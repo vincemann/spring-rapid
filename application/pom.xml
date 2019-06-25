@@ -46,8 +46,8 @@
             <artifactId>spring-boot-starter-web</artifactId>
         </dependency>
         <dependency>
-            <groupId>com.example</groupId>
-            <artifactId>gs-multi-module-library</artifactId>
+            <groupId>io.github.vincemann</groupId>
+            <artifactId>generic-crud-lib</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>
