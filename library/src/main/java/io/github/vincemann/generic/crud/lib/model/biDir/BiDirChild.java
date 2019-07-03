@@ -11,6 +11,11 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicBoolean;
 
+/**
+ * Represents a Child of a Bidirectional jpa realtion ship (i.e. Entity with @ManyToOne typically would implement this interface)
+ * the Parent of the Relation ship should implement {@link BiDirParent} and annotate its ChildCollection (containing Entities of this Type) with {@link BiDirChildCollection}
+ * or its single Child (bidirectional @OneToOne) with {@link BiDirChildEntity}
+ */
 public interface BiDirChild extends BiDirEntity {
     Map<Class,Field[]> biDirParentFieldsCache = new HashMap<>();
 

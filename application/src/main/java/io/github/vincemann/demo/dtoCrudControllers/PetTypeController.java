@@ -1,6 +1,6 @@
 package io.github.vincemann.demo.dtoCrudControllers;
 
-import io.github.vincemann.generic.crud.lib.controller.springAdapter.DTOCrudControllerSpringAdatper;
+import io.github.vincemann.generic.crud.lib.controller.springAdapter.DTOCrudControllerSpringAdapter;
 import io.github.vincemann.generic.crud.lib.controller.springAdapter.idFetchingStrategy.IdFetchingStrategy;
 import io.github.vincemann.generic.crud.lib.controller.springAdapter.mediaTypeStrategy.JSONMediaTypeStrategy;
 import io.github.vincemann.generic.crud.lib.controller.springAdapter.validationStrategy.JavaXValidationStrategy;
@@ -13,7 +13,7 @@ import io.github.vincemann.generic.crud.lib.dtoMapper.DTOMapper;
 import io.github.vincemann.generic.crud.lib.service.EndpointService;
 
 @Controller
-public class PetTypeController extends DTOCrudControllerSpringAdatper<PetType, PetTypeDTO,Long, PetTypeService> {
+public class PetTypeController extends DTOCrudControllerSpringAdapter<PetType, PetTypeDTO,Long, PetTypeService> {
 
     public PetTypeController(PetTypeService crudService, EndpointService endpointService, IdFetchingStrategy<Long> longIdFetchingStrategy) {
         super(crudService,

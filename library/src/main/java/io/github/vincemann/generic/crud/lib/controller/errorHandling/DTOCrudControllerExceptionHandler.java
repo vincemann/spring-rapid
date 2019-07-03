@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 
 /**
  * handles Exceptions thrown by {@link DTOCrudController}
- * Impl needs to be annotated with
+ * Impl needs to be annotated with @RestControllerAdvice(assignableTypes = DTOCrudController.class)
  */
 public interface DTOCrudControllerExceptionHandler<ExceptionResponse>{
 

@@ -18,6 +18,14 @@ import org.modelmapper.spi.MappingContext;
 import java.io.Serializable;
 import java.util.Optional;
 
+/**
+ *
+ * @param <DTO>             DTO Entity Type that is a {@link BiDirDTOChild} of {@link ParentServiceE}
+ * @param <ServiceE>        Service Entity Type that should be the result of the mapping
+ * @param <ParentServiceE>  Service Entity Type of the {@link BiDirParent} of {@link ServiceE}
+ * @param <Id>              Id Type
+ * @param <ParentId>        Parent Id Type
+ */
 public class BackRefResolvingConverter<DTO extends IdentifiableEntity<Id> & BiDirDTOChild<ParentId>, ServiceE extends IdentifiableEntity<Id> & BiDirChild, ParentServiceE extends IdentifiableEntity<ParentId> & BiDirParent, Id extends Serializable, ParentId extends Serializable> implements Converter<DTO, ServiceE> {
     private CrudService<ParentServiceE,ParentId> parentCrudService;
     private Class<? extends IdentifiableEntity> parentClass;
@@ -25,12 +33,12 @@ public class BackRefResolvingConverter<DTO extends IdentifiableEntity<Id> & BiDi
     private Class<ServiceE> serviceEntityClass;
 
     /**
-     * Converts an {@link BiDirDTOChild} to its ServiceEntity of Type {@link ParentServiceE}.
+     * Converts a {@link BiDirDTOChild} to its ServiceEntity of Type {@link ParentServiceE}.
      * The backRefence Id, annotated with {@link BiDirParentId} of BiDirDTOChild {@link ParentId} is used in order to find ParentServiceEntity by id from vincemann.github.generic.crud.lib.service {@param parentCrudService}
      * The retrieved ParentService entity can then be set as a Backreference for the mapping result Entity. See: {@link BiDirParentEntity}
      *
      * So a mapping from {@link BiDirParentId} to {@link BiDirParentEntity} happens.
-     * A mapping from id to corresponding ServiceEntity.
+     * A mapping from parent id to the corresponding parent ServiceEntity.
      *
      * @param parentCrudService
      * @param parentClass

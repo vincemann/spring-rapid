@@ -25,19 +25,25 @@ import java.util.stream.Collectors;
 
 /**
  * Adapter that connects Springs Requirements for a Controller (which can be seen as an Interface),
- * with the {@link BasicDTOCrudController} Interface
- * fetches {@link Id} from UrlParameter
+ * with the {@link BasicDTOCrudController} Interface, resulting in a fully functional Spring @{@link org.springframework.web.bind.annotation.RestController}
  *
+ * fetches {@link Id} with given {@link IdFetchingStrategy} from HttpRequest
+ * fetches {@link DTO} with given {@link MediaTypeStrategy} from HttpRequest
+ * validate the {@link DTO} and {@link Id} with the given {@link ValidationStrategy}
+ *
+ * Examples with {@link io.github.vincemann.generic.crud.lib.controller.springAdapter.idFetchingStrategy.UrlParamIdFetchingStrategy}:
  * /entityName/httpMethod?entityIdName=id
- *
- * examples:
  *
  * /account/get?accountId=34
  * /account/get?accountId=44bedc08-8e71-11e9-bc42-526af7764f64
  *
+ * @param <ServiceE> Service Entity Type, of entity, which curd enpoints are exposed by this Controller
+ * @param <Service>  Service Type of {@link ServiceE}
+ * @param <DTO>      DTO Type corresponding to {@link ServiceE}
+ * @param <Id>       Id Type of {@link ServiceE}
  *
  */
-public abstract class DTOCrudControllerSpringAdatper<ServiceE extends IdentifiableEntity<Id>,DTO extends IdentifiableEntity<Id>,Id extends Serializable, Service extends CrudService<ServiceE,Id>> extends BasicDTOCrudController<ServiceE,Id, Service,DTO> {
+public abstract class DTOCrudControllerSpringAdapter<ServiceE extends IdentifiableEntity<Id>,DTO extends IdentifiableEntity<Id>,Id extends Serializable, Service extends CrudService<ServiceE,Id>> extends BasicDTOCrudController<ServiceE,Id, Service,DTO> {
 
 
     private EndpointService endpointService;
@@ -52,10 +58,8 @@ public abstract class DTOCrudControllerSpringAdatper<ServiceE extends Identifiab
     private MediaTypeStrategy mediaTypeStrategy;
     private ValidationStrategy<DTO,Id> validationStrategy;
 
-    //todo methoden einbauen die einfach nur die id returnen, siehe BasicDTOCrudController
-
-
-    public DTOCrudControllerSpringAdatper(Service crudService, EndpointService endpointService, String entityNameInUrl, Class<DTO> dtoClass, IdFetchingStrategy<Id> idIdFetchingStrategy, MediaTypeStrategy mediaTypeStrategy, ValidationStrategy<DTO, Id> validationStrategy) {
+    //todo implement methods, that only return id, and not whole dtos
+    public DTOCrudControllerSpringAdapter(Service crudService, EndpointService endpointService, String entityNameInUrl, Class<DTO> dtoClass, IdFetchingStrategy<Id> idIdFetchingStrategy, MediaTypeStrategy mediaTypeStrategy, ValidationStrategy<DTO, Id> validationStrategy) {
         super(crudService);
         this.endpointService = endpointService;
         this.entityNameInUrl = entityNameInUrl;
@@ -67,7 +71,7 @@ public abstract class DTOCrudControllerSpringAdatper<ServiceE extends Identifiab
         initRequestMapping();
     }
 
-    public DTOCrudControllerSpringAdatper(Service crudService, EndpointService endpointService, Class<ServiceE> entityClass, Class<DTO> dtoClass, IdFetchingStrategy<Id> idIdFetchingStrategy, MediaTypeStrategy mediaTypeStrategy, ValidationStrategy<DTO, Id> validationStrategy) {
+    public DTOCrudControllerSpringAdapter(Service crudService, EndpointService endpointService, Class<ServiceE> entityClass, Class<DTO> dtoClass, IdFetchingStrategy<Id> idIdFetchingStrategy, MediaTypeStrategy mediaTypeStrategy, ValidationStrategy<DTO, Id> validationStrategy) {
         super(crudService);
         this.endpointService = endpointService;
         this.entityNameInUrl = entityClass.getSimpleName();

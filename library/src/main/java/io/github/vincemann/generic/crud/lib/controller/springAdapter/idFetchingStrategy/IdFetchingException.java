@@ -1,5 +1,9 @@
 package io.github.vincemann.generic.crud.lib.controller.springAdapter.idFetchingStrategy;
 
+/**
+ * Indicates that the id could not be Fetched from the httprequest.
+ * See : {@link IdFetchingStrategy}
+ */
 public class IdFetchingException extends Exception {
     public IdFetchingException() {
     }

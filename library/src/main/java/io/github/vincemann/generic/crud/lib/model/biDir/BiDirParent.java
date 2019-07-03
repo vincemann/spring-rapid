@@ -5,16 +5,14 @@ import io.github.vincemann.generic.crud.lib.service.exception.UnknownParentTypeE
 import io.github.vincemann.generic.crud.lib.util.ReflectionUtils;
 
 import java.lang.reflect.Field;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 //muss ich als interface machen, weil es entities geben wird die gleichzeitig child und parent entity sind
 public interface BiDirParent extends BiDirEntity {
 
     Map<Class,Field[]> biDirChildrenCollectionFieldsCache = new HashMap<>();
+    Map<Class,Field[]> biDirChildEntityFieldsCache = new HashMap<>();
 
     default void dismissChildren() throws UnknownParentTypeException, IllegalAccessException {
         for(Map.Entry<Collection<? extends BiDirChild>,Class<? extends BiDirChild>> entry: getChildrenCollections().entrySet()){
@@ -90,6 +88,17 @@ public interface BiDirParent extends BiDirEntity {
         }else {
             return childrenCollectionFieldsFromCache;
         }
+    }
+
+    default Field[] findChildrenEntityFields(){
+        Field[] childEntityFieldsFromCache = biDirChildEntityFieldsCache.get(this.getClass());
+        if(childEntityFieldsFromCache==null){
+            Field[] childEntityFields = ReflectionUtils.getDeclaredFieldsAnnotatedWith(this.getClass(),BiDirChildEntity.class,true);
+            biDirChildrenCollectionFieldsCache.put(this.getClass(),childEntityFields);
+            return childEntityFields;
+        }else {
+            return childEntityFieldsFromCache;
+        }
 
     }
     /**
@@ -98,16 +107,27 @@ public interface BiDirParent extends BiDirEntity {
      */
     default Map<Collection<? extends BiDirChild>,Class<? extends BiDirChild>> getChildrenCollections() throws IllegalAccessException {
         Map<Collection<? extends BiDirChild>,Class<? extends BiDirChild>> childrenCollection_CollectionTypeMap = new HashMap<>();
-        Field[] fields =findChildrenCollectionFields();
-        for(Field field : fields){
+        Field[] collectionFields =findChildrenCollectionFields();
+        Field[] entityFields = findChildrenEntityFields();
+        for(Field field : collectionFields){
             field.setAccessible(true);
             Collection<? extends BiDirChild> biDirChildren = (Collection<? extends BiDirChild>) field.get(this);
             if(biDirChildren == null){
                 //skip
                 continue;
             }
-            Class<? extends BiDirChild> collectionType = field.getAnnotation(BiDirChildCollection.class).value();
-            childrenCollection_CollectionTypeMap.put(biDirChildren,collectionType);
+            Class<? extends BiDirChild> collectionEntityType = field.getAnnotation(BiDirChildCollection.class).value();
+            childrenCollection_CollectionTypeMap.put(biDirChildren,collectionEntityType);
+        }
+        for(Field field: entityFields){
+            field.setAccessible(true);
+            BiDirChild biDirChild = (BiDirChild) field.get(this);
+            if(biDirChild == null){
+                //skip
+                continue;
+            }
+            Class<? extends BiDirChild> entityType = field.getAnnotation(BiDirChildCollection.class).value();
+            childrenCollection_CollectionTypeMap.put(Collections.singleton(biDirChild),entityType);
         }
         return childrenCollection_CollectionTypeMap;
     }

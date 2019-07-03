@@ -6,6 +6,12 @@ import io.github.vincemann.generic.crud.lib.model.IdentifiableEntity;
 
 import java.io.Serializable;
 
+/**
+ * BaseImplementation of {@link DTOMapper} that utilizes the {@link ModelMapper}' map method with it's baseconfiguration
+ * @param <Src>     Source EntityType
+ * @param <Dest>    Destination EntityType
+ * @param <Id>      IdType
+ */
 public class BasicDTOMapper<Src extends IdentifiableEntity<Id>,Dest extends IdentifiableEntity<Id>,Id extends Serializable> implements DTOMapper<Src,Dest,Id> {
 
     private Class<Dest> destClass;

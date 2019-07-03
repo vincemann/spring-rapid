@@ -9,6 +9,11 @@ import java.lang.reflect.Field;
 import java.util.HashMap;
 import java.util.Map;
 
+/**
+ * Represents a DTO Entity, which corresponding ServiceEntity, has a {@link io.github.vincemann.generic.crud.lib.model.biDir.BiDirParentEntity}.
+ * The parent is represented in the DTO Entity by an id Field, annotated with {@link io.github.vincemann.generic.crud.lib.model.biDir.BiDirParentId}
+ * @param <ParentId>    Type of ParentId
+ */
 public interface BiDirDTOChild<ParentId> {
     Map<Class,Field[]> biDirParentFieldsCache = new HashMap<>();
 

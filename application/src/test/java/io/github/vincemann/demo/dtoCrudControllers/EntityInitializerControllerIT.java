@@ -7,14 +7,13 @@ import io.github.vincemann.demo.model.Owner;
 import io.github.vincemann.demo.model.PetType;
 import io.github.vincemann.demo.model.Specialty;
 import io.github.vincemann.demo.service.VisitService;
-import io.github.vincemann.demo.service.*;
 import lombok.Getter;
 import lombok.Setter;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.springframework.beans.factory.annotation.Autowired;
-import io.github.vincemann.generic.crud.lib.controller.springAdapter.DTOCrudControllerSpringAdatper;
+import io.github.vincemann.generic.crud.lib.controller.springAdapter.DTOCrudControllerSpringAdapter;
 import io.github.vincemann.generic.crud.lib.model.IdentifiableEntity;
 import io.github.vincemann.generic.crud.lib.service.CrudService;
 import io.github.vincemann.generic.crud.lib.service.exception.EntityNotFoundException;
@@ -26,7 +25,7 @@ import java.util.Set;
 
 @Getter
 @Setter
-public abstract class EntityInitializerControllerIT<ServiceE extends IdentifiableEntity<Id>, DTO extends IdentifiableEntity<Id>, Service extends CrudService<ServiceE, Id>, Controller extends DTOCrudControllerSpringAdatper<ServiceE, DTO, Id, Service>, Id extends Serializable> extends ValidationUrlParamIdDTOCrudControllerSpringAdapterIT<ServiceE,DTO,Service,Controller,Id> {
+public abstract class EntityInitializerControllerIT<ServiceE extends IdentifiableEntity<Id>, DTO extends IdentifiableEntity<Id>, Service extends CrudService<ServiceE, Id>, Controller extends DTOCrudControllerSpringAdapter<ServiceE, DTO, Id, Service>, Id extends Serializable> extends ValidationUrlParamIdDTOCrudControllerSpringAdapterIT<ServiceE,DTO,Service,Controller,Id> {
 
     @Autowired
     private PetTypeController petTypeController;

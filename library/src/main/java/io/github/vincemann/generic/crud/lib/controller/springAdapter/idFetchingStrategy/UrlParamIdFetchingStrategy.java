@@ -4,6 +4,11 @@ import io.github.vincemann.generic.crud.lib.controller.exception.IdTransformingE
 
 import javax.servlet.http.HttpServletRequest;
 
+/**
+ * Fetches the Id from a {@link HttpServletRequest} by a url param with the name given by
+ * {@link UrlParamIdFetchingStrategy#idUrlParamKey}
+ * @param <Id>
+ */
 public abstract class UrlParamIdFetchingStrategy<Id> implements IdFetchingStrategy<Id> {
 
     private String idUrlParamKey;

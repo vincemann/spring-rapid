@@ -1,6 +1,6 @@
 package io.github.vincemann.demo.dtoCrudControllers;
 
-import io.github.vincemann.generic.crud.lib.controller.springAdapter.DTOCrudControllerSpringAdatper;
+import io.github.vincemann.generic.crud.lib.controller.springAdapter.DTOCrudControllerSpringAdapter;
 import io.github.vincemann.generic.crud.lib.dtoMapper.BasicDTOMapper;
 import io.github.vincemann.generic.crud.lib.dtoMapper.DTOMapper;
 import io.github.vincemann.generic.crud.lib.dtoMapper.backRefResolving.BackRefResolvingConverter;
@@ -20,7 +20,7 @@ import io.github.vincemann.generic.crud.lib.service.EndpointService;
 import java.util.Collections;
 
 @Controller
-public class PetController extends DTOCrudControllerSpringAdatper<Pet, PetDTO,Long, PetService> {
+public class PetController extends DTOCrudControllerSpringAdapter<Pet, PetDTO,Long, PetService> {
 
     private OwnerService ownerService;
 
