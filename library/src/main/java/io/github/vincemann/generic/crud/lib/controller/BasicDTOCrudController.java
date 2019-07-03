@@ -14,13 +14,24 @@ import java.io.Serializable;
 import java.util.Optional;
 
 
-public abstract class BasicDTOCrudController<ServiceE extends IdentifiableEntity<Id>, Id extends Serializable, S extends CrudService<ServiceE, Id>, DTO extends IdentifiableEntity<Id>> implements DTOCrudController<DTO, Id> {
+/**
+ * Impl of {@link DTOCrudController} that handles the following:
+ * Mapping of ServiceEntity to DTO and vice versa.
+ * Interaction with specified  {@link CrudService}.
+ * Supply callback Methods.
+ *
+ * @param <ServiceE> Service Entity Type, of entity, which curd enpoints are exposed by this Controller
+ * @param <Service>  Service Type of {@link ServiceE}
+ * @param <DTO>      DTO Type corresponding to {@link ServiceE}
+ * @param <Id>       Id Type of {@link ServiceE}
+ */
+public abstract class BasicDTOCrudController<ServiceE extends IdentifiableEntity<Id>, Id extends Serializable, Service extends CrudService<ServiceE, Id>, DTO extends IdentifiableEntity<Id>> implements DTOCrudController<DTO, Id> {
 
-    private S crudService;
+    private Service crudService;
     private DTOMapper<DTO, ServiceE, Id> dtoToServiceEntityMapper;
     private DTOMapper<ServiceE, DTO, Id> serviceEntityToDTOMapper;
 
-    public BasicDTOCrudController(S crudService) {
+    public BasicDTOCrudController(Service crudService) {
         this.crudService = crudService;
     }
 
@@ -105,7 +116,7 @@ public abstract class BasicDTOCrudController<ServiceE extends IdentifiableEntity
         return new ResponseEntity<>(entity, HttpStatus.OK);
     }
 
-    public S getCrudService() {
+    public Service getCrudService() {
         return crudService;
     }
 

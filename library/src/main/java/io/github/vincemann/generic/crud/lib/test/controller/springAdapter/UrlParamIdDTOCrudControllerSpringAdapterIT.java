@@ -1,7 +1,7 @@
 package io.github.vincemann.generic.crud.lib.test.controller.springAdapter;
 
 import io.github.vincemann.generic.crud.lib.controller.exception.EntityMappingException;
-import io.github.vincemann.generic.crud.lib.controller.springAdapter.DTOCrudControllerSpringAdatper;
+import io.github.vincemann.generic.crud.lib.controller.springAdapter.DTOCrudControllerSpringAdapter;
 import io.github.vincemann.generic.crud.lib.controller.springAdapter.idFetchingStrategy.LongUrlParamIdFetchingStrategy;
 import io.github.vincemann.generic.crud.lib.controller.springAdapter.idFetchingStrategy.UrlParamIdFetchingStrategy;
 import io.github.vincemann.generic.crud.lib.model.IdentifiableEntity;
@@ -28,7 +28,7 @@ import java.util.Optional;
 import java.util.Set;
 
 /**
- * Integration Test for a {@link DTOCrudControllerSpringAdatper} with {@link UrlParamIdFetchingStrategy}
+ * Integration Test for a {@link DTOCrudControllerSpringAdapter} with {@link UrlParamIdFetchingStrategy}
  * Removes all Entries in Database, that is connected to the {@link CrudService} after each test.
  *
  * @param <ServiceE>
@@ -37,7 +37,7 @@ import java.util.Set;
  * @param <Controller>
  * @param <Id>
  */
-public abstract class UrlParamIdDTOCrudControllerSpringAdapterIT<ServiceE extends IdentifiableEntity<Id>, DTO extends IdentifiableEntity<Id>, Service extends CrudService<ServiceE, Id>, Controller extends DTOCrudControllerSpringAdatper<ServiceE, DTO, Id, Service>, Id extends Serializable> extends IntegrationTest {
+public abstract class UrlParamIdDTOCrudControllerSpringAdapterIT<ServiceE extends IdentifiableEntity<Id>, DTO extends IdentifiableEntity<Id>, Service extends CrudService<ServiceE, Id>, Controller extends DTOCrudControllerSpringAdapter<ServiceE, DTO, Id, Service>, Id extends Serializable> extends IntegrationTest {
 
     /**
      * This is a security feature.

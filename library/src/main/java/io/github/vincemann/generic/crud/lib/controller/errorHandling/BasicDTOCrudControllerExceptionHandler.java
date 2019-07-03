@@ -10,7 +10,7 @@ import io.github.vincemann.generic.crud.lib.service.exception.BadEntityException
 import io.github.vincemann.generic.crud.lib.service.exception.EntityNotFoundException;
 import io.github.vincemann.generic.crud.lib.service.exception.NoIdException;
 
-//todo leider ist die annotation nicht inherited.. deswegen muss die immer an die impl ran
+//todo annotation is not inherited, so it the impl needs to be annotated
 @RestControllerAdvice(assignableTypes = DTOCrudController.class)
 @Slf4j
 public class BasicDTOCrudControllerExceptionHandler extends ImprovedRestExceptionHandler implements DTOCrudControllerExceptionHandler<ApiError>{

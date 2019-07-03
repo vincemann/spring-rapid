@@ -1,5 +1,8 @@
 package io.github.vincemann.generic.crud.lib.controller.exception;
 
+/**
+ * Indicates, that a mapping from a DTO Entity to ServiceEntity with {@link io.github.vincemann.generic.crud.lib.dtoMapper.DTOMapper} or vice versa failed.
+ */
 public class EntityMappingException extends Exception {
 
 
