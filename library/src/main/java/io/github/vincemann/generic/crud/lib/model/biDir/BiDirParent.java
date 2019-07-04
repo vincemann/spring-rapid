@@ -99,7 +99,7 @@ public interface BiDirParent extends BiDirEntity {
         Field[] childEntityFieldsFromCache = biDirChildEntityFieldsCache.get(this.getClass());
         if(childEntityFieldsFromCache==null){
             Field[] childEntityFields = ReflectionUtils.getDeclaredFieldsAnnotatedWith(this.getClass(),BiDirChildEntity.class,true);
-            biDirChildrenCollectionFieldsCache.put(this.getClass(),childEntityFields);
+            biDirChildEntityFieldsCache.put(this.getClass(),childEntityFields);
             return childEntityFields;
         }else {
             return childEntityFieldsFromCache;
