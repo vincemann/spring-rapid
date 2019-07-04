@@ -5,6 +5,7 @@ import io.github.vincemann.generic.crud.lib.service.CrudService;
 import io.github.vincemann.generic.crud.lib.service.exception.BadEntityException;
 import io.github.vincemann.generic.crud.lib.service.exception.EntityNotFoundException;
 import io.github.vincemann.generic.crud.lib.service.exception.NoIdException;
+import io.github.vincemann.generic.crud.lib.util.BeanUtils;
 import lombok.Getter;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
@@ -52,7 +53,8 @@ public abstract class CrudServiceTest<S extends CrudService<E,Id>,E extends Iden
         //then
         Assertions.assertTrue(foundEntity.isPresent());
         Assertions.assertNotNull(foundEntity.get().getId());
-        Assertions.assertEquals(savedTestEntity,foundEntity.get());
+        Assertions.assertTrue(BeanUtils.isDeepEqual(savedTestEntity,foundEntity.get()));
+        //Assertions.assertEquals(savedTestEntity,foundEntity.get());
     }
 
     protected E saveEntity(E entityToSave) throws  BadEntityException {
@@ -101,7 +103,8 @@ public abstract class CrudServiceTest<S extends CrudService<E,Id>,E extends Iden
         //then
         Assertions.assertEquals(1,foundEntities.size());
         for(E foundEntity: foundEntities){
-            Assertions.assertEquals(savedTestEntity,foundEntity);
+            Assertions.assertTrue(BeanUtils.isDeepEqual(savedTestEntity,foundEntity));
+            //Assertions.assertEquals(savedTestEntity,foundEntity);
         }
     }
 

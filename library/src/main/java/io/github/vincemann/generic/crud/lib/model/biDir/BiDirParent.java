@@ -9,6 +9,11 @@ import java.util.*;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 //muss ich als interface machen, weil es entities geben wird die gleichzeitig child und parent entity sind
+
+/**
+ * represents a parent of a bidirectional jpa relationship (i.e. Entity with @OneToMany typically would implement this interface)
+ * the Child of the Relation ship should implement {@link BiDirChild} and annotate its parents with {@link BiDirParentEntity}
+ */
 public interface BiDirParent extends BiDirEntity {
 
     Map<Class,Field[]> biDirChildrenCollectionFieldsCache = new HashMap<>();

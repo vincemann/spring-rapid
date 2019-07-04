@@ -27,6 +27,8 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
+import static io.github.vincemann.generic.crud.lib.util.BeanUtils.isDeepEqual;
+
 /**
  * Integration Test for a {@link DTOCrudControllerSpringAdapter} with {@link UrlParamIdFetchingStrategy}
  * Removes all Entries in Database, that is connected to the {@link CrudService} after each test.
@@ -282,7 +284,7 @@ public abstract class UrlParamIdDTOCrudControllerSpringAdapterIT<ServiceE extend
     }
 
     /**
-     * 1. expect oldEntityDTO and newEntityDTO to not be deepEqual {@link #isDeepEqual(Object, Object)}
+     * 1. expect oldEntityDTO and newEntityDTO to not be deepEqual {@link BeanUtils#isDeepEqual(Object, Object)}
      * 2. expect oldEntityDTO and newEntityDTO to have same id
      * 3. expect oldEntityDTO to be already persisted -> can be found by id
      * 4. make update request to backend
@@ -378,7 +380,7 @@ public abstract class UrlParamIdDTOCrudControllerSpringAdapterIT<ServiceE extend
     /**
      * 1. Map DTOEntity to ServiceEntity = RequestServiceEntity
      * 2. Fetch ServiceEntity from Service (ultimately from the persistence layer) by Id = dbServiceEntity
-     * 3. Validate that RequestServiceEntity and dbServiceEntity are deep equal via {@link #isDeepEqual(Object, Object)}
+     * 3. Validate that RequestServiceEntity and dbServiceEntity are deep equal via {@link BeanUtils#isDeepEqual(Object, Object)}
      *
      * @param httpResponseEntity the DTO entity returned by Backend after http request
      * @return
@@ -398,7 +400,7 @@ public abstract class UrlParamIdDTOCrudControllerSpringAdapterIT<ServiceE extend
     }
 
     /**
-     * see {@link #isDeepEqual(Object, Object)}
+     * see {@link BeanUtils#isDeepEqual(Object, Object)}
      *
      * @param httpResponseEntity
      * @param prevSavedEntity
@@ -409,7 +411,7 @@ public abstract class UrlParamIdDTOCrudControllerSpringAdapterIT<ServiceE extend
     }
 
     /**
-     * see {@link #isDeepEqual(Object, Object)}
+     * see {@link BeanUtils#isDeepEqual(Object, Object)}
      *
      * @param httpResponseEntity
      * @param prevSavedEntity
@@ -465,27 +467,6 @@ public abstract class UrlParamIdDTOCrudControllerSpringAdapterIT<ServiceE extend
 
     public List<DTO> getTestDTOs() {
         return testDTOs;
-    }
-
-    /**
-     * checks whether two Objects are equal by properties
-     * -> equals method of object is not used, but property values are compared reflectively
-     * order in Collections is ignored
-     *
-     * @param o1
-     * @param o2
-     * @return
-     */
-    protected boolean isDeepEqual(Object o1, Object o2) {
-        try {
-            //Reihenfolge in Lists wird hier ignored
-            ReflectionAssert.assertReflectionEquals(o1, o2, ReflectionComparatorMode.LENIENT_ORDER);
-            return true;
-        } catch (AssertionFailedError e) {
-            e.printStackTrace();
-            return false;
-        }
-
     }
 
 }
