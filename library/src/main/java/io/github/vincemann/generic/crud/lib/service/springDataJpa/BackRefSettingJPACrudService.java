@@ -107,9 +107,7 @@ public class BackRefSettingJPACrudService<E extends IdentifiableEntity<Id> & BiD
             List<Method> baseEntityAndCollectionGetters = new ArrayList<>();
             List<Method> getters = ReflectionUtils.findGetters(clazz);
             for (Method getter : getters) {
-                System.err.println("getter return type: " + getter.getReturnType().getSimpleName());
                 if (IdentifiableEntity.class.isAssignableFrom(getter.getReturnType())|| Collection.class.isAssignableFrom(getter.getReturnType())) {
-                    System.err.println("getter assignable from baseentity: " + getter.getName());
                     baseEntityAndCollectionGetters.add(getter);
                 }
             }

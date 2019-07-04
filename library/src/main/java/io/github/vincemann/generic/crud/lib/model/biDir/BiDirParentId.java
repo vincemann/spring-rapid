@@ -9,7 +9,7 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.RUNTIME)
 public @interface BiDirParentId {
     /**
-     * Type of Parent which blongs to the annotated parent id
+     * Type of Parent which belongs to the annotated parent id
      * @return
      */
     Class<? extends BiDirParent> value();
