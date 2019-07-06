@@ -33,7 +33,7 @@ public class BackRefResolvingConverter<DTO extends IdentifiableEntity<Id> & BiDi
     private Class<ServiceE> serviceEntityClass;
 
     /**
-     * Converts a {@link BiDirDTOChild} to its ServiceEntity of Type {@link ParentServiceE}.
+     * Converts a {@link BiDirDTOChild} to its ServiceEntity of Type {@link ServiceE}.
      * The backRefence Id, annotated with {@link BiDirParentId} of BiDirDTOChild {@link ParentId} is used in order to find ParentServiceEntity by id from vincemann.github.generic.crud.lib.service {@param parentCrudService}
      * The retrieved ParentService entity can then be set as a Backreference for the mapping result Entity. See: {@link BiDirParentEntity}
      *

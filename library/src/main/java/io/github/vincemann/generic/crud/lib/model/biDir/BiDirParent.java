@@ -29,18 +29,38 @@ public interface BiDirParent extends BiDirEntity {
         }
     }
 
-   default void addChild(BiDirChild biDirChild) throws UnknownChildTypeException, IllegalAccessException {
+    /**
+     * Add a new Child to this parent
+     * child will be added to fields with {@link BiDirChildCollection} and fields with {@link BiDirChildEntity} will be set with newChild
+     * @param newChild
+     * @throws UnknownChildTypeException
+     * @throws IllegalAccessException
+     */
+   default void addChild(BiDirChild newChild) throws UnknownChildTypeException, IllegalAccessException {
        AtomicBoolean addedChildToAtLeastOneCollection = new AtomicBoolean(false);
        for(Map.Entry entry: getChildrenCollections().entrySet()){
            Class targetClass = (Class) entry.getValue();
-           if(biDirChild.getClass().equals(targetClass)){
-               ((Collection)entry.getKey()).add(biDirChild);
+           if(newChild.getClass().equals(targetClass)){
+               ((Collection)entry.getKey()).add(newChild);
+               addedChildToAtLeastOneCollection.set(true);
+           }
+       }
+
+       Field[] entityFields = findChildrenEntityFields();
+       for(Field childField: entityFields) {
+           if (childField.getType().equals(newChild.getClass())) {
+               childField.setAccessible(true);
+               BiDirChild oldChild = (BiDirChild) childField.get(this);
+               if (oldChild != null) {
+                   System.err.println("warning, overriding old child: " + oldChild + " with new Child: " + newChild + " of parent: " + this);
+               }
+               childField.set(this,newChild);
                addedChildToAtLeastOneCollection.set(true);
            }
        }
 
        if(!addedChildToAtLeastOneCollection.get()){
-           throw new UnknownChildTypeException(getClass(),biDirChild.getClass());
+           throw new UnknownChildTypeException(getClass(),newChild.getClass());
        }
    }
 
@@ -113,7 +133,7 @@ public interface BiDirParent extends BiDirEntity {
     default Map<Collection<? extends BiDirChild>,Class<? extends BiDirChild>> getChildrenCollections() throws IllegalAccessException {
         Map<Collection<? extends BiDirChild>,Class<? extends BiDirChild>> childrenCollection_CollectionTypeMap = new HashMap<>();
         Field[] collectionFields =findChildrenCollectionFields();
-        Field[] entityFields = findChildrenEntityFields();
+
         for(Field field : collectionFields){
             field.setAccessible(true);
             Collection<? extends BiDirChild> biDirChildren = (Collection<? extends BiDirChild>) field.get(this);
@@ -124,6 +144,14 @@ public interface BiDirParent extends BiDirEntity {
             Class<? extends BiDirChild> collectionEntityType = field.getAnnotation(BiDirChildCollection.class).value();
             childrenCollection_CollectionTypeMap.put(biDirChildren,collectionEntityType);
         }
+
+        return childrenCollection_CollectionTypeMap;
+    }
+
+
+    default Set<? extends BiDirChild> getChildren() throws IllegalAccessException {
+        Set<BiDirChild> children = new HashSet<>();
+        Field[] entityFields = findChildrenEntityFields();
         for(Field field: entityFields){
             field.setAccessible(true);
             BiDirChild biDirChild = (BiDirChild) field.get(this);
@@ -131,9 +159,8 @@ public interface BiDirParent extends BiDirEntity {
                 //skip
                 continue;
             }
-            Class<? extends BiDirChild> entityType = field.getAnnotation(BiDirChildCollection.class).value();
-            childrenCollection_CollectionTypeMap.put(Collections.singleton(biDirChild),entityType);
+            children.add(biDirChild);
         }
-        return childrenCollection_CollectionTypeMap;
+        return children;
     }
 }

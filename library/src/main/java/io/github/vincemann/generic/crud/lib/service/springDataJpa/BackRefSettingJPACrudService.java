@@ -2,6 +2,7 @@ package io.github.vincemann.generic.crud.lib.service.springDataJpa;
 
 import io.github.vincemann.generic.crud.lib.service.exception.BadEntityException;
 import io.github.vincemann.generic.crud.lib.service.exception.UnknownParentTypeException;
+import io.github.vincemann.generic.crud.lib.util.ListUtils;
 import lombok.extern.slf4j.Slf4j;
 import io.github.vincemann.generic.crud.lib.model.IdentifiableEntity;
 import io.github.vincemann.generic.crud.lib.model.biDir.BiDirChild;
@@ -58,7 +59,7 @@ public class BackRefSettingJPACrudService<E extends IdentifiableEntity<Id> & BiD
     private void setBackReferencesOfEntityGraph(Stack<IdentifiableEntity> entitiesToCheck, List<IdentifiableEntity> entitiesToAddToCheckList) throws IllegalAccessException, InvocationTargetException, UnknownParentTypeException {
         while (!entitiesToCheck.empty()) {
             IdentifiableEntity parentEntity = entitiesToCheck.pop();
-            if (entitiesAlreadySeen.contains(parentEntity)) {
+            if (ListUtils.containsByReference(entitiesAlreadySeen,parentEntity)) {
                 //prevent endless cycle
                 continue;
             }
