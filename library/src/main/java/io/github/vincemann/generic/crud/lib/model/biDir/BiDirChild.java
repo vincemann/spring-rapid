@@ -19,6 +19,12 @@ import java.util.concurrent.atomic.AtomicBoolean;
 public interface BiDirChild extends BiDirEntity {
     Map<Class,Field[]> biDirParentFieldsCache = new HashMap<>();
 
+    /**
+     *
+     * @param parentToSet
+     * @throws UnknownParentTypeException   when supplied Parent does not match any of the fields in child class anntoated with {@link BiDirParentEntity}
+     * @throws IllegalAccessException
+     */
     public default void findAndSetParent(BiDirParent parentToSet) throws UnknownParentTypeException, IllegalAccessException {
         AtomicBoolean atLeastOneParentSet = new AtomicBoolean(false);
         for(Field parentField: findParentFields()){
@@ -33,6 +39,10 @@ public interface BiDirChild extends BiDirEntity {
         }
     }
 
+    /**
+     * Adds child (this) to its parents
+     * @throws IllegalAccessException
+     */
     public default void addChildToParents() throws IllegalAccessException {
         Collection<BiDirParent> parents = findParents();
         for(BiDirParent parent: parents){
@@ -44,6 +54,12 @@ public interface BiDirChild extends BiDirEntity {
         }
     }
 
+    /**
+     * find Parent of this, annotated with {@link BiDirParentEntity} and has same type as parentToSet
+     * @param parentToSet
+     * @return
+     * @throws IllegalAccessException
+     */
     public default boolean findAndSetParentIfNull(BiDirParent parentToSet) throws IllegalAccessException {
         AtomicBoolean atLeastOneParentSet = new AtomicBoolean(false);
         for(Field parentField: findParentFields()){
@@ -56,7 +72,11 @@ public interface BiDirChild extends BiDirEntity {
         }
         return atLeastOneParentSet.get();
     }
-    
+
+    /**
+     * All fields of this, annotated with {@link BiDirParentEntity}
+     * @return
+     */
     public default Field[] findParentFields(){
         Field[] parentFieldsFromCache = biDirParentFieldsCache.get(this.getClass());
         if(parentFieldsFromCache==null){
@@ -69,13 +89,20 @@ public interface BiDirChild extends BiDirEntity {
     }
 
 
+    /**
+     *
+     * @return  all parent of this, that are not null
+     * @throws IllegalAccessException
+     */
     public default Collection<BiDirParent> findParents() throws IllegalAccessException {
         Collection<BiDirParent> result = new ArrayList<>();
         Field[] parentFields = findParentFields();
         for(Field parentField: parentFields) {
             parentField.setAccessible(true);
             BiDirParent biDirParent = (BiDirParent) parentField.get(this);
-            result.add(biDirParent);
+            if(biDirParent!=null) {
+                result.add(biDirParent);
+            }
         }
         return result;
     }

@@ -77,14 +77,15 @@
             <groupId>org.junit.jupiter</groupId>
             <artifactId>junit-jupiter-api</artifactId>
             <version>5.5.0-M1</version>
-            <scope>compile</scope>
+            <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>org.junit.jupiter</groupId>
             <artifactId>junit-jupiter-engine</artifactId>
             <version>5.4.2</version>
-            <scope>compile</scope>
+            <scope>provided</scope>
         </dependency>
+
 
         <dependency>
             <groupId>org.unitils</groupId>
@@ -98,6 +99,13 @@
             <artifactId>httpclient</artifactId>
             <version>4.5.8</version>
             <scope>compile</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.junit.platform</groupId>
+            <artifactId>junit-platform-commons</artifactId>
+            <version>1.4.1</version>
+            <scope>test</scope>
         </dependency>
 
 
