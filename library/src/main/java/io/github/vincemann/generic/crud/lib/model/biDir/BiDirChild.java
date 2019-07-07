@@ -26,21 +26,21 @@ public interface BiDirChild extends BiDirEntity {
      * @throws IllegalAccessException
      */
     public default void findAndSetParent(BiDirParent parentToSet) throws UnknownParentTypeException, IllegalAccessException {
-        AtomicBoolean atLeastOneParentSet = new AtomicBoolean(false);
+        AtomicBoolean parentSet = new AtomicBoolean(false);
         for(Field parentField: findParentFields()){
             if(parentToSet.getClass().equals(parentField.getType())){
                 parentField.setAccessible(true);
                 parentField.set(this,parentToSet);
-                atLeastOneParentSet.set(true);
+                parentSet.set(true);
             }
         }
-        if(!atLeastOneParentSet.get()){
+        if(!parentSet.get()){
             throw new UnknownParentTypeException(this.getClass(),parentToSet.getClass());
         }
     }
 
     /**
-     * Adds child (this) to its parents
+     * Adds this child to its parents
      * @throws IllegalAccessException
      */
     public default void addChildToParents() throws IllegalAccessException {
@@ -55,13 +55,14 @@ public interface BiDirChild extends BiDirEntity {
     }
 
     /**
-     * find Parent of this, annotated with {@link BiDirParentEntity} and has same type as parentToSet
+     * Find Parent of this child, annotated with {@link BiDirParentEntity} and has same type as parentToSet.
+     * Dont override, only set parentToSet, if matching parentField value was null.
      * @param parentToSet
-     * @return
+     * @return  true, if parent was null and set
      * @throws IllegalAccessException
      */
     public default boolean findAndSetParentIfNull(BiDirParent parentToSet) throws IllegalAccessException {
-        AtomicBoolean atLeastOneParentSet = new AtomicBoolean(false);
+        AtomicBoolean parentSet = new AtomicBoolean(false);
         for(Field parentField: findParentFields()){
             if(parentToSet.getClass().equals(parentField.getType())){
                 parentField.setAccessible(true);
@@ -70,11 +71,11 @@ public interface BiDirChild extends BiDirEntity {
                 }
             }
         }
-        return atLeastOneParentSet.get();
+        return parentSet.get();
     }
 
     /**
-     * All fields of this, annotated with {@link BiDirParentEntity}
+     * Find all fields of this child, annotated with {@link BiDirParentEntity}
      * @return
      */
     public default Field[] findParentFields(){
@@ -107,10 +108,10 @@ public interface BiDirChild extends BiDirEntity {
         return result;
     }
 
+
     public default void dismissParents() throws UnknownChildTypeException, UnknownParentTypeException, IllegalAccessException {
         for(BiDirParent parent: findParents()){
             if(parent!=null) {
-                parent.dismissChild(this);
                 this.dismissParent(parent);
             }else {
                 System.err.println("parent Reference of BiDirChild with type: " + this.getClass().getSimpleName() +" was not set when deleting -> parent was deleted before child");
@@ -118,8 +119,15 @@ public interface BiDirChild extends BiDirEntity {
         }
     }
 
+    /**
+     * This Child wont know about parentToDelete after this operation.
+     * Set all {@link BiDirParentEntity}s of this {@link BiDirChild} to null.
+     * @param parentToDelete
+     * @throws UnknownParentTypeException   thrown, if parentToDelete is of unknown type -> no field , annotated as {@link BiDirParentEntity}, with the most specific type of parentToDelete, exists in Child (this).
+     * @throws IllegalAccessException
+     */
     public default void dismissParent(BiDirParent parentToDelete) throws UnknownParentTypeException, IllegalAccessException {
-        AtomicBoolean atLeastOneParentRemoved = new AtomicBoolean(false);
+        AtomicBoolean parentRemoved = new AtomicBoolean(false);
         Field[] parentFields = findParentFields();
         for(Field parentField: parentFields){
             parentField.setAccessible(true);
@@ -127,14 +135,11 @@ public interface BiDirChild extends BiDirEntity {
             if(parent!=null) {
                 if (parentToDelete.getClass().equals(parent.getClass())) {
                     parentField.set(this,null);
-                    atLeastOneParentRemoved.set(true);
+                    parentRemoved.set(true);
                 }
-            }else {
-                System.err.println("parent reference was null when wanting to dismiss");
             }
         }
-
-        if(!atLeastOneParentRemoved.get()){
+        if(!parentRemoved.get()){
             throw new UnknownParentTypeException(this.getClass(),parentToDelete.getClass());
         }
     }

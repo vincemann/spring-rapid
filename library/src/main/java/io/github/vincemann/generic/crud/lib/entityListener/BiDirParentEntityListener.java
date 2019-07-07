@@ -8,6 +8,6 @@ public class BiDirParentEntityListener {
 
     @PreRemove
     public void onPreRemove(BiDirParent biDirParent) throws IllegalAccessException {
-        biDirParent.dismissChildren();
+        biDirParent.dismissChildrensParent();
     }
 }

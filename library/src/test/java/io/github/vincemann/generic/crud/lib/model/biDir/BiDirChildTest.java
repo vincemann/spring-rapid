@@ -1,12 +1,14 @@
 package io.github.vincemann.generic.crud.lib.model.biDir;
 
 import io.github.vincemann.generic.crud.lib.model.IdentifiableEntityImpl;
+import io.github.vincemann.generic.crud.lib.service.exception.UnknownParentTypeException;
 import lombok.Getter;
 import lombok.Setter;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.function.Executable;
 
 import java.lang.reflect.Field;
 import java.util.Collection;
@@ -45,8 +47,11 @@ class BiDirChildTest {
     @BeforeEach
     void setUp() {
         this.testEntityChild= new EntityChild();
+        testEntityChild.setId(1L);
         this.testEntityParent = new EntityParent();
+        testEntityParent.setId(2L);
         this.testSecondEntityParent = new SecondEntityParent();
+        testSecondEntityParent.setId(3L);
     }
 
     @Test
@@ -96,6 +101,7 @@ class BiDirChildTest {
     void findAndSetParentIfNotNull() throws IllegalAccessException {
         //when
         EntityParent newEntityParent = new EntityParent();
+        newEntityParent.setId(99L);
         testEntityChild.setEntityParent(newEntityParent);
         Assertions.assertNull(testEntityChild.getUnusedParent());
         Assertions.assertNull(testEntityChild.getSecondEntityParent());
@@ -168,11 +174,51 @@ class BiDirChildTest {
     }
 
     @Test
-    void dismissParents() {
+    void dismissParents() throws IllegalAccessException {
+        //when
+        testEntityChild.setEntityParent(testEntityParent);
+        testEntityChild.setSecondEntityParent(testSecondEntityParent);
+        //do
+        testEntityChild.dismissParents();
+        //then
+        Assertions.assertNull(testEntityChild.getEntityParent());
+        Assertions.assertNull(testEntityChild.getSecondEntityParent());
     }
 
     @Test
-    void dismissParent() {
+    void dismissParent() throws IllegalAccessException {
+        //when
+        testEntityChild.setEntityParent(testEntityParent);
+        //do
+        testEntityChild.dismissParent(testEntityParent);
+        //then
+        Assertions.assertNull(testEntityChild.getEntityParent());
+    }
+
+    @Test
+    void dismissUnknownParent() {
+        //when
+        testEntityChild.setSecondEntityParent(testSecondEntityParent);
+        //do
+        Assertions.assertThrows(UnknownParentTypeException.class, new Executable() {
+            @Override
+            public void execute() throws Throwable {
+                testEntityChild.dismissParent(testEntityParent);
+            }
+        });
+    }
+
+    @Test
+    void dismissParentWhenMultiplePresent() throws IllegalAccessException {
+        //when
+        testEntityChild.setEntityParent(testEntityParent);
+        testEntityChild.setSecondEntityParent(testSecondEntityParent);
+        //do
+        testEntityChild.dismissParent(testEntityParent);
+        //then
+        Assertions.assertNull(testEntityChild.getEntityParent());
+        Assertions.assertSame(testSecondEntityParent,testEntityChild.getSecondEntityParent());
+
     }
 
     @AfterEach
