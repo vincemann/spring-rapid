@@ -2,6 +2,7 @@ package io.github.vincemann.generic.crud.lib.model.biDir;
 
 import io.github.vincemann.generic.crud.lib.service.exception.UnknownChildTypeException;
 import io.github.vincemann.generic.crud.lib.service.exception.UnknownParentTypeException;
+import io.github.vincemann.generic.crud.lib.util.CollectionUtils;
 import io.github.vincemann.generic.crud.lib.util.ReflectionUtils;
 
 import java.lang.reflect.Field;
@@ -19,7 +20,17 @@ public interface BiDirParent extends BiDirEntity {
     Map<Class,Field[]> biDirChildrenCollectionFieldsCache = new HashMap<>();
     Map<Class,Field[]> biDirChildEntityFieldsCache = new HashMap<>();
 
-    default void dismissChildren() throws UnknownParentTypeException, IllegalAccessException {
+    /**
+     * All children {@link BiDirChild} of this parent wont know about this parent, after this operation.
+     * Clear all {@link BiDirChildCollection}s of this parent.
+     * Call this, before you want to delete this parent.
+     * @throws UnknownParentTypeException
+     * @throws IllegalAccessException
+     */
+    default void dismissChildrensParent() throws UnknownParentTypeException, IllegalAccessException {
+        for(BiDirChild child: getChildren()){
+            child.dismissParent(this);
+        }
         for(Map.Entry<Collection<? extends BiDirChild>,Class<? extends BiDirChild>> entry: getChildrenCollections().entrySet()){
             Collection<? extends BiDirChild> childrenCollection = entry.getKey();
             for(BiDirChild biDirChild: childrenCollection){
@@ -30,19 +41,21 @@ public interface BiDirParent extends BiDirEntity {
     }
 
     /**
-     * Add a new Child to this parent
-     * child will be added to fields with {@link BiDirChildCollection} and fields with {@link BiDirChildEntity} will be set with newChild
+     * Add a new Child to this parent.
+     * Call this, when saving a {@link BiDirChild} of this parent.
+     * child will be added to fields with {@link BiDirChildCollection} and fields with {@link BiDirChildEntity} will be set with newChild, when most specific type matches of newChild matches the field.
+     * Child wont be added and UnknownChildTypeException will be thrown when corresponding {@link BiDirChildCollection} is null.
      * @param newChild
      * @throws UnknownChildTypeException
      * @throws IllegalAccessException
      */
    default void addChild(BiDirChild newChild) throws UnknownChildTypeException, IllegalAccessException {
-       AtomicBoolean addedChildToAtLeastOneCollection = new AtomicBoolean(false);
+       AtomicBoolean addedChild = new AtomicBoolean(false);
        for(Map.Entry entry: getChildrenCollections().entrySet()){
            Class targetClass = (Class) entry.getValue();
            if(newChild.getClass().equals(targetClass)){
                ((Collection)entry.getKey()).add(newChild);
-               addedChildToAtLeastOneCollection.set(true);
+               addedChild.set(true);
            }
        }
 
@@ -55,11 +68,11 @@ public interface BiDirParent extends BiDirEntity {
                    System.err.println("warning, overriding old child: " + oldChild + " with new Child: " + newChild + " of parent: " + this);
                }
                childField.set(this,newChild);
-               addedChildToAtLeastOneCollection.set(true);
+               addedChild.set(true);
            }
        }
 
-       if(!addedChildToAtLeastOneCollection.get()){
+       if(!addedChild.get()){
            throw new UnknownChildTypeException(getClass(),newChild.getClass());
        }
    }
@@ -78,8 +91,17 @@ public interface BiDirParent extends BiDirEntity {
         return childrenCollections;
     }*/
 
+    /**
+     * This parent wont know about the given biDirChildToRemove after this operation.
+     * Call this, before you delete the biDirChildToRemove.
+     * Case 1: Remove Child {@link BiDirChild} from all {@link BiDirChildCollection}s from this parent.
+     * Case 2: Set {@link BiDirChildEntity}Field to null if child is not saved in a collection in this parent.
+     * @param biDirChildToRemove
+     * @throws UnknownChildTypeException
+     * @throws IllegalAccessException
+     */
     default void dismissChild(BiDirChild biDirChildToRemove) throws UnknownChildTypeException, IllegalAccessException {
-        AtomicBoolean deletedFromAtLeastOneChildSet = new AtomicBoolean(false);
+        AtomicBoolean deletedChild = new AtomicBoolean(false);
         for(Map.Entry<Collection<? extends BiDirChild>,Class<? extends BiDirChild>> entry: getChildrenCollections().entrySet()){
             Collection<? extends BiDirChild> childrenCollection = entry.getKey();
             if(childrenCollection!=null){
@@ -92,14 +114,24 @@ public interface BiDirParent extends BiDirEntity {
                             if(!successfulRemove){
                                 System.err.println("Entity: "+ biDirChildToRemove + " was not present in children set of parent: " + this);
                             }else {
-                                deletedFromAtLeastOneChildSet.set(true);
+                                deletedChild.set(true);
                             }
                         }
                     });
                 }
             }
         }
-        if(!deletedFromAtLeastOneChildSet.get()){
+        for(Field childField : findChildrenEntityFields()){
+            childField.setAccessible(true);
+            BiDirChild child = (BiDirChild) childField.get(this);
+            if(child!=null) {
+                if (child.getClass().equals(biDirChildToRemove.getClass())) {
+                    childField.set(this, null);
+                    deletedChild.set(true);
+                }
+            }
+        }
+        if(!deletedChild.get()){
             throw new UnknownChildTypeException(this.getClass(), biDirChildToRemove.getClass());
         }
     }
@@ -127,7 +159,8 @@ public interface BiDirParent extends BiDirEntity {
 
     }
     /**
-     * give me the BiDirChildren Collections and their Type
+     * Find the BiDirChildren Collections (all fields of this parent annotated with {@link BiDirChildCollection} and not null )
+     * and the Type of the Entities in the Collection.
      * @return
      */
     default Map<Collection<? extends BiDirChild>,Class<? extends BiDirChild>> getChildrenCollections() throws IllegalAccessException {
@@ -149,6 +182,11 @@ public interface BiDirParent extends BiDirEntity {
     }
 
 
+    /**
+     * Find the single BiDirChildren (all fields of this parent annotated with {@link BiDirChildEntity} and not null.
+     * @return
+     * @throws IllegalAccessException
+     */
     default Set<? extends BiDirChild> getChildren() throws IllegalAccessException {
         Set<BiDirChild> children = new HashSet<>();
         Field[] entityFields = findChildrenEntityFields();

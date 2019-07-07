@@ -23,6 +23,7 @@ public class BiDirChildBackRefSettingJPACrudService<E extends IdentifiableEntity
         //only needs to be handled specifically when entity is a biDirChild
         try {
             entity.dismissParents();
+            //hier muss noch über parents iteriert werden vorher und dann jew. dismissChild gecallt werden
         }catch (UnknownChildTypeException | UnknownParentTypeException |IllegalAccessException e){
             throw new BiDirRelationManagingException(e);
         }
@@ -39,6 +40,7 @@ public class BiDirChildBackRefSettingJPACrudService<E extends IdentifiableEntity
         Optional<E> entityToDelete  = getJpaRepository().findById(id);
         if(entityToDelete.isPresent()) {
             try {
+                //hier muss noch über parents iteriert werden vorher und dann jew. dismissChild gecallt werden
                 entityToDelete.get().dismissParents();
             }catch (UnknownChildTypeException | UnknownParentTypeException|IllegalAccessException e){
                 throw new BiDirRelationManagingException(e);
