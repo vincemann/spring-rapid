@@ -365,7 +365,7 @@ public abstract class UrlParamIdDTOCrudControllerSpringAdapterIT<ServiceE extend
      * @param httpStatus expected status code
      * @return backend Response
      */
-    private ResponseEntity<String> updateEntity(DTO newEntity, HttpStatus httpStatus) {
+    protected ResponseEntity<String> updateEntity(DTO newEntity, HttpStatus httpStatus) {
         Assertions.assertNotNull(newEntity.getId());
         UriComponentsBuilder builder = UriComponentsBuilder.fromHttpUrl(getBaseUrl() + crudController.getUpdateMethodName())
                 .queryParam(entityIdParamKey, newEntity.getId());

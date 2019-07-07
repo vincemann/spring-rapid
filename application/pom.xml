@@ -4,7 +4,7 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>io.github.vincemann</groupId>
-    <artifactId>generic-crud-demo</artifactId>
+    <artifactId>spring-crud-demo</artifactId>
     <version>0.0.1-SNAPSHOT</version>
     <packaging>jar</packaging>
 
@@ -47,7 +47,7 @@
         </dependency>
         <dependency>
             <groupId>io.github.vincemann</groupId>
-            <artifactId>generic-crud-lib</artifactId>
+            <artifactId>spring-crud-lib</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>
