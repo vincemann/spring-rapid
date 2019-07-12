@@ -41,8 +41,10 @@ public class Owner extends Person implements BiDirParent {
 
     @Column(name = "adress")
     private String address;
+
     @Column(name = "city")
     private String city;
+
     @Column(name = "telephone")
     private String telephone;
 

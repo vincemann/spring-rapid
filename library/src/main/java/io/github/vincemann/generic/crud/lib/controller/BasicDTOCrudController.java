@@ -1,9 +1,9 @@
 package io.github.vincemann.generic.crud.lib.controller;
 
-import io.github.vincemann.generic.crud.lib.controller.exception.EntityMappingException;
+import io.github.vincemann.generic.crud.lib.controller.dtoMapper.EntityMappingException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import io.github.vincemann.generic.crud.lib.dtoMapper.DTOMapper;
+import io.github.vincemann.generic.crud.lib.controller.dtoMapper.DtoMapper;
 import io.github.vincemann.generic.crud.lib.model.IdentifiableEntity;
 import io.github.vincemann.generic.crud.lib.service.CrudService;
 import io.github.vincemann.generic.crud.lib.service.exception.BadEntityException;
@@ -11,6 +11,7 @@ import io.github.vincemann.generic.crud.lib.service.exception.EntityNotFoundExce
 import io.github.vincemann.generic.crud.lib.service.exception.NoIdException;
 
 import java.io.Serializable;
+import java.lang.reflect.ParameterizedType;
 import java.util.Optional;
 
 
@@ -25,33 +26,32 @@ import java.util.Optional;
  * @param <DTO>      DTO Type corresponding to {@link ServiceE}
  * @param <Id>       Id Type of {@link ServiceE}
  */
-public abstract class BasicDTOCrudController<ServiceE extends IdentifiableEntity<Id>, Id extends Serializable, Service extends CrudService<ServiceE, Id>, DTO extends IdentifiableEntity<Id>> implements DTOCrudController<DTO, Id> {
+public abstract class BasicDTOCrudController<ServiceE extends IdentifiableEntity<Id>,DTO extends IdentifiableEntity<Id>,  Id extends Serializable, Service extends CrudService<ServiceE, Id>> implements DTOCrudController<DTO, Id> {
 
     private Service crudService;
-    private DTOMapper<DTO, ServiceE, Id> dtoToServiceEntityMapper;
-    private DTOMapper<ServiceE, DTO, Id> serviceEntityToDTOMapper;
+    private DtoMapper dtoMapper;
+    @SuppressWarnings("unchecked")
+    private Class<ServiceE> serviceEntityClass = (Class<ServiceE>) ((ParameterizedType) this.getClass().getGenericSuperclass()).getActualTypeArguments()[0];
+    @SuppressWarnings("unchecked")
+    private Class<DTO> dtoClass = (Class<DTO>) ((ParameterizedType) this.getClass().getGenericSuperclass()).getActualTypeArguments()[1];
 
-    public BasicDTOCrudController(Service crudService) {
+    public BasicDTOCrudController(Service crudService, DtoMapper dtoMapper) {
         this.crudService = crudService;
+        this.dtoMapper = dtoMapper;
     }
 
     //todo methoden einbauen die einfach nur die id returnen
 
     @SuppressWarnings("unchecked")
-    public ResponseEntity<DTO> find(Id id) throws EntityMappingException, NoIdException, EntityNotFoundException {
+    public ResponseEntity<DTO> find(Id id) throws NoIdException, EntityNotFoundException {
         Optional<ServiceE> optionalEntity = crudService.findById(beforeFindEntity(id));
         //noinspection OptionalIsPresent
         if (optionalEntity.isPresent()) {
-            return ok(getServiceEntityToDTOMapper().map(afterFindEntity(optionalEntity.get())));
+            return ok(getDtoMapper().mapServiceEntityToDto(afterFindEntity(optionalEntity.get()),dtoClass));
         } else {
             throw new EntityNotFoundException();
         }
     }
-
-    protected abstract DTOMapper<ServiceE, DTO, Id> provideServiceEntityToDTOMapper();
-
-    //I like this better than in constructor
-    protected abstract DTOMapper<DTO, ServiceE, Id> provideDTOToServiceEntityMapper();
 
 
     protected Id beforeFindEntity(Id id) {
@@ -63,11 +63,10 @@ public abstract class BasicDTOCrudController<ServiceE extends IdentifiableEntity
     }
 
     @SuppressWarnings("unchecked")
-    public ResponseEntity<DTO> create(DTO dto) throws EntityMappingException, BadEntityException {
-        ServiceE serviceEntity = getDtoToServiceEntityMapper().map(dto);
+    public ResponseEntity<DTO> create(DTO dto) throws BadEntityException, EntityMappingException {
+        ServiceE serviceEntity = getDtoMapper().mapDtoToServiceEntity(dto,serviceEntityClass);
         ServiceE savedServiceEntity = crudService.save(beforeCreateEntity(serviceEntity, dto));
-        //no idea why casting is necessary here?
-        return new ResponseEntity<DTO>((DTO) getServiceEntityToDTOMapper().map(afterCreateEntity(savedServiceEntity)), HttpStatus.OK);
+        return new ResponseEntity(getDtoMapper().mapServiceEntityToDto(afterCreateEntity(savedServiceEntity),dtoClass), HttpStatus.OK);
     }
 
 
@@ -80,18 +79,16 @@ public abstract class BasicDTOCrudController<ServiceE extends IdentifiableEntity
     }
 
     @SuppressWarnings("unchecked")
-    public ResponseEntity<DTO> update(DTO dto) throws EntityMappingException, NoIdException, EntityNotFoundException, BadEntityException {
-        ServiceE serviceEntity = getDtoToServiceEntityMapper().map(dto);
+    public ResponseEntity<DTO> update(DTO dto) throws BadEntityException, EntityMappingException, NoIdException, EntityNotFoundException {
+        ServiceE serviceEntity = getDtoMapper().mapDtoToServiceEntity(dto,serviceEntityClass);
         ServiceE updatedServiceEntity = crudService.update(beforeUpdateEntity(serviceEntity));
         //no idea why casting is necessary here?
-        return new ResponseEntity<DTO>((DTO) getServiceEntityToDTOMapper().map(afterUpdateEntity(updatedServiceEntity)), HttpStatus.OK);
+        return new ResponseEntity(getDtoMapper().mapServiceEntityToDto(afterUpdateEntity(updatedServiceEntity),dtoClass), HttpStatus.OK);
     }
 
     protected ServiceE beforeUpdateEntity(ServiceE entity) {
         return entity;
     }
-
-    ;
 
     protected ServiceE afterUpdateEntity(ServiceE entity) {
         return entity;
@@ -120,17 +117,15 @@ public abstract class BasicDTOCrudController<ServiceE extends IdentifiableEntity
         return crudService;
     }
 
-    public DTOMapper<DTO, ServiceE, Id> getDtoToServiceEntityMapper() {
-        if (dtoToServiceEntityMapper == null) {
-            this.dtoToServiceEntityMapper = provideDTOToServiceEntityMapper();
-        }
-        return dtoToServiceEntityMapper;
+    public DtoMapper getDtoMapper() {
+        return dtoMapper;
     }
 
-    public DTOMapper<ServiceE, DTO, Id> getServiceEntityToDTOMapper() {
-        if (serviceEntityToDTOMapper == null) {
-            this.serviceEntityToDTOMapper = provideServiceEntityToDTOMapper();
-        }
-        return serviceEntityToDTOMapper;
+    public Class<ServiceE> getServiceEntityClass() {
+        return serviceEntityClass;
+    }
+
+    public Class<DTO> getDtoClass() {
+        return dtoClass;
     }
 }

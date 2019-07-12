@@ -1,6 +1,6 @@
 package io.github.vincemann.generic.crud.lib.controller.springAdapter.idFetchingStrategy;
 
-import io.github.vincemann.generic.crud.lib.controller.exception.IdTransformingException;
+import org.springframework.lang.Nullable;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -10,11 +10,16 @@ import javax.servlet.http.HttpServletRequest;
  * @param <Id>
  */
 public abstract class UrlParamIdFetchingStrategy<Id> implements IdFetchingStrategy<Id> {
+    private static final String DEFAULT_ID_URL_PARAM_KEY = "id";
 
     private String idUrlParamKey;
 
-    public UrlParamIdFetchingStrategy(String idUrlParamKey) {
-        this.idUrlParamKey = idUrlParamKey;
+    public UrlParamIdFetchingStrategy(@Nullable String idUrlParamKey) {
+        if(idUrlParamKey==null){
+            this.idUrlParamKey=DEFAULT_ID_URL_PARAM_KEY;
+        }else {
+            this.idUrlParamKey = idUrlParamKey;
+        }
     }
 
     @Override

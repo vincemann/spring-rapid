@@ -1,6 +1,8 @@
 package io.github.vincemann.demo.model;
 
 import io.github.vincemann.demo.model.abs.Person;
+import io.github.vincemann.generic.crud.lib.model.uniDir.UniDirChildCollection;
+import io.github.vincemann.generic.crud.lib.model.uniDir.UniDirParent;
 import lombok.*;
 
 import javax.persistence.*;
@@ -12,7 +14,7 @@ import java.util.Set;
 @NoArgsConstructor
 @Entity
 @Table(name = "vets")
-public class Vet extends Person {
+public class Vet extends Person implements UniDirParent {
 
     @Builder
     public Vet(String firstName, String lastName, Set<Specialty> specialties) {
@@ -24,10 +26,10 @@ public class Vet extends Person {
         }
     }
 
-    //unilateral
     @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(name = "vet_specialties",
             joinColumns = @JoinColumn(name = "vet_id"),
             inverseJoinColumns = @JoinColumn(name = "speciality_id"))
+    @UniDirChildCollection(Specialty.class)
     private Set<Specialty> specialties = new HashSet<>();
 }

@@ -1,5 +1,7 @@
 package io.github.vincemann.demo.model;
 
+import io.github.vincemann.generic.crud.lib.model.uniDir.UniDirChildEntity;
+import io.github.vincemann.generic.crud.lib.model.uniDir.UniDirParent;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -18,14 +20,17 @@ import java.time.LocalDate;
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
-public class Visit extends IdentifiableEntityImpl<Long> {
+public class Visit extends IdentifiableEntityImpl<Long> implements UniDirParent {
 
     @ManyToOne
     @JoinColumn(name = "pet_id")
+    @UniDirChildEntity
     private Pet pet;
+
     @DateTimeFormat(pattern = "yyyy-MM-dd")
     @Column(name = "date")
     private LocalDate date;
+
     @Column(name = "description")
     private String description;
 }

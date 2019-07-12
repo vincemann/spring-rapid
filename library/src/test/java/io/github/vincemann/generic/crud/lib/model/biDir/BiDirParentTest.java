@@ -34,13 +34,13 @@ class BiDirParentTest {
     @Getter
     @Setter
     private class SecondEntityParent extends IdentifiableEntityImpl<Long> implements BiDirParent{
-        @BiDirChildEntity(EntityChild.class)
+        @BiDirChildEntity
         private EntityChild entityChild;
     }
     @Getter
     @Setter
     private class EntityParent extends IdentifiableEntityImpl<Long> implements BiDirParent {
-        @BiDirChildEntity(EntityChild.class)
+        @BiDirChildEntity
         private EntityChild entityChild;
         @BiDirChildCollection(SecondEntityChild.class)
         private Set<SecondEntityChild> secondEntityChildSet = new HashSet<>();
@@ -126,7 +126,7 @@ class BiDirParentTest {
         //when
         testEntityParent.setSecondEntityChildSet(null);
         //do
-        Assertions.assertThrows(UnknownChildTypeException.class, new Executable() {
+        Assertions.assertThrows(IllegalArgumentException.class, new Executable() {
             @Override
             public void execute() throws Throwable {
                 testEntityParent.addChild(testSecondEntityChild);
@@ -207,9 +207,12 @@ class BiDirParentTest {
         //when
         testEntityParent.setSecondEntityChildSet(null);
         //do
-        Map<Collection<? extends BiDirChild>, Class<? extends BiDirChild>> childrenCollections = testEntityParent.getChildrenCollections();
-        //then
-        Assertions.assertTrue(childrenCollections.isEmpty());
+        Assertions.assertThrows(IllegalArgumentException.class, new Executable() {
+            @Override
+            public void execute() throws Throwable {
+                testEntityParent.getChildrenCollections();
+            }
+        });
     }
 
     @Test

@@ -27,4 +27,6 @@ public interface CrudService<E extends IdentifiableEntity<Id>,Id extends Seriali
     void delete(E entity) throws EntityNotFoundException, NoIdException;
 
     void deleteById(Id id) throws EntityNotFoundException, NoIdException;
+
+    Class<E> getEntityClass();
 }

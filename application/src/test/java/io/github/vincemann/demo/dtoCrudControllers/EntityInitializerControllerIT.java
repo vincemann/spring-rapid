@@ -1,26 +1,27 @@
 package io.github.vincemann.demo.dtoCrudControllers;
 
-import io.github.vincemann.demo.dtos.OwnerDTO;
-import io.github.vincemann.demo.dtos.PetTypeDTO;
-import io.github.vincemann.demo.dtos.SpecialtyDTO;
 import io.github.vincemann.demo.model.Owner;
+import io.github.vincemann.demo.model.Pet;
 import io.github.vincemann.demo.model.PetType;
 import io.github.vincemann.demo.model.Specialty;
+import io.github.vincemann.demo.service.PetService;
 import io.github.vincemann.demo.service.VisitService;
-import lombok.Getter;
-import lombok.Setter;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.BeforeEach;
-import org.springframework.beans.factory.annotation.Autowired;
 import io.github.vincemann.generic.crud.lib.controller.springAdapter.DTOCrudControllerSpringAdapter;
 import io.github.vincemann.generic.crud.lib.model.IdentifiableEntity;
 import io.github.vincemann.generic.crud.lib.service.CrudService;
 import io.github.vincemann.generic.crud.lib.service.exception.EntityNotFoundException;
 import io.github.vincemann.generic.crud.lib.service.exception.NoIdException;
 import io.github.vincemann.generic.crud.lib.test.controller.springAdapter.ValidationUrlParamIdDTOCrudControllerSpringAdapterIT;
+import lombok.Getter;
+import lombok.Setter;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import java.io.Serializable;
+import java.time.LocalDate;
+import java.util.Collections;
 import java.util.Set;
 
 @Getter
@@ -29,21 +30,24 @@ public abstract class EntityInitializerControllerIT<ServiceE extends Identifiabl
 
     @Autowired
     private PetTypeController petTypeController;
-    private PetTypeDTO testPetType;
+    private PetType testPetType;
 
     @Autowired
     private SpecialtyController specialtyController;
-    private SpecialtyDTO testSpecialty;
+    private Specialty testSpecialty;
 
     @Autowired
     private OwnerController ownerController;
-    private OwnerDTO testOwner;
+    private Owner testOwner;
     @Autowired
     private PetController petController;
     @Autowired
     private VetController vetController;
     @Autowired
     private VisitService visitService;
+    @Autowired
+    private PetService petService;
+    private Pet testPet;
 
     public EntityInitializerControllerIT(String url, Controller crudController, Id nonExistingId) {
         super(url, crudController, nonExistingId);
@@ -58,12 +62,23 @@ public abstract class EntityInitializerControllerIT<ServiceE extends Identifiabl
     public void before() throws Exception {
         //PetType abspeichern, den muss es vorher geben , bevor ich ein Pet abspeicher
         //ich möchte den nicht per cascade erstellen lassen wenn jmd ein pet added und da ein unbekannter pettype drinhängt
-        PetType petType = PetType.builder().name("Hund").build();
-        Specialty specialty = Specialty.builder().description("HundeLeber Experte").build();
-        Owner testOwner = Owner.builder().firstName("klaus").lastName("Kleber").address("street 123").city("Berlin").build();
-        this.testPetType = petTypeController.getServiceEntityToDTOMapper().map(petTypeController.getCrudService().save(petType));
-        this.testSpecialty=specialtyController.getServiceEntityToDTOMapper().map(specialtyController.getCrudService().save(specialty));
-        this.testOwner=ownerController.provideServiceEntityToDTOMapper().map(ownerController.getCrudService().save(testOwner));
+        testPetType = petTypeController.getCrudService().save(PetType.builder()
+                .name("Hund")
+                .build());
+        testSpecialty = specialtyController.getCrudService().save(Specialty.builder()
+                .description("HundeLeber Experte")
+                .build());
+        testPet = petController.getCrudService().save(Pet.builder()
+                .name("bello")
+                .birthDate(LocalDate.of(2012,1,23))
+                .petType(testPetType)
+                .build());
+        testOwner = ownerController.getCrudService().save(Owner.builder()
+                .firstName("klaus")
+                .lastName("Kleber")
+                .address("street 123")
+                .city("Berlin")
+                .build());
         super.before();
     }
 
@@ -72,7 +87,13 @@ public abstract class EntityInitializerControllerIT<ServiceE extends Identifiabl
     @Override
     public void tearDown() throws Exception {
         super.tearDown();
-        cleanAllServiceEntities(petController.getCrudService(),petTypeController.getCrudService(),ownerController.getCrudService(),specialtyController.getCrudService(),vetController.getCrudService(),visitService);
+        cleanAllServiceEntities(
+                petController.getCrudService(),
+                petTypeController.getCrudService(),
+                ownerController.getCrudService(),
+                specialtyController.getCrudService(),
+                vetController.getCrudService(),
+                visitService);
 
     }
 

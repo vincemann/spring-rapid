@@ -19,7 +19,7 @@ import java.util.Map;
 @Slf4j
 public class PetClinicGuruVersionApplication {
 
-	public static void main(String[] args) throws SQLException {
+	public static void main(String[] args){
 		ApplicationContext context = SpringApplication.run(PetClinicGuruVersionApplication.class, args);
 		final RequestMappingHandlerMapping requestMappingHandlerMapping =
 				context.getBean( RequestMappingHandlerMapping.class );
@@ -29,7 +29,6 @@ public class PetClinicGuruVersionApplication {
 			log.debug("handlermethod: " + entry.getValue().toString());
 			log.debug("RequestMappingInfo: " + entry.getKey().toString());
 		}
-		//org.h2.tools.Server.startWebServer(((DataSource)context.getBean("dataSource")).getConnection());
 	}
 
 }

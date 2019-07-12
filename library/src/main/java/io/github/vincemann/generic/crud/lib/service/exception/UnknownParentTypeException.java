@@ -1,6 +1,5 @@
 package io.github.vincemann.generic.crud.lib.service.exception;
 
-import io.github.vincemann.generic.crud.lib.service.springDataJpa.BiDirRelationManagingException;
 
 public class UnknownParentTypeException extends BiDirRelationManagingException {
 

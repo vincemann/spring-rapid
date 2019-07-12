@@ -9,6 +9,7 @@ import org.springframework.dao.NonTransientDataAccessException;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.io.Serializable;
+import java.lang.reflect.ParameterizedType;
 import java.util.HashSet;
 import java.util.Optional;
 import java.util.Set;
@@ -17,22 +18,22 @@ public class JPACrudService<E extends IdentifiableEntity<Id>,Id extends Serializ
 
 
     private R jpaRepository;
-    private Class<E> entityClazz;
+    @SuppressWarnings("unchecked")
+    private Class<E> entityClass = (Class<E>) ((ParameterizedType) this.getClass().getGenericSuperclass()).getActualTypeArguments()[0];
 
-    public JPACrudService(R jpaRepository, Class<E> entityClazz) {
+    public JPACrudService(R jpaRepository) {
         this.jpaRepository = jpaRepository;
-        this.entityClazz=entityClazz;
     }
 
 
     @Override
     public E update(E entity) throws  NoIdException, EntityNotFoundException, BadEntityException {
         if(entity.getId()==null){
-            throw new NoIdException("No Id value set for EntityType: " + entityClazz.getSimpleName());
+            throw new NoIdException("No Id value set for EntityType: " + entityClass.getSimpleName());
         }
         Optional<E> optionalEntity = findById(entity.getId());
         if(!optionalEntity.isPresent()){
-            throw new EntityNotFoundException(entity.getId(),entityClazz);
+            throw new EntityNotFoundException(entity.getId(), entityClass);
         }
         return save(entity);
     }
@@ -40,7 +41,7 @@ public class JPACrudService<E extends IdentifiableEntity<Id>,Id extends Serializ
     @Override
     public Optional<E> findById(Id id) throws NoIdException {
         if(id==null){
-            throw new NoIdException("No Id value set for EntityType: " + entityClazz.getSimpleName());
+            throw new NoIdException("No Id value set for EntityType: " + entityClass.getSimpleName());
         }
         return jpaRepository.findById(id);
     }
@@ -63,7 +64,7 @@ public class JPACrudService<E extends IdentifiableEntity<Id>,Id extends Serializ
     @Override
     public void delete(E entity) throws EntityNotFoundException, NoIdException {
         if(entity.getId()==null){
-            throw new NoIdException("No Id value set for EntityType: " + entityClazz.getSimpleName());
+            throw new NoIdException("No Id value set for EntityType: " + entityClass.getSimpleName());
         }
         if(!findById(entity.getId()).isPresent()){
             throw new EntityNotFoundException(entity.getId(),entity.getClass());
@@ -74,10 +75,10 @@ public class JPACrudService<E extends IdentifiableEntity<Id>,Id extends Serializ
     @Override
     public void deleteById(Id id) throws EntityNotFoundException, NoIdException {
         if(id==null){
-            throw new NoIdException("No Id value set for EntityType: " + entityClazz.getSimpleName());
+            throw new NoIdException("No Id value set for EntityType: " + entityClass.getSimpleName());
         }
         if(!findById(id).isPresent()){
-            throw new EntityNotFoundException(id,entityClazz);
+            throw new EntityNotFoundException(id, entityClass);
         }
         jpaRepository.deleteById(id);
     }
@@ -86,7 +87,7 @@ public class JPACrudService<E extends IdentifiableEntity<Id>,Id extends Serializ
         return jpaRepository;
     }
 
-    public Class<E> getEntityClazz() {
-        return entityClazz;
+    public Class<E> getEntityClass() {
+        return entityClass;
     }
 }

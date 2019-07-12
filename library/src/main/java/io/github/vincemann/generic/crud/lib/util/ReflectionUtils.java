@@ -1,6 +1,8 @@
 package io.github.vincemann.generic.crud.lib.util;
 
 
+import org.apache.commons.lang3.reflect.FieldUtils;
+
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
@@ -121,7 +123,7 @@ public class ReflectionUtils {
     }
 
     public static Field[] getDeclaredFieldsAnnotatedWith(Class clazz, Class<? extends Annotation> annotationClass, boolean recursively) {
-        Field[] allFields = getDeclaredFields(clazz, recursively);
+        /*Field[] allFields = getDeclaredFields(clazz, recursively);
         List<Field> annotatedFields = new LinkedList<Field>();
 
         for (Field field : allFields) {
@@ -130,7 +132,8 @@ public class ReflectionUtils {
             }
         }
 
-        return annotatedFields.toArray(new Field[annotatedFields.size()]);
+        return annotatedFields.toArray(new Field[annotatedFields.size()]);*/
+        return FieldUtils.getFieldsWithAnnotation(clazz,annotationClass);
     }
 
     public static Field[] getDeclaredFieldsAssignableFrom(Class clazz, Class interfaceThatNeedsToBeImplemented, boolean recursively) {
@@ -144,4 +147,6 @@ public class ReflectionUtils {
         }
         return annotatedFields.toArray(new Field[annotatedFields.size()]);
     }
+
+
 }
