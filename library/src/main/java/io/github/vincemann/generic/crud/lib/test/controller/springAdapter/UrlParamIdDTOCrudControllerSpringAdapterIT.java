@@ -1,15 +1,15 @@
 package io.github.vincemann.generic.crud.lib.test.controller.springAdapter;
 
-import io.github.vincemann.generic.crud.lib.controller.exception.EntityMappingException;
+import io.github.vincemann.generic.crud.lib.controller.dtoMapper.EntityMappingException;
 import io.github.vincemann.generic.crud.lib.controller.springAdapter.DTOCrudControllerSpringAdapter;
 import io.github.vincemann.generic.crud.lib.controller.springAdapter.idFetchingStrategy.LongUrlParamIdFetchingStrategy;
 import io.github.vincemann.generic.crud.lib.controller.springAdapter.idFetchingStrategy.UrlParamIdFetchingStrategy;
 import io.github.vincemann.generic.crud.lib.model.IdentifiableEntity;
 import io.github.vincemann.generic.crud.lib.service.CrudService;
+import io.github.vincemann.generic.crud.lib.service.exception.EntityNotFoundException;
 import io.github.vincemann.generic.crud.lib.service.exception.NoIdException;
 import io.github.vincemann.generic.crud.lib.test.IntegrationTest;
 import io.github.vincemann.generic.crud.lib.util.BeanUtils;
-import junit.framework.AssertionFailedError;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -19,8 +19,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.RequestEntity;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.util.UriComponentsBuilder;
-import org.unitils.reflectionassert.ReflectionAssert;
-import org.unitils.reflectionassert.ReflectionComparatorMode;
 
 import java.io.Serializable;
 import java.util.List;
@@ -54,6 +52,7 @@ public abstract class UrlParamIdDTOCrudControllerSpringAdapterIT<ServiceE extend
     private int safetyCheckMaxAmountEntitiesInRepo = MAX_AMOUNT_ENTITIES_IN_REPO_WHEN_DELETING_ALL;
     private List<DTO> testDTOs;
 
+
     public UrlParamIdDTOCrudControllerSpringAdapterIT(String url, Controller crudController, Id nonExistingId) {
         super(url);
         Assertions.assertTrue(crudController.getIdIdFetchingStrategy() instanceof LongUrlParamIdFetchingStrategy, "Controller must have LongUrlParamIdFetchingStrategy");
@@ -76,16 +75,6 @@ public abstract class UrlParamIdDTOCrudControllerSpringAdapterIT<ServiceE extend
     public void before() throws Exception {
         this.testDTOs = provideValidTestDTOs();
     }
-
-    protected DTO mapServiceEntityToDTO(ServiceE serviceEntity) {
-        try {
-            return getCrudController().getServiceEntityToDTOMapper().map(serviceEntity);
-        } catch (EntityMappingException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-
 
     protected abstract List<DTO> provideValidTestDTOs();
 
@@ -152,7 +141,7 @@ public abstract class UrlParamIdDTOCrudControllerSpringAdapterIT<ServiceE extend
         Assertions.assertTrue(serviceFoundEntityBeforeDelete.isPresent(), "Entity to delete was not present");
 
         ResponseEntity responseEntity = deleteEntity(id);
-        Assertions.assertTrue(responseEntity.getStatusCode().is2xxSuccessful(), "Status was : " + responseEntity.getStatusCode());
+        Assertions.assertTrue(responseEntity.getStatusCode().is2xxSuccessful(), "Status was : " + responseEntity.getStatusCode()+" response Body: " + responseEntity.getBody());
 
         //is it really deleted?
         Optional<ServiceE> serviceFoundEntity = crudController.getCrudService().findById(id);
@@ -166,7 +155,7 @@ public abstract class UrlParamIdDTOCrudControllerSpringAdapterIT<ServiceE extend
         Assertions.assertTrue(serviceFoundEntityBeforeDelete.isPresent(), "Entity to delete was not present");
 
         ResponseEntity responseEntity = deleteEntity(id);
-        Assertions.assertFalse(responseEntity.getStatusCode().is2xxSuccessful(), "Status was : " + responseEntity.getStatusCode());
+        Assertions.assertFalse(responseEntity.getStatusCode().is2xxSuccessful(), "Status was : " + responseEntity.getStatusCode()+" response Body: " + responseEntity.getBody());
 
         //is it really not deleted?
         Optional<ServiceE> serviceFoundEntity = crudController.getCrudService().findById(id);
@@ -183,7 +172,7 @@ public abstract class UrlParamIdDTOCrudControllerSpringAdapterIT<ServiceE extend
 
     protected ResponseEntity deleteEntity(Id id, HttpStatus httpStatus) {
         ResponseEntity responseEntity = deleteEntity(id);
-        Assertions.assertEquals(httpStatus, responseEntity.getStatusCode(), "Status was : " + responseEntity.getStatusCode());
+        Assertions.assertEquals(httpStatus, responseEntity.getStatusCode(), "Status was : " + responseEntity.getStatusCode()+" response Body: " + responseEntity.getBody());
         return responseEntity;
     }
 
@@ -199,7 +188,7 @@ public abstract class UrlParamIdDTOCrudControllerSpringAdapterIT<ServiceE extend
      */
     protected DTO findEntityShouldSucceed(Id id, HttpStatus httpStatus) throws Exception {
         ResponseEntity<String> responseEntity = findEntity(id);
-        Assertions.assertTrue(responseEntity.getStatusCode().is2xxSuccessful(), "Status was : " + responseEntity.getStatusCode());
+        Assertions.assertTrue(responseEntity.getStatusCode().is2xxSuccessful(), "Status was : " + responseEntity.getStatusCode()+" response Body: " + responseEntity.getBody());
         Assertions.assertEquals(httpStatus, responseEntity.getStatusCode());
         DTO httpResponseEntity = crudController.getMediaTypeStrategy().readDTOFromBody(responseEntity.getBody(), dtoEntityClass);
         Assertions.assertNotNull(httpResponseEntity);
@@ -235,7 +224,7 @@ public abstract class UrlParamIdDTOCrudControllerSpringAdapterIT<ServiceE extend
      */
     protected ResponseEntity<String> findEntity(Id id, HttpStatus httpStatus) {
         ResponseEntity<String> responseEntity = findEntity(id);
-        Assertions.assertEquals(httpStatus, responseEntity.getStatusCode(), "Status was : " + responseEntity.getStatusCode());
+        Assertions.assertEquals(httpStatus, responseEntity.getStatusCode(), "Status was : " + responseEntity.getStatusCode()+" response Body: " + responseEntity.getBody());
         return responseEntity;
     }
 
@@ -253,7 +242,7 @@ public abstract class UrlParamIdDTOCrudControllerSpringAdapterIT<ServiceE extend
     protected DTO createEntityShouldSucceed(DTO dtoEntity, HttpStatus httpStatus) throws Exception {
         Assertions.assertNull(dtoEntity.getId());
         ResponseEntity<String> responseEntity = createEntity(dtoEntity);
-        Assertions.assertTrue(responseEntity.getStatusCode().is2xxSuccessful(), "Status was : " + responseEntity.getStatusCode());
+        Assertions.assertTrue(responseEntity.getStatusCode().is2xxSuccessful(), "Status was : " + responseEntity.getStatusCode() + " response Body: " + responseEntity.getBody());
         Assertions.assertEquals(responseEntity.getStatusCode(), httpStatus);
         DTO httpResponseEntity = crudController.getMediaTypeStrategy().readDTOFromBody(responseEntity.getBody(), dtoEntityClass);
         Assertions.assertTrue(isSavedServiceEntityDeepEqual(httpResponseEntity));
@@ -384,19 +373,23 @@ public abstract class UrlParamIdDTOCrudControllerSpringAdapterIT<ServiceE extend
      *
      * @param httpResponseEntity the DTO entity returned by Backend after http request
      * @return
-     * @throws EntityMappingException
      * @throws NoIdException
      */
-    protected boolean isSavedServiceEntityDeepEqual(DTO httpResponseEntity) throws EntityMappingException, NoIdException {
-        ServiceE serviceHttpResponseEntity = crudController.getDtoToServiceEntityMapper().map(httpResponseEntity);
-        Assertions.assertNotNull(serviceHttpResponseEntity);
-        Id httpResponseEntityId = serviceHttpResponseEntity.getId();
-        Assertions.assertNotNull(httpResponseEntityId);
+    protected boolean isSavedServiceEntityDeepEqual(DTO httpResponseEntity) throws EntityMappingException{
+        try {
+            ServiceE serviceHttpResponseEntity = crudController.getDtoMapper().mapDtoToServiceEntity(httpResponseEntity,crudController.getServiceEntityClass());
+            Assertions.assertNotNull(serviceHttpResponseEntity);
+            Id httpResponseEntityId = serviceHttpResponseEntity.getId();
+            Assertions.assertNotNull(httpResponseEntityId);
 
-        //Compare httpEntity with saved Entity From Service
-        Optional<ServiceE> entityFromService = crudController.getCrudService().findById(httpResponseEntityId);
-        Assertions.assertTrue(entityFromService.isPresent());
-        return isDeepEqual(entityFromService.get(), serviceHttpResponseEntity);
+            //Compare httpEntity with saved Entity From Service
+            Optional<ServiceE> entityFromService = crudController.getCrudService().findById(httpResponseEntityId);
+            Assertions.assertTrue(entityFromService.isPresent());
+            return isDeepEqual(entityFromService.get(), serviceHttpResponseEntity);
+        } catch (NoIdException e) {
+            throw new EntityMappingException(e);
+        }
+
     }
 
     /**

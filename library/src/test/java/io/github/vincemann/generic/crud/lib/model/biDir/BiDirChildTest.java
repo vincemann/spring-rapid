@@ -30,13 +30,13 @@ class BiDirChildTest {
     @Getter
     @Setter
     private class SecondEntityParent extends IdentifiableEntityImpl<Long> implements BiDirParent{
-        @BiDirChildEntity(EntityChild.class)
+        @BiDirChildEntity
         private EntityChild entityChild;
     }
     @Getter
     @Setter
     private class EntityParent extends IdentifiableEntityImpl<Long> implements BiDirParent {
-        @BiDirChildEntity(EntityChild.class)
+        @BiDirChildEntity
         private EntityChild entityChild;
     }
 

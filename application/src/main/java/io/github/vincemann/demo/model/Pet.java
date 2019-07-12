@@ -2,6 +2,8 @@ package io.github.vincemann.demo.model;
 
 import io.github.vincemann.generic.crud.lib.entityListener.BiDirChildEntityListener;
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import io.github.vincemann.generic.crud.lib.model.uniDir.UniDirChildEntity;
+import io.github.vincemann.generic.crud.lib.model.uniDir.UniDirParent;
 import lombok.*;
 import org.springframework.format.annotation.DateTimeFormat;
 import io.github.vincemann.generic.crud.lib.model.IdentifiableEntityImpl;
@@ -19,7 +21,7 @@ import java.time.LocalDate;
 @Entity
 @Builder
 @EntityListeners(BiDirChildEntityListener.class)
-public class Pet extends IdentifiableEntityImpl<Long> implements BiDirChild {
+public class Pet extends IdentifiableEntityImpl<Long> implements BiDirChild, UniDirParent {
 
     @Column(name = "name")
     private String name;
@@ -32,6 +34,7 @@ public class Pet extends IdentifiableEntityImpl<Long> implements BiDirChild {
     //pet_type_id erstellt werden wo dann die id von petType rein kommt
     @ManyToOne
     @JoinColumn(name = "pet_type_id")
+    @UniDirChildEntity
     private PetType petType;
 
 

@@ -1,7 +1,7 @@
 package io.github.vincemann.demo.model;
 
-import lombok.*;
 import io.github.vincemann.generic.crud.lib.model.IdentifiableEntityImpl;
+import lombok.*;
 
 import javax.persistence.Entity;
 import javax.persistence.Table;

@@ -2,7 +2,6 @@ package io.github.vincemann.generic.crud.lib.model.biDir;
 
 import io.github.vincemann.generic.crud.lib.service.exception.UnknownChildTypeException;
 import io.github.vincemann.generic.crud.lib.service.exception.UnknownParentTypeException;
-import io.github.vincemann.generic.crud.lib.util.CollectionUtils;
 import io.github.vincemann.generic.crud.lib.util.ReflectionUtils;
 
 import java.lang.reflect.Field;
@@ -159,7 +158,7 @@ public interface BiDirParent extends BiDirEntity {
 
     }
     /**
-     * Find the BiDirChildren Collections (all fields of this parent annotated with {@link BiDirChildCollection} and not null )
+     * Find the BiDirChildren Collections (all fields of this parent annotated with {@link BiDirChildCollection} )
      * and the Type of the Entities in the Collection.
      * @return
      */
@@ -171,8 +170,7 @@ public interface BiDirParent extends BiDirEntity {
             field.setAccessible(true);
             Collection<? extends BiDirChild> biDirChildren = (Collection<? extends BiDirChild>) field.get(this);
             if(biDirChildren == null){
-                //skip
-                continue;
+                throw new IllegalArgumentException("Null idCollection found in BiDirParent "+ this + " for ChildCollectionField with name: " + field.getName());
             }
             Class<? extends BiDirChild> collectionEntityType = field.getAnnotation(BiDirChildCollection.class).value();
             childrenCollection_CollectionTypeMap.put(biDirChildren,collectionEntityType);

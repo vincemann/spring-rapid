@@ -3,7 +3,7 @@ package io.github.vincemann.demo.dtoCrudControllers.springAdapter;
 
 import io.github.vincemann.demo.dtoCrudControllers.EntityInitializerControllerIT;
 import io.github.vincemann.demo.dtoCrudControllers.PetController;
-import io.github.vincemann.demo.dtos.PetDTO;
+import io.github.vincemann.demo.dtos.PetDto;
 import io.github.vincemann.demo.model.Pet;
 import io.github.vincemann.demo.service.PetService;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -19,7 +19,7 @@ import java.util.List;
 @SpringBootTest(webEnvironment =
         SpringBootTest.WebEnvironment.RANDOM_PORT)
 @ActiveProfiles(value = {"test","springdatajpa"})
-public class PetControllerIT extends EntityInitializerControllerIT<Pet, PetDTO, PetService, PetController,Long> {
+public class PetControllerIT extends EntityInitializerControllerIT<Pet, PetDto, PetService, PetController,Long> {
 
 
     public PetControllerIT(@Autowired PetController crudController) {
@@ -28,33 +28,34 @@ public class PetControllerIT extends EntityInitializerControllerIT<Pet, PetDTO, 
 
 
     @Override
-    protected List<PetDTO> provideValidTestDTOs() {
+    protected List<PetDto> provideValidTestDTOs() {
         return Arrays.asList(
-                PetDTO.builder()
+                //Pet with persisted PetType
+                PetDto.builder()
                         .name("esta")
-                        .petType(getTestPetType())
+                        .petTypeId(getTestPetType().getId())
                         .build(),
-                //Pet with known Owner
-                PetDTO.builder()
+                //Pet with persisted PetType and persisted Owner
+                PetDto.builder()
                         .ownerId(getTestOwner().getId())
-                        .petType(getTestPetType())
+                        .petTypeId(getTestPetType().getId())
                         .name("esta")
                         .build()
         );
     }
 
     @Override
-    protected List<PetDTO> provideInvalidTestDTOs() {
+    protected List<PetDto> provideInvalidTestDTOs() {
         return Arrays.asList(
-                PetDTO.builder()
+                PetDto.builder()
                         .name(null)
-                        .petType(getTestPetType())
+                        .petTypeId(getTestPetType().getId())
                         .build()
         );
     }
 
     @Override
-    protected void modifyTestEntity(PetDTO testEntityDTO) {
+    protected void modifyTestEntity(PetDto testEntityDTO) {
         testEntityDTO.setName("MODIFIED NAME");
     }
 }

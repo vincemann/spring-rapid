@@ -13,6 +13,6 @@ import io.github.vincemann.generic.crud.lib.service.springDataJpa.JPACrudService
 public class PetTypeJPAService extends JPACrudService<PetType,Long, PetTypeRepository> implements PetTypeService {
 
     public PetTypeJPAService(PetTypeRepository jpaRepository) {
-        super(jpaRepository, PetType.class);
+        super(jpaRepository);
     }
 }

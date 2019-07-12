@@ -12,6 +12,6 @@ import io.github.vincemann.generic.crud.lib.service.springDataJpa.JPACrudService
 public class VisitJPAService extends JPACrudService<Visit,Long, VisitRepository> implements VisitService {
 
     public VisitJPAService(VisitRepository jpaRepository) {
-        super(jpaRepository, Visit.class);
+        super(jpaRepository);
     }
 }

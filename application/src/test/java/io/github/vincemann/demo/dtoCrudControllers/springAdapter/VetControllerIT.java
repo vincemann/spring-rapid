@@ -2,8 +2,7 @@ package io.github.vincemann.demo.dtoCrudControllers.springAdapter;
 
 import io.github.vincemann.demo.dtoCrudControllers.EntityInitializerControllerIT;
 import io.github.vincemann.demo.dtoCrudControllers.VetController;
-import io.github.vincemann.demo.dtos.SpecialtyDTO;
-import io.github.vincemann.demo.dtos.VetDTO;
+import io.github.vincemann.demo.dtos.VetDto;
 import io.github.vincemann.demo.model.Vet;
 import io.github.vincemann.demo.service.VetService;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -20,7 +19,7 @@ import java.util.List;
 @SpringBootTest(webEnvironment =
         SpringBootTest.WebEnvironment.RANDOM_PORT)
 @ActiveProfiles(value = {"test","springdatajpa"})
-class VetControllerIT extends EntityInitializerControllerIT<Vet, VetDTO, VetService, VetController, Long> {
+class VetControllerIT extends EntityInitializerControllerIT<Vet, VetDto, VetService, VetController, Long> {
 
 
     VetControllerIT(@Autowired VetController crudController) {
@@ -28,40 +27,41 @@ class VetControllerIT extends EntityInitializerControllerIT<Vet, VetDTO, VetServ
     }
 
     @Override
-    protected List<VetDTO> provideValidTestDTOs() {
+    protected List<VetDto> provideValidTestDTOs() {
         return Arrays.asList(
-                VetDTO.builder()
+                //Vet without Specialty
+                VetDto.builder()
                      .firstName("Meister")
                      .lastName("Yoda")
                      .build(),
-                //Vet mit valid specialty
-                VetDTO.builder()
+                //Vet with persisted specialty
+                VetDto.builder()
                         .firstName("Meister")
                         .lastName("Yoda")
-                        .specialties(Collections.singleton(getTestSpecialty()))
+                        .specialtyIds(Collections.singleton(getTestSpecialty().getId()))
                         .build()
         );
     }
 
     @Override
-    protected List<VetDTO> provideInvalidTestDTOs() {
+    protected List<VetDto> provideInvalidTestDTOs() {
         return Arrays.asList(
-                VetDTO.builder()
+                VetDto.builder()
                         .firstName("Meister")
                         //no last name
                         //.lastName("Yoda")
                         .build(),
                 //Vet with invalid specialty
-                VetDTO.builder()
+                VetDto.builder()
                         .firstName("Meister")
                         .lastName("Yoda")
-                        .specialties(Collections.singleton(new SpecialtyDTO(null)))
+                        .specialtyIds(Collections.singleton(-1L))
                         .build()
         );
     }
 
     @Override
-    protected void modifyTestEntity(VetDTO testEntityDTO) {
+    protected void modifyTestEntity(VetDto testEntityDTO) {
         testEntityDTO.setLastName("MODIFIED");
     }
 }

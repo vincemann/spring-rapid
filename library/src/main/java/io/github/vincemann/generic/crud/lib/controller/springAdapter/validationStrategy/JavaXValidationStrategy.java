@@ -5,7 +5,7 @@ import javax.validation.*;
 import java.util.Set;
 
 /**
- * BaseImpl of {@link ValidationStrategy}, that utilizes the javax validation API
+ * BaseImpl of {@link ValidationStrategy}, that utilizes the javax validation API.
  * See: {@link Validator}
  * @param <DTO>
  * @param <Id>

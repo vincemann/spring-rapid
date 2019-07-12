@@ -3,6 +3,7 @@ package io.github.vincemann.generic.crud.lib.controller.errorHandling;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.fasterxml.jackson.databind.annotation.JsonTypeIdResolver;
+import io.github.vincemann.generic.crud.lib.controller.errorHandling.exceptionHandler.LowerCaseNameResolver;
 import org.hibernate.validator.internal.engine.path.PathImpl;
 import org.springframework.http.HttpStatus;
 import org.springframework.validation.FieldError;

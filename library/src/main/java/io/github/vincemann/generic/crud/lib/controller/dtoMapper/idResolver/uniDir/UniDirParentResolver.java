@@ -1,0 +1,62 @@
+package io.github.vincemann.generic.crud.lib.controller.dtoMapper.idResolver.uniDir;
+
+import io.github.vincemann.generic.crud.lib.controller.dtoMapper.EntityMappingException;
+import io.github.vincemann.generic.crud.lib.controller.dtoMapper.idResolver.EntityIdResolver;
+import io.github.vincemann.generic.crud.lib.dto.uniDir.UniDirDtoParent;
+import io.github.vincemann.generic.crud.lib.model.IdentifiableEntity;
+import io.github.vincemann.generic.crud.lib.model.uniDir.UniDirParent;
+import io.github.vincemann.generic.crud.lib.service.crudServiceFinder.CrudServiceFinder;
+import io.github.vincemann.generic.crud.lib.service.exception.EntityNotFoundException;
+import io.github.vincemann.generic.crud.lib.service.exception.NoIdException;
+import org.springframework.stereotype.Component;
+
+import java.io.Serializable;
+import java.util.AbstractMap;
+import java.util.Collection;
+import java.util.Map;
+
+@Component
+public class UniDirParentResolver extends EntityIdResolver<UniDirParent, UniDirDtoParent> {
+
+    public UniDirParentResolver(CrudServiceFinder crudServiceFinder) {
+        super(crudServiceFinder, UniDirDtoParent.class);
+    }
+
+    public void resolveServiceEntityIds(UniDirParent mappedUniDirParent, UniDirDtoParent uniDirDtoParent) throws EntityMappingException {
+        try {
+            //find and handle single Children
+            Map<Class, Serializable> allChildIdToClassMappings = uniDirDtoParent.findChildrenIds();
+            for (Map.Entry<Class, Serializable> childIdToClassMapping : allChildIdToClassMappings.entrySet()) {
+                Object child = findEntityFromService(childIdToClassMapping);
+                mappedUniDirParent.addChild(child);
+            }
+            //find and handle children collections
+            Map<Class, Collection<Serializable>> allChildrenIdCollection = uniDirDtoParent.findChildrenIdCollections();
+            for (Map.Entry<Class, Collection<Serializable>> entry : allChildrenIdCollection.entrySet()) {
+                Collection<Serializable> idCollection = entry.getValue();
+                for (Serializable id : idCollection) {
+                    Object child = findEntityFromService(new AbstractMap.SimpleEntry<>(entry.getKey(), id));
+                    mappedUniDirParent.addChild(child);
+                }
+            }
+        }catch (IllegalAccessException e){
+            throw new RuntimeException(e);
+        }
+    }
+
+    @Override
+    public void resolveDtoIds(UniDirDtoParent mappedDto, UniDirParent serviceEntity){
+        try {
+            for (Object child : serviceEntity.getChildren()) {
+                mappedDto.addChildsId((IdentifiableEntity)child);
+            }
+            for (Collection childrenCollection : serviceEntity.getChildrenCollections().keySet()) {
+                for (Object child : childrenCollection) {
+                    mappedDto.addChildsId((IdentifiableEntity) child);
+                }
+            }
+        } catch (IllegalAccessException e) {
+            throw new RuntimeException(e);
+        }
+    }
+}

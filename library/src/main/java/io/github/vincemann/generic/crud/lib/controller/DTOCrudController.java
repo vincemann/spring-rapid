@@ -1,6 +1,6 @@
 package io.github.vincemann.generic.crud.lib.controller;
 
-import io.github.vincemann.generic.crud.lib.controller.exception.EntityMappingException;
+import io.github.vincemann.generic.crud.lib.controller.dtoMapper.EntityMappingException;
 import io.github.vincemann.generic.crud.lib.model.IdentifiableEntity;
 import io.github.vincemann.generic.crud.lib.service.exception.BadEntityException;
 import io.github.vincemann.generic.crud.lib.service.exception.EntityNotFoundException;
@@ -19,12 +19,11 @@ public interface DTOCrudController<DTO extends IdentifiableEntity<Id>,Id extends
 
     //todo impl methods that only return ids and not whole dtos
 
+    ResponseEntity<DTO> create(DTO entity) throws BadEntityException, EntityMappingException;
 
-    ResponseEntity<DTO> create(DTO entity) throws EntityMappingException, BadEntityException;
+    ResponseEntity<DTO> find(Id id) throws NoIdException, EntityNotFoundException;
 
-    ResponseEntity<DTO> find(Id id) throws EntityMappingException, NoIdException, EntityNotFoundException;
-
-    ResponseEntity<DTO> update(DTO entity) throws EntityMappingException, NoIdException, EntityNotFoundException, BadEntityException;
+    ResponseEntity<DTO> update(DTO entity) throws EntityMappingException, BadEntityException, NoIdException, EntityNotFoundException;
 
     ResponseEntity delete(Id id) throws NoIdException, EntityNotFoundException;
 }

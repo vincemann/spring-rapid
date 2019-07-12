@@ -3,7 +3,7 @@ package io.github.vincemann.generic.crud.lib.controller.springAdapter.idFetching
 import javax.servlet.http.HttpServletRequest;
 
 /**
- * Provides an interface for 'how to get the Id from a HttpServletRequest'
+ * Provides an interface for 'how to get the Id from an HttpServletRequest'
  *
  */
 public interface IdFetchingStrategy<Id> {

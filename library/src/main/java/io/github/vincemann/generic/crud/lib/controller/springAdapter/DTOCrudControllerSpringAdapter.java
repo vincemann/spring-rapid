@@ -1,15 +1,16 @@
 package io.github.vincemann.generic.crud.lib.controller.springAdapter;
 
+import io.github.vincemann.generic.crud.lib.controller.dtoMapper.EntityMappingException;
 import io.github.vincemann.generic.crud.lib.controller.springAdapter.idFetchingStrategy.IdFetchingException;
 import io.github.vincemann.generic.crud.lib.controller.springAdapter.idFetchingStrategy.IdFetchingStrategy;
 import io.github.vincemann.generic.crud.lib.controller.springAdapter.mediaTypeStrategy.DTOReadingException;
 import io.github.vincemann.generic.crud.lib.controller.springAdapter.mediaTypeStrategy.MediaTypeStrategy;
 import io.github.vincemann.generic.crud.lib.controller.springAdapter.validationStrategy.ValidationStrategy;
+import io.github.vincemann.generic.crud.lib.controller.dtoMapper.DtoMapper;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.servlet.mvc.method.RequestMappingInfo;
 import io.github.vincemann.generic.crud.lib.controller.BasicDTOCrudController;
-import io.github.vincemann.generic.crud.lib.controller.exception.EntityMappingException;
 import io.github.vincemann.generic.crud.lib.model.IdentifiableEntity;
 import io.github.vincemann.generic.crud.lib.service.CrudService;
 import io.github.vincemann.generic.crud.lib.service.EndpointService;
@@ -31,25 +32,24 @@ import java.util.stream.Collectors;
  * fetches {@link DTO} with given {@link MediaTypeStrategy} from HttpRequest
  * validate the {@link DTO} and {@link Id} with the given {@link ValidationStrategy}
  *
- * Examples with {@link io.github.vincemann.generic.crud.lib.controller.springAdapter.idFetchingStrategy.UrlParamIdFetchingStrategy}:
+ * ExampleUrls with {@link io.github.vincemann.generic.crud.lib.controller.springAdapter.idFetchingStrategy.UrlParamIdFetchingStrategy}:
  * /entityName/httpMethod?entityIdName=id
  *
  * /account/get?accountId=34
  * /account/get?accountId=44bedc08-8e71-11e9-bc42-526af7764f64
  *
- * @param <ServiceE> Service Entity Type, of entity, which curd enpoints are exposed by this Controller
- * @param <Service>  Service Type of {@link ServiceE}
+ * @param <ServiceE> Service Entity Type, of entity, which's curd operations are exposed, via endpoints,  by this Controller
+ * @param <Service>  Service Type of {@link CrudService} managing {@link ServiceE}s
  * @param <DTO>      DTO Type corresponding to {@link ServiceE}
  * @param <Id>       Id Type of {@link ServiceE}
  *
  */
-public abstract class DTOCrudControllerSpringAdapter<ServiceE extends IdentifiableEntity<Id>,DTO extends IdentifiableEntity<Id>,Id extends Serializable, Service extends CrudService<ServiceE,Id>> extends BasicDTOCrudController<ServiceE,Id, Service,DTO> {
+public abstract class DTOCrudControllerSpringAdapter<ServiceE extends IdentifiableEntity<Id>,DTO extends IdentifiableEntity<Id>,Id extends Serializable, Service extends CrudService<ServiceE,Id>> extends BasicDTOCrudController<ServiceE,DTO,Id,Service> {
 
 
     private EndpointService endpointService;
     private String entityNameInUrl;
     private String baseUrl;
-    private Class<DTO> dtoClass;
     private String findMethodName ="get";
     private String createMethodName="create";
     private String deleteMethodName="delete";
@@ -59,27 +59,25 @@ public abstract class DTOCrudControllerSpringAdapter<ServiceE extends Identifiab
     private ValidationStrategy<DTO,Id> validationStrategy;
 
     //todo implement methods, that only return id, and not whole dtos
-    public DTOCrudControllerSpringAdapter(Service crudService, EndpointService endpointService, String entityNameInUrl, Class<DTO> dtoClass, IdFetchingStrategy<Id> idIdFetchingStrategy, MediaTypeStrategy mediaTypeStrategy, ValidationStrategy<DTO, Id> validationStrategy) {
-        super(crudService);
-        this.endpointService = endpointService;
+    public DTOCrudControllerSpringAdapter(Service crudService, String entityNameInUrl, IdFetchingStrategy<Id> idIdFetchingStrategy, MediaTypeStrategy mediaTypeStrategy, ValidationStrategy<DTO, Id> validationStrategy, DtoMapper dtoMapper, EndpointService endpointService) {
+        super(crudService, dtoMapper);
         this.entityNameInUrl = entityNameInUrl;
-        this.dtoClass = dtoClass;
         this.baseUrl="/"+entityNameInUrl+"/";
         this.idIdFetchingStrategy=idIdFetchingStrategy;
         this.mediaTypeStrategy=mediaTypeStrategy;
         this.validationStrategy = validationStrategy;
+        this.endpointService=endpointService;
         initRequestMapping();
     }
 
-    public DTOCrudControllerSpringAdapter(Service crudService, EndpointService endpointService, Class<ServiceE> entityClass, Class<DTO> dtoClass, IdFetchingStrategy<Id> idIdFetchingStrategy, MediaTypeStrategy mediaTypeStrategy, ValidationStrategy<DTO, Id> validationStrategy) {
-        super(crudService);
-        this.endpointService = endpointService;
-        this.entityNameInUrl = entityClass.getSimpleName();
-        this.dtoClass = dtoClass;
+    public DTOCrudControllerSpringAdapter(Service crudService,IdFetchingStrategy<Id> idIdFetchingStrategy, MediaTypeStrategy mediaTypeStrategy, ValidationStrategy<DTO, Id> validationStrategy, DtoMapper dtoMapper, EndpointService endpointService) {
+        super(crudService, dtoMapper);
+        this.entityNameInUrl = getServiceEntityClass().getSimpleName().toLowerCase();
         this.validationStrategy = validationStrategy;
         this.baseUrl="/"+entityNameInUrl+"/";
         this.idIdFetchingStrategy=idIdFetchingStrategy;
         this.mediaTypeStrategy=mediaTypeStrategy;
+        this.endpointService=endpointService;
         initRequestMapping();
     }
 
@@ -87,19 +85,19 @@ public abstract class DTOCrudControllerSpringAdapter<ServiceE extends Identifiab
     private void initRequestMapping(){
         try {
             //CREATE
-            endpointService.addMapping(getCreateRequestMappingInfo(),
+            getEndpointService().addMapping(getCreateRequestMappingInfo(),
                     this.getClass().getMethod("create", HttpServletRequest.class), this);
 
             //GET
-            endpointService.addMapping(getGetRequestMappingInfo(),
+            getEndpointService().addMapping(getGetRequestMappingInfo(),
                     this.getClass().getMethod("find", HttpServletRequest.class),this);
 
             //UPDATE
-            endpointService.addMapping(getUpdateRequestMappingInfo(),
+            getEndpointService().addMapping(getUpdateRequestMappingInfo(),
                     this.getClass().getMethod("update", HttpServletRequest.class),this);
 
             //DELETE
-            endpointService.addMapping(getDeleteRequestMappingInfo(),
+            getEndpointService().addMapping(getDeleteRequestMappingInfo(),
                     this.getClass().getMethod("delete", HttpServletRequest.class),this);
 
         }catch (NoSuchMethodException e){
@@ -146,17 +144,17 @@ public abstract class DTOCrudControllerSpringAdapter<ServiceE extends Identifiab
     }
 
 
-    public ResponseEntity<DTO> find(HttpServletRequest request) throws IdFetchingException, EntityNotFoundException, NoIdException, EntityMappingException {
+    public ResponseEntity<DTO> find(HttpServletRequest request) throws IdFetchingException, EntityNotFoundException, NoIdException{
         Id id = idIdFetchingStrategy.fetchId(request);
         validationStrategy.validateId(id,request);
         beforeFind(id,request);
         return super.find(id);
     }
 
-    public ResponseEntity<DTO> create(HttpServletRequest request) throws DTOReadingException, EntityMappingException, BadEntityException {
+    public ResponseEntity<DTO> create(HttpServletRequest request) throws DTOReadingException, BadEntityException, EntityMappingException {
         try {
             String body = request.getReader().lines().collect(Collectors.joining(System.lineSeparator()));
-            DTO dto = mediaTypeStrategy.readDTOFromBody(body,dtoClass);
+            DTO dto = mediaTypeStrategy.readDTOFromBody(body,getDtoClass());
             validationStrategy.validateDTO(dto,request);
             beforeCreate(dto,request);
             return super.create(dto);
@@ -165,10 +163,10 @@ public abstract class DTOCrudControllerSpringAdapter<ServiceE extends Identifiab
         }
     }
 
-    public ResponseEntity<DTO> update(HttpServletRequest request) throws DTOReadingException, EntityMappingException, EntityNotFoundException, NoIdException, BadEntityException {
+    public ResponseEntity<DTO> update(HttpServletRequest request) throws DTOReadingException, EntityNotFoundException, NoIdException, BadEntityException, EntityMappingException {
         try {
             String body = request.getReader().lines().collect(Collectors.joining(System.lineSeparator()));
-            DTO dto = mediaTypeStrategy.readDTOFromBody(body,dtoClass);
+            DTO dto = mediaTypeStrategy.readDTOFromBody(body,getDtoClass());
             validationStrategy.validateDTO(dto,request);
             beforeUpdate(dto,request);
             return super.update(dto);
@@ -219,13 +217,12 @@ public abstract class DTOCrudControllerSpringAdapter<ServiceE extends Identifiab
 
     }*/
 
+    protected EndpointService getEndpointService() {
+        return endpointService;
+    }
 
     public String getEntityNameInUrl() {
         return entityNameInUrl;
-    }
-
-    public Class<DTO> getDtoClass() {
-        return dtoClass;
     }
 
     public String getFindMethodName() {

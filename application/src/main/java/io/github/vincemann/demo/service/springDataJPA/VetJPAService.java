@@ -12,6 +12,6 @@ import io.github.vincemann.generic.crud.lib.service.springDataJpa.JPACrudService
 public class VetJPAService extends JPACrudService<Vet,Long, VetRepository> implements VetService {
 
     public VetJPAService(VetRepository vetRepository) {
-        super(vetRepository, Vet.class);
+        super(vetRepository);
     }
 }

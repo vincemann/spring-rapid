@@ -2,37 +2,27 @@ package io.github.vincemann.demo.dtoCrudControllers;
 
 import io.github.vincemann.generic.crud.lib.controller.springAdapter.DTOCrudControllerSpringAdapter;
 import io.github.vincemann.generic.crud.lib.controller.springAdapter.idFetchingStrategy.IdFetchingStrategy;
-import io.github.vincemann.generic.crud.lib.controller.springAdapter.mediaTypeStrategy.JSONMediaTypeStrategy;
-import io.github.vincemann.generic.crud.lib.controller.springAdapter.validationStrategy.JavaXValidationStrategy;
-import io.github.vincemann.demo.dtos.SpecialtyDTO;
+import io.github.vincemann.generic.crud.lib.controller.springAdapter.mediaTypeStrategy.MediaTypeStrategy;
+import io.github.vincemann.demo.dtos.SpecialtyDto;
 import io.github.vincemann.demo.model.Specialty;
 import io.github.vincemann.demo.service.SpecialtyService;
-import org.springframework.stereotype.Controller;
-import io.github.vincemann.generic.crud.lib.dtoMapper.BasicDTOMapper;
-import io.github.vincemann.generic.crud.lib.dtoMapper.DTOMapper;
+import io.github.vincemann.generic.crud.lib.controller.springAdapter.validationStrategy.ValidationStrategy;
 import io.github.vincemann.generic.crud.lib.service.EndpointService;
+import org.springframework.stereotype.Controller;
+import io.github.vincemann.generic.crud.lib.controller.dtoMapper.DtoMapper;
 
 @Controller
-public class SpecialtyController extends DTOCrudControllerSpringAdapter<Specialty, SpecialtyDTO,Long, SpecialtyService> {
+public class SpecialtyController extends DTOCrudControllerSpringAdapter<Specialty, SpecialtyDto,Long, SpecialtyService> {
 
 
-    public SpecialtyController(SpecialtyService crudService, EndpointService endpointService, IdFetchingStrategy<Long> longIdFetchingStrategy) {
+    public SpecialtyController(SpecialtyService crudService, IdFetchingStrategy<Long> longIdFetchingStrategy, MediaTypeStrategy mediaTypeStrategy, ValidationStrategy validationStrategy, DtoMapper dtoMapper, EndpointService endpointService) {
         super(crudService,
-                endpointService,
-                Specialty.class,
-                SpecialtyDTO.class,
                 longIdFetchingStrategy,
-                new JSONMediaTypeStrategy(),
-                new JavaXValidationStrategy<>());
+                mediaTypeStrategy,
+                validationStrategy,
+                dtoMapper,
+                endpointService
+                );
     }
 
-    @Override
-    protected DTOMapper<Specialty, SpecialtyDTO, Long> provideServiceEntityToDTOMapper() {
-        return new BasicDTOMapper<>(SpecialtyDTO.class);
-    }
-
-    @Override
-    protected DTOMapper<SpecialtyDTO, Specialty, Long> provideDTOToServiceEntityMapper() {
-        return new BasicDTOMapper<>(Specialty.class);
-    }
 }

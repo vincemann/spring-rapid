@@ -13,6 +13,6 @@ import io.github.vincemann.generic.crud.lib.service.springDataJpa.JPACrudService
 public class SpecialtyJPAService extends JPACrudService<Specialty,Long, SpecialtyRepository> implements SpecialtyService {
 
     public SpecialtyJPAService(SpecialtyRepository jpaRepository) {
-        super(jpaRepository, Specialty.class);
+        super(jpaRepository);
     }
 }
