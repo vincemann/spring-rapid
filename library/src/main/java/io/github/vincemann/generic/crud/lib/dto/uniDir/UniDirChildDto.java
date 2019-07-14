@@ -11,7 +11,7 @@ import java.lang.reflect.Field;
 import java.util.HashMap;
 import java.util.Map;
 
-public interface UniDirDtoChild {
+public interface UniDirChildDto {
     Map<Class, Field[]> uniDirParentFieldsCache = new HashMap<>();
 
     default <ParentId extends Serializable> ParentId findParentId(Class<? extends UniDirParent> parentClazz) throws UnknownParentTypeException, IllegalAccessException {
@@ -40,8 +40,8 @@ public interface UniDirDtoChild {
         return parentIds;
     }
 
-    default void addParentsId(UniDirParent uniDirParent) throws IllegalAccessException {
-        Serializable parentId = ((IdentifiableEntity) uniDirParent).getId();
+    default void addParentsId(IdentifiableEntity uniDirParent) throws IllegalAccessException {
+        Serializable parentId =  uniDirParent.getId();
         if(parentId==null){
             throw new IllegalArgumentException("ParentId must not be null");
         }
@@ -51,8 +51,8 @@ public interface UniDirDtoChild {
                 Object prevParent = parentIdField.get(this);
                 if(prevParent!=null){
                     System.err.println("Warning, prev ParentId was not null -> overriding");
-                    parentIdField.set(this,parentId);
                 }
+                parentIdField.set(this,parentId);
             }
         }
     }

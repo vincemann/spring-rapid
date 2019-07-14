@@ -4,7 +4,7 @@ import io.github.vincemann.demo.model.Owner;
 
 import io.github.vincemann.demo.model.PetType;
 import io.github.vincemann.generic.crud.lib.dto.uniDir.UniDirChildId;
-import io.github.vincemann.generic.crud.lib.dto.uniDir.UniDirDtoParent;
+import io.github.vincemann.generic.crud.lib.dto.uniDir.UniDirParentDto;
 import lombok.*;
 import org.springframework.lang.Nullable;
 import io.github.vincemann.generic.crud.lib.dto.biDir.BiDirDtoChild;
@@ -22,7 +22,7 @@ import java.time.LocalDate;
 @AllArgsConstructor
 @ToString
 @Builder
-public class PetDto extends IdentifiableEntityImpl<Long> implements UniDirDtoParent, BiDirDtoChild {
+public class PetDto extends IdentifiableEntityImpl<Long> implements UniDirParentDto, BiDirDtoChild {
     @NotBlank
     @Size(min = 2, max = 20)
     private String name;

@@ -1,4 +1,4 @@
-package io.github.vincemann.generic.crud.lib.controller.dtoMapper.backRefResolving;
+package io.github.vincemann.generic.crud.lib.controller.dtoMapper.idResolver.uniDir.testEntities;
 
 import io.github.vincemann.generic.crud.lib.model.IdentifiableEntityImpl;
 import lombok.Getter;
@@ -8,7 +8,5 @@ import lombok.Setter;
 @Getter
 @Setter
 @NoArgsConstructor
-class EntityParentDTO extends IdentifiableEntityImpl<Long> {
-
-    private EntityChildDto entityChild;
+public class UniDirEntityParentsChild extends IdentifiableEntityImpl<Long> {
 }

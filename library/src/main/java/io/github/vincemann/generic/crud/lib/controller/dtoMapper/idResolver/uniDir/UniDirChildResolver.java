@@ -2,27 +2,26 @@ package io.github.vincemann.generic.crud.lib.controller.dtoMapper.idResolver.uni
 
 import io.github.vincemann.generic.crud.lib.controller.dtoMapper.EntityMappingException;
 import io.github.vincemann.generic.crud.lib.controller.dtoMapper.idResolver.EntityIdResolver;
-import io.github.vincemann.generic.crud.lib.dto.uniDir.UniDirDtoChild;
+import io.github.vincemann.generic.crud.lib.dto.uniDir.UniDirChildDto;
+import io.github.vincemann.generic.crud.lib.model.IdentifiableEntity;
 import io.github.vincemann.generic.crud.lib.model.uniDir.UniDirChild;
 import io.github.vincemann.generic.crud.lib.model.uniDir.UniDirParent;
 import io.github.vincemann.generic.crud.lib.service.crudServiceFinder.CrudServiceFinder;
-import io.github.vincemann.generic.crud.lib.service.exception.EntityNotFoundException;
-import io.github.vincemann.generic.crud.lib.service.exception.NoIdException;
 import org.springframework.stereotype.Component;
 
 import java.io.Serializable;
 import java.util.Map;
 
 @Component
-public class UniDirChildResolver extends EntityIdResolver<UniDirChild, UniDirDtoChild> {
+public class UniDirChildResolver extends EntityIdResolver<UniDirChild, UniDirChildDto> {
 
     public UniDirChildResolver(CrudServiceFinder crudServiceFinder) {
-        super(crudServiceFinder, UniDirDtoChild.class);
+        super(crudServiceFinder, UniDirChildDto.class);
     }
 
-    public void resolveServiceEntityIds(UniDirChild mappedUniDirChild, UniDirDtoChild uniDirDtoChild) throws EntityMappingException {
+    public void resolveServiceEntityIds(UniDirChild mappedUniDirChild, UniDirChildDto uniDirChildDto) throws EntityMappingException {
         try {
-            Map<Class, Serializable> allParentIdToClassMappings = uniDirDtoChild.findAllParentIds();
+            Map<Class, Serializable> allParentIdToClassMappings = uniDirChildDto.findAllParentIds();
             for (Map.Entry<Class, Serializable> parentIdToClassMapping : allParentIdToClassMappings.entrySet()) {
                 Object parent = findEntityFromService(parentIdToClassMapping);
                 try {
@@ -39,10 +38,10 @@ public class UniDirChildResolver extends EntityIdResolver<UniDirChild, UniDirDto
     }
 
     @Override
-    public void resolveDtoIds(UniDirDtoChild mappedDto, UniDirChild serviceEntity ){
+    public void resolveDtoIds(UniDirChildDto mappedDto, UniDirChild serviceEntity ){
         try {
-            for (UniDirParent uniDirParent : serviceEntity.findParents()) {
-                mappedDto.addParentsId(uniDirParent);
+            for (Object uniDirParent : serviceEntity.findParents()) {
+                mappedDto.addParentsId((IdentifiableEntity) uniDirParent);
             }
         }catch (IllegalAccessException e){
             throw new RuntimeException(e);

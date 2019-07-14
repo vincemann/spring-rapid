@@ -1,9 +1,6 @@
 package io.github.vincemann.generic.crud.lib.dto.uniDir;
 
-import io.github.vincemann.generic.crud.lib.dto.biDir.BiDirChildId;
-import io.github.vincemann.generic.crud.lib.dto.biDir.BiDirChildIdCollection;
 import io.github.vincemann.generic.crud.lib.model.IdentifiableEntity;
-import io.github.vincemann.generic.crud.lib.model.biDir.BiDirChild;
 import io.github.vincemann.generic.crud.lib.model.uniDir.UniDirChild;
 import io.github.vincemann.generic.crud.lib.service.exception.UnknownChildTypeException;
 import io.github.vincemann.generic.crud.lib.util.ReflectionUtils;
@@ -14,7 +11,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
-public interface UniDirDtoParent {
+public interface UniDirParentDto {
 
     Map<Class, Field[]> uniDirChildFieldsCache = new HashMap<>();
     Map<Class, Field[]> uniDirChildrenCollectionFieldsCache = new HashMap<>();
@@ -51,7 +48,7 @@ public interface UniDirDtoParent {
             if(id!=null) {
                 childrenIds.put(field.getAnnotation(UniDirChildId.class).value(),id);
             }else {
-                System.err.println("Warning: Null id found in UniDirDtoParent "+ this + " for ChildIdField with name: " + field.getName());
+                System.err.println("Warning: Null id found in UniDirParentDto "+ this + " for ChildIdField with name: " + field.getName());
             }
         }
         return childrenIds;
@@ -66,7 +63,7 @@ public interface UniDirDtoParent {
             if(idCollection!=null){
                 childrenIdCollections.put(field.getAnnotation(UniDirChildIdCollection.class).value(),idCollection);
             }else {
-               throw new IllegalArgumentException("Null idCollection found in UniDirDtoParent "+ this + " for ChildIdCollectionField with name: " + field.getName());
+               throw new IllegalArgumentException("Null idCollection found in UniDirParentDto "+ this + " for ChildIdCollectionField with name: " + field.getName());
             }
         }
         return childrenIdCollections;

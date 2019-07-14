@@ -2,7 +2,7 @@ package io.github.vincemann.demo.dtos;
 
 import io.github.vincemann.demo.model.Specialty;
 import io.github.vincemann.generic.crud.lib.dto.uniDir.UniDirChildIdCollection;
-import io.github.vincemann.generic.crud.lib.dto.uniDir.UniDirDtoParent;
+import io.github.vincemann.generic.crud.lib.dto.uniDir.UniDirParentDto;
 import lombok.*;
 import org.springframework.lang.Nullable;
 import org.springframework.validation.annotation.Validated;
@@ -17,7 +17,7 @@ import java.util.Set;
 @Setter
 @Validated
 @ToString
-public class VetDto extends PersonDto implements UniDirDtoParent {
+public class VetDto extends PersonDto implements UniDirParentDto {
 
 
     @Builder
