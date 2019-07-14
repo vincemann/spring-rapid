@@ -1,4 +1,4 @@
-package io.github.vincemann.generic.crud.lib.controller.dtoMapper.backRefResolving;
+package io.github.vincemann.generic.crud.lib.controller.dtoMapper.idResolver.biDir.testEntities;
 
 import io.github.vincemann.generic.crud.lib.model.IdentifiableEntityImpl;
 import io.github.vincemann.generic.crud.lib.model.biDir.BiDirChildEntity;
@@ -10,9 +10,9 @@ import lombok.Setter;
 @Getter
 @Setter
 @NoArgsConstructor
-class EntityParent extends IdentifiableEntityImpl<Long> implements BiDirParent {
+public class BiDirEntityParent extends IdentifiableEntityImpl<Long> implements BiDirParent {
 
     @BiDirChildEntity
-    private EntityChild entityChild;
+    private BiDirEntityChild biDIrEntityChild;
 
 }

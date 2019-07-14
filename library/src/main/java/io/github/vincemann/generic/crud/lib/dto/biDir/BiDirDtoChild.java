@@ -42,8 +42,8 @@ public interface BiDirDtoChild {
                 Object prevParent = parentIdField.get(this);
                 if(prevParent!=null){
                     System.err.println("Warning, prev ParentId was not null -> overriding");
-                    parentIdField.set(this,parentId);
                 }
+                parentIdField.set(this,parentId);
             }
         }
     }

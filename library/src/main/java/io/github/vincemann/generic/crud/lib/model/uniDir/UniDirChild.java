@@ -1,6 +1,5 @@
 package io.github.vincemann.generic.crud.lib.model.uniDir;
 
-import io.github.vincemann.generic.crud.lib.service.exception.UnknownChildTypeException;
 import io.github.vincemann.generic.crud.lib.service.exception.UnknownParentTypeException;
 import io.github.vincemann.generic.crud.lib.util.ReflectionUtils;
 
@@ -91,28 +90,17 @@ public interface UniDirChild extends UniDirEntity {
      * @return  all parent of this, that are not null
      * @throws IllegalAccessException
      */
-    public default Collection<UniDirParent> findParents() throws IllegalAccessException {
-        Collection<UniDirParent> result = new ArrayList<>();
+    public default Collection findParents() throws IllegalAccessException {
+        Collection result = new ArrayList<>();
         Field[] parentFields = findParentFields();
         for(Field parentField: parentFields) {
             parentField.setAccessible(true);
-            UniDirParent uniDirParent = (UniDirParent) parentField.get(this);
+            Object uniDirParent =  parentField.get(this);
             if(uniDirParent!=null) {
                 result.add(uniDirParent);
             }
         }
         return result;
-    }
-
-
-    public default void dismissParents() throws UnknownChildTypeException, UnknownParentTypeException, IllegalAccessException {
-        for(UniDirParent parent: findParents()){
-            if(parent!=null) {
-                this.dismissParent(parent);
-            }else {
-                System.err.println("parent Reference of UniDirChild with type: " + this.getClass().getSimpleName() +" was not set when deleting -> parent was deleted before child");
-            }
-        }
     }
 
     /**
