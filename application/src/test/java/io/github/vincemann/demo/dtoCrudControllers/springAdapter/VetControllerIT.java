@@ -19,11 +19,11 @@ import java.util.List;
 @SpringBootTest(webEnvironment =
         SpringBootTest.WebEnvironment.RANDOM_PORT)
 @ActiveProfiles(value = {"test","springdatajpa"})
-class VetControllerIT extends EntityInitializerControllerIT<Vet, VetDto, VetService, VetController, Long> {
+class VetControllerIT extends EntityInitializerControllerIT<Vet, VetDto, VetService, VetController> {
 
 
     VetControllerIT(@Autowired VetController crudController) {
-        super(crudController, 99L);
+        super(crudController);
     }
 
     @Override
@@ -31,12 +31,12 @@ class VetControllerIT extends EntityInitializerControllerIT<Vet, VetDto, VetServ
         return Arrays.asList(
                 //Vet without Specialty
                 VetDto.builder()
-                     .firstName("Meister")
+                     .firstName("master")
                      .lastName("Yoda")
                      .build(),
                 //Vet with persisted specialty
                 VetDto.builder()
-                        .firstName("Meister")
+                        .firstName("master")
                         .lastName("Yoda")
                         .specialtyIds(Collections.singleton(getTestSpecialty().getId()))
                         .build()
@@ -47,13 +47,13 @@ class VetControllerIT extends EntityInitializerControllerIT<Vet, VetDto, VetServ
     protected List<VetDto> provideInvalidTestDTOs() {
         return Arrays.asList(
                 VetDto.builder()
-                        .firstName("Meister")
+                        .firstName("master")
                         //no last name
                         //.lastName("Yoda")
                         .build(),
                 //Vet with invalid specialty
                 VetDto.builder()
-                        .firstName("Meister")
+                        .firstName("master")
                         .lastName("Yoda")
                         .specialtyIds(Collections.singleton(-1L))
                         .build()

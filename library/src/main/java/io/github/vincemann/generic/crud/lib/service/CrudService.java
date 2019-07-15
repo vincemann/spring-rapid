@@ -14,7 +14,7 @@ import java.util.Set;
  * @param <E>       Type of managed Entity
  * @param <Id>      Id Type of managed Entity
  */
-public interface CrudService<E extends IdentifiableEntity<Id>,Id extends Serializable> {
+public interface CrudService<E extends IdentifiableEntity<Id>,Id extends Serializable & Comparable> {
 
     Optional<E> findById(Id id) throws NoIdException;
 

@@ -44,7 +44,7 @@ import java.util.stream.Collectors;
  * @param <Id>       Id Type of {@link ServiceE}
  *
  */
-public abstract class DTOCrudControllerSpringAdapter<ServiceE extends IdentifiableEntity<Id>,DTO extends IdentifiableEntity<Id>,Id extends Serializable, Service extends CrudService<ServiceE,Id>> extends BasicDTOCrudController<ServiceE,DTO,Id,Service> {
+public abstract class DTOCrudControllerSpringAdapter<ServiceE extends IdentifiableEntity<Id>,DTO extends IdentifiableEntity<Id>,Id extends Serializable & Comparable, Service extends CrudService<ServiceE,Id>> extends BasicDTOCrudController<ServiceE,DTO,Id,Service> {
 
 
     private EndpointService endpointService;

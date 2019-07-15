@@ -5,8 +5,10 @@ import io.github.vincemann.demo.dtoCrudControllers.EntityInitializerControllerIT
 import io.github.vincemann.demo.dtoCrudControllers.OwnerController;
 import io.github.vincemann.demo.dtos.OwnerDto;
 import io.github.vincemann.demo.model.Owner;
+import io.github.vincemann.demo.model.Pet;
 import io.github.vincemann.demo.service.OwnerService;
 import io.github.vincemann.demo.service.PetService;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -15,40 +17,42 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
 
 @ExtendWith(SpringExtension.class)
 @SpringBootTest(webEnvironment =
         SpringBootTest.WebEnvironment.RANDOM_PORT)
 @ActiveProfiles(value = {"test","springdatajpa"})
-class OwnerControllerIT extends EntityInitializerControllerIT<Owner, OwnerDto, OwnerService, OwnerController,Long> {
+class OwnerControllerIT extends EntityInitializerControllerIT<Owner, OwnerDto, OwnerService, OwnerController> {
 
     @Autowired
     private PetService petService;
+    private Pet pet1;
+    private Pet pet2;
 
     OwnerControllerIT(@Autowired OwnerController crudController) {
-        super(crudController, 99L);
+        super(crudController);
+    }
+
+    @BeforeEach
+    @Override
+    public void before() throws Exception {
+        this.pet1 = petService.save(Pet.builder().name("pet1").petType(getTestPetType()).build());
+        this.pet2 = petService.save(Pet.builder().name("pet2").petType(getTestPetType()).build());
+        super.before();
     }
 
     @Override
     protected List<OwnerDto> provideValidTestDTOs() {
         return Arrays.asList(
-                //OwnerDto with pets
-                /*OwnerDto.builder()
-                        .firstName("Hans")
-                        .lastName("meier")
-                        .address("MegaNiceStreet 5")
-                        .city("Berlin")
-                        .pets(Collections.singleton(pet))
-                        .build(),*/
-
 
                 //OwnerDto without pets
                 OwnerDto.builder()
                         .firstName("Max")
                         .lastName("Müller")
-                        .address("Andere Street 13")
-                        .city("München")
+                        .address("other Street 13")
+                        .city("munich")
                         .build(),
 
                 //Owner with persisted pet
@@ -58,16 +62,16 @@ class OwnerControllerIT extends EntityInitializerControllerIT<Owner, OwnerDto, O
                         .address("mega nice Street 42")
                         .city("Berlin")
                         .petIds(Collections.singleton(getTestPet().getId()))
-                        .build()
+                        .build(),
 
                 //OwnerDto with many Pets
-                /*OwnerDto.builder()
+                OwnerDto.builder()
                         .firstName("Max")
                         .lastName("Müller")
                         .address("Andere Street 13")
                         .city("München")
-                        .pets(new HashSet<>(Arrays.asList(pet,pet2,pet3)))
-                        .build()*/
+                        .petIds(new HashSet<>(Arrays.asList(pet1.getId(),pet2.getId())))
+                        .build()
 
         );
     }
@@ -84,7 +88,6 @@ class OwnerControllerIT extends EntityInitializerControllerIT<Owner, OwnerDto, O
                         .build()
         );
     }
-
 
     @Override
     protected void modifyTestEntity(OwnerDto testEntityDTO) {

@@ -19,11 +19,11 @@ import java.util.List;
 @SpringBootTest(webEnvironment =
         SpringBootTest.WebEnvironment.RANDOM_PORT)
 @ActiveProfiles(value = {"test","springdatajpa"})
-public class PetControllerIT extends EntityInitializerControllerIT<Pet, PetDto, PetService, PetController,Long> {
+public class PetControllerIT extends EntityInitializerControllerIT<Pet, PetDto, PetService, PetController> {
 
 
     public PetControllerIT(@Autowired PetController crudController) {
-        super(crudController, 99L);
+        super(crudController);
     }
 
 
