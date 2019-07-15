@@ -14,7 +14,7 @@ import java.util.Map;
 public interface UniDirChildDto {
     Map<Class, Field[]> uniDirParentFieldsCache = new HashMap<>();
 
-    default <ParentId extends Serializable> ParentId findParentId(Class<? extends UniDirParent> parentClazz) throws UnknownParentTypeException, IllegalAccessException {
+    default <ParentId extends Serializable & Comparable> ParentId findParentId(Class<? extends UniDirParent> parentClazz) throws UnknownParentTypeException, IllegalAccessException {
         Field[] parentIdFields = findParentIdFields();
         for (Field field: parentIdFields) {
             if(field.getAnnotation(UniDirParentId.class).value().equals(parentClazz)) {

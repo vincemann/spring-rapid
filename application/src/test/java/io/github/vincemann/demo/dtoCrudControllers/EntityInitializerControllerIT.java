@@ -21,12 +21,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import java.io.Serializable;
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.Collections;
+import java.util.List;
 import java.util.Set;
 
 @Getter
 @Setter
-public abstract class EntityInitializerControllerIT<ServiceE extends IdentifiableEntity<Id>, DTO extends IdentifiableEntity<Id>, Service extends CrudService<ServiceE, Id>, Controller extends DTOCrudControllerSpringAdapter<ServiceE, DTO, Id, Service>, Id extends Serializable> extends ValidationUrlParamIdDTOCrudControllerSpringAdapterIT<ServiceE,DTO,Service,Controller,Id> {
+public abstract class EntityInitializerControllerIT<ServiceE extends IdentifiableEntity<Long>, DTO extends IdentifiableEntity<Long>, Service extends CrudService<ServiceE, Long>, Controller extends DTOCrudControllerSpringAdapter<ServiceE, DTO, Long, Service>> extends ValidationUrlParamIdDTOCrudControllerSpringAdapterIT<ServiceE,DTO,Service,Controller,Long> {
 
     @Autowired
     private PetTypeController petTypeController;
@@ -49,12 +51,28 @@ public abstract class EntityInitializerControllerIT<ServiceE extends Identifiabl
     private PetService petService;
     private Pet testPet;
 
-    public EntityInitializerControllerIT(String url, Controller crudController, Id nonExistingId) {
-        super(url, crudController, nonExistingId);
+    public EntityInitializerControllerIT(String url, Controller crudController) {
+        super(url, crudController,null);
+        this.setNonExistingIdFinder(this::findNonExistingId);
     }
 
-    public EntityInitializerControllerIT(Controller crudController, Id nonExistingId) {
-        super(crudController, nonExistingId);
+    public EntityInitializerControllerIT(Controller crudController) {
+        super(crudController, null);
+        this.setNonExistingIdFinder(this::findNonExistingId);
+    }
+
+    private Long findNonExistingId(){
+        List<Long> allIds = new ArrayList<>();
+        Set<ServiceE> allEntities = getCrudController().getCrudService().findAll();
+        allEntities.forEach(serviceEntity -> {
+            allIds.add(serviceEntity.getId());
+        });
+        Collections.sort(allIds);
+        if(allIds.isEmpty()){
+            return 1L;
+        }
+        Long biggestId = allIds.get(allIds.size()-1);
+        return biggestId+1L;
     }
 
     @BeforeEach
@@ -63,10 +81,10 @@ public abstract class EntityInitializerControllerIT<ServiceE extends Identifiabl
         //PetType abspeichern, den muss es vorher geben , bevor ich ein Pet abspeicher
         //ich möchte den nicht per cascade erstellen lassen wenn jmd ein pet added und da ein unbekannter pettype drinhängt
         testPetType = petTypeController.getCrudService().save(PetType.builder()
-                .name("Hund")
+                .name("dog")
                 .build());
         testSpecialty = specialtyController.getCrudService().save(Specialty.builder()
-                .description("HundeLeber Experte")
+                .description("dogliver expert")
                 .build());
         testPet = petController.getCrudService().save(Pet.builder()
                 .name("bello")

@@ -28,10 +28,7 @@ public class Pet extends IdentifiableEntityImpl<Long> implements BiDirChild, Uni
 
 
 
-    //hier sage ich dass ist eine unilaterale manytoone
-    //-> dh PetType weiß nix davon
-    //und es soll doch bitte die spalte mit dem namen
-    //pet_type_id erstellt werden wo dann die id von petType rein kommt
+    //uniDir ManyToMany -> PetType has no information about this mapping
     @ManyToOne
     @JoinColumn(name = "pet_type_id")
     @UniDirChildEntity

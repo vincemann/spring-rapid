@@ -18,12 +18,11 @@ import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.RequestEntity;
 import org.springframework.http.ResponseEntity;
+import org.springframework.lang.Nullable;
 import org.springframework.web.util.UriComponentsBuilder;
 
 import java.io.Serializable;
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 
 import static io.github.vincemann.generic.crud.lib.util.BeanUtils.isDeepEqual;
 
@@ -37,7 +36,7 @@ import static io.github.vincemann.generic.crud.lib.util.BeanUtils.isDeepEqual;
  * @param <Controller>
  * @param <Id>
  */
-public abstract class UrlParamIdDTOCrudControllerSpringAdapterIT<ServiceE extends IdentifiableEntity<Id>, DTO extends IdentifiableEntity<Id>, Service extends CrudService<ServiceE, Id>, Controller extends DTOCrudControllerSpringAdapter<ServiceE, DTO, Id, Service>, Id extends Serializable> extends IntegrationTest {
+public abstract class UrlParamIdDTOCrudControllerSpringAdapterIT<ServiceE extends IdentifiableEntity<Id>, DTO extends IdentifiableEntity<Id>, Service extends CrudService<ServiceE, Id>, Controller extends DTOCrudControllerSpringAdapter<ServiceE, DTO, Id, Service>, Id extends Serializable & Comparable> extends IntegrationTest {
 
     /**
      * This is a security feature.
@@ -48,9 +47,9 @@ public abstract class UrlParamIdDTOCrudControllerSpringAdapterIT<ServiceE extend
     private final Controller crudController;
     private final Class<DTO> dtoEntityClass;
     private final String entityIdParamKey;
-    private final Id nonExistingId;
     private int safetyCheckMaxAmountEntitiesInRepo = MAX_AMOUNT_ENTITIES_IN_REPO_WHEN_DELETING_ALL;
     private List<DTO> testDTOs;
+    private NonExistingIdFinder<Id> nonExistingIdFinder;
 
 
     public UrlParamIdDTOCrudControllerSpringAdapterIT(String url, Controller crudController, Id nonExistingId) {
@@ -59,7 +58,7 @@ public abstract class UrlParamIdDTOCrudControllerSpringAdapterIT<ServiceE extend
         this.crudController = crudController;
         this.dtoEntityClass = crudController.getDtoClass();
         this.entityIdParamKey = ((UrlParamIdFetchingStrategy) crudController.getIdIdFetchingStrategy()).getIdUrlParamKey();
-        this.nonExistingId = nonExistingId;
+        this.nonExistingIdFinder = () -> nonExistingId;
     }
 
     public UrlParamIdDTOCrudControllerSpringAdapterIT(Controller crudController, Id nonExistingId) {
@@ -68,8 +67,9 @@ public abstract class UrlParamIdDTOCrudControllerSpringAdapterIT<ServiceE extend
         this.crudController = crudController;
         this.dtoEntityClass = crudController.getDtoClass();
         this.entityIdParamKey = ((UrlParamIdFetchingStrategy) crudController.getIdIdFetchingStrategy()).getIdUrlParamKey();
-        this.nonExistingId = nonExistingId;
+        this.nonExistingIdFinder = () -> nonExistingId;
     }
+
 
     @BeforeEach
     public void before() throws Exception {
@@ -91,13 +91,13 @@ public abstract class UrlParamIdDTOCrudControllerSpringAdapterIT<ServiceE extend
 
     @Test
     protected void findNonExistentEntityTest() {
-        ResponseEntity<String> responseEntity = findEntity(nonExistingId, HttpStatus.NOT_FOUND);
+        ResponseEntity<String> responseEntity = findEntity(nonExistingIdFinder.findNonExistingId(), HttpStatus.NOT_FOUND);
         Assertions.assertFalse(isBodyOfDtoType(responseEntity.getBody()));
     }
 
     @Test
     protected void deleteNonExistentEntityTest() {
-        deleteEntity(nonExistingId, HttpStatus.NOT_FOUND);
+        deleteEntity(nonExistingIdFinder.findNonExistingId(), HttpStatus.NOT_FOUND);
     }
 
     protected abstract void modifyTestEntity(DTO testEntityDTO);
@@ -462,4 +462,7 @@ public abstract class UrlParamIdDTOCrudControllerSpringAdapterIT<ServiceE extend
         return testDTOs;
     }
 
+    public void setNonExistingIdFinder(NonExistingIdFinder<Id> nonExistingIdFinder) {
+        this.nonExistingIdFinder = nonExistingIdFinder;
+    }
 }

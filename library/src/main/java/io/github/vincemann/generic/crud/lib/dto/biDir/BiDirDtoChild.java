@@ -20,7 +20,7 @@ import java.util.Map;
 public interface BiDirDtoChild {
     Map<Class,Field[]> biDirParentFieldsCache = new HashMap<>();
 
-    default <ParentId extends Serializable> ParentId findParentId(Class<? extends BiDirParent> parentClazz) throws UnknownParentTypeException, IllegalAccessException {
+    default <ParentId extends Serializable & Comparable> ParentId findParentId(Class<? extends BiDirParent> parentClazz) throws UnknownParentTypeException, IllegalAccessException {
         Field[] parentIdFields = findParentIdFields();
         for (Field field: parentIdFields) {
             if(field.getAnnotation(BiDirParentId.class).value().equals(parentClazz)) {
