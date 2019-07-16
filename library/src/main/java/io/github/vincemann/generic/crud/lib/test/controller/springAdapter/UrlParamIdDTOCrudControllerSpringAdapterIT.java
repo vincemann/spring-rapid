@@ -2,13 +2,13 @@ package io.github.vincemann.generic.crud.lib.test.controller.springAdapter;
 
 import io.github.vincemann.generic.crud.lib.controller.dtoMapper.EntityMappingException;
 import io.github.vincemann.generic.crud.lib.controller.springAdapter.DTOCrudControllerSpringAdapter;
-import io.github.vincemann.generic.crud.lib.controller.springAdapter.idFetchingStrategy.LongUrlParamIdFetchingStrategy;
 import io.github.vincemann.generic.crud.lib.controller.springAdapter.idFetchingStrategy.UrlParamIdFetchingStrategy;
 import io.github.vincemann.generic.crud.lib.model.IdentifiableEntity;
 import io.github.vincemann.generic.crud.lib.service.CrudService;
-import io.github.vincemann.generic.crud.lib.service.exception.EntityNotFoundException;
 import io.github.vincemann.generic.crud.lib.service.exception.NoIdException;
 import io.github.vincemann.generic.crud.lib.test.IntegrationTest;
+import io.github.vincemann.generic.crud.lib.test.controller.springAdapter.testBundles.TestDtoBundle;
+import io.github.vincemann.generic.crud.lib.test.controller.springAdapter.testBundles.UpdateTestBundle;
 import io.github.vincemann.generic.crud.lib.util.BeanUtils;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
@@ -18,7 +18,6 @@ import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.RequestEntity;
 import org.springframework.http.ResponseEntity;
-import org.springframework.lang.Nullable;
 import org.springframework.web.util.UriComponentsBuilder;
 
 import java.io.Serializable;
@@ -27,8 +26,7 @@ import java.util.*;
 import static io.github.vincemann.generic.crud.lib.util.BeanUtils.isDeepEqual;
 
 /**
- * Integration Test for a {@link DTOCrudControllerSpringAdapter} with {@link UrlParamIdFetchingStrategy}
- * Removes all Entries in Database, that is connected to the {@link CrudService} after each test.
+ * Integration Test for a {@link DTOCrudControllerSpringAdapter} with {@link UrlParamIdFetchingStrategy}, that tests typical Crud operation tests
  *
  * @param <ServiceE>
  * @param <DTO>
@@ -48,13 +46,18 @@ public abstract class UrlParamIdDTOCrudControllerSpringAdapterIT<ServiceE extend
     private final Class<DTO> dtoEntityClass;
     private final String entityIdParamKey;
     private int safetyCheckMaxAmountEntitiesInRepo = MAX_AMOUNT_ENTITIES_IN_REPO_WHEN_DELETING_ALL;
-    private List<DTO> testDTOs;
+    private List<TestDtoBundle<DTO>> testDtoBundles;
     private NonExistingIdFinder<Id> nonExistingIdFinder;
 
-
+    /**
+     *
+     * @param url
+     * @param crudController
+     * @param nonExistingId   this can be null if you want to set your own {@link NonExistingIdFinder} with {@link #setNonExistingIdFinder(NonExistingIdFinder)}
+     */
     public UrlParamIdDTOCrudControllerSpringAdapterIT(String url, Controller crudController, Id nonExistingId) {
         super(url);
-        Assertions.assertTrue(crudController.getIdIdFetchingStrategy() instanceof LongUrlParamIdFetchingStrategy, "Controller must have LongUrlParamIdFetchingStrategy");
+        Assertions.assertTrue(crudController.getIdIdFetchingStrategy() instanceof UrlParamIdFetchingStrategy, "Controller must have UrlParamIdFetchingStrategy");
         this.crudController = crudController;
         this.dtoEntityClass = crudController.getDtoClass();
         this.entityIdParamKey = ((UrlParamIdFetchingStrategy) crudController.getIdIdFetchingStrategy()).getIdUrlParamKey();
@@ -63,7 +66,7 @@ public abstract class UrlParamIdDTOCrudControllerSpringAdapterIT<ServiceE extend
 
     public UrlParamIdDTOCrudControllerSpringAdapterIT(Controller crudController, Id nonExistingId) {
         super();
-        Assertions.assertTrue(crudController.getIdIdFetchingStrategy() instanceof LongUrlParamIdFetchingStrategy, "Controller must have LongUrlParamIdFetchingStrategy");
+        Assertions.assertTrue(crudController.getIdIdFetchingStrategy() instanceof UrlParamIdFetchingStrategy, "Controller must have UrlParamIdFetchingStrategy");
         this.crudController = crudController;
         this.dtoEntityClass = crudController.getDtoClass();
         this.entityIdParamKey = ((UrlParamIdFetchingStrategy) crudController.getIdIdFetchingStrategy()).getIdUrlParamKey();
@@ -73,18 +76,26 @@ public abstract class UrlParamIdDTOCrudControllerSpringAdapterIT<ServiceE extend
 
     @BeforeEach
     public void before() throws Exception {
-        this.testDTOs = provideValidTestDTOs();
+        this.testDtoBundles = provideValidTestDTOs();
+        Assertions.assertFalse(testDtoBundles.isEmpty());
     }
 
-    protected abstract List<DTO> provideValidTestDTOs();
+    /**
+     *
+     * @return  a list of {@link TestDtoBundle}s with valid {@link TestDtoBundle#getDto()} according to the provided {@link io.github.vincemann.generic.crud.lib.controller.springAdapter.validationStrategy.ValidationStrategy}
+     *          These DTO's will be used for all tests in this class
+     *          The {@link TestDtoBundle#getUpdateTestBundles()} should have valid modified dto {@link UpdateTestBundle#getModifiedDto()} get used for update tests, that should be successful
+     */
+    protected abstract List<TestDtoBundle<DTO>> provideValidTestDTOs();
 
     @Test
     protected void findEntityTest() throws Exception {
-        for (DTO testEntityDTO : this.testDTOs) {
-            System.err.println("findEntityTest with testDTO: " + testEntityDTO);
-            DTO savedEntity = createEntityShouldSucceed(testEntityDTO, HttpStatus.OK);
+        for (TestDtoBundle<DTO> bundle : this.testDtoBundles) {
+            System.err.println("findEntityTest with testDTO: " + bundle.getDto());
+            DTO savedEntity = createEntityShouldSucceed(bundle.getDto(), HttpStatus.OK);
             DTO responseDTO = findEntityShouldSucceed(savedEntity.getId(), HttpStatus.OK);
             validateDTOsAreDeepEqual(responseDTO, savedEntity);
+            bundle.getPostFindCallback().callback(responseDTO);
             System.err.println("Test succeeded");
         }
     }
@@ -100,37 +111,52 @@ public abstract class UrlParamIdDTOCrudControllerSpringAdapterIT<ServiceE extend
         deleteEntity(nonExistingIdFinder.findNonExistingId(), HttpStatus.NOT_FOUND);
     }
 
-    protected abstract void modifyTestEntity(DTO testEntityDTO);
-
     @Test
     protected void updateEntityTest() throws Exception {
-        for (DTO testEntityDTO : this.testDTOs) {
-            System.err.println("updateEntityTest with testDTO: " + testEntityDTO);
-            Assertions.assertNull(testEntityDTO.getId());
-            DTO savedDTOEntity = createEntityShouldSucceed(testEntityDTO, HttpStatus.OK);
-            //they have to differ in other attribute values than id
-            DTO modTestEntityDTO = BeanUtils.createDeepCopy(savedDTOEntity, dtoEntityClass);
-            modifyTestEntity(modTestEntityDTO);
-            updateEntityShouldSucceed(savedDTOEntity, modTestEntityDTO, HttpStatus.OK);
+        for (TestDtoBundle<DTO> bundle : this.testDtoBundles) {
+            System.err.println("updateEntityTest with testDTO: " +  bundle.getDto());
+
+            List<UpdateTestBundle<DTO>> updateTestBundles = bundle.getUpdateTestBundles();
+            if(updateTestBundles.isEmpty()){
+                System.err.println("no update tests for this entity");
+                return;
+            }
+            for (UpdateTestBundle<DTO> updateTestBundle : updateTestBundles) {
+                DTO modifiedDto = updateTestBundle.getModifiedDto();
+                System.err.println("update test with modified dto: " + modifiedDto);
+                //save old dto
+                Assertions.assertNull(bundle.getDto().getId());
+                DTO savedDTOEntity = createEntityShouldSucceed(bundle.getDto(), HttpStatus.OK);
+                modifiedDto.setId(savedDTOEntity.getId());
+                //update dto
+                DTO dbUpdatedDto = updateEntityShouldSucceed(savedDTOEntity, modifiedDto, HttpStatus.OK);
+                updateTestBundle.getPostUpdateCallback().callback(dbUpdatedDto);
+                //remove dto -> clean for next iteration
+                deleteExistingEntityShouldSucceed(savedDTOEntity.getId());
+                System.err.println("update Test succeeded");
+            }
+
             System.err.println("Test succeeded");
         }
     }
 
     @Test
     protected void deleteEntityTest() throws Exception {
-        for (DTO testEntityDTO : this.testDTOs) {
-            System.err.println("deleteEntityTest with testDTO: " + testEntityDTO);
-            DTO savedEntity = createEntityShouldSucceed(testEntityDTO, HttpStatus.OK);
+        for (TestDtoBundle<DTO> bundle : this.testDtoBundles) {
+            System.err.println("deleteEntityTest with testDTO: " + bundle.getDto());
+            DTO savedEntity = createEntityShouldSucceed(bundle.getDto(), HttpStatus.OK);
             deleteExistingEntityShouldSucceed(savedEntity.getId());
+            bundle.getPostDeleteCallback().callback(savedEntity);
             System.err.println("Test succeeded");
         }
     }
 
     @Test
     protected void createEntityTest() throws Exception {
-        for (DTO testEntityDTO : this.testDTOs) {
-            System.err.println("createEntityTest with testDTO: " + testEntityDTO);
-            createEntityShouldSucceed(testEntityDTO, HttpStatus.OK);
+        for (TestDtoBundle<DTO> bundle : this.testDtoBundles) {
+            System.err.println("createEntityTest with testDTO: " + bundle.getDto());
+            DTO savedDto = createEntityShouldSucceed(bundle.getDto(), HttpStatus.OK);
+            bundle.getPostCreateCallback().callback(savedDto);
             System.err.println("Test succeeded");
         }
     }
@@ -458,11 +484,15 @@ public abstract class UrlParamIdDTOCrudControllerSpringAdapterIT<ServiceE extend
         return dtoEntityClass;
     }
 
-    public List<DTO> getTestDTOs() {
-        return testDTOs;
+    public List<TestDtoBundle<DTO>> getTestDtoBundles() {
+        return testDtoBundles;
     }
 
     public void setNonExistingIdFinder(NonExistingIdFinder<Id> nonExistingIdFinder) {
         this.nonExistingIdFinder = nonExistingIdFinder;
+    }
+
+    public NonExistingIdFinder<Id> getNonExistingIdFinder() {
+        return nonExistingIdFinder;
     }
 }

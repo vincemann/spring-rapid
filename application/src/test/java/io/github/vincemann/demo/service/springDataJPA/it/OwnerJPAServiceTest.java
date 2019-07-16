@@ -14,15 +14,23 @@ import io.github.vincemann.generic.crud.lib.test.service.CrudServiceTest;
 @ExtendWith(SpringExtension.class)
 @SpringBootTest(webEnvironment =
         SpringBootTest.WebEnvironment.RANDOM_PORT)
-@ActiveProfiles(value = {"test","springdatajpa"})
-class OwnerJPAServiceTest extends CrudServiceTest<OwnerJPAService, Owner,Long> {
+@ActiveProfiles(value = {"test", "springdatajpa"})
+class OwnerJPAServiceTest extends CrudServiceTest<OwnerJPAService, Owner, Long> {
 
     @Autowired
     OwnerRepository ownerRepository;
 
     @Override
-    protected CrudServiceTest.CrudServiceTestEntry<OwnerJPAService,Owner,Long> provideTestEntity() {
+    protected CrudServiceTest.CrudServiceTestEntry<OwnerJPAService, Owner, Long> provideTestEntity() {
         return new CrudServiceTestEntry<>(
-                new OwnerJPAService(ownerRepository), new Owner());
+                new OwnerJPAService(ownerRepository),
+                Owner.builder()
+                        .firstName("ownername")
+                        .lastName("owner lastName")
+                        .address("asljnflksamfslkmf")
+                        .city("n1 city")
+                        .telephone("12843723847324")
+                .build()
+        );
     }
 }
