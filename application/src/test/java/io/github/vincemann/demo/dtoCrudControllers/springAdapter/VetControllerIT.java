@@ -5,6 +5,7 @@ import io.github.vincemann.demo.dtoCrudControllers.VetController;
 import io.github.vincemann.demo.dtos.VetDto;
 import io.github.vincemann.demo.model.Vet;
 import io.github.vincemann.demo.service.VetService;
+import io.github.vincemann.generic.crud.lib.test.controller.springAdapter.testBundles.TestDtoBundle;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -18,7 +19,7 @@ import java.util.List;
 @ExtendWith(SpringExtension.class)
 @SpringBootTest(webEnvironment =
         SpringBootTest.WebEnvironment.RANDOM_PORT)
-@ActiveProfiles(value = {"test","springdatajpa"})
+@ActiveProfiles(value = {"test", "springdatajpa"})
 class VetControllerIT extends EntityInitializerControllerIT<Vet, VetDto, VetService, VetController> {
 
 
@@ -27,19 +28,25 @@ class VetControllerIT extends EntityInitializerControllerIT<Vet, VetDto, VetServ
     }
 
     @Override
-    protected List<VetDto> provideValidTestDTOs() {
+    protected List<TestDtoBundle<VetDto>> provideValidTestDTOs() {
+        VetDto vetWithoutSpecialty = VetDto.builder()
+                .firstName("master")
+                .lastName("Yoda")
+                .build();
+        VetDto vetWithSpecialty = VetDto.builder()
+                .firstName("master")
+                .lastName("Yoda")
+                .specialtyIds(Collections.singleton(getTestSpecialty().getId()))
+                .build();
+        VetDto diffVetsNameUpdate = VetDto.builder()
+                .firstName("UPDATED NAME")
+                .lastName("Yoda")
+                .specialtyIds(Collections.singleton(getTestSpecialty().getId()))
+                .build();
+
         return Arrays.asList(
-                //Vet without Specialty
-                VetDto.builder()
-                     .firstName("master")
-                     .lastName("Yoda")
-                     .build(),
-                //Vet with persisted specialty
-                VetDto.builder()
-                        .firstName("master")
-                        .lastName("Yoda")
-                        .specialtyIds(Collections.singleton(getTestSpecialty().getId()))
-                        .build()
+                new TestDtoBundle<>(vetWithoutSpecialty),
+                new TestDtoBundle<>(vetWithSpecialty,diffVetsNameUpdate)
         );
     }
 
@@ -60,8 +67,20 @@ class VetControllerIT extends EntityInitializerControllerIT<Vet, VetDto, VetServ
         );
     }
 
+
     @Override
-    protected void modifyTestEntity(VetDto testEntityDTO) {
-        testEntityDTO.setLastName("MODIFIED");
+    protected List<TestDtoBundle<VetDto>> provideInvalidUpdateDtoBundles() {
+        VetDto validVet = VetDto.builder()
+                .firstName("master")
+                .lastName("Yoda")
+                .build();
+        VetDto noNameUpdate = VetDto.builder()
+                .firstName(null)
+                .lastName("Yoda")
+                .build();
+
+        return Arrays.asList(
+                //vets name must not be set to null in update
+                new TestDtoBundle<>(validVet,noNameUpdate));
     }
 }

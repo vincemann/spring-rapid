@@ -13,8 +13,8 @@ import io.github.vincemann.generic.crud.lib.test.service.CrudServiceTest;
 @ExtendWith(SpringExtension.class)
 @SpringBootTest(webEnvironment =
         SpringBootTest.WebEnvironment.RANDOM_PORT)
-@ActiveProfiles(value = {"test","springdatajpa"})
-public class VetJPAServiceTest extends CrudServiceTest<VetJPAService, Vet,Long> {
+@ActiveProfiles(value = {"test", "springdatajpa"})
+public class VetJPAServiceTest extends CrudServiceTest<VetJPAService, Vet, Long> {
 
     @Autowired
     VetRepository vetRepository;
@@ -22,6 +22,10 @@ public class VetJPAServiceTest extends CrudServiceTest<VetJPAService, Vet,Long> 
     @Override
     protected CrudServiceTest.CrudServiceTestEntry<VetJPAService, Vet, Long> provideTestEntity() {
         return new CrudServiceTestEntry<>(
-                new VetJPAService(vetRepository), new Vet());
+                new VetJPAService(vetRepository),
+                Vet.builder()
+                        .firstName("meister")
+                        .lastName("yoda")
+                        .build());
     }
 }

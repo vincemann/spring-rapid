@@ -28,7 +28,7 @@ public class BeanUtils {
             ReflectionAssert.assertReflectionEquals(o1, o2, ReflectionComparatorMode.LENIENT_ORDER);
             return true;
         } catch (AssertionFailedError e) {
-            e.printStackTrace();
+            //e.printStackTrace();
             return false;
         }
 
