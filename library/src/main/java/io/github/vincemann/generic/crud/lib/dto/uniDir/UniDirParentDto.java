@@ -17,7 +17,7 @@ public interface UniDirParentDto {
     Map<Class, Field[]> uniDirChildrenCollectionFieldsCache = new HashMap<>();
 
 
-    default <ChildId extends Serializable & Comparable> ChildId findChildId(Class<? extends UniDirChild> childClazz) throws UnknownChildTypeException, IllegalAccessException {
+    default <ChildId extends Serializable> ChildId findChildId(Class<? extends UniDirChild> childClazz) throws UnknownChildTypeException, IllegalAccessException {
         Field[] childrenIdFields = findChildrenIdFields();
         for (Field field: childrenIdFields) {
             if(field.getAnnotation(UniDirChildId.class).value().equals(childClazz)) {
@@ -28,7 +28,7 @@ public interface UniDirParentDto {
         throw new UnknownChildTypeException(this.getClass(),childClazz);
     }
 
-    default <ChildId extends Serializable & Comparable> Collection<ChildId> findChildrenIdCollection(Class<? extends UniDirChild> childClazz) throws IllegalAccessException {
+    default <ChildId extends Serializable> Collection<ChildId> findChildrenIdCollection(Class<? extends UniDirChild> childClazz) throws IllegalAccessException {
         Field[] childrenIdCollectionFields = findChildrenIdCollectionFields();
         for (Field field: childrenIdCollectionFields) {
             if(field.getAnnotation(UniDirChildIdCollection.class).value().equals(childClazz)) {

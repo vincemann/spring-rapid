@@ -14,7 +14,7 @@ import java.util.HashSet;
 import java.util.Optional;
 import java.util.Set;
 
-public abstract class JPACrudService<E extends IdentifiableEntity<Id>,Id extends Serializable & Comparable,R extends JpaRepository<E,Id>> implements CrudService<E,Id> {
+public abstract class JPACrudService<E extends IdentifiableEntity<Id>,Id extends Serializable,R extends JpaRepository<E,Id>> implements CrudService<E,Id> {
 
 
     private R jpaRepository;

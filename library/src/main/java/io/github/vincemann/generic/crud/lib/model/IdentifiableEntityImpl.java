@@ -10,7 +10,7 @@ import java.io.Serializable;
 @MappedSuperclass
 @NoArgsConstructor
 @EqualsAndHashCode
-public class IdentifiableEntityImpl<Id extends Serializable & Comparable> implements IdentifiableEntity<Id> {
+public class IdentifiableEntityImpl<Id extends Serializable> implements IdentifiableEntity<Id> {
 
 
     @GeneratedValue(strategy = GenerationType.IDENTITY)
