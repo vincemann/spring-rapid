@@ -94,8 +94,8 @@ class OwnerControllerIT extends EntityInitializerControllerIT<Owner, OwnerDto, O
 
         return Arrays.asList(
 
-                new TestDtoBundle<>(ownerWithoutPets,diffStreetUpdate,diffLastNameUpdate),
-                new TestDtoBundle<>(ownerWithPersistedPet,deletedPetUpdate),
+                new TestDtoBundle<>(ownerWithoutPets, diffStreetUpdate, diffLastNameUpdate),
+                new TestDtoBundle<>(ownerWithPersistedPet, deletedPetUpdate),
                 //OwnerDto with many Pets (no update test)
                 new TestDtoBundle<>(ownerWithManyPets)
         );
@@ -134,14 +134,12 @@ class OwnerControllerIT extends EntityInitializerControllerIT<Owner, OwnerDto, O
                 .build();
 
         return Arrays.asList(
-                TestDtoBundle.<OwnerDto>builder()
-                        .dto(ownerWithoutPets)
-                        .updateTestBundles(Collections.singletonList(
-                                //update owner without pets, by adding a nonexisting pet -> should fail
-                                //adter the update test assert that the saved owner indeed has no pets
-                                new UpdateTestBundle<>(addInvalidPetUpdate, this::assertOwnerDoesNotHavePets)
-                        ))
-                .build()
+                new TestDtoBundle<>(
+                        ownerWithoutPets,
+                        //update owner without pets, by adding a nonexisting pet -> should fail
+                        //adter the update test assert that the saved owner indeed has no pets
+                        new UpdateTestBundle<>(addInvalidPetUpdate, this::assertOwnerDoesNotHavePets)
+                )
         );
     }
 

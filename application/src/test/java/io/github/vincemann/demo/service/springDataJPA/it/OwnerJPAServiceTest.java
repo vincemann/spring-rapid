@@ -30,7 +30,7 @@ class OwnerJPAServiceTest extends CrudServiceTest<OwnerJPAService, Owner, Long> 
                         .address("asljnflksamfslkmf")
                         .city("n1 city")
                         .telephone("12843723847324")
-                .build()
+                        .build()
         );
     }
 }
