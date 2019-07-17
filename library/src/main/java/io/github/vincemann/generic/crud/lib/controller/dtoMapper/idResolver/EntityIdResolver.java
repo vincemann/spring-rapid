@@ -1,7 +1,6 @@
 package io.github.vincemann.generic.crud.lib.controller.dtoMapper.idResolver;
 
 import io.github.vincemann.generic.crud.lib.controller.dtoMapper.EntityMappingException;
-import io.github.vincemann.generic.crud.lib.model.IdentifiableEntity;
 import io.github.vincemann.generic.crud.lib.service.CrudService;
 import io.github.vincemann.generic.crud.lib.service.crudServiceFinder.CrudServiceFinder;
 import io.github.vincemann.generic.crud.lib.service.exception.EntityNotFoundException;
@@ -15,12 +14,12 @@ import java.util.Optional;
 @Getter
 public abstract class EntityIdResolver<ServiceE,Dto> {
 
-    private Map<Class<? extends IdentifiableEntity>, CrudService> crudServiceMap;
+    private CrudServiceFinder crudServiceFinder;
     private Class<Dto> dtoClass;
 
     public EntityIdResolver(CrudServiceFinder crudServiceFinder, Class<Dto> dtoClass) {
         this.dtoClass = dtoClass;
-        this.crudServiceMap = crudServiceFinder.getCrudServices();
+        this.crudServiceFinder=crudServiceFinder;
     }
 
     public abstract void resolveServiceEntityIds(ServiceE mappedServiceEntity, Dto dto) throws EntityMappingException;
@@ -32,7 +31,7 @@ public abstract class EntityIdResolver<ServiceE,Dto> {
 
     protected Object findEntityFromService(Map.Entry<Class, Serializable> entityIdToClassMapping) throws EntityMappingException {
         try {
-            CrudService entityService = getCrudServiceMap().get(entityIdToClassMapping.getKey());
+            CrudService entityService = crudServiceFinder.getCrudServices().get(entityIdToClassMapping.getKey());
             if(entityService==null){
                 throw new IllegalArgumentException("No Service found for entityClass: " + entityIdToClassMapping.getKey().getSimpleName());
             }

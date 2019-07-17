@@ -10,7 +10,7 @@ import org.springframework.context.annotation.Configuration;
 public class CrudServiceConfig {
 
     @Bean
-    public CrudServiceFinder provideCrudServiceFinder(ApplicationContext applicationContext){
-        return new PackageScanningCrudServiceFinder(applicationContext);
+    public CrudServiceFinder provideCrudServiceFinder(){
+        return new PackageScanningCrudServiceFinder();
     }
 }

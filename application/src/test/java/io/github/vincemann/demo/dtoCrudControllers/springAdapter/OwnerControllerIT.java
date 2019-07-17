@@ -78,7 +78,7 @@ class OwnerControllerIT extends EntityInitializerControllerIT<Owner, OwnerDto, O
                 .firstName("Hans")
                 .lastName("Müller")
                 .address("mega nice Street 42")
-                .city("Berlin")
+                .city("Berlinasdasd")
                 .petIds(Collections.EMPTY_SET)
                 .build();
 
