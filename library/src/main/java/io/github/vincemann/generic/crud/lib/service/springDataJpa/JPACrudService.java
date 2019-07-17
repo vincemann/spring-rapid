@@ -1,8 +1,8 @@
 package io.github.vincemann.generic.crud.lib.service.springDataJpa;
 
-import io.github.vincemann.generic.crud.lib.service.exception.BadEntityException;
 import io.github.vincemann.generic.crud.lib.model.IdentifiableEntity;
 import io.github.vincemann.generic.crud.lib.service.CrudService;
+import io.github.vincemann.generic.crud.lib.service.exception.BadEntityException;
 import io.github.vincemann.generic.crud.lib.service.exception.EntityNotFoundException;
 import io.github.vincemann.generic.crud.lib.service.exception.NoIdException;
 import org.springframework.dao.NonTransientDataAccessException;
@@ -14,7 +14,7 @@ import java.util.HashSet;
 import java.util.Optional;
 import java.util.Set;
 
-public class JPACrudService<E extends IdentifiableEntity<Id>,Id extends Serializable & Comparable,R extends JpaRepository<E,Id>> implements CrudService<E,Id> {
+public abstract class JPACrudService<E extends IdentifiableEntity<Id>,Id extends Serializable & Comparable,R extends JpaRepository<E,Id>> implements CrudService<E,Id> {
 
 
     private R jpaRepository;
@@ -77,7 +77,8 @@ public class JPACrudService<E extends IdentifiableEntity<Id>,Id extends Serializ
         if(id==null){
             throw new NoIdException("No Id value set for EntityType: " + entityClass.getSimpleName());
         }
-        if(!findById(id).isPresent()){
+        Optional<E> entity = findById(id);
+        if(!entity.isPresent()){
             throw new EntityNotFoundException(id, entityClass);
         }
         jpaRepository.deleteById(id);

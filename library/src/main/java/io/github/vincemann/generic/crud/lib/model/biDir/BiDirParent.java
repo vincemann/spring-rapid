@@ -3,6 +3,7 @@ package io.github.vincemann.generic.crud.lib.model.biDir;
 import io.github.vincemann.generic.crud.lib.service.exception.UnknownChildTypeException;
 import io.github.vincemann.generic.crud.lib.service.exception.UnknownParentTypeException;
 import io.github.vincemann.generic.crud.lib.util.ReflectionUtils;
+import org.springframework.beans.factory.DisposableBean;
 
 import java.lang.reflect.Field;
 import java.util.*;
@@ -14,7 +15,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
  * represents a parent of a bidirectional jpa relationship (i.e. Entity with @OneToMany typically would implement this interface)
  * the Child of the Relation ship should implement {@link BiDirChild} and annotate its parents with {@link BiDirParentEntity}
  */
-public interface BiDirParent extends BiDirEntity {
+public interface BiDirParent extends BiDirEntity, DisposableBean {
 
     Map<Class,Field[]> biDirChildrenCollectionFieldsCache = new HashMap<>();
     Map<Class,Field[]> biDirChildEntityFieldsCache = new HashMap<>();
@@ -37,6 +38,11 @@ public interface BiDirParent extends BiDirEntity {
             }
             childrenCollection.clear();
         }
+    }
+
+    @Override
+    default void destroy() throws Exception {
+        this.dismissChildrensParent();
     }
 
     /**
@@ -106,7 +112,8 @@ public interface BiDirParent extends BiDirEntity {
             if(childrenCollection!=null){
                 if(!childrenCollection.isEmpty()){
                     Optional<? extends BiDirChild> optionalBiDirChild = childrenCollection.stream().findFirst();
-                    optionalBiDirChild.ifPresent(child -> {
+                    if(optionalBiDirChild.isPresent()){
+                        BiDirChild child = optionalBiDirChild.get();
                         if(biDirChildToRemove.getClass().equals(child.getClass())){
                             //this set needs to remove the child
                             boolean successfulRemove = childrenCollection.remove(biDirChildToRemove);
@@ -116,7 +123,7 @@ public interface BiDirParent extends BiDirEntity {
                                 deletedChild.set(true);
                             }
                         }
-                    });
+                    }
                 }
             }
         }
