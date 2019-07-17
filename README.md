@@ -5,7 +5,7 @@ Crud-Service Layer
 Crud-Controller Layer  
 Abstract Integration-Test for the Crud-Controller Layer  
 Abstract Test for Crud-Service Layer  
-validation Layer
+validation Layer  
 exception Handling for Crud-Controller-Layer  
 support for Bidirectional Entity Relationships (i.e. @OneToMany, @ManyToOne)  
      -> automatically manages both sides of the bidirectional relationship (i.e. setting of backrefences) for all crud                                     operations  
