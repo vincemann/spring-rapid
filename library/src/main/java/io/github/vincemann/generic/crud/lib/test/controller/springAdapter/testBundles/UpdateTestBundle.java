@@ -4,19 +4,19 @@ import io.github.vincemann.generic.crud.lib.model.IdentifiableEntity;
 import lombok.Getter;
 
 @Getter
-public class UpdateTestBundle<Dto extends IdentifiableEntity> {
-    private Dto modifiedDto;
-    private PostUpdateCallback<Dto> postUpdateCallback = (dto) -> {};
+public class UpdateTestBundle<E extends IdentifiableEntity> {
+    private E modifiedEntity;
+    private PostUpdateCallback<E> postUpdateCallback = (entity) -> {};
 
-    public UpdateTestBundle(Dto modifiedDto) {
-        this.modifiedDto = modifiedDto;
+    public UpdateTestBundle(E modifiedEntity) {
+        this.modifiedEntity = modifiedEntity;
     }
 
-    public UpdateTestBundle(Dto modifiedDto, PostUpdateCallback<Dto> postUpdateCallback) {
-        this.modifiedDto = modifiedDto;
+    public UpdateTestBundle(E modifiedEntity, PostUpdateCallback<E> postUpdateCallback) {
+        this.modifiedEntity = modifiedEntity;
         this.postUpdateCallback = postUpdateCallback;
         if(this.postUpdateCallback==null){
-            this.postUpdateCallback= (dto) -> {};
+            this.postUpdateCallback= (entity) -> {};
         }
     }
 

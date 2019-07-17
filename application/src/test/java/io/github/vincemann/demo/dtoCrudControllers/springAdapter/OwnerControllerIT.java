@@ -9,7 +9,7 @@ import io.github.vincemann.demo.model.Pet;
 import io.github.vincemann.demo.service.OwnerService;
 import io.github.vincemann.demo.service.PetService;
 import io.github.vincemann.generic.crud.lib.service.exception.NoIdException;
-import io.github.vincemann.generic.crud.lib.test.controller.springAdapter.testBundles.TestDtoBundle;
+import io.github.vincemann.generic.crud.lib.test.controller.springAdapter.testBundles.TestEntityBundle;
 import io.github.vincemann.generic.crud.lib.test.controller.springAdapter.testBundles.UpdateTestBundle;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -45,7 +45,7 @@ class OwnerControllerIT extends EntityInitializerControllerIT<Owner, OwnerDto, O
     }
 
     @Override
-    protected List<TestDtoBundle<OwnerDto>> provideValidTestDTOs() {
+    protected List<TestEntityBundle<OwnerDto>> provideValidTestDTOs() {
         //OwnerDto without pets
         OwnerDto ownerWithoutPets = OwnerDto.builder()
                 .firstName("Max")
@@ -94,10 +94,10 @@ class OwnerControllerIT extends EntityInitializerControllerIT<Owner, OwnerDto, O
 
         return Arrays.asList(
 
-                new TestDtoBundle<>(ownerWithoutPets, diffStreetUpdate, diffLastNameUpdate),
-                new TestDtoBundle<>(ownerWithPersistedPet, deletedPetUpdate),
+                new TestEntityBundle<>(ownerWithoutPets, diffStreetUpdate, diffLastNameUpdate),
+                new TestEntityBundle<>(ownerWithPersistedPet, deletedPetUpdate),
                 //OwnerDto with many Pets (no update test)
-                new TestDtoBundle<>(ownerWithManyPets)
+                new TestEntityBundle<>(ownerWithManyPets)
         );
     }
 
@@ -115,7 +115,7 @@ class OwnerControllerIT extends EntityInitializerControllerIT<Owner, OwnerDto, O
     }
 
     @Override
-    protected List<TestDtoBundle<OwnerDto>> provideInvalidUpdateDtoBundles() {
+    protected List<TestEntityBundle<OwnerDto>> provideInvalidUpdateDtoBundles() {
         //OwnerDto without pets
         OwnerDto ownerWithoutPets = OwnerDto.builder()
                 .firstName("Max")
@@ -134,7 +134,7 @@ class OwnerControllerIT extends EntityInitializerControllerIT<Owner, OwnerDto, O
                 .build();
 
         return Arrays.asList(
-                new TestDtoBundle<>(
+                new TestEntityBundle<>(
                         ownerWithoutPets,
                         //update owner without pets, by adding a nonexisting pet -> should fail
                         //adter the update test assert that the saved owner indeed has no pets

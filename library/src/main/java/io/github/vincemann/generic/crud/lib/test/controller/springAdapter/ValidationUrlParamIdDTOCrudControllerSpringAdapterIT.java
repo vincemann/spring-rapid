@@ -3,7 +3,7 @@ package io.github.vincemann.generic.crud.lib.test.controller.springAdapter;
 import io.github.vincemann.generic.crud.lib.controller.springAdapter.DTOCrudControllerSpringAdapter;
 import io.github.vincemann.generic.crud.lib.model.IdentifiableEntity;
 import io.github.vincemann.generic.crud.lib.service.CrudService;
-import io.github.vincemann.generic.crud.lib.test.controller.springAdapter.testBundles.TestDtoBundle;
+import io.github.vincemann.generic.crud.lib.test.controller.springAdapter.testBundles.TestEntityBundle;
 import io.github.vincemann.generic.crud.lib.test.controller.springAdapter.testBundles.UpdateTestBundle;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -26,7 +26,7 @@ import java.util.List;
 public abstract class ValidationUrlParamIdDTOCrudControllerSpringAdapterIT<ServiceE extends IdentifiableEntity<Id>, DTO extends IdentifiableEntity<Id>, Service extends CrudService<ServiceE, Id>, Controller extends DTOCrudControllerSpringAdapter<ServiceE, DTO, Id, Service>, Id extends Serializable>  extends UrlParamIdDTOCrudControllerSpringAdapterIT<ServiceE,DTO,Service,Controller,Id> {
 
     private List<DTO> invalidTestDTOs;
-    private List<TestDtoBundle<DTO>> invalidUpdateDtoBundles;
+    private List<TestEntityBundle<DTO>> invalidUpdateDtoBundles;
 
     public ValidationUrlParamIdDTOCrudControllerSpringAdapterIT(String url, Controller crudController, Id nonExistingId) {
         super(url, crudController, nonExistingId);
@@ -45,11 +45,11 @@ public abstract class ValidationUrlParamIdDTOCrudControllerSpringAdapterIT<Servi
 
     /**
      *
-     * @return  a list of {@link TestDtoBundle}s with valid {@link TestDtoBundle#getDto()} according to the provided {@link io.github.vincemann.generic.crud.lib.controller.springAdapter.validationStrategy.ValidationStrategy}
+     * @return  a list of {@link TestEntityBundle}s with valid {@link TestEntityBundle#getEntity()} according to the provided {@link io.github.vincemann.generic.crud.lib.controller.springAdapter.validationStrategy.ValidationStrategy}
      *          These DTO's will be used for update tests only in this class
-     *          The modfified dtos of {@link TestDtoBundle#getUpdateTestBundles()} should be INVALID, see {@link UpdateTestBundle#getModifiedDto()}
+     *          The modfified dtos of {@link TestEntityBundle#getUpdateTestBundles()} should be INVALID, see {@link UpdateTestBundle#getModifiedEntity()}
      */
-    protected abstract List<TestDtoBundle<DTO>> provideInvalidUpdateDtoBundles();
+    protected abstract List<TestEntityBundle<DTO>> provideInvalidUpdateDtoBundles();
 
     @BeforeEach
     public void before() throws Exception {
@@ -91,11 +91,11 @@ public abstract class ValidationUrlParamIdDTOCrudControllerSpringAdapterIT<Servi
             System.err.println("No update tests");
             return;
         }
-        for(TestDtoBundle<DTO> bundle: invalidUpdateDtoBundles) {
-            System.err.println("update valid Entity with invalid UpdateDto Test with valid testDTO: " + bundle.getDto().toString());
-            DTO dbEntityDto = createEntityShouldSucceed(bundle.getDto(), HttpStatus.OK);
+        for(TestEntityBundle<DTO> bundle: invalidUpdateDtoBundles) {
+            System.err.println("update valid Entity with invalid UpdateDto Test with valid testDTO: " + bundle.getEntity().toString());
+            DTO dbEntityDto = createEntityShouldSucceed(bundle.getEntity(), HttpStatus.OK);
             for (UpdateTestBundle<DTO> updateTestBundle : bundle.getUpdateTestBundles()) {
-                DTO invalidModificationDto = updateTestBundle.getModifiedDto();
+                DTO invalidModificationDto = updateTestBundle.getModifiedEntity();
                 System.err.println("Testing invalid update dto: " + invalidModificationDto.toString());
                 invalidModificationDto.setId(dbEntityDto.getId());
                 updateEntityShouldFail(dbEntityDto,invalidModificationDto, HttpStatus.BAD_REQUEST);

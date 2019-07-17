@@ -24,12 +24,12 @@ public class BiDirChildResolverTest extends BiDirEntityResolverTest {
 
     @Test
     public void resolveServiceEntityIds() throws EntityMappingException {
-        //when
+        //given
         BiDirEntityChild unfinishedMappedBiDirEntityChild = new BiDirEntityChild();
         BiDirEntityChildDto biDirEntityChildDto = new BiDirEntityChildDto();
         biDirEntityChildDto.setEntityPId(getBiDirEntityParent().getId());
         biDirEntityChildDto.setSecondEntityPId(getBiDirSecondEntityParent().getId());
-        //do
+        //when
         biDirChildResolver.resolveServiceEntityIds(unfinishedMappedBiDirEntityChild, biDirEntityChildDto);
         //then
         Assertions.assertEquals(getBiDirEntityParent(), unfinishedMappedBiDirEntityChild.getBiDirEntityParent());
@@ -38,12 +38,12 @@ public class BiDirChildResolverTest extends BiDirEntityResolverTest {
 
     @Test
     public void resolveDtoIds(){
-        //when
+        //given
         BiDirEntityChild entityChild = new BiDirEntityChild();
         entityChild.setBiDirEntityParent(getBiDirEntityParent());
         entityChild.setBiDirSecondEntityParent(getBiDirSecondEntityParent());
         BiDirEntityChildDto unfinishedMappedBiDirEntityChildDTO = new BiDirEntityChildDto();
-        //do
+        //when
         biDirChildResolver.resolveDtoIds(unfinishedMappedBiDirEntityChildDTO,entityChild);
         //then
         Assertions.assertEquals(getBiDirEntityParent().getId(),unfinishedMappedBiDirEntityChildDTO.getEntityPId());

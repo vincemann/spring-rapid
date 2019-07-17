@@ -5,7 +5,7 @@ import io.github.vincemann.demo.dtoCrudControllers.VetController;
 import io.github.vincemann.demo.dtos.VetDto;
 import io.github.vincemann.demo.model.Vet;
 import io.github.vincemann.demo.service.VetService;
-import io.github.vincemann.generic.crud.lib.test.controller.springAdapter.testBundles.TestDtoBundle;
+import io.github.vincemann.generic.crud.lib.test.controller.springAdapter.testBundles.TestEntityBundle;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -28,7 +28,7 @@ class VetControllerIT extends EntityInitializerControllerIT<Vet, VetDto, VetServ
     }
 
     @Override
-    protected List<TestDtoBundle<VetDto>> provideValidTestDTOs() {
+    protected List<TestEntityBundle<VetDto>> provideValidTestDTOs() {
         VetDto vetWithoutSpecialty = VetDto.builder()
                 .firstName("master")
                 .lastName("Yoda")
@@ -45,8 +45,8 @@ class VetControllerIT extends EntityInitializerControllerIT<Vet, VetDto, VetServ
                 .build();
 
         return Arrays.asList(
-                new TestDtoBundle<>(vetWithoutSpecialty),
-                new TestDtoBundle<>(vetWithSpecialty,diffVetsNameUpdate)
+                new TestEntityBundle<>(vetWithoutSpecialty),
+                new TestEntityBundle<>(vetWithSpecialty,diffVetsNameUpdate)
         );
     }
 
@@ -69,7 +69,7 @@ class VetControllerIT extends EntityInitializerControllerIT<Vet, VetDto, VetServ
 
 
     @Override
-    protected List<TestDtoBundle<VetDto>> provideInvalidUpdateDtoBundles() {
+    protected List<TestEntityBundle<VetDto>> provideInvalidUpdateDtoBundles() {
         VetDto validVet = VetDto.builder()
                 .firstName("master")
                 .lastName("Yoda")
@@ -81,6 +81,6 @@ class VetControllerIT extends EntityInitializerControllerIT<Vet, VetDto, VetServ
 
         return Arrays.asList(
                 //vets name must not be set to null in update
-                new TestDtoBundle<>(validVet,noNameUpdate));
+                new TestEntityBundle<>(validVet,noNameUpdate));
     }
 }

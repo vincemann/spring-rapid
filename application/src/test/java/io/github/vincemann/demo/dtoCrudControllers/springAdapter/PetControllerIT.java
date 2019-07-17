@@ -6,8 +6,7 @@ import io.github.vincemann.demo.dtoCrudControllers.PetController;
 import io.github.vincemann.demo.dtos.PetDto;
 import io.github.vincemann.demo.model.Pet;
 import io.github.vincemann.demo.service.PetService;
-import io.github.vincemann.generic.crud.lib.test.controller.springAdapter.testBundles.TestDtoBundle;
-import io.github.vincemann.generic.crud.lib.test.controller.springAdapter.testBundles.UpdateTestBundle;
+import io.github.vincemann.generic.crud.lib.test.controller.springAdapter.testBundles.TestEntityBundle;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -15,7 +14,6 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 
 @ExtendWith(SpringExtension.class)
@@ -31,7 +29,7 @@ public class PetControllerIT extends EntityInitializerControllerIT<Pet, PetDto, 
 
 
     @Override
-    protected List<TestDtoBundle<PetDto>> provideValidTestDTOs() {
+    protected List<TestEntityBundle<PetDto>> provideValidTestDTOs() {
         //Pet with persisted PetType
         PetDto petWithPersistedPetType = PetDto.builder()
                 .name("esta")
@@ -57,8 +55,8 @@ public class PetControllerIT extends EntityInitializerControllerIT<Pet, PetDto, 
                 .build();
 
         return Arrays.asList(
-                new TestDtoBundle<>(petWithPersistedPetType,diffPetsNameUpdate),
-                new TestDtoBundle<>(petWithOwner, removePetsOwnerUpdate)
+                new TestEntityBundle<>(petWithPersistedPetType,diffPetsNameUpdate),
+                new TestEntityBundle<>(petWithOwner, removePetsOwnerUpdate)
         );
     }
 
@@ -94,7 +92,7 @@ public class PetControllerIT extends EntityInitializerControllerIT<Pet, PetDto, 
     }
 
     @Override
-    protected List<TestDtoBundle<PetDto>> provideInvalidUpdateDtoBundles() {
+    protected List<TestEntityBundle<PetDto>> provideInvalidUpdateDtoBundles() {
         PetDto validPet = PetDto.builder()
                 .name("esta")
                 .petTypeId(getTestPetType().getId())
@@ -106,6 +104,6 @@ public class PetControllerIT extends EntityInitializerControllerIT<Pet, PetDto, 
                 .build();
 
         return Arrays.asList(
-                new TestDtoBundle<>(validPet,removePetsNameUpdate));
+                new TestEntityBundle<>(validPet,removePetsNameUpdate));
     }
 }

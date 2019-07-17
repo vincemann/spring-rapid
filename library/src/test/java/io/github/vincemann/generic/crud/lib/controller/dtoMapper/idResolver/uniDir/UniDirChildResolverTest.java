@@ -22,11 +22,11 @@ public class UniDirChildResolverTest extends UniDirEntityResolverTest {
 
     @Test
     public void resolveServiceEntityIds() throws EntityMappingException {
-        //when
+        //given
         UniDirEntityChild unfinishedMappedUniDirChild = new UniDirEntityChild();
         UniDirEntityChildDto childDto = new UniDirEntityChildDto();
         childDto.setParentId(getUniDirEntityChildsParent().getId());
-        //do
+        //when
         uniDirChildResolver.resolveServiceEntityIds(unfinishedMappedUniDirChild,childDto);
         //then
         Assertions.assertEquals(getUniDirEntityChildsParent(),unfinishedMappedUniDirChild.getUniDirEntityChildsParent());
@@ -34,11 +34,11 @@ public class UniDirChildResolverTest extends UniDirEntityResolverTest {
 
     @Test
     void resolveDtoIds() {
-        //when
+        //given
         UniDirEntityChildDto unfinishedMappedUniDirChildDto = new UniDirEntityChildDto();
         UniDirEntityChild child = new UniDirEntityChild();
         child.setUniDirEntityChildsParent(getUniDirEntityChildsParent());
-        //do
+        //when
         uniDirChildResolver.resolveDtoIds(unfinishedMappedUniDirChildDto,child);
         //then
         Assertions.assertEquals(getUniDirEntityChildsParent().getId(),unfinishedMappedUniDirChildDto.getParentId());
