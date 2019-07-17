@@ -25,11 +25,11 @@ public class BiDirParentResolverTest extends BiDirEntityResolverTest {
 
     @Test
     public void resolveServiceEntityIds() throws EntityMappingException {
-        //when
+        //given
         BiDirEntityParentDTO biDirEntityParentDTO = new BiDirEntityParentDTO();
         biDirEntityParentDTO.setEntityChildId(getBiDirChild().getId());
         BiDirEntityParent unfinishedMappedBiDirEntityParent = new BiDirEntityParent();
-        //do
+        //when
         biDirParentResolver.resolveServiceEntityIds(unfinishedMappedBiDirEntityParent,biDirEntityParentDTO);
         //then
         Assertions.assertEquals(getBiDirChild(),unfinishedMappedBiDirEntityParent.getBiDIrEntityChild());
@@ -37,11 +37,11 @@ public class BiDirParentResolverTest extends BiDirEntityResolverTest {
 
     @Test
     public void resolveDtoIds(){
-        //when
+        //given
         BiDirEntityParent entityParent = new BiDirEntityParent();
         entityParent.setBiDIrEntityChild(getBiDirChild());
         BiDirEntityParentDTO unfinishedMappedBiDirEntityParentDTO = new BiDirEntityParentDTO();
-        //do
+        //when
         biDirParentResolver.resolveDtoIds(unfinishedMappedBiDirEntityParentDTO,entityParent);
         //then
         Assertions.assertEquals(getBiDirChild().getId(),unfinishedMappedBiDirEntityParentDTO.getEntityChildId());

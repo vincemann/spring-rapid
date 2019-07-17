@@ -7,7 +7,7 @@ import io.github.vincemann.generic.crud.lib.model.IdentifiableEntity;
 import io.github.vincemann.generic.crud.lib.service.CrudService;
 import io.github.vincemann.generic.crud.lib.service.exception.NoIdException;
 import io.github.vincemann.generic.crud.lib.test.IntegrationTest;
-import io.github.vincemann.generic.crud.lib.test.controller.springAdapter.testBundles.TestDtoBundle;
+import io.github.vincemann.generic.crud.lib.test.controller.springAdapter.testBundles.TestEntityBundle;
 import io.github.vincemann.generic.crud.lib.test.controller.springAdapter.testBundles.UpdateTestBundle;
 import io.github.vincemann.generic.crud.lib.util.BeanUtils;
 import org.junit.jupiter.api.AfterEach;
@@ -18,7 +18,6 @@ import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.RequestEntity;
 import org.springframework.http.ResponseEntity;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.util.UriComponentsBuilder;
 
 import java.io.Serializable;
@@ -47,7 +46,7 @@ public abstract class UrlParamIdDTOCrudControllerSpringAdapterIT<ServiceE extend
     private final Class<DTO> dtoEntityClass;
     private final String entityIdParamKey;
     private int safetyCheckMaxAmountEntitiesInRepo = MAX_AMOUNT_ENTITIES_IN_REPO_WHEN_DELETING_ALL;
-    private List<TestDtoBundle<DTO>> testDtoBundles;
+    private List<TestEntityBundle<DTO>> testEntityBundles;
     private NonExistingIdFinder<Id> nonExistingIdFinder;
 
     /**
@@ -77,23 +76,23 @@ public abstract class UrlParamIdDTOCrudControllerSpringAdapterIT<ServiceE extend
 
     @BeforeEach
     public void before() throws Exception {
-        this.testDtoBundles = provideValidTestDTOs();
-        Assertions.assertFalse(testDtoBundles.isEmpty());
+        this.testEntityBundles = provideValidTestDTOs();
+        Assertions.assertFalse(testEntityBundles.isEmpty());
     }
 
     /**
      *
-     * @return  a list of {@link TestDtoBundle}s with valid {@link TestDtoBundle#getDto()} according to the provided {@link io.github.vincemann.generic.crud.lib.controller.springAdapter.validationStrategy.ValidationStrategy}
+     * @return  a list of {@link TestEntityBundle}s with valid {@link TestEntityBundle#getEntity()} according to the provided {@link io.github.vincemann.generic.crud.lib.controller.springAdapter.validationStrategy.ValidationStrategy}
      *          These DTO's will be used for all tests in this class
-     *          The {@link TestDtoBundle#getUpdateTestBundles()} should have valid modified dto {@link UpdateTestBundle#getModifiedDto()} get used for update tests, that should be successful
+     *          The {@link TestEntityBundle#getUpdateTestBundles()} should have valid modified dto {@link UpdateTestBundle#getModifiedEntity()} get used for update tests, that should be successful
      */
-    protected abstract List<TestDtoBundle<DTO>> provideValidTestDTOs();
+    protected abstract List<TestEntityBundle<DTO>> provideValidTestDTOs();
 
     @Test
     protected void findEntityTest() throws Exception {
-        for (TestDtoBundle<DTO> bundle : this.testDtoBundles) {
-            System.err.println("findEntityTest with testDTO: " + bundle.getDto());
-            DTO savedEntity = createEntityShouldSucceed(bundle.getDto(), HttpStatus.OK);
+        for (TestEntityBundle<DTO> bundle : this.testEntityBundles) {
+            System.err.println("findEntityTest with testDTO: " + bundle.getEntity());
+            DTO savedEntity = createEntityShouldSucceed(bundle.getEntity(), HttpStatus.OK);
             DTO responseDTO = findEntityShouldSucceed(savedEntity.getId(), HttpStatus.OK);
             validateDTOsAreDeepEqual(responseDTO, savedEntity);
             bundle.getPostFindCallback().callback(responseDTO);
@@ -114,8 +113,8 @@ public abstract class UrlParamIdDTOCrudControllerSpringAdapterIT<ServiceE extend
 
     @Test
     protected void updateEntityTest() throws Exception {
-        for (TestDtoBundle<DTO> bundle : this.testDtoBundles) {
-            System.err.println("updateEntityTest with testDTO: " +  bundle.getDto());
+        for (TestEntityBundle<DTO> bundle : this.testEntityBundles) {
+            System.err.println("updateEntityTest with testDTO: " +  bundle.getEntity());
 
             List<UpdateTestBundle<DTO>> updateTestBundles = bundle.getUpdateTestBundles();
             if(updateTestBundles.isEmpty()){
@@ -123,11 +122,11 @@ public abstract class UrlParamIdDTOCrudControllerSpringAdapterIT<ServiceE extend
                 return;
             }
             for (UpdateTestBundle<DTO> updateTestBundle : updateTestBundles) {
-                DTO modifiedDto = updateTestBundle.getModifiedDto();
+                DTO modifiedDto = updateTestBundle.getModifiedEntity();
                 System.err.println("update test with modified dto: " + modifiedDto);
                 //save old dto
-                Assertions.assertNull(bundle.getDto().getId());
-                DTO savedDTOEntity = createEntityShouldSucceed(bundle.getDto(), HttpStatus.OK);
+                Assertions.assertNull(bundle.getEntity().getId());
+                DTO savedDTOEntity = createEntityShouldSucceed(bundle.getEntity(), HttpStatus.OK);
                 modifiedDto.setId(savedDTOEntity.getId());
                 //update dto
                 DTO dbUpdatedDto = updateEntityShouldSucceed(savedDTOEntity, modifiedDto, HttpStatus.OK);
@@ -143,9 +142,9 @@ public abstract class UrlParamIdDTOCrudControllerSpringAdapterIT<ServiceE extend
 
     @Test
     protected void deleteEntityTest() throws Exception {
-        for (TestDtoBundle<DTO> bundle : this.testDtoBundles) {
-            System.err.println("deleteEntityTest with testDTO: " + bundle.getDto());
-            DTO savedEntity = createEntityShouldSucceed(bundle.getDto(), HttpStatus.OK);
+        for (TestEntityBundle<DTO> bundle : this.testEntityBundles) {
+            System.err.println("deleteEntityTest with testDTO: " + bundle.getEntity());
+            DTO savedEntity = createEntityShouldSucceed(bundle.getEntity(), HttpStatus.OK);
             deleteExistingEntityShouldSucceed(savedEntity.getId());
             bundle.getPostDeleteCallback().callback(savedEntity);
             System.err.println("Test succeeded");
@@ -154,9 +153,9 @@ public abstract class UrlParamIdDTOCrudControllerSpringAdapterIT<ServiceE extend
 
     @Test
     protected void createEntityTest() throws Exception {
-        for (TestDtoBundle<DTO> bundle : this.testDtoBundles) {
-            System.err.println("createEntityTest with testDTO: " + bundle.getDto());
-            DTO savedDto = createEntityShouldSucceed(bundle.getDto(), HttpStatus.OK);
+        for (TestEntityBundle<DTO> bundle : this.testEntityBundles) {
+            System.err.println("createEntityTest with testDTO: " + bundle.getEntity());
+            DTO savedDto = createEntityShouldSucceed(bundle.getEntity(), HttpStatus.OK);
             bundle.getPostCreateCallback().callback(savedDto);
             System.err.println("Test succeeded");
         }
@@ -485,8 +484,8 @@ public abstract class UrlParamIdDTOCrudControllerSpringAdapterIT<ServiceE extend
         return dtoEntityClass;
     }
 
-    public List<TestDtoBundle<DTO>> getTestDtoBundles() {
-        return testDtoBundles;
+    public List<TestEntityBundle<DTO>> getTestEntityBundles() {
+        return testEntityBundles;
     }
 
     public void setNonExistingIdFinder(NonExistingIdFinder<Id> nonExistingIdFinder) {

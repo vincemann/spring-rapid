@@ -66,10 +66,10 @@ class BiDirParentTest {
 
     @Test
     void dismissChildrensParent() throws IllegalAccessException {
-        //when
+        //given
         testEntityParent.setEntityChild(testEntityChild);
         testEntityChild.setEntityParent(testEntityParent);
-        //do
+        //when
         testEntityParent.dismissChildrensParent();
         //then
         Assertions.assertNull(testEntityChild.getEntityParent());
@@ -77,10 +77,10 @@ class BiDirParentTest {
     }
     @Test
     void dismissChildrensCollectionParent() throws IllegalAccessException {
-        //when
+        //given
         testEntityParent.setSecondEntityChildSet(new HashSet<>(Arrays.asList(testSecondEntityChild)));
         testSecondEntityChild.setEntityParent(testEntityParent);
-        //do
+        //when
         testEntityParent.dismissChildrensParent();
         //then
         Assertions.assertFalse(testEntityParent.getSecondEntityChildSet().stream().findFirst().isPresent());
@@ -88,12 +88,12 @@ class BiDirParentTest {
     }
     @Test
     void dismissAllChildrensParent() throws IllegalAccessException {
-        //when
+        //given
         testEntityParent.setSecondEntityChildSet(new HashSet<>(Arrays.asList(testSecondEntityChild)));
         testSecondEntityChild.setEntityParent(testEntityParent);
         testEntityParent.setEntityChild(testEntityChild);
         testEntityChild.setEntityParent(testEntityParent);
-        //do
+        //when
         testEntityParent.dismissChildrensParent();
         //then
         Assertions.assertFalse(testEntityParent.getSecondEntityChildSet().stream().findFirst().isPresent());
@@ -104,7 +104,7 @@ class BiDirParentTest {
 
     @Test
     void addChild() throws IllegalAccessException {
-        //do
+        //when
         testEntityParent.addChild(testEntityChild);
         //then
         Assertions.assertSame(testEntityChild,testEntityParent.getEntityChild());
@@ -112,9 +112,9 @@ class BiDirParentTest {
 
     @Test
     void addChildToCollection() throws IllegalAccessException {
-        //when
+        //given
         Assertions.assertNotNull(testEntityParent.getSecondEntityChildSet());
-        //do
+        //when
         testEntityParent.addChild(testSecondEntityChild);
         //then
         Assertions.assertEquals(1,testEntityParent.getSecondEntityChildSet().size());
@@ -123,9 +123,9 @@ class BiDirParentTest {
 
     @Test
     void addChildToNullCollection() {
-        //when
+        //given
         testEntityParent.setSecondEntityChildSet(null);
-        //do
+        //when
         Assertions.assertThrows(IllegalArgumentException.class, new Executable() {
             @Override
             public void execute() throws Throwable {
@@ -136,9 +136,9 @@ class BiDirParentTest {
 
     @Test
     void dismissChild() throws IllegalAccessException {
-        //when
+        //given
         testEntityParent.setEntityChild(testEntityChild);
-        //do
+        //when
         testEntityParent.dismissChild(testEntityChild);
         //then
         Assertions.assertNull(testEntityParent.getEntityChild());
@@ -146,9 +146,9 @@ class BiDirParentTest {
 
     @Test
     void dismissChildFromCollection() throws IllegalAccessException {
-        //when
+        //given
         testEntityParent.setSecondEntityChildSet(new HashSet<>(Collections.singleton(testSecondEntityChild)));
-        //do
+        //when
         testEntityParent.dismissChild(testSecondEntityChild);
         //then
         Assertions.assertTrue(testEntityParent.getSecondEntityChildSet().isEmpty());
@@ -156,14 +156,14 @@ class BiDirParentTest {
 
     @Test
     void dismissChildFromFilledCollection() throws IllegalAccessException {
-        //when
+        //given
         SecondEntityChild second = new SecondEntityChild();
         second.setId(99L);
         Set<SecondEntityChild> secondEntityChildren = new HashSet<>();
         secondEntityChildren.add(testSecondEntityChild);
         secondEntityChildren.add(second);
         testEntityParent.setSecondEntityChildSet(secondEntityChildren);
-        //do
+        //when
         testEntityParent.dismissChild(testSecondEntityChild);
         //then
         Assertions.assertEquals(1,testEntityParent.getSecondEntityChildSet().size());
@@ -172,7 +172,7 @@ class BiDirParentTest {
 
     @Test
     void findChildrenCollectionFields() {
-        //do
+        //when
         Field[] childrenCollectionFields = testEntityParent.findChildrenCollectionFields();
         //then
         Assertions.assertEquals(1,childrenCollectionFields.length);
@@ -181,8 +181,9 @@ class BiDirParentTest {
 
     @Test
     void findChildrenEntityFields() {
-        //do
+        //when
         Field[] childrenEntityFields = testEntityParent.findChildrenEntityFields();
+        //then
         Assertions.assertEquals(1,childrenEntityFields.length);
         Assertions.assertEquals("entityChild",childrenEntityFields[0].getName());
 
@@ -190,10 +191,10 @@ class BiDirParentTest {
 
     @Test
     void getChildrenCollections() throws IllegalAccessException {
-        //when
+        //given
         HashSet<SecondEntityChild> secondEntityChildSet = new HashSet<>();
         testEntityParent.setSecondEntityChildSet(secondEntityChildSet);
-        //do
+        //when
         Map<Collection<? extends BiDirChild>, Class<? extends BiDirChild>> childrenCollections = testEntityParent.getChildrenCollections();
         //then
         Assertions.assertEquals(1,childrenCollections.size());
@@ -204,9 +205,9 @@ class BiDirParentTest {
 
     @Test
     void getNullChildrenCollection() throws IllegalAccessException {
-        //when
+        //given
         testEntityParent.setSecondEntityChildSet(null);
-        //do
+        //when
         Assertions.assertThrows(IllegalArgumentException.class, new Executable() {
             @Override
             public void execute() throws Throwable {
@@ -217,9 +218,9 @@ class BiDirParentTest {
 
     @Test
     void getChildren() throws IllegalAccessException {
-        //when
+        //given
         testEntityParent.setEntityChild(testEntityChild);
-        //do
+        //when
         Set<? extends BiDirChild> children = testEntityParent.getChildren();
         //then
         Assertions.assertEquals(1,children.size());
@@ -228,9 +229,9 @@ class BiDirParentTest {
 
     @Test
     void getNullChildren() throws IllegalAccessException {
-        //when
+        //given
         testEntityParent.setEntityChild(null);
-        //do
+        //when
         Set<? extends BiDirChild> children = testEntityParent.getChildren();
         //then
         Assertions.assertTrue(children.isEmpty());

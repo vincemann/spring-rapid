@@ -5,6 +5,8 @@ import io.github.vincemann.generic.crud.lib.service.CrudService;
 import io.github.vincemann.generic.crud.lib.service.exception.BadEntityException;
 import io.github.vincemann.generic.crud.lib.service.exception.EntityNotFoundException;
 import io.github.vincemann.generic.crud.lib.service.exception.NoIdException;
+import io.github.vincemann.generic.crud.lib.test.controller.springAdapter.testBundles.TestEntityBundle;
+import io.github.vincemann.generic.crud.lib.test.controller.springAdapter.testBundles.UpdateTestBundle;
 import io.github.vincemann.generic.crud.lib.util.BeanUtils;
 import lombok.Getter;
 import org.junit.jupiter.api.AfterEach;
@@ -27,40 +29,76 @@ import java.util.Set;
 public abstract class CrudServiceTest<S extends CrudService<E,Id>,E extends IdentifiableEntity<Id>,Id extends Serializable> {
 
     @Getter
-    private CrudServiceTestEntry<S,E,Id> crudServiceTestEntry;
+    private List<TestEntityBundle<E>> testEntityBundles;
+    @Getter
+    private S crudService;
 
-    protected abstract CrudServiceTestEntry<S,E,Id> provideTestEntity();
-    private List<Id> savedEntitiesIds = new ArrayList<>();
+    public CrudServiceTest(S crudService) {
+        this.crudService = crudService;
+    }
 
     @BeforeEach
-    void setUp() {
-        crudServiceTestEntry=provideTestEntity();
+    public void setUp() throws Exception{
+        testEntityBundles = provideTestEntityBundles();
+        Assertions.assertFalse(testEntityBundles.isEmpty(),"At least one testEntityBundle must be provided");
     }
+
+    protected abstract List<TestEntityBundle<E>> provideTestEntityBundles();
+
 
 
     @Test
     void findById() throws NoIdException, BadEntityException {
-        //given
-        Assertions.assertNull(crudServiceTestEntry.getTestEntity().getId());
-        CrudService<E,Id> crudService = crudServiceTestEntry.getCrudService();
+        for (TestEntityBundle<E> testEntityBundle : testEntityBundles) {
+            E entityUnderTest = testEntityBundle.getEntity();
+            System.err.println("find entity test with entity: "+ entityUnderTest);
+            //given
+            Assertions.assertNull(entityUnderTest.getId());
 
+            //when
+            E savedTestEntity = saveEntityShouldSucceed(entityUnderTest);
+            Optional<E> foundEntity = crudService.findById(savedTestEntity.getId());
 
-        //when
-        E savedTestEntity = saveEntity(crudServiceTestEntry.getTestEntity());
-        savedEntitiesIds.add(savedTestEntity.getId());
-        Optional<E> foundEntity = crudService.findById(savedTestEntity.getId());
-
-        //then
-        Assertions.assertTrue(foundEntity.isPresent());
-        Assertions.assertNotNull(foundEntity.get().getId());
-        Assertions.assertTrue(BeanUtils.isDeepEqual(savedTestEntity,foundEntity.get()));
-        //Assertions.assertEquals(savedTestEntity,foundEntity.get());
+            //then
+            Assertions.assertTrue(foundEntity.isPresent());
+            Assertions.assertNotNull(foundEntity.get().getId());
+            Assertions.assertTrue(BeanUtils.isDeepEqual(savedTestEntity,foundEntity.get()));
+            System.err.println("Test succeeded");
+        }
     }
 
-    protected E saveEntity(E entityToSave) throws  BadEntityException {
+
+    @Test
+    void update() throws NoIdException, BadEntityException, EntityNotFoundException {
+        for (TestEntityBundle<E> testEntityBundle : testEntityBundles) {
+            //given
+            E entityUnderTest = testEntityBundle.getEntity();
+            System.err.println("update entity test with entity: "+ entityUnderTest);
+            E savedEntity = saveEntityShouldSucceed(entityUnderTest);
+
+            for (UpdateTestBundle<E> updateTestBundle : testEntityBundle.getUpdateTestBundles()) {
+                //given
+                E modifiedEntity = updateTestBundle.getModifiedEntity();
+                System.err.println("update test with modified entity: " + modifiedEntity);
+                modifiedEntity.setId(savedEntity.getId());
+
+                //when
+                E updatedEntity = crudService.update(modifiedEntity);
+
+                //then
+                Assertions.assertTrue(BeanUtils.isDeepEqual(modifiedEntity,updatedEntity));
+                E updatedEntityFromService = crudService.findById(savedEntity.getId()).get();
+                Assertions.assertTrue(BeanUtils.isDeepEqual(modifiedEntity,updatedEntityFromService));
+                System.err.println("Test succeeded");
+            }
+            System.err.println("Test succeeded");
+
+        }
+    }
+
+    protected E saveEntityShouldSucceed(E entityToSave) throws BadEntityException, NoIdException {
         //given
         Assertions.assertNull(entityToSave.getId());
-        CrudService<E,Id> crudService = crudServiceTestEntry.getCrudService();
 
         //when
         E savedTestEntity = crudService.save(entityToSave);
@@ -69,12 +107,14 @@ public abstract class CrudServiceTest<S extends CrudService<E,Id>,E extends Iden
         Assertions.assertNotNull(savedTestEntity);
         Assertions.assertNotNull(savedTestEntity.getId());
         Assertions.assertNotEquals(0,savedTestEntity.getId());
+        entityToSave.setId(savedTestEntity.getId());
+        E savedEntityFromService = crudService.findById(savedTestEntity.getId()).get();
+        Assertions.assertTrue(BeanUtils.isDeepEqual(entityToSave,savedEntityFromService));
         return savedTestEntity;
     }
 
-    protected void deleteEntityById(Id id) throws EntityNotFoundException, NoIdException {
+    protected void deleteEntityByIdShouldSucceed(Id id) throws EntityNotFoundException, NoIdException {
         Assertions.assertNotNull(id);
-        CrudService<E,Id> crudService = crudServiceTestEntry.getCrudService();
         //when
         crudService.deleteById(id);
         //then
@@ -84,91 +124,80 @@ public abstract class CrudServiceTest<S extends CrudService<E,Id>,E extends Iden
 
 
     @Test
-    void save() throws  BadEntityException {
-        E savedTestEntity = saveEntity(crudServiceTestEntry.getTestEntity());
-        savedEntitiesIds.add(savedTestEntity.getId());
+    void save() throws BadEntityException, NoIdException {
+        for (TestEntityBundle<E> testEntityBundle : testEntityBundles) {
+            //given
+            E entityUnderTest = testEntityBundle.getEntity();
+            System.err.println("save entity test with entity: "+ entityUnderTest);
+            //when
+            E savedTestEntity = saveEntityShouldSucceed(entityUnderTest);
+
+            //then
+            System.err.println("Test succeeded");
+        }
     }
 
 
     @Test
-    void findAll() throws  BadEntityException {
+    void findAll() throws BadEntityException, NoIdException {
+        E entityUnderTest = testEntityBundles.stream().findFirst().get().getEntity();
         //given
-        Assertions.assertNull(crudServiceTestEntry.getTestEntity().getId());
-        CrudService<E,Id> crudService = crudServiceTestEntry.getCrudService();
+        Assertions.assertNull(entityUnderTest.getId());
 
-        E savedTestEntity = saveEntity(crudServiceTestEntry.getTestEntity());
-        savedEntitiesIds.add(savedTestEntity.getId());
+        E savedTestEntity = saveEntityShouldSucceed(entityUnderTest);
         Set<E> foundEntities = crudService.findAll();
 
         //then
         Assertions.assertEquals(1,foundEntities.size());
         for(E foundEntity: foundEntities){
             Assertions.assertTrue(BeanUtils.isDeepEqual(savedTestEntity,foundEntity));
-            //Assertions.assertEquals(savedTestEntity,foundEntity);
         }
     }
 
     @Test
     void delete() throws  EntityNotFoundException, NoIdException, BadEntityException {
-        //given
-        Assertions.assertNull(crudServiceTestEntry.getTestEntity().getId());
-        CrudService<E,Id> crudService = crudServiceTestEntry.getCrudService();
+        for (TestEntityBundle<E> testEntityBundle : testEntityBundles) {
+            E entityUnderTest = testEntityBundle.getEntity();
+            System.err.println("delete entity test with entity: "+ entityUnderTest);
+            //given
+            Assertions.assertNull(entityUnderTest.getId());
 
-        //when
-        E savedTestEntity = saveEntity(crudServiceTestEntry.getTestEntity());
-        crudService.delete(savedTestEntity);
+            //when
+            E savedTestEntity = saveEntityShouldSucceed(entityUnderTest);
+            crudService.delete(savedTestEntity);
 
-        //then
-        Set<E> foundEntities = crudService.findAll();
-        Assertions.assertEquals(0,foundEntities.size());
+            //then
+            Set<E> foundEntities = crudService.findAll();
+            Assertions.assertEquals(0, foundEntities.size());
+            System.err.println("Test succeeded");
+        }
     }
 
 
     @Test
     void deleteById() throws EntityNotFoundException, NoIdException, BadEntityException {
-        //given
-        Assertions.assertNull(crudServiceTestEntry.getTestEntity().getId());
-        CrudService<E,Id> crudService = crudServiceTestEntry.getCrudService();
+        for (TestEntityBundle<E> testEntityBundle : testEntityBundles) {
+            E entityUnderTest = testEntityBundle.getEntity();
+            System.err.println("delete by id entity test with entity: "+ entityUnderTest);
+            //given
+            Assertions.assertNull(entityUnderTest.getId());
 
-        //when
-        E savedTestEntity = saveEntity(crudServiceTestEntry.getTestEntity());
-        deleteEntityById(savedTestEntity.getId());
+            //when
+            E savedTestEntity = saveEntityShouldSucceed(entityUnderTest);
+            deleteEntityByIdShouldSucceed(savedTestEntity.getId());
 
-        //then
-        Set<E> foundEntities = crudService.findAll();
-        Assertions.assertEquals(0,foundEntities.size());
+            //then
+            Set<E> foundEntities = crudService.findAll();
+            Assertions.assertEquals(0, foundEntities.size());
+        }
     }
 
     @AfterEach
     void tearDown() throws EntityNotFoundException, NoIdException {
-        for(Id entityToDeleteId : savedEntitiesIds){
-            deleteEntityById(entityToDeleteId);
+        for(E entityToDelete : crudService.findAll()){
+            deleteEntityByIdShouldSucceed(entityToDelete.getId());
         }
-        savedEntitiesIds.clear();
-    }
-
-    /**
-     *
-     * @param <S>       CrudeServiceImpl that should be tested
-     * @param <E>       BaseEntityImpl that will be used as a Test entity for Crud Operations
-     * @param <Id>      id Type of BaseEntityImpl
-     */
-    protected static class CrudServiceTestEntry<S extends CrudService,E extends IdentifiableEntity<Id>,Id extends Serializable>{
-        public CrudServiceTestEntry(S crudService, E testEntity) {
-            this.crudService = crudService;
-            this.testEntity = testEntity;
-        }
-
-        private S crudService;
-        private E testEntity;
-
-        public S getCrudService() {
-            return crudService;
-        }
-
-        public E getTestEntity() {
-            return testEntity;
-        }
+        Assertions.assertTrue(crudService.findAll().isEmpty());
     }
 
 }

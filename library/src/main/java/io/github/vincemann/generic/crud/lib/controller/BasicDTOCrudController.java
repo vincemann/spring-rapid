@@ -19,7 +19,7 @@ import java.util.Optional;
  * Impl of {@link DTOCrudController} that handles the following:
  * Mapping of ServiceEntity to DTO and vice versa.
  * Interaction with specified  {@link CrudService}.
- * Supply callback Methods.
+ * Supply hook Methods.
  *
  * @param <ServiceE> Service Entity Type, of entity, which curd enpoints are exposed by this Controller
  * @param <Service>  Service Type of {@link ServiceE}
@@ -40,7 +40,7 @@ public abstract class BasicDTOCrudController<ServiceE extends IdentifiableEntity
         this.dtoMapper = dtoMapper;
     }
 
-    //todo methoden einbauen die einfach nur die id returnen
+    //todo implement methods that just return id and not whole dtos (create, update)
 
     @SuppressWarnings("unchecked")
     public ResponseEntity<DTO> find(Id id) throws NoIdException, EntityNotFoundException {

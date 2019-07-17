@@ -56,11 +56,11 @@ class BiDirChildTest {
 
     @Test
     void findAndSetParent() throws IllegalAccessException {
-        //when
+        //given
         Assertions.assertNull(testEntityChild.getEntityParent());
         Assertions.assertNull(testEntityChild.getUnusedParent());
         Assertions.assertNull(testEntityChild.getSecondEntityParent());
-        //do
+        //when
         testEntityChild.findAndSetParent(testEntityParent);
         //then
         Assertions.assertSame(testEntityChild.getEntityParent(),testEntityParent);
@@ -71,12 +71,12 @@ class BiDirChildTest {
 
     @Test
     void addChildToParents() throws IllegalAccessException {
-        //when
+        //given
         testEntityChild.setEntityParent(testEntityParent);
         testEntityChild.setSecondEntityParent(testSecondEntityParent);
         Assertions.assertNull(testEntityParent.getEntityChild());
         Assertions.assertNull(testSecondEntityParent.getEntityChild());
-        //do
+        //when
         testEntityChild.addChildToParents();
         //then
         Assertions.assertSame(testEntityChild,testEntityParent.getEntityChild());
@@ -85,11 +85,11 @@ class BiDirChildTest {
 
     @Test
     void findAndSetParentIfNull() throws IllegalAccessException {
-        //when
+        //given
         Assertions.assertNull(testEntityChild.getEntityParent());
         Assertions.assertNull(testEntityChild.getUnusedParent());
         Assertions.assertNull(testEntityChild.getSecondEntityParent());
-        //do
+        //when
         testEntityChild.findAndSetParentIfNull(testEntityParent);
         //then
         Assertions.assertSame(testEntityParent,testEntityChild.getEntityParent());
@@ -99,13 +99,13 @@ class BiDirChildTest {
 
     @Test
     void findAndSetParentIfNotNull() throws IllegalAccessException {
-        //when
+        //given
         EntityParent newEntityParent = new EntityParent();
         newEntityParent.setId(99L);
         testEntityChild.setEntityParent(newEntityParent);
         Assertions.assertNull(testEntityChild.getUnusedParent());
         Assertions.assertNull(testEntityChild.getSecondEntityParent());
-        //do
+        //when
         testEntityChild.findAndSetParentIfNull(testEntityParent);
         //then
         //test entity parent is NOT set
@@ -116,10 +116,10 @@ class BiDirChildTest {
 
     @Test
     void findParentFields() throws IllegalAccessException {
-        //when
+        //given
         testEntityChild.setEntityParent(testEntityParent);
         testEntityChild.setSecondEntityParent(testSecondEntityParent);
-        //do
+        //when
         Field[] parentFields = testEntityChild.findParentFields();
         //then
         Assertions.assertEquals(2,parentFields.length);
@@ -133,10 +133,10 @@ class BiDirChildTest {
 
     @Test
     void findParentFieldsWhenParentNull() throws IllegalAccessException {
-        //when
+        //given
         Assertions.assertNull(testEntityChild.getEntityParent());
         Assertions.assertNull(testEntityChild.getSecondEntityParent());
-        //do
+        //when
         Field[] parentFields = testEntityChild.findParentFields();
         //then
         Assertions.assertEquals(2,parentFields.length);
@@ -150,21 +150,21 @@ class BiDirChildTest {
 
     @Test
     void findParents() throws IllegalAccessException {
-        //when
+        //given
         testEntityChild.setEntityParent(testEntityParent);
         testEntityChild.setSecondEntityParent(testSecondEntityParent);
-        //do
+        //when
         Collection<BiDirParent> parents = testEntityChild.findParents();
         //then
         Assertions.assertEquals(2,parents.size());
     }
     @Test
     void findParentsWithOneNullParent() throws IllegalAccessException {
-        //when
+        //given
         testEntityChild.setEntityParent(testEntityParent);
         Assertions.assertNull(testEntityChild.getSecondEntityParent());
         Assertions.assertNull(testEntityChild.getUnusedParent());
-        //do
+        //when
         Collection<BiDirParent> parents = testEntityChild.findParents();
         //then
         Assertions.assertEquals(1,parents.size());
@@ -175,10 +175,10 @@ class BiDirChildTest {
 
     @Test
     void dismissParents() throws IllegalAccessException {
-        //when
+        //given
         testEntityChild.setEntityParent(testEntityParent);
         testEntityChild.setSecondEntityParent(testSecondEntityParent);
-        //do
+        //when
         testEntityChild.dismissParents();
         //then
         Assertions.assertNull(testEntityChild.getEntityParent());
@@ -187,9 +187,9 @@ class BiDirChildTest {
 
     @Test
     void dismissParent() throws IllegalAccessException {
-        //when
+        //given
         testEntityChild.setEntityParent(testEntityParent);
-        //do
+        //when
         testEntityChild.dismissParent(testEntityParent);
         //then
         Assertions.assertNull(testEntityChild.getEntityParent());
@@ -197,9 +197,9 @@ class BiDirChildTest {
 
     @Test
     void dismissUnknownParent() {
-        //when
+        //given
         testEntityChild.setSecondEntityParent(testSecondEntityParent);
-        //do
+        //when
         Assertions.assertThrows(UnknownParentTypeException.class, new Executable() {
             @Override
             public void execute() throws Throwable {
@@ -210,10 +210,10 @@ class BiDirChildTest {
 
     @Test
     void dismissParentWhenMultiplePresent() throws IllegalAccessException {
-        //when
+        //given
         testEntityChild.setEntityParent(testEntityParent);
         testEntityChild.setSecondEntityParent(testSecondEntityParent);
-        //do
+        //when
         testEntityChild.dismissParent(testEntityParent);
         //then
         Assertions.assertNull(testEntityChild.getEntityParent());
