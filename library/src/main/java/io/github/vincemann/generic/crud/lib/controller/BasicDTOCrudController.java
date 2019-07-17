@@ -26,7 +26,7 @@ import java.util.Optional;
  * @param <DTO>      DTO Type corresponding to {@link ServiceE}
  * @param <Id>       Id Type of {@link ServiceE}
  */
-public abstract class BasicDTOCrudController<ServiceE extends IdentifiableEntity<Id>,DTO extends IdentifiableEntity<Id>,  Id extends Serializable & Comparable, Service extends CrudService<ServiceE, Id>> implements DTOCrudController<DTO, Id> {
+public abstract class BasicDTOCrudController<ServiceE extends IdentifiableEntity<Id>,DTO extends IdentifiableEntity<Id>,  Id extends Serializable, Service extends CrudService<ServiceE, Id>> implements DTOCrudController<DTO, Id> {
 
     private Service crudService;
     private DtoMapper dtoMapper;

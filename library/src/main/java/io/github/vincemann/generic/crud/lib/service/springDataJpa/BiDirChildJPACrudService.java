@@ -14,7 +14,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 
-public abstract class BiDirChildJPACrudService<E extends IdentifiableEntity<Id> & BiDirChild,Id extends Serializable & Comparable,R extends JpaRepository<E,Id>> extends JPACrudService<E,Id,R> {
+public abstract class BiDirChildJPACrudService<E extends IdentifiableEntity<Id> & BiDirChild,Id extends Serializable,R extends JpaRepository<E,Id>> extends JPACrudService<E,Id,R> {
 
     public BiDirChildJPACrudService(R jpaRepository) {
         super(jpaRepository);

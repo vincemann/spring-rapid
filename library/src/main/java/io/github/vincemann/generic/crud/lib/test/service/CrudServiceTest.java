@@ -24,7 +24,7 @@ import java.util.Set;
  * @param <E>       TestEntityType
  * @param <Id>      Id Type of TestEntityType
  */
-public abstract class CrudServiceTest<S extends CrudService<E,Id>,E extends IdentifiableEntity<Id>,Id extends Serializable & Comparable> {
+public abstract class CrudServiceTest<S extends CrudService<E,Id>,E extends IdentifiableEntity<Id>,Id extends Serializable> {
 
     @Getter
     private CrudServiceTestEntry<S,E,Id> crudServiceTestEntry;
@@ -153,7 +153,7 @@ public abstract class CrudServiceTest<S extends CrudService<E,Id>,E extends Iden
      * @param <E>       BaseEntityImpl that will be used as a Test entity for Crud Operations
      * @param <Id>      id Type of BaseEntityImpl
      */
-    protected static class CrudServiceTestEntry<S extends CrudService,E extends IdentifiableEntity<Id>,Id extends Serializable & Comparable>{
+    protected static class CrudServiceTestEntry<S extends CrudService,E extends IdentifiableEntity<Id>,Id extends Serializable>{
         public CrudServiceTestEntry(S crudService, E testEntity) {
             this.crudService = crudService;
             this.testEntity = testEntity;

@@ -11,7 +11,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import java.io.Serializable;
 import java.util.*;
 
-public class BiDirParentAndChildJPACrudService <E extends IdentifiableEntity<Id> & BiDirParent & BiDirChild,Id extends Serializable & Comparable,R extends JpaRepository<E,Id>> extends JPACrudService<E,Id,R>  {
+public class BiDirParentAndChildJPACrudService <E extends IdentifiableEntity<Id> & BiDirParent & BiDirChild,Id extends Serializable,R extends JpaRepository<E,Id>> extends JPACrudService<E,Id,R>  {
 
     public BiDirParentAndChildJPACrudService(R jpaRepository) {
         super(jpaRepository);

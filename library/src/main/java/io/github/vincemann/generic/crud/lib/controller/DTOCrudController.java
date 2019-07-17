@@ -15,7 +15,7 @@ import java.io.Serializable;
  * @param <DTO>     DTO Entity Type of corresponding ServiceEntity, managed by this DTOCrudController
  * @param <Id>      Id Type of corresponding Service Entity of  {@link DTO}
  */
-public interface DTOCrudController<DTO extends IdentifiableEntity<Id>,Id extends Serializable & Comparable> {
+public interface DTOCrudController<DTO extends IdentifiableEntity<Id>,Id extends Serializable> {
 
     //todo impl methods that only return ids and not whole dtos
 

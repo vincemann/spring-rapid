@@ -15,7 +15,7 @@ public interface BiDirDtoParent {
     Map<Class, Field[]> biDirChildrenCollectionFieldsCache = new HashMap<>();
 
 
-    default <ChildId extends Serializable & Comparable> ChildId findChildId(Class<? extends BiDirChild> childClazz) throws UnknownChildTypeException, IllegalAccessException {
+    default <ChildId extends Serializable> ChildId findChildId(Class<? extends BiDirChild> childClazz) throws UnknownChildTypeException, IllegalAccessException {
         Field[] childrenIdFields = findChildrenIdFields();
         for (Field field: childrenIdFields) {
             if(field.getAnnotation(BiDirChildId.class).value().equals(childClazz)) {
@@ -59,7 +59,7 @@ public interface BiDirDtoParent {
 
 
 
-    default <ChildId extends Serializable & Comparable> Collection<ChildId> findChildrenIdCollection(Class<? extends BiDirChild> childClazz) throws IllegalAccessException {
+    default <ChildId extends Serializable> Collection<ChildId> findChildrenIdCollection(Class<? extends BiDirChild> childClazz) throws IllegalAccessException {
         Field[] childrenIdCollectionFields = findChildrenIdCollectionFields();
         for (Field field: childrenIdCollectionFields) {
             if(field.getAnnotation(BiDirChildIdCollection.class).value().equals(childClazz)) {

@@ -35,7 +35,7 @@ import static io.github.vincemann.generic.crud.lib.util.BeanUtils.isDeepEqual;
  * @param <Controller>
  * @param <Id>
  */
-public abstract class UrlParamIdDTOCrudControllerSpringAdapterIT<ServiceE extends IdentifiableEntity<Id>, DTO extends IdentifiableEntity<Id>, Service extends CrudService<ServiceE, Id>, Controller extends DTOCrudControllerSpringAdapter<ServiceE, DTO, Id, Service>, Id extends Serializable & Comparable> extends IntegrationTest {
+public abstract class UrlParamIdDTOCrudControllerSpringAdapterIT<ServiceE extends IdentifiableEntity<Id>, DTO extends IdentifiableEntity<Id>, Service extends CrudService<ServiceE, Id>, Controller extends DTOCrudControllerSpringAdapter<ServiceE, DTO, Id, Service>, Id extends Serializable> extends IntegrationTest {
 
     /**
      * This is a security feature.
