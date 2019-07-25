@@ -28,7 +28,7 @@ import java.util.*;
 import static io.github.vincemann.generic.crud.lib.util.BeanUtils.isDeepEqual;
 
 /**
- * Integration Test for a {@link DTOCrudControllerSpringAdapter} with {@link UrlParamIdFetchingStrategy}, that tests typical Crud operation tests
+ * Integration Test for a {@link DTOCrudControllerSpringAdapter} with {@link UrlParamIdFetchingStrategy}, that tests typical Crud operations
  *
  * @param <ServiceE>
  * @param <DTO>
@@ -75,6 +75,7 @@ public abstract class UrlParamIdDTOCrudControllerSpringAdapterIT<ServiceE extend
         this.entityIdParamKey = ((UrlParamIdFetchingStrategy) crudController.getIdIdFetchingStrategy()).getIdUrlParamKey();
         this.nonExistingIdFinder = () -> nonExistingId;
     }
+
 
 
     @BeforeEach

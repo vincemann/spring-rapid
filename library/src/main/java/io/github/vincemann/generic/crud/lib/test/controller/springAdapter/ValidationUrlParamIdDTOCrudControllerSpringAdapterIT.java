@@ -5,6 +5,7 @@ import io.github.vincemann.generic.crud.lib.model.IdentifiableEntity;
 import io.github.vincemann.generic.crud.lib.service.CrudService;
 import io.github.vincemann.generic.crud.lib.test.controller.springAdapter.testBundles.TestEntityBundle;
 import io.github.vincemann.generic.crud.lib.test.controller.springAdapter.testBundles.UpdateTestBundle;
+import io.github.vincemann.generic.crud.lib.util.TestLogUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -13,6 +14,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
 import java.io.Serializable;
+import java.util.AbstractMap;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -80,10 +82,7 @@ public abstract class ValidationUrlParamIdDTOCrudControllerSpringAdapterIT<Servi
             return;
         }
         for(DTO invalidTestDTO: invalidTestDTOs) {
-            log.info("-------------------------------------------------------------------------");
-            log.info("######################## createInvalidEntity Test starts. ########################");
-            log.info("testDto(invalid): "+invalidTestDTO);
-            log.info("-------------------------------------------------------------------------");
+            TestLogUtils.logTestStart(log,"createInvalidEntity",new AbstractMap.SimpleEntry<>("testDto(invalid)",invalidTestDTO));
 
 
 
@@ -91,10 +90,7 @@ public abstract class ValidationUrlParamIdDTOCrudControllerSpringAdapterIT<Servi
             Assertions.assertFalse(isBodyOfDtoType(responseEntity.getBody()));
 
 
-            log.info("-------------------------------------------------------------------------");
-            log.info("######################## createInvalidEntity Test succeeded. ########################");
-            log.info("testDto(invalid): "+invalidTestDTO);
-            log.info("-------------------------------------------------------------------------");
+            TestLogUtils.logTestSucceeded(log,"createInvalidEntity",new AbstractMap.SimpleEntry<>("testDto(invalid)",invalidTestDTO));
         }
     }
 
@@ -108,22 +104,13 @@ public abstract class ValidationUrlParamIdDTOCrudControllerSpringAdapterIT<Servi
             DTO dbEntityDto = createEntityShouldSucceed(bundle.getEntity(), HttpStatus.OK);
             for (UpdateTestBundle<DTO> updateTestBundle : bundle.getUpdateTestBundles()) {
                 DTO invalidModificationDto = updateTestBundle.getModifiedEntity();
-                log.info("-------------------------------------------------------------------------");
-                log.info("######################## updateValidEntityWithInvalidEntities-Test starts. ########################");
-                log.info("testDto(valid): " + bundle.getEntity());
-                log.info("testUpdateDto(invalid): "+invalidModificationDto);
-                log.info("-------------------------------------------------------------------------");
+                TestLogUtils.logTestStart(log,"updateValidEntityWithInvalidEntity",new AbstractMap.SimpleEntry<>("testDto(valid)",bundle.getEntity()),new AbstractMap.SimpleEntry<>("testUpdateDto(invalid)",invalidModificationDto));
 
                 invalidModificationDto.setId(dbEntityDto.getId());
                 updateEntityShouldFail(dbEntityDto,invalidModificationDto, HttpStatus.BAD_REQUEST);
                 updateTestBundle.getPostUpdateCallback().callback(dbEntityDto);
 
-
-                log.info("-------------------------------------------------------------------------");
-                log.info("######################## updateValidEntityWithInvalidEntities-Test succeeded. ########################");
-                log.info("testDto(valid): " + bundle.getEntity());
-                log.info("testUpdateDto(invalid): "+invalidModificationDto);
-                log.info("-------------------------------------------------------------------------");
+                TestLogUtils.logTestSucceeded(log,"updateValidEntityWithInvalidEntity",new AbstractMap.SimpleEntry<>("testDto(valid)",bundle.getEntity()),new AbstractMap.SimpleEntry<>("testUpdateDto(invalid)",invalidModificationDto));
             }
         }
     }
