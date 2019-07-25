@@ -1,7 +1,7 @@
 package io.github.vincemann.generic.crud.lib.controller.springAdapter;
 
 import io.github.vincemann.generic.crud.lib.controller.dtoMapper.EntityMappingException;
-import io.github.vincemann.generic.crud.lib.controller.springAdapter.idFetchingStrategy.IdFetchingException;
+import io.github.vincemann.generic.crud.lib.controller.springAdapter.idFetchingStrategy.exception.IdFetchingException;
 import io.github.vincemann.generic.crud.lib.controller.springAdapter.idFetchingStrategy.IdFetchingStrategy;
 import io.github.vincemann.generic.crud.lib.controller.springAdapter.mediaTypeStrategy.DTOReadingException;
 import io.github.vincemann.generic.crud.lib.controller.springAdapter.mediaTypeStrategy.MediaTypeStrategy;

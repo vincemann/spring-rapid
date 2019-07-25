@@ -1,4 +1,6 @@
-package io.github.vincemann.generic.crud.lib.controller.springAdapter.idFetchingStrategy;
+package io.github.vincemann.generic.crud.lib.controller.springAdapter.idFetchingStrategy.exception;
+
+import io.github.vincemann.generic.crud.lib.controller.springAdapter.idFetchingStrategy.IdFetchingStrategy;
 
 /**
  * Indicates that the id could not be Fetched from the httprequest.

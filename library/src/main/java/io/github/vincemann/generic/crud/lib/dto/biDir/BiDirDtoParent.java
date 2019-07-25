@@ -1,9 +1,12 @@
 package io.github.vincemann.generic.crud.lib.dto.biDir;
 
+import io.github.vincemann.generic.crud.lib.dto.uniDir.UniDirChildDto;
 import io.github.vincemann.generic.crud.lib.model.IdentifiableEntity;
 import io.github.vincemann.generic.crud.lib.model.biDir.BiDirChild;
 import io.github.vincemann.generic.crud.lib.service.exception.UnknownChildTypeException;
 import io.github.vincemann.generic.crud.lib.util.ReflectionUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.Serializable;
 import java.lang.reflect.Field;
@@ -11,6 +14,7 @@ import java.util.*;
 
 public interface BiDirDtoParent {
 
+    Logger log = LoggerFactory.getLogger(BiDirDtoParent.class);
     Map<Class, Field[]> biDirChildFieldsCache = new HashMap<>();
     Map<Class, Field[]> biDirChildrenCollectionFieldsCache = new HashMap<>();
 
@@ -35,7 +39,7 @@ public interface BiDirDtoParent {
             if(id!=null) {
                 childrenIds.put(field.getAnnotation(BiDirChildId.class).value(),id);
             }else {
-                System.err.println("Warning: Null id found in BiDirDtoParent "+ this + " for ChildIdField with name: " + field.getName());
+                log.warn("Warning: Null id found in BiDirDtoParent "+ this + " for ChildIdField with name: " + field.getName());
             }
         }
         return childrenIds;
@@ -97,7 +101,7 @@ public interface BiDirDtoParent {
             if(clazzBelongingToId.equals(biDirChild.getClass())){
                 Object prevChild = field.get(this);
                 if(prevChild!=null){
-                    System.err.println("Warning: prevChild was not null -> overriding child:  " + prevChild + " from this parent: " + this);
+                    log.warn("Warning: prevChild was not null -> overriding child:  " + prevChild + " from this parent: " + this);
                 }
                 field.set(this,biDirChildId);
             }

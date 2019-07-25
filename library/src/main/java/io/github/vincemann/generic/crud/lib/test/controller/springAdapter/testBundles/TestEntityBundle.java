@@ -26,7 +26,7 @@ public class TestEntityBundle<E extends IdentifiableEntity> {
     /**
      *
      * @param entity
-     * @param updateTestBundles  for every given {@link UpdateTestBundle}, there will be a update test,
+     * @param updateTestBundles  for every given {@link UpdateTestBundle}, there will be one update test,
      *                           trying to update the {@link TestEntityBundle#entity} with the {@link UpdateTestBundle#getModifiedEntity()}.
      *
      */
@@ -63,10 +63,10 @@ public class TestEntityBundle<E extends IdentifiableEntity> {
         verifyBundle();
     }
 
-    public TestEntityBundle(E entity, E... modifiedE){
+    public TestEntityBundle(E entity, E... modifiedEntities){
         this.entity = entity;
-        for (E modE : modifiedE) {
-            this.updateTestBundles.add(new UpdateTestBundle<>(modE));
+        for (E modEntity : modifiedEntities) {
+            this.updateTestBundles.add(new UpdateTestBundle<>(modEntity));
         }
         verifyBundle();
     }
@@ -76,7 +76,7 @@ public class TestEntityBundle<E extends IdentifiableEntity> {
         updateTestBundles.forEach(bundle -> {
             Assertions.assertNotNull(bundle);
             Assertions.assertNotNull(bundle.getModifiedEntity());
-            Assertions.assertFalse(BeanUtils.isDeepEqual(entity,bundle.getModifiedEntity()),"E must differ from modifiedDto");
+            Assertions.assertFalse(BeanUtils.isDeepEqual(entity,bundle.getModifiedEntity()),"ModifiedEntity must differ from Entity");
         });
     }
 }

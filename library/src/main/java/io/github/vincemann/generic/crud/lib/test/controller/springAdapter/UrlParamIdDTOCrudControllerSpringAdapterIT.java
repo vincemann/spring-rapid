@@ -10,6 +10,8 @@ import io.github.vincemann.generic.crud.lib.test.IntegrationTest;
 import io.github.vincemann.generic.crud.lib.test.controller.springAdapter.testBundles.TestEntityBundle;
 import io.github.vincemann.generic.crud.lib.test.controller.springAdapter.testBundles.UpdateTestBundle;
 import io.github.vincemann.generic.crud.lib.util.BeanUtils;
+import io.github.vincemann.generic.crud.lib.util.TestLogUtils;
+import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -34,6 +36,7 @@ import static io.github.vincemann.generic.crud.lib.util.BeanUtils.isDeepEqual;
  * @param <Controller>
  * @param <Id>
  */
+@Slf4j
 public abstract class UrlParamIdDTOCrudControllerSpringAdapterIT<ServiceE extends IdentifiableEntity<Id>, DTO extends IdentifiableEntity<Id>, Service extends CrudService<ServiceE, Id>, Controller extends DTOCrudControllerSpringAdapter<ServiceE, DTO, Id, Service>, Id extends Serializable> extends IntegrationTest {
 
     /**
@@ -57,7 +60,7 @@ public abstract class UrlParamIdDTOCrudControllerSpringAdapterIT<ServiceE extend
      */
     public UrlParamIdDTOCrudControllerSpringAdapterIT(String url, Controller crudController, Id nonExistingId) {
         super(url);
-        Assertions.assertTrue(crudController.getIdIdFetchingStrategy() instanceof UrlParamIdFetchingStrategy, "Controller must have UrlParamIdFetchingStrategy");
+        Assertions.assertTrue(crudController.getIdIdFetchingStrategy() instanceof UrlParamIdFetchingStrategy, "Controller must have an UrlParamIdFetchingStrategy");
         this.crudController = crudController;
         this.dtoEntityClass = crudController.getDtoClass();
         this.entityIdParamKey = ((UrlParamIdFetchingStrategy) crudController.getIdIdFetchingStrategy()).getIdUrlParamKey();
@@ -66,7 +69,7 @@ public abstract class UrlParamIdDTOCrudControllerSpringAdapterIT<ServiceE extend
 
     public UrlParamIdDTOCrudControllerSpringAdapterIT(Controller crudController, Id nonExistingId) {
         super();
-        Assertions.assertTrue(crudController.getIdIdFetchingStrategy() instanceof UrlParamIdFetchingStrategy, "Controller must have UrlParamIdFetchingStrategy");
+        Assertions.assertTrue(crudController.getIdIdFetchingStrategy() instanceof UrlParamIdFetchingStrategy, "Controller must have an UrlParamIdFetchingStrategy");
         this.crudController = crudController;
         this.dtoEntityClass = crudController.getDtoClass();
         this.entityIdParamKey = ((UrlParamIdFetchingStrategy) crudController.getIdIdFetchingStrategy()).getIdUrlParamKey();
@@ -91,12 +94,14 @@ public abstract class UrlParamIdDTOCrudControllerSpringAdapterIT<ServiceE extend
     @Test
     protected void findEntityTest() throws Exception {
         for (TestEntityBundle<DTO> bundle : this.testEntityBundles) {
-            System.err.println("findEntityTest with testDTO: " + bundle.getEntity());
+            TestLogUtils.logTestStart(log,"findEntity",new AbstractMap.SimpleEntry<>("testDto",bundle.getEntity()));
+
             DTO savedEntity = createEntityShouldSucceed(bundle.getEntity(), HttpStatus.OK);
             DTO responseDTO = findEntityShouldSucceed(savedEntity.getId(), HttpStatus.OK);
             validateDTOsAreDeepEqual(responseDTO, savedEntity);
             bundle.getPostFindCallback().callback(responseDTO);
-            System.err.println("Test succeeded");
+
+            TestLogUtils.logTestSucceeded(log,"findEntity",new AbstractMap.SimpleEntry<>("testDto",bundle.getEntity()));
         }
     }
 
@@ -114,16 +119,16 @@ public abstract class UrlParamIdDTOCrudControllerSpringAdapterIT<ServiceE extend
     @Test
     protected void updateEntityTest() throws Exception {
         for (TestEntityBundle<DTO> bundle : this.testEntityBundles) {
-            System.err.println("updateEntityTest with testDTO: " +  bundle.getEntity());
 
             List<UpdateTestBundle<DTO>> updateTestBundles = bundle.getUpdateTestBundles();
             if(updateTestBundles.isEmpty()){
-                System.err.println("no update tests for this entity");
+                log.info("No update tests for testDto : " + bundle.getEntity());
                 return;
             }
             for (UpdateTestBundle<DTO> updateTestBundle : updateTestBundles) {
                 DTO modifiedDto = updateTestBundle.getModifiedEntity();
-                System.err.println("update test with modified dto: " + modifiedDto);
+                TestLogUtils.logTestStart(log,"updateEntity",new AbstractMap.SimpleEntry<>("testDto",bundle.getEntity()),new AbstractMap.SimpleEntry<>("modifiedDto",modifiedDto));
+
                 //save old dto
                 Assertions.assertNull(bundle.getEntity().getId());
                 DTO savedDTOEntity = createEntityShouldSucceed(bundle.getEntity(), HttpStatus.OK);
@@ -133,31 +138,37 @@ public abstract class UrlParamIdDTOCrudControllerSpringAdapterIT<ServiceE extend
                 updateTestBundle.getPostUpdateCallback().callback(dbUpdatedDto);
                 //remove dto -> clean for next iteration
                 deleteExistingEntityShouldSucceed(savedDTOEntity.getId());
-                System.err.println("update Test succeeded");
-            }
 
-            System.err.println("Test succeeded");
+                TestLogUtils.logTestSucceeded(log,"updateEntity",new AbstractMap.SimpleEntry<>("testDto",bundle.getEntity()),new AbstractMap.SimpleEntry<>("modifiedDto",modifiedDto));
+            }
         }
     }
 
     @Test
     protected void deleteEntityTest() throws Exception {
         for (TestEntityBundle<DTO> bundle : this.testEntityBundles) {
-            System.err.println("deleteEntityTest with testDTO: " + bundle.getEntity());
+            TestLogUtils.logTestStart(log,"deleteEntity",new AbstractMap.SimpleEntry<>("testDto",bundle.getEntity()));
+
+
             DTO savedEntity = createEntityShouldSucceed(bundle.getEntity(), HttpStatus.OK);
             deleteExistingEntityShouldSucceed(savedEntity.getId());
             bundle.getPostDeleteCallback().callback(savedEntity);
-            System.err.println("Test succeeded");
+
+            TestLogUtils.logTestSucceeded(log,"deleteEntity",new AbstractMap.SimpleEntry<>("testDto",bundle.getEntity()));
         }
     }
 
     @Test
     protected void createEntityTest() throws Exception {
         for (TestEntityBundle<DTO> bundle : this.testEntityBundles) {
-            System.err.println("createEntityTest with testDTO: " + bundle.getEntity());
+
+            TestLogUtils.logTestStart(log,"createEntity",new AbstractMap.SimpleEntry<>("testDto",bundle.getEntity()));
+
+
             DTO savedDto = createEntityShouldSucceed(bundle.getEntity(), HttpStatus.OK);
             bundle.getPostCreateCallback().callback(savedDto);
-            System.err.println("Test succeeded");
+
+            TestLogUtils.logTestSucceeded(log,"createEntity",new AbstractMap.SimpleEntry<>("testDto",bundle.getEntity()));
         }
     }
 

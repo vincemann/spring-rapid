@@ -2,8 +2,11 @@ package io.github.vincemann.generic.crud.lib.dto.uniDir;
 
 import io.github.vincemann.generic.crud.lib.model.IdentifiableEntity;
 import io.github.vincemann.generic.crud.lib.model.uniDir.UniDirChild;
+import io.github.vincemann.generic.crud.lib.model.uniDir.UniDirParent;
 import io.github.vincemann.generic.crud.lib.service.exception.UnknownChildTypeException;
 import io.github.vincemann.generic.crud.lib.util.ReflectionUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.Serializable;
 import java.lang.reflect.Field;
@@ -12,6 +15,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 public interface UniDirParentDto {
+    Logger log = LoggerFactory.getLogger(UniDirParentDto.class);
 
     Map<Class, Field[]> uniDirChildFieldsCache = new HashMap<>();
     Map<Class, Field[]> uniDirChildrenCollectionFieldsCache = new HashMap<>();
@@ -48,7 +52,7 @@ public interface UniDirParentDto {
             if(id!=null) {
                 childrenIds.put(field.getAnnotation(UniDirChildId.class).value(),id);
             }else {
-                System.err.println("Warning: Null id found in UniDirParentDto "+ this + " for ChildIdField with name: " + field.getName());
+                log.warn("Null id found in UniDirParentDto "+ this + " for ChildIdField with name: " + field.getName());
             }
         }
         return childrenIds;
@@ -70,7 +74,7 @@ public interface UniDirParentDto {
     }
 
     /**
-     * Adds childs id to {@link UniDirChildIdCollection} or {@link UniDirChildId}, depending on type it belongs to
+     * Adds child's id to {@link UniDirChildIdCollection} or {@link UniDirChildId}, depending on entity type it belongs to
      * @param child
      */
     default void addChildsId(IdentifiableEntity child) throws IllegalAccessException {
@@ -96,7 +100,7 @@ public interface UniDirParentDto {
             if(clazzBelongingToId.equals(child.getClass())){
                 Object prevChild = field.get(this);
                 if(prevChild!=null){
-                    System.err.println("Warning: prevChild was not null -> overriding child:  " + prevChild + " from this parent: " + this);
+                    log.warn("Warning: previous Child was not null -> overriding child:  " + prevChild + " from this parent: " + this + " with new value: " + child);
                 }
                 field.set(this,biDirChildId);
             }

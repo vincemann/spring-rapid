@@ -3,19 +3,20 @@ package io.github.vincemann.generic.crud.lib.model.biDir;
 import io.github.vincemann.generic.crud.lib.service.exception.UnknownChildTypeException;
 import io.github.vincemann.generic.crud.lib.service.exception.UnknownParentTypeException;
 import io.github.vincemann.generic.crud.lib.util.ReflectionUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.DisposableBean;
 
 import java.lang.reflect.Field;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-//muss ich als interface machen, weil es entities geben wird die gleichzeitig child und parent entity sind
-
 /**
  * represents a parent of a bidirectional jpa relationship (i.e. Entity with @OneToMany typically would implement this interface)
  * the Child of the Relation ship should implement {@link BiDirChild} and annotate its parents with {@link BiDirParentEntity}
  */
 public interface BiDirParent extends BiDirEntity, DisposableBean {
+    Logger log = LoggerFactory.getLogger(BiDirParent.class);
 
     Map<Class,Field[]> biDirChildrenCollectionFieldsCache = new HashMap<>();
     Map<Class,Field[]> biDirChildEntityFieldsCache = new HashMap<>();
@@ -70,7 +71,7 @@ public interface BiDirParent extends BiDirEntity, DisposableBean {
                childField.setAccessible(true);
                BiDirChild oldChild = (BiDirChild) childField.get(this);
                if (oldChild != null) {
-                   System.err.println("warning, overriding old child: " + oldChild + " with new Child: " + newChild + " of parent: " + this);
+                    log.warn("Overriding old child: "+oldChild+" with new Child "+newChild+" of parent "+this);
                }
                childField.set(this,newChild);
                addedChild.set(true);
@@ -118,7 +119,7 @@ public interface BiDirParent extends BiDirEntity, DisposableBean {
                             //this set needs to remove the child
                             boolean successfulRemove = childrenCollection.remove(biDirChildToRemove);
                             if(!successfulRemove){
-                                System.err.println("Entity: "+ biDirChildToRemove + " was not present in children set of parent: " + this);
+                                log.warn("BiDirChild: "+biDirChildToRemove+", which should be deleted from parents Childcollection,was not present in it. Parent: " + this);
                             }else {
                                 deletedChild.set(true);
                             }

@@ -1,15 +1,16 @@
 package io.github.vincemann.generic.crud.lib.model.uniDir;
 
 import io.github.vincemann.generic.crud.lib.service.exception.UnknownChildTypeException;
-import io.github.vincemann.generic.crud.lib.service.exception.UnknownParentTypeException;
 import io.github.vincemann.generic.crud.lib.util.ReflectionUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.lang.reflect.Field;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 public interface UniDirParent extends UniDirEntity {
-
+    Logger log = LoggerFactory.getLogger(UniDirParent.class);
     Map<Class, Field[]> uniDirChildrenCollectionFieldsCache = new HashMap<>();
     Map<Class,Field[]> uniDirChildEntityFieldsCache = new HashMap<>();
 
@@ -39,7 +40,7 @@ public interface UniDirParent extends UniDirEntity {
                 childField.setAccessible(true);
                 Object oldChild = childField.get(this);
                 if (oldChild != null) {
-                    System.err.println("warning, overriding old child: " + oldChild + " with new Child: " + newChild + " of parent: " + this);
+                    log.warn("Overriding old child: " + oldChild + " with new Child: " + newChild + " of parent: " + this);
                 }
                 childField.set(this,newChild);
                 addedChild.set(true);
@@ -86,7 +87,7 @@ public interface UniDirParent extends UniDirEntity {
                             //this set needs to remove the child
                             boolean successfulRemove = childrenCollection.remove(uniDirChildToRemove);
                             if(!successfulRemove){
-                                System.err.println("Entity: "+ uniDirChildToRemove + " was not present in children set of parent: " + this);
+                                log.warn("UniDirChild: "+ uniDirChildToRemove + " was not present in children set of parent: " + this + " when trying to delete.");
                             }else {
                                 deletedChild.set(true);
                             }

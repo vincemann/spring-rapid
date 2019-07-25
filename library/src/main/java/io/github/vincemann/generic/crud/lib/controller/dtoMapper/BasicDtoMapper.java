@@ -4,6 +4,9 @@ import io.github.vincemann.generic.crud.lib.model.IdentifiableEntity;
 import org.modelmapper.ModelMapper;
 
 
+/**
+ * Maps a DTO to its ServiceEntity and vice versa, by using {@link ModelMapper}
+ */
 public class BasicDtoMapper implements DtoMapper {
 
     @Override

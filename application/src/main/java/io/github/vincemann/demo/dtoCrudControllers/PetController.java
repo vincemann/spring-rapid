@@ -15,9 +15,8 @@ import org.springframework.stereotype.Controller;
 @Controller
 public class PetController extends DTOCrudControllerSpringAdapter<Pet, PetDto,Long, PetService> {
 
-    private OwnerService ownerService;
 
-    public PetController(PetService crudService, IdFetchingStrategy<Long> longIdFetchingStrategy, MediaTypeStrategy mediaTypeStrategy, OwnerService ownerService, ValidationStrategy validationStrategy, DtoMapper dtoMapper, EndpointService endpointService) {
+    public PetController(PetService crudService, IdFetchingStrategy<Long> longIdFetchingStrategy, MediaTypeStrategy mediaTypeStrategy, ValidationStrategy validationStrategy, DtoMapper dtoMapper, EndpointService endpointService) {
         super(
                 crudService,
                 longIdFetchingStrategy,
@@ -26,6 +25,5 @@ public class PetController extends DTOCrudControllerSpringAdapter<Pet, PetDto,Lo
                 dtoMapper,
                 endpointService
                 );
-        this.ownerService=ownerService;
     }
 }

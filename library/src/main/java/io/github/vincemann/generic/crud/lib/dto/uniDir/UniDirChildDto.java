@@ -2,9 +2,12 @@ package io.github.vincemann.generic.crud.lib.dto.uniDir;
 
 import io.github.vincemann.generic.crud.lib.model.IdentifiableEntity;
 import io.github.vincemann.generic.crud.lib.model.biDir.BiDirParent;
+import io.github.vincemann.generic.crud.lib.model.uniDir.UniDirChild;
 import io.github.vincemann.generic.crud.lib.model.uniDir.UniDirParent;
 import io.github.vincemann.generic.crud.lib.service.exception.UnknownParentTypeException;
 import io.github.vincemann.generic.crud.lib.util.ReflectionUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.Serializable;
 import java.lang.reflect.Field;
@@ -12,6 +15,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 public interface UniDirChildDto {
+    Logger log = LoggerFactory.getLogger(UniDirChildDto.class);
     Map<Class, Field[]> uniDirParentFieldsCache = new HashMap<>();
 
     default <ParentId extends Serializable> ParentId findParentId(Class<? extends UniDirParent> parentClazz) throws UnknownParentTypeException, IllegalAccessException {
@@ -34,7 +38,7 @@ public interface UniDirChildDto {
             if(id!=null) {
                 parentIds.put(field.getAnnotation(UniDirParentId.class).value(),id);
             }else {
-                System.err.println("Warning: Null id found in BiDirDtoChild "+ this + " for ParentIdField with name: " + field.getName());
+                log.warn("Warning: Null id found in BiDirDtoChild "+ this + " for ParentIdField with name: " + field.getName());
             }
         }
         return parentIds;
@@ -48,9 +52,9 @@ public interface UniDirChildDto {
         for(Field parentIdField: findParentIdFields()){
             if(parentIdField.getAnnotation(UniDirParentId.class).value().equals(uniDirParent.getClass())){
                 parentIdField.setAccessible(true);
-                Object prevParent = parentIdField.get(this);
-                if(prevParent!=null){
-                    System.err.println("Warning, prev ParentId was not null -> overriding");
+                Object prevParentId = parentIdField.get(this);
+                if(prevParentId!=null){
+                    log.warn("Warning, prev ParentId: "+prevParentId+" was not null -> overriding with new value: "+parentId);
                 }
                 parentIdField.set(this,parentId);
             }
