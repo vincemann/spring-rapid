@@ -21,6 +21,10 @@ public class BiDirParentEntityListener extends BiDirEntityListener{
     }
 
 
+
+
+
+
     @PrePersist
     public void onPrePersist(BiDirParent biDirParent) throws IllegalAccessException {
         Set<? extends BiDirChild> children = biDirParent.getChildren();

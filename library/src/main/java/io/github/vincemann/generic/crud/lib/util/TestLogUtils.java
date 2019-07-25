@@ -22,11 +22,15 @@ public class TestLogUtils {
     }
 
     private static void logTest(Logger logger, String testName,String testStateIndicator,  Map.Entry<String,Object>... loggedKeyValuePairs){
+        logger.info("");
+        logger.info("");
         logger.info(BEFORE_AFTER_PADDING);
         logger.info(LEFT_RIGHT_PADDING+" Test: " + testName+" " + testStateIndicator+". "+LEFT_RIGHT_PADDING);
         for (Map.Entry<String, Object> loggedKeyValuePair : loggedKeyValuePairs) {
             logger.info(loggedKeyValuePair.getKey()+" = "+loggedKeyValuePair.getValue());
         }
         logger.info(BEFORE_AFTER_PADDING);
+        logger.info("");
+        logger.info("");
     }
 }
