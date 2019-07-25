@@ -117,7 +117,6 @@ public abstract class EntityInitializerControllerIT<ServiceE extends Identifiabl
 
     private void cleanAllServiceEntities(CrudService... crudServices) throws NoIdException, EntityNotFoundException {
         for(CrudService crudService: crudServices) {
-            System.out.println("cleaning up Enitities managed by_: " + crudService.getClass().getSimpleName());
             Set<IdentifiableEntity> allEntitesOfService = crudService.findAll();
             for (IdentifiableEntity identifyableEntity : allEntitesOfService) {
                 crudService.delete(identifyableEntity);

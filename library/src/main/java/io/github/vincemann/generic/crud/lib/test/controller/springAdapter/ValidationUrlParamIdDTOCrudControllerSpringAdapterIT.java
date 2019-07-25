@@ -5,6 +5,7 @@ import io.github.vincemann.generic.crud.lib.model.IdentifiableEntity;
 import io.github.vincemann.generic.crud.lib.service.CrudService;
 import io.github.vincemann.generic.crud.lib.test.controller.springAdapter.testBundles.TestEntityBundle;
 import io.github.vincemann.generic.crud.lib.test.controller.springAdapter.testBundles.UpdateTestBundle;
+import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -23,10 +24,11 @@ import java.util.List;
  * @param <Controller>
  * @param <Id>
  */
+@Slf4j
 public abstract class ValidationUrlParamIdDTOCrudControllerSpringAdapterIT<ServiceE extends IdentifiableEntity<Id>, DTO extends IdentifiableEntity<Id>, Service extends CrudService<ServiceE, Id>, Controller extends DTOCrudControllerSpringAdapter<ServiceE, DTO, Id, Service>, Id extends Serializable>  extends UrlParamIdDTOCrudControllerSpringAdapterIT<ServiceE,DTO,Service,Controller,Id> {
 
     private List<DTO> invalidTestDTOs;
-    private List<TestEntityBundle<DTO>> invalidUpdateDtoBundles;
+    private List<TestEntityBundle<DTO>> invalidTestDtoUpdateBundles;
 
     public ValidationUrlParamIdDTOCrudControllerSpringAdapterIT(String url, Controller crudController, Id nonExistingId) {
         super(url, crudController, nonExistingId);
@@ -62,11 +64,11 @@ public abstract class ValidationUrlParamIdDTOCrudControllerSpringAdapterIT<Servi
         }
 
 
-        this.invalidUpdateDtoBundles=provideInvalidUpdateDtoBundles();
-        if(invalidUpdateDtoBundles==null){
-            this.invalidUpdateDtoBundles= new ArrayList<>();
+        this.invalidTestDtoUpdateBundles =provideInvalidUpdateDtoBundles();
+        if(invalidTestDtoUpdateBundles ==null){
+            this.invalidTestDtoUpdateBundles = new ArrayList<>();
         }
-        invalidUpdateDtoBundles.forEach(bundle -> Assertions.assertFalse(bundle.getUpdateTestBundles().isEmpty(),"Must specifiy at least one UpdateTestBundle"));
+        invalidTestDtoUpdateBundles.forEach(bundle -> Assertions.assertFalse(bundle.getUpdateTestBundles().isEmpty(),"Must specifiy at least one UpdateTestBundle"));
     }
 
 
@@ -74,35 +76,55 @@ public abstract class ValidationUrlParamIdDTOCrudControllerSpringAdapterIT<Servi
     @Test
     protected void createInvalidEntities(){
         if(invalidTestDTOs.isEmpty()){
-            System.err.println("no create invalid Entites Test");
+            log.info("No invalid Entities for createInvalidEntities-Test provided -> skipping. ");
             return;
         }
         for(DTO invalidTestDTO: invalidTestDTOs) {
-            System.err.println("create invalid EntityTest with testDTO: " + invalidTestDTO.toString());
+            log.info("-------------------------------------------------------------------------");
+            log.info("######################## createInvalidEntity Test starts. ########################");
+            log.info("testDto(invalid): "+invalidTestDTO);
+            log.info("-------------------------------------------------------------------------");
+
+
+
             ResponseEntity<String> responseEntity = createEntity(invalidTestDTO, HttpStatus.BAD_REQUEST);
             Assertions.assertFalse(isBodyOfDtoType(responseEntity.getBody()));
-            System.err.println("Test succeeded");
+
+
+            log.info("-------------------------------------------------------------------------");
+            log.info("######################## createInvalidEntity Test succeeded. ########################");
+            log.info("testDto(invalid): "+invalidTestDTO);
+            log.info("-------------------------------------------------------------------------");
         }
     }
 
     @Test
     protected void updateValidEntityWithInvalidEntities() throws Exception {
-        if(invalidUpdateDtoBundles.isEmpty()){
-            System.err.println("No update tests");
+        if(invalidTestDtoUpdateBundles.isEmpty()){
+            log.info("No invalid Entity Update Dto Bundles for updateValidEntityWithInvalidEntities-Test provided -> skipping. ");
             return;
         }
-        for(TestEntityBundle<DTO> bundle: invalidUpdateDtoBundles) {
-            System.err.println("update valid Entity with invalid UpdateDto Test with valid testDTO: " + bundle.getEntity().toString());
+        for(TestEntityBundle<DTO> bundle: invalidTestDtoUpdateBundles) {
             DTO dbEntityDto = createEntityShouldSucceed(bundle.getEntity(), HttpStatus.OK);
             for (UpdateTestBundle<DTO> updateTestBundle : bundle.getUpdateTestBundles()) {
                 DTO invalidModificationDto = updateTestBundle.getModifiedEntity();
-                System.err.println("Testing invalid update dto: " + invalidModificationDto.toString());
+                log.info("-------------------------------------------------------------------------");
+                log.info("######################## updateValidEntityWithInvalidEntities-Test starts. ########################");
+                log.info("testDto(valid): " + bundle.getEntity());
+                log.info("testUpdateDto(invalid): "+invalidModificationDto);
+                log.info("-------------------------------------------------------------------------");
+
                 invalidModificationDto.setId(dbEntityDto.getId());
                 updateEntityShouldFail(dbEntityDto,invalidModificationDto, HttpStatus.BAD_REQUEST);
-                System.err.println("invalid update Test succeeded");
                 updateTestBundle.getPostUpdateCallback().callback(dbEntityDto);
+
+
+                log.info("-------------------------------------------------------------------------");
+                log.info("######################## updateValidEntityWithInvalidEntities-Test succeeded. ########################");
+                log.info("testDto(valid): " + bundle.getEntity());
+                log.info("testUpdateDto(invalid): "+invalidModificationDto);
+                log.info("-------------------------------------------------------------------------");
             }
-            System.err.println("Test succeeded");
         }
     }
 }

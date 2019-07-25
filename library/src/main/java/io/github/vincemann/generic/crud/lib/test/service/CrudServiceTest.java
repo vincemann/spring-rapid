@@ -9,6 +9,7 @@ import io.github.vincemann.generic.crud.lib.test.controller.springAdapter.testBu
 import io.github.vincemann.generic.crud.lib.test.controller.springAdapter.testBundles.UpdateTestBundle;
 import io.github.vincemann.generic.crud.lib.util.BeanUtils;
 import lombok.Getter;
+import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -26,6 +27,7 @@ import java.util.Set;
  * @param <E>       TestEntityType
  * @param <Id>      Id Type of TestEntityType
  */
+@Slf4j
 public abstract class CrudServiceTest<S extends CrudService<E,Id>,E extends IdentifiableEntity<Id>,Id extends Serializable> {
 
     @Getter
@@ -51,7 +53,11 @@ public abstract class CrudServiceTest<S extends CrudService<E,Id>,E extends Iden
     void findById() throws NoIdException, BadEntityException {
         for (TestEntityBundle<E> testEntityBundle : testEntityBundles) {
             E entityUnderTest = testEntityBundle.getEntity();
-            System.err.println("find entity test with entity: "+ entityUnderTest);
+            log.info("-------------------------------------------------------------------------");
+            log.info("######################## findById Test starts. ########################");
+            log.info("testEntity: "+entityUnderTest);
+            log.info("-------------------------------------------------------------------------");
+
             //given
             Assertions.assertNull(entityUnderTest.getId());
 
@@ -63,7 +69,12 @@ public abstract class CrudServiceTest<S extends CrudService<E,Id>,E extends Iden
             Assertions.assertTrue(foundEntity.isPresent());
             Assertions.assertNotNull(foundEntity.get().getId());
             Assertions.assertTrue(BeanUtils.isDeepEqual(savedTestEntity,foundEntity.get()));
-            System.err.println("Test succeeded");
+
+
+            log.info("-------------------------------------------------------------------------");
+            log.info("######################## findById Test succeeded. ########################");
+            log.info("testEntity: "+entityUnderTest);
+            log.info("-------------------------------------------------------------------------");
         }
     }
 
@@ -73,13 +84,17 @@ public abstract class CrudServiceTest<S extends CrudService<E,Id>,E extends Iden
         for (TestEntityBundle<E> testEntityBundle : testEntityBundles) {
             //given
             E entityUnderTest = testEntityBundle.getEntity();
-            System.err.println("update entity test with entity: "+ entityUnderTest);
             E savedEntity = saveEntityShouldSucceed(entityUnderTest);
 
             for (UpdateTestBundle<E> updateTestBundle : testEntityBundle.getUpdateTestBundles()) {
                 //given
                 E modifiedEntity = updateTestBundle.getModifiedEntity();
-                System.err.println("update test with modified entity: " + modifiedEntity);
+                log.info("-------------------------------------------------------------------------");
+                log.info("######################## update Test starts. ########################");
+                log.info("testEntity: "+entityUnderTest);
+                log.info("modified Entity: " + modifiedEntity);
+                log.info("-------------------------------------------------------------------------");
+
                 modifiedEntity.setId(savedEntity.getId());
 
                 //when
@@ -89,10 +104,14 @@ public abstract class CrudServiceTest<S extends CrudService<E,Id>,E extends Iden
                 Assertions.assertTrue(BeanUtils.isDeepEqual(modifiedEntity,updatedEntity));
                 E updatedEntityFromService = crudService.findById(savedEntity.getId()).get();
                 Assertions.assertTrue(BeanUtils.isDeepEqual(modifiedEntity,updatedEntityFromService));
-                System.err.println("Test succeeded");
-            }
-            System.err.println("Test succeeded");
 
+
+                log.info("-------------------------------------------------------------------------");
+                log.info("######################## update Test succeeded. ########################");
+                log.info("testEntity: "+entityUnderTest);
+                log.info("modified Entity: " + modifiedEntity);
+                log.info("-------------------------------------------------------------------------");
+            }
         }
     }
 
@@ -128,12 +147,19 @@ public abstract class CrudServiceTest<S extends CrudService<E,Id>,E extends Iden
         for (TestEntityBundle<E> testEntityBundle : testEntityBundles) {
             //given
             E entityUnderTest = testEntityBundle.getEntity();
-            System.err.println("save entity test with entity: "+ entityUnderTest);
+            log.info("-------------------------------------------------------------------------");
+            log.info("######################## save Test starts. ########################");
+            log.info("testEntity: "+entityUnderTest);
+            log.info("-------------------------------------------------------------------------");
             //when
             E savedTestEntity = saveEntityShouldSucceed(entityUnderTest);
 
             //then
-            System.err.println("Test succeeded");
+
+            log.info("-------------------------------------------------------------------------");
+            log.info("######################## save Test succeeded. ########################");
+            log.info("testEntity: "+entityUnderTest);
+            log.info("-------------------------------------------------------------------------");
         }
     }
 
@@ -158,7 +184,10 @@ public abstract class CrudServiceTest<S extends CrudService<E,Id>,E extends Iden
     void delete() throws  EntityNotFoundException, NoIdException, BadEntityException {
         for (TestEntityBundle<E> testEntityBundle : testEntityBundles) {
             E entityUnderTest = testEntityBundle.getEntity();
-            System.err.println("delete entity test with entity: "+ entityUnderTest);
+            log.info("-------------------------------------------------------------------------");
+            log.info("######################## delete Test starts. ########################");
+            log.info("testEntity: "+entityUnderTest);
+            log.info("-------------------------------------------------------------------------");
             //given
             Assertions.assertNull(entityUnderTest.getId());
 
@@ -169,7 +198,12 @@ public abstract class CrudServiceTest<S extends CrudService<E,Id>,E extends Iden
             //then
             Set<E> foundEntities = crudService.findAll();
             Assertions.assertEquals(0, foundEntities.size());
-            System.err.println("Test succeeded");
+
+
+            log.info("-------------------------------------------------------------------------");
+            log.info("######################## save Test succeeded. ########################");
+            log.info("testEntity: "+entityUnderTest);
+            log.info("-------------------------------------------------------------------------");
         }
     }
 
@@ -178,7 +212,10 @@ public abstract class CrudServiceTest<S extends CrudService<E,Id>,E extends Iden
     void deleteById() throws EntityNotFoundException, NoIdException, BadEntityException {
         for (TestEntityBundle<E> testEntityBundle : testEntityBundles) {
             E entityUnderTest = testEntityBundle.getEntity();
-            System.err.println("delete by id entity test with entity: "+ entityUnderTest);
+            log.info("-------------------------------------------------------------------------");
+            log.info("######################## deleteById Test starts. ########################");
+            log.info("testEntity: "+entityUnderTest);
+            log.info("-------------------------------------------------------------------------");
             //given
             Assertions.assertNull(entityUnderTest.getId());
 
@@ -189,6 +226,11 @@ public abstract class CrudServiceTest<S extends CrudService<E,Id>,E extends Iden
             //then
             Set<E> foundEntities = crudService.findAll();
             Assertions.assertEquals(0, foundEntities.size());
+
+            log.info("-------------------------------------------------------------------------");
+            log.info("######################## deleteById Test succeeded. ########################");
+            log.info("testEntity: "+entityUnderTest);
+            log.info("-------------------------------------------------------------------------");
         }
     }
 

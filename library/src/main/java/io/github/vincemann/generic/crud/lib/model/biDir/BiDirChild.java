@@ -3,6 +3,9 @@ package io.github.vincemann.generic.crud.lib.model.biDir;
 import io.github.vincemann.generic.crud.lib.service.exception.UnknownChildTypeException;
 import io.github.vincemann.generic.crud.lib.service.exception.UnknownParentTypeException;
 import io.github.vincemann.generic.crud.lib.util.ReflectionUtils;
+import lombok.extern.slf4j.Slf4j;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.lang.reflect.Field;
 import java.util.ArrayList;
@@ -17,6 +20,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
  * or its single Children (bidirectional @OneToOne) with {@link BiDirChildEntity}
  */
 public interface BiDirChild extends BiDirEntity {
+    Logger log = LoggerFactory.getLogger(BiDirChild.class);
     Map<Class,Field[]> biDirParentFieldsCache = new HashMap<>();
 
     /**
@@ -49,7 +53,7 @@ public interface BiDirChild extends BiDirEntity {
             if(parent!=null) {
                 parent.addChild(this);
             }else {
-                System.err.println("found null parent of biDirChild with type: " +getClass().getSimpleName());
+                log.warn("found null parent of biDirChild with type: "+ getClass().getSimpleName());
             }
         }
     }
@@ -114,7 +118,7 @@ public interface BiDirChild extends BiDirEntity {
             if(parent!=null) {
                 this.dismissParent(parent);
             }else {
-                System.err.println("parent Reference of BiDirChild with type: " + this.getClass().getSimpleName() +" was not set when deleting -> parent was deleted before child");
+                log.warn("Parent Reference of BiDirChild with type: "+getClass().getSimpleName()+" was not set when deleting -> parent was deleted before child");
             }
         }
     }

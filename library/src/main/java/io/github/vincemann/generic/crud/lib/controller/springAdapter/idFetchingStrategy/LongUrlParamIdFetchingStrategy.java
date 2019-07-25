@@ -1,9 +1,10 @@
 package io.github.vincemann.generic.crud.lib.controller.springAdapter.idFetchingStrategy;
 
+import io.github.vincemann.generic.crud.lib.controller.springAdapter.idFetchingStrategy.exception.IdTransformingException;
 import org.springframework.lang.Nullable;
 
 /**
- * The fetched Id is of Type Long.
+ * The fetched Id is of Type {@link Long}.
  * {@see UrlParamIdFetchingStrategy}
  */
 public class LongUrlParamIdFetchingStrategy extends UrlParamIdFetchingStrategy<Long> {

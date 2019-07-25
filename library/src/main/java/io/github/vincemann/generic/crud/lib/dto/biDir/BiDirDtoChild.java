@@ -4,6 +4,8 @@ import io.github.vincemann.generic.crud.lib.model.IdentifiableEntity;
 import io.github.vincemann.generic.crud.lib.model.biDir.BiDirParent;
 import io.github.vincemann.generic.crud.lib.service.exception.UnknownParentTypeException;
 import io.github.vincemann.generic.crud.lib.util.ReflectionUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.Serializable;
 import java.lang.reflect.Field;
@@ -18,6 +20,7 @@ import java.util.Map;
  *
  */
 public interface BiDirDtoChild {
+    Logger log = LoggerFactory.getLogger(BiDirDtoChild.class);
     Map<Class,Field[]> biDirParentFieldsCache = new HashMap<>();
 
     default <ParentId extends Serializable> ParentId findParentId(Class<? extends BiDirParent> parentClazz) throws UnknownParentTypeException, IllegalAccessException {
@@ -39,9 +42,9 @@ public interface BiDirDtoChild {
         for(Field parentIdField: findParentIdFields()){
             if(parentIdField.getAnnotation(BiDirParentId.class).value().equals(biDirParent.getClass())){
                 parentIdField.setAccessible(true);
-                Object prevParent = parentIdField.get(this);
-                if(prevParent!=null){
-                    System.err.println("Warning, prev ParentId was not null -> overriding");
+                Object prevParentId = parentIdField.get(this);
+                if(prevParentId!=null){
+                    log.warn("Overriding previous parentId field. OldValue: "+ prevParentId);
                 }
                 parentIdField.set(this,parentId);
             }
@@ -57,7 +60,7 @@ public interface BiDirDtoChild {
             if(id!=null) {
                 parentIds.put(field.getAnnotation(BiDirParentId.class).value(),id);
             }else {
-                System.err.println("Warning: Null id found in BiDirDtoChild "+ this + " for ParentIdField with name: " + field.getName());
+                log.warn("Null ParentId found in BiDirDtoChild: "+this+" with idFieldName "+field.getName());
             }
         }
         return parentIds;

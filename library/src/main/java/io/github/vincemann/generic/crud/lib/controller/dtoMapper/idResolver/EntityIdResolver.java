@@ -12,6 +12,18 @@ import java.util.Map;
 import java.util.Optional;
 
 @Getter
+/**
+ *
+ *  Resolves parent- or child-id's from an Dto to their mapped Entities.
+ *
+ *  These id fields must be annotated with on of these Annotations:
+ *  {@link io.github.vincemann.generic.crud.lib.dto.biDir.BiDirChildId}, {@link io.github.vincemann.generic.crud.lib.dto.biDir.BiDirParentId},
+ *  {@link io.github.vincemann.generic.crud.lib.dto.uniDir.UniDirParentId}, {@link io.github.vincemann.generic.crud.lib.dto.uniDir.UniDirChildId}
+ *  {@link io.github.vincemann.generic.crud.lib.dto.uniDir.UniDirChildIdCollection}, {@link io.github.vincemann.generic.crud.lib.dto.biDir.BiDirChildIdCollection}
+ *
+ *  The resolving of the ids is done, by calling {@link io.github.vincemann.generic.crud.lib.service.CrudService#findById(Serializable)} of the {@link CrudService}, that belongs to the Annotated Id's Entity Type.
+ *  The needed CrudService is found with {@link CrudServiceFinder}.
+ */
 public abstract class EntityIdResolver<ServiceE,Dto> {
 
     private CrudServiceFinder crudServiceFinder;

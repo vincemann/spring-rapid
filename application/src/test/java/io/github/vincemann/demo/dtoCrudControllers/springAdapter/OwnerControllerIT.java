@@ -137,7 +137,7 @@ class OwnerControllerIT extends EntityInitializerControllerIT<Owner, OwnerDto, O
                 new TestEntityBundle<>(
                         ownerWithoutPets,
                         //update owner without pets, by adding a nonexisting pet -> should fail
-                        //adter the update test assert that the saved owner indeed has no pets
+                        //after the update test assert that the saved owner indeed has no pets
                         new UpdateTestBundle<>(addInvalidPetUpdate, this::assertOwnerDoesNotHavePets)
                 )
         );

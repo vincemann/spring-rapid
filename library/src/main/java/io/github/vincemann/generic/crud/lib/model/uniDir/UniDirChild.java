@@ -2,6 +2,8 @@ package io.github.vincemann.generic.crud.lib.model.uniDir;
 
 import io.github.vincemann.generic.crud.lib.service.exception.UnknownParentTypeException;
 import io.github.vincemann.generic.crud.lib.util.ReflectionUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.lang.reflect.Field;
 import java.util.ArrayList;
@@ -11,7 +13,7 @@ import java.util.Map;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 public interface UniDirChild extends UniDirEntity {
-
+    Logger log = LoggerFactory.getLogger(UniDirChild.class);
     Map<Class, Field[]> uniDirParentFieldsCache = new HashMap<>();
 
     /**
@@ -34,26 +36,12 @@ public interface UniDirChild extends UniDirEntity {
         }
     }
 
-    /**
-     * Adds this child to its parents
-     * @throws IllegalAccessException
-     */
-    public default void addChildToParents() throws IllegalAccessException {
-        Collection<UniDirParent> parents = findParents();
-        for(UniDirParent parent: parents){
-            if(parent!=null) {
-                parent.addChild(this);
-            }else {
-                System.err.println("found null parent of uniDirChild with type: " +getClass().getSimpleName());
-            }
-        }
-    }
 
     /**
-     * Find Parent of this child, annotated with {@link UniDirParentEntity} and has same type as parentToSet.
-     * Dont override, only set parentToSet, if matching parentField value was null.
+     * Find Parent of this child, annotated with {@link UniDirParentEntity} that has the same type as {@param parentToSet}.
+     * Does not override. The parent will only be set to {@param parentToSet}, if matching parentField's value is null.
      * @param parentToSet
-     * @return  true, if parent was null and set
+     * @return  true, if parent was null and is set to {@param parentToSet}, otherwise false
      * @throws IllegalAccessException
      */
     public default boolean findAndSetParentIfNull(UniDirParent parentToSet) throws IllegalAccessException {
@@ -105,7 +93,7 @@ public interface UniDirChild extends UniDirEntity {
 
     /**
      * This Child wont know about parentToDelete after this operation.
-     * Set all {@link UniDirParentEntity}s of this {@link UniDirChild} to null.
+     * Sets {@link UniDirParentEntity} Field, that has same Type as {@param parentToDelete}, to null.
      * @param parentToDelete
      * @throws UnknownParentTypeException   thrown, if parentToDelete is of unknown type -> no field , annotated as {@link UniDirParentEntity}, with the most specific type of parentToDelete, exists in Child (this).
      * @throws IllegalAccessException

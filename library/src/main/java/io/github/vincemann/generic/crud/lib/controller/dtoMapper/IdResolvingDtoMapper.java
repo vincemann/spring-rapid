@@ -5,8 +5,17 @@ import io.github.vincemann.generic.crud.lib.model.IdentifiableEntity;
 import io.github.vincemann.generic.crud.lib.service.exception.EntityNotFoundException;
 import io.github.vincemann.generic.crud.lib.service.exception.NoIdException;
 
+import java.io.Serializable;
 import java.util.List;
 
+/**
+ * Maps an {@link IdentifiableEntity} to its Dto and vice versa using {@link org.modelmapper.ModelMapper} AND resolving
+ * id fields, referencing parent/child entities.
+ * The id resolving is done by the given {@link EntityIdResolver}s.
+ *
+ *
+ *
+ */
 public class IdResolvingDtoMapper extends BasicDtoMapper {
 
     private List<EntityIdResolver> entityIdResolvers;

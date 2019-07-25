@@ -1,4 +1,4 @@
-package io.github.vincemann.generic.crud.lib.controller.springAdapter.idFetchingStrategy;
+package io.github.vincemann.generic.crud.lib.controller.springAdapter.idFetchingStrategy.exception;
 
 public class IdTransformingException extends Exception{
 
