@@ -3,6 +3,7 @@ package io.github.vincemann.generic.crud.lib.test.controller.springAdapter;
 import io.github.vincemann.generic.crud.lib.controller.dtoMapper.EntityMappingException;
 import io.github.vincemann.generic.crud.lib.controller.springAdapter.DTOCrudControllerSpringAdapter;
 import io.github.vincemann.generic.crud.lib.controller.springAdapter.idFetchingStrategy.UrlParamIdFetchingStrategy;
+import io.github.vincemann.generic.crud.lib.controller.springAdapter.mediaTypeStrategy.DTOReadingException;
 import io.github.vincemann.generic.crud.lib.model.IdentifiableEntity;
 import io.github.vincemann.generic.crud.lib.service.CrudService;
 import io.github.vincemann.generic.crud.lib.service.exception.NoIdException;
@@ -56,7 +57,7 @@ public abstract class UrlParamIdDTOCrudControllerSpringAdapterIT<ServiceE extend
      *
      * @param url
      * @param crudController
-     * @param nonExistingId   this can be null if you want to set your own {@link NonExistingIdFinder} with {@link #setNonExistingIdFinder(NonExistingIdFinder)}
+     * @param nonExistingId   this can be null, if you want to set your own {@link NonExistingIdFinder} with {@link #setNonExistingIdFinder(NonExistingIdFinder)}
      */
     public UrlParamIdDTOCrudControllerSpringAdapterIT(String url, Controller crudController, Id nonExistingId) {
         super(url);
@@ -311,14 +312,6 @@ public abstract class UrlParamIdDTOCrudControllerSpringAdapterIT<ServiceE extend
     }
 
     /**
-     * 1. expect oldEntityDTO and newEntityDTO to not be deepEqual {@link BeanUtils#isDeepEqual(Object, Object)}
-     * 2. expect oldEntityDTO and newEntityDTO to have same id
-     * 3. expect oldEntityDTO to be already persisted -> can be found by id
-     * 4. make update request to backend
-     * 5. expect {@link HttpStatus} response status code to be 2xx
-     * 6. expect {@link HttpStatus} response status code to be specified {@link HttpStatus} statuscode
-     * 7. returned EntityDTO by backend must be deepEqual to newEntityDTO and persisted entityDTO with the id of newEntityDTO
-     * 8. oldEntityDTO must differ from returned EntityDTO by backend
      *
      * @param oldEntityDTO entityDTO already saved that should be updated
      * @param newEntityDTO entityDTO that should replace/update old entity
@@ -332,22 +325,45 @@ public abstract class UrlParamIdDTOCrudControllerSpringAdapterIT<ServiceE extend
         //Entity muss vorher auch schon da sein
         Optional<ServiceE> serviceFoundEntityBeforeUpdate = crudController.getCrudService().findById(newEntityDTO.getId());
         Assertions.assertTrue(serviceFoundEntityBeforeUpdate.isPresent(), "Entity to delete was not present");
-        //trotzdem müssen changes vorliegen
-        Assertions.assertFalse(isDeepEqual(oldEntityDTO, newEntityDTO));
+        return _updateEntityShouldSucceed(oldEntityDTO,newEntityDTO,httpStatus);
+    }
 
-        ResponseEntity<String> responseEntity = updateEntity(newEntityDTO);
+
+    private DTO _updateEntityShouldSucceed(DTO oldEntityDto, DTO newEntityDto, HttpStatus httpStatus) throws DTOReadingException, EntityMappingException {
+        //trotzdem müssen changes vorliegen
+        Assertions.assertFalse(isDeepEqual(oldEntityDto, newEntityDto));
+
+        ResponseEntity<String> responseEntity = updateEntity(newEntityDto);
         Assertions.assertTrue(responseEntity.getStatusCode().is2xxSuccessful(), "Status was : " + responseEntity.getStatusCode());
         Assertions.assertEquals(httpStatus, responseEntity.getStatusCode());
         DTO httpResponseDTO = crudController.getMediaTypeStrategy().readDTOFromBody(responseEntity.getBody(), dtoEntityClass);
         Assertions.assertNotNull(httpResponseDTO);
         //response http entity must match modTestEntity
-        validateDTOsAreDeepEqual(httpResponseDTO, newEntityDTO);
+        validateDTOsAreDeepEqual(httpResponseDTO, newEntityDto);
         //entity fetched from vincemann.github.generic.crud.lib.service by id must match httpResponseEntity
         Assertions.assertTrue(isSavedServiceEntityDeepEqual(httpResponseDTO));
         //entity fetched from vincemann.github.generic.crud.lib.service at start of test (before update) must not match httpResponseEntity (since it got updated)
-        boolean deepEqual = isDeepEqual(oldEntityDTO, httpResponseDTO);
+        boolean deepEqual = isDeepEqual(oldEntityDto, httpResponseDTO);
         Assertions.assertFalse(deepEqual, "Entites did match but must not -> entity was not updated");
         return httpResponseDTO;
+    }
+
+    /**
+     * The entity found by id of {@param newEntityDTO}, is updated with newEntityDTO
+     * @param newEntityDTO
+     * @param httpStatus
+     * @return
+     * @throws Exception
+     */
+    protected DTO updateEntityShouldSucceed(DTO newEntityDTO, HttpStatus httpStatus) throws Exception {
+        Assertions.assertNotNull(newEntityDTO.getId());
+        //Entity must be saved already
+        Optional<ServiceE> serviceFoundEntityBeforeUpdate = crudController.getCrudService().findById(newEntityDTO.getId());
+        Assertions.assertTrue(serviceFoundEntityBeforeUpdate.isPresent(), "Entity to delete was not present");
+        //there must be changes
+        DTO oldEntityDtoFromService = getCrudController().getDtoMapper().mapServiceEntityToDto(serviceFoundEntityBeforeUpdate.get(), getDtoEntityClass());
+
+        return _updateEntityShouldSucceed(oldEntityDtoFromService,newEntityDTO,httpStatus);
     }
 
     protected void updateEntityShouldFail(DTO oldEntity, DTO newEntity, HttpStatus httpStatus) throws Exception {
