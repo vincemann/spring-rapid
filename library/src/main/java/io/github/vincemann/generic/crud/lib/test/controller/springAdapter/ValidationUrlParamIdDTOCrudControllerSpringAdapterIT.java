@@ -8,6 +8,7 @@ import io.github.vincemann.generic.crud.lib.test.controller.springAdapter.testBu
 import io.github.vincemann.generic.crud.lib.util.TestLogUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Assumptions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
@@ -70,17 +71,15 @@ public abstract class ValidationUrlParamIdDTOCrudControllerSpringAdapterIT<Servi
         if(invalidTestDtoUpdateBundles ==null){
             this.invalidTestDtoUpdateBundles = new ArrayList<>();
         }
-        invalidTestDtoUpdateBundles.forEach(bundle -> Assertions.assertFalse(bundle.getUpdateTestBundles().isEmpty(),"Must specifiy at least one UpdateTestBundle"));
+        invalidTestDtoUpdateBundles.forEach(bundle -> Assertions.assertFalse(bundle.getUpdateTestBundles().isEmpty(),"Must specifiy at least one UpdateTestBundle for each bundle"));
     }
 
 
 
     @Test
     protected void createInvalidEntities(){
-        if(invalidTestDTOs.isEmpty()){
-            log.info("No invalid Entities for createInvalidEntities-Test provided -> skipping. ");
-            return;
-        }
+        Assumptions.assumeTrue(getCrudController().getEndpointsExposureDetails().isCreateEndpointExposed());
+        Assumptions.assumeTrue(!invalidTestDTOs.isEmpty(),"No invalid Entities for createInvalidEntities-Test provided -> skipping. ");
         for(DTO invalidTestDTO: invalidTestDTOs) {
             TestLogUtils.logTestStart(log,"createInvalidEntity",new AbstractMap.SimpleEntry<>("testDto(invalid)",invalidTestDTO));
 
@@ -96,10 +95,9 @@ public abstract class ValidationUrlParamIdDTOCrudControllerSpringAdapterIT<Servi
 
     @Test
     protected void updateValidEntityWithInvalidEntities() throws Exception {
-        if(invalidTestDtoUpdateBundles.isEmpty()){
-            log.info("No invalid Entity Update Dto Bundles for updateValidEntityWithInvalidEntities-Test provided -> skipping. ");
-            return;
-        }
+        Assumptions.assumeTrue(getCrudController().getEndpointsExposureDetails().isUpdateEndpointExposed());
+        Assumptions.assumeTrue(!invalidTestDtoUpdateBundles.isEmpty(),"No invalid Entity Update Dto Bundles for updateValidEntityWithInvalidEntities-Test provided -> skipping. ");
+
         for(TestEntityBundle<DTO> bundle: invalidTestDtoUpdateBundles) {
             DTO dbEntityDto = createEntityShouldSucceed(bundle.getEntity(), HttpStatus.OK);
             for (UpdateTestBundle<DTO> updateTestBundle : bundle.getUpdateTestBundles()) {
