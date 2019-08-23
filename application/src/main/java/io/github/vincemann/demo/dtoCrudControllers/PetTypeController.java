@@ -1,6 +1,7 @@
 package io.github.vincemann.demo.dtoCrudControllers;
 
 import io.github.vincemann.generic.crud.lib.controller.springAdapter.DTOCrudControllerSpringAdapter;
+import io.github.vincemann.generic.crud.lib.controller.springAdapter.EndpointsExposureDetails;
 import io.github.vincemann.generic.crud.lib.controller.springAdapter.idFetchingStrategy.IdFetchingStrategy;
 import io.github.vincemann.generic.crud.lib.controller.springAdapter.mediaTypeStrategy.MediaTypeStrategy;
 import io.github.vincemann.demo.dtos.PetTypeDto;
@@ -16,12 +17,14 @@ public class PetTypeController extends DTOCrudControllerSpringAdapter<PetType, P
 
     public PetTypeController(PetTypeService crudService, IdFetchingStrategy<Long> longIdFetchingStrategy, MediaTypeStrategy mediaTypeStrategy, ValidationStrategy validationStrategy, DtoMapper dtoMapper, EndpointService endpointService) {
         super(crudService,
-                longIdFetchingStrategy,
+                endpointService, longIdFetchingStrategy,
                 mediaTypeStrategy,
                 validationStrategy,
                 dtoMapper,
-                endpointService
-        );
+                //no update Endpoint
+                EndpointsExposureDetails.builder()
+                        .updateEndpointExposed(false)
+                        .build());
     }
 
 }

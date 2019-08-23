@@ -1,6 +1,7 @@
 package io.github.vincemann.generic.crud.lib.service.crudServiceFinder;
 
 import io.github.vincemann.generic.crud.lib.model.IdentifiableEntity;
+import io.github.vincemann.generic.crud.lib.model.biDir.BiDirEntity;
 import io.github.vincemann.generic.crud.lib.service.CrudService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeansException;
@@ -31,7 +32,7 @@ public class PackageScanningCrudServiceFinder implements CrudServiceFinder, Appl
 
     @Override
     public void onApplicationEvent(ContextRefreshedEvent event) {
-        //all beans are intialized -> now is the right time to scan for beans
+        //all beans are initialized -> now is the right time to scan for beans
         scanFromApplicationContext(applicationContext);
     }
 

@@ -1,6 +1,8 @@
 package io.github.vincemann.generic.crud.lib.controller.springAdapter.mediaTypeStrategy;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.json.JSONException;
+import org.json.JSONObject;
 import org.springframework.http.MediaType;
 
 import java.io.IOException;
@@ -20,11 +22,12 @@ public class JSONMediaTypeStrategy implements MediaTypeStrategy{
     @Override
     public boolean isBodyOfGivenType(String body, Class type) {
         try {
-            mapper.convertValue(body, type);
-        } catch (IllegalArgumentException e) {
+            JSONObject jObj = new JSONObject(body);
+            Object aObj = jObj.get(type.getSimpleName());
+            return aObj.getClass().equals(type);
+        } catch (IllegalArgumentException|JSONException e) {
             return false;
         }
-        return true;
     }
 
     @Override

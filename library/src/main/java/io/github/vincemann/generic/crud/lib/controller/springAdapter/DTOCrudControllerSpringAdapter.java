@@ -7,6 +7,7 @@ import io.github.vincemann.generic.crud.lib.controller.springAdapter.mediaTypeSt
 import io.github.vincemann.generic.crud.lib.controller.springAdapter.mediaTypeStrategy.MediaTypeStrategy;
 import io.github.vincemann.generic.crud.lib.controller.springAdapter.validationStrategy.ValidationStrategy;
 import io.github.vincemann.generic.crud.lib.controller.dtoMapper.DtoMapper;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.servlet.mvc.method.RequestMappingInfo;
@@ -44,6 +45,7 @@ import java.util.stream.Collectors;
  * @param <Id>       Id Type of {@link ServiceE}
  *
  */
+@Slf4j
 public abstract class DTOCrudControllerSpringAdapter<ServiceE extends IdentifiableEntity<Id>,DTO extends IdentifiableEntity<Id>,Id extends Serializable, Service extends CrudService<ServiceE,Id>> extends BasicDTOCrudController<ServiceE,DTO,Id,Service> {
 
 
@@ -57,48 +59,63 @@ public abstract class DTOCrudControllerSpringAdapter<ServiceE extends Identifiab
     private IdFetchingStrategy<Id> idIdFetchingStrategy;
     private MediaTypeStrategy mediaTypeStrategy;
     private ValidationStrategy<DTO,Id> validationStrategy;
+    private EndpointsExposureDetails endpointsExposureDetails;
 
     //todo implement methods, that only return id, and not whole dtos
-    public DTOCrudControllerSpringAdapter(Service crudService, String entityNameInUrl, IdFetchingStrategy<Id> idIdFetchingStrategy, MediaTypeStrategy mediaTypeStrategy, ValidationStrategy<DTO, Id> validationStrategy, DtoMapper dtoMapper, EndpointService endpointService) {
+    public DTOCrudControllerSpringAdapter(Service crudService, EndpointService endpointService, String entityNameInUrl, IdFetchingStrategy<Id> idIdFetchingStrategy, MediaTypeStrategy mediaTypeStrategy, ValidationStrategy<DTO, Id> validationStrategy, DtoMapper dtoMapper, EndpointsExposureDetails endpointsExposureDetails) {
         super(crudService, dtoMapper);
+        this.endpointService = endpointService;
         this.entityNameInUrl = entityNameInUrl;
         this.baseUrl="/"+entityNameInUrl+"/";
         this.idIdFetchingStrategy=idIdFetchingStrategy;
         this.mediaTypeStrategy=mediaTypeStrategy;
         this.validationStrategy = validationStrategy;
-        this.endpointService=endpointService;
+        this.endpointsExposureDetails = endpointsExposureDetails;
         initRequestMapping();
     }
 
-    public DTOCrudControllerSpringAdapter(Service crudService,IdFetchingStrategy<Id> idIdFetchingStrategy, MediaTypeStrategy mediaTypeStrategy, ValidationStrategy<DTO, Id> validationStrategy, DtoMapper dtoMapper, EndpointService endpointService) {
+    public DTOCrudControllerSpringAdapter(Service crudService, EndpointService endpointService, IdFetchingStrategy<Id> idIdFetchingStrategy, MediaTypeStrategy mediaTypeStrategy, ValidationStrategy<DTO, Id> validationStrategy, DtoMapper dtoMapper, EndpointsExposureDetails endpointsExposureDetails) {
         super(crudService, dtoMapper);
+        this.endpointService = endpointService;
+        this.endpointsExposureDetails = endpointsExposureDetails;
         this.entityNameInUrl = getServiceEntityClass().getSimpleName().toLowerCase();
         this.validationStrategy = validationStrategy;
         this.baseUrl="/"+entityNameInUrl+"/";
         this.idIdFetchingStrategy=idIdFetchingStrategy;
         this.mediaTypeStrategy=mediaTypeStrategy;
-        this.endpointService=endpointService;
         initRequestMapping();
     }
 
 
     private void initRequestMapping(){
         try {
-            //CREATE
-            getEndpointService().addMapping(getCreateRequestMappingInfo(),
-                    this.getClass().getMethod("create", HttpServletRequest.class), this);
+            if(endpointsExposureDetails.isCreateEndpointExposed()) {
+                //CREATE
+                log.debug("Exposing create Endpoint for "+this.getClass().getSimpleName());
+                getEndpointService().addMapping(getCreateRequestMappingInfo(),
+                        this.getClass().getMethod("create", HttpServletRequest.class), this);
+            }
 
-            //GET
-            getEndpointService().addMapping(getGetRequestMappingInfo(),
-                    this.getClass().getMethod("find", HttpServletRequest.class),this);
+            if(endpointsExposureDetails.isGetEndpointExposed()) {
+                //GET
+                log.debug("Exposing get Endpoint for "+this.getClass().getSimpleName());
+                getEndpointService().addMapping(getGetRequestMappingInfo(),
+                        this.getClass().getMethod("find", HttpServletRequest.class), this);
+            }
 
-            //UPDATE
-            getEndpointService().addMapping(getUpdateRequestMappingInfo(),
-                    this.getClass().getMethod("update", HttpServletRequest.class),this);
+            if(endpointsExposureDetails.isUpdateEndpointExposed()) {
+                //UPDATE
+                log.debug("Exposing update Endpoint for "+this.getClass().getSimpleName());
+                getEndpointService().addMapping(getUpdateRequestMappingInfo(),
+                        this.getClass().getMethod("update", HttpServletRequest.class), this);
+            }
 
-            //DELETE
-            getEndpointService().addMapping(getDeleteRequestMappingInfo(),
-                    this.getClass().getMethod("delete", HttpServletRequest.class),this);
+            if(endpointsExposureDetails.isDeleteEndpointExposed()) {
+                //DELETE
+                log.debug("Exposing delete Endpoint for "+this.getClass().getSimpleName());
+                getEndpointService().addMapping(getDeleteRequestMappingInfo(),
+                        this.getClass().getMethod("delete", HttpServletRequest.class), this);
+            }
 
         }catch (NoSuchMethodException e){
             //should never happen
@@ -221,6 +238,7 @@ public abstract class DTOCrudControllerSpringAdapter<ServiceE extends Identifiab
         return endpointService;
     }
 
+
     public String getEntityNameInUrl() {
         return entityNameInUrl;
     }
@@ -267,5 +285,9 @@ public abstract class DTOCrudControllerSpringAdapter<ServiceE extends Identifiab
 
     public ValidationStrategy<DTO, Id> getValidationStrategy() {
         return validationStrategy;
+    }
+
+    public EndpointsExposureDetails getEndpointsExposureDetails() {
+        return endpointsExposureDetails;
     }
 }

@@ -2,6 +2,7 @@ package io.github.vincemann.demo.dtoCrudControllers;
 
 import io.github.vincemann.demo.dtos.VetDto;
 import io.github.vincemann.generic.crud.lib.controller.springAdapter.DTOCrudControllerSpringAdapter;
+import io.github.vincemann.generic.crud.lib.controller.springAdapter.EndpointsExposureDetails;
 import io.github.vincemann.generic.crud.lib.controller.springAdapter.idFetchingStrategy.IdFetchingStrategy;
 import io.github.vincemann.generic.crud.lib.controller.springAdapter.mediaTypeStrategy.MediaTypeStrategy;
 import io.github.vincemann.demo.model.Vet;
@@ -16,14 +17,14 @@ import io.github.vincemann.generic.crud.lib.controller.dtoMapper.DtoMapper;
 @Controller
 public class VetController extends DTOCrudControllerSpringAdapter<Vet, VetDto,Long,VetService> {
 
-    public VetController(VetService crudService, MediaTypeStrategy mediaTypeStrategy, IdFetchingStrategy<Long> longIdFetchingStrategy, ValidationStrategy validationStrategy, DtoMapper dtoMapper, EndpointService endpointService) {
+    public VetController(VetService crudService, MediaTypeStrategy mediaTypeStrategy, IdFetchingStrategy<Long> longIdFetchingStrategy, ValidationStrategy validationStrategy, DtoMapper dtoMapper, EndpointsExposureDetails endpointsExposureDetails, EndpointService endpointService) {
         super(crudService,
+                endpointService,
                 longIdFetchingStrategy,
                 mediaTypeStrategy,
                 validationStrategy,
                 dtoMapper,
-                endpointService
-        );
+                endpointsExposureDetails);
     }
 
 

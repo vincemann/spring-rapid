@@ -26,7 +26,7 @@ public class PetClinicGuruVersionApplication {
 		final Map<RequestMappingInfo, HandlerMethod> handlerMethods =
 				requestMappingHandlerMapping.getHandlerMethods();
 		for(Map.Entry<RequestMappingInfo, HandlerMethod> entry : handlerMethods.entrySet()){
-			log.debug("handlermethod: " + entry.getValue().toString());
+			log.debug("handlerMethod: " + entry.getValue().toString());
 			log.debug("RequestMappingInfo: " + entry.getKey().toString());
 		}
 	}
