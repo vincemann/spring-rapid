@@ -23,6 +23,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.validation.ConstraintViolationException;
 import java.io.IOException;
 import java.io.Serializable;
+import java.util.Collection;
 import java.util.stream.Collectors;
 
 /**
@@ -56,6 +57,7 @@ public abstract class DTOCrudControllerSpringAdapter<ServiceE extends Identifiab
     private String createMethodName="create";
     private String deleteMethodName="delete";
     private String updateMethodName="update";
+    private String findAllMethodName = "getAll";
     private IdFetchingStrategy<Id> idIdFetchingStrategy;
     private MediaTypeStrategy mediaTypeStrategy;
     private ValidationStrategy<DTO,Id> validationStrategy;
@@ -96,7 +98,7 @@ public abstract class DTOCrudControllerSpringAdapter<ServiceE extends Identifiab
                         this.getClass().getMethod("create", HttpServletRequest.class), this);
             }
 
-            if(endpointsExposureDetails.isGetEndpointExposed()) {
+            if(endpointsExposureDetails.isFindEndpointExposed()) {
                 //GET
                 log.debug("Exposing get Endpoint for "+this.getClass().getSimpleName());
                 getEndpointService().addMapping(getGetRequestMappingInfo(),
@@ -115,6 +117,13 @@ public abstract class DTOCrudControllerSpringAdapter<ServiceE extends Identifiab
                 log.debug("Exposing delete Endpoint for "+this.getClass().getSimpleName());
                 getEndpointService().addMapping(getDeleteRequestMappingInfo(),
                         this.getClass().getMethod("delete", HttpServletRequest.class), this);
+            }
+
+            if(endpointsExposureDetails.isFindAllEndpointExposed()){
+                //DELETE
+                log.debug("Exposing delete Endpoint for "+this.getClass().getSimpleName());
+                getEndpointService().addMapping(getFindAllRequestMappingInfo(),
+                        this.getClass().getMethod("findAll", HttpServletRequest.class), this);
             }
 
         }catch (NoSuchMethodException e){
@@ -160,8 +169,22 @@ public abstract class DTOCrudControllerSpringAdapter<ServiceE extends Identifiab
                 .build();
     }
 
+    protected RequestMappingInfo getFindAllRequestMappingInfo(){
+        String findAllUrl = baseUrl+getFindAllMethodName();
+        return RequestMappingInfo
+                .paths(findAllUrl)
+                .methods(RequestMethod.GET)
+                .produces(mediaTypeStrategy.getMediaType())
+                .build();
+    }
 
-    public ResponseEntity<DTO> find(HttpServletRequest request) throws IdFetchingException, EntityNotFoundException, NoIdException{
+    public ResponseEntity<Collection<DTO>> findAll(HttpServletRequest request) throws EntityMappingException {
+        beforeFindAll(request);
+        return super.findAll();
+    }
+
+
+    public ResponseEntity<DTO> find(HttpServletRequest request) throws IdFetchingException, EntityNotFoundException, NoIdException, EntityMappingException {
         Id id = idIdFetchingStrategy.fetchId(request);
         validationStrategy.validateId(id,request);
         beforeFind(id,request);
@@ -205,6 +228,7 @@ public abstract class DTOCrudControllerSpringAdapter<ServiceE extends Identifiab
     protected void beforeUpdate(DTO dto, HttpServletRequest httpServletRequest){}
     protected void beforeDelete(Id id, HttpServletRequest httpServletRequest){}
     protected void beforeFind(Id id, HttpServletRequest httpServletRequest){}
+    protected void beforeFindAll(HttpServletRequest httpServletRequest){}
 
 
 
@@ -257,6 +281,14 @@ public abstract class DTOCrudControllerSpringAdapter<ServiceE extends Identifiab
 
     public String getUpdateMethodName() {
         return updateMethodName;
+    }
+
+    public String getFindAllMethodName() {
+        return findAllMethodName;
+    }
+
+    public void setFindAllMethodName(String findAllMethodName) {
+        this.findAllMethodName = findAllMethodName;
     }
 
     public void setFindMethodName(String findMethodName) {

@@ -8,6 +8,7 @@ import io.github.vincemann.generic.crud.lib.service.exception.NoIdException;
 import org.springframework.http.ResponseEntity;
 
 import java.io.Serializable;
+import java.util.Collection;
 
 
 /**
@@ -21,9 +22,11 @@ public interface DTOCrudController<DTO extends IdentifiableEntity<Id>,Id extends
 
     ResponseEntity<DTO> create(DTO entity) throws BadEntityException, EntityMappingException;
 
-    ResponseEntity<DTO> find(Id id) throws NoIdException, EntityNotFoundException;
+    ResponseEntity<DTO> find(Id id) throws NoIdException, EntityNotFoundException, EntityMappingException;
 
     ResponseEntity<DTO> update(DTO entity) throws EntityMappingException, BadEntityException, NoIdException, EntityNotFoundException;
 
     ResponseEntity delete(Id id) throws NoIdException, EntityNotFoundException;
+
+    ResponseEntity<Collection<DTO>> findAll() throws EntityMappingException;
 }

@@ -13,7 +13,6 @@ import io.github.vincemann.generic.crud.lib.test.controller.springAdapter.testBu
 import io.github.vincemann.generic.crud.lib.util.BeanUtils;
 import io.github.vincemann.generic.crud.lib.util.TestLogUtils;
 import lombok.extern.slf4j.Slf4j;
-import org.junit.Assert;
 import org.junit.jupiter.api.*;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
@@ -89,7 +88,7 @@ public abstract class UrlParamIdDTOCrudControllerSpringAdapterIT<ServiceE extend
 
     @Test
     protected void findEntityTest() throws Exception {
-        Assumptions.assumeTrue(getCrudController().getEndpointsExposureDetails().isGetEndpointExposed());
+        Assumptions.assumeTrue(getCrudController().getEndpointsExposureDetails().isFindEndpointExposed());
         Assumptions.assumeTrue(!testEntityBundles.isEmpty());
         for (TestEntityBundle<DTO> bundle : this.testEntityBundles) {
             TestLogUtils.logTestStart(log, "findEntity", new AbstractMap.SimpleEntry<>("testDto", bundle.getEntity()));
@@ -103,10 +102,26 @@ public abstract class UrlParamIdDTOCrudControllerSpringAdapterIT<ServiceE extend
         }
     }
 
+    @Test
+    protected void findAllEntitiesTest() throws Exception {
+        Assumptions.assumeTrue(getCrudController().getEndpointsExposureDetails().isFindAllEndpointExposed());
+        Assumptions.assumeTrue(!testEntityBundles.isEmpty());
+
+        //save all entities from bundles
+        Collection<DTO> savedDtos = new ArrayList<>();
+        for (TestEntityBundle<DTO> bundle : testEntityBundles) {
+            DTO savedEntity = createEntityShouldSucceed(bundle.getEntity(), HttpStatus.OK);
+            savedDtos.add(savedEntity);
+        }
+
+        //test find all
+        findAllEntitiesShouldSucceed(HttpStatus.OK);
+    }
+
 
     @Test
     protected void findNonExistentEntityTest() {
-        Assumptions.assumeTrue(getCrudController().getEndpointsExposureDetails().isGetEndpointExposed());
+        Assumptions.assumeTrue(getCrudController().getEndpointsExposureDetails().isFindEndpointExposed());
         ResponseEntity<String> responseEntity = findEntity(nonExistingIdFinder.findNonExistingId(), HttpStatus.NOT_FOUND);
         Assertions.assertFalse(isBodyOfDtoType(responseEntity.getBody()));
     }
@@ -220,6 +235,24 @@ public abstract class UrlParamIdDTOCrudControllerSpringAdapterIT<ServiceE extend
         return responseEntity;
     }
 
+    protected Collection<DTO> findAllEntitiesShouldSucceed(HttpStatus httpStatus) throws DTOReadingException, EntityMappingException {
+        ResponseEntity<String> responseEntity = findAllEntities(httpStatus);
+
+        @SuppressWarnings("unchecked")
+        Set<DTO> dtos = crudController.getMediaTypeStrategy().readDTOsFromBody(responseEntity.getBody(), getDtoEntityClass(),Set.class);
+
+        Set<ServiceE> allServiceEntities = crudController.getCrudService().findAll();
+        Assertions.assertEquals(allServiceEntities.size(),dtos.size());
+        List<Id> idsSeen = new ArrayList<>();
+        for (DTO dto : dtos) {
+            //prevent duplicates
+            Assertions.assertFalse(idsSeen.contains(dto.getId()));
+            idsSeen.add(dto.getId());
+            Assertions.assertTrue(isSavedServiceEntityDeepEqual(dto));
+        }
+        return dtos;
+    }
+
     /**
      * send find Entity Request to backend
      * expect {@link HttpStatus} status code to be 2xx
@@ -271,6 +304,17 @@ public abstract class UrlParamIdDTOCrudControllerSpringAdapterIT<ServiceE extend
         Assertions.assertEquals(httpStatus, responseEntity.getStatusCode(), "Status was : " + responseEntity.getStatusCode() + " response Body: " + responseEntity.getBody());
         return responseEntity;
     }
+
+    protected ResponseEntity<String> findAllEntities(HttpStatus httpStatus){
+        ResponseEntity<String> responseEntity = findAllEntities();
+        Assertions.assertEquals(httpStatus,responseEntity.getStatusCode(),"Status was : " + responseEntity.getStatusCode() + " response Body: " + responseEntity.getBody());
+        return responseEntity;
+    }
+
+    protected ResponseEntity<String> findAllEntities(){
+        return getRestTemplate().getForEntity(getBaseUrl()+crudController.getFindAllMethodName(),String.class);
+    }
+
 
 
     /**
