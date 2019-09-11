@@ -8,6 +8,7 @@ import lombok.Setter;
 import org.junit.jupiter.api.Assertions;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 @Getter
@@ -22,6 +23,9 @@ public class TestEntityBundle<E extends IdentifiableEntity> {
     private PostDeleteCallback<E> postDeleteCallback = (e) -> {};
     @Setter
     private PostFindCallback<E> postFindCallback = (e) -> {};
+    @Setter
+    private PostFindAllCallback<Collection<E>> postFindAllCallback = (collection) -> {};
+
 
     /**
      *
@@ -31,7 +35,7 @@ public class TestEntityBundle<E extends IdentifiableEntity> {
      *
      */
     @Builder
-    public TestEntityBundle(E entity, List<UpdateTestBundle<E>> updateTestBundles, PostCreateCallback<E> postCreateCallback, PostDeleteCallback<E> postDeleteCallback, PostFindCallback<E> postFindCallback) {
+    public TestEntityBundle(E entity, List<UpdateTestBundle<E>> updateTestBundles, PostCreateCallback<E> postCreateCallback, PostDeleteCallback<E> postDeleteCallback, PostFindCallback<E> postFindCallback, PostFindAllCallback<Collection<E>> postFindAllCallback) {
         this.entity = entity;
         this.updateTestBundles = updateTestBundles;
         if(this.updateTestBundles==null){
@@ -48,6 +52,9 @@ public class TestEntityBundle<E extends IdentifiableEntity> {
         this.postFindCallback = postFindCallback;
         if(this.postFindCallback == null){
             this.postFindCallback = (e1) -> {};
+        }
+        if(this.postFindAllCallback==null){
+            this.postFindAllCallback= (collection) -> {};
         }
         verifyBundle();
     }

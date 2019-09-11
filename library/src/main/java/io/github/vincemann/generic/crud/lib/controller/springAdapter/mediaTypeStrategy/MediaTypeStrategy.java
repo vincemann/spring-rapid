@@ -1,5 +1,7 @@
 package io.github.vincemann.generic.crud.lib.controller.springAdapter.mediaTypeStrategy;
 
+import java.util.Collection;
+
 /**
  * Interface for 'how to convert the stringBody of an HttpRequest to a DTO Entity
  */
@@ -13,6 +15,8 @@ public interface MediaTypeStrategy{
      * @throws DTOReadingException      occurs, when DTO could not be fetched from StringBody
      */
     <DTO> DTO readDTOFromBody(String body,Class<DTO> dtoClass) throws DTOReadingException;
+
+    <DTO, C extends Collection<DTO>> C readDTOsFromBody(String body, Class<DTO> dtoClass, Class<C> collectionType) throws DTOReadingException;
 
     /**
      * Use {@link org.springframework.http.MediaType}

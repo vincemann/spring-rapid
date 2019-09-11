@@ -12,7 +12,10 @@ import io.github.vincemann.generic.crud.lib.service.exception.NoIdException;
 
 import java.io.Serializable;
 import java.lang.reflect.ParameterizedType;
+import java.util.Collection;
+import java.util.HashSet;
 import java.util.Optional;
+import java.util.Set;
 
 
 /**
@@ -42,8 +45,9 @@ public abstract class BasicDTOCrudController<ServiceE extends IdentifiableEntity
 
     //todo implement methods that just return id and not whole dtos (create, update)
 
+    @Override
     @SuppressWarnings("unchecked")
-    public ResponseEntity<DTO> find(Id id) throws NoIdException, EntityNotFoundException {
+    public ResponseEntity<DTO> find(Id id) throws NoIdException, EntityNotFoundException, EntityMappingException {
         Optional<ServiceE> optionalEntity = crudService.findById(beforeFindEntity(id));
         //noinspection OptionalIsPresent
         if (optionalEntity.isPresent()) {
@@ -51,6 +55,16 @@ public abstract class BasicDTOCrudController<ServiceE extends IdentifiableEntity
         } else {
             throw new EntityNotFoundException();
         }
+    }
+
+    @Override
+    public ResponseEntity<Collection<DTO>> findAll() throws EntityMappingException {
+        Set<ServiceE> all = crudService.findAll();
+        Set<DTO> dtos = new HashSet<>();
+        for (ServiceE serviceE : all) {
+            dtos.add(getDtoMapper().mapServiceEntityToDto(serviceE,dtoClass));
+        }
+        return ok(dtos);
     }
 
 
@@ -62,6 +76,7 @@ public abstract class BasicDTOCrudController<ServiceE extends IdentifiableEntity
         return foundEntity;
     }
 
+    @Override
     @SuppressWarnings("unchecked")
     public ResponseEntity<DTO> create(DTO dto) throws BadEntityException, EntityMappingException {
         ServiceE serviceEntity = getDtoMapper().mapDtoToServiceEntity(dto,serviceEntityClass);
@@ -78,6 +93,7 @@ public abstract class BasicDTOCrudController<ServiceE extends IdentifiableEntity
         return entity;
     }
 
+    @Override
     @SuppressWarnings("unchecked")
     public ResponseEntity<DTO> update(DTO dto) throws BadEntityException, EntityMappingException, NoIdException, EntityNotFoundException {
         ServiceE serviceEntity = getDtoMapper().mapDtoToServiceEntity(dto,serviceEntityClass);
@@ -94,7 +110,7 @@ public abstract class BasicDTOCrudController<ServiceE extends IdentifiableEntity
         return entity;
     }
 
-
+    @Override
     public ResponseEntity delete(Id id) throws NoIdException, EntityNotFoundException {
         crudService.deleteById(beforeDeleteEntity(id));
         afterDeleteEntity(id);
@@ -108,6 +124,9 @@ public abstract class BasicDTOCrudController<ServiceE extends IdentifiableEntity
     protected void afterDeleteEntity(Id id) {
     }
 
+    private ResponseEntity<Collection<DTO>> ok(Collection<DTO> dtoCollection){
+        return new ResponseEntity<>(dtoCollection,HttpStatus.OK);
+    }
 
     private ResponseEntity<DTO> ok(DTO entity) {
         return new ResponseEntity<>(entity, HttpStatus.OK);

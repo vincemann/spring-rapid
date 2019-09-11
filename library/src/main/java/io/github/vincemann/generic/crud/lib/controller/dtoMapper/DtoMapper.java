@@ -9,5 +9,5 @@ import io.github.vincemann.generic.crud.lib.service.exception.NoIdException;
  */
 public interface DtoMapper {
     public <T extends IdentifiableEntity> T mapDtoToServiceEntity(Object source, Class<T> destinationClass) throws EntityMappingException;
-    public <T extends IdentifiableEntity> T mapServiceEntityToDto(Object source, Class<T> destinationClass);
+    public <T extends IdentifiableEntity> T mapServiceEntityToDto(Object source, Class<T> destinationClass) throws EntityMappingException;
 }

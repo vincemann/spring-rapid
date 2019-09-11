@@ -13,22 +13,23 @@ import org.springframework.stereotype.Component;
  */
 public class EndpointsExposureDetails {
     private boolean createEndpointExposed=true;
-    private boolean getEndpointExposed=true;
+    private boolean findEndpointExposed =true;
     private boolean updateEndpointExposed=true;
     private boolean deleteEndpointExposed=true;
+    private boolean findAllEndpointExposed=true;
 
     @Builder
-    public EndpointsExposureDetails(Boolean createEndpointExposed, Boolean getEndpointExposed, Boolean updateEndpointExposed, Boolean deleteEndpointExposed) {
+    public EndpointsExposureDetails(Boolean createEndpointExposed, Boolean findEndpointExposed, Boolean updateEndpointExposed, Boolean deleteEndpointExposed, Boolean findAllEndpointExposed) {
         if(createEndpointExposed ==null){
             this.createEndpointExposed=true;
         }else {
             this.createEndpointExposed = createEndpointExposed;
         }
 
-        if(getEndpointExposed ==null){
-            this.getEndpointExposed=true;
+        if(findEndpointExposed ==null){
+            this.findEndpointExposed =true;
         }else {
-            this.getEndpointExposed = getEndpointExposed;
+            this.findEndpointExposed = findEndpointExposed;
         }
 
         if(deleteEndpointExposed ==null){
@@ -42,6 +43,12 @@ public class EndpointsExposureDetails {
             this.updateEndpointExposed=true;
         }else {
             this.updateEndpointExposed = updateEndpointExposed;
+        }
+
+        if(findAllEndpointExposed ==null){
+            this.findAllEndpointExposed=true;
+        }else {
+            this.findAllEndpointExposed = findAllEndpointExposed;
         }
     }
 
