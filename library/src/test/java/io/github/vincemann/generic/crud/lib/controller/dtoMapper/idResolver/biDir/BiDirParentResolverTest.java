@@ -1,7 +1,7 @@
 package io.github.vincemann.generic.crud.lib.controller.dtoMapper.idResolver.biDir;
 
 import io.github.vincemann.generic.crud.lib.controller.dtoMapper.idResolver.biDir.testEntities.BiDirEntityParent;
-import io.github.vincemann.generic.crud.lib.controller.dtoMapper.idResolver.biDir.testEntities.BiDirEntityParentDTO;
+import io.github.vincemann.generic.crud.lib.controller.dtoMapper.idResolver.biDir.testEntities.BiDirEntityParentDto;
 import io.github.vincemann.generic.crud.lib.controller.dtoMapper.EntityMappingException;
 import io.github.vincemann.generic.crud.lib.controller.dtoMapper.idResolver.biDir.abs.BiDirEntityResolverTest;
 import io.github.vincemann.generic.crud.lib.service.exception.NoIdException;
@@ -26,11 +26,11 @@ public class BiDirParentResolverTest extends BiDirEntityResolverTest {
     @Test
     public void resolveServiceEntityIds() throws EntityMappingException {
         //given
-        BiDirEntityParentDTO biDirEntityParentDTO = new BiDirEntityParentDTO();
-        biDirEntityParentDTO.setEntityChildId(getBiDirChild().getId());
+        BiDirEntityParentDto biDirEntityParentDto = new BiDirEntityParentDto();
+        biDirEntityParentDto.setEntityChildId(getBiDirChild().getId());
         BiDirEntityParent unfinishedMappedBiDirEntityParent = new BiDirEntityParent();
         //when
-        biDirParentResolver.resolveServiceEntityIds(unfinishedMappedBiDirEntityParent,biDirEntityParentDTO);
+        biDirParentResolver.resolveServiceEntityIds(unfinishedMappedBiDirEntityParent,biDirEntityParentDto);
         //then
         Assertions.assertEquals(getBiDirChild(),unfinishedMappedBiDirEntityParent.getBiDIrEntityChild());
     }
@@ -40,10 +40,10 @@ public class BiDirParentResolverTest extends BiDirEntityResolverTest {
         //given
         BiDirEntityParent entityParent = new BiDirEntityParent();
         entityParent.setBiDIrEntityChild(getBiDirChild());
-        BiDirEntityParentDTO unfinishedMappedBiDirEntityParentDTO = new BiDirEntityParentDTO();
+        BiDirEntityParentDto unfinishedMappedBiDirEntityParentDto = new BiDirEntityParentDto();
         //when
-        biDirParentResolver.resolveDtoIds(unfinishedMappedBiDirEntityParentDTO,entityParent);
+        biDirParentResolver.resolveDtoIds(unfinishedMappedBiDirEntityParentDto,entityParent);
         //then
-        Assertions.assertEquals(getBiDirChild().getId(),unfinishedMappedBiDirEntityParentDTO.getEntityChildId());
+        Assertions.assertEquals(getBiDirChild().getId(), unfinishedMappedBiDirEntityParentDto.getEntityChildId());
     }
 }

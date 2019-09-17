@@ -7,10 +7,10 @@ import java.util.Set;
 /**
  * BaseImpl of {@link ValidationStrategy}, that utilizes the javax validation API.
  * See: {@link Validator}
- * @param <DTO>
+ * @param <Dto>
  * @param <Id>
  */
-public class JavaXValidationStrategy<DTO,Id> implements ValidationStrategy<DTO,Id>{
+public class JavaXValidationStrategy<Dto,Id> implements ValidationStrategy<Dto,Id>{
     private final Validator validator;
 
     public JavaXValidationStrategy() {
@@ -19,8 +19,8 @@ public class JavaXValidationStrategy<DTO,Id> implements ValidationStrategy<DTO,I
     }
 
     @Override
-    public void validateDTO(DTO dto, HttpServletRequest httpServletRequest) throws ConstraintViolationException {
-        Set<ConstraintViolation<DTO>> constraintViolations = validator.validate(dto);
+    public void validateDto(Dto dto, HttpServletRequest httpServletRequest) throws ConstraintViolationException {
+        Set<ConstraintViolation<Dto>> constraintViolations = validator.validate(dto);
         if(!constraintViolations.isEmpty())
             throw new ConstraintViolationException(constraintViolations);
     }

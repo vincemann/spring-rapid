@@ -1,9 +1,9 @@
 package io.github.vincemann.generic.crud.lib.test.controller.springAdapter;
 
 import io.github.vincemann.generic.crud.lib.controller.dtoMapper.EntityMappingException;
-import io.github.vincemann.generic.crud.lib.controller.springAdapter.DTOCrudControllerSpringAdapter;
+import io.github.vincemann.generic.crud.lib.controller.springAdapter.DtoCrudControllerSpringAdapter;
 import io.github.vincemann.generic.crud.lib.controller.springAdapter.idFetchingStrategy.UrlParamIdFetchingStrategy;
-import io.github.vincemann.generic.crud.lib.controller.springAdapter.mediaTypeStrategy.DTOReadingException;
+import io.github.vincemann.generic.crud.lib.controller.springAdapter.mediaTypeStrategy.DtoReadingException;
 import io.github.vincemann.generic.crud.lib.model.IdentifiableEntity;
 import io.github.vincemann.generic.crud.lib.service.CrudService;
 import io.github.vincemann.generic.crud.lib.service.exception.NoIdException;
@@ -26,16 +26,16 @@ import java.util.*;
 import static io.github.vincemann.generic.crud.lib.util.BeanUtils.isDeepEqual;
 
 /**
- * Integration Test for a {@link DTOCrudControllerSpringAdapter} with {@link UrlParamIdFetchingStrategy}, that tests typical Crud operations
+ * Integration Test for a {@link DtoCrudControllerSpringAdapter} with {@link UrlParamIdFetchingStrategy}, that tests typical Crud operations
  *
  * @param <ServiceE>
- * @param <DTO>
+ * @param <Dto>
  * @param <Service>
  * @param <Controller>
  * @param <Id>
  */
 @Slf4j
-public abstract class UrlParamIdDTOCrudControllerSpringAdapterIT<ServiceE extends IdentifiableEntity<Id>, DTO extends IdentifiableEntity<Id>, Service extends CrudService<ServiceE, Id>, Controller extends DTOCrudControllerSpringAdapter<ServiceE, DTO, Id, Service>, Id extends Serializable> extends IntegrationTest {
+public abstract class UrlParamIdDtoCrudControllerSpringAdapterIT<ServiceE extends IdentifiableEntity<Id>, Dto extends IdentifiableEntity<Id>, Service extends CrudService<ServiceE, Id>, Controller extends DtoCrudControllerSpringAdapter<ServiceE, Dto, Id, Service>, Id extends Serializable> extends IntegrationTest {
 
     /**
      * This is a security feature.
@@ -44,10 +44,10 @@ public abstract class UrlParamIdDTOCrudControllerSpringAdapterIT<ServiceE extend
     private static final int MAX_AMOUNT_ENTITIES_IN_REPO_WHEN_DELETING_ALL = 200;
 
     private final Controller crudController;
-    private final Class<DTO> dtoEntityClass;
+    private final Class<Dto> dtoEntityClass;
     private final String entityIdParamKey;
     private int safetyCheckMaxAmountEntitiesInRepo = MAX_AMOUNT_ENTITIES_IN_REPO_WHEN_DELETING_ALL;
-    private List<TestEntityBundle<DTO>> testEntityBundles;
+    private List<TestEntityBundle<Dto>> testEntityBundles;
     private NonExistingIdFinder<Id> nonExistingIdFinder;
 
     /**
@@ -55,7 +55,7 @@ public abstract class UrlParamIdDTOCrudControllerSpringAdapterIT<ServiceE extend
      * @param crudController
      * @param nonExistingId  this can be null, if you want to set your own {@link NonExistingIdFinder} with {@link #setNonExistingIdFinder(NonExistingIdFinder)}
      */
-    public UrlParamIdDTOCrudControllerSpringAdapterIT(String url, Controller crudController, Id nonExistingId) {
+    public UrlParamIdDtoCrudControllerSpringAdapterIT(String url, Controller crudController, Id nonExistingId) {
         super(url);
         Assertions.assertTrue(crudController.getIdIdFetchingStrategy() instanceof UrlParamIdFetchingStrategy, "Controller must have an UrlParamIdFetchingStrategy");
         this.crudController = crudController;
@@ -64,7 +64,7 @@ public abstract class UrlParamIdDTOCrudControllerSpringAdapterIT<ServiceE extend
         this.nonExistingIdFinder = () -> nonExistingId;
     }
 
-    public UrlParamIdDTOCrudControllerSpringAdapterIT(Controller crudController, Id nonExistingId) {
+    public UrlParamIdDtoCrudControllerSpringAdapterIT(Controller crudController, Id nonExistingId) {
         super();
         Assertions.assertTrue(crudController.getIdIdFetchingStrategy() instanceof UrlParamIdFetchingStrategy, "Controller must have an UrlParamIdFetchingStrategy");
         this.crudController = crudController;
@@ -76,27 +76,27 @@ public abstract class UrlParamIdDTOCrudControllerSpringAdapterIT<ServiceE extend
 
     @BeforeEach
     public void before() throws Exception {
-        this.testEntityBundles = provideValidTestDTOs();
+        this.testEntityBundles = provideValidTestDtos();
     }
 
     /**
      * @return a list of {@link TestEntityBundle}s with valid {@link TestEntityBundle#getEntity()} according to the provided {@link io.github.vincemann.generic.crud.lib.controller.springAdapter.validationStrategy.ValidationStrategy}
-     * These DTO's will be used for all tests in this class
+     * These Dto's will be used for all tests in this class
      * The {@link TestEntityBundle#getUpdateTestBundles()} should have valid modified dto {@link UpdateTestBundle#getModifiedEntity()} get used for update tests, that should be successful
      */
-    protected abstract List<TestEntityBundle<DTO>> provideValidTestDTOs();
+    protected abstract List<TestEntityBundle<Dto>> provideValidTestDtos();
 
     @Test
     protected void findEntityTest() throws Exception {
         Assumptions.assumeTrue(getCrudController().getEndpointsExposureDetails().isFindEndpointExposed());
         Assumptions.assumeTrue(!testEntityBundles.isEmpty());
-        for (TestEntityBundle<DTO> bundle : this.testEntityBundles) {
+        for (TestEntityBundle<Dto> bundle : this.testEntityBundles) {
             TestLogUtils.logTestStart(log, "findEntity", new AbstractMap.SimpleEntry<>("testDto", bundle.getEntity()));
 
-            DTO savedEntity = createEntityShouldSucceed(bundle.getEntity(), HttpStatus.OK);
-            DTO responseDTO = findEntityShouldSucceed(savedEntity.getId(), HttpStatus.OK);
-            validateDTOsAreDeepEqual(responseDTO, savedEntity);
-            bundle.getPostFindCallback().callback(responseDTO);
+            Dto savedEntity = createEntityShouldSucceed(bundle.getEntity(), HttpStatus.OK);
+            Dto responseDto = findEntityShouldSucceed(savedEntity.getId(), HttpStatus.OK);
+            validateDtosAreDeepEqual(responseDto, savedEntity);
+            bundle.getPostFindCallback().callback(responseDto);
 
             TestLogUtils.logTestSucceeded(log, "findEntity", new AbstractMap.SimpleEntry<>("testDto", bundle.getEntity()));
         }
@@ -108,9 +108,9 @@ public abstract class UrlParamIdDTOCrudControllerSpringAdapterIT<ServiceE extend
         Assumptions.assumeTrue(!testEntityBundles.isEmpty());
 
         //save all entities from bundles
-        Collection<DTO> savedDtos = new ArrayList<>();
-        for (TestEntityBundle<DTO> bundle : testEntityBundles) {
-            DTO savedEntity = createEntityShouldSucceed(bundle.getEntity(), HttpStatus.OK);
+        Collection<Dto> savedDtos = new ArrayList<>();
+        for (TestEntityBundle<Dto> bundle : testEntityBundles) {
+            Dto savedEntity = createEntityShouldSucceed(bundle.getEntity(), HttpStatus.OK);
             savedDtos.add(savedEntity);
         }
 
@@ -136,26 +136,26 @@ public abstract class UrlParamIdDTOCrudControllerSpringAdapterIT<ServiceE extend
     protected void updateEntityTest() throws Exception {
         Assumptions.assumeTrue(getCrudController().getEndpointsExposureDetails().isUpdateEndpointExposed());
         Assumptions.assumeTrue(!testEntityBundles.isEmpty());
-        for (TestEntityBundle<DTO> bundle : this.testEntityBundles) {
+        for (TestEntityBundle<Dto> bundle : this.testEntityBundles) {
 
-            List<UpdateTestBundle<DTO>> updateTestBundles = bundle.getUpdateTestBundles();
+            List<UpdateTestBundle<Dto>> updateTestBundles = bundle.getUpdateTestBundles();
             if (updateTestBundles.isEmpty()) {
                 log.info("No update tests for testDto : " + bundle.getEntity());
                 return;
             }
-            for (UpdateTestBundle<DTO> updateTestBundle : updateTestBundles) {
-                DTO modifiedDto = updateTestBundle.getModifiedEntity();
+            for (UpdateTestBundle<Dto> updateTestBundle : updateTestBundles) {
+                Dto modifiedDto = updateTestBundle.getModifiedEntity();
                 TestLogUtils.logTestStart(log, "updateEntity", new AbstractMap.SimpleEntry<>("testDto", bundle.getEntity()), new AbstractMap.SimpleEntry<>("modifiedDto", modifiedDto));
 
                 //save old dto
                 Assertions.assertNull(bundle.getEntity().getId());
-                DTO savedDTOEntity = createEntityShouldSucceed(bundle.getEntity(), HttpStatus.OK);
-                modifiedDto.setId(savedDTOEntity.getId());
+                Dto savedDtoEntity = createEntityShouldSucceed(bundle.getEntity(), HttpStatus.OK);
+                modifiedDto.setId(savedDtoEntity.getId());
                 //update dto
-                DTO dbUpdatedDto = updateEntityShouldSucceed(savedDTOEntity, modifiedDto, HttpStatus.OK);
+                Dto dbUpdatedDto = updateEntityShouldSucceed(savedDtoEntity, modifiedDto, HttpStatus.OK);
                 updateTestBundle.getPostUpdateCallback().callback(dbUpdatedDto);
                 //remove dto -> clean for next iteration
-                deleteExistingEntityShouldSucceed(savedDTOEntity.getId());
+                deleteExistingEntityShouldSucceed(savedDtoEntity.getId());
 
                 TestLogUtils.logTestSucceeded(log, "updateEntity", new AbstractMap.SimpleEntry<>("testDto", bundle.getEntity()), new AbstractMap.SimpleEntry<>("modifiedDto", modifiedDto));
             }
@@ -166,11 +166,11 @@ public abstract class UrlParamIdDTOCrudControllerSpringAdapterIT<ServiceE extend
     protected void deleteEntityTest() throws Exception {
         Assumptions.assumeTrue(getCrudController().getEndpointsExposureDetails().isDeleteEndpointExposed());
         Assumptions.assumeTrue(!testEntityBundles.isEmpty());
-        for (TestEntityBundle<DTO> bundle : this.testEntityBundles) {
+        for (TestEntityBundle<Dto> bundle : this.testEntityBundles) {
             TestLogUtils.logTestStart(log, "deleteEntity", new AbstractMap.SimpleEntry<>("testDto", bundle.getEntity()));
 
 
-            DTO savedEntity = createEntityShouldSucceed(bundle.getEntity(), HttpStatus.OK);
+            Dto savedEntity = createEntityShouldSucceed(bundle.getEntity(), HttpStatus.OK);
             deleteExistingEntityShouldSucceed(savedEntity.getId());
             bundle.getPostDeleteCallback().callback(savedEntity);
 
@@ -182,12 +182,12 @@ public abstract class UrlParamIdDTOCrudControllerSpringAdapterIT<ServiceE extend
     protected void createEntityTest() throws Exception {
         Assumptions.assumeTrue(getCrudController().getEndpointsExposureDetails().isCreateEndpointExposed());
         Assumptions.assumeTrue(!testEntityBundles.isEmpty());
-        for (TestEntityBundle<DTO> bundle : this.testEntityBundles) {
+        for (TestEntityBundle<Dto> bundle : this.testEntityBundles) {
 
             TestLogUtils.logTestStart(log, "createEntity", new AbstractMap.SimpleEntry<>("testDto", bundle.getEntity()));
 
 
-            DTO savedDto = createEntityShouldSucceed(bundle.getEntity(), HttpStatus.OK);
+            Dto savedDto = createEntityShouldSucceed(bundle.getEntity(), HttpStatus.OK);
             bundle.getPostCreateCallback().callback(savedDto);
 
             TestLogUtils.logTestSucceeded(log, "createEntity", new AbstractMap.SimpleEntry<>("testDto", bundle.getEntity()));
@@ -235,16 +235,16 @@ public abstract class UrlParamIdDTOCrudControllerSpringAdapterIT<ServiceE extend
         return responseEntity;
     }
 
-    protected Collection<DTO> findAllEntitiesShouldSucceed(HttpStatus httpStatus) throws DTOReadingException, EntityMappingException {
+    protected Collection<Dto> findAllEntitiesShouldSucceed(HttpStatus httpStatus) throws DtoReadingException, EntityMappingException {
         ResponseEntity<String> responseEntity = findAllEntities(httpStatus);
 
         @SuppressWarnings("unchecked")
-        Set<DTO> dtos = crudController.getMediaTypeStrategy().readDTOsFromBody(responseEntity.getBody(), getDtoEntityClass(),Set.class);
+        Set<Dto> dtos = crudController.getMediaTypeStrategy().readDtosFromBody(responseEntity.getBody(), getDtoEntityClass(),Set.class);
 
         Set<ServiceE> allServiceEntities = crudController.getCrudService().findAll();
         Assertions.assertEquals(allServiceEntities.size(),dtos.size());
         List<Id> idsSeen = new ArrayList<>();
-        for (DTO dto : dtos) {
+        for (Dto dto : dtos) {
             //prevent duplicates
             Assertions.assertFalse(idsSeen.contains(dto.getId()));
             idsSeen.add(dto.getId());
@@ -257,17 +257,17 @@ public abstract class UrlParamIdDTOCrudControllerSpringAdapterIT<ServiceE extend
      * send find Entity Request to backend
      * expect {@link HttpStatus} status code to be 2xx
      * expect status code to be specified {@link HttpStatus} statuscode
-     * parse Body to {@link DTO} dtoObject
+     * parse Body to {@link Dto} dtoObject
      *
      * @param id
-     * @return parsed {@link DTO} dtoObject
+     * @return parsed {@link Dto} dtoObject
      * @throws Exception
      */
-    protected DTO findEntityShouldSucceed(Id id, HttpStatus httpStatus) throws Exception {
+    protected Dto findEntityShouldSucceed(Id id, HttpStatus httpStatus) throws Exception {
         ResponseEntity<String> responseEntity = findEntity(id);
         Assertions.assertTrue(responseEntity.getStatusCode().is2xxSuccessful(), "Status was : " + responseEntity.getStatusCode() + " response Body: " + responseEntity.getBody());
         Assertions.assertEquals(httpStatus, responseEntity.getStatusCode());
-        DTO httpResponseEntity = crudController.getMediaTypeStrategy().readDTOFromBody(responseEntity.getBody(), dtoEntityClass);
+        Dto httpResponseEntity = crudController.getMediaTypeStrategy().readDtoFromBody(responseEntity.getBody(), dtoEntityClass);
         Assertions.assertNotNull(httpResponseEntity);
         Assertions.assertTrue(isSavedServiceEntityDeepEqual(httpResponseEntity));
         return httpResponseEntity;
@@ -321,18 +321,18 @@ public abstract class UrlParamIdDTOCrudControllerSpringAdapterIT<ServiceE extend
      * 1. Send create Entity Request to Backend
      * 2. Expect 2xx {@link HttpStatus} statuscode from backend
      * 3. Expect the specified {@link HttpStatus}  statuscode from backend
-     * 4. assert returned DTO entity is deep equal to ServiceEntity via  {@link #isSavedServiceEntityDeepEqual(IdentifiableEntity)}
+     * 4. assert returned Dto entity is deep equal to ServiceEntity via  {@link #isSavedServiceEntityDeepEqual(IdentifiableEntity)}
      *
      * @param dtoEntity
      * @return
      * @throws Exception
      */
-    protected DTO createEntityShouldSucceed(DTO dtoEntity, HttpStatus httpStatus) throws Exception {
+    protected Dto createEntityShouldSucceed(Dto dtoEntity, HttpStatus httpStatus) throws Exception {
         Assertions.assertNull(dtoEntity.getId());
         ResponseEntity<String> responseEntity = createEntity(dtoEntity);
         Assertions.assertTrue(responseEntity.getStatusCode().is2xxSuccessful(), "Status was : " + responseEntity.getStatusCode() + " response Body: " + responseEntity.getBody());
         Assertions.assertEquals(responseEntity.getStatusCode(), httpStatus);
-        DTO httpResponseEntity = crudController.getMediaTypeStrategy().readDTOFromBody(responseEntity.getBody(), dtoEntityClass);
+        Dto httpResponseEntity = crudController.getMediaTypeStrategy().readDtoFromBody(responseEntity.getBody(), dtoEntityClass);
         Assertions.assertTrue(isSavedServiceEntityDeepEqual(httpResponseEntity));
         return httpResponseEntity;
     }
@@ -340,82 +340,82 @@ public abstract class UrlParamIdDTOCrudControllerSpringAdapterIT<ServiceE extend
     /**
      * Send create Entity Request to Backend, Response is returned
      *
-     * @param dtoEntity the DTO entity that should be stored
+     * @param dtoEntity the Dto entity that should be stored
      * @return
      */
-    protected ResponseEntity<String> createEntity(DTO dtoEntity) {
+    protected ResponseEntity<String> createEntity(Dto dtoEntity) {
         return getRestTemplate().postForEntity(getBaseUrl() + crudController.getCreateMethodName(), dtoEntity, String.class);
     }
 
     /**
      * Same as {@link #createEntity(IdentifiableEntity dtoEntity)} but the specified {@link HttpStatus} must be returned by Backend
      *
-     * @param dtoEntity  the DTO entity that should be stored
+     * @param dtoEntity  the Dto entity that should be stored
      * @param httpStatus the expected http Status
      * @return
      */
-    protected ResponseEntity<String> createEntity(DTO dtoEntity, HttpStatus httpStatus) {
+    protected ResponseEntity<String> createEntity(Dto dtoEntity, HttpStatus httpStatus) {
         ResponseEntity<String> responseEntity = createEntity(dtoEntity);
         Assertions.assertEquals(httpStatus, responseEntity.getStatusCode());
         return responseEntity;
     }
 
     /**
-     * @param oldEntityDTO entityDTO already saved that should be updated
-     * @param newEntityDTO entityDTO that should replace/update old entity
-     * @return updated entityDTO returned by backend
+     * @param oldEntityDto entityDto already saved that should be updated
+     * @param newEntityDto entityDto that should replace/update old entity
+     * @return updated entityDto returned by backend
      * @throws Exception
      */
-    protected DTO updateEntityShouldSucceed(DTO oldEntityDTO, DTO newEntityDTO, HttpStatus httpStatus) throws Exception {
-        Assertions.assertNotNull(oldEntityDTO.getId());
-        Assertions.assertNotNull(newEntityDTO.getId());
-        Assertions.assertEquals(oldEntityDTO.getId(), newEntityDTO.getId());
+    protected Dto updateEntityShouldSucceed(Dto oldEntityDto, Dto newEntityDto, HttpStatus httpStatus) throws Exception {
+        Assertions.assertNotNull(oldEntityDto.getId());
+        Assertions.assertNotNull(newEntityDto.getId());
+        Assertions.assertEquals(oldEntityDto.getId(), newEntityDto.getId());
         //Entity muss vorher auch schon da sein
-        Optional<ServiceE> serviceFoundEntityBeforeUpdate = crudController.getCrudService().findById(newEntityDTO.getId());
+        Optional<ServiceE> serviceFoundEntityBeforeUpdate = crudController.getCrudService().findById(newEntityDto.getId());
         Assertions.assertTrue(serviceFoundEntityBeforeUpdate.isPresent(), "Entity to delete was not present");
-        return _updateEntityShouldSucceed(oldEntityDTO, newEntityDTO, httpStatus);
+        return _updateEntityShouldSucceed(oldEntityDto, newEntityDto, httpStatus);
     }
 
 
-    private DTO _updateEntityShouldSucceed(DTO oldEntityDto, DTO newEntityDto, HttpStatus httpStatus) throws DTOReadingException, EntityMappingException {
+    private Dto _updateEntityShouldSucceed(Dto oldEntityDto, Dto newEntityDto, HttpStatus httpStatus) throws DtoReadingException, EntityMappingException {
         //trotzdem müssen changes vorliegen
         Assertions.assertFalse(isDeepEqual(oldEntityDto, newEntityDto));
 
         ResponseEntity<String> responseEntity = updateEntity(newEntityDto);
         Assertions.assertTrue(responseEntity.getStatusCode().is2xxSuccessful(), "Status was : " + responseEntity.getStatusCode());
         Assertions.assertEquals(httpStatus, responseEntity.getStatusCode());
-        DTO httpResponseDTO = crudController.getMediaTypeStrategy().readDTOFromBody(responseEntity.getBody(), dtoEntityClass);
-        Assertions.assertNotNull(httpResponseDTO);
+        Dto httpResponseDto = crudController.getMediaTypeStrategy().readDtoFromBody(responseEntity.getBody(), dtoEntityClass);
+        Assertions.assertNotNull(httpResponseDto);
         //response http entity must match modTestEntity
-        validateDTOsAreDeepEqual(httpResponseDTO, newEntityDto);
+        validateDtosAreDeepEqual(httpResponseDto, newEntityDto);
         //entity fetched from vincemann.github.generic.crud.lib.service by id must match httpResponseEntity
-        Assertions.assertTrue(isSavedServiceEntityDeepEqual(httpResponseDTO));
+        Assertions.assertTrue(isSavedServiceEntityDeepEqual(httpResponseDto));
         //entity fetched from vincemann.github.generic.crud.lib.service at start of test (before update) must not match httpResponseEntity (since it got updated)
-        boolean deepEqual = isDeepEqual(oldEntityDto, httpResponseDTO);
+        boolean deepEqual = isDeepEqual(oldEntityDto, httpResponseDto);
         Assertions.assertFalse(deepEqual, "Entites did match but must not -> entity was not updated");
-        return httpResponseDTO;
+        return httpResponseDto;
     }
 
     /**
-     * The entity found by id of {@param newEntityDTO}, is updated with newEntityDTO
+     * The entity found by id of {@param newEntityDto}, is updated with newEntityDto
      *
-     * @param newEntityDTO
+     * @param newEntityDto
      * @param httpStatus
      * @return
      * @throws Exception
      */
-    protected DTO updateEntityShouldSucceed(DTO newEntityDTO, HttpStatus httpStatus) throws Exception {
-        Assertions.assertNotNull(newEntityDTO.getId());
+    protected Dto updateEntityShouldSucceed(Dto newEntityDto, HttpStatus httpStatus) throws Exception {
+        Assertions.assertNotNull(newEntityDto.getId());
         //Entity must be saved already
-        Optional<ServiceE> serviceFoundEntityBeforeUpdate = crudController.getCrudService().findById(newEntityDTO.getId());
+        Optional<ServiceE> serviceFoundEntityBeforeUpdate = crudController.getCrudService().findById(newEntityDto.getId());
         Assertions.assertTrue(serviceFoundEntityBeforeUpdate.isPresent(), "Entity to delete was not present");
         //there must be changes
-        DTO oldEntityDtoFromService = getCrudController().getDtoMapper().mapServiceEntityToDto(serviceFoundEntityBeforeUpdate.get(), getDtoEntityClass());
+        Dto oldEntityDtoFromService = getCrudController().getDtoMapper().mapServiceEntityToDto(serviceFoundEntityBeforeUpdate.get(), getDtoEntityClass());
 
-        return _updateEntityShouldSucceed(oldEntityDtoFromService, newEntityDTO, httpStatus);
+        return _updateEntityShouldSucceed(oldEntityDtoFromService, newEntityDto, httpStatus);
     }
 
-    protected void updateEntityShouldFail(DTO oldEntity, DTO newEntity, HttpStatus httpStatus) throws Exception {
+    protected void updateEntityShouldFail(Dto oldEntity, Dto newEntity, HttpStatus httpStatus) throws Exception {
         Assertions.assertNotNull(oldEntity.getId());
         Assertions.assertNotNull(newEntity.getId());
         Assertions.assertEquals(oldEntity.getId(), newEntity.getId());
@@ -438,31 +438,31 @@ public abstract class UrlParamIdDTOCrudControllerSpringAdapterIT<ServiceE extend
     /**
      * Send update Entity Request to Backend
      *
-     * @param newEntity updated entityDTO
+     * @param newEntity updated entityDto
      * @return backend Response
      */
-    private ResponseEntity<String> updateEntity(DTO newEntity) {
+    private ResponseEntity<String> updateEntity(Dto newEntity) {
         Assertions.assertNotNull(newEntity.getId());
         UriComponentsBuilder builder = UriComponentsBuilder.fromHttpUrl(getBaseUrl() + crudController.getUpdateMethodName())
                 .queryParam(entityIdParamKey, newEntity.getId());
 
-        RequestEntity<DTO> requestEntity = new RequestEntity<DTO>(newEntity, HttpMethod.PUT, builder.build().toUri());
+        RequestEntity<Dto> requestEntity = new RequestEntity<Dto>(newEntity, HttpMethod.PUT, builder.build().toUri());
         return getRestTemplate().exchange(requestEntity, String.class);
     }
 
     /**
      * Send update Entity Request to Backend and expect specified {@link HttpStatus} status code
      *
-     * @param newEntity  updated entityDTO
+     * @param newEntity  updated entityDto
      * @param httpStatus expected status code
      * @return backend Response
      */
-    protected ResponseEntity<String> updateEntity(DTO newEntity, HttpStatus httpStatus) {
+    protected ResponseEntity<String> updateEntity(Dto newEntity, HttpStatus httpStatus) {
         Assertions.assertNotNull(newEntity.getId());
         UriComponentsBuilder builder = UriComponentsBuilder.fromHttpUrl(getBaseUrl() + crudController.getUpdateMethodName())
                 .queryParam(entityIdParamKey, newEntity.getId());
 
-        RequestEntity<DTO> requestEntity = new RequestEntity<DTO>(newEntity, HttpMethod.PUT, builder.build().toUri());
+        RequestEntity<Dto> requestEntity = new RequestEntity<Dto>(newEntity, HttpMethod.PUT, builder.build().toUri());
         ResponseEntity<String> responseEntity = getRestTemplate().exchange(requestEntity, String.class);
         Assertions.assertEquals(httpStatus, responseEntity.getStatusCode());
         return responseEntity;
@@ -470,15 +470,15 @@ public abstract class UrlParamIdDTOCrudControllerSpringAdapterIT<ServiceE extend
 
 
     /**
-     * 1. Map DTOEntity to ServiceEntity = RequestServiceEntity
+     * 1. Map DtoEntity to ServiceEntity = RequestServiceEntity
      * 2. Fetch ServiceEntity from Service (ultimately from the persistence layer) by Id = dbServiceEntity
      * 3. Validate that RequestServiceEntity and dbServiceEntity are deep equal via {@link BeanUtils#isDeepEqual(Object, Object)}
      *
-     * @param httpResponseEntity the DTO entity returned by Backend after http request
+     * @param httpResponseEntity the Dto entity returned by Backend after http request
      * @return
      * @throws NoIdException
      */
-    protected boolean isSavedServiceEntityDeepEqual(DTO httpResponseEntity) throws EntityMappingException {
+    protected boolean isSavedServiceEntityDeepEqual(Dto httpResponseEntity) throws EntityMappingException {
         try {
             ServiceE serviceHttpResponseEntity = crudController.getDtoMapper().mapDtoToServiceEntity(httpResponseEntity, crudController.getServiceEntityClass());
             Assertions.assertNotNull(serviceHttpResponseEntity);
@@ -501,8 +501,8 @@ public abstract class UrlParamIdDTOCrudControllerSpringAdapterIT<ServiceE extend
      * @param httpResponseEntity
      * @param prevSavedEntity
      */
-    protected void validateDTOsAreDeepEqual(DTO httpResponseEntity, DTO prevSavedEntity) {
-        boolean deepEqual = areDTOsDeepEqual(httpResponseEntity, prevSavedEntity);
+    protected void validateDtosAreDeepEqual(Dto httpResponseEntity, Dto prevSavedEntity) {
+        boolean deepEqual = areDtosDeepEqual(httpResponseEntity, prevSavedEntity);
         Assertions.assertTrue(deepEqual, "Entities did not match");
     }
 
@@ -513,14 +513,14 @@ public abstract class UrlParamIdDTOCrudControllerSpringAdapterIT<ServiceE extend
      * @param prevSavedEntity
      * @return
      */
-    protected boolean areDTOsDeepEqual(DTO httpResponseEntity, DTO prevSavedEntity) {
+    protected boolean areDtosDeepEqual(Dto httpResponseEntity, Dto prevSavedEntity) {
         return isDeepEqual(httpResponseEntity, prevSavedEntity);
     }
 
 
     /**
      * removes all Entites from given {@link Service}
-     * checks whether specified max amount of entities is exeeded : {@link UrlParamIdDTOCrudControllerSpringAdapterIT#setSafetyCheckMaxAmountEntitiesInRepo(int)}
+     * checks whether specified max amount of entities is exeeded : {@link UrlParamIdDtoCrudControllerSpringAdapterIT#setSafetyCheckMaxAmountEntitiesInRepo(int)}
      */
     @AfterEach
     public void tearDown() throws Exception {
@@ -557,11 +557,11 @@ public abstract class UrlParamIdDTOCrudControllerSpringAdapterIT<ServiceE extend
     }
 
 
-    public Class<DTO> getDtoEntityClass() {
+    public Class<Dto> getDtoEntityClass() {
         return dtoEntityClass;
     }
 
-    public List<TestEntityBundle<DTO>> getTestEntityBundles() {
+    public List<TestEntityBundle<Dto>> getTestEntityBundles() {
         return testEntityBundles;
     }
 

@@ -10,7 +10,7 @@ import lombok.Setter;
 @Getter
 @Setter
 @NoArgsConstructor
-public class BiDirEntityParentDTO extends IdentifiableEntityImpl<Long> implements BiDirDtoParent {
+public class BiDirEntityParentDto extends IdentifiableEntityImpl<Long> implements BiDirDtoParent {
 
     @BiDirChildId(BiDirEntityChild.class)
     private Long entityChildId;

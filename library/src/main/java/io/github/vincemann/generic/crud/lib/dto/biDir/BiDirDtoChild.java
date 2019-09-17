@@ -13,8 +13,8 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * Represents a DTO Entity, that has n ParentEntities {@link BiDirDtoParent}
- * The parent is represented in the DTO Entity by an id Field, annotated with {@link BiDirParentId}
+ * Represents a Dto Entity, that has n ParentEntities {@link BiDirDtoParent}
+ * The parent is represented in the Dto Entity by an id Field, annotated with {@link BiDirParentId}
  *
  * This entity can be mapped to its ServiceEntity by using {@link io.github.vincemann.generic.crud.lib.controller.dtoMapper.IdResolvingDtoMapper}
  *

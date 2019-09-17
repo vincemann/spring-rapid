@@ -1,9 +1,10 @@
 package io.github.vincemann.generic.crud.lib.controller.springAdapter;
 
 import io.github.vincemann.generic.crud.lib.controller.dtoMapper.EntityMappingException;
+import io.github.vincemann.generic.crud.lib.controller.springAdapter.plugins.AbstractDtoCrudControllerSpringAdapterPlugin;
 import io.github.vincemann.generic.crud.lib.controller.springAdapter.idFetchingStrategy.exception.IdFetchingException;
 import io.github.vincemann.generic.crud.lib.controller.springAdapter.idFetchingStrategy.IdFetchingStrategy;
-import io.github.vincemann.generic.crud.lib.controller.springAdapter.mediaTypeStrategy.DTOReadingException;
+import io.github.vincemann.generic.crud.lib.controller.springAdapter.mediaTypeStrategy.DtoReadingException;
 import io.github.vincemann.generic.crud.lib.controller.springAdapter.mediaTypeStrategy.MediaTypeStrategy;
 import io.github.vincemann.generic.crud.lib.controller.springAdapter.validationStrategy.ValidationStrategy;
 import io.github.vincemann.generic.crud.lib.controller.dtoMapper.DtoMapper;
@@ -11,7 +12,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.servlet.mvc.method.RequestMappingInfo;
-import io.github.vincemann.generic.crud.lib.controller.BasicDTOCrudController;
+import io.github.vincemann.generic.crud.lib.controller.BasicDtoCrudController;
 import io.github.vincemann.generic.crud.lib.model.IdentifiableEntity;
 import io.github.vincemann.generic.crud.lib.service.CrudService;
 import io.github.vincemann.generic.crud.lib.service.EndpointService;
@@ -23,16 +24,19 @@ import javax.servlet.http.HttpServletRequest;
 import javax.validation.ConstraintViolationException;
 import java.io.IOException;
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
+import java.util.List;
 import java.util.stream.Collectors;
 
 /**
  * Adapter that connects Springs Requirements for a Controller (which can be seen as an Interface),
- * with the {@link BasicDTOCrudController} Interface, resulting in a fully functional Spring @{@link org.springframework.web.bind.annotation.RestController}
+ * with the {@link BasicDtoCrudController} Interface, resulting in a fully functional Spring @{@link org.springframework.web.bind.annotation.RestController}
  *
  * fetches {@link Id} with given {@link IdFetchingStrategy} from HttpRequest
- * fetches {@link DTO} with given {@link MediaTypeStrategy} from HttpRequest
- * validate the {@link DTO} and {@link Id} with the given {@link ValidationStrategy}
+ * fetches {@link Dto} with given {@link MediaTypeStrategy} from HttpRequest
+ * validate the {@link Dto} and {@link Id} with the given {@link ValidationStrategy}
  *
  * ExampleUrls with {@link io.github.vincemann.generic.crud.lib.controller.springAdapter.idFetchingStrategy.UrlParamIdFetchingStrategy}:
  * /entityName/httpMethod?entityIdName=id
@@ -42,12 +46,12 @@ import java.util.stream.Collectors;
  *
  * @param <ServiceE> Service Entity Type, of entity, which's curd operations are exposed, via endpoints,  by this Controller
  * @param <Service>  Service Type of {@link CrudService} managing {@link ServiceE}s
- * @param <DTO>      DTO Type corresponding to {@link ServiceE}
+ * @param <Dto>      Dto Type corresponding to {@link ServiceE}
  * @param <Id>       Id Type of {@link ServiceE}
  *
  */
 @Slf4j
-public abstract class DTOCrudControllerSpringAdapter<ServiceE extends IdentifiableEntity<Id>,DTO extends IdentifiableEntity<Id>,Id extends Serializable, Service extends CrudService<ServiceE,Id>> extends BasicDTOCrudController<ServiceE,DTO,Id,Service> {
+public abstract class DtoCrudControllerSpringAdapter<ServiceE extends IdentifiableEntity<Id>,Dto extends IdentifiableEntity<Id>,Id extends Serializable, Service extends CrudService<ServiceE,Id>> extends BasicDtoCrudController<ServiceE,Dto,Id,Service> {
 
 
     private EndpointService endpointService;
@@ -60,11 +64,12 @@ public abstract class DTOCrudControllerSpringAdapter<ServiceE extends Identifiab
     private String findAllMethodName = "getAll";
     private IdFetchingStrategy<Id> idIdFetchingStrategy;
     private MediaTypeStrategy mediaTypeStrategy;
-    private ValidationStrategy<DTO,Id> validationStrategy;
+    private ValidationStrategy<Dto,Id> validationStrategy;
     private EndpointsExposureDetails endpointsExposureDetails;
+    private List<AbstractDtoCrudControllerSpringAdapterPlugin<? super ServiceE,? super Dto,? super Id>> plugins = new ArrayList<>();
 
     //todo implement methods, that only return id, and not whole dtos
-    public DTOCrudControllerSpringAdapter(Service crudService, EndpointService endpointService, String entityNameInUrl, IdFetchingStrategy<Id> idIdFetchingStrategy, MediaTypeStrategy mediaTypeStrategy, ValidationStrategy<DTO, Id> validationStrategy, DtoMapper dtoMapper, EndpointsExposureDetails endpointsExposureDetails) {
+    public DtoCrudControllerSpringAdapter(Service crudService, EndpointService endpointService, String entityNameInUrl, IdFetchingStrategy<Id> idIdFetchingStrategy, MediaTypeStrategy mediaTypeStrategy, ValidationStrategy<Dto, Id> validationStrategy, DtoMapper dtoMapper, EndpointsExposureDetails endpointsExposureDetails, AbstractDtoCrudControllerSpringAdapterPlugin<? super ServiceE,? super Dto,? super Id>... plugins) {
         super(crudService, dtoMapper);
         this.endpointService = endpointService;
         this.entityNameInUrl = entityNameInUrl;
@@ -74,9 +79,10 @@ public abstract class DTOCrudControllerSpringAdapter<ServiceE extends Identifiab
         this.validationStrategy = validationStrategy;
         this.endpointsExposureDetails = endpointsExposureDetails;
         initRequestMapping();
+        this.initExtensions(plugins);
     }
 
-    public DTOCrudControllerSpringAdapter(Service crudService, EndpointService endpointService, IdFetchingStrategy<Id> idIdFetchingStrategy, MediaTypeStrategy mediaTypeStrategy, ValidationStrategy<DTO, Id> validationStrategy, DtoMapper dtoMapper, EndpointsExposureDetails endpointsExposureDetails) {
+    public DtoCrudControllerSpringAdapter(Service crudService, EndpointService endpointService, IdFetchingStrategy<Id> idIdFetchingStrategy, MediaTypeStrategy mediaTypeStrategy, ValidationStrategy<Dto, Id> validationStrategy, DtoMapper dtoMapper, EndpointsExposureDetails endpointsExposureDetails, AbstractDtoCrudControllerSpringAdapterPlugin<? super ServiceE,? super Dto,? super Id>... plugins) {
         super(crudService, dtoMapper);
         this.endpointService = endpointService;
         this.endpointsExposureDetails = endpointsExposureDetails;
@@ -86,6 +92,14 @@ public abstract class DTOCrudControllerSpringAdapter<ServiceE extends Identifiab
         this.idIdFetchingStrategy=idIdFetchingStrategy;
         this.mediaTypeStrategy=mediaTypeStrategy;
         initRequestMapping();
+        this.initExtensions(plugins);
+    }
+
+    private void initExtensions(AbstractDtoCrudControllerSpringAdapterPlugin<? super ServiceE,? super Dto,? super Id>... crudControllerSpringAdapterExtensions){
+        List<AbstractDtoCrudControllerSpringAdapterPlugin<? super ServiceE, ? super Dto, ? super Id>> plugins = Arrays.asList(crudControllerSpringAdapterExtensions);
+        plugins.forEach(extension -> extension.setController(this));
+        this.plugins.addAll(plugins);
+        this.getBasicCrudControllerPlugins().addAll(plugins);
     }
 
 
@@ -178,40 +192,40 @@ public abstract class DTOCrudControllerSpringAdapter<ServiceE extends Identifiab
                 .build();
     }
 
-    public ResponseEntity<Collection<DTO>> findAll(HttpServletRequest request) throws EntityMappingException {
+    public ResponseEntity<Collection<Dto>> findAll(HttpServletRequest request) throws EntityMappingException {
         beforeFindAll(request);
         return super.findAll();
     }
 
 
-    public ResponseEntity<DTO> find(HttpServletRequest request) throws IdFetchingException, EntityNotFoundException, NoIdException, EntityMappingException {
+    public ResponseEntity<Dto> find(HttpServletRequest request) throws IdFetchingException, EntityNotFoundException, NoIdException, EntityMappingException {
         Id id = idIdFetchingStrategy.fetchId(request);
         validationStrategy.validateId(id,request);
         beforeFind(id,request);
         return super.find(id);
     }
 
-    public ResponseEntity<DTO> create(HttpServletRequest request) throws DTOReadingException, BadEntityException, EntityMappingException {
+    public ResponseEntity<Dto> create(HttpServletRequest request) throws DtoReadingException, BadEntityException, EntityMappingException {
         try {
             String body = request.getReader().lines().collect(Collectors.joining(System.lineSeparator()));
-            DTO dto = mediaTypeStrategy.readDTOFromBody(body,getDtoClass());
-            validationStrategy.validateDTO(dto,request);
+            Dto dto = mediaTypeStrategy.readDtoFromBody(body,getDtoClass());
+            validationStrategy.validateDto(dto,request);
             beforeCreate(dto,request);
             return super.create(dto);
         }catch (IOException e){
-            throw new DTOReadingException(e);
+            throw new DtoReadingException(e);
         }
     }
 
-    public ResponseEntity<DTO> update(HttpServletRequest request) throws DTOReadingException, EntityNotFoundException, NoIdException, BadEntityException, EntityMappingException {
+    public ResponseEntity<Dto> update(HttpServletRequest request) throws DtoReadingException, EntityNotFoundException, NoIdException, BadEntityException, EntityMappingException {
         try {
             String body = request.getReader().lines().collect(Collectors.joining(System.lineSeparator()));
-            DTO dto = mediaTypeStrategy.readDTOFromBody(body,getDtoClass());
-            validationStrategy.validateDTO(dto,request);
+            Dto dto = mediaTypeStrategy.readDtoFromBody(body,getDtoClass());
+            validationStrategy.validateDto(dto,request);
             beforeUpdate(dto,request);
             return super.update(dto);
         }catch (IOException e){
-            throw new DTOReadingException(e);
+            throw new DtoReadingException(e);
         }
 
 
@@ -224,11 +238,21 @@ public abstract class DTOCrudControllerSpringAdapter<ServiceE extends Identifiab
         return super.delete(id);
     }
 
-    protected void beforeCreate(DTO dto, HttpServletRequest httpServletRequest){}
-    protected void beforeUpdate(DTO dto, HttpServletRequest httpServletRequest){}
-    protected void beforeDelete(Id id, HttpServletRequest httpServletRequest){}
-    protected void beforeFind(Id id, HttpServletRequest httpServletRequest){}
-    protected void beforeFindAll(HttpServletRequest httpServletRequest){}
+    protected void beforeCreate(Dto dto, HttpServletRequest httpServletRequest){
+        plugins.forEach(extension -> extension.beforeCreate(dto,httpServletRequest));
+    }
+    protected void beforeUpdate(Dto dto, HttpServletRequest httpServletRequest){
+        plugins.forEach(extension -> extension.beforeUpdate(dto,httpServletRequest));
+    }
+    protected void beforeDelete(Id id, HttpServletRequest httpServletRequest){
+        plugins.forEach(extension -> extension.beforeDelete(id,httpServletRequest));
+    }
+    protected void beforeFind(Id id, HttpServletRequest httpServletRequest){
+        plugins.forEach(extension -> extension.beforeFind(id,httpServletRequest));
+    }
+    protected void beforeFindAll(HttpServletRequest httpServletRequest){
+        plugins.forEach(extension -> extension.beforeFindAll(httpServletRequest));
+    }
 
 
 
@@ -261,6 +285,7 @@ public abstract class DTOCrudControllerSpringAdapter<ServiceE extends Identifiab
     protected EndpointService getEndpointService() {
         return endpointService;
     }
+
 
 
     public String getEntityNameInUrl() {
@@ -315,7 +340,7 @@ public abstract class DTOCrudControllerSpringAdapter<ServiceE extends Identifiab
         return mediaTypeStrategy;
     }
 
-    public ValidationStrategy<DTO, Id> getValidationStrategy() {
+    public ValidationStrategy<Dto, Id> getValidationStrategy() {
         return validationStrategy;
     }
 

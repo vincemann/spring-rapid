@@ -28,7 +28,7 @@ class VetControllerIT extends EntityInitializerControllerIT<Vet, VetDto, VetServ
     }
 
     @Override
-    protected List<TestEntityBundle<VetDto>> provideValidTestDTOs() {
+    protected List<TestEntityBundle<VetDto>> provideValidTestDtos() {
         VetDto vetWithoutSpecialty = VetDto.builder()
                 .firstName("master")
                 .lastName("Yoda")
@@ -51,7 +51,7 @@ class VetControllerIT extends EntityInitializerControllerIT<Vet, VetDto, VetServ
     }
 
     @Override
-    protected List<VetDto> provideInvalidTestDTOs() {
+    protected List<VetDto> provideInvalidTestDtos() {
         return Arrays.asList(
                 VetDto.builder()
                         .firstName("master")
