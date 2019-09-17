@@ -17,6 +17,8 @@
 .idea/
 out/
 library/target/
+library/build.sh
+library/backup/
 
 application/target/
 # Gradle

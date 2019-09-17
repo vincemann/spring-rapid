@@ -1,6 +1,6 @@
 package io.github.vincemann.generic.crud.lib.controller.errorHandling.exceptionHandler;
 
-import io.github.vincemann.generic.crud.lib.controller.DTOCrudController;
+import io.github.vincemann.generic.crud.lib.controller.DtoCrudController;
 import io.github.vincemann.generic.crud.lib.controller.dtoMapper.EntityMappingException;
 import io.github.vincemann.generic.crud.lib.service.exception.BadEntityException;
 import io.github.vincemann.generic.crud.lib.service.exception.EntityNotFoundException;
@@ -9,8 +9,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 
 /**
- * handles Exceptions thrown by {@link DTOCrudController}
- * Impl needs to be annotated with @RestControllerAdvice(assignableTypes = DTOCrudController.class)
+ * handles Exceptions thrown by {@link DtoCrudController}
+ * Impl needs to be annotated with @RestControllerAdvice(assignableTypes = DtoCrudController.class)
  */
 public interface DtoCrudControllerExceptionHandler<ExceptionResponse>{
 

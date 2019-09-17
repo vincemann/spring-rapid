@@ -6,12 +6,12 @@ import io.github.vincemann.demo.model.PetType;
 import io.github.vincemann.demo.model.Specialty;
 import io.github.vincemann.demo.service.PetService;
 import io.github.vincemann.demo.service.VisitService;
-import io.github.vincemann.generic.crud.lib.controller.springAdapter.DTOCrudControllerSpringAdapter;
+import io.github.vincemann.generic.crud.lib.controller.springAdapter.DtoCrudControllerSpringAdapter;
 import io.github.vincemann.generic.crud.lib.model.IdentifiableEntity;
 import io.github.vincemann.generic.crud.lib.service.CrudService;
 import io.github.vincemann.generic.crud.lib.service.exception.EntityNotFoundException;
 import io.github.vincemann.generic.crud.lib.service.exception.NoIdException;
-import io.github.vincemann.generic.crud.lib.test.controller.springAdapter.ValidationUrlParamIdDTOCrudControllerSpringAdapterIT;
+import io.github.vincemann.generic.crud.lib.test.controller.springAdapter.ValidationUrlParamIdDtoCrudControllerSpringAdapterIT;
 import lombok.Getter;
 import lombok.Setter;
 import org.junit.jupiter.api.AfterEach;
@@ -19,7 +19,6 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import java.io.Serializable;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -28,7 +27,7 @@ import java.util.Set;
 
 @Getter
 @Setter
-public abstract class EntityInitializerControllerIT<ServiceE extends IdentifiableEntity<Long>, DTO extends IdentifiableEntity<Long>, Service extends CrudService<ServiceE, Long>, Controller extends DTOCrudControllerSpringAdapter<ServiceE, DTO, Long, Service>> extends ValidationUrlParamIdDTOCrudControllerSpringAdapterIT<ServiceE,DTO,Service,Controller,Long> {
+public abstract class EntityInitializerControllerIT<ServiceE extends IdentifiableEntity<Long>, Dto extends IdentifiableEntity<Long>, Service extends CrudService<ServiceE, Long>, Controller extends DtoCrudControllerSpringAdapter<ServiceE, Dto, Long, Service>> extends ValidationUrlParamIdDtoCrudControllerSpringAdapterIT<ServiceE,Dto,Service,Controller,Long> {
 
     @Autowired
     private PetTypeController petTypeController;

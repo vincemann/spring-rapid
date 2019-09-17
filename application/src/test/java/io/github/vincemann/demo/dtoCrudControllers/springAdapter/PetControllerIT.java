@@ -29,7 +29,7 @@ public class PetControllerIT extends EntityInitializerControllerIT<Pet, PetDto, 
 
 
     @Override
-    protected List<TestEntityBundle<PetDto>> provideValidTestDTOs() {
+    protected List<TestEntityBundle<PetDto>> provideValidTestDtos() {
         //Pet with persisted PetType
         PetDto petWithPersistedPetType = PetDto.builder()
                 .name("esta")
@@ -61,7 +61,7 @@ public class PetControllerIT extends EntityInitializerControllerIT<Pet, PetDto, 
     }
 
     @Override
-    protected List<PetDto> provideInvalidTestDTOs() {
+    protected List<PetDto> provideInvalidTestDtos() {
         PetDto petWithAlreadySetId = PetDto.builder()
                 .name("bello")
                 .petTypeId(getTestPetType().getId())

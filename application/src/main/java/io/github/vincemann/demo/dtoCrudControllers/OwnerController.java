@@ -1,9 +1,11 @@
 package io.github.vincemann.demo.dtoCrudControllers;
 
 import io.github.vincemann.demo.dtos.OwnerDto;
+import io.github.vincemann.demo.plugins.AclPlugin;
+import io.github.vincemann.demo.plugins.PersonNameSavingPlugin;
 import io.github.vincemann.demo.model.Owner;
 import io.github.vincemann.demo.service.OwnerService;
-import io.github.vincemann.generic.crud.lib.controller.springAdapter.DTOCrudControllerSpringAdapter;
+import io.github.vincemann.generic.crud.lib.controller.springAdapter.DtoCrudControllerSpringAdapter;
 import io.github.vincemann.generic.crud.lib.controller.springAdapter.EndpointsExposureDetails;
 import io.github.vincemann.generic.crud.lib.controller.springAdapter.idFetchingStrategy.IdFetchingStrategy;
 import io.github.vincemann.generic.crud.lib.controller.springAdapter.mediaTypeStrategy.MediaTypeStrategy;
@@ -16,7 +18,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 @Controller
-public class OwnerController extends DTOCrudControllerSpringAdapter<Owner, OwnerDto,Long,OwnerService> {
+public class OwnerController extends DtoCrudControllerSpringAdapter<Owner, OwnerDto,Long,OwnerService> {
 
 
     @Autowired
@@ -28,7 +30,10 @@ public class OwnerController extends DTOCrudControllerSpringAdapter<Owner, Owner
                 mediaTypeStrategy,
                 validationStrategy,
                 dtoMapper,
-                endpointsExposureDetails);
+                endpointsExposureDetails,
+                new AclPlugin(),
+                new PersonNameSavingPlugin()
+                );
     }
 
 

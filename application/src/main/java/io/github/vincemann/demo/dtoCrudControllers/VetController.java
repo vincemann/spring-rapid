@@ -1,7 +1,8 @@
 package io.github.vincemann.demo.dtoCrudControllers;
 
 import io.github.vincemann.demo.dtos.VetDto;
-import io.github.vincemann.generic.crud.lib.controller.springAdapter.DTOCrudControllerSpringAdapter;
+import io.github.vincemann.demo.plugins.PersonNameSavingPlugin;
+import io.github.vincemann.generic.crud.lib.controller.springAdapter.DtoCrudControllerSpringAdapter;
 import io.github.vincemann.generic.crud.lib.controller.springAdapter.EndpointsExposureDetails;
 import io.github.vincemann.generic.crud.lib.controller.springAdapter.idFetchingStrategy.IdFetchingStrategy;
 import io.github.vincemann.generic.crud.lib.controller.springAdapter.mediaTypeStrategy.MediaTypeStrategy;
@@ -15,7 +16,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import io.github.vincemann.generic.crud.lib.controller.dtoMapper.DtoMapper;
 
 @Controller
-public class VetController extends DTOCrudControllerSpringAdapter<Vet, VetDto,Long,VetService> {
+public class VetController extends DtoCrudControllerSpringAdapter<Vet, VetDto,Long,VetService> {
 
     public VetController(VetService crudService, MediaTypeStrategy mediaTypeStrategy, IdFetchingStrategy<Long> longIdFetchingStrategy, ValidationStrategy validationStrategy, DtoMapper dtoMapper, EndpointsExposureDetails endpointsExposureDetails, EndpointService endpointService) {
         super(crudService,
@@ -24,7 +25,10 @@ public class VetController extends DTOCrudControllerSpringAdapter<Vet, VetDto,Lo
                 mediaTypeStrategy,
                 validationStrategy,
                 dtoMapper,
-                endpointsExposureDetails);
+                endpointsExposureDetails,
+                //needs PersonNameSavingPlugin but no Acl Extension
+                new PersonNameSavingPlugin()
+        );
     }
 
 

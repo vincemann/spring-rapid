@@ -9,6 +9,6 @@ validation Layer
 exception Handling for Crud-Controller-Layer  
 support for Bidirectional Entity Relationships (i.e. @OneToMany, @ManyToOne)  
      -> automatically manages both sides of the bidirectional relationship (i.e. setting of backrefences) for all crud                                     operations  
-     DTO-to-ServiceEntity-mapping layer (and vice versa), integrated in the Crud-Controller-Layer  
+     Dto-to-ServiceEntity-mapping layer (and vice versa), integrated in the Crud-Controller-Layer  
   
 Checkout the example application for usageinfos and deatils

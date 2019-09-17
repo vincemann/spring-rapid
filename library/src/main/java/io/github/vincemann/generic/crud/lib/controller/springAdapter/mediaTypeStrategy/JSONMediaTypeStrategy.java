@@ -18,20 +18,20 @@ public class JSONMediaTypeStrategy implements MediaTypeStrategy{
     }
 
     @Override
-    public <DTO> DTO readDTOFromBody(String body,Class<DTO> dtoClass) throws DTOReadingException {
+    public <Dto> Dto readDtoFromBody(String body, Class<Dto> dtoClass) throws DtoReadingException {
         try {
             return mapper.readValue(body, dtoClass);
         } catch (IOException e) {
-            throw new DTOReadingException(e);
+            throw new DtoReadingException(e);
         }
     }
 
     @Override
-    public <DTO, C extends Collection<DTO>> C readDTOsFromBody(String body, Class<DTO> dtoClass, Class<C> collectionType) throws DTOReadingException {
+    public <Dto, C extends Collection<Dto>> C readDtosFromBody(String body, Class<Dto> dtoClass, Class<C> collectionType) throws DtoReadingException {
         try {
             return mapper.readValue(body,mapper.getTypeFactory().constructCollectionType(collectionType,dtoClass));
         } catch (IOException e) {
-            throw new DTOReadingException(e);
+            throw new DtoReadingException(e);
         }
     }
 

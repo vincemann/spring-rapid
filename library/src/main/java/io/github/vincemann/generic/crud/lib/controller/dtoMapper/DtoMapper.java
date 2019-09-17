@@ -5,7 +5,7 @@ import io.github.vincemann.generic.crud.lib.service.exception.EntityNotFoundExce
 import io.github.vincemann.generic.crud.lib.service.exception.NoIdException;
 
 /**
- * maps a DTO Entity to a ServiceEntity, or vice versa
+ * maps a Dto Entity to a ServiceEntity, or vice versa
  */
 public interface DtoMapper {
     public <T extends IdentifiableEntity> T mapDtoToServiceEntity(Object source, Class<T> destinationClass) throws EntityMappingException;

@@ -1,6 +1,6 @@
 package io.github.vincemann.generic.crud.lib.controller.errorHandling.exceptionHandler;
 
-import io.github.vincemann.generic.crud.lib.controller.DTOCrudController;
+import io.github.vincemann.generic.crud.lib.controller.DtoCrudController;
 import io.github.vincemann.generic.crud.lib.controller.dtoMapper.EntityMappingException;
 import io.github.vincemann.generic.crud.lib.controller.errorHandling.ApiError;
 import lombok.extern.slf4j.Slf4j;
@@ -12,7 +12,7 @@ import io.github.vincemann.generic.crud.lib.service.exception.EntityNotFoundExce
 import io.github.vincemann.generic.crud.lib.service.exception.NoIdException;
 
 //todo annotation is not inherited, so it the impl needs to be annotated
-@RestControllerAdvice(assignableTypes = DTOCrudController.class)
+@RestControllerAdvice(assignableTypes = DtoCrudController.class)
 @Slf4j
 public class DtoCrudControllerExceptionHandlerImpl extends ImprovedRestExceptionHandler implements DtoCrudControllerExceptionHandler<ApiError> {
 
@@ -21,7 +21,7 @@ public class DtoCrudControllerExceptionHandlerImpl extends ImprovedRestException
     public ResponseEntity<ApiError> handleEntityMappingException(EntityMappingException e) {
         logInternalServerError(e);
         return buildResponseEntity(new ApiError(HttpStatus.BAD_REQUEST,
-                "EntityDTO could not be mapped to Entity or vice versa",e));
+                "EntityDto could not be mapped to Entity or vice versa",e));
     }
 
     @Override

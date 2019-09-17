@@ -45,7 +45,7 @@ class OwnerControllerIT extends EntityInitializerControllerIT<Owner, OwnerDto, O
     }
 
     @Override
-    protected List<TestEntityBundle<OwnerDto>> provideValidTestDTOs() {
+    protected List<TestEntityBundle<OwnerDto>> provideValidTestDtos() {
         //OwnerDto without pets
         OwnerDto ownerWithoutPets = OwnerDto.builder()
                 .firstName("Max")
@@ -102,7 +102,7 @@ class OwnerControllerIT extends EntityInitializerControllerIT<Owner, OwnerDto, O
     }
 
     @Override
-    protected List<OwnerDto> provideInvalidTestDTOs() {
+    protected List<OwnerDto> provideInvalidTestDtos() {
         return Arrays.asList(
                 OwnerDto.builder()
                         .firstName("Hans")

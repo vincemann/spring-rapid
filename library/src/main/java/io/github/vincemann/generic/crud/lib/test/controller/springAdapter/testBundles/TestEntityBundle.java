@@ -1,6 +1,10 @@
 package io.github.vincemann.generic.crud.lib.test.controller.springAdapter.testBundles;
 
 import io.github.vincemann.generic.crud.lib.model.IdentifiableEntity;
+import io.github.vincemann.generic.crud.lib.test.controller.springAdapter.testBundles.callback.PostCreateCallback;
+import io.github.vincemann.generic.crud.lib.test.controller.springAdapter.testBundles.callback.PostDeleteCallback;
+import io.github.vincemann.generic.crud.lib.test.controller.springAdapter.testBundles.callback.PostFindAllCallback;
+import io.github.vincemann.generic.crud.lib.test.controller.springAdapter.testBundles.callback.PostFindCallback;
 import io.github.vincemann.generic.crud.lib.util.BeanUtils;
 import lombok.Builder;
 import lombok.Getter;
