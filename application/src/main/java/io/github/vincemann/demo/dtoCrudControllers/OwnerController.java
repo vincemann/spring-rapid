@@ -22,7 +22,13 @@ public class OwnerController extends DtoCrudControllerSpringAdapter<Owner, Owner
 
 
     @Autowired
-    public OwnerController(OwnerService crudService, MediaTypeStrategy mediaTypeStrategy, IdFetchingStrategy<Long> longIdFetchingStrategy, DtoMapper dtoMapper, ValidationStrategy validationStrategy, EndpointsExposureDetails endpointsExposureDetails, EndpointService endpointService){
+    public OwnerController(OwnerService crudService,
+                           MediaTypeStrategy mediaTypeStrategy,
+                           IdFetchingStrategy<Long> longIdFetchingStrategy,
+                           DtoMapper dtoMapper,
+                           ValidationStrategy validationStrategy,
+                           EndpointsExposureDetails endpointsExposureDetails,
+                           EndpointService endpointService){
         super(
                 crudService,
                 endpointService,

@@ -17,9 +17,9 @@ public class AclPlugin extends AbstractDtoCrudControllerSpringAdapterPlugin<Iden
     }
 
     @Override
-    public void afterDeleteEntity(Long aLong) {
+    public void afterDeleteEntity(Long id) {
         log.debug("deleting acl list for Entity with class: " + getController().getServiceEntityClass());
         /*acl would be deleted here*/
-        super.afterDeleteEntity(aLong);
+        super.afterDeleteEntity(id);
     }
 }
