@@ -179,7 +179,7 @@ public abstract class UrlParamIdDtoCrudControllerSpringAdapterIT<ServiceE extend
     }
 
     @Test
-    protected void createEntityTest() throws Exception {
+    protected void  createEntityTest() throws Exception {
         Assumptions.assumeTrue(getCrudController().getEndpointsExposureDetails().isCreateEndpointExposed());
         Assumptions.assumeTrue(!testEntityBundles.isEmpty());
         for (TestEntityBundle<Dto> bundle : this.testEntityBundles) {
