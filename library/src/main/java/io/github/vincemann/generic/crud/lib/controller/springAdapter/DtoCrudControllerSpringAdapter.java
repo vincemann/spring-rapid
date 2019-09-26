@@ -204,6 +204,8 @@ public abstract class DtoCrudControllerSpringAdapter<ServiceE extends Identifiab
                 .build();
     }
 
+
+
     public ResponseEntity<Collection<Dto>> findAll(HttpServletRequest request) throws EntityMappingException {
         beforeFindAll(request);
         return super.findAll();
@@ -212,6 +214,7 @@ public abstract class DtoCrudControllerSpringAdapter<ServiceE extends Identifiab
 
     public ResponseEntity<Dto> find(HttpServletRequest request) throws IdFetchingException, EntityNotFoundException, NoIdException, EntityMappingException {
         Id id = idIdFetchingStrategy.fetchId(request);
+        beforeFindValidate(id);
         validationStrategy.validateId(id,request);
         beforeFind(id,request);
         return super.find(id);
@@ -221,6 +224,7 @@ public abstract class DtoCrudControllerSpringAdapter<ServiceE extends Identifiab
         try {
             String body = request.getReader().lines().collect(Collectors.joining(System.lineSeparator()));
             Dto dto = mediaTypeStrategy.readDtoFromBody(body,getDtoClass());
+            beforeCreateValidate(dto);
             validationStrategy.validateDto(dto,request);
             beforeCreate(dto,request);
             return super.create(dto);
@@ -233,6 +237,7 @@ public abstract class DtoCrudControllerSpringAdapter<ServiceE extends Identifiab
         try {
             String body = request.getReader().lines().collect(Collectors.joining(System.lineSeparator()));
             Dto dto = mediaTypeStrategy.readDtoFromBody(body,getDtoClass());
+            beforeUpdateValidate(dto);
             validationStrategy.validateDto(dto,request);
             beforeUpdate(dto,request);
             return super.update(dto);
@@ -245,6 +250,7 @@ public abstract class DtoCrudControllerSpringAdapter<ServiceE extends Identifiab
 
     public ResponseEntity delete(HttpServletRequest request) throws IdFetchingException, NoIdException, EntityNotFoundException, ConstraintViolationException {
         Id id = idIdFetchingStrategy.fetchId(request);
+        beforeDeleteValidate(id);
         validationStrategy.validateId(id,request);
         beforeDelete(id,request);
         return super.delete(id);
@@ -265,6 +271,14 @@ public abstract class DtoCrudControllerSpringAdapter<ServiceE extends Identifiab
     protected void beforeFindAll(HttpServletRequest httpServletRequest){
         plugins.forEach(extension -> extension.beforeFindAll(httpServletRequest));
     }
+
+    protected void beforeCreateValidate(Dto dto){}
+
+    protected void beforeUpdateValidate(Dto dto){}
+
+    protected void beforeDeleteValidate(Id id){}
+
+    protected void beforeFindValidate(Id id){}
 
 
 
