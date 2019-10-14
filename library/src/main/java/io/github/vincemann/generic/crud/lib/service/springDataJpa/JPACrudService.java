@@ -7,6 +7,7 @@ import io.github.vincemann.generic.crud.lib.service.exception.EntityNotFoundExce
 import io.github.vincemann.generic.crud.lib.service.exception.NoIdException;
 import org.springframework.dao.NonTransientDataAccessException;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.io.Serializable;
 import java.lang.reflect.ParameterizedType;
@@ -26,6 +27,7 @@ public abstract class JPACrudService<E extends IdentifiableEntity<Id>,Id extends
     }
 
 
+    @Transactional
     @Override
     public E update(E entity) throws  NoIdException, EntityNotFoundException, BadEntityException {
         if(entity.getId()==null){
@@ -38,6 +40,7 @@ public abstract class JPACrudService<E extends IdentifiableEntity<Id>,Id extends
         return save(entity);
     }
 
+    @Transactional
     @Override
     public Optional<E> findById(Id id) throws NoIdException {
         if(id==null){
@@ -46,6 +49,7 @@ public abstract class JPACrudService<E extends IdentifiableEntity<Id>,Id extends
         return jpaRepository.findById(id);
     }
 
+    @Transactional
     @Override
     public E save(E entity) throws  BadEntityException {
         try {
@@ -56,11 +60,13 @@ public abstract class JPACrudService<E extends IdentifiableEntity<Id>,Id extends
         }
     }
 
+    @Transactional
     @Override
     public Set<E> findAll() {
        return new HashSet<>(jpaRepository.findAll());
     }
 
+    @Transactional
     @Override
     public void delete(E entity) throws EntityNotFoundException, NoIdException {
         if(entity.getId()==null){
@@ -72,6 +78,7 @@ public abstract class JPACrudService<E extends IdentifiableEntity<Id>,Id extends
         jpaRepository.delete(entity);
     }
 
+    @Transactional
     @Override
     public void deleteById(Id id) throws EntityNotFoundException, NoIdException {
         if(id==null){

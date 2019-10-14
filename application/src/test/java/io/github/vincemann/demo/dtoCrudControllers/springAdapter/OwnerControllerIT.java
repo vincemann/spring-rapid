@@ -9,6 +9,8 @@ import io.github.vincemann.demo.model.Pet;
 import io.github.vincemann.demo.service.OwnerService;
 import io.github.vincemann.demo.service.PetService;
 import io.github.vincemann.generic.crud.lib.service.exception.NoIdException;
+import io.github.vincemann.generic.crud.lib.test.controller.springAdapter.plugins.CheckIfDbDeletedPlugin;
+import io.github.vincemann.generic.crud.lib.test.controller.springAdapter.plugins.ServiceDeepEqualPlugin;
 import io.github.vincemann.generic.crud.lib.test.controller.springAdapter.testBundles.TestEntityBundle;
 import io.github.vincemann.generic.crud.lib.test.controller.springAdapter.testBundles.UpdateTestBundle;
 import org.junit.jupiter.api.Assertions;
@@ -18,6 +20,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.*;
 
@@ -32,8 +36,13 @@ class OwnerControllerIT extends EntityInitializerControllerIT<Owner, OwnerDto, O
     private Pet pet1;
     private Pet pet2;
 
-    OwnerControllerIT(@Autowired OwnerController crudController) {
-        super(crudController);
+    OwnerControllerIT(@Autowired OwnerController crudController,
+                      @Autowired CheckIfDbDeletedPlugin checkIfDbDeletedPlugin,
+                      @Autowired ServiceDeepEqualPlugin serviceDeepEqualPlugin) {
+        super(crudController,
+                checkIfDbDeletedPlugin,
+                serviceDeepEqualPlugin
+        );
     }
 
     @BeforeEach

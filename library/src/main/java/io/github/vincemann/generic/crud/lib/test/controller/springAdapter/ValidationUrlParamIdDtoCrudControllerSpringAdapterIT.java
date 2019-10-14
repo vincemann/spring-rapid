@@ -1,8 +1,10 @@
 package io.github.vincemann.generic.crud.lib.test.controller.springAdapter;
 
 import io.github.vincemann.generic.crud.lib.controller.springAdapter.DtoCrudControllerSpringAdapter;
+import io.github.vincemann.generic.crud.lib.controller.springAdapter.plugins.AbstractDtoCrudControllerSpringAdapterPlugin;
 import io.github.vincemann.generic.crud.lib.model.IdentifiableEntity;
 import io.github.vincemann.generic.crud.lib.service.CrudService;
+import io.github.vincemann.generic.crud.lib.test.controller.springAdapter.plugins.abs.AbstractUrlParamIdDtoCrudControllerSpringAdapterITPlugin;
 import io.github.vincemann.generic.crud.lib.test.controller.springAdapter.testBundles.TestEntityBundle;
 import io.github.vincemann.generic.crud.lib.test.controller.springAdapter.testBundles.UpdateTestBundle;
 import io.github.vincemann.generic.crud.lib.util.TestLogUtils;
@@ -13,6 +15,8 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.io.Serializable;
 import java.util.AbstractMap;
@@ -33,12 +37,12 @@ public abstract class ValidationUrlParamIdDtoCrudControllerSpringAdapterIT<Servi
     private List<Dto> invalidTestDtos;
     private List<TestEntityBundle<Dto>> invalidTestDtoUpdateBundles;
 
-    public ValidationUrlParamIdDtoCrudControllerSpringAdapterIT(String url, Controller crudController, Id nonExistingId) {
-        super(url, crudController, nonExistingId);
+    public ValidationUrlParamIdDtoCrudControllerSpringAdapterIT(String url, Controller crudController, Id nonExistingId, AbstractUrlParamIdDtoCrudControllerSpringAdapterITPlugin<? super Dto,? super Id>... plugins) {
+        super(url, crudController, nonExistingId, plugins);
     }
 
-    public ValidationUrlParamIdDtoCrudControllerSpringAdapterIT(Controller crudController, Id nonExistingId) {
-        super(crudController, nonExistingId);
+    public ValidationUrlParamIdDtoCrudControllerSpringAdapterIT(Controller crudController, Id nonExistingId,AbstractUrlParamIdDtoCrudControllerSpringAdapterITPlugin<? super Dto,? super Id>... plugins) {
+        super(crudController, nonExistingId, plugins);
     }
 
     /**

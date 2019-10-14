@@ -5,6 +5,8 @@ import io.github.vincemann.demo.dtoCrudControllers.VetController;
 import io.github.vincemann.demo.dtos.VetDto;
 import io.github.vincemann.demo.model.Vet;
 import io.github.vincemann.demo.service.VetService;
+import io.github.vincemann.generic.crud.lib.test.controller.springAdapter.plugins.CheckIfDbDeletedPlugin;
+import io.github.vincemann.generic.crud.lib.test.controller.springAdapter.plugins.ServiceDeepEqualPlugin;
 import io.github.vincemann.generic.crud.lib.test.controller.springAdapter.testBundles.TestEntityBundle;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,8 +25,10 @@ import java.util.List;
 class VetControllerIT extends EntityInitializerControllerIT<Vet, VetDto, VetService, VetController> {
 
 
-    VetControllerIT(@Autowired VetController crudController) {
-        super(crudController);
+    VetControllerIT(@Autowired VetController crudController,
+                    @Autowired CheckIfDbDeletedPlugin checkIfDbDeletedPlugin,
+                    @Autowired ServiceDeepEqualPlugin serviceDeepEqualPlugin) {
+        super(crudController, checkIfDbDeletedPlugin,serviceDeepEqualPlugin);
     }
 
     @Override

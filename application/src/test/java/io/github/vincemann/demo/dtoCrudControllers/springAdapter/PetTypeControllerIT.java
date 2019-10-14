@@ -5,6 +5,8 @@ import io.github.vincemann.demo.dtos.PetTypeDto;
 import io.github.vincemann.demo.model.PetType;
 import io.github.vincemann.demo.service.PetTypeService;
 import io.github.vincemann.generic.crud.lib.test.controller.springAdapter.ValidationUrlParamIdDtoCrudControllerSpringAdapterIT;
+import io.github.vincemann.generic.crud.lib.test.controller.springAdapter.plugins.CheckIfDbDeletedPlugin;
+import io.github.vincemann.generic.crud.lib.test.controller.springAdapter.plugins.ServiceDeepEqualPlugin;
 import io.github.vincemann.generic.crud.lib.test.controller.springAdapter.testBundles.TestEntityBundle;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,8 +23,10 @@ import java.util.List;
 @ActiveProfiles(value = {"test", "springdatajpa"})
 public class PetTypeControllerIT extends ValidationUrlParamIdDtoCrudControllerSpringAdapterIT<PetType, PetTypeDto,PetTypeService, PetTypeController,Long> {
 
-    public PetTypeControllerIT(@Autowired PetTypeController crudController) {
-        super(crudController, -1L);
+    public PetTypeControllerIT(@Autowired PetTypeController crudController,
+                               @Autowired CheckIfDbDeletedPlugin checkIfDbDeletedPlugin,
+                               @Autowired ServiceDeepEqualPlugin serviceDeepEqualPlugin) {
+        super(crudController, -1L,checkIfDbDeletedPlugin,serviceDeepEqualPlugin);
     }
 
     @Override

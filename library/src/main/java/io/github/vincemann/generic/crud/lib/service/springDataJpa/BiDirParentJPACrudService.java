@@ -7,6 +7,7 @@ import io.github.vincemann.generic.crud.lib.service.exception.BadEntityException
 import io.github.vincemann.generic.crud.lib.service.exception.EntityNotFoundException;
 import io.github.vincemann.generic.crud.lib.service.exception.NoIdException;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.io.Serializable;
 import java.util.*;
@@ -16,6 +17,7 @@ public abstract class BiDirParentJPACrudService<E extends IdentifiableEntity<Id>
         super(jpaRepository);
     }
 
+    @Transactional
     @Override
     public E update(E entity) throws NoIdException, EntityNotFoundException, BadEntityException {
         try {
