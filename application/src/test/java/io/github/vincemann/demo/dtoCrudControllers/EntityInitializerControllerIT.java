@@ -12,13 +12,19 @@ import io.github.vincemann.generic.crud.lib.service.CrudService;
 import io.github.vincemann.generic.crud.lib.service.exception.EntityNotFoundException;
 import io.github.vincemann.generic.crud.lib.service.exception.NoIdException;
 import io.github.vincemann.generic.crud.lib.test.controller.springAdapter.ValidationUrlParamIdDtoCrudControllerSpringAdapterIT;
+import io.github.vincemann.generic.crud.lib.test.controller.springAdapter.plugins.CheckIfDbDeletedPlugin;
+import io.github.vincemann.generic.crud.lib.test.controller.springAdapter.plugins.ServiceDeepEqualPlugin;
+import io.github.vincemann.generic.crud.lib.test.controller.springAdapter.plugins.abs.AbstractUrlParamIdDtoCrudControllerSpringAdapterITPlugin;
 import lombok.Getter;
 import lombok.Setter;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 
+import javax.persistence.EntityManager;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -50,15 +56,16 @@ public abstract class EntityInitializerControllerIT<ServiceE extends Identifiabl
     private PetService petService;
     private Pet testPet;
 
-    public EntityInitializerControllerIT(String url, Controller crudController) {
-        super(url, crudController,null);
+    public EntityInitializerControllerIT(String url, Controller crudController, AbstractUrlParamIdDtoCrudControllerSpringAdapterITPlugin<? super Dto,? super Long>... plugins) {
+        super(url, crudController,null,plugins);
         this.setNonExistingIdFinder(this::findNonExistingId);
     }
 
-    public EntityInitializerControllerIT(Controller crudController) {
-        super(crudController, null);
+    public EntityInitializerControllerIT(Controller crudController,AbstractUrlParamIdDtoCrudControllerSpringAdapterITPlugin<? super Dto,? super Long>... plugins) {
+        super(crudController, null,plugins);
         this.setNonExistingIdFinder(this::findNonExistingId);
     }
+
 
     private Long findNonExistingId(){
         List<Long> allIds = new ArrayList<>();

@@ -7,6 +7,7 @@ import io.github.vincemann.demo.service.OwnerService;
 import io.github.vincemann.generic.crud.lib.service.springDataJpa.BiDirParentJPACrudService;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Optional;
 @Service
@@ -17,6 +18,7 @@ public class OwnerJPAService extends BiDirParentJPACrudService<Owner,Long, Owner
         super(ownerRepository);
     }
 
+    @Transactional
     @Override
     public Optional<Owner> findByLastName(String lastName) {
         return getJpaRepository().findByLastName(lastName);
