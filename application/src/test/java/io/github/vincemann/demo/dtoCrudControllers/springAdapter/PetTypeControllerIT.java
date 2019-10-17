@@ -7,7 +7,7 @@ import io.github.vincemann.demo.service.PetTypeService;
 import io.github.vincemann.generic.crud.lib.test.controller.springAdapter.ValidationUrlParamIdDtoCrudControllerSpringAdapterIT;
 import io.github.vincemann.generic.crud.lib.test.controller.springAdapter.plugins.CheckIfDbDeletedPlugin;
 import io.github.vincemann.generic.crud.lib.test.controller.springAdapter.plugins.ServiceDeepEqualPlugin;
-import io.github.vincemann.generic.crud.lib.test.controller.springAdapter.testBundles.TestEntityBundle;
+import io.github.vincemann.generic.crud.lib.test.controller.springAdapter.testBundles.successfulTestBundles.UpdatableSucceedingTestEntityBundle;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -38,14 +38,14 @@ public class PetTypeControllerIT extends ValidationUrlParamIdDtoCrudControllerSp
     }
 
     @Override
-    protected List<TestEntityBundle<PetTypeDto>> provideInvalidUpdateDtoBundles() {
+    protected List<UpdatableSucceedingTestEntityBundle<PetTypeDto>> provideInvalidEntityTestBundles() {
         return null;
     }
 
     @Override
-    protected List<TestEntityBundle<PetTypeDto>> provideValidTestDtos() {
+    protected List<UpdatableSucceedingTestEntityBundle<PetTypeDto>> provideSucceedingTestBundles() {
         return Arrays.asList(
-                new TestEntityBundle<>(new PetTypeDto("Maus"))
+                new UpdatableSucceedingTestEntityBundle<>(new PetTypeDto("Maus"))
         );
     }
 }

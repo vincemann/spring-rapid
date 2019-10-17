@@ -7,7 +7,7 @@ import io.github.vincemann.demo.model.Vet;
 import io.github.vincemann.demo.service.VetService;
 import io.github.vincemann.generic.crud.lib.test.controller.springAdapter.plugins.CheckIfDbDeletedPlugin;
 import io.github.vincemann.generic.crud.lib.test.controller.springAdapter.plugins.ServiceDeepEqualPlugin;
-import io.github.vincemann.generic.crud.lib.test.controller.springAdapter.testBundles.TestEntityBundle;
+import io.github.vincemann.generic.crud.lib.test.controller.springAdapter.testBundles.successfulTestBundles.UpdatableSucceedingTestEntityBundle;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -32,7 +32,7 @@ class VetControllerIT extends EntityInitializerControllerIT<Vet, VetDto, VetServ
     }
 
     @Override
-    protected List<TestEntityBundle<VetDto>> provideValidTestDtos() {
+    protected List<UpdatableSucceedingTestEntityBundle<VetDto>> provideSucceedingTestBundles() {
         VetDto vetWithoutSpecialty = VetDto.builder()
                 .firstName("master")
                 .lastName("Yoda")
@@ -49,8 +49,8 @@ class VetControllerIT extends EntityInitializerControllerIT<Vet, VetDto, VetServ
                 .build();
 
         return Arrays.asList(
-                new TestEntityBundle<>(vetWithoutSpecialty),
-                new TestEntityBundle<>(vetWithSpecialty,diffVetsNameUpdate)
+                new UpdatableSucceedingTestEntityBundle<>(vetWithoutSpecialty),
+                new UpdatableSucceedingTestEntityBundle<>(vetWithSpecialty,diffVetsNameUpdate)
         );
     }
 
@@ -73,7 +73,7 @@ class VetControllerIT extends EntityInitializerControllerIT<Vet, VetDto, VetServ
 
 
     @Override
-    protected List<TestEntityBundle<VetDto>> provideInvalidUpdateDtoBundles() {
+    protected List<UpdatableSucceedingTestEntityBundle<VetDto>> provideInvalidEntityTestBundles() {
         VetDto validVet = VetDto.builder()
                 .firstName("master")
                 .lastName("Yoda")
@@ -85,6 +85,6 @@ class VetControllerIT extends EntityInitializerControllerIT<Vet, VetDto, VetServ
 
         return Arrays.asList(
                 //vets name must not be set to null in update
-                new TestEntityBundle<>(validVet,noNameUpdate));
+                new UpdatableSucceedingTestEntityBundle<>(validVet,noNameUpdate));
     }
 }

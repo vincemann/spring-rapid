@@ -11,8 +11,8 @@ import io.github.vincemann.demo.service.PetService;
 import io.github.vincemann.generic.crud.lib.service.exception.NoIdException;
 import io.github.vincemann.generic.crud.lib.test.controller.springAdapter.plugins.CheckIfDbDeletedPlugin;
 import io.github.vincemann.generic.crud.lib.test.controller.springAdapter.plugins.ServiceDeepEqualPlugin;
-import io.github.vincemann.generic.crud.lib.test.controller.springAdapter.testBundles.TestEntityBundle;
-import io.github.vincemann.generic.crud.lib.test.controller.springAdapter.testBundles.UpdateTestBundle;
+import io.github.vincemann.generic.crud.lib.test.controller.springAdapter.testBundles.successfulTestBundles.UpdatableSucceedingTestEntityBundle;
+import io.github.vincemann.generic.crud.lib.test.controller.springAdapter.testBundles.UpdateTestEntityBundle;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -20,8 +20,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
-import org.springframework.transaction.annotation.Propagation;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.util.*;
 
@@ -54,7 +52,7 @@ class OwnerControllerIT extends EntityInitializerControllerIT<Owner, OwnerDto, O
     }
 
     @Override
-    protected List<TestEntityBundle<OwnerDto>> provideValidTestDtos() {
+    protected List<UpdatableSucceedingTestEntityBundle<OwnerDto>> provideSucceedingTestBundles() {
         //OwnerDto without pets
         OwnerDto ownerWithoutPets = OwnerDto.builder()
                 .firstName("Max")
@@ -102,29 +100,15 @@ class OwnerControllerIT extends EntityInitializerControllerIT<Owner, OwnerDto, O
 
 
         return Arrays.asList(
-
-                new TestEntityBundle<>(ownerWithoutPets, diffStreetUpdate, diffLastNameUpdate),
-                new TestEntityBundle<>(ownerWithPersistedPet, deletedPetUpdate),
+                new UpdatableSucceedingTestEntityBundle<>(ownerWithoutPets, diffStreetUpdate, diffLastNameUpdate),
+                new UpdatableSucceedingTestEntityBundle<>(ownerWithPersistedPet, deletedPetUpdate),
                 //OwnerDto with many Pets (no update test)
-                new TestEntityBundle<>(ownerWithManyPets)
+                new UpdatableSucceedingTestEntityBundle<>(ownerWithManyPets)
         );
     }
 
     @Override
-    protected List<OwnerDto> provideInvalidTestDtos() {
-        return Arrays.asList(
-                OwnerDto.builder()
-                        .firstName("Hans")
-                        .lastName("meier")
-                        .address("MegaNiceStreet 5")
-                        //blank city
-                        .city("")
-                        .build()
-        );
-    }
-
-    @Override
-    protected List<TestEntityBundle<OwnerDto>> provideInvalidUpdateDtoBundles() {
+    protected List<UpdatableSucceedingTestEntityBundle<OwnerDto>> provideInvalidEntityTestBundles() {
         //OwnerDto without pets
         OwnerDto ownerWithoutPets = OwnerDto.builder()
                 .firstName("Max")
@@ -142,13 +126,25 @@ class OwnerControllerIT extends EntityInitializerControllerIT<Owner, OwnerDto, O
                 .petIds(Collections.singleton(-1L))
                 .build();
 
+        OwnerDto blankCityOwner = OwnerDto.builder()
+                .firstName("Hans")
+                .lastName("meier")
+                .address("MegaNiceStreet 5")
+                //blank city
+                .city("")
+                .build();
+
         return Arrays.asList(
-                new TestEntityBundle<>(
+                new UpdatableSucceedingTestEntityBundle<>(
                         ownerWithoutPets,
                         //update owner without pets, by adding a nonexisting pet -> should fail
                         //after the update test assert that the saved owner indeed has no pets
-                        new UpdateTestBundle<>(addInvalidPetUpdate, this::assertOwnerDoesNotHavePets)
-                )
+                        UpdateTestEntityBundle.<OwnerDto>builder()
+                                .modifiedEntity(addInvalidPetUpdate)
+                                .postUpdateCallback(this::assertOwnerDoesNotHavePets)
+                                .build()
+                ),
+                new UpdatableSucceedingTestEntityBundle<>(blankCityOwner)
         );
     }
 

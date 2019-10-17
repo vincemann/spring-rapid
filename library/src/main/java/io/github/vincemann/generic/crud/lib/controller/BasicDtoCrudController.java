@@ -1,9 +1,8 @@
 package io.github.vincemann.generic.crud.lib.controller;
 
 import io.github.vincemann.generic.crud.lib.controller.dtoMapper.EntityMappingException;
-import io.github.vincemann.generic.crud.lib.controller.springAdapter.plugins.AbstractBasicDtoCrudControllerPlugin;
-import io.github.vincemann.generic.crud.lib.controller.springAdapter.plugins.BasicDtoCrudControllerPlugin;
 import lombok.Getter;
+import lombok.Setter;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import io.github.vincemann.generic.crud.lib.controller.dtoMapper.DtoMapper;
@@ -38,10 +37,10 @@ public abstract class BasicDtoCrudController<ServiceE extends IdentifiableEntity
     private Class<ServiceE> serviceEntityClass = (Class<ServiceE>) ((ParameterizedType) this.getClass().getGenericSuperclass()).getActualTypeArguments()[0];
     @SuppressWarnings("unchecked")
     private Class<Dto> dtoClass = (Class<Dto>) ((ParameterizedType) this.getClass().getGenericSuperclass()).getActualTypeArguments()[1];
-    private List<BasicDtoCrudControllerPlugin<? super ServiceE,? super Id>> basicCrudControllerPlugins = new ArrayList<>();
+    private List<Plugin<? super ServiceE,? super Id>> basicCrudControllerPlugins = new ArrayList<>();
 
-    public BasicDtoCrudController(Service crudService, DtoMapper dtoMapper, AbstractBasicDtoCrudControllerPlugin<? super ServiceE,? super Id>... crudControllerExtensions) {
-        List<AbstractBasicDtoCrudControllerPlugin<? super ServiceE, ? super Id>> plugins = Arrays.asList(crudControllerExtensions);
+    public BasicDtoCrudController(Service crudService, DtoMapper dtoMapper, AbstractPlugin<? super ServiceE,? super Id>... crudControllerExtensions) {
+        List<AbstractPlugin<? super ServiceE, ? super Id>> plugins = Arrays.asList(crudControllerExtensions);
         plugins.forEach(extension -> extension.setController(this));
         this.basicCrudControllerPlugins.addAll(plugins);
         this.crudService = crudService;
@@ -77,7 +76,7 @@ public abstract class BasicDtoCrudController<ServiceE extends IdentifiableEntity
     }
 
     protected void beforeFindAllEntities(){
-        basicCrudControllerPlugins.forEach(BasicDtoCrudControllerPlugin::beforeFindAllEntities);
+        basicCrudControllerPlugins.forEach(Plugin::beforeFindAllEntities);
     }
 
     protected void afterFindAllEntities(Set<ServiceE> all){
@@ -154,5 +153,36 @@ public abstract class BasicDtoCrudController<ServiceE extends IdentifiableEntity
     private ResponseEntity<Dto> ok(Dto entity) {
         return new ResponseEntity<>(entity, HttpStatus.OK);
     }
+
+    public interface Plugin<ServiceE extends IdentifiableEntity<Id>,Id extends Serializable> {
+
+        public void beforeFindEntity(Id id);
+
+        public void afterFindEntity(ServiceE foundEntity);
+
+        public void beforeCreateEntity(ServiceE entity);
+
+        public void afterCreateEntity(ServiceE entity);
+
+        public void beforeUpdateEntity(ServiceE entity);
+
+        public void afterUpdateEntity(ServiceE entity);
+
+        public void beforeDeleteEntity(Id id);
+
+        public void afterDeleteEntity(Id id);
+
+        public void beforeFindAllEntities();
+
+        public void afterFindAllEntities(Set<? extends ServiceE> all);
+    }
+
+
+    @Setter
+    @Getter
+    public static abstract class AbstractPlugin<ServiceE extends IdentifiableEntity<Id>,Id extends Serializable> implements BasicDtoCrudController.Plugin<ServiceE,Id> {
+        private BasicDtoCrudController controller;
+    }
+
 
 }

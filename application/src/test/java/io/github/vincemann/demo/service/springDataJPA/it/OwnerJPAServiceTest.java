@@ -2,8 +2,7 @@ package io.github.vincemann.demo.service.springDataJPA.it;
 
 import io.github.vincemann.demo.model.Owner;
 import io.github.vincemann.demo.service.springDataJPA.OwnerJPAService;
-import io.github.vincemann.demo.jpaRepositories.OwnerRepository;
-import io.github.vincemann.generic.crud.lib.test.controller.springAdapter.testBundles.TestEntityBundle;
+import io.github.vincemann.generic.crud.lib.test.controller.springAdapter.testBundles.successfulTestBundles.UpdatableSucceedingTestEntityBundle;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -27,7 +26,7 @@ class OwnerJPAServiceTest extends CrudServiceTest<OwnerJPAService, Owner, Long> 
     }
 
     @Override
-    protected List<TestEntityBundle<Owner>> provideTestEntityBundles() {
+    protected List<UpdatableSucceedingTestEntityBundle<Owner>> provideTestEntityBundles() {
         Owner owner = Owner.builder()
                 .firstName("ownername")
                 .lastName("owner lastName")
@@ -45,7 +44,7 @@ class OwnerJPAServiceTest extends CrudServiceTest<OwnerJPAService, Owner, Long> 
                 .build();
 
         return Arrays.asList(
-                new TestEntityBundle<>(owner,diffTelephoneNumberUpdate)
+                new UpdatableSucceedingTestEntityBundle<>(owner,diffTelephoneNumberUpdate)
         );
     }
 }

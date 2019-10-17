@@ -4,9 +4,7 @@ import io.github.vincemann.demo.model.Pet;
 import io.github.vincemann.demo.model.PetType;
 import io.github.vincemann.demo.service.PetTypeService;
 import io.github.vincemann.demo.service.springDataJPA.PetJPAService;
-import io.github.vincemann.demo.jpaRepositories.PetRepository;
-import io.github.vincemann.demo.service.springDataJPA.PetTypeJPAService;
-import io.github.vincemann.generic.crud.lib.test.controller.springAdapter.testBundles.TestEntityBundle;
+import io.github.vincemann.generic.crud.lib.test.controller.springAdapter.testBundles.successfulTestBundles.UpdatableSucceedingTestEntityBundle;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,7 +15,6 @@ import io.github.vincemann.generic.crud.lib.test.service.CrudServiceTest;
 
 import java.time.LocalDate;
 import java.util.Arrays;
-import java.util.Date;
 import java.util.List;
 
 @ExtendWith(SpringExtension.class)
@@ -42,7 +39,7 @@ class PetJPAServiceTest extends CrudServiceTest<PetJPAService, Pet,Long> {
     }
 
     @Override
-    protected List<TestEntityBundle<Pet>> provideTestEntityBundles() {
+    protected List<UpdatableSucceedingTestEntityBundle<Pet>> provideTestEntityBundles() {
         Pet dogWithDogType = Pet.builder()
                 .petType(dogPetType)
                 .birthDate(LocalDate.now())
@@ -51,7 +48,7 @@ class PetJPAServiceTest extends CrudServiceTest<PetJPAService, Pet,Long> {
 
 
         return Arrays.asList(
-                new TestEntityBundle<>(dogWithDogType)
+                new UpdatableSucceedingTestEntityBundle<>(dogWithDogType)
         );
     }
 }

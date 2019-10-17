@@ -3,7 +3,7 @@ package io.github.vincemann.generic.crud.lib.test.controller.springAdapter.plugi
 import io.github.vincemann.generic.crud.lib.controller.dtoMapper.EntityMappingException;
 import io.github.vincemann.generic.crud.lib.model.IdentifiableEntity;
 import io.github.vincemann.generic.crud.lib.service.exception.NoIdException;
-import io.github.vincemann.generic.crud.lib.test.controller.springAdapter.plugins.abs.AbstractUrlParamIdDtoCrudControllerSpringAdapterITPlugin;
+import io.github.vincemann.generic.crud.lib.test.controller.springAdapter.UrlParamIdDtoCrudControllerSpringAdapterIT;
 import io.github.vincemann.generic.crud.lib.util.BeanUtils;
 import org.junit.jupiter.api.Assertions;
 import org.springframework.http.ResponseEntity;
@@ -19,7 +19,7 @@ import static io.github.vincemann.generic.crud.lib.util.BeanUtils.isDeepEqual;
  * This plugin checks for find-,create- and updateTests if serviceEntity with id of dto returned by httpRequest is {@link BeanUtils#isDeepEqual(Object, Object)} to it.
  */
 @Component
-public class ServiceDeepEqualPlugin extends AbstractUrlParamIdDtoCrudControllerSpringAdapterITPlugin<IdentifiableEntity<Long>,Long> {
+public class ServiceDeepEqualPlugin extends UrlParamIdDtoCrudControllerSpringAdapterIT.Plugin<IdentifiableEntity<Long>,Long> {
     
 
     @Override
