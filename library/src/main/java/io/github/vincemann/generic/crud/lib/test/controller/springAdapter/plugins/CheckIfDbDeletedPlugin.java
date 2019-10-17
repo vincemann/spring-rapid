@@ -1,6 +1,6 @@
 package io.github.vincemann.generic.crud.lib.test.controller.springAdapter.plugins;
 
-import io.github.vincemann.generic.crud.lib.test.controller.springAdapter.plugins.abs.AbstractUrlParamIdDtoCrudControllerSpringAdapterITPlugin;
+import io.github.vincemann.generic.crud.lib.test.controller.springAdapter.UrlParamIdDtoCrudControllerSpringAdapterIT;
 import org.junit.jupiter.api.Assertions;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
@@ -14,7 +14,7 @@ import java.util.Optional;
  * if there is no result, then it is assumed the entity is deleted properly.
  */
 @Component
-public class CheckIfDbDeletedPlugin extends AbstractUrlParamIdDtoCrudControllerSpringAdapterITPlugin {
+public class CheckIfDbDeletedPlugin extends UrlParamIdDtoCrudControllerSpringAdapterIT.Plugin {
 
     @Override
     public void onAfterDeleteEntityShouldSucceed(Serializable id, ResponseEntity responseEntity) throws Exception {
