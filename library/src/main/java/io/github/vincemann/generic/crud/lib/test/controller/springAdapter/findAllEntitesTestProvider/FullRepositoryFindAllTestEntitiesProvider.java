@@ -18,4 +18,9 @@ public class FullRepositoryFindAllTestEntitiesProvider<ServiceE extends Identifi
     public Set<ServiceE> provideEntitiesShouldBeFound() {
         return crudService.findAll();
     }
+
+    @Override
+    public Set<ServiceE> provideRepoEntities() {
+        return crudService.findAll();
+    }
 }
