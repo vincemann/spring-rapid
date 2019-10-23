@@ -1,4 +1,4 @@
-package io.github.vincemann.generic.crud.lib.test.controller.springAdapter.testBundles;
+package io.github.vincemann.generic.crud.lib.test.controller.springAdapter.testBundles.findAll;
 
 import io.github.vincemann.generic.crud.lib.model.IdentifiableEntity;
 import io.github.vincemann.generic.crud.lib.test.controller.springAdapter.findAllEntitesTestProvider.FindAllTestEntitiesProvider;

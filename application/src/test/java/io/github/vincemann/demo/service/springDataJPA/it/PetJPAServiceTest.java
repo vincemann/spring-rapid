@@ -4,7 +4,6 @@ import io.github.vincemann.demo.model.Pet;
 import io.github.vincemann.demo.model.PetType;
 import io.github.vincemann.demo.service.PetTypeService;
 import io.github.vincemann.demo.service.springDataJPA.PetJPAService;
-import io.github.vincemann.generic.crud.lib.test.controller.springAdapter.testBundles.successfulTestBundles.UpdatableSucceedingTestEntityBundle;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;

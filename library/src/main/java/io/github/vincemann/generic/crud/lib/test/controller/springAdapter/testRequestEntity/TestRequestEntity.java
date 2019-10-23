@@ -1,6 +1,7 @@
 package io.github.vincemann.generic.crud.lib.test.controller.springAdapter.testRequestEntity;
 
-import io.github.vincemann.generic.crud.lib.test.controller.springAdapter.testBundles.successfulTestBundles.UpdatableSucceedingTestEntityBundle;
+import io.github.vincemann.generic.crud.lib.test.controller.springAdapter.testBundles.findAll.FindAllTestBundle;
+import io.github.vincemann.generic.crud.lib.test.controller.springAdapter.testBundles.update.UpdateTestEntityBundle;
 import io.github.vincemann.generic.crud.lib.test.controller.springAdapter.testRequestEntity.factory.TestRequestEntityFactory;
 import lombok.Builder;
 import lombok.Getter;
@@ -17,7 +18,7 @@ import java.net.URI;
  * For every Entity in every test in {@link io.github.vincemann.generic.crud.lib.test.controller.springAdapter.UrlParamIdDtoCrudControllerSpringAdapterIT}
  * this object can be created.
  * This is created by {@link TestRequestEntityFactory}.
- * For further customization one can specify its own {@link TestRequestEntity} in a TestBundle (see {@link UpdatableSucceedingTestEntityBundle}, {@link io.github.vincemann.generic.crud.lib.test.controller.springAdapter.testBundles.UpdateTestEntityBundle}, {@link io.github.vincemann.generic.crud.lib.test.controller.springAdapter.testBundles.FindAllTestBundle}).
+ * For further customization one can specify its own {@link TestRequestEntity} in a TestBundle (see {@link UpdatableSucceedingTestEntityBundle}, {@link UpdateTestEntityBundle}, {@link FindAllTestBundle}).
  * The implementation of {@link TestRequestEntityFactory} will decide, in which way the provided {@link TestRequestEntity} in the bundle, will be taken into account.
  */
 @Getter

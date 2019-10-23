@@ -5,5 +5,6 @@ import java.util.Set;
 
 public interface FindAllTestEntitiesProvider<ServiceE extends IdentifiableEntity> {
 
+    public Set<ServiceE> provideRepoEntities();
     public Set<ServiceE> provideEntitiesShouldBeFound();
 }

@@ -2,7 +2,6 @@ package io.github.vincemann.demo.service.springDataJPA.it;
 
 import io.github.vincemann.demo.model.Vet;
 import io.github.vincemann.demo.service.springDataJPA.VetJPAService;
-import io.github.vincemann.generic.crud.lib.test.controller.springAdapter.testBundles.successfulTestBundles.UpdatableSucceedingTestEntityBundle;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;

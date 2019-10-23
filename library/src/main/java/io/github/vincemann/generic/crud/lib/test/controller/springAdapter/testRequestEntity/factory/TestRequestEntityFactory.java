@@ -2,8 +2,7 @@ package io.github.vincemann.generic.crud.lib.test.controller.springAdapter.testR
 
 
 import io.github.vincemann.generic.crud.lib.test.controller.springAdapter.CrudControllerTestCase;
-import io.github.vincemann.generic.crud.lib.test.controller.springAdapter.testBundles.UpdateTestEntityBundle;
-import io.github.vincemann.generic.crud.lib.test.controller.springAdapter.testBundles.successfulTestBundles.UpdatableSucceedingTestEntityBundle;
+import io.github.vincemann.generic.crud.lib.test.controller.springAdapter.testBundles.update.UpdateTestEntityBundle;
 import io.github.vincemann.generic.crud.lib.test.controller.springAdapter.testRequestEntity.TestRequestEntity;
 import io.github.vincemann.generic.crud.lib.test.controller.springAdapter.testRequestEntity.TestRequestEntityModification;
 import org.springframework.lang.Nullable;
