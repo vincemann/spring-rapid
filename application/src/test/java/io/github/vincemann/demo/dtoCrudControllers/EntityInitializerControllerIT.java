@@ -11,6 +11,8 @@ import io.github.vincemann.generic.crud.lib.model.IdentifiableEntity;
 import io.github.vincemann.generic.crud.lib.service.CrudService;
 import io.github.vincemann.generic.crud.lib.service.exception.EntityNotFoundException;
 import io.github.vincemann.generic.crud.lib.service.exception.NoIdException;
+import io.github.vincemann.generic.crud.lib.test.controller.springAdapter.UrlParamIdDtoCrudControllerSpringAdapterIT;
+import io.github.vincemann.generic.crud.lib.test.controller.springAdapter.testRequestEntity.factory.TestRequestEntityFactory;
 import lombok.Getter;
 import lombok.Setter;
 import org.junit.jupiter.api.AfterEach;
@@ -26,7 +28,7 @@ import java.util.Set;
 
 @Getter
 @Setter
-public abstract class EntityInitializerControllerIT<ServiceE extends IdentifiableEntity<Long>, Dto extends IdentifiableEntity<Long>, Service extends CrudService<ServiceE, Long>, Controller extends DtoCrudControllerSpringAdapter<ServiceE, Dto, Long, Service>> extends ValidationUrlParamIdDtoCrudControllerSpringAdapterIT<ServiceE,Dto,Service,Controller,Long> {
+public abstract class EntityInitializerControllerIT<ServiceE extends IdentifiableEntity<Long>, Dto extends IdentifiableEntity<Long>, Service extends CrudService<ServiceE, Long>, Controller extends DtoCrudControllerSpringAdapter<ServiceE, Dto, Long, Service>> extends UrlParamIdDtoCrudControllerSpringAdapterIT<ServiceE,Dto,Service,Controller,Long> {
 
     @Autowired
     private PetTypeController petTypeController;
@@ -49,18 +51,16 @@ public abstract class EntityInitializerControllerIT<ServiceE extends Identifiabl
     private PetService petService;
     private Pet testPet;
 
-    public EntityInitializerControllerIT(String url, Controller crudController, Plugin<? super Dto,? super Long>... plugins) {
-        super(url, crudController,null,plugins);
-        this.setNonExistingIdProvider(this::findNonExistingId);
+    public EntityInitializerControllerIT(String url, Controller crudController, TestRequestEntityFactory requestEntityFactory, Plugin<? super Dto, ? super Long>... plugins) {
+        super(url, crudController,requestEntityFactory,plugins);
     }
 
-    public EntityInitializerControllerIT(Controller crudController, Plugin<? super Dto,? super Long>... plugins) {
-        super(crudController, null,plugins);
-        this.setNonExistingIdProvider(this::findNonExistingId);
+    public EntityInitializerControllerIT(Controller crudController,TestRequestEntityFactory requestEntityFactory, Plugin<? super Dto,? super Long>... plugins) {
+        super(crudController, requestEntityFactory,plugins);
     }
 
 
-    private Long findNonExistingId(){
+    /*private Long findNonExistingId(){
         List<Long> allIds = new ArrayList<>();
         Set<ServiceE> allEntities = getCrudController().getCrudService().findAll();
         allEntities.forEach(serviceEntity -> {
@@ -72,7 +72,7 @@ public abstract class EntityInitializerControllerIT<ServiceE extends Identifiabl
         }
         Long biggestId = allIds.get(allIds.size()-1);
         return biggestId+1L;
-    }
+    }*/
 
     @BeforeEach
     @Override

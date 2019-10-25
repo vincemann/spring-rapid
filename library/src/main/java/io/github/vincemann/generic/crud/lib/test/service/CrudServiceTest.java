@@ -6,6 +6,9 @@ import io.github.vincemann.generic.crud.lib.service.exception.BadEntityException
 import io.github.vincemann.generic.crud.lib.service.exception.EntityNotFoundException;
 import io.github.vincemann.generic.crud.lib.service.exception.NoIdException;
 import io.github.vincemann.generic.crud.lib.test.controller.springAdapter.testBundles.update.UpdateTestEntityBundle;
+import io.github.vincemann.generic.crud.lib.test.controller.springAdapter.testBundles.update.UpdateTestEntityBundleIteration;
+import io.github.vincemann.generic.crud.lib.test.service.testBundles.ServiceUpdateTestEntityBundle;
+import io.github.vincemann.generic.crud.lib.test.service.testBundles.ServiceUpdateTestEntityBundleIteration;
 import io.github.vincemann.generic.crud.lib.util.BeanUtils;
 import io.github.vincemann.generic.crud.lib.util.TestLogUtils;
 import lombok.Getter;
@@ -28,7 +31,7 @@ import java.util.*;
 public abstract class CrudServiceTest<S extends CrudService<E,Id>,E extends IdentifiableEntity<Id>,Id extends Serializable> {
 
     @Getter
-    private List<UpdatableSucceedingTestEntityBundle<E>> updatableTestEntityBundles;
+    private List<ServiceUpdateTestEntityBundle<E>> updatableTestEntityBundles;
     @Getter
     private S crudService;
 
@@ -42,13 +45,13 @@ public abstract class CrudServiceTest<S extends CrudService<E,Id>,E extends Iden
         Assertions.assertFalse(updatableTestEntityBundles.isEmpty(),"At least one testEntityBundle must be provided");
     }
 
-    protected abstract List<UpdatableSucceedingTestEntityBundle<E>> provideTestEntityBundles();
+    protected abstract List<ServiceUpdateTestEntityBundle<E>> provideTestEntityBundles();
 
 
 
     @Test
     void findById() throws NoIdException, BadEntityException {
-        for (UpdatableSucceedingTestEntityBundle<E> updatableTestEntityBundle : updatableTestEntityBundles) {
+        for (ServiceUpdateTestEntityBundle<E> updatableTestEntityBundle : updatableTestEntityBundles) {
             E entityUnderTest = updatableTestEntityBundle.getEntity();
             TestLogUtils.logTestStart(log,"findById",new AbstractMap.SimpleEntry<>("testEntity",entityUnderTest));
 
@@ -71,14 +74,14 @@ public abstract class CrudServiceTest<S extends CrudService<E,Id>,E extends Iden
 
     @Test
     void update() throws NoIdException, BadEntityException, EntityNotFoundException {
-        for (UpdatableSucceedingTestEntityBundle<E> updatableTestEntityBundle : updatableTestEntityBundles) {
+        for (ServiceUpdateTestEntityBundle<E> updatableTestEntityBundle : updatableTestEntityBundles) {
             //given
             E entityUnderTest = updatableTestEntityBundle.getEntity();
             E savedEntity = saveEntityShouldSucceed(entityUnderTest);
 
-            for (UpdateTestEntityBundle<E> updateTestEntityBundle : updatableTestEntityBundle.getUpdateTestEntityBundles()) {
+            for (ServiceUpdateTestEntityBundleIteration<E> UpdateTestEntityBundleIteration : updatableTestEntityBundle.getUpdateTestEntityBundleIterations()) {
                 //given
-                E modifiedEntity = updateTestEntityBundle.getModifiedEntity();
+                E modifiedEntity = UpdateTestEntityBundleIteration.getModifiedEntity();
                 TestLogUtils.logTestStart(log,"update",new AbstractMap.SimpleEntry<>("testEntity",entityUnderTest),new AbstractMap.SimpleEntry<>("modified Entity",modifiedEntity));
 
                 modifiedEntity.setId(savedEntity.getId());
@@ -125,7 +128,7 @@ public abstract class CrudServiceTest<S extends CrudService<E,Id>,E extends Iden
 
     @Test
     void save() throws BadEntityException, NoIdException {
-        for (UpdatableSucceedingTestEntityBundle<E> updatableTestEntityBundle : updatableTestEntityBundles) {
+        for (ServiceUpdateTestEntityBundle<E> updatableTestEntityBundle : updatableTestEntityBundles) {
             //given
             E entityUnderTest = updatableTestEntityBundle.getEntity();
             TestLogUtils.logTestStart(log,"save",new AbstractMap.SimpleEntry<>("testEntity",entityUnderTest));
@@ -156,7 +159,7 @@ public abstract class CrudServiceTest<S extends CrudService<E,Id>,E extends Iden
 
     @Test
     void delete() throws  EntityNotFoundException, NoIdException, BadEntityException {
-        for (UpdatableSucceedingTestEntityBundle<E> updatableTestEntityBundle : updatableTestEntityBundles) {
+        for (ServiceUpdateTestEntityBundle<E> updatableTestEntityBundle : updatableTestEntityBundles) {
             E entityUnderTest = updatableTestEntityBundle.getEntity();
             TestLogUtils.logTestStart(log,"delete",new AbstractMap.SimpleEntry<>("testEntity",entityUnderTest));
             //given
@@ -177,7 +180,7 @@ public abstract class CrudServiceTest<S extends CrudService<E,Id>,E extends Iden
 
     @Test
     void deleteById() throws EntityNotFoundException, NoIdException, BadEntityException {
-        for (UpdatableSucceedingTestEntityBundle<E> updatableTestEntityBundle : updatableTestEntityBundles) {
+        for (ServiceUpdateTestEntityBundle<E> updatableTestEntityBundle : updatableTestEntityBundles) {
             E entityUnderTest = updatableTestEntityBundle.getEntity();
             TestLogUtils.logTestStart(log,"deleteById",new AbstractMap.SimpleEntry<>("testEntity",entityUnderTest));
             //given

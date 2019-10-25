@@ -11,10 +11,11 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.lang.Nullable;
 
 @Getter
-public class FailedFindTestEntityBundle<ServiceE extends IdentifiableEntity,Dto extends IdentifiableEntity> extends TestEntityBundle<ServiceE> {
+public class FailedFindTestEntityBundle<ServiceE extends IdentifiableEntity> extends TestEntityBundle<ServiceE> {
 
     @Setter
     private PostFindCallback<ResponseEntity<String>> postFindCallback = (e) -> {};
+    @Setter
     private ServiceE entityToBeFound;
 
     @Builder

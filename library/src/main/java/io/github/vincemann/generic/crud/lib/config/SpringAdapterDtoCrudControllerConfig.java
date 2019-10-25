@@ -21,6 +21,10 @@ public class SpringAdapterDtoCrudControllerConfig {
     @Value("${controller.idFetchingStrategy.idUrlParamKey}")
     private String idUrlParamKey;
 
+    @Bean(name = "idUrlParamKey")
+    public String getIdUrlParamKey(){
+        return idUrlParamKey;
+    }
 
     @Bean
     public IdFetchingStrategy<Long> getLongIdFetchingStrategy(){
