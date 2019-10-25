@@ -15,7 +15,7 @@ public class SuccessfulFindTestEntityBundle<Dto extends IdentifiableEntity,Servi
     private PostFindCallback<Dto> postFindCallback = (e) -> {};
     private ServiceE entityToFind;
 
-    @Builder
+    @Builder(builderMethodName = "Builder")
     public SuccessfulFindTestEntityBundle(Dto entity, TestRequestEntityModification testRequestEntityModification, PostFindCallback<Dto> postFindCallback, ServiceE entityToFind) {
         super(entity, testRequestEntityModification);
         this.postFindCallback = postFindCallback;

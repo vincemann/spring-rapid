@@ -17,7 +17,7 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 import java.util.Arrays;
 import java.util.List;
 
-@ExtendWith(SpringExtension.class)
+/*@ExtendWith(SpringExtension.class)
 @SpringBootTest(webEnvironment =
         SpringBootTest.WebEnvironment.RANDOM_PORT)
 @ActiveProfiles(value = {"test", "springdatajpa"})
@@ -111,3 +111,4 @@ public class PetControllerIT extends EntityInitializerControllerIT<Pet, PetDto, 
                 new UpdatableSucceedingTestEntityBundle<>(validPet,removePetsNameUpdate));
     }
 }
+*/

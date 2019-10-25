@@ -4,7 +4,7 @@ import io.github.vincemann.generic.crud.lib.test.controller.springAdapter.testRe
 import io.github.vincemann.generic.crud.lib.test.controller.springAdapter.testRequestEntity.TestRequestEntityModification;
 import org.springframework.web.util.UriComponentsBuilder;
 
-public class RequestEntityModificationStrategyImpl implements TestRequestEntityModificationStrategy {
+public class TestRequestEntityModificationStrategyImpl implements TestRequestEntityModificationStrategy {
     @Override
     public void modify(TestRequestEntity requestEntity, TestRequestEntityModification modification) {
         if(modification.getExpectedHttpStatus()!=null){

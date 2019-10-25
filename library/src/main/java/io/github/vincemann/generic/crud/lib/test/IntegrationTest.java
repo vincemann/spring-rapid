@@ -1,13 +1,14 @@
 package io.github.vincemann.generic.crud.lib.test;
 
+import io.github.vincemann.generic.crud.lib.test.controller.springAdapter.testRequestEntity.factory.defaultUriFactory.testBaseUrlProvider.BaseUrlProvider;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.junit.jupiter.api.BeforeAll;
 import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
 
-public abstract class IntegrationTest {
-    private static final String URL = "http://127.0.0.1:";
+public abstract class IntegrationTest implements BaseUrlProvider {
+    private static final String URL = "http://127.0.0.1";
 
     private String url;
     @LocalServerPort
@@ -40,7 +41,12 @@ public abstract class IntegrationTest {
     }
 
     public String getUrlWithPort(){
-        return url+port;
+        return url+":"+port;
+    }
+
+    @Override
+    public String provideUrl() {
+        return getUrlWithPort();
     }
 
     public TestRestTemplate getRestTemplate() {
