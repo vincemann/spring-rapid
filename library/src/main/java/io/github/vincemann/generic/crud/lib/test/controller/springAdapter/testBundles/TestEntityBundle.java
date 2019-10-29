@@ -22,8 +22,7 @@ public abstract class TestEntityBundle<E extends IdentifiableEntity> {
      */
     @Nullable
     private TestRequestEntityModification testRequestEntityModification;
-
-    @Builder
+    
     public TestEntityBundle(E entity,@Nullable TestRequestEntityModification testRequestEntityModification) {
         this.entity=entity;
         this.testRequestEntityModification = testRequestEntityModification;

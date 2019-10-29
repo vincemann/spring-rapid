@@ -14,6 +14,7 @@ import java.util.Set;
 @NoArgsConstructor
 @Entity
 @Table(name = "vets")
+@ToString
 public class Vet extends Person implements UniDirParent {
 
     @Builder

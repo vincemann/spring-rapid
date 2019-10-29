@@ -13,17 +13,17 @@ import io.github.vincemann.generic.crud.lib.test.controller.springAdapter.plugin
 import io.github.vincemann.generic.crud.lib.test.controller.springAdapter.plugins.ServiceDeepEqualPlugin;
 import io.github.vincemann.generic.crud.lib.test.controller.springAdapter.testBundles.create.FailedCreateTestEntityBundle;
 import io.github.vincemann.generic.crud.lib.test.controller.springAdapter.testBundles.create.SuccessfulCreateTestEntityBundle;
+import io.github.vincemann.generic.crud.lib.test.controller.springAdapter.testBundles.delete.SuccessfulDeleteTestEntityBundle;
 import io.github.vincemann.generic.crud.lib.test.controller.springAdapter.testBundles.update.UpdateTestEntityBundle;
 import io.github.vincemann.generic.crud.lib.test.controller.springAdapter.testBundles.update.UpdateTestEntityBundleIteration;
 import io.github.vincemann.generic.crud.lib.test.controller.springAdapter.testRequestEntity.factory.TestRequestEntityFactory;
 import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.stereotype.Component;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
+import org.springframework.transaction.PlatformTransactionManager;
 
 import java.util.*;
 
@@ -31,7 +31,6 @@ import java.util.*;
 @SpringBootTest(webEnvironment =
         SpringBootTest.WebEnvironment.RANDOM_PORT)
 @ActiveProfiles(value = {"test", "springdatajpa"})
-@Component
 class OwnerControllerIT extends EntityInitializerControllerIT<Owner, OwnerDto, OwnerService, OwnerController> {
 
     @Autowired
@@ -51,24 +50,25 @@ class OwnerControllerIT extends EntityInitializerControllerIT<Owner, OwnerDto, O
 
 
     OwnerControllerIT(@Autowired OwnerController crudController,
+                      @Autowired PlatformTransactionManager platformTransactionManager,
                       @Autowired TestRequestEntityFactory requestEntityFactory,
                       @Autowired CheckIfDbDeletedPlugin checkIfDbDeletedPlugin,
                       @Autowired ServiceDeepEqualPlugin serviceDeepEqualPlugin) {
         super(
                 crudController,
                 requestEntityFactory,
+                platformTransactionManager,
                 checkIfDbDeletedPlugin,
                 serviceDeepEqualPlugin
         );
     }
 
-    @BeforeEach
+
     @Override
-    public void before() throws Exception {
+    protected void onBeforeProvideEntityBundles() throws Exception {
+        super.onBeforeProvideEntityBundles();
         this.pet1 = petService.save(Pet.builder().name("pet1").petType(getTestPetType()).build());
         this.pet2 = petService.save(Pet.builder().name("pet2").petType(getTestPetType()).build());
-        super.before();
-
 
         validOwnerDtoWithoutPets = OwnerDto.builder()
                 .firstName("Max")
@@ -140,6 +140,15 @@ class OwnerControllerIT extends EntityInitializerControllerIT<Owner, OwnerDto, O
     }
 
     @Override
+    protected List<SuccessfulDeleteTestEntityBundle<Owner>> provideSuccessfulDeleteTestEntityBundles() {
+        return Arrays.asList(
+                new SuccessfulDeleteTestEntityBundle<Owner>(validOwnerWithManyPets),
+                new SuccessfulDeleteTestEntityBundle<Owner>(validOwnerWithoutPets),
+                new SuccessfulDeleteTestEntityBundle<Owner>(validOwnerWithOnePet)
+        );
+    }
+
+    @Override
     protected List<UpdateTestEntityBundle<Owner,OwnerDto>> provideSuccessfulUpdateTestEntityBundles() {
         OwnerDto diffStreetUpdate = OwnerDto.builder()
                 .firstName("Max")
@@ -167,7 +176,7 @@ class OwnerControllerIT extends EntityInitializerControllerIT<Owner, OwnerDto, O
         return Arrays.asList(
                 new UpdateTestEntityBundle<Owner,OwnerDto>(validOwnerWithoutPets,diffLastNameUpdate,diffStreetUpdate),
                 new UpdateTestEntityBundle<Owner, OwnerDto>(validOwnerWithOnePet,deleteAllPetsUpdate),
-                new UpdateTestEntityBundle<Owner, OwnerDto>(validOwnerWithManyPets,deleteAllPetsUpdate)
+                    new UpdateTestEntityBundle<Owner, OwnerDto>(validOwnerWithManyPets,deleteAllPetsUpdate)
         );
     }
 

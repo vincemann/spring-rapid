@@ -1,5 +1,6 @@
 package io.github.vincemann.generic.crud.lib.test.controller.springAdapter.testRequestEntity;
 
+import io.github.vincemann.generic.crud.lib.test.controller.springAdapter.UrlParamIdDtoCrudControllerSpringAdapterIT;
 import io.github.vincemann.generic.crud.lib.test.controller.springAdapter.testBundles.findAll.FindAllTestBundle;
 import io.github.vincemann.generic.crud.lib.test.controller.springAdapter.testBundles.update.UpdateTestEntityBundleIteration;
 import io.github.vincemann.generic.crud.lib.test.controller.springAdapter.testRequestEntity.factory.TestRequestEntityFactory;
@@ -15,7 +16,7 @@ import java.net.URI;
 
 
 /**
- * For every Entity in every test in {@link io.github.vincemann.generic.crud.lib.test.controller.springAdapter.UrlParamIdDtoCrudControllerSpringAdapterIT}
+ * For every Entity in every test in {@link UrlParamIdDtoCrudControllerSpringAdapterIT}
  * this object can be created.
  * This is created by {@link TestRequestEntityFactory}.
  * For further customization one can specify its own {@link TestRequestEntity} in a TestBundle (see {@link UpdatableSucceedingTestEntityBundle}, {@link UpdateTestEntityBundleIteration}, {@link FindAllTestBundle}).

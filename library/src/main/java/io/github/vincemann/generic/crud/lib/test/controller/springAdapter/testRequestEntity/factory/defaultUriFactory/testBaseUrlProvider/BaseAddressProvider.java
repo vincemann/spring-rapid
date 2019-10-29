@@ -3,6 +3,6 @@ package io.github.vincemann.generic.crud.lib.test.controller.springAdapter.testR
 /**
  * provides Test Url at runtime
  */
-public interface BaseUrlProvider {
-    public String provideUrl();
+public interface BaseAddressProvider {
+    public String provideAddress();
 }
