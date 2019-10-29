@@ -21,6 +21,7 @@ import java.time.LocalDate;
 @Entity
 @Builder
 @EntityListeners(BiDirChildEntityListener.class)
+@ToString
 public class Pet extends IdentifiableEntityImpl<Long> implements BiDirChild, UniDirParent {
 
     @Column(name = "name")

@@ -17,13 +17,10 @@ import lombok.Getter;
 import lombok.Setter;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.BeforeEach;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.transaction.PlatformTransactionManager;
 
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
 import java.util.Set;
 
 @Getter
@@ -51,12 +48,12 @@ public abstract class EntityInitializerControllerIT<ServiceE extends Identifiabl
     private PetService petService;
     private Pet testPet;
 
-    public EntityInitializerControllerIT(String url, Controller crudController, TestRequestEntityFactory requestEntityFactory, Plugin<? super Dto, ? super Long>... plugins) {
+    /*public EntityInitializerControllerIT(String url, Controller crudController, TestRequestEntityFactory requestEntityFactory, Plugin<? super Dto, ? super Long>... plugins) {
         super(url, crudController,requestEntityFactory,plugins);
-    }
+    }*/
 
-    public EntityInitializerControllerIT(Controller crudController,TestRequestEntityFactory requestEntityFactory, Plugin<? super Dto,? super Long>... plugins) {
-        super(crudController, requestEntityFactory,plugins);
+    public EntityInitializerControllerIT(Controller crudController, TestRequestEntityFactory requestEntityFactory, PlatformTransactionManager platformTransactionManager, Plugin<? super Dto, ? super Long>... plugins) {
+        super(crudController, platformTransactionManager, requestEntityFactory,plugins);
     }
 
 
@@ -74,14 +71,14 @@ public abstract class EntityInitializerControllerIT<ServiceE extends Identifiabl
         return biggestId+1L;
     }*/
 
-    @BeforeEach
     @Override
-    public void before() throws Exception {
+    protected void onBeforeProvideEntityBundles() throws Exception {
         //PetType abspeichern, den muss es vorher geben , bevor ich ein Pet abspeicher
         //ich möchte den nicht per cascade erstellen lassen wenn jmd ein pet added und da ein unbekannter pettype drinhängt
         testPetType = petTypeController.getCrudService().save(PetType.builder()
                 .name("dog")
                 .build());
+
         testSpecialty = specialtyController.getCrudService().save(Specialty.builder()
                 .description("dogliver expert")
                 .build());
@@ -90,14 +87,15 @@ public abstract class EntityInitializerControllerIT<ServiceE extends Identifiabl
                 .birthDate(LocalDate.of(2012,1,23))
                 .petType(testPetType)
                 .build());
+
         testOwner = ownerController.getCrudService().save(Owner.builder()
                 .firstName("klaus")
                 .lastName("Kleber")
                 .address("street 123")
                 .city("Berlin")
                 .build());
-        super.before();
     }
+
 
 
     @AfterEach
@@ -113,6 +111,7 @@ public abstract class EntityInitializerControllerIT<ServiceE extends Identifiabl
                 visitService);
 
     }
+
 
     private void cleanAllServiceEntities(CrudService... crudServices) throws NoIdException, EntityNotFoundException {
         for(CrudService crudService: crudServices) {

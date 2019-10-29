@@ -1,11 +1,12 @@
 package io.github.vincemann.demo.plugins;
 
-import io.github.vincemann.generic.crud.lib.controller.springAdapter.plugins.AbstractDtoCrudControllerSpringAdapterPlugin;
+import io.github.vincemann.generic.crud.lib.controller.springAdapter.DtoCrudControllerSpringAdapter;
 import io.github.vincemann.generic.crud.lib.model.IdentifiableEntity;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
-public class AclPlugin extends AbstractDtoCrudControllerSpringAdapterPlugin<IdentifiableEntity<Long>,IdentifiableEntity<Long>,Long> {
+public class AclPlugin extends DtoCrudControllerSpringAdapter.Plugin<IdentifiableEntity<Long>,IdentifiableEntity<Long>,Long> {
+
 
 
     @Override

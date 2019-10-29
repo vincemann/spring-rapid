@@ -2,10 +2,11 @@ package io.github.vincemann.generic.crud.lib.util;
 
 public class SetterUtils {
 
-    public static <T> void setIfNotNull(T ptr, T newValue){
+    public static <T> T returnIfNotNull(T oldValue, T newValue){
         if(newValue!=null){
-            ptr=newValue;
+            return newValue;
+        }else {
+            return oldValue;
         }
-        //else dont set
     }
 }

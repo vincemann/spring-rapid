@@ -2,8 +2,8 @@ package io.github.vincemann.generic.crud.lib.config;
 
 import io.github.vincemann.generic.crud.lib.test.controller.springAdapter.testRequestEntity.factory.TestRequestEntityFactory;
 import io.github.vincemann.generic.crud.lib.test.controller.springAdapter.testRequestEntity.factory.TestRequestFactoryImpl;
-import io.github.vincemann.generic.crud.lib.test.controller.springAdapter.testRequestEntity.factory.defaultUriFactory.DefaultUriFactory;
-import io.github.vincemann.generic.crud.lib.test.controller.springAdapter.testRequestEntity.factory.defaultUriFactory.UrlParamDefaultUriFactory;
+import io.github.vincemann.generic.crud.lib.test.controller.springAdapter.testRequestEntity.factory.defaultUriFactory.UrlParamIdDefaultUriFactory;
+import io.github.vincemann.generic.crud.lib.test.controller.springAdapter.testRequestEntity.factory.defaultUriFactory.UrlParamUrlParamIdDefaultUriFactory;
 import io.github.vincemann.generic.crud.lib.test.controller.springAdapter.testRequestEntity.factory.testRequestEntityModificationStrategy.TestRequestEntityModificationStrategy;
 import io.github.vincemann.generic.crud.lib.test.controller.springAdapter.testRequestEntity.factory.testRequestEntityModificationStrategy.TestRequestEntityModificationStrategyImpl;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -14,8 +14,9 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 public class IntegrationTestConfig {
 
-    public TestRequestEntityFactory testRequestEntityFactory(TestRequestEntityModificationStrategy testRequestEntityModificationStrategy, DefaultUriFactory defaultUriFactory){
-        return new TestRequestFactoryImpl(defaultUriFactory,testRequestEntityModificationStrategy);
+    @Bean
+    public TestRequestEntityFactory testRequestEntityFactory(TestRequestEntityModificationStrategy testRequestEntityModificationStrategy, UrlParamIdDefaultUriFactory urlParamIdDefaultUriFactory){
+        return new TestRequestFactoryImpl(urlParamIdDefaultUriFactory,testRequestEntityModificationStrategy);
     }
 
     @Bean
@@ -24,7 +25,7 @@ public class IntegrationTestConfig {
     }
 
     @Bean
-    public DefaultUriFactory defaultUriFactory(@Qualifier("idUrlParamKey") String idUrlParamKey){
-        return new UrlParamDefaultUriFactory(idUrlParamKey);
+    public UrlParamIdDefaultUriFactory defaultUriFactory(@Qualifier("idUrlParamKey") String idUrlParamKey){
+        return new UrlParamUrlParamIdDefaultUriFactory(idUrlParamKey);
     }
 }

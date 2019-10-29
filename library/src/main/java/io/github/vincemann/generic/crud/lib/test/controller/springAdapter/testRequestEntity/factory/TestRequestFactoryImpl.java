@@ -5,7 +5,7 @@ import io.github.vincemann.generic.crud.lib.test.controller.springAdapter.CrudCo
 import io.github.vincemann.generic.crud.lib.test.controller.springAdapter.UrlParamIdDtoCrudControllerSpringAdapterIT;
 import io.github.vincemann.generic.crud.lib.test.controller.springAdapter.testRequestEntity.TestRequestEntity;
 import io.github.vincemann.generic.crud.lib.test.controller.springAdapter.testRequestEntity.TestRequestEntityModification;
-import io.github.vincemann.generic.crud.lib.test.controller.springAdapter.testRequestEntity.factory.defaultUriFactory.DefaultUriFactory;
+import io.github.vincemann.generic.crud.lib.test.controller.springAdapter.testRequestEntity.factory.defaultUriFactory.UrlParamIdDefaultUriFactory;
 import io.github.vincemann.generic.crud.lib.test.controller.springAdapter.testRequestEntity.factory.testRequestEntityModificationStrategy.TestRequestEntityModificationStrategy;
 import org.junit.jupiter.api.Assertions;
 import org.springframework.http.HttpStatus;
@@ -25,19 +25,19 @@ import java.util.Set;
 public class TestRequestFactoryImpl implements TestRequestEntityFactory {
 
     private UrlParamIdDtoCrudControllerSpringAdapterIT crudControllerTest;
-    private DefaultUriFactory defaultUriFactory;
+    private UrlParamIdDefaultUriFactory urlParamIdDefaultUriFactory;
     private TestRequestEntityModificationStrategy testRequestEntityModificationStrategy;
 
 
-    public TestRequestFactoryImpl(DefaultUriFactory defaultUriFactory, TestRequestEntityModificationStrategy testRequestEntityModificationStrategy) {
-        this.defaultUriFactory = defaultUriFactory;
+    public TestRequestFactoryImpl(UrlParamIdDefaultUriFactory urlParamIdDefaultUriFactory, TestRequestEntityModificationStrategy testRequestEntityModificationStrategy) {
+        this.urlParamIdDefaultUriFactory = urlParamIdDefaultUriFactory;
         this.testRequestEntityModificationStrategy = testRequestEntityModificationStrategy;
     }
 
     @Override
     public void setTest(UrlParamIdDtoCrudControllerSpringAdapterIT test) {
         this.crudControllerTest=test;
-        this.defaultUriFactory.setBaseUrlProvider(test);
+        this.urlParamIdDefaultUriFactory.setBaseAddressProvider(test);
     }
 
     public UrlParamIdDtoCrudControllerSpringAdapterIT getCrudControllerTest() {
@@ -49,7 +49,7 @@ public class TestRequestFactoryImpl implements TestRequestEntityFactory {
 
     @Override
     public TestRequestEntity createInstance(CrudControllerTestCase crudControllerTestCase, TestRequestEntityModification bundleTestRequestEntityModification, Object id) {
-        TestRequestEntity defaultTestRequestEntity = createDefaultTestRequestEntity(crudControllerTestCase,id,bundleTestRequestEntityModification);
+        TestRequestEntity defaultTestRequestEntity = createDefaultTestRequestEntity(crudControllerTestCase,id);
         if(bundleTestRequestEntityModification==null){
             return defaultTestRequestEntity;
         }else {
@@ -59,19 +59,24 @@ public class TestRequestFactoryImpl implements TestRequestEntityFactory {
         }
     }
 
-    private TestRequestEntity createDefaultTestRequestEntity(CrudControllerTestCase crudControllerTestCase, Object id, TestRequestEntityModification testRequestEntityModification){
+    private TestRequestEntity createDefaultTestRequestEntity(CrudControllerTestCase crudControllerTestCase, Object id){
         return TestRequestEntity.builder()
-                .url(defaultUriFactory.createDefaultUri(mapTestCaseToMethodName(crudControllerTestCase),id,testRequestEntityModification.getAdditionalQueryParams()))
+                .url(urlParamIdDefaultUriFactory.createDefaultUri(mapTestCaseToMethodName(crudControllerTestCase),getCrudControllerTest().getCrudController().getBaseUrl(),id,null))
                 .expectedHttpStatus(mapTestCaseToHttpStatus(crudControllerTestCase))
                 .method(mapTestCaseToHttpMethod(crudControllerTestCase))
                 .build();
     }
 
 
-    private HttpStatus mapTestCaseToHttpStatus(CrudControllerTestCase crudControllerTestCase){
+    protected HttpStatus mapTestCaseToHttpStatus(CrudControllerTestCase crudControllerTestCase){
         switch (crudControllerTestCase){
-            case SUCCESSFUL_FIND:
+            case FAILED_FIND:
+            case FAILED_DELETE:
                 return HttpStatus.NOT_FOUND;
+            case FAILED_CREATE:
+            case FAILED_UPDATE:
+                return HttpStatus.BAD_REQUEST;
+            case SUCCESSFUL_FIND:
             case SUCCESSFUL_FIND_ALL:
             case SUCCESSFUL_DELETE:
             case SUCCESSFUL_CREATE:
@@ -82,25 +87,28 @@ public class TestRequestFactoryImpl implements TestRequestEntityFactory {
     }
 
 
-    private RequestMethod mapTestCaseToHttpMethod(CrudControllerTestCase crudControllerTestCase){
+    protected RequestMethod mapTestCaseToHttpMethod(CrudControllerTestCase crudControllerTestCase){
         DtoCrudControllerSpringAdapter crudController = getCrudControllerTest().getCrudController();
         RequestMappingInfo requestMappingInfo=null;
         switch (crudControllerTestCase){
             case SUCCESSFUL_FIND:
-            case FIND_NON_EXISTENT:
+            case FAILED_FIND:
                 requestMappingInfo = crudController.getFindRequestMappingInfo();
                 break;
             case SUCCESSFUL_FIND_ALL:
+            case FAILED_FIND_ALL:
                 requestMappingInfo = crudController.getFindAllRequestMappingInfo();
                 break;
-            case DELETE_NON_EXISTENT:
             case SUCCESSFUL_DELETE:
+            case FAILED_DELETE:
                 requestMappingInfo = crudController.getDeleteRequestMappingInfo();
                 break;
             case SUCCESSFUL_UPDATE:
+            case FAILED_UPDATE:
                 requestMappingInfo = crudController.getUpdateRequestMappingInfo();
                 break;
             case SUCCESSFUL_CREATE:
+            case FAILED_CREATE:
                 requestMappingInfo = crudController.getCreateRequestMappingInfo();
                 break;
         }
@@ -118,20 +126,23 @@ public class TestRequestFactoryImpl implements TestRequestEntityFactory {
 
     }
 
-    private String mapTestCaseToMethodName(CrudControllerTestCase crudControllerTestCase){
+    protected String mapTestCaseToMethodName(CrudControllerTestCase crudControllerTestCase){
         DtoCrudControllerSpringAdapter crudController = getCrudControllerTest().getCrudController();
         switch (crudControllerTestCase) {
             case SUCCESSFUL_FIND:
-            case FIND_NON_EXISTENT:
+            case FAILED_FIND:
                 return crudController.getFindMethodName();
             case SUCCESSFUL_FIND_ALL:
+            case FAILED_FIND_ALL:
                 return crudController.getFindAllMethodName();
-            case DELETE_NON_EXISTENT:
+            case FAILED_DELETE:
             case SUCCESSFUL_DELETE:
                 return crudController.getDeleteMethodName();
             case SUCCESSFUL_UPDATE:
+            case FAILED_UPDATE:
                 return crudController.getUpdateMethodName();
             case SUCCESSFUL_CREATE:
+            case FAILED_CREATE:
                 return crudController.getCreateMethodName();
         }
         throw new IllegalArgumentException("Invalid Test Case : " + crudControllerTestCase);

@@ -3,10 +3,8 @@ package io.github.vincemann.demo.model;
 import io.github.vincemann.generic.crud.lib.entityListener.BiDirParentEntityListener;
 import io.github.vincemann.demo.model.abs.Person;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import io.github.vincemann.generic.crud.lib.model.IdentifiableEntityImpl;
+import lombok.*;
 import io.github.vincemann.generic.crud.lib.model.biDir.BiDirChildCollection;
 import io.github.vincemann.generic.crud.lib.model.biDir.BiDirParent;
 
@@ -48,4 +46,13 @@ public class Owner extends Person implements BiDirParent {
     @Column(name = "telephone")
     private String telephone;
 
+    @Override
+    public String toString() {
+        return "Owner{" +
+                "petIds=" + Arrays.toString(pets.stream().map(IdentifiableEntityImpl::getId).toArray()) +
+                ", address='" + address + '\'' +
+                ", city='" + city + '\'' +
+                ", telephone='" + telephone + '\'' +
+                '}';
+    }
 }

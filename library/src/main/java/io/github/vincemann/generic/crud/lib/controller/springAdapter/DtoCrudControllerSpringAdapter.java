@@ -11,6 +11,7 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.servlet.mvc.method.RequestMappingInfo;
 import io.github.vincemann.generic.crud.lib.controller.BasicDtoCrudController;
@@ -54,6 +55,7 @@ public abstract class DtoCrudControllerSpringAdapter<ServiceE extends Identifiab
 
     private EndpointService endpointService;
     private String entityNameInUrl;
+    @Getter
     private String baseUrl;
     private String findMethodName ="get";
     private String createMethodName="create";
@@ -236,6 +238,7 @@ public abstract class DtoCrudControllerSpringAdapter<ServiceE extends Identifiab
             throw new DtoReadingException(e);
         }
     }
+
 
     public ResponseEntity delete(HttpServletRequest request) throws IdFetchingException, NoIdException, EntityNotFoundException, ConstraintViolationException {
         Id id = idIdFetchingStrategy.fetchId(request);
