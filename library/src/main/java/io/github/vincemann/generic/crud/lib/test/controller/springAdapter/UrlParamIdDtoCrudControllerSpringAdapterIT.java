@@ -591,7 +591,7 @@ public abstract class UrlParamIdDtoCrudControllerSpringAdapterIT<ServiceE extend
             SuccessfulFindTestEntityBundle<Dto, ServiceE> bundle = successfulFindTestEntityBundles.get(i);
             TestLogUtils.logTestStart(log, "findEntity should Succeed", new AbstractMap.SimpleEntry<>("test Service Entity", bundle.getEntity()));
 
-            ServiceE entityToFind = saveServiceEntity(bundle.getEntityToFind());
+            ServiceE entityToFind = saveServiceEntity(bundle.getEntity());
             transactionManager.commit(transaction);
             Dto responseDto = findEntityShouldSucceed(entityToFind.getId(), bundle.getTestRequestEntityModification());
             //todo auslagern?
@@ -614,7 +614,7 @@ public abstract class UrlParamIdDtoCrudControllerSpringAdapterIT<ServiceE extend
             FailedFindTestEntityBundle<ServiceE> bundle = failedFindTestEntityBundles.get(i);
             TestLogUtils.logTestStart(log, "findEntity should Fail", new AbstractMap.SimpleEntry<>("test Service Entity", bundle.getEntity()));
 
-            ServiceE entityToFind = saveServiceEntity(bundle.getEntityToBeFound());
+            ServiceE entityToFind = saveServiceEntity(bundle.getEntity());
             transactionManager.commit(transaction);
             ResponseEntity<String> responseEntity = findEntityShouldFail(entityToFind.getId(), bundle.getTestRequestEntityModification());
             bundle.getPostFindCallback().callback(responseEntity);

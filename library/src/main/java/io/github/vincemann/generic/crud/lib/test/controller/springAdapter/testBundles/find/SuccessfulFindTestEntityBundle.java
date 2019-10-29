@@ -9,24 +9,21 @@ import lombok.Getter;
 import lombok.Setter;
 
 @Getter
-public class SuccessfulFindTestEntityBundle<Dto extends IdentifiableEntity,ServiceE extends IdentifiableEntity> extends TestEntityBundle<Dto> {
+public class SuccessfulFindTestEntityBundle<Dto extends IdentifiableEntity,ServiceE extends IdentifiableEntity> extends TestEntityBundle<ServiceE> {
 
     @Setter
     private PostFindCallback<Dto> postFindCallback = (e) -> {};
-    private ServiceE entityToFind;
 
     @Builder(builderMethodName = "Builder")
-    public SuccessfulFindTestEntityBundle(Dto entity, TestRequestEntityModification testRequestEntityModification, PostFindCallback<Dto> postFindCallback, ServiceE entityToFind) {
+    public SuccessfulFindTestEntityBundle(ServiceE entity, TestRequestEntityModification testRequestEntityModification, PostFindCallback<Dto> postFindCallback) {
         super(entity, testRequestEntityModification);
         this.postFindCallback = postFindCallback;
-        this.entityToFind = entityToFind;
         if(this.postFindCallback == null){
             this.postFindCallback = (e1) -> {};
         }
     }
 
-    public SuccessfulFindTestEntityBundle(Dto entity, ServiceE entityToFind) {
+    public SuccessfulFindTestEntityBundle(ServiceE entity) {
         super(entity);
-        this.entityToFind = entityToFind;
     }
 }

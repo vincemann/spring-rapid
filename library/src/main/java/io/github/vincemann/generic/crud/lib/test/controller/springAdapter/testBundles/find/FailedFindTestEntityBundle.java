@@ -15,20 +15,17 @@ public class FailedFindTestEntityBundle<ServiceE extends IdentifiableEntity> ext
 
     @Setter
     private PostFindCallback<ResponseEntity<String>> postFindCallback = (e) -> {};
-    @Setter
-    private ServiceE entityToBeFound;
+
 
     @Builder
-    public FailedFindTestEntityBundle(ServiceE entity, @Nullable TestRequestEntityModification testRequestEntityModification, @Nullable PostFindCallback<ResponseEntity<String>> postFindCallback, ServiceE entityToBeFound) {
+    public FailedFindTestEntityBundle(ServiceE entity, @Nullable TestRequestEntityModification testRequestEntityModification, @Nullable PostFindCallback<ResponseEntity<String>> postFindCallback) {
         super(entity,testRequestEntityModification);
-        this.entityToBeFound = entityToBeFound;
         if(postFindCallback!=null) {
             this.postFindCallback = postFindCallback;
         }
     }
 
-    public FailedFindTestEntityBundle(ServiceE entity, ServiceE entityToBeFound) {
+    public FailedFindTestEntityBundle(ServiceE entity) {
         super(entity);
-        this.entityToBeFound = entityToBeFound;
     }
 }
