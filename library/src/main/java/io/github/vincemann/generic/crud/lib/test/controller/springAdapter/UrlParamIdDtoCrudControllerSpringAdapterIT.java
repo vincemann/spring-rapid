@@ -47,8 +47,6 @@ import static io.github.vincemann.generic.crud.lib.util.SetterUtils.returnIfNotN
  * @param <Id>
  */
 @Slf4j
-//before all must be static otherwise
-@TestInstance(TestInstance.Lifecycle.PER_CLASS)
 public abstract class UrlParamIdDtoCrudControllerSpringAdapterIT<ServiceE extends IdentifiableEntity<Id>, Dto extends IdentifiableEntity<Id>, Service extends CrudService<ServiceE, Id>, Controller extends DtoCrudControllerSpringAdapter<ServiceE, Dto, Id, Service>, Id extends Serializable> extends IntegrationTest {
 
     @Getter
@@ -126,24 +124,23 @@ public abstract class UrlParamIdDtoCrudControllerSpringAdapterIT<ServiceE extend
         this.plugins.forEach(plugin -> plugin.setIntegrationTest(this));
     }
 
-    @BeforeAll
-    public void beforeAll() throws Exception {
-        //provide entity bundles in memory, but dont apply changes to database
-        //this is done because entities saved within "provide entityBundle process" must be persisted within same transaction
-        //as persisting actions in tests -> otherwise there will be an exception because detached entities cant be persisted anymore
-        provideBundlesAndRollbackTransaction();
-    }
 
-    /**
-     * conveniencemethod
-     * @return
-     */
     private TransactionStatus provideBundlesAndStartTransaction() throws Exception {
         TransactionStatus testTransaction = startTestTransaction();
         provideBundles();
         return testTransaction;
     }
 
+
+    private void provideBundlesAndCommitTransaction() throws Exception {
+        TransactionStatus testTransaction = startTestTransaction();
+        provideBundles();
+        transactionManager.commit(testTransaction);
+    }
+
+    //provide entity bundles in memory, but dont apply changes to database
+    //this is done because entities saved within "provide entityBundle process" must be persisted within same transaction
+    //as persisting actions in tests -> otherwise there will be an exception because detached entities cant be persisted anymore
     /**
      * use if you want the to provide the bundles but dont wish to persist any entities created/saved in provide process to be saved to database
      * @throws Exception
@@ -155,7 +152,6 @@ public abstract class UrlParamIdDtoCrudControllerSpringAdapterIT<ServiceE extend
     }
 
 
-    //todo aufsplitten, sodass jeder test nur die für ihn relevanten bundles holt
     private void provideBundles() throws Exception {
         onBeforeProvideEntityBundles();
         failedCreateTestEntityBundles = returnIfNotNull(failedCreateTestEntityBundles, provideFailingCreateTestBundles());
@@ -300,6 +296,7 @@ public abstract class UrlParamIdDtoCrudControllerSpringAdapterIT<ServiceE extend
     @Test
     public void updateEntity_shouldSucceedTest() throws Exception {
         Assumptions.assumeTrue(getCrudController().getEndpointsExposureDetails().isUpdateEndpointExposed());
+        provideBundlesAndRollbackTransaction();
         Assumptions.assumeTrue(!successfulUpdateTestEntityBundles.isEmpty());
 
 
@@ -340,6 +337,7 @@ public abstract class UrlParamIdDtoCrudControllerSpringAdapterIT<ServiceE extend
     @Test
     public void updateEntity_shouldFailTest() throws Exception {
         Assumptions.assumeTrue(getCrudController().getEndpointsExposureDetails().isUpdateEndpointExposed());
+        provideBundlesAndRollbackTransaction();
         Assumptions.assumeTrue(!failedUpdateTestEntityBundles.isEmpty());
 
         for (int i = 0; i<this.failedUpdateTestEntityBundles.size();i++){
@@ -444,11 +442,12 @@ public abstract class UrlParamIdDtoCrudControllerSpringAdapterIT<ServiceE extend
     @Test
     public void createEntity_shouldSucceedTest() throws Exception {
         Assumptions.assumeTrue(getCrudController().getEndpointsExposureDetails().isCreateEndpointExposed());
+        provideBundlesAndCommitTransaction();
         Assumptions.assumeTrue(!successfulCreateTestEntityBundles.isEmpty());
+
+
         for (SuccessfulCreateTestEntityBundle<Dto> bundle : this.successfulCreateTestEntityBundles) {
-
             TestLogUtils.logTestStart(log, "createEntity_shouldSucceed", new AbstractMap.SimpleEntry<>("testDto", bundle.getEntity()));
-
 
             Dto savedDto = createEntityShouldSucceed(bundle.getEntity(), bundle.getTestRequestEntityModification());
             bundle.getPostCreateCallback().callback(savedDto);
@@ -461,12 +460,11 @@ public abstract class UrlParamIdDtoCrudControllerSpringAdapterIT<ServiceE extend
     @Test
     public void createEntity_shouldFailTest() throws Exception {
         Assumptions.assumeTrue(getCrudController().getEndpointsExposureDetails().isCreateEndpointExposed());
+        provideBundlesAndCommitTransaction();
         Assumptions.assumeTrue(!failedCreateTestEntityBundles.isEmpty());
 
         for (FailedCreateTestEntityBundle<Dto> bundle : this.failedCreateTestEntityBundles) {
-
             TestLogUtils.logTestStart(log, "createEntity_shouldFail", new AbstractMap.SimpleEntry<>("testDto", bundle.getEntity()));
-
 
             ResponseEntity<String> responseEntity = createEntityShouldFail(bundle.getEntity(), bundle.getTestRequestEntityModification());
             bundle.getPostCreateCallback().callback(responseEntity);
@@ -513,12 +511,16 @@ public abstract class UrlParamIdDtoCrudControllerSpringAdapterIT<ServiceE extend
     @Test
     public void deleteEntity_shouldSucceedTest() throws Exception {
         Assumptions.assumeTrue(getCrudController().getEndpointsExposureDetails().isDeleteEndpointExposed());
+        provideBundlesAndRollbackTransaction();
         Assumptions.assumeTrue(!successfulDeleteTestEntityBundles.isEmpty());
-        for (SuccessfulDeleteTestEntityBundle<ServiceE> bundle : this.successfulDeleteTestEntityBundles) {
+
+        for(int i = 0; i<this.successfulDeleteTestEntityBundles.size();i++){
+            TransactionStatus transaction = provideBundlesAndStartTransaction();
+            SuccessfulDeleteTestEntityBundle<ServiceE> bundle = successfulDeleteTestEntityBundles.get(i);
             TestLogUtils.logTestStart(log, "deleteEntity should Succeed ", new AbstractMap.SimpleEntry<>("test Service Entity", bundle.getEntity()));
 
-            //todo change back to service Entity solution
             ServiceE savedEntityToDelete = saveServiceEntity(bundle.getEntity());
+            transactionManager.commit(transaction);
             deleteEntityShouldSucceed(savedEntityToDelete.getId(), bundle.getTestRequestEntityModification());
             bundle.getPostDeleteCallback().callback(savedEntityToDelete);
 
@@ -529,11 +531,16 @@ public abstract class UrlParamIdDtoCrudControllerSpringAdapterIT<ServiceE extend
     @Test
     public void deleteEntity_shouldFailTest() throws Exception {
         Assumptions.assumeTrue(getCrudController().getEndpointsExposureDetails().isDeleteEndpointExposed());
-        Assumptions.assumeTrue(!successfulDeleteTestEntityBundles.isEmpty());
-        for (FailedDeleteTestEntityBundle<ServiceE> bundle : this.failedDeleteTestEntityBundles) {
+        provideBundlesAndRollbackTransaction();
+        Assumptions.assumeTrue(!failedDeleteTestEntityBundles.isEmpty());
+
+        for(int i = 0; i<this.failedDeleteTestEntityBundles.size();i++){
+            TransactionStatus transaction = provideBundlesAndStartTransaction();
+            FailedDeleteTestEntityBundle<ServiceE> bundle = failedDeleteTestEntityBundles.get(i);
             TestLogUtils.logTestStart(log, "deleteEntity should Fail", new AbstractMap.SimpleEntry<>("testDto", bundle.getEntity()));
 
             ServiceE savedEntityToDelete = saveServiceEntity(bundle.getEntity());
+            transactionManager.commit(transaction);
             deleteEntityShouldFail(savedEntityToDelete.getId(), bundle.getTestRequestEntityModification());
             bundle.getPostDeleteCallback().callback(savedEntityToDelete);
 
@@ -576,28 +583,39 @@ public abstract class UrlParamIdDtoCrudControllerSpringAdapterIT<ServiceE extend
     @Test
     public void findEntity_shouldSucceedTest() throws Exception {
         Assumptions.assumeTrue(getCrudController().getEndpointsExposureDetails().isFindEndpointExposed());
+        provideBundlesAndRollbackTransaction();
         Assumptions.assumeTrue(!successfulFindTestEntityBundles.isEmpty());
-        for (SuccessfulFindTestEntityBundle<Dto, ServiceE> bundle : this.successfulFindTestEntityBundles) {
+
+        for(int i=0;i<this.successfulFindTestEntityBundles.size();i++){
+            TransactionStatus transaction = provideBundlesAndStartTransaction();
+            SuccessfulFindTestEntityBundle<Dto, ServiceE> bundle = successfulFindTestEntityBundles.get(i);
             TestLogUtils.logTestStart(log, "findEntity should Succeed", new AbstractMap.SimpleEntry<>("test Service Entity", bundle.getEntity()));
 
             ServiceE entityToFind = saveServiceEntity(bundle.getEntityToFind());
+            transactionManager.commit(transaction);
             Dto responseDto = findEntityShouldSucceed(entityToFind.getId(), bundle.getTestRequestEntityModification());
             //todo auslagern?
             validateDtosAreDeepEqual(responseDto, getCrudController().getDtoMapper().mapServiceEntityToDto(entityToFind, getDtoEntityClass()));
             bundle.getPostFindCallback().callback(responseDto);
 
             TestLogUtils.logTestSucceeded(log, "findEntity should Succeed", new AbstractMap.SimpleEntry<>("test Service Entity", bundle.getEntity()));
+
         }
     }
 
     @Test
     public void findEntity_shouldFailTest() throws Exception {
         Assumptions.assumeTrue(getCrudController().getEndpointsExposureDetails().isFindEndpointExposed());
+        provideBundlesAndRollbackTransaction();
         Assumptions.assumeTrue(!failedFindTestEntityBundles.isEmpty());
-        for (FailedFindTestEntityBundle<ServiceE> bundle : this.failedFindTestEntityBundles) {
+
+        for(int i=0;i<this.failedFindTestEntityBundles.size();i++){
+            TransactionStatus transaction = provideBundlesAndStartTransaction();
+            FailedFindTestEntityBundle<ServiceE> bundle = failedFindTestEntityBundles.get(i);
             TestLogUtils.logTestStart(log, "findEntity should Fail", new AbstractMap.SimpleEntry<>("test Service Entity", bundle.getEntity()));
 
             ServiceE entityToFind = saveServiceEntity(bundle.getEntityToBeFound());
+            transactionManager.commit(transaction);
             ResponseEntity<String> responseEntity = findEntityShouldFail(entityToFind.getId(), bundle.getTestRequestEntityModification());
             bundle.getPostFindCallback().callback(responseEntity);
 
