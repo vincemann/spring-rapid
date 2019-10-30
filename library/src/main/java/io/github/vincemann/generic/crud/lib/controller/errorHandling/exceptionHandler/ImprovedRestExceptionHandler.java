@@ -100,7 +100,8 @@ public class ImprovedRestExceptionHandler extends ResponseEntityExceptionHandler
             javax.validation.ConstraintViolationException ex) {
         ApiError apiError = new ApiError(HttpStatus.BAD_REQUEST);
         apiError.setMessage("Validation error");
-        apiError.addValidationErrors(ex.getConstraintViolations());
+        if(ex.getConstraintViolations()!=null)
+            apiError.addValidationErrors(ex.getConstraintViolations());
         return buildResponseEntityLocal(apiError);
     }
 

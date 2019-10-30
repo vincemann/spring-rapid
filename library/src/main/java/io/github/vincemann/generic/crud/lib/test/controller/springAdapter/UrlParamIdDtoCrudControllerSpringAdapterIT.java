@@ -313,7 +313,7 @@ public abstract class UrlParamIdDtoCrudControllerSpringAdapterIT<ServiceE extend
                 TransactionStatus testTransaction = provideBundlesAndStartTransaction();
                 //get bundle again because reference of successfulUpdateTestEntityBundles.get(i) has changed because of latest/new provideBundles() call
                 UpdateTestEntityBundle<ServiceE, Dto> bundle = successfulUpdateTestEntityBundles.get(i);
-                UpdateTestEntityBundleIteration<Dto> updateBundle = updateTestEntityBundleIterations.get(j);
+                UpdateTestEntityBundleIteration<Dto> updateBundle = bundle.getUpdateTestEntityBundleIterations().get(j);
                 Dto modifiedDto = updateBundle.getModifiedEntity();
                 TestLogUtils.logTestStart(log, "updateEntity should succeed", new AbstractMap.SimpleEntry<>("test Service Entity", bundle.getEntity()), new AbstractMap.SimpleEntry<>("modifiedDto", modifiedDto));
 
@@ -352,8 +352,8 @@ public abstract class UrlParamIdDtoCrudControllerSpringAdapterIT<ServiceE extend
                 // -> new transaction and new provideBundles call for each iteration
                 TransactionStatus testTransaction = provideBundlesAndStartTransaction();
                 //get bundle again because reference of successfulUpdateTestEntityBundles.get(i) has changed because of latest/new provideBundles() call
-                UpdateTestEntityBundle<ServiceE, Dto> bundle = successfulUpdateTestEntityBundles.get(i);
-                UpdateTestEntityBundleIteration<Dto> updateBundle = updateTestEntityBundleIterations.get(j);
+                UpdateTestEntityBundle<ServiceE, Dto> bundle = failedUpdateTestEntityBundles.get(i);
+                UpdateTestEntityBundleIteration<Dto> updateBundle = bundle.getUpdateTestEntityBundleIterations().get(j);
 
                 Dto modifiedDto = updateBundle.getModifiedEntity();
                 TestLogUtils.logTestStart(log, "updateEntity should fail", new AbstractMap.SimpleEntry<>("testDto", bundle.getEntity()), new AbstractMap.SimpleEntry<>("modifiedDto", modifiedDto));
