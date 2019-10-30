@@ -16,7 +16,7 @@ public interface ValidationStrategy<Dto,Id> {
      * @param httpServletRequest    HttpRequest from client
      * @throws ConstraintViolationException     is thrown, when Dto Entity {@param dto} is not valid
      */
-    public void validateDto(Dto dto, HttpServletRequest httpServletRequest) throws ConstraintViolationException;
+    public abstract void validateDto(Dto dto, HttpServletRequest httpServletRequest) throws ConstraintViolationException;
 
     /**
      * checks whether the Id, read from the {@link HttpServletRequest} is valid
@@ -24,5 +24,14 @@ public interface ValidationStrategy<Dto,Id> {
      * @param httpServletRequest    HttpRequest from client
      * @throws ConstraintViolationException     is thrown, when Dto Entity {@param id} is not valid
      */
-    public void validateId(Id id,HttpServletRequest httpServletRequest) throws ConstraintViolationException;
+    public abstract void validateId(Id id,HttpServletRequest httpServletRequest) throws ConstraintViolationException;
+
+
+    public default void beforeCreateValidate(Dto dto){}
+
+    public default void beforeUpdateValidate(Dto dto){}
+
+    public default void beforeDeleteValidate(Id id){}
+
+    public default void beforeFindValidate(Id id){}
 }

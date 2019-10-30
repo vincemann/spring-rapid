@@ -107,9 +107,9 @@ public abstract class DtoCrudControllerSpringAdapter<ServiceE extends Identifiab
         this.createUrl=baseUrl+getCreateMethodName();
     }
 
-    private void initPlugins(Plugin<? super ServiceE,? super Dto,? super Id>... crudControllerSpringAdapterExtensions){
-        List<Plugin<? super ServiceE, ? super Dto, ? super Id>> plugins = Arrays.asList(crudControllerSpringAdapterExtensions);
-        plugins.forEach(extension -> extension.setController(this));
+    private void initPlugins(Plugin<? super ServiceE,? super Dto,? super Id>... crudControllerSpringAdapterPlugins){
+        List<Plugin<? super ServiceE, ? super Dto, ? super Id>> plugins = Arrays.asList(crudControllerSpringAdapterPlugins);
+        plugins.forEach(plugin -> plugin.setController(this));
         this.plugins.addAll(plugins);
         this.getBasicCrudControllerPlugins().addAll(plugins);
     }
@@ -207,7 +207,7 @@ public abstract class DtoCrudControllerSpringAdapter<ServiceE extends Identifiab
 
     public ResponseEntity<Dto> find(HttpServletRequest request) throws IdFetchingException, EntityNotFoundException, NoIdException, EntityMappingException {
         Id id = idIdFetchingStrategy.fetchId(request);
-        beforeFindValidate(id);
+        validationStrategy.beforeFindValidate(id);
         validationStrategy.validateId(id,request);
         beforeFind(id,request);
         return super.find(id);
@@ -217,7 +217,7 @@ public abstract class DtoCrudControllerSpringAdapter<ServiceE extends Identifiab
         try {
             String body = request.getReader().lines().collect(Collectors.joining(System.lineSeparator()));
             Dto dto = mediaTypeStrategy.readDtoFromBody(body,getDtoClass());
-            beforeCreateValidate(dto);
+            validationStrategy.beforeCreateValidate(dto);
             validationStrategy.validateDto(dto,request);
             beforeCreate(dto,request);
             return super.create(dto);
@@ -230,7 +230,7 @@ public abstract class DtoCrudControllerSpringAdapter<ServiceE extends Identifiab
         try {
             String body = request.getReader().lines().collect(Collectors.joining(System.lineSeparator()));
             Dto dto = mediaTypeStrategy.readDtoFromBody(body,getDtoClass());
-            beforeUpdateValidate(dto);
+            validationStrategy.beforeUpdateValidate(dto);
             validationStrategy.validateDto(dto,request);
             beforeUpdate(dto,request);
             return super.update(dto);
@@ -242,35 +242,28 @@ public abstract class DtoCrudControllerSpringAdapter<ServiceE extends Identifiab
 
     public ResponseEntity delete(HttpServletRequest request) throws IdFetchingException, NoIdException, EntityNotFoundException, ConstraintViolationException {
         Id id = idIdFetchingStrategy.fetchId(request);
-        beforeDeleteValidate(id);
+        validationStrategy.beforeDeleteValidate(id);
         validationStrategy.validateId(id,request);
         beforeDelete(id,request);
         return super.delete(id);
     }
 
     protected void beforeCreate(Dto dto, HttpServletRequest httpServletRequest){
-        plugins.forEach(extension -> extension.beforeCreate(dto,httpServletRequest));
+        plugins.forEach(plugin -> plugin.beforeCreate(dto,httpServletRequest));
     }
     protected void beforeUpdate(Dto dto, HttpServletRequest httpServletRequest){
-        plugins.forEach(extension -> extension.beforeUpdate(dto,httpServletRequest));
+        plugins.forEach(plugin -> plugin.beforeUpdate(dto,httpServletRequest));
     }
     protected void beforeDelete(Id id, HttpServletRequest httpServletRequest){
-        plugins.forEach(extension -> extension.beforeDelete(id,httpServletRequest));
+        plugins.forEach(plugin -> plugin.beforeDelete(id,httpServletRequest));
     }
     protected void beforeFind(Id id, HttpServletRequest httpServletRequest){
-        plugins.forEach(extension -> extension.beforeFind(id,httpServletRequest));
+        plugins.forEach(plugin -> plugin.beforeFind(id,httpServletRequest));
     }
     protected void beforeFindAll(HttpServletRequest httpServletRequest){
-        plugins.forEach(extension -> extension.beforeFindAll(httpServletRequest));
+        plugins.forEach(plugin -> plugin.beforeFindAll(httpServletRequest));
     }
 
-    protected void beforeCreateValidate(Dto dto){}
-
-    protected void beforeUpdateValidate(Dto dto){}
-
-    protected void beforeDeleteValidate(Id id){}
-
-    protected void beforeFindValidate(Id id){}
 
     @Getter
     @Setter

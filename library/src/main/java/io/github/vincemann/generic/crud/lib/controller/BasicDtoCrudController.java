@@ -39,9 +39,9 @@ public abstract class BasicDtoCrudController<ServiceE extends IdentifiableEntity
     private Class<Dto> dtoClass = (Class<Dto>) ((ParameterizedType) this.getClass().getGenericSuperclass()).getActualTypeArguments()[1];
     private List<Plugin<? super ServiceE,? super Id>> basicCrudControllerPlugins = new ArrayList<>();
 
-    public BasicDtoCrudController(Service crudService, DtoMapper dtoMapper, AbstractPlugin<? super ServiceE,? super Id>... crudControllerExtensions) {
-        List<AbstractPlugin<? super ServiceE, ? super Id>> plugins = Arrays.asList(crudControllerExtensions);
-        plugins.forEach(extension -> extension.setController(this));
+    public BasicDtoCrudController(Service crudService, DtoMapper dtoMapper, AbstractPlugin<? super ServiceE,? super Id>... crudControllerPlugins) {
+        List<AbstractPlugin<? super ServiceE, ? super Id>> plugins = Arrays.asList(crudControllerPlugins);
+        plugins.forEach(plugin -> plugin.setController(this));
         this.basicCrudControllerPlugins.addAll(plugins);
         this.crudService = crudService;
         this.dtoMapper = dtoMapper;
@@ -80,16 +80,16 @@ public abstract class BasicDtoCrudController<ServiceE extends IdentifiableEntity
     }
 
     protected void afterFindAllEntities(Set<ServiceE> all){
-        basicCrudControllerPlugins.forEach(extension -> extension.afterFindAllEntities(all));
+        basicCrudControllerPlugins.forEach(plugin -> plugin.afterFindAllEntities(all));
     }
 
 
     protected void beforeFindEntity(Id id) {
-        basicCrudControllerPlugins.forEach(extension -> extension.beforeFindEntity(id));
+        basicCrudControllerPlugins.forEach(plugin -> plugin.beforeFindEntity(id));
     }
 
     protected void afterFindEntity(ServiceE foundEntity) {
-        basicCrudControllerPlugins.forEach(extension -> extension.afterFindEntity(foundEntity));
+        basicCrudControllerPlugins.forEach(plugin -> plugin.afterFindEntity(foundEntity));
     }
 
     @Override
@@ -104,11 +104,11 @@ public abstract class BasicDtoCrudController<ServiceE extends IdentifiableEntity
 
 
     protected void beforeCreateEntity(ServiceE entity) {
-        basicCrudControllerPlugins.forEach(extension -> extension.beforeCreateEntity(entity));
+        basicCrudControllerPlugins.forEach(plugin -> plugin.beforeCreateEntity(entity));
     }
 
     protected void afterCreateEntity(ServiceE entity) {
-        basicCrudControllerPlugins.forEach(extension -> extension.afterCreateEntity(entity));
+        basicCrudControllerPlugins.forEach(plugin -> plugin.afterCreateEntity(entity));
     }
 
     @Override
@@ -123,11 +123,11 @@ public abstract class BasicDtoCrudController<ServiceE extends IdentifiableEntity
     }
 
     protected void beforeUpdateEntity(ServiceE entity) {
-        basicCrudControllerPlugins.forEach(extension -> extension.beforeUpdateEntity(entity));
+        basicCrudControllerPlugins.forEach(plugin -> plugin.beforeUpdateEntity(entity));
     }
 
     protected void afterUpdateEntity(ServiceE entity) {
-        basicCrudControllerPlugins.forEach(extension -> extension.afterUpdateEntity(entity));
+        basicCrudControllerPlugins.forEach(plugin -> plugin.afterUpdateEntity(entity));
     }
 
     @Override
@@ -139,11 +139,11 @@ public abstract class BasicDtoCrudController<ServiceE extends IdentifiableEntity
     }
 
     protected void beforeDeleteEntity(Id id) {
-        basicCrudControllerPlugins.forEach(extension -> extension.beforeDeleteEntity(id));
+        basicCrudControllerPlugins.forEach(plugin -> plugin.beforeDeleteEntity(id));
     }
 
     protected void afterDeleteEntity(Id id) {
-        basicCrudControllerPlugins.forEach(extension -> extension.afterDeleteEntity(id));
+        basicCrudControllerPlugins.forEach(plugin -> plugin.afterDeleteEntity(id));
     }
 
     private ResponseEntity<Collection<Dto>> ok(Collection<Dto> dtoCollection){

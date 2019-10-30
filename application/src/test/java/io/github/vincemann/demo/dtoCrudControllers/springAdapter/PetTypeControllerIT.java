@@ -15,6 +15,7 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.transaction.PlatformTransactionManager;
 
+/*
 @ExtendWith(SpringExtension.class)
 @SpringBootTest(webEnvironment =
         SpringBootTest.WebEnvironment.RANDOM_PORT)
@@ -35,3 +36,4 @@ public class PetTypeControllerIT extends UrlParamIdDtoCrudControllerSpringAdapte
     }
 
 }
+*/

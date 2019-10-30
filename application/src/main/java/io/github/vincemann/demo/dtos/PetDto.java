@@ -13,6 +13,7 @@ import io.github.vincemann.generic.crud.lib.dto.biDir.BiDirParentId;
 
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Null;
 import javax.validation.constraints.Size;
 import java.time.LocalDate;
 
@@ -23,6 +24,7 @@ import java.time.LocalDate;
 @ToString
 @Builder
 public class PetDto extends IdentifiableEntityImpl<Long> implements UniDirParentDto, BiDirDtoChild {
+
     @NotBlank
     @Size(min = 2, max = 20)
     private String name;

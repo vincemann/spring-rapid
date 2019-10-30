@@ -26,7 +26,7 @@ public class VetController extends DtoCrudControllerSpringAdapter<Vet, VetDto,Lo
                 validationStrategy,
                 dtoMapper,
                 endpointsExposureDetails,
-                //needs PersonNameSavingPlugin but no Acl Extension
+                //needs PersonNameSavingPlugin but no Acl Plugin
                 new PersonNameSavingPlugin()
         );
     }

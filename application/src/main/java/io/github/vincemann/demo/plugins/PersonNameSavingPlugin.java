@@ -6,7 +6,7 @@ import io.github.vincemann.generic.crud.lib.controller.springAdapter.DtoCrudCont
 import lombok.extern.slf4j.Slf4j;
 
 /**
- *Extension that can be plugged in to all {@link io.github.vincemann.generic.crud.lib.controller.springAdapter.DtoCrudControllerSpringAdapter} dealing with Person Objects
+ *Plugin that can be plugged in to all {@link io.github.vincemann.generic.crud.lib.controller.springAdapter.DtoCrudControllerSpringAdapter} dealing with Person Objects
  */
 @Slf4j
 public class PersonNameSavingPlugin extends DtoCrudControllerSpringAdapter.Plugin<Person, PersonDto,Long> {
