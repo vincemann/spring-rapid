@@ -11,7 +11,6 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.servlet.mvc.method.RequestMappingInfo;
 import io.github.vincemann.generic.crud.lib.controller.BasicDtoCrudController;
@@ -109,7 +108,11 @@ public abstract class DtoCrudControllerSpringAdapter<ServiceE extends Identifiab
 
     private void initPlugins(Plugin<? super ServiceE,? super Dto,? super Id>... crudControllerSpringAdapterPlugins){
         List<Plugin<? super ServiceE, ? super Dto, ? super Id>> plugins = Arrays.asList(crudControllerSpringAdapterPlugins);
-        plugins.forEach(plugin -> plugin.setController(this));
+        plugins.forEach(plugin -> {
+            log.debug("Initializing plugin: "+ plugin + " for controller: "+this.getClass().getSimpleName());
+            plugin.setController(this);
+
+        });
         this.plugins.addAll(plugins);
         this.getBasicCrudControllerPlugins().addAll(plugins);
     }
@@ -200,25 +203,35 @@ public abstract class DtoCrudControllerSpringAdapter<ServiceE extends Identifiab
     }
 
     public ResponseEntity<Collection<Dto>> findAll(HttpServletRequest request) throws EntityMappingException {
+        log.debug("FindAll request arriving at controller: " + request);
+        validationStrategy.validateFindAllRequest(request);
+        log.debug("Find all request validated");
         beforeFindAll(request);
         return super.findAll();
     }
 
 
     public ResponseEntity<Dto> find(HttpServletRequest request) throws IdFetchingException, EntityNotFoundException, NoIdException, EntityMappingException {
+        log.debug("Find request arriving at controller: " + request);
         Id id = idIdFetchingStrategy.fetchId(request);
         validationStrategy.beforeFindValidate(id);
+        log.debug("id fetched from request: " + id);
         validationStrategy.validateId(id,request);
+        log.debug("id successfully validated");
         beforeFind(id,request);
         return super.find(id);
     }
 
     public ResponseEntity<Dto> create(HttpServletRequest request) throws DtoReadingException, BadEntityException, EntityMappingException {
+        log.debug("Create request arriving at controller: " + request);
         try {
             String body = request.getReader().lines().collect(Collectors.joining(System.lineSeparator()));
+            log.debug("String Body fetched from request: " + body);
             Dto dto = mediaTypeStrategy.readDtoFromBody(body,getDtoClass());
+            log.debug("Dto read from string body " + dto);
             validationStrategy.beforeCreateValidate(dto);
             validationStrategy.validateDto(dto,request);
+            log.debug("Dto successfully validated");
             beforeCreate(dto,request);
             return super.create(dto);
         }catch (IOException e){
@@ -227,11 +240,15 @@ public abstract class DtoCrudControllerSpringAdapter<ServiceE extends Identifiab
     }
 
     public ResponseEntity<Dto> update(HttpServletRequest request) throws DtoReadingException, EntityNotFoundException, NoIdException, BadEntityException, EntityMappingException {
+        log.debug("Update request arriving at controller: " + request);
         try {
             String body = request.getReader().lines().collect(Collectors.joining(System.lineSeparator()));
+            log.debug("String Body fetched from request: " + body);
             Dto dto = mediaTypeStrategy.readDtoFromBody(body,getDtoClass());
+            log.debug("Dto read from string body " + dto);
             validationStrategy.beforeUpdateValidate(dto);
             validationStrategy.validateDto(dto,request);
+            log.debug("Dto successfully validated");
             beforeUpdate(dto,request);
             return super.update(dto);
         }catch (IOException e){
@@ -241,9 +258,12 @@ public abstract class DtoCrudControllerSpringAdapter<ServiceE extends Identifiab
 
 
     public ResponseEntity delete(HttpServletRequest request) throws IdFetchingException, NoIdException, EntityNotFoundException, ConstraintViolationException {
+        log.debug("Delete request arriving at controller: " + request);
         Id id = idIdFetchingStrategy.fetchId(request);
+        log.debug("id fetched from request: " + id);
         validationStrategy.beforeDeleteValidate(id);
         validationStrategy.validateId(id,request);
+        log.debug("id successfully validated");
         beforeDelete(id,request);
         return super.delete(id);
     }

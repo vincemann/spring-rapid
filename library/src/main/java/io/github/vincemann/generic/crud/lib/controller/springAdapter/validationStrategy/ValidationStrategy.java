@@ -26,6 +26,7 @@ public interface ValidationStrategy<Dto,Id> {
      */
     public abstract void validateId(Id id,HttpServletRequest httpServletRequest) throws ConstraintViolationException;
 
+    public default void validateFindAllRequest(HttpServletRequest httpServletRequest)throws ConstraintViolationException {}
 
     public default void beforeCreateValidate(Dto dto){}
 
