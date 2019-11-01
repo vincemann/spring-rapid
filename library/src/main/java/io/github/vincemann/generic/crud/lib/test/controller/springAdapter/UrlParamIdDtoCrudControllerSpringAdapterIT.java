@@ -479,7 +479,6 @@ public abstract class UrlParamIdDtoCrudControllerSpringAdapterIT<ServiceE extend
         TestRequestEntity testRequestEntity = requestEntityFactory.createInstance(CrudControllerTestCase.SUCCESSFUL_CREATE, bundleMod, null);
         onBeforeCreateEntityShouldSucceed(dto);
         ResponseEntity<String> responseEntity = createEntity(dto, testRequestEntity);
-        Assertions.assertTrue(responseEntity.getStatusCode().is2xxSuccessful());
         Assertions.assertEquals(responseEntity.getStatusCode(), testRequestEntity.getExpectedHttpStatus(), "Status was : " + responseEntity.getStatusCode() + " response Body: " + responseEntity.getBody());
         Dto httpResponseEntity = crudController.getMediaTypeStrategy().readDtoFromBody(responseEntity.getBody(), dtoEntityClass);
         onAfterCreateEntityShouldSucceed(dto, httpResponseEntity);
@@ -490,7 +489,6 @@ public abstract class UrlParamIdDtoCrudControllerSpringAdapterIT<ServiceE extend
         TestRequestEntity testRequestEntity = requestEntityFactory.createInstance(CrudControllerTestCase.FAILED_CREATE, bundleMod, null);
         onBeforeCreateEntityShouldFail(dto);
         ResponseEntity<String> responseEntity = createEntity(dto, testRequestEntity);
-        Assertions.assertFalse(responseEntity.getStatusCode().is2xxSuccessful());
         Assertions.assertEquals(responseEntity.getStatusCode(), testRequestEntity.getExpectedHttpStatus(), "Status was : " + responseEntity.getStatusCode() + " response Body: " + responseEntity.getBody());
         onAfterCreateEntityShouldFail(dto, responseEntity);
         return responseEntity;
@@ -632,7 +630,6 @@ public abstract class UrlParamIdDtoCrudControllerSpringAdapterIT<ServiceE extend
         TestRequestEntity testRequestEntity = requestEntityFactory.createInstance(CrudControllerTestCase.SUCCESSFUL_FIND, bundleMod, id);
         onBeforeFindEntityShouldSucceed(id);
         ResponseEntity<String> responseEntity = findEntity(id, testRequestEntity);
-        Assertions.assertTrue(responseEntity.getStatusCode().is2xxSuccessful());
         Assertions.assertEquals(responseEntity.getStatusCode(), testRequestEntity.getExpectedHttpStatus(), "Status was : " + responseEntity.getStatusCode() + " response Body: " + responseEntity.getBody());
         Dto responseDto = crudController.getMediaTypeStrategy().readDtoFromBody(responseEntity.getBody(), dtoEntityClass);
         Assertions.assertNotNull(responseDto);
@@ -644,7 +641,6 @@ public abstract class UrlParamIdDtoCrudControllerSpringAdapterIT<ServiceE extend
         TestRequestEntity testRequestEntity = requestEntityFactory.createInstance(CrudControllerTestCase.FAILED_FIND, bundleMod, id);
         onBeforeFindEntityShouldFail(id);
         ResponseEntity<String> responseEntity = findEntity(id, testRequestEntity);
-        Assertions.assertFalse(responseEntity.getStatusCode().is2xxSuccessful());
         Assertions.assertEquals(responseEntity.getStatusCode(), testRequestEntity.getExpectedHttpStatus(), "Status was : " + responseEntity.getStatusCode() + " response Body: " + responseEntity.getBody());
         onAfterFindEntityShouldFail(id, responseEntity);
         return responseEntity;
@@ -810,11 +806,11 @@ public abstract class UrlParamIdDtoCrudControllerSpringAdapterIT<ServiceE extend
     }
 
 
-    private ServiceE saveServiceEntity(ServiceE serviceE) throws BadEntityException {
+    protected ServiceE saveServiceEntity(ServiceE serviceE) throws BadEntityException {
         return crudController.getCrudService().save(serviceE);
     }
 
-    private Collection<ServiceE> saveServiceEntities(Collection<ServiceE> serviceECollection) throws BadEntityException {
+    protected Collection<ServiceE> saveServiceEntities(Collection<ServiceE> serviceECollection) throws BadEntityException {
         Collection<ServiceE> savedEntities = new ArrayList<>();
         for (ServiceE serviceE : serviceECollection) {
             ServiceE savedEntity = saveServiceEntity(serviceE);

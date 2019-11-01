@@ -37,7 +37,7 @@ public class TestRequestEntity {
         this.method = method;
         this.url = url;
         if(headers==null){
-            headers = new LinkedMultiValueMap<>();
+            this.headers = new LinkedMultiValueMap<>();
         }else {
             this.headers = headers;
         }
