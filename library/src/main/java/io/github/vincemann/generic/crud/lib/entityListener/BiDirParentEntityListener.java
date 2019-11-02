@@ -2,7 +2,7 @@ package io.github.vincemann.generic.crud.lib.entityListener;
 
 import io.github.vincemann.generic.crud.lib.model.biDir.BiDirChild;
 import io.github.vincemann.generic.crud.lib.model.biDir.BiDirParent;
-import io.github.vincemann.generic.crud.lib.service.crudServiceFinder.CrudServiceFinder;
+import io.github.vincemann.generic.crud.lib.service.finder.CrudServiceFinder;
 
 import javax.persistence.PrePersist;
 import javax.persistence.PreRemove;

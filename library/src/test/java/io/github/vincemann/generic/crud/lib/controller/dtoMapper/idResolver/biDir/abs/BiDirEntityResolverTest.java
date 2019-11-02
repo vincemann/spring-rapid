@@ -5,7 +5,7 @@ import io.github.vincemann.generic.crud.lib.controller.dtoMapper.idResolver.biDi
 import io.github.vincemann.generic.crud.lib.controller.dtoMapper.idResolver.biDir.testEntities.BiDirSecondEntityParent;
 import io.github.vincemann.generic.crud.lib.model.IdentifiableEntity;
 import io.github.vincemann.generic.crud.lib.service.CrudService;
-import io.github.vincemann.generic.crud.lib.service.crudServiceFinder.CrudServiceFinder;
+import io.github.vincemann.generic.crud.lib.service.finder.CrudServiceFinder;
 import io.github.vincemann.generic.crud.lib.service.exception.NoIdException;
 import lombok.Getter;
 import org.junit.jupiter.api.BeforeEach;

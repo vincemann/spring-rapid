@@ -49,7 +49,8 @@ import java.util.stream.Collectors;
  *
  */
 @Slf4j
-public abstract class DtoCrudControllerSpringAdapter<ServiceE extends IdentifiableEntity<Id>,Dto extends IdentifiableEntity<Id>,Id extends Serializable, Service extends CrudService<ServiceE,Id>> extends BasicDtoCrudController<ServiceE,Dto,Id,Service> {
+public abstract class DtoCrudControllerSpringAdapter<ServiceE extends IdentifiableEntity<Id>,Dto extends IdentifiableEntity<Id>,Id extends Serializable, Service extends CrudService<ServiceE,Id>>
+        extends BasicDtoCrudController<ServiceE,Dto,Id,Service> {
 
 
     private EndpointService endpointService;
@@ -70,22 +71,39 @@ public abstract class DtoCrudControllerSpringAdapter<ServiceE extends Identifiab
 
     private IdFetchingStrategy<Id> idIdFetchingStrategy;
     private MediaTypeStrategy mediaTypeStrategy;
-    private ValidationStrategy<Dto,Id> validationStrategy;
+    private ValidationStrategy<? super Dto,? super Id> validationStrategy;
     private EndpointsExposureDetails endpointsExposureDetails;
     private List<Plugin<? super ServiceE,? super Dto,? super Id>> plugins = new ArrayList<>();
 
     //todo implement methods, that only return id, and not whole dtos
-    public DtoCrudControllerSpringAdapter(Service crudService, EndpointService endpointService, String entityNameInUrl, IdFetchingStrategy<Id> idIdFetchingStrategy, MediaTypeStrategy mediaTypeStrategy, ValidationStrategy<Dto, Id> validationStrategy, DtoMapper dtoMapper, EndpointsExposureDetails endpointsExposureDetails, Plugin<? super ServiceE,? super Dto,? super Id>... plugins) {
+    public DtoCrudControllerSpringAdapter(Service crudService,
+                                          EndpointService endpointService,
+                                          String entityNameInUrl,
+                                          IdFetchingStrategy<Id> idIdFetchingStrategy,
+                                          MediaTypeStrategy mediaTypeStrategy,
+                                          ValidationStrategy<? super Dto,? super Id> validationStrategy,
+                                          DtoMapper dtoMapper,
+                                          EndpointsExposureDetails endpointsExposureDetails,
+                                          Plugin<? super ServiceE,? super Dto,? super Id>... plugins
+    ) {
         super(crudService, dtoMapper);
         constructorInit(endpointService,entityNameInUrl,idIdFetchingStrategy,mediaTypeStrategy,validationStrategy,endpointsExposureDetails,plugins);
     }
 
-    public DtoCrudControllerSpringAdapter(Service crudService, EndpointService endpointService, IdFetchingStrategy<Id> idIdFetchingStrategy, MediaTypeStrategy mediaTypeStrategy, ValidationStrategy<Dto, Id> validationStrategy, DtoMapper dtoMapper, EndpointsExposureDetails endpointsExposureDetails, Plugin<? super ServiceE,? super Dto,? super Id>... plugins) {
+    public DtoCrudControllerSpringAdapter(Service crudService,
+                                          EndpointService endpointService,
+                                          IdFetchingStrategy<Id> idIdFetchingStrategy,
+                                          MediaTypeStrategy mediaTypeStrategy,
+                                          ValidationStrategy<? super Dto,? super Id> validationStrategy,
+                                          DtoMapper dtoMapper,
+                                          EndpointsExposureDetails endpointsExposureDetails,
+                                          Plugin<? super ServiceE,? super Dto,? super Id>... plugins
+    ) {
         super(crudService, dtoMapper);
         constructorInit(endpointService,getServiceEntityClass().getSimpleName().toLowerCase(),idIdFetchingStrategy,mediaTypeStrategy,validationStrategy,endpointsExposureDetails,plugins);
     }
 
-    private void constructorInit(EndpointService endpointService, String entityNameInUrl, IdFetchingStrategy<Id> idIdFetchingStrategy, MediaTypeStrategy mediaTypeStrategy, ValidationStrategy<Dto, Id> validationStrategy, EndpointsExposureDetails endpointsExposureDetails, Plugin<? super ServiceE,? super Dto,? super Id>... plugins){
+    private void constructorInit(EndpointService endpointService, String entityNameInUrl, IdFetchingStrategy<Id> idIdFetchingStrategy, MediaTypeStrategy mediaTypeStrategy, ValidationStrategy<? super Dto,? super Id> validationStrategy, EndpointsExposureDetails endpointsExposureDetails, Plugin<? super ServiceE,? super Dto,? super Id>... plugins){
         this.endpointService = endpointService;
         this.entityNameInUrl = entityNameInUrl;
         this.baseUrl="/"+entityNameInUrl+"/";
@@ -444,7 +462,7 @@ public abstract class DtoCrudControllerSpringAdapter<ServiceE extends Identifiab
         return mediaTypeStrategy;
     }
 
-    public ValidationStrategy<Dto, Id> getValidationStrategy() {
+    public ValidationStrategy<? super Dto,? super Id> getValidationStrategy() {
         return validationStrategy;
     }
 

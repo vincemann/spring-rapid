@@ -1,8 +1,7 @@
 package io.github.vincemann.generic.crud.lib.config;
 
-import io.github.vincemann.generic.crud.lib.service.crudServiceFinder.CrudServiceFinder;
-import io.github.vincemann.generic.crud.lib.service.crudServiceFinder.PackageScanningCrudServiceFinder;
-import org.springframework.context.ApplicationContext;
+import io.github.vincemann.generic.crud.lib.service.finder.CrudServiceFinder;
+import io.github.vincemann.generic.crud.lib.service.finder.PackageScanningCrudServiceFinder;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
