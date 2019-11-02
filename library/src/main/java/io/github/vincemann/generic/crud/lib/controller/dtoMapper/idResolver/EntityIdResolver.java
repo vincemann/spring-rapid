@@ -2,7 +2,7 @@ package io.github.vincemann.generic.crud.lib.controller.dtoMapper.idResolver;
 
 import io.github.vincemann.generic.crud.lib.controller.dtoMapper.EntityMappingException;
 import io.github.vincemann.generic.crud.lib.service.CrudService;
-import io.github.vincemann.generic.crud.lib.service.crudServiceFinder.CrudServiceFinder;
+import io.github.vincemann.generic.crud.lib.service.finder.CrudServiceFinder;
 import io.github.vincemann.generic.crud.lib.service.exception.EntityNotFoundException;
 import io.github.vincemann.generic.crud.lib.service.exception.NoIdException;
 import lombok.Getter;

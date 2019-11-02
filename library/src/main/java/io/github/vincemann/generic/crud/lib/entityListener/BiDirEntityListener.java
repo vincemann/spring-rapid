@@ -1,6 +1,6 @@
 package io.github.vincemann.generic.crud.lib.entityListener;
 
-import io.github.vincemann.generic.crud.lib.service.crudServiceFinder.CrudServiceFinder;
+import io.github.vincemann.generic.crud.lib.service.finder.CrudServiceFinder;
 import lombok.Getter;
 
 @Getter

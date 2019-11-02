@@ -29,7 +29,8 @@ import java.util.*;
  * @param <Id>       Id Type of {@link ServiceE}
  */
 @Getter
-public abstract class BasicDtoCrudController<ServiceE extends IdentifiableEntity<Id>,Dto extends IdentifiableEntity<Id>,  Id extends Serializable, Service extends CrudService<ServiceE, Id>> implements DtoCrudController<Dto, Id> {
+public abstract class BasicDtoCrudController<ServiceE extends IdentifiableEntity<Id>,Dto extends IdentifiableEntity<Id>,  Id extends Serializable, Service extends CrudService<ServiceE, Id>>
+        implements DtoCrudController<Dto, Id> {
 
     private Service crudService;
     private DtoMapper dtoMapper;
@@ -39,7 +40,10 @@ public abstract class BasicDtoCrudController<ServiceE extends IdentifiableEntity
     private Class<Dto> dtoClass = (Class<Dto>) ((ParameterizedType) this.getClass().getGenericSuperclass()).getActualTypeArguments()[1];
     private List<Plugin<? super ServiceE,? super Id>> basicCrudControllerPlugins = new ArrayList<>();
 
-    public BasicDtoCrudController(Service crudService, DtoMapper dtoMapper, AbstractPlugin<? super ServiceE,? super Id>... crudControllerPlugins) {
+    public BasicDtoCrudController(Service crudService,
+                                  DtoMapper dtoMapper,
+                                  AbstractPlugin<? super ServiceE,? super Id>... crudControllerPlugins
+    ) {
         List<AbstractPlugin<? super ServiceE, ? super Id>> plugins = Arrays.asList(crudControllerPlugins);
         plugins.forEach(plugin -> plugin.setController(this));
         this.basicCrudControllerPlugins.addAll(plugins);

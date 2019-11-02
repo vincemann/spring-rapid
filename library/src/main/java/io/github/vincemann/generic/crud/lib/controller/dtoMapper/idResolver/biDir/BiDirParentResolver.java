@@ -5,9 +5,7 @@ import io.github.vincemann.generic.crud.lib.controller.dtoMapper.idResolver.Enti
 import io.github.vincemann.generic.crud.lib.dto.biDir.BiDirDtoParent;
 import io.github.vincemann.generic.crud.lib.model.biDir.BiDirChild;
 import io.github.vincemann.generic.crud.lib.model.biDir.BiDirParent;
-import io.github.vincemann.generic.crud.lib.service.crudServiceFinder.CrudServiceFinder;
-import io.github.vincemann.generic.crud.lib.service.exception.EntityNotFoundException;
-import io.github.vincemann.generic.crud.lib.service.exception.NoIdException;
+import io.github.vincemann.generic.crud.lib.service.finder.CrudServiceFinder;
 import org.springframework.stereotype.Component;
 
 import java.io.Serializable;
