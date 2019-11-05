@@ -1,13 +1,12 @@
 package io.github.vincemann.generic.crud.lib.service.jpa;
 
 import io.github.vincemann.generic.crud.lib.model.IdentifiableEntity;
-import io.github.vincemann.generic.crud.lib.service.ExtendableCrudService;
+import io.github.vincemann.generic.crud.lib.service.CrudService;
 import io.github.vincemann.generic.crud.lib.service.exception.BadEntityException;
 import io.github.vincemann.generic.crud.lib.service.exception.EntityNotFoundException;
 import io.github.vincemann.generic.crud.lib.service.exception.NoIdException;
 import org.springframework.dao.NonTransientDataAccessException;
 import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.io.Serializable;
 import java.lang.reflect.ParameterizedType;
@@ -15,27 +14,20 @@ import java.util.HashSet;
 import java.util.Optional;
 import java.util.Set;
 
-public abstract class JPACrudService<E extends IdentifiableEntity<Id>,Id extends Serializable,R extends JpaRepository<E,Id>> extends ExtendableCrudService<E,Id> {
+public abstract class JPACrudService<E extends IdentifiableEntity<Id>,Id extends Serializable,R extends JpaRepository<E,Id>> implements CrudService<E,Id> {
 
 
     private R jpaRepository;
     @SuppressWarnings("unchecked")
     private Class<E> entityClass = (Class<E>) ((ParameterizedType) this.getClass().getGenericSuperclass()).getActualTypeArguments()[0];
 
-    public JPACrudService(R jpaRepository,Plugin<? super E,? super Id>... plugins) {
-        super(plugins);
+    public JPACrudService(R jpaRepository) {
         this.jpaRepository = jpaRepository;
     }
 
-    @Transactional
-    @Override
-    public E update(E entity) throws EntityNotFoundException, NoIdException, BadEntityException {
-        return super.update(entity);
-    }
-
 
     @Override
-    public E updateImpl(E entity) throws  NoIdException, EntityNotFoundException, BadEntityException {
+    public E update(E entity) throws  NoIdException, EntityNotFoundException, BadEntityException {
         if(entity.getId()==null){
             throw new NoIdException("No Id value set for EntityType: " + entityClass.getSimpleName());
         }
@@ -46,29 +38,16 @@ public abstract class JPACrudService<E extends IdentifiableEntity<Id>,Id extends
         return save(entity);
     }
 
-    @Transactional
     @Override
     public Optional<E> findById(Id id) throws NoIdException {
-        return super.findById(id);
-    }
-
-    @Override
-    public Optional<E> findByIdImpl(Id id) throws NoIdException {
         if(id==null){
             throw new NoIdException("No Id value set for EntityType: " + entityClass.getSimpleName());
         }
         return jpaRepository.findById(id);
     }
 
-    @Transactional
     @Override
-    public E save(E entity) throws BadEntityException {
-        return super.save(entity);
-    }
-
-
-    @Override
-    public E saveImpl(E entity) throws  BadEntityException {
+    public E save(E entity) throws  BadEntityException {
         try {
             return jpaRepository.save(entity);
         }
@@ -77,25 +56,13 @@ public abstract class JPACrudService<E extends IdentifiableEntity<Id>,Id extends
         }
     }
 
-    @Transactional
     @Override
     public Set<E> findAll() {
-        return super.findAll();
-    }
-
-    @Override
-    public Set<E> findAllImpl() {
        return new HashSet<>(jpaRepository.findAll());
     }
 
-    @Transactional
     @Override
     public void delete(E entity) throws EntityNotFoundException, NoIdException {
-        super.delete(entity);
-    }
-
-    @Override
-    public void deleteImpl(E entity) throws EntityNotFoundException, NoIdException {
         if(entity.getId()==null){
             throw new NoIdException("No Id value set for EntityType: " + entityClass.getSimpleName());
         }
@@ -105,14 +72,8 @@ public abstract class JPACrudService<E extends IdentifiableEntity<Id>,Id extends
         jpaRepository.delete(entity);
     }
 
-    @Transactional
     @Override
     public void deleteById(Id id) throws EntityNotFoundException, NoIdException {
-        super.deleteById(id);
-    }
-
-    @Override
-    public void deleteByIdImpl(Id id) throws EntityNotFoundException, NoIdException {
         if(id==null){
             throw new NoIdException("No Id value set for EntityType: " + entityClass.getSimpleName());
         }
