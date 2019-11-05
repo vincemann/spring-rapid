@@ -97,6 +97,7 @@ public abstract class EntityInitializerControllerIT<ServiceE extends Identifiabl
     }
 
 
+    /*
 
     @AfterEach
     @Override
@@ -110,9 +111,9 @@ public abstract class EntityInitializerControllerIT<ServiceE extends Identifiabl
                 vetController.getCrudService(),
                 visitService);
 
-    }
+    }*/
 
-
+/*
     private void cleanAllServiceEntities(CrudService... crudServices) throws NoIdException, EntityNotFoundException {
         for(CrudService crudService: crudServices) {
             Set<IdentifiableEntity> allEntitesOfService = crudService.findAll();
@@ -121,5 +122,5 @@ public abstract class EntityInitializerControllerIT<ServiceE extends Identifiabl
             }
             Assertions.assertTrue(crudService.findAll().isEmpty());
         }
-    }
+    }*/
 }

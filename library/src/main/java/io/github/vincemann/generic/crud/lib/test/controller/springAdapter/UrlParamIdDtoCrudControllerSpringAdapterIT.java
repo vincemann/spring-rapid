@@ -20,6 +20,7 @@ import io.github.vincemann.generic.crud.lib.test.controller.springAdapter.testRe
 import io.github.vincemann.generic.crud.lib.test.controller.springAdapter.testRequestEntity.RequestEntityMapper;
 import io.github.vincemann.generic.crud.lib.test.controller.springAdapter.testRequestEntity.TestRequestEntity;
 import io.github.vincemann.generic.crud.lib.test.controller.springAdapter.testBundles.findAll.FindAllTestBundle;
+import io.github.vincemann.generic.crud.lib.test.databaseReset.ResetDatabaseTestExecutionListener;
 import io.github.vincemann.generic.crud.lib.util.BeanUtils;
 import io.github.vincemann.generic.crud.lib.util.TestLogUtils;
 import lombok.Getter;
@@ -27,6 +28,7 @@ import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.*;
 import org.springframework.http.ResponseEntity;
+import org.springframework.test.context.TestExecutionListeners;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.DefaultTransactionDefinition;
@@ -47,6 +49,11 @@ import static io.github.vincemann.generic.crud.lib.util.SetterUtils.returnIfNotN
  * @param <Id>
  */
 @Slf4j
+//clear database after each test
+@TestExecutionListeners(mergeMode =
+        TestExecutionListeners.MergeMode.MERGE_WITH_DEFAULTS,
+        listeners = {ResetDatabaseTestExecutionListener.class}
+)
 public abstract class UrlParamIdDtoCrudControllerSpringAdapterIT<ServiceE extends IdentifiableEntity<Id>, Dto extends IdentifiableEntity<Id>, Service extends CrudService<ServiceE, Id>, Controller extends DtoCrudControllerSpringAdapter<ServiceE, Dto, Id, Service>, Id extends Serializable>
         extends IntegrationTest {
 
@@ -822,9 +829,10 @@ public abstract class UrlParamIdDtoCrudControllerSpringAdapterIT<ServiceE extend
 
 
 
+    /*
     /**
      * Removes all Entites from given {@link Service}
-     */
+     *//*
     @AfterEach
     public void tearDown() throws Exception {
         Set<ServiceE> allEntities = crudController.getCrudService().findAll();
@@ -833,7 +841,7 @@ public abstract class UrlParamIdDtoCrudControllerSpringAdapterIT<ServiceE extend
         }
         Set<ServiceE> allEntitiesAfterDeleting = crudController.getCrudService().findAll();
         Assertions.assertTrue(allEntitiesAfterDeleting.isEmpty());
-    }
+    }*/
 
 
     @Getter

@@ -1,9 +1,7 @@
-package io.github.vincemann.demo.service.springDataJPA.decorator.adapter;
+package io.github.vincemann.generic.crud.lib.service.decorator.implementations;
 
 import io.github.vincemann.generic.crud.lib.model.IdentifiableEntity;
 import io.github.vincemann.generic.crud.lib.service.CrudService;
-import io.github.vincemann.generic.crud.lib.service.decorator.implementations.PluginCrudServiceDecorator;
-import io.github.vincemann.generic.crud.lib.service.decorator.implementations.TransactionalCrudServiceDecorator;
 import io.github.vincemann.generic.crud.lib.service.exception.BadEntityException;
 import io.github.vincemann.generic.crud.lib.service.exception.EntityNotFoundException;
 import io.github.vincemann.generic.crud.lib.service.exception.NoIdException;
