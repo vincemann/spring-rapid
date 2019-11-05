@@ -8,6 +8,7 @@ import io.github.vincemann.demo.service.plugins.PersonNameSavingPlugin;
 import io.github.vincemann.demo.service.springDataJPA.decorator.adapter.*;
 import io.github.vincemann.generic.crud.lib.service.decorator.DecorationQualifier;
 import io.github.vincemann.generic.crud.lib.service.decorator.implementations.TransactionalCrudServiceDecorator;
+import io.github.vincemann.generic.crud.lib.service.decorator.implementations.TransactionalPluginServiceDecorator;
 import io.github.vincemann.generic.crud.lib.service.plugin.BiDirChildPlugin;
 import io.github.vincemann.generic.crud.lib.service.plugin.BiDirParentPlugin;
 import org.springframework.beans.factory.annotation.Qualifier;

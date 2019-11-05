@@ -7,6 +7,7 @@ import io.github.vincemann.generic.crud.lib.service.exception.EntityNotFoundExce
 import io.github.vincemann.generic.crud.lib.service.exception.NoIdException;
 import io.github.vincemann.generic.crud.lib.test.controller.springAdapter.testBundles.update.UpdateTestEntityBundle;
 import io.github.vincemann.generic.crud.lib.test.controller.springAdapter.testBundles.update.UpdateTestEntityBundleIteration;
+import io.github.vincemann.generic.crud.lib.test.databaseReset.ResetDatabaseTestExecutionListener;
 import io.github.vincemann.generic.crud.lib.test.service.testBundles.ServiceUpdateTestEntityBundle;
 import io.github.vincemann.generic.crud.lib.test.service.testBundles.ServiceUpdateTestEntityBundleIteration;
 import io.github.vincemann.generic.crud.lib.util.BeanUtils;
@@ -17,6 +18,7 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.springframework.test.context.TestExecutionListeners;
 
 import java.io.Serializable;
 import java.util.*;
@@ -28,6 +30,10 @@ import java.util.*;
  * @param <Id>      Id Type of TestEntityType
  */
 @Slf4j
+@TestExecutionListeners(mergeMode =
+        TestExecutionListeners.MergeMode.MERGE_WITH_DEFAULTS,
+        listeners = {ResetDatabaseTestExecutionListener.class}
+)
 public abstract class CrudServiceTest<S extends CrudService<E,Id>,E extends IdentifiableEntity<Id>,Id extends Serializable> {
 
     @Getter
@@ -198,12 +204,12 @@ public abstract class CrudServiceTest<S extends CrudService<E,Id>,E extends Iden
         }
     }
 
-    @AfterEach
+    /*@AfterEach
     void tearDown() throws EntityNotFoundException, NoIdException {
         for(E entityToDelete : crudService.findAll()){
             deleteEntityByIdShouldSucceed(entityToDelete.getId());
         }
         Assertions.assertTrue(crudService.findAll().isEmpty());
-    }
+    }*/
 
 }
