@@ -1,7 +1,7 @@
 package io.github.vincemann.demo.service.plugins;
 
 import io.github.vincemann.demo.model.abs.Person;
-import io.github.vincemann.generic.crud.lib.service.decorator.implementations.PluginCrudServiceDecorator;
+import io.github.vincemann.generic.crud.lib.service.ExtendableCrudService;
 import io.github.vincemann.generic.crud.lib.service.exception.BadEntityException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
@@ -11,7 +11,7 @@ import org.springframework.stereotype.Component;
  */
 @Slf4j
 @Component
-public class PersonNameSavingPlugin extends PluginCrudServiceDecorator.Plugin<Person,Long> {
+public class PersonNameSavingPlugin extends ExtendableCrudService.Plugin<Person,Long> {
 
     @Override
     public void onBeforeSave(Person entity) throws BadEntityException {

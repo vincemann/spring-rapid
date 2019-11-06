@@ -40,6 +40,7 @@ public class ResetDatabaseTestExecutionListener extends AbstractTestExecutionLis
         log.debug("database cleaned");
     }
 
+
     private void cleanupDatabase() throws SQLException {
         Connection c = dataSource.getConnection();
         Statement s = c.createStatement();

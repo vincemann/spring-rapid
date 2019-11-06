@@ -1,7 +1,7 @@
 package io.github.vincemann.demo.service.plugins;
 
 import io.github.vincemann.generic.crud.lib.model.IdentifiableEntity;
-import io.github.vincemann.generic.crud.lib.service.decorator.implementations.PluginCrudServiceDecorator;
+import io.github.vincemann.generic.crud.lib.service.ExtendableCrudService;
 import io.github.vincemann.generic.crud.lib.service.exception.BadEntityException;
 import io.github.vincemann.generic.crud.lib.service.exception.EntityNotFoundException;
 import io.github.vincemann.generic.crud.lib.service.exception.NoIdException;
@@ -10,7 +10,7 @@ import org.springframework.stereotype.Component;
 
 @Slf4j
 @Component
-public class AclPlugin extends PluginCrudServiceDecorator.Plugin<IdentifiableEntity<Long>,Long> {
+public class AclPlugin extends ExtendableCrudService.Plugin<IdentifiableEntity<Long>,Long> {
 
 
     @Override
