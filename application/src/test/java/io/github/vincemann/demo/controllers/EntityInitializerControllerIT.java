@@ -25,7 +25,8 @@ import java.util.Set;
 
 @Getter
 @Setter
-public abstract class EntityInitializerControllerIT<ServiceE extends IdentifiableEntity<Long>, Dto extends IdentifiableEntity<Long>, Service extends CrudService<ServiceE, Long>, Controller extends DtoCrudControllerSpringAdapter<ServiceE, Dto, Long, Service>> extends UrlParamIdDtoCrudControllerSpringAdapterIT<ServiceE,Dto,Service,Controller,Long> {
+public abstract class EntityInitializerControllerIT<ServiceE extends IdentifiableEntity<Long>, Dto extends IdentifiableEntity<Long>, Service extends CrudService<ServiceE, Long>, Controller extends DtoCrudControllerSpringAdapter<ServiceE, Dto, Long, Service>>
+        extends UrlParamIdDtoCrudControllerSpringAdapterIT<ServiceE,Dto,Service,Controller,Long> {
 
     @Autowired
     private PetTypeController petTypeController;
