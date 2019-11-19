@@ -10,7 +10,8 @@ import lombok.Setter;
 import java.io.Serializable;
 import java.util.*;
 
-public abstract class ExtendableCrudService<E extends IdentifiableEntity<Id>, Id extends Serializable> implements CrudService<E, Id> {
+public abstract class ExtendableCrudService<E extends IdentifiableEntity<Id>, Id extends Serializable>
+        implements CrudService<E, Id> {
 
     private List<Plugin<? super E,? super Id>> plugins = new ArrayList<>();
 

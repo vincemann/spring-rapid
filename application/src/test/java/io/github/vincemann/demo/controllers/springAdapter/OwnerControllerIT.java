@@ -11,12 +11,14 @@ import io.github.vincemann.demo.service.PetService;
 import io.github.vincemann.generic.crud.lib.service.exception.NoIdException;
 import io.github.vincemann.generic.crud.lib.test.controller.springAdapter.plugins.CheckIfDbDeletedPlugin;
 import io.github.vincemann.generic.crud.lib.test.controller.springAdapter.plugins.ServiceDeepEqualPlugin;
-import io.github.vincemann.generic.crud.lib.test.controller.springAdapter.testBundles.create.FailedCreateTestEntityBundle;
-import io.github.vincemann.generic.crud.lib.test.controller.springAdapter.testBundles.create.SuccessfulCreateTestEntityBundle;
-import io.github.vincemann.generic.crud.lib.test.controller.springAdapter.testBundles.delete.SuccessfulDeleteTestEntityBundle;
-import io.github.vincemann.generic.crud.lib.test.controller.springAdapter.testBundles.find.SuccessfulFindTestEntityBundle;
-import io.github.vincemann.generic.crud.lib.test.controller.springAdapter.testBundles.update.UpdateTestEntityBundle;
-import io.github.vincemann.generic.crud.lib.test.controller.springAdapter.testBundles.update.UpdateTestEntityBundleIteration;
+import io.github.vincemann.generic.crud.lib.test.testBundles.abs.callback.PostIntegrationTestCallbackIdBundle;
+import io.github.vincemann.generic.crud.lib.test.testBundles.controller.create.FailedCreateIntegrationTestBundle;
+import io.github.vincemann.generic.crud.lib.test.testBundles.controller.create.SuccessfulCreateIntegrationTestBundle;
+import io.github.vincemann.generic.crud.lib.test.testBundles.controller.delete.DeleteIntegrationTestBundle;
+import io.github.vincemann.generic.crud.lib.test.testBundles.controller.find.SuccessfulFindIntegrationTestBundle;
+import io.github.vincemann.generic.crud.lib.test.testBundles.controller.update.FailedUpdateIntegrationTestBundle;
+import io.github.vincemann.generic.crud.lib.test.testBundles.controller.update.SuccessfulUpdateIntegrationTestBundle;
+import io.github.vincemann.generic.crud.lib.test.testBundles.controller.update.updateIteration.FailedUpdateTestEntityBundleIteration;
 import io.github.vincemann.generic.crud.lib.test.controller.springAdapter.testRequestEntity.factory.TestRequestEntityFactory;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -126,36 +128,36 @@ class OwnerControllerIT extends EntityInitializerControllerIT<Owner, OwnerDto, O
     }
 
     @Override
-    protected List<SuccessfulCreateTestEntityBundle<OwnerDto>> provideSuccessfulCreateTestEntityBundles() {
+    protected List<SuccessfulCreateIntegrationTestBundle<OwnerDto>> provideSuccessfulCreateTestEntityBundles() {
         return Arrays.asList(
-                new SuccessfulCreateTestEntityBundle<>(validOwnerDtoWithoutPets),
-                new SuccessfulCreateTestEntityBundle<>(validOwnerDtoWithOnePet),
-                new SuccessfulCreateTestEntityBundle<>(validOwnerDtoWithManyPets)
+                new SuccessfulCreateIntegrationTestBundle<>(validOwnerDtoWithoutPets),
+                new SuccessfulCreateIntegrationTestBundle<>(validOwnerDtoWithOnePet),
+                new SuccessfulCreateIntegrationTestBundle<>(validOwnerDtoWithManyPets)
 
         );
     }
 
     @Override
-    protected List<SuccessfulDeleteTestEntityBundle<Owner>> provideSuccessfulDeleteTestEntityBundles() {
+    protected List<DeleteIntegrationTestBundle<Owner,Long>> provideSuccessfulDeleteTestEntityBundles() {
         return Arrays.asList(
-                new SuccessfulDeleteTestEntityBundle<Owner>(validOwnerWithManyPets),
-                new SuccessfulDeleteTestEntityBundle<Owner>(validOwnerWithoutPets),
-                new SuccessfulDeleteTestEntityBundle<Owner>(validOwnerWithOnePet)
+                new DeleteIntegrationTestBundle<Owner,Long>(validOwnerWithManyPets),
+                new DeleteIntegrationTestBundle<Owner,Long>(validOwnerWithoutPets),
+                new DeleteIntegrationTestBundle<Owner,Long>(validOwnerWithOnePet)
         );
     }
 
     @Override
-    public List<SuccessfulFindTestEntityBundle<OwnerDto, Owner>> provideSuccessfulFindTestEntityBundles() {
+    public List<SuccessfulFindIntegrationTestBundle<OwnerDto, Owner>> provideSuccessfulFindTestEntityBundles() {
         return Arrays.asList(
-                new SuccessfulFindTestEntityBundle<>(validOwnerWithoutPets),
-                new SuccessfulFindTestEntityBundle<>(validOwnerWithOnePet),
-                new SuccessfulFindTestEntityBundle<>(validOwnerWithManyPets)
+                new SuccessfulFindIntegrationTestBundle<>(validOwnerWithoutPets),
+                new SuccessfulFindIntegrationTestBundle<>(validOwnerWithOnePet),
+                new SuccessfulFindIntegrationTestBundle<>(validOwnerWithManyPets)
 
         );
     }
 
     @Override
-    protected List<UpdateTestEntityBundle<Owner, OwnerDto>> provideSuccessfulUpdateTestEntityBundles() {
+    protected List<SuccessfulUpdateIntegrationTestBundle<Owner, OwnerDto>> provideSuccessfulUpdateTestEntityBundles() {
         OwnerDto diffStreetUpdate = OwnerDto.builder()
                 .firstName("Max")
                 .lastName("Müller")
@@ -179,21 +181,21 @@ class OwnerControllerIT extends EntityInitializerControllerIT<Owner, OwnerDto, O
                 .build();
 
         return Arrays.asList(
-                new UpdateTestEntityBundle<Owner, OwnerDto>(validOwnerWithoutPets, diffLastNameUpdate, diffStreetUpdate),
-                new UpdateTestEntityBundle<Owner, OwnerDto>(validOwnerWithOnePet, deleteAllPetsUpdate),
-                new UpdateTestEntityBundle<Owner, OwnerDto>(validOwnerWithManyPets, deleteAllPetsUpdate)
+                new SuccessfulUpdateIntegrationTestBundle<>(validOwnerWithoutPets, diffLastNameUpdate, diffStreetUpdate),
+                new SuccessfulUpdateIntegrationTestBundle<>(validOwnerWithOnePet, deleteAllPetsUpdate),
+                new SuccessfulUpdateIntegrationTestBundle<>(validOwnerWithManyPets, deleteAllPetsUpdate)
         );
     }
 
     @Override
-    protected List<FailedCreateTestEntityBundle<OwnerDto>> provideFailingCreateTestBundles() {
+    protected List<FailedCreateIntegrationTestBundle<OwnerDto,Long>> provideFailingCreateTestBundles() {
         return Arrays.asList(
-                new FailedCreateTestEntityBundle<>(invalidOwnerDto_becauseBlankCity)
+                new FailedCreateIntegrationTestBundle<>(invalidOwnerDto_becauseBlankCity)
         );
     }
 
     @Override
-    protected List<UpdateTestEntityBundle<Owner, OwnerDto>> provideFailedUpdateTestBundles() {
+    protected List<FailedUpdateIntegrationTestBundle<Owner, OwnerDto,Long>> provideFailedUpdateTestBundles() {
         //setting of invalid pet(-id) should not be possible
         OwnerDto addInvalidPetUpdate = OwnerDto.builder()
                 .firstName("Max")
@@ -211,25 +213,25 @@ class OwnerControllerIT extends EntityInitializerControllerIT<Owner, OwnerDto, O
                 .city("")
                 .build();
         return Arrays.asList(
-                UpdateTestEntityBundle.<Owner, OwnerDto>Builder()
-                        .entity(validOwnerWithoutPets)
+                FailedUpdateIntegrationTestBundle.<Owner, OwnerDto,Long>builder()
+                        .entityToUpdate(validOwnerWithoutPets)
                         .updateTestEntityBundleIterations(
                                 Arrays.asList(
-                                        UpdateTestEntityBundleIteration.<OwnerDto>builder()
-                                                .modifiedEntity(addInvalidPetUpdate)
-                                                .postUpdateCallback(this::assertOwnerDoesNotHavePets)
+                                        FailedUpdateTestEntityBundleIteration.<OwnerDto,Long>builder()
+                                                .entity(addInvalidPetUpdate)
+                                                .postTestCallback(this::assertOwnerDoesNotHavePets)
                                                 .build()
                                 )
                         )
                         .build(),
-                new UpdateTestEntityBundle<Owner, OwnerDto>(validOwnerWithoutPets, blankCityUpdate)
+                new FailedUpdateIntegrationTestBundle(validOwnerWithoutPets, blankCityUpdate)
         );
     }
 
 
-    private void assertOwnerDoesNotHavePets(OwnerDto ownerAfterUpdate) {
+    private void assertOwnerDoesNotHavePets(PostIntegrationTestCallbackIdBundle<Long> callbackIdBundle) {
         try {
-            Optional<Owner> ownerOptional = getOwnerController().getCrudService().findById(ownerAfterUpdate.getId());
+            Optional<Owner> ownerOptional = getOwnerController().getCrudService().findById(callbackIdBundle.getId());
             Assertions.assertTrue(ownerOptional.get().getPets().isEmpty());
         } catch (NoIdException e) {
             throw new RuntimeException(e);

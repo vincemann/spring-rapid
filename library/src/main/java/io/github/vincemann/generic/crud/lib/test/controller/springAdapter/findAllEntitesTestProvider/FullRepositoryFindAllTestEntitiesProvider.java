@@ -4,13 +4,15 @@ import io.github.vincemann.generic.crud.lib.model.IdentifiableEntity;
 import io.github.vincemann.generic.crud.lib.service.CrudService;
 
 import java.io.Serializable;
+import java.util.List;
 import java.util.Set;
 
-public class FullRepositoryFindAllTestEntitiesProvider<ServiceE extends IdentifiableEntity<? extends Serializable>> implements FindAllTestEntitiesProvider<ServiceE> {
+public class FullRepositoryFindAllTestEntitiesProvider<ServiceE extends IdentifiableEntity<? extends Serializable>>
+        implements FindAllTestEntitiesProvider<ServiceE> {
 
     private CrudService<ServiceE,? extends Serializable> crudService;
 
-    public FullRepositoryFindAllTestEntitiesProvider(CrudService<ServiceE, ? extends Serializable> crudService) {
+    public FullRepositoryFindAllTestEntitiesProvider(CrudService<ServiceE, ? extends Serializable> crudService, Set<ServiceE> repoEntities) {
         this.crudService = crudService;
     }
 
@@ -19,8 +21,4 @@ public class FullRepositoryFindAllTestEntitiesProvider<ServiceE extends Identifi
         return crudService.findAll();
     }
 
-    @Override
-    public Set<ServiceE> provideRepoEntities() {
-        return crudService.findAll();
-    }
 }

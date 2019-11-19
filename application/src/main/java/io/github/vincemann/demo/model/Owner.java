@@ -1,6 +1,6 @@
 package io.github.vincemann.demo.model;
 
-import io.github.vincemann.generic.crud.lib.entityListener.BiDirParentEntityListener;
+import io.github.vincemann.generic.crud.lib.model.entityListener.BiDirParentEntityListener;
 import io.github.vincemann.demo.model.abs.Person;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import io.github.vincemann.generic.crud.lib.model.IdentifiableEntityImpl;
