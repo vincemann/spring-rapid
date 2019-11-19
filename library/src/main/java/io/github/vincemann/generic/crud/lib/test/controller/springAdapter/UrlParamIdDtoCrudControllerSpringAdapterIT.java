@@ -7,20 +7,24 @@ import io.github.vincemann.generic.crud.lib.service.CrudService;
 import io.github.vincemann.generic.crud.lib.service.exception.BadEntityException;
 import io.github.vincemann.generic.crud.lib.test.IntegrationTest;
 import io.github.vincemann.generic.crud.lib.test.controller.springAdapter.findAllEntitesTestProvider.FindAllTestEntitiesProvider;
-import io.github.vincemann.generic.crud.lib.test.controller.springAdapter.testBundles.create.FailedCreateTestEntityBundle;
-import io.github.vincemann.generic.crud.lib.test.controller.springAdapter.testBundles.create.SuccessfulCreateTestEntityBundle;
-import io.github.vincemann.generic.crud.lib.test.controller.springAdapter.testBundles.delete.FailedDeleteTestEntityBundle;
-import io.github.vincemann.generic.crud.lib.test.controller.springAdapter.testBundles.delete.SuccessfulDeleteTestEntityBundle;
-import io.github.vincemann.generic.crud.lib.test.controller.springAdapter.testBundles.find.FailedFindTestEntityBundle;
-import io.github.vincemann.generic.crud.lib.test.controller.springAdapter.testBundles.find.SuccessfulFindTestEntityBundle;
-import io.github.vincemann.generic.crud.lib.test.controller.springAdapter.testBundles.update.UpdateTestEntityBundle;
-import io.github.vincemann.generic.crud.lib.test.controller.springAdapter.testBundles.update.UpdateTestEntityBundleIteration;
+import io.github.vincemann.generic.crud.lib.test.testBundles.abs.callback.PostIntegrationTestCallbackIdBundle;
+import io.github.vincemann.generic.crud.lib.test.testBundles.controller.create.FailedCreateIntegrationTestBundle;
+import io.github.vincemann.generic.crud.lib.test.testBundles.controller.create.SuccessfulCreateIntegrationTestBundle;
+import io.github.vincemann.generic.crud.lib.test.testBundles.controller.delete.DeleteIntegrationTestBundle;
+import io.github.vincemann.generic.crud.lib.test.testBundles.controller.find.FailedFindIntegrationTestBundle;
+import io.github.vincemann.generic.crud.lib.test.testBundles.controller.find.SuccessfulFindIntegrationTestBundle;
+import io.github.vincemann.generic.crud.lib.test.testBundles.controller.findAll.FailedFindAllIntegrationTestBundle;
+import io.github.vincemann.generic.crud.lib.test.testBundles.controller.findAll.SuccessfulFindAllIntegrationTestBundle;
+import io.github.vincemann.generic.crud.lib.test.testBundles.controller.update.FailedUpdateIntegrationTestBundle;
+import io.github.vincemann.generic.crud.lib.test.testBundles.controller.update.SuccessfulUpdateIntegrationTestBundle;
+import io.github.vincemann.generic.crud.lib.test.testBundles.controller.update.updateIteration.FailedUpdateTestEntityBundleIteration;
+import io.github.vincemann.generic.crud.lib.test.testBundles.controller.update.updateIteration.SuccessfulUpdateTestEntityBundleIteration;
+import io.github.vincemann.generic.crud.lib.test.testBundles.controller.update.updateIteration.abs.UpdateTestEntityBundleIteration;
 import io.github.vincemann.generic.crud.lib.test.controller.springAdapter.testRequestEntity.TestRequestEntityModification;
 import io.github.vincemann.generic.crud.lib.test.controller.springAdapter.testRequestEntity.factory.TestRequestEntityFactory;
 import io.github.vincemann.generic.crud.lib.test.controller.springAdapter.testRequestEntity.RequestEntityMapper;
 import io.github.vincemann.generic.crud.lib.test.controller.springAdapter.testRequestEntity.TestRequestEntity;
-import io.github.vincemann.generic.crud.lib.test.controller.springAdapter.testBundles.findAll.FindAllTestBundle;
-import io.github.vincemann.generic.crud.lib.test.databaseReset.ResetDatabaseTestExecutionListener;
+import io.github.vincemann.generic.crud.lib.test.testExecutionListeners.ResetDatabaseTestExecutionListener;
 import io.github.vincemann.generic.crud.lib.util.BeanUtils;
 import io.github.vincemann.generic.crud.lib.util.TestLogUtils;
 import lombok.Getter;
@@ -50,58 +54,62 @@ import static io.github.vincemann.generic.crud.lib.util.SetterUtils.returnIfNotN
  */
 @Slf4j
 //clear database after each test
-@TestExecutionListeners(mergeMode =
-        TestExecutionListeners.MergeMode.MERGE_WITH_DEFAULTS,
+@TestExecutionListeners(
+        mergeMode = TestExecutionListeners.MergeMode.MERGE_WITH_DEFAULTS,
         listeners = {ResetDatabaseTestExecutionListener.class}
 )
 public abstract class UrlParamIdDtoCrudControllerSpringAdapterIT<ServiceE extends IdentifiableEntity<Id>, Dto extends IdentifiableEntity<Id>, Service extends CrudService<ServiceE, Id>, Controller extends DtoCrudControllerSpringAdapter<ServiceE, Dto, Id, Service>, Id extends Serializable>
         extends IntegrationTest {
 
-    @Getter
-    private Controller crudController;
-    @Getter
-    private Class<Dto> dtoEntityClass;
-    @Getter
-    private Class<ServiceE> serviceEntityClass;
-    @Getter
-    private String entityIdParamKey;
-
-    private PlatformTransactionManager transactionManager;
 
 
-    //TEST ENTITY BUNDLES
+
+    //TEST BUNDLES
+    //##################################################################################################################
+    //UPDATE
+    @Getter private List<SuccessfulUpdateIntegrationTestBundle<ServiceE, Dto>> successfulUpdateTestEntityBundles = new ArrayList<>();
+    @Getter private List<FailedUpdateIntegrationTestBundle<ServiceE, Dto,Id>> failedUpdateTestEntityBundles = new ArrayList<>();
+    protected List<SuccessfulUpdateIntegrationTestBundle<ServiceE, Dto>> provideSuccessfulUpdateTestEntityBundles() { return null; }
+    protected List<FailedUpdateIntegrationTestBundle<ServiceE, Dto,Id>> provideFailedUpdateTestBundles() { return null; }
+
+    //CREATE
+    @Getter private List<SuccessfulCreateIntegrationTestBundle<Dto>> successfulCreateTestEntityBundles = new ArrayList<>();
+    @Getter private List<FailedCreateIntegrationTestBundle<Dto,Id>> failedCreateTestEntityBundles = new ArrayList<>();
+    protected List<SuccessfulCreateIntegrationTestBundle<Dto>> provideSuccessfulCreateTestEntityBundles() { return null; }
+    protected List<FailedCreateIntegrationTestBundle<Dto,Id>> provideFailingCreateTestBundles() { return null; }
+
+    //DELETE
+    @Getter private List<DeleteIntegrationTestBundle<ServiceE,Id>> successfulDeleteTestEntityBundles = new ArrayList<>();
+    @Getter private List<DeleteIntegrationTestBundle<ServiceE,Id>> failedDeleteTestEntityBundles = new ArrayList<>();
+    protected List<DeleteIntegrationTestBundle<ServiceE,Id>> provideSuccessfulDeleteTestEntityBundles() { return null; }
+    protected List<DeleteIntegrationTestBundle<ServiceE,Id>> provideFailedDeleteTestBundles() { return null; }
+
+    //FIND
+    @Getter private List<SuccessfulFindIntegrationTestBundle<Dto, ServiceE>> successfulFindTestEntityBundles = new ArrayList<>();
+    @Getter private List<FailedFindIntegrationTestBundle<ServiceE,Id>> failedFindTestEntityBundles = new ArrayList<>();
+    protected List<SuccessfulFindIntegrationTestBundle<Dto, ServiceE>> provideSuccessfulFindTestEntityBundles() { return null; }
+    protected List<FailedFindIntegrationTestBundle<ServiceE,Id>> provideFailedFindTestBundles() {
+        return null;
+    }
+
+    //FIND ALL
+    @Getter private List<SuccessfulFindAllIntegrationTestBundle<ServiceE,Dto>> successfulFindAllTestEntityBundles = new ArrayList<>();
+    @Getter private List<FailedFindAllIntegrationTestBundle<ServiceE,Dto>> failedFindAllTestEntityBundles = new ArrayList<>();
+    protected List<FailedFindAllIntegrationTestBundle<ServiceE,Dto>> provideFailedFindAllTestBundles() { return null; }
+    protected List<SuccessfulFindAllIntegrationTestBundle<ServiceE,Dto>> provideSuccessfulFindAllTestBundles() { return null; }
+    //##################################################################################################################
 
 
-    //SUCCESSFUL
-    @Getter
-    private List<UpdateTestEntityBundle<ServiceE, Dto>> successfulUpdateTestEntityBundles = new ArrayList<>();
-    @Getter
-    private List<SuccessfulCreateTestEntityBundle<Dto>> successfulCreateTestEntityBundles = new ArrayList<>();
-    @Getter
-    private List<SuccessfulDeleteTestEntityBundle<ServiceE>> successfulDeleteTestEntityBundles = new ArrayList<>();
-    @Getter
-    private List<SuccessfulFindTestEntityBundle<Dto, ServiceE>> successfulFindTestEntityBundles = new ArrayList<>();
-    @Getter
-    private List<FindAllTestBundle<ServiceE>> successfulFindAllTestEntityBundles = new ArrayList<>();
 
 
-    //FAILED
-    @Getter
-    private List<FailedCreateTestEntityBundle<Dto>> failedCreateTestEntityBundles = new ArrayList<>();
-    @Getter
-    private List<FailedDeleteTestEntityBundle<ServiceE>> failedDeleteTestEntityBundles = new ArrayList<>();
-    @Getter
-    private List<FailedFindTestEntityBundle<ServiceE>> failedFindTestEntityBundles = new ArrayList<>();
-    @Getter
-    private List<UpdateTestEntityBundle<ServiceE, Dto>> failedUpdateTestEntityBundles = new ArrayList<>();
-    @Getter
-    private List<UpdateTestEntityBundle<ServiceE, Dto>> failingUpdatableTestEntityBundles = new ArrayList<>();
-    @Getter
-    private List<FindAllTestBundle<ServiceE>> failedFindAllTestEntityBundles = new ArrayList<>();
 
-
-    private List<Plugin<? super Dto, ? super Id>> plugins = new ArrayList<>();
-    private TestRequestEntityFactory requestEntityFactory;
+            private List<Plugin<? super Dto, ? super Id>> plugins = new ArrayList<>();
+            private TestRequestEntityFactory requestEntityFactory;
+    @Getter private Controller crudController;
+    @Getter private Class<Dto> dtoEntityClass;
+    @Getter private Class<ServiceE> serviceEntityClass;
+    @Getter private String entityIdParamKey;
+            private PlatformTransactionManager transactionManager;
 
 
     /*public UrlParamIdDtoCrudControllerSpringAdapterIT(String url, Controller crudController, TestRequestEntityFactory requestEntityFactory, Plugin<? super Dto, ? super Id>... plugins) {
@@ -133,19 +141,55 @@ public abstract class UrlParamIdDtoCrudControllerSpringAdapterIT<ServiceE extend
     }
 
 
+
+
+
+
+    private void provideBundles() throws Exception {
+        onBeforeProvideEntityBundles();
+        failedCreateTestEntityBundles = returnIfNotNull(failedCreateTestEntityBundles, provideFailingCreateTestBundles());
+        failedDeleteTestEntityBundles = returnIfNotNull(failedDeleteTestEntityBundles, provideFailedDeleteTestBundles());
+        failedFindTestEntityBundles = returnIfNotNull(failedFindTestEntityBundles, provideFailedFindTestBundles());
+        failedFindAllTestEntityBundles = returnIfNotNull(failedFindAllTestEntityBundles, provideFailedFindAllTestBundles());
+        failedUpdateTestEntityBundles = returnIfNotNull(failedUpdateTestEntityBundles, provideFailedUpdateTestBundles());
+
+
+        successfulFindAllTestEntityBundles = returnIfNotNull(successfulFindAllTestEntityBundles, provideSuccessfulFindAllTestBundles());
+        successfulUpdateTestEntityBundles = returnIfNotNull(successfulUpdateTestEntityBundles, provideSuccessfulUpdateTestEntityBundles());
+        successfulCreateTestEntityBundles = returnIfNotNull(successfulCreateTestEntityBundles, provideSuccessfulCreateTestEntityBundles());
+        successfulDeleteTestEntityBundles = returnIfNotNull(successfulDeleteTestEntityBundles, provideSuccessfulDeleteTestEntityBundles());
+        successfulFindTestEntityBundles = returnIfNotNull(successfulFindTestEntityBundles, provideSuccessfulFindTestEntityBundles());
+    }
+    protected void onBeforeProvideEntityBundles() throws Exception { }
+
+
+
+
+
+
+
+
+
+    //TRANSACTION MANAGEMENT & PROVIDE BUNDLES
+    /**
+     * Starts Transaction that should be committed in the running test that is calling this method
+     * @return
+     */
+    private TransactionStatus startTestTransaction(){
+        DefaultTransactionDefinition testTransactionDefinition = new DefaultTransactionDefinition();
+        testTransactionDefinition.setName("testTransaction");
+        return transactionManager.getTransaction(testTransactionDefinition);
+    }
     private TransactionStatus provideBundlesAndStartTransaction() throws Exception {
         TransactionStatus testTransaction = startTestTransaction();
         provideBundles();
         return testTransaction;
     }
-
-
     private void provideBundlesAndCommitTransaction() throws Exception {
         TransactionStatus testTransaction = startTestTransaction();
         provideBundles();
         transactionManager.commit(testTransaction);
     }
-
     //provide entity bundles in memory, but dont apply changes to database
     //this is done because entities saved within "provide entityBundle process" must be persisted within same transaction
     //as persisting actions in tests -> otherwise there will be an exception because detached entities cant be persisted anymore
@@ -160,92 +204,25 @@ public abstract class UrlParamIdDtoCrudControllerSpringAdapterIT<ServiceE extend
     }
 
 
-    private void provideBundles() throws Exception {
-        onBeforeProvideEntityBundles();
-        failedCreateTestEntityBundles = returnIfNotNull(failedCreateTestEntityBundles, provideFailingCreateTestBundles());
-        failedDeleteTestEntityBundles = returnIfNotNull(failedDeleteTestEntityBundles, provideFailedDeleteTestBundles());
-        failedFindTestEntityBundles = returnIfNotNull(failedFindTestEntityBundles, provideFailedFindTestBundles());
-        failedFindAllTestEntityBundles = returnIfNotNull(failedFindAllTestEntityBundles, provideFailingFindAllTestBundles());
-        failedUpdateTestEntityBundles = returnIfNotNull(failedUpdateTestEntityBundles, provideFailedUpdateTestBundles());
 
 
-        successfulFindAllTestEntityBundles = returnIfNotNull(successfulFindAllTestEntityBundles, provideSuccessfulFindAllTestBundles());
-        successfulUpdateTestEntityBundles = returnIfNotNull(successfulUpdateTestEntityBundles, provideSuccessfulUpdateTestEntityBundles());
-        successfulCreateTestEntityBundles = returnIfNotNull(successfulCreateTestEntityBundles, provideSuccessfulCreateTestEntityBundles());
-        successfulDeleteTestEntityBundles = returnIfNotNull(successfulDeleteTestEntityBundles, provideSuccessfulDeleteTestEntityBundles());
-        successfulFindTestEntityBundles = returnIfNotNull(successfulFindTestEntityBundles, provideSuccessfulFindTestEntityBundles());
-    }
-
-    /**
-     * Starts Transaction that should be committed in the running test that is calling this method
-     * @return
-     */
-    private TransactionStatus startTestTransaction(){
-        DefaultTransactionDefinition testTransactionDefinition = new DefaultTransactionDefinition();
-        testTransactionDefinition.setName("testTransaction");
-        return transactionManager.getTransaction(testTransactionDefinition);
-    }
-
-    protected void onBeforeProvideEntityBundles() throws Exception { }
 
 
-    //SUCCESSFUL CRUD
-
-    protected List<SuccessfulCreateTestEntityBundle<Dto>> provideSuccessfulCreateTestEntityBundles() {
-        return null;
-    }
-
-    protected List<SuccessfulDeleteTestEntityBundle<ServiceE>> provideSuccessfulDeleteTestEntityBundles() {
-        return null;
-    }
-
-    protected List<SuccessfulFindTestEntityBundle<Dto, ServiceE>> provideSuccessfulFindTestEntityBundles() {
-        return null;
-    }
-
-    protected List<UpdateTestEntityBundle<ServiceE, Dto>> provideSuccessfulUpdateTestEntityBundles() {
-        return null;
-    }
 
 
-    //FAILED CRUD
-    protected List<FailedCreateTestEntityBundle<Dto>> provideFailingCreateTestBundles() {
-        return null;
-    }
 
-    protected List<FailedDeleteTestEntityBundle<ServiceE>> provideFailedDeleteTestBundles() {
-        return null;
-    }
-
-    protected List<UpdateTestEntityBundle<ServiceE, Dto>> provideFailedUpdateTestBundles() {
-        return null;
-    }
-
-    protected List<FailedFindTestEntityBundle<ServiceE>> provideFailedFindTestBundles() {
-        return null;
-    }
-
-
+    //TESTS ############################################################################################################
     //FIND ALL
-    protected List<FindAllTestBundle<ServiceE>> provideFailingFindAllTestBundles() {
-        return null;
-    }
-
-    protected List<FindAllTestBundle<ServiceE>> provideSuccessfulFindAllTestBundles() {
-        return null;
-    }
-
-
     @Test
     public void findAllEntities_shouldSucceedTest() throws Exception {
         Assumptions.assumeTrue(getCrudController().getEndpointsExposureDetails().isFindAllEndpointExposed());
         Assumptions.assumeTrue(!successfulFindAllTestEntityBundles.isEmpty());
 
-        //test find all
-        for (FindAllTestBundle<ServiceE> findAllTestBundle : successfulFindAllTestEntityBundles) {
-            //save all repo entities from bundle
-            findAllEntitiesShouldSucceed(findAllTestBundle.getRequestEntityModification(),
-                    findAllTestBundle.getFindAllTestEntitiesProvider());
+        for (SuccessfulFindAllIntegrationTestBundle<ServiceE,Dto> bundle : successfulFindAllTestEntityBundles) {
+            saveServiceEntities(bundle.getEntitiesSavedBeforeRequest());
+            bundle.callPreTestCallback();
+            Set<Dto> foundDtos = findAllEntitiesShouldSucceed(bundle.getRequestEntityModification(), bundle.getFindAllTestEntitiesProvider());
+            bundle.callPostTestCallback(foundDtos);
         }
     }
 
@@ -254,25 +231,25 @@ public abstract class UrlParamIdDtoCrudControllerSpringAdapterIT<ServiceE extend
         Assumptions.assumeTrue(getCrudController().getEndpointsExposureDetails().isFindAllEndpointExposed());
         Assumptions.assumeTrue(!successfulFindAllTestEntityBundles.isEmpty());
 
-        //test find all
-        for (FindAllTestBundle<ServiceE> findAllTestBundle : successfulFindAllTestEntityBundles) {
-            //save all repo entities from bundle
-            findAllEntitiesShouldFail(findAllTestBundle.getRequestEntityModification(),
-                    findAllTestBundle.getFindAllTestEntitiesProvider());
+        for (FailedFindAllIntegrationTestBundle<ServiceE,Dto> bundle : failedFindAllTestEntityBundles) {
+            saveServiceEntities(bundle.getEntitiesSavedBeforeRequest());
+            bundle.callPreTestCallback();
+            ResponseEntity<String> responseEntity = findAllEntitiesShouldFail(bundle.getRequestEntityModification(),
+                    bundle.getFindAllTestEntitiesProvider());
+            bundle.callPostTestCallback(responseEntity);
         }
     }
 
-    protected void findAllEntitiesShouldFail(TestRequestEntityModification requestEntityModification, FindAllTestEntitiesProvider<ServiceE> findAllTestEntitiesProvider) throws Exception {
-        saveServiceEntities(findAllTestEntitiesProvider.provideRepoEntities());
+    protected ResponseEntity<String> findAllEntitiesShouldFail(TestRequestEntityModification requestEntityModification, FindAllTestEntitiesProvider<ServiceE> findAllTestEntitiesProvider) throws Exception {
         TestRequestEntity testRequestEntity = requestEntityFactory.createInstance(CrudControllerTestCase.FAILED_FIND_ALL,
                 requestEntityModification, null);
         onBeforeFindAllEntitiesShouldFail();
         ResponseEntity<String> responseEntity = findAllEntities(testRequestEntity);
         onAfterFindAllEntitiesShouldFail(responseEntity);
+        return responseEntity;
     }
 
-    protected Collection<Dto> findAllEntitiesShouldSucceed(TestRequestEntityModification testRequestEntityModification, FindAllTestEntitiesProvider<ServiceE> findAllTestEntitiesProvider) throws Exception {
-        saveServiceEntities(findAllTestEntitiesProvider.provideRepoEntities());
+    protected Set<Dto> findAllEntitiesShouldSucceed(TestRequestEntityModification testRequestEntityModification, FindAllTestEntitiesProvider<ServiceE> findAllTestEntitiesProvider) throws Exception {
         TestRequestEntity testRequestEntity = requestEntityFactory.createInstance(CrudControllerTestCase.SUCCESSFUL_FIND_ALL,
                 testRequestEntityModification, null);
         onBeforeFindAllEntitiesShouldSucceed();
@@ -293,7 +270,6 @@ public abstract class UrlParamIdDtoCrudControllerSpringAdapterIT<ServiceE extend
         return dtos;
     }
 
-
     private ResponseEntity<String> findAllEntities(TestRequestEntity testRequestEntity) {
         ResponseEntity<String> responseEntity = getRestTemplate().exchange(RequestEntityMapper.map(testRequestEntity, null), String.class);
         Assertions.assertEquals(testRequestEntity.getExpectedHttpStatus(), responseEntity.getStatusCode(), "Status was : " + responseEntity.getStatusCode() + " response Body: " + responseEntity.getBody());
@@ -301,6 +277,9 @@ public abstract class UrlParamIdDtoCrudControllerSpringAdapterIT<ServiceE extend
     }
 
 
+
+
+    //UPDATE
     @Test
     public void updateEntity_shouldSucceedTest() throws Exception {
         Assumptions.assumeTrue(getCrudController().getEndpointsExposureDetails().isUpdateEndpointExposed());
@@ -309,8 +288,8 @@ public abstract class UrlParamIdDtoCrudControllerSpringAdapterIT<ServiceE extend
 
 
         for (int i = 0; i<this.successfulUpdateTestEntityBundles.size();i++){
-            UpdateTestEntityBundle<ServiceE, Dto> tempBundle = successfulUpdateTestEntityBundles.get(i);
-            List<UpdateTestEntityBundleIteration<Dto>> updateTestEntityBundleIterations = tempBundle.getUpdateTestEntityBundleIterations();
+            SuccessfulUpdateIntegrationTestBundle<ServiceE, Dto> tempBundle = successfulUpdateTestEntityBundles.get(i);
+            List<SuccessfulUpdateTestEntityBundleIteration<Dto>> updateTestEntityBundleIterations = tempBundle.getUpdateTestEntityBundleIterations();
             if (updateTestEntityBundleIterations.isEmpty()) {
                 log.info("No successful update tests for testDto : " + tempBundle.getEntity());
                 return;
@@ -320,9 +299,9 @@ public abstract class UrlParamIdDtoCrudControllerSpringAdapterIT<ServiceE extend
                 // -> new transaction and new provideBundles call for each iteration
                 TransactionStatus testTransaction = provideBundlesAndStartTransaction();
                 //get bundle again because reference of successfulUpdateTestEntityBundles.get(i) has changed because of latest/new provideBundles() call
-                UpdateTestEntityBundle<ServiceE, Dto> bundle = successfulUpdateTestEntityBundles.get(i);
-                UpdateTestEntityBundleIteration<Dto> updateBundle = bundle.getUpdateTestEntityBundleIterations().get(j);
-                Dto modifiedDto = updateBundle.getModifiedEntity();
+                SuccessfulUpdateIntegrationTestBundle<ServiceE, Dto> bundle = successfulUpdateTestEntityBundles.get(i);
+                UpdateTestEntityBundleIteration<Dto,Dto,Dto> updateBundle = bundle.getUpdateTestEntityBundleIterations().get(j);
+                Dto modifiedDto = updateBundle.getEntity();
                 TestLogUtils.logTestStart(log, "updateEntity should succeed", new AbstractMap.SimpleEntry<>("test Service Entity", bundle.getEntity()), new AbstractMap.SimpleEntry<>("modifiedDto", modifiedDto));
 
                 //save old dto
@@ -331,9 +310,10 @@ public abstract class UrlParamIdDtoCrudControllerSpringAdapterIT<ServiceE extend
                 //save all changes from provideBundle call and saveServiceEntity by committing transaction
                 transactionManager.commit(testTransaction);
 
+                updateBundle.callPreTestCallback(modifiedDto);
                 //update dto
                 Dto dbUpdatedDto = updateEntityShouldSucceed(modifiedDto, updateBundle.getTestRequestEntityModification());
-                updateBundle.getPostUpdateCallback().callback(dbUpdatedDto);
+                updateBundle.callPostTestCallback(dbUpdatedDto);
 
                 //remove entity -> clean for next iteration
                 getCrudController().getCrudService().deleteById(savedOldEntity.getId());
@@ -349,33 +329,35 @@ public abstract class UrlParamIdDtoCrudControllerSpringAdapterIT<ServiceE extend
         Assumptions.assumeTrue(!failedUpdateTestEntityBundles.isEmpty());
 
         for (int i = 0; i<this.failedUpdateTestEntityBundles.size();i++){
-            UpdateTestEntityBundle<ServiceE, Dto> tempBundle = failedUpdateTestEntityBundles.get(i);
-            List<UpdateTestEntityBundleIteration<Dto>> updateTestEntityBundleIterations = tempBundle.getUpdateTestEntityBundleIterations();
+            FailedUpdateIntegrationTestBundle<ServiceE, Dto,Id> tempBundle = failedUpdateTestEntityBundles.get(i);
+            List<FailedUpdateTestEntityBundleIteration<Dto,Id>> updateTestEntityBundleIterations = tempBundle.getUpdateTestEntityBundleIterations();
             if (updateTestEntityBundleIterations.isEmpty()) {
-                log.info("No failed update tests for testDto : " + tempBundle.getEntity());
+                log.info("No failed update tests for testDto : " + tempBundle.getEntityToUpdate());
                 return;
             }
             for(int j = 0; j<updateTestEntityBundleIterations.size();j++){
                 //entities from provideBundles process need to be persisted in same transaction as saveServiceEntity
                 // -> new transaction and new provideBundles call for each iteration
                 TransactionStatus testTransaction = provideBundlesAndStartTransaction();
-                //get bundle again because reference of successfulUpdateTestEntityBundles.get(i) has changed because of latest/new provideBundles() call
-                UpdateTestEntityBundle<ServiceE, Dto> bundle = failedUpdateTestEntityBundles.get(i);
-                UpdateTestEntityBundleIteration<Dto> updateBundle = bundle.getUpdateTestEntityBundleIterations().get(j);
+                //get bundle again because reference of failedUpdateTestEntityBundles.get(i) has changed because of latest/new provideBundles() call
+                FailedUpdateIntegrationTestBundle<ServiceE, Dto,Id> bundle = failedUpdateTestEntityBundles.get(i);
+                FailedUpdateTestEntityBundleIteration<Dto,Id> iterationBundle = bundle.getUpdateTestEntityBundleIterations().get(j);
 
-                Dto modifiedDto = updateBundle.getModifiedEntity();
-                TestLogUtils.logTestStart(log, "updateEntity should fail", new AbstractMap.SimpleEntry<>("testDto", bundle.getEntity()), new AbstractMap.SimpleEntry<>("modifiedDto", modifiedDto));
-                ServiceE savedOldEntity = saveServiceEntity(bundle.getEntity());
+                Dto modifiedDto = iterationBundle.getEntity();
+                TestLogUtils.logTestStart(log, "updateEntity should fail", new AbstractMap.SimpleEntry<>("testDto", bundle.getEntityToUpdate()), new AbstractMap.SimpleEntry<>("modifiedDto", modifiedDto));
+                ServiceE savedOldEntity = saveServiceEntity(bundle.getEntityToUpdate());
+                bundle.callPreTestCallback(savedOldEntity);
                 modifiedDto.setId(savedOldEntity.getId());
                 //save all changes from provideBundle call and saveServiceEntity by committing transaction
                 transactionManager.commit(testTransaction);
                 //update dto
-                updateEntityShouldFail(modifiedDto, updateBundle.getTestRequestEntityModification());
-                updateBundle.getPostUpdateCallback().callback(modifiedDto);
+                iterationBundle.callPreTestCallback(modifiedDto);
+                ResponseEntity<String> responseEntity = updateEntityShouldFail(modifiedDto, iterationBundle.getTestRequestEntityModification());
+                iterationBundle.callPostTestCallback(new PostIntegrationTestCallbackIdBundle<>(modifiedDto.getId(),responseEntity));
 
                 //remove entity -> clean for next iteration
                 getCrudController().getCrudService().deleteById(savedOldEntity.getId());
-                TestLogUtils.logTestStart(log, "updateEntity should fail", new AbstractMap.SimpleEntry<>("testDto", bundle.getEntity()), new AbstractMap.SimpleEntry<>("modifiedDto", modifiedDto));
+                TestLogUtils.logTestStart(log, "updateEntity should fail", new AbstractMap.SimpleEntry<>("testDto", bundle.getEntityToUpdate()), new AbstractMap.SimpleEntry<>("modifiedDto", modifiedDto));
             }
         }
     }
@@ -420,7 +402,7 @@ public abstract class UrlParamIdDtoCrudControllerSpringAdapterIT<ServiceE extend
         return _updateEntityShouldSucceed(oldEntityDtoFromService, newEntityDto, testRequestEntity);
     }
 
-    protected void updateEntityShouldFail(Dto newEntity, TestRequestEntityModification testRequestEntityModification) throws Exception {
+    protected ResponseEntity<String> updateEntityShouldFail(Dto newEntity, TestRequestEntityModification testRequestEntityModification) throws Exception {
         Assertions.assertNotNull(newEntity.getId());
         TestRequestEntity testRequestEntity = requestEntityFactory.createInstance(CrudControllerTestCase.FAILED_UPDATE, testRequestEntityModification, newEntity.getId());
         //Entity muss vorher auch schon da sein
@@ -433,6 +415,7 @@ public abstract class UrlParamIdDtoCrudControllerSpringAdapterIT<ServiceE extend
         Assertions.assertEquals(responseEntity.getStatusCode(), testRequestEntity.getExpectedHttpStatus(), "Status was : " + responseEntity.getStatusCode());
 
         onAfterUpdateEntityShouldFail(newEntity, responseEntity);
+        return responseEntity;
     }
 
     /**
@@ -447,6 +430,9 @@ public abstract class UrlParamIdDtoCrudControllerSpringAdapterIT<ServiceE extend
     }
 
 
+
+
+    //CREATE
     @Test
     public void createEntity_shouldSucceedTest() throws Exception {
         Assumptions.assumeTrue(getCrudController().getEndpointsExposureDetails().isCreateEndpointExposed());
@@ -454,16 +440,14 @@ public abstract class UrlParamIdDtoCrudControllerSpringAdapterIT<ServiceE extend
         Assumptions.assumeTrue(!successfulCreateTestEntityBundles.isEmpty());
 
 
-        for (SuccessfulCreateTestEntityBundle<Dto> bundle : this.successfulCreateTestEntityBundles) {
+        for (SuccessfulCreateIntegrationTestBundle<Dto> bundle : this.successfulCreateTestEntityBundles) {
             TestLogUtils.logTestStart(log, "createEntity_shouldSucceed", new AbstractMap.SimpleEntry<>("testDto", bundle.getEntity()));
-
+            bundle.callPreTestCallback(bundle.getEntity());
             Dto savedDto = createEntityShouldSucceed(bundle.getEntity(), bundle.getTestRequestEntityModification());
-            bundle.getPostCreateCallback().callback(savedDto);
-
+            bundle.callPostTestCallback(savedDto);
             TestLogUtils.logTestSucceeded(log, "createEntity_shouldSucceed", new AbstractMap.SimpleEntry<>("testDto", bundle.getEntity()));
         }
     }
-
 
     @Test
     public void createEntity_shouldFailTest() throws Exception {
@@ -471,16 +455,15 @@ public abstract class UrlParamIdDtoCrudControllerSpringAdapterIT<ServiceE extend
         provideBundlesAndCommitTransaction();
         Assumptions.assumeTrue(!failedCreateTestEntityBundles.isEmpty());
 
-        for (FailedCreateTestEntityBundle<Dto> bundle : this.failedCreateTestEntityBundles) {
+        for (FailedCreateIntegrationTestBundle<Dto,Id> bundle : this.failedCreateTestEntityBundles) {
             TestLogUtils.logTestStart(log, "createEntity_shouldFail", new AbstractMap.SimpleEntry<>("testDto", bundle.getEntity()));
-
+            bundle.callPreTestCallback(bundle.getEntity());
             ResponseEntity<String> responseEntity = createEntityShouldFail(bundle.getEntity(), bundle.getTestRequestEntityModification());
-            bundle.getPostCreateCallback().callback(responseEntity);
+            bundle.callPostTestCallback(new PostIntegrationTestCallbackIdBundle<>(bundle.getEntity().getId(),responseEntity));
 
             TestLogUtils.logTestSucceeded(log, "createEntity_shouldFail", new AbstractMap.SimpleEntry<>("testDto", bundle.getEntity()));
         }
     }
-
 
     protected Dto createEntityShouldSucceed(Dto dto, TestRequestEntityModification bundleMod) throws Exception {
         Assertions.assertNull(dto.getId());
@@ -502,7 +485,6 @@ public abstract class UrlParamIdDtoCrudControllerSpringAdapterIT<ServiceE extend
         return responseEntity;
     }
 
-
     /**
      * Send create Entity Request to Backend, Response is returned
      *
@@ -514,6 +496,11 @@ public abstract class UrlParamIdDtoCrudControllerSpringAdapterIT<ServiceE extend
     }
 
 
+
+
+
+
+    //DELETE
     @Test
     public void deleteEntity_shouldSucceedTest() throws Exception {
         Assumptions.assumeTrue(getCrudController().getEndpointsExposureDetails().isDeleteEndpointExposed());
@@ -522,13 +509,15 @@ public abstract class UrlParamIdDtoCrudControllerSpringAdapterIT<ServiceE extend
 
         for(int i = 0; i<this.successfulDeleteTestEntityBundles.size();i++){
             TransactionStatus transaction = provideBundlesAndStartTransaction();
-            SuccessfulDeleteTestEntityBundle<ServiceE> bundle = successfulDeleteTestEntityBundles.get(i);
+            DeleteIntegrationTestBundle<ServiceE,Id> bundle = successfulDeleteTestEntityBundles.get(i);
             TestLogUtils.logTestStart(log, "deleteEntity should Succeed ", new AbstractMap.SimpleEntry<>("test Service Entity", bundle.getEntity()));
 
             ServiceE savedEntityToDelete = saveServiceEntity(bundle.getEntity());
             transactionManager.commit(transaction);
-            deleteEntityShouldSucceed(savedEntityToDelete.getId(), bundle.getTestRequestEntityModification());
-            bundle.getPostDeleteCallback().callback(savedEntityToDelete);
+            Id idFromEntityToDelete = savedEntityToDelete.getId();
+            bundle.callPreTestCallback(idFromEntityToDelete);
+            ResponseEntity<String> responseEntity = deleteEntityShouldSucceed(idFromEntityToDelete, bundle.getTestRequestEntityModification());
+            bundle.callPostTestCallback(new PostIntegrationTestCallbackIdBundle<>(idFromEntityToDelete,responseEntity));
 
             TestLogUtils.logTestSucceeded(log, "deleteEntity should Succeed", new AbstractMap.SimpleEntry<>("test Service Entity", bundle.getEntity()));
         }
@@ -542,13 +531,15 @@ public abstract class UrlParamIdDtoCrudControllerSpringAdapterIT<ServiceE extend
 
         for(int i = 0; i<this.failedDeleteTestEntityBundles.size();i++){
             TransactionStatus transaction = provideBundlesAndStartTransaction();
-            FailedDeleteTestEntityBundle<ServiceE> bundle = failedDeleteTestEntityBundles.get(i);
+            DeleteIntegrationTestBundle<ServiceE,Id> bundle = failedDeleteTestEntityBundles.get(i);
             TestLogUtils.logTestStart(log, "deleteEntity should Fail", new AbstractMap.SimpleEntry<>("testDto", bundle.getEntity()));
 
             ServiceE savedEntityToDelete = saveServiceEntity(bundle.getEntity());
             transactionManager.commit(transaction);
-            deleteEntityShouldFail(savedEntityToDelete.getId(), bundle.getTestRequestEntityModification());
-            bundle.getPostDeleteCallback().callback(savedEntityToDelete);
+            Id idFromEntityToDelete = savedEntityToDelete.getId();
+            bundle.callPreTestCallback(idFromEntityToDelete);
+            ResponseEntity<String> responseEntity = deleteEntityShouldFail(idFromEntityToDelete, bundle.getTestRequestEntityModification());
+            bundle.callPostTestCallback(new PostIntegrationTestCallbackIdBundle<>(idFromEntityToDelete,responseEntity));
 
             TestLogUtils.logTestSucceeded(log, "deleteEntity should Fail", new AbstractMap.SimpleEntry<>("testDto", bundle.getEntity()));
         }
@@ -586,6 +577,13 @@ public abstract class UrlParamIdDtoCrudControllerSpringAdapterIT<ServiceE extend
     }
 
 
+
+
+
+
+
+
+    //FIND
     @Test
     public void findEntity_shouldSucceedTest() throws Exception {
         Assumptions.assumeTrue(getCrudController().getEndpointsExposureDetails().isFindEndpointExposed());
@@ -594,15 +592,16 @@ public abstract class UrlParamIdDtoCrudControllerSpringAdapterIT<ServiceE extend
 
         for(int i=0;i<this.successfulFindTestEntityBundles.size();i++){
             TransactionStatus transaction = provideBundlesAndStartTransaction();
-            SuccessfulFindTestEntityBundle<Dto, ServiceE> bundle = successfulFindTestEntityBundles.get(i);
+            SuccessfulFindIntegrationTestBundle<Dto, ServiceE> bundle = successfulFindTestEntityBundles.get(i);
             TestLogUtils.logTestStart(log, "findEntity should Succeed", new AbstractMap.SimpleEntry<>("test Service Entity", bundle.getEntity()));
 
             ServiceE entityToFind = saveServiceEntity(bundle.getEntity());
             transactionManager.commit(transaction);
+            bundle.callPreTestCallback(entityToFind);
             Dto responseDto = findEntityShouldSucceed(entityToFind.getId(), bundle.getTestRequestEntityModification());
             //todo auslagern?
             validateDtosAreDeepEqual(responseDto, getCrudController().getDtoMapper().mapServiceEntityToDto(entityToFind, getDtoEntityClass()));
-            bundle.getPostFindCallback().callback(responseDto);
+            bundle.callPostTestCallback(responseDto);
 
             TestLogUtils.logTestSucceeded(log, "findEntity should Succeed", new AbstractMap.SimpleEntry<>("test Service Entity", bundle.getEntity()));
 
@@ -617,13 +616,14 @@ public abstract class UrlParamIdDtoCrudControllerSpringAdapterIT<ServiceE extend
 
         for(int i=0;i<this.failedFindTestEntityBundles.size();i++){
             TransactionStatus transaction = provideBundlesAndStartTransaction();
-            FailedFindTestEntityBundle<ServiceE> bundle = failedFindTestEntityBundles.get(i);
+            FailedFindIntegrationTestBundle<ServiceE,Id> bundle = failedFindTestEntityBundles.get(i);
             TestLogUtils.logTestStart(log, "findEntity should Fail", new AbstractMap.SimpleEntry<>("test Service Entity", bundle.getEntity()));
 
             ServiceE entityToFind = saveServiceEntity(bundle.getEntity());
             transactionManager.commit(transaction);
+            bundle.callPreTestCallback(entityToFind);
             ResponseEntity<String> responseEntity = findEntityShouldFail(entityToFind.getId(), bundle.getTestRequestEntityModification());
-            bundle.getPostFindCallback().callback(responseEntity);
+            bundle.callPostTestCallback(new PostIntegrationTestCallbackIdBundle<>(entityToFind.getId(),responseEntity));
 
             TestLogUtils.logTestSucceeded(log, "findEntity should Fail", new AbstractMap.SimpleEntry<>("test Service Entity", bundle.getEntity()));
         }
@@ -666,126 +666,114 @@ public abstract class UrlParamIdDtoCrudControllerSpringAdapterIT<ServiceE extend
     }
 
 
-    //updateTests callbacks
-    protected void onAfterUpdateEntityShouldFail(Dto newEntity, ResponseEntity<String> responseEntity) throws Exception {
-        for (Plugin<? super Dto, ? super Id> plugin : plugins) {
-            plugin.onAfterUpdateEntityShouldFail(newEntity, responseEntity);
-        }
-    }
-
-    protected void onBeforeUpdateEntityShouldFail(Dto newEntity) throws Exception {
-        for (Plugin<? super Dto, ? super Id> plugin : plugins) {
-            plugin.onBeforeUpdateEntityShouldFail(newEntity);
-        }
-    }
-
-    protected void onAfterUpdateEntityShouldSucceed(Dto oldEntity, Dto newEntity, Dto responseDto) throws Exception {
-        for (Plugin<? super Dto, ? super Id> plugin : plugins) {
-            plugin.onAfterUpdateEntityShouldSucceed(oldEntity, newEntity, responseDto);
-        }
-    }
-
+    //PLUGIN CALLBACKS##################################################################################################
+    //UPDATE
     protected void onBeforeUpdateEntityShouldSucceed(Dto oldEntity, Dto newEntity) throws Exception {
         for (Plugin<? super Dto, ? super Id> plugin : plugins) {
             plugin.onBeforeUpdateEntityShouldSucceed(oldEntity, newEntity);
         }
     }
-
-    protected void onAfterCreateEntityShouldSucceed(Dto dtoToCreate, Dto responseDto) throws Exception {
+    protected void onAfterUpdateEntityShouldSucceed(Dto oldEntity, Dto newEntity, Dto responseDto) throws Exception {
         for (Plugin<? super Dto, ? super Id> plugin : plugins) {
-            plugin.onAfterCreateEntityShouldSucceed(dtoToCreate, responseDto);
+            plugin.onAfterUpdateEntityShouldSucceed(oldEntity, newEntity, responseDto);
         }
     }
-
+    protected void onBeforeUpdateEntityShouldFail(Dto newEntity) throws Exception {
+        for (Plugin<? super Dto, ? super Id> plugin : plugins) {
+            plugin.onBeforeUpdateEntityShouldFail(newEntity);
+        }
+    }
+    protected void onAfterUpdateEntityShouldFail(Dto newEntity, ResponseEntity<String> responseEntity) throws Exception {
+        for (Plugin<? super Dto, ? super Id> plugin : plugins) {
+            plugin.onAfterUpdateEntityShouldFail(newEntity, responseEntity);
+        }
+    }
+    //CREATE
     protected void onBeforeCreateEntityShouldSucceed(Dto dtoToCreate) throws Exception {
         for (Plugin<? super Dto, ? super Id> plugin : plugins) {
             plugin.onBeforeCreateEntityShouldSucceed(dtoToCreate);
         }
     }
-
-    protected void onAfterCreateEntityShouldFail(Dto dtoToCreate, ResponseEntity<String> responseEntity) throws Exception {
+    protected void onAfterCreateEntityShouldSucceed(Dto dtoToCreate, Dto responseDto) throws Exception {
         for (Plugin<? super Dto, ? super Id> plugin : plugins) {
-            plugin.onAfterCreateEntityShouldFail(dtoToCreate, responseEntity);
+            plugin.onAfterCreateEntityShouldSucceed(dtoToCreate, responseDto);
         }
     }
-
     protected void onBeforeCreateEntityShouldFail(Dto dtoToCreate) throws Exception {
         for (Plugin<? super Dto, ? super Id> plugin : plugins) {
             plugin.onBeforeCreateEntityShouldFail(dtoToCreate);
         }
     }
-
-    protected void onAfterDeleteEntityShouldSucceed(Id id, ResponseEntity<String> responseEntity) throws Exception {
+    protected void onAfterCreateEntityShouldFail(Dto dtoToCreate, ResponseEntity<String> responseEntity) throws Exception {
         for (Plugin<? super Dto, ? super Id> plugin : plugins) {
-            plugin.onAfterDeleteEntityShouldSucceed(id, responseEntity);
+            plugin.onAfterCreateEntityShouldFail(dtoToCreate, responseEntity);
         }
     }
-
+    //DELETE
     protected void onBeforeDeleteEntityShouldSucceed(Id id) throws Exception {
         for (Plugin<? super Dto, ? super Id> plugin : plugins) {
             plugin.onBeforeDeleteEntityShouldSucceed(id);
         }
     }
-
-    protected void onAfterDeleteEntityShouldFail(Id id, ResponseEntity<String> responseEntity) throws Exception {
+    protected void onAfterDeleteEntityShouldSucceed(Id id, ResponseEntity<String> responseEntity) throws Exception {
         for (Plugin<? super Dto, ? super Id> plugin : plugins) {
-            plugin.onAfterDeleteEntityShouldFail(id, responseEntity);
+            plugin.onAfterDeleteEntityShouldSucceed(id, responseEntity);
         }
     }
-
     protected void onBeforeDeleteEntityShouldFail(Id id) throws Exception {
         for (Plugin<? super Dto, ? super Id> plugin : plugins) {
             plugin.onBeforeDeleteEntityShouldFail(id);
         }
     }
-
-    protected void onAfterFindEntityShouldSucceed(Id id, Dto responseDto) throws Exception {
+    protected void onAfterDeleteEntityShouldFail(Id id, ResponseEntity<String> responseEntity) throws Exception {
         for (Plugin<? super Dto, ? super Id> plugin : plugins) {
-            plugin.onAfterFindEntityShouldSucceed(id, responseDto);
+            plugin.onAfterDeleteEntityShouldFail(id, responseEntity);
         }
     }
-
+    //FIND
     protected void onBeforeFindEntityShouldSucceed(Id id) throws Exception {
         for (Plugin<? super Dto, ? super Id> plugin : plugins) {
             plugin.onBeforeFindEntityShouldSucceed(id);
         }
     }
-
-    protected void onAfterFindEntityShouldFail(Id id, ResponseEntity<String> responseEntity) throws Exception {
+    protected void onAfterFindEntityShouldSucceed(Id id, Dto responseDto) throws Exception {
         for (Plugin<? super Dto, ? super Id> plugin : plugins) {
-            plugin.onAfterFindEntityShouldFail(id, responseEntity);
+            plugin.onAfterFindEntityShouldSucceed(id, responseDto);
         }
     }
-
     protected void onBeforeFindEntityShouldFail(Id id) throws Exception {
         for (Plugin<? super Dto, ? super Id> plugin : plugins) {
             plugin.onBeforeFindEntityShouldFail(id);
         }
     }
-
+    protected void onAfterFindEntityShouldFail(Id id, ResponseEntity<String> responseEntity) throws Exception {
+        for (Plugin<? super Dto, ? super Id> plugin : plugins) {
+            plugin.onAfterFindEntityShouldFail(id, responseEntity);
+        }
+    }
+    //FIND ALL
     protected void onBeforeFindAllEntitiesShouldSucceed() throws Exception {
         for (Plugin<? super Dto, ? super Id> plugin : plugins) {
             plugin.onBeforeFindAllEntitiesShouldSucceed();
         }
     }
-
-    protected void onBeforeFindAllEntitiesShouldFail() throws Exception {
-        for (Plugin<? super Dto, ? super Id> plugin : plugins) {
-            plugin.onBeforeFindAllEntitiesShouldFail();
-        }
-    }
-
     protected void onAfterFindAllEntitiesShouldSucceed(Set<Dto> dtos) throws Exception {
         for (Plugin<? super Dto, ? super Id> plugin : plugins) {
             plugin.onAfterFindAllEntitiesShouldSucceed(dtos);
         }
     }
-
+    protected void onBeforeFindAllEntitiesShouldFail() throws Exception {
+        for (Plugin<? super Dto, ? super Id> plugin : plugins) {
+            plugin.onBeforeFindAllEntitiesShouldFail();
+        }
+    }
     protected void onAfterFindAllEntitiesShouldFail(ResponseEntity<String> responseEntity) throws Exception {
         for (Plugin<? super Dto, ? super Id> plugin : plugins) {
             plugin.onAfterFindAllEntitiesShouldFail(responseEntity);
         }
     }
+    //##################################################################################################################
+
 
 
     /**
@@ -814,6 +802,8 @@ public abstract class UrlParamIdDtoCrudControllerSpringAdapterIT<ServiceE extend
     }
 
 
+
+
     protected ServiceE saveServiceEntity(ServiceE serviceE) throws BadEntityException {
         return crudController.getCrudService().save(serviceE);
     }
@@ -826,8 +816,6 @@ public abstract class UrlParamIdDtoCrudControllerSpringAdapterIT<ServiceE extend
         }
         return savedEntities;
     }
-
-
 
     /*
     /**
@@ -847,73 +835,27 @@ public abstract class UrlParamIdDtoCrudControllerSpringAdapterIT<ServiceE extend
     @Getter
     @Setter
     public static class Plugin<dto extends IdentifiableEntity<id>, id extends Serializable> {
-
         private UrlParamIdDtoCrudControllerSpringAdapterIT integrationTest;
 
-        //todo sollte an test methoden gebunden sein und nicht an helper methoden ...
-
-        //updateTests callbacks
-        public void onAfterUpdateEntityShouldFail(dto newEntity, ResponseEntity<String> responseEntity) throws Exception {
-        }
-
-        public void onBeforeUpdateEntityShouldFail(dto newEntity) throws Exception {
-        }
-
-        public void onAfterUpdateEntityShouldSucceed(dto oldEntity, dto newEntity, dto responseDto) throws Exception {
-        }
-
-        public void onBeforeUpdateEntityShouldSucceed(dto oldEntity, dto newEntity) throws Exception {
-        }
-
-        public void onAfterCreateEntityShouldSucceed(dto dtoToCreate, dto responseDto) throws Exception {
-        }
-
-        public void onBeforeCreateEntityShouldSucceed(dto dtoToCreate) throws Exception {
-        }
-
-        public void onAfterCreateEntityShouldFail(dto dtoToCreate, ResponseEntity<String> responseEntity) throws Exception {
-        }
-
-        public void onBeforeCreateEntityShouldFail(dto dtoToCreate) throws Exception {
-        }
-
-        public void onAfterDeleteEntityShouldSucceed(id id, ResponseEntity<String> responseEntity) throws Exception {
-        }
-
-        public void onBeforeDeleteEntityShouldSucceed(id id) throws Exception {
-        }
-
-        public void onAfterDeleteEntityShouldFail(id id, ResponseEntity<String> responseEntity) throws Exception {
-        }
-
-        public void onBeforeDeleteEntityShouldFail(id id) throws Exception {
-        }
-
-        public void onAfterFindEntityShouldSucceed(id id, dto responseDto) throws Exception {
-        }
-
-        public void onBeforeFindEntityShouldSucceed(id id) throws Exception {
-        }
-
-        public void onAfterFindEntityShouldFail(id id, ResponseEntity<String> responseEntity) throws Exception {
-        }
-
-        public void onBeforeFindEntityShouldFail(id id) throws Exception {
-        }
-
-        public void onBeforeFindAllEntitiesShouldSucceed() throws Exception {
-        }
-
-        public void onBeforeFindAllEntitiesShouldFail() throws Exception {
-        }
-
-        public void onAfterFindAllEntitiesShouldFail(ResponseEntity<String> responseEntity) throws Exception {
-
-        }
-
-        public void onAfterFindAllEntitiesShouldSucceed(Set<? extends dto> dtos) throws Exception {
-        }
-
+        public void onAfterUpdateEntityShouldFail(dto newEntity, ResponseEntity<String> responseEntity) throws Exception { }
+        public void onBeforeUpdateEntityShouldFail(dto newEntity) throws Exception { }
+        public void onAfterUpdateEntityShouldSucceed(dto oldEntity, dto newEntity, dto responseDto) throws Exception { }
+        public void onBeforeUpdateEntityShouldSucceed(dto oldEntity, dto newEntity) throws Exception { }
+        public void onAfterCreateEntityShouldSucceed(dto dtoToCreate, dto responseDto) throws Exception { }
+        public void onBeforeCreateEntityShouldSucceed(dto dtoToCreate) throws Exception { }
+        public void onAfterCreateEntityShouldFail(dto dtoToCreate, ResponseEntity<String> responseEntity) throws Exception { }
+        public void onBeforeCreateEntityShouldFail(dto dtoToCreate) throws Exception { }
+        public void onAfterDeleteEntityShouldSucceed(id id, ResponseEntity<String> responseEntity) throws Exception { }
+        public void onBeforeDeleteEntityShouldSucceed(id id) throws Exception { }
+        public void onAfterDeleteEntityShouldFail(id id, ResponseEntity<String> responseEntity) throws Exception { }
+        public void onBeforeDeleteEntityShouldFail(id id) throws Exception { }
+        public void onAfterFindEntityShouldSucceed(id id, dto responseDto) throws Exception { }
+        public void onBeforeFindEntityShouldSucceed(id id) throws Exception { }
+        public void onAfterFindEntityShouldFail(id id, ResponseEntity<String> responseEntity) throws Exception { }
+        public void onBeforeFindEntityShouldFail(id id) throws Exception { }
+        public void onBeforeFindAllEntitiesShouldSucceed() throws Exception { }
+        public void onBeforeFindAllEntitiesShouldFail() throws Exception { }
+        public void onAfterFindAllEntitiesShouldFail(ResponseEntity<String> responseEntity) throws Exception { }
+        public void onAfterFindAllEntitiesShouldSucceed(Set<? extends dto> dtos) throws Exception { }
     }
-
 }

@@ -2,7 +2,7 @@ package io.github.vincemann.demo.service.springDataJPA.it;
 
 import io.github.vincemann.demo.model.Vet;
 import io.github.vincemann.demo.service.springDataJPA.VetJPAService;
-import io.github.vincemann.generic.crud.lib.test.service.testBundles.ServiceUpdateTestEntityBundle;
+import io.github.vincemann.generic.crud.lib.test.testBundles.service.save.SuccessfulSaveServiceTestBundle;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -23,15 +23,16 @@ public class VetJPAServiceTest extends CrudServiceTest<VetJPAService, Vet, Long>
         super(crudService);
     }
 
+
     @Override
-    protected List<ServiceUpdateTestEntityBundle<Vet>> provideTestEntityBundles() {
+    protected List<SuccessfulSaveServiceTestBundle<Vet>> provideSuccessfulSaveTestEntityBundles() {
         return Arrays.asList(
-                new ServiceUpdateTestEntityBundle<>(
+                new SuccessfulSaveServiceTestBundle<>(
                         Vet.builder()
                         .firstName("meister")
                         .lastName("yoda")
-                        .build()
-                )
+                        .build())
         );
     }
+
 }

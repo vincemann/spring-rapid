@@ -1,6 +1,6 @@
 package io.github.vincemann.demo.model;
 
-import io.github.vincemann.generic.crud.lib.entityListener.BiDirChildEntityListener;
+import io.github.vincemann.generic.crud.lib.model.entityListener.BiDirChildEntityListener;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import io.github.vincemann.generic.crud.lib.model.uniDir.UniDirChildEntity;
 import io.github.vincemann.generic.crud.lib.model.uniDir.UniDirParent;

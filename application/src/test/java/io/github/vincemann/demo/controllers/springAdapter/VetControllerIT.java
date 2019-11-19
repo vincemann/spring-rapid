@@ -7,9 +7,10 @@ import io.github.vincemann.demo.model.Vet;
 import io.github.vincemann.demo.service.VetService;
 import io.github.vincemann.generic.crud.lib.test.controller.springAdapter.plugins.CheckIfDbDeletedPlugin;
 import io.github.vincemann.generic.crud.lib.test.controller.springAdapter.plugins.ServiceDeepEqualPlugin;
-import io.github.vincemann.generic.crud.lib.test.controller.springAdapter.testBundles.create.FailedCreateTestEntityBundle;
-import io.github.vincemann.generic.crud.lib.test.controller.springAdapter.testBundles.create.SuccessfulCreateTestEntityBundle;
-import io.github.vincemann.generic.crud.lib.test.controller.springAdapter.testBundles.update.UpdateTestEntityBundle;
+import io.github.vincemann.generic.crud.lib.test.testBundles.controller.create.FailedCreateIntegrationTestBundle;
+import io.github.vincemann.generic.crud.lib.test.testBundles.controller.create.SuccessfulCreateIntegrationTestBundle;
+import io.github.vincemann.generic.crud.lib.test.testBundles.controller.update.FailedUpdateIntegrationTestBundle;
+import io.github.vincemann.generic.crud.lib.test.testBundles.controller.update.SuccessfulUpdateIntegrationTestBundle;
 import io.github.vincemann.generic.crud.lib.test.controller.springAdapter.testRequestEntity.factory.TestRequestEntityFactory;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -76,36 +77,36 @@ class VetControllerIT extends EntityInitializerControllerIT<Vet, VetDto, VetServ
     }
 
     @Override
-    protected List<SuccessfulCreateTestEntityBundle<VetDto>> provideSuccessfulCreateTestEntityBundles() {
+    protected List<SuccessfulCreateIntegrationTestBundle<VetDto>> provideSuccessfulCreateTestEntityBundles() {
         return Arrays.asList(
-                new SuccessfulCreateTestEntityBundle<>(vetDtoWithoutSpecialty),
-                new SuccessfulCreateTestEntityBundle<>(vetDtoWithSpecialty)
+                new SuccessfulCreateIntegrationTestBundle<>(vetDtoWithoutSpecialty),
+                new SuccessfulCreateIntegrationTestBundle<>(vetDtoWithSpecialty)
         );
     }
 
     @Override
-    protected List<UpdateTestEntityBundle<Vet, VetDto>> provideSuccessfulUpdateTestEntityBundles() {
+    protected List<SuccessfulUpdateIntegrationTestBundle<Vet, VetDto>> provideSuccessfulUpdateTestEntityBundles() {
         VetDto diffVetsNameUpdate = VetDto.builder()
                 .firstName("UPDATED NAME")
                 .lastName("Yoda")
                 .specialtyIds(Collections.singleton(getTestSpecialty().getId()))
                 .build();
         return Arrays.asList(
-            new UpdateTestEntityBundle<Vet, VetDto>(vetWithSpecialty,diffVetsNameUpdate)
+            new SuccessfulUpdateIntegrationTestBundle<>(vetWithSpecialty,diffVetsNameUpdate)
         );
     }
 
 
     @Override
-    protected List<FailedCreateTestEntityBundle<VetDto>> provideFailingCreateTestBundles() {
+    protected List<FailedCreateIntegrationTestBundle<VetDto,Long>> provideFailingCreateTestBundles() {
         return Arrays.asList(
-                new FailedCreateTestEntityBundle<>(VetDto.builder()
+                new FailedCreateIntegrationTestBundle<>(VetDto.builder()
                         .firstName("master")
                         //no last name
                         //.lastName("Yoda")
                         .build()),
                 //Vet with invalid specialty
-                new FailedCreateTestEntityBundle<>(VetDto.builder()
+                new FailedCreateIntegrationTestBundle<>(VetDto.builder()
                         .firstName("master")
                         .lastName("Yoda")
                         .specialtyIds(Collections.singleton(-1L))
@@ -114,13 +115,13 @@ class VetControllerIT extends EntityInitializerControllerIT<Vet, VetDto, VetServ
     }
 
     @Override
-    protected List<UpdateTestEntityBundle<Vet, VetDto>> provideFailedUpdateTestBundles() {
+    protected List<FailedUpdateIntegrationTestBundle<Vet, VetDto,Long>> provideFailedUpdateTestBundles() {
         VetDto noNameUpdate = VetDto.builder()
                 .firstName(null)
                 .lastName("Yoda")
                 .build();
         return Arrays.asList(
-                new UpdateTestEntityBundle<Vet, VetDto>(vetWithoutSpecialty,noNameUpdate)
+                new FailedUpdateIntegrationTestBundle<>(vetWithoutSpecialty,noNameUpdate)
         );
     }
 }

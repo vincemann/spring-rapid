@@ -8,9 +8,10 @@ import io.github.vincemann.demo.model.Pet;
 import io.github.vincemann.demo.service.PetService;
 import io.github.vincemann.generic.crud.lib.test.controller.springAdapter.plugins.CheckIfDbDeletedPlugin;
 import io.github.vincemann.generic.crud.lib.test.controller.springAdapter.plugins.ServiceDeepEqualPlugin;
-import io.github.vincemann.generic.crud.lib.test.controller.springAdapter.testBundles.create.FailedCreateTestEntityBundle;
-import io.github.vincemann.generic.crud.lib.test.controller.springAdapter.testBundles.create.SuccessfulCreateTestEntityBundle;
-import io.github.vincemann.generic.crud.lib.test.controller.springAdapter.testBundles.update.UpdateTestEntityBundle;
+import io.github.vincemann.generic.crud.lib.test.testBundles.controller.create.FailedCreateIntegrationTestBundle;
+import io.github.vincemann.generic.crud.lib.test.testBundles.controller.create.SuccessfulCreateIntegrationTestBundle;
+import io.github.vincemann.generic.crud.lib.test.testBundles.controller.update.FailedUpdateIntegrationTestBundle;
+import io.github.vincemann.generic.crud.lib.test.testBundles.controller.update.SuccessfulUpdateIntegrationTestBundle;
 import io.github.vincemann.generic.crud.lib.test.controller.springAdapter.testRequestEntity.factory.TestRequestEntityFactory;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -79,17 +80,15 @@ public class PetControllerIT extends EntityInitializerControllerIT<Pet, PetDto, 
     }
 
     @Override
-    protected List<SuccessfulCreateTestEntityBundle<PetDto>> provideSuccessfulCreateTestEntityBundles() {
-
-
+    protected List<SuccessfulCreateIntegrationTestBundle<PetDto>> provideSuccessfulCreateTestEntityBundles() {
         return Arrays.asList(
-                new SuccessfulCreateTestEntityBundle<>(petDtoWithPersistedPetType),
-                new SuccessfulCreateTestEntityBundle<>(petDtoWithOwner)
+                new SuccessfulCreateIntegrationTestBundle<>(petDtoWithPersistedPetType),
+                new SuccessfulCreateIntegrationTestBundle<>(petDtoWithOwner)
         );
     }
 
     @Override
-    public List<UpdateTestEntityBundle<Pet, PetDto>> provideSuccessfulUpdateTestEntityBundles() {
+    public List<SuccessfulUpdateIntegrationTestBundle<Pet, PetDto>> provideSuccessfulUpdateTestEntityBundles() {
         //update pets name
         PetDto diffPetsNameUpdate = PetDto.builder()
                 .name("MODIFIED NAME")
@@ -104,43 +103,43 @@ public class PetControllerIT extends EntityInitializerControllerIT<Pet, PetDto, 
                 .build();
 
         return Arrays.asList(
-                new UpdateTestEntityBundle<Pet, PetDto>(petWithPersistedPetType, diffPetsNameUpdate),
-                new UpdateTestEntityBundle<Pet, PetDto>(petWithOwner, removePetsOwnerUpdate)
+                new SuccessfulUpdateIntegrationTestBundle<Pet, PetDto>(petWithPersistedPetType, diffPetsNameUpdate),
+                new SuccessfulUpdateIntegrationTestBundle<Pet, PetDto>(petWithOwner, removePetsOwnerUpdate)
 
         );
     }
 
     @Override
-    protected List<FailedCreateTestEntityBundle<PetDto>> provideFailingCreateTestBundles() {
+    protected List<FailedCreateIntegrationTestBundle<PetDto,Long>> provideFailingCreateTestBundles() {
         PetDto petDtoWithAlreadySetId = PetDto.builder()
                 .name("bello")
                 .petTypeId(getTestPetType().getId())
                 .build();
         petDtoWithAlreadySetId.setId(42L);
         return Arrays.asList(
-                new FailedCreateTestEntityBundle<PetDto>(petDtoWithAlreadySetId)
+                new FailedCreateIntegrationTestBundle<>(petDtoWithAlreadySetId)
         );
     }
 
 
     @Override
-    protected List<UpdateTestEntityBundle<Pet, PetDto>> provideFailedUpdateTestBundles() {
+    protected List<FailedUpdateIntegrationTestBundle<Pet, PetDto,Long>> provideFailedUpdateTestBundles() {
         return Arrays.asList(
-                new UpdateTestEntityBundle<Pet, PetDto>(
+                new FailedUpdateIntegrationTestBundle<>(
                         getTestPet(),
                         //no name
                         PetDto.builder()
                                 .name(null)
                                 .petTypeId(getTestPetType().getId())
                                 .build()),
-                new UpdateTestEntityBundle<Pet, PetDto>(
+                new FailedUpdateIntegrationTestBundle<>(
                         getTestPet(),
                         //no pettype
                         PetDto.builder()
                                 .name("bello")
                                 .petTypeId(null)
                                 .build()),
-                new UpdateTestEntityBundle<Pet, PetDto>(
+                new FailedUpdateIntegrationTestBundle<>(
                         getTestPet(),
                         //invalid OwnerId
                         PetDto.builder()
