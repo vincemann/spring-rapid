@@ -5,22 +5,20 @@ import io.github.vincemann.generic.crud.lib.service.CrudService;
 import io.github.vincemann.generic.crud.lib.service.exception.BadEntityException;
 import io.github.vincemann.generic.crud.lib.service.exception.EntityNotFoundException;
 import io.github.vincemann.generic.crud.lib.service.exception.NoIdException;
+import io.github.vincemann.generic.crud.lib.test.TransactionManagedTest;
 import io.github.vincemann.generic.crud.lib.test.testBundles.service.delete.failed.FailedDeleteByIdServiceTestBundle;
 import io.github.vincemann.generic.crud.lib.test.testBundles.service.delete.successful.SuccessfulDeleteByIdServiceTestBundle;
 import io.github.vincemann.generic.crud.lib.test.testBundles.service.find.FailedFindByIdServiceTestBundle;
 import io.github.vincemann.generic.crud.lib.test.testBundles.service.find.SuccessfulFindByIdServiceTestBundle;
 import io.github.vincemann.generic.crud.lib.test.testBundles.service.findAll.FailedFindAllServiceTestBundle;
 import io.github.vincemann.generic.crud.lib.test.testBundles.service.findAll.SuccessfulFindAllServiceTestBundle;
-import io.github.vincemann.generic.crud.lib.test.testBundles.service.findAll.abs.FindAllServiceTestBundle;
 import io.github.vincemann.generic.crud.lib.test.testBundles.service.save.FailedSaveServiceTestEntityBundle;
 import io.github.vincemann.generic.crud.lib.test.testBundles.service.save.SuccessfulSaveServiceTestBundle;
 import io.github.vincemann.generic.crud.lib.test.testBundles.service.update.updateIteration.SuccessfulServiceUpdateTestEntityBundleIteration;
 import io.github.vincemann.generic.crud.lib.test.testExecutionListeners.ResetDatabaseTestExecutionListener;
-import io.github.vincemann.generic.crud.lib.test.testBundles.service.delete.successful.SuccessfulDeleteServiceTestBundle;
 import io.github.vincemann.generic.crud.lib.test.testBundles.service.update.updateIteration.FailedServiceUpdateTestEntityBundleIteration;
 import io.github.vincemann.generic.crud.lib.test.testBundles.service.update.FailedUpdateServiceTestEntityBundle;
 import io.github.vincemann.generic.crud.lib.test.testBundles.service.update.SuccessfulUpdateServiceTestEntityBundle;
-import io.github.vincemann.generic.crud.lib.test.testBundles.service.update.updateIteration.abs.ServiceUpdateTestEntityBundleIteration;
 import io.github.vincemann.generic.crud.lib.util.BeanUtils;
 import io.github.vincemann.generic.crud.lib.util.TestLogUtils;
 import lombok.Getter;
@@ -30,6 +28,7 @@ import org.junit.jupiter.api.Assumptions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.test.context.TestExecutionListeners;
+import org.springframework.transaction.PlatformTransactionManager;
 
 import java.io.Serializable;
 import java.util.*;
@@ -49,7 +48,10 @@ import static io.github.vincemann.generic.crud.lib.util.SetterUtils.returnIfNotN
         listeners = {ResetDatabaseTestExecutionListener.class}
 )
 @Getter
-public abstract class CrudServiceTest<S extends CrudService<E,Id>,E extends IdentifiableEntity<Id>,Id extends Serializable> {
+public abstract class CrudServiceTest<S extends CrudService<E,Id>,E extends IdentifiableEntity<Id>,Id extends Serializable>
+    implements TransactionManagedTest
+{
+
 
 
     private List<SuccessfulUpdateServiceTestEntityBundle<E>> successfulUpdatableTestEntityBundles;
@@ -79,13 +81,15 @@ public abstract class CrudServiceTest<S extends CrudService<E,Id>,E extends Iden
 
 
     private S crudService;
+    @Getter private PlatformTransactionManager transactionManager;
 
-    public CrudServiceTest(S crudService) {
+    public CrudServiceTest(S crudService, PlatformTransactionManager transactionManager) {
         this.crudService = crudService;
+        this.transactionManager = transactionManager;
     }
 
-    @BeforeEach
-    public void setUp() throws Exception{
+    @Override
+    public void provideBundles() throws Exception {
         successfulUpdatableTestEntityBundles=returnIfNotNull(successfulUpdatableTestEntityBundles,provideSuccessfulUpdateTestEntityBundles());
         failedUpdatableTestEntityBundles=returnIfNotNull(failedUpdatableTestEntityBundles,provideFailedUpdateTestEntityBundles());
 
@@ -101,7 +105,6 @@ public abstract class CrudServiceTest<S extends CrudService<E,Id>,E extends Iden
         successfulFindAllServiceTestBundles =returnIfNotNull(successfulFindAllServiceTestBundles, provideSuccessfulFindAllTestEntityBundles());
         failedFindAllServiceTestBundles =returnIfNotNull(failedFindAllServiceTestBundles, provideFailedFindAllTestEntityBundles());
     }
-
 
     @Test
     void findById_shouldSucceed() throws NoIdException, BadEntityException {
@@ -237,6 +240,8 @@ public abstract class CrudServiceTest<S extends CrudService<E,Id>,E extends Iden
             bundle.callPreTestCallback(entityUnderTest);
             E savedTestEntity = saveEntityShouldSucceed(entityUnderTest);
             bundle.callPostTestCallback(savedTestEntity);
+
+
 
             //then
             TestLogUtils.logTestSucceeded(log,"save",new AbstractMap.SimpleEntry<>("testEntity",entityUnderTest));

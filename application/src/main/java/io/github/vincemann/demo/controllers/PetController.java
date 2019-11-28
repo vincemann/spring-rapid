@@ -13,7 +13,8 @@ import io.github.vincemann.generic.crud.lib.service.EndpointService;
 import org.springframework.stereotype.Controller;
 
 @Controller
-public class PetController extends DtoCrudControllerSpringAdapter<Pet, PetDto,Long, PetService> {
+public class PetController
+        extends DtoCrudControllerSpringAdapter<Pet, PetDto,Long, PetService> {
 
 
     public PetController(PetService crudService,

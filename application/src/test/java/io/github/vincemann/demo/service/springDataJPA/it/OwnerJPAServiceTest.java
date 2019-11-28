@@ -25,7 +25,7 @@ class OwnerJPAServiceTest extends CrudServiceTest<OwnerJPAService, Owner, Long> 
     private Owner validOwner;
 
     public OwnerJPAServiceTest(@Autowired OwnerJPAService crudService) {
-        super(crudService);
+        super(crudService, transactionManager);
     }
 
 
