@@ -20,7 +20,7 @@ import java.util.List;
 public class VetJPAServiceTest extends CrudServiceTest<VetJPAService, Vet, Long> {
 
     public VetJPAServiceTest(@Autowired VetJPAService crudService) {
-        super(crudService, transactionManager);
+        super(crudService, transactionManager, repository);
     }
 
 

@@ -3,9 +3,11 @@ package io.github.vincemann.generic.crud.lib.test.controller.springAdapter.plugi
 import io.github.vincemann.generic.crud.lib.controller.dtoMapper.EntityMappingException;
 import io.github.vincemann.generic.crud.lib.model.IdentifiableEntity;
 import io.github.vincemann.generic.crud.lib.service.exception.NoIdException;
-import io.github.vincemann.generic.crud.lib.test.controller.springAdapter.UrlParamIdDtoCrudControllerSpringAdapterIT;
-import io.github.vincemann.generic.crud.lib.util.BeanUtils;
-import lombok.extern.log4j.Log4j;
+import io.github.vincemann.generic.crud.lib.test.controller.springAdapter.UrlParamId_DtoCrudController_SpringAdapter_IT;
+import io.github.vincemann.generic.crud.lib.test.deepEqualChecker.EqualChecker;
+import io.github.vincemann.generic.crud.lib.test.deepEqualChecker.ReflectionEqualChecker;
+import lombok.Getter;
+import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Assertions;
 import org.springframework.http.ResponseEntity;
@@ -15,15 +17,20 @@ import java.io.Serializable;
 import java.util.Optional;
 import java.util.Set;
 
-import static io.github.vincemann.generic.crud.lib.util.BeanUtils.isDeepEqual;
-
 /**
- * This plugin checks for find-,create- and updateTests if serviceEntity with id of dto returned by httpRequest is {@link BeanUtils#isDeepEqual(Object, Object)} to it.
+ * This plugin checks for find-,create- and updateTests if serviceEntity with id of dto returned by httpRequest is {@link EqualChecker#isEqual(Object, Object)} to it.
  */
 @Component
 @Slf4j
-public class ServiceDeepEqualPlugin extends UrlParamIdDtoCrudControllerSpringAdapterIT.Plugin<IdentifiableEntity<Long>,Long> {
-    
+public class ServiceDeepEqualPlugin extends UrlParamId_DtoCrudController_SpringAdapter_IT.Plugin<IdentifiableEntity<Long>,IdentifiableEntity<Long>,Long> {
+
+    @Setter
+    @Getter
+    private EqualChecker<Object> equalChecker;
+
+    public ServiceDeepEqualPlugin() {
+        equalChecker = new ReflectionEqualChecker<>();
+    }
 
     @Override
     public void onAfterFindAllEntitiesShouldSucceed(Set<? extends IdentifiableEntity<Long>> dtos) throws Exception {
@@ -68,11 +75,10 @@ public class ServiceDeepEqualPlugin extends UrlParamIdDtoCrudControllerSpringAda
     /**
      * 1. Map DtoEntity to ServiceEntity = RequestServiceEntity
      * 2. Fetch ServiceEntity from Service (ultimately from the persistence layer) by Id = dbServiceEntity
-     * 3. Validate that RequestServiceEntity and dbServiceEntity are deep equal via {@link BeanUtils#isDeepEqual(Object, Object)}
+     * 3. Validate that RequestServiceEntity and dbServiceEntity are deep equal via
      *
      * @param dto the Dto entity returned by Backend after http request
      * @return
-     * @throws NoIdException
      */
     private boolean isSavedServiceEntityDeepEqual(IdentifiableEntity<Long> dto) throws EntityMappingException {
         try {
@@ -84,7 +90,7 @@ public class ServiceDeepEqualPlugin extends UrlParamIdDtoCrudControllerSpringAda
             //Compare httpEntity with saved Entity From Service
             Optional entityFromService = getIntegrationTest().getCrudController().getCrudService().findById(httpResponseEntityId);
             Assertions.assertTrue(entityFromService.isPresent());
-            return isDeepEqual(entityFromService.get(), serviceHttpResponseEntity);
+            return equalChecker.isEqual(entityFromService.get(), serviceHttpResponseEntity);
         } catch (NoIdException e) {
             throw new EntityMappingException(e);
         }

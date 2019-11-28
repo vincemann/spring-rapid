@@ -6,12 +6,18 @@ import io.github.vincemann.generic.crud.lib.service.exception.EntityNotFoundExce
 import io.github.vincemann.generic.crud.lib.service.exception.NoIdException;
 import lombok.Getter;
 import lombok.Setter;
+import org.springframework.data.repository.CrudRepository;
 
 import java.io.Serializable;
 import java.util.*;
 
-public abstract class ExtendableCrudService<E extends IdentifiableEntity<Id>, Id extends Serializable>
-        implements CrudService<E, Id> {
+public abstract class ExtendableCrudService
+        <
+                E extends IdentifiableEntity<Id>,
+                Id extends Serializable,
+                R extends CrudRepository<E,Id>
+        >
+        implements CrudService<E, Id,R> {
 
     private List<Plugin<? super E,? super Id>> plugins = new ArrayList<>();
 

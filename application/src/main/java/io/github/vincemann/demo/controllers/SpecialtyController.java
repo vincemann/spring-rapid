@@ -1,6 +1,7 @@
 package io.github.vincemann.demo.controllers;
 
-import io.github.vincemann.generic.crud.lib.controller.springAdapter.DtoCrudControllerSpringAdapter;
+import io.github.vincemann.demo.repositories.SpecialtyRepository;
+import io.github.vincemann.generic.crud.lib.controller.springAdapter.DtoCrudController_SpringAdapter;
 import io.github.vincemann.generic.crud.lib.controller.springAdapter.EndpointsExposureDetails;
 import io.github.vincemann.generic.crud.lib.controller.springAdapter.idFetchingStrategy.IdFetchingStrategy;
 import io.github.vincemann.generic.crud.lib.controller.springAdapter.mediaTypeStrategy.MediaTypeStrategy;
@@ -13,7 +14,7 @@ import org.springframework.stereotype.Controller;
 import io.github.vincemann.generic.crud.lib.controller.dtoMapper.DtoMapper;
 
 @Controller
-public class SpecialtyController extends DtoCrudControllerSpringAdapter<Specialty, SpecialtyDto,Long, SpecialtyService> {
+public class SpecialtyController extends DtoCrudController_SpringAdapter<Specialty, SpecialtyDto,Long, SpecialtyRepository, SpecialtyService> {
 
 
     public SpecialtyController(SpecialtyService crudService, IdFetchingStrategy<Long> longIdFetchingStrategy, MediaTypeStrategy mediaTypeStrategy, ValidationStrategy validationStrategy, DtoMapper dtoMapper, EndpointsExposureDetails endpointsExposureDetails, EndpointService endpointService) {

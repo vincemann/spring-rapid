@@ -1,11 +1,11 @@
 package io.github.vincemann.generic.crud.lib.config;
 
-import io.github.vincemann.generic.crud.lib.test.controller.springAdapter.testRequestEntity.factory.TestRequestEntityFactory;
+import io.github.vincemann.generic.crud.lib.test.controller.springAdapter.testRequestEntity.factory.TestRequestEntity_Factory;
 import io.github.vincemann.generic.crud.lib.test.controller.springAdapter.testRequestEntity.factory.TestRequestFactoryImpl;
-import io.github.vincemann.generic.crud.lib.test.controller.springAdapter.testRequestEntity.factory.defaultUriFactory.UrlParamIdDefaultUriFactory;
-import io.github.vincemann.generic.crud.lib.test.controller.springAdapter.testRequestEntity.factory.defaultUriFactory.UrlParamUrlParamIdDefaultUriFactory;
-import io.github.vincemann.generic.crud.lib.test.controller.springAdapter.testRequestEntity.factory.testRequestEntityModificationStrategy.TestRequestEntityModificationStrategy;
-import io.github.vincemann.generic.crud.lib.test.controller.springAdapter.testRequestEntity.factory.testRequestEntityModificationStrategy.TestRequestEntityModificationStrategyImpl;
+import io.github.vincemann.generic.crud.lib.test.controller.springAdapter.testRequestEntity.factory.defaultUriFactory.UrlParamId_DefaultUri_Factory;
+import io.github.vincemann.generic.crud.lib.test.controller.springAdapter.testRequestEntity.factory.defaultUriFactory.UrlParamId_DefaultUri_Factory_Impl;
+import io.github.vincemann.generic.crud.lib.test.controller.springAdapter.testRequestEntity.factory.requestEntityModification.TestRequestEntity_ModificationStrategy;
+import io.github.vincemann.generic.crud.lib.test.controller.springAdapter.testRequestEntity.factory.requestEntityModification.TestRequestEntity_ModificationStrategy_Impl;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -15,17 +15,17 @@ import org.springframework.context.annotation.Configuration;
 public class IntegrationTestConfig {
 
     @Bean
-    public TestRequestEntityFactory testRequestEntityFactory(TestRequestEntityModificationStrategy testRequestEntityModificationStrategy, UrlParamIdDefaultUriFactory urlParamIdDefaultUriFactory){
+    public TestRequestEntity_Factory testRequestEntityFactory(TestRequestEntity_ModificationStrategy testRequestEntityModificationStrategy, UrlParamId_DefaultUri_Factory urlParamIdDefaultUriFactory){
         return new TestRequestFactoryImpl(urlParamIdDefaultUriFactory,testRequestEntityModificationStrategy);
     }
 
     @Bean
-    public TestRequestEntityModificationStrategy testRequestEntityModificationStrategy(){
-        return new TestRequestEntityModificationStrategyImpl();
+    public TestRequestEntity_ModificationStrategy testRequestEntityModificationStrategy(){
+        return new TestRequestEntity_ModificationStrategy_Impl();
     }
 
     @Bean
-    public UrlParamIdDefaultUriFactory defaultUriFactory(@Qualifier("idUrlParamKey") String idUrlParamKey){
-        return new UrlParamUrlParamIdDefaultUriFactory(idUrlParamKey);
+    public UrlParamId_DefaultUri_Factory defaultUriFactory(@Qualifier("idUrlParamKey") String idUrlParamKey){
+        return new UrlParamId_DefaultUri_Factory_Impl(idUrlParamKey);
     }
 }
