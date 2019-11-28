@@ -27,7 +27,7 @@ class PetJPAServiceTest extends CrudServiceTest<PetJPAService, Pet,Long> {
     private PetType dogPetType;
 
     public PetJPAServiceTest(@Autowired PetJPAService crudService, @Autowired PetTypeService petTypeService) {
-        super(crudService);
+        super(crudService, transactionManager);
         this.petTypeService=petTypeService;
     }
 

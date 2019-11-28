@@ -6,6 +6,7 @@ import io.github.vincemann.generic.crud.lib.model.IdentifiableEntity;
 import io.github.vincemann.generic.crud.lib.service.CrudService;
 import io.github.vincemann.generic.crud.lib.service.exception.BadEntityException;
 import io.github.vincemann.generic.crud.lib.test.IntegrationTest;
+import io.github.vincemann.generic.crud.lib.test.TransactionManagedTest;
 import io.github.vincemann.generic.crud.lib.test.controller.springAdapter.findAllEntitesTestProvider.FindAllTestEntitiesProvider;
 import io.github.vincemann.generic.crud.lib.test.testBundles.abs.callback.PostIntegrationTestCallbackIdBundle;
 import io.github.vincemann.generic.crud.lib.test.testBundles.controller.create.FailedCreateIntegrationTestBundle;
@@ -35,7 +36,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.TestExecutionListeners;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.TransactionStatus;
-import org.springframework.transaction.support.DefaultTransactionDefinition;
 
 import java.io.Serializable;
 import java.util.*;
@@ -59,9 +59,7 @@ import static io.github.vincemann.generic.crud.lib.util.SetterUtils.returnIfNotN
         listeners = {ResetDatabaseTestExecutionListener.class}
 )
 public abstract class UrlParamIdDtoCrudControllerSpringAdapterIT<ServiceE extends IdentifiableEntity<Id>, Dto extends IdentifiableEntity<Id>, Service extends CrudService<ServiceE, Id>, Controller extends DtoCrudControllerSpringAdapter<ServiceE, Dto, Id, Service>, Id extends Serializable>
-        extends IntegrationTest {
-
-
+        extends IntegrationTest implements TransactionManagedTest {
 
 
     //TEST BUNDLES
@@ -109,7 +107,8 @@ public abstract class UrlParamIdDtoCrudControllerSpringAdapterIT<ServiceE extend
     @Getter private Class<Dto> dtoEntityClass;
     @Getter private Class<ServiceE> serviceEntityClass;
     @Getter private String entityIdParamKey;
-            private PlatformTransactionManager transactionManager;
+    @Getter private PlatformTransactionManager transactionManager;
+
 
 
     /*public UrlParamIdDtoCrudControllerSpringAdapterIT(String url, Controller crudController, TestRequestEntityFactory requestEntityFactory, Plugin<? super Dto, ? super Id>... plugins) {
@@ -118,8 +117,7 @@ public abstract class UrlParamIdDtoCrudControllerSpringAdapterIT<ServiceE extend
     }*/
 
     public UrlParamIdDtoCrudControllerSpringAdapterIT(Controller crudController, PlatformTransactionManager transactionManager, TestRequestEntityFactory requestEntityFactory, Plugin<? super Dto, ? super Id>... plugins) {
-        super();
-        this.transactionManager = transactionManager;
+        this.transactionManager=transactionManager;
         this.requestEntityFactory = requestEntityFactory;
         constructorInit(crudController, requestEntityFactory, plugins);
     }
@@ -145,7 +143,8 @@ public abstract class UrlParamIdDtoCrudControllerSpringAdapterIT<ServiceE extend
 
 
 
-    private void provideBundles() throws Exception {
+    @Override
+    public void provideBundles() throws Exception {
         onBeforeProvideEntityBundles();
         failedCreateTestEntityBundles = returnIfNotNull(failedCreateTestEntityBundles, provideFailingCreateTestBundles());
         failedDeleteTestEntityBundles = returnIfNotNull(failedDeleteTestEntityBundles, provideFailedDeleteTestBundles());
@@ -161,53 +160,6 @@ public abstract class UrlParamIdDtoCrudControllerSpringAdapterIT<ServiceE extend
         successfulFindTestEntityBundles = returnIfNotNull(successfulFindTestEntityBundles, provideSuccessfulFindTestEntityBundles());
     }
     protected void onBeforeProvideEntityBundles() throws Exception { }
-
-
-
-
-
-
-
-
-
-    //TRANSACTION MANAGEMENT & PROVIDE BUNDLES
-    /**
-     * Starts Transaction that should be committed in the running test that is calling this method
-     * @return
-     */
-    private TransactionStatus startTestTransaction(){
-        DefaultTransactionDefinition testTransactionDefinition = new DefaultTransactionDefinition();
-        testTransactionDefinition.setName("testTransaction");
-        return transactionManager.getTransaction(testTransactionDefinition);
-    }
-    private TransactionStatus provideBundlesAndStartTransaction() throws Exception {
-        TransactionStatus testTransaction = startTestTransaction();
-        provideBundles();
-        return testTransaction;
-    }
-    private void provideBundlesAndCommitTransaction() throws Exception {
-        TransactionStatus testTransaction = startTestTransaction();
-        provideBundles();
-        transactionManager.commit(testTransaction);
-    }
-    //provide entity bundles in memory, but dont apply changes to database
-    //this is done because entities saved within "provide entityBundle process" must be persisted within same transaction
-    //as persisting actions in tests -> otherwise there will be an exception because detached entities cant be persisted anymore
-    /**
-     * use if you want the to provide the bundles but dont wish to persist any entities created/saved in provide process to be saved to database
-     * @throws Exception
-     */
-    private void provideBundlesAndRollbackTransaction() throws Exception {
-        TransactionStatus testTransaction = startTestTransaction();
-        provideBundles();
-        transactionManager.rollback(testTransaction);
-    }
-
-
-
-
-
-
 
 
 
@@ -241,8 +193,10 @@ public abstract class UrlParamIdDtoCrudControllerSpringAdapterIT<ServiceE extend
     }
 
     protected ResponseEntity<String> findAllEntitiesShouldFail(TestRequestEntityModification requestEntityModification, FindAllTestEntitiesProvider<ServiceE> findAllTestEntitiesProvider) throws Exception {
-        TestRequestEntity testRequestEntity = requestEntityFactory.createInstance(CrudControllerTestCase.FAILED_FIND_ALL,
-                requestEntityModification, null);
+        TestRequestEntity testRequestEntity = requestEntityFactory.createInstance(
+                CrudControllerTestCase.FAILED_FIND_ALL,
+                requestEntityModification,
+                null);
         onBeforeFindAllEntitiesShouldFail();
         ResponseEntity<String> responseEntity = findAllEntities(testRequestEntity);
         onAfterFindAllEntitiesShouldFail(responseEntity);
@@ -250,7 +204,8 @@ public abstract class UrlParamIdDtoCrudControllerSpringAdapterIT<ServiceE extend
     }
 
     protected Set<Dto> findAllEntitiesShouldSucceed(TestRequestEntityModification testRequestEntityModification, FindAllTestEntitiesProvider<ServiceE> findAllTestEntitiesProvider) throws Exception {
-        TestRequestEntity testRequestEntity = requestEntityFactory.createInstance(CrudControllerTestCase.SUCCESSFUL_FIND_ALL,
+        TestRequestEntity testRequestEntity = requestEntityFactory.createInstance(
+                CrudControllerTestCase.SUCCESSFUL_FIND_ALL,
                 testRequestEntityModification, null);
         onBeforeFindAllEntitiesShouldSucceed();
         ResponseEntity<String> responseEntity = findAllEntities(testRequestEntity);
