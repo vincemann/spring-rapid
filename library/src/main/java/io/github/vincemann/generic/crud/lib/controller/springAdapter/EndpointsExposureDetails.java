@@ -9,7 +9,7 @@ import org.springframework.stereotype.Component;
 @Setter
 @Component
 /**
- * Gives User fine grained control about which endpoints should be exposed by {@link DtoCrudControllerSpringAdapter}.
+ * Gives User fine grained control about which endpoints should be exposed by {@link DtoCrudController_SpringAdapter}.
  */
 public class EndpointsExposureDetails {
     private boolean createEndpointExposed=true;

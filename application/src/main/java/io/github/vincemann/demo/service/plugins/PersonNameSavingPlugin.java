@@ -1,13 +1,14 @@
 package io.github.vincemann.demo.service.plugins;
 
 import io.github.vincemann.demo.model.abs.Person;
+import io.github.vincemann.generic.crud.lib.controller.springAdapter.DtoCrudController_SpringAdapter;
 import io.github.vincemann.generic.crud.lib.service.ExtendableCrudService;
 import io.github.vincemann.generic.crud.lib.service.exception.BadEntityException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
 /**
- *Plugin that can be plugged in to all {@link io.github.vincemann.generic.crud.lib.controller.springAdapter.DtoCrudControllerSpringAdapter} dealing with Person Objects
+ *Plugin that can be plugged in to all {@link DtoCrudController_SpringAdapter} dealing with Person Objects
  */
 @Slf4j
 @Component

@@ -3,6 +3,7 @@ package io.github.vincemann.generic.crud.lib.controller;
 import io.github.vincemann.generic.crud.lib.controller.dtoMapper.EntityMappingException;
 import lombok.Getter;
 import lombok.Setter;
+import org.springframework.data.repository.CrudRepository;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import io.github.vincemann.generic.crud.lib.controller.dtoMapper.DtoMapper;
@@ -29,7 +30,14 @@ import java.util.*;
  * @param <Id>       Id Type of {@link ServiceE}
  */
 @Getter
-public abstract class BasicDtoCrudController<ServiceE extends IdentifiableEntity<Id>,Dto extends IdentifiableEntity<Id>,  Id extends Serializable, Service extends CrudService<ServiceE, Id>>
+public abstract class BasicDtoCrudController
+        <
+                ServiceE extends IdentifiableEntity<Id>,
+                Dto extends IdentifiableEntity<Id>,
+                Id extends Serializable,
+                R extends CrudRepository<ServiceE,Id>,
+                Service extends CrudService<ServiceE, Id,R>
+        >
         implements DtoCrudController<Dto, Id> {
 
     private Service crudService;

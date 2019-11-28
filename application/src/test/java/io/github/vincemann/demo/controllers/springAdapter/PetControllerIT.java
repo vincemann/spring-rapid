@@ -1,7 +1,7 @@
 package io.github.vincemann.demo.controllers.springAdapter;
 
 
-import io.github.vincemann.demo.controllers.EntityInitializerControllerIT;
+import io.github.vincemann.demo.controllers.EntityInitializer_ControllerIT;
 import io.github.vincemann.demo.controllers.PetController;
 import io.github.vincemann.demo.dtos.PetDto;
 import io.github.vincemann.demo.model.Pet;
@@ -12,7 +12,7 @@ import io.github.vincemann.generic.crud.lib.test.testBundles.controller.create.F
 import io.github.vincemann.generic.crud.lib.test.testBundles.controller.create.SuccessfulCreateIntegrationTestBundle;
 import io.github.vincemann.generic.crud.lib.test.testBundles.controller.update.FailedUpdateIntegrationTestBundle;
 import io.github.vincemann.generic.crud.lib.test.testBundles.controller.update.SuccessfulUpdateIntegrationTestBundle;
-import io.github.vincemann.generic.crud.lib.test.controller.springAdapter.testRequestEntity.factory.TestRequestEntityFactory;
+import io.github.vincemann.generic.crud.lib.test.controller.springAdapter.testRequestEntity.factory.TestRequestEntity_Factory;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -27,7 +27,7 @@ import java.util.List;
 @SpringBootTest(webEnvironment =
         SpringBootTest.WebEnvironment.DEFINED_PORT)
 @ActiveProfiles(value = {"test", "springdatajpa"})
-public class PetControllerIT extends EntityInitializerControllerIT<Pet, PetDto, PetService, PetController> {
+public class PetControllerIT extends EntityInitializer_ControllerIT<Pet, PetDto, PetService, PetController> {
 
     private PetDto petDtoWithPersistedPetType;
     private Pet petWithPersistedPetType;
@@ -36,7 +36,7 @@ public class PetControllerIT extends EntityInitializerControllerIT<Pet, PetDto, 
 
 
     public PetControllerIT(@Autowired PetController crudController,
-                           @Autowired TestRequestEntityFactory testRequestEntityFactory,
+                           @Autowired TestRequestEntity_Factory testRequestEntityFactory,
                            @Autowired PlatformTransactionManager transactionManager,
                            @Autowired CheckIfDbDeletedPlugin checkIfDbDeletedPlugin,
                            @Autowired ServiceDeepEqualPlugin serviceDeepEqualPlugin) {

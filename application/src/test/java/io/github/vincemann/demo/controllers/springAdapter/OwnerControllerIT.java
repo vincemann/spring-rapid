@@ -1,16 +1,18 @@
 package io.github.vincemann.demo.controllers.springAdapter;
 
 
-import io.github.vincemann.demo.controllers.EntityInitializerControllerIT;
+import io.github.vincemann.demo.controllers.EntityInitializer_ControllerIT;
 import io.github.vincemann.demo.controllers.OwnerController;
 import io.github.vincemann.demo.dtos.OwnerDto;
 import io.github.vincemann.demo.model.Owner;
 import io.github.vincemann.demo.model.Pet;
+import io.github.vincemann.demo.repositories.OwnerRepository;
 import io.github.vincemann.demo.service.OwnerService;
 import io.github.vincemann.demo.service.PetService;
 import io.github.vincemann.generic.crud.lib.service.exception.NoIdException;
 import io.github.vincemann.generic.crud.lib.test.controller.springAdapter.plugins.CheckIfDbDeletedPlugin;
 import io.github.vincemann.generic.crud.lib.test.controller.springAdapter.plugins.ServiceDeepEqualPlugin;
+import io.github.vincemann.generic.crud.lib.test.deepEqualChecker.EqualChecker;
 import io.github.vincemann.generic.crud.lib.test.testBundles.abs.callback.PostIntegrationTestCallbackIdBundle;
 import io.github.vincemann.generic.crud.lib.test.testBundles.controller.create.FailedCreateIntegrationTestBundle;
 import io.github.vincemann.generic.crud.lib.test.testBundles.controller.create.SuccessfulCreateIntegrationTestBundle;
@@ -19,14 +21,16 @@ import io.github.vincemann.generic.crud.lib.test.testBundles.controller.find.Suc
 import io.github.vincemann.generic.crud.lib.test.testBundles.controller.update.FailedUpdateIntegrationTestBundle;
 import io.github.vincemann.generic.crud.lib.test.testBundles.controller.update.SuccessfulUpdateIntegrationTestBundle;
 import io.github.vincemann.generic.crud.lib.test.testBundles.controller.update.updateIteration.FailedUpdateTestEntityBundleIteration;
-import io.github.vincemann.generic.crud.lib.test.controller.springAdapter.testRequestEntity.factory.TestRequestEntityFactory;
+import io.github.vincemann.generic.crud.lib.test.controller.springAdapter.testRequestEntity.factory.TestRequestEntity_Factory;
+import org.junit.Test;
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
-import org.springframework.transaction.PlatformTransactionManager;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.*;
 
@@ -34,7 +38,8 @@ import java.util.*;
 @SpringBootTest(webEnvironment =
         SpringBootTest.WebEnvironment.DEFINED_PORT)
 @ActiveProfiles(value = {"test", "springdatajpa"})
-class OwnerControllerIT extends EntityInitializerControllerIT<Owner, OwnerDto, OwnerService, OwnerController> {
+class OwnerControllerIT
+        extends EntityInitializer_ControllerIT<Owner, OwnerDto, OwnerRepository, OwnerService, OwnerController> {
 
     @Autowired
     private PetService petService;
@@ -43,8 +48,6 @@ class OwnerControllerIT extends EntityInitializerControllerIT<Owner, OwnerDto, O
 
     private OwnerDto validOwnerDtoWithoutPets;
     private Owner validOwnerWithoutPets;
-    private OwnerDto validOwnerDtoWithOnePet;
-    private Owner validOwnerWithOnePet;
     private OwnerDto validOwnerDtoWithManyPets;
     private Owner validOwnerWithManyPets;
 
@@ -52,126 +55,127 @@ class OwnerControllerIT extends EntityInitializerControllerIT<Owner, OwnerDto, O
 
 
     OwnerControllerIT(@Autowired OwnerController crudController,
-                      @Autowired PlatformTransactionManager platformTransactionManager,
-                      @Autowired TestRequestEntityFactory requestEntityFactory,
+                      @Autowired TestRequestEntity_Factory requestEntityFactory,
                       @Autowired CheckIfDbDeletedPlugin checkIfDbDeletedPlugin,
                       @Autowired ServiceDeepEqualPlugin serviceDeepEqualPlugin) {
         super(
                 crudController,
                 requestEntityFactory,
-                platformTransactionManager,
                 checkIfDbDeletedPlugin,
                 serviceDeepEqualPlugin
         );
     }
 
-
     @Override
-    protected void onBeforeProvideEntityBundles() throws Exception {
-        super.onBeforeProvideEntityBundles();
-        this.pet1 = petService.save(Pet.builder().name("pet1").petType(getTestPetType()).build());
-        this.pet2 = petService.save(Pet.builder().name("pet2").petType(getTestPetType()).build());
+    @BeforeEach
+    public void before() {
+        super.before();
+        addPreTestRunnable(() -> {
+            try {
+                this.pet1 = petService.save(Pet.builder().name("pet1").petType(getTestPetType()).build());
+                this.pet2 = petService.save(Pet.builder().name("pet2").petType(getTestPetType()).build());
 
-        validOwnerDtoWithoutPets = OwnerDto.builder()
-                .firstName("Max")
-                .lastName("Müller")
-                .address("other Street 13")
-                .city("munich")
-                .build();
-        validOwnerWithoutPets = Owner.builder()
-                .firstName("Max")
-                .lastName("Müller")
-                .address("other Street 13")
-                .city("munich")
-                .build();
-
-
-        validOwnerDtoWithOnePet = OwnerDto.builder()
-                .firstName("Hans")
-                .lastName("Müller")
-                .address("mega nice Street 42")
-                .city("Berlin")
-                .petIds(Collections.singleton(getTestPet().getId()))
-                .build();
-        validOwnerWithOnePet = Owner.builder()
-                .firstName("Hans")
-                .lastName("Müller")
-                .address("mega nice Street 42")
-                .city("Berlin")
-                .pets(Collections.singleton(getTestPet()))
-                .build();
+                validOwnerDtoWithoutPets = OwnerDto.builder()
+                        .firstName("Max")
+                        .lastName("Müller")
+                        .address("other Street 13")
+                        .city("munich")
+                        .build();
+                validOwnerWithoutPets = Owner.builder()
+                        .firstName("Max")
+                        .lastName("Müller")
+                        .address("other Street 13")
+                        .city("munich")
+                        .build();
 
 
-        validOwnerDtoWithManyPets = OwnerDto.builder()
-                .firstName("Max")
-                .lastName("Müller")
-                .address("Andere Street 13")
-                .city("München")
-                .petIds(new HashSet<>(Arrays.asList(pet1.getId(), pet2.getId())))
-                .build();
-        validOwnerWithManyPets = Owner.builder()
-                .firstName("Max")
-                .lastName("Müller")
-                .address("Andere Street 13")
-                .city("München")
-                .pets(new HashSet<>(Arrays.asList(pet1, pet2)))
-                .build();
+                validOwnerDtoWithManyPets = OwnerDto.builder()
+                        .firstName("Max")
+                        .lastName("Müller")
+                        .address("Andere Street 13")
+                        .city("München")
+                        .petIds(new HashSet<>(Arrays.asList(pet1.getId(), pet2.getId())))
+                        .build();
+                validOwnerWithManyPets = Owner.builder()
+                        .firstName("Max")
+                        .lastName("Müller")
+                        .address("Andere Street 13")
+                        .city("München")
+                        .pets(new HashSet<>(Arrays.asList(pet1, pet2)))
+                        .build();
 
 
-        invalidOwnerDto_becauseBlankCity = OwnerDto.builder()
-                .firstName("Hans")
-                .lastName("meier")
-                .address("MegaNiceStreet 5")
-                //blank city
-                .city("")
-                .build();
+                invalidOwnerDto_becauseBlankCity = OwnerDto.builder()
+                        .firstName("Hans")
+                        .lastName("meier")
+                        .address("MegaNiceStreet 5")
+                        //blank city
+                        .city("")
+                        .build();
+            }catch (Exception e){
+                throw new RuntimeException(e);
+            }
+        });
     }
 
-    @Override
-    protected List<SuccessfulCreateIntegrationTestBundle<OwnerDto>> provideSuccessfulCreateTestEntityBundles() {
-        return Arrays.asList(
-                new SuccessfulCreateIntegrationTestBundle<>(validOwnerDtoWithoutPets),
-                new SuccessfulCreateIntegrationTestBundle<>(validOwnerDtoWithOnePet),
-                new SuccessfulCreateIntegrationTestBundle<>(validOwnerDtoWithManyPets)
-
-        );
+    @Test
+    @Transactional
+    public void createOwnerWithoutPets_shouldSucceed() throws Exception {
+        runPreTestRunnables();
+        createEntity_ShouldSucceed(validOwnerDtoWithoutPets);
     }
 
-    @Override
-    protected List<DeleteIntegrationTestBundle<Owner,Long>> provideSuccessfulDeleteTestEntityBundles() {
-        return Arrays.asList(
-                new DeleteIntegrationTestBundle<Owner,Long>(validOwnerWithManyPets),
-                new DeleteIntegrationTestBundle<Owner,Long>(validOwnerWithoutPets),
-                new DeleteIntegrationTestBundle<Owner,Long>(validOwnerWithOnePet)
-        );
+    @Test
+    @Transactional
+    public void createOwnerWithPets_shouldSucceed() throws Exception {
+        runPreTestRunnables();
+        createEntity_ShouldSucceed(validOwnerDtoWithManyPets);
     }
 
-    @Override
-    public List<SuccessfulFindIntegrationTestBundle<OwnerDto, Owner>> provideSuccessfulFindTestEntityBundles() {
-        return Arrays.asList(
-                new SuccessfulFindIntegrationTestBundle<>(validOwnerWithoutPets),
-                new SuccessfulFindIntegrationTestBundle<>(validOwnerWithOnePet),
-                new SuccessfulFindIntegrationTestBundle<>(validOwnerWithManyPets)
-
-        );
+    @Test
+    @Transactional
+    public void deleteOwner_shouldSucceed() throws Exception {
+        runPreTestRunnables();
+        OwnerDto savedOwner = createEntity_ShouldSucceed(validOwnerDtoWithManyPets);
+        deleteEntity_ShouldSucceed(savedOwner.getId());
     }
 
-    @Override
-    protected List<SuccessfulUpdateIntegrationTestBundle<Owner, OwnerDto>> provideSuccessfulUpdateTestEntityBundles() {
+    @Transactional
+    @Test
+    public void findOwner_shouldSucceed() throws Exception {
+        runPreTestRunnables();
+        OwnerDto savedOwner = createEntity_ShouldSucceed(validOwnerDtoWithManyPets);
+        findEntity_ShouldSucceed(savedOwner.getId());
+    }
+
+    @Test
+    @Transactional
+    public void updateOwnerWithDifferentAddress_ShouldSucceed() throws Exception {
+        //given
         OwnerDto diffStreetUpdate = OwnerDto.builder()
                 .firstName("Max")
                 .lastName("Müller")
                 .address("other Street 12")
                 .city("munich")
                 .build();
-        OwnerDto diffLastNameUpdate = OwnerDto.builder()
-                .firstName("MODIFIED")
-                .lastName("Müller")
-                .address("other Street 13")
-                .city("munich")
-                .build();
 
+        OwnerDto savedOwner = createEntity_ShouldSucceed(validOwnerDtoWithManyPets);
+        Assertions.assertNotEquals(diffStreetUpdate.getAddress(),savedOwner.getAddress());
+        diffStreetUpdate.setId(savedOwner.getId());
 
+        //when
+        updateEntity_ShouldSucceed(diffStreetUpdate, new EqualChecker<Owner>() {
+            @Override
+            public boolean isEqual(Owner object1, Owner object2) {
+                return object1.getAddress().equals(object2.getAddress());
+            }
+        });
+    }
+
+    @Transactional
+    @Test
+    public void updateOwnerWithManyPets_RemovePets_ShouldSucceed() throws Exception {
+        //given
         OwnerDto deleteAllPetsUpdate = OwnerDto.builder()
                 .firstName("Hans")
                 .lastName("Müller")
@@ -179,20 +183,29 @@ class OwnerControllerIT extends EntityInitializerControllerIT<Owner, OwnerDto, O
                 .city("Berlinasdasd")
                 .petIds(Collections.EMPTY_SET)
                 .build();
+        OwnerDto savedOwner = createEntity_ShouldSucceed(validOwnerDtoWithManyPets);
 
-        return Arrays.asList(
-                new SuccessfulUpdateIntegrationTestBundle<>(validOwnerWithoutPets, diffLastNameUpdate, diffStreetUpdate),
-                new SuccessfulUpdateIntegrationTestBundle<>(validOwnerWithOnePet, deleteAllPetsUpdate),
-                new SuccessfulUpdateIntegrationTestBundle<>(validOwnerWithManyPets, deleteAllPetsUpdate)
-        );
+        //when
+        updateEntity_ShouldSucceed(deleteAllPetsUpdate, new EqualChecker<Owner>() {
+            @Override
+            public boolean isEqual(Owner object1, Owner object2) {
+                return object1.getPets().size()==object2.getPets().size()
+                        &&
+                        object1.getPets().size()==0;
+            }
+        });
+
     }
 
-    @Override
-    protected List<FailedCreateIntegrationTestBundle<OwnerDto,Long>> provideFailingCreateTestBundles() {
-        return Arrays.asList(
-                new FailedCreateIntegrationTestBundle<>(invalidOwnerDto_becauseBlankCity)
-        );
+
+    @Test
+    @Transactional
+    public void createOwnerWithBlankCity_ShouldFail() throws Exception {
+        createEntity_ShouldFail(invalidOwnerDto_becauseBlankCity);
     }
+
+
+
 
     @Override
     protected List<FailedUpdateIntegrationTestBundle<Owner, OwnerDto,Long>> provideFailedUpdateTestBundles() {

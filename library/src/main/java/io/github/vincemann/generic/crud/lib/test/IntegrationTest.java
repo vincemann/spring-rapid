@@ -1,13 +1,13 @@
 package io.github.vincemann.generic.crud.lib.test;
 
-import io.github.vincemann.generic.crud.lib.test.controller.springAdapter.testRequestEntity.factory.defaultUriFactory.testBaseUrlProvider.BaseAddressProvider;
+import io.github.vincemann.generic.crud.lib.test.controller.springAdapter.testRequestEntity.factory.defaultUriFactory.baseUrl.BaseAddress_Provider;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.junit.jupiter.api.BeforeAll;
 import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
 
-public abstract class IntegrationTest implements BaseAddressProvider {
+public abstract class IntegrationTest implements BaseAddress_Provider {
     private static final String URL = "http://127.0.0.1";
 
     private String url;

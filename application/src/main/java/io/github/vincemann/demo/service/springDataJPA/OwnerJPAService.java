@@ -16,6 +16,7 @@ import java.util.Optional;
 @Profile("springdatajpa")
 public class OwnerJPAService extends JPACrudService<Owner,Long,OwnerRepository> implements OwnerService {
 
+
     public OwnerJPAService(
             OwnerRepository jpaRepository,
             BiDirParentPlugin<Owner,Long> biDirParentPlugin,
@@ -34,7 +35,7 @@ public class OwnerJPAService extends JPACrudService<Owner,Long,OwnerRepository> 
     @Transactional
     @Override
     public Optional<Owner> findByLastName(String lastName) {
-        return getJpaRepository().findByLastName(lastName);
+        return getRepository().findByLastName(lastName);
     }
 
 }

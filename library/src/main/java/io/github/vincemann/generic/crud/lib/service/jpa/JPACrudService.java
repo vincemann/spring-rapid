@@ -7,6 +7,7 @@ import io.github.vincemann.generic.crud.lib.service.exception.EntityNotFoundExce
 import io.github.vincemann.generic.crud.lib.service.exception.NoIdException;
 import org.springframework.dao.NonTransientDataAccessException;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.repository.CrudRepository;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.io.Serializable;
@@ -15,8 +16,13 @@ import java.util.HashSet;
 import java.util.Optional;
 import java.util.Set;
 
-public abstract class JPACrudService<E extends IdentifiableEntity<Id>,Id extends Serializable,R extends JpaRepository<E,Id>>
-        extends ExtendableCrudService<E,Id> {
+public abstract class JPACrudService
+                <
+                          E extends IdentifiableEntity<Id>,
+                          Id extends Serializable,
+                          R extends JpaRepository<E,Id>
+                >
+        extends ExtendableCrudService<E,Id,R> {
 
 
     private R jpaRepository;
@@ -123,7 +129,8 @@ public abstract class JPACrudService<E extends IdentifiableEntity<Id>,Id extends
         jpaRepository.deleteById(id);
     }
 
-    public R getJpaRepository() {
+    @Override
+    public R getRepository() {
         return jpaRepository;
     }
 
