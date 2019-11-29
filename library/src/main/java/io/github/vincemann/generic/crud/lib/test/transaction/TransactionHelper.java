@@ -1,4 +1,4 @@
-package io.github.vincemann.generic.crud.lib.test.controller.springAdapter.transaction;
+package io.github.vincemann.generic.crud.lib.test.transaction;
 
 import org.hibernate.Session;
 import org.springframework.beans.factory.annotation.Autowired;

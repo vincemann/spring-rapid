@@ -7,14 +7,12 @@ import io.github.vincemann.generic.crud.lib.service.ExtendableCrudService;
 import io.github.vincemann.generic.crud.lib.service.exception.BadEntityException;
 import io.github.vincemann.generic.crud.lib.service.exception.EntityNotFoundException;
 import io.github.vincemann.generic.crud.lib.service.exception.NoIdException;
-import io.github.vincemann.generic.crud.lib.test.controller.springAdapter.transaction.TransactionHelper;
+import io.github.vincemann.generic.crud.lib.test.transaction.TransactionHelper;
 import lombok.extern.slf4j.Slf4j;
-import org.hibernate.Session;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
-import javax.persistence.EntityManager;
 import java.io.Serializable;
 import java.util.*;
 
