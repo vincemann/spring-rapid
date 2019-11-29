@@ -4,8 +4,8 @@ import io.github.vincemann.generic.crud.lib.controller.dtoMapper.EntityMappingEx
 import io.github.vincemann.generic.crud.lib.model.IdentifiableEntity;
 import io.github.vincemann.generic.crud.lib.service.exception.NoIdException;
 import io.github.vincemann.generic.crud.lib.test.controller.springAdapter.UrlParamId_DtoCrudController_SpringAdapter_IT;
-import io.github.vincemann.generic.crud.lib.test.deepEqualChecker.EqualChecker;
-import io.github.vincemann.generic.crud.lib.test.deepEqualChecker.ReflectionEqualChecker;
+import io.github.vincemann.generic.crud.lib.test.equalChecker.EqualChecker;
+import io.github.vincemann.generic.crud.lib.test.equalChecker.ReflectionEqualChecker;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;

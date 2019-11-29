@@ -1,7 +1,11 @@
 package io.github.vincemann.generic.crud.lib.model.biDir;
 
 import io.github.vincemann.generic.crud.lib.model.IdentifiableEntityImpl;
-import io.github.vincemann.generic.crud.lib.service.exception.UnknownChildTypeException;
+import io.github.vincemann.generic.crud.lib.model.biDir.child.BiDirChild;
+import io.github.vincemann.generic.crud.lib.model.biDir.child.BiDirChildCollection;
+import io.github.vincemann.generic.crud.lib.model.biDir.child.BiDirChildEntity;
+import io.github.vincemann.generic.crud.lib.model.biDir.parent.BiDirParent;
+import io.github.vincemann.generic.crud.lib.model.biDir.parent.BiDirParentEntity;
 import lombok.Getter;
 import lombok.Setter;
 import org.junit.jupiter.api.Assertions;
@@ -33,7 +37,7 @@ class BiDirParentTest {
     }
     @Getter
     @Setter
-    private class SecondEntityParent extends IdentifiableEntityImpl<Long> implements BiDirParent{
+    private class SecondEntityParent extends IdentifiableEntityImpl<Long> implements BiDirParent {
         @BiDirChildEntity
         private EntityChild entityChild;
     }

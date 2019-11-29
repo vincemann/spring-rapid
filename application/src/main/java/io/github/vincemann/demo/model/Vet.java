@@ -1,8 +1,8 @@
 package io.github.vincemann.demo.model;
 
 import io.github.vincemann.demo.model.abs.Person;
-import io.github.vincemann.generic.crud.lib.model.uniDir.UniDirChildCollection;
-import io.github.vincemann.generic.crud.lib.model.uniDir.UniDirParent;
+import io.github.vincemann.generic.crud.lib.model.uniDir.child.UniDirChildCollection;
+import io.github.vincemann.generic.crud.lib.model.uniDir.parent.UniDirParent;
 import lombok.*;
 
 import javax.persistence.*;

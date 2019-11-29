@@ -3,8 +3,8 @@ package io.github.vincemann.generic.crud.lib.controller.dtoMapper.idResolver.biD
 import io.github.vincemann.generic.crud.lib.controller.dtoMapper.EntityMappingException;
 import io.github.vincemann.generic.crud.lib.controller.dtoMapper.idResolver.EntityIdResolver;
 import io.github.vincemann.generic.crud.lib.dto.biDir.BiDirDtoParent;
-import io.github.vincemann.generic.crud.lib.model.biDir.BiDirChild;
-import io.github.vincemann.generic.crud.lib.model.biDir.BiDirParent;
+import io.github.vincemann.generic.crud.lib.model.biDir.child.BiDirChild;
+import io.github.vincemann.generic.crud.lib.model.biDir.parent.BiDirParent;
 import io.github.vincemann.generic.crud.lib.service.finder.CrudServiceFinder;
 import org.springframework.stereotype.Component;
 

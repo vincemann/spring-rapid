@@ -5,53 +5,46 @@ import io.github.vincemann.demo.controllers.EntityInitializer_ControllerIT;
 import io.github.vincemann.demo.controllers.PetController;
 import io.github.vincemann.demo.dtos.PetDto;
 import io.github.vincemann.demo.model.Pet;
+import io.github.vincemann.demo.repositories.PetRepository;
 import io.github.vincemann.demo.service.PetService;
-import io.github.vincemann.generic.crud.lib.test.controller.springAdapter.plugins.CheckIfDbDeletedPlugin;
-import io.github.vincemann.generic.crud.lib.test.controller.springAdapter.plugins.ServiceDeepEqualPlugin;
-import io.github.vincemann.generic.crud.lib.test.testBundles.controller.create.FailedCreateIntegrationTestBundle;
-import io.github.vincemann.generic.crud.lib.test.testBundles.controller.create.SuccessfulCreateIntegrationTestBundle;
-import io.github.vincemann.generic.crud.lib.test.testBundles.controller.update.FailedUpdateIntegrationTestBundle;
-import io.github.vincemann.generic.crud.lib.test.testBundles.controller.update.SuccessfulUpdateIntegrationTestBundle;
+import io.github.vincemann.generic.crud.lib.test.controller.springAdapter.plugins.DatabaseDeletedCheck_Plugin;
+import io.github.vincemann.generic.crud.lib.test.controller.springAdapter.postUpdateCallback.PostUpdateCallback;
 import io.github.vincemann.generic.crud.lib.test.controller.springAdapter.testRequestEntity.factory.TestRequestEntity_Factory;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
-import org.springframework.transaction.PlatformTransactionManager;
-
-import java.util.Arrays;
-import java.util.List;
+import org.springframework.transaction.annotation.Transactional;
 
 @ExtendWith(SpringExtension.class)
 @SpringBootTest(webEnvironment =
         SpringBootTest.WebEnvironment.DEFINED_PORT)
 @ActiveProfiles(value = {"test", "springdatajpa"})
-public class PetControllerIT extends EntityInitializer_ControllerIT<Pet, PetDto, PetService, PetController> {
+class PetControllerIT
+        extends EntityInitializer_ControllerIT<Pet, PetDto, PetRepository, PetService, PetController> {
 
     private PetDto petDtoWithPersistedPetType;
     private Pet petWithPersistedPetType;
-    private PetDto petDtoWithOwner;
-    private Pet petWithOwner;
+    private PetDto petDtoWithPersistedOwner;
+    private Pet petWithPersistedOwner;
 
 
     public PetControllerIT(@Autowired PetController crudController,
                            @Autowired TestRequestEntity_Factory testRequestEntityFactory,
-                           @Autowired PlatformTransactionManager transactionManager,
-                           @Autowired CheckIfDbDeletedPlugin checkIfDbDeletedPlugin,
-                           @Autowired ServiceDeepEqualPlugin serviceDeepEqualPlugin) {
+                           @Autowired DatabaseDeletedCheck_Plugin databaseDeletedCheckPlugin) {
         super(
                 crudController,
                 testRequestEntityFactory,
-                transactionManager,
-                checkIfDbDeletedPlugin,
-                serviceDeepEqualPlugin
+                databaseDeletedCheckPlugin
         );
     }
 
     @Override
-    protected void onBeforeProvideEntityBundles() throws Exception {
-        super.onBeforeProvideEntityBundles();
+    public void beforeEachTest() throws Exception {
+        super.beforeEachTest();
         petDtoWithPersistedPetType = PetDto.builder()
                 .name("esta")
                 .petTypeId(getTestPetType().getId())
@@ -64,37 +57,49 @@ public class PetControllerIT extends EntityInitializer_ControllerIT<Pet, PetDto,
 
 
         //Pet with persisted PetType and persisted Owner
-        petDtoWithOwner = PetDto.builder()
+        petDtoWithPersistedOwner = PetDto.builder()
                 .ownerId(getTestOwner().getId())
                 .petTypeId(getTestPetType().getId())
                 .name("esta")
                 .build();
 
 
-        petWithOwner = Pet.builder()
+        petWithPersistedOwner = Pet.builder()
                 .owner(getTestOwner())
                 .petType(getTestPetType())
                 .name("esta")
                 .build();
-
     }
 
-    @Override
-    protected List<SuccessfulCreateIntegrationTestBundle<PetDto>> provideSuccessfulCreateTestEntityBundles() {
-        return Arrays.asList(
-                new SuccessfulCreateIntegrationTestBundle<>(petDtoWithPersistedPetType),
-                new SuccessfulCreateIntegrationTestBundle<>(petDtoWithOwner)
-        );
+
+    @Test
+    public void createPetWithPersistedPetType_ShouldSucceed() throws Exception {
+        createEntity_ShouldSucceed(petDtoWithPersistedPetType);
     }
 
-    @Override
-    public List<SuccessfulUpdateIntegrationTestBundle<Pet, PetDto>> provideSuccessfulUpdateTestEntityBundles() {
+    @Test
+    public void createPetWithPersistedOwner_ShouldSucceed() throws Exception {
+        createEntity_ShouldSucceed(petDtoWithPersistedOwner);
+    }
+
+    @Test
+    public void updatePetsName_ShouldSucceed() throws Exception {
         //update pets name
         PetDto diffPetsNameUpdate = PetDto.builder()
                 .name("MODIFIED NAME")
                 .petTypeId(getTestPetType().getId())
                 .build();
+        Assertions.assertNotEquals(diffPetsNameUpdate.getName(),petWithPersistedPetType.getName());
+        updateEntity_ShouldSucceed(petWithPersistedPetType, diffPetsNameUpdate, new PostUpdateCallback<Pet>() {
+            @Override
+            public void callback(Pet entityToUpdate, Pet updatedEntity) {
+                Assertions.assertEquals(diffPetsNameUpdate.getName(),updatedEntity.getName());
+            }
+        });
+    }
 
+    @Test
+    public void updatePet_RemoveOwner_ShouldSucceed() throws Exception {
         //remove pets owner in update
         PetDto removePetsOwnerUpdate = PetDto.builder()
                 .ownerId(null)
@@ -102,53 +107,40 @@ public class PetControllerIT extends EntityInitializer_ControllerIT<Pet, PetDto,
                 .name("esta")
                 .build();
 
-        return Arrays.asList(
-                new SuccessfulUpdateIntegrationTestBundle<Pet, PetDto>(petWithPersistedPetType, diffPetsNameUpdate),
-                new SuccessfulUpdateIntegrationTestBundle<Pet, PetDto>(petWithOwner, removePetsOwnerUpdate)
-
-        );
+        updateEntity_ShouldSucceed(petWithPersistedOwner, removePetsOwnerUpdate, new PostUpdateCallback<Pet>() {
+            @Override
+            public void callback(Pet entityToUpdate, Pet updatedEntity) {
+                Assertions.assertNull(updatedEntity.getOwner());
+            }
+        });
     }
 
-    @Override
-    protected List<FailedCreateIntegrationTestBundle<PetDto,Long>> provideFailingCreateTestBundles() {
+    @Test
+    public void createPetWithAlreadySetId_ShouldFail() throws Exception {
         PetDto petDtoWithAlreadySetId = PetDto.builder()
                 .name("bello")
                 .petTypeId(getTestPetType().getId())
                 .build();
-        petDtoWithAlreadySetId.setId(42L);
-        return Arrays.asList(
-                new FailedCreateIntegrationTestBundle<>(petDtoWithAlreadySetId)
-        );
+        petDtoWithAlreadySetId.setId(9L);
+        createEntity_ShouldFail(petDtoWithAlreadySetId);
+
     }
 
 
-    @Override
-    protected List<FailedUpdateIntegrationTestBundle<Pet, PetDto,Long>> provideFailedUpdateTestBundles() {
-        return Arrays.asList(
-                new FailedUpdateIntegrationTestBundle<>(
-                        getTestPet(),
-                        //no name
-                        PetDto.builder()
-                                .name(null)
-                                .petTypeId(getTestPetType().getId())
-                                .build()),
-                new FailedUpdateIntegrationTestBundle<>(
-                        getTestPet(),
-                        //no pettype
-                        PetDto.builder()
-                                .name("bello")
-                                .petTypeId(null)
-                                .build()),
-                new FailedUpdateIntegrationTestBundle<>(
-                        getTestPet(),
-                        //invalid OwnerId
-                        PetDto.builder()
-                                .name("bello")
-                                .petTypeId(getTestPetType().getId())
-                                .ownerId(-1L)
-                                .build())
 
-        );
+    @Test
+    public void updatePet_SetPetTypeIdToNull_ShouldFail() throws Exception {
+        //no pettype
+        PetDto petTypeIdNullUpdate = PetDto.builder()
+                .name("bello")
+                .petTypeId(null)
+                .build();
+        updateEntity_ShouldFail(petWithPersistedPetType, petTypeIdNullUpdate, new PostUpdateCallback<Pet>() {
+            @Override
+            public void callback(Pet entityToUpdate, Pet updatedEntity) {
+                Assertions.assertNotNull(updatedEntity.getPetType());
+                Assertions.assertEquals(petDtoWithPersistedPetType.getPetTypeId(),updatedEntity.getPetType().getId());
+            }
+        });
     }
-
 }

@@ -2,13 +2,13 @@ package io.github.vincemann.demo.model;
 
 import io.github.vincemann.generic.crud.lib.model.entityListener.BiDirChildEntityListener;
 import com.fasterxml.jackson.annotation.JsonBackReference;
-import io.github.vincemann.generic.crud.lib.model.uniDir.UniDirChildEntity;
-import io.github.vincemann.generic.crud.lib.model.uniDir.UniDirParent;
+import io.github.vincemann.generic.crud.lib.model.uniDir.child.UniDirChildEntity;
+import io.github.vincemann.generic.crud.lib.model.uniDir.parent.UniDirParent;
 import lombok.*;
 import org.springframework.format.annotation.DateTimeFormat;
 import io.github.vincemann.generic.crud.lib.model.IdentifiableEntityImpl;
-import io.github.vincemann.generic.crud.lib.model.biDir.BiDirChild;
-import io.github.vincemann.generic.crud.lib.model.biDir.BiDirParentEntity;
+import io.github.vincemann.generic.crud.lib.model.biDir.child.BiDirChild;
+import io.github.vincemann.generic.crud.lib.model.biDir.parent.BiDirParentEntity;
 
 import javax.persistence.*;
 import java.time.LocalDate;
@@ -29,7 +29,7 @@ public class Pet extends IdentifiableEntityImpl<Long> implements BiDirChild, Uni
 
 
 
-    //uniDir ManyToMany -> PetType has no information about this mapping
+    //uniDir ManyToMany -> PetType does not know about this mapping
     @ManyToOne
     @JoinColumn(name = "pet_type_id")
     @UniDirChildEntity

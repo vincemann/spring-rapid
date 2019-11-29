@@ -1,56 +1,109 @@
 package io.github.vincemann.demo.service.springDataJPA.it;
 
 import io.github.vincemann.demo.model.Owner;
+import io.github.vincemann.demo.model.Pet;
+import io.github.vincemann.demo.model.PetType;
+import io.github.vincemann.demo.repositories.OwnerRepository;
+import io.github.vincemann.demo.service.PetService;
+import io.github.vincemann.demo.service.PetTypeService;
 import io.github.vincemann.demo.service.springDataJPA.OwnerJPAService;
-import io.github.vincemann.generic.crud.lib.test.testBundles.service.save.SuccessfulSaveServiceTestBundle;
-import io.github.vincemann.generic.crud.lib.test.testBundles.service.update.SuccessfulUpdateServiceTestEntityBundle;
+import io.github.vincemann.generic.crud.lib.service.exception.BadEntityException;
+import io.github.vincemann.generic.crud.lib.service.exception.EntityNotFoundException;
+import io.github.vincemann.generic.crud.lib.service.exception.NoIdException;
+import io.github.vincemann.generic.crud.lib.test.equalChecker.EqualChecker;
+import io.github.vincemann.generic.crud.lib.test.service.CrudServiceTest;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
-import io.github.vincemann.generic.crud.lib.test.service.CrudServiceTest;
 
+import java.time.LocalDate;
 import java.util.Arrays;
-import java.util.List;
+import java.util.HashSet;
 
 //@DataJpaTest cant be used because i need autowired components from generic-crud-lib
 @ExtendWith(SpringExtension.class)
 @SpringBootTest(webEnvironment =
         SpringBootTest.WebEnvironment.RANDOM_PORT)
 @ActiveProfiles(value = {"test", "springdatajpa"})
-class OwnerJPAServiceTest extends CrudServiceTest<OwnerJPAService, Owner, Long> {
+class OwnerJPAServiceTest
+        extends CrudServiceTest<OwnerJPAService, OwnerRepository, Owner, Long> {
 
-    private Owner validOwner;
+    private Owner ownerWithoutPets;
+    private Owner ownerWithOnePet;
+    private PetTypeService petTypeService;
+    private PetService petService;
 
-    public OwnerJPAServiceTest(@Autowired OwnerJPAService crudService) {
-        super(crudService, transactionManager, repository);
+    private Pet testPet;
+
+    public OwnerJPAServiceTest(@Autowired OwnerJPAService crudService,
+                               @Autowired EqualChecker<Owner> equalChecker,
+                               @Autowired OwnerRepository repository,
+                               @Autowired PetTypeService petTypeService,
+                               @Autowired PetService petService) {
+        super(crudService, equalChecker, repository);
+        this.petTypeService = petTypeService;
+        this.petService = petService;
     }
 
-
-    @Override
     @BeforeEach
     public void setUp() throws Exception {
-        validOwner  = Owner.builder()
-                .firstName("ownername")
-                .lastName("owner lastName")
+        PetType savedDogPetType = petTypeService.save(new PetType("Dog"));
+        testPet = Pet.builder()
+                .petType(savedDogPetType)
+                .name("Bello")
+                .birthDate(LocalDate.now())
+                .build();
+        ownerWithoutPets = Owner.builder()
+                .firstName("owner without pets")
+                .lastName("owner without pets lastName")
                 .address("asljnflksamfslkmf")
                 .city("n1 city")
                 .telephone("12843723847324")
                 .build();
-        super.setUp();
+
+        ownerWithOnePet = Owner.builder()
+                .firstName("owner with one pet")
+                .lastName("owner with one pet lastName")
+                .address("asljnflksamfslkmf")
+                .city("n1 city")
+                .telephone("12843723847324")
+                .pets(new HashSet<>(Arrays.asList(testPet)))
+                .build();
     }
 
-    @Override
-    protected List<SuccessfulSaveServiceTestBundle<Owner>> provideSuccessfulSaveTestEntityBundles() {
-        return Arrays.asList(
-                new SuccessfulSaveServiceTestBundle<>(validOwner)
-        );
+    @Test
+    public void saveOwnerWithoutPets_ShouldSucceed() throws NoIdException, BadEntityException {
+        saveEntity_ShouldSucceed(ownerWithoutPets);
     }
 
-    @Override
-    protected List<SuccessfulUpdateServiceTestEntityBundle<Owner>> provideSuccessfulUpdateTestEntityBundles() {
+    @Test
+    public void saveOwnerWithPet_ShouldSucceed() throws NoIdException, BadEntityException {
+        saveEntity_ShouldSucceed(ownerWithOnePet);
+    }
+
+    @Test
+    public void saveOwnerWithPersistedPet_ShouldSucceed() throws NoIdException, BadEntityException {
+        Pet savedPet = petService.save(testPet);
+
+
+        Owner owner = Owner.builder()
+                .firstName("owner with one already persisted pet")
+                .lastName("owner with one already persisted pet lastName")
+                .address("asljnflksamfslkmf")
+                .city("n1 city")
+                .telephone("12843723847324")
+                .pets(new HashSet<>(Arrays.asList(savedPet)))
+                .build();
+        saveEntity_ShouldSucceed(owner);
+    }
+
+
+    @Test
+    public void updateOwner_ChangeTelephoneNumber_ShouldSucceed() throws BadEntityException, EntityNotFoundException, NoIdException {
         Owner diffTelephoneNumberUpdate = Owner.builder()
                 .firstName("ownername")
                 .lastName("owner lastName")
@@ -58,11 +111,8 @@ class OwnerJPAServiceTest extends CrudServiceTest<OwnerJPAService, Owner, Long> 
                 .city("n1 city")
                 .telephone("42")
                 .build();
-
-
-        return Arrays.asList(
-            new SuccessfulUpdateServiceTestEntityBundle<>(validOwner,diffTelephoneNumberUpdate)
-        );
+        updateEntity_ShouldSucceed(ownerWithoutPets,diffTelephoneNumberUpdate);
     }
+
 
 }

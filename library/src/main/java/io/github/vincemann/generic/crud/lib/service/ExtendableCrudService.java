@@ -11,6 +11,16 @@ import org.springframework.data.repository.CrudRepository;
 import java.io.Serializable;
 import java.util.*;
 
+/**
+ * Adds a lot of callbacks for service methods of  {@link CrudService}
+ * for {@link Plugin}s that can override these callbacks.
+ *
+ * ONLY OVERRIDE THE <functionname>Impl methods! Otherwise callbacks wont be called.
+ *
+ * @param <E>
+ * @param <Id>
+ * @param <R>
+ */
 public abstract class ExtendableCrudService
         <
                 E extends IdentifiableEntity<Id>,

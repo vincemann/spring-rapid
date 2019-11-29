@@ -1,7 +1,11 @@
 package io.github.vincemann.generic.crud.lib.model.biDir;
 
 import io.github.vincemann.generic.crud.lib.model.IdentifiableEntityImpl;
-import io.github.vincemann.generic.crud.lib.service.exception.UnknownParentTypeException;
+import io.github.vincemann.generic.crud.lib.model.biDir.child.BiDirChild;
+import io.github.vincemann.generic.crud.lib.model.biDir.child.BiDirChildEntity;
+import io.github.vincemann.generic.crud.lib.model.biDir.parent.BiDirParent;
+import io.github.vincemann.generic.crud.lib.model.biDir.parent.BiDirParentEntity;
+import io.github.vincemann.generic.crud.lib.service.exception.entityRelationHandling.UnknownParentTypeException;
 import lombok.Getter;
 import lombok.Setter;
 import org.junit.jupiter.api.AfterEach;
@@ -29,7 +33,7 @@ class BiDirChildTest {
     }
     @Getter
     @Setter
-    private class SecondEntityParent extends IdentifiableEntityImpl<Long> implements BiDirParent{
+    private class SecondEntityParent extends IdentifiableEntityImpl<Long> implements BiDirParent {
         @BiDirChildEntity
         private EntityChild entityChild;
     }
@@ -61,7 +65,7 @@ class BiDirChildTest {
         Assertions.assertNull(testEntityChild.getUnusedParent());
         Assertions.assertNull(testEntityChild.getSecondEntityParent());
         //when
-        testEntityChild.findAndSetParent(testEntityParent);
+        testEntityChild.setParentRef(testEntityParent);
         //then
         Assertions.assertSame(testEntityChild.getEntityParent(),testEntityParent);
         Assertions.assertNull(testEntityChild.getUnusedParent());
@@ -90,7 +94,7 @@ class BiDirChildTest {
         Assertions.assertNull(testEntityChild.getUnusedParent());
         Assertions.assertNull(testEntityChild.getSecondEntityParent());
         //when
-        testEntityChild.findAndSetParentIfNull(testEntityParent);
+        testEntityChild.setParentRefIfNull(testEntityParent);
         //then
         Assertions.assertSame(testEntityParent,testEntityChild.getEntityParent());
         Assertions.assertNull(testEntityChild.getUnusedParent());
@@ -106,7 +110,7 @@ class BiDirChildTest {
         Assertions.assertNull(testEntityChild.getUnusedParent());
         Assertions.assertNull(testEntityChild.getSecondEntityParent());
         //when
-        testEntityChild.findAndSetParentIfNull(testEntityParent);
+        testEntityChild.setParentRefIfNull(testEntityParent);
         //then
         //test entity parent is NOT set
         Assertions.assertSame(newEntityParent,testEntityChild.getEntityParent());

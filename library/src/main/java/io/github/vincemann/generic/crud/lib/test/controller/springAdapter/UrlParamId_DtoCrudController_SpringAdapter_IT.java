@@ -11,12 +11,13 @@ import io.github.vincemann.generic.crud.lib.test.controller.springAdapter.testRe
 import io.github.vincemann.generic.crud.lib.test.controller.springAdapter.testRequestEntity.TestRequestEntity;
 import io.github.vincemann.generic.crud.lib.test.controller.springAdapter.testRequestEntity.TestRequestEntity_Modification;
 import io.github.vincemann.generic.crud.lib.test.controller.springAdapter.testRequestEntity.factory.TestRequestEntity_Factory;
-import io.github.vincemann.generic.crud.lib.test.deepEqualChecker.EqualChecker;
+import io.github.vincemann.generic.crud.lib.test.controller.springAdapter.postUpdateCallback.PostUpdateCallback;
 import io.github.vincemann.generic.crud.lib.test.testExecutionListeners.ResetDatabaseTestExecutionListener;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.http.ResponseEntity;
 import org.springframework.lang.Nullable;
@@ -59,13 +60,6 @@ public abstract class UrlParamId_DtoCrudController_SpringAdapter_IT
     @Getter private Class<Dto> dtoEntityClass;
     @Getter private Class<ServiceE> serviceEntityClass;
     @Getter private String entityIdParamKey;
-
-            /**
-             * Put all your Code in here that is saving test Entities need for a test to run and call this {@link #runPreTestRunnables()}
-             * in your TestMethod, so the init code is in the same Transaction as the test code (useful for lazy loading)
-             * @return
-             */
-     @Getter private List<Runnable> preTestRunnables = new ArrayList<>();
     //@Getter private PlatformTransactionManager transactionManager;
 
 
@@ -100,13 +94,12 @@ public abstract class UrlParamId_DtoCrudController_SpringAdapter_IT
         this.plugins.forEach(plugin -> plugin.setIntegrationTest(this));
     }
 
-    protected void addPreTestRunnable(Runnable runnable){
-        getPreTestRunnables().add(runnable);
+    @BeforeEach
+    public final void beforeEach() throws Exception{
+        beforeEachTest();
     }
 
-    protected void runPreTestRunnables(){
-        getPreTestRunnables().forEach(Runnable::run);
-    }
+    public void beforeEachTest() throws Exception{}
 
     protected ResponseEntity<String> findAllEntities_ShouldFail() throws Exception {
         return findAllEntities_ShouldFail(null);
@@ -157,8 +150,32 @@ public abstract class UrlParamId_DtoCrudController_SpringAdapter_IT
         return responseEntity;
     }
 
+    protected Dto updateEntity_ShouldSucceed(ServiceE entityToUpdate, Dto updateRequest) throws Exception {
+        ServiceE savedEntityToUpdate = saveServiceEntity(entityToUpdate);
+        updateRequest.setId(savedEntityToUpdate.getId());
+        return updateEntity_ShouldSucceed(updateRequest);
+    }
 
-    protected Dto updateEntity_ShouldSucceed(Dto updateRequestDto, @Nullable TestRequestEntity_Modification testRequestEntityModification,@Nullable EqualChecker<ServiceE> updatedValuesEqualChecker) throws Exception {
+    protected Dto updateEntity_ShouldSucceed(ServiceE entityToUpdate, Dto updateRequest,@Nullable PostUpdateCallback<ServiceE> updatedValuesPostUpdateCallback) throws Exception {
+        ServiceE savedEntityToUpdate = saveServiceEntity(entityToUpdate);
+        updateRequest.setId(savedEntityToUpdate.getId());
+        return updateEntity_ShouldSucceed(updateRequest,updatedValuesPostUpdateCallback);
+    }
+
+    protected Dto updateEntity_ShouldSucceed(ServiceE entityToUpdate, Dto updateRequest,@Nullable TestRequestEntity_Modification testRequestEntityModification) throws Exception {
+        ServiceE savedEntityToUpdate = saveServiceEntity(entityToUpdate);
+        updateRequest.setId(savedEntityToUpdate.getId());
+        return updateEntity_ShouldSucceed(updateRequest,testRequestEntityModification);
+    }
+
+    protected Dto updateEntity_ShouldSucceed(ServiceE entityToUpdate, Dto updateRequest,@Nullable TestRequestEntity_Modification testRequestEntityModification,@Nullable PostUpdateCallback<ServiceE> updatedValuesPostUpdateCallback) throws Exception {
+        ServiceE savedEntityToUpdate = saveServiceEntity(entityToUpdate);
+        updateRequest.setId(savedEntityToUpdate.getId());
+        return updateEntity_ShouldSucceed(updateRequest,testRequestEntityModification,updatedValuesPostUpdateCallback);
+    }
+
+
+    protected Dto updateEntity_ShouldSucceed(Dto updateRequestDto, @Nullable TestRequestEntity_Modification testRequestEntityModification,@Nullable PostUpdateCallback<ServiceE> updatedValuesPostUpdateCallback) throws Exception {
         Assertions.assertNotNull(updateRequestDto.getId());
         TestRequestEntity testRequestEntity = requestEntityFactory.createInstance(
                 CrudController_TestCase.SUCCESSFUL_UPDATE,
@@ -174,11 +191,11 @@ public abstract class UrlParamId_DtoCrudController_SpringAdapter_IT
         //validate response Dto
         Dto httpResponseDto = crudController.getMediaTypeStrategy().readDtoFromBody(responseEntity.getBody(), dtoEntityClass);
         Assertions.assertNotNull(httpResponseDto);
-        if(updatedValuesEqualChecker!=null){
-            //check that Changes were actually applied -> relevant attribute values specified by EqualChecker Impl are equal now
+        if(updatedValuesPostUpdateCallback !=null){
+            //check that Changes were actually applied -> relevant attribute values specified by UpdateSuccessfulChecker Impl are equal now
             ServiceE serviceUpdateRequestEntity = mapDtoToServiceEntity(updateRequestDto);
             Optional<ServiceE> updatedServiceEntity = getService().findById(httpResponseDto.getId());
-            Assertions.assertTrue(updatedValuesEqualChecker.isEqual(serviceUpdateRequestEntity,updatedServiceEntity.get()));
+            updatedValuesPostUpdateCallback.callback(serviceUpdateRequestEntity,updatedServiceEntity.get());
         }
         onAfterUpdateEntityShouldSucceed(serviceEntityToUpdate.get(), updateRequestDto, httpResponseDto);
         return httpResponseDto;
@@ -200,11 +217,11 @@ public abstract class UrlParamId_DtoCrudController_SpringAdapter_IT
         return updateEntity_ShouldSucceed(updateRequestDto,testRequestEntity_modification,null);
     }
 
-    protected Dto updateEntity_ShouldSucceed(Dto updateRequestDto, EqualChecker<ServiceE> equalChecker) throws Exception {
+    protected Dto updateEntity_ShouldSucceed(Dto updateRequestDto, PostUpdateCallback<ServiceE> equalChecker) throws Exception {
         return updateEntity_ShouldSucceed(updateRequestDto,null,equalChecker);
     }
 
-    protected ResponseEntity<String> updateEntity_ShouldFail(Dto updateRequestDto, TestRequestEntity_Modification testRequestEntityModification,@Nullable EqualChecker<ServiceE> updatedValuesEqualChecker) throws Exception {
+    protected ResponseEntity<String> updateEntity_ShouldFail(Dto updateRequestDto, TestRequestEntity_Modification testRequestEntityModification,@Nullable PostUpdateCallback<ServiceE> updatedValuesPostUpdateCallback) throws Exception {
         Assertions.assertNotNull(updateRequestDto.getId());
         TestRequestEntity testRequestEntity = requestEntityFactory.createInstance(
                 CrudController_TestCase.FAILED_UPDATE,
@@ -219,10 +236,10 @@ public abstract class UrlParamId_DtoCrudController_SpringAdapter_IT
         ResponseEntity<String> responseEntity = updateEntity(updateRequestDto, testRequestEntity);
         Assertions.assertEquals(responseEntity.getStatusCode(), testRequestEntity.getExpectedHttpStatus(), "Status was : " + responseEntity.getStatusCode());
 
-        if(updatedValuesEqualChecker!=null){
-            //check that Changes were not applied -> relevant attribute values specified by EqualChecker Impl are still the same as before update request
+        if(updatedValuesPostUpdateCallback !=null){
+            //check that Changes were not applied -> relevant attribute values specified by UpdateSuccessfulChecker Impl are still the same as before update request
             Optional<ServiceE> serviceEntityAfterUpdate = getService().findById(updateRequestDto.getId());
-            Assertions.assertTrue(updatedValuesEqualChecker.isEqual(serviceEntityToUpdate.get(),serviceEntityAfterUpdate.get()));
+            updatedValuesPostUpdateCallback.callback(serviceEntityToUpdate.get(),serviceEntityAfterUpdate.get());
         }
 
         onAfterUpdateEntityShouldFail(updateRequestDto, responseEntity);
@@ -237,8 +254,32 @@ public abstract class UrlParamId_DtoCrudController_SpringAdapter_IT
         return updateEntity_ShouldFail(newEntity,testRequestEntity_modification,null);
     }
 
-    protected ResponseEntity<String> updateEntity_ShouldFail(Dto newEntity, EqualChecker<ServiceE> equalChecker) throws Exception {
+    protected ResponseEntity<String> updateEntity_ShouldFail(Dto newEntity, PostUpdateCallback<ServiceE> equalChecker) throws Exception {
         return updateEntity_ShouldFail(newEntity,null,equalChecker);
+    }
+
+    protected ResponseEntity<String> updateEntity_ShouldFail(ServiceE entityToUpdate, Dto updateRequest) throws Exception {
+        ServiceE savedEntityToUpdate = saveServiceEntity(entityToUpdate);
+        updateRequest.setId(savedEntityToUpdate.getId());
+        return updateEntity_ShouldFail(updateRequest);
+    }
+
+    protected ResponseEntity<String> updateEntity_ShouldFail(ServiceE entityToUpdate, Dto updateRequest,@Nullable PostUpdateCallback<ServiceE> updatedValuesPostUpdateCallback) throws Exception {
+        ServiceE savedEntityToUpdate = saveServiceEntity(entityToUpdate);
+        updateRequest.setId(savedEntityToUpdate.getId());
+        return updateEntity_ShouldFail(updateRequest,updatedValuesPostUpdateCallback);
+    }
+
+    protected ResponseEntity<String> updateEntity_ShouldFail(ServiceE entityToUpdate, Dto updateRequest,@Nullable TestRequestEntity_Modification testRequestEntityModification) throws Exception {
+        ServiceE savedEntityToUpdate = saveServiceEntity(entityToUpdate);
+        updateRequest.setId(savedEntityToUpdate.getId());
+        return updateEntity_ShouldFail(updateRequest,testRequestEntityModification);
+    }
+
+    protected ResponseEntity<String> updateEntity_ShouldFail(ServiceE entityToUpdate, Dto updateRequest,@Nullable TestRequestEntity_Modification testRequestEntityModification,@Nullable PostUpdateCallback<ServiceE> updatedValuesPostUpdateCallback) throws Exception {
+        ServiceE savedEntityToUpdate = saveServiceEntity(entityToUpdate);
+        updateRequest.setId(savedEntityToUpdate.getId());
+        return updateEntity_ShouldFail(updateRequest,testRequestEntityModification,updatedValuesPostUpdateCallback);
     }
 
 

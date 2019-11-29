@@ -1,7 +1,7 @@
-package io.github.vincemann.generic.crud.lib.service.exception;
+package io.github.vincemann.generic.crud.lib.service.exception.entityRelationHandling;
 
 
-public class UnknownParentTypeException extends BiDirRelationManagingException {
+public class UnknownParentTypeException extends EntityRelationHandlingException {
 
 
     public UnknownParentTypeException(Class childEntity, Class actualType){

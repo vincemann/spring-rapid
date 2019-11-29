@@ -4,7 +4,7 @@ import io.github.vincemann.generic.crud.lib.controller.dtoMapper.EntityMappingEx
 import io.github.vincemann.generic.crud.lib.controller.dtoMapper.idResolver.EntityIdResolver;
 import io.github.vincemann.generic.crud.lib.dto.uniDir.UniDirChildDto;
 import io.github.vincemann.generic.crud.lib.model.IdentifiableEntity;
-import io.github.vincemann.generic.crud.lib.model.uniDir.UniDirChild;
+import io.github.vincemann.generic.crud.lib.model.uniDir.child.UniDirChild;
 import io.github.vincemann.generic.crud.lib.service.finder.CrudServiceFinder;
 import org.springframework.stereotype.Component;
 

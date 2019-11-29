@@ -12,12 +12,12 @@ import org.springframework.stereotype.Component;
  */
 @Slf4j
 @Component
-public class PersonNameSavingPlugin extends ExtendableCrudService.Plugin<Person,Long> {
+public class SaveNameToWordPressDb_Plugin extends ExtendableCrudService.Plugin<Person,Long> {
 
     @Override
     public void onBeforeSave(Person entity) throws BadEntityException {
         super.onBeforeSave(entity);
-        log.debug("saving Persons name: "+ entity.getFirstName() + " into separate person database table");
+        log.debug("saving Persons name: "+ entity.getFirstName() + " into wordpress database");
         /* save name of every created Person in seperate db table for example*/
     }
 }

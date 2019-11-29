@@ -1,29 +1,6 @@
 package io.github.vincemann.demo.controllers.springAdapter;
 
-import io.github.vincemann.demo.controllers.EntityInitializer_ControllerIT;
-import io.github.vincemann.demo.controllers.VetController;
-import io.github.vincemann.demo.dtos.VetDto;
-import io.github.vincemann.demo.model.Vet;
-import io.github.vincemann.demo.service.VetService;
-import io.github.vincemann.generic.crud.lib.test.controller.springAdapter.plugins.CheckIfDbDeletedPlugin;
-import io.github.vincemann.generic.crud.lib.test.controller.springAdapter.plugins.ServiceDeepEqualPlugin;
-import io.github.vincemann.generic.crud.lib.test.testBundles.controller.create.FailedCreateIntegrationTestBundle;
-import io.github.vincemann.generic.crud.lib.test.testBundles.controller.create.SuccessfulCreateIntegrationTestBundle;
-import io.github.vincemann.generic.crud.lib.test.testBundles.controller.update.FailedUpdateIntegrationTestBundle;
-import io.github.vincemann.generic.crud.lib.test.testBundles.controller.update.SuccessfulUpdateIntegrationTestBundle;
-import io.github.vincemann.generic.crud.lib.test.controller.springAdapter.testRequestEntity.factory.TestRequestEntity_Factory;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.ActiveProfiles;
-import org.springframework.test.context.junit.jupiter.SpringExtension;
-import org.springframework.transaction.PlatformTransactionManager;
-
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
-
-
+/*
 @ExtendWith(SpringExtension.class)
 @SpringBootTest(webEnvironment =
         SpringBootTest.WebEnvironment.DEFINED_PORT)
@@ -124,4 +101,4 @@ class VetControllerIT extends EntityInitializer_ControllerIT<Vet, VetDto, VetSer
                 new FailedUpdateIntegrationTestBundle<>(vetWithoutSpecialty,noNameUpdate)
         );
     }
-}
+}*/
