@@ -16,6 +16,12 @@ import java.util.HashSet;
 import java.util.Optional;
 import java.util.Set;
 
+/**
+ * PluginCode from {@link ExtendableCrudService.Plugin}s runs in the Transaction of the ServiceMethod.
+ * @param <E>
+ * @param <Id>
+ * @param <R>
+ */
 public abstract class JPACrudService
                 <
                           E extends IdentifiableEntity<Id>,
@@ -80,7 +86,7 @@ public abstract class JPACrudService
         if(!optionalEntity.isPresent()){
             throw new EntityNotFoundException(entity.getId(), entityClass);
         }
-        return save(entity);
+        return saveImpl(entity);
     }
 
     @Override

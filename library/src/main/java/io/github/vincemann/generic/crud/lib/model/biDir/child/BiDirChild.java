@@ -1,9 +1,11 @@
-package io.github.vincemann.generic.crud.lib.model.biDir;
+package io.github.vincemann.generic.crud.lib.model.biDir.child;
 
-import io.github.vincemann.generic.crud.lib.service.exception.UnknownChildTypeException;
-import io.github.vincemann.generic.crud.lib.service.exception.UnknownParentTypeException;
+import io.github.vincemann.generic.crud.lib.model.biDir.BiDirEntity;
+import io.github.vincemann.generic.crud.lib.model.biDir.parent.BiDirParent;
+import io.github.vincemann.generic.crud.lib.model.biDir.parent.BiDirParentEntity;
+import io.github.vincemann.generic.crud.lib.service.exception.entityRelationHandling.UnknownChildTypeException;
+import io.github.vincemann.generic.crud.lib.service.exception.entityRelationHandling.UnknownParentTypeException;
 import io.github.vincemann.generic.crud.lib.util.ReflectionUtils;
-import lombok.extern.slf4j.Slf4j;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -29,7 +31,7 @@ public interface BiDirChild extends BiDirEntity {
      * @throws UnknownParentTypeException   when supplied Parent does not match any of the fields in child class anntoated with {@link BiDirParentEntity}
      * @throws IllegalAccessException
      */
-    public default void findAndSetParent(BiDirParent parentToSet) throws UnknownParentTypeException, IllegalAccessException {
+    public default void setParentRef(BiDirParent parentToSet) throws UnknownParentTypeException, IllegalAccessException {
         AtomicBoolean parentSet = new AtomicBoolean(false);
         for(Field parentField: findParentFields()){
             if(parentToSet.getClass().equals(parentField.getType())){
@@ -65,7 +67,7 @@ public interface BiDirChild extends BiDirEntity {
      * @return  true, if parent was null and set
      * @throws IllegalAccessException
      */
-    public default boolean findAndSetParentIfNull(BiDirParent parentToSet) throws IllegalAccessException {
+    public default boolean setParentRefIfNull(BiDirParent parentToSet) throws IllegalAccessException {
         AtomicBoolean parentSet = new AtomicBoolean(false);
         for(Field parentField: findParentFields()){
             if(parentToSet.getClass().equals(parentField.getType())){

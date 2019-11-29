@@ -2,7 +2,7 @@ package io.github.vincemann.demo.dtos;
 
 import io.github.vincemann.demo.model.Pet;
 import io.github.vincemann.generic.crud.lib.dto.uniDir.UniDirParentId;
-import io.github.vincemann.generic.crud.lib.model.uniDir.UniDirChild;
+import io.github.vincemann.generic.crud.lib.model.uniDir.child.UniDirChild;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;

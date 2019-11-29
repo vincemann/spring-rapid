@@ -5,8 +5,8 @@ import io.github.vincemann.demo.model.abs.Person;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import io.github.vincemann.generic.crud.lib.model.IdentifiableEntityImpl;
 import lombok.*;
-import io.github.vincemann.generic.crud.lib.model.biDir.BiDirChildCollection;
-import io.github.vincemann.generic.crud.lib.model.biDir.BiDirParent;
+import io.github.vincemann.generic.crud.lib.model.biDir.child.BiDirChildCollection;
+import io.github.vincemann.generic.crud.lib.model.biDir.parent.BiDirParent;
 
 import javax.persistence.*;
 import java.util.*;

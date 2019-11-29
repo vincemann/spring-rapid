@@ -1,7 +1,7 @@
 package io.github.vincemann.demo.model;
 
-import io.github.vincemann.generic.crud.lib.model.uniDir.UniDirChildEntity;
-import io.github.vincemann.generic.crud.lib.model.uniDir.UniDirParent;
+import io.github.vincemann.generic.crud.lib.model.uniDir.child.UniDirChildEntity;
+import io.github.vincemann.generic.crud.lib.model.uniDir.parent.UniDirParent;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;

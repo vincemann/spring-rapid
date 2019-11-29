@@ -3,8 +3,9 @@ package io.github.vincemann.generic.crud.lib.controller.dtoMapper.idResolver.biD
 import io.github.vincemann.generic.crud.lib.controller.dtoMapper.EntityMappingException;
 import io.github.vincemann.generic.crud.lib.controller.dtoMapper.idResolver.EntityIdResolver;
 import io.github.vincemann.generic.crud.lib.dto.biDir.BiDirDtoChild;
-import io.github.vincemann.generic.crud.lib.model.biDir.BiDirChild;
-import io.github.vincemann.generic.crud.lib.model.biDir.BiDirParent;
+import io.github.vincemann.generic.crud.lib.model.biDir.child.BiDirChild;
+import io.github.vincemann.generic.crud.lib.model.biDir.parent.BiDirParent;
+import io.github.vincemann.generic.crud.lib.model.biDir.parent.BiDirParentEntity;
 import io.github.vincemann.generic.crud.lib.service.finder.CrudServiceFinder;
 import org.springframework.stereotype.Component;
 
@@ -13,7 +14,7 @@ import java.util.Map;
 
 @Component
 /**
- * Resolves {@link io.github.vincemann.generic.crud.lib.dto.biDir.BiDirParentId} to corresponding {@link io.github.vincemann.generic.crud.lib.model.biDir.BiDirParentEntity}.
+ * Resolves {@link io.github.vincemann.generic.crud.lib.dto.biDir.BiDirParentId} to corresponding {@link BiDirParentEntity}.
  * Adds mapped {@link BiDirChild} to {@link BiDirParent}'s children by calling {@link BiDirParent#addChild(BiDirChild)} -> sets Backreference
  */
 public class BiDirChildResolver extends EntityIdResolver<BiDirChild,BiDirDtoChild> {
@@ -30,7 +31,7 @@ public class BiDirChildResolver extends EntityIdResolver<BiDirChild,BiDirDtoChil
                 try {
                     BiDirParent biDirParent = ((BiDirParent) parent);
                     //set parent of mapped child
-                    mappedBiDirChild.findAndSetParent(biDirParent);
+                    mappedBiDirChild.setParentRef(biDirParent);
                     //backreference gets set in BiDirChildListener
                 }catch (ClassCastException e){
                     throw new IllegalArgumentException("Found Parent " + parent + " is not of Type BiDirParent");

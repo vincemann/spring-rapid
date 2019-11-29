@@ -1,4 +1,4 @@
-package io.github.vincemann.generic.crud.lib.model.biDir;
+package io.github.vincemann.generic.crud.lib.model.biDir.child;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
@@ -7,5 +7,11 @@ import java.lang.annotation.Target;
 
 @Target(ElementType.FIELD)
 @Retention(RetentionPolicy.RUNTIME)
-public @interface BiDirChildEntity {
+public @interface BiDirChildCollection {
+
+    /**
+     *
+     * @return generic type of annotated collection
+     */
+    Class<? extends BiDirChild> value();
 }

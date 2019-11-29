@@ -9,6 +9,7 @@ import io.github.vincemann.demo.service.VisitService;
 import io.github.vincemann.generic.crud.lib.controller.springAdapter.DtoCrudController_SpringAdapter;
 import io.github.vincemann.generic.crud.lib.model.IdentifiableEntity;
 import io.github.vincemann.generic.crud.lib.service.CrudService;
+import io.github.vincemann.generic.crud.lib.service.exception.BadEntityException;
 import io.github.vincemann.generic.crud.lib.test.controller.springAdapter.UrlParamId_DtoCrudController_SpringAdapter_IT;
 import io.github.vincemann.generic.crud.lib.test.controller.springAdapter.testRequestEntity.factory.TestRequestEntity_Factory;
 import lombok.Getter;
@@ -61,33 +62,27 @@ public abstract class EntityInitializer_ControllerIT
         super(crudController, requestEntityFactory, plugins);
     }
 
+    @Override
+    public void beforeEachTest() throws Exception {
+        super.beforeEachTest();
+        testPetType = petTypeController.getCrudService().save(PetType.builder()
+                .name("dog")
+                .build());
 
-    @BeforeEach
-    public void before(){
-        addPreTestRunnable(() -> {
-            try {
-                testPetType = petTypeController.getCrudService().save(PetType.builder()
-                        .name("dog")
-                        .build());
+        testSpecialty = specialtyController.getCrudService().save(Specialty.builder()
+                .description("dogliver expert")
+                .build());
+        testPet = petController.getCrudService().save(Pet.builder()
+                .name("bello")
+                .birthDate(LocalDate.of(2012,1,23))
+                .petType(testPetType)
+                .build());
 
-                testSpecialty = specialtyController.getCrudService().save(Specialty.builder()
-                        .description("dogliver expert")
-                        .build());
-                testPet = petController.getCrudService().save(Pet.builder()
-                        .name("bello")
-                        .birthDate(LocalDate.of(2012,1,23))
-                        .petType(testPetType)
-                        .build());
-
-                testOwner = ownerController.getCrudService().save(Owner.builder()
-                        .firstName("klaus")
-                        .lastName("Kleber")
-                        .address("street 123")
-                        .city("Berlin")
-                        .build());
-            }catch (Exception e){
-                throw new RuntimeException(e);
-            }
-        });
+        testOwner = ownerController.getCrudService().save(Owner.builder()
+                .firstName("klaus")
+                .lastName("Kleber")
+                .address("street 123")
+                .city("Berlin")
+                .build());
     }
 }

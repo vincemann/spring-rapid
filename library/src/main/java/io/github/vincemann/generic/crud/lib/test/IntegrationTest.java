@@ -1,6 +1,7 @@
 package io.github.vincemann.generic.crud.lib.test;
 
 import io.github.vincemann.generic.crud.lib.test.controller.springAdapter.testRequestEntity.factory.defaultUriFactory.baseUrl.BaseAddress_Provider;
+import lombok.Getter;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.junit.jupiter.api.BeforeAll;
 import org.springframework.boot.test.web.client.TestRestTemplate;
@@ -8,9 +9,11 @@ import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
 
 public abstract class IntegrationTest implements BaseAddress_Provider {
-    private static final String URL = "http://127.0.0.1";
+    private static final String LOCAL_HOST = "http://127.0.0.1";
 
+    @Getter
     private String url;
+    @Getter
     @LocalServerPort
     private String port;
     private static TestRestTemplate restTemplate;
@@ -20,7 +23,7 @@ public abstract class IntegrationTest implements BaseAddress_Provider {
     }
 
     public IntegrationTest() {
-        this.url=URL;
+        this.url= LOCAL_HOST;
     }
 
     @BeforeAll
@@ -30,14 +33,6 @@ public abstract class IntegrationTest implements BaseAddress_Provider {
         clientHttpRequestFactory.setBufferRequestBody(false);
         restTemplate = new TestRestTemplate();
         restTemplate.getRestTemplate().setRequestFactory(clientHttpRequestFactory);
-    }
-
-    public String getUrl() {
-        return url;
-    }
-
-    public String getPort() {
-        return port;
     }
 
     public String getUrlWithPort(){

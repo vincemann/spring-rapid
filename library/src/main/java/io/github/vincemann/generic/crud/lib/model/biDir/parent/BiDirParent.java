@@ -1,7 +1,11 @@
-package io.github.vincemann.generic.crud.lib.model.biDir;
+package io.github.vincemann.generic.crud.lib.model.biDir.parent;
 
-import io.github.vincemann.generic.crud.lib.service.exception.UnknownChildTypeException;
-import io.github.vincemann.generic.crud.lib.service.exception.UnknownParentTypeException;
+import io.github.vincemann.generic.crud.lib.model.biDir.BiDirEntity;
+import io.github.vincemann.generic.crud.lib.model.biDir.child.BiDirChild;
+import io.github.vincemann.generic.crud.lib.model.biDir.child.BiDirChildCollection;
+import io.github.vincemann.generic.crud.lib.model.biDir.child.BiDirChildEntity;
+import io.github.vincemann.generic.crud.lib.service.exception.entityRelationHandling.UnknownChildTypeException;
+import io.github.vincemann.generic.crud.lib.service.exception.entityRelationHandling.UnknownParentTypeException;
 import io.github.vincemann.generic.crud.lib.util.ReflectionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

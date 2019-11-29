@@ -4,7 +4,7 @@ import io.github.vincemann.demo.model.Owner;
 import io.github.vincemann.demo.repositories.OwnerRepository;
 import io.github.vincemann.demo.service.OwnerService;
 import io.github.vincemann.demo.service.plugins.AclPlugin;
-import io.github.vincemann.demo.service.plugins.PersonNameSavingPlugin;
+import io.github.vincemann.demo.service.plugins.SaveNameToWordPressDb_Plugin;
 import io.github.vincemann.generic.crud.lib.service.jpa.JPACrudService;
 import io.github.vincemann.generic.crud.lib.service.plugin.BiDirParentPlugin;
 import org.springframework.context.annotation.Profile;
@@ -21,14 +21,14 @@ public class OwnerJPAService extends JPACrudService<Owner,Long,OwnerRepository> 
             OwnerRepository jpaRepository,
             BiDirParentPlugin<Owner,Long> biDirParentPlugin,
             AclPlugin aclPlugin,
-            PersonNameSavingPlugin personNameSavingPlugin
+            SaveNameToWordPressDb_Plugin saveNameToWordPressDbPlugin
     )
     {
         super(
                 jpaRepository,
                 biDirParentPlugin,
                 aclPlugin,
-                personNameSavingPlugin
+                saveNameToWordPressDbPlugin
         );
     }
 

@@ -10,15 +10,14 @@ import java.util.Optional;
 
 /**
  * Checks if Entities deleted, are actually delete from the database.
- * This is done by calling {@link io.github.vincemann.generic.crud.lib.service.CrudService#findById(Serializable)},
- * if there is no result, then it is assumed the entity is deleted properly.
+ * This is done by asking the Repository Layer ({@link org.springframework.data.repository.CrudRepository}), whether the entity is still there by calling ,
  */
 @Component
-public class CheckIfDbDeletedPlugin extends UrlParamId_DtoCrudController_SpringAdapter_IT.Plugin {
+public class DatabaseDeletedCheck_Plugin extends UrlParamId_DtoCrudController_SpringAdapter_IT.Plugin {
 
     @Override
     public void onAfterDeleteEntityShouldSucceed(Serializable id, ResponseEntity responseEntity) throws Exception {
-        Optional entity = getIntegrationTest().getCrudController().getCrudService().findById(id);
+        Optional entity = getIntegrationTest().getCrudController().getCrudService().getRepository().findById(id);
         Assertions.assertFalse(entity.isPresent());
         super.onAfterDeleteEntityShouldSucceed(id, responseEntity);
     }

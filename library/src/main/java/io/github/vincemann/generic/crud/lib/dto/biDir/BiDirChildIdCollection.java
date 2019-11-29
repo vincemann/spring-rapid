@@ -1,6 +1,6 @@
 package io.github.vincemann.generic.crud.lib.dto.biDir;
 
-import io.github.vincemann.generic.crud.lib.model.biDir.BiDirChild;
+import io.github.vincemann.generic.crud.lib.model.biDir.child.BiDirChild;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;

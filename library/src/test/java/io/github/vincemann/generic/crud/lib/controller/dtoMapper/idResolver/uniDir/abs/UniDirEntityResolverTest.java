@@ -7,12 +7,13 @@ import io.github.vincemann.generic.crud.lib.controller.dtoMapper.idResolver.uniD
 import io.github.vincemann.generic.crud.lib.controller.dtoMapper.idResolver.uniDir.testEntities.UniDirEntityParentsChild;
 import io.github.vincemann.generic.crud.lib.model.IdentifiableEntity;
 import io.github.vincemann.generic.crud.lib.service.CrudService;
-import io.github.vincemann.generic.crud.lib.service.finder.CrudServiceFinder;
 import io.github.vincemann.generic.crud.lib.service.exception.NoIdException;
+import io.github.vincemann.generic.crud.lib.service.finder.CrudServiceFinder;
 import lombok.Getter;
 import org.junit.jupiter.api.BeforeEach;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import org.springframework.data.repository.CrudRepository;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -26,13 +27,13 @@ public abstract class UniDirEntityResolverTest {
     @Mock
     private CrudServiceFinder crudServiceFinder;
     @Mock
-    private CrudService<UniDirEntityChild,Long> entityChildCrudService;
+    private CrudService<UniDirEntityChild,Long, CrudRepository<UniDirEntityChild,Long>> entityChildCrudService;
     @Mock
-    private CrudService<UniDirEntityChildsParent,Long> entityChildsParentCrudService;
+    private CrudService<UniDirEntityChildsParent,Long,CrudRepository<UniDirEntityChildsParent,Long>> entityChildsParentCrudService;
     @Mock
-    private CrudService<UniDirEntityParent,Long> entityParentCrudService;
+    private CrudService<UniDirEntityParent,Long,CrudRepository<UniDirEntityParent,Long>> entityParentCrudService;
     @Mock
-    private CrudService<UniDirEntityParentsChild,Long> entityParentsChildCrudService;
+    private CrudService<UniDirEntityParentsChild,Long,CrudRepository<UniDirEntityParentsChild,Long>> entityParentsChildCrudService;
 
 
     private UniDirEntityParent uniDirEntityParent = new UniDirEntityParent();

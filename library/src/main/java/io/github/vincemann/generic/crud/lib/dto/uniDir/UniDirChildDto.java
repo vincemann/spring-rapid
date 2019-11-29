@@ -1,10 +1,8 @@
 package io.github.vincemann.generic.crud.lib.dto.uniDir;
 
 import io.github.vincemann.generic.crud.lib.model.IdentifiableEntity;
-import io.github.vincemann.generic.crud.lib.model.biDir.BiDirParent;
-import io.github.vincemann.generic.crud.lib.model.uniDir.UniDirChild;
-import io.github.vincemann.generic.crud.lib.model.uniDir.UniDirParent;
-import io.github.vincemann.generic.crud.lib.service.exception.UnknownParentTypeException;
+import io.github.vincemann.generic.crud.lib.model.uniDir.parent.UniDirParent;
+import io.github.vincemann.generic.crud.lib.service.exception.entityRelationHandling.UnknownParentTypeException;
 import io.github.vincemann.generic.crud.lib.util.ReflectionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

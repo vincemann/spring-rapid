@@ -5,7 +5,7 @@ import io.github.vincemann.generic.crud.lib.service.CrudService;
 import io.github.vincemann.generic.crud.lib.service.exception.BadEntityException;
 import io.github.vincemann.generic.crud.lib.service.exception.EntityNotFoundException;
 import io.github.vincemann.generic.crud.lib.service.exception.NoIdException;
-import io.github.vincemann.generic.crud.lib.test.deepEqualChecker.EqualChecker;
+import io.github.vincemann.generic.crud.lib.test.equalChecker.EqualChecker;
 import io.github.vincemann.generic.crud.lib.test.testExecutionListeners.ResetDatabaseTestExecutionListener;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
@@ -63,7 +63,8 @@ public abstract class CrudServiceTest
         Assertions.assertNotNull(savedTestEntity);
         Assertions.assertNotNull(savedTestEntity.getId());
         Assertions.assertNotEquals(0,savedTestEntity.getId());
-        entityToSave.setId(savedTestEntity.getId());
+        //check if entityToSave and savedTestEntity have same id, should be true
+        Assertions.assertEquals(savedTestEntity.getId(),entityToSave.getId());
         Optional<E> savedEntityFromService = crudService.findById(savedTestEntity.getId());
         Assertions.assertTrue(savedEntityFromService.isPresent());
         Assertions.assertTrue(equalChecker.isEqual(entityToSave,savedEntityFromService.get()));
@@ -71,8 +72,6 @@ public abstract class CrudServiceTest
 
         Optional<E> repoEntity = repository.findById(savedTestEntity.getId());
         Assertions.assertTrue(repoEntity.isPresent());
-
-        entityToSave.setId(null);
         return savedTestEntity;
     }
 
@@ -123,6 +122,21 @@ public abstract class CrudServiceTest
         Assertions.assertTrue(repoEntityAfterDelete.isPresent());
     }
 
+    protected E updateEntity_ShouldSucceed(E entityToUpdate, E newEntity) throws BadEntityException, EntityNotFoundException, NoIdException {
+        saveEntityForUpdate(entityToUpdate,newEntity);
+        return updateEntity_ShouldSucceed(newEntity,equalChecker);
+    }
+
+    private void saveEntityForUpdate(E entityToUpdate, E newEntity) throws NoIdException, BadEntityException {
+        Assertions.assertNull(entityToUpdate.getId());
+        Assertions.assertNull(newEntity.getId());
+        E savedEntityToUpdate = saveEntity_ShouldSucceed(entityToUpdate);
+        newEntity.setId(savedEntityToUpdate.getId());
+    }
+    protected E updateEntity_ShouldSucceed(E entityToUpdate, E newEntity,EqualChecker<E> equalChecker) throws BadEntityException, EntityNotFoundException, NoIdException {
+        saveEntityForUpdate(entityToUpdate,newEntity);
+        return updateEntity_ShouldSucceed(newEntity,equalChecker);
+    }
 
     protected E updateEntity_ShouldSucceed(E newEntity) throws BadEntityException, EntityNotFoundException, NoIdException {
         return updateEntity_ShouldSucceed(newEntity,equalChecker);
@@ -159,6 +173,16 @@ public abstract class CrudServiceTest
 
     protected void updateExistingEntity_ShouldFail(E newEntity, Class<Exception> expectedException) throws NoIdException {
         updateExistingEntity_ShouldFail(newEntity,expectedException,equalChecker);
+    }
+
+    protected void updateExistingEntity_ShouldFail(E entityToUpdate, E newEntity, Class<Exception> expectedException) throws NoIdException, BadEntityException {
+        saveEntityForUpdate(entityToUpdate,newEntity);
+        updateExistingEntity_ShouldFail(newEntity,expectedException,equalChecker);
+    }
+
+    protected void updateExistingEntity_ShouldFail(E entityToUpdate, E newEntity, Class<Exception> expectedException,EqualChecker<E> equalChecker) throws NoIdException, BadEntityException {
+        saveEntityForUpdate(entityToUpdate, newEntity);
+        updateExistingEntity_ShouldFail(newEntity, expectedException, equalChecker);
     }
 
     protected void updateExistingEntity_ShouldFail(E newEntity, Class<Exception> expectedException, EqualChecker<E> equalChecker) throws NoIdException{

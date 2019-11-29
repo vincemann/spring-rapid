@@ -1,8 +1,8 @@
 package io.github.vincemann.generic.crud.lib.controller.dtoMapper.idResolver.uniDir.testEntities;
 
 import io.github.vincemann.generic.crud.lib.model.IdentifiableEntityImpl;
-import io.github.vincemann.generic.crud.lib.model.uniDir.UniDirChild;
-import io.github.vincemann.generic.crud.lib.model.uniDir.UniDirParentEntity;
+import io.github.vincemann.generic.crud.lib.model.uniDir.child.UniDirChild;
+import io.github.vincemann.generic.crud.lib.model.uniDir.parent.UniDirParentEntity;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;

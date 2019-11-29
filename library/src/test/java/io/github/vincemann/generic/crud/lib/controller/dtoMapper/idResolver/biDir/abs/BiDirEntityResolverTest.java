@@ -11,6 +11,7 @@ import lombok.Getter;
 import org.junit.jupiter.api.BeforeEach;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import org.springframework.data.repository.CrudRepository;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -27,11 +28,11 @@ public abstract class BiDirEntityResolverTest {
     @Mock
     private CrudServiceFinder crudServiceFinder;
     @Mock
-    private CrudService<BiDirEntityChild,Long> entityChildCrudService;
+    private CrudService<BiDirEntityChild,Long, CrudRepository<BiDirEntityChild,Long>> entityChildCrudService;
     @Mock
-    private CrudService<BiDirEntityParent,Long> entityParentCrudService;
+    private CrudService<BiDirEntityParent,Long,CrudRepository<BiDirEntityParent,Long>> entityParentCrudService;
     @Mock
-    private CrudService<BiDirSecondEntityParent,Long> secondEntityParentCrudService;
+    private CrudService<BiDirSecondEntityParent,Long,CrudRepository<BiDirSecondEntityParent,Long>> secondEntityParentCrudService;
 
     private BiDirEntityParent biDirEntityParent = new BiDirEntityParent();
     private BiDirSecondEntityParent biDirSecondEntityParent = new BiDirSecondEntityParent();

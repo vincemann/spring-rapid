@@ -1,9 +1,11 @@
-package io.github.vincemann.generic.crud.lib.test.deepEqualChecker;
+package io.github.vincemann.generic.crud.lib.test.equalChecker;
 
 import junit.framework.AssertionFailedError;
+import org.springframework.stereotype.Component;
 import org.unitils.reflectionassert.ReflectionAssert;
 import org.unitils.reflectionassert.ReflectionComparatorMode;
 
+@Component
 public class ReflectionEqualChecker<T> implements EqualChecker<T> {
 
     @Override
