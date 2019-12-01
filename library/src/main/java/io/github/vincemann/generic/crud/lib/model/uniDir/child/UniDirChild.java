@@ -25,9 +25,9 @@ public interface UniDirChild extends UniDirEntity {
      * @throws UnknownParentTypeException   when supplied Parent does not match any of the fields in child class anntoated with {@link UniDirParentEntity}
      * @throws IllegalAccessException
      */
-    public default void findAndSetParent(Object parentToSet) throws UnknownParentTypeException, IllegalAccessException {
+    public default void _findAndSetParent(Object parentToSet) throws UnknownParentTypeException, IllegalAccessException {
         AtomicBoolean parentSet = new AtomicBoolean(false);
-        for(Field parentField: findParentFields()){
+        for(Field parentField: _findParentFields()){
             if(parentToSet.getClass().equals(parentField.getType())){
                 parentField.setAccessible(true);
                 parentField.set(this,parentToSet);
@@ -47,9 +47,9 @@ public interface UniDirChild extends UniDirEntity {
      * @return  true, if parent was null and is set to {@param parentToSet}, otherwise false
      * @throws IllegalAccessException
      */
-    public default boolean findAndSetParentIfNull(UniDirParent parentToSet) throws IllegalAccessException {
+    public default boolean _findAndSetParentIfNull(UniDirParent parentToSet) throws IllegalAccessException {
         AtomicBoolean parentSet = new AtomicBoolean(false);
-        for(Field parentField: findParentFields()){
+        for(Field parentField: _findParentFields()){
             if(parentToSet.getClass().equals(parentField.getType())){
                 parentField.setAccessible(true);
                 if(parentField.get(this)==null) {
@@ -64,7 +64,7 @@ public interface UniDirChild extends UniDirEntity {
      * Find all fields of this child, annotated with {@link UniDirParentEntity}
      * @return
      */
-    public default Field[] findParentFields(){
+    public default Field[] _findParentFields(){
         Field[] parentFieldsFromCache = uniDirParentFieldsCache.get(this.getClass());
         if(parentFieldsFromCache==null){
             Field[] parentFields = ReflectionUtils.getDeclaredFieldsAnnotatedWith(getClass(), UniDirParentEntity.class, true);
@@ -81,9 +81,9 @@ public interface UniDirChild extends UniDirEntity {
      * @return  all parent of this, that are not null
      * @throws IllegalAccessException
      */
-    public default Collection findParents() throws IllegalAccessException {
+    public default Collection _findParents() throws IllegalAccessException {
         Collection result = new ArrayList<>();
-        Field[] parentFields = findParentFields();
+        Field[] parentFields = _findParentFields();
         for(Field parentField: parentFields) {
             parentField.setAccessible(true);
             Object uniDirParent =  parentField.get(this);
@@ -101,9 +101,9 @@ public interface UniDirChild extends UniDirEntity {
      * @throws UnknownParentTypeException   thrown, if parentToDelete is of unknown type -> no field , annotated as {@link UniDirParentEntity}, with the most specific type of parentToDelete, exists in Child (this).
      * @throws IllegalAccessException
      */
-    public default void dismissParent(UniDirParent parentToDelete) throws UnknownParentTypeException, IllegalAccessException {
+    public default void _dismissParent(UniDirParent parentToDelete) throws UnknownParentTypeException, IllegalAccessException {
         AtomicBoolean parentRemoved = new AtomicBoolean(false);
-        Field[] parentFields = findParentFields();
+        Field[] parentFields = _findParentFields();
         for(Field parentField: parentFields){
             parentField.setAccessible(true);
             UniDirParent  parent = (UniDirParent) parentField.get(this);
