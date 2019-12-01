@@ -29,7 +29,7 @@ public class Pet extends IdentifiableEntityImpl<Long> implements BiDirChild, Uni
 
 
 
-    //uniDir ManyToMany -> PetType does not know about this mapping
+    //uniDir ManyToOne -> PetType does not know about this mapping
     @ManyToOne
     @JoinColumn(name = "pet_type_id")
     @UniDirChildEntity

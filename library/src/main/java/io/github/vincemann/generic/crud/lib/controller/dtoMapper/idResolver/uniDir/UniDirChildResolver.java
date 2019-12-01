@@ -25,7 +25,7 @@ public class UniDirChildResolver extends EntityIdResolver<UniDirChild, UniDirChi
                 Object parent = findEntityFromService(parentIdToClassMapping);
                 try {
                     //set parent of mapped child
-                    mappedUniDirChild.findAndSetParent(parent);
+                    mappedUniDirChild._findAndSetParent(parent);
                     //dont set backref, because Parent does not know about Child (uniDir)
                 } catch (ClassCastException e) {
                     throw new IllegalArgumentException("Found Parent " + parent + " is not of Type UniDirParent");
@@ -39,7 +39,7 @@ public class UniDirChildResolver extends EntityIdResolver<UniDirChild, UniDirChi
     @Override
     public void resolveDtoIds(UniDirChildDto mappedDto, UniDirChild serviceEntity ){
         try {
-            for (Object uniDirParent : serviceEntity.findParents()) {
+            for (Object uniDirParent : serviceEntity._findParents()) {
                 mappedDto.addParentsId((IdentifiableEntity) uniDirParent);
             }
         }catch (IllegalAccessException e){

@@ -28,9 +28,9 @@ public interface UniDirParent extends UniDirEntity {
      * @throws UnknownChildTypeException
      * @throws IllegalAccessException
      */
-    default void addChild(Object newChild) throws UnknownChildTypeException, IllegalAccessException {
+    default void _addChild(Object newChild) throws UnknownChildTypeException, IllegalAccessException {
         AtomicBoolean addedChild = new AtomicBoolean(false);
-        for(Map.Entry entry: getChildrenCollections().entrySet()){
+        for(Map.Entry entry: _getChildrenCollections().entrySet()){
             Class targetClass = (Class) entry.getValue();
             if(newChild.getClass().equals(targetClass)){
                 ((Collection)entry.getKey()).add(newChild);
@@ -38,7 +38,7 @@ public interface UniDirParent extends UniDirEntity {
             }
         }
 
-        Field[] entityFields = findChildrenEntityFields();
+        Field[] entityFields = _findChildrenEntityFields();
         for(Field childField: entityFields) {
             if (childField.getType().equals(newChild.getClass())) {
                 childField.setAccessible(true);
@@ -79,9 +79,9 @@ public interface UniDirParent extends UniDirEntity {
      * @throws UnknownChildTypeException
      * @throws IllegalAccessException
      */
-    default void dismissChild(Object uniDirChildToRemove) throws UnknownChildTypeException, IllegalAccessException {
+    default void _dismissChild(Object uniDirChildToRemove) throws UnknownChildTypeException, IllegalAccessException {
         AtomicBoolean deletedChild = new AtomicBoolean(false);
-        for(Map.Entry<Collection,Class<? extends UniDirChild>> entry: getChildrenCollections().entrySet()){
+        for(Map.Entry<Collection,Class<? extends UniDirChild>> entry: _getChildrenCollections().entrySet()){
             Collection<? extends UniDirChild> childrenCollection = entry.getKey();
             if(childrenCollection!=null){
                 if(!childrenCollection.isEmpty()){
@@ -100,7 +100,7 @@ public interface UniDirParent extends UniDirEntity {
                 }
             }
         }
-        for(Field childField : findChildrenEntityFields()){
+        for(Field childField : _findChildrenEntityFields()){
             childField.setAccessible(true);
             UniDirChild child = (UniDirChild) childField.get(this);
             if(child!=null) {
@@ -115,7 +115,7 @@ public interface UniDirParent extends UniDirEntity {
         }
     }
 
-    default Field[] findChildrenCollectionFields(){
+    default Field[] _findChildrenCollectionFields(){
         Field[] childrenCollectionFieldsFromCache = uniDirChildrenCollectionFieldsCache.get(this.getClass());
         if(childrenCollectionFieldsFromCache==null){
             Field[] childrenCollectionFields = ReflectionUtils.getDeclaredFieldsAnnotatedWith(this.getClass(),UniDirChildCollection.class,true);
@@ -126,7 +126,7 @@ public interface UniDirParent extends UniDirEntity {
         }
     }
 
-    default Field[] findChildrenEntityFields(){
+    default Field[] _findChildrenEntityFields(){
         Field[] childEntityFieldsFromCache = uniDirChildEntityFieldsCache.get(this.getClass());
         if(childEntityFieldsFromCache==null){
             Field[] childEntityFields = ReflectionUtils.getDeclaredFieldsAnnotatedWith(this.getClass(),UniDirChildEntity.class,true);
@@ -142,9 +142,9 @@ public interface UniDirParent extends UniDirEntity {
      * and the Type of the Entities in the Collection.
      * @return
      */
-    default Map<Collection,Class<? extends UniDirChild>> getChildrenCollections() throws IllegalAccessException {
+    default Map<Collection,Class<? extends UniDirChild>> _getChildrenCollections() throws IllegalAccessException {
         Map<Collection,Class<? extends UniDirChild>> childrenCollection_CollectionTypeMap = new HashMap<>();
-        Field[] collectionFields =findChildrenCollectionFields();
+        Field[] collectionFields = _findChildrenCollectionFields();
 
         for(Field field : collectionFields){
             field.setAccessible(true);
@@ -165,9 +165,9 @@ public interface UniDirParent extends UniDirEntity {
      * @return
      * @throws IllegalAccessException
      */
-    default Set getChildren() throws IllegalAccessException {
+    default Set _getChildren() throws IllegalAccessException {
         Set children = new HashSet<>();
-        Field[] entityFields = findChildrenEntityFields();
+        Field[] entityFields = _findChildrenEntityFields();
         for(Field field: entityFields){
             field.setAccessible(true);
             Object child = field.get(this);

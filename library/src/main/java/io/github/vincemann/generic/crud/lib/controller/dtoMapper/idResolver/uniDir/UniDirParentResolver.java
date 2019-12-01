@@ -26,7 +26,7 @@ public class UniDirParentResolver extends EntityIdResolver<UniDirParent, UniDirP
             Map<Class, Serializable> allChildIdToClassMappings = uniDirParentDto.findChildrenIds();
             for (Map.Entry<Class, Serializable> childIdToClassMapping : allChildIdToClassMappings.entrySet()) {
                 Object child = findEntityFromService(childIdToClassMapping);
-                mappedUniDirParent.addChild(child);
+                mappedUniDirParent._addChild(child);
             }
             //find and handle children collections
             Map<Class, Collection<Serializable>> allChildrenIdCollection = uniDirParentDto.findChildrenIdCollections();
@@ -34,7 +34,7 @@ public class UniDirParentResolver extends EntityIdResolver<UniDirParent, UniDirP
                 Collection<Serializable> idCollection = entry.getValue();
                 for (Serializable id : idCollection) {
                     Object child = findEntityFromService(new AbstractMap.SimpleEntry<>(entry.getKey(), id));
-                    mappedUniDirParent.addChild(child);
+                    mappedUniDirParent._addChild(child);
                 }
             }
         }catch (IllegalAccessException e){
@@ -45,10 +45,10 @@ public class UniDirParentResolver extends EntityIdResolver<UniDirParent, UniDirP
     @Override
     public void resolveDtoIds(UniDirParentDto mappedDto, UniDirParent serviceEntity){
         try {
-            for (Object child : serviceEntity.getChildren()) {
+            for (Object child : serviceEntity._getChildren()) {
                 mappedDto.addChildsId((IdentifiableEntity)child);
             }
-            for (Collection childrenCollection : serviceEntity.getChildrenCollections().keySet()) {
+            for (Collection childrenCollection : serviceEntity._getChildrenCollections().keySet()) {
                 for (Object child : childrenCollection) {
                     mappedDto.addChildsId((IdentifiableEntity) child);
                 }
