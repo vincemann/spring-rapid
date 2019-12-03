@@ -21,6 +21,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
+import org.springframework.transaction.PlatformTransactionManager;
 
 import java.time.LocalDate;
 import java.util.Arrays;
@@ -45,8 +46,9 @@ class OwnerJPAServiceTest
                                @Autowired EqualChecker<Owner> equalChecker,
                                @Autowired OwnerRepository repository,
                                @Autowired PetTypeService petTypeService,
-                               @Autowired PetService petService) {
-        super(crudService, equalChecker, repository);
+                               @Autowired PetService petService,
+                               @Autowired PlatformTransactionManager transactionManager) {
+        super(crudService, equalChecker, repository,transactionManager);
         this.petTypeService = petTypeService;
         this.petService = petService;
     }
