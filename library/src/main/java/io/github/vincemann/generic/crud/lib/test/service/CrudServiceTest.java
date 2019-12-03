@@ -8,7 +8,9 @@ import io.github.vincemann.generic.crud.lib.service.exception.NoIdException;
 import io.github.vincemann.generic.crud.lib.test.equalChecker.EqualChecker;
 import io.github.vincemann.generic.crud.lib.test.testExecutionListeners.ResetDatabaseTestExecutionListener;
 import lombok.Getter;
+import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
+import org.hibernate.Hibernate;
 import org.junit.jupiter.api.Assertions;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.test.context.TestExecutionListeners;
@@ -27,7 +29,6 @@ import java.util.Optional;
         mergeMode = TestExecutionListeners.MergeMode.MERGE_WITH_DEFAULTS,
         listeners = {ResetDatabaseTestExecutionListener.class}
 )
-@Getter
 public abstract class CrudServiceTest
                 <
                         S extends CrudService<E,Id,R>,
@@ -38,8 +39,10 @@ public abstract class CrudServiceTest
 {
 
 
-    private S crudService;
+    private CrudService<E,Id,R> crudService;
+    @Getter
     private EqualChecker<E> equalChecker;
+    @Getter
     private R repository;
 
     public CrudServiceTest(S crudService, EqualChecker<E> equalChecker, R repository) {
@@ -58,6 +61,7 @@ public abstract class CrudServiceTest
 
         //when
         E savedTestEntity = crudService.save(entityToSave);
+        Hibernate.initialize(savedTestEntity);
 
         //then
         Assertions.assertNotNull(savedTestEntity);
@@ -67,6 +71,7 @@ public abstract class CrudServiceTest
         Assertions.assertEquals(savedTestEntity.getId(),entityToSave.getId());
         Optional<E> savedEntityFromService = crudService.findById(savedTestEntity.getId());
         Assertions.assertTrue(savedEntityFromService.isPresent());
+        Hibernate.initialize(savedEntityFromService.get());
         Assertions.assertTrue(equalChecker.isEqual(entityToSave,savedEntityFromService.get()));
         Assertions.assertTrue(equalChecker.isEqual(savedTestEntity,entityToSave));
 
@@ -233,5 +238,11 @@ public abstract class CrudServiceTest
     }
 
 
+    public S getCrudService() {
+        return (S) crudService;
+    }
 
+    protected void setCrudService(CrudService<E, Id, R> crudService) {
+        this.crudService = crudService;
+    }
 }
