@@ -12,6 +12,8 @@ import io.github.vincemann.generic.crud.lib.service.exception.EntityNotFoundExce
 import io.github.vincemann.generic.crud.lib.service.exception.NoIdException;
 import io.github.vincemann.generic.crud.lib.test.equalChecker.EqualChecker;
 import io.github.vincemann.generic.crud.lib.test.service.CrudServiceTest;
+import io.github.vincemann.generic.crud.lib.test.service.ForceEagerFetch_CrudServiceTest;
+import io.github.vincemann.generic.crud.lib.test.service.Hibernate_ForceEagerFetch_CrudService_Proxy;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -30,7 +32,7 @@ import java.util.HashSet;
         SpringBootTest.WebEnvironment.RANDOM_PORT)
 @ActiveProfiles(value = {"test", "springdatajpa"})
 class OwnerJPAServiceTest
-        extends CrudServiceTest<OwnerJPAService, OwnerRepository, Owner, Long> {
+        extends ForceEagerFetch_CrudServiceTest<OwnerJPAService, OwnerRepository, Owner, Long> {
 
     private Owner ownerWithoutPets;
     private Owner ownerWithOnePet;
