@@ -24,7 +24,7 @@ public abstract class ForceEagerFetch_CrudServiceTest
 
     public ForceEagerFetch_CrudServiceTest(S crudService, EqualChecker<E> equalChecker, R repository, PlatformTransactionManager transactionManager) {
         super(crudService, equalChecker, repository);
-        log.debug("initiliazing proxy for crudservice: " + crudService.getClass().getSimpleName()+ " all entities will be loaded eagerly");
+        log.debug("initializing proxy for crudservice: " + crudService.getClass().getSimpleName()+ " all entities will be loaded eagerly");
         setCrudService(new Hibernate_ForceEagerFetch_CrudService_Proxy<>(crudService, transactionManager));
     }
 }
