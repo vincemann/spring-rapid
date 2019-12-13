@@ -7,6 +7,7 @@ import io.github.vincemann.demo.service.plugins.AclPlugin;
 import io.github.vincemann.demo.service.plugins.SaveNameToWordPressDb_Plugin;
 import io.github.vincemann.generic.crud.lib.service.jpa.JPACrudService;
 import io.github.vincemann.generic.crud.lib.service.plugin.BiDirParentPlugin;
+import org.springframework.context.annotation.Primary;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -14,6 +15,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.Optional;
 @Service
 @Profile("springdatajpa")
+@Primary
 public class OwnerJPAService extends JPACrudService<Owner,Long,OwnerRepository> implements OwnerService {
 
 

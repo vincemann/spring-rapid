@@ -2,7 +2,10 @@ package io.github.vincemann.generic.crud.lib.util;
 
 
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.collections4.MultiValuedMap;
+import org.apache.commons.collections4.multimap.ArrayListValuedHashMap;
 import org.apache.commons.lang3.reflect.FieldUtils;
+
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
@@ -194,57 +197,74 @@ public class ReflectionUtils {
      * If it finds a MemberVariable which is of Type annotated with {@code annotatedWith},
      * then this instance will be "dived into" aka start with step 1 again.
      *
-     * @param instance
+     * @param startInstance
      * @param annotatedWith
      * @param checkCollections
      * @return
      * @throws IllegalAccessException
      */
-    public static Set<Field> getAllFields_WithoutThisField_OfAllMemberVars_AnnotatedWith(Object instance, Class<? extends Annotation> annotatedWith, boolean checkCollections) throws IllegalAccessException {
-        Set<Field> fields = new HashSet<>();
-        if(instance==null){
-            throw new IllegalArgumentException("Instance must not be null");
+    public static MultiValuedMap<Field,Object> getAllFieldsAnnotatedWith_WithoutThisField_OfAllMemberVars_AnnotatedWith(Object startInstance, Class<? extends Annotation> annotatedWith, boolean checkCollections, boolean emptyCollectionsIncluded) throws IllegalAccessException {
+        MultiValuedMap<Field,Object> fields_instances_map = new ArrayListValuedHashMap<>();
+        if(startInstance==null){
+            throw new IllegalArgumentException("StartInstance must not be null");
         }
-        List<Class> classesChecked = new ArrayList<>();
-        _getAllFields_WithoutThisField_OfAllMemberVars_DiveDownIfAnnotatedWith(instance,classesChecked,fields,annotatedWith,checkCollections);
-        return fields;
+        if(!startInstance.getClass().isAnnotationPresent(annotatedWith)){
+            throw new IllegalArgumentException("StartInstance must be annotated with: "+annotatedWith.getSimpleName());
+        }
+        List<Object> instancesChecked = new ArrayList<>();
+        _getAllFieldsAnnotatedWith_WithoutThisField_OfAllMemberVars_DiveDownIfAnnotatedWith(startInstance,instancesChecked,fields_instances_map,annotatedWith,checkCollections,emptyCollectionsIncluded);
+        return fields_instances_map;
     }
 
-    private static void _getAllFields_WithoutThisField_OfAllMemberVars_DiveDownIfAnnotatedWith(Object instance,
-                                                                                               List<Class> classesChecked,
-                                                                                               Set<Field> fields,
-                                                                                               Class<? extends Annotation> annotatedWith,
-                                                                                               boolean checkCollections)
+    private static void _getAllFieldsAnnotatedWith_WithoutThisField_OfAllMemberVars_DiveDownIfAnnotatedWith(Object currentInstance,
+                                                                                                            List<Object> instancesChecked,
+                                                                                                            MultiValuedMap<Field,Object> fields_instances_map,
+                                                                                                            Class<? extends Annotation> annotatedWith,
+                                                                                                            boolean checkCollections,
+                                                                                                            boolean emptyCollectionsIncluded)
             throws IllegalAccessException {
-        if(classesChecked.contains(instance.getClass())){
-            //we already checked this class -> done
+        //it is important to compare instances by reference and not by equals method
+        if(ListUtils.containsByReference(instancesChecked,currentInstance)){
+            //we already checked this instance -> done
             return;
         }
-        classesChecked.add(instance.getClass());
+        instancesChecked.add(currentInstance);
         //save all fields of class
-        Field[] instanceFields = getDeclaredFields_WithoutOutThisField(instance.getClass(), true);
-        //we are preventing duplicates by using a set
-        fields.addAll(Arrays.asList(instanceFields));
+        Field[] fieldsOfInstance = getDeclaredFields_WithoutOutThisField(currentInstance.getClass(), true);
 
         //now we check for memberVars, that we have to dive into
-        for (Field instanceField : instanceFields) {
-            if(instanceField.getType().isAnnotationPresent(annotatedWith)) {
+        for (Field field : fieldsOfInstance) {
+            if(field.getType().isAnnotationPresent(annotatedWith)) {
+                fields_instances_map.put(field,currentInstance);
                 //we need to dive into this memberVar
-                instanceField.setAccessible(true);
-                Object memberVar = instanceField.get(instance);
+                field.setAccessible(true);
+                Object memberVar = field.get(currentInstance);
                 if(memberVar!=null) {
-                    _getAllFields_WithoutThisField_OfAllMemberVars_DiveDownIfAnnotatedWith(memberVar,classesChecked, fields, annotatedWith,checkCollections);
+                    _getAllFieldsAnnotatedWith_WithoutThisField_OfAllMemberVars_DiveDownIfAnnotatedWith(memberVar,instancesChecked, fields_instances_map, annotatedWith,checkCollections,emptyCollectionsIncluded);
                 }
             }
             else if(checkCollections){
-                if(Collection.class.isAssignableFrom(instanceField.getType())){
-                    instanceField.setAccessible(true);
-                    Collection memberCollection = (Collection) instanceField.get(instance);
-                    for (Object entry : memberCollection) {
-                        //we need to dive into this memberVar, which is part of a collection
-                        if(entry!=null) {
-                            if (entry.getClass().isAnnotationPresent(annotatedWith)) {
-                                _getAllFields_WithoutThisField_OfAllMemberVars_DiveDownIfAnnotatedWith(entry, classesChecked, fields, annotatedWith, checkCollections);
+                if(Collection.class.isAssignableFrom(field.getType())){
+                    field.setAccessible(true);
+                    Collection memberCollection = (Collection) field.get(currentInstance);
+                    if(memberCollection!=null) {
+                        //this boolean is introduced to prevent duplicates
+                        if(emptyCollectionsIncluded) {
+                            if (memberCollection.isEmpty()){
+                                fields_instances_map.put(field, currentInstance);
+                            }
+                        }
+                        boolean mapEntrySaved = false;
+                        for (Object entry : memberCollection) {
+                            //we need to dive into this memberVar, which is part of a collection
+                            if (entry != null) {
+                                if (entry.getClass().isAnnotationPresent(annotatedWith)) {
+                                    if(!mapEntrySaved) {
+                                        fields_instances_map.put(field, currentInstance);
+                                        mapEntrySaved=true;
+                                    }
+                                    _getAllFieldsAnnotatedWith_WithoutThisField_OfAllMemberVars_DiveDownIfAnnotatedWith(entry, instancesChecked, fields_instances_map, annotatedWith, checkCollections,emptyCollectionsIncluded);
+                                }
                             }
                         }
                     }
@@ -252,6 +272,8 @@ public class ReflectionUtils {
             }
         }
     }
+
+
 
 
 }
