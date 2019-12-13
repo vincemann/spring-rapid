@@ -4,24 +4,23 @@ import io.github.vincemann.demo.model.Owner;
 import io.github.vincemann.demo.model.Pet;
 import io.github.vincemann.demo.model.PetType;
 import io.github.vincemann.demo.repositories.OwnerRepository;
+import io.github.vincemann.demo.service.OwnerService;
 import io.github.vincemann.demo.service.PetService;
 import io.github.vincemann.demo.service.PetTypeService;
-import io.github.vincemann.demo.service.springDataJPA.OwnerJPAService;
+import io.github.vincemann.demo.testSuite.serviceProxies.ForceEagerFetch_OwnerService_Proxy;
 import io.github.vincemann.generic.crud.lib.service.exception.BadEntityException;
 import io.github.vincemann.generic.crud.lib.service.exception.EntityNotFoundException;
 import io.github.vincemann.generic.crud.lib.service.exception.NoIdException;
 import io.github.vincemann.generic.crud.lib.test.equalChecker.EqualChecker;
-import io.github.vincemann.generic.crud.lib.test.service.CrudServiceTest;
 import io.github.vincemann.generic.crud.lib.test.service.ForceEagerFetch_CrudServiceTest;
-import io.github.vincemann.generic.crud.lib.test.service.Hibernate_ForceEagerFetch_CrudService_Proxy;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
-import org.springframework.transaction.PlatformTransactionManager;
 
 import java.time.LocalDate;
 import java.util.Arrays;
@@ -33,7 +32,14 @@ import java.util.HashSet;
         SpringBootTest.WebEnvironment.RANDOM_PORT)
 @ActiveProfiles(value = {"test", "springdatajpa"})
 class OwnerJPAServiceTest
-        extends ForceEagerFetch_CrudServiceTest<OwnerJPAService, OwnerRepository, Owner, Long> {
+        extends ForceEagerFetch_CrudServiceTest
+        <
+                OwnerService,
+                OwnerRepository,
+                Owner,
+                Long
+        >
+{
 
     private Owner ownerWithoutPets;
     private Owner ownerWithOnePet;
@@ -42,13 +48,12 @@ class OwnerJPAServiceTest
 
     private Pet testPet;
 
-    public OwnerJPAServiceTest(@Autowired OwnerJPAService crudService,
+    public OwnerJPAServiceTest(@Autowired @Qualifier("proxy") OwnerService crudService,
                                @Autowired EqualChecker<Owner> equalChecker,
                                @Autowired OwnerRepository repository,
                                @Autowired PetTypeService petTypeService,
-                               @Autowired PetService petService,
-                               @Autowired PlatformTransactionManager transactionManager) {
-        super(crudService, equalChecker, repository,transactionManager);
+                               @Autowired PetService petService) {
+        super(crudService, equalChecker, repository);
         this.petTypeService = petTypeService;
         this.petService = petService;
     }

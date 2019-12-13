@@ -6,6 +6,8 @@ import io.github.vincemann.generic.crud.lib.service.exception.BadEntityException
 import io.github.vincemann.generic.crud.lib.service.exception.EntityNotFoundException;
 import io.github.vincemann.generic.crud.lib.service.exception.NoIdException;
 import io.github.vincemann.generic.crud.lib.util.ReflectionUtils;
+import lombok.Getter;
+import org.apache.commons.collections4.MultiValuedMap;
 import org.hibernate.Hibernate;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.transaction.PlatformTransactionManager;
@@ -13,25 +15,34 @@ import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.DefaultTransactionDefinition;
 
 import javax.persistence.Entity;
-import javax.persistence.OneToMany;
 import java.io.Serializable;
 import java.lang.reflect.Field;
+import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 
 
+/**
+ * Proxy for {@link CrudService}, that forces eager fetching from database -> very slow, use only for testing
+ * This is done by reflectively finding all {@link Entity}s and EntityCollections and manually initializing them via {@link Hibernate#initialize(Object)}.
+ * @param <E>
+ * @param <Id>
+ * @param <R>
+ */
+@Getter
 public class Hibernate_ForceEagerFetch_CrudService_Proxy
         <
                 E extends IdentifiableEntity<Id>,
                 Id extends Serializable,
-                R extends CrudRepository<E, Id>
+                R extends CrudRepository<E, Id>,
+                S extends CrudService<E,Id,R>
                 >
         implements CrudService<E, Id, R> {
 
-    private CrudService<E, Id, R> crudService;
+    private S crudService;
     private PlatformTransactionManager transactionManager;
 
-    public Hibernate_ForceEagerFetch_CrudService_Proxy(CrudService<E, Id, R> crudService, PlatformTransactionManager transactionManager) {
+    public Hibernate_ForceEagerFetch_CrudService_Proxy(S crudService, PlatformTransactionManager transactionManager) {
         this.crudService = crudService;
         this.transactionManager = transactionManager;
     }
@@ -42,7 +53,7 @@ public class Hibernate_ForceEagerFetch_CrudService_Proxy
         TransactionStatus status = startNewTransaction();
         try {
             Optional<E> foundEntity = crudService.findById(id);
-            foundEntity.ifPresent(this::initializeAllCollections);
+            foundEntity.ifPresent(this::eagerFetchAllEntities);
             transactionManager.commit(status);
             return foundEntity;
         } catch (NoIdException e) {
@@ -51,9 +62,13 @@ public class Hibernate_ForceEagerFetch_CrudService_Proxy
         }
     }
 
-    private TransactionStatus startNewTransaction() {
+    protected TransactionStatus startNewTransaction() {
         DefaultTransactionDefinition def = new DefaultTransactionDefinition();
         return transactionManager.getTransaction(def);
+    }
+
+    protected void commitTransaction(TransactionStatus transactionStatus){
+        getTransactionManager().commit(transactionStatus);
     }
 
     @Override
@@ -61,7 +76,7 @@ public class Hibernate_ForceEagerFetch_CrudService_Proxy
         TransactionStatus status = startNewTransaction();
         try {
             E updatedEntity = crudService.update(entity);
-            initializeAllCollections(updatedEntity);
+            eagerFetchAllEntities(updatedEntity);
             transactionManager.commit(status);
             return updatedEntity;
         } catch (EntityNotFoundException | NoIdException | BadEntityException e) {
@@ -75,7 +90,7 @@ public class Hibernate_ForceEagerFetch_CrudService_Proxy
         TransactionStatus status = startNewTransaction();
         try {
             E savedEntity = crudService.save(entity);
-            initializeAllCollections(savedEntity);
+            eagerFetchAllEntities(savedEntity);
             transactionManager.commit(status);
             return savedEntity;
         } catch (BadEntityException e) {
@@ -89,7 +104,7 @@ public class Hibernate_ForceEagerFetch_CrudService_Proxy
         TransactionStatus status = startNewTransaction();
         Set<E> allEntities = crudService.findAll();
         for (E entity : allEntities) {
-            initializeAllCollections(entity);
+            eagerFetchAllEntities(entity);
         }
         transactionManager.commit(status);
         return allEntities;
@@ -115,16 +130,18 @@ public class Hibernate_ForceEagerFetch_CrudService_Proxy
         return crudService.getRepository();
     }
 
-    private void initializeAllCollections(Object entity) {
+    protected void eagerFetchAllEntities(Object startEntity) {
         try {
-            Set<Field> entityGraphFields = ReflectionUtils.getAllFields_WithoutThisField_OfAllMemberVars_AnnotatedWith(entity, Entity.class,true);
-            for (Field relevantField : entityGraphFields) {
-                if(relevantField.isAnnotationPresent(OneToMany.class)){
-                    relevantField.setAccessible(true);
-                    Object collection = relevantField.get(entity);
-                    if(collection!=null) {
-                        Hibernate.initialize(collection);
-                    }
+            MultiValuedMap<Field, Object> field_instances_map
+                    = ReflectionUtils.getAllFieldsAnnotatedWith_WithoutThisField_OfAllMemberVars_AnnotatedWith(startEntity, Entity.class, true,true);
+            for (Map.Entry<Field, Object> entry : field_instances_map.entries()) {
+                Field field = entry.getKey();
+                Object instance = entry.getValue();
+                field.setAccessible(true);
+                //this is either a collection of entities or an entity-instance
+                Object instanceThatNeedsToBeInitialized = field.get(instance);
+                if(instanceThatNeedsToBeInitialized!=null){
+                    Hibernate.initialize(instanceThatNeedsToBeInitialized);
                 }
             }
         } catch (IllegalAccessException e) {

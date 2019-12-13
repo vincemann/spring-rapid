@@ -4,6 +4,7 @@ import io.github.vincemann.generic.crud.lib.model.IdentifiableEntity;
 import io.github.vincemann.generic.crud.lib.service.CrudService;
 import io.github.vincemann.generic.crud.lib.test.equalChecker.EqualChecker;
 import lombok.extern.slf4j.Slf4j;
+import org.junit.jupiter.api.Assertions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.transaction.PlatformTransactionManager;
@@ -22,9 +23,10 @@ public abstract class ForceEagerFetch_CrudServiceTest
         extends CrudServiceTest<S, R, E, Id> {
 
 
-    public ForceEagerFetch_CrudServiceTest(S crudService, EqualChecker<E> equalChecker, R repository, PlatformTransactionManager transactionManager) {
-        super(crudService, equalChecker, repository);
-        log.debug("initializing proxy for crudservice: " + crudService.getClass().getSimpleName()+ " all entities will be loaded eagerly");
-        setCrudService(new Hibernate_ForceEagerFetch_CrudService_Proxy<>(crudService, transactionManager));
+    public ForceEagerFetch_CrudServiceTest(S proxy,  EqualChecker<E> equalChecker, R repository) {
+        super(proxy, equalChecker, repository);
+        Assertions.assertTrue(proxy instanceof Hibernate_ForceEagerFetch_CrudService_Proxy);
     }
+
+
 }

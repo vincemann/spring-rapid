@@ -1,0 +1,9 @@
+#!/bin/bash
+mvn clean
+mvn install -DskipTests
+date=$(date)
+cp "target/spring-crud-lib-0.0.1-SNAPSHOT-jar-with-dependencies.jar" "backup/spring-crud-lib-0.0.1-SNAPSHOT-jar-with-dependencies.jar$date"
+cp "target/spring-crud-lib-0.0.1-SNAPSHOT-sources.jar" "backup/spring-crud-lib-0.0.1-SNAPSHOT-sources.jar$date"
+#move into projects depending on the lib
+cp "target/spring-crud-lib-0.0.1-SNAPSHOT-jar-with-dependencies.jar" "/home/vince/projekte/important/vote-snack-backend/lib/"
+cp "target/spring-crud-lib-0.0.1-SNAPSHOT-sources.jar" "/home/vince/projekte/important/vote-snack-backend/lib/"

@@ -38,7 +38,7 @@ public abstract class CrudServiceTest
 {
 
 
-    private CrudService<E,Id,R> crudService;
+    private S crudService;
     @Getter
     private EqualChecker<E> equalChecker;
     @Getter
@@ -60,9 +60,9 @@ public abstract class CrudServiceTest
 
         //when
         E savedTestEntity = crudService.save(entityToSave);
-        Hibernate.initialize(savedTestEntity);
 
         //then
+        //savedTestEntity = entityToSafe (equal by reference)
         Assertions.assertNotNull(savedTestEntity);
         Assertions.assertNotNull(savedTestEntity.getId());
         Assertions.assertNotEquals(0,savedTestEntity.getId());
@@ -70,9 +70,7 @@ public abstract class CrudServiceTest
         Assertions.assertEquals(savedTestEntity.getId(),entityToSave.getId());
         Optional<E> savedEntityFromService = crudService.findById(savedTestEntity.getId());
         Assertions.assertTrue(savedEntityFromService.isPresent());
-        Hibernate.initialize(savedEntityFromService.get());
         Assertions.assertTrue(equalChecker.isEqual(entityToSave,savedEntityFromService.get()));
-        Assertions.assertTrue(equalChecker.isEqual(savedTestEntity,entityToSave));
 
         Optional<E> repoEntity = repository.findById(savedTestEntity.getId());
         Assertions.assertTrue(repoEntity.isPresent());
@@ -238,10 +236,10 @@ public abstract class CrudServiceTest
 
 
     public S getCrudService() {
-        return (S) crudService;
+        return crudService;
     }
 
-    protected void setCrudService(CrudService<E, Id, R> crudService) {
+    protected void setCrudService(S crudService) {
         this.crudService = crudService;
     }
 }
