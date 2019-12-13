@@ -7,12 +7,11 @@ import io.github.vincemann.demo.repositories.OwnerRepository;
 import io.github.vincemann.demo.service.OwnerService;
 import io.github.vincemann.demo.service.PetService;
 import io.github.vincemann.demo.service.PetTypeService;
-import io.github.vincemann.demo.testSuite.serviceProxies.ForceEagerFetch_OwnerService_Proxy;
 import io.github.vincemann.generic.crud.lib.service.exception.BadEntityException;
 import io.github.vincemann.generic.crud.lib.service.exception.EntityNotFoundException;
 import io.github.vincemann.generic.crud.lib.service.exception.NoIdException;
 import io.github.vincemann.generic.crud.lib.test.equalChecker.EqualChecker;
-import io.github.vincemann.generic.crud.lib.test.service.ForceEagerFetch_CrudServiceTest;
+import io.github.vincemann.generic.crud.lib.test.service.forceEagerFetch.ForceEagerFetch_CrudServiceTest;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -21,10 +20,11 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
-
 import java.time.LocalDate;
 import java.util.Arrays;
 import java.util.HashSet;
+
+import static io.github.vincemann.generic.crud.lib.test.service.forceEagerFetch.CrudService_Hibernate_ForceEagerFetch_Proxy.EAGER_FETCH_PROXY;
 
 //@DataJpaTest cant be used because i need autowired components from generic-crud-lib
 @ExtendWith(SpringExtension.class)
@@ -45,14 +45,13 @@ class OwnerJPAServiceTest
     private Owner ownerWithOnePet;
     private PetTypeService petTypeService;
     private PetService petService;
-
     private Pet testPet;
 
-    public OwnerJPAServiceTest(@Autowired @Qualifier("proxy") OwnerService crudService,
-                               @Autowired EqualChecker<Owner> equalChecker,
-                               @Autowired OwnerRepository repository,
-                               @Autowired PetTypeService petTypeService,
-                               @Autowired PetService petService) {
+    public OwnerJPAServiceTest(@Autowired @Qualifier(EAGER_FETCH_PROXY) OwnerService crudService,
+                               @Autowired                     EqualChecker<Owner> equalChecker,
+                               @Autowired                     OwnerRepository repository,
+                               @Autowired                     PetTypeService petTypeService,
+                               @Autowired                     PetService petService) {
         super(crudService, equalChecker, repository);
         this.petTypeService = petTypeService;
         this.petService = petService;
@@ -61,11 +60,13 @@ class OwnerJPAServiceTest
     @BeforeEach
     public void setUp() throws Exception {
         PetType savedDogPetType = petTypeService.save(new PetType("Dog"));
+
         testPet = Pet.builder()
                 .petType(savedDogPetType)
                 .name("Bello")
                 .birthDate(LocalDate.now())
                 .build();
+
         ownerWithoutPets = Owner.builder()
                 .firstName("owner without pets")
                 .lastName("owner without pets lastName")

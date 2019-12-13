@@ -1,13 +1,12 @@
-package io.github.vincemann.generic.crud.lib.test.service;
+package io.github.vincemann.generic.crud.lib.test.service.forceEagerFetch;
 
 import io.github.vincemann.generic.crud.lib.model.IdentifiableEntity;
 import io.github.vincemann.generic.crud.lib.service.CrudService;
 import io.github.vincemann.generic.crud.lib.test.equalChecker.EqualChecker;
+import io.github.vincemann.generic.crud.lib.test.service.CrudServiceTest;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Assertions;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.repository.CrudRepository;
-import org.springframework.transaction.PlatformTransactionManager;
 
 import java.io.Serializable;
 
@@ -25,7 +24,7 @@ public abstract class ForceEagerFetch_CrudServiceTest
 
     public ForceEagerFetch_CrudServiceTest(S proxy,  EqualChecker<E> equalChecker, R repository) {
         super(proxy, equalChecker, repository);
-        Assertions.assertTrue(proxy instanceof Hibernate_ForceEagerFetch_CrudService_Proxy);
+        Assertions.assertTrue(proxy instanceof CrudService_Hibernate_ForceEagerFetch_Proxy);
     }
 
 

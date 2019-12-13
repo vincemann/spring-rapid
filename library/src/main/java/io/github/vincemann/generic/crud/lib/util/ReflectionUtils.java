@@ -216,6 +216,24 @@ public class ReflectionUtils {
         return fields_instances_map;
     }
 
+    public static MultiValuedMap<Field,Object> getAllFieldsAnnotatedWith_WithoutThisField_OfAllMemberVars_AnnotatedWith(Collection startCollection, Class<? extends Annotation> annotatedWith, boolean checkCollections, boolean emptyCollectionsIncluded) throws IllegalAccessException {
+        if(startCollection==null){
+            throw new IllegalArgumentException("StartCollection must not be null");
+        }
+        for (Object entry : startCollection) {
+            /*if(entry==null){
+                throw new IllegalArgumentException("StartCollection must not have null entries");
+            }
+            if(!entry.getClass().isAnnotationPresent(annotatedWith)){
+                throw new IllegalArgumentException("StartCollection must have Entries annoted with: " + annotatedWith.getSimpleName());
+            }*/
+            return getAllFieldsAnnotatedWith_WithoutThisField_OfAllMemberVars_AnnotatedWith(entry,annotatedWith,checkCollections,emptyCollectionsIncluded);
+        }
+        throw new IllegalArgumentException("StartCollection must not be empty");
+    }
+
+
+
     private static void _getAllFieldsAnnotatedWith_WithoutThisField_OfAllMemberVars_DiveDownIfAnnotatedWith(Object currentInstance,
                                                                                                             List<Object> instancesChecked,
                                                                                                             MultiValuedMap<Field,Object> fields_instances_map,
