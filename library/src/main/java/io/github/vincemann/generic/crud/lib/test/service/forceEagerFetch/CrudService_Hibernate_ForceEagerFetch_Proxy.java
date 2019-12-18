@@ -9,6 +9,7 @@ import io.github.vincemann.generic.crud.lib.util.ReflectionUtils;
 import lombok.Getter;
 import org.apache.commons.collections4.MultiValuedMap;
 import org.hibernate.Hibernate;
+import org.hibernate.TransactionException;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.transaction.PlatformTransactionManager;
@@ -73,7 +74,11 @@ public class CrudService_Hibernate_ForceEagerFetch_Proxy
             result.ifPresent(this::eagerFetchAllEntities);
             getTransactionManager().commit(transactionStatus);
             return result;
-        }catch (Exception e){
+        }catch (TransactionException e){
+            //docs say we must not issue a rollback in this case
+            throw e;
+        }
+        catch (Exception e){
             getTransactionManager().rollback(transactionStatus);
             throw e;
         }
@@ -86,7 +91,11 @@ public class CrudService_Hibernate_ForceEagerFetch_Proxy
             eagerFetchAllEntities(result);
             getTransactionManager().commit(transactionStatus);
             return result;
-        }catch (Exception e){
+        }catch (TransactionException e){
+            //docs say we must not issue a rollback in this case
+            throw e;
+        }
+        catch (Exception e){
             getTransactionManager().rollback(transactionStatus);
             throw e;
         }
