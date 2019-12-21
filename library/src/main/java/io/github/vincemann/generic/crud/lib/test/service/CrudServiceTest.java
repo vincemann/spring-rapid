@@ -66,12 +66,17 @@ public abstract class CrudServiceTest
         Assertions.assertNotNull(savedTestEntity);
         Assertions.assertNotNull(savedTestEntity.getId());
         Assertions.assertNotEquals(0,savedTestEntity.getId());
-        //check if entityToSave and savedTestEntity have same id, should be true
-        Assertions.assertEquals(savedTestEntity.getId(),entityToSave.getId());
+
         Optional<E> savedEntityFromService = crudService.findById(savedTestEntity.getId());
         Assertions.assertTrue(savedEntityFromService.isPresent());
-        Assertions.assertTrue(equalChecker.isEqual(entityToSave,savedEntityFromService.get()));
+        //if service save method does not copy entityToSave, then entitytoSaveRef = savedEntityFromServiceRef, otherwise not
+        Id oldId_EntityToSave = entityToSave.getId();
+        entityToSave.setId(savedEntityFromService.get().getId());
 
+        Assertions.assertTrue(equalChecker.isEqual(entityToSave,savedEntityFromService.get()));
+        Assertions.assertTrue(equalChecker.isEqual(entityToSave,savedTestEntity));
+
+        entityToSave.setId(oldId_EntityToSave);
         Optional<E> repoEntity = repository.findById(savedTestEntity.getId());
         Assertions.assertTrue(repoEntity.isPresent());
         return savedTestEntity;
