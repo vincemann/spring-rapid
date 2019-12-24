@@ -9,7 +9,9 @@ import io.github.vincemann.generic.crud.lib.controller.springAdapter.validationS
 import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Required;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -59,7 +61,7 @@ public abstract class DtoCrudController_SpringAdapter
                 Repo extends CrudRepository<ServiceE,Id>,
                 Service extends CrudService<ServiceE,Id, Repo>
         >
-        extends BasicDtoCrudController<ServiceE,Dto,Id, Repo, Service> {
+        extends BasicDtoCrudController<ServiceE,Dto,Id, Repo, Service> implements InitializingBean {
 
 
     private EndpointService endpointService;
@@ -93,23 +95,36 @@ public abstract class DtoCrudController_SpringAdapter
     private EndpointsExposureDetails endpointsExposureDetails;
     private List<Plugin<? super ServiceE,? super Dto,? super Id>> plugins = new ArrayList<>();
 
-    public DtoCrudController_SpringAdapter() { }
+    public DtoCrudController_SpringAdapter() {
+        this.entityNameInUrl=getServiceEntityClass().getSimpleName().toLowerCase();
+        this.baseUrl="/"+entityNameInUrl+"/";
+
+    }
 
 
     public DtoCrudController_SpringAdapter(Plugin<? super ServiceE, ? super Dto, ? super Id>... plugins) {
         this.initPlugins(plugins);
     }
 
-    @Autowired
-    public void initializeRequestMapping(EndpointService endpointService, EndpointsExposureDetails endpointsExposureDetails, MediaTypeStrategy mediaTypeStrategy) {
-        this.endpointService = endpointService;
-        this.endpointsExposureDetails=endpointsExposureDetails;
-        this.mediaTypeStrategy=mediaTypeStrategy;
-        this.entityNameInUrl=getServiceEntityClass().getSimpleName().toLowerCase();
-        this.baseUrl="/"+entityNameInUrl+"/";
+    @Override
+    public void afterPropertiesSet() {
         initUrls();
         initRequestMapping();
     }
+
+    @Autowired
+    public void setEndpointService(EndpointService endpointService) {
+        this.endpointService = endpointService;
+    }
+    @Autowired
+    public void setMediaTypeStrategy(MediaTypeStrategy mediaTypeStrategy) {
+        this.mediaTypeStrategy = mediaTypeStrategy;
+    }
+    @Autowired
+    public void setEndpointsExposureDetails(EndpointsExposureDetails endpointsExposureDetails) {
+        this.endpointsExposureDetails = endpointsExposureDetails;
+    }
+
     @Autowired
     public void setIdIdFetchingStrategy(IdFetchingStrategy<Id> idIdFetchingStrategy) {
         this.idIdFetchingStrategy = idIdFetchingStrategy;
