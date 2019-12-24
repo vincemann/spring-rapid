@@ -21,26 +21,6 @@ public class OwnerController
         extends DtoCrudController_SpringAdapter<Owner, OwnerDto,Long,OwnerRepository,OwnerService> {
 
 
-    @Autowired
-    public OwnerController(OwnerService crudService,
-                           MediaTypeStrategy mediaTypeStrategy,
-                           IdFetchingStrategy<Long> longIdFetchingStrategy,
-                           DtoMapper dtoMapper,
-                           ValidationStrategy validationStrategy,
-                           EndpointsExposureDetails endpointsExposureDetails,
-                           EndpointService endpointService){
-        super(
-                crudService,
-                endpointService,
-                longIdFetchingStrategy,
-                mediaTypeStrategy,
-                validationStrategy,
-                dtoMapper,
-                endpointsExposureDetails
-        );
-    }
-
-
     @RequestMapping("/owners")
     public String listOwners(Model model){
         model.addAttribute("owners",getCrudService().findAll());

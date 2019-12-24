@@ -13,9 +13,7 @@ import java.lang.reflect.Method;
 import java.util.*;
 import java.util.stream.Collectors;
 
-/**
- * @author Kupal 3kb
- */
+
 @Slf4j
 public class ReflectionUtils {
 
@@ -40,7 +38,7 @@ public class ReflectionUtils {
     }
 
 
-    public static List<Method> findGetters(Class clazz){
+    public static List<Method> findGetters(Class clazz) {
         List<Method> getters = new ArrayList<>();
         for (Method method : clazz.getMethods()) {
             if (method.getName().startsWith("get") && method.getParameterTypes().length == 0) {
@@ -49,6 +47,7 @@ public class ReflectionUtils {
         }
         return getters;
     }
+
     /**
      * Retrieving fields list of specified class
      * If recursively is true, retrieving fields from all class hierarchy
@@ -163,7 +162,7 @@ public class ReflectionUtils {
         }
 
         return annotatedFields.toArray(new Field[annotatedFields.size()]);*/
-        return FieldUtils.getFieldsWithAnnotation(clazz,annotationClass);
+        return FieldUtils.getFieldsWithAnnotation(clazz, annotationClass);
     }
 
     public static Field[] getDeclaredFieldsAssignableFrom(Class clazz, Class interfaceThatNeedsToBeImplemented, boolean recursively) {
@@ -197,52 +196,52 @@ public class ReflectionUtils {
      * If it finds a MemberVariable which is of Type annotated with {@code annotatedWith},
      * then this instance will be "dived into" aka start with step 1 again.
      *
-     * @param startInstance
+     * @param root
      * @param annotatedWith
      * @param checkCollections
      * @return
      * @throws IllegalAccessException
      */
-    public static MultiValuedMap<Field,Object> getAllFieldsAnnotatedWith_WithoutThisField_OfAllMemberVars_AnnotatedWith(Object startInstance, Class<? extends Annotation> annotatedWith, boolean checkCollections, boolean emptyCollectionsIncluded) throws IllegalAccessException {
-        MultiValuedMap<Field,Object> fields_instances_map = new ArrayListValuedHashMap<>();
-        if(startInstance==null){
+    public static MultiValuedMap<Field, Object> findFieldsAndTheirDeclaringInstances_OfAllMemberVars_AnnotatedWith(
+            Object root,
+            Class<? extends Annotation> annotatedWith,
+            boolean checkCollections,
+            boolean emptyCollectionsIncluded)
+            throws IllegalAccessException {
+        MultiValuedMap<Field, Object> fields_instances_map = new ArrayListValuedHashMap<>();
+        if (root == null) {
             throw new IllegalArgumentException("StartInstance must not be null");
         }
-        if(!startInstance.getClass().isAnnotationPresent(annotatedWith)){
-            throw new IllegalArgumentException("StartInstance must be annotated with: "+annotatedWith.getSimpleName());
-        }
+
         List<Object> instancesChecked = new ArrayList<>();
-        _getAllFieldsAnnotatedWith_WithoutThisField_OfAllMemberVars_DiveDownIfAnnotatedWith(startInstance,instancesChecked,fields_instances_map,annotatedWith,checkCollections,emptyCollectionsIncluded);
+        if(Collection.class.isAssignableFrom(root.getClass())){
+            for (Object entry : ((Collection) root)) {
+                if(entry==null){
+                    //skip
+                    continue;
+                }
+                return findFieldsAndTheirDeclaringInstances_OfAllMemberVars_AnnotatedWith(entry, annotatedWith, checkCollections, emptyCollectionsIncluded);
+            }
+            throw new IllegalArgumentException("StartCollection must not be empty");
+        }else {
+            if (!root.getClass().isAnnotationPresent(annotatedWith)) {
+                throw new IllegalArgumentException("StartInstance must be annotated with: " + annotatedWith.getSimpleName());
+            }
+            _findFieldsAndTheirDeclaringInstances_OfAllMemberVars_AnnotatedWith(root, instancesChecked, fields_instances_map, annotatedWith, checkCollections, emptyCollectionsIncluded);
+        }
+
         return fields_instances_map;
     }
 
-    public static MultiValuedMap<Field,Object> getAllFieldsAnnotatedWith_WithoutThisField_OfAllMemberVars_AnnotatedWith(Collection startCollection, Class<? extends Annotation> annotatedWith, boolean checkCollections, boolean emptyCollectionsIncluded) throws IllegalAccessException {
-        if(startCollection==null){
-            throw new IllegalArgumentException("StartCollection must not be null");
-        }
-        for (Object entry : startCollection) {
-            /*if(entry==null){
-                throw new IllegalArgumentException("StartCollection must not have null entries");
-            }
-            if(!entry.getClass().isAnnotationPresent(annotatedWith)){
-                throw new IllegalArgumentException("StartCollection must have Entries annoted with: " + annotatedWith.getSimpleName());
-            }*/
-            return getAllFieldsAnnotatedWith_WithoutThisField_OfAllMemberVars_AnnotatedWith(entry,annotatedWith,checkCollections,emptyCollectionsIncluded);
-        }
-        throw new IllegalArgumentException("StartCollection must not be empty");
-    }
-
-
-
-    private static void _getAllFieldsAnnotatedWith_WithoutThisField_OfAllMemberVars_DiveDownIfAnnotatedWith(Object currentInstance,
-                                                                                                            List<Object> instancesChecked,
-                                                                                                            MultiValuedMap<Field,Object> fields_instances_map,
-                                                                                                            Class<? extends Annotation> annotatedWith,
-                                                                                                            boolean checkCollections,
-                                                                                                            boolean emptyCollectionsIncluded)
+    private static void _findFieldsAndTheirDeclaringInstances_OfAllMemberVars_AnnotatedWith(Object currentInstance,
+                                                                                            List<Object> instancesChecked,
+                                                                                            MultiValuedMap<Field, Object> fields_instances_map,
+                                                                                            Class<? extends Annotation> annotatedWith,
+                                                                                            boolean checkCollections,
+                                                                                            boolean emptyCollectionsIncluded)
             throws IllegalAccessException {
         //it is important to compare instances by reference and not by equals method
-        if(ListUtils.containsByReference(instancesChecked,currentInstance)){
+        if (ListUtils.containsByReference(instancesChecked, currentInstance)) {
             //we already checked this instance -> done
             return;
         }
@@ -252,36 +251,35 @@ public class ReflectionUtils {
 
         //now we check for memberVars, that we have to dive into
         for (Field field : fieldsOfInstance) {
-            if(field.getType().isAnnotationPresent(annotatedWith)) {
-                fields_instances_map.put(field,currentInstance);
-                //we need to dive into this memberVar
+            if (field.getType().isAnnotationPresent(annotatedWith)) {
+                fields_instances_map.put(field, currentInstance);
                 field.setAccessible(true);
                 Object memberVar = field.get(currentInstance);
-                if(memberVar!=null) {
-                    _getAllFieldsAnnotatedWith_WithoutThisField_OfAllMemberVars_DiveDownIfAnnotatedWith(memberVar,instancesChecked, fields_instances_map, annotatedWith,checkCollections,emptyCollectionsIncluded);
+                if (memberVar != null) {
+                    //we need to dive into this memberVar
+                    _findFieldsAndTheirDeclaringInstances_OfAllMemberVars_AnnotatedWith(memberVar, instancesChecked, fields_instances_map, annotatedWith, checkCollections, emptyCollectionsIncluded);
                 }
-            }
-            else if(checkCollections){
-                if(Collection.class.isAssignableFrom(field.getType())){
+            } else if (checkCollections) {
+                if (Collection.class.isAssignableFrom(field.getType())) {
                     field.setAccessible(true);
                     Collection memberCollection = (Collection) field.get(currentInstance);
-                    if(memberCollection!=null) {
-                        //this boolean is introduced to prevent duplicates
-                        if(emptyCollectionsIncluded) {
-                            if (memberCollection.isEmpty()){
+                    if (memberCollection != null) {
+                        if (emptyCollectionsIncluded) {
+                            if (memberCollection.isEmpty()) {
                                 fields_instances_map.put(field, currentInstance);
                             }
                         }
+                        //this boolean is introduced to prevent duplicates
                         boolean mapEntrySaved = false;
                         for (Object entry : memberCollection) {
-                            //we need to dive into this memberVar, which is part of a collection
                             if (entry != null) {
                                 if (entry.getClass().isAnnotationPresent(annotatedWith)) {
-                                    if(!mapEntrySaved) {
+                                    //we need to dive into this memberVar, which is part of a collection
+                                    if (!mapEntrySaved) {
                                         fields_instances_map.put(field, currentInstance);
-                                        mapEntrySaved=true;
+                                        mapEntrySaved = true;
                                     }
-                                    _getAllFieldsAnnotatedWith_WithoutThisField_OfAllMemberVars_DiveDownIfAnnotatedWith(entry, instancesChecked, fields_instances_map, annotatedWith, checkCollections,emptyCollectionsIncluded);
+                                    _findFieldsAndTheirDeclaringInstances_OfAllMemberVars_AnnotatedWith(entry, instancesChecked, fields_instances_map, annotatedWith, checkCollections, emptyCollectionsIncluded);
                                 }
                             }
                         }
@@ -292,6 +290,80 @@ public class ReflectionUtils {
     }
 
 
+    public static Set<Object> findObjects_OfAllMemberVars_AssignableFrom(Object root,
+                                                                    Class<?> assignableFrom,
+                                                                    boolean checkCollections) throws IllegalAccessException {
+        if (root == null) {
+            throw new IllegalArgumentException("StartInstance must not be null");
+        }
+
+        List<Object> instancesChecked = new ArrayList<>();
+        Set<Object> result = new HashSet();
+        if(Collection.class.isAssignableFrom(root.getClass())){
+            for (Object entry : ((Collection) root)) {
+                if(entry==null){
+                    //skip
+                    continue;
+                }
+                _findObjects_OfAllMemberVars_AssignableFrom(entry,assignableFrom,checkCollections,result,instancesChecked);
+            }
+        }else {
+            if(assignableFrom.isAssignableFrom(root.getClass())){
+                result.add(root);
+            }
+            _findObjects_OfAllMemberVars_AssignableFrom(root,assignableFrom,checkCollections,result,instancesChecked);
+        }
+
+        return result;
+    }
+
+    private static void _findObjects_OfAllMemberVars_AssignableFrom(Object currentInstance,
+                                                                   Class<?> assignableFrom,
+                                                                   boolean checkCollections,
+                                                                   Set<Object> objectsFound,
+                                                                   List<Object> instancesChecked) throws IllegalAccessException {
+        //it is important to compare instances by reference and not by equals method
+        if (ListUtils.containsByReference(instancesChecked, currentInstance)) {
+            //we already checked this instance -> done
+            return;
+        }
+        instancesChecked.add(currentInstance);
+        //save all fields of class
+        Field[] fieldsOfInstance = getDeclaredFields_WithoutOutThisField(currentInstance.getClass(), true);
+
+        //now we check for memberVars, that we have to dive into
+        for (Field field : fieldsOfInstance) {
+            if (assignableFrom.isAssignableFrom(field.getType())) {
+
+                field.setAccessible(true);
+                Object memberVar = field.get(currentInstance);
+                if (memberVar != null) {
+                    //we found a match
+                    //we need to dive into this memberVar
+                    objectsFound.add(memberVar);
+                    _findObjects_OfAllMemberVars_AssignableFrom(memberVar, assignableFrom, checkCollections, objectsFound, instancesChecked);
+                }
+            } else if (checkCollections) {
+                if (Collection.class.isAssignableFrom(field.getType())) {
+                    field.setAccessible(true);
+                    Collection memberCollection = (Collection) field.get(currentInstance);
+                    if (memberCollection != null) {
+                        for (Object memberCollectionEntry : memberCollection) {
+                            if (memberCollectionEntry != null) {
+                                if (assignableFrom.isAssignableFrom(memberCollectionEntry.getClass())) {
+                                    //we found a match
+                                    //we need to dive into this memberVar, which is part of a collection
+                                    objectsFound.add(memberCollectionEntry);
+                                    _findObjects_OfAllMemberVars_AssignableFrom(memberCollectionEntry, assignableFrom, checkCollections, objectsFound, instancesChecked);
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+    }
 
 
 }

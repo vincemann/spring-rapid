@@ -7,7 +7,7 @@ import io.github.vincemann.generic.crud.lib.service.ExtendableCrudService;
 import io.github.vincemann.generic.crud.lib.service.exception.BadEntityException;
 import io.github.vincemann.generic.crud.lib.service.exception.EntityNotFoundException;
 import io.github.vincemann.generic.crud.lib.service.exception.NoIdException;
-import io.github.vincemann.generic.crud.lib.test.transaction.TransactionHelper;
+import io.github.vincemann.generic.crud.lib.service.sessionReattach.EntityManger_SessionReattacher;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -22,11 +22,11 @@ public class BiDirParentPlugin<E extends IdentifiableEntity<Id> & BiDirParent,Id
         extends ExtendableCrudService.Plugin<E,Id> {
 
 
-    private TransactionHelper transactionHelper;
+    private EntityManger_SessionReattacher sessionReattachmentHelper;
 
     @Autowired
-    public BiDirParentPlugin(TransactionHelper transactionHelper) {
-        this.transactionHelper = transactionHelper;
+    public BiDirParentPlugin(EntityManger_SessionReattacher sessionReattachmentHelper) {
+        this.sessionReattachmentHelper = sessionReattachmentHelper;
     }
 
     @Transactional
@@ -34,7 +34,7 @@ public class BiDirParentPlugin<E extends IdentifiableEntity<Id> & BiDirParent,Id
     public void onBeforeUpdate(E entity) throws EntityNotFoundException, BadEntityException, NoIdException {
         super.onBeforeUpdate(entity);
         try {
-            handleChildrenCollectionChanges(entity);
+            handleChildCollectionChanges(entity);
         } catch (IllegalAccessException e) {
             throw new RuntimeException(e);
         }
@@ -59,9 +59,9 @@ public class BiDirParentPlugin<E extends IdentifiableEntity<Id> & BiDirParent,Id
             Collection<? extends BiDirChild> childrenCollection = childrenCollectionEntry.getKey();
             for (BiDirChild child : childrenCollection) {
                 Serializable childId = ((IdentifiableEntity) child).getId();
-                //if child has id, then it already persisted and detached to current session started by service
+                //if child has id, then it is already persisted and detached to current session started by service, so it needs to be reattached
                 if(childId!=null) {
-                    transactionHelper.attachToCurrentSession(child);
+                    sessionReattachmentHelper.attachToCurrentSession(child);
                     //THIS WOULD BE AN ALTERNATIVE SOLUTION TO ATTACH THE CHILD, BUT ITS SHIT
                         //CrudService service = crudServices.get(biDirChild.getClass());
                         //Optional optionalChildFromService = service.findById(childId);
@@ -77,7 +77,7 @@ public class BiDirParentPlugin<E extends IdentifiableEntity<Id> & BiDirParent,Id
 
 
     @SuppressWarnings("Duplicates")
-    private void handleChildrenCollectionChanges(E newBiDirParent) throws NoIdException, EntityNotFoundException, IllegalAccessException {
+    private void handleChildCollectionChanges(E newBiDirParent) throws NoIdException, EntityNotFoundException, IllegalAccessException {
         Optional<E> oldBiDirParentOptional = getCrudService().findById(newBiDirParent.getId());
         if(!oldBiDirParentOptional.isPresent()){
             throw new EntityNotFoundException(newBiDirParent.getId(),newBiDirParent.getClass());

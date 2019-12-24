@@ -1,6 +1,6 @@
 package io.github.vincemann.generic.crud.lib.test.controller.springAdapter.plugins;
 
-import io.github.vincemann.generic.crud.lib.test.controller.springAdapter.UrlParamId_DtoCrudController_SpringAdapter_IT;
+import io.github.vincemann.generic.crud.lib.test.controller.springAdapter.UrlParamId_ControllerIntegrationTest;
 import org.junit.jupiter.api.Assertions;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
@@ -13,7 +13,7 @@ import java.util.Optional;
  * This is done by asking the Repository Layer ({@link org.springframework.data.repository.CrudRepository}), whether the entity is still there by calling ,
  */
 @Component
-public class DatabaseDeletedCheck_Plugin extends UrlParamId_DtoCrudController_SpringAdapter_IT.Plugin {
+public class DatabaseDeletedCheck_Plugin extends UrlParamId_ControllerIntegrationTest.Plugin {
 
     @Override
     public void onAfterDeleteEntityShouldSucceed(Serializable id, ResponseEntity responseEntity) throws Exception {

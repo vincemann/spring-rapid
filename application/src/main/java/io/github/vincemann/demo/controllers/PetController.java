@@ -18,22 +18,4 @@ public class PetController
         extends DtoCrudController_SpringAdapter<Pet, PetDto,Long, PetRepository, PetService> {
 
 
-    public PetController(PetService crudService,
-                         IdFetchingStrategy<Long> longIdFetchingStrategy,
-                         MediaTypeStrategy mediaTypeStrategy,
-                         ValidationStrategy validationStrategy,
-                         DtoMapper dtoMapper,
-                         EndpointsExposureDetails endpointsExposureDetails,
-                         EndpointService endpointService) {
-        super(
-                crudService,
-                endpointService,
-                longIdFetchingStrategy,
-                mediaTypeStrategy,
-                validationStrategy,
-                dtoMapper,
-                endpointsExposureDetails
-        );
-    }
-
 }

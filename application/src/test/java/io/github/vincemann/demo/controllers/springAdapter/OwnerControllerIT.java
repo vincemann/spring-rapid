@@ -45,13 +45,10 @@ class OwnerControllerIT
     private OwnerDto invalidOwnerDto_becauseBlankCity;
 
 
-    OwnerControllerIT(@Autowired OwnerController crudController,
-                      @Autowired TestRequestEntity_Factory requestEntityFactory,
+    OwnerControllerIT(
                       @Autowired DatabaseDeletedCheck_Plugin databaseDeletedCheckPlugin,
                       @Autowired ServiceDeepEqualPlugin serviceDeepEqualPlugin) {
         super(
-                crudController,
-                requestEntityFactory,
                 databaseDeletedCheckPlugin,
                 serviceDeepEqualPlugin
         );

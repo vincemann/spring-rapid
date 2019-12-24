@@ -16,14 +16,4 @@ import io.github.vincemann.generic.crud.lib.controller.dtoMapper.DtoMapper;
 @Controller
 public class SpecialtyController extends DtoCrudController_SpringAdapter<Specialty, SpecialtyDto,Long, SpecialtyRepository, SpecialtyService> {
 
-
-    public SpecialtyController(SpecialtyService crudService, IdFetchingStrategy<Long> longIdFetchingStrategy, MediaTypeStrategy mediaTypeStrategy, ValidationStrategy validationStrategy, DtoMapper dtoMapper, EndpointsExposureDetails endpointsExposureDetails, EndpointService endpointService) {
-        super(crudService,
-                endpointService, longIdFetchingStrategy,
-                mediaTypeStrategy,
-                validationStrategy,
-                dtoMapper,
-                endpointsExposureDetails);
-    }
-
 }

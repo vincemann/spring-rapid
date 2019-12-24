@@ -1,18 +1,22 @@
-package io.github.vincemann.generic.crud.lib.test.transaction;
+package io.github.vincemann.generic.crud.lib.service.sessionReattach;
 
 import org.hibernate.Session;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Primary;
+import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.EntityManager;
 
 @Component
-public class TransactionHelper {
+@Primary
+public class EntityManger_SessionReattacher implements SessionReattacher {
 
     private EntityManager entityManager;
 
     @Autowired
-    public TransactionHelper(EntityManager entityManager) {
+    public EntityManger_SessionReattacher(EntityManager entityManager) {
         this.entityManager = entityManager;
     }
 

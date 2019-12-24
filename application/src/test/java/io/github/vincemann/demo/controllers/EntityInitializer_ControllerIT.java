@@ -9,13 +9,10 @@ import io.github.vincemann.demo.service.VisitService;
 import io.github.vincemann.generic.crud.lib.controller.springAdapter.DtoCrudController_SpringAdapter;
 import io.github.vincemann.generic.crud.lib.model.IdentifiableEntity;
 import io.github.vincemann.generic.crud.lib.service.CrudService;
-import io.github.vincemann.generic.crud.lib.service.exception.BadEntityException;
-import io.github.vincemann.generic.crud.lib.test.controller.springAdapter.UrlParamId_DtoCrudController_SpringAdapter_IT;
+import io.github.vincemann.generic.crud.lib.test.controller.springAdapter.UrlParamId_ControllerIntegrationTest;
 import io.github.vincemann.generic.crud.lib.test.controller.springAdapter.testRequestEntity.factory.TestRequestEntity_Factory;
 import lombok.Getter;
 import lombok.Setter;
-import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.BeforeEach;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.repository.CrudRepository;
 
@@ -31,7 +28,7 @@ public abstract class EntityInitializer_ControllerIT
                 Service extends CrudService<ServiceE, Long,Repo>,
                 Controller extends DtoCrudController_SpringAdapter<ServiceE, Dto, Long,Repo, Service>
         >
-        extends UrlParamId_DtoCrudController_SpringAdapter_IT<ServiceE,Dto,Repo,Service,Controller,Long> {
+        extends UrlParamId_ControllerIntegrationTest<ServiceE,Dto,Repo,Service,Controller,Long> {
 
     @Autowired
     private PetTypeController petTypeController;
@@ -54,12 +51,11 @@ public abstract class EntityInitializer_ControllerIT
     private PetService petService;
     private Pet testPet;
 
-    /*public EntityInitializerControllerIT(String url, Controller crudController, TestRequestEntityFactory requestEntityFactory, Plugin<? super Dto, ? super Long>... plugins) {
-        super(url, crudController,requestEntityFactory,plugins);
-    }*/
+    public EntityInitializer_ControllerIT() {
+    }
 
-    public EntityInitializer_ControllerIT(Controller crudController, TestRequestEntity_Factory requestEntityFactory, Plugin<? super Dto, ? super ServiceE, ? super Long>... plugins) {
-        super(crudController, requestEntityFactory, plugins);
+    public EntityInitializer_ControllerIT(Plugin<? super Dto, ? super ServiceE, ? super Long>... plugins) {
+        super(plugins);
     }
 
     @Override
