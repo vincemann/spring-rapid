@@ -16,16 +16,4 @@ import org.springframework.stereotype.Controller;
 @Controller
 public class PetTypeController extends DtoCrudController_SpringAdapter<PetType, PetTypeDto,Long, PetTypeRepository, PetTypeService> {
 
-    public PetTypeController(PetTypeService crudService, IdFetchingStrategy<Long> longIdFetchingStrategy, MediaTypeStrategy mediaTypeStrategy, ValidationStrategy validationStrategy, DtoMapper dtoMapper, EndpointService endpointService) {
-        super(crudService,
-                endpointService, longIdFetchingStrategy,
-                mediaTypeStrategy,
-                validationStrategy,
-                dtoMapper,
-                //no update Endpoint
-                EndpointsExposureDetails.builder()
-                        .updateEndpointExposed(false)
-                        .build());
-    }
-
 }

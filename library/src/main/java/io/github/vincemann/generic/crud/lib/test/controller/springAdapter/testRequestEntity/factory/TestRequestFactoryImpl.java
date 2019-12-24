@@ -2,7 +2,7 @@ package io.github.vincemann.generic.crud.lib.test.controller.springAdapter.testR
 
 import io.github.vincemann.generic.crud.lib.controller.springAdapter.DtoCrudController_SpringAdapter;
 import io.github.vincemann.generic.crud.lib.test.controller.springAdapter.CrudController_TestCase;
-import io.github.vincemann.generic.crud.lib.test.controller.springAdapter.UrlParamId_DtoCrudController_SpringAdapter_IT;
+import io.github.vincemann.generic.crud.lib.test.controller.springAdapter.UrlParamId_ControllerIntegrationTest;
 import io.github.vincemann.generic.crud.lib.test.controller.springAdapter.testRequestEntity.TestRequestEntity;
 import io.github.vincemann.generic.crud.lib.test.controller.springAdapter.testRequestEntity.TestRequestEntity_Modification;
 import io.github.vincemann.generic.crud.lib.test.controller.springAdapter.testRequestEntity.factory.defaultUriFactory.UrlParamId_DefaultUri_Factory;
@@ -24,7 +24,7 @@ import java.util.Set;
 //todo sketchy af needs refactoring
 public class TestRequestFactoryImpl implements TestRequestEntity_Factory {
 
-    private UrlParamId_DtoCrudController_SpringAdapter_IT crudControllerTest;
+    private UrlParamId_ControllerIntegrationTest crudControllerTest;
     private UrlParamId_DefaultUri_Factory urlParamIdDefaultUriFactory;
     private TestRequestEntity_ModificationStrategy testRequestEntityModificationStrategy;
 
@@ -35,12 +35,12 @@ public class TestRequestFactoryImpl implements TestRequestEntity_Factory {
     }
 
     @Override
-    public void setTest(UrlParamId_DtoCrudController_SpringAdapter_IT test) {
+    public void setTest(UrlParamId_ControllerIntegrationTest test) {
         this.crudControllerTest=test;
         this.urlParamIdDefaultUriFactory.setBaseAddressProvider(test);
     }
 
-    public UrlParamId_DtoCrudController_SpringAdapter_IT getCrudControllerTest() {
+    public UrlParamId_ControllerIntegrationTest getCrudControllerTest() {
         if(crudControllerTest==null){
             throw new IllegalStateException("No test class set yet");
         }

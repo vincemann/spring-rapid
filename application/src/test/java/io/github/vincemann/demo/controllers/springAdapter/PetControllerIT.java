@@ -32,12 +32,9 @@ class PetControllerIT
     private Pet petWithPersistedOwner;
 
 
-    public PetControllerIT(@Autowired PetController crudController,
-                           @Autowired TestRequestEntity_Factory testRequestEntityFactory,
+    public PetControllerIT(
                            @Autowired DatabaseDeletedCheck_Plugin databaseDeletedCheckPlugin) {
         super(
-                crudController,
-                testRequestEntityFactory,
                 databaseDeletedCheckPlugin
         );
     }

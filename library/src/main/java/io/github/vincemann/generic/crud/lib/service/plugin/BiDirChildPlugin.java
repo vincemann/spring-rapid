@@ -16,21 +16,26 @@ import java.util.List;
 import java.util.Optional;
 
 @Component
-public class BiDirChildPlugin<E extends IdentifiableEntity<Id> & BiDirChild,Id extends Serializable> extends ExtendableCrudService.Plugin<E,Id> {
+public class BiDirChildPlugin
+        <
+                E extends IdentifiableEntity<Id> & BiDirChild,
+                Id extends Serializable
+        >
+            extends ExtendableCrudService.Plugin<E,Id>{
 
 
     @Override
     public void onBeforeUpdate(E entity) throws EntityNotFoundException, NoIdException, BadEntityException {
         super.onBeforeUpdate(entity);
         try {
-            onBiDirChildPreUpdate(entity);
+            manageBiDirRelations(entity);
         }catch (IllegalAccessException e){
             throw new RuntimeException(e);
         }
     }
 
     @SuppressWarnings("Duplicates")
-    private void onBiDirChildPreUpdate(E newBiDirChild) throws NoIdException, EntityNotFoundException, IllegalAccessException {
+    private void manageBiDirRelations(E newBiDirChild) throws NoIdException, EntityNotFoundException, IllegalAccessException {
         //find already persisted biDirChild (preUpdateState of child)
         Optional<E> oldBiDirChildOptional = getCrudService().findById(newBiDirChild.getId());
         if(!oldBiDirChildOptional.isPresent()){

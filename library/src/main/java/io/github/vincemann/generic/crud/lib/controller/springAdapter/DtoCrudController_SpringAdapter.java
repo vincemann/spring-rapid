@@ -6,10 +6,10 @@ import io.github.vincemann.generic.crud.lib.controller.springAdapter.idFetchingS
 import io.github.vincemann.generic.crud.lib.controller.springAdapter.mediaTypeStrategy.DtoReadingException;
 import io.github.vincemann.generic.crud.lib.controller.springAdapter.mediaTypeStrategy.MediaTypeStrategy;
 import io.github.vincemann.generic.crud.lib.controller.springAdapter.validationStrategy.ValidationStrategy;
-import io.github.vincemann.generic.crud.lib.controller.dtoMapper.DtoMapper;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -50,6 +50,7 @@ import java.util.stream.Collectors;
  *
  */
 @Slf4j
+@Getter
 public abstract class DtoCrudController_SpringAdapter
         <
                 ServiceE extends IdentifiableEntity<Id>,
@@ -63,18 +64,27 @@ public abstract class DtoCrudController_SpringAdapter
 
     private EndpointService endpointService;
     private String entityNameInUrl;
-    @Getter
     private String baseUrl;
+    @Setter
     private String findMethodName ="get";
+    @Setter
     private String createMethodName="create";
+    @Setter
     private String deleteMethodName="delete";
+    @Setter
     private String updateMethodName="update";
+    @Setter
     private String findAllMethodName = "getAll";
 
+    @Setter
     private String findUrl;
+    @Setter
     private String updateUrl;
+    @Setter
     private String getAllUrl;
+    @Setter
     private String deleteUrl;
+    @Setter
     private String createUrl;
 
     private IdFetchingStrategy<Id> idIdFetchingStrategy;
@@ -83,45 +93,31 @@ public abstract class DtoCrudController_SpringAdapter
     private EndpointsExposureDetails endpointsExposureDetails;
     private List<Plugin<? super ServiceE,? super Dto,? super Id>> plugins = new ArrayList<>();
 
-    //todo implement methods, that only return id, and not whole dtos
-    public DtoCrudController_SpringAdapter(Service crudService,
-                                           EndpointService endpointService,
-                                           String entityNameInUrl,
-                                           IdFetchingStrategy<Id> idIdFetchingStrategy,
-                                           MediaTypeStrategy mediaTypeStrategy,
-                                           ValidationStrategy<? super Dto,? super Id> validationStrategy,
-                                           DtoMapper dtoMapper,
-                                           EndpointsExposureDetails endpointsExposureDetails,
-                                           Plugin<? super ServiceE,? super Dto,? super Id>... plugins
-    ) {
-        super(crudService, dtoMapper);
-        constructorInit(endpointService,entityNameInUrl,idIdFetchingStrategy,mediaTypeStrategy,validationStrategy,endpointsExposureDetails,plugins);
+    public DtoCrudController_SpringAdapter() { }
+
+
+    public DtoCrudController_SpringAdapter(Plugin<? super ServiceE, ? super Dto, ? super Id>... plugins) {
+        this.initPlugins(plugins);
     }
 
-    public DtoCrudController_SpringAdapter(Service crudService,
-                                           EndpointService endpointService,
-                                           IdFetchingStrategy<Id> idIdFetchingStrategy,
-                                           MediaTypeStrategy mediaTypeStrategy,
-                                           ValidationStrategy<? super Dto,? super Id> validationStrategy,
-                                           DtoMapper dtoMapper,
-                                           EndpointsExposureDetails endpointsExposureDetails,
-                                           Plugin<? super ServiceE,? super Dto,? super Id>... plugins
-    ) {
-        super(crudService, dtoMapper);
-        constructorInit(endpointService,getServiceEntityClass().getSimpleName().toLowerCase(),idIdFetchingStrategy,mediaTypeStrategy,validationStrategy,endpointsExposureDetails,plugins);
-    }
-
-    private void constructorInit(EndpointService endpointService, String entityNameInUrl, IdFetchingStrategy<Id> idIdFetchingStrategy, MediaTypeStrategy mediaTypeStrategy, ValidationStrategy<? super Dto,? super Id> validationStrategy, EndpointsExposureDetails endpointsExposureDetails, Plugin<? super ServiceE,? super Dto,? super Id>... plugins){
+    @Autowired
+    public void initializeRequestMapping(EndpointService endpointService, EndpointsExposureDetails endpointsExposureDetails, MediaTypeStrategy mediaTypeStrategy) {
         this.endpointService = endpointService;
-        this.entityNameInUrl = entityNameInUrl;
-        this.baseUrl="/"+entityNameInUrl+"/";
-        this.idIdFetchingStrategy=idIdFetchingStrategy;
+        this.endpointsExposureDetails=endpointsExposureDetails;
         this.mediaTypeStrategy=mediaTypeStrategy;
-        this.validationStrategy = validationStrategy;
-        this.endpointsExposureDetails = endpointsExposureDetails;
+        this.entityNameInUrl=getServiceEntityClass().getSimpleName().toLowerCase();
+        this.baseUrl="/"+entityNameInUrl+"/";
         initUrls();
         initRequestMapping();
-        this.initPlugins(plugins);
+    }
+    @Autowired
+    public void setIdIdFetchingStrategy(IdFetchingStrategy<Id> idIdFetchingStrategy) {
+        this.idIdFetchingStrategy = idIdFetchingStrategy;
+    }
+
+    @Autowired
+    public void setValidationStrategy(ValidationStrategy<? super Dto, ? super Id> validationStrategy) {
+        this.validationStrategy = validationStrategy;
     }
 
     private void initUrls(){
@@ -140,7 +136,7 @@ public abstract class DtoCrudController_SpringAdapter
 
         });
         this.plugins.addAll(plugins);
-        this.getBasicCrudControllerPlugins().addAll(plugins);
+        this.getBasicPlugins().addAll(plugins);
     }
 
 
@@ -313,7 +309,8 @@ public abstract class DtoCrudController_SpringAdapter
 
     @Getter
     @Setter
-    public static abstract class Plugin<ServiceE extends IdentifiableEntity<Id>,Dto extends IdentifiableEntity<Id>, Id extends Serializable> implements BasicDtoCrudController.Plugin<ServiceE,Id> {
+    public static abstract class Plugin<ServiceE extends IdentifiableEntity<Id>,Dto extends IdentifiableEntity<Id>, Id extends Serializable>
+            implements BasicDtoCrudController.Plugin<ServiceE,Id> {
 
         private DtoCrudController_SpringAdapter controller;
 
@@ -345,136 +342,4 @@ public abstract class DtoCrudController_SpringAdapter
         public void afterFindAllEntities(Set<? extends ServiceE> all) { }
     }
 
-
-
-    /*private Long getEntityIdFromPathVar(String url) throws MissingIdException {
-        Path urlPath = Paths.find(url);
-        String entityId=null;
-        int index=0;
-        for (Path path: urlPath){
-            if(path.toString().equals(entityNameInUrl)){
-                if(urlPath.getNameCount()>=index+1) {
-                    entityId = urlPath.getName(index + 1).toString();
-                }else {
-                    throw new MissingIdException("Could not retrieve PathVar " + entityIdParamKey + " from url");
-                }
-                break;
-            }
-        }
-
-        if(entityId==null){
-            throw new MissingIdException("Could not retrieve PathVar " + entityIdParamKey + " from url");
-        }
-        try {
-            return Long.parseLong(entityId);
-        }catch (NumberFormatException e){
-            throw new MissingIdException("PathVar " + entityIdParamKey + " is not of Type Long",e);
-        }
-
-    }*/
-
-    protected EndpointService getEndpointService() {
-        return endpointService;
-    }
-
-
-    public String getFindUrl() {
-        return findUrl;
-    }
-
-    public void setFindUrl(String findUrl) {
-        this.findUrl = findUrl;
-    }
-
-    public String getUpdateUrl() {
-        return updateUrl;
-    }
-
-    public void setUpdateUrl(String updateUrl) {
-        this.updateUrl = updateUrl;
-    }
-
-    public String getGetAllUrl() {
-        return getAllUrl;
-    }
-
-    public void setGetAllUrl(String getAllUrl) {
-        this.getAllUrl = getAllUrl;
-    }
-
-    public String getDeleteUrl() {
-        return deleteUrl;
-    }
-
-    public void setDeleteUrl(String deleteUrl) {
-        this.deleteUrl = deleteUrl;
-    }
-
-    public String getCreateUrl() {
-        return createUrl;
-    }
-
-    public void setCreateUrl(String createUrl) {
-        this.createUrl = createUrl;
-    }
-
-    public String getEntityNameInUrl() {
-        return entityNameInUrl;
-    }
-
-    public String getFindMethodName() {
-        return findMethodName;
-    }
-
-    public String getCreateMethodName() {
-        return createMethodName;
-    }
-
-    public String getDeleteMethodName() {
-        return deleteMethodName;
-    }
-
-    public String getUpdateMethodName() {
-        return updateMethodName;
-    }
-
-    public String getFindAllMethodName() {
-        return findAllMethodName;
-    }
-
-    public void setFindAllMethodName(String findAllMethodName) {
-        this.findAllMethodName = findAllMethodName;
-    }
-
-    public void setFindMethodName(String findMethodName) {
-        this.findMethodName = findMethodName;
-    }
-
-    public void setCreateMethodName(String createMethodName) {
-        this.createMethodName = createMethodName;
-    }
-
-    public void setDeleteMethodName(String deleteMethodName) {
-        this.deleteMethodName = deleteMethodName;
-    }
-
-    public void setUpdateMethodName(String updateMethodName) {
-        this.updateMethodName = updateMethodName;
-    }
-
-    public IdFetchingStrategy<Id> getIdIdFetchingStrategy() {
-        return idIdFetchingStrategy;
-    }
-
-    public MediaTypeStrategy getMediaTypeStrategy() {
-        return mediaTypeStrategy;
-    }
-
-    public ValidationStrategy<? super Dto,? super Id> getValidationStrategy() {
-        return validationStrategy;
-    }
-
-    public EndpointsExposureDetails getEndpointsExposureDetails() {
-        return endpointsExposureDetails;
-    }
 }

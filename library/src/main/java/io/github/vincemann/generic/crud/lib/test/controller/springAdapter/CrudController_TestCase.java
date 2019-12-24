@@ -2,7 +2,7 @@ package io.github.vincemann.generic.crud.lib.test.controller.springAdapter;
 
 
 /**
- * Maps to all test methods in {@link UrlParamId_DtoCrudController_SpringAdapter_IT}
+ * Maps to all test methods in {@link UrlParamId_ControllerIntegrationTest}
  */
 public enum CrudController_TestCase {
     SUCCESSFUL_CREATE,

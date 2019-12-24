@@ -3,7 +3,7 @@ package io.github.vincemann.generic.crud.lib.test.controller.springAdapter.plugi
 import io.github.vincemann.generic.crud.lib.controller.dtoMapper.EntityMappingException;
 import io.github.vincemann.generic.crud.lib.model.IdentifiableEntity;
 import io.github.vincemann.generic.crud.lib.service.exception.NoIdException;
-import io.github.vincemann.generic.crud.lib.test.controller.springAdapter.UrlParamId_DtoCrudController_SpringAdapter_IT;
+import io.github.vincemann.generic.crud.lib.test.controller.springAdapter.UrlParamId_ControllerIntegrationTest;
 import io.github.vincemann.generic.crud.lib.test.equalChecker.EqualChecker;
 import io.github.vincemann.generic.crud.lib.test.equalChecker.ReflectionEqualChecker;
 import lombok.Getter;
@@ -22,7 +22,7 @@ import java.util.Set;
  */
 @Component
 @Slf4j
-public class ServiceDeepEqualPlugin extends UrlParamId_DtoCrudController_SpringAdapter_IT.Plugin<IdentifiableEntity<Long>,IdentifiableEntity<Long>,Long> {
+public class ServiceDeepEqualPlugin extends UrlParamId_ControllerIntegrationTest.Plugin<IdentifiableEntity<Long>,IdentifiableEntity<Long>,Long> {
 
     @Setter
     @Getter

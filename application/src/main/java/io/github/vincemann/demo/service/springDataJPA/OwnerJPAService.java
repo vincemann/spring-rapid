@@ -7,6 +7,7 @@ import io.github.vincemann.demo.service.plugins.AclPlugin;
 import io.github.vincemann.demo.service.plugins.SaveNameToWordPressDb_Plugin;
 import io.github.vincemann.generic.crud.lib.service.jpa.JPACrudService;
 import io.github.vincemann.generic.crud.lib.service.plugin.BiDirParentPlugin;
+import io.github.vincemann.generic.crud.lib.service.plugin.SessionReattachmentPlugin;
 import org.springframework.context.annotation.Primary;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Service;
@@ -23,14 +24,16 @@ public class OwnerJPAService extends JPACrudService<Owner,Long,OwnerRepository> 
             OwnerRepository jpaRepository,
             BiDirParentPlugin<Owner,Long> biDirParentPlugin,
             AclPlugin aclPlugin,
-            SaveNameToWordPressDb_Plugin saveNameToWordPressDbPlugin
+            SaveNameToWordPressDb_Plugin saveNameToWordPressDbPlugin,
+            SessionReattachmentPlugin sessionReattachmentPlugin
     )
     {
         super(
                 jpaRepository,
                 biDirParentPlugin,
                 aclPlugin,
-                saveNameToWordPressDbPlugin
+                saveNameToWordPressDbPlugin,
+                sessionReattachmentPlugin
         );
     }
 

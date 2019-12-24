@@ -18,17 +18,6 @@ import io.github.vincemann.generic.crud.lib.controller.dtoMapper.DtoMapper;
 @Controller
 public class VetController extends DtoCrudController_SpringAdapter<Vet, VetDto,Long, VetRepository,VetService> {
 
-    public VetController(VetService crudService, MediaTypeStrategy mediaTypeStrategy, IdFetchingStrategy<Long> longIdFetchingStrategy, ValidationStrategy validationStrategy, DtoMapper dtoMapper, EndpointsExposureDetails endpointsExposureDetails, EndpointService endpointService) {
-        super(crudService,
-                endpointService,
-                longIdFetchingStrategy,
-                mediaTypeStrategy,
-                validationStrategy,
-                dtoMapper,
-                endpointsExposureDetails
-        );
-    }
-
 
 
     @RequestMapping({"/vets", "/vets/index", "/vets/index.html", "/vets.html"})

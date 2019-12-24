@@ -4,6 +4,7 @@ import lombok.*;
 import org.apache.commons.collections4.MultiSet;
 import org.apache.commons.collections4.MultiValuedMap;
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import javax.persistence.Entity;
@@ -15,6 +16,10 @@ import java.util.stream.Collectors;
 
 
 class ReflectionUtilsTest {
+
+    private interface SpecialSnowflake {
+
+    }
 
     @AllArgsConstructor
     @Entity
@@ -43,13 +48,35 @@ class ReflectionUtilsTest {
                     '}';
         }
     }
+    @Entity
+    @Getter
+    @Setter
+    @AllArgsConstructor
+    @NoArgsConstructor
+    @ToString
+    private class UniDirParent extends Person implements SpecialSnowflake {
+        private String name;
+        private String hey;
+        private UniDirChild uniDirChild;
+    }
 
     @Entity
     @Getter
     @Setter
     @AllArgsConstructor
     @NoArgsConstructor
-    private class Child extends Person{
+    @ToString
+    private class UniDirChild extends Person implements SpecialSnowflake{
+        private String name;
+        private String heyho;
+    }
+
+    @Entity
+    @Getter
+    @Setter
+    @AllArgsConstructor
+    @NoArgsConstructor
+    private class Child extends Person implements SpecialSnowflake{
         private String name;
         private String fieldWithNullValue;
         @OneToMany
@@ -57,6 +84,7 @@ class ReflectionUtilsTest {
         @ManyToOne
         private Parent parent;
         private NoEntity noEntity;
+        private UniDirParent uniDirParent;
 
         @Override
         public String toString() {
@@ -71,7 +99,7 @@ class ReflectionUtilsTest {
     @Setter
     @AllArgsConstructor
     @NoArgsConstructor
-    private class GrandChild extends  Person{
+    private class GrandChild extends  Person implements SpecialSnowflake{
         private String name;
         private Set<NoEntity> noEntities;
         private Set<NoEntity> nullElementList;
@@ -114,57 +142,83 @@ class ReflectionUtilsTest {
         private int pleaseNotFindThis;
     }
 
+    GrandChild grandChild1;
+    GrandChild grandChild2;
+    UniDirChild uniDirChild;
+    UniDirParent uniDirParent;
+    Child child;
+    Parent parent;
+    LastEntity lastEntity1;
+    LastEntity lastEntity2;
+    LastEntity lastEntity3;
 
-    @Test
-    void getAllFields_WithoutThisField_OfAllMemberVars_AnnotatedWith() throws IllegalAccessException, NoSuchFieldException {
-//GIVEN
-        GrandChild grandChild1 = new GrandChild();
+    @BeforeEach
+    void setUp() {
+        //setup ObjectGraph for tests
+        grandChild1 = new GrandChild();
         grandChild1.setName("grandchild 1");
         grandChild1.setNoEntities(new HashSet<>(Arrays.asList(new NoEntity("dont",12))));
         grandChild1.setNullElementList(new HashSet<>(Arrays.asList(null,null)));
 
-        GrandChild grandChild2 = new GrandChild();
+        grandChild2 = new GrandChild();
         grandChild2.setName("grandchild2");
 
-        Child child = new Child();
+        uniDirChild = new UniDirChild();
+        uniDirChild.setHeyho("heyho");
+        uniDirChild.setName("uniDirChild");
+
+        uniDirParent = new UniDirParent();
+        uniDirParent.setHey("hey");
+        uniDirParent.setName("uniDirParent");
+        uniDirParent.setUniDirChild(uniDirChild);
+
+        child = new Child();
         child.setName("child");
         child.setGrandChildren(new HashSet<>(Arrays.asList(grandChild1,grandChild2)));
         child.setNoEntity(new NoEntity("please dont find",99));
         child.setFieldWithNullValue(null);
+        child.setUniDirParent(uniDirParent);
 
-        Parent parent = new Parent();
+        parent = new Parent();
         parent.setHeight(182);
         parent.setName("parent");
         parent.setChildren(Collections.singleton(child));
 
-        LastEntity lastEntity1 = new LastEntity();
+        child.setParent(parent);
+
+        lastEntity1 = new LastEntity();
         lastEntity1.setIAmTheLastNote("i am 1");
         lastEntity1.setHeight(1);
         lastEntity1.setGrandChild(grandChild1);
 
-        LastEntity lastEntity2 = new LastEntity();
+
+        lastEntity2 = new LastEntity();
         lastEntity2.setIAmTheLastNote("i am 2");
         lastEntity2.setHeight(2);
         lastEntity2.setGrandChild(grandChild2);
 
-        LastEntity lastEntity3 = new LastEntity();
+        lastEntity3 = new LastEntity();
         lastEntity3.setIAmTheLastNote("i am 3");
         lastEntity3.setHeight(3);
         lastEntity3.setGrandChild(grandChild1);
 
         grandChild1.setLastEntities(new HashSet<>(Arrays.asList(lastEntity1,lastEntity3)));
         grandChild2.setLastEntities(new HashSet<>(Arrays.asList(lastEntity2)));
+    }
+
+    @Test
+    void findFieldsAndTheirDeclaringInstances_OfAllMemberVars_AnnotatedWith() throws IllegalAccessException, NoSuchFieldException {
 //WHEN
         MultiValuedMap<Field, Object> field_instances_map =
-                ReflectionUtils.getAllFieldsAnnotatedWith_WithoutThisField_OfAllMemberVars_AnnotatedWith(parent, Entity.class, true,false);
+                ReflectionUtils.findFieldsAndTheirDeclaringInstances_OfAllMemberVars_AnnotatedWith(parent, Entity.class, true,false);
 //THEN
         Collection<Map.Entry<Field, Object>> entries = field_instances_map.entries();
         for (Map.Entry<Field, Object> entry : entries) {
             System.out.println("entry: "+" fieldclass: "+entry.getKey().getDeclaringClass().getSimpleName()+", fieldname:" + entry.getKey().getName() + ", instance:" + entry.getValue().toString());
         }
-        Assertions.assertEquals(8,field_instances_map.size());
+        Assertions.assertEquals(10,field_instances_map.size());
 
-        //have all instances of type Entity been found in the entityGraph?
+        //have all (entity instance as member containing) instances of type Entity been found in the entityGraph?
         Collection<Object> instances = field_instances_map.values();
         Assertions.assertTrue(instances.contains(parent));
         Assertions.assertTrue(instances.contains(child));
@@ -173,6 +227,7 @@ class ReflectionUtilsTest {
         Assertions.assertTrue(instances.contains(lastEntity1));
         Assertions.assertTrue(instances.contains(lastEntity2));
         Assertions.assertTrue(instances.contains(lastEntity3));
+        Assertions.assertTrue(instances.contains(uniDirParent));
 
         //have all expected fields been found
         MultiSet<Field> keys = field_instances_map.keys();
@@ -188,6 +243,17 @@ class ReflectionUtilsTest {
         Assertions.assertEquals(1,childEntriesFoundByFieldName.size());
         Map.Entry<Field, Object> childEntry = childEntriesFoundByFieldName.get(0);
         Assertions.assertEquals(parent,childEntry.getValue());
+
+        List<Map.Entry<Field, Object>> uniDirParentFieldsFoundByFieldName = entries.stream().filter(entry -> entry.getKey().getName().equals("uniDirParent")).collect(Collectors.toList());
+        Assertions.assertEquals(1,uniDirParentFieldsFoundByFieldName.size());
+        Map.Entry<Field, Object> uniDirParentEntry = uniDirParentFieldsFoundByFieldName.get(0);
+        Assertions.assertEquals(child,uniDirParentEntry.getValue());
+
+
+        List<Map.Entry<Field, Object>> uniChildFieldsFoundByFieldName = entries.stream().filter(entry -> entry.getKey().getName().equals("uniDirChild")).collect(Collectors.toList());
+        Assertions.assertEquals(1,uniChildFieldsFoundByFieldName.size());
+        Map.Entry<Field, Object> uniDirChildEntry = uniChildFieldsFoundByFieldName.get(0);
+        Assertions.assertEquals(uniDirParent,uniDirChildEntry.getValue());
 
         //to field with name parent, child instance must be mapped
         List<Map.Entry<Field, Object>> parentEntriesFoundByFieldName = entries.stream().filter(entry -> entry.getKey().getName().equals("parent")).collect(Collectors.toList());
@@ -215,6 +281,21 @@ class ReflectionUtilsTest {
         Assertions.assertEquals(1,grandChildEntriesFoundByFieldName.stream().filter(entry -> entry.getValue().equals(lastEntity2)).count());
         Assertions.assertEquals(1,grandChildEntriesFoundByFieldName.stream().filter(entry -> entry.getValue().equals(lastEntity3)).count());
     }
+
+    @Test
+    public void findObjects_OfAllMemberVars_AssignableFrom() throws IllegalAccessException {
+        Set<Object> result = ReflectionUtils.findObjects_OfAllMemberVars_AssignableFrom(parent, SpecialSnowflake.class, true);
+//        result.forEach(System.out::println);
+        Assertions.assertEquals(5,result.size());
+        Assertions.assertTrue(result.contains(child));
+        Assertions.assertTrue(result.contains(grandChild1));
+        Assertions.assertTrue(result.contains(grandChild2));
+        Assertions.assertTrue(result.contains(uniDirParent));
+        Assertions.assertTrue(result.contains(uniDirChild));
+
+    }
+
+
 
 
 }

@@ -3,6 +3,7 @@ package io.github.vincemann.generic.crud.lib.controller;
 import io.github.vincemann.generic.crud.lib.controller.dtoMapper.EntityMappingException;
 import lombok.Getter;
 import lombok.Setter;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -29,7 +30,7 @@ import java.util.*;
  * @param <Dto>      Dto Type corresponding to {@link ServiceE}
  * @param <Id>       Id Type of {@link ServiceE}
  */
-@Getter
+
 public abstract class BasicDtoCrudController
         <
                 ServiceE extends IdentifiableEntity<Id>,
@@ -40,24 +41,43 @@ public abstract class BasicDtoCrudController
         >
         implements DtoCrudController<Dto, Id> {
 
+    @Getter
     private Service crudService;
+    @Getter
     private DtoMapper dtoMapper;
     @SuppressWarnings("unchecked")
+    @Getter
     private Class<ServiceE> serviceEntityClass = (Class<ServiceE>) ((ParameterizedType) this.getClass().getGenericSuperclass()).getActualTypeArguments()[0];
     @SuppressWarnings("unchecked")
+    @Getter
     private Class<Dto> dtoClass = (Class<Dto>) ((ParameterizedType) this.getClass().getGenericSuperclass()).getActualTypeArguments()[1];
-    private List<Plugin<? super ServiceE,? super Id>> basicCrudControllerPlugins = new ArrayList<>();
+    private List<Plugin<? super ServiceE,? super Id>> plugins = new ArrayList<>();
 
-    public BasicDtoCrudController(Service crudService,
-                                  DtoMapper dtoMapper,
-                                  AbstractPlugin<? super ServiceE,? super Id>... crudControllerPlugins
-    ) {
-        List<AbstractPlugin<? super ServiceE, ? super Id>> plugins = Arrays.asList(crudControllerPlugins);
-        plugins.forEach(plugin -> plugin.setController(this));
-        this.basicCrudControllerPlugins.addAll(plugins);
+
+
+    public BasicDtoCrudController(Plugin<? super ServiceE,? super Id>... controllerAwarePlugins) {
+        List<Plugin<? super ServiceE, ? super Id>> plugins = Arrays.asList(controllerAwarePlugins);
+        plugins.forEach(plugin -> {
+            if(plugin instanceof ControllerAwarePlugin) {
+                ((ControllerAwarePlugin<? super ServiceE, ? super Id>) plugin).setController(this);
+            }
+            this.plugins.add(plugin);
+        });
+    }
+
+    public BasicDtoCrudController() {
+    }
+
+    @Autowired
+    public void setCrudService(Service crudService) {
         this.crudService = crudService;
+    }
+
+    @Autowired
+    public void setDtoMapper(DtoMapper dtoMapper) {
         this.dtoMapper = dtoMapper;
     }
+
 
     //todo implement methods that just return id and not whole dtos (create, update)
 
@@ -88,20 +108,20 @@ public abstract class BasicDtoCrudController
     }
 
     protected void beforeFindAllEntities(){
-        basicCrudControllerPlugins.forEach(Plugin::beforeFindAllEntities);
+        plugins.forEach(Plugin::beforeFindAllEntities);
     }
 
     protected void afterFindAllEntities(Set<ServiceE> all){
-        basicCrudControllerPlugins.forEach(plugin -> plugin.afterFindAllEntities(all));
+        plugins.forEach(plugin -> plugin.afterFindAllEntities(all));
     }
 
 
     protected void beforeFindEntity(Id id) {
-        basicCrudControllerPlugins.forEach(plugin -> plugin.beforeFindEntity(id));
+        plugins.forEach(plugin -> plugin.beforeFindEntity(id));
     }
 
     protected void afterFindEntity(ServiceE foundEntity) {
-        basicCrudControllerPlugins.forEach(plugin -> plugin.afterFindEntity(foundEntity));
+        plugins.forEach(plugin -> plugin.afterFindEntity(foundEntity));
     }
 
     @Override
@@ -116,11 +136,11 @@ public abstract class BasicDtoCrudController
 
 
     protected void beforeCreateEntity(ServiceE entity) {
-        basicCrudControllerPlugins.forEach(plugin -> plugin.beforeCreateEntity(entity));
+        plugins.forEach(plugin -> plugin.beforeCreateEntity(entity));
     }
 
     protected void afterCreateEntity(ServiceE entity) {
-        basicCrudControllerPlugins.forEach(plugin -> plugin.afterCreateEntity(entity));
+        plugins.forEach(plugin -> plugin.afterCreateEntity(entity));
     }
 
     @Override
@@ -135,11 +155,11 @@ public abstract class BasicDtoCrudController
     }
 
     protected void beforeUpdateEntity(ServiceE entity) {
-        basicCrudControllerPlugins.forEach(plugin -> plugin.beforeUpdateEntity(entity));
+        plugins.forEach(plugin -> plugin.beforeUpdateEntity(entity));
     }
 
     protected void afterUpdateEntity(ServiceE entity) {
-        basicCrudControllerPlugins.forEach(plugin -> plugin.afterUpdateEntity(entity));
+        plugins.forEach(plugin -> plugin.afterUpdateEntity(entity));
     }
 
     @Override
@@ -151,11 +171,11 @@ public abstract class BasicDtoCrudController
     }
 
     protected void beforeDeleteEntity(Id id) {
-        basicCrudControllerPlugins.forEach(plugin -> plugin.beforeDeleteEntity(id));
+        plugins.forEach(plugin -> plugin.beforeDeleteEntity(id));
     }
 
     protected void afterDeleteEntity(Id id) {
-        basicCrudControllerPlugins.forEach(plugin -> plugin.afterDeleteEntity(id));
+        plugins.forEach(plugin -> plugin.afterDeleteEntity(id));
     }
 
     private ResponseEntity<Collection<Dto>> ok(Collection<Dto> dtoCollection){
@@ -192,9 +212,12 @@ public abstract class BasicDtoCrudController
 
     @Setter
     @Getter
-    public static abstract class AbstractPlugin<ServiceE extends IdentifiableEntity<Id>,Id extends Serializable> implements BasicDtoCrudController.Plugin<ServiceE,Id> {
+    public static abstract class ControllerAwarePlugin<ServiceE extends IdentifiableEntity<Id>,Id extends Serializable> implements BasicDtoCrudController.Plugin<ServiceE,Id> {
         private BasicDtoCrudController controller;
     }
 
 
+    public List<Plugin<? super ServiceE, ? super Id>> getBasicPlugins() {
+        return plugins;
+    }
 }

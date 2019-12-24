@@ -9,8 +9,8 @@ import io.github.vincemann.generic.crud.lib.test.equalChecker.EqualChecker;
 import io.github.vincemann.generic.crud.lib.test.testExecutionListeners.ResetDatabaseTestExecutionListener;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
-import org.hibernate.Hibernate;
 import org.junit.jupiter.api.Assertions;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.test.context.TestExecutionListeners;
 
@@ -18,6 +18,8 @@ import java.io.Serializable;
 import java.util.Optional;
 
 /**
+ * Abstract Test Class, offering many convenience methods for crud operation testing.
+ * It is expected that Repository-Layer works properly.
  *
  * @param <S>       CrudServiceImplType
  * @param <E>       TestEntityType
@@ -28,7 +30,7 @@ import java.util.Optional;
         mergeMode = TestExecutionListeners.MergeMode.MERGE_WITH_DEFAULTS,
         listeners = {ResetDatabaseTestExecutionListener.class}
 )
-public abstract class CrudServiceTest
+public abstract class CrudServiceIntegrationTest
                 <
                         S extends CrudService<E,Id,R>,
                         R extends CrudRepository<E,Id>,
@@ -44,88 +46,104 @@ public abstract class CrudServiceTest
     @Getter
     private R repository;
 
-    public CrudServiceTest(S crudService, EqualChecker<E> equalChecker, R repository) {
-        this.crudService = crudService;
+
+    @Autowired
+    public void setEqualChecker(EqualChecker<E> equalChecker) {
         this.equalChecker = equalChecker;
+    }
+
+    @Autowired
+    public void setCrudService(S crudService) {
+        this.crudService = crudService;
+    }
+
+    @Autowired
+    public void setRepository(R repository) {
         this.repository = repository;
     }
 
-
-    protected E saveEntity_ShouldSucceed(E entityToSave) throws NoIdException, BadEntityException {
+    protected E saveEntity_ShouldSucceed(E entityToSave) throws BadEntityException {
         return saveEntity_ShouldSucceed(entityToSave,equalChecker);
     }
-    protected E saveEntity_ShouldSucceed(E entityToSave, EqualChecker<E> equalChecker) throws BadEntityException, NoIdException {
+    protected E saveEntity_ShouldSucceed(E entityToSave, EqualChecker<E> equalChecker) throws BadEntityException {
         //given
         Assertions.assertNull(entityToSave.getId());
 
         //when
-        E savedTestEntity = crudService.save(entityToSave);
+        E savedTestEntity = serviceSave(entityToSave);
 
         //then
-        //savedTestEntity = entityToSafe (equal by reference)
         Assertions.assertNotNull(savedTestEntity);
         Assertions.assertNotNull(savedTestEntity.getId());
         Assertions.assertNotEquals(0,savedTestEntity.getId());
 
-        Optional<E> savedEntityFromService = crudService.findById(savedTestEntity.getId());
-        Assertions.assertTrue(savedEntityFromService.isPresent());
         //if service save method does not copy entityToSave, then entitytoSaveRef = savedEntityFromServiceRef, otherwise not
-        Id oldId_EntityToSave = entityToSave.getId();
-        entityToSave.setId(savedEntityFromService.get().getId());
+        Optional<E> repoEntity = repoFindById(savedTestEntity.getId());
+        Assertions.assertTrue(repoEntity.isPresent());
 
-        Assertions.assertTrue(equalChecker.isEqual(entityToSave,savedEntityFromService.get()));
+        Id oldId_EntityToSave = entityToSave.getId();
+        entityToSave.setId(savedTestEntity.getId());
+
+        Assertions.assertTrue(equalChecker.isEqual(entityToSave,repoEntity.get()));
         Assertions.assertTrue(equalChecker.isEqual(entityToSave,savedTestEntity));
 
+        //restore old id
         entityToSave.setId(oldId_EntityToSave);
-        Optional<E> repoEntity = repository.findById(savedTestEntity.getId());
-        Assertions.assertTrue(repoEntity.isPresent());
+
         return savedTestEntity;
     }
 
     protected void saveEntity_ShouldFail(E entityToSave, Class<Exception> expectedException) {
         //when
-        Assertions.assertThrows(expectedException, () -> crudService.save(entityToSave));
+        Assertions.assertThrows(expectedException, () -> serviceSave(entityToSave));
     }
 
+    protected Optional<E> serviceFindById(Id id) throws NoIdException {
+        return getCrudService().findById(id);
+    }
 
+    protected E serviceSave(E entity) throws BadEntityException {
+        return getCrudService().save(entity);
+    }
+
+    protected Optional<E> repoFindById(Id id){
+        return getRepository().findById(id);
+    }
+
+    protected E repoSave(E entityToSave){
+        return getRepository().save(entityToSave);
+    }
+
+    protected E serviceUpdate(E entity) throws EntityNotFoundException, BadEntityException, NoIdException {
+        return getCrudService().update(entity);
+    }
 
     protected void deleteEntityById_ShouldSucceed(Id id) throws EntityNotFoundException, NoIdException {
         //given
         Assertions.assertNotNull(id);
-        Optional<E> entityToDelete = crudService.findById(id);
+        Optional<E> entityToDelete = repoFindById(id);
         Assertions.assertTrue(entityToDelete.isPresent());
-
-        Optional<E> repoEntity = repository.findById(id);
-        Assertions.assertTrue(repoEntity.isPresent());
 
         //when
         crudService.deleteById(id);
         //then
-        Optional<E> deletedEntity = crudService.findById(id);
+        Optional<E> deletedEntity = repoFindById(id);
         Assertions.assertFalse(deletedEntity.isPresent());
-
-        Optional<E> repoEntityAfterDelete = repository.findById(id);
-        Assertions.assertFalse(repoEntityAfterDelete.isPresent());
     }
 
     protected void deleteExistingEntityById_ShouldFail(Id id, Class<Exception> expectedException) throws NoIdException {
         //given
         //entity is present
         Assertions.assertNotNull(id);
-        Optional<E> entityToDelete = crudService.findById(id);
-        Assertions.assertTrue(entityToDelete.isPresent());
 
-        Optional<E> repoEntity = repository.findById(id);
+        Optional<E> repoEntity = repoFindById(id);
         Assertions.assertTrue(repoEntity.isPresent());
 
         //when
         Assertions.assertThrows(expectedException,() -> crudService.deleteById(id));
         //then
         //still present
-        Optional<E> deletedEntity = crudService.findById(id);
-        Assertions.assertTrue(deletedEntity.isPresent());
-
-        Optional<E> repoEntityAfterDelete = repository.findById(id);
+        Optional<E> repoEntityAfterDelete = repoFindById(id);
         Assertions.assertTrue(repoEntityAfterDelete.isPresent());
     }
 
@@ -134,10 +152,10 @@ public abstract class CrudServiceTest
         return updateEntity_ShouldSucceed(newEntity,equalChecker);
     }
 
-    private void saveEntityForUpdate(E entityToUpdate, E newEntity) throws NoIdException, BadEntityException {
+    private void saveEntityForUpdate(E entityToUpdate, E newEntity) throws BadEntityException {
         Assertions.assertNull(entityToUpdate.getId());
         Assertions.assertNull(newEntity.getId());
-        E savedEntityToUpdate = saveEntity_ShouldSucceed(entityToUpdate);
+        E savedEntityToUpdate = repoSave(entityToUpdate);
         newEntity.setId(savedEntityToUpdate.getId());
     }
     protected E updateEntity_ShouldSucceed(E entityToUpdate, E newEntity,EqualChecker<E> equalChecker) throws BadEntityException, EntityNotFoundException, NoIdException {
@@ -153,27 +171,23 @@ public abstract class CrudServiceTest
         //given
         Assertions.assertNotNull(newEntity);
         Assertions.assertNotNull(newEntity.getId());
-        Optional<E> entityToUpdate = crudService.findById(newEntity.getId());
+        Optional<E> entityToUpdate = repoFindById(newEntity.getId());
         Assertions.assertTrue(entityToUpdate.isPresent());
         Assertions.assertFalse(equalChecker.isEqual(entityToUpdate.get(),newEntity));
 
-        Optional<E> repoEntity = repository.findById(newEntity.getId());
-        Assertions.assertTrue(repoEntity.isPresent());
-
         //when
-        E updatedEntity = crudService.update(newEntity);
+        E updatedEntity = serviceUpdate(newEntity);
 
         //then
         Assertions.assertEquals(updatedEntity.getId(),newEntity.getId());
-        Optional<E> updatedRepoEntity = repository.findById(updatedEntity.getId());
+        Optional<E> updatedRepoEntity = repoFindById(updatedEntity.getId());
         Assertions.assertTrue(updatedRepoEntity.isPresent());
-        Assertions.assertFalse(equalChecker.isEqual(repoEntity.get(),updatedRepoEntity.get()));
 
 
         Assertions.assertTrue(equalChecker.isEqual(updatedEntity,newEntity));
-        Optional<E> updatedEntityFromService = crudService.findById(newEntity.getId());
-        Assertions.assertTrue(updatedEntityFromService.isPresent());
-        Assertions.assertTrue(equalChecker.isEqual(updatedEntity,updatedEntityFromService.get()));
+        Optional<E> updatedEntityFromRepo = repoFindById(newEntity.getId());
+        Assertions.assertTrue(updatedEntityFromRepo.isPresent());
+        Assertions.assertTrue(equalChecker.isEqual(updatedEntity,updatedEntityFromRepo.get()));
 
         return updatedEntity;
     }
@@ -197,45 +211,39 @@ public abstract class CrudServiceTest
         //entity to update is present
         Assertions.assertNotNull(newEntity);
         Assertions.assertNotNull(newEntity.getId());
-        Optional<E> entityToUpdate = crudService.findById(newEntity.getId());
+        Optional<E> entityToUpdate = repoFindById(newEntity.getId());
         Assertions.assertTrue(entityToUpdate.isPresent());
         Assertions.assertFalse(equalChecker.isEqual(entityToUpdate.get(),newEntity));
 
-        Optional<E> repoEntity = repository.findById(newEntity.getId());
-        Assertions.assertTrue(repoEntity.isPresent());
 
         //when
-        Assertions.assertThrows(expectedException,() -> crudService.update(newEntity));
+        Assertions.assertThrows(expectedException,() -> serviceUpdate(newEntity));
 
         //then
-        Optional<E> updatedRepoEntity = repository.findById(newEntity.getId());
+        Optional<E> updatedRepoEntity = repoFindById(newEntity.getId());
         Assertions.assertTrue(updatedRepoEntity.isPresent());
-        //still the same (repo)
-        Assertions.assertTrue(equalChecker.isEqual(repoEntity.get(),updatedRepoEntity.get()));
-        //still the same (service)
-        Optional<E> updatedEntityFromService = crudService.findById(newEntity.getId());
-        Assertions.assertTrue(updatedEntityFromService.isPresent());
-        Assertions.assertTrue(equalChecker.isEqual(newEntity,updatedEntityFromService.get()));
+        //still the same
+        Assertions.assertTrue(equalChecker.isEqual(entityToUpdate.get(),updatedRepoEntity.get()));
     }
 
     protected E findEntityById_ShouldSucceed(Id id) throws NoIdException {
         Assertions.assertNotNull(id);
-        Assertions.assertTrue(repository.findById(id).isPresent());
-        Optional<E> foundEntity = crudService.findById(id);
+        Assertions.assertTrue(repoFindById(id).isPresent());
+        Optional<E> foundEntity = serviceFindById(id);
         Assertions.assertTrue(foundEntity.isPresent());
         return foundEntity.get();
     }
 
     protected void findExistingEntityById_ShouldFail(Id id, Class<Exception> expectedException) throws NoIdException {
         Assertions.assertNotNull(id);
-        Assertions.assertTrue(repository.findById(id).isPresent());
-        Assertions.assertThrows(expectedException,() -> crudService.findById(id));
+        Assertions.assertTrue(repoFindById(id).isPresent());
+        Assertions.assertThrows(expectedException,() -> serviceFindById(id));
     }
 
     protected void findExistingEntityById_ShouldFail(Id id) throws NoIdException {
         Assertions.assertNotNull(id);
-        Assertions.assertTrue(repository.findById(id).isPresent());
-        Optional<E> foundEntity = crudService.findById(id);
+        Assertions.assertTrue(repoFindById(id).isPresent());
+        Optional<E> foundEntity = serviceFindById(id);
         Assertions.assertFalse(foundEntity.isPresent());
     }
 
@@ -244,7 +252,4 @@ public abstract class CrudServiceTest
         return crudService;
     }
 
-    protected void setCrudService(S crudService) {
-        this.crudService = crudService;
-    }
 }

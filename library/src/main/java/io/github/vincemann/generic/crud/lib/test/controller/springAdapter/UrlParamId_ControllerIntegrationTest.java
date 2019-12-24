@@ -18,6 +18,7 @@ import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.http.ResponseEntity;
 import org.springframework.lang.Nullable;
@@ -41,7 +42,7 @@ import java.util.*;
         mergeMode = TestExecutionListeners.MergeMode.MERGE_WITH_DEFAULTS,
         listeners = {ResetDatabaseTestExecutionListener.class}
 )
-public abstract class UrlParamId_DtoCrudController_SpringAdapter_IT
+public abstract class UrlParamId_ControllerIntegrationTest
                 <
                         ServiceE extends IdentifiableEntity<Id>,
                         Dto extends IdentifiableEntity<Id>,
@@ -50,7 +51,7 @@ public abstract class UrlParamId_DtoCrudController_SpringAdapter_IT
                         Controller extends DtoCrudController_SpringAdapter<ServiceE, Dto, Id,Repo, Service>,
                         Id extends Serializable
                 >
-        extends IntegrationTest /*implements TransactionManagedTest*/ {
+        extends IntegrationTest {
 
 
 
@@ -60,35 +61,28 @@ public abstract class UrlParamId_DtoCrudController_SpringAdapter_IT
     @Getter private Class<Dto> dtoEntityClass;
     @Getter private Class<ServiceE> serviceEntityClass;
     @Getter private String entityIdParamKey;
-    //@Getter private PlatformTransactionManager transactionManager;
 
-
-
-    /*public UrlParamIdDtoCrudControllerSpringAdapterIT(String url, Controller crudController, TestRequestEntityFactory requestEntityFactory, Plugin<? super Dto,? super ServiceE, ? super Id>... plugins) {
-        super(url);
-        constructorInit(crudController, requestEntityFactory, plugins);
-    }*/
-
-    public UrlParamId_DtoCrudController_SpringAdapter_IT(Controller crudController,
-                                                         TestRequestEntity_Factory requestEntityFactory,
-                                                         Plugin<? super Dto,? super ServiceE, ? super Id>... plugins)
-    {
-        this.requestEntityFactory = requestEntityFactory;
-        constructorInit(crudController, requestEntityFactory, plugins);
+    public UrlParamId_ControllerIntegrationTest() {
     }
 
-    private void constructorInit(Controller crudController,
-                                 TestRequestEntity_Factory requestEntityFactory,
-                                 Plugin<? super Dto,? super ServiceE, ? super Id>... plugins) {
-        Assertions.assertTrue(crudController.getIdIdFetchingStrategy() instanceof UrlParamIdFetchingStrategy, "Controller must have an UrlParamIdFetchingStrategy");
-        requestEntityFactory.setTest(this);
-        this.crudController = crudController;
-        this.requestEntityFactory = requestEntityFactory;
-        this.dtoEntityClass = crudController.getDtoClass();
-        this.serviceEntityClass = crudController.getServiceEntityClass();
-        this.entityIdParamKey = ((UrlParamIdFetchingStrategy) crudController.getIdIdFetchingStrategy()).getIdUrlParamKey();
+    public UrlParamId_ControllerIntegrationTest(Plugin<? super Dto, ? super ServiceE, ? super Id>... plugins) {
         initPlugins(plugins);
     }
+
+    @Autowired
+    public void setCrudController(Controller crudController) {
+        this.crudController = crudController;
+        this.dtoEntityClass=crudController.getDtoClass();
+        this.serviceEntityClass = crudController.getServiceEntityClass();
+        this.entityIdParamKey = ((UrlParamIdFetchingStrategy) crudController.getIdIdFetchingStrategy()).getIdUrlParamKey();
+    }
+
+    @Autowired
+    public void setRequestEntityFactory(TestRequestEntity_Factory requestEntityFactory) {
+        requestEntityFactory.setTest(this);
+        this.requestEntityFactory = requestEntityFactory;
+    }
+
     private void initPlugins(Plugin<? super Dto,? super ServiceE, ? super Id>... plugins) {
         this.plugins.addAll(Arrays.asList(plugins));
         this.plugins.forEach(plugin -> plugin.setIntegrationTest(this));
@@ -567,7 +561,7 @@ public abstract class UrlParamId_DtoCrudController_SpringAdapter_IT
     @Getter
     @Setter
     public static class Plugin<dto extends IdentifiableEntity<id>,serviceE extends IdentifiableEntity<id>, id extends Serializable> {
-        private UrlParamId_DtoCrudController_SpringAdapter_IT integrationTest;
+        private UrlParamId_ControllerIntegrationTest integrationTest;
 
         public void onAfterUpdateEntityShouldFail(dto newEntity, ResponseEntity<String> responseEntity) throws Exception { }
         public void onBeforeUpdateEntityShouldFail(serviceE oldEntity, dto newEntity) throws Exception { }
