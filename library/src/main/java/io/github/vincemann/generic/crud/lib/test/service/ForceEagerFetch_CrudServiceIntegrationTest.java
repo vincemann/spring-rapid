@@ -73,7 +73,7 @@ public abstract class ForceEagerFetch_CrudServiceIntegrationTest<
     @Transactional
     protected Optional<E> serviceFindById(Id id) throws NoIdException {
         try {
-            return hibernate_forceEagerFetch_helper.runInTransactionAndFetchEagerly(() -> {
+            return hibernate_forceEagerFetch_helper.runInTransactionAndFetchEagerly_OptionalValue(() -> {
                 return super.serviceFindById(id);
             });
         }catch (NoIdException e){
