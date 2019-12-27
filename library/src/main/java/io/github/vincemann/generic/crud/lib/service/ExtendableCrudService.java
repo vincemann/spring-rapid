@@ -29,13 +29,19 @@ public abstract class ExtendableCrudService
         >
         implements CrudService<E, Id,R> {
 
-    private List<Plugin<? super E,? super Id>> plugins = new ArrayList<>();
+    private final List<Plugin<? super E,? super Id>> plugins = new ArrayList<>();
 
     public ExtendableCrudService(Plugin<? super E,? super Id>... plugins) {
         for (Plugin<? super E,? super Id> plugin : plugins) {
             plugin.setCrudService(this);
         }
         this.plugins.addAll(Arrays.asList(plugins));
+    }
+
+    public void addPlugin(Plugin<? super E,? super Id> plugin){
+        synchronized (plugins){
+            this.plugins.add(plugin);
+        }
     }
 
     @Override
@@ -46,7 +52,7 @@ public abstract class ExtendableCrudService
         return foundEntity;
     }
 
-    protected abstract Optional<E> findByIdImpl(Id id) throws NoIdException;
+    public abstract Optional<E> findByIdImpl(Id id) throws NoIdException;
 
 
     @Override
@@ -61,7 +67,7 @@ public abstract class ExtendableCrudService
         return updatedEntity;
     }
 
-    protected abstract E updateImpl(E entity) throws EntityNotFoundException, NoIdException, BadEntityException;
+    public abstract E updateImpl(E entity) throws EntityNotFoundException, NoIdException, BadEntityException;
 
     @Override
     public E save(E entity) throws BadEntityException {
@@ -76,7 +82,7 @@ public abstract class ExtendableCrudService
         return savedEntity;
     }
 
-    protected abstract E saveImpl(E entity) throws BadEntityException;
+    public abstract E saveImpl(E entity) throws BadEntityException;
 
     @Override
     public Set<E> findAll() {
@@ -86,7 +92,7 @@ public abstract class ExtendableCrudService
         return foundEntities;
     }
 
-    protected abstract Set<E> findAllImpl();
+    public abstract Set<E> findAllImpl();
 
     @Override
     public void delete(E entity) throws EntityNotFoundException, NoIdException {
@@ -100,7 +106,7 @@ public abstract class ExtendableCrudService
         }
     }
 
-    protected abstract void deleteImpl(E entity) throws EntityNotFoundException, NoIdException;
+    public abstract void deleteImpl(E entity) throws EntityNotFoundException, NoIdException;
 
     @Override
     public void deleteById(Id id) throws EntityNotFoundException, NoIdException {
@@ -113,7 +119,7 @@ public abstract class ExtendableCrudService
             plugin.onAfterDeleteById(id);
         }
     }
-    protected abstract void deleteByIdImpl(Id id) throws EntityNotFoundException, NoIdException;
+    public abstract void deleteByIdImpl(Id id) throws EntityNotFoundException, NoIdException;
 
     @Setter
     @Getter
