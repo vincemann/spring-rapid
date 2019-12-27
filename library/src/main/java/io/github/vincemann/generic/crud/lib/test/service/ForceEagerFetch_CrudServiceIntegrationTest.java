@@ -18,7 +18,10 @@ import java.util.Optional;
  * Wraps all findById and save repo calls, used in {@link CrudServiceIntegrationTest}, in transactions and forces eager fetching on Result with {@link Hibernate_ForceEagerFetch_Helper}.
  * Also makes sure to attach all detached entities to current session, when using save and findById Repo calls.
  *
- * This makes the use {@link io.github.vincemann.generic.crud.lib.test.forceEagerFetch.proxy.abs.Hibernate_ForceEagerFetch_Proxy} not necessary in most cases.
+ * This makes the use {@link io.github.vincemann.generic.crud.lib.test.forceEagerFetch.proxy.CrudRepo_Hibernate_ForceEagerFetch_Proxy} not necessary in most cases.
+ * The Service layer should still be wrapped by {@link io.github.vincemann.generic.crud.lib.test.forceEagerFetch.proxy.CrudService_Hibernate_ForceEagerFetch_Proxy} in most cases.
+ *
+ *
  * @param <S>
  * @param <R>
  * @param <E>
@@ -37,12 +40,12 @@ public abstract class ForceEagerFetch_CrudServiceIntegrationTest<
 
 
     @Autowired
-    public void setHibernate_forceEagerFetch_helper(Hibernate_ForceEagerFetch_Helper hibernate_forceEagerFetch_helper) {
+    public void injectHibernate_forceEagerFetch_helper(Hibernate_ForceEagerFetch_Helper hibernate_forceEagerFetch_helper) {
         this.hibernate_forceEagerFetch_helper = hibernate_forceEagerFetch_helper;
     }
 
     @Autowired
-    public void setEntityGraph_sessionReattachment_helper(EntityGraph_SessionReattachment_Helper entityGraph_sessionReattachment_helper) {
+    public void injectEntityGraph_sessionReattachment_helper(EntityGraph_SessionReattachment_Helper entityGraph_sessionReattachment_helper) {
         this.entityGraph_sessionReattachment_helper = entityGraph_sessionReattachment_helper;
     }
 
