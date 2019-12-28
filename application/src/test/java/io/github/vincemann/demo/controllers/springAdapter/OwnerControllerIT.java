@@ -9,11 +9,9 @@ import io.github.vincemann.demo.model.Pet;
 import io.github.vincemann.demo.repositories.OwnerRepository;
 import io.github.vincemann.demo.service.OwnerService;
 import io.github.vincemann.demo.service.PetService;
-import io.github.vincemann.generic.crud.lib.test.controller.springAdapter.plugins.DatabaseDeletedCheck_Plugin;
-import io.github.vincemann.generic.crud.lib.test.controller.springAdapter.plugins.ServiceDeepEqualPlugin;
 import io.github.vincemann.generic.crud.lib.test.controller.springAdapter.postUpdateCallback.PostUpdateCallback;
-import io.github.vincemann.generic.crud.lib.test.controller.springAdapter.testRequestEntity.factory.TestRequestEntity_Factory;
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -41,22 +39,13 @@ class OwnerControllerIT
     private Owner validOwnerWithoutPets;
     private OwnerDto validOwnerDtoWithManyPets;
     private Owner validOwnerWithManyPets;
-
     private OwnerDto invalidOwnerDto_becauseBlankCity;
 
 
-    OwnerControllerIT(
-                      @Autowired DatabaseDeletedCheck_Plugin databaseDeletedCheckPlugin,
-                      @Autowired ServiceDeepEqualPlugin serviceDeepEqualPlugin) {
-        super(
-                databaseDeletedCheckPlugin,
-                serviceDeepEqualPlugin
-        );
-    }
-
+    @BeforeEach
     @Override
-    public void beforeEachTest() throws Exception {
-        super.beforeEachTest();
+    public void setup() throws Exception {
+        super.setup();
         this.pet1 = petService.save(Pet.builder().name("pet1").petType(getTestPetType()).build());
         this.pet2 = petService.save(Pet.builder().name("pet2").petType(getTestPetType()).build());
 

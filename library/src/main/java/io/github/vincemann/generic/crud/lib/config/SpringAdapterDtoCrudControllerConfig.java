@@ -46,6 +46,4 @@ public class SpringAdapterDtoCrudControllerConfig {
         return new JavaXValidationStrategy();
     }
 
-
-
 }

@@ -1,5 +1,6 @@
 package io.github.vincemann.generic.crud.lib.test.controller.springAdapter;
 
+import io.github.vincemann.generic.crud.lib.controller.BasicDtoCrudController;
 import io.github.vincemann.generic.crud.lib.controller.dtoMapper.EntityMappingException;
 import io.github.vincemann.generic.crud.lib.controller.springAdapter.DtoCrudController_SpringAdapter;
 import io.github.vincemann.generic.crud.lib.controller.springAdapter.idFetchingStrategy.UrlParamIdFetchingStrategy;
@@ -12,12 +13,13 @@ import io.github.vincemann.generic.crud.lib.test.controller.springAdapter.testRe
 import io.github.vincemann.generic.crud.lib.test.controller.springAdapter.testRequestEntity.TestRequestEntity_Modification;
 import io.github.vincemann.generic.crud.lib.test.controller.springAdapter.testRequestEntity.factory.TestRequestEntity_Factory;
 import io.github.vincemann.generic.crud.lib.test.controller.springAdapter.postUpdateCallback.PostUpdateCallback;
+import io.github.vincemann.generic.crud.lib.test.forceEagerFetch.Hibernate_ForceEagerFetch_Helper;
+import io.github.vincemann.generic.crud.lib.test.forceEagerFetch.proxy.CrudService_HibernateForceEagerFetch_Proxy;
 import io.github.vincemann.generic.crud.lib.test.testExecutionListeners.ResetDatabaseTestExecutionListener;
 import lombok.Getter;
-import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.BeforeEach;
+import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.http.ResponseEntity;
@@ -29,6 +31,9 @@ import java.util.*;
 
 /**
  * Integration Test for a {@link DtoCrudController_SpringAdapter} with {@link UrlParamIdFetchingStrategy}, that tests typical Crud operations
+ *
+ * Wraps Controllers {@link BasicDtoCrudController#getCrudOnlyService()} with {@link CrudService_HibernateForceEagerFetch_Proxy}.
+ * -> No LazyInit Exceptions possible.
  *
  * @param <ServiceE>
  * @param <Dto>
@@ -51,49 +56,55 @@ public abstract class UrlParamId_ControllerIntegrationTest
                         Controller extends DtoCrudController_SpringAdapter<ServiceE, Dto, Id,Repo, Service>,
                         Id extends Serializable
                 >
-        extends IntegrationTest {
+        extends IntegrationTest implements InitializingBean {
 
 
 
-            private List<Plugin<? super Dto,? super ServiceE, ? super Id>> plugins = new ArrayList<>();
+            //private List<Plugin<? super Dto,? super ServiceE, ? super Id>> plugins = new ArrayList<>();
             private TestRequestEntity_Factory requestEntityFactory;
     @Getter private Controller crudController;
     @Getter private Class<Dto> dtoEntityClass;
     @Getter private Class<ServiceE> serviceEntityClass;
     @Getter private String entityIdParamKey;
+            private Hibernate_ForceEagerFetch_Helper hibernate_forceEagerFetch_helper;
 
-    public UrlParamId_ControllerIntegrationTest() {
-    }
-
-    public UrlParamId_ControllerIntegrationTest(Plugin<? super Dto, ? super ServiceE, ? super Id>... plugins) {
+    /*public UrlParamId_ControllerIntegrationTest(Plugin<? super Dto, ? super ServiceE, ? super Id>... plugins) {
         initPlugins(plugins);
-    }
+    }*/
 
     @Autowired
-    public void setCrudController(Controller crudController) {
+    public void injectCrudController(Controller crudController) {
         this.crudController = crudController;
         this.dtoEntityClass=crudController.getDtoClass();
         this.serviceEntityClass = crudController.getServiceEntityClass();
         this.entityIdParamKey = ((UrlParamIdFetchingStrategy) crudController.getIdIdFetchingStrategy()).getIdUrlParamKey();
     }
 
+    protected  <E extends IdentifiableEntity<Id>,Id extends Serializable,R extends CrudRepository<E,Id>> CrudService<E,Id,R> wrapWithEagerFetchProxy(CrudService<E,Id,R> crudService){
+        return new CrudService_HibernateForceEagerFetch_Proxy<>(crudService,hibernate_forceEagerFetch_helper);
+    }
+
+    @Override
+    public void afterPropertiesSet() throws Exception {
+        log.debug("wrapping CrudOnly CrudService with ForceEagerFetch Proxy");
+        getCrudController().setCrudOnlyService(wrapWithEagerFetchProxy(getCrudController().getCrudOnlyService()));
+    }
+
     @Autowired
-    public void setRequestEntityFactory(TestRequestEntity_Factory requestEntityFactory) {
+    public void injectRequestEntityFactory(TestRequestEntity_Factory requestEntityFactory) {
         requestEntityFactory.setTest(this);
         this.requestEntityFactory = requestEntityFactory;
     }
 
-    private void initPlugins(Plugin<? super Dto,? super ServiceE, ? super Id>... plugins) {
+    /*private void initPlugins(Plugin<? super Dto,? super ServiceE, ? super Id>... plugins) {
         this.plugins.addAll(Arrays.asList(plugins));
         this.plugins.forEach(plugin -> plugin.setIntegrationTest(this));
-    }
+    }*/
 
-    @BeforeEach
-    public final void beforeEach() throws Exception{
-        beforeEachTest();
+    @Autowired
+    public void injectHibernate_forceEagerFetch_helper(Hibernate_ForceEagerFetch_Helper hibernate_forceEagerFetch_helper) {
+        this.hibernate_forceEagerFetch_helper = hibernate_forceEagerFetch_helper;
     }
-
-    public void beforeEachTest() throws Exception{}
 
     protected ResponseEntity<String> findAllEntities_ShouldFail() throws Exception {
         return findAllEntities_ShouldFail(null);
@@ -105,9 +116,9 @@ public abstract class UrlParamId_ControllerIntegrationTest
                 CrudController_TestCase.FAILED_FIND_ALL,
                 requestEntity_Modification,
                 null);
-        onBeforeFindAllEntitiesShouldFail();
+        //onBeforeFindAllEntitiesShouldFail();
         ResponseEntity<String> responseEntity = findAllEntities(testRequestEntity);
-        onAfterFindAllEntitiesShouldFail(responseEntity);
+        //onAfterFindAllEntitiesShouldFail(responseEntity);
         return responseEntity;
     }
 
@@ -116,12 +127,12 @@ public abstract class UrlParamId_ControllerIntegrationTest
                 CrudController_TestCase.SUCCESSFUL_FIND_ALL,
                 testRequestEntityModification,
                 null);
-        onBeforeFindAllEntitiesShouldSucceed();
+        //onBeforeFindAllEntitiesShouldSucceed();
         ResponseEntity<String> responseEntity = findAllEntities(testRequestEntity);
 
         @SuppressWarnings("unchecked")
         Set<Dto> httpResponseDtos = crudController.getMediaTypeStrategy().readDtosFromBody(responseEntity.getBody(), getDtoEntityClass(), Set.class);
-        onAfterFindAllEntitiesShouldSucceed(httpResponseDtos);
+        //onAfterFindAllEntitiesShouldSucceed(httpResponseDtos);
 
 
         Assertions.assertEquals(entitiesExpectedToBeFound.size(), httpResponseDtos.size());
@@ -176,10 +187,10 @@ public abstract class UrlParamId_ControllerIntegrationTest
                 testRequestEntityModification,
                 updateRequestDto.getId());
         //Entity to update must be saved already
-        Optional<ServiceE> serviceEntityToUpdate = crudController.getCrudService().findById(updateRequestDto.getId());
+        Optional<ServiceE> serviceEntityToUpdate = crudController.getCrudOnlyService().findById(updateRequestDto.getId());
         Assertions.assertTrue(serviceEntityToUpdate.isPresent(), "Entity to update was not present");
         //update request
-        onBeforeUpdateEntityShouldSucceed(serviceEntityToUpdate.get(), updateRequestDto);
+        //onBeforeUpdateEntityShouldSucceed(serviceEntityToUpdate.get(), updateRequestDto);
         ResponseEntity<String> responseEntity = updateEntity(updateRequestDto, testRequestEntity);
         Assertions.assertEquals(testRequestEntity.getExpectedHttpStatus(), responseEntity.getStatusCode());
         //validate response Dto
@@ -188,10 +199,10 @@ public abstract class UrlParamId_ControllerIntegrationTest
         if(updatedValuesPostUpdateCallback !=null){
             //check that Changes were actually applied -> relevant attribute values specified by UpdateSuccessfulChecker Impl are equal now
             ServiceE serviceUpdateRequestEntity = mapDtoToServiceEntity(updateRequestDto);
-            Optional<ServiceE> updatedServiceEntity = getService().findById(httpResponseDto.getId());
+            Optional<ServiceE> updatedServiceEntity = getCrudOnlyService().findById(httpResponseDto.getId());
             updatedValuesPostUpdateCallback.callback(serviceUpdateRequestEntity,updatedServiceEntity.get());
         }
-        onAfterUpdateEntityShouldSucceed(serviceEntityToUpdate.get(), updateRequestDto, httpResponseDto);
+        //onAfterUpdateEntityShouldSucceed(serviceEntityToUpdate.get(), updateRequestDto, httpResponseDto);
         return httpResponseDto;
     }
 
@@ -222,21 +233,21 @@ public abstract class UrlParamId_ControllerIntegrationTest
                 testRequestEntityModification,
                 updateRequestDto.getId());
         //Entity muss vorher auch schon da sein
-        Optional<ServiceE> serviceEntityToUpdate = getService().findById(updateRequestDto.getId());
+        Optional<ServiceE> serviceEntityToUpdate = getCrudOnlyService().findById(updateRequestDto.getId());
         Assertions.assertTrue(serviceEntityToUpdate.isPresent(), "Entity to update was not present");
 
-        onBeforeUpdateEntityShouldFail(serviceEntityToUpdate.get(),updateRequestDto);
+        //onBeforeUpdateEntityShouldFail(serviceEntityToUpdate.get(),updateRequestDto);
 
         ResponseEntity<String> responseEntity = updateEntity(updateRequestDto, testRequestEntity);
         Assertions.assertEquals(responseEntity.getStatusCode(), testRequestEntity.getExpectedHttpStatus(), "Status was : " + responseEntity.getStatusCode());
 
         if(updatedValuesPostUpdateCallback !=null){
             //check that Changes were not applied -> relevant attribute values specified by UpdateSuccessfulChecker Impl are still the same as before update request
-            Optional<ServiceE> serviceEntityAfterUpdate = getService().findById(updateRequestDto.getId());
+            Optional<ServiceE> serviceEntityAfterUpdate = getCrudOnlyService().findById(updateRequestDto.getId());
             updatedValuesPostUpdateCallback.callback(serviceEntityToUpdate.get(),serviceEntityAfterUpdate.get());
         }
 
-        onAfterUpdateEntityShouldFail(updateRequestDto, responseEntity);
+        //onAfterUpdateEntityShouldFail(updateRequestDto, responseEntity);
         return responseEntity;
     }
 
@@ -295,11 +306,11 @@ public abstract class UrlParamId_ControllerIntegrationTest
     protected Dto createEntity_ShouldSucceed(Dto dto, TestRequestEntity_Modification modification) throws Exception {
         Assertions.assertNull(dto.getId());
         TestRequestEntity testRequestEntity = requestEntityFactory.createInstance(CrudController_TestCase.SUCCESSFUL_CREATE, modification, null);
-        onBeforeCreateEntityShouldSucceed(dto);
+        //onBeforeCreateEntityShouldSucceed(dto);
         ResponseEntity<String> responseEntity = createEntity(dto, testRequestEntity);
         Assertions.assertEquals(responseEntity.getStatusCode(), testRequestEntity.getExpectedHttpStatus(), "Status was : " + responseEntity.getStatusCode() + " response Body: " + responseEntity.getBody());
         Dto httpResponseEntity = crudController.getMediaTypeStrategy().readDtoFromBody(responseEntity.getBody(), dtoEntityClass);
-        onAfterCreateEntityShouldSucceed(dto, httpResponseEntity);
+        //onAfterCreateEntityShouldSucceed(dto, httpResponseEntity);
         return httpResponseEntity;
     }
 
@@ -312,10 +323,10 @@ public abstract class UrlParamId_ControllerIntegrationTest
                 CrudController_TestCase.FAILED_CREATE,
                 modification,
                 null);
-        onBeforeCreateEntityShouldFail(dto);
+        //onBeforeCreateEntityShouldFail(dto);
         ResponseEntity<String> responseEntity = createEntity(dto, testRequestEntity);
         Assertions.assertEquals(responseEntity.getStatusCode(), testRequestEntity.getExpectedHttpStatus(), "Status was : " + responseEntity.getStatusCode() + " response Body: " + responseEntity.getBody());
-        onAfterCreateEntityShouldFail(dto, responseEntity);
+        //onAfterCreateEntityShouldFail(dto, responseEntity);
         return responseEntity;
     }
 
@@ -340,13 +351,13 @@ public abstract class UrlParamId_ControllerIntegrationTest
                 modification,
                 id);
         //Entity muss vorher auch schon da sein
-        Optional<ServiceE> serviceFoundEntityBeforeDelete = crudController.getCrudService().findById(id);
+        Optional<ServiceE> serviceFoundEntityBeforeDelete = crudController.getCrudOnlyService().findById(id);
         Assertions.assertTrue(serviceFoundEntityBeforeDelete.isPresent(), "Entity to delete was not present");
 
-        onBeforeDeleteEntityShouldSucceed(id);
+        //onBeforeDeleteEntityShouldSucceed(id);
         ResponseEntity<String> responseEntity = deleteEntity(id, testRequestEntity);
         Assertions.assertEquals(responseEntity.getStatusCode(), testRequestEntity.getExpectedHttpStatus(), "Status was : " + responseEntity.getStatusCode() + " response Body: " + responseEntity.getBody());
-        onAfterDeleteEntityShouldSucceed(id, responseEntity);
+        //onAfterDeleteEntityShouldSucceed(id, responseEntity);
         return responseEntity;
     }
 
@@ -360,14 +371,14 @@ public abstract class UrlParamId_ControllerIntegrationTest
                 testRequestEntityModification,
                 id);
         //Entity muss vorher auch schon da sein
-        Optional<ServiceE> serviceFoundEntityBeforeDelete = crudController.getCrudService().findById(id);
+        Optional<ServiceE> serviceFoundEntityBeforeDelete = crudController.getCrudOnlyService().findById(id);
         Assertions.assertTrue(serviceFoundEntityBeforeDelete.isPresent(), "Entity to delete was not present");
 
-        onBeforeDeleteEntityShouldFail(id);
+        //onBeforeDeleteEntityShouldFail(id);
         ResponseEntity<String> responseEntity = deleteEntity(id, testRequestEntity);
         Assertions.assertEquals(responseEntity.getStatusCode(), testRequestEntity.getExpectedHttpStatus(), "Status was : " + responseEntity.getStatusCode() + " response Body: " + responseEntity.getBody());
 
-        onAfterDeleteEntityShouldFail(id, responseEntity);
+        //onAfterDeleteEntityShouldFail(id, responseEntity);
         return responseEntity;
     }
 
@@ -385,12 +396,12 @@ public abstract class UrlParamId_ControllerIntegrationTest
                 CrudController_TestCase.SUCCESSFUL_FIND,
                 modification,
                 id);
-        onBeforeFindEntityShouldSucceed(id);
+        //onBeforeFindEntityShouldSucceed(id);
         ResponseEntity<String> responseEntity = findEntity(id, testRequestEntity);
         Assertions.assertEquals(responseEntity.getStatusCode(), testRequestEntity.getExpectedHttpStatus(), "Status was : " + responseEntity.getStatusCode() + " response Body: " + responseEntity.getBody());
         Dto responseDto = crudController.getMediaTypeStrategy().readDtoFromBody(responseEntity.getBody(), dtoEntityClass);
         Assertions.assertNotNull(responseDto);
-        onAfterFindEntityShouldSucceed(id, responseDto);
+        //onAfterFindEntityShouldSucceed(id, responseDto);
         return responseDto;
     }
 
@@ -403,10 +414,10 @@ public abstract class UrlParamId_ControllerIntegrationTest
                 CrudController_TestCase.FAILED_FIND,
                 modification,
                 id);
-        onBeforeFindEntityShouldFail(id);
+        //onBeforeFindEntityShouldFail(id);
         ResponseEntity<String> responseEntity = findEntity(id, testRequestEntity);
         Assertions.assertEquals(responseEntity.getStatusCode(), testRequestEntity.getExpectedHttpStatus(), "Status was : " + responseEntity.getStatusCode() + " response Body: " + responseEntity.getBody());
-        onAfterFindEntityShouldFail(id, responseEntity);
+        //onAfterFindEntityShouldFail(id, responseEntity);
         return responseEntity;
     }
 
@@ -426,6 +437,7 @@ public abstract class UrlParamId_ControllerIntegrationTest
     }
 
 
+    /*
     //PLUGIN CALLBACKS##################################################################################################
     //UPDATE
     protected void onBeforeUpdateEntityShouldSucceed(ServiceE oldEntity, Dto newEntity) throws Exception {
@@ -533,10 +545,10 @@ public abstract class UrlParamId_ControllerIntegrationTest
         }
     }
     //##################################################################################################################
-
+*/
 
     protected ServiceE saveServiceEntity(ServiceE serviceE) throws BadEntityException {
-        return crudController.getCrudService().save(serviceE);
+        return crudController.getCrudOnlyService().save(serviceE);
     }
 
     protected Collection<ServiceE> saveServiceEntities(Collection<ServiceE> serviceECollection) throws BadEntityException {
@@ -548,9 +560,14 @@ public abstract class UrlParamId_ControllerIntegrationTest
         return savedEntities;
     }
 
+    public CrudService<ServiceE, Id, Repo> getCrudOnlyService(){
+        return getCrudController().getCrudOnlyService();
+    }
+
     public Service getService(){
         return getCrudController().getCrudService();
     }
+
 
 
     /**
@@ -558,6 +575,7 @@ public abstract class UrlParamId_ControllerIntegrationTest
      * @param <dto>
      * @param <id>
      */
+    /*
     @Getter
     @Setter
     public static class Plugin<dto extends IdentifiableEntity<id>,serviceE extends IdentifiableEntity<id>, id extends Serializable> {
@@ -583,5 +601,5 @@ public abstract class UrlParamId_ControllerIntegrationTest
         public void onBeforeFindAllEntitiesShouldFail() throws Exception { }
         public void onAfterFindAllEntitiesShouldFail(ResponseEntity<String> responseEntity) throws Exception { }
         public void onAfterFindAllEntitiesShouldSucceed(Set<? extends dto> dtos) throws Exception { }
-    }
+    }*/
 }

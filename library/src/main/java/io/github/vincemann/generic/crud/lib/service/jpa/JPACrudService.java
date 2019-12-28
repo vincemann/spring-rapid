@@ -1,24 +1,24 @@
 package io.github.vincemann.generic.crud.lib.service.jpa;
 
 import io.github.vincemann.generic.crud.lib.model.IdentifiableEntity;
-import io.github.vincemann.generic.crud.lib.service.ExtendableCrudService;
+import io.github.vincemann.generic.crud.lib.service.CrudService;
+import io.github.vincemann.generic.crud.lib.service.plugin.CrudService_PluginProxy;
 import io.github.vincemann.generic.crud.lib.service.exception.BadEntityException;
 import io.github.vincemann.generic.crud.lib.service.exception.EntityNotFoundException;
 import io.github.vincemann.generic.crud.lib.service.exception.NoIdException;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.NonTransientDataAccessException;
 import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.repository.CrudRepository;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.io.Serializable;
 import java.lang.reflect.ParameterizedType;
-import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Optional;
 import java.util.Set;
 
 /**
- * PluginCode from {@link ExtendableCrudService.Plugin}s runs in the Transaction of the ServiceMethod.
+ * PluginCode from {@link CrudService_PluginProxy.Plugin}s runs in the Transaction of the ServiceMethod.
  * @param <E>
  * @param <Id>
  * @param <R>
@@ -29,57 +29,35 @@ public abstract class JPACrudService
                           Id extends Serializable,
                           R extends JpaRepository<E,Id>
                 >
-        extends ExtendableCrudService<E,Id,R> {
+        implements CrudService<E,Id,R> {
 
 
     private R jpaRepository;
     @SuppressWarnings("unchecked")
     private Class<E> entityClass = (Class<E>) ((ParameterizedType) this.getClass().getGenericSuperclass()).getActualTypeArguments()[0];
 
-    public JPACrudService(R jpaRepository,Plugin<? super E,? super Id>... plugins) {
-        super(plugins);
-        this.jpaRepository = jpaRepository;
+    public JPACrudService() {
     }
 
+    @Autowired
+    public void injectJpaRepository(R jpaRepository) {
+        this.jpaRepository = jpaRepository;
+    }
 
     @Transactional
     @Override
     public Optional<E> findById(Id id) throws NoIdException {
-        return super.findById(id);
+        if(id==null){
+            throw new NoIdException("No Id value set for EntityType: " + entityClass.getSimpleName());
+        }
+        return jpaRepository.findById(id);
     }
+
+
 
     @Transactional
     @Override
     public E update(E entity) throws EntityNotFoundException, NoIdException, BadEntityException {
-        return super.update(entity);
-    }
-
-    @Transactional
-    @Override
-    public E save(E entity) throws BadEntityException {
-        return super.save(entity);
-    }
-
-    @Transactional
-    @Override
-    public Set<E> findAll() {
-        return super.findAll();
-    }
-
-    @Transactional
-    @Override
-    public void delete(E entity) throws EntityNotFoundException, NoIdException {
-        super.delete(entity);
-    }
-
-    @Transactional
-    @Override
-    public void deleteById(Id id) throws EntityNotFoundException, NoIdException {
-        super.deleteById(id);
-    }
-
-    @Override
-    public E updateImpl(E entity) throws  NoIdException, EntityNotFoundException, BadEntityException {
         if(entity.getId()==null){
             throw new NoIdException("No Id value set for EntityType: " + entityClass.getSimpleName());
         }
@@ -87,19 +65,12 @@ public abstract class JPACrudService
         if(!optionalEntity.isPresent()){
             throw new EntityNotFoundException(entity.getId(), entityClass);
         }
-        return saveImpl(entity);
+        return save(entity);
     }
 
+    @Transactional
     @Override
-    public Optional<E> findByIdImpl(Id id) throws NoIdException {
-        if(id==null){
-            throw new NoIdException("No Id value set for EntityType: " + entityClass.getSimpleName());
-        }
-        return jpaRepository.findById(id);
-    }
-
-    @Override
-    public E saveImpl(E entity) throws  BadEntityException {
+    public E save(E entity) throws BadEntityException {
         try {
             return jpaRepository.save(entity);
         }
@@ -108,13 +79,15 @@ public abstract class JPACrudService
         }
     }
 
+    @Transactional
     @Override
-    public Set<E> findAllImpl() {
-       return new HashSet<>(jpaRepository.findAll());
+    public Set<E> findAll() {
+        return new HashSet<>(jpaRepository.findAll());
     }
 
+    @Transactional
     @Override
-    public void deleteImpl(E entity) throws EntityNotFoundException, NoIdException {
+    public void delete(E entity) throws EntityNotFoundException, NoIdException {
         if(entity.getId()==null){
             throw new NoIdException("No Id value set for EntityType: " + entityClass.getSimpleName());
         }
@@ -124,8 +97,9 @@ public abstract class JPACrudService
         jpaRepository.delete(entity);
     }
 
+    @Transactional
     @Override
-    public void deleteByIdImpl(Id id) throws EntityNotFoundException, NoIdException {
+    public void deleteById(Id id) throws EntityNotFoundException, NoIdException {
         if(id==null){
             throw new NoIdException("No Id value set for EntityType: " + entityClass.getSimpleName());
         }

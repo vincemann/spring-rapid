@@ -11,7 +11,4 @@ import org.springframework.stereotype.Service;
 @Profile("springdatajpa")
 public class SpecialtyJPAService extends JPACrudService<Specialty,Long, SpecialtyRepository> implements SpecialtyService {
 
-    public SpecialtyJPAService(SpecialtyRepository jpaRepository) {
-        super(jpaRepository);
-    }
 }

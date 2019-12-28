@@ -12,6 +12,7 @@ import java.util.Optional;
  * Checks if Entities deleted, are actually delete from the database.
  * This is done by asking the Repository Layer ({@link org.springframework.data.repository.CrudRepository}), whether the entity is still there by calling ,
  */
+/*
 @Component
 public class DatabaseDeletedCheck_Plugin extends UrlParamId_ControllerIntegrationTest.Plugin {
 
@@ -22,3 +23,4 @@ public class DatabaseDeletedCheck_Plugin extends UrlParamId_ControllerIntegratio
         super.onAfterDeleteEntityShouldSucceed(id, responseEntity);
     }
 }
+*/

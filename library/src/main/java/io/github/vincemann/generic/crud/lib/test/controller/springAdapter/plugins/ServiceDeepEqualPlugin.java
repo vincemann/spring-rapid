@@ -17,9 +17,11 @@ import java.io.Serializable;
 import java.util.Optional;
 import java.util.Set;
 
+
 /**
  * This plugin checks for find-,create- and updateTests if serviceEntity with id of dto returned by httpRequest is {@link EqualChecker#isEqual(Object, Object)} to it.
  */
+/*
 @Component
 @Slf4j
 public class ServiceDeepEqualPlugin extends UrlParamId_ControllerIntegrationTest.Plugin<IdentifiableEntity<Long>,IdentifiableEntity<Long>,Long> {
@@ -80,6 +82,7 @@ public class ServiceDeepEqualPlugin extends UrlParamId_ControllerIntegrationTest
      * @param dto the Dto entity returned by Backend after http request
      * @return
      */
+/*
     private boolean isSavedServiceEntityDeepEqual(IdentifiableEntity<Long> dto) throws EntityMappingException {
         try {
             IdentifiableEntity<Long>serviceHttpResponseEntity = getIntegrationTest().getCrudController().getDtoMapper().mapDtoToServiceEntity(dto, getIntegrationTest().getCrudController().getServiceEntityClass());
@@ -96,4 +99,4 @@ public class ServiceDeepEqualPlugin extends UrlParamId_ControllerIntegrationTest
         }
 
     }
-}
+}*/

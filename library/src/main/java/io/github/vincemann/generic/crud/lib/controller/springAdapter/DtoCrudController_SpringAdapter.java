@@ -113,25 +113,26 @@ public abstract class DtoCrudController_SpringAdapter
     }
 
     @Autowired
-    public void setEndpointService(EndpointService endpointService) {
+    public void injectEndpointService(EndpointService endpointService) {
         this.endpointService = endpointService;
     }
+
     @Autowired
-    public void setMediaTypeStrategy(MediaTypeStrategy mediaTypeStrategy) {
+    public void injectMediaTypeStrategy(MediaTypeStrategy mediaTypeStrategy) {
         this.mediaTypeStrategy = mediaTypeStrategy;
     }
     @Autowired
-    public void setEndpointsExposureDetails(EndpointsExposureDetails endpointsExposureDetails) {
+    public void injectEndpointsExposureDetails(EndpointsExposureDetails endpointsExposureDetails) {
         this.endpointsExposureDetails = endpointsExposureDetails;
     }
 
     @Autowired
-    public void setIdIdFetchingStrategy(IdFetchingStrategy<Id> idIdFetchingStrategy) {
+    public void injectIdIdFetchingStrategy(IdFetchingStrategy<Id> idIdFetchingStrategy) {
         this.idIdFetchingStrategy = idIdFetchingStrategy;
     }
 
     @Autowired
-    public void setValidationStrategy(ValidationStrategy<? super Dto, ? super Id> validationStrategy) {
+    public void injectValidationStrategy(ValidationStrategy<? super Dto, ? super Id> validationStrategy) {
         this.validationStrategy = validationStrategy;
     }
 
