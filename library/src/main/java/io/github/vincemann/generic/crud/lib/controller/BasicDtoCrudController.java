@@ -13,7 +13,9 @@ import io.github.vincemann.generic.crud.lib.service.CrudService;
 import io.github.vincemann.generic.crud.lib.service.exception.BadEntityException;
 import io.github.vincemann.generic.crud.lib.service.exception.EntityNotFoundException;
 import io.github.vincemann.generic.crud.lib.service.exception.NoIdException;
+import org.springframework.lang.Nullable;
 
+import javax.validation.constraints.Null;
 import java.io.Serializable;
 import java.lang.reflect.ParameterizedType;
 import java.util.*;
@@ -39,10 +41,15 @@ public abstract class BasicDtoCrudController
                 R extends CrudRepository<ServiceE,Id>,
                 Service extends CrudService<ServiceE, Id,R>
         >
-        implements DtoCrudController<Dto, Id> {
+            implements DtoCrudController<Dto, Id> {
 
     @Getter
+    @Setter
+    private CrudService<ServiceE,Id,R> crudOnlyService;
+    @Nullable
+    @Getter
     private Service crudService;
+
     @Getter
     private DtoMapper dtoMapper;
     @SuppressWarnings("unchecked")
@@ -52,7 +59,6 @@ public abstract class BasicDtoCrudController
     @Getter
     private Class<Dto> dtoClass = (Class<Dto>) ((ParameterizedType) this.getClass().getGenericSuperclass()).getActualTypeArguments()[1];
     private List<Plugin<? super ServiceE,? super Id>> plugins = new ArrayList<>();
-
 
 
     public BasicDtoCrudController(Plugin<? super ServiceE,? super Id>... controllerAwarePlugins) {
@@ -68,13 +74,26 @@ public abstract class BasicDtoCrudController
     public BasicDtoCrudController() {
     }
 
+    public void setCrudOnlyService(CrudService<ServiceE, Id, R> crudOnlyService) {
+        this.crudOnlyService = crudOnlyService;
+    }
+
     @Autowired
+    public void injectCrudOnlyService(CrudService<ServiceE,Id,R> crudService) {
+        this.crudOnlyService = crudService;
+    }
+
+    /**
+     * Override this method and inject your CrudService Impl, if you need a more complex CrudService (more methods),
+     * than {@link CrudService}.
+     * @param crudService
+     */
     public void setCrudService(Service crudService) {
         this.crudService = crudService;
     }
 
     @Autowired
-    public void setDtoMapper(DtoMapper dtoMapper) {
+    public void injectDtoMapper(DtoMapper dtoMapper) {
         this.dtoMapper = dtoMapper;
     }
 
@@ -85,7 +104,7 @@ public abstract class BasicDtoCrudController
     @SuppressWarnings("unchecked")
     public ResponseEntity<Dto> find(Id id) throws NoIdException, EntityNotFoundException, EntityMappingException {
         beforeFindEntity(id);
-        Optional<ServiceE> optionalEntity = crudService.findById(id);
+        Optional<ServiceE> optionalEntity = crudOnlyService.findById(id);
         //noinspection OptionalIsPresent
         if (optionalEntity.isPresent()) {
             afterFindEntity(optionalEntity.get());
@@ -98,7 +117,7 @@ public abstract class BasicDtoCrudController
     @Override
     public ResponseEntity<Collection<Dto>> findAll() throws EntityMappingException {
         beforeFindAllEntities();
-        Set<ServiceE> all = crudService.findAll();
+        Set<ServiceE> all = crudOnlyService.findAll();
         afterFindAllEntities(all);
         Set<Dto> dtos = new HashSet<>();
         for (ServiceE serviceE : all) {
@@ -129,7 +148,7 @@ public abstract class BasicDtoCrudController
     public ResponseEntity<Dto> create(Dto dto) throws BadEntityException, EntityMappingException {
         ServiceE serviceEntity = getDtoMapper().mapDtoToServiceEntity(dto,serviceEntityClass);
         beforeCreateEntity(serviceEntity);
-        ServiceE savedServiceEntity = crudService.save(serviceEntity);
+        ServiceE savedServiceEntity = crudOnlyService.save(serviceEntity);
         afterCreateEntity(savedServiceEntity);
         return new ResponseEntity(getDtoMapper().mapServiceEntityToDto(savedServiceEntity,dtoClass), HttpStatus.OK);
     }
@@ -148,7 +167,7 @@ public abstract class BasicDtoCrudController
     public ResponseEntity<Dto> update(Dto dto) throws BadEntityException, EntityMappingException, NoIdException, EntityNotFoundException {
         ServiceE serviceEntity = getDtoMapper().mapDtoToServiceEntity(dto,serviceEntityClass);
         beforeUpdateEntity(serviceEntity);
-        ServiceE updatedServiceEntity = crudService.update(serviceEntity);
+        ServiceE updatedServiceEntity = crudOnlyService.update(serviceEntity);
         //no idea why casting is necessary here?
         afterUpdateEntity(updatedServiceEntity);
         return new ResponseEntity(getDtoMapper().mapServiceEntityToDto(updatedServiceEntity,dtoClass), HttpStatus.OK);
@@ -165,7 +184,7 @@ public abstract class BasicDtoCrudController
     @Override
     public ResponseEntity delete(Id id) throws NoIdException, EntityNotFoundException {
         beforeDeleteEntity(id);
-        crudService.deleteById(id);
+        crudOnlyService.deleteById(id);
         afterDeleteEntity(id);
         return ResponseEntity.ok().build();
     }

@@ -7,6 +7,8 @@ import io.github.vincemann.generic.crud.lib.service.exception.EntityNotFoundExce
 import io.github.vincemann.generic.crud.lib.service.exception.NoIdException;
 import io.github.vincemann.generic.crud.lib.service.sessionReattach.EntityGraph_SessionReattachment_Helper;
 import io.github.vincemann.generic.crud.lib.test.forceEagerFetch.Hibernate_ForceEagerFetch_Helper;
+import io.github.vincemann.generic.crud.lib.test.forceEagerFetch.proxy.CrudService_HibernateForceEagerFetch_Proxy;
+import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.transaction.annotation.Transactional;
@@ -15,11 +17,16 @@ import java.io.Serializable;
 import java.util.Optional;
 
 /**
- * Wraps all findById and save repo calls, used in {@link CrudServiceIntegrationTest}, in transactions and forces eager fetching on Result with {@link Hibernate_ForceEagerFetch_Helper}.
- * Also makes sure to attach all detached entities to current session, when using save and findById Repo calls.
+ * Wraps {@link CrudService} and {@link CrudRepository} with {@link io.github.vincemann.generic.crud.lib.test.forceEagerFetch.proxy.abs.Hibernate_ForceEagerFetch_Proxy}s.
+ * -> no Lazy-initialize Exceptions can occur
+ * -> Tests can be non {@link Transactional}, while Service Layer can use Lazy fetching.
  *
- * This makes the use {@link io.github.vincemann.generic.crud.lib.test.forceEagerFetch.proxy.CrudRepo_Hibernate_ForceEagerFetch_Proxy} not necessary in most cases.
- * The Service layer should still be wrapped by {@link io.github.vincemann.generic.crud.lib.test.forceEagerFetch.proxy.CrudService_Hibernate_ForceEagerFetch_Proxy} in most cases.
+ * This works only for {@link CrudService}s tho. If you need a more complex service (offering more methods), then you need to call
+ * {@link #setCrudOnlyService(CrudService)} and wrap your service implementation manually with {@link CrudService_HibernateForceEagerFetch_Proxy}.
+ * This can be done by calling {@link #wrapWithEagerFetchProxy(CrudService)};
+ *
+ * Also makes sure to attach all detached entities to current session, when using Repo calls.
+ * For Service Layer this behavior is expected, usually realized with {@link io.github.vincemann.generic.crud.lib.service.plugin.SessionReattachmentPlugin}.
  *
  *
  * @param <S>
@@ -32,35 +39,41 @@ public abstract class ForceEagerFetch_CrudServiceIntegrationTest<
                         R extends CrudRepository<E,Id>,
                         E extends IdentifiableEntity<Id>,
                         Id extends Serializable
-                > extends CrudServiceIntegrationTest<S, R, E, Id> {
+                > extends CrudServiceIntegrationTest<S, R, E, Id>
+                    implements InitializingBean
+{
 
-    private Hibernate_ForceEagerFetch_Helper hibernate_forceEagerFetch_helper;
-    private EntityGraph_SessionReattachment_Helper entityGraph_sessionReattachment_helper;
-
+    private Hibernate_ForceEagerFetch_Helper forceEagerFetchHelper;
+    private EntityGraph_SessionReattachment_Helper sessionReattachmentHelper;
 
 
     @Autowired
     public void injectHibernate_forceEagerFetch_helper(Hibernate_ForceEagerFetch_Helper hibernate_forceEagerFetch_helper) {
-        this.hibernate_forceEagerFetch_helper = hibernate_forceEagerFetch_helper;
+        this.forceEagerFetchHelper = hibernate_forceEagerFetch_helper;
     }
 
     @Autowired
     public void injectEntityGraph_sessionReattachment_helper(EntityGraph_SessionReattachment_Helper entityGraph_sessionReattachment_helper) {
-        this.entityGraph_sessionReattachment_helper = entityGraph_sessionReattachment_helper;
+        this.sessionReattachmentHelper = entityGraph_sessionReattachment_helper;
     }
 
     @Override
     protected Optional<E> repoFindById(Id id) {
-        return hibernate_forceEagerFetch_helper.runInTransactionAndFetchEagerly_OptionalValue_NoException(() -> {
+        return forceEagerFetchHelper.runInTransactionAndFetchEagerly_OptionalValue_NoException(() -> {
             return super.repoFindById(id);
         });
+    }
+
+    @Override
+    public void afterPropertiesSet() throws Exception {
+        setCrudOnlyService(wrapWithEagerFetchProxy(getCrudOnlyService()));
     }
 
     @Transactional
     @Override
     protected E serviceSave(E entity) throws BadEntityException {
         try {
-            return hibernate_forceEagerFetch_helper.runInTransactionAndFetchEagerly(() -> {
+            return forceEagerFetchHelper.runInTransactionAndFetchEagerly(() -> {
                 //it is expected for service to handle reattachment (for example with reattachment plugin) so this is not necessary
                 //entityGraph_sessionReattachment_helper.attachEntityGraphToCurrentSession(entity);
                 return super.serviceSave(entity);
@@ -76,7 +89,7 @@ public abstract class ForceEagerFetch_CrudServiceIntegrationTest<
     @Transactional
     protected Optional<E> serviceFindById(Id id) throws NoIdException {
         try {
-            return hibernate_forceEagerFetch_helper.runInTransactionAndFetchEagerly_OptionalValue(() -> {
+            return forceEagerFetchHelper.runInTransactionAndFetchEagerly_OptionalValue(() -> {
                 return super.serviceFindById(id);
             });
         }catch (NoIdException e){
@@ -91,7 +104,7 @@ public abstract class ForceEagerFetch_CrudServiceIntegrationTest<
     @Transactional
     protected E serviceUpdate(E entity) throws EntityNotFoundException, BadEntityException, NoIdException {
         try {
-            return hibernate_forceEagerFetch_helper.runInTransactionAndFetchEagerly(() -> {
+            return forceEagerFetchHelper.runInTransactionAndFetchEagerly(() -> {
                 //it is expected for service to handle reattachment (for example with reattachment plugin) so this is not necessary
                 //entityGraph_sessionReattachment_helper.attachEntityGraphToCurrentSession(entity);
                 return super.serviceUpdate(entity);
@@ -104,12 +117,16 @@ public abstract class ForceEagerFetch_CrudServiceIntegrationTest<
 
     }
 
+    protected  <E extends IdentifiableEntity<Id>,Id extends Serializable,R extends CrudRepository<E,Id>> CrudService<E,Id,R> wrapWithEagerFetchProxy(CrudService<E,Id,R> crudService){
+        return new CrudService_HibernateForceEagerFetch_Proxy<>(crudService, forceEagerFetchHelper);
+    }
+
     @Override
     @Transactional
     protected E repoSave(E entity) {
         //make sure that there are no entities, not attached to the current session (created via @Transactional)
-        return hibernate_forceEagerFetch_helper.runInTransactionAndFetchEagerly_NoException(() -> {
-            entityGraph_sessionReattachment_helper.attachEntityGraphToCurrentSession(entity);
+        return forceEagerFetchHelper.runInTransactionAndFetchEagerly_NoException(() -> {
+            sessionReattachmentHelper.attachEntityGraphToCurrentSession(entity);
             return super.repoSave(entity);
         });
     }

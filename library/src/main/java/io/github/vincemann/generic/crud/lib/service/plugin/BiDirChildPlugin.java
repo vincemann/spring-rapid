@@ -3,7 +3,6 @@ package io.github.vincemann.generic.crud.lib.service.plugin;
 import io.github.vincemann.generic.crud.lib.model.IdentifiableEntity;
 import io.github.vincemann.generic.crud.lib.model.biDir.child.BiDirChild;
 import io.github.vincemann.generic.crud.lib.model.biDir.parent.BiDirParent;
-import io.github.vincemann.generic.crud.lib.service.ExtendableCrudService;
 import io.github.vincemann.generic.crud.lib.service.exception.BadEntityException;
 import io.github.vincemann.generic.crud.lib.service.exception.EntityNotFoundException;
 import io.github.vincemann.generic.crud.lib.service.exception.NoIdException;
@@ -21,7 +20,7 @@ public class BiDirChildPlugin
                 E extends IdentifiableEntity<Id> & BiDirChild,
                 Id extends Serializable
         >
-            extends ExtendableCrudService.Plugin<E,Id>{
+            extends CrudService_PluginProxy.Plugin<E,Id>{
 
 
     @Override

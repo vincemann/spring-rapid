@@ -1,7 +1,6 @@
 package io.github.vincemann.generic.crud.lib.service.plugin;
 
 import io.github.vincemann.generic.crud.lib.model.IdentifiableEntity;
-import io.github.vincemann.generic.crud.lib.service.ExtendableCrudService;
 import io.github.vincemann.generic.crud.lib.service.exception.BadEntityException;
 import io.github.vincemann.generic.crud.lib.service.sessionReattach.EntityGraph_SessionReattachment_Helper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,7 +10,7 @@ import org.springframework.transaction.annotation.Transactional;
 @Component
 public class SessionReattachmentPlugin
     //todo why doesnt this work with Serializable instead of Long?
-        extends ExtendableCrudService.Plugin<IdentifiableEntity<Long>,Long> {
+        extends CrudService_PluginProxy.Plugin<IdentifiableEntity<Long>,Long> {
 
     private EntityGraph_SessionReattachment_Helper entityGraph_sessionReattachment_helper;
 

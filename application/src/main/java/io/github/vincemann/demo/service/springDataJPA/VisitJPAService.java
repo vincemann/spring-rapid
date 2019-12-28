@@ -10,9 +10,4 @@ import org.springframework.stereotype.Service;
 @Service
 @Profile("springdatajpa")
 public class VisitJPAService extends JPACrudService<Visit,Long, VisitRepository> implements VisitService {
-
-    public VisitJPAService(VisitRepository jpaRepository)
-    {
-        super(jpaRepository);
-    }
 }

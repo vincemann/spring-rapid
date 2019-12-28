@@ -4,9 +4,10 @@ import io.github.vincemann.demo.model.Owner;
 import io.github.vincemann.demo.model.Pet;
 import io.github.vincemann.demo.model.PetType;
 import io.github.vincemann.demo.repositories.OwnerRepository;
+import io.github.vincemann.demo.repositories.PetRepository;
 import io.github.vincemann.demo.service.OwnerService;
-import io.github.vincemann.demo.service.PetService;
 import io.github.vincemann.demo.service.PetTypeService;
+import io.github.vincemann.generic.crud.lib.service.CrudService;
 import io.github.vincemann.generic.crud.lib.service.exception.BadEntityException;
 import io.github.vincemann.generic.crud.lib.service.exception.EntityNotFoundException;
 import io.github.vincemann.generic.crud.lib.service.exception.NoIdException;
@@ -16,6 +17,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
@@ -23,35 +25,47 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 import java.time.LocalDate;
 import java.util.Arrays;
 import java.util.HashSet;
+import java.util.Optional;
+
+import static io.github.vincemann.generic.crud.lib.test.forceEagerFetch.proxy.abs.Hibernate_ForceEagerFetch_Proxy.EAGER_FETCH_PROXY;
 
 //@DataJpaTest cant be used because i need autowired components from generic-crud-lib
 @ExtendWith(SpringExtension.class)
 @SpringBootTest(webEnvironment =
         SpringBootTest.WebEnvironment.RANDOM_PORT)
 @ActiveProfiles(value = {"test", "springdatajpa"})
-class OwnerJPAServiceIntegrationTest
+class OwnerJPAServiceIT
         extends ForceEagerFetch_CrudServiceIntegrationTest
-        <
+            <
                                         OwnerService,
                                         OwnerRepository,
                                         Owner,
                                         Long
-                                >
+            >
 {
 
     private Owner ownerWithoutPets;
     private Owner ownerWithOnePet;
     @Autowired
     private PetTypeService petTypeService;
-    @Autowired
-    private PetService petService;
     private Pet testPet;
     private PetType savedDogPetType;
 
+    @Autowired
+    private CrudService<Pet, Long, PetRepository> petService;
+
+
+    @Qualifier(EAGER_FETCH_PROXY)
+    @Autowired
+    @Override
+    public void injectCrudService(OwnerService crudService) {
+        super.injectCrudService(crudService);
+    }
 
     @BeforeEach
     public void setUp() throws Exception {
-
+        //proxyfy service
+        this.petService = wrapWithEagerFetchProxy(petService);
         savedDogPetType = petTypeService.save(new PetType("Dog"));
 
         testPet = Pet.builder()
@@ -79,17 +93,17 @@ class OwnerJPAServiceIntegrationTest
     }
 
     @Test
-    public void saveOwnerWithoutPets_ShouldSucceed() throws NoIdException, BadEntityException {
+    public void saveOwnerWithoutPets_ShouldSucceed() throws BadEntityException {
         saveEntity_ShouldSucceed(ownerWithoutPets);
     }
 
     @Test
-    public void saveOwnerWithPet_ShouldSucceed() throws NoIdException, BadEntityException {
+    public void saveOwnerWithPet_ShouldSucceed() throws BadEntityException {
         saveEntity_ShouldSucceed(ownerWithOnePet);
     }
 
     @Test
-    public void saveOwnerWithPersistedPet_ShouldSucceed() throws NoIdException, BadEntityException {
+    public void saveOwnerWithPersistedPet_ShouldSucceed() throws BadEntityException {
         Pet savedPet = petService.save(testPet);
 
 
@@ -142,6 +156,14 @@ class OwnerJPAServiceIntegrationTest
 
         Owner updatedOwner = updateEntity_ShouldSucceed(savedOwner);
         Assertions.assertTrue(updatedOwner.getPets().contains(savedPetToAdd));
+    }
+
+    @Test
+    public void findByLastName_shouldSucceed() throws BadEntityException {
+        Owner savedOwner = saveEntity_ShouldSucceed(ownerWithOnePet);
+        Optional<Owner> byLastName = getCrudService().findByLastName(ownerWithOnePet.getLastName());
+        Assertions.assertTrue(byLastName.isPresent());
+        Assertions.assertTrue(getEqualChecker().isEqual(savedOwner,byLastName.get()));
     }
 
 

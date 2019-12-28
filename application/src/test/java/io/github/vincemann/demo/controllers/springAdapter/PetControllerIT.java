@@ -7,17 +7,14 @@ import io.github.vincemann.demo.dtos.PetDto;
 import io.github.vincemann.demo.model.Pet;
 import io.github.vincemann.demo.repositories.PetRepository;
 import io.github.vincemann.demo.service.PetService;
-import io.github.vincemann.generic.crud.lib.test.controller.springAdapter.plugins.DatabaseDeletedCheck_Plugin;
 import io.github.vincemann.generic.crud.lib.test.controller.springAdapter.postUpdateCallback.PostUpdateCallback;
-import io.github.vincemann.generic.crud.lib.test.controller.springAdapter.testRequestEntity.factory.TestRequestEntity_Factory;
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
-import org.springframework.transaction.annotation.Transactional;
 
 @ExtendWith(SpringExtension.class)
 @SpringBootTest(webEnvironment =
@@ -32,16 +29,10 @@ class PetControllerIT
     private Pet petWithPersistedOwner;
 
 
-    public PetControllerIT(
-                           @Autowired DatabaseDeletedCheck_Plugin databaseDeletedCheckPlugin) {
-        super(
-                databaseDeletedCheckPlugin
-        );
-    }
-
     @Override
-    public void beforeEachTest() throws Exception {
-        super.beforeEachTest();
+    @BeforeEach
+    public void setup() throws Exception {
+        super.setup();
         petDtoWithPersistedPetType = PetDto.builder()
                 .name("esta")
                 .petTypeId(getTestPetType().getId())
