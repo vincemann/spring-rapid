@@ -1,5 +1,6 @@
 package io.github.vincemann.generic.crud.lib.service.sessionReattach;
 
+import lombok.extern.slf4j.Slf4j;
 import org.hibernate.Session;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
@@ -10,9 +11,11 @@ import javax.persistence.PersistenceContext;
 
 @Component
 @Qualifier("test")
+@Slf4j
 public class TestEntityManger_SessionReattacher implements SessionReattacher {
 
     private EntityManager entityManager;
+    //todo is this impl even acting any different from the non test version?
 
 
     @PersistenceContext
@@ -34,6 +37,7 @@ public class TestEntityManger_SessionReattacher implements SessionReattacher {
             return false;
         } else {
             //attach
+            log.debug("reattaching: " + entity+ " to session: " + session);
             session.saveOrUpdate(entity);
             return true;
         }

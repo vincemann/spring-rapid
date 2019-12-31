@@ -32,7 +32,7 @@ import java.util.*;
 /**
  * Integration Test for a {@link DtoCrudController_SpringAdapter} with {@link UrlParamIdFetchingStrategy}, that tests typical Crud operations
  *
- * Wraps Controllers {@link BasicDtoCrudController#getCrudOnlyService()} with {@link CrudService_HibernateForceEagerFetch_Proxy}.
+ * Wraps Controllers {@link BasicDtoCrudController#getCrudService()} with {@link CrudService_HibernateForceEagerFetch_Proxy}.
  * -> No LazyInit Exceptions possible.
  *
  * @param <ServiceE>
@@ -56,7 +56,8 @@ public abstract class UrlParamId_ControllerIntegrationTest
                         Controller extends DtoCrudController_SpringAdapter<ServiceE, Dto, Id,Repo, Service>,
                         Id extends Serializable
                 >
-        extends IntegrationTest implements InitializingBean {
+        extends IntegrationTest
+            implements InitializingBean {
 
 
 
@@ -67,39 +68,45 @@ public abstract class UrlParamId_ControllerIntegrationTest
     @Getter private Class<ServiceE> serviceEntityClass;
     @Getter private String entityIdParamKey;
             private Hibernate_ForceEagerFetch_Helper hibernate_forceEagerFetch_helper;
+            private CrudService<ServiceE,Id,Repo> userInjectedCrudService;
 
-    /*public UrlParamId_ControllerIntegrationTest(Plugin<? super Dto, ? super ServiceE, ? super Id>... plugins) {
-        initPlugins(plugins);
-    }*/
 
     @Autowired
     public void injectCrudController(Controller crudController) {
         this.crudController = crudController;
-        this.dtoEntityClass=crudController.getDtoClass();
-        this.serviceEntityClass = crudController.getServiceEntityClass();
-        this.entityIdParamKey = ((UrlParamIdFetchingStrategy) crudController.getIdIdFetchingStrategy()).getIdUrlParamKey();
     }
 
     protected  <E extends IdentifiableEntity<Id>,Id extends Serializable,R extends CrudRepository<E,Id>> CrudService<E,Id,R> wrapWithEagerFetchProxy(CrudService<E,Id,R> crudService){
         return new CrudService_HibernateForceEagerFetch_Proxy<>(crudService,hibernate_forceEagerFetch_helper);
     }
 
+
     @Override
     public void afterPropertiesSet() throws Exception {
-        log.debug("wrapping CrudOnly CrudService with ForceEagerFetch Proxy");
-        getCrudController().setCrudOnlyService(wrapWithEagerFetchProxy(getCrudController().getCrudOnlyService()));
+        this.dtoEntityClass=crudController.getDtoClass();
+        this.serviceEntityClass = crudController.getServiceEntityClass();
+        this.entityIdParamKey = ((UrlParamIdFetchingStrategy) crudController.getIdIdFetchingStrategy()).getIdUrlParamKey();
+        if(userInjectedCrudService!=null){
+            getCrudController().setCrudService(userInjectedCrudService);
+        }
     }
+
+    public void setTestService(CrudService<ServiceE,Id,Repo> testService){
+        if(getCrudController()==null){
+            //might happen when this method is overridden and @Autowired
+            this.userInjectedCrudService=testService;
+        }else {
+            getCrudController().setCrudService(testService);
+        }
+    }
+
+
 
     @Autowired
     public void injectRequestEntityFactory(TestRequestEntity_Factory requestEntityFactory) {
         requestEntityFactory.setTest(this);
         this.requestEntityFactory = requestEntityFactory;
     }
-
-    /*private void initPlugins(Plugin<? super Dto,? super ServiceE, ? super Id>... plugins) {
-        this.plugins.addAll(Arrays.asList(plugins));
-        this.plugins.forEach(plugin -> plugin.setIntegrationTest(this));
-    }*/
 
     @Autowired
     public void injectHibernate_forceEagerFetch_helper(Hibernate_ForceEagerFetch_Helper hibernate_forceEagerFetch_helper) {
@@ -116,10 +123,7 @@ public abstract class UrlParamId_ControllerIntegrationTest
                 CrudController_TestCase.FAILED_FIND_ALL,
                 requestEntity_Modification,
                 null);
-        //onBeforeFindAllEntitiesShouldFail();
-        ResponseEntity<String> responseEntity = findAllEntities(testRequestEntity);
-        //onAfterFindAllEntitiesShouldFail(responseEntity);
-        return responseEntity;
+        return findAllEntities(testRequestEntity);
     }
 
     protected Set<Dto> findAllEntities_ShouldSucceed(Set<ServiceE> entitiesExpectedToBeFound,TestRequestEntity_Modification testRequestEntityModification) throws Exception {
@@ -127,12 +131,10 @@ public abstract class UrlParamId_ControllerIntegrationTest
                 CrudController_TestCase.SUCCESSFUL_FIND_ALL,
                 testRequestEntityModification,
                 null);
-        //onBeforeFindAllEntitiesShouldSucceed();
         ResponseEntity<String> responseEntity = findAllEntities(testRequestEntity);
 
         @SuppressWarnings("unchecked")
         Set<Dto> httpResponseDtos = crudController.getMediaTypeStrategy().readDtosFromBody(responseEntity.getBody(), getDtoEntityClass(), Set.class);
-        //onAfterFindAllEntitiesShouldSucceed(httpResponseDtos);
 
 
         Assertions.assertEquals(entitiesExpectedToBeFound.size(), httpResponseDtos.size());
@@ -187,10 +189,9 @@ public abstract class UrlParamId_ControllerIntegrationTest
                 testRequestEntityModification,
                 updateRequestDto.getId());
         //Entity to update must be saved already
-        Optional<ServiceE> serviceEntityToUpdate = crudController.getCrudOnlyService().findById(updateRequestDto.getId());
+        Optional<ServiceE> serviceEntityToUpdate = crudController.getCrudService().findById(updateRequestDto.getId());
         Assertions.assertTrue(serviceEntityToUpdate.isPresent(), "Entity to update was not present");
         //update request
-        //onBeforeUpdateEntityShouldSucceed(serviceEntityToUpdate.get(), updateRequestDto);
         ResponseEntity<String> responseEntity = updateEntity(updateRequestDto, testRequestEntity);
         Assertions.assertEquals(testRequestEntity.getExpectedHttpStatus(), responseEntity.getStatusCode());
         //validate response Dto
@@ -199,10 +200,9 @@ public abstract class UrlParamId_ControllerIntegrationTest
         if(updatedValuesPostUpdateCallback !=null){
             //check that Changes were actually applied -> relevant attribute values specified by UpdateSuccessfulChecker Impl are equal now
             ServiceE serviceUpdateRequestEntity = mapDtoToServiceEntity(updateRequestDto);
-            Optional<ServiceE> updatedServiceEntity = getCrudOnlyService().findById(httpResponseDto.getId());
+            Optional<ServiceE> updatedServiceEntity = getService().findById(httpResponseDto.getId());
             updatedValuesPostUpdateCallback.callback(serviceUpdateRequestEntity,updatedServiceEntity.get());
         }
-        //onAfterUpdateEntityShouldSucceed(serviceEntityToUpdate.get(), updateRequestDto, httpResponseDto);
         return httpResponseDto;
     }
 
@@ -233,21 +233,18 @@ public abstract class UrlParamId_ControllerIntegrationTest
                 testRequestEntityModification,
                 updateRequestDto.getId());
         //Entity muss vorher auch schon da sein
-        Optional<ServiceE> serviceEntityToUpdate = getCrudOnlyService().findById(updateRequestDto.getId());
+        Optional<ServiceE> serviceEntityToUpdate = getService().findById(updateRequestDto.getId());
         Assertions.assertTrue(serviceEntityToUpdate.isPresent(), "Entity to update was not present");
-
-        //onBeforeUpdateEntityShouldFail(serviceEntityToUpdate.get(),updateRequestDto);
 
         ResponseEntity<String> responseEntity = updateEntity(updateRequestDto, testRequestEntity);
         Assertions.assertEquals(responseEntity.getStatusCode(), testRequestEntity.getExpectedHttpStatus(), "Status was : " + responseEntity.getStatusCode());
 
         if(updatedValuesPostUpdateCallback !=null){
             //check that Changes were not applied -> relevant attribute values specified by UpdateSuccessfulChecker Impl are still the same as before update request
-            Optional<ServiceE> serviceEntityAfterUpdate = getCrudOnlyService().findById(updateRequestDto.getId());
+            Optional<ServiceE> serviceEntityAfterUpdate = getService().findById(updateRequestDto.getId());
             updatedValuesPostUpdateCallback.callback(serviceEntityToUpdate.get(),serviceEntityAfterUpdate.get());
         }
 
-        //onAfterUpdateEntityShouldFail(updateRequestDto, responseEntity);
         return responseEntity;
     }
 
@@ -306,11 +303,9 @@ public abstract class UrlParamId_ControllerIntegrationTest
     protected Dto createEntity_ShouldSucceed(Dto dto, TestRequestEntity_Modification modification) throws Exception {
         Assertions.assertNull(dto.getId());
         TestRequestEntity testRequestEntity = requestEntityFactory.createInstance(CrudController_TestCase.SUCCESSFUL_CREATE, modification, null);
-        //onBeforeCreateEntityShouldSucceed(dto);
         ResponseEntity<String> responseEntity = createEntity(dto, testRequestEntity);
         Assertions.assertEquals(responseEntity.getStatusCode(), testRequestEntity.getExpectedHttpStatus(), "Status was : " + responseEntity.getStatusCode() + " response Body: " + responseEntity.getBody());
         Dto httpResponseEntity = crudController.getMediaTypeStrategy().readDtoFromBody(responseEntity.getBody(), dtoEntityClass);
-        //onAfterCreateEntityShouldSucceed(dto, httpResponseEntity);
         return httpResponseEntity;
     }
 
@@ -323,10 +318,8 @@ public abstract class UrlParamId_ControllerIntegrationTest
                 CrudController_TestCase.FAILED_CREATE,
                 modification,
                 null);
-        //onBeforeCreateEntityShouldFail(dto);
         ResponseEntity<String> responseEntity = createEntity(dto, testRequestEntity);
         Assertions.assertEquals(responseEntity.getStatusCode(), testRequestEntity.getExpectedHttpStatus(), "Status was : " + responseEntity.getStatusCode() + " response Body: " + responseEntity.getBody());
-        //onAfterCreateEntityShouldFail(dto, responseEntity);
         return responseEntity;
     }
 
@@ -351,7 +344,7 @@ public abstract class UrlParamId_ControllerIntegrationTest
                 modification,
                 id);
         //Entity muss vorher auch schon da sein
-        Optional<ServiceE> serviceFoundEntityBeforeDelete = crudController.getCrudOnlyService().findById(id);
+        Optional<ServiceE> serviceFoundEntityBeforeDelete = crudController.getCrudService().findById(id);
         Assertions.assertTrue(serviceFoundEntityBeforeDelete.isPresent(), "Entity to delete was not present");
 
         //onBeforeDeleteEntityShouldSucceed(id);
@@ -371,14 +364,11 @@ public abstract class UrlParamId_ControllerIntegrationTest
                 testRequestEntityModification,
                 id);
         //Entity muss vorher auch schon da sein
-        Optional<ServiceE> serviceFoundEntityBeforeDelete = crudController.getCrudOnlyService().findById(id);
+        Optional<ServiceE> serviceFoundEntityBeforeDelete = crudController.getCrudService().findById(id);
         Assertions.assertTrue(serviceFoundEntityBeforeDelete.isPresent(), "Entity to delete was not present");
-
-        //onBeforeDeleteEntityShouldFail(id);
         ResponseEntity<String> responseEntity = deleteEntity(id, testRequestEntity);
         Assertions.assertEquals(responseEntity.getStatusCode(), testRequestEntity.getExpectedHttpStatus(), "Status was : " + responseEntity.getStatusCode() + " response Body: " + responseEntity.getBody());
 
-        //onAfterDeleteEntityShouldFail(id, responseEntity);
         return responseEntity;
     }
 
@@ -396,12 +386,10 @@ public abstract class UrlParamId_ControllerIntegrationTest
                 CrudController_TestCase.SUCCESSFUL_FIND,
                 modification,
                 id);
-        //onBeforeFindEntityShouldSucceed(id);
         ResponseEntity<String> responseEntity = findEntity(id, testRequestEntity);
         Assertions.assertEquals(responseEntity.getStatusCode(), testRequestEntity.getExpectedHttpStatus(), "Status was : " + responseEntity.getStatusCode() + " response Body: " + responseEntity.getBody());
         Dto responseDto = crudController.getMediaTypeStrategy().readDtoFromBody(responseEntity.getBody(), dtoEntityClass);
         Assertions.assertNotNull(responseDto);
-        //onAfterFindEntityShouldSucceed(id, responseDto);
         return responseDto;
     }
 
@@ -414,10 +402,8 @@ public abstract class UrlParamId_ControllerIntegrationTest
                 CrudController_TestCase.FAILED_FIND,
                 modification,
                 id);
-        //onBeforeFindEntityShouldFail(id);
         ResponseEntity<String> responseEntity = findEntity(id, testRequestEntity);
         Assertions.assertEquals(responseEntity.getStatusCode(), testRequestEntity.getExpectedHttpStatus(), "Status was : " + responseEntity.getStatusCode() + " response Body: " + responseEntity.getBody());
-        //onAfterFindEntityShouldFail(id, responseEntity);
         return responseEntity;
     }
 
@@ -436,119 +422,8 @@ public abstract class UrlParamId_ControllerIntegrationTest
         return getRestTemplate().exchange(RequestEntityMapper.map(testRequestEntity, id), String.class);
     }
 
-
-    /*
-    //PLUGIN CALLBACKS##################################################################################################
-    //UPDATE
-    protected void onBeforeUpdateEntityShouldSucceed(ServiceE oldEntity, Dto newEntity) throws Exception {
-        for (Plugin<? super Dto,? super ServiceE, ? super Id> plugin : plugins) {
-            plugin.onBeforeUpdateEntityShouldSucceed(oldEntity, newEntity);
-        }
-    }
-    protected void onAfterUpdateEntityShouldSucceed(ServiceE oldEntity, Dto newEntity, Dto responseDto) throws Exception {
-        for (Plugin<? super Dto,? super ServiceE, ? super Id> plugin : plugins) {
-            plugin.onAfterUpdateEntityShouldSucceed(oldEntity, newEntity, responseDto);
-        }
-    }
-    protected void onBeforeUpdateEntityShouldFail(ServiceE oldEntity, Dto newEntity) throws Exception {
-        for (Plugin<? super Dto,? super ServiceE, ? super Id> plugin : plugins) {
-            plugin.onBeforeUpdateEntityShouldFail(oldEntity,newEntity);
-        }
-    }
-    protected void onAfterUpdateEntityShouldFail(Dto newEntity, ResponseEntity<String> responseEntity) throws Exception {
-        for (Plugin<? super Dto,? super ServiceE, ? super Id> plugin : plugins) {
-            plugin.onAfterUpdateEntityShouldFail(newEntity, responseEntity);
-        }
-    }
-    //CREATE
-    protected void onBeforeCreateEntityShouldSucceed(Dto dtoToCreate) throws Exception {
-        for (Plugin<? super Dto,? super ServiceE, ? super Id> plugin : plugins) {
-            plugin.onBeforeCreateEntityShouldSucceed(dtoToCreate);
-        }
-    }
-    protected void onAfterCreateEntityShouldSucceed(Dto dtoToCreate, Dto responseDto) throws Exception {
-        for (Plugin<? super Dto,? super ServiceE, ? super Id> plugin : plugins) {
-            plugin.onAfterCreateEntityShouldSucceed(dtoToCreate, responseDto);
-        }
-    }
-    protected void onBeforeCreateEntityShouldFail(Dto dtoToCreate) throws Exception {
-        for (Plugin<? super Dto,? super ServiceE, ? super Id> plugin : plugins) {
-            plugin.onBeforeCreateEntityShouldFail(dtoToCreate);
-        }
-    }
-    protected void onAfterCreateEntityShouldFail(Dto dtoToCreate, ResponseEntity<String> responseEntity) throws Exception {
-        for (Plugin<? super Dto,? super ServiceE, ? super Id> plugin : plugins) {
-            plugin.onAfterCreateEntityShouldFail(dtoToCreate, responseEntity);
-        }
-    }
-    //DELETE
-    protected void onBeforeDeleteEntityShouldSucceed(Id id) throws Exception {
-        for (Plugin<? super Dto,? super ServiceE, ? super Id> plugin : plugins) {
-            plugin.onBeforeDeleteEntityShouldSucceed(id);
-        }
-    }
-    protected void onAfterDeleteEntityShouldSucceed(Id id, ResponseEntity<String> responseEntity) throws Exception {
-        for (Plugin<? super Dto,? super ServiceE, ? super Id> plugin : plugins) {
-            plugin.onAfterDeleteEntityShouldSucceed(id, responseEntity);
-        }
-    }
-    protected void onBeforeDeleteEntityShouldFail(Id id) throws Exception {
-        for (Plugin<? super Dto,? super ServiceE, ? super Id> plugin : plugins) {
-            plugin.onBeforeDeleteEntityShouldFail(id);
-        }
-    }
-    protected void onAfterDeleteEntityShouldFail(Id id, ResponseEntity<String> responseEntity) throws Exception {
-        for (Plugin<? super Dto,? super ServiceE, ? super Id> plugin : plugins) {
-            plugin.onAfterDeleteEntityShouldFail(id, responseEntity);
-        }
-    }
-    //FIND
-    protected void onBeforeFindEntityShouldSucceed(Id id) throws Exception {
-        for (Plugin<? super Dto,? super ServiceE, ? super Id> plugin : plugins) {
-            plugin.onBeforeFindEntityShouldSucceed(id);
-        }
-    }
-    protected void onAfterFindEntityShouldSucceed(Id id, Dto responseDto) throws Exception {
-        for (Plugin<? super Dto,? super ServiceE, ? super Id> plugin : plugins) {
-            plugin.onAfterFindEntityShouldSucceed(id, responseDto);
-        }
-    }
-    protected void onBeforeFindEntityShouldFail(Id id) throws Exception {
-        for (Plugin<? super Dto,? super ServiceE, ? super Id> plugin : plugins) {
-            plugin.onBeforeFindEntityShouldFail(id);
-        }
-    }
-    protected void onAfterFindEntityShouldFail(Id id, ResponseEntity<String> responseEntity) throws Exception {
-        for (Plugin<? super Dto,? super ServiceE, ? super Id> plugin : plugins) {
-            plugin.onAfterFindEntityShouldFail(id, responseEntity);
-        }
-    }
-    //FIND ALL
-    protected void onBeforeFindAllEntitiesShouldSucceed() throws Exception {
-        for (Plugin<? super Dto,? super ServiceE, ? super Id> plugin : plugins) {
-            plugin.onBeforeFindAllEntitiesShouldSucceed();
-        }
-    }
-    protected void onAfterFindAllEntitiesShouldSucceed(Set<Dto> dtos) throws Exception {
-        for (Plugin<? super Dto,? super ServiceE, ? super Id> plugin : plugins) {
-            plugin.onAfterFindAllEntitiesShouldSucceed(dtos);
-        }
-    }
-    protected void onBeforeFindAllEntitiesShouldFail() throws Exception {
-        for (Plugin<? super Dto,? super ServiceE, ? super Id> plugin : plugins) {
-            plugin.onBeforeFindAllEntitiesShouldFail();
-        }
-    }
-    protected void onAfterFindAllEntitiesShouldFail(ResponseEntity<String> responseEntity) throws Exception {
-        for (Plugin<? super Dto,? super ServiceE, ? super Id> plugin : plugins) {
-            plugin.onAfterFindAllEntitiesShouldFail(responseEntity);
-        }
-    }
-    //##################################################################################################################
-*/
-
     protected ServiceE saveServiceEntity(ServiceE serviceE) throws BadEntityException {
-        return crudController.getCrudOnlyService().save(serviceE);
+        return crudController.getCrudService().save(serviceE);
     }
 
     protected Collection<ServiceE> saveServiceEntities(Collection<ServiceE> serviceECollection) throws BadEntityException {
@@ -560,46 +435,12 @@ public abstract class UrlParamId_ControllerIntegrationTest
         return savedEntities;
     }
 
-    public CrudService<ServiceE, Id, Repo> getCrudOnlyService(){
-        return getCrudController().getCrudOnlyService();
-    }
 
-    public Service getService(){
+    public CrudService<ServiceE, Id, Repo> getService(){
         return getCrudController().getCrudService();
     }
 
-
-
-    /**
-     * Plugin for helper methods in this class.
-     * @param <dto>
-     * @param <id>
-     */
-    /*
-    @Getter
-    @Setter
-    public static class Plugin<dto extends IdentifiableEntity<id>,serviceE extends IdentifiableEntity<id>, id extends Serializable> {
-        private UrlParamId_ControllerIntegrationTest integrationTest;
-
-        public void onAfterUpdateEntityShouldFail(dto newEntity, ResponseEntity<String> responseEntity) throws Exception { }
-        public void onBeforeUpdateEntityShouldFail(serviceE oldEntity, dto newEntity) throws Exception { }
-        public void onAfterUpdateEntityShouldSucceed(serviceE oldEntity, dto newEntity, dto responseDto) throws Exception { }
-        public void onBeforeUpdateEntityShouldSucceed(serviceE oldEntity, dto newEntity) throws Exception { }
-        public void onAfterCreateEntityShouldSucceed(dto dtoToCreate, dto responseDto) throws Exception { }
-        public void onBeforeCreateEntityShouldSucceed(dto dtoToCreate) throws Exception { }
-        public void onAfterCreateEntityShouldFail(dto dtoToCreate, ResponseEntity<String> responseEntity) throws Exception { }
-        public void onBeforeCreateEntityShouldFail(dto dtoToCreate) throws Exception { }
-        public void onAfterDeleteEntityShouldSucceed(id id, ResponseEntity<String> responseEntity) throws Exception { }
-        public void onBeforeDeleteEntityShouldSucceed(id id) throws Exception { }
-        public void onAfterDeleteEntityShouldFail(id id, ResponseEntity<String> responseEntity) throws Exception { }
-        public void onBeforeDeleteEntityShouldFail(id id) throws Exception { }
-        public void onAfterFindEntityShouldSucceed(id id, dto responseDto) throws Exception { }
-        public void onBeforeFindEntityShouldSucceed(id id) throws Exception { }
-        public void onAfterFindEntityShouldFail(id id, ResponseEntity<String> responseEntity) throws Exception { }
-        public void onBeforeFindEntityShouldFail(id id) throws Exception { }
-        public void onBeforeFindAllEntitiesShouldSucceed() throws Exception { }
-        public void onBeforeFindAllEntitiesShouldFail() throws Exception { }
-        public void onAfterFindAllEntitiesShouldFail(ResponseEntity<String> responseEntity) throws Exception { }
-        public void onAfterFindAllEntitiesShouldSucceed(Set<? extends dto> dtos) throws Exception { }
-    }*/
+    public Service getCastedService(){
+        return getCrudController().getCastedCrudService();
+    }
 }

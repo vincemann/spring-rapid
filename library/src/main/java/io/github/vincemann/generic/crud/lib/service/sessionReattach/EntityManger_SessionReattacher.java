@@ -1,5 +1,6 @@
 package io.github.vincemann.generic.crud.lib.service.sessionReattach;
 
+import lombok.extern.slf4j.Slf4j;
 import org.hibernate.Session;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Primary;
@@ -11,6 +12,7 @@ import javax.persistence.EntityManager;
 
 @Component
 @Primary
+@Slf4j
 public class EntityManger_SessionReattacher implements SessionReattacher {
 
     private EntityManager entityManager;
@@ -32,6 +34,7 @@ public class EntityManger_SessionReattacher implements SessionReattacher {
             return false;
         } else {
             //attach
+            log.debug("reattaching: " + entity+ " to session: " + session);
             session.saveOrUpdate(entity);
             return true;
         }

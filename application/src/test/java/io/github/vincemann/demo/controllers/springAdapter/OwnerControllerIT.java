@@ -9,12 +9,14 @@ import io.github.vincemann.demo.model.Pet;
 import io.github.vincemann.demo.repositories.OwnerRepository;
 import io.github.vincemann.demo.service.OwnerService;
 import io.github.vincemann.demo.service.PetService;
+import io.github.vincemann.generic.crud.lib.service.CrudService;
 import io.github.vincemann.generic.crud.lib.test.controller.springAdapter.postUpdateCallback.PostUpdateCallback;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
@@ -22,6 +24,8 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;
+
+import static io.github.vincemann.generic.crud.lib.test.forceEagerFetch.proxy.abs.Hibernate_ForceEagerFetch_Proxy.EAGER_FETCH_PROXY;
 
 @ExtendWith(SpringExtension.class)
 @SpringBootTest(webEnvironment =
@@ -41,6 +45,13 @@ class OwnerControllerIT
     private Owner validOwnerWithManyPets;
     private OwnerDto invalidOwnerDto_becauseBlankCity;
 
+    //uses eagerly fetching service proxy
+    @Autowired
+    @Qualifier(EAGER_FETCH_PROXY)
+    @Override
+    public void setTestService(CrudService<Owner, Long, OwnerRepository> testService) {
+        super.setTestService(testService);
+    }
 
     @BeforeEach
     @Override
