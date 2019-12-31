@@ -18,12 +18,13 @@ import java.io.Serializable;
 import java.util.Optional;
 
 /**
- * Wraps {@link CrudService} and {@link CrudRepository} with {@link io.github.vincemann.generic.crud.lib.test.forceEagerFetch.proxy.abs.Hibernate_ForceEagerFetch_Proxy}s.
+ * Provides method: {@link #wrapWithEagerFetchProxy(CrudService)} for wrapping {@link CrudService} and {@link CrudRepository} with {@link io.github.vincemann.generic.crud.lib.test.forceEagerFetch.proxy.abs.Hibernate_ForceEagerFetch_Proxy}s.
  * -> no Lazy-initialize Exceptions can occur
  * -> Tests can be non {@link Transactional}, while Service Layer can use Lazy fetching.
  *
- * Also makes sure to attach all detached entities to current session, when using Repo calls.
- * For Service Layer this behavior is expected, usually realized with {@link io.github.vincemann.generic.crud.lib.service.plugin.SessionReattachmentPlugin}.
+ *
+ * Also makes sure to attach all detached entities to current session, when using Repo calls and fetches results eagerly.
+ * For Service Layer this behavior is usually realized with {@link io.github.vincemann.generic.crud.lib.service.plugin.SessionReattachmentPlugin}.
  *
  *
  * @param <S>
@@ -37,7 +38,6 @@ public abstract class ForceEagerFetch_CrudServiceIntegrationTest<
                         E extends IdentifiableEntity<Id>,
                         Id extends Serializable
                 > extends CrudServiceIntegrationTest<S, R, E, Id>
-                    implements InitializingBean
 {
 
     @Getter
@@ -60,16 +60,6 @@ public abstract class ForceEagerFetch_CrudServiceIntegrationTest<
         return forceEagerFetchHelper.runInTransactionAndFetchEagerly_OptionalValue_NoException(() -> {
             return super.repoFindById(id);
         });
-    }
-
-    @Override
-    public void afterPropertiesSet() throws Exception {
-        try {
-            getCastedCrudService();
-        }catch (ClassCastException e){
-            //user did not override injectCrudService with own impl implementing S-> safe to wrap with proxy
-            setCrudService(wrapWithEagerFetchProxy(getCrudService()));
-        }
     }
 
     @Transactional

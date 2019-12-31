@@ -13,9 +13,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 public class OwnerController
         extends DtoCrudController_SpringAdapter<Owner, OwnerDto,Long,OwnerRepository,OwnerService> {
 
+
     @RequestMapping("/owners")
     public String listOwners(Model model){
-        model.addAttribute("owners", getCrudOnlyService().findAll());
+        model.addAttribute("owners", getCrudService().findAll());
         return "owners/index";
     }
 }

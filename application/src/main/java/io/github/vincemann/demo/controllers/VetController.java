@@ -16,7 +16,7 @@ public class VetController extends DtoCrudController_SpringAdapter<Vet, VetDto,L
 
     @RequestMapping({"/vets", "/vets/index", "/vets/index.html", "/vets.html"})
     public String listVets(Model model){
-        model.addAttribute("vets", getCrudOnlyService().findAll());
+        model.addAttribute("vets", getCrudService().findAll());
         return "vets/index";
     }
 
