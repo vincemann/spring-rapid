@@ -9,6 +9,7 @@ import lombok.Getter;
 import lombok.Setter;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.data.repository.CrudRepository;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.io.Serializable;
 import java.util.*;
@@ -54,6 +55,7 @@ public class CrudService_PluginProxy
         }
     }
 
+    @Transactional
     @Override
     public Optional<E> findById(Id id) throws NoIdException {
         plugins.forEach(plugin -> plugin.onBeforeFindById(id));
@@ -62,7 +64,7 @@ public class CrudService_PluginProxy
         return foundEntity;
     }
 
-
+    @Transactional
     @Override
     public E update(E entity) throws EntityNotFoundException, NoIdException, BadEntityException {
         for (Plugin<? super E,? super Id> plugin : plugins) {
@@ -75,7 +77,7 @@ public class CrudService_PluginProxy
         return updatedEntity;
     }
 
-
+    @Transactional
     @Override
     public E save(E entity) throws BadEntityException {
         for (Plugin<? super E,? super Id> plugin : plugins) {
@@ -89,6 +91,7 @@ public class CrudService_PluginProxy
         return savedEntity;
     }
 
+    @Transactional
     @Override
     public Set<E> findAll() {
         plugins.forEach(Plugin::onBeforeFindAll);
@@ -97,6 +100,7 @@ public class CrudService_PluginProxy
         return foundEntities;
     }
 
+    @Transactional
     @Override
     public void delete(E entity) throws EntityNotFoundException, NoIdException {
         for (Plugin<? super E,? super Id> plugin : plugins) {
@@ -109,6 +113,7 @@ public class CrudService_PluginProxy
         }
     }
 
+    @Transactional
     @Override
     public void deleteById(Id id) throws EntityNotFoundException, NoIdException {
         for (Plugin<? super E,? super Id> plugin : plugins) {

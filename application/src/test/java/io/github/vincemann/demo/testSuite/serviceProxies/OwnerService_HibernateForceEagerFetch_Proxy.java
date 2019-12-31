@@ -7,6 +7,7 @@ import io.github.vincemann.generic.crud.lib.test.forceEagerFetch.Hibernate_Force
 import io.github.vincemann.generic.crud.lib.test.forceEagerFetch.proxy.CrudService_HibernateForceEagerFetch_Proxy;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Optional;
 
@@ -20,6 +21,7 @@ public class OwnerService_HibernateForceEagerFetch_Proxy
         super(crudService, helper);
     }
 
+    @Transactional
     @Override
     public Optional<Owner> findByLastName(String lastName) {
         try {
