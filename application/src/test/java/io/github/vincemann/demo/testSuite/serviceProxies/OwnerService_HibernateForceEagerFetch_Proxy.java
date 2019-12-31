@@ -23,7 +23,7 @@ public class OwnerService_HibernateForceEagerFetch_Proxy
     @Override
     public Optional<Owner> findByLastName(String lastName) {
         try {
-            return getHelper().runInTransactionAndFetchEagerly_OptionalValue(() -> getCrudService().findByLastName(lastName));
+            return getHelper().runInTransactionAndFetchEagerly_OptionalValue(() -> getCastedService().findByLastName(lastName));
         }catch (Exception e){
             throw new RuntimeException(e);
         }

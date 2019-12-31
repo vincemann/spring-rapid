@@ -32,10 +32,16 @@ public class CrudService_PluginProxy
 
     public static final String PLUGIN_PROXY = "pluginProxy";
     private final List<Plugin<? super E,? super Id>> plugins = new ArrayList<>();
+    @Setter
     private S crudService;
 
     public CrudService_PluginProxy(S crudService, Plugin<? super E, ? super Id>... plugins) {
+        this(plugins);
         this.crudService = crudService;
+
+    }
+
+    public CrudService_PluginProxy(Plugin<? super E, ? super Id>... plugins) {
         for (Plugin<? super E,? super Id> plugin : plugins) {
             plugin.setCrudService(this);
         }

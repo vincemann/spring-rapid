@@ -37,9 +37,9 @@ public class CrudService_HibernateForceEagerFetch_Proxy
         implements CrudService<E, Id, R> {
 
 
-    private S crudService;
+    private CrudService<E,Id,R> crudService;
 
-    public CrudService_HibernateForceEagerFetch_Proxy(S crudService, Hibernate_ForceEagerFetch_Helper helper) {
+    public CrudService_HibernateForceEagerFetch_Proxy(CrudService<E,Id,R> crudService, Hibernate_ForceEagerFetch_Helper helper) {
         super(helper);
         this.crudService = crudService;
     }
@@ -106,6 +106,10 @@ public class CrudService_HibernateForceEagerFetch_Proxy
     @Override
     public R getRepository() {
         return crudService.getRepository();
+    }
+
+    public S getCastedService(){
+        return (S) crudService;
     }
 
 }
