@@ -39,18 +39,13 @@ public abstract class CrudServiceIntegrationTest
                 >
 {
 
-    private CrudService<E,Id,R> crudOnlyService;
-    private S crudService;
+    private CrudService<E,Id,R> crudService;
 
     @Getter
     private EqualChecker<E> equalChecker;
     @Getter
     private R repository;
-
-
-    public void setCrudOnlyService(CrudService<E, Id, R> crudOnlyService) {
-        this.crudOnlyService = crudOnlyService;
-    }
+    
 
     @Autowired
     public void injectEqualChecker(EqualChecker<E> equalChecker) {
@@ -58,13 +53,12 @@ public abstract class CrudServiceIntegrationTest
     }
 
     @Autowired
-    public void injectCrudService(S crudService) {
-        this.crudService = crudService;
+    public void injectCrudService(CrudService<E, Id, R> crudService) {
+        setCrudService(crudService);
     }
 
-    @Autowired
-    public void injectCrudOnlyService(CrudService<E, Id, R> crudService) {
-        this.crudOnlyService = crudService;
+    public void setCrudService(CrudService<E, Id, R> crudService) {
+        this.crudService = crudService;
     }
 
     @Autowired
@@ -109,11 +103,11 @@ public abstract class CrudServiceIntegrationTest
     }
 
     protected Optional<E> serviceFindById(Id id) throws NoIdException {
-        return getCrudOnlyService().findById(id);
+        return getCrudService().findById(id);
     }
 
     protected E serviceSave(E entity) throws BadEntityException {
-        return getCrudOnlyService().save(entity);
+        return getCrudService().save(entity);
     }
 
     protected Optional<E> repoFindById(Id id){
@@ -125,7 +119,7 @@ public abstract class CrudServiceIntegrationTest
     }
 
     protected E serviceUpdate(E entity) throws EntityNotFoundException, BadEntityException, NoIdException {
-        return getCrudOnlyService().update(entity);
+        return getCrudService().update(entity);
     }
 
     protected void deleteEntityById_ShouldSucceed(Id id) throws EntityNotFoundException, NoIdException {
@@ -135,7 +129,7 @@ public abstract class CrudServiceIntegrationTest
         Assertions.assertTrue(entityToDelete.isPresent());
 
         //when
-        getCrudOnlyService().deleteById(id);
+        getCrudService().deleteById(id);
         //then
         Optional<E> deletedEntity = repoFindById(id);
         Assertions.assertFalse(deletedEntity.isPresent());
@@ -150,7 +144,7 @@ public abstract class CrudServiceIntegrationTest
         Assertions.assertTrue(repoEntity.isPresent());
 
         //when
-        Assertions.assertThrows(expectedException,() -> getCrudOnlyService().deleteById(id));
+        Assertions.assertThrows(expectedException,() -> getCrudService().deleteById(id));
         //then
         //still present
         Optional<E> repoEntityAfterDelete = repoFindById(id);
@@ -257,12 +251,12 @@ public abstract class CrudServiceIntegrationTest
         Assertions.assertFalse(foundEntity.isPresent());
     }
 
-    public S getCrudService() {
+    public CrudService<E, Id, R> getCrudService() {
         return crudService;
     }
-
-    public CrudService<E, Id, R> getCrudOnlyService() {
-        return crudOnlyService;
+    
+    public S getCastedCrudService(){
+        return (S) crudService;
     }
-
+    
 }

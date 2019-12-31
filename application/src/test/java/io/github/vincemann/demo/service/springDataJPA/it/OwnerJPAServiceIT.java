@@ -7,6 +7,7 @@ import io.github.vincemann.demo.repositories.OwnerRepository;
 import io.github.vincemann.demo.repositories.PetRepository;
 import io.github.vincemann.demo.service.OwnerService;
 import io.github.vincemann.demo.service.PetTypeService;
+import io.github.vincemann.demo.testSuite.serviceProxies.OwnerService_HibernateForceEagerFetch_Proxy;
 import io.github.vincemann.generic.crud.lib.service.CrudService;
 import io.github.vincemann.generic.crud.lib.service.exception.BadEntityException;
 import io.github.vincemann.generic.crud.lib.service.exception.EntityNotFoundException;
@@ -46,19 +47,19 @@ class OwnerJPAServiceIT
 
     private Owner ownerWithoutPets;
     private Owner ownerWithOnePet;
-    @Autowired
-    private PetTypeService petTypeService;
     private Pet testPet;
     private PetType savedDogPetType;
 
     @Autowired
     private CrudService<Pet, Long, PetRepository> petService;
-
-
-    @Qualifier(EAGER_FETCH_PROXY)
     @Autowired
+    private PetTypeService petTypeService;
+
+
+    @Autowired
+    @Qualifier(EAGER_FETCH_PROXY)
     @Override
-    public void injectCrudService(OwnerService crudService) {
+    public void injectCrudService(CrudService<Owner, Long, OwnerRepository> crudService) {
         super.injectCrudService(crudService);
     }
 
@@ -161,7 +162,7 @@ class OwnerJPAServiceIT
     @Test
     public void findByLastName_shouldSucceed() throws BadEntityException {
         Owner savedOwner = saveEntity_ShouldSucceed(ownerWithOnePet);
-        Optional<Owner> byLastName = getCrudService().findByLastName(ownerWithOnePet.getLastName());
+        Optional<Owner> byLastName = getCastedCrudService().findByLastName(ownerWithOnePet.getLastName());
         Assertions.assertTrue(byLastName.isPresent());
         Assertions.assertTrue(getEqualChecker().isEqual(savedOwner,byLastName.get()));
     }
