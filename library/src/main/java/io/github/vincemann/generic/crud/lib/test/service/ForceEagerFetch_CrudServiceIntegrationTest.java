@@ -8,6 +8,7 @@ import io.github.vincemann.generic.crud.lib.service.exception.NoIdException;
 import io.github.vincemann.generic.crud.lib.service.sessionReattach.EntityGraph_SessionReattachment_Helper;
 import io.github.vincemann.generic.crud.lib.test.forceEagerFetch.Hibernate_ForceEagerFetch_Helper;
 import io.github.vincemann.generic.crud.lib.test.forceEagerFetch.proxy.CrudService_HibernateForceEagerFetch_Proxy;
+import lombok.Getter;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.repository.CrudRepository;
@@ -20,10 +21,6 @@ import java.util.Optional;
  * Wraps {@link CrudService} and {@link CrudRepository} with {@link io.github.vincemann.generic.crud.lib.test.forceEagerFetch.proxy.abs.Hibernate_ForceEagerFetch_Proxy}s.
  * -> no Lazy-initialize Exceptions can occur
  * -> Tests can be non {@link Transactional}, while Service Layer can use Lazy fetching.
- *
- * This works only for {@link CrudService}s tho. If you need a more complex service (offering more methods), then you need to call
- * {@link #setCrudOnlyService(CrudService)} and wrap your service implementation manually with {@link CrudService_HibernateForceEagerFetch_Proxy}.
- * This can be done by calling {@link #wrapWithEagerFetchProxy(CrudService)};
  *
  * Also makes sure to attach all detached entities to current session, when using Repo calls.
  * For Service Layer this behavior is expected, usually realized with {@link io.github.vincemann.generic.crud.lib.service.plugin.SessionReattachmentPlugin}.
@@ -43,6 +40,7 @@ public abstract class ForceEagerFetch_CrudServiceIntegrationTest<
                     implements InitializingBean
 {
 
+    @Getter
     private Hibernate_ForceEagerFetch_Helper forceEagerFetchHelper;
     private EntityGraph_SessionReattachment_Helper sessionReattachmentHelper;
 
@@ -66,7 +64,12 @@ public abstract class ForceEagerFetch_CrudServiceIntegrationTest<
 
     @Override
     public void afterPropertiesSet() throws Exception {
-        setCrudOnlyService(wrapWithEagerFetchProxy(getCrudOnlyService()));
+        try {
+            getCastedCrudService();
+        }catch (ClassCastException e){
+            //user did not override injectCrudService with own impl implementing S-> safe to wrap with proxy
+            setCrudService(wrapWithEagerFetchProxy(getCrudService()));
+        }
     }
 
     @Transactional
