@@ -71,7 +71,7 @@ public abstract class ForceEagerFetch_CrudServiceIntegrationTest<
                 //entityGraph_sessionReattachment_helper.attachEntityGraphToCurrentSession(entity);
                 return super.serviceSave(entity);
             });
-        }catch (BadEntityException e){
+        }catch (BadEntityException|RuntimeException e){
             throw e;
         }catch (Exception e){
             throw new RuntimeException(e);
@@ -85,7 +85,7 @@ public abstract class ForceEagerFetch_CrudServiceIntegrationTest<
             return forceEagerFetchHelper.runInTransactionAndFetchEagerly_OptionalValue(() -> {
                 return super.serviceFindById(id);
             });
-        }catch (NoIdException e){
+        }catch (NoIdException|RuntimeException e){
             throw e;
         }catch (Exception e){
             throw new RuntimeException(e);
@@ -102,7 +102,7 @@ public abstract class ForceEagerFetch_CrudServiceIntegrationTest<
                 //entityGraph_sessionReattachment_helper.attachEntityGraphToCurrentSession(entity);
                 return super.serviceUpdate(entity);
             });
-        }catch (NoIdException|EntityNotFoundException|BadEntityException e){
+        }catch (NoIdException|EntityNotFoundException|BadEntityException|RuntimeException e){
             throw e;
         }catch (Exception e){
             throw new RuntimeException(e);
