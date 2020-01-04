@@ -9,13 +9,10 @@ import io.github.vincemann.generic.crud.lib.test.forceEagerFetch.Hibernate_Force
 import io.github.vincemann.generic.crud.lib.test.forceEagerFetch.proxy.abs.Hibernate_ForceEagerFetch_Proxy;
 import lombok.Getter;
 import org.hibernate.Hibernate;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.data.repository.CrudRepository;
 
 import java.io.Serializable;
 import java.util.Set;
-
-import static io.github.vincemann.generic.crud.lib.test.forceEagerFetch.proxy.CrudService_HibernateForceEagerFetch_Proxy.EAGER_FETCH_PROXY;
 
 
 /**

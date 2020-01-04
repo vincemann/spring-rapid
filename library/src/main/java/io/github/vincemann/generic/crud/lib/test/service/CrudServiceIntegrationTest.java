@@ -69,7 +69,12 @@ public abstract class CrudServiceIntegrationTest
     protected E saveEntity_ShouldSucceed(E entityToSave) throws BadEntityException {
         return saveEntity_ShouldSucceed(entityToSave,equalChecker);
     }
+
     protected E saveEntity_ShouldSucceed(E entityToSave, EqualChecker<E> equalChecker) throws BadEntityException {
+        return saveEntity_ShouldSucceed(entityToSave,equalChecker,equalChecker);
+    }
+
+    protected E saveEntity_ShouldSucceed(E entityToSave, EqualChecker<E> repoEntityEqualChecker, EqualChecker<E> returnedEntityEqualChecker) throws BadEntityException {
         //given
         Assertions.assertNull(entityToSave.getId());
 
@@ -88,8 +93,8 @@ public abstract class CrudServiceIntegrationTest
         Id oldId_EntityToSave = entityToSave.getId();
         entityToSave.setId(savedTestEntity.getId());
 
-        Assertions.assertTrue(equalChecker.isEqual(entityToSave,repoEntity.get()));
-        Assertions.assertTrue(equalChecker.isEqual(entityToSave,savedTestEntity));
+        Assertions.assertTrue(repoEntityEqualChecker.isEqual(entityToSave,repoEntity.get()));
+        Assertions.assertTrue(returnedEntityEqualChecker.isEqual(entityToSave,savedTestEntity));
 
         //restore old id
         entityToSave.setId(oldId_EntityToSave);
@@ -97,9 +102,9 @@ public abstract class CrudServiceIntegrationTest
         return savedTestEntity;
     }
 
-    protected void saveEntity_ShouldFail(E entityToSave, Class<? extends Exception> expectedException) {
+    protected <T extends Throwable> T saveEntity_ShouldFail(E entityToSave, Class<? extends T> expectedException) {
         //when
-        Assertions.assertThrows(expectedException, () -> serviceSave(entityToSave));
+        return Assertions.assertThrows(expectedException, () -> serviceSave(entityToSave));
     }
 
     protected Optional<E> serviceFindById(Id id) throws NoIdException {
@@ -135,7 +140,7 @@ public abstract class CrudServiceIntegrationTest
         Assertions.assertFalse(deletedEntity.isPresent());
     }
 
-    protected void deleteExistingEntityById_ShouldFail(Id id, Class<? extends Exception> expectedException) throws NoIdException {
+    protected <T extends Throwable> T deleteExistingEntityById_ShouldFail(Id id, Class<? extends T> expectedException) throws NoIdException {
         //given
         //entity is present
         Assertions.assertNotNull(id);
@@ -144,11 +149,12 @@ public abstract class CrudServiceIntegrationTest
         Assertions.assertTrue(repoEntity.isPresent());
 
         //when
-        Assertions.assertThrows(expectedException,() -> getCrudService().deleteById(id));
+        T exception = Assertions.assertThrows(expectedException, () -> getCrudService().deleteById(id));
         //then
         //still present
         Optional<E> repoEntityAfterDelete = repoFindById(id);
         Assertions.assertTrue(repoEntityAfterDelete.isPresent());
+        return exception;
     }
 
     protected E updateEntity_ShouldSucceed(E entityToUpdate, E newEntity) throws BadEntityException, EntityNotFoundException, NoIdException {
@@ -170,14 +176,17 @@ public abstract class CrudServiceIntegrationTest
     protected E updateEntity_ShouldSucceed(E newEntity) throws BadEntityException, EntityNotFoundException, NoIdException {
         return updateEntity_ShouldSucceed(newEntity,equalChecker);
     }
+    protected E updateEntity_ShouldSucceed(E newEntity, EqualChecker<E> equalChecker) throws BadEntityException, EntityNotFoundException, NoIdException {
+        return updateEntity_ShouldSucceed(newEntity,equalChecker,equalChecker);
+    }
 
-    protected E updateEntity_ShouldSucceed(E newEntity, EqualChecker<E> equalChecker) throws NoIdException, BadEntityException, EntityNotFoundException {
+    protected E updateEntity_ShouldSucceed(E newEntity, EqualChecker<E> repoEntityEqualChecker, EqualChecker<E> returnedEntityEqualChecker) throws NoIdException, BadEntityException, EntityNotFoundException {
         //given
         Assertions.assertNotNull(newEntity);
         Assertions.assertNotNull(newEntity.getId());
         Optional<E> entityToUpdate = repoFindById(newEntity.getId());
         Assertions.assertTrue(entityToUpdate.isPresent());
-        Assertions.assertFalse(equalChecker.isEqual(entityToUpdate.get(),newEntity));
+        Assertions.assertFalse(repoEntityEqualChecker.isEqual(newEntity,entityToUpdate.get()));
 
         //when
         E updatedEntity = serviceUpdate(newEntity);
@@ -188,46 +197,47 @@ public abstract class CrudServiceIntegrationTest
         Assertions.assertTrue(updatedRepoEntity.isPresent());
 
 
-        Assertions.assertTrue(equalChecker.isEqual(updatedEntity,newEntity));
+        Assertions.assertTrue(repoEntityEqualChecker.isEqual(newEntity,updatedEntity));
         Optional<E> updatedEntityFromRepo = repoFindById(newEntity.getId());
         Assertions.assertTrue(updatedEntityFromRepo.isPresent());
-        Assertions.assertTrue(equalChecker.isEqual(updatedEntity,updatedEntityFromRepo.get()));
+        Assertions.assertTrue(returnedEntityEqualChecker.isEqual(newEntity,updatedEntity));
 
         return updatedEntity;
     }
 
-    protected void updateExistingEntity_ShouldFail(E newEntity, Class<? extends Exception> expectedException) throws NoIdException {
-        updateExistingEntity_ShouldFail(newEntity,expectedException,equalChecker);
+    protected <T extends Throwable> T updateExistingEntity_ShouldFail(E newEntity, Class<? extends T> expectedException) throws NoIdException {
+        return updateExistingEntity_ShouldFail(newEntity,expectedException,equalChecker);
     }
 
-    protected void updateExistingEntity_ShouldFail(E entityToUpdate, E newEntity, Class<? extends Exception> expectedException) throws NoIdException, BadEntityException {
+    protected <T extends Throwable> T updateExistingEntity_ShouldFail(E entityToUpdate, E newEntity, Class<? extends T> expectedException) throws NoIdException, BadEntityException {
         saveEntityForUpdate(entityToUpdate,newEntity);
-        updateExistingEntity_ShouldFail(newEntity,expectedException,equalChecker);
+        return updateExistingEntity_ShouldFail(newEntity,expectedException,equalChecker);
     }
 
-    protected void updateExistingEntity_ShouldFail(E entityToUpdate, E newEntity, Class<? extends Exception> expectedException,EqualChecker<E> equalChecker) throws NoIdException, BadEntityException {
+    protected <T extends Throwable> T updateExistingEntity_ShouldFail(E entityToUpdate, E newEntity, Class<? extends T> expectedException,EqualChecker<E> equalChecker) throws NoIdException, BadEntityException {
         saveEntityForUpdate(entityToUpdate, newEntity);
-        updateExistingEntity_ShouldFail(newEntity, expectedException, equalChecker);
+        return updateExistingEntity_ShouldFail(newEntity, expectedException, equalChecker);
     }
 
-    protected void updateExistingEntity_ShouldFail(E newEntity, Class<? extends Exception> expectedException, EqualChecker<E> equalChecker) throws NoIdException{
+    protected <T extends Throwable> T updateExistingEntity_ShouldFail(E newEntity, Class<? extends T> expectedException, EqualChecker<E> equalChecker) throws NoIdException{
         //given
         //entity to update is present
         Assertions.assertNotNull(newEntity);
         Assertions.assertNotNull(newEntity.getId());
         Optional<E> entityToUpdate = repoFindById(newEntity.getId());
         Assertions.assertTrue(entityToUpdate.isPresent());
-        Assertions.assertFalse(equalChecker.isEqual(entityToUpdate.get(),newEntity));
+        Assertions.assertFalse(equalChecker.isEqual(newEntity,entityToUpdate.get()));
 
 
         //when
-        Assertions.assertThrows(expectedException,() -> serviceUpdate(newEntity));
+        T exception = Assertions.assertThrows(expectedException, () -> serviceUpdate(newEntity));
 
         //then
         Optional<E> updatedRepoEntity = repoFindById(newEntity.getId());
         Assertions.assertTrue(updatedRepoEntity.isPresent());
         //still the same
         Assertions.assertTrue(equalChecker.isEqual(entityToUpdate.get(),updatedRepoEntity.get()));
+        return exception;
     }
 
     protected E findEntityById_ShouldSucceed(Id id) throws NoIdException {
@@ -238,10 +248,10 @@ public abstract class CrudServiceIntegrationTest
         return foundEntity.get();
     }
 
-    protected void findExistingEntityById_ShouldFail(Id id, Class<? extends Exception> expectedException) throws NoIdException {
+    protected <T extends Throwable> T findExistingEntityById_ShouldFail(Id id, Class<? extends T> expectedException) throws NoIdException {
         Assertions.assertNotNull(id);
         Assertions.assertTrue(repoFindById(id).isPresent());
-        Assertions.assertThrows(expectedException,() -> serviceFindById(id));
+        return Assertions.assertThrows(expectedException,() -> serviceFindById(id));
     }
 
     protected void findExistingEntityById_ShouldFail(Id id) throws NoIdException {

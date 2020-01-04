@@ -8,8 +8,8 @@ import io.github.vincemann.generic.crud.lib.service.exception.NoIdException;
 import io.github.vincemann.generic.crud.lib.service.sessionReattach.EntityGraph_SessionReattachment_Helper;
 import io.github.vincemann.generic.crud.lib.test.forceEagerFetch.Hibernate_ForceEagerFetch_Helper;
 import io.github.vincemann.generic.crud.lib.test.forceEagerFetch.proxy.CrudService_HibernateForceEagerFetch_Proxy;
+import io.github.vincemann.generic.crud.lib.test.forceEagerFetch.proxy.abs.Hibernate_ForceEagerFetch_Proxy;
 import lombok.Getter;
-import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.transaction.annotation.Transactional;
@@ -18,7 +18,7 @@ import java.io.Serializable;
 import java.util.Optional;
 
 /**
- * Provides method: {@link #wrapWithEagerFetchProxy(CrudService)} for wrapping {@link CrudService} and {@link CrudRepository} with {@link io.github.vincemann.generic.crud.lib.test.forceEagerFetch.proxy.abs.Hibernate_ForceEagerFetch_Proxy}s.
+ * Provides method: {@link #wrapWithEagerFetchProxy(CrudService)} for wrapping {@link CrudService} and {@link CrudRepository} with {@link Hibernate_ForceEagerFetch_Proxy}s.
  * -> no Lazy-initialize Exceptions can occur
  * -> Tests can be non {@link Transactional}, while Service Layer can use Lazy fetching.
  *
