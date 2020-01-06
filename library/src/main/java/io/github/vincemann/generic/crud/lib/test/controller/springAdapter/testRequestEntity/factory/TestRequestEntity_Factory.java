@@ -18,7 +18,7 @@ public interface TestRequestEntity_Factory {
      * @param id of the request represented by returned {@link TestRequestEntity}, can be null if request does not carry and id
      * @return
      */
-    public TestRequestEntity createInstance(CrudController_TestCase crudControllerTestCase, @Nullable TestRequestEntity_Modification bundleTestRequestEntityModification, @Nullable Object id);
+    public TestRequestEntity createInstance(CrudController_TestCase crudControllerTestCase,@Nullable Object id, @Nullable TestRequestEntity_Modification... bundleTestRequestEntityModifications);
     public void setTest(UrlParamId_ControllerIntegrationTest test);
 
 }
