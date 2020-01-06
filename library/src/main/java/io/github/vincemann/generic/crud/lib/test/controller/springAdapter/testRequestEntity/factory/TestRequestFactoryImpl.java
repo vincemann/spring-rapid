@@ -48,12 +48,12 @@ public class TestRequestFactoryImpl implements TestRequestEntity_Factory {
     }
 
     @Override
-    public TestRequestEntity createInstance(CrudController_TestCase crudControllerTestCase, TestRequestEntity_Modification bundleTestRequestEntityModification, Object id) {
+    public TestRequestEntity createInstance(CrudController_TestCase crudControllerTestCase, Object id, TestRequestEntity_Modification... bundleTestRequestEntityModifications) {
         TestRequestEntity defaultTestRequestEntity = createDefaultTestRequestEntity(crudControllerTestCase,id);
-        if(bundleTestRequestEntityModification==null){
+        if(bundleTestRequestEntityModifications==null){
             return defaultTestRequestEntity;
         }else {
-            testRequestEntityModificationStrategy.modify(defaultTestRequestEntity,bundleTestRequestEntityModification);
+            testRequestEntityModificationStrategy.process(defaultTestRequestEntity,bundleTestRequestEntityModifications);
             //return modified defaultTestRequestEntity
             return defaultTestRequestEntity;
         }

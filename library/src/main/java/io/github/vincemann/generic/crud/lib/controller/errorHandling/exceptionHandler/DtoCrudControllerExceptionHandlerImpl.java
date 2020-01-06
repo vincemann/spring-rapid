@@ -19,7 +19,7 @@ public class DtoCrudControllerExceptionHandlerImpl extends ImprovedRestException
 
     @Override
     public ResponseEntity<ApiError> handleEntityMappingException(EntityMappingException e) {
-        logInternalServerError(e);
+        logError(e);
         return buildResponseEntity(new ApiError(HttpStatus.BAD_REQUEST,
                 "EntityDto could not be mapped to Entity or vice versa",e));
     }
@@ -38,7 +38,7 @@ public class DtoCrudControllerExceptionHandlerImpl extends ImprovedRestException
 
     @Override
     public ResponseEntity<ApiError> handleUnknownException(Exception e) {
-        logInternalServerError(e);
+        logError(e);
         return buildResponseEntity(new ApiError(HttpStatus.INTERNAL_SERVER_ERROR,
                 "Unknown ServerError occured in CrudController",e));
     }
@@ -49,8 +49,8 @@ public class DtoCrudControllerExceptionHandlerImpl extends ImprovedRestException
                 "Entity sent by client was malformed",e));
     }
 
-    private void logInternalServerError(Exception e){
-        log.error("internal Server error occured: ",e);
+    protected void logError(Exception e){
+        log.error("Exception caught by Handler: "+ this.getClass().getSimpleName()+ ", :",e);
     }
 
 }

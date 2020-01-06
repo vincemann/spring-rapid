@@ -4,5 +4,5 @@ import io.github.vincemann.generic.crud.lib.test.controller.springAdapter.testRe
 import io.github.vincemann.generic.crud.lib.test.controller.springAdapter.testRequestEntity.TestRequestEntity_Modification;
 
 public interface TestRequestEntity_ModificationStrategy {
-    public void modify(TestRequestEntity requestEntity, TestRequestEntity_Modification modification);
+    public void process(TestRequestEntity requestEntity, TestRequestEntity_Modification... modifications);
 }

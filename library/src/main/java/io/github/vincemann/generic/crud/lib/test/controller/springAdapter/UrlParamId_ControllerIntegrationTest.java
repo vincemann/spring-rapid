@@ -118,19 +118,19 @@ public abstract class UrlParamId_ControllerIntegrationTest
     }
 
 
-    protected ResponseEntity<String> findAllEntities_ShouldFail(TestRequestEntity_Modification requestEntity_Modification) throws Exception {
+    protected ResponseEntity<String> findAllEntities_ShouldFail(TestRequestEntity_Modification... modifications) throws Exception {
         TestRequestEntity testRequestEntity = requestEntityFactory.createInstance(
                 CrudController_TestCase.FAILED_FIND_ALL,
-                requestEntity_Modification,
-                null);
+                null,
+                modifications);
         return findAllEntities(testRequestEntity);
     }
 
-    protected Set<Dto> findAllEntities_ShouldSucceed(Set<ServiceE> entitiesExpectedToBeFound,TestRequestEntity_Modification testRequestEntityModification) throws Exception {
+    protected Set<Dto> findAllEntities_ShouldSucceed(Set<ServiceE> entitiesExpectedToBeFound,TestRequestEntity_Modification... modifications) throws Exception {
         TestRequestEntity testRequestEntity = requestEntityFactory.createInstance(
                 CrudController_TestCase.SUCCESSFUL_FIND_ALL,
-                testRequestEntityModification,
-                null);
+                null,
+                modifications);
         ResponseEntity<String> responseEntity = findAllEntities(testRequestEntity);
 
         @SuppressWarnings("unchecked")
@@ -169,25 +169,26 @@ public abstract class UrlParamId_ControllerIntegrationTest
         return updateEntity_ShouldSucceed(updateRequest,updatedValuesPostUpdateCallback);
     }
 
-    protected Dto updateEntity_ShouldSucceed(ServiceE entityToUpdate, Dto updateRequest,@Nullable TestRequestEntity_Modification testRequestEntityModification) throws Exception {
+    protected Dto updateEntity_ShouldSucceed(ServiceE entityToUpdate, Dto updateRequest,@Nullable TestRequestEntity_Modification... modifications) throws Exception {
         ServiceE savedEntityToUpdate = saveServiceEntity(entityToUpdate);
         updateRequest.setId(savedEntityToUpdate.getId());
-        return updateEntity_ShouldSucceed(updateRequest,testRequestEntityModification);
+        return updateEntity_ShouldSucceed(updateRequest,modifications);
     }
 
-    protected Dto updateEntity_ShouldSucceed(ServiceE entityToUpdate, Dto updateRequest,@Nullable TestRequestEntity_Modification testRequestEntityModification,@Nullable PostUpdateCallback<ServiceE> updatedValuesPostUpdateCallback) throws Exception {
+    protected Dto updateEntity_ShouldSucceed(ServiceE entityToUpdate, Dto updateRequest,@Nullable PostUpdateCallback<ServiceE> updatedValuesPostUpdateCallback,@Nullable TestRequestEntity_Modification... modifications) throws Exception {
         ServiceE savedEntityToUpdate = saveServiceEntity(entityToUpdate);
         updateRequest.setId(savedEntityToUpdate.getId());
-        return updateEntity_ShouldSucceed(updateRequest,testRequestEntityModification,updatedValuesPostUpdateCallback);
+        return updateEntity_ShouldSucceed(updateRequest,updatedValuesPostUpdateCallback,modifications);
     }
 
 
-    protected Dto updateEntity_ShouldSucceed(Dto updateRequestDto, @Nullable TestRequestEntity_Modification testRequestEntityModification,@Nullable PostUpdateCallback<ServiceE> updatedValuesPostUpdateCallback) throws Exception {
+    protected Dto updateEntity_ShouldSucceed(Dto updateRequestDto,@Nullable PostUpdateCallback<ServiceE> updatedValuesPostUpdateCallback, @Nullable TestRequestEntity_Modification... modifications) throws Exception {
         Assertions.assertNotNull(updateRequestDto.getId());
         TestRequestEntity testRequestEntity = requestEntityFactory.createInstance(
                 CrudController_TestCase.SUCCESSFUL_UPDATE,
-                testRequestEntityModification,
-                updateRequestDto.getId());
+                updateRequestDto.getId(),
+                modifications
+                );
         //Entity to update must be saved already
         Optional<ServiceE> serviceEntityToUpdate = crudController.getCrudService().findById(updateRequestDto.getId());
         Assertions.assertTrue(serviceEntityToUpdate.isPresent(), "Entity to update was not present");
@@ -218,20 +219,16 @@ public abstract class UrlParamId_ControllerIntegrationTest
         return updateEntity_ShouldSucceed(updateRequestDto,null,null);
     }
 
-    protected Dto updateEntity_ShouldSucceed(Dto updateRequestDto, TestRequestEntity_Modification testRequestEntity_modification) throws Exception {
-        return updateEntity_ShouldSucceed(updateRequestDto,testRequestEntity_modification,null);
+    protected Dto updateEntity_ShouldSucceed(Dto updateRequestDto, TestRequestEntity_Modification... modifications) throws Exception {
+        return updateEntity_ShouldSucceed(updateRequestDto,null,modifications);
     }
 
-    protected Dto updateEntity_ShouldSucceed(Dto updateRequestDto, PostUpdateCallback<ServiceE> equalChecker) throws Exception {
-        return updateEntity_ShouldSucceed(updateRequestDto,null,equalChecker);
-    }
-
-    protected ResponseEntity<String> updateEntity_ShouldFail(Dto updateRequestDto, TestRequestEntity_Modification testRequestEntityModification,@Nullable PostUpdateCallback<ServiceE> updatedValuesPostUpdateCallback) throws Exception {
+    protected ResponseEntity<String> updateEntity_ShouldFail(Dto updateRequestDto, @Nullable PostUpdateCallback<ServiceE> updatedValuesPostUpdateCallback,TestRequestEntity_Modification... modifications) throws Exception {
         Assertions.assertNotNull(updateRequestDto.getId());
         TestRequestEntity testRequestEntity = requestEntityFactory.createInstance(
                 CrudController_TestCase.FAILED_UPDATE,
-                testRequestEntityModification,
-                updateRequestDto.getId());
+                updateRequestDto.getId(),
+                modifications);
         //Entity muss vorher auch schon da sein
         Optional<ServiceE> serviceEntityToUpdate = getService().findById(updateRequestDto.getId());
         Assertions.assertTrue(serviceEntityToUpdate.isPresent(), "Entity to update was not present");
@@ -252,12 +249,12 @@ public abstract class UrlParamId_ControllerIntegrationTest
         return updateEntity_ShouldFail(newEntity,null,null);
     }
 
-    protected ResponseEntity<String> updateEntity_ShouldFail(Dto newEntity,TestRequestEntity_Modification testRequestEntity_modification) throws Exception {
-        return updateEntity_ShouldFail(newEntity,testRequestEntity_modification,null);
+    protected ResponseEntity<String> updateEntity_ShouldFail(Dto newEntity,TestRequestEntity_Modification... modifications) throws Exception {
+        return updateEntity_ShouldFail(newEntity,null,modifications);
     }
 
     protected ResponseEntity<String> updateEntity_ShouldFail(Dto newEntity, PostUpdateCallback<ServiceE> equalChecker) throws Exception {
-        return updateEntity_ShouldFail(newEntity,null,equalChecker);
+        return updateEntity_ShouldFail(newEntity,equalChecker,null);
     }
 
     protected ResponseEntity<String> updateEntity_ShouldFail(ServiceE entityToUpdate, Dto updateRequest) throws Exception {
@@ -272,16 +269,16 @@ public abstract class UrlParamId_ControllerIntegrationTest
         return updateEntity_ShouldFail(updateRequest,updatedValuesPostUpdateCallback);
     }
 
-    protected ResponseEntity<String> updateEntity_ShouldFail(ServiceE entityToUpdate, Dto updateRequest,@Nullable TestRequestEntity_Modification testRequestEntityModification) throws Exception {
+    protected ResponseEntity<String> updateEntity_ShouldFail(ServiceE entityToUpdate, Dto updateRequest,@Nullable TestRequestEntity_Modification... modifications) throws Exception {
         ServiceE savedEntityToUpdate = saveServiceEntity(entityToUpdate);
         updateRequest.setId(savedEntityToUpdate.getId());
-        return updateEntity_ShouldFail(updateRequest,testRequestEntityModification);
+        return updateEntity_ShouldFail(updateRequest,modifications);
     }
 
-    protected ResponseEntity<String> updateEntity_ShouldFail(ServiceE entityToUpdate, Dto updateRequest,@Nullable TestRequestEntity_Modification testRequestEntityModification,@Nullable PostUpdateCallback<ServiceE> updatedValuesPostUpdateCallback) throws Exception {
+    protected ResponseEntity<String> updateEntity_ShouldFail(ServiceE entityToUpdate, Dto updateRequest,@Nullable PostUpdateCallback<ServiceE> updatedValuesPostUpdateCallback,@Nullable TestRequestEntity_Modification... modifications) throws Exception {
         ServiceE savedEntityToUpdate = saveServiceEntity(entityToUpdate);
         updateRequest.setId(savedEntityToUpdate.getId());
-        return updateEntity_ShouldFail(updateRequest,testRequestEntityModification,updatedValuesPostUpdateCallback);
+        return updateEntity_ShouldFail(updateRequest,updatedValuesPostUpdateCallback,modifications);
     }
 
 
@@ -300,9 +297,9 @@ public abstract class UrlParamId_ControllerIntegrationTest
         return createEntity_ShouldSucceed(dto,null);
     }
 
-    protected Dto createEntity_ShouldSucceed(Dto dto, TestRequestEntity_Modification modification) throws Exception {
+    protected Dto createEntity_ShouldSucceed(Dto dto, TestRequestEntity_Modification... modifications) throws Exception {
         Assertions.assertNull(dto.getId());
-        TestRequestEntity testRequestEntity = requestEntityFactory.createInstance(CrudController_TestCase.SUCCESSFUL_CREATE, modification, null);
+        TestRequestEntity testRequestEntity = requestEntityFactory.createInstance(CrudController_TestCase.SUCCESSFUL_CREATE, null, modifications);
         ResponseEntity<String> responseEntity = createEntity(dto, testRequestEntity);
         Assertions.assertEquals(responseEntity.getStatusCode(), testRequestEntity.getExpectedHttpStatus(), "Status was : " + responseEntity.getStatusCode() + " response Body: " + responseEntity.getBody());
         Dto httpResponseEntity = crudController.getMediaTypeStrategy().readDtoFromBody(responseEntity.getBody(), dtoEntityClass);
@@ -313,11 +310,11 @@ public abstract class UrlParamId_ControllerIntegrationTest
         return createEntity_ShouldFail(dto,null);
     }
 
-    protected ResponseEntity<String> createEntity_ShouldFail(Dto dto, TestRequestEntity_Modification modification) throws Exception {
+    protected ResponseEntity<String> createEntity_ShouldFail(Dto dto, TestRequestEntity_Modification... modifications) throws Exception {
         TestRequestEntity testRequestEntity = requestEntityFactory.createInstance(
                 CrudController_TestCase.FAILED_CREATE,
-                modification,
-                null);
+                null,
+                modifications);
         ResponseEntity<String> responseEntity = createEntity(dto, testRequestEntity);
         Assertions.assertEquals(responseEntity.getStatusCode(), testRequestEntity.getExpectedHttpStatus(), "Status was : " + responseEntity.getStatusCode() + " response Body: " + responseEntity.getBody());
         return responseEntity;
@@ -338,11 +335,11 @@ public abstract class UrlParamId_ControllerIntegrationTest
         return deleteEntity_ShouldSucceed(id,null);
     }
 
-    protected ResponseEntity<String> deleteEntity_ShouldSucceed(Id id, TestRequestEntity_Modification modification) throws Exception {
+    protected ResponseEntity<String> deleteEntity_ShouldSucceed(Id id, TestRequestEntity_Modification... modifications) throws Exception {
         TestRequestEntity testRequestEntity = requestEntityFactory.createInstance(
                 CrudController_TestCase.SUCCESSFUL_DELETE,
-                modification,
-                id);
+                id,
+                modifications);
         //Entity muss vorher auch schon da sein
         Optional<ServiceE> serviceFoundEntityBeforeDelete = crudController.getCrudService().findById(id);
         Assertions.assertTrue(serviceFoundEntityBeforeDelete.isPresent(), "Entity to delete was not present");
@@ -358,11 +355,11 @@ public abstract class UrlParamId_ControllerIntegrationTest
         return deleteEntity_ShouldFail(id,null);
     }
 
-    protected ResponseEntity<String> deleteEntity_ShouldFail(Id id, TestRequestEntity_Modification testRequestEntityModification) throws Exception {
+    protected ResponseEntity<String> deleteEntity_ShouldFail(Id id, TestRequestEntity_Modification... modifications) throws Exception {
         TestRequestEntity testRequestEntity = requestEntityFactory.createInstance(
                 CrudController_TestCase.FAILED_DELETE,
-                testRequestEntityModification,
-                id);
+                id,
+                modifications);
         //Entity muss vorher auch schon da sein
         Optional<ServiceE> serviceFoundEntityBeforeDelete = crudController.getCrudService().findById(id);
         Assertions.assertTrue(serviceFoundEntityBeforeDelete.isPresent(), "Entity to delete was not present");
@@ -381,11 +378,11 @@ public abstract class UrlParamId_ControllerIntegrationTest
      * @return the dto of the requested entity found on backend with given id
      * @throws Exception
      */
-    protected Dto findEntity_ShouldSucceed(Id id, TestRequestEntity_Modification modification) throws Exception {
+    protected Dto findEntity_ShouldSucceed(Id id, TestRequestEntity_Modification... modifications) throws Exception {
         TestRequestEntity testRequestEntity = requestEntityFactory.createInstance(
                 CrudController_TestCase.SUCCESSFUL_FIND,
-                modification,
-                id);
+                id,
+                modifications);
         ResponseEntity<String> responseEntity = findEntity(id, testRequestEntity);
         Assertions.assertEquals(responseEntity.getStatusCode(), testRequestEntity.getExpectedHttpStatus(), "Status was : " + responseEntity.getStatusCode() + " response Body: " + responseEntity.getBody());
         Dto responseDto = crudController.getMediaTypeStrategy().readDtoFromBody(responseEntity.getBody(), dtoEntityClass);
@@ -397,11 +394,11 @@ public abstract class UrlParamId_ControllerIntegrationTest
         return findEntity_ShouldSucceed(id,null);
     }
 
-    protected ResponseEntity<String> findEntity_ShouldFail(Id id, TestRequestEntity_Modification modification) throws Exception {
+    protected ResponseEntity<String> findEntity_ShouldFail(Id id, TestRequestEntity_Modification... modifications) throws Exception {
         TestRequestEntity testRequestEntity = requestEntityFactory.createInstance(
                 CrudController_TestCase.FAILED_FIND,
-                modification,
-                id);
+                id,
+                modifications);
         ResponseEntity<String> responseEntity = findEntity(id, testRequestEntity);
         Assertions.assertEquals(responseEntity.getStatusCode(), testRequestEntity.getExpectedHttpStatus(), "Status was : " + responseEntity.getStatusCode() + " response Body: " + responseEntity.getBody());
         return responseEntity;
