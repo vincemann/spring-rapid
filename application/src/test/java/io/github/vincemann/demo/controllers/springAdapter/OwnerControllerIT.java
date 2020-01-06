@@ -49,8 +49,8 @@ class OwnerControllerIT
     @Autowired
     @Qualifier(EAGER_FETCH_PROXY)
     @Override
-    public void setTestService(CrudService<Owner, Long, OwnerRepository> testService) {
-        super.setTestService(testService);
+    public void setTestCrudService(CrudService<Owner, Long, OwnerRepository> testService) {
+        super.setTestCrudService(testService);
     }
 
     @BeforeEach
