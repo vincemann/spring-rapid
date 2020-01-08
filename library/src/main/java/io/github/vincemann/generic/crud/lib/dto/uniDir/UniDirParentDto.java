@@ -65,9 +65,9 @@ public interface UniDirParentDto {
             Collection<Serializable> idCollection = (Collection<Serializable>) field.get(this);
             if(idCollection!=null){
                 childrenIdCollections.put(field.getAnnotation(UniDirChildIdCollection.class).value(),idCollection);
-            }else {
+            }/*else {
                throw new IllegalArgumentException("Null idCollection found in UniDirParentDto "+ this + " for ChildIdCollectionField with name: " + field.getName());
-            }
+            }*/
         }
         return childrenIdCollections;
     }

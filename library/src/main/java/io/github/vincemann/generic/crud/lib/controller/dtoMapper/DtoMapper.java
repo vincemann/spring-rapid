@@ -8,7 +8,7 @@ import io.github.vincemann.generic.crud.lib.model.IdentifiableEntity;
  */
 public interface DtoMapper {
 
-    public Class getDtoClass();
+    public boolean isDtoClassSupported(Class<? extends IdentifiableEntity> clazz);
     public <T extends IdentifiableEntity> T mapDtoToEntity(Object source, Class<T> destinationClass) throws EntityMappingException;
     public <T extends IdentifiableEntity> T mapEntityToDto(Object source, Class<T> destinationClass) throws EntityMappingException;
 }

@@ -2,11 +2,9 @@ package io.github.vincemann.demo.controllers.springAdapter;
 
 
 import io.github.vincemann.demo.controllers.EntityInitializer_ControllerIT;
-import io.github.vincemann.demo.controllers.PetController;
 import io.github.vincemann.demo.dtos.PetDto;
 import io.github.vincemann.demo.model.Pet;
 import io.github.vincemann.demo.repositories.PetRepository;
-import io.github.vincemann.demo.service.PetService;
 import io.github.vincemann.generic.crud.lib.test.controller.springAdapter.postUpdateCallback.PostUpdateCallback;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -90,7 +88,8 @@ class PetControllerIT
     public void updatePet_RemoveOwner_ShouldSucceed() throws Exception {
         //remove pets owner in update
         PetDto removePetsOwnerUpdate = PetDto.builder()
-                .ownerId(null)
+                //tells backend to detach owner from pet
+                .ownerId(0L)
                 .petTypeId(getTestPetType().getId())
                 .name("esta")
                 .build();

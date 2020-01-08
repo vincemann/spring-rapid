@@ -44,7 +44,7 @@ public abstract class BasicDtoCrudController
             implements DtoCrudController<Id> {
 
     private CrudService<E,Id,R> crudService;
-    private DtoMapperFinder dtoMapperFinder;
+    private DtoMapperFinder<Id> dtoMapperFinder;
     private MappingContext<Id> mappingContext;
     @SuppressWarnings("unchecked")
     private Class<E> entityClass = (Class<E>) ((ParameterizedType) this.getClass().getGenericSuperclass()).getActualTypeArguments()[0];
@@ -60,17 +60,15 @@ public abstract class BasicDtoCrudController
     }
 
     @Autowired
-    public void injectDtoMapperFinder(DtoMapperFinder dtoMapperFinder) {
+    public void injectDtoMapperFinder(DtoMapperFinder<Id> dtoMapperFinder) {
         this.dtoMapperFinder = dtoMapperFinder;
     }
 
     @Override
     @SuppressWarnings("unchecked")
     public ResponseEntity<? extends IdentifiableEntity<Id>> find(Id id) throws NoIdException, EntityNotFoundException, EntityMappingException {
-        beforeFindEntity(id);
         Optional<E> optionalEntity = crudService.findById(id);
         if (optionalEntity.isPresent()) {
-            afterFindEntity(optionalEntity.get());
             return ok(findMapperAndMapToDto(optionalEntity.get(),getMappingContext().getFindReturnDtoClass()));
         } else {
             throw new EntityNotFoundException();
@@ -79,9 +77,7 @@ public abstract class BasicDtoCrudController
 
     @Override
     public ResponseEntity<Collection<IdentifiableEntity<Id>>> findAll() throws EntityMappingException {
-        beforeFindAllEntities();
         Set<E> all = crudService.findAll();
-        afterFindAllEntities(all);
         Collection<IdentifiableEntity<Id>> dtos = new HashSet<>();
         for (E e : all) {
             dtos.add(findMapperAndMapToDto(e,getMappingContext().getFindAllReturnDtoClass()));
@@ -93,9 +89,7 @@ public abstract class BasicDtoCrudController
     @SuppressWarnings("unchecked")
     public ResponseEntity<? extends IdentifiableEntity<Id>> create(IdentifiableEntity<Id> dto) throws BadEntityException, EntityMappingException {
         E entity = findMapperAndMapToEntity(dto, getMappingContext().getCreateArgDtoClass());
-        beforeCreateEntity(entity);
         E savedEntity = crudService.save(entity);
-        afterCreateEntity(savedEntity);
         return new ResponseEntity(findMapperAndMapToDto(savedEntity,getMappingContext().getCreateReturnDtoClass()),
                 HttpStatus.OK);
     }
@@ -104,10 +98,8 @@ public abstract class BasicDtoCrudController
     @SuppressWarnings("unchecked")
     public ResponseEntity<? extends IdentifiableEntity<Id>> update(IdentifiableEntity<Id> dto) throws BadEntityException, EntityMappingException, NoIdException, EntityNotFoundException {
         E entity = findMapperAndMapToEntity(dto, getMappingContext().getUpdateArgDtoClass());
-        beforeUpdateEntity(entity);
         E updatedEntity = crudService.update(entity);
         //no idea why casting is necessary here?
-        afterUpdateEntity(updatedEntity);
         return new ResponseEntity(findMapperAndMapToDto(updatedEntity,getMappingContext().getUpdateReturnDtoClass()),
                 HttpStatus.OK);
     }
@@ -115,9 +107,7 @@ public abstract class BasicDtoCrudController
 
     @Override
     public ResponseEntity<?> delete(Id id) throws NoIdException, EntityNotFoundException {
-        beforeDeleteEntity(id);
         crudService.deleteById(id);
-        afterDeleteEntity(id);
         return ResponseEntity.ok().build();
     }
 
@@ -128,14 +118,14 @@ public abstract class BasicDtoCrudController
     }
 
     public E findMapperAndMapToEntity(IdentifiableEntity<Id> dto, Class<? extends IdentifiableEntity<Id>> dtoClass) throws EntityMappingException {
-        Class<?> dtoClazz;
+        Class dtoClazz;
         if(dtoClass==null){
             dtoClazz=dto.getClass();
         }else {
             dtoClazz = dtoClass;
         }
         DtoMapper dtoMapper = dtoMapperFinder.find(dtoClazz);
-        return dtoMapper.mapEntityToDto(dto, entityClass);
+        return dtoMapper.mapDtoToEntity(dto, entityClass);
     }
 
     private ResponseEntity<Collection<IdentifiableEntity<Id>>> ok(Collection<IdentifiableEntity<Id>> dtoCollection){
@@ -150,34 +140,4 @@ public abstract class BasicDtoCrudController
         return (S) crudService;
     }
 
-    protected void beforeFindAllEntities(){
-    }
-
-    protected void afterFindAllEntities(Set<E> all){
-    }
-
-    protected void beforeUpdateEntity(E entity) {
-    }
-
-    protected void afterUpdateEntity(E entity) {
-    }
-
-    protected void beforeCreateEntity(E entity) {
-    }
-
-    protected void afterCreateEntity(E entity) {
-    }
-
-
-    protected void beforeFindEntity(Id id) {
-    }
-
-    protected void afterFindEntity(E foundEntity) {
-    }
-
-    protected void beforeDeleteEntity(Id id) {
-    }
-
-    protected void afterDeleteEntity(Id id) {
-    }
 }

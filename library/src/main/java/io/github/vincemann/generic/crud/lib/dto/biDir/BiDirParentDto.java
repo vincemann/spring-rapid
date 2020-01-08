@@ -11,9 +11,9 @@ import java.io.Serializable;
 import java.lang.reflect.Field;
 import java.util.*;
 
-public interface BiDirDtoParent {
+public interface BiDirParentDto {
 
-    Logger log = LoggerFactory.getLogger(BiDirDtoParent.class);
+    Logger log = LoggerFactory.getLogger(BiDirParentDto.class);
     Map<Class, Field[]> biDirChildFieldsCache = new HashMap<>();
     Map<Class, Field[]> biDirChildrenCollectionFieldsCache = new HashMap<>();
 
@@ -52,9 +52,9 @@ public interface BiDirDtoParent {
             Collection<Serializable> idCollection = (Collection<Serializable>) field.get(this);
             if(idCollection!=null){
                 childrenIdCollections.put(field.getAnnotation(BiDirChildIdCollection.class).value(),idCollection);
-            }else {
+            }/*else {
                 throw new IllegalArgumentException("Null idCollection found in BiDirDtoParent "+ this + " for ChildIdCollectionField with name: " + field.getName());
-            }
+            }*/
         }
         return childrenIdCollections;
     }

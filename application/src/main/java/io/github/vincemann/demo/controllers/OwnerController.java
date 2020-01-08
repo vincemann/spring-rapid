@@ -1,6 +1,8 @@
 package io.github.vincemann.demo.controllers;
 
-import io.github.vincemann.demo.dtos.OwnerDto;
+import io.github.vincemann.demo.dtos.owner.CreateOwnerDto;
+import io.github.vincemann.demo.dtos.owner.ReadOwnerDto;
+import io.github.vincemann.demo.dtos.owner.UpdateOwnerDto;
 import io.github.vincemann.demo.model.Owner;
 import io.github.vincemann.demo.repositories.OwnerRepository;
 import io.github.vincemann.generic.crud.lib.controller.dtoMapper.MappingContext;
@@ -15,7 +17,11 @@ public class OwnerController
 
 
     public OwnerController() {
-        super(MappingContext.DEFAULT(OwnerDto.class));
+        super(MappingContext.CREATE_UPDATE_READ(
+                CreateOwnerDto.class,
+                UpdateOwnerDto.class,
+                ReadOwnerDto.class
+        ));
     }
 
     @RequestMapping("/owners")

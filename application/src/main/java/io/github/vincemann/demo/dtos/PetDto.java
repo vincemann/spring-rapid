@@ -7,13 +7,12 @@ import io.github.vincemann.generic.crud.lib.dto.uniDir.UniDirChildId;
 import io.github.vincemann.generic.crud.lib.dto.uniDir.UniDirParentDto;
 import lombok.*;
 import org.springframework.lang.Nullable;
-import io.github.vincemann.generic.crud.lib.dto.biDir.BiDirDtoChild;
+import io.github.vincemann.generic.crud.lib.dto.biDir.BiDirChildDto;
 import io.github.vincemann.generic.crud.lib.model.IdentifiableEntityImpl;
 import io.github.vincemann.generic.crud.lib.dto.biDir.BiDirParentId;
 
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Null;
 import javax.validation.constraints.Size;
 import java.time.LocalDate;
 
@@ -23,7 +22,7 @@ import java.time.LocalDate;
 @AllArgsConstructor
 @ToString
 @Builder
-public class PetDto extends IdentifiableEntityImpl<Long> implements UniDirParentDto, BiDirDtoChild {
+public class PetDto extends IdentifiableEntityImpl<Long> implements UniDirParentDto, BiDirChildDto {
 
     @NotBlank
     @Size(min = 2, max = 20)
