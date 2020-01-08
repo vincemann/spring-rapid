@@ -21,7 +21,7 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
         SpringBootTest.WebEnvironment.DEFINED_PORT)
 @ActiveProfiles(value = {"test", "springdatajpa"})
 class PetControllerIT
-        extends EntityInitializer_ControllerIT<Pet, PetDto, PetRepository, PetService, PetController> {
+        extends EntityInitializer_ControllerIT<Pet,PetRepository> {
 
     private PetDto petDtoWithPersistedPetType;
     private Pet petWithPersistedPetType;
@@ -78,10 +78,10 @@ class PetControllerIT
                 .petTypeId(getTestPetType().getId())
                 .build();
         Assertions.assertNotEquals(diffPetsNameUpdate.getName(),petWithPersistedPetType.getName());
-        updateEntity_ShouldSucceed(petWithPersistedPetType, diffPetsNameUpdate, new PostUpdateCallback<Pet>() {
+        updateEntity_ShouldSucceed(petWithPersistedPetType, diffPetsNameUpdate, new PostUpdateCallback<Pet,Long>() {
             @Override
-            public void callback(Pet entityToUpdate, Pet updatedEntity) {
-                Assertions.assertEquals(diffPetsNameUpdate.getName(),updatedEntity.getName());
+            public void callback(Pet after) {
+                Assertions.assertEquals(diffPetsNameUpdate.getName(), after.getName());
             }
         });
     }
@@ -95,10 +95,10 @@ class PetControllerIT
                 .name("esta")
                 .build();
 
-        updateEntity_ShouldSucceed(petWithPersistedOwner, removePetsOwnerUpdate, new PostUpdateCallback<Pet>() {
+        updateEntity_ShouldSucceed(petWithPersistedOwner, removePetsOwnerUpdate, new PostUpdateCallback<Pet,Long>() {
             @Override
-            public void callback(Pet entityToUpdate, Pet updatedEntity) {
-                Assertions.assertNull(updatedEntity.getOwner());
+            public void callback(Pet after) {
+                Assertions.assertNull(after.getOwner());
             }
         });
     }
@@ -123,11 +123,11 @@ class PetControllerIT
                 .name("bello")
                 .petTypeId(null)
                 .build();
-        updateEntity_ShouldFail(petWithPersistedPetType, petTypeIdNullUpdate, new PostUpdateCallback<Pet>() {
+        updateEntity_ShouldFail(petWithPersistedPetType, petTypeIdNullUpdate, new PostUpdateCallback<Pet,Long>() {
             @Override
-            public void callback(Pet entityToUpdate, Pet updatedEntity) {
-                Assertions.assertNotNull(updatedEntity.getPetType());
-                Assertions.assertEquals(petDtoWithPersistedPetType.getPetTypeId(),updatedEntity.getPetType().getId());
+            public void callback(Pet after) {
+                Assertions.assertNotNull(after.getPetType());
+                Assertions.assertEquals(petDtoWithPersistedPetType.getPetTypeId(), after.getPetType().getId());
             }
         });
     }

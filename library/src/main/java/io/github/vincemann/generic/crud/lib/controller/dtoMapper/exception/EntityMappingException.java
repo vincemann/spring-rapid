@@ -1,4 +1,4 @@
-package io.github.vincemann.generic.crud.lib.controller.dtoMapper;
+package io.github.vincemann.generic.crud.lib.controller.dtoMapper.exception;
 
 public class EntityMappingException extends Exception{
 

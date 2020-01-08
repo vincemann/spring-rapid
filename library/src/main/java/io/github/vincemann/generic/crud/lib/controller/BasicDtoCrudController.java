@@ -1,18 +1,22 @@
 package io.github.vincemann.generic.crud.lib.controller;
 
-import io.github.vincemann.generic.crud.lib.controller.dtoMapper.EntityMappingException;
+import io.github.vincemann.generic.crud.lib.controller.dtoMapper.DtoMapper;
+import io.github.vincemann.generic.crud.lib.controller.dtoMapper.MappingContext;
+import io.github.vincemann.generic.crud.lib.controller.dtoMapper.exception.EntityMappingException;
+import io.github.vincemann.generic.crud.lib.controller.dtoMapper.finder.DtoMapperFinder;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import io.github.vincemann.generic.crud.lib.controller.dtoMapper.DtoMapper;
 import io.github.vincemann.generic.crud.lib.model.IdentifiableEntity;
 import io.github.vincemann.generic.crud.lib.service.CrudService;
 import io.github.vincemann.generic.crud.lib.service.exception.BadEntityException;
 import io.github.vincemann.generic.crud.lib.service.exception.EntityNotFoundException;
 import io.github.vincemann.generic.crud.lib.service.exception.NoIdException;
+import org.springframework.lang.Nullable;
 
 import java.io.Serializable;
 import java.lang.reflect.ParameterizedType;
@@ -25,213 +29,155 @@ import java.util.*;
  * Interaction with specified  {@link CrudService}.
  * Supply hook Methods.
  *
- * @param <ServiceE> Service Entity Type, of entity, which curd enpoints are exposed by this Controller
- * @param <Service>  Service Type of {@link ServiceE}
- * @param <Dto>      Dto Type corresponding to {@link ServiceE}
- * @param <Id>       Id Type of {@link ServiceE}
+ * @param <E>        Entity Type, of entity, which's curd endpoints are exposed by this Controller
+ * @param <Id>       Id Type of {@link E}
  */
-
+@Slf4j
+@Getter
+@Setter
 public abstract class BasicDtoCrudController
         <
-                ServiceE extends IdentifiableEntity<Id>,
-                Dto extends IdentifiableEntity<Id>,
+                E extends IdentifiableEntity<Id>,
                 Id extends Serializable,
-                R extends CrudRepository<ServiceE,Id>,
-                Service extends CrudService<ServiceE, Id,R>
+                R extends CrudRepository<E,Id>
         >
-            implements DtoCrudController<Dto, Id> {
+            implements DtoCrudController<Id> {
 
-    @Getter
-    @Setter
-    private CrudService<ServiceE,Id,R> crudService;
-
-
-    @Getter
-    private DtoMapper dtoMapper;
+    private CrudService<E,Id,R> crudService;
+    private DtoMapperFinder dtoMapperFinder;
+    private MappingContext<Id> mappingContext;
     @SuppressWarnings("unchecked")
-    @Getter
-    private Class<ServiceE> serviceEntityClass = (Class<ServiceE>) ((ParameterizedType) this.getClass().getGenericSuperclass()).getActualTypeArguments()[0];
-    @SuppressWarnings("unchecked")
-    @Getter
-    private Class<Dto> dtoClass = (Class<Dto>) ((ParameterizedType) this.getClass().getGenericSuperclass()).getActualTypeArguments()[1];
-    private List<Plugin<? super ServiceE,? super Id>> plugins = new ArrayList<>();
+    private Class<E> entityClass = (Class<E>) ((ParameterizedType) this.getClass().getGenericSuperclass()).getActualTypeArguments()[0];
 
 
-    public BasicDtoCrudController(Plugin<? super ServiceE,? super Id>... controllerAwarePlugins) {
-        List<Plugin<? super ServiceE, ? super Id>> plugins = Arrays.asList(controllerAwarePlugins);
-        plugins.forEach(plugin -> {
-            if(plugin instanceof ControllerAwarePlugin) {
-                ((ControllerAwarePlugin<? super ServiceE, ? super Id>) plugin).setController(this);
-            }
-            this.plugins.add(plugin);
-        });
+    public BasicDtoCrudController(MappingContext<Id> mappingContext) {
+        this.mappingContext = mappingContext;
     }
 
-    public BasicDtoCrudController() {
-    }
-
-    public void setCrudService(CrudService<ServiceE, Id, R> crudService) {
+    @Autowired
+    public void injectCrudService(CrudService<E,Id,R> crudService) {
         this.crudService = crudService;
     }
 
     @Autowired
-    public void injectCrudService(CrudService<ServiceE,Id,R> crudService) {
-        this.crudService = crudService;
+    public void injectDtoMapperFinder(DtoMapperFinder dtoMapperFinder) {
+        this.dtoMapperFinder = dtoMapperFinder;
     }
-
-    @Autowired
-    public void injectDtoMapper(DtoMapper dtoMapper) {
-        this.dtoMapper = dtoMapper;
-    }
-
-
-    //todo implement methods that just return id and not whole dtos (create, update)
 
     @Override
     @SuppressWarnings("unchecked")
-    public ResponseEntity<Dto> find(Id id) throws NoIdException, EntityNotFoundException, EntityMappingException {
+    public ResponseEntity<? extends IdentifiableEntity<Id>> find(Id id) throws NoIdException, EntityNotFoundException, EntityMappingException {
         beforeFindEntity(id);
-        Optional<ServiceE> optionalEntity = crudService.findById(id);
-        //noinspection OptionalIsPresent
+        Optional<E> optionalEntity = crudService.findById(id);
         if (optionalEntity.isPresent()) {
             afterFindEntity(optionalEntity.get());
-            return ok(getDtoMapper().mapServiceEntityToDto(optionalEntity.get(),dtoClass));
+            return ok(findMapperAndMapToDto(optionalEntity.get(),getMappingContext().getFindReturnDtoClass()));
         } else {
             throw new EntityNotFoundException();
         }
     }
 
     @Override
-    public ResponseEntity<Collection<Dto>> findAll() throws EntityMappingException {
+    public ResponseEntity<Collection<IdentifiableEntity<Id>>> findAll() throws EntityMappingException {
         beforeFindAllEntities();
-        Set<ServiceE> all = crudService.findAll();
+        Set<E> all = crudService.findAll();
         afterFindAllEntities(all);
-        Set<Dto> dtos = new HashSet<>();
-        for (ServiceE serviceE : all) {
-            dtos.add(getDtoMapper().mapServiceEntityToDto(serviceE,dtoClass));
+        Collection<IdentifiableEntity<Id>> dtos = new HashSet<>();
+        for (E e : all) {
+            dtos.add(findMapperAndMapToDto(e,getMappingContext().getFindAllReturnDtoClass()));
         }
         return ok(dtos);
     }
 
-    protected void beforeFindAllEntities(){
-        plugins.forEach(Plugin::beforeFindAllEntities);
-    }
-
-    protected void afterFindAllEntities(Set<ServiceE> all){
-        plugins.forEach(plugin -> plugin.afterFindAllEntities(all));
-    }
-
-
-    protected void beforeFindEntity(Id id) {
-        plugins.forEach(plugin -> plugin.beforeFindEntity(id));
-    }
-
-    protected void afterFindEntity(ServiceE foundEntity) {
-        plugins.forEach(plugin -> plugin.afterFindEntity(foundEntity));
+    @Override
+    @SuppressWarnings("unchecked")
+    public ResponseEntity<? extends IdentifiableEntity<Id>> create(IdentifiableEntity<Id> dto) throws BadEntityException, EntityMappingException {
+        E entity = findMapperAndMapToEntity(dto, getMappingContext().getCreateArgDtoClass());
+        beforeCreateEntity(entity);
+        E savedEntity = crudService.save(entity);
+        afterCreateEntity(savedEntity);
+        return new ResponseEntity(findMapperAndMapToDto(savedEntity,getMappingContext().getCreateReturnDtoClass()),
+                HttpStatus.OK);
     }
 
     @Override
     @SuppressWarnings("unchecked")
-    public ResponseEntity<Dto> create(Dto dto) throws BadEntityException, EntityMappingException {
-        ServiceE serviceEntity = getDtoMapper().mapDtoToServiceEntity(dto,serviceEntityClass);
-        beforeCreateEntity(serviceEntity);
-        ServiceE savedServiceEntity = crudService.save(serviceEntity);
-        afterCreateEntity(savedServiceEntity);
-        return new ResponseEntity(getDtoMapper().mapServiceEntityToDto(savedServiceEntity,dtoClass), HttpStatus.OK);
-    }
-
-
-    protected void beforeCreateEntity(ServiceE entity) {
-        plugins.forEach(plugin -> plugin.beforeCreateEntity(entity));
-    }
-
-    protected void afterCreateEntity(ServiceE entity) {
-        plugins.forEach(plugin -> plugin.afterCreateEntity(entity));
-    }
-
-    @Override
-    @SuppressWarnings("unchecked")
-    public ResponseEntity<Dto> update(Dto dto) throws BadEntityException, EntityMappingException, NoIdException, EntityNotFoundException {
-        ServiceE serviceEntity = getDtoMapper().mapDtoToServiceEntity(dto,serviceEntityClass);
-        beforeUpdateEntity(serviceEntity);
-        ServiceE updatedServiceEntity = crudService.update(serviceEntity);
+    public ResponseEntity<? extends IdentifiableEntity<Id>> update(IdentifiableEntity<Id> dto) throws BadEntityException, EntityMappingException, NoIdException, EntityNotFoundException {
+        E entity = findMapperAndMapToEntity(dto, getMappingContext().getUpdateArgDtoClass());
+        beforeUpdateEntity(entity);
+        E updatedEntity = crudService.update(entity);
         //no idea why casting is necessary here?
-        afterUpdateEntity(updatedServiceEntity);
-        return new ResponseEntity(getDtoMapper().mapServiceEntityToDto(updatedServiceEntity,dtoClass), HttpStatus.OK);
+        afterUpdateEntity(updatedEntity);
+        return new ResponseEntity(findMapperAndMapToDto(updatedEntity,getMappingContext().getUpdateReturnDtoClass()),
+                HttpStatus.OK);
     }
 
-    protected void beforeUpdateEntity(ServiceE entity) {
-        plugins.forEach(plugin -> plugin.beforeUpdateEntity(entity));
-    }
-
-    protected void afterUpdateEntity(ServiceE entity) {
-        plugins.forEach(plugin -> plugin.afterUpdateEntity(entity));
-    }
 
     @Override
-    public ResponseEntity delete(Id id) throws NoIdException, EntityNotFoundException {
+    public ResponseEntity<?> delete(Id id) throws NoIdException, EntityNotFoundException {
         beforeDeleteEntity(id);
         crudService.deleteById(id);
         afterDeleteEntity(id);
         return ResponseEntity.ok().build();
     }
 
-    protected void beforeDeleteEntity(Id id) {
-        plugins.forEach(plugin -> plugin.beforeDeleteEntity(id));
+
+    public  <Dto extends IdentifiableEntity<Id>> Dto findMapperAndMapToDto(E entity, Class<Dto> dtoClass) throws EntityMappingException {
+        DtoMapper dtoMapper = dtoMapperFinder.find(dtoClass);
+        return dtoMapper.mapEntityToDto(entity,dtoClass);
     }
 
-    protected void afterDeleteEntity(Id id) {
-        plugins.forEach(plugin -> plugin.afterDeleteEntity(id));
+    public E findMapperAndMapToEntity(IdentifiableEntity<Id> dto, Class<? extends IdentifiableEntity<Id>> dtoClass) throws EntityMappingException {
+        Class<?> dtoClazz;
+        if(dtoClass==null){
+            dtoClazz=dto.getClass();
+        }else {
+            dtoClazz = dtoClass;
+        }
+        DtoMapper dtoMapper = dtoMapperFinder.find(dtoClazz);
+        return dtoMapper.mapEntityToDto(dto, entityClass);
     }
 
-    private ResponseEntity<Collection<Dto>> ok(Collection<Dto> dtoCollection){
+    private ResponseEntity<Collection<IdentifiableEntity<Id>>> ok(Collection<IdentifiableEntity<Id>> dtoCollection){
         return new ResponseEntity<>(dtoCollection,HttpStatus.OK);
     }
 
-    private ResponseEntity<Dto> ok(Dto entity) {
+    private ResponseEntity<? extends IdentifiableEntity<Id>> ok(IdentifiableEntity<Id> entity) {
         return new ResponseEntity<>(entity, HttpStatus.OK);
     }
 
-    public interface Plugin<ServiceE extends IdentifiableEntity<Id>,Id extends Serializable> {
+    public <S extends CrudService<E, Id,R>> S getCastedCrudService(){
+        return (S) crudService;
+    }
 
-        public void beforeFindEntity(Id id);
+    protected void beforeFindAllEntities(){
+    }
 
-        public void afterFindEntity(ServiceE foundEntity);
+    protected void afterFindAllEntities(Set<E> all){
+    }
 
-        public void beforeCreateEntity(ServiceE entity);
+    protected void beforeUpdateEntity(E entity) {
+    }
 
-        public void afterCreateEntity(ServiceE entity);
+    protected void afterUpdateEntity(E entity) {
+    }
 
-        public void beforeUpdateEntity(ServiceE entity);
+    protected void beforeCreateEntity(E entity) {
+    }
 
-        public void afterUpdateEntity(ServiceE entity);
-
-        public void beforeDeleteEntity(Id id);
-
-        public void afterDeleteEntity(Id id);
-
-        public void beforeFindAllEntities();
-
-        public void afterFindAllEntities(Set<? extends ServiceE> all);
+    protected void afterCreateEntity(E entity) {
     }
 
 
-    @Setter
-    @Getter
-    public static abstract class ControllerAwarePlugin<ServiceE extends IdentifiableEntity<Id>,Id extends Serializable> implements BasicDtoCrudController.Plugin<ServiceE,Id> {
-        private BasicDtoCrudController controller;
+    protected void beforeFindEntity(Id id) {
     }
 
-
-    public List<Plugin<? super ServiceE, ? super Id>> getBasicPlugins() {
-        return plugins;
+    protected void afterFindEntity(E foundEntity) {
     }
 
-    public CrudService<ServiceE, Id, R> getCrudService() {
-        return crudService;
+    protected void beforeDeleteEntity(Id id) {
     }
 
-    public Service getCastedCrudService(){
-        return (Service) crudService;
+    protected void afterDeleteEntity(Id id) {
     }
 }

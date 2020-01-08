@@ -2,40 +2,30 @@ package io.github.vincemann.demo.controllers;
 
 import io.github.vincemann.demo.model.*;
 import io.github.vincemann.demo.repositories.*;
-import io.github.vincemann.demo.service.OwnerService;
 import io.github.vincemann.generic.crud.lib.controller.springAdapter.DtoCrudController_SpringAdapter;
 import io.github.vincemann.generic.crud.lib.model.IdentifiableEntity;
 import io.github.vincemann.generic.crud.lib.service.CrudService;
 import io.github.vincemann.generic.crud.lib.test.controller.springAdapter.UrlParamId_ControllerIntegrationTest;
 import io.github.vincemann.generic.crud.lib.test.forceEagerFetch.Hibernate_ForceEagerFetch_Helper;
-import io.github.vincemann.generic.crud.lib.test.forceEagerFetch.proxy.CrudService_HibernateForceEagerFetch_Proxy;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
-import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.data.repository.CrudRepository;
 
-import java.io.Serializable;
 import java.time.LocalDate;
-
-import static io.github.vincemann.generic.crud.lib.service.plugin.CrudService_PluginProxy.PLUGIN_PROXY;
 
 @Getter
 @Setter
 @Slf4j
 public abstract class EntityInitializer_ControllerIT
         <
-                ServiceE extends IdentifiableEntity<Long>,
-                Dto extends IdentifiableEntity<Long>,
-                Repo extends CrudRepository<ServiceE, Long>,
-                Service extends CrudService<ServiceE, Long,Repo>,
-                Controller extends DtoCrudController_SpringAdapter<ServiceE, Dto, Long,Repo, Service>
+                E extends IdentifiableEntity<Long>,
+                R extends CrudRepository<E, Long>
         >
-        extends UrlParamId_ControllerIntegrationTest<ServiceE,Dto,Repo,Service,Controller,Long>
+        extends UrlParamId_ControllerIntegrationTest<E,Long,R>
 
 {
 

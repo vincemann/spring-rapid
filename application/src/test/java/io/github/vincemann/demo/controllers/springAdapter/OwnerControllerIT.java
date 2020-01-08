@@ -2,12 +2,10 @@ package io.github.vincemann.demo.controllers.springAdapter;
 
 
 import io.github.vincemann.demo.controllers.EntityInitializer_ControllerIT;
-import io.github.vincemann.demo.controllers.OwnerController;
 import io.github.vincemann.demo.dtos.OwnerDto;
 import io.github.vincemann.demo.model.Owner;
 import io.github.vincemann.demo.model.Pet;
 import io.github.vincemann.demo.repositories.OwnerRepository;
-import io.github.vincemann.demo.service.OwnerService;
 import io.github.vincemann.demo.service.PetService;
 import io.github.vincemann.generic.crud.lib.service.CrudService;
 import io.github.vincemann.generic.crud.lib.test.controller.springAdapter.postUpdateCallback.PostUpdateCallback;
@@ -32,7 +30,7 @@ import static io.github.vincemann.generic.crud.lib.test.forceEagerFetch.proxy.ab
         SpringBootTest.WebEnvironment.DEFINED_PORT)
 @ActiveProfiles(value = {"test", "springdatajpa"})
 class OwnerControllerIT
-        extends EntityInitializer_ControllerIT<Owner, OwnerDto, OwnerRepository, OwnerService, OwnerController> {
+        extends EntityInitializer_ControllerIT<Owner,OwnerRepository> {
 
     @Autowired
     private PetService petService;
@@ -133,10 +131,10 @@ class OwnerControllerIT
 
         Assertions.assertNotEquals(diffAddressUpdate.getAddress(),validOwnerWithManyPets.getAddress());
         //when
-        updateEntity_ShouldSucceed(validOwnerWithManyPets,diffAddressUpdate, new PostUpdateCallback<Owner>() {
+        updateEntity_ShouldSucceed(validOwnerWithManyPets, diffAddressUpdate, new PostUpdateCallback<Owner, Long>() {
             @Override
-            public void callback(Owner entityToUpdate, Owner updatedEntity) {
-                Assertions.assertEquals(updatedEntity.getAddress(),diffAddressUpdate.getAddress());
+            public void callback(Owner afterUpdate) {
+                Assertions.assertEquals(afterUpdate.getAddress(),diffAddressUpdate.getAddress());
             }
         });
     }
@@ -153,10 +151,10 @@ class OwnerControllerIT
                 .build();
 
         //when
-        updateEntity_ShouldSucceed(validOwnerWithManyPets,deleteAllPetsUpdate, new PostUpdateCallback<Owner>() {
+        updateEntity_ShouldSucceed(validOwnerWithManyPets,deleteAllPetsUpdate, new PostUpdateCallback<Owner,Long>() {
             @Override
-            public void callback(Owner entityToUpdate, Owner updatedEntity) {
-                Assertions.assertTrue(updatedEntity.getPets().isEmpty());
+            public void callback(Owner after) {
+                Assertions.assertTrue(after.getPets().isEmpty());
             }
         });
 
@@ -181,10 +179,10 @@ class OwnerControllerIT
                 .build();
         
         //when
-        updateEntity_ShouldFail(validOwnerWithoutPets,setInvalidPetUpdate, new PostUpdateCallback<Owner>() {
+        updateEntity_ShouldFail(validOwnerWithoutPets,setInvalidPetUpdate, new PostUpdateCallback<Owner,Long>() {
             @Override
-            public void callback(Owner entityToUpdate, Owner updatedEntity) {
-                 Assertions.assertTrue(updatedEntity.getPets().isEmpty());
+            public void callback(Owner after) {
+                 Assertions.assertTrue(after.getPets().isEmpty());
             }
         });
     }
@@ -198,11 +196,11 @@ class OwnerControllerIT
                 //blank city
                 .city("")
                 .build();
-        updateEntity_ShouldFail(validOwnerWithoutPets,blankCityUpdate, new PostUpdateCallback<Owner>() {
+        updateEntity_ShouldFail(validOwnerWithoutPets,blankCityUpdate, new PostUpdateCallback<Owner,Long>() {
             @Override
-            public void callback(Owner entityToUpdate, Owner updatedEntity) {
-                Assertions.assertFalse(updatedEntity.getCity().isEmpty());
-                Assertions.assertEquals(validOwnerWithoutPets.getCity(),updatedEntity.getCity());
+            public void callback(Owner after) {
+                Assertions.assertFalse(after.getCity().isEmpty());
+                Assertions.assertEquals(validOwnerWithoutPets.getCity(), after.getCity());
             }
         });
     }

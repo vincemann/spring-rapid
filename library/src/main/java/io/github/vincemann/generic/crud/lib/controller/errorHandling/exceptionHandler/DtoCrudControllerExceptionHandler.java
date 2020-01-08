@@ -1,7 +1,7 @@
 package io.github.vincemann.generic.crud.lib.controller.errorHandling.exceptionHandler;
 
 import io.github.vincemann.generic.crud.lib.controller.DtoCrudController;
-import io.github.vincemann.generic.crud.lib.controller.dtoMapper.EntityMappingException;
+import io.github.vincemann.generic.crud.lib.controller.dtoMapper.exception.EntityMappingException;
 import io.github.vincemann.generic.crud.lib.service.exception.BadEntityException;
 import io.github.vincemann.generic.crud.lib.service.exception.EntityNotFoundException;
 import io.github.vincemann.generic.crud.lib.service.exception.NoIdException;

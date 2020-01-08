@@ -1,22 +1,5 @@
 package io.github.vincemann.generic.crud.lib.test.controller.springAdapter.plugins;
 
-import io.github.vincemann.generic.crud.lib.controller.dtoMapper.EntityMappingException;
-import io.github.vincemann.generic.crud.lib.model.IdentifiableEntity;
-import io.github.vincemann.generic.crud.lib.service.exception.NoIdException;
-import io.github.vincemann.generic.crud.lib.test.controller.springAdapter.UrlParamId_ControllerIntegrationTest;
-import io.github.vincemann.generic.crud.lib.test.equalChecker.EqualChecker;
-import io.github.vincemann.generic.crud.lib.test.equalChecker.ReflectionEqualChecker;
-import lombok.Getter;
-import lombok.Setter;
-import lombok.extern.slf4j.Slf4j;
-import org.junit.jupiter.api.Assertions;
-import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Component;
-
-import java.io.Serializable;
-import java.util.Optional;
-import java.util.Set;
-
 
 /**
  * This plugin checks for find-,create- and updateTests if serviceEntity with id of dto returned by httpRequest is {@link EqualChecker#isEqual(Object, Object)} to it.

@@ -1,6 +1,6 @@
 package io.github.vincemann.generic.crud.lib.controller.dtoMapper.idResolver;
 
-import io.github.vincemann.generic.crud.lib.controller.dtoMapper.EntityMappingException;
+import io.github.vincemann.generic.crud.lib.controller.dtoMapper.exception.EntityMappingException;
 import io.github.vincemann.generic.crud.lib.service.CrudService;
 import io.github.vincemann.generic.crud.lib.service.finder.CrudServiceFinder;
 import io.github.vincemann.generic.crud.lib.service.exception.EntityNotFoundException;
@@ -24,7 +24,7 @@ import java.util.Optional;
  *  The resolving of the ids is done, by calling {@link io.github.vincemann.generic.crud.lib.service.CrudService#findById(Serializable)} of the {@link CrudService}, that belongs to the Annotated Id's Entity Type.
  *  The needed CrudService is found with {@link CrudServiceFinder}.
  */
-public abstract class EntityIdResolver<ServiceE,Dto> {
+public abstract class EntityIdResolver<E,Dto> {
 
     private CrudServiceFinder crudServiceFinder;
     private Class<Dto> dtoClass;
@@ -34,11 +34,9 @@ public abstract class EntityIdResolver<ServiceE,Dto> {
         this.crudServiceFinder=crudServiceFinder;
     }
 
-    public abstract void resolveServiceEntityIds(ServiceE mappedServiceEntity, Dto dto) throws EntityMappingException;
+    public abstract void resolveServiceEntityIds(E mappedEntity, Dto dto) throws EntityMappingException;
 
-    public abstract void resolveDtoIds(Dto mappedDto, ServiceE serviceEntity);
-
-
+    public abstract void resolveDtoIds(Dto mappedDto, E entity);
 
 
     protected Object findEntityFromService(Map.Entry<Class, Serializable> entityIdToClassMapping) throws EntityMappingException {
