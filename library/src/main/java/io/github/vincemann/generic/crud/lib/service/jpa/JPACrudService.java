@@ -6,12 +6,15 @@ import io.github.vincemann.generic.crud.lib.service.plugin.CrudService_PluginPro
 import io.github.vincemann.generic.crud.lib.service.exception.BadEntityException;
 import io.github.vincemann.generic.crud.lib.service.exception.EntityNotFoundException;
 import io.github.vincemann.generic.crud.lib.service.exception.NoIdException;
+import io.github.vincemann.generic.crud.lib.util.NullAwareBeanUtilsBean;
+import org.apache.commons.beanutils.BeanUtilsBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.NonTransientDataAccessException;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.io.Serializable;
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.ParameterizedType;
 import java.util.HashSet;
 import java.util.Optional;
@@ -57,15 +60,24 @@ public abstract class JPACrudService
 
     @Transactional
     @Override
-    public E update(E entity) throws EntityNotFoundException, NoIdException, BadEntityException {
-        if(entity.getId()==null){
-            throw new NoIdException("No Id value set for EntityType: " + entityClass.getSimpleName());
+    public E update(E update) throws EntityNotFoundException, NoIdException, BadEntityException {
+        try {
+            if(update.getId()==null){
+                throw new NoIdException("No Id value set for EntityType: " + entityClass.getSimpleName());
+            }
+
+            Optional<E> entityToUpdate = findById(update.getId());
+            if(!entityToUpdate.isPresent()){
+                throw new EntityNotFoundException(update.getId(), entityClass);
+            }
+            //copy non null values from update to entityToUpdate
+            BeanUtilsBean notNull=new NullAwareBeanUtilsBean();
+            notNull.copyProperties(entityToUpdate.get(), update);
+            return save(entityToUpdate.get());
+        }catch (IllegalAccessException | InvocationTargetException e){
+            throw new RuntimeException(e);
         }
-        Optional<E> optionalEntity = findById(entity.getId());
-        if(!optionalEntity.isPresent()){
-            throw new EntityNotFoundException(entity.getId(), entityClass);
-        }
-        return save(entity);
+
     }
 
     @Transactional

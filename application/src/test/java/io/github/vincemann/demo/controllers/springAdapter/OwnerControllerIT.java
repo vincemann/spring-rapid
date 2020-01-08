@@ -2,7 +2,9 @@ package io.github.vincemann.demo.controllers.springAdapter;
 
 
 import io.github.vincemann.demo.controllers.EntityInitializer_ControllerIT;
-import io.github.vincemann.demo.dtos.OwnerDto;
+import io.github.vincemann.demo.dtos.owner.CreateOwnerDto;
+import io.github.vincemann.demo.dtos.owner.ReadOwnerDto;
+import io.github.vincemann.demo.dtos.owner.UpdateOwnerDto;
 import io.github.vincemann.demo.model.Owner;
 import io.github.vincemann.demo.model.Pet;
 import io.github.vincemann.demo.repositories.OwnerRepository;
@@ -37,11 +39,11 @@ class OwnerControllerIT
     private Pet pet1;
     private Pet pet2;
 
-    private OwnerDto validOwnerDtoWithoutPets;
+    private CreateOwnerDto validOwnerDtoWithoutPets;
     private Owner validOwnerWithoutPets;
-    private OwnerDto validOwnerDtoWithManyPets;
+    private CreateOwnerDto validOwnerDtoWithManyPets;
     private Owner validOwnerWithManyPets;
-    private OwnerDto invalidOwnerDto_becauseBlankCity;
+    private CreateOwnerDto invalidOwnerDto_becauseBlankCity;
 
     //uses eagerly fetching service proxy
     @Autowired
@@ -58,7 +60,7 @@ class OwnerControllerIT
         this.pet1 = petService.save(Pet.builder().name("pet1").petType(getTestPetType()).build());
         this.pet2 = petService.save(Pet.builder().name("pet2").petType(getTestPetType()).build());
 
-        validOwnerDtoWithoutPets = OwnerDto.builder()
+        validOwnerDtoWithoutPets = CreateOwnerDto.builder()
                 .firstName("Max")
                 .lastName("Müller")
                 .address("other Street 13")
@@ -72,7 +74,7 @@ class OwnerControllerIT
                 .build();
 
 
-        validOwnerDtoWithManyPets = OwnerDto.builder()
+        validOwnerDtoWithManyPets = CreateOwnerDto.builder()
                 .firstName("Max")
                 .lastName("Müller")
                 .address("Andere Street 13")
@@ -88,7 +90,7 @@ class OwnerControllerIT
                 .build();
 
 
-        invalidOwnerDto_becauseBlankCity = OwnerDto.builder()
+        invalidOwnerDto_becauseBlankCity = CreateOwnerDto.builder()
                 .firstName("Hans")
                 .lastName("meier")
                 .address("MegaNiceStreet 5")
@@ -109,22 +111,20 @@ class OwnerControllerIT
 
     @Test
     public void deleteOwner_shouldSucceed() throws Exception {
-        OwnerDto savedOwner = createEntity_ShouldSucceed(validOwnerDtoWithManyPets);
+        ReadOwnerDto savedOwner = createEntity_ShouldSucceed(validOwnerDtoWithManyPets);
         deleteEntity_ShouldSucceed(savedOwner.getId());
     }
 
     @Test
     public void findOwner_shouldSucceed() throws Exception {
-        OwnerDto savedOwner = createEntity_ShouldSucceed(validOwnerDtoWithManyPets);
+        ReadOwnerDto savedOwner = createEntity_ShouldSucceed(validOwnerDtoWithManyPets);
         findEntity_ShouldSucceed(savedOwner.getId());
     }
 
     @Test
     public void updateOwnerWithDifferentAddress_ShouldSucceed() throws Exception {
         //given
-        OwnerDto diffAddressUpdate = OwnerDto.builder()
-                .firstName("Max")
-                .lastName("Müller")
+        UpdateOwnerDto diffAddressUpdate = UpdateOwnerDto.builder()
                 .address("other Street 12")
                 .city("munich")
                 .build();
@@ -142,11 +142,7 @@ class OwnerControllerIT
     @Test
     public void updateOwnerWithManyPets_RemovePets_ShouldSucceed() throws Exception {
         //given
-        OwnerDto deleteAllPetsUpdate = OwnerDto.builder()
-                .firstName("Hans")
-                .lastName("Müller")
-                .address("mega nice Street 42")
-                .city("Berlinasdasd")
+        UpdateOwnerDto deleteAllPetsUpdate = UpdateOwnerDto.builder()
                 .petIds(Collections.EMPTY_SET)
                 .build();
 
@@ -170,11 +166,7 @@ class OwnerControllerIT
     @Test
     public void updateOwner_SetInvalidPet_ShouldFail() throws Exception {
         //given
-        OwnerDto setInvalidPetUpdate = OwnerDto.builder()
-                .firstName("Max")
-                .lastName("Müller")
-                .address("other Street 13")
-                .city("munich")
+        UpdateOwnerDto setInvalidPetUpdate = UpdateOwnerDto.builder()
                 .petIds(Collections.singleton(-1L))
                 .build();
         
@@ -189,10 +181,7 @@ class OwnerControllerIT
 
     @Test
     public void updateOwner_SetBlankCity_ShouldFail() throws Exception {
-        OwnerDto blankCityUpdate = OwnerDto.builder()
-                .firstName("Hans")
-                .lastName("meier")
-                .address("MegaNiceStreet 5")
+        UpdateOwnerDto blankCityUpdate = UpdateOwnerDto.builder()
                 //blank city
                 .city("")
                 .build();

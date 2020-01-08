@@ -4,7 +4,6 @@ import io.github.vincemann.generic.crud.lib.model.IdentifiableEntity;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
-import org.springframework.stereotype.Component;
 
 import java.io.Serializable;
 
@@ -48,7 +47,8 @@ public class MappingContext<Id extends Serializable> {
         return mc;
     }
 
-    public static <Id extends Serializable>MappingContext<Id> WRITE_READ(Class<? extends IdentifiableEntity<Id>> writeDtoClass,
+    public static <Id extends Serializable>MappingContext<Id> WRITE_READ(
+                                            Class<? extends IdentifiableEntity<Id>> writeDtoClass,
                                             Class<? extends IdentifiableEntity<Id>> readDtoClass){
         MappingContext mc = new MappingContext();
         mc.createArgDtoClass=writeDtoClass;
@@ -60,7 +60,8 @@ public class MappingContext<Id extends Serializable> {
         return mc;
     }
 
-    public static <Id extends Serializable> MappingContext<Id> CREATE_UPDATE_READ(Class<? extends IdentifiableEntity<Id>> createDtoClass,
+    public static <Id extends Serializable> MappingContext<Id> CREATE_UPDATE_READ(
+                                                    Class<? extends IdentifiableEntity<Id>> createDtoClass,
                                                     Class<? extends IdentifiableEntity<Id>> updateDtoClass,
                                                     Class<? extends IdentifiableEntity<Id>> readDtoClass){
         MappingContext mc = new MappingContext();

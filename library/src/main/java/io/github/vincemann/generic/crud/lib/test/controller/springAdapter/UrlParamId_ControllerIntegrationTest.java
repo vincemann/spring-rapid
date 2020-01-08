@@ -189,7 +189,7 @@ public abstract class UrlParamId_ControllerIntegrationTest
         ResponseEntity<String> responseEntity = updateEntity(updateRequestDto, testRequestEntity);
         Assertions.assertEquals(testRequestEntity.getExpectedHttpStatus(), responseEntity.getStatusCode());
         //validate response Dto
-        IdentifiableEntity<Id> responseDto = controller().getMediaTypeStrategy().readDtoFromBody(responseEntity.getBody(), mappingContext().getUpdateArgDtoClass());
+        IdentifiableEntity<Id> responseDto = controller().getMediaTypeStrategy().readDtoFromBody(responseEntity.getBody(), mappingContext().getUpdateReturnDtoClass());
         Assertions.assertNotNull(responseDto);
         if (updatedValuesPostUpdateCallback != null) {
             //check that Changes were actually applied -> relevant attribute values specified by UpdateSuccessfulChecker Impl are equal now
@@ -279,8 +279,8 @@ public abstract class UrlParamId_ControllerIntegrationTest
         return getRestTemplate().exchange(RequestEntityMapper.map(testRequestEntity, newEntity), String.class);
     }
 
-    protected <Dto extends IdentifiableEntity<Id>> Dto createEntity_ShouldSucceed(Dto dto) throws Exception {
-        return createEntity_ShouldSucceed(dto, null);
+    protected <Dto extends IdentifiableEntity<Id>> Dto createEntity_ShouldSucceed(IdentifiableEntity<Id> returnDto) throws Exception {
+        return createEntity_ShouldSucceed(returnDto, null);
     }
 
     protected <Dto extends IdentifiableEntity<Id>> Dto createEntity_ShouldSucceed(IdentifiableEntity<Id> createRequestDto, TestRequestEntity_Modification... modifications) throws Exception {

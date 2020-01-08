@@ -19,12 +19,12 @@ public class BasicDtoMapper implements DtoMapper {
     private ModelMapper modelMapper;
 
     @Override
-    public Class getDtoClass() {
-        return IdentifiableEntity.class;
+    public boolean isDtoClassSupported(Class<? extends IdentifiableEntity> clazz) {
+        return true;
     }
 
     @Override
-    public <Dto extends IdentifiableEntity> Dto mapEntityToDto(Object source, Class<Dto> destinationClass) {
+    public <Dto extends IdentifiableEntity> Dto mapEntityToDto(Object source, Class<Dto> destinationClass) throws EntityMappingException {
         return modelMapper.map(source,destinationClass);
     }
 

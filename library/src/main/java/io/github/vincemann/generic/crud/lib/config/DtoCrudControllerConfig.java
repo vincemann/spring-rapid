@@ -1,5 +1,6 @@
 package io.github.vincemann.generic.crud.lib.config;
 
+import io.github.vincemann.generic.crud.lib.controller.dtoMapper.BasicDtoMapper;
 import io.github.vincemann.generic.crud.lib.controller.dtoMapper.DtoMapper;
 import io.github.vincemann.generic.crud.lib.controller.dtoMapper.idResolver.EntityIdResolver;
 import io.github.vincemann.generic.crud.lib.controller.dtoMapper.idResolver.IdResolvingDtoMapper;
@@ -21,7 +22,7 @@ public class DtoCrudControllerConfig {
 
     @Qualifier("default")
     @Bean
-    public DtoMapper defaultDtoMapper(List<EntityIdResolver> entityIdResolvers){
-        return new IdResolvingDtoMapper(entityIdResolvers);
+    public DtoMapper defaultDtoMapper(){
+        return new BasicDtoMapper();
     }
 }

@@ -2,7 +2,7 @@ package io.github.vincemann.generic.crud.lib.controller.dtoMapper.idResolver.biD
 
 import io.github.vincemann.generic.crud.lib.controller.dtoMapper.exception.EntityMappingException;
 import io.github.vincemann.generic.crud.lib.controller.dtoMapper.idResolver.EntityIdResolver;
-import io.github.vincemann.generic.crud.lib.dto.biDir.BiDirDtoParent;
+import io.github.vincemann.generic.crud.lib.dto.biDir.BiDirParentDto;
 import io.github.vincemann.generic.crud.lib.model.biDir.child.BiDirChild;
 import io.github.vincemann.generic.crud.lib.model.biDir.parent.BiDirParent;
 import io.github.vincemann.generic.crud.lib.service.finder.CrudServiceFinder;
@@ -14,22 +14,22 @@ import java.util.Collection;
 import java.util.Map;
 
 @Component
-public class BiDirParentResolver extends EntityIdResolver<BiDirParent,BiDirDtoParent> {
+public class BiDirParentResolver extends EntityIdResolver<BiDirParent, BiDirParentDto> {
 
     public BiDirParentResolver(CrudServiceFinder crudServiceFinder) {
-        super(crudServiceFinder,BiDirDtoParent.class);
+        super(crudServiceFinder, BiDirParentDto.class);
     }
 
-    public void resolveServiceEntityIds(BiDirParent mappedBiDirParent, BiDirDtoParent biDirDtoParent) throws EntityMappingException {
+    public void resolveServiceEntityIds(BiDirParent mappedBiDirParent, BiDirParentDto biDirParentDto) throws EntityMappingException {
         try {
             //find and handle single Children
-            Map<Class, Serializable> allChildIdToClassMappings = biDirDtoParent.findChildrenIds();
+            Map<Class, Serializable> allChildIdToClassMappings = biDirParentDto.findChildrenIds();
             for (Map.Entry<Class, Serializable> childIdToClassMapping : allChildIdToClassMappings.entrySet()) {
                 Object child = findEntityFromService(childIdToClassMapping);
                 resolveBiDirChildFromService(child,mappedBiDirParent);
             }
             //find and handle children collections
-            Map<Class, Collection<Serializable>> allChildrenIdCollection = biDirDtoParent.findChildrenIdCollections();
+            Map<Class, Collection<Serializable>> allChildrenIdCollection = biDirParentDto.findChildrenIdCollections();
             for (Map.Entry<Class, Collection<Serializable>> entry: allChildrenIdCollection.entrySet()){
                 Collection<Serializable> idCollection = entry.getValue();
                 for(Serializable id: idCollection){
@@ -43,7 +43,7 @@ public class BiDirParentResolver extends EntityIdResolver<BiDirParent,BiDirDtoPa
     }
 
     @Override
-    public void resolveDtoIds(BiDirDtoParent mappedDto, BiDirParent serviceEntity) {
+    public void resolveDtoIds(BiDirParentDto mappedDto, BiDirParent serviceEntity) {
         try {
             for(BiDirChild biDirChild: serviceEntity.getChildren()){
                 mappedDto.addChildsId(biDirChild);

@@ -39,20 +39,21 @@ public abstract class EntityIdResolver<E,Dto> {
     public abstract void resolveDtoIds(Dto mappedDto, E entity);
 
 
-    protected Object findEntityFromService(Map.Entry<Class, Serializable> entityIdToClassMapping) throws EntityMappingException {
+    protected Object findEntityFromService(Map.Entry<Class, Serializable> entityClassToIdMapping) throws EntityMappingException {
         try {
-            CrudService entityService = crudServiceFinder.getCrudServices().get(entityIdToClassMapping.getKey());
+            CrudService entityService = crudServiceFinder.getCrudServices().get(entityClassToIdMapping.getKey());
             if(entityService==null){
-                throw new IllegalArgumentException("No Service found for entityClass: " + entityIdToClassMapping.getKey().getSimpleName());
+                throw new IllegalArgumentException("No Service found for entityClass: " + entityClassToIdMapping.getKey().getSimpleName());
             }
             Optional optionalParent;
             try {
-                optionalParent = entityService.findById(entityIdToClassMapping.getValue());
+                Serializable id = entityClassToIdMapping.getValue();
+                optionalParent = entityService.findById(id);
             } catch (ClassCastException e) {
-                throw new IllegalArgumentException("ParentId: " + entityIdToClassMapping.getValue() + " was of wrong type for Service: " + entityService,e);
+                throw new IllegalArgumentException("ParentId: " + entityClassToIdMapping.getValue() + " was of wrong type for Service: " + entityService,e);
             }
             if (!optionalParent.isPresent()) {
-                throw new EntityNotFoundException("No Parent of Type: " + entityIdToClassMapping.getKey().getSimpleName() + " found with id: " + entityIdToClassMapping.getValue());
+                throw new EntityNotFoundException("No Parent of Type: " + entityClassToIdMapping.getKey().getSimpleName() + " found with id: " + entityClassToIdMapping.getValue());
             }
             return optionalParent.get();
         }catch (NoIdException|EntityNotFoundException e){
