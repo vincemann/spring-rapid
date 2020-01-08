@@ -4,15 +4,15 @@ import io.github.vincemann.generic.crud.lib.model.IdentifiableEntity;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.*;
+import java.io.Serializable;
 import java.util.Set;
 
 /**
  * BaseImpl of {@link ValidationStrategy}, that utilizes the javax validation API.
  * See: {@link Validator}
- * @param <Dto>
  * @param <Id>
  */
-public class JavaXValidationStrategy<Dto extends IdentifiableEntity,Id> implements ValidationStrategy<Dto,Id>{
+public class JavaXValidationStrategy<Id extends Serializable> implements ValidationStrategy<Id>{
     private final Validator validator;
 
     public JavaXValidationStrategy() {
@@ -21,8 +21,8 @@ public class JavaXValidationStrategy<Dto extends IdentifiableEntity,Id> implemen
     }
 
     @Override
-    public void validateDto(Dto dto, HttpServletRequest httpServletRequest) throws ConstraintViolationException {
-        Set<ConstraintViolation<Dto>> constraintViolations = validator.validate(dto);
+    public void validateDto(IdentifiableEntity<Id> dto, HttpServletRequest httpServletRequest) throws ConstraintViolationException {
+        Set<ConstraintViolation<IdentifiableEntity<Id>>> constraintViolations = validator.validate(dto);
         if(!constraintViolations.isEmpty())
             throw new ConstraintViolationException(constraintViolations);
     }
@@ -35,14 +35,14 @@ public class JavaXValidationStrategy<Dto extends IdentifiableEntity,Id> implemen
     }
 
     @Override
-    public void beforeUpdateValidate(Dto dto) {
+    public void beforeUpdateValidate(IdentifiableEntity<Id> dto) {
         if(dto.getId()==null){
             throw new ConstraintViolationException("Id must not be null for update entity request",null);
         }
     }
 
     @Override
-    public void beforeCreateValidate(Dto dto) {
+    public void beforeCreateValidate(IdentifiableEntity<Id> dto) {
         if(dto.getId()!=null){
             throw new ConstraintViolationException("Id must be null for create entity request, the backend sets the id",null);
         }
