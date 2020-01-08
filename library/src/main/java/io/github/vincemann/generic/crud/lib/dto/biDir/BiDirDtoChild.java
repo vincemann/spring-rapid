@@ -1,5 +1,6 @@
 package io.github.vincemann.generic.crud.lib.dto.biDir;
 
+import io.github.vincemann.generic.crud.lib.controller.dtoMapper.idResolver.IdResolvingDtoMapper;
 import io.github.vincemann.generic.crud.lib.model.IdentifiableEntity;
 import io.github.vincemann.generic.crud.lib.model.biDir.parent.BiDirParent;
 import io.github.vincemann.generic.crud.lib.service.exception.entityRelationHandling.UnknownParentTypeException;
@@ -16,7 +17,7 @@ import java.util.Map;
  * Represents a Dto Entity, that has n ParentEntities {@link BiDirDtoParent}
  * The parent is represented in the Dto Entity by an id Field, annotated with {@link BiDirParentId}
  *
- * This entity can be mapped to its ServiceEntity by using {@link io.github.vincemann.generic.crud.lib.controller.dtoMapper.IdResolvingDtoMapper}
+ * This entity can be mapped to its ServiceEntity by using {@link IdResolvingDtoMapper}
  *
  */
 public interface BiDirDtoChild {

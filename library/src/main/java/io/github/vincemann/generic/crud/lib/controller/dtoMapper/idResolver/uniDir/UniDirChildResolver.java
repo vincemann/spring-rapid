@@ -1,6 +1,6 @@
 package io.github.vincemann.generic.crud.lib.controller.dtoMapper.idResolver.uniDir;
 
-import io.github.vincemann.generic.crud.lib.controller.dtoMapper.EntityMappingException;
+import io.github.vincemann.generic.crud.lib.controller.dtoMapper.exception.EntityMappingException;
 import io.github.vincemann.generic.crud.lib.controller.dtoMapper.idResolver.EntityIdResolver;
 import io.github.vincemann.generic.crud.lib.dto.uniDir.UniDirChildDto;
 import io.github.vincemann.generic.crud.lib.model.IdentifiableEntity;

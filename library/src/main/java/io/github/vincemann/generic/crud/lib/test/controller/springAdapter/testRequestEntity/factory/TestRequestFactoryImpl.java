@@ -61,7 +61,7 @@ public class TestRequestFactoryImpl implements TestRequestEntity_Factory {
 
     private TestRequestEntity createDefaultTestRequestEntity(CrudController_TestCase crudControllerTestCase, Object id){
         return TestRequestEntity.builder()
-                .url(urlParamIdDefaultUriFactory.createDefaultUri(mapTestCaseToMethodName(crudControllerTestCase),getCrudControllerTest().getCrudController().getBaseUrl(),id,null))
+                .url(urlParamIdDefaultUriFactory.createDefaultUri(mapTestCaseToMethodName(crudControllerTestCase),getCrudControllerTest().controller().getBaseUrl(),id,null))
                 .expectedHttpStatus(mapTestCaseToHttpStatus(crudControllerTestCase))
                 .method(mapTestCaseToHttpMethod(crudControllerTestCase))
                 .build();
@@ -88,7 +88,7 @@ public class TestRequestFactoryImpl implements TestRequestEntity_Factory {
 
 
     protected RequestMethod mapTestCaseToHttpMethod(CrudController_TestCase crudControllerTestCase){
-        DtoCrudController_SpringAdapter crudController = getCrudControllerTest().getCrudController();
+        DtoCrudController_SpringAdapter crudController = getCrudControllerTest().controller();
         RequestMappingInfo requestMappingInfo=null;
         switch (crudControllerTestCase){
             case SUCCESSFUL_FIND:
@@ -127,7 +127,7 @@ public class TestRequestFactoryImpl implements TestRequestEntity_Factory {
     }
 
     protected String mapTestCaseToMethodName(CrudController_TestCase crudControllerTestCase){
-        DtoCrudController_SpringAdapter crudController = getCrudControllerTest().getCrudController();
+        DtoCrudController_SpringAdapter crudController = getCrudControllerTest().controller();
         switch (crudControllerTestCase) {
             case SUCCESSFUL_FIND:
             case FAILED_FIND:

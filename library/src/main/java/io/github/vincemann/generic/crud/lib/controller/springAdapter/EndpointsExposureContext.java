@@ -11,7 +11,7 @@ import org.springframework.stereotype.Component;
 /**
  * Gives User fine grained control about which endpoints should be exposed by {@link DtoCrudController_SpringAdapter}.
  */
-public class EndpointsExposureDetails {
+public class EndpointsExposureContext {
     private boolean createEndpointExposed=true;
     private boolean findEndpointExposed =true;
     private boolean updateEndpointExposed=true;
@@ -19,7 +19,7 @@ public class EndpointsExposureDetails {
     private boolean findAllEndpointExposed=true;
 
     @Builder
-    public EndpointsExposureDetails(Boolean createEndpointExposed, Boolean findEndpointExposed, Boolean updateEndpointExposed, Boolean deleteEndpointExposed, Boolean findAllEndpointExposed) {
+    public EndpointsExposureContext(Boolean createEndpointExposed, Boolean findEndpointExposed, Boolean updateEndpointExposed, Boolean deleteEndpointExposed, Boolean findAllEndpointExposed) {
         if(createEndpointExposed ==null){
             this.createEndpointExposed=true;
         }else {
@@ -52,6 +52,6 @@ public class EndpointsExposureDetails {
         }
     }
 
-    public EndpointsExposureDetails() {
+    public EndpointsExposureContext() {
     }
 }

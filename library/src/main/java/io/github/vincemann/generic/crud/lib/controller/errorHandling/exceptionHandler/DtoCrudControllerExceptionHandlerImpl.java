@@ -1,7 +1,7 @@
 package io.github.vincemann.generic.crud.lib.controller.errorHandling.exceptionHandler;
 
 import io.github.vincemann.generic.crud.lib.controller.DtoCrudController;
-import io.github.vincemann.generic.crud.lib.controller.dtoMapper.EntityMappingException;
+import io.github.vincemann.generic.crud.lib.controller.dtoMapper.exception.EntityMappingException;
 import io.github.vincemann.generic.crud.lib.controller.errorHandling.ApiError;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;

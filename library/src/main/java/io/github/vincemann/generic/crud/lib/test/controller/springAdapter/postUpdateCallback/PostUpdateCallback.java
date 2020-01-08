@@ -1,5 +1,9 @@
 package io.github.vincemann.generic.crud.lib.test.controller.springAdapter.postUpdateCallback;
 
-public interface PostUpdateCallback<E> {
-    public void callback(E entityToUpdate, E updatedEntity);
+import io.github.vincemann.generic.crud.lib.model.IdentifiableEntity;
+
+import java.io.Serializable;
+
+public interface PostUpdateCallback<E extends IdentifiableEntity<Id>,Id extends Serializable> {
+    public void callback(E afterUpdate);
 }

@@ -1,14 +1,16 @@
 package io.github.vincemann.generic.crud.lib.controller.springAdapter.validationStrategy;
 
+import io.github.vincemann.generic.crud.lib.model.IdentifiableEntity;
+
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.ConstraintViolationException;
+import java.io.Serializable;
 
 /**
  *
- * @param <Dto>     Type of Dto Entity
  * @param <Id>      Id Type of id that is send to Server by Client
  */
-public interface ValidationStrategy<Dto,Id> {
+public interface ValidationStrategy<Id extends Serializable> {
 
     /**
      * checks whether the Dto entity, read from the {@link HttpServletRequest} is valid
@@ -16,7 +18,7 @@ public interface ValidationStrategy<Dto,Id> {
      * @param httpServletRequest    HttpRequest from client
      * @throws ConstraintViolationException     is thrown, when Dto Entity {@param dto} is not valid
      */
-    public abstract void validateDto(Dto dto, HttpServletRequest httpServletRequest) throws ConstraintViolationException;
+    public abstract void validateDto(IdentifiableEntity<Id> dto, HttpServletRequest httpServletRequest) throws ConstraintViolationException;
 
     /**
      * checks whether the Id, read from the {@link HttpServletRequest} is valid
@@ -28,9 +30,9 @@ public interface ValidationStrategy<Dto,Id> {
 
     public default void validateFindAllRequest(HttpServletRequest httpServletRequest)throws ConstraintViolationException {}
 
-    public default void beforeCreateValidate(Dto dto){}
+    public default void beforeCreateValidate(IdentifiableEntity<Id> dto){}
 
-    public default void beforeUpdateValidate(Dto dto){}
+    public default void beforeUpdateValidate(IdentifiableEntity<Id> dto){}
 
     public default void beforeDeleteValidate(Id id){}
 
