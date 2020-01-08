@@ -2,14 +2,16 @@ package io.github.vincemann.generic.crud.lib.controller.springAdapter.mediaTypeS
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
+import io.github.vincemann.generic.crud.lib.model.IdentifiableEntity;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.springframework.http.MediaType;
 
 import java.io.IOException;
+import java.io.Serializable;
 import java.util.Collection;
 
-public class JSONMediaTypeStrategy implements MediaTypeStrategy{
+public class JSONMediaTypeStrategy<Id extends Serializable> implements MediaTypeStrategy<Id>{
     private final ObjectMapper mapper;
 
     public JSONMediaTypeStrategy() {
@@ -18,7 +20,7 @@ public class JSONMediaTypeStrategy implements MediaTypeStrategy{
     }
 
     @Override
-    public <Dto> Dto readDtoFromBody(String body, Class<Dto> dtoClass) throws DtoReadingException {
+    public <Dto extends IdentifiableEntity<Id>> Dto readDtoFromBody(String body, Class<Dto> dtoClass) throws DtoReadingException {
         try {
             return mapper.readValue(body, dtoClass);
         } catch (IOException e) {
@@ -27,7 +29,7 @@ public class JSONMediaTypeStrategy implements MediaTypeStrategy{
     }
 
     @Override
-    public <Dto, C extends Collection<Dto>> C readDtosFromBody(String body, Class<Dto> dtoClass, Class<C> collectionType) throws DtoReadingException {
+    public <Dto extends IdentifiableEntity<Id>, C extends Collection<Dto>> C readDtosFromBody(String body, Class<Dto> dtoClass, Class<C> collectionType) throws DtoReadingException {
         try {
             return mapper.readValue(body,mapper.getTypeFactory().constructCollectionType(collectionType,dtoClass));
         } catch (IOException e) {
