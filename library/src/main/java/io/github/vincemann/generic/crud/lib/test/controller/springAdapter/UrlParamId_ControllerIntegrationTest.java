@@ -9,11 +9,11 @@ import io.github.vincemann.generic.crud.lib.model.IdentifiableEntity;
 import io.github.vincemann.generic.crud.lib.service.CrudService;
 import io.github.vincemann.generic.crud.lib.service.exception.BadEntityException;
 import io.github.vincemann.generic.crud.lib.test.IntegrationTest;
+import io.github.vincemann.generic.crud.lib.test.controller.springAdapter.postUpdateCallback.PostUpdateCallback;
 import io.github.vincemann.generic.crud.lib.test.controller.springAdapter.testRequestEntity.RequestEntityMapper;
 import io.github.vincemann.generic.crud.lib.test.controller.springAdapter.testRequestEntity.TestRequestEntity;
 import io.github.vincemann.generic.crud.lib.test.controller.springAdapter.testRequestEntity.TestRequestEntity_Modification;
 import io.github.vincemann.generic.crud.lib.test.controller.springAdapter.testRequestEntity.factory.TestRequestEntity_Factory;
-import io.github.vincemann.generic.crud.lib.test.controller.springAdapter.postUpdateCallback.PostUpdateCallback;
 import io.github.vincemann.generic.crud.lib.test.forceEagerFetch.Hibernate_ForceEagerFetch_Helper;
 import io.github.vincemann.generic.crud.lib.test.forceEagerFetch.proxy.CrudService_HibernateForceEagerFetch_Proxy;
 import io.github.vincemann.generic.crud.lib.test.testExecutionListeners.ResetDatabaseTestExecutionListener;
@@ -23,7 +23,6 @@ import org.junit.jupiter.api.Assertions;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.repository.CrudRepository;
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
 import org.springframework.lang.Nullable;
 import org.springframework.test.context.TestExecutionListeners;
@@ -58,11 +57,11 @@ public abstract class UrlParamId_ControllerIntegrationTest
         extends IntegrationTest
         implements InitializingBean {
 
+    @Getter
+    private Class<E> entityClass = (Class<E>) ((ParameterizedType) this.getClass().getGenericSuperclass()).getActualTypeArguments()[0];
 
     private TestRequestEntity_Factory requestEntityFactory;
     private DtoCrudController_SpringAdapter<E, Id, R> controller;
-    @Getter
-    private Class<E> entityClass = (Class<E>) ((ParameterizedType) this.getClass().getGenericSuperclass()).getActualTypeArguments()[0];
     @Getter
     private String entityIdParamKey;
     private Hibernate_ForceEagerFetch_Helper hibernate_forceEagerFetch_helper;
@@ -157,29 +156,54 @@ public abstract class UrlParamId_ControllerIntegrationTest
         return updateEntity_ShouldSucceed(updateRequest,fullUpdate);
     }
 
-    protected <Dto extends IdentifiableEntity<Id>> Dto updateEntity_ShouldSucceed(E entityToUpdate, IdentifiableEntity<Id> updateRequest,boolean fullUpdate, @Nullable PostUpdateCallback<E,Id> updatedValuesPostUpdateCallback) throws Exception {
+    protected <Dto extends IdentifiableEntity<Id>> Dto updateEntity_ShouldSucceed(E entityToUpdate, IdentifiableEntity<Id> updateRequestDto,boolean fullUpdate, @Nullable PostUpdateCallback<E,Id> updatedValuesPostUpdateCallback) throws Exception {
         E savedEntityToUpdate = saveServiceEntity(entityToUpdate);
-        updateRequest.setId(savedEntityToUpdate.getId());
-        return updateEntity_ShouldSucceed(updateRequest,fullUpdate, updatedValuesPostUpdateCallback);
+        updateRequestDto.setId(savedEntityToUpdate.getId());
+        return updateEntity_ShouldSucceed(updateRequestDto,fullUpdate,updatedValuesPostUpdateCallback);
     }
 
-    protected <Dto extends IdentifiableEntity<Id>> Dto updateEntity_ShouldSucceed(E entityToUpdate, IdentifiableEntity<Id> updateRequest,boolean fullUpdate, @Nullable TestRequestEntity_Modification... modifications) throws Exception {
+    protected <Dto extends IdentifiableEntity<Id>> Dto updateEntity_ShouldSucceed(E entityToUpdate, IdentifiableEntity<Id> updateRequestDto,boolean fullUpdate, @Nullable TestRequestEntity_Modification... modifications) throws Exception {
         E savedEntityToUpdate = saveServiceEntity(entityToUpdate);
-        updateRequest.setId(savedEntityToUpdate.getId());
-        return updateEntity_ShouldSucceed(updateRequest,fullUpdate, modifications);
+        updateRequestDto.setId(savedEntityToUpdate.getId());
+        return updateEntity_ShouldSucceed(updateRequestDto,fullUpdate, modifications);
     }
 
-    protected <Dto extends IdentifiableEntity<Id>> Dto updateEntity_ShouldSucceed(E entityToUpdate, IdentifiableEntity<Id> updateRequest, @Nullable PostUpdateCallback<E,Id> updatedValuesPostUpdateCallback,boolean fullUpdate, @Nullable TestRequestEntity_Modification... modifications) throws Exception {
+    protected <Dto extends IdentifiableEntity<Id>> Dto updateEntity_ShouldSucceed(E entityToUpdate, IdentifiableEntity<Id> updateRequestDto,boolean fullUpdate, @Nullable PostUpdateCallback<E,Id> updatedValuesPostUpdateCallback, @Nullable TestRequestEntity_Modification... modifications) throws Exception {
         E savedEntityToUpdate = saveServiceEntity(entityToUpdate);
-        updateRequest.setId(savedEntityToUpdate.getId());
-        return updateEntity_ShouldSucceed(updateRequest, updatedValuesPostUpdateCallback,fullUpdate, modifications);
+        updateRequestDto.setId(savedEntityToUpdate.getId());
+        return updateEntity_ShouldSucceed(updateRequestDto, fullUpdate,updatedValuesPostUpdateCallback, modifications);
     }
 
 
-    protected <Dto extends IdentifiableEntity<Id>> Dto updateEntity_ShouldSucceed(IdentifiableEntity<Id> updateRequestDto, @Nullable PostUpdateCallback<E,Id> updatedValuesPostUpdateCallback,boolean fullUpdate, @Nullable TestRequestEntity_Modification... modifications) throws Exception {
+    protected <Dto extends IdentifiableEntity<Id>> Dto updateEntity_ShouldSucceed(IdentifiableEntity<Id> updateRequestDto,boolean fullUpdate, @Nullable PostUpdateCallback<E,Id> updatedValuesPostUpdateCallback, @Nullable TestRequestEntity_Modification... modifications) throws Exception {
         Assertions.assertNotNull(updateRequestDto.getId());
         Assertions.assertEquals(mappingContext().getUpdateArgDtoClass(),updateRequestDto.getClass());
 
+
+        TestRequestEntity testRequestEntity = requestEntityFactory.createInstance(
+                CrudController_TestCase.SUCCESSFUL_UPDATE,
+                updateRequestDto.getId(),
+                getFullUpdateAwareModifications(fullUpdate,modifications)
+        );
+        //Entity to update must be saved already
+        Optional<E> entityBeforeUpdate = testCrudService.findById(updateRequestDto.getId());
+        Assertions.assertTrue(entityBeforeUpdate.isPresent(), "Entity to update was not present");
+        //update request
+        ResponseEntity<String> responseEntity = updateEntity(updateRequestDto, testRequestEntity);
+        Assertions.assertEquals(testRequestEntity.getExpectedHttpStatus(), responseEntity.getStatusCode(),responseEntity.getBody());
+        //validate response Dto
+        IdentifiableEntity<Id> responseDto = controller().getMediaTypeStrategy().readDtoFromBody(responseEntity.getBody(), mappingContext().getUpdateReturnDtoClass());
+        Assertions.assertNotNull(responseDto);
+        if (updatedValuesPostUpdateCallback != null) {
+            //check that Changes were actually applied -> relevant attribute values specified by UpdateSuccessfulChecker Impl are equal now
+            Optional<E> entityAfterUpdate = getTestService().findById(responseDto.getId());
+            updatedValuesPostUpdateCallback.callback(entityAfterUpdate.get());
+        }
+        Assertions.assertEquals(mappingContext().getUpdateReturnDtoClass(),responseDto.getClass());
+        return (Dto) responseDto;
+    }
+
+    protected TestRequestEntity_Modification[] getFullUpdateAwareModifications(boolean fullUpdate, TestRequestEntity_Modification... modifications){
         TestRequestEntity_Modification[] finalModifications = null;
         if(fullUpdate) {
             if (modifications != null) {
@@ -193,32 +217,12 @@ public abstract class UrlParamId_ControllerIntegrationTest
         }else {
             finalModifications=modifications;
         }
-        TestRequestEntity testRequestEntity = requestEntityFactory.createInstance(
-                CrudController_TestCase.SUCCESSFUL_UPDATE,
-                updateRequestDto.getId(),
-                modifications
-        );
-        //Entity to update must be saved already
-        Optional<E> entityBeforeUpdate = testCrudService.findById(updateRequestDto.getId());
-        Assertions.assertTrue(entityBeforeUpdate.isPresent(), "Entity to update was not present");
-        //update request
-        ResponseEntity<String> responseEntity = updateEntity(updateRequestDto, testRequestEntity);
-        Assertions.assertEquals(testRequestEntity.getExpectedHttpStatus(), responseEntity.getStatusCode());
-        //validate response Dto
-        IdentifiableEntity<Id> responseDto = controller().getMediaTypeStrategy().readDtoFromBody(responseEntity.getBody(), mappingContext().getUpdateReturnDtoClass());
-        Assertions.assertNotNull(responseDto);
-        if (updatedValuesPostUpdateCallback != null) {
-            //check that Changes were actually applied -> relevant attribute values specified by UpdateSuccessfulChecker Impl are equal now
-            Optional<E> entityAfterUpdate = getTestService().findById(responseDto.getId());
-            updatedValuesPostUpdateCallback.callback(entityAfterUpdate.get());
-        }
-        Assertions.assertEquals(mappingContext().getUpdateReturnDtoClass(),responseDto.getClass());
-        return (Dto) responseDto;
+        return finalModifications;
     }
 
     private TestRequestEntity_Modification fullUpdate(){
-        MultiValueMap<String,String> fullUpdateQueryParam = new LinkedMultiValueMap<>();
-        fullUpdateQueryParam.put(DtoCrudController_SpringAdapter.FULL_UPDATE_QUERY_PARAM,Arrays.asList("true"));
+        Map<String,String> fullUpdateQueryParam = new HashMap<>();
+        fullUpdateQueryParam.put(DtoCrudController_SpringAdapter.FULL_UPDATE_QUERY_PARAM,"true");
         return TestRequestEntity_Modification.builder()
                 .additionalQueryParams(fullUpdateQueryParam)
                 .build();
@@ -226,14 +230,14 @@ public abstract class UrlParamId_ControllerIntegrationTest
 
 
     protected <Dto extends IdentifiableEntity<Id>> Dto updateEntity_ShouldSucceed(IdentifiableEntity<Id> updateRequestDto,boolean fullUpdate) throws Exception {
-        return updateEntity_ShouldSucceed(updateRequestDto, null, fullUpdate,null);
+        return updateEntity_ShouldSucceed(updateRequestDto, fullUpdate,null,null);
     }
 
     protected <Dto extends IdentifiableEntity<Id>> Dto updateEntity_ShouldSucceed(IdentifiableEntity<Id> updateRequestDto,boolean fullUpdate, TestRequestEntity_Modification... modifications) throws Exception {
-        return updateEntity_ShouldSucceed(updateRequestDto, null, fullUpdate,modifications);
+        return updateEntity_ShouldSucceed(updateRequestDto, fullUpdate,null,modifications);
     }
 
-    protected ResponseEntity<String> updateEntity_ShouldFail(IdentifiableEntity<Id> updateRequestDto, @Nullable PostUpdateCallback<E,Id> updatedValuesPostUpdateCallback, TestRequestEntity_Modification... modifications) throws Exception {
+    protected ResponseEntity<String> updateEntity_ShouldFail(IdentifiableEntity<Id> updateRequestDto, boolean fullUpdate, @Nullable PostUpdateCallback<E,Id> updatedValuesPostUpdateCallback, TestRequestEntity_Modification... modifications) throws Exception {
         Assertions.assertNotNull(updateRequestDto.getId());
 
         TestRequestEntity testRequestEntity = requestEntityFactory.createInstance(
@@ -245,7 +249,7 @@ public abstract class UrlParamId_ControllerIntegrationTest
         Assertions.assertTrue(entityBeforeUpdate.isPresent(), "Entity to update was not present");
 
         ResponseEntity<String> responseEntity = updateEntity(updateRequestDto, testRequestEntity);
-        Assertions.assertEquals(testRequestEntity.getExpectedHttpStatus(), responseEntity.getStatusCode(), "Status was : " + responseEntity.getStatusCode());
+        Assertions.assertEquals(testRequestEntity.getExpectedHttpStatus(), responseEntity.getStatusCode(), responseEntity.getBody());
 
         if (updatedValuesPostUpdateCallback != null) {
             //check that Changes were not applied -> relevant attribute values specified by UpdateSuccessfulChecker Impl are still the same as before update request
@@ -255,40 +259,40 @@ public abstract class UrlParamId_ControllerIntegrationTest
         return responseEntity;
     }
 
-    protected ResponseEntity<String> updateEntity_ShouldFail(IdentifiableEntity<Id> newEntity) throws Exception {
-        return updateEntity_ShouldFail(newEntity, null, null);
+    protected ResponseEntity<String> updateEntity_ShouldFail(IdentifiableEntity<Id> newEntity,boolean fullUpdate) throws Exception {
+        return updateEntity_ShouldFail(newEntity, fullUpdate,null, null);
     }
 
-    protected ResponseEntity<String> updateEntity_ShouldFail(IdentifiableEntity<Id> newEntity, TestRequestEntity_Modification... modifications) throws Exception {
-        return updateEntity_ShouldFail(newEntity, null, modifications);
+    protected ResponseEntity<String> updateEntity_ShouldFail(IdentifiableEntity<Id> newEntity,boolean fullUpdate, TestRequestEntity_Modification... modifications) throws Exception {
+        return updateEntity_ShouldFail(newEntity, fullUpdate,null, modifications);
     }
 
-    protected ResponseEntity<String> updateEntity_ShouldFail(IdentifiableEntity<Id> newEntity, PostUpdateCallback<E,Id> equalChecker) throws Exception {
-        return updateEntity_ShouldFail(newEntity, equalChecker, null);
+    protected ResponseEntity<String> updateEntity_ShouldFail(IdentifiableEntity<Id> newEntity,boolean fullUpdate, PostUpdateCallback<E,Id> equalChecker) throws Exception {
+        return updateEntity_ShouldFail(newEntity,fullUpdate, equalChecker, null);
     }
 
-    protected ResponseEntity<String> updateEntity_ShouldFail(E entityToUpdate, IdentifiableEntity<Id> updateRequest) throws Exception {
+    protected ResponseEntity<String> updateEntity_ShouldFail(E entityToUpdate, IdentifiableEntity<Id> updateRequest,boolean fullUpdate) throws Exception {
         E savedEntityToUpdate = saveServiceEntity(entityToUpdate);
         updateRequest.setId(savedEntityToUpdate.getId());
-        return updateEntity_ShouldFail(updateRequest);
+        return updateEntity_ShouldFail(updateRequest,fullUpdate);
     }
 
-    protected ResponseEntity<String> updateEntity_ShouldFail(E entityToUpdate, IdentifiableEntity<Id> updateRequest, @Nullable PostUpdateCallback<E,Id> updatedValuesPostUpdateCallback) throws Exception {
+    protected ResponseEntity<String> updateEntity_ShouldFail(E entityToUpdate, IdentifiableEntity<Id> updateRequest,boolean fullUpdate, @Nullable PostUpdateCallback<E,Id> updatedValuesPostUpdateCallback) throws Exception {
         E savedEntityToUpdate = saveServiceEntity(entityToUpdate);
         updateRequest.setId(savedEntityToUpdate.getId());
-        return updateEntity_ShouldFail(updateRequest, updatedValuesPostUpdateCallback);
+        return updateEntity_ShouldFail(updateRequest, fullUpdate,updatedValuesPostUpdateCallback);
     }
 
-    protected ResponseEntity<String> updateEntity_ShouldFail(E entityToUpdate, IdentifiableEntity<Id> updateRequest, @Nullable TestRequestEntity_Modification... modifications) throws Exception {
+    protected ResponseEntity<String> updateEntity_ShouldFail(E entityToUpdate, IdentifiableEntity<Id> updateRequest,boolean fullUpdate, @Nullable TestRequestEntity_Modification... modifications) throws Exception {
         E savedEntityToUpdate = saveServiceEntity(entityToUpdate);
         updateRequest.setId(savedEntityToUpdate.getId());
-        return updateEntity_ShouldFail(updateRequest, modifications);
+        return updateEntity_ShouldFail(updateRequest, fullUpdate,modifications);
     }
 
-    protected ResponseEntity<String> updateEntity_ShouldFail(E entityToUpdate, IdentifiableEntity<Id> updateRequest, @Nullable PostUpdateCallback<E,Id> updatedValuesPostUpdateCallback, @Nullable TestRequestEntity_Modification... modifications) throws Exception {
+    protected ResponseEntity<String> updateEntity_ShouldFail(E entityToUpdate, IdentifiableEntity<Id> updateRequest,boolean fullUpdate, @Nullable PostUpdateCallback<E,Id> updatedValuesPostUpdateCallback, @Nullable TestRequestEntity_Modification... modifications) throws Exception {
         E savedEntityToUpdate = saveServiceEntity(entityToUpdate);
         updateRequest.setId(savedEntityToUpdate.getId());
-        return updateEntity_ShouldFail(updateRequest, updatedValuesPostUpdateCallback, modifications);
+        return updateEntity_ShouldFail(updateRequest,fullUpdate, updatedValuesPostUpdateCallback, modifications);
     }
 
 
@@ -313,7 +317,7 @@ public abstract class UrlParamId_ControllerIntegrationTest
 
         TestRequestEntity testRequestEntity = requestEntityFactory.createInstance(CrudController_TestCase.SUCCESSFUL_CREATE, null, modifications);
         ResponseEntity<String> responseEntity = createEntity(createRequestDto, testRequestEntity);
-        Assertions.assertEquals(testRequestEntity.getExpectedHttpStatus(), responseEntity.getStatusCode(), "Status was : " + responseEntity.getStatusCode() + " response Body: " + responseEntity.getBody());
+        Assertions.assertEquals(testRequestEntity.getExpectedHttpStatus(), responseEntity.getStatusCode(), responseEntity.getBody());
         IdentifiableEntity<Id> responseDto = controller.getMediaTypeStrategy().readDtoFromBody(responseEntity.getBody(), mappingContext().getCreateReturnDtoClass());
 
         Assertions.assertNotNull(responseDto);
@@ -331,7 +335,7 @@ public abstract class UrlParamId_ControllerIntegrationTest
                 null,
                 modifications);
         ResponseEntity<String> responseEntity = createEntity(dto, testRequestEntity);
-        Assertions.assertEquals(testRequestEntity.getExpectedHttpStatus(), responseEntity.getStatusCode(), "Status was : " + responseEntity.getStatusCode() + " response Body: " + responseEntity.getBody());
+        Assertions.assertEquals(testRequestEntity.getExpectedHttpStatus(), responseEntity.getStatusCode(), responseEntity.getBody());
         return responseEntity;
     }
 
@@ -361,7 +365,7 @@ public abstract class UrlParamId_ControllerIntegrationTest
 
         //onBeforeDeleteEntityShouldSucceed(id);
         ResponseEntity<String> responseEntity = deleteEntity(id, testRequestEntity);
-        Assertions.assertEquals(testRequestEntity.getExpectedHttpStatus(), responseEntity.getStatusCode(), "Status was : " + responseEntity.getStatusCode() + " response Body: " + responseEntity.getBody());
+        Assertions.assertEquals(testRequestEntity.getExpectedHttpStatus(), responseEntity.getStatusCode(), responseEntity.getBody());
         //onAfterDeleteEntityShouldSucceed(id, responseEntity);
         return responseEntity;
     }
@@ -379,7 +383,7 @@ public abstract class UrlParamId_ControllerIntegrationTest
         Optional<E> serviceFoundEntityBeforeDelete = testCrudService.findById(id);
         Assertions.assertTrue(serviceFoundEntityBeforeDelete.isPresent(), "Entity to delete was not present");
         ResponseEntity<String> responseEntity = deleteEntity(id, testRequestEntity);
-        Assertions.assertEquals(testRequestEntity.getExpectedHttpStatus(), responseEntity.getStatusCode(), "Status was : " + responseEntity.getStatusCode() + " response Body: " + responseEntity.getBody());
+        Assertions.assertEquals(testRequestEntity.getExpectedHttpStatus(), responseEntity.getStatusCode(), responseEntity.getBody());
 
         return responseEntity;
     }
@@ -399,7 +403,7 @@ public abstract class UrlParamId_ControllerIntegrationTest
                 id,
                 modifications);
         ResponseEntity<String> responseEntity = findEntity(id, testRequestEntity);
-        Assertions.assertEquals(testRequestEntity.getExpectedHttpStatus(), responseEntity.getStatusCode(), "Status was : " + responseEntity.getStatusCode() + " response Body: " + responseEntity.getBody());
+        Assertions.assertEquals(testRequestEntity.getExpectedHttpStatus(), responseEntity.getStatusCode(), responseEntity.getBody());
         IdentifiableEntity<Id> responseDto = controller.getMediaTypeStrategy().readDtoFromBody(responseEntity.getBody(), mappingContext().getFindReturnDtoClass());
         Assertions.assertNotNull(responseDto);
         Assertions.assertEquals(mappingContext().getFindReturnDtoClass(),responseDto.getClass());
@@ -416,7 +420,7 @@ public abstract class UrlParamId_ControllerIntegrationTest
                 id,
                 modifications);
         ResponseEntity<String> responseEntity = findEntity(id, testRequestEntity);
-        Assertions.assertEquals(testRequestEntity.getExpectedHttpStatus(), responseEntity.getStatusCode(), "Status was : " + responseEntity.getStatusCode() + " response Body: " + responseEntity.getBody());
+        Assertions.assertEquals(testRequestEntity.getExpectedHttpStatus(), responseEntity.getStatusCode(), responseEntity.getBody());
         return responseEntity;
     }
 

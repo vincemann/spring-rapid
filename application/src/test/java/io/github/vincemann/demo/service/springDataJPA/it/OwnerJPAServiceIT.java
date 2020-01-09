@@ -11,6 +11,7 @@ import io.github.vincemann.generic.crud.lib.service.CrudService;
 import io.github.vincemann.generic.crud.lib.service.exception.BadEntityException;
 import io.github.vincemann.generic.crud.lib.service.exception.EntityNotFoundException;
 import io.github.vincemann.generic.crud.lib.service.exception.NoIdException;
+import io.github.vincemann.generic.crud.lib.test.equalChecker.EqualChecker;
 import io.github.vincemann.generic.crud.lib.test.service.ForceEagerFetch_CrudServiceIntegrationTest;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -122,13 +123,14 @@ class OwnerJPAServiceIT
     @Test
     public void updateOwner_ChangeTelephoneNumber_ShouldSucceed() throws BadEntityException, EntityNotFoundException, NoIdException {
         Owner diffTelephoneNumberUpdate = Owner.builder()
-                .firstName("ownername")
-                .lastName("owner lastName")
-                .address("asljnflksamfslkmf")
-                .city("n1 city")
-                .telephone("42")
+                .telephone(ownerWithoutPets.getTelephone()+"123")
                 .build();
-        updateEntity_ShouldSucceed(ownerWithoutPets,diffTelephoneNumberUpdate);
+        updateEntity_ShouldSucceed(ownerWithoutPets, diffTelephoneNumberUpdate, false, new EqualChecker<Owner>() {
+            @Override
+            public boolean isEqual(Owner request, Owner updated) {
+                return request.getTelephone().equals(updated.getTelephone());
+            }
+        });
     }
 
     @Test
@@ -151,10 +153,9 @@ class OwnerJPAServiceIT
                 .pets(new HashSet<>(Arrays.asList(savedPet)))
                 .build();
         Owner savedOwner = repoSave(owner);
-
         savedOwner.getPets().add(savedPetToAdd);
 
-        Owner updatedOwner = updateEntity_ShouldSucceed(savedOwner);
+        Owner updatedOwner = updateEntity_ShouldSucceed(savedOwner,false);
         Assertions.assertTrue(updatedOwner.getPets().contains(savedPetToAdd));
     }
 

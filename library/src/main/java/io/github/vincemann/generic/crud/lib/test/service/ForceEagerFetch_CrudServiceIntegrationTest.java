@@ -95,12 +95,12 @@ public abstract class ForceEagerFetch_CrudServiceIntegrationTest<
 
     @Override
     @Transactional
-    protected E serviceUpdate(E entity) throws EntityNotFoundException, BadEntityException, NoIdException {
+    protected E serviceUpdate(E entity,boolean full) throws EntityNotFoundException, BadEntityException, NoIdException {
         try {
             return forceEagerFetchHelper.runInTransactionAndFetchEagerly(() -> {
                 //it is expected for service to handle reattachment (for example with reattachment plugin) so this is not necessary
                 //entityGraph_sessionReattachment_helper.attachEntityGraphToCurrentSession(entity);
-                return super.serviceUpdate(entity);
+                return super.serviceUpdate(entity,full);
             });
         }catch (NoIdException|EntityNotFoundException|BadEntityException|RuntimeException e){
             throw e;
