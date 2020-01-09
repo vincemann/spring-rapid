@@ -3,7 +3,7 @@ package io.github.vincemann.generic.crud.lib.test.service.testApi;
 import io.github.vincemann.generic.crud.lib.model.IdentifiableEntity;
 import io.github.vincemann.generic.crud.lib.service.exception.NoIdException;
 import io.github.vincemann.generic.crud.lib.test.service.testApi.abs.AbstractServiceTestApi;
-import io.github.vincemann.generic.crud.lib.test.service.testApi.abs.RootServiceTestContext;
+import io.github.vincemann.generic.crud.lib.test.service.RootServiceTestContext;
 import org.junit.jupiter.api.Assertions;
 import org.springframework.data.repository.CrudRepository;
 
