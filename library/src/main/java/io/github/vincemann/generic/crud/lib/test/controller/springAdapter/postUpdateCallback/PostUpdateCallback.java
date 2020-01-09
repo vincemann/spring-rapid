@@ -5,5 +5,5 @@ import io.github.vincemann.generic.crud.lib.model.IdentifiableEntity;
 import java.io.Serializable;
 
 public interface PostUpdateCallback<E extends IdentifiableEntity<Id>,Id extends Serializable> {
-    public void callback(E afterUpdate);
+    public void callback(E request, E afterUpdate);
 }

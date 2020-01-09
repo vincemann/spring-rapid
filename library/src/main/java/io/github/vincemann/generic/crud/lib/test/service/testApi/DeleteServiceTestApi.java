@@ -3,27 +3,33 @@ package io.github.vincemann.generic.crud.lib.test.service.testApi;
 import io.github.vincemann.generic.crud.lib.model.IdentifiableEntity;
 import io.github.vincemann.generic.crud.lib.service.exception.EntityNotFoundException;
 import io.github.vincemann.generic.crud.lib.service.exception.NoIdException;
-import io.github.vincemann.generic.crud.lib.test.service.testApi.abs.ServiceTestApi;
+import io.github.vincemann.generic.crud.lib.test.service.testApi.abs.AbstractServiceTestApi;
+import io.github.vincemann.generic.crud.lib.test.service.testApi.abs.RootServiceTestContext;
+import lombok.Getter;
 import org.junit.jupiter.api.Assertions;
 import org.springframework.data.repository.CrudRepository;
 
 import java.io.Serializable;
 import java.util.Optional;
 
+@Getter
 public class DeleteServiceTestApi<E extends IdentifiableEntity<Id>, Id extends Serializable,R extends CrudRepository<E,Id>>
-        extends ServiceTestApi<E,Id,R>
+    extends AbstractServiceTestApi<E,Id,R>
 {
+    public DeleteServiceTestApi(RootServiceTestContext<E, Id, R> serviceTestContext) {
+        super(serviceTestContext);
+    }
 
     protected void deleteEntityById_ShouldSucceed(Id id) throws EntityNotFoundException, NoIdException {
         //given
         Assertions.assertNotNull(id);
-        Optional<E> entityToDelete = repoFindById(id);
+        Optional<E> entityToDelete = getRootContext().repoFindById(id);
         Assertions.assertTrue(entityToDelete.isPresent());
 
         //when
-        getCrudService().deleteById(id);
+        getRootContext().getCrudService().deleteById(id);
         //then
-        Optional<E> deletedEntity = repoFindById(id);
+        Optional<E> deletedEntity = getRootContext().repoFindById(id);
         Assertions.assertFalse(deletedEntity.isPresent());
     }
 
@@ -32,14 +38,14 @@ public class DeleteServiceTestApi<E extends IdentifiableEntity<Id>, Id extends S
         //entity is present
         Assertions.assertNotNull(id);
 
-        Optional<E> repoEntity = repoFindById(id);
+        Optional<E> repoEntity = getRootContext().repoFindById(id);
         Assertions.assertTrue(repoEntity.isPresent());
 
         //when
-        T exception = Assertions.assertThrows(expectedException, () -> getCrudService().deleteById(id));
+        T exception = Assertions.assertThrows(expectedException, () -> getRootContext().getCrudService().deleteById(id));
         //then
         //still present
-        Optional<E> repoEntityAfterDelete = repoFindById(id);
+        Optional<E> repoEntityAfterDelete = getRootContext().repoFindById(id);
         Assertions.assertTrue(repoEntityAfterDelete.isPresent());
         return exception;
     }
