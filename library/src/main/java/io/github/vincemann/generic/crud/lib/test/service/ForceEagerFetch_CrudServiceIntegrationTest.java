@@ -27,17 +27,15 @@ import java.util.Optional;
  * For Service Layer this behavior is usually realized with {@link io.github.vincemann.generic.crud.lib.service.plugin.SessionReattachmentPlugin}.
  *
  *
- * @param <S>
- * @param <R>
  * @param <E>
  * @param <Id>
  */
-public abstract class ForceEagerFetch_CrudServiceIntegrationTest<
-                        S extends CrudService<E,Id,R>,
-                        R extends CrudRepository<E,Id>,
+public abstract class ForceEagerFetch_CrudServiceIntegrationTest
+                <
                         E extends IdentifiableEntity<Id>,
-                        Id extends Serializable
-                > extends CrudServiceIntegrationTest<S, R, E, Id>
+                        Id extends Serializable,
+                        R extends CrudRepository<E,Id>
+                > extends CrudServiceIntegrationTest<E, Id,R>
 {
 
     @Getter
@@ -56,7 +54,7 @@ public abstract class ForceEagerFetch_CrudServiceIntegrationTest<
     }
 
     @Override
-    protected Optional<E> repoFindById(Id id) {
+    public Optional<E> repoFindById(Id id) {
         return forceEagerFetchHelper.runInTransactionAndFetchEagerly_OptionalValue_NoException(() -> {
             return super.repoFindById(id);
         });
@@ -64,7 +62,7 @@ public abstract class ForceEagerFetch_CrudServiceIntegrationTest<
 
     @Transactional
     @Override
-    protected E serviceSave(E entity) throws BadEntityException {
+    public E serviceSave(E entity) throws BadEntityException {
         try {
             return forceEagerFetchHelper.runInTransactionAndFetchEagerly(() -> {
                 //it is expected for service to handle reattachment (for example with reattachment plugin) so this is not necessary
@@ -80,7 +78,7 @@ public abstract class ForceEagerFetch_CrudServiceIntegrationTest<
 
     @Override
     @Transactional
-    protected Optional<E> serviceFindById(Id id) throws NoIdException {
+    public Optional<E> serviceFindById(Id id) throws NoIdException {
         try {
             return forceEagerFetchHelper.runInTransactionAndFetchEagerly_OptionalValue(() -> {
                 return super.serviceFindById(id);
@@ -95,7 +93,7 @@ public abstract class ForceEagerFetch_CrudServiceIntegrationTest<
 
     @Override
     @Transactional
-    protected E serviceUpdate(E entity,boolean full) throws EntityNotFoundException, BadEntityException, NoIdException {
+    public E serviceUpdate(E entity,boolean full) throws EntityNotFoundException, BadEntityException, NoIdException {
         try {
             return forceEagerFetchHelper.runInTransactionAndFetchEagerly(() -> {
                 //it is expected for service to handle reattachment (for example with reattachment plugin) so this is not necessary
@@ -116,7 +114,7 @@ public abstract class ForceEagerFetch_CrudServiceIntegrationTest<
 
     @Override
     @Transactional
-    protected E repoSave(E entity) {
+    public E repoSave(E entity) {
         //make sure that there are no entities, not attached to the current session (created via @Transactional)
         return forceEagerFetchHelper.runInTransactionAndFetchEagerly_NoException(() -> {
             sessionReattachmentHelper.attachEntityGraphToCurrentSession(entity);
