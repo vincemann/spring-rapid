@@ -7,7 +7,6 @@ import io.github.vincemann.generic.crud.lib.test.service.testApi.DeleteServiceTe
 import io.github.vincemann.generic.crud.lib.test.service.testApi.FindServiceTestApi;
 import io.github.vincemann.generic.crud.lib.test.service.testApi.SaveServiceTestApi;
 import io.github.vincemann.generic.crud.lib.test.service.testApi.UpdateServiceTestApi;
-import io.github.vincemann.generic.crud.lib.test.service.testApi.abs.RootServiceTestContext;
 import io.github.vincemann.generic.crud.lib.test.testExecutionListeners.ResetDatabaseTestExecutionListener;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;

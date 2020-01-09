@@ -4,7 +4,7 @@ import io.github.vincemann.generic.crud.lib.model.IdentifiableEntity;
 import io.github.vincemann.generic.crud.lib.service.exception.BadEntityException;
 import io.github.vincemann.generic.crud.lib.test.equalChecker.EqualChecker;
 import io.github.vincemann.generic.crud.lib.test.service.testApi.abs.AbstractServiceTestApi;
-import io.github.vincemann.generic.crud.lib.test.service.testApi.abs.RootServiceTestContext;
+import io.github.vincemann.generic.crud.lib.test.service.RootServiceTestContext;
 import lombok.Builder;
 import lombok.Getter;
 import org.junit.jupiter.api.Assertions;

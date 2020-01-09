@@ -5,14 +5,12 @@ import io.github.vincemann.demo.model.Pet;
 import io.github.vincemann.demo.model.PetType;
 import io.github.vincemann.demo.repositories.OwnerRepository;
 import io.github.vincemann.demo.repositories.PetRepository;
-import io.github.vincemann.demo.service.OwnerService;
 import io.github.vincemann.demo.service.PetTypeService;
 import io.github.vincemann.generic.crud.lib.service.CrudService;
 import io.github.vincemann.generic.crud.lib.service.exception.BadEntityException;
 import io.github.vincemann.generic.crud.lib.service.exception.EntityNotFoundException;
 import io.github.vincemann.generic.crud.lib.service.exception.NoIdException;
 import io.github.vincemann.generic.crud.lib.test.controller.springAdapter.postUpdateCallback.PostUpdateCallback;
-import io.github.vincemann.generic.crud.lib.test.equalChecker.EqualChecker;
 import io.github.vincemann.generic.crud.lib.test.service.ForceEagerFetch_CrudServiceIntegrationTest;
 import io.github.vincemann.generic.crud.lib.test.service.testApi.UpdateServiceTestApi;
 import org.junit.jupiter.api.Assertions;
@@ -127,13 +125,19 @@ class OwnerJPAServiceIT
                 .telephone(ownerWithoutPets.getTelephone()+"123")
                 .build();
         getUpdateServiceTestApi().updateEntity_ShouldSucceed(ownerWithoutPets, diffTelephoneNumberUpdate,
-                UpdateServiceTestApi.SuccessfulTestContext.partialUpdateContextBuilder()
+                /*UpdateServiceTestApi.SuccessfulTestContext.partialUpdateContextBuilder()
                 .postUpdateCallback(new PostUpdateCallback<Owner,Long>() {
                     @Override
                     public void callback(Owner request, Owner afterUpdate) {
-                        Assertions.assertEquals(request.getTelephone(),afterUpdate.getTelephone());
+
                     }
-                }).build());
+                }).build());*/
+                new UpdateServiceTestApi<Owner,Long,OwnerRepository>.SuccessfulTestContext(new PostUpdateCallback<Owner, Long>() {
+                    @Override
+                    public void callback(Owner request, Owner afterUpdate) {
+
+                    }
+                }),getUpdateServiceTestApi().getDefaultSuccessfulContext());
     }
 
     @Test
