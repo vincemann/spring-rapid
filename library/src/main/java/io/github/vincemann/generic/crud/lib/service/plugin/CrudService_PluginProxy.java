@@ -66,11 +66,11 @@ public class CrudService_PluginProxy
 
     @Transactional
     @Override
-    public E update(E entity) throws EntityNotFoundException, NoIdException, BadEntityException {
+    public E update(E entity,boolean full) throws EntityNotFoundException, NoIdException, BadEntityException {
         for (Plugin<? super E,? super Id> plugin : plugins) {
             plugin.onBeforeUpdate(entity);
         }
-        E updatedEntity = crudService.update(entity);
+        E updatedEntity = crudService.update(entity,full);
         for (Plugin<? super E,? super Id> plugin : plugins) {
             plugin.onAfterUpdate(updatedEntity, entity);
         }

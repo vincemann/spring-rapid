@@ -73,10 +73,9 @@ class PetControllerIT
         //update pets name
         PetDto diffPetsNameUpdate = PetDto.builder()
                 .name("MODIFIED NAME")
-                .petTypeId(getTestPetType().getId())
                 .build();
         Assertions.assertNotEquals(diffPetsNameUpdate.getName(),petWithPersistedPetType.getName());
-        updateEntity_ShouldSucceed(petWithPersistedPetType, diffPetsNameUpdate, new PostUpdateCallback<Pet,Long>() {
+        updateEntity_ShouldSucceed(petWithPersistedPetType, diffPetsNameUpdate,false,new PostUpdateCallback<Pet,Long>() {
             @Override
             public void callback(Pet after) {
                 Assertions.assertEquals(diffPetsNameUpdate.getName(), after.getName());
@@ -87,14 +86,9 @@ class PetControllerIT
     @Test
     public void updatePet_RemoveOwner_ShouldSucceed() throws Exception {
         //remove pets owner in update
-        PetDto removePetsOwnerUpdate = PetDto.builder()
-                //tells backend to detach owner from pet
-                .ownerId(0L)
-                .petTypeId(getTestPetType().getId())
-                .name("esta")
-                .build();
+        petDtoWithPersistedOwner.setOwnerId(null);
 
-        updateEntity_ShouldSucceed(petWithPersistedOwner, removePetsOwnerUpdate, new PostUpdateCallback<Pet,Long>() {
+        updateEntity_ShouldSucceed(petWithPersistedOwner, petDtoWithPersistedOwner,true, new PostUpdateCallback<Pet,Long>() {
             @Override
             public void callback(Pet after) {
                 Assertions.assertNull(after.getOwner());
@@ -119,10 +113,9 @@ class PetControllerIT
     public void updatePet_SetPetTypeIdToNull_ShouldFail() throws Exception {
         //no pettype
         PetDto petTypeIdNullUpdate = PetDto.builder()
-                .name("bello")
                 .petTypeId(null)
                 .build();
-        updateEntity_ShouldFail(petWithPersistedPetType, petTypeIdNullUpdate, new PostUpdateCallback<Pet,Long>() {
+        updateEntity_ShouldFail(petWithPersistedPetType, petTypeIdNullUpdate,true, new PostUpdateCallback<Pet,Long>() {
             @Override
             public void callback(Pet after) {
                 Assertions.assertNotNull(after.getPetType());

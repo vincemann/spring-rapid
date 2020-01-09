@@ -126,12 +126,11 @@ class OwnerControllerIT
         //given
         UpdateOwnerDto diffAddressUpdate = UpdateOwnerDto.builder()
                 .address("other Street 12")
-                .city("munich")
                 .build();
 
         Assertions.assertNotEquals(diffAddressUpdate.getAddress(),validOwnerWithManyPets.getAddress());
         //when
-        updateEntity_ShouldSucceed(validOwnerWithManyPets, diffAddressUpdate, new PostUpdateCallback<Owner, Long>() {
+        updateEntity_ShouldSucceed(validOwnerWithManyPets, diffAddressUpdate,false,new PostUpdateCallback<Owner, Long>() {
             @Override
             public void callback(Owner afterUpdate) {
                 Assertions.assertEquals(afterUpdate.getAddress(),diffAddressUpdate.getAddress());
@@ -147,7 +146,7 @@ class OwnerControllerIT
                 .build();
 
         //when
-        updateEntity_ShouldSucceed(validOwnerWithManyPets,deleteAllPetsUpdate, new PostUpdateCallback<Owner,Long>() {
+        updateEntity_ShouldSucceed(validOwnerWithManyPets,deleteAllPetsUpdate,false, new PostUpdateCallback<Owner,Long>() {
             @Override
             public void callback(Owner after) {
                 Assertions.assertTrue(after.getPets().isEmpty());
@@ -171,7 +170,7 @@ class OwnerControllerIT
                 .build();
         
         //when
-        updateEntity_ShouldFail(validOwnerWithoutPets,setInvalidPetUpdate, new PostUpdateCallback<Owner,Long>() {
+        updateEntity_ShouldFail(validOwnerWithoutPets,setInvalidPetUpdate,false, new PostUpdateCallback<Owner,Long>() {
             @Override
             public void callback(Owner after) {
                  Assertions.assertTrue(after.getPets().isEmpty());
@@ -185,7 +184,7 @@ class OwnerControllerIT
                 //blank city
                 .city("")
                 .build();
-        updateEntity_ShouldFail(validOwnerWithoutPets,blankCityUpdate, new PostUpdateCallback<Owner,Long>() {
+        updateEntity_ShouldFail(validOwnerWithoutPets,blankCityUpdate,false, new PostUpdateCallback<Owner,Long>() {
             @Override
             public void callback(Owner after) {
                 Assertions.assertFalse(after.getCity().isEmpty());

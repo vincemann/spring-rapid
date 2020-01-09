@@ -55,10 +55,10 @@ public class CrudService_HibernateForceEagerFetch_Proxy
     }
 
     @Override
-    public E update(E entity) throws EntityNotFoundException, NoIdException, BadEntityException {
+    public E update(E entity,boolean full) throws EntityNotFoundException, NoIdException, BadEntityException {
         try {
             return getHelper().runInTransactionAndFetchEagerly(() -> {
-                return crudService.update(entity);
+                return crudService.update(entity,full);
             });
         } catch (EntityNotFoundException|NoIdException|BadEntityException|RuntimeException e) {
             throw e;

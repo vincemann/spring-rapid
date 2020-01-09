@@ -11,10 +11,10 @@ import org.unitils.reflectionassert.ReflectionComparatorMode;
 public class ReflectionEqualChecker<T> implements EqualChecker<T> {
 
     @Override
-    public boolean isEqual(T o1, T o2) {
+    public boolean isEqual(T request, T updated) {
         try {
             //order in Lists is ignored
-            ReflectionAssert.assertReflectionEquals(o1, o2, ReflectionComparatorMode.LENIENT_ORDER);
+            ReflectionAssert.assertReflectionEquals(request, updated, ReflectionComparatorMode.LENIENT_ORDER);
             return true;
         } catch (AssertionFailedError e) {
             log.debug("Objects are not considered equal by EqualChecker: " + e.getMessage());
