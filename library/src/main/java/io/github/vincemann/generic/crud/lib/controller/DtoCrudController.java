@@ -21,7 +21,18 @@ public interface DtoCrudController<Id extends Serializable> {
 
     ResponseEntity<? extends IdentifiableEntity<Id>> find(Id id) throws NoIdException, EntityNotFoundException, EntityMappingException;
 
-    ResponseEntity<? extends IdentifiableEntity<Id>> update(IdentifiableEntity<Id> entity) throws EntityMappingException, BadEntityException, NoIdException, EntityNotFoundException;
+    /**
+     *
+     * @param entity
+     * @param full      indicates whether all set values should be recognized as new values or only non null values
+     *                  If you want to delete values (aka setting them null) with the update, then set this flag to true.
+     * @return
+     * @throws EntityMappingException
+     * @throws BadEntityException
+     * @throws NoIdException
+     * @throws EntityNotFoundException
+     */
+    ResponseEntity<? extends IdentifiableEntity<Id>> update(IdentifiableEntity<Id> entity, boolean full) throws EntityMappingException, BadEntityException, NoIdException, EntityNotFoundException;
 
     ResponseEntity<?> delete(Id id) throws NoIdException, EntityNotFoundException;
 

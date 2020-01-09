@@ -23,9 +23,12 @@ import org.junit.jupiter.api.Assertions;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.repository.CrudRepository;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
 import org.springframework.lang.Nullable;
 import org.springframework.test.context.TestExecutionListeners;
+import org.springframework.util.LinkedMultiValueMap;
+import org.springframework.util.MultiValueMap;
 
 import java.io.Serializable;
 import java.lang.reflect.ParameterizedType;
@@ -148,35 +151,48 @@ public abstract class UrlParamId_ControllerIntegrationTest
         return responseEntity;
     }
 
-    protected <Dto extends IdentifiableEntity<Id>> Dto updateEntity_ShouldSucceed(E entityToUpdate, IdentifiableEntity<Id> updateRequest) throws Exception {
+    protected <Dto extends IdentifiableEntity<Id>> Dto updateEntity_ShouldSucceed(E entityToUpdate, IdentifiableEntity<Id> updateRequest,boolean fullUpdate) throws Exception {
         E savedEntityToUpdate = saveServiceEntity(entityToUpdate);
         updateRequest.setId(savedEntityToUpdate.getId());
-        return updateEntity_ShouldSucceed(updateRequest);
+        return updateEntity_ShouldSucceed(updateRequest,fullUpdate);
     }
 
-    protected <Dto extends IdentifiableEntity<Id>> Dto updateEntity_ShouldSucceed(E entityToUpdate, IdentifiableEntity<Id> updateRequest, @Nullable PostUpdateCallback<E,Id> updatedValuesPostUpdateCallback) throws Exception {
+    protected <Dto extends IdentifiableEntity<Id>> Dto updateEntity_ShouldSucceed(E entityToUpdate, IdentifiableEntity<Id> updateRequest,boolean fullUpdate, @Nullable PostUpdateCallback<E,Id> updatedValuesPostUpdateCallback) throws Exception {
         E savedEntityToUpdate = saveServiceEntity(entityToUpdate);
         updateRequest.setId(savedEntityToUpdate.getId());
-        return updateEntity_ShouldSucceed(updateRequest, updatedValuesPostUpdateCallback);
+        return updateEntity_ShouldSucceed(updateRequest,fullUpdate, updatedValuesPostUpdateCallback);
     }
 
-    protected <Dto extends IdentifiableEntity<Id>> Dto updateEntity_ShouldSucceed(E entityToUpdate, IdentifiableEntity<Id> updateRequest, @Nullable TestRequestEntity_Modification... modifications) throws Exception {
+    protected <Dto extends IdentifiableEntity<Id>> Dto updateEntity_ShouldSucceed(E entityToUpdate, IdentifiableEntity<Id> updateRequest,boolean fullUpdate, @Nullable TestRequestEntity_Modification... modifications) throws Exception {
         E savedEntityToUpdate = saveServiceEntity(entityToUpdate);
         updateRequest.setId(savedEntityToUpdate.getId());
-        return updateEntity_ShouldSucceed(updateRequest, modifications);
+        return updateEntity_ShouldSucceed(updateRequest,fullUpdate, modifications);
     }
 
-    protected <Dto extends IdentifiableEntity<Id>> Dto updateEntity_ShouldSucceed(E entityToUpdate, IdentifiableEntity<Id> updateRequest, @Nullable PostUpdateCallback<E,Id> updatedValuesPostUpdateCallback, @Nullable TestRequestEntity_Modification... modifications) throws Exception {
+    protected <Dto extends IdentifiableEntity<Id>> Dto updateEntity_ShouldSucceed(E entityToUpdate, IdentifiableEntity<Id> updateRequest, @Nullable PostUpdateCallback<E,Id> updatedValuesPostUpdateCallback,boolean fullUpdate, @Nullable TestRequestEntity_Modification... modifications) throws Exception {
         E savedEntityToUpdate = saveServiceEntity(entityToUpdate);
         updateRequest.setId(savedEntityToUpdate.getId());
-        return updateEntity_ShouldSucceed(updateRequest, updatedValuesPostUpdateCallback, modifications);
+        return updateEntity_ShouldSucceed(updateRequest, updatedValuesPostUpdateCallback,fullUpdate, modifications);
     }
 
 
-    protected <Dto extends IdentifiableEntity<Id>> Dto updateEntity_ShouldSucceed(IdentifiableEntity<Id> updateRequestDto, @Nullable PostUpdateCallback<E,Id> updatedValuesPostUpdateCallback, @Nullable TestRequestEntity_Modification... modifications) throws Exception {
+    protected <Dto extends IdentifiableEntity<Id>> Dto updateEntity_ShouldSucceed(IdentifiableEntity<Id> updateRequestDto, @Nullable PostUpdateCallback<E,Id> updatedValuesPostUpdateCallback,boolean fullUpdate, @Nullable TestRequestEntity_Modification... modifications) throws Exception {
         Assertions.assertNotNull(updateRequestDto.getId());
         Assertions.assertEquals(mappingContext().getUpdateArgDtoClass(),updateRequestDto.getClass());
 
+        TestRequestEntity_Modification[] finalModifications = null;
+        if(fullUpdate) {
+            if (modifications != null) {
+                int appendedLength = modifications.length + 1;
+                finalModifications = new TestRequestEntity_Modification[appendedLength];
+                for (int i = 0; i < modifications.length; i++) {
+                    finalModifications[i]=modifications[i];
+                }
+                finalModifications[appendedLength-1]=fullUpdate();
+            }
+        }else {
+            finalModifications=modifications;
+        }
         TestRequestEntity testRequestEntity = requestEntityFactory.createInstance(
                 CrudController_TestCase.SUCCESSFUL_UPDATE,
                 updateRequestDto.getId(),
@@ -200,13 +216,21 @@ public abstract class UrlParamId_ControllerIntegrationTest
         return (Dto) responseDto;
     }
 
-
-    protected <Dto extends IdentifiableEntity<Id>> Dto updateEntity_ShouldSucceed(IdentifiableEntity<Id> updateRequestDto) throws Exception {
-        return updateEntity_ShouldSucceed(updateRequestDto, null, null);
+    private TestRequestEntity_Modification fullUpdate(){
+        MultiValueMap<String,String> fullUpdateQueryParam = new LinkedMultiValueMap<>();
+        fullUpdateQueryParam.put(DtoCrudController_SpringAdapter.FULL_UPDATE_QUERY_PARAM,Arrays.asList("true"));
+        return TestRequestEntity_Modification.builder()
+                .additionalQueryParams(fullUpdateQueryParam)
+                .build();
     }
 
-    protected <Dto extends IdentifiableEntity<Id>> Dto updateEntity_ShouldSucceed(IdentifiableEntity<Id> updateRequestDto, TestRequestEntity_Modification... modifications) throws Exception {
-        return updateEntity_ShouldSucceed(updateRequestDto, null, modifications);
+
+    protected <Dto extends IdentifiableEntity<Id>> Dto updateEntity_ShouldSucceed(IdentifiableEntity<Id> updateRequestDto,boolean fullUpdate) throws Exception {
+        return updateEntity_ShouldSucceed(updateRequestDto, null, fullUpdate,null);
+    }
+
+    protected <Dto extends IdentifiableEntity<Id>> Dto updateEntity_ShouldSucceed(IdentifiableEntity<Id> updateRequestDto,boolean fullUpdate, TestRequestEntity_Modification... modifications) throws Exception {
+        return updateEntity_ShouldSucceed(updateRequestDto, null, fullUpdate,modifications);
     }
 
     protected ResponseEntity<String> updateEntity_ShouldFail(IdentifiableEntity<Id> updateRequestDto, @Nullable PostUpdateCallback<E,Id> updatedValuesPostUpdateCallback, TestRequestEntity_Modification... modifications) throws Exception {

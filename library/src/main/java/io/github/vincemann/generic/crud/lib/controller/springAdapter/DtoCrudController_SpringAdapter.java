@@ -7,6 +7,7 @@ import io.github.vincemann.generic.crud.lib.controller.springAdapter.idFetchingS
 import io.github.vincemann.generic.crud.lib.controller.springAdapter.mediaTypeStrategy.DtoReadingException;
 import io.github.vincemann.generic.crud.lib.controller.springAdapter.mediaTypeStrategy.MediaTypeStrategy;
 import io.github.vincemann.generic.crud.lib.controller.springAdapter.validationStrategy.ValidationStrategy;
+import io.github.vincemann.generic.crud.lib.util.HttpServletRequestUtils;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
@@ -59,6 +60,8 @@ public abstract class DtoCrudController_SpringAdapter
         extends BasicDtoCrudController<E,Id, Repo>
                 implements InitializingBean {
 
+
+    public static final String FULL_UPDATE_QUERY_PARAM = "full";
 
     private EndpointService endpointService;
     private String entityNameInUrl;
@@ -266,8 +269,10 @@ public abstract class DtoCrudController_SpringAdapter
             validationStrategy.beforeUpdateValidate(dto);
             validationStrategy.validateDto(dto,request);
             log.debug("Dto successfully validated");
-            beforeUpdate(dto,request);
-            return super.update(dto);
+            boolean fullUpdate = isFullUpdate(request);
+            log.debug("full update mode: " + fullUpdate);
+            beforeUpdate(dto,request,fullUpdate);
+            return super.update(dto,fullUpdate);
         }catch (IOException e){
             throw new DtoReadingException(e);
         }
@@ -285,9 +290,22 @@ public abstract class DtoCrudController_SpringAdapter
         return super.delete(id);
     }
 
+    protected boolean isFullUpdate(HttpServletRequest request) throws BadEntityException {
+        Map<String, String[]> queryParameters = HttpServletRequestUtils.getQueryParameters(request);
+        String[] fullUpdateParams = queryParameters.get(FULL_UPDATE_QUERY_PARAM);
+        if(fullUpdateParams.length>1){
+            throw new BadEntityException("Multiple full update query params specified, there must be only one max. key: " + FULL_UPDATE_QUERY_PARAM);
+        }
+        else if(fullUpdateParams.length==0){
+            return false;
+        }else {
+            return true;
+        }
+    }
+
     protected void beforeCreate(IdentifiableEntity<Id> dto, HttpServletRequest httpServletRequest){
     }
-    protected void beforeUpdate(IdentifiableEntity<Id> dto, HttpServletRequest httpServletRequest){
+    protected void beforeUpdate(IdentifiableEntity<Id> dto, HttpServletRequest httpServletRequest, boolean full){
     }
     protected void beforeDelete(Id id, HttpServletRequest httpServletRequest){
     }

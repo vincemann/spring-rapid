@@ -25,7 +25,19 @@ public interface CrudService
 
     Optional<E> findById(Id id) throws NoIdException;
 
-    E update(E entity) throws EntityNotFoundException, NoIdException, BadEntityException;
+    /**
+     * If full is false, then
+     * this function only applies changes of non null fields.
+     * Therefore it is not capable of setting a field in the entityToUpdate null.
+     * If full is true, then
+     * This function applies all changes, therefore it is capable of setting values to null aka removing them.
+     * @param entity
+     * @return
+     * @throws EntityNotFoundException
+     * @throws NoIdException
+     * @throws BadEntityException
+     */
+    E update(E entity, boolean full) throws EntityNotFoundException, NoIdException, BadEntityException;
 
     E save(E entity) throws  BadEntityException;
 

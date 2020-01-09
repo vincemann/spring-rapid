@@ -57,27 +57,34 @@ public abstract class JPACrudService
     }
 
 
-
     @Transactional
     @Override
-    public E update(E update) throws EntityNotFoundException, NoIdException, BadEntityException {
+    public E update(E update, boolean full) throws EntityNotFoundException, NoIdException, BadEntityException {
         try {
-            if(update.getId()==null){
-                throw new NoIdException("No Id value set for EntityType: " + entityClass.getSimpleName());
+            E entityToUpdate = findOldEntity(update.getId());
+            if(full){
+                return save(update);
+            }else {
+                //copy non null values from update to entityToUpdate
+                BeanUtilsBean notNull = new NullAwareBeanUtilsBean();
+                notNull.copyProperties(entityToUpdate, update);
+                return save(entityToUpdate);
             }
-
-            Optional<E> entityToUpdate = findById(update.getId());
-            if(!entityToUpdate.isPresent()){
-                throw new EntityNotFoundException(update.getId(), entityClass);
-            }
-            //copy non null values from update to entityToUpdate
-            BeanUtilsBean notNull=new NullAwareBeanUtilsBean();
-            notNull.copyProperties(entityToUpdate.get(), update);
-            return save(entityToUpdate.get());
         }catch (IllegalAccessException | InvocationTargetException e){
             throw new RuntimeException(e);
         }
+    }
 
+
+    private E findOldEntity(Id id) throws NoIdException, EntityNotFoundException {
+        if(id==null){
+            throw new NoIdException("No Id value set for EntityType: " + entityClass.getSimpleName());
+        }
+        Optional<E> entityToUpdate = findById(id);
+        if(!entityToUpdate.isPresent()){
+            throw new EntityNotFoundException(id, entityClass);
+        }
+        return entityToUpdate.get();
     }
 
     @Transactional
