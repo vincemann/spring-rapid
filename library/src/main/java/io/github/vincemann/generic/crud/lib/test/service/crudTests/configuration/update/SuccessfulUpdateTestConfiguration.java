@@ -1,8 +1,9 @@
-package io.github.vincemann.generic.crud.lib.test.service.testApi.configuration.update;
+package io.github.vincemann.generic.crud.lib.test.service.crudTests.configuration.update;
 
 import io.github.vincemann.generic.crud.lib.model.IdentifiableEntity;
 import io.github.vincemann.generic.crud.lib.test.controller.springAdapter.postUpdateCallback.PostUpdateCallback;
 import io.github.vincemann.generic.crud.lib.test.equalChecker.EqualChecker;
+import io.github.vincemann.generic.crud.lib.test.service.crudTests.configuration.update.abs.AbstractUpdateTestConfiguration;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
@@ -16,8 +17,8 @@ public class SuccessfulUpdateTestConfiguration<E extends IdentifiableEntity<Id>,
     private EqualChecker<E> returnedEntityEqualChecker;
 
     @Builder
-    public SuccessfulUpdateTestConfiguration(boolean full, PostUpdateCallback<E, Id> postUpdateCallback, EqualChecker<E> repoEntityEqualChecker, EqualChecker<E> returnedEntityEqualChecker) {
-        super(full,postUpdateCallback,repoEntityEqualChecker);
+    public SuccessfulUpdateTestConfiguration(Boolean fullUpdate, PostUpdateCallback<E, Id> postUpdateCallback, EqualChecker<E> repoEntityEqualChecker, EqualChecker<E> returnedEntityEqualChecker) {
+        super(fullUpdate,postUpdateCallback,repoEntityEqualChecker);
         this.returnedEntityEqualChecker=returnedEntityEqualChecker;
     }
 

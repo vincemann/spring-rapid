@@ -20,11 +20,12 @@ import java.util.Optional;
 @Getter
 @AllArgsConstructor
 @NoArgsConstructor
-public abstract class RootServiceTestContext<E extends IdentifiableEntity<Id>, Id extends Serializable,R extends CrudRepository<E,Id>> {
+public abstract class RootServiceTestContext<E extends IdentifiableEntity<Id>, Id extends Serializable> {
 
-    private CrudService<E,Id,R> crudService;
-    private R repository;
+    private CrudService<E,Id,CrudRepository<E,Id>> crudService;
+    private CrudRepository<E,Id> repository;
     private EqualChecker<E> defaultEqualChecker;
+    private EqualChecker<E> defaultPartialUpdateEqualChecker;
 
 
     public E repoSave(E entityToSave){
@@ -42,7 +43,12 @@ public abstract class RootServiceTestContext<E extends IdentifiableEntity<Id>, I
     public E serviceUpdate(E entity,boolean full) throws EntityNotFoundException, BadEntityException, NoIdException {
         return getCrudService().update(entity,full);
     }
-    public <S extends CrudService<E,Id,R>> S getCastedCrudService(){
+
+    public <R extends CrudRepository<E,Id>> R getCastedCrudRepository(){
+        return (R) repository;
+    }
+
+    public <S extends CrudService<E,Id,? extends CrudRepository<E,Id>>> S getCastedCrudService(){
         return (S) crudService;
     }
 }

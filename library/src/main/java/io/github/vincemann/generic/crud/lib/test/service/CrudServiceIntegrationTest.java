@@ -3,14 +3,15 @@ package io.github.vincemann.generic.crud.lib.test.service;
 import io.github.vincemann.generic.crud.lib.model.IdentifiableEntity;
 import io.github.vincemann.generic.crud.lib.service.CrudService;
 import io.github.vincemann.generic.crud.lib.test.equalChecker.EqualChecker;
-import io.github.vincemann.generic.crud.lib.test.service.testApi.DeleteServiceTestApi;
-import io.github.vincemann.generic.crud.lib.test.service.testApi.FindServiceTestApi;
-import io.github.vincemann.generic.crud.lib.test.service.testApi.SaveServiceTestApi;
-import io.github.vincemann.generic.crud.lib.test.service.testApi.UpdateServiceTestApi;
+import io.github.vincemann.generic.crud.lib.test.service.crudTests.DeleteServiceTest;
+import io.github.vincemann.generic.crud.lib.test.service.crudTests.FindServiceTest;
+import io.github.vincemann.generic.crud.lib.test.service.crudTests.SaveServiceTest;
+import io.github.vincemann.generic.crud.lib.test.service.crudTests.UpdateServiceTest;
 import io.github.vincemann.generic.crud.lib.test.testExecutionListeners.ResetDatabaseTestExecutionListener;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.test.context.TestExecutionListeners;
 
@@ -32,26 +33,26 @@ import java.io.Serializable;
 public abstract class CrudServiceIntegrationTest
                 <
                         E extends IdentifiableEntity<Id>,
-                        Id extends Serializable,
-                        R extends CrudRepository<E,Id>
+                        Id extends Serializable
                 >
-    extends RootServiceTestContext<E,Id,R>
+    extends RootServiceTestContext<E,Id>
 {
+    public static final String PARTIAL_UPDATE_EQUAL_CHECKER_QUALIFIER = "partialUpdateEqualCheckerBean";
 
-    private DeleteServiceTestApi<E,Id,R> deleteServiceTestApi;
-    private FindServiceTestApi<E,Id,R> findServiceTestApi;
-    private SaveServiceTestApi<E,Id,R> saveServiceTestApi;
-    private UpdateServiceTestApi<E,Id,R> updateServiceTestApi;
+    private DeleteServiceTest<E,Id> deleteServiceTest;
+    private FindServiceTest<E,Id> findServiceTest;
+    private SaveServiceTest<E,Id> saveServiceTest;
+    private UpdateServiceTest<E,Id> updateServiceTest;
 
     public CrudServiceIntegrationTest() {
-        this.deleteServiceTestApi= new DeleteServiceTestApi<>(this);
-        this.findServiceTestApi = new FindServiceTestApi<>(this);
-        this.saveServiceTestApi= new SaveServiceTestApi<>(this);
-        this.updateServiceTestApi= new UpdateServiceTestApi<>(this);
+        this.deleteServiceTest = new DeleteServiceTest<>(this);
+        this.findServiceTest = new FindServiceTest<>(this);
+        this.saveServiceTest = new SaveServiceTest<>(this);
+        this.updateServiceTest = new UpdateServiceTest<>(this);
     }
 
     @Autowired
-    public void injectRepository(R repository) {
+    public void injectRepository(CrudRepository<E,Id> repository) {
         setRepository(repository);
     }
 
@@ -61,7 +62,13 @@ public abstract class CrudServiceIntegrationTest
     }
 
     @Autowired
-    public void injectCrudService(CrudService<E, Id, R> crudService) {
+    public void injectCrudService(CrudService<E, Id, CrudRepository<E,Id>> crudService) {
         setCrudService(crudService);
+    }
+
+    @Autowired
+    @Qualifier(PARTIAL_UPDATE_EQUAL_CHECKER_QUALIFIER)
+    protected void injectPartialUpdateEqualChecker(EqualChecker<E> partialUpdateEqualChecker){
+        setDefaultPartialUpdateEqualChecker(partialUpdateEqualChecker);
     }
 }

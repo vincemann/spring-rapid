@@ -1,20 +1,19 @@
-package io.github.vincemann.generic.crud.lib.test.service.testApi;
+package io.github.vincemann.generic.crud.lib.test.service.crudTests;
 
 import io.github.vincemann.generic.crud.lib.model.IdentifiableEntity;
 import io.github.vincemann.generic.crud.lib.service.exception.NoIdException;
-import io.github.vincemann.generic.crud.lib.test.service.testApi.abs.AbstractServiceTestApi;
+import io.github.vincemann.generic.crud.lib.test.service.crudTests.abs.AbstractServiceTestApi;
 import io.github.vincemann.generic.crud.lib.test.service.RootServiceTestContext;
 import org.junit.jupiter.api.Assertions;
-import org.springframework.data.repository.CrudRepository;
 
 import java.io.Serializable;
 import java.util.Optional;
 
-public class FindServiceTestApi<E extends IdentifiableEntity<Id>, Id extends Serializable,R extends CrudRepository<E,Id>>
-        extends AbstractServiceTestApi<E,Id,R> {
+public class FindServiceTest<E extends IdentifiableEntity<Id>, Id extends Serializable>
+        extends AbstractServiceTestApi<E,Id> {
 
-    public FindServiceTestApi(RootServiceTestContext<E, Id, R> serviceTestContext) {
-        super(serviceTestContext);
+    public FindServiceTest(RootServiceTestContext<E, Id> testContext) {
+        super(testContext);
     }
 
     public E findEntityById_ShouldSucceed(Id id) throws NoIdException {

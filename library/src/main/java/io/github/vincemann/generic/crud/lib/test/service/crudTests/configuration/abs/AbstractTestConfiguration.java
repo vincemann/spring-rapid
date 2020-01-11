@@ -1,4 +1,4 @@
-package io.github.vincemann.generic.crud.lib.test.service.testApi.configuration.abs;
+package io.github.vincemann.generic.crud.lib.test.service.crudTests.configuration.abs;
 
 import io.github.vincemann.generic.crud.lib.model.IdentifiableEntity;
 import io.github.vincemann.generic.crud.lib.test.equalChecker.EqualChecker;

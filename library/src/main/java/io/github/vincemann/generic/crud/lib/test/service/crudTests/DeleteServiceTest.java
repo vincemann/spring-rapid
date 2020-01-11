@@ -1,23 +1,22 @@
-package io.github.vincemann.generic.crud.lib.test.service.testApi;
+package io.github.vincemann.generic.crud.lib.test.service.crudTests;
 
 import io.github.vincemann.generic.crud.lib.model.IdentifiableEntity;
 import io.github.vincemann.generic.crud.lib.service.exception.EntityNotFoundException;
 import io.github.vincemann.generic.crud.lib.service.exception.NoIdException;
-import io.github.vincemann.generic.crud.lib.test.service.testApi.abs.AbstractServiceTestApi;
+import io.github.vincemann.generic.crud.lib.test.service.crudTests.abs.AbstractServiceTestApi;
 import io.github.vincemann.generic.crud.lib.test.service.RootServiceTestContext;
 import lombok.Getter;
 import org.junit.jupiter.api.Assertions;
-import org.springframework.data.repository.CrudRepository;
 
 import java.io.Serializable;
 import java.util.Optional;
 
 @Getter
-public class DeleteServiceTestApi<E extends IdentifiableEntity<Id>, Id extends Serializable,R extends CrudRepository<E,Id>>
-    extends AbstractServiceTestApi<E,Id,R>
+public class DeleteServiceTest<E extends IdentifiableEntity<Id>, Id extends Serializable>
+    extends AbstractServiceTestApi<E,Id>
 {
-    public DeleteServiceTestApi(RootServiceTestContext<E, Id, R> serviceTestContext) {
-        super(serviceTestContext);
+    public DeleteServiceTest(RootServiceTestContext<E, Id> testContext) {
+        super(testContext);
     }
 
     protected void deleteEntityById_ShouldSucceed(Id id) throws EntityNotFoundException, NoIdException {
