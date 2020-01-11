@@ -30,12 +30,8 @@ import java.util.Optional;
  * @param <E>
  * @param <Id>
  */
-public abstract class ForceEagerFetch_CrudServiceIntegrationTest
-                <
-                        E extends IdentifiableEntity<Id>,
-                        Id extends Serializable,
-                        R extends CrudRepository<E,Id>
-                > extends CrudServiceIntegrationTest<E, Id,R>
+public abstract class ForceEagerFetch_CrudServiceIntegrationTest<E extends IdentifiableEntity<Id>,Id extends Serializable>
+        extends CrudServiceIntegrationTest<E,Id>
 {
 
     @Getter

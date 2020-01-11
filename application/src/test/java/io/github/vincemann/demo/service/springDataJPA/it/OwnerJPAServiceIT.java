@@ -5,6 +5,7 @@ import io.github.vincemann.demo.model.Pet;
 import io.github.vincemann.demo.model.PetType;
 import io.github.vincemann.demo.repositories.OwnerRepository;
 import io.github.vincemann.demo.repositories.PetRepository;
+import io.github.vincemann.demo.service.OwnerService;
 import io.github.vincemann.demo.service.PetTypeService;
 import io.github.vincemann.generic.crud.lib.service.CrudService;
 import io.github.vincemann.generic.crud.lib.service.exception.BadEntityException;
@@ -12,7 +13,9 @@ import io.github.vincemann.generic.crud.lib.service.exception.EntityNotFoundExce
 import io.github.vincemann.generic.crud.lib.service.exception.NoIdException;
 import io.github.vincemann.generic.crud.lib.test.controller.springAdapter.postUpdateCallback.PostUpdateCallback;
 import io.github.vincemann.generic.crud.lib.test.service.ForceEagerFetch_CrudServiceIntegrationTest;
-import io.github.vincemann.generic.crud.lib.test.service.testApi.UpdateServiceTestApi;
+import io.github.vincemann.generic.crud.lib.test.service.crudTests.UpdateServiceTest;
+import io.github.vincemann.generic.crud.lib.test.service.crudTests.configuration.exception.InvalidConfigurationModificationException;
+import io.github.vincemann.generic.crud.lib.test.service.crudTests.configuration.update.SuccessfulUpdateTestConfiguration;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -20,6 +23,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.data.repository.CrudRepository;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
@@ -37,11 +41,7 @@ import static io.github.vincemann.generic.crud.lib.test.forceEagerFetch.proxy.ab
 @ActiveProfiles(value = {"test", "springdatajpa"})
 class OwnerJPAServiceIT
         extends ForceEagerFetch_CrudServiceIntegrationTest
-            <
-                                        Owner,
-                                        Long,
-                                        OwnerRepository
-            >
+            <Owner,Long>
 {
 
     private Owner ownerWithoutPets;
@@ -58,7 +58,7 @@ class OwnerJPAServiceIT
     @Autowired
     @Qualifier(EAGER_FETCH_PROXY)
     @Override
-    public void injectCrudService(CrudService<Owner, Long, OwnerRepository> crudService) {
+    public void injectCrudService(CrudService<Owner, Long, CrudRepository<Owner,Long>> crudService) {
         super.injectCrudService(crudService);
     }
 
@@ -94,12 +94,12 @@ class OwnerJPAServiceIT
 
     @Test
     public void saveOwnerWithoutPets_ShouldSucceed() throws BadEntityException {
-        getSaveServiceTestApi().saveEntity_ShouldSucceed(ownerWithoutPets);
+        getSaveServiceTest().saveEntity_ShouldSucceed(ownerWithoutPets);
     }
 
     @Test
     public void saveOwnerWithPet_ShouldSucceed() throws BadEntityException {
-        getSaveServiceTestApi().saveEntity_ShouldSucceed(ownerWithOnePet);
+        getSaveServiceTest().saveEntity_ShouldSucceed(ownerWithOnePet);
     }
 
     @Test
@@ -115,40 +115,37 @@ class OwnerJPAServiceIT
                 .telephone("12843723847324")
                 .pets(new HashSet<>(Arrays.asList(savedPet)))
                 .build();
-        getSaveServiceTestApi().saveEntity_ShouldSucceed(owner);
+        getSaveServiceTest().saveEntity_ShouldSucceed(owner);
     }
 
 
     @Test
-    public void updateOwner_ChangeTelephoneNumber_ShouldSucceed() throws BadEntityException, EntityNotFoundException, NoIdException {
+    public void updateOwner_ChangeTelephoneNumber_ShouldSucceed() throws BadEntityException, EntityNotFoundException, NoIdException, InvalidConfigurationModificationException {
         Owner diffTelephoneNumberUpdate = Owner.builder()
                 .telephone(ownerWithoutPets.getTelephone()+"123")
                 .build();
-        getUpdateServiceTestApi().updateEntity_ShouldSucceed(ownerWithoutPets, diffTelephoneNumberUpdate,
-                /*UpdateServiceTestApi.SuccessfulTestContext.partialUpdateContextBuilder()
-                .postUpdateCallback(new PostUpdateCallback<Owner,Long>() {
-                    @Override
-                    public void callback(Owner request, Owner afterUpdate) {
-
-                    }
-                }).build());*/
-                new UpdateServiceTestApi<Owner,Long,OwnerRepository>.SuccessfulTestContext(new PostUpdateCallback<Owner, Long>() {
-                    @Override
-                    public void callback(Owner request, Owner afterUpdate) {
-
-                    }
-                }),getUpdateServiceTestApi().getDefaultSuccessfulContext());
+        getUpdateServiceTest().updateEntity_ShouldSucceed(ownerWithoutPets, diffTelephoneNumberUpdate,
+                SuccessfulUpdateTestConfiguration.<Owner, Long>builder()
+                        .fullUpdate(false)
+                        .postUpdateCallback(new PostUpdateCallback<Owner, Long>() {
+                            @Override
+                            public void callback(Owner request, Owner afterUpdate) {
+                                Assertions.assertEquals(request.getTelephone(),afterUpdate.getTelephone());
+                            }
+                        })
+                        .build());
     }
 
     @Test
-    public void updateOwner_addAnotherPet_shouldSucceed() throws BadEntityException, NoIdException, EntityNotFoundException {
+    public void updateOwner_addAnotherPet_shouldSucceed() throws BadEntityException, EntityNotFoundException, InvalidConfigurationModificationException, NoIdException {
         Pet savedPet = petService.save(testPet);
-        Pet petToAdd = Pet.builder()
-                .name("petToAdd")
+        String newPetName = "petToAdd";
+        Pet newPet = Pet.builder()
+                .name(newPetName)
                 .petType(savedDogPetType)
                 .birthDate(LocalDate.now())
                 .build();
-        Pet savedPetToAdd = petService.save(petToAdd);
+        Pet savedPetToAdd = petService.save(newPet);
 
 
         Owner owner = Owner.builder()
@@ -159,19 +156,32 @@ class OwnerJPAServiceIT
                 .telephone("12843723847324")
                 .pets(new HashSet<>(Arrays.asList(savedPet)))
                 .build();
-        Owner savedOwner = repoSave(owner);
-        savedOwner.getPets().add(savedPetToAdd);
 
-        Owner updatedOwner = updateEntity_ShouldSucceed(savedOwner,false);
-        Assertions.assertTrue(updatedOwner.getPets().contains(savedPetToAdd));
+        Owner ownerUpdateRequest = new Owner();
+        ownerUpdateRequest.getPets().addAll(owner.getPets());
+        //here comes the new pet
+        ownerUpdateRequest.getPets().add(savedPetToAdd);
+
+        Owner updatedOwner = getUpdateServiceTest().updateEntity_ShouldSucceed(owner,ownerUpdateRequest,
+                SuccessfulUpdateTestConfiguration.<Owner, Long>builder()
+                        .fullUpdate(false)
+                        .postUpdateCallback(new PostUpdateCallback<Owner, Long>() {
+                            @Override
+                            public void callback(Owner request, Owner afterUpdate) {
+                                Assertions.assertEquals(2,afterUpdate.getPets().size());
+                                Assertions.assertEquals(1, afterUpdate.getPets().stream().filter(owner -> owner.getName().equals(newPetName)).count());
+                            }
+                        })
+                .build());
     }
 
     @Test
-    public void findByLastName_shouldSucceed() throws BadEntityException {
-        Owner savedOwner = saveEntity_ShouldSucceed(ownerWithOnePet);
-        Optional<Owner> byLastName = getCastedCrudService().findByLastName(ownerWithOnePet.getLastName());
+    public void findByLastName_shouldSucceed(){
+        Owner savedOwner = repoSave(ownerWithOnePet);
+        OwnerService ownerService = getCastedCrudService();
+        Optional<Owner> byLastName = ownerService.findByLastName(ownerWithOnePet.getLastName());
         Assertions.assertTrue(byLastName.isPresent());
-        Assertions.assertTrue(getEqualChecker().isEqual(savedOwner,byLastName.get()));
+        Assertions.assertTrue(getDefaultEqualChecker().isEqual(savedOwner,byLastName.get()));
     }
 
 
