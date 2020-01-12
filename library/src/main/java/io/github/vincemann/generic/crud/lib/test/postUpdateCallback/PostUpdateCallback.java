@@ -1,4 +1,4 @@
-package io.github.vincemann.generic.crud.lib.test.controller.springAdapter.postUpdateCallback;
+package io.github.vincemann.generic.crud.lib.test.postUpdateCallback;
 
 import io.github.vincemann.generic.crud.lib.model.IdentifiableEntity;
 

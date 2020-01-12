@@ -35,7 +35,7 @@ public abstract class CrudServiceIntegrationTest
                         E extends IdentifiableEntity<Id>,
                         Id extends Serializable
                 >
-    extends RootServiceTestContext<E,Id>
+    extends ServiceTestContext<E,Id>
 {
     public static final String PARTIAL_UPDATE_EQUAL_CHECKER_QUALIFIER = "partialUpdateEqualCheckerBean";
 

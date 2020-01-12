@@ -3,8 +3,8 @@ package io.github.vincemann.generic.crud.lib.test.service.crudTests;
 import io.github.vincemann.generic.crud.lib.model.IdentifiableEntity;
 import io.github.vincemann.generic.crud.lib.service.exception.EntityNotFoundException;
 import io.github.vincemann.generic.crud.lib.service.exception.NoIdException;
-import io.github.vincemann.generic.crud.lib.test.service.crudTests.abs.AbstractServiceTestApi;
-import io.github.vincemann.generic.crud.lib.test.service.RootServiceTestContext;
+import io.github.vincemann.generic.crud.lib.test.service.crudTests.abs.AbstractServiceTest;
+import io.github.vincemann.generic.crud.lib.test.service.ServiceTestContext;
 import lombok.Getter;
 import org.junit.jupiter.api.Assertions;
 
@@ -13,9 +13,9 @@ import java.util.Optional;
 
 @Getter
 public class DeleteServiceTest<E extends IdentifiableEntity<Id>, Id extends Serializable>
-    extends AbstractServiceTestApi<E,Id>
+    extends AbstractServiceTest<E,Id>
 {
-    public DeleteServiceTest(RootServiceTestContext<E, Id> testContext) {
+    public DeleteServiceTest(ServiceTestContext<E, Id> testContext) {
         super(testContext);
     }
 

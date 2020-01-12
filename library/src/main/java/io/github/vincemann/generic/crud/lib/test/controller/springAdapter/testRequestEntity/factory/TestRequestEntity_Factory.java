@@ -3,8 +3,6 @@ package io.github.vincemann.generic.crud.lib.test.controller.springAdapter.testR
 
 import io.github.vincemann.generic.crud.lib.test.controller.springAdapter.CrudController_TestCase;
 import io.github.vincemann.generic.crud.lib.test.controller.springAdapter.UrlParamId_ControllerIntegrationTest;
-import io.github.vincemann.generic.crud.lib.test.controller.springAdapter.testRequestEntity.TestRequestEntity;
-import io.github.vincemann.generic.crud.lib.test.controller.springAdapter.testRequestEntity.TestRequestEntity_Modification;
 import org.springframework.lang.Nullable;
 
 

@@ -1,6 +1,6 @@
 package io.github.vincemann.generic.crud.lib.controller.springAdapter;
 
-import io.github.vincemann.generic.crud.lib.controller.dtoMapper.MappingContext;
+import io.github.vincemann.generic.crud.lib.controller.dtoMapper.DtoMappingContext;
 import io.github.vincemann.generic.crud.lib.controller.dtoMapper.exception.EntityMappingException;
 import io.github.vincemann.generic.crud.lib.controller.springAdapter.idFetchingStrategy.exception.IdFetchingException;
 import io.github.vincemann.generic.crud.lib.controller.springAdapter.idFetchingStrategy.IdFetchingStrategy;
@@ -93,8 +93,8 @@ public abstract class DtoCrudController_SpringAdapter
     private ValidationStrategy<Id> validationStrategy;
     private EndpointsExposureContext endpointsExposureContext;
 
-    public DtoCrudController_SpringAdapter(MappingContext<Id> mappingContext) {
-        super(mappingContext);
+    public DtoCrudController_SpringAdapter(DtoMappingContext<Id> dtoMappingContext) {
+        super(dtoMappingContext);
     }
 
 
@@ -247,7 +247,7 @@ public abstract class DtoCrudController_SpringAdapter
         try {
             String body = request.getReader().lines().collect(Collectors.joining(System.lineSeparator()));
             log.debug("String Body fetched from request: " + body);
-            IdentifiableEntity<Id> dto = mediaTypeStrategy.readDtoFromBody(body,getMappingContext().getCreateArgDtoClass());
+            IdentifiableEntity<Id> dto = mediaTypeStrategy.readDtoFromBody(body, getDtoMappingContext().getCreateArgDtoClass());
             log.debug("Dto read from string body " + dto);
             validationStrategy.beforeCreateValidate(dto);
             validationStrategy.validateDto(dto,request);
@@ -264,7 +264,7 @@ public abstract class DtoCrudController_SpringAdapter
         try {
             String body = request.getReader().lines().collect(Collectors.joining(System.lineSeparator()));
             log.debug("String Body fetched from request: " + body);
-            IdentifiableEntity<Id> dto = mediaTypeStrategy.readDtoFromBody(body,getMappingContext().getUpdateArgDtoClass());
+            IdentifiableEntity<Id> dto = mediaTypeStrategy.readDtoFromBody(body, getDtoMappingContext().getUpdateArgDtoClass());
             log.debug("Dto read from string body " + dto);
             validationStrategy.beforeUpdateValidate(dto);
             validationStrategy.validateDto(dto,request);
