@@ -1,36 +1,26 @@
 package io.github.vincemann.generic.crud.lib.test.controller.springAdapter;
 
 import io.github.vincemann.generic.crud.lib.controller.BasicDtoCrudController;
-import io.github.vincemann.generic.crud.lib.controller.dtoMapper.MappingContext;
 import io.github.vincemann.generic.crud.lib.controller.dtoMapper.exception.EntityMappingException;
 import io.github.vincemann.generic.crud.lib.controller.springAdapter.DtoCrudController_SpringAdapter;
 import io.github.vincemann.generic.crud.lib.controller.springAdapter.idFetchingStrategy.UrlParamIdFetchingStrategy;
 import io.github.vincemann.generic.crud.lib.model.IdentifiableEntity;
-import io.github.vincemann.generic.crud.lib.service.CrudService;
 import io.github.vincemann.generic.crud.lib.service.exception.BadEntityException;
-import io.github.vincemann.generic.crud.lib.test.IntegrationTest;
-import io.github.vincemann.generic.crud.lib.test.controller.springAdapter.postUpdateCallback.PostUpdateCallback;
+import io.github.vincemann.generic.crud.lib.test.ServiceEagerFetch_ControllerIntegrationTestContextImpl;
+import io.github.vincemann.generic.crud.lib.test.postUpdateCallback.PostUpdateCallback;
 import io.github.vincemann.generic.crud.lib.test.controller.springAdapter.testRequestEntity.RequestEntityMapper;
-import io.github.vincemann.generic.crud.lib.test.controller.springAdapter.testRequestEntity.TestRequestEntity;
-import io.github.vincemann.generic.crud.lib.test.controller.springAdapter.testRequestEntity.TestRequestEntity_Modification;
 import io.github.vincemann.generic.crud.lib.test.controller.springAdapter.testRequestEntity.factory.TestRequestEntity_Factory;
-import io.github.vincemann.generic.crud.lib.test.forceEagerFetch.Hibernate_ForceEagerFetch_Helper;
 import io.github.vincemann.generic.crud.lib.test.forceEagerFetch.proxy.CrudService_HibernateForceEagerFetch_Proxy;
 import io.github.vincemann.generic.crud.lib.test.testExecutionListeners.ResetDatabaseTestExecutionListener;
-import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Assertions;
-import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.http.ResponseEntity;
 import org.springframework.lang.Nullable;
 import org.springframework.test.context.TestExecutionListeners;
-import org.springframework.util.LinkedMultiValueMap;
-import org.springframework.util.MultiValueMap;
 
 import java.io.Serializable;
-import java.lang.reflect.ParameterizedType;
 import java.util.*;
 
 /**
@@ -51,48 +41,18 @@ import java.util.*;
 public abstract class UrlParamId_ControllerIntegrationTest
         <
                 E extends IdentifiableEntity<Id>,
-                Id extends Serializable,
-                R extends CrudRepository<E, Id>
+                Id extends Serializable
         >
-        extends IntegrationTest
-        implements InitializingBean {
-
-    @Getter
-    private Class<E> entityClass = (Class<E>) ((ParameterizedType) this.getClass().getGenericSuperclass()).getActualTypeArguments()[0];
+        extends ServiceEagerFetch_ControllerIntegrationTestContextImpl<E,Id>
+{
 
     private TestRequestEntity_Factory requestEntityFactory;
-    private DtoCrudController_SpringAdapter<E, Id, R> controller;
-    @Getter
-    private String entityIdParamKey;
-    private Hibernate_ForceEagerFetch_Helper hibernate_forceEagerFetch_helper;
-    private CrudService<E, Id, R> testCrudService;
-    private MappingContext<Id> mappingContext;
+
 
 
     @Autowired
-    public void injectCrudController(DtoCrudController_SpringAdapter<E, Id, R> crudController) {
-        this.controller = crudController;
-    }
-
-    protected <E extends IdentifiableEntity<Id>,
-            Id extends Serializable,
-            R extends CrudRepository<E, Id>
-            > CrudService<E, Id, R> wrapWithEagerFetchProxy(CrudService<E, Id, R> crudService) {
-        return new CrudService_HibernateForceEagerFetch_Proxy<>(crudService, hibernate_forceEagerFetch_helper);
-    }
-
-
-    @Override
-    public void afterPropertiesSet() throws Exception {
-        this.entityIdParamKey = ((UrlParamIdFetchingStrategy) controller().getIdIdFetchingStrategy()).getIdUrlParamKey();
-        mappingContext = controller().getMappingContext();
-        if (testCrudService == null) {
-            testCrudService = controller().getCrudService();
-        }
-    }
-
-    public void setTestCrudService(CrudService<E, Id, R> testService) {
-        this.testCrudService = testService;
+    public void injectCrudController(DtoCrudController_SpringAdapter<E, Id, CrudRepository<E,Id>> crudController) {
+        setController(crudController);
     }
 
     @Autowired
@@ -101,10 +61,10 @@ public abstract class UrlParamId_ControllerIntegrationTest
         this.requestEntityFactory = requestEntityFactory;
     }
 
-    @Autowired
-    public void injectHibernate_forceEagerFetch_helper(Hibernate_ForceEagerFetch_Helper hibernate_forceEagerFetch_helper) {
-        this.hibernate_forceEagerFetch_helper = hibernate_forceEagerFetch_helper;
-    }
+
+
+
+
 
     protected ResponseEntity<String> findAllEntities_ShouldFail() throws Exception {
         return findAllEntities_ShouldFail(null);
@@ -307,47 +267,7 @@ public abstract class UrlParamId_ControllerIntegrationTest
         return getRestTemplate().exchange(RequestEntityMapper.map(testRequestEntity, newEntity), String.class);
     }
 
-    protected <Dto extends IdentifiableEntity<Id>> Dto createEntity_ShouldSucceed(IdentifiableEntity<Id> returnDto) throws Exception {
-        return createEntity_ShouldSucceed(returnDto, null);
-    }
 
-    protected <Dto extends IdentifiableEntity<Id>> Dto createEntity_ShouldSucceed(IdentifiableEntity<Id> createRequestDto, TestRequestEntity_Modification... modifications) throws Exception {
-        Assertions.assertNull(createRequestDto.getId());
-        Assertions.assertEquals(mappingContext().getCreateArgDtoClass(),createRequestDto.getClass());
-
-        TestRequestEntity testRequestEntity = requestEntityFactory.createInstance(CrudController_TestCase.SUCCESSFUL_CREATE, null, modifications);
-        ResponseEntity<String> responseEntity = createEntity(createRequestDto, testRequestEntity);
-        Assertions.assertEquals(testRequestEntity.getExpectedHttpStatus(), responseEntity.getStatusCode(), responseEntity.getBody());
-        IdentifiableEntity<Id> responseDto = controller.getMediaTypeStrategy().readDtoFromBody(responseEntity.getBody(), mappingContext().getCreateReturnDtoClass());
-
-        Assertions.assertNotNull(responseDto);
-        Assertions.assertEquals(mappingContext().getCreateReturnDtoClass(),responseDto.getClass());
-        return (Dto) responseDto;
-    }
-
-    protected ResponseEntity<String> createEntity_ShouldFail(IdentifiableEntity<Id> dto) throws Exception {
-        return createEntity_ShouldFail(dto, null);
-    }
-
-    protected ResponseEntity<String> createEntity_ShouldFail(IdentifiableEntity<Id> dto, TestRequestEntity_Modification... modifications) throws Exception {
-        TestRequestEntity testRequestEntity = requestEntityFactory.createInstance(
-                CrudController_TestCase.FAILED_CREATE,
-                null,
-                modifications);
-        ResponseEntity<String> responseEntity = createEntity(dto, testRequestEntity);
-        Assertions.assertEquals(testRequestEntity.getExpectedHttpStatus(), responseEntity.getStatusCode(), responseEntity.getBody());
-        return responseEntity;
-    }
-
-    /**
-     * Send create Entity Request to Backend, raw Response is returned
-     *
-     * @param dto the Dto entity that should be stored
-     * @return
-     */
-    protected ResponseEntity<String> createEntity(IdentifiableEntity<Id> dto, TestRequestEntity testRequestEntity) {
-        return getRestTemplate().exchange(RequestEntityMapper.map(testRequestEntity, dto), String.class);
-    }
 
 
     protected ResponseEntity<String> deleteEntity_ShouldSucceed(Id id) throws Exception {
@@ -459,26 +379,5 @@ public abstract class UrlParamId_ControllerIntegrationTest
             savedEntities.add(savedEntity);
         }
         return savedEntities;
-    }
-
-
-    /**
-     * Service used by Test, this does not need to be the Service, the controller is using
-     * @return
-     */
-    public CrudService<E, Id, R> getTestService() {
-        return testCrudService;
-    }
-
-    public <S extends CrudService<E,Id, R>> S getCastedService() {
-        return controller().getCastedCrudService();
-    }
-
-    public DtoCrudController_SpringAdapter<E, Id, R> controller() {
-        return controller;
-    }
-
-    public MappingContext<Id> mappingContext() {
-        return mappingContext;
     }
 }

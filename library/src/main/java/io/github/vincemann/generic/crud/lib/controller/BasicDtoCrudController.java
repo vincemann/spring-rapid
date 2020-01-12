@@ -1,7 +1,7 @@
 package io.github.vincemann.generic.crud.lib.controller;
 
 import io.github.vincemann.generic.crud.lib.controller.dtoMapper.DtoMapper;
-import io.github.vincemann.generic.crud.lib.controller.dtoMapper.MappingContext;
+import io.github.vincemann.generic.crud.lib.controller.dtoMapper.DtoMappingContext;
 import io.github.vincemann.generic.crud.lib.controller.dtoMapper.exception.EntityMappingException;
 import io.github.vincemann.generic.crud.lib.controller.dtoMapper.finder.DtoMapperFinder;
 import lombok.Getter;
@@ -16,7 +16,6 @@ import io.github.vincemann.generic.crud.lib.service.CrudService;
 import io.github.vincemann.generic.crud.lib.service.exception.BadEntityException;
 import io.github.vincemann.generic.crud.lib.service.exception.EntityNotFoundException;
 import io.github.vincemann.generic.crud.lib.service.exception.NoIdException;
-import org.springframework.lang.Nullable;
 
 import java.io.Serializable;
 import java.lang.reflect.ParameterizedType;
@@ -38,24 +37,23 @@ import java.util.*;
 public abstract class BasicDtoCrudController
         <
                 E extends IdentifiableEntity<Id>,
-                Id extends Serializable,
-                R extends CrudRepository<E,Id>
+                Id extends Serializable
         >
             implements DtoCrudController<Id> {
 
-    private CrudService<E,Id,R> crudService;
+    private CrudService<E,Id,CrudRepository<E,Id>> crudService;
     private DtoMapperFinder<Id> dtoMapperFinder;
-    private MappingContext<Id> mappingContext;
+    private DtoMappingContext<Id> dtoMappingContext;
     @SuppressWarnings("unchecked")
     private Class<E> entityClass = (Class<E>) ((ParameterizedType) this.getClass().getGenericSuperclass()).getActualTypeArguments()[0];
 
 
-    public BasicDtoCrudController(MappingContext<Id> mappingContext) {
-        this.mappingContext = mappingContext;
+    public BasicDtoCrudController(DtoMappingContext<Id> dtoMappingContext) {
+        this.dtoMappingContext = dtoMappingContext;
     }
 
     @Autowired
-    public void injectCrudService(CrudService<E,Id,R> crudService) {
+    public void injectCrudService(CrudService<E,Id,CrudRepository<E,Id>> crudService) {
         this.crudService = crudService;
     }
 
@@ -69,7 +67,7 @@ public abstract class BasicDtoCrudController
     public ResponseEntity<? extends IdentifiableEntity<Id>> find(Id id) throws NoIdException, EntityNotFoundException, EntityMappingException {
         Optional<E> optionalEntity = crudService.findById(id);
         if (optionalEntity.isPresent()) {
-            return ok(findMapperAndMapToDto(optionalEntity.get(),getMappingContext().getFindReturnDtoClass()));
+            return ok(findMapperAndMapToDto(optionalEntity.get(), getDtoMappingContext().getFindReturnDtoClass()));
         } else {
             throw new EntityNotFoundException();
         }
@@ -80,7 +78,7 @@ public abstract class BasicDtoCrudController
         Set<E> all = crudService.findAll();
         Collection<IdentifiableEntity<Id>> dtos = new HashSet<>();
         for (E e : all) {
-            dtos.add(findMapperAndMapToDto(e,getMappingContext().getFindAllReturnDtoClass()));
+            dtos.add(findMapperAndMapToDto(e, getDtoMappingContext().getFindAllReturnDtoClass()));
         }
         return ok(dtos);
     }
@@ -88,19 +86,19 @@ public abstract class BasicDtoCrudController
     @Override
     @SuppressWarnings("unchecked")
     public ResponseEntity<? extends IdentifiableEntity<Id>> create(IdentifiableEntity<Id> dto) throws BadEntityException, EntityMappingException {
-        E entity = findMapperAndMapToEntity(dto, getMappingContext().getCreateArgDtoClass());
+        E entity = findMapperAndMapToEntity(dto, getDtoMappingContext().getCreateArgDtoClass());
         E savedEntity = crudService.save(entity);
-        return new ResponseEntity(findMapperAndMapToDto(savedEntity,getMappingContext().getCreateReturnDtoClass()),
+        return new ResponseEntity(findMapperAndMapToDto(savedEntity, getDtoMappingContext().getCreateReturnDtoClass()),
                 HttpStatus.OK);
     }
 
     @Override
     @SuppressWarnings("unchecked")
     public ResponseEntity<? extends IdentifiableEntity<Id>> update(IdentifiableEntity<Id> dto, boolean full) throws BadEntityException, EntityMappingException, NoIdException, EntityNotFoundException {
-        E entity = findMapperAndMapToEntity(dto, getMappingContext().getUpdateArgDtoClass());
+        E entity = findMapperAndMapToEntity(dto, getDtoMappingContext().getUpdateArgDtoClass());
         E updatedEntity = crudService.update(entity,full);
         //no idea why casting is necessary here?
-        return new ResponseEntity(findMapperAndMapToDto(updatedEntity,getMappingContext().getUpdateReturnDtoClass()),
+        return new ResponseEntity(findMapperAndMapToDto(updatedEntity, getDtoMappingContext().getUpdateReturnDtoClass()),
                 HttpStatus.OK);
     }
 
@@ -136,7 +134,7 @@ public abstract class BasicDtoCrudController
         return new ResponseEntity<>(entity, HttpStatus.OK);
     }
 
-    public <S extends CrudService<E, Id,R>> S getCastedCrudService(){
+    public <S extends CrudService<E, Id,CrudRepository<E,Id>>> S getCastedCrudService(){
         return (S) crudService;
     }
 

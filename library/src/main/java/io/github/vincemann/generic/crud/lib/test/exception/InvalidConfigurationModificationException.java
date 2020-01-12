@@ -1,4 +1,4 @@
-package io.github.vincemann.generic.crud.lib.test.service.crudTests.configuration.exception;
+package io.github.vincemann.generic.crud.lib.test.exception;
 
 public class InvalidConfigurationModificationException extends Exception {
     public InvalidConfigurationModificationException() {

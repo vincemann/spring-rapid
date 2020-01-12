@@ -2,17 +2,17 @@ package io.github.vincemann.generic.crud.lib.test.service.crudTests;
 
 import io.github.vincemann.generic.crud.lib.model.IdentifiableEntity;
 import io.github.vincemann.generic.crud.lib.service.exception.NoIdException;
-import io.github.vincemann.generic.crud.lib.test.service.crudTests.abs.AbstractServiceTestApi;
-import io.github.vincemann.generic.crud.lib.test.service.RootServiceTestContext;
+import io.github.vincemann.generic.crud.lib.test.service.crudTests.abs.AbstractServiceTest;
+import io.github.vincemann.generic.crud.lib.test.service.ServiceTestContext;
 import org.junit.jupiter.api.Assertions;
 
 import java.io.Serializable;
 import java.util.Optional;
 
 public class FindServiceTest<E extends IdentifiableEntity<Id>, Id extends Serializable>
-        extends AbstractServiceTestApi<E,Id> {
+        extends AbstractServiceTest<E,Id> {
 
-    public FindServiceTest(RootServiceTestContext<E, Id> testContext) {
+    public FindServiceTest(ServiceTestContext<E, Id> testContext) {
         super(testContext);
     }
 

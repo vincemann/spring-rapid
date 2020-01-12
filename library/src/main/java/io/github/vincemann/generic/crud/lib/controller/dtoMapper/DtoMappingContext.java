@@ -10,7 +10,7 @@ import java.io.Serializable;
 @SuppressWarnings("ALL")
 @Getter
 @Setter
-public class MappingContext<Id extends Serializable> {
+public class DtoMappingContext<Id extends Serializable> {
     private Class<? extends IdentifiableEntity<Id>> createArgDtoClass;
     private Class<? extends IdentifiableEntity<Id>> createReturnDtoClass;
     private Class<? extends IdentifiableEntity<Id>> findReturnDtoClass;
@@ -19,10 +19,10 @@ public class MappingContext<Id extends Serializable> {
     private Class<? extends IdentifiableEntity<Id>> findAllReturnDtoClass;
 
 
-    public MappingContext(){ }
+    public DtoMappingContext(){ }
 
     @Builder
-    public MappingContext(Class<? extends IdentifiableEntity<Id>> createArgDtoClass, Class<? extends IdentifiableEntity<Id>> createReturnDtoClass, Class<? extends IdentifiableEntity<Id>> findReturnDtoClass, Class<? extends IdentifiableEntity<Id>> updateArgDtoClass, Class<? extends IdentifiableEntity<Id>> updateReturnDtoClass, Class<? extends IdentifiableEntity<Id>> findAllReturnDtoClass) {
+    public DtoMappingContext(Class<? extends IdentifiableEntity<Id>> createArgDtoClass, Class<? extends IdentifiableEntity<Id>> createReturnDtoClass, Class<? extends IdentifiableEntity<Id>> findReturnDtoClass, Class<? extends IdentifiableEntity<Id>> updateArgDtoClass, Class<? extends IdentifiableEntity<Id>> updateReturnDtoClass, Class<? extends IdentifiableEntity<Id>> findAllReturnDtoClass) {
         this.createArgDtoClass = createArgDtoClass;
         this.createReturnDtoClass = createReturnDtoClass;
         this.findReturnDtoClass = findReturnDtoClass;
@@ -36,8 +36,8 @@ public class MappingContext<Id extends Serializable> {
      * @param defaultDtoClass
      * @return
      */
-    public static <Id extends Serializable>MappingContext<Id> DEFAULT(Class<? extends IdentifiableEntity<Id>> defaultDtoClass){
-        MappingContext mc = new MappingContext();
+    public static <Id extends Serializable> DtoMappingContext<Id> DEFAULT(Class<? extends IdentifiableEntity<Id>> defaultDtoClass){
+        DtoMappingContext mc = new DtoMappingContext();
         mc.createArgDtoClass=defaultDtoClass;
         mc.createReturnDtoClass=defaultDtoClass;
         mc.findReturnDtoClass=defaultDtoClass;
@@ -47,10 +47,10 @@ public class MappingContext<Id extends Serializable> {
         return mc;
     }
 
-    public static <Id extends Serializable>MappingContext<Id> WRITE_READ(
+    public static <Id extends Serializable> DtoMappingContext<Id> WRITE_READ(
                                             Class<? extends IdentifiableEntity<Id>> writeDtoClass,
                                             Class<? extends IdentifiableEntity<Id>> readDtoClass){
-        MappingContext mc = new MappingContext();
+        DtoMappingContext mc = new DtoMappingContext();
         mc.createArgDtoClass=writeDtoClass;
         mc.createReturnDtoClass=readDtoClass;
         mc.findReturnDtoClass=readDtoClass;
@@ -60,11 +60,11 @@ public class MappingContext<Id extends Serializable> {
         return mc;
     }
 
-    public static <Id extends Serializable> MappingContext<Id> CREATE_UPDATE_READ(
+    public static <Id extends Serializable> DtoMappingContext<Id> CREATE_UPDATE_READ(
                                                     Class<? extends IdentifiableEntity<Id>> createDtoClass,
                                                     Class<? extends IdentifiableEntity<Id>> updateDtoClass,
                                                     Class<? extends IdentifiableEntity<Id>> readDtoClass){
-        MappingContext mc = new MappingContext();
+        DtoMappingContext mc = new DtoMappingContext();
         mc.createArgDtoClass=createDtoClass;
         mc.createReturnDtoClass=readDtoClass;
         mc.findReturnDtoClass=readDtoClass;

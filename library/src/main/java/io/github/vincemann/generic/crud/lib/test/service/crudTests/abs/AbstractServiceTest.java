@@ -1,7 +1,7 @@
 package io.github.vincemann.generic.crud.lib.test.service.crudTests.abs;
 
 import io.github.vincemann.generic.crud.lib.model.IdentifiableEntity;
-import io.github.vincemann.generic.crud.lib.test.service.RootServiceTestContext;
+import io.github.vincemann.generic.crud.lib.test.service.ServiceTestContext;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
@@ -15,6 +15,6 @@ import java.io.Serializable;
  */
 @Getter
 @AllArgsConstructor
-public class AbstractServiceTestApi<E extends IdentifiableEntity<Id>, Id extends Serializable> {
-    private RootServiceTestContext<E,Id> rootContext;
+public class AbstractServiceTest<E extends IdentifiableEntity<Id>, Id extends Serializable> {
+    private ServiceTestContext<E,Id> rootContext;
 }

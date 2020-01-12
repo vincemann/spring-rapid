@@ -1,7 +1,5 @@
 package io.github.vincemann.generic.crud.lib.test.controller.springAdapter.testRequestEntity.factory.requestEntityModification;
 
-import io.github.vincemann.generic.crud.lib.test.controller.springAdapter.testRequestEntity.TestRequestEntity;
-import io.github.vincemann.generic.crud.lib.test.controller.springAdapter.testRequestEntity.TestRequestEntity_Modification;
 import org.springframework.web.util.UriComponentsBuilder;
 
 public class TestRequestEntity_ModificationStrategy_Impl implements TestRequestEntity_ModificationStrategy {

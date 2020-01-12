@@ -2,27 +2,27 @@ package io.github.vincemann.generic.crud.lib.test.service.crudTests;
 
 import io.github.vincemann.generic.crud.lib.model.IdentifiableEntity;
 import io.github.vincemann.generic.crud.lib.service.exception.BadEntityException;
-import io.github.vincemann.generic.crud.lib.test.service.RootServiceTestContext;
-import io.github.vincemann.generic.crud.lib.test.service.crudTests.abs.AbstractServiceTestApi;
-import io.github.vincemann.generic.crud.lib.test.service.crudTests.configuration.exception.InvalidConfigurationModificationException;
-import io.github.vincemann.generic.crud.lib.test.service.crudTests.configuration.factory.abs.AbstractTestConfigurationFactory;
-import io.github.vincemann.generic.crud.lib.test.service.crudTests.configuration.factory.save.SuccessfulSaveTestConfigurationFactory;
-import io.github.vincemann.generic.crud.lib.test.service.crudTests.configuration.save.SuccessfulSaveTestConfiguration;
+import io.github.vincemann.generic.crud.lib.test.service.ServiceTestContext;
+import io.github.vincemann.generic.crud.lib.test.service.crudTests.abs.AbstractServiceTest;
+import io.github.vincemann.generic.crud.lib.test.exception.InvalidConfigurationModificationException;
+import io.github.vincemann.generic.crud.lib.test.service.crudTests.configuration.factory.abs.AbstractServiceTestConfigurationFactory;
+import io.github.vincemann.generic.crud.lib.test.service.crudTests.configuration.factory.save.SuccessfulSaveServiceTestConfigurationFactory;
+import io.github.vincemann.generic.crud.lib.test.service.crudTests.configuration.save.SuccessfulSaveServiceTestConfiguration;
 import org.junit.jupiter.api.Assertions;
 
 import java.io.Serializable;
 import java.util.Optional;
 
 public class SaveServiceTest<E extends IdentifiableEntity<Id>, Id extends Serializable>
-        extends AbstractServiceTestApi<E,Id>
+        extends AbstractServiceTest<E,Id>
 {
 
-    private AbstractTestConfigurationFactory<E,Id,SuccessfulSaveTestConfiguration<E,Id>> successfulSaveTestConfigurationFactory;
+    private AbstractServiceTestConfigurationFactory<E,Id, SuccessfulSaveServiceTestConfiguration<E,Id>> successfulSaveTestConfigurationFactory;
     //private FailedSaveTestConfigurationFactory<E,Id> failedSaveTestConfigurationFactory;
 
-    public SaveServiceTest(RootServiceTestContext<E, Id> testContext) {
+    public SaveServiceTest(ServiceTestContext<E, Id> testContext) {
         super(testContext);
-        this.successfulSaveTestConfigurationFactory=  new SuccessfulSaveTestConfigurationFactory<>(testContext);
+        this.successfulSaveTestConfigurationFactory=  new SuccessfulSaveServiceTestConfigurationFactory<>(testContext);
     }
 
     public E saveEntity_ShouldSucceed(E entityToSave) throws BadEntityException {
@@ -33,8 +33,8 @@ public class SaveServiceTest<E extends IdentifiableEntity<Id>, Id extends Serial
         }
     }
 
-    public E saveEntity_ShouldSucceed(E entityToSave, SuccessfulSaveTestConfiguration<E,Id> configModification) throws BadEntityException, InvalidConfigurationModificationException {
-        SuccessfulSaveTestConfiguration<E, Id> config = successfulSaveTestConfigurationFactory.createMergedConfig(configModification);
+    public E saveEntity_ShouldSucceed(E entityToSave, SuccessfulSaveServiceTestConfiguration<E,Id> configModification) throws BadEntityException, InvalidConfigurationModificationException {
+        SuccessfulSaveServiceTestConfiguration<E, Id> config = successfulSaveTestConfigurationFactory.createMergedConfig(configModification);
         //given
         Assertions.assertNull(entityToSave.getId());
 

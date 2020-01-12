@@ -3,7 +3,6 @@ package io.github.vincemann.demo.service.springDataJPA.it;
 import io.github.vincemann.demo.model.Owner;
 import io.github.vincemann.demo.model.Pet;
 import io.github.vincemann.demo.model.PetType;
-import io.github.vincemann.demo.repositories.OwnerRepository;
 import io.github.vincemann.demo.repositories.PetRepository;
 import io.github.vincemann.demo.service.OwnerService;
 import io.github.vincemann.demo.service.PetTypeService;
@@ -11,11 +10,10 @@ import io.github.vincemann.generic.crud.lib.service.CrudService;
 import io.github.vincemann.generic.crud.lib.service.exception.BadEntityException;
 import io.github.vincemann.generic.crud.lib.service.exception.EntityNotFoundException;
 import io.github.vincemann.generic.crud.lib.service.exception.NoIdException;
-import io.github.vincemann.generic.crud.lib.test.controller.springAdapter.postUpdateCallback.PostUpdateCallback;
+import io.github.vincemann.generic.crud.lib.test.postUpdateCallback.PostUpdateCallback;
 import io.github.vincemann.generic.crud.lib.test.service.ForceEagerFetch_CrudServiceIntegrationTest;
-import io.github.vincemann.generic.crud.lib.test.service.crudTests.UpdateServiceTest;
-import io.github.vincemann.generic.crud.lib.test.service.crudTests.configuration.exception.InvalidConfigurationModificationException;
-import io.github.vincemann.generic.crud.lib.test.service.crudTests.configuration.update.SuccessfulUpdateTestConfiguration;
+import io.github.vincemann.generic.crud.lib.test.exception.InvalidConfigurationModificationException;
+import io.github.vincemann.generic.crud.lib.test.service.crudTests.configuration.update.SuccessfulUpdateServiceTestConfiguration;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -125,7 +123,7 @@ class OwnerJPAServiceIT
                 .telephone(ownerWithoutPets.getTelephone()+"123")
                 .build();
         getUpdateServiceTest().updateEntity_ShouldSucceed(ownerWithoutPets, diffTelephoneNumberUpdate,
-                SuccessfulUpdateTestConfiguration.<Owner, Long>builder()
+                SuccessfulUpdateServiceTestConfiguration.<Owner, Long>builder()
                         .fullUpdate(false)
                         .postUpdateCallback(new PostUpdateCallback<Owner, Long>() {
                             @Override
@@ -163,7 +161,7 @@ class OwnerJPAServiceIT
         ownerUpdateRequest.getPets().add(savedPetToAdd);
 
         Owner updatedOwner = getUpdateServiceTest().updateEntity_ShouldSucceed(owner,ownerUpdateRequest,
-                SuccessfulUpdateTestConfiguration.<Owner, Long>builder()
+                SuccessfulUpdateServiceTestConfiguration.<Owner, Long>builder()
                         .fullUpdate(false)
                         .postUpdateCallback(new PostUpdateCallback<Owner, Long>() {
                             @Override

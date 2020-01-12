@@ -20,7 +20,7 @@ import java.util.Optional;
 @Getter
 @AllArgsConstructor
 @NoArgsConstructor
-public abstract class RootServiceTestContext<E extends IdentifiableEntity<Id>, Id extends Serializable> {
+public abstract class ServiceTestContext<E extends IdentifiableEntity<Id>, Id extends Serializable> {
 
     private CrudService<E,Id,CrudRepository<E,Id>> crudService;
     private CrudRepository<E,Id> repository;
