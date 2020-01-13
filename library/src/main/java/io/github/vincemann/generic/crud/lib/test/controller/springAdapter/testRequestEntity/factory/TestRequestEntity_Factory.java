@@ -1,7 +1,6 @@
 package io.github.vincemann.generic.crud.lib.test.controller.springAdapter.testRequestEntity.factory;
 
 
-import io.github.vincemann.generic.crud.lib.test.controller.springAdapter.CrudController_TestCase;
 import io.github.vincemann.generic.crud.lib.test.controller.springAdapter.UrlParamId_ControllerIntegrationTest;
 import org.springframework.lang.Nullable;
 

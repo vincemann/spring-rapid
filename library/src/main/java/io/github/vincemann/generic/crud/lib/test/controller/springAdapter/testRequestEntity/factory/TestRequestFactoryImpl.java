@@ -1,7 +1,6 @@
 package io.github.vincemann.generic.crud.lib.test.controller.springAdapter.testRequestEntity.factory;
 
 import io.github.vincemann.generic.crud.lib.controller.springAdapter.DtoCrudController_SpringAdapter;
-import io.github.vincemann.generic.crud.lib.test.controller.springAdapter.CrudController_TestCase;
 import io.github.vincemann.generic.crud.lib.test.controller.springAdapter.UrlParamId_ControllerIntegrationTest;
 import io.github.vincemann.generic.crud.lib.test.controller.springAdapter.testRequestEntity.factory.defaultUriFactory.UrlParamId_DefaultUri_Factory;
 import io.github.vincemann.generic.crud.lib.test.controller.springAdapter.testRequestEntity.factory.requestEntityModification.TestRequestEntity_ModificationStrategy;

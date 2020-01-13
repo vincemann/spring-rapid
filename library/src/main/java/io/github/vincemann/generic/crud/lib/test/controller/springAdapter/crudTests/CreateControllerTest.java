@@ -2,9 +2,8 @@ package io.github.vincemann.generic.crud.lib.test.controller.springAdapter.crudT
 
 import io.github.vincemann.generic.crud.lib.model.IdentifiableEntity;
 import io.github.vincemann.generic.crud.lib.test.ControllerIntegrationTestContext;
-import io.github.vincemann.generic.crud.lib.test.controller.springAdapter.CrudController_TestCase;
+import io.github.vincemann.generic.crud.lib.test.controller.springAdapter.testRequestEntity.factory.CrudController_TestCase;
 import io.github.vincemann.generic.crud.lib.test.controller.springAdapter.crudTests.abs.AbstractControllerTest;
-import io.github.vincemann.generic.crud.lib.test.controller.springAdapter.testRequestEntity.RequestEntityMapper;
 import org.junit.jupiter.api.Assertions;
 import org.springframework.http.ResponseEntity;
 
