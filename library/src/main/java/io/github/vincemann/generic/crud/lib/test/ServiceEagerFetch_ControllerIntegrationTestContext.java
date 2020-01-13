@@ -11,12 +11,12 @@ import org.springframework.data.repository.CrudRepository;
 import java.io.Serializable;
 
 @Getter
-public class ServiceEagerFetch_ControllerIntegrationTestContextImpl<E extends IdentifiableEntity<Id>, Id extends Serializable> extends ControllerIntegrationTestContext<E, Id> {
-    public ServiceEagerFetch_ControllerIntegrationTestContextImpl(String url) {
+public class ServiceEagerFetch_ControllerIntegrationTestContext<E extends IdentifiableEntity<Id>, Id extends Serializable> extends ControllerIntegrationTestContext<E, Id> {
+    public ServiceEagerFetch_ControllerIntegrationTestContext(String url) {
         super(url);
     }
 
-    public ServiceEagerFetch_ControllerIntegrationTestContextImpl() {
+    public ServiceEagerFetch_ControllerIntegrationTestContext() {
     }
 
 

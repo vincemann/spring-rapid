@@ -6,15 +6,18 @@ import io.github.vincemann.generic.crud.lib.controller.springAdapter.DtoCrudCont
 import io.github.vincemann.generic.crud.lib.controller.springAdapter.idFetchingStrategy.UrlParamIdFetchingStrategy;
 import io.github.vincemann.generic.crud.lib.model.IdentifiableEntity;
 import io.github.vincemann.generic.crud.lib.service.exception.BadEntityException;
-import io.github.vincemann.generic.crud.lib.test.ServiceEagerFetch_ControllerIntegrationTestContextImpl;
+import io.github.vincemann.generic.crud.lib.test.ServiceEagerFetch_ControllerIntegrationTestContext;
+import io.github.vincemann.generic.crud.lib.test.controller.springAdapter.requestEntityFactory.RequestEntityFactory;
+import io.github.vincemann.generic.crud.lib.test.controller.springAdapter.requestEntityFactory.UrlParamIdRequestEntityFactory;
+import io.github.vincemann.generic.crud.lib.test.controller.springAdapter.testRequestEntity.factory.CrudController_TestCase;
+import io.github.vincemann.generic.crud.lib.test.equalChecker.EqualChecker;
 import io.github.vincemann.generic.crud.lib.test.postUpdateCallback.PostUpdateCallback;
-import io.github.vincemann.generic.crud.lib.test.controller.springAdapter.testRequestEntity.RequestEntityMapper;
-import io.github.vincemann.generic.crud.lib.test.controller.springAdapter.testRequestEntity.factory.TestRequestEntity_Factory;
 import io.github.vincemann.generic.crud.lib.test.forceEagerFetch.proxy.CrudService_HibernateForceEagerFetch_Proxy;
 import io.github.vincemann.generic.crud.lib.test.testExecutionListeners.ResetDatabaseTestExecutionListener;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Assertions;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.http.ResponseEntity;
 import org.springframework.lang.Nullable;
@@ -43,23 +46,31 @@ public abstract class UrlParamId_ControllerIntegrationTest
                 E extends IdentifiableEntity<Id>,
                 Id extends Serializable
         >
-        extends ServiceEagerFetch_ControllerIntegrationTestContextImpl<E,Id>
+        extends ServiceEagerFetch_ControllerIntegrationTestContext<E,Id>
 {
 
-    private TestRequestEntity_Factory requestEntityFactory;
 
+    private RequestEntityFactory<Id> requestEntityFactory;
 
+    public UrlParamId_ControllerIntegrationTest() {
+        Assertions.assertTrue(UrlParamIdFetchingStrategy.class.isAssignableFrom(getController().getIdIdFetchingStrategy().getClass()));
+        this.requestEntityFactory = new UrlParamIdRequestEntityFactory<>(
+                this,
+                ((UrlParamIdFetchingStrategy) getController().getIdIdFetchingStrategy()).getIdUrlParamKey()
+        );
+    }
+
+    @Qualifier("default")
+    @Autowired
+    public void injectDefaultDtoEqualChecker(EqualChecker<? extends IdentifiableEntity<Id>> defaultDtoEqualChecker) {
+        setDefaultDtoEqualChecker(defaultDtoEqualChecker);
+    }
 
     @Autowired
     public void injectCrudController(DtoCrudController_SpringAdapter<E, Id, CrudRepository<E,Id>> crudController) {
         setController(crudController);
     }
 
-    @Autowired
-    public void injectRequestEntityFactory(TestRequestEntity_Factory requestEntityFactory) {
-        requestEntityFactory.setTest(this);
-        this.requestEntityFactory = requestEntityFactory;
-    }
 
 
 

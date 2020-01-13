@@ -5,7 +5,8 @@ import io.github.vincemann.generic.crud.lib.controller.springAdapter.DtoCrudCont
 import io.github.vincemann.generic.crud.lib.controller.springAdapter.idFetchingStrategy.UrlParamIdFetchingStrategy;
 import io.github.vincemann.generic.crud.lib.model.IdentifiableEntity;
 import io.github.vincemann.generic.crud.lib.service.CrudService;
-import io.github.vincemann.generic.crud.lib.test.controller.springAdapter.testRequestEntity.factory.defaultUriFactory.baseUrl.BaseAddress_Provider;
+import io.github.vincemann.generic.crud.lib.test.controller.springAdapter.BaseAddressProvider;
+import io.github.vincemann.generic.crud.lib.test.equalChecker.EqualChecker;
 import lombok.Getter;
 import lombok.Setter;
 import org.apache.http.impl.client.HttpClientBuilder;
@@ -22,7 +23,7 @@ import java.lang.reflect.ParameterizedType;
 @Getter
 @Setter
 public abstract class ControllerIntegrationTestContext<E extends IdentifiableEntity<Id>, Id extends Serializable>
-            implements BaseAddress_Provider, InitializingBean {
+            implements BaseAddressProvider, InitializingBean {
 
     private static final String LOCAL_HOST = "http://127.0.0.1";
     private static TestRestTemplate restTemplate;
@@ -30,11 +31,13 @@ public abstract class ControllerIntegrationTestContext<E extends IdentifiableEnt
     private String port;
     private Class<E> entityClass = (Class<E>) ((ParameterizedType) this.getClass().getGenericSuperclass()).getActualTypeArguments()[0];
 
-    private String entityIdParamKey;
+    //todo muss raus hier, wir hardcoden nicht auf url param id strategy
+
     private DtoMappingContext<Id> dtoMappingContext;
     private String url;
     private CrudService<E,Id, CrudRepository<E,Id>> testService;
     private DtoCrudController_SpringAdapter<E, Id, CrudRepository<E,Id>> controller;
+    private EqualChecker<? extends IdentifiableEntity<Id>> defaultDtoEqualChecker;
 
     public ControllerIntegrationTestContext(String url) {
         this.url = url;
