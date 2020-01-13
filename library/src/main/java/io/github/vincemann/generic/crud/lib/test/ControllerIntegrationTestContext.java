@@ -30,9 +30,6 @@ public abstract class ControllerIntegrationTestContext<E extends IdentifiableEnt
     @LocalServerPort
     private String port;
     private Class<E> entityClass = (Class<E>) ((ParameterizedType) this.getClass().getGenericSuperclass()).getActualTypeArguments()[0];
-
-    //todo muss raus hier, wir hardcoden nicht auf url param id strategy
-
     private DtoMappingContext<Id> dtoMappingContext;
     private String url;
     private CrudService<E,Id, CrudRepository<E,Id>> testService;
@@ -49,7 +46,6 @@ public abstract class ControllerIntegrationTestContext<E extends IdentifiableEnt
 
     @Override
     public void afterPropertiesSet() throws Exception {
-        this.entityIdParamKey = ((UrlParamIdFetchingStrategy<Id>) getController().getIdIdFetchingStrategy()).getIdUrlParamKey();
         //user might want to inject own beans that are diff from controllers beans -> null checks
         if(dtoMappingContext ==null) {
             dtoMappingContext = getController().getDtoMappingContext();
