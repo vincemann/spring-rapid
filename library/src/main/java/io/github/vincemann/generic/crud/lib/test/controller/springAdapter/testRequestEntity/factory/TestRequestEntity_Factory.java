@@ -1,12 +1,12 @@
 package io.github.vincemann.generic.crud.lib.test.controller.springAdapter.testRequestEntity.factory;
 
 
-import io.github.vincemann.generic.crud.lib.test.controller.springAdapter.UrlParamId_ControllerIntegrationTest;
+import io.github.vincemann.generic.crud.lib.test.controller.springAdapter.UrlParamIdControllerIntegrationTest;
 import org.springframework.lang.Nullable;
 
 
 public interface TestRequestEntity_Factory {
-    //todo sketchy af needs refactoring
+    //todo remove
 
     /**
      * Creates an default Instance of {@link TestRequestEntity} based on the testMethod ({@link CrudController_TestCase}).
@@ -16,6 +16,6 @@ public interface TestRequestEntity_Factory {
      * @return
      */
     public TestRequestEntity createInstance(CrudController_TestCase crudControllerTestCase,@Nullable Object id, @Nullable TestRequestEntity_Modification... bundleTestRequestEntityModifications);
-    public void setTest(UrlParamId_ControllerIntegrationTest test);
+    public void setTest(UrlParamIdControllerIntegrationTest test);
 
 }

@@ -13,7 +13,6 @@ public class CreateControllerTest<E extends IdentifiableEntity<Id>, Id extends S
         extends AbstractControllerTest<E,Id> {
 
 
-
     public CreateControllerTest(ControllerIntegrationTestContext<E, Id> rootContext) {
         super(rootContext);
     }

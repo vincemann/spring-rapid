@@ -7,6 +7,7 @@ import io.github.vincemann.generic.crud.lib.controller.springAdapter.idFetchingS
 import io.github.vincemann.generic.crud.lib.model.IdentifiableEntity;
 import io.github.vincemann.generic.crud.lib.service.exception.BadEntityException;
 import io.github.vincemann.generic.crud.lib.test.ServiceEagerFetch_ControllerIntegrationTestContext;
+import io.github.vincemann.generic.crud.lib.test.controller.springAdapter.crudTests.CreateControllerTest;
 import io.github.vincemann.generic.crud.lib.test.controller.springAdapter.requestEntityFactory.RequestEntityFactory;
 import io.github.vincemann.generic.crud.lib.test.controller.springAdapter.requestEntityFactory.UrlParamIdRequestEntityFactory;
 import io.github.vincemann.generic.crud.lib.test.controller.springAdapter.testRequestEntity.factory.CrudController_TestCase;
@@ -41,7 +42,7 @@ import java.util.*;
         mergeMode = TestExecutionListeners.MergeMode.MERGE_WITH_DEFAULTS,
         listeners = {ResetDatabaseTestExecutionListener.class}
 )
-public abstract class UrlParamId_ControllerIntegrationTest
+public abstract class UrlParamIdControllerIntegrationTest
         <
                 E extends IdentifiableEntity<Id>,
                 Id extends Serializable
@@ -49,15 +50,15 @@ public abstract class UrlParamId_ControllerIntegrationTest
         extends ServiceEagerFetch_ControllerIntegrationTestContext<E,Id>
 {
 
+    private CreateControllerTest<E,Id> createControllerTest;
 
-    private RequestEntityFactory<Id> requestEntityFactory;
-
-    public UrlParamId_ControllerIntegrationTest() {
+    public UrlParamIdControllerIntegrationTest() {
         Assertions.assertTrue(UrlParamIdFetchingStrategy.class.isAssignableFrom(getController().getIdIdFetchingStrategy().getClass()));
-        this.requestEntityFactory = new UrlParamIdRequestEntityFactory<>(
+        RequestEntityFactory<Id> requestEntityFactory = new UrlParamIdRequestEntityFactory<>(
                 this,
-                ((UrlParamIdFetchingStrategy) getController().getIdIdFetchingStrategy()).getIdUrlParamKey()
+                ((UrlParamIdFetchingStrategy<Id>) getController().getIdIdFetchingStrategy()).getIdUrlParamKey()
         );
+        this.createControllerTest= new CreateControllerTest<>(this);
     }
 
     @Qualifier("default")

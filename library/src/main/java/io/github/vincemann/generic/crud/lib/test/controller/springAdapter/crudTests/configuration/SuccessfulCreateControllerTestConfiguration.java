@@ -11,7 +11,6 @@ import org.springframework.util.MultiValueMap;
 import org.springframework.web.bind.annotation.RequestMethod;
 
 import java.io.Serializable;
-import java.net.URI;
 import java.util.Map;
 
 
@@ -22,8 +21,8 @@ public class SuccessfulCreateControllerTestConfiguration<Id extends Serializable
     private EqualChecker<? extends IdentifiableEntity<Id>> createArg_createReturn_equalChecker;
 
     @Builder
-    public SuccessfulCreateControllerTestConfiguration(RequestMethod method, URI uri, MultiValueMap<String, String> headers, HttpStatus expectedHttpStatus, Map<String, String> queryParams, Id id, EqualChecker<? extends IdentifiableEntity<Id>> createArg_createReturn_equalChecker) {
-        super(method, uri, headers, expectedHttpStatus, queryParams, id);
+    public SuccessfulCreateControllerTestConfiguration(RequestMethod method, MultiValueMap<String, String> headers, HttpStatus expectedHttpStatus, Map<String, String> queryParams, Id id, EqualChecker<? extends IdentifiableEntity<Id>> createArg_createReturn_equalChecker) {
+        super(method, headers, expectedHttpStatus, queryParams, id);
         this.createArg_createReturn_equalChecker = createArg_createReturn_equalChecker;
     }
 }

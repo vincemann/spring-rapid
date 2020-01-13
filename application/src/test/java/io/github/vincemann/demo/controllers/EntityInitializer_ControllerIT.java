@@ -2,10 +2,9 @@ package io.github.vincemann.demo.controllers;
 
 import io.github.vincemann.demo.model.*;
 import io.github.vincemann.demo.repositories.*;
-import io.github.vincemann.generic.crud.lib.controller.springAdapter.DtoCrudController_SpringAdapter;
 import io.github.vincemann.generic.crud.lib.model.IdentifiableEntity;
 import io.github.vincemann.generic.crud.lib.service.CrudService;
-import io.github.vincemann.generic.crud.lib.test.controller.springAdapter.UrlParamId_ControllerIntegrationTest;
+import io.github.vincemann.generic.crud.lib.test.controller.springAdapter.UrlParamIdControllerIntegrationTest;
 import io.github.vincemann.generic.crud.lib.test.forceEagerFetch.Hibernate_ForceEagerFetch_Helper;
 import lombok.Getter;
 import lombok.Setter;
@@ -25,7 +24,7 @@ public abstract class EntityInitializer_ControllerIT
                 E extends IdentifiableEntity<Long>,
                 R extends CrudRepository<E, Long>
         >
-        extends UrlParamId_ControllerIntegrationTest<E,Long,R>
+        extends UrlParamIdControllerIntegrationTest<E,Long,R>
 
 {
 
