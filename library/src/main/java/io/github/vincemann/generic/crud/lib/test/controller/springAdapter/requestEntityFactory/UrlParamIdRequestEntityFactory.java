@@ -1,6 +1,6 @@
 package io.github.vincemann.generic.crud.lib.test.controller.springAdapter.requestEntityFactory;
 
-import io.github.vincemann.generic.crud.lib.test.controller.springAdapter.crudTests.configuration.abs.AbstractControllerTestConfiguration;
+import io.github.vincemann.generic.crud.lib.test.controller.springAdapter.crudTests.config.abs.ControllerTestConfiguration;
 import io.github.vincemann.generic.crud.lib.test.controller.springAdapter.BaseAddressProvider;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpMethod;
@@ -23,7 +23,7 @@ public class UrlParamIdRequestEntityFactory<Id extends Serializable>
     }
 
     @Override
-    public RequestEntity<?> create(AbstractControllerTestConfiguration<Id> config, Object body) {
+    public RequestEntity<?> create(ControllerTestConfiguration<Id> config, Object body) {
         //build uri
         String baseAddress = getBaseAddressProvider().provideAddress();
         URI uri = buildUri(config.getMethod().name(), baseAddress, config.getId(), config.getQueryParams());

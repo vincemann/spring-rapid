@@ -1,6 +1,6 @@
 package io.github.vincemann.generic.crud.lib.test.controller.springAdapter.requestEntityFactory;
 
-import io.github.vincemann.generic.crud.lib.test.controller.springAdapter.crudTests.configuration.abs.AbstractControllerTestConfiguration;
+import io.github.vincemann.generic.crud.lib.test.controller.springAdapter.crudTests.config.abs.ControllerTestConfiguration;
 import io.github.vincemann.generic.crud.lib.test.controller.springAdapter.BaseAddressProvider;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -15,6 +15,6 @@ import java.io.Serializable;
 public abstract class RequestEntityFactory<Id extends Serializable> {
     private BaseAddressProvider baseAddressProvider;
 
-    public abstract RequestEntity<?> create(AbstractControllerTestConfiguration<Id> config, Object body);
+    public abstract RequestEntity<?> create(ControllerTestConfiguration<Id> config, Object body);
 
 }

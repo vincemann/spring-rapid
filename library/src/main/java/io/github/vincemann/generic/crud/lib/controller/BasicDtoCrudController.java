@@ -86,7 +86,7 @@ public abstract class BasicDtoCrudController
     @Override
     @SuppressWarnings("unchecked")
     public ResponseEntity<? extends IdentifiableEntity<Id>> create(IdentifiableEntity<Id> dto) throws BadEntityException, EntityMappingException {
-        E entity = findMapperAndMapToEntity(dto, getDtoMappingContext().getCreateArgDtoClass());
+        E entity = findMapperAndMapToEntity(dto, getDtoMappingContext().getCreateRequestDtoClass());
         E savedEntity = crudService.save(entity);
         return new ResponseEntity(findMapperAndMapToDto(savedEntity, getDtoMappingContext().getCreateReturnDtoClass()),
                 HttpStatus.OK);
@@ -95,7 +95,7 @@ public abstract class BasicDtoCrudController
     @Override
     @SuppressWarnings("unchecked")
     public ResponseEntity<? extends IdentifiableEntity<Id>> update(IdentifiableEntity<Id> dto, boolean full) throws BadEntityException, EntityMappingException, NoIdException, EntityNotFoundException {
-        E entity = findMapperAndMapToEntity(dto, getDtoMappingContext().getUpdateArgDtoClass());
+        E entity = findMapperAndMapToEntity(dto, getDtoMappingContext().getUpdateRequestDtoClass());
         E updatedEntity = crudService.update(entity,full);
         //no idea why casting is necessary here?
         return new ResponseEntity(findMapperAndMapToDto(updatedEntity, getDtoMappingContext().getUpdateReturnDtoClass()),

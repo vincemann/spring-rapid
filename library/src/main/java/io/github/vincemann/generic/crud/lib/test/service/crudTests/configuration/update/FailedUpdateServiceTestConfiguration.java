@@ -1,7 +1,7 @@
 package io.github.vincemann.generic.crud.lib.test.service.crudTests.configuration.update;
 
 import io.github.vincemann.generic.crud.lib.model.IdentifiableEntity;
-import io.github.vincemann.generic.crud.lib.test.postUpdateCallback.PostUpdateCallback;
+import io.github.vincemann.generic.crud.lib.test.callback.PostUpdateServiceTestCallback;
 import io.github.vincemann.generic.crud.lib.test.equalChecker.EqualChecker;
 import io.github.vincemann.generic.crud.lib.test.service.crudTests.configuration.update.abs.AbstractUpdateServiceTestConfiguration;
 import lombok.Builder;
@@ -17,7 +17,7 @@ public class FailedUpdateServiceTestConfiguration<E extends IdentifiableEntity<I
     private Class<? extends Throwable> expectedException;
 
     @Builder
-    public FailedUpdateServiceTestConfiguration(Boolean fullUpdate, PostUpdateCallback<E, Id> postUpdateCallback, EqualChecker<E> repoEntityEqualChecker, Class<? extends Throwable> expectedException) {
+    public FailedUpdateServiceTestConfiguration(Boolean fullUpdate, PostUpdateServiceTestCallback<E, Id> postUpdateCallback, EqualChecker<E> repoEntityEqualChecker, Class<? extends Throwable> expectedException) {
         super(fullUpdate, postUpdateCallback, repoEntityEqualChecker);
         this.expectedException = expectedException;
     }

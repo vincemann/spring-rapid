@@ -5,7 +5,7 @@ import io.github.vincemann.demo.controllers.EntityInitializer_ControllerIT;
 import io.github.vincemann.demo.dtos.PetDto;
 import io.github.vincemann.demo.model.Pet;
 import io.github.vincemann.demo.repositories.PetRepository;
-import io.github.vincemann.generic.crud.lib.test.postUpdateCallback.PostUpdateCallback;
+import io.github.vincemann.generic.crud.lib.test.callback.PostUpdateServiceTestCallback;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -75,7 +75,7 @@ class PetControllerIT
                 .name("MODIFIED NAME")
                 .build();
         Assertions.assertNotEquals(diffPetsNameUpdate.getName(),petWithPersistedPetType.getName());
-        updateEntity_ShouldSucceed(petWithPersistedPetType, diffPetsNameUpdate,false,new PostUpdateCallback<Pet,Long>() {
+        updateEntity_ShouldSucceed(petWithPersistedPetType, diffPetsNameUpdate,false,new PostUpdateServiceTestCallback<Pet,Long>() {
             @Override
             public void callback(Pet after) {
                 Assertions.assertEquals(diffPetsNameUpdate.getName(), after.getName());
@@ -88,7 +88,7 @@ class PetControllerIT
         //remove pets owner in update
         petDtoWithPersistedOwner.setOwnerId(null);
 
-        updateEntity_ShouldSucceed(petWithPersistedOwner, petDtoWithPersistedOwner,true, new PostUpdateCallback<Pet,Long>() {
+        updateEntity_ShouldSucceed(petWithPersistedOwner, petDtoWithPersistedOwner,true, new PostUpdateServiceTestCallback<Pet,Long>() {
             @Override
             public void callback(Pet after) {
                 Assertions.assertNull(after.getOwner());
@@ -115,7 +115,7 @@ class PetControllerIT
         PetDto petTypeIdNullUpdate = PetDto.builder()
                 .petTypeId(null)
                 .build();
-        updateEntity_ShouldFail(petWithPersistedPetType, petTypeIdNullUpdate,true, new PostUpdateCallback<Pet,Long>() {
+        updateEntity_ShouldFail(petWithPersistedPetType, petTypeIdNullUpdate,true, new PostUpdateServiceTestCallback<Pet,Long>() {
             @Override
             public void callback(Pet after) {
                 Assertions.assertNotNull(after.getPetType());
