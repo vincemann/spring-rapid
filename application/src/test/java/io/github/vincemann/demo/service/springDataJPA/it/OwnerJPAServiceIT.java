@@ -10,7 +10,7 @@ import io.github.vincemann.generic.crud.lib.service.CrudService;
 import io.github.vincemann.generic.crud.lib.service.exception.BadEntityException;
 import io.github.vincemann.generic.crud.lib.service.exception.EntityNotFoundException;
 import io.github.vincemann.generic.crud.lib.service.exception.NoIdException;
-import io.github.vincemann.generic.crud.lib.test.postUpdateCallback.PostUpdateCallback;
+import io.github.vincemann.generic.crud.lib.test.callback.PostUpdateServiceTestCallback;
 import io.github.vincemann.generic.crud.lib.test.service.ForceEagerFetch_CrudServiceIntegrationTest;
 import io.github.vincemann.generic.crud.lib.test.exception.InvalidConfigurationModificationException;
 import io.github.vincemann.generic.crud.lib.test.service.crudTests.configuration.update.SuccessfulUpdateServiceTestConfiguration;
@@ -125,7 +125,7 @@ class OwnerJPAServiceIT
         getUpdateServiceTest().updateEntity_ShouldSucceed(ownerWithoutPets, diffTelephoneNumberUpdate,
                 SuccessfulUpdateServiceTestConfiguration.<Owner, Long>builder()
                         .fullUpdate(false)
-                        .postUpdateCallback(new PostUpdateCallback<Owner, Long>() {
+                        .postUpdateCallback(new PostUpdateServiceTestCallback<Owner, Long>() {
                             @Override
                             public void callback(Owner request, Owner afterUpdate) {
                                 Assertions.assertEquals(request.getTelephone(),afterUpdate.getTelephone());
@@ -163,7 +163,7 @@ class OwnerJPAServiceIT
         Owner updatedOwner = getUpdateServiceTest().updateEntity_ShouldSucceed(owner,ownerUpdateRequest,
                 SuccessfulUpdateServiceTestConfiguration.<Owner, Long>builder()
                         .fullUpdate(false)
-                        .postUpdateCallback(new PostUpdateCallback<Owner, Long>() {
+                        .postUpdateCallback(new PostUpdateServiceTestCallback<Owner, Long>() {
                             @Override
                             public void callback(Owner request, Owner afterUpdate) {
                                 Assertions.assertEquals(2,afterUpdate.getPets().size());

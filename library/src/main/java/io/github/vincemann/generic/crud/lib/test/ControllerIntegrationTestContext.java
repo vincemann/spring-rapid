@@ -3,6 +3,7 @@ package io.github.vincemann.generic.crud.lib.test;
 import io.github.vincemann.generic.crud.lib.controller.dtoMapper.DtoMappingContext;
 import io.github.vincemann.generic.crud.lib.controller.springAdapter.DtoCrudController_SpringAdapter;
 import io.github.vincemann.generic.crud.lib.controller.springAdapter.idFetchingStrategy.UrlParamIdFetchingStrategy;
+import io.github.vincemann.generic.crud.lib.controller.springAdapter.mediaTypeStrategy.DtoReadingException;
 import io.github.vincemann.generic.crud.lib.model.IdentifiableEntity;
 import io.github.vincemann.generic.crud.lib.service.CrudService;
 import io.github.vincemann.generic.crud.lib.test.controller.springAdapter.BaseAddressProvider;
@@ -34,7 +35,7 @@ public abstract class ControllerIntegrationTestContext<E extends IdentifiableEnt
     private String url;
     private CrudService<E,Id, CrudRepository<E,Id>> testService;
     private DtoCrudController_SpringAdapter<E, Id, CrudRepository<E,Id>> controller;
-    private EqualChecker<? extends IdentifiableEntity<Id>> defaultDtoEqualChecker;
+    //private EqualChecker<? extends IdentifiableEntity<Id>> defaultDtoEqualChecker;
 
     public ControllerIntegrationTestContext(String url) {
         this.url = url;

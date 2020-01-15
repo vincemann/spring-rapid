@@ -10,7 +10,7 @@ import io.github.vincemann.demo.model.Pet;
 import io.github.vincemann.demo.repositories.OwnerRepository;
 import io.github.vincemann.demo.service.PetService;
 import io.github.vincemann.generic.crud.lib.service.CrudService;
-import io.github.vincemann.generic.crud.lib.test.postUpdateCallback.PostUpdateCallback;
+import io.github.vincemann.generic.crud.lib.test.callback.PostUpdateServiceTestCallback;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -130,7 +130,7 @@ class OwnerControllerIT
 
         Assertions.assertNotEquals(diffAddressUpdate.getAddress(),validOwnerWithManyPets.getAddress());
         //when
-        updateEntity_ShouldSucceed(validOwnerWithManyPets, diffAddressUpdate,false,new PostUpdateCallback<Owner, Long>() {
+        updateEntity_ShouldSucceed(validOwnerWithManyPets, diffAddressUpdate,false,new PostUpdateServiceTestCallback<Owner, Long>() {
             @Override
             public void callback(Owner afterUpdate) {
                 Assertions.assertEquals(afterUpdate.getAddress(),diffAddressUpdate.getAddress());
@@ -146,7 +146,7 @@ class OwnerControllerIT
                 .build();
 
         //when
-        updateEntity_ShouldSucceed(validOwnerWithManyPets,deleteAllPetsUpdate,false, new PostUpdateCallback<Owner,Long>() {
+        updateEntity_ShouldSucceed(validOwnerWithManyPets,deleteAllPetsUpdate,false, new PostUpdateServiceTestCallback<Owner,Long>() {
             @Override
             public void callback(Owner after) {
                 Assertions.assertTrue(after.getPets().isEmpty());
@@ -170,7 +170,7 @@ class OwnerControllerIT
                 .build();
         
         //when
-        updateEntity_ShouldFail(validOwnerWithoutPets,setInvalidPetUpdate,false, new PostUpdateCallback<Owner,Long>() {
+        updateEntity_ShouldFail(validOwnerWithoutPets,setInvalidPetUpdate,false, new PostUpdateServiceTestCallback<Owner,Long>() {
             @Override
             public void callback(Owner after) {
                  Assertions.assertTrue(after.getPets().isEmpty());
@@ -184,7 +184,7 @@ class OwnerControllerIT
                 //blank city
                 .city("")
                 .build();
-        updateEntity_ShouldFail(validOwnerWithoutPets,blankCityUpdate,false, new PostUpdateCallback<Owner,Long>() {
+        updateEntity_ShouldFail(validOwnerWithoutPets,blankCityUpdate,false, new PostUpdateServiceTestCallback<Owner,Long>() {
             @Override
             public void callback(Owner after) {
                 Assertions.assertFalse(after.getCity().isEmpty());

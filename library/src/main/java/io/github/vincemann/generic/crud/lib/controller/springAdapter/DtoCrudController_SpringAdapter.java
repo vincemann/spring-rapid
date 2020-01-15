@@ -247,7 +247,7 @@ public abstract class DtoCrudController_SpringAdapter
         try {
             String body = request.getReader().lines().collect(Collectors.joining(System.lineSeparator()));
             log.debug("String Body fetched from request: " + body);
-            IdentifiableEntity<Id> dto = mediaTypeStrategy.readDtoFromBody(body, getDtoMappingContext().getCreateArgDtoClass());
+            IdentifiableEntity<Id> dto = mediaTypeStrategy.readDtoFromBody(body, getDtoMappingContext().getCreateRequestDtoClass());
             log.debug("Dto read from string body " + dto);
             validationStrategy.beforeCreateValidate(dto);
             validationStrategy.validateDto(dto,request);
@@ -264,7 +264,7 @@ public abstract class DtoCrudController_SpringAdapter
         try {
             String body = request.getReader().lines().collect(Collectors.joining(System.lineSeparator()));
             log.debug("String Body fetched from request: " + body);
-            IdentifiableEntity<Id> dto = mediaTypeStrategy.readDtoFromBody(body, getDtoMappingContext().getUpdateArgDtoClass());
+            IdentifiableEntity<Id> dto = mediaTypeStrategy.readDtoFromBody(body, getDtoMappingContext().getUpdateRequestDtoClass());
             log.debug("Dto read from string body " + dto);
             validationStrategy.beforeUpdateValidate(dto);
             validationStrategy.validateDto(dto,request);
