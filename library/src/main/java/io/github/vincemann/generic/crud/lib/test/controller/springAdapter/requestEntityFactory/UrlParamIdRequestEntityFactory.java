@@ -2,6 +2,7 @@ package io.github.vincemann.generic.crud.lib.test.controller.springAdapter.reque
 
 import io.github.vincemann.generic.crud.lib.test.controller.springAdapter.crudTests.config.abs.ControllerTestConfiguration;
 import io.github.vincemann.generic.crud.lib.test.controller.springAdapter.BaseAddressProvider;
+import lombok.Builder;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.RequestEntity;
@@ -17,6 +18,7 @@ public class UrlParamIdRequestEntityFactory<Id extends Serializable>
 
     private String entityIdParamKey;
 
+    @Builder
     public UrlParamIdRequestEntityFactory(BaseAddressProvider baseAddressProvider, String entityIdParamKey) {
         super(baseAddressProvider);
         this.entityIdParamKey = entityIdParamKey;

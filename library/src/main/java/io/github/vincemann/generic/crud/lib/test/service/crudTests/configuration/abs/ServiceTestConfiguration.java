@@ -11,6 +11,6 @@ import java.io.Serializable;
 @Getter
 @Setter
 @AllArgsConstructor
-public abstract class AbstractServiceTestConfiguration<E extends IdentifiableEntity<Id>,Id extends Serializable> {
+public class ServiceTestConfiguration<E extends IdentifiableEntity<Id>,Id extends Serializable> {
     private EqualChecker<E> repoEntityEqualChecker;
 }

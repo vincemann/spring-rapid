@@ -12,8 +12,11 @@ import java.io.Serializable;
 @Getter
 @AllArgsConstructor
 public abstract class AbstractControllerTestConfigurationFactory
-        <E extends IdentifiableEntity<Id>,Id extends Serializable,C extends ControllerTestConfiguration<Id>>
-                    implements TestConfigurationFactory<C>
+                <E extends IdentifiableEntity<Id>,
+                Id extends Serializable, SuccessfulC extends ControllerTestConfiguration<Id>,
+                FailedC extends ControllerTestConfiguration<Id>>
+
+                    implements TestConfigurationFactory<SuccessfulC,FailedC>
 {
     private ControllerIntegrationTestContext<E,Id> context;
 }

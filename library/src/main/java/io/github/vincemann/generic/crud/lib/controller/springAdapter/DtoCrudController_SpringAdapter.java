@@ -54,10 +54,9 @@ import java.util.stream.Collectors;
 public abstract class DtoCrudController_SpringAdapter
         <
                 E extends IdentifiableEntity<Id>,
-                Id extends Serializable,
-                Repo extends CrudRepository<E,Id>
+                Id extends Serializable
         >
-        extends BasicDtoCrudController<E,Id, Repo>
+        extends BasicDtoCrudController<E,Id>
                 implements InitializingBean {
 
 

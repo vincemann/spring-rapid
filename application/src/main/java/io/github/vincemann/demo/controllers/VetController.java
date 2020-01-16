@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 
 @Controller
 public class VetController
-        extends DtoCrudController_SpringAdapter<Vet, Long, VetRepository> {
+        extends DtoCrudController_SpringAdapter<Vet, Long> {
 
     public VetController() {
         super(DtoMappingContext.DEFAULT(VetDto.class));
