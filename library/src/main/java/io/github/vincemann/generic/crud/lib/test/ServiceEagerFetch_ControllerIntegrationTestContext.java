@@ -11,7 +11,9 @@ import org.springframework.data.repository.CrudRepository;
 import java.io.Serializable;
 
 @Getter
-public class ServiceEagerFetch_ControllerIntegrationTestContext<E extends IdentifiableEntity<Id>, Id extends Serializable> extends ControllerIntegrationTestContext<E, Id> {
+public abstract class ServiceEagerFetch_ControllerIntegrationTestContext<E extends IdentifiableEntity<Id>, Id extends Serializable>
+        extends ControllerIntegrationTestContext<E, Id> {
+
     public ServiceEagerFetch_ControllerIntegrationTestContext(String url) {
         super(url);
     }

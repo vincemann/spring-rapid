@@ -9,7 +9,7 @@ import org.springframework.stereotype.Controller;
 
 @Controller
 public class SpecialtyController
-        extends DtoCrudController_SpringAdapter<Specialty,Long, SpecialtyRepository> {
+        extends DtoCrudController_SpringAdapter<Specialty,Long> {
 
     public SpecialtyController() {
         super(DtoMappingContext.DEFAULT(SpecialtyDto.class));

@@ -6,32 +6,34 @@ import io.github.vincemann.generic.crud.lib.test.ControllerIntegrationTestContex
 import io.github.vincemann.generic.crud.lib.test.controller.springAdapter.crudTests.config.SuccessfulCreateControllerTestConfiguration;
 import io.github.vincemann.generic.crud.lib.test.controller.springAdapter.crudTests.config.abs.ControllerTestConfiguration;
 import io.github.vincemann.generic.crud.lib.test.controller.springAdapter.crudTests.config.factory.abs.AbstractControllerTestConfigurationFactory;
-import io.github.vincemann.generic.crud.lib.test.controller.springAdapter.requestEntityFactory.RequestEntityFactory;
 import io.github.vincemann.generic.crud.lib.test.controller.springAdapter.crudTests.abs.AbstractControllerTest;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.Setter;
 import org.junit.jupiter.api.Assertions;
 import org.springframework.http.ResponseEntity;
 
 import java.io.Serializable;
 
+@Setter
+@Getter
 public class CreateControllerTest<E extends IdentifiableEntity<Id>, Id extends Serializable>
         extends AbstractControllerTest<E,Id> {
 
-    private AbstractControllerTestConfigurationFactory<E,Id,SuccessfulCreateControllerTestConfiguration<E,Id>> successfulTestConfigFactory;
-    private AbstractControllerTestConfigurationFactory<E,Id,ControllerTestConfiguration<Id>> failedTestConfigFactory;
+    private AbstractControllerTestConfigurationFactory<E,Id,SuccessfulCreateControllerTestConfiguration<E,Id>,ControllerTestConfiguration<Id>> testConfigFactory;
 
 
-    public CreateControllerTest(ControllerIntegrationTestContext<E, Id> rootContext, RequestEntityFactory<Id> requestEntityFactory, AbstractControllerTestConfigurationFactory<E, Id, SuccessfulCreateControllerTestConfiguration<E, Id>> successfulTestConfigFactory, AbstractControllerTestConfigurationFactory<E, Id, ControllerTestConfiguration<Id>> failedTestConfigFactory) {
-        super(rootContext, requestEntityFactory);
-        this.successfulTestConfigFactory = successfulTestConfigFactory;
-        this.failedTestConfigFactory = failedTestConfigFactory;
+    public CreateControllerTest(ControllerIntegrationTestContext<E, Id> testContext, AbstractControllerTestConfigurationFactory<E, Id, SuccessfulCreateControllerTestConfiguration<E, Id>, ControllerTestConfiguration<Id>> testConfigFactory) {
+        super(testContext);
+        this.testConfigFactory = testConfigFactory;
     }
 
     public  <Dto extends IdentifiableEntity<Id>> Dto createEntity_ShouldSucceed(IdentifiableEntity<Id> returnDto) throws Exception {
-        return createEntity_ShouldSucceed(returnDto, successfulTestConfigFactory.createDefaultConfig());
+        return createEntity_ShouldSucceed(returnDto, testConfigFactory.createSuccessfulDefaultConfig());
     }
 
     public <Dto extends IdentifiableEntity<Id>> Dto createEntity_ShouldSucceed(IdentifiableEntity<Id> createRequestDto, SuccessfulCreateControllerTestConfiguration<E,Id> modifications) throws Exception {
-        SuccessfulCreateControllerTestConfiguration<E,Id> config = successfulTestConfigFactory.createMergedConfig(modifications);
+        SuccessfulCreateControllerTestConfiguration<E,Id> config = testConfigFactory.createSuccessfulMergedConfig(modifications);
 
         Assertions.assertNull(createRequestDto.getId());
         DtoMappingContext<Id> mappingContext = getTestContext().getDtoMappingContext();
@@ -49,11 +51,11 @@ public class CreateControllerTest<E extends IdentifiableEntity<Id>, Id extends S
     }
 
     public ResponseEntity<String> createEntity_ShouldFail(IdentifiableEntity<Id> dto) throws Exception {
-        return createEntity_ShouldFail(dto, failedTestConfigFactory.createDefaultConfig());
+        return createEntity_ShouldFail(dto, testConfigFactory.createFailedDefaultConfig());
     }
 
     public ResponseEntity<String> createEntity_ShouldFail(IdentifiableEntity<Id> dto, ControllerTestConfiguration<Id> modifications) throws Exception {
-        ControllerTestConfiguration<Id> config = failedTestConfigFactory.createMergedConfig(modifications);
+        ControllerTestConfiguration<Id> config = testConfigFactory.createFailedMergedConfig(modifications);
         ResponseEntity<String> responseEntity = createEntity(dto, config);
         Assertions.assertEquals(config.getExpectedHttpStatus(), responseEntity.getStatusCode(), responseEntity.getBody());
         return responseEntity;
@@ -66,6 +68,6 @@ public class CreateControllerTest<E extends IdentifiableEntity<Id>, Id extends S
      * @return
      */
     public ResponseEntity<String> createEntity(IdentifiableEntity<Id> dto, ControllerTestConfiguration<Id> config) {
-        return sendRequest(getRequestEntityFactory().create(config,dto));
+        return sendRequest(getTestContext().getRequestEntityFactory().create(config,dto));
     }
 }

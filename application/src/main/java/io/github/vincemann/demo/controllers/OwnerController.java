@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 
 @Controller
 public class OwnerController
-        extends DtoCrudController_SpringAdapter<Owner, Long,OwnerRepository> {
+        extends DtoCrudController_SpringAdapter<Owner, Long> {
 
 
     public OwnerController() {

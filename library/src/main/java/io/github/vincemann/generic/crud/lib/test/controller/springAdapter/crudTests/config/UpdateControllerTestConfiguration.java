@@ -16,13 +16,13 @@ import java.util.Map;
 
 @Getter
 @Setter
-public class SuccessfulUpdateControllerTestConfiguration<E extends IdentifiableEntity<Id>,Id extends Serializable>
+public class UpdateControllerTestConfiguration<E extends IdentifiableEntity<Id>,Id extends Serializable>
         extends ControllerTestConfiguration<Id> {
     private Boolean fullUpdate;
     private PostUpdateControllerTestCallback<E,Id> postUpdateCallback;
 
     @Builder(builderMethodName = "Builder")
-    public SuccessfulUpdateControllerTestConfiguration(RequestMethod method, MultiValueMap<String, String> headers, HttpStatus expectedHttpStatus, Map<String, String> queryParams, Boolean fullUpdate, PostUpdateControllerTestCallback<E, Id> postUpdateCallback) {
+    public UpdateControllerTestConfiguration(RequestMethod method, MultiValueMap<String, String> headers, HttpStatus expectedHttpStatus, Map<String, String> queryParams, Boolean fullUpdate, PostUpdateControllerTestCallback<E, Id> postUpdateCallback) {
         super(method, headers, expectedHttpStatus, queryParams);
         this.fullUpdate = fullUpdate;
         this.postUpdateCallback = postUpdateCallback;

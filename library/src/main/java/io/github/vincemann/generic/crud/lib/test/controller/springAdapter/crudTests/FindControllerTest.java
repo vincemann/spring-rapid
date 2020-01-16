@@ -6,7 +6,9 @@ import io.github.vincemann.generic.crud.lib.test.controller.springAdapter.crudTe
 import io.github.vincemann.generic.crud.lib.test.controller.springAdapter.crudTests.config.SuccessfulFindControllerTestConfiguration;
 import io.github.vincemann.generic.crud.lib.test.controller.springAdapter.crudTests.config.abs.ControllerTestConfiguration;
 import io.github.vincemann.generic.crud.lib.test.controller.springAdapter.crudTests.config.factory.abs.AbstractControllerTestConfigurationFactory;
-import io.github.vincemann.generic.crud.lib.test.controller.springAdapter.requestEntityFactory.RequestEntityFactory;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Assertions;
 import org.springframework.http.ResponseEntity;
@@ -15,22 +17,23 @@ import java.io.Serializable;
 import java.util.Optional;
 
 @Slf4j
+@Setter
+@Getter
 public class FindControllerTest<E extends IdentifiableEntity<Id>, Id extends Serializable>
         extends AbstractControllerTest<E,Id> {
 
 
-    private AbstractControllerTestConfigurationFactory<E,Id,SuccessfulFindControllerTestConfiguration<E,Id>> successfulTestConfigFactory;
-    private AbstractControllerTestConfigurationFactory<E,Id, ControllerTestConfiguration<Id>> failedTestConfigFactory;
+    private AbstractControllerTestConfigurationFactory<E,Id,SuccessfulFindControllerTestConfiguration<E,Id>,ControllerTestConfiguration<Id>> testConfigFactory;
 
-    public FindControllerTest(ControllerIntegrationTestContext<E, Id> rootContext, RequestEntityFactory<Id> requestEntityFactory, AbstractControllerTestConfigurationFactory<E, Id, SuccessfulFindControllerTestConfiguration<E, Id>> successfulTestConfigFactory, AbstractControllerTestConfigurationFactory<E, Id, ControllerTestConfiguration<Id>> failedTestConfigFactory) {
-        super(rootContext, requestEntityFactory);
-        this.successfulTestConfigFactory = successfulTestConfigFactory;
-        this.failedTestConfigFactory = failedTestConfigFactory;
+    @Builder
+    public FindControllerTest(ControllerIntegrationTestContext<E, Id> testContext, AbstractControllerTestConfigurationFactory<E, Id, SuccessfulFindControllerTestConfiguration<E, Id>, ControllerTestConfiguration<Id>> testConfigFactory) {
+        super(testContext);
+        this.testConfigFactory = testConfigFactory;
     }
 
 
-    protected <Dto extends IdentifiableEntity<Id>> Dto findEntity_ShouldSucceed(Id id) throws Exception {
-        return findEntity_ShouldSucceed(id, successfulTestConfigFactory.createDefaultConfig());
+    public <Dto extends IdentifiableEntity<Id>> Dto findEntity_ShouldSucceed(Id id) throws Exception {
+        return findEntity_ShouldSucceed(id, testConfigFactory.createSuccessfulDefaultConfig());
     }
 
     /**
@@ -38,8 +41,8 @@ public class FindControllerTest<E extends IdentifiableEntity<Id>, Id extends Ser
      * @return the dto of the requested entity found on backend with given id
      * @throws Exception
      */
-    protected <Dto extends IdentifiableEntity<Id>> Dto findEntity_ShouldSucceed(Id id, SuccessfulFindControllerTestConfiguration<E,Id> modifications) throws Exception {
-        SuccessfulFindControllerTestConfiguration<E, Id> config = successfulTestConfigFactory.createMergedConfig(modifications);
+    public <Dto extends IdentifiableEntity<Id>> Dto findEntity_ShouldSucceed(Id id, SuccessfulFindControllerTestConfiguration<E,Id> modifications) throws Exception {
+        SuccessfulFindControllerTestConfiguration<E, Id> config = testConfigFactory.createSuccessfulMergedConfig(modifications);
         Optional<E> entityToFind = getTestContext().getTestService().findById(id);
         if(entityToFind.isEmpty()){
             log.warn("Entity that shall be found does not exist with id: " + id);
@@ -55,19 +58,19 @@ public class FindControllerTest<E extends IdentifiableEntity<Id>, Id extends Ser
         return (Dto) responseDto;
     }
 
-    protected ResponseEntity<String> findEntity_ShouldFail(Id id) throws Exception {
-        return findEntity_ShouldFail(id, failedTestConfigFactory.createDefaultConfig());
+    public ResponseEntity<String> findEntity_ShouldFail(Id id) throws Exception {
+        return findEntity_ShouldFail(id, testConfigFactory.createFailedDefaultConfig());
     }
 
-    protected ResponseEntity<String> findEntity_ShouldFail(Id id, ControllerTestConfiguration<Id> modifications) throws Exception {
-        ControllerTestConfiguration<Id> config = failedTestConfigFactory.createMergedConfig(modifications);
+    public ResponseEntity<String> findEntity_ShouldFail(Id id, ControllerTestConfiguration<Id> modifications) throws Exception {
+        ControllerTestConfiguration<Id> config = testConfigFactory.createFailedMergedConfig(modifications);
         ResponseEntity<String> responseEntity = findEntity(id, config);
         Assertions.assertEquals(config.getExpectedHttpStatus(), responseEntity.getStatusCode(), responseEntity.getBody());
         return responseEntity;
     }
 
-    protected ResponseEntity<String> findEntity(Id id, ControllerTestConfiguration<Id> config) {
+    public ResponseEntity<String> findEntity(Id id, ControllerTestConfiguration<Id> config) {
         Assertions.assertNotNull(id);
-        return sendRequest(getRequestEntityFactory().create(config,id));
+        return sendRequest(getTestContext().getRequestEntityFactory().create(config,id));
     }
 }

@@ -23,7 +23,7 @@ import java.time.LocalDate;
         SpringBootTest.WebEnvironment.RANDOM_PORT)
 @ActiveProfiles(value = {"test","springdatajpa"})
 class PetJPAServiceIntegrationTest
-        extends CrudServiceIntegrationTest<PetJPAService, PetRepository, Pet,Long> {
+        extends CrudServiceIntegrationTest<Pet,Long> {
 
     @Autowired
     private PetTypeService petTypeService;
@@ -43,6 +43,6 @@ class PetJPAServiceIntegrationTest
                 .birthDate(LocalDate.now())
                 .name("bello")
                 .build();
-        saveEntity_ShouldSucceed(dogWithDogType);
+        getSaveServiceTest().saveEntity_ShouldSucceed(dogWithDogType);
     }
 }

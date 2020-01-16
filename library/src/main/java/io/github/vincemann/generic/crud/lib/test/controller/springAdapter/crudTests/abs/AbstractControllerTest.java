@@ -4,7 +4,6 @@ import io.github.vincemann.generic.crud.lib.controller.dtoMapper.DtoMappingConte
 import io.github.vincemann.generic.crud.lib.controller.springAdapter.mediaTypeStrategy.DtoReadingException;
 import io.github.vincemann.generic.crud.lib.model.IdentifiableEntity;
 import io.github.vincemann.generic.crud.lib.test.ControllerIntegrationTestContext;
-import io.github.vincemann.generic.crud.lib.test.controller.springAdapter.requestEntityFactory.RequestEntityFactory;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import org.springframework.http.RequestEntity;
@@ -16,7 +15,6 @@ import java.io.Serializable;
 @AllArgsConstructor
 public abstract class AbstractControllerTest<E extends IdentifiableEntity<Id>, Id extends Serializable> {
     private ControllerIntegrationTestContext<E,Id> testContext;
-    private RequestEntityFactory<Id> requestEntityFactory;
 
     public ResponseEntity<String> sendRequest(RequestEntity<?> requestEntity){
         return getTestContext().getRestTemplate().exchange(requestEntity, String.class);

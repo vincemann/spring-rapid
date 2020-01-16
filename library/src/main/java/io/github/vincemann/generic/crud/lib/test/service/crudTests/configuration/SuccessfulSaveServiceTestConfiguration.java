@@ -1,8 +1,8 @@
-package io.github.vincemann.generic.crud.lib.test.service.crudTests.configuration.save;
+package io.github.vincemann.generic.crud.lib.test.service.crudTests.configuration;
 
 import io.github.vincemann.generic.crud.lib.model.IdentifiableEntity;
 import io.github.vincemann.generic.crud.lib.test.equalChecker.EqualChecker;
-import io.github.vincemann.generic.crud.lib.test.service.crudTests.configuration.abs.AbstractServiceTestConfiguration;
+import io.github.vincemann.generic.crud.lib.test.service.crudTests.configuration.abs.ServiceTestConfiguration;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
@@ -12,7 +12,7 @@ import java.io.Serializable;
 @Getter
 @Setter
 public class SuccessfulSaveServiceTestConfiguration<E extends IdentifiableEntity<Id>,Id extends Serializable>
-        extends AbstractServiceTestConfiguration<E,Id>
+        extends ServiceTestConfiguration<E,Id>
 {
     private EqualChecker<E> returnedEntityEqualChecker;
 

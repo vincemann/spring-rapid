@@ -6,5 +6,5 @@ import java.io.Serializable;
 
 public interface PostUpdateControllerTestCallback<E extends IdentifiableEntity<Id>,Id extends Serializable> {
 
-    public void callback(IdentifiableEntity<Id> requestDto, E afterUpdate);
+    public void callback(E afterUpdate);
 }

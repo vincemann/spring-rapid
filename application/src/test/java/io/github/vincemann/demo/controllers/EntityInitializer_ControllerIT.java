@@ -24,7 +24,7 @@ public abstract class EntityInitializer_ControllerIT
                 E extends IdentifiableEntity<Long>,
                 R extends CrudRepository<E, Long>
         >
-        extends UrlParamIdControllerIntegrationTest<E,Long,R>
+        extends UrlParamIdControllerIntegrationTest<E,Long>
 
 {
 

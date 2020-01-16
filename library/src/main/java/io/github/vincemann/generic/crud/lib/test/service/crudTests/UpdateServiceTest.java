@@ -7,8 +7,7 @@ import io.github.vincemann.generic.crud.lib.service.exception.NoIdException;
 import io.github.vincemann.generic.crud.lib.test.service.ServiceTestContext;
 import io.github.vincemann.generic.crud.lib.test.service.crudTests.abs.AbstractServiceTest;
 import io.github.vincemann.generic.crud.lib.test.exception.InvalidConfigurationModificationException;
-import io.github.vincemann.generic.crud.lib.test.service.crudTests.configuration.factory.update.FailedServiceTestConfigurationFactory;
-import io.github.vincemann.generic.crud.lib.test.service.crudTests.configuration.factory.update.SuccessfulUpdateServiceTestConfigurationFactory;
+import io.github.vincemann.generic.crud.lib.test.service.crudTests.configuration.factory.ServiceUpdateTestConfigurationFactory;
 import io.github.vincemann.generic.crud.lib.test.service.crudTests.configuration.factory.abs.AbstractServiceTestConfigurationFactory;
 import io.github.vincemann.generic.crud.lib.test.service.crudTests.configuration.update.FailedUpdateServiceTestConfiguration;
 import io.github.vincemann.generic.crud.lib.test.service.crudTests.configuration.update.SuccessfulUpdateServiceTestConfiguration;
@@ -23,20 +22,18 @@ import java.util.Optional;
 @Setter
 public class UpdateServiceTest<E extends IdentifiableEntity<Id>, Id extends Serializable>
         extends AbstractServiceTest<E, Id> {
-    private AbstractServiceTestConfigurationFactory<E, Id, SuccessfulUpdateServiceTestConfiguration<E, Id>> successfulUpdateTestConfigurationFactory;
-    private AbstractServiceTestConfigurationFactory<E, Id, FailedUpdateServiceTestConfiguration<E, Id>> failedAbstractServiceTestConfigurationFactory;
+    private AbstractServiceTestConfigurationFactory<E, Id, SuccessfulUpdateServiceTestConfiguration<E, Id>,FailedUpdateServiceTestConfiguration<E, Id>> updateTestConfigurationFactory;
 
     public UpdateServiceTest(ServiceTestContext<E, Id> testContext) {
         super(testContext);
-        this.successfulUpdateTestConfigurationFactory = new SuccessfulUpdateServiceTestConfigurationFactory<>(testContext);
-        this.failedAbstractServiceTestConfigurationFactory = new FailedServiceTestConfigurationFactory<>(testContext);
+        this.updateTestConfigurationFactory = new ServiceUpdateTestConfigurationFactory<>(testContext);
     }
 
 
     public E updateEntity_ShouldSucceed(E entityToUpdate, E updateRequest) throws BadEntityException, EntityNotFoundException, NoIdException {
         saveEntityForUpdate(entityToUpdate, updateRequest);
         try {
-            return updateEntity_ShouldSucceed(updateRequest, successfulUpdateTestConfigurationFactory.createDefaultConfig());
+            return updateEntity_ShouldSucceed(updateRequest, updateTestConfigurationFactory.createSuccessfulDefaultConfig());
         } catch (InvalidConfigurationModificationException e) {
             throw new RuntimeException(e);
         }
@@ -49,7 +46,7 @@ public class UpdateServiceTest<E extends IdentifiableEntity<Id>, Id extends Seri
 
     public E updateEntity_ShouldSucceed(E updateRequest) throws BadEntityException, EntityNotFoundException, NoIdException {
         try {
-            return updateEntity_ShouldSucceed(updateRequest, successfulUpdateTestConfigurationFactory.createDefaultConfig());
+            return updateEntity_ShouldSucceed(updateRequest, updateTestConfigurationFactory.createSuccessfulDefaultConfig());
         } catch (InvalidConfigurationModificationException e) {
             throw new RuntimeException(e);
         }
@@ -57,7 +54,7 @@ public class UpdateServiceTest<E extends IdentifiableEntity<Id>, Id extends Seri
 
 
     public E updateEntity_ShouldSucceed(E updateRequest, SuccessfulUpdateServiceTestConfiguration<E, Id> configModification) throws NoIdException, BadEntityException, EntityNotFoundException, InvalidConfigurationModificationException {
-        SuccessfulUpdateServiceTestConfiguration<E, Id> config = successfulUpdateTestConfigurationFactory.createMergedConfig(configModification);
+        SuccessfulUpdateServiceTestConfiguration<E, Id> config = updateTestConfigurationFactory.createSuccessfulMergedConfig(configModification);
         //given
         Assertions.assertNotNull(updateRequest);
         Assertions.assertNotNull(updateRequest.getId());
@@ -86,7 +83,7 @@ public class UpdateServiceTest<E extends IdentifiableEntity<Id>, Id extends Seri
 
     public <T extends Throwable> T updateEntity_ShouldFail(E newEntity) {
         try {
-            return (T) updateEntity_ShouldFail(newEntity, failedAbstractServiceTestConfigurationFactory.createDefaultConfig());
+            return (T) updateEntity_ShouldFail(newEntity, updateTestConfigurationFactory.createFailedDefaultConfig());
         } catch (InvalidConfigurationModificationException e) {
             throw new RuntimeException(e);
         }
@@ -100,14 +97,14 @@ public class UpdateServiceTest<E extends IdentifiableEntity<Id>, Id extends Seri
     public <T extends Throwable> T updateEntity_ShouldFail(E entityToUpdate, E newEntity) throws NoIdException, BadEntityException {
         saveEntityForUpdate(entityToUpdate, newEntity);
         try {
-            return (T) updateEntity_ShouldFail(newEntity, failedAbstractServiceTestConfigurationFactory.createDefaultConfig());
+            return (T) updateEntity_ShouldFail(newEntity, updateTestConfigurationFactory.createFailedDefaultConfig());
         } catch (InvalidConfigurationModificationException e) {
             throw new RuntimeException(e);
         }
     }
 
     public <T extends Throwable> T updateEntity_ShouldFail(E newEntity, FailedUpdateServiceTestConfiguration<E, Id> configModification) throws InvalidConfigurationModificationException {
-        FailedUpdateServiceTestConfiguration<E, Id> config = failedAbstractServiceTestConfigurationFactory.createMergedConfig(configModification);
+        FailedUpdateServiceTestConfiguration<E, Id> config = updateTestConfigurationFactory.createFailedMergedConfig(configModification);
         //given
         //entity to update is present
         Assertions.assertNotNull(newEntity);

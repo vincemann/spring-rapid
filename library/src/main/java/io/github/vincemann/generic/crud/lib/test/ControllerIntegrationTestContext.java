@@ -7,6 +7,7 @@ import io.github.vincemann.generic.crud.lib.controller.springAdapter.mediaTypeSt
 import io.github.vincemann.generic.crud.lib.model.IdentifiableEntity;
 import io.github.vincemann.generic.crud.lib.service.CrudService;
 import io.github.vincemann.generic.crud.lib.test.controller.springAdapter.BaseAddressProvider;
+import io.github.vincemann.generic.crud.lib.test.controller.springAdapter.requestEntityFactory.RequestEntityFactory;
 import io.github.vincemann.generic.crud.lib.test.equalChecker.EqualChecker;
 import lombok.Getter;
 import lombok.Setter;
@@ -34,16 +35,18 @@ public abstract class ControllerIntegrationTestContext<E extends IdentifiableEnt
     private DtoMappingContext<Id> dtoMappingContext;
     private String url;
     private CrudService<E,Id, CrudRepository<E,Id>> testService;
-    private DtoCrudController_SpringAdapter<E, Id, CrudRepository<E,Id>> controller;
-    //private EqualChecker<? extends IdentifiableEntity<Id>> defaultDtoEqualChecker;
+    private DtoCrudController_SpringAdapter<E, Id> controller;
+    private RequestEntityFactory<Id> requestEntityFactory;
 
     public ControllerIntegrationTestContext(String url) {
-        this.url = url;
+        this.url=url;
     }
 
     public ControllerIntegrationTestContext() {
-        this.url= LOCAL_HOST;
+        this(LOCAL_HOST);
     }
+
+    protected abstract RequestEntityFactory<Id> provideRequestEntityFactory();
 
     @Override
     public void afterPropertiesSet() throws Exception {
@@ -54,6 +57,7 @@ public abstract class ControllerIntegrationTestContext<E extends IdentifiableEnt
         if (testService == null) {
             setTestService(getController().getCrudService());
         }
+        this.requestEntityFactory= provideRequestEntityFactory();
     }
 
     @BeforeAll

@@ -8,7 +8,7 @@ import org.springframework.stereotype.Controller;
 
 @Controller
 public class PetTypeController
-        extends DtoCrudController_SpringAdapter<PetType, Long, PetTypeRepository> {
+        extends DtoCrudController_SpringAdapter<PetType, Long> {
 
     public PetTypeController() {
         super(DtoMappingContext.DEFAULT(PetType.class));

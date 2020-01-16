@@ -3,7 +3,7 @@ package io.github.vincemann.generic.crud.lib.test.service.crudTests.configuratio
 import io.github.vincemann.generic.crud.lib.model.IdentifiableEntity;
 import io.github.vincemann.generic.crud.lib.test.callback.PostUpdateServiceTestCallback;
 import io.github.vincemann.generic.crud.lib.test.equalChecker.EqualChecker;
-import io.github.vincemann.generic.crud.lib.test.service.crudTests.configuration.abs.AbstractServiceTestConfiguration;
+import io.github.vincemann.generic.crud.lib.test.service.crudTests.configuration.abs.ServiceTestConfiguration;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -12,7 +12,7 @@ import java.io.Serializable;
 @Getter
 @Setter
 public class AbstractUpdateServiceTestConfiguration<E extends IdentifiableEntity<Id>,Id extends Serializable>
-                                            extends AbstractServiceTestConfiguration<E,Id> {
+                                            extends ServiceTestConfiguration<E,Id> {
     private Boolean fullUpdate;
     private PostUpdateServiceTestCallback<E, Id> postUpdateCallback;
 
