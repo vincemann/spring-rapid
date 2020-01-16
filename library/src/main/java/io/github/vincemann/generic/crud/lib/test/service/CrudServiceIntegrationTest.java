@@ -62,7 +62,7 @@ public abstract class CrudServiceIntegrationTest
     }
 
     @Autowired
-    public void injectCrudService(CrudService<E, Id, CrudRepository<E,Id>> crudService) {
+    public void injectCrudService(CrudService<E, Id,? extends CrudRepository<E,Id>> crudService) {
         setCrudService(crudService);
     }
 

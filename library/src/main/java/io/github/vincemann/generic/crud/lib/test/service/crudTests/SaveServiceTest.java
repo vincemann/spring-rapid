@@ -7,7 +7,7 @@ import io.github.vincemann.generic.crud.lib.test.service.crudTests.abs.AbstractS
 import io.github.vincemann.generic.crud.lib.test.exception.InvalidConfigurationModificationException;
 import io.github.vincemann.generic.crud.lib.test.service.crudTests.configuration.abs.ServiceTestConfiguration;
 import io.github.vincemann.generic.crud.lib.test.service.crudTests.configuration.factory.abs.AbstractServiceTestConfigurationFactory;
-import io.github.vincemann.generic.crud.lib.test.service.crudTests.configuration.factory.SuccessfulSaveServiceTestConfigurationFactory;
+import io.github.vincemann.generic.crud.lib.test.service.crudTests.configuration.factory.SaveServiceTestConfigurationFactory;
 import io.github.vincemann.generic.crud.lib.test.service.crudTests.configuration.SuccessfulSaveServiceTestConfiguration;
 import org.junit.jupiter.api.Assertions;
 
@@ -22,7 +22,7 @@ public class SaveServiceTest<E extends IdentifiableEntity<Id>, Id extends Serial
 
     public SaveServiceTest(ServiceTestContext<E, Id> testContext) {
         super(testContext);
-        this.saveTestConfigurationFactory =  new SuccessfulSaveServiceTestConfigurationFactory<>(testContext);
+        this.saveTestConfigurationFactory =  new SaveServiceTestConfigurationFactory<>(testContext);
     }
 
     public E saveEntity_ShouldSucceed(E entityToSave) throws BadEntityException {

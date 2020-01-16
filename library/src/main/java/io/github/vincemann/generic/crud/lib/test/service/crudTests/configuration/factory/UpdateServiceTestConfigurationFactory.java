@@ -10,10 +10,10 @@ import io.github.vincemann.generic.crud.lib.util.NullAwareBeanUtils;
 
 import java.io.Serializable;
 
-public class ServiceUpdateTestConfigurationFactory<E extends IdentifiableEntity<Id>,Id extends Serializable>
+public class UpdateServiceTestConfigurationFactory<E extends IdentifiableEntity<Id>,Id extends Serializable>
         extends AbstractServiceTestConfigurationFactory<E, Id, SuccessfulUpdateServiceTestConfiguration<E,Id>,FailedUpdateServiceTestConfiguration<E,Id>> {
 
-    public ServiceUpdateTestConfigurationFactory(ServiceTestContext<E, Id> context) {
+    public UpdateServiceTestConfigurationFactory(ServiceTestContext<E, Id> context) {
         super(context);
     }
 
@@ -38,6 +38,17 @@ public class ServiceUpdateTestConfigurationFactory<E extends IdentifiableEntity<
                 throw new InvalidConfigurationModificationException("partial update and repo Entity equal checker must not be combined");
             }
         }
+        //partial update should use partialUpdateEqualChecker, if user did not specify own
+        if(config.getFullUpdate()!=null){
+            if(!config.getFullUpdate()){
+                if(modification.getReturnedEntityEqualChecker()==null){
+                    config.setReturnedEntityEqualChecker(getContext().getDefaultPartialUpdateEqualChecker());
+                }
+                if(modification.getRepoEntityEqualChecker()==null){
+                    config.setRepoEntityEqualChecker(getContext().getDefaultPartialUpdateEqualChecker());
+                }
+            }
+        }
         return config;
     }
 
@@ -60,6 +71,14 @@ public class ServiceUpdateTestConfigurationFactory<E extends IdentifiableEntity<
             return config;
         }
         NullAwareBeanUtils.copyProperties(config,modification);
+        //partial update should use partialUpdateEqualChecker, if user did not specify own
+        if(config.getFullUpdate()!=null){
+            if(!config.getFullUpdate()){
+                if(modification.getRepoEntityEqualChecker()==null){
+                    config.setRepoEntityEqualChecker(getContext().getDefaultPartialUpdateEqualChecker());
+                }
+            }
+        }
         return config;
     }
 }

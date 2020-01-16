@@ -55,7 +55,7 @@ public abstract class ControllerIntegrationTestContext<E extends IdentifiableEnt
             dtoMappingContext = getController().getDtoMappingContext();
         }
         if (testService == null) {
-            setTestService(getController().getCrudService());
+            setTestService(getController().getCastedCrudService());
         }
         this.requestEntityFactory= provideRequestEntityFactory();
     }

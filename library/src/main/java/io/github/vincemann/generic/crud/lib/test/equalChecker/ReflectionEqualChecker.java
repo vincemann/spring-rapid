@@ -2,12 +2,14 @@ package io.github.vincemann.generic.crud.lib.test.equalChecker;
 
 import junit.framework.AssertionFailedError;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Component;
 import org.unitils.reflectionassert.ReflectionAssert;
 import org.unitils.reflectionassert.ReflectionComparatorMode;
 
-@Component
 @Slf4j
+@Component
+@Primary
 public class ReflectionEqualChecker<T> implements EqualChecker<T> {
 
     @Override
