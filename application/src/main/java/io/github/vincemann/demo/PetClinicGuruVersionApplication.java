@@ -13,6 +13,7 @@ import org.springframework.web.servlet.mvc.method.RequestMappingInfo;
 import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping;
 
 import java.sql.SQLException;
+import java.util.Arrays;
 import java.util.Map;
 
 @SpringBootApplication
@@ -24,14 +25,6 @@ public class PetClinicGuruVersionApplication {
 
 	public static void main(String[] args){
 		ApplicationContext context = SpringApplication.run(PetClinicGuruVersionApplication.class, args);
-		final RequestMappingHandlerMapping requestMappingHandlerMapping =
-				context.getBean( RequestMappingHandlerMapping.class );
-		final Map<RequestMappingInfo, HandlerMethod> handlerMethods =
-				requestMappingHandlerMapping.getHandlerMethods();
-		for(Map.Entry<RequestMappingInfo, HandlerMethod> entry : handlerMethods.entrySet()){
-			log.debug("handlerMethod: " + entry.getValue().toString());
-			log.debug("RequestMappingInfo: " + entry.getKey().toString());
-		}
 	}
 
 }

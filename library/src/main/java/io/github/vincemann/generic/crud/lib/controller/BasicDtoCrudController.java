@@ -41,7 +41,7 @@ public abstract class BasicDtoCrudController
         >
             implements DtoCrudController<Id> {
 
-    private CrudService<E,Id,CrudRepository<E,Id>> crudService;
+    private CrudService<E,Id,? extends CrudRepository<E,Id>> crudService;
     private DtoMapperFinder<Id> dtoMapperFinder;
     private DtoMappingContext<Id> dtoMappingContext;
     @SuppressWarnings("unchecked")
@@ -53,7 +53,7 @@ public abstract class BasicDtoCrudController
     }
 
     @Autowired
-    public void injectCrudService(CrudService<E,Id,CrudRepository<E,Id>> crudService) {
+    public void injectCrudService(CrudService<E,Id,? extends CrudRepository<E,Id>> crudService) {
         this.crudService = crudService;
     }
 

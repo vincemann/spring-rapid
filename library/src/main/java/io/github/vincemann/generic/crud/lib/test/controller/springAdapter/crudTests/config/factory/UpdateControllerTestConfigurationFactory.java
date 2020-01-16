@@ -12,15 +12,15 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import java.io.Serializable;
 
 public class UpdateControllerTestConfigurationFactory<E extends IdentifiableEntity<Id>,Id extends Serializable>
-        extends AbstractControllerTestConfigurationFactory<E, Id, UpdateControllerTestConfiguration<E,Id>, FailedUpdateControllerTestConfiguration<Id>> {
+        extends AbstractControllerTestConfigurationFactory<E, Id, UpdateControllerTestConfiguration<E,Id>, UpdateControllerTestConfiguration<E,Id>> {
 
     public UpdateControllerTestConfigurationFactory(ControllerIntegrationTestContext<E, Id> context) {
         super(context);
     }
 
     @Override
-    public FailedUpdateControllerTestConfiguration<Id> createFailedDefaultConfig() {
-        return FailedUpdateControllerTestConfiguration.<Id>Builder()
+    public UpdateControllerTestConfiguration<E,Id> createFailedDefaultConfig() {
+        return UpdateControllerTestConfiguration.<E,Id>Builder()
                 .expectedHttpStatus(HttpStatus.BAD_REQUEST)
                 .fullUpdate(true)
                 .method(RequestMethod.PUT)
@@ -28,8 +28,8 @@ public class UpdateControllerTestConfigurationFactory<E extends IdentifiableEnti
     }
 
     @Override
-    public FailedUpdateControllerTestConfiguration<Id> createFailedMergedConfig(FailedUpdateControllerTestConfiguration<Id> modification) throws InvalidConfigurationModificationException {
-        FailedUpdateControllerTestConfiguration<Id> config = createFailedDefaultConfig();
+    public UpdateControllerTestConfiguration<E,Id> createFailedMergedConfig(UpdateControllerTestConfiguration<E,Id> modification) throws InvalidConfigurationModificationException {
+        UpdateControllerTestConfiguration<E,Id> config = createFailedDefaultConfig();
         NullAwareBeanUtils.copyProperties(config,modification);
         return config;
     }
@@ -40,7 +40,7 @@ public class UpdateControllerTestConfigurationFactory<E extends IdentifiableEnti
                 .method(RequestMethod.PUT)
                 .expectedHttpStatus(HttpStatus.OK)
                 .fullUpdate(true)
-                .postUpdateCallback((a,b)->{})
+                .postUpdateCallback((a)->{})
                 .build();
     }
 

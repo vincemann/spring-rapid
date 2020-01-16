@@ -56,7 +56,7 @@ class OwnerJPAServiceIT
     @Autowired
     @Qualifier(EAGER_FETCH_PROXY)
     @Override
-    public void injectCrudService(CrudService<Owner, Long, CrudRepository<Owner,Long>> crudService) {
+    public void injectCrudService(CrudService<Owner, Long, ? extends CrudRepository<Owner,Long>> crudService) {
         super.injectCrudService(crudService);
     }
 
@@ -163,12 +163,9 @@ class OwnerJPAServiceIT
         Owner updatedOwner = getUpdateServiceTest().updateEntity_ShouldSucceed(owner,ownerUpdateRequest,
                 SuccessfulUpdateServiceTestConfiguration.<Owner, Long>builder()
                         .fullUpdate(false)
-                        .postUpdateCallback(new PostUpdateServiceTestCallback<Owner, Long>() {
-                            @Override
-                            public void callback(Owner request, Owner afterUpdate) {
-                                Assertions.assertEquals(2,afterUpdate.getPets().size());
-                                Assertions.assertEquals(1, afterUpdate.getPets().stream().filter(owner -> owner.getName().equals(newPetName)).count());
-                            }
+                        .postUpdateCallback((request, afterUpdate) -> {
+                            Assertions.assertEquals(2,afterUpdate.getPets().size());
+                            Assertions.assertEquals(1, afterUpdate.getPets().stream().filter(owner1 -> owner1.getName().equals(newPetName)).count());
                         })
                 .build());
     }

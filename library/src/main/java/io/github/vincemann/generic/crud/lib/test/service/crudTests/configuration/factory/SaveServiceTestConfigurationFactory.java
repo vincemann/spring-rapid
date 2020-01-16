@@ -9,10 +9,10 @@ import io.github.vincemann.generic.crud.lib.util.NullAwareBeanUtils;
 
 import java.io.Serializable;
 
-public class SuccessfulSaveServiceTestConfigurationFactory<E extends IdentifiableEntity<Id>, Id extends Serializable>
+public class SaveServiceTestConfigurationFactory<E extends IdentifiableEntity<Id>, Id extends Serializable>
         extends AbstractServiceTestConfigurationFactory<E, Id, SuccessfulSaveServiceTestConfiguration<E, Id>, ServiceTestConfiguration<E,Id>> {
 
-    public SuccessfulSaveServiceTestConfigurationFactory(ServiceTestContext<E, Id> context) {
+    public SaveServiceTestConfigurationFactory(ServiceTestContext<E, Id> context) {
         super(context);
     }
 

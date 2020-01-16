@@ -22,7 +22,7 @@ import java.util.Optional;
 @NoArgsConstructor
 public abstract class ServiceTestContext<E extends IdentifiableEntity<Id>, Id extends Serializable> {
 
-    private CrudService<E,Id,CrudRepository<E,Id>> crudService;
+    private CrudService<E,Id,? extends CrudRepository<E,Id>> crudService;
     private CrudRepository<E,Id> repository;
     private EqualChecker<E> defaultEqualChecker;
     private EqualChecker<E> defaultPartialUpdateEqualChecker;
