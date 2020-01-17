@@ -58,7 +58,13 @@ public abstract class UrlParamIdControllerIntegrationTest
     private FindAllControllerTest<E,Id> findAllControllerTest;
 
 
+
     public UrlParamIdControllerIntegrationTest() {
+    }
+
+    @Override
+    public void afterPropertiesSet() throws Exception {
+        super.afterPropertiesSet();
         Assertions.assertTrue(UrlParamIdFetchingStrategy.class.isAssignableFrom(getController().getIdIdFetchingStrategy().getClass()));
         initTestsWithDefaults();
     }
@@ -89,6 +95,7 @@ public abstract class UrlParamIdControllerIntegrationTest
     @Override
     protected RequestEntityFactory<Id> provideRequestEntityFactory() {
         return UrlParamIdRequestEntityFactory.<Id>builder()
+                .controller(getController())
                 .entityIdParamKey(((UrlParamIdFetchingStrategy<Id>) getController().getIdIdFetchingStrategy()).getIdUrlParamKey())
                 .baseAddressProvider(this)
                 .build();

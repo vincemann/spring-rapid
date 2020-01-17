@@ -1,5 +1,6 @@
 package io.github.vincemann.generic.crud.lib.controller.springAdapter.mediaTypeStrategy;
 
+import com.fasterxml.jackson.databind.MapperFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import io.github.vincemann.generic.crud.lib.model.IdentifiableEntity;
@@ -17,6 +18,7 @@ public class JSONMediaTypeStrategy<Id extends Serializable> implements MediaType
     public JSONMediaTypeStrategy() {
         this.mapper= new ObjectMapper();
         this.mapper.registerModule(new JavaTimeModule());
+        this.mapper.getDeserializationConfig().with(MapperFeature.USE_STATIC_TYPING);
     }
 
     @Override

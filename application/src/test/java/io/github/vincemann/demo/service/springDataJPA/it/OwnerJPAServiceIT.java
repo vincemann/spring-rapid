@@ -10,7 +10,7 @@ import io.github.vincemann.generic.crud.lib.service.CrudService;
 import io.github.vincemann.generic.crud.lib.service.exception.BadEntityException;
 import io.github.vincemann.generic.crud.lib.service.exception.EntityNotFoundException;
 import io.github.vincemann.generic.crud.lib.service.exception.NoIdException;
-import io.github.vincemann.generic.crud.lib.test.callback.PostUpdateServiceTestCallback;
+import io.github.vincemann.generic.crud.lib.test.service.callback.PostUpdateServiceTestCallback;
 import io.github.vincemann.generic.crud.lib.test.service.ForceEagerFetch_CrudServiceIntegrationTest;
 import io.github.vincemann.generic.crud.lib.test.exception.InvalidConfigurationModificationException;
 import io.github.vincemann.generic.crud.lib.test.service.crudTests.configuration.update.SuccessfulUpdateServiceTestConfiguration;

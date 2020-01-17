@@ -14,7 +14,8 @@ public class DtoMappingContext<Id extends Serializable> {
     private Class<? extends IdentifiableEntity<Id>> createRequestDtoClass;
     private Class<? extends IdentifiableEntity<Id>> createReturnDtoClass;
     private Class<? extends IdentifiableEntity<Id>> findReturnDtoClass;
-    private Class<? extends IdentifiableEntity<Id>> updateRequestDtoClass;
+    private Class<? extends IdentifiableEntity<Id>> partialUpdateRequestDtoClass;
+    private Class<? extends IdentifiableEntity<Id>> fullUpdateRequestDtoClass;
     private Class<? extends IdentifiableEntity<Id>> updateReturnDtoClass;
     private Class<? extends IdentifiableEntity<Id>> findAllReturnDtoClass;
 
@@ -22,11 +23,12 @@ public class DtoMappingContext<Id extends Serializable> {
     public DtoMappingContext(){ }
 
     @Builder
-    public DtoMappingContext(Class<? extends IdentifiableEntity<Id>> createRequestDtoClass, Class<? extends IdentifiableEntity<Id>> createReturnDtoClass, Class<? extends IdentifiableEntity<Id>> findReturnDtoClass, Class<? extends IdentifiableEntity<Id>> updateRequestDtoClass, Class<? extends IdentifiableEntity<Id>> updateReturnDtoClass, Class<? extends IdentifiableEntity<Id>> findAllReturnDtoClass) {
+    public DtoMappingContext(Class<? extends IdentifiableEntity<Id>> createRequestDtoClass, Class<? extends IdentifiableEntity<Id>> createReturnDtoClass, Class<? extends IdentifiableEntity<Id>> findReturnDtoClass, Class<? extends IdentifiableEntity<Id>> partialUpdateRequestDtoClass, Class<? extends IdentifiableEntity<Id>> updateReturnDtoClass, Class<? extends IdentifiableEntity<Id>> findAllReturnDtoClass,Class<? extends IdentifiableEntity<Id>> fullUpdateRequestDtoClass) {
         this.createRequestDtoClass = createRequestDtoClass;
         this.createReturnDtoClass = createReturnDtoClass;
         this.findReturnDtoClass = findReturnDtoClass;
-        this.updateRequestDtoClass = updateRequestDtoClass;
+        this.partialUpdateRequestDtoClass = partialUpdateRequestDtoClass;
+        this.fullUpdateRequestDtoClass=fullUpdateRequestDtoClass;
         this.updateReturnDtoClass = updateReturnDtoClass;
         this.findAllReturnDtoClass = findAllReturnDtoClass;
     }
@@ -41,7 +43,8 @@ public class DtoMappingContext<Id extends Serializable> {
         mc.createRequestDtoClass =defaultDtoClass;
         mc.createReturnDtoClass=defaultDtoClass;
         mc.findReturnDtoClass=defaultDtoClass;
-        mc.updateRequestDtoClass =defaultDtoClass;
+        mc.partialUpdateRequestDtoClass =defaultDtoClass;
+        mc.fullUpdateRequestDtoClass=defaultDtoClass;
         mc.updateReturnDtoClass=defaultDtoClass;
         mc.findAllReturnDtoClass=defaultDtoClass;
         return mc;
@@ -54,7 +57,8 @@ public class DtoMappingContext<Id extends Serializable> {
         mc.createRequestDtoClass =writeDtoClass;
         mc.createReturnDtoClass=readDtoClass;
         mc.findReturnDtoClass=readDtoClass;
-        mc.updateRequestDtoClass =writeDtoClass;
+        mc.partialUpdateRequestDtoClass =writeDtoClass;
+        mc.fullUpdateRequestDtoClass=writeDtoClass;
         mc.updateReturnDtoClass=readDtoClass;
         mc.findAllReturnDtoClass=readDtoClass;
         return mc;
@@ -68,7 +72,8 @@ public class DtoMappingContext<Id extends Serializable> {
         mc.createRequestDtoClass =createDtoClass;
         mc.createReturnDtoClass=readDtoClass;
         mc.findReturnDtoClass=readDtoClass;
-        mc.updateRequestDtoClass =updateDtoClass;
+        mc.partialUpdateRequestDtoClass =updateDtoClass;
+        mc.fullUpdateRequestDtoClass=updateDtoClass;
         mc.updateReturnDtoClass=readDtoClass;
         mc.findAllReturnDtoClass=readDtoClass;
         return mc;

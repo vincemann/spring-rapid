@@ -1,4 +1,4 @@
-package io.github.vincemann.generic.crud.lib.test.callback.controller;
+package io.github.vincemann.generic.crud.lib.test.controller.springAdapter.callback;
 
 import io.github.vincemann.generic.crud.lib.model.IdentifiableEntity;
 

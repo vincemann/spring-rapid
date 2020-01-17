@@ -1,7 +1,7 @@
 package io.github.vincemann.generic.crud.lib.test.service.crudTests.configuration.update.abs;
 
 import io.github.vincemann.generic.crud.lib.model.IdentifiableEntity;
-import io.github.vincemann.generic.crud.lib.test.callback.PostUpdateServiceTestCallback;
+import io.github.vincemann.generic.crud.lib.test.service.callback.PostUpdateServiceTestCallback;
 import io.github.vincemann.generic.crud.lib.test.equalChecker.EqualChecker;
 import io.github.vincemann.generic.crud.lib.test.service.crudTests.configuration.abs.ServiceTestConfiguration;
 import lombok.Getter;

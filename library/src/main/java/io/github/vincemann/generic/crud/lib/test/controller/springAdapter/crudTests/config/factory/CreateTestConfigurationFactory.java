@@ -25,6 +25,7 @@ public class CreateTestConfigurationFactory<E extends IdentifiableEntity<Id>,Id 
         return SuccessfulCreateControllerTestConfiguration.<E,Id>Builder()
                 .expectedHttpStatus(HttpStatus.OK)
                 .method(RequestMethod.POST)
+                .postCreateCallback((a,b)->{})
                 .build();
     }
 

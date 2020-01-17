@@ -1,4 +1,4 @@
-package io.github.vincemann.generic.crud.lib.test.callback;
+package io.github.vincemann.generic.crud.lib.test.service.callback;
 
 import io.github.vincemann.generic.crud.lib.model.IdentifiableEntity;
 

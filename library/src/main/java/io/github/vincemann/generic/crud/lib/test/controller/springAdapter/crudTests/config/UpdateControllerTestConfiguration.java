@@ -1,8 +1,7 @@
 package io.github.vincemann.generic.crud.lib.test.controller.springAdapter.crudTests.config;
 
 import io.github.vincemann.generic.crud.lib.model.IdentifiableEntity;
-import io.github.vincemann.generic.crud.lib.test.callback.PostUpdateServiceTestCallback;
-import io.github.vincemann.generic.crud.lib.test.callback.controller.PostUpdateControllerTestCallback;
+import io.github.vincemann.generic.crud.lib.test.controller.springAdapter.callback.PostUpdateControllerTestCallback;
 import io.github.vincemann.generic.crud.lib.test.controller.springAdapter.crudTests.config.abs.ControllerTestConfiguration;
 import lombok.Builder;
 import lombok.Getter;
