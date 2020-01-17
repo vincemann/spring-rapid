@@ -46,7 +46,7 @@ public class FindControllerTestConfigurationFactory<E extends IdentifiableEntity
     }
 
     @Override
-    public SuccessfulFindControllerTestConfiguration<E, Id> createSuccessfulMergedConfig(SuccessfulFindControllerTestConfiguration<E, Id> modification) throws InvalidConfigurationModificationException {
+    public SuccessfulFindControllerTestConfiguration<E, Id> createSuccessfulMergedConfig(ControllerTestConfiguration<Id> modification) throws InvalidConfigurationModificationException {
         SuccessfulFindControllerTestConfiguration<E, Id> config = createSuccessfulDefaultConfig();
         NullAwareBeanUtils.copyProperties(config,modification);
         return config;

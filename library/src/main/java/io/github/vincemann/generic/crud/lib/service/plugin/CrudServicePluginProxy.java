@@ -20,9 +20,9 @@ import java.util.*;
  * @param <Id>
  * @param <R>
  */
-@Qualifier(PluginProxyCrudService.PLUGIN_PROXY)
+@Qualifier(CrudServicePluginProxy.PLUGIN_PROXY)
 @Getter
-public class PluginProxyCrudService
+public class CrudServicePluginProxy
         <
                 E extends IdentifiableEntity<Id>,
                 Id extends Serializable,
@@ -36,13 +36,13 @@ public class PluginProxyCrudService
     @Setter
     private S crudService;
 
-    public PluginProxyCrudService(S crudService, Plugin<? super E, ? super Id>... plugins) {
+    public CrudServicePluginProxy(S crudService, Plugin<? super E, ? super Id>... plugins) {
         this(plugins);
         this.crudService = crudService;
 
     }
 
-    public PluginProxyCrudService(Plugin<? super E, ? super Id>... plugins) {
+    public CrudServicePluginProxy(Plugin<? super E, ? super Id>... plugins) {
         for (Plugin<? super E,? super Id> plugin : plugins) {
             plugin.setCrudService(this);
         }
@@ -139,7 +139,7 @@ public class PluginProxyCrudService
     @Setter
     @Getter
     public static class Plugin<E extends IdentifiableEntity<Id>, Id extends Serializable> {
-        private PluginProxyCrudService crudService;
+        private CrudServicePluginProxy crudService;
 
 
         public void onBeforeFindById(Id id) {

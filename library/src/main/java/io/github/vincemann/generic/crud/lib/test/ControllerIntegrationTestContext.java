@@ -66,6 +66,10 @@ public abstract class ControllerIntegrationTestContext<E extends IdentifiableEnt
         restTemplate.getRestTemplate().setRequestFactory(clientHttpRequestFactory);
     }
 
+    public <C extends SpringAdapterDtoCrudController<E,Id>> C getCastedController(){
+        return (C) controller;
+    }
+
     public String getUrlWithPort(){
         return url+":"+port;
     }

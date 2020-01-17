@@ -3,16 +3,16 @@ package io.github.vincemann.demo.service.plugin.proxy;
 import io.github.vincemann.demo.model.Owner;
 import io.github.vincemann.demo.repositories.OwnerRepository;
 import io.github.vincemann.demo.service.OwnerService;
-import io.github.vincemann.generic.crud.lib.service.plugin.PluginProxyCrudService;
+import io.github.vincemann.generic.crud.lib.service.plugin.CrudServicePluginProxy;
 
 import java.util.Optional;
 
-public class OwnerPluginProxyCrudService
-        extends PluginProxyCrudService<Owner,Long, OwnerRepository, OwnerService>
+public class OwnerServicePluginProxy
+        extends CrudServicePluginProxy<Owner,Long, OwnerRepository, OwnerService>
             implements OwnerService
 {
 
-    public OwnerPluginProxyCrudService(OwnerService crudService, Plugin<? super Owner, ? super Long>... plugins) {
+    public OwnerServicePluginProxy(OwnerService crudService, Plugin<? super Owner, ? super Long>... plugins) {
         super(crudService, plugins);
     }
 

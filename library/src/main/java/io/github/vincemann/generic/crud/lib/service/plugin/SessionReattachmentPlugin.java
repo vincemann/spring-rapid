@@ -12,7 +12,7 @@ import org.springframework.transaction.annotation.Transactional;
 @Slf4j
 public class SessionReattachmentPlugin
     //todo why doesnt this work with Serializable instead of Long?
-        extends PluginProxyCrudService.Plugin<IdentifiableEntity<Long>,Long> {
+        extends CrudServicePluginProxy.Plugin<IdentifiableEntity<Long>,Long> {
 
     private EntityGraphSessionReattacher entityGraph_sessionReattacher;
 

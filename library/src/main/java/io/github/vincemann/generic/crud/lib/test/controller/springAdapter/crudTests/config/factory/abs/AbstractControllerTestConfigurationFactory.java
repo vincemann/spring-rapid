@@ -16,7 +16,7 @@ public abstract class AbstractControllerTestConfigurationFactory
                 Id extends Serializable, SuccessfulC extends ControllerTestConfiguration<Id>,
                 FailedC extends ControllerTestConfiguration<Id>>
 
-                    implements TestConfigurationFactory<SuccessfulC,FailedC>
+                    implements TestConfigurationFactory<SuccessfulC,FailedC,ControllerTestConfiguration<Id>,ControllerTestConfiguration<Id>>
 {
     private ControllerIntegrationTestContext<E,Id> context;
 }

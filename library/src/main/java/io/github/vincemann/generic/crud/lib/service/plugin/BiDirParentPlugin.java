@@ -18,7 +18,7 @@ import java.util.*;
 @Component
 @Slf4j
 public class BiDirParentPlugin<E extends IdentifiableEntity<Id> & BiDirParent,Id extends Serializable>
-        extends PluginProxyCrudService.Plugin<E,Id> {
+        extends CrudServicePluginProxy.Plugin<E,Id> {
 
 
     private EntityMangerSessionReattacher sessionReattachmentHelper;

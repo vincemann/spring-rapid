@@ -25,7 +25,7 @@ public class SaveServiceTestConfigurationFactory<E extends IdentifiableEntity<Id
     }
 
     @Override
-    public SuccessfulSaveServiceTestConfiguration<E, Id> createSuccessfulMergedConfig(SuccessfulSaveServiceTestConfiguration<E, Id> modification) {
+    public SuccessfulSaveServiceTestConfiguration<E, Id> createSuccessfulMergedConfig(ServiceTestConfiguration<E, Id> modification) {
         SuccessfulSaveServiceTestConfiguration<E, Id> config = createSuccessfulDefaultConfig();
         NullAwareBeanUtils.copyProperties(config,modification);
         return config;

@@ -2,7 +2,7 @@ package io.github.vincemann.generic.crud.lib.service.jpa;
 
 import io.github.vincemann.generic.crud.lib.model.IdentifiableEntity;
 import io.github.vincemann.generic.crud.lib.service.CrudService;
-import io.github.vincemann.generic.crud.lib.service.plugin.PluginProxyCrudService;
+import io.github.vincemann.generic.crud.lib.service.plugin.CrudServicePluginProxy;
 import io.github.vincemann.generic.crud.lib.service.exception.BadEntityException;
 import io.github.vincemann.generic.crud.lib.service.exception.EntityNotFoundException;
 import io.github.vincemann.generic.crud.lib.service.exception.NoIdException;
@@ -21,7 +21,7 @@ import java.util.Optional;
 import java.util.Set;
 
 /**
- * PluginCode from {@link PluginProxyCrudService.Plugin}s runs in the Transaction of the ServiceMethod.
+ * PluginCode from {@link CrudServicePluginProxy.Plugin}s runs in the Transaction of the ServiceMethod.
  * @param <E>
  * @param <Id>
  * @param <R>

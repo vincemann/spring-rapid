@@ -11,7 +11,7 @@ import io.github.vincemann.generic.crud.lib.test.controller.springAdapter.crudTe
 import io.github.vincemann.generic.crud.lib.test.controller.springAdapter.crudTests.config.factory.*;
 import io.github.vincemann.generic.crud.lib.test.controller.springAdapter.requestEntityFactory.RequestEntityFactory;
 import io.github.vincemann.generic.crud.lib.test.controller.springAdapter.requestEntityFactory.UrlParamIdRequestEntityFactory;
-import io.github.vincemann.generic.crud.lib.test.forceEagerFetch.proxy.HibernateForceEagerFetchProxyCrudService;
+import io.github.vincemann.generic.crud.lib.test.forceEagerFetch.proxy.CrudServiceHibernateForceEagerFetchProxy;
 import io.github.vincemann.generic.crud.lib.test.testExecutionListeners.ResetDatabaseTestExecutionListener;
 import lombok.Getter;
 import lombok.Setter;
@@ -27,7 +27,7 @@ import java.util.Collection;
 /**
  * Integration Test for a {@link SpringAdapterDtoCrudController} with {@link UrlParamIdFetchingStrategy}, that tests typical Crud operations
  * <p>
- * Wraps Controllers {@link BasicDtoCrudController#getCrudService()} with {@link HibernateForceEagerFetchProxyCrudService}.
+ * Wraps Controllers {@link BasicDtoCrudController#getCrudService()} with {@link CrudServiceHibernateForceEagerFetchProxy}.
  * -> No LazyInit Exceptions possible.
  *
  * @param <E>
