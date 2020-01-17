@@ -17,11 +17,11 @@ import java.util.concurrent.Callable;
 
 @Component
 @Getter
-public class Hibernate_ForceEagerFetch_Helper {
+public class HibernateForceEagerFetchUtil {
     private PlatformTransactionManager transactionManager;
 
     @Autowired
-    public Hibernate_ForceEagerFetch_Helper(PlatformTransactionManager transactionManager) {
+    public HibernateForceEagerFetchUtil(PlatformTransactionManager transactionManager) {
         this.transactionManager = transactionManager;
     }
 

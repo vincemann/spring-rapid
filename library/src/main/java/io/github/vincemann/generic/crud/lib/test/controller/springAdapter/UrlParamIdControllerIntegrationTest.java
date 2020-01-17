@@ -2,23 +2,22 @@ package io.github.vincemann.generic.crud.lib.test.controller.springAdapter;
 
 import io.github.vincemann.generic.crud.lib.controller.BasicDtoCrudController;
 import io.github.vincemann.generic.crud.lib.controller.dtoMapper.exception.EntityMappingException;
-import io.github.vincemann.generic.crud.lib.controller.springAdapter.DtoCrudController_SpringAdapter;
+import io.github.vincemann.generic.crud.lib.controller.springAdapter.SpringAdapterDtoCrudController;
 import io.github.vincemann.generic.crud.lib.controller.springAdapter.idFetchingStrategy.UrlParamIdFetchingStrategy;
 import io.github.vincemann.generic.crud.lib.model.IdentifiableEntity;
 import io.github.vincemann.generic.crud.lib.service.exception.BadEntityException;
-import io.github.vincemann.generic.crud.lib.test.ServiceEagerFetch_ControllerIntegrationTestContext;
+import io.github.vincemann.generic.crud.lib.test.ServiceEagerFetchControllerIntegrationTestContext;
 import io.github.vincemann.generic.crud.lib.test.controller.springAdapter.crudTests.*;
 import io.github.vincemann.generic.crud.lib.test.controller.springAdapter.crudTests.config.factory.*;
 import io.github.vincemann.generic.crud.lib.test.controller.springAdapter.requestEntityFactory.RequestEntityFactory;
 import io.github.vincemann.generic.crud.lib.test.controller.springAdapter.requestEntityFactory.UrlParamIdRequestEntityFactory;
-import io.github.vincemann.generic.crud.lib.test.forceEagerFetch.proxy.CrudService_HibernateForceEagerFetch_Proxy;
+import io.github.vincemann.generic.crud.lib.test.forceEagerFetch.proxy.HibernateForceEagerFetchProxyCrudService;
 import io.github.vincemann.generic.crud.lib.test.testExecutionListeners.ResetDatabaseTestExecutionListener;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Assertions;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.repository.CrudRepository;
 import org.springframework.test.context.TestExecutionListeners;
 
 import java.io.Serializable;
@@ -26,9 +25,9 @@ import java.util.ArrayList;
 import java.util.Collection;
 
 /**
- * Integration Test for a {@link DtoCrudController_SpringAdapter} with {@link UrlParamIdFetchingStrategy}, that tests typical Crud operations
+ * Integration Test for a {@link SpringAdapterDtoCrudController} with {@link UrlParamIdFetchingStrategy}, that tests typical Crud operations
  * <p>
- * Wraps Controllers {@link BasicDtoCrudController#getCrudService()} with {@link CrudService_HibernateForceEagerFetch_Proxy}.
+ * Wraps Controllers {@link BasicDtoCrudController#getCrudService()} with {@link HibernateForceEagerFetchProxyCrudService}.
  * -> No LazyInit Exceptions possible.
  *
  * @param <E>
@@ -47,7 +46,7 @@ public abstract class UrlParamIdControllerIntegrationTest
                 E extends IdentifiableEntity<Id>,
                 Id extends Serializable
         >
-        extends ServiceEagerFetch_ControllerIntegrationTestContext<E,Id>
+        extends ServiceEagerFetchControllerIntegrationTestContext<E,Id>
 {
 
     //todo we probably at some point need interfaces before these
@@ -87,7 +86,7 @@ public abstract class UrlParamIdControllerIntegrationTest
     }
 
     @Autowired
-    public void injectCrudController(DtoCrudController_SpringAdapter<E, Id> crudController) {
+    public void injectCrudController(SpringAdapterDtoCrudController<E, Id> crudController) {
         setController(crudController);
     }
 

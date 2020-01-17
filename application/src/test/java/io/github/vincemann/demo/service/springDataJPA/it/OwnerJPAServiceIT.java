@@ -11,7 +11,7 @@ import io.github.vincemann.generic.crud.lib.service.exception.BadEntityException
 import io.github.vincemann.generic.crud.lib.service.exception.EntityNotFoundException;
 import io.github.vincemann.generic.crud.lib.service.exception.NoIdException;
 import io.github.vincemann.generic.crud.lib.test.service.callback.PostUpdateServiceTestCallback;
-import io.github.vincemann.generic.crud.lib.test.service.ForceEagerFetch_CrudServiceIntegrationTest;
+import io.github.vincemann.generic.crud.lib.test.service.ForceEagerFetchCrudServiceIntegrationTest;
 import io.github.vincemann.generic.crud.lib.test.exception.InvalidConfigurationModificationException;
 import io.github.vincemann.generic.crud.lib.test.service.crudTests.configuration.update.SuccessfulUpdateServiceTestConfiguration;
 import org.junit.jupiter.api.Assertions;
@@ -30,7 +30,7 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Optional;
 
-import static io.github.vincemann.generic.crud.lib.test.forceEagerFetch.proxy.abs.Hibernate_ForceEagerFetch_Proxy.EAGER_FETCH_PROXY;
+import static io.github.vincemann.generic.crud.lib.test.forceEagerFetch.proxy.abs.HibernateForceEagerFetchProxy.EAGER_FETCH_PROXY;
 
 //@DataJpaTest cant be used because i need autowired components from generic-crud-lib
 @ExtendWith(SpringExtension.class)
@@ -38,8 +38,8 @@ import static io.github.vincemann.generic.crud.lib.test.forceEagerFetch.proxy.ab
         SpringBootTest.WebEnvironment.RANDOM_PORT)
 @ActiveProfiles(value = {"test", "springdatajpa"})
 class OwnerJPAServiceIT
-        extends ForceEagerFetch_CrudServiceIntegrationTest
-            <Owner,Long>
+        extends ForceEagerFetchCrudServiceIntegrationTest
+        <Owner,Long>
 {
 
     private Owner ownerWithoutPets;

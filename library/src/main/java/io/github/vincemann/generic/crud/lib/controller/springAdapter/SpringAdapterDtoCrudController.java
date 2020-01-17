@@ -50,7 +50,7 @@ import java.util.stream.Collectors;
  */
 @Slf4j
 @Getter
-public abstract class DtoCrudController_SpringAdapter
+public abstract class SpringAdapterDtoCrudController
         <
                 E extends IdentifiableEntity<Id>,
                 Id extends Serializable
@@ -91,7 +91,7 @@ public abstract class DtoCrudController_SpringAdapter
     private ValidationStrategy<Id> validationStrategy;
     private EndpointsExposureContext endpointsExposureContext;
 
-    public DtoCrudController_SpringAdapter(DtoMappingContext<Id> dtoMappingContext) {
+    public SpringAdapterDtoCrudController(DtoMappingContext<Id> dtoMappingContext) {
         super(dtoMappingContext);
     }
 
@@ -313,6 +313,7 @@ public abstract class DtoCrudController_SpringAdapter
         }
     }
 
+    //callbacks
     protected void beforeCreate(IdentifiableEntity<Id> dto, HttpServletRequest httpServletRequest){
     }
     protected void beforeUpdate(IdentifiableEntity<Id> dto, HttpServletRequest httpServletRequest, boolean full){

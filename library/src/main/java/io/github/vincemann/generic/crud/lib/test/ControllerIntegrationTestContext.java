@@ -1,14 +1,11 @@
 package io.github.vincemann.generic.crud.lib.test;
 
 import io.github.vincemann.generic.crud.lib.controller.dtoMapper.DtoMappingContext;
-import io.github.vincemann.generic.crud.lib.controller.springAdapter.DtoCrudController_SpringAdapter;
-import io.github.vincemann.generic.crud.lib.controller.springAdapter.idFetchingStrategy.UrlParamIdFetchingStrategy;
-import io.github.vincemann.generic.crud.lib.controller.springAdapter.mediaTypeStrategy.DtoReadingException;
+import io.github.vincemann.generic.crud.lib.controller.springAdapter.SpringAdapterDtoCrudController;
 import io.github.vincemann.generic.crud.lib.model.IdentifiableEntity;
 import io.github.vincemann.generic.crud.lib.service.CrudService;
 import io.github.vincemann.generic.crud.lib.test.controller.springAdapter.BaseAddressProvider;
 import io.github.vincemann.generic.crud.lib.test.controller.springAdapter.requestEntityFactory.RequestEntityFactory;
-import io.github.vincemann.generic.crud.lib.test.equalChecker.EqualChecker;
 import lombok.Getter;
 import lombok.Setter;
 import org.apache.http.impl.client.HttpClientBuilder;
@@ -35,7 +32,7 @@ public abstract class ControllerIntegrationTestContext<E extends IdentifiableEnt
     private DtoMappingContext<Id> dtoMappingContext;
     private String url;
     private CrudService<E,Id, ? extends CrudRepository<E,Id>> testService;
-    private DtoCrudController_SpringAdapter<E, Id> controller;
+    private SpringAdapterDtoCrudController<E, Id> controller;
     private RequestEntityFactory<Id> requestEntityFactory;
 
     public ControllerIntegrationTestContext(String url) {

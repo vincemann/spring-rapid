@@ -1,8 +1,8 @@
 package io.github.vincemann.generic.crud.lib.test.forceEagerFetch.proxy;
 
 import io.github.vincemann.generic.crud.lib.model.IdentifiableEntity;
-import io.github.vincemann.generic.crud.lib.test.forceEagerFetch.Hibernate_ForceEagerFetch_Helper;
-import io.github.vincemann.generic.crud.lib.test.forceEagerFetch.proxy.abs.Hibernate_ForceEagerFetch_Proxy;
+import io.github.vincemann.generic.crud.lib.test.forceEagerFetch.HibernateForceEagerFetchUtil;
+import io.github.vincemann.generic.crud.lib.test.forceEagerFetch.proxy.abs.HibernateForceEagerFetchProxy;
 import lombok.Getter;
 import org.springframework.data.domain.Example;
 import org.springframework.data.domain.Page;
@@ -16,18 +16,18 @@ import java.util.Optional;
 
 
 @Getter
-public class CrudRepo_Hibernate_ForceEagerFetch_Proxy
+public class CrudRepoHibernateForceEagerFetchProxy
         <
                 E extends IdentifiableEntity<Id>,
                 Id extends Serializable,
                 R extends JpaRepository<E, Id>
                 >
-        extends Hibernate_ForceEagerFetch_Proxy
+        extends HibernateForceEagerFetchProxy
         implements JpaRepository<E, Id> {
 
     private R repository;
 
-    public CrudRepo_Hibernate_ForceEagerFetch_Proxy(R repository, Hibernate_ForceEagerFetch_Helper helper) {
+    public CrudRepoHibernateForceEagerFetchProxy(R repository, HibernateForceEagerFetchUtil helper) {
         super(helper);
         this.repository = repository;
     }
