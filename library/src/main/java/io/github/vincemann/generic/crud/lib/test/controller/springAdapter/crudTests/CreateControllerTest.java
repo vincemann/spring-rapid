@@ -24,7 +24,7 @@ public class CreateControllerTest<E extends IdentifiableEntity<Id>, Id extends S
     private AbstractControllerTestConfigurationFactory<E,Id,SuccessfulCreateControllerTestConfiguration<E,Id>,ControllerTestConfiguration<Id>> testConfigFactory;
 
 
-    public CreateControllerTest(ControllerIntegrationTestContext<E, Id> testContext, AbstractControllerTestConfigurationFactory<E, Id, SuccessfulCreateControllerTestConfiguration<E, Id>, ControllerTestConfiguration<Id>> testConfigFactory) {
+    public CreateControllerTest(ControllerIntegrationTestContext<E, Id> testContext, AbstractControllerTestConfigurationFactory<E, Id, SuccessfulCreateControllerTestConfiguration<E,Id>, ControllerTestConfiguration<Id>> testConfigFactory) {
         super(testContext);
         this.testConfigFactory = testConfigFactory;
     }
@@ -33,7 +33,7 @@ public class CreateControllerTest<E extends IdentifiableEntity<Id>, Id extends S
         return createEntity_ShouldSucceed(returnDto, testConfigFactory.createSuccessfulDefaultConfig());
     }
 
-    public <Dto extends IdentifiableEntity<Id>> Dto createEntity_ShouldSucceed(IdentifiableEntity<Id> createRequestDto, SuccessfulCreateControllerTestConfiguration<E,Id> modifications) throws Exception {
+    public <Dto extends IdentifiableEntity<Id>> Dto createEntity_ShouldSucceed(IdentifiableEntity<Id> createRequestDto, ControllerTestConfiguration<Id> modifications) throws Exception {
         SuccessfulCreateControllerTestConfiguration<E,Id> config = testConfigFactory.createSuccessfulMergedConfig(modifications);
 
         Assertions.assertNull(createRequestDto.getId());

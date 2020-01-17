@@ -42,14 +42,14 @@ public class UpdateControllerTest<E extends IdentifiableEntity<Id>, Id extends S
         return updateEntity_ShouldSucceed(updateRequest, testConfigFactory.createSuccessfulDefaultConfig());
     }
 
-    public <Dto extends IdentifiableEntity<Id>> Dto updateEntity_ShouldSucceed(E saveBefore, IdentifiableEntity<Id> updateRequest, UpdateControllerTestConfiguration<E, Id> modifications) throws Exception {
+    public <Dto extends IdentifiableEntity<Id>> Dto updateEntity_ShouldSucceed(E saveBefore, IdentifiableEntity<Id> updateRequest, ControllerTestConfiguration<Id> modifications) throws Exception {
         E savedEntityToUpdate = getTestContext().getTestService().save(saveBefore);
         updateRequest.setId(savedEntityToUpdate.getId());
         return updateEntity_ShouldSucceed(updateRequest, testConfigFactory.createSuccessfulMergedConfig(modifications));
     }
 
 
-    public <Dto extends IdentifiableEntity<Id>> Dto updateEntity_ShouldSucceed(IdentifiableEntity<Id> updateRequestDto, UpdateControllerTestConfiguration<E, Id> modifications) throws Exception {
+    public <Dto extends IdentifiableEntity<Id>> Dto updateEntity_ShouldSucceed(IdentifiableEntity<Id> updateRequestDto, ControllerTestConfiguration<Id> modifications) throws Exception {
         UpdateControllerTestConfiguration<E, Id> config = testConfigFactory.createSuccessfulMergedConfig(modifications);
 
         Assertions.assertNotNull(updateRequestDto.getId());
@@ -76,7 +76,7 @@ public class UpdateControllerTest<E extends IdentifiableEntity<Id>, Id extends S
         return updateEntity_ShouldFail(updateRequestDto, testConfigFactory.createFailedDefaultConfig());
     }
 
-    public ResponseEntity<String> updateEntity_ShouldFail(IdentifiableEntity<Id> updateRequestDto, UpdateControllerTestConfiguration<E, Id> modifications) throws Exception {
+    public ResponseEntity<String> updateEntity_ShouldFail(IdentifiableEntity<Id> updateRequestDto, ControllerTestConfiguration<Id> modifications) throws Exception {
         UpdateControllerTestConfiguration<E, Id> config = testConfigFactory.createFailedMergedConfig(modifications);
 
         Assertions.assertNotNull(updateRequestDto.getId());
@@ -96,7 +96,7 @@ public class UpdateControllerTest<E extends IdentifiableEntity<Id>, Id extends S
         return updateEntity_ShouldFail(updateRequest, testConfigFactory.createFailedDefaultConfig());
     }
 
-    public ResponseEntity<String> updateEntity_ShouldFail(E entityToUpdate, IdentifiableEntity<Id> updateRequest, UpdateControllerTestConfiguration<E, Id> modifications) throws Exception {
+    public ResponseEntity<String> updateEntity_ShouldFail(E entityToUpdate, IdentifiableEntity<Id> updateRequest, ControllerTestConfiguration<Id> modifications) throws Exception {
         E savedEntityToUpdate = getTestContext().getTestService().save(entityToUpdate);
         updateRequest.setId(savedEntityToUpdate.getId());
         return updateEntity_ShouldFail(updateRequest, modifications);

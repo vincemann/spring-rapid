@@ -42,7 +42,7 @@ public class FindControllerTest<E extends IdentifiableEntity<Id>, Id extends Ser
      * @return the dto of the requested entity found on backend with given id
      * @throws Exception
      */
-    public <Dto extends IdentifiableEntity<Id>> Dto findEntity_ShouldSucceed(Id id, SuccessfulFindControllerTestConfiguration<E,Id> modifications) throws Exception {
+    public <Dto extends IdentifiableEntity<Id>> Dto findEntity_ShouldSucceed(Id id, ControllerTestConfiguration<Id> modifications) throws Exception {
         SuccessfulFindControllerTestConfiguration<E, Id> config = testConfigFactory.createSuccessfulMergedConfig(modifications);
         Optional<E> entityToFind = getTestContext().getTestService().findById(id);
         if(entityToFind.isEmpty()){
