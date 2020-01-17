@@ -3,7 +3,7 @@ package io.github.vincemann.generic.crud.lib.test;
 import io.github.vincemann.generic.crud.lib.model.IdentifiableEntity;
 import io.github.vincemann.generic.crud.lib.service.CrudService;
 import io.github.vincemann.generic.crud.lib.test.forceEagerFetch.HibernateForceEagerFetchUtil;
-import io.github.vincemann.generic.crud.lib.test.forceEagerFetch.proxy.HibernateForceEagerFetchProxyCrudService;
+import io.github.vincemann.generic.crud.lib.test.forceEagerFetch.proxy.CrudServiceHibernateForceEagerFetchProxy;
 import lombok.Getter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.repository.CrudRepository;
@@ -34,6 +34,6 @@ public abstract class ServiceEagerFetchControllerIntegrationTestContext<E extend
             Id extends Serializable,
             R extends CrudRepository<E, Id>
             > CrudService<E, Id, R> wrapWithEagerFetchProxy(CrudService<E, Id, R> crudService) {
-        return new HibernateForceEagerFetchProxyCrudService<>(crudService, hibernate_forceEagerFetch_util);
+        return new CrudServiceHibernateForceEagerFetchProxy<>(crudService, hibernate_forceEagerFetch_util);
     }
 }

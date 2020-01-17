@@ -7,7 +7,7 @@ import io.github.vincemann.generic.crud.lib.service.exception.EntityNotFoundExce
 import io.github.vincemann.generic.crud.lib.service.exception.NoIdException;
 import io.github.vincemann.generic.crud.lib.service.sessionReattach.EntityGraphSessionReattacher;
 import io.github.vincemann.generic.crud.lib.test.forceEagerFetch.HibernateForceEagerFetchUtil;
-import io.github.vincemann.generic.crud.lib.test.forceEagerFetch.proxy.HibernateForceEagerFetchProxyCrudService;
+import io.github.vincemann.generic.crud.lib.test.forceEagerFetch.proxy.CrudServiceHibernateForceEagerFetchProxy;
 import io.github.vincemann.generic.crud.lib.test.forceEagerFetch.proxy.abs.HibernateForceEagerFetchProxy;
 import lombok.Getter;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -105,7 +105,7 @@ public abstract class ForceEagerFetchCrudServiceIntegrationTest<E extends Identi
     }
 
     protected  <E extends IdentifiableEntity<Id>,Id extends Serializable,R extends CrudRepository<E,Id>> CrudService<E,Id,R> wrapWithEagerFetchProxy(CrudService<E,Id,R> crudService){
-        return new HibernateForceEagerFetchProxyCrudService<>(crudService, forceEagerFetchHelper);
+        return new CrudServiceHibernateForceEagerFetchProxy<>(crudService, forceEagerFetchHelper);
     }
 
     @Override

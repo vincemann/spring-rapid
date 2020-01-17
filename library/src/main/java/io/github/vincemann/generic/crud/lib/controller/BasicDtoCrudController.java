@@ -134,7 +134,7 @@ public abstract class BasicDtoCrudController
         return new ResponseEntity<>(entity, HttpStatus.OK);
     }
 
-    public <S extends CrudService<E, Id,CrudRepository<E,Id>>> S getCastedCrudService(){
+    public <S extends CrudService<E, Id,? extends CrudRepository<E,Id>>> S getCastedCrudService(){
         return (S) crudService;
     }
 

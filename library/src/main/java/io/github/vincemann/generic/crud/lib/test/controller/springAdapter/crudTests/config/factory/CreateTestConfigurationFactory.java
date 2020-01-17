@@ -30,7 +30,7 @@ public class CreateTestConfigurationFactory<E extends IdentifiableEntity<Id>,Id 
     }
 
     @Override
-    public SuccessfulCreateControllerTestConfiguration<E,Id> createSuccessfulMergedConfig(SuccessfulCreateControllerTestConfiguration<E,Id> modification) throws InvalidConfigurationModificationException {
+    public SuccessfulCreateControllerTestConfiguration<E,Id> createSuccessfulMergedConfig(ControllerTestConfiguration<Id> modification) throws InvalidConfigurationModificationException {
         SuccessfulCreateControllerTestConfiguration<E,Id> config = createSuccessfulDefaultConfig();
         NullAwareBeanUtils.copyProperties(config,modification);
         return config;

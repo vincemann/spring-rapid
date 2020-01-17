@@ -23,7 +23,7 @@ import java.util.Set;
  * @param <R>
  */
 @Getter
-public class HibernateForceEagerFetchProxyCrudService
+public class CrudServiceHibernateForceEagerFetchProxy
         <
                 E extends IdentifiableEntity<Id>,
                 Id extends Serializable,
@@ -36,7 +36,7 @@ public class HibernateForceEagerFetchProxyCrudService
 
     private CrudService<E,Id,R> crudService;
 
-    public HibernateForceEagerFetchProxyCrudService(CrudService<E,Id,R> crudService,
+    public CrudServiceHibernateForceEagerFetchProxy(CrudService<E,Id,R> crudService,
                                                     HibernateForceEagerFetchUtil helper) {
         super(helper);
         this.crudService = crudService;

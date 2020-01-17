@@ -3,6 +3,7 @@ package io.github.vincemann.generic.crud.lib.test.controller.springAdapter.crudT
 import io.github.vincemann.generic.crud.lib.model.IdentifiableEntity;
 import io.github.vincemann.generic.crud.lib.test.ControllerIntegrationTestContext;
 import io.github.vincemann.generic.crud.lib.test.controller.springAdapter.crudTests.config.UpdateControllerTestConfiguration;
+import io.github.vincemann.generic.crud.lib.test.controller.springAdapter.crudTests.config.abs.ControllerTestConfiguration;
 import io.github.vincemann.generic.crud.lib.test.controller.springAdapter.crudTests.config.factory.abs.AbstractControllerTestConfigurationFactory;
 import io.github.vincemann.generic.crud.lib.test.exception.InvalidConfigurationModificationException;
 import io.github.vincemann.generic.crud.lib.util.NullAwareBeanUtils;
@@ -32,7 +33,7 @@ public class UpdateControllerTestConfigurationFactory<E extends IdentifiableEnti
     }
 
     @Override
-    public UpdateControllerTestConfiguration<E,Id> createFailedMergedConfig(UpdateControllerTestConfiguration<E,Id> modification) throws InvalidConfigurationModificationException {
+    public UpdateControllerTestConfiguration<E,Id> createFailedMergedConfig(ControllerTestConfiguration<Id> modification) throws InvalidConfigurationModificationException {
         UpdateControllerTestConfiguration<E,Id> config = createFailedDefaultConfig();
         NullAwareBeanUtils.copyProperties(config,modification);
         return config;
@@ -49,7 +50,7 @@ public class UpdateControllerTestConfigurationFactory<E extends IdentifiableEnti
     }
 
     @Override
-    public UpdateControllerTestConfiguration<E, Id> createSuccessfulMergedConfig(UpdateControllerTestConfiguration<E, Id> modification) throws InvalidConfigurationModificationException {
+    public UpdateControllerTestConfiguration<E, Id> createSuccessfulMergedConfig(ControllerTestConfiguration<Id> modification) throws InvalidConfigurationModificationException {
         UpdateControllerTestConfiguration<E, Id> config = createSuccessfulDefaultConfig();
         NullAwareBeanUtils.copyProperties(config,modification);
         return config;
