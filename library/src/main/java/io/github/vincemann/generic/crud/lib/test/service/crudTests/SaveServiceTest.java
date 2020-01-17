@@ -33,7 +33,7 @@ public class SaveServiceTest<E extends IdentifiableEntity<Id>, Id extends Serial
         }
     }
 
-    public E saveEntity_ShouldSucceed(E entityToSave, SuccessfulSaveServiceTestConfiguration<E,Id> configModification) throws BadEntityException, InvalidConfigurationModificationException {
+    public E saveEntity_ShouldSucceed(E entityToSave, ServiceTestConfiguration<E,Id> configModification) throws BadEntityException, InvalidConfigurationModificationException {
         SuccessfulSaveServiceTestConfiguration<E, Id> config = saveTestConfigurationFactory.createSuccessfulMergedConfig(configModification);
         //given
         Assertions.assertNull(entityToSave.getId());

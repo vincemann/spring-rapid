@@ -7,6 +7,7 @@ import io.github.vincemann.generic.crud.lib.service.exception.NoIdException;
 import io.github.vincemann.generic.crud.lib.test.service.ServiceTestContext;
 import io.github.vincemann.generic.crud.lib.test.service.crudTests.abs.AbstractServiceTest;
 import io.github.vincemann.generic.crud.lib.test.exception.InvalidConfigurationModificationException;
+import io.github.vincemann.generic.crud.lib.test.service.crudTests.configuration.abs.ServiceTestConfiguration;
 import io.github.vincemann.generic.crud.lib.test.service.crudTests.configuration.factory.UpdateServiceTestConfigurationFactory;
 import io.github.vincemann.generic.crud.lib.test.service.crudTests.configuration.factory.abs.AbstractServiceTestConfigurationFactory;
 import io.github.vincemann.generic.crud.lib.test.service.crudTests.configuration.update.FailedUpdateServiceTestConfiguration;
@@ -39,7 +40,7 @@ public class UpdateServiceTest<E extends IdentifiableEntity<Id>, Id extends Seri
         }
     }
 
-    public E updateEntity_ShouldSucceed(E entityToUpdate, E updateRequest, SuccessfulUpdateServiceTestConfiguration<E, Id> configModification) throws BadEntityException, EntityNotFoundException, NoIdException, InvalidConfigurationModificationException {
+    public E updateEntity_ShouldSucceed(E entityToUpdate, E updateRequest, ServiceTestConfiguration<E, Id> configModification) throws BadEntityException, EntityNotFoundException, NoIdException, InvalidConfigurationModificationException {
         saveEntityForUpdate(entityToUpdate, updateRequest);
         return updateEntity_ShouldSucceed(updateRequest, configModification);
     }
@@ -53,7 +54,7 @@ public class UpdateServiceTest<E extends IdentifiableEntity<Id>, Id extends Seri
     }
 
 
-    public E updateEntity_ShouldSucceed(E updateRequest, SuccessfulUpdateServiceTestConfiguration<E, Id> configModification) throws NoIdException, BadEntityException, EntityNotFoundException, InvalidConfigurationModificationException {
+    public E updateEntity_ShouldSucceed(E updateRequest, ServiceTestConfiguration<E, Id> configModification) throws NoIdException, BadEntityException, EntityNotFoundException, InvalidConfigurationModificationException {
         SuccessfulUpdateServiceTestConfiguration<E, Id> config = updateTestConfigurationFactory.createSuccessfulMergedConfig(configModification);
         //given
         Assertions.assertNotNull(updateRequest);
@@ -89,7 +90,7 @@ public class UpdateServiceTest<E extends IdentifiableEntity<Id>, Id extends Seri
         }
     }
 
-    public <T extends Throwable> T updateEntity_ShouldFail(E entityToUpdate, E newEntity, FailedUpdateServiceTestConfiguration<E, Id> configModification) throws InvalidConfigurationModificationException {
+    public <T extends Throwable> T updateEntity_ShouldFail(E entityToUpdate, E newEntity, ServiceTestConfiguration<E, Id> configModification) throws InvalidConfigurationModificationException {
         saveEntityForUpdate(entityToUpdate, newEntity);
         return updateEntity_ShouldFail(newEntity, configModification);
     }
@@ -103,7 +104,7 @@ public class UpdateServiceTest<E extends IdentifiableEntity<Id>, Id extends Seri
         }
     }
 
-    public <T extends Throwable> T updateEntity_ShouldFail(E newEntity, FailedUpdateServiceTestConfiguration<E, Id> configModification) throws InvalidConfigurationModificationException {
+    public <T extends Throwable> T updateEntity_ShouldFail(E newEntity, ServiceTestConfiguration<E, Id> configModification) throws InvalidConfigurationModificationException {
         FailedUpdateServiceTestConfiguration<E, Id> config = updateTestConfigurationFactory.createFailedMergedConfig(configModification);
         //given
         //entity to update is present
@@ -114,7 +115,7 @@ public class UpdateServiceTest<E extends IdentifiableEntity<Id>, Id extends Seri
         Assertions.assertFalse(config.getRepoEntityEqualChecker().isEqual(newEntity, entityToUpdate.get()));
 
         //when
-        T exception = (T) Assertions.assertThrows(configModification.getExpectedException(), () -> getRootContext().serviceUpdate(newEntity, config.getFullUpdate()));
+        T exception = (T) Assertions.assertThrows(config.getExpectedException(), () -> getRootContext().serviceUpdate(newEntity, config.getFullUpdate()));
 
         //then
         Optional<E> updatedRepoEntity = getRootContext().repoFindById(newEntity.getId());
