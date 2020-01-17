@@ -10,6 +10,9 @@ import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.RequestMethod;
 
 import java.io.Serializable;
+import java.util.AbstractMap;
+import java.util.HashMap;
+import java.util.Map;
 
 public class UpdateControllerTestConfigurationFactory<E extends IdentifiableEntity<Id>,Id extends Serializable>
         extends AbstractControllerTestConfigurationFactory<E, Id, UpdateControllerTestConfiguration<E,Id>, UpdateControllerTestConfiguration<E,Id>> {
@@ -24,6 +27,7 @@ public class UpdateControllerTestConfigurationFactory<E extends IdentifiableEnti
                 .expectedHttpStatus(HttpStatus.BAD_REQUEST)
                 .fullUpdate(true)
                 .method(RequestMethod.PUT)
+                .postUpdateCallback((a)->{})
                 .build();
     }
 
@@ -50,4 +54,5 @@ public class UpdateControllerTestConfigurationFactory<E extends IdentifiableEnti
         NullAwareBeanUtils.copyProperties(config,modification);
         return config;
     }
+
 }

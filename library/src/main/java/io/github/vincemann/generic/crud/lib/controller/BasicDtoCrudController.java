@@ -95,7 +95,7 @@ public abstract class BasicDtoCrudController
     @Override
     @SuppressWarnings("unchecked")
     public ResponseEntity<? extends IdentifiableEntity<Id>> update(IdentifiableEntity<Id> dto, boolean full) throws BadEntityException, EntityMappingException, NoIdException, EntityNotFoundException {
-        E entity = findMapperAndMapToEntity(dto, getDtoMappingContext().getUpdateRequestDtoClass());
+        E entity = findMapperAndMapToEntity(dto, getDtoMappingContext().getPartialUpdateRequestDtoClass());
         E updatedEntity = crudService.update(entity,full);
         //no idea why casting is necessary here?
         return new ResponseEntity(findMapperAndMapToDto(updatedEntity, getDtoMappingContext().getUpdateReturnDtoClass()),

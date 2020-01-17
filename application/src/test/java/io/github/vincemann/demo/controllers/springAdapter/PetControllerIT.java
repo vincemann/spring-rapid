@@ -2,10 +2,10 @@ package io.github.vincemann.demo.controllers.springAdapter;
 
 
 import io.github.vincemann.demo.controllers.EntityInitializer_ControllerIT;
-import io.github.vincemann.demo.dtos.PetDto;
+import io.github.vincemann.demo.dtos.pet.BasePetDto;
+import io.github.vincemann.demo.dtos.pet.abs.AbstractPetDto;
 import io.github.vincemann.demo.model.Pet;
 import io.github.vincemann.demo.repositories.PetRepository;
-import io.github.vincemann.generic.crud.lib.test.callback.PostUpdateServiceTestCallback;
 import io.github.vincemann.generic.crud.lib.test.controller.springAdapter.crudTests.config.UpdateControllerTestConfiguration;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -22,9 +22,9 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 class PetControllerIT
         extends EntityInitializer_ControllerIT<Pet, PetRepository> {
 
-    private PetDto petDtoWithPersistedPetType;
+    private AbstractPetDto petDtoWithPersistedPetType;
     private Pet petWithPersistedPetType;
-    private PetDto petDtoWithPersistedOwner;
+    private AbstractPetDto petDtoWithPersistedOwner;
     private Pet petWithPersistedOwner;
 
 
@@ -32,7 +32,7 @@ class PetControllerIT
     @BeforeEach
     public void setup() throws Exception {
         super.setup();
-        petDtoWithPersistedPetType = PetDto.builder()
+        petDtoWithPersistedPetType = BasePetDto.builder()
                 .name("esta")
                 .petTypeId(getTestPetType().getId())
                 .build();
@@ -44,7 +44,7 @@ class PetControllerIT
 
 
         //Pet with persisted PetType and persisted Owner
-        petDtoWithPersistedOwner = PetDto.builder()
+        petDtoWithPersistedOwner = BasePetDto.builder()
                 .ownerId(getTestOwner().getId())
                 .petTypeId(getTestPetType().getId())
                 .name("esta")
@@ -72,7 +72,7 @@ class PetControllerIT
     @Test
     public void updatePetsName_ShouldSucceed() throws Exception {
         //update pets name
-        PetDto diffPetsNameUpdate = PetDto.builder()
+        AbstractPetDto diffPetsNameUpdate = BasePetDto.builder()
                 .name("MODIFIED NAME")
                 .build();
         Assertions.assertNotEquals(diffPetsNameUpdate.getName(), petWithPersistedPetType.getName());
@@ -101,7 +101,7 @@ class PetControllerIT
 
     @Test
     public void createPetWithAlreadySetId_ShouldFail() throws Exception {
-        PetDto petDtoWithAlreadySetId = PetDto.builder()
+        AbstractPetDto petDtoWithAlreadySetId = BasePetDto.builder()
                 .name("bello")
                 .petTypeId(getTestPetType().getId())
                 .build();
@@ -113,7 +113,7 @@ class PetControllerIT
     @Test
     public void updatePet_SetPetTypeIdToNull_ShouldFail() throws Exception {
         //no pettype
-        PetDto petTypeIdNullUpdate = PetDto.builder()
+        AbstractPetDto petTypeIdNullUpdate = BasePetDto.builder()
                 .petTypeId(null)
                 .build();
         getUpdateControllerTest().updateEntity_ShouldFail(petWithPersistedPetType, petTypeIdNullUpdate,

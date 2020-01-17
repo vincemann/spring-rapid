@@ -3,6 +3,7 @@ package io.github.vincemann.generic.crud.lib.test.controller.springAdapter.crudT
 import io.github.vincemann.generic.crud.lib.controller.dtoMapper.DtoMappingContext;
 import io.github.vincemann.generic.crud.lib.model.IdentifiableEntity;
 import io.github.vincemann.generic.crud.lib.test.ControllerIntegrationTestContext;
+import io.github.vincemann.generic.crud.lib.test.controller.springAdapter.ControllerTestMethod;
 import io.github.vincemann.generic.crud.lib.test.controller.springAdapter.crudTests.config.SuccessfulCreateControllerTestConfiguration;
 import io.github.vincemann.generic.crud.lib.test.controller.springAdapter.crudTests.config.abs.ControllerTestConfiguration;
 import io.github.vincemann.generic.crud.lib.test.controller.springAdapter.crudTests.config.factory.abs.AbstractControllerTestConfigurationFactory;
@@ -43,7 +44,7 @@ public class CreateControllerTest<E extends IdentifiableEntity<Id>, Id extends S
         Assertions.assertEquals(config.getExpectedHttpStatus(), responseEntity.getStatusCode(), responseEntity.getBody());
         IdentifiableEntity<Id> responseDto = getTestContext().getController().getMediaTypeStrategy().readDtoFromBody(responseEntity.getBody(), mappingContext.getCreateReturnDtoClass());
 
-        E savedEntity = getTestContext().getTestService().findById(createRequestDto.getId()).get();
+        E savedEntity = getTestContext().getTestService().findById(responseDto.getId()).get();
         config.getPostCreateCallback().callback(savedEntity,responseDto);
         Assertions.assertNotNull(responseDto);
         Assertions.assertEquals(mappingContext.getCreateReturnDtoClass(),responseDto.getClass());
@@ -68,6 +69,6 @@ public class CreateControllerTest<E extends IdentifiableEntity<Id>, Id extends S
      * @return
      */
     public ResponseEntity<String> createEntity(IdentifiableEntity<Id> dto, ControllerTestConfiguration<Id> config) {
-        return sendRequest(getTestContext().getRequestEntityFactory().create(config,dto));
+        return sendRequest(getTestContext().getRequestEntityFactory().create(config,dto,null, ControllerTestMethod.CREATE));
     }
 }

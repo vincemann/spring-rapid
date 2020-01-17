@@ -34,7 +34,7 @@ public abstract class ControllerIntegrationTestContext<E extends IdentifiableEnt
     private Class<E> entityClass = (Class<E>) ((ParameterizedType) this.getClass().getGenericSuperclass()).getActualTypeArguments()[0];
     private DtoMappingContext<Id> dtoMappingContext;
     private String url;
-    private CrudService<E,Id, CrudRepository<E,Id>> testService;
+    private CrudService<E,Id, ? extends CrudRepository<E,Id>> testService;
     private DtoCrudController_SpringAdapter<E, Id> controller;
     private RequestEntityFactory<Id> requestEntityFactory;
 

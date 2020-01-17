@@ -1,4 +1,4 @@
-package io.github.vincemann.demo.dtos;
+package io.github.vincemann.demo.dtos.pet.abs;
 
 import io.github.vincemann.demo.model.Owner;
 
@@ -18,17 +18,14 @@ import java.time.LocalDate;
 
 @Getter
 @Setter
-@NoArgsConstructor
 @AllArgsConstructor
+@NoArgsConstructor
 @ToString
-@Builder
-public class PetDto extends IdentifiableEntityImpl<Long> implements UniDirParentDto, BiDirChildDto {
+public abstract class AbstractPetDto extends IdentifiableEntityImpl<Long> implements UniDirParentDto, BiDirChildDto {
 
-    @NotBlank
     @Size(min = 2, max = 20)
     private String name;
 
-    @NotNull
     @UniDirChildId(PetType.class)
     private Long petTypeId;
 

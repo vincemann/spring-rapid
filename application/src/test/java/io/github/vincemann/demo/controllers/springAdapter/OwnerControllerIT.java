@@ -9,7 +9,6 @@ import io.github.vincemann.demo.model.Pet;
 import io.github.vincemann.demo.repositories.OwnerRepository;
 import io.github.vincemann.demo.service.PetService;
 import io.github.vincemann.generic.crud.lib.service.CrudService;
-import io.github.vincemann.generic.crud.lib.test.callback.PostUpdateServiceTestCallback;
 import io.github.vincemann.generic.crud.lib.test.controller.springAdapter.crudTests.config.UpdateControllerTestConfiguration;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -50,7 +49,7 @@ class OwnerControllerIT
     @Autowired
     @Qualifier(EAGER_FETCH_PROXY)
     @Override
-    public void setTestService(CrudService<Owner, Long, CrudRepository<Owner, Long>> testService) {
+    public void setTestService(CrudService<Owner, Long, ? extends CrudRepository<Owner, Long>> testService) {
         super.setTestService(testService);
     }
 

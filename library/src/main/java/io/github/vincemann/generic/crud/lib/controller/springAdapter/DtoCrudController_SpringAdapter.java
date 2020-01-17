@@ -13,7 +13,6 @@ import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.repository.CrudRepository;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.servlet.mvc.method.RequestMappingInfo;
@@ -263,13 +262,22 @@ public abstract class DtoCrudController_SpringAdapter
         try {
             String body = request.getReader().lines().collect(Collectors.joining(System.lineSeparator()));
             log.debug("String Body fetched from request: " + body);
-            IdentifiableEntity<Id> dto = mediaTypeStrategy.readDtoFromBody(body, getDtoMappingContext().getUpdateRequestDtoClass());
+            boolean fullUpdate = isFullUpdate(request);
+            log.debug("full update mode: " + fullUpdate);
+            Class<? extends IdentifiableEntity<Id>> dtoClass = null;
+            if(fullUpdate) {
+                dtoClass = getDtoMappingContext().getFullUpdateRequestDtoClass();
+            }else {
+                dtoClass = getDtoMappingContext().getPartialUpdateRequestDtoClass();
+            }
+            log.debug("dtoClass that will be mapped to: " + dtoClass);
+            IdentifiableEntity<Id> dto  = mediaTypeStrategy.readDtoFromBody(body, dtoClass);
             log.debug("Dto read from string body " + dto);
             validationStrategy.beforeUpdateValidate(dto);
             validationStrategy.validateDto(dto,request);
             log.debug("Dto successfully validated");
-            boolean fullUpdate = isFullUpdate(request);
-            log.debug("full update mode: " + fullUpdate);
+
+
             beforeUpdate(dto,request,fullUpdate);
             return super.update(dto,fullUpdate);
         }catch (IOException e){
@@ -292,6 +300,9 @@ public abstract class DtoCrudController_SpringAdapter
     protected boolean isFullUpdate(HttpServletRequest request) throws BadEntityException {
         Map<String, String[]> queryParameters = HttpServletRequestUtils.getQueryParameters(request);
         String[] fullUpdateParams = queryParameters.get(FULL_UPDATE_QUERY_PARAM);
+        if(fullUpdateParams==null){
+            return false;
+        }
         if(fullUpdateParams.length>1){
             throw new BadEntityException("Multiple full update query params specified, there must be only one max. key: " + FULL_UPDATE_QUERY_PARAM);
         }

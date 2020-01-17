@@ -51,7 +51,7 @@ public abstract class JPACrudService
     @Override
     public Optional<E> findById(Id id) throws NoIdException {
         if(id==null){
-            throw new NoIdException("No Id value set for EntityType: " + entityClass.getSimpleName());
+            throw new NoIdException("No Id value set for Entity of type: " + entityClass.getSimpleName());
         }
         return jpaRepository.findById(id);
     }

@@ -2,6 +2,7 @@ package io.github.vincemann.generic.crud.lib.test.controller.springAdapter.crudT
 
 import io.github.vincemann.generic.crud.lib.model.IdentifiableEntity;
 import io.github.vincemann.generic.crud.lib.test.ControllerIntegrationTestContext;
+import io.github.vincemann.generic.crud.lib.test.controller.springAdapter.ControllerTestMethod;
 import io.github.vincemann.generic.crud.lib.test.controller.springAdapter.crudTests.abs.AbstractControllerTest;
 import io.github.vincemann.generic.crud.lib.test.controller.springAdapter.crudTests.config.SuccessfulFindControllerTestConfiguration;
 import io.github.vincemann.generic.crud.lib.test.controller.springAdapter.crudTests.config.abs.ControllerTestConfiguration;
@@ -71,6 +72,6 @@ public class FindControllerTest<E extends IdentifiableEntity<Id>, Id extends Ser
 
     public ResponseEntity<String> findEntity(Id id, ControllerTestConfiguration<Id> config) {
         Assertions.assertNotNull(id);
-        return sendRequest(getTestContext().getRequestEntityFactory().create(config,id));
+        return sendRequest(getTestContext().getRequestEntityFactory().create(config,null,id, ControllerTestMethod.FIND));
     }
 }
