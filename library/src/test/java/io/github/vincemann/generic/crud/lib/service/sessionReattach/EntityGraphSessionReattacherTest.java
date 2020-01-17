@@ -15,7 +15,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-class EntityGraph_SessionReattachment_HelperTest {
+class EntityGraphSessionReattacherTest {
 
     @AllArgsConstructor
     @Entity
@@ -136,13 +136,13 @@ class EntityGraph_SessionReattachment_HelperTest {
         private int pleaseNotFindThis;
     }
 
-    private EntityGraph_SessionReattachment_Helper sessionReattachmentHelper;
+    private EntityGraphSessionReattacher sessionReattachmentHelper;
     private SessionReattacher sessionReattacher;
 
     @BeforeEach
     void setUp() {
         sessionReattacher = mock(SessionReattacher.class);
-        this.sessionReattachmentHelper = new EntityGraph_SessionReattachment_Helper(sessionReattacher);
+        this.sessionReattachmentHelper = new EntityGraphSessionReattacher(sessionReattacher);
     }
 
     @Test

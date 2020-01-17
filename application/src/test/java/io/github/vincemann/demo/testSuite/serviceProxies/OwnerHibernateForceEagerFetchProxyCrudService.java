@@ -3,8 +3,8 @@ package io.github.vincemann.demo.testSuite.serviceProxies;
 import io.github.vincemann.demo.model.Owner;
 import io.github.vincemann.demo.repositories.OwnerRepository;
 import io.github.vincemann.demo.service.OwnerService;
-import io.github.vincemann.generic.crud.lib.test.forceEagerFetch.Hibernate_ForceEagerFetch_Helper;
-import io.github.vincemann.generic.crud.lib.test.forceEagerFetch.proxy.CrudService_HibernateForceEagerFetch_Proxy;
+import io.github.vincemann.generic.crud.lib.test.forceEagerFetch.HibernateForceEagerFetchUtil;
+import io.github.vincemann.generic.crud.lib.test.forceEagerFetch.proxy.HibernateForceEagerFetchProxyCrudService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -12,12 +12,12 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.Optional;
 
 @Service
-public class OwnerService_HibernateForceEagerFetch_Proxy
-        extends CrudService_HibernateForceEagerFetch_Proxy<Owner, Long, OwnerRepository, OwnerService>
+public class OwnerHibernateForceEagerFetchProxyCrudService
+        extends HibernateForceEagerFetchProxyCrudService<Owner, Long, OwnerRepository, OwnerService>
             implements OwnerService {
 
     @Autowired
-    public OwnerService_HibernateForceEagerFetch_Proxy(OwnerService crudService, Hibernate_ForceEagerFetch_Helper helper) {
+    public OwnerHibernateForceEagerFetchProxyCrudService(OwnerService crudService, HibernateForceEagerFetchUtil helper) {
         super(crudService, helper);
     }
 

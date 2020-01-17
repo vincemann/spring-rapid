@@ -1,16 +1,16 @@
 package io.github.vincemann.generic.crud.lib.test.forceEagerFetch.proxy.abs;
 
-import io.github.vincemann.generic.crud.lib.test.forceEagerFetch.Hibernate_ForceEagerFetch_Helper;
+import io.github.vincemann.generic.crud.lib.test.forceEagerFetch.HibernateForceEagerFetchUtil;
 import lombok.Getter;
 import org.springframework.beans.factory.annotation.Qualifier;
 
 @Getter
-@Qualifier(Hibernate_ForceEagerFetch_Proxy.EAGER_FETCH_PROXY)
-public abstract class Hibernate_ForceEagerFetch_Proxy {
+@Qualifier(HibernateForceEagerFetchProxy.EAGER_FETCH_PROXY)
+public abstract class HibernateForceEagerFetchProxy {
 
-    private Hibernate_ForceEagerFetch_Helper helper;
+    private HibernateForceEagerFetchUtil helper;
 
-    public Hibernate_ForceEagerFetch_Proxy(Hibernate_ForceEagerFetch_Helper helper) {
+    public HibernateForceEagerFetchProxy(HibernateForceEagerFetchUtil helper) {
         this.helper = helper;
     }
 

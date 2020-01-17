@@ -20,7 +20,7 @@ public class BiDirChildPlugin
                 E extends IdentifiableEntity<Id> & BiDirChild,
                 Id extends Serializable
         >
-            extends CrudService_PluginProxy.Plugin<E,Id>{
+            extends PluginProxyCrudService.Plugin<E,Id>{
 
 
     @Override

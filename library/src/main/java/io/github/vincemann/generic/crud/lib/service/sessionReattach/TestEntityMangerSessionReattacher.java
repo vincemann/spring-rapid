@@ -12,7 +12,7 @@ import javax.persistence.PersistenceContext;
 @Component
 @Qualifier("test")
 @Slf4j
-public class TestEntityManger_SessionReattacher implements SessionReattacher {
+public class TestEntityMangerSessionReattacher implements SessionReattacher {
 
     private EntityManager entityManager;
     //todo is this impl even acting any different from the non test version?

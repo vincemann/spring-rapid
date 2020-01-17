@@ -6,7 +6,7 @@ import io.github.vincemann.generic.crud.lib.model.biDir.parent.BiDirParent;
 import io.github.vincemann.generic.crud.lib.service.exception.BadEntityException;
 import io.github.vincemann.generic.crud.lib.service.exception.EntityNotFoundException;
 import io.github.vincemann.generic.crud.lib.service.exception.NoIdException;
-import io.github.vincemann.generic.crud.lib.service.sessionReattach.EntityManger_SessionReattacher;
+import io.github.vincemann.generic.crud.lib.service.sessionReattach.EntityMangerSessionReattacher;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -18,13 +18,13 @@ import java.util.*;
 @Component
 @Slf4j
 public class BiDirParentPlugin<E extends IdentifiableEntity<Id> & BiDirParent,Id extends Serializable>
-        extends CrudService_PluginProxy.Plugin<E,Id> {
+        extends PluginProxyCrudService.Plugin<E,Id> {
 
 
-    private EntityManger_SessionReattacher sessionReattachmentHelper;
+    private EntityMangerSessionReattacher sessionReattachmentHelper;
 
     @Autowired
-    public BiDirParentPlugin(EntityManger_SessionReattacher sessionReattachmentHelper) {
+    public BiDirParentPlugin(EntityMangerSessionReattacher sessionReattachmentHelper) {
         this.sessionReattachmentHelper = sessionReattachmentHelper;
     }
 

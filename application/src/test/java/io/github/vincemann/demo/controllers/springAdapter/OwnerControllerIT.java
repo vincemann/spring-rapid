@@ -1,12 +1,11 @@
 package io.github.vincemann.demo.controllers.springAdapter;
 
 
-import io.github.vincemann.demo.controllers.EntityInitializer_ControllerIT;
+import io.github.vincemann.demo.controllers.EntityInitializerControllerIntegrationTest;
 import io.github.vincemann.demo.dtos.owner.CreateOwnerDto;
 import io.github.vincemann.demo.dtos.owner.UpdateOwnerDto;
 import io.github.vincemann.demo.model.Owner;
 import io.github.vincemann.demo.model.Pet;
-import io.github.vincemann.demo.repositories.OwnerRepository;
 import io.github.vincemann.demo.service.PetService;
 import io.github.vincemann.generic.crud.lib.service.CrudService;
 import io.github.vincemann.generic.crud.lib.test.controller.springAdapter.crudTests.config.UpdateControllerTestConfiguration;
@@ -25,14 +24,14 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;
 
-import static io.github.vincemann.generic.crud.lib.test.forceEagerFetch.proxy.abs.Hibernate_ForceEagerFetch_Proxy.EAGER_FETCH_PROXY;
+import static io.github.vincemann.generic.crud.lib.test.forceEagerFetch.proxy.abs.HibernateForceEagerFetchProxy.EAGER_FETCH_PROXY;
 
 @ExtendWith(SpringExtension.class)
 @SpringBootTest(webEnvironment =
         SpringBootTest.WebEnvironment.DEFINED_PORT)
 @ActiveProfiles(value = {"test", "springdatajpa"})
 class OwnerControllerIT
-        extends EntityInitializer_ControllerIT<Owner, OwnerRepository> {
+        extends EntityInitializerControllerIntegrationTest<Owner> {
 
     @Autowired
     private PetService petService;

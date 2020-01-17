@@ -13,12 +13,12 @@ import javax.persistence.EntityManager;
 @Component
 @Primary
 @Slf4j
-public class EntityManger_SessionReattacher implements SessionReattacher {
+public class EntityMangerSessionReattacher implements SessionReattacher {
 
     private EntityManager entityManager;
 
     @Autowired
-    public EntityManger_SessionReattacher(EntityManager entityManager) {
+    public EntityMangerSessionReattacher(EntityManager entityManager) {
         this.entityManager = entityManager;
     }
 

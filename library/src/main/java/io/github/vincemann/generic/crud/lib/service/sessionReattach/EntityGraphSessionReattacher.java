@@ -13,13 +13,13 @@ import java.util.Set;
 
 @Component
 @Slf4j
-public class EntityGraph_SessionReattachment_Helper {
+public class EntityGraphSessionReattacher {
 
     @Getter
     private SessionReattacher sessionReattacher;
 
     @Autowired
-    public EntityGraph_SessionReattachment_Helper(SessionReattacher sessionReattacher) {
+    public EntityGraphSessionReattacher(SessionReattacher sessionReattacher) {
         this.sessionReattacher = sessionReattacher;
     }
 

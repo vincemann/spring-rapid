@@ -5,8 +5,8 @@ import io.github.vincemann.generic.crud.lib.service.CrudService;
 import io.github.vincemann.generic.crud.lib.service.exception.BadEntityException;
 import io.github.vincemann.generic.crud.lib.service.exception.EntityNotFoundException;
 import io.github.vincemann.generic.crud.lib.service.exception.NoIdException;
-import io.github.vincemann.generic.crud.lib.test.forceEagerFetch.Hibernate_ForceEagerFetch_Helper;
-import io.github.vincemann.generic.crud.lib.test.forceEagerFetch.proxy.abs.Hibernate_ForceEagerFetch_Proxy;
+import io.github.vincemann.generic.crud.lib.test.forceEagerFetch.HibernateForceEagerFetchUtil;
+import io.github.vincemann.generic.crud.lib.test.forceEagerFetch.proxy.abs.HibernateForceEagerFetchProxy;
 import lombok.Getter;
 import org.hibernate.Hibernate;
 import org.springframework.data.repository.CrudRepository;
@@ -23,21 +23,21 @@ import java.util.Set;
  * @param <R>
  */
 @Getter
-public class CrudService_HibernateForceEagerFetch_Proxy
+public class HibernateForceEagerFetchProxyCrudService
         <
                 E extends IdentifiableEntity<Id>,
                 Id extends Serializable,
                 R extends CrudRepository<E, Id>,
                 S extends CrudService<E,Id,R>
                 >
-            extends Hibernate_ForceEagerFetch_Proxy
+            extends HibernateForceEagerFetchProxy
         implements CrudService<E, Id, R> {
 
 
     private CrudService<E,Id,R> crudService;
 
-    public CrudService_HibernateForceEagerFetch_Proxy(CrudService<E,Id,R> crudService,
-                                                      Hibernate_ForceEagerFetch_Helper helper) {
+    public HibernateForceEagerFetchProxyCrudService(CrudService<E,Id,R> crudService,
+                                                    HibernateForceEagerFetchUtil helper) {
         super(helper);
         this.crudService = crudService;
     }

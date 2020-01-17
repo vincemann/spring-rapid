@@ -1,11 +1,10 @@
 package io.github.vincemann.demo.controllers.springAdapter;
 
 
-import io.github.vincemann.demo.controllers.EntityInitializer_ControllerIT;
+import io.github.vincemann.demo.controllers.EntityInitializerControllerIntegrationTest;
 import io.github.vincemann.demo.dtos.pet.BasePetDto;
 import io.github.vincemann.demo.dtos.pet.abs.AbstractPetDto;
 import io.github.vincemann.demo.model.Pet;
-import io.github.vincemann.demo.repositories.PetRepository;
 import io.github.vincemann.generic.crud.lib.test.controller.springAdapter.crudTests.config.UpdateControllerTestConfiguration;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -20,7 +19,7 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
         SpringBootTest.WebEnvironment.DEFINED_PORT)
 @ActiveProfiles(value = {"test", "springdatajpa"})
 class PetControllerIT
-        extends EntityInitializer_ControllerIT<Pet, PetRepository> {
+        extends EntityInitializerControllerIntegrationTest<Pet> {
 
     private AbstractPetDto petDtoWithPersistedPetType;
     private Pet petWithPersistedPetType;

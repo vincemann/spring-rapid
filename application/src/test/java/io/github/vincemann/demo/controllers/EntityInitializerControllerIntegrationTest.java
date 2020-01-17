@@ -5,7 +5,7 @@ import io.github.vincemann.demo.repositories.*;
 import io.github.vincemann.generic.crud.lib.model.IdentifiableEntity;
 import io.github.vincemann.generic.crud.lib.service.CrudService;
 import io.github.vincemann.generic.crud.lib.test.controller.springAdapter.UrlParamIdControllerIntegrationTest;
-import io.github.vincemann.generic.crud.lib.test.forceEagerFetch.Hibernate_ForceEagerFetch_Helper;
+import io.github.vincemann.generic.crud.lib.test.forceEagerFetch.HibernateForceEagerFetchUtil;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
@@ -19,11 +19,7 @@ import java.time.LocalDate;
 @Getter
 @Setter
 @Slf4j
-public abstract class EntityInitializer_ControllerIT
-        <
-                E extends IdentifiableEntity<Long>,
-                R extends CrudRepository<E, Long>
-        >
+public abstract class EntityInitializerControllerIntegrationTest<E extends IdentifiableEntity<Long>>
         extends UrlParamIdControllerIntegrationTest<E,Long>
 
 {
@@ -40,7 +36,7 @@ public abstract class EntityInitializer_ControllerIT
     private CrudService<Specialty,Long,SpecialtyRepository> specialtyService;
 
     @Autowired
-    private Hibernate_ForceEagerFetch_Helper hibernate_forceEagerFetch_helper;
+    private HibernateForceEagerFetchUtil hibernate_forceEagerFetch_util;
 
 
     @Autowired

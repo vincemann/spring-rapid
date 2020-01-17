@@ -4,16 +4,15 @@ import io.github.vincemann.demo.dtos.owner.CreateOwnerDto;
 import io.github.vincemann.demo.dtos.owner.ReadOwnerDto;
 import io.github.vincemann.demo.dtos.owner.UpdateOwnerDto;
 import io.github.vincemann.demo.model.Owner;
-import io.github.vincemann.demo.repositories.OwnerRepository;
 import io.github.vincemann.generic.crud.lib.controller.dtoMapper.DtoMappingContext;
-import io.github.vincemann.generic.crud.lib.controller.springAdapter.DtoCrudController_SpringAdapter;
+import io.github.vincemann.generic.crud.lib.controller.springAdapter.SpringAdapterDtoCrudController;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 @Controller
 public class OwnerController
-        extends DtoCrudController_SpringAdapter<Owner, Long> {
+        extends SpringAdapterDtoCrudController<Owner, Long> {
 
 
     public OwnerController() {

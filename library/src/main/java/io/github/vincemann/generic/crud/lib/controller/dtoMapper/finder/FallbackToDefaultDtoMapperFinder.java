@@ -13,13 +13,13 @@ import java.util.stream.Collectors;
 
 @Component
 @Slf4j
-public class FallbackToDefault_DtoMapperFinder<Id extends Serializable> implements DtoMapperFinder<Id> {
+public class FallbackToDefaultDtoMapperFinder<Id extends Serializable> implements DtoMapperFinder<Id> {
 
     private List<DtoMapper> dtoMappers;
     private DtoMapper defaultMapper;
 
     @Autowired
-    public FallbackToDefault_DtoMapperFinder(List<DtoMapper> dtoMappers, @Qualifier("default") DtoMapper defaultMapper) {
+    public FallbackToDefaultDtoMapperFinder(List<DtoMapper> dtoMappers, @Qualifier("default") DtoMapper defaultMapper) {
         this.dtoMappers = dtoMappers;
         this.dtoMappers.remove(defaultMapper);
         this.defaultMapper = defaultMapper;

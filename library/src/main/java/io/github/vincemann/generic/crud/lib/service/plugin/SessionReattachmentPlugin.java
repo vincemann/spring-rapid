@@ -2,7 +2,7 @@ package io.github.vincemann.generic.crud.lib.service.plugin;
 
 import io.github.vincemann.generic.crud.lib.model.IdentifiableEntity;
 import io.github.vincemann.generic.crud.lib.service.exception.BadEntityException;
-import io.github.vincemann.generic.crud.lib.service.sessionReattach.EntityGraph_SessionReattachment_Helper;
+import io.github.vincemann.generic.crud.lib.service.sessionReattach.EntityGraphSessionReattacher;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -12,20 +12,20 @@ import org.springframework.transaction.annotation.Transactional;
 @Slf4j
 public class SessionReattachmentPlugin
     //todo why doesnt this work with Serializable instead of Long?
-        extends CrudService_PluginProxy.Plugin<IdentifiableEntity<Long>,Long> {
+        extends PluginProxyCrudService.Plugin<IdentifiableEntity<Long>,Long> {
 
-    private EntityGraph_SessionReattachment_Helper entityGraph_sessionReattachment_helper;
+    private EntityGraphSessionReattacher entityGraph_sessionReattacher;
 
     @Autowired
-    public SessionReattachmentPlugin(EntityGraph_SessionReattachment_Helper entityGraph_sessionReattachment_helper) {
-        this.entityGraph_sessionReattachment_helper = entityGraph_sessionReattachment_helper;
+    public SessionReattachmentPlugin(EntityGraphSessionReattacher entityGraph_sessionReattacher) {
+        this.entityGraph_sessionReattacher = entityGraph_sessionReattacher;
     }
 
     @Transactional
     @Override
     public void onBeforeSave(IdentifiableEntity entity) throws BadEntityException {
         log.debug("attaching entityGraph to Session if necessary. Root: " + entity);
-        entityGraph_sessionReattachment_helper.attachEntityGraphToCurrentSession(entity);
+        entityGraph_sessionReattacher.attachEntityGraphToCurrentSession(entity);
         super.onBeforeSave(entity);
     }
 

@@ -1,6 +1,6 @@
 package io.github.vincemann.generic.crud.lib.test.controller.springAdapter.requestEntityFactory;
 
-import io.github.vincemann.generic.crud.lib.controller.springAdapter.DtoCrudController_SpringAdapter;
+import io.github.vincemann.generic.crud.lib.controller.springAdapter.SpringAdapterDtoCrudController;
 import io.github.vincemann.generic.crud.lib.test.controller.springAdapter.ControllerTestMethod;
 import io.github.vincemann.generic.crud.lib.test.controller.springAdapter.crudTests.config.UpdateControllerTestConfiguration;
 import io.github.vincemann.generic.crud.lib.test.controller.springAdapter.crudTests.config.abs.ControllerTestConfiguration;
@@ -21,11 +21,11 @@ public class UrlParamIdRequestEntityFactory<Id extends Serializable>
         extends RequestEntityFactory<Id> {
 
     public static final Map.Entry<String,String> FULL_UPDATE_QUERY_PARAM_ENTRY = new AbstractMap.SimpleEntry<>("full","true");
-    private DtoCrudController_SpringAdapter<?,Id> controller;
+    private SpringAdapterDtoCrudController<?,Id> controller;
     private String entityIdParamKey;
 
     @Builder
-    public UrlParamIdRequestEntityFactory(BaseAddressProvider baseAddressProvider, DtoCrudController_SpringAdapter<?, Id> controller, String entityIdParamKey) {
+    public UrlParamIdRequestEntityFactory(BaseAddressProvider baseAddressProvider, SpringAdapterDtoCrudController<?, Id> controller, String entityIdParamKey) {
         super(baseAddressProvider);
         this.controller = controller;
         this.entityIdParamKey = entityIdParamKey;
