@@ -2,6 +2,7 @@ package io.github.vincemann.generic.crud.lib.controller.errorHandling.exceptionH
 
 import io.github.vincemann.generic.crud.lib.controller.DtoCrudController;
 import io.github.vincemann.generic.crud.lib.controller.dtoMapper.exception.EntityMappingException;
+import io.github.vincemann.generic.crud.lib.controller.springAdapter.mediaTypeStrategy.DtoReadingException;
 import io.github.vincemann.generic.crud.lib.service.exception.BadEntityException;
 import io.github.vincemann.generic.crud.lib.service.exception.EntityNotFoundException;
 import io.github.vincemann.generic.crud.lib.service.exception.NoIdException;
@@ -22,6 +23,8 @@ public interface DtoCrudControllerExceptionHandler<ExceptionResponse>{
     public abstract ResponseEntity<ExceptionResponse> handleNoIdException(NoIdException e);
     @ExceptionHandler(BadEntityException.class)
     public abstract ResponseEntity<ExceptionResponse> handleBadEntityException(BadEntityException e);
+    @ExceptionHandler(DtoReadingException.class)
+    public abstract ResponseEntity<ExceptionResponse> handleDtoReadingException(DtoReadingException e);
     @ExceptionHandler(Exception.class)
     public abstract ResponseEntity<ExceptionResponse> handleUnknownException(Exception e);
 }

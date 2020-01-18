@@ -5,6 +5,7 @@ import io.github.vincemann.generic.crud.lib.controller.springAdapter.SpringAdapt
 import io.github.vincemann.generic.crud.lib.model.IdentifiableEntity;
 import io.github.vincemann.generic.crud.lib.service.CrudService;
 import io.github.vincemann.generic.crud.lib.test.controller.springAdapter.BaseAddressProvider;
+import io.github.vincemann.generic.crud.lib.test.controller.springAdapter.crudTests.config.abs.ControllerTestConfiguration;
 import io.github.vincemann.generic.crud.lib.test.controller.springAdapter.requestEntityFactory.RequestEntityFactory;
 import lombok.Getter;
 import lombok.Setter;
@@ -14,6 +15,7 @@ import org.springframework.beans.factory.InitializingBean;
 import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.data.repository.CrudRepository;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
 
 import java.io.Serializable;
@@ -21,7 +23,7 @@ import java.lang.reflect.ParameterizedType;
 
 @Getter
 @Setter
-public abstract class ControllerIntegrationTestContext<E extends IdentifiableEntity<Id>, Id extends Serializable>
+public abstract class ControllerIntegrationTest<E extends IdentifiableEntity<Id>, Id extends Serializable>
             implements BaseAddressProvider, InitializingBean {
 
     private static final String LOCAL_HOST = "http://127.0.0.1";
@@ -35,11 +37,11 @@ public abstract class ControllerIntegrationTestContext<E extends IdentifiableEnt
     private SpringAdapterDtoCrudController<E, Id> controller;
     private RequestEntityFactory<Id> requestEntityFactory;
 
-    public ControllerIntegrationTestContext(String url) {
+    public ControllerIntegrationTest(String url) {
         this.url=url;
     }
 
-    public ControllerIntegrationTestContext() {
+    public ControllerIntegrationTest() {
         this(LOCAL_HOST);
     }
 
@@ -55,6 +57,12 @@ public abstract class ControllerIntegrationTestContext<E extends IdentifiableEnt
             setTestService(getController().getCastedCrudService());
         }
         this.requestEntityFactory= provideRequestEntityFactory();
+    }
+
+    public ControllerTestConfiguration<Id> expect(HttpStatus httpStatus){
+        return ControllerTestConfiguration.<Id>builder()
+                .expectedHttpStatus(httpStatus)
+                .build();
     }
 
     @BeforeAll

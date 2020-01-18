@@ -27,39 +27,39 @@ public class CrudRepoHibernateForceEagerFetchProxy
 
     private R repository;
 
-    public CrudRepoHibernateForceEagerFetchProxy(R repository, HibernateForceEagerFetchUtil helper) {
-        super(helper);
+    public CrudRepoHibernateForceEagerFetchProxy(R repository, HibernateForceEagerFetchUtil util) {
+        super(util);
         this.repository = repository;
     }
 
 
     @Override
     public <S extends E> List<S> saveAll(Iterable<S> iterable) {
-        return getHelper().runInTransactionAndFetchEagerly_NoException(() -> repository.saveAll(iterable));
+        return getEagerFetchUtil().runInTransactionAndFetchEagerly_NoException(() -> repository.saveAll(iterable));
     }
 
     @Override
     public <S extends E> S save(S s) {
-        return getHelper().runInTransactionAndFetchEagerly_NoException(() -> repository.save(s));
+        return getEagerFetchUtil().runInTransactionAndFetchEagerly_NoException(() -> repository.save(s));
     }
     @Override
     public List<E> findAll() {
-        return getHelper().runInTransactionAndFetchEagerly_NoException(() -> repository.findAll());
+        return getEagerFetchUtil().runInTransactionAndFetchEagerly_NoException(() -> repository.findAll());
     }
 
     @Override
     public List<E> findAllById(Iterable<Id> iterable) {
-        return getHelper().runInTransactionAndFetchEagerly_NoException(() -> repository.findAllById(iterable));
+        return getEagerFetchUtil().runInTransactionAndFetchEagerly_NoException(() -> repository.findAllById(iterable));
     }
 
     @Override
     public Optional<E> findById(Id id) {
-        return getHelper().runInTransactionAndFetchEagerly_OptionalValue_NoException(() -> repository.findById(id));
+        return getEagerFetchUtil().runInTransactionAndFetchEagerly_OptionalValue_NoException(() -> repository.findById(id));
     }
 
     @Override
     public boolean existsById(Id id) {
-        return getHelper().runInTransactionAndFetchEagerly_NoException(() -> repository.existsById(id));
+        return getEagerFetchUtil().runInTransactionAndFetchEagerly_NoException(() -> repository.existsById(id));
     }
 
     @Override
@@ -89,7 +89,7 @@ public class CrudRepoHibernateForceEagerFetchProxy
 
     @Override
     public List<E> findAll(Sort sort) {
-        return getHelper().runInTransactionAndFetchEagerly_NoException(() -> repository.findAll(sort));
+        return getEagerFetchUtil().runInTransactionAndFetchEagerly_NoException(() -> repository.findAll(sort));
     }
 
     @Override
@@ -99,7 +99,7 @@ public class CrudRepoHibernateForceEagerFetchProxy
 
     @Override
     public <S extends E> S saveAndFlush(S s) {
-        return getHelper().runInTransactionAndFetchEagerly_NoException(() -> repository.saveAndFlush(s));
+        return getEagerFetchUtil().runInTransactionAndFetchEagerly_NoException(() -> repository.saveAndFlush(s));
     }
 
     @Override
@@ -114,34 +114,34 @@ public class CrudRepoHibernateForceEagerFetchProxy
 
     @Override
     public E getOne(Id id) {
-        return getHelper().runInTransactionAndFetchEagerly_NoException(() -> repository.getOne(id));
+        return getEagerFetchUtil().runInTransactionAndFetchEagerly_NoException(() -> repository.getOne(id));
 
     }
 
     @Override
     public <S extends E> List<S> findAll(Example<S> example) {
-        return getHelper().runInTransactionAndFetchEagerly_NoException(() -> repository.findAll(example));
+        return getEagerFetchUtil().runInTransactionAndFetchEagerly_NoException(() -> repository.findAll(example));
 
     }
 
     @Override
     public <S extends E> List<S> findAll(Example<S> example, Sort sort) {
-        return getHelper().runInTransactionAndFetchEagerly_NoException(() -> repository.findAll(example, sort));
+        return getEagerFetchUtil().runInTransactionAndFetchEagerly_NoException(() -> repository.findAll(example, sort));
     }
 
     @Override
     public Page<E> findAll(Pageable pageable) {
-        return getHelper().runInTransactionAndFetchEagerly_NoException(() -> repository.findAll(pageable));
+        return getEagerFetchUtil().runInTransactionAndFetchEagerly_NoException(() -> repository.findAll(pageable));
     }
 
     @Override
     public <S extends E> Optional<S> findOne(Example<S> example) {
-        return getHelper().runInTransactionAndFetchEagerly_OptionalValue_NoException(() -> repository.findOne(example));
+        return getEagerFetchUtil().runInTransactionAndFetchEagerly_OptionalValue_NoException(() -> repository.findOne(example));
     }
 
     @Override
     public <S extends E> Page<S> findAll(Example<S> example, Pageable pageable) {
-        return getHelper().runInTransactionAndFetchEagerly_NoException(() -> repository.findAll(example,pageable));
+        return getEagerFetchUtil().runInTransactionAndFetchEagerly_NoException(() -> repository.findAll(example,pageable));
     }
 
     @Override

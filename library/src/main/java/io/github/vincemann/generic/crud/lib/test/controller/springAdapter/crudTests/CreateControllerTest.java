@@ -2,13 +2,12 @@ package io.github.vincemann.generic.crud.lib.test.controller.springAdapter.crudT
 
 import io.github.vincemann.generic.crud.lib.controller.dtoMapper.DtoMappingContext;
 import io.github.vincemann.generic.crud.lib.model.IdentifiableEntity;
-import io.github.vincemann.generic.crud.lib.test.ControllerIntegrationTestContext;
+import io.github.vincemann.generic.crud.lib.test.ControllerIntegrationTest;
 import io.github.vincemann.generic.crud.lib.test.controller.springAdapter.ControllerTestMethod;
 import io.github.vincemann.generic.crud.lib.test.controller.springAdapter.crudTests.config.SuccessfulCreateControllerTestConfiguration;
 import io.github.vincemann.generic.crud.lib.test.controller.springAdapter.crudTests.config.abs.ControllerTestConfiguration;
 import io.github.vincemann.generic.crud.lib.test.controller.springAdapter.crudTests.config.factory.abs.AbstractControllerTestConfigurationFactory;
 import io.github.vincemann.generic.crud.lib.test.controller.springAdapter.crudTests.abs.AbstractControllerTest;
-import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
 import org.junit.jupiter.api.Assertions;
@@ -24,7 +23,7 @@ public class CreateControllerTest<E extends IdentifiableEntity<Id>, Id extends S
     private AbstractControllerTestConfigurationFactory<E,Id,SuccessfulCreateControllerTestConfiguration<E,Id>,ControllerTestConfiguration<Id>> testConfigFactory;
 
 
-    public CreateControllerTest(ControllerIntegrationTestContext<E, Id> testContext, AbstractControllerTestConfigurationFactory<E, Id, SuccessfulCreateControllerTestConfiguration<E,Id>, ControllerTestConfiguration<Id>> testConfigFactory) {
+    public CreateControllerTest(ControllerIntegrationTest<E, Id> testContext, AbstractControllerTestConfigurationFactory<E, Id, SuccessfulCreateControllerTestConfiguration<E,Id>, ControllerTestConfiguration<Id>> testConfigFactory) {
         super(testContext);
         this.testConfigFactory = testConfigFactory;
     }

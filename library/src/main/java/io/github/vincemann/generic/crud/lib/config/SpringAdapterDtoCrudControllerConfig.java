@@ -9,6 +9,7 @@ import io.github.vincemann.generic.crud.lib.controller.springAdapter.validationS
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.validation.beanvalidation.LocalValidatorFactoryBean;
 
 @Configuration
 public class SpringAdapterDtoCrudControllerConfig {
@@ -32,8 +33,9 @@ public class SpringAdapterDtoCrudControllerConfig {
     }
 
     @Bean
-    public ValidationStrategy getValidationStrategy(){
-        return new JavaXValidationStrategy();
+    public ValidationStrategy getValidationStrategy(LocalValidatorFactoryBean localValidatorFactoryBean){
+        //use spring validator, so dependency injection is supported
+        return new JavaXValidationStrategy(localValidatorFactoryBean.getValidator());
     }
 
 }

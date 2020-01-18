@@ -11,29 +11,29 @@ import org.springframework.data.repository.CrudRepository;
 import java.io.Serializable;
 
 @Getter
-public abstract class ServiceEagerFetchControllerIntegrationTestContext<E extends IdentifiableEntity<Id>, Id extends Serializable>
-        extends ControllerIntegrationTestContext<E, Id> {
+public abstract class ServiceEagerFetchControllerIntegrationTest<E extends IdentifiableEntity<Id>, Id extends Serializable>
+        extends ControllerIntegrationTest<E, Id> {
 
-    public ServiceEagerFetchControllerIntegrationTestContext(String url) {
+    public ServiceEagerFetchControllerIntegrationTest(String url) {
         super(url);
     }
 
-    public ServiceEagerFetchControllerIntegrationTestContext() {
+    public ServiceEagerFetchControllerIntegrationTest() {
     }
 
 
-    private HibernateForceEagerFetchUtil hibernate_forceEagerFetch_util;
+    private HibernateForceEagerFetchUtil hibernateForceEagerFetchUtil;
 
 
     @Autowired
-    public void injectHibernate_forceEagerFetch_helper(HibernateForceEagerFetchUtil hibernate_forceEagerFetch_util) {
-        this.hibernate_forceEagerFetch_util = hibernate_forceEagerFetch_util;
+    public void injectHibernateForceEagerFetchUtil(HibernateForceEagerFetchUtil hibernateForceEagerFetchUtil) {
+        this.hibernateForceEagerFetchUtil = hibernateForceEagerFetchUtil;
     }
 
     protected <E extends IdentifiableEntity<Id>,
             Id extends Serializable,
             R extends CrudRepository<E, Id>
             > CrudService<E, Id, R> wrapWithEagerFetchProxy(CrudService<E, Id, R> crudService) {
-        return new CrudServiceHibernateForceEagerFetchProxy<>(crudService, hibernate_forceEagerFetch_util);
+        return new CrudServiceHibernateForceEagerFetchProxy<>(crudService, hibernateForceEagerFetchUtil);
     }
 }

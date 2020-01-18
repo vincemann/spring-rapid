@@ -6,7 +6,7 @@ import io.github.vincemann.generic.crud.lib.controller.springAdapter.SpringAdapt
 import io.github.vincemann.generic.crud.lib.controller.springAdapter.idFetchingStrategy.UrlParamIdFetchingStrategy;
 import io.github.vincemann.generic.crud.lib.model.IdentifiableEntity;
 import io.github.vincemann.generic.crud.lib.service.exception.BadEntityException;
-import io.github.vincemann.generic.crud.lib.test.ServiceEagerFetchControllerIntegrationTestContext;
+import io.github.vincemann.generic.crud.lib.test.ServiceEagerFetchControllerIntegrationTest;
 import io.github.vincemann.generic.crud.lib.test.controller.springAdapter.crudTests.*;
 import io.github.vincemann.generic.crud.lib.test.controller.springAdapter.crudTests.config.factory.*;
 import io.github.vincemann.generic.crud.lib.test.controller.springAdapter.requestEntityFactory.RequestEntityFactory;
@@ -46,7 +46,7 @@ public abstract class UrlParamIdControllerIntegrationTest
                 E extends IdentifiableEntity<Id>,
                 Id extends Serializable
         >
-        extends ServiceEagerFetchControllerIntegrationTestContext<E,Id>
+        extends ServiceEagerFetchControllerIntegrationTest<E,Id>
 {
 
     //todo we probably at some point need interfaces before these

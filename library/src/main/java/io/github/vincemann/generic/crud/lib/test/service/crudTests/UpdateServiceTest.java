@@ -4,7 +4,7 @@ import io.github.vincemann.generic.crud.lib.model.IdentifiableEntity;
 import io.github.vincemann.generic.crud.lib.service.exception.BadEntityException;
 import io.github.vincemann.generic.crud.lib.service.exception.EntityNotFoundException;
 import io.github.vincemann.generic.crud.lib.service.exception.NoIdException;
-import io.github.vincemann.generic.crud.lib.test.service.ServiceTestContext;
+import io.github.vincemann.generic.crud.lib.test.service.ServiceTest;
 import io.github.vincemann.generic.crud.lib.test.service.crudTests.abs.AbstractServiceTest;
 import io.github.vincemann.generic.crud.lib.test.exception.InvalidConfigurationModificationException;
 import io.github.vincemann.generic.crud.lib.test.service.crudTests.configuration.abs.ServiceTestConfiguration;
@@ -25,7 +25,7 @@ public class UpdateServiceTest<E extends IdentifiableEntity<Id>, Id extends Seri
         extends AbstractServiceTest<E, Id> {
     private AbstractServiceTestConfigurationFactory<E, Id, SuccessfulUpdateServiceTestConfiguration<E, Id>,FailedUpdateServiceTestConfiguration<E, Id>> updateTestConfigurationFactory;
 
-    public UpdateServiceTest(ServiceTestContext<E, Id> testContext) {
+    public UpdateServiceTest(ServiceTest<E, Id> testContext) {
         super(testContext);
         this.updateTestConfigurationFactory = new UpdateServiceTestConfigurationFactory<>(testContext);
     }

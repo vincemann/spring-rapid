@@ -8,10 +8,10 @@ import org.springframework.beans.factory.annotation.Qualifier;
 @Qualifier(HibernateForceEagerFetchProxy.EAGER_FETCH_PROXY)
 public abstract class HibernateForceEagerFetchProxy {
 
-    private HibernateForceEagerFetchUtil helper;
+    private HibernateForceEagerFetchUtil eagerFetchUtil;
 
-    public HibernateForceEagerFetchProxy(HibernateForceEagerFetchUtil helper) {
-        this.helper = helper;
+    public HibernateForceEagerFetchProxy(HibernateForceEagerFetchUtil eagerFetchUtil) {
+        this.eagerFetchUtil = eagerFetchUtil;
     }
 
     /**

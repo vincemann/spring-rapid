@@ -1,6 +1,6 @@
 package io.github.vincemann.generic.crud.lib.test.exception;
 
-public class InvalidConfigurationModificationException extends Exception {
+public class InvalidConfigurationModificationException extends RuntimeException {
     public InvalidConfigurationModificationException() {
     }
 

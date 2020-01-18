@@ -6,6 +6,7 @@ import io.github.vincemann.generic.crud.lib.service.exception.BadEntityException
 import io.github.vincemann.generic.crud.lib.service.exception.EntityNotFoundException;
 import io.github.vincemann.generic.crud.lib.service.exception.NoIdException;
 import io.github.vincemann.generic.crud.lib.test.equalChecker.EqualChecker;
+import io.github.vincemann.generic.crud.lib.test.service.crudTests.configuration.FailedServiceTestConfiguration;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -20,7 +21,7 @@ import java.util.Optional;
 @Getter
 @AllArgsConstructor
 @NoArgsConstructor
-public abstract class ServiceTestContext<E extends IdentifiableEntity<Id>, Id extends Serializable> {
+public abstract class ServiceTest<E extends IdentifiableEntity<Id>, Id extends Serializable> {
 
     private CrudService<E,Id,? extends CrudRepository<E,Id>> crudService;
     private CrudRepository<E,Id> repository;
@@ -42,6 +43,12 @@ public abstract class ServiceTestContext<E extends IdentifiableEntity<Id>, Id ex
     }
     public E serviceUpdate(E entity,boolean full) throws EntityNotFoundException, BadEntityException, NoIdException {
         return getCrudService().update(entity,full);
+    }
+
+    protected FailedServiceTestConfiguration<E,Id> expect(Class<? extends Exception> exceptionClass){
+        return FailedServiceTestConfiguration.<E,Id>builder()
+                .expectedException(exceptionClass)
+                .build();
     }
 
     public <R extends CrudRepository<E,Id>> R getCastedCrudRepository(){

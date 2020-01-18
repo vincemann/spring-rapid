@@ -35,13 +35,13 @@ public abstract class ForceEagerFetchCrudServiceIntegrationTest<E extends Identi
 {
 
     @Getter
-    private HibernateForceEagerFetchUtil forceEagerFetchHelper;
+    private HibernateForceEagerFetchUtil forceEagerFetchUtil;
     private EntityGraphSessionReattacher sessionReattacher;
 
 
     @Autowired
-    public void injectHibernate_forceEagerFetch_helper(HibernateForceEagerFetchUtil hibernate_forceEagerFetch_util) {
-        this.forceEagerFetchHelper = hibernate_forceEagerFetch_util;
+    public void injectHibernateForceEagerFetchUtil(HibernateForceEagerFetchUtil forceEagerFetchUtil) {
+        this.forceEagerFetchUtil = forceEagerFetchUtil;
     }
 
     @Autowired
@@ -51,7 +51,7 @@ public abstract class ForceEagerFetchCrudServiceIntegrationTest<E extends Identi
 
     @Override
     public Optional<E> repoFindById(Id id) {
-        return forceEagerFetchHelper.runInTransactionAndFetchEagerly_OptionalValue_NoException(() -> {
+        return forceEagerFetchUtil.runInTransactionAndFetchEagerly_OptionalValue_NoException(() -> {
             return super.repoFindById(id);
         });
     }
@@ -60,7 +60,7 @@ public abstract class ForceEagerFetchCrudServiceIntegrationTest<E extends Identi
     @Override
     public E serviceSave(E entity) throws BadEntityException {
         try {
-            return forceEagerFetchHelper.runInTransactionAndFetchEagerly(() -> {
+            return forceEagerFetchUtil.runInTransactionAndFetchEagerly(() -> {
                 //it is expected for service to handle reattachment (for example with reattachment plugin) so this is not necessary
                 //entityGraph_sessionReattachment_helper.attachEntityGraphToCurrentSession(entity);
                 return super.serviceSave(entity);
@@ -76,7 +76,7 @@ public abstract class ForceEagerFetchCrudServiceIntegrationTest<E extends Identi
     @Transactional
     public Optional<E> serviceFindById(Id id) throws NoIdException {
         try {
-            return forceEagerFetchHelper.runInTransactionAndFetchEagerly_OptionalValue(() -> {
+            return forceEagerFetchUtil.runInTransactionAndFetchEagerly_OptionalValue(() -> {
                 return super.serviceFindById(id);
             });
         }catch (NoIdException|RuntimeException e){
@@ -91,7 +91,7 @@ public abstract class ForceEagerFetchCrudServiceIntegrationTest<E extends Identi
     @Transactional
     public E serviceUpdate(E entity,boolean full) throws EntityNotFoundException, BadEntityException, NoIdException {
         try {
-            return forceEagerFetchHelper.runInTransactionAndFetchEagerly(() -> {
+            return forceEagerFetchUtil.runInTransactionAndFetchEagerly(() -> {
                 //it is expected for service to handle reattachment (for example with reattachment plugin) so this is not necessary
                 //entityGraph_sessionReattachment_helper.attachEntityGraphToCurrentSession(entity);
                 return super.serviceUpdate(entity,full);
@@ -105,14 +105,14 @@ public abstract class ForceEagerFetchCrudServiceIntegrationTest<E extends Identi
     }
 
     protected  <E extends IdentifiableEntity<Id>,Id extends Serializable,R extends CrudRepository<E,Id>> CrudService<E,Id,R> wrapWithEagerFetchProxy(CrudService<E,Id,R> crudService){
-        return new CrudServiceHibernateForceEagerFetchProxy<>(crudService, forceEagerFetchHelper);
+        return new CrudServiceHibernateForceEagerFetchProxy<>(crudService, forceEagerFetchUtil);
     }
 
     @Override
     @Transactional
     public E repoSave(E entity) {
         //make sure that there are no entities, not attached to the current session (created via @Transactional)
-        return forceEagerFetchHelper.runInTransactionAndFetchEagerly_NoException(() -> {
+        return forceEagerFetchUtil.runInTransactionAndFetchEagerly_NoException(() -> {
             sessionReattacher.attachEntityGraphToCurrentSession(entity);
             return super.repoSave(entity);
         });
