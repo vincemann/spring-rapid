@@ -1,7 +1,7 @@
 package io.github.vincemann.generic.crud.lib.test.controller.springAdapter.crudTests;
 
 import io.github.vincemann.generic.crud.lib.model.IdentifiableEntity;
-import io.github.vincemann.generic.crud.lib.test.ControllerIntegrationTestContext;
+import io.github.vincemann.generic.crud.lib.test.ControllerIntegrationTest;
 import io.github.vincemann.generic.crud.lib.test.controller.springAdapter.ControllerTestMethod;
 import io.github.vincemann.generic.crud.lib.test.controller.springAdapter.crudTests.abs.AbstractControllerTest;
 import io.github.vincemann.generic.crud.lib.test.controller.springAdapter.crudTests.config.abs.ControllerTestConfiguration;
@@ -20,7 +20,7 @@ public class DeleteControllerTest<E extends IdentifiableEntity<Id>, Id extends S
     private AbstractControllerTestConfigurationFactory<E,Id, ControllerTestConfiguration<Id>,ControllerTestConfiguration<Id>> testConfigFactory;
 
     @Builder
-    public DeleteControllerTest(ControllerIntegrationTestContext<E, Id> testContext, AbstractControllerTestConfigurationFactory<E, Id, ControllerTestConfiguration<Id>, ControllerTestConfiguration<Id>> testConfigFactory) {
+    public DeleteControllerTest(ControllerIntegrationTest<E, Id> testContext, AbstractControllerTestConfigurationFactory<E, Id, ControllerTestConfiguration<Id>, ControllerTestConfiguration<Id>> testConfigFactory) {
         super(testContext);
         this.testConfigFactory = testConfigFactory;
     }

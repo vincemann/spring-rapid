@@ -1,7 +1,7 @@
 package io.github.vincemann.generic.crud.lib.test.controller.springAdapter.crudTests;
 
 import io.github.vincemann.generic.crud.lib.model.IdentifiableEntity;
-import io.github.vincemann.generic.crud.lib.test.ControllerIntegrationTestContext;
+import io.github.vincemann.generic.crud.lib.test.ControllerIntegrationTest;
 import io.github.vincemann.generic.crud.lib.test.controller.springAdapter.ControllerTestMethod;
 import io.github.vincemann.generic.crud.lib.test.controller.springAdapter.crudTests.abs.AbstractControllerTest;
 import io.github.vincemann.generic.crud.lib.test.controller.springAdapter.crudTests.config.UpdateControllerTestConfiguration;
@@ -25,7 +25,7 @@ public class UpdateControllerTest<E extends IdentifiableEntity<Id>, Id extends S
 
 
     @Builder
-    public UpdateControllerTest(ControllerIntegrationTestContext<E, Id> testContext, AbstractControllerTestConfigurationFactory<E, Id, UpdateControllerTestConfiguration<E, Id>, UpdateControllerTestConfiguration<E, Id>> testConfigFactory) {
+    public UpdateControllerTest(ControllerIntegrationTest<E, Id> testContext, AbstractControllerTestConfigurationFactory<E, Id, UpdateControllerTestConfiguration<E, Id>, UpdateControllerTestConfiguration<E, Id>> testConfigFactory) {
         super(testContext);
         this.testConfigFactory = testConfigFactory;
     }

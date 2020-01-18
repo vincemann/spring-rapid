@@ -37,15 +37,15 @@ public class CrudServiceHibernateForceEagerFetchProxy
     private CrudService<E,Id,R> crudService;
 
     public CrudServiceHibernateForceEagerFetchProxy(CrudService<E,Id,R> crudService,
-                                                    HibernateForceEagerFetchUtil helper) {
-        super(helper);
+                                                    HibernateForceEagerFetchUtil util) {
+        super(util);
         this.crudService = crudService;
     }
 
     @Override
     public java.util.Optional<E> findById(Id id) throws NoIdException {
         try {
-            return getHelper().runInTransactionAndFetchEagerly_OptionalValue(() -> crudService.findById(id));
+            return getEagerFetchUtil().runInTransactionAndFetchEagerly_OptionalValue(() -> crudService.findById(id));
         } catch (NoIdException|RuntimeException e) {
             throw e;
         }
@@ -57,7 +57,7 @@ public class CrudServiceHibernateForceEagerFetchProxy
     @Override
     public E update(E entity,boolean full) throws EntityNotFoundException, NoIdException, BadEntityException {
         try {
-            return getHelper().runInTransactionAndFetchEagerly(() -> {
+            return getEagerFetchUtil().runInTransactionAndFetchEagerly(() -> {
                 return crudService.update(entity,full);
             });
         } catch (EntityNotFoundException|NoIdException|BadEntityException|RuntimeException e) {
@@ -70,7 +70,7 @@ public class CrudServiceHibernateForceEagerFetchProxy
     @Override
     public E save(E entity) throws BadEntityException {
         try {
-            return getHelper().runInTransactionAndFetchEagerly(() -> crudService.save(entity));
+            return getEagerFetchUtil().runInTransactionAndFetchEagerly(() -> crudService.save(entity));
         } catch (BadEntityException|RuntimeException e) {
             throw e;
         }catch (Exception e) {
@@ -81,7 +81,7 @@ public class CrudServiceHibernateForceEagerFetchProxy
     @Override
     public Set<E> findAll() {
         try {
-            return getHelper().runInTransactionAndFetchEagerly(() -> crudService.findAll());
+            return getEagerFetchUtil().runInTransactionAndFetchEagerly(() -> crudService.findAll());
         }
         catch (RuntimeException e){
             throw e;

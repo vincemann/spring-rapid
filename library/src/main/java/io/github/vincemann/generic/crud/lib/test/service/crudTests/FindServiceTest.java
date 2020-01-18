@@ -3,7 +3,7 @@ package io.github.vincemann.generic.crud.lib.test.service.crudTests;
 import io.github.vincemann.generic.crud.lib.model.IdentifiableEntity;
 import io.github.vincemann.generic.crud.lib.service.exception.NoIdException;
 import io.github.vincemann.generic.crud.lib.test.service.crudTests.abs.AbstractServiceTest;
-import io.github.vincemann.generic.crud.lib.test.service.ServiceTestContext;
+import io.github.vincemann.generic.crud.lib.test.service.ServiceTest;
 import org.junit.jupiter.api.Assertions;
 
 import java.io.Serializable;
@@ -12,7 +12,7 @@ import java.util.Optional;
 public class FindServiceTest<E extends IdentifiableEntity<Id>, Id extends Serializable>
         extends AbstractServiceTest<E,Id> {
 
-    public FindServiceTest(ServiceTestContext<E, Id> testContext) {
+    public FindServiceTest(ServiceTest<E, Id> testContext) {
         super(testContext);
     }
 
@@ -24,13 +24,13 @@ public class FindServiceTest<E extends IdentifiableEntity<Id>, Id extends Serial
         return foundEntity.get();
     }
 
-    public <T extends Throwable> T findExistingEntityById_ShouldFail(Id id, Class<? extends T> expectedException) throws NoIdException {
+    public <T extends Throwable> T findEntityById_ShouldFail(Id id, Class<? extends T> expectedException) throws NoIdException {
         Assertions.assertNotNull(id);
         Assertions.assertTrue(getRootContext().repoFindById(id).isPresent());
         return Assertions.assertThrows(expectedException,() -> getRootContext().serviceFindById(id));
     }
 
-    public void findExistingEntityById_ShouldFail(Id id) throws NoIdException {
+    public void findEntityById_ShouldFail(Id id) throws NoIdException {
         Assertions.assertNotNull(id);
         Assertions.assertTrue(getRootContext().repoFindById(id).isPresent());
         Optional<E> foundEntity = getRootContext().serviceFindById(id);

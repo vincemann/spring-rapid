@@ -15,9 +15,10 @@ import java.util.Set;
 public class JavaXValidationStrategy<Id extends Serializable> implements ValidationStrategy<Id>{
     private final Validator validator;
 
-    public JavaXValidationStrategy() {
-        ValidatorFactory factory=Validation.buildDefaultValidatorFactory();
-        this.validator=factory.getValidator();
+    public JavaXValidationStrategy(Validator validator) {
+//        ValidatorFactory factory=Validation.buildDefaultValidatorFactory();
+//        this.validator=factory.getValidator();
+        this.validator = validator;
     }
 
     @Override

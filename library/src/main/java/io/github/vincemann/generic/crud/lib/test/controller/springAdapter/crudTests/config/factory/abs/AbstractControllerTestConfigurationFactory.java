@@ -1,7 +1,7 @@
 package io.github.vincemann.generic.crud.lib.test.controller.springAdapter.crudTests.config.factory.abs;
 
 import io.github.vincemann.generic.crud.lib.model.IdentifiableEntity;
-import io.github.vincemann.generic.crud.lib.test.ControllerIntegrationTestContext;
+import io.github.vincemann.generic.crud.lib.test.ControllerIntegrationTest;
 import io.github.vincemann.generic.crud.lib.test.TestConfigurationFactory;
 import io.github.vincemann.generic.crud.lib.test.controller.springAdapter.crudTests.config.abs.ControllerTestConfiguration;
 import lombok.AllArgsConstructor;
@@ -18,5 +18,5 @@ public abstract class AbstractControllerTestConfigurationFactory
 
                     implements TestConfigurationFactory<SuccessfulC,FailedC,ControllerTestConfiguration<Id>,ControllerTestConfiguration<Id>>
 {
-    private ControllerIntegrationTestContext<E,Id> context;
+    private ControllerIntegrationTest<E,Id> context;
 }

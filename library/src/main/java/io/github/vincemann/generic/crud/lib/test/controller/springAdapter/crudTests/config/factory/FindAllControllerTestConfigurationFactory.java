@@ -1,7 +1,7 @@
 package io.github.vincemann.generic.crud.lib.test.controller.springAdapter.crudTests.config.factory;
 
 import io.github.vincemann.generic.crud.lib.model.IdentifiableEntity;
-import io.github.vincemann.generic.crud.lib.test.ControllerIntegrationTestContext;
+import io.github.vincemann.generic.crud.lib.test.ControllerIntegrationTest;
 import io.github.vincemann.generic.crud.lib.test.controller.springAdapter.crudTests.config.abs.ControllerTestConfiguration;
 import io.github.vincemann.generic.crud.lib.test.controller.springAdapter.crudTests.config.factory.abs.AbstractControllerTestConfigurationFactory;
 import io.github.vincemann.generic.crud.lib.test.exception.InvalidConfigurationModificationException;
@@ -15,7 +15,7 @@ public class FindAllControllerTestConfigurationFactory<E extends IdentifiableEnt
                 Id extends Serializable>
         extends AbstractControllerTestConfigurationFactory<E, Id, ControllerTestConfiguration<Id>, ControllerTestConfiguration<Id>> {
 
-    public FindAllControllerTestConfigurationFactory(ControllerIntegrationTestContext<E, Id> context) {
+    public FindAllControllerTestConfigurationFactory(ControllerIntegrationTest<E, Id> context) {
         super(context);
     }
 

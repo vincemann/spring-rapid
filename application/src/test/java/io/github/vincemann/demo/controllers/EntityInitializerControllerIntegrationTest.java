@@ -36,7 +36,7 @@ public abstract class EntityInitializerControllerIntegrationTest<E extends Ident
     private CrudService<Specialty,Long,SpecialtyRepository> specialtyService;
 
     @Autowired
-    private HibernateForceEagerFetchUtil hibernate_forceEagerFetch_util;
+    private HibernateForceEagerFetchUtil eagerFetchUtil;
 
 
     @Autowired

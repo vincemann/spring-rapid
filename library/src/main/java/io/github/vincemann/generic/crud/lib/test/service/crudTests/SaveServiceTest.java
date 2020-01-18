@@ -2,7 +2,7 @@ package io.github.vincemann.generic.crud.lib.test.service.crudTests;
 
 import io.github.vincemann.generic.crud.lib.model.IdentifiableEntity;
 import io.github.vincemann.generic.crud.lib.service.exception.BadEntityException;
-import io.github.vincemann.generic.crud.lib.test.service.ServiceTestContext;
+import io.github.vincemann.generic.crud.lib.test.service.ServiceTest;
 import io.github.vincemann.generic.crud.lib.test.service.crudTests.abs.AbstractServiceTest;
 import io.github.vincemann.generic.crud.lib.test.exception.InvalidConfigurationModificationException;
 import io.github.vincemann.generic.crud.lib.test.service.crudTests.configuration.abs.ServiceTestConfiguration;
@@ -20,7 +20,7 @@ public class SaveServiceTest<E extends IdentifiableEntity<Id>, Id extends Serial
 
     private AbstractServiceTestConfigurationFactory<E,Id, SuccessfulSaveServiceTestConfiguration<E,Id>, ServiceTestConfiguration<E,Id>> saveTestConfigurationFactory;
 
-    public SaveServiceTest(ServiceTestContext<E, Id> testContext) {
+    public SaveServiceTest(ServiceTest<E, Id> testContext) {
         super(testContext);
         this.saveTestConfigurationFactory =  new SaveServiceTestConfigurationFactory<>(testContext);
     }

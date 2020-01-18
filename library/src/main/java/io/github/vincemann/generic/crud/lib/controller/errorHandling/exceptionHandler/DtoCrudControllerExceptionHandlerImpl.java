@@ -3,6 +3,7 @@ package io.github.vincemann.generic.crud.lib.controller.errorHandling.exceptionH
 import io.github.vincemann.generic.crud.lib.controller.DtoCrudController;
 import io.github.vincemann.generic.crud.lib.controller.dtoMapper.exception.EntityMappingException;
 import io.github.vincemann.generic.crud.lib.controller.errorHandling.ApiError;
+import io.github.vincemann.generic.crud.lib.controller.springAdapter.mediaTypeStrategy.DtoReadingException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -16,6 +17,13 @@ import io.github.vincemann.generic.crud.lib.service.exception.NoIdException;
 @Slf4j
 public class DtoCrudControllerExceptionHandlerImpl extends ImprovedRestExceptionHandler implements DtoCrudControllerExceptionHandler<ApiError> {
 
+
+    @Override
+    public ResponseEntity<ApiError> handleDtoReadingException(DtoReadingException e) {
+        logError(e);
+        return buildResponseEntity(new ApiError(HttpStatus.BAD_REQUEST,
+                "Invalid Dto. Cannot be read.",e));
+    }
 
     @Override
     public ResponseEntity<ApiError> handleEntityMappingException(EntityMappingException e) {

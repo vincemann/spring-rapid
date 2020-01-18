@@ -2,7 +2,7 @@ package io.github.vincemann.generic.crud.lib.test.service.crudTests.configuratio
 
 import io.github.vincemann.generic.crud.lib.model.IdentifiableEntity;
 import io.github.vincemann.generic.crud.lib.test.exception.InvalidConfigurationModificationException;
-import io.github.vincemann.generic.crud.lib.test.service.ServiceTestContext;
+import io.github.vincemann.generic.crud.lib.test.service.ServiceTest;
 import io.github.vincemann.generic.crud.lib.test.service.crudTests.configuration.abs.ServiceTestConfiguration;
 import io.github.vincemann.generic.crud.lib.test.service.crudTests.configuration.factory.abs.AbstractServiceTestConfigurationFactory;
 import io.github.vincemann.generic.crud.lib.test.service.crudTests.configuration.update.FailedUpdateServiceTestConfiguration;
@@ -15,7 +15,7 @@ import java.io.Serializable;
 public class UpdateServiceTestConfigurationFactory<E extends IdentifiableEntity<Id>,Id extends Serializable>
         extends AbstractServiceTestConfigurationFactory<E, Id, SuccessfulUpdateServiceTestConfiguration<E,Id>,FailedUpdateServiceTestConfiguration<E,Id>> {
 
-    public UpdateServiceTestConfigurationFactory(ServiceTestContext<E, Id> context) {
+    public UpdateServiceTestConfigurationFactory(ServiceTest<E, Id> context) {
         super(context);
     }
 

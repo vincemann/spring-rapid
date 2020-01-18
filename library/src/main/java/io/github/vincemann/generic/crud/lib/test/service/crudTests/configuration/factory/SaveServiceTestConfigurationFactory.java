@@ -1,7 +1,7 @@
 package io.github.vincemann.generic.crud.lib.test.service.crudTests.configuration.factory;
 
 import io.github.vincemann.generic.crud.lib.model.IdentifiableEntity;
-import io.github.vincemann.generic.crud.lib.test.service.ServiceTestContext;
+import io.github.vincemann.generic.crud.lib.test.service.ServiceTest;
 import io.github.vincemann.generic.crud.lib.test.service.crudTests.configuration.abs.ServiceTestConfiguration;
 import io.github.vincemann.generic.crud.lib.test.service.crudTests.configuration.factory.abs.AbstractServiceTestConfigurationFactory;
 import io.github.vincemann.generic.crud.lib.test.service.crudTests.configuration.SuccessfulSaveServiceTestConfiguration;
@@ -12,7 +12,7 @@ import java.io.Serializable;
 public class SaveServiceTestConfigurationFactory<E extends IdentifiableEntity<Id>, Id extends Serializable>
         extends AbstractServiceTestConfigurationFactory<E, Id, SuccessfulSaveServiceTestConfiguration<E, Id>, ServiceTestConfiguration<E,Id>> {
 
-    public SaveServiceTestConfigurationFactory(ServiceTestContext<E, Id> context) {
+    public SaveServiceTestConfigurationFactory(ServiceTest<E, Id> context) {
         super(context);
     }
 

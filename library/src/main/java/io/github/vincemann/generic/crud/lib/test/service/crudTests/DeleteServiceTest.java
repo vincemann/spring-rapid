@@ -4,7 +4,7 @@ import io.github.vincemann.generic.crud.lib.model.IdentifiableEntity;
 import io.github.vincemann.generic.crud.lib.service.exception.EntityNotFoundException;
 import io.github.vincemann.generic.crud.lib.service.exception.NoIdException;
 import io.github.vincemann.generic.crud.lib.test.service.crudTests.abs.AbstractServiceTest;
-import io.github.vincemann.generic.crud.lib.test.service.ServiceTestContext;
+import io.github.vincemann.generic.crud.lib.test.service.ServiceTest;
 import lombok.Getter;
 import org.junit.jupiter.api.Assertions;
 
@@ -15,11 +15,11 @@ import java.util.Optional;
 public class DeleteServiceTest<E extends IdentifiableEntity<Id>, Id extends Serializable>
     extends AbstractServiceTest<E,Id>
 {
-    public DeleteServiceTest(ServiceTestContext<E, Id> testContext) {
+    public DeleteServiceTest(ServiceTest<E, Id> testContext) {
         super(testContext);
     }
 
-    protected void deleteEntityById_ShouldSucceed(Id id) throws EntityNotFoundException, NoIdException {
+    public void deleteEntityById_ShouldSucceed(Id id) throws EntityNotFoundException, NoIdException {
         //given
         Assertions.assertNotNull(id);
         Optional<E> entityToDelete = getRootContext().repoFindById(id);
@@ -32,7 +32,7 @@ public class DeleteServiceTest<E extends IdentifiableEntity<Id>, Id extends Seri
         Assertions.assertFalse(deletedEntity.isPresent());
     }
 
-    protected <T extends Throwable> T deleteExistingEntityById_ShouldFail(Id id, Class<? extends T> expectedException) throws NoIdException {
+    public  <T extends Throwable> T deleteEntityById_ShouldFail(Id id, Class<? extends T> expectedException) throws NoIdException {
         //given
         //entity is present
         Assertions.assertNotNull(id);
