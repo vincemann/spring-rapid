@@ -12,13 +12,13 @@ import java.io.Serializable;
 import java.util.Map;
 
 @Component
-public class UniDirChildResolver extends EntityIdResolver<UniDirChild, UniDirChildDto> {
+public class UniDirChildIdResolver extends EntityIdResolver<UniDirChild, UniDirChildDto> {
 
-    public UniDirChildResolver(CrudServiceFinder crudServiceFinder) {
+    public UniDirChildIdResolver(CrudServiceFinder crudServiceFinder) {
         super(crudServiceFinder, UniDirChildDto.class);
     }
 
-    public void resolveServiceEntityIds(UniDirChild mappedUniDirChild, UniDirChildDto uniDirChildDto) throws EntityMappingException {
+    public void resolveEntityIds(UniDirChild mappedUniDirChild, UniDirChildDto uniDirChildDto) throws EntityMappingException {
         try {
             Map<Class, Serializable> allParentIdToClassMappings = uniDirChildDto.findAllParentIds();
             for (Map.Entry<Class, Serializable> parentIdToClassMapping : allParentIdToClassMappings.entrySet()) {

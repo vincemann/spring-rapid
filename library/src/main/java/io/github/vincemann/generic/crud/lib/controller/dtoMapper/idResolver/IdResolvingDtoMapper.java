@@ -40,7 +40,7 @@ public class IdResolvingDtoMapper extends BasicDtoMapper {
         E mappingResult = super.mapDtoToEntity(source, destinationClass);
         //yet unfinished
         EntityIdResolver entityIdResolver = findResolver(source.getClass());
-        entityIdResolver.resolveServiceEntityIds(mappingResult, source);
+        entityIdResolver.resolveEntityIds(mappingResult, source);
         //is now finished
         return mappingResult;
     }

@@ -12,15 +12,15 @@ import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
 
 @MockitoSettings(strictness = Strictness.LENIENT)
-public class BiDirParentResolverTest extends BiDirEntityResolverTest {
+public class BiDirParentIdResolverTest extends BiDirEntityResolverTest {
 
-    private BiDirParentResolver biDirParentResolver;
+    private BiDirParentIdResolver biDirParentIdResolver;
 
     @BeforeEach
     @Override
     public void setUp() throws NoIdException {
         super.setUp();
-        this.biDirParentResolver = new BiDirParentResolver(getCrudServiceFinder());
+        this.biDirParentIdResolver = new BiDirParentIdResolver(getCrudServiceFinder());
     }
 
     @Test
@@ -30,7 +30,7 @@ public class BiDirParentResolverTest extends BiDirEntityResolverTest {
         biDirEntityParentDto.setEntityChildId(getBiDirChild().getId());
         BiDirEntityParent unfinishedMappedBiDirEntityParent = new BiDirEntityParent();
         //when
-        biDirParentResolver.resolveServiceEntityIds(unfinishedMappedBiDirEntityParent,biDirEntityParentDto);
+        biDirParentIdResolver.resolveEntityIds(unfinishedMappedBiDirEntityParent,biDirEntityParentDto);
         //then
         Assertions.assertEquals(getBiDirChild(),unfinishedMappedBiDirEntityParent.getBiDIrEntityChild());
     }
@@ -42,7 +42,7 @@ public class BiDirParentResolverTest extends BiDirEntityResolverTest {
         entityParent.setBiDIrEntityChild(getBiDirChild());
         BiDirEntityParentDto unfinishedMappedBiDirEntityParentDto = new BiDirEntityParentDto();
         //when
-        biDirParentResolver.resolveDtoIds(unfinishedMappedBiDirEntityParentDto,entityParent);
+        biDirParentIdResolver.resolveDtoIds(unfinishedMappedBiDirEntityParentDto,entityParent);
         //then
         Assertions.assertEquals(getBiDirChild().getId(), unfinishedMappedBiDirEntityParentDto.getEntityChildId());
     }

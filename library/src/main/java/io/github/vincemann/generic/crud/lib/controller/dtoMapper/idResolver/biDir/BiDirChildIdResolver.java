@@ -17,13 +17,13 @@ import java.util.Map;
  * Resolves {@link io.github.vincemann.generic.crud.lib.dto.biDir.BiDirParentId} to corresponding {@link BiDirParentEntity}.
  * Adds mapped {@link BiDirChild} to {@link BiDirParent}'s children by calling {@link BiDirParent#addChild(BiDirChild)} -> sets Backreference
  */
-public class BiDirChildResolver extends EntityIdResolver<BiDirChild, BiDirChildDto> {
+public class BiDirChildIdResolver extends EntityIdResolver<BiDirChild, BiDirChildDto> {
 
-    public BiDirChildResolver(CrudServiceFinder crudServiceFinder) {
+    public BiDirChildIdResolver(CrudServiceFinder crudServiceFinder) {
         super(crudServiceFinder, BiDirChildDto.class);
     }
 
-    public void resolveServiceEntityIds(BiDirChild mappedBiDirChild, BiDirChildDto biDirChildDto) throws EntityMappingException {
+    public void resolveEntityIds(BiDirChild mappedBiDirChild, BiDirChildDto biDirChildDto) throws EntityMappingException {
         try {
             Map<Class, Serializable> allParentIdToClassMappings = biDirChildDto.findAllParentIds();
             for (Map.Entry<Class, Serializable> parentIdToClassMapping : allParentIdToClassMappings.entrySet()) {

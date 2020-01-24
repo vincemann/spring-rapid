@@ -2,9 +2,11 @@ package io.github.vincemann.generic.crud.lib.test.forceEagerFetch;
 
 import io.github.vincemann.generic.crud.lib.util.ReflectionUtils;
 import lombok.Getter;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.MultiValuedMap;
 import org.hibernate.Hibernate;
 import org.hibernate.TransactionException;
+import org.hibernate.proxy.HibernateProxy;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.PlatformTransactionManager;
@@ -15,6 +17,7 @@ import java.lang.reflect.Field;
 import java.util.Map;
 import java.util.concurrent.Callable;
 
+@Slf4j
 @Component
 @Getter
 public class HibernateForceEagerFetchUtil {
@@ -105,6 +108,9 @@ public class HibernateForceEagerFetchUtil {
         try {
             MultiValuedMap<Field, Object> field_instances_map
                     = ReflectionUtils.findFieldsAndTheirDeclaringInstances_OfAllMemberVars_AnnotatedWith(startEntity, javax.persistence.Entity.class, true,true);
+
+
+
             for (Map.Entry<Field, Object> entry : field_instances_map.entries()) {
                 Field field = entry.getKey();
                 Object instance = entry.getValue();
@@ -112,7 +118,14 @@ public class HibernateForceEagerFetchUtil {
                 //this is either a collection of entities or an entity-instance
                 Object instanceThatNeedsToBeInitialized = field.get(instance);
                 if(instanceThatNeedsToBeInitialized!=null){
+                    log.debug("member var instance: " + instanceThatNeedsToBeInitialized.getClass() + " of parent instance: " + instance + " needs to be initialized");
                     Hibernate.initialize(instanceThatNeedsToBeInitialized);
+                    if (instanceThatNeedsToBeInitialized instanceof HibernateProxy) {
+                        Object unproxied = unproxy(instanceThatNeedsToBeInitialized);
+                        log.debug("found hibernate proxy: " + instanceThatNeedsToBeInitialized + " unproxied to: "+ unproxied + ". diving into unproxied instance now");
+                        //dive into entity of proxy
+                        eagerFetchAllEntities(unproxied);
+                    }
                 }
             }
         } catch (IllegalAccessException e) {
@@ -120,8 +133,17 @@ public class HibernateForceEagerFetchUtil {
         }
     }
 
+
+
     private TransactionStatus startNewTransaction() {
         DefaultTransactionDefinition def = new DefaultTransactionDefinition();
         return transactionManager.getTransaction(def);
     }
+
+    private  Object unproxy(Object entity) {
+        return ((HibernateProxy) entity).getHibernateLazyInitializer()
+                .getImplementation();
+    }
+
 }
+

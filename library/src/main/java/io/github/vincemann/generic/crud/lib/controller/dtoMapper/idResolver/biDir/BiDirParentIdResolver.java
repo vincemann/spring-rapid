@@ -14,13 +14,13 @@ import java.util.Collection;
 import java.util.Map;
 
 @Component
-public class BiDirParentResolver extends EntityIdResolver<BiDirParent, BiDirParentDto> {
+public class BiDirParentIdResolver extends EntityIdResolver<BiDirParent, BiDirParentDto> {
 
-    public BiDirParentResolver(CrudServiceFinder crudServiceFinder) {
+    public BiDirParentIdResolver(CrudServiceFinder crudServiceFinder) {
         super(crudServiceFinder, BiDirParentDto.class);
     }
 
-    public void resolveServiceEntityIds(BiDirParent mappedBiDirParent, BiDirParentDto biDirParentDto) throws EntityMappingException {
+    public void resolveEntityIds(BiDirParent mappedBiDirParent, BiDirParentDto biDirParentDto) throws EntityMappingException {
         try {
             //find and handle single Children
             Map<Class, Serializable> allChildIdToClassMappings = biDirParentDto.findChildrenIds();

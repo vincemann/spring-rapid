@@ -12,14 +12,14 @@ import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
 
 @MockitoSettings(strictness = Strictness.LENIENT)
-public class BiDirChildResolverTest extends BiDirEntityResolverTest {
-    private BiDirChildResolver biDirChildResolver;
+public class BiDirChildIdResolverTest extends BiDirEntityResolverTest {
+    private BiDirChildIdResolver biDirChildIdResolver;
 
     @BeforeEach
     @Override
     public void setUp() throws NoIdException {
         super.setUp();
-        this.biDirChildResolver = new BiDirChildResolver(getCrudServiceFinder());
+        this.biDirChildIdResolver = new BiDirChildIdResolver(getCrudServiceFinder());
     }
 
     @Test
@@ -30,7 +30,7 @@ public class BiDirChildResolverTest extends BiDirEntityResolverTest {
         biDirEntityChildDto.setEntityPId(getBiDirEntityParent().getId());
         biDirEntityChildDto.setSecondEntityPId(getBiDirSecondEntityParent().getId());
         //when
-        biDirChildResolver.resolveServiceEntityIds(unfinishedMappedBiDirEntityChild, biDirEntityChildDto);
+        biDirChildIdResolver.resolveEntityIds(unfinishedMappedBiDirEntityChild, biDirEntityChildDto);
         //then
         Assertions.assertEquals(getBiDirEntityParent(), unfinishedMappedBiDirEntityChild.getBiDirEntityParent());
         Assertions.assertEquals(getBiDirSecondEntityParent(), unfinishedMappedBiDirEntityChild.getBiDirSecondEntityParent());
@@ -44,7 +44,7 @@ public class BiDirChildResolverTest extends BiDirEntityResolverTest {
         entityChild.setBiDirSecondEntityParent(getBiDirSecondEntityParent());
         BiDirEntityChildDto unfinishedMappedBiDirEntityChildDto = new BiDirEntityChildDto();
         //when
-        biDirChildResolver.resolveDtoIds(unfinishedMappedBiDirEntityChildDto,entityChild);
+        biDirChildIdResolver.resolveDtoIds(unfinishedMappedBiDirEntityChildDto,entityChild);
         //then
         Assertions.assertEquals(getBiDirEntityParent().getId(),unfinishedMappedBiDirEntityChildDto.getEntityPId());
         Assertions.assertEquals(getBiDirSecondEntityParent().getId(),unfinishedMappedBiDirEntityChildDto.getSecondEntityPId());
