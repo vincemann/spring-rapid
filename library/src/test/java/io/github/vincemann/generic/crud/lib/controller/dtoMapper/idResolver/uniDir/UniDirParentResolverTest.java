@@ -11,13 +11,13 @@ import org.junit.jupiter.api.Test;
 
 public class UniDirParentResolverTest extends UniDirEntityResolverTest {
 
-    private UniDirParentResolver uniDirParentResolver;
+    private UniDirParentIdResolver uniDirParentIdResolver;
 
     @BeforeEach
     @Override
     public void setUp() throws NoIdException {
         super.setUp();
-        this.uniDirParentResolver = new UniDirParentResolver(getCrudServiceFinder());
+        this.uniDirParentIdResolver = new UniDirParentIdResolver(getCrudServiceFinder());
     }
 
     @Test
@@ -27,7 +27,7 @@ public class UniDirParentResolverTest extends UniDirEntityResolverTest {
         UniDirEntityParentDto parentDto = new UniDirEntityParentDto();
         parentDto.setChildId(getUniDirEntityParentsChild().getId());
         //when
-        uniDirParentResolver.resolveServiceEntityIds(unfinishedMappedUniDirParent,parentDto);
+        uniDirParentIdResolver.resolveEntityIds(unfinishedMappedUniDirParent,parentDto);
         //then
         Assertions.assertEquals(getUniDirEntityParentsChild(),unfinishedMappedUniDirParent.getEntityChild());
     }
@@ -39,7 +39,7 @@ public class UniDirParentResolverTest extends UniDirEntityResolverTest {
         UniDirEntityParent parent = new UniDirEntityParent();
         parent.setEntityChild(getUniDirEntityParentsChild());
         //when
-        uniDirParentResolver.resolveDtoIds(unfinishedMappedUniDirParentDto,parent);
+        uniDirParentIdResolver.resolveDtoIds(unfinishedMappedUniDirParentDto,parent);
         //then
         Assertions.assertEquals(getUniDirEntityParentsChild().getId(),unfinishedMappedUniDirParentDto.getChildId());
     }

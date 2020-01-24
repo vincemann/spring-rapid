@@ -34,7 +34,7 @@ public abstract class EntityIdResolver<E,Dto> {
         this.crudServiceFinder=crudServiceFinder;
     }
 
-    public abstract void resolveServiceEntityIds(E mappedEntity, Dto dto) throws EntityMappingException;
+    public abstract void resolveEntityIds(E mappedEntity, Dto dto) throws EntityMappingException;
 
     public abstract void resolveDtoIds(Dto mappedDto, E entity);
 
