@@ -20,7 +20,6 @@ import java.util.*;
  * @param <Id>
  * @param <R>
  */
-@Qualifier(CrudServicePluginProxy.PLUGIN_PROXY)
 @Getter
 public class CrudServicePluginProxy
         <
@@ -34,9 +33,9 @@ public class CrudServicePluginProxy
     public static final String PLUGIN_PROXY = "pluginProxy";
     private final List<Plugin<? super E,? super Id>> plugins = new ArrayList<>();
     @Setter
-    private S crudService;
+    private CrudService<E,Id,R> crudService;
 
-    public CrudServicePluginProxy(S crudService, Plugin<? super E, ? super Id>... plugins) {
+    public CrudServicePluginProxy(CrudService<E,Id,R> crudService, Plugin<? super E, ? super Id>... plugins) {
         this(plugins);
         this.crudService = crudService;
 
@@ -134,6 +133,10 @@ public class CrudServicePluginProxy
     @Override
     public R getRepository() {
         return crudService.getRepository();
+    }
+
+    public S getCastedService(){
+        return (S) getCrudService();
     }
 
     @Setter
