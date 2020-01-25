@@ -1,4 +1,4 @@
-package io.github.vincemann.generic.crud.lib.model.entityListener;
+package io.github.vincemann.generic.crud.lib.jpaAuditing.entityListener;
 
 import io.github.vincemann.generic.crud.lib.model.biDir.child.BiDirChild;
 import io.github.vincemann.generic.crud.lib.model.biDir.parent.BiDirParent;
@@ -6,7 +6,10 @@ import io.github.vincemann.generic.crud.lib.model.biDir.parent.BiDirParent;
 import javax.persistence.PrePersist;
 import javax.persistence.PreRemove;
 
-//todo kann man @EntityListener annotation vllt wrappen in eigene die @Inherited ist und das an BiDirChildEntity ranmachen, dass der user nicht an die annotation denken muss?!
+/**
+ * Manages bidirectional relationship of Child side.
+ * Works only in conjunction with {@link io.github.vincemann.generic.crud.lib.service.plugin.BiDirChildPlugin}.
+ */
 public class BiDirChildEntityListener{
 
 

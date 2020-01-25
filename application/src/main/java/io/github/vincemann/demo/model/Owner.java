@@ -1,15 +1,20 @@
 package io.github.vincemann.demo.model;
 
-import io.github.vincemann.generic.crud.lib.model.entityListener.BiDirParentEntityListener;
-import io.github.vincemann.demo.model.abs.Person;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
+import io.github.vincemann.demo.model.abs.Person;
+import io.github.vincemann.generic.crud.lib.jpaAuditing.entityListener.BiDirParentEntityListener;
 import io.github.vincemann.generic.crud.lib.model.IdentifiableEntityImpl;
-import lombok.*;
 import io.github.vincemann.generic.crud.lib.model.biDir.child.BiDirChildCollection;
 import io.github.vincemann.generic.crud.lib.model.biDir.parent.BiDirParent;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import javax.persistence.*;
-import java.util.*;
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.Set;
 
 @Setter
 @Getter

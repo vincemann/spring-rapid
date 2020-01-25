@@ -1,14 +1,14 @@
 package io.github.vincemann.demo.model;
 
-import io.github.vincemann.generic.crud.lib.model.entityListener.BiDirChildEntityListener;
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import io.github.vincemann.generic.crud.lib.jpaAuditing.entityListener.BiDirChildEntityListener;
+import io.github.vincemann.generic.crud.lib.model.IdentifiableEntityImpl;
+import io.github.vincemann.generic.crud.lib.model.biDir.child.BiDirChild;
+import io.github.vincemann.generic.crud.lib.model.biDir.parent.BiDirParentEntity;
 import io.github.vincemann.generic.crud.lib.model.uniDir.child.UniDirChildEntity;
 import io.github.vincemann.generic.crud.lib.model.uniDir.parent.UniDirParent;
 import lombok.*;
 import org.springframework.format.annotation.DateTimeFormat;
-import io.github.vincemann.generic.crud.lib.model.IdentifiableEntityImpl;
-import io.github.vincemann.generic.crud.lib.model.biDir.child.BiDirChild;
-import io.github.vincemann.generic.crud.lib.model.biDir.parent.BiDirParentEntity;
 
 import javax.persistence.*;
 import java.time.LocalDate;
