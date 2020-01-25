@@ -34,6 +34,7 @@ public class EntityGraphSessionReattacher {
      */
     public void attachEntityGraphToCurrentSession(Object root){
         try {
+            //todo are hibernate proxys a problem here? If so, see HibernateForceEagerFetchUtil recursive solution
             Set<Object> identifiableEntitiesInEntityGraph = ReflectionUtils.findObjects_OfAllMemberVars_AssignableFrom(root, IdentifiableEntity.class, true);
             identifiableEntitiesInEntityGraph.remove(root);
             for (Object entity : identifiableEntitiesInEntityGraph) {

@@ -17,15 +17,18 @@ import java.util.*;
 
 @Component
 @Slf4j
+/**
+ * Analog to {@link BiDirChildPlugin}.
+ */
 public class BiDirParentPlugin<E extends IdentifiableEntity<Id> & BiDirParent,Id extends Serializable>
         extends CrudServicePluginProxy.Plugin<E,Id> {
 
 
-    private EntityMangerSessionReattacher sessionReattachmentHelper;
+    private EntityMangerSessionReattacher entityMangerSessionReattacher;
 
     @Autowired
-    public BiDirParentPlugin(EntityMangerSessionReattacher sessionReattachmentHelper) {
-        this.sessionReattachmentHelper = sessionReattachmentHelper;
+    public BiDirParentPlugin(EntityMangerSessionReattacher entityMangerSessionReattacher) {
+        this.entityMangerSessionReattacher = entityMangerSessionReattacher;
     }
 
     @Transactional
@@ -51,6 +54,7 @@ public class BiDirParentPlugin<E extends IdentifiableEntity<Id> & BiDirParent,Id
     }
 
 
+    //todo shouldnt this be done by SessionReattachmentPlugin
     private void attachChildrenToCurrentSessionIfNecessary(E entityToSave) throws IllegalAccessException{
         //iterate over all children of this parent (entityToSave)
         Map<Collection<? extends BiDirChild>, Class<? extends BiDirChild>> childrenCollections = entityToSave.getChildrenCollections();
@@ -60,7 +64,7 @@ public class BiDirParentPlugin<E extends IdentifiableEntity<Id> & BiDirParent,Id
                 Serializable childId = ((IdentifiableEntity) child).getId();
                 //if child has id, then it is already persisted and detached to current session started by service, so it needs to be reattached
                 if(childId!=null) {
-                    sessionReattachmentHelper.attachToCurrentSession(child);
+                    entityMangerSessionReattacher.attachToCurrentSession(child);
                     //THIS WOULD BE AN ALTERNATIVE SOLUTION TO ATTACH THE CHILD, BUT ITS SHIT
                         //CrudService service = crudServices.get(biDirChild.getClass());
                         //Optional optionalChildFromService = service.findById(childId);

@@ -10,6 +10,12 @@ import org.springframework.transaction.annotation.Transactional;
 
 @Component
 @Slf4j
+/**
+ * This Plugin prevents detached Entity persistence errors.
+ * Use it for crud-services that manage Entities with children or parents, if you intend to save or update
+ * entities with parents/children set as member variables, that were persisted in a different session (thus are detached).
+ * This Plugin will automatically reattach all detached entities to the current session.
+ */
 public class SessionReattachmentPlugin
     //todo why doesnt this work with Serializable instead of Long?
         extends CrudServicePluginProxy.Plugin<IdentifiableEntity<Long>,Long> {
