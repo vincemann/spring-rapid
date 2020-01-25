@@ -8,7 +8,7 @@ import io.github.vincemann.generic.crud.lib.service.plugin.CrudServicePluginProx
 import java.util.Optional;
 
 public class OwnerServicePluginProxy
-        extends CrudServicePluginProxy<Owner,Long, OwnerRepository, OwnerService>
+        extends CrudServicePluginProxy<Owner,Long, OwnerRepository,OwnerService>
             implements OwnerService
 {
 
@@ -18,6 +18,6 @@ public class OwnerServicePluginProxy
 
     @Override
     public Optional<Owner> findByLastName(String lastName) {
-        return getCrudService().findByLastName(lastName);
+        return getCastedService().findByLastName(lastName);
     }
 }
