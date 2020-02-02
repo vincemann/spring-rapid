@@ -7,6 +7,7 @@ import io.github.vincemann.generic.crud.lib.service.exception.BadEntityException
 import io.github.vincemann.generic.crud.lib.service.exception.EntityNotFoundException;
 import io.github.vincemann.generic.crud.lib.service.exception.NoIdException;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -15,6 +16,7 @@ import java.util.List;
 import java.util.Optional;
 
 @Component
+@Transactional
 /**
  * This plugin, combined with {@link io.github.vincemann.generic.crud.lib.jpaAuditing.entityListener.BiDirChildEntityListener} manages bidirectional relationships of the entity, managed by the service using this plugin.
  * and the parent side must be managed via {@link BiDirParentPlugin} and {@link io.github.vincemann.generic.crud.lib.jpaAuditing.entityListener.BiDirParentEntityListener} as well.
@@ -23,13 +25,11 @@ public class BiDirChildPlugin
         <
                 E extends IdentifiableEntity<Id> & BiDirChild,
                 Id extends Serializable
-        >
-            extends CrudServicePluginProxy.Plugin<E,Id>{
+        >  extends CrudServicePlugin<E,Id> {
 
 
-    @Override
-    public void onBeforeUpdate(E entity) throws EntityNotFoundException, NoIdException, BadEntityException {
-        super.onBeforeUpdate(entity);
+
+    public void onBeforeUpdate(E entity,boolean full) throws EntityNotFoundException, NoIdException, BadEntityException {
         try {
             manageBiDirRelations(entity);
         }catch (IllegalAccessException e){
@@ -40,7 +40,7 @@ public class BiDirChildPlugin
     @SuppressWarnings("Duplicates")
     private void manageBiDirRelations(E newBiDirChild) throws NoIdException, EntityNotFoundException, IllegalAccessException {
         //find already persisted biDirChild (preUpdateState of child)
-        Optional<E> oldBiDirChildOptional = getCrudService().findById(newBiDirChild.getId());
+        Optional<E> oldBiDirChildOptional = getService().findById(newBiDirChild.getId());
         if(!oldBiDirChildOptional.isPresent()){
             throw new EntityNotFoundException(newBiDirChild.getId(),newBiDirChild.getClass());
         }

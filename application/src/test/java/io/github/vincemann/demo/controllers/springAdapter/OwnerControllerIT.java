@@ -1,22 +1,20 @@
 package io.github.vincemann.demo.controllers.springAdapter;
 
 
-import io.github.vincemann.demo.controllers.EntityInitializerControllerIntegrationTest;
+import io.github.vincemann.demo.controllers.MyControllerIntegrationTest;
 import io.github.vincemann.demo.dtos.owner.CreateOwnerDto;
 import io.github.vincemann.demo.dtos.owner.UpdateOwnerDto;
 import io.github.vincemann.demo.model.Owner;
 import io.github.vincemann.demo.model.Pet;
+import io.github.vincemann.demo.service.OwnerService;
 import io.github.vincemann.demo.service.PetService;
-import io.github.vincemann.generic.crud.lib.service.CrudService;
 import io.github.vincemann.generic.crud.lib.test.controller.springAdapter.crudTests.config.UpdateControllerTestConfiguration;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.data.repository.CrudRepository;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
@@ -24,14 +22,11 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;
 
-import static io.github.vincemann.generic.crud.lib.test.forceEagerFetch.proxy.abs.HibernateForceEagerFetchProxy.EAGER_FETCH_PROXY;
-
 @ExtendWith(SpringExtension.class)
 @SpringBootTest(webEnvironment =
         SpringBootTest.WebEnvironment.DEFINED_PORT)
 @ActiveProfiles(value = {"test", "springdatajpa"})
-class OwnerControllerIT
-        extends EntityInitializerControllerIntegrationTest<Owner> {
+class OwnerControllerIT extends MyControllerIntegrationTest<Owner> {
 
     @Autowired
     private PetService petService;
@@ -43,15 +38,6 @@ class OwnerControllerIT
     private CreateOwnerDto validOwnerDtoWithManyPets;
     private Owner validOwnerWithManyPets;
     private CreateOwnerDto invalidOwnerDto_becauseBlankCity;
-
-    //uses eagerly fetching service proxy
-    @Autowired
-    @Qualifier(EAGER_FETCH_PROXY)
-    @Override
-    public void setTestService(CrudService<Owner, Long, ? extends CrudRepository<Owner, Long>> testService) {
-        super.setTestService(testService);
-    }
-
 
     @BeforeEach
     @Override

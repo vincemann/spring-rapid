@@ -3,7 +3,6 @@ package io.github.vincemann.generic.crud.lib.service.plugin;
 import io.github.vincemann.generic.crud.lib.model.IdentifiableEntity;
 import io.github.vincemann.generic.crud.lib.model.biDir.child.BiDirChild;
 import io.github.vincemann.generic.crud.lib.model.biDir.parent.BiDirParent;
-import io.github.vincemann.generic.crud.lib.service.exception.BadEntityException;
 import io.github.vincemann.generic.crud.lib.service.exception.EntityNotFoundException;
 import io.github.vincemann.generic.crud.lib.service.exception.NoIdException;
 import io.github.vincemann.generic.crud.lib.service.sessionReattach.EntityMangerSessionReattacher;
@@ -17,11 +16,12 @@ import java.util.*;
 
 @Component
 @Slf4j
+@Transactional
 /**
  * Analog to {@link BiDirChildPlugin}.
  */
 public class BiDirParentPlugin<E extends IdentifiableEntity<Id> & BiDirParent,Id extends Serializable>
-        extends CrudServicePluginProxy.Plugin<E,Id> {
+        extends CrudServicePlugin<E,Id> {
 
 
     private EntityMangerSessionReattacher entityMangerSessionReattacher;
@@ -31,10 +31,7 @@ public class BiDirParentPlugin<E extends IdentifiableEntity<Id> & BiDirParent,Id
         this.entityMangerSessionReattacher = entityMangerSessionReattacher;
     }
 
-    @Transactional
-    @Override
-    public void onBeforeUpdate(E entity) throws EntityNotFoundException, BadEntityException, NoIdException {
-        super.onBeforeUpdate(entity);
+    public void onBeforeUpdate(E entity, boolean full) throws EntityNotFoundException, NoIdException {
         try {
             handleChildCollectionChanges(entity);
         } catch (IllegalAccessException e) {
@@ -42,10 +39,7 @@ public class BiDirParentPlugin<E extends IdentifiableEntity<Id> & BiDirParent,Id
         }
     }
 
-    @Transactional
-    @Override
-    public void onBeforeSave(E entityToSave) throws BadEntityException{
-        super.onBeforeSave(entityToSave);
+    public void onBeforeSave(E entityToSave){
         try {
             attachChildrenToCurrentSessionIfNecessary(entityToSave);
         } catch (IllegalAccessException e) {
@@ -81,7 +75,7 @@ public class BiDirParentPlugin<E extends IdentifiableEntity<Id> & BiDirParent,Id
 
     @SuppressWarnings("Duplicates")
     private void handleChildCollectionChanges(E newBiDirParent) throws NoIdException, EntityNotFoundException, IllegalAccessException {
-        Optional<E> oldBiDirParentOptional = getCrudService().findById(newBiDirParent.getId());
+        Optional<E> oldBiDirParentOptional = getService().findById(newBiDirParent.getId());
         if(!oldBiDirParentOptional.isPresent()){
             throw new EntityNotFoundException(newBiDirParent.getId(),newBiDirParent.getClass());
         }

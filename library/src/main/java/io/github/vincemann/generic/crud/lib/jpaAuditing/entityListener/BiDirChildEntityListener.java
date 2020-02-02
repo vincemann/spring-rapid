@@ -2,13 +2,14 @@ package io.github.vincemann.generic.crud.lib.jpaAuditing.entityListener;
 
 import io.github.vincemann.generic.crud.lib.model.biDir.child.BiDirChild;
 import io.github.vincemann.generic.crud.lib.model.biDir.parent.BiDirParent;
+import io.github.vincemann.generic.crud.lib.service.plugin.BiDirChildPlugin;
 
 import javax.persistence.PrePersist;
 import javax.persistence.PreRemove;
 
 /**
  * Manages bidirectional relationship of Child side.
- * Works only in conjunction with {@link io.github.vincemann.generic.crud.lib.service.plugin.BiDirChildPlugin}.
+ * Works only in conjunction with {@link BiDirChildPlugin}.
  */
 public class BiDirChildEntityListener{
 

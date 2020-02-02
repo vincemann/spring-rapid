@@ -10,18 +10,16 @@ import io.github.vincemann.generic.crud.lib.service.CrudService;
 import io.github.vincemann.generic.crud.lib.service.exception.BadEntityException;
 import io.github.vincemann.generic.crud.lib.service.exception.EntityNotFoundException;
 import io.github.vincemann.generic.crud.lib.service.exception.NoIdException;
-import io.github.vincemann.generic.crud.lib.test.service.callback.PostUpdateServiceTestCallback;
-import io.github.vincemann.generic.crud.lib.test.service.ForceEagerFetchCrudServiceIntegrationTest;
 import io.github.vincemann.generic.crud.lib.test.exception.InvalidConfigurationModificationException;
+import io.github.vincemann.generic.crud.lib.test.service.eagerFetch.ForceEagerFetchCrudServiceIntegrationTest;
+import io.github.vincemann.generic.crud.lib.test.service.callback.PostUpdateServiceTestCallback;
 import io.github.vincemann.generic.crud.lib.test.service.crudTests.configuration.update.SuccessfulUpdateServiceTestConfiguration;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.data.repository.CrudRepository;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
@@ -30,17 +28,15 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Optional;
 
-import static io.github.vincemann.generic.crud.lib.test.forceEagerFetch.proxy.abs.HibernateForceEagerFetchProxy.EAGER_FETCH_PROXY;
-
 //@DataJpaTest cant be used because i need autowired components from generic-crud-lib
 @ExtendWith(SpringExtension.class)
 @SpringBootTest(webEnvironment =
         SpringBootTest.WebEnvironment.RANDOM_PORT)
 @ActiveProfiles(value = {"test", "springdatajpa"})
-class OwnerJPAServiceIT
-        extends ForceEagerFetchCrudServiceIntegrationTest
-        <Owner,Long>
+class OwnerServiceIT
+        extends ForceEagerFetchCrudServiceIntegrationTest<Owner,Long>
 {
+
 
     private Owner ownerWithoutPets;
     private Owner ownerWithOnePet;
@@ -51,14 +47,6 @@ class OwnerJPAServiceIT
     private CrudService<Pet, Long, PetRepository> petService;
     @Autowired
     private PetTypeService petTypeService;
-
-
-    @Autowired
-    @Qualifier(EAGER_FETCH_PROXY)
-    @Override
-    public void injectCrudService(CrudService<Owner, Long, ? extends CrudRepository<Owner,Long>> crudService) {
-        super.injectCrudService(crudService);
-    }
 
     @BeforeEach
     public void setUp() throws Exception {

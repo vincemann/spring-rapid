@@ -17,6 +17,8 @@ import java.lang.reflect.Field;
 import java.util.Map;
 import java.util.concurrent.Callable;
 
+import static io.github.vincemann.generic.crud.lib.util.HibernateProxyUtils.unproxy;
+
 @Slf4j
 @Component
 @Getter
@@ -138,11 +140,6 @@ public class HibernateForceEagerFetchUtil {
     private TransactionStatus startNewTransaction() {
         DefaultTransactionDefinition def = new DefaultTransactionDefinition();
         return transactionManager.getTransaction(def);
-    }
-
-    private  Object unproxy(Object entity) {
-        return ((HibernateProxy) entity).getHibernateLazyInitializer()
-                .getImplementation();
     }
 
 }

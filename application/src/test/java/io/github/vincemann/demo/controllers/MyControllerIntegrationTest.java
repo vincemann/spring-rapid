@@ -5,21 +5,19 @@ import io.github.vincemann.demo.repositories.*;
 import io.github.vincemann.generic.crud.lib.model.IdentifiableEntity;
 import io.github.vincemann.generic.crud.lib.service.CrudService;
 import io.github.vincemann.generic.crud.lib.test.controller.springAdapter.UrlParamIdControllerIntegrationTest;
-import io.github.vincemann.generic.crud.lib.test.forceEagerFetch.HibernateForceEagerFetchUtil;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.repository.CrudRepository;
 
 import java.time.LocalDate;
 
 @Getter
 @Setter
 @Slf4j
-public abstract class EntityInitializerControllerIntegrationTest<E extends IdentifiableEntity<Long>>
+public abstract class MyControllerIntegrationTest<E extends IdentifiableEntity<Long>>
         extends UrlParamIdControllerIntegrationTest<E,Long>
 
 {
@@ -35,9 +33,12 @@ public abstract class EntityInitializerControllerIntegrationTest<E extends Ident
     private CrudService<PetType,Long, PetTypeRepository> petTypeService;
     private CrudService<Specialty,Long,SpecialtyRepository> specialtyService;
 
-    @Autowired
-    private HibernateForceEagerFetchUtil eagerFetchUtil;
+    public MyControllerIntegrationTest(String url) {
+        super(url);
+    }
 
+    public MyControllerIntegrationTest() {
+    }
 
     @Autowired
     public void injectOwnerService(CrudService<Owner, Long, OwnerRepository> ownerService) {

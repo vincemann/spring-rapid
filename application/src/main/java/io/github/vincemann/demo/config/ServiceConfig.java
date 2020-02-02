@@ -4,9 +4,9 @@ import io.github.vincemann.demo.model.Owner;
 import io.github.vincemann.demo.model.Pet;
 import io.github.vincemann.demo.service.OwnerService;
 import io.github.vincemann.demo.service.PetService;
+import io.github.vincemann.demo.service.plugin.AclPlugin;
 import io.github.vincemann.demo.service.plugin.SaveNameToWordPressDbPlugin;
-import io.github.vincemann.demo.service.plugin.proxy.OwnerServicePluginProxy;
-import io.github.vincemann.demo.service.plugin.proxy.PetServicePluginProxy;
+import io.github.vincemann.generic.crud.lib.proxy.factory.CrudServicePluginProxyFactory;
 import io.github.vincemann.generic.crud.lib.service.plugin.BiDirChildPlugin;
 import io.github.vincemann.generic.crud.lib.service.plugin.BiDirParentPlugin;
 import io.github.vincemann.generic.crud.lib.service.plugin.SessionReattachmentPlugin;
@@ -18,21 +18,36 @@ import org.springframework.context.annotation.Primary;
 @Configuration
 public class ServiceConfig {
 
+    @Bean
+    public CrudServicePluginProxyFactory pluginProxyFactory(){
+        return new CrudServicePluginProxyFactory();
+    }
+
     //always use ownerService with core plugins when injecting OwnerService
     @Primary
     @Bean
-    public OwnerService extendedOwnerService(@Qualifier("basic") OwnerService ownerService,
-                                             BiDirParentPlugin<Owner,Long> biDirParentPlugin,
-                                             SaveNameToWordPressDbPlugin saveNameToWordPressDbPlugin,
-                                             SessionReattachmentPlugin sessionReattachmentPlugin){
-        return new OwnerServicePluginProxy(ownerService,sessionReattachmentPlugin,biDirParentPlugin,saveNameToWordPressDbPlugin);
+    public OwnerService ownerService(@Qualifier("basic") OwnerService ownerService,
+                                     BiDirParentPlugin<Owner,Long> biDirParentPlugin,
+                                     SaveNameToWordPressDbPlugin saveNameToWordPressDbPlugin,
+                                     SessionReattachmentPlugin sessionReattachmentPlugin,
+                                     AclPlugin aclPlugin) {
+        return pluginProxyFactory().create(ownerService,
+                sessionReattachmentPlugin,
+                biDirParentPlugin,
+                saveNameToWordPressDbPlugin,
+                aclPlugin
+        );
     }
 
     @Primary
     @Bean
     public PetService extendedPetService(@Qualifier("basic") PetService petService,
-                                         BiDirChildPlugin<Pet,Long> biDirChildPlugin){
-        return new PetServicePluginProxy(petService,biDirChildPlugin);
+                                         BiDirChildPlugin<Pet,Long> biDirChildPlugin,
+                                         AclPlugin aclPlugin) {
+        return pluginProxyFactory().create(petService,
+                biDirChildPlugin,
+                aclPlugin
+        );
     }
 
 }
