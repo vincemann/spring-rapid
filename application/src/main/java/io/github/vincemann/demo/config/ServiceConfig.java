@@ -5,6 +5,7 @@ import io.github.vincemann.demo.model.Pet;
 import io.github.vincemann.demo.service.OwnerService;
 import io.github.vincemann.demo.service.PetService;
 import io.github.vincemann.demo.service.plugin.AclPlugin;
+import io.github.vincemann.demo.service.plugin.OwnerOfTheYearPlugin;
 import io.github.vincemann.demo.service.plugin.SaveNameToWordPressDbPlugin;
 import io.github.vincemann.generic.crud.lib.proxy.factory.CrudServicePluginProxyFactory;
 import io.github.vincemann.generic.crud.lib.service.plugin.BiDirChildPlugin;
@@ -30,11 +31,13 @@ public class ServiceConfig {
                                      BiDirParentPlugin<Owner,Long> biDirParentPlugin,
                                      SaveNameToWordPressDbPlugin saveNameToWordPressDbPlugin,
                                      SessionReattachmentPlugin sessionReattachmentPlugin,
+                                     OwnerOfTheYearPlugin ownerOfTheYearPlugin,
                                      AclPlugin aclPlugin) {
         return pluginProxyFactory().create(ownerService,
                 sessionReattachmentPlugin,
                 biDirParentPlugin,
                 saveNameToWordPressDbPlugin,
+                ownerOfTheYearPlugin,
                 aclPlugin
         );
     }

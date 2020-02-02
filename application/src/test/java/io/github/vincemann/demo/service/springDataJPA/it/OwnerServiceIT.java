@@ -6,6 +6,7 @@ import io.github.vincemann.demo.model.PetType;
 import io.github.vincemann.demo.repositories.PetRepository;
 import io.github.vincemann.demo.service.OwnerService;
 import io.github.vincemann.demo.service.PetTypeService;
+import io.github.vincemann.demo.service.plugin.OwnerOfTheYearPlugin;
 import io.github.vincemann.generic.crud.lib.service.CrudService;
 import io.github.vincemann.generic.crud.lib.service.exception.BadEntityException;
 import io.github.vincemann.generic.crud.lib.service.exception.EntityNotFoundException;
@@ -18,8 +19,10 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.SpyBean;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
@@ -42,6 +45,9 @@ class OwnerServiceIT
     private Owner ownerWithOnePet;
     private Pet testPet;
     private PetType savedDogPetType;
+
+    @SpyBean
+    private OwnerOfTheYearPlugin ownerOfTheYearPlugin;
 
     @Autowired
     private CrudService<Pet, Long, PetRepository> petService;
@@ -156,6 +162,17 @@ class OwnerServiceIT
                             Assertions.assertEquals(1, afterUpdate.getPets().stream().filter(owner1 -> owner1.getName().equals(newPetName)).count());
                         })
                 .build());
+    }
+
+     @Test
+    public void findOwnerOfTheYear_shouldSucceed_andTriggerPluginCallback(){
+        //owner of the years name is 42
+        ownerWithOnePet.setFirstName("42");
+        Owner savedOwner = repoSave(ownerWithOnePet);
+        OwnerService ownerService = getCastedCrudService();
+        Optional<Owner> ownerOfTheYear = ownerService.findOwnerOfTheYear();
+        Assertions.assertTrue(ownerOfTheYear.isPresent());
+        Mockito.verify(ownerOfTheYearPlugin).onAfterFindOwnerOfTheYear(ownerOfTheYear);
     }
 
     @Test

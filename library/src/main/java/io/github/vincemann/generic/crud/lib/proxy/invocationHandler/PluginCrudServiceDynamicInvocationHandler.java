@@ -31,7 +31,7 @@ public class PluginCrudServiceDynamicInvocationHandler<E extends IdentifiableEnt
         if(method.getName().length()<3){
             throw new IllegalArgumentException("Method names are expected to be at least 2 characters long");
         }
-        String capitalFirstLetterMethodName = method.getName().substring(0, 1).toUpperCase() + method.getName().substring(1).toLowerCase();
+        String capitalFirstLetterMethodName = method.getName().substring(0, 1).toUpperCase() + method.getName().substring(1);
 
         Object result;
         //call before method of plugins
@@ -48,14 +48,30 @@ public class PluginCrudServiceDynamicInvocationHandler<E extends IdentifiableEnt
         for (Object plugin : plugins) {
             Method afterMethod = findPluginMethodByName(plugin, AFTER_METHOD_PREFIX+capitalFirstLetterMethodName);
             if(afterMethod!=null){
-                //append result of proxy call to args for plugins onAfter method
-                int extendedArgsLength = args.length+1;
-                Object[] extendedArgs = new Object[extendedArgsLength];
-                for (int i = 0; i < args.length; i++) {
-                    extendedArgs[i]=args[i];
+                if(args!=null) {
+                    if(result!=null) {
+                        //append result of proxy call to args for plugins onAfter method
+                        int extendedArgsLength = args.length + 1;
+                        Object[] extendedArgs = new Object[extendedArgsLength];
+                        for (int i = 0; i < args.length; i++) {
+                            extendedArgs[i] = args[i];
+                        }
+                        extendedArgs[extendedArgsLength - 1] = result;
+                        afterMethod.invoke(plugin, extendedArgs);
+                    }else {
+                        //void -> only call with args
+                        afterMethod.invoke(plugin,args);
+                    }
+                }else {
+                    if(result!=null) {
+                        afterMethod.invoke(plugin, result);
+                    }else {
+                        //void method without result
+                        afterMethod.invoke(plugin);
+                    }
                 }
-                extendedArgs[extendedArgsLength-1]=result;
-                afterMethod.invoke(plugin,extendedArgs);
+
+
             }
         }
 
