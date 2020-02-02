@@ -2,6 +2,7 @@ package io.github.vincemann.generic.crud.lib.service.plugin;
 
 import io.github.vincemann.generic.crud.lib.model.IdentifiableEntity;
 import io.github.vincemann.generic.crud.lib.service.exception.BadEntityException;
+import io.github.vincemann.generic.crud.lib.service.plugin.CrudServicePlugin;
 import io.github.vincemann.generic.crud.lib.service.sessionReattach.EntityGraphSessionReattacher;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,6 +11,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 @Component
 @Slf4j
+@Transactional
 /**
  * This Plugin prevents detached Entity persistence errors.
  * Use it for crud-services that manage Entities with children or parents, if you intend to save or update
@@ -18,7 +20,7 @@ import org.springframework.transaction.annotation.Transactional;
  */
 public class SessionReattachmentPlugin
     //todo why doesnt this work with Serializable instead of Long?
-        extends CrudServicePluginProxy.Plugin<IdentifiableEntity<Long>,Long> {
+        extends CrudServicePlugin<IdentifiableEntity<Long>,Long> {
 
     private EntityGraphSessionReattacher entityGraph_sessionReattacher;
 
@@ -27,12 +29,9 @@ public class SessionReattachmentPlugin
         this.entityGraph_sessionReattacher = entityGraph_sessionReattacher;
     }
 
-    @Transactional
-    @Override
-    public void onBeforeSave(IdentifiableEntity entity) throws BadEntityException {
+    public void onBeforeSave(IdentifiableEntity<Long> entity) throws BadEntityException {
         log.debug("attaching entityGraph to Session if necessary. Root: " + entity);
         entityGraph_sessionReattacher.attachEntityGraphToCurrentSession(entity);
-        super.onBeforeSave(entity);
     }
 
 

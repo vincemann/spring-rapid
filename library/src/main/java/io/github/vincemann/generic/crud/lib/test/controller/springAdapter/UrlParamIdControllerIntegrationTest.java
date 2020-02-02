@@ -1,23 +1,23 @@
 package io.github.vincemann.generic.crud.lib.test.controller.springAdapter;
 
-import io.github.vincemann.generic.crud.lib.controller.BasicDtoCrudController;
 import io.github.vincemann.generic.crud.lib.controller.dtoMapper.exception.EntityMappingException;
 import io.github.vincemann.generic.crud.lib.controller.springAdapter.SpringAdapterDtoCrudController;
 import io.github.vincemann.generic.crud.lib.controller.springAdapter.idFetchingStrategy.UrlParamIdFetchingStrategy;
 import io.github.vincemann.generic.crud.lib.model.IdentifiableEntity;
+import io.github.vincemann.generic.crud.lib.service.CrudService;
 import io.github.vincemann.generic.crud.lib.service.exception.BadEntityException;
-import io.github.vincemann.generic.crud.lib.test.ServiceEagerFetchControllerIntegrationTest;
+import io.github.vincemann.generic.crud.lib.test.EagerFetchControllerIntegrationTest;
 import io.github.vincemann.generic.crud.lib.test.controller.springAdapter.crudTests.*;
 import io.github.vincemann.generic.crud.lib.test.controller.springAdapter.crudTests.config.factory.*;
 import io.github.vincemann.generic.crud.lib.test.controller.springAdapter.requestEntityFactory.RequestEntityFactory;
 import io.github.vincemann.generic.crud.lib.test.controller.springAdapter.requestEntityFactory.UrlParamIdRequestEntityFactory;
-import io.github.vincemann.generic.crud.lib.test.forceEagerFetch.proxy.CrudServiceHibernateForceEagerFetchProxy;
 import io.github.vincemann.generic.crud.lib.test.testExecutionListeners.ResetDatabaseTestExecutionListener;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Assertions;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.repository.CrudRepository;
 import org.springframework.test.context.TestExecutionListeners;
 
 import java.io.Serializable;
@@ -27,8 +27,6 @@ import java.util.Collection;
 /**
  * Integration Test for a {@link SpringAdapterDtoCrudController} with {@link UrlParamIdFetchingStrategy}, that tests typical Crud operations
  * <p>
- * Wraps Controllers {@link BasicDtoCrudController#getCrudService()} with {@link CrudServiceHibernateForceEagerFetchProxy}.
- * -> No LazyInit Exceptions possible.
  *
  * @param <E>
  * @param <Id>
@@ -41,12 +39,8 @@ import java.util.Collection;
 )
 @Getter
 @Setter
-public abstract class UrlParamIdControllerIntegrationTest
-        <
-                E extends IdentifiableEntity<Id>,
-                Id extends Serializable
-        >
-        extends ServiceEagerFetchControllerIntegrationTest<E,Id>
+public abstract class UrlParamIdControllerIntegrationTest<E extends IdentifiableEntity<Id>, Id extends Serializable>
+        extends EagerFetchControllerIntegrationTest<E,Id>
 {
 
     //todo we probably at some point need interfaces before these
@@ -56,7 +50,9 @@ public abstract class UrlParamIdControllerIntegrationTest
     private DeleteControllerTest<E,Id> deleteControllerTest;
     private FindAllControllerTest<E,Id> findAllControllerTest;
 
-
+    public UrlParamIdControllerIntegrationTest(String url) {
+        super(url);
+    }
 
     public UrlParamIdControllerIntegrationTest() {
     }

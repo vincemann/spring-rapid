@@ -21,6 +21,11 @@ import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
 import java.io.Serializable;
 import java.lang.reflect.ParameterizedType;
 
+/**
+ * Baseclass for all Controller IntegrationTests
+ * @param <E>
+ * @param <Id>
+ */
 @Getter
 @Setter
 public abstract class ControllerIntegrationTest<E extends IdentifiableEntity<Id>, Id extends Serializable>

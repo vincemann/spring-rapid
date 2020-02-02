@@ -2,8 +2,8 @@ package io.github.vincemann.demo.service.plugin;
 
 import io.github.vincemann.demo.model.abs.Person;
 import io.github.vincemann.generic.crud.lib.controller.springAdapter.SpringAdapterDtoCrudController;
-import io.github.vincemann.generic.crud.lib.service.plugin.CrudServicePluginProxy;
 import io.github.vincemann.generic.crud.lib.service.exception.BadEntityException;
+import io.github.vincemann.generic.crud.lib.service.plugin.CrudServicePlugin;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
@@ -12,11 +12,9 @@ import org.springframework.stereotype.Component;
  */
 @Slf4j
 @Component
-public class SaveNameToWordPressDbPlugin extends CrudServicePluginProxy.Plugin<Person,Long> {
+public class SaveNameToWordPressDbPlugin extends CrudServicePlugin<Person,Long> {
 
-    @Override
-    public void onBeforeSave(Person entity) throws BadEntityException {
-        super.onBeforeSave(entity);
+    public void onBeforeSave(Person entity){
         log.debug("saving Persons name: "+ entity.getFirstName() + " into wordpress database");
         /* save name of every created Person in seperate db table for example*/
     }

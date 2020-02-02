@@ -22,7 +22,7 @@ import java.time.LocalDate;
 @SpringBootTest(webEnvironment =
         SpringBootTest.WebEnvironment.RANDOM_PORT)
 @ActiveProfiles(value = {"test","springdatajpa"})
-class PetJPAServiceIntegrationTest
+class PetServiceIntegrationTest
         extends CrudServiceIntegrationTest<Pet,Long> {
 
     @Autowired

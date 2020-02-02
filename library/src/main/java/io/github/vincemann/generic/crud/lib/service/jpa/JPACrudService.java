@@ -20,12 +20,7 @@ import java.util.HashSet;
 import java.util.Optional;
 import java.util.Set;
 
-/**
- * PluginCode from {@link CrudServicePluginProxy.Plugin}s runs in the Transaction of the ServiceMethod.
- * @param <E>
- * @param <Id>
- * @param <R>
- */
+
 public abstract class JPACrudService
                 <
                           E extends IdentifiableEntity<Id>,
@@ -42,6 +37,7 @@ public abstract class JPACrudService
     public JPACrudService() {
     }
 
+    @SuppressWarnings("SpringJavaInjectionPointsAutowiringInspection")
     @Autowired
     public void injectJpaRepository(R jpaRepository) {
         this.jpaRepository = jpaRepository;
