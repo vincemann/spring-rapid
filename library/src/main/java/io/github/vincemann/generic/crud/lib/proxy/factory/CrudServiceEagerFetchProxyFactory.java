@@ -5,11 +5,13 @@ import io.github.vincemann.generic.crud.lib.proxy.invocationHandler.ForceEagerFe
 import io.github.vincemann.generic.crud.lib.service.CrudService;
 import io.github.vincemann.generic.crud.lib.test.forceEagerFetch.HibernateForceEagerFetchUtil;
 import org.springframework.data.repository.CrudRepository;
+import org.springframework.stereotype.Component;
 import org.springframework.test.util.AopTestUtils;
 
 import java.io.Serializable;
 import java.lang.reflect.Proxy;
 
+@Component
 public class CrudServiceEagerFetchProxyFactory {
     //we need the class explicitly here to avoid issues with other proxies. HibernateProxys for example, are not interfaces, so service.getClass returns no interface
     //-> this would make this crash

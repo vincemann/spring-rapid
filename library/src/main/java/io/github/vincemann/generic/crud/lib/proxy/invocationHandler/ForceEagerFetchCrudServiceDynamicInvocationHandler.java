@@ -6,6 +6,7 @@ import io.github.vincemann.generic.crud.lib.service.CrudService;
 import io.github.vincemann.generic.crud.lib.test.forceEagerFetch.HibernateForceEagerFetchUtil;
 
 import java.io.Serializable;
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.Optional;
 
@@ -25,14 +26,19 @@ public class ForceEagerFetchCrudServiceDynamicInvocationHandler
 
     @Override
     protected Object handleProxyCall(Object o, Method method, Object[] args) throws Throwable {
-        if(method.getReturnType().equals(Optional.class)){
-            return eagerFetchUtil.runInTransactionAndFetchEagerly_OptionalValue(() -> {
-                return (Optional<?>) getMethods().get(method.getName()).invoke(getService(), args);
-            });
-        }else {
-            return eagerFetchUtil.runInTransactionAndFetchEagerly(() -> {
-                return getMethods().get(method.getName()).invoke(getService(), args);
-            });
+        try {
+
+            if (method.getReturnType().equals(Optional.class)) {
+                return eagerFetchUtil.runInTransactionAndFetchEagerly_OptionalValue(() -> {
+                    return (Optional<?>) getMethods().get(method.getName()).invoke(getService(), args);
+                });
+            } else {
+                return eagerFetchUtil.runInTransactionAndFetchEagerly(() -> {
+                    return getMethods().get(method.getName()).invoke(getService(), args);
+                });
+            }
+        }catch (InvocationTargetException e){
+            throw e.getCause();
         }
     }
 
