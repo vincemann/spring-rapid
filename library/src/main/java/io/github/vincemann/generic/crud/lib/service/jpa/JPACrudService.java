@@ -2,7 +2,6 @@ package io.github.vincemann.generic.crud.lib.service.jpa;
 
 import io.github.vincemann.generic.crud.lib.model.IdentifiableEntity;
 import io.github.vincemann.generic.crud.lib.service.CrudService;
-import io.github.vincemann.generic.crud.lib.service.plugin.CrudServicePluginProxy;
 import io.github.vincemann.generic.crud.lib.service.exception.BadEntityException;
 import io.github.vincemann.generic.crud.lib.service.exception.EntityNotFoundException;
 import io.github.vincemann.generic.crud.lib.service.exception.NoIdException;
