@@ -13,7 +13,7 @@ import java.util.Arrays;
 
 public class CrudServicePluginProxyFactory
 {
-    //we need the class explicitly here to avoid issues with other proxies. HibernateProxys for example, are not interfaces, so service.getClass returns no interface
+    //we need the class explicitly here to avoid issues with other proxies. HibernateProxies for example, are not interfaces, so service.getClass returns no interface
     //-> this would make this crash
     public <Id extends Serializable, E extends IdentifiableEntity<Id>,S extends CrudService<E,Id, ? extends CrudRepository<E,Id>>> S
     create(S crudService, CrudServicePlugin<? super E,? super Id>... plugins){

@@ -23,4 +23,14 @@ public class OwnerJPAService extends JPACrudService<Owner,Long,OwnerRepository> 
         return getRepository().findByLastName(lastName);
     }
 
+    /**
+     * Owner named "42" is owner of the year
+     * @return
+     */
+    @Override
+    public Optional<Owner> findOwnerOfTheYear() {
+        return getRepository().findAll().stream().filter(owner -> {
+            return owner.getFirstName().equals("42");
+        }).findFirst();
+    }
 }
