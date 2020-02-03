@@ -1,5 +1,6 @@
 package io.github.vincemann.generic.crud.lib.test.forceEagerFetch;
 
+import io.github.vincemann.generic.crud.lib.util.ListUtils;
 import io.github.vincemann.generic.crud.lib.util.ReflectionUtils;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
@@ -14,10 +15,9 @@ import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.DefaultTransactionDefinition;
 
 import java.lang.reflect.Field;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.Callable;
 
-import static io.github.vincemann.generic.crud.lib.util.HibernateProxyUtils.unproxy;
 
 @Slf4j
 @Component
@@ -107,6 +107,11 @@ public class HibernateForceEagerFetchUtil {
     }
 
     public void eagerFetchAllEntities(Object startEntity) {
+        List<Object> memory = new ArrayList<>();
+        eagerFetchAllEntities(startEntity, memory);
+    }
+
+    private void eagerFetchAllEntities(Object startEntity, List<Object> initialized){
         try {
             MultiValuedMap<Field, Object> field_instances_map
                     = ReflectionUtils.findFieldsAndTheirDeclaringInstances_OfAllMemberVars_AnnotatedWith(startEntity, javax.persistence.Entity.class, true,true);
@@ -118,15 +123,20 @@ public class HibernateForceEagerFetchUtil {
                 Object instance = entry.getValue();
                 field.setAccessible(true);
                 //this is either a collection of entities or an entity-instance
-                Object instanceThatNeedsToBeInitialized = field.get(instance);
-                if(instanceThatNeedsToBeInitialized!=null){
-                    log.debug("member var instance: " + instanceThatNeedsToBeInitialized.getClass() + " of parent instance: " + instance + " needs to be initialized");
-                    Hibernate.initialize(instanceThatNeedsToBeInitialized);
-                    if (instanceThatNeedsToBeInitialized instanceof HibernateProxy) {
-                        Object unproxied = unproxy(instanceThatNeedsToBeInitialized);
-                        log.debug("found hibernate proxy: " + instanceThatNeedsToBeInitialized + " unproxied to: "+ unproxied + ". diving into unproxied instance now");
+                Object instanceToBeInitialized = field.get(instance);
+                if(instanceToBeInitialized!=null){
+                    if(ListUtils.containsByReference(initialized,instanceToBeInitialized)){
+                        //already initialized
+                        continue;
+                    }
+                    //log.debug("member var instance: " + instanceThatNeedsToBeInitialized.getClass() + " of parent instance: " + instance + " needs to be initialized");
+                    Hibernate.initialize(instanceToBeInitialized);
+                    initialized.add(instanceToBeInitialized);
+                    if (instanceToBeInitialized instanceof HibernateProxy) {
+                        Object unproxied = Hibernate.unproxy(instanceToBeInitialized);
+                        log.debug("found hibernate proxy: " + instanceToBeInitialized + " unproxied to: "+ unproxied + ". diving into unproxied instance now");
                         //dive into entity of proxy
-                        eagerFetchAllEntities(unproxied);
+                        eagerFetchAllEntities(unproxied,initialized);
                     }
                 }
             }

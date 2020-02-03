@@ -47,8 +47,13 @@ public class ForceEagerFetchCrudServiceIntegrationTest<
         });
     }
 
-    protected <E extends IdentifiableEntity<Id>, Id extends Serializable, R extends CrudRepository<E, Id>> CrudService<E, Id, R>
-    wrapWithEagerFetchProxy(CrudService<E, Id, R> crudService,String... omittedMethods) {
+//    protected <E extends IdentifiableEntity<Id>, Id extends Serializable, R extends CrudRepository<E, Id>> CrudService<E, Id, R>
+//    wrapWithEagerFetchProxy(CrudService<E, Id, R> crudService,String... omittedMethods) {
+//        return eagerFetchProxyFactory.create(crudService,eagerFetchUtil, omittedMethods);
+//    }
+
+    protected <E extends IdentifiableEntity<Id>, Id extends Serializable, R extends CrudRepository<E, Id>,S extends CrudService<E,Id,R>> S
+    wrapWithEagerFetchProxy(S crudService,String... omittedMethods) {
         return eagerFetchProxyFactory.create(crudService,eagerFetchUtil, omittedMethods);
     }
 
