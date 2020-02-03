@@ -27,7 +27,10 @@ public class ForceEagerFetchCrudServiceDynamicInvocationHandler
     @Override
     protected Object handleProxyCall(Object o, Method method, Object[] args) throws Throwable {
         try {
-
+            if(method.getReturnType().equals(Void.TYPE)){
+                //no return value -> we dont have do eager fetch anything
+                return getMethods().get(method.getName()).invoke(getService(),args);
+            }
             if (method.getReturnType().equals(Optional.class)) {
                 return eagerFetchUtil.runInTransactionAndFetchEagerly_OptionalValue(() -> {
                     return (Optional<?>) getMethods().get(method.getName()).invoke(getService(), args);
