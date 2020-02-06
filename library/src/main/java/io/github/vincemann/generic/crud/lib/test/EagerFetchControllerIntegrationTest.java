@@ -35,7 +35,7 @@ public abstract class EagerFetchControllerIntegrationTest<E extends Identifiable
 
     protected <E extends IdentifiableEntity<Id>, Id extends Serializable, R extends CrudRepository<E, Id>> CrudService<E, Id, R>
     wrapWithEagerFetchProxy(CrudService<E, Id, R> crudService,String... omittedMethods) {
-        return eagerFetchProxyFactory.create(crudService,eagerFetchUtil, omittedMethods);
+        return eagerFetchProxyFactory.create(crudService,omittedMethods);
     }
 
 
