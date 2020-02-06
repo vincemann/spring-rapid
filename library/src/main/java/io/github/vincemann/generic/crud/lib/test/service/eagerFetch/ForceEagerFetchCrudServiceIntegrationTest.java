@@ -54,12 +54,12 @@ public class ForceEagerFetchCrudServiceIntegrationTest<
 
     protected <E extends IdentifiableEntity<Id>, Id extends Serializable, R extends CrudRepository<E, Id>,S extends CrudService<E,Id,R>> S
     wrapWithEagerFetchProxy(S crudService,String... omittedMethods) {
-        return eagerFetchProxyFactory.create(crudService,eagerFetchUtil, omittedMethods);
+        return eagerFetchProxyFactory.create(crudService,omittedMethods);
     }
 
     @Autowired
     @Override
     public void injectCrudService(CrudService<E, Id, ? extends CrudRepository<E, Id>> crudService) throws Exception {
-        super.injectCrudService(eagerFetchProxyFactory.create(crudService, eagerFetchUtil));
+        super.injectCrudService(eagerFetchProxyFactory.create(crudService));
     }
 }

@@ -13,10 +13,17 @@ import java.lang.reflect.Proxy;
 
 @Component
 public class CrudServiceEagerFetchProxyFactory {
+
+    private HibernateForceEagerFetchUtil eagerFetchUtil;
+
+    public CrudServiceEagerFetchProxyFactory(HibernateForceEagerFetchUtil eagerFetchUtil) {
+        this.eagerFetchUtil = eagerFetchUtil;
+    }
+
     //we need the class explicitly here to avoid issues with other proxies. HibernateProxys for example, are not interfaces, so service.getClass returns no interface
     //-> this would make this crash
     public <Id extends Serializable, E extends IdentifiableEntity<Id>, S extends CrudService<E, Id, ? extends CrudRepository<E, Id>>> S
-    create(S crudService, HibernateForceEagerFetchUtil eagerFetchUtil, String... omittedMethods) {
+    create(S crudService, String... omittedMethods) {
         S unproxied = AopTestUtils.getTargetObject(crudService);
         S proxyInstance = (S) Proxy.newProxyInstance(
                 unproxied.getClass().getClassLoader(), unproxied.getClass().getInterfaces(),
