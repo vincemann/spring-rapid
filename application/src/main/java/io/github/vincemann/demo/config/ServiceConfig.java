@@ -11,6 +11,7 @@ import io.github.vincemann.generic.crud.lib.proxy.factory.CrudServicePluginProxy
 import io.github.vincemann.generic.crud.lib.service.plugin.BiDirChildPlugin;
 import io.github.vincemann.generic.crud.lib.service.plugin.BiDirParentPlugin;
 import io.github.vincemann.generic.crud.lib.service.plugin.SessionReattachmentPlugin;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -19,9 +20,11 @@ import org.springframework.context.annotation.Primary;
 @Configuration
 public class ServiceConfig {
 
-    @Bean
-    public CrudServicePluginProxyFactory pluginProxyFactory(){
-        return new CrudServicePluginProxyFactory();
+    private CrudServicePluginProxyFactory pluginProxyFactory;
+
+    @Autowired
+    public ServiceConfig(CrudServicePluginProxyFactory pluginProxyFactory) {
+        this.pluginProxyFactory = pluginProxyFactory;
     }
 
     //always use ownerService with core plugins when injecting OwnerService
@@ -33,7 +36,7 @@ public class ServiceConfig {
                                      SessionReattachmentPlugin sessionReattachmentPlugin,
                                      OwnerOfTheYearPlugin ownerOfTheYearPlugin,
                                      AclPlugin aclPlugin) {
-        return pluginProxyFactory().create(ownerService,
+        return pluginProxyFactory.create(ownerService,
                 sessionReattachmentPlugin,
                 biDirParentPlugin,
                 saveNameToWordPressDbPlugin,
@@ -47,7 +50,7 @@ public class ServiceConfig {
     public PetService extendedPetService(@Qualifier("basic") PetService petService,
                                          BiDirChildPlugin<Pet,Long> biDirChildPlugin,
                                          AclPlugin aclPlugin) {
-        return pluginProxyFactory().create(petService,
+        return pluginProxyFactory.create(petService,
                 biDirChildPlugin,
                 aclPlugin
         );
