@@ -222,7 +222,7 @@ public class ReflectionUtils {
                 }
                 return findFieldsAndTheirDeclaringInstances_OfAllMemberVars_AnnotatedWith(entry, annotatedWith, checkCollections, emptyCollectionsIncluded);
             }
-            throw new IllegalArgumentException("StartCollection must not be empty");
+            return fields_instances_map;
         }else {
             if (!root.getClass().isAnnotationPresent(annotatedWith)) {
                 throw new IllegalArgumentException("StartInstance must be annotated with: " + annotatedWith.getSimpleName());

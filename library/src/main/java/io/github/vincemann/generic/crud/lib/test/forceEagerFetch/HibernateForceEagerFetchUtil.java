@@ -113,6 +113,9 @@ public class HibernateForceEagerFetchUtil {
 
     private void eagerFetchAllEntities(Object startEntity, List<Object> initialized){
         try {
+            if(startEntity==null){
+                return;
+            }
             MultiValuedMap<Field, Object> field_instances_map
                     = ReflectionUtils.findFieldsAndTheirDeclaringInstances_OfAllMemberVars_AnnotatedWith(startEntity, javax.persistence.Entity.class, true,true);
 
