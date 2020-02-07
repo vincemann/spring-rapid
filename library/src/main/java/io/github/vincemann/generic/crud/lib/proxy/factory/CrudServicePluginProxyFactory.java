@@ -5,12 +5,14 @@ import io.github.vincemann.generic.crud.lib.proxy.invocationHandler.PluginCrudSe
 import io.github.vincemann.generic.crud.lib.service.CrudService;
 import io.github.vincemann.generic.crud.lib.service.plugin.CrudServicePlugin;
 import org.springframework.data.repository.CrudRepository;
+import org.springframework.stereotype.Component;
 import org.springframework.test.util.AopTestUtils;
 
 import java.io.Serializable;
 import java.lang.reflect.Proxy;
 import java.util.Arrays;
 
+@Component
 public class CrudServicePluginProxyFactory
 {
     //we need the class explicitly here to avoid issues with other proxies. HibernateProxies for example, are not interfaces, so service.getClass returns no interface
