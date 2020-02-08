@@ -7,7 +7,7 @@ import io.github.vincemann.demo.dtos.owner.UpdateOwnerDto;
 import io.github.vincemann.demo.model.Owner;
 import io.github.vincemann.demo.model.Pet;
 import io.github.vincemann.demo.service.PetService;
-import io.github.vincemann.generic.crud.lib.test.controller.springAdapter.callback.PostUpdateControllerTestCallback;
+import io.github.vincemann.generic.crud.lib.test.controller.callback.PostUpdateControllerTestCallback;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -21,8 +21,8 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;
 
-import static io.github.vincemann.generic.crud.lib.test.controller.springAdapter.crudTests.config.ControllerTestConfigurations.partialUpdate;
-import static io.github.vincemann.generic.crud.lib.test.controller.springAdapter.crudTests.config.ControllerTestConfigurations.postUpdateCallback;
+import static io.github.vincemann.generic.crud.lib.test.controller.crudTests.config.ControllerTestConfigurations.partialUpdate;
+import static io.github.vincemann.generic.crud.lib.test.controller.crudTests.config.ControllerTestConfigurations.postUpdateCallback;
 
 
 @ExtendWith(SpringExtension.class)

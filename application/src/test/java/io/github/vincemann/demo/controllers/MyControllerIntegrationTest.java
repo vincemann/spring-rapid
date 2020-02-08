@@ -4,7 +4,7 @@ import io.github.vincemann.demo.model.*;
 import io.github.vincemann.demo.repositories.*;
 import io.github.vincemann.generic.crud.lib.model.IdentifiableEntity;
 import io.github.vincemann.generic.crud.lib.service.CrudService;
-import io.github.vincemann.generic.crud.lib.test.controller.springAdapter.UrlParamIdControllerIntegrationTest;
+import io.github.vincemann.generic.crud.lib.test.controller.UrlParamIdControllerIntegrationTest;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;

@@ -4,7 +4,7 @@ import io.github.vincemann.generic.crud.lib.model.IdentifiableEntity;
 import io.github.vincemann.generic.crud.lib.service.CrudService;
 import io.github.vincemann.generic.crud.lib.service.sessionReattach.EntityGraphSessionReattacher;
 import io.github.vincemann.generic.crud.lib.proxy.factory.CrudServiceEagerFetchProxyFactory;
-import io.github.vincemann.generic.crud.lib.test.forceEagerFetch.HibernateForceEagerFetchUtil;
+import io.github.vincemann.generic.crud.lib.test.forceEagerFetch.HibernateForceEagerFetchTemplate;
 import io.github.vincemann.generic.crud.lib.test.service.CrudServiceIntegrationTest;
 import lombok.Getter;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,7 +27,7 @@ public class ForceEagerFetchCrudServiceIntegrationTest<
     private EntityGraphSessionReattacher sessionReattacher;
 
     @Autowired
-    private HibernateForceEagerFetchUtil eagerFetchUtil;
+    private HibernateForceEagerFetchTemplate eagerFetchUtil;
 
 
     @Override

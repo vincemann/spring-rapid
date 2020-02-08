@@ -1,7 +1,7 @@
 package io.github.vincemann.generic.crud.lib.proxy.factory;
 
 import io.github.vincemann.generic.crud.lib.model.IdentifiableEntity;
-import io.github.vincemann.generic.crud.lib.proxy.invocationHandler.PluginCrudServiceDynamicInvocationHandler;
+import io.github.vincemann.generic.crud.lib.proxy.invocationHandler.PluginCrudServiceProxy;
 import io.github.vincemann.generic.crud.lib.service.CrudService;
 import io.github.vincemann.generic.crud.lib.service.plugin.CrudServicePlugin;
 import org.springframework.data.repository.CrudRepository;
@@ -22,7 +22,7 @@ public class CrudServicePluginProxyFactory
         S unproxied = AopTestUtils.getTargetObject(crudService);
         S proxyInstance = (S) Proxy.newProxyInstance(
                 unproxied.getClass().getClassLoader(), unproxied.getClass().getInterfaces(),
-                new PluginCrudServiceDynamicInvocationHandler(unproxied, Arrays.asList(plugins)));
+                new PluginCrudServiceProxy(unproxied, Arrays.asList(plugins)));
 
         return proxyInstance;
     }

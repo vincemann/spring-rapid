@@ -5,6 +5,7 @@ import io.github.vincemann.generic.crud.lib.service.CrudService;
 import io.github.vincemann.generic.crud.lib.service.exception.BadEntityException;
 import io.github.vincemann.generic.crud.lib.service.exception.EntityNotFoundException;
 import io.github.vincemann.generic.crud.lib.service.exception.NoIdException;
+import io.github.vincemann.generic.crud.lib.test.InitializingTest;
 import io.github.vincemann.generic.crud.lib.test.equalChecker.EqualChecker;
 import io.github.vincemann.generic.crud.lib.test.service.crudTests.config.FailedServiceTestConfiguration;
 import lombok.AllArgsConstructor;
@@ -21,7 +22,9 @@ import java.util.Optional;
 @Getter
 @AllArgsConstructor
 @NoArgsConstructor
-public abstract class ServiceTest<E extends IdentifiableEntity<Id>, Id extends Serializable> {
+public abstract class ServiceTest<E extends IdentifiableEntity<Id>, Id extends Serializable>
+    extends InitializingTest
+{
 
     private CrudService<E,Id,? extends CrudRepository<E,Id>> crudService;
     private CrudRepository<E,Id> repository;
