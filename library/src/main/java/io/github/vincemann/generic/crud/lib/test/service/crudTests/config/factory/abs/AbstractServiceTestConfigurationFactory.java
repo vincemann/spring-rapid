@@ -1,9 +1,9 @@
-package io.github.vincemann.generic.crud.lib.test.service.crudTests.configuration.factory.abs;
+package io.github.vincemann.generic.crud.lib.test.service.crudTests.config.factory.abs;
 
 import io.github.vincemann.generic.crud.lib.model.IdentifiableEntity;
 import io.github.vincemann.generic.crud.lib.test.TestConfigurationFactory;
 import io.github.vincemann.generic.crud.lib.test.service.ServiceTest;
-import io.github.vincemann.generic.crud.lib.test.service.crudTests.configuration.abs.ServiceTestConfiguration;
+import io.github.vincemann.generic.crud.lib.test.service.crudTests.config.abs.ServiceTestConfiguration;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 

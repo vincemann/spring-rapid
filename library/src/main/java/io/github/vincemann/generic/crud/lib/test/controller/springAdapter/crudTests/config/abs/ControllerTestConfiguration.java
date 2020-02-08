@@ -1,5 +1,6 @@
 package io.github.vincemann.generic.crud.lib.test.controller.springAdapter.crudTests.config.abs;
 
+import io.github.vincemann.generic.crud.lib.model.IdentifiableEntity;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;

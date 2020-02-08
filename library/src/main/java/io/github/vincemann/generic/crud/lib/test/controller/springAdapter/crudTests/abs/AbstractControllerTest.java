@@ -16,6 +16,8 @@ import java.io.Serializable;
 public abstract class AbstractControllerTest<E extends IdentifiableEntity<Id>, Id extends Serializable> {
     private ControllerIntegrationTest<E,Id> testContext;
 
+
+
     public ResponseEntity<String> sendRequest(RequestEntity<?> requestEntity){
         return getTestContext().getRestTemplate().exchange(requestEntity, String.class);
     }

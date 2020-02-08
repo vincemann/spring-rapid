@@ -4,10 +4,8 @@ package io.github.vincemann.generic.crud.lib.proxy.invocationHandler;
 import io.github.vincemann.generic.crud.lib.model.IdentifiableEntity;
 import io.github.vincemann.generic.crud.lib.proxy.invocationHandler.abs.MethodBlacklistingCrudServiceDynamicInvocationHandler;
 import io.github.vincemann.generic.crud.lib.service.CrudService;
-import io.github.vincemann.generic.crud.lib.service.exception.BadEntityException;
-import io.github.vincemann.generic.crud.lib.service.exception.EntityNotFoundException;
-import io.github.vincemann.generic.crud.lib.service.exception.NoIdException;
 import io.github.vincemann.generic.crud.lib.service.plugin.CrudServicePlugin;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.repository.CrudRepository;
 
 import java.io.Serializable;
@@ -15,14 +13,15 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.List;
 
-public class PluginCrudServiceDynamicInvocationHandler<E extends IdentifiableEntity<Id>,Id extends Serializable>
-        extends MethodBlacklistingCrudServiceDynamicInvocationHandler<E,Id> {
+@Slf4j
+public class PluginCrudServiceDynamicInvocationHandler<E extends IdentifiableEntity<Id>, Id extends Serializable>
+        extends MethodBlacklistingCrudServiceDynamicInvocationHandler<E, Id> {
 
     private static final String BEFORE_METHOD_PREFIX = "onBefore";
     private static final String AFTER_METHOD_PREFIX = "onAfter";
 
 
-    private List<CrudServicePlugin<E,Id>> plugins;
+    private List<CrudServicePlugin<E, Id>> plugins;
 
     public PluginCrudServiceDynamicInvocationHandler(CrudService<E, Id, CrudRepository<E, Id>> service, List<CrudServicePlugin<E, Id>> plugins, String... ignoredMethods) {
         super(service, ignoredMethods);
@@ -31,8 +30,8 @@ public class PluginCrudServiceDynamicInvocationHandler<E extends IdentifiableEnt
     }
 
     @Override
-    protected Object handleProxyCall(Object o, Method method, Object[] args) throws Throwable{
-        if(method.getName().length()<3){
+    protected Object handleProxyCall(Object o, Method method, Object[] args) throws Throwable {
+        if (method.getName().length() < 3) {
             throw new IllegalArgumentException("Method names are expected to be at least 2 characters long");
         }
         try {
@@ -81,15 +80,15 @@ public class PluginCrudServiceDynamicInvocationHandler<E extends IdentifiableEnt
             }
 
             return result;
-        }catch (InvocationTargetException e){
+        } catch (InvocationTargetException e) {
             throw e.getCause();
         }
     }
 
 
-    public Method findPluginMethodByName(Object plugin, String methodName){
+    public Method findPluginMethodByName(Object plugin, String methodName) {
         for (Method method : plugin.getClass().getMethods()) {
-            if(method.getName().equals(methodName)){
+            if (method.getName().equals(methodName)) {
                 return method;
             }
         }

@@ -21,23 +21,28 @@ public class FindControllerTestConfigurationFactory<E extends IdentifiableEntity
 
 
     @Override
-    public ControllerTestConfiguration<Id> createFailedDefaultConfig() {
+    public ControllerTestConfiguration<Id> createDefaultFailedConfig() {
         return ControllerTestConfiguration.<Id>builder()
                 .expectedHttpStatus(HttpStatus.NOT_FOUND)
                 .method(RequestMethod.GET)
                 .build();
     }
 
+
+
+
     @Override
-    public ControllerTestConfiguration<Id> createFailedMergedConfig(ControllerTestConfiguration<Id> modification) throws InvalidConfigurationModificationException {
-        ControllerTestConfiguration<Id> config = createSuccessfulDefaultConfig();
-        NullAwareBeanUtils.copyProperties(config,modification);
+    public SuccessfulFindControllerTestConfiguration<E,Id> createMergedSuccessfulConfig(ControllerTestConfiguration<Id>... modifications) throws InvalidConfigurationModificationException {
+        SuccessfulFindControllerTestConfiguration<E,Id> config = createDefaultSuccessfulConfig();
+        for (ControllerTestConfiguration<Id> modification : modifications) {
+            NullAwareBeanUtils.copyProperties(config,modification);
+        }
         return config;
     }
 
 
     @Override
-    public SuccessfulFindControllerTestConfiguration<E,Id> createSuccessfulDefaultConfig() {
+    public SuccessfulFindControllerTestConfiguration<E,Id> createDefaultSuccessfulConfig() {
         return SuccessfulFindControllerTestConfiguration.<E,Id>Builder()
                 .expectedHttpStatus(HttpStatus.OK)
                 .postFindCallback((a,b)-> {})
@@ -46,9 +51,11 @@ public class FindControllerTestConfigurationFactory<E extends IdentifiableEntity
     }
 
     @Override
-    public SuccessfulFindControllerTestConfiguration<E, Id> createSuccessfulMergedConfig(ControllerTestConfiguration<Id> modification) throws InvalidConfigurationModificationException {
-        SuccessfulFindControllerTestConfiguration<E, Id> config = createSuccessfulDefaultConfig();
-        NullAwareBeanUtils.copyProperties(config,modification);
+    public SuccessfulFindControllerTestConfiguration<E, Id> createMergedFailedConfig(ControllerTestConfiguration<Id>... modifications) throws InvalidConfigurationModificationException {
+        SuccessfulFindControllerTestConfiguration<E, Id> config = createDefaultSuccessfulConfig();
+        for (ControllerTestConfiguration<Id> modification : modifications) {
+            NullAwareBeanUtils.copyProperties(config,modification);
+        }
         return config;
     }
 }

@@ -34,7 +34,7 @@ public class FindControllerTest<E extends IdentifiableEntity<Id>, Id extends Ser
 
 
     public <Dto extends IdentifiableEntity<Id>> Dto findEntity_ShouldSucceed(Id id) throws Exception {
-        return findEntity_ShouldSucceed(id, testConfigFactory.createSuccessfulDefaultConfig());
+        return findEntity_ShouldSucceed(id, testConfigFactory.createDefaultSuccessfulConfig());
     }
 
     /**
@@ -42,8 +42,8 @@ public class FindControllerTest<E extends IdentifiableEntity<Id>, Id extends Ser
      * @return the dto of the requested entity found on backend with given id
      * @throws Exception
      */
-    public <Dto extends IdentifiableEntity<Id>> Dto findEntity_ShouldSucceed(Id id, ControllerTestConfiguration<Id> modifications) throws Exception {
-        SuccessfulFindControllerTestConfiguration<E, Id> config = testConfigFactory.createSuccessfulMergedConfig(modifications);
+    public <Dto extends IdentifiableEntity<Id>> Dto findEntity_ShouldSucceed(Id id, ControllerTestConfiguration<Id>... modifications) throws Exception {
+        SuccessfulFindControllerTestConfiguration<E, Id> config = testConfigFactory.createMergedSuccessfulConfig(modifications);
         Optional<E> entityToFind = getTestContext().getTestService().findById(id);
         if(entityToFind.isEmpty()){
             log.warn("Entity that shall be found does not exist with id: " + id);
@@ -60,11 +60,11 @@ public class FindControllerTest<E extends IdentifiableEntity<Id>, Id extends Ser
     }
 
     public ResponseEntity<String> findEntity_ShouldFail(Id id) throws Exception {
-        return findEntity_ShouldFail(id, testConfigFactory.createFailedDefaultConfig());
+        return findEntity_ShouldFail(id, testConfigFactory.createDefaultFailedConfig());
     }
 
-    public ResponseEntity<String> findEntity_ShouldFail(Id id, ControllerTestConfiguration<Id> modifications) throws Exception {
-        ControllerTestConfiguration<Id> config = testConfigFactory.createFailedMergedConfig(modifications);
+    public ResponseEntity<String> findEntity_ShouldFail(Id id, ControllerTestConfiguration<Id>... modifications) throws Exception {
+        ControllerTestConfiguration<Id> config = testConfigFactory.createMergedFailedConfig(modifications);
         ResponseEntity<String> responseEntity = findEntity(id, config);
         Assertions.assertEquals(config.getExpectedHttpStatus(), responseEntity.getStatusCode(), responseEntity.getBody());
         return responseEntity;

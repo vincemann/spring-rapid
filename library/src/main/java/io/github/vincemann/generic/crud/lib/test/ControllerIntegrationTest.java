@@ -5,10 +5,12 @@ import io.github.vincemann.generic.crud.lib.controller.springAdapter.SpringAdapt
 import io.github.vincemann.generic.crud.lib.model.IdentifiableEntity;
 import io.github.vincemann.generic.crud.lib.service.CrudService;
 import io.github.vincemann.generic.crud.lib.test.controller.springAdapter.BaseAddressProvider;
+import io.github.vincemann.generic.crud.lib.test.controller.springAdapter.ControllerTestAware;
 import io.github.vincemann.generic.crud.lib.test.controller.springAdapter.crudTests.config.abs.ControllerTestConfiguration;
 import io.github.vincemann.generic.crud.lib.test.controller.springAdapter.requestEntityFactory.RequestEntityFactory;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.junit.jupiter.api.BeforeAll;
 import org.springframework.beans.factory.InitializingBean;
@@ -19,6 +21,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
 
 import java.io.Serializable;
+import java.lang.reflect.Field;
 import java.lang.reflect.ParameterizedType;
 
 /**
@@ -28,6 +31,7 @@ import java.lang.reflect.ParameterizedType;
  */
 @Getter
 @Setter
+@Slf4j
 public abstract class ControllerIntegrationTest<E extends IdentifiableEntity<Id>, Id extends Serializable>
             implements BaseAddressProvider, InitializingBean {
 
@@ -62,13 +66,10 @@ public abstract class ControllerIntegrationTest<E extends IdentifiableEntity<Id>
             setTestService(getController().getCastedCrudService());
         }
         this.requestEntityFactory= provideRequestEntityFactory();
+        initControllerAwareComponents();
+        initInitializableComponents();
     }
 
-    public ControllerTestConfiguration<Id> expect(HttpStatus httpStatus){
-        return ControllerTestConfiguration.<Id>builder()
-                .expectedHttpStatus(httpStatus)
-                .build();
-    }
 
     @BeforeAll
     public static void setUp() {
@@ -77,6 +78,28 @@ public abstract class ControllerIntegrationTest<E extends IdentifiableEntity<Id>
         clientHttpRequestFactory.setBufferRequestBody(false);
         restTemplate = new TestRestTemplate();
         restTemplate.getRestTemplate().setRequestFactory(clientHttpRequestFactory);
+    }
+
+    private void initControllerAwareComponents() throws IllegalAccessException {
+        for (Field declaredField : this.getClass().getDeclaredFields()) {
+            if(ControllerTestAware.class.isAssignableFrom(declaredField.getType())){
+                log.debug("found controller test aware field, with name : " + declaredField.getName() +", passing testObject for initialization");
+                declaredField.setAccessible(true);
+                ControllerTestAware testAware = (ControllerTestAware)declaredField.get(this);
+                testAware.setTest(this);
+            }
+        }
+    }
+
+    private void initInitializableComponents() throws IllegalAccessException {
+        for (Field declaredField : this.getClass().getDeclaredFields()) {
+            if(TestInitializable.class.isAssignableFrom(declaredField.getType())){
+                log.debug("found controller test aware field, with name : " + declaredField.getName() +", passing testObject for initialization");
+                declaredField.setAccessible(true);
+                TestInitializable initializable = (TestInitializable)declaredField.get(this);
+                initializable.init();
+            }
+        }
     }
 
     public <C extends SpringAdapterDtoCrudController<E,Id>> C getCastedController(){
