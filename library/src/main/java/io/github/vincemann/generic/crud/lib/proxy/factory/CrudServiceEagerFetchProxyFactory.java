@@ -1,9 +1,9 @@
 package io.github.vincemann.generic.crud.lib.proxy.factory;
 
 import io.github.vincemann.generic.crud.lib.model.IdentifiableEntity;
-import io.github.vincemann.generic.crud.lib.proxy.invocationHandler.ForceEagerFetchCrudServiceDynamicInvocationHandler;
+import io.github.vincemann.generic.crud.lib.proxy.invocationHandler.ForceEagerFetchCrudServiceProxy;
 import io.github.vincemann.generic.crud.lib.service.CrudService;
-import io.github.vincemann.generic.crud.lib.test.forceEagerFetch.HibernateForceEagerFetchUtil;
+import io.github.vincemann.generic.crud.lib.test.forceEagerFetch.HibernateForceEagerFetchTemplate;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.stereotype.Component;
 import org.springframework.test.util.AopTestUtils;
@@ -14,10 +14,10 @@ import java.lang.reflect.Proxy;
 @Component
 public class CrudServiceEagerFetchProxyFactory {
 
-    private HibernateForceEagerFetchUtil eagerFetchUtil;
+    private HibernateForceEagerFetchTemplate eagerFetchTemplate;
 
-    public CrudServiceEagerFetchProxyFactory(HibernateForceEagerFetchUtil eagerFetchUtil) {
-        this.eagerFetchUtil = eagerFetchUtil;
+    public CrudServiceEagerFetchProxyFactory(HibernateForceEagerFetchTemplate eagerFetchTemplate) {
+        this.eagerFetchTemplate = eagerFetchTemplate;
     }
 
     //we need the class explicitly here to avoid issues with other proxies. HibernateProxys for example, are not interfaces, so service.getClass returns no interface
@@ -27,7 +27,7 @@ public class CrudServiceEagerFetchProxyFactory {
         S unproxied = AopTestUtils.getTargetObject(crudService);
         S proxyInstance = (S) Proxy.newProxyInstance(
                 unproxied.getClass().getClassLoader(), unproxied.getClass().getInterfaces(),
-                new ForceEagerFetchCrudServiceDynamicInvocationHandler(unproxied, eagerFetchUtil,omittedMethods));
+                new ForceEagerFetchCrudServiceProxy(unproxied, eagerFetchTemplate,omittedMethods));
 
         return proxyInstance;
     }
@@ -37,7 +37,7 @@ public class CrudServiceEagerFetchProxyFactory {
 //    //todo maybe put this logic in other proxy factories as well
 //    //autodetect proxies and unproxy them
 //    public <Id extends Serializable, E extends IdentifiableEntity<Id>, S extends CrudService<E, Id, ? extends CrudRepository<E, Id>>> S
-//    create(S crudService, HibernateForceEagerFetchUtil eagerFetchUtil,String... omittedMethods) {
+//    create(S crudService, HibernateForceEagerFetchTemplate eagerFetchTemplate,String... omittedMethods) {
 //        //figure out service interface class by itself
 //        //resolve proxy if necessary
 //        Class<? extends CrudService> serviceClass;
@@ -48,7 +48,7 @@ public class CrudServiceEagerFetchProxyFactory {
 //        }
 //        S proxyInstance = (S) Proxy.newProxyInstance(
 //                serviceClass.getClassLoader(), new Class[]{serviceClass},
-//                new ForceEagerFetchCrudServiceDynamicInvocationHandler(crudService, eagerFetchUtil,omittedMethods));
+//                new ForceEagerFetchCrudServiceDynamicInvocationHandler(crudService, eagerFetchTemplate,omittedMethods));
 //
 //        return proxyInstance;
 //    }
