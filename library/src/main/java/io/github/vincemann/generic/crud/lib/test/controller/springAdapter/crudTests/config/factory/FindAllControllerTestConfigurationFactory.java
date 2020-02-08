@@ -20,22 +20,25 @@ public class FindAllControllerTestConfigurationFactory<E extends IdentifiableEnt
     }
 
     @Override
-    public ControllerTestConfiguration<Id> createSuccessfulDefaultConfig() {
+    public ControllerTestConfiguration<Id> createDefaultSuccessfulConfig() {
         return ControllerTestConfiguration.<Id>builder()
                 .method(RequestMethod.GET)
                 .expectedHttpStatus(HttpStatus.OK)
                 .build();
     }
 
+
     @Override
-    public ControllerTestConfiguration<Id> createSuccessfulMergedConfig(ControllerTestConfiguration<Id> modification) throws InvalidConfigurationModificationException {
-        ControllerTestConfiguration<Id> config = createSuccessfulDefaultConfig();
-        NullAwareBeanUtils.copyProperties(config,modification);
+    public ControllerTestConfiguration<Id> createMergedSuccessfulConfig(ControllerTestConfiguration<Id>... modifications) throws InvalidConfigurationModificationException {
+        ControllerTestConfiguration<Id> config = createDefaultSuccessfulConfig();
+        for (ControllerTestConfiguration<Id> modification : modifications) {
+            NullAwareBeanUtils.copyProperties(config,modification);
+        }
         return config;
     }
 
     @Override
-    public ControllerTestConfiguration<Id> createFailedDefaultConfig() {
+    public ControllerTestConfiguration<Id> createDefaultFailedConfig() {
         return ControllerTestConfiguration.<Id>builder()
                 .method(RequestMethod.GET)
                 .expectedHttpStatus(HttpStatus.BAD_REQUEST)
@@ -43,9 +46,11 @@ public class FindAllControllerTestConfigurationFactory<E extends IdentifiableEnt
     }
 
     @Override
-    public ControllerTestConfiguration<Id> createFailedMergedConfig(ControllerTestConfiguration<Id> modification) throws InvalidConfigurationModificationException {
-        ControllerTestConfiguration<Id> config = createFailedDefaultConfig();
-        NullAwareBeanUtils.copyProperties(config,modification);
+    public ControllerTestConfiguration<Id> createMergedFailedConfig(ControllerTestConfiguration<Id>... modifications) throws InvalidConfigurationModificationException {
+        ControllerTestConfiguration<Id> config = createDefaultFailedConfig();
+        for (ControllerTestConfiguration<Id> modification : modifications) {
+            NullAwareBeanUtils.copyProperties(config,modification);
+        }
         return config;
     }
 }

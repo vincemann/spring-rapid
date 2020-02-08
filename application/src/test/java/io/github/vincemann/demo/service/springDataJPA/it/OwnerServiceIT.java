@@ -14,7 +14,7 @@ import io.github.vincemann.generic.crud.lib.service.exception.NoIdException;
 import io.github.vincemann.generic.crud.lib.test.exception.InvalidConfigurationModificationException;
 import io.github.vincemann.generic.crud.lib.test.service.eagerFetch.ForceEagerFetchCrudServiceIntegrationTest;
 import io.github.vincemann.generic.crud.lib.test.service.callback.PostUpdateServiceTestCallback;
-import io.github.vincemann.generic.crud.lib.test.service.crudTests.configuration.update.SuccessfulUpdateServiceTestConfiguration;
+import io.github.vincemann.generic.crud.lib.test.service.crudTests.config.update.SuccessfulUpdateServiceTestConfiguration;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -31,14 +31,16 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Optional;
 
+import static io.github.vincemann.generic.crud.lib.test.service.crudTests.config.ServiceTestConfigurations.partialUpdate;
+import static io.github.vincemann.generic.crud.lib.test.service.crudTests.config.ServiceTestConfigurations.postUpdateCallback;
+
 //@DataJpaTest cant be used because i need autowired components from generic-crud-lib
 @ExtendWith(SpringExtension.class)
 @SpringBootTest(webEnvironment =
         SpringBootTest.WebEnvironment.RANDOM_PORT)
 @ActiveProfiles(value = {"test", "springdatajpa"})
 class OwnerServiceIT
-        extends ForceEagerFetchCrudServiceIntegrationTest<Owner,Long>
-{
+        extends ForceEagerFetchCrudServiceIntegrationTest<Owner, Long> {
 
 
     private Owner ownerWithoutPets;
@@ -114,18 +116,12 @@ class OwnerServiceIT
     @Test
     public void updateOwner_ChangeTelephoneNumber_ShouldSucceed() throws BadEntityException, EntityNotFoundException, NoIdException, InvalidConfigurationModificationException {
         Owner diffTelephoneNumberUpdate = Owner.builder()
-                .telephone(ownerWithoutPets.getTelephone()+"123")
+                .telephone(ownerWithoutPets.getTelephone() + "123")
                 .build();
         getUpdateServiceTest().updateEntity_ShouldSucceed(ownerWithoutPets, diffTelephoneNumberUpdate,
-                SuccessfulUpdateServiceTestConfiguration.<Owner, Long>builder()
-                        .fullUpdate(false)
-                        .postUpdateCallback(new PostUpdateServiceTestCallback<Owner, Long>() {
-                            @Override
-                            public void callback(Owner request, Owner afterUpdate) {
-                                Assertions.assertEquals(request.getTelephone(),afterUpdate.getTelephone());
-                            }
-                        })
-                        .build());
+                partialUpdate(),
+                postUpdateCallback((request, afterUpdate) -> Assertions.assertEquals(request.getTelephone(), afterUpdate.getTelephone()))
+        );
     }
 
     @Test
@@ -154,18 +150,18 @@ class OwnerServiceIT
         //here comes the new pet
         ownerUpdateRequest.getPets().add(savedPetToAdd);
 
-        Owner updatedOwner = getUpdateServiceTest().updateEntity_ShouldSucceed(owner,ownerUpdateRequest,
+        Owner updatedOwner = getUpdateServiceTest().updateEntity_ShouldSucceed(owner, ownerUpdateRequest,
                 SuccessfulUpdateServiceTestConfiguration.<Owner, Long>builder()
                         .fullUpdate(false)
                         .postUpdateCallback((request, afterUpdate) -> {
-                            Assertions.assertEquals(2,afterUpdate.getPets().size());
+                            Assertions.assertEquals(2, afterUpdate.getPets().size());
                             Assertions.assertEquals(1, afterUpdate.getPets().stream().filter(owner1 -> owner1.getName().equals(newPetName)).count());
                         })
-                .build());
+                        .build());
     }
 
-     @Test
-    public void findOwnerOfTheYear_shouldSucceed_andTriggerPluginCallback(){
+    @Test
+    public void findOwnerOfTheYear_shouldSucceed_andTriggerPluginCallback() {
         //owner of the years name is 42
         ownerWithOnePet.setFirstName("42");
         Owner savedOwner = repoSave(ownerWithOnePet);
@@ -176,12 +172,12 @@ class OwnerServiceIT
     }
 
     @Test
-    public void findByLastName_shouldSucceed(){
+    public void findByLastName_shouldSucceed() {
         Owner savedOwner = repoSave(ownerWithOnePet);
         OwnerService ownerService = getCastedCrudService();
         Optional<Owner> byLastName = ownerService.findByLastName(ownerWithOnePet.getLastName());
         Assertions.assertTrue(byLastName.isPresent());
-        Assertions.assertTrue(getDefaultEqualChecker().isEqual(savedOwner,byLastName.get()));
+        Assertions.assertTrue(getDefaultEqualChecker().isEqual(savedOwner, byLastName.get()));
     }
 
 

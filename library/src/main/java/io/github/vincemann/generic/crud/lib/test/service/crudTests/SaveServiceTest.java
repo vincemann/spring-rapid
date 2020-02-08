@@ -5,10 +5,10 @@ import io.github.vincemann.generic.crud.lib.service.exception.BadEntityException
 import io.github.vincemann.generic.crud.lib.test.service.ServiceTest;
 import io.github.vincemann.generic.crud.lib.test.service.crudTests.abs.AbstractServiceTest;
 import io.github.vincemann.generic.crud.lib.test.exception.InvalidConfigurationModificationException;
-import io.github.vincemann.generic.crud.lib.test.service.crudTests.configuration.abs.ServiceTestConfiguration;
-import io.github.vincemann.generic.crud.lib.test.service.crudTests.configuration.factory.abs.AbstractServiceTestConfigurationFactory;
-import io.github.vincemann.generic.crud.lib.test.service.crudTests.configuration.factory.SaveServiceTestConfigurationFactory;
-import io.github.vincemann.generic.crud.lib.test.service.crudTests.configuration.SuccessfulSaveServiceTestConfiguration;
+import io.github.vincemann.generic.crud.lib.test.service.crudTests.config.abs.ServiceTestConfiguration;
+import io.github.vincemann.generic.crud.lib.test.service.crudTests.config.factory.abs.AbstractServiceTestConfigurationFactory;
+import io.github.vincemann.generic.crud.lib.test.service.crudTests.config.factory.SaveServiceTestConfigurationFactory;
+import io.github.vincemann.generic.crud.lib.test.service.crudTests.config.SuccessfulSaveServiceTestConfiguration;
 import org.junit.jupiter.api.Assertions;
 
 import java.io.Serializable;
@@ -27,14 +27,14 @@ public class SaveServiceTest<E extends IdentifiableEntity<Id>, Id extends Serial
 
     public E saveEntity_ShouldSucceed(E entityToSave) throws BadEntityException {
         try {
-            return saveEntity_ShouldSucceed(entityToSave, saveTestConfigurationFactory.createSuccessfulDefaultConfig());
+            return saveEntity_ShouldSucceed(entityToSave, saveTestConfigurationFactory.createDefaultSuccessfulConfig());
         } catch (InvalidConfigurationModificationException e) {
             throw new RuntimeException(e);
         }
     }
 
-    public E saveEntity_ShouldSucceed(E entityToSave, ServiceTestConfiguration<E,Id> configModification) throws BadEntityException, InvalidConfigurationModificationException {
-        SuccessfulSaveServiceTestConfiguration<E, Id> config = saveTestConfigurationFactory.createSuccessfulMergedConfig(configModification);
+    public E saveEntity_ShouldSucceed(E entityToSave, ServiceTestConfiguration<E,Id>... configModification) throws BadEntityException, InvalidConfigurationModificationException {
+        SuccessfulSaveServiceTestConfiguration<E, Id> config = saveTestConfigurationFactory.createMergedSuccessfulConfig(configModification);
         //given
         Assertions.assertNull(entityToSave.getId());
 

@@ -27,11 +27,11 @@ public class DeleteControllerTest<E extends IdentifiableEntity<Id>, Id extends S
 
 
     public ResponseEntity<String> deleteEntity_ShouldSucceed(Id id) throws Exception {
-        return deleteEntity_ShouldSucceed(id, testConfigFactory.createSuccessfulDefaultConfig());
+        return deleteEntity_ShouldSucceed(id, testConfigFactory.createDefaultSuccessfulConfig());
     }
 
-    public ResponseEntity<String> deleteEntity_ShouldSucceed(Id id, ControllerTestConfiguration<Id> modifications) throws Exception {
-        ControllerTestConfiguration<Id> config = testConfigFactory.createSuccessfulMergedConfig(modifications);
+    public ResponseEntity<String> deleteEntity_ShouldSucceed(Id id, ControllerTestConfiguration<Id>... modifications) throws Exception {
+        ControllerTestConfiguration<Id> config = testConfigFactory.createMergedSuccessfulConfig(modifications);
         //Entity muss vorher auch schon da sein
         Optional<E> serviceFoundEntityBeforeDelete = getTestContext().getTestService().findById(id);
         Assertions.assertTrue(serviceFoundEntityBeforeDelete.isPresent(), "Entity to delete was not present");
@@ -42,11 +42,11 @@ public class DeleteControllerTest<E extends IdentifiableEntity<Id>, Id extends S
     }
 
     public ResponseEntity<String> deleteEntity_ShouldFail(Id id) throws Exception {
-        return deleteEntity_ShouldFail(id, testConfigFactory.createFailedDefaultConfig());
+        return deleteEntity_ShouldFail(id, testConfigFactory.createDefaultFailedConfig());
     }
 
-    public ResponseEntity<String> deleteEntity_ShouldFail(Id id, ControllerTestConfiguration<Id> modifications) throws Exception {
-        ControllerTestConfiguration<Id> config = testConfigFactory.createFailedMergedConfig(modifications);
+    public ResponseEntity<String> deleteEntity_ShouldFail(Id id, ControllerTestConfiguration<Id>... modifications) throws Exception {
+        ControllerTestConfiguration<Id> config = testConfigFactory.createMergedFailedConfig(modifications);
         //Entity muss vorher auch schon da sein
         Optional<E> serviceFoundEntityBeforeDelete = getTestContext().getTestService().findById(id);
         Assertions.assertTrue(serviceFoundEntityBeforeDelete.isPresent(), "Entity to delete was not present");

@@ -6,9 +6,8 @@ import io.github.vincemann.demo.dtos.owner.CreateOwnerDto;
 import io.github.vincemann.demo.dtos.owner.UpdateOwnerDto;
 import io.github.vincemann.demo.model.Owner;
 import io.github.vincemann.demo.model.Pet;
-import io.github.vincemann.demo.service.OwnerService;
 import io.github.vincemann.demo.service.PetService;
-import io.github.vincemann.generic.crud.lib.test.controller.springAdapter.crudTests.config.UpdateControllerTestConfiguration;
+import io.github.vincemann.generic.crud.lib.test.controller.springAdapter.callback.PostUpdateControllerTestCallback;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -21,6 +20,10 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;
+
+import static io.github.vincemann.generic.crud.lib.test.controller.springAdapter.crudTests.config.ControllerTestConfigurations.partialUpdate;
+import static io.github.vincemann.generic.crud.lib.test.controller.springAdapter.crudTests.config.ControllerTestConfigurations.postUpdateCallback;
+
 
 @ExtendWith(SpringExtension.class)
 @SpringBootTest(webEnvironment =
@@ -116,11 +119,14 @@ class OwnerControllerIT extends MyControllerIntegrationTest<Owner> {
 
         Assertions.assertNotEquals(diffAddressUpdate.getAddress(), validOwnerWithManyPets.getAddress());
         //when
-        getUpdateControllerTest().updateEntity_ShouldSucceed(validOwnerWithManyPets, diffAddressUpdate,
-                UpdateControllerTestConfiguration.<Owner, Long>Builder()
-                        .fullUpdate(false)
-                        .postUpdateCallback(afterUpdate -> Assertions.assertEquals(diffAddressUpdate.getAddress(), afterUpdate.getAddress()))
-                        .build()
+        getUpdateControllerTest().updateEntity_ShouldSucceed(
+                validOwnerWithManyPets,
+                diffAddressUpdate,
+                partialUpdate(),
+                postUpdateCallback((PostUpdateControllerTestCallback<Owner, Long>)
+
+                        updated -> Assertions.assertEquals(diffAddressUpdate.getAddress(), updated.getAddress()))
+
         );
     }
 
@@ -133,10 +139,10 @@ class OwnerControllerIT extends MyControllerIntegrationTest<Owner> {
 
         //when
         getUpdateControllerTest().updateEntity_ShouldSucceed(validOwnerWithManyPets, deleteAllPetsUpdate,
-                UpdateControllerTestConfiguration.<Owner, Long>Builder()
-                        .fullUpdate(false)
-                        .postUpdateCallback((updated) -> updated.getPets().isEmpty())
-                        .build()
+                partialUpdate(),
+                postUpdateCallback((PostUpdateControllerTestCallback<Owner, Long>)
+
+                        updated -> Assertions.assertTrue(updated.getPets().isEmpty()))
         );
 
     }
@@ -156,10 +162,11 @@ class OwnerControllerIT extends MyControllerIntegrationTest<Owner> {
                 .build();
 
         //when
-        getUpdateControllerTest().updateEntity_ShouldFail(validOwnerWithoutPets, setInvalidPetUpdate, UpdateControllerTestConfiguration.<Owner, Long>Builder()
-                .fullUpdate(false)
-                .postUpdateCallback((updated) -> updated.getPets().isEmpty())
-                .build()
+        getUpdateControllerTest().updateEntity_ShouldFail(validOwnerWithoutPets, setInvalidPetUpdate,
+                partialUpdate(),
+                postUpdateCallback((PostUpdateControllerTestCallback<Owner, Long>)
+
+                        updated -> Assertions.assertTrue(updated.getPets().isEmpty()))
         );
     }
 
@@ -169,12 +176,14 @@ class OwnerControllerIT extends MyControllerIntegrationTest<Owner> {
                 //blank city
                 .city("")
                 .build();
-        getUpdateControllerTest().updateEntity_ShouldFail(validOwnerWithoutPets, blankCityUpdate, UpdateControllerTestConfiguration.<Owner, Long>Builder()
-                .fullUpdate(false)
-                .postUpdateCallback((updated) -> {
-                    Assertions.assertFalse(updated.getCity().isEmpty());
-                    Assertions.assertEquals(validOwnerWithoutPets.getCity(), updated.getCity());
-                }).build()
+        getUpdateControllerTest().updateEntity_ShouldFail(validOwnerWithoutPets, blankCityUpdate,
+                partialUpdate(),
+                postUpdateCallback((PostUpdateControllerTestCallback<Owner, Long>)
+
+                        updated -> {
+                            Assertions.assertFalse(updated.getCity().isEmpty());
+                            Assertions.assertEquals(validOwnerWithoutPets.getCity(), updated.getCity());
+                        })
         );
     }
 }

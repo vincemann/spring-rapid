@@ -28,12 +28,12 @@ public class FindAllControllerTest<E extends IdentifiableEntity<Id>, Id extends 
 
 
     protected <Dto extends IdentifiableEntity<Id>> Set<Dto> findAllEntities_ShouldSucceed() throws Exception {
-        return findAllEntities_ShouldSucceed(configFactory.createSuccessfulDefaultConfig());
+        return findAllEntities_ShouldSucceed(configFactory.createDefaultSuccessfulConfig());
     }
 
 
-    protected <Dto extends IdentifiableEntity<Id>> Set<Dto> findAllEntities_ShouldSucceed(ControllerTestConfiguration<Id> modifications) throws Exception {
-        ControllerTestConfiguration<Id> config = configFactory.createSuccessfulMergedConfig(modifications);
+    protected <Dto extends IdentifiableEntity<Id>> Set<Dto> findAllEntities_ShouldSucceed(ControllerTestConfiguration<Id>... modifications) throws Exception {
+        ControllerTestConfiguration<Id> config = configFactory.createMergedSuccessfulConfig(modifications);
         ResponseEntity<String> responseEntity = findAllEntities(config);
 
         @SuppressWarnings("unchecked")
@@ -52,12 +52,12 @@ public class FindAllControllerTest<E extends IdentifiableEntity<Id>, Id extends 
 
 
     protected ResponseEntity<String> findAllEntities_ShouldFail() throws Exception {
-        return findAllEntities_ShouldFail(configFactory.createFailedDefaultConfig());
+        return findAllEntities_ShouldFail(configFactory.createDefaultFailedConfig());
     }
 
 
-    protected ResponseEntity<String> findAllEntities_ShouldFail(ControllerTestConfiguration<Id> modifications) throws Exception {
-        ControllerTestConfiguration<Id> config = configFactory.createFailedMergedConfig(modifications);
+    protected ResponseEntity<String> findAllEntities_ShouldFail(ControllerTestConfiguration<Id>... modifications) throws Exception {
+        ControllerTestConfiguration<Id> config = configFactory.createMergedFailedConfig(modifications);
         return findAllEntities(config);
     }
 
