@@ -22,11 +22,11 @@ import java.util.concurrent.Callable;
 @Slf4j
 @Component
 @Getter
-public class HibernateForceEagerFetchTemplate {
+public class ForceEagerFetchTemplate {
     private PlatformTransactionManager transactionManager;
 
     @Autowired
-    public HibernateForceEagerFetchTemplate(PlatformTransactionManager transactionManager) {
+    public ForceEagerFetchTemplate(PlatformTransactionManager transactionManager) {
         this.transactionManager = transactionManager;
     }
 

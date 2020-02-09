@@ -3,7 +3,7 @@ package io.github.vincemann.generic.crud.lib.proxy.invocationHandler;
 import io.github.vincemann.generic.crud.lib.model.IdentifiableEntity;
 import io.github.vincemann.generic.crud.lib.proxy.invocationHandler.abs.MethodBlacklistingCrudServiceProxy;
 import io.github.vincemann.generic.crud.lib.service.CrudService;
-import io.github.vincemann.generic.crud.lib.test.forceEagerFetch.HibernateForceEagerFetchTemplate;
+import io.github.vincemann.generic.crud.lib.test.forceEagerFetch.ForceEagerFetchTemplate;
 
 import java.io.Serializable;
 import java.lang.reflect.InvocationTargetException;
@@ -14,11 +14,11 @@ public class ForceEagerFetchCrudServiceProxy
        extends MethodBlacklistingCrudServiceProxy<IdentifiableEntity<Serializable>, Serializable> {
     //todo implement applicationcontext aware and get eagerfetchUtil bean like that instead of constructor?
 
-    private HibernateForceEagerFetchTemplate eagerFetchUtil;
+    private ForceEagerFetchTemplate eagerFetchUtil;
 
 
 
-    public ForceEagerFetchCrudServiceProxy(CrudService service, HibernateForceEagerFetchTemplate eagerFetchUtil, String... omittedMethods) {
+    public ForceEagerFetchCrudServiceProxy(CrudService service, ForceEagerFetchTemplate eagerFetchUtil, String... omittedMethods) {
         super(service,omittedMethods);
         this.eagerFetchUtil = eagerFetchUtil;
 

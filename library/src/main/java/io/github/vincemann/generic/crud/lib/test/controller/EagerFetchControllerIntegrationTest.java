@@ -4,7 +4,7 @@ import io.github.vincemann.generic.crud.lib.model.IdentifiableEntity;
 import io.github.vincemann.generic.crud.lib.proxy.invocationHandler.ForceEagerFetchCrudServiceProxy;
 import io.github.vincemann.generic.crud.lib.service.CrudService;
 import io.github.vincemann.generic.crud.lib.proxy.factory.CrudServiceEagerFetchProxyFactory;
-import io.github.vincemann.generic.crud.lib.test.forceEagerFetch.HibernateForceEagerFetchTemplate;
+import io.github.vincemann.generic.crud.lib.test.forceEagerFetch.ForceEagerFetchTemplate;
 import lombok.Getter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.repository.CrudRepository;
@@ -21,7 +21,7 @@ public abstract class EagerFetchControllerIntegrationTest<E extends Identifiable
         extends ControllerIntegrationTest<E, Id> {
 
     private CrudServiceEagerFetchProxyFactory eagerFetchProxyFactory;
-    private HibernateForceEagerFetchTemplate eagerFetchUtil;
+    private ForceEagerFetchTemplate eagerFetchUtil;
 
 
     public EagerFetchControllerIntegrationTest(String url) {
@@ -52,8 +52,8 @@ public abstract class EagerFetchControllerIntegrationTest<E extends Identifiable
     }
 
     @Autowired
-    public void injectHibernateForceEagerFetchUtil(HibernateForceEagerFetchTemplate hibernateForceEagerFetchTemplate) {
-        this.eagerFetchUtil = hibernateForceEagerFetchTemplate;
+    public void injectHibernateForceEagerFetchUtil(ForceEagerFetchTemplate forceEagerFetchTemplate) {
+        this.eagerFetchUtil = forceEagerFetchTemplate;
     }
 
 

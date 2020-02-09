@@ -38,8 +38,6 @@ public abstract class InitializingTest implements InitializingBean {
                         initializable.init();
                     }
                 }
-
-
             }
         }
     }

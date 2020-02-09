@@ -3,7 +3,7 @@ package io.github.vincemann.generic.crud.lib.proxy.factory;
 import io.github.vincemann.generic.crud.lib.model.IdentifiableEntity;
 import io.github.vincemann.generic.crud.lib.proxy.invocationHandler.ForceEagerFetchCrudServiceProxy;
 import io.github.vincemann.generic.crud.lib.service.CrudService;
-import io.github.vincemann.generic.crud.lib.test.forceEagerFetch.HibernateForceEagerFetchTemplate;
+import io.github.vincemann.generic.crud.lib.test.forceEagerFetch.ForceEagerFetchTemplate;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.stereotype.Component;
 import org.springframework.test.util.AopTestUtils;
@@ -14,9 +14,9 @@ import java.lang.reflect.Proxy;
 @Component
 public class CrudServiceEagerFetchProxyFactory {
 
-    private HibernateForceEagerFetchTemplate eagerFetchTemplate;
+    private ForceEagerFetchTemplate eagerFetchTemplate;
 
-    public CrudServiceEagerFetchProxyFactory(HibernateForceEagerFetchTemplate eagerFetchTemplate) {
+    public CrudServiceEagerFetchProxyFactory(ForceEagerFetchTemplate eagerFetchTemplate) {
         this.eagerFetchTemplate = eagerFetchTemplate;
     }
 
