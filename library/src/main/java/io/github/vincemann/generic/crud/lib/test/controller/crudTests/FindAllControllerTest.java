@@ -26,12 +26,12 @@ public class FindAllControllerTest<E extends IdentifiableEntity<Id>, Id extends 
     }
 
 
-    protected <Dto extends IdentifiableEntity<Id>> Set<Dto> findAllEntities_ShouldSucceed() throws Exception {
+    public <Dto extends IdentifiableEntity<Id>> Set<Dto> findAllEntities_ShouldSucceed() throws Exception {
         return findAllEntities_ShouldSucceed(configFactory.createDefaultSuccessfulConfig());
     }
 
 
-    protected <Dto extends IdentifiableEntity<Id>> Set<Dto> findAllEntities_ShouldSucceed(ControllerTestConfiguration<Id>... modifications) throws Exception {
+    public <Dto extends IdentifiableEntity<Id>> Set<Dto> findAllEntities_ShouldSucceed(ControllerTestConfiguration<Id>... modifications) throws Exception {
         ControllerTestConfiguration<Id> config = configFactory.createMergedSuccessfulConfig(modifications);
         ResponseEntity<String> responseEntity = findAllEntities(config);
 
@@ -50,17 +50,17 @@ public class FindAllControllerTest<E extends IdentifiableEntity<Id>, Id extends 
 
 
 
-    protected ResponseEntity<String> findAllEntities_ShouldFail() throws Exception {
+    public ResponseEntity<String> findAllEntities_ShouldFail() throws Exception {
         return findAllEntities_ShouldFail(configFactory.createDefaultFailedConfig());
     }
 
 
-    protected ResponseEntity<String> findAllEntities_ShouldFail(ControllerTestConfiguration<Id>... modifications) throws Exception {
+    public ResponseEntity<String> findAllEntities_ShouldFail(ControllerTestConfiguration<Id>... modifications) throws Exception {
         ControllerTestConfiguration<Id> config = configFactory.createMergedFailedConfig(modifications);
         return findAllEntities(config);
     }
 
-    protected ResponseEntity<String> findAllEntities(ControllerTestConfiguration<Id> config) {
+    public ResponseEntity<String> findAllEntities(ControllerTestConfiguration<Id> config) {
         return sendRequest(getTestContext().getRequestEntityFactory().create(config,null,null, ControllerTestMethod.FIND_ALL));
     }
 }
