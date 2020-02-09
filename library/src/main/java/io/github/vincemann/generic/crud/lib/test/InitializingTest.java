@@ -6,6 +6,8 @@ import org.springframework.beans.factory.InitializingBean;
 
 import java.lang.reflect.Field;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.LinkedList;
 import java.util.List;
 
 @Slf4j
@@ -15,8 +17,7 @@ public abstract class InitializingTest implements InitializingBean {
 
     @Override
     public void afterPropertiesSet() throws Exception {
-        initInitializableComponents();
-        initTestAwareComponents();
+        initComponents();
     }
 
     @BeforeEach
@@ -25,33 +26,35 @@ public abstract class InitializingTest implements InitializingBean {
     }
 
 
-    private void initInitializableComponents() throws IllegalAccessException {
-        for (Field declaredField : this.getClass().getDeclaredFields()) {
-            if(TestInitializable.class.isAssignableFrom(declaredField.getType())){
-                log.debug("found controller test aware field, with name : " + declaredField.getName() +", passing testObject for initialization");
-                declaredField.setAccessible(true);
-                TestInitializable initializable = (TestInitializable)declaredField.get(this);
-                if(initializable!=null){
-                    if(initializable instanceof BeforeEachMethodInitializable){
-                        beforeEachMethodInitializables.add(((BeforeEachMethodInitializable) initializable));
+    private void initComponents() throws IllegalAccessException {
+        for (Field declaredField : getAllFields(new LinkedList<>(),this.getClass())) {
+            declaredField.setAccessible(true);
+            Object member = declaredField.get(this);
+            if(member!=null) {
+                if (member instanceof TestInitializable) {
+                    log.debug("found controller test aware member of type : " + member.getClass().getSimpleName() + ", passing testObject for initialization");
+                    if(member instanceof BeforeEachMethodInitializable){
+                        beforeEachMethodInitializables.add(((BeforeEachMethodInitializable) member));
                     }else {
-                        initializable.init();
+                        ((TestInitializable) member).init();
                     }
+                }
+                if(member instanceof TestAware){
+                    log.debug("found controller test aware member, of type : " + member.getClass().getSimpleName() +", passing testObject for initialization");
+                    ((TestAware) member).setTest(this);
                 }
             }
         }
     }
 
-    private void initTestAwareComponents() throws IllegalAccessException {
-        for (Field declaredField : this.getClass().getDeclaredFields()) {
-            if(TestAware.class.isAssignableFrom(declaredField.getType())){
-                log.debug("found controller test aware field, with name : " + declaredField.getName() +", passing testObject for initialization");
-                declaredField.setAccessible(true);
-                TestAware testAware = (TestAware)declaredField.get(this);
-                if(testAware!=null) {
-                    testAware.setTest(this);
-                }
-            }
+    public static List<Field> getAllFields(List<Field> fields, Class<?> type) {
+        fields.addAll(Arrays.asList(type.getDeclaredFields()));
+
+        if (type.getSuperclass() != null) {
+            getAllFields(fields, type.getSuperclass());
         }
+
+        return fields;
     }
+
 }
