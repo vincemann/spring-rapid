@@ -4,7 +4,7 @@ import io.github.vincemann.generic.crud.lib.model.IdentifiableEntity;
 import io.github.vincemann.generic.crud.lib.service.CrudService;
 import io.github.vincemann.generic.crud.lib.service.sessionReattach.EntityGraphSessionReattacher;
 import io.github.vincemann.generic.crud.lib.proxy.factory.CrudServiceEagerFetchProxyFactory;
-import io.github.vincemann.generic.crud.lib.test.forceEagerFetch.HibernateForceEagerFetchTemplate;
+import io.github.vincemann.generic.crud.lib.test.forceEagerFetch.ForceEagerFetchTemplate;
 import io.github.vincemann.generic.crud.lib.test.service.CrudServiceIntegrationTest;
 import lombok.Getter;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,7 +27,7 @@ public class ForceEagerFetchCrudServiceIntegrationTest<
     private EntityGraphSessionReattacher sessionReattacher;
 
     @Autowired
-    private HibernateForceEagerFetchTemplate eagerFetchUtil;
+    private ForceEagerFetchTemplate eagerFetchUtil;
 
 
     @Override
@@ -47,10 +47,6 @@ public class ForceEagerFetchCrudServiceIntegrationTest<
         });
     }
 
-    protected <E extends IdentifiableEntity<Id>, Id extends Serializable, R extends CrudRepository<E, Id>,S extends CrudService<E,Id,R>> S
-    wrapWithEagerFetchProxy(S crudService,String... omittedMethods) {
-        return eagerFetchProxyFactory.create(crudService,omittedMethods);
-    }
 
     @Autowired
     @Override

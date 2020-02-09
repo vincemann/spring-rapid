@@ -59,7 +59,7 @@ class OwnerServiceIT
     @BeforeEach
     public void setUp() throws Exception {
         //proxyfy service
-        this.petService = wrapWithEagerFetchProxy(petService);
+        this.petService = getEagerFetchProxyFactory().create(petService);
         savedDogPetType = petTypeService.save(new PetType("Dog"));
 
         testPet = Pet.builder()
