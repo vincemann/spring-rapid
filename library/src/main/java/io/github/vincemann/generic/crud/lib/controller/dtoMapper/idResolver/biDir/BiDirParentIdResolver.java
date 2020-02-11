@@ -23,13 +23,13 @@ public class BiDirParentIdResolver extends EntityIdResolver<BiDirParent, BiDirPa
     public void resolveEntityIds(BiDirParent mappedBiDirParent, BiDirParentDto biDirParentDto) throws EntityMappingException {
         try {
             //find and handle single Children
-            Map<Class, Serializable> allChildIdToClassMappings = biDirParentDto.findChildrenIds();
+            Map<Class, Serializable> allChildIdToClassMappings = biDirParentDto.findBiDirChildrenIds();
             for (Map.Entry<Class, Serializable> childIdToClassMapping : allChildIdToClassMappings.entrySet()) {
                 Object child = findEntityFromService(childIdToClassMapping);
                 resolveBiDirChildFromService(child,mappedBiDirParent);
             }
             //find and handle children collections
-            Map<Class, Collection<Serializable>> allChildrenIdCollection = biDirParentDto.findChildrenIdCollections();
+            Map<Class, Collection<Serializable>> allChildrenIdCollection = biDirParentDto.findBiDirChildrenIdCollections();
             for (Map.Entry<Class, Collection<Serializable>> entry: allChildrenIdCollection.entrySet()){
                 Collection<Serializable> idCollection = entry.getValue();
                 for(Serializable id: idCollection){
@@ -46,11 +46,11 @@ public class BiDirParentIdResolver extends EntityIdResolver<BiDirParent, BiDirPa
     public void resolveDtoIds(BiDirParentDto mappedDto, BiDirParent serviceEntity) {
         try {
             for(BiDirChild biDirChild: serviceEntity.getChildren()){
-                mappedDto.addChildsId(biDirChild);
+                mappedDto.addBiDirChildsId(biDirChild);
             }
             for(Collection<? extends BiDirChild> childrenCollection: serviceEntity.getChildrenCollections().keySet()){
                 for(BiDirChild biDirChild: childrenCollection){
-                    mappedDto.addChildsId(biDirChild);
+                    mappedDto.addBiDirChildsId(biDirChild);
                 }
             }
         }catch (IllegalAccessException e){

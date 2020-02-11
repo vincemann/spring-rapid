@@ -20,8 +20,8 @@ public interface UniDirParentDto {
     Map<Class, Field[]> uniDirChildrenCollectionFieldsCache = new HashMap<>();
 
 
-    default <ChildId extends Serializable> ChildId findChildId(Class<? extends UniDirChild> childClazz) throws UnknownChildTypeException, IllegalAccessException {
-        Field[] childrenIdFields = findChildrenIdFields();
+    default <ChildId extends Serializable> ChildId findUniDirChildId(Class<? extends UniDirChild> childClazz) throws UnknownChildTypeException, IllegalAccessException {
+        Field[] childrenIdFields = findUniDirChildrenIdFields();
         for (Field field: childrenIdFields) {
             if(field.getAnnotation(UniDirChildId.class).value().equals(childClazz)) {
                 field.setAccessible(true);
@@ -31,8 +31,8 @@ public interface UniDirParentDto {
         throw new UnknownChildTypeException(this.getClass(),childClazz);
     }
 
-    default <ChildId extends Serializable> Collection<ChildId> findChildrenIdCollection(Class<? extends UniDirChild> childClazz) throws IllegalAccessException {
-        Field[] childrenIdCollectionFields = findChildrenIdCollectionFields();
+    default <ChildId extends Serializable> Collection<ChildId> findUniDirChildrenIdCollection(Class<? extends UniDirChild> childClazz) throws IllegalAccessException {
+        Field[] childrenIdCollectionFields = findUniDirChildrenIdCollectionFields();
         for (Field field: childrenIdCollectionFields) {
             if(field.getAnnotation(UniDirChildIdCollection.class).value().equals(childClazz)) {
                 field.setAccessible(true);
@@ -42,9 +42,9 @@ public interface UniDirParentDto {
         throw new UnknownChildTypeException(this.getClass(),childClazz);
     }
 
-    default Map<Class,Serializable> findChildrenIds() throws IllegalAccessException {
+    default Map<Class,Serializable> findUniDirChildrenIds() throws IllegalAccessException {
         Map<Class,Serializable> childrenIds = new HashMap<>();
-        Field[] childIdFields = findChildrenIdFields();
+        Field[] childIdFields = findUniDirChildrenIdFields();
         for(Field field: childIdFields){
             field.setAccessible(true);
             Serializable id = (Serializable) field.get(this);
@@ -57,9 +57,9 @@ public interface UniDirParentDto {
         return childrenIds;
     }
 
-    default Map<Class,Collection<Serializable>> findChildrenIdCollections() throws IllegalAccessException {
+    default Map<Class,Collection<Serializable>> findUniDirChildrenIdCollections() throws IllegalAccessException {
         Map<Class,Collection<Serializable>> childrenIdCollections = new HashMap<>();
-        Field[] childIdCollectionFields = findChildrenIdCollectionFields();
+        Field[] childIdCollectionFields = findUniDirChildrenIdCollectionFields();
         for (Field field : childIdCollectionFields) {
             field.setAccessible(true);
             Collection<Serializable> idCollection = (Collection<Serializable>) field.get(this);
@@ -76,12 +76,12 @@ public interface UniDirParentDto {
      * Adds child's id to {@link UniDirChildIdCollection} or {@link UniDirChildId}, depending on entity type it belongs to
      * @param child
      */
-    default void addChildsId(IdentifiableEntity child) throws IllegalAccessException {
+    default void addUniDirChildsId(IdentifiableEntity child) throws IllegalAccessException {
         Serializable biDirChildId = child.getId();
         if(biDirChildId==null){
             throw new IllegalArgumentException("Id from Child must not be null");
         }
-        Map<Class, Collection<Serializable>> allChildrenIdCollections = findChildrenIdCollections();
+        Map<Class, Collection<Serializable>> allChildrenIdCollections = findUniDirChildrenIdCollections();
         //child collections
         for(Map.Entry<Class,Collection<Serializable>> childrenIdCollectionEntry : allChildrenIdCollections.entrySet()){
             if(childrenIdCollectionEntry.getKey().equals(child.getClass())){
@@ -92,7 +92,7 @@ public interface UniDirParentDto {
             }
         }
         //single children
-        Field[] childrenIdFields = findChildrenIdFields();
+        Field[] childrenIdFields = findUniDirChildrenIdFields();
         for(Field field: childrenIdFields){
             field.setAccessible(true);
             Class<? extends UniDirChild> clazzBelongingToId = field.getAnnotation(UniDirChildId.class).value();
@@ -106,7 +106,7 @@ public interface UniDirParentDto {
         }
     }
 
-    default Field[] findChildrenIdCollectionFields(){
+    default Field[] findUniDirChildrenIdCollectionFields(){
         Field[] childrenIdCollectionFieldsFromCache = uniDirChildrenCollectionFieldsCache.get(this.getClass());
         if(childrenIdCollectionFieldsFromCache==null){
             Field[] childrenIdCollectionFields = ReflectionUtils.getAnnotatedDeclaredFields(this.getClass(), UniDirChildIdCollection.class, true);
@@ -117,7 +117,7 @@ public interface UniDirParentDto {
         }
     }
 
-    default Field[] findChildrenIdFields(){
+    default Field[] findUniDirChildrenIdFields(){
         Field[] childrenIdFieldsFromCache = uniDirChildFieldsCache.get(this.getClass());
         if(childrenIdFieldsFromCache==null){
             Field[] childrenIdFields = ReflectionUtils.getDeclaredFieldsAnnotatedWith(getClass(), UniDirChildId.class, true);

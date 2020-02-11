@@ -20,7 +20,7 @@ public class UniDirChildIdResolver extends EntityIdResolver<UniDirChild, UniDirC
 
     public void resolveEntityIds(UniDirChild mappedUniDirChild, UniDirChildDto uniDirChildDto) throws EntityMappingException {
         try {
-            Map<Class, Serializable> allParentIdToClassMappings = uniDirChildDto.findAllParentIds();
+            Map<Class, Serializable> allParentIdToClassMappings = uniDirChildDto.findAllUniDirParentIds();
             for (Map.Entry<Class, Serializable> parentIdToClassMapping : allParentIdToClassMappings.entrySet()) {
                 Object parent = findEntityFromService(parentIdToClassMapping);
                 try {
@@ -40,7 +40,7 @@ public class UniDirChildIdResolver extends EntityIdResolver<UniDirChild, UniDirC
     public void resolveDtoIds(UniDirChildDto mappedDto, UniDirChild serviceEntity ){
         try {
             for (Object uniDirParent : serviceEntity._findParents()) {
-                mappedDto.addParentsId((IdentifiableEntity) uniDirParent);
+                mappedDto.addUniDirParentsId((IdentifiableEntity) uniDirParent);
             }
         }catch (IllegalAccessException e){
             throw new RuntimeException(e);

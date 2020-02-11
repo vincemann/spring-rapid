@@ -18,8 +18,8 @@ public interface BiDirParentDto {
     Map<Class, Field[]> biDirChildrenCollectionFieldsCache = new HashMap<>();
 
 
-    default <ChildId extends Serializable> ChildId findChildId(Class<? extends BiDirChild> childClazz) throws UnknownChildTypeException, IllegalAccessException {
-        Field[] childrenIdFields = findChildrenIdFields();
+    default <ChildId extends Serializable> ChildId findBiDirChildId(Class<? extends BiDirChild> childClazz) throws UnknownChildTypeException, IllegalAccessException {
+        Field[] childrenIdFields = findBiDirChildrenIdFields();
         for (Field field: childrenIdFields) {
             if(field.getAnnotation(BiDirChildId.class).value().equals(childClazz)) {
                 field.setAccessible(true);
@@ -29,9 +29,9 @@ public interface BiDirParentDto {
         throw new UnknownChildTypeException(this.getClass(),childClazz);
     }
 
-    default Map<Class,Serializable> findChildrenIds() throws IllegalAccessException {
+    default Map<Class,Serializable> findBiDirChildrenIds() throws IllegalAccessException {
         Map<Class,Serializable> childrenIds = new HashMap<>();
-        Field[] childIdFields = findChildrenIdFields();
+        Field[] childIdFields = findBiDirChildrenIdFields();
         for(Field field: childIdFields){
             field.setAccessible(true);
             Serializable id = (Serializable) field.get(this);
@@ -44,9 +44,9 @@ public interface BiDirParentDto {
         return childrenIds;
     }
 
-    default Map<Class,Collection<Serializable>> findChildrenIdCollections() throws IllegalAccessException {
+    default Map<Class,Collection<Serializable>> findBiDirChildrenIdCollections() throws IllegalAccessException {
         Map<Class,Collection<Serializable>> childrenIdCollections = new HashMap<>();
-        Field[] childIdCollectionFields = findChildrenIdCollectionFields();
+        Field[] childIdCollectionFields = findBiDirChildrenIdCollectionFields();
         for (Field field : childIdCollectionFields) {
             field.setAccessible(true);
             Collection<Serializable> idCollection = (Collection<Serializable>) field.get(this);
@@ -62,8 +62,8 @@ public interface BiDirParentDto {
 
 
 
-    default <ChildId extends Serializable> Collection<ChildId> findChildrenIdCollection(Class<? extends BiDirChild> childClazz) throws IllegalAccessException {
-        Field[] childrenIdCollectionFields = findChildrenIdCollectionFields();
+    default <ChildId extends Serializable> Collection<ChildId> findBiDirChildrenIdCollection(Class<? extends BiDirChild> childClazz) throws IllegalAccessException {
+        Field[] childrenIdCollectionFields = findBiDirChildrenIdCollectionFields();
         for (Field field: childrenIdCollectionFields) {
             if(field.getAnnotation(BiDirChildIdCollection.class).value().equals(childClazz)) {
                 field.setAccessible(true);
@@ -77,12 +77,12 @@ public interface BiDirParentDto {
      * Adds childs id to {@link BiDirChildIdCollection} or {@link BiDirChildId}, depending on type it belongs to
      * @param biDirChild
      */
-    default void addChildsId(BiDirChild biDirChild) throws IllegalAccessException {
+    default void addBiDirChildsId(BiDirChild biDirChild) throws IllegalAccessException {
         Serializable biDirChildId = ((IdentifiableEntity) biDirChild).getId();
         if(biDirChildId==null){
             throw new IllegalArgumentException("Id from Child must not be null");
         }
-        Map<Class, Collection<Serializable>> allChildrenIdCollections = findChildrenIdCollections();
+        Map<Class, Collection<Serializable>> allChildrenIdCollections = findBiDirChildrenIdCollections();
         //child collections
         for(Map.Entry<Class,Collection<Serializable>> childrenIdCollectionEntry : allChildrenIdCollections.entrySet()){
             if(childrenIdCollectionEntry.getKey().equals(biDirChild.getClass())){
@@ -93,7 +93,7 @@ public interface BiDirParentDto {
             }
         }
         //single children
-        Field[] childrenIdFields = findChildrenIdFields();
+        Field[] childrenIdFields = findBiDirChildrenIdFields();
         for(Field field: childrenIdFields){
             field.setAccessible(true);
             Class<? extends BiDirChild> clazzBelongingToId = field.getAnnotation(BiDirChildId.class).value();
@@ -107,7 +107,7 @@ public interface BiDirParentDto {
         }
     }
 
-    default Field[] findChildrenIdCollectionFields(){
+    default Field[] findBiDirChildrenIdCollectionFields(){
         Field[] childrenIdCollectionFieldsFromCache = biDirChildrenCollectionFieldsCache.get(this.getClass());
         if(childrenIdCollectionFieldsFromCache==null){
             Field[] childrenIdCollectionFields = ReflectionUtils.getAnnotatedDeclaredFields(this.getClass(), BiDirChildIdCollection.class, true);
@@ -118,7 +118,7 @@ public interface BiDirParentDto {
         }
     }
 
-    default Field[] findChildrenIdFields(){
+    default Field[] findBiDirChildrenIdFields(){
         Field[] childrenIdFieldsFromCache = biDirChildFieldsCache.get(this.getClass());
         if(childrenIdFieldsFromCache==null){
             Field[] childrenIdFields = ReflectionUtils.getDeclaredFieldsAnnotatedWith(getClass(), BiDirChildId.class, true);
