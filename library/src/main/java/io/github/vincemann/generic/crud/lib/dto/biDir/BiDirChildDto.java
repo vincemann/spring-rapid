@@ -24,8 +24,8 @@ public interface BiDirChildDto {
     Logger log = LoggerFactory.getLogger(BiDirChildDto.class);
     Map<Class,Field[]> biDirParentFieldsCache = new HashMap<>();
 
-    default <ParentId extends Serializable> ParentId findParentId(Class<? extends BiDirParent> parentClazz) throws UnknownParentTypeException, IllegalAccessException {
-        Field[] parentIdFields = findParentIdFields();
+    default <ParentId extends Serializable> ParentId findBiDirParentId(Class<? extends BiDirParent> parentClazz) throws UnknownParentTypeException, IllegalAccessException {
+        Field[] parentIdFields = findBiDirParentIdFields();
         for (Field field: parentIdFields) {
             if(field.getAnnotation(BiDirParentId.class).value().equals(parentClazz)) {
                 field.setAccessible(true);
@@ -35,12 +35,12 @@ public interface BiDirChildDto {
         throw new UnknownParentTypeException(this.getClass(),parentClazz);
     }
 
-    default void addParentsId(BiDirParent biDirParent) throws IllegalAccessException {
+    default void addBiDirParentsId(BiDirParent biDirParent) throws IllegalAccessException {
         Serializable parentId = ((IdentifiableEntity) biDirParent).getId();
         if(parentId==null){
             throw new IllegalArgumentException("ParentId must not be null");
         }
-        for(Field parentIdField: findParentIdFields()){
+        for(Field parentIdField: findBiDirParentIdFields()){
             if(parentIdField.getAnnotation(BiDirParentId.class).value().equals(biDirParent.getClass())){
                 parentIdField.setAccessible(true);
                 Object prevParentId = parentIdField.get(this);
@@ -52,9 +52,9 @@ public interface BiDirChildDto {
         }
     }
 
-    default Map<Class,Serializable> findAllParentIds() throws IllegalAccessException {
+    default Map<Class,Serializable> findAllBiDirParentIds() throws IllegalAccessException {
         Map<Class,Serializable> parentIds = new HashMap<>();
-        Field[] parentIdFields = findParentIdFields();
+        Field[] parentIdFields = findBiDirParentIdFields();
         for(Field field: parentIdFields){
             field.setAccessible(true);
             Serializable id = (Serializable) field.get(this);
@@ -67,7 +67,7 @@ public interface BiDirChildDto {
         return parentIds;
     }
 
-    default Field[] findParentIdFields(){
+    default Field[] findBiDirParentIdFields(){
         Field[] parentIdFieldsFromCache = biDirParentFieldsCache.get(this.getClass());
         if(parentIdFieldsFromCache==null){
             Field[] parentIdFields = ReflectionUtils.getDeclaredFieldsAnnotatedWith(getClass(), BiDirParentId.class, true);

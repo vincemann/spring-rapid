@@ -25,7 +25,7 @@ public class BiDirChildIdResolver extends EntityIdResolver<BiDirChild, BiDirChil
 
     public void resolveEntityIds(BiDirChild mappedBiDirChild, BiDirChildDto biDirChildDto) throws EntityMappingException {
         try {
-            Map<Class, Serializable> allParentIdToClassMappings = biDirChildDto.findAllParentIds();
+            Map<Class, Serializable> allParentIdToClassMappings = biDirChildDto.findAllBiDirParentIds();
             for (Map.Entry<Class, Serializable> parentIdToClassMapping : allParentIdToClassMappings.entrySet()) {
                 Object parent = findEntityFromService(parentIdToClassMapping);
                 try {
@@ -46,7 +46,7 @@ public class BiDirChildIdResolver extends EntityIdResolver<BiDirChild, BiDirChil
     public void resolveDtoIds(BiDirChildDto mappedDto, BiDirChild serviceEntity) {
         try {
             for(BiDirParent biDirParent: serviceEntity.findParents()){
-                mappedDto.addParentsId(biDirParent);
+                mappedDto.addBiDirParentsId(biDirParent);
             }
         }catch (IllegalAccessException e){
             throw new RuntimeException(e);
