@@ -61,6 +61,6 @@ public class FindAllControllerTest<E extends IdentifiableEntity<Id>, Id extends 
     }
 
     public ResponseEntity<String> findAllEntities(ControllerTestConfiguration<Id> config) {
-        return sendRequest(getTestContext().getRequestEntityFactory().create(config,null,null, ControllerTestMethod.FIND_ALL));
+        return sendRequest(getTestContext().getRequestEntityFactory().create(config,null,null));
     }
 }

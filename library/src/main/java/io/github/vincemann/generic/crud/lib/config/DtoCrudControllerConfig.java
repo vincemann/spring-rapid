@@ -13,6 +13,7 @@ import org.springframework.context.annotation.Configuration;
 
 import java.util.List;
 
+@SuppressWarnings("rawtypes")
 @Configuration
 public class DtoCrudControllerConfig {
 

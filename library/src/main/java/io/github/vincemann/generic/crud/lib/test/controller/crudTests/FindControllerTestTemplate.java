@@ -71,6 +71,6 @@ public class FindControllerTest<E extends IdentifiableEntity<Id>, Id extends Ser
 
     public ResponseEntity<String> findEntity(Id id, ControllerTestConfiguration<Id> config) {
         Assertions.assertNotNull(id);
-        return sendRequest(getTestContext().getRequestEntityFactory().create(config,null,id, ControllerTestMethod.FIND));
+        return sendRequest(getTestContext().getRequestEntityFactory().create(config,null,id));
     }
 }

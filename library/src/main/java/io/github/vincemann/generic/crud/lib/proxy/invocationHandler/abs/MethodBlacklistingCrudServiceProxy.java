@@ -39,7 +39,7 @@ public abstract class MethodBlacklistingCrudServiceProxy<E extends IdentifiableE
     @Override
     public final Object invoke(Object o, Method method, Object[] args) throws Throwable {
         if(isMethodIgnored(method)){
-            log.debug("proxy call ignored, because method: " + method.getName() + " is not handled by this proxy: " + this.getClass().getSimpleName());
+            //log.debug("proxy call ignored, because method: " + method.getName() + " is not handled by this proxy: " + this.getClass().getSimpleName());
             return getMethods().get(method.getName()).invoke(getService(),args);
         }
         else{
