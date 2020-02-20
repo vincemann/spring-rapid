@@ -6,6 +6,7 @@ import io.github.vincemann.generic.crud.lib.controller.dtoMapper.idResolver.Enti
 import io.github.vincemann.generic.crud.lib.controller.dtoMapper.idResolver.IdResolvingDtoMapper;
 import io.github.vincemann.generic.crud.lib.controller.errorHandling.exceptionHandler.DtoCrudControllerExceptionHandlerImpl;
 import io.github.vincemann.generic.crud.lib.controller.errorHandling.exceptionHandler.DtoCrudControllerExceptionHandler;
+import io.github.vincemann.generic.crud.lib.controller.springAdapter.EndpointsExposureContext;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -19,6 +20,7 @@ public class DtoCrudControllerConfig {
     public DtoCrudControllerExceptionHandler dtoCrudControllerExceptionHandler() {
         return new DtoCrudControllerExceptionHandlerImpl();
     }
+
 
     @Qualifier("default")
     @Bean
