@@ -68,6 +68,6 @@ public class CreateControllerTest<E extends IdentifiableEntity<Id>, Id extends S
      * @return
      */
     public ResponseEntity<String> createEntity(IdentifiableEntity<Id> dto, ControllerTestConfiguration<Id> config) {
-        return sendRequest(getTestContext().getRequestEntityFactory().create(config,dto,null, ControllerTestMethod.CREATE));
+        return sendRequest(getTestContext().getRequestEntityFactory().create(config,dto,null));
     }
 }

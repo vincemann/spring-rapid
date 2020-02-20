@@ -5,6 +5,7 @@ import io.github.vincemann.generic.crud.lib.controller.springAdapter.SpringAdapt
 import io.github.vincemann.generic.crud.lib.model.IdentifiableEntity;
 import io.github.vincemann.generic.crud.lib.service.CrudService;
 import io.github.vincemann.generic.crud.lib.test.InitializingTest;
+import io.github.vincemann.generic.crud.lib.test.controller.crudTests.config.abs.ControllerTestConfiguration;
 import io.github.vincemann.generic.crud.lib.test.controller.requestEntityFactory.RequestEntityFactory;
 import lombok.Getter;
 import lombok.Setter;
@@ -41,7 +42,6 @@ public abstract class ControllerIntegrationTest<E extends IdentifiableEntity<Id>
     private String url;
     private CrudService<E,Id, ? extends CrudRepository<E,Id>> testService;
     private SpringAdapterDtoCrudController<E, Id> controller;
-    private RequestEntityFactory<Id> requestEntityFactory;
 
     public ControllerIntegrationTest(String url) {
         this.url=url;
@@ -50,8 +50,6 @@ public abstract class ControllerIntegrationTest<E extends IdentifiableEntity<Id>
     public ControllerIntegrationTest() {
         this(LOCAL_HOST);
     }
-
-    protected abstract RequestEntityFactory<Id> provideRequestEntityFactory();
 
     @Override
     public void afterPropertiesSet() throws Exception {
@@ -63,7 +61,6 @@ public abstract class ControllerIntegrationTest<E extends IdentifiableEntity<Id>
         if (testService == null) {
             setTestService(getController().getCastedCrudService());
         }
-        this.requestEntityFactory= provideRequestEntityFactory();
     }
 
 

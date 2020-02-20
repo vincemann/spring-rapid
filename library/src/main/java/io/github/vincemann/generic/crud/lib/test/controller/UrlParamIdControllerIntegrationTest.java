@@ -8,7 +8,7 @@ import io.github.vincemann.generic.crud.lib.service.exception.BadEntityException
 import io.github.vincemann.generic.crud.lib.test.controller.crudTests.*;
 import io.github.vincemann.generic.crud.lib.test.controller.crudTests.config.factory.*;
 import io.github.vincemann.generic.crud.lib.test.controller.requestEntityFactory.RequestEntityFactory;
-import io.github.vincemann.generic.crud.lib.test.controller.requestEntityFactory.UrlParamIdRequestEntityFactory;
+import io.github.vincemann.generic.crud.lib.test.controller.requestEntityFactory.urlParamId.AbstractUrlParamIdRequestEntityFactory;
 import io.github.vincemann.generic.crud.lib.test.testExecutionListeners.ResetDatabaseTestExecutionListener;
 import lombok.Getter;
 import lombok.Setter;
@@ -86,7 +86,7 @@ public abstract class UrlParamIdControllerIntegrationTest<E extends Identifiable
 
     @Override
     protected RequestEntityFactory<Id> provideRequestEntityFactory() {
-        return UrlParamIdRequestEntityFactory.<Id>builder()
+        return AbstractUrlParamIdRequestEntityFactory.<Id>builder()
                 .controller(getController())
                 .entityIdParamKey(((UrlParamIdFetchingStrategy<Id>) getController().getIdIdFetchingStrategy()).getIdUrlParamKey())
                 .baseAddressProvider(this)

@@ -55,6 +55,6 @@ public class DeleteControllerTest<E extends IdentifiableEntity<Id>, Id extends S
     }
 
     public ResponseEntity<String> deleteEntity(Id id, ControllerTestConfiguration<Id> config) {
-        return sendRequest(getTestContext().getRequestEntityFactory().create(config,null,id, ControllerTestMethod.DELETE));
+        return sendRequest(getTestContext().getRequestEntityFactory().create(config,null,id));
     }
 }
