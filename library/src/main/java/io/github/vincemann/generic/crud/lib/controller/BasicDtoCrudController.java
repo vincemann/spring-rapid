@@ -126,11 +126,11 @@ public abstract class BasicDtoCrudController
         return dtoMapper.mapDtoToEntity(dto, entityClass);
     }
 
-    private ResponseEntity<Collection<IdentifiableEntity<Id>>> ok(Collection<IdentifiableEntity<Id>> dtoCollection){
+    protected ResponseEntity<Collection<IdentifiableEntity<Id>>> ok(Collection<IdentifiableEntity<Id>> dtoCollection){
         return new ResponseEntity<>(dtoCollection,HttpStatus.OK);
     }
 
-    private ResponseEntity<? extends IdentifiableEntity<Id>> ok(IdentifiableEntity<Id> entity) {
+    protected ResponseEntity<? extends IdentifiableEntity<Id>> ok(IdentifiableEntity<Id> entity) {
         return new ResponseEntity<>(entity, HttpStatus.OK);
     }
 

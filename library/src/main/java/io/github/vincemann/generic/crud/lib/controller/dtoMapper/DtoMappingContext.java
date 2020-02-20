@@ -11,13 +11,13 @@ import java.io.Serializable;
 @Getter
 @Setter
 public class DtoMappingContext<Id extends Serializable> {
-    private Class<? extends IdentifiableEntity<Id>> createRequestDtoClass;
-    private Class<? extends IdentifiableEntity<Id>> createReturnDtoClass;
-    private Class<? extends IdentifiableEntity<Id>> findReturnDtoClass;
-    private Class<? extends IdentifiableEntity<Id>> partialUpdateRequestDtoClass;
-    private Class<? extends IdentifiableEntity<Id>> fullUpdateRequestDtoClass;
-    private Class<? extends IdentifiableEntity<Id>> updateReturnDtoClass;
-    private Class<? extends IdentifiableEntity<Id>> findAllReturnDtoClass;
+    protected Class<? extends IdentifiableEntity<Id>> createRequestDtoClass;
+    protected Class<? extends IdentifiableEntity<Id>> createReturnDtoClass;
+    protected Class<? extends IdentifiableEntity<Id>> findReturnDtoClass;
+    protected Class<? extends IdentifiableEntity<Id>> partialUpdateRequestDtoClass;
+    protected Class<? extends IdentifiableEntity<Id>> fullUpdateRequestDtoClass;
+    protected Class<? extends IdentifiableEntity<Id>> updateReturnDtoClass;
+    protected Class<? extends IdentifiableEntity<Id>> findAllReturnDtoClass;
 
 
     public DtoMappingContext(){ }
