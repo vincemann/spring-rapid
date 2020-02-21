@@ -5,8 +5,11 @@ import io.github.vincemann.generic.crud.lib.test.InitializingTest;
 import io.github.vincemann.generic.crud.lib.test.TestContextAware;
 import io.github.vincemann.generic.crud.lib.test.controller.ControllerIntegrationTest;
 import io.github.vincemann.generic.crud.lib.test.TestConfigurationFactory;
+import io.github.vincemann.generic.crud.lib.test.controller.crudTests.config.SuccessfulCreateControllerTestConfiguration;
 import io.github.vincemann.generic.crud.lib.test.controller.crudTests.config.abs.ControllerTestConfiguration;
 import io.github.vincemann.generic.crud.lib.test.controller.springAdapter.crudTests.abs.AbstractControllerTest;
+import io.github.vincemann.generic.crud.lib.test.exception.InvalidConfigurationModificationException;
+import io.github.vincemann.generic.crud.lib.util.NullAwareBeanUtils;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -30,5 +33,23 @@ public abstract class AbstractControllerTestConfigurationFactory
     @Override
     public boolean supports(Class<? extends InitializingTest> contextClass) {
         return ControllerIntegrationTest.class.isAssignableFrom(contextClass);
+    }
+
+    @Override
+    public FailedC createMergedFailedConfig(ControllerTestConfiguration<Id>... modifications) throws InvalidConfigurationModificationException {
+        FailedC config = createDefaultFailedConfig();
+        for (ControllerTestConfiguration<Id> modification : modifications) {
+            NullAwareBeanUtils.copyProperties(config,modification);
+        }
+        return config;
+    }
+
+    @Override
+    public SuccessfulC createMergedSuccessfulConfig(ControllerTestConfiguration<Id>... modifications) throws InvalidConfigurationModificationException {
+        SuccessfulC config = createDefaultSuccessfulConfig();
+        for (ControllerTestConfiguration<Id> modification : modifications) {
+            NullAwareBeanUtils.copyProperties(config,modification);
+        }
+        return config;
     }
 }

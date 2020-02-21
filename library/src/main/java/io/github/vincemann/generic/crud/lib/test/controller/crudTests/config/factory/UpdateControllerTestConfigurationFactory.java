@@ -25,16 +25,6 @@ public class UpdateControllerTestConfigurationFactory<E extends IdentifiableEnti
                 .build();
     }
 
-
-    @Override
-    public UpdateControllerTestConfiguration<E,Id> createMergedSuccessfulConfig(ControllerTestConfiguration<Id>... modifications) throws InvalidConfigurationModificationException {
-        UpdateControllerTestConfiguration<E,Id> config = createDefaultSuccessfulConfig();
-        for (ControllerTestConfiguration<Id> modification : modifications) {
-            NullAwareBeanUtils.copyProperties(config,modification);
-        }
-        return config;
-    }
-
     @Override
     public UpdateControllerTestConfiguration<E, Id> createDefaultSuccessfulConfig() {
         return UpdateControllerTestConfiguration.<E,Id>Builder()
@@ -44,14 +34,4 @@ public class UpdateControllerTestConfigurationFactory<E extends IdentifiableEnti
                 .postUpdateCallback((a)->{})
                 .build();
     }
-
-    @Override
-    public UpdateControllerTestConfiguration<E, Id> createMergedFailedConfig(ControllerTestConfiguration<Id>... modifications) throws InvalidConfigurationModificationException {
-        UpdateControllerTestConfiguration<E, Id> config = createDefaultFailedConfig();
-        for (ControllerTestConfiguration<Id> modification : modifications) {
-            NullAwareBeanUtils.copyProperties(config,modification);
-        }
-        return config;
-    }
-
 }

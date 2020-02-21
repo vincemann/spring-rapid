@@ -24,28 +24,10 @@ public class DeleteControllerTestConfigurationFactory<E extends IdentifiableEnti
     }
 
     @Override
-    public ControllerTestConfiguration<Id> createMergedFailedConfig(ControllerTestConfiguration<Id>... modifications) throws InvalidConfigurationModificationException {
-        ControllerTestConfiguration<Id> config = createDefaultSuccessfulConfig();
-        for (ControllerTestConfiguration<Id> modification : modifications) {
-            NullAwareBeanUtils.copyProperties(config, modification);
-        }
-        return config;
-    }
-
-    @Override
     public ControllerTestConfiguration<Id> createDefaultSuccessfulConfig() {
         return ControllerTestConfiguration.<Id>builder()
                 .expectedHttpStatus(HttpStatus.OK)
                 .method(RequestMethod.DELETE)
                 .build();
-    }
-
-    @Override
-    public ControllerTestConfiguration<Id> createMergedSuccessfulConfig(ControllerTestConfiguration<Id>... modifications) throws InvalidConfigurationModificationException {
-        ControllerTestConfiguration<Id> config = createDefaultSuccessfulConfig();
-        for (ControllerTestConfiguration<Id> modification : modifications) {
-            NullAwareBeanUtils.copyProperties(config,modification);
-        }
-        return config;
     }
 }

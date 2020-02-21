@@ -24,30 +24,11 @@ public class FindAllControllerTestConfigurationFactory<E extends IdentifiableEnt
                 .build();
     }
 
-
-    @Override
-    public ControllerTestConfiguration<Id> createMergedSuccessfulConfig(ControllerTestConfiguration<Id>... modifications) throws InvalidConfigurationModificationException {
-        ControllerTestConfiguration<Id> config = createDefaultSuccessfulConfig();
-        for (ControllerTestConfiguration<Id> modification : modifications) {
-            NullAwareBeanUtils.copyProperties(config,modification);
-        }
-        return config;
-    }
-
     @Override
     public ControllerTestConfiguration<Id> createDefaultFailedConfig() {
         return ControllerTestConfiguration.<Id>builder()
                 .method(RequestMethod.GET)
                 .expectedHttpStatus(HttpStatus.BAD_REQUEST)
                 .build();
-    }
-
-    @Override
-    public ControllerTestConfiguration<Id> createMergedFailedConfig(ControllerTestConfiguration<Id>... modifications) throws InvalidConfigurationModificationException {
-        ControllerTestConfiguration<Id> config = createDefaultFailedConfig();
-        for (ControllerTestConfiguration<Id> modification : modifications) {
-            NullAwareBeanUtils.copyProperties(config,modification);
-        }
-        return config;
     }
 }
