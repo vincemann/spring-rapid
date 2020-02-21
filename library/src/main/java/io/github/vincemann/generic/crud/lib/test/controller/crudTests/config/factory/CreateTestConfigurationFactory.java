@@ -27,16 +27,6 @@ public class CreateTestConfigurationFactory<E extends IdentifiableEntity<Id>,Id 
 
 
     @Override
-    public SuccessfulCreateControllerTestConfiguration<E,Id> createMergedSuccessfulConfig(ControllerTestConfiguration<Id>... modifications) throws InvalidConfigurationModificationException {
-        SuccessfulCreateControllerTestConfiguration<E,Id> config = createDefaultSuccessfulConfig();
-        for (ControllerTestConfiguration<Id> modification : modifications) {
-            NullAwareBeanUtils.copyProperties(config,modification);
-        }
-        return config;
-    }
-
-
-    @Override
     public ControllerTestConfiguration<Id> createDefaultFailedConfig() {
         return ControllerTestConfiguration.<Id>builder()
                 .expectedHttpStatus(HttpStatus.BAD_REQUEST)
@@ -44,12 +34,4 @@ public class CreateTestConfigurationFactory<E extends IdentifiableEntity<Id>,Id 
                 .build();
     }
 
-    @Override
-    public ControllerTestConfiguration<Id> createMergedFailedConfig(ControllerTestConfiguration<Id>... modifications) throws InvalidConfigurationModificationException {
-        ControllerTestConfiguration<Id> config = createDefaultSuccessfulConfig();
-        for (ControllerTestConfiguration<Id> modification : modifications) {
-            NullAwareBeanUtils.copyProperties(config,modification);
-        }
-        return config;
-    }
 }

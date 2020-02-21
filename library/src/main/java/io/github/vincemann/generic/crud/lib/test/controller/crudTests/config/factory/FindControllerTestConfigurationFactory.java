@@ -26,17 +26,6 @@ public class FindControllerTestConfigurationFactory<E extends IdentifiableEntity
 
 
 
-
-    @Override
-    public SuccessfulFindControllerTestConfiguration<E,Id> createMergedSuccessfulConfig(ControllerTestConfiguration<Id>... modifications) throws InvalidConfigurationModificationException {
-        SuccessfulFindControllerTestConfiguration<E,Id> config = createDefaultSuccessfulConfig();
-        for (ControllerTestConfiguration<Id> modification : modifications) {
-            NullAwareBeanUtils.copyProperties(config,modification);
-        }
-        return config;
-    }
-
-
     @Override
     public SuccessfulFindControllerTestConfiguration<E,Id> createDefaultSuccessfulConfig() {
         return SuccessfulFindControllerTestConfiguration.<E,Id>Builder()
@@ -44,14 +33,5 @@ public class FindControllerTestConfigurationFactory<E extends IdentifiableEntity
                 .postFindCallback((a,b)-> {})
                 .method(RequestMethod.GET)
                 .build();
-    }
-
-    @Override
-    public SuccessfulFindControllerTestConfiguration<E, Id> createMergedFailedConfig(ControllerTestConfiguration<Id>... modifications) throws InvalidConfigurationModificationException {
-        SuccessfulFindControllerTestConfiguration<E, Id> config = createDefaultSuccessfulConfig();
-        for (ControllerTestConfiguration<Id> modification : modifications) {
-            NullAwareBeanUtils.copyProperties(config,modification);
-        }
-        return config;
     }
 }
