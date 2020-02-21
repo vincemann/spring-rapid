@@ -90,24 +90,24 @@ class OwnerControllerIT extends MyControllerIntegrationTest<Owner> {
 
     @Test
     public void createOwnerWithoutPets_shouldSucceed() throws Exception {
-        getCreateControllerTestTemplate().createEntity_ShouldSucceed(validOwnerDtoWithoutPets);
+        getCreateTemplate().createEntity_ShouldSucceed(validOwnerDtoWithoutPets);
     }
 
     @Test
     public void createOwnerWithPets_shouldSucceed() throws Exception {
-        getCreateControllerTestTemplate().createEntity_ShouldSucceed(validOwnerDtoWithManyPets);
+        getCreateTemplate().createEntity_ShouldSucceed(validOwnerDtoWithManyPets);
     }
 
     @Test
     public void deleteOwner_shouldSucceed() throws Exception {
         Owner savedOwner = saveServiceEntity(validOwnerWithManyPets);
-        getDeleteControllerTestTemplate().deleteEntity_ShouldSucceed(savedOwner.getId());
+        getDeleteTemplate().deleteEntity_ShouldSucceed(savedOwner.getId());
     }
 
     @Test
     public void findOwner_shouldSucceed() throws Exception {
         Owner savedOwner = saveServiceEntity(validOwnerWithManyPets);
-        getFindControllerTestTemplate().findEntity_ShouldSucceed(savedOwner.getId());
+        getFindTemplate().findEntity_ShouldSucceed(savedOwner.getId());
     }
 
     @Test
@@ -119,7 +119,7 @@ class OwnerControllerIT extends MyControllerIntegrationTest<Owner> {
 
         Assertions.assertNotEquals(diffAddressUpdate.getAddress(), validOwnerWithManyPets.getAddress());
         //when
-        getUpdateControllerTemplate().updateEntity_ShouldSucceed(
+        getUpdateTemplate().updateEntity_ShouldSucceed(
                 validOwnerWithManyPets,
                 diffAddressUpdate,
                 partialUpdate(),
@@ -138,7 +138,7 @@ class OwnerControllerIT extends MyControllerIntegrationTest<Owner> {
                 .build();
 
         //when
-        getUpdateControllerTemplate().updateEntity_ShouldSucceed(validOwnerWithManyPets, deleteAllPetsUpdate,
+        getUpdateTemplate().updateEntity_ShouldSucceed(validOwnerWithManyPets, deleteAllPetsUpdate,
                 partialUpdate(),
                 postUpdateCallback((PostUpdateControllerTestCallback<Owner, Long>)
 
@@ -150,7 +150,7 @@ class OwnerControllerIT extends MyControllerIntegrationTest<Owner> {
 
     @Test
     public void createOwnerWithBlankCity_ShouldFail() throws Exception {
-        getCreateControllerTestTemplate().createEntity_ShouldFail(invalidOwnerDto_becauseBlankCity);
+        getCreateTemplate().createEntity_ShouldFail(invalidOwnerDto_becauseBlankCity);
     }
 
 
@@ -162,7 +162,7 @@ class OwnerControllerIT extends MyControllerIntegrationTest<Owner> {
                 .build();
 
         //when
-        getUpdateControllerTemplate().updateEntity_ShouldFail(validOwnerWithoutPets, setInvalidPetUpdate,
+        getUpdateTemplate().updateEntity_ShouldFail(validOwnerWithoutPets, setInvalidPetUpdate,
                 partialUpdate(),
                 postUpdateCallback((PostUpdateControllerTestCallback<Owner, Long>)
 
@@ -176,7 +176,7 @@ class OwnerControllerIT extends MyControllerIntegrationTest<Owner> {
                 //blank city
                 .city("")
                 .build();
-        getUpdateControllerTemplate().updateEntity_ShouldFail(validOwnerWithoutPets, blankCityUpdate,
+        getUpdateTemplate().updateEntity_ShouldFail(validOwnerWithoutPets, blankCityUpdate,
                 partialUpdate(),
                 postUpdateCallback((PostUpdateControllerTestCallback<Owner, Long>)
 
