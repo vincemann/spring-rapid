@@ -1,7 +1,6 @@
 package io.github.vincemann.generic.crud.lib.test.controller.requestEntityFactory.urlParamId;
 
 import io.github.vincemann.generic.crud.lib.controller.springAdapter.SpringAdapterDtoCrudController;
-import io.github.vincemann.generic.crud.lib.test.controller.BaseAddressProvider;
 import io.github.vincemann.generic.crud.lib.test.controller.crudTests.config.UpdateControllerTestConfiguration;
 import org.springframework.http.RequestEntity;
 import org.springframework.web.util.UriComponentsBuilder;
@@ -11,17 +10,14 @@ import java.util.AbstractMap;
 import java.util.Map;
 
 public class UpdateUrlParamIdRequestEntityFactory<Id extends Serializable>
-        extends AbstractUrlParamIdRequestEntityFactory<Id, UpdateControllerTestConfiguration<?,Id>,SpringAdapterDtoCrudController<?,Id>> {
-    public static final Map.Entry<String, String> FULL_UPDATE_QUERY_PARAM_ENTRY = new AbstractMap.SimpleEntry<>("full", "true");
+        extends AbstractUrlParamIdRequestEntityFactory<Id, UpdateControllerTestConfiguration<?,Id>> {
 
-    public UpdateUrlParamIdRequestEntityFactory(SpringAdapterDtoCrudController<?, Id> controller, String entityIdParamKey, BaseAddressProvider baseAddressProvider) {
-        super(controller, entityIdParamKey, baseAddressProvider);
-    }
+    public static final Map.Entry<String, String> FULL_UPDATE_QUERY_PARAM_ENTRY = new AbstractMap.SimpleEntry<>("full", "true");
 
     @Override
     public RequestEntity<?> create(UpdateControllerTestConfiguration<?, Id> config, Object body, Id id) {
         Boolean fullUpdate = config.getFullUpdate();
-        UriComponentsBuilder uriBuilder = buildUri(getController().getUpdateMethodName(), config, id);
+        UriComponentsBuilder uriBuilder = buildUri(SpringAdapterDtoCrudController.UPDATE_METHOD_NAME, config, id);
         if(fullUpdate!=null){
             if(fullUpdate){
                 //...?full=true

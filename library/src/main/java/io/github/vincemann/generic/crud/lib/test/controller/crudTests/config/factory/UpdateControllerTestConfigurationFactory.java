@@ -13,12 +13,8 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import java.io.Serializable;
 
 public class UpdateControllerTestConfigurationFactory<E extends IdentifiableEntity<Id>,Id extends Serializable>
-        extends AbstractControllerTestConfigurationFactory<E, Id, UpdateControllerTestConfiguration<E,Id>, UpdateControllerTestConfiguration<E,Id>> {
-
-    public UpdateControllerTestConfigurationFactory(ControllerIntegrationTest<E, Id> context) {
-        super(context);
-    }
-
+        extends AbstractControllerTestConfigurationFactory<E, Id, UpdateControllerTestConfiguration<E,Id>, UpdateControllerTestConfiguration<E,Id>>
+{
     @Override
     public UpdateControllerTestConfiguration<E,Id> createDefaultFailedConfig() {
         return UpdateControllerTestConfiguration.<E,Id>Builder()

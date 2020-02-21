@@ -3,29 +3,39 @@ package io.github.vincemann.generic.crud.lib.test.controller.crudTests;
 import io.github.vincemann.generic.crud.lib.controller.dtoMapper.DtoMappingContext;
 import io.github.vincemann.generic.crud.lib.model.IdentifiableEntity;
 import io.github.vincemann.generic.crud.lib.test.controller.ControllerIntegrationTest;
-import io.github.vincemann.generic.crud.lib.test.controller.crudTests.abs.AbstractControllerTest;
+import io.github.vincemann.generic.crud.lib.test.controller.crudTests.abs.AbstractControllerTestTemplate;
 import io.github.vincemann.generic.crud.lib.test.controller.crudTests.config.SuccessfulCreateControllerTestConfiguration;
 import io.github.vincemann.generic.crud.lib.test.controller.crudTests.config.abs.ControllerTestConfiguration;
 import io.github.vincemann.generic.crud.lib.test.controller.crudTests.config.factory.abs.AbstractControllerTestConfigurationFactory;
+import io.github.vincemann.generic.crud.lib.test.controller.requestEntityFactory.CreateTest;
+import io.github.vincemann.generic.crud.lib.test.controller.requestEntityFactory.RequestEntityFactory;
 import lombok.Getter;
 import lombok.Setter;
 import org.junit.jupiter.api.Assertions;
+import org.springframework.boot.test.context.TestComponent;
 import org.springframework.http.ResponseEntity;
 
 import java.io.Serializable;
 
 @Setter
 @Getter
-public class CreateControllerTest<E extends IdentifiableEntity<Id>, Id extends Serializable>
-        extends AbstractControllerTest<E,Id> {
+@TestComponent
+public class CreateControllerTestTemplate<E extends IdentifiableEntity<Id>, Id extends Serializable>
+        extends AbstractControllerTestTemplate<E,Id,ControllerTestConfiguration<Id>> {
 
     private AbstractControllerTestConfigurationFactory<E,Id, SuccessfulCreateControllerTestConfiguration<E,Id>,ControllerTestConfiguration<Id>> testConfigFactory;
 
 
-    public CreateControllerTest(ControllerIntegrationTest<E, Id> testContext,
-                                AbstractControllerTestConfigurationFactory<E, Id, SuccessfulCreateControllerTestConfiguration<E,Id>, ControllerTestConfiguration<Id>> testConfigFactory) {
-        super(testContext);
+
+    public CreateControllerTestTemplate(@CreateTest RequestEntityFactory<Id, ControllerTestConfiguration<Id>> requestEntityFactory, @CreateTest AbstractControllerTestConfigurationFactory<E, Id, SuccessfulCreateControllerTestConfiguration<E, Id>, ControllerTestConfiguration<Id>> testConfigFactory) {
+        super(requestEntityFactory);
         this.testConfigFactory = testConfigFactory;
+    }
+
+    @Override
+    public void setTestContext(ControllerIntegrationTest<E, Id> testContext) {
+        super.setTestContext(testContext);
+        testConfigFactory.setTestContext(testContext);
     }
 
     public  <Dto extends IdentifiableEntity<Id>> Dto createEntity_ShouldSucceed(IdentifiableEntity<Id> returnDto) throws Exception {
@@ -68,6 +78,6 @@ public class CreateControllerTest<E extends IdentifiableEntity<Id>, Id extends S
      * @return
      */
     public ResponseEntity<String> createEntity(IdentifiableEntity<Id> dto, ControllerTestConfiguration<Id> config) {
-        return sendRequest(getTestContext().getRequestEntityFactory().create(config,dto,null));
+        return sendRequest(getRequestEntityFactory().create(config,dto,null));
     }
 }

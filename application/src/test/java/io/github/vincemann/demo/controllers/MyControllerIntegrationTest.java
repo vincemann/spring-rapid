@@ -4,7 +4,8 @@ import io.github.vincemann.demo.model.*;
 import io.github.vincemann.demo.repositories.*;
 import io.github.vincemann.generic.crud.lib.model.IdentifiableEntity;
 import io.github.vincemann.generic.crud.lib.service.CrudService;
-import io.github.vincemann.generic.crud.lib.test.controller.UrlParamIdControllerIntegrationTest;
+import io.github.vincemann.generic.crud.lib.test.controller.CrudControllerIntegrationTest;
+import io.github.vincemann.generic.crud.lib.test.controller.crudTests.*;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
@@ -18,7 +19,7 @@ import java.time.LocalDate;
 @Setter
 @Slf4j
 public abstract class MyControllerIntegrationTest<E extends IdentifiableEntity<Long>>
-        extends UrlParamIdControllerIntegrationTest<E,Long>
+        extends CrudControllerIntegrationTest<E,Long>
 
 {
 
@@ -33,12 +34,6 @@ public abstract class MyControllerIntegrationTest<E extends IdentifiableEntity<L
     private CrudService<PetType,Long, PetTypeRepository> petTypeService;
     private CrudService<Specialty,Long,SpecialtyRepository> specialtyService;
 
-    public MyControllerIntegrationTest(String url) {
-        super(url);
-    }
-
-    public MyControllerIntegrationTest() {
-    }
 
     @Autowired
     public void injectOwnerService(CrudService<Owner, Long, OwnerRepository> ownerService) {
