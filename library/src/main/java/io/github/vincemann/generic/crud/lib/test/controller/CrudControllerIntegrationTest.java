@@ -2,19 +2,14 @@ package io.github.vincemann.generic.crud.lib.test.controller;
 
 import io.github.vincemann.generic.crud.lib.controller.dtoMapper.exception.EntityMappingException;
 import io.github.vincemann.generic.crud.lib.controller.springAdapter.SpringAdapterDtoCrudController;
-import io.github.vincemann.generic.crud.lib.controller.springAdapter.idFetchingStrategy.UrlParamIdFetchingStrategy;
 import io.github.vincemann.generic.crud.lib.model.IdentifiableEntity;
 import io.github.vincemann.generic.crud.lib.service.exception.BadEntityException;
 import io.github.vincemann.generic.crud.lib.test.controller.crudTests.*;
-import io.github.vincemann.generic.crud.lib.test.controller.crudTests.config.factory.*;
-import io.github.vincemann.generic.crud.lib.test.controller.requestEntityFactory.RequestEntityFactory;
-import io.github.vincemann.generic.crud.lib.test.controller.requestEntityFactory.urlParamId.AbstractUrlParamIdRequestEntityFactory;
 import io.github.vincemann.generic.crud.lib.test.testExecutionListeners.ResetDatabaseTestExecutionListener;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
-import org.junit.jupiter.api.Assertions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.TestExecutionListeners;
 
@@ -42,31 +37,31 @@ public abstract class CrudControllerIntegrationTest<E extends IdentifiableEntity
         extends EagerFetchControllerIntegrationTest<E,Id>
 {
 
-    private CreateControllerTestTemplate<E,Id> createControllerTestTemplate;
-    private FindControllerTestTemplate<E,Id> findControllerTestTemplate;
-    private UpdateControllerTestTemplate<E,Id> updateControllerTemplate;
-    private DeleteControllerTestTemplate<E,Id> deleteControllerTestTemplate;
-    private FindAllControllerTestTemplate<E,Id> findAllControllerTestTemplate;
+    private CreateControllerTestTemplate<E,Id> createTemplate;
+    private FindControllerTestTemplate<E,Id> findTemplate;
+    private UpdateControllerTestTemplate<E,Id> updateTemplate;
+    private DeleteControllerTestTemplate<E,Id> deleteTemplate;
+    private FindAllControllerTestTemplate<E,Id> findAllTemplate;
 
     @Autowired
     public void injectCreateControllerTestTemplate(CreateControllerTestTemplate<E, Id> createControllerTestTemplate) {
-        this.createControllerTestTemplate = createControllerTestTemplate;
+        this.createTemplate = createControllerTestTemplate;
     }
     @Autowired
     public void injectFindControllerTestTemplate(FindControllerTestTemplate<E, Id> findControllerTestTemplate) {
-        this.findControllerTestTemplate = findControllerTestTemplate;
+        this.findTemplate = findControllerTestTemplate;
     }
     @Autowired
     public void injectUpdateControllerTemplate(UpdateControllerTestTemplate<E, Id> updateControllerTemplate) {
-        this.updateControllerTemplate = updateControllerTemplate;
+        this.updateTemplate = updateControllerTemplate;
     }
     @Autowired
     public void injectDeleteControllerTestTemplate(DeleteControllerTestTemplate<E, Id> deleteControllerTestTemplate) {
-        this.deleteControllerTestTemplate = deleteControllerTestTemplate;
+        this.deleteTemplate = deleteControllerTestTemplate;
     }
     @Autowired
     public void injectFindAllControllerTestTemplate(FindAllControllerTestTemplate<E, Id> findAllControllerTestTemplate) {
-        this.findAllControllerTestTemplate = findAllControllerTestTemplate;
+        this.findAllTemplate = findAllControllerTestTemplate;
     }
 
 

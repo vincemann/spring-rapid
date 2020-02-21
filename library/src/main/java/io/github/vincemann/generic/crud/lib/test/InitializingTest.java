@@ -24,7 +24,12 @@ public abstract class InitializingTest implements InitializingBean {
     public void afterPropertiesSet() throws Exception {
         //initComponents();
         //init all components in spring container
-        initializables.ifPresent(l -> l.forEach(TestInitializable::init));
+        initializables.ifPresent(l -> l.forEach(e -> {
+            if(e.supports(this.getClass())){
+                log.debug("calling init method of  bean : " +e);
+                e.init();
+            }
+        }));
         testContextAwareList.ifPresent(l -> l.forEach(a -> {
             if(a.supports(this.getClass())) {
                 log.debug("giving test context to bean : " +a);
@@ -35,7 +40,12 @@ public abstract class InitializingTest implements InitializingBean {
 
     @BeforeEach
     void callBeforeEachCallbacks(){
-        beforeEachMethodInitializables.ifPresent(l -> l.forEach(TestInitializable::init));
+        beforeEachMethodInitializables.ifPresent(l -> l.forEach(e -> {
+            if(e.supports(this.getClass())){
+                log.debug("calling init method of  bean : " +e);
+                e.init();
+            }
+        }));
     }
 
 
