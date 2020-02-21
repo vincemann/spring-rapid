@@ -16,10 +16,6 @@ public class CreateTestConfigurationFactory<E extends IdentifiableEntity<Id>,Id 
         extends AbstractControllerTestConfigurationFactory<E, Id, SuccessfulCreateControllerTestConfiguration<E,Id>,ControllerTestConfiguration<Id>> {
 
 
-    public CreateTestConfigurationFactory(ControllerIntegrationTest<E, Id> context) {
-        super(context);
-    }
-
     @Override
     public SuccessfulCreateControllerTestConfiguration<E,Id> createDefaultSuccessfulConfig() {
         return SuccessfulCreateControllerTestConfiguration.<E,Id>Builder()

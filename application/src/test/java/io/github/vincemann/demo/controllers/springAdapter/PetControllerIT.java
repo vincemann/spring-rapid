@@ -59,12 +59,12 @@ class PetControllerIT extends MyControllerIntegrationTest<Pet> {
 
     @Test
     public void createPetWithPersistedPetType_ShouldSucceed() throws Exception {
-        getCreateControllerTest().createEntity_ShouldSucceed(petDtoWithPersistedPetType);
+        getCreateControllerTestTemplate().createEntity_ShouldSucceed(petDtoWithPersistedPetType);
     }
 
     @Test
     public void createPetWithPersistedOwner_ShouldSucceed() throws Exception {
-        getCreateControllerTest().createEntity_ShouldSucceed(petDtoWithPersistedOwner);
+        getCreateControllerTestTemplate().createEntity_ShouldSucceed(petDtoWithPersistedOwner);
     }
 
     @Test
@@ -74,7 +74,7 @@ class PetControllerIT extends MyControllerIntegrationTest<Pet> {
                 .name("MODIFIED NAME")
                 .build();
         Assertions.assertNotEquals(diffPetsNameUpdate.getName(), petWithPersistedPetType.getName());
-        getUpdateControllerTest().updateEntity_ShouldSucceed(petWithPersistedPetType, diffPetsNameUpdate,
+        getUpdateControllerTemplate().updateEntity_ShouldSucceed(petWithPersistedPetType, diffPetsNameUpdate,
                 UpdateControllerTestConfiguration.<Pet, Long>Builder()
                         .fullUpdate(false)
                         .postUpdateCallback((updated) -> {
@@ -89,7 +89,7 @@ class PetControllerIT extends MyControllerIntegrationTest<Pet> {
         //remove pets owner in update
         petDtoWithPersistedOwner.setOwnerId(null);
 
-        getUpdateControllerTest().updateEntity_ShouldSucceed(petWithPersistedOwner, petDtoWithPersistedOwner,
+        getUpdateControllerTemplate().updateEntity_ShouldSucceed(petWithPersistedOwner, petDtoWithPersistedOwner,
                 UpdateControllerTestConfiguration.<Pet, Long>Builder()
                         .fullUpdate(true)
                         .postUpdateCallback((updated) -> Assertions.assertNull(updated.getOwner()))
@@ -104,7 +104,7 @@ class PetControllerIT extends MyControllerIntegrationTest<Pet> {
                 .petTypeId(getTestPetType().getId())
                 .build();
         petDtoWithAlreadySetId.setId(9L);
-        getCreateControllerTest().createEntity_ShouldFail(petDtoWithAlreadySetId);
+        getCreateControllerTestTemplate().createEntity_ShouldFail(petDtoWithAlreadySetId);
     }
 
 
@@ -114,7 +114,7 @@ class PetControllerIT extends MyControllerIntegrationTest<Pet> {
         AbstractPetDto petTypeIdNullUpdate = BasePetDto.builder()
                 .petTypeId(null)
                 .build();
-        getUpdateControllerTest().updateEntity_ShouldFail(petWithPersistedPetType, petTypeIdNullUpdate,
+        getUpdateControllerTemplate().updateEntity_ShouldFail(petWithPersistedPetType, petTypeIdNullUpdate,
                 UpdateControllerTestConfiguration.<Pet, Long>Builder()
                         .fullUpdate(true)
                         .postUpdateCallback((afterUpdate -> {

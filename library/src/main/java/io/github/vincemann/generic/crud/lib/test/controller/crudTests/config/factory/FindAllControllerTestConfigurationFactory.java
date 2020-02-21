@@ -15,9 +15,6 @@ public class FindAllControllerTestConfigurationFactory<E extends IdentifiableEnt
                 Id extends Serializable>
         extends AbstractControllerTestConfigurationFactory<E, Id, ControllerTestConfiguration<Id>, ControllerTestConfiguration<Id>> {
 
-    public FindAllControllerTestConfigurationFactory(ControllerIntegrationTest<E, Id> context) {
-        super(context);
-    }
 
     @Override
     public ControllerTestConfiguration<Id> createDefaultSuccessfulConfig() {

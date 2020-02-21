@@ -3,13 +3,16 @@ package io.github.vincemann.generic.crud.lib.test.controller.crudTests;
 import io.github.vincemann.generic.crud.lib.model.IdentifiableEntity;
 import io.github.vincemann.generic.crud.lib.test.controller.ControllerIntegrationTest;
 import io.github.vincemann.generic.crud.lib.test.controller.crudTests.config.UpdateControllerTestConfiguration;
-import io.github.vincemann.generic.crud.lib.test.controller.crudTests.abs.AbstractControllerTest;
+import io.github.vincemann.generic.crud.lib.test.controller.crudTests.abs.AbstractControllerTestTemplate;
 import io.github.vincemann.generic.crud.lib.test.controller.crudTests.config.abs.ControllerTestConfiguration;
 import io.github.vincemann.generic.crud.lib.test.controller.crudTests.config.factory.abs.AbstractControllerTestConfigurationFactory;
+import io.github.vincemann.generic.crud.lib.test.controller.requestEntityFactory.RequestEntityFactory;
+import io.github.vincemann.generic.crud.lib.test.controller.requestEntityFactory.UpdateTest;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
 import org.junit.jupiter.api.Assertions;
+import org.springframework.boot.test.context.TestComponent;
 import org.springframework.http.ResponseEntity;
 
 import java.io.Serializable;
@@ -17,18 +20,17 @@ import java.util.Optional;
 
 @Setter
 @Getter
-public class UpdateControllerTest<E extends IdentifiableEntity<Id>, Id extends Serializable>
-        extends AbstractControllerTest<E, Id> {
+@TestComponent
+public class UpdateControllerTestTemplate<E extends IdentifiableEntity<Id>, Id extends Serializable>
+        extends AbstractControllerTestTemplate<E, Id,UpdateControllerTestConfiguration<E,Id>> {
 
     private AbstractControllerTestConfigurationFactory<E, Id, UpdateControllerTestConfiguration<E, Id>, UpdateControllerTestConfiguration<E, Id>> testConfigFactory;
 
 
-    @Builder
-    public UpdateControllerTest(ControllerIntegrationTest<E, Id> testContext, AbstractControllerTestConfigurationFactory<E, Id, UpdateControllerTestConfiguration<E, Id>, UpdateControllerTestConfiguration<E, Id>> testConfigFactory) {
-        super(testContext);
+    public UpdateControllerTestTemplate(@UpdateTest RequestEntityFactory<Id, UpdateControllerTestConfiguration<E, Id>> requestEntityFactory, @UpdateTest AbstractControllerTestConfigurationFactory<E, Id, UpdateControllerTestConfiguration<E, Id>, UpdateControllerTestConfiguration<E, Id>> testConfigFactory) {
+        super(requestEntityFactory);
         this.testConfigFactory = testConfigFactory;
     }
-
 
     public <Dto extends IdentifiableEntity<Id>> Dto updateEntity_ShouldSucceed(IdentifiableEntity<Id> updateRequestDto) throws Exception {
         return updateEntity_ShouldSucceed(updateRequestDto, testConfigFactory.createDefaultSuccessfulConfig());
@@ -108,8 +110,8 @@ public class UpdateControllerTest<E extends IdentifiableEntity<Id>, Id extends S
      * @param updateRequestDto updated entityDto
      * @return backend Response
      */
-    public ResponseEntity<String> updateEntity(IdentifiableEntity<Id> updateRequestDto, ControllerTestConfiguration<Id> config) {
+    public ResponseEntity<String> updateEntity(IdentifiableEntity<Id> updateRequestDto, UpdateControllerTestConfiguration<E,Id> config) {
         Assertions.assertNotNull(updateRequestDto.getId());
-        return sendRequest(getTestContext().getRequestEntityFactory().create(config, updateRequestDto, updateRequestDto.getId(), ControllerTestMethod.UPDATE));
+        return sendRequest(getRequestEntityFactory().create(config, updateRequestDto, updateRequestDto.getId()));
     }
 }

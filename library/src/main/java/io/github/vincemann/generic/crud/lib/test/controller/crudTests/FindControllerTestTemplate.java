@@ -2,15 +2,18 @@ package io.github.vincemann.generic.crud.lib.test.controller.crudTests;
 
 import io.github.vincemann.generic.crud.lib.model.IdentifiableEntity;
 import io.github.vincemann.generic.crud.lib.test.controller.ControllerIntegrationTest;
-import io.github.vincemann.generic.crud.lib.test.controller.crudTests.abs.AbstractControllerTest;
+import io.github.vincemann.generic.crud.lib.test.controller.crudTests.abs.AbstractControllerTestTemplate;
 import io.github.vincemann.generic.crud.lib.test.controller.crudTests.config.SuccessfulFindControllerTestConfiguration;
 import io.github.vincemann.generic.crud.lib.test.controller.crudTests.config.abs.ControllerTestConfiguration;
 import io.github.vincemann.generic.crud.lib.test.controller.crudTests.config.factory.abs.AbstractControllerTestConfigurationFactory;
+import io.github.vincemann.generic.crud.lib.test.controller.requestEntityFactory.FindTest;
+import io.github.vincemann.generic.crud.lib.test.controller.requestEntityFactory.RequestEntityFactory;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Assertions;
+import org.springframework.boot.test.context.TestComponent;
 import org.springframework.http.ResponseEntity;
 
 import java.io.Serializable;
@@ -19,18 +22,17 @@ import java.util.Optional;
 @Slf4j
 @Setter
 @Getter
-public class FindControllerTest<E extends IdentifiableEntity<Id>, Id extends Serializable>
-        extends AbstractControllerTest<E,Id> {
+@TestComponent
+public class FindControllerTestTemplate<E extends IdentifiableEntity<Id>, Id extends Serializable>
+        extends AbstractControllerTestTemplate<E,Id,ControllerTestConfiguration<Id>> {
 
 
     private AbstractControllerTestConfigurationFactory<E,Id,SuccessfulFindControllerTestConfiguration<E,Id>,ControllerTestConfiguration<Id>> testConfigFactory;
 
-    @Builder
-    public FindControllerTest(ControllerIntegrationTest<E, Id> testContext, AbstractControllerTestConfigurationFactory<E, Id, SuccessfulFindControllerTestConfiguration<E, Id>, ControllerTestConfiguration<Id>> testConfigFactory) {
-        super(testContext);
+    public FindControllerTestTemplate(@FindTest RequestEntityFactory<Id, ControllerTestConfiguration<Id>> requestEntityFactory,@FindTest AbstractControllerTestConfigurationFactory<E, Id, SuccessfulFindControllerTestConfiguration<E, Id>, ControllerTestConfiguration<Id>> testConfigFactory) {
+        super(requestEntityFactory);
         this.testConfigFactory = testConfigFactory;
     }
-
 
     public <Dto extends IdentifiableEntity<Id>> Dto findEntity_ShouldSucceed(Id id) throws Exception {
         return findEntity_ShouldSucceed(id, testConfigFactory.createDefaultSuccessfulConfig());
@@ -71,6 +73,6 @@ public class FindControllerTest<E extends IdentifiableEntity<Id>, Id extends Ser
 
     public ResponseEntity<String> findEntity(Id id, ControllerTestConfiguration<Id> config) {
         Assertions.assertNotNull(id);
-        return sendRequest(getTestContext().getRequestEntityFactory().create(config,null,id));
+        return sendRequest(getRequestEntityFactory().create(config,null,id));
     }
 }

@@ -2,10 +2,13 @@ package io.github.vincemann.generic.crud.lib.test.controller.crudTests;
 
 import io.github.vincemann.generic.crud.lib.model.IdentifiableEntity;
 import io.github.vincemann.generic.crud.lib.test.controller.ControllerIntegrationTest;
-import io.github.vincemann.generic.crud.lib.test.controller.crudTests.abs.AbstractControllerTest;
+import io.github.vincemann.generic.crud.lib.test.controller.crudTests.abs.AbstractControllerTestTemplate;
 import io.github.vincemann.generic.crud.lib.test.controller.crudTests.config.abs.ControllerTestConfiguration;
 import io.github.vincemann.generic.crud.lib.test.controller.crudTests.config.factory.abs.AbstractControllerTestConfigurationFactory;
+import io.github.vincemann.generic.crud.lib.test.controller.requestEntityFactory.FindAllTest;
+import io.github.vincemann.generic.crud.lib.test.controller.requestEntityFactory.RequestEntityFactory;
 import org.junit.jupiter.api.Assertions;
+import org.springframework.boot.test.context.TestComponent;
 import org.springframework.http.ResponseEntity;
 
 import java.io.Serializable;
@@ -13,18 +16,18 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
-public class FindAllControllerTest<E extends IdentifiableEntity<Id>, Id extends Serializable>
-        extends AbstractControllerTest<E,Id>
+@TestComponent
+public class FindAllControllerTestTemplate<E extends IdentifiableEntity<Id>, Id extends Serializable>
+        extends AbstractControllerTestTemplate<E,Id,ControllerTestConfiguration<Id>>
 {
 
 
     private AbstractControllerTestConfigurationFactory<E, Id, ControllerTestConfiguration<Id>, ControllerTestConfiguration<Id>> configFactory;
 
-    public FindAllControllerTest(ControllerIntegrationTest<E, Id> testContext, AbstractControllerTestConfigurationFactory<E, Id, ControllerTestConfiguration<Id>, ControllerTestConfiguration<Id>> configFactory) {
-        super(testContext);
+    public FindAllControllerTestTemplate(@FindAllTest RequestEntityFactory<Id, ControllerTestConfiguration<Id>> requestEntityFactory, @FindAllTest AbstractControllerTestConfigurationFactory<E, Id, ControllerTestConfiguration<Id>, ControllerTestConfiguration<Id>> configFactory) {
+        super(requestEntityFactory);
         this.configFactory = configFactory;
     }
-
 
     public <Dto extends IdentifiableEntity<Id>> Set<Dto> findAllEntities_ShouldSucceed() throws Exception {
         return findAllEntities_ShouldSucceed(configFactory.createDefaultSuccessfulConfig());
@@ -61,6 +64,6 @@ public class FindAllControllerTest<E extends IdentifiableEntity<Id>, Id extends 
     }
 
     public ResponseEntity<String> findAllEntities(ControllerTestConfiguration<Id> config) {
-        return sendRequest(getTestContext().getRequestEntityFactory().create(config,null,null));
+        return sendRequest(getRequestEntityFactory().create(config,null,null));
     }
 }

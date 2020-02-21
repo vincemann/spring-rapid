@@ -15,10 +15,6 @@ import java.io.Serializable;
 public class FindControllerTestConfigurationFactory<E extends IdentifiableEntity<Id>,Id extends Serializable>
         extends AbstractControllerTestConfigurationFactory<E, Id, SuccessfulFindControllerTestConfiguration<E,Id>,ControllerTestConfiguration<Id>> {
 
-    public FindControllerTestConfigurationFactory(ControllerIntegrationTest<E, Id> context) {
-        super(context);
-    }
-
 
     @Override
     public ControllerTestConfiguration<Id> createDefaultFailedConfig() {

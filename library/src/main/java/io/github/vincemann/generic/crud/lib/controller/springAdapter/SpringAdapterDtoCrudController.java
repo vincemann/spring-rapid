@@ -64,16 +64,12 @@ public abstract class SpringAdapterDtoCrudController
     private EndpointService endpointService;
     private String entityNameInUrl;
     private String baseUrl;
-    @Setter
-    private String findMethodName ="get";
-    @Setter
-    private String createMethodName="create";
-    @Setter
-    private String deleteMethodName="delete";
-    @Setter
-    private String updateMethodName="update";
-    @Setter
-    private String findAllMethodName = "getAll";
+
+    public static final String FIND_METHOD_NAME ="get";
+    public static final String CREATE_METHOD_NAME ="create";
+    public static final String DELETE_METHOD_NAME ="delete";
+    public static final String UPDATE_METHOD_NAME ="update";
+    public static final String FIND_ALL_METHOD_NAME = "getAll";
 
     @Setter
     private String findUrl;
@@ -129,11 +125,11 @@ public abstract class SpringAdapterDtoCrudController
     private void initUrls(){
         this.entityNameInUrl=getEntityClass().getSimpleName().toLowerCase();
         this.baseUrl="/"+entityNameInUrl+"/";
-        this.findUrl =baseUrl+getFindMethodName();
-        this.getAllUrl=baseUrl+getFindAllMethodName();
-        this.updateUrl=baseUrl+getUpdateMethodName();
-        this.deleteUrl=baseUrl+getDeleteMethodName();
-        this.createUrl=baseUrl+getCreateMethodName();
+        this.findUrl =baseUrl+FIND_METHOD_NAME;
+        this.getAllUrl=baseUrl+FIND_ALL_METHOD_NAME;
+        this.updateUrl=baseUrl+UPDATE_METHOD_NAME;
+        this.deleteUrl=baseUrl+DELETE_METHOD_NAME;
+        this.createUrl=baseUrl+CREATE_METHOD_NAME;
     }
 
     private void initRequestMapping(){

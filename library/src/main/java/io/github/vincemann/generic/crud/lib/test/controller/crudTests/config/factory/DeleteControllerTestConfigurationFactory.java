@@ -14,9 +14,6 @@ import java.io.Serializable;
 public class DeleteControllerTestConfigurationFactory<E extends IdentifiableEntity<Id>,Id extends Serializable>
         extends AbstractControllerTestConfigurationFactory<E, Id, ControllerTestConfiguration<Id>,ControllerTestConfiguration<Id>> {
 
-    public DeleteControllerTestConfigurationFactory(ControllerIntegrationTest<E, Id> context) {
-        super(context);
-    }
 
     @Override
     public ControllerTestConfiguration<Id> createDefaultFailedConfig() {
