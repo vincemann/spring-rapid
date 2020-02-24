@@ -119,11 +119,11 @@
 
 
         <dependency>
-            <groupId>org.unitils</groupId>
-            <artifactId>unitils-core</artifactId>
-            <version>3.4.6</version>
-            <scope>compile</scope>
+            <groupId>de.danielbechler</groupId>
+            <artifactId>java-object-diff</artifactId>
+            <version>0.95</version>
         </dependency>
+
 
         <dependency>
             <groupId>org.apache.httpcomponents</groupId>

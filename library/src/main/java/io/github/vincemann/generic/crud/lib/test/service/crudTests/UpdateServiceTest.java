@@ -22,7 +22,7 @@ import java.util.Optional;
 @Getter
 @Setter
 public class UpdateServiceTest<E extends IdentifiableEntity<Id>, Id extends Serializable>
-        extends AbstractServiceTest<E, Id> {
+        extends ServiceTest<E, Id> {
     private AbstractServiceTestConfigurationFactory<E, Id, SuccessfulUpdateServiceTestConfiguration<E, Id>,FailedUpdateServiceTestConfiguration<E, Id>> updateTestConfigurationFactory;
 
     public UpdateServiceTest(ServiceTest<E, Id> testContext) {
@@ -59,21 +59,21 @@ public class UpdateServiceTest<E extends IdentifiableEntity<Id>, Id extends Seri
         //given
         Assertions.assertNotNull(updateRequest);
         Assertions.assertNotNull(updateRequest.getId());
-        Optional<E> entityToUpdate = getRootContext().repoFindById(updateRequest.getId());
+        Optional<E> entityToUpdate = repoFindById(updateRequest.getId());
         Assertions.assertTrue(entityToUpdate.isPresent());
         Assertions.assertFalse(config.getRepoEntityEqualChecker().isEqual(updateRequest, entityToUpdate.get()));
 
         //when
-        E updatedEntity = getRootContext().serviceUpdate(updateRequest, config.getFullUpdate());
+        E updatedEntity = serviceUpdate(updateRequest, config.getFullUpdate());
 
         //then
         Assertions.assertEquals(updatedEntity.getId(), updateRequest.getId());
-        Optional<E> updatedRepoEntity = getRootContext().repoFindById(updatedEntity.getId());
+        Optional<E> updatedRepoEntity = repoFindById(updatedEntity.getId());
         Assertions.assertTrue(updatedRepoEntity.isPresent());
 
 
         Assertions.assertTrue(config.getRepoEntityEqualChecker().isEqual(updateRequest, updatedEntity));
-        Optional<E> updatedEntityFromRepo = getRootContext().repoFindById(updateRequest.getId());
+        Optional<E> updatedEntityFromRepo = repoFindById(updateRequest.getId());
         Assertions.assertTrue(updatedEntityFromRepo.isPresent());
         Assertions.assertTrue(config.getReturnedEntityEqualChecker().isEqual(updateRequest, updatedEntity));
         config.getPostUpdateCallback().callback(updateRequest, updatedRepoEntity.get());
@@ -110,15 +110,15 @@ public class UpdateServiceTest<E extends IdentifiableEntity<Id>, Id extends Seri
         //entity to update is present
         Assertions.assertNotNull(newEntity);
         Assertions.assertNotNull(newEntity.getId());
-        Optional<E> entityToUpdate = getRootContext().repoFindById(newEntity.getId());
+        Optional<E> entityToUpdate = repoFindById(newEntity.getId());
         Assertions.assertTrue(entityToUpdate.isPresent());
         Assertions.assertFalse(config.getRepoEntityEqualChecker().isEqual(newEntity, entityToUpdate.get()));
 
         //when
-        T exception = (T) Assertions.assertThrows(config.getExpectedException(), () -> getRootContext().serviceUpdate(newEntity, config.getFullUpdate()));
+        T exception = (T) Assertions.assertThrows(config.getExpectedException(), () -> serviceUpdate(newEntity, config.getFullUpdate()));
 
         //then
-        Optional<E> updatedRepoEntity = getRootContext().repoFindById(newEntity.getId());
+        Optional<E> updatedRepoEntity = repoFindById(newEntity.getId());
         Assertions.assertTrue(updatedRepoEntity.isPresent());
         //still the same
         Assertions.assertTrue(config.getRepoEntityEqualChecker().isEqual(entityToUpdate.get(), updatedRepoEntity.get()));
@@ -129,7 +129,7 @@ public class UpdateServiceTest<E extends IdentifiableEntity<Id>, Id extends Seri
     private void saveEntityForUpdate(E entityToUpdate, E newEntity) {
         Assertions.assertNull(entityToUpdate.getId());
         Assertions.assertNull(newEntity.getId());
-        E savedEntityToUpdate = getRootContext().repoSave(entityToUpdate);
+        E savedEntityToUpdate = repoSave(entityToUpdate);
         newEntity.setId(savedEntityToUpdate.getId());
     }
 

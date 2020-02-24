@@ -3,44 +3,49 @@ package io.github.vincemann.demo.service.springDataJPA.it;
 import io.github.vincemann.demo.model.Owner;
 import io.github.vincemann.demo.model.Pet;
 import io.github.vincemann.demo.model.PetType;
-import io.github.vincemann.demo.repositories.PetRepository;
 import io.github.vincemann.demo.service.OwnerService;
+import io.github.vincemann.demo.service.PetService;
 import io.github.vincemann.demo.service.PetTypeService;
 import io.github.vincemann.demo.service.plugin.OwnerOfTheYearPlugin;
-import io.github.vincemann.generic.crud.lib.service.CrudService;
+import io.github.vincemann.generic.crud.lib.model.IdentifiableEntity;
 import io.github.vincemann.generic.crud.lib.service.exception.BadEntityException;
 import io.github.vincemann.generic.crud.lib.service.exception.EntityNotFoundException;
 import io.github.vincemann.generic.crud.lib.service.exception.NoIdException;
 import io.github.vincemann.generic.crud.lib.test.exception.InvalidConfigurationModificationException;
-import io.github.vincemann.generic.crud.lib.test.service.eagerFetch.ForceEagerFetchCrudServiceIntegrationTest;
-import io.github.vincemann.generic.crud.lib.test.service.callback.PostUpdateServiceTestCallback;
-import io.github.vincemann.generic.crud.lib.test.service.crudTests.config.update.SuccessfulUpdateServiceTestConfiguration;
+import io.github.vincemann.generic.crud.lib.test.service.CrudServiceIntegrationTest;
+import io.github.vincemann.generic.crud.lib.test.service.result.EntityServiceResult;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.boot.test.mock.mockito.SpyBean;
 import org.springframework.test.context.ActiveProfiles;
-import org.springframework.test.context.junit.jupiter.SpringExtension;
+import org.springframework.transaction.annotation.Transactional;
 
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
 import java.time.LocalDate;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Optional;
+import java.util.function.Function;
 
-import static io.github.vincemann.generic.crud.lib.test.service.crudTests.config.ServiceTestConfigurations.partialUpdate;
-import static io.github.vincemann.generic.crud.lib.test.service.crudTests.config.ServiceTestConfigurations.postUpdateCallback;
+import static io.github.vincemann.generic.crud.lib.test.service.CopyNonNullValuesEntityMerger.merge;
+import static io.github.vincemann.generic.crud.lib.test.service.request.CrudServiceRequestBuilders.*;
+import static io.github.vincemann.generic.crud.lib.test.service.result.resultMatcher.compare.FuzzyCompareResultMatchers.fuzzyCompare;
+import static io.github.vincemann.generic.crud.lib.test.service.result.resultMatcher.compare.PropertyCompareResultMatchers.compare;
 
 //@DataJpaTest cant be used because i need autowired components from generic-crud-lib
-@ExtendWith(SpringExtension.class)
-@SpringBootTest(webEnvironment =
-        SpringBootTest.WebEnvironment.RANDOM_PORT)
 @ActiveProfiles(value = {"test", "springdatajpa"})
+@Transactional
+@DataJpaTest
 class OwnerServiceIT
-        extends ForceEagerFetchCrudServiceIntegrationTest<Owner, Long> {
+        extends CrudServiceIntegrationTest<OwnerService,Owner, Long> {
+
+    @PersistenceContext
+    EntityManager entityManager;
 
 
     private Owner ownerWithoutPets;
@@ -52,14 +57,13 @@ class OwnerServiceIT
     private OwnerOfTheYearPlugin ownerOfTheYearPlugin;
 
     @Autowired
-    private CrudService<Pet, Long, PetRepository> petService;
+    private PetService petService;
     @Autowired
     private PetTypeService petTypeService;
 
     @BeforeEach
     public void setUp() throws Exception {
         //proxyfy service
-        this.petService = getEagerFetchProxyFactory().create(petService);
         savedDogPetType = petTypeService.save(new PetType("Dog"));
 
         testPet = Pet.builder()
@@ -87,19 +91,30 @@ class OwnerServiceIT
     }
 
     @Test
-    public void saveOwnerWithoutPets_ShouldSucceed() throws BadEntityException {
-        getSaveServiceTest().saveEntity_ShouldSucceed(ownerWithoutPets);
+    public void saveOwnerWithoutPets_ShouldSucceed() {
+        EntityServiceResult entityServiceResult = getTestTemplate().perform(save(ownerWithoutPets))
+                .andExpect(compare(ownerWithoutPets).withReturnedAndDbEntity()
+                        .property(Owner::getTelephone)
+                        .isEqual())
+                .andReturn();
+        Assertions.assertEquals(0,((Owner) entityServiceResult.getResult()).getPets().size());
+
+        acceptGetter(Owner::getTelephone);
+    }
+
+    private void acceptGetter(Function<IdentifiableEntity,?> getter){
+
     }
 
     @Test
     public void saveOwnerWithPet_ShouldSucceed() throws BadEntityException {
-        getSaveServiceTest().saveEntity_ShouldSucceed(ownerWithOnePet);
+        getTestTemplate().perform(save(ownerWithOnePet))
+                .andExpect(fuzzyCompare(ownerWithOnePet).withReturnedEntity().isEqual());
     }
 
     @Test
     public void saveOwnerWithPersistedPet_ShouldSucceed() throws BadEntityException {
         Pet savedPet = petService.save(testPet);
-
 
         Owner owner = Owner.builder()
                 .firstName("owner with one already persisted pet")
@@ -109,7 +124,9 @@ class OwnerServiceIT
                 .telephone("12843723847324")
                 .pets(new HashSet<>(Arrays.asList(savedPet)))
                 .build();
-        getSaveServiceTest().saveEntity_ShouldSucceed(owner);
+
+        getTestTemplate().perform(save(owner))
+                .andExpect(fuzzyCompare(owner).withReturnedAndDbEntity().isEqual());
     }
 
 
@@ -118,14 +135,20 @@ class OwnerServiceIT
         Owner diffTelephoneNumberUpdate = Owner.builder()
                 .telephone(ownerWithoutPets.getTelephone() + "123")
                 .build();
-        getUpdateServiceTest().updateEntity_ShouldSucceed(ownerWithoutPets, diffTelephoneNumberUpdate,
-                partialUpdate(),
-                postUpdateCallback((request, afterUpdate) -> Assertions.assertEquals(request.getTelephone(), afterUpdate.getTelephone()))
-        );
+        Owner toUpdate = getRepository().save(ownerWithoutPets);
+        diffTelephoneNumberUpdate.setId(toUpdate.getId());
+
+        getTestTemplate().perform(partialUpdate(diffTelephoneNumberUpdate))
+                .andExpect(
+                        fuzzyCompare(merge(diffTelephoneNumberUpdate,toUpdate))
+                        .withReturnedAndDbEntity()
+                                .isEqual()
+                );
     }
 
     @Test
     public void updateOwner_addAnotherPet_shouldSucceed() throws BadEntityException, EntityNotFoundException, InvalidConfigurationModificationException, NoIdException {
+        //given
         Pet savedPet = petService.save(testPet);
         String newPetName = "petToAdd";
         Pet newPet = Pet.builder()
@@ -134,7 +157,6 @@ class OwnerServiceIT
                 .birthDate(LocalDate.now())
                 .build();
         Pet savedPetToAdd = petService.save(newPet);
-
 
         Owner owner = Owner.builder()
                 .firstName("owner with one already persisted pet")
@@ -150,14 +172,16 @@ class OwnerServiceIT
         //here comes the new pet
         ownerUpdateRequest.getPets().add(savedPetToAdd);
 
-        Owner updatedOwner = getUpdateServiceTest().updateEntity_ShouldSucceed(owner, ownerUpdateRequest,
-                SuccessfulUpdateServiceTestConfiguration.<Owner, Long>builder()
-                        .fullUpdate(false)
-                        .postUpdateCallback((request, afterUpdate) -> {
-                            Assertions.assertEquals(2, afterUpdate.getPets().size());
-                            Assertions.assertEquals(1, afterUpdate.getPets().stream().filter(owner1 -> owner1.getName().equals(newPetName)).count());
-                        })
-                        .build());
+        //when
+
+//        Owner updatedOwner = getUpdateServiceTest().updateEntity_ShouldSucceed(owner, ownerUpdateRequest,
+//                SuccessfulUpdateServiceTestConfiguration.<Owner, Long>builder()
+//                        .fullUpdate(false)
+//                        .postUpdateCallback((request, afterUpdate) -> {
+//                            Assertions.assertEquals(2, afterUpdate.getPets().size());
+//                            Assertions.assertEquals(1, afterUpdate.getPets().stream().filter(owner1 -> owner1.getName().equals(newPetName)).count());
+//                        })
+//                        .build());
     }
 
     @Test

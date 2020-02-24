@@ -47,37 +47,4 @@ public abstract class InitializingTest implements InitializingBean {
             }
         }));
     }
-
-
-//    private void initComponents() throws IllegalAccessException {
-//        for (Field declaredField : getAllFields(new LinkedList<>(),this.getClass())) {
-//            declaredField.setAccessible(true);
-//            Object member = declaredField.get(this);
-//            if(member!=null) {
-//                if (member instanceof TestInitializable) {
-//                    log.debug("found controller test aware member of type : " + member.getClass().getSimpleName() + ", passing testObject for initialization");
-//                    if(member instanceof BeforeEachMethodInitializable){
-//                        beforeEachMethodInitializables.add(((BeforeEachMethodInitializable) member));
-//                    }else {
-//                        ((TestInitializable) member).init();
-//                    }
-//                }
-//                if(member instanceof TestContextAware){
-//                    log.debug("found controller test aware member, of type : " + member.getClass().getSimpleName() +", passing testObject for initialization");
-//                    ((TestContextAware) member).setTestContext(this);
-//                }
-//            }
-//        }
-//    }
-//
-//    public static List<Field> getAllFields(List<Field> fields, Class<?> type) {
-//        fields.addAll(Arrays.asList(type.getDeclaredFields()));
-//
-//        if (type.getSuperclass() != null) {
-//            getAllFields(fields, type.getSuperclass());
-//        }
-//
-//        return fields;
-//    }
-
 }
