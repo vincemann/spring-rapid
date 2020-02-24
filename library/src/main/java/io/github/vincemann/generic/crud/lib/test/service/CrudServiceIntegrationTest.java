@@ -2,18 +2,12 @@ package io.github.vincemann.generic.crud.lib.test.service;
 
 import io.github.vincemann.generic.crud.lib.model.IdentifiableEntity;
 import io.github.vincemann.generic.crud.lib.service.CrudService;
-import io.github.vincemann.generic.crud.lib.test.equalChecker.EqualChecker;
-import io.github.vincemann.generic.crud.lib.test.service.crudTests.DeleteServiceTest;
-import io.github.vincemann.generic.crud.lib.test.service.crudTests.FindServiceTest;
-import io.github.vincemann.generic.crud.lib.test.service.crudTests.SaveServiceTest;
-import io.github.vincemann.generic.crud.lib.test.service.crudTests.UpdateServiceTest;
-import io.github.vincemann.generic.crud.lib.test.testExecutionListeners.ResetDatabaseTestExecutionListener;
+import io.github.vincemann.generic.crud.lib.test.InitializingTest;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.data.repository.CrudRepository;
-import org.springframework.test.context.TestExecutionListeners;
 
 import java.io.Serializable;
 
@@ -25,50 +19,40 @@ import java.io.Serializable;
  * @param <Id>      Id Type of TestEntityType
  */
 @Slf4j
-@TestExecutionListeners(
-        mergeMode = TestExecutionListeners.MergeMode.MERGE_WITH_DEFAULTS,
-        listeners = {ResetDatabaseTestExecutionListener.class}
-)
 @Getter
 public abstract class CrudServiceIntegrationTest
                 <
+                        S extends CrudService<E,Id,? extends CrudRepository<E,Id>>,
                         E extends IdentifiableEntity<Id>,
                         Id extends Serializable
                 >
-    extends ServiceTest<E,Id>
+    extends InitializingTest
+    implements InitializingBean
 {
-    public static final String PARTIAL_UPDATE_EQUAL_CHECKER_QUALIFIER = "partialUpdateEqualCheckerBean";
+    //public static final String PARTIAL_UPDATE_EQUAL_CHECKER_QUALIFIER = "partialUpdateEqualCheckerBean";
 
-    private DeleteServiceTest<E,Id> deleteServiceTest;
-    private FindServiceTest<E,Id> findServiceTest;
-    private SaveServiceTest<E,Id> saveServiceTest;
-    private UpdateServiceTest<E,Id> updateServiceTest;
-
-    public CrudServiceIntegrationTest() {
-        this.deleteServiceTest = new DeleteServiceTest<>(this);
-        this.findServiceTest = new FindServiceTest<>(this);
-        this.saveServiceTest = new SaveServiceTest<>(this);
-        this.updateServiceTest = new UpdateServiceTest<>(this);
-    }
+    private CrudRepository<E,Id> repository;
+    private ServiceTestTemplate testTemplate;
+    private S serviceUnderTest;
 
     @Autowired
     public void injectRepository(CrudRepository<E,Id> repository) {
-        setRepository(repository);
+        this.repository=repository;
     }
 
     @Autowired
-    public void injectDefaultEqualChecker(EqualChecker<E> defaultEqualChecker) {
-        setDefaultEqualChecker(defaultEqualChecker);
+    public void injectServiceTestTemplate(ServiceTestTemplate serviceTestTemplate){
+        this.testTemplate =serviceTestTemplate;
+    }
+
+    @Override
+    public void afterPropertiesSet() throws Exception {
+        //if user changed service -> update templates service version
+        testTemplate.setServiceUnderTest(serviceUnderTest);
     }
 
     @Autowired
-    public void injectCrudService(CrudService<E, Id,? extends CrudRepository<E,Id>> crudService) throws Exception {
-        setCrudService(crudService);
-    }
-
-    @Autowired
-    @Qualifier(PARTIAL_UPDATE_EQUAL_CHECKER_QUALIFIER)
-    protected void injectPartialUpdateEqualChecker(EqualChecker<E> partialUpdateEqualChecker){
-        setDefaultPartialUpdateEqualChecker(partialUpdateEqualChecker);
+    public void injectServiceUnderTest(S serviceUnderTest) {
+        this.serviceUnderTest = serviceUnderTest;
     }
 }

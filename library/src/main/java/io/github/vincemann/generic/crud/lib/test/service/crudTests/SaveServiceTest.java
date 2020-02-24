@@ -15,14 +15,13 @@ import java.io.Serializable;
 import java.util.Optional;
 
 public class SaveServiceTest<E extends IdentifiableEntity<Id>, Id extends Serializable>
-        extends AbstractServiceTest<E,Id>
+        extends ServiceTest<E,Id>
 {
 
     private AbstractServiceTestConfigurationFactory<E,Id, SuccessfulSaveServiceTestConfiguration<E,Id>, ServiceTestConfiguration<E,Id>> saveTestConfigurationFactory;
 
-    public SaveServiceTest(ServiceTest<E, Id> testContext) {
-        super(testContext);
-        this.saveTestConfigurationFactory =  new SaveServiceTestConfigurationFactory<>(testContext);
+    public SaveServiceTest(AbstractServiceTestConfigurationFactory<E, Id, SuccessfulSaveServiceTestConfiguration<E, Id>, ServiceTestConfiguration<E, Id>> saveTestConfigurationFactory) {
+        this.saveTestConfigurationFactory = saveTestConfigurationFactory;
     }
 
     public E saveEntity_ShouldSucceed(E entityToSave) throws BadEntityException {
@@ -39,7 +38,7 @@ public class SaveServiceTest<E extends IdentifiableEntity<Id>, Id extends Serial
         Assertions.assertNull(entityToSave.getId());
 
         //when
-        E savedTestEntity = getRootContext().serviceSave(entityToSave);
+        E savedTestEntity = serviceSave(entityToSave);
 
         //then
         Assertions.assertNotNull(savedTestEntity);
@@ -47,7 +46,7 @@ public class SaveServiceTest<E extends IdentifiableEntity<Id>, Id extends Serial
         Assertions.assertNotEquals(0,savedTestEntity.getId());
 
         //if service save method does not copy entityToSave, then entitytoSaveRef = savedEntityFromServiceRef, otherwise not
-        Optional<E> repoEntity = getRootContext().repoFindById(savedTestEntity.getId());
+        Optional<E> repoEntity = repoFindById(savedTestEntity.getId());
         Assertions.assertTrue(repoEntity.isPresent());
 
         Id oldId_EntityToSave = entityToSave.getId();
@@ -63,6 +62,6 @@ public class SaveServiceTest<E extends IdentifiableEntity<Id>, Id extends Serial
     }
 
     public <T extends Throwable> T saveEntity_ShouldFail(E entityToSave, Class<? extends T> expectedException) {
-        return Assertions.assertThrows(expectedException, () -> getRootContext().serviceSave(entityToSave));
+        return Assertions.assertThrows(expectedException, () -> serviceSave(entityToSave));
     }
 }

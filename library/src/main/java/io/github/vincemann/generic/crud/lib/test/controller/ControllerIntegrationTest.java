@@ -5,18 +5,12 @@ import io.github.vincemann.generic.crud.lib.controller.springAdapter.SpringAdapt
 import io.github.vincemann.generic.crud.lib.model.IdentifiableEntity;
 import io.github.vincemann.generic.crud.lib.service.CrudService;
 import io.github.vincemann.generic.crud.lib.test.InitializingTest;
-import io.github.vincemann.generic.crud.lib.test.controller.crudTests.config.abs.ControllerTestConfiguration;
-import io.github.vincemann.generic.crud.lib.test.controller.requestEntityFactory.RequestEntityFactory;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.http.impl.client.HttpClientBuilder;
-import org.junit.jupiter.api.BeforeAll;
 import org.springframework.beans.factory.InitializingBean;
-import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.data.repository.CrudRepository;
-import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
 
 import java.io.Serializable;
 import java.lang.reflect.ParameterizedType;
@@ -31,10 +25,11 @@ import java.lang.reflect.ParameterizedType;
 @Slf4j
 public abstract class ControllerIntegrationTest<E extends IdentifiableEntity<Id>, Id extends Serializable>
         extends InitializingTest
-            implements BaseAddressProvider, InitializingBean {
+            implements InitializingBean {
 
     private static final String LOCAL_HOST = "http://127.0.0.1";
-    private static TestRestTemplate restTemplate;
+
+
     @LocalServerPort
     private String port;
     private Class<E> entityClass = (Class<E>) ((ParameterizedType) this.getClass().getGenericSuperclass()).getActualTypeArguments()[0];
@@ -64,16 +59,6 @@ public abstract class ControllerIntegrationTest<E extends IdentifiableEntity<Id>
     }
 
 
-    @BeforeAll
-    public static void setUp() {
-        HttpComponentsClientHttpRequestFactory clientHttpRequestFactory =
-                new HttpComponentsClientHttpRequestFactory(HttpClientBuilder.create().build());
-        clientHttpRequestFactory.setBufferRequestBody(false);
-        restTemplate = new TestRestTemplate();
-        restTemplate.getRestTemplate().setRequestFactory(clientHttpRequestFactory);
-    }
-
-
 
     public <C extends SpringAdapterDtoCrudController<E,Id>> C getCastedController(){
         return (C) controller;
@@ -83,12 +68,4 @@ public abstract class ControllerIntegrationTest<E extends IdentifiableEntity<Id>
         return url+":"+port;
     }
 
-    @Override
-    public String provideAddress() {
-        return getUrlWithPort();
-    }
-
-    public TestRestTemplate getRestTemplate() {
-        return restTemplate;
-    }
 }
