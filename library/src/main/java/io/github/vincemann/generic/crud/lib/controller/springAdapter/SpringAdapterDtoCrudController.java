@@ -20,7 +20,12 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.ApplicationContextAware;
+import org.springframework.context.ApplicationListener;
+import org.springframework.context.event.ContextRefreshedEvent;
+import org.springframework.context.event.ContextStartedEvent;
 import org.springframework.http.ResponseEntity;
+import org.springframework.test.context.TestPropertySource;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.mvc.method.RequestMappingInfo;
@@ -59,7 +64,7 @@ public abstract class SpringAdapterDtoCrudController
                 Id extends Serializable
         >
         extends BasicDtoCrudController<E,Id>
-                implements InitializingBean {
+                implements ApplicationListener<ContextRefreshedEvent> {
 
 
 
@@ -96,12 +101,11 @@ public abstract class SpringAdapterDtoCrudController
 
     public SpringAdapterDtoCrudController(DtoMappingContext dtoMappingContext) {
         super(dtoMappingContext);
+        initUrls();
     }
 
-
     @Override
-    public void afterPropertiesSet() {
-        initUrls();
+    public void onApplicationEvent(ContextRefreshedEvent event) {
         initRequestMapping();
     }
 
@@ -283,6 +287,8 @@ public abstract class SpringAdapterDtoCrudController
     }
 
 
+
+
     public ResponseEntity<?> delete(HttpServletRequest request) throws IdFetchingException, NoIdException, EntityNotFoundException, ConstraintViolationException {
         log.debug("Delete request arriving at controller: " + request);
         Id id = idIdFetchingStrategy.fetchId(request);
@@ -305,7 +311,7 @@ public abstract class SpringAdapterDtoCrudController
         else if(fullUpdateParams.length==0){
             return false;
         }else {
-            return true;
+            return Boolean.parseBoolean(fullUpdateParams[0]);
         }
     }
 

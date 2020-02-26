@@ -6,17 +6,17 @@ import io.github.vincemann.generic.crud.lib.controller.springAdapter.SpringAdapt
 import io.github.vincemann.generic.crud.lib.controller.springAdapter.mediaTypeStrategy.ProcessDtoException;
 import io.github.vincemann.generic.crud.lib.model.IdentifiableEntity;
 import io.github.vincemann.generic.crud.lib.service.CrudService;
-import io.github.vincemann.generic.crud.lib.test.InitializingTest;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.BeforeEach;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.http.MediaType;
-import org.springframework.test.web.servlet.*;
+import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.MvcResult;
+import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 
@@ -42,7 +42,7 @@ public abstract class MvcControllerTest
         //extends InitializingTest
             implements InitializingBean {
 
-    private static final String LOCAL_HOST = "http://127.0.0.1";
+    private static final String LOCAL_HOST = "127.0.0.1";
 
     private Class<E> entityClass = (Class<E>) ((ParameterizedType) this.getClass().getGenericSuperclass()).getActualTypeArguments()[0];
     private DtoMappingContext dtoMappingContext;
@@ -74,10 +74,10 @@ public abstract class MvcControllerTest
         String mediaType = MediaType.APPLICATION_JSON_UTF8_VALUE;
         this.mockMvc = MockMvcBuilders.webAppContextSetup(wac)
                 .defaultRequest(get("/").accept(mediaType))
-                .defaultRequest(post("/").contentType(mediaType))
-                .defaultRequest(post("/").accept(mediaType))
-                .defaultRequest(put("/").contentType(mediaType))
-                .defaultRequest(put("/").accept(mediaType))
+//                .defaultRequest(post("/").contentType(mediaType))
+//                .defaultRequest(post("/").accept(mediaType))
+//                .defaultRequest(put("/").contentType(mediaType))
+//                .defaultRequest(put("/").accept(mediaType))
                 .alwaysExpect(content().contentType(mediaType))
                 .alwaysDo(print())
                 .build();
@@ -109,9 +109,11 @@ public abstract class MvcControllerTest
     }
 
     private ResultActions performUpdate(IdentifiableEntity<Id> updateDto, Boolean full) throws Exception {
-        return getMockMvc().perform(put(getUpdateUrl())
+        String fullUpdateQueryParam = getController().getFullUpdateQueryParam();
+
+        return getMockMvc().perform(put(getUpdateUrl()+"?"+fullUpdateQueryParam+"="+full.toString())
                 .content(serialize(updateDto))
-                .param(getController().getFullUpdateQueryParam(),full.toString()));
+                .contentType(getController().getMediaTypeStrategy().getMediaType()));
     }
 
     public ResultActions performFullUpdate(IdentifiableEntity<Id> updateDto) throws Exception {
