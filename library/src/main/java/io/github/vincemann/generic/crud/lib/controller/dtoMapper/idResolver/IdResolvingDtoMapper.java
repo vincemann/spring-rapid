@@ -36,8 +36,8 @@ public class IdResolvingDtoMapper extends BasicDtoMapper {
     }
 
     @Override
-    public <E extends IdentifiableEntity> E mapDtoToEntity(Object source, Class<E> destinationClass) throws EntityMappingException {
-        E mappingResult = super.mapDtoToEntity(source, destinationClass);
+    public <E extends IdentifiableEntity> E mapToEntity(IdentifiableEntity source, Class<E> destinationClass) throws EntityMappingException {
+        E mappingResult = super.mapToEntity(source, destinationClass);
         //yet unfinished
         EntityIdResolver entityIdResolver = findResolver(source.getClass());
         entityIdResolver.resolveEntityIds(mappingResult, source);
@@ -46,8 +46,8 @@ public class IdResolvingDtoMapper extends BasicDtoMapper {
     }
 
     @Override
-    public <Dto extends IdentifiableEntity> Dto mapEntityToDto(Object source, Class<Dto> destinationClass) throws EntityMappingException {
-        Dto mappingResult = super.mapEntityToDto(source, destinationClass);
+    public <Dto extends IdentifiableEntity> Dto mapToDto(IdentifiableEntity source, Class<Dto> destinationClass) throws EntityMappingException {
+        Dto mappingResult = super.mapToDto(source, destinationClass);
         //yet unfinished
         EntityIdResolver entityIdResolver = findResolver(destinationClass);
         entityIdResolver.resolveDtoIds(mappingResult, source);

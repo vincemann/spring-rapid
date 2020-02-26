@@ -28,13 +28,4 @@ public interface ValidationStrategy<Id extends Serializable> {
      */
     public abstract void validateId(Id id,HttpServletRequest httpServletRequest) throws ConstraintViolationException;
 
-    public default void validateFindAllRequest(HttpServletRequest httpServletRequest)throws ConstraintViolationException {}
-
-    public default void beforeCreateValidate(IdentifiableEntity<Id> dto){}
-
-    public default void beforeUpdateValidate(IdentifiableEntity<Id> dto){}
-
-    public default void beforeDeleteValidate(Id id){}
-
-    public default void beforeFindValidate(Id id){}
 }

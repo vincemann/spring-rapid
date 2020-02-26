@@ -15,11 +15,12 @@ import java.util.Collection;
 @Slf4j
 @Component
 @Primary
-public class IgnoreEntitiesFuzzyComparator<T> implements FuzzyComparator<T> {
+public class IgnoreEntitiesReflectionComparator<T> implements ReflectionComparator<T> {
+    private static final String ENTITY_GROUP = "entities";
 
     private ObjectDiffer objectDiffer;
 
-    public IgnoreEntitiesFuzzyComparator() {
+    public IgnoreEntitiesReflectionComparator() {
 //        this.objectDiffer = ObjectDifferBuilder.startBuilding()
 //                .filtering()
 //                .omitNodesWithState(DiffNode.State.IGNORED)
@@ -29,20 +30,20 @@ public class IgnoreEntitiesFuzzyComparator<T> implements FuzzyComparator<T> {
         this.objectDiffer = ObjectDifferBuilder.startBuilding()
                 .categories()
                 .ofType(Entity.class)
-                .toBe("entities")
+                .toBe(ENTITY_GROUP)
                 .ofType((Class<Collection<Entity>>)(Class<?>)Collection.class)
-                .toBe("entities")
+                .toBe(ENTITY_GROUP)
                 .and()
                 .inclusion()
                 .exclude()
-                .category("entities")
+                .category(ENTITY_GROUP)
                 .and()
                 .build();
 
     }
 
     @Override
-    public boolean isFuzzyEqual(T expected, T actual) {
+    public boolean isEqual(T expected, T actual) {
         try {
             //order in Lists is ignored
             DiffNode diff = objectDiffer.compare(expected, actual);

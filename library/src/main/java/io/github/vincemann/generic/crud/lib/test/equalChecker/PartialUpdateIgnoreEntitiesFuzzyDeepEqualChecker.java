@@ -1,14 +1,5 @@
 package io.github.vincemann.generic.crud.lib.test.equalChecker;
 
-import io.github.vincemann.generic.crud.lib.util.NullAwareBeanUtils;
-import org.apache.commons.beanutils.BeanUtilsBean;
-import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.stereotype.Component;
-
-import java.lang.reflect.InvocationTargetException;
-
-import static io.github.vincemann.generic.crud.lib.test.service.CrudServiceIntegrationTest.PARTIAL_UPDATE_EQUAL_CHECKER_QUALIFIER;
-
 //@Component
 //@Qualifier(PARTIAL_UPDATE_EQUAL_CHECKER_QUALIFIER)
 //public class PartialUpdateIgnoreEntitiesFuzzyDeepEqualChecker<T> extends IgnoreEntitiesFuzzyDeepEqualChecker<T> {

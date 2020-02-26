@@ -35,17 +35,4 @@ public class JavaXValidationStrategy<Id extends Serializable> implements Validat
             throw new ConstraintViolationException(constraintViolations);
     }
 
-    @Override
-    public void beforeUpdateValidate(IdentifiableEntity<Id> dto) {
-        if(dto.getId()==null){
-            throw new ConstraintViolationException("Id must not be null for update entity request",null);
-        }
-    }
-
-    @Override
-    public void beforeCreateValidate(IdentifiableEntity<Id> dto) {
-        if(dto.getId()!=null){
-            throw new ConstraintViolationException("Id must be null for create entity request, the backend sets the id",null);
-        }
-    }
 }

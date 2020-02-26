@@ -10,20 +10,20 @@ import java.io.Serializable;
 @SuppressWarnings("ALL")
 @Getter
 @Setter
-public class DtoMappingContext<Id extends Serializable> {
-    protected Class<? extends IdentifiableEntity<Id>> createRequestDtoClass;
-    protected Class<? extends IdentifiableEntity<Id>> createReturnDtoClass;
-    protected Class<? extends IdentifiableEntity<Id>> findReturnDtoClass;
-    protected Class<? extends IdentifiableEntity<Id>> partialUpdateRequestDtoClass;
-    protected Class<? extends IdentifiableEntity<Id>> fullUpdateRequestDtoClass;
-    protected Class<? extends IdentifiableEntity<Id>> updateReturnDtoClass;
-    protected Class<? extends IdentifiableEntity<Id>> findAllReturnDtoClass;
+public class DtoMappingContext {
+    protected Class<? extends IdentifiableEntity> createRequestDtoClass;
+    protected Class<? extends IdentifiableEntity> createReturnDtoClass;
+    protected Class<? extends IdentifiableEntity> findReturnDtoClass;
+    protected Class<? extends IdentifiableEntity> partialUpdateRequestDtoClass;
+    protected Class<? extends IdentifiableEntity> fullUpdateRequestDtoClass;
+    protected Class<? extends IdentifiableEntity> updateReturnDtoClass;
+    protected Class<? extends IdentifiableEntity> findAllReturnDtoClass;
 
 
     public DtoMappingContext(){ }
 
     @Builder
-    public DtoMappingContext(Class<? extends IdentifiableEntity<Id>> createRequestDtoClass, Class<? extends IdentifiableEntity<Id>> createReturnDtoClass, Class<? extends IdentifiableEntity<Id>> findReturnDtoClass, Class<? extends IdentifiableEntity<Id>> partialUpdateRequestDtoClass, Class<? extends IdentifiableEntity<Id>> updateReturnDtoClass, Class<? extends IdentifiableEntity<Id>> findAllReturnDtoClass,Class<? extends IdentifiableEntity<Id>> fullUpdateRequestDtoClass) {
+    public DtoMappingContext(Class<? extends IdentifiableEntity> createRequestDtoClass, Class<? extends IdentifiableEntity> createReturnDtoClass, Class<? extends IdentifiableEntity> findReturnDtoClass, Class<? extends IdentifiableEntity> partialUpdateRequestDtoClass, Class<? extends IdentifiableEntity> updateReturnDtoClass, Class<? extends IdentifiableEntity> findAllReturnDtoClass,Class<? extends IdentifiableEntity> fullUpdateRequestDtoClass) {
         this.createRequestDtoClass = createRequestDtoClass;
         this.createReturnDtoClass = createReturnDtoClass;
         this.findReturnDtoClass = findReturnDtoClass;
@@ -38,7 +38,7 @@ public class DtoMappingContext<Id extends Serializable> {
      * @param defaultDtoClass
      * @return
      */
-    public static <Id extends Serializable> DtoMappingContext<Id> DEFAULT(Class<? extends IdentifiableEntity<Id>> defaultDtoClass){
+    public static <Id extends Serializable> DtoMappingContext DEFAULT(Class<? extends IdentifiableEntity> defaultDtoClass){
         DtoMappingContext mc = new DtoMappingContext();
         mc.createRequestDtoClass =defaultDtoClass;
         mc.createReturnDtoClass=defaultDtoClass;
@@ -50,9 +50,9 @@ public class DtoMappingContext<Id extends Serializable> {
         return mc;
     }
 
-    public static <Id extends Serializable> DtoMappingContext<Id> WRITE_READ(
-                                            Class<? extends IdentifiableEntity<Id>> writeDtoClass,
-                                            Class<? extends IdentifiableEntity<Id>> readDtoClass){
+    public static <Id extends Serializable> DtoMappingContext WRITE_READ(
+                                            Class<? extends IdentifiableEntity> writeDtoClass,
+                                            Class<? extends IdentifiableEntity> readDtoClass){
         DtoMappingContext mc = new DtoMappingContext();
         mc.createRequestDtoClass =writeDtoClass;
         mc.createReturnDtoClass=readDtoClass;
@@ -64,10 +64,10 @@ public class DtoMappingContext<Id extends Serializable> {
         return mc;
     }
 
-    public static <Id extends Serializable> DtoMappingContext<Id> CREATE_UPDATE_READ(
-                                                    Class<? extends IdentifiableEntity<Id>> createDtoClass,
-                                                    Class<? extends IdentifiableEntity<Id>> updateDtoClass,
-                                                    Class<? extends IdentifiableEntity<Id>> readDtoClass){
+    public static <Id extends Serializable> DtoMappingContext CREATE_UPDATE_READ(
+                                                    Class<? extends IdentifiableEntity> createDtoClass,
+                                                    Class<? extends IdentifiableEntity> updateDtoClass,
+                                                    Class<? extends IdentifiableEntity> readDtoClass){
         DtoMappingContext mc = new DtoMappingContext();
         mc.createRequestDtoClass =createDtoClass;
         mc.createReturnDtoClass=readDtoClass;

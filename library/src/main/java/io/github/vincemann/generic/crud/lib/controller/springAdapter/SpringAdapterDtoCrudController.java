@@ -1,33 +1,36 @@
 package io.github.vincemann.generic.crud.lib.controller.springAdapter;
 
+import io.github.vincemann.generic.crud.lib.controller.BasicDtoCrudController;
 import io.github.vincemann.generic.crud.lib.controller.dtoMapper.DtoMappingContext;
 import io.github.vincemann.generic.crud.lib.controller.dtoMapper.exception.EntityMappingException;
-import io.github.vincemann.generic.crud.lib.controller.springAdapter.idFetchingStrategy.exception.IdFetchingException;
 import io.github.vincemann.generic.crud.lib.controller.springAdapter.idFetchingStrategy.IdFetchingStrategy;
-import io.github.vincemann.generic.crud.lib.controller.springAdapter.mediaTypeStrategy.DtoReadingException;
+import io.github.vincemann.generic.crud.lib.controller.springAdapter.idFetchingStrategy.exception.IdFetchingException;
 import io.github.vincemann.generic.crud.lib.controller.springAdapter.mediaTypeStrategy.MediaTypeStrategy;
+import io.github.vincemann.generic.crud.lib.controller.springAdapter.mediaTypeStrategy.ProcessDtoException;
 import io.github.vincemann.generic.crud.lib.controller.springAdapter.validationStrategy.ValidationStrategy;
+import io.github.vincemann.generic.crud.lib.model.IdentifiableEntity;
+import io.github.vincemann.generic.crud.lib.service.EndpointService;
+import io.github.vincemann.generic.crud.lib.service.exception.BadEntityException;
+import io.github.vincemann.generic.crud.lib.service.exception.EntityNotFoundException;
+import io.github.vincemann.generic.crud.lib.service.exception.NoIdException;
 import io.github.vincemann.generic.crud.lib.util.HttpServletRequestUtils;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.mvc.method.RequestMappingInfo;
-import io.github.vincemann.generic.crud.lib.controller.BasicDtoCrudController;
-import io.github.vincemann.generic.crud.lib.model.IdentifiableEntity;
-import io.github.vincemann.generic.crud.lib.service.EndpointService;
-import io.github.vincemann.generic.crud.lib.service.exception.BadEntityException;
-import io.github.vincemann.generic.crud.lib.service.exception.EntityNotFoundException;
-import io.github.vincemann.generic.crud.lib.service.exception.NoIdException;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.ConstraintViolationException;
 import java.io.IOException;
 import java.io.Serializable;
-import java.util.*;
+import java.util.Collection;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 /**
@@ -59,7 +62,6 @@ public abstract class SpringAdapterDtoCrudController
                 implements InitializingBean {
 
 
-    public static final String FULL_UPDATE_QUERY_PARAM = "full";
 
     private EndpointService endpointService;
     private String entityNameInUrl;
@@ -76,18 +78,23 @@ public abstract class SpringAdapterDtoCrudController
     @Setter
     private String updateUrl;
     @Setter
-    private String getAllUrl;
+    private String findAllUrl;
     @Setter
     private String deleteUrl;
     @Setter
     private String createUrl;
 
+
+    @Getter
+    @Value("${controller.update.full.queryParam}")
+    private String fullUpdateQueryParam;
+
     private IdFetchingStrategy<Id> idIdFetchingStrategy;
-    private MediaTypeStrategy<Id> mediaTypeStrategy;
+    private MediaTypeStrategy mediaTypeStrategy;
     private ValidationStrategy<Id> validationStrategy;
     private EndpointsExposureContext endpointsExposureContext;
 
-    public SpringAdapterDtoCrudController(DtoMappingContext<Id> dtoMappingContext) {
+    public SpringAdapterDtoCrudController(DtoMappingContext dtoMappingContext) {
         super(dtoMappingContext);
     }
 
@@ -104,11 +111,11 @@ public abstract class SpringAdapterDtoCrudController
     }
 
     @Autowired
-    public void injectMediaTypeStrategy(MediaTypeStrategy<Id> mediaTypeStrategy) {
+    public void injectMediaTypeStrategy(MediaTypeStrategy mediaTypeStrategy) {
         this.mediaTypeStrategy = mediaTypeStrategy;
     }
     @Autowired
-    public void injectEndpointsExposureDetails(EndpointsExposureContext endpointsExposureContext) {
+    public void injectEndpointsExposureContext(EndpointsExposureContext endpointsExposureContext) {
         this.endpointsExposureContext = endpointsExposureContext;
     }
 
@@ -126,7 +133,7 @@ public abstract class SpringAdapterDtoCrudController
         this.entityNameInUrl=getEntityClass().getSimpleName().toLowerCase();
         this.baseUrl="/"+entityNameInUrl+"/";
         this.findUrl =baseUrl+FIND_METHOD_NAME;
-        this.getAllUrl=baseUrl+FIND_ALL_METHOD_NAME;
+        this.findAllUrl =baseUrl+FIND_ALL_METHOD_NAME;
         this.updateUrl=baseUrl+UPDATE_METHOD_NAME;
         this.deleteUrl=baseUrl+DELETE_METHOD_NAME;
         this.createUrl=baseUrl+CREATE_METHOD_NAME;
@@ -210,7 +217,7 @@ public abstract class SpringAdapterDtoCrudController
 
     public RequestMappingInfo getFindAllRequestMappingInfo(){
         return RequestMappingInfo
-                .paths(getAllUrl)
+                .paths(findAllUrl)
                 .methods(RequestMethod.GET)
                 .produces(mediaTypeStrategy.getMediaType())
                 .build();
@@ -218,8 +225,6 @@ public abstract class SpringAdapterDtoCrudController
 
     public ResponseEntity<Collection<IdentifiableEntity<Id>>> findAll(HttpServletRequest request) throws EntityMappingException {
         log.debug("FindAll request arriving at controller: " + request);
-        validationStrategy.validateFindAllRequest(request);
-        log.debug("Find all request validated");
         beforeFindAll(request);
         return super.findAll();
     }
@@ -228,7 +233,6 @@ public abstract class SpringAdapterDtoCrudController
     public ResponseEntity<? extends IdentifiableEntity<Id>> find(HttpServletRequest request) throws IdFetchingException, EntityNotFoundException, NoIdException, EntityMappingException {
         log.debug("Find request arriving at controller: " + request);
         Id id = idIdFetchingStrategy.fetchId(request);
-        validationStrategy.beforeFindValidate(id);
         log.debug("id fetched from request: " + id);
         validationStrategy.validateId(id,request);
         log.debug("id successfully validated");
@@ -236,48 +240,45 @@ public abstract class SpringAdapterDtoCrudController
         return super.find(id);
     }
 
-    public ResponseEntity<? extends IdentifiableEntity<Id>> create(HttpServletRequest request) throws DtoReadingException, BadEntityException, EntityMappingException {
+    public ResponseEntity<? extends IdentifiableEntity<Id>> create(HttpServletRequest request) throws ProcessDtoException, BadEntityException, EntityMappingException {
         log.debug("Create request arriving at controller: " + request);
         try {
             String body = request.getReader().lines().collect(Collectors.joining(System.lineSeparator()));
             log.debug("String Body fetched from request: " + body);
-            IdentifiableEntity<Id> dto = mediaTypeStrategy.readDtoFromBody(body, getDtoMappingContext().getCreateRequestDtoClass());
+            IdentifiableEntity<Id> dto = mediaTypeStrategy.readDto(body, getDtoMappingContext().getCreateRequestDtoClass());
             log.debug("Dto read from string body " + dto);
-            validationStrategy.beforeCreateValidate(dto);
             validationStrategy.validateDto(dto,request);
             log.debug("Dto successfully validated");
             beforeCreate(dto,request);
             return super.create(dto);
         }catch (IOException e){
-            throw new DtoReadingException(e);
+            throw new ProcessDtoException(e);
         }
     }
 
-    public ResponseEntity<? extends IdentifiableEntity<Id>> update(HttpServletRequest request) throws DtoReadingException, EntityNotFoundException, NoIdException, BadEntityException, EntityMappingException {
+    public ResponseEntity<? extends IdentifiableEntity<Id>> update(HttpServletRequest request) throws ProcessDtoException, EntityNotFoundException, NoIdException, BadEntityException, EntityMappingException {
         log.debug("Update request arriving at controller: " + request);
         try {
             String body = request.getReader().lines().collect(Collectors.joining(System.lineSeparator()));
             log.debug("String Body fetched from request: " + body);
             boolean fullUpdate = isFullUpdate(request);
             log.debug("full update mode: " + fullUpdate);
-            Class<? extends IdentifiableEntity<Id>> dtoClass = null;
+            Class<? extends IdentifiableEntity> dtoClass = null;
             if(fullUpdate) {
                 dtoClass = getDtoMappingContext().getFullUpdateRequestDtoClass();
             }else {
                 dtoClass = getDtoMappingContext().getPartialUpdateRequestDtoClass();
             }
             log.debug("dtoClass that will be mapped to: " + dtoClass);
-            IdentifiableEntity<Id> dto  = mediaTypeStrategy.readDtoFromBody(body, dtoClass);
+            IdentifiableEntity<Id> dto  = mediaTypeStrategy.readDto(body, dtoClass);
             log.debug("Dto read from string body " + dto);
-            validationStrategy.beforeUpdateValidate(dto);
             validationStrategy.validateDto(dto,request);
             log.debug("Dto successfully validated");
-
 
             beforeUpdate(dto,request,fullUpdate);
             return super.update(dto,fullUpdate);
         }catch (IOException e){
-            throw new DtoReadingException(e);
+            throw new ProcessDtoException(e);
         }
     }
 
@@ -286,7 +287,6 @@ public abstract class SpringAdapterDtoCrudController
         log.debug("Delete request arriving at controller: " + request);
         Id id = idIdFetchingStrategy.fetchId(request);
         log.debug("id fetched from request: " + id);
-        validationStrategy.beforeDeleteValidate(id);
         validationStrategy.validateId(id,request);
         log.debug("id successfully validated");
         beforeDelete(id,request);
@@ -295,12 +295,12 @@ public abstract class SpringAdapterDtoCrudController
 
     protected boolean isFullUpdate(HttpServletRequest request) throws BadEntityException {
         Map<String, String[]> queryParameters = HttpServletRequestUtils.getQueryParameters(request);
-        String[] fullUpdateParams = queryParameters.get(FULL_UPDATE_QUERY_PARAM);
+        String[] fullUpdateParams = queryParameters.get(fullUpdateQueryParam);
         if(fullUpdateParams==null){
             return false;
         }
         if(fullUpdateParams.length>1){
-            throw new BadEntityException("Multiple full update query params specified, there must be only one max. key: " + FULL_UPDATE_QUERY_PARAM);
+            throw new BadEntityException("Multiple full update query params specified, there must be only one max. key: " + fullUpdateQueryParam);
         }
         else if(fullUpdateParams.length==0){
             return false;
@@ -310,15 +310,15 @@ public abstract class SpringAdapterDtoCrudController
     }
 
     //callbacks
-    protected void beforeCreate(IdentifiableEntity<Id> dto, HttpServletRequest httpServletRequest){
+    public void beforeCreate(IdentifiableEntity<Id> dto, HttpServletRequest httpServletRequest){
     }
-    protected void beforeUpdate(IdentifiableEntity<Id> dto, HttpServletRequest httpServletRequest, boolean full){
+    public void beforeUpdate(IdentifiableEntity<Id> dto, HttpServletRequest httpServletRequest, boolean full){
     }
-    protected void beforeDelete(Id id, HttpServletRequest httpServletRequest){
+    public void beforeDelete(Id id, HttpServletRequest httpServletRequest){
     }
-    protected void beforeFind(Id id, HttpServletRequest httpServletRequest){
+    public void beforeFind(Id id, HttpServletRequest httpServletRequest){
     }
-    protected void beforeFindAll(HttpServletRequest httpServletRequest){
+    public void beforeFindAll(HttpServletRequest httpServletRequest){
     }
 
 }
