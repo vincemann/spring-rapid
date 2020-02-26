@@ -14,6 +14,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 
 import java.io.Serializable;
@@ -106,7 +107,8 @@ public abstract class BasicDtoCrudController
         E entity = mapToEntity(dto);
         E updatedEntity = crudService.update(entity,full);
         //no idea why casting is necessary here?
-        return new ResponseEntity(dtoMapper.mapToDto(updatedEntity, getDtoMappingContext().getUpdateReturnDtoClass()),
+        return new ResponseEntity(
+                dtoMapper.mapToDto(updatedEntity, getDtoMappingContext().getUpdateReturnDtoClass()),
                 HttpStatus.OK);
     }
 
@@ -114,7 +116,7 @@ public abstract class BasicDtoCrudController
     @Override
     public ResponseEntity<?> delete(Id id) throws NoIdException, EntityNotFoundException {
         crudService.deleteById(id);
-        return ResponseEntity.ok().build();
+        return ResponseEntity.ok().contentType(MediaType.APPLICATION_JSON_UTF8).build();
     }
 
 
