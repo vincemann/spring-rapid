@@ -1,6 +1,5 @@
 package io.github.vincemann.generic.crud.lib.test.service;
 
-import io.github.vincemann.generic.crud.lib.model.IdentifiableEntity;
 import io.github.vincemann.generic.crud.lib.service.CrudService;
 import io.github.vincemann.generic.crud.lib.test.service.request.ServiceRequest;
 import io.github.vincemann.generic.crud.lib.test.service.request.ServiceRequestBuilder;
@@ -10,11 +9,10 @@ import io.github.vincemann.generic.crud.lib.test.service.result.ServiceResult;
 import io.github.vincemann.generic.crud.lib.test.service.result.action.EntityCollectionServiceResultActions;
 import io.github.vincemann.generic.crud.lib.test.service.result.action.EntityServiceResultActions;
 import io.github.vincemann.generic.crud.lib.test.service.result.action.ServiceResultActions;
-import io.github.vincemann.generic.crud.lib.test.service.result.resultHandler.ServiceResultHandler;
-import io.github.vincemann.generic.crud.lib.test.service.result.resultMatcher.EntityCollectionServiceResultMatcher;
-import io.github.vincemann.generic.crud.lib.test.service.result.resultMatcher.EntityServiceResultMatcher;
+import io.github.vincemann.generic.crud.lib.test.service.result.handler.ServiceResultHandler;
+import io.github.vincemann.generic.crud.lib.test.service.result.matcher.EntityCollectionServiceResultMatcher;
+import io.github.vincemann.generic.crud.lib.test.service.result.matcher.EntityServiceResultMatcher;
 import org.springframework.beans.BeansException;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.TestComponent;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;

@@ -1,7 +1,7 @@
 package io.github.vincemann.generic.crud.lib.config;
 
-import io.github.vincemann.generic.crud.lib.test.equalChecker.FuzzyComparator;
-import io.github.vincemann.generic.crud.lib.test.equalChecker.IgnoreEntitiesFuzzyComparator;
+import io.github.vincemann.generic.crud.lib.test.equalChecker.ReflectionComparator;
+import io.github.vincemann.generic.crud.lib.test.equalChecker.IgnoreEntitiesReflectionComparator;
 import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.context.annotation.Bean;
 
@@ -9,7 +9,7 @@ import org.springframework.context.annotation.Bean;
 public class TestConfig {
 
     @Bean
-    public FuzzyComparator fuzzyComparator(){
-        return new IgnoreEntitiesFuzzyComparator();
+    public ReflectionComparator reflectionComparator(){
+        return new IgnoreEntitiesReflectionComparator();
     }
 }

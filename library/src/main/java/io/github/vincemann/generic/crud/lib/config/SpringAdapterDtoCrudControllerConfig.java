@@ -4,12 +4,14 @@ import io.github.vincemann.generic.crud.lib.controller.dtoMapper.BasicDtoMapper;
 import io.github.vincemann.generic.crud.lib.controller.dtoMapper.DtoMapper;
 import io.github.vincemann.generic.crud.lib.controller.errorHandling.exceptionHandler.DtoCrudControllerExceptionHandler;
 import io.github.vincemann.generic.crud.lib.controller.errorHandling.exceptionHandler.DtoCrudControllerExceptionHandlerImpl;
+import io.github.vincemann.generic.crud.lib.controller.springAdapter.EndpointsExposureContext;
 import io.github.vincemann.generic.crud.lib.controller.springAdapter.idFetchingStrategy.IdFetchingStrategy;
 import io.github.vincemann.generic.crud.lib.controller.springAdapter.idFetchingStrategy.LongUrlParamIdFetchingStrategy;
 import io.github.vincemann.generic.crud.lib.controller.springAdapter.mediaTypeStrategy.JSONMediaTypeStrategy;
 import io.github.vincemann.generic.crud.lib.controller.springAdapter.mediaTypeStrategy.MediaTypeStrategy;
 import io.github.vincemann.generic.crud.lib.controller.springAdapter.validationStrategy.JavaXValidationStrategy;
 import io.github.vincemann.generic.crud.lib.controller.springAdapter.validationStrategy.ValidationStrategy;
+import io.github.vincemann.generic.crud.lib.service.EndpointService;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
@@ -21,14 +23,14 @@ import org.springframework.validation.beanvalidation.LocalValidatorFactoryBean;
 public class SpringAdapterDtoCrudControllerConfig {
 
     @Bean
-    public DtoCrudControllerExceptionHandler dtoCrudControllerExceptionHandler() {
+    public DtoCrudControllerExceptionHandler getDtoCrudControllerExceptionHandler() {
         return new DtoCrudControllerExceptionHandlerImpl();
     }
 
 
     @Qualifier("default")
     @Bean
-    public DtoMapper defaultDtoMapper(){
+    public DtoMapper getDefaultDtoMapper(){
         return new BasicDtoMapper();
     }
 
@@ -46,6 +48,11 @@ public class SpringAdapterDtoCrudControllerConfig {
     }
 
     @Bean
+    public EndpointsExposureContext getEndpointsExposureContext(){
+        return new EndpointsExposureContext();
+    }
+
+    @Bean
     public MediaTypeStrategy getMediaTypeStrategy(){
         return new JSONMediaTypeStrategy();
     }
@@ -55,5 +62,7 @@ public class SpringAdapterDtoCrudControllerConfig {
         //use spring validator, so dependency injection is supported
         return new JavaXValidationStrategy(localValidatorFactoryBean.getValidator());
     }
+
+
 
 }

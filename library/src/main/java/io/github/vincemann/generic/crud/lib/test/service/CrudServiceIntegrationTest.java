@@ -47,7 +47,6 @@ public abstract class CrudServiceIntegrationTest
 
     @Override
     public void afterPropertiesSet() throws Exception {
-        //if user changed service -> update templates service version
         testTemplate.setServiceUnderTest(serviceUnderTest);
     }
 

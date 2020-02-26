@@ -3,6 +3,7 @@ package io.github.vincemann.demo.service.springDataJPA.it;
 import io.github.vincemann.demo.model.Pet;
 import io.github.vincemann.demo.model.PetType;
 import io.github.vincemann.demo.repositories.PetRepository;
+import io.github.vincemann.demo.service.PetService;
 import io.github.vincemann.demo.service.PetTypeService;
 import io.github.vincemann.demo.service.springDataJPA.PetJPAService;
 import io.github.vincemann.generic.crud.lib.service.exception.BadEntityException;
@@ -18,12 +19,15 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import java.time.LocalDate;
 
+import static io.github.vincemann.generic.crud.lib.test.service.request.CrudServiceRequestBuilders.save;
+import static io.github.vincemann.generic.crud.lib.test.service.result.matcher.compare.PropertyCompareResultMatchers.compare;
+
 @ExtendWith(SpringExtension.class)
 @SpringBootTest(webEnvironment =
         SpringBootTest.WebEnvironment.RANDOM_PORT)
 @ActiveProfiles(value = {"test","springdatajpa"})
 class PetServiceIntegrationTest
-        extends CrudServiceIntegrationTest<Pet,Long> {
+        extends CrudServiceIntegrationTest<PetService,Pet,Long> {
 
     @Autowired
     private PetTypeService petTypeService;
@@ -43,6 +47,7 @@ class PetServiceIntegrationTest
                 .birthDate(LocalDate.now())
                 .name("bello")
                 .build();
-        getSaveServiceTest().saveEntity_ShouldSucceed(dogWithDogType);
+        getTestTemplate().perform(save(dogWithDogType))
+                .andExpect(compare(dogWithDogType).withDbEntity().isEqual());
     }
 }

@@ -1,25 +1,30 @@
 package io.github.vincemann.demo.controllers;
 
-import io.github.vincemann.demo.model.*;
-import io.github.vincemann.demo.repositories.*;
+import io.github.vincemann.demo.model.Owner;
+import io.github.vincemann.demo.model.Pet;
+import io.github.vincemann.demo.model.PetType;
+import io.github.vincemann.demo.model.Specialty;
+import io.github.vincemann.demo.repositories.OwnerRepository;
+import io.github.vincemann.demo.repositories.PetRepository;
+import io.github.vincemann.demo.repositories.PetTypeRepository;
+import io.github.vincemann.demo.repositories.SpecialtyRepository;
 import io.github.vincemann.generic.crud.lib.model.IdentifiableEntity;
 import io.github.vincemann.generic.crud.lib.service.CrudService;
-import io.github.vincemann.generic.crud.lib.test.controller.CrudControllerIntegrationTest;
-import io.github.vincemann.generic.crud.lib.test.controller.crudTests.*;
+import io.github.vincemann.generic.crud.lib.test.controller.UrlParamIdMvcControllerTest;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.repository.CrudRepository;
 
 import java.time.LocalDate;
 
 @Getter
 @Setter
 @Slf4j
-public abstract class MyControllerIntegrationTest<E extends IdentifiableEntity<Long>>
-        extends CrudControllerIntegrationTest<E,Long>
+public abstract class TestDataInitMvcControllerTest<S extends CrudService<E,Long,? extends CrudRepository<E,Long>>,E extends IdentifiableEntity<Long>>
+        extends UrlParamIdMvcControllerTest<S,E,Long>
 
 {
 
@@ -35,25 +40,22 @@ public abstract class MyControllerIntegrationTest<E extends IdentifiableEntity<L
     private CrudService<Specialty,Long,SpecialtyRepository> specialtyService;
 
 
+
     @Autowired
-    public void injectOwnerService(CrudService<Owner, Long, OwnerRepository> ownerService) {
-        Assertions.assertNotNull(ownerService);
-        this.ownerService = wrapWithEagerFetchProxy(ownerService);
+    public void setOwnerService(CrudService<Owner, Long, OwnerRepository> ownerService) {
+        this.ownerService = ownerService;
     }
     @Autowired
-    public void injectPetService(CrudService<Pet, Long, PetRepository> petService) {
-        Assertions.assertNotNull(petService);
-        this.petService = wrapWithEagerFetchProxy(petService);
+    public void setPetService(CrudService<Pet, Long, PetRepository> petService) {
+        this.petService = petService;
     }
     @Autowired
-    public void injectPetTypeService(CrudService<PetType, Long, PetTypeRepository> petTypeService) {
-        Assertions.assertNotNull(petTypeService);
-        this.petTypeService = wrapWithEagerFetchProxy(petTypeService);
+    public void setPetTypeService(CrudService<PetType, Long, PetTypeRepository> petTypeService) {
+        this.petTypeService = petTypeService;
     }
     @Autowired
-    public void injectSpecialtyService(CrudService<Specialty, Long, SpecialtyRepository> specialtyService) {
-        Assertions.assertNotNull(specialtyService);
-        this.specialtyService = wrapWithEagerFetchProxy(specialtyService);
+    public void setSpecialtyService(CrudService<Specialty, Long, SpecialtyRepository> specialtyService) {
+        this.specialtyService = specialtyService;
     }
 
     @BeforeEach

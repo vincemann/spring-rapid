@@ -24,16 +24,17 @@ public class BasicDtoMapper implements DtoMapper {
     }
 
     @Override
-    public <Dto extends IdentifiableEntity> Dto mapEntityToDto(Object source, Class<Dto> destinationClass) throws EntityMappingException {
+    public <Dto extends IdentifiableEntity> Dto mapToDto(IdentifiableEntity source, Class<Dto> destinationClass) throws EntityMappingException {
         return modelMapper.map(source,destinationClass);
     }
+
 
     public BasicDtoMapper() {
         this.modelMapper= new ModelMapper();
     }
 
     @Override
-    public <E extends IdentifiableEntity> E mapDtoToEntity(Object source, Class<E> destinationClass) throws EntityMappingException {
+    public <E extends IdentifiableEntity> E mapToEntity(IdentifiableEntity source, Class<E> destinationClass) throws EntityMappingException {
         return modelMapper.map(source,destinationClass);
     }
 }

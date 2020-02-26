@@ -7,10 +7,10 @@ import io.github.vincemann.demo.service.OwnerService;
 import io.github.vincemann.demo.service.PetService;
 import io.github.vincemann.demo.service.PetTypeService;
 import io.github.vincemann.demo.service.plugin.OwnerOfTheYearPlugin;
-import io.github.vincemann.generic.crud.lib.model.IdentifiableEntity;
 import io.github.vincemann.generic.crud.lib.service.exception.BadEntityException;
 import io.github.vincemann.generic.crud.lib.service.exception.EntityNotFoundException;
 import io.github.vincemann.generic.crud.lib.service.exception.NoIdException;
+import io.github.vincemann.generic.crud.lib.test.equalChecker.ReflectionComparator;
 import io.github.vincemann.generic.crud.lib.test.exception.InvalidConfigurationModificationException;
 import io.github.vincemann.generic.crud.lib.test.service.CrudServiceIntegrationTest;
 import io.github.vincemann.generic.crud.lib.test.service.result.EntityServiceResult;
@@ -30,14 +30,13 @@ import java.time.LocalDate;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Optional;
-import java.util.function.Function;
 
 import static io.github.vincemann.generic.crud.lib.test.service.CopyNonNullValuesEntityMerger.merge;
 import static io.github.vincemann.generic.crud.lib.test.service.request.CrudServiceRequestBuilders.*;
-import static io.github.vincemann.generic.crud.lib.test.service.result.resultMatcher.compare.FuzzyCompareResultMatchers.fuzzyCompare;
-import static io.github.vincemann.generic.crud.lib.test.service.result.resultMatcher.compare.PropertyCompareResultMatchers.compare;
+import static io.github.vincemann.generic.crud.lib.test.service.result.matcher.compare.ReflectionCompareResultMatchers.deepCompare;
+import static io.github.vincemann.generic.crud.lib.test.service.result.matcher.compare.PropertyCompareResultMatchers.compare;
 
-//@DataJpaTest cant be used because i need autowired components from generic-crud-lib
+//@DataJpaTest cant be used because i need autowired components from generic-crud-lib, edit just use @Import
 @ActiveProfiles(value = {"test", "springdatajpa"})
 @Transactional
 @DataJpaTest
@@ -47,6 +46,8 @@ class OwnerServiceIT
     @PersistenceContext
     EntityManager entityManager;
 
+    @Autowired
+    ReflectionComparator<Owner> reflectionComparator;
 
     private Owner ownerWithoutPets;
     private Owner ownerWithOnePet;
@@ -94,22 +95,18 @@ class OwnerServiceIT
     public void saveOwnerWithoutPets_ShouldSucceed() {
         EntityServiceResult entityServiceResult = getTestTemplate().perform(save(ownerWithoutPets))
                 .andExpect(compare(ownerWithoutPets).withReturnedAndDbEntity()
-                        .property(Owner::getTelephone)
+                        .property(ownerWithoutPets::getTelephone)
+                        .property(ownerWithoutPets::getAddress)
                         .isEqual())
                 .andReturn();
         Assertions.assertEquals(0,((Owner) entityServiceResult.getResult()).getPets().size());
-
-        acceptGetter(Owner::getTelephone);
     }
 
-    private void acceptGetter(Function<IdentifiableEntity,?> getter){
-
-    }
 
     @Test
     public void saveOwnerWithPet_ShouldSucceed() throws BadEntityException {
         getTestTemplate().perform(save(ownerWithOnePet))
-                .andExpect(fuzzyCompare(ownerWithOnePet).withReturnedEntity().isEqual());
+                .andExpect(deepCompare(ownerWithOnePet).withReturnedEntity().isEqual());
     }
 
     @Test
@@ -126,7 +123,7 @@ class OwnerServiceIT
                 .build();
 
         getTestTemplate().perform(save(owner))
-                .andExpect(fuzzyCompare(owner).withReturnedAndDbEntity().isEqual());
+                .andExpect(deepCompare(owner).withReturnedAndDbEntity().isEqual());
     }
 
 
@@ -140,7 +137,7 @@ class OwnerServiceIT
 
         getTestTemplate().perform(partialUpdate(diffTelephoneNumberUpdate))
                 .andExpect(
-                        fuzzyCompare(merge(diffTelephoneNumberUpdate,toUpdate))
+                        deepCompare(merge(diffTelephoneNumberUpdate,toUpdate))
                         .withReturnedAndDbEntity()
                                 .isEqual()
                 );
@@ -173,35 +170,33 @@ class OwnerServiceIT
         ownerUpdateRequest.getPets().add(savedPetToAdd);
 
         //when
+        Owner saved = getRepository().save(owner);
+        ownerUpdateRequest.setId(saved.getId());
 
-//        Owner updatedOwner = getUpdateServiceTest().updateEntity_ShouldSucceed(owner, ownerUpdateRequest,
-//                SuccessfulUpdateServiceTestConfiguration.<Owner, Long>builder()
-//                        .fullUpdate(false)
-//                        .postUpdateCallback((request, afterUpdate) -> {
-//                            Assertions.assertEquals(2, afterUpdate.getPets().size());
-//                            Assertions.assertEquals(1, afterUpdate.getPets().stream().filter(owner1 -> owner1.getName().equals(newPetName)).count());
-//                        })
-//                        .build());
+        getTestTemplate().perform(partialUpdate(ownerUpdateRequest))
+                .andExpect(
+                        compare(merge(ownerUpdateRequest,owner))
+                        .property(ownerUpdateRequest::getPets)
+                        .sizeIs(2)
+                );
     }
 
     @Test
     public void findOwnerOfTheYear_shouldSucceed_andTriggerPluginCallback() {
         //owner of the years name is 42
         ownerWithOnePet.setFirstName("42");
-        Owner savedOwner = repoSave(ownerWithOnePet);
-        OwnerService ownerService = getCastedCrudService();
-        Optional<Owner> ownerOfTheYear = ownerService.findOwnerOfTheYear();
+        Owner savedOwner = getRepository().save(ownerWithOnePet);
+        Optional<Owner> ownerOfTheYear = getServiceUnderTest().findOwnerOfTheYear();
         Assertions.assertTrue(ownerOfTheYear.isPresent());
         Mockito.verify(ownerOfTheYearPlugin).onAfterFindOwnerOfTheYear(ownerOfTheYear);
     }
 
     @Test
     public void findByLastName_shouldSucceed() {
-        Owner savedOwner = repoSave(ownerWithOnePet);
-        OwnerService ownerService = getCastedCrudService();
-        Optional<Owner> byLastName = ownerService.findByLastName(ownerWithOnePet.getLastName());
+        Owner savedOwner = getRepository().save(ownerWithOnePet);
+        Optional<Owner> byLastName = getServiceUnderTest().findByLastName(ownerWithOnePet.getLastName());
         Assertions.assertTrue(byLastName.isPresent());
-        Assertions.assertTrue(getDefaultEqualChecker().isEqual(savedOwner, byLastName.get()));
+        Assertions.assertTrue(reflectionComparator.isEqual(savedOwner, byLastName.get()));
     }
 
 
