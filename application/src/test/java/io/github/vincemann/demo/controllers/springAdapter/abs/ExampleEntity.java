@@ -1,5 +1,6 @@
-package io.github.vincemann.demo.controllers.springAdapter;
+package io.github.vincemann.demo.controllers.springAdapter.abs;
 
+import io.github.vincemann.generic.crud.lib.model.IdentifiableEntity;
 import io.github.vincemann.generic.crud.lib.model.IdentifiableEntityImpl;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -10,6 +11,6 @@ import lombok.Setter;
 @Getter
 @Setter
 @NoArgsConstructor
-public class ExampleWriteDto extends IdentifiableEntityImpl<Long> {
+public class ExampleEntity extends IdentifiableEntityImpl<Long> {
     private String name;
 }

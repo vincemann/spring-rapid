@@ -7,11 +7,12 @@ import io.github.vincemann.demo.service.OwnerService;
 import io.github.vincemann.demo.service.PetService;
 import io.github.vincemann.demo.service.PetTypeService;
 import io.github.vincemann.demo.service.plugin.OwnerOfTheYearPlugin;
+import io.github.vincemann.generic.crud.lib.config.SpringAdapterDtoCrudControllerConfig;
+import io.github.vincemann.generic.crud.lib.service.EndpointService;
 import io.github.vincemann.generic.crud.lib.service.exception.BadEntityException;
 import io.github.vincemann.generic.crud.lib.service.exception.EntityNotFoundException;
 import io.github.vincemann.generic.crud.lib.service.exception.NoIdException;
 import io.github.vincemann.generic.crud.lib.test.equalChecker.ReflectionComparator;
-import io.github.vincemann.generic.crud.lib.test.exception.InvalidConfigurationModificationException;
 import io.github.vincemann.generic.crud.lib.test.service.CrudServiceIntegrationTest;
 import io.github.vincemann.generic.crud.lib.test.service.result.EntityServiceResult;
 import org.junit.jupiter.api.Assertions;
@@ -21,6 +22,7 @@ import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.boot.test.mock.mockito.SpyBean;
+import org.springframework.context.annotation.ComponentScan;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -32,15 +34,16 @@ import java.util.HashSet;
 import java.util.Optional;
 
 import static io.github.vincemann.generic.crud.lib.test.service.CopyNonNullValuesEntityMerger.merge;
-import static io.github.vincemann.generic.crud.lib.test.service.request.CrudServiceRequestBuilders.*;
-import static io.github.vincemann.generic.crud.lib.test.service.result.matcher.compare.ReflectionCompareResultMatchers.deepCompare;
+import static io.github.vincemann.generic.crud.lib.test.service.request.CrudServiceRequestBuilders.partialUpdate;
+import static io.github.vincemann.generic.crud.lib.test.service.request.CrudServiceRequestBuilders.save;
 import static io.github.vincemann.generic.crud.lib.test.service.result.matcher.compare.PropertyCompareResultMatchers.compare;
+import static io.github.vincemann.generic.crud.lib.test.service.result.matcher.compare.ReflectionCompareResultMatchers.deepCompare;
 
 //@DataJpaTest cant be used because i need autowired components from generic-crud-lib, edit just use @Import
-@ActiveProfiles(value = {"test", "springdatajpa"})
+@ActiveProfiles(value = {"test","springdatajpa"})
 @Transactional
-@DataJpaTest
-class OwnerServiceIT
+@DataJpaTest(properties = "web.active=false")
+class OwnerServiceIntegrationTest
         extends CrudServiceIntegrationTest<OwnerService,Owner, Long> {
 
     @PersistenceContext
@@ -59,6 +62,7 @@ class OwnerServiceIT
 
     @Autowired
     private PetService petService;
+
     @Autowired
     private PetTypeService petTypeService;
 
@@ -128,7 +132,7 @@ class OwnerServiceIT
 
 
     @Test
-    public void updateOwner_ChangeTelephoneNumber_ShouldSucceed() throws BadEntityException, EntityNotFoundException, NoIdException, InvalidConfigurationModificationException {
+    public void updateOwner_ChangeTelephoneNumber_ShouldSucceed() throws BadEntityException, EntityNotFoundException, NoIdException {
         Owner diffTelephoneNumberUpdate = Owner.builder()
                 .telephone(ownerWithoutPets.getTelephone() + "123")
                 .build();
@@ -144,7 +148,7 @@ class OwnerServiceIT
     }
 
     @Test
-    public void updateOwner_addAnotherPet_shouldSucceed() throws BadEntityException, EntityNotFoundException, InvalidConfigurationModificationException, NoIdException {
+    public void updateOwner_addAnotherPet_shouldSucceed() throws BadEntityException, EntityNotFoundException,  NoIdException {
         //given
         Pet savedPet = petService.save(testPet);
         String newPetName = "petToAdd";

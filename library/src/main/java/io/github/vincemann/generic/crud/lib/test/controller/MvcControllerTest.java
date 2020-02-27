@@ -152,7 +152,6 @@ public abstract class MvcControllerTest
         return getController().getJsonMapper().readValue(s,dtoClass);
     }
 
-
     public <C extends SpringAdapterDtoCrudController<E,Id>> C getController(){
         return (C) controller;
     }

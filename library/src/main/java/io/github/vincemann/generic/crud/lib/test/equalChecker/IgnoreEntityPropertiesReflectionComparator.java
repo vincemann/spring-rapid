@@ -4,8 +4,8 @@ import de.danielbechler.diff.ObjectDiffer;
 import de.danielbechler.diff.ObjectDifferBuilder;
 import de.danielbechler.diff.node.DiffNode;
 import de.danielbechler.diff.node.Visit;
-import junit.framework.AssertionFailedError;
 import lombok.extern.slf4j.Slf4j;
+import org.opentest4j.AssertionFailedError;
 import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Component;
 
@@ -15,18 +15,20 @@ import java.util.Collection;
 @Slf4j
 @Component
 @Primary
-public class IgnoreEntitiesReflectionComparator<T> implements ReflectionComparator<T> {
+public class IgnoreEntityPropertiesReflectionComparator<T> implements ReflectionComparator<T> {
     private static final String ENTITY_GROUP = "entities";
 
     private ObjectDiffer objectDiffer;
 
-    public IgnoreEntitiesReflectionComparator() {
+    public IgnoreEntityPropertiesReflectionComparator() {
 //        this.objectDiffer = ObjectDifferBuilder.startBuilding()
 //                .filtering()
 //                .omitNodesWithState(DiffNode.State.IGNORED)
 //                .omitNodesWithState(DiffNode.State.CIRCULAR)
 //                .and()
 //                .build();
+
+        //exclude @Entity instances
         this.objectDiffer = ObjectDifferBuilder.startBuilding()
                 .categories()
                 .ofType(Entity.class)

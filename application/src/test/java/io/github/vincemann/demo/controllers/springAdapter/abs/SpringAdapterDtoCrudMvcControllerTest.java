@@ -1,4 +1,4 @@
-package io.github.vincemann.demo.controllers.springAdapter;
+package io.github.vincemann.demo.controllers.springAdapter.abs;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.github.vincemann.generic.crud.lib.config.SpringAdapterDtoCrudControllerConfig;
@@ -40,7 +40,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@ActiveProfiles(value = {"test", "springdatajpa"})
+@ActiveProfiles(value = {"test"})
 //manually add only the autoConfiguration rly needed
 @SpringJUnitWebConfig(
         {
@@ -90,11 +90,11 @@ class SpringAdapterDtoCrudMvcControllerTest
     static final ExampleReadDto requestDto = new ExampleReadDto("request testDto");
     static final ExampleWriteDto returnDto = new ExampleWriteDto("return TestDto");
     static final Long entityId = 42L;
-    static final String jsonRequestDto = "{ExampleRequestDto : name : requestDto } ";
     static final String jsonReturnDto = "{ExampleReturnDto : name : returnDto } ";
 
     @TestConfiguration
     public static class TestConfig  {
+
 
         @Bean
         @Primary

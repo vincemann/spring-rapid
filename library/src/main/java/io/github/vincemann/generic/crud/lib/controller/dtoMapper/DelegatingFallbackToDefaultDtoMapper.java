@@ -1,30 +1,26 @@
 package io.github.vincemann.generic.crud.lib.controller.dtoMapper;
 
-import io.github.vincemann.generic.crud.lib.controller.dtoMapper.DtoMapper;
+import io.github.vincemann.generic.crud.lib.config.WebComponent;
 import io.github.vincemann.generic.crud.lib.controller.dtoMapper.exception.EntityMappingException;
 import io.github.vincemann.generic.crud.lib.model.IdentifiableEntity;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.context.annotation.Primary;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
 import java.util.stream.Collectors;
 
-@Component
+@WebComponent
 @Slf4j
-@Primary
 public class DelegatingFallbackToDefaultDtoMapper implements DtoMapper {
 
     private List<DtoMapper> delegates;
     private DtoMapper defaultDelegate;
 
     @Autowired
-    public DelegatingFallbackToDefaultDtoMapper(List<DtoMapper> delegates, @Qualifier("default") DtoMapper defaultDelegate) {
-        this.delegates = delegates;
-        this.delegates.remove(defaultDelegate);
-        this.delegates.remove(this);
+    public DelegatingFallbackToDefaultDtoMapper(@Qualifier("default") DtoMapper defaultDelegate) {
         this.defaultDelegate = defaultDelegate;
     }
 
@@ -36,7 +32,14 @@ public class DelegatingFallbackToDefaultDtoMapper implements DtoMapper {
         }catch (IllegalArgumentException e){
             return false;
         }
+    }
 
+    @Autowired
+    @Lazy
+    public void setDelegates(List<DtoMapper> delegates) {
+        this.delegates = delegates;
+        this.delegates.remove(defaultDelegate);
+        this.delegates.remove(this);
     }
 
     @Override

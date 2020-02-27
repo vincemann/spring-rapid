@@ -33,7 +33,8 @@ public class CrudServiceRequestBuilders {
     private static ServiceRequestBuilder createBuilder(String methodName, List<Object> args) {
 
         Object[] argTypes = args.stream().map(e -> e.getClass()).collect(Collectors.toList()).toArray();
-        Class<?>[] argTypeArray = Arrays.copyOf(argTypes, args.size(), Class[].class);
+        Class<?>[] argTypeArray //= Arrays.copyOf(argTypes, args.size(), Class[].class);
+        = {IdentifiableEntity.class};
         return serviceUnderTest -> {
             try {
                 return ServiceRequest.builder()

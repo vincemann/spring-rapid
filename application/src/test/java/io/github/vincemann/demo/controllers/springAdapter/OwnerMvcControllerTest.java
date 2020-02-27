@@ -52,8 +52,6 @@ class OwnerMvcControllerTest
     }
 
     void initTestData() throws BadEntityException {
-
-
         this.pet1 = petService.save(Pet.builder().name("pet1").petType(getTestPetType()).build());
         this.pet2 = petService.save(Pet.builder().name("pet2").petType(getTestPetType()).build());
 

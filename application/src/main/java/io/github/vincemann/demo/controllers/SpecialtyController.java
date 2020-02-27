@@ -1,12 +1,12 @@
 package io.github.vincemann.demo.controllers;
 
+import io.github.vincemann.generic.crud.lib.config.WebComponent;
 import io.github.vincemann.generic.crud.lib.controller.dtoMapper.DtoMappingContext;
 import io.github.vincemann.generic.crud.lib.controller.springAdapter.SpringAdapterDtoCrudController;
 import io.github.vincemann.demo.dtos.SpecialtyDto;
 import io.github.vincemann.demo.model.Specialty;
-import org.springframework.stereotype.Controller;
 
-@Controller
+@WebComponent
 public class SpecialtyController
         extends SpringAdapterDtoCrudController<Specialty,Long> {
 
