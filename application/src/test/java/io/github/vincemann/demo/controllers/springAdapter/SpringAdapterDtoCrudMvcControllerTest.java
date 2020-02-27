@@ -1,14 +1,14 @@
 package io.github.vincemann.demo.controllers.springAdapter;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import io.github.vincemann.generic.crud.lib.config.SpringAdapterDtoCrudControllerConfig;
 import io.github.vincemann.generic.crud.lib.controller.dtoMapper.DtoMapper;
 import io.github.vincemann.generic.crud.lib.controller.dtoMapper.DtoMappingContext;
 import io.github.vincemann.generic.crud.lib.controller.springAdapter.idFetchingStrategy.IdFetchingStrategy;
-import io.github.vincemann.generic.crud.lib.controller.springAdapter.idFetchingStrategy.exception.IdFetchingException;
-import io.github.vincemann.generic.crud.lib.controller.springAdapter.mediaTypeStrategy.MediaTypeStrategy;
 import io.github.vincemann.generic.crud.lib.controller.springAdapter.validationStrategy.ValidationStrategy;
 import io.github.vincemann.generic.crud.lib.service.EndpointService;
 import io.github.vincemann.generic.crud.lib.test.controller.MvcControllerTest;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
@@ -27,17 +27,17 @@ import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit.jupiter.web.SpringJUnitWebConfig;
-import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
 import javax.servlet.http.HttpServletRequest;
-
+import java.util.Arrays;
+import java.util.HashSet;
 import java.util.Optional;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @ActiveProfiles(value = {"test", "springdatajpa"})
@@ -66,7 +66,7 @@ class SpringAdapterDtoCrudMvcControllerTest
     @Autowired
     DtoMappingContext dtoMappingContext;
 
-    @MockBean
+    @SpyBean
     DtoMapper dtoMapper;
 
     @MockBean
@@ -75,11 +75,11 @@ class SpringAdapterDtoCrudMvcControllerTest
     @MockBean
     IdFetchingStrategy<Long> idFetchingStrategy;
 
-    @Autowired//should autowire mock see below
-    MediaTypeStrategy mediaTypeStrategy;
-
     @Autowired
     MockHttpServletRequest mockHttpServletRequest;
+
+    @SpyBean
+    ObjectMapper objectMapper;
 
 
     Class readDtoClass = ExampleReadDto.class;
@@ -90,19 +90,11 @@ class SpringAdapterDtoCrudMvcControllerTest
     static final ExampleReadDto requestDto = new ExampleReadDto("request testDto");
     static final ExampleWriteDto returnDto = new ExampleWriteDto("return TestDto");
     static final Long entityId = 42L;
-    static final String serializedRequestEntity = "{ExampleEntity : name : testEntity } ";
+    static final String jsonRequestDto = "{ExampleRequestDto : name : requestDto } ";
+    static final String jsonReturnDto = "{ExampleReturnDto : name : returnDto } ";
 
     @TestConfiguration
     public static class TestConfig  {
-
-        @Bean
-        @Primary
-        public MediaTypeStrategy mediaTypeStrategy() throws Exception {
-            MediaTypeStrategy mediaTypeStrategy = Mockito.mock(MediaTypeStrategy.class);
-            when(mediaTypeStrategy.getMediaType()).thenReturn(MediaType.APPLICATION_JSON_VALUE);
-            when(mediaTypeStrategy.writeDto(requestDto)).thenReturn(serializedRequestEntity);
-            return mediaTypeStrategy;
-        }
 
         @Bean
         @Primary
@@ -119,8 +111,24 @@ class SpringAdapterDtoCrudMvcControllerTest
     }
 
     @Test
-    void findAll() {
+    void findAll_shouldSucceed() throws Exception {
+        when(service.findAll())
+                .thenReturn(new HashSet<>(Arrays.asList(returnEntity)));
+        when(dtoMappingContext.getFindAllReturnDtoClass())
+                .thenReturn(readDtoClass);
+        when(dtoMapper.mapToDto(returnEntity,readDtoClass))
+                .thenReturn(returnDto);
+        when(objectMapper.writeValueAsString(eq(new HashSet<>(Arrays.asList(returnDto)))))
+                .thenReturn(jsonReturnDto);
 
+        performFindAll()
+                .andExpect(status().isOk())
+                .andExpect(content().string(jsonReturnDto));
+
+        verify(dtoMapper).mapToDto(returnEntity,readDtoClass);
+        verify(objectMapper).writeValueAsString(eq(new HashSet<>(Arrays.asList(returnDto))));
+        verify(controllerSpy).beforeFindAll(any());
+        verify(service).findAll();
     }
 
     @Test
@@ -137,23 +145,33 @@ class SpringAdapterDtoCrudMvcControllerTest
 
     void update_shouldSucceed(boolean full) throws Exception {
         //given
-        when(service.update(requestEntity,full)).thenReturn(returnEntity);
-        when(mediaTypeStrategy.readDto(anyString(), eq(readDtoClass))).thenReturn(requestDto);
-        when(dtoMapper.mapToEntity(requestDto, getController().getEntityClass())).thenReturn(requestEntity);
-        when(dtoMappingContext.getUpdateReturnDtoClass()).thenReturn(writeDtoClass);
-        when(dtoMapper.mapToDto(returnEntity, writeDtoClass)).thenReturn(returnDto);
+        when(service.update(requestEntity,full))
+                .thenReturn(returnEntity);
+        doReturn(requestDto)
+                .when(objectMapper).readValue(Mockito.anyString(), Mockito.eq(readDtoClass));
+        when(dtoMapper.mapToEntity(requestDto, getController().getEntityClass()))
+                .thenReturn(requestEntity);
+        when(dtoMappingContext.getUpdateReturnDtoClass())
+                .thenReturn(writeDtoClass);
+        when(dtoMapper.mapToDto(returnEntity, writeDtoClass))
+                .thenReturn(returnDto);
+        when(objectMapper.writeValueAsString(returnDto))
+                .thenReturn(jsonReturnDto);
 
         //when
-        performPartialUpdate(requestDto).andExpect(status().isOk());
+        performUpdate(requestDto,full)
+                .andExpect(status().isOk())
+                .andExpect(content().string(jsonReturnDto));
 
         //then
         verify(controllerSpy).update(any(HttpServletRequest.class));
-        verify(mediaTypeStrategy).readDto(anyString(), eq(readDtoClass));
+        verify(objectMapper).readValue(anyString(), eq(readDtoClass));
         verify(validationStrategy).validateDto(eq(requestDto), any(HttpServletRequest.class));
         verify(controllerSpy).beforeUpdate(eq(requestDto), any(HttpServletRequest.class),eq(full));
         verify(dtoMapper).mapToEntity(requestDto, getController().getEntityClass());
         verify(service).update(requestEntity,full);
         verify(dtoMapper).mapToDto(returnEntity, writeDtoClass);
+        verify(objectMapper,atLeastOnce()).writeValueAsString(returnDto);
 
         verifyNoMoreInteractions(validationStrategy);
         verifyNoMoreInteractions(dtoMapper);
@@ -165,23 +183,27 @@ class SpringAdapterDtoCrudMvcControllerTest
         //given
         when(service.save(requestEntity)).thenReturn(returnEntity);
         when(dtoMappingContext.getCreateRequestDtoClass()).thenReturn(readDtoClass);
-        when(mediaTypeStrategy.readDto(anyString(), eq(readDtoClass))).thenReturn(requestDto);
+        doReturn(requestDto)
+                .when(objectMapper).readValue(Mockito.anyString(), Mockito.eq(readDtoClass));
         when(dtoMapper.mapToEntity(requestDto, getController().getEntityClass())).thenReturn(requestEntity);
         when(dtoMappingContext.getCreateReturnDtoClass()).thenReturn(writeDtoClass);
         when(dtoMapper.mapToDto(returnEntity, writeDtoClass)).thenReturn(returnDto);
+        when(objectMapper.writeValueAsString(returnDto)).thenReturn(jsonReturnDto);
 
         //when
         performCreate(requestDto)
-                .andExpect(status().isOk());
+                .andExpect(status().isOk())
+                .andExpect(content().string(jsonReturnDto));
 
         //then
         verify(controllerSpy).create(any(HttpServletRequest.class));
-        verify(mediaTypeStrategy).readDto(anyString(), eq(readDtoClass));
+        verify(objectMapper).readValue(anyString(), eq(readDtoClass));
         verify(validationStrategy).validateDto(eq(requestDto), any(HttpServletRequest.class));
         verify(controllerSpy).beforeCreate(eq(requestDto), any(HttpServletRequest.class));
         verify(dtoMapper).mapToEntity(requestDto, getController().getEntityClass());
         verify(service).save(requestEntity);
         verify(dtoMapper).mapToDto(returnEntity, writeDtoClass);
+        verify(objectMapper,atLeastOnce()).writeValueAsString(returnDto);
 
         verifyNoMoreInteractions(validationStrategy);
         verifyNoMoreInteractions(dtoMapper);
@@ -219,9 +241,10 @@ class SpringAdapterDtoCrudMvcControllerTest
         when(idFetchingStrategy.fetchId(any())).thenReturn(entityId);
 
         getMockMvc().perform(delete(getDeleteUrl())
-                .contentType(getController().getMediaTypeStrategy().getMediaType())
-                .accept(getController().getMediaTypeStrategy().getMediaType()))
-                .andExpect(status().isOk());
+                .contentType(MediaType.APPLICATION_JSON_UTF8)
+                .accept(MediaType.APPLICATION_JSON_UTF8))
+                .andExpect(status().isOk())
+                .andExpect(content().string(""));
 
 
         verify(idFetchingStrategy).fetchId(any());
@@ -231,6 +254,8 @@ class SpringAdapterDtoCrudMvcControllerTest
         verify(service).deleteById(entityId);
     }
 
-
-
+    @AfterEach
+    void tearDown() {
+        Mockito.clearInvocations(dtoMappingContext);
+    }
 }

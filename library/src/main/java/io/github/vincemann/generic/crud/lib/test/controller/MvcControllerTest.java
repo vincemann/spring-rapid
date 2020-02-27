@@ -1,9 +1,9 @@
 package io.github.vincemann.generic.crud.lib.test.controller;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import io.github.vincemann.generic.crud.lib.controller.dtoMapper.DtoMappingContext;
 import io.github.vincemann.generic.crud.lib.controller.dtoMapper.exception.EntityMappingException;
 import io.github.vincemann.generic.crud.lib.controller.springAdapter.SpringAdapterDtoCrudController;
-import io.github.vincemann.generic.crud.lib.controller.springAdapter.mediaTypeStrategy.ProcessDtoException;
 import io.github.vincemann.generic.crud.lib.model.IdentifiableEntity;
 import io.github.vincemann.generic.crud.lib.service.CrudService;
 import lombok.Getter;
@@ -20,6 +20,7 @@ import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 
+import java.io.IOException;
 import java.io.Serializable;
 import java.lang.reflect.ParameterizedType;
 
@@ -43,6 +44,7 @@ public abstract class MvcControllerTest
             implements InitializingBean {
 
     private static final String LOCAL_HOST = "127.0.0.1";
+
 
     private Class<E> entityClass = (Class<E>) ((ParameterizedType) this.getClass().getGenericSuperclass()).getActualTypeArguments()[0];
     private DtoMappingContext dtoMappingContext;
@@ -74,10 +76,6 @@ public abstract class MvcControllerTest
         String mediaType = MediaType.APPLICATION_JSON_UTF8_VALUE;
         this.mockMvc = MockMvcBuilders.webAppContextSetup(wac)
                 .defaultRequest(get("/").accept(mediaType))
-//                .defaultRequest(post("/").contentType(mediaType))
-//                .defaultRequest(post("/").accept(mediaType))
-//                .defaultRequest(put("/").contentType(mediaType))
-//                .defaultRequest(put("/").accept(mediaType))
                 .alwaysExpect(content().contentType(mediaType))
                 .alwaysDo(print())
                 .build();
@@ -104,16 +102,16 @@ public abstract class MvcControllerTest
                 post(getCreateUrl())
                         .content(serialize(dto))
                         //todo this must be set
-                        .contentType(getController().getMediaTypeStrategy().getMediaType())
+                        .contentType(MediaType.APPLICATION_JSON_UTF8_VALUE)
         );
     }
 
-    private ResultActions performUpdate(IdentifiableEntity<Id> updateDto, Boolean full) throws Exception {
+    public ResultActions performUpdate(IdentifiableEntity<Id> updateDto, Boolean full) throws Exception {
         String fullUpdateQueryParam = getController().getFullUpdateQueryParam();
 
         return getMockMvc().perform(put(getUpdateUrl()+"?"+fullUpdateQueryParam+"="+full.toString())
                 .content(serialize(updateDto))
-                .contentType(getController().getMediaTypeStrategy().getMediaType()));
+                .contentType(MediaType.APPLICATION_JSON_UTF8_VALUE));
     }
 
     public ResultActions performFullUpdate(IdentifiableEntity<Id> updateDto) throws Exception {
@@ -146,12 +144,12 @@ public abstract class MvcControllerTest
         return getController().getFindAllUrl();
     }
 
-    public String serialize(IdentifiableEntity<Id> dto) throws ProcessDtoException {
-        return getController().getMediaTypeStrategy().writeDto(dto);
+    public String serialize(Object o) throws JsonProcessingException {
+        return getController().getJsonMapper().writeValueAsString(o);
     }
 
-    public <Dto extends IdentifiableEntity<Id>> Dto deserialize(String s,Class<Dto> dtoClass) throws ProcessDtoException {
-        return getController().getMediaTypeStrategy().readDto(s,dtoClass);
+    public <Dto extends IdentifiableEntity<Id>> Dto deserialize(String s,Class<Dto> dtoClass) throws IOException {
+        return getController().getJsonMapper().readValue(s,dtoClass);
     }
 
 

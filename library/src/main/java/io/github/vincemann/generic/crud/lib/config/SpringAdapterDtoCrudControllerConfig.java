@@ -1,5 +1,8 @@
 package io.github.vincemann.generic.crud.lib.config;
 
+import com.fasterxml.jackson.databind.MapperFeature;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import io.github.vincemann.generic.crud.lib.controller.dtoMapper.BasicDtoMapper;
 import io.github.vincemann.generic.crud.lib.controller.dtoMapper.DtoMapper;
 import io.github.vincemann.generic.crud.lib.controller.errorHandling.exceptionHandler.DtoCrudControllerExceptionHandler;
@@ -61,6 +64,14 @@ public class SpringAdapterDtoCrudControllerConfig {
     public ValidationStrategy getValidationStrategy(LocalValidatorFactoryBean localValidatorFactoryBean){
         //use spring validator, so dependency injection is supported
         return new JavaXValidationStrategy(localValidatorFactoryBean.getValidator());
+    }
+
+    @Bean
+    public ObjectMapper objectMapper(){
+        ObjectMapper mapper= new ObjectMapper();
+        mapper.registerModule(new JavaTimeModule());
+        mapper.getDeserializationConfig().with(MapperFeature.USE_STATIC_TYPING);
+        return mapper;
     }
 
 
