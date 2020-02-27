@@ -8,6 +8,7 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 public class CrudServiceConfig {
 
+    
     @Bean
     public CrudServiceFinder provideCrudServiceFinder(){
         return new PackageScanningCrudServiceFinder();

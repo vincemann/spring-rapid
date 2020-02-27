@@ -10,7 +10,6 @@ import org.springframework.stereotype.Component;
 
 @Getter
 @Setter
-@Scope(scopeName = ConfigurableBeanFactory.SCOPE_PROTOTYPE)
 /**
  * Gives User fine grained control about which endpoints should be exposed by {@link SpringAdapterDtoCrudController}.
  */

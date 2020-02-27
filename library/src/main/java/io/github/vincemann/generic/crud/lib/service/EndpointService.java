@@ -6,11 +6,14 @@ import org.springframework.web.servlet.mvc.method.RequestMappingInfo;
 import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping;
 
 import java.lang.reflect.Method;
-@Service
 public class EndpointService {
 
-    @Autowired
+
     private RequestMappingHandlerMapping requestMappingHandlerMapping;
+
+    public EndpointService(RequestMappingHandlerMapping requestMappingHandlerMapping) {
+        this.requestMappingHandlerMapping = requestMappingHandlerMapping;
+    }
 
     public void addMapping(RequestMappingInfo requestMappingInfo, Method requestMethod, Object controller)  {
 

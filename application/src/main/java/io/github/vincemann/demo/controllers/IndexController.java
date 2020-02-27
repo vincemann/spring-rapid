@@ -1,9 +1,9 @@
 package io.github.vincemann.demo.controllers;
 
-import org.springframework.stereotype.Controller;
+import io.github.vincemann.generic.crud.lib.config.WebComponent;
 import org.springframework.web.bind.annotation.RequestMapping;
 
-@Controller
+@WebComponent
 public class IndexController {
 
     @RequestMapping({"/","index","index.html"})

@@ -1,4 +1,4 @@
-package io.github.vincemann.demo.controllers.springAdapter;
+package io.github.vincemann.demo.controllers.springAdapter.abs;
 
 import io.github.vincemann.generic.crud.lib.model.IdentifiableEntityImpl;
 import lombok.AllArgsConstructor;

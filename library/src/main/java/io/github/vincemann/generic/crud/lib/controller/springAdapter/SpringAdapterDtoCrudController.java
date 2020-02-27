@@ -5,7 +5,6 @@ import io.github.vincemann.generic.crud.lib.controller.dtoMapper.DtoMappingConte
 import io.github.vincemann.generic.crud.lib.controller.dtoMapper.exception.EntityMappingException;
 import io.github.vincemann.generic.crud.lib.controller.springAdapter.idFetchingStrategy.IdFetchingStrategy;
 import io.github.vincemann.generic.crud.lib.controller.springAdapter.idFetchingStrategy.exception.IdFetchingException;
-import io.github.vincemann.generic.crud.lib.controller.springAdapter.mediaTypeStrategy.MediaTypeStrategy;
 import io.github.vincemann.generic.crud.lib.controller.springAdapter.validationStrategy.ValidationStrategy;
 import io.github.vincemann.generic.crud.lib.model.IdentifiableEntity;
 import io.github.vincemann.generic.crud.lib.service.EndpointService;
@@ -37,7 +36,7 @@ import java.util.stream.Collectors;
  * with the {@link BasicDtoCrudController} Interface, resulting in a fully functional Spring @{@link org.springframework.web.bind.annotation.RestController}
  *
  * fetches {@link Id} with given {@link IdFetchingStrategy} from HttpRequest
- * fetches Dto with given {@link MediaTypeStrategy} from HttpRequest
+ * fetches Dto, expected in json format, from HttpRequest
  * validates the Dto and {@link Id} with the given {@link ValidationStrategy}
  *
  * ExampleUrls with {@link io.github.vincemann.generic.crud.lib.controller.springAdapter.idFetchingStrategy.UrlParamIdFetchingStrategy}:

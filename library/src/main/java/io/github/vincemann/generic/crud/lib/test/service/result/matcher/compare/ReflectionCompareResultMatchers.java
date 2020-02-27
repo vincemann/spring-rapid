@@ -4,7 +4,7 @@ import io.github.vincemann.generic.crud.lib.model.IdentifiableEntity;
 import io.github.vincemann.generic.crud.lib.service.exception.NoIdException;
 import io.github.vincemann.generic.crud.lib.test.equalChecker.ReflectionComparator;
 import io.github.vincemann.generic.crud.lib.test.service.result.matcher.EntityServiceResultMatcher;
-import junit.framework.AssertionFailedError;
+import org.opentest4j.AssertionFailedError;
 import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
