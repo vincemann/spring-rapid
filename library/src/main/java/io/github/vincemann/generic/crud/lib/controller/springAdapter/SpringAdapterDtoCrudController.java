@@ -6,7 +6,6 @@ import io.github.vincemann.generic.crud.lib.controller.dtoMapper.exception.Entit
 import io.github.vincemann.generic.crud.lib.controller.springAdapter.idFetchingStrategy.IdFetchingStrategy;
 import io.github.vincemann.generic.crud.lib.controller.springAdapter.idFetchingStrategy.exception.IdFetchingException;
 import io.github.vincemann.generic.crud.lib.controller.springAdapter.mediaTypeStrategy.MediaTypeStrategy;
-import io.github.vincemann.generic.crud.lib.controller.springAdapter.mediaTypeStrategy.ProcessDtoException;
 import io.github.vincemann.generic.crud.lib.controller.springAdapter.validationStrategy.ValidationStrategy;
 import io.github.vincemann.generic.crud.lib.model.IdentifiableEntity;
 import io.github.vincemann.generic.crud.lib.service.EndpointService;
@@ -17,24 +16,19 @@ import io.github.vincemann.generic.crud.lib.util.HttpServletRequestUtils;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.context.ApplicationContextAware;
 import org.springframework.context.ApplicationListener;
 import org.springframework.context.event.ContextRefreshedEvent;
-import org.springframework.context.event.ContextStartedEvent;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.test.context.TestPropertySource;
 import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.mvc.method.RequestMappingInfo;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.ConstraintViolationException;
 import java.io.IOException;
 import java.io.Serializable;
-import java.util.Collection;
 import java.util.Map;
 import java.util.stream.Collectors;
 
@@ -52,9 +46,9 @@ import java.util.stream.Collectors;
  * /account/get?accountId=34
  * /account/get?accountId=44bedc08-8e71-11e9-bc42-526af7764f64
  *
- * @param <E> Service Entity Type, of entity, which's curd operations are exposed, via endpoints,  by this Controller
+ * @param <E> Service Entity Type, of entity, which's crud operations are exposed, via endpoints,  by this Controller
  * @param <Id>       Id Type of {@link E}
- *
+ *<
  */
 @Slf4j
 @Getter
@@ -95,7 +89,6 @@ public abstract class SpringAdapterDtoCrudController
     private String fullUpdateQueryParam;
 
     private IdFetchingStrategy<Id> idIdFetchingStrategy;
-    private MediaTypeStrategy mediaTypeStrategy;
     private ValidationStrategy<Id> validationStrategy;
     private EndpointsExposureContext endpointsExposureContext;
 
@@ -115,13 +108,10 @@ public abstract class SpringAdapterDtoCrudController
     }
 
     @Autowired
-    public void injectMediaTypeStrategy(MediaTypeStrategy mediaTypeStrategy) {
-        this.mediaTypeStrategy = mediaTypeStrategy;
-    }
-    @Autowired
     public void injectEndpointsExposureContext(EndpointsExposureContext endpointsExposureContext) {
         this.endpointsExposureContext = endpointsExposureContext;
     }
+
 
     @Autowired
     public void injectIdIdFetchingStrategy(IdFetchingStrategy<Id> idIdFetchingStrategy) {
@@ -190,7 +180,7 @@ public abstract class SpringAdapterDtoCrudController
         return RequestMappingInfo
                 .paths(findUrl)
                 .methods(RequestMethod.GET)
-                .produces(mediaTypeStrategy.getMediaType())
+                .produces(MediaType.APPLICATION_JSON_UTF8_VALUE)
                 .build();
     }
 
@@ -198,6 +188,7 @@ public abstract class SpringAdapterDtoCrudController
         return RequestMappingInfo
                 .paths(deleteUrl)
                 .methods(RequestMethod.DELETE)
+                .produces(MediaType.APPLICATION_JSON_UTF8_VALUE)
                 .build();
     }
 
@@ -205,8 +196,8 @@ public abstract class SpringAdapterDtoCrudController
         return RequestMappingInfo
                 .paths(createUrl)
                 .methods(RequestMethod.POST)
-                .consumes(mediaTypeStrategy.getMediaType())
-                .produces(mediaTypeStrategy.getMediaType())
+                .consumes(MediaType.APPLICATION_JSON_UTF8_VALUE)
+                .produces(MediaType.APPLICATION_JSON_UTF8_VALUE)
                 .build();
     }
 
@@ -214,8 +205,8 @@ public abstract class SpringAdapterDtoCrudController
         return RequestMappingInfo
                 .paths(updateUrl)
                 .methods(RequestMethod.PUT)
-                .consumes(mediaTypeStrategy.getMediaType())
-                .produces(mediaTypeStrategy.getMediaType())
+                .consumes(MediaType.APPLICATION_JSON_UTF8_VALUE)
+                .produces(MediaType.APPLICATION_JSON_UTF8_VALUE)
                 .build();
     }
 
@@ -223,18 +214,18 @@ public abstract class SpringAdapterDtoCrudController
         return RequestMappingInfo
                 .paths(findAllUrl)
                 .methods(RequestMethod.GET)
-                .produces(mediaTypeStrategy.getMediaType())
+                .produces(MediaType.APPLICATION_JSON_UTF8_VALUE)
                 .build();
     }
 
-    public ResponseEntity<Collection<IdentifiableEntity<Id>>> findAll(HttpServletRequest request) throws EntityMappingException {
+    public ResponseEntity<String> findAll(HttpServletRequest request) throws EntityMappingException, DtoSerializingException {
         log.debug("FindAll request arriving at controller: " + request);
         beforeFindAll(request);
         return super.findAll();
     }
 
 
-    public ResponseEntity<? extends IdentifiableEntity<Id>> find(HttpServletRequest request) throws IdFetchingException, EntityNotFoundException, NoIdException, EntityMappingException {
+    public ResponseEntity<String> find(HttpServletRequest request) throws IdFetchingException, EntityNotFoundException, NoIdException, EntityMappingException, DtoSerializingException {
         log.debug("Find request arriving at controller: " + request);
         Id id = idIdFetchingStrategy.fetchId(request);
         log.debug("id fetched from request: " + id);
@@ -244,23 +235,23 @@ public abstract class SpringAdapterDtoCrudController
         return super.find(id);
     }
 
-    public ResponseEntity<? extends IdentifiableEntity<Id>> create(HttpServletRequest request) throws ProcessDtoException, BadEntityException, EntityMappingException {
+    public ResponseEntity<String> create(HttpServletRequest request) throws BadEntityException, EntityMappingException, DtoSerializingException {
         log.debug("Create request arriving at controller: " + request);
         try {
             String body = request.getReader().lines().collect(Collectors.joining(System.lineSeparator()));
             log.debug("String Body fetched from request: " + body);
-            IdentifiableEntity<Id> dto = mediaTypeStrategy.readDto(body, getDtoMappingContext().getCreateRequestDtoClass());
+            IdentifiableEntity<Id> dto = getJsonMapper().readValue(body, getDtoMappingContext().getCreateRequestDtoClass());
             log.debug("Dto read from string body " + dto);
             validationStrategy.validateDto(dto,request);
             log.debug("Dto successfully validated");
             beforeCreate(dto,request);
             return super.create(dto);
         }catch (IOException e){
-            throw new ProcessDtoException(e);
+            throw new DtoSerializingException(e);
         }
     }
 
-    public ResponseEntity<? extends IdentifiableEntity<Id>> update(HttpServletRequest request) throws ProcessDtoException, EntityNotFoundException, NoIdException, BadEntityException, EntityMappingException {
+    public ResponseEntity<String> update(HttpServletRequest request) throws EntityNotFoundException, NoIdException, BadEntityException, EntityMappingException, DtoSerializingException {
         log.debug("Update request arriving at controller: " + request);
         try {
             String body = request.getReader().lines().collect(Collectors.joining(System.lineSeparator()));
@@ -274,7 +265,7 @@ public abstract class SpringAdapterDtoCrudController
                 dtoClass = getDtoMappingContext().getPartialUpdateRequestDtoClass();
             }
             log.debug("dtoClass that will be mapped to: " + dtoClass);
-            IdentifiableEntity<Id> dto  = mediaTypeStrategy.readDto(body, dtoClass);
+            IdentifiableEntity<Id> dto  = getJsonMapper().readValue(body, dtoClass);
             log.debug("Dto read from string body " + dto);
             validationStrategy.validateDto(dto,request);
             log.debug("Dto successfully validated");
@@ -282,7 +273,7 @@ public abstract class SpringAdapterDtoCrudController
             beforeUpdate(dto,request,fullUpdate);
             return super.update(dto,fullUpdate);
         }catch (IOException e){
-            throw new ProcessDtoException(e);
+            throw new DtoSerializingException(e);
         }
     }
 

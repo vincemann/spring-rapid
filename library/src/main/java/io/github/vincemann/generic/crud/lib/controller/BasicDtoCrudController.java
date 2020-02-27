@@ -1,8 +1,11 @@
 package io.github.vincemann.generic.crud.lib.controller;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import io.github.vincemann.generic.crud.lib.controller.dtoMapper.DtoMapper;
 import io.github.vincemann.generic.crud.lib.controller.dtoMapper.DtoMappingContext;
 import io.github.vincemann.generic.crud.lib.controller.dtoMapper.exception.EntityMappingException;
+import io.github.vincemann.generic.crud.lib.controller.springAdapter.DtoSerializingException;
 import io.github.vincemann.generic.crud.lib.model.IdentifiableEntity;
 import io.github.vincemann.generic.crud.lib.service.CrudService;
 import io.github.vincemann.generic.crud.lib.service.exception.BadEntityException;
@@ -44,9 +47,14 @@ public abstract class BasicDtoCrudController
         >
             implements DtoCrudController<Id> {
 
+    //todo merge into spring adapter -> wo ist der sinn hier zu trennen?
+
     private CrudService<E,Id,? extends CrudRepository<E,Id>> crudService;
     private DtoMapper dtoMapper;
     private DtoMappingContext dtoMappingContext;
+    @Setter
+    private ObjectMapper jsonMapper;
+
     @SuppressWarnings("unchecked")
     private Class<E> entityClass = (Class<E>) ((ParameterizedType) this.getClass().getGenericSuperclass()).getActualTypeArguments()[0];
 
@@ -65,56 +73,82 @@ public abstract class BasicDtoCrudController
     }
 
     @Autowired
+    public void injectJsonMapper(ObjectMapper mapper) {
+        this.jsonMapper = mapper;
+    }
+
+    @Autowired
     public void injectDtoMapper(DtoMapper dtoMapper) {
         this.dtoMapper = dtoMapper;
     }
 
     @Override
     @SuppressWarnings("unchecked")
-    public ResponseEntity<? extends IdentifiableEntity<Id>> find(Id id) throws NoIdException, EntityNotFoundException, EntityMappingException {
-        Optional<E> optionalEntity = crudService.findById(id);
-        if (optionalEntity.isPresent()) {
-            return ok(dtoMapper.mapToDto(optionalEntity.get(), getDtoMappingContext().getFindReturnDtoClass()));
-        } else {
-            throw new EntityNotFoundException();
+    public ResponseEntity<String> find(Id id) throws NoIdException, EntityNotFoundException, EntityMappingException, DtoSerializingException {
+        try {
+            Optional<E> optionalEntity = crudService.findById(id);
+            if (optionalEntity.isPresent()) {
+                IdentifiableEntity<?> dto = dtoMapper.mapToDto(optionalEntity.get(), getDtoMappingContext().getFindReturnDtoClass());
+                return ok(jsonMapper.writeValueAsString(dto));
+            } else {
+                throw new EntityNotFoundException();
+            }
+        }catch (JsonProcessingException e){
+            throw new DtoSerializingException(e);
         }
     }
 
     @Override
-    public ResponseEntity<Collection<IdentifiableEntity<Id>>> findAll() throws EntityMappingException {
-        Set<E> all = crudService.findAll();
-        Collection<IdentifiableEntity<Id>> dtos = new HashSet<>();
-        for (E e : all) {
-            dtos.add(dtoMapper.mapToDto(e, getDtoMappingContext().getFindAllReturnDtoClass()));
+    public ResponseEntity<String> findAll() throws EntityMappingException, DtoSerializingException {
+        try {
+            Set<E> all = crudService.findAll();
+            Collection<IdentifiableEntity<Id>> dtos = new HashSet<>();
+            for (E e : all) {
+                dtos.add(dtoMapper.mapToDto(e, getDtoMappingContext().getFindAllReturnDtoClass()));
+            }
+            String json = jsonMapper.writeValueAsString(dtos);
+            return ok(json);
+        } catch (JsonProcessingException e) {
+            throw new DtoSerializingException(e);
         }
-        return ok(dtos);
     }
 
     @Override
     @SuppressWarnings("unchecked")
-    public ResponseEntity<? extends IdentifiableEntity<Id>> create(IdentifiableEntity<Id> dto) throws BadEntityException, EntityMappingException {
-        //i expect that dto has the right dto type -> callers responsibility
-        E entity = mapToEntity(dto);
-        E savedEntity = crudService.save(entity);
-        return new ResponseEntity(dtoMapper.mapToDto(savedEntity, getDtoMappingContext().getCreateReturnDtoClass()),
-                HttpStatus.OK);
+    public ResponseEntity<String> create(IdentifiableEntity<Id> dto) throws BadEntityException, EntityMappingException, DtoSerializingException {
+        try {
+            //i expect that dto has the right dto type -> callers responsibility
+            E entity = mapToEntity(dto);
+            E savedEntity = crudService.save(entity);
+            IdentifiableEntity<?> resultDto = dtoMapper.mapToDto(savedEntity, getDtoMappingContext().getCreateReturnDtoClass());
+            return new ResponseEntity<>(
+                    jsonMapper.writeValueAsString(resultDto),
+                    HttpStatus.OK);
+        }catch (JsonProcessingException e){
+            throw new DtoSerializingException(e);
+        }
     }
 
     @Override
     @SuppressWarnings("unchecked")
-    public ResponseEntity<? extends IdentifiableEntity<Id>> update(IdentifiableEntity<Id> dto, boolean full) throws BadEntityException, EntityMappingException, NoIdException, EntityNotFoundException {
-        //i expect that dto has the right dto type -> callers responsibility
-        E entity = mapToEntity(dto);
-        E updatedEntity = crudService.update(entity,full);
-        //no idea why casting is necessary here?
-        return new ResponseEntity(
-                dtoMapper.mapToDto(updatedEntity, getDtoMappingContext().getUpdateReturnDtoClass()),
-                HttpStatus.OK);
+    public ResponseEntity<String> update(IdentifiableEntity<Id> dto, boolean full) throws BadEntityException, EntityMappingException, NoIdException, EntityNotFoundException, DtoSerializingException {
+        try {
+            //i expect that dto has the right dto type -> callers responsibility
+            E entity = mapToEntity(dto);
+            E updatedEntity = crudService.update(entity,full);
+            //no idea why casting is necessary here?
+            IdentifiableEntity<?> resultDto = dtoMapper.mapToDto(updatedEntity, getDtoMappingContext().getUpdateReturnDtoClass());
+            return new ResponseEntity<>(
+                    jsonMapper.writeValueAsString(resultDto),
+                    HttpStatus.OK);
+        }catch (JsonProcessingException e){
+            throw new DtoSerializingException(e);
+        }
     }
 
 
     @Override
-    public ResponseEntity<?> delete(Id id) throws NoIdException, EntityNotFoundException {
+    public ResponseEntity<String> delete(Id id) throws NoIdException, EntityNotFoundException {
         crudService.deleteById(id);
         return ResponseEntity.ok().contentType(MediaType.APPLICATION_JSON_UTF8).build();
     }
@@ -125,12 +159,8 @@ public abstract class BasicDtoCrudController
     }
 
 
-    protected ResponseEntity<Collection<IdentifiableEntity<Id>>> ok(Collection<IdentifiableEntity<Id>> dtoCollection){
-        return new ResponseEntity<>(dtoCollection,HttpStatus.OK);
-    }
-
-    protected ResponseEntity<? extends IdentifiableEntity<Id>> ok(IdentifiableEntity<Id> entity) {
-        return new ResponseEntity<>(entity, HttpStatus.OK);
+    protected ResponseEntity<String> ok(String jsonDto) {
+        return new ResponseEntity<>(jsonDto, HttpStatus.OK);
     }
 
     public <S extends CrudService<E, Id,? extends CrudRepository<E,Id>>> S getCastedCrudService(){
