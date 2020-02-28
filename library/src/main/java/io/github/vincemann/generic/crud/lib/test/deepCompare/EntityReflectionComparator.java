@@ -4,38 +4,34 @@ import de.danielbechler.diff.ObjectDiffer;
 import de.danielbechler.diff.ObjectDifferBuilder;
 import de.danielbechler.diff.node.DiffNode;
 import de.danielbechler.diff.node.Visit;
+import lombok.Getter;
+import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.opentest4j.AssertionFailedError;
 
 import javax.persistence.Entity;
 
 @Slf4j
+@Getter
+@Setter
 public class EntityReflectionComparator implements ReflectionComparator<Object> {
 
     private ObjectDiffer objectDiffer;
+    private ObjectDifferBuilder builder;
 
-    public EntityReflectionComparator(ObjectDiffer objectDiffer) {
-        this.objectDiffer = objectDiffer;
+
+    public EntityReflectionComparator(ObjectDifferBuilder builder) {
+        this.objectDiffer = builder.build();
+        this.builder=builder;
     }
 
-    public static EntityReflectionComparator EQUALS_FOR_ENTITIES(){
-        ObjectDiffer objectDiffer = ObjectDifferBuilder.startBuilding()
+    public static ObjectDifferBuilder EQUALS_FOR_ENTITIES(){
+        return ObjectDifferBuilder.startBuilding()
                 .comparison()
                 .ofType(Entity.class)
                 .toUseEqualsMethod()
-                .and()
-                .build();
-        return new EntityReflectionComparator(objectDiffer);
-    }
+                .and();
 
-    public static EntityReflectionComparator IGNORE_ID(){
-        ObjectDiffer objectDiffer = ObjectDifferBuilder.startBuilding()
-                .inclusion()
-                .exclude()
-                .propertyName("id")
-                .and()
-                .build();
-        return new EntityReflectionComparator(objectDiffer);
     }
 
     @Override

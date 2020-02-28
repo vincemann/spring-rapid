@@ -37,7 +37,7 @@ public interface CrudService
      * @throws NoIdException
      * @throws BadEntityException
      */
-    E update(E entity, boolean full) throws EntityNotFoundException, NoIdException, BadEntityException;
+    E update(E entity, Boolean full) throws EntityNotFoundException, NoIdException, BadEntityException;
 
     E save(E entity) throws  BadEntityException;
 

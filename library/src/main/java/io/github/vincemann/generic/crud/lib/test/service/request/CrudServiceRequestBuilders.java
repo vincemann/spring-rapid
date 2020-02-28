@@ -6,7 +6,6 @@ import io.github.vincemann.generic.crud.lib.service.CrudService;
 import java.io.Serializable;
 import java.util.Arrays;
 import java.util.List;
-import java.util.stream.Collectors;
 
 public class CrudServiceRequestBuilders {
 
@@ -30,15 +29,12 @@ public class CrudServiceRequestBuilders {
         return createBuilder("findById", Arrays.asList(id),Serializable.class);
     }
 
-    private static ServiceRequestBuilder createBuilder(String methodName, List<Object> args,Class... abstractTypes) {
-
-        Object[] argTypes = args.stream().map(e -> e.getClass()).collect(Collectors.toList()).toArray();
-        //todo hier darf er nicht owner class bekommen, sondern abstr class wenn ich das interface als base für method search nutze
+    protected static ServiceRequestBuilder createBuilder(String methodName, List<Object> args,Class... types) {
         return serviceUnderTest -> {
             try {
                 return ServiceRequest.builder()
                         .args(args)
-                        .serviceMethod(CrudService.class.getMethod(methodName,abstractTypes ))
+                        .serviceMethod(CrudService.class.getMethod(methodName,types ))
                         .build();
             } catch (NoSuchMethodException e) {
                 throw new IllegalArgumentException(e);

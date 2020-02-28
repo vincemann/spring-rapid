@@ -7,37 +7,19 @@ import lombok.Setter;
 @Setter
 public class AbstractCompareResultMatchers<T extends AbstractCompareResultMatchers> {
     @Getter
-    private IdentifiableEntity entity;
-    private boolean checkReturnedEntity = false;
+    private IdentifiableEntity inputEntity;
     private boolean checkDbEntity = false;
-
-    public boolean checkReturnedEntity() {
-        return checkReturnedEntity;
-    }
 
     public boolean checkDbEntity() {
         return checkDbEntity;
     }
 
-    public AbstractCompareResultMatchers(IdentifiableEntity entity) {
-        this.entity = entity;
-    }
-
-    public T withReturnedEntity(){
-        this.checkReturnedEntity =true;
-        return ((T) this);
+    public AbstractCompareResultMatchers(IdentifiableEntity inputEntity) {
+        this.inputEntity = inputEntity;
     }
 
     public T withDbEntity(){
         this.checkDbEntity =true;
         return ((T) this);
     }
-
-    public T withReturnedAndDbEntity(){
-        this.checkReturnedEntity =true;
-        this.checkDbEntity =true;
-        return ((T) this);
-    }
-
-
 }

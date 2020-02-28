@@ -54,7 +54,7 @@ public abstract class JPACrudService
 
     @Transactional
     @Override
-    public E update(E update, boolean full) throws EntityNotFoundException, NoIdException, BadEntityException {
+    public E update(E update, Boolean full) throws EntityNotFoundException, NoIdException, BadEntityException {
         try {
             E entityToUpdate = findOldEntity(update.getId());
             if(full){

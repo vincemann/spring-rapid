@@ -23,8 +23,6 @@ import org.springframework.boot.test.mock.mockito.SpyBean;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.transaction.annotation.Transactional;
 
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
 import java.time.LocalDate;
 import java.util.Arrays;
 import java.util.HashSet;
@@ -36,32 +34,28 @@ import static io.github.vincemann.generic.crud.lib.test.service.request.CrudServ
 import static io.github.vincemann.generic.crud.lib.test.service.result.matcher.compare.PropertyCompareResultMatchers.compare;
 import static io.github.vincemann.generic.crud.lib.test.service.result.matcher.compare.ReflectionCompareResultMatchers.deepCompare;
 
-//@DataJpaTest cant be used because i need autowired components from generic-crud-lib, edit just use @Import
 @ActiveProfiles(value = {"test","springdatajpa"})
 @Transactional
 @DataJpaTest(properties = "web.active=false")
 class OwnerServiceIntegrationTest
         extends CrudServiceIntegrationTest<OwnerService,Owner, Long> {
 
-    @PersistenceContext
-    EntityManager entityManager;
-
     @Autowired
     ReflectionComparator<Owner> reflectionComparator;
 
-    private Owner ownerWithoutPets;
-    private Owner ownerWithOnePet;
-    private Pet testPet;
-    private PetType savedDogPetType;
+    Owner ownerWithoutPets;
+    Owner ownerWithOnePet;
+    Pet testPet;
+    PetType savedDogPetType;
 
     @SpyBean
-    private OwnerOfTheYearPlugin ownerOfTheYearPlugin;
+    OwnerOfTheYearPlugin ownerOfTheYearPlugin;
 
     @Autowired
-    private PetService petService;
+    PetService petService;
 
     @Autowired
-    private PetTypeService petTypeService;
+    PetTypeService petTypeService;
 
     @BeforeEach
     public void setUp() throws Exception {
@@ -95,7 +89,8 @@ class OwnerServiceIntegrationTest
     @Test
     public void saveOwnerWithoutPets_ShouldSucceed() {
         ServiceResult entityServiceResult = getTestTemplate().perform(save(ownerWithoutPets))
-                .andExpect(compare(ownerWithoutPets).withReturnedAndDbEntity()
+                .andExpect(compare(ownerWithoutPets)
+                        .withDbEntity()
                         .property(ownerWithoutPets::getTelephone)
                         .property(ownerWithoutPets::getAddress)
                         .isEqual())
@@ -107,7 +102,10 @@ class OwnerServiceIntegrationTest
     @Test
     public void saveOwnerWithPet_ShouldSucceed() throws BadEntityException {
         getTestTemplate().perform(save(ownerWithOnePet))
-                .andExpect(deepCompare(ownerWithOnePet).withReturnedEntity().isEqual());
+                .andExpect(deepCompare(ownerWithOnePet)
+                        .withDbEntity()
+                        .isEqual());
+        Assertions.assertTrue(getRepository().existsById(ownerWithOnePet.getId()));
     }
 
     @Test
@@ -124,7 +122,10 @@ class OwnerServiceIntegrationTest
                 .build();
 
         getTestTemplate().perform(save(owner))
-                .andExpect(deepCompare(owner).withReturnedAndDbEntity().isEqual());
+                .andExpect(deepCompare(owner)
+                        .withDbEntity()
+                        .isEqual()
+                );
     }
 
 
@@ -139,7 +140,7 @@ class OwnerServiceIntegrationTest
         getTestTemplate().perform(partialUpdate(diffTelephoneNumberUpdate))
                 .andExpect(
                         deepCompare(merge(diffTelephoneNumberUpdate,toUpdate))
-                        .withReturnedAndDbEntity()
+                        .withDbEntity()
                                 .isEqual()
                 );
     }
