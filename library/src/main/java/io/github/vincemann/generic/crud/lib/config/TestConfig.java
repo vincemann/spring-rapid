@@ -1,7 +1,7 @@
 package io.github.vincemann.generic.crud.lib.config;
 
-import io.github.vincemann.generic.crud.lib.test.equalChecker.ReflectionComparator;
-import io.github.vincemann.generic.crud.lib.test.equalChecker.IgnoreEntityPropertiesReflectionComparator;
+import io.github.vincemann.generic.crud.lib.test.deepCompare.ReflectionComparator;
+import io.github.vincemann.generic.crud.lib.test.deepCompare.EntityReflectionComparator;
 import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.context.annotation.Bean;
 
@@ -10,6 +10,6 @@ public class TestConfig {
 
     @Bean
     public ReflectionComparator reflectionComparator(){
-        return new IgnoreEntityPropertiesReflectionComparator();
+        return EntityReflectionComparator.EQUALS_FOR_ENTITIES();
     }
 }

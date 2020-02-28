@@ -2,67 +2,56 @@ package io.github.vincemann.generic.crud.lib.test.service.result.matcher.compare
 
 import io.github.vincemann.generic.crud.lib.model.IdentifiableEntity;
 import io.github.vincemann.generic.crud.lib.service.exception.NoIdException;
-import io.github.vincemann.generic.crud.lib.test.equalChecker.ReflectionComparator;
-import io.github.vincemann.generic.crud.lib.test.service.result.matcher.EntityServiceResultMatcher;
+import io.github.vincemann.generic.crud.lib.test.deepCompare.ReflectionComparator;
 import org.opentest4j.AssertionFailedError;
-import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
-import org.springframework.context.ApplicationContextAware;
 
 @SuppressWarnings("rawtypes")
-public class ReflectionCompareResultMatchers extends AbstractCompareResultMatchers<ReflectionCompareResultMatchers>
-        implements ApplicationContextAware {
+public class ReflectionCompareResultMatchers extends AbstractCompareResultMatchers<ReflectionCompareResultMatchers> {
 
     private ReflectionComparator reflectionComparator;
-    private ApplicationContext context;
 
     public ReflectionCompareResultMatchers(IdentifiableEntity entity) {
         super(entity);
     }
 
-    @Override
-    public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
-        this.context=applicationContext;
-    }
-
-    public static ReflectionCompareResultMatchers deepCompare(IdentifiableEntity entity){
+    public static ReflectionCompareResultMatchers deepCompare(IdentifiableEntity entity) {
         return new ReflectionCompareResultMatchers(entity);
     }
 
-    public ReflectionCompareResultMatchers useComparator(ReflectionComparator fuzzyEqualChecker){
-        this.reflectionComparator =fuzzyEqualChecker;
+
+    public ReflectionCompareResultMatchers useComparator(ReflectionComparator fuzzyEqualChecker) {
+        this.reflectionComparator = fuzzyEqualChecker;
         return this;
     }
 
 
-    public EntityServiceResultMatcher isEqual(){
-        init();
-        return performEqualCheck(true);
+    public ServiceResultMatcher isEqual() {
+        return performDeepCompare(true);
     }
 
-    public EntityServiceResultMatcher isNotEqual(){
-        init();
-        return performEqualCheck(false);
+    public ServiceResultMatcher isNotEqual() {
+        return performDeepCompare(false);
     }
 
 
-
-    private EntityServiceResultMatcher performEqualCheck(boolean wanted){
-        return serviceResult -> {
-            if(checkReturnedEntity()){
-                IdentifiableEntity result = ((IdentifiableEntity) serviceResult.getResult());
+    private ServiceResultMatcher performDeepCompare(boolean wanted) {
+        return (serviceResult,context) -> {
+            init(context);
+            if (checkReturnedEntity()) {
+                IdentifiableEntity result = serviceResult.getExpectedResult();
                 boolean equal = reflectionComparator.isEqual(getEntity(), result);
-                if(equal!=wanted){
-                    throw new AssertionFailedError("Object is not fuzzyEqual to Returned, check log for details");
+                if (equal != wanted) {
+                    throw new AssertionFailedError("Object is not deep equal to Returned, check log for details");
                 }
             }
-            if(checkDbEntity()){
+            if (checkDbEntity()) {
                 try {
                     IdentifiableEntity result = ((IdentifiableEntity)
                             serviceResult.getServiceRequest().getService().findById(getEntity().getId()).get());
                     boolean equal = reflectionComparator.isEqual(getEntity(), result);
-                    if(equal!=wanted){
-                        throw new AssertionFailedError("Object is not fuzzyEqual to Db Entity, check log for details");
+                    if (equal != wanted) {
+                        throw new AssertionFailedError("Object is not deep to Db Entity, check log for details");
                     }
                 } catch (NoIdException e) {
                     throw new RuntimeException(e);
@@ -70,10 +59,11 @@ public class ReflectionCompareResultMatchers extends AbstractCompareResultMatche
             }
         };
     }
-    private void init(){
-        this.reflectionComparator = context.getBean(ReflectionComparator.class);
-    }
 
+    private void init(ApplicationContext context) {
+        if (reflectionComparator == null)
+            this.reflectionComparator = context.getBean(ReflectionComparator.class);
+    }
 
 
 }

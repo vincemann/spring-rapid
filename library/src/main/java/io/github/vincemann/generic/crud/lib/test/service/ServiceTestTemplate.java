@@ -3,15 +3,10 @@ package io.github.vincemann.generic.crud.lib.test.service;
 import io.github.vincemann.generic.crud.lib.service.CrudService;
 import io.github.vincemann.generic.crud.lib.test.service.request.ServiceRequest;
 import io.github.vincemann.generic.crud.lib.test.service.request.ServiceRequestBuilder;
-import io.github.vincemann.generic.crud.lib.test.service.result.EntityCollectionServiceResult;
-import io.github.vincemann.generic.crud.lib.test.service.result.EntityServiceResult;
 import io.github.vincemann.generic.crud.lib.test.service.result.ServiceResult;
-import io.github.vincemann.generic.crud.lib.test.service.result.action.EntityCollectionServiceResultActions;
-import io.github.vincemann.generic.crud.lib.test.service.result.action.EntityServiceResultActions;
 import io.github.vincemann.generic.crud.lib.test.service.result.action.ServiceResultActions;
 import io.github.vincemann.generic.crud.lib.test.service.result.handler.ServiceResultHandler;
-import io.github.vincemann.generic.crud.lib.test.service.result.matcher.EntityCollectionServiceResultMatcher;
-import io.github.vincemann.generic.crud.lib.test.service.result.matcher.EntityServiceResultMatcher;
+import io.github.vincemann.generic.crud.lib.test.service.result.matcher.compare.ServiceResultMatcher;
 import org.springframework.beans.BeansException;
 import org.springframework.boot.test.context.TestComponent;
 import org.springframework.context.ApplicationContext;
@@ -42,69 +37,26 @@ public class ServiceTestTemplate
     public ServiceResultActions perform(ServiceRequestBuilder serviceRequestBuilder){
         ServiceRequest serviceRequest = serviceRequestBuilder.create(serviceUnderTest);
         serviceRequest.setService(serviceUnderTest);
-        ServiceResult<?> serviceResult = execute(serviceRequest);
+        ServiceResult serviceResult = execute(serviceRequest);
 
-        try {
-            return new ServiceResultActions() {
-                @Override
-                public EntityServiceResultActions andExpect(EntityServiceResultMatcher matcher){
-                    if(matcher instanceof ApplicationContextAware){
-                        ((ApplicationContextAware) matcher).setApplicationContext(context);
-                    }
-                    matcher.match(((EntityServiceResult) serviceResult));
-                    return new EntityServiceResultActions() {
-                        @Override
-                        public EntityServiceResult andReturn() {
-                            return (EntityServiceResult) serviceResult;
-                        }
+        return new ServiceResultActions() {
+            @Override
+            public ServiceResultActions andExpect(ServiceResultMatcher matcher) {
+                matcher.match(serviceResult,context);
+                return this;
+            }
 
-                        @Override
-                        public EntityServiceResultActions andExpect(EntityServiceResultMatcher matcher){
-                            if(matcher instanceof ApplicationContextAware){
-                                ((ApplicationContextAware) matcher).setApplicationContext(context);
-                            }
-                            matcher.match(((EntityServiceResult) serviceResult));
-                            return this;
-                        }
-                    };
-                }
+            @Override
+            public ServiceResultActions andDo(ServiceResultHandler handler) {
+                handler.handle(serviceResult,context);
+                return this;
+            }
 
-                @Override
-                public EntityCollectionServiceResultActions andExpect(EntityCollectionServiceResultMatcher matcher) {
-                    if(matcher instanceof ApplicationContextAware){
-                        ((ApplicationContextAware) matcher).setApplicationContext(context);
-                    }
-                    matcher.match(((EntityCollectionServiceResult) serviceResult));
-                    return new EntityCollectionServiceResultActions() {
-                        @Override
-                        public EntityCollectionServiceResultActions andExpect(EntityCollectionServiceResultMatcher matcher)  {
-                            if(matcher instanceof ApplicationContextAware){
-                                ((ApplicationContextAware) matcher).setApplicationContext(context);
-                            }
-                            matcher.match(((EntityCollectionServiceResult) serviceResult));
-                            return this;
-                        }
-
-                        @Override
-                        public EntityCollectionServiceResult andReturn() {
-                            return ((EntityCollectionServiceResult) serviceResult);
-                        }
-                    };
-                }
-
-                @Override
-                public ServiceResultActions andDo(ServiceResultHandler handler)  {
-                    return handler.handle(serviceResult);
-                }
-
-                @Override
-                public ServiceResult andReturn() {
-                    return serviceResult;
-                }
-            };
-        }catch (ClassCastException e){
-            throw new IllegalArgumentException("Invalid matcher type",e);
-        }
+            @Override
+            public ServiceResult andReturn() {
+                return serviceResult;
+            }
+        };
     }
 
     private ServiceResult execute(ServiceRequest serviceRequest) {
@@ -123,4 +75,6 @@ public class ServiceTestTemplate
                     .build();
         }
     }
+
+
 }
