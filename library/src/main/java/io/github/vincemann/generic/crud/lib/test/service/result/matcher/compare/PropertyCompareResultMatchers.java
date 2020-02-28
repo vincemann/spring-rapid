@@ -2,7 +2,6 @@ package io.github.vincemann.generic.crud.lib.test.service.result.matcher.compare
 
 import io.github.vincemann.generic.crud.lib.model.IdentifiableEntity;
 import io.github.vincemann.generic.crud.lib.service.exception.NoIdException;
-import io.github.vincemann.generic.crud.lib.test.service.result.matcher.EntityServiceResultMatcher;
 import org.junit.jupiter.api.Assertions;
 
 import java.lang.reflect.InvocationTargetException;
@@ -28,34 +27,34 @@ public class PropertyCompareResultMatchers extends AbstractCompareResultMatchers
         return new PropertyCompareResultMatchers(entity);
     }
 
-    public EntityServiceResultMatcher isEqual(){
+    public ServiceResultMatcher isEqual(){
         return checkGetterEquality(true);
     }
 
-    public EntityServiceResultMatcher isNotEqual(){
+    public ServiceResultMatcher isNotEqual(){
         return checkGetterEquality(false);
     }
 
-    public EntityServiceResultMatcher is(Object value){
+    public ServiceResultMatcher is(Object value){
         if(gettersToCompare.size()!=1){
             throw new IllegalArgumentException("Cant compare multiple getters to one value");
         }
-        return serviceResult -> Assertions.assertEquals(value,gettersToCompare.stream().findFirst().get().get());
+        return (serviceResult,context) -> Assertions.assertEquals(value,gettersToCompare.stream().findFirst().get().get());
     }
 
 
 
-    public EntityServiceResultMatcher sizeIs(Integer value){
+    public ServiceResultMatcher sizeIs(Integer value){
         if(gettersToCompare.size()!=1){
             throw new IllegalArgumentException("Cant compare multiple getters to one value");
         }
-        return serviceResult -> Assertions.assertEquals(value, ((Collection) gettersToCompare.stream().findFirst().get().get()).size());
+        return (serviceResult,context) -> Assertions.assertEquals(value, ((Collection) gettersToCompare.stream().findFirst().get().get()).size());
     }
 
 
 
-    private EntityServiceResultMatcher checkGetterEquality(boolean equal){
-        return serviceResult -> {
+    private ServiceResultMatcher checkGetterEquality(boolean equal){
+        return (serviceResult,context) -> {
             if(checkReturnedEntity()){
                 IdentifiableEntity returnedEntity = ((IdentifiableEntity) serviceResult.getResult());
                 assertGetterValues(returnedEntity,"Returned Entity",equal);

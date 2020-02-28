@@ -7,14 +7,12 @@ import io.github.vincemann.demo.service.OwnerService;
 import io.github.vincemann.demo.service.PetService;
 import io.github.vincemann.demo.service.PetTypeService;
 import io.github.vincemann.demo.service.plugin.OwnerOfTheYearPlugin;
-import io.github.vincemann.generic.crud.lib.config.SpringAdapterDtoCrudControllerConfig;
-import io.github.vincemann.generic.crud.lib.service.EndpointService;
 import io.github.vincemann.generic.crud.lib.service.exception.BadEntityException;
 import io.github.vincemann.generic.crud.lib.service.exception.EntityNotFoundException;
 import io.github.vincemann.generic.crud.lib.service.exception.NoIdException;
-import io.github.vincemann.generic.crud.lib.test.equalChecker.ReflectionComparator;
+import io.github.vincemann.generic.crud.lib.test.deepCompare.ReflectionComparator;
 import io.github.vincemann.generic.crud.lib.test.service.CrudServiceIntegrationTest;
-import io.github.vincemann.generic.crud.lib.test.service.result.EntityServiceResult;
+import io.github.vincemann.generic.crud.lib.test.service.result.ServiceResult;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -22,7 +20,6 @@ import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.boot.test.mock.mockito.SpyBean;
-import org.springframework.context.annotation.ComponentScan;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -97,7 +94,7 @@ class OwnerServiceIntegrationTest
 
     @Test
     public void saveOwnerWithoutPets_ShouldSucceed() {
-        EntityServiceResult entityServiceResult = getTestTemplate().perform(save(ownerWithoutPets))
+        ServiceResult entityServiceResult = getTestTemplate().perform(save(ownerWithoutPets))
                 .andExpect(compare(ownerWithoutPets).withReturnedAndDbEntity()
                         .property(ownerWithoutPets::getTelephone)
                         .property(ownerWithoutPets::getAddress)

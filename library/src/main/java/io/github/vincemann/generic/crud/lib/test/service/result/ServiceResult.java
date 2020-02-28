@@ -9,8 +9,16 @@ import lombok.*;
 @Setter
 @NoArgsConstructor
 @Builder
-public class ServiceResult<T> {
+public class ServiceResult {
     private Exception raisedException;
-    private T result;
+    private Object result;
     private ServiceRequest serviceRequest;
+
+    public <T> T getExpectedResult(){
+        try {
+            return (T)result;
+        }catch (ClassCastException e) {
+            throw new IllegalArgumentException("Wrong Service Result Handler/Matcher chosen");
+        }
+    }
 }

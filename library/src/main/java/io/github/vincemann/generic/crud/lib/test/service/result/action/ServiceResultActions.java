@@ -2,15 +2,12 @@ package io.github.vincemann.generic.crud.lib.test.service.result.action;
 
 import io.github.vincemann.generic.crud.lib.test.service.result.ServiceResult;
 import io.github.vincemann.generic.crud.lib.test.service.result.handler.ServiceResultHandler;
-import io.github.vincemann.generic.crud.lib.test.service.result.matcher.EntityCollectionServiceResultMatcher;
-import io.github.vincemann.generic.crud.lib.test.service.result.matcher.EntityServiceResultMatcher;
+import io.github.vincemann.generic.crud.lib.test.service.result.matcher.compare.ServiceResultMatcher;
 
 public interface ServiceResultActions {
-    EntityServiceResultActions andExpect(EntityServiceResultMatcher matcher);
-
-    EntityCollectionServiceResultActions andExpect(EntityCollectionServiceResultMatcher matcher);
+    ServiceResultActions andExpect(ServiceResultMatcher matcher);
 
     ServiceResultActions andDo(ServiceResultHandler handler);
 
-    <T> ServiceResult<T> andReturn();
+    ServiceResult andReturn();
 }
