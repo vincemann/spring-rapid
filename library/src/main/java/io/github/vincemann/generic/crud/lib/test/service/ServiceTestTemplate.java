@@ -6,18 +6,23 @@ import io.github.vincemann.generic.crud.lib.test.service.request.ServiceRequestB
 import io.github.vincemann.generic.crud.lib.test.service.result.ServiceResult;
 import io.github.vincemann.generic.crud.lib.test.service.result.action.ServiceResultActions;
 import io.github.vincemann.generic.crud.lib.test.service.result.handler.ServiceResultHandler;
-import io.github.vincemann.generic.crud.lib.test.service.result.matcher.compare.ServiceResultMatcher;
+import io.github.vincemann.generic.crud.lib.test.service.result.matcher.ServiceResultMatcher;
 import org.springframework.beans.BeansException;
 import org.springframework.boot.test.context.TestComponent;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
 import java.lang.reflect.InvocationTargetException;
 
 @TestComponent
 public class ServiceTestTemplate
     implements ApplicationContextAware
 {
+
+    @PersistenceContext
+    private EntityManager entityManager;
 
     private CrudService serviceUnderTest;
 //    private List<EntityServiceResultMatcher<E>> defaultEntityServiceResultMatchers;
@@ -38,6 +43,7 @@ public class ServiceTestTemplate
         ServiceRequest serviceRequest = serviceRequestBuilder.create(serviceUnderTest);
         serviceRequest.setService(serviceUnderTest);
         ServiceResult serviceResult = execute(serviceRequest);
+        entityManager.flush();
 
         return new ServiceResultActions() {
             @Override
@@ -61,7 +67,7 @@ public class ServiceTestTemplate
 
     private ServiceResult execute(ServiceRequest serviceRequest) {
         try {
-            Object result = serviceRequest.getServiceMethod().invoke(serviceRequest.getArgs().toArray());
+            Object result = serviceRequest.getServiceMethod().invoke(serviceUnderTest,serviceRequest.getArgs().toArray());
             return ServiceResult.builder()
                     .serviceRequest(serviceRequest)
                     .result(result)

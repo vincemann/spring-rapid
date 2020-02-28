@@ -1,25 +1,31 @@
 package io.github.vincemann.generic.crud.lib.test.service.result.matcher.compare;
 
+import com.github.hervian.reflection.Types;
 import io.github.vincemann.generic.crud.lib.model.IdentifiableEntity;
 import io.github.vincemann.generic.crud.lib.service.exception.NoIdException;
+import io.github.vincemann.generic.crud.lib.test.service.result.ServiceResult;
+import io.github.vincemann.generic.crud.lib.test.service.result.matcher.ServiceResultMatcher;
 import org.junit.jupiter.api.Assertions;
 
 import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
-import java.util.function.Supplier;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class PropertyCompareResultMatchers extends AbstractCompareResultMatchers<PropertyCompareResultMatchers>{
 
-    private List<Supplier<Object>> gettersToCompare = new ArrayList<>();
+    private List<Method> gettersToCompare = new ArrayList<>();
 
     public PropertyCompareResultMatchers(IdentifiableEntity entity) {
         super(entity);
     }
 
-    public PropertyCompareResultMatchers property(Supplier<Object> getter){
-        gettersToCompare.add(getter);
+    public PropertyCompareResultMatchers property(Types.Supplier<?> getter){
+        Method method = Types.createMethod(getter);
+        gettersToCompare.add(method);
         return this;
     }
 
@@ -39,31 +45,46 @@ public class PropertyCompareResultMatchers extends AbstractCompareResultMatchers
         if(gettersToCompare.size()!=1){
             throw new IllegalArgumentException("Cant compare multiple getters to one value");
         }
-        return (serviceResult,context) -> Assertions.assertEquals(value,gettersToCompare.stream().findFirst().get().get());
+        return (serviceResult,context) -> {
+            assertWasSuccessful(serviceResult);
+            try {
+                assertEquals(
+                        value,
+                        gettersToCompare.stream().findFirst().get().invoke(getInputEntity())
+                );
+            } catch (IllegalAccessException|InvocationTargetException e) {
+                throw new RuntimeException(e);
+            }
+        };
     }
 
 
 
-    public ServiceResultMatcher sizeIs(Integer value){
+    public ServiceResultMatcher sizeIs(int value){
         if(gettersToCompare.size()!=1){
             throw new IllegalArgumentException("Cant compare multiple getters to one value");
         }
-        return (serviceResult,context) -> Assertions.assertEquals(value, ((Collection) gettersToCompare.stream().findFirst().get().get()).size());
+        return (serviceResult,context) -> {
+            assertWasSuccessful(serviceResult);
+            try {
+                assertEquals(
+                                value,
+                                ((Collection) gettersToCompare.stream().findFirst().get().invoke(getInputEntity())).size()
+                );
+            } catch (IllegalAccessException|InvocationTargetException e) {
+                throw new RuntimeException(e);
+            }
+        };
     }
-
-
 
     private ServiceResultMatcher checkGetterEquality(boolean equal){
         return (serviceResult,context) -> {
-            if(checkReturnedEntity()){
-                IdentifiableEntity returnedEntity = ((IdentifiableEntity) serviceResult.getResult());
-                assertGetterValues(returnedEntity,"Returned Entity",equal);
-            }
+            assertWasSuccessful(serviceResult);
             if(checkDbEntity()){
                 try {
                     IdentifiableEntity dbEntity = ((IdentifiableEntity)
-                            serviceResult.getServiceRequest().getService().findById(getEntity().getId()).get());
-                    assertGetterValues(dbEntity,"dbEntity",equal);
+                            serviceResult.getServiceRequest().getService().findById(getInputEntity().getId()).get());
+                    compareGetterValues(dbEntity, equal);
                 } catch (NoIdException e) {
                     throw new RuntimeException(e);
                 }
@@ -71,21 +92,26 @@ public class PropertyCompareResultMatchers extends AbstractCompareResultMatchers
         };
     }
 
-    private void assertGetterValues(IdentifiableEntity actual, String actualType, boolean equal){
+    public void assertWasSuccessful(ServiceResult serviceResult){
+        if(!serviceResult.wasSuccessful()) {
+            throw new AssertionError("Service method raised exception : " + serviceResult.getRaisedException());
+        }
+    }
+
+    private void compareGetterValues(IdentifiableEntity checkedAgainst, boolean equal){
         try {
-            for (Supplier<Object> getter : gettersToCompare) {
-                Object entityValue = getter.get();
-                String getterMethodName = getter.toString();
-                Object returnedEntityValue = actual.getClass().getDeclaredMethod(getterMethodName).invoke(actual);
+            for (Method getter : gettersToCompare) {
+                Object entityValue = getter.invoke(getInputEntity());
+                Object checkedAgainstValue = getter.invoke(checkedAgainst);
                 if(equal) {
-                    Assertions.assertEquals(entityValue, returnedEntityValue, "Property value from expected entity: " + entityValue
-                            + " is not equal to property value from " + actualType + ": " + returnedEntityValue);
+                    assertEquals(entityValue, checkedAgainstValue, "Property value from expected entity: " + entityValue
+                            + " is not equal to property value from " + "dbEntity" + ": " + checkedAgainstValue);
                 }else {
-                    Assertions.assertNotEquals(entityValue, returnedEntityValue, "Property value from expected entity: " + entityValue
-                            + " is equal to property value from " + actualType + ": " + returnedEntityValue);
+                    Assertions.assertNotEquals(entityValue, checkedAgainstValue, "Property value from expected entity: " + entityValue
+                            + " is equal to property value from " + "dbEntity" + ": " + checkedAgainstValue);
                 }
             }
-        }catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException e){
+        }catch (IllegalAccessException | InvocationTargetException e){
             throw new RuntimeException("Did not find getter by name",e);
         }
 

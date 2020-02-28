@@ -20,7 +20,7 @@ class EqualsForEntitiesEntityReflectionComparatorTest {
 
     @BeforeEach
     void setUp() {
-        comparator = EntityReflectionComparator.EQUALS_FOR_ENTITIES();
+        comparator = new EntityReflectionComparator(EntityReflectionComparator.EQUALS_FOR_ENTITIES());
     }
 
     @Entity

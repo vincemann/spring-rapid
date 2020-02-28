@@ -10,6 +10,11 @@ public class TestConfig {
 
     @Bean
     public ReflectionComparator reflectionComparator(){
-        return EntityReflectionComparator.EQUALS_FOR_ENTITIES();
+        return new EntityReflectionComparator(EntityReflectionComparator.EQUALS_FOR_ENTITIES());
+    }
+
+    @Bean
+    public EntityReflectionComparator entityReflectionComparator(){
+        return new EntityReflectionComparator(EntityReflectionComparator.EQUALS_FOR_ENTITIES());
     }
 }

@@ -25,11 +25,11 @@
     <dependencies>
 
 
-<!--        <dependency>-->
-<!--            <groupId>de.danielbechler</groupId>-->
-<!--            <artifactId>java-object-diff</artifactId>-->
-<!--            <version>4.2</version>-->
-<!--        </dependency>-->
+        <dependency>
+            <groupId>de.danielbechler</groupId>
+            <artifactId>java-object-diff</artifactId>
+            <version>0.95</version>
+        </dependency>
 
 
         <dependency>
@@ -179,6 +179,12 @@
             <version>4.4</version>
         </dependency>
 
+        <dependency>
+            <groupId>com.github.Hervian</groupId>
+            <artifactId>safety-mirror</artifactId>
+            <version>1.0.0</version>
+        </dependency>
+
 
 
 
@@ -189,6 +195,12 @@
             <id>my</id>
             <url>file://${basedir}/lib/</url>
         </repository>
+
+        <repository>
+            <id>jitpack.io</id>
+            <url>https://jitpack.io</url>
+        </repository>
+
     </repositories>
 
     <build>

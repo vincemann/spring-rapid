@@ -14,6 +14,10 @@ public class ServiceResult {
     private Object result;
     private ServiceRequest serviceRequest;
 
+    public boolean wasSuccessful(){
+        return raisedException==null;
+    }
+
     public <T> T getExpectedResult(){
         try {
             return (T)result;
