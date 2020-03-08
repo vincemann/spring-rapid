@@ -8,6 +8,7 @@ import io.github.vincemann.generic.crud.lib.controller.dtoMapper.exception.DtoMa
 import io.github.vincemann.generic.crud.lib.controller.springAdapter.SpringAdapterJsonDtoCrudController;
 import io.github.vincemann.generic.crud.lib.model.IdentifiableEntity;
 import io.github.vincemann.generic.crud.lib.service.CrudService;
+import io.github.vincemann.generic.crud.lib.test.InitializingTest;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
@@ -60,7 +61,7 @@ public abstract class MvcControllerTest
         <S extends CrudService<E,Id,? extends CrudRepository<E,Id>>
         ,E extends IdentifiableEntity<Id>,
         Id extends Serializable>
-        //extends InitializingTest
+        extends InitializingTest
             implements InitializingBean {
 
     private static final String LOCAL_HOST = "127.0.0.1";

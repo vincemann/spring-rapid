@@ -35,9 +35,7 @@ import static io.github.vincemann.generic.crud.lib.test.service.result.matcher.c
 import static io.github.vincemann.generic.crud.lib.test.service.result.matcher.compare.ReflectionCompareResultMatchers.fullCompare;
 
 //only load service "slice" of application context via service profile and Springs DataJpa Slice Test
-@ActiveProfiles(value = {"test","service"})
-@Transactional
-@DataJpaTest
+
 class OwnerServiceIntegrationTest
         extends CrudServiceIntegrationTest<OwnerService,Owner, Long> {
 
