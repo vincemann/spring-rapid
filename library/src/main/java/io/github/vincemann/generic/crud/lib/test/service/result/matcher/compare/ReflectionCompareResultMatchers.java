@@ -1,19 +1,20 @@
 package io.github.vincemann.generic.crud.lib.test.service.result.matcher.compare;
 
-import de.danielbechler.diff.ObjectDifferBuilder;
+import com.github.hervian.reflection.Types;
 import io.github.vincemann.generic.crud.lib.model.IdentifiableEntity;
 import io.github.vincemann.generic.crud.lib.service.exception.NoIdException;
-import io.github.vincemann.generic.crud.lib.test.deepCompare.EntityReflectionComparator;
+import io.github.vincemann.generic.crud.lib.test.compare.EntityReflectionComparator;
 import io.github.vincemann.generic.crud.lib.test.service.result.matcher.ServiceResultMatcher;
 import lombok.Getter;
 import lombok.Setter;
 import org.opentest4j.AssertionFailedError;
 
-import java.util.function.Supplier;
-
 @SuppressWarnings("rawtypes")
 @Getter
 @Setter
+/**
+ * Select all properties for comparision and maybe ignore some.
+ */
 public class ReflectionCompareResultMatchers extends AbstractCompareResultMatchers<ReflectionCompareResultMatchers> {
 
     private EntityReflectionComparator reflectionComparator;
@@ -23,34 +24,18 @@ public class ReflectionCompareResultMatchers extends AbstractCompareResultMatche
         reflectionComparator  = new EntityReflectionComparator(EntityReflectionComparator.EQUALS_FOR_ENTITIES());
     }
 
-    public static ReflectionCompareResultMatchers deepCompare(IdentifiableEntity entity) {
+    public static ReflectionCompareResultMatchers fullCompare(IdentifiableEntity entity) {
         return new ReflectionCompareResultMatchers(entity);
     }
 
 
-    public ReflectionCompareResultMatchers ignoreProperty(Supplier supplier){
-        String getter = supplier.toString();
-        String propertyName = "";
-        if (getter.startsWith("get")){
-            propertyName = getter.replace("get","");
-            propertyName = propertyName.substring(0, 1).toLowerCase() + propertyName.substring(1);
-        }else if(getter.startsWith("is")){
-            propertyName = getter.replace("is","");
-            propertyName = propertyName.substring(0, 1).toLowerCase() + propertyName.substring(1);
-        }else {
-            throw new IllegalArgumentException("Not a getter: " + supplier.toString());
-        }
-        return ignoreProperty(propertyName);
+    public ReflectionCompareResultMatchers ignore(Types.Supplier<?> supplier){
+        getReflectionComparator().ignoreProperty(supplier);
+        return this;
     }
 
-    public ReflectionCompareResultMatchers ignoreProperty(String property){
-        ObjectDifferBuilder builder = reflectionComparator.getBuilder()
-                .inclusion()
-                .exclude()
-                .propertyName(property)
-                .and();
-        reflectionComparator.setObjectDiffer(builder.build());
-        reflectionComparator.setBuilder(builder);
+    public ReflectionCompareResultMatchers ignore(String property){
+        getReflectionComparator().ignoreProperty(property);
         return this;
     }
 
@@ -60,7 +45,7 @@ public class ReflectionCompareResultMatchers extends AbstractCompareResultMatche
      * @return
      */
     public ReflectionCompareResultMatchers ignoreIds(){
-        return ignoreProperty("id");
+        return ignore("id");
     }
 
 

@@ -1,11 +1,11 @@
 package io.github.vincemann.generic.crud.lib.controller.dtoMapper.idResolver.biDir;
 
-import io.github.vincemann.generic.crud.lib.controller.dtoMapper.exception.EntityMappingException;
+import io.github.vincemann.generic.crud.lib.controller.dtoMapper.exception.DtoMappingException;
 import io.github.vincemann.generic.crud.lib.controller.dtoMapper.idResolver.EntityIdResolver;
 import io.github.vincemann.generic.crud.lib.dto.biDir.BiDirParentDto;
 import io.github.vincemann.generic.crud.lib.model.biDir.child.BiDirChild;
 import io.github.vincemann.generic.crud.lib.model.biDir.parent.BiDirParent;
-import io.github.vincemann.generic.crud.lib.service.finder.CrudServiceFinder;
+import io.github.vincemann.generic.crud.lib.service.locator.CrudServiceLocator;
 import org.springframework.stereotype.Component;
 
 import java.io.Serializable;
@@ -13,14 +13,13 @@ import java.util.AbstractMap;
 import java.util.Collection;
 import java.util.Map;
 
-@Component
 public class BiDirParentIdResolver extends EntityIdResolver<BiDirParent, BiDirParentDto> {
 
-    public BiDirParentIdResolver(CrudServiceFinder crudServiceFinder) {
-        super(crudServiceFinder, BiDirParentDto.class);
+    public BiDirParentIdResolver(CrudServiceLocator crudServiceLocator) {
+        super(crudServiceLocator, BiDirParentDto.class);
     }
 
-    public void resolveEntityIds(BiDirParent mappedBiDirParent, BiDirParentDto biDirParentDto) throws EntityMappingException {
+    public void resolveEntityIds(BiDirParent mappedBiDirParent, BiDirParentDto biDirParentDto) throws DtoMappingException {
         try {
             //find and handle single Children
             Map<Class, Serializable> allChildIdToClassMappings = biDirParentDto.findBiDirChildrenIds();

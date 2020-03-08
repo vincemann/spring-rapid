@@ -8,7 +8,7 @@ import io.github.vincemann.generic.crud.lib.controller.dtoMapper.idResolver.uniD
 import io.github.vincemann.generic.crud.lib.model.IdentifiableEntity;
 import io.github.vincemann.generic.crud.lib.service.CrudService;
 import io.github.vincemann.generic.crud.lib.service.exception.NoIdException;
-import io.github.vincemann.generic.crud.lib.service.finder.CrudServiceFinder;
+import io.github.vincemann.generic.crud.lib.service.locator.CrudServiceLocator;
 import lombok.Getter;
 import org.junit.jupiter.api.BeforeEach;
 import org.mockito.Mock;
@@ -25,7 +25,7 @@ import static org.mockito.Mockito.when;
 public abstract class UniDirEntityResolverTest {
 
     @Mock
-    private CrudServiceFinder crudServiceFinder;
+    private CrudServiceLocator crudServiceLocator;
     @Mock
     private CrudService<UniDirEntityChild,Long, CrudRepository<UniDirEntityChild,Long>> entityChildCrudService;
     @Mock
@@ -70,7 +70,7 @@ public abstract class UniDirEntityResolverTest {
         classCrudServiceMap.put(UniDirEntityParentsChild.class,entityParentsChildCrudService);
         classCrudServiceMap.put(UniDirEntityChildsParent.class,entityChildsParentCrudService);
 
-        when(crudServiceFinder.getCrudServices())
+        when(crudServiceLocator.find())
                 .thenReturn(classCrudServiceMap);
     }
 }

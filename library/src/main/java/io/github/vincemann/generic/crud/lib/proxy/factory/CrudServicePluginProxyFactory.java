@@ -12,12 +12,11 @@ import java.io.Serializable;
 import java.lang.reflect.Proxy;
 import java.util.Arrays;
 
-@Component
 public class CrudServicePluginProxyFactory
 {
     //we need the class explicitly here to avoid issues with other proxies. HibernateProxies for example, are not interfaces, so service.getClass returns no interface
     //-> this would make this crash
-    public <Id extends Serializable, E extends IdentifiableEntity<Id>,S extends CrudService<E,Id, ? extends CrudRepository<E,Id>>> S
+    public static <Id extends Serializable, E extends IdentifiableEntity<Id>,S extends CrudService<E,Id, ? extends CrudRepository<E,Id>>> S
     create(S crudService, CrudServicePlugin<? super E,? super Id>... plugins){
         S unproxied = AopTestUtils.getTargetObject(crudService);
         S proxyInstance = (S) Proxy.newProxyInstance(

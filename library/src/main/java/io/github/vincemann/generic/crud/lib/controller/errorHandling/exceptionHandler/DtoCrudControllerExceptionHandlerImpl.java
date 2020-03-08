@@ -1,7 +1,7 @@
 package io.github.vincemann.generic.crud.lib.controller.errorHandling.exceptionHandler;
 
 import io.github.vincemann.generic.crud.lib.controller.DtoCrudController;
-import io.github.vincemann.generic.crud.lib.controller.dtoMapper.exception.EntityMappingException;
+import io.github.vincemann.generic.crud.lib.controller.dtoMapper.exception.DtoMappingException;
 import io.github.vincemann.generic.crud.lib.controller.errorHandling.ApiError;
 import io.github.vincemann.generic.crud.lib.controller.springAdapter.DtoSerializingException;
 
@@ -16,7 +16,9 @@ import io.github.vincemann.generic.crud.lib.service.exception.NoIdException;
 //todo annotation is not inherited, so it the impl needs to be annotated
 @RestControllerAdvice(assignableTypes = DtoCrudController.class)
 @Slf4j
-public class DtoCrudControllerExceptionHandlerImpl extends ImprovedRestExceptionHandler implements DtoCrudControllerExceptionHandler<ApiError> {
+public class DtoCrudControllerExceptionHandlerImpl
+        extends ImprovedRestExceptionHandler
+                implements DtoCrudControllerExceptionHandler<ApiError> {
 
 
     @Override
@@ -27,7 +29,7 @@ public class DtoCrudControllerExceptionHandlerImpl extends ImprovedRestException
     }
 
     @Override
-    public ResponseEntity<ApiError> handleEntityMappingException(EntityMappingException e) {
+    public ResponseEntity<ApiError> handleEntityMappingException(DtoMappingException e) {
         logError(e);
         return buildResponseEntity(new ApiError(HttpStatus.BAD_REQUEST,
                 "EntityDto could not be mapped to Entity or vice versa",e));

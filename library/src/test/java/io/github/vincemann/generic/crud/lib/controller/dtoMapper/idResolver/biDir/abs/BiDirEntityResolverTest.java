@@ -5,7 +5,7 @@ import io.github.vincemann.generic.crud.lib.controller.dtoMapper.idResolver.biDi
 import io.github.vincemann.generic.crud.lib.controller.dtoMapper.idResolver.biDir.testEntities.BiDirSecondEntityParent;
 import io.github.vincemann.generic.crud.lib.model.IdentifiableEntity;
 import io.github.vincemann.generic.crud.lib.service.CrudService;
-import io.github.vincemann.generic.crud.lib.service.finder.CrudServiceFinder;
+import io.github.vincemann.generic.crud.lib.service.locator.CrudServiceLocator;
 import io.github.vincemann.generic.crud.lib.service.exception.NoIdException;
 import lombok.Getter;
 import org.junit.jupiter.api.BeforeEach;
@@ -26,7 +26,7 @@ import static org.mockito.Mockito.when;
 public abstract class BiDirEntityResolverTest {
 
     @Mock
-    private CrudServiceFinder crudServiceFinder;
+    private CrudServiceLocator crudServiceLocator;
     @Mock
     private CrudService<BiDirEntityChild,Long, CrudRepository<BiDirEntityChild,Long>> entityChildCrudService;
     @Mock
@@ -61,7 +61,7 @@ public abstract class BiDirEntityResolverTest {
         classCrudServiceMap.put(BiDirSecondEntityParent.class,secondEntityParentCrudService);
         classCrudServiceMap.put(BiDirEntityChild.class,entityChildCrudService);
 
-        when(crudServiceFinder.getCrudServices())
+        when(crudServiceLocator.find())
                 .thenReturn(classCrudServiceMap);
     }
 }

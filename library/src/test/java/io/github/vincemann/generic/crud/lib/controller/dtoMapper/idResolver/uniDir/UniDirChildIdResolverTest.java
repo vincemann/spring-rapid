@@ -1,6 +1,6 @@
 package io.github.vincemann.generic.crud.lib.controller.dtoMapper.idResolver.uniDir;
 
-import io.github.vincemann.generic.crud.lib.controller.dtoMapper.exception.EntityMappingException;
+import io.github.vincemann.generic.crud.lib.controller.dtoMapper.exception.DtoMappingException;
 import io.github.vincemann.generic.crud.lib.controller.dtoMapper.idResolver.uniDir.abs.UniDirEntityResolverTest;
 import io.github.vincemann.generic.crud.lib.controller.dtoMapper.idResolver.uniDir.testEntities.UniDirEntityChild;
 import io.github.vincemann.generic.crud.lib.controller.dtoMapper.idResolver.uniDir.testEntities.UniDirEntityChildDto;
@@ -17,11 +17,11 @@ public class UniDirChildIdResolverTest extends UniDirEntityResolverTest {
     @Override
     public void setUp() throws NoIdException {
         super.setUp();
-        this.uniDirChildIdResolver = new UniDirChildIdResolver(getCrudServiceFinder());
+        this.uniDirChildIdResolver = new UniDirChildIdResolver(getCrudServiceLocator());
     }
 
     @Test
-    public void resolveServiceEntityIds() throws EntityMappingException {
+    public void resolveServiceEntityIds() throws DtoMappingException {
         //given
         UniDirEntityChild unfinishedMappedUniDirChild = new UniDirEntityChild();
         UniDirEntityChildDto childDto = new UniDirEntityChildDto();

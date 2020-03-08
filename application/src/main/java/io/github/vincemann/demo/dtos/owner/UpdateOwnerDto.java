@@ -20,7 +20,7 @@ public class UpdateOwnerDto extends BaseOwnerDto{
     }
 
     @Builder
-    public UpdateOwnerDto(Set<Long> petIds, @Size(min = 10, max = 255) @NotBlank String address, @NotBlank String city, @Size(min = 10, max = 10) String telephone) {
-        super(petIds, address, city, telephone);
+    public UpdateOwnerDto(@Size(min = 10, max = 255) @NotBlank String address, @NotBlank String city, @Size(min = 10, max = 10) String telephone) {
+        super(address, city, telephone);
     }
 }

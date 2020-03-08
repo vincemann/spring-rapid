@@ -3,15 +3,11 @@ package io.github.vincemann.generic.crud.lib.controller.springAdapter;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
-import org.springframework.beans.factory.config.ConfigurableBeanFactory;
-import org.springframework.context.annotation.Primary;
-import org.springframework.context.annotation.Scope;
-import org.springframework.stereotype.Component;
 
 @Getter
 @Setter
 /**
- * Gives User fine grained control about which endpoints should be exposed by {@link SpringAdapterDtoCrudController}.
+ * Gives User fine grained control about which endpoints should be exposed by {@link SpringAdapterJsonDtoCrudController}.
  */
 public class EndpointsExposureContext {
     private boolean createEndpointExposed=true;

@@ -4,7 +4,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.github.vincemann.generic.crud.lib.controller.dtoMapper.DtoMapper;
 import io.github.vincemann.generic.crud.lib.controller.dtoMapper.DtoMappingContext;
-import io.github.vincemann.generic.crud.lib.controller.dtoMapper.exception.EntityMappingException;
+import io.github.vincemann.generic.crud.lib.controller.dtoMapper.exception.DtoMappingException;
 import io.github.vincemann.generic.crud.lib.controller.springAdapter.DtoSerializingException;
 import io.github.vincemann.generic.crud.lib.model.IdentifiableEntity;
 import io.github.vincemann.generic.crud.lib.service.CrudService;
@@ -40,7 +40,7 @@ import java.util.Set;
 @Slf4j
 @Getter
 @Setter
-public abstract class BasicDtoCrudController
+public abstract class JsonDtoCrudController
         <
                 E extends IdentifiableEntity<Id>,
                 Id extends Serializable
@@ -59,7 +59,7 @@ public abstract class BasicDtoCrudController
     private Class<E> entityClass = (Class<E>) ((ParameterizedType) this.getClass().getGenericSuperclass()).getActualTypeArguments()[0];
 
 
-    public BasicDtoCrudController(DtoMappingContext dtoMappingContext) {
+    public JsonDtoCrudController(DtoMappingContext dtoMappingContext) {
         this.dtoMappingContext = dtoMappingContext;
     }
 
@@ -84,7 +84,7 @@ public abstract class BasicDtoCrudController
 
     @Override
     @SuppressWarnings("unchecked")
-    public ResponseEntity<String> find(Id id) throws NoIdException, EntityNotFoundException, EntityMappingException, DtoSerializingException {
+    public ResponseEntity<String> find(Id id) throws NoIdException, EntityNotFoundException, DtoMappingException, DtoSerializingException {
         try {
             Optional<E> optionalEntity = crudService.findById(id);
             if (optionalEntity.isPresent()) {
@@ -99,7 +99,7 @@ public abstract class BasicDtoCrudController
     }
 
     @Override
-    public ResponseEntity<String> findAll() throws EntityMappingException, DtoSerializingException {
+    public ResponseEntity<String> findAll() throws DtoMappingException, DtoSerializingException {
         try {
             Set<E> all = crudService.findAll();
             Collection<IdentifiableEntity<Id>> dtos = new HashSet<>();
@@ -115,7 +115,7 @@ public abstract class BasicDtoCrudController
 
     @Override
     @SuppressWarnings("unchecked")
-    public ResponseEntity<String> create(IdentifiableEntity<Id> dto) throws BadEntityException, EntityMappingException, DtoSerializingException {
+    public ResponseEntity<String> create(IdentifiableEntity<Id> dto) throws BadEntityException, DtoMappingException, DtoSerializingException {
         try {
             //i expect that dto has the right dto type -> callers responsibility
             E entity = mapToEntity(dto);
@@ -131,7 +131,7 @@ public abstract class BasicDtoCrudController
 
     @Override
     @SuppressWarnings("unchecked")
-    public ResponseEntity<String> update(IdentifiableEntity<Id> dto, boolean full) throws BadEntityException, EntityMappingException, NoIdException, EntityNotFoundException, DtoSerializingException {
+    public ResponseEntity<String> update(IdentifiableEntity<Id> dto, boolean full) throws BadEntityException, DtoMappingException, NoIdException, EntityNotFoundException, DtoSerializingException {
         try {
             //i expect that dto has the right dto type -> callers responsibility
             E entity = mapToEntity(dto);
@@ -154,7 +154,7 @@ public abstract class BasicDtoCrudController
     }
 
 
-    private E mapToEntity(IdentifiableEntity<Id> dto) throws EntityMappingException {
+    private E mapToEntity(IdentifiableEntity<Id> dto) throws DtoMappingException {
         return dtoMapper.mapToEntity(dto,entityClass);
     }
 

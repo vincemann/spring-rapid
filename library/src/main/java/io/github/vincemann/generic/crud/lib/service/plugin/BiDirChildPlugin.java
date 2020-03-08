@@ -15,7 +15,6 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 
-@Component
 @Transactional
 /**
  * This plugin, combined with {@link io.github.vincemann.generic.crud.lib.jpaAuditing.entityListener.BiDirChildEntityListener} manages bidirectional relationships of the entity, managed by the service using this plugin.

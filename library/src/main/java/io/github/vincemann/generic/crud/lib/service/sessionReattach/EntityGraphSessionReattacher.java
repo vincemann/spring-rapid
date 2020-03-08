@@ -13,14 +13,12 @@ import org.springframework.stereotype.Component;
 import java.io.Serializable;
 import java.util.Set;
 
-@Component
 @Slf4j
 public class EntityGraphSessionReattacher {
 
     @Getter
     private SessionReattacher sessionReattacher;
 
-    @Autowired
     public EntityGraphSessionReattacher(SessionReattacher sessionReattacher) {
         this.sessionReattacher = sessionReattacher;
     }

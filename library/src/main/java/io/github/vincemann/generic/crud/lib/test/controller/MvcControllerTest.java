@@ -1,9 +1,11 @@
 package io.github.vincemann.generic.crud.lib.test.controller;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import io.github.vincemann.generic.crud.lib.config.JacksonConfig;
 import io.github.vincemann.generic.crud.lib.controller.dtoMapper.DtoMappingContext;
-import io.github.vincemann.generic.crud.lib.controller.dtoMapper.exception.EntityMappingException;
-import io.github.vincemann.generic.crud.lib.controller.springAdapter.SpringAdapterDtoCrudController;
+import io.github.vincemann.generic.crud.lib.controller.dtoMapper.exception.DtoMappingException;
+import io.github.vincemann.generic.crud.lib.controller.springAdapter.SpringAdapterJsonDtoCrudController;
 import io.github.vincemann.generic.crud.lib.model.IdentifiableEntity;
 import io.github.vincemann.generic.crud.lib.service.CrudService;
 import lombok.Getter;
@@ -12,8 +14,13 @@ import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.BeforeEach;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.context.annotation.Import;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.http.MediaType;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.ResultActions;
@@ -28,14 +35,27 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 
+
 /**
- * Baseclass for all Controller IntegrationTests
- * @param <E>
- * @param <Id>
+ * Use this base class to test your Controllers.
+ * Service is tested in isolation, that's why it should be mocked here and only the correct interaction
+ * with the service is getting tested.
+ *
+ * Main Goal of this test, is to test the correct setup of the web-layer and that the webcomponents
+ * work together as expected.
+ * Each component is tested heavily in isolation though, which means, that a few simple test cases here are sufficient.
+ * @param <S> Service Type
+ * @param <E> Entity managed by Service Type
+ * @param <Id> Id Type of Entity
  */
 @Getter
 @Setter
 @Slf4j
+//web layer and service is layer is loaded, I cannot get it to work with a single controller loaded and service layer not loaded..
+@ActiveProfiles(value = {"test","web","service"})
+@SpringBootTest
+@AutoConfigureMockMvc
+@Import({JacksonConfig.class})
 public abstract class MvcControllerTest
         <S extends CrudService<E,Id,? extends CrudRepository<E,Id>>
         ,E extends IdentifiableEntity<Id>,
@@ -50,8 +70,15 @@ public abstract class MvcControllerTest
     private DtoMappingContext dtoMappingContext;
     private String url;
     private S testService;
-    private SpringAdapterDtoCrudController<E, Id> controller;
+    private SpringAdapterJsonDtoCrudController<E, Id> controller;
     private MockMvc mockMvc;
+
+//    @MockBean
+//    private S mockedService;
+    //load from jackson config, using same mapper, the controllers are using
+    //i expect this component to work, thus using it in my test methods as well
+    @Autowired
+    private ObjectMapper objectMapper;
 
     public MvcControllerTest(String url) {
         this.url=url;
@@ -67,7 +94,7 @@ public abstract class MvcControllerTest
     }
 
     @Autowired
-    public void injectController(SpringAdapterDtoCrudController<E, Id> controller) {
+    public void injectController(SpringAdapterJsonDtoCrudController<E, Id> controller) {
         this.controller = controller;
     }
 
@@ -93,7 +120,7 @@ public abstract class MvcControllerTest
         }
     }
 
-    public E map(IdentifiableEntity<Id> dto) throws EntityMappingException {
+    public E mapToEntity(IdentifiableEntity<Id> dto) throws DtoMappingException {
         return getController().getDtoMapper().mapToEntity(dto,getEntityClass());
     }
 
@@ -101,7 +128,6 @@ public abstract class MvcControllerTest
         return getMockMvc().perform(
                 post(getCreateUrl())
                         .content(serialize(dto))
-                        //todo this must be set
                         .contentType(MediaType.APPLICATION_JSON_UTF8_VALUE)
         );
     }
@@ -152,7 +178,7 @@ public abstract class MvcControllerTest
         return getController().getJsonMapper().readValue(s,dtoClass);
     }
 
-    public <C extends SpringAdapterDtoCrudController<E,Id>> C getController(){
+    public <C extends SpringAdapterJsonDtoCrudController<E,Id>> C getController(){
         return (C) controller;
     }
 

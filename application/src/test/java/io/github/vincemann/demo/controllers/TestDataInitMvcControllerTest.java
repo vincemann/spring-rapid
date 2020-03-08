@@ -17,6 +17,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.BeforeEach;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.repository.CrudRepository;
+import org.springframework.test.context.ActiveProfiles;
 
 import java.time.LocalDate;
 
@@ -32,7 +33,6 @@ public abstract class TestDataInitMvcControllerTest<S extends CrudService<E,Long
     private Specialty testSpecialty;
     private Owner testOwner;
     private Pet testPet;
-
 
     private CrudService<Owner,Long, OwnerRepository> ownerService;
     private CrudService<Pet,Long, PetRepository> petService;

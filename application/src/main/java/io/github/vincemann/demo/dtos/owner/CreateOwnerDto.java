@@ -32,8 +32,8 @@ public class CreateOwnerDto extends BaseOwnerDto implements BiDirParentDto {
     }
 
     @Builder
-    public CreateOwnerDto(Set<Long> petIds, @Size(min = 10, max = 255) @NotBlank String address, @NotBlank String city, @Size(min = 10, max = 10) String telephone, @NotBlank @Size(min = 2, max = 20) String firstName, @NotBlank @Size(min = 2, max = 20) String lastName) {
-        super(petIds, address, city, telephone);
+    public CreateOwnerDto(@Size(min = 10, max = 255) @NotBlank String address, @NotBlank String city, @Size(min = 10, max = 10) String telephone, @NotBlank @Size(min = 2, max = 20) String firstName, @NotBlank @Size(min = 2, max = 20) String lastName) {
+        super(address, city, telephone);
         this.firstName = firstName;
         this.lastName = lastName;
     }

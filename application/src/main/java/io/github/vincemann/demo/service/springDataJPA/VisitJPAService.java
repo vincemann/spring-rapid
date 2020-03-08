@@ -8,6 +8,6 @@ import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Service;
 
 @Service
-@Profile("springdatajpa")
+@Profile("service")
 public class VisitJPAService extends JPACrudService<Visit,Long, VisitRepository> implements VisitService {
 }

@@ -5,16 +5,8 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.ComponentScan;
-import org.springframework.security.access.expression.method.DefaultMethodSecurityExpressionHandler;
-import org.springframework.security.access.expression.method.MethodSecurityExpressionHandler;
-import org.springframework.web.context.ContextLoader;
-import org.springframework.web.method.HandlerMethod;
-import org.springframework.web.servlet.mvc.method.RequestMappingInfo;
-import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping;
-
-import java.sql.SQLException;
-import java.util.Arrays;
-import java.util.Map;
+import org.springframework.context.annotation.Profile;
+import org.springframework.test.context.ActiveProfiles;
 
 @SpringBootApplication
 @ComponentScan(basePackages = {
@@ -25,6 +17,9 @@ public class PetClinicGuruVersionApplication {
 
 	public static void main(String[] args){
 		ApplicationContext context = SpringApplication.run(PetClinicGuruVersionApplication.class, args);
+		for (String beanDefinitionName : context.getBeanDefinitionNames()) {
+			log.debug("beandefname: " + beanDefinitionName);
+		}
 	}
 
 }

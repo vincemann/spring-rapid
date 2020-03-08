@@ -1,6 +1,6 @@
 package io.github.vincemann.generic.crud.lib.controller.dtoMapper.idResolver.biDir;
 
-import io.github.vincemann.generic.crud.lib.controller.dtoMapper.exception.EntityMappingException;
+import io.github.vincemann.generic.crud.lib.controller.dtoMapper.exception.DtoMappingException;
 import io.github.vincemann.generic.crud.lib.controller.dtoMapper.idResolver.biDir.abs.BiDirEntityResolverTest;
 import io.github.vincemann.generic.crud.lib.controller.dtoMapper.idResolver.biDir.testEntities.BiDirEntityChild;
 import io.github.vincemann.generic.crud.lib.controller.dtoMapper.idResolver.biDir.testEntities.BiDirEntityChildDto;
@@ -19,11 +19,11 @@ public class BiDirChildIdResolverTest extends BiDirEntityResolverTest {
     @Override
     public void setUp() throws NoIdException {
         super.setUp();
-        this.biDirChildIdResolver = new BiDirChildIdResolver(getCrudServiceFinder());
+        this.biDirChildIdResolver = new BiDirChildIdResolver(getCrudServiceLocator());
     }
 
     @Test
-    public void resolveServiceEntityIds() throws EntityMappingException {
+    public void resolveServiceEntityIds() throws DtoMappingException {
         //given
         BiDirEntityChild unfinishedMappedBiDirEntityChild = new BiDirEntityChild();
         BiDirEntityChildDto biDirEntityChildDto = new BiDirEntityChildDto();

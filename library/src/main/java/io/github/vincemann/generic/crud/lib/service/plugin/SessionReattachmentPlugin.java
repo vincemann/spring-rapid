@@ -9,7 +9,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
-@Component
 @Slf4j
 @Transactional
 /**
@@ -24,7 +23,6 @@ public class SessionReattachmentPlugin
 
     private EntityGraphSessionReattacher entityGraph_sessionReattacher;
 
-    @Autowired
     public SessionReattachmentPlugin(EntityGraphSessionReattacher entityGraph_sessionReattacher) {
         this.entityGraph_sessionReattacher = entityGraph_sessionReattacher;
     }

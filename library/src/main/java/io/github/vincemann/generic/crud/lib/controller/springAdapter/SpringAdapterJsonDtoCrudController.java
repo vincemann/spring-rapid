@@ -1,8 +1,8 @@
 package io.github.vincemann.generic.crud.lib.controller.springAdapter;
 
-import io.github.vincemann.generic.crud.lib.controller.BasicDtoCrudController;
+import io.github.vincemann.generic.crud.lib.controller.JsonDtoCrudController;
 import io.github.vincemann.generic.crud.lib.controller.dtoMapper.DtoMappingContext;
-import io.github.vincemann.generic.crud.lib.controller.dtoMapper.exception.EntityMappingException;
+import io.github.vincemann.generic.crud.lib.controller.dtoMapper.exception.DtoMappingException;
 import io.github.vincemann.generic.crud.lib.controller.springAdapter.idFetchingStrategy.IdFetchingStrategy;
 import io.github.vincemann.generic.crud.lib.controller.springAdapter.idFetchingStrategy.exception.IdFetchingException;
 import io.github.vincemann.generic.crud.lib.controller.springAdapter.validationStrategy.ValidationStrategy;
@@ -33,7 +33,7 @@ import java.util.stream.Collectors;
 
 /**
  * Adapter that connects Springs Requirements for a Controller (which can be seen as an Interface),
- * with the {@link BasicDtoCrudController} Interface, resulting in a fully functional Spring @{@link org.springframework.web.bind.annotation.RestController}
+ * with the {@link JsonDtoCrudController} Interface, resulting in a fully functional Spring @{@link org.springframework.web.bind.annotation.RestController}
  *
  * fetches {@link Id} with given {@link IdFetchingStrategy} from HttpRequest
  * fetches Dto, expected in json format, from HttpRequest
@@ -51,12 +51,12 @@ import java.util.stream.Collectors;
  */
 @Slf4j
 @Getter
-public abstract class SpringAdapterDtoCrudController
+public abstract class SpringAdapterJsonDtoCrudController
         <
                 E extends IdentifiableEntity<Id>,
                 Id extends Serializable
         >
-        extends BasicDtoCrudController<E,Id>
+        extends JsonDtoCrudController<E,Id>
                 implements ApplicationListener<ContextRefreshedEvent> {
 
 
@@ -91,7 +91,7 @@ public abstract class SpringAdapterDtoCrudController
     private ValidationStrategy<Id> validationStrategy;
     private EndpointsExposureContext endpointsExposureContext;
 
-    public SpringAdapterDtoCrudController(DtoMappingContext dtoMappingContext) {
+    public SpringAdapterJsonDtoCrudController(DtoMappingContext dtoMappingContext) {
         super(dtoMappingContext);
         initUrls();
     }
@@ -217,14 +217,14 @@ public abstract class SpringAdapterDtoCrudController
                 .build();
     }
 
-    public ResponseEntity<String> findAll(HttpServletRequest request) throws EntityMappingException, DtoSerializingException {
+    public ResponseEntity<String> findAll(HttpServletRequest request) throws DtoMappingException, DtoSerializingException {
         log.debug("FindAll request arriving at controller: " + request);
         beforeFindAll(request);
         return super.findAll();
     }
 
 
-    public ResponseEntity<String> find(HttpServletRequest request) throws IdFetchingException, EntityNotFoundException, NoIdException, EntityMappingException, DtoSerializingException {
+    public ResponseEntity<String> find(HttpServletRequest request) throws IdFetchingException, EntityNotFoundException, NoIdException, DtoMappingException, DtoSerializingException {
         log.debug("Find request arriving at controller: " + request);
         Id id = idIdFetchingStrategy.fetchId(request);
         log.debug("id fetched from request: " + id);
@@ -234,7 +234,7 @@ public abstract class SpringAdapterDtoCrudController
         return super.find(id);
     }
 
-    public ResponseEntity<String> create(HttpServletRequest request) throws BadEntityException, EntityMappingException, DtoSerializingException {
+    public ResponseEntity<String> create(HttpServletRequest request) throws BadEntityException, DtoMappingException, DtoSerializingException {
         log.debug("Create request arriving at controller: " + request);
         try {
             String body = request.getReader().lines().collect(Collectors.joining(System.lineSeparator()));
@@ -250,7 +250,7 @@ public abstract class SpringAdapterDtoCrudController
         }
     }
 
-    public ResponseEntity<String> update(HttpServletRequest request) throws EntityNotFoundException, NoIdException, BadEntityException, EntityMappingException, DtoSerializingException {
+    public ResponseEntity<String> update(HttpServletRequest request) throws EntityNotFoundException, NoIdException, BadEntityException, DtoMappingException, DtoSerializingException {
         log.debug("Update request arriving at controller: " + request);
         try {
             String body = request.getReader().lines().collect(Collectors.joining(System.lineSeparator()));

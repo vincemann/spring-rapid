@@ -1,6 +1,6 @@
 package io.github.vincemann.generic.crud.lib.controller.dtoMapper;
 
-import io.github.vincemann.generic.crud.lib.controller.dtoMapper.exception.EntityMappingException;
+import io.github.vincemann.generic.crud.lib.controller.dtoMapper.exception.DtoMappingException;
 import io.github.vincemann.generic.crud.lib.model.IdentifiableEntity;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -24,7 +24,7 @@ public class BasicDtoMapper implements DtoMapper {
     }
 
     @Override
-    public <Dto extends IdentifiableEntity> Dto mapToDto(IdentifiableEntity source, Class<Dto> destinationClass) throws EntityMappingException {
+    public <Dto extends IdentifiableEntity> Dto mapToDto(IdentifiableEntity source, Class<Dto> destinationClass) throws DtoMappingException {
         return modelMapper.map(source,destinationClass);
     }
 
@@ -34,7 +34,7 @@ public class BasicDtoMapper implements DtoMapper {
     }
 
     @Override
-    public <E extends IdentifiableEntity> E mapToEntity(IdentifiableEntity source, Class<E> destinationClass) throws EntityMappingException {
+    public <E extends IdentifiableEntity> E mapToEntity(IdentifiableEntity source, Class<E> destinationClass) throws DtoMappingException {
         return modelMapper.map(source,destinationClass);
     }
 }

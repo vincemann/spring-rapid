@@ -1,4 +1,4 @@
-package io.github.vincemann.generic.crud.lib.test.deepCompare;
+package io.github.vincemann.generic.crud.lib.test.compare;
 
 //@Component
 //@Qualifier(PARTIAL_UPDATE_EQUAL_CHECKER_QUALIFIER)

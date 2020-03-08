@@ -4,10 +4,11 @@ import io.github.vincemann.generic.crud.lib.service.CrudService;
 import io.github.vincemann.generic.crud.lib.test.service.request.ServiceRequest;
 import io.github.vincemann.generic.crud.lib.test.service.request.ServiceRequestBuilder;
 import io.github.vincemann.generic.crud.lib.test.service.result.ServiceResult;
-import io.github.vincemann.generic.crud.lib.test.service.result.action.ServiceResultActions;
-import io.github.vincemann.generic.crud.lib.test.service.result.handler.ServiceResultHandler;
+import io.github.vincemann.generic.crud.lib.test.service.result.ServiceResultActions;
+import io.github.vincemann.generic.crud.lib.test.service.result.ServiceResultHandler;
 import io.github.vincemann.generic.crud.lib.test.service.result.matcher.ServiceResultMatcher;
 import org.springframework.beans.BeansException;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.TestComponent;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
@@ -16,14 +17,11 @@ import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import java.lang.reflect.InvocationTargetException;
 
-@TestComponent
 public class ServiceTestTemplate
     implements ApplicationContextAware
 {
 
-    @PersistenceContext
     private EntityManager entityManager;
-
     private CrudService serviceUnderTest;
 //    private List<EntityServiceResultMatcher<E>> defaultEntityServiceResultMatchers;
 //    private List<EntityCollectionServiceResultMatcher<E>> defaultEntityCollectionServiceResultMatchers;
@@ -32,6 +30,10 @@ public class ServiceTestTemplate
 
     public void setServiceUnderTest(CrudService serviceUnderTest) {
         this.serviceUnderTest = serviceUnderTest;
+    }
+
+    public void setEntityManager(EntityManager entityManager) {
+        this.entityManager = entityManager;
     }
 
     @Override

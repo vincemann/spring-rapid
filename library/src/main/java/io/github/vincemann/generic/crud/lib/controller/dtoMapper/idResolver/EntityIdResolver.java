@@ -1,8 +1,8 @@
 package io.github.vincemann.generic.crud.lib.controller.dtoMapper.idResolver;
 
-import io.github.vincemann.generic.crud.lib.controller.dtoMapper.exception.EntityMappingException;
+import io.github.vincemann.generic.crud.lib.controller.dtoMapper.exception.DtoMappingException;
 import io.github.vincemann.generic.crud.lib.service.CrudService;
-import io.github.vincemann.generic.crud.lib.service.finder.CrudServiceFinder;
+import io.github.vincemann.generic.crud.lib.service.locator.CrudServiceLocator;
 import io.github.vincemann.generic.crud.lib.service.exception.EntityNotFoundException;
 import io.github.vincemann.generic.crud.lib.service.exception.NoIdException;
 import lombok.Getter;
@@ -22,26 +22,26 @@ import java.util.Optional;
  *  {@link io.github.vincemann.generic.crud.lib.dto.uniDir.UniDirChildIdCollection}, {@link io.github.vincemann.generic.crud.lib.dto.biDir.BiDirChildIdCollection}
  *
  *  The resolving of the ids is done, by calling {@link io.github.vincemann.generic.crud.lib.service.CrudService#findById(Serializable)} of the {@link CrudService}, that belongs to the Annotated Id's Entity Type.
- *  The needed CrudService is found with {@link CrudServiceFinder}.
+ *  The needed CrudService is found with {@link CrudServiceLocator}.
  */
 public abstract class EntityIdResolver<E,Dto> {
 
-    private CrudServiceFinder crudServiceFinder;
+    private CrudServiceLocator crudServiceLocator;
     private Class<Dto> dtoClass;
 
-    public EntityIdResolver(CrudServiceFinder crudServiceFinder, Class<Dto> dtoClass) {
+    public EntityIdResolver(CrudServiceLocator crudServiceLocator, Class<Dto> dtoClass) {
         this.dtoClass = dtoClass;
-        this.crudServiceFinder=crudServiceFinder;
+        this.crudServiceLocator = crudServiceLocator;
     }
 
-    public abstract void resolveEntityIds(E mappedEntity, Dto dto) throws EntityMappingException;
+    public abstract void resolveEntityIds(E mappedEntity, Dto dto) throws DtoMappingException;
 
     public abstract void resolveDtoIds(Dto mappedDto, E entity);
 
 
-    protected Object findEntityFromService(Map.Entry<Class, Serializable> entityClassToIdMapping) throws EntityMappingException {
+    protected Object findEntityFromService(Map.Entry<Class, Serializable> entityClassToIdMapping) throws DtoMappingException {
         try {
-            CrudService entityService = crudServiceFinder.getCrudServices().get(entityClassToIdMapping.getKey());
+            CrudService entityService = crudServiceLocator.find().get(entityClassToIdMapping.getKey());
             if(entityService==null){
                 throw new IllegalArgumentException("No Service found for entityClass: " + entityClassToIdMapping.getKey().getSimpleName());
             }
@@ -57,7 +57,7 @@ public abstract class EntityIdResolver<E,Dto> {
             }
             return optionalParent.get();
         }catch (NoIdException|EntityNotFoundException e){
-            throw new EntityMappingException(e);
+            throw new DtoMappingException(e);
         }
 
     }

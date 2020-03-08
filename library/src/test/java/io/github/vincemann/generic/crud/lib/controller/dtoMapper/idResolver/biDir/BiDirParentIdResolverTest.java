@@ -2,7 +2,7 @@ package io.github.vincemann.generic.crud.lib.controller.dtoMapper.idResolver.biD
 
 import io.github.vincemann.generic.crud.lib.controller.dtoMapper.idResolver.biDir.testEntities.BiDirEntityParent;
 import io.github.vincemann.generic.crud.lib.controller.dtoMapper.idResolver.biDir.testEntities.BiDirEntityParentDto;
-import io.github.vincemann.generic.crud.lib.controller.dtoMapper.exception.EntityMappingException;
+import io.github.vincemann.generic.crud.lib.controller.dtoMapper.exception.DtoMappingException;
 import io.github.vincemann.generic.crud.lib.controller.dtoMapper.idResolver.biDir.abs.BiDirEntityResolverTest;
 import io.github.vincemann.generic.crud.lib.service.exception.NoIdException;
 import org.junit.jupiter.api.Assertions;
@@ -20,11 +20,11 @@ public class BiDirParentIdResolverTest extends BiDirEntityResolverTest {
     @Override
     public void setUp() throws NoIdException {
         super.setUp();
-        this.biDirParentIdResolver = new BiDirParentIdResolver(getCrudServiceFinder());
+        this.biDirParentIdResolver = new BiDirParentIdResolver(getCrudServiceLocator());
     }
 
     @Test
-    public void resolveServiceEntityIds() throws EntityMappingException {
+    public void resolveServiceEntityIds() throws DtoMappingException {
         //given
         BiDirEntityParentDto biDirEntityParentDto = new BiDirEntityParentDto();
         biDirEntityParentDto.setEntityChildId(getBiDirChild().getId());
