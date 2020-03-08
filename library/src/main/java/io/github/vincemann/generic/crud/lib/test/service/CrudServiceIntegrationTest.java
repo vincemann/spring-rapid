@@ -7,7 +7,10 @@ import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.data.repository.CrudRepository;
+import org.springframework.test.context.ActiveProfiles;
+import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
@@ -16,6 +19,9 @@ import java.io.Serializable;
 
 @Slf4j
 @Getter
+@ActiveProfiles(value = {"test","service"})
+@Transactional
+@DataJpaTest
 public abstract class CrudServiceIntegrationTest
                 <
                         S extends CrudService<E,Id,? extends CrudRepository<E,Id>>,
