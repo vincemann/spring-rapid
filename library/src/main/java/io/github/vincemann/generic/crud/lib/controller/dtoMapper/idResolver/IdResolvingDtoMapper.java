@@ -1,7 +1,7 @@
 package io.github.vincemann.generic.crud.lib.controller.dtoMapper.idResolver;
 
 import io.github.vincemann.generic.crud.lib.controller.dtoMapper.BasicDtoMapper;
-import io.github.vincemann.generic.crud.lib.controller.dtoMapper.exception.EntityMappingException;
+import io.github.vincemann.generic.crud.lib.controller.dtoMapper.exception.DtoMappingException;
 import io.github.vincemann.generic.crud.lib.dto.biDir.BiDirChildDto;
 import io.github.vincemann.generic.crud.lib.dto.biDir.BiDirParentDto;
 import io.github.vincemann.generic.crud.lib.dto.uniDir.UniDirChildDto;
@@ -17,12 +17,10 @@ import java.util.List;
  * id fields, referencing parent/child entities.
  * The id resolving is done by the given {@link EntityIdResolver}s.
  */
-@Component
 public class IdResolvingDtoMapper extends BasicDtoMapper {
 
     private List<EntityIdResolver> entityIdResolvers;
 
-    @Autowired
     public IdResolvingDtoMapper(List<EntityIdResolver> entityIdResolvers) {
         this.entityIdResolvers = entityIdResolvers;
     }
@@ -36,7 +34,7 @@ public class IdResolvingDtoMapper extends BasicDtoMapper {
     }
 
     @Override
-    public <E extends IdentifiableEntity> E mapToEntity(IdentifiableEntity source, Class<E> destinationClass) throws EntityMappingException {
+    public <E extends IdentifiableEntity> E mapToEntity(IdentifiableEntity source, Class<E> destinationClass) throws DtoMappingException {
         E mappingResult = super.mapToEntity(source, destinationClass);
         //yet unfinished
         EntityIdResolver entityIdResolver = findResolver(source.getClass());
@@ -46,7 +44,7 @@ public class IdResolvingDtoMapper extends BasicDtoMapper {
     }
 
     @Override
-    public <Dto extends IdentifiableEntity> Dto mapToDto(IdentifiableEntity source, Class<Dto> destinationClass) throws EntityMappingException {
+    public <Dto extends IdentifiableEntity> Dto mapToDto(IdentifiableEntity source, Class<Dto> destinationClass) throws DtoMappingException {
         Dto mappingResult = super.mapToDto(source, destinationClass);
         //yet unfinished
         EntityIdResolver entityIdResolver = findResolver(destinationClass);
@@ -55,12 +53,12 @@ public class IdResolvingDtoMapper extends BasicDtoMapper {
         return mappingResult;
     }
 
-    private EntityIdResolver findResolver(Class dstClass) throws EntityMappingException {
+    private EntityIdResolver findResolver(Class dstClass) throws DtoMappingException {
         for (EntityIdResolver entityIdResolver : entityIdResolvers) {
             if (entityIdResolver.getDtoClass().isAssignableFrom(dstClass)) {
                 return entityIdResolver;
             }
         }
-        throw new EntityMappingException("No "+EntityIdResolver.class.getSimpleName() + " found for dstClass: " + dstClass.getSimpleName());
+        throw new DtoMappingException("No "+EntityIdResolver.class.getSimpleName() + " found for dstClass: " + dstClass.getSimpleName());
     }
 }

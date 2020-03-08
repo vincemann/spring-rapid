@@ -1,29 +1,28 @@
 package io.github.vincemann.generic.crud.lib.controller.dtoMapper.idResolver.biDir;
 
-import io.github.vincemann.generic.crud.lib.controller.dtoMapper.exception.EntityMappingException;
+import io.github.vincemann.generic.crud.lib.controller.dtoMapper.exception.DtoMappingException;
 import io.github.vincemann.generic.crud.lib.controller.dtoMapper.idResolver.EntityIdResolver;
 import io.github.vincemann.generic.crud.lib.dto.biDir.BiDirChildDto;
 import io.github.vincemann.generic.crud.lib.model.biDir.child.BiDirChild;
 import io.github.vincemann.generic.crud.lib.model.biDir.parent.BiDirParent;
 import io.github.vincemann.generic.crud.lib.model.biDir.parent.BiDirParentEntity;
-import io.github.vincemann.generic.crud.lib.service.finder.CrudServiceFinder;
+import io.github.vincemann.generic.crud.lib.service.locator.CrudServiceLocator;
 import org.springframework.stereotype.Component;
 
 import java.io.Serializable;
 import java.util.Map;
 
-@Component
 /**
  * Resolves {@link io.github.vincemann.generic.crud.lib.dto.biDir.BiDirParentId} to corresponding {@link BiDirParentEntity}.
  * Adds mapped {@link BiDirChild} to {@link BiDirParent}'s children by calling {@link BiDirParent#addChild(BiDirChild)} -> sets Backreference
  */
 public class BiDirChildIdResolver extends EntityIdResolver<BiDirChild, BiDirChildDto> {
 
-    public BiDirChildIdResolver(CrudServiceFinder crudServiceFinder) {
-        super(crudServiceFinder, BiDirChildDto.class);
+    public BiDirChildIdResolver(CrudServiceLocator crudServiceLocator) {
+        super(crudServiceLocator, BiDirChildDto.class);
     }
 
-    public void resolveEntityIds(BiDirChild mappedBiDirChild, BiDirChildDto biDirChildDto) throws EntityMappingException {
+    public void resolveEntityIds(BiDirChild mappedBiDirChild, BiDirChildDto biDirChildDto) throws DtoMappingException {
         try {
             Map<Class, Serializable> allParentIdToClassMappings = biDirChildDto.findAllBiDirParentIds();
             for (Map.Entry<Class, Serializable> parentIdToClassMapping : allParentIdToClassMappings.entrySet()) {

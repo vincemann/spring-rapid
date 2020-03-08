@@ -4,15 +4,17 @@ import io.github.vincemann.demo.dtos.owner.CreateOwnerDto;
 import io.github.vincemann.demo.dtos.owner.ReadOwnerDto;
 import io.github.vincemann.demo.dtos.owner.UpdateOwnerDto;
 import io.github.vincemann.demo.model.Owner;
-import io.github.vincemann.generic.crud.lib.config.WebComponent;
 import io.github.vincemann.generic.crud.lib.controller.dtoMapper.DtoMappingContext;
-import io.github.vincemann.generic.crud.lib.controller.springAdapter.SpringAdapterDtoCrudController;
+import io.github.vincemann.generic.crud.lib.controller.springAdapter.SpringAdapterJsonDtoCrudController;
+import org.springframework.context.annotation.Profile;
+import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
 
-@WebComponent
+@Controller
+@Profile("web")
 public class OwnerController
-        extends SpringAdapterDtoCrudController<Owner, Long> {
+        extends SpringAdapterJsonDtoCrudController<Owner, Long> {
 
 
     public OwnerController() {
@@ -21,8 +23,8 @@ public class OwnerController
                 UpdateOwnerDto.class,
                 ReadOwnerDto.class
         ));
-    }
 
+    }
     @RequestMapping("/owners")
     public String listOwners(Model model){
         model.addAttribute("owners", getCrudService().findAll());

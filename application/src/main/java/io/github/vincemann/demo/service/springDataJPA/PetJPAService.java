@@ -8,8 +8,8 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Service;
 
-@Service
-@Profile("springdatajpa")
 @Qualifier("basic")
+@Service
+@Profile("service")
 public class PetJPAService extends JPACrudService<Pet, Long, PetRepository> implements PetService {
 }

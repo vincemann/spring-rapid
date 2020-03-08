@@ -1,4 +1,4 @@
-package io.github.vincemann.generic.crud.lib.test.deepCompare;
+package io.github.vincemann.generic.crud.lib.test.compare;
 
 import io.github.vincemann.generic.crud.lib.model.IdentifiableEntityImpl;
 import lombok.AllArgsConstructor;

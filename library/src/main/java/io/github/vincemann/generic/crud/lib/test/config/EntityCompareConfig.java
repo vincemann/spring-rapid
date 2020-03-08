@@ -1,12 +1,12 @@
-package io.github.vincemann.generic.crud.lib.config;
+package io.github.vincemann.generic.crud.lib.test.config;
 
-import io.github.vincemann.generic.crud.lib.test.deepCompare.ReflectionComparator;
-import io.github.vincemann.generic.crud.lib.test.deepCompare.EntityReflectionComparator;
+import io.github.vincemann.generic.crud.lib.test.compare.ReflectionComparator;
+import io.github.vincemann.generic.crud.lib.test.compare.EntityReflectionComparator;
 import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.context.annotation.Bean;
 
 @TestConfiguration
-public class TestConfig {
+public class EntityCompareConfig {
 
     @Bean
     public ReflectionComparator reflectionComparator(){

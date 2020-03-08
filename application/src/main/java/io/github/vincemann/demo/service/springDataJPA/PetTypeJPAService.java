@@ -9,7 +9,7 @@ import org.springframework.stereotype.Service;
 import io.github.vincemann.generic.crud.lib.service.jpa.JPACrudService;
 
 @Service
-@Profile("springdatajpa")
+@Profile("service")
 public class PetTypeJPAService extends JPACrudService<PetType,Long, PetTypeRepository> implements PetTypeService {
 
 }

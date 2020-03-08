@@ -1,25 +1,20 @@
 package io.github.vincemann.generic.crud.lib.controller.dtoMapper;
 
-import io.github.vincemann.generic.crud.lib.config.WebComponent;
-import io.github.vincemann.generic.crud.lib.controller.dtoMapper.exception.EntityMappingException;
+import io.github.vincemann.generic.crud.lib.controller.dtoMapper.exception.DtoMappingException;
 import io.github.vincemann.generic.crud.lib.model.IdentifiableEntity;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.context.annotation.Lazy;
-import org.springframework.stereotype.Component;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
-@WebComponent
 @Slf4j
 public class DelegatingFallbackToDefaultDtoMapper implements DtoMapper {
 
-    private List<DtoMapper> delegates;
+    private List<DtoMapper> delegates = new ArrayList<>();
     private DtoMapper defaultDelegate;
 
-    @Autowired
     public DelegatingFallbackToDefaultDtoMapper(@Qualifier("default") DtoMapper defaultDelegate) {
         this.defaultDelegate = defaultDelegate;
     }
@@ -34,22 +29,20 @@ public class DelegatingFallbackToDefaultDtoMapper implements DtoMapper {
         }
     }
 
-    @Autowired
-    @Lazy
-    public void setDelegates(List<DtoMapper> delegates) {
-        this.delegates = delegates;
-        this.delegates.remove(defaultDelegate);
-        this.delegates.remove(this);
+    public void registerDelegate(DtoMapper delegate) {
+        this.delegates.add(delegate);
     }
 
     @Override
-    public <T extends IdentifiableEntity> T mapToEntity(IdentifiableEntity dto, Class<T> destinationClass) throws EntityMappingException {
-        return findMapper(dto.getClass()).mapToEntity(dto,destinationClass);
+    public <T extends IdentifiableEntity> T mapToEntity(IdentifiableEntity dto, Class<T> destinationClass) throws DtoMappingException {
+        return findMapper(dto.getClass())
+                .mapToEntity(dto,destinationClass);
     }
 
     @Override
-    public <T extends IdentifiableEntity> T mapToDto(IdentifiableEntity entity, Class<T> destinationClass) throws EntityMappingException {
-        return findMapper(destinationClass).mapToDto(entity,destinationClass);
+    public <T extends IdentifiableEntity> T mapToDto(IdentifiableEntity entity, Class<T> destinationClass) throws DtoMappingException {
+        return findMapper(destinationClass)
+                .mapToDto(entity,destinationClass);
     }
 
     private DtoMapper findMapper(Class<? extends IdentifiableEntity> dtoClass) {

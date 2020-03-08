@@ -9,15 +9,11 @@ import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.repository.CrudRepository;
 
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
 import java.io.Serializable;
 
-/**
- * Abstract Test Class, offering many convenience methods for crud operation testing.
- * It is expected that Repository-Layer works properly.
- *
- * @param <E>       TestEntityType
- * @param <Id>      Id Type of TestEntityType
- */
+
 @Slf4j
 @Getter
 public abstract class CrudServiceIntegrationTest
@@ -29,9 +25,11 @@ public abstract class CrudServiceIntegrationTest
     extends InitializingTest
     implements InitializingBean
 {
-    //public static final String PARTIAL_UPDATE_EQUAL_CHECKER_QUALIFIER = "partialUpdateEqualCheckerBean";
 
     private CrudRepository<E,Id> repository;
+
+    @PersistenceContext
+    private EntityManager entityManager;
     private ServiceTestTemplate testTemplate;
     private S serviceUnderTest;
 
@@ -40,13 +38,11 @@ public abstract class CrudServiceIntegrationTest
         this.repository=repository;
     }
 
-    @Autowired
-    public void injectServiceTestTemplate(ServiceTestTemplate serviceTestTemplate){
-        this.testTemplate =serviceTestTemplate;
-    }
 
     @Override
     public void afterPropertiesSet() throws Exception {
+        testTemplate = new ServiceTestTemplate();
+        testTemplate.setEntityManager(entityManager);
         testTemplate.setServiceUnderTest(serviceUnderTest);
     }
 

@@ -1,7 +1,5 @@
-package io.github.vincemann.generic.crud.lib.test.service.result.action;
+package io.github.vincemann.generic.crud.lib.test.service.result;
 
-import io.github.vincemann.generic.crud.lib.test.service.result.ServiceResult;
-import io.github.vincemann.generic.crud.lib.test.service.result.handler.ServiceResultHandler;
 import io.github.vincemann.generic.crud.lib.test.service.result.matcher.ServiceResultMatcher;
 
 public interface ServiceResultActions {

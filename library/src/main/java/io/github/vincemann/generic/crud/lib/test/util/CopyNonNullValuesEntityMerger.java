@@ -1,4 +1,4 @@
-package io.github.vincemann.generic.crud.lib.test.service;
+package io.github.vincemann.generic.crud.lib.test.util;
 
 import io.github.vincemann.generic.crud.lib.model.IdentifiableEntity;
 import io.github.vincemann.generic.crud.lib.util.NullAwareBeanUtils;

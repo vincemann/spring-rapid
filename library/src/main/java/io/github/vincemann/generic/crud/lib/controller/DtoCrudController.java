@@ -1,6 +1,6 @@
 package io.github.vincemann.generic.crud.lib.controller;
 
-import io.github.vincemann.generic.crud.lib.controller.dtoMapper.exception.EntityMappingException;
+import io.github.vincemann.generic.crud.lib.controller.dtoMapper.exception.DtoMappingException;
 import io.github.vincemann.generic.crud.lib.controller.springAdapter.DtoSerializingException;
 import io.github.vincemann.generic.crud.lib.model.IdentifiableEntity;
 import io.github.vincemann.generic.crud.lib.service.exception.BadEntityException;
@@ -17,9 +17,9 @@ import java.io.Serializable;
  */
 public interface DtoCrudController<Id extends Serializable> {
 
-    ResponseEntity<String> create(IdentifiableEntity<Id> entity) throws BadEntityException, EntityMappingException, DtoSerializingException;
+    ResponseEntity<String> create(IdentifiableEntity<Id> entity) throws BadEntityException, DtoMappingException, DtoSerializingException;
 
-    ResponseEntity<String> find(Id id) throws NoIdException, EntityNotFoundException, EntityMappingException, DtoSerializingException;
+    ResponseEntity<String> find(Id id) throws NoIdException, EntityNotFoundException, DtoMappingException, DtoSerializingException;
 
     /**
      *
@@ -27,14 +27,14 @@ public interface DtoCrudController<Id extends Serializable> {
      * @param full      indicates whether all set values should be recognized as new values or only non null values
      *                  If you want to delete values (aka setting them null) with the update, then set this flag to true.
      * @return
-     * @throws EntityMappingException
+     * @throws DtoMappingException
      * @throws BadEntityException
      * @throws NoIdException
      * @throws EntityNotFoundException
      */
-    ResponseEntity<String> update(IdentifiableEntity<Id> entity, boolean full) throws EntityMappingException, BadEntityException, NoIdException, EntityNotFoundException, DtoSerializingException;
+    ResponseEntity<String> update(IdentifiableEntity<Id> entity, boolean full) throws DtoMappingException, BadEntityException, NoIdException, EntityNotFoundException, DtoSerializingException;
 
     ResponseEntity<String> delete(Id id) throws NoIdException, EntityNotFoundException;
 
-    ResponseEntity<String> findAll() throws EntityMappingException, DtoSerializingException;
+    ResponseEntity<String> findAll() throws DtoMappingException, DtoSerializingException;
 }

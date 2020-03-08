@@ -1,4 +1,4 @@
-package io.github.vincemann.generic.crud.lib.service.finder;
+package io.github.vincemann.generic.crud.lib.service.locator;
 
 import io.github.vincemann.generic.crud.lib.model.IdentifiableEntity;
 import io.github.vincemann.generic.crud.lib.service.CrudService;
@@ -11,7 +11,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 @Slf4j
-public class PackageScanningCrudServiceFinder implements CrudServiceFinder, ApplicationContextAware, ApplicationListener<ContextRefreshedEvent> {
+public class PackageScanningCrudServiceLocator implements CrudServiceLocator, ApplicationContextAware, ApplicationListener<ContextRefreshedEvent> {
     private Map<Class<? extends IdentifiableEntity>,CrudService> entityClassCrudServiceMap = new HashMap<>();
     private ApplicationContext applicationContext;
 
@@ -34,7 +34,7 @@ public class PackageScanningCrudServiceFinder implements CrudServiceFinder, Appl
     }
 
     @Override
-    public Map<Class<? extends IdentifiableEntity>,CrudService> getCrudServices() {
+    public Map<Class<? extends IdentifiableEntity>,CrudService> find() {
         return this.entityClassCrudServiceMap;
     }
 }

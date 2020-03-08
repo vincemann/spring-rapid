@@ -1,4 +1,4 @@
-package io.github.vincemann.generic.crud.lib.test.deepCompare;
+package io.github.vincemann.generic.crud.lib.test.compare;
 
 import de.danielbechler.diff.ObjectDiffer;
 import de.danielbechler.diff.ObjectDifferBuilder;
@@ -31,7 +31,16 @@ public class EntityReflectionComparator implements ReflectionComparator<Object> 
                 .ofType(Entity.class)
                 .toUseEqualsMethod()
                 .and();
+    }
 
+    public void ignoreProperty(String property){
+        ObjectDifferBuilder builder = getBuilder()
+                .inclusion()
+                .exclude()
+                .propertyName(property)
+                .and();
+        setObjectDiffer(builder.build());
+        setBuilder(builder);
     }
 
     @Override

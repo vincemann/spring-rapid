@@ -1,11 +1,11 @@
 package io.github.vincemann.generic.crud.lib.controller.dtoMapper.idResolver.uniDir;
 
-import io.github.vincemann.generic.crud.lib.controller.dtoMapper.exception.EntityMappingException;
+import io.github.vincemann.generic.crud.lib.controller.dtoMapper.exception.DtoMappingException;
 import io.github.vincemann.generic.crud.lib.controller.dtoMapper.idResolver.EntityIdResolver;
 import io.github.vincemann.generic.crud.lib.dto.uniDir.UniDirParentDto;
 import io.github.vincemann.generic.crud.lib.model.IdentifiableEntity;
 import io.github.vincemann.generic.crud.lib.model.uniDir.parent.UniDirParent;
-import io.github.vincemann.generic.crud.lib.service.finder.CrudServiceFinder;
+import io.github.vincemann.generic.crud.lib.service.locator.CrudServiceLocator;
 import org.springframework.stereotype.Component;
 
 import java.io.Serializable;
@@ -13,14 +13,13 @@ import java.util.AbstractMap;
 import java.util.Collection;
 import java.util.Map;
 
-@Component
 public class UniDirParentIdResolver extends EntityIdResolver<UniDirParent, UniDirParentDto> {
 
-    public UniDirParentIdResolver(CrudServiceFinder crudServiceFinder) {
-        super(crudServiceFinder, UniDirParentDto.class);
+    public UniDirParentIdResolver(CrudServiceLocator crudServiceLocator) {
+        super(crudServiceLocator, UniDirParentDto.class);
     }
 
-    public void resolveEntityIds(UniDirParent mappedUniDirParent, UniDirParentDto uniDirParentDto) throws EntityMappingException {
+    public void resolveEntityIds(UniDirParent mappedUniDirParent, UniDirParentDto uniDirParentDto) throws DtoMappingException {
         try {
             //find and handle single Children
             Map<Class, Serializable> allChildIdToClassMappings = uniDirParentDto.findUniDirChildrenIds();

@@ -15,6 +15,9 @@ import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
+/**
+ * Select single properties for comparision.
+ */
 public class PropertyCompareResultMatchers extends AbstractCompareResultMatchers<PropertyCompareResultMatchers>{
 
     private List<Method> gettersToCompare = new ArrayList<>();
@@ -92,7 +95,7 @@ public class PropertyCompareResultMatchers extends AbstractCompareResultMatchers
         };
     }
 
-    public void assertWasSuccessful(ServiceResult serviceResult){
+    private void assertWasSuccessful(ServiceResult serviceResult){
         if(!serviceResult.wasSuccessful()) {
             throw new AssertionError("Service method raised exception : " + serviceResult.getRaisedException());
         }

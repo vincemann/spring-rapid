@@ -3,24 +3,22 @@ package io.github.vincemann.generic.crud.lib.service.sessionReattach;
 import lombok.extern.slf4j.Slf4j;
 import org.hibernate.Session;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.context.annotation.Primary;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
 
-@Component
 @Primary
 @Slf4j
 public class EntityMangerSessionReattacher implements SessionReattacher {
 
+    @PersistenceContext
     private EntityManager entityManager;
 
-    @Autowired
-    public EntityMangerSessionReattacher(EntityManager entityManager) {
-        this.entityManager = entityManager;
-    }
 
     /**
      *

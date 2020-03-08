@@ -21,8 +21,8 @@ import java.time.LocalDate;
 import static io.github.vincemann.generic.crud.lib.test.service.request.CrudServiceRequestBuilders.save;
 import static io.github.vincemann.generic.crud.lib.test.service.result.matcher.compare.PropertyCompareResultMatchers.compare;
 
-@DataJpaTest(properties = "web.active=false")
-@ActiveProfiles(value = {"test","springdatajpa"})
+@DataJpaTest
+@ActiveProfiles(value = {"test","service"})
 @Transactional
 class PetServiceIntegrationTest
         extends CrudServiceIntegrationTest<PetService,Pet,Long> {
@@ -45,7 +45,8 @@ class PetServiceIntegrationTest
                 .birthDate(LocalDate.now())
                 .name("bello")
                 .build();
-        getTestTemplate().perform(save(dogWithDogType))
+        getTestTemplate()
+                .perform(save(dogWithDogType))
                 .andExpect(compare(dogWithDogType).withDbEntity().isEqual());
     }
 }

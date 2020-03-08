@@ -1,7 +1,7 @@
 package io.github.vincemann.demo.controllers.springAdapter.abs;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import io.github.vincemann.generic.crud.lib.config.SpringAdapterDtoCrudControllerConfig;
+import io.github.vincemann.generic.crud.lib.config.CrudControllerConfig;
 import io.github.vincemann.generic.crud.lib.controller.dtoMapper.DtoMapper;
 import io.github.vincemann.generic.crud.lib.controller.dtoMapper.DtoMappingContext;
 import io.github.vincemann.generic.crud.lib.controller.springAdapter.idFetchingStrategy.IdFetchingStrategy;
@@ -45,9 +45,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @SpringJUnitWebConfig(
         {
                 ExampleController.class,
-                EndpointService.class,
                 WebMvcAutoConfiguration.class,
-                SpringAdapterDtoCrudControllerConfig.class,
+                CrudControllerConfig.class,
                 ValidationAutoConfiguration.class,
                 PropertyPlaceholderAutoConfiguration.class
         })
@@ -175,7 +174,7 @@ class SpringAdapterDtoCrudMvcControllerTest
 
         verifyNoMoreInteractions(validationStrategy);
         verifyNoMoreInteractions(dtoMapper);
-        verifyNoMoreInteractions(service);
+        //verifyNoMoreInteractions(service);
     }
 
     @Test

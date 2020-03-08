@@ -11,20 +11,23 @@ import io.github.vincemann.generic.crud.lib.proxy.factory.CrudServicePluginProxy
 import io.github.vincemann.generic.crud.lib.service.plugin.BiDirChildPlugin;
 import io.github.vincemann.generic.crud.lib.service.plugin.BiDirParentPlugin;
 import io.github.vincemann.generic.crud.lib.service.plugin.SessionReattachmentPlugin;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Primary;
+import org.springframework.context.annotation.*;
 
 @Configuration
+@Import(ServicePluginConfig.class)
+@Profile("service")
 public class ServiceConfig {
 
-    private CrudServicePluginProxyFactory pluginProxyFactory;
-
-    @Autowired
-    public ServiceConfig(CrudServicePluginProxyFactory pluginProxyFactory) {
-        this.pluginProxyFactory = pluginProxyFactory;
+    @Primary
+    @Bean
+    public PetService extendedPetService(@Qualifier("basic") PetService petService,
+                                         BiDirChildPlugin<Pet,Long> biDirChildPlugin,
+                                         AclPlugin aclPlugin) {
+        return CrudServicePluginProxyFactory.create(petService,
+                biDirChildPlugin,
+                aclPlugin
+        );
     }
 
     //always use ownerService with core plugins when injecting OwnerService
@@ -36,7 +39,7 @@ public class ServiceConfig {
                                      SessionReattachmentPlugin sessionReattachmentPlugin,
                                      OwnerOfTheYearPlugin ownerOfTheYearPlugin,
                                      AclPlugin aclPlugin) {
-        return pluginProxyFactory.create(ownerService,
+        return CrudServicePluginProxyFactory.create(ownerService,
                 sessionReattachmentPlugin,
                 biDirParentPlugin,
                 saveNameToWordPressDbPlugin,
@@ -44,16 +47,4 @@ public class ServiceConfig {
                 aclPlugin
         );
     }
-
-    @Primary
-    @Bean
-    public PetService extendedPetService(@Qualifier("basic") PetService petService,
-                                         BiDirChildPlugin<Pet,Long> biDirChildPlugin,
-                                         AclPlugin aclPlugin) {
-        return pluginProxyFactory.create(petService,
-                biDirChildPlugin,
-                aclPlugin
-        );
-    }
-
 }

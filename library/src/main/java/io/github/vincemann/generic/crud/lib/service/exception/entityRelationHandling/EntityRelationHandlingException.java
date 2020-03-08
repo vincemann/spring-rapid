@@ -1,6 +1,6 @@
 package io.github.vincemann.generic.crud.lib.service.exception.entityRelationHandling;
 
-public class EntityRelationHandlingException extends RuntimeException{
+public abstract class EntityRelationHandlingException extends RuntimeException{
     public EntityRelationHandlingException(String message) {
         super(message);
     }

@@ -10,7 +10,7 @@ import io.github.vincemann.demo.service.plugin.OwnerOfTheYearPlugin;
 import io.github.vincemann.generic.crud.lib.service.exception.BadEntityException;
 import io.github.vincemann.generic.crud.lib.service.exception.EntityNotFoundException;
 import io.github.vincemann.generic.crud.lib.service.exception.NoIdException;
-import io.github.vincemann.generic.crud.lib.test.deepCompare.ReflectionComparator;
+import io.github.vincemann.generic.crud.lib.test.compare.ReflectionComparator;
 import io.github.vincemann.generic.crud.lib.test.service.CrudServiceIntegrationTest;
 import io.github.vincemann.generic.crud.lib.test.service.result.ServiceResult;
 import org.junit.jupiter.api.Assertions;
@@ -28,15 +28,16 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Optional;
 
-import static io.github.vincemann.generic.crud.lib.test.service.CopyNonNullValuesEntityMerger.merge;
+import static io.github.vincemann.generic.crud.lib.test.util.CopyNonNullValuesEntityMerger.merge;
 import static io.github.vincemann.generic.crud.lib.test.service.request.CrudServiceRequestBuilders.partialUpdate;
 import static io.github.vincemann.generic.crud.lib.test.service.request.CrudServiceRequestBuilders.save;
 import static io.github.vincemann.generic.crud.lib.test.service.result.matcher.compare.PropertyCompareResultMatchers.compare;
-import static io.github.vincemann.generic.crud.lib.test.service.result.matcher.compare.ReflectionCompareResultMatchers.deepCompare;
+import static io.github.vincemann.generic.crud.lib.test.service.result.matcher.compare.ReflectionCompareResultMatchers.fullCompare;
 
-@ActiveProfiles(value = {"test","springdatajpa"})
+//only load service "slice" of application context via service profile and Springs DataJpa Slice Test
+@ActiveProfiles(value = {"test","service"})
 @Transactional
-@DataJpaTest(properties = "web.active=false")
+@DataJpaTest
 class OwnerServiceIntegrationTest
         extends CrudServiceIntegrationTest<OwnerService,Owner, Long> {
 
@@ -88,7 +89,8 @@ class OwnerServiceIntegrationTest
 
     @Test
     public void saveOwnerWithoutPets_ShouldSucceed() {
-        ServiceResult entityServiceResult = getTestTemplate().perform(save(ownerWithoutPets))
+        ServiceResult entityServiceResult = getTestTemplate()
+                .perform(save(ownerWithoutPets))
                 .andExpect(compare(ownerWithoutPets)
                         .withDbEntity()
                         .property(ownerWithoutPets::getTelephone)
@@ -101,15 +103,16 @@ class OwnerServiceIntegrationTest
 
     @Test
     public void saveOwnerWithPet_ShouldSucceed() throws BadEntityException {
-        getTestTemplate().perform(save(ownerWithOnePet))
-                .andExpect(deepCompare(ownerWithOnePet)
+        getTestTemplate()
+                .perform(save(ownerWithOnePet))
+                .andExpect(fullCompare(ownerWithOnePet)
                         .withDbEntity()
                         .isEqual());
         Assertions.assertTrue(getRepository().existsById(ownerWithOnePet.getId()));
     }
 
     @Test
-    public void saveOwnerWithPersistedPet_ShouldSucceed() throws BadEntityException {
+    public void saveOwnerWithPersistedPet_shouldSucceed() throws BadEntityException {
         Pet savedPet = petService.save(testPet);
 
         Owner owner = Owner.builder()
@@ -121,8 +124,9 @@ class OwnerServiceIntegrationTest
                 .pets(new HashSet<>(Arrays.asList(savedPet)))
                 .build();
 
-        getTestTemplate().perform(save(owner))
-                .andExpect(deepCompare(owner)
+        getTestTemplate()
+                .perform(save(owner))
+                .andExpect(fullCompare(owner)
                         .withDbEntity()
                         .isEqual()
                 );
@@ -130,7 +134,7 @@ class OwnerServiceIntegrationTest
 
 
     @Test
-    public void updateOwner_ChangeTelephoneNumber_ShouldSucceed() throws BadEntityException, EntityNotFoundException, NoIdException {
+    public void updateOwner_changeTelephoneNumber_shouldSucceed() throws BadEntityException, EntityNotFoundException, NoIdException {
         Owner diffTelephoneNumberUpdate = Owner.builder()
                 .telephone(ownerWithoutPets.getTelephone() + "123")
                 .build();
@@ -139,7 +143,7 @@ class OwnerServiceIntegrationTest
 
         getTestTemplate().perform(partialUpdate(diffTelephoneNumberUpdate))
                 .andExpect(
-                        deepCompare(merge(diffTelephoneNumberUpdate,toUpdate))
+                        fullCompare(merge(diffTelephoneNumberUpdate,toUpdate))
                         .withDbEntity()
                                 .isEqual()
                 );

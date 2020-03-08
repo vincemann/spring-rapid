@@ -8,13 +8,13 @@ import io.github.vincemann.generic.crud.lib.service.exception.NoIdException;
 import io.github.vincemann.generic.crud.lib.service.sessionReattach.EntityMangerSessionReattacher;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.io.Serializable;
 import java.util.*;
 
-@Component
 @Slf4j
 @Transactional
 /**
@@ -27,7 +27,8 @@ public class BiDirParentPlugin<E extends IdentifiableEntity<Id> & BiDirParent,Id
     private EntityMangerSessionReattacher entityMangerSessionReattacher;
 
     @Autowired
-    public BiDirParentPlugin(EntityMangerSessionReattacher entityMangerSessionReattacher) {
+    @Lazy
+    public void setEntityMangerSessionReattacher(EntityMangerSessionReattacher entityMangerSessionReattacher) {
         this.entityMangerSessionReattacher = entityMangerSessionReattacher;
     }
 

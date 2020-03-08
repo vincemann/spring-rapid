@@ -2,15 +2,17 @@ package io.github.vincemann.demo.controllers;
 
 import io.github.vincemann.demo.dtos.VetDto;
 import io.github.vincemann.demo.model.Vet;
-import io.github.vincemann.generic.crud.lib.config.WebComponent;
 import io.github.vincemann.generic.crud.lib.controller.dtoMapper.DtoMappingContext;
-import io.github.vincemann.generic.crud.lib.controller.springAdapter.SpringAdapterDtoCrudController;
+import io.github.vincemann.generic.crud.lib.controller.springAdapter.SpringAdapterJsonDtoCrudController;
+import org.springframework.context.annotation.Profile;
+import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
 
-@WebComponent
+@Controller
+@Profile("web")
 public class VetController
-        extends SpringAdapterDtoCrudController<Vet, Long> {
+        extends SpringAdapterJsonDtoCrudController<Vet, Long> {
 
     public VetController() {
         super(DtoMappingContext.DEFAULT(VetDto.class));
