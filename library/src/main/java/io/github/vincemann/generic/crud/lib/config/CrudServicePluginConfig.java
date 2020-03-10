@@ -8,7 +8,7 @@ import org.springframework.context.annotation.Import;
 import org.springframework.context.annotation.Profile;
 
 @Configuration
-@Import(SessionReattachmentConfig.class)
+//@Import(SessionReattachmentConfig.class)
 @Profile("service")
 public class CrudServicePluginConfig {
 

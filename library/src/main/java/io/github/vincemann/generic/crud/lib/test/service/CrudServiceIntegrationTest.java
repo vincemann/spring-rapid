@@ -9,6 +9,7 @@ import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.data.repository.CrudRepository;
+import org.springframework.test.annotation.Rollback;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -21,6 +22,7 @@ import java.io.Serializable;
 @Getter
 @ActiveProfiles(value = {"test","service"})
 @Transactional
+@Rollback
 @DataJpaTest
 public abstract class CrudServiceIntegrationTest
                 <
