@@ -5,7 +5,6 @@ import io.github.vincemann.generic.crud.lib.model.biDir.child.BiDirChild;
 import io.github.vincemann.generic.crud.lib.model.biDir.parent.BiDirParent;
 import io.github.vincemann.generic.crud.lib.service.exception.EntityNotFoundException;
 import io.github.vincemann.generic.crud.lib.service.exception.NoIdException;
-import io.github.vincemann.generic.crud.lib.service.sessionReattach.EntityMangerSessionReattacher;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
@@ -24,13 +23,13 @@ public class BiDirParentPlugin<E extends IdentifiableEntity<Id> & BiDirParent,Id
         extends CrudServicePlugin<E,Id> {
 
 
-    private EntityMangerSessionReattacher entityMangerSessionReattacher;
-
-    @Autowired
-    @Lazy
-    public void setEntityMangerSessionReattacher(EntityMangerSessionReattacher entityMangerSessionReattacher) {
-        this.entityMangerSessionReattacher = entityMangerSessionReattacher;
-    }
+//    private EntityMangerSessionReattacher entityMangerSessionReattacher;
+//
+//    @Autowired
+//    @Lazy
+//    public void setEntityMangerSessionReattacher(EntityMangerSessionReattacher entityMangerSessionReattacher) {
+//        this.entityMangerSessionReattacher = entityMangerSessionReattacher;
+//    }
 
     public void onBeforeUpdate(E entity, boolean full) throws EntityNotFoundException, NoIdException {
         try {
@@ -40,38 +39,38 @@ public class BiDirParentPlugin<E extends IdentifiableEntity<Id> & BiDirParent,Id
         }
     }
 
-    public void onBeforeSave(E entityToSave){
-        try {
-            attachChildrenToCurrentSessionIfNecessary(entityToSave);
-        } catch (IllegalAccessException e) {
-            throw new RuntimeException(e);
-        }
-    }
+//    public void onBeforeSave(E entityToSave){
+//        try {
+//            attachChildrenToCurrentSessionIfNecessary(entityToSave);
+//        } catch (IllegalAccessException e) {
+//            throw new RuntimeException(e);
+//        }
+//    }
 
-
-    //todo shouldnt this be done by SessionReattachmentPlugin
-    private void attachChildrenToCurrentSessionIfNecessary(E entityToSave) throws IllegalAccessException{
-        //iterate over all children of this parent (entityToSave)
-        Map<Collection<? extends BiDirChild>, Class<? extends BiDirChild>> childrenCollections = entityToSave.getChildrenCollections();
-        for (Map.Entry<Collection<? extends BiDirChild>, Class<? extends BiDirChild>> childrenCollectionEntry : childrenCollections.entrySet()) {
-            Collection<? extends BiDirChild> childrenCollection = childrenCollectionEntry.getKey();
-            for (BiDirChild child : childrenCollection) {
-                Serializable childId = ((IdentifiableEntity) child).getId();
-                //if child has id, then it is already persisted and detached to current session started by service, so it needs to be reattached
-                if(childId!=null) {
-                    entityMangerSessionReattacher.attachToCurrentSession(child);
-                    //THIS WOULD BE AN ALTERNATIVE SOLUTION TO ATTACH THE CHILD, BUT ITS SHIT
-                        //CrudService service = crudServices.get(biDirChild.getClass());
-                        //Optional optionalChildFromService = service.findById(childId);
-                        //Object childFromService = optionalChildFromService.get();
-                        //replace child (possibly detached) with same child found by service (is now attached to the session)
-                        //entityToSave.dismissChild(biDirChild);
-                        //entityToSave.addChild((BiDirChild) childFromService);
-                }
-                //if child has no id, then we dont have a problem, it will be persisted within this create-entity-session started by service
-            }
-        }
-    }
+//
+//    //todo shouldnt this be done by SessionReattachmentPlugin
+//    private void attachChildrenToCurrentSessionIfNecessary(E entityToSave) throws IllegalAccessException{
+//        //iterate over all children of this parent (entityToSave)
+//        Map<Collection<? extends BiDirChild>, Class<? extends BiDirChild>> childrenCollections = entityToSave.getChildrenCollections();
+//        for (Map.Entry<Collection<? extends BiDirChild>, Class<? extends BiDirChild>> childrenCollectionEntry : childrenCollections.entrySet()) {
+//            Collection<? extends BiDirChild> childrenCollection = childrenCollectionEntry.getKey();
+//            for (BiDirChild child : childrenCollection) {
+//                Serializable childId = ((IdentifiableEntity) child).getId();
+//                //if child has id, then it is already persisted and detached to current session started by service, so it needs to be reattached
+//                if(childId!=null) {
+//                    entityMangerSessionReattacher.attachToCurrentSession(child);
+//                    //THIS WOULD BE AN ALTERNATIVE SOLUTION TO ATTACH THE CHILD, BUT ITS SHIT
+//                        //CrudService service = crudServices.get(biDirChild.getClass());
+//                        //Optional optionalChildFromService = service.findById(childId);
+//                        //Object childFromService = optionalChildFromService.get();
+//                        //replace child (possibly detached) with same child found by service (is now attached to the session)
+//                        //entityToSave.dismissChild(biDirChild);
+//                        //entityToSave.addChild((BiDirChild) childFromService);
+//                }
+//                //if child has no id, then we dont have a problem, it will be persisted within this create-entity-session started by service
+//            }
+//        }
+//    }
 
 
     @SuppressWarnings("Duplicates")

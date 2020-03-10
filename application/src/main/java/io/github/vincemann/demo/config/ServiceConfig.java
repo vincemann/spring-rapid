@@ -10,7 +10,6 @@ import io.github.vincemann.demo.service.plugin.SaveNameToWordPressDbPlugin;
 import io.github.vincemann.generic.crud.lib.proxy.factory.CrudServicePluginProxyFactory;
 import io.github.vincemann.generic.crud.lib.service.plugin.BiDirChildPlugin;
 import io.github.vincemann.generic.crud.lib.service.plugin.BiDirParentPlugin;
-import io.github.vincemann.generic.crud.lib.service.plugin.SessionReattachmentPlugin;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.*;
 
@@ -36,11 +35,11 @@ public class ServiceConfig {
     public OwnerService ownerService(@Qualifier("basic") OwnerService ownerService,
                                      BiDirParentPlugin<Owner,Long> biDirParentPlugin,
                                      SaveNameToWordPressDbPlugin saveNameToWordPressDbPlugin,
-                                     SessionReattachmentPlugin sessionReattachmentPlugin,
+                                     //SessionReattachmentPlugin sessionReattachmentPlugin,
                                      OwnerOfTheYearPlugin ownerOfTheYearPlugin,
                                      AclPlugin aclPlugin) {
         return CrudServicePluginProxyFactory.create(ownerService,
-                sessionReattachmentPlugin,
+                //sessionReattachmentPlugin,
                 biDirParentPlugin,
                 saveNameToWordPressDbPlugin,
                 ownerOfTheYearPlugin,
