@@ -5,9 +5,12 @@ import io.github.vincemann.generic.crud.lib.service.CrudService;
 import io.github.vincemann.generic.crud.lib.test.InitializingTest;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.ApplicationContextAware;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.test.annotation.Rollback;
 import org.springframework.test.context.ActiveProfiles;
@@ -31,7 +34,7 @@ public abstract class CrudServiceIntegrationTest
                         Id extends Serializable
                 >
     extends InitializingTest
-    implements InitializingBean
+    implements InitializingBean, ApplicationContextAware
 {
 
     private CrudRepository<E,Id> repository;
@@ -39,6 +42,7 @@ public abstract class CrudServiceIntegrationTest
     @PersistenceContext
     private EntityManager entityManager;
     private ServiceTestTemplate testTemplate;
+    private ApplicationContext applicationContext;
     private CrudService<E,Id,? extends CrudRepository<E,Id>> serviceUnderTest;
 
     @Autowired
@@ -48,11 +52,17 @@ public abstract class CrudServiceIntegrationTest
 
 
     @Override
+    public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
+        this.applicationContext=applicationContext;
+    }
+
+    @Override
     public void afterPropertiesSet() throws Exception {
         testTemplate = new ServiceTestTemplate();
         testTemplate.setEntityManager(entityManager);
         testTemplate.setServiceUnderTest(serviceUnderTest);
         testTemplate.setRepository(repository);
+        testTemplate.setApplicationContext(applicationContext);
     }
 
     @Autowired

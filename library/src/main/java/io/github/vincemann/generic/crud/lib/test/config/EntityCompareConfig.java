@@ -13,8 +13,8 @@ public class EntityCompareConfig {
         return new EntityReflectionComparator(EntityReflectionComparator.EQUALS_FOR_ENTITIES());
     }
 
-    @Bean
-    public EntityReflectionComparator entityReflectionComparator(){
-        return new EntityReflectionComparator(EntityReflectionComparator.EQUALS_FOR_ENTITIES());
-    }
+//    @Bean
+//    public EntityReflectionComparator entityReflectionComparator(){
+//        return new EntityReflectionComparator(EntityReflectionComparator.EQUALS_FOR_ENTITIES());
+//    }
 }
