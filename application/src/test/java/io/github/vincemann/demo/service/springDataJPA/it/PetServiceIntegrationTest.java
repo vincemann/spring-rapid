@@ -35,6 +35,7 @@ class PetServiceIntegrationTest
 
     @BeforeEach
     public void setUp() throws Exception {
+        super.setup();
         this.dogPetType= petTypeService.save(new PetType("Dog"));
     }
 

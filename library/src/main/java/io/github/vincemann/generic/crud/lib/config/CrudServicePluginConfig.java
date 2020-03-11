@@ -9,7 +9,7 @@ import org.springframework.context.annotation.Profile;
 
 @Configuration
 //@Import(SessionReattachmentConfig.class)
-@Profile("service")
+@ServiceLayer
 public class CrudServicePluginConfig {
 
     @Bean

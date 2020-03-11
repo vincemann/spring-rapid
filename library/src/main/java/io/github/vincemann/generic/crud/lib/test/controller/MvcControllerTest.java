@@ -61,8 +61,7 @@ public abstract class MvcControllerTest
         <S extends CrudService<E,Id,? extends CrudRepository<E,Id>>
         ,E extends IdentifiableEntity<Id>,
         Id extends Serializable>
-        extends InitializingTest
-            implements InitializingBean {
+        extends InitializingTest {
 
     private static final String LOCAL_HOST = "127.0.0.1";
 
@@ -89,12 +88,14 @@ public abstract class MvcControllerTest
         this(LOCAL_HOST);
     }
 
-    @Autowired
+    //wont be autowired, if i mock it -> should not be required
+    @Autowired(required = false)
     public void injectTestService(S testService) {
         this.testService = testService;
     }
 
-    @Autowired
+    //i want to manually add single controller to context -> so no controller will be available for autowiring here..
+    @Autowired(required = false)
     public void injectController(SpringAdapterJsonDtoCrudController<E, Id> controller) {
         this.controller = controller;
     }
@@ -109,9 +110,9 @@ public abstract class MvcControllerTest
                 .build();
     }
 
-    @Override
-    public void afterPropertiesSet() throws Exception {
-        //super.afterPropertiesSet();
+    @BeforeEach
+    public void setup() throws Exception{
+        super.setup();
         //user might want to inject own beans that are diff from controllers beans -> null checks
         if(dtoMappingContext ==null) {
             dtoMappingContext = getController().getDtoMappingContext();
@@ -120,6 +121,7 @@ public abstract class MvcControllerTest
             setTestService(getController().getCastedCrudService());
         }
     }
+
 
     public E mapToEntity(IdentifiableEntity<Id> dto) throws DtoMappingException {
         return getController().getDtoMapper().mapToEntity(dto,getEntityClass());

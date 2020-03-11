@@ -23,7 +23,7 @@ import java.io.Serializable;
 
 @Slf4j
 @Getter
-@ActiveProfiles(value = {"test","service"})
+@ActiveProfiles(value = {"test","service","serviceTest"})
 @Transactional
 @Rollback
 @DataJpaTest

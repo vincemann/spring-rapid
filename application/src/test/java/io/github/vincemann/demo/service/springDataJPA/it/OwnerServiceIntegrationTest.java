@@ -56,6 +56,7 @@ class OwnerServiceIntegrationTest
 
     @BeforeEach
     public void setUp() throws Exception {
+        super.setup();
         //proxyfy service
         savedDogPetType = petTypeService.save(new PetType("Dog"));
 

@@ -38,6 +38,7 @@ class OwnerControllerTest
 
     @BeforeEach
     public void setup() throws Exception {
+        super.setup();
         Long id = 42L;
         String address = "Other Street 13";
         String firstName = "Max";

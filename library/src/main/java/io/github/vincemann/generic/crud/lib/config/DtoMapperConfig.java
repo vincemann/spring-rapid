@@ -18,10 +18,9 @@ import java.util.List;
 
 @Configuration
 @Import(CrudServiceLocatorConfig.class)
-@Profile("web")
+@WebLayer
 public class DtoMapperConfig {
 
-    @ConditionalOnMissingBean
     @Qualifier("default")
     @Bean
     public DtoMapper defaultDtoMapper(){
@@ -48,7 +47,6 @@ public class DtoMapperConfig {
         return new UniDirParentIdResolver(crudServiceLocator);
     }
 
-    @ConditionalOnMissingBean
     @Primary
     @Bean
     public DtoMapper dtoMapper(List<EntityIdResolver> entityIdResolvers){

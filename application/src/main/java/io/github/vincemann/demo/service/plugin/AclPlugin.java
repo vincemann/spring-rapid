@@ -6,7 +6,6 @@ import io.github.vincemann.generic.crud.lib.service.exception.EntityNotFoundExce
 import io.github.vincemann.generic.crud.lib.service.exception.NoIdException;
 import io.github.vincemann.generic.crud.lib.service.plugin.CrudServicePlugin;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.stereotype.Component;
 
 @Slf4j
 public class AclPlugin extends CrudServicePlugin<IdentifiableEntity<Long>,Long> {

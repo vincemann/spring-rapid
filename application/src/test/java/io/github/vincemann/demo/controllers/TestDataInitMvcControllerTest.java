@@ -60,6 +60,7 @@ public abstract class TestDataInitMvcControllerTest<S extends CrudService<E,Long
 
     @BeforeEach
     public void setup() throws Exception {
+        super.setup();
         testPetType = petTypeService.save(PetType.builder()
                 .name("dog")
                 .build());
