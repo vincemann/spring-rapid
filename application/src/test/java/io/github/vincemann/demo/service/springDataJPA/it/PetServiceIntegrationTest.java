@@ -19,7 +19,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDate;
 
 import static io.github.vincemann.generic.crud.lib.test.service.request.CrudServiceRequestBuilders.save;
-import static io.github.vincemann.generic.crud.lib.test.service.result.matcher.compare.PropertyCompareResultMatchers.compare;
+import static io.github.vincemann.generic.crud.lib.test.service.result.matcher.compare.CompareEntityMatchers.compare;
 
 @DataJpaTest
 @ActiveProfiles(value = {"test","service"})
@@ -47,6 +47,10 @@ class PetServiceIntegrationTest
                 .build();
         getTestTemplate()
                 .perform(save(dogWithDogType))
-                .andExpect(compare(dogWithDogType).withDbEntity().isEqual());
+                .andExpect(compare(dogWithDogType)
+                        .withDbEntity()
+                        .fullEqualCheck()
+                        .ignoreId()
+                        .isEqual());
     }
 }

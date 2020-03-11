@@ -18,26 +18,24 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.boot.test.mock.mockito.SpyBean;
-import org.springframework.test.context.ActiveProfiles;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Optional;
 
-import static io.github.vincemann.generic.crud.lib.test.util.CopyNonNullValuesEntityMerger.merge;
 import static io.github.vincemann.generic.crud.lib.test.service.request.CrudServiceRequestBuilders.partialUpdate;
 import static io.github.vincemann.generic.crud.lib.test.service.request.CrudServiceRequestBuilders.save;
-import static io.github.vincemann.generic.crud.lib.test.service.result.matcher.compare.PropertyCompareResultMatchers.compare;
-import static io.github.vincemann.generic.crud.lib.test.service.result.matcher.compare.ReflectionCompareResultMatchers.fullCompare;
+import static io.github.vincemann.generic.crud.lib.test.service.result.matcher.compare.CompareEntityMatchers.compare;
+import static io.github.vincemann.generic.crud.lib.test.service.result.matcher.compare.CompareEntityMatchers.propertyCompare;
+import static io.github.vincemann.generic.crud.lib.test.service.result.matcher.compare.resolve.CompareEntityPlaceholder.DB_ENTITY;
+import static io.github.vincemann.generic.crud.lib.test.service.result.matcher.compare.resolve.CompareEntityPlaceholder.SERVICE_INPUT_ENTITY;
 
 //only load service "slice" of application context via service profile and Springs DataJpa Slice Test
 
 class OwnerServiceIntegrationTest
-        extends CrudServiceIntegrationTest<OwnerService,Owner, Long> {
+        extends CrudServiceIntegrationTest<OwnerService, Owner, Long> {
 
     @Autowired
     ReflectionComparator<Owner> reflectionComparator;
@@ -90,12 +88,14 @@ class OwnerServiceIntegrationTest
         ServiceResult entityServiceResult = getTestTemplate()
                 .perform(save(ownerWithoutPets))
                 .andExpect(compare(ownerWithoutPets)
-                        .withDbEntity()
-                        .property(ownerWithoutPets::getTelephone)
-                        .property(ownerWithoutPets::getAddress)
+                        .with(DB_ENTITY)
+                        .withServiceReturnedEntity()
+                        .partialEqualCheck()
+                        .include(ownerWithoutPets::getTelephone)
+                        .include(ownerWithoutPets::getAddress)
                         .isEqual())
                 .andReturn();
-        Assertions.assertEquals(0,((Owner) entityServiceResult.getResult()).getPets().size());
+        Assertions.assertEquals(0, ((Owner) entityServiceResult.getResult()).getPets().size());
     }
 
 
@@ -103,8 +103,10 @@ class OwnerServiceIntegrationTest
     public void saveOwnerWithPet_ShouldSucceed() throws BadEntityException {
         getTestTemplate()
                 .perform(save(ownerWithOnePet))
-                .andExpect(fullCompare(ownerWithOnePet)
+                .andExpect(compare(SERVICE_INPUT_ENTITY)
                         .withDbEntity()
+                        .fullEqualCheck()
+                        .ignoreId()
                         .isEqual());
         Assertions.assertTrue(getRepository().existsById(ownerWithOnePet.getId()));
     }
@@ -124,8 +126,11 @@ class OwnerServiceIntegrationTest
 
         getTestTemplate()
                 .perform(save(owner))
-                .andExpect(fullCompare(owner)
+                .andExpect(compare(owner)
                         .withDbEntity()
+                        .withServiceReturnedEntity()
+                        .fullEqualCheck()
+                        .ignoreId()
                         .isEqual()
                 );
     }
@@ -133,22 +138,24 @@ class OwnerServiceIntegrationTest
 
     @Test
     public void updateOwner_changeTelephoneNumber_shouldSucceed() throws BadEntityException, EntityNotFoundException, NoIdException {
+        String newNumber = ownerWithoutPets.getTelephone() + "123";
         Owner diffTelephoneNumberUpdate = Owner.builder()
-                .telephone(ownerWithoutPets.getTelephone() + "123")
+                .telephone(newNumber)
                 .build();
         Owner toUpdate = getRepository().save(ownerWithoutPets);
         diffTelephoneNumberUpdate.setId(toUpdate.getId());
 
-        getTestTemplate().perform(partialUpdate(diffTelephoneNumberUpdate))
+        getTestTemplate()
+                .perform(partialUpdate(diffTelephoneNumberUpdate))
                 .andExpect(
-                        fullCompare(merge(diffTelephoneNumberUpdate,toUpdate))
-                        .withDbEntity()
-                                .isEqual()
+                        propertyCompare(DB_ENTITY)
+                                .shouldMatch(toUpdate::getTelephone, newNumber)
+                                .go()
                 );
     }
 
     @Test
-    public void updateOwner_addAnotherPet_shouldSucceed() throws BadEntityException, EntityNotFoundException,  NoIdException {
+    public void updateOwner_addAnotherPet_shouldSucceed() throws BadEntityException, EntityNotFoundException, NoIdException {
         //given
         Pet savedPet = petService.save(testPet);
         String newPetName = "petToAdd";
@@ -177,11 +184,11 @@ class OwnerServiceIntegrationTest
         Owner saved = getRepository().save(owner);
         ownerUpdateRequest.setId(saved.getId());
 
-        getTestTemplate().perform(partialUpdate(ownerUpdateRequest))
-                .andExpect(
-                        compare(merge(ownerUpdateRequest,owner))
-                        .property(ownerUpdateRequest::getPets)
-                        .sizeIs(2)
+        getTestTemplate()
+                .perform(partialUpdate(ownerUpdateRequest))
+                .andExpect(propertyCompare(DB_ENTITY)
+                        .shouldMatchSize(ownerUpdateRequest::getPets,2)
+                        .go()
                 );
     }
 

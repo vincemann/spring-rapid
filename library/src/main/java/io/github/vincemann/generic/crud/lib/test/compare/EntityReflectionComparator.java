@@ -5,6 +5,7 @@ import de.danielbechler.diff.ObjectDifferBuilder;
 import de.danielbechler.diff.node.DiffNode;
 import de.danielbechler.diff.node.Visit;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.opentest4j.AssertionFailedError;
@@ -14,6 +15,7 @@ import javax.persistence.Entity;
 @Slf4j
 @Getter
 @Setter
+@NoArgsConstructor
 public class EntityReflectionComparator implements ReflectionComparator<Object> {
 
     private ObjectDiffer objectDiffer;

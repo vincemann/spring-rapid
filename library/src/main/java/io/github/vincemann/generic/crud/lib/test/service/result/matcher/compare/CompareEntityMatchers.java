@@ -10,12 +10,12 @@ public class CompareEntityMatchers {
      * @param compareRoot supply own Entity
      * @return
      */
-    public static CompareEntityMatcher compare(IdentifiableEntity compareRoot){
-        return new CompareEntityMatcher(compareRoot);
+    public static CompareEntityMatcherContext compare(IdentifiableEntity compareRoot){
+        return new CompareEntityMatcherContext(compareRoot);
     }
 
-    public static CompareEntityMatcher compare(CompareEntityPlaceholder rootCompareResolvable){
-        return new CompareEntityMatcher(rootCompareResolvable);
+    public static CompareEntityMatcherContext compare(CompareEntityPlaceholder rootCompareResolvable){
+        return new CompareEntityMatcherContext(rootCompareResolvable);
     }
 
     /**
@@ -23,12 +23,12 @@ public class CompareEntityMatchers {
      * @param compareRoot supply own Entity
      * @return
      */
-    public static CompareEntityMatcher propertyCompare(IdentifiableEntity compareRoot){
-        return new CompareEntityMatcher(compareRoot);
+    public static EntityPropertyMatcher propertyCompare(IdentifiableEntity compareRoot){
+        return new EntityPropertyMatcher(compareRoot);
     }
 
-    public static CompareEntityMatcher propertyCompare(CompareEntityPlaceholder rootCompareResolvable){
-        return new CompareEntityMatcher(rootCompareResolvable);
+    public static EntityPropertyMatcher propertyCompare(CompareEntityPlaceholder rootCompareResolvable){
+        return new EntityPropertyMatcher(rootCompareResolvable);
     }
 
 }
