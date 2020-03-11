@@ -20,7 +20,7 @@ import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandl
 @SuppressWarnings("rawtypes")
 @Configuration
 @Import(DtoMapperConfig.class)
-@Profile("web")
+@WebLayer
 public class CrudControllerConfig {
 
     @Value("${controller.idFetchingStrategy.idUrlParamKey}")

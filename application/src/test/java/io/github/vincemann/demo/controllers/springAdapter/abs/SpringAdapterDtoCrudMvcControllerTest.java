@@ -105,6 +105,7 @@ class SpringAdapterDtoCrudMvcControllerTest
 
     @BeforeEach
     void setUp() throws Exception {
+        super.setup();
         returnEntity.setId(entityId);
         returnDto.setId(entityId);
     }
