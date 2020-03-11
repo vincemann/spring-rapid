@@ -16,7 +16,7 @@ import java.util.*;
  * Assert GetterValues of CompareEntity, that can either be a concrete entity or a {@link CompareEntityPlaceholder}.
  */
 public class EntityPropertyMatcher extends PlaceholderResolvingEntityMatcherContext {
-    private Map<Method, Object> getterValueMap = new HashMap<>();
+    private Map<Method, Object> getterValueMap = new LinkedHashMap<>();
     private List<CompareMetaData> compareMetaData = new ArrayList<>();
 
     public EntityPropertyMatcher(IdentifiableEntity compareRoot) {
