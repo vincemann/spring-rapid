@@ -44,6 +44,9 @@ public class BasicCompareEntityPlaceholderResolver implements CompareEntityPlace
      */
     private Serializable findDbEntityId(ServiceTestContext testContext) {
         Object result = testContext.getServiceResult().getResult();
+        if(result instanceof Optional){
+            result = ((Optional) result).get();
+        }
         if (result instanceof IdentifiableEntity) {
             Serializable returnedEntityId = ((IdentifiableEntity) result).getId();
             if (returnedEntityId != null) {
