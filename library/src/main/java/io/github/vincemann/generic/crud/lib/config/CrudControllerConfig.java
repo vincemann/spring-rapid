@@ -11,6 +11,7 @@ import io.github.vincemann.generic.crud.lib.service.EndpointService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.*;
 import org.springframework.validation.beanvalidation.LocalValidatorFactoryBean;
@@ -30,28 +31,32 @@ public class CrudControllerConfig {
         return idUrlParamKey;
     }
 
+    @ConditionalOnMissingBean
     @Bean
     public DtoCrudControllerExceptionHandler dtoCrudControllerExceptionHandler() {
         return new DtoCrudControllerExceptionHandlerImpl();
     }
 
+    @ConditionalOnMissingBean
     @Bean
     public EndpointService endpointService(@Autowired RequestMappingHandlerMapping requestMappingHandlerMapping){
         return new EndpointService(requestMappingHandlerMapping);
     }
 
-
+    @ConditionalOnMissingBean
     @Bean
     public IdFetchingStrategy<Long> longIdFetchingStrategy(){
         return new LongUrlParamIdFetchingStrategy(idUrlParamKey());
     }
 
+    @ConditionalOnMissingBean
     @Bean
     @Scope(scopeName = ConfigurableBeanFactory.SCOPE_PROTOTYPE)
     public EndpointsExposureContext endpointsExposureContext(){
         return new EndpointsExposureContext();
     }
 
+    @ConditionalOnMissingBean
     @Bean
     public ValidationStrategy validationStrategy(LocalValidatorFactoryBean localValidatorFactoryBean){
         //use spring validator, so dependency injection is supported

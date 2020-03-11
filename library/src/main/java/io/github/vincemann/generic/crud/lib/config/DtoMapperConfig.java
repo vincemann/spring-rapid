@@ -11,6 +11,7 @@ import io.github.vincemann.generic.crud.lib.controller.dtoMapper.idResolver.uniD
 import io.github.vincemann.generic.crud.lib.controller.dtoMapper.idResolver.uniDir.UniDirParentIdResolver;
 import io.github.vincemann.generic.crud.lib.service.locator.CrudServiceLocator;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.context.annotation.*;
 
 import java.util.List;
@@ -20,6 +21,7 @@ import java.util.List;
 @Profile("web")
 public class DtoMapperConfig {
 
+    @ConditionalOnMissingBean
     @Qualifier("default")
     @Bean
     public DtoMapper defaultDtoMapper(){
@@ -46,6 +48,7 @@ public class DtoMapperConfig {
         return new UniDirParentIdResolver(crudServiceLocator);
     }
 
+    @ConditionalOnMissingBean
     @Primary
     @Bean
     public DtoMapper dtoMapper(List<EntityIdResolver> entityIdResolvers){
