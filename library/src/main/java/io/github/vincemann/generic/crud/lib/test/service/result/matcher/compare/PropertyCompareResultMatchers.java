@@ -16,7 +16,8 @@ import java.util.List;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 /**
- * Select single properties for comparision.
+ * Compare single properties of either returned entity (by service) or specified entity (usually input entity e for service operation i.e. save(e)).
+ * Compare either with db entity or with concrete value.
  */
 public class PropertyCompareResultMatchers extends AbstractCompareResultMatchers<PropertyCompareResultMatchers>{
 
@@ -24,6 +25,10 @@ public class PropertyCompareResultMatchers extends AbstractCompareResultMatchers
 
     public PropertyCompareResultMatchers(IdentifiableEntity entity) {
         super(entity);
+    }
+
+    public PropertyCompareResultMatchers() {
+        super(null);
     }
 
     public PropertyCompareResultMatchers property(Types.Supplier<?> getter){
@@ -34,6 +39,11 @@ public class PropertyCompareResultMatchers extends AbstractCompareResultMatchers
 
     public static PropertyCompareResultMatchers compare(IdentifiableEntity entity){
         return new PropertyCompareResultMatchers(entity);
+    }
+
+
+    public static PropertyCompareResultMatchers compare(){
+        return new PropertyCompareResultMatchers();
     }
 
     public ServiceResultMatcher isEqual(){
@@ -48,12 +58,13 @@ public class PropertyCompareResultMatchers extends AbstractCompareResultMatchers
         if(gettersToCompare.size()!=1){
             throw new IllegalArgumentException("Cant compare multiple getters to one value");
         }
-        return (serviceResult,context) -> {
+        return (serviceResult, context, repository) -> {
             assertWasSuccessful(serviceResult);
+            resolveToCompare(serviceResult);
             try {
                 assertEquals(
                         value,
-                        gettersToCompare.stream().findFirst().get().invoke(getInputEntity())
+                        gettersToCompare.stream().findFirst().get().invoke(getToCompare())
                 );
             } catch (IllegalAccessException|InvocationTargetException e) {
                 throw new RuntimeException(e);
@@ -67,12 +78,13 @@ public class PropertyCompareResultMatchers extends AbstractCompareResultMatchers
         if(gettersToCompare.size()!=1){
             throw new IllegalArgumentException("Cant compare multiple getters to one value");
         }
-        return (serviceResult,context) -> {
+        return (serviceResult, context, repository) -> {
             assertWasSuccessful(serviceResult);
+            resolveToCompare(serviceResult);
             try {
                 assertEquals(
                                 value,
-                                ((Collection) gettersToCompare.stream().findFirst().get().invoke(getInputEntity())).size()
+                                ((Collection) gettersToCompare.stream().findFirst().get().invoke(getToCompare())).size()
                 );
             } catch (IllegalAccessException|InvocationTargetException e) {
                 throw new RuntimeException(e);
@@ -81,12 +93,13 @@ public class PropertyCompareResultMatchers extends AbstractCompareResultMatchers
     }
 
     private ServiceResultMatcher checkGetterEquality(boolean equal){
-        return (serviceResult,context) -> {
+        return (serviceResult, context, repository) -> {
             assertWasSuccessful(serviceResult);
+            resolveToCompare(serviceResult);
             if(checkDbEntity()){
                 try {
                     IdentifiableEntity dbEntity = ((IdentifiableEntity)
-                            serviceResult.getServiceRequest().getService().findById(getInputEntity().getId()).get());
+                            serviceResult.getServiceRequest().getService().findById(getToCompare().getId()).get());
                     compareGetterValues(dbEntity, equal);
                 } catch (NoIdException e) {
                     throw new RuntimeException(e);
@@ -104,7 +117,7 @@ public class PropertyCompareResultMatchers extends AbstractCompareResultMatchers
     private void compareGetterValues(IdentifiableEntity checkedAgainst, boolean equal){
         try {
             for (Method getter : gettersToCompare) {
-                Object entityValue = getter.invoke(getInputEntity());
+                Object entityValue = getter.invoke(getToCompare());
                 Object checkedAgainstValue = getter.invoke(checkedAgainst);
                 if(equal) {
                     assertEquals(entityValue, checkedAgainstValue, "Property value from expected entity: " + entityValue
