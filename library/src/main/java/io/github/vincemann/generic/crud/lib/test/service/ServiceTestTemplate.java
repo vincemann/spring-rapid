@@ -12,6 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.TestComponent;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
+import org.springframework.test.util.AopTestUtils;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
@@ -69,14 +70,24 @@ public class ServiceTestTemplate
 
     private ServiceResult execute(ServiceRequest serviceRequest) {
         try {
-            Object result = serviceRequest.getServiceMethod().invoke(serviceUnderTest,serviceRequest.getArgs().toArray());
+            Object result = serviceRequest.getServiceMethod().invoke(
+                    AopTestUtils.getUltimateTargetObject(serviceUnderTest),
+                    serviceRequest.getArgs().toArray()
+            );
             return ServiceResult.builder()
                     .serviceRequest(serviceRequest)
                     .result(result)
                     .build();
-        } catch (IllegalAccessException|InvocationTargetException e) {
+        } catch (IllegalAccessException e) {
             throw new RuntimeException(e);
-        }catch (Exception e){
+        }
+        catch (InvocationTargetException e){
+            return ServiceResult.builder()
+                    .serviceRequest(serviceRequest)
+                    .raisedException(((Exception) e.getTargetException()))
+                    .build();
+        }
+        catch (Exception e){
             return ServiceResult.builder()
                     .serviceRequest(serviceRequest)
                     .raisedException(e)

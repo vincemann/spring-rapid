@@ -18,7 +18,7 @@ public class ServiceResult {
         return raisedException==null;
     }
 
-    public <T> T getExpectedResult(){
+    public <T> T getResult(){
         try {
             return (T)result;
         }catch (ClassCastException e) {
