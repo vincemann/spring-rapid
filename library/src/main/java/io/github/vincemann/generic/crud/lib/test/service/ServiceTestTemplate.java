@@ -6,16 +6,15 @@ import io.github.vincemann.generic.crud.lib.test.service.request.ServiceRequestB
 import io.github.vincemann.generic.crud.lib.test.service.result.ServiceResult;
 import io.github.vincemann.generic.crud.lib.test.service.result.ServiceResultActions;
 import io.github.vincemann.generic.crud.lib.test.service.result.ServiceResultHandler;
+import io.github.vincemann.generic.crud.lib.test.service.result.ServiceTestContext;
 import io.github.vincemann.generic.crud.lib.test.service.result.matcher.ServiceResultMatcher;
 import org.springframework.beans.BeansException;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.TestComponent;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
+import org.springframework.data.repository.CrudRepository;
 import org.springframework.test.util.AopTestUtils;
 
 import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
 import java.lang.reflect.InvocationTargetException;
 
 public class ServiceTestTemplate
@@ -24,13 +23,18 @@ public class ServiceTestTemplate
 
     private EntityManager entityManager;
     private CrudService serviceUnderTest;
+    private CrudRepository repository;
 //    private List<EntityServiceResultMatcher<E>> defaultEntityServiceResultMatchers;
 //    private List<EntityCollectionServiceResultMatcher<E>> defaultEntityCollectionServiceResultMatchers;
 //    private List<ServiceResultHandler> defaultServiceResultHandler;
-    private ApplicationContext context;
+    private ApplicationContext applicationContext;
 
     public void setServiceUnderTest(CrudService serviceUnderTest) {
         this.serviceUnderTest = serviceUnderTest;
+    }
+
+    public void setRepository(CrudRepository repository) {
+        this.repository = repository;
     }
 
     public void setEntityManager(EntityManager entityManager) {
@@ -39,25 +43,30 @@ public class ServiceTestTemplate
 
     @Override
     public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
-        this.context=applicationContext;
+        this.applicationContext =applicationContext;
     }
 
     public ServiceResultActions perform(ServiceRequestBuilder serviceRequestBuilder){
         ServiceRequest serviceRequest = serviceRequestBuilder.create(serviceUnderTest);
         serviceRequest.setService(serviceUnderTest);
         ServiceResult serviceResult = execute(serviceRequest);
+        ServiceTestContext testContext = ServiceTestContext.builder()
+                .applicationContext(applicationContext)
+                .repository(repository)
+                .serviceResult(serviceResult)
+                .build();
         entityManager.flush();
 
         return new ServiceResultActions() {
             @Override
             public ServiceResultActions andExpect(ServiceResultMatcher matcher) {
-                matcher.match(serviceResult,context);
+                matcher.match(testContext);
                 return this;
             }
 
             @Override
             public ServiceResultActions andDo(ServiceResultHandler handler) {
-                handler.handle(serviceResult,context);
+                handler.handle(testContext);
                 return this;
             }
 

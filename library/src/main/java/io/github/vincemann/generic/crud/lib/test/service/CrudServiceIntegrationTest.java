@@ -52,6 +52,7 @@ public abstract class CrudServiceIntegrationTest
         testTemplate = new ServiceTestTemplate();
         testTemplate.setEntityManager(entityManager);
         testTemplate.setServiceUnderTest(serviceUnderTest);
+        testTemplate.setRepository(repository);
     }
 
     @Autowired

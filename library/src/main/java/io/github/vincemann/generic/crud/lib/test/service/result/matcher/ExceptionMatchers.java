@@ -5,7 +5,7 @@ import org.junit.jupiter.api.Assertions;
 public class ExceptionMatchers {
 
     public static ServiceResultMatcher exception(Class<? extends Exception> e){
-        return (serviceResult,context) -> {
+        return (serviceResult, context, repository) -> {
             Exception raisedException = serviceResult.getRaisedException();
             if(raisedException==null){
                 throw new AssertionError("No Exception thrown");
@@ -17,7 +17,7 @@ public class ExceptionMatchers {
     }
 
     public static ServiceResultMatcher exceptionCauseIs(Class<? extends Exception> e){
-        return (serviceResult,context) -> {
+        return (serviceResult, context, repository) -> {
             Exception raisedException = serviceResult.getRaisedException();
             if(raisedException==null){
                 throw new AssertionError("No Exception thrown");
@@ -27,7 +27,7 @@ public class ExceptionMatchers {
     }
 
     public static ServiceResultMatcher noException(){
-        return (serviceResult,context) -> {
+        return (serviceResult, context, repository) -> {
             Exception raisedException = serviceResult.getRaisedException();
             if(raisedException!=null){
                 throw new AssertionError("No Exception thrown");
