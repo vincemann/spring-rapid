@@ -12,7 +12,7 @@ import java.io.Serializable;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 
-public class UrlParamIdMvcControllerTest<S extends CrudService<E,Id,? extends CrudRepository<E,Id>>
+public abstract class UrlParamIdMvcControllerTest<S extends CrudService<E,Id,? extends CrudRepository<E,Id>>
         ,E extends IdentifiableEntity<Id>,
         Id extends Serializable>
         extends MvcControllerTest<S, E, Id> {

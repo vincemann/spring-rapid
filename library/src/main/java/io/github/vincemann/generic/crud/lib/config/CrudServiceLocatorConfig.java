@@ -1,12 +1,12 @@
 package io.github.vincemann.generic.crud.lib.config;
 
+import io.github.vincemann.generic.crud.lib.config.layers.config.ServiceConfig;
+import io.github.vincemann.generic.crud.lib.config.layers.config.WebConfig;
 import io.github.vincemann.generic.crud.lib.service.locator.CrudServiceLocator;
 import io.github.vincemann.generic.crud.lib.service.locator.PackageScanningCrudServiceLocator;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
 
-@Configuration
-@ServiceLayer
+@ServiceConfig
 public class CrudServiceLocatorConfig {
 
     @Bean

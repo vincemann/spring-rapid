@@ -4,14 +4,14 @@ import lombok.extern.slf4j.Slf4j;
 import org.h2.tools.Server;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnExpression;
+import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
 
 import java.sql.SQLException;
 
-@Configuration
-@Profile("test") // Only activate this in the "test" profile
+@TestConfiguration
 @Slf4j
 public class H2ServerConfiguration {
 

@@ -13,9 +13,8 @@ import io.github.vincemann.generic.crud.lib.service.plugin.BiDirParentPlugin;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.*;
 
-@Configuration
 @Import(ServicePluginConfig.class)
-@Profile("service")
+@io.github.vincemann.generic.crud.lib.config.layers.config.ServiceConfig
 public class ServiceConfig {
 
     @Primary
