@@ -18,7 +18,7 @@ public class PetClinicGuruVersionApplication {
 	public static void main(String[] args){
 		ApplicationContext context = SpringApplication.run(PetClinicGuruVersionApplication.class, args);
 		for (String beanDefinitionName : context.getBeanDefinitionNames()) {
-			log.debug("beandefname: " + beanDefinitionName);
+			log.debug("beanDefName: " + beanDefinitionName);
 		}
 	}
 

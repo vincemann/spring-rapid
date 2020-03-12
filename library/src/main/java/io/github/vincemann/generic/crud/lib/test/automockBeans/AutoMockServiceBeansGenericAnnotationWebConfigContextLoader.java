@@ -20,6 +20,8 @@ import org.springframework.test.context.MergedContextConfiguration;
 import org.springframework.test.context.support.AbstractContextLoader;
 import org.springframework.test.context.support.AnnotationConfigContextLoader;
 import org.springframework.test.context.support.AnnotationConfigContextLoaderUtils;
+import org.springframework.test.context.web.AbstractGenericWebContextLoader;
+import org.springframework.test.context.web.AnnotationConfigWebContextLoader;
 import org.springframework.test.context.web.WebMergedContextConfiguration;
 import org.springframework.util.Assert;
 import org.springframework.util.ObjectUtils;
@@ -31,10 +33,10 @@ import javax.servlet.ServletContext;
 /**
  * copied version with one change according to https://stackoverflow.com/questions/49124887/how-to-mock-absent-bean-definitions-in-springjunit4classrunner/49220187#49220187
  */
-public class AutoMockGenericAnnotationConfigContextLoader extends AbstractContextLoader{
+public class AutoMockServiceBeansGenericAnnotationWebConfigContextLoader extends AbstractContextLoader{
 
 
-    private static final Log logger = LogFactory.getLog(AnnotationConfigContextLoader.class);
+    private static final Log logger = LogFactory.getLog(AnnotationConfigWebContextLoader.class);
 
 
     // SmartContextLoader
@@ -43,10 +45,10 @@ public class AutoMockGenericAnnotationConfigContextLoader extends AbstractContex
      * Process <em>annotated classes</em> in the supplied {@link ContextConfigurationAttributes}.
      * <p>If the <em>annotated classes</em> are {@code null} or empty and
      * {@link #isGenerateDefaultLocations()} returns {@code true}, this
-     * {@code SmartContextLoader} will attempt to {@link
+     * {@code SmartContextLoader} will attempt to {@linkplain
      * #detectDefaultConfigurationClasses detect default configuration classes}.
      * If defaults are detected they will be
-     * {@link ContextConfigurationAttributes#setClasses(Class[]) set} in the
+     * {@linkplain ContextConfigurationAttributes#setClasses(Class[]) set} in the
      * supplied configuration attributes. Otherwise, properties in the supplied
      * configuration attributes will not be modified.
      * @param configAttributes the context configuration attributes to process
@@ -61,16 +63,12 @@ public class AutoMockGenericAnnotationConfigContextLoader extends AbstractContex
         }
     }
 
-
-    // AnnotationConfigContextLoader
-
     /**
      * Detect the default configuration classes for the supplied test class.
      * <p>The default implementation simply delegates to
      * {@link AnnotationConfigContextLoaderUtils#detectDefaultConfigurationClasses(Class)}.
      * @param declaringClass the test class that declared {@code @ContextConfiguration}
-     * @return an array of default configuration classes, potentially empty but
-     * never {@code null}
+     * @return an array of default configuration classes, potentially empty but never {@code null}
      * @see AnnotationConfigContextLoaderUtils
      */
     protected Class<?>[] detectDefaultConfigurationClasses(Class<?> declaringClass) {
@@ -81,94 +79,93 @@ public class AutoMockGenericAnnotationConfigContextLoader extends AbstractContex
     // AbstractContextLoader
 
     /**
-     * {@code AnnotationConfigContextLoader} should be used as a
+     * {@code AnnotationConfigWebContextLoader} should be used as a
      * {@link org.springframework.test.context.SmartContextLoader SmartContextLoader},
      * not as a legacy {@link org.springframework.test.context.ContextLoader ContextLoader}.
      * Consequently, this method is not supported.
      * @throws UnsupportedOperationException in this implementation
-     * @see AbstractContextLoader#modifyLocations
+     * @see org.springframework.test.context.support.AbstractContextLoader#modifyLocations
      */
     @Override
     protected String[] modifyLocations(Class<?> clazz, String... locations) {
         throw new UnsupportedOperationException(
-                "AnnotationConfigContextLoader does not support the modifyLocations(Class, String...) method");
+                "AnnotationConfigWebContextLoader does not support the modifyLocations(Class, String...) method");
     }
 
     /**
-     * {@code AnnotationConfigContextLoader} should be used as a
+     * {@code AnnotationConfigWebContextLoader} should be used as a
      * {@link org.springframework.test.context.SmartContextLoader SmartContextLoader},
      * not as a legacy {@link org.springframework.test.context.ContextLoader ContextLoader}.
      * Consequently, this method is not supported.
      * @throws UnsupportedOperationException in this implementation
-     * @see AbstractContextLoader#generateDefaultLocations
+     * @see org.springframework.test.context.support.AbstractContextLoader#generateDefaultLocations
      */
     @Override
     protected String[] generateDefaultLocations(Class<?> clazz) {
         throw new UnsupportedOperationException(
-                "AnnotationConfigContextLoader does not support the generateDefaultLocations(Class) method");
+                "AnnotationConfigWebContextLoader does not support the generateDefaultLocations(Class) method");
     }
 
     /**
-     * {@code AnnotationConfigContextLoader} should be used as a
+     * {@code AnnotationConfigWebContextLoader} should be used as a
      * {@link org.springframework.test.context.SmartContextLoader SmartContextLoader},
      * not as a legacy {@link org.springframework.test.context.ContextLoader ContextLoader}.
      * Consequently, this method is not supported.
      * @throws UnsupportedOperationException in this implementation
-     * @see AbstractContextLoader#getResourceSuffix
+     * @see org.springframework.test.context.support.AbstractContextLoader#getResourceSuffix
      */
     @Override
     protected String getResourceSuffix() {
         throw new UnsupportedOperationException(
-                "AnnotationConfigContextLoader does not support the getResourceSuffix() method");
+                "AnnotationConfigWebContextLoader does not support the getResourceSuffix() method");
     }
 
 
-    // AbstractGenericContextLoader
-    protected void validateMergedContextConfiguration(MergedContextConfiguration mergedConfig) {
-        if (mergedConfig.hasLocations()) {
-            String msg = String.format("Test class [%s] has been configured with @ContextConfiguration's 'locations' " +
-                            "(or 'value') attribute %s, but %s does not support resource locations.",
-                    mergedConfig.getTestClass().getName(), ObjectUtils.nullSafeToString(mergedConfig.getLocations()),
-                    getClass().getSimpleName());
-            logger.error(msg);
-            throw new IllegalStateException(msg);
-        }
-    }
+    // AbstractGenericWebContextLoader
 
+    /**
+     * Register classes in the supplied {@linkplain GenericWebApplicationContext context}
+     * from the classes in the supplied {@link WebMergedContextConfiguration}.
+     * <p>Each class must represent an <em>annotated class</em>. An
+     * {@link AnnotatedBeanDefinitionReader} is used to register the appropriate
+     * bean definitions.
+     * @param context the context in which the annotated classes should be registered
+     * @param webMergedConfig the merged configuration from which the classes should be retrieved
+     * @see this#loadBeanDefinitions
+     */
+    protected void loadBeanDefinitions(
+            GenericWebApplicationContext context, WebMergedContextConfiguration webMergedConfig) {
 
-    protected void loadBeanDefinitions(GenericApplicationContext context, MergedContextConfiguration mergedConfig) {
-        Class<?>[] annotatedClasses = mergedConfig.getClasses();
+        Class<?>[] annotatedClasses = webMergedConfig.getClasses();
         if (logger.isDebugEnabled()) {
             logger.debug("Registering annotated classes: " + ObjectUtils.nullSafeToString(annotatedClasses));
         }
         new AnnotatedBeanDefinitionReader(context).register(annotatedClasses);
     }
 
-
-    protected BeanDefinitionReader createBeanDefinitionReader(GenericApplicationContext context) {
-        throw new UnsupportedOperationException(
-                "AnnotationConfigContextLoader does not support the createBeanDefinitionReader(GenericApplicationContext) method");
-    }
-
-    protected void loadBeanDefinitions(GenericWebApplicationContext context,
-                                       WebMergedContextConfiguration webMergedConfig) {
-        new XmlBeanDefinitionReader(context).loadBeanDefinitions(webMergedConfig.getLocations());
-    }
-
-
-
+    /**
+     * Ensure that the supplied {@link WebMergedContextConfiguration} does not
+     * contain {@link MergedContextConfiguration#getLocations() locations}.
+     * @since 4.0.4
+     * @see this#validateMergedContextConfiguration
+     */
     protected void validateMergedContextConfiguration(WebMergedContextConfiguration webMergedConfig) {
-        if (webMergedConfig.hasClasses()) {
-            String msg = String.format(
-                    "Test class [%s] has been configured with @ContextConfiguration's 'classes' attribute %s, "
-                            + "but %s does not support annotated classes.", webMergedConfig.getTestClass().getName(),
-                    ObjectUtils.nullSafeToString(webMergedConfig.getClasses()), getClass().getSimpleName());
+        if (webMergedConfig.hasLocations()) {
+            String msg = String.format("Test class [%s] has been configured with @ContextConfiguration's 'locations' " +
+                            "(or 'value') attribute %s, but %s does not support resource locations.",
+                    webMergedConfig.getTestClass().getName(),
+                    ObjectUtils.nullSafeToString(webMergedConfig.getLocations()), getClass().getSimpleName());
             logger.error(msg);
             throw new IllegalStateException(msg);
         }
     }
 
-    // SmartContextLoader
+
+
+
+
+
+// SmartContextLoader
 
     /**
      * Load a Spring {@link WebApplicationContext} from the supplied
@@ -219,7 +216,6 @@ public class AutoMockGenericAnnotationConfigContextLoader extends AbstractContex
 
         validateMergedContextConfiguration(webMergedConfig);
 
-        //here are my changes, add custom automock bean factory
         GenericWebApplicationContext context = new GenericWebApplicationContext(new AutoMockBeanFactory());
 
         ApplicationContext parent = mergedConfig.getParentApplicationContext();
@@ -314,7 +310,6 @@ public class AutoMockGenericAnnotationConfigContextLoader extends AbstractContex
     protected void customizeBeanFactory(
             DefaultListableBeanFactory beanFactory, WebMergedContextConfiguration webMergedConfig) {
     }
-
 
     /**
      * Customize the {@link GenericWebApplicationContext} created by this context

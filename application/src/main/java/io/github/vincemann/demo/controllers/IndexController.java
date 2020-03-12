@@ -1,11 +1,11 @@
 package io.github.vincemann.demo.controllers;
 
-import io.github.vincemann.generic.crud.lib.config.layers.component.ControllerComponent;
-import org.springframework.context.annotation.Profile;
+import io.github.vincemann.generic.crud.lib.config.layers.component.WebComponent;
+import io.github.vincemann.generic.crud.lib.config.layers.component.WebController;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 
-@ControllerComponent
+@WebController
 public class IndexController {
 
     @RequestMapping({"/","index","index.html"})

@@ -1,5 +1,6 @@
 package io.github.vincemann.generic.crud.lib.service.plugin;
 
+import io.github.vincemann.generic.crud.lib.config.layers.component.ServiceComponent;
 import io.github.vincemann.generic.crud.lib.model.IdentifiableEntity;
 import io.github.vincemann.generic.crud.lib.model.biDir.child.BiDirChild;
 import io.github.vincemann.generic.crud.lib.model.biDir.parent.BiDirParent;
@@ -14,6 +15,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.io.Serializable;
 import java.util.*;
 
+@ServiceComponent
 @Slf4j
 @Transactional
 /**
