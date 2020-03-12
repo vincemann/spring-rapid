@@ -13,6 +13,7 @@ import java.util.Set;
  * Manages bidirectional relationship of Parent side.
  * Works only in conjunction with {@link BiDirParentPlugin}.
  */
+//todo @ServiceComponent?
 public class BiDirParentEntityListener {
 
 

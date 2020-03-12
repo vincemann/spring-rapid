@@ -1,5 +1,6 @@
 package io.github.vincemann.generic.crud.lib.service;
 
+import io.github.vincemann.generic.crud.lib.config.layers.component.ServiceComponent;
 import io.github.vincemann.generic.crud.lib.service.exception.BadEntityException;
 import io.github.vincemann.generic.crud.lib.model.IdentifiableEntity;
 import io.github.vincemann.generic.crud.lib.service.exception.EntityNotFoundException;
@@ -15,6 +16,7 @@ import java.util.Set;
  * @param <E>       Type of managed Entity
  * @param <Id>      Id Type of managed Entity
  */
+@ServiceComponent
 public interface CrudService
         <
                 E extends IdentifiableEntity<Id>,

@@ -10,4 +10,5 @@
 
     <logger name="io.github.vincemann" level="DEBUG"/>
 
+
 </configuration>

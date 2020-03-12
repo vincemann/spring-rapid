@@ -3,6 +3,7 @@ package io.github.vincemann.demo.service.springDataJPA;
 import io.github.vincemann.demo.model.Owner;
 import io.github.vincemann.demo.repositories.OwnerRepository;
 import io.github.vincemann.demo.service.OwnerService;
+import io.github.vincemann.generic.crud.lib.config.layers.component.ServiceComponent;
 import io.github.vincemann.generic.crud.lib.service.jpa.JPACrudService;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Primary;
@@ -15,7 +16,7 @@ import java.util.Optional;
 
 @Qualifier("basic")
 @Service
-@Profile("service")
+@ServiceComponent
 public class OwnerJPAService extends JPACrudService<Owner,Long,OwnerRepository> implements OwnerService {
 
 

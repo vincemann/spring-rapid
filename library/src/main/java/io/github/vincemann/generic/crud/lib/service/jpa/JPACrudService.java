@@ -1,5 +1,6 @@
 package io.github.vincemann.generic.crud.lib.service.jpa;
 
+import io.github.vincemann.generic.crud.lib.config.layers.component.ServiceComponent;
 import io.github.vincemann.generic.crud.lib.model.IdentifiableEntity;
 import io.github.vincemann.generic.crud.lib.service.CrudService;
 import io.github.vincemann.generic.crud.lib.service.exception.BadEntityException;
@@ -20,6 +21,7 @@ import java.util.Optional;
 import java.util.Set;
 
 
+@ServiceComponent
 public abstract class JPACrudService
                 <
                           E extends IdentifiableEntity<Id>,
