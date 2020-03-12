@@ -8,6 +8,7 @@ import io.github.vincemann.generic.crud.lib.controller.dtoMapper.exception.DtoMa
 import io.github.vincemann.generic.crud.lib.controller.springAdapter.SpringAdapterJsonDtoCrudController;
 import io.github.vincemann.generic.crud.lib.model.IdentifiableEntity;
 import io.github.vincemann.generic.crud.lib.service.CrudService;
+import io.github.vincemann.generic.crud.lib.service.locator.CrudServiceLocator;
 import io.github.vincemann.generic.crud.lib.test.InitializingTest;
 import lombok.Getter;
 import lombok.Setter;
@@ -15,9 +16,12 @@ import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.BeforeEach;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.Import;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.http.MediaType;
@@ -40,11 +44,13 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 /**
  * Use this base class to test your Controllers.
  * Service is tested in isolation, that's why it should be mocked here and only the correct interaction
- * with the service is getting tested.
+ * with the service is getting tested. -> service layer not loaded -> web only context is loaded
  *
  * Main Goal of this test, is to test the correct setup of the web-layer and that the webcomponents
  * work together as expected.
  * Each component is tested heavily in isolation though, which means, that a few simple test cases here are sufficient.
+ *
+ * Controller under test must be manually added to context and all of its service dependencies must be mocked.
  * @param <S> Service Type
  * @param <E> Entity managed by Service Type
  * @param <Id> Id Type of Entity
@@ -52,8 +58,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @Getter
 @Setter
 @Slf4j
-//web layer and service is layer is loaded, I cannot get it to work with a single controller loaded and service layer not loaded..
-@ActiveProfiles(value = {"test","web","service"})
+@ActiveProfiles(value = {"test","web","webTest"})
 @SpringBootTest
 @AutoConfigureMockMvc
 @Import({JacksonConfig.class})
@@ -61,7 +66,7 @@ public abstract class MvcControllerTest
         <S extends CrudService<E,Id,? extends CrudRepository<E,Id>>
         ,E extends IdentifiableEntity<Id>,
         Id extends Serializable>
-        extends InitializingTest {
+        extends InitializingTest implements InitializingBean{
 
     private static final String LOCAL_HOST = "127.0.0.1";
 
@@ -69,9 +74,10 @@ public abstract class MvcControllerTest
     private Class<E> entityClass = (Class<E>) ((ParameterizedType) this.getClass().getGenericSuperclass()).getActualTypeArguments()[0];
     private DtoMappingContext dtoMappingContext;
     private String url;
-    private S testService;
     private SpringAdapterJsonDtoCrudController<E, Id> controller;
     private MockMvc mockMvc;
+    @MockBean
+    private CrudServiceLocator crudServiceLocator;
 
 //    @MockBean
 //    private S mockedService;
@@ -79,6 +85,8 @@ public abstract class MvcControllerTest
     //i expect this component to work, thus using it in my test methods as well
     @Autowired
     private ObjectMapper objectMapper;
+    @Autowired
+    private ApplicationContext applicationContext;
 
     public MvcControllerTest(String url) {
         this.url=url;
@@ -88,13 +96,8 @@ public abstract class MvcControllerTest
         this(LOCAL_HOST);
     }
 
-    //wont be autowired, if i mock it -> should not be required
-    @Autowired(required = false)
-    public void injectTestService(S testService) {
-        this.testService = testService;
-    }
 
-    //i want to manually add single controller to context -> so no controller will be available for autowiring here..
+    //if i want to manually add single controller to context, no controller will be available for autowiring here..
     @Autowired(required = false)
     public void injectController(SpringAdapterJsonDtoCrudController<E, Id> controller) {
         this.controller = controller;
@@ -110,15 +113,41 @@ public abstract class MvcControllerTest
                 .build();
     }
 
+    @Override
+    public void afterPropertiesSet() throws Exception {
+        SpringAdapterJsonDtoCrudController<E, Id> controller = provideControllerUnderTest();
+        String beanName = controller.getClass().getCanonicalName();
+        if (controller != null) {
+            if(!applicationContext.containsBean(beanName)) {
+                log.debug("Manually registering controller under test: " + controller);
+                registerControllerBean(controller,beanName);
+            }else {
+                setController(((SpringAdapterJsonDtoCrudController<E,Id>) applicationContext.getBean(beanName)));
+            }
+        }
+    }
+
+    /**
+     * Use this method to manually add controller under test to application context.
+     * Useful if you dont want to load all controllers, thus exclude them via profile config (default).
+     * @param controller
+     * @param beanName
+     */
+    private void registerControllerBean(SpringAdapterJsonDtoCrudController<E, Id> controller, String beanName){
+        //manually register controller under test and exclude all (other) controllers from context via profile
+        ConfigurableListableBeanFactory beanFactory = ((ConfigurableApplicationContext) applicationContext).getBeanFactory();
+        beanFactory.registerSingleton(beanName, controller);
+        setController(controller);
+    }
+
+    protected SpringAdapterJsonDtoCrudController<E,Id> provideControllerUnderTest(){return null;}
+
     @BeforeEach
     public void setup() throws Exception{
         super.setup();
         //user might want to inject own beans that are diff from controllers beans -> null checks
         if(dtoMappingContext ==null) {
             dtoMappingContext = getController().getDtoMappingContext();
-        }
-        if (testService == null) {
-            setTestService(getController().getCastedCrudService());
         }
     }
 

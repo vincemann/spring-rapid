@@ -5,8 +5,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
 import org.springframework.web.filter.CommonsRequestLoggingFilter;
 
-@Configuration
-@Profile("web")
+@io.github.vincemann.generic.crud.lib.config.layers.config.WebConfig
 public class WebConfig {
 
     @Bean

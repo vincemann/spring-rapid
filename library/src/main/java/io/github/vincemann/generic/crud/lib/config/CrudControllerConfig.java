@@ -1,5 +1,7 @@
 package io.github.vincemann.generic.crud.lib.config;
 
+import io.github.vincemann.generic.crud.lib.config.layers.component.WebComponent;
+import io.github.vincemann.generic.crud.lib.config.layers.config.WebConfig;
 import io.github.vincemann.generic.crud.lib.controller.errorHandling.exceptionHandler.DtoCrudControllerExceptionHandler;
 import io.github.vincemann.generic.crud.lib.controller.errorHandling.exceptionHandler.DtoCrudControllerExceptionHandlerImpl;
 import io.github.vincemann.generic.crud.lib.controller.springAdapter.EndpointsExposureContext;
@@ -12,15 +14,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.*;
 import org.springframework.validation.beanvalidation.LocalValidatorFactoryBean;
 import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping;
 
 @SuppressWarnings("rawtypes")
-@Configuration
 @Import(DtoMapperConfig.class)
-@WebLayer
+@WebConfig
 public class CrudControllerConfig {
 
     @Value("${controller.idFetchingStrategy.idUrlParamKey}")

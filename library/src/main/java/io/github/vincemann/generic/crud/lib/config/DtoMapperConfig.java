@@ -1,5 +1,7 @@
 package io.github.vincemann.generic.crud.lib.config;
 
+import io.github.vincemann.generic.crud.lib.config.layers.component.WebComponent;
+import io.github.vincemann.generic.crud.lib.config.layers.config.WebConfig;
 import io.github.vincemann.generic.crud.lib.controller.dtoMapper.BasicDtoMapper;
 import io.github.vincemann.generic.crud.lib.controller.dtoMapper.DelegatingFallbackToDefaultDtoMapper;
 import io.github.vincemann.generic.crud.lib.controller.dtoMapper.DtoMapper;
@@ -11,14 +13,12 @@ import io.github.vincemann.generic.crud.lib.controller.dtoMapper.idResolver.uniD
 import io.github.vincemann.generic.crud.lib.controller.dtoMapper.idResolver.uniDir.UniDirParentIdResolver;
 import io.github.vincemann.generic.crud.lib.service.locator.CrudServiceLocator;
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.context.annotation.*;
 
 import java.util.List;
 
-@Configuration
 @Import(CrudServiceLocatorConfig.class)
-@WebLayer
+@WebConfig
 public class DtoMapperConfig {
 
     @Qualifier("default")

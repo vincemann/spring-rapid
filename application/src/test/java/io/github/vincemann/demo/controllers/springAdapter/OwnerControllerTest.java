@@ -2,11 +2,14 @@ package io.github.vincemann.demo.controllers.springAdapter;
 
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import io.github.vincemann.demo.controllers.OwnerController;
 import io.github.vincemann.demo.dtos.owner.CreateOwnerDto;
 import io.github.vincemann.demo.dtos.owner.ReadOwnerDto;
 import io.github.vincemann.demo.dtos.owner.UpdateOwnerDto;
 import io.github.vincemann.demo.model.Owner;
 import io.github.vincemann.demo.service.OwnerService;
+import io.github.vincemann.generic.crud.lib.controller.springAdapter.SpringAdapterJsonDtoCrudController;
+import io.github.vincemann.generic.crud.lib.test.automockBeans.AutoMockGenericAnnotationConfigContextLoader;
 import io.github.vincemann.generic.crud.lib.test.controller.UrlParamIdMvcControllerTest;
 import org.apache.commons.beanutils.BeanUtilsBean;
 import org.junit.jupiter.api.BeforeEach;
@@ -14,6 +17,7 @@ import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.test.context.ContextConfiguration;
 
 import java.util.HashSet;
 import java.util.Optional;
@@ -22,7 +26,9 @@ import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
-
+//@ContextConfiguration(
+//        loader = AutoMockGenericAnnotationConfigContextLoader.class
+//)
 class OwnerControllerTest
         extends UrlParamIdMvcControllerTest<OwnerService,Owner,Long> {
 
@@ -46,7 +52,6 @@ class OwnerControllerTest
         String city = "Munich";
         String telephone = "0176546231";
         //Set<Long> petIds = new HashSet<>(Arrays.asList(3L,12L));
-
 
         createOwnerDto = CreateOwnerDto.builder()
                 .firstName(firstName)
@@ -75,6 +80,10 @@ class OwnerControllerTest
         owner.setId(id);
     }
 
+    @Override
+    protected SpringAdapterJsonDtoCrudController<Owner, Long> provideControllerUnderTest() {
+        return new OwnerController();
+    }
 
     @Test
     public void createOwner_shouldSucceed() throws Exception {
