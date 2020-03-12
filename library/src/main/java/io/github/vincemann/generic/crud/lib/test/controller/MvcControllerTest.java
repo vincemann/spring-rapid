@@ -63,6 +63,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @ContextConfiguration(
         loader = AutoMockServiceBeansGenericAnnotationWebConfigContextLoader.class//,
 )
+//smh he does not find property sources anymore without explicitly specifying with that setup
 @PropertySource({"classpath:application.properties","classpath:application-test.properties"})
 public abstract class MvcControllerTest
         <S extends CrudService<E,Id,? extends CrudRepository<E,Id>>
