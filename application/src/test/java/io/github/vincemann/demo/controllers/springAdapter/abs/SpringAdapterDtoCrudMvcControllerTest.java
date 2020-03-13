@@ -6,8 +6,7 @@ import io.github.vincemann.generic.crud.lib.controller.dtoMapper.DtoMapper;
 import io.github.vincemann.generic.crud.lib.controller.dtoMapper.DtoMappingContext;
 import io.github.vincemann.generic.crud.lib.controller.springAdapter.idFetchingStrategy.IdFetchingStrategy;
 import io.github.vincemann.generic.crud.lib.controller.springAdapter.validationStrategy.ValidationStrategy;
-import io.github.vincemann.generic.crud.lib.service.EndpointService;
-import io.github.vincemann.generic.crud.lib.test.controller.MvcControllerTest;
+import io.github.vincemann.generic.crud.lib.test.controller.MvcCrudControllerTest;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -54,7 +53,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @Import(SpringAdapterDtoCrudMvcControllerTest.TestConfig.class)
 @PropertySource({"classpath:application.properties","classpath:application-test.properties"})
 class SpringAdapterDtoCrudMvcControllerTest
-        extends MvcControllerTest<ExampleService, ExampleEntity, Long> {
+        extends MvcCrudControllerTest<ExampleService, ExampleEntity, Long> {
 
     @SpyBean
     ExampleController controllerSpy;
