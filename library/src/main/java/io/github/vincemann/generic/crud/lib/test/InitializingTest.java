@@ -4,18 +4,18 @@ import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.BeforeEach;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import java.util.List;
-import java.util.Optional;
+import java.lang.reflect.Field;
+import java.lang.reflect.ParameterizedType;
+import java.util.*;
+import java.util.stream.Collector;
+import java.util.stream.Collectors;
 
 @Slf4j
 public abstract class InitializingTest{
 
-    @Autowired
-    private Optional<List<TestInitializable>> initializables;
-    @Autowired
-    private Optional<List<BeforeEachMethodInitializable>> beforeEachMethodInitializables;
-    @Autowired
-    private Optional<List<TestContextAware>> testContextAwareList;
+    private List<TestInitializable> initializables;
+    private List<BeforeEachMethodInitializable> beforeEachMethodInitializables;
+    private List<TestContextAware> testContextAwareList;
 
 
     private boolean init = false;
@@ -24,26 +24,52 @@ public abstract class InitializingTest{
     @BeforeEach
     public void setup() throws Exception{
         if(!init){
+            List<Field> testMemberFields = getAllFields(new ArrayList<>(), this.getClass());
+            initializables = findMember(testMemberFields,TestInitializable.class);
+            beforeEachMethodInitializables = findMember(testMemberFields,BeforeEachMethodInitializable.class);
+            testContextAwareList = findMember(testMemberFields,TestContextAware.class);
+
             //init all components in spring container
-            initializables.ifPresent(l -> l.forEach(e -> {
-                if(e.supports(this.getClass())){
+            initializables.forEach(e -> {
                     log.debug("calling init method of  bean : " +e);
                     e.init();
-                }
-            }));
-            testContextAwareList.ifPresent(l -> l.forEach(a -> {
-                if(a.supports(this.getClass())) {
+            });
+            testContextAwareList.forEach(a -> {
                     log.debug("giving test context to bean : " +a);
                     a.setTestContext(this);
-                }
-            }));
+            });
             init=true;
         }
-        beforeEachMethodInitializables.ifPresent(l -> l.forEach(e -> {
-            if(e.supports(this.getClass())){
+        beforeEachMethodInitializables.forEach(e -> {
                 log.debug("calling init method of  bean : " +e);
                 e.init();
-            }
-        }));
+        });
     }
+
+    private <T> List<T> findMember(List<Field> memberFields, Class<T> type){
+        List<T> members = new ArrayList<>();
+        for (Field memberField : memberFields) {
+            if(type.isAssignableFrom(memberField.getType())){
+                try {
+                    memberField.setAccessible(true);
+                    T member = (T) memberField.get(this);
+                    if(member!=null)
+                        members.add(member);
+                } catch (IllegalAccessException e) {
+                    throw new IllegalArgumentException(e);
+                }
+            }
+        }
+       return members;
+    }
+
+    private static List<Field> getAllFields(List<Field> fields, Class<?> type) {
+        fields.addAll(Arrays.asList(type.getDeclaredFields()));
+        if (type.getSuperclass() != null) {
+            getAllFields(fields, type.getSuperclass());
+        }
+
+        return fields;
+    }
+
 }
