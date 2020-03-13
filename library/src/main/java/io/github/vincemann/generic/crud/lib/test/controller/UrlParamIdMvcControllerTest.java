@@ -4,7 +4,8 @@ import io.github.vincemann.generic.crud.lib.model.IdentifiableEntity;
 import io.github.vincemann.generic.crud.lib.service.CrudService;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.repository.CrudRepository;
-import org.springframework.test.web.servlet.ResultActions;
+import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
+import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
 import java.io.Serializable;
 
@@ -20,14 +21,14 @@ public abstract class UrlParamIdMvcControllerTest<S extends CrudService<E,Id,? e
     private String entityIdParamKey;
 
 
-    public ResultActions performDelete(Id id) throws Exception {
-        return getMockMvc().perform(delete(getDeleteUrl())
-        .param(entityIdParamKey,id.toString()));
+    public MockHttpServletRequestBuilder delete(Id id) throws Exception {
+        return MockMvcRequestBuilders.delete(getDeleteUrl())
+        .param(entityIdParamKey,id.toString());
     }
 
-    public ResultActions performFind(Id id) throws Exception {
-        return getMockMvc().perform(get(getFindUrl())
-                .param(entityIdParamKey,id.toString()));
+    public MockHttpServletRequestBuilder find(Id id) throws Exception {
+        return get(getFindUrl())
+                .param(entityIdParamKey,id.toString());
     }
 
 

@@ -120,7 +120,7 @@ class SpringAdapterDtoCrudMvcControllerTest
         when(objectMapper.writeValueAsString(eq(new HashSet<>(Arrays.asList(returnDto)))))
                 .thenReturn(jsonReturnDto);
 
-        performFindAll()
+        getMockMvc().perform(findAll())
                 .andExpect(status().isOk())
                 .andExpect(content().string(jsonReturnDto));
 
@@ -158,7 +158,7 @@ class SpringAdapterDtoCrudMvcControllerTest
                 .thenReturn(jsonReturnDto);
 
         //when
-        performUpdate(requestDto,full)
+        getMockMvc().perform(update(requestDto,full))
                 .andExpect(status().isOk())
                 .andExpect(content().string(jsonReturnDto));
 
@@ -190,7 +190,7 @@ class SpringAdapterDtoCrudMvcControllerTest
         when(objectMapper.writeValueAsString(returnDto)).thenReturn(jsonReturnDto);
 
         //when
-        performCreate(requestDto)
+        getMockMvc().perform(create(requestDto))
                 .andExpect(status().isOk())
                 .andExpect(content().string(jsonReturnDto));
 

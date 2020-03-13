@@ -2,33 +2,22 @@ package io.github.vincemann.generic.crud.lib.test.controller;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import io.github.vincemann.generic.crud.lib.config.JacksonConfig;
 import io.github.vincemann.generic.crud.lib.controller.dtoMapper.DtoMappingContext;
 import io.github.vincemann.generic.crud.lib.controller.dtoMapper.exception.DtoMappingException;
 import io.github.vincemann.generic.crud.lib.controller.springAdapter.SpringAdapterJsonDtoCrudController;
 import io.github.vincemann.generic.crud.lib.model.IdentifiableEntity;
 import io.github.vincemann.generic.crud.lib.service.CrudService;
-import io.github.vincemann.generic.crud.lib.test.InitializingTest;
-import io.github.vincemann.generic.crud.lib.test.automockBeans.AutoMockServiceBeansGenericAnnotationWebConfigContextLoader;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.BeforeEach;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
-import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.ApplicationContext;
-import org.springframework.context.annotation.Import;
-import org.springframework.context.annotation.PropertySource;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.http.MediaType;
-import org.springframework.test.context.ActiveProfiles;
-import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.ResultActions;
-import org.springframework.test.web.servlet.setup.MockMvcBuilders;
-import org.springframework.web.context.WebApplicationContext;
+import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
 
 import java.io.IOException;
 import java.io.Serializable;
@@ -36,7 +25,6 @@ import java.lang.reflect.ParameterizedType;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 
 
 /**
@@ -93,32 +81,30 @@ public abstract class MvcCrudControllerTest
         return getController().getDtoMapper().mapToEntity(dto,getEntityClass());
     }
 
-    public ResultActions performCreate(IdentifiableEntity<Id> dto) throws Exception {
-        return getMockMvc().perform(
-                post(getCreateUrl())
+    public MockHttpServletRequestBuilder create(IdentifiableEntity<Id> dto) throws Exception {
+        return post(getCreateUrl())
                         .content(serialize(dto))
-                        .contentType(MediaType.APPLICATION_JSON_UTF8)
-        );
+                        .contentType(MediaType.APPLICATION_JSON_UTF8);
     }
 
-    public ResultActions performUpdate(IdentifiableEntity<Id> updateDto, Boolean full) throws Exception {
+    public MockHttpServletRequestBuilder update(IdentifiableEntity<Id> updateDto, Boolean full) throws Exception {
         String fullUpdateQueryParam = getController().getFullUpdateQueryParam();
 
-        return getMockMvc().perform(put(getUpdateUrl()+"?"+fullUpdateQueryParam+"="+full.toString())
+        return put(getUpdateUrl()+"?"+fullUpdateQueryParam+"="+full.toString())
                 .content(serialize(updateDto))
-                .contentType(MediaType.APPLICATION_JSON_UTF8));
+                .contentType(MediaType.APPLICATION_JSON_UTF8);
     }
 
-    public ResultActions performFullUpdate(IdentifiableEntity<Id> updateDto) throws Exception {
-        return performUpdate(updateDto,Boolean.TRUE);
+    public MockHttpServletRequestBuilder fullUpdate(IdentifiableEntity<Id> updateDto) throws Exception {
+        return update(updateDto,Boolean.TRUE);
     }
 
-    public ResultActions performPartialUpdate(IdentifiableEntity<Id> updateDto) throws Exception {
-        return performUpdate(updateDto,Boolean.FALSE);
+    public MockHttpServletRequestBuilder partialUpdate(IdentifiableEntity<Id> updateDto) throws Exception {
+        return update(updateDto,Boolean.FALSE);
     }
 
-    public ResultActions performFindAll() throws Exception {
-        return getMockMvc().perform(get(getController().getFindAllUrl()));
+    public MockHttpServletRequestBuilder findAll() throws Exception {
+        return get(getController().getFindAllUrl());
     }
 
     public String getCreateUrl(){
