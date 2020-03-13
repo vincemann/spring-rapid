@@ -79,7 +79,7 @@ class OwnerControllerTest
         String readOwnerDtoJson = mapper.writeValueAsString(readOwnerDto);
         when(mockedService.save(refEq(owner,"id"))).thenReturn(owner);
 
-        performCreate(createOwnerDto)
+        getMockMvc().perform(create(createOwnerDto))
                 .andExpect(status().isOk())
                 .andExpect(content().json(readOwnerDtoJson));
 
@@ -89,7 +89,7 @@ class OwnerControllerTest
 
     @Test
     public void deleteOwner_shouldSucceed() throws Exception {
-        performDelete(owner.getId())
+        getMockMvc().perform(delete(owner.getId()))
                 .andExpect(status().isOk());
         Mockito.verify(mockedService).deleteById(owner.getId());
     }
@@ -99,7 +99,7 @@ class OwnerControllerTest
     public void findOwner_shouldSucceed() throws Exception {
         when(mockedService.findById(owner.getId())).thenReturn(Optional.of(owner));
         String readDtoJson = mapper.writeValueAsString(readOwnerDto);
-        performFind(owner.getId())
+        getMockMvc().perform(find(owner.getId()))
                 .andExpect(status().isOk())
                 .andExpect(content().json(readDtoJson));
         Mockito.verify(mockedService).findById(owner.getId());
@@ -119,7 +119,7 @@ class OwnerControllerTest
         when(mockedService.update(eq(owner),eq(false))).thenReturn(updatedOwner);
 
         //when
-        performPartialUpdate(diffAddressUpdate)
+        getMockMvc().perform(partialUpdate(diffAddressUpdate))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.address").value(updatedOwner.getAddress()));
 
@@ -133,7 +133,7 @@ class OwnerControllerTest
                 //blank city
                 .city("")
                 .build();
-        performPartialUpdate(blankCityUpdate)
+        getMockMvc().perform(partialUpdate(blankCityUpdate))
                 .andExpect(status().isBadRequest());
 
         verify(mockedService,never()).update(any(),any());
