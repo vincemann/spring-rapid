@@ -18,7 +18,7 @@ public class EndpointService {
         /*RequestMappingInfo requestMappingInfo = RequestMappingInfo
                 .paths(urlPath)
                 .methods(RequestMethod.GET)
-                .produces(MediaType.APPLICATION_JSON_VALUE)
+                .produces(MediaType.APPLICATION_JSON_UTF8_VALUE)
                 .build();*/
 
         requestMappingHandlerMapping.

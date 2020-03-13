@@ -97,7 +97,7 @@ public abstract class MvcCrudControllerTest
         return getMockMvc().perform(
                 post(getCreateUrl())
                         .content(serialize(dto))
-                        .contentType(MediaType.APPLICATION_JSON_UTF8_VALUE)
+                        .contentType(MediaType.APPLICATION_JSON_UTF8)
         );
     }
 
@@ -106,7 +106,7 @@ public abstract class MvcCrudControllerTest
 
         return getMockMvc().perform(put(getUpdateUrl()+"?"+fullUpdateQueryParam+"="+full.toString())
                 .content(serialize(updateDto))
-                .contentType(MediaType.APPLICATION_JSON_UTF8_VALUE));
+                .contentType(MediaType.APPLICATION_JSON_UTF8));
     }
 
     public ResultActions performFullUpdate(IdentifiableEntity<Id> updateDto) throws Exception {
