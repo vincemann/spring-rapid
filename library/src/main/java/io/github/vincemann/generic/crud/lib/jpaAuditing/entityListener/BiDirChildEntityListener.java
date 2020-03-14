@@ -3,6 +3,7 @@ package io.github.vincemann.generic.crud.lib.jpaAuditing.entityListener;
 import io.github.vincemann.generic.crud.lib.model.biDir.child.BiDirChild;
 import io.github.vincemann.generic.crud.lib.model.biDir.parent.BiDirParent;
 import io.github.vincemann.generic.crud.lib.service.plugin.BiDirChildPlugin;
+import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.PrePersist;
 import javax.persistence.PreRemove;

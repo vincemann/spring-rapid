@@ -30,7 +30,7 @@ public class ExceptionMatchers {
         return (testContext) -> {
             Exception raisedException = testContext.getServiceResult().getRaisedException();
             if(raisedException!=null){
-                throw new AssertionError("No Exception thrown");
+                throw new AssertionError("Exception was thrown: ",raisedException);
             }
         };
     }
