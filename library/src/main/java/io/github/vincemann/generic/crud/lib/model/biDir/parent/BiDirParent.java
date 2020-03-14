@@ -121,9 +121,14 @@ public interface BiDirParent extends BiDirEntity/*,DisposableBean*/ {
                         BiDirChild child = optionalBiDirChild.get();
                         if(biDirChildToRemove.getClass().equals(child.getClass())){
                             //this set needs to remove the child
-                            boolean successfulRemove = childrenCollection.remove(biDirChildToRemove);
+                            //here is a hibernate bug in persistent set remove function, see https://stackoverflow.com/a/47968974
+                            //therefor we user removeAll as workaround
+                            List<BiDirChild> toRemove = new ArrayList<>();
+                            toRemove.add(biDirChildToRemove);
+                            boolean successfulRemove = childrenCollection.removeAll(toRemove);
+                            //childrenCollection = PersistentSet
                             if(!successfulRemove){
-                                log.warn("BiDirChild: "+biDirChildToRemove+", which should be deleted from parents Childcollection,was not present in it. Parent: " + this);
+                                throw new RuntimeException("BiDirChild: "+biDirChildToRemove+", which should be deleted from parents Childcollection,was not present in it or delete operation was not successful. "+this);
                             }else {
                                 deletedChild.set(true);
                             }
