@@ -16,6 +16,8 @@ import org.springframework.test.annotation.Rollback;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.MockMvcBuilder;
+import org.springframework.test.web.servlet.setup.DefaultMockMvcBuilder;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.context.WebApplicationContext;
@@ -37,17 +39,18 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @PropertySource({"classpath:application.properties","classpath:application-test.properties"})
 public abstract class MvcControllerTest extends InitializingTest {
     private MockMvc mockMvc;
+    private DefaultMockMvcBuilder mockMvcBuilder;
 
     @BeforeEach
     public void setupMvc(WebApplicationContext wac) {
         String mediaType = MediaType.APPLICATION_JSON_UTF8_VALUE;
-        this.mockMvc = MockMvcBuilders.webAppContextSetup(wac)
+        mockMvcBuilder = MockMvcBuilders.webAppContextSetup(wac)
                 .defaultRequest(get("/")
                         .accept(mediaType)
                         .contentType(mediaType)
                 )
                 .alwaysExpect(content().contentType(mediaType))
-                .alwaysDo(print())
-                .build();
+                .alwaysDo(print());
+        mockMvc=mockMvcBuilder.build();
     }
 }
