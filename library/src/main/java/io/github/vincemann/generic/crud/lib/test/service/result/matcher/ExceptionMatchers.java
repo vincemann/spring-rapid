@@ -11,7 +11,8 @@ public class ExceptionMatchers {
                 throw new AssertionError("No Exception thrown");
             }
             if(!raisedException.getClass().equals(e)){
-                throw new AssertionError("Wrong exception type thrown: "  + raisedException.getClass());
+                raisedException.printStackTrace();
+                throw new AssertionError("Wrong exception type thrown: "  + raisedException);
             }
         };
     }

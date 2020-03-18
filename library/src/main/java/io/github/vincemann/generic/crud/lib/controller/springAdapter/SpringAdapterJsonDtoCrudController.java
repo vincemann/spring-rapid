@@ -164,7 +164,7 @@ public abstract class SpringAdapterJsonDtoCrudController
 
             if(endpointsExposureContext.isFindAllEndpointExposed()){
                 //DELETE
-                log.debug("Exposing delete Endpoint for "+this.getClass().getSimpleName());
+                log.debug("Exposing findAll Endpoint for "+this.getClass().getSimpleName());
                 getEndpointService().addMapping(getFindAllRequestMappingInfo(),
                         this.getClass().getMethod("findAll", HttpServletRequest.class), this);
             }

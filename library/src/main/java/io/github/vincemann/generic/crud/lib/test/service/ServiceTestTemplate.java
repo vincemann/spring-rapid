@@ -8,6 +8,7 @@ import io.github.vincemann.generic.crud.lib.test.service.result.ServiceResultAct
 import io.github.vincemann.generic.crud.lib.test.service.result.ServiceResultHandler;
 import io.github.vincemann.generic.crud.lib.test.service.result.ServiceTestContext;
 import io.github.vincemann.generic.crud.lib.test.service.result.matcher.ServiceResultMatcher;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
@@ -17,6 +18,7 @@ import org.springframework.test.util.AopTestUtils;
 import javax.persistence.EntityManager;
 import java.lang.reflect.InvocationTargetException;
 
+@Slf4j
 public class ServiceTestTemplate
     implements ApplicationContextAware
 {
@@ -56,6 +58,10 @@ public class ServiceTestTemplate
                 .serviceResult(serviceResult)
                 .build();
         entityManager.flush();
+        if (serviceResult.getRaisedException() != null) {
+            log.warn("Service threw exception, this might have been wanted. Stacktrace: ");
+            serviceResult.getRaisedException().printStackTrace();
+        }
 
         return new ServiceResultActions() {
             @Override
