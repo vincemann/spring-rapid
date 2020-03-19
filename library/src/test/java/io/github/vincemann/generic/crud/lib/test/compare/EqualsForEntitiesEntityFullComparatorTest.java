@@ -13,14 +13,14 @@ import javax.persistence.Entity;
 
 import java.util.Set;
 
-class EqualsForEntitiesEntityReflectionComparatorTest {
+class EqualsForEntitiesEntityFullComparatorTest {
 
 
-    EntityReflectionComparator comparator;
+    EntityFullComparator comparator;
 
     @BeforeEach
     void setUp() {
-        comparator = new EntityReflectionComparator(EntityReflectionComparator.EQUALS_FOR_ENTITIES());
+        comparator = new EntityFullComparator();
     }
 
     @Entity

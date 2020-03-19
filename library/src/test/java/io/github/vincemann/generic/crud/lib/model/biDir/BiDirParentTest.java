@@ -126,16 +126,11 @@ class BiDirParentTest {
     }
 
     @Test
-    void addChildToNullCollection() {
+    void addChildToNullCollection_shouldAutoCreateCollectionAndWork() throws IllegalAccessException {
         //given
         testEntityParent.setSecondEntityChildSet(null);
-        //when
-        Assertions.assertThrows(IllegalArgumentException.class, new Executable() {
-            @Override
-            public void execute() throws Throwable {
-                testEntityParent.addChild(testSecondEntityChild);
-            }
-        });
+        testEntityParent.addChild(testSecondEntityChild);
+        Assertions.assertEquals(testSecondEntityChild,testEntityParent.getSecondEntityChildSet().stream().findFirst().get());
     }
 
     @Test
@@ -208,16 +203,15 @@ class BiDirParentTest {
     }
 
     @Test
-    void getNullChildrenCollection() throws IllegalAccessException {
+    void getNullChildrenCollection_shouldCreateEmptyCollection() throws IllegalAccessException {
         //given
         testEntityParent.setSecondEntityChildSet(null);
-        //when
-        Assertions.assertThrows(IllegalArgumentException.class, new Executable() {
-            @Override
-            public void execute() throws Throwable {
-                testEntityParent.getChildrenCollections();
-            }
-        });
+        Map<Collection<? extends BiDirChild>, Class<? extends BiDirChild>> childrenCollections = testEntityParent.getChildrenCollections();
+        for (Map.Entry<Collection<? extends BiDirChild>, Class<? extends BiDirChild>> collectionClassEntry : childrenCollections.entrySet()) {
+            Assertions.assertNotNull(collectionClassEntry.getKey());
+            Assertions.assertTrue(collectionClassEntry.getKey().isEmpty());
+            Assertions.assertTrue(collectionClassEntry.getKey() instanceof Set);
+        }
     }
 
     @Test

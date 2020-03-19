@@ -5,6 +5,7 @@ import io.github.vincemann.generic.crud.lib.model.uniDir.child.UniDirChild;
 import io.github.vincemann.generic.crud.lib.model.uniDir.child.UniDirChildCollection;
 import io.github.vincemann.generic.crud.lib.model.uniDir.child.UniDirChildEntity;
 import io.github.vincemann.generic.crud.lib.service.exception.entityRelationHandling.UnknownChildTypeException;
+import io.github.vincemann.generic.crud.lib.util.CollectionUtils;
 import io.github.vincemann.generic.crud.lib.util.ReflectionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -150,7 +151,11 @@ public interface UniDirParent extends UniDirEntity {
             field.setAccessible(true);
             Collection uniDirChildren = (Collection) field.get(this);
             if(uniDirChildren == null){
-                throw new IllegalArgumentException("Null idCollection found in UniDirParent "+ this + " for ChildCollectionField with name: " + field.getName());
+                //throw new IllegalArgumentException("Null idCollection found in UniDirParent "+ this + " for ChildCollectionField with name: " + field.getName());
+                log.warn("Auto-generating Collection for nullIdCollection Field: " + field);
+                Collection emptyCollection = CollectionUtils.createEmptyCollection(field);
+                field.set(this,emptyCollection);
+                uniDirChildren=emptyCollection;
             }
             Class<? extends UniDirChild> collectionEntityType = field.getAnnotation(UniDirChildCollection.class).value();
             childrenCollection_CollectionTypeMap.put(uniDirChildren,collectionEntityType);
