@@ -10,7 +10,7 @@ import io.github.vincemann.demo.service.plugin.OwnerOfTheYearPlugin;
 import io.github.vincemann.generic.crud.lib.service.exception.BadEntityException;
 import io.github.vincemann.generic.crud.lib.service.exception.EntityNotFoundException;
 import io.github.vincemann.generic.crud.lib.service.exception.NoIdException;
-import io.github.vincemann.generic.crud.lib.test.compare.ReflectionComparator;
+import io.github.vincemann.generic.crud.lib.test.compare.FullComparator;
 import io.github.vincemann.generic.crud.lib.test.service.CrudServiceIntegrationTest;
 import io.github.vincemann.generic.crud.lib.test.service.result.ServiceResult;
 import org.junit.jupiter.api.Assertions;
@@ -38,7 +38,7 @@ class OwnerServiceIntegrationTest
         extends CrudServiceIntegrationTest<OwnerService, Owner, Long> {
 
     @Autowired
-    ReflectionComparator<Owner> reflectionComparator;
+    FullComparator<Owner> fullComparator;
 
     Owner ownerWithoutPets;
     Owner ownerWithOnePet;
@@ -208,7 +208,7 @@ class OwnerServiceIntegrationTest
         Owner savedOwner = getRepository().save(ownerWithOnePet);
         Optional<Owner> byLastName = getServiceUnderTest().findByLastName(ownerWithOnePet.getLastName());
         Assertions.assertTrue(byLastName.isPresent());
-        Assertions.assertTrue(reflectionComparator.isEqual(savedOwner, byLastName.get()));
+        Assertions.assertTrue(fullComparator.isEqual(savedOwner, byLastName.get()));
     }
 
 

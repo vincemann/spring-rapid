@@ -6,6 +6,7 @@ import io.github.vincemann.generic.crud.lib.model.biDir.child.BiDirChildCollecti
 import io.github.vincemann.generic.crud.lib.model.biDir.child.BiDirChildEntity;
 import io.github.vincemann.generic.crud.lib.service.exception.entityRelationHandling.UnknownChildTypeException;
 import io.github.vincemann.generic.crud.lib.service.exception.entityRelationHandling.UnknownParentTypeException;
+import io.github.vincemann.generic.crud.lib.util.CollectionUtils;
 import io.github.vincemann.generic.crud.lib.util.ReflectionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -187,7 +188,11 @@ public interface BiDirParent extends BiDirEntity/*,DisposableBean*/ {
             field.setAccessible(true);
             Collection<? extends BiDirChild> biDirChildren = (Collection<? extends BiDirChild>) field.get(this);
             if(biDirChildren == null){
-                throw new IllegalArgumentException("Null idCollection found in BiDirParent "+ this + " for ChildCollectionField with name: " + field.getName());
+                //throw new IllegalArgumentException("Null idCollection found in BiDirParent "+ this + " for ChildCollectionField with name: " + field.getName());
+                log.warn("Auto-generating Collection for nullIdCollection Field: " + field);
+                Collection emptyCollection = CollectionUtils.createEmptyCollection(field);
+                field.set(this,emptyCollection);
+                biDirChildren=emptyCollection;
             }
             Class<? extends BiDirChild> collectionEntityType = field.getAnnotation(BiDirChildCollection.class).value();
             childrenCollection_CollectionTypeMap.put(biDirChildren,collectionEntityType);

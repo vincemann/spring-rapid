@@ -2,7 +2,7 @@ package io.github.vincemann.generic.crud.lib.test.service.result.matcher.compare
 
 import com.github.hervian.reflection.Types;
 import io.github.vincemann.generic.crud.lib.model.IdentifiableEntity;
-import io.github.vincemann.generic.crud.lib.test.compare.ReflectionComparator;
+import io.github.vincemann.generic.crud.lib.test.compare.FullComparator;
 import io.github.vincemann.generic.crud.lib.test.service.result.matcher.ServiceResultMatcher;
 import io.github.vincemann.generic.crud.lib.util.MethodNameUtil;
 import org.apache.commons.beanutils.BeanUtilsBean;
@@ -13,7 +13,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class FullCompareEntityMatcher extends CompareEntityMatcher {
-    private ReflectionComparator reflectionComparator;
+    private FullComparator fullComparator;
     private List<String> propertiesToIgnore = new ArrayList<>();
 
 
@@ -46,8 +46,8 @@ public class FullCompareEntityMatcher extends CompareEntityMatcher {
         return performReflectionCompare(false);
     }
 
-    protected ReflectionComparator getReflectionComparator() {
-        return reflectionComparator;
+    protected FullComparator getFullComparator() {
+        return fullComparator;
     }
 
     protected List<String> getPropertiesToIgnore() {
@@ -58,17 +58,17 @@ public class FullCompareEntityMatcher extends CompareEntityMatcher {
         return testContext -> {
             try {
                 //get comparator from application context and clone it, so property ignore changes do not disturb application wide comparator
-                reflectionComparator = (ReflectionComparator) BeanUtilsBean.getInstance().cloneBean(
-                        testContext.getApplicationContext().getBean(ReflectionComparator.class)
+                fullComparator = (FullComparator) BeanUtilsBean.getInstance().cloneBean(
+                        testContext.getApplicationContext().getBean(FullComparator.class)
                 );
             } catch (IllegalAccessException | InstantiationException | InvocationTargetException | NoSuchMethodException e) {
-                throw new IllegalArgumentException("Could not clone stateful " + ReflectionComparator.class.getSimpleName(),e);
+                throw new IllegalArgumentException("Could not clone stateful " + FullComparator.class.getSimpleName(),e);
             }
             getCompareEntityContext().resolvePlaceholders(testContext);
             IdentifiableEntity compareRoot = getCompareEntityContext().getCompareRoot();
             List<IdentifiableEntity> compareTos = getCompareEntityContext().getCompareTos();
             for (IdentifiableEntity compareTo : compareTos) {
-                Assertions.assertTrue(reflectionComparator.isEqual(compareRoot, compareTo));
+                Assertions.assertTrue(fullComparator.isEqual(compareRoot, compareTo));
             }
         };
     }

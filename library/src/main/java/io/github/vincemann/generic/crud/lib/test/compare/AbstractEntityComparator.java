@@ -4,30 +4,27 @@ import de.danielbechler.diff.ObjectDiffer;
 import de.danielbechler.diff.ObjectDifferBuilder;
 import de.danielbechler.diff.node.DiffNode;
 import de.danielbechler.diff.node.Visit;
+import de.danielbechler.diff.path.NodePath;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.opentest4j.AssertionFailedError;
 
 import javax.persistence.Entity;
 
-@Slf4j
 @Getter
 @Setter
-@NoArgsConstructor
-public class EntityReflectionComparator implements ReflectionComparator<Object> {
+@Slf4j
+public abstract class AbstractEntityComparator {
 
     private ObjectDiffer objectDiffer;
-    private ObjectDifferBuilder builder;
 
 
-    public EntityReflectionComparator(ObjectDifferBuilder builder) {
-        this.objectDiffer = builder.build();
-        this.builder=builder;
+    public AbstractEntityComparator() {
+        this.objectDiffer = createDefaultBuilder().build();
     }
 
-    public static ObjectDifferBuilder EQUALS_FOR_ENTITIES(){
+    public ObjectDifferBuilder createDefaultBuilder(){
         return ObjectDifferBuilder.startBuilding()
                 .comparison()
                 .ofType(Entity.class)
@@ -35,21 +32,13 @@ public class EntityReflectionComparator implements ReflectionComparator<Object> 
                 .and();
     }
 
-    public void ignoreProperty(String property){
-        ObjectDifferBuilder builder = getBuilder()
-                .inclusion()
-                .exclude()
-                .propertyName(property)
-                .and();
-        setObjectDiffer(builder.build());
-        setBuilder(builder);
-    }
-
-    @Override
     public boolean isEqual(Object expected, Object actual) {
         try {
             //order in Lists is ignored
             DiffNode diff = objectDiffer.compare(expected, actual);
+            if(diff.isRootNode()){
+                return !diff.hasChildren();
+            }
             log(diff);
             return !diff.hasChanges();
         } catch (AssertionFailedError e) {
@@ -67,5 +56,4 @@ public class EntityReflectionComparator implements ReflectionComparator<Object> 
             }
         });
     }
-
 }
