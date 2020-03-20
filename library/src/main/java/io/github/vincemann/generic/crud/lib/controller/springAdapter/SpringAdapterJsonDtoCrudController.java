@@ -237,10 +237,10 @@ public abstract class SpringAdapterJsonDtoCrudController
     public ResponseEntity<String> create(HttpServletRequest request) throws BadEntityException, DtoMappingException, DtoSerializingException {
         log.debug("Create request arriving at controller: " + request);
         try {
-            String body = request.getReader().lines().collect(Collectors.joining(System.lineSeparator()));
-            log.debug("String Body fetched from request: " + body);
-            IdentifiableEntity<Id> dto = getJsonMapper().readValue(body, getDtoMappingContext().getCreateRequestDtoClass());
-            log.debug("Dto read from string body " + dto);
+            String json = request.getReader().lines().collect(Collectors.joining(System.lineSeparator()));
+            log.debug("Json Input for JsonMapper to map to DtoClass: " + getDtoMappingContext().getCreateRequestDtoClass().getSimpleName() + " : " + json);
+            IdentifiableEntity<Id> dto = getJsonMapper().readValue(json, getDtoMappingContext().getCreateRequestDtoClass());
+            log.debug("successfully read Dto: " + dto);
             validationStrategy.validateDto(dto,request);
             log.debug("Dto successfully validated");
             beforeCreate(dto,request);
@@ -253,8 +253,7 @@ public abstract class SpringAdapterJsonDtoCrudController
     public ResponseEntity<String> update(HttpServletRequest request) throws EntityNotFoundException, NoIdException, BadEntityException, DtoMappingException, DtoSerializingException {
         log.debug("Update request arriving at controller: " + request);
         try {
-            String body = request.getReader().lines().collect(Collectors.joining(System.lineSeparator()));
-            log.debug("String Body fetched from request: " + body);
+            String json = request.getReader().lines().collect(Collectors.joining(System.lineSeparator()));
             boolean fullUpdate = isFullUpdate(request);
             log.debug("full update mode: " + fullUpdate);
             Class<? extends IdentifiableEntity> dtoClass = null;
@@ -263,9 +262,9 @@ public abstract class SpringAdapterJsonDtoCrudController
             }else {
                 dtoClass = getDtoMappingContext().getPartialUpdateRequestDtoClass();
             }
-            log.debug("dtoClass that will be mapped to: " + dtoClass);
-            IdentifiableEntity<Id> dto  = getJsonMapper().readValue(body, dtoClass);
-            log.debug("Dto read from string body " + dto);
+            log.debug("Json Input for JsonMapper to map to DtoClass: " + dtoClass.getSimpleName() + " : " + json);
+            IdentifiableEntity<Id> dto  = getJsonMapper().readValue(json, dtoClass);
+            log.debug("successfully read Dto: " + dto);
             validationStrategy.validateDto(dto,request);
             log.debug("Dto successfully validated");
 

@@ -31,18 +31,27 @@ public abstract class AbstractEntityComparator {
         return equals;
     }
 
-    protected void compare(Object expected, Object actual, Collection<String> properties) {
+    protected void compare(Object expected, Object actual, Collection<String> properties, boolean silentIgnore) {
         try {
             for (String property : properties) {
-                Field expectedField = findField(expected.getClass(),property);
-                Field actualField = findField(actual.getClass(),property);
-                expectedField.setAccessible(true);
-                actualField.setAccessible(true);
-                Object expectedValue = expectedField.get(expected);
-                Object actualValue = actualField.get(actual);
-                boolean equals = Objects.equals(expectedValue,actualValue);
-                if (!equals) {
-                    getDiff().put(property, Lists.newArrayList(expectedValue, actualValue));
+                try {
+                    Field expectedField = findField(expected.getClass(),property);
+                    Field actualField = findField(actual.getClass(),property);
+                    expectedField.setAccessible(true);
+                    actualField.setAccessible(true);
+                    Object expectedValue = expectedField.get(expected);
+                    Object actualValue = actualField.get(actual);
+                    boolean equals = Objects.equals(expectedValue,actualValue);
+                    if (!equals) {
+                        getDiff().put(property, Lists.newArrayList(expectedValue, actualValue));
+                    }
+                }catch (FieldNotFoundException e){
+                    if(silentIgnore) {
+                        log.debug("Field: " + property + " not found, silent ignoring");
+                        continue;
+                    }else {
+                        throw new RuntimeException(e);
+                    }
                 }
             }
         } catch (IllegalAccessException e) {
@@ -50,14 +59,14 @@ public abstract class AbstractEntityComparator {
         }
     }
 
-    private Field findField(Class clazz, String property){
+    private Field findField(Class clazz, String property) throws FieldNotFoundException{
         List<Field> cachedFields = fieldCache.get(clazz);
         if(cachedFields==null){
             cachedFields = Arrays.asList(ReflectionUtils.getDeclaredFields(clazz,true));
         }
         Optional<Field> field = cachedFields.stream().filter(f -> f.getName().equals(property)).findFirst();
         if(!field.isPresent()){
-            throw new IllegalArgumentException("Field not found: " + property + " class: " + clazz);
+            throw new FieldNotFoundException("Field not found: " + property + " class: " + clazz);
         }
         return field.get();
     }

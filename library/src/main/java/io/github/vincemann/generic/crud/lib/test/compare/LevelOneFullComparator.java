@@ -15,6 +15,7 @@ import java.util.stream.Collectors;
 public class LevelOneFullComparator extends AbstractEntityComparator implements FullComparator<Object> {
 
     private List<String> excluded = new ArrayList<>();
+    private boolean silentIgnore = false;
 
     @Override
     public boolean isEqual(Object expected, Object actual) {
@@ -24,7 +25,7 @@ public class LevelOneFullComparator extends AbstractEntityComparator implements 
         included.removeAll(excluded);
         included.remove("this$0");
 
-        compare(expected,actual,included);
+        compare(expected,actual,included,silentIgnore);
         return super.isEquals(expected,actual);
     }
 
