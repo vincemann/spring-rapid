@@ -35,12 +35,18 @@ public class DelegatingFallbackToDefaultDtoMapper implements DtoMapper {
 
     @Override
     public <T extends IdentifiableEntity> T mapToEntity(IdentifiableEntity dto, Class<T> destinationClass) throws DtoMappingException {
+        log.info("_____________________________________________________________________________");
+        log.info("Map from Dto to Entity-Class: "+destinationClass+" inputDto: " + dto);
+        log.info("_____________________________________________________________________________");
         return findMapper(dto.getClass())
                 .mapToEntity(dto,destinationClass);
     }
 
     @Override
     public <T extends IdentifiableEntity> T mapToDto(IdentifiableEntity entity, Class<T> destinationClass) throws DtoMappingException {
+        log.info("_____________________________________________________________________________");
+        log.info("Map from Entity to Dto-Class: "+destinationClass+" inputEntity: " + entity);
+        log.info("_____________________________________________________________________________");
         return findMapper(destinationClass)
                 .mapToDto(entity,destinationClass);
     }

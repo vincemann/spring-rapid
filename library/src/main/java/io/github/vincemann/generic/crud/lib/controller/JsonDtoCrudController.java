@@ -19,13 +19,13 @@ import org.springframework.data.repository.CrudRepository;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.context.SecurityContextHolder;
 
 import java.io.Serializable;
 import java.lang.reflect.ParameterizedType;
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
+
+import static io.github.vincemann.generic.crud.lib.util.MethodNameUtil.propertyNameOf;
 
 
 /**
@@ -86,9 +86,11 @@ public abstract class JsonDtoCrudController
     @SuppressWarnings("unchecked")
     public ResponseEntity<String> find(Id id) throws NoIdException, EntityNotFoundException, DtoMappingException, DtoSerializingException {
         try {
+            logStateBeforeServiceCall("findById",id);
             Optional<E> optionalEntity = crudService.findById(id);
             if (optionalEntity.isPresent()) {
                 IdentifiableEntity<?> dto = dtoMapper.mapToDto(optionalEntity.get(), getDtoMappingContext().getFindReturnDtoClass());
+                log.debug("Input for JsonMapper (Dto): " + dto);
                 return ok(jsonMapper.writeValueAsString(dto));
             } else {
                 throw new EntityNotFoundException();
@@ -101,11 +103,13 @@ public abstract class JsonDtoCrudController
     @Override
     public ResponseEntity<String> findAll() throws DtoMappingException, DtoSerializingException {
         try {
+            logStateBeforeServiceCall("findAll");
             Set<E> all = crudService.findAll();
             Collection<IdentifiableEntity<Id>> dtos = new HashSet<>();
             for (E e : all) {
                 dtos.add(dtoMapper.mapToDto(e, getDtoMappingContext().getFindAllReturnDtoClass()));
             }
+            log.debug("Input for JsonMapper (Dto): " + dtos);
             String json = jsonMapper.writeValueAsString(dtos);
             return ok(json);
         } catch (JsonProcessingException e) {
@@ -119,8 +123,10 @@ public abstract class JsonDtoCrudController
         try {
             //i expect that dto has the right dto type -> callers responsibility
             E entity = mapToEntity(dto);
+            logStateBeforeServiceCall("save",entity);
             E savedEntity = crudService.save(entity);
             IdentifiableEntity<?> resultDto = dtoMapper.mapToDto(savedEntity, getDtoMappingContext().getCreateReturnDtoClass());
+            log.debug("Input for JsonMapper (Dto): " + resultDto);
             return new ResponseEntity<>(
                     jsonMapper.writeValueAsString(resultDto),
                     HttpStatus.OK);
@@ -135,9 +141,11 @@ public abstract class JsonDtoCrudController
         try {
             //i expect that dto has the right dto type -> callers responsibility
             E entity = mapToEntity(dto);
+            logStateBeforeServiceCall("update",entity,full);
             E updatedEntity = crudService.update(entity,full);
             //no idea why casting is necessary here?
             IdentifiableEntity<?> resultDto = dtoMapper.mapToDto(updatedEntity, getDtoMappingContext().getUpdateReturnDtoClass());
+            log.debug("Input for JsonMapper (Dto): " + resultDto);
             return new ResponseEntity<>(
                     jsonMapper.writeValueAsString(resultDto),
                     HttpStatus.OK);
@@ -146,9 +154,17 @@ public abstract class JsonDtoCrudController
         }
     }
 
+    protected void logStateBeforeServiceCall(String methodName, Object... args ){
+        log.info("_____________________________________________________________________________");
+        log.info("Calling CrudService method "+methodName+"with args: " + Arrays.toString(args));
+        log.info("SecurityContexts Authentication right before service call: " + SecurityContextHolder.getContext().getAuthentication());
+        log.info("_____________________________________________________________________________");
+    }
+
 
     @Override
     public ResponseEntity<String> delete(Id id) throws NoIdException, EntityNotFoundException {
+        logStateBeforeServiceCall("delete",id);
         crudService.deleteById(id);
         return ResponseEntity.ok().contentType(MediaType.APPLICATION_JSON_UTF8).build();
     }
