@@ -13,14 +13,14 @@ import javax.persistence.Entity;
 
 import java.util.Set;
 
-class EqualsForEntitiesEntityFullComparatorTest {
+class LevelOneFullComparatorTest {
 
 
-    EntityFullComparator comparator;
+    LevelOneFullComparator comparator;
 
     @BeforeEach
     void setUp() {
-        comparator = new EntityFullComparator();
+        comparator = new LevelOneFullComparator();
     }
 
     @Entity
@@ -66,7 +66,7 @@ class EqualsForEntitiesEntityFullComparatorTest {
     }
 
     @Test
-    void notAllValuesSame_onlyNullEntityProperties_shouldNotBeEqual() throws Exception{
+    void allValuesSame_exceptOne_shouldNotBeEqual() throws Exception{
         //given
         Parent parent = new Parent();
         parent.setAge(42);

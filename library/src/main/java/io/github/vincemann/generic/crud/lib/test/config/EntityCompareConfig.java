@@ -1,8 +1,8 @@
 package io.github.vincemann.generic.crud.lib.test.config;
 
-import io.github.vincemann.generic.crud.lib.test.compare.EntityPropertyComparator;
+import io.github.vincemann.generic.crud.lib.test.compare.LevelOnePropertyComparator;
 import io.github.vincemann.generic.crud.lib.test.compare.FullComparator;
-import io.github.vincemann.generic.crud.lib.test.compare.EntityFullComparator;
+import io.github.vincemann.generic.crud.lib.test.compare.LevelOneFullComparator;
 import io.github.vincemann.generic.crud.lib.test.compare.PropertyComparator;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.test.context.TestConfiguration;
@@ -18,14 +18,14 @@ public class EntityCompareConfig {
     @ConditionalOnMissingBean(FullComparator.class)
     @Bean
     public FullComparator reflectionComparator(){
-        return new EntityFullComparator();
+        return new LevelOneFullComparator();
     }
 
     @Scope(SCOPE_PROTOTYPE)
     @ConditionalOnMissingBean(PropertyComparator.class)
     @Bean
     public PropertyComparator propertyComparator(){
-        return new EntityPropertyComparator();
+        return new LevelOnePropertyComparator();
     }
 
 }

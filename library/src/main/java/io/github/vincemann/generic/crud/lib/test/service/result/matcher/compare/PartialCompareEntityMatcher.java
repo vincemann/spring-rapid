@@ -2,8 +2,11 @@ package io.github.vincemann.generic.crud.lib.test.service.result.matcher.compare
 
 import com.github.hervian.reflection.Types;
 import io.github.vincemann.generic.crud.lib.model.IdentifiableEntity;
+import io.github.vincemann.generic.crud.lib.test.compare.FullComparator;
+import io.github.vincemann.generic.crud.lib.test.compare.PropertyComparator;
 import io.github.vincemann.generic.crud.lib.test.service.result.matcher.ServiceResultMatcher;
 import io.github.vincemann.generic.crud.lib.util.MethodNameUtil;
+import org.apache.commons.beanutils.BeanUtilsBean;
 import org.junit.jupiter.api.Assertions;
 
 import java.lang.reflect.InvocationTargetException;
@@ -13,6 +16,7 @@ import java.util.List;
 
 public class PartialCompareEntityMatcher extends CompareEntityMatcher{
     private List<String> propertiesToCheck = new ArrayList<>();
+    private PropertyComparator propertyComparator;
 
     public PartialCompareEntityMatcher(CompareEntityMatcherContext compareEntityContext) {
         super(compareEntityContext);
@@ -42,24 +46,34 @@ public class PartialCompareEntityMatcher extends CompareEntityMatcher{
         return testContext -> {
             getCompareEntityContext().resolvePlaceholders(testContext);
             try {
+                //get comparator from application context and clone it, so property ignore changes do not disturb application wide comparator
+                propertyComparator = (PropertyComparator) BeanUtilsBean.getInstance().cloneBean(
+                        testContext.getApplicationContext().getBean(PropertyComparator.class)
+                );
                 IdentifiableEntity compareRoot = getCompareEntityContext().getCompareRoot();
-                for (String propertyName : propertiesToCheck) {
-                    Method getter = compareRoot.getClass().getMethod("get" + propertyName.substring(0, 1).toUpperCase() + propertyName.substring(1));
-                    Object expected = getter.invoke(compareRoot);
-                    List<IdentifiableEntity> compareTos = getCompareEntityContext().getCompareTos();
-                    for (IdentifiableEntity compareTo : compareTos) {
-                        Object actual = getter.invoke(compareTo);
-                        if(equal) {
-                            Assertions.assertEquals(expected, actual);
-                        }else {
-                            Assertions.assertNotEquals(expected,actual);
-                        }
-                    }
+                for (String property : propertiesToCheck) {
+                    propertyComparator.includeProperty(property);
                 }
+                List<IdentifiableEntity> compareTos = getCompareEntityContext().getCompareTos();
+                for (IdentifiableEntity compareTo : compareTos) {
+                    boolean result = propertyComparator.isEqual(compareRoot, compareTo);
+                    Assertions.assertEquals(equal,result);
+                }
+//                for (String propertyName : propertiesToCheck) {
+//                    Method getter = compareRoot.getClass().getMethod("get" + propertyName.substring(0, 1).toUpperCase() + propertyName.substring(1));
+//                    Object expected = getter.invoke(compareRoot);
+//
+//                    for (IdentifiableEntity compareTo : compareTos) {
+//                        Object actual = getter.invoke(compareTo);
+//
+//                    }
+//                }
             } catch (NoSuchMethodException e) {
                 throw new IllegalArgumentException("Could not find getter of property", e);
             } catch (IllegalAccessException | InvocationTargetException e) {
                 throw new IllegalArgumentException("Error while calling getter for property comparison");
+            } catch (InstantiationException e) {
+                e.printStackTrace();
             }
         };
     }
