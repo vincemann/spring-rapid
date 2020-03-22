@@ -19,7 +19,7 @@ See the example application under application/ and the code examples below to ge
 * Testsupport for service and controller layer (automocking of all service beans in controller tests)  
   
 # Examples  
-
+### This is the setup required to run a fully functional controller exposing crud enpoints for one entity:  
 ## What a typical fully functional crud controller looks like:  
   
 ```java
@@ -78,7 +78,7 @@ public class Module extends DateAuditIdEntity<Long> implements UniDirParent, BiD
     private School school;
 ```  
   
-# What a typical Dto looks like  
+## What a typical Dto looks like  
   
 ```java
 public class ReadModuleDto extends AbstractModuleDto implements UniDirParentDto, BiDirParentDto {
@@ -92,7 +92,7 @@ public class ReadModuleDto extends AbstractModuleDto implements UniDirParentDto,
 ```
   
   
-# What a typical service config looks like:  
+## What a typical service config looks like:  
   
 ```java
 @Configuration
