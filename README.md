@@ -9,13 +9,13 @@ Feel free to extract the parts you need and/or help coding!
   
 # Features  
 * JpaCrudService implementing crud on the service layer  
-* proxybased PluginSystem for service  
+* Proxybased PluginSystem for service  
 * JsonCrudController implementing crud on the weblayer  
-* Simple JavaX Validation  
+* Basic Exception to ApiError translation  
 * DtoMapping (support for different Dto's for each endpoint; diff request and response dto's)  
-* uni- and bidirectional relationship management for all crud opeartions  
-* automatic resolving of ids in dtos referencing other entities and vice versa  
-* testsupport for service and controller layer (automocking of all service beans in controller tests)  
+* Uni- and Bidirectional relationship management for all crud opeartions  
+* Automatic resolving of ids in dtos referencing other entities and vice versa  
+* Testsupport for service and controller layer (automocking of all service beans in controller tests)  
   
 # Examples  
 
