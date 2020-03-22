@@ -21,7 +21,7 @@ Feel free to extract the parts you need and/or help coding!
 
 ## What a typical fully functional crud controller looks like:  
   
-`
+```java
 @WebController
 public class ModuleController extends SpringAdapterJsonDtoCrudController<Module,Long> {
 
@@ -37,11 +37,11 @@ public class ModuleController extends SpringAdapterJsonDtoCrudController<Module,
         ctx.setFindAllEndpointExposed(false);
         super.injectEndpointsExposureContext(ctx);
     }
-}`  
+}```  
   
 ## What a typical crud Service looks like:  
   
-`
+```java
 @Service
 @Transactional
 @NoProxy
@@ -49,11 +49,11 @@ public class JpaModuleService
         extends JPACrudService<Module,Long,ModuleRepository>
                 implements ModuleService {
 }
-`  
+```  
   
 ## What a typical entity looks like:  
   
-`
+```java
 @Entity
 @Table(name = "MODULE")
 @EntityListeners(BiDirChildEntityListener.class)
@@ -73,11 +73,11 @@ public class Module extends DateAuditIdEntity<Long> implements UniDirParent, BiD
     @BiDirParentEntity
     @ManyToOne
     private School school;
-`  
+```  
   
 # What a typical Dto looks like  
   
-`
+```java
 public class ReadModuleDto extends AbstractModuleDto implements UniDirParentDto, BiDirParentDto {
     //creator
     @UniDirChildId(User.class)
@@ -86,12 +86,12 @@ public class ReadModuleDto extends AbstractModuleDto implements UniDirParentDto,
     @BiDirChildIdCollection(ExerciseGroup.class)
     private Set<Long> exerciseGroupsIds = new HashSet<>();
 }
-` 
+```
   
   
 # What a typical service config looks like:  
   
-`
+```java
 public class ServiceConfig  {
     @Primary
     @Bean
@@ -103,7 +103,8 @@ public class ServiceConfig  {
                 biDirChildPlugin
         );
     }
-}`
+}
+```  
   
 
 
