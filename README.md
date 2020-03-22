@@ -30,14 +30,6 @@ public class ModuleController extends SpringAdapterJsonDtoCrudController<Module,
         //Diff Dto types are set here
         super(DtoMappingContext.WRITE_READ(CreateModuleDto.class, ReadModuleDto.class));
     }
-
-    @Autowired
-    @Override
-    public void injectEndpointsExposureContext(EndpointsExposureContext ctx) {
-        ctx.setUpdateEndpointExposed(false);
-        ctx.setFindAllEndpointExposed(false);
-        super.injectEndpointsExposureContext(ctx);
-    }
 }
 ```
   
