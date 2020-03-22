@@ -37,7 +37,9 @@ public class ModuleController extends SpringAdapterJsonDtoCrudController<Module,
         ctx.setFindAllEndpointExposed(false);
         super.injectEndpointsExposureContext(ctx);
     }
-}```  
+}
+```
+  
   
 ## What a typical crud Service looks like:  
   
