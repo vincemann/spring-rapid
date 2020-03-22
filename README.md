@@ -22,7 +22,7 @@ Feel free to extract the parts you need and/or help coding!
 ## What a typical fully functional crud controller looks like:  
   
 ```java
-@WebController
+@Controller
 public class ModuleController extends SpringAdapterJsonDtoCrudController<Module,Long> {
 
     public ModuleController() {
@@ -94,6 +94,7 @@ public class ReadModuleDto extends AbstractModuleDto implements UniDirParentDto,
 # What a typical service config looks like:  
   
 ```java
+@Configuration
 public class ServiceConfig  {
     @Primary
     @Bean
