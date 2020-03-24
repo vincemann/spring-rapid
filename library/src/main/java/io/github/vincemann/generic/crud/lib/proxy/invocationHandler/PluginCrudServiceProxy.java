@@ -35,6 +35,7 @@ public class PluginCrudServiceProxy<E extends IdentifiableEntity<Id>, Id extends
         if (method.getName().length() < 3) {
             throw new IllegalArgumentException("Method names are expected to be at least 2 characters long");
         }
+        CurrentTransactionInfoUtil.printInfo();
         try {
             String capitalFirstLetterMethodName = method.getName().substring(0, 1).toUpperCase() + method.getName().substring(1);
 

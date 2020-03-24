@@ -86,7 +86,8 @@ public class ServiceTestTemplate
     private ServiceResult execute(ServiceRequest serviceRequest) {
         try {
             Object result = serviceRequest.getServiceMethod().invoke(
-                    AopTestUtils.getUltimateTargetObject(serviceUnderTest),
+                    //AopTestUtils.getUltimateTargetObject(serviceUnderTest),
+                    serviceUnderTest,
                     serviceRequest.getArgs().toArray()
             );
             return ServiceResult.builder()
