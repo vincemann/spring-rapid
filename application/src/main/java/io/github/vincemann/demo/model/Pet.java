@@ -20,7 +20,7 @@ import java.time.LocalDate;
 @Table(name = "pets")
 @Entity
 @Builder
-@EntityListeners(BiDirChildEntityListener.class)
+//@EntityListeners(BiDirChildEntityListener.class)
 @ToString
 public class Pet extends IdentifiableEntityImpl<Long> implements BiDirChild, UniDirParent {
 
