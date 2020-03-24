@@ -23,7 +23,7 @@ import java.util.Set;
 @NoArgsConstructor
 @Entity
 @Table(name = "owners")
-@EntityListeners(BiDirParentEntityListener.class)
+//@EntityListeners(BiDirParentEntityListener.class)
 public class Owner extends Person implements BiDirParent {
 
 

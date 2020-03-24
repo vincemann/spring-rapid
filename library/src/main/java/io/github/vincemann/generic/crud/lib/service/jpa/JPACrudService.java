@@ -6,6 +6,7 @@ import io.github.vincemann.generic.crud.lib.service.CrudService;
 import io.github.vincemann.generic.crud.lib.service.exception.BadEntityException;
 import io.github.vincemann.generic.crud.lib.service.exception.EntityNotFoundException;
 import io.github.vincemann.generic.crud.lib.service.exception.NoIdException;
+import io.github.vincemann.generic.crud.lib.util.CurrentTransactionInfoUtil;
 import io.github.vincemann.generic.crud.lib.util.NullAwareBeanUtilsBean;
 import org.apache.commons.beanutils.BeanUtilsBean;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -87,6 +88,7 @@ public abstract class JPACrudService
     @Transactional
     @Override
     public E save(E entity) throws BadEntityException {
+        CurrentTransactionInfoUtil.printInfo();
         try {
             return jpaRepository.save(entity);
         }
