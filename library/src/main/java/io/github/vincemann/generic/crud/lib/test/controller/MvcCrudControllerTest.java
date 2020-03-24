@@ -1,6 +1,8 @@
 package io.github.vincemann.generic.crud.lib.test.controller;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.github.vincemann.generic.crud.lib.controller.dtoMapper.DtoMappingContext;
 import io.github.vincemann.generic.crud.lib.controller.dtoMapper.exception.DtoMappingException;
@@ -129,9 +131,18 @@ public abstract class MvcCrudControllerTest
         return getController().getJsonMapper().writeValueAsString(o);
     }
 
-    public <Dto extends IdentifiableEntity<Id>> Dto deserialize(String s,Class<Dto> dtoClass) throws IOException {
+    public <Dto> Dto deserialize(String s,Class<Dto> dtoClass) throws IOException {
         return getController().getJsonMapper().readValue(s,dtoClass);
     }
+
+    public <Dto> Dto deserialize(String s, TypeReference<?> dtoClass) throws IOException {
+        return getController().getJsonMapper().readValue(s,dtoClass);
+    }
+
+    public <Dto> Dto deserialize(String s, JavaType dtoClass) throws IOException {
+        return getController().getJsonMapper().readValue(s,dtoClass);
+    }
+
 
     public <C extends SpringAdapterJsonDtoCrudController<E,Id>> C getController(){
         return (C) controller;
