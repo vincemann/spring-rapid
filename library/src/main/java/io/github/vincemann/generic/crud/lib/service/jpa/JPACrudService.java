@@ -6,12 +6,14 @@ import io.github.vincemann.generic.crud.lib.service.CrudService;
 import io.github.vincemann.generic.crud.lib.service.exception.BadEntityException;
 import io.github.vincemann.generic.crud.lib.service.exception.EntityNotFoundException;
 import io.github.vincemann.generic.crud.lib.service.exception.NoIdException;
-import io.github.vincemann.generic.crud.lib.util.CurrentTransactionInfoUtil;
+import io.github.vincemann.generic.crud.lib.util.DebugTransactionUtil;
 import io.github.vincemann.generic.crud.lib.util.NullAwareBeanUtilsBean;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.beanutils.BeanUtilsBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.NonTransientDataAccessException;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.test.context.transaction.TestTransaction;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.io.Serializable;
@@ -23,6 +25,7 @@ import java.util.Set;
 
 
 @ServiceComponent
+@Slf4j
 public abstract class JPACrudService
                 <
                           E extends IdentifiableEntity<Id>,
@@ -88,7 +91,7 @@ public abstract class JPACrudService
     @Transactional
     @Override
     public E save(E entity) throws BadEntityException {
-        CurrentTransactionInfoUtil.printInfo();
+        DebugTransactionUtil.showTransactionStatus(this.getClass(),"save");
         try {
             return jpaRepository.save(entity);
         }

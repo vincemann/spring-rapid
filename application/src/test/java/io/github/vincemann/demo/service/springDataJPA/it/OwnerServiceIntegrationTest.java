@@ -25,8 +25,9 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Optional;
 
-import static io.github.vincemann.generic.crud.lib.test.service.request.CrudServiceRequestBuilders.partialUpdate;
-import static io.github.vincemann.generic.crud.lib.test.service.request.CrudServiceRequestBuilders.save;
+import static io.github.vincemann.generic.crud.lib.test.service.request.CrudServiceRequestBuilders.*;
+import static io.github.vincemann.generic.crud.lib.test.service.result.matcher.ExceptionMatchers.noException;
+import static io.github.vincemann.generic.crud.lib.test.service.result.matcher.ExistenceMatchers.notPresentInDatabase;
 import static io.github.vincemann.generic.crud.lib.test.service.result.matcher.compare.CompareEntityMatchers.compare;
 import static io.github.vincemann.generic.crud.lib.test.service.result.matcher.compare.CompareEntityMatchers.propertyCompare;
 import static io.github.vincemann.generic.crud.lib.test.service.result.matcher.compare.resolve.CompareEntityPlaceholder.DB_ENTITY;
@@ -209,6 +210,15 @@ class OwnerServiceIntegrationTest
         Optional<Owner> byLastName = getServiceUnderTest().findByLastName(ownerWithOnePet.getLastName());
         Assertions.assertTrue(byLastName.isPresent());
         Assertions.assertTrue(fullComparator.isEqual(savedOwner, byLastName.get()));
+    }
+
+    @Test
+    public void deleteOwner_shouldSucceed(){
+        Owner savedOwner = getRepository().save(ownerWithOnePet);
+        getTestTemplate()
+                .perform(deleteById(savedOwner.getId()))
+                .andExpect(noException())
+                .andExpect(notPresentInDatabase(savedOwner.getId()));
     }
 
 
