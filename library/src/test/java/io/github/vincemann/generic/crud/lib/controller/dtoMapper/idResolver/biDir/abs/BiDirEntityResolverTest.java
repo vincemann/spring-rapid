@@ -3,10 +3,10 @@ package io.github.vincemann.generic.crud.lib.controller.dtoMapper.idResolver.biD
 import io.github.vincemann.generic.crud.lib.controller.dtoMapper.idResolver.biDir.testEntities.BiDirEntityChild;
 import io.github.vincemann.generic.crud.lib.controller.dtoMapper.idResolver.biDir.testEntities.BiDirEntityParent;
 import io.github.vincemann.generic.crud.lib.controller.dtoMapper.idResolver.biDir.testEntities.BiDirSecondEntityParent;
-import io.github.vincemann.generic.crud.lib.model.IdentifiableEntity;
 import io.github.vincemann.generic.crud.lib.service.CrudService;
 import io.github.vincemann.generic.crud.lib.service.locator.CrudServiceLocator;
 import io.github.vincemann.generic.crud.lib.service.exception.NoIdException;
+import io.github.vincemann.generic.crud.lib.service.locator.ServiceBeanInfo;
 import lombok.Getter;
 import org.junit.jupiter.api.BeforeEach;
 import org.mockito.Mock;
@@ -56,10 +56,10 @@ public abstract class BiDirEntityResolverTest {
         when(entityChildCrudService.findById(childId))
                 .thenReturn(Optional.of(biDirChild));
 
-        Map<Class<? extends IdentifiableEntity>,CrudService> classCrudServiceMap = new HashMap<>();
-        classCrudServiceMap.put(BiDirEntityParent.class,entityParentCrudService);
-        classCrudServiceMap.put(BiDirSecondEntityParent.class,secondEntityParentCrudService);
-        classCrudServiceMap.put(BiDirEntityChild.class,entityChildCrudService);
+        Map<ServiceBeanInfo,CrudService> classCrudServiceMap = new HashMap<>();
+        classCrudServiceMap.put(new ServiceBeanInfo(BiDirEntityParent.class),entityParentCrudService);
+        classCrudServiceMap.put(new ServiceBeanInfo(BiDirSecondEntityParent.class),secondEntityParentCrudService);
+        classCrudServiceMap.put(new ServiceBeanInfo(BiDirEntityChild.class),entityChildCrudService);
 
         when(crudServiceLocator.find())
                 .thenReturn(classCrudServiceMap);

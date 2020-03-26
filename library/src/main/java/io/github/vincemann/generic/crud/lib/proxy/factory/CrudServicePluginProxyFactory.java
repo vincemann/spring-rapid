@@ -20,7 +20,7 @@ public class CrudServicePluginProxyFactory {
     //-> this would make this crash
     public static <Id extends Serializable, E extends IdentifiableEntity<Id>, S extends CrudService<E, Id, ? extends CrudRepository<E, Id>>> S
     create(S crudService, CrudServicePlugin<? super E, ? super Id>... plugins) {
-        //resolve spring proxy
+        //resolve spring aop proxy
         S unproxied = AopTestUtils.getUltimateTargetObject(crudService);
         S proxyInstance = (S) Proxy.newProxyInstance(
                 unproxied.getClass().getClassLoader(), unproxied.getClass().getInterfaces(),

@@ -5,9 +5,10 @@ import io.github.vincemann.generic.crud.lib.model.IdentifiableEntity;
 import io.github.vincemann.generic.crud.lib.proxy.invocationHandler.abs.MethodBlacklistingCrudServiceProxy;
 import io.github.vincemann.generic.crud.lib.service.CrudService;
 import io.github.vincemann.generic.crud.lib.service.plugin.CrudServicePlugin;
-import io.github.vincemann.generic.crud.lib.util.CurrentTransactionInfoUtil;
+import io.github.vincemann.generic.crud.lib.util.DebugTransactionUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.repository.CrudRepository;
+import org.springframework.test.context.transaction.TestTransaction;
 
 import java.io.Serializable;
 import java.lang.reflect.InvocationTargetException;
@@ -35,7 +36,7 @@ public class PluginCrudServiceProxy<E extends IdentifiableEntity<Id>, Id extends
         if (method.getName().length() < 3) {
             throw new IllegalArgumentException("Method names are expected to be at least 2 characters long");
         }
-        CurrentTransactionInfoUtil.printInfo();
+        DebugTransactionUtil.showTransactionStatus(this.getClass(),"handleProxyCall");
         try {
             String capitalFirstLetterMethodName = method.getName().substring(0, 1).toUpperCase() + method.getName().substring(1);
 

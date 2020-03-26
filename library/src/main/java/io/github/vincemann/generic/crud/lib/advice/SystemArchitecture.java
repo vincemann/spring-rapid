@@ -15,6 +15,14 @@ public class SystemArchitecture {
     @Pointcut("execution(* save(..))")
     public void saveOperation(){}
 
-    @Pointcut("execution(* delete(..)) || execution(* deleteById(..))")
+    @Pointcut("execution(* deleteById(..))")
     public void deleteOperation(){}
+
+
+    @Pointcut("execution(public * org.springframework.data.repository.Repository+.*(..))")
+    public void repoOperation(){}
+
+
+
+
 }

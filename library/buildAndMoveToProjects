@@ -2,8 +2,25 @@
 mvn clean
 mvn install -DskipTests
 date=$(date)
-cp "target/spring-crud-lib-0.0.1-SNAPSHOT-jar-with-dependencies.jar" "backup/spring-crud-lib-0.0.1-SNAPSHOT-jar-with-dependencies.jar$date"
-cp "target/spring-crud-lib-0.0.1-SNAPSHOT-sources.jar" "backup/spring-crud-lib-0.0.1-SNAPSHOT-sources.jar$date"
-#move into projects depending on the lib
-cp "target/spring-crud-lib-0.0.1-SNAPSHOT-jar-with-dependencies.jar" "/home/vince/projekte/important/vote-snack-backend/lib/"
-cp "target/spring-crud-lib-0.0.1-SNAPSHOT-sources.jar" "/home/vince/projekte/important/vote-snack-backend/lib/"
+version="0.0.1-SNAPSHOT"
+jar="spring-crud-lib-$version-jar-with-dependencies.jar"
+sources="spring-crud-lib-$version-sources.jar"
+
+echo "This script must be executed from idea docker container!" 
+#create backup
+cp "target/$jar" "backup/$jar$date"
+cp "target/$sources" "backup/$sources$date"
+
+#move into projects that depend on this lib
+cp "target/$jar" "/home/vince/projekte/important/vote-snack-backend/lib/"
+cp "target/$sources" "/home/vince/projekte/important/vote-snack-backend/lib/"
+
+#replace lib in m2 cache..
+#rm -rf "/home/vince/.m2/repository/io/github/vincemann/spring-crud-#lib/$version/spring*"
+#cp "target/$sources" "/home/vince/.m2/repository/io/github/vincemann/#spring-crud-lib/$version/"
+#install lib, this will put the jar in the local m2 cache
+#cd "/home/vince/projekte/important/vote-snack-backend"
+#./installLib.sh
+#now replace jar with jarWithDep
+#rm "/home/vince/.m2/repository/io/github/vincemann/spring-crud-lib/#$version/spring-crud-lib-$version.jar"
+#mv "/home/vince/.m2/repository/io/github/vincemann/spring-crud-lib/#$version/$jar" "/home/vince/.m2/repository/io/github/vincemann/#spring-crud-lib/$version/spring-crud-lib-$version.jar"
