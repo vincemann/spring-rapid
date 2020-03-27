@@ -15,6 +15,9 @@ public class SystemArchitecture {
     @Pointcut("execution(* save(..))")
     public void saveOperation(){}
 
+    @Pointcut("execution(* update(..))")
+    public void updateOperation(){}
+
     @Pointcut("execution(* deleteById(..))")
     public void deleteOperation(){}
 

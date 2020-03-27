@@ -34,18 +34,17 @@ import java.lang.reflect.Type;
 import java.util.*;
 
 @Aspect
-//@Transactional
 @Component
 @Slf4j
 //Transactional Method interceptor is called before this advice -> methods will be executed in repoTransaction
 //@Order(100)
-public class BiDirRepositoryAdvice /*implements MethodInterceptor*/ {
+public class BiDirEntityRemoveAdvice /*implements MethodInterceptor*/ {
 
     private CrudServiceLocator crudServiceLocator;
 
 
     @Autowired
-    public BiDirRepositoryAdvice(CrudServiceLocator crudServiceLocator) {
+    public BiDirEntityRemoveAdvice(CrudServiceLocator crudServiceLocator) {
         this.crudServiceLocator = crudServiceLocator;
     }
 
@@ -102,21 +101,11 @@ public class BiDirRepositoryAdvice /*implements MethodInterceptor*/ {
 //        }
 //    }
 
-    @Before("io.github.vincemann.generic.crud.lib.advice.SystemArchitecture.saveOperation() && " +
-            "io.github.vincemann.generic.crud.lib.advice.SystemArchitecture.repoOperation() && " +
-            "args(biDirParent)")
-    public void prePersistBiDirParent(BiDirParent biDirParent) throws IllegalAccessException {
-        log.debug("pre persist biDirParent hook reached for: " + biDirParent);
-        setChildrensParentRef(biDirParent);
-    }
 
-    @Before("io.github.vincemann.generic.crud.lib.advice.SystemArchitecture.saveOperation() && " +
-            "io.github.vincemann.generic.crud.lib.advice.SystemArchitecture.repoOperation() && " +
-            "args(biDirChild)")
-    public void prePersistBiDiChild(BiDirChild biDirChild) throws IllegalAccessException {
-        log.debug("pre persist biDirChild hook reached for: " + biDirChild);
-        setParentsChildRef(biDirChild);
-    }
+
+
+
+
 
 
     @Around("io.github.vincemann.generic.crud.lib.advice.SystemArchitecture.deleteOperation() && " +
@@ -162,27 +151,6 @@ public class BiDirRepositoryAdvice /*implements MethodInterceptor*/ {
         entityInformationField.setAccessible(true);
         JpaEntityInformation entityInformation = ((JpaEntityInformation) entityInformationField.get(jpaRepository));
         return entityInformation.getJavaType();
-    }
-
-    private void setChildrensParentRef(BiDirParent biDirParent) throws IllegalAccessException {
-        Set<? extends BiDirChild> children = biDirParent.getChildren();
-        for (BiDirChild child : children) {
-            child.setParentRef(biDirParent);
-        }
-        Set<Collection<? extends BiDirChild>> childCollections = biDirParent.getChildrenCollections().keySet();
-        for (Collection<? extends BiDirChild> childCollection : childCollections) {
-            for (BiDirChild biDirChild : childCollection) {
-                biDirChild.setParentRef(biDirParent);
-            }
-        }
-    }
-
-
-    private void setParentsChildRef(BiDirChild biDirChild) throws IllegalAccessException {
-        //set backreferences
-        for (BiDirParent parent : biDirChild.findParents()) {
-            parent.addChild(biDirChild);
-        }
     }
 
 }
