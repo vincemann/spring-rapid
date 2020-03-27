@@ -6,10 +6,12 @@ import io.github.vincemann.generic.crud.lib.service.locator.CrudServiceLocatorIm
 import org.springframework.beans.factory.config.BeanFactoryPostProcessor;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Primary;
 
 @ServiceConfig
 public class CrudServiceLocatorConfig {
 
+    @Primary
     @ConditionalOnMissingBean
     @Bean
     public CrudServiceLocator crudServiceLocator(){

@@ -2,8 +2,6 @@ package io.github.vincemann.demo.model;
 
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import io.github.vincemann.demo.model.abs.Person;
-import io.github.vincemann.generic.crud.lib.jpaAuditing.entityListener.BiDirParentEntityListener;
-import io.github.vincemann.generic.crud.lib.model.IdentifiableEntity;
 import io.github.vincemann.generic.crud.lib.model.IdentifiableEntityImpl;
 import io.github.vincemann.generic.crud.lib.model.biDir.child.BiDirChildCollection;
 import io.github.vincemann.generic.crud.lib.model.biDir.parent.BiDirParent;
@@ -13,7 +11,6 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import javax.persistence.*;
-import javax.validation.constraints.NotBlank;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
@@ -23,7 +20,6 @@ import java.util.Set;
 @NoArgsConstructor
 @Entity
 @Table(name = "owners")
-//@EntityListeners(BiDirParentEntityListener.class)
 public class Owner extends Person implements BiDirParent {
 
 

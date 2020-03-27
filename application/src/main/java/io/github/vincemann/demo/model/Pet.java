@@ -1,7 +1,6 @@
 package io.github.vincemann.demo.model;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
-import io.github.vincemann.generic.crud.lib.jpaAuditing.entityListener.BiDirChildEntityListener;
 import io.github.vincemann.generic.crud.lib.model.IdentifiableEntityImpl;
 import io.github.vincemann.generic.crud.lib.model.biDir.child.BiDirChild;
 import io.github.vincemann.generic.crud.lib.model.biDir.parent.BiDirParentEntity;
@@ -20,7 +19,6 @@ import java.time.LocalDate;
 @Table(name = "pets")
 @Entity
 @Builder
-//@EntityListeners(BiDirChildEntityListener.class)
 @ToString
 public class Pet extends IdentifiableEntityImpl<Long> implements BiDirChild, UniDirParent {
 

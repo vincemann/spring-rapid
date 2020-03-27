@@ -9,7 +9,6 @@ import io.github.vincemann.generic.crud.lib.model.IdentifiableEntity;
 import io.github.vincemann.generic.crud.lib.service.CrudService;
 import io.github.vincemann.generic.crud.lib.service.exception.NoIdException;
 import io.github.vincemann.generic.crud.lib.service.locator.CrudServiceLocator;
-import io.github.vincemann.generic.crud.lib.service.locator.ServiceBeanInfo;
 import lombok.Getter;
 import org.junit.jupiter.api.BeforeEach;
 import org.mockito.Mock;
