@@ -56,12 +56,12 @@ public abstract class BiDirEntityResolverTest {
         when(entityChildCrudService.findById(childId))
                 .thenReturn(Optional.of(biDirChild));
 
-        Map<ServiceBeanInfo,CrudService> classCrudServiceMap = new HashMap<>();
-        classCrudServiceMap.put(new ServiceBeanInfo(BiDirEntityParent.class),entityParentCrudService);
-        classCrudServiceMap.put(new ServiceBeanInfo(BiDirSecondEntityParent.class),secondEntityParentCrudService);
-        classCrudServiceMap.put(new ServiceBeanInfo(BiDirEntityChild.class),entityChildCrudService);
 
-        when(crudServiceLocator.find())
-                .thenReturn(classCrudServiceMap);
+        when(crudServiceLocator.find(BiDirEntityParent.class))
+                .thenReturn(entityParentCrudService);
+        when(crudServiceLocator.find(BiDirSecondEntityParent.class))
+                .thenReturn(secondEntityParentCrudService);
+        when(crudServiceLocator.find(BiDirEntityChild.class))
+                .thenReturn(entityChildCrudService);
     }
 }

@@ -23,6 +23,7 @@ import org.springframework.data.util.ProxyUtils;
 import org.springframework.data.util.ReflectionUtils;
 import org.springframework.stereotype.Component;
 import org.springframework.test.util.AopTestUtils;
+import org.springframework.util.Assert;
 
 import java.io.Serializable;
 import java.lang.annotation.Annotation;
@@ -150,18 +151,8 @@ public class BiDirRepositoryAdvice /*implements MethodInterceptor*/ {
     private Optional<Object> resolveId(Serializable id, ProceedingJoinPoint joinPoint) throws NoIdException, IllegalAccessException {
         Class entityClass = resolveEntityClass(joinPoint);
         log.debug("pre remove hook reached for entity " + entityClass+":"+id);
-        List<CrudService> crudServices = crudServiceLocator.find(
-                entityClass,
-                //service bean without beanType annotations
-                new Class[]{}
-        );
-        if(crudServices.isEmpty()){
-            throw new IllegalArgumentException("No CrudService found for entityClass: " + entityClass);
-        }
-        if(crudServices.size()>1){
-            log.warn("Found multiple CrudServices for entityClass: " +entityClass +", choosing first");
-        }
-        CrudService service = crudServices.get(0);
+        CrudService service = crudServiceLocator.find(entityClass);
+        Assert.notNull(service,"Did not find service for entityClass: " + entityClass);
         return service.findById((id));
     }
 
