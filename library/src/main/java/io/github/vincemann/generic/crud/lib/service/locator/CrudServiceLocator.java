@@ -4,6 +4,7 @@ import io.github.vincemann.generic.crud.lib.config.layers.component.ServiceCompo
 import io.github.vincemann.generic.crud.lib.model.IdentifiableEntity;
 import io.github.vincemann.generic.crud.lib.service.CrudService;
 import io.github.vincemann.generic.crud.lib.service.ServiceBeanType;
+import org.springframework.data.annotation.CreatedDate;
 
 import java.lang.annotation.Annotation;
 import java.util.List;
@@ -17,8 +18,8 @@ import java.util.Optional;
 public interface CrudServiceLocator {
 
 
-    public List<CrudService> find(Class serviceClass, Class<? extends ServiceBeanType>... annotations);
-    public Optional<CrudService> find(String beanName);
-    public List<CrudService> find(Class serviceClass);
-    public Map<ServiceBeanInfo, CrudService> find();
+    public CrudService find(Class<? extends IdentifiableEntity> entityClass, Class<? extends ServiceBeanType> annotation);
+    //public CrudService find(String beanName);
+    public CrudService find(Class<? extends IdentifiableEntity> entityClass);
+    //public Map<ServiceBeanInfo, CrudService> find();
 }

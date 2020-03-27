@@ -41,7 +41,7 @@ public abstract class EntityIdResolver<E,Dto> {
 
     protected Object findEntityFromService(Map.Entry<Class, Serializable> entityClassToIdMapping) throws DtoMappingException {
         try {
-            CrudService entityService = crudServiceLocator.find().get(entityClassToIdMapping.getKey());
+            CrudService entityService = crudServiceLocator.find(entityClassToIdMapping.getKey());
             if(entityService==null){
                 throw new IllegalArgumentException("No Service found for entityClass: " + entityClassToIdMapping.getKey().getSimpleName());
             }

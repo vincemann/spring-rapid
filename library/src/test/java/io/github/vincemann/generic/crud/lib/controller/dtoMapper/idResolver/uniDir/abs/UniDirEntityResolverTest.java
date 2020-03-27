@@ -20,6 +20,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.when;
 
 @Getter
@@ -65,13 +66,13 @@ public abstract class UniDirEntityResolverTest {
         when(entityChildsParentCrudService.findById(childsParentId))
                 .thenReturn(Optional.of(uniDirEntityChildsParent));
 
-        Map<ServiceBeanInfo,CrudService> classCrudServiceMap = new HashMap<>();
-        classCrudServiceMap.put(new ServiceBeanInfo(UniDirEntityParent.class),entityParentCrudService);
-        classCrudServiceMap.put(new ServiceBeanInfo(UniDirEntityChild.class),entityChildCrudService);
-        classCrudServiceMap.put(new ServiceBeanInfo(UniDirEntityParentsChild.class),entityParentsChildCrudService);
-        classCrudServiceMap.put(new ServiceBeanInfo(UniDirEntityChildsParent.class),entityChildsParentCrudService);
-
-        when(crudServiceLocator.find())
-                .thenReturn(classCrudServiceMap);
+        when(crudServiceLocator.find(UniDirEntityParent.class))
+                .thenReturn(entityParentCrudService);
+        when(crudServiceLocator.find(UniDirEntityChild.class))
+                .thenReturn(entityChildCrudService);
+        when(crudServiceLocator.find(UniDirEntityParentsChild.class))
+                .thenReturn(entityParentsChildCrudService);
+        when(crudServiceLocator.find(UniDirEntityChildsParent.class))
+                .thenReturn(entityChildsParentCrudService);
     }
 }
