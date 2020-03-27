@@ -51,16 +51,17 @@ public class JpaModuleService
 ```java
 @Entity
 @Table(name = "MODULE")
-@EntityListeners(BiDirChildEntityListener.class)
 public class Module extends DateAuditIdEntity<Long> implements UniDirParent, BiDirChild, BiDirParent {
 
     @NotEmpty
     private String name;
 
+    //both sides of BiDir- Relationships indicated by these Annotations are automatically handled by the Framework  
     @BiDirChildCollection(ExerciseGroup.class)
     @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL,mappedBy = "module")
     private Set<ExerciseGroup> exerciseGroups = new HashSet<>();
 
+    //UniDir Relationships are also marked with Annotations for automatic Dto-Mapping (Entity gets resolved to id)  
     @UniDirChildEntity
     @OneToOne(fetch = FetchType.LAZY)
     private User creator;
@@ -74,7 +75,7 @@ public class Module extends DateAuditIdEntity<Long> implements UniDirParent, BiD
   
 ```java
 public class ReadModuleDto extends AbstractModuleDto implements UniDirParentDto, BiDirParentDto {
-    //creator
+
     @UniDirChildId(User.class)
     private Long creatorId;
 
@@ -87,16 +88,32 @@ public class ReadModuleDto extends AbstractModuleDto implements UniDirParentDto,
 ## Service Config    
   
 ```java
-@Configuration
-public class ServiceConfig  {
-    @Primary
+//the framework is divided in Service and WebConfigs, so when you are testing the ServiceLayer for example, all //WebConfigs and Components wont be loaded (diff ApplicationContext)  
+@ServiceConfig
+public class ModuleServiceConfig  {
+    //define multiple proxied service beans here, i.E. :
+    
+    
+    @AclManaging
     @Bean
-    public ModuleService unsecuredModuleService(@NoProxy ModuleService moduleService,
-                                                BiDirChildPlugin<Module, Long> biDirChildPlugin,
+    public ModuleService aclModuleService(      ModuleService moduleService,
+                                                YourAclPlugin aclPlugin,
                                                 //more Plugins can be added here...
     ) {
         return CrudServicePluginProxyFactory.create(moduleService,
-                biDirChildPlugin
+                aclPlugin
+        );
+    }
+    
+
+    @Primary
+    @Bean
+    public ModuleService normalModuleService(@NoProxy ModuleService moduleService,
+                                                      LogCreationPlugin logPlugin,
+                                                      //more Plugins can be added here...
+    ) {
+        return CrudServicePluginProxyFactory.create(moduleService,
+                logPlugin
         );
     }
 }
