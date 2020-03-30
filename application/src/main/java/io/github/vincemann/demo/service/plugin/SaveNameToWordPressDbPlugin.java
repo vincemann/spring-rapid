@@ -14,8 +14,8 @@ import org.springframework.stereotype.Component;
 @ServiceComponent
 public class SaveNameToWordPressDbPlugin extends CrudServicePlugin<Person,Long> {
 
-    public void onBeforeSave(Person entity){
-        log.debug("saving Persons name: "+ entity.getFirstName() + " into wordpress database");
-        /* save name of every created Person in seperate db table for example*/
+    public void onBeforeSave(Person toSave, Class<? extends Person> entityClass) {
+        if(toSave!=null)
+            log.debug("saving Persons name: "+ toSave.getFirstName() + " into wordpress database");
     }
 }
