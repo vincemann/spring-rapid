@@ -2,22 +2,23 @@ package io.github.vincemann.generic.crud.lib.proxy.invocationHandler;
 
 
 import io.github.vincemann.generic.crud.lib.model.IdentifiableEntity;
-import io.github.vincemann.generic.crud.lib.proxy.invocationHandler.abs.MethodBlacklistingCrudServiceProxy;
+import io.github.vincemann.generic.crud.lib.proxy.invocationHandler.abs.CrudServiceExtensionProxy;
 import io.github.vincemann.generic.crud.lib.service.CrudService;
 import io.github.vincemann.generic.crud.lib.service.plugin.CrudServicePlugin;
-import io.github.vincemann.generic.crud.lib.util.DebugTransactionUtil;
 import lombok.extern.slf4j.Slf4j;
+import org.assertj.core.util.Lists;
 import org.springframework.data.repository.CrudRepository;
-import org.springframework.test.context.transaction.TestTransaction;
 
 import java.io.Serializable;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 @Slf4j
-public class PluginCrudServiceProxy<E extends IdentifiableEntity<Id>, Id extends Serializable>
-        extends MethodBlacklistingCrudServiceProxy<E, Id> {
+public class CrudServicePluginProxy<E extends IdentifiableEntity<Id>, Id extends Serializable>
+        extends CrudServiceExtensionProxy<E, Id> {
 
     private static final String BEFORE_METHOD_PREFIX = "onBefore";
     private static final String AFTER_METHOD_PREFIX = "onAfter";
@@ -25,10 +26,9 @@ public class PluginCrudServiceProxy<E extends IdentifiableEntity<Id>, Id extends
 
     private List<CrudServicePlugin<E, Id>> plugins;
 
-    public PluginCrudServiceProxy(CrudService<E, Id, CrudRepository<E, Id>> service, List<CrudServicePlugin<E, Id>> plugins, String... ignoredMethods) {
+    public CrudServicePluginProxy(CrudService<E, Id, CrudRepository<E, Id>> service, List<CrudServicePlugin<E, Id>> plugins, String... ignoredMethods) {
         super(service, ignoredMethods);
         this.plugins = plugins;
-        plugins.forEach(plugin -> plugin.setService(service));
     }
 
     @Override
@@ -36,7 +36,6 @@ public class PluginCrudServiceProxy<E extends IdentifiableEntity<Id>, Id extends
         if (method.getName().length() < 3) {
             throw new IllegalArgumentException("Method names are expected to be at least 2 characters long");
         }
-        DebugTransactionUtil.showTransactionStatus(this.getClass(),"handleProxyCall");
         try {
             String capitalFirstLetterMethodName = method.getName().substring(0, 1).toUpperCase() + method.getName().substring(1);
 
@@ -45,7 +44,8 @@ public class PluginCrudServiceProxy<E extends IdentifiableEntity<Id>, Id extends
             for (Object plugin : plugins) {
                 Method beforeMethod = findPluginMethodByName(plugin, BEFORE_METHOD_PREFIX + capitalFirstLetterMethodName);
                 if (beforeMethod != null) {
-                    beforeMethod.invoke(plugin, args);
+                    invokeAndAppendEntityClassArgIfNeeded(plugin,beforeMethod, Arrays.asList(args));
+                    //beforeMethod.invoke(plugin, args);
                 }
             }
             //actual call
@@ -64,17 +64,21 @@ public class PluginCrudServiceProxy<E extends IdentifiableEntity<Id>, Id extends
                                 extendedArgs[i] = args[i];
                             }
                             extendedArgs[extendedArgsLength - 1] = result;
-                            afterMethod.invoke(plugin, extendedArgs);
+                            invokeAndAppendEntityClassArgIfNeeded(plugin,afterMethod,Arrays.asList(extendedArgs));
+                            //afterMethod.invoke(plugin, extendedArgs);
                         } else {
                             //void -> only call with args
-                            afterMethod.invoke(plugin, args);
+                            invokeAndAppendEntityClassArgIfNeeded(plugin,afterMethod,Arrays.asList(args));
+                            //afterMethod.invoke(plugin, args);
                         }
                     } else {
                         if (result != null) {
-                            afterMethod.invoke(plugin, result);
+                            invokeAndAppendEntityClassArgIfNeeded(plugin,afterMethod,Arrays.asList(result));
+                            //afterMethod.invoke(plugin, result);
                         } else {
                             //void method without result
-                            afterMethod.invoke(plugin);
+                            invokeAndAppendEntityClassArgIfNeeded(plugin,afterMethod,new ArrayList<>());
+                            //afterMethod.invoke(plugin);
                         }
                     }
 
