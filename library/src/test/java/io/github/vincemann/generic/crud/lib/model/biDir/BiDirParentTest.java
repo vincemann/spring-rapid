@@ -1,5 +1,6 @@
 package io.github.vincemann.generic.crud.lib.model.biDir;
 
+import com.google.common.collect.Lists;
 import io.github.vincemann.generic.crud.lib.model.IdentifiableEntityImpl;
 import io.github.vincemann.generic.crud.lib.model.biDir.child.BiDirChild;
 import io.github.vincemann.generic.crud.lib.model.biDir.child.BiDirChildCollection;
@@ -82,7 +83,7 @@ class BiDirParentTest {
     @Test
     void dismissChildrensCollectionParent() throws IllegalAccessException {
         //given
-        testEntityParent.setSecondEntityChildSet(new HashSet<>(Arrays.asList(testSecondEntityChild)));
+        testEntityParent.setSecondEntityChildSet(new HashSet<>(Lists.newArrayList(testSecondEntityChild)));
         testSecondEntityChild.setEntityParent(testEntityParent);
         //when
         testEntityParent.dismissChildrensParent();
@@ -93,7 +94,7 @@ class BiDirParentTest {
     @Test
     void dismissAllChildrensParent() throws IllegalAccessException {
         //given
-        testEntityParent.setSecondEntityChildSet(new HashSet<>(Arrays.asList(testSecondEntityChild)));
+        testEntityParent.setSecondEntityChildSet(new HashSet<>(Lists.newArrayList(testSecondEntityChild)));
         testSecondEntityChild.setEntityParent(testEntityParent);
         testEntityParent.setEntityChild(testEntityChild);
         testEntityChild.setEntityParent(testEntityParent);

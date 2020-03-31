@@ -6,7 +6,7 @@ import io.github.vincemann.generic.crud.lib.controller.dtoMapper.DtoMapper;
 import io.github.vincemann.generic.crud.lib.controller.dtoMapper.context.Direction;
 import io.github.vincemann.generic.crud.lib.controller.dtoMapper.context.DtoMappingContext;
 import io.github.vincemann.generic.crud.lib.controller.dtoMapper.context.DtoMappingInfo;
-import io.github.vincemann.generic.crud.lib.controller.dtoMapper.context.DtoUsingEndpoint;
+import io.github.vincemann.generic.crud.lib.controller.dtoMapper.context.CrudDtoEndpoint;
 import io.github.vincemann.generic.crud.lib.controller.dtoMapper.exception.DtoMappingException;
 import io.github.vincemann.generic.crud.lib.controller.springAdapter.DtoSerializingException;
 import io.github.vincemann.generic.crud.lib.model.IdentifiableEntity;
@@ -92,7 +92,7 @@ public abstract class JsonDtoCrudController
             Optional<E> optionalEntity = crudService.findById(id);
             if (optionalEntity.isPresent()) {
                 IdentifiableEntity<?> dto = dtoMapper.mapToDto(optionalEntity.get(),
-                        findDtoClass(DtoUsingEndpoint.FIND,Direction.RESPONSE));
+                        findDtoClass(CrudDtoEndpoint.FIND,Direction.RESPONSE));
                 log.debug("Input for JsonMapper (Dto): " + dto);
                 return ok(jsonMapper.writeValueAsString(dto));
             } else {
@@ -103,15 +103,15 @@ public abstract class JsonDtoCrudController
         }
     }
 
-    protected Class<? extends IdentifiableEntity> findDtoClass(Integer endpoint, Direction direction){
+    protected Class<? extends IdentifiableEntity> findDtoClass(String endpoint, Direction direction){
         DtoMappingInfo endpointInfo = createEndpointInfo(endpoint, direction);
         log.debug("Endpoint info used to find DtoClass " + endpointInfo);
-        Class<? extends IdentifiableEntity> dtoClass = getDtoMappingContext().get(endpointInfo);
+        Class<? extends IdentifiableEntity> dtoClass = getDtoMappingContext().find(endpointInfo);
         log.debug("Dto Class found: " + dtoClass);
         return dtoClass;
     }
 
-    protected DtoMappingInfo createEndpointInfo(Integer endpoint, Direction direction){
+    protected DtoMappingInfo createEndpointInfo(String endpoint, Direction direction){
         return DtoMappingInfo.builder()
                 .authorities(AuthorityUtil.getAuthorities())
                 .direction(direction)
@@ -127,7 +127,7 @@ public abstract class JsonDtoCrudController
             Collection<IdentifiableEntity<Id>> dtos = new HashSet<>();
             for (E e : all) {
                 dtos.add(dtoMapper.mapToDto(e,
-                        findDtoClass(DtoUsingEndpoint.FIND_ALL,Direction.RESPONSE)));
+                        findDtoClass(CrudDtoEndpoint.FIND_ALL,Direction.RESPONSE)));
             }
             log.debug("Input for JsonMapper (Dto): " + dtos);
             String json = jsonMapper.writeValueAsString(dtos);
@@ -146,7 +146,7 @@ public abstract class JsonDtoCrudController
             logStateBeforeServiceCall("save",entity);
             E savedEntity = crudService.save(entity);
             IdentifiableEntity<?> resultDto = dtoMapper.mapToDto(savedEntity,
-                    findDtoClass(DtoUsingEndpoint.CREATE,Direction.RESPONSE));
+                    findDtoClass(CrudDtoEndpoint.CREATE,Direction.RESPONSE));
             log.debug("Input for JsonMapper (Dto): " + resultDto);
             return new ResponseEntity<>(
                     jsonMapper.writeValueAsString(resultDto),
@@ -167,9 +167,9 @@ public abstract class JsonDtoCrudController
             //no idea why casting is necessary here?
             Class<? extends IdentifiableEntity> dtoClass;
             if(full){
-                dtoClass = findDtoClass(DtoUsingEndpoint.FULL_UPDATE,Direction.RESPONSE);
+                dtoClass = findDtoClass(CrudDtoEndpoint.FULL_UPDATE,Direction.RESPONSE);
             }else {
-                dtoClass = findDtoClass(DtoUsingEndpoint.PARTIAL_UPDATE,Direction.RESPONSE);
+                dtoClass = findDtoClass(CrudDtoEndpoint.PARTIAL_UPDATE,Direction.RESPONSE);
             }
             IdentifiableEntity<?> resultDto = dtoMapper.mapToDto(updatedEntity,dtoClass);
             log.debug("Input for JsonMapper (Dto): " + resultDto);

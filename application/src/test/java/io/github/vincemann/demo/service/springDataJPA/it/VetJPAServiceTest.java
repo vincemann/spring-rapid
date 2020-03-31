@@ -14,7 +14,7 @@ public class VetJPAServiceTest extends CrudServiceTest<VetJPAService, Vet, Long>
 
     @Override
     protected List<SuccessfulSaveServiceTestBundle<Vet>> provideSuccessfulSaveTestEntityBundles() {
-        return Arrays.asList(
+        return Lists.newArrayList(
                 new SuccessfulSaveServiceTestBundle<>(
                         Vet.builder()
                         .firstName("meister")

@@ -44,7 +44,7 @@ public class CrudServicePluginProxy<E extends IdentifiableEntity<Id>, Id extends
             for (Object plugin : plugins) {
                 Method beforeMethod = findPluginMethodByName(plugin, BEFORE_METHOD_PREFIX + capitalFirstLetterMethodName);
                 if (beforeMethod != null) {
-                    invokeAndAppendEntityClassArgIfNeeded(plugin,beforeMethod, Arrays.asList(args));
+                    invokeAndAppendEntityClassArgIfNeeded(plugin,beforeMethod, Lists.newArrayList(args));
                     //beforeMethod.invoke(plugin, args);
                 }
             }
@@ -64,16 +64,16 @@ public class CrudServicePluginProxy<E extends IdentifiableEntity<Id>, Id extends
                                 extendedArgs[i] = args[i];
                             }
                             extendedArgs[extendedArgsLength - 1] = result;
-                            invokeAndAppendEntityClassArgIfNeeded(plugin,afterMethod,Arrays.asList(extendedArgs));
+                            invokeAndAppendEntityClassArgIfNeeded(plugin,afterMethod,Lists.newArrayList(extendedArgs));
                             //afterMethod.invoke(plugin, extendedArgs);
                         } else {
                             //void -> only call with args
-                            invokeAndAppendEntityClassArgIfNeeded(plugin,afterMethod,Arrays.asList(args));
+                            invokeAndAppendEntityClassArgIfNeeded(plugin,afterMethod,Lists.newArrayList(args));
                             //afterMethod.invoke(plugin, args);
                         }
                     } else {
                         if (result != null) {
-                            invokeAndAppendEntityClassArgIfNeeded(plugin,afterMethod,Arrays.asList(result));
+                            invokeAndAppendEntityClassArgIfNeeded(plugin,afterMethod,Lists.newArrayList(result));
                             //afterMethod.invoke(plugin, result);
                         } else {
                             //void method without result

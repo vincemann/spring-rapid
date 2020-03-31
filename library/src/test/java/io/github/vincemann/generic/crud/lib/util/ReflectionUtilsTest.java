@@ -1,5 +1,6 @@
 package io.github.vincemann.generic.crud.lib.util;
 
+import com.google.common.collect.Lists;
 import lombok.*;
 import org.apache.commons.collections4.MultiSet;
 import org.apache.commons.collections4.MultiValuedMap;
@@ -157,8 +158,8 @@ class ReflectionUtilsTest {
         //setup ObjectGraph for tests
         grandChild1 = new GrandChild();
         grandChild1.setName("grandchild 1");
-        grandChild1.setNoEntities(new HashSet<>(Arrays.asList(new NoEntity("dont",12))));
-        grandChild1.setNullElementList(new HashSet<>(Arrays.asList(null,null)));
+        grandChild1.setNoEntities(new HashSet<>(Lists.newArrayList(new NoEntity("dont",12))));
+        grandChild1.setNullElementList(new HashSet<>(Lists.newArrayList(null,null)));
 
         grandChild2 = new GrandChild();
         grandChild2.setName("grandchild2");
@@ -174,7 +175,7 @@ class ReflectionUtilsTest {
 
         child = new Child();
         child.setName("child");
-        child.setGrandChildren(new HashSet<>(Arrays.asList(grandChild1,grandChild2)));
+        child.setGrandChildren(new HashSet<>(Lists.newArrayList(grandChild1,grandChild2)));
         child.setNoEntity(new NoEntity("please dont find",99));
         child.setFieldWithNullValue(null);
         child.setUniDirParent(uniDirParent);
@@ -202,8 +203,8 @@ class ReflectionUtilsTest {
         lastEntity3.setHeight(3);
         lastEntity3.setGrandChild(grandChild1);
 
-        grandChild1.setLastEntities(new HashSet<>(Arrays.asList(lastEntity1,lastEntity3)));
-        grandChild2.setLastEntities(new HashSet<>(Arrays.asList(lastEntity2)));
+        grandChild1.setLastEntities(new HashSet<>(Lists.newArrayList(lastEntity1,lastEntity3)));
+        grandChild2.setLastEntities(new HashSet<>(Lists.newArrayList(lastEntity2)));
     }
 
     @Test

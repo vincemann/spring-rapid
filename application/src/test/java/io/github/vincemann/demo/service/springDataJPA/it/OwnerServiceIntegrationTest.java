@@ -1,5 +1,6 @@
 package io.github.vincemann.demo.service.springDataJPA.it;
 
+import com.google.common.collect.Lists;
 import io.github.vincemann.demo.model.Owner;
 import io.github.vincemann.demo.model.Pet;
 import io.github.vincemann.demo.model.PetType;
@@ -81,7 +82,7 @@ class OwnerServiceIntegrationTest
                 .address("asljnflksamfslkmf")
                 .city("n1 city")
                 .telephone("12843723847324")
-                .pets(new HashSet<>(Arrays.asList(testPet)))
+                .pets(new HashSet<>(Lists.newArrayList(testPet)))
                 .build();
     }
 
@@ -123,7 +124,7 @@ class OwnerServiceIntegrationTest
                 .address("asljnflksamfslkmf")
                 .city("n1 city")
                 .telephone("12843723847324")
-                .pets(new HashSet<>(Arrays.asList(savedPet)))
+                .pets(new HashSet<>(Lists.newArrayList(savedPet)))
                 .build();
 
         getTestTemplate()
@@ -174,7 +175,7 @@ class OwnerServiceIntegrationTest
                 .address("asljnflksamfslkmf")
                 .city("n1 city")
                 .telephone("12843723847324")
-                .pets(new HashSet<>(Arrays.asList(savedPet)))
+                .pets(new HashSet<>(Lists.newArrayList(savedPet)))
                 .build();
 
         Owner ownerUpdateRequest = new Owner();

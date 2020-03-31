@@ -4,11 +4,10 @@ import com.google.common.collect.Lists;
 import io.github.vincemann.generic.crud.lib.model.IdentifiableEntity;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 public class DtoMappingContextBuilder {
-    private String defaultRole;
+    private String currentRole;
     private DtoMappingContext mc;
 
     public DtoMappingContextBuilder() {
@@ -16,38 +15,47 @@ public class DtoMappingContextBuilder {
         this.mc.setIgnoreRole(true);
     }
 
-    public DtoMappingContextBuilder(String defaultRole) {
+    public DtoMappingContextBuilder(String currentRole) {
         this.mc = new DtoMappingContext();
-        if(defaultRole!=null){
+        if(currentRole !=null){
             this.mc.setIgnoreRole(false);
         }
-        this.defaultRole = defaultRole;
+        this.currentRole = currentRole;
     }
 
-    public static DtoMappingContextBuilder ignoreRole(){
+    public static DtoMappingContextBuilder builder(){
         return new DtoMappingContextBuilder();
     }
 
 
-    public static DtoMappingContextBuilder withDefaultRole(String defaultRole){
-        return new DtoMappingContextBuilder(defaultRole);
+    public DtoMappingContextBuilder withRole(String role){
+        this.currentRole=role;
+        this.mc.setIgnoreRole(false);
+        return this;
+    }
+
+    public DtoMappingContextBuilder withoutRole(){
+        this.currentRole=null;
+        return this;
     }
 
 
-    protected List<Integer> getAllEndpoints(){
-        return Arrays.asList(DtoUsingEndpoint.CREATE, DtoUsingEndpoint.FIND, DtoUsingEndpoint.FIND_ALL, DtoUsingEndpoint.FULL_UPDATE, DtoUsingEndpoint.PARTIAL_UPDATE);
+
+
+    protected List<String> getAllEndpoints(){
+        return Lists.newArrayList(CrudDtoEndpoint.CREATE, CrudDtoEndpoint.FIND, CrudDtoEndpoint.FIND_ALL, CrudDtoEndpoint.FULL_UPDATE, CrudDtoEndpoint.PARTIAL_UPDATE);
     }
 
-    protected List<Integer> getFindEndpoints(){
-        return Arrays.asList(DtoUsingEndpoint.FIND, DtoUsingEndpoint.FIND_ALL);
+    protected List<String> getFindEndpoints(){
+        return Lists.newArrayList(CrudDtoEndpoint.FIND, CrudDtoEndpoint.FIND_ALL);
     }
 
-    protected List<Integer> getWriteEndpoints(){
-        return Arrays.asList(DtoUsingEndpoint.CREATE, DtoUsingEndpoint.FULL_UPDATE, DtoUsingEndpoint.PARTIAL_UPDATE);
+    protected List<String> getWriteEndpoints(){
+        return Lists.newArrayList(CrudDtoEndpoint.CREATE, CrudDtoEndpoint.FULL_UPDATE, CrudDtoEndpoint.PARTIAL_UPDATE);
     }
 
-    protected List<Integer> getUpdateEndpoints(){
-        return Arrays.asList(DtoUsingEndpoint.FULL_UPDATE, DtoUsingEndpoint.PARTIAL_UPDATE);
+    protected List<String> getUpdateEndpoints(){
+        return Lists.newArrayList(CrudDtoEndpoint.FULL_UPDATE, CrudDtoEndpoint.PARTIAL_UPDATE);
     }
 
     /**
@@ -56,7 +64,7 @@ public class DtoMappingContextBuilder {
      * @return
      */
     public DtoMappingContextBuilder forAll(Class<? extends IdentifiableEntity> defaultDtoClass){
-        List<DtoMappingInfo> infoList = createInfo(getAllEndpoints());
+        List<DtoMappingInfo> infoList = createInfos(getAllEndpoints());
         for (DtoMappingInfo info : infoList) {
             mc.getMappingEntries().put(info,defaultDtoClass);
         }
@@ -72,9 +80,9 @@ public class DtoMappingContextBuilder {
     }
 
     private DtoMappingContextBuilder forDirection(Direction direction,Class<? extends IdentifiableEntity> responseDtoClass){
-        List<Integer> allEndpoints = getAllEndpoints();
+        List<String> allEndpoints = getAllEndpoints();
         List<DtoMappingInfo> infoList = new ArrayList<>();
-        for (Integer endpoint : allEndpoints) {
+        for (String endpoint : allEndpoints) {
             infoList.add(createInfo(endpoint,direction));
         }
         for (DtoMappingInfo info : infoList) {
@@ -84,7 +92,7 @@ public class DtoMappingContextBuilder {
     }
 
     public DtoMappingContextBuilder forFind(Class<? extends IdentifiableEntity> readDtoClass){
-        List<DtoMappingInfo> infoList = createInfo(getFindEndpoints());
+        List<DtoMappingInfo> infoList = createInfos(getFindEndpoints());
         for (DtoMappingInfo info : infoList) {
             mc.getMappingEntries().put(info,readDtoClass);
         }
@@ -92,34 +100,43 @@ public class DtoMappingContextBuilder {
     }
 
     public DtoMappingContextBuilder forWrite(Class<? extends IdentifiableEntity> writeDtoClass){
-        List<DtoMappingInfo> infoList = createInfo(getWriteEndpoints());
+        List<DtoMappingInfo> infoList = createInfos(getWriteEndpoints());
         for (DtoMappingInfo info : infoList) {
             mc.getMappingEntries().put(info,writeDtoClass);
         }
         return this;
     }
 
-    public DtoMappingContextBuilder forUpdate(Class<? extends IdentifiableEntity> updateDtoClass){
-        List<DtoMappingInfo> infoList = createInfo(getUpdateEndpoints());
-        for (DtoMappingInfo info : infoList) {
-            mc.getMappingEntries().put(info,updateDtoClass);
+    public DtoMappingContextBuilder forUpdate(Direction direction,Class<? extends IdentifiableEntity> updateDtoClass){
+        List<String> updateEndpoints = getUpdateEndpoints();
+        for (String updateEndpoint : updateEndpoints) {
+            mc.getMappingEntries().put(createInfo(updateEndpoint,direction),updateDtoClass);
         }
         return this;
     }
 
-    public DtoMappingContextBuilder forEndpoint(Integer endpoint, Class<? extends IdentifiableEntity> dtoClass){
+    public DtoMappingContextBuilder forUpdate(Class<? extends IdentifiableEntity> updateDtoClass){
+        List<String> updateEndpoints = getUpdateEndpoints();
+        for (String updateEndpoint : updateEndpoints) {
+            mc.getMappingEntries().put(createInfo(updateEndpoint,Direction.REQUEST),updateDtoClass);
+            mc.getMappingEntries().put(createInfo(updateEndpoint,Direction.RESPONSE),updateDtoClass);
+        }
+        return this;
+    }
+
+    public DtoMappingContextBuilder forEndpoint(String endpoint, Class<? extends IdentifiableEntity> dtoClass){
         mc.getMappingEntries().put(createInfo(endpoint,Direction.REQUEST),dtoClass);
         mc.getMappingEntries().put(createInfo(endpoint,Direction.RESPONSE),dtoClass);
         return this;
     }
 
 
-    public DtoMappingContextBuilder forEndpoint(Integer endpoint, Direction direction, Class<? extends IdentifiableEntity> dtoClass){
+    public DtoMappingContextBuilder forEndpoint(String endpoint, Direction direction, Class<? extends IdentifiableEntity> dtoClass){
         mc.getMappingEntries().put(createInfo(endpoint,direction),dtoClass);
         return this;
     }
 
-    public DtoMappingContextBuilder forEndpointAndRoles(Integer endpoint, Direction direction, List<String> authorities, Class<? extends IdentifiableEntity> dtoClass){
+    public DtoMappingContextBuilder forEndpointAndRoles(String endpoint, Direction direction, List<String> authorities, Class<? extends IdentifiableEntity> dtoClass){
         DtoMappingInfo info = createInfo(endpoint, direction);
         info.setAuthorities(authorities);
         mc.getMappingEntries().put(info,dtoClass);
@@ -136,7 +153,8 @@ public class DtoMappingContextBuilder {
         mc.getMappingEntries().entrySet().forEach(e ->{
             DtoMappingInfo ignoreRoleInfo = new DtoMappingInfo(e.getKey());
             ignoreRoleInfo.getAuthorities().clear();
-            mc.getMappingEntriesIgnoreRole().put(ignoreRoleInfo,e.getValue());
+            mc.getMappingEntriesIgnoreRole()
+                    .computeIfAbsent(ignoreRoleInfo, k -> e.getValue());
         });
         return mc;
     }
@@ -147,18 +165,18 @@ public class DtoMappingContextBuilder {
      * @param endpoints
      * @return
      */
-    private List<DtoMappingInfo> createInfo(List<Integer> endpoints) {
+    private List<DtoMappingInfo> createInfos(List<String> endpoints) {
         List<DtoMappingInfo> infoList = new ArrayList<>();
-        for (Integer endpoint : endpoints) {
+        for (String endpoint : endpoints) {
             infoList.add(createInfo(endpoint,Direction.REQUEST));
             infoList.add(createInfo(endpoint,Direction.RESPONSE));
         }
         return infoList;
     }
 
-    private DtoMappingInfo createInfo(Integer endpoint, Direction direction){
+    private DtoMappingInfo createInfo(String endpoint, Direction direction){
         return DtoMappingInfo.builder()
-                .authorities(Lists.newArrayList(defaultRole))
+                .authorities(Lists.newArrayList(currentRole))
                 .endpoint(endpoint)
                 .direction(direction)
                 .build();

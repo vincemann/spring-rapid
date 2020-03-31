@@ -3,7 +3,6 @@ package io.github.vincemann.demo.controllers;
 import io.github.vincemann.demo.dtos.VetDto;
 import io.github.vincemann.demo.model.Vet;
 import io.github.vincemann.generic.crud.lib.config.layers.component.WebController;
-import io.github.vincemann.generic.crud.lib.controller.dtoMapper.context.DtoMappingContext;
 import io.github.vincemann.generic.crud.lib.controller.dtoMapper.context.DtoMappingContextBuilder;
 import io.github.vincemann.generic.crud.lib.controller.springAdapter.SpringAdapterJsonDtoCrudController;
 import org.springframework.ui.Model;
@@ -14,7 +13,7 @@ public class VetController
         extends SpringAdapterJsonDtoCrudController<Vet, Long> {
 
     public VetController() {
-        super(DtoMappingContextBuilder.ignoreRole()
+        super(DtoMappingContextBuilder.builder()
                 .forAll(VetDto.class)
                 .build()
         );

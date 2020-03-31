@@ -1,5 +1,6 @@
 package io.github.vincemann.generic.crud.lib.proxy.factory;
 
+import com.google.common.collect.Lists;
 import io.github.vincemann.generic.crud.lib.model.IdentifiableEntity;
 import io.github.vincemann.generic.crud.lib.proxy.invocationHandler.CrudServicePluginProxy;
 import io.github.vincemann.generic.crud.lib.service.CrudService;
@@ -20,7 +21,7 @@ public class CrudServicePluginProxyFactory {
         S unproxied = AopTestUtils.getUltimateTargetObject(crudService);
         S proxyInstance = (S) Proxy.newProxyInstance(
                 unproxied.getClass().getClassLoader(), unproxied.getClass().getInterfaces(),
-                new CrudServicePluginProxy(unproxied, Arrays.asList(plugins)));
+                new CrudServicePluginProxy(unproxied, Lists.newArrayList(plugins)));
 
         return proxyInstance;
     }

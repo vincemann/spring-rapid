@@ -21,7 +21,6 @@ import java.util.List;
 @WebConfig
 public class DtoMapperConfig {
 
-    @ConditionalOnMissingBean
     @Qualifier("default")
     @Bean
     public DtoMapper defaultDtoMapper(){
@@ -49,7 +48,6 @@ public class DtoMapperConfig {
     }
 
     @Primary
-    @ConditionalOnMissingBean
     @Bean
     public DtoMapper dtoMapper(List<EntityIdResolver> entityIdResolvers){
         DelegatingFallbackToDefaultDtoMapper delegatingFallbackToDefaultDtoMapper = new DelegatingFallbackToDefaultDtoMapper(defaultDtoMapper());
