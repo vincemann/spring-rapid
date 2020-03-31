@@ -1,6 +1,5 @@
 package io.github.vincemann.generic.crud.lib.config;
 
-import io.github.vincemann.generic.crud.lib.config.layers.component.WebComponent;
 import io.github.vincemann.generic.crud.lib.config.layers.config.WebConfig;
 import io.github.vincemann.generic.crud.lib.controller.dtoMapper.BasicDtoMapper;
 import io.github.vincemann.generic.crud.lib.controller.dtoMapper.DelegatingFallbackToDefaultDtoMapper;
@@ -13,6 +12,7 @@ import io.github.vincemann.generic.crud.lib.controller.dtoMapper.idResolver.uniD
 import io.github.vincemann.generic.crud.lib.controller.dtoMapper.idResolver.uniDir.UniDirParentIdResolver;
 import io.github.vincemann.generic.crud.lib.service.locator.CrudServiceLocator;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.context.annotation.*;
 
 import java.util.List;
@@ -21,6 +21,7 @@ import java.util.List;
 @WebConfig
 public class DtoMapperConfig {
 
+    @ConditionalOnMissingBean
     @Qualifier("default")
     @Bean
     public DtoMapper defaultDtoMapper(){
@@ -48,6 +49,7 @@ public class DtoMapperConfig {
     }
 
     @Primary
+    @ConditionalOnMissingBean
     @Bean
     public DtoMapper dtoMapper(List<EntityIdResolver> entityIdResolvers){
         DelegatingFallbackToDefaultDtoMapper delegatingFallbackToDefaultDtoMapper = new DelegatingFallbackToDefaultDtoMapper(defaultDtoMapper());

@@ -1,7 +1,9 @@
 package io.github.vincemann.generic.crud.lib.controller.springAdapter;
 
 import io.github.vincemann.generic.crud.lib.controller.JsonDtoCrudController;
-import io.github.vincemann.generic.crud.lib.controller.dtoMapper.DtoMappingContext;
+import io.github.vincemann.generic.crud.lib.controller.dtoMapper.context.Direction;
+import io.github.vincemann.generic.crud.lib.controller.dtoMapper.context.DtoMappingContext;
+import io.github.vincemann.generic.crud.lib.controller.dtoMapper.context.DtoUsingEndpoint;
 import io.github.vincemann.generic.crud.lib.controller.dtoMapper.exception.DtoMappingException;
 import io.github.vincemann.generic.crud.lib.controller.springAdapter.idFetchingStrategy.IdFetchingStrategy;
 import io.github.vincemann.generic.crud.lib.controller.springAdapter.idFetchingStrategy.exception.IdFetchingException;
@@ -238,8 +240,9 @@ public abstract class SpringAdapterJsonDtoCrudController
         log.debug("Create request arriving at controller: " + request);
         try {
             String json = request.getReader().lines().collect(Collectors.joining(System.lineSeparator()));
-            log.debug("Json Input for JsonMapper to map to DtoClass: " + getDtoMappingContext().getCreateRequestDtoClass().getSimpleName() + " : " + json);
-            IdentifiableEntity<Id> dto = getJsonMapper().readValue(json, getDtoMappingContext().getCreateRequestDtoClass());
+            Class<? extends IdentifiableEntity> dtoClass = findDtoClass(DtoUsingEndpoint.CREATE, Direction.REQUEST);
+            log.debug("Json Input for JsonMapper to map to DtoClass: " + dtoClass.getSimpleName() + " : " + json);
+            IdentifiableEntity<Id> dto = getJsonMapper().readValue(json, dtoClass);
             log.debug("successfully read Dto: " + dto);
             validationStrategy.validateDto(dto,request);
             log.debug("Dto successfully validated");
@@ -258,9 +261,9 @@ public abstract class SpringAdapterJsonDtoCrudController
             log.debug("full update mode: " + fullUpdate);
             Class<? extends IdentifiableEntity> dtoClass = null;
             if(fullUpdate) {
-                dtoClass = getDtoMappingContext().getFullUpdateRequestDtoClass();
+                dtoClass = findDtoClass(DtoUsingEndpoint.FULL_UPDATE, Direction.REQUEST);
             }else {
-                dtoClass = getDtoMappingContext().getPartialUpdateRequestDtoClass();
+                dtoClass = findDtoClass(DtoUsingEndpoint.PARTIAL_UPDATE, Direction.REQUEST);
             }
             log.debug("Json Input for JsonMapper to map to DtoClass: " + dtoClass.getSimpleName() + " : " + json);
             IdentifiableEntity<Id> dto  = getJsonMapper().readValue(json, dtoClass);

@@ -5,10 +5,10 @@ import io.github.vincemann.demo.dtos.owner.ReadOwnerDto;
 import io.github.vincemann.demo.dtos.owner.UpdateOwnerDto;
 import io.github.vincemann.demo.model.Owner;
 import io.github.vincemann.generic.crud.lib.config.layers.component.WebController;
-import io.github.vincemann.generic.crud.lib.controller.dtoMapper.DtoMappingContext;
+import io.github.vincemann.generic.crud.lib.controller.dtoMapper.context.Direction;
+import io.github.vincemann.generic.crud.lib.controller.dtoMapper.context.DtoMappingContextBuilder;
+import io.github.vincemann.generic.crud.lib.controller.dtoMapper.context.DtoUsingEndpoint;
 import io.github.vincemann.generic.crud.lib.controller.springAdapter.SpringAdapterJsonDtoCrudController;
-import org.springframework.context.annotation.Profile;
-import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
 
@@ -18,15 +18,18 @@ public class OwnerController
 
 
     public OwnerController() {
-        super(DtoMappingContext.CREATE_UPDATE_READ(
-                CreateOwnerDto.class,
-                UpdateOwnerDto.class,
-                ReadOwnerDto.class
-        ));
+        super(
+                DtoMappingContextBuilder.ignoreRole()
+                        .forEndpoint(DtoUsingEndpoint.CREATE,CreateOwnerDto.class)
+                        .forUpdate(UpdateOwnerDto.class)
+                        .forResponse(ReadOwnerDto.class)
+                        .build()
+        );
 
     }
+
     @RequestMapping("/owners")
-    public String listOwners(Model model){
+    public String listOwners(Model model) {
         model.addAttribute("owners", getCrudService().findAll());
         return "owners/index";
     }
