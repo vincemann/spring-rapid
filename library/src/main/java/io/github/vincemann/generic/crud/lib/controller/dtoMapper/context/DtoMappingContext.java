@@ -14,20 +14,39 @@ public class DtoMappingContext {
     private Map<DtoMappingInfo,Class<? extends IdentifiableEntity>> mappingEntriesIgnoreRole = new HashMap<>();
     private boolean ignoreRole;
 
-    public Class<? extends IdentifiableEntity> get(DtoMappingInfo dtoMappingInfo){
-        DtoMappingInfo clone = new DtoMappingInfo(dtoMappingInfo);
-        Class<? extends IdentifiableEntity> dtoClass;
+    /**
+     * Ignores role if no role was configured for this MappingContext.
+     * If a role was configured, searching for dtoClass matching Role and Endpoint.
+     * If none was found falling back to searching for dtoClass without Role Information.
+     * @param dtoMappingInfo
+     * @return
+     */
+    public Class<? extends IdentifiableEntity> find(DtoMappingInfo dtoMappingInfo){
         if(ignoreRole){
-            log.debug("ignoring Role of info silently");
-            clone.setAuthorities(new ArrayList<>());
-            dtoClass = mappingEntriesIgnoreRole.get(clone);
+            Class<? extends IdentifiableEntity> dtoClass = mappingEntries.get(dtoMappingInfo);
+            if(dtoClass==null){
+                log.debug("Did not find Dto Class for entry: " + dtoMappingInfo);
+                log.debug("Trying without Role Information");
+                return notNull(findAndIgnoreRole(dtoMappingInfo),dtoMappingInfo);
+            }else {
+                return dtoClass;
+            }
         }else {
-             dtoClass= mappingEntries.get(clone);
+             return notNull(findAndIgnoreRole(dtoMappingInfo),dtoMappingInfo);
         }
-        if(dtoClass==null){
-            throw new IllegalArgumentException("No DtoClass mapped for info: "  + clone);
+    }
+
+    private Class<? extends IdentifiableEntity> findAndIgnoreRole(DtoMappingInfo dtoMappingInfo){
+        DtoMappingInfo clone = new DtoMappingInfo(dtoMappingInfo);
+        clone.setAuthorities(new ArrayList<>());
+        return notNull(mappingEntriesIgnoreRole.get(clone),clone);
+    }
+
+    private Class<? extends IdentifiableEntity> notNull(Class<? extends IdentifiableEntity> clazz, DtoMappingInfo info){
+        if(clazz==null){
+            throw new IllegalArgumentException("No DtoClass mapped for info: "  + info);
         }
-        return dtoClass;
+        return clazz;
     }
 
     Map<DtoMappingInfo, Class<? extends IdentifiableEntity>> getMappingEntries() {

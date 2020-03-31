@@ -1,5 +1,6 @@
 package io.github.vincemann.generic.crud.lib.proxy.invocationHandler.abs;
 
+import com.google.common.collect.Lists;
 import io.github.vincemann.generic.crud.lib.model.IdentifiableEntity;
 import io.github.vincemann.generic.crud.lib.service.CrudService;
 import lombok.Getter;
@@ -21,7 +22,7 @@ public abstract class CrudServiceExtensionProxy<E extends IdentifiableEntity<Id>
         implements InvocationHandler
 {
 
-    private List<String> ignoredMethods = Arrays.asList("getEntityClass","getRepository","toString","equals","hashCode","getClass","clone","notify","notifyAll","wait","finalize");
+    private List<String> ignoredMethods = Lists.newArrayList("getEntityClass","getRepository","toString","equals","hashCode","getClass","clone","notify","notifyAll","wait","finalize");
     private CrudService<E,Id, CrudRepository<E,Id>> service;
     private final Map<String, Method> methods = new HashMap<>();
 
@@ -30,7 +31,7 @@ public abstract class CrudServiceExtensionProxy<E extends IdentifiableEntity<Id>
         for(Method method: service.getClass().getMethods()) {
             this.methods.put(method.getName(), method);
         }
-        this.ignoredMethods.addAll(Arrays.asList(ignoredMethods));
+        this.ignoredMethods.addAll(Lists.newArrayList(ignoredMethods));
 
     }
 

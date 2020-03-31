@@ -110,12 +110,12 @@
 //    @Test
 //    void findAll_shouldSucceed() throws Exception {
 //        when(service.findAll())
-//                .thenReturn(new HashSet<>(Arrays.asList(returnEntity)));
+//                .thenReturn(new HashSet<>(Lists.newArrayList(returnEntity)));
 //        when(dtoMappingContext.getFindAllReturnDtoClass())
 //                .thenReturn(readDtoClass);
 //        when(dtoMapper.mapToDto(returnEntity,readDtoClass))
 //                .thenReturn(returnDto);
-//        when(objectMapper.writeValueAsString(eq(new HashSet<>(Arrays.asList(returnDto)))))
+//        when(objectMapper.writeValueAsString(eq(new HashSet<>(Lists.newArrayList(returnDto)))))
 //                .thenReturn(jsonReturnDto);
 //
 //        getMockMvc().perform(findAll())
@@ -123,7 +123,7 @@
 //                .andExpect(content().string(jsonReturnDto));
 //
 //        verify(dtoMapper).mapToDto(returnEntity,readDtoClass);
-//        verify(objectMapper).writeValueAsString(eq(new HashSet<>(Arrays.asList(returnDto))));
+//        verify(objectMapper).writeValueAsString(eq(new HashSet<>(Lists.newArrayList(returnDto))));
 //        verify(controllerSpy).beforeFindAll(any());
 //        verify(service).findAll();
 //    }

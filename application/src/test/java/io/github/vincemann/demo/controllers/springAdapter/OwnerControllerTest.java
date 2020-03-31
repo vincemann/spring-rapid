@@ -45,7 +45,7 @@ class OwnerControllerTest
         String lastName = "Müller";
         String city = "Munich";
         String telephone = "0176546231";
-        //Set<Long> petIds = new HashSet<>(Arrays.asList(3L,12L));
+        //Set<Long> petIds = new HashSet<>(Lists.newArrayList(3L,12L));
 
         createOwnerDto = CreateOwnerDto.builder()
                 .firstName(firstName)

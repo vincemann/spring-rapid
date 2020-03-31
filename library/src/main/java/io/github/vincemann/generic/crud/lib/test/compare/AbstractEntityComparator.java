@@ -62,7 +62,7 @@ public abstract class AbstractEntityComparator {
     private Field findField(Class clazz, String property) throws FieldNotFoundException{
         List<Field> cachedFields = fieldCache.get(clazz);
         if(cachedFields==null){
-            cachedFields = Arrays.asList(ReflectionUtils.getDeclaredFields(clazz,true));
+            cachedFields = Lists.newArrayList(ReflectionUtils.getDeclaredFields(clazz,true));
         }
         Optional<Field> field = cachedFields.stream().filter(f -> f.getName().equals(property)).findFirst();
         if(!field.isPresent()){

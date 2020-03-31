@@ -1,5 +1,6 @@
 package io.github.vincemann.generic.crud.lib.test;
 
+import com.google.common.collect.Lists;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.BeforeEach;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -64,7 +65,7 @@ public abstract class InitializingTest{
     }
 
     private static List<Field> getAllFields(List<Field> fields, Class<?> type) {
-        fields.addAll(Arrays.asList(type.getDeclaredFields()));
+        fields.addAll(Lists.newArrayList(type.getDeclaredFields()));
         if (type.getSuperclass() != null) {
             getAllFields(fields, type.getSuperclass());
         }

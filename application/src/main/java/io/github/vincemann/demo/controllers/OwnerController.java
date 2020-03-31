@@ -7,7 +7,7 @@ import io.github.vincemann.demo.model.Owner;
 import io.github.vincemann.generic.crud.lib.config.layers.component.WebController;
 import io.github.vincemann.generic.crud.lib.controller.dtoMapper.context.Direction;
 import io.github.vincemann.generic.crud.lib.controller.dtoMapper.context.DtoMappingContextBuilder;
-import io.github.vincemann.generic.crud.lib.controller.dtoMapper.context.DtoUsingEndpoint;
+import io.github.vincemann.generic.crud.lib.controller.dtoMapper.context.CrudDtoEndpoint;
 import io.github.vincemann.generic.crud.lib.controller.springAdapter.SpringAdapterJsonDtoCrudController;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -19,9 +19,9 @@ public class OwnerController
 
     public OwnerController() {
         super(
-                DtoMappingContextBuilder.ignoreRole()
-                        .forEndpoint(DtoUsingEndpoint.CREATE,CreateOwnerDto.class)
-                        .forUpdate(UpdateOwnerDto.class)
+                DtoMappingContextBuilder.builder()
+                        .forEndpoint(CrudDtoEndpoint.CREATE,CreateOwnerDto.class)
+                        .forUpdate(Direction.REQUEST,UpdateOwnerDto.class)
                         .forResponse(ReadOwnerDto.class)
                         .build()
         );
