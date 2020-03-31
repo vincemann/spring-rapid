@@ -22,7 +22,7 @@ public class DtoMappingContext {
      * @return
      */
     public Class<? extends IdentifiableEntity> find(DtoMappingInfo dtoMappingInfo){
-        if(ignoreRole){
+        if(!ignoreRole){
             Class<? extends IdentifiableEntity> dtoClass = mappingEntries.get(dtoMappingInfo);
             if(dtoClass==null){
                 log.debug("Did not find Dto Class for entry: " + dtoMappingInfo);
