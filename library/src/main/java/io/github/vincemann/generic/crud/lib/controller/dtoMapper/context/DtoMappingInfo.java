@@ -1,6 +1,7 @@
 package io.github.vincemann.generic.crud.lib.controller.dtoMapper.context;
 
 import com.google.common.base.Objects;
+import com.google.common.collect.Lists;
 import lombok.*;
 import org.springframework.lang.Nullable;
 
@@ -26,7 +27,7 @@ public class DtoMappingInfo {
     public DtoMappingInfo(DtoMappingInfo info){
         this.endpoint=info.endpoint;
         this.direction=info.direction;
-        this.authorities =info.authorities;
+        this.authorities = Lists.newArrayList(info.authorities);
     }
 
     public DtoMappingInfo(String endpoint, Direction direction) {
