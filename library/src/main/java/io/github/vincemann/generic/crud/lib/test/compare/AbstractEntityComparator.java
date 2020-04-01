@@ -31,7 +31,7 @@ public abstract class AbstractEntityComparator {
         return equals;
     }
 
-    protected void compare(Object expected, Object actual, Collection<String> properties, boolean silentIgnore) {
+    protected void compare(Object expected, Object actual, Collection<String> properties, boolean silentIgnore,boolean ignoreNull) {
         try {
             for (String property : properties) {
                 try {
@@ -41,6 +41,10 @@ public abstract class AbstractEntityComparator {
                     actualField.setAccessible(true);
                     Object expectedValue = expectedField.get(expected);
                     Object actualValue = actualField.get(actual);
+                    if(ignoreNull && (expectedValue==null || actualValue == null)){
+                        log.debug("Null ignore is activated, field: " + property + " gets ignored bc at least one null value found.");
+                        continue;
+                    }
                     boolean equals = Objects.equals(expectedValue,actualValue);
                     if (!equals) {
                         getDiff().put(property, Lists.newArrayList(expectedValue, actualValue));
