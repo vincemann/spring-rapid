@@ -22,7 +22,7 @@ public class LevelOnePropertyComparator extends AbstractEntityComparator impleme
     @Override
     public boolean isEqual(Object expected, Object actual) {
         getDiff().clear();
-        compare(expected, actual, includedProperties,false);
+        compare(expected, actual, includedProperties, false, false);
         return super.isEquals(expected, actual);
     }
 

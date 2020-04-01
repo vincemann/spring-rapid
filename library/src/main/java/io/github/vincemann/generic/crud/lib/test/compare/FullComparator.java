@@ -12,5 +12,6 @@ public interface FullComparator<T> extends Comparator<T>{
     default void ignoreId(){
         ignoreProperty("id");
     }
-    void setSilentIgnore(boolean ignore);
+    void silentIgnore(boolean ignore);
+    void ignoreNull(boolean ignore);
 }

@@ -16,6 +16,7 @@ public class LevelOneFullComparator extends AbstractEntityComparator implements 
 
     private List<String> excluded = new ArrayList<>();
     private boolean silentIgnore = false;
+    private boolean ignoreNull =false;
 
     @Override
     public boolean isEqual(Object expected, Object actual) {
@@ -25,13 +26,18 @@ public class LevelOneFullComparator extends AbstractEntityComparator implements 
         included.removeAll(excluded);
         included.remove("this$0");
 
-        compare(expected,actual,included,silentIgnore);
+        compare(expected,actual,included,silentIgnore,ignoreNull);
         return super.isEquals(expected,actual);
     }
 
     private List<String> getAllProperties(Object instance){
         return Arrays.stream(ReflectionUtils.getDeclaredFields(instance.getClass(),true))
                 .map(Field::getName).collect(Collectors.toList());
+    }
+
+    @Override
+    public void ignoreNull(boolean ignore) {
+        this.ignoreNull=ignore;
     }
 
     @Override
