@@ -1,5 +1,6 @@
 package io.github.vincemann.generic.crud.lib.service.jpa;
 
+import io.github.vincemann.generic.crud.lib.advice.log.LogInteraction;
 import io.github.vincemann.generic.crud.lib.config.layers.component.ServiceComponent;
 import io.github.vincemann.generic.crud.lib.model.IdentifiableEntity;
 import io.github.vincemann.generic.crud.lib.service.CrudService;
@@ -48,6 +49,7 @@ public abstract class JPACrudService
         this.jpaRepository = jpaRepository;
     }
 
+    @LogInteraction
     @Transactional
     @Override
     public Optional<E> findById(Id id) throws NoIdException {
@@ -57,7 +59,7 @@ public abstract class JPACrudService
         return jpaRepository.findById(id);
     }
 
-
+    @LogInteraction
     @Transactional
     @Override
     public E update(E update, Boolean full) throws EntityNotFoundException, NoIdException, BadEntityException {
@@ -88,6 +90,7 @@ public abstract class JPACrudService
         return entityToUpdate.get();
     }
 
+    @LogInteraction
     @Transactional
     @Override
     public E save(E entity) throws BadEntityException {
@@ -100,12 +103,14 @@ public abstract class JPACrudService
         }
     }
 
+    @LogInteraction
     @Transactional
     @Override
     public Set<E> findAll() {
         return new HashSet<>(jpaRepository.findAll());
     }
 
+    @LogInteraction
     @Transactional
     @Override
     public void delete(E entity) throws EntityNotFoundException, NoIdException {
@@ -118,6 +123,7 @@ public abstract class JPACrudService
         jpaRepository.delete(entity);
     }
 
+    @LogInteraction
     @Transactional
     @Override
     public void deleteById(Id id) throws EntityNotFoundException, NoIdException {

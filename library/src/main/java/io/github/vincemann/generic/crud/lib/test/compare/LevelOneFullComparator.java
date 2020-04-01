@@ -11,7 +11,6 @@ import java.util.stream.Collectors;
 
 @Slf4j
 @Getter
-@Setter
 public class LevelOneFullComparator extends AbstractEntityComparator implements FullComparator<Object> {
 
     private List<String> excluded = new ArrayList<>();
@@ -38,6 +37,11 @@ public class LevelOneFullComparator extends AbstractEntityComparator implements 
     @Override
     public void ignoreNull(boolean ignore) {
         this.ignoreNull=ignore;
+    }
+
+    @Override
+    public void silentIgnore(boolean ignore) {
+        this.silentIgnore=ignore;
     }
 
     @Override

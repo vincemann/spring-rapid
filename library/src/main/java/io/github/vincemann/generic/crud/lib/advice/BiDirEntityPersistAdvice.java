@@ -1,5 +1,6 @@
 package io.github.vincemann.generic.crud.lib.advice;
 
+import io.github.vincemann.generic.crud.lib.advice.log.LogInteraction;
 import io.github.vincemann.generic.crud.lib.model.biDir.child.BiDirChild;
 import io.github.vincemann.generic.crud.lib.model.biDir.parent.BiDirParent;
 import lombok.extern.slf4j.Slf4j;

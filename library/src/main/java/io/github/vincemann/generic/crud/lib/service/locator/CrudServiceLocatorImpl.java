@@ -1,5 +1,6 @@
 package io.github.vincemann.generic.crud.lib.service.locator;
 
+import io.github.vincemann.generic.crud.lib.advice.log.LogInteraction;
 import io.github.vincemann.generic.crud.lib.model.IdentifiableEntity;
 import io.github.vincemann.generic.crud.lib.service.CrudService;
 import io.github.vincemann.generic.crud.lib.service.ServiceBeanType;
@@ -103,6 +104,7 @@ public class CrudServiceLocatorImpl implements CrudServiceLocator, ApplicationCo
 //        return infoCrudServiceMap;
 //    }
 
+    @LogInteraction
     @Override
     public synchronized CrudService find(Class<? extends IdentifiableEntity> entityClass, Class<? extends ServiceBeanType> annotation) {
 //        return infoCrudServiceMap.entrySet().stream()
@@ -123,6 +125,7 @@ public class CrudServiceLocatorImpl implements CrudServiceLocator, ApplicationCo
 //        return (CrudService) applicationContext.getBean(beanName);
 //    }
 
+    @LogInteraction
     @Override
     public synchronized CrudService find(Class<? extends IdentifiableEntity> entityClass) {
 //        return infoCrudServiceMap.entrySet().stream()

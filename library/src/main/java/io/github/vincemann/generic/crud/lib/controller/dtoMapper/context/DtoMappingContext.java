@@ -1,5 +1,6 @@
 package io.github.vincemann.generic.crud.lib.controller.dtoMapper.context;
 
+import io.github.vincemann.generic.crud.lib.advice.log.LogInteraction;
 import io.github.vincemann.generic.crud.lib.model.IdentifiableEntity;
 import lombok.extern.slf4j.Slf4j;
 
@@ -21,6 +22,7 @@ public class DtoMappingContext {
      * @param dtoMappingInfo
      * @return
      */
+    @LogInteraction
     public Class<? extends IdentifiableEntity> find(DtoMappingInfo dtoMappingInfo){
         if(!ignoreRole){
             Class<? extends IdentifiableEntity> dtoClass = mappingEntries.get(dtoMappingInfo);
