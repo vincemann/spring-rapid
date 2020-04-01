@@ -1,5 +1,6 @@
 package io.github.vincemann.generic.crud.lib.controller.dtoMapper.idResolver.biDir;
 
+import io.github.vincemann.generic.crud.lib.advice.log.LogInteraction;
 import io.github.vincemann.generic.crud.lib.controller.dtoMapper.exception.DtoMappingException;
 import io.github.vincemann.generic.crud.lib.controller.dtoMapper.idResolver.EntityIdResolver;
 import io.github.vincemann.generic.crud.lib.dto.biDir.BiDirParentDto;

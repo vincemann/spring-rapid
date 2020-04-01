@@ -1,5 +1,6 @@
 package io.github.vincemann.generic.crud.lib.controller.dtoMapper;
 
+import io.github.vincemann.generic.crud.lib.advice.log.LogInteraction;
 import io.github.vincemann.generic.crud.lib.controller.dtoMapper.exception.DtoMappingException;
 import io.github.vincemann.generic.crud.lib.model.IdentifiableEntity;
 import lombok.extern.slf4j.Slf4j;
@@ -33,20 +34,22 @@ public class DelegatingFallbackToDefaultDtoMapper implements DtoMapper {
         this.delegates.add(delegate);
     }
 
+    @LogInteraction
     @Override
     public <T extends IdentifiableEntity> T mapToEntity(IdentifiableEntity dto, Class<T> destinationClass) throws DtoMappingException {
-        log.info("_____________________________________________________________________________");
-        log.info("Map from Dto to Entity-Class: "+destinationClass+" inputDto: " + dto);
-        log.info("_____________________________________________________________________________");
+//        log.info("_____________________________________________________________________________");
+//        log.info("Map from Dto to Entity-Class: "+destinationClass+" inputDto: " + dto);
+//        log.info("_____________________________________________________________________________");
         return findMapper(dto.getClass())
                 .mapToEntity(dto,destinationClass);
     }
 
+    @LogInteraction
     @Override
     public <T extends IdentifiableEntity> T mapToDto(IdentifiableEntity entity, Class<T> destinationClass) throws DtoMappingException {
-        log.info("_____________________________________________________________________________");
-        log.info("Map from Entity to Dto-Class: "+destinationClass+" inputEntity: " + entity);
-        log.info("_____________________________________________________________________________");
+//        log.info("_____________________________________________________________________________");
+//        log.info("Map from Entity to Dto-Class: "+destinationClass+" inputEntity: " + entity);
+//        log.info("_____________________________________________________________________________");
         return findMapper(destinationClass)
                 .mapToDto(entity,destinationClass);
     }

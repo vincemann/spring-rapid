@@ -2,6 +2,7 @@ package io.github.vincemann.generic.crud.lib.controller;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import io.github.vincemann.generic.crud.lib.advice.log.LogInteraction;
 import io.github.vincemann.generic.crud.lib.controller.dtoMapper.DtoMapper;
 import io.github.vincemann.generic.crud.lib.controller.dtoMapper.context.Direction;
 import io.github.vincemann.generic.crud.lib.controller.dtoMapper.context.DtoMappingContext;
@@ -88,12 +89,12 @@ public abstract class JsonDtoCrudController
     @SuppressWarnings("unchecked")
     public ResponseEntity<String> find(Id id) throws NoIdException, EntityNotFoundException, DtoMappingException, DtoSerializingException {
         try {
-            logStateBeforeServiceCall("findById",id);
+            //logStateBeforeServiceCall("findById",id);
             Optional<E> optionalEntity = crudService.findById(id);
             if (optionalEntity.isPresent()) {
                 IdentifiableEntity<?> dto = dtoMapper.mapToDto(optionalEntity.get(),
                         findDtoClass(CrudDtoEndpoint.FIND,Direction.RESPONSE));
-                log.debug("Input for JsonMapper (Dto): " + dto);
+                //log.debug("Input for JsonMapper (Dto): " + dto);
                 return ok(jsonMapper.writeValueAsString(dto));
             } else {
                 throw new EntityNotFoundException();
@@ -103,11 +104,11 @@ public abstract class JsonDtoCrudController
         }
     }
 
-    protected Class<? extends IdentifiableEntity> findDtoClass(String endpoint, Direction direction){
+    public Class<? extends IdentifiableEntity> findDtoClass(String endpoint, Direction direction){
         DtoMappingInfo endpointInfo = createEndpointInfo(endpoint, direction);
-        log.debug("Endpoint info used to find DtoClass " + endpointInfo);
+        //log.debug("Endpoint info used to find DtoClass " + endpointInfo);
         Class<? extends IdentifiableEntity> dtoClass = getDtoMappingContext().find(endpointInfo);
-        log.debug("Dto Class found: " + dtoClass);
+        //log.debug("Dto Class found: " + dtoClass);
         return dtoClass;
     }
 
@@ -122,7 +123,7 @@ public abstract class JsonDtoCrudController
     @Override
     public ResponseEntity<String> findAll() throws DtoMappingException, DtoSerializingException {
         try {
-            logStateBeforeServiceCall("findAll");
+            //logStateBeforeServiceCall("findAll");
             Set<E> all = crudService.findAll();
             Collection<IdentifiableEntity<Id>> dtos = new HashSet<>();
             for (E e : all) {
@@ -143,11 +144,11 @@ public abstract class JsonDtoCrudController
         try {
             //i expect that dto has the right dto type -> callers responsibility
             E entity = mapToEntity(dto);
-            logStateBeforeServiceCall("save",entity);
+            //logStateBeforeServiceCall("save",entity);
             E savedEntity = crudService.save(entity);
             IdentifiableEntity<?> resultDto = dtoMapper.mapToDto(savedEntity,
                     findDtoClass(CrudDtoEndpoint.CREATE,Direction.RESPONSE));
-            log.debug("Input for JsonMapper (Dto): " + resultDto);
+            //log.debug("Input for JsonMapper (Dto): " + resultDto);
             return new ResponseEntity<>(
                     jsonMapper.writeValueAsString(resultDto),
                     HttpStatus.OK);
@@ -162,7 +163,7 @@ public abstract class JsonDtoCrudController
         try {
             //i expect that dto has the right dto type -> callers responsibility
             E entity = mapToEntity(dto);
-            logStateBeforeServiceCall("update",entity,full);
+            //logStateBeforeServiceCall("update",entity,full);
             E updatedEntity = crudService.update(entity,full);
             //no idea why casting is necessary here?
             Class<? extends IdentifiableEntity> dtoClass;
@@ -172,7 +173,7 @@ public abstract class JsonDtoCrudController
                 dtoClass = findDtoClass(CrudDtoEndpoint.PARTIAL_UPDATE,Direction.RESPONSE);
             }
             IdentifiableEntity<?> resultDto = dtoMapper.mapToDto(updatedEntity,dtoClass);
-            log.debug("Input for JsonMapper (Dto): " + resultDto);
+            //log.debug("Input for JsonMapper (Dto): " + resultDto);
             return new ResponseEntity<>(
                     jsonMapper.writeValueAsString(resultDto),
                     HttpStatus.OK);
@@ -181,17 +182,17 @@ public abstract class JsonDtoCrudController
         }
     }
 
-    protected void logStateBeforeServiceCall(String methodName, Object... args ){
-        log.info("_____________________________________________________________________________");
-        log.info("Calling CrudService method "+methodName+"with args: " + Arrays.toString(args));
-        log.info("SecurityContexts Authentication right before service call: " + SecurityContextHolder.getContext().getAuthentication());
-        log.info("_____________________________________________________________________________");
-    }
+//    protected void logStateBeforeServiceCall(String methodName, Object... args ){
+//        log.info("_____________________________________________________________________________");
+//        log.info("Calling CrudService method "+methodName+"with args: " + Arrays.toString(args));
+//        log.info("SecurityContexts Authentication right before service call: " + SecurityContextHolder.getContext().getAuthentication());
+//        log.info("_____________________________________________________________________________");
+//    }
 
 
     @Override
     public ResponseEntity<String> delete(Id id) throws NoIdException, EntityNotFoundException {
-        logStateBeforeServiceCall("delete",id);
+        //logStateBeforeServiceCall("delete",id);
         crudService.deleteById(id);
         return ResponseEntity.ok().contentType(MediaType.APPLICATION_JSON_UTF8).build();
     }

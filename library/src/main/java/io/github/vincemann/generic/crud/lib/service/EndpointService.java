@@ -1,5 +1,6 @@
 package io.github.vincemann.generic.crud.lib.service;
 
+import io.github.vincemann.generic.crud.lib.advice.log.LogInteraction;
 import org.springframework.web.servlet.mvc.method.RequestMappingInfo;
 import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping;
 
@@ -13,6 +14,7 @@ public class EndpointService {
         this.requestMappingHandlerMapping = requestMappingHandlerMapping;
     }
 
+    @LogInteraction
     public void addMapping(RequestMappingInfo requestMappingInfo, Method requestMethod, Object controller)  {
 
         /*RequestMappingInfo requestMappingInfo = RequestMappingInfo
