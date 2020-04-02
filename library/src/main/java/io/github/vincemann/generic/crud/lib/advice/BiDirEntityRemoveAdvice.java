@@ -49,65 +49,6 @@ public class BiDirEntityRemoveAdvice /*implements MethodInterceptor*/ {
     }
 
 
-//    @Override
-//    public Object invoke(MethodInvocation invocation) throws Throwable {
-//        Method method = invocation.getMethod();
-//        if (method.getName().startsWith("save")) {
-//            prePersist(invocation);
-//        } else if (method.getName().startsWith("delete")) {
-//            preRemove(invocation);
-//        }
-//        // add update here
-//        return invocation.proceed();
-//    }
-//
-//    private void preRemove(MethodInvocation invocation) throws IllegalAccessException, NoIdException {
-//        if (invocation.getMethod().getParameterTypes().length >= 1) {
-//            Class<?> firstArgClass = invocation.getMethod().getParameterTypes()[0];
-//            Object firstArg = invocation.getArguments()[0];
-//            if (IdentifiableEntity.class.isAssignableFrom(firstArgClass)) {
-//                if (firstArg != null) {
-//                    preRemoveEntity(firstArg);
-//                }
-//            } else {
-//                if (firstArg instanceof Serializable) {
-//                    //delete by id
-//                    Optional<Object> entity = resolveId(((Serializable) firstArg), invocation.getMethod().getDeclaringClass());
-//                    if (entity.isPresent()) {
-//                        preRemoveEntity(entity.get());
-//                    } else {
-//                        log.warn("preDelete BiDirEntity could not be done, because for id: " + firstArg + " was not entity found");
-//                    }
-//                }
-//            }
-//        }
-//    }
-//
-//
-//
-//
-//
-//    private void prePersist(MethodInvocation invocation) throws IllegalAccessException {
-//        if (invocation.getMethod().getParameterTypes().length >= 1) {
-//            Class<?> firstArgClass = invocation.getMethod().getParameterTypes()[0];
-//            Object firstArg = invocation.getArguments()[0];
-//            if (BiDirParent.class.isAssignableFrom(firstArgClass)) {
-//                log.debug("applying pre persist BiDirParent logic for: " + firstArg);
-//                //prePersistBiDirParent(((BiDirParent) firstArg));
-//            } else if (BiDirChild.class.isAssignableFrom(firstArgClass)) {
-//                log.debug("applying pre persist BiDirChild logic for: " + firstArg);
-//                prePersistBiDiChild(((BiDirChild) firstArg));
-//            }
-//        }
-//    }
-
-
-
-
-
-
-
-
     @Around("io.github.vincemann.generic.crud.lib.advice.SystemArchitecture.deleteOperation() && " +
             "io.github.vincemann.generic.crud.lib.advice.SystemArchitecture.repoOperation() && " +
             "args(serializable)")

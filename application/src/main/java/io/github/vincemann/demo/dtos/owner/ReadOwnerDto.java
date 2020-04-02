@@ -3,10 +3,7 @@ package io.github.vincemann.demo.dtos.owner;
 import io.github.vincemann.demo.model.Pet;
 import io.github.vincemann.generic.crud.lib.dto.biDir.BiDirChildIdCollection;
 import io.github.vincemann.generic.crud.lib.dto.biDir.BiDirParentDto;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 import org.springframework.lang.Nullable;
 
 import javax.validation.constraints.NotBlank;
@@ -17,6 +14,7 @@ import java.util.Set;
 @NoArgsConstructor
 @Getter
 @Setter
+@ToString
 public class ReadOwnerDto extends BaseOwnerDto implements BiDirParentDto {
 
     @Builder
