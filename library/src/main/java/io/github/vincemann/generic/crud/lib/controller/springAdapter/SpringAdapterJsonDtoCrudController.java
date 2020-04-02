@@ -241,9 +241,7 @@ public abstract class SpringAdapterJsonDtoCrudController
         try {
             String json = request.getReader().lines().collect(Collectors.joining(System.lineSeparator()));
             Class<? extends IdentifiableEntity> dtoClass = findDtoClass(CrudDtoEndpoint.CREATE, Direction.REQUEST);
-            //log.debug("Json Input for JsonMapper to map to DtoClass: " + dtoClass.getSimpleName() + " : " + json);
             IdentifiableEntity<Id> dto = getJsonMapper().readValue(json, dtoClass);
-            //log.debug("successfully read Dto: " + dto);
             validationStrategy.validateDto(dto,request);
             log.debug("Dto successfully validated");
             beforeCreate(dto,request);
@@ -265,9 +263,7 @@ public abstract class SpringAdapterJsonDtoCrudController
             }else {
                 dtoClass = findDtoClass(CrudDtoEndpoint.PARTIAL_UPDATE, Direction.REQUEST);
             }
-            //log.debug("Json Input for JsonMapper to map to DtoClass: " + dtoClass.getSimpleName() + " : " + json);
             IdentifiableEntity<Id> dto  = getJsonMapper().readValue(json, dtoClass);
-            //log.debug("successfully read Dto: " + dto);
             validationStrategy.validateDto(dto,request);
             log.debug("Dto successfully validated");
 
