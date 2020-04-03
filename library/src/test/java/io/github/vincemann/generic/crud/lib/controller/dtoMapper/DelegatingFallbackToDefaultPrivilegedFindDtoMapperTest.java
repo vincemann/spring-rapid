@@ -13,7 +13,7 @@ import org.mockito.Mockito;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.*;
 
-class DelegatingFallbackToDefaultDtoMapperTest {
+class DelegatingFallbackToDefaultPrivilegedFindDtoMapperTest {
     DelegatingFallbackToDefaultDtoMapper mapper;
     DtoMapper defaultMapper;
 
