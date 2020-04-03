@@ -56,9 +56,9 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
                 PropertyPlaceholderAutoConfiguration.class
         })
 //override config to define mock rules before context initialization
-@Import(SpringAdapterDtoCrudMvcControllerTest.TestConfig.class)
+@Import(SpringAdapterPrivilegedFindDtoCrudMvcControllerTest.TestConfig.class)
 @PropertySource({"classpath:application.properties","classpath:application-test.properties"})
-class SpringAdapterDtoCrudMvcControllerTest
+class SpringAdapterPrivilegedFindDtoCrudMvcControllerTest
         extends MvcCrudControllerTest<ExampleService, ExampleEntity, Long> {
 
     @SpyBean

@@ -7,7 +7,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class DtoMappingContextBuilder {
-    private String currentRole;
+    private List<String> currentRoles = new ArrayList<>();
     private DtoMappingContext mc;
 
     public DtoMappingContextBuilder() {
@@ -15,27 +15,19 @@ public class DtoMappingContextBuilder {
         this.mc.setIgnoreRole(true);
     }
 
-    public DtoMappingContextBuilder(String currentRole) {
-        this.mc = new DtoMappingContext();
-        if(currentRole !=null){
-            this.mc.setIgnoreRole(false);
-        }
-        this.currentRole = currentRole;
-    }
-
     public static DtoMappingContextBuilder builder(){
         return new DtoMappingContextBuilder();
     }
 
 
-    public DtoMappingContextBuilder withRole(String role){
-        this.currentRole=role;
+    public DtoMappingContextBuilder withRoles(String... roles){
+        this.currentRoles =Lists.newArrayList(roles);
         this.mc.setIgnoreRole(false);
         return this;
     }
 
     public DtoMappingContextBuilder withoutRole(){
-        this.currentRole=null;
+        this.currentRoles = new ArrayList<>();
         return this;
     }
 
@@ -150,12 +142,12 @@ public class DtoMappingContextBuilder {
 
     public DtoMappingContext build(){
         //create ignore Role Map
-        mc.getMappingEntries().entrySet().forEach(e ->{
-            DtoMappingInfo ignoreRoleInfo = new DtoMappingInfo(e.getKey());
-            ignoreRoleInfo.getAuthorities().clear();
-            mc.getMappingEntriesIgnoreRole()
-                    .computeIfAbsent(ignoreRoleInfo, k -> e.getValue());
-        });
+//        mc.getMappingEntries().entrySet().forEach(e ->{
+//            DtoMappingInfo ignoreRoleInfo = new DtoMappingInfo(e.getKey());
+//            ignoreRoleInfo.getAuthorities().clear();
+//            mc.getMappingEntriesIgnoreRole()
+//                    .computeIfAbsent(ignoreRoleInfo, k -> e.getValue());
+//        });
         return mc;
     }
 
@@ -176,7 +168,7 @@ public class DtoMappingContextBuilder {
 
     private DtoMappingInfo createInfo(String endpoint, Direction direction){
         return DtoMappingInfo.builder()
-                .authorities(Lists.newArrayList(currentRole))
+                .authorities(currentRoles)
                 .endpoint(endpoint)
                 .direction(direction)
                 .build();

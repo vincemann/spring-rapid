@@ -14,10 +14,10 @@ import java.util.stream.Collectors;
 public class DelegatingFallbackToDefaultDtoMapper implements DtoMapper {
 
     private List<DtoMapper> delegates = new ArrayList<>();
-    private DtoMapper defaultDelegate;
+    private DtoMapper defaultMapper;
 
-    public DelegatingFallbackToDefaultDtoMapper(@Qualifier("default") DtoMapper defaultDelegate) {
-        this.defaultDelegate = defaultDelegate;
+    public DelegatingFallbackToDefaultDtoMapper(@Qualifier("default") DtoMapper defaultMapper) {
+        this.defaultMapper = defaultMapper;
     }
 
     @Override
@@ -60,8 +60,8 @@ public class DelegatingFallbackToDefaultDtoMapper implements DtoMapper {
                         filter(mapper -> mapper.isDtoClassSupported(dtoClass)).
                         collect(Collectors.toList());
         if(matchingMappers.isEmpty()){
-            log.debug("No dtoMapper found in user specified mappers, returning default mapper: " + defaultDelegate);
-            return defaultDelegate;
+            log.debug("No dtoMapper found in user specified mappers, returning default mapper: " + defaultMapper);
+            return defaultMapper;
         }else if(matchingMappers.size()==1){
             log.debug("found dto mapper matching dto class: " + dtoClass + " is:" + matchingMappers.get(0));
             return matchingMappers.get(0);
