@@ -1,4 +1,4 @@
-package io.github.vincemann.demo.controllers.springAdapter.abs;
+package io.github.vincemann.demo.lib.controller;
 
 import io.github.vincemann.generic.crud.lib.controller.dtoMapper.context.DtoMappingContext;
 import io.github.vincemann.generic.crud.lib.controller.springAdapter.SpringAdapterJsonDtoCrudController;

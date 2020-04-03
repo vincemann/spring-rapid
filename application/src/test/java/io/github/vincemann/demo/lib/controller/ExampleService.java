@@ -1,4 +1,4 @@
-package io.github.vincemann.demo.controllers.springAdapter.abs;
+package io.github.vincemann.demo.lib.controller;
 
 import io.github.vincemann.generic.crud.lib.service.CrudService;
 import org.springframework.data.repository.CrudRepository;
