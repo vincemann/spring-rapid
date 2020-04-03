@@ -13,7 +13,6 @@ import org.springframework.context.annotation.Configuration;
 @WebConfig
 public class JacksonConfig {
 
-    @ConditionalOnMissingBean
     @Bean
     public ObjectMapper objectMapper(){
         ObjectMapper mapper= new LoggingObjectMapper();

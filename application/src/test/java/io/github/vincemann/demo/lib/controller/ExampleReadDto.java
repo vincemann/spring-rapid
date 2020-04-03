@@ -1,15 +1,13 @@
-package io.github.vincemann.demo.controllers.springAdapter.abs;
+package io.github.vincemann.demo.lib.controller;
 
 import io.github.vincemann.generic.crud.lib.model.IdentifiableEntityImpl;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 @AllArgsConstructor
 @Getter
 @Setter
 @NoArgsConstructor
+@ToString
 public class ExampleReadDto extends IdentifiableEntityImpl<Long> {
     private String name;
 }
