@@ -1,0 +1,58 @@
+package io.github.vincemann.springrapid.core.config;
+
+import io.github.vincemann.springrapid.core.config.layers.config.WebConfig;
+import io.github.vincemann.springrapid.core.controller.dtoMapper.BasicDtoMapper;
+import io.github.vincemann.springrapid.core.controller.dtoMapper.DelegatingFallbackToDefaultDtoMapper;
+import io.github.vincemann.springrapid.core.controller.dtoMapper.DtoMapper;
+import io.github.vincemann.springrapid.core.controller.dtoMapper.idResolver.EntityIdResolver;
+import io.github.vincemann.springrapid.core.controller.dtoMapper.idResolver.IdResolvingDtoMapper;
+import io.github.vincemann.springrapid.core.controller.dtoMapper.idResolver.biDir.BiDirChildIdResolver;
+import io.github.vincemann.springrapid.core.controller.dtoMapper.idResolver.biDir.BiDirParentIdResolver;
+import io.github.vincemann.springrapid.core.controller.dtoMapper.idResolver.uniDir.UniDirChildIdResolver;
+import io.github.vincemann.springrapid.core.controller.dtoMapper.idResolver.uniDir.UniDirParentIdResolver;
+import io.github.vincemann.springrapid.core.service.locator.CrudServiceLocator;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.context.annotation.*;
+
+import java.util.List;
+
+@Import(CrudServiceLocatorConfig.class)
+@WebConfig
+public class DtoMapperConfig {
+
+    @Qualifier("default")
+    @Bean
+    public DtoMapper defaultDtoMapper(){
+        return new BasicDtoMapper();
+    }
+
+    @Bean
+    public EntityIdResolver biDiChildIdResolver(CrudServiceLocator crudServiceLocator){
+        return new BiDirChildIdResolver(crudServiceLocator);
+    }
+
+    @Bean
+    public EntityIdResolver uniDirChildIdResolver(CrudServiceLocator crudServiceLocator){
+        return new UniDirChildIdResolver(crudServiceLocator);
+    }
+
+    @Bean
+    public EntityIdResolver biDiParentIdResolver(CrudServiceLocator crudServiceLocator){
+        return new BiDirParentIdResolver(crudServiceLocator);
+    }
+
+    @Bean
+    public EntityIdResolver uniDirParentIdResolver(CrudServiceLocator crudServiceLocator){
+        return new UniDirParentIdResolver(crudServiceLocator);
+    }
+
+    @Primary
+    @Bean
+    public DtoMapper dtoMapper(List<EntityIdResolver> entityIdResolvers){
+        DelegatingFallbackToDefaultDtoMapper delegatingFallbackToDefaultDtoMapper = new DelegatingFallbackToDefaultDtoMapper(defaultDtoMapper());
+        delegatingFallbackToDefaultDtoMapper.registerDelegate(new IdResolvingDtoMapper(entityIdResolvers));
+        return delegatingFallbackToDefaultDtoMapper;
+    }
+
+
+}
