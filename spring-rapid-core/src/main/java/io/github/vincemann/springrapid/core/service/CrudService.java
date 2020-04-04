@@ -1,6 +1,6 @@
 package io.github.vincemann.springrapid.core.service;
 
-import io.github.vincemann.springrapid.core.config.layers.component.ServiceComponent;
+import io.github.vincemann.springrapid.core.slicing.components.ServiceComponent;
 import io.github.vincemann.springrapid.core.service.exception.BadEntityException;
 import io.github.vincemann.springrapid.core.model.IdentifiableEntity;
 import io.github.vincemann.springrapid.core.service.exception.EntityNotFoundException;

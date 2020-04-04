@@ -1,7 +1,7 @@
 package io.github.vincemann.springrapid.demo.service.plugin;
 
 import io.github.vincemann.springrapid.demo.model.Owner;
-import io.github.vincemann.springrapid.core.config.layers.component.ServiceComponent;
+import io.github.vincemann.springrapid.core.slicing.components.ServiceComponent;
 import io.github.vincemann.springrapid.core.service.plugin.CrudServicePlugin;
 
 import java.util.Optional;

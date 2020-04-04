@@ -1,7 +1,7 @@
 package io.github.vincemann.springrapid.exceptions.exceptionHandler;
 
 import io.github.vincemann.springrapid.core.controller.DtoCrudController;
-import io.github.vincemann.springrapid.core.controller.dtoMapper.exception.DtoMappingException;
+import io.github.vincemann.springrapid.core.controller.dtoMapper.DtoMappingException;
 import io.github.vincemann.springrapid.core.controller.springAdapter.DtoSerializingException;
 import io.github.vincemann.springrapid.core.service.exception.BadEntityException;
 import io.github.vincemann.springrapid.core.service.exception.EntityNotFoundException;

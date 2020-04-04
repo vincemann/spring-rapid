@@ -1,6 +1,6 @@
 package io.github.vincemann.springrapid.entityrelationship.controller.dtomapper.idResolver.uniDir;
 
-import io.github.vincemann.springrapid.core.controller.dtoMapper.exception.DtoMappingException;
+import io.github.vincemann.springrapid.core.controller.dtoMapper.DtoMappingException;
 import io.github.vincemann.springrapid.entityrelationship.controller.dtomapper.idResolver.UniDirParentIdResolver;
 import io.github.vincemann.springrapid.entityrelationship.controller.dtomapper.idResolver.uniDir.abs.UniDirEntityResolverTest;
 import io.github.vincemann.springrapid.entityrelationship.controller.dtomapper.idResolver.uniDir.testEntities.UniDirEntityParent;

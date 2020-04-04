@@ -1,6 +1,6 @@
 package io.github.vincemann.springrapid.core.config;
 
-import io.github.vincemann.springrapid.core.config.layers.config.WebConfig;
+import io.github.vincemann.springrapid.core.slicing.config.WebConfig;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.http.MediaType;
 import org.springframework.web.servlet.config.annotation.ContentNegotiationConfigurer;

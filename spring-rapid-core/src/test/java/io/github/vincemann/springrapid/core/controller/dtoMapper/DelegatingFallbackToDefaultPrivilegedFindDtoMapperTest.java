@@ -1,6 +1,5 @@
 package io.github.vincemann.springrapid.core.controller.dtoMapper;
 
-import io.github.vincemann.springrapid.core.controller.dtoMapper.exception.DtoMappingException;
 import io.github.vincemann.springrapid.core.model.IdentifiableEntityImpl;
 import lombok.AllArgsConstructor;
 import lombok.Getter;

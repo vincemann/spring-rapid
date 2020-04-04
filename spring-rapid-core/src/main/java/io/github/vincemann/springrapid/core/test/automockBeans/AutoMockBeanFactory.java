@@ -1,6 +1,6 @@
 package io.github.vincemann.springrapid.core.test.automockBeans;
 
-import io.github.vincemann.springrapid.core.config.layers.component.ServiceComponent;
+import io.github.vincemann.springrapid.core.slicing.components.ServiceComponent;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 import org.springframework.beans.factory.UnsatisfiedDependencyException;

@@ -1,6 +1,6 @@
 package io.github.vincemann.springrapid.demo.controllers;
 
-import io.github.vincemann.springrapid.core.config.layers.component.WebController;
+import io.github.vincemann.springrapid.core.slicing.components.WebController;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 @WebController

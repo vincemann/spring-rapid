@@ -1,6 +1,6 @@
 package io.github.vincemann.springrapid.entityrelationship.controller.dtomapper.idResolver;
 
-import io.github.vincemann.springrapid.core.controller.dtoMapper.exception.DtoMappingException;
+import io.github.vincemann.springrapid.core.controller.dtoMapper.DtoMappingException;
 import io.github.vincemann.springrapid.core.service.CrudService;
 import io.github.vincemann.springrapid.core.service.locator.CrudServiceLocator;
 import io.github.vincemann.springrapid.core.service.exception.EntityNotFoundException;

@@ -2,7 +2,7 @@ package io.github.vincemann.springrapid.entityrelationship.controller.dtomapper.
 
 import io.github.vincemann.springrapid.entityrelationship.controller.dtomapper.idResolver.biDir.testEntities.BiDirEntityParent;
 import io.github.vincemann.springrapid.entityrelationship.controller.dtomapper.idResolver.biDir.testEntities.BiDirEntityParentDto;
-import io.github.vincemann.springrapid.core.controller.dtoMapper.exception.DtoMappingException;
+import io.github.vincemann.springrapid.core.controller.dtoMapper.DtoMappingException;
 import io.github.vincemann.springrapid.entityrelationship.controller.dtomapper.idResolver.biDir.abs.BiDirEntityResolverTest;
 import io.github.vincemann.springrapid.core.service.exception.NoIdException;
 import org.junit.jupiter.api.Assertions;
