@@ -6,36 +6,17 @@
     <artifactId>spring-crud-demo</artifactId>
     <packaging>jar</packaging>
 
+
+
     <parent>
         <groupId>io.github.vincemann</groupId>
         <artifactId>spring-rapid</artifactId>
         <version>0.1.0</version>
     </parent>
 
-    <dependencies>
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-actuator</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-data-jpa</artifactId>
-        </dependency>
-        <!-- https://mvnrepository.com/artifact/org.springframework.security/spring-security-core -->
-        <dependency>
-            <groupId>org.springframework.security</groupId>
-            <artifactId>spring-security-core</artifactId>
-        </dependency>
-        <!-- https://mvnrepository.com/artifact/org.springframework.security/spring-security-test -->
-        <dependency>
-            <groupId>org.springframework.security</groupId>
-            <artifactId>spring-security-test</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-web</artifactId>
-        </dependency>
 
+
+    <dependencies>
         <dependency>
             <groupId>io.github.vincemann</groupId>
             <artifactId>spring-rapid-core</artifactId>
@@ -43,10 +24,41 @@
         </dependency>
 
         <dependency>
-            <groupId>org.mockito</groupId>
-            <artifactId>mockito-junit-jupiter</artifactId>
-            <version>2.22.0</version>
-            <scope>test</scope>
+            <groupId>io.github.vincemann</groupId>
+            <artifactId>spring-rapid-entity-relationship</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>io.github.vincemann</groupId>
+            <artifactId>spring-rapid-exceptions</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+
+
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-actuator</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-data-jpa</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>org.springframework.security</groupId>
+            <artifactId>spring-security-core</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>org.springframework.security</groupId>
+            <artifactId>spring-security-test</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-web</artifactId>
         </dependency>
 
         <dependency>
@@ -66,23 +78,13 @@
             <optional>true</optional>
         </dependency>
 
-        <!-- https://mvnrepository.com/artifact/org.slf4j/slf4j-simple -->
-        <dependency>
-            <groupId>org.slf4j</groupId>
-            <artifactId>slf4j-simple</artifactId>
-            <version>2.0.0-alpha0</version>
-            <scope>compile</scope>
-        </dependency>
-
         <dependency>
             <groupId>com.github.Hervian</groupId>
             <artifactId>safety-mirror</artifactId>
             <version>1.0.0</version>
         </dependency>
 
-
     </dependencies>
-
 
 
 
@@ -94,5 +96,7 @@
             </plugin>
         </plugins>
     </build>
+
+
 
 </project>

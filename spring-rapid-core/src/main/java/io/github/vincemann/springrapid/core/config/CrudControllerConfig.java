@@ -1,8 +1,6 @@
 package io.github.vincemann.springrapid.core.config;
 
 import io.github.vincemann.springrapid.core.config.layers.config.WebConfig;
-import io.github.vincemann.springrapid.core.controller.errorHandling.exceptionHandler.DtoCrudControllerExceptionHandler;
-import io.github.vincemann.springrapid.core.controller.errorHandling.exceptionHandler.DtoCrudControllerExceptionHandlerImpl;
 import io.github.vincemann.springrapid.core.controller.springAdapter.EndpointsExposureContext;
 import io.github.vincemann.springrapid.core.controller.springAdapter.idFetchingStrategy.IdFetchingStrategy;
 import io.github.vincemann.springrapid.core.controller.springAdapter.idFetchingStrategy.LongUrlParamIdFetchingStrategy;
@@ -13,7 +11,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
-import org.springframework.context.annotation.*;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Import;
+import org.springframework.context.annotation.Scope;
 import org.springframework.validation.beanvalidation.LocalValidatorFactoryBean;
 import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping;
 
@@ -30,11 +30,6 @@ public class CrudControllerConfig {
         return idUrlParamKey;
     }
 
-    @ConditionalOnMissingBean
-    @Bean
-    public DtoCrudControllerExceptionHandler dtoCrudControllerExceptionHandler() {
-        return new DtoCrudControllerExceptionHandlerImpl();
-    }
 
     @ConditionalOnMissingBean
     @Bean

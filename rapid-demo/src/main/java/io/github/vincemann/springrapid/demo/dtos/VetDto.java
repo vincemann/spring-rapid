@@ -1,8 +1,8 @@
 package io.github.vincemann.springrapid.demo.dtos;
 
 import io.github.vincemann.springrapid.demo.model.Specialty;
-import io.github.vincemann.springrapid.core.dto.uniDir.UniDirChildIdCollection;
-import io.github.vincemann.springrapid.core.dto.uniDir.UniDirParentDto;
+import io.github.vincemann.springrapid.entityrelationship.dto.uniDir.UniDirChildIdCollection;
+import io.github.vincemann.springrapid.entityrelationship.dto.uniDir.UniDirParentDto;
 import lombok.*;
 import org.springframework.lang.Nullable;
 import org.springframework.validation.annotation.Validated;

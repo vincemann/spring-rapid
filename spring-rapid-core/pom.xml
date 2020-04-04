@@ -12,56 +12,33 @@
         <version>0.1.0</version>
     </parent>
 
+
+
     <dependencies>
 
         <dependency>
-            <groupId>com.google.guava</groupId>
-            <artifactId>guava</artifactId>
-            <version>28.2-jre</version>
-        </dependency>
-
-<!--        <dependency>-->
-<!--            <groupId>org.springframework.boot</groupId>-->
-<!--            <artifactId>spring-boot-starter</artifactId>-->
-<!--            <scope>provided</scope>-->
-<!--        </dependency>-->
-        <!-- https://mvnrepository.com/artifact/org.springframework.boot/spring-boot-starter-web -->
-        <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-web</artifactId>
-            <scope>provided</scope>
+            <scope>compile</scope>
         </dependency>
-
 
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-data-jpa</artifactId>
-            <scope>provided</scope>
+            <scope>compile</scope>
         </dependency>
 
-        <!-- https://mvnrepository.com/artifact/org.springframework.security/spring-security-core -->
         <dependency>
             <groupId>org.springframework.security</groupId>
             <artifactId>spring-security-core</artifactId>
             <scope>provided</scope>
         </dependency>
-        <!-- https://mvnrepository.com/artifact/org.springframework.security/spring-security-test -->
+
         <dependency>
             <groupId>org.springframework.security</groupId>
             <artifactId>spring-security-test</artifactId>
             <scope>provided</scope>
         </dependency>
-
-
-        <!-- https://mvnrepository.com/artifact/org.slf4j/slf4j-api -->
-        <dependency>
-            <groupId>org.slf4j</groupId>
-            <artifactId>slf4j-api</artifactId>
-            <version>1.7.27</version>
-        </dependency>
-
-
-
 
         <dependency>
             <groupId>org.modelmapper</groupId>
@@ -69,6 +46,7 @@
             <version>2.3.4</version>
             <scope>compile</scope>
         </dependency>
+
         <dependency>
             <groupId>javax.validation</groupId>
             <artifactId>validation-api</artifactId>
@@ -76,22 +54,6 @@
             <scope>compile</scope>
         </dependency>
 
-        <!-- Junit 5 importieren-->
-        <dependency>
-            <groupId>org.junit.jupiter</groupId>
-            <artifactId>junit-jupiter-api</artifactId>
-            <version>5.5.0-M1</version>
-            <scope>provided</scope>
-        </dependency>
-        <!--<dependency>
-            <groupId>org.junit.jupiter</groupId>
-            <artifactId>junit-jupiter-engine</artifactId>
-            <version>5.4.2</version>
-            <scope>provided</scope>
-        </dependency>-->
-
-        <!-- https://mvnrepository.com/artifact/com.fasterxml.jackson.core/jackson-core -->
-        <!-- https://mvnrepository.com/artifact/org.apache.commons/commons-lang3 -->
         <dependency>
             <groupId>org.apache.commons</groupId>
             <artifactId>commons-lang3</artifactId>
@@ -99,16 +61,12 @@
         </dependency>
 
         <!-- transfer non null values reflectively while udating -->
-        <!-- https://mvnrepository.com/artifact/commons-beanutils/commons-beanutils -->
         <dependency>
             <groupId>commons-beanutils</groupId>
             <artifactId>commons-beanutils</artifactId>
             <version>1.9.4</version>
         </dependency>
 
-
-
-        <!-- https://mvnrepository.com/artifact/org.apache.commons/commons-collections4 -->
         <dependency>
             <groupId>org.apache.commons</groupId>
             <artifactId>commons-collections4</artifactId>
@@ -129,23 +87,12 @@
             <scope>compile</scope>
         </dependency>
 
-        <dependency>
-            <groupId>org.junit.platform</groupId>
-            <artifactId>junit-platform-commons</artifactId>
-            <version>1.4.1</version>
-            <scope>test</scope>
-        </dependency>
-
-        <dependency>
-            <groupId>org.mockito</groupId>
-            <artifactId>mockito-junit-jupiter</artifactId>
-            <version>2.22.0</version>
-            <scope>test</scope>
-        </dependency>
-
     </dependencies>
 
+
+
     <repositories>
+
         <repository>
             <id>my</id>
             <url>file://${basedir}/lib/</url>
@@ -158,8 +105,11 @@
 
     </repositories>
 
+
+
     <build>
         <plugins>
+
             <plugin>
                 <artifactId>maven-deploy-plugin</artifactId>
                 <version>2.8.2</version>
@@ -203,33 +153,22 @@
                     </execution>
                 </executions>
             </plugin>
+
         </plugins>
     </build>
 
 
 
-
-
     <distributionManagement>
-
         <snapshotRepository>
-
             <id>ossrh</id>
-
             <url>https://oss.sonatype.org/content/repositories/snapshots</url>
-
         </snapshotRepository>
-
         <repository>
-
             <id>ossrh</id>
-
             <url>https://oss.sonatype.org/service/local/staging/deploy/maven2/
-
             </url>
-
         </repository>
-
     </distributionManagement>
 
 </project>

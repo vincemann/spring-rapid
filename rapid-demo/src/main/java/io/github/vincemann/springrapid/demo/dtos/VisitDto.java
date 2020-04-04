@@ -1,8 +1,8 @@
 package io.github.vincemann.springrapid.demo.dtos;
 
 import io.github.vincemann.springrapid.demo.model.Pet;
-import io.github.vincemann.springrapid.core.dto.uniDir.UniDirParentId;
-import io.github.vincemann.springrapid.core.model.uniDir.child.UniDirChild;
+import io.github.vincemann.springrapid.entityrelationship.dto.uniDir.UniDirParentId;
+import io.github.vincemann.springrapid.entityrelationship.model.uniDir.child.UniDirChild;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;

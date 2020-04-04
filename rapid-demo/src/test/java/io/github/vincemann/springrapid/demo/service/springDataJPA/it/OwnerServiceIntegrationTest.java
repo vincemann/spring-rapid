@@ -33,7 +33,6 @@ import static io.github.vincemann.springrapid.core.test.service.result.matcher.c
 import static io.github.vincemann.springrapid.core.test.service.result.matcher.compare.resolve.CompareEntityPlaceholder.DB_ENTITY;
 import static io.github.vincemann.springrapid.core.test.service.result.matcher.compare.resolve.CompareEntityPlaceholder.SERVICE_INPUT_ENTITY;
 
-//only load service "slice" of application context via service profile and Springs DataJpa Slice Test
 
 class OwnerServiceIntegrationTest
         extends CrudServiceIntegrationTest<OwnerService, Owner, Long> {

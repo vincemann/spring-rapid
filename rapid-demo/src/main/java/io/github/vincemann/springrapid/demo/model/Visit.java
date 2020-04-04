@@ -1,7 +1,7 @@
 package io.github.vincemann.springrapid.demo.model;
 
-import io.github.vincemann.springrapid.core.model.uniDir.child.UniDirChildEntity;
-import io.github.vincemann.springrapid.core.model.uniDir.parent.UniDirParent;
+import io.github.vincemann.springrapid.entityrelationship.model.uniDir.child.UniDirChildEntity;
+import io.github.vincemann.springrapid.entityrelationship.model.uniDir.parent.UniDirParent;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
