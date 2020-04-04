@@ -1,6 +1,6 @@
 package io.github.vincemann.springrapid.demo.config;
 
-import io.github.vincemann.springrapid.core.config.layers.config.WebConfig;
+import io.github.vincemann.springrapid.core.slicing.config.WebConfig;
 import org.springframework.context.annotation.Bean;
 import org.springframework.web.filter.CommonsRequestLoggingFilter;
 

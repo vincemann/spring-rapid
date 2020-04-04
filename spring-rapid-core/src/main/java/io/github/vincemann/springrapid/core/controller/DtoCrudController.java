@@ -1,6 +1,6 @@
 package io.github.vincemann.springrapid.core.controller;
 
-import io.github.vincemann.springrapid.core.controller.dtoMapper.exception.DtoMappingException;
+import io.github.vincemann.springrapid.core.controller.dtoMapper.DtoMappingException;
 import io.github.vincemann.springrapid.core.controller.springAdapter.DtoSerializingException;
 import io.github.vincemann.springrapid.core.model.IdentifiableEntity;
 import io.github.vincemann.springrapid.core.service.exception.BadEntityException;

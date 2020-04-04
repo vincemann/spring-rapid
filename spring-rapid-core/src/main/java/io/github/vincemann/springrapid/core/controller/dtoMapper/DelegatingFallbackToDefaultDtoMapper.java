@@ -1,7 +1,6 @@
 package io.github.vincemann.springrapid.core.controller.dtoMapper;
 
 import io.github.vincemann.springrapid.core.advice.log.LogInteraction;
-import io.github.vincemann.springrapid.core.controller.dtoMapper.exception.DtoMappingException;
 import io.github.vincemann.springrapid.core.model.IdentifiableEntity;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Qualifier;

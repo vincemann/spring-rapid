@@ -1,6 +1,6 @@
 package io.github.vincemann.springrapid.entityrelationship.config;
 
-import io.github.vincemann.springrapid.core.config.layers.config.WebConfig;
+import io.github.vincemann.springrapid.core.slicing.config.WebConfig;
 import io.github.vincemann.springrapid.core.controller.dtoMapper.DelegatingFallbackToDefaultDtoMapper;
 import io.github.vincemann.springrapid.core.controller.dtoMapper.DtoMapper;
 import io.github.vincemann.springrapid.core.service.locator.CrudServiceLocator;

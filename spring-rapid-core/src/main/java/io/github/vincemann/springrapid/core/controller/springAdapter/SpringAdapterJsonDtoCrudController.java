@@ -4,7 +4,7 @@ import io.github.vincemann.springrapid.core.controller.JsonDtoCrudController;
 import io.github.vincemann.springrapid.core.controller.dtoMapper.context.Direction;
 import io.github.vincemann.springrapid.core.controller.dtoMapper.context.DtoMappingContext;
 import io.github.vincemann.springrapid.core.controller.dtoMapper.context.CrudDtoEndpoint;
-import io.github.vincemann.springrapid.core.controller.dtoMapper.exception.DtoMappingException;
+import io.github.vincemann.springrapid.core.controller.dtoMapper.DtoMappingException;
 import io.github.vincemann.springrapid.core.controller.springAdapter.idFetchingStrategy.IdFetchingStrategy;
 import io.github.vincemann.springrapid.core.controller.springAdapter.idFetchingStrategy.UrlParamIdFetchingStrategy;
 import io.github.vincemann.springrapid.core.controller.springAdapter.idFetchingStrategy.exception.IdFetchingException;

@@ -8,7 +8,7 @@ import io.github.vincemann.springrapid.core.controller.dtoMapper.context.Directi
 import io.github.vincemann.springrapid.core.controller.dtoMapper.context.DtoMappingContext;
 import io.github.vincemann.springrapid.core.controller.dtoMapper.context.DtoMappingInfo;
 import io.github.vincemann.springrapid.core.controller.dtoMapper.context.CrudDtoEndpoint;
-import io.github.vincemann.springrapid.core.controller.dtoMapper.exception.DtoMappingException;
+import io.github.vincemann.springrapid.core.controller.dtoMapper.DtoMappingException;
 import io.github.vincemann.springrapid.core.controller.springAdapter.DtoSerializingException;
 import io.github.vincemann.springrapid.core.model.IdentifiableEntity;
 import io.github.vincemann.springrapid.core.service.CrudService;

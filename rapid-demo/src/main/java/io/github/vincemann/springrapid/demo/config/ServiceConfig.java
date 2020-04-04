@@ -10,7 +10,7 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Primary;
 
-@io.github.vincemann.springrapid.core.config.layers.config.ServiceConfig
+@io.github.vincemann.springrapid.core.slicing.config.ServiceConfig
 public class ServiceConfig {
 
     @Primary

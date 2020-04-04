@@ -1,6 +1,6 @@
 package io.github.vincemann.springrapid.entityrelationship.controller.dtomapper.idResolver.biDir;
 
-import io.github.vincemann.springrapid.core.controller.dtoMapper.exception.DtoMappingException;
+import io.github.vincemann.springrapid.core.controller.dtoMapper.DtoMappingException;
 import io.github.vincemann.springrapid.entityrelationship.controller.dtomapper.idResolver.EntityIdResolver;
 import io.github.vincemann.springrapid.entityrelationship.dto.biDir.BiDirChildDto;
 import io.github.vincemann.springrapid.entityrelationship.model.biDir.child.BiDirChild;

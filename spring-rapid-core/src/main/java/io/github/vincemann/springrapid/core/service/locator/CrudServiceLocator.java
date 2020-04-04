@@ -1,6 +1,6 @@
 package io.github.vincemann.springrapid.core.service.locator;
 
-import io.github.vincemann.springrapid.core.config.layers.component.ServiceComponent;
+import io.github.vincemann.springrapid.core.slicing.components.ServiceComponent;
 import io.github.vincemann.springrapid.core.model.IdentifiableEntity;
 import io.github.vincemann.springrapid.core.service.CrudService;
 import io.github.vincemann.springrapid.core.service.ServiceBeanType;

@@ -5,7 +5,7 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.github.vincemann.springrapid.core.controller.dtoMapper.context.DtoMappingContext;
-import io.github.vincemann.springrapid.core.controller.dtoMapper.exception.DtoMappingException;
+import io.github.vincemann.springrapid.core.controller.dtoMapper.DtoMappingException;
 import io.github.vincemann.springrapid.core.controller.springAdapter.SpringAdapterJsonDtoCrudController;
 import io.github.vincemann.springrapid.core.model.IdentifiableEntity;
 import io.github.vincemann.springrapid.core.service.CrudService;

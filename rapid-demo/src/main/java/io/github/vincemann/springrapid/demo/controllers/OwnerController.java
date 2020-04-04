@@ -4,7 +4,7 @@ import io.github.vincemann.springrapid.demo.dtos.owner.CreateOwnerDto;
 import io.github.vincemann.springrapid.demo.dtos.owner.ReadOwnerDto;
 import io.github.vincemann.springrapid.demo.dtos.owner.UpdateOwnerDto;
 import io.github.vincemann.springrapid.demo.model.Owner;
-import io.github.vincemann.springrapid.core.config.layers.component.WebController;
+import io.github.vincemann.springrapid.core.slicing.components.WebController;
 import io.github.vincemann.springrapid.core.controller.dtoMapper.context.Direction;
 import io.github.vincemann.springrapid.core.controller.dtoMapper.context.DtoMappingContextBuilder;
 import io.github.vincemann.springrapid.core.controller.dtoMapper.context.CrudDtoEndpoint;
