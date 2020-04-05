@@ -5,7 +5,7 @@
 
     <groupId>io.github.vincemann</groupId>
     <artifactId>spring-rapid</artifactId>
-    <version>0.1.0</version>
+    <version>${rapid.version}</version>
     <packaging>pom</packaging>
 
 
@@ -14,6 +14,7 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <maven.compiler.source>11</maven.compiler.source>
         <maven.compiler.target>11</maven.compiler.target>
+        <rapid.version>1.0.0-SNAPSHOT</rapid.version>
     </properties>
 
 
@@ -69,7 +70,7 @@
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-simple</artifactId>
             <version>2.0.0-alpha0</version>
-            <scope>compile</scope>
+            <optional>true</optional>
         </dependency>
 
         <dependency>
@@ -95,8 +96,24 @@
 
     </dependencies>
 
+
+    <distributionManagement>
+        <repository>
+            <id>github</id>
+            <name>GitHub vincemann Apache Maven Packages</name>
+            <url>https://maven.pkg.github.com/vincemann/spring-rapid</url>
+        </repository>
+
+        <snapshotRepository>
+            <id>github</id>
+            <name>GitHub vincemann Apache Maven Snapshots</name>
+            <url>https://maven.pkg.github.com/vincemann/spring-rapid</url>
+        </snapshotRepository>
+
+    </distributionManagement>
+
+
     <build>
-        <directory>/home/vince/projekte/important/spring-rapid-repository</directory>
         <plugins>
 
             <plugin>

@@ -10,7 +10,7 @@
     <parent>
         <groupId>io.github.vincemann</groupId>
         <artifactId>spring-rapid</artifactId>
-        <version>0.1.0</version>
+        <version>${rapid.version}</version>
     </parent>
 
 
