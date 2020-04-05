@@ -19,8 +19,8 @@
 
 
     <modules>
-        <module>spring-rapid-core</module>
         <module>rapid-demo</module>
+        <module>spring-rapid-core</module>
         <module>spring-rapid-entity-relationship</module>
         <module>spring-rapid-exceptions</module>
         <module>spring-rapid-security</module>
@@ -94,6 +94,42 @@
         </dependency>
 
     </dependencies>
+
+    <build>
+        <directory>/home/vince/projekte/important/spring-rapid-repository</directory>
+        <plugins>
+
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-source-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>attach-sources</id>
+                        <goals>
+                            <goal>jar</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-javadoc-plugin</artifactId>
+                <configuration>
+                    <failOnError>false</failOnError>
+                </configuration>
+                <executions>
+                    <execution>
+                        <id>attach-javadocs</id>
+                        <goals>
+                            <goal>jar</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+
+        </plugins>
+    </build>
 
 
 

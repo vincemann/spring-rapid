@@ -5,7 +5,10 @@
 .idea/**
 # Generated files
 .idea/**/contentModel.xml
-
+/target/**
+spring-rapid-core/target
+*/target/*
+*/target/**/
 # Sensitive or high-churn files
 .idea/**/dataSources/
 .idea/**/dataSources.ids
@@ -16,11 +19,8 @@
 .idea/**/dbnavigator.xml
 .idea/
 out/
-library/target/
-library/build.sh
-library/backup/
 
-application/target/
+buildAndDeploy.sh
 # Gradle
 .idea/**/gradle.xml
 .idea/**/libraries
