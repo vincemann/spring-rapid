@@ -4,7 +4,7 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>io.github.vincemann</groupId>
-    <artifactId>spring-crud-demo</artifactId>
+    <artifactId>rapid-demo</artifactId>
     <packaging>jar</packaging>
 
 
@@ -12,7 +12,7 @@
     <parent>
         <groupId>io.github.vincemann</groupId>
         <artifactId>spring-rapid</artifactId>
-        <version>0.1.0</version>
+        <version>${rapid.version}</version>
     </parent>
 
 
@@ -22,19 +22,19 @@
         <dependency>
             <groupId>io.github.vincemann</groupId>
             <artifactId>spring-rapid-core</artifactId>
-            <version>${project.version}</version>
+            <version>${rapid.version}</version>
         </dependency>
 
         <dependency>
             <groupId>io.github.vincemann</groupId>
             <artifactId>spring-rapid-entity-relationship</artifactId>
-            <version>${project.version}</version>
+            <version>${rapid.version}</version>
         </dependency>
 
         <dependency>
             <groupId>io.github.vincemann</groupId>
             <artifactId>spring-rapid-exceptions</artifactId>
-            <version>${project.version}</version>
+            <version>${rapid.version}</version>
         </dependency>
 
 
@@ -71,7 +71,6 @@
         <dependency>
             <groupId>com.h2database</groupId>
             <artifactId>h2</artifactId>
-            <scope>compile</scope>
         </dependency>
 
         <dependency>
