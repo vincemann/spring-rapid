@@ -5,7 +5,7 @@ Also say goodbye to manually handling bidirectional relationships of entities. T
 But:  
 This library is under active developement and the testcoverage is not sufficient yet.  
 Feel free to extract the parts you need and/or help coding!  
-See the example application under application/ and the code examples below to get a feeling for what it is all about.  
+See the demo application under rapid-demo/ and the code examples below to get a feeling for what it is all about.  
   
   
 # Features  
