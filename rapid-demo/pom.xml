@@ -12,7 +12,7 @@
     <parent>
         <groupId>io.github.vincemann</groupId>
         <artifactId>spring-rapid</artifactId>
-        <version>${rapid.version}</version>
+        <version>0.0.1</version>
     </parent>
 
 
@@ -22,19 +22,19 @@
         <dependency>
             <groupId>io.github.vincemann</groupId>
             <artifactId>spring-rapid-core</artifactId>
-            <version>${rapid.version}</version>
+            <version>0.0.1</version>
         </dependency>
 
         <dependency>
             <groupId>io.github.vincemann</groupId>
             <artifactId>spring-rapid-entity-relationship</artifactId>
-            <version>${rapid.version}</version>
+            <version>0.0.1</version>
         </dependency>
 
         <dependency>
             <groupId>io.github.vincemann</groupId>
             <artifactId>spring-rapid-exceptions</artifactId>
-            <version>${rapid.version}</version>
+            <version>0.0.1</version>
         </dependency>
 
 
