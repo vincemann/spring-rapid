@@ -135,7 +135,7 @@ public abstract class MvcCrudControllerTest
     }
 
     public <Dto> Dto deserialize(String s, TypeReference<?> dtoClass) throws IOException {
-        return getController().getJsonMapper().readValue(s,dtoClass);
+        return (Dto) getController().getJsonMapper().readValue(s,dtoClass);
     }
 
     public <Dto> Dto deserialize(String s, JavaType dtoClass) throws IOException {
