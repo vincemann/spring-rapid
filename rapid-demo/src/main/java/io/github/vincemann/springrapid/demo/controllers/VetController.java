@@ -4,13 +4,13 @@ import io.github.vincemann.springrapid.demo.dtos.VetDto;
 import io.github.vincemann.springrapid.demo.model.Vet;
 import io.github.vincemann.springrapid.core.slicing.components.WebController;
 import io.github.vincemann.springrapid.core.controller.dtoMapper.context.DtoMappingContextBuilder;
-import io.github.vincemann.springrapid.core.controller.springAdapter.SpringAdapterJsonDtoCrudController;
+import io.github.vincemann.springrapid.core.controller.rapid.RapidController;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 @WebController
 public class VetController
-        extends SpringAdapterJsonDtoCrudController<Vet, Long> {
+        extends RapidController<Vet, Long> {
 
     public VetController() {
         super(DtoMappingContextBuilder.builder()

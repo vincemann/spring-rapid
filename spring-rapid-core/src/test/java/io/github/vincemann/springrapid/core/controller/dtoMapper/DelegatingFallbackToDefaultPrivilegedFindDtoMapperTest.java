@@ -13,7 +13,7 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.*;
 
 class DelegatingFallbackToDefaultPrivilegedFindDtoMapperTest {
-    DelegatingFallbackToDefaultDtoMapper mapper;
+    DelegatingDtoMapper mapper;
     DtoMapper defaultMapper;
 
     DtoMapper customEntityMapper;
@@ -56,7 +56,7 @@ class DelegatingFallbackToDefaultPrivilegedFindDtoMapperTest {
         when(customEntityMapper.isDtoClassSupported(KnownDto.class))
                 .thenReturn(true);
         defaultMapper = Mockito.mock(DtoMapper.class);
-        mapper = new DelegatingFallbackToDefaultDtoMapper(defaultMapper);
+        mapper = new DelegatingDtoMapper(defaultMapper);
         mapper.registerDelegate(customEntityMapper);
     }
 

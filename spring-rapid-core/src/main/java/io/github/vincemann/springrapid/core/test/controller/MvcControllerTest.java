@@ -1,7 +1,7 @@
 package io.github.vincemann.springrapid.core.test.controller;
 
 import io.github.vincemann.springrapid.core.test.InitializingTest;
-import io.github.vincemann.springrapid.core.test.automockBeans.AutoMockServiceBeansGenericAnnotationWebConfigContextLoader;
+import io.github.vincemann.springrapid.core.test.automock.AutoMockServiceBeansGenericAnnotationWebConfigContextLoader;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;

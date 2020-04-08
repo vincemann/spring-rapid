@@ -1,7 +1,7 @@
 package io.github.vincemann.springrapid.entityrelationship.config;
 
 import io.github.vincemann.springrapid.core.slicing.config.WebConfig;
-import io.github.vincemann.springrapid.core.controller.dtoMapper.DelegatingFallbackToDefaultDtoMapper;
+import io.github.vincemann.springrapid.core.controller.dtoMapper.DelegatingDtoMapper;
 import io.github.vincemann.springrapid.core.controller.dtoMapper.DtoMapper;
 import io.github.vincemann.springrapid.core.service.locator.CrudServiceLocator;
 import io.github.vincemann.springrapid.entityrelationship.controller.dtomapper.idResolver.EntityIdResolver;
@@ -42,8 +42,8 @@ public class EntityIdResolvingMapperAutoConfiguration {
     @Primary
     @Bean
     public DtoMapper dtoMapper(List<EntityIdResolver> entityIdResolvers, @Qualifier("default") DtoMapper defaultMapper){
-        DelegatingFallbackToDefaultDtoMapper delegatingFallbackToDefaultDtoMapper = new DelegatingFallbackToDefaultDtoMapper(defaultMapper);
-        delegatingFallbackToDefaultDtoMapper.registerDelegate(new IdResolvingDtoMapper(entityIdResolvers));
-        return delegatingFallbackToDefaultDtoMapper;
+        DelegatingDtoMapper delegatingDtoMapper = new DelegatingDtoMapper(defaultMapper);
+        delegatingDtoMapper.registerDelegate(new IdResolvingDtoMapper(entityIdResolvers));
+        return delegatingDtoMapper;
     }
 }

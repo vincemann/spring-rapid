@@ -7,12 +7,12 @@ import io.github.vincemann.springrapid.core.slicing.components.WebController;
 import io.github.vincemann.springrapid.core.controller.dtoMapper.context.Direction;
 import io.github.vincemann.springrapid.core.controller.dtoMapper.context.DtoMappingContextBuilder;
 import io.github.vincemann.springrapid.core.controller.dtoMapper.context.CrudDtoEndpoint;
-import io.github.vincemann.springrapid.core.controller.springAdapter.SpringAdapterJsonDtoCrudController;
+import io.github.vincemann.springrapid.core.controller.rapid.RapidController;
 
 
 @WebController
 public class PetController
-        extends SpringAdapterJsonDtoCrudController<Pet, Long> {
+        extends RapidController<Pet, Long> {
 
     public PetController() {
         super(DtoMappingContextBuilder.builder()

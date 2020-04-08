@@ -1,6 +1,6 @@
 package io.github.vincemann.springrapid.exceptions.exceptionHandler;
 
-import io.github.vincemann.springrapid.exceptions.ApiError;
+import io.github.vincemann.springrapid.exceptions.model.ApiError;
 import org.hibernate.exception.ConstraintViolationException;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpHeaders;
