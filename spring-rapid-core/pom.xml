@@ -9,7 +9,7 @@
     <parent>
         <groupId>io.github.vincemann</groupId>
         <artifactId>spring-rapid</artifactId>
-        <version>0.0.4</version>
+        <version>0.0.6</version>
     </parent>
 
 
@@ -55,13 +55,6 @@
         </dependency>
 
         <dependency>
-            <groupId>com.github.Hervian</groupId>
-            <artifactId>safety-mirror</artifactId>
-            <version>1.0.0</version>
-        </dependency>
-
-
-        <dependency>
             <groupId>org.apache.httpcomponents</groupId>
             <artifactId>httpclient</artifactId>
             <version>4.5.8</version>
@@ -80,16 +73,9 @@
             <version>4.4</version>
         </dependency>
 
+
+
     </dependencies>
-
-    <repositories>
-
-        <repository>
-            <id>jitpack.io</id>
-            <url>https://jitpack.io</url>
-        </repository>
-
-    </repositories>
 
 </project>
 

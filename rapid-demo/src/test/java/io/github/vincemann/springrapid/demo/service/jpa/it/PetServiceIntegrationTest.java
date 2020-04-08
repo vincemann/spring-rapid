@@ -5,7 +5,7 @@ import io.github.vincemann.springrapid.demo.model.PetType;
 import io.github.vincemann.springrapid.demo.service.PetService;
 import io.github.vincemann.springrapid.demo.service.PetTypeService;
 import io.github.vincemann.springrapid.core.service.exception.BadEntityException;
-import io.github.vincemann.springrapid.core.test.service.CrudServiceIntegrationTest;
+import io.github.vincemann.springrapid.coretest.service.CrudServiceIntegrationTest;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,8 +15,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 
-import static io.github.vincemann.springrapid.core.test.service.request.CrudServiceRequestBuilders.save;
-import static io.github.vincemann.springrapid.core.test.service.result.matcher.compare.CompareEntityMatchers.compare;
+import static io.github.vincemann.springrapid.coretest.service.request.CrudServiceRequestBuilders.save;
+import static io.github.vincemann.springrapid.coretest.service.result.matcher.compare.CompareEntityMatchers.compare;
 
 @DataJpaTest
 @ActiveProfiles(value = {"test","service"})
