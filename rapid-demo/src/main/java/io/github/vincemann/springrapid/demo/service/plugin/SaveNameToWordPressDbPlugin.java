@@ -2,12 +2,12 @@ package io.github.vincemann.springrapid.demo.service.plugin;
 
 import io.github.vincemann.springrapid.demo.model.abs.Person;
 import io.github.vincemann.springrapid.core.slicing.components.ServiceComponent;
-import io.github.vincemann.springrapid.core.controller.springAdapter.SpringAdapterJsonDtoCrudController;
+import io.github.vincemann.springrapid.core.controller.rapid.RapidController;
 import io.github.vincemann.springrapid.core.service.plugin.CrudServicePlugin;
 import lombok.extern.slf4j.Slf4j;
 
 /**
- *Plugin that can be plugged in to all {@link SpringAdapterJsonDtoCrudController} dealing with Person Objects
+ *Plugin that can be plugged in to all {@link RapidController} dealing with Person Objects
  */
 @Slf4j
 @ServiceComponent

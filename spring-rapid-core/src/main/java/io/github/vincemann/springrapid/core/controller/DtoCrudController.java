@@ -1,14 +1,14 @@
 package io.github.vincemann.springrapid.core.controller;
 
 import io.github.vincemann.springrapid.core.controller.dtoMapper.DtoMappingException;
-import io.github.vincemann.springrapid.core.controller.springAdapter.DtoSerializingException;
+import io.github.vincemann.springrapid.core.controller.rapid.DtoSerializingException;
 import io.github.vincemann.springrapid.core.model.IdentifiableEntity;
 import io.github.vincemann.springrapid.core.service.exception.BadEntityException;
 import io.github.vincemann.springrapid.core.service.exception.EntityNotFoundException;
 import io.github.vincemann.springrapid.core.service.exception.NoIdException;
-import org.springframework.http.ResponseEntity;
 
 import java.io.Serializable;
+import java.util.Collection;
 
 
 /**
@@ -17,9 +17,9 @@ import java.io.Serializable;
  */
 public interface DtoCrudController<Id extends Serializable> {
 
-    ResponseEntity<String> create(IdentifiableEntity<Id> entity) throws BadEntityException, DtoMappingException, DtoSerializingException;
+    IdentifiableEntity<Id> create(IdentifiableEntity<Id> entity) throws BadEntityException, DtoMappingException, DtoSerializingException;
 
-    ResponseEntity<String> find(Id id) throws NoIdException, EntityNotFoundException, DtoMappingException, DtoSerializingException;
+    IdentifiableEntity<Id> find(Id id) throws NoIdException, EntityNotFoundException, DtoMappingException, DtoSerializingException;
 
     /**
      *
@@ -32,9 +32,9 @@ public interface DtoCrudController<Id extends Serializable> {
      * @throws NoIdException
      * @throws EntityNotFoundException
      */
-    ResponseEntity<String> update(IdentifiableEntity<Id> entity, boolean full) throws DtoMappingException, BadEntityException, NoIdException, EntityNotFoundException, DtoSerializingException;
+    IdentifiableEntity<Id> update(IdentifiableEntity<Id> entity, boolean full) throws DtoMappingException, BadEntityException, NoIdException, EntityNotFoundException, DtoSerializingException;
 
-    ResponseEntity<String> delete(Id id) throws NoIdException, EntityNotFoundException;
+    void delete(Id id) throws NoIdException, EntityNotFoundException;
 
-    ResponseEntity<String> findAll() throws DtoMappingException, DtoSerializingException;
+    Collection<IdentifiableEntity<Id>> findAll() throws DtoMappingException, DtoSerializingException;
 }

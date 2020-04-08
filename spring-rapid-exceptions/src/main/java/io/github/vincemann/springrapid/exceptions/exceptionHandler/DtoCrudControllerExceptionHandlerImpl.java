@@ -2,8 +2,8 @@ package io.github.vincemann.springrapid.exceptions.exceptionHandler;
 
 import io.github.vincemann.springrapid.core.controller.DtoCrudController;
 import io.github.vincemann.springrapid.core.controller.dtoMapper.DtoMappingException;
-import io.github.vincemann.springrapid.exceptions.ApiError;
-import io.github.vincemann.springrapid.core.controller.springAdapter.DtoSerializingException;
+import io.github.vincemann.springrapid.exceptions.model.ApiError;
+import io.github.vincemann.springrapid.core.controller.rapid.DtoSerializingException;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;

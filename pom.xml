@@ -6,7 +6,7 @@
     <groupId>io.github.vincemann</groupId>
     <artifactId>spring-rapid</artifactId>
 <!--    <version>${rapid.version}</version>-->
-    <version>0.0.2-SNAPSHOT</version>
+    <version>0.0.4</version>
     <packaging>pom</packaging>
 
 
@@ -15,13 +15,13 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <maven.compiler.source>11</maven.compiler.source>
         <maven.compiler.target>11</maven.compiler.target>
-<!--        <rapid.version>0.0.2-SNAPSHOT</rapid.version>-->
+<!--        <rapid.version>0.0.4</rapid.version>-->
     </properties>
 
 
 
     <modules>
-<!--        <module>rapid-demo</module>-->
+        <module>rapid-demo</module>
         <module>spring-rapid-core</module>
         <module>spring-rapid-entity-relationship</module>
         <module>spring-rapid-exceptions</module>
@@ -122,21 +122,21 @@
                 </executions>
             </plugin>
 
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-javadoc-plugin</artifactId>
-                <configuration>
-                    <failOnError>false</failOnError>
-                </configuration>
-                <executions>
-                    <execution>
-                        <id>attach-javadocs</id>
-                        <goals>
-                            <goal>jar</goal>
-                        </goals>
-                    </execution>
-                </executions>
-            </plugin>
+<!--            <plugin>-->
+<!--                <groupId>org.apache.maven.plugins</groupId>-->
+<!--                <artifactId>maven-javadoc-plugin</artifactId>-->
+<!--                <configuration>-->
+<!--                    <failOnError>false</failOnError>-->
+<!--                </configuration>-->
+<!--                <executions>-->
+<!--                    <execution>-->
+<!--                        <id>attach-javadocs</id>-->
+<!--                        <goals>-->
+<!--                            <goal>jar</goal>-->
+<!--                        </goals>-->
+<!--                    </execution>-->
+<!--                </executions>-->
+<!--            </plugin>-->
 
         </plugins>
     </build>
