@@ -1,4 +1,4 @@
-package io.github.vincemann.springrapid.coretest.slicing;
+package io.github.vincemann.springrapid.core.slicing.components;
 
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
