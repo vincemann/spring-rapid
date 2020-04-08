@@ -11,9 +11,9 @@ import io.github.vincemann.springrapid.demo.service.plugin.OwnerOfTheYearPlugin;
 import io.github.vincemann.springrapid.core.service.exception.BadEntityException;
 import io.github.vincemann.springrapid.core.service.exception.EntityNotFoundException;
 import io.github.vincemann.springrapid.core.service.exception.NoIdException;
-import io.github.vincemann.springrapid.core.test.compare.FullComparator;
-import io.github.vincemann.springrapid.core.test.service.CrudServiceIntegrationTest;
-import io.github.vincemann.springrapid.core.test.service.result.ServiceResult;
+import io.github.vincemann.springrapid.coretest.compare.FullComparator;
+import io.github.vincemann.springrapid.coretest.service.CrudServiceIntegrationTest;
+import io.github.vincemann.springrapid.coretest.service.result.ServiceResult;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -25,13 +25,13 @@ import java.time.LocalDate;
 import java.util.HashSet;
 import java.util.Optional;
 
-import static io.github.vincemann.springrapid.core.test.service.request.CrudServiceRequestBuilders.*;
-import static io.github.vincemann.springrapid.core.test.service.result.matcher.ExceptionMatchers.noException;
-import static io.github.vincemann.springrapid.core.test.service.result.matcher.ExistenceMatchers.notPresentInDatabase;
-import static io.github.vincemann.springrapid.core.test.service.result.matcher.compare.CompareEntityMatchers.compare;
-import static io.github.vincemann.springrapid.core.test.service.result.matcher.compare.CompareEntityMatchers.propertyCompare;
-import static io.github.vincemann.springrapid.core.test.service.result.matcher.compare.resolve.CompareEntityPlaceholder.DB_ENTITY;
-import static io.github.vincemann.springrapid.core.test.service.result.matcher.compare.resolve.CompareEntityPlaceholder.SERVICE_INPUT_ENTITY;
+import static io.github.vincemann.springrapid.coretest.service.request.CrudServiceRequestBuilders.*;
+import static io.github.vincemann.springrapid.coretest.service.result.matcher.ExceptionMatchers.noException;
+import static io.github.vincemann.springrapid.coretest.service.result.matcher.ExistenceMatchers.notPresentInDatabase;
+import static io.github.vincemann.springrapid.coretest.service.result.matcher.compare.CompareEntityMatchers.compare;
+import static io.github.vincemann.springrapid.coretest.service.result.matcher.compare.CompareEntityMatchers.propertyCompare;
+import static io.github.vincemann.springrapid.coretest.service.result.matcher.compare.resolve.CompareEntityPlaceholder.DB_ENTITY;
+import static io.github.vincemann.springrapid.coretest.service.result.matcher.compare.resolve.CompareEntityPlaceholder.SERVICE_INPUT_ENTITY;
 
 
 class OwnerServiceIntegrationTest

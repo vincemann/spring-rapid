@@ -7,7 +7,7 @@ import io.github.vincemann.springrapid.demo.dtos.owner.ReadOwnerDto;
 import io.github.vincemann.springrapid.demo.dtos.owner.UpdateOwnerDto;
 import io.github.vincemann.springrapid.demo.model.Owner;
 import io.github.vincemann.springrapid.demo.service.OwnerService;
-import io.github.vincemann.springrapid.core.test.controller.rapid.UrlParamIdRapidControllerTest;
+import io.github.vincemann.springrapid.coretest.controller.rapid.UrlParamIdRapidControllerTest;
 import org.apache.commons.beanutils.BeanUtilsBean;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

@@ -10,7 +10,7 @@ import io.github.vincemann.springrapid.demo.repositories.PetTypeRepository;
 import io.github.vincemann.springrapid.demo.repositories.SpecialtyRepository;
 import io.github.vincemann.springrapid.core.model.IdentifiableEntity;
 import io.github.vincemann.springrapid.core.service.CrudService;
-import io.github.vincemann.springrapid.core.test.controller.rapid.UrlParamIdRapidControllerTest;
+import io.github.vincemann.springrapid.coretest.controller.rapid.UrlParamIdRapidControllerTest;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
