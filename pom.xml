@@ -25,7 +25,7 @@
         <module>spring-rapid-core</module>
         <module>spring-rapid-entity-relationship</module>
         <module>spring-rapid-exceptions</module>
-        <module>spring-rapid-security</module>
+        <module>spring-rapid-acl</module>
         <module>spring-rapid-core-test</module>
     </modules>
 

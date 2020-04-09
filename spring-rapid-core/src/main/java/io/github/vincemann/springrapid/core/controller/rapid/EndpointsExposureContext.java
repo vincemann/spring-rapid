@@ -1,11 +1,17 @@
 package io.github.vincemann.springrapid.core.controller.rapid;
 
+import io.github.vincemann.springrapid.core.slicing.components.WebComponent;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
+import org.springframework.beans.factory.config.ConfigurableBeanFactory;
+import org.springframework.context.annotation.Scope;
+import org.springframework.stereotype.Component;
 
 @Getter
 @Setter
+@WebComponent
+@Scope(scopeName = ConfigurableBeanFactory.SCOPE_PROTOTYPE)
 /**
  * Gives User fine grained control about which endpoints should be exposed by {@link RapidController}.
  */

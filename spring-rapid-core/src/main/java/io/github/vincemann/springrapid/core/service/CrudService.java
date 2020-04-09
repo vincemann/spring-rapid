@@ -45,8 +45,6 @@ public interface CrudService
 
     Set<E> findAll();
 
-    void delete(E entity) throws EntityNotFoundException, NoIdException;
-
     void deleteById(Id id) throws EntityNotFoundException, NoIdException;
 
     Class<E> getEntityClass();
