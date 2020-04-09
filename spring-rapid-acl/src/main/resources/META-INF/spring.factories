@@ -1,0 +1,5 @@
+org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
+io.github.vincemann.springrapid.acl.config.AclAutoConfiguration,\
+io.github.vincemann.springrapid.acl.config.AclMethodSecurityAutoConfiguration,\
+io.github.vincemann.springrapid.acl.config.AclSchemaConfig,\
+io.github.vincemann.springrapid.acl.config.ServiceSecurityProxyAutoConfiguration

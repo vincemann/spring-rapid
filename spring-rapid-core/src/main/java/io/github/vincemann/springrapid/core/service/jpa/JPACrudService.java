@@ -104,17 +104,6 @@ public abstract class JPACrudService
         return new HashSet<>(jpaRepository.findAll());
     }
 
-    @Transactional
-    @Override
-    public void delete(E entity) throws EntityNotFoundException, NoIdException {
-        if(entity.getId()==null){
-            throw new NoIdException("No Id value set for EntityType: " + entityClass.getSimpleName());
-        }
-        if(!findById(entity.getId()).isPresent()){
-            throw new EntityNotFoundException(entity.getId(),entity.getClass());
-        }
-        jpaRepository.delete(entity);
-    }
 
     @Transactional
     @Override
