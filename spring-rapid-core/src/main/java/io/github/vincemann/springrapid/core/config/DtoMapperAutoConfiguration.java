@@ -1,20 +1,34 @@
 package io.github.vincemann.springrapid.core.config;
 
+import io.github.vincemann.springrapid.core.controller.dtoMapper.*;
 import io.github.vincemann.springrapid.core.slicing.config.WebConfig;
-import io.github.vincemann.springrapid.core.controller.dtoMapper.BasicDtoMapper;
-import io.github.vincemann.springrapid.core.controller.dtoMapper.DtoMapper;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.boot.autoconfigure.AutoConfigureAfter;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Import;
 
-@Import(CrudServiceLocatorAutoConfiguration.class)
+import java.util.List;
+
 @WebConfig
 public class DtoMapperAutoConfiguration {
 
-    @Qualifier("default")
+    @ConditionalOnMissingBean(name = "defaultDtoMapper")
+    @Default
     @Bean
     public DtoMapper defaultDtoMapper(){
         return new BasicDtoMapper();
     }
 
+
+    @Delegating
+    @ConditionalOnMissingBean(name = "delegatingDtoMapper")
+    @Bean
+    public DtoMapper delegatingDtoMapper(List<DtoMapper> dtoMappers, @Default DtoMapper defaultDtoMapper){
+        DelegatingDtoMapper delegatingDtoMapper = new DelegatingDtoMapper(defaultDtoMapper);
+        dtoMappers.remove(defaultDtoMapper);
+        dtoMappers.forEach(delegatingDtoMapper::registerDelegate);
+        return delegatingDtoMapper;
+    }
 }

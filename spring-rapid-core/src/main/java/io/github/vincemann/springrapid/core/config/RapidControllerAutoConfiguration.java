@@ -11,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Import;
 import org.springframework.context.annotation.Scope;
@@ -31,26 +32,26 @@ public class RapidControllerAutoConfiguration {
     }
 
 
-    @ConditionalOnMissingBean
+    @ConditionalOnMissingBean(EndpointService.class)
     @Bean
     public EndpointService endpointService(@Autowired RequestMappingHandlerMapping requestMappingHandlerMapping){
         return new EndpointService(requestMappingHandlerMapping);
     }
 
-    @ConditionalOnMissingBean
+    @ConditionalOnMissingBean(IdFetchingStrategy.class)
     @Bean
     public IdFetchingStrategy<Long> longIdFetchingStrategy(){
         return new LongUrlParamIdFetchingStrategy(idUrlParamKey());
     }
 
-    @ConditionalOnMissingBean
+    @ConditionalOnMissingBean(EndpointsExposureContext.class)
     @Bean
     @Scope(scopeName = ConfigurableBeanFactory.SCOPE_PROTOTYPE)
     public EndpointsExposureContext endpointsExposureContext(){
         return new EndpointsExposureContext();
     }
 
-    @ConditionalOnMissingBean
+    @ConditionalOnMissingBean(ValidationStrategy.class)
     @Bean
     public ValidationStrategy validationStrategy(LocalValidatorFactoryBean localValidatorFactoryBean){
         //use spring validator, so dependency injection is supported

@@ -1,6 +1,8 @@
 package io.github.vincemann.springrapid.core.controller;
 
 import io.github.vincemann.springrapid.core.advice.log.LogComponentInteractionAdvice;
+import io.github.vincemann.springrapid.core.controller.dtoMapper.Delegating;
+import io.github.vincemann.springrapid.core.controller.dtoMapper.DelegatingDtoMapper;
 import io.github.vincemann.springrapid.core.controller.dtoMapper.DtoMapper;
 import io.github.vincemann.springrapid.core.controller.dtoMapper.DtoMappingException;
 import io.github.vincemann.springrapid.core.controller.dtoMapper.context.CrudDtoEndpoint;
@@ -82,6 +84,8 @@ public abstract class JsonDtoCrudController
         this.validationStrategy = validationStrategy;
     }
 
+
+    @Delegating
     @Autowired
     public void injectDtoMapper(DtoMapper dtoMapper) {
         this.dtoMapper = dtoMapper;

@@ -5,7 +5,7 @@ import io.github.vincemann.springrapid.core.slicing.config.ServiceConfig;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingClass;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.access.expression.method.MethodSecurityExpressionHandler;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
@@ -25,7 +25,7 @@ public class AclMethodSecurityAutoConfiguration extends GlobalMethodSecurityConf
     @Autowired
     MethodSecurityExpressionHandler defaultMethodSecurityExpressionHandler;
 
-    @ConditionalOnMissingClass
+    @ConditionalOnMissingBean(MethodSecurityExpressionHandler.class)
     @Override
     protected MethodSecurityExpressionHandler createExpressionHandler() {
         return defaultMethodSecurityExpressionHandler;

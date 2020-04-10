@@ -3,6 +3,7 @@ package io.github.vincemann.springrapid.demo.lib.controller;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.Lists;
 import io.github.vincemann.springrapid.core.config.RapidControllerAutoConfiguration;
+import io.github.vincemann.springrapid.core.controller.dtoMapper.Delegating;
 import io.github.vincemann.springrapid.core.controller.dtoMapper.DtoMapper;
 import io.github.vincemann.springrapid.core.controller.dtoMapper.context.CrudDtoEndpoint;
 import io.github.vincemann.springrapid.core.controller.dtoMapper.context.Direction;
@@ -71,6 +72,7 @@ class RapidControllerTest
     DtoMappingContext dtoMappingContext;
 
     @SpyBean
+    @Delegating
     DtoMapper dtoMapper;
 
     @MockBean

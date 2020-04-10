@@ -15,7 +15,7 @@ public class DelegatingDtoMapper implements DtoMapper {
     private List<DtoMapper> delegates = new ArrayList<>();
     private DtoMapper defaultMapper;
 
-    public DelegatingDtoMapper(@Qualifier("default") DtoMapper defaultMapper) {
+    public DelegatingDtoMapper(DtoMapper defaultMapper) {
         this.defaultMapper = defaultMapper;
     }
 

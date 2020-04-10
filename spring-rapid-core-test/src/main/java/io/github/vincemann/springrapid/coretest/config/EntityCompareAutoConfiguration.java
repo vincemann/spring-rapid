@@ -5,6 +5,7 @@ import io.github.vincemann.springrapid.coretest.compare.FullComparator;
 import io.github.vincemann.springrapid.coretest.compare.LevelOneFullComparator;
 import io.github.vincemann.springrapid.coretest.compare.PropertyComparator;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Scope;
