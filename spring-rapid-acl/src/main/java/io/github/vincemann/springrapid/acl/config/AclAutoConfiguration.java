@@ -8,7 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingClass;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.cache.ehcache.EhCacheFactoryBean;
 import org.springframework.cache.ehcache.EhCacheManagerFactoryBean;
 import org.springframework.context.annotation.Bean;
@@ -43,7 +43,7 @@ public class AclAutoConfiguration {
     @Value("${rapid.acl.adminRole:ROLE_ADMIN}")
     String adminRole;
 
-    @ConditionalOnMissingClass
+    @ConditionalOnMissingBean(EhCacheBasedAclCache.class)
     @Bean
     public EhCacheBasedAclCache aclCache() {
         return new EhCacheBasedAclCache(
@@ -53,7 +53,7 @@ public class AclAutoConfiguration {
         );
     }
 
-    @ConditionalOnMissingClass
+    @ConditionalOnMissingBean(EhCacheFactoryBean.class)
     @Bean
     public EhCacheFactoryBean aclEhCacheFactoryBean() {
         EhCacheFactoryBean ehCacheFactoryBean = new EhCacheFactoryBean();
@@ -62,7 +62,7 @@ public class AclAutoConfiguration {
         return ehCacheFactoryBean;
     }
 
-    @ConditionalOnMissingClass
+    @ConditionalOnMissingBean(EhCacheManagerFactoryBean.class)
     @Bean
     public EhCacheManagerFactoryBean aclCacheManager() {
         //for unit tests, es soll nicht immer wieder neuer manager erstellt werden, der dann cacheFactory mit selben name kreiert, was die rules violated
@@ -71,13 +71,13 @@ public class AclAutoConfiguration {
         return ehCacheManagerFactoryBean;
     }
 
-    @ConditionalOnMissingClass
+    @ConditionalOnMissingBean(PermissionGrantingStrategy.class)
     @Bean
     public PermissionGrantingStrategy permissionGrantingStrategy() {
         return new SophisticatedPermissionGrantingStrategy(new ConsoleAuditLogger());
     }
 
-    @ConditionalOnMissingClass
+    @ConditionalOnMissingBean(AclAuthorizationStrategy.class)
     @Bean
     public AclAuthorizationStrategy aclAuthorizationStrategy() {
         //admin is allowed to change all acl db tables, but he is not automatically allowed to do anything acl restricted bc of this statement
@@ -87,7 +87,7 @@ public class AclAutoConfiguration {
         );
     }
 
-    @ConditionalOnMissingClass
+    @ConditionalOnMissingBean(MethodSecurityExpressionHandler.class)
     @Bean
     public MethodSecurityExpressionHandler defaultMethodSecurityExpressionHandler() {
         DefaultMethodSecurityExpressionHandler expressionHandler = new DefaultMethodSecurityExpressionHandler();
@@ -97,19 +97,19 @@ public class AclAutoConfiguration {
         return expressionHandler;
     }
 
-    @ConditionalOnMissingClass
+    @ConditionalOnMissingBean(LookupStrategy.class)
     @Bean
     public LookupStrategy lookupStrategy() {
         return new BasicLookupStrategy(dataSource, aclCache(), aclAuthorizationStrategy(), new ConsoleAuditLogger());
     }
 
-    @ConditionalOnMissingClass
+    @ConditionalOnMissingBean(JdbcMutableAclService.class)
     @Bean
     public JdbcMutableAclService aclService() {
         return new JdbcMutableAclService(dataSource, lookupStrategy(), aclCache());
     }
 
-    @ConditionalOnMissingClass
+    @ConditionalOnMissingBean(PermissionEvaluator.class)
     @Bean
     public PermissionEvaluator permissionEvaluator(){
         return new AclPermissionEvaluator(aclService());

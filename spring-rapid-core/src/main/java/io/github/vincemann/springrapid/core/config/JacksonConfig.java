@@ -5,11 +5,13 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import io.github.vincemann.springrapid.core.slicing.config.WebConfig;
 import io.github.vincemann.springrapid.core.controller.dtoMapper.LoggingObjectMapper;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.context.annotation.Bean;
 
 @WebConfig
 public class JacksonConfig {
 
+    @ConditionalOnMissingBean(ObjectMapper.class)
     @Bean
     public ObjectMapper objectMapper(){
         ObjectMapper mapper= new LoggingObjectMapper();

@@ -8,7 +8,7 @@ import io.github.vincemann.springrapid.acl.proxy.rules.ServiceSecurityRule;
 import io.github.vincemann.springrapid.core.slicing.config.ServiceConfig;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingClass;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.context.annotation.Bean;
 
 @ServiceConfig
@@ -20,13 +20,13 @@ public class ServiceSecurityProxyAutoConfiguration {
     }
 
 
-    @ConditionalOnMissingClass
+    @ConditionalOnMissingBean(HandleNoSecurityRuleStrategy.class)
     @Bean
     public HandleNoSecurityRuleStrategy handleNoSecurityRuleStrategy(){
         return new LoggingHandleNoSecurityRuleStrategy();
     }
 
-    @ConditionalOnMissingClass
+    @ConditionalOnMissingBean(name = "defaultServiceSecurityRule")
     @DefaultServiceSecurityRule
     @Bean
     public ServiceSecurityRule defaultServiceSecurityRule(){
