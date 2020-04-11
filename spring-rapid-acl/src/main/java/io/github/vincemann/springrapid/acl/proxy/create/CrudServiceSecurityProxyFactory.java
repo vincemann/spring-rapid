@@ -3,7 +3,6 @@ package io.github.vincemann.springrapid.acl.proxy.create;
 import io.github.vincemann.springrapid.acl.proxy.CrudServiceSecurityProxy;
 import io.github.vincemann.springrapid.core.model.IdentifiableEntity;
 import io.github.vincemann.springrapid.core.service.CrudService;
-import io.github.vincemann.springrapid.acl.proxy.noRuleStrategy.HandleNoSecurityRuleStrategy;
 import io.github.vincemann.springrapid.acl.proxy.rules.DefaultServiceSecurityRule;
 import io.github.vincemann.springrapid.acl.proxy.rules.ServiceSecurityRule;
 import io.github.vincemann.springrapid.acl.securityChecker.SecurityChecker;
@@ -18,15 +17,12 @@ import java.lang.reflect.Proxy;
 public class CrudServiceSecurityProxyFactory {
 
     private SecurityChecker securityChecker;
-    private HandleNoSecurityRuleStrategy noRuleHandlingStrategy;
     private ServiceSecurityRule defaultServiceSecurityRule;
 
     public CrudServiceSecurityProxyFactory(SecurityChecker securityChecker,
-                                           HandleNoSecurityRuleStrategy noRuleHandlingStrategy,
                                            @DefaultServiceSecurityRule ServiceSecurityRule defaultServiceSecurityRule
     ) {
         this.securityChecker = securityChecker;
-        this.noRuleHandlingStrategy = noRuleHandlingStrategy;
         this.defaultServiceSecurityRule = defaultServiceSecurityRule;
     }
 
@@ -37,7 +33,7 @@ public class CrudServiceSecurityProxyFactory {
         S unproxied = AopTestUtils.getTargetObject(crudService);
         S proxyInstance = (S) Proxy.newProxyInstance(
                 unproxied.getClass().getClassLoader(), unproxied.getClass().getInterfaces(),
-                new CrudServiceSecurityProxy(unproxied, securityChecker, noRuleHandlingStrategy, defaultServiceSecurityRule,rules));
+                new CrudServiceSecurityProxy(unproxied, securityChecker, defaultServiceSecurityRule,rules));
         return proxyInstance;
     }
 }

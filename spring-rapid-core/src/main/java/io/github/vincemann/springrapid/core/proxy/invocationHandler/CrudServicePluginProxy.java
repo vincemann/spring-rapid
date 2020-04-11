@@ -5,6 +5,7 @@ import io.github.vincemann.springrapid.core.model.IdentifiableEntity;
 import io.github.vincemann.springrapid.core.proxy.invocationHandler.abs.CrudServiceExtensionProxy;
 import io.github.vincemann.springrapid.core.service.CrudService;
 import io.github.vincemann.springrapid.core.service.plugin.CrudServicePlugin;
+import io.github.vincemann.springrapid.core.util.NullableOptional;
 import lombok.extern.slf4j.Slf4j;
 import org.assertj.core.util.Lists;
 import org.springframework.data.repository.CrudRepository;
@@ -31,73 +32,38 @@ public class CrudServicePluginProxy<E extends IdentifiableEntity<Id>, Id extends
     }
 
     @Override
-    protected Object handleProxyCall(Object o, Method method, Object[] args) throws Throwable {
-        if (method.getName().length() < 3) {
-            throw new IllegalArgumentException("Method names are expected to be at least 2 characters long");
+    protected Object proxy(Object target, Method method, Object[] args){
+        MethodHandle targetMethod = MethodHandle.create(method, target);
+        NullableOptional<Object> result;
+        //call before method of plugins
+        for (Object plugin : plugins) {
+            MethodHandle beforeMethod = findMethod(createPrefixedMethodName(BEFORE_METHOD_PREFIX, method.getName()), plugin);
+            if(beforeMethod!=null){
+                log.debug("Found before method:"+beforeMethod.getName()+" of plugin: " + plugin.getClass().getSimpleName());
+                invokeAndAppendEntityClassArgIfNeeded(beforeMethod,Lists.newArrayList(args));
+            }
         }
-        try {
-            String capitalFirstLetterMethodName = method.getName().substring(0, 1).toUpperCase() + method.getName().substring(1);
 
-            Object result;
-            //call before method of plugins
-            for (Object plugin : plugins) {
-                Method beforeMethod = findPluginMethodByName(plugin, BEFORE_METHOD_PREFIX + capitalFirstLetterMethodName);
-                if (beforeMethod != null) {
-                    invokeAndAppendEntityClassArgIfNeeded(plugin,beforeMethod, Lists.newArrayList(args));
-                    //beforeMethod.invoke(plugin, args);
+        //actual call
+        result = targetMethod.execute(args);
+
+        for (Object plugin : plugins) {
+            MethodHandle afterMethod = findMethod(createPrefixedMethodName(AFTER_METHOD_PREFIX, method.getName()), plugin);
+            if(afterMethod!=null){
+                log.debug("Found after method: "+afterMethod.getName()+" of plugin: " + plugin.getClass().getSimpleName());
+                //append service method return value if present
+                List<Object> finalArgs = Lists.newArrayList(args);
+                if(result.isPresent()){
+                    finalArgs.add(result.get());
+                }
+                NullableOptional<Object> pluginResult = invokeAndAppendEntityClassArgIfNeeded(afterMethod, finalArgs);
+                if(!afterMethod.isVoidMethod()){
+                    log.debug("Plugin method updated old ret value: " + result + " to: " + pluginResult.get());
+                    result=pluginResult;
                 }
             }
-            //actual call
-            result = getMethods().get(method.getName()).invoke(getService(), args);
-
-            //call after method of plugins
-            for (Object plugin : plugins) {
-                Method afterMethod = findPluginMethodByName(plugin, AFTER_METHOD_PREFIX + capitalFirstLetterMethodName);
-                if (afterMethod != null) {
-                    if (args != null) {
-                        if (result != null) {
-                            //append result of proxy call to args for plugins onAfter method
-                            int extendedArgsLength = args.length + 1;
-                            Object[] extendedArgs = new Object[extendedArgsLength];
-                            for (int i = 0; i < args.length; i++) {
-                                extendedArgs[i] = args[i];
-                            }
-                            extendedArgs[extendedArgsLength - 1] = result;
-                            invokeAndAppendEntityClassArgIfNeeded(plugin,afterMethod,Lists.newArrayList(extendedArgs));
-                            //afterMethod.invoke(plugin, extendedArgs);
-                        } else {
-                            //void -> only call with args
-                            invokeAndAppendEntityClassArgIfNeeded(plugin,afterMethod,Lists.newArrayList(args));
-                            //afterMethod.invoke(plugin, args);
-                        }
-                    } else {
-                        if (result != null) {
-                            invokeAndAppendEntityClassArgIfNeeded(plugin,afterMethod,Lists.newArrayList(result));
-                            //afterMethod.invoke(plugin, result);
-                        } else {
-                            //void method without result
-                            invokeAndAppendEntityClassArgIfNeeded(plugin,afterMethod,new ArrayList<>());
-                            //afterMethod.invoke(plugin);
-                        }
-                    }
-
-
-                }
-            }
-
-            return result;
-        } catch (InvocationTargetException e) {
-            throw e.getCause();
         }
-    }
 
-
-    public Method findPluginMethodByName(Object plugin, String methodName) {
-        for (Method method : plugin.getClass().getMethods()) {
-            if (method.getName().equals(methodName)) {
-                return method;
-            }
-        }
-        return null;
+        return result.get();
     }
 }
