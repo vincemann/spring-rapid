@@ -1,5 +1,8 @@
 package io.github.vincemann.springrapid.acl.proxy;
 
+import com.google.common.collect.Lists;
+import io.github.vincemann.springrapid.acl.proxy.rules.DontCallTargetMethod;
+import io.github.vincemann.springrapid.acl.proxy.rules.OverrideDefaultSecurityRule;
 import io.github.vincemann.springrapid.acl.proxy.rules.ServiceSecurityRule;
 import io.github.vincemann.springrapid.acl.securityChecker.SecurityChecker;
 import io.github.vincemann.springrapid.core.model.IdentifiableEntityImpl;
@@ -10,16 +13,19 @@ import lombok.NoArgsConstructor;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InOrder;
 import org.mockito.Mock;
 import org.mockito.Mockito;
+import org.mockito.internal.InOrderImpl;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.lang.reflect.Method;
 import java.util.Arrays;
+import java.util.Optional;
 
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.*;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
@@ -47,6 +53,29 @@ class CrudServiceSecurityProxyTest {
         }
 
         @CalledByProxy
+        public void preAuthorizeUpdate(ExampleEntity exampleEntity,boolean full, Class entityClass){
+
+        }
+
+        @CalledByProxy
+        @OverrideDefaultSecurityRule
+        public void postAuthorizeUpdate(ExampleEntity exampleEntity, boolean full, ExampleEntity ret, Class entityClass){
+
+        }
+
+        @CalledByProxy
+        @DontCallTargetMethod
+        public void preAuthorizeDeleteById(Long id){
+
+        }
+
+        @CalledByProxy
+        @OverrideDefaultSecurityRule
+        public void preAuthorizeFindById(Long id){
+
+        }
+
+        @CalledByProxy
         public void postAuthorizeSave(ExampleEntity exampleEntity,ExampleEntity returned){
 
         }
@@ -64,6 +93,26 @@ class CrudServiceSecurityProxyTest {
 
         @CalledByProxy
         public void postAuthorizeSave(ExampleEntity exampleEntity,ExampleEntity returned){
+
+        }
+
+        @CalledByProxy
+        public void preAuthorizeDeleteById(Long id){
+
+        }
+
+        @CalledByProxy
+        public void preAuthorizeFindById(Long id){
+            //should never be called
+        }
+
+        @CalledByProxy
+        public void postAuthorizeFindById(Long id, Optional<ExampleEntity> result){
+            //should be called
+        }
+
+        @CalledByProxy
+        public void postAuthorizeUpdate(ExampleEntity exampleEntity, boolean full, ExampleEntity ret, Class entityClass){
 
         }
 
@@ -93,15 +142,28 @@ class CrudServiceSecurityProxyTest {
     }
 
     @Test
-    public void callSaveMethod_shouldCallBeforeMethodInRule() throws Throwable {
+    public void callMethod_shouldCall_rulesBeforeMethod() throws Throwable {
         invokeProxy("save",exampleEntity);
 
         Mockito.verify(rule).preAuthorizeSave(exampleEntity);
         Mockito.verify(rule,Mockito.never()).preAuthorizeCustomMethod(anyString());
     }
+    @Test
+    public void callMethod_withBeforeRule_shouldBeCalled_with_entityClass_asLastArg() throws Throwable {
+        invokeProxy("update",exampleEntity,true);
+
+        Mockito.verify(rule).preAuthorizeUpdate(exampleEntity,true,service.getEntityClass());
+    }
 
     @Test
-    public void callSaveMethod_shouldCallServiceMethod() throws Throwable {
+    public void callMethod_withAfterRule_shouldBeCalled_with_entityClass_asLastArg() throws Throwable {
+        invokeProxy("update",exampleEntity,true);
+
+        Mockito.verify(rule).postAuthorizeUpdate(exampleEntity,true,null,service.getEntityClass());
+    }
+
+    @Test
+    public void callMethod_shouldCall_serviceMethod() throws Throwable {
         invokeProxy("save",exampleEntity);
 
         Mockito.verify(service).save(exampleEntity);
@@ -109,18 +171,14 @@ class CrudServiceSecurityProxyTest {
     }
 
     @Test
-    public void callSaveMethod_shouldCallDefaultRuleBeforeMethod() throws Throwable {
+    public void callMethod_shouldCall_defaultRulesBeforeMethod() throws Throwable {
         invokeProxy("save",exampleEntity);
 
         Mockito.verify(defaultRule).preAuthorizeSave(exampleEntity);
     }
 
-
-
-
-
     @Test
-    public void callSaveMethod_shouldCallAfterMethodInRule_withServiceArgsAndReturnedValue() throws Throwable {
+    public void callMethod_shouldCall_afterMethodInRule_withServiceArgs_and_returnedValue() throws Throwable {
         ExampleEntity returned = new ExampleEntity("returned");
         when(service.save(exampleEntity))
                 .thenReturn(returned);
@@ -130,7 +188,7 @@ class CrudServiceSecurityProxyTest {
     }
 
     @Test
-    public void callSaveMethod_shouldCallDefaultRuleAfterMethod() throws Throwable {
+    public void callMethod_shouldCall_defaultRulesAfterMethod() throws Throwable {
         ExampleEntity returned = new ExampleEntity("returned");
         when(service.save(exampleEntity))
                 .thenReturn(returned);
@@ -139,10 +197,8 @@ class CrudServiceSecurityProxyTest {
         Mockito.verify(defaultRule).postAuthorizeSave(exampleEntity,returned);
     }
 
-
-
     @Test
-    public void callCustomMethod_shouldCallRulesBeforeMethodsAndServiceMethod() throws Throwable {
+    public void callCustomMethod_shouldCallRulesBeforeMethods_and_serviceMethod() throws Throwable {
         String arg = "argString";
         invokeProxy("customMethod",arg);
 
@@ -150,6 +206,73 @@ class CrudServiceSecurityProxyTest {
         Mockito.verify(rule).preAuthorizeCustomMethod(arg);
         Mockito.verify(service).customMethod(arg);
     }
+
+
+
+    @Test
+    public void callMethod_withDontCallTargetMethodConfig_targetMethod_shouldNotBeCalled() throws Throwable {
+        Long id =42L;
+        invokeProxy("deleteById",id);
+
+        Mockito.verify(rule).preAuthorizeDeleteById(id);
+        Mockito.verify(defaultRule).preAuthorizeDeleteById(id);
+        Mockito.verifyNoInteractions(service);
+
+    }
+
+    @Test
+    public void callMethod_withOverrideDefaultRuleConfig_defaultPreAuthMethod_shouldNotBeCalled() throws Throwable {
+        Long id =42L;
+        invokeProxy("findById",id);
+
+        Mockito.verify(rule).preAuthorizeFindById(id);
+        Mockito.verify(defaultRule,never()).preAuthorizeFindById(id);
+        Mockito.verify(service).findById(id);
+    }
+
+    @Test
+    public void callMethod_withOverrideDefaultRuleConfig_defaultPostAuthMethod_shouldNotBeCalled() throws Throwable {
+        invokeProxy("update",exampleEntity,true);
+
+        Mockito.verify(rule).postAuthorizeUpdate(exampleEntity,true,null,service.getEntityClass());
+        Mockito.verify(defaultRule,never()).postAuthorizeUpdate(any(ExampleEntity.class),anyBoolean(),any(ExampleEntity.class),any(Class.class));
+    }
+
+    @Test
+    public void callMethod_withOverrideDefaultRuleConfig_defaultPreAuthMethod_shouldNotBeCalled_but_DefaultRulePostMethod_should() throws Throwable {
+        Long id =42L;
+        Optional<ExampleEntity> serviceResult = Optional.of(exampleEntity);
+        when(service.findById(id))
+                .thenReturn(serviceResult);
+        invokeProxy("findById",id);
+
+        Mockito.verify(defaultRule).postAuthorizeFindById(id,serviceResult);
+    }
+
+    @Test
+    public void callMethod_orderOfPlugins_shouldMatch_orderOfExecution() throws Throwable {
+        ExampleRule newRule = Mockito.mock(ExampleRule.class);
+        proxy.getRules().add(newRule);
+
+        invokeProxy("save",exampleEntity);
+
+        InOrder inOrder = new InOrderImpl(Lists.newArrayList(newRule,rule));
+        inOrder.verify(rule).postAuthorizeSave(exampleEntity,null);
+        inOrder.verify(newRule).postAuthorizeSave(exampleEntity,null);
+    }
+
+    @Test
+    public void callMethod_testOrder_pre_preDef_service_post_postDef_Method() throws Throwable {
+        invokeProxy("save",exampleEntity);
+
+        InOrder inOrder = new InOrderImpl(Lists.newArrayList(rule,service,defaultRule));
+        inOrder.verify(rule).preAuthorizeSave(exampleEntity);
+        inOrder.verify(defaultRule).preAuthorizeSave(exampleEntity);
+        inOrder.verify(service).save(exampleEntity);
+        inOrder.verify(rule).postAuthorizeSave(exampleEntity,null);
+        inOrder.verify(defaultRule).postAuthorizeSave(exampleEntity,null);
+    }
+
 
 
 
