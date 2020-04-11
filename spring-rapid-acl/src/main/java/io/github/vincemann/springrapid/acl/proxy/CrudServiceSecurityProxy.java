@@ -1,24 +1,29 @@
 package io.github.vincemann.springrapid.acl.proxy;
 
+import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.google.common.collect.Lists;
 import io.github.vincemann.springrapid.acl.proxy.create.CrudServiceSecurityProxyFactory;
-import io.github.vincemann.springrapid.acl.proxy.rules.DontCallRealMethod;
+import io.github.vincemann.springrapid.acl.proxy.rules.DontCallTargetMethod;
 import io.github.vincemann.springrapid.acl.proxy.rules.OverrideDefaultSecurityRule;
+import io.github.vincemann.springrapid.core.util.NullableOptional;
 import io.github.vincemann.springrapid.core.model.IdentifiableEntity;
 import io.github.vincemann.springrapid.core.proxy.invocationHandler.abs.CrudServiceExtensionProxy;
 import io.github.vincemann.springrapid.core.service.CrudService;
-import io.github.vincemann.springrapid.acl.proxy.noRuleStrategy.HandleNoSecurityRuleStrategy;
 import io.github.vincemann.springrapid.acl.proxy.rules.ServiceSecurityRule;
 import io.github.vincemann.springrapid.acl.securityChecker.SecurityChecker;
 import lombok.Getter;
+import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.util.Assert;
 
 import java.io.Serializable;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.stream.Collectors;
 
 @Slf4j
 @Getter
@@ -32,203 +37,137 @@ import java.util.concurrent.atomic.AtomicBoolean;
 public class CrudServiceSecurityProxy
         extends CrudServiceExtensionProxy<IdentifiableEntity<Serializable>, Serializable> {
 
+    @Getter
+    @Setter
+    public static class State {
+        boolean invokeTargetMethod = true;
+        boolean overrideDefaultPreAuthMethod = false;
+        boolean overrideDefaultPostAuthMethod = false;
+        MethodHandle targetMethod;
+        String targetMethodName;
+        Object target;
+        Object[] targetMethodArgs;
+        NullableOptional<Object> result = NullableOptional.empty();
+
+        public static State create(Method targetMethod, Object target, Object[] targetMethodArgs) {
+            State state = new State();
+            state.targetMethodArgs = targetMethodArgs;
+            state.targetMethod = MethodHandle.create(targetMethod, target);
+            state.overrideDefaultPostAuthMethod = false;
+            state.overrideDefaultPreAuthMethod = false;
+            state.invokeTargetMethod = true;
+            state.targetMethodName = targetMethod.getName();
+            state.target = target;
+            return state;
+        }
+    }
+
     private static final String PRE_AUTHORIZE_METHOD_PREFIX = "preAuthorize";
     private static final String POST_AUTHORIZE_METHOD_PREFIX = "postAuthorize";
 
-    private List<ServiceSecurityRule> rules =  new ArrayList<>();
-    private HandleNoSecurityRuleStrategy noRuleHandlingStrategy;
+    private List<ServiceSecurityRule> rules = new ArrayList<>();
     private ServiceSecurityRule defaultSecurityRule;
-
+    private State state;
 
     public CrudServiceSecurityProxy(CrudService service,
                                     SecurityChecker securityChecker,
-                                    HandleNoSecurityRuleStrategy noRuleHandlingStrategy,
                                     ServiceSecurityRule defaultSecurityRule,
                                     ServiceSecurityRule... rules) {
         super(service);
-        this.noRuleHandlingStrategy = noRuleHandlingStrategy;
         this.defaultSecurityRule = defaultSecurityRule;
         this.rules.addAll(Lists.newArrayList(rules));
         this.rules.forEach(rule -> {
-                rule.setSecurityChecker(securityChecker);
+            rule.setSecurityChecker(securityChecker);
         });
         defaultSecurityRule.setSecurityChecker(securityChecker);
 
     }
 
 
+
     @Override
-    protected Object handleProxyCall(Object o, Method method, Object[] args) throws Throwable {
+    protected Object proxy(Object target, Method method, Object[] args) throws Throwable {
         log.debug("SecurityProxy intercepting method: " + method.getName() + " of Class: " + method.getDeclaringClass().getSimpleName());
-        if(method.getName().length()<3){
-            throw new IllegalArgumentException("Method names are expected to be at least 2 characters long");
-        }
-        List<Object> argsList;
-        if(args==null){
-            argsList = new ArrayList<>();
-        }else {
-            argsList  = Lists.newArrayList(args);
+        state = State.create(method, target,args);
+
+        invokePreAuthorizeMethods();
+        if (!state.overrideDefaultPreAuthMethod) {
+            log.debug("Applying preAuthorize method of default SecurityRule: " + defaultSecurityRule.getClass().getSimpleName());
+            invokePreAuthorizeMethod(defaultSecurityRule);
+        } else {
+            log.debug("Default SecurityRule: " + defaultSecurityRule.getClass().getSimpleName() + " is skipped.");
         }
 
-        try {
-            AtomicBoolean invokeRealMethod = new AtomicBoolean(true);
-            String capitalFirstLetterMethodName = method.getName().substring(0, 1).toUpperCase() + method.getName().substring(1);
-            boolean defaultRuleReplaced = invokePreAuthorizeMethods(capitalFirstLetterMethodName,argsList,invokeRealMethod);
-            Object result;
-            if(!defaultRuleReplaced){
-                log.debug("Applying preAuthorize method of default SecurityRule: " + defaultSecurityRule.getClass().getSimpleName());
-                applyDefaultPreAuthSecurityRule(method,capitalFirstLetterMethodName,argsList);
-            }else {
-                log.debug("Default SecurityRule: " + defaultSecurityRule.getClass().getSimpleName() +" is skipped.");
-            }
-            if(invokeRealMethod.get()) {
-                result = invokeRealMethod(method, args);
-            }else {
-                log.debug("Proxy rule decided to not call real method");
-                result = null;
-            }
-
-            AtomicBoolean defaultPostAuthRuleOverridden = new AtomicBoolean(false);
-            result = invokePostAuthorizeMethods(result,capitalFirstLetterMethodName,argsList,defaultPostAuthRuleOverridden);
-            if(!defaultPostAuthRuleOverridden.get()){
-                result = applyDefaultPostAuthSecurityRule(result,capitalFirstLetterMethodName,argsList);
-            }
-            return result;
-        }catch (InvocationTargetException e){
-            throw e.getCause();
+        if (state.invokeTargetMethod) {
+            state.result = state.getTargetMethod().execute(state.targetMethodArgs);
+        } else {
+            log.debug("Real Method call is skipped");
         }
-    }
 
-    private Object invokeRealMethod(Method method, Object[] args) throws InvocationTargetException, IllegalAccessException {
-        return getMethods().get(method.getName()).invoke(getService(),args);
+        invokePostAuthorizeMethods();
+
+        if (!state.overrideDefaultPostAuthMethod) {
+            log.debug("Applying postAuthorize method of default SecurityRule: " + defaultSecurityRule.getClass().getSimpleName());
+
+            invokePostAuthorizeMethod(defaultSecurityRule);
+        }
+        return state.result.get();
     }
 
 
-    private boolean invokePreAuthorizeMethods(String capitalFirstLetterMethodName, List<Object> argsList, AtomicBoolean invokeRealMethod) throws InvocationTargetException, IllegalAccessException {
-        boolean defaultMethodOverritten = false;
+    private void invokePreAuthorizeMethods() throws InvocationTargetException, IllegalAccessException {
         for (Object rule : rules) {
-            Method preAuthMethod = findRuleMethodByName(rule, PRE_AUTHORIZE_METHOD_PREFIX + capitalFirstLetterMethodName);
-            if (preAuthMethod != null) {
-                log.debug("Found preAuthorize method: " + preAuthMethod.getName() + " in Rule: " + rule.getClass().getSimpleName());
-//                if(!preAuthMethod.isAnnotationPresent(CalledByProxy.class)){
-//                    log.warn("Found pre authorize method with suitable name:"+capitalFirstLetterMethodName+", but not annotated with "+CalledByProxy.class.getSimpleName() + " -> ignored.");
-//                    continue;
-//                }
-                if(!preAuthMethod.getReturnType().equals(Void.TYPE)){
-                    throw new RuntimeException("pre Authorize methods return type must be void");
-                }
-                if(preAuthMethod.isAnnotationPresent(DontCallRealMethod.class)){
-                    invokeRealMethod.set(false);
-                }
-                if(preAuthMethod.isAnnotationPresent(OverrideDefaultSecurityRule.class)) {
-                    log.debug("default pre authorize security method " + capitalFirstLetterMethodName + " was replaced by security rule " + rule.getClass().getSimpleName());
-                    defaultMethodOverritten=true;
-                }
-                invokeAndAppendEntityClassArgIfNeeded(rule,preAuthMethod,argsList);
-            }
+            invokePreAuthorizeMethod(rule);
         }
-        return defaultMethodOverritten;
     }
 
-    /**
-     *
-     * @param result
-     * @param capitalFirstLetterMethodName
-     * @param argsList
-     * @param defaultPostAuthRuleOverridden
-     * @return                      null if result did not change
-     * @throws InvocationTargetException
-     * @throws IllegalAccessException
-     */
-    private Object invokePostAuthorizeMethods(Object result, String capitalFirstLetterMethodName, List<Object> argsList, AtomicBoolean defaultPostAuthRuleOverridden) throws InvocationTargetException, IllegalAccessException {
+    private void invokePreAuthorizeMethod(Object rule) {
+        MethodHandle preAuthMethod = findMethod(createPrefixedMethodName(PRE_AUTHORIZE_METHOD_PREFIX,state.targetMethodName),rule);
+        if (preAuthMethod != null) {
+            log.debug("Found preAuthorize method: " + preAuthMethod.getName() + " in Rule: " + rule.getClass().getSimpleName());
+            Assert.isTrue(preAuthMethod.isVoidMethod(), "Pre Authorize methods return type must be void");
+            applyPreAuthMethodConfig(preAuthMethod);
+            invokeAndAppendEntityClassArgIfNeeded(preAuthMethod, state.targetMethodArgs);
+        }
+    }
+
+    private void invokePostAuthorizeMethod(Object rule) {
+        MethodHandle postAuthMethod = findMethod(createPrefixedMethodName(POST_AUTHORIZE_METHOD_PREFIX,state.targetMethodName),rule);
+        if (postAuthMethod != null) {
+            log.debug("Found postAuthorize method: " + postAuthMethod.getName() + " in Rule: " + rule.getClass().getSimpleName());
+            applyPostAuthMethodConfig(postAuthMethod);
+            List<Object> args = Lists.newArrayList(state.targetMethodArgs);
+            //append result of service method if there is one
+            if (!state.targetMethod.isVoidMethod()) {
+                args.add(state.getResult().get());
+            }
+            NullableOptional<Object> ruleResult = invokeAndAppendEntityClassArgIfNeeded(postAuthMethod, args.toArray());
+            if (!postAuthMethod.isVoidMethod()) {
+                state.result = ruleResult;
+            }
+        }
+    }
+
+    private void applyPostAuthMethodConfig(MethodHandle method) {
+        if (method.hasAnnotation(OverrideDefaultSecurityRule.class)) {
+            state.overrideDefaultPostAuthMethod = true;
+        }
+    }
+
+    private void applyPreAuthMethodConfig(MethodHandle method) {
+        if (method.hasAnnotation(DontCallTargetMethod.class)) {
+            state.invokeTargetMethod = false;
+        }
+        if (method.hasAnnotation(OverrideDefaultSecurityRule.class)) {
+            state.overrideDefaultPreAuthMethod = true;
+        }
+    }
+
+    private void invokePostAuthorizeMethods() {
         //call after method of plugins
-        Object returnValue = result;
         for (Object rule : rules) {
-
-            Method postAuthMethod = findRuleMethodByName(rule, POST_AUTHORIZE_METHOD_PREFIX + capitalFirstLetterMethodName);
-            if (postAuthMethod != null) {
-                log.debug("Found post authorize method: " + postAuthMethod.getName() + " of rule: " + rule.getClass().getSimpleName());
-//                if(!postAuthMethod.isAnnotationPresent(CalledByProxy.class)){
-//                    log.warn("Found post authorize method with suitable name:"+capitalFirstLetterMethodName+", but not annotated with "+CalledByProxy.class.getSimpleName() + " -> ignored.");
-//                    continue;
-//                }
-                if(postAuthMethod.isAnnotationPresent(OverrideDefaultSecurityRule.class)){
-                    log.debug("post authorize method: " + postAuthMethod.getName() + " overrides default post auth method");
-                    defaultPostAuthRuleOverridden.set(true);
-                }
-
-                List<Object> args = new ArrayList<>();
-                if (!argsList.isEmpty()) {
-                    if (returnValue != null) {
-                        //append result of proxy call to args for plugins onAfter method
-                        List<Object> copiedArgs = new ArrayList<>(argsList);
-                        copiedArgs.add(returnValue);
-                        args = copiedArgs;
-
-                    } else {
-                        args = argsList;
-                    }
-                } else {
-                    if (returnValue != null) {
-                        args.add(returnValue);
-                    } else {
-                        //void method without result
-                        args = new ArrayList<>();
-                    }
-                }
-                if(!postAuthMethod.getReturnType().equals(Void.TYPE)){
-                    //wants to return value -> update return value
-                    returnValue = invokeAndAppendEntityClassArgIfNeeded(rule,postAuthMethod,args);
-                    log.debug("post auth method: " + postAuthMethod.getName() +" has return type -> this will be the updated return value: " + returnValue);
-                }else {
-                    //post auth method is void
-                    invokeAndAppendEntityClassArgIfNeeded(rule,postAuthMethod,args);
-                }
-
-            }
-        }
-        return returnValue;
-    }
-
-
-
-    protected void applyDefaultPreAuthSecurityRule(Method method, String capitalFirstLetterMethodName, List<Object> args) throws InvocationTargetException, IllegalAccessException {
-        if(!Lists.newArrayList(CrudService.class.getMethods()).contains(method)){
-            log.debug("No Default pre auth Rule for method: " + method.getName());
-            noRuleHandlingStrategy.react(method);
-            return;
-        }else {
-            Method defaultPreAuthMethod = findRuleMethodByName(defaultSecurityRule, PRE_AUTHORIZE_METHOD_PREFIX + capitalFirstLetterMethodName);
-            if(defaultPreAuthMethod!=null){
-                log.debug("invoking default pre auth method: " + defaultPreAuthMethod.getName());
-                invokeAndAppendEntityClassArgIfNeeded(defaultSecurityRule,defaultPreAuthMethod,args);
-            }
+            invokePostAuthorizeMethod(rule);
         }
     }
 
-    protected Object applyDefaultPostAuthSecurityRule(Object result , String capitalFirstLetterMethodName, List<Object> args) throws InvocationTargetException, IllegalAccessException {
-        Method postAuthMethod = findRuleMethodByName(defaultSecurityRule, POST_AUTHORIZE_METHOD_PREFIX + capitalFirstLetterMethodName);
-        if(postAuthMethod!=null){
-            log.debug("applying default post auth method: " + postAuthMethod.getName());
-            List<Object> copiedArgs = new ArrayList<>(args);
-            copiedArgs.add(result);
-            Object postAuthResult = invokeAndAppendEntityClassArgIfNeeded(defaultSecurityRule,postAuthMethod,copiedArgs);
-            if(postAuthResult!=null){
-                return postAuthResult;
-            }else {
-                return result;
-            }
-        }
-        return result;
-    }
-
-
-    public Method findRuleMethodByName(Object target, String methodName){
-        for (Method method : target.getClass().getMethods()) {
-            if(method.getName().equals(methodName)){
-                return method;
-            }
-        }
-        return null;
-    }
 }

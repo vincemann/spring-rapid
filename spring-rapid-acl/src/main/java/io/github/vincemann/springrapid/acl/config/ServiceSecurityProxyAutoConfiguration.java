@@ -1,7 +1,5 @@
 package io.github.vincemann.springrapid.acl.config;
 
-import io.github.vincemann.springrapid.acl.proxy.noRuleStrategy.HandleNoSecurityRuleStrategy;
-import io.github.vincemann.springrapid.acl.proxy.noRuleStrategy.LoggingHandleNoSecurityRuleStrategy;
 import io.github.vincemann.springrapid.acl.proxy.rules.DefaultCrudSecurityRule;
 import io.github.vincemann.springrapid.acl.proxy.rules.DefaultServiceSecurityRule;
 import io.github.vincemann.springrapid.acl.proxy.rules.ServiceSecurityRule;
@@ -19,12 +17,6 @@ public class ServiceSecurityProxyAutoConfiguration {
         log.debug("ServiceSecurityProxyAutoConfiguration loaded");
     }
 
-
-    @ConditionalOnMissingBean(HandleNoSecurityRuleStrategy.class)
-    @Bean
-    public HandleNoSecurityRuleStrategy handleNoSecurityRuleStrategy(){
-        return new LoggingHandleNoSecurityRuleStrategy();
-    }
 
     @ConditionalOnMissingBean(name = "defaultServiceSecurityRule")
     @DefaultServiceSecurityRule
