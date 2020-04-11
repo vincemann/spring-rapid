@@ -2,6 +2,7 @@ package io.github.vincemann.springrapid.coretest.service.result.matcher.compare.
 
 import io.github.vincemann.springrapid.core.model.IdentifiableEntity;
 import io.github.vincemann.springrapid.coretest.service.result.ServiceTestContext;
+import org.springframework.util.Assert;
 
 import java.io.Serializable;
 import java.util.List;
@@ -25,6 +26,7 @@ public class BasicCompareEntityPlaceholderResolver implements CompareEntityPlace
                 }
             case SERVICE_RETURNED_ENTITY:
                 Object result =  testContext.getServiceResult().getResult();
+                Assert.notNull(result,"Service Result is null");
                 if(result instanceof IdentifiableEntity){
                     return ((IdentifiableEntity) result);
                 }else if (result instanceof Optional){

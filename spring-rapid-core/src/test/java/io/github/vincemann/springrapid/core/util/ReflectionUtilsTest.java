@@ -1,6 +1,6 @@
 package io.github.vincemann.springrapid.core.util;
 
-import com.google.common.collect.Lists;
+import io.github.vincemann.springrapid.core.util.Lists;
 import lombok.*;
 import org.apache.commons.collections4.MultiSet;
 import org.apache.commons.collections4.MultiValuedMap;

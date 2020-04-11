@@ -5,15 +5,13 @@ import io.github.vincemann.springrapid.core.model.IdentifiableEntity;
 import io.github.vincemann.springrapid.core.proxy.invocationHandler.abs.CrudServiceExtensionProxy;
 import io.github.vincemann.springrapid.core.service.CrudService;
 import io.github.vincemann.springrapid.core.service.plugin.CrudServicePlugin;
+import io.github.vincemann.springrapid.core.util.Lists;
 import io.github.vincemann.springrapid.core.util.NullableOptional;
 import lombok.extern.slf4j.Slf4j;
-import org.assertj.core.util.Lists;
 import org.springframework.data.repository.CrudRepository;
 
 import java.io.Serializable;
-import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.util.ArrayList;
 import java.util.List;
 
 @Slf4j
@@ -32,8 +30,13 @@ public class CrudServicePluginProxy<E extends IdentifiableEntity<Id>, Id extends
     }
 
     @Override
-    protected Object proxy(Object target, Method method, Object[] args){
-        MethodHandle targetMethod = MethodHandle.create(method, target);
+    protected Object proxy(Object target, Method method, Object[] args) throws Throwable {
+//        List<Method> methods = Arrays.stream(target.getClass().getMethods())
+//                .filter(m -> m.getName().equals(method.getName()))
+//                .collect(Collectors.toList());
+//        Assert.isTrue(methods.size()==1);
+
+        MethodHandle targetMethod = MethodHandle.create(getMethods().get(method.getName()),getService());
         NullableOptional<Object> result;
         //call before method of plugins
         for (Object plugin : plugins) {
@@ -45,6 +48,7 @@ public class CrudServicePluginProxy<E extends IdentifiableEntity<Id>, Id extends
         }
 
         //actual call
+
         result = targetMethod.execute(args);
 
         for (Object plugin : plugins) {

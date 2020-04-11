@@ -5,7 +5,7 @@ import io.github.vincemann.springrapid.core.model.IdentifiableEntity;
 import io.github.vincemann.springrapid.core.service.CrudService;
 import io.github.vincemann.springrapid.core.service.ServiceBeanType;
 import lombok.extern.slf4j.Slf4j;
-import org.assertj.core.util.Lists;
+import io.github.vincemann.springrapid.core.util.Lists;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;

@@ -99,9 +99,13 @@ public class ServiceTestTemplate
             throw new RuntimeException(e);
         }
         catch (InvocationTargetException e){
+            Throwable cause = e;
+            do {
+                cause = cause.getCause();
+            }while (cause instanceof InvocationTargetException);
             return ServiceResult.builder()
                     .serviceRequest(serviceRequest)
-                    .raisedException(((Exception) e.getTargetException()))
+                    .raisedException(((Exception) cause))
                     .build();
         }
         catch (Exception e){

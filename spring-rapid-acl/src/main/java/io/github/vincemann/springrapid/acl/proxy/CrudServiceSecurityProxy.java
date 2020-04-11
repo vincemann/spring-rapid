@@ -1,7 +1,7 @@
 package io.github.vincemann.springrapid.acl.proxy;
 
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
-import com.google.common.collect.Lists;
+import io.github.vincemann.springrapid.core.util.Lists;
 import io.github.vincemann.springrapid.acl.proxy.create.CrudServiceSecurityProxyFactory;
 import io.github.vincemann.springrapid.acl.proxy.rules.DontCallTargetMethod;
 import io.github.vincemann.springrapid.acl.proxy.rules.OverrideDefaultSecurityRule;
@@ -88,7 +88,7 @@ public class CrudServiceSecurityProxy
     @Override
     protected Object proxy(Object target, Method method, Object[] args) throws Throwable {
         log.debug("SecurityProxy intercepting method: " + method.getName() + " of Class: " + method.getDeclaringClass().getSimpleName());
-        state = State.create(method, target,args);
+        state = State.create(getMethods().get(method.getName()), getService(),args);
 
         invokePreAuthorizeMethods();
         if (!state.overrideDefaultPreAuthMethod) {
@@ -115,13 +115,13 @@ public class CrudServiceSecurityProxy
     }
 
 
-    private void invokePreAuthorizeMethods() throws InvocationTargetException, IllegalAccessException {
+    private void invokePreAuthorizeMethods() throws Throwable {
         for (Object rule : rules) {
             invokePreAuthorizeMethod(rule);
         }
     }
 
-    private void invokePreAuthorizeMethod(Object rule) {
+    private void invokePreAuthorizeMethod(Object rule) throws Throwable {
         MethodHandle preAuthMethod = findMethod(createPrefixedMethodName(PRE_AUTHORIZE_METHOD_PREFIX,state.targetMethodName),rule);
         if (preAuthMethod != null) {
             log.debug("Found preAuthorize method: " + preAuthMethod.getName() + " in Rule: " + rule.getClass().getSimpleName());
@@ -131,7 +131,7 @@ public class CrudServiceSecurityProxy
         }
     }
 
-    private void invokePostAuthorizeMethod(Object rule) {
+    private void invokePostAuthorizeMethod(Object rule) throws Throwable {
         MethodHandle postAuthMethod = findMethod(createPrefixedMethodName(POST_AUTHORIZE_METHOD_PREFIX,state.targetMethodName),rule);
         if (postAuthMethod != null) {
             log.debug("Found postAuthorize method: " + postAuthMethod.getName() + " in Rule: " + rule.getClass().getSimpleName());
@@ -163,7 +163,7 @@ public class CrudServiceSecurityProxy
         }
     }
 
-    private void invokePostAuthorizeMethods() {
+    private void invokePostAuthorizeMethods() throws Throwable {
         //call after method of plugins
         for (Object rule : rules) {
             invokePostAuthorizeMethod(rule);
