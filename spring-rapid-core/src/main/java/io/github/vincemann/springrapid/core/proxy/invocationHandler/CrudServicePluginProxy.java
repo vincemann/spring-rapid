@@ -40,7 +40,7 @@ public class CrudServicePluginProxy<E extends IdentifiableEntity<Id>, Id extends
             MethodHandle beforeMethod = findMethod(createPrefixedMethodName(BEFORE_METHOD_PREFIX, method.getName()), plugin);
             if(beforeMethod!=null){
                 log.debug("Found before method:"+beforeMethod.getName()+" of plugin: " + plugin.getClass().getSimpleName());
-                invokeAndAppendEntityClassArgIfNeeded(beforeMethod,Lists.newArrayList(args));
+                invokeAndAppendEntityClassArgIfNeeded(beforeMethod,args);
             }
         }
 
@@ -56,7 +56,7 @@ public class CrudServicePluginProxy<E extends IdentifiableEntity<Id>, Id extends
                 if(result.isPresent()){
                     finalArgs.add(result.get());
                 }
-                NullableOptional<Object> pluginResult = invokeAndAppendEntityClassArgIfNeeded(afterMethod, finalArgs);
+                NullableOptional<Object> pluginResult = invokeAndAppendEntityClassArgIfNeeded(afterMethod, finalArgs.toArray());
                 if(!afterMethod.isVoidMethod()){
                     log.debug("Plugin method updated old ret value: " + result + " to: " + pluginResult.get());
                     result=pluginResult;
