@@ -1,6 +1,6 @@
 package io.github.vincemann.springrapid.entityrelationship.model.biDir.child;
 
-import com.google.common.collect.Lists;
+import io.github.vincemann.springrapid.core.util.Lists;
 import io.github.vincemann.springrapid.core.model.IdentifiableEntityImpl;
 import io.github.vincemann.springrapid.entityrelationship.model.biDir.child.BiDirChild;
 import io.github.vincemann.springrapid.entityrelationship.model.biDir.child.BiDirChildCollection;

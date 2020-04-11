@@ -4,7 +4,7 @@ import io.github.vincemann.springrapid.core.util.ReflectionUtils;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
-import org.assertj.core.util.Lists;
+import io.github.vincemann.springrapid.core.util.Lists;
 
 import java.lang.reflect.Field;
 import java.util.*;

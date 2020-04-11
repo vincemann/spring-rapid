@@ -1,6 +1,6 @@
 package io.github.vincemann.springrapid.core.proxy.invocationHandler.abs;
 
-import com.google.common.collect.Lists;
+import io.github.vincemann.springrapid.core.util.Lists;
 import io.github.vincemann.springrapid.core.model.IdentifiableEntity;
 import io.github.vincemann.springrapid.core.service.CrudService;
 import io.github.vincemann.springrapid.core.util.NullableOptional;
@@ -9,6 +9,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.repository.CrudRepository;
+import org.springframework.test.util.AopTestUtils;
 import org.springframework.util.Assert;
 
 import java.io.Serializable;
@@ -50,7 +51,7 @@ public abstract class CrudServiceExtensionProxy<E extends IdentifiableEntity<Id>
             return method.isAnnotationPresent(type);
         }
 
-        public NullableOptional<Object> execute(Object[] args){
+        public NullableOptional<Object> execute(Object[] args) throws Throwable {
             try {
                 Object result = method.invoke(target, args);
                 if(voidMethod){
@@ -58,8 +59,10 @@ public abstract class CrudServiceExtensionProxy<E extends IdentifiableEntity<Id>
                 }else {
                     return NullableOptional.of(result);
                 }
-            } catch (IllegalAccessException | InvocationTargetException e) {
+            } catch (IllegalAccessException e) {
                 throw new RuntimeException(e);
+            }catch (InvocationTargetException e){
+                throw e.getCause();
             }
         }
     }
@@ -84,17 +87,46 @@ public abstract class CrudServiceExtensionProxy<E extends IdentifiableEntity<Id>
                     .invoke(getService(),args);
         }
         else{
+            if(args==null){
+                args=new Object[]{};
+            }
             return proxy(o,method,args);
         }
     }
 
     protected MethodHandle findMethod(String name, Object target) {
         List<Method> methods = Arrays.stream(target.getClass().getMethods())
-                .filter(m -> m.getName().equals(name))
+                .filter(m ->
+                        m.getName().equals(name) &&
+                        !m.isBridge()
+                )
                 .collect(Collectors.toList());
-        Assert.isTrue(methods.size() <= 1, "Found multiple methods with same name -> illegal for rule/plugin hook methods");
+        if(methods.size()>1){
+            return MethodHandle.create(extractOverridingMethod(methods),target);
+        }
         //Assert.isTrue(!methods.isEmpty(),"Could not find method with name: " + name + " on target: " + target);
         return methods.isEmpty() ? null : MethodHandle.create(methods.get(0), target);
+    }
+
+    private Method extractOverridingMethod(List<Method> conflicting){
+        //use method highest in the class hierachy -> the one that overrides
+        //check if methods are in same class -> design flaw
+        List<Class> classes = new ArrayList<>();
+        Method highestInHierarchy = null;
+        for (Method method : conflicting) {
+            Class<?> declaringClass = method.getDeclaringClass();
+            if (classes.contains(declaringClass)) {
+                throw new IllegalArgumentException("Found multiple methods with same name -> illegal for rule/plugin hook methods");
+            }
+            if(highestInHierarchy==null){
+                highestInHierarchy=method;
+            }
+            else if(highestInHierarchy.getDeclaringClass().isAssignableFrom(declaringClass)){
+                highestInHierarchy=method;
+            }
+            classes.add(declaringClass);
+        }
+        return highestInHierarchy;
     }
 
     protected String createPrefixedMethodName(String prefix,String targetMethodName) {
@@ -103,7 +135,7 @@ public abstract class CrudServiceExtensionProxy<E extends IdentifiableEntity<Id>
     }
 
 
-    protected NullableOptional<Object> invokeAndAppendEntityClassArgIfNeeded(MethodHandle method, Object[] args){
+    protected NullableOptional<Object> invokeAndAppendEntityClassArgIfNeeded(MethodHandle method, Object[] args) throws Throwable {
         List<Object> finalArgs = Lists.newArrayList(args);
         if(isEntityClassWanted(method,args.length)){
             finalArgs.add(getService().getEntityClass());

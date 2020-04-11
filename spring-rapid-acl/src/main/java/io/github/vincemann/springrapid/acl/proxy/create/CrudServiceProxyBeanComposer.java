@@ -1,6 +1,6 @@
 package io.github.vincemann.springrapid.acl.proxy.create;
 
-import com.google.common.collect.Lists;
+import io.github.vincemann.springrapid.core.util.Lists;
 import io.github.vincemann.springrapid.acl.proxy.SecurityProxy;
 import io.github.vincemann.springrapid.acl.proxy.rules.ServiceSecurityRule;
 import io.github.vincemann.springrapid.core.slicing.components.ServiceComponent;

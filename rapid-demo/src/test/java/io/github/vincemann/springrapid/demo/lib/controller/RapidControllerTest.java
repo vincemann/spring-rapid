@@ -1,7 +1,7 @@
 package io.github.vincemann.springrapid.demo.lib.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.google.common.collect.Lists;
+import io.github.vincemann.springrapid.core.util.Lists;
 import io.github.vincemann.springrapid.core.config.RapidControllerAutoConfiguration;
 import io.github.vincemann.springrapid.core.controller.dtoMapper.Delegating;
 import io.github.vincemann.springrapid.core.controller.dtoMapper.DtoMapper;

@@ -1,6 +1,6 @@
 package io.github.vincemann.springrapid.demo.service.jpa.it;
 
-import com.google.common.collect.Lists;
+import io.github.vincemann.springrapid.core.util.Lists;
 import io.github.vincemann.springrapid.demo.model.Owner;
 import io.github.vincemann.springrapid.demo.model.Pet;
 import io.github.vincemann.springrapid.demo.model.PetType;
