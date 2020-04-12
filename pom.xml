@@ -6,7 +6,7 @@
     <groupId>io.github.vincemann</groupId>
     <artifactId>spring-rapid</artifactId>
 <!--    <version>${rapid.version}</version>-->
-    <version>0.0.7</version>
+    <version>0.0.72</version>
     <packaging>pom</packaging>
 
 
@@ -15,7 +15,7 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <maven.compiler.source>11</maven.compiler.source>
         <maven.compiler.target>11</maven.compiler.target>
-<!--        <rapid.version>0.0.7</rapid.version>-->
+<!--        <rapid.version>0.0.72</rapid.version>-->
     </properties>
 
 

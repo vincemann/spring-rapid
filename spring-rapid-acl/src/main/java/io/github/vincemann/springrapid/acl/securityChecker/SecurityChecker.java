@@ -8,19 +8,32 @@ import java.util.Collection;
 import java.util.Set;
 
 /**
- * Dynamic acl permission checking.
+ * API for dynamic acl permission checking.
  */
 @ServiceComponent
 public interface SecurityChecker {
+
     public boolean checkExpression(String securityExpression);
 
+    /**
+     * Filters a collection based on permission the currently logged in user has.
+     *
+     * @param toFilter
+     * @param permission
+     * @param <E>
+     * @param <C>
+     * @return
+     */
     public <E extends IdentifiableEntity<? extends Serializable>, C extends Collection<E>>
     C filter(C toFilter, String permission);
 
+    /**
+     * Checks if currently logged in user is authenticated.
+     */
     public void checkIfAuthenticated();
 
     /**
-     * Checks if authenticated User has @permission over Entity with given @id,@class
+     * Checks if authenticated User has permission over Entity with given id & class
      * @param id
      * @param clazz
      * @param permission

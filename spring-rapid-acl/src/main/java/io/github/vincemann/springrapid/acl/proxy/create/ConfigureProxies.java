@@ -7,7 +7,8 @@ import java.lang.annotation.*;
 
 
 /**
- * This annotation can be used to create and configure Proxies for a {@link io.github.vincemann.springrapid.core.service.CrudService}.
+ * Annotate your {@link io.github.vincemann.springrapid.core.service.CrudService} with this annotation to
+ * induce the dynamic creation of Proxies for a {@link io.github.vincemann.springrapid.core.service.CrudService}.
  * This is an alternative solution for {@link io.github.vincemann.springrapid.acl.proxy.create.CrudServiceSecurityProxyFactory}
  * and {@link io.github.vincemann.springrapid.core.proxy.factory.CrudServicePluginProxyFactory}.
  *

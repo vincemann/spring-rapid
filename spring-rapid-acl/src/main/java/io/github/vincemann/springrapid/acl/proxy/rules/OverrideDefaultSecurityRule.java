@@ -6,9 +6,8 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * Annotate {@link io.github.vincemann.springrapid.acl.proxy.rules.ServiceSecurityRule} method with this annotation,
- * if rule overrides the {@link io.github.vincemann.springrapid.acl.proxy.rules.DefaultServiceSecurityRule}s method -> default security rule method
- * wont be called.
+ * Annotate {@link io.github.vincemann.springrapid.acl.proxy.rules.ServiceSecurityRule} method a with this annotation,
+ * if {@link io.github.vincemann.springrapid.acl.proxy.rules.DefaultServiceSecurityRule}s method a should not be called.
  */
 @Target({ElementType.METHOD})
 @Retention(RetentionPolicy.RUNTIME)

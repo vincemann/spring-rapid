@@ -5,7 +5,7 @@ import org.springframework.security.acls.model.Acl;
 import org.springframework.security.core.GrantedAuthority;
 
 /**
- * Anyone is able to change Acls -> make sure modifying calls are only made by trusted code
+ * Anyone is able to change Acl's -> make sure modifying calls are only made by trusted code.
  */
 public class NoModSecurityCheckAclAuthorizationStrategy extends AclAuthorizationStrategyImpl {
 

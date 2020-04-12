@@ -14,10 +14,9 @@ import org.springframework.transaction.annotation.Transactional;
 import java.io.Serializable;
 
 /**
- * Default Acl Plugin, granting admin permission for creator and admin of entity saved by {@link io.github.vincemann.springrapid.core.service.CrudService}.
- * Acl Info gets deleted, when entity gets deleted.
- * @param <E>
- * @param <Id>
+ * Abstract Acl Plugin, granting {@link BasePermission#ADMINISTRATION} for creator and admin(role) of entity saved by {@link io.github.vincemann.springrapid.core.service.CrudService}.
+ * @param <E>   Type of Entity managed by {@link io.github.vincemann.springrapid.core.service.CrudService}
+ * @param <Id>  IdType of Entity managed by {@link io.github.vincemann.springrapid.core.service.CrudService}
  */
 @Slf4j
 @Getter
@@ -39,8 +38,6 @@ public abstract class AdminFullAccessAclPlugin<E extends IdentifiableEntity<Id>,
         log.debug("admin now gets full permission over entity: " + returnedEntity);
         saveFullPermissionForAdminOver(returnedEntity);
     }
-
-
 
     protected void saveFullPermissionForAdminOver(E entity){
         getPermissionService().addPermissionForAuthorityOver(entity,BasePermission.ADMINISTRATION, adminRole);
