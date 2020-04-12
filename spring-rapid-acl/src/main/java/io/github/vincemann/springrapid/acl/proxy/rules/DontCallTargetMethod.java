@@ -7,7 +7,7 @@ import java.lang.annotation.Target;
 
 /**
  * Annotate {@link io.github.vincemann.springrapid.acl.proxy.rules.ServiceSecurityRule} method with this annotation,
- * if the rule decides, that the underlying intercepted method should not be called.
+ * if the underlying intercepted (target-) method should not be called.
  */
 @Target({ElementType.METHOD})
 @Retention(RetentionPolicy.RUNTIME)

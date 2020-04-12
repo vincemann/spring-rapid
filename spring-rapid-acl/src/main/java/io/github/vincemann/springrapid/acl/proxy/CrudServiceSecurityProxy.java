@@ -29,8 +29,8 @@ import java.util.stream.Collectors;
 @Getter
 /**
  * Proxy for {@link CrudService}, that applys {@link ServiceSecurityRule}s before calling service method.
- * After all Rules have been applied in the order they were givin for construction, the {@link io.github.vincemann.springrapid.acl.proxy.rules.DefaultServiceSecurityRule}
- * is applied if not prohibited for a specific method by a rule, by annotating the rule (intercept) methodwith {@link OverrideDefaultSecurityRule}.
+ * After all Rules have been applied in the order they were given in for construction, the {@link io.github.vincemann.springrapid.acl.proxy.rules.DefaultServiceSecurityRule}
+ * is applied if not prohibited ()
  *
  * Create instances of this class with {@link CrudServiceSecurityProxyFactory}.
  */

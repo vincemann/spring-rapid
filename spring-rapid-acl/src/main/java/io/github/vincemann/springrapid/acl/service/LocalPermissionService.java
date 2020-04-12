@@ -39,16 +39,34 @@ public class LocalPermissionService {
         this.aclService = aclService;
     }
 
+    /**
+     *
+     * @param targetObj
+     * @param permission
+     * @param username      username of user, that gains permission over target object
+     */
     public void addPermissionForUserOver(IdentifiableEntity<? extends Serializable> targetObj, Permission permission, String username) {
         final Sid sid = new PrincipalSid(username);
         addPermissionForSid(targetObj, permission, sid);
     }
 
+    /**
+     *
+     * @param targetObj
+     * @param permission
+     * @param authority     the authority that gains the given permission over the target obj
+     */
     public void addPermissionForAuthorityOver(IdentifiableEntity<? extends Serializable> targetObj, Permission permission, String authority) {
         final Sid sid = new GrantedAuthoritySid(authority);
         addPermissionForSid(targetObj, permission, sid);
     }
 
+    /**
+     *
+     * @param targetObj   inherits all permissions from parent
+     * @param parent
+     * @throws AclNotFoundException
+     */
     public void inheritPermissions(IdentifiableEntity<? extends Serializable> targetObj,IdentifiableEntity<? extends Serializable> parent) throws AclNotFoundException {
         final ObjectIdentity childOi = new ObjectIdentityImpl(targetObj.getClass(), targetObj.getId());
         final ObjectIdentity parentOi = new ObjectIdentityImpl(parent.getClass(), parent.getId());

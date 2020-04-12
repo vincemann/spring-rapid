@@ -19,7 +19,7 @@ import java.io.Serializable;
 @Getter
 @Slf4j
 /**
- * Removes Acls on delete, if existing
+ * Removes Acl's on delete, if existing.
  */
 public abstract class CleanUpAclPlugin<E extends IdentifiableEntity<Id>, Id extends Serializable>
         extends CrudServicePlugin<E,Id> {

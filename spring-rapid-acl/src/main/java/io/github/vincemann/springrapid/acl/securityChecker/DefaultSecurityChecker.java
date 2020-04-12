@@ -23,8 +23,12 @@ import java.util.HashSet;
 
 @Slf4j
 /**
+ * Copied an modified from:
  * https://gist.github.com/matteocedroni/b0e5a935127316603dfb
  *
+ * DefaultImpl of {@link SecurityChecker}.
+ * Uses {@link MethodSecurityExpressionHandler} for expression evaluation and {@link org.springframework.security.core.context.SecurityContext}
+ * to get information about authenticated user.
  */
 @ServiceComponent
 public class DefaultSecurityChecker implements SecurityChecker,ApplicationContextAware {

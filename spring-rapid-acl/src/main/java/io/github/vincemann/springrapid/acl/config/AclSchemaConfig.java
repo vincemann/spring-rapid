@@ -10,6 +10,9 @@ import org.springframework.jdbc.datasource.init.ResourceDatabasePopulator;
 
 import javax.sql.DataSource;
 
+/**
+ * Creates Acl-Schema in db on startup.
+ */
 @ServiceConfig
 @Slf4j
 public class AclSchemaConfig {

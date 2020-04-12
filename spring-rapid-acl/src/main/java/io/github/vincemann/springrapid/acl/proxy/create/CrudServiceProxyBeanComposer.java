@@ -27,6 +27,10 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
+/**
+ * Used to create {@link CrudService} Proxy's dynamically by resolving {@link ConfigureProxies} annotation.
+ * @see ConfigureProxies
+ */
 @ServiceComponent
 @Slf4j
 public class CrudServiceProxyBeanComposer implements BeanPostProcessor, ApplicationContextAware {
@@ -47,7 +51,7 @@ public class CrudServiceProxyBeanComposer implements BeanPostProcessor, Applicat
 
     @Override
     public Object postProcessAfterInitialization(Object bean, String beanName) throws BeansException {
-        log.debug("postProcessing bean : " + beanName);
+        //log.debug("postProcessing bean : " + beanName);
         Object unwrappedBean = AopTestUtils.getUltimateTargetObject(bean);
         if(unwrappedBean instanceof CrudService){
             ConfigureProxies proxiesConfig = AnnotationUtils.findAnnotation(unwrappedBean.getClass(), ConfigureProxies.class);

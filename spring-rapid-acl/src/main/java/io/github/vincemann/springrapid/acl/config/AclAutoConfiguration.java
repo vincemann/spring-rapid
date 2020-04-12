@@ -1,13 +1,12 @@
 package io.github.vincemann.springrapid.acl.config;
 
 import io.github.vincemann.springrapid.acl.framework.NoModSecurityCheckAclAuthorizationStrategy;
-import io.github.vincemann.springrapid.acl.framework.SophisticatedPermissionGrantingStrategy;
+import io.github.vincemann.springrapid.acl.framework.LenientPermissionGrantingStrategy;
 import io.github.vincemann.springrapid.core.slicing.config.ServiceConfig;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.cache.ehcache.EhCacheFactoryBean;
 import org.springframework.cache.ehcache.EhCacheManagerFactoryBean;
@@ -28,6 +27,9 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 
 import javax.sql.DataSource;
 
+/**
+ * Auto-configures AclBeans and Acl-Caching.
+ */
 @ServiceConfig
 @Slf4j
 @ConditionalOnClass(DataSource.class)
@@ -74,7 +76,7 @@ public class AclAutoConfiguration {
     @ConditionalOnMissingBean(PermissionGrantingStrategy.class)
     @Bean
     public PermissionGrantingStrategy permissionGrantingStrategy() {
-        return new SophisticatedPermissionGrantingStrategy(new ConsoleAuditLogger());
+        return new LenientPermissionGrantingStrategy(new ConsoleAuditLogger());
     }
 
     @ConditionalOnMissingBean(AclAuthorizationStrategy.class)

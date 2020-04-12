@@ -17,8 +17,8 @@ import lombok.NoArgsConstructor;
  *
  * void onBeforeMyServiceMethod(all,args,in,service,method,Class<ServiceEntityType>)
  * void onAfterMyServiceMethod(all,args,serviceResult, Class<ServiceEntityType>)
- * T onAfterMyServiceMethod(...) -> return value of hooked service methods gets updated with return value from hook method.
- *
+ * T onAfterMyServiceMethod(...)        -> return value of hooked service methods gets updated with return value from hook method.
+ * void onAfterMyServiceMethod(...)     -> return value of hooked service method is not tampered with
  *
  */
 public abstract class ServiceSecurityRule extends CrudServicePlugin{

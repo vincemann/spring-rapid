@@ -9,7 +9,8 @@ import java.io.Serializable;
 import java.util.Collection;
 
 /**
- * Does basic acl permission checks on crud Methods defined in {@link io.github.vincemann.springrapid.core.service.CrudService}
+ * Does basic acl permission checks on crud Methods defined in {@link io.github.vincemann.springrapid.core.service.CrudService}.
+ * @see DefaultServiceSecurityRule
  */
 public class DefaultCrudSecurityRule extends ServiceSecurityRule {
 
