@@ -14,6 +14,11 @@ import java.lang.reflect.Proxy;
 public class CrudServicePluginProxyFactory {
     //we need the class explicitly here to avoid issues with other proxies. HibernateProxies for example, are not interfaces, so service.getClass returns no interface
     //-> this would make this crash
+
+    /**
+     * Creates a {@link CrudServicePluginProxy} of @param crudService with given {@link CrudServicePlugin}s.
+     * The plugins will be called in the order you give them to this Factory.
+     */
     public static <Id extends Serializable, E extends IdentifiableEntity<Id>, S extends CrudService<E, Id, ? extends CrudRepository<E, Id>>> S
     create(S crudService, CrudServicePlugin<? super E, ? super Id>... plugins) {
         //resolve spring aop proxy

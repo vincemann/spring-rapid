@@ -41,10 +41,10 @@ import java.util.stream.Collectors;
  * Adapter that connects Springs Requirements for a Controller (which can be seen as an Interface),
  * with the {@link JsonDtoCrudController} Interface, resulting in a fully functional Spring @{@link org.springframework.web.bind.annotation.RestController}
  *
- * fetches {@link Id} with given {@link IdFetchingStrategy} from HttpRequest
- * fetches Dto, expected in json format, from HttpRequest
+ * Fetches {@link Id} with given {@link IdFetchingStrategy} from HttpRequest.
+ * Deserializes Json String from Requests to Dto and vice versa.
  *
- * ExampleUrls with {@link UrlParamIdFetchingStrategy}:
+ * Example-Request-URL's with {@link UrlParamIdFetchingStrategy}:
  * /entityName/httpMethod?entityIdName=id
  *
  * /account/get?accountId=34

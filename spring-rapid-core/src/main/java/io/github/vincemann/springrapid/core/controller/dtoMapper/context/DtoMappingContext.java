@@ -10,6 +10,10 @@ import java.util.Map;
 import java.util.concurrent.atomic.AtomicReference;
 
 @SuppressWarnings("ALL")
+/**
+ * Represents the Context that contains the information when which dto class should be used for mapping.
+ * Offers a find method, for finding the right Dto class for the current situation (represented by {@link DtoMappingInfo}).
+ */
 @Slf4j
 public class DtoMappingContext {
     private Map<DtoMappingInfo, Class<? extends IdentifiableEntity>> mappingEntries = new HashMap<>();
@@ -22,8 +26,8 @@ public class DtoMappingContext {
 
     /**
      * Ignores role if no role was configured for this MappingContext.
-     * If a role was configured, searching for dtoClass matching Role and Endpoint.
-     * If none was found falling back to searching for dtoClass without Role Information.
+     * Otherwise role and all other properties of {@link DtoMappingInfo} must match for a match.
+     * If no match was found with a role, it falls back on searching for dtoClass without Role Information.
      *
      * @param dtoMappingInfo
      * @return

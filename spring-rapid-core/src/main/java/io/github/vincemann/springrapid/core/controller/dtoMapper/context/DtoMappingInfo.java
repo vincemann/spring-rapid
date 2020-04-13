@@ -7,6 +7,10 @@ import org.springframework.lang.Nullable;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Bundle of information that maps to dto class for
+ * entity -> dto mapping.
+ */
 @Getter
 @Setter
 @ToString

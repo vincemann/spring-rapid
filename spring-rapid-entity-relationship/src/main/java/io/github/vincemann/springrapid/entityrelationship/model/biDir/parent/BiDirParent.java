@@ -4,8 +4,8 @@ import io.github.vincemann.springrapid.entityrelationship.model.biDir.BiDirEntit
 import io.github.vincemann.springrapid.entityrelationship.model.biDir.child.BiDirChild;
 import io.github.vincemann.springrapid.entityrelationship.model.biDir.child.BiDirChildCollection;
 import io.github.vincemann.springrapid.entityrelationship.model.biDir.child.BiDirChildEntity;
-import io.github.vincemann.springrapid.core.service.exception.entityRelationHandling.UnknownChildTypeException;
-import io.github.vincemann.springrapid.core.service.exception.entityRelationHandling.UnknownParentTypeException;
+import io.github.vincemann.springrapid.entityrelationship.exception.UnknownChildTypeException;
+import io.github.vincemann.springrapid.entityrelationship.exception.UnknownParentTypeException;
 import io.github.vincemann.springrapid.entityrelationship.util.CollectionUtils;
 import io.github.vincemann.springrapid.core.util.ReflectionUtils;
 import org.slf4j.Logger;

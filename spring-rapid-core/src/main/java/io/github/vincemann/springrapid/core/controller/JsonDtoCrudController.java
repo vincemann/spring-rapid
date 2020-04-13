@@ -36,12 +36,12 @@ import java.util.Set;
 
 /**
  * Impl of {@link DtoCrudController} that handles the following:
- * Mapping of Entity to Dto and vice versa.
- * Validates the Dto and {@link Id} with the given {@link ValidationStrategy}
- * Interaction with specified  {@link CrudService}.
+ * Mapping of Entity to Dto and vice versa with {@link DtoMapper}.
+ * Validation of the Dto and {@link Id} with {@link ValidationStrategy}
+ * Interaction with {@link CrudService}.
  * Supply hook Methods.
  *
- * @param <E>  Entity Type, of entity, which's curd endpoints are exposed by this Controller
+ * @param <E>  Entity Type, of entity, which's crud endpoints are exposed by this Controller
  * @param <Id> Id Type of {@link E}
  */
 @Slf4j

@@ -1,4 +1,4 @@
-package io.github.vincemann.springrapid.core.service.exception.entityRelationHandling;
+package io.github.vincemann.springrapid.entityrelationship.exception;
 
 
 public class UnknownChildTypeException extends EntityRelationHandlingException {

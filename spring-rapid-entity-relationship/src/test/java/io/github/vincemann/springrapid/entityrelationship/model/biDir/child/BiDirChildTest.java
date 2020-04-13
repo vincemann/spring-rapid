@@ -1,11 +1,9 @@
 package io.github.vincemann.springrapid.entityrelationship.model.biDir.child;
 
 import io.github.vincemann.springrapid.core.model.IdentifiableEntityImpl;
-import io.github.vincemann.springrapid.entityrelationship.model.biDir.child.BiDirChild;
-import io.github.vincemann.springrapid.entityrelationship.model.biDir.child.BiDirChildEntity;
 import io.github.vincemann.springrapid.entityrelationship.model.biDir.parent.BiDirParent;
 import io.github.vincemann.springrapid.entityrelationship.model.biDir.parent.BiDirParentEntity;
-import io.github.vincemann.springrapid.core.service.exception.entityRelationHandling.UnknownParentTypeException;
+import io.github.vincemann.springrapid.entityrelationship.exception.UnknownParentTypeException;
 import lombok.Getter;
 import lombok.Setter;
 import org.junit.jupiter.api.AfterEach;

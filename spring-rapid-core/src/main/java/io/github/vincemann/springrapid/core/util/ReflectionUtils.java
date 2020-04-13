@@ -17,25 +17,18 @@ import java.util.stream.Collectors;
 @Slf4j
 public class ReflectionUtils {
 
-    /**
-     * Create new instance of specified class and type
-     *
-     * @param clazz of instance
-     * @param <T>   type of object
-     * @return new Class instance
-     */
-    public static <T> T getInstance(Class<T> clazz) {
-        T t = null;
-        try {
-            t = clazz.newInstance();
-        } catch (InstantiationException e) {
-            e.printStackTrace();
-        } catch (IllegalAccessException e) {
-            e.printStackTrace();
-        }
-
-        return t;
-    }
+//    public static <T> T getInstance(Class<T> clazz) {
+//        T t = null;
+//        try {
+//            t = clazz.newInstance();
+//        } catch (InstantiationException e) {
+//            e.printStackTrace();
+//        } catch (IllegalAccessException e) {
+//            e.printStackTrace();
+//        }
+//
+//        return t;
+//    }
 
 
     public static List<Method> findGetters(Class clazz) {
@@ -49,12 +42,8 @@ public class ReflectionUtils {
     }
 
     /**
-     * Retrieving fields list of specified class
-     * If recursively is true, retrieving fields from all class hierarchy
-     *
-     * @param clazz       where fields are searching
-     * @param recursively param
-     * @return list of fields
+     * Retrieving fields list of specified class.
+     * If @param recursively is true, retrieving fields from whole class hierarchy
      */
     public static Field[] getDeclaredFields(Class clazz, boolean recursively) {
         List<Field> fields = new LinkedList<Field>();
@@ -73,12 +62,7 @@ public class ReflectionUtils {
     }
 
     /**
-     * Retrieving fields list of specified class
-     * If recursively is true, retrieving fields from all class hierarchy
-     *
-     * @param clazz       where fields are searching
-     * @param recursively param
-     * @return list of fields
+     * Same as {@link this#getDeclaredFields(Class, boolean)} but the 'this' field is excluded.
      */
     public static Field[] getDeclaredFields_WithoutOutThisField(Class clazz, boolean recursively) {
         List<Field> fields = new LinkedList<>();
@@ -100,14 +84,7 @@ public class ReflectionUtils {
     }
 
     /**
-     * Retrieving fields list of specified class and which
-     * are annotated by incoming annotation class
-     * If recursively is true, retrieving fields from all class hierarchy
-     *
-     * @param clazz           - where fields are searching
-     * @param annotationClass - specified annotation class
-     * @param recursively     param
-     * @return list of annotated fields
+     * Same as {@link this#getDeclaredFields(Class, boolean)} but only field annotated with @param annotationClass
      */
     public static Field[] getAnnotatedDeclaredFields(Class clazz,
                                                      Class<? extends Annotation> annotationClass,
@@ -124,14 +101,7 @@ public class ReflectionUtils {
     }
 
     /**
-     * Retrieving fields list of specified class and which
-     * are annotated by incoming annotation class
-     * If recursively is true, retrieving fields from all class hierarchy
-     *
-     * @param clazz           - where fields are searching
-     * @param annotationClass - specified annotation class
-     * @param recursively     param
-     * @return list of annotated fields
+     * Same as {@link this#getDeclaredFieldsAnnotatedWith(Class, Class, boolean)} but field also need to be assignable from @param interfaceThatNeedsToBeImplemented.
      */
     public static Field[] getAnnotatedDeclaredFieldsAssignableFrom(Class clazz,
                                                                    Class<? extends Annotation> annotationClass,

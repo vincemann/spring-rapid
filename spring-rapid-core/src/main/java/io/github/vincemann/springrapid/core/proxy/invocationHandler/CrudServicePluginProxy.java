@@ -14,6 +14,12 @@ import java.io.Serializable;
 import java.lang.reflect.Method;
 import java.util.List;
 
+/**
+ * Proxy that calls hook methods {@link CrudServicePlugin}s.
+ * @see CrudServicePlugin
+ * @param <E>
+ * @param <Id>
+ */
 @Slf4j
 public class CrudServicePluginProxy<E extends IdentifiableEntity<Id>, Id extends Serializable>
         extends CrudServiceExtensionProxy<E, Id> {

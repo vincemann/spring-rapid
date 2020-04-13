@@ -12,8 +12,8 @@ import java.util.Collection;
 
 
 /**
- * Defines Crud Operations a DtoCrudController must implement
- * @param <Id>      Id Type of corresponding Service Entity
+ * CrudController with variable Dtos.
+ * @param <Id>      Id Type of the Entity which's crud operations are exposed with this Controller
  */
 public interface DtoCrudController<Id extends Serializable> {
 

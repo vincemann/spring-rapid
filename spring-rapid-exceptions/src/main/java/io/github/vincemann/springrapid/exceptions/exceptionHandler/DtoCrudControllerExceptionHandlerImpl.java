@@ -13,7 +13,10 @@ import io.github.vincemann.springrapid.core.service.exception.BadEntityException
 import io.github.vincemann.springrapid.core.service.exception.EntityNotFoundException;
 import io.github.vincemann.springrapid.core.service.exception.NoIdException;
 
-//todo annotation is not inherited, so it the impl needs to be annotated
+/**
+ * BaseImpl of {@link DtoCrudControllerExceptionHandler}.
+ * Translates Exceptions to {@link ApiError} with the appropriate ErrorCode.
+ */
 @RestControllerAdvice(assignableTypes = DtoCrudController.class)
 @Slf4j
 public class DtoCrudControllerExceptionHandlerImpl

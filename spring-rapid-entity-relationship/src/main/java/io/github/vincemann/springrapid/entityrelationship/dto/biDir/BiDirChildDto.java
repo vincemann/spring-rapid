@@ -3,7 +3,7 @@ package io.github.vincemann.springrapid.entityrelationship.dto.biDir;
 import io.github.vincemann.springrapid.entityrelationship.controller.dtomapper.idResolver.IdResolvingDtoMapper;
 import io.github.vincemann.springrapid.core.model.IdentifiableEntity;
 import io.github.vincemann.springrapid.entityrelationship.model.biDir.parent.BiDirParent;
-import io.github.vincemann.springrapid.core.service.exception.entityRelationHandling.UnknownParentTypeException;
+import io.github.vincemann.springrapid.entityrelationship.exception.UnknownParentTypeException;
 import io.github.vincemann.springrapid.core.util.ReflectionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

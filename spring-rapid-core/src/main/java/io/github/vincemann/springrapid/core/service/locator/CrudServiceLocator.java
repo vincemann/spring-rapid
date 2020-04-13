@@ -6,7 +6,8 @@ import io.github.vincemann.springrapid.core.service.CrudService;
 import io.github.vincemann.springrapid.core.service.ServiceBeanType;
 
 /**
- * Find all {@link CrudService}s in the Project mapped to the EntityClass handled by the CrudService
+ * API for finding a specific {@link CrudService}, that is in the Spring Container.
+ * @see ServiceBeanType
  */
 @ServiceComponent
 public interface CrudServiceLocator {

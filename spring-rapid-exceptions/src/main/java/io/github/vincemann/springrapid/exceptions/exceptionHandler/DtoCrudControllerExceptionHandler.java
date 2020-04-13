@@ -10,8 +10,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 
 /**
- * handles Exceptions thrown by {@link DtoCrudController}
- * Impl needs to be annotated with @RestControllerAdvice(assignableTypes = DtoCrudController.class)
+ * Handles Exceptions thrown by {@link DtoCrudController}.
+ * Impl needs to be annotated with @RestControllerAdvice(assignableTypes = DtoCrudController.class).
  */
 public interface DtoCrudControllerExceptionHandler<ExceptionResponse>{
 

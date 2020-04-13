@@ -12,6 +12,10 @@ import java.util.stream.Collectors;
 
 public class AuthorityUtil {
 
+    /**
+     * Get all authorities from currently logged in user
+     * @return
+     */
     public static List<String> getAuthorities() {
         List<String> result = new LinkedList<>();
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();

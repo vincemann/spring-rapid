@@ -12,9 +12,9 @@ import java.util.Optional;
 import java.util.Set;
 
 /**
- * Interface for a Service offering Crud Operations
- * @param <E>       Type of managed Entity
- * @param <Id>      Id Type of managed Entity
+ * Interface for a Service offering Crud Operations.
+ * @param <E>       Type of Entity which's crud operations are exposed by this Service
+ * @param <Id>      Id Type of E
  */
 @ServiceComponent
 public interface CrudService
@@ -28,16 +28,12 @@ public interface CrudService
     Optional<E> findById(Id id) throws NoIdException;
 
     /**
-     * If full is false, then
-     * this function only applies changes of non null fields.
-     * Therefore it is not capable of setting a field in the entityToUpdate null.
-     * If full is true, then
-     * This function applies all changes, therefore it is capable of setting values to null aka removing them.
+     * If full is false:
+     * only non null members of @param entity will be taken into consideration for updating the database entity.
+     * If full is true:
+     * all members of @param entity will be taken into consideration for updating the database entity.
      * @param entity
-     * @return
-     * @throws EntityNotFoundException
-     * @throws NoIdException
-     * @throws BadEntityException
+     * @return updated (database) entity
      */
     E update(E entity, Boolean full) throws EntityNotFoundException, NoIdException, BadEntityException;
 
