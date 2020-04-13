@@ -1,5 +1,6 @@
 package io.github.vincemann.springrapid.entityrelationship.advice;
 
+import io.github.vincemann.springrapid.core.model.IdentifiableEntity;
 import io.github.vincemann.springrapid.entityrelationship.model.biDir.child.BiDirChild;
 import io.github.vincemann.springrapid.entityrelationship.model.biDir.parent.BiDirParent;
 import io.github.vincemann.springrapid.core.service.CrudService;
@@ -26,6 +27,9 @@ import java.util.Optional;
 @Slf4j
 //Transactional Method interceptor is called before this advice -> methods will be executed in repoTransaction
 //@Order(100)
+/**
+ * Advice that keeps BiDirRelationships intact for {@link io.github.vincemann.springrapid.core.service.CrudService#deleteById(Serializable)} - operations.
+ */
 public class BiDirEntityRemoveAdvice /*implements MethodInterceptor*/ {
 
     private CrudServiceLocator crudServiceLocator;

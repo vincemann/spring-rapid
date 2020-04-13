@@ -9,6 +9,12 @@ import io.github.vincemann.springrapid.core.service.locator.CrudServiceLocator;
 import java.io.Serializable;
 import java.util.Map;
 
+/**
+ * Same as {@link io.github.vincemann.springrapid.entityrelationship.controller.dtomapper.idResolver.biDir.BiDirChildIdResolver} but without backref setting and for
+ * {@link io.github.vincemann.springrapid.entityrelationship.model.uniDir.UniDirEntity}s.
+ *
+ * @see EntityIdResolver
+ */
 public class UniDirChildIdResolver extends EntityIdResolver<UniDirChild, UniDirChildDto> {
 
     public UniDirChildIdResolver(CrudServiceLocator crudServiceLocator) {

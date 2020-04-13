@@ -14,7 +14,7 @@ import java.util.Optional;
 @Getter
 /**
  *
- *  Resolves parent- or child-id's from an Dto to their mapped Entities.
+ *  Resolves parent- or child-id's from a Dto to their mapped Entities.
  *
  *  These id fields must be annotated with on of these Annotations:
  *  {@link BiDirChildId}, {@link BiDirParentId},
@@ -23,6 +23,7 @@ import java.util.Optional;
  *
  *  The resolving of the ids is done, by calling {@link CrudService#findById(Serializable)} of the {@link CrudService}, that belongs to the Annotated Id's Entity Type.
  *  The needed CrudService is found with {@link CrudServiceLocator}.
+ *
  */
 public abstract class EntityIdResolver<E,Dto> {
 

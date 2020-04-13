@@ -20,6 +20,9 @@ import java.util.*;
 @Aspect
 @Component
 @Slf4j
+/**
+ * Advice that keeps BiDirRelationships intact for {@link io.github.vincemann.springrapid.core.service.CrudService#update(IdentifiableEntity, Boolean)} - operations.
+ */
 public class BiDirEntityUpdateAdvice {
 
     private CrudServiceLocator serviceLocator;

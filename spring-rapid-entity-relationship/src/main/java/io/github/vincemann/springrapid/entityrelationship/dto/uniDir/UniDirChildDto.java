@@ -12,6 +12,9 @@ import java.lang.reflect.Field;
 import java.util.HashMap;
 import java.util.Map;
 
+/**
+ * See {@link io.github.vincemann.springrapid.entityrelationship.dto.biDir.BiDirChildDto}
+ */
 public interface UniDirChildDto {
     Logger log = LoggerFactory.getLogger(UniDirChildDto.class);
     Map<Class, Field[]> uniDirParentFieldsCache = new HashMap<>();
