@@ -11,8 +11,7 @@ import io.github.vincemann.springrapid.core.controller.rapid.RapidController;
 
 
 @WebController
-public class PetController
-        extends RapidController<Pet, Long> {
+public class PetController extends RapidController<Pet, Long> {
 
     public PetController() {
         super(DtoMappingContextBuilder.builder()

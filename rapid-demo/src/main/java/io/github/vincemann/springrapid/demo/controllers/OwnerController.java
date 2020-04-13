@@ -13,25 +13,17 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 @WebController
-public class OwnerController
-        extends RapidController<Owner, Long> {
+public class OwnerController extends RapidController<Owner, Long> {
 
 
     public OwnerController() {
         super(
                 DtoMappingContextBuilder.builder()
                         .forEndpoint(CrudDtoEndpoint.CREATE, CreateOwnerDto.class)
-                        .forUpdate(Direction.REQUEST, UpdateOwnerDto.class)
+                        .forUpdate(UpdateOwnerDto.class)
                         .forResponse(ReadOwnerDto.class)
                         .build()
         );
-
-    }
-
-    @RequestMapping("/owners")
-    public String listOwners(Model model) {
-        model.addAttribute("owners", getCrudService().findAll());
-        return "owners/index";
     }
 
 }

@@ -7,8 +7,7 @@ import io.github.vincemann.springrapid.core.controller.dtoMapper.context.DtoMapp
 import io.github.vincemann.springrapid.core.controller.rapid.RapidController;
 
 @WebController
-public class SpecialtyController
-        extends RapidController<Specialty,Long> {
+public class SpecialtyController extends RapidController<Specialty,Long> {
 
     public SpecialtyController() {
         super(DtoMappingContextBuilder.builder()

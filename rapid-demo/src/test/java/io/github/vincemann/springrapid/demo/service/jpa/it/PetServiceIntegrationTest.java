@@ -18,9 +18,6 @@ import java.time.LocalDate;
 import static io.github.vincemann.springrapid.coretest.service.request.CrudServiceRequestBuilders.save;
 import static io.github.vincemann.springrapid.coretest.service.result.matcher.compare.CompareEntityMatchers.compare;
 
-@DataJpaTest
-@ActiveProfiles(value = {"test","service"})
-@Transactional
 class PetServiceIntegrationTest
         extends CrudServiceIntegrationTest<PetService,Pet,Long> {
 
@@ -37,7 +34,7 @@ class PetServiceIntegrationTest
     }
 
     @Test
-    public void savePetWithPersistedPetType_ShouldSucceed() throws BadEntityException {
+    public void save_withPersistedPetType_shouldSucceed() throws BadEntityException {
         Pet dogWithDogType = Pet.builder()
                 .petType(dogPetType)
                 .birthDate(LocalDate.now())

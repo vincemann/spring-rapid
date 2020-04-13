@@ -1,18 +1,16 @@
 package io.github.vincemann.springrapid.demo.controllers;
 
 
-import com.fasterxml.jackson.databind.ObjectMapper;
+import io.github.vincemann.springrapid.coretest.controller.rapid.UrlParamIdRapidControllerTest;
 import io.github.vincemann.springrapid.demo.dtos.owner.CreateOwnerDto;
 import io.github.vincemann.springrapid.demo.dtos.owner.ReadOwnerDto;
 import io.github.vincemann.springrapid.demo.dtos.owner.UpdateOwnerDto;
 import io.github.vincemann.springrapid.demo.model.Owner;
 import io.github.vincemann.springrapid.demo.service.OwnerService;
-import io.github.vincemann.springrapid.coretest.controller.rapid.UrlParamIdRapidControllerTest;
 import org.apache.commons.beanutils.BeanUtilsBean;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.mock.mockito.MockBean;
 
 import java.util.HashSet;
@@ -32,9 +30,6 @@ class OwnerControllerTest
     
     @MockBean
     OwnerService mockedService;
-    
-    @Autowired
-    ObjectMapper mapper;
 
     @BeforeEach
     public void setup() throws Exception {
@@ -45,7 +40,6 @@ class OwnerControllerTest
         String lastName = "Müller";
         String city = "Munich";
         String telephone = "0176546231";
-        //Set<Long> petIds = new HashSet<>(Lists.newArrayList(3L,12L));
 
         createOwnerDto = CreateOwnerDto.builder()
                 .firstName(firstName)
@@ -75,8 +69,8 @@ class OwnerControllerTest
     }
 
     @Test
-    public void createOwner_shouldSucceed() throws Exception {
-        String readOwnerDtoJson = mapper.writeValueAsString(readOwnerDto);
+    public void create_shouldSucceed() throws Exception {
+        String readOwnerDtoJson = serialize(readOwnerDto);
         when(mockedService.save(refEq(owner,"id"))).thenReturn(owner);
 
         getMockMvc().perform(create(createOwnerDto))
@@ -88,7 +82,7 @@ class OwnerControllerTest
 
 
     @Test
-    public void deleteOwner_shouldSucceed() throws Exception {
+    public void delete_shouldSucceed() throws Exception {
         getMockMvc().perform(delete(owner.getId()))
                 .andExpect(status().isOk());
         Mockito.verify(mockedService).deleteById(owner.getId());
@@ -96,9 +90,10 @@ class OwnerControllerTest
 
 
     @Test
-    public void findOwner_shouldSucceed() throws Exception {
+    public void findById_shouldSucceed() throws Exception {
         when(mockedService.findById(owner.getId())).thenReturn(Optional.of(owner));
-        String readDtoJson = mapper.writeValueAsString(readOwnerDto);
+        String readDtoJson = serialize(readOwnerDto);
+
         getMockMvc().perform(find(owner.getId()))
                 .andExpect(status().isOk())
                 .andExpect(content().json(readDtoJson));
@@ -106,7 +101,7 @@ class OwnerControllerTest
     }
 
     @Test
-    public void updateOwner_shouldSucceed() throws Exception {
+    public void partialUpdate_address_shouldSucceed() throws Exception {
         //given
         UpdateOwnerDto diffAddressUpdate = UpdateOwnerDto.builder()
                 .address("other Street 12")
@@ -128,7 +123,7 @@ class OwnerControllerTest
 
 
     @Test
-    public void updateBlankCityOwner_shouldFailWithBadRequest() throws Exception {
+    public void partialUpdate_withBlankCity_shouldFail_withBadRequest() throws Exception {
         UpdateOwnerDto blankCityUpdate = UpdateOwnerDto.builder()
                 //blank city
                 .city("")

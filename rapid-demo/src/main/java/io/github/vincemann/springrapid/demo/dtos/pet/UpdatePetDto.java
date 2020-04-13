@@ -1,6 +1,5 @@
 package io.github.vincemann.springrapid.demo.dtos.pet;
 
-import io.github.vincemann.springrapid.demo.dtos.pet.abs.AbstractPetDto;
 import lombok.NoArgsConstructor;
 
 import javax.validation.constraints.NotBlank;

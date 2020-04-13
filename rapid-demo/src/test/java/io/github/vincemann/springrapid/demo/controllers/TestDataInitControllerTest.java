@@ -23,7 +23,7 @@ import java.time.LocalDate;
 @Getter
 @Setter
 @Slf4j
-public abstract class TestDataInitRapidControllerTest<S extends CrudService<E,Long,? extends CrudRepository<E,Long>>,E extends IdentifiableEntity<Long>>
+public abstract class TestDataInitControllerTest<S extends CrudService<E,Long,? extends CrudRepository<E,Long>>,E extends IdentifiableEntity<Long>>
         extends UrlParamIdRapidControllerTest<S,E,Long>
 
 {

@@ -14,9 +14,9 @@ import javax.validation.constraints.Size;
 @Setter
 @NoArgsConstructor
 @ToString(callSuper = true)
-public abstract class BaseOwnerDto extends IdentifiableEntityImpl<Long> {
+public abstract class AbstractOwnerDto extends IdentifiableEntityImpl<Long> {
 
-    public BaseOwnerDto(@Size(min = 10, max = 255) @NotBlank String address, @NotBlank String city, @Nullable @Size(min = 10, max = 10) String telephone) {
+    public AbstractOwnerDto(@Size(min = 10, max = 255) @NotBlank String address, @NotBlank String city, @Nullable @Size(min = 10, max = 10) String telephone) {
         this.address = address;
         this.city = city;
         this.telephone = telephone;

@@ -6,12 +6,13 @@ import io.github.vincemann.springrapid.demo.service.OwnerService;
 import io.github.vincemann.springrapid.core.slicing.components.ServiceComponent;
 import io.github.vincemann.springrapid.core.service.jpa.JPACrudService;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Optional;
 
-@Qualifier("basic")
+@Qualifier("noProxy")
 @Service
 @ServiceComponent
 public class OwnerJPAService extends JPACrudService<Owner,Long, OwnerRepository> implements OwnerService {
