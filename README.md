@@ -99,7 +99,8 @@ public class ModuleServiceConfig  {
     @Bean
     public ModuleService aclModuleService(      ModuleService moduleService,
                                                 YourAclPlugin aclPlugin,
-                                                //more Plugins can be added here...) {
+                                                //more Plugins can be added here...
+                                                ) {
         return CrudServicePluginProxyFactory.create(moduleService,aclPlugin);
     }
     
@@ -107,7 +108,8 @@ public class ModuleServiceConfig  {
     @Bean
     public ModuleService normalModuleService(@NoProxy ModuleService moduleService,
                                                       LogCreationPlugin logPlugin,
-                                                      //more Plugins can be added here...) {
+                                                      //more Plugins can be added here...
+                                                      ) {
         return CrudServicePluginProxyFactory.create(moduleService,logPlugin);
     }
 }
