@@ -1,4 +1,4 @@
-package io.github.vincemann.springrapid.demo.dtos.pet.abs;
+package io.github.vincemann.springrapid.demo.dtos.pet;
 
 import io.github.vincemann.springrapid.demo.model.Owner;
 

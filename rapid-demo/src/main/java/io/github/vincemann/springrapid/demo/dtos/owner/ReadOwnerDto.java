@@ -15,7 +15,7 @@ import java.util.Set;
 @Getter
 @Setter
 @ToString
-public class ReadOwnerDto extends BaseOwnerDto implements BiDirParentDto {
+public class ReadOwnerDto extends AbstractOwnerDto implements BiDirParentDto {
 
     @Builder
     public ReadOwnerDto(Set<Long> petIds, @Size(min = 10, max = 255) @NotBlank String address, @NotBlank String city, @Size(min = 10, max = 10) String telephone) {

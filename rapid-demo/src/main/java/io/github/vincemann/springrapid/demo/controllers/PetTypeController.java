@@ -6,8 +6,7 @@ import io.github.vincemann.springrapid.core.controller.dtoMapper.context.DtoMapp
 import io.github.vincemann.springrapid.core.controller.rapid.RapidController;
 
 @WebController
-public class PetTypeController
-        extends RapidController<PetType, Long> {
+public class PetTypeController extends RapidController<PetType, Long> {
 
     public PetTypeController() {
         super(DtoMappingContextBuilder.builder()

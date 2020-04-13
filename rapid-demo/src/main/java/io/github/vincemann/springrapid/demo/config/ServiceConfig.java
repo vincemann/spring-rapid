@@ -15,25 +15,20 @@ public class ServiceConfig {
 
     @Primary
     @Bean
-    public PetService extendedPetService(@Qualifier("basic") PetService petService,
-                                         //BiDirChildPlugin<Pet,Long> biDirChildPlugin,
+    public PetService extendedPetService(@Qualifier("noProxy") PetService petService,
                                          AclPlugin aclPlugin) {
         return CrudServicePluginProxyFactory.create(petService,
-        //        biDirChildPlugin,
                 aclPlugin
         );
     }
 
-    //always use ownerService with core plugins when injecting OwnerService
     @Primary
     @Bean
-    public OwnerService ownerService(@Qualifier("basic") OwnerService ownerService,
-                                     //BiDirParentPlugin<Owner,Long> biDirParentPlugin,
+    public OwnerService ownerService(@Qualifier("noProxy") OwnerService ownerService,
                                      SaveNameToWordPressDbPlugin saveNameToWordPressDbPlugin,
                                      OwnerOfTheYearPlugin ownerOfTheYearPlugin,
                                      AclPlugin aclPlugin) {
         return CrudServicePluginProxyFactory.create(ownerService,
-//                biDirParentPlugin,
                 saveNameToWordPressDbPlugin,
                 ownerOfTheYearPlugin,
                 aclPlugin

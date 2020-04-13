@@ -10,7 +10,7 @@ import javax.validation.constraints.Size;
 
 @NoArgsConstructor
 @ToString(callSuper = true)
-public class UpdateOwnerDto extends BaseOwnerDto{
+public class UpdateOwnerDto extends AbstractOwnerDto {
 
     @NotNull
     @Override

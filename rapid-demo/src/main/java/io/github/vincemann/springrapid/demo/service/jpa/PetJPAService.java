@@ -8,7 +8,7 @@ import io.github.vincemann.springrapid.core.service.jpa.JPACrudService;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 
-@Qualifier("basic")
+@Qualifier("noProxy")
 @Service
 @ServiceComponent
 public class PetJPAService extends JPACrudService<Pet, Long, PetRepository> implements PetService {

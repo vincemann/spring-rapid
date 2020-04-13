@@ -13,7 +13,7 @@ import javax.validation.constraints.Size;
 @Setter
 @NoArgsConstructor
 @ToString(callSuper = true)
-public class CreateOwnerDto extends BaseOwnerDto implements BiDirParentDto {
+public class CreateOwnerDto extends AbstractOwnerDto implements BiDirParentDto {
 
     @NotBlank
     @Size(min = 2, max = 20)
