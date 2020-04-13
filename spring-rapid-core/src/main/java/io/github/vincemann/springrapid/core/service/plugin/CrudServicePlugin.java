@@ -1,5 +1,6 @@
 package io.github.vincemann.springrapid.core.service.plugin;
 
+import io.github.vincemann.springrapid.core.service.CrudService;
 import io.github.vincemann.springrapid.core.slicing.components.ServiceComponent;
 import io.github.vincemann.springrapid.core.model.IdentifiableEntity;
 import lombok.Getter;
@@ -7,6 +8,18 @@ import lombok.Setter;
 
 import java.io.Serializable;
 
+/**
+ * Represents a Plugin accepted by {@link io.github.vincemann.springrapid.core.proxy.invocationHandler.CrudServicePluginProxy}.
+ * Define hook methods as follows:
+ *
+ * void onBeforeServiceMethod(all,args,of,service,method)
+ * void onBeforeServiceMethod(all,args,of,service,method,Class entityClass)  see: {@link CrudService#getEntityClass()}
+ * void onAfterServiceMethod(all,args,of,service,method)
+ * void onAfterServiceMethod(all,args,of,service,method, Class entityClass)
+ * T onAfterServiceMethod(all,args,of,service,method)   -> the return value will update the services return value.
+ * T onAfterServiceMethod(all,args,of,service,method, Class entityClass)
+ *
+ */
 @Getter
 @Setter
 @ServiceComponent

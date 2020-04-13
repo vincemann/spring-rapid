@@ -2,7 +2,7 @@ package io.github.vincemann.springrapid.entityrelationship.dto.uniDir;
 
 import io.github.vincemann.springrapid.core.model.IdentifiableEntity;
 import io.github.vincemann.springrapid.entityrelationship.model.uniDir.parent.UniDirParent;
-import io.github.vincemann.springrapid.core.service.exception.entityRelationHandling.UnknownParentTypeException;
+import io.github.vincemann.springrapid.entityrelationship.exception.UnknownParentTypeException;
 import io.github.vincemann.springrapid.core.util.ReflectionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

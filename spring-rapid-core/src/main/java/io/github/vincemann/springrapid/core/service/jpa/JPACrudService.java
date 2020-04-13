@@ -23,6 +23,12 @@ import java.util.Optional;
 import java.util.Set;
 
 
+/**
+ * Implementation of {@link CrudService} that utilizes Jpa's {@link JpaRepository}.
+ * @param <E>       Type of Entity which's crud operations are exposed by this Service
+ * @param <Id>      Id type of E
+ * @param <R>       {@link JpaRepository} Type
+ */
 @ServiceComponent
 @Slf4j
 public abstract class JPACrudService

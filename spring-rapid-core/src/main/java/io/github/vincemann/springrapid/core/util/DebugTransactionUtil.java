@@ -8,6 +8,9 @@ import org.springframework.transaction.support.TransactionSynchronizationManager
 
 import java.lang.reflect.InvocationTargetException;
 
+/**
+ * Transaction Logging support.
+ */
 @Slf4j
 public class DebugTransactionUtil {
 

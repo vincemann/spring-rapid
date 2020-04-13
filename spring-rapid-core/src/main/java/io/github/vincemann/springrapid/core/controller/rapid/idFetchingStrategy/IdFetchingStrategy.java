@@ -5,7 +5,7 @@ import io.github.vincemann.springrapid.core.controller.rapid.idFetchingStrategy.
 import javax.servlet.http.HttpServletRequest;
 
 /**
- * Provides an interface for 'how to get the Id from an HttpServletRequest'
+ * API for fetching the id from an {@link HttpServletRequest}.
  *
  */
 public interface IdFetchingStrategy<Id> {

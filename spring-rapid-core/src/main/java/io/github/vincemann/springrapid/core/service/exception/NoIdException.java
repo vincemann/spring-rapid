@@ -1,5 +1,8 @@
 package io.github.vincemann.springrapid.core.service.exception;
 
+/**
+ * Indicates that the id in {@link io.github.vincemann.springrapid.core.model.IdentifiableEntity} was missing, but must be supplied.
+ */
 public class NoIdException extends Exception{
 
     public NoIdException() {

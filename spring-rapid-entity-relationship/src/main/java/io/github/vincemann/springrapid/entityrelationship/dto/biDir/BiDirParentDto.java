@@ -2,7 +2,7 @@ package io.github.vincemann.springrapid.entityrelationship.dto.biDir;
 
 import io.github.vincemann.springrapid.core.model.IdentifiableEntity;
 import io.github.vincemann.springrapid.entityrelationship.model.biDir.child.BiDirChild;
-import io.github.vincemann.springrapid.core.service.exception.entityRelationHandling.UnknownChildTypeException;
+import io.github.vincemann.springrapid.entityrelationship.exception.UnknownChildTypeException;
 import io.github.vincemann.springrapid.core.util.ReflectionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

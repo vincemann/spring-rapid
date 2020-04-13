@@ -5,7 +5,7 @@ import org.springframework.lang.Nullable;
 
 /**
  * The fetched Id is of Type {@link Long}.
- * {@see UrlParamIdFetchingStrategy}
+ * @see UrlParamIdFetchingStrategy
  */
 public class LongUrlParamIdFetchingStrategy extends UrlParamIdFetchingStrategy<Long> {
     public LongUrlParamIdFetchingStrategy(@Nullable String idUrlParamKey) {

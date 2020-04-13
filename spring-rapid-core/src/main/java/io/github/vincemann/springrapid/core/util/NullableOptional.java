@@ -8,6 +8,9 @@ import java.util.function.Predicate;
 import java.util.function.Supplier;
 import java.util.stream.Stream;
 
+/**
+ * Java's {@link java.util.Optional}, but null is an accepted value.
+ */
 public class NullableOptional<T> {
     private boolean empty;
     private final T value;

@@ -5,12 +5,7 @@ import org.apache.commons.beanutils.BeanUtilsBean;
 public class NullAwareBeanUtilsBean extends BeanUtilsBean{
 
     /**
-     * Copy only non null values
-     * @param dest
-     * @param name
-     * @param value
-     * @throws IllegalAccessException
-     * @throws InvocationTargetException
+     * Copy member from @param value to @param dst only when not null
      */
     @Override
     public void copyProperty(Object dest, String name, Object value)

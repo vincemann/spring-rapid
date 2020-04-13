@@ -7,7 +7,7 @@ import org.springframework.lang.Nullable;
 import javax.servlet.http.HttpServletRequest;
 
 /**
- * Fetches the Id from a {@link HttpServletRequest} by a url param with the name given by
+ * Fetches the Id from a {@link HttpServletRequest} by a url param with the key given by
  * {@link UrlParamIdFetchingStrategy#idUrlParamKey}
  * @param <Id>
  */

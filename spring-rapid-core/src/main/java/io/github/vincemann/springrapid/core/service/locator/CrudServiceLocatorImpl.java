@@ -20,6 +20,10 @@ import org.springframework.util.Assert;
 import java.util.*;
 import java.util.stream.Collectors;
 
+/**
+ * Utilizes {@link ConfigurableListableBeanFactory} to find the {@link CrudService} in question.
+ * @see ServiceBeanType
+ */
 @Slf4j
 public class CrudServiceLocatorImpl implements CrudServiceLocator, ApplicationContextAware, ApplicationListener<ContextRefreshedEvent>, BeanDefinitionRegistryPostProcessor {
     private Map<Class<? extends IdentifiableEntity>,CrudService> entityClassPrimaryServiceMap = new HashMap<>();

@@ -1,5 +1,10 @@
 package io.github.vincemann.springrapid.core.controller.dtoMapper.context;
 
+/**
+ * Represents an Endpoint exposed by {@link io.github.vincemann.springrapid.core.controller.DtoCrudController} that
+ * has a Dto either in the request or Response.
+ *
+ */
 public class CrudDtoEndpoint {
     private CrudDtoEndpoint(){}
 
