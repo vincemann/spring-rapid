@@ -19,8 +19,8 @@ Feel free to use, download and modify any code you want.
 * Proxybased PluginSystem for Service                                                                (Core)  
 * Basic Exception to ApiError translation                                                            (Exceptions)  
 * Dto-Mapping (support for different Dto's for each endpoint; diff request and response dto's)       (Core)  
-* Uni- and Bidirectional relationship management for all crud opeartions                             (EntityRelationShip)  
-* Automatic resolving of ids in dtos referencing other entities and vice versa                       (EntityRelationShip)  
+* Uni- and Bidirectional relationship management for all crud opeartions                             (Entity-Relationship)  
+* Automatic resolving of ids in dtos referencing other entities and vice versa                       (Entity-Relationship)  
 * Testsupport for service and controller layer                                                       (Core-Test)  
 * Out of the box working Acl Module with SecurityProxy solution for applying Acl-based, pluginlike 
   rules that restrict access to service methods                                                       (Acl)            
