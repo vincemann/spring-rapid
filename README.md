@@ -1,11 +1,12 @@
 # Overview  
-This library aims to make the repetitive task, of implementing crud operations for all of your entities, become a cinch.  
-This is done by providing highly extendable powerful generic classes, that are doing all the work, that comes with implementing crud.  
-Also say goodbye to manually handling bidirectional relationships of entities. This is automatically done for all crud operations.  
-But:  
-This library is under active developement and the testcoverage is not sufficient yet.  
-Feel free to extract the parts you need and/or help coding!  
-See the demo application under rapid-demo/ and the code examples below to get a feeling for what it is all about.  
+Spring Rapid consists of modules encapsulating solutions for common issues when developing Spring Rest Apis.  
+The goal is too speed up the developement process and stop rewriting the same code over and over again.  
+Instead there should be very well implemented modules for each task, that can be plugged in whenever needed.  
+One common task, that is very repetitive, is implementing CRUD-Operations for all of your entities.  
+This library gives you a fully functional and autoconfigured (yet hightly configurable/ extendable) solution for implementing crud,  
+that only consists of a few lines of code.  
+The lines of code needed for a working Controller handling multiple different Dto Types can be seen in the example section below.  
+Along with the Crud Module (Core) come many other modules building upon the core module, that can be plugged in when needed.  
   
   
 # Features  
