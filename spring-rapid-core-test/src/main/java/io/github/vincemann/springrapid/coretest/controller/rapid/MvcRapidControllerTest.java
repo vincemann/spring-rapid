@@ -31,17 +31,16 @@ import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.
 
 
 /**
- * Use this base class to test your Controllers.
- * Service is tested in isolation, that's why it should be mocked here and only the correct interaction
- * with the service is getting tested. -> service layer not loaded -> web only context is loaded
+ * Use this base class to perform integration tests of your {@link RapidController}.
  *
- * Main Goal of this test, is to test the correct setup of the web-layer and that the webcomponents
- * work together as expected.
- * Each component is tested heavily in isolation though, which means, that a few simple test cases here are sufficient.
+ * Offers basic crud methods to interact with controller and convenience methods to use Controllers {@link ObjectMapper} to
+ * {@link this#serialize(Object)} and {@link this#deserialize(String, JavaType)} raw JSON Strings.
  *
- * @param <S> Service Type
- * @param <E> Entity managed by Service Type
- * @param <Id> Id Type of Entity
+ * @see MvcControllerTest
+ *
+ * @param <S>  Service Type used by Controller
+ * @param <E>  EntityType managed by Service
+ * @param <Id> IdType of Entity
  */
 @Getter
 @Setter

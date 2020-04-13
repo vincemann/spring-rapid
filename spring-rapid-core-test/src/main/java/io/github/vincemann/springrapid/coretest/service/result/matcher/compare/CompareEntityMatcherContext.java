@@ -7,7 +7,7 @@ import io.github.vincemann.springrapid.coretest.service.result.matcher.compare.r
 import java.util.ArrayList;
 import java.util.List;
 
-public class CompareEntityMatcherContext extends PlaceholderResolvingEntityMatcherContext {
+class CompareEntityMatcherContext extends PlaceholderResolvingEntityMatcherContext {
     private List<IdentifiableEntity> compareTos = new ArrayList<>();
     private List<CompareEntityPlaceholder> compareToPlaceholders = new ArrayList<>();
 

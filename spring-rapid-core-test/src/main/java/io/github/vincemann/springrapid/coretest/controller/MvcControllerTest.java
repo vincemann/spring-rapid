@@ -21,6 +21,12 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 
+/**
+ * BaseClass for Controller Integration tests performing basic {@link MockMvc} auto-config.
+ * Does not load {@link io.github.vincemann.springrapid.core.slicing.components.ServiceComponent}s and {@link io.github.vincemann.springrapid.core.slicing.config.ServiceConfig}s.
+ * All service beans are automatically mocked by {@link AutoMockServiceBeansGenericAnnotationWebConfigContextLoader}.
+ * You can autowire them in with @{@link org.springframework.beans.factory.annotation.Autowired} and work with the mocks.
+ */
 @Getter
 @Setter
 @Slf4j

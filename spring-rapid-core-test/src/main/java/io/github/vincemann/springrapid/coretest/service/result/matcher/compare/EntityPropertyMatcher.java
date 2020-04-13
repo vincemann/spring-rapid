@@ -13,7 +13,7 @@ import java.lang.reflect.Method;
 import java.util.*;
 
 /**
- * Assert GetterValues of CompareEntity, that can either be a concrete entity or a {@link CompareEntityPlaceholder}.
+ * Asserts GetterValues of Entity, that can either be a concrete entity or a {@link CompareEntityPlaceholder}.
  */
 public class EntityPropertyMatcher extends PlaceholderResolvingEntityMatcherContext {
     private Map<Method, Object> getterValueMap = new LinkedHashMap<>();

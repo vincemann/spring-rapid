@@ -18,6 +18,10 @@ import org.springframework.test.util.AopTestUtils;
 import javax.persistence.EntityManager;
 import java.lang.reflect.InvocationTargetException;
 
+/**
+ * Template similar to {@link org.springframework.test.web.servlet.MockMvc}, but build for testing of service layer ({@link CrudService}).
+ * With this template you can build the test, that shall be executed against a {@link CrudService} in a fluent-API manner.
+ */
 @Slf4j
 public class ServiceTestTemplate
     implements ApplicationContextAware

@@ -8,6 +8,7 @@ import java.io.Serializable;
 import java.util.List;
 import java.util.Optional;
 
+
 public class BasicCompareEntityPlaceholderResolver implements CompareEntityPlaceholderResolver {
 
     @Override

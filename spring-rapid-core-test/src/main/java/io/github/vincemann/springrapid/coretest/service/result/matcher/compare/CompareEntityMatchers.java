@@ -3,6 +3,9 @@ package io.github.vincemann.springrapid.coretest.service.result.matcher.compare;
 import io.github.vincemann.springrapid.core.model.IdentifiableEntity;
 import io.github.vincemann.springrapid.coretest.service.result.matcher.compare.resolve.CompareEntityPlaceholder;
 
+/**
+ * Offers Matchers for comparing two Entities, that can also be {@link CompareEntityPlaceholder}s.
+ */
 public class CompareEntityMatchers {
 
     /**
