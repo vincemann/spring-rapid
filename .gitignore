@@ -20,7 +20,7 @@ spring-rapid-core/target
 .idea/
 out/
 
-buildAndDeploy.sh
+mvnLight.sh
 # Gradle
 .idea/**/gradle.xml
 .idea/**/libraries
