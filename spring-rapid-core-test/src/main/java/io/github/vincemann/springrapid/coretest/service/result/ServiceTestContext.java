@@ -6,6 +6,9 @@ import lombok.Getter;
 import org.springframework.context.ApplicationContext;
 import org.springframework.data.repository.CrudRepository;
 
+/**
+ * Represent the context of a test created and executed with {@link io.github.vincemann.springrapid.coretest.service.ServiceTestTemplate}.
+ */
 @AllArgsConstructor
 @Getter
 @Builder

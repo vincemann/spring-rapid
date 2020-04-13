@@ -4,6 +4,9 @@ import io.github.vincemann.springrapid.core.model.IdentifiableEntity;
 import io.github.vincemann.springrapid.core.util.NullAwareBeanUtilsBean;
 import org.apache.commons.beanutils.BeanUtilsBean;
 
+/**
+ * Merge two Entities by copying all non null values from origin to dst.
+ */
 public class CopyNonNullValuesEntityMerger {
 
     public static IdentifiableEntity merge(IdentifiableEntity origin, IdentifiableEntity dst) {

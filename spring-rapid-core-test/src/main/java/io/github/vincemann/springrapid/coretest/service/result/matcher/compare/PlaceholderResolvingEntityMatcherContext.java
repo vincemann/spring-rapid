@@ -8,6 +8,9 @@ import io.github.vincemann.springrapid.coretest.service.result.matcher.compare.r
 import lombok.AllArgsConstructor;
 import org.junit.jupiter.api.Assertions;
 
+/**
+ * Context for entity matching, that has a {@link CompareEntityPlaceholderResolver}.
+ */
 @AllArgsConstructor
 public class PlaceholderResolvingEntityMatcherContext {
     private CompareEntityPlaceholderResolver resolver = new BasicCompareEntityPlaceholderResolver();

@@ -6,6 +6,9 @@ import lombok.*;
 import java.lang.reflect.Method;
 import java.util.List;
 
+/**
+ * Represents an invocation of {@link CrudService} method in a test scenario.
+ */
 @Getter
 @Setter
 @NoArgsConstructor

@@ -7,6 +7,9 @@ import io.github.vincemann.springrapid.core.service.CrudService;
 import java.io.Serializable;
 import java.util.List;
 
+/**
+ * Use these preconfigured {@link ServiceRequestBuilder}s to build {@link ServiceRequest}s for typical Tests of a {@link CrudService} method.
+ */
 public class CrudServiceRequestBuilders {
 
     public static ServiceRequestBuilder save(IdentifiableEntity entityToSave) {

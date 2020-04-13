@@ -30,9 +30,9 @@ import java.util.stream.Collectors;
 /**
  * Proxy for {@link CrudService}, that applys {@link ServiceSecurityRule}s before calling service method.
  * After all Rules have been applied in the order they were given in for construction, the {@link io.github.vincemann.springrapid.acl.proxy.rules.DefaultServiceSecurityRule}
- * is applied if not prohibited ()
+ * is applied if not prohibited (@see {@link OverrideDefaultSecurityRule})
  *
- * Create instances of this class with {@link CrudServiceSecurityProxyFactory}.
+ * Is created by {@link CrudServiceSecurityProxyFactory} or by {@link io.github.vincemann.springrapid.acl.proxy.create.ConfigureProxies}.
  */
 public class CrudServiceSecurityProxy
         extends CrudServiceExtensionProxy<IdentifiableEntity<Serializable>, Serializable> {

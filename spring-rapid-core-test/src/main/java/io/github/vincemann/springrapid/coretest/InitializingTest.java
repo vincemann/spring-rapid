@@ -7,6 +7,10 @@ import org.junit.jupiter.api.BeforeEach;
 import java.lang.reflect.Field;
 import java.util.*;
 
+/**
+ * BaseClass for Tests that wish to initialize members that implement {@link BeforeEachMethodInitializable}s and/or {@link TestContextAware} and/or
+ * {@link TestInitializable}.
+ */
 @Slf4j
 public abstract class InitializingTest{
 

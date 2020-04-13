@@ -12,6 +12,9 @@ import java.io.Serializable;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 
+/**
+ * Extension of {@link MvcRapidControllerTest} expecting {@link io.github.vincemann.springrapid.core.controller.rapid.idFetchingStrategy.UrlParamIdFetchingStrategy}.
+ */
 public abstract class UrlParamIdRapidControllerTest<S extends CrudService<E,Id,? extends CrudRepository<E,Id>>
         ,E extends IdentifiableEntity<Id>,
         Id extends Serializable>

@@ -1,9 +1,14 @@
 package io.github.vincemann.springrapid.coretest.service.result;
 
 
+import io.github.vincemann.springrapid.core.service.CrudService;
 import io.github.vincemann.springrapid.coretest.service.request.ServiceRequest;
 import lombok.*;
 
+/**
+ * Represents the result of {@link CrudService} method in a test scenario.
+ * @see ServiceRequest
+ */
 @AllArgsConstructor
 @Getter
 @Setter

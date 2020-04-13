@@ -5,6 +5,10 @@ import io.github.vincemann.springrapid.core.service.plugin.CrudServicePlugin;
 
 import java.lang.annotation.*;
 
+/**
+ * Represents a {@link CrudServiceSecurityProxy} in {@link io.github.vincemann.springrapid.acl.proxy.create.ConfigureProxies}.
+ * @see io.github.vincemann.springrapid.acl.proxy.create.Proxy
+ */
 @Target(ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)
 @Inherited
