@@ -2,7 +2,7 @@
 Spring Rapid consists of modules encapsulating solutions for common issues when developing Spring Rest Apis.  
 The goal is too speed up the developement process and stop rewriting the same code over and over again.  
 Instead there should be very well implemented modules for each task, that can be plugged in whenever needed.  
-One common task, that is very repetitive, is implementing CRUD-Operations for all of your entities.  
+One common task, that is very repetitive, is implementing Cruc-Operations for all of your entities.  
 This library gives you a fully functional and autoconfigured (yet hightly configurable/ extendable) solution for implementing crud,  
 that only consists of a few lines of code.  
 The lines of code needed for a working Controller handling multiple different Dto Types can be seen in the example section below.  
@@ -10,17 +10,19 @@ Along with the Crud Module (Core) come many other modules building upon the core
   
   
 # Features  
-* JpaCrudService implementing crud on the service layer  
-* Proxybased PluginSystem for service  
-* JsonCrudController implementing crud on the weblayer  
-* Basic Exception to ApiError translation  
-* DtoMapping (support for different Dto's for each endpoint; diff request and response dto's)  
-* Uni- and Bidirectional relationship management for all crud opeartions  
-* Automatic resolving of ids in dtos referencing other entities and vice versa  
-* Testsupport for service and controller layer (automocking of all service beans in controller tests)  
-  
+* Generic Crud Implementation for Controller and Servicelayer                                        (Core)  
+* Proxybased PluginSystem for Service                                                                (Core)  
+* Basic Exception to ApiError translation                                                            (Exceptions)  
+* Dto-Mapping (support for different Dto's for each endpoint; diff request and response dto's)       (Core)  
+* Uni- and Bidirectional relationship management for all crud opeartions                             (EntityRelationShip)  
+* Automatic resolving of ids in dtos referencing other entities and vice versa                       (EntityRelationShip)  
+* Testsupport for service and controller layer                                                       (Core-Test)  
+* Out of the box working Acl Module with SecurityProxy solution for applying Acl-based, pluginlike 
+  rules that restrict access to service methods                                                       (Acl)            
+    
+    
 # Example  
-**This is the setup required to run a fully functional controller exposing crud enpoints for one entity:**  
+**This is the typical setup required to run a fully functional controller exposing crud enpoints for one entity:**  
 ## Controller    
   
 ```java
