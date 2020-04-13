@@ -1,4 +1,5 @@
 # Overview  
+!! Under Active Developement !!  
 Spring Rapid consists of modules encapsulating solutions for **common issues** when developing Spring REST APIs.  
 The goal is too **speed up** the developement process and stop rewriting the same code over and over again.  
 Instead there should be very well implemented modules for each task, that can be plugged in whenever needed.  
@@ -7,6 +8,9 @@ This library gives you a **fully functional** and autoconfigured (yet hightly co
 that only consists of **a few lines of code**.  
 The lines of code needed for a working Controller handling multiple different Dto Types can be seen in the example section below.  
 Along with the Crud Module (Core) come many other modules building upon the core module, that can be plugged in when needed.  
+  
+Any help with developement is greatly appreciated.  
+Feel free to use, download and modify any code you want.  
   
   
 # Features  
@@ -23,6 +27,7 @@ Along with the Crud Module (Core) come many other modules building upon the core
     
 # Example  
 **This is the typical setup required to run a fully functional controller exposing crud enpoints for one entity:**  
+**Check out the rapid-demo module for a more complete example!**  
 ## Controller    
   
 ```java
@@ -115,6 +120,7 @@ public class ModuleServiceConfig  {
 }
 ```  
   
-
+## Installation  
+See 'Packages' section in this repo for maven dependencies tag and artifacts.  
 
 
