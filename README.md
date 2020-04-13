@@ -26,14 +26,16 @@ Along with the Crud Module (Core) come many other modules building upon the core
 ## Controller    
   
 ```java
-@Controller
-public class ModuleController extends SpringAdapterJsonDtoCrudController<Module,Long> {
+@WebController
+public class ModuleController extends RapidController<Module,Long> {
 
     public ModuleController() {
-        //Diff Dto types are set here
-        super(DtoMappingContext.WRITE_READ(CreateModuleDto.class, ReadModuleDto.class));
+        super(DtoMappingContextBuilder.builder()
+                .forResponse(ReadModuleDto.class)
+                .forEndpoint(CrudDtoEndpoint.CREATE, Direction.REQUEST, CreateModuleDto.class)
+                .build()
+        );
     }
-}
 ```
   
   
@@ -41,7 +43,6 @@ public class ModuleController extends SpringAdapterJsonDtoCrudController<Module,
   
 ```java
 @Service
-@Transactional
 @NoProxy
 public class JpaModuleService
         extends JPACrudService<Module,Long,ModuleRepository>
@@ -53,18 +54,16 @@ public class JpaModuleService
   
 ```java
 @Entity
-@Table(name = "MODULE")
-public class Module extends DateAuditIdEntity<Long> implements UniDirParent, BiDirChild, BiDirParent {
+public class Module extends IdentifiableEntityImpl<Long> implements UniDirParent, BiDirChild, BiDirParent {
 
-    @NotEmpty
     private String name;
 
-    //both sides of BiDir- Relationships indicated by these Annotations are automatically handled by the Framework  
+    //both sides of BiDir- Relationships are automatically handled by the Framework  
     @BiDirChildCollection(ExerciseGroup.class)
     @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL,mappedBy = "module")
     private Set<ExerciseGroup> exerciseGroups = new HashSet<>();
 
-    //UniDir Relationships are also marked with Annotations for automatic Dto-Mapping (Entity gets resolved to id)  
+    //UniDir Relationships are also marked with Annotations for automatic Dto-Mapping (Entity gets resolved from id)  
     @UniDirChildEntity
     @OneToOne(fetch = FetchType.LAZY)
     private User creator;
@@ -79,6 +78,7 @@ public class Module extends DateAuditIdEntity<Long> implements UniDirParent, BiD
 ```java
 public class ReadModuleDto extends AbstractModuleDto implements UniDirParentDto, BiDirParentDto {
 
+    //meta information used to automatically resolve creator by id when mapping dto to entity
     @UniDirChildId(User.class)
     private Long creatorId;
 
@@ -87,37 +87,28 @@ public class ReadModuleDto extends AbstractModuleDto implements UniDirParentDto,
 }
 ```
   
-  
 ## Service Config    
   
 ```java
-//the framework is divided in Service and WebConfigs, so when you are testing the ServiceLayer for example, all //WebConfigs and Components wont be loaded (diff ApplicationContext)  
 @ServiceConfig
 public class ModuleServiceConfig  {
-    //define multiple proxied service beans here, i.E. :
+    //define multiple service proxy beans here, i.E. :
     
-    
+    //can be wired in with @Autowired @AclManaging if you want to use the version of the service, that also stores acl information  
     @AclManaging
     @Bean
     public ModuleService aclModuleService(      ModuleService moduleService,
                                                 YourAclPlugin aclPlugin,
-                                                //more Plugins can be added here...
-    ) {
-        return CrudServicePluginProxyFactory.create(moduleService,
-                aclPlugin
-        );
+                                                //more Plugins can be added here...) {
+        return CrudServicePluginProxyFactory.create(moduleService,aclPlugin);
     }
     
-
     @Primary
     @Bean
     public ModuleService normalModuleService(@NoProxy ModuleService moduleService,
                                                       LogCreationPlugin logPlugin,
-                                                      //more Plugins can be added here...
-    ) {
-        return CrudServicePluginProxyFactory.create(moduleService,
-                logPlugin
-        );
+                                                      //more Plugins can be added here...) {
+        return CrudServicePluginProxyFactory.create(moduleService,logPlugin);
     }
 }
 ```  
