@@ -9,6 +9,7 @@ that only consists of **a few lines of code**.
 The lines of code needed for a working Controller handling multiple different Dto Types can be seen in the example section below.  
 Along with the Crud Module (Core) come many other modules building upon the core module, that can be plugged in when needed.  
   
+This project is inspired by **Spring-Lemon** which offers many good modules as well.  
 Any help with developement is greatly appreciated.  
 Feel free to use, download and modify any code you want.  
   
