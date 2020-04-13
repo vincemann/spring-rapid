@@ -6,7 +6,7 @@ Instead there should be very well implemented modules for each task, that can be
 One common task, that is very repetitive, is implementing **Crud-Operations** for all of your entities.  
 This library gives you a **fully functional** and autoconfigured (yet hightly configurable/ extendable) solution for implementing crud,  
 that only consists of **a few lines of code**.  
-The lines of code needed for a working Controller handling multiple different Dto Types can be seen in the example section below.  
+The code needed for a working Controller handling multiple different Dto Types can be seen in the example section below.  
 Along with the Crud Module (Core) come many other modules building upon the core module, that can be plugged in when needed.  
   
 This project is inspired by **Spring-Lemon** which offers many good modules as well.  
