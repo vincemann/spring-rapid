@@ -15,6 +15,9 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicBoolean;
 
+/**
+ * Same as {@link io.github.vincemann.springrapid.entityrelationship.model.biDir.child.BiDirChild} but for a unidirectional relationship.
+ */
 public interface UniDirChild extends UniDirEntity {
     Logger log = LoggerFactory.getLogger(UniDirChild.class);
     Map<Class, Field[]> uniDirParentFieldsCache = new HashMap<>();

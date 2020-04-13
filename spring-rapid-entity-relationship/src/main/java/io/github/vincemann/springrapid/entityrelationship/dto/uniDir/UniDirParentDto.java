@@ -13,6 +13,9 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
+/**
+ * See {@link io.github.vincemann.springrapid.entityrelationship.dto.biDir.BiDirParentDto}
+ */
 public interface UniDirParentDto {
     Logger log = LoggerFactory.getLogger(UniDirParentDto.class);
 

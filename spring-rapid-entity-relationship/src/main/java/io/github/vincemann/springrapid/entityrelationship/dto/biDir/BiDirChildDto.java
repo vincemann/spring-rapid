@@ -14,11 +14,10 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * Represents a Dto Entity, that has n ParentEntities {@link BiDirParentDto}
- * The parent is represented in the Dto Entity by an id Field, annotated with {@link BiDirParentId}
+ * Represents a Dto, that has n Parent Entities.
+ * Each parent is represented by an id Field, annotated with {@link BiDirParentId}.
  *
- * This entity can be mapped to its ServiceEntity by using {@link IdResolvingDtoMapper}
- *
+ * This Dto can be mapped to its Entity by using {@link IdResolvingDtoMapper}
  */
 public interface BiDirChildDto {
     Logger log = LoggerFactory.getLogger(BiDirChildDto.class);

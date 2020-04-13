@@ -12,9 +12,11 @@ import io.github.vincemann.springrapid.entityrelationship.dto.uniDir.UniDirParen
 import java.util.List;
 
 /**
- * Maps an {@link IdentifiableEntity} to its Dto and vice versa using {@link org.modelmapper.ModelMapper} AND resolving
+ * Maps an {@link IdentifiableEntity} to its Dto and vice versa using {@link org.modelmapper.ModelMapper} AND resolves
  * id fields, referencing parent/child entities.
  * The id resolving is done by the given {@link EntityIdResolver}s.
+ *
+ * @see EntityIdResolver
  */
 public class IdResolvingDtoMapper extends BasicDtoMapper {
 

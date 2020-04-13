@@ -1,5 +1,6 @@
 package io.github.vincemann.springrapid.entityrelationship.advice;
 
+import io.github.vincemann.springrapid.core.model.IdentifiableEntity;
 import io.github.vincemann.springrapid.entityrelationship.model.biDir.child.BiDirChild;
 import io.github.vincemann.springrapid.entityrelationship.model.biDir.parent.BiDirParent;
 import lombok.extern.slf4j.Slf4j;
@@ -13,6 +14,9 @@ import java.util.Set;
 @Aspect
 @Component
 @Slf4j
+/**
+ * Advice that keeps BiDirRelationships intact for {@link io.github.vincemann.springrapid.core.service.CrudService#save(IdentifiableEntity)} - operations.
+ */
 public class BiDirEntityPersistAdvice {
 
     @Before("io.github.vincemann.springrapid.core.advice.SystemArchitecture.saveOperation() && " +

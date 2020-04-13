@@ -13,8 +13,11 @@ import java.io.Serializable;
 import java.util.Map;
 
 /**
+ * Used by {@link io.github.vincemann.springrapid.entityrelationship.controller.dtomapper.idResolver.IdResolvingDtoMapper}.
  * Resolves {@link BiDirParentId} to corresponding {@link BiDirParentEntity}.
- * Adds mapped {@link BiDirChild} to {@link BiDirParent}'s children by calling {@link BiDirParent#addChild(BiDirChild)} -> sets Backreference
+ * Adds mapped {@link BiDirChild} to {@link BiDirParent#getChildren()}'s  -> sets Backreference
+ *
+ * @see EntityIdResolver
  */
 public class BiDirChildIdResolver extends EntityIdResolver<BiDirChild, BiDirChildDto> {
 

@@ -1,6 +1,10 @@
 package io.github.vincemann.springrapid.entityrelationship.exception;
 
 
+/**
+ * Indicates that the searched {@link io.github.vincemann.springrapid.entityrelationship.model.biDir.parent.BiDirParent} / {@link io.github.vincemann.springrapid.entityrelationship.model.uniDir.parent.UniDirParent} -
+ * Type is unknown for the Child, within it was searched.
+ */
 public class UnknownParentTypeException extends EntityRelationHandlingException {
 
 

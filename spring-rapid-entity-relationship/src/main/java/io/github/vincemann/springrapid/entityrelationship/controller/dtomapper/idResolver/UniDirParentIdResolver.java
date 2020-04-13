@@ -11,6 +11,12 @@ import java.util.AbstractMap;
 import java.util.Collection;
 import java.util.Map;
 
+/**
+ * Same as {@link io.github.vincemann.springrapid.entityrelationship.controller.dtomapper.idResolver.biDir.BiDirParentIdResolver} but without backref setting and for
+ * {@link io.github.vincemann.springrapid.entityrelationship.model.uniDir.UniDirEntity}s.
+ *
+ * @see EntityIdResolver
+ */
 public class UniDirParentIdResolver extends EntityIdResolver<UniDirParent, UniDirParentDto> {
 
     public UniDirParentIdResolver(CrudServiceLocator crudServiceLocator) {

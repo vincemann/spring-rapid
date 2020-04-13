@@ -17,9 +17,9 @@ import java.util.Map;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
- * Represents a Child of a Bidirectional jpa relation ship (i.e. Entity with @ManyToOne typically would implement this interface)
- * the Parent of the Relation ship should implement {@link BiDirParent} and annotate its ChildCollections (containing Entities of this Type) with {@link BiDirChildCollection}
- * or its single Children (bidirectional @OneToOne) with {@link BiDirChildEntity}
+ * Represents a Child of a Bidirectional jpa relation ship (i.e. Entity with @ManyToOne typically would implement this interface).
+ * The Parent of the Relation ship should implement {@link BiDirParent} and annotate its ChildCollections (containing Entities of this Type) with {@link BiDirChildCollection}
+ * or its single Children (bidirectional @OneToOne) with {@link BiDirChildEntity}.
  */
 public interface BiDirChild extends BiDirEntity {
     Logger log = LoggerFactory.getLogger(BiDirChild.class);

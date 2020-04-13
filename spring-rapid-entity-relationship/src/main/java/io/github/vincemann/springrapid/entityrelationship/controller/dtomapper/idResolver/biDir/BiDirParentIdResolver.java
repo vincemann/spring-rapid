@@ -3,15 +3,24 @@ package io.github.vincemann.springrapid.entityrelationship.controller.dtomapper.
 import io.github.vincemann.springrapid.core.controller.dtoMapper.DtoMappingException;
 import io.github.vincemann.springrapid.entityrelationship.controller.dtomapper.idResolver.EntityIdResolver;
 import io.github.vincemann.springrapid.entityrelationship.dto.biDir.BiDirParentDto;
+import io.github.vincemann.springrapid.entityrelationship.dto.biDir.BiDirParentId;
 import io.github.vincemann.springrapid.entityrelationship.model.biDir.child.BiDirChild;
 import io.github.vincemann.springrapid.entityrelationship.model.biDir.parent.BiDirParent;
 import io.github.vincemann.springrapid.core.service.locator.CrudServiceLocator;
+import io.github.vincemann.springrapid.entityrelationship.model.biDir.parent.BiDirParentEntity;
 
 import java.io.Serializable;
 import java.util.AbstractMap;
 import java.util.Collection;
 import java.util.Map;
 
+/**
+ * Used by {@link io.github.vincemann.springrapid.entityrelationship.controller.dtomapper.idResolver.IdResolvingDtoMapper}.
+ * Resolves {@link io.github.vincemann.springrapid.entityrelationship.dto.biDir.BiDirChildId} to corresponding {@link io.github.vincemann.springrapid.entityrelationship.model.biDir.child.BiDirChildEntity}.
+ * Sets {@link BiDirParent} as {@link BiDirChild}'s Parent > sets Backreference
+ *
+ * @see EntityIdResolver
+ */
 public class BiDirParentIdResolver extends EntityIdResolver<BiDirParent, BiDirParentDto> {
 
     public BiDirParentIdResolver(CrudServiceLocator crudServiceLocator) {

@@ -16,8 +16,8 @@ import java.util.*;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
- * represents a parent of a bidirectional jpa relationship (i.e. Entity with @OneToMany typically would implement this interface)
- * the Child of the Relation ship should implement {@link BiDirChild} and annotate its parents with {@link BiDirParentEntity}
+ * Represents a parent of a bidirectional jpa relationship (i.e. Entity with @OneToMany typically would implement this interface).
+ * The Child of the relationship should implement {@link BiDirChild} and annotate its parents with {@link BiDirParentEntity}.
  */
 public interface BiDirParent extends BiDirEntity/*,DisposableBean*/ {
     Logger log = LoggerFactory.getLogger(BiDirParent.class);
