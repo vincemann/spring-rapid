@@ -27,7 +27,6 @@ import java.io.Serializable;
  */
 @Service
 @Transactional
-@ServiceComponent
 //todo test
 @Slf4j
 public class LocalPermissionService {

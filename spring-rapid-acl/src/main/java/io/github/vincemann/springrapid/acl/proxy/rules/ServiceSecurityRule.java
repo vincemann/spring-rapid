@@ -1,6 +1,7 @@
 package io.github.vincemann.springrapid.acl.proxy.rules;
 
 
+import io.github.vincemann.springrapid.acl.Permission;
 import io.github.vincemann.springrapid.core.slicing.components.ServiceComponent;
 import io.github.vincemann.springrapid.core.service.plugin.CrudServicePlugin;
 import io.github.vincemann.springrapid.acl.securityChecker.SecurityChecker;
@@ -22,13 +23,10 @@ import lombok.NoArgsConstructor;
  *
  */
 public abstract class ServiceSecurityRule extends CrudServicePlugin{
-    private String readPermission = "READ";
-    //@Value("${crud.security.writePermission:WRITE}")
-    private String writePermission = "WRITE";
-    //@Value("${crud.security.createPermission:CREATE}")
-    private String createPermission = "CREATE";
-    //@Value("${crud.security.deletePermission:DELETE}")
-    private String deletePermission = "DELETE";
+    private String readPermission = Permission.READ;
+    private String writePermission = Permission.WRITE;
+    private String createPermission = Permission.CREATE;
+    private String deletePermission = Permission.DELETE;
 
     private SecurityChecker securityChecker;
 

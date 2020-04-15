@@ -1,5 +1,6 @@
 package io.github.vincemann.springrapid.acl.plugin;
 
+import io.github.vincemann.springrapid.acl.Role;
 import io.github.vincemann.springrapid.acl.service.LocalPermissionService;
 import io.github.vincemann.springrapid.core.slicing.components.ServiceComponent;
 import io.github.vincemann.springrapid.core.model.IdentifiableEntity;
@@ -24,9 +25,6 @@ import java.io.Serializable;
 public abstract class AdminFullAccessAclPlugin<E extends IdentifiableEntity<Id>, Id extends Serializable>
         extends CleanUpAclPlugin<E,Id> {
 
-    @Value("${rapid.acl.adminRole:ROLE_ADMIN}")
-    private String adminRole;
-
 
     public AdminFullAccessAclPlugin(LocalPermissionService permissionService, MutableAclService mutableAclService) {
         super(permissionService, mutableAclService);
@@ -40,7 +38,7 @@ public abstract class AdminFullAccessAclPlugin<E extends IdentifiableEntity<Id>,
     }
 
     protected void saveFullPermissionForAdminOver(E entity){
-        getPermissionService().addPermissionForAuthorityOver(entity,BasePermission.ADMINISTRATION, adminRole);
+        getPermissionService().addPermissionForAuthorityOver(entity,BasePermission.ADMINISTRATION, Role.ADMIN);
     }
 
 }
