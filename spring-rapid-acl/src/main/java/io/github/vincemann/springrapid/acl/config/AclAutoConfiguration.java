@@ -1,5 +1,6 @@
 package io.github.vincemann.springrapid.acl.config;
 
+import io.github.vincemann.springrapid.acl.Role;
 import io.github.vincemann.springrapid.acl.framework.NoModSecurityCheckAclAuthorizationStrategy;
 import io.github.vincemann.springrapid.acl.framework.LenientPermissionGrantingStrategy;
 import io.github.vincemann.springrapid.core.slicing.config.ServiceConfig;
@@ -42,9 +43,6 @@ public class AclAutoConfiguration {
     @Autowired
     DataSource dataSource;
 
-    @Value("${rapid.acl.adminRole:ROLE_ADMIN}")
-    String adminRole;
-
     @ConditionalOnMissingBean(EhCacheBasedAclCache.class)
     @Bean
     public EhCacheBasedAclCache aclCache() {
@@ -85,7 +83,7 @@ public class AclAutoConfiguration {
         //admin is allowed to change all acl db tables, but he is not automatically allowed to do anything acl restricted bc of this statement
         //return new AclAuthorizationStrategyImpl(new SimpleGrantedAuthority(AuthorityName.ROLE_ADMIN.toString()));
         return new NoModSecurityCheckAclAuthorizationStrategy(
-                new SimpleGrantedAuthority(adminRole)
+                new SimpleGrantedAuthority(Role.ADMIN)
         );
     }
 

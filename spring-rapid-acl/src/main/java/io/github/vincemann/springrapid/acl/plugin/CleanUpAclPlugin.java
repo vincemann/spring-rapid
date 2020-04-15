@@ -6,6 +6,7 @@ import io.github.vincemann.springrapid.core.proxy.CalledByProxy;
 import io.github.vincemann.springrapid.core.service.exception.EntityNotFoundException;
 import io.github.vincemann.springrapid.core.service.exception.NoIdException;
 import io.github.vincemann.springrapid.core.service.plugin.CrudServicePlugin;
+import io.github.vincemann.springrapid.core.slicing.components.ServiceComponent;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
@@ -21,6 +22,7 @@ import java.io.Serializable;
 /**
  * Removes Acl's on delete, if existing.
  */
+@ServiceComponent
 public abstract class CleanUpAclPlugin<E extends IdentifiableEntity<Id>, Id extends Serializable>
         extends CrudServicePlugin<E,Id> {
 
