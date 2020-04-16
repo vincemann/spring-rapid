@@ -4,6 +4,7 @@ package io.github.vincemann.springrapid.acl.config;
 import io.github.vincemann.springrapid.core.slicing.config.ServiceConfig;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.context.annotation.Configuration;
@@ -14,6 +15,7 @@ import org.springframework.security.config.annotation.method.configuration.Globa
 
 @ServiceConfig
 @EnableGlobalMethodSecurity(prePostEnabled = true, securedEnabled = true)
+@AutoConfigureAfter(AclAutoConfiguration.class)
 @Slf4j
 public class AclMethodSecurityAutoConfiguration extends GlobalMethodSecurityConfiguration {
 

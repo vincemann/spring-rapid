@@ -18,7 +18,6 @@ import java.io.Serializable;
  * @param <E>
  * @param <Id>
  */
-@ServiceComponent
 public class InheritParentAclPlugin<E extends IdentifiableEntity<Id> & AclParentAware,Id extends Serializable>
         extends CleanUpAclPlugin<E,Id> {
 

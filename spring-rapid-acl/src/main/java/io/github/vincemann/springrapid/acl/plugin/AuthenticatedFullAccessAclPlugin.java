@@ -15,8 +15,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import java.io.Serializable;
 
 @Slf4j
-@ServiceComponent
-public abstract class AuthenticatedFullAccessAclPlugin<E extends IdentifiableEntity<Id>, Id extends Serializable>
+public class AuthenticatedFullAccessAclPlugin<E extends IdentifiableEntity<Id>, Id extends Serializable>
         extends CleanUpAclPlugin<E,Id> {
 
 

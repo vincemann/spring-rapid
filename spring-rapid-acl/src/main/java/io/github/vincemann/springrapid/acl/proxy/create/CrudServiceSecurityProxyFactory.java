@@ -13,7 +13,6 @@ import org.springframework.test.util.AopTestUtils;
 import java.io.Serializable;
 import java.lang.reflect.Proxy;
 
-@Component
 public class CrudServiceSecurityProxyFactory {
 
     private SecurityChecker securityChecker;

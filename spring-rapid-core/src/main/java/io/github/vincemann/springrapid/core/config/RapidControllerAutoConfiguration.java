@@ -23,7 +23,7 @@ import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandl
 @WebConfig
 public class RapidControllerAutoConfiguration {
 
-    @Value("${controller.idFetchingStrategy.idUrlParamKey}")
+    @Value("${controller.idFetchingStrategy.idUrlParamKey:id}")
     private String idUrlParamKey;
 
     @Bean(name = "idUrlParamKey")

@@ -91,7 +91,7 @@ public abstract class RapidController
 
 
     @Getter
-    @Value("${controller.update.full.queryParam}")
+    @Value("${controller.update.full.queryParam:full}")
     private String fullUpdateQueryParam;
 
     private IdFetchingStrategy<Id> idIdFetchingStrategy;

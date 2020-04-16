@@ -7,6 +7,7 @@ import io.github.vincemann.springrapid.core.slicing.config.ServiceConfig;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.autoconfigure.AutoConfigureBefore;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.cache.ehcache.EhCacheFactoryBean;
@@ -33,7 +34,8 @@ import javax.sql.DataSource;
  */
 @ServiceConfig
 @Slf4j
-@ConditionalOnClass(DataSource.class)
+//@ConditionalOnClass(DataSource.class)
+@AutoConfigureBefore(AclPluginAutoConfiguration.class)
 public class AclAutoConfiguration {
 
     public AclAutoConfiguration() {
