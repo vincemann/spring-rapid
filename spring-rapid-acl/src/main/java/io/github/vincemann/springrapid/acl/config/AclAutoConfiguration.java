@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.AutoConfigureBefore;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingClass;
 import org.springframework.cache.ehcache.EhCacheFactoryBean;
 import org.springframework.cache.ehcache.EhCacheManagerFactoryBean;
 import org.springframework.context.annotation.Bean;
@@ -91,9 +92,9 @@ public class AclAutoConfiguration {
 
     @ConditionalOnMissingBean(MethodSecurityExpressionHandler.class)
     @Bean
-    public MethodSecurityExpressionHandler defaultMethodSecurityExpressionHandler() {
+    public MethodSecurityExpressionHandler defaultMethodSecurityExpressionHandler(PermissionEvaluator permissionEvaluator) {
         DefaultMethodSecurityExpressionHandler expressionHandler = new DefaultMethodSecurityExpressionHandler();
-        AclPermissionEvaluator permissionEvaluator = new AclPermissionEvaluator(aclService());
+        //AclPermissionEvaluator permissionEvaluator = new AclPermissionEvaluator(aclService());
         expressionHandler.setPermissionEvaluator(permissionEvaluator);
         expressionHandler.setPermissionCacheOptimizer(new AclPermissionCacheOptimizer(aclService()));
         return expressionHandler;
