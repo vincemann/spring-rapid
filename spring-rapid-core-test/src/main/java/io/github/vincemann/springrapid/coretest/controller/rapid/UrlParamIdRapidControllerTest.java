@@ -20,7 +20,7 @@ public abstract class UrlParamIdRapidControllerTest<S extends CrudService<E,Id,?
         Id extends Serializable>
         extends MvcRapidControllerTest<S, E, Id> {
 
-    @Value("${controller.idFetchingStrategy.idUrlParamKey}")
+    @Value("${controller.idFetchingStrategy.idUrlParamKey:id}")
     private String entityIdParamKey;
 
 

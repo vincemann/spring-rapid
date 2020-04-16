@@ -21,8 +21,7 @@ import java.io.Serializable;
  */
 @Slf4j
 @Getter
-@ServiceComponent
-public abstract class AdminFullAccessAclPlugin<E extends IdentifiableEntity<Id>, Id extends Serializable>
+public class AdminFullAccessAclPlugin<E extends IdentifiableEntity<Id>, Id extends Serializable>
         extends CleanUpAclPlugin<E,Id> {
 
 

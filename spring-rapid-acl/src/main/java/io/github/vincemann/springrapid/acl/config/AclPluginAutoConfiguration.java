@@ -1,11 +1,9 @@
 package io.github.vincemann.springrapid.acl.config;
 
-import io.github.vincemann.springrapid.acl.plugin.AdminFullAccessAclPlugin;
-import io.github.vincemann.springrapid.acl.plugin.AdminFullAccessAclPluginImpl;
-import io.github.vincemann.springrapid.acl.plugin.AuthenticatedFullAccessAclPlugin;
-import io.github.vincemann.springrapid.acl.plugin.AuthenticatedFullAccessAclPluginImpl;
+import io.github.vincemann.springrapid.acl.plugin.*;
 import io.github.vincemann.springrapid.acl.service.LocalPermissionService;
 import io.github.vincemann.springrapid.core.slicing.config.ServiceConfig;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
@@ -13,8 +11,13 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.security.acls.model.MutableAclService;
 
 @ServiceConfig
-@AutoConfigureAfter(AclAutoConfiguration.class)
+@Slf4j
 public class AclPluginAutoConfiguration {
+
+    public AclPluginAutoConfiguration() {
+        log.debug("AclPluginAutoConfiguration loaded");
+    }
+
 
     @ConditionalOnMissingBean(LocalPermissionService.class)
     @Bean
@@ -22,15 +25,21 @@ public class AclPluginAutoConfiguration {
         return new LocalPermissionService(aclService);
     }
 
-    @ConditionalOnMissingBean(AdminFullAccessAclPluginImpl.class)
+    @ConditionalOnMissingBean(AdminFullAccessAclPlugin.class)
     @Bean
-    public AdminFullAccessAclPluginImpl adminFullAccessAclPlugin(LocalPermissionService localPermissionService, MutableAclService mutableAclService){
-        return new AdminFullAccessAclPluginImpl(localPermissionService,mutableAclService);
+    public AdminFullAccessAclPlugin adminFullAccessAclPlugin(MutableAclService mutableAclService){
+        return new AdminFullAccessAclPlugin(localPermissionService(mutableAclService),mutableAclService);
     }
 
-    @ConditionalOnMissingBean(AuthenticatedFullAccessAclPluginImpl.class)
+    @ConditionalOnMissingBean(AuthenticatedFullAccessAclPlugin.class)
     @Bean
-    public AuthenticatedFullAccessAclPluginImpl authenticatedFullAccessAclPlugin(LocalPermissionService localPermissionService, MutableAclService mutableAclService){
-        return new AuthenticatedFullAccessAclPluginImpl(localPermissionService,mutableAclService);
+    public AuthenticatedFullAccessAclPlugin authenticatedFullAccessAclPlugin(MutableAclService mutableAclService){
+        return new AuthenticatedFullAccessAclPlugin(localPermissionService(mutableAclService),mutableAclService);
+    }
+
+    @Bean
+    @ConditionalOnMissingBean(InheritParentAclPlugin.class)
+    public InheritParentAclPlugin inheritParentAclPlugin(MutableAclService aclService){
+        return new InheritParentAclPlugin(localPermissionService(aclService),aclService);
     }
 }
