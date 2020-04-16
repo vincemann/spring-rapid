@@ -23,10 +23,10 @@ import lombok.NoArgsConstructor;
  *
  */
 public abstract class ServiceSecurityRule extends CrudServicePlugin{
-    private String readPermission = Permission.READ;
-    private String writePermission = Permission.WRITE;
-    private String createPermission = Permission.CREATE;
-    private String deletePermission = Permission.DELETE;
+    private String readPermission = BasePermission.READ;
+    private String writePermission = BasePermission.WRITE;
+    private String createPermission = BasePermission.CREATE;
+    private String deletePermission = BasePermission.DELETE;
 
     private SecurityChecker securityChecker;
 
