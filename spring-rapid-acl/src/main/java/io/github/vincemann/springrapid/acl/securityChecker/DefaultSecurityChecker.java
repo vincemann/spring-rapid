@@ -30,7 +30,6 @@ import java.util.HashSet;
  * Uses {@link MethodSecurityExpressionHandler} for expression evaluation and {@link org.springframework.security.core.context.SecurityContext}
  * to get information about authenticated user.
  */
-@ServiceComponent
 public class DefaultSecurityChecker implements SecurityChecker,ApplicationContextAware {
 
 
