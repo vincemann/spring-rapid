@@ -3,6 +3,9 @@ package io.github.vincemann.springrapid.acl.config;
 import io.github.vincemann.springrapid.acl.Role;
 import io.github.vincemann.springrapid.acl.framework.NoModSecurityCheckAclAuthorizationStrategy;
 import io.github.vincemann.springrapid.acl.framework.LenientPermissionGrantingStrategy;
+import io.github.vincemann.springrapid.acl.proxy.create.CrudServiceProxyBeanComposer;
+import io.github.vincemann.springrapid.acl.service.RunAsUserService;
+import io.github.vincemann.springrapid.acl.service.SecurityContextRunAsUserService;
 import io.github.vincemann.springrapid.core.slicing.config.ServiceConfig;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -98,6 +101,13 @@ public class AclAutoConfiguration {
         expressionHandler.setPermissionEvaluator(permissionEvaluator);
         expressionHandler.setPermissionCacheOptimizer(new AclPermissionCacheOptimizer(aclService()));
         return expressionHandler;
+    }
+
+
+    @Bean
+    @ConditionalOnMissingBean(RunAsUserService.class)
+    public RunAsUserService runAsUserService(){
+        return new SecurityContextRunAsUserService();
     }
 
     @ConditionalOnMissingBean(LookupStrategy.class)

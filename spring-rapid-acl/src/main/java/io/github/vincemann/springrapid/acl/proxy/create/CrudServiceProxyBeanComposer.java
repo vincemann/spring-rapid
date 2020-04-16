@@ -31,7 +31,6 @@ import java.util.Optional;
  * Used to create {@link CrudService} Proxy's dynamically by resolving {@link ConfigureProxies} annotation.
  * @see ConfigureProxies
  */
-@ServiceComponent
 @Slf4j
 public class CrudServiceProxyBeanComposer implements BeanPostProcessor, ApplicationContextAware {
 
