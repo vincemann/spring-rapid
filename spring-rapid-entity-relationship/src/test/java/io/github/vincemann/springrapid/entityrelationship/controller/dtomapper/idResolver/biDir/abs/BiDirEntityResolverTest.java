@@ -4,7 +4,7 @@ import io.github.vincemann.springrapid.entityrelationship.controller.dtomapper.i
 import io.github.vincemann.springrapid.entityrelationship.controller.dtomapper.idResolver.biDir.testEntities.BiDirEntityParent;
 import io.github.vincemann.springrapid.entityrelationship.controller.dtomapper.idResolver.biDir.testEntities.BiDirSecondEntityParent;
 import io.github.vincemann.springrapid.core.service.CrudService;
-import io.github.vincemann.springrapid.core.service.exception.NoIdException;
+import io.github.vincemann.springrapid.core.service.exception.BadEntityException;
 import io.github.vincemann.springrapid.core.service.locator.CrudServiceLocator;
 import lombok.Getter;
 import org.junit.jupiter.api.BeforeEach;
@@ -36,7 +36,7 @@ public abstract class BiDirEntityResolverTest {
     private BiDirEntityChild biDirChild = new BiDirEntityChild();
 
     @BeforeEach
-    public void setUp() throws NoIdException {
+    public void setUp() throws BadEntityException {
         MockitoAnnotations.initMocks(this);
 
         Long entityParentId = 1L;

@@ -4,7 +4,7 @@ import io.github.vincemann.springrapid.core.controller.dtoMapper.DtoMappingExcep
 import io.github.vincemann.springrapid.entityrelationship.controller.dtomapper.idResolver.biDir.abs.BiDirEntityResolverTest;
 import io.github.vincemann.springrapid.entityrelationship.controller.dtomapper.idResolver.biDir.testEntities.BiDirEntityChild;
 import io.github.vincemann.springrapid.entityrelationship.controller.dtomapper.idResolver.biDir.testEntities.BiDirEntityChildDto;
-import io.github.vincemann.springrapid.core.service.exception.NoIdException;
+import io.github.vincemann.springrapid.core.service.exception.BadEntityException;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -17,7 +17,7 @@ public class BiDirChildIdResolverTest extends BiDirEntityResolverTest {
 
     @BeforeEach
     @Override
-    public void setUp() throws NoIdException {
+    public void setUp() throws BadEntityException {
         super.setUp();
         this.biDirChildIdResolver = new BiDirChildIdResolver(getCrudServiceLocator());
     }

@@ -5,7 +5,7 @@ import io.github.vincemann.springrapid.entityrelationship.controller.dtomapper.i
 import io.github.vincemann.springrapid.entityrelationship.controller.dtomapper.idResolver.uniDir.abs.UniDirEntityResolverTest;
 import io.github.vincemann.springrapid.entityrelationship.controller.dtomapper.idResolver.uniDir.testEntities.UniDirEntityParent;
 import io.github.vincemann.springrapid.entityrelationship.controller.dtomapper.idResolver.uniDir.testEntities.UniDirEntityParentDto;
-import io.github.vincemann.springrapid.core.service.exception.NoIdException;
+import io.github.vincemann.springrapid.core.service.exception.BadEntityException;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -16,7 +16,7 @@ public class UniDirParentResolverTest extends UniDirEntityResolverTest {
 
     @BeforeEach
     @Override
-    public void setUp() throws NoIdException {
+    public void setUp() throws BadEntityException {
         super.setUp();
         this.uniDirParentIdResolver = new UniDirParentIdResolver(getCrudServiceLocator());
     }

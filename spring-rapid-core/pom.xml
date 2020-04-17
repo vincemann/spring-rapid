@@ -9,7 +9,7 @@
     <parent>
         <groupId>io.github.vincemann</groupId>
         <artifactId>spring-rapid</artifactId>
-        <version>0.0.72</version>
+        <version>0.0.8</version>
     </parent>
 
 
@@ -29,6 +29,12 @@
         <dependency>
             <groupId>org.springframework.security</groupId>
             <artifactId>spring-security-core</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>io.github.vincemann</groupId>
+            <artifactId>spring-lemon-exceptions</artifactId>
+            <version>${project.version}</version>
         </dependency>
 
 

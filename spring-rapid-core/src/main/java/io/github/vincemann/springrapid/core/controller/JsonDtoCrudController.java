@@ -15,7 +15,7 @@ import io.github.vincemann.springrapid.core.model.IdentifiableEntity;
 import io.github.vincemann.springrapid.core.service.CrudService;
 import io.github.vincemann.springrapid.core.service.exception.BadEntityException;
 import io.github.vincemann.springrapid.core.service.exception.EntityNotFoundException;
-import io.github.vincemann.springrapid.core.service.exception.NoIdException;
+import io.github.vincemann.springrapid.core.service.exception.BadEntityException;
 import io.github.vincemann.springrapid.core.util.AuthorityUtil;
 import lombok.Getter;
 import lombok.Setter;
@@ -93,7 +93,7 @@ public abstract class JsonDtoCrudController
 
     @Override
     @SuppressWarnings("unchecked")
-    public IdentifiableEntity<Id> find(Id id) throws NoIdException, EntityNotFoundException, DtoMappingException, DtoSerializingException {
+    public IdentifiableEntity<Id> find(Id id) throws BadEntityException, EntityNotFoundException, DtoMappingException, DtoSerializingException {
         validationStrategy.validateId(id);
         log.debug("id successfully validated");
         logStateBeforeServiceCall("findById", id);
@@ -152,7 +152,7 @@ public abstract class JsonDtoCrudController
 
     @Override
     @SuppressWarnings("unchecked")
-    public IdentifiableEntity<Id> update(IdentifiableEntity<Id> dto, boolean full) throws BadEntityException, DtoMappingException, NoIdException, EntityNotFoundException, DtoSerializingException {
+    public IdentifiableEntity<Id> update(IdentifiableEntity<Id> dto, boolean full) throws BadEntityException, DtoMappingException, BadEntityException, EntityNotFoundException, DtoSerializingException {
         validationStrategy.validateDto(dto);
         log.debug("Dto successfully validated");
         //i expect that dto has the right dto type -> callers responsibility
@@ -184,7 +184,7 @@ public abstract class JsonDtoCrudController
 
 
     @Override
-    public void delete(Id id) throws NoIdException, EntityNotFoundException {
+    public void delete(Id id) throws BadEntityException, EntityNotFoundException {
         validationStrategy.validateId(id);
         log.debug("id successfully validated");
         logStateBeforeServiceCall("delete", id);

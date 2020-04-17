@@ -12,11 +12,17 @@
     <parent>
         <groupId>io.github.vincemann</groupId>
         <artifactId>spring-rapid</artifactId>
-        <version>0.0.72</version>
+        <version>0.0.8</version>
     </parent>
 
     <dependencies>
-    
+
+<!--        <dependency>-->
+<!--            <groupId>io.github.vincemann</groupId>-->
+<!--            <artifactId>spring-rapid-core</artifactId>-->
+<!--            <version>${project.version}</version>-->
+<!--        </dependency>-->
+
 		<dependency>
 		    <groupId>org.springframework</groupId>
 		    <artifactId>spring-web</artifactId>

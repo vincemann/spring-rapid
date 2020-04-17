@@ -5,7 +5,7 @@ import io.github.vincemann.springrapid.core.model.IdentifiableEntity;
 import io.github.vincemann.springrapid.core.service.CrudService;
 import io.github.vincemann.springrapid.core.service.exception.BadEntityException;
 import io.github.vincemann.springrapid.core.service.exception.EntityNotFoundException;
-import io.github.vincemann.springrapid.core.service.exception.NoIdException;
+import io.github.vincemann.springrapid.core.service.exception.BadEntityException;
 import io.github.vincemann.springrapid.core.util.DebugTransactionUtil;
 import io.github.vincemann.springrapid.core.util.NullAwareBeanUtilsBean;
 import lombok.extern.slf4j.Slf4j;
@@ -55,16 +55,16 @@ public abstract class JPACrudService
 
     @Transactional
     @Override
-    public Optional<E> findById(Id id) throws NoIdException {
+    public Optional<E> findById(Id id) throws BadEntityException {
         if(id==null){
-            throw new NoIdException("No Id value set for Entity of type: " + entityClass.getSimpleName());
+            throw new BadEntityException("No Id value set for Entity of type: " + entityClass.getSimpleName());
         }
         return jpaRepository.findById(id);
     }
 
     @Transactional
     @Override
-    public E update(E update, Boolean full) throws EntityNotFoundException, NoIdException, BadEntityException {
+    public E update(E update, Boolean full) throws EntityNotFoundException, BadEntityException, BadEntityException {
         try {
             E entityToUpdate = findOldEntity(update.getId());
             if(full){
@@ -81,9 +81,9 @@ public abstract class JPACrudService
     }
 
 
-    private E findOldEntity(Id id) throws NoIdException, EntityNotFoundException {
+    private E findOldEntity(Id id) throws BadEntityException, EntityNotFoundException {
         if(id==null){
-            throw new NoIdException("No Id value set for EntityType: " + entityClass.getSimpleName());
+            throw new BadEntityException("No Id value set for EntityType: " + entityClass.getSimpleName());
         }
         Optional<E> entityToUpdate = findById(id);
         if(!entityToUpdate.isPresent()){
@@ -113,9 +113,9 @@ public abstract class JPACrudService
 
     @Transactional
     @Override
-    public void deleteById(Id id) throws EntityNotFoundException, NoIdException {
+    public void deleteById(Id id) throws EntityNotFoundException, BadEntityException {
         if(id==null){
-            throw new NoIdException("No Id value set for EntityType: " + entityClass.getSimpleName());
+            throw new BadEntityException("No Id value set for EntityType: " + entityClass.getSimpleName());
         }
         Optional<E> entity = findById(id);
         if(!entity.isPresent()){

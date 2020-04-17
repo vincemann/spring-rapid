@@ -1,6 +1,7 @@
 package com.naturalprogrammer.spring.lemon.auth.service;
 
 import com.naturalprogrammer.spring.lemon.auth.LemonProperties;
+import com.naturalprogrammer.spring.lemon.auth.domain.AbstractUserRepository;
 import com.naturalprogrammer.spring.lemon.auth.domain.LemonUser;
 import com.naturalprogrammer.spring.lemon.auth.mail.LemonMailData;
 import com.naturalprogrammer.spring.lemon.auth.mail.MailSender;
@@ -8,10 +9,12 @@ import com.naturalprogrammer.spring.lemon.auth.security.domain.LemonRole;
 import com.naturalprogrammer.spring.lemon.auth.security.service.BlueTokenService;
 import com.naturalprogrammer.spring.lemon.auth.security.service.GreenTokenService;
 import com.naturalprogrammer.spring.lemon.auth.util.LecUtils;
+import io.github.vincemann.springrapid.core.service.jpa.JPACrudService;
 import lemon.exceptions.util.LexUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.io.Serializable;
@@ -19,7 +22,8 @@ import java.util.HashMap;
 import java.util.Map;
 
 public abstract class AbstractLemonService
-	<U extends LemonUser<ID>, ID extends Serializable> {
+	<U extends LemonUser<ID>, ID extends Serializable>
+			extends JPACrudService<U,ID, JpaRepository<U,ID>> {
 
     private static final Log log = LogFactory.getLog(AbstractLemonService.class);
 	protected PasswordEncoder passwordEncoder;
@@ -30,8 +34,6 @@ public abstract class AbstractLemonService
 
 
 
-	protected abstract U newUser();
-	
 	protected Map<String, Object> buildContext() {
 		
 		// make the context

@@ -1,8 +1,6 @@
 package com.naturalprogrammer.spring.lemon.auth.controller;
 
 import com.fasterxml.jackson.annotation.JsonView;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.github.fge.jsonpatch.JsonPatchException;
 import com.naturalprogrammer.spring.lemon.auth.LemonProperties;
 import com.naturalprogrammer.spring.lemon.auth.domain.AbstractUser;
 import com.naturalprogrammer.spring.lemon.auth.domain.ChangePasswordForm;
@@ -12,7 +10,9 @@ import com.naturalprogrammer.spring.lemon.auth.service.LemonService;
 import com.naturalprogrammer.spring.lemon.auth.util.LecUtils;
 import com.naturalprogrammer.spring.lemon.auth.util.LecwUtils;
 import com.naturalprogrammer.spring.lemon.auth.util.UserUtils;
-import lemon.exceptions.util.LexUtils;
+import io.github.vincemann.springrapid.core.controller.dtoMapper.context.DtoMappingContext;
+import io.github.vincemann.springrapid.core.controller.rapid.RapidController;
+import io.github.vincemann.springrapid.core.service.exception.BadEntityException;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,7 +21,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletResponse;
-import java.io.IOException;
 import java.io.Serializable;
 import java.util.Map;
 import java.util.Optional;
@@ -34,13 +33,20 @@ import java.util.Optional;
  * @author Sanjay Patel
  */
 public abstract class LemonController
-	<U extends AbstractUser<ID>, ID extends Serializable> {
+	<U extends AbstractUser<ID>, ID extends Serializable>
+			extends RapidController<U,ID> {
 
 	private static final Log log = LogFactory.getLog(LemonController.class);
 
     private long jwtExpirationMillis;
 	private LemonService<U, ID> lemonService;
 
+	public LemonController(DtoMappingContext dtoMappingContext) {
+		super(dtoMappingContext);
+	}
+
+	public LemonController() {
+	}
 
 	@Autowired
 	public void createLemonController(
@@ -89,8 +95,8 @@ public abstract class LemonController
 	@PostMapping("/users")
 	@ResponseStatus(HttpStatus.CREATED)
 	public UserDto signup(@RequestBody @JsonView(UserUtils.SignupInput.class) U user,
-			HttpServletResponse response) {
-		
+			HttpServletResponse response) throws BadEntityException {
+
 		log.debug("Signing up: " + user);
 		lemonService.signup(user);
 		log.debug("Signed up: " + user);
@@ -113,7 +119,7 @@ public abstract class LemonController
 
 
 	/**
-	 * Verifies current-user
+	 * Verifies current-user -> send code per email
 	 */
 	@PostMapping("/users/{id}/verification")
 	public UserDto verifyUser(
@@ -129,7 +135,7 @@ public abstract class LemonController
 	
 
 	/**
-	 * The forgot Password feature
+	 * The forgot Password feature -> mail new password to email
 	 */
 	@PostMapping("/forgot-password")
 	@ResponseStatus(HttpStatus.NO_CONTENT)
@@ -162,7 +168,7 @@ public abstract class LemonController
 	public U fetchUserByEmail(@RequestParam String email) {
 		
 		log.debug("Fetching user by email: " + email);						
-		return lemonService.fetchUserByEmail(email);
+		return lemonService.findByEmail(email);
 	}
 
 	
@@ -177,29 +183,32 @@ public abstract class LemonController
 	}
 
 	
-	/**
-	 * Updates a user
-	 */
-	@PatchMapping("/users/{id}")
-	public UserDto updateUser(
-			@PathVariable("id") U user,
-			@RequestBody String patch,
-			HttpServletResponse response)
-			throws JsonProcessingException, IOException, JsonPatchException {
-		
-		log.debug("Updating user ... ");
-		
-		// ensure that the user exists
-		LexUtils.ensureFound(user);
-		U updatedUser = LecUtils.applyPatch(user, patch); // create a patched form
-		UserDto userDto = lemonService.updateUser(user, updatedUser);
-		
-		// Send a new token for logged in user in the response
-		userWithToken(response);
-		
-		// Send updated user data in the response
-		return userDto;
-	}
+//	/**
+//	 * Updates a user
+//	 */
+//	@PatchMapping("/users/{id}")
+//	public UserDto updateUser(
+//			@PathVariable("id") U user,
+//			@RequestBody String patch,
+//			HttpServletResponse response)
+//			throws JsonProcessingException, IOException, JsonPatchException {
+//
+//		log.debug("Updating user ... ");
+//
+//		// ensure that the user exists
+//		LexUtils.ensureFound(user);
+//		U updatedUser = LecUtils.applyPatch(user, patch); // create a patched form
+//		UserDto userDto = lemonService.updateUser(user, updatedUser);
+//
+//		// Send a new token for logged in user in the response
+//		userWithToken(response);
+//
+//		// Send updated user data in the response
+//		return userDto;
+//	}
+
+
+
 	
 	
 	/**
@@ -275,7 +284,7 @@ public abstract class LemonController
 
 	
 	/**
-	 * returns the current user and a new authorization token in the response
+	 * returns the current user and puts a new authorization token in the response
 	 */
 	protected UserDto userWithToken(HttpServletResponse response) {
 		
