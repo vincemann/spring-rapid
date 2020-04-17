@@ -129,7 +129,7 @@ class OwnerControllerTest
                 .city("")
                 .build();
         getMockMvc().perform(partialUpdate(blankCityUpdate))
-                .andExpect(status().isBadRequest());
+                .andExpect(status().isUnprocessableEntity());
 
         verify(mockedService,never()).update(any(),any());
     }

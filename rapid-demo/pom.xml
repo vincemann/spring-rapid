@@ -30,9 +30,16 @@
             <version>${project.version}</version>
         </dependency>
 
+<!--        Lemon Exceptions Module is better-->
+<!--        <dependency>-->
+<!--            <groupId>io.github.vincemann</groupId>-->
+<!--            <artifactId>spring-rapid-exceptions</artifactId>-->
+<!--            <version>${project.version}</version>-->
+<!--        </dependency>-->
+
         <dependency>
             <groupId>io.github.vincemann</groupId>
-            <artifactId>spring-rapid-exceptions</artifactId>
+            <artifactId>spring-lemon-exceptions</artifactId>
             <version>${project.version}</version>
         </dependency>
 

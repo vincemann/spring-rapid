@@ -1,0 +1,5 @@
+org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
+com.naturalprogrammer.spring.lemon.auth.config.LemonAutoConfiguration,\
+com.naturalprogrammer.spring.lemon.auth.config.LemonCommonsAutoConfiguration,\
+com.naturalprogrammer.spring.lemon.auth.config.LemonCommonsJpaAutoConfiguration,\
+com.naturalprogrammer.spring.lemon.auth.config.LemonCommonsWebAutoConfiguration
