@@ -6,7 +6,7 @@
     <groupId>io.github.vincemann</groupId>
     <artifactId>spring-rapid</artifactId>
 <!--    <version>${rapid.version}</version>-->
-    <version>0.0.72</version>
+    <version>0.0.8</version>
     <packaging>pom</packaging>
 
 
@@ -22,7 +22,7 @@
         <maven.compiler.source>11</maven.compiler.source>
         <maven.compiler.target>11</maven.compiler.target>
         <lemon.version>1.0.0.RC3</lemon.version>
-<!--        <rapid.version>0.0.72</rapid.version>-->
+<!--        <rapid.version>0.0.8</rapid.version>-->
     </properties>
 
 

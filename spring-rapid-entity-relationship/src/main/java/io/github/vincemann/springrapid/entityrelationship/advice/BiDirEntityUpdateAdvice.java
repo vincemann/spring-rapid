@@ -6,7 +6,7 @@ import io.github.vincemann.springrapid.entityrelationship.model.biDir.parent.BiD
 import io.github.vincemann.springrapid.core.service.CrudService;
 import io.github.vincemann.springrapid.core.service.exception.BadEntityException;
 import io.github.vincemann.springrapid.core.service.exception.EntityNotFoundException;
-import io.github.vincemann.springrapid.core.service.exception.NoIdException;
+import io.github.vincemann.springrapid.core.service.exception.BadEntityException;
 import io.github.vincemann.springrapid.core.service.locator.CrudServiceLocator;
 import lombok.extern.slf4j.Slf4j;
 import org.aspectj.lang.annotation.Aspect;
@@ -35,7 +35,7 @@ public class BiDirEntityUpdateAdvice {
     @Before("io.github.vincemann.springrapid.core.advice.SystemArchitecture.updateOperation() && " +
             "io.github.vincemann.springrapid.core.advice.SystemArchitecture.repoOperation() && " +
             "args(biDirChild)")
-    public void preUpdateBiDirChild(BiDirChild biDirChild) throws EntityNotFoundException, NoIdException, BadEntityException {
+    public void preUpdateBiDirChild(BiDirChild biDirChild) throws EntityNotFoundException, BadEntityException, BadEntityException {
         try {
             if(((IdentifiableEntity) biDirChild).getId()!=null) {
                 log.debug("detected update operation for BiDirChild: " + biDirChild +", running preUpdateAdvice logic");
@@ -49,7 +49,7 @@ public class BiDirEntityUpdateAdvice {
     @Before("io.github.vincemann.springrapid.core.advice.SystemArchitecture.updateOperation() && " +
             "io.github.vincemann.springrapid.core.advice.SystemArchitecture.repoOperation() && " +
             "args(biDirParent)")
-    public void preUpdateBiDirParent(BiDirParent biDirParent) throws EntityNotFoundException, NoIdException {
+    public void preUpdateBiDirParent(BiDirParent biDirParent) throws EntityNotFoundException, BadEntityException {
         try {
             if(((IdentifiableEntity) biDirParent).getId()!=null) {
                 log.debug("detected update operation for BiDirParent: " + biDirParent + ", running preUpdateAdvice logic");
@@ -63,7 +63,7 @@ public class BiDirEntityUpdateAdvice {
 
 
     @SuppressWarnings("Duplicates")
-    private void updateBiDirChildRelations(BiDirChild newBiDirChild) throws NoIdException, EntityNotFoundException, IllegalAccessException {
+    private void updateBiDirChildRelations(BiDirChild newBiDirChild) throws BadEntityException, EntityNotFoundException, IllegalAccessException {
         //find already persisted biDirChild (preUpdateState of child)
         CrudService service = serviceLocator.find((Class<? extends IdentifiableEntity>) newBiDirChild.getClass());
         Optional<BiDirChild> oldBiDirChildOptional = service.findById(((IdentifiableEntity<Serializable>) newBiDirChild).getId());
@@ -101,7 +101,7 @@ public class BiDirEntityUpdateAdvice {
 
 
     @SuppressWarnings("Duplicates")
-    private void updateBiDirParentRelations(BiDirParent newBiDirParent) throws NoIdException, EntityNotFoundException, IllegalAccessException {
+    private void updateBiDirParentRelations(BiDirParent newBiDirParent) throws BadEntityException, EntityNotFoundException, IllegalAccessException {
         CrudService service = serviceLocator.find((Class<? extends IdentifiableEntity>) newBiDirParent.getClass());
         Optional<BiDirParent> oldBiDirParentOptional = service.findById(((IdentifiableEntity<Serializable>) newBiDirParent).getId());
         if(!oldBiDirParentOptional.isPresent()){

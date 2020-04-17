@@ -14,7 +14,7 @@ import io.github.vincemann.springrapid.core.model.IdentifiableEntity;
 import io.github.vincemann.springrapid.core.service.EndpointService;
 import io.github.vincemann.springrapid.core.service.exception.BadEntityException;
 import io.github.vincemann.springrapid.core.service.exception.EntityNotFoundException;
-import io.github.vincemann.springrapid.core.service.exception.NoIdException;
+import io.github.vincemann.springrapid.core.service.exception.BadEntityException;
 import io.github.vincemann.springrapid.core.util.HttpServletRequestUtils;
 import lombok.Getter;
 import lombok.Setter;
@@ -99,6 +99,11 @@ public abstract class RapidController
 
     public RapidController(DtoMappingContext dtoMappingContext) {
         super(dtoMappingContext);
+        initUrls();
+    }
+
+    public RapidController(){
+        super(null);
         initUrls();
     }
 
@@ -238,7 +243,7 @@ public abstract class RapidController
     }
 
 
-    public ResponseEntity<String> find(HttpServletRequest request) throws IdFetchingException, EntityNotFoundException, NoIdException, DtoMappingException, DtoSerializingException {
+    public ResponseEntity<String> find(HttpServletRequest request) throws IdFetchingException, EntityNotFoundException, BadEntityException, DtoMappingException, DtoSerializingException {
         log.debug("Find request arriving at controller: " + request);
         Id id = idIdFetchingStrategy.fetchId(request);
         log.debug("id fetched from request: " + id);
@@ -268,7 +273,7 @@ public abstract class RapidController
         }
     }
 
-    public ResponseEntity<String> update(HttpServletRequest request) throws EntityNotFoundException, NoIdException, BadEntityException, DtoMappingException, DtoSerializingException {
+    public ResponseEntity<String> update(HttpServletRequest request) throws EntityNotFoundException, BadEntityException, BadEntityException, DtoMappingException, DtoSerializingException {
         log.debug("Update request arriving at controller: " + request);
         try {
             String json = request.getReader().lines().collect(Collectors.joining(System.lineSeparator()));
@@ -294,7 +299,7 @@ public abstract class RapidController
 
 
 
-    public ResponseEntity<?> delete(HttpServletRequest request) throws IdFetchingException, NoIdException, EntityNotFoundException, ConstraintViolationException {
+    public ResponseEntity<?> delete(HttpServletRequest request) throws IdFetchingException, BadEntityException, EntityNotFoundException, ConstraintViolationException {
         log.debug("Delete request arriving at controller: " + request);
         Id id = idIdFetchingStrategy.fetchId(request);
         log.debug("id fetched from request: " + id);

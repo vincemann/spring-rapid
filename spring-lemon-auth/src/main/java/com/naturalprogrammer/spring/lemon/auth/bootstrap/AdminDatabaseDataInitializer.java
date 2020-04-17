@@ -87,6 +87,7 @@ public class AdminDatabaseDataInitializer extends DatabaseDataInitializer {
             } catch (UsernameNotFoundException e) {
 
                 // Doesn't exist. So, create it.
+
                 lemonService.createAdminUser(
                         new LemonProperties.Admin(admin, adminPasswords.get(index))
                 );

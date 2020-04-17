@@ -6,7 +6,7 @@ import io.github.vincemann.springrapid.entityrelationship.controller.dtomapper.i
 import io.github.vincemann.springrapid.entityrelationship.controller.dtomapper.idResolver.uniDir.testEntities.UniDirEntityParent;
 import io.github.vincemann.springrapid.entityrelationship.controller.dtomapper.idResolver.uniDir.testEntities.UniDirEntityParentsChild;
 import io.github.vincemann.springrapid.core.service.CrudService;
-import io.github.vincemann.springrapid.core.service.exception.NoIdException;
+import io.github.vincemann.springrapid.core.service.exception.BadEntityException;
 import io.github.vincemann.springrapid.core.service.locator.CrudServiceLocator;
 import lombok.Getter;
 import org.junit.jupiter.api.BeforeEach;
@@ -40,7 +40,7 @@ public abstract class UniDirEntityResolverTest {
     private UniDirEntityParentsChild uniDirEntityParentsChild = new UniDirEntityParentsChild();
 
     @BeforeEach
-    public void setUp() throws NoIdException {
+    public void setUp() throws BadEntityException {
         MockitoAnnotations.initMocks(this);
 
         Long entityParentId = 1L;

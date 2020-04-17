@@ -17,6 +17,7 @@ import com.nimbusds.jwt.JWTClaimsSet;
 import io.github.vincemann.springrapid.acl.Role;
 import io.github.vincemann.springrapid.acl.securityChecker.SecurityChecker;
 import io.github.vincemann.springrapid.acl.service.LocalPermissionService;
+import io.github.vincemann.springrapid.core.service.exception.BadEntityException;
 import lemon.exceptions.util.LexUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
@@ -58,8 +59,8 @@ public abstract class LemonService
 
 	private AbstractUserRepository<U, ID> userRepository;
 
-	private SecurityChecker securityChecker;
-	private LocalPermissionService permissionService;
+//	private SecurityChecker securityChecker;
+//	private LocalPermissionService permissionService;
 
 
 	@Autowired
@@ -79,17 +80,17 @@ public abstract class LemonService
 		log.info("Created");
 	}
 
-	@Autowired
-	@Lazy
-	public void setSecurityChecker(SecurityChecker securityChecker) {
-		this.securityChecker = securityChecker;
-	}
+//	@Autowired
+//	@Lazy
+//	public void setSecurityChecker(SecurityChecker securityChecker) {
+//		this.securityChecker = securityChecker;
+//	}
 
-	@Autowired
-	@Lazy
-	public void setPermissionService(LocalPermissionService permissionService) {
-		this.permissionService = permissionService;
-	}
+//	@Autowired
+//	@Lazy
+//	public void setPermissionService(LocalPermissionService permissionService) {
+//		this.permissionService = permissionService;
+//	}
 
 	/**
 	 * Creates a new user object. Must be overridden in the
@@ -143,13 +144,13 @@ public abstract class LemonService
 	//todo wo findet captcha statt, hier sollte captcha stattfinden, Aop Solution: https://medium.com/@cristi.rosu4/protecting-your-spring-boot-rest-endpoints-with-google-recaptcha-and-aop-31328a3f56b7
 	@Validated(UserUtils.SignUpValidation.class)
 	@Transactional(propagation = Propagation.REQUIRED, readOnly = false)
-	public void signup(@Valid U user) {
+	public void signup(@Valid U user) throws BadEntityException {
 
 		log.debug("Signing up user: " + user);
 
 		initUser(user); // sets right all fields of the user
-		@Valid U saved = userRepository.save(user);
-		saveAclInfo(saved);
+		userRepository.save(user);
+//		saveAclInfo(saved);
 
 		// if successfully committed
 		LecjUtils.afterCommit(() -> {
@@ -159,10 +160,13 @@ public abstract class LemonService
 		});
 	}
 
-	protected void saveAclInfo(U saved){
-		permissionService.addPermissionForUserOver(saved, BasePermission.ADMINISTRATION,saved.getEmail());
-		permissionService.addPermissionForAuthorityOver(saved,BasePermission.ADMINISTRATION,Role.ADMIN);
-	}
+
+//
+//	//todo raus
+//	protected void saveAclInfo(U saved){
+//		permissionService.addPermissionForUserOver(saved, BasePermission.ADMINISTRATION,saved.getEmail());
+//		permissionService.addPermissionForAuthorityOver(saved,BasePermission.ADMINISTRATION,Role.ADMIN);
+//	}
 
 
 	/**
@@ -182,7 +186,6 @@ public abstract class LemonService
 	 * Makes a user unverified
 	 */
 	protected void makeUnverified(U user) {
-
 		super.makeUnverified(user);
 		LecjUtils.afterCommit(() -> sendVerificationMail(user)); // send a verification mail to the user
 	}
@@ -209,7 +212,7 @@ public abstract class LemonService
 	/**
 	 * Fetches a user by email
 	 */
-	public U fetchUserByEmail(@Valid @Email @NotBlank String email) {
+	public U findByEmail(@Valid @Email @NotBlank String email) {
 
 		log.debug("Fetching user by email: " + email);
 		return processUser(userRepository.findByEmail(email).orElse(null));
@@ -227,7 +230,7 @@ public abstract class LemonService
 		LexUtils.ensureFound(user);
 
 		// hide confidential fields
-		hideConfidentialFields(user);
+//		hideConfidentialFields(user);
 
 		return user;
 	}
@@ -322,30 +325,30 @@ public abstract class LemonService
 	}
 
 
-	/**
-	 * Updates a user with the given data.
-	 */
-	@UserEditPermission
-	@Validated(UserUtils.UpdateValidation.class)
-	@Transactional(propagation = Propagation.REQUIRED, readOnly = false)
-	public UserDto updateUser(U user, @Valid U updatedUser) {
-
-		log.debug("Updating user: " + user);
-
-		// checks
-		LecjUtils.ensureCorrectVersion(user, updatedUser);
-
-		// delegates to updateUserFields
-
-		updateUserFields(user, updatedUser, LecwUtils.currentUser());
-		userRepository.save(user);
-
-		log.debug("Updated user: " + user);
-
-		UserDto userDto = user.toUserDto();
-		userDto.setPassword(null);
-		return userDto;
-	}
+//	/**
+//	 * Updates a user with the given data.
+//	 */
+//	@UserEditPermission
+//	@Validated(UserUtils.UpdateValidation.class)
+//	@Transactional(propagation = Propagation.REQUIRED, readOnly = false)
+//	public UserDto updateUser(U user, @Valid U updatedUser) {
+//
+//		log.debug("Updating user: " + user);
+//
+//		// checks
+//		LecjUtils.ensureCorrectVersion(user, updatedUser);
+//
+//		// delegates to updateUserFields
+//
+//		updateUserFields(user, updatedUser, LecwUtils.currentUser());
+//		userRepository.save(user);
+//
+//		log.debug("Updated user: " + user);
+//
+//		UserDto userDto = user.toUserDto();
+//		userDto.setPassword(null);
+//		return userDto;
+//	}
 
 
 
@@ -382,40 +385,40 @@ public abstract class LemonService
 
 	public abstract ID toId(String id);
 
-	/**
-	 * Updates the fields of the users. Override this if you have more fields.
-	 */
-	protected void updateUserFields(U user, U updatedUser, UserDto currentUser) {
-
-		log.debug("Updating user fields for user: " + user);
-
-		// Another good admin must be logged in to edit roles
-		if (currentUser.isGoodAdmin() &&
-				!currentUser.getId().equals(user.getId().toString())) {
-
-			log.debug("Updating roles for user: " + user);
-
-			// update the roles
-
-			if (user.getRoles().equals(updatedUser.getRoles())) // roles are same
-				return;
-
-			if (updatedUser.hasRole(LemonRole.UNVERIFIED)) {
-
-				if (!user.hasRole(LemonRole.UNVERIFIED)) {
-
-					makeUnverified(user); // make user unverified
-				}
-			} else {
-
-				if (user.hasRole(LemonRole.UNVERIFIED))
-					user.getRoles().remove(LemonRole.UNVERIFIED); // make user verified
-			}
-
-			user.setRoles(updatedUser.getRoles());
-			user.setCredentialsUpdatedMillis(System.currentTimeMillis());
-		}
-	}
+//	/**
+//	 * Updates the fields of the users. Override this if you have more fields.
+//	 */
+//	protected void updateUserFields(U user, U updatedUser, UserDto currentUser) {
+//
+//		log.debug("Updating user fields for user: " + user);
+//
+//		// Another good admin must be logged in to edit roles
+//		if (currentUser.isGoodAdmin() &&
+//				!currentUser.getId().equals(user.getId().toString())) {
+//
+//			log.debug("Updating roles for user: " + user);
+//
+//			// update the roles
+//
+//			if (user.getRoles().equals(updatedUser.getRoles())) // roles are same
+//				return;
+//
+//			if (updatedUser.hasRole(LemonRole.UNVERIFIED)) {
+//
+//				if (!user.hasRole(LemonRole.UNVERIFIED)) {
+//
+//					makeUnverified(user); // make user unverified
+//				}
+//			} else {
+//
+//				if (user.hasRole(LemonRole.UNVERIFIED))
+//					user.getRoles().remove(LemonRole.UNVERIFIED); // make user verified
+//			}
+//
+//			user.setRoles(updatedUser.getRoles());
+//			user.setCredentialsUpdatedMillis(System.currentTimeMillis());
+//		}
+//	}
 
 
 	/**
@@ -573,6 +576,7 @@ public abstract class LemonService
 						expirationMillis.orElse(properties.getJwt().getExpirationMillis()));
 	}
 
+	//IS OK muss so
 	public void createAdminUser(LemonProperties.Admin admin) {
 		log.info("Creating the first admin user: " + admin.getUsername());
 
@@ -583,28 +587,29 @@ public abstract class LemonService
 				properties.getAdmin().getPassword()));
 		user.getRoles().add(Role.ADMIN);
 		U saved = userRepository.save(user);
+		//put in @AclManaging
 		//admins can admin themselfes
-		permissionService.addPermissionForUserOver(saved,BasePermission.ADMINISTRATION,saved.getEmail());
+//		permissionService.addPermissionForUserOver(saved,BasePermission.ADMINISTRATION,saved.getEmail());
 	}
 
 
-	/**
-	 * Hides the confidential fields before sending to client
-	 */
-	protected void hideConfidentialFields(U user) {
-
-		user.setPassword(null); // JsonIgnore didn't work
-		try {
-			securityChecker.checkPermission(user.getId(),user.getClass(),"WRITE");
-		}catch (AccessDeniedException e){
-			user.setEmail(null);
-		}
-
-//		if (!user.hasPermission(LecwUtils.currentUser(), BasePermission.WRITE.toString()))
-
-
-		log.debug("Hid confidential fields for user: " + user);
-	}
+//	/**
+//	 * Hides the confidential fields before sending to client
+//	 */
+//	protected void hideConfidentialFields(U user) {
+//
+//		user.setPassword(null); // JsonIgnore didn't work
+//		try {
+//			securityChecker.checkPermission(user.getId(),user.getClass(),"WRITE");
+//		}catch (AccessDeniedException e){
+//			user.setEmail(null);
+//		}
+//
+////		if (!user.hasPermission(LecwUtils.currentUser(), BasePermission.WRITE.toString()))
+//
+//
+//		log.debug("Hid confidential fields for user: " + user);
+//	}
 
 
 	@PreAuthorize("isAuthenticated()")

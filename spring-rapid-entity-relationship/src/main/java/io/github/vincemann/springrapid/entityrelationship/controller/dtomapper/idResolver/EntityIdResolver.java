@@ -4,7 +4,7 @@ import io.github.vincemann.springrapid.core.controller.dtoMapper.DtoMappingExcep
 import io.github.vincemann.springrapid.core.service.CrudService;
 import io.github.vincemann.springrapid.core.service.locator.CrudServiceLocator;
 import io.github.vincemann.springrapid.core.service.exception.EntityNotFoundException;
-import io.github.vincemann.springrapid.core.service.exception.NoIdException;
+import io.github.vincemann.springrapid.core.service.exception.BadEntityException;
 import lombok.Getter;
 
 import java.io.Serializable;
@@ -57,7 +57,7 @@ public abstract class EntityIdResolver<E,Dto> {
                 throw new EntityNotFoundException("No Parent of Type: " + entityClassToIdMapping.getKey().getSimpleName() + " found with id: " + entityClassToIdMapping.getValue());
             }
             return optionalParent.get();
-        }catch (NoIdException|EntityNotFoundException e){
+        }catch (BadEntityException|EntityNotFoundException e){
             throw new DtoMappingException(e);
         }
 

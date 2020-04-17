@@ -10,7 +10,7 @@ import io.github.vincemann.springrapid.demo.service.PetTypeService;
 import io.github.vincemann.springrapid.demo.service.plugin.OwnerOfTheYearPlugin;
 import io.github.vincemann.springrapid.core.service.exception.BadEntityException;
 import io.github.vincemann.springrapid.core.service.exception.EntityNotFoundException;
-import io.github.vincemann.springrapid.core.service.exception.NoIdException;
+import io.github.vincemann.springrapid.core.service.exception.BadEntityException;
 import io.github.vincemann.springrapid.coretest.compare.FullComparator;
 import io.github.vincemann.springrapid.coretest.service.CrudServiceIntegrationTest;
 import io.github.vincemann.springrapid.coretest.service.result.ServiceResult;
@@ -138,7 +138,7 @@ class OwnerServiceIntegrationTest
 
 
     @Test
-    public void updateOwner_changeTelephoneNumber_shouldSucceed() throws BadEntityException, EntityNotFoundException, NoIdException {
+    public void updateOwner_changeTelephoneNumber_shouldSucceed() throws BadEntityException, EntityNotFoundException, BadEntityException {
         String newNumber = ownerWithoutPets.getTelephone() + "123";
         Owner diffTelephoneNumberUpdate = Owner.builder()
                 .telephone(newNumber)
@@ -156,7 +156,7 @@ class OwnerServiceIntegrationTest
     }
 
     @Test
-    public void updateOwner_addAnotherPet_shouldSucceed() throws BadEntityException, EntityNotFoundException, NoIdException {
+    public void updateOwner_addAnotherPet_shouldSucceed() throws BadEntityException, EntityNotFoundException, BadEntityException {
         //given
         Pet savedPet = petService.save(testPet);
         String newPetName = "petToAdd";

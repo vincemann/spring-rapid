@@ -4,7 +4,7 @@ import io.github.vincemann.springrapid.core.slicing.components.ServiceComponent;
 import io.github.vincemann.springrapid.core.service.exception.BadEntityException;
 import io.github.vincemann.springrapid.core.model.IdentifiableEntity;
 import io.github.vincemann.springrapid.core.service.exception.EntityNotFoundException;
-import io.github.vincemann.springrapid.core.service.exception.NoIdException;
+import io.github.vincemann.springrapid.core.service.exception.BadEntityException;
 import org.springframework.data.repository.CrudRepository;
 
 import java.io.Serializable;
@@ -25,7 +25,7 @@ public interface CrudService
         >
 {
 
-    Optional<E> findById(Id id) throws NoIdException;
+    Optional<E> findById(Id id) throws BadEntityException;
 
     /**
      * If full is false:
@@ -35,13 +35,13 @@ public interface CrudService
      * @param entity
      * @return updated (database) entity
      */
-    E update(E entity, Boolean full) throws EntityNotFoundException, NoIdException, BadEntityException;
+    E update(E entity, Boolean full) throws EntityNotFoundException, BadEntityException, BadEntityException;
 
     E save(E entity) throws  BadEntityException;
 
     Set<E> findAll();
 
-    void deleteById(Id id) throws EntityNotFoundException, NoIdException;
+    void deleteById(Id id) throws EntityNotFoundException, BadEntityException;
 
     Class<E> getEntityClass();
 

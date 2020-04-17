@@ -1,6 +1,7 @@
 package com.naturalprogrammer.spring.lemon.auth.security.domain;
 
 import io.github.vincemann.springrapid.acl.Role;
+import io.github.vincemann.springrapid.core.model.IdentifiableEntityImpl;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
@@ -14,11 +15,11 @@ import java.util.Set;
  * mainly used for holding logged-in user data 
  */
 @Getter @Setter @ToString
-public class UserDto implements Serializable {
+public class UserDto extends IdentifiableEntityImpl<String> implements Serializable {
 
 	private static final long serialVersionUID = -9134054705405149534L;
 	
-	private String id;
+//	private String id;
 	private String username;
 	private String password;
 	private Set<String> roles = new HashSet<String>();

@@ -4,7 +4,7 @@ import io.github.vincemann.springrapid.core.model.IdentifiableEntity;
 import io.github.vincemann.springrapid.entityrelationship.model.biDir.child.BiDirChild;
 import io.github.vincemann.springrapid.entityrelationship.model.biDir.parent.BiDirParent;
 import io.github.vincemann.springrapid.core.service.CrudService;
-import io.github.vincemann.springrapid.core.service.exception.NoIdException;
+import io.github.vincemann.springrapid.core.service.exception.BadEntityException;
 import io.github.vincemann.springrapid.core.service.locator.CrudServiceLocator;
 import lombok.extern.slf4j.Slf4j;
 import org.aspectj.lang.ProceedingJoinPoint;
@@ -70,7 +70,7 @@ public class BiDirEntityRemoveAdvice /*implements MethodInterceptor*/ {
         }
     }
 
-    private Optional<Object> resolveId(Serializable id, ProceedingJoinPoint joinPoint) throws NoIdException, IllegalAccessException {
+    private Optional<Object> resolveId(Serializable id, ProceedingJoinPoint joinPoint) throws BadEntityException, IllegalAccessException {
         Class entityClass = resolveEntityClass(joinPoint);
         log.debug("pre remove hook reached for entity " + entityClass+":"+id);
         CrudService service = crudServiceLocator.find(entityClass);

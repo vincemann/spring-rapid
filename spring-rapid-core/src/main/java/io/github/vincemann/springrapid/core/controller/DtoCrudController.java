@@ -5,7 +5,7 @@ import io.github.vincemann.springrapid.core.controller.rapid.DtoSerializingExcep
 import io.github.vincemann.springrapid.core.model.IdentifiableEntity;
 import io.github.vincemann.springrapid.core.service.exception.BadEntityException;
 import io.github.vincemann.springrapid.core.service.exception.EntityNotFoundException;
-import io.github.vincemann.springrapid.core.service.exception.NoIdException;
+import io.github.vincemann.springrapid.core.service.exception.BadEntityException;
 
 import java.io.Serializable;
 import java.util.Collection;
@@ -19,7 +19,7 @@ public interface DtoCrudController<Id extends Serializable> {
 
     IdentifiableEntity<Id> create(IdentifiableEntity<Id> entity) throws BadEntityException, DtoMappingException, DtoSerializingException;
 
-    IdentifiableEntity<Id> find(Id id) throws NoIdException, EntityNotFoundException, DtoMappingException, DtoSerializingException;
+    IdentifiableEntity<Id> find(Id id) throws BadEntityException, EntityNotFoundException, DtoMappingException, DtoSerializingException;
 
     /**
      *
@@ -29,12 +29,12 @@ public interface DtoCrudController<Id extends Serializable> {
      * @return
      * @throws DtoMappingException
      * @throws BadEntityException
-     * @throws NoIdException
+     * @throws BadEntityException
      * @throws EntityNotFoundException
      */
-    IdentifiableEntity<Id> update(IdentifiableEntity<Id> entity, boolean full) throws DtoMappingException, BadEntityException, NoIdException, EntityNotFoundException, DtoSerializingException;
+    IdentifiableEntity<Id> update(IdentifiableEntity<Id> entity, boolean full) throws DtoMappingException, BadEntityException, BadEntityException, EntityNotFoundException, DtoSerializingException;
 
-    void delete(Id id) throws NoIdException, EntityNotFoundException;
+    void delete(Id id) throws BadEntityException, EntityNotFoundException;
 
     Collection<IdentifiableEntity<Id>> findAll() throws DtoMappingException, DtoSerializingException;
 }
