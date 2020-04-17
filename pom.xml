@@ -10,27 +10,6 @@
     <packaging>pom</packaging>
 
 
-
-    <properties>
-        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <maven.compiler.source>11</maven.compiler.source>
-        <maven.compiler.target>11</maven.compiler.target>
-<!--        <rapid.version>0.0.72</rapid.version>-->
-    </properties>
-
-
-
-    <modules>
-        <module>rapid-demo</module>
-        <module>spring-rapid-core</module>
-        <module>spring-rapid-entity-relationship</module>
-        <module>spring-rapid-exceptions</module>
-        <module>spring-rapid-acl</module>
-        <module>spring-rapid-core-test</module>
-    </modules>
-
-
-
     <parent>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
@@ -38,6 +17,29 @@
         <relativePath /> <!-- lookup parent from repository -->
     </parent>
 
+    <properties>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <maven.compiler.source>11</maven.compiler.source>
+        <maven.compiler.target>11</maven.compiler.target>
+        <lemon.version>1.0.0.RC3</lemon.version>
+<!--        <rapid.version>0.0.72</rapid.version>-->
+    </properties>
+
+
+
+    <modules>
+<!--        lemon-->
+        <module>lemon-demo</module>
+        <module>spring-lemon-auth</module>
+        <module>spring-lemon-exceptions</module>
+<!--         rapid-->
+        <module>rapid-demo</module>
+        <module>spring-rapid-core</module>
+        <module>spring-rapid-entity-relationship</module>
+        <module>spring-rapid-acl</module>
+        <module>spring-rapid-core-test</module>
+
+    </modules>
 
 
     <dependencies>
