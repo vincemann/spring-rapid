@@ -1,13 +1,13 @@
 package com.naturalprogrammer.spring.lemon.authdemo.services;
 
 import com.naturalprogrammer.spring.lemon.authdemo.entities.User;
-import com.naturalprogrammer.spring.lemon.auth.security.domain.UserDto;
-import com.naturalprogrammer.spring.lemon.auth.service.LemonService;
-import com.naturalprogrammer.spring.lemon.auth.util.LecjUtils;
+import com.naturalprogrammer.spring.lemon.auth.service.LemonServiceImpl;
+import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Service;
 
 @Service
-public class MyService extends LemonService<User, Long> {
+@Primary
+public class MyService extends LemonServiceImpl<User, Long> {
 
 
 	//is ok

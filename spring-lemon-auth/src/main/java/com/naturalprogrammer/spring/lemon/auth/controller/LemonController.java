@@ -10,6 +10,7 @@ import com.naturalprogrammer.spring.lemon.auth.service.LemonService;
 import com.naturalprogrammer.spring.lemon.auth.util.LecUtils;
 import com.naturalprogrammer.spring.lemon.auth.util.LecwUtils;
 import com.naturalprogrammer.spring.lemon.auth.util.UserUtils;
+import io.github.vincemann.springrapid.acl.service.Secured;
 import io.github.vincemann.springrapid.core.controller.dtoMapper.context.DtoMappingContext;
 import io.github.vincemann.springrapid.core.controller.rapid.RapidController;
 import io.github.vincemann.springrapid.core.service.exception.BadEntityException;
@@ -51,7 +52,7 @@ public abstract class LemonController
 	@Autowired
 	public void createLemonController(
 			LemonProperties properties,
-			LemonService<U, ID> lemonService) {
+			@Secured LemonService<U, ID> lemonService) {
 		
 		this.jwtExpirationMillis = properties.getJwt().getExpirationMillis();
 		this.lemonService = lemonService;
@@ -70,7 +71,7 @@ public abstract class LemonController
 		log.debug("Received a ping");
 	}
 	
-	
+
 	/**
 	 * Returns context properties needed at the client side,
 	 * current-user data and an Authorization token as a response header.

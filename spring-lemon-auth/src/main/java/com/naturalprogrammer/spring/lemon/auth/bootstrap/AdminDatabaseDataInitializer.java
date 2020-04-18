@@ -47,7 +47,7 @@ public class AdminDatabaseDataInitializer extends DatabaseDataInitializer {
                                         RunAsUserService runAsUserService,
                                         UserDetailsService userDetailsService,
                                         LemonProperties lemonProperties) {
-        this.lemonService=lemonService;
+        this.lemonService = lemonService;
         this.runAsUserService = runAsUserService;
         this.userDetailsService = userDetailsService;
         this.lemonProperties = lemonProperties;

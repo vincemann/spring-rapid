@@ -3,6 +3,7 @@ package com.naturalprogrammer.spring.lemon.auth.config;
 import java.io.Serializable;
 
 import com.naturalprogrammer.spring.lemon.auth.LemonProperties;
+import io.github.vincemann.springrapid.core.slicing.config.WebConfig;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.boot.autoconfigure.AutoConfigureBefore;

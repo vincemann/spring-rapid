@@ -16,13 +16,11 @@ import java.io.Serializable;
 
 /**
  * Abstract Acl Plugin, granting {@link BasePermission#ADMINISTRATION} for creator and admin(role) of entity saved by {@link io.github.vincemann.springrapid.core.service.CrudService}.
- * @param <E>   Type of Entity managed by {@link io.github.vincemann.springrapid.core.service.CrudService}
- * @param <Id>  IdType of Entity managed by {@link io.github.vincemann.springrapid.core.service.CrudService}
  */
 @Slf4j
 @Getter
-public class AdminFullAccessAclPlugin<E extends IdentifiableEntity<Id>, Id extends Serializable>
-        extends CleanUpAclPlugin<E,Id> {
+public class AdminFullAccessAclPlugin
+        extends CleanUpAclPlugin<IdentifiableEntity<Serializable>,Serializable> {
 
 
     public AdminFullAccessAclPlugin(LocalPermissionService permissionService, MutableAclService mutableAclService) {
@@ -31,12 +29,12 @@ public class AdminFullAccessAclPlugin<E extends IdentifiableEntity<Id>, Id exten
 
     @Transactional
     @CalledByProxy
-    public void onAfterSave(E requestEntity, E returnedEntity) {
+    public void onAfterSave(IdentifiableEntity<Serializable> requestEntity, IdentifiableEntity<Serializable> returnedEntity) {
         log.debug("admin now gets full permission over entity: " + returnedEntity);
         saveFullPermissionForAdminOver(returnedEntity);
     }
 
-    protected void saveFullPermissionForAdminOver(E entity){
+    protected void saveFullPermissionForAdminOver(IdentifiableEntity<Serializable> entity){
         getPermissionService().addPermissionForAuthorityOver(entity,BasePermission.ADMINISTRATION, Role.ADMIN);
     }
 

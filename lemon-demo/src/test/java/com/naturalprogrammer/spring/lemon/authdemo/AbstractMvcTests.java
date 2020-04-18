@@ -4,7 +4,7 @@ import com.google.common.collect.Lists;
 import com.naturalprogrammer.spring.lemon.authdemo.entities.User;
 import com.naturalprogrammer.spring.lemon.authdemo.repositories.UserRepository;
 import com.naturalprogrammer.spring.lemon.auth.mail.MailSender;
-import com.naturalprogrammer.spring.lemon.auth.service.LemonService;
+import com.naturalprogrammer.spring.lemon.auth.service.LemonServiceImpl;
 import com.naturalprogrammer.spring.lemon.auth.util.LecUtils;
 import io.github.vincemann.springrapid.acl.Role;
 import io.github.vincemann.springrapid.acl.service.LocalPermissionService;
@@ -73,7 +73,7 @@ public abstract class AbstractMvcTests {
     @Autowired
     protected UserRepository userRepository;
     @Autowired
-    protected LemonService lemonService;
+    protected LemonServiceImpl lemonServiceImpl;
 
     @Autowired
     protected LocalPermissionService permissionService;
