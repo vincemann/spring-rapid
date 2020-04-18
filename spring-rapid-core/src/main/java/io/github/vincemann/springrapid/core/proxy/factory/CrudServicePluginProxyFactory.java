@@ -10,6 +10,10 @@ import org.springframework.test.util.AopTestUtils;
 
 import java.io.Serializable;
 import java.lang.reflect.Proxy;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 public class CrudServicePluginProxyFactory {
     //we need the class explicitly here to avoid issues with other proxies. HibernateProxies for example, are not interfaces, so service.getClass returns no interface
@@ -24,10 +28,23 @@ public class CrudServicePluginProxyFactory {
         //resolve spring aop proxy
         S unproxied = AopTestUtils.getUltimateTargetObject(crudService);
         S proxyInstance = (S) Proxy.newProxyInstance(
-                unproxied.getClass().getClassLoader(), unproxied.getClass().getInterfaces(),
+                unproxied.getClass().getClassLoader(), getAllInterfaces(unproxied.getClass()),
                 new CrudServicePluginProxy(unproxied, Lists.newArrayList(plugins)));
 
         return proxyInstance;
+    }
+
+
+    //whole class hierachy
+    private static Class[] getAllInterfaces(Class clazz) {
+        Class curr = clazz;
+        Set<Class> interfaces = new HashSet<>();
+        do {
+            interfaces.addAll(Lists.newArrayList(curr.getInterfaces()));
+            curr = curr.getSuperclass();
+        } while (!curr.equals(Object.class));
+        interfaces.forEach(i -> interfaces.addAll(Lists.newArrayList(i.getInterfaces())));
+        return interfaces.toArray(new Class[0]);
     }
 
 

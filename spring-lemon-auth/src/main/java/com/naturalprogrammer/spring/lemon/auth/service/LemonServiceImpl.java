@@ -52,9 +52,6 @@ public abstract class LemonServiceImpl
 
 	private AbstractUserRepository<U, ID> userRepository;
 
-//	private SecurityChecker securityChecker;
-//	private LocalPermissionService permissionService;
-
 
 	@Autowired
 	public void createLemonService(LemonProperties properties,
@@ -72,18 +69,6 @@ public abstract class LemonServiceImpl
 		this.greenTokenService = greenTokenService;
 		log.info("Created");
 	}
-
-//	@Autowired
-//	@Lazy
-//	public void setSecurityChecker(SecurityChecker securityChecker) {
-//		this.securityChecker = securityChecker;
-//	}
-
-//	@Autowired
-//	@Lazy
-//	public void setPermissionService(LocalPermissionService permissionService) {
-//		this.permissionService = permissionService;
-//	}
 
 	/**
 	 * Creates a new user object. Must be overridden in the
