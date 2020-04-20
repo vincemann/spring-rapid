@@ -2,7 +2,7 @@ package com.naturalprogrammer.spring.lemon.auth.security.handlers;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.naturalprogrammer.spring.lemon.auth.LemonProperties;
-import com.naturalprogrammer.spring.lemon.auth.security.domain.UserDto;
+import com.naturalprogrammer.spring.lemon.auth.security.domain.LemonUserDto;
 import com.naturalprogrammer.spring.lemon.auth.service.LemonService;
 import com.naturalprogrammer.spring.lemon.auth.util.LecwUtils;
 import org.apache.commons.logging.Log;
@@ -57,7 +57,7 @@ public class LemonAuthenticationSuccessHandler
     			defaultExpirationMillis : Long.valueOf(expirationMillisStr);
  
     	// get the current-user
-    	UserDto currentUser = LecwUtils.currentUser();
+    	LemonUserDto currentUser = LecwUtils.currentUser();
 
     	lemonService.addAuthHeader(response, currentUser.getUsername(), expirationMillis);
     	

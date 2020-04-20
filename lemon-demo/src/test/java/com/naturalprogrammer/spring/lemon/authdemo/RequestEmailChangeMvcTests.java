@@ -72,7 +72,7 @@ public class RequestEmailChangeMvcTests extends AbstractMvcTests {
 				.contentType(MediaType.APPLICATION_JSON)
 				.header(HttpHeaders.AUTHORIZATION, tokens.get(ADMIN_ID))
 				.content(LecUtils.toJson(form())))
-				.andExpect(status().is(404));
+				.andExpect(status().is(403));
 		
 		verify(mailSender, never()).send(any());
 	}

@@ -23,7 +23,7 @@ extends AbstractAuditorAware<ID> {
 	}
 
 	@Override
-	protected UserDto currentUser() {
+	protected LemonUserDto currentUser() {
 		return LecwUtils.currentUser();
 	}	
 }

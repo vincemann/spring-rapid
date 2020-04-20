@@ -23,13 +23,6 @@ public class User extends AbstractUser<Long> {
     public static final int NAME_MIN = 1;
     public static final int NAME_MAX = 50;
 
-    @Getter @Setter @ToString
-	public static class Tag implements Serializable {
-		
-		private static final long serialVersionUID = -2129078111926834670L;
-		private String name;
-	}
-
 	public User(String email, String password, String name) {
 		this.email = email;
 		this.password = password;
@@ -47,12 +40,7 @@ public class User extends AbstractUser<Long> {
     @Size(min=NAME_MIN, max=NAME_MAX, groups = {UserUtils.SignUpValidation.class, UserUtils.UpdateValidation.class})
     @Column(nullable = false, length = NAME_MAX)
     private String name;
-	
-	@Override
-	public Tag toTag() {
-		
-		Tag tag = new Tag();
-		tag.setName(name);
-		return tag;
-	}
+
+
+
 }

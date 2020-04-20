@@ -1,6 +1,6 @@
 package com.naturalprogrammer.spring.lemon.auth.domain;
 
-import com.naturalprogrammer.spring.lemon.auth.security.domain.UserDto;
+import com.naturalprogrammer.spring.lemon.auth.security.domain.LemonUserDto;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,12 +29,12 @@ implements AuditorAware<ID> {
 		log.info("Created");
 	}
 
-	protected abstract UserDto currentUser();
+	protected abstract LemonUserDto currentUser();
 	
 	@Override
 	public Optional<ID> getCurrentAuditor() {
 		
-		UserDto user = currentUser();
+		LemonUserDto user = currentUser();
 		
 		if (user == null)
 			return Optional.empty();

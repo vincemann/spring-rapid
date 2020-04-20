@@ -59,7 +59,7 @@ public class SignupMvcTests extends AbstractMvcTests {
 				.andExpect(jsonPath("$.username").value("user.foo@example.com"))
 				.andExpect(jsonPath("$.roles").value(hasSize(1)))
 				.andExpect(jsonPath("$.roles[0]").value(LemonRole.UNVERIFIED))
-				.andExpect(jsonPath("$.tag.name").value("User Foo"))
+//				.andExpect(jsonPath("$.tag.name").value("User Foo"))
 				.andExpect(jsonPath("$.unverified").value(true))
 				.andExpect(jsonPath("$.blocked").value(false))
 				.andExpect(jsonPath("$.admin").value(false))

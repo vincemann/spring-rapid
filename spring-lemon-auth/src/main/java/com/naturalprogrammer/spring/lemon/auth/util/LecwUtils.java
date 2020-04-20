@@ -1,6 +1,6 @@
 package com.naturalprogrammer.spring.lemon.auth.util;
 
-import com.naturalprogrammer.spring.lemon.auth.security.domain.UserDto;
+import com.naturalprogrammer.spring.lemon.auth.security.domain.LemonUserDto;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -36,7 +36,7 @@ public class LecwUtils {
 	/**
 	 * Gets the current-user
 	 */
-	public static UserDto currentUser() {
+	public static LemonUserDto currentUser() {
 		
 		return LecUtils.currentUser(SecurityContextHolder.getContext());
 	}

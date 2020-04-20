@@ -7,18 +7,31 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import org.junit.jupiter.api.Test;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 
 public class ForgotPasswordMvcTests extends AbstractMvcTests {
 	
 	@Test
-	public void testForgotPassword() throws Exception {
+	public void testAnonForgotPassword() throws Exception {
 		
 		mvc.perform(post("/api/core/forgot-password")
                 .param("email", ADMIN_EMAIL)
                 .header("contentType",  MediaType.APPLICATION_FORM_URLENCODED))
-                .andExpect(status().is(204));
+                .andExpect(status().is(403));
 		
+		verify(mailSender).send(any());
+	}
+
+	@Test
+	public void testForgotPassword() throws Exception {
+
+		mvc.perform(post("/api/core/forgot-password")
+				.param("email", ADMIN_EMAIL)
+				.header(HttpHeaders.AUTHORIZATION, tokens.get(ADMIN_ID))
+				.header("contentType",  MediaType.APPLICATION_FORM_URLENCODED))
+				.andExpect(status().is(204));
+
 		verify(mailSender).send(any());
 	}
 	

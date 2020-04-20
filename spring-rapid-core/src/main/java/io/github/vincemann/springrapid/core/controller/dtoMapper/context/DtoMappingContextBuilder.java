@@ -35,7 +35,10 @@ public class DtoMappingContextBuilder {
 
 
     protected List<String> getAllEndpoints(){
-        return Lists.newArrayList(CrudDtoEndpoint.CREATE, CrudDtoEndpoint.FIND, CrudDtoEndpoint.FIND_ALL, CrudDtoEndpoint.FULL_UPDATE, CrudDtoEndpoint.PARTIAL_UPDATE);
+        ArrayList<String> all = Lists.newArrayList(CrudDtoEndpoint.CREATE);
+        all.addAll(getWriteEndpoints());
+        all.addAll(getFindEndpoints());
+        return all;
     }
 
     protected List<String> getFindEndpoints(){
@@ -43,7 +46,9 @@ public class DtoMappingContextBuilder {
     }
 
     protected List<String> getWriteEndpoints(){
-        return Lists.newArrayList(CrudDtoEndpoint.CREATE, CrudDtoEndpoint.FULL_UPDATE, CrudDtoEndpoint.PARTIAL_UPDATE);
+        ArrayList<String> writeEndpoints = Lists.newArrayList(CrudDtoEndpoint.CREATE);
+        writeEndpoints.addAll(getUpdateEndpoints());
+        return writeEndpoints;
     }
 
     protected List<String> getUpdateEndpoints(){

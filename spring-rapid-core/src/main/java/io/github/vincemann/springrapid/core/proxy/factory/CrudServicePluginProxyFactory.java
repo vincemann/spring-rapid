@@ -1,5 +1,6 @@
 package io.github.vincemann.springrapid.core.proxy.factory;
 
+import io.github.vincemann.springrapid.core.util.ClassUtils;
 import io.github.vincemann.springrapid.core.util.Lists;
 import io.github.vincemann.springrapid.core.model.IdentifiableEntity;
 import io.github.vincemann.springrapid.core.proxy.invocationHandler.CrudServicePluginProxy;
@@ -28,23 +29,10 @@ public class CrudServicePluginProxyFactory {
         //resolve spring aop proxy
         S unproxied = AopTestUtils.getUltimateTargetObject(crudService);
         S proxyInstance = (S) Proxy.newProxyInstance(
-                unproxied.getClass().getClassLoader(), getAllInterfaces(unproxied.getClass()),
+                unproxied.getClass().getClassLoader(), ClassUtils.getAllInterfaces(unproxied.getClass()),
                 new CrudServicePluginProxy(unproxied, Lists.newArrayList(plugins)));
 
         return proxyInstance;
-    }
-
-
-    //whole class hierachy
-    private static Class[] getAllInterfaces(Class clazz) {
-        Class curr = clazz;
-        Set<Class> interfaces = new HashSet<>();
-        do {
-            interfaces.addAll(Lists.newArrayList(curr.getInterfaces()));
-            curr = curr.getSuperclass();
-        } while (!curr.equals(Object.class));
-        interfaces.forEach(i -> interfaces.addAll(Lists.newArrayList(i.getInterfaces())));
-        return interfaces.toArray(new Class[0]);
     }
 
 

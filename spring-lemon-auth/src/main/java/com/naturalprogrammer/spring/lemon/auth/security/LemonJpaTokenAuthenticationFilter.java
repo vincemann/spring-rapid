@@ -1,7 +1,7 @@
 package com.naturalprogrammer.spring.lemon.auth.security;
 
 import com.naturalprogrammer.spring.lemon.auth.domain.AbstractUser;
-import com.naturalprogrammer.spring.lemon.auth.security.domain.UserDto;
+import com.naturalprogrammer.spring.lemon.auth.security.domain.LemonUserDto;
 import com.naturalprogrammer.spring.lemon.auth.security.service.BlueTokenService;
 import com.naturalprogrammer.spring.lemon.auth.security.service.LemonUserDetailsService;
 import com.naturalprogrammer.spring.lemon.auth.util.LemonUtils;
@@ -30,7 +30,7 @@ public class LemonJpaTokenAuthenticationFilter<U extends AbstractUser<ID>, ID ex
 	}
 
 	@Override
-	protected UserDto fetchUserDto(JWTClaimsSet claims) {
+	protected LemonUserDto fetchUserDto(JWTClaimsSet claims) {
 		
         String username = claims.getSubject();
         U user = userDetailsService.findUserByUsername(username)
@@ -39,9 +39,9 @@ public class LemonJpaTokenAuthenticationFilter<U extends AbstractUser<ID>, ID ex
         log.debug("User found ...");
 
         LemonUtils.ensureCredentialsUpToDate(claims, user);
-        UserDto userDto = user.toUserDto();
-        userDto.setPassword(null);
+        LemonUserDto lemonUserDto = user.toUserDto();
+        lemonUserDto.setPassword(null);
         
-        return userDto;
+        return lemonUserDto;
 	}
 }

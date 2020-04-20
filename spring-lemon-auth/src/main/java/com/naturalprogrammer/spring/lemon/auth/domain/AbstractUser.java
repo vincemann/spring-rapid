@@ -2,7 +2,7 @@ package com.naturalprogrammer.spring.lemon.auth.domain;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonView;
-import com.naturalprogrammer.spring.lemon.auth.security.domain.UserDto;
+import com.naturalprogrammer.spring.lemon.auth.security.domain.LemonUserDto;
 import com.naturalprogrammer.spring.lemon.auth.util.UserUtils;
 import com.naturalprogrammer.spring.lemon.auth.validation.Captcha;
 import com.naturalprogrammer.spring.lemon.auth.validation.Password;
@@ -83,32 +83,32 @@ public class AbstractUser<ID extends Serializable>
 	/**
 	 * Makes a User DTO
 	 */
-	public UserDto toUserDto() {
-		
-		UserDto userDto = new UserDto();
-		
+	public LemonUserDto toUserDto() {
+
+		LemonUserDto userDto = new LemonUserDto();
+
 		userDto.setId(getId().toString());
 		userDto.setUsername(email);
 		userDto.setPassword(password);
-		
+
 		// roles would be org.hibernate.collection.internal.PersistentSet,
 		// which is not in another microservices not having Hibernate.
 		// So, let's convert it to HashSet
 		userDto.setRoles(new HashSet<String>(roles));
-		
-		userDto.setTag(toTag());
-		
+
+//		userDto.setTag(toTag());
+
 		userDto.initialize();
 
 		return userDto;
 	}
 
-	/**
-	 * Override this to supply any additional fields to the user DTO,
-	 * e.g. name
-	 */
-	protected Serializable toTag() {
-		
-		return null;
-	}
+//	/**
+//	 * Override this to supply any additional fields to the user DTO,
+//	 * e.g. name
+//	 */
+//	protected Serializable toTag() {
+//
+//		return null;
+//	}
 }
