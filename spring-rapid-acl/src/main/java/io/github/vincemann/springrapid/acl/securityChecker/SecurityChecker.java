@@ -2,6 +2,7 @@ package io.github.vincemann.springrapid.acl.securityChecker;
 
 import io.github.vincemann.springrapid.core.slicing.components.ServiceComponent;
 import io.github.vincemann.springrapid.core.model.IdentifiableEntity;
+import org.springframework.security.access.AccessDeniedException;
 
 import java.io.Serializable;
 import java.util.Collection;
@@ -30,7 +31,7 @@ public interface SecurityChecker {
     /**
      * Checks if currently logged in user is authenticated.
      */
-    public void checkIfAuthenticated();
+    public void checkIfAuthenticated() throws AccessDeniedException;;
 
     /**
      * Checks if authenticated User has permission over Entity with given id & class
@@ -38,11 +39,11 @@ public interface SecurityChecker {
      * @param clazz
      * @param permission
      */
-    public void checkPermission(Serializable id,Class<?> clazz,String permission);
+    public void checkPermission(Serializable id,Class<?> clazz,String permission) throws AccessDeniedException;
 
     /**
      * Check if authenticated user has @role
      * @param role
      */
-    public void checkRole(String role);
+    public void checkRole(String role) throws AccessDeniedException;;
 }

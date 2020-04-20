@@ -7,7 +7,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.fge.jsonpatch.JsonPatch;
 import com.github.fge.jsonpatch.JsonPatchException;
 import com.naturalprogrammer.spring.lemon.auth.security.domain.LemonPrincipal;
-import com.naturalprogrammer.spring.lemon.auth.security.domain.UserDto;
+import com.naturalprogrammer.spring.lemon.auth.security.domain.LemonUserDto;
 import com.naturalprogrammer.spring.lemon.auth.security.service.BlueTokenService;
 import com.nimbusds.jwt.JWTClaimsSet;
 import lemon.exceptions.util.LexUtils;
@@ -63,7 +63,7 @@ public class LecUtils {
 
 	 * @return
 	 */
-	public static <ID extends Serializable> UserDto currentUser(SecurityContext context) {
+	public static <ID extends Serializable> LemonUserDto currentUser(SecurityContext context) {
 		
 		return currentUser(context.getAuthentication());
 	}
@@ -75,7 +75,7 @@ public class LecUtils {
 	 * @param auth
 	 * @return
 	 */
-	public static <ID extends Serializable> UserDto currentUser(Authentication auth) {
+	public static <ID extends Serializable> LemonUserDto currentUser(Authentication auth) {
 		
 	    if (auth != null) {
 	      Object principal = auth.getPrincipal();
@@ -247,7 +247,7 @@ public class LecUtils {
     }
 
 
-	public static UserDto getUserDto(JWTClaimsSet claims) {
+	public static LemonUserDto getUserDto(JWTClaimsSet claims) {
 
 		Object userClaim = claims.getClaim(BlueTokenService.USER_CLAIM);
 		

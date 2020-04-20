@@ -1,7 +1,7 @@
 package com.naturalprogrammer.spring.lemon.auth.security;
 
 import com.naturalprogrammer.spring.lemon.auth.security.domain.LemonPrincipal;
-import com.naturalprogrammer.spring.lemon.auth.security.domain.UserDto;
+import com.naturalprogrammer.spring.lemon.auth.security.domain.LemonUserDto;
 import com.naturalprogrammer.spring.lemon.auth.security.service.BlueTokenService;
 import com.naturalprogrammer.spring.lemon.auth.util.LecUtils;
 import com.nimbusds.jwt.JWTClaimsSet;
@@ -72,11 +72,11 @@ public class LemonCommonsWebTokenAuthenticationFilter extends OncePerRequestFilt
 	protected Authentication createAuthToken(String token) {
 		
 		JWTClaimsSet claims = blueTokenService.parseToken(token, BlueTokenService.AUTH_AUDIENCE);
-		UserDto userDto = LecUtils.getUserDto(claims);
-		if (userDto == null)
-			userDto = fetchUserDto(claims);
+		LemonUserDto lemonUserDto = LecUtils.getUserDto(claims);
+		if (lemonUserDto == null)
+			lemonUserDto = fetchUserDto(claims);
 		
-        LemonPrincipal principal = new LemonPrincipal(userDto);
+        LemonPrincipal principal = new LemonPrincipal(lemonUserDto);
         		
         return new UsernamePasswordAuthenticationToken(principal, token, principal.getAuthorities());
 	}
@@ -86,7 +86,7 @@ public class LemonCommonsWebTokenAuthenticationFilter extends OncePerRequestFilt
 	 * 
 	 * @return
 	 */
-	protected UserDto fetchUserDto(JWTClaimsSet claims) {
+	protected LemonUserDto fetchUserDto(JWTClaimsSet claims) {
 		throw new AuthenticationCredentialsNotFoundException(
 				LexUtils.getMessage("com.naturalprogrammer.spring.userClaimAbsent"));
 	}

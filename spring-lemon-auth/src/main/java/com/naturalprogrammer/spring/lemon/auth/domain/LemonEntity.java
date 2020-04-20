@@ -9,10 +9,7 @@ import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedBy;
 import org.springframework.data.annotation.LastModifiedDate;
 
-import javax.persistence.MappedSuperclass;
-import javax.persistence.Temporal;
-import javax.persistence.TemporalType;
-import javax.persistence.Version;
+import javax.persistence.*;
 import java.io.Serializable;
 import java.util.Date;
 
@@ -26,7 +23,6 @@ import java.util.Date;
 @Getter @Setter
 @JsonIgnoreProperties({ "createdById", "lastModifiedById", "createdDate", "lastModifiedDate", "new" })
 public class LemonEntity<ID extends Serializable> extends IdentifiableEntityImpl<ID>
-		//todo rausnehmen und überAll wo hasPermission gecallt wird an SecurityChecker delegaten
 {
 
 	private static final long serialVersionUID = -8151190931948396443L;
@@ -44,9 +40,6 @@ public class LemonEntity<ID extends Serializable> extends IdentifiableEntityImpl
 	@LastModifiedDate
 	@Temporal(TemporalType.TIMESTAMP)
 	private Date lastModifiedDate;
-	
-	@Version
-	private Long version;
 
 	
 }

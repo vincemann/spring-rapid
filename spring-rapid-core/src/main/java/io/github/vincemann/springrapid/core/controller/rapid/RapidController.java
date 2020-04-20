@@ -144,7 +144,7 @@ public abstract class RapidController
         this.createUrl=baseUrl+CREATE_METHOD_NAME;
     }
 
-    private void initRequestMapping(){
+    protected void initRequestMapping(){
         try {
             if(endpointsExposureContext.isCreateEndpointExposed()) {
                 //CREATE

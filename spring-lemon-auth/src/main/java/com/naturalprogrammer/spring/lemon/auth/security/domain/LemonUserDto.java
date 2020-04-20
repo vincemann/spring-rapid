@@ -15,7 +15,7 @@ import java.util.Set;
  * mainly used for holding logged-in user data 
  */
 @Getter @Setter @ToString
-public class UserDto extends IdentifiableEntityImpl<String> implements Serializable {
+public class LemonUserDto extends IdentifiableEntityImpl<String> implements Serializable {
 
 	private static final long serialVersionUID = -9134054705405149534L;
 	
@@ -23,7 +23,7 @@ public class UserDto extends IdentifiableEntityImpl<String> implements Serializa
 	private String username;
 	private String password;
 	private Set<String> roles = new HashSet<String>();
-	private Serializable tag;
+//	private Serializable tag;
 	
 	private boolean unverified = false;
 	private boolean blocked = false;

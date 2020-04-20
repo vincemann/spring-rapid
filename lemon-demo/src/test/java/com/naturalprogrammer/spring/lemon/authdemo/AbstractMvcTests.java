@@ -72,8 +72,6 @@ public abstract class AbstractMvcTests {
 
     @Autowired
     protected UserRepository userRepository;
-    @Autowired
-    protected LemonServiceImpl lemonServiceImpl;
 
     @Autowired
     protected LocalPermissionService permissionService;

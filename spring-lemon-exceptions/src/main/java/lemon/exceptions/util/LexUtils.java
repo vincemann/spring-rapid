@@ -1,5 +1,6 @@
 package lemon.exceptions.util;
 
+import java.util.Optional;
 import java.util.function.Supplier;
 
 import javax.annotation.PostConstruct;
@@ -110,6 +111,16 @@ public class LexUtils {
 		LexUtils.validate(entity != null,
 			"com.naturalprogrammer.spring.notFound")
 			.httpStatus(HttpStatus.NOT_FOUND).go();
+	}
+
+	/**
+	 * Throws 404 Error is the entity isn't found
+	 */
+	public static <T> void ensureFound(Optional<T> entity) {
+
+		LexUtils.validate(entity.isPresent(),
+				"com.naturalprogrammer.spring.notFound")
+				.httpStatus(HttpStatus.NOT_FOUND).go();
 	}
 
 	

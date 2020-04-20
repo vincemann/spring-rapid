@@ -8,12 +8,17 @@ import com.naturalprogrammer.spring.lemon.auth.domain.ResetPasswordForm;
 import com.naturalprogrammer.spring.lemon.auth.mail.LemonMailData;
 import com.naturalprogrammer.spring.lemon.auth.mail.MailSender;
 import com.naturalprogrammer.spring.lemon.auth.security.domain.LemonRole;
-import com.naturalprogrammer.spring.lemon.auth.security.domain.UserDto;
+import com.naturalprogrammer.spring.lemon.auth.security.domain.LemonUserDto;
 import com.naturalprogrammer.spring.lemon.auth.security.service.BlueTokenService;
 import com.naturalprogrammer.spring.lemon.auth.security.service.GreenTokenService;
 import com.naturalprogrammer.spring.lemon.auth.util.*;
 import com.nimbusds.jwt.JWTClaimsSet;
 import io.github.vincemann.springrapid.acl.Role;
+import io.github.vincemann.springrapid.core.controller.dtoMapper.context.CrudDtoEndpoint;
+import io.github.vincemann.springrapid.core.controller.dtoMapper.context.Direction;
+import io.github.vincemann.springrapid.core.model.IdentifiableEntity;
+import io.github.vincemann.springrapid.core.service.exception.BadEntityException;
+import io.github.vincemann.springrapid.core.service.exception.EntityNotFoundException;
 import lemon.exceptions.util.LexUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
@@ -26,9 +31,6 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.annotation.Validated;
 
 import javax.servlet.http.HttpServletResponse;
-import javax.validation.Valid;
-import javax.validation.constraints.Email;
-import javax.validation.constraints.NotBlank;
 import java.io.Serializable;
 import java.util.Collections;
 import java.util.Map;
@@ -51,6 +53,7 @@ public abstract class LemonServiceImpl
 	private static final Log log = LogFactory.getLog(LemonServiceImpl.class);
 
 	private AbstractUserRepository<U, ID> userRepository;
+
 
 
 	@Autowired
@@ -104,7 +107,7 @@ public abstract class LemonServiceImpl
 
 		Map<String, Object> context = buildContext();
 
-		UserDto currentUser = LecwUtils.currentUser();
+		LemonUserDto currentUser = LecwUtils.currentUser();
 		if (currentUser != null) {
 			addAuthHeader(response, currentUser.getUsername(),
 					expirationMillis.orElse(properties.getJwt().getExpirationMillis()));
@@ -114,16 +117,13 @@ public abstract class LemonServiceImpl
 		return context;
 	}
 
-
 	/**
 	 * Signs up a user.
 	 */
 	//todo welcher validator kommt hier zum einsatz?
 	//todo wo findet captcha statt, hier sollte captcha stattfinden, Aop Solution: https://medium.com/@cristi.rosu4/protecting-your-spring-boot-rest-endpoints-with-google-recaptcha-and-aop-31328a3f56b7
-	@Validated(UserUtils.SignUpValidation.class)
 	@Transactional(propagation = Propagation.REQUIRED, readOnly = false)
-	public void signup(@Valid U user) {
-
+	public void signup(U user) {
 		log.debug("Signing up user: " + user);
 
 		initUser(user); // sets right all fields of the user
@@ -181,26 +181,14 @@ public abstract class LemonServiceImpl
 	/**
 	 * Fetches a user by email
 	 */
-	public U findByEmail(@Valid @Email @NotBlank String email) {
-
+	public U findByEmail(String email) {
 		log.debug("Fetching user by email: " + email);
-		return processUser(userRepository.findByEmail(email).orElse(null));
+		U found = userRepository.findByEmail(email).orElse(null);
+		LexUtils.ensureFound(found);
+		return found;
 	}
 
 
-	/**
-	 * Returns a non-null, processed user for the client.
-	 */
-	public U processUser(U user) {
-
-		log.debug("Fetching user: " + user);
-
-		// ensure that the user exists
-		LexUtils.ensureFound(user);
-
-
-		return user;
-	}
 
 
 	/**
@@ -245,7 +233,7 @@ public abstract class LemonServiceImpl
 	 * Forgot password.
 	 */
 	@Transactional(propagation = Propagation.REQUIRED, readOnly = false)
-	public void forgotPassword(@Valid @Email @NotBlank String email) {
+	public void forgotPassword(String email) {
 
 		log.debug("Processing forgot password for email: " + email);
 
@@ -261,8 +249,7 @@ public abstract class LemonServiceImpl
 	 * Resets the password.
 	 */
 	@Transactional(propagation = Propagation.REQUIRED, readOnly = false)
-	public void resetPassword(@Valid ResetPasswordForm form) {
-
+	public void resetPassword(ResetPasswordForm form) {
 		log.debug("Resetting password ...");
 
 		JWTClaimsSet claims = greenTokenService.parseToken(form.getCode(),
@@ -292,30 +279,39 @@ public abstract class LemonServiceImpl
 	}
 
 
-//	/**
-//	 * Updates a user with the given data.
-//	 */
-//	@UserEditPermission
-//	@Validated(UserUtils.UpdateValidation.class)
-//	@Transactional(propagation = Propagation.REQUIRED, readOnly = false)
-//	public UserDto updateUser(U user, @Valid U updatedUser) {
-//
-//		log.debug("Updating user: " + user);
-//
-//		// checks
-//		LecjUtils.ensureCorrectVersion(user, updatedUser);
-//
-//		// delegates to updateUserFields
-//
-//		updateUserFields(user, updatedUser, LecwUtils.currentUser());
-//		userRepository.save(user);
-//
-//		log.debug("Updated user: " + user);
-//
-//		UserDto userDto = user.toUserDto();
-//		userDto.setPassword(null);
-//		return userDto;
+//	@Override
+//	public U update(U updatedUser, Boolean full) throws EntityNotFoundException, BadEntityException, BadEntityException {
+////		// checks
+////		Optional<U> byId = userRepository.findById(updatedUser.getId());
+////		LexUtils.ensureFound(byId);
+////		U old = byId.get();
+////
+////		return super.update(updatedUser, full);
+//		throw new IllegalArgumentException("Call updateUser instead");
 //	}
+
+	/**
+	 * Updates a user with the given data.
+	 */
+	@Override
+	@Transactional(propagation = Propagation.REQUIRED, readOnly = false)
+	public LemonUserDto updateUser(U user, U updatedUser) {
+
+		log.debug("Updating user: " + user);
+
+		// checks
+//		LecjUtils.ensureCorrectVersion(user, updatedUser);
+
+		// delegates to updateUserFields
+		updateUserFields(user, updatedUser, LecwUtils.currentUser());
+		userRepository.saveAndFlush(user);
+
+		log.debug("Updated user: " + user);
+
+		LemonUserDto userDto = user.toUserDto();
+		userDto.setPassword(null);
+		return userDto;
+	}
 
 
 
@@ -323,12 +319,12 @@ public abstract class LemonServiceImpl
 	 * Changes the password.
 	 */
 	@Transactional(propagation = Propagation.REQUIRED, readOnly = false)
-	public String changePassword(U user, @Valid ChangePasswordForm changePasswordForm) {
+	public String changePassword(U user,ChangePasswordForm changePasswordForm) {
 
 		log.debug("Changing password for user: " + user);
 
 		// Get the old password of the logged in user (logged in user may be an ADMIN)
-		UserDto currentUser = LecwUtils.currentUser();
+		LemonUserDto currentUser = LecwUtils.currentUser();
 		U loggedIn = userRepository.findById(toId(currentUser.getId())).get();
 		String oldPassword = loggedIn.getPassword();
 
@@ -350,53 +346,52 @@ public abstract class LemonServiceImpl
 
 
 
-//	/**
-//	 * Updates the fields of the users. Override this if you have more fields.
-//	 */
-//	protected void updateUserFields(U user, U updatedUser, UserDto currentUser) {
-//
-//		log.debug("Updating user fields for user: " + user);
-//
-//		// Another good admin must be logged in to edit roles
-//		if (currentUser.isGoodAdmin() &&
-//				!currentUser.getId().equals(user.getId().toString())) {
-//
-//			log.debug("Updating roles for user: " + user);
-//
-//			// update the roles
-//
-//			if (user.getRoles().equals(updatedUser.getRoles())) // roles are same
-//				return;
-//
-//			if (updatedUser.hasRole(LemonRole.UNVERIFIED)) {
-//
-//				if (!user.hasRole(LemonRole.UNVERIFIED)) {
-//
-//					makeUnverified(user); // make user unverified
-//				}
-//			} else {
-//
-//				if (user.hasRole(LemonRole.UNVERIFIED))
-//					user.getRoles().remove(LemonRole.UNVERIFIED); // make user verified
-//			}
-//
-//			user.setRoles(updatedUser.getRoles());
-//			user.setCredentialsUpdatedMillis(System.currentTimeMillis());
-//		}
-//	}
+	/**
+	 * Updates the fields of the users. Override this if you have more fields.
+	 */
+	protected void updateUserFields(U user, U updatedUser, LemonUserDto currentUser) {
+
+		log.debug("Updating user fields for user: " + user);
+
+		// Good admin tries to edit
+		if (currentUser.isGoodAdmin() &&
+				!currentUser.getId().equals(user.getId().toString())) {
+
+			log.debug("Updating roles for user: " + user);
+
+			// update the roles
+
+			if (user.getRoles().equals(updatedUser.getRoles())) // roles are same
+				return;
+
+			if (updatedUser.hasRole(LemonRole.UNVERIFIED)) {
+
+				if (!user.hasRole(LemonRole.UNVERIFIED)) {
+
+					makeUnverified(user); // make user unverified
+				}
+			} else {
+
+				if (user.hasRole(LemonRole.UNVERIFIED))
+					user.getRoles().remove(LemonRole.UNVERIFIED); // make user verified
+			}
+
+			user.setRoles(updatedUser.getRoles());
+			user.setCredentialsUpdatedMillis(System.currentTimeMillis());
+		}
+	}
 
 
 	/**
 	 * Requests for email change.
 	 */
-	@Validated(UserUtils.ChangeEmailValidation.class)
 	@Transactional(propagation = Propagation.REQUIRED, readOnly = false)
-	public void requestEmailChange(U user, @Valid U updatedUser) {
-
-		log.debug("Requesting email change: " + user);
-
+	public void requestEmailChange(ID userId, /*@Valid*/ U updatedUser) {
+		log.debug("Requesting email change for userId " + userId);
 		// checks
-		LexUtils.ensureFound(user);
+		Optional<U> byId = userRepository.findById(userId);
+		LexUtils.ensureFound(byId);
+		U user = byId.get();
 		LexUtils.validateField("updatedUser.password",
 				passwordEncoder.matches(updatedUser.getPassword(),
 						user.getPassword()),
@@ -465,12 +460,12 @@ public abstract class LemonServiceImpl
 	 * Change the email.
 	 */
 	@Transactional(propagation = Propagation.REQUIRED, readOnly = false)
-	public void changeEmail(ID userId, @Valid @NotBlank String changeEmailCode) {
+	public void changeEmail(ID userId, /*@Valid @NotBlank*/ String changeEmailCode) {
 
 		log.debug("Changing email of current user ...");
 
 		// fetch the current-user
-		UserDto currentUser = LecwUtils.currentUser();
+		LemonUserDto currentUser = LecwUtils.currentUser();
 
 		LexUtils.validate(userId.equals(toId(currentUser.getId())),
 				"com.naturalprogrammer.spring.wrong.login").go();
@@ -525,7 +520,7 @@ public abstract class LemonServiceImpl
 	public String fetchNewToken(Optional<Long> expirationMillis,
 								Optional<String> optionalUsername) {
 
-		UserDto currentUser = LecwUtils.currentUser();
+		LemonUserDto currentUser = LecwUtils.currentUser();
 		String username = optionalUsername.orElse(currentUser.getUsername());
 
 		LecUtils.ensureAuthority(currentUser.getUsername().equals(username) ||
@@ -538,7 +533,7 @@ public abstract class LemonServiceImpl
 						expirationMillis.orElse(properties.getJwt().getExpirationMillis()));
 	}
 
-	@Transactional(readOnly = false)
+	@Transactional(propagation = Propagation.REQUIRED, readOnly = false)
 	//only called internally
 	public void createAdminUser(LemonProperties.Admin admin) {
 		log.info("Creating the first admin user: " + admin.getUsername());
@@ -580,7 +575,7 @@ public abstract class LemonServiceImpl
 		LecUtils.ensureCredentials(blueTokenService.parseClaim(authHeader.substring(LecUtils.TOKEN_PREFIX_LENGTH),
 				BlueTokenService.USER_CLAIM) == null, "com.naturalprogrammer.spring.fullTokenNotAllowed");
 
-		UserDto currentUser = LecwUtils.currentUser();
+		LemonUserDto currentUser = LecwUtils.currentUser();
 
 		Map<String, Object> claimMap = Collections.singletonMap(BlueTokenService.USER_CLAIM,
 				LecUtils.serialize(currentUser)); // Not serializing converts it to a JsonNode

@@ -23,7 +23,7 @@ public class LemonPrincipal implements UserDetails, CredentialsContainer {
 	private static final long serialVersionUID = -7849730155307434535L;
 	
 	@Getter(AccessLevel.NONE)
-	private final UserDto userDto;
+	private final LemonUserDto lemonUserDto;
 	
 	private Map<String, Object> attributes;
 	private String name;
@@ -31,26 +31,26 @@ public class LemonPrincipal implements UserDetails, CredentialsContainer {
 //	private OidcUserInfo userInfo;
 //	private OidcIdToken idToken;
 	
-	public UserDto currentUser() {
-		return userDto;
+	public LemonUserDto currentUser() {
+		return lemonUserDto;
 	}
 
 	@Override
 	public Collection<? extends GrantedAuthority> getAuthorities() {
 
 		//todo sollte das nicht eher bei der creation dieses obj passieren (adden der gen roles) anstatt bei der abfrage?? fix
-		Set<String> roles = userDto.getRoles();
+		Set<String> roles = lemonUserDto.getRoles();
 		
 		Collection<LemonGrantedAuthority> authorities = roles.stream()
 				.map(role -> new LemonGrantedAuthority(role))
 				.collect(Collectors.toCollection(() ->
 					new ArrayList<LemonGrantedAuthority>(roles.size() + 2))); 
 		
-		if (userDto.isGoodUser()) {
+		if (lemonUserDto.isGoodUser()) {
 			
 			authorities.add(new LemonGrantedAuthority(LemonRole.GOOD_USER));
 			
-			if (userDto.isGoodAdmin())
+			if (lemonUserDto.isGoodAdmin())
 				authorities.add(new LemonGrantedAuthority(LemonRole.GOOD_ADMIN));
 		}
 		
@@ -62,13 +62,13 @@ public class LemonPrincipal implements UserDetails, CredentialsContainer {
 	@Override
 	public String getPassword() {
 
-		return userDto.getPassword();
+		return lemonUserDto.getPassword();
 	}
 
 	@Override
 	public String getUsername() {
 
-		return userDto.getUsername();
+		return lemonUserDto.getUsername();
 	}
 
 	@Override
@@ -98,7 +98,7 @@ public class LemonPrincipal implements UserDetails, CredentialsContainer {
 	@Override
 	public void eraseCredentials() {
 		
-		userDto.setPassword(null);
+		lemonUserDto.setPassword(null);
 		attributes = null;
 		claims = null;
 //		userInfo = null;

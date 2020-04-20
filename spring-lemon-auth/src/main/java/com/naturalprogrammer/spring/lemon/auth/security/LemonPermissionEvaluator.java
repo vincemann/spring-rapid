@@ -1,6 +1,6 @@
 package com.naturalprogrammer.spring.lemon.auth.security;
 
-import com.naturalprogrammer.spring.lemon.auth.security.domain.UserDto;
+import com.naturalprogrammer.spring.lemon.auth.security.domain.LemonUserDto;
 import com.naturalprogrammer.spring.lemon.auth.util.LecUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -58,14 +58,14 @@ public class LemonPermissionEvaluator extends AclPermissionEvaluator {
 
     private void performChecks(Authentication authentication){
         //check if blocked or unverified
-        UserDto userDto = LecUtils.currentUser(authentication);
-        if(userDto==null){
+        LemonUserDto lemonUserDto = LecUtils.currentUser(authentication);
+        if(lemonUserDto ==null){
             return;
         }
-        if(userDto.isBlocked()){
+        if(lemonUserDto.isBlocked()){
             throw new AccessDeniedException("User is Blocked");
         }
-        if(userDto.isAdmin() && userDto.isUnverified()){
+        if(lemonUserDto.isAdmin() && lemonUserDto.isUnverified()){
             throw new AccessDeniedException("Admin is Unverified");
         }
     }
