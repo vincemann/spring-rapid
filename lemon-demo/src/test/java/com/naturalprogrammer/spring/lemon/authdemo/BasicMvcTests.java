@@ -13,7 +13,6 @@ import org.springframework.test.context.jdbc.Sql;
 
 import com.naturalprogrammer.spring.lemon.auth.util.LecUtils;
 
-@Sql({"/test-data/initialize.sql", "/test-data/finalize.sql", })
 public class BasicMvcTests extends AbstractMvcTests {
 	
 	@Test

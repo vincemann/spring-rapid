@@ -20,7 +20,6 @@ import static org.hamcrest.Matchers.hasSize;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
-@Sql({"/test-data/initialize.sql", "/test-data/finalize.sql"})
 public class UpdateUserMvcTests extends AbstractMvcTests {
 	
 	private static final String UPDATED_NAME = "Edited name";

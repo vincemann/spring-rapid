@@ -12,7 +12,6 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@Sql({"/test-data/initialize.sql", "/test-data/finalize.sql"})
 public class FetchUserMvcTests extends AbstractMvcTests {
 	
 //	@Test
