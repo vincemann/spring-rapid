@@ -37,7 +37,6 @@ public class LecwUtils {
 	 * Gets the current-user
 	 */
 	public static LemonUserDto currentUser() {
-		
 		return LecUtils.currentUser(SecurityContextHolder.getContext());
 	}
 

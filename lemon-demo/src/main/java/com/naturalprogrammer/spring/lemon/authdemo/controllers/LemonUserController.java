@@ -7,9 +7,10 @@ import com.naturalprogrammer.spring.lemon.authdemo.entities.User;
 import io.github.vincemann.springrapid.core.controller.dtoMapper.context.CrudDtoEndpoint;
 import io.github.vincemann.springrapid.core.controller.dtoMapper.context.DtoMappingContextBuilder;
 import io.github.vincemann.springrapid.core.slicing.components.WebController;
+import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 
-@WebController
+@Controller
 @RequestMapping(LemonUserController.BASE_URI)
 public class LemonUserController extends LemonController<User, Long> {
 

@@ -7,6 +7,8 @@ import io.github.vincemann.springrapid.acl.Role;
 import io.github.vincemann.springrapid.acl.service.AclManaging;
 import io.github.vincemann.springrapid.acl.service.MockAuthService;
 import io.github.vincemann.springrapid.core.bootstrap.DatabaseDataInitializer;
+import io.github.vincemann.springrapid.core.service.exception.BadEntityException;
+import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -65,12 +67,18 @@ public class AdminDatabaseDataInitializer extends DatabaseDataInitializer {
                         new SimpleGrantedAuthority(Role.ADMIN)
                 )
         );
-        addAdmins();
-        mockAuthService.runAuthenticatedAs(adminAuth, this::addAdmins);
+        mockAuthService.runAuthenticatedAs(adminAuth,
+                () -> {
+                    try {
+                        addAdmins();
+                    } catch (BadEntityException e) {
+                        throw new RuntimeException(e);
+                    }
+                });
         setInitialized(true);
     }
 
-    private void addAdmins() {
+    private void addAdmins() throws BadEntityException {
         //add lemon admin
         LemonProperties.Admin lemonAdmin = lemonProperties.getAdmin();
         adminUsername.add(lemonAdmin.getUsername());

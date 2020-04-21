@@ -23,26 +23,25 @@ import java.io.Serializable;
  * Removes Acl's on delete, if existing.
  */
 @ServiceComponent
-public abstract class CleanUpAclPlugin<E extends IdentifiableEntity<Id>, Id extends Serializable>
-        extends CrudServicePlugin<E,Id> {
+@Transactional
+public class CleanUpAclPlugin
+    extends AbstractAclPlugin
+{
 
-    private LocalPermissionService permissionService;
-    private MutableAclService mutableAclService;
     @Setter
     private boolean deleteCascade = true;
 
     public CleanUpAclPlugin(LocalPermissionService permissionService, MutableAclService mutableAclService) {
-        this.permissionService = permissionService;
-        this.mutableAclService = mutableAclService;
+        super(permissionService, mutableAclService);
     }
 
-    @Transactional
+
     @CalledByProxy
-    public void onAfterDeleteById(Id id,Class entityClass) throws EntityNotFoundException, BadEntityException {
+    public void onAfterDeleteById(Serializable id,Class entityClass) throws EntityNotFoundException, BadEntityException {
         deleteAcl(id,entityClass);
     }
 
-    private void deleteAcl(Id id, Class entityClass){
+    private void deleteAcl(Serializable id, Class entityClass){
         log.debug("deleting acl for entity with id: " + id + " and class: " + entityClass);
         //delete acl as well
         ObjectIdentity oi = new ObjectIdentityImpl(entityClass, id);

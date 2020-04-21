@@ -26,7 +26,6 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.stream.Collectors;
 
 @Slf4j
-@Getter
 /**
  * Proxy for {@link CrudService}, that applys {@link ServiceSecurityRule}s before calling service method.
  * After all Rules have been applied in the order they were given in for construction, the {@link io.github.vincemann.springrapid.acl.proxy.rules.DefaultServiceSecurityRule}
@@ -35,7 +34,7 @@ import java.util.stream.Collectors;
  * Is created by {@link CrudServiceSecurityProxyFactory} or by {@link io.github.vincemann.springrapid.acl.proxy.create.ConfigureProxies}.
  */
 public class CrudServiceSecurityProxy
-        extends CrudServiceExtensionProxy<IdentifiableEntity<Serializable>, Serializable> {
+        extends CrudServiceExtensionProxy {
 
     @Getter
     @Setter
@@ -65,7 +64,10 @@ public class CrudServiceSecurityProxy
     private static final String PRE_AUTHORIZE_METHOD_PREFIX = "preAuthorize";
     private static final String POST_AUTHORIZE_METHOD_PREFIX = "postAuthorize";
 
+    @Getter
     private List<ServiceSecurityRule> rules = new ArrayList<>();
+    @Getter
+    @Setter
     private ServiceSecurityRule defaultSecurityRule;
     private State state;
 

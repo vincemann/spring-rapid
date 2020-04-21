@@ -20,7 +20,7 @@ import java.io.Serializable;
 @Slf4j
 @Getter
 public class AdminFullAccessAclPlugin
-        extends CleanUpAclPlugin<IdentifiableEntity<Serializable>,Serializable> {
+        extends AbstractAclPlugin {
 
 
     public AdminFullAccessAclPlugin(LocalPermissionService permissionService, MutableAclService mutableAclService) {
@@ -32,10 +32,6 @@ public class AdminFullAccessAclPlugin
     public void onAfterSave(IdentifiableEntity<Serializable> requestEntity, IdentifiableEntity<Serializable> returnedEntity) {
         log.debug("admin now gets full permission over entity: " + returnedEntity);
         saveFullPermissionForAdminOver(returnedEntity);
-    }
-
-    protected void saveFullPermissionForAdminOver(IdentifiableEntity<Serializable> entity){
-        getPermissionService().addPermissionForAuthorityOver(entity,BasePermission.ADMINISTRATION, Role.ADMIN);
     }
 
 }

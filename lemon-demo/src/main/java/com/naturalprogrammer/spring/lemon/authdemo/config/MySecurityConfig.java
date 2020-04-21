@@ -5,11 +5,12 @@ import com.naturalprogrammer.spring.lemon.auth.security.config.LemonJpaSecurityC
 import com.naturalprogrammer.spring.lemon.auth.security.domain.LemonRole;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.stereotype.Component;
 
 
-@Component
+@Configuration
 public class MySecurityConfig extends LemonJpaSecurityConfig {
 	
 	private static final Log log = LogFactory.getLog(MySecurityConfig.class);
