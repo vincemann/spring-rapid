@@ -4,6 +4,6 @@ import io.github.vincemann.springrapid.core.slicing.components.ServiceComponent;
 import org.springframework.security.core.Authentication;
 
 @ServiceComponent
-public interface RunAsUserService {
+public interface MockAuthService {
     public void runAuthenticatedAs(Authentication authentication, Runnable privilegedRunnable);
 }

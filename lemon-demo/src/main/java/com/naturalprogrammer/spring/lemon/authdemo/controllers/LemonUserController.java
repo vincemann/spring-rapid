@@ -13,7 +13,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 @RequestMapping(LemonUserController.BASE_URI)
 public class LemonUserController extends LemonController<User, Long> {
 
-    //todo get from config file
     public static final String BASE_URI = "/api/core";
 
 

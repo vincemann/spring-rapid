@@ -3,17 +3,13 @@ package io.github.vincemann.springrapid.acl.config;
 import io.github.vincemann.springrapid.acl.Role;
 import io.github.vincemann.springrapid.acl.framework.NoModSecurityCheckAclAuthorizationStrategy;
 import io.github.vincemann.springrapid.acl.framework.LenientPermissionGrantingStrategy;
-import io.github.vincemann.springrapid.acl.proxy.create.CrudServiceProxyBeanComposer;
-import io.github.vincemann.springrapid.acl.service.RunAsUserService;
-import io.github.vincemann.springrapid.acl.service.SecurityContextRunAsUserService;
+import io.github.vincemann.springrapid.acl.service.MockAuthService;
+import io.github.vincemann.springrapid.acl.service.SecurityContextMockAuthService;
 import io.github.vincemann.springrapid.core.slicing.config.ServiceConfig;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.AutoConfigureBefore;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingClass;
 import org.springframework.cache.ehcache.EhCacheFactoryBean;
 import org.springframework.cache.ehcache.EhCacheManagerFactoryBean;
 import org.springframework.context.annotation.Bean;
@@ -105,9 +101,9 @@ public class AclAutoConfiguration {
 
 
     @Bean
-    @ConditionalOnMissingBean(RunAsUserService.class)
-    public RunAsUserService runAsUserService(){
-        return new SecurityContextRunAsUserService();
+    @ConditionalOnMissingBean(MockAuthService.class)
+    public MockAuthService runAsUserService(){
+        return new SecurityContextMockAuthService();
     }
 
     @ConditionalOnMissingBean(LookupStrategy.class)

@@ -7,7 +7,7 @@ import com.naturalprogrammer.spring.lemon.auth.mail.MailSender;
 import com.naturalprogrammer.spring.lemon.auth.util.LecUtils;
 import io.github.vincemann.springrapid.acl.Role;
 import io.github.vincemann.springrapid.acl.service.LocalPermissionService;
-import io.github.vincemann.springrapid.acl.service.RunAsUserService;
+import io.github.vincemann.springrapid.acl.service.MockAuthService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -77,7 +77,7 @@ public abstract class AbstractMvcTests {
     @SpyBean
     protected MailSender<?> mailSender;
     @Autowired
-    private RunAsUserService runAsUserService;
+    private MockAuthService mockAuthService;
     @Autowired
     private DataSource dataSource;
 
@@ -98,6 +98,7 @@ public abstract class AbstractMvcTests {
     public void baseSetUp() throws Exception {
         if (!aclInitialized) {
             initAcl();
+            aclInitialized = true;
         }
         tokens.put(ADMIN_ID, login(ADMIN_EMAIL, ADMIN_PASSWORD));
         tokens.put(UNVERIFIED_ADMIN_ID, login("unverifiedadmin@example.com", ADMIN_PASSWORD));
@@ -113,11 +114,10 @@ public abstract class AbstractMvcTests {
         User admin = userRepository.findById(ADMIN_ID).get();
         Authentication adminAuth = new UsernamePasswordAuthenticationToken(admin.getName(), admin.getPassword()
                 , Lists.newArrayList(new SimpleGrantedAuthority(Role.ADMIN)));
-        runAsUserService.runAuthenticatedAs(adminAuth, () -> {
+        mockAuthService.runAuthenticatedAs(adminAuth, () -> {
             giveAdminFullPermissionOver(USER_ID, UNVERIFIED_USER_ID, BLOCKED_USER_ID, ADMIN_ID, UNVERIFIED_ADMIN_ID, BLOCKED_ADMIN_ID);
             giveFullPermissionAboutSelf(ADMIN_ID, UNVERIFIED_ADMIN_ID, BLOCKED_ADMIN_ID, USER_ID, UNVERIFIED_USER_ID, BLOCKED_USER_ID);
         });
-        aclInitialized = true;
     }
 
     protected void giveFullPermissionAboutSelf(Long... ids) {
