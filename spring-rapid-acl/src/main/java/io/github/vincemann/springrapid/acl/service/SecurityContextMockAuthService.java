@@ -1,13 +1,12 @@
 package io.github.vincemann.springrapid.acl.service;
 
-import io.github.vincemann.springrapid.core.slicing.components.ServiceComponent;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.transaction.annotation.Transactional;
 
 @Slf4j
-public class SecurityContextRunAsUserService implements RunAsUserService {
+public class SecurityContextMockAuthService implements MockAuthService {
 
     @Transactional
     public void runAuthenticatedAs(Authentication authentication, Runnable privilegedRunnable){

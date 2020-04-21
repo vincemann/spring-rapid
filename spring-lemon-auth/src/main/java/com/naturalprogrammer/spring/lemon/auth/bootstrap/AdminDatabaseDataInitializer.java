@@ -5,7 +5,7 @@ import com.naturalprogrammer.spring.lemon.auth.LemonProperties;
 import com.naturalprogrammer.spring.lemon.auth.service.LemonService;
 import io.github.vincemann.springrapid.acl.Role;
 import io.github.vincemann.springrapid.acl.service.AclManaging;
-import io.github.vincemann.springrapid.acl.service.RunAsUserService;
+import io.github.vincemann.springrapid.acl.service.MockAuthService;
 import io.github.vincemann.springrapid.core.bootstrap.DatabaseDataInitializer;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,7 +24,7 @@ import java.util.List;
 @Slf4j
 @Component
 /**
- * Adds admins from property file, if not already present in database
+ * Adds admins from property file, if not already present in database.
  * Also adds lemon admin
  * @see LemonProperties#getAdmin()
  */
@@ -37,18 +37,18 @@ public class AdminDatabaseDataInitializer extends DatabaseDataInitializer {
     private List<String> adminPasswords;
 
     //private SchoolService schoolService;
-    private RunAsUserService runAsUserService;
+    private MockAuthService mockAuthService;
     private UserDetailsService userDetailsService;
     private LemonService lemonService;
     private LemonProperties lemonProperties;
 
     @Autowired
     public AdminDatabaseDataInitializer(@AclManaging LemonService lemonService,
-                                        RunAsUserService runAsUserService,
+                                        MockAuthService mockAuthService,
                                         UserDetailsService userDetailsService,
                                         LemonProperties lemonProperties) {
         this.lemonService = lemonService;
-        this.runAsUserService = runAsUserService;
+        this.mockAuthService = mockAuthService;
         this.userDetailsService = userDetailsService;
         this.lemonProperties = lemonProperties;
     }
@@ -66,7 +66,7 @@ public class AdminDatabaseDataInitializer extends DatabaseDataInitializer {
                 )
         );
         addAdmins();
-        runAsUserService.runAuthenticatedAs(adminAuth, this::addAdmins);
+        mockAuthService.runAuthenticatedAs(adminAuth, this::addAdmins);
         setInitialized(true);
     }
 
