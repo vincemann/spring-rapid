@@ -15,8 +15,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.SpyBean;
+import org.springframework.core.io.ClassPathResource;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
+import org.springframework.jdbc.datasource.init.ScriptUtils;
 import org.springframework.security.acls.domain.BasePermission;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -28,6 +30,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.sql.DataSource;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -82,6 +85,11 @@ public abstract class AbstractMvcTests {
     @Autowired
     private RunAsUserService runAsUserService;
 
+    public static boolean initialized = false;
+
+//    @Autowired
+//    private DataSource dataSource;
+
 
 
     protected String login(String userName, String password) throws Exception {
@@ -99,11 +107,16 @@ public abstract class AbstractMvcTests {
 
     @BeforeEach
     public void baseSetUp() throws Exception {
-        User admin = userRepository.findById(ADMIN_ID).get();
-        Authentication adminAuth = new UsernamePasswordAuthenticationToken(admin.getName(), admin.getPassword()
-                , Lists.newArrayList(new SimpleGrantedAuthority(Role.ADMIN)));
-        runAsUserService.runAuthenticatedAs(adminAuth,this::saveUsersAclData);
-
+        if(!initialized) {
+            //only do this expensive stuff once -> permission stay the same
+            //ScriptUtils.executeSqlScript(dataSource.getConnection(),new ClassPathResource("/test-data/initialize.sql"));
+            //ScriptUtils.executeSqlScript(dataSource.getConnection(),new ClassPathResource("/test-data/finalize.sql"));
+            User admin = userRepository.findById(ADMIN_ID).get();
+            Authentication adminAuth = new UsernamePasswordAuthenticationToken(admin.getName(), admin.getPassword()
+                    , Lists.newArrayList(new SimpleGrantedAuthority(Role.ADMIN)));
+            runAsUserService.runAuthenticatedAs(adminAuth, this::saveUsersAclData);
+            initialized=true;
+        }
         tokens.put(ADMIN_ID, login(ADMIN_EMAIL, ADMIN_PASSWORD));
         tokens.put(UNVERIFIED_ADMIN_ID, login("unverifiedadmin@example.com", ADMIN_PASSWORD));
         tokens.put(BLOCKED_ADMIN_ID, login("blockedadmin@example.com", ADMIN_PASSWORD));

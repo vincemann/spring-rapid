@@ -52,7 +52,6 @@ public abstract class AbstractLemonService
 		log.debug("Initializing user: " + user);
 
 		user.setPassword(passwordEncoder.encode(user.getPassword())); // encode the password
-		makeUnverified(user); // make the user unverified
 	}
 	
 	/**
