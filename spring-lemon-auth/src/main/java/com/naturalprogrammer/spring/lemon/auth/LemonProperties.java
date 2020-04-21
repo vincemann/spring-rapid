@@ -174,7 +174,7 @@ public class LemonProperties {
 	 */
 	@Getter @Setter @AllArgsConstructor @NoArgsConstructor
 	public static class Admin {
-		
+		public static final String EMAIL_SUFFIX = "@admin.de";
 		/**
 		 * Login ID of the initial Admin user to be created 
 		 */

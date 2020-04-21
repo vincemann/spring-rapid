@@ -7,6 +7,7 @@ import io.github.vincemann.springrapid.core.service.CrudService;
 import io.github.vincemann.springrapid.core.service.plugin.CrudServicePlugin;
 import io.github.vincemann.springrapid.core.util.Lists;
 import io.github.vincemann.springrapid.core.util.NullableOptional;
+import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.repository.CrudRepository;
 
@@ -17,20 +18,19 @@ import java.util.List;
 /**
  * Proxy that calls hook methods {@link CrudServicePlugin}s.
  * @see CrudServicePlugin
- * @param <E>
- * @param <Id>
  */
 @Slf4j
-public class CrudServicePluginProxy<E extends IdentifiableEntity<Id>, Id extends Serializable>
-        extends CrudServiceExtensionProxy<E, Id> {
+public class CrudServicePluginProxy
+        extends CrudServiceExtensionProxy {
 
     private static final String BEFORE_METHOD_PREFIX = "onBefore";
     private static final String AFTER_METHOD_PREFIX = "onAfter";
 
 
-    private List<CrudServicePlugin<E, Id>> plugins;
+    @Getter
+    private List<CrudServicePlugin> plugins;
 
-    public CrudServicePluginProxy(CrudService<E, Id, CrudRepository<E, Id>> service, List<CrudServicePlugin<E, Id>> plugins, String... ignoredMethods) {
+    public CrudServicePluginProxy(CrudService service, List<CrudServicePlugin> plugins, String... ignoredMethods) {
         super(service, ignoredMethods);
         this.plugins = plugins;
     }

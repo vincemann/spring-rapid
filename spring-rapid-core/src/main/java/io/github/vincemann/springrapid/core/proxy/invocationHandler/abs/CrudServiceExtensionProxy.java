@@ -24,7 +24,7 @@ import java.util.stream.Collectors;
 @Getter
 @Setter
 @Slf4j
-public abstract class CrudServiceExtensionProxy<E extends IdentifiableEntity<Id>,Id extends Serializable>
+public abstract class CrudServiceExtensionProxy
         implements InvocationHandler
 {
 
@@ -68,10 +68,10 @@ public abstract class CrudServiceExtensionProxy<E extends IdentifiableEntity<Id>
     }
 
     private List<String> ignoredMethods = Lists.newArrayList("getEntityClass","getRepository","toString","equals","hashCode","getClass","clone","notify","notifyAll","wait","finalize");
-    private CrudService<E,Id, CrudRepository<E,Id>> service;
+    private CrudService service;
     private final Map<String, Method> methods = new HashMap<>();
 
-    public CrudServiceExtensionProxy(CrudService<E, Id, CrudRepository<E, Id>> service, String... ignoredMethods) {
+    public CrudServiceExtensionProxy(CrudService service, String... ignoredMethods) {
         this.service = service;
         for(Method method: service.getClass().getMethods()) {
             this.methods.put(method.getName(), method);

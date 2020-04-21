@@ -2,6 +2,7 @@ package com.naturalprogrammer.spring.lemon.auth.service;
 
 import com.naturalprogrammer.spring.lemon.auth.LemonProperties;
 import com.naturalprogrammer.spring.lemon.auth.domain.AbstractUser;
+import com.naturalprogrammer.spring.lemon.auth.domain.AbstractUserRepository;
 import com.naturalprogrammer.spring.lemon.auth.domain.ChangePasswordForm;
 import com.naturalprogrammer.spring.lemon.auth.domain.ResetPasswordForm;
 import com.naturalprogrammer.spring.lemon.auth.security.domain.LemonUserDto;
@@ -21,10 +22,11 @@ import java.util.Map;
 import java.util.Optional;
 
 @Validated
-public interface LemonService<U extends AbstractUser<ID>, ID extends Serializable> extends CrudService<U,ID, JpaRepository<U,ID>> {
+public interface LemonService<U extends AbstractUser<ID>, ID extends Serializable>
+        extends CrudService<U,ID, AbstractUserRepository<U,ID>> {
     public Map<String, Object> getContext(Optional<Long> expirationMillis, HttpServletResponse response);
     @Validated(UserUtils.SignUpValidation.class)
-    public void signup(@Valid U user);
+    public void signup(@Valid U user) throws BadEntityException;
     public void resendVerificationMail(U user);
     public U findByEmail(@Valid @Email @NotBlank String email);
     public void verifyUser(ID userId, String verificationCode);
@@ -36,7 +38,7 @@ public interface LemonService<U extends AbstractUser<ID>, ID extends Serializabl
     public void changeEmail(ID userId, @Valid @NotBlank String changeEmailCode);
     public String fetchNewToken(Optional<Long> expirationMillis, Optional<String> optionalUsername);
     public Map<String, String> fetchFullToken(String authHeader);
-    public void createAdminUser(LemonProperties.Admin admin);
+    public void createAdminUser(LemonProperties.Admin admin) throws BadEntityException;
     public abstract ID toId(String id);
     public void addAuthHeader(HttpServletResponse response, String username, Long expirationMillis);
     @Validated(UserUtils.UpdateValidation.class)

@@ -1,6 +1,7 @@
 package com.naturalprogrammer.spring.lemon.auth.service;
 
 import com.naturalprogrammer.spring.lemon.auth.LemonProperties;
+import com.naturalprogrammer.spring.lemon.auth.domain.AbstractUser;
 import com.naturalprogrammer.spring.lemon.auth.domain.AbstractUserRepository;
 import com.naturalprogrammer.spring.lemon.auth.domain.LemonUser;
 import com.naturalprogrammer.spring.lemon.auth.mail.LemonMailData;
@@ -9,6 +10,7 @@ import com.naturalprogrammer.spring.lemon.auth.security.domain.LemonRole;
 import com.naturalprogrammer.spring.lemon.auth.security.service.BlueTokenService;
 import com.naturalprogrammer.spring.lemon.auth.security.service.GreenTokenService;
 import com.naturalprogrammer.spring.lemon.auth.util.LecUtils;
+import io.github.vincemann.springrapid.core.service.exception.BadEntityException;
 import io.github.vincemann.springrapid.core.service.jpa.JPACrudService;
 import lemon.exceptions.util.LexUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
@@ -22,8 +24,8 @@ import java.util.HashMap;
 import java.util.Map;
 
 public abstract class AbstractLemonService
-	<U extends LemonUser<ID>, ID extends Serializable>
-			extends JPACrudService<U,ID, JpaRepository<U,ID>> {
+	<U extends AbstractUser<ID>, ID extends Serializable>
+			extends JPACrudService<U,ID,AbstractUserRepository<U,ID>> {
 
     private static final Log log = LogFactory.getLog(AbstractLemonService.class);
 	protected PasswordEncoder passwordEncoder;
@@ -47,11 +49,12 @@ public abstract class AbstractLemonService
 		return context;		
 	}
 	
-	protected void initUser(U user) {
+	protected U initUser(U user) throws BadEntityException {
 		
 		log.debug("Initializing user: " + user);
 
 		user.setPassword(passwordEncoder.encode(user.getPassword())); // encode the password
+		return user;
 	}
 	
 	/**
