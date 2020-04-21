@@ -18,7 +18,6 @@ import org.springframework.test.web.servlet.MvcResult;
 import com.naturalprogrammer.spring.lemon.auth.util.LecUtils;
 import com.naturalprogrammer.spring.lemon.authdemo.entities.User;
 
-@Sql({"/test-data/initialize.sql", "/test-data/finalize.sql"})
 public class LoginMvcTests extends AbstractMvcTests {
 	
 	@Test

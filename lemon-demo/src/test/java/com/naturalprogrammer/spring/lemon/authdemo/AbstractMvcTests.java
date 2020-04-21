@@ -4,7 +4,6 @@ import com.google.common.collect.Lists;
 import com.naturalprogrammer.spring.lemon.authdemo.entities.User;
 import com.naturalprogrammer.spring.lemon.authdemo.repositories.UserRepository;
 import com.naturalprogrammer.spring.lemon.auth.mail.MailSender;
-import com.naturalprogrammer.spring.lemon.auth.service.LemonServiceImpl;
 import com.naturalprogrammer.spring.lemon.auth.util.LecUtils;
 import io.github.vincemann.springrapid.acl.Role;
 import io.github.vincemann.springrapid.acl.service.LocalPermissionService;
@@ -28,9 +27,9 @@ import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
-import org.springframework.transaction.annotation.Transactional;
 
 import javax.sql.DataSource;
+import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -47,7 +46,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 })
 @AutoConfigureMockMvc
 //@AutoConfigureTestDatabase(connection = EmbeddedDatabaseConnection.HSQL)
-@Sql({"/test-data/initialize.sql", "/test-data/finalize.sql"})
+@Sql({"/test-data/resetTestData.sql"})
 /**
  * Fills tokens Map in an integration test manner by logging all users in
  */
@@ -67,33 +66,23 @@ public abstract class AbstractMvcTests {
 
     protected static final String USER_PASSWORD = "Sanjay99!";
     protected static final String UNVERIFIED_USER_EMAIL = "unverifieduser@example.com";
-
+    private static boolean aclInitialized = false;
     protected Map<Long, String> tokens = new HashMap<>(6);
-
     @Autowired
     protected MockMvc mvc;
-
     @Autowired
     protected UserRepository userRepository;
-
     @Autowired
     protected LocalPermissionService permissionService;
-
     @SpyBean
     protected MailSender<?> mailSender;
-
     @Autowired
     private RunAsUserService runAsUserService;
-
-    public static boolean initialized = false;
-
-//    @Autowired
-//    private DataSource dataSource;
-
+    @Autowired
+    private DataSource dataSource;
 
 
     protected String login(String userName, String password) throws Exception {
-
         MvcResult result = mvc.perform(post("/api/core/login")
                 .param("username", userName)
                 .param("password", password)
@@ -107,15 +96,8 @@ public abstract class AbstractMvcTests {
 
     @BeforeEach
     public void baseSetUp() throws Exception {
-        if(!initialized) {
-            //only do this expensive stuff once -> permission stay the same
-            //ScriptUtils.executeSqlScript(dataSource.getConnection(),new ClassPathResource("/test-data/initialize.sql"));
-            //ScriptUtils.executeSqlScript(dataSource.getConnection(),new ClassPathResource("/test-data/finalize.sql"));
-            User admin = userRepository.findById(ADMIN_ID).get();
-            Authentication adminAuth = new UsernamePasswordAuthenticationToken(admin.getName(), admin.getPassword()
-                    , Lists.newArrayList(new SimpleGrantedAuthority(Role.ADMIN)));
-            runAsUserService.runAuthenticatedAs(adminAuth, this::saveUsersAclData);
-            initialized=true;
+        if (!aclInitialized) {
+            initAcl();
         }
         tokens.put(ADMIN_ID, login(ADMIN_EMAIL, ADMIN_PASSWORD));
         tokens.put(UNVERIFIED_ADMIN_ID, login("unverifiedadmin@example.com", ADMIN_PASSWORD));
@@ -125,20 +107,27 @@ public abstract class AbstractMvcTests {
         tokens.put(BLOCKED_USER_ID, login("blockeduser@example.com", USER_PASSWORD));
     }
 
-    @Transactional
-    public void saveUsersAclData() {
-        adminFullAccessOver(USER_ID, UNVERIFIED_USER_ID, BLOCKED_USER_ID, ADMIN_ID, UNVERIFIED_ADMIN_ID, BLOCKED_ADMIN_ID);
-        fullAccessAboutSelf(ADMIN_ID, UNVERIFIED_ADMIN_ID, BLOCKED_ADMIN_ID, USER_ID, UNVERIFIED_USER_ID, BLOCKED_USER_ID);
+    private void initAcl() throws SQLException {
+        //only do this expensive stuff once -> permission stay the same
+        ScriptUtils.executeSqlScript(dataSource.getConnection(), new ClassPathResource("/test-data/removeAclInfo.sql"));
+        User admin = userRepository.findById(ADMIN_ID).get();
+        Authentication adminAuth = new UsernamePasswordAuthenticationToken(admin.getName(), admin.getPassword()
+                , Lists.newArrayList(new SimpleGrantedAuthority(Role.ADMIN)));
+        runAsUserService.runAuthenticatedAs(adminAuth, () -> {
+            giveAdminFullPermissionOver(USER_ID, UNVERIFIED_USER_ID, BLOCKED_USER_ID, ADMIN_ID, UNVERIFIED_ADMIN_ID, BLOCKED_ADMIN_ID);
+            giveFullPermissionAboutSelf(ADMIN_ID, UNVERIFIED_ADMIN_ID, BLOCKED_ADMIN_ID, USER_ID, UNVERIFIED_USER_ID, BLOCKED_USER_ID);
+        });
+        aclInitialized = true;
     }
 
-    private void fullAccessAboutSelf(Long... ids) {
+    protected void giveFullPermissionAboutSelf(Long... ids) {
         for (Long id : ids) {
             User user = userRepository.findById(id).get();
             permissionService.addPermissionForUserOver(user, BasePermission.ADMINISTRATION, user.getEmail());
         }
     }
 
-    private void adminFullAccessOver(Long... ids) {
+    protected void giveAdminFullPermissionOver(Long... ids) {
         for (Long id : ids) {
             User user = userRepository.findById(id).get();
             permissionService.addPermissionForAuthorityOver(user, BasePermission.ADMINISTRATION, Role.ADMIN);

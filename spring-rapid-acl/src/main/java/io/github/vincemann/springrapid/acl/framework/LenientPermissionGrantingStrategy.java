@@ -33,6 +33,7 @@ public class LenientPermissionGrantingStrategy extends DefaultPermissionGranting
 //            if(givenPermissionMask== BasePermission.ADMINISTRATION.getMask()){
 //                return true;
 //            }
+            log.debug("checking ace: "+ ace.getId() + ", " + ace.getPermission().getPattern() + ", sid: " + ace.getSid());
             log.debug("given permission: " + ace.getPermission().toString() +", mask: " + givenPermissionMask);
             log.debug("requested permission: " + p.toString()+", mask: " + requestedPermissionMask);
             return givenPermissionMask >= requestedPermissionMask;
