@@ -13,14 +13,14 @@ import org.springframework.http.MediaType;
 public class ForgotPasswordMvcTests extends AbstractMvcTests {
 	
 	@Test
-	public void testAnonForgotPassword() throws Exception {
+	public void testAnonForgotPassword_shouldNotWork() throws Exception {
 		
 		mvc.perform(post("/api/core/forgot-password")
                 .param("email", ADMIN_EMAIL)
                 .header("contentType",  MediaType.APPLICATION_FORM_URLENCODED))
                 .andExpect(status().is(403));
 		
-		verify(mailSender).send(any());
+		verify(mailSender,never()).send(any());
 	}
 
 	@Test

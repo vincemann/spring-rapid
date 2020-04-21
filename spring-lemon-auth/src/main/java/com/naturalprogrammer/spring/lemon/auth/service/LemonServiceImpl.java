@@ -127,12 +127,14 @@ public abstract class LemonServiceImpl
 		log.debug("Signing up user: " + user);
 
 		initUser(user); // sets right all fields of the user
-		userRepository.save(user);
+		U saved = userRepository.save(user);
+		makeUnverified(saved); // make the user unverified
+
 
 		// if successfully committed
 		LecjUtils.afterCommit(() -> {
 
-			LemonUtils.login(user); // log the user in
+			LemonUtils.login(saved); // log the user in
 			log.debug("Signed up user: " + user);
 		});
 	}
@@ -144,11 +146,8 @@ public abstract class LemonServiceImpl
 	 * e.g. encrypts the password
 	 */
 	protected void initUser(U user) {
-
 		log.debug("Initializing user: " + user);
-
 		user.setPassword(passwordEncoder.encode(user.getPassword())); // encode the password
-		makeUnverified(user); // make the user unverified
 	}
 
 
@@ -157,7 +156,7 @@ public abstract class LemonServiceImpl
 	 */
 	protected void makeUnverified(U user) {
 		super.makeUnverified(user);
-		LecjUtils.afterCommit(() -> sendVerificationMail(user)); // send a verification mail to the user
+		LecjUtils.afterCommit(() -> sendVerificationMail(user));// send a verification mail to the user
 	}
 
 
@@ -215,13 +214,13 @@ public abstract class LemonServiceImpl
 
 		user.getRoles().remove(LemonRole.UNVERIFIED); // make him verified
 		user.setCredentialsUpdatedMillis(System.currentTimeMillis());
-		userRepository.save(user);
+		U saved = userRepository.save(user);
 
 		// after successful commit,
 		LecjUtils.afterCommit(() -> {
 
 			// Re-login the user, so that the UNVERIFIED role is removed
-			LemonUtils.login(user);
+			LemonUtils.login(saved);
 			log.debug("Re-logged-in the user for removing UNVERIFIED role.");
 		});
 
@@ -266,13 +265,13 @@ public abstract class LemonServiceImpl
 		user.setCredentialsUpdatedMillis(System.currentTimeMillis());
 		//user.setForgotPasswordCode(null);
 
-		userRepository.save(user);
+		U saved = userRepository.save(user);
 
 		// after successful commit,
 		LecjUtils.afterCommit(() -> {
 
 			// Login the user
-			LemonUtils.login(user);
+			LemonUtils.login(saved);
 		});
 
 		log.debug("Password reset.");
@@ -400,10 +399,10 @@ public abstract class LemonServiceImpl
 		// preserves the new email id
 		user.setNewEmail(updatedUser.getNewEmail());
 		//user.setChangeEmailCode(LemonUtils.uid());
-		userRepository.save(user);
+		U saved = userRepository.save(user);
 
 		// after successful commit, mails a link to the user
-		LecjUtils.afterCommit(() -> mailChangeEmailLink(user));
+		LecjUtils.afterCommit(() -> mailChangeEmailLink(saved));
 
 		log.debug("Requested email change: " + user);
 	}
@@ -499,13 +498,13 @@ public abstract class LemonServiceImpl
 		if (user.hasRole(LemonRole.UNVERIFIED))
 			user.getRoles().remove(LemonRole.UNVERIFIED);
 
-		userRepository.save(user);
+		U saved = userRepository.save(user);
 
 		// after successful commit,
 		LecjUtils.afterCommit(() -> {
 
 			// Login the user
-			LemonUtils.login(user);
+			LemonUtils.login(saved);
 		});
 
 		log.debug("Changed email of user: " + user);
