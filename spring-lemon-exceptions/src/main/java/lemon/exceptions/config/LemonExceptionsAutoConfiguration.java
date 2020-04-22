@@ -4,6 +4,8 @@ import java.util.List;
 
 import lemon.exceptions.ErrorResponseComposer;
 import lemon.exceptions.ExceptionIdMaker;
+import lemon.exceptions.MultiErrorException;
+import lemon.exceptions.handlers.*;
 import lemon.exceptions.web.DefaultExceptionHandlerControllerAdvice;
 import lemon.exceptions.web.LemonErrorAttributes;
 import lemon.exceptions.web.LemonErrorController;
@@ -22,12 +24,11 @@ import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.validation.beanvalidation.LocalValidatorFactoryBean;
 
-import lemon.exceptions.handlers.AbstractExceptionHandler;
 import lemon.exceptions.util.LexUtils;
 
 @Configuration
 @AutoConfigureBefore({ValidationAutoConfiguration.class})
-@ComponentScan(basePackageClasses=AbstractExceptionHandler.class)
+//@ComponentScan(basePackageClasses=AbstractExceptionHandler.class) cant override anymore in this config
 public class LemonExceptionsAutoConfiguration {
 
 	private static final Log log = LogFactory.getLog(LemonExceptionsAutoConfiguration.class);
@@ -104,6 +105,7 @@ public class LemonExceptionsAutoConfiguration {
 		log.info("Configuring LemonErrorController");
 		return new LemonErrorController(errorAttributes, serverProperties, errorViewResolvers);
 	}
+
 
 	
 	/**

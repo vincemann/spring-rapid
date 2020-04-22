@@ -8,7 +8,7 @@ import org.springframework.stereotype.Component;
 
 import lemon.exceptions.handlers.AbstractExceptionHandler;
 
-@Component
+//@Component
 @Order(Ordered.LOWEST_PRECEDENCE)
 public class UsernameNotFoundExceptionHandler extends AbstractExceptionHandler<UsernameNotFoundException> {
 	

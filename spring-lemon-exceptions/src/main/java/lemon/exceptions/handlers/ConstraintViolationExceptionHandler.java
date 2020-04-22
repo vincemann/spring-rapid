@@ -10,7 +10,7 @@ import org.springframework.stereotype.Component;
 
 import lemon.exceptions.LemonFieldError;
 
-@Component
+//@Component
 @Order(Ordered.LOWEST_PRECEDENCE)
 public class ConstraintViolationExceptionHandler extends AbstractValidationExceptionHandler<ConstraintViolationException> {
 

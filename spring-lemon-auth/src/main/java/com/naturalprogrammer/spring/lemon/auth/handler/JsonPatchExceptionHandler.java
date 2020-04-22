@@ -7,7 +7,7 @@ import org.springframework.stereotype.Component;
 import com.github.fge.jsonpatch.JsonPatchException;
 import lemon.exceptions.handlers.AbstractBadRequestExceptionHandler;
 
-@Component
+//@Component
 @Order(Ordered.LOWEST_PRECEDENCE)
 public class JsonPatchExceptionHandler extends AbstractBadRequestExceptionHandler<JsonPatchException> {
 

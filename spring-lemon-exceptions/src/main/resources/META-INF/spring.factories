@@ -1,2 +1,3 @@
 org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
-lemon.exceptions.config.LemonExceptionsAutoConfiguration
+lemon.exceptions.config.LemonExceptionsAutoConfiguration,\
+lemon.exceptions.config.LemonExceptionHandlerAutoConfiguration
