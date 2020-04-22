@@ -49,7 +49,7 @@ public abstract class LemonController
 	private static final Log log = LogFactory.getLog(LemonController.class);
 
     private long jwtExpirationMillis;
-	private LemonService<U, ID> lemonService;
+	private LemonService<U, ID,?> lemonService;
 
 	public LemonController(DtoMappingContext dtoMappingContext) {
 		super(dtoMappingContext);
@@ -62,7 +62,7 @@ public abstract class LemonController
 	@Autowired
 	public void createLemonController(
 			LemonProperties properties,
-			@Secured LemonService<U, ID> lemonService) {
+			@Secured LemonService<U, ID,? extends AbstractUserRepository<U,ID>> lemonService) {
 		
 		this.jwtExpirationMillis = properties.getJwt().getExpirationMillis();
 		this.lemonService = lemonService;

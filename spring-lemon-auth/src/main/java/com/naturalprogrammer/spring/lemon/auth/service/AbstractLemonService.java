@@ -24,8 +24,8 @@ import java.util.HashMap;
 import java.util.Map;
 
 public abstract class AbstractLemonService
-	<U extends AbstractUser<ID>, ID extends Serializable>
-			extends JPACrudService<U,ID,AbstractUserRepository<U,ID>> {
+	<U extends AbstractUser<ID>, ID extends Serializable,R extends AbstractUserRepository<U,ID>>
+			extends JPACrudService<U,ID,R> {
 
     private static final Log log = LogFactory.getLog(AbstractLemonService.class);
 	protected PasswordEncoder passwordEncoder;

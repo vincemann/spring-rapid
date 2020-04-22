@@ -51,7 +51,7 @@ public class LemonAutoConfiguration {
 	@Bean
 	@ConditionalOnMissingBean(IdConverter.class)
 	public <ID extends Serializable>
-	IdConverter<ID> idConverter(LemonService<?,ID> lemonService) {
+	IdConverter<ID> idConverter(LemonService<?,ID,?> lemonService) {
 		return id -> lemonService.toId(id);
 	}
 	
@@ -61,7 +61,7 @@ public class LemonAutoConfiguration {
 	@Bean
 	@ConditionalOnMissingBean(LemonAuthenticationSuccessHandler.class)
 	public LemonAuthenticationSuccessHandler authenticationSuccessHandler(
-			ObjectMapper objectMapper, LemonService<?, ?> lemonService, LemonProperties properties) {
+			ObjectMapper objectMapper, LemonService<?, ?,?> lemonService, LemonProperties properties) {
 		
         log.info("Configuring AuthenticationSuccessHandler");       
 		return new LemonAuthenticationSuccessHandler(objectMapper, lemonService, properties);

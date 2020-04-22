@@ -28,10 +28,10 @@ public class LemonAuthenticationSuccessHandler
 	private static final Log log = LogFactory.getLog(LemonAuthenticationSuccessHandler.class);
 	
     private ObjectMapper objectMapper;    
-    private LemonService<?, ?> lemonService;
+    private LemonService<?, ?,?> lemonService;
     private long defaultExpirationMillis;
     
-	public LemonAuthenticationSuccessHandler(ObjectMapper objectMapper, LemonService<?, ?> lemonService, LemonProperties properties) {
+	public LemonAuthenticationSuccessHandler(ObjectMapper objectMapper, LemonService<?, ?,?> lemonService, LemonProperties properties) {
 		
 		this.objectMapper = objectMapper;
 		this.lemonService = lemonService;

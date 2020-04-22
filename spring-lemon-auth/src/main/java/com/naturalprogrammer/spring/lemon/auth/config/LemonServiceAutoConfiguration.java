@@ -3,7 +3,7 @@ package com.naturalprogrammer.spring.lemon.auth.config;
 import com.naturalprogrammer.spring.lemon.auth.domain.AbstractUserRepository;
 import com.naturalprogrammer.spring.lemon.auth.security.LemonAclPlugin;
 import com.naturalprogrammer.spring.lemon.auth.service.LemonService;
-import com.naturalprogrammer.spring.lemon.auth.service.LemonServiceSecurityRule;
+import com.naturalprogrammer.spring.lemon.auth.security.LemonServiceSecurityRule;
 import io.github.vincemann.springrapid.acl.plugin.AdminFullAccessAclPlugin;
 import io.github.vincemann.springrapid.acl.plugin.CleanUpAclPlugin;
 import io.github.vincemann.springrapid.acl.proxy.create.CrudServiceSecurityProxyFactory;
