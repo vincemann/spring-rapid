@@ -30,11 +30,11 @@ public class LemonServiceAutoConfiguration {
     MutableAclService mutableAclService;
 
     @Autowired
-    AbstractUserRepository userRepository;
+    AbstractUserRepository<?,?> userRepository;
 
     @ConditionalOnMissingBean(LemonServiceSecurityRule.class)
     @Bean
-    public LemonServiceSecurityRule lemonServiceSecurityRule(AbstractUserRepository repository){
+    public LemonServiceSecurityRule lemonServiceSecurityRule(AbstractUserRepository<?,?> repository){
         return new LemonServiceSecurityRule(repository);
     }
 
@@ -47,7 +47,7 @@ public class LemonServiceAutoConfiguration {
     @ConditionalOnMissingBean(name = "aclManagingLemonService")
     @Bean
     @AclManaging
-    public LemonService aclManagingLemonService(LemonService service,
+    public LemonService<?,?,?> aclManagingLemonService(LemonService<?,?,?> service,
                                                 AdminFullAccessAclPlugin adminFullAccess,
                                                 CleanUpAclPlugin cleanUpAclPlugin){
         return CrudServicePluginProxyFactory.create(service,adminFullAccess,lemonAclPlugin(),cleanUpAclPlugin);
@@ -57,7 +57,7 @@ public class LemonServiceAutoConfiguration {
     @ConditionalOnMissingBean(name = "securedLemonService")
     @Bean
     @Secured
-    public LemonService securedLemonService(@AclManaging LemonService service,
+    public LemonService<?,?,?> securedLemonService(@AclManaging LemonService<?,?,?> service,
                                                 LemonServiceSecurityRule securityRule){
         return securityProxyFactory.create(service,securityRule);
     }

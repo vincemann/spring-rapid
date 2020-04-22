@@ -9,7 +9,7 @@ import org.springframework.web.bind.support.WebExchangeBindException;
 
 import lemon.exceptions.LemonFieldError;
 
-@Component
+//@Component
 @Order(Ordered.LOWEST_PRECEDENCE)
 public class WebExchangeBindExceptionHandler extends AbstractValidationExceptionHandler<WebExchangeBindException> {
 

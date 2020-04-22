@@ -10,7 +10,7 @@ import org.springframework.stereotype.Component;
 import lemon.exceptions.LemonFieldError;
 import lemon.exceptions.MultiErrorException;
 
-@Component
+//@Component
 @Order(Ordered.LOWEST_PRECEDENCE)
 public class MultiErrorExceptionHandler extends AbstractExceptionHandler<MultiErrorException> {
 
