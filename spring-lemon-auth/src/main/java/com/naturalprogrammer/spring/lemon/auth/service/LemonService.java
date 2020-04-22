@@ -22,8 +22,8 @@ import java.util.Map;
 import java.util.Optional;
 
 @Validated
-public interface LemonService<U extends AbstractUser<ID>, ID extends Serializable>
-        extends CrudService<U,ID, AbstractUserRepository<U,ID>> {
+public interface LemonService<U extends AbstractUser<ID>, ID extends Serializable, R extends AbstractUserRepository<U,ID>>
+        extends CrudService<U,ID, R> {
     public Map<String, Object> getContext(Optional<Long> expirationMillis, HttpServletResponse response);
     @Validated(UserUtils.SignUpValidation.class)
     public void signup(@Valid U user) throws BadEntityException;

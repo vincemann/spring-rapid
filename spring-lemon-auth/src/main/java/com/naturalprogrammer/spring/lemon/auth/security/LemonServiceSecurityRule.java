@@ -1,4 +1,4 @@
-package com.naturalprogrammer.spring.lemon.auth.service;
+package com.naturalprogrammer.spring.lemon.auth.security;
 
 import com.naturalprogrammer.spring.lemon.auth.domain.AbstractUser;
 import com.naturalprogrammer.spring.lemon.auth.domain.AbstractUserRepository;

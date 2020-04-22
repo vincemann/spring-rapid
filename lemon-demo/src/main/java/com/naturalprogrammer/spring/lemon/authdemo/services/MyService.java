@@ -9,7 +9,7 @@ import org.springframework.stereotype.Service;
 
 @Service
 @Primary
-public class MyService extends LemonServiceImpl<User, Long> {
+public class MyService extends LemonServiceImpl<User, Long,UserRepository> {
 
 	@Override
     public User newUser() {
