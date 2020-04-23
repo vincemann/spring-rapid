@@ -3,7 +3,7 @@ package io.github.vincemann.springrapid.coretest.service.result.matcher.compare;
 import com.github.hervian.reflection.Types;
 import io.github.vincemann.springrapid.core.model.IdentifiableEntity;
 import io.github.vincemann.springrapid.coretest.service.result.matcher.ServiceResultMatcher;
-import io.github.vincemann.springrapid.coretest.service.result.matcher.compare.resolve.CompareEntityPlaceholder;
+import io.github.vincemann.springrapid.coretest.service.result.matcher.resolve.EntityPlaceholder;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import org.junit.jupiter.api.Assertions;
@@ -13,7 +13,7 @@ import java.lang.reflect.Method;
 import java.util.*;
 
 /**
- * Asserts GetterValues of Entity, that can either be a concrete entity or a {@link CompareEntityPlaceholder}.
+ * Asserts GetterValues of Entity, that can either be a concrete entity or a {@link EntityPlaceholder}.
  */
 public class EntityPropertyMatcher extends PlaceholderResolvingEntityMatcherContext {
     private Map<Method, Object> getterValueMap = new LinkedHashMap<>();
@@ -30,7 +30,7 @@ public class EntityPropertyMatcher extends PlaceholderResolvingEntityMatcherCont
         private Boolean collectionSizeCheck;
     }
 
-    public EntityPropertyMatcher(CompareEntityPlaceholder compareRootPlaceholder) {
+    public EntityPropertyMatcher(EntityPlaceholder compareRootPlaceholder) {
         super(compareRootPlaceholder);
     }
 

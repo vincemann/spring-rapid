@@ -10,7 +10,6 @@ import io.github.vincemann.springrapid.demo.service.PetTypeService;
 import io.github.vincemann.springrapid.demo.service.plugin.OwnerOfTheYearPlugin;
 import io.github.vincemann.springrapid.core.service.exception.BadEntityException;
 import io.github.vincemann.springrapid.core.service.exception.EntityNotFoundException;
-import io.github.vincemann.springrapid.core.service.exception.BadEntityException;
 import io.github.vincemann.springrapid.coretest.compare.FullComparator;
 import io.github.vincemann.springrapid.coretest.service.CrudServiceIntegrationTest;
 import io.github.vincemann.springrapid.coretest.service.result.ServiceResult;
@@ -30,8 +29,8 @@ import static io.github.vincemann.springrapid.coretest.service.result.matcher.Ex
 import static io.github.vincemann.springrapid.coretest.service.result.matcher.ExistenceMatchers.notPresentInDatabase;
 import static io.github.vincemann.springrapid.coretest.service.result.matcher.compare.CompareEntityMatchers.compare;
 import static io.github.vincemann.springrapid.coretest.service.result.matcher.compare.CompareEntityMatchers.propertyCompare;
-import static io.github.vincemann.springrapid.coretest.service.result.matcher.compare.resolve.CompareEntityPlaceholder.DB_ENTITY;
-import static io.github.vincemann.springrapid.coretest.service.result.matcher.compare.resolve.CompareEntityPlaceholder.SERVICE_INPUT_ENTITY;
+import static io.github.vincemann.springrapid.coretest.service.result.matcher.resolve.EntityPlaceholder.DB_ENTITY;
+import static io.github.vincemann.springrapid.coretest.service.result.matcher.resolve.EntityPlaceholder.SERVICE_INPUT_ENTITY;
 
 
 class OwnerServiceIntegrationTest
