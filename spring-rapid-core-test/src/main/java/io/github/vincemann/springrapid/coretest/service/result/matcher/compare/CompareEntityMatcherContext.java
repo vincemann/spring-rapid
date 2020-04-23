@@ -2,20 +2,20 @@ package io.github.vincemann.springrapid.coretest.service.result.matcher.compare;
 
 import io.github.vincemann.springrapid.core.model.IdentifiableEntity;
 import io.github.vincemann.springrapid.coretest.service.result.ServiceTestContext;
-import io.github.vincemann.springrapid.coretest.service.result.matcher.compare.resolve.CompareEntityPlaceholder;
+import io.github.vincemann.springrapid.coretest.service.result.matcher.resolve.EntityPlaceholder;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class CompareEntityMatcherContext extends PlaceholderResolvingEntityMatcherContext {
     private List<IdentifiableEntity> compareTos = new ArrayList<>();
-    private List<CompareEntityPlaceholder> compareToPlaceholders = new ArrayList<>();
+    private List<EntityPlaceholder> compareToPlaceholders = new ArrayList<>();
 
     public CompareEntityMatcherContext(IdentifiableEntity compareRoot) {
         super(compareRoot);
     }
 
-    public CompareEntityMatcherContext(CompareEntityPlaceholder compareRootPlaceholder) {
+    public CompareEntityMatcherContext(EntityPlaceholder compareRootPlaceholder) {
         super(compareRootPlaceholder);
     }
 
@@ -24,22 +24,22 @@ public class CompareEntityMatcherContext extends PlaceholderResolvingEntityMatch
         return this;
     }
 
-    public CompareEntityMatcherContext with(CompareEntityPlaceholder compareTo) {
+    public CompareEntityMatcherContext with(EntityPlaceholder compareTo) {
         compareToPlaceholders.add(compareTo);
         return this;
     }
 
     public CompareEntityMatcherContext withDbEntity() {
-        compareToPlaceholders.add(CompareEntityPlaceholder.DB_ENTITY);
+        compareToPlaceholders.add(EntityPlaceholder.DB_ENTITY);
         return this;
     }
     public CompareEntityMatcherContext withServiceReturnedEntity() {
-        compareToPlaceholders.add(CompareEntityPlaceholder.SERVICE_RETURNED_ENTITY);
+        compareToPlaceholders.add(EntityPlaceholder.SERVICE_RETURNED_ENTITY);
         return this;
     }
 
     public CompareEntityMatcherContext withServiceInputEntity() {
-        compareToPlaceholders.add(CompareEntityPlaceholder.SERVICE_INPUT_ENTITY);
+        compareToPlaceholders.add(EntityPlaceholder.SERVICE_INPUT_ENTITY);
         return this;
     }
 
@@ -48,7 +48,7 @@ public class CompareEntityMatcherContext extends PlaceholderResolvingEntityMatch
         return compareTos;
     }
 
-    protected List<CompareEntityPlaceholder> getCompareToPlaceholders() {
+    protected List<EntityPlaceholder> getCompareToPlaceholders() {
         return compareToPlaceholders;
     }
 
@@ -62,7 +62,7 @@ public class CompareEntityMatcherContext extends PlaceholderResolvingEntityMatch
 
     protected void resolvePlaceholders(ServiceTestContext testContext) {
         resolveCompareRoot(testContext);
-        for (CompareEntityPlaceholder compareToPlaceholder : compareToPlaceholders) {
+        for (EntityPlaceholder compareToPlaceholder : compareToPlaceholders) {
             compareTos.add(getResolver().resolve(compareToPlaceholder, testContext));
         }
     }

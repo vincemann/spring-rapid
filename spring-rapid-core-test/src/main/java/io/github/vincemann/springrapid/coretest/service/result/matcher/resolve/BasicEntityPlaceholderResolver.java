@@ -1,4 +1,4 @@
-package io.github.vincemann.springrapid.coretest.service.result.matcher.compare.resolve;
+package io.github.vincemann.springrapid.coretest.service.result.matcher.resolve;
 
 import io.github.vincemann.springrapid.core.model.IdentifiableEntity;
 import io.github.vincemann.springrapid.coretest.service.result.ServiceTestContext;
@@ -9,11 +9,11 @@ import java.util.List;
 import java.util.Optional;
 
 
-public class BasicCompareEntityPlaceholderResolver implements CompareEntityPlaceholderResolver {
+public class BasicEntityPlaceholderResolver implements EntityPlaceholderResolver {
 
     @Override
-    public IdentifiableEntity resolve(CompareEntityPlaceholder compareEntityPlaceholder, ServiceTestContext testContext) {
-        switch (compareEntityPlaceholder) {
+    public IdentifiableEntity resolve(EntityPlaceholder entityPlaceholder, ServiceTestContext testContext) {
+        switch (entityPlaceholder) {
             case DB_ENTITY:
                 Serializable id = findDbEntityId(testContext);
                 Optional<IdentifiableEntity> byId = testContext.getRepository().findById(id);

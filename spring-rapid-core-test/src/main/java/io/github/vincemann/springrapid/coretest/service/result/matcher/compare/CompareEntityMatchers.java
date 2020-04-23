@@ -1,10 +1,10 @@
 package io.github.vincemann.springrapid.coretest.service.result.matcher.compare;
 
 import io.github.vincemann.springrapid.core.model.IdentifiableEntity;
-import io.github.vincemann.springrapid.coretest.service.result.matcher.compare.resolve.CompareEntityPlaceholder;
+import io.github.vincemann.springrapid.coretest.service.result.matcher.resolve.EntityPlaceholder;
 
 /**
- * Offers Matchers for comparing two Entities, that can also be {@link CompareEntityPlaceholder}s.
+ * Offers Matchers for comparing two Entities, that can also be {@link EntityPlaceholder}s.
  */
 public class CompareEntityMatchers {
 
@@ -17,7 +17,7 @@ public class CompareEntityMatchers {
         return new CompareEntityMatcherContext(compareRoot);
     }
 
-    public static CompareEntityMatcherContext compare(CompareEntityPlaceholder rootCompareResolvable){
+    public static CompareEntityMatcherContext compare(EntityPlaceholder rootCompareResolvable){
         return new CompareEntityMatcherContext(rootCompareResolvable);
     }
 
@@ -30,7 +30,7 @@ public class CompareEntityMatchers {
         return new EntityPropertyMatcher(compareRoot);
     }
 
-    public static EntityPropertyMatcher propertyCompare(CompareEntityPlaceholder rootCompareResolvable){
+    public static EntityPropertyMatcher propertyCompare(EntityPlaceholder rootCompareResolvable){
         return new EntityPropertyMatcher(rootCompareResolvable);
     }
 

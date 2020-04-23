@@ -52,6 +52,7 @@ public class ServiceTestTemplate
         this.applicationContext =applicationContext;
     }
 
+
     public ServiceResultActions perform(ServiceRequestBuilder serviceRequestBuilder){
         ServiceRequest serviceRequest = serviceRequestBuilder.create(serviceUnderTest);
         serviceRequest.setService(serviceUnderTest);
