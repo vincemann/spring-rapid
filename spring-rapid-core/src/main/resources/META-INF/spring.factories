@@ -1,8 +1,8 @@
 org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
-io.github.vincemann.springrapid.core.config.WebMvcConfig,\
+io.github.vincemann.springrapid.core.config.WebMvcAutoConfiguration,\
 io.github.vincemann.springrapid.core.config.CrudServiceLocatorAutoConfiguration,\
 io.github.vincemann.springrapid.core.config.DtoMapperAutoConfiguration,\
-io.github.vincemann.springrapid.core.config.EnableAdviceConfig,\
-io.github.vincemann.springrapid.core.config.JacksonConfig,\
+io.github.vincemann.springrapid.core.config.EnableAdviceAutoConfiguration,\
+io.github.vincemann.springrapid.core.config.RapidJacksonAutoConfiguration,\
 io.github.vincemann.springrapid.core.config.RapidControllerAutoConfiguration,\
 io.github.vincemann.springrapid.core.config.BootstrapAutoConfiguration

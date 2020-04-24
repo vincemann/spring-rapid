@@ -17,7 +17,7 @@ import org.springframework.context.annotation.Bean;
 public class SecurityProxyAutoConfiguration {
 
     public SecurityProxyAutoConfiguration() {
-        log.debug("ServiceSecurityProxyAutoConfiguration loaded");
+        log.info("Created");
     }
 
 

@@ -7,6 +7,7 @@ import io.github.vincemann.springrapid.core.controller.rapid.idFetchingStrategy.
 import io.github.vincemann.springrapid.core.controller.rapid.validationStrategy.JavaXValidationStrategy;
 import io.github.vincemann.springrapid.core.controller.rapid.validationStrategy.ValidationStrategy;
 import io.github.vincemann.springrapid.core.service.EndpointService;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
@@ -21,7 +22,12 @@ import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandl
 @SuppressWarnings("rawtypes")
 @Import(DtoMapperAutoConfiguration.class)
 @WebConfig
+@Slf4j
 public class RapidControllerAutoConfiguration {
+
+    public RapidControllerAutoConfiguration() {
+        log.info("Created");
+    }
 
     @Value("${controller.idFetchingStrategy.idUrlParamKey:id}")
     private String idUrlParamKey;

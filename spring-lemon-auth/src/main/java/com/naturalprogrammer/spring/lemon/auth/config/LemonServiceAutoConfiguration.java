@@ -11,6 +11,7 @@ import io.github.vincemann.springrapid.acl.service.AclManaging;
 import io.github.vincemann.springrapid.acl.service.LocalPermissionService;
 import io.github.vincemann.springrapid.acl.service.Secured;
 import io.github.vincemann.springrapid.core.proxy.factory.CrudServicePluginProxyFactory;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.context.annotation.Bean;
@@ -18,6 +19,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.security.acls.model.MutableAclService;
 
 @Configuration
+@Slf4j
 public class LemonServiceAutoConfiguration {
 
     @Autowired
@@ -31,6 +33,10 @@ public class LemonServiceAutoConfiguration {
 
     @Autowired
     AbstractUserRepository<?,?> userRepository;
+
+    public LemonServiceAutoConfiguration() {
+        log.info("Created");
+    }
 
     @ConditionalOnMissingBean(LemonServiceSecurityRule.class)
     @Bean

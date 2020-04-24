@@ -11,6 +11,7 @@ import io.github.vincemann.springrapid.entityrelationship.controller.dtomapper.i
 import io.github.vincemann.springrapid.entityrelationship.controller.dtomapper.idResolver.biDir.BiDirParentIdResolver;
 import io.github.vincemann.springrapid.entityrelationship.controller.dtomapper.idResolver.UniDirChildIdResolver;
 import io.github.vincemann.springrapid.entityrelationship.controller.dtomapper.idResolver.UniDirParentIdResolver;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.autoconfigure.AutoConfigureBefore;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
@@ -22,7 +23,12 @@ import java.util.List;
 
 @WebConfig
 @AutoConfigureBefore(DtoMapperAutoConfiguration.class)
+@Slf4j
 public class EntityIdResolvingMapperAutoConfiguration {
+
+    public EntityIdResolvingMapperAutoConfiguration() {
+        log.info("Created");
+    }
 
     @ConditionalOnMissingBean(name = "biDiChildIdResolver")
     @Bean

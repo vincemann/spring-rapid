@@ -13,7 +13,9 @@ public class ClassUtils {
             interfaces.addAll(Lists.newArrayList(curr.getInterfaces()));
             curr = curr.getSuperclass();
         } while (!curr.equals(Object.class));
-        interfaces.forEach(i -> interfaces.addAll(Lists.newArrayList(i.getInterfaces())));
+        Set<Class> interfacesTmp = new HashSet<>(interfaces.size());
+        interfaces.forEach(i -> interfacesTmp.addAll(Lists.newArrayList(i.getInterfaces())));
+        interfacesTmp.forEach(i -> interfaces.add(i));
         return interfaces.toArray(new Class[0]);
     }
 }

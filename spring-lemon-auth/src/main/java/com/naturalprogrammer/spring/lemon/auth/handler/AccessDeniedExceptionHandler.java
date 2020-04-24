@@ -4,9 +4,8 @@ import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.AccessDeniedException;
-import org.springframework.stereotype.Component;
 
-import lemon.exceptions.handlers.AbstractExceptionHandler;
+import com.naturalprogrammer.spring.lemon.exceptions.handlers.AbstractExceptionHandler;
 
 //@Component
 @Order(Ordered.LOWEST_PRECEDENCE)
