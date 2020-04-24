@@ -18,7 +18,7 @@ import com.naturalprogrammer.spring.lemon.auth.util.LemonUtils;
 import com.nimbusds.jwt.JWTClaimsSet;
 import io.github.vincemann.springrapid.acl.Role;
 import io.github.vincemann.springrapid.core.service.exception.BadEntityException;
-import lemon.exceptions.util.LexUtils;
+import com.naturalprogrammer.spring.lemon.exceptions.util.LexUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.apache.commons.logging.Log;

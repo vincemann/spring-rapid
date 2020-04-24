@@ -30,7 +30,7 @@ import com.naturalprogrammer.spring.lemon.auth.util.LecwUtils;
 
 @Configuration
 @EnableSpringDataWebSupport
-@EnableGlobalMethodSecurity(prePostEnabled = true)
+//@EnableGlobalMethodSecurity(prePostEnabled = true)
 @AutoConfigureBefore({
 	WebMvcAutoConfiguration.class,
 	ErrorMvcAutoConfiguration.class,

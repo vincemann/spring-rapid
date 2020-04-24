@@ -3,7 +3,7 @@ package com.naturalprogrammer.spring.lemon.auth.security.service;
 import com.naturalprogrammer.spring.lemon.auth.domain.AbstractUser;
 import com.naturalprogrammer.spring.lemon.auth.domain.AbstractUserRepository;
 import com.naturalprogrammer.spring.lemon.auth.security.domain.LemonPrincipal;
-import lemon.exceptions.util.LexUtils;
+import com.naturalprogrammer.spring.lemon.exceptions.util.LexUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.security.core.userdetails.UserDetailsService;

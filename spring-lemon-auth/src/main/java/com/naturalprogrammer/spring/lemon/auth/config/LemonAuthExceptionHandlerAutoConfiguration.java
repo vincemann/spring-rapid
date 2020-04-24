@@ -4,6 +4,7 @@ import com.naturalprogrammer.spring.lemon.auth.handler.AccessDeniedExceptionHand
 import com.naturalprogrammer.spring.lemon.auth.handler.BadCredentialsExceptionHandler;
 import com.naturalprogrammer.spring.lemon.auth.handler.JsonPatchExceptionHandler;
 import com.naturalprogrammer.spring.lemon.auth.handler.UsernameNotFoundExceptionHandler;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -11,7 +12,12 @@ import org.springframework.context.annotation.Configuration;
 import java.nio.file.AccessDeniedException;
 
 @Configuration
+@Slf4j
 public class LemonAuthExceptionHandlerAutoConfiguration {
+
+    public LemonAuthExceptionHandlerAutoConfiguration() {
+        log.info("Created");
+    }
 
     @Bean
     @ConditionalOnMissingBean(UsernameNotFoundExceptionHandler.class)

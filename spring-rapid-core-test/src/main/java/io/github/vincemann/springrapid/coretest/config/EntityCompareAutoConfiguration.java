@@ -4,6 +4,7 @@ import io.github.vincemann.springrapid.coretest.compare.LevelOnePropertyComparat
 import io.github.vincemann.springrapid.coretest.compare.FullComparator;
 import io.github.vincemann.springrapid.coretest.compare.LevelOneFullComparator;
 import io.github.vincemann.springrapid.coretest.compare.PropertyComparator;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.test.context.TestConfiguration;
@@ -13,7 +14,12 @@ import org.springframework.context.annotation.Scope;
 import static org.springframework.beans.factory.config.ConfigurableBeanFactory.SCOPE_PROTOTYPE;
 
 @TestConfiguration
+@Slf4j
 public class EntityCompareAutoConfiguration {
+
+    public EntityCompareAutoConfiguration() {
+        log.info("Created");
+    }
 
     @Scope(SCOPE_PROTOTYPE)
     @ConditionalOnMissingBean(FullComparator.class)

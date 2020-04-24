@@ -20,7 +20,7 @@ import org.springframework.security.config.annotation.method.configuration.Globa
 public class AclMethodSecurityAutoConfiguration extends GlobalMethodSecurityConfiguration {
 
     public AclMethodSecurityAutoConfiguration() {
-        log.debug("AclMethodSecurityAutoConfiguration loaded");
+        log.info("Created");
     }
 
 

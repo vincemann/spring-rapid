@@ -15,7 +15,7 @@ import com.naturalprogrammer.spring.lemon.auth.util.LecUtils;
 import com.naturalprogrammer.spring.lemon.auth.validation.CaptchaValidator;
 import com.nimbusds.jose.JOSEException;
 import com.nimbusds.jose.KeyLengthException;
-import lemon.exceptions.config.LemonExceptionsAutoConfiguration;
+import com.naturalprogrammer.spring.lemon.exceptions.config.LemonExceptionsAutoConfiguration;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.boot.autoconfigure.AutoConfigureBefore;

@@ -39,7 +39,7 @@ import javax.sql.DataSource;
 public class AclAutoConfiguration {
 
     public AclAutoConfiguration() {
-        log.debug("AclAutoConfiguration loaded");
+        log.info("Created");
     }
 
     @Autowired

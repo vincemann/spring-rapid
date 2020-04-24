@@ -5,7 +5,7 @@ import com.naturalprogrammer.spring.lemon.auth.security.domain.LemonUserDto;
 import com.naturalprogrammer.spring.lemon.auth.security.service.BlueTokenService;
 import com.naturalprogrammer.spring.lemon.auth.util.LecUtils;
 import com.nimbusds.jwt.JWTClaimsSet;
-import lemon.exceptions.util.LexUtils;
+import com.naturalprogrammer.spring.lemon.exceptions.util.LexUtils;
 import lombok.AllArgsConstructor;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
