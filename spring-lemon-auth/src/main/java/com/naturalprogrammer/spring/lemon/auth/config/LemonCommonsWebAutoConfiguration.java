@@ -3,12 +3,15 @@ package com.naturalprogrammer.spring.lemon.auth.config;
 import java.io.Serializable;
 
 import com.naturalprogrammer.spring.lemon.auth.LemonProperties;
+import io.github.vincemann.springrapid.core.config.RapidJacksonAutoConfiguration;
 import io.github.vincemann.springrapid.core.slicing.config.WebConfig;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.AutoConfigureBefore;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.boot.autoconfigure.jackson.JacksonAutoConfiguration;
 import org.springframework.boot.autoconfigure.security.servlet.SecurityAutoConfiguration;
 import org.springframework.boot.autoconfigure.security.servlet.SecurityFilterAutoConfiguration;
 import org.springframework.boot.autoconfigure.web.servlet.WebMvcAutoConfiguration;
@@ -31,6 +34,7 @@ import com.naturalprogrammer.spring.lemon.auth.util.LecwUtils;
 @Configuration
 @EnableSpringDataWebSupport
 //@EnableGlobalMethodSecurity(prePostEnabled = true)
+@AutoConfigureAfter(RapidJacksonAutoConfiguration.class)
 @AutoConfigureBefore({
 	WebMvcAutoConfiguration.class,
 	ErrorMvcAutoConfiguration.class,

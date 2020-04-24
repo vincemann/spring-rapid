@@ -2,13 +2,13 @@ package com.naturalprogrammer.spring.lemon.auth.bootstrap;
 
 import com.google.common.collect.Lists;
 import com.naturalprogrammer.spring.lemon.auth.LemonProperties;
+import com.naturalprogrammer.spring.lemon.auth.domain.AbstractUser;
 import com.naturalprogrammer.spring.lemon.auth.service.LemonService;
 import io.github.vincemann.springrapid.acl.Role;
 import io.github.vincemann.springrapid.acl.service.AclManaging;
 import io.github.vincemann.springrapid.acl.service.MockAuthService;
 import io.github.vincemann.springrapid.core.bootstrap.DatabaseDataInitializer;
 import io.github.vincemann.springrapid.core.service.exception.BadEntityException;
-import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -33,8 +33,8 @@ import java.util.List;
 //todo backend muss noch order3 und profile dev,prod machen
 public class AdminDatabaseDataInitializer extends DatabaseDataInitializer {
 
-    @Value("#{'${database.init.admin.usernames}'.split(',')}")
-    private List<String> adminUsername;
+    @Value("#{'${database.init.admin.emails}'.split(',')}")
+    private List<String> adminEmails;
     @Value("#{'${database.init.admin.passwords}'.split(',')}")
     private List<String> adminPasswords;
 
@@ -57,11 +57,11 @@ public class AdminDatabaseDataInitializer extends DatabaseDataInitializer {
 
     @Override
     @Transactional
-    public void loadInitData()  {
-        Assert.isTrue(!adminUsername.isEmpty());
+    public void loadInitData() {
+        Assert.isTrue(!adminEmails.isEmpty());
         Assert.isTrue(!adminPasswords.isEmpty());
         Authentication adminAuth = new UsernamePasswordAuthenticationToken(
-                adminUsername.get(0),
+                adminEmails.get(0),
                 adminPasswords.get(0),
                 Lists.newArrayList(
                         new SimpleGrantedAuthority(Role.ADMIN)
@@ -81,21 +81,18 @@ public class AdminDatabaseDataInitializer extends DatabaseDataInitializer {
     private void addAdmins() throws BadEntityException {
         //add lemon admin
         LemonProperties.Admin lemonAdmin = lemonProperties.getAdmin();
-        adminUsername.add(lemonAdmin.getUsername());
+        adminEmails.add(lemonAdmin.getUsername());
         adminPasswords.add(lemonAdmin.getPassword());
         //add rapid admins
         int index = 0;
-        for (String admin : adminUsername) {
+        for (String admin : adminEmails) {
             log.debug("registering admin:: " + admin);
-            try {
-                // Check if the user already exists
-                userDetailsService
-                        .loadUserByUsername(admin);
 
-            } catch (UsernameNotFoundException e) {
-
+            // Check if the user already exists
+            AbstractUser byEmail = lemonService
+                    .findByEmail(admin);
+            if (byEmail != null) {
                 // Doesn't exist. So, create it.
-
                 lemonService.createAdminUser(
                         new LemonProperties.Admin(admin, adminPasswords.get(index))
                 );

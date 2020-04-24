@@ -181,9 +181,7 @@ public abstract class LemonServiceImpl
 	 */
 	public U findByEmail(String email) {
 		log.debug("Fetching user by email: " + email);
-		U found = getRepository().findByEmail(email).orElse(null);
-		LexUtils.ensureFound(found);
-		return found;
+		return getRepository().findByEmail(email).orElse(null);
 	}
 
 

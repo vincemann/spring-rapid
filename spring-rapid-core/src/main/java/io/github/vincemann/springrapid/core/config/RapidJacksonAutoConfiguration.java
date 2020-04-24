@@ -10,6 +10,8 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
+import static com.fasterxml.jackson.databind.DeserializationFeature.ACCEPT_SINGLE_VALUE_AS_ARRAY;
+
 @Configuration
 @Slf4j
 public class RapidJacksonAutoConfiguration {
@@ -23,7 +25,8 @@ public class RapidJacksonAutoConfiguration {
     public ObjectMapper objectMapper(){
         ObjectMapper mapper= new LoggingObjectMapper();
         mapper.registerModule(new JavaTimeModule());
-        mapper.getDeserializationConfig().with(MapperFeature.USE_STATIC_TYPING);
+        mapper.configure(ACCEPT_SINGLE_VALUE_AS_ARRAY,true);
+        mapper.configure(MapperFeature.USE_STATIC_TYPING,true);
         return mapper;
     }
 
