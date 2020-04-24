@@ -22,6 +22,7 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Primary;
 import org.springframework.data.jpa.repository.config.EnableJpaAuditing;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.web.authentication.AuthenticationFailureHandler;
@@ -82,6 +83,7 @@ public class LemonAutoConfiguration {
 	 * Configures UserDetailsService if missing
 	 */
 	@Bean
+	@Primary
 	@ConditionalOnMissingBean(UserDetailsService.class)
 	public <U extends AbstractUser<ID>, ID extends Serializable>
 	LemonUserDetailsService userDetailService(AbstractUserRepository<U, ID> userRepository) {

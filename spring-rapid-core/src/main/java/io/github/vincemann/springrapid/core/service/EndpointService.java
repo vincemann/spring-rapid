@@ -18,7 +18,7 @@ public class EndpointService {
         this.requestMappingHandlerMapping = requestMappingHandlerMapping;
     }
 
-    @LogInteraction
+//    @LogInteraction
     public void addMapping(RequestMappingInfo requestMappingInfo, Method requestMethod, Object controller)  {
 
         /*RequestMappingInfo requestMappingInfo = RequestMappingInfo

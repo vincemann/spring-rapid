@@ -185,6 +185,7 @@ public abstract class LemonController
 		
 		log.debug("Fetching user by email: " + email);
 		U byEmail = lemonService.findByEmail(email);
+		LexUtils.ensureFound(byEmail);
 		byEmail.setPassword(null);
 		IdentifiableEntity<ID> dto = getDtoMapper().mapToDto(byEmail,
 				findDtoClass(CrudDtoEndpoint.FIND, Direction.RESPONSE));

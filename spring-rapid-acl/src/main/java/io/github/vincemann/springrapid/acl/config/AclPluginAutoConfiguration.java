@@ -1,12 +1,15 @@
 package io.github.vincemann.springrapid.acl.config;
 
-import io.github.vincemann.springrapid.acl.plugin.*;
+import io.github.vincemann.springrapid.acl.plugin.AdminFullAccessAclPlugin;
+import io.github.vincemann.springrapid.acl.plugin.AuthenticatedFullAccessAclPlugin;
+import io.github.vincemann.springrapid.acl.plugin.InheritParentAclPlugin;
 import io.github.vincemann.springrapid.acl.service.LocalPermissionService;
 import io.github.vincemann.springrapid.core.config.RapidJacksonAutoConfiguration;
 import io.github.vincemann.springrapid.core.slicing.config.ServiceConfig;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
+import org.springframework.boot.autoconfigure.jackson.JacksonAutoConfiguration;
 import org.springframework.context.annotation.Bean;
 import org.springframework.security.acls.model.MutableAclService;
 
