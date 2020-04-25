@@ -12,7 +12,6 @@ import org.springframework.security.acls.model.MutableAclService;
 
 import java.util.Optional;
 
-import static com.naturalprogrammer.spring.lemon.auth.LemonProperties.Admin.EMAIL_SUFFIX;
 
 @Slf4j
 public class LemonAclPlugin extends AbstractAclPlugin {
@@ -30,7 +29,7 @@ public class LemonAclPlugin extends AbstractAclPlugin {
 
     @CalledByProxy
     public void onAfterCreateAdmin(LemonProperties.Admin admin){
-        savePostSignupAclInfo(admin.getUsername()+EMAIL_SUFFIX);
+        savePostSignupAclInfo(admin.getUsername());
     }
 
     private void savePostSignupAclInfo(String email){

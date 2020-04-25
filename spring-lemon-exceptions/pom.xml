@@ -17,11 +17,11 @@
 
     <dependencies>
 
-<!--        <dependency>-->
-<!--            <groupId>io.github.vincemann</groupId>-->
-<!--            <artifactId>spring-rapid-core</artifactId>-->
-<!--            <version>${project.version}</version>-->
-<!--        </dependency>-->
+        <dependency>
+            <groupId>io.github.vincemann</groupId>
+            <artifactId>spring-rapid-core</artifactId>
+            <version>${project.version}</version>
+        </dependency>
 
 		<dependency>
 		    <groupId>org.springframework</groupId>

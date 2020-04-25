@@ -11,6 +11,7 @@ import com.naturalprogrammer.spring.lemon.auth.security.domain.LemonUserDto;
 import com.naturalprogrammer.spring.lemon.auth.service.LemonService;
 import com.naturalprogrammer.spring.lemon.auth.util.LecUtils;
 import com.naturalprogrammer.spring.lemon.auth.util.LecwUtils;
+import com.naturalprogrammer.spring.lemon.auth.util.LemonUtils;
 import com.naturalprogrammer.spring.lemon.auth.util.UserUtils;
 import io.github.vincemann.springrapid.acl.service.Secured;
 import io.github.vincemann.springrapid.core.controller.dtoMapper.DtoMappingException;
@@ -22,6 +23,8 @@ import io.github.vincemann.springrapid.core.model.IdentifiableEntity;
 import io.github.vincemann.springrapid.core.service.exception.BadEntityException;
 import io.github.vincemann.springrapid.core.service.exception.EntityNotFoundException;
 import com.naturalprogrammer.spring.lemon.exceptions.util.LexUtils;
+import io.github.vincemann.springrapid.core.slicing.components.WebComponent;
+import io.github.vincemann.springrapid.core.slicing.components.WebController;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -42,6 +45,7 @@ import java.util.Optional;
  * 
  * @author Sanjay Patel
  */
+@WebComponent
 public abstract class LemonController
 	<U extends AbstractUser<ID>, ID extends Serializable>
 			extends RapidController<U,ID> {

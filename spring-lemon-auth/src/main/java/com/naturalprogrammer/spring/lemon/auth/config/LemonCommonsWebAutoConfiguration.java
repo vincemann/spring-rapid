@@ -31,7 +31,7 @@ import com.naturalprogrammer.spring.lemon.auth.security.domain.LemonWebAuditorAw
 import com.naturalprogrammer.spring.lemon.auth.security.config.LemonWebSecurityConfig;
 import com.naturalprogrammer.spring.lemon.auth.util.LecwUtils;
 
-@Configuration
+@WebConfig
 @EnableSpringDataWebSupport
 //@EnableGlobalMethodSecurity(prePostEnabled = true)
 @AutoConfigureAfter(RapidJacksonAutoConfiguration.class)
@@ -110,14 +110,5 @@ public class LemonCommonsWebAutoConfiguration {
 		return new LemonWebAuditorAware<ID>();
 	}
 
-	/**
-	 * Configures LemonUtils
-	 */
-	@Bean
-	public LecwUtils lecwUtils(ApplicationContext applicationContext,
-			ObjectMapper objectMapper) {
 
-        log.info("Configuring LecwUtils");       		
-		return new LecwUtils();
-	}
 }

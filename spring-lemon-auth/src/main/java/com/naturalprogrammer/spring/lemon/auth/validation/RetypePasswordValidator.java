@@ -1,5 +1,6 @@
 package com.naturalprogrammer.spring.lemon.auth.validation;
 
+import io.github.vincemann.springrapid.core.slicing.components.ServiceComponent;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -15,6 +16,7 @@ import java.util.Objects;
  * 
  * @author Sanjay Patel
  */
+@ServiceComponent
 public class RetypePasswordValidator
 implements ConstraintValidator<RetypePassword, RetypePasswordForm> {
 	

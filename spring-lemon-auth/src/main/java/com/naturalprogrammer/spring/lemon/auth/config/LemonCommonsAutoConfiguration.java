@@ -12,10 +12,12 @@ import com.naturalprogrammer.spring.lemon.auth.security.service.GreenTokenServic
 import com.naturalprogrammer.spring.lemon.auth.security.service.LemonJweService;
 import com.naturalprogrammer.spring.lemon.auth.security.service.LemonJwsService;
 import com.naturalprogrammer.spring.lemon.auth.util.LecUtils;
+import com.naturalprogrammer.spring.lemon.auth.util.LecwUtils;
 import com.naturalprogrammer.spring.lemon.auth.validation.CaptchaValidator;
 import com.nimbusds.jose.JOSEException;
 import com.nimbusds.jose.KeyLengthException;
-import com.naturalprogrammer.spring.lemon.exceptions.config.LemonExceptionsAutoConfiguration;
+import com.naturalprogrammer.spring.lemon.exceptions.config.LemonWebExceptionsAutoConfiguration;
+import io.github.vincemann.springrapid.core.slicing.config.ServiceConfig;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.boot.autoconfigure.AutoConfigureBefore;
@@ -33,11 +35,11 @@ import org.springframework.security.acls.model.AclService;
 import org.springframework.security.crypto.factory.PasswordEncoderFactories;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
-@Configuration
-@ComponentScan(basePackageClasses= BadCredentialsExceptionHandler.class)
+@ServiceConfig
+//@ComponentScan(basePackageClasses= BadCredentialsExceptionHandler.class)
 @EnableAsync
 @AutoConfigureBefore({
-	LemonExceptionsAutoConfiguration.class})
+	LemonWebExceptionsAutoConfiguration.class})
 public class LemonCommonsAutoConfiguration {
 
 	private static final Log log = LogFactory.getLog(LemonCommonsAutoConfiguration.class);
@@ -54,16 +56,16 @@ public class LemonCommonsAutoConfiguration {
 	public PermissionEvaluator lemonPermissionEvaluator(AclService aclService){
 		return new LemonPermissionEvaluator(aclService);
 	}
-	
+
 	/**
-	 * Spring Lemon related properties
-	 */	
+	 * Configures LemonUtils
+	 */
 	@Bean
-	public LemonProperties lemonProperties() {
-		
-        log.info("Configuring LemonProperties");       
-		return new LemonProperties();
+	public LecwUtils lecwUtils() {
+		log.info("Configuring LecwUtils");
+		return new LecwUtils();
 	}
+
 	
 
 	/**

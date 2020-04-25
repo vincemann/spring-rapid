@@ -31,11 +31,11 @@
             <artifactId>spring-security-core</artifactId>
         </dependency>
 
-        <dependency>
-            <groupId>io.github.vincemann</groupId>
-            <artifactId>spring-lemon-exceptions</artifactId>
-            <version>${project.version}</version>
-        </dependency>
+<!--        <dependency>-->
+<!--            <groupId>io.github.vincemann</groupId>-->
+<!--            <artifactId>spring-lemon-exceptions</artifactId>-->
+<!--            <version>${project.version}</version>-->
+<!--        </dependency>-->
 
 
         <!--        <dependency>-->

@@ -10,6 +10,7 @@ import com.naturalprogrammer.spring.lemon.auth.util.UserUtils;
 import io.github.vincemann.springrapid.core.service.CrudService;
 import io.github.vincemann.springrapid.core.service.exception.BadEntityException;
 import io.github.vincemann.springrapid.core.service.exception.EntityNotFoundException;
+import io.github.vincemann.springrapid.core.slicing.components.ServiceComponent;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.validation.annotation.Validated;
 
@@ -22,6 +23,7 @@ import java.util.Map;
 import java.util.Optional;
 
 @Validated
+@ServiceComponent
 public interface LemonService<U extends AbstractUser<ID>, ID extends Serializable, R extends AbstractUserRepository<U,ID>>
         extends CrudService<U,ID, R> {
     public Map<String, Object> getContext(Optional<Long> expirationMillis, HttpServletResponse response);

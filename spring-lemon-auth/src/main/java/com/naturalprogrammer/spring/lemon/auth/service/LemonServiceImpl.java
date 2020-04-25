@@ -121,13 +121,11 @@ public abstract class LemonServiceImpl
 	@Transactional(propagation = Propagation.REQUIRED, readOnly = false)
 	public void signup(U user) throws BadEntityException {
 		log.debug("Signing up user: " + user);
-
 		initUser(user); // sets right all fields of the user
 		U saved = save(user);
 		makeUnverified(saved); // make the user unverified
-
 		LemonUtils.login(saved);
-		log.debug("Signed up user: " + user);
+
 
 //		// if successfully committed
 //		LecjUtils.afterCommit(() -> {

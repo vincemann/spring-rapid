@@ -2,6 +2,7 @@ package com.naturalprogrammer.spring.lemon.auth.validation;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.naturalprogrammer.spring.lemon.auth.LemonProperties;
+import io.github.vincemann.springrapid.core.slicing.components.ServiceComponent;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.apache.commons.logging.Log;
@@ -24,6 +25,7 @@ import java.util.Collection;
  * @author Sanjay Patel
  *
  */
+@ServiceComponent
 public class CaptchaValidator implements ConstraintValidator<Captcha, String> {
 	
 	private static final Log log = LogFactory.getLog(CaptchaValidator.class);
