@@ -4,4 +4,6 @@ com.naturalprogrammer.spring.lemon.auth.config.LemonCommonsAutoConfiguration,\
 com.naturalprogrammer.spring.lemon.auth.config.LemonCommonsJpaAutoConfiguration,\
 com.naturalprogrammer.spring.lemon.auth.config.LemonCommonsWebAutoConfiguration,\
 com.naturalprogrammer.spring.lemon.auth.config.LemonServiceAutoConfiguration,\
-com.naturalprogrammer.spring.lemon.auth.config.LemonAuthExceptionHandlerAutoConfiguration
+com.naturalprogrammer.spring.lemon.auth.config.LemonAuthExceptionHandlerAutoConfiguration,\
+com.naturalprogrammer.spring.lemon.auth.config.LemonWebAutoConfiguration,\
+com.naturalprogrammer.spring.lemon.auth.config.LemonGeneralAutoConfiguration

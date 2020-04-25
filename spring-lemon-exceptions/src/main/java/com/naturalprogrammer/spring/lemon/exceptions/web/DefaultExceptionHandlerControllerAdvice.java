@@ -2,6 +2,7 @@ package com.naturalprogrammer.spring.lemon.exceptions.web;
 
 import com.naturalprogrammer.spring.lemon.exceptions.ErrorResponse;
 import com.naturalprogrammer.spring.lemon.exceptions.ErrorResponseComposer;
+import io.github.vincemann.springrapid.core.slicing.components.WebComponent;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.http.HttpStatus;
@@ -14,6 +15,7 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
  * Handles exceptions thrown from in controllers or inner routines
  */
 @RestControllerAdvice
+@WebComponent
 public class DefaultExceptionHandlerControllerAdvice<T extends Throwable> {
 	
 	private static final Log log = LogFactory.getLog(DefaultExceptionHandlerControllerAdvice.class);

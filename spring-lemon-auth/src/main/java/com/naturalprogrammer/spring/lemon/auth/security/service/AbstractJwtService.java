@@ -3,6 +3,7 @@ package com.naturalprogrammer.spring.lemon.auth.security.service;
 import com.naturalprogrammer.spring.lemon.auth.util.LecUtils;
 import com.nimbusds.jose.Payload;
 import com.nimbusds.jwt.JWTClaimsSet;
+import io.github.vincemann.springrapid.core.slicing.components.ServiceComponent;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -13,6 +14,7 @@ import java.util.Map;
 /**
  * Common JWT Service
  */
+@ServiceComponent
 public abstract class AbstractJwtService implements LemonTokenService {
 	
 	private static final Log log = LogFactory.getLog(AbstractJwtService.class);

@@ -14,24 +14,23 @@ public class LecwUtils {
 	private static final Log log = LogFactory.getLog(LecwUtils.class);
 
 	public LecwUtils() {
-		
 		log.info("Created");
 	}
 
-	/**
-	 * Fetches a cookie from the request
-	 */
-	public static Optional<Cookie> fetchCookie(HttpServletRequest request, String name) {
-		
-		Cookie[] cookies = request.getCookies();
-	
-		if (cookies != null && cookies.length > 0)
-			for (int i = 0; i < cookies.length; i++)
-				if (cookies[i].getName().equals(name))
-					return Optional.of(cookies[i]);
-		
-		return Optional.empty();
-	}
+//	/**
+//	 * Fetches a cookie from the request
+//	 */
+//	public static Optional<Cookie> fetchCookie(HttpServletRequest request, String name) {
+//
+//		Cookie[] cookies = request.getCookies();
+//
+//		if (cookies != null && cookies.length > 0)
+//			for (int i = 0; i < cookies.length; i++)
+//				if (cookies[i].getName().equals(name))
+//					return Optional.of(cookies[i]);
+//
+//		return Optional.empty();
+//	}
 
 	/**
 	 * Gets the current-user

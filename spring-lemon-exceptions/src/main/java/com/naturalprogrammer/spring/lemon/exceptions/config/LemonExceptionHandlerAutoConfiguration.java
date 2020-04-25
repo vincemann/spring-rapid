@@ -1,12 +1,13 @@
 package com.naturalprogrammer.spring.lemon.exceptions.config;
 
 import com.naturalprogrammer.spring.lemon.exceptions.handlers.*;
+import io.github.vincemann.springrapid.core.slicing.config.WebConfig;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
-@Configuration
+@WebConfig
 @Slf4j
 public class LemonExceptionHandlerAutoConfiguration {
 
@@ -18,6 +19,12 @@ public class LemonExceptionHandlerAutoConfiguration {
     @ConditionalOnMissingBean(ConstraintViolationExceptionHandler.class)
     public ConstraintViolationExceptionHandler constraintViolationExceptionHandler(){
         return new ConstraintViolationExceptionHandler();
+    }
+
+    @Bean
+    @ConditionalOnMissingBean(BadEntityExceptionHandler.class)
+    public BadEntityExceptionHandler badEntityExceptionHandler(){
+        return new BadEntityExceptionHandler();
     }
 
     @Bean

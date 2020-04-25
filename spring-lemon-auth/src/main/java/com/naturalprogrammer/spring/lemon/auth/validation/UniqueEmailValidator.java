@@ -1,6 +1,7 @@
 package com.naturalprogrammer.spring.lemon.auth.validation;
 
 import com.naturalprogrammer.spring.lemon.auth.domain.AbstractUserRepository;
+import io.github.vincemann.springrapid.core.slicing.components.ServiceComponent;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -13,6 +14,7 @@ import javax.validation.ConstraintValidatorContext;
  * 
  * @author Sanjay Patel
  */
+@ServiceComponent
 public class UniqueEmailValidator
 implements ConstraintValidator<UniqueEmail, String> {
 

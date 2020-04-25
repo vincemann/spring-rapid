@@ -10,7 +10,7 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 @WebConfig
 @EnableWebMvc
-@ComponentScan
+//@ComponentScan
 @Slf4j
 public class WebMvcAutoConfiguration implements WebMvcConfigurer {
 

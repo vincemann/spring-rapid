@@ -1,6 +1,7 @@
 package io.github.vincemann.springrapid.demo.lib.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import io.github.vincemann.springrapid.core.config.DtoMapperAutoConfiguration;
 import io.github.vincemann.springrapid.core.config.RapidControllerAutoConfiguration;
 import io.github.vincemann.springrapid.core.controller.dtoMapper.Delegating;
 import io.github.vincemann.springrapid.core.controller.dtoMapper.DtoMapper;
@@ -55,11 +56,12 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
                 WebMvcAutoConfiguration.class,
                 RapidControllerAutoConfiguration.class,
                 ValidationAutoConfiguration.class,
-                PropertyPlaceholderAutoConfiguration.class
+                PropertyPlaceholderAutoConfiguration.class,
+                DtoMapperAutoConfiguration.class
         })
 //override config to define mock rules before context initialization
 @Import(RapidControllerTest.TestConfig.class)
-@PropertySource({"classpath:application.properties","classpath:application-test.properties"})
+//@PropertySource({"classpath:application.properties","classpath:application-test.properties"})
 class RapidControllerTest
         extends MvcRapidControllerTest<ExampleService, ExampleEntity, Long> {
 

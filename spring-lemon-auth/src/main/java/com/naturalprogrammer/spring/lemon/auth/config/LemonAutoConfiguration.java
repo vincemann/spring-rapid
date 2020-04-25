@@ -14,6 +14,7 @@ import com.naturalprogrammer.spring.lemon.auth.util.LemonUtils;
 import com.naturalprogrammer.spring.lemon.auth.validation.RetypePasswordValidator;
 import com.naturalprogrammer.spring.lemon.auth.validation.UniqueEmailValidator;
 import io.github.vincemann.springrapid.acl.config.AclAutoConfiguration;
+import io.github.vincemann.springrapid.core.slicing.config.ServiceConfig;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
@@ -36,7 +37,7 @@ import java.io.Serializable;
  * 
  * @author Sanjay Patel
  */
-@Configuration
+@ServiceConfig
 @EnableTransactionManagement
 @EnableJpaAuditing
 @AutoConfigureBefore({LemonCommonsJpaAutoConfiguration.class})
@@ -56,28 +57,7 @@ public class LemonAutoConfiguration {
 		return id -> lemonService.toId(id);
 	}
 	
-	/**
-	 * Configures AuthenticationSuccessHandler if missing
-	 */
-	@Bean
-	@ConditionalOnMissingBean(LemonAuthenticationSuccessHandler.class)
-	public LemonAuthenticationSuccessHandler authenticationSuccessHandler(
-			ObjectMapper objectMapper, LemonService<?, ?,?> lemonService, LemonProperties properties) {
-		
-        log.info("Configuring AuthenticationSuccessHandler");       
-		return new LemonAuthenticationSuccessHandler(objectMapper, lemonService, properties);
-	}
 
-	/**
-	 * Configures AuthenticationFailureHandler if missing
-	 */
-	@Bean
-	@ConditionalOnMissingBean(AuthenticationFailureHandler.class)
-    public AuthenticationFailureHandler authenticationFailureHandler() {
-		
-        log.info("Configuring SimpleUrlAuthenticationFailureHandler");       
-    	return new SimpleUrlAuthenticationFailureHandler();
-    }	
 
 	/**
 	 * Configures UserDetailsService if missing
@@ -92,27 +72,9 @@ public class LemonAutoConfiguration {
 		return new LemonUserDetailsService<U, ID>(userRepository);
 	}
 
-	/**
-	 * Configures LemonSecurityConfig if missing
-	 */
-	@Bean
-	@ConditionalOnMissingBean(LemonWebSecurityConfig.class)	
-	public LemonWebSecurityConfig lemonSecurityConfig() {
-		
-        log.info("Configuring LemonJpaSecurityConfig");       
-		return new LemonJpaSecurityConfig();
-	}
-	
-	/**
-	 * Configures LemonUtils
-	 */
-	@Bean
-	public LemonUtils lemonUtils(ApplicationContext applicationContext,
-								 ObjectMapper objectMapper) {
 
-        log.info("Configuring LemonUtils");       		
-		return new LemonUtils();
-	}
+	
+
 	
 	/**
 	 * Configures RetypePasswordValidator if missing

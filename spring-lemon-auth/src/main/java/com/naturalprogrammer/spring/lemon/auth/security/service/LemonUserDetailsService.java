@@ -4,6 +4,7 @@ import com.naturalprogrammer.spring.lemon.auth.domain.AbstractUser;
 import com.naturalprogrammer.spring.lemon.auth.domain.AbstractUserRepository;
 import com.naturalprogrammer.spring.lemon.auth.security.domain.LemonPrincipal;
 import com.naturalprogrammer.spring.lemon.exceptions.util.LexUtils;
+import io.github.vincemann.springrapid.core.slicing.components.ServiceComponent;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -17,6 +18,7 @@ import java.util.Optional;
  * 
  * @author Sanjay Patel
  */
+@ServiceComponent
 public class LemonUserDetailsService
 	<U extends AbstractUser<ID>, ID extends Serializable>
 implements UserDetailsService {

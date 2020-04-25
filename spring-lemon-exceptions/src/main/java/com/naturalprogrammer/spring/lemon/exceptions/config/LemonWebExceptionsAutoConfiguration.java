@@ -8,6 +8,7 @@ import com.naturalprogrammer.spring.lemon.exceptions.handlers.AbstractExceptionH
 import com.naturalprogrammer.spring.lemon.exceptions.web.DefaultExceptionHandlerControllerAdvice;
 import com.naturalprogrammer.spring.lemon.exceptions.web.LemonErrorAttributes;
 import com.naturalprogrammer.spring.lemon.exceptions.web.LemonErrorController;
+import io.github.vincemann.springrapid.core.slicing.config.WebConfig;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.autoconfigure.AutoConfigureBefore;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
@@ -19,22 +20,24 @@ import org.springframework.boot.web.servlet.error.ErrorController;
 import org.springframework.context.MessageSource;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.validation.Validator;
 import org.springframework.validation.beanvalidation.LocalValidatorFactoryBean;
 
 import com.naturalprogrammer.spring.lemon.exceptions.util.LexUtils;
 
-@Configuration
-@AutoConfigureBefore({ValidationAutoConfiguration.class})
+@WebConfig
+//@AutoConfigureBefore({ValidationAutoConfiguration.class})
 @Slf4j
 //@ComponentScan(basePackageClasses=AbstractExceptionHandler.class) cant override anymore in this config
-public class LemonExceptionsAutoConfiguration {
+public class LemonWebExceptionsAutoConfiguration {
 
 
-	public LemonExceptionsAutoConfiguration() {
+	public LemonWebExceptionsAutoConfiguration() {
 		log.info("Created");
 	}
-	
-	
+
+
+
 	/**
 	 * Configures ErrorResponseComposer if missing
 	 */	
@@ -47,23 +50,6 @@ public class LemonExceptionsAutoConfiguration {
 		return new ErrorResponseComposer<T>(handlers);
 	}
 
-	
-	/**
-	 * Configures ExceptionCodeMaker if missing
-	 */	
-	@Bean
-	@ConditionalOnMissingBean(ExceptionIdMaker.class)
-	public ExceptionIdMaker exceptionIdMaker() {
-		
-        log.info("Configuring ExceptionIdMaker");
-        return ex -> {
-        	
-        	if (ex == null)
-        		return null;
-        	
-        	return ex.getClass().getSimpleName();
-        };
-	}
 
 	/**
 	 * Configures DefaultExceptionHandlerControllerAdvice if missing
@@ -103,17 +89,4 @@ public class LemonExceptionsAutoConfiguration {
 		return new LemonErrorController(errorAttributes, serverProperties, errorViewResolvers);
 	}
 
-
-	
-	/**
-	 * Configures LexUtils
-	 */
-	@Bean
-	public LexUtils lexUtils(MessageSource messageSource,
-			LocalValidatorFactoryBean validator,
-			ExceptionIdMaker exceptionIdMaker) {
-
-        log.info("Configuring LexUtils");       		
-		return new LexUtils(messageSource, validator, exceptionIdMaker);
-	}
 }

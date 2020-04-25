@@ -1,5 +1,6 @@
 package com.naturalprogrammer.spring.lemon.auth.domain;
 
+import io.github.vincemann.springrapid.core.slicing.components.ServiceComponent;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.repository.NoRepositoryBean;
 
@@ -13,6 +14,7 @@ import java.util.Optional;
  * @author Sanjay Patel
  */
 @NoRepositoryBean
+@ServiceComponent
 public interface AbstractUserRepository
 	<U extends AbstractUser<ID>, ID extends Serializable>
 extends JpaRepository<U, ID> {

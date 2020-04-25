@@ -6,12 +6,16 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.BeforeEach;
+import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
+import org.springframework.boot.autoconfigure.context.PropertyPlaceholderAutoConfiguration;
+import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.DefaultMockMvcBuilder;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
@@ -34,12 +38,14 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @Slf4j
 @ActiveProfiles(value = {"test","web","webTest"})
 @SpringBootTest
+//all service interaction is mocked -> no interaction with database -> no datasource config needed
+@TestPropertySource(properties =
+        "spring.autoconfigure.exclude=org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration")
 @AutoConfigureMockMvc
 @ContextConfiguration(
         loader = AutoMockServiceBeansGenericAnnotationWebConfigContextLoader.class//,
+//        classes = PropertyPlaceholderAutoConfiguration.class
 )
-//smh he does not find property sources anymore without explicitly specifying with that setup
-@PropertySource({"classpath:application.properties","classpath:application-test.properties"})
 public abstract class MvcControllerTest extends InitializingTest {
     private MockMvc mockMvc;
     private DefaultMockMvcBuilder mockMvcBuilder;

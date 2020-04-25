@@ -1,9 +1,11 @@
 package com.naturalprogrammer.spring.lemon.auth.security.service;
 
 import com.nimbusds.jwt.JWTClaimsSet;
+import io.github.vincemann.springrapid.core.slicing.components.ServiceComponent;
 
 import java.util.Map;
 
+@ServiceComponent
 public interface LemonTokenService {
 
 	String LEMON_IAT = "lemon-iat";

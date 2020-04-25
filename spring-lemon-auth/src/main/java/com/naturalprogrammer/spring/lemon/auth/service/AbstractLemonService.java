@@ -12,6 +12,7 @@ import com.naturalprogrammer.spring.lemon.auth.util.LecUtils;
 import io.github.vincemann.springrapid.core.service.exception.BadEntityException;
 import io.github.vincemann.springrapid.core.service.jpa.JPACrudService;
 import com.naturalprogrammer.spring.lemon.exceptions.util.LexUtils;
+import io.github.vincemann.springrapid.core.slicing.components.ServiceComponent;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -21,6 +22,7 @@ import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
 
+@ServiceComponent
 public abstract class AbstractLemonService
 	<U extends AbstractUser<ID>, ID extends Serializable,R extends AbstractUserRepository<U,ID>>
 			extends JPACrudService<U,ID,R> {
