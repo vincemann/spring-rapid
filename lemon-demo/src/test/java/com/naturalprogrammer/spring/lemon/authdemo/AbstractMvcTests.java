@@ -50,6 +50,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 /**
  * Fills tokens Map in an integration test manner by logging all users in
  */
+//just active everything for simplicity
 @ActiveProfiles(value = {"web", "service", "test", "webTest", "serviceTest", "dev"}, inheritProfiles = false)
 public abstract class AbstractMvcTests {
 
