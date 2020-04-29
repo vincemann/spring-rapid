@@ -5,6 +5,7 @@ import com.naturalprogrammer.spring.lemon.auth.domain.AbstractUser;
 import com.naturalprogrammer.spring.lemon.auth.domain.AbstractUserRepository;
 import io.github.vincemann.springrapid.acl.plugin.AbstractAclPlugin;
 import io.github.vincemann.springrapid.acl.service.LocalPermissionService;
+import io.github.vincemann.springrapid.acl.service.MockAuthService;
 import io.github.vincemann.springrapid.core.proxy.CalledByProxy;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.acls.domain.BasePermission;
@@ -17,8 +18,8 @@ import java.util.Optional;
 public class LemonAclPlugin extends AbstractAclPlugin {
     private AbstractUserRepository repository;
 
-    public LemonAclPlugin(LocalPermissionService permissionService, MutableAclService mutableAclService, AbstractUserRepository repository) {
-        super(permissionService, mutableAclService);
+    public LemonAclPlugin(LocalPermissionService permissionService, MutableAclService mutableAclService, MockAuthService mockAuthService, AbstractUserRepository repository) {
+        super(permissionService, mutableAclService, mockAuthService);
         this.repository = repository;
     }
 

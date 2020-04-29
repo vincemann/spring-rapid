@@ -1,33 +1,24 @@
 package com.naturalprogrammer.spring.lemon.auth.config;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.naturalprogrammer.spring.lemon.auth.LemonProperties;
 import com.naturalprogrammer.spring.lemon.auth.domain.AbstractUser;
 import com.naturalprogrammer.spring.lemon.auth.domain.AbstractUserRepository;
 import com.naturalprogrammer.spring.lemon.auth.domain.IdConverter;
-import com.naturalprogrammer.spring.lemon.auth.security.config.LemonJpaSecurityConfig;
-import com.naturalprogrammer.spring.lemon.auth.security.config.LemonWebSecurityConfig;
-import com.naturalprogrammer.spring.lemon.auth.security.handlers.LemonAuthenticationSuccessHandler;
 import com.naturalprogrammer.spring.lemon.auth.security.service.LemonUserDetailsService;
+import com.naturalprogrammer.spring.lemon.auth.service.LemonMockAuthService;
 import com.naturalprogrammer.spring.lemon.auth.service.LemonService;
-import com.naturalprogrammer.spring.lemon.auth.util.LemonUtils;
 import com.naturalprogrammer.spring.lemon.auth.validation.RetypePasswordValidator;
 import com.naturalprogrammer.spring.lemon.auth.validation.UniqueEmailValidator;
 import io.github.vincemann.springrapid.acl.config.AclAutoConfiguration;
+import io.github.vincemann.springrapid.acl.service.MockAuthService;
 import io.github.vincemann.springrapid.core.slicing.config.ServiceConfig;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.AutoConfigureBefore;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
-import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
 import org.springframework.data.jpa.repository.config.EnableJpaAuditing;
 import org.springframework.security.core.userdetails.UserDetailsService;
-import org.springframework.security.web.authentication.AuthenticationFailureHandler;
-import org.springframework.security.web.authentication.SimpleUrlAuthenticationFailureHandler;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 
 import java.io.Serializable;
@@ -40,8 +31,7 @@ import java.io.Serializable;
 @ServiceConfig
 @EnableTransactionManagement
 @EnableJpaAuditing
-@AutoConfigureBefore({LemonCommonsJpaAutoConfiguration.class})
-@AutoConfigureAfter(AclAutoConfiguration.class)
+@AutoConfigureBefore({LemonCommonsJpaAutoConfiguration.class,AclAutoConfiguration.class})
 public class LemonAutoConfiguration {
 	
 	private static final Log log = LogFactory.getLog(LemonAutoConfiguration.class);
@@ -72,9 +62,11 @@ public class LemonAutoConfiguration {
 		return new LemonUserDetailsService<U, ID>(userRepository);
 	}
 
-
-	
-
+	@Bean
+	@ConditionalOnMissingBean(MockAuthService.class)
+	public MockAuthService lemonMockAuthService(){
+		return new LemonMockAuthService();
+	}
 	
 	/**
 	 * Configures RetypePasswordValidator if missing

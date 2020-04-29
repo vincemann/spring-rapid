@@ -4,6 +4,7 @@ import io.github.vincemann.springrapid.acl.plugin.AdminFullAccessAclPlugin;
 import io.github.vincemann.springrapid.acl.plugin.AuthenticatedFullAccessAclPlugin;
 import io.github.vincemann.springrapid.acl.plugin.InheritParentAclPlugin;
 import io.github.vincemann.springrapid.acl.service.LocalPermissionService;
+import io.github.vincemann.springrapid.acl.service.MockAuthService;
 import io.github.vincemann.springrapid.core.config.RapidJacksonAutoConfiguration;
 import io.github.vincemann.springrapid.core.slicing.config.ServiceConfig;
 import lombok.extern.slf4j.Slf4j;
@@ -31,19 +32,19 @@ public class AclPluginAutoConfiguration {
 
     @ConditionalOnMissingBean(AdminFullAccessAclPlugin.class)
     @Bean
-    public AdminFullAccessAclPlugin adminFullAccessAclPlugin(MutableAclService mutableAclService){
-        return new AdminFullAccessAclPlugin(localPermissionService(mutableAclService),mutableAclService);
+    public AdminFullAccessAclPlugin adminFullAccessAclPlugin(MutableAclService mutableAclService, MockAuthService mockAuthService){
+        return new AdminFullAccessAclPlugin(localPermissionService(mutableAclService),mutableAclService,mockAuthService);
     }
 
     @ConditionalOnMissingBean(AuthenticatedFullAccessAclPlugin.class)
     @Bean
-    public AuthenticatedFullAccessAclPlugin authenticatedFullAccessAclPlugin(MutableAclService mutableAclService){
-        return new AuthenticatedFullAccessAclPlugin(localPermissionService(mutableAclService),mutableAclService);
+    public AuthenticatedFullAccessAclPlugin authenticatedFullAccessAclPlugin(MutableAclService mutableAclService,MockAuthService mockAuthService){
+        return new AuthenticatedFullAccessAclPlugin(localPermissionService(mutableAclService),mutableAclService,mockAuthService);
     }
 
     @Bean
     @ConditionalOnMissingBean(InheritParentAclPlugin.class)
-    public InheritParentAclPlugin inheritParentAclPlugin(MutableAclService aclService){
-        return new InheritParentAclPlugin(localPermissionService(aclService),aclService);
+    public InheritParentAclPlugin inheritParentAclPlugin(MutableAclService aclService,MockAuthService mockAuthService){
+        return new InheritParentAclPlugin(localPermissionService(aclService),aclService,mockAuthService);
     }
 }
