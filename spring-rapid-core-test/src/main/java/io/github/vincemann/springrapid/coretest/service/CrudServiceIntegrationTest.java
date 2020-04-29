@@ -2,7 +2,9 @@ package io.github.vincemann.springrapid.coretest.service;
 
 import io.github.vincemann.springrapid.core.model.IdentifiableEntity;
 import io.github.vincemann.springrapid.core.service.CrudService;
+import io.github.vincemann.springrapid.core.slicing.test.ImportRapidCoreServiceConfig;
 import io.github.vincemann.springrapid.coretest.InitializingTest;
+import io.github.vincemann.springrapid.coretest.slicing.test.ImportRapidCoreTestConfig;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeansException;
@@ -23,10 +25,14 @@ import java.io.Serializable;
 
 @Slf4j
 @Getter
+//only include project beans that are relevant for service tests
 @ActiveProfiles(value = {"test","service","serviceTest"})
 @Transactional
 @Rollback
+//import spring config that is relevant for service tests
 @DataJpaTest
+@ImportRapidCoreServiceConfig
+@ImportRapidCoreTestConfig
 public abstract class CrudServiceIntegrationTest
                 <
                         S extends CrudService<E,Id,? extends CrudRepository<E,Id>>,
