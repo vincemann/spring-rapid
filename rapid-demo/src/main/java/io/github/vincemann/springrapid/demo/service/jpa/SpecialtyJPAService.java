@@ -1,7 +1,7 @@
 package io.github.vincemann.springrapid.demo.service.jpa;
 
 import io.github.vincemann.springrapid.demo.model.Specialty;
-import io.github.vincemann.springrapid.demo.repositories.SpecialtyRepository;
+import io.github.vincemann.springrapid.demo.repo.SpecialtyRepository;
 import io.github.vincemann.springrapid.demo.service.SpecialtyService;
 import io.github.vincemann.springrapid.core.slicing.components.ServiceComponent;
 import io.github.vincemann.springrapid.core.service.jpa.JPACrudService;

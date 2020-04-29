@@ -1,4 +1,4 @@
-package io.github.vincemann.springrapid.demo.service.jpa.it;
+package io.github.vincemann.springrapid.demo.service.jpa;
 
 import io.github.vincemann.springrapid.core.util.Lists;
 import io.github.vincemann.springrapid.demo.EnableProjectComponentScan;

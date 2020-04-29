@@ -1,12 +1,11 @@
 package io.github.vincemann.springrapid.demo.service.jpa;
 
 import io.github.vincemann.springrapid.demo.model.Owner;
-import io.github.vincemann.springrapid.demo.repositories.OwnerRepository;
+import io.github.vincemann.springrapid.demo.repo.OwnerRepository;
 import io.github.vincemann.springrapid.demo.service.OwnerService;
 import io.github.vincemann.springrapid.core.slicing.components.ServiceComponent;
 import io.github.vincemann.springrapid.core.service.jpa.JPACrudService;
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 

@@ -49,7 +49,7 @@ public abstract class CrudServiceIntegrationTest
     private EntityManager entityManager;
     private ServiceTestTemplate testTemplate;
     private ApplicationContext applicationContext;
-    private CrudService<E,Id,? extends CrudRepository<E,Id>> serviceUnderTest;
+    private S serviceUnderTest;
 
     @Autowired
     public void injectRepository(CrudRepository<E,Id> repository) {
@@ -72,11 +72,11 @@ public abstract class CrudServiceIntegrationTest
     }
 
     @Autowired
-    public void injectServiceUnderTest(CrudService<E,Id,? extends CrudRepository<E,Id>> serviceUnderTest) {
+    public void injectServiceUnderTest(S serviceUnderTest) {
         this.serviceUnderTest = serviceUnderTest;
     }
 
-    public void setServiceUnderTest(CrudService<E,Id,? extends CrudRepository<E,Id>> serviceUnderTest) {
+    public void setServiceUnderTest(S serviceUnderTest) {
         this.serviceUnderTest = serviceUnderTest;
     }
 

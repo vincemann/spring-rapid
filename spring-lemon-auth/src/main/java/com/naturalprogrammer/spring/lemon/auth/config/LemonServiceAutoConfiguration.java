@@ -1,5 +1,6 @@
 package com.naturalprogrammer.spring.lemon.auth.config;
 
+import com.naturalprogrammer.spring.lemon.auth.domain.AbstractUser;
 import com.naturalprogrammer.spring.lemon.auth.domain.AbstractUserRepository;
 import com.naturalprogrammer.spring.lemon.auth.security.LemonAclPlugin;
 import com.naturalprogrammer.spring.lemon.auth.service.LemonService;
@@ -58,9 +59,9 @@ public class LemonServiceAutoConfiguration {
     @ConditionalOnMissingBean(name = "aclManagingLemonService")
     @Bean
     @AclManaging
-    public LemonService<?,?,?> aclManagingLemonService(LemonService<?,?,?> service,
-                                                AdminFullAccessAclPlugin adminFullAccess,
-                                                CleanUpAclPlugin cleanUpAclPlugin){
+    public LemonService<? extends AbstractUser,?,?> aclManagingLemonService(LemonService<? extends AbstractUser,?,?> service,
+                                                                            AdminFullAccessAclPlugin adminFullAccess,
+                                                                            CleanUpAclPlugin cleanUpAclPlugin){
         return CrudServicePluginProxyFactory.create(service,adminFullAccess,lemonAclPlugin(),cleanUpAclPlugin);
     }
 
@@ -68,7 +69,7 @@ public class LemonServiceAutoConfiguration {
     @ConditionalOnMissingBean(name = "securedLemonService")
     @Bean
     @Secured
-    public LemonService<?,?,?> securedLemonService(@AclManaging LemonService<?,?,?> service,
+    public LemonService<? extends AbstractUser,?,?> securedLemonService(@AclManaging LemonService<?,?,?> service,
                                                 LemonServiceSecurityRule securityRule){
         return securityProxyFactory.create(service,securityRule);
     }
