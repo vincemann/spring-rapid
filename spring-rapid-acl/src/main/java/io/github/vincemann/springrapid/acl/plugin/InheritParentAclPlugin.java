@@ -19,7 +19,7 @@ import java.io.Serializable;
 
  */
 public class InheritParentAclPlugin<E extends IdentifiableEntity<Id> & AclParentAware,Id extends Serializable>
-        extends CleanUpAclPlugin {
+        extends AbstractAclPlugin {
 
     public InheritParentAclPlugin(LocalPermissionService permissionService, MutableAclService mutableAclService, MockAuthService mockAuthService) {
         super(permissionService, mutableAclService, mockAuthService);

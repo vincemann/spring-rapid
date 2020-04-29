@@ -23,7 +23,6 @@ import java.io.Serializable;
 /**
  * Removes Acl's on delete, if existing.
  */
-@ServiceComponent
 @Transactional
 public class CleanUpAclPlugin
     extends AbstractAclPlugin

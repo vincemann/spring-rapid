@@ -2,6 +2,7 @@ package io.github.vincemann.springrapid.acl.config;
 
 import io.github.vincemann.springrapid.acl.plugin.AdminFullAccessAclPlugin;
 import io.github.vincemann.springrapid.acl.plugin.AuthenticatedFullAccessAclPlugin;
+import io.github.vincemann.springrapid.acl.plugin.CleanUpAclPlugin;
 import io.github.vincemann.springrapid.acl.plugin.InheritParentAclPlugin;
 import io.github.vincemann.springrapid.acl.service.LocalPermissionService;
 import io.github.vincemann.springrapid.acl.service.MockAuthService;
@@ -46,5 +47,11 @@ public class AclPluginAutoConfiguration {
     @ConditionalOnMissingBean(InheritParentAclPlugin.class)
     public InheritParentAclPlugin inheritParentAclPlugin(MutableAclService aclService,MockAuthService mockAuthService){
         return new InheritParentAclPlugin(localPermissionService(aclService),aclService,mockAuthService);
+    }
+
+    @Bean
+    @ConditionalOnMissingBean(CleanUpAclPlugin.class)
+    public CleanUpAclPlugin cleanUpAclPlugin(MutableAclService aclService,MockAuthService mockAuthService){
+        return new CleanUpAclPlugin(localPermissionService(aclService),aclService,mockAuthService);
     }
 }
