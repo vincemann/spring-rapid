@@ -1,4 +1,4 @@
-package io.github.vincemann.springrapid.demo.repositories;
+package io.github.vincemann.springrapid.demo.repo;
 
 import io.github.vincemann.springrapid.demo.model.Owner;
 
