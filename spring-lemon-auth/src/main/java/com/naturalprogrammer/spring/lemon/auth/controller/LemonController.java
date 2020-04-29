@@ -112,10 +112,10 @@ public abstract class LemonController
 							   HttpServletResponse response) throws BadEntityException {
 
 		log.debug("Signing up: " + user);
-		lemonService.signup(user);
+		U saved = lemonService.signup(user);
 		log.debug("Signed up: " + user);
 
-		return userWithToken(response);
+		return userWithToken(response,saved);
 	}
 	
 	
@@ -142,10 +142,10 @@ public abstract class LemonController
 			@RequestParam String code,
 			HttpServletResponse response) {
 		
-		log.debug("Verifying user ...");		
-		lemonService.verifyUser(id, code);
-		
-		return userWithToken(response);
+		log.debug("Verifying user ...");
+		U saved = lemonService.verifyUser(id, code);
+
+		return userWithToken(response,saved);
 	}
 	
 
@@ -170,10 +170,10 @@ public abstract class LemonController
 			@RequestBody ResetPasswordForm form,
 			HttpServletResponse response) {
 		
-		log.debug("Resetting password ... ");				
-		lemonService.resetPassword(form);
-		
-		return userWithToken(response);
+		log.debug("Resetting password ... ");
+		U saved = lemonService.resetPassword(form);
+
+		return userWithToken(response,saved);
 	}
 
 
@@ -212,10 +212,12 @@ public abstract class LemonController
 		LexUtils.ensureFound(user);
 		U updateUser = LmapUtils.applyPatch(user, patch); // create a patched form
 		//default security Rule checks for write permission
-		LemonUserDto updated = lemonService.updateUser(user, updateUser);
+		U updated = lemonService.updateUser(user, updateUser);
+		LemonUserDto dto = updated.toUserDto();
+		dto.setPassword(null);
 		// Send a new token for logged in user in the response
-		userWithToken(response);
-		return updated;
+		userWithToken(response,updated);
+		return dto;
 	}
 
 
@@ -261,11 +263,11 @@ public abstract class LemonController
 			@RequestParam String code,
 			HttpServletResponse response) {
 		
-		log.debug("Changing email of user ...");		
-		lemonService.changeEmail(userId, code);
-		
+		log.debug("Changing email of user ...");
+		U saved = lemonService.changeEmail(userId, code);
+
 		// return the currently logged in user with new email
-		return userWithToken(response);		
+		return userWithToken(response,saved);
 	}
 
 
@@ -300,8 +302,8 @@ public abstract class LemonController
 	/**
 	 * returns the current user and puts a new authorization token in the response
 	 */
-	protected LemonUserDto userWithToken(HttpServletResponse response) {
-		
+	protected LemonUserDto userWithToken(HttpServletResponse response,U saved) {
+		LemonUtils.login(saved);
 		LemonUserDto currentUser = LecwUtils.currentUser();
 		lemonService.addAuthHeader(response, currentUser.getUsername(), jwtExpirationMillis);
 		return currentUser;

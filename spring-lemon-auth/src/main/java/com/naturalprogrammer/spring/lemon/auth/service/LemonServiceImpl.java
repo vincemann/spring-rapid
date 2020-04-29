@@ -116,20 +116,12 @@ public abstract class LemonServiceImpl
 	//todo welcher validator kommt hier zum einsatz?
 	//todo wo findet captcha statt, hier sollte captcha stattfinden, Aop Solution: https://medium.com/@cristi.rosu4/protecting-your-spring-boot-rest-endpoints-with-google-recaptcha-and-aop-31328a3f56b7
 	@Transactional(propagation = Propagation.REQUIRED, readOnly = false)
-	public void signup(U user) throws BadEntityException {
+	public U signup(U user) throws BadEntityException {
 		log.debug("Signing up user: " + user);
 		initUser(user); // sets right all fields of the user
 		U saved = save(user);
 		makeUnverified(saved); // make the user unverified
-		LemonUtils.login(saved);
-
-
-//		// if successfully committed
-//		LecjUtils.afterCommit(() -> {
-//
-//			 // log the user in
-//		});
-
+		return saved;
 	}
 
 
@@ -150,7 +142,7 @@ public abstract class LemonServiceImpl
 	 */
 	protected void makeUnverified(U user) {
 		super.makeUnverified(user);
-		LecjUtils.afterCommit(() -> sendVerificationMail(user));// send a verification mail to the user
+		/*LecjUtils.afterCommit(() -> */sendVerificationMail(user);/*);*/// send a verification mail to the user
 	}
 
 
@@ -184,9 +176,10 @@ public abstract class LemonServiceImpl
 
 	/**
 	 * Verifies the email id of current-user
+	 * @return
 	 */
 	@Transactional(propagation = Propagation.REQUIRED, readOnly = false)
-	public void verifyUser(ID userId, String verificationCode) {
+	public U verifyUser(ID userId, String verificationCode) {
 
 		log.debug("Verifying user ...");
 
@@ -209,7 +202,7 @@ public abstract class LemonServiceImpl
 		U saved = getRepository().save(user);
 
 		// Re-login the user, so that the UNVERIFIED role is removed
-		LemonUtils.login(saved);
+//		LemonUtils.login(saved);
 		log.debug("Re-logged-in the user for removing UNVERIFIED role.");
 //		// after successful commit,
 //		LecjUtils.afterCommit(() -> {
@@ -217,7 +210,8 @@ public abstract class LemonServiceImpl
 //
 //		});
 
-		log.debug("Verified user: " + user);
+		log.debug("Verified user: " + saved);
+		return saved;
 	}
 
 
@@ -239,9 +233,10 @@ public abstract class LemonServiceImpl
 
 	/**
 	 * Resets the password.
+	 * @return
 	 */
 	@Transactional(propagation = Propagation.REQUIRED, readOnly = false)
-	public void resetPassword(ResetPasswordForm form) {
+	public U resetPassword(ResetPasswordForm form) {
 		log.debug("Resetting password ...");
 
 		JWTClaimsSet claims = greenTokenService.parseToken(form.getCode(),
@@ -261,7 +256,7 @@ public abstract class LemonServiceImpl
 		U saved = getRepository().save(user);
 
 		// Login the user
-		LemonUtils.login(saved);
+//		LemonUtils.login(saved);
 //		// after successful commit,
 //		LecjUtils.afterCommit(() -> {
 //
@@ -269,6 +264,7 @@ public abstract class LemonServiceImpl
 //		});
 
 		log.debug("Password reset.");
+		return saved;
 	}
 
 
@@ -288,7 +284,7 @@ public abstract class LemonServiceImpl
 	 */
 	@Override
 	@Transactional(propagation = Propagation.REQUIRED, readOnly = false)
-	public LemonUserDto updateUser(U user, U updatedUser) {
+	public U updateUser(U user, U updatedUser) {
 
 		log.debug("Updating user: " + user);
 
@@ -297,13 +293,12 @@ public abstract class LemonServiceImpl
 
 		// delegates to updateUserFields
 		updateUserFields(user, updatedUser, LecwUtils.currentUser());
-		getRepository().save(user);
-
+		U updated = getRepository().save(user);
 		log.debug("Updated user: " + user);
 
-		LemonUserDto userDto = user.toUserDto();
-		userDto.setPassword(null);
-		return userDto;
+//		LemonUserDto userDto = user.toUserDto();
+//		userDto.setPassword(null);
+		return updated;
 	}
 
 
@@ -451,9 +446,10 @@ public abstract class LemonServiceImpl
 
 	/**
 	 * Change the email.
+	 * @return
 	 */
 	@Transactional(propagation = Propagation.REQUIRED, readOnly = false)
-	public void changeEmail(ID userId, /*@Valid @NotBlank*/ String changeEmailCode) {
+	public U changeEmail(ID userId, /*@Valid @NotBlank*/ String changeEmailCode) {
 
 		log.debug("Changing email of current user ...");
 
@@ -495,7 +491,7 @@ public abstract class LemonServiceImpl
 		U saved = getRepository().save(user);
 
 		// Login the user
-		LemonUtils.login(saved);
+//		LemonUtils.login(saved);
 //		// after successful commit,
 //		LecjUtils.afterCommit(() -> {
 //
@@ -503,6 +499,7 @@ public abstract class LemonServiceImpl
 //		});
 
 		log.debug("Changed email of user: " + user);
+		return saved;
 	}
 
 
