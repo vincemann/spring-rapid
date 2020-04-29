@@ -4,6 +4,7 @@ package io.github.vincemann.springrapid.acl.plugin;
 import io.github.vincemann.springrapid.acl.model.AclParentAware;
 import io.github.vincemann.springrapid.acl.service.AclNotFoundException;
 import io.github.vincemann.springrapid.acl.service.LocalPermissionService;
+import io.github.vincemann.springrapid.acl.service.MockAuthService;
 import io.github.vincemann.springrapid.core.slicing.components.ServiceComponent;
 import io.github.vincemann.springrapid.core.model.IdentifiableEntity;
 import io.github.vincemann.springrapid.core.proxy.CalledByProxy;
@@ -20,8 +21,8 @@ import java.io.Serializable;
 public class InheritParentAclPlugin<E extends IdentifiableEntity<Id> & AclParentAware,Id extends Serializable>
         extends CleanUpAclPlugin {
 
-    public InheritParentAclPlugin(LocalPermissionService permissionService, MutableAclService mutableAclService) {
-        super(permissionService, mutableAclService);
+    public InheritParentAclPlugin(LocalPermissionService permissionService, MutableAclService mutableAclService, MockAuthService mockAuthService) {
+        super(permissionService, mutableAclService, mockAuthService);
     }
 
     @Transactional

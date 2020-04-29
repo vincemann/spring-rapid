@@ -2,6 +2,7 @@ package io.github.vincemann.springrapid.acl.plugin;
 
 import io.github.vincemann.springrapid.acl.Role;
 import io.github.vincemann.springrapid.acl.service.LocalPermissionService;
+import io.github.vincemann.springrapid.acl.service.MockAuthService;
 import io.github.vincemann.springrapid.core.slicing.components.ServiceComponent;
 import io.github.vincemann.springrapid.core.model.IdentifiableEntity;
 import io.github.vincemann.springrapid.core.proxy.CalledByProxy;
@@ -23,8 +24,8 @@ public class AdminFullAccessAclPlugin
         extends AbstractAclPlugin {
 
 
-    public AdminFullAccessAclPlugin(LocalPermissionService permissionService, MutableAclService mutableAclService) {
-        super(permissionService, mutableAclService);
+    public AdminFullAccessAclPlugin(LocalPermissionService permissionService, MutableAclService mutableAclService, MockAuthService mockAuthService) {
+        super(permissionService, mutableAclService, mockAuthService);
     }
 
     @Transactional

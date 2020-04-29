@@ -102,7 +102,7 @@ public class AclAutoConfiguration {
 
     @Bean
     @ConditionalOnMissingBean(MockAuthService.class)
-    public MockAuthService runAsUserService(){
+    public MockAuthService mockAuthService(){
         return new SecurityContextMockAuthService();
     }
 

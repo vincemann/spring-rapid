@@ -1,6 +1,7 @@
 package io.github.vincemann.springrapid.acl.plugin;
 
 import io.github.vincemann.springrapid.acl.service.LocalPermissionService;
+import io.github.vincemann.springrapid.acl.service.MockAuthService;
 import io.github.vincemann.springrapid.core.model.IdentifiableEntity;
 import io.github.vincemann.springrapid.core.proxy.CalledByProxy;
 import lombok.extern.slf4j.Slf4j;
@@ -17,8 +18,8 @@ public class AuthenticatedFullAccessAclPlugin
         extends AbstractAclPlugin {
 
 
-    public AuthenticatedFullAccessAclPlugin(LocalPermissionService permissionService, MutableAclService mutableAclService) {
-        super(permissionService, mutableAclService);
+    public AuthenticatedFullAccessAclPlugin(LocalPermissionService permissionService, MutableAclService mutableAclService, MockAuthService mockAuthService) {
+        super(permissionService, mutableAclService, mockAuthService);
     }
 
     @CalledByProxy

@@ -9,6 +9,7 @@ import io.github.vincemann.springrapid.acl.plugin.CleanUpAclPlugin;
 import io.github.vincemann.springrapid.acl.proxy.create.CrudServiceSecurityProxyFactory;
 import io.github.vincemann.springrapid.acl.service.AclManaging;
 import io.github.vincemann.springrapid.acl.service.LocalPermissionService;
+import io.github.vincemann.springrapid.acl.service.MockAuthService;
 import io.github.vincemann.springrapid.acl.service.Secured;
 import io.github.vincemann.springrapid.core.proxy.factory.CrudServicePluginProxyFactory;
 import io.github.vincemann.springrapid.core.slicing.config.ServiceConfig;
@@ -35,6 +36,9 @@ public class LemonServiceAutoConfiguration {
     @Autowired
     AbstractUserRepository<?,?> userRepository;
 
+    @Autowired
+    MockAuthService mockAuthService;
+
     public LemonServiceAutoConfiguration() {
         log.info("Created");
     }
@@ -48,7 +52,7 @@ public class LemonServiceAutoConfiguration {
     @Bean
     @ConditionalOnMissingBean(LemonAclPlugin.class)
     public LemonAclPlugin lemonAclPlugin(){
-        return new LemonAclPlugin(permissionService,mutableAclService,userRepository);
+        return new LemonAclPlugin(permissionService,mutableAclService,mockAuthService,userRepository);
     }
 
     @ConditionalOnMissingBean(name = "aclManagingLemonService")

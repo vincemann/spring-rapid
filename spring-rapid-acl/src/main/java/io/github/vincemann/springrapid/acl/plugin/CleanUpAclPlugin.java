@@ -1,6 +1,7 @@
 package io.github.vincemann.springrapid.acl.plugin;
 
 import io.github.vincemann.springrapid.acl.service.LocalPermissionService;
+import io.github.vincemann.springrapid.acl.service.MockAuthService;
 import io.github.vincemann.springrapid.core.model.IdentifiableEntity;
 import io.github.vincemann.springrapid.core.proxy.CalledByProxy;
 import io.github.vincemann.springrapid.core.service.exception.EntityNotFoundException;
@@ -31,10 +32,9 @@ public class CleanUpAclPlugin
     @Setter
     private boolean deleteCascade = true;
 
-    public CleanUpAclPlugin(LocalPermissionService permissionService, MutableAclService mutableAclService) {
-        super(permissionService, mutableAclService);
+    public CleanUpAclPlugin(LocalPermissionService permissionService, MutableAclService mutableAclService, MockAuthService mockAuthService) {
+        super(permissionService, mutableAclService, mockAuthService);
     }
-
 
     @CalledByProxy
     public void onAfterDeleteById(Serializable id,Class entityClass) throws EntityNotFoundException, BadEntityException {
