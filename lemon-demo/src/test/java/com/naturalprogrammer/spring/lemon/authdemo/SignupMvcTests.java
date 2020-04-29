@@ -1,5 +1,6 @@
 package com.naturalprogrammer.spring.lemon.authdemo;
 
+import com.naturalprogrammer.spring.lemon.auth.util.LmapUtils;
 import com.naturalprogrammer.spring.lemon.authdemo.entities.User;
 import com.naturalprogrammer.spring.lemon.auth.security.domain.LemonRole;
 import com.naturalprogrammer.spring.lemon.auth.util.LecUtils;
@@ -24,7 +25,7 @@ public class SignupMvcTests extends AbstractMvcTests {
 
 		mvc.perform(post("/api/core/users")
 				.contentType(MediaType.APPLICATION_JSON)
-				.content(LecUtils.toJson(invalidUser)))
+				.content(LmapUtils.toJson(invalidUser)))
 				.andExpect(status().is(422))
 				.andExpect(jsonPath("$.errors[*].field").value(hasSize(4)))
 				.andExpect(jsonPath("$.errors[*].field").value(hasItems(
@@ -50,7 +51,7 @@ public class SignupMvcTests extends AbstractMvcTests {
 
 		mvc.perform(post("/api/core/users")
 				.contentType(MediaType.APPLICATION_JSON)
-				.content(LecUtils.toJson(user)))
+				.content(LmapUtils.toJson(user)))
 				.andExpect(status().is(201))
 				.andExpect(header().string(LecUtils.TOKEN_RESPONSE_HEADER_NAME, containsString(".")))
 				.andExpect(jsonPath("$.id").exists())
@@ -78,7 +79,7 @@ public class SignupMvcTests extends AbstractMvcTests {
 
 		mvc.perform(post("/api/core/users")
 				.contentType(MediaType.APPLICATION_JSON)
-				.content(LecUtils.toJson(user)))
+				.content(LmapUtils.toJson(user)))
 				.andExpect(status().is(422));
 		
 		verify(mailSender, never()).send(any());

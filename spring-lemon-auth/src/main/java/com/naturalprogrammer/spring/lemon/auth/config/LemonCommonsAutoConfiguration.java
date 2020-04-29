@@ -132,8 +132,8 @@ public class LemonCommonsAutoConfiguration {
 	}
 
 	@Bean
-	public LecUtils lecUtils(ApplicationContext applicationContext, ObjectMapper objectMapper) {
-		return new LecUtils(applicationContext, objectMapper);
+	public LecUtils lecUtils(ApplicationContext applicationContext) {
+		return new LecUtils(applicationContext);
 	}
 	
 	/**

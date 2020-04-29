@@ -9,10 +9,7 @@ import com.naturalprogrammer.spring.lemon.auth.domain.ChangePasswordForm;
 import com.naturalprogrammer.spring.lemon.auth.domain.ResetPasswordForm;
 import com.naturalprogrammer.spring.lemon.auth.security.domain.LemonUserDto;
 import com.naturalprogrammer.spring.lemon.auth.service.LemonService;
-import com.naturalprogrammer.spring.lemon.auth.util.LecUtils;
-import com.naturalprogrammer.spring.lemon.auth.util.LecwUtils;
-import com.naturalprogrammer.spring.lemon.auth.util.LemonUtils;
-import com.naturalprogrammer.spring.lemon.auth.util.UserUtils;
+import com.naturalprogrammer.spring.lemon.auth.util.*;
 import io.github.vincemann.springrapid.acl.service.Secured;
 import io.github.vincemann.springrapid.core.controller.dtoMapper.DtoMappingException;
 import io.github.vincemann.springrapid.core.controller.dtoMapper.context.CrudDtoEndpoint;
@@ -213,7 +210,7 @@ public abstract class LemonController
 
 		// ensure that the user exists
 		LexUtils.ensureFound(user);
-		U updateUser = LecUtils.applyPatch(user, patch); // create a patched form
+		U updateUser = LmapUtils.applyPatch(user, patch); // create a patched form
 		//default security Rule checks for write permission
 		LemonUserDto updated = lemonService.updateUser(user, updateUser);
 		// Send a new token for logged in user in the response
