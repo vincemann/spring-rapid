@@ -7,7 +7,6 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.ComponentScan;
 
 @SpringBootApplication
-@ComponentScan(basePackages = {"io.github.vincemann.springrapid"})
 @Slf4j
 public class RapidDemoApplication {
 

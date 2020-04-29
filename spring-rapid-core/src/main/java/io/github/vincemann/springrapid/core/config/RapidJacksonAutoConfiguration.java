@@ -12,7 +12,7 @@ import org.springframework.context.annotation.Configuration;
 
 import static com.fasterxml.jackson.databind.DeserializationFeature.ACCEPT_SINGLE_VALUE_AS_ARRAY;
 
-@Configuration
+@WebConfig
 @Slf4j
 public class RapidJacksonAutoConfiguration {
 

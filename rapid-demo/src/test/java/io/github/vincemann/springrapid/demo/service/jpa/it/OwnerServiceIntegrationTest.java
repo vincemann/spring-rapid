@@ -1,6 +1,7 @@
 package io.github.vincemann.springrapid.demo.service.jpa.it;
 
 import io.github.vincemann.springrapid.core.util.Lists;
+import io.github.vincemann.springrapid.demo.EnableProjectComponentScan;
 import io.github.vincemann.springrapid.demo.model.Owner;
 import io.github.vincemann.springrapid.demo.model.Pet;
 import io.github.vincemann.springrapid.demo.model.PetType;
@@ -19,6 +20,7 @@ import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.mock.mockito.SpyBean;
+import org.springframework.context.annotation.ComponentScan;
 
 import java.time.LocalDate;
 import java.util.HashSet;
@@ -33,6 +35,8 @@ import static io.github.vincemann.springrapid.coretest.service.result.matcher.re
 import static io.github.vincemann.springrapid.coretest.service.result.matcher.resolve.EntityPlaceholder.SERVICE_INPUT_ENTITY;
 
 
+
+@EnableProjectComponentScan
 class OwnerServiceIntegrationTest
         extends CrudServiceIntegrationTest<OwnerService, Owner, Long> {
 
