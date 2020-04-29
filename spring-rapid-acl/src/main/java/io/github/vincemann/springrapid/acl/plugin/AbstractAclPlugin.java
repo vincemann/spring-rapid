@@ -30,7 +30,7 @@ public abstract class AbstractAclPlugin extends CrudServicePlugin {
     }
 
     protected void savePermissionForAuthenticatedOver(IdentifiableEntity<Serializable> entity, Permission permission){
-        String own = findAuthenticatedUsername();
+        String own = findAuthenticatedName();
         //not needed, acl, SecurityContext already has right name...
 //        mockAuthService.runAuthenticatedAs(own,() -> {
             getPermissionService().addPermissionForUserOver(entity, permission,own);
@@ -38,7 +38,7 @@ public abstract class AbstractAclPlugin extends CrudServicePlugin {
 
     }
 
-    protected String findAuthenticatedUsername(){
+    protected String findAuthenticatedName(){
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         //Nicht auslagern. MutableAclService macht das intern auch so -> use @MockUser(username="testUser") in tests
         if(authentication==null){

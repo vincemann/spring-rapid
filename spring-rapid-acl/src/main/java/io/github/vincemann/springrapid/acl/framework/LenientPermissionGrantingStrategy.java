@@ -1,5 +1,6 @@
 package io.github.vincemann.springrapid.acl.framework;
 
+import io.github.vincemann.springrapid.acl.util.PermissionUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.acls.domain.AuditLogger;
 import org.springframework.security.acls.domain.BasePermission;
@@ -11,7 +12,7 @@ import java.util.List;
 /**
  * No exact Permission match is needed.
  * If Entity has create Permission for example (mask = 4), then it implicitly also has read (mask = 1) permission,
- * bc this permission ois below create in the Hierarchy.
+ * bc this permission is below create in the Hierarchy.
  * @see BasePermission
  */
 @Slf4j
@@ -33,9 +34,9 @@ public class LenientPermissionGrantingStrategy extends DefaultPermissionGranting
 //            if(givenPermissionMask== BasePermission.ADMINISTRATION.getMask()){
 //                return true;
 //            }
-            log.debug("checking ace: "+ ace.getId() + ", " + ace.getPermission().getPattern() + ", sid: " + ace.getSid());
-            log.debug("given permission: " + ace.getPermission().toString() +", mask: " + givenPermissionMask);
-            log.debug("requested permission: " + p.toString()+", mask: " + requestedPermissionMask);
+            log.debug("checking ace: id:"+ ace.getId() + ", " + PermissionUtils.toString(ace.getPermission()) + ", owner sid of permission: " + ace.getSid());
+            log.debug("given permission: " + PermissionUtils.toString(ace.getPermission()) +", mask: " + givenPermissionMask);
+            log.debug("requested permission: " + PermissionUtils.toString(p)+", mask: " + requestedPermissionMask);
             return givenPermissionMask >= requestedPermissionMask;
             //return (ace.getPermission().getMask() & p.getMask()) == 0;
         } else {

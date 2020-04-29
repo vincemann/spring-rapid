@@ -1,5 +1,6 @@
 package io.github.vincemann.springrapid.acl.service;
 
+import io.github.vincemann.springrapid.acl.util.PermissionUtils;
 import io.github.vincemann.springrapid.core.slicing.components.ServiceComponent;
 import io.github.vincemann.springrapid.core.model.IdentifiableEntity;
 import lombok.Getter;
@@ -94,7 +95,7 @@ public class LocalPermissionService {
     }
 
     private void addPermissionForSid(IdentifiableEntity<? extends Serializable> targetObj, Permission permission, Sid sid) {
-        log.debug("sid: "+ sid +" will gain permission: " + permission.getPattern() +" over entity: " + targetObj);
+        log.debug("sid: "+ sid +" will gain permission: " + PermissionUtils.toString(permission) +" over entity: " + targetObj);
         final ObjectIdentity oi = new ObjectIdentityImpl(targetObj.getClass(), targetObj.getId());
 
         MutableAcl acl = null;

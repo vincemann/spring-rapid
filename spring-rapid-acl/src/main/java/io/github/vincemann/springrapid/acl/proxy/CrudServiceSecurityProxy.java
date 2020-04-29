@@ -89,7 +89,7 @@ public class CrudServiceSecurityProxy
 
     @Override
     protected Object proxy(Object target, Method method, Object[] args) throws Throwable {
-        log.debug("SecurityProxy intercepting method: " + method.getName() + " of Class: " + method.getDeclaringClass().getSimpleName());
+        log.debug("SecurityProxy intercepting method: " + method.getName() + " of Class: " +target.getClass());
         state = State.create(getMethods().get(method.getName()), getService(),args);
 
         invokePreAuthorizeMethods();
