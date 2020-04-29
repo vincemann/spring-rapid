@@ -61,8 +61,8 @@ public class CrudServiceProxyBeanComposer implements BeanPostProcessor, Applicat
             Class serviceInterface = resolveServiceInterface(unwrappedBean, beanName);
             List<Proxy> proxies = Lists.newArrayList(proxiesConfig.value());
             ArrayList<SecurityProxy> securityProxies = Lists.newArrayList(proxiesConfig.securityProxies());
-            log.debug("Proxies of bean: " + beanName + " : " + proxies);
-            log.debug("SecurityProxies of bean: " + beanName + " : " + securityProxies);
+            log.debug("Identified Proxies of bean: " + beanName + " : " + proxies);
+            log.debug("Identified SecurityProxies of bean: " + beanName + " : " + securityProxies);
             CrudService lastProxiedBean = null;
             for (Proxy proxy : proxies) {
                 if(proxy.primary()){
@@ -84,11 +84,11 @@ public class CrudServiceProxyBeanComposer implements BeanPostProcessor, Applicat
                 CrudService proxyBean = CrudServicePluginProxyFactory.create(proxiedBean,
                         resolvePlugins(proxy.plugins()).toArray(new CrudServicePlugin[0]));
 
-                log.debug("creating proxyBean : " + proxyBean);
-                log.debug("Registering beanDef of proxyBean first: " + proxyBeanDef);
+                log.trace("creating proxyBean : " + proxyBean);
+                log.trace("Registering beanDef of proxyBean first: " + proxyBeanDef);
                 beanFactory.registerBeanDefinition(proxyBeanName,proxyBeanDef);
                 beanFactory.registerSingleton(proxyBeanName,proxyBean);
-                log.debug("registered proxyBean.");
+                log.trace("registered proxyBean.");
                 lastProxiedBean = proxyBean;
             }
 
@@ -108,12 +108,12 @@ public class CrudServiceProxyBeanComposer implements BeanPostProcessor, Applicat
                 String proxyBeanName = resolveProxyName(securityProxy.qualifiers(),securityProxy.primary(),securityProxy.name(),unwrappedBean.getClass());
                 CrudService securityProxyBean = securityProxyFactory.create(lastProxiedBean,
                         (resolveRules(securityProxy).toArray(new ServiceSecurityRule[0])));
-                log.debug("creating proxyBean with name: " + proxyBeanName);
-                log.debug("creating security proxyBean : " + securityProxyBean);
+                log.debug("Creating proxyBean with name: " + proxyBeanName);
+                log.debug("Creating security proxyBean : " + securityProxyBean);
                 log.debug("Registering beanDef of securityProxyBean first: " + beanDef);
                 beanFactory.registerBeanDefinition(proxyBeanName,beanDef);
                 beanFactory.registerSingleton(proxyBeanName,securityProxyBean);
-                log.debug("registered securityProxyBean.");
+                log.trace("registered securityProxyBean.");
                 lastProxiedBean = securityProxyBean;
             }
         }

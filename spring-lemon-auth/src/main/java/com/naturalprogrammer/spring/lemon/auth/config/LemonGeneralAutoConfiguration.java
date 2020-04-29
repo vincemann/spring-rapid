@@ -22,7 +22,7 @@ public class LemonGeneralAutoConfiguration {
     /**
      * Spring Lemon related properties
      */
-    @ConfigurationProperties(prefix="lemon")
+    @ConfigurationProperties(prefix="lemon",ignoreUnknownFields = false)
     @Bean
     public LemonProperties lemonProperties() {
 

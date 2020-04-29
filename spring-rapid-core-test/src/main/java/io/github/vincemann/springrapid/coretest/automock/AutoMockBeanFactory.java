@@ -36,7 +36,7 @@ public class AutoMockBeanFactory extends DefaultListableBeanFactory {
             if(requiredType.isAnnotationPresent(ServiceComponent.class)
                     || requiredType.isAnnotationPresent(Service.class)) {
                 final Object mock = mock(requiredType);
-                System.err.println("Automocking bean with name " + mockBeanName + "of type: " + requiredType.getSimpleName());
+                log.info("Automocking bean with name " + mockBeanName + "of type: " + requiredType.getSimpleName());
                 autowireCandidates.put(mockBeanName, mock);
                 this.addSingleton(mockBeanName, mock);
             }

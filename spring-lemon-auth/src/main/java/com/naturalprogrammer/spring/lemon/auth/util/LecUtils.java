@@ -46,14 +46,10 @@ public class LecUtils {
 
 
 	public static ApplicationContext applicationContext;
-	public static ObjectMapper objectMapper;
 	
-	public LecUtils(ApplicationContext applicationContext,
-		ObjectMapper objectMapper) {
+	public LecUtils(ApplicationContext applicationContext) {
 		
 		LecUtils.applicationContext = applicationContext;
-		LecUtils.objectMapper = objectMapper;
-		
 		log.info("Created");
 	}
 	
@@ -134,30 +130,6 @@ public class LecUtils {
 			throw new BadCredentialsException(LexUtils.getMessage(messageKey));
 	}
 
-	
-	/**
-	 * Applies a JsonPatch to an object
-	 */
-    @SuppressWarnings("unchecked")
-	public static <T> T applyPatch(T originalObj, String patchString)
-			throws JsonProcessingException, IOException, JsonPatchException {
-
-        // Parse the patch to JsonNode
-        JsonNode patchNode = objectMapper.readTree(patchString);
-
-        // Create the patch
-        JsonPatch patch = JsonPatch.fromJson(patchNode);
-
-        // Convert the original object to JsonNode
-        JsonNode originalObjNode = objectMapper.valueToTree(originalObj);
-
-        // Apply the patch
-        TreeNode patchedObjNode = patch.apply(originalObjNode);
-
-        // Convert the patched node to an updated obj
-        return objectMapper.treeToValue(patchedObjNode, (Class<T>) originalObj.getClass());
-    }
-
 
 	/**
 	 * Reads a resource into a String
@@ -172,10 +144,6 @@ public class LecUtils {
 	    return text;
 	}
 	
-	public static ObjectMapper mapper() {
-		
-		return objectMapper;
-	}
 
 
 	/**
@@ -197,63 +165,7 @@ public class LecUtils {
 	}
 
 
-	/**
-	 * Serializes an object to JSON string
-	 */
-	public static <T> String toJson(T obj) {
-	
-		try {
-			
-			return objectMapper.writeValueAsString(obj);
-			
-		} catch (JsonProcessingException e) {
-			
-			throw new RuntimeException(e);
-		}
-	}
 
 
-	/**
-	 * Deserializes a JSON String
-	 */
-	public static <T> T fromJson(String json, Class<T> clazz) {
-	
-		try {
-			
-			return objectMapper.readValue(json, clazz);
-			
-		} catch (IOException e) {
-			
-			throw new RuntimeException(e);
-		}
-	}
-	
-	/**
-	 * Serializes an object
-	 */	
-	public static String serialize(Serializable obj) {
-		
-		return Base64.getUrlEncoder().encodeToString(
-				SerializationUtils.serialize(obj));
-	}
 
-	/**
-	 * Deserializes an object
-	 */	
-	public static <T> T deserialize(String serializedObj) {
-
-		return SerializationUtils.deserialize(
-				Base64.getUrlDecoder().decode(serializedObj));
-    }
-
-
-	public static LemonUserDto getUserDto(JWTClaimsSet claims) {
-
-		Object userClaim = claims.getClaim(BlueTokenService.USER_CLAIM);
-		
-		if (userClaim == null)
-			return null;
-		
-		return LecUtils.deserialize((String) userClaim);
-	}
 }

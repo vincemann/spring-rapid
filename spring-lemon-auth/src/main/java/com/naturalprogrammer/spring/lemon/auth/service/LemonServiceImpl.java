@@ -11,10 +11,7 @@ import com.naturalprogrammer.spring.lemon.auth.security.domain.LemonRole;
 import com.naturalprogrammer.spring.lemon.auth.security.domain.LemonUserDto;
 import com.naturalprogrammer.spring.lemon.auth.security.service.BlueTokenService;
 import com.naturalprogrammer.spring.lemon.auth.security.service.GreenTokenService;
-import com.naturalprogrammer.spring.lemon.auth.util.LecUtils;
-import com.naturalprogrammer.spring.lemon.auth.util.LecjUtils;
-import com.naturalprogrammer.spring.lemon.auth.util.LecwUtils;
-import com.naturalprogrammer.spring.lemon.auth.util.LemonUtils;
+import com.naturalprogrammer.spring.lemon.auth.util.*;
 import com.nimbusds.jwt.JWTClaimsSet;
 import io.github.vincemann.springrapid.acl.Role;
 import io.github.vincemann.springrapid.core.service.exception.BadEntityException;
@@ -575,7 +572,7 @@ public abstract class LemonServiceImpl
 		LemonUserDto currentUser = LecwUtils.currentUser();
 
 		Map<String, Object> claimMap = Collections.singletonMap(BlueTokenService.USER_CLAIM,
-				LecUtils.serialize(currentUser)); // Not serializing converts it to a JsonNode
+				LmapUtils.serialize(currentUser)); // Not serializing converts it to a JsonNode
 
 		Map<String, String> tokenMap = Collections.singletonMap("token", LecUtils.TOKEN_PREFIX +
 				blueTokenService.createToken(BlueTokenService.AUTH_AUDIENCE, currentUser.getUsername(),

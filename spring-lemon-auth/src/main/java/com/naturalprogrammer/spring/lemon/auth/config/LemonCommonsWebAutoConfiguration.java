@@ -3,6 +3,7 @@ package com.naturalprogrammer.spring.lemon.auth.config;
 import java.io.Serializable;
 
 import com.naturalprogrammer.spring.lemon.auth.LemonProperties;
+import com.naturalprogrammer.spring.lemon.auth.util.LmapUtils;
 import io.github.vincemann.springrapid.core.config.RapidJacksonAutoConfiguration;
 import io.github.vincemann.springrapid.core.slicing.config.WebConfig;
 import org.apache.commons.logging.Log;
@@ -73,6 +74,11 @@ public class LemonCommonsWebAutoConfiguration {
         converter.setJsonPrefix(JSON_PREFIX);
         
         return converter;
+	}
+
+	@Bean
+	public LmapUtils lmapUtils(ObjectMapper mapper){
+		return new LmapUtils(mapper);
 	}
 
 	/**
