@@ -3,6 +3,7 @@ package com.naturalprogrammer.spring.lemon.auth.security;
 import com.naturalprogrammer.spring.lemon.auth.LemonProperties;
 import com.naturalprogrammer.spring.lemon.auth.domain.AbstractUser;
 import com.naturalprogrammer.spring.lemon.auth.domain.AbstractUserRepository;
+import com.naturalprogrammer.spring.lemon.auth.util.LemonUtils;
 import io.github.vincemann.springrapid.acl.plugin.AbstractAclPlugin;
 import io.github.vincemann.springrapid.acl.service.LocalPermissionService;
 import io.github.vincemann.springrapid.acl.service.MockAuthService;
@@ -39,6 +40,8 @@ public class LemonAclPlugin extends AbstractAclPlugin {
             log.warn("No user found after signup -> cant save acl permissions");
             return;
         }
+        //login is needed for save full permission for authenticated
+        LemonUtils.login(byEmail.get());
         savePermissionForAuthenticatedOver(byEmail.get(), BasePermission.ADMINISTRATION);
         saveFullPermissionForAdminOver(byEmail.get());
     }
