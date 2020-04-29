@@ -31,9 +31,10 @@ public abstract class AbstractAclPlugin extends CrudServicePlugin {
 
     protected void savePermissionForAuthenticatedOver(IdentifiableEntity<Serializable> entity, Permission permission){
         String own = findAuthenticatedUsername();
-        mockAuthService.runAuthenticatedAs(own,() -> {
+        //not needed, acl, SecurityContext already has right name...
+//        mockAuthService.runAuthenticatedAs(own,() -> {
             getPermissionService().addPermissionForUserOver(entity, permission,own);
-        });
+//        });
 
     }
 
