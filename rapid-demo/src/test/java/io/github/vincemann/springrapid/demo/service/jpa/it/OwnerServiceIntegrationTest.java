@@ -14,6 +14,7 @@ import io.github.vincemann.springrapid.core.service.exception.EntityNotFoundExce
 import io.github.vincemann.springrapid.coretest.compare.FullComparator;
 import io.github.vincemann.springrapid.coretest.service.CrudServiceIntegrationTest;
 import io.github.vincemann.springrapid.coretest.service.result.ServiceResult;
+import io.github.vincemann.springrapid.entityrelationship.slicing.test.ImportRapidEntityRelConfig;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -37,6 +38,7 @@ import static io.github.vincemann.springrapid.coretest.service.result.matcher.re
 
 
 @EnableProjectComponentScan
+@ImportRapidEntityRelConfig
 class OwnerServiceIntegrationTest
         extends CrudServiceIntegrationTest<OwnerService, Owner, Long> {
 

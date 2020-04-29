@@ -12,5 +12,6 @@ import java.lang.annotation.*;
 @ImportAutoConfiguration({
         LemonAuthExceptionHandlerAutoConfiguration.class, LemonCommonsWebAutoConfiguration.class, LemonWebAutoConfiguration.class
 })
+@ImportLemonAuthGeneralConfig
 public @interface ImportLemonAuthWebConfig {
 }

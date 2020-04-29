@@ -15,5 +15,6 @@ import java.lang.annotation.*;
 @ImportAutoConfiguration({
         LemonAutoConfiguration.class, LemonCommonsAutoConfiguration.class, LemonCommonsJpaAutoConfiguration.class, LemonServiceAutoConfiguration.class
 })
+@ImportLemonAuthGeneralConfig
 public @interface ImportLemonAuthServiceConfig {
 }
