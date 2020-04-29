@@ -6,6 +6,7 @@ import com.naturalprogrammer.spring.lemon.auth.security.LemonAclPlugin;
 import com.naturalprogrammer.spring.lemon.auth.service.LemonService;
 import com.naturalprogrammer.spring.lemon.auth.security.LemonServiceSecurityRule;
 import io.github.vincemann.springrapid.acl.plugin.AdminFullAccessAclPlugin;
+import io.github.vincemann.springrapid.acl.plugin.AuthenticatedFullAccessAclPlugin;
 import io.github.vincemann.springrapid.acl.plugin.CleanUpAclPlugin;
 import io.github.vincemann.springrapid.acl.proxy.create.CrudServiceSecurityProxyFactory;
 import io.github.vincemann.springrapid.acl.service.AclManaging;
@@ -60,9 +61,10 @@ public class LemonServiceAutoConfiguration {
     @Bean
     @AclManaging
     public LemonService<? extends AbstractUser,?,?> aclManagingLemonService(LemonService<? extends AbstractUser,?,?> service,
-                                                                            AdminFullAccessAclPlugin adminFullAccess,
+//                                                                            AdminFullAccessAclPlugin adminFullAccess,
+//                                                                            AuthenticatedFullAccessAclPlugin authenticatedFullAccessAclPlugin,
                                                                             CleanUpAclPlugin cleanUpAclPlugin){
-        return CrudServicePluginProxyFactory.create(service,adminFullAccess,lemonAclPlugin(),cleanUpAclPlugin);
+        return CrudServicePluginProxyFactory.create(service/*,adminFullAccess*/,lemonAclPlugin(),/*authenticatedFullAccessAclPlugin,*/cleanUpAclPlugin);
     }
 
 

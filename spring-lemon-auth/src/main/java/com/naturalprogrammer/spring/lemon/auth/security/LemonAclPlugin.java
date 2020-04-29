@@ -25,6 +25,11 @@ public class LemonAclPlugin extends AbstractAclPlugin {
     }
 
     @CalledByProxy
+    public void onAfterSave(AbstractUser toSave,AbstractUser saved){
+        savePostSignupAclInfo(saved.getEmail());
+    }
+
+    @CalledByProxy
     public void onAfterSignup(AbstractUser registerAttempt,AbstractUser saved){
         savePostSignupAclInfo(registerAttempt.getEmail());
     }

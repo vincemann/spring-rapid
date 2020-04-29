@@ -2,11 +2,13 @@ package com.naturalprogrammer.spring.lemon.auth.security;
 
 import com.naturalprogrammer.spring.lemon.auth.security.domain.LemonUserDto;
 import com.naturalprogrammer.spring.lemon.auth.util.LecUtils;
+import io.github.vincemann.springrapid.acl.util.PermissionUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.acls.AclPermissionEvaluator;
 import org.springframework.security.acls.model.AclService;
+import org.springframework.security.acls.model.Permission;
 import org.springframework.security.core.Authentication;
 
 import java.io.Serializable;
