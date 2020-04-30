@@ -4,7 +4,6 @@ import com.naturalprogrammer.spring.lemon.auth.domain.AbstractUser;
 import com.naturalprogrammer.spring.lemon.auth.domain.AbstractUserRepository;
 import com.naturalprogrammer.spring.lemon.auth.domain.IdConverter;
 import com.naturalprogrammer.spring.lemon.auth.security.service.LemonUserDetailsService;
-import com.naturalprogrammer.spring.lemon.auth.service.LemonMockAuthService;
 import com.naturalprogrammer.spring.lemon.auth.service.LemonService;
 import com.naturalprogrammer.spring.lemon.auth.validation.RetypePasswordValidator;
 import com.naturalprogrammer.spring.lemon.auth.validation.UniqueEmailValidator;
@@ -62,12 +61,12 @@ public class LemonAutoConfiguration {
 		return new LemonUserDetailsService<U, ID>(userRepository);
 	}
 
-	@Bean
-	@ConditionalOnMissingBean(MockAuthService.class)
-	public MockAuthService lemonMockAuthService(){
-		return new LemonMockAuthService();
-	}
-	
+//	@Bean
+//	@ConditionalOnMissingBean(MockAuthService.class)
+//	public MockAuthService lemonMockAuthService(){
+//		return new LemonMockAuthService();
+//	}
+//
 	/**
 	 * Configures RetypePasswordValidator if missing
 	 */

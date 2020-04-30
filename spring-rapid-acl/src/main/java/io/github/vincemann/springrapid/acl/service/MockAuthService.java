@@ -10,7 +10,7 @@ import java.util.stream.Collectors;
 
 @ServiceComponent
 public interface MockAuthService {
-    String TEMP_USER_EMAIL = "tempUser@email.com";
+    String TEMP_USER_EMAIL = "tempUser@mockAuthService.com";
     String TEMP_USER_PASSWORD = "tempUserPassword123@";
 
     public void runAuthenticatedAs(Authentication authentication, Runnable runnable);

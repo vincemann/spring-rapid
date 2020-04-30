@@ -35,8 +35,8 @@ public class LemonAclPlugin extends AbstractAclPlugin {
     }
 
     @CalledByProxy
-    public void onAfterCreateAdmin(LemonProperties.Admin admin){
-        savePostSignupAclInfo(admin.getUsername());
+    public void onAfterCreateAdminUser(LemonProperties.Admin admin){
+        savePostSignupAclInfo(admin.getEmail());
     }
 
     private void savePostSignupAclInfo(String email){

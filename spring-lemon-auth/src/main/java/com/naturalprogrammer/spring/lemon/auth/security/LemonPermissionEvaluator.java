@@ -14,7 +14,8 @@ import org.springframework.security.core.Authentication;
 import java.io.Serializable;
 
 /**
- * Denys any access if blocked or unverified admin
+ * Denys any access if any user is blocked or if admin is unverified
+ * -> unverified Users are let through, so you can treat Role_GoodUser and Role_User differently in access logic
  */
 public class LemonPermissionEvaluator extends AclPermissionEvaluator {
 

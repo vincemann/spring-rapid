@@ -529,11 +529,11 @@ public abstract class LemonServiceImpl
 	@Transactional(propagation = Propagation.REQUIRED, readOnly = false)
 	//only called internally
 	public void createAdminUser(LemonProperties.Admin admin) throws BadEntityException{
-		log.info("Creating the first admin user: " + admin.getUsername());
+		log.info("Creating the first admin user: " + admin.getEmail());
 
 		// create the user
 		U user = newUser();
-		user.setEmail(admin.getUsername());
+		user.setEmail(admin.getEmail());
 		user.setPassword(passwordEncoder.encode(
 				admin.getPassword()));
 		user.getRoles().add(Role.ADMIN);

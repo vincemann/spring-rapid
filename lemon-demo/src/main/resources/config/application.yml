@@ -32,7 +32,7 @@ lemon:
 
   # First ADMIN user
   admin:
-    username: admin@example.com
+    email: admin@example.com
     password: admin!
     
    # Spring Lemon flags
