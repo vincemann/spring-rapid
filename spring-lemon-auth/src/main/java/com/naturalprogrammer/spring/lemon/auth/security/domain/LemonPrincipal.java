@@ -26,6 +26,7 @@ public class LemonPrincipal implements UserDetails, CredentialsContainer {
 	private final LemonUserDto lemonUserDto;
 	
 	private Map<String, Object> attributes;
+	//username is always email in spring lemon
 	private String name;
 	private Map<String, Object> claims;
 //	private OidcUserInfo userInfo;
@@ -67,7 +68,7 @@ public class LemonPrincipal implements UserDetails, CredentialsContainer {
 
 	@Override
 	public String getUsername() {
-
+//username is always email in spring lemon
 		return lemonUserDto.getUsername();
 	}
 

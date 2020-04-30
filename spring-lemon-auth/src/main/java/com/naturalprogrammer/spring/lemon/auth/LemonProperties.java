@@ -4,7 +4,6 @@ import com.naturalprogrammer.spring.lemon.auth.util.LecUtils;
 import lombok.*;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.http.HttpHeaders;
 import org.springframework.validation.annotation.Validated;
 
@@ -226,19 +225,19 @@ public class LemonProperties {
 		/**
 		 * Login ID of the initial Admin user to be created 
 		 */
-		private String username;
+		private String email;
 		
 		/**
 		 * Password of the initial Admin user to be created 
 		 */		
 		private String password;
 
-		public String getUsername() {
-			return username;
+		public String getEmail() {
+			return email;
 		}
 
-		public void setUsername(String username) {
-			this.username = username;
+		public void setEmail(String email) {
+			this.email = email;
 		}
 
 		public String getPassword() {

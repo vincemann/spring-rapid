@@ -16,7 +16,6 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetailsService;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.Assert;
@@ -81,7 +80,7 @@ public class AdminDatabaseDataInitializer extends DatabaseDataInitializer {
     private void addAdmins() throws BadEntityException {
         //add lemon admin
         LemonProperties.Admin lemonAdmin = lemonProperties.getAdmin();
-        adminEmails.add(lemonAdmin.getUsername());
+        adminEmails.add(lemonAdmin.getEmail());
         adminPasswords.add(lemonAdmin.getPassword());
         //add rapid admins
         int index = 0;

@@ -14,6 +14,7 @@ import io.github.vincemann.springrapid.acl.securityChecker.SecurityChecker;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.test.util.AopTestUtils;
 import org.springframework.util.Assert;
 
 import java.io.Serializable;
@@ -89,7 +90,7 @@ public class CrudServiceSecurityProxy
 
     @Override
     protected Object proxy(Object target, Method method, Object[] args) throws Throwable {
-        log.debug("SecurityProxy intercepting method: " + method.getName() + " of Class: " +target.getClass());
+        log.debug("SecurityProxy intercepting method: " + method.getName() + " of Class: " + AopTestUtils.getUltimateTargetObject(target).getClass());
         state = State.create(getMethods().get(method.getName()), getService(),args);
 
         invokePreAuthorizeMethods();

@@ -11,6 +11,7 @@ import org.springframework.expression.spel.standard.SpelExpressionParser;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.access.expression.ExpressionUtils;
 import org.springframework.security.access.expression.method.MethodSecurityExpressionHandler;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.util.SimpleMethodInvocation;
 import org.springframework.stereotype.Component;
@@ -20,6 +21,7 @@ import java.io.Serializable;
 import java.lang.reflect.Method;
 import java.util.Collection;
 import java.util.HashSet;
+import java.util.stream.Collectors;
 
 @Slf4j
 /**
@@ -81,7 +83,12 @@ public class DefaultSecurityChecker implements SecurityChecker,ApplicationContex
         boolean permitted = checkExpression("hasPermission(" + id + ",'" + clazz.getName() + "','" + permission + "')");
         if(!permitted){
             String principal = SecurityContextHolder.getContext().getAuthentication().getName();
-            throw new AccessDeniedException("Permission not Granted! Principal: "+principal+" does not have Permission " + permission + " for entity: {"+clazz.getSimpleName() + ", id: " + id+"}");
+            throw new AccessDeniedException("Permission not Granted! Principal: "+principal+" with roles:"
+                    +SecurityContextHolder.getContext().getAuthentication().getAuthorities()
+                            .stream()
+                            .map(GrantedAuthority::getAuthority)
+                            .collect(Collectors.toList())
+                    +" does not have Permission " + permission + " for entity: {"+clazz.getSimpleName() + ", id: " + id+"}");
         }
     }
 
