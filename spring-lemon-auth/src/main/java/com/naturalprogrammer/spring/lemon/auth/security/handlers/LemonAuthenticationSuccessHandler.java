@@ -59,7 +59,7 @@ public class LemonAuthenticationSuccessHandler
     	// get the current-user
     	LemonUserDto currentUser = LecwUtils.currentUser();
 
-    	lemonService.addAuthHeader(response, currentUser.getUsername(), expirationMillis);
+    	lemonService.addAuthHeader(response, currentUser.getEmail(), expirationMillis);
     	
     	// write current-user data to the response  
     	response.getOutputStream().print(

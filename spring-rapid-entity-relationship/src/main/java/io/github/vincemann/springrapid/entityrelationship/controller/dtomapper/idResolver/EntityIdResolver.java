@@ -5,6 +5,7 @@ import io.github.vincemann.springrapid.core.service.CrudService;
 import io.github.vincemann.springrapid.core.service.locator.CrudServiceLocator;
 import io.github.vincemann.springrapid.core.service.exception.EntityNotFoundException;
 import io.github.vincemann.springrapid.core.service.exception.BadEntityException;
+import io.github.vincemann.springrapid.core.util.EntityUtils;
 import lombok.Getter;
 
 import java.io.Serializable;
@@ -53,9 +54,7 @@ public abstract class EntityIdResolver<E,Dto> {
             } catch (ClassCastException e) {
                 throw new IllegalArgumentException("ParentId: " + entityClassToIdMapping.getValue() + " was of wrong type for Service: " + entityService,e);
             }
-            if (!optionalParent.isPresent()) {
-                throw new EntityNotFoundException("No Parent of Type: " + entityClassToIdMapping.getKey().getSimpleName() + " found with id: " + entityClassToIdMapping.getValue());
-            }
+            EntityUtils.checkPresent(optionalParent,"No Parent of Type: " + entityClassToIdMapping.getKey().getSimpleName() + " found with id: " + entityClassToIdMapping.getValue());
             return optionalParent.get();
         }catch (BadEntityException|EntityNotFoundException e){
             throw new DtoMappingException(e);

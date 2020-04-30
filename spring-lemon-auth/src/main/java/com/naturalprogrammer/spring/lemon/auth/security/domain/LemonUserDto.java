@@ -20,7 +20,7 @@ public class LemonUserDto extends IdentifiableEntityImpl<String> implements Seri
 	private static final long serialVersionUID = -9134054705405149534L;
 	
 //	private String id;
-	private String username;
+	private String email;
 	private String password;
 	private Set<String> roles = new HashSet<String>();
 //	private Serializable tag;

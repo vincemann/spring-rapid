@@ -88,7 +88,7 @@ public class AbstractUser<ID extends Serializable>
 		LemonUserDto userDto = new LemonUserDto();
 
 		userDto.setId(getId().toString());
-		userDto.setUsername(email);
+		userDto.setEmail(email);
 		userDto.setPassword(password);
 
 		// roles would be org.hibernate.collection.internal.PersistentSet,

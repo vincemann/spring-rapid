@@ -17,6 +17,7 @@ import io.github.vincemann.springrapid.core.service.exception.BadEntityException
 import io.github.vincemann.springrapid.core.service.exception.EntityNotFoundException;
 import io.github.vincemann.springrapid.core.service.exception.BadEntityException;
 import io.github.vincemann.springrapid.core.util.AuthorityUtil;
+import io.github.vincemann.springrapid.core.util.EntityUtils;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
@@ -99,13 +100,10 @@ public abstract class JsonDtoCrudController
         logStateBeforeServiceCall("findById", id);
         Optional<E> optionalEntity = crudService.findById(id);
         logServiceResult("findById", optionalEntity);
-        if (optionalEntity.isPresent()) {
-            IdentifiableEntity<Id> dto = dtoMapper.mapToDto(optionalEntity.get(),
-                    findDtoClass(CrudDtoEndpoint.FIND, Direction.RESPONSE));
-            return dto;
-        } else {
-            throw new EntityNotFoundException();
-        }
+        EntityUtils.checkPresent(optionalEntity, id, getEntityClass());
+        IdentifiableEntity<Id> dto = dtoMapper.mapToDto(optionalEntity.get(),
+                findDtoClass(CrudDtoEndpoint.FIND, Direction.RESPONSE));
+        return dto;
     }
 
     public Class<? extends IdentifiableEntity> findDtoClass(String endpoint, Direction direction) {

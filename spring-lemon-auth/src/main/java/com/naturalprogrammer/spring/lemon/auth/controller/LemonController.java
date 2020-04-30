@@ -21,7 +21,6 @@ import io.github.vincemann.springrapid.core.service.exception.BadEntityException
 import io.github.vincemann.springrapid.core.service.exception.EntityNotFoundException;
 import com.naturalprogrammer.spring.lemon.exceptions.util.LexUtils;
 import io.github.vincemann.springrapid.core.slicing.components.WebComponent;
-import io.github.vincemann.springrapid.core.slicing.components.WebController;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -305,7 +304,7 @@ public abstract class LemonController
 	protected LemonUserDto userWithToken(HttpServletResponse response,U saved) {
 		LemonUtils.login(saved);
 		LemonUserDto currentUser = LecwUtils.currentUser();
-		lemonService.addAuthHeader(response, currentUser.getUsername(), jwtExpirationMillis);
+		lemonService.addAuthHeader(response, currentUser.getEmail(), jwtExpirationMillis);
 		return currentUser;
 	}
 }
