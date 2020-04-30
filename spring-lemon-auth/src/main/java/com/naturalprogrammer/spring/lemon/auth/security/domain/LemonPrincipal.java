@@ -69,7 +69,7 @@ public class LemonPrincipal implements UserDetails, CredentialsContainer {
 	@Override
 	public String getUsername() {
 //username is always email in spring lemon
-		return lemonUserDto.getUsername();
+		return lemonUserDto.getEmail();
 	}
 
 	@Override

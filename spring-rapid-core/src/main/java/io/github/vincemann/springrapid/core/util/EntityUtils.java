@@ -1,0 +1,40 @@
+package io.github.vincemann.springrapid.core.util;
+
+import io.github.vincemann.springrapid.core.service.exception.BadEntityException;
+import io.github.vincemann.springrapid.core.service.exception.EntityNotFoundException;
+
+import java.util.Optional;
+
+public class EntityUtils {
+
+    public static void checkNotNull(Object entity,String property) throws BadEntityException {
+        if(entity==null){
+            throw new BadEntityException("Property: " + property + " must not be null");
+        }
+    }
+
+    public static void checkProperEntity(boolean expression, String msg) throws BadEntityException {
+        if(!expression){
+            throw new BadEntityException(msg);
+        }
+    }
+
+    public static void checkPresent(Object entity, String msg) throws EntityNotFoundException {
+        if(entity==null){
+            throw new EntityNotFoundException(msg);
+        }
+    }
+
+    public static void checkPresent(Object entity, Object id, Class clazz) throws EntityNotFoundException {
+        if(entity==null){
+            throw new EntityNotFoundException(id,clazz);
+        }
+    }
+
+    public static void checkPresent(Optional<Object> entity, String msg) throws EntityNotFoundException {
+        if(entity.isEmpty()){
+            throw new EntityNotFoundException(msg);
+        }
+    }
+
+}

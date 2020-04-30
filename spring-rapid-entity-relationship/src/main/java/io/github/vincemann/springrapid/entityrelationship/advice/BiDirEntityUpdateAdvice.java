@@ -1,6 +1,7 @@
 package io.github.vincemann.springrapid.entityrelationship.advice;
 
 import io.github.vincemann.springrapid.core.model.IdentifiableEntity;
+import io.github.vincemann.springrapid.core.util.EntityUtils;
 import io.github.vincemann.springrapid.entityrelationship.model.biDir.child.BiDirChild;
 import io.github.vincemann.springrapid.entityrelationship.model.biDir.parent.BiDirParent;
 import io.github.vincemann.springrapid.core.service.CrudService;
@@ -67,9 +68,7 @@ public class BiDirEntityUpdateAdvice {
         //find already persisted biDirChild (preUpdateState of child)
         CrudService service = serviceLocator.find((Class<? extends IdentifiableEntity>) newBiDirChild.getClass());
         Optional<BiDirChild> oldBiDirChildOptional = service.findById(((IdentifiableEntity<Serializable>) newBiDirChild).getId());
-        if(!oldBiDirChildOptional.isPresent()){
-            throw new EntityNotFoundException(((IdentifiableEntity<Serializable>) newBiDirChild).getId(),newBiDirChild.getClass());
-        }
+        EntityUtils.checkPresent(oldBiDirChildOptional,((IdentifiableEntity<Serializable>) newBiDirChild).getId(),newBiDirChild.getClass());
         BiDirChild oldBiDirChild = oldBiDirChildOptional.get();
         Collection<BiDirParent> oldParents = oldBiDirChild.findParents();
         Collection<BiDirParent> newParents = newBiDirChild.findParents();
@@ -104,9 +103,7 @@ public class BiDirEntityUpdateAdvice {
     private void updateBiDirParentRelations(BiDirParent newBiDirParent) throws BadEntityException, EntityNotFoundException, IllegalAccessException {
         CrudService service = serviceLocator.find((Class<? extends IdentifiableEntity>) newBiDirParent.getClass());
         Optional<BiDirParent> oldBiDirParentOptional = service.findById(((IdentifiableEntity<Serializable>) newBiDirParent).getId());
-        if(!oldBiDirParentOptional.isPresent()){
-            throw new EntityNotFoundException(((IdentifiableEntity<Serializable>) newBiDirParent).getId(),newBiDirParent.getClass());
-        }
+        EntityUtils.checkPresent(oldBiDirParentOptional,((IdentifiableEntity<Serializable>) newBiDirParent).getId(),newBiDirParent.getClass());
         BiDirParent oldBiDirParent = oldBiDirParentOptional.get();
 
         Set<? extends BiDirChild> oldChildren = oldBiDirParent.getChildren();

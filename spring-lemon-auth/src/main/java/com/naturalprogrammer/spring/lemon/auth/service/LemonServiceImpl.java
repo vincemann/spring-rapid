@@ -102,7 +102,7 @@ public abstract class LemonServiceImpl
 
 		LemonUserDto currentUser = LecwUtils.currentUser();
 		if (currentUser != null) {
-			addAuthHeader(response, currentUser.getUsername(),
+			addAuthHeader(response, currentUser.getEmail(),
 					expirationMillis.orElse(properties.getJwt().getExpirationMillis()));
 			context.put("user", currentUser);
 		}
@@ -331,7 +331,7 @@ public abstract class LemonServiceImpl
 		getRepository().save(user);
 
 		log.debug("Changed password for user: " + user);
-		return user.toUserDto().getUsername();
+		return user.toUserDto().getEmail();
 	}
 
 
@@ -514,9 +514,9 @@ public abstract class LemonServiceImpl
 								Optional<String> optionalUsername) {
 
 		LemonUserDto currentUser = LecwUtils.currentUser();
-		String username = optionalUsername.orElse(currentUser.getUsername());
+		String username = optionalUsername.orElse(currentUser.getEmail());
 
-		LecUtils.ensureAuthority(currentUser.getUsername().equals(username) ||
+		LecUtils.ensureAuthority(currentUser.getEmail().equals(username) ||
 				currentUser.isGoodAdmin(), "com.naturalprogrammer.spring.notGoodAdminOrSameUser");
 
 		//todo kann sich hier jeder user nen token mit beliebiger expiration ausstellen lassen?
@@ -574,7 +574,7 @@ public abstract class LemonServiceImpl
 				LmapUtils.serialize(currentUser)); // Not serializing converts it to a JsonNode
 
 		Map<String, String> tokenMap = Collections.singletonMap("token", LecUtils.TOKEN_PREFIX +
-				blueTokenService.createToken(BlueTokenService.AUTH_AUDIENCE, currentUser.getUsername(),
+				blueTokenService.createToken(BlueTokenService.AUTH_AUDIENCE, currentUser.getEmail(),
 						Long.valueOf(properties.getJwt().getShortLivedMillis()),
 						claimMap));
 

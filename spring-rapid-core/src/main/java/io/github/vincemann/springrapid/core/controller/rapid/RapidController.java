@@ -15,6 +15,7 @@ import io.github.vincemann.springrapid.core.service.EndpointService;
 import io.github.vincemann.springrapid.core.service.exception.BadEntityException;
 import io.github.vincemann.springrapid.core.service.exception.EntityNotFoundException;
 import io.github.vincemann.springrapid.core.service.exception.BadEntityException;
+import io.github.vincemann.springrapid.core.util.EntityUtils;
 import io.github.vincemann.springrapid.core.util.HttpServletRequestUtils;
 import lombok.Getter;
 import lombok.Setter;
@@ -314,10 +315,8 @@ public abstract class RapidController
         if(fullUpdateParams==null){
             return false;
         }
-        if(fullUpdateParams.length>1){
-            throw new BadEntityException("Multiple full update query params specified, there must be only one max. key: " + fullUpdateQueryParam);
-        }
-        else if(fullUpdateParams.length==0){
+        EntityUtils.checkProperEntity(!(fullUpdateParams.length>1),"Multiple full update query params specified, there must be only one max. key: " + fullUpdateQueryParam);
+        if(fullUpdateParams.length==0){
             return false;
         }else {
             return Boolean.parseBoolean(fullUpdateParams[0]);

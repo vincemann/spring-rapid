@@ -7,6 +7,7 @@ import io.github.vincemann.springrapid.core.service.exception.BadEntityException
 import io.github.vincemann.springrapid.core.service.exception.EntityNotFoundException;
 import io.github.vincemann.springrapid.core.service.exception.BadEntityException;
 import io.github.vincemann.springrapid.core.util.DebugTransactionUtil;
+import io.github.vincemann.springrapid.core.util.EntityUtils;
 import io.github.vincemann.springrapid.core.util.NullAwareBeanUtilsBean;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.beanutils.BeanUtilsBean;
@@ -56,9 +57,7 @@ public abstract class JPACrudService
     @Transactional
     @Override
     public Optional<E> findById(Id id) throws BadEntityException {
-        if(id==null){
-            throw new BadEntityException("No Id value set for Entity of type: " + entityClass.getSimpleName());
-        }
+        EntityUtils.checkNotNull(id,"No Id value set for Entity of type: " + entityClass.getSimpleName());
         return jpaRepository.findById(id);
     }
 
@@ -82,13 +81,9 @@ public abstract class JPACrudService
 
 
     private E findOldEntity(Id id) throws BadEntityException, EntityNotFoundException {
-        if(id==null){
-            throw new BadEntityException("No Id value set for EntityType: " + entityClass.getSimpleName());
-        }
+        EntityUtils.checkNotNull(id,"No Id value set for EntityType: " + entityClass.getSimpleName());
         Optional<E> entityToUpdate = findById(id);
-        if(!entityToUpdate.isPresent()){
-            throw new EntityNotFoundException(id, entityClass);
-        }
+        EntityUtils.checkPresent(entityToUpdate,id,getEntityClass());
         return entityToUpdate.get();
     }
 
@@ -114,13 +109,9 @@ public abstract class JPACrudService
     @Transactional
     @Override
     public void deleteById(Id id) throws EntityNotFoundException, BadEntityException {
-        if(id==null){
-            throw new BadEntityException("No Id value set for EntityType: " + entityClass.getSimpleName());
-        }
+        EntityUtils.checkNotNull(id,"No Id value set for EntityType: " + entityClass.getSimpleName());
         Optional<E> entity = findById(id);
-        if(!entity.isPresent()){
-            throw new EntityNotFoundException(id, entityClass);
-        }
+        EntityUtils.checkPresent(entity,id,entityClass);
         jpaRepository.deleteById(id);
     }
 
