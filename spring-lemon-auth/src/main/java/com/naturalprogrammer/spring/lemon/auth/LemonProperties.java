@@ -5,6 +5,7 @@ import lombok.*;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.http.HttpHeaders;
 import org.springframework.validation.annotation.Validated;
 
@@ -17,6 +18,7 @@ import java.util.Map;
  */
 @Validated
 @Slf4j
+@ConfigurationProperties(prefix = "lemon")
 public class LemonProperties {
 	
 //    private static final Log log = LogFactory.getLog(LemonProperties.class);

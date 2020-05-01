@@ -12,23 +12,23 @@ import org.springframework.context.annotation.Configuration;
 
 @Configuration
 @Slf4j
-@EnableConfigurationProperties
+@EnableConfigurationProperties(LemonProperties.class)
 public class LemonGeneralAutoConfiguration {
 
     public LemonGeneralAutoConfiguration() {
         log.info("Created");
     }
 
-    /**
-     * Spring Lemon related properties
-     */
-    @ConfigurationProperties(prefix="lemon",ignoreUnknownFields = false)
-    @Bean
-    public LemonProperties lemonProperties() {
-
-        log.info("Configuring LemonProperties");
-        return new LemonProperties();
-    }
+//    /**
+//     * Spring Lemon related properties
+//     */
+//    @ConfigurationProperties(prefix="lemon",)
+//    @Bean
+//    public LemonProperties lemonProperties() {
+//
+//        log.info("Configuring LemonProperties");
+//        return new LemonProperties();
+//    }
 
     /**
      * Configures LemonUtils
