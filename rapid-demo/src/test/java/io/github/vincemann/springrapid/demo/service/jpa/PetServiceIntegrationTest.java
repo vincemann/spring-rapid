@@ -7,13 +7,10 @@ import io.github.vincemann.springrapid.demo.service.PetService;
 import io.github.vincemann.springrapid.demo.service.PetTypeService;
 import io.github.vincemann.springrapid.core.service.exception.BadEntityException;
 import io.github.vincemann.springrapid.coretest.service.CrudServiceIntegrationTest;
-import io.github.vincemann.springrapid.entityrelationship.slicing.test.ImportRapidEntityRelConfig;
+import io.github.vincemann.springrapid.entityrelationship.slicing.test.ImportRapidEntityRelServiceConfig;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
-import org.springframework.test.context.ActiveProfiles;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 
@@ -21,6 +18,7 @@ import static io.github.vincemann.springrapid.coretest.service.request.CrudServi
 import static io.github.vincemann.springrapid.coretest.service.result.matcher.compare.CompareEntityMatchers.compare;
 
 @EnableProjectComponentScan
+@ImportRapidEntityRelServiceConfig
 class PetServiceIntegrationTest
         extends CrudServiceIntegrationTest<PetService,Pet,Long> {
 

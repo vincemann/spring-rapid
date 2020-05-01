@@ -14,14 +14,14 @@ import io.github.vincemann.springrapid.core.service.exception.EntityNotFoundExce
 import io.github.vincemann.springrapid.coretest.compare.FullComparator;
 import io.github.vincemann.springrapid.coretest.service.CrudServiceIntegrationTest;
 import io.github.vincemann.springrapid.coretest.service.result.ServiceResult;
-import io.github.vincemann.springrapid.entityrelationship.slicing.test.ImportRapidEntityRelConfig;
+import io.github.vincemann.springrapid.entityrelationship.slicing.test.ImportRapidEntityRelServiceConfig;
+import io.github.vincemann.springrapid.entityrelationship.slicing.test.ImportRapidEntityRelWebConfig;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.mock.mockito.SpyBean;
-import org.springframework.context.annotation.ComponentScan;
 
 import java.time.LocalDate;
 import java.util.HashSet;
@@ -38,7 +38,7 @@ import static io.github.vincemann.springrapid.coretest.service.result.matcher.re
 
 
 @EnableProjectComponentScan
-@ImportRapidEntityRelConfig
+@ImportRapidEntityRelServiceConfig
 class OwnerServiceIntegrationTest
         extends CrudServiceIntegrationTest<OwnerService, Owner, Long> {
 
