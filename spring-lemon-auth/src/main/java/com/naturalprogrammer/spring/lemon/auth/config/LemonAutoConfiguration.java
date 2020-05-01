@@ -3,6 +3,7 @@ package com.naturalprogrammer.spring.lemon.auth.config;
 import com.naturalprogrammer.spring.lemon.auth.domain.AbstractUser;
 import com.naturalprogrammer.spring.lemon.auth.domain.AbstractUserRepository;
 import com.naturalprogrammer.spring.lemon.auth.domain.IdConverter;
+import com.naturalprogrammer.spring.lemon.auth.security.domain.LemonAuditorAware;
 import com.naturalprogrammer.spring.lemon.auth.security.service.LemonUserDetailsService;
 import com.naturalprogrammer.spring.lemon.auth.service.LemonService;
 import com.naturalprogrammer.spring.lemon.auth.validation.RetypePasswordValidator;
@@ -16,6 +17,7 @@ import org.springframework.boot.autoconfigure.AutoConfigureBefore;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Primary;
+import org.springframework.data.domain.AuditorAware;
 import org.springframework.data.jpa.repository.config.EnableJpaAuditing;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
@@ -27,9 +29,9 @@ import java.io.Serializable;
  * 
  * @author Sanjay Patel
  */
+@EnableJpaAuditing
 @ServiceConfig
 @EnableTransactionManagement
-@EnableJpaAuditing
 @AutoConfigureBefore({LemonCommonsJpaAutoConfiguration.class,AclAutoConfiguration.class})
 public class LemonAutoConfiguration {
 	
@@ -45,8 +47,19 @@ public class LemonAutoConfiguration {
 	IdConverter<ID> idConverter(LemonService<?,ID,?> lemonService) {
 		return id -> lemonService.toId(id);
 	}
-	
 
+
+	/**
+	 * Configures an Auditor Aware if missing
+	 */
+	@Bean
+	@ConditionalOnMissingBean(AuditorAware.class)
+	public <ID extends Serializable>
+	AuditorAware<ID> auditorAware() {
+
+		log.info("Configuring LemonAuditorAware");
+		return new LemonAuditorAware<ID>();
+	}
 
 	/**
 	 * Configures UserDetailsService if missing

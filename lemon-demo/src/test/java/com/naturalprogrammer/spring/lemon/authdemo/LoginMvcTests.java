@@ -31,7 +31,7 @@ public class LoginMvcTests extends AbstractMvcTests {
 				.andExpect(header().string(LecUtils.TOKEN_RESPONSE_HEADER_NAME, containsString(".")))
 				.andExpect(jsonPath("$.id").value(ADMIN_ID))
 				.andExpect(jsonPath("$.password").doesNotExist())
-				.andExpect(jsonPath("$.username").value("admin@example.com"))
+				.andExpect(jsonPath("$.email").value("admin@example.com"))
 				.andExpect(jsonPath("$.roles").value(hasSize(1)))
 				.andExpect(jsonPath("$.roles[0]").value(Role.ADMIN))
 //				.andExpect(jsonPath("$.tag.name").value("Admin 1"))
