@@ -1,8 +1,9 @@
 package com.naturalprogrammer.spring.lemon.auth.config;
 
-import java.io.Serializable;
-
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.naturalprogrammer.spring.lemon.auth.LemonProperties;
+import com.naturalprogrammer.spring.lemon.auth.security.config.LemonCorsConfigurationSource;
+import com.naturalprogrammer.spring.lemon.auth.security.config.LemonWebSecurityConfig;
 import com.naturalprogrammer.spring.lemon.auth.util.LmapUtils;
 import io.github.vincemann.springrapid.core.config.RapidJacksonAutoConfiguration;
 import io.github.vincemann.springrapid.core.slicing.config.WebConfig;
@@ -12,25 +13,14 @@ import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.AutoConfigureBefore;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
-import org.springframework.boot.autoconfigure.jackson.JacksonAutoConfiguration;
 import org.springframework.boot.autoconfigure.security.servlet.SecurityAutoConfiguration;
 import org.springframework.boot.autoconfigure.security.servlet.SecurityFilterAutoConfiguration;
 import org.springframework.boot.autoconfigure.web.servlet.WebMvcAutoConfiguration;
 import org.springframework.boot.autoconfigure.web.servlet.error.ErrorMvcAutoConfiguration;
-import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
-import org.springframework.data.domain.AuditorAware;
 import org.springframework.data.web.config.EnableSpringDataWebSupport;
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
-import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.web.cors.CorsConfigurationSource;
-
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.naturalprogrammer.spring.lemon.auth.security.config.LemonCorsConfigurationSource;
-import com.naturalprogrammer.spring.lemon.auth.security.domain.LemonWebAuditorAware;
-import com.naturalprogrammer.spring.lemon.auth.security.config.LemonWebSecurityConfig;
-import com.naturalprogrammer.spring.lemon.auth.util.LecwUtils;
 
 @WebConfig
 @EnableSpringDataWebSupport
@@ -104,17 +94,7 @@ public class LemonCommonsWebAutoConfiguration {
 		return new LemonWebSecurityConfig();
 	}
 	
-	/**
-	 * Configures an Auditor Aware if missing
-	 */	
-	@Bean
-	@ConditionalOnMissingBean(AuditorAware.class)
-	public <ID extends Serializable>
-	AuditorAware<ID> auditorAware() {
-		
-        log.info("Configuring LemonAuditorAware");       
-		return new LemonWebAuditorAware<ID>();
-	}
+
 
 
 }

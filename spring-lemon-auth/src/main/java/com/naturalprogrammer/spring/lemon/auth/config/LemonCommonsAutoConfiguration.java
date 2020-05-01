@@ -7,6 +7,7 @@ import com.naturalprogrammer.spring.lemon.auth.mail.MailSender;
 import com.naturalprogrammer.spring.lemon.auth.mail.MockMailSender;
 import com.naturalprogrammer.spring.lemon.auth.mail.SmtpMailSender;
 import com.naturalprogrammer.spring.lemon.auth.security.LemonPermissionEvaluator;
+import com.naturalprogrammer.spring.lemon.auth.security.domain.LemonAuditorAware;
 import com.naturalprogrammer.spring.lemon.auth.security.service.BlueTokenService;
 import com.naturalprogrammer.spring.lemon.auth.security.service.GreenTokenService;
 import com.naturalprogrammer.spring.lemon.auth.security.service.LemonJweService;
@@ -28,12 +29,16 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
+import org.springframework.data.domain.AuditorAware;
+import org.springframework.data.jpa.repository.config.EnableJpaAuditing;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.security.access.PermissionEvaluator;
 import org.springframework.security.acls.model.AclService;
 import org.springframework.security.crypto.factory.PasswordEncoderFactories;
 import org.springframework.security.crypto.password.PasswordEncoder;
+
+import java.io.Serializable;
 
 @ServiceConfig
 //@ComponentScan(basePackageClasses= BadCredentialsExceptionHandler.class)
@@ -56,6 +61,10 @@ public class LemonCommonsAutoConfiguration {
 	public PermissionEvaluator lemonPermissionEvaluator(AclService aclService){
 		return new LemonPermissionEvaluator(aclService);
 	}
+
+
+
+
 
 	/**
 	 * Configures LemonUtils

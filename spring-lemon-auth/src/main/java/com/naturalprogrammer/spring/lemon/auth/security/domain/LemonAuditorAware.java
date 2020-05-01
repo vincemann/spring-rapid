@@ -13,12 +13,12 @@ import java.io.Serializable;
  *  
  * @author Sanjay Patel
  */
-public class LemonWebAuditorAware<ID extends Serializable>
+public class LemonAuditorAware<ID extends Serializable>
 extends AbstractAuditorAware<ID> {
 	
-    private static final Log log = LogFactory.getLog(LemonWebAuditorAware.class);
+    private static final Log log = LogFactory.getLog(LemonAuditorAware.class);
     
-	public LemonWebAuditorAware() {		
+	public LemonAuditorAware() {
 		log.info("Created");
 	}
 

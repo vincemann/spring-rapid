@@ -56,7 +56,7 @@ public class SignupMvcTests extends AbstractMvcTests {
 				.andExpect(header().string(LecUtils.TOKEN_RESPONSE_HEADER_NAME, containsString(".")))
 				.andExpect(jsonPath("$.id").exists())
 				.andExpect(jsonPath("$.password").doesNotExist())
-				.andExpect(jsonPath("$.username").value("user.foo@example.com"))
+				.andExpect(jsonPath("$.email").value("user.foo@example.com"))
 				.andExpect(jsonPath("$.roles").value(hasSize(1)))
 				.andExpect(jsonPath("$.roles[0]").value(LemonRole.UNVERIFIED))
 //				.andExpect(jsonPath("$.tag.name").value("User Foo"))

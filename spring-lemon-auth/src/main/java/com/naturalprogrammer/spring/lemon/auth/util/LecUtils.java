@@ -60,7 +60,6 @@ public class LecUtils {
 	 * @return
 	 */
 	public static <ID extends Serializable> LemonUserDto currentUser(SecurityContext context) {
-		
 		return currentUser(context.getAuthentication());
 	}
 
