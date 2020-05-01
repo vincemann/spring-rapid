@@ -46,7 +46,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.
 @Setter
 @Slf4j
 public abstract class MvcRapidControllerTest
-        <S extends CrudService<E,Id,? extends CrudRepository<E,Id>>
+        <S extends CrudService<E,Id,?>
         ,E extends IdentifiableEntity<Id>,
         Id extends Serializable>
         extends MvcControllerTest
@@ -54,7 +54,7 @@ public abstract class MvcRapidControllerTest
     private Class<E> entityClass = (Class<E>) ((ParameterizedType) this.getClass().getGenericSuperclass()).getActualTypeArguments()[0];
     private DtoMappingContext dtoMappingContext;
     private String url;
-    private RapidController<E, Id> controller;
+    private RapidController<E, Id,S> controller;
 
 
     @Autowired
@@ -64,7 +64,7 @@ public abstract class MvcRapidControllerTest
 
 
     @Autowired
-    public void injectController(RapidController<E, Id> controller) {
+    public void injectController(RapidController<E, Id,S> controller) {
         this.controller = controller;
     }
 
@@ -141,10 +141,6 @@ public abstract class MvcRapidControllerTest
 
     public <Dto> Dto deserialize(String s, JavaType dtoClass) throws IOException {
         return getController().getJsonMapper().readValue(s,dtoClass);
-    }
-
-    public <C extends RapidController<E,Id>> C getController(){
-        return (C) controller;
     }
 
 

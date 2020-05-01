@@ -60,7 +60,7 @@ public class LemonServiceAutoConfiguration {
     @ConditionalOnMissingBean(name = "aclManagingLemonService")
     @Bean
     @AclManaging
-    public LemonService<? extends AbstractUser,?,?> aclManagingLemonService(LemonService<? extends AbstractUser,?,?> service,
+    public LemonService<?,?,?> aclManagingLemonService(LemonService<?,?,?> service,
 //                                                                            AdminFullAccessAclPlugin adminFullAccess,
 //                                                                            AuthenticatedFullAccessAclPlugin authenticatedFullAccessAclPlugin,
                                                                             CleanUpAclPlugin cleanUpAclPlugin){
@@ -71,7 +71,7 @@ public class LemonServiceAutoConfiguration {
     @ConditionalOnMissingBean(name = "securedLemonService")
     @Bean
     @Secured
-    public LemonService<? extends AbstractUser,?,?> securedLemonService(@AclManaging LemonService<?,?,?> service,
+    public LemonService<?,?,?> securedLemonService(@AclManaging LemonService<?,?,?> service,
                                                 LemonServiceSecurityRule securityRule){
         return securityProxyFactory.create(service,securityRule);
     }

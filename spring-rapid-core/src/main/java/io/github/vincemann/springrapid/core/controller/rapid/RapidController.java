@@ -11,6 +11,7 @@ import io.github.vincemann.springrapid.core.controller.rapid.idFetchingStrategy.
 import io.github.vincemann.springrapid.core.controller.rapid.idFetchingStrategy.UrlParamIdFetchingStrategy;
 import io.github.vincemann.springrapid.core.controller.rapid.idFetchingStrategy.exception.IdFetchingException;
 import io.github.vincemann.springrapid.core.model.IdentifiableEntity;
+import io.github.vincemann.springrapid.core.service.CrudService;
 import io.github.vincemann.springrapid.core.service.EndpointService;
 import io.github.vincemann.springrapid.core.service.exception.BadEntityException;
 import io.github.vincemann.springrapid.core.service.exception.EntityNotFoundException;
@@ -60,9 +61,10 @@ import java.util.stream.Collectors;
 public abstract class RapidController
         <
                 E extends IdentifiableEntity<Id>,
-                Id extends Serializable
+                Id extends Serializable,
+                S extends CrudService<E,Id,?>
         >
-        extends JsonDtoCrudController<E,Id>
+        extends JsonDtoCrudController<E,Id,S>
                 implements ApplicationListener<ContextRefreshedEvent> {
 
 

@@ -2,6 +2,7 @@ package com.naturalprogrammer.spring.lemon.auth;
 
 import com.naturalprogrammer.spring.lemon.auth.util.LecUtils;
 import lombok.*;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.http.HttpHeaders;
@@ -15,9 +16,10 @@ import java.util.Map;
  * @author Sanjay Patel
  */
 @Validated
+@Slf4j
 public class LemonProperties {
 	
-    private static final Log log = LogFactory.getLog(LemonProperties.class);
+//    private static final Log log = LogFactory.getLog(LemonProperties.class);
     
     public LemonProperties() {
 		log.info("Created");
