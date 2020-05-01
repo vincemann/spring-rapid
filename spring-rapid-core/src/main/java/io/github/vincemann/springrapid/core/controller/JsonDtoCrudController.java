@@ -51,13 +51,14 @@ import java.util.Set;
 public abstract class JsonDtoCrudController
         <
                 E extends IdentifiableEntity<Id>,
-                Id extends Serializable
+                Id extends Serializable,
+                S extends CrudService<E,Id,?>
                 >
         implements DtoCrudController<Id> {
 
     //todo merge into spring adapter -> wo ist der sinn hier zu trennen?
 
-    private CrudService<E, Id, ? extends CrudRepository<E, Id>> crudService;
+    private S crudService;
     private DtoMapper dtoMapper;
     private DtoMappingContext dtoMappingContext;
     private ValidationStrategy<Id> validationStrategy;
@@ -72,7 +73,7 @@ public abstract class JsonDtoCrudController
     }
 
     @Autowired
-    public void injectCrudService(CrudService<E, Id, ? extends CrudRepository<E, Id>> crudService) {
+    public void injectCrudService(S crudService) {
         this.crudService = crudService;
     }
 
@@ -197,10 +198,6 @@ public abstract class JsonDtoCrudController
 
     protected ResponseEntity<String> ok(String jsonDto) {
         return new ResponseEntity<>(jsonDto, HttpStatus.OK);
-    }
-
-    public <S extends CrudService<E, Id, ? extends CrudRepository<E, Id>>> S getCastedCrudService() {
-        return (S) crudService;
     }
 
 }

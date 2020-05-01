@@ -4,7 +4,7 @@ import io.github.vincemann.springrapid.core.controller.dtoMapper.context.DtoMapp
 import io.github.vincemann.springrapid.core.controller.rapid.RapidController;
 
 public class ExampleRapidController
-        extends RapidController<ExampleEntity,Long>
+        extends RapidController<ExampleEntity,Long,ExampleService>
 {
     public ExampleRapidController(DtoMappingContext dtoMappingContext) {
         super(dtoMappingContext);

@@ -8,10 +8,11 @@ import io.github.vincemann.springrapid.core.controller.dtoMapper.context.Directi
 import io.github.vincemann.springrapid.core.controller.dtoMapper.context.DtoMappingContextBuilder;
 import io.github.vincemann.springrapid.core.controller.dtoMapper.context.CrudDtoEndpoint;
 import io.github.vincemann.springrapid.core.controller.rapid.RapidController;
+import io.github.vincemann.springrapid.demo.service.PetService;
 
 
 @WebController
-public class PetController extends RapidController<Pet, Long> {
+public class PetController extends RapidController<Pet, Long, PetService> {
 
     public PetController() {
         super(DtoMappingContextBuilder.builder()

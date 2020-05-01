@@ -4,12 +4,12 @@ import com.fasterxml.jackson.annotation.JsonView;
 import com.github.fge.jsonpatch.JsonPatchException;
 import com.naturalprogrammer.spring.lemon.auth.LemonProperties;
 import com.naturalprogrammer.spring.lemon.auth.domain.AbstractUser;
-import com.naturalprogrammer.spring.lemon.auth.domain.AbstractUserRepository;
 import com.naturalprogrammer.spring.lemon.auth.domain.ChangePasswordForm;
 import com.naturalprogrammer.spring.lemon.auth.domain.ResetPasswordForm;
 import com.naturalprogrammer.spring.lemon.auth.security.domain.LemonUserDto;
 import com.naturalprogrammer.spring.lemon.auth.service.LemonService;
 import com.naturalprogrammer.spring.lemon.auth.util.*;
+import com.naturalprogrammer.spring.lemon.exceptions.util.LexUtils;
 import io.github.vincemann.springrapid.acl.service.Secured;
 import io.github.vincemann.springrapid.core.controller.dtoMapper.DtoMappingException;
 import io.github.vincemann.springrapid.core.controller.dtoMapper.context.CrudDtoEndpoint;
@@ -19,11 +19,11 @@ import io.github.vincemann.springrapid.core.controller.rapid.RapidController;
 import io.github.vincemann.springrapid.core.model.IdentifiableEntity;
 import io.github.vincemann.springrapid.core.service.exception.BadEntityException;
 import io.github.vincemann.springrapid.core.service.exception.EntityNotFoundException;
-import com.naturalprogrammer.spring.lemon.exceptions.util.LexUtils;
 import io.github.vincemann.springrapid.core.slicing.components.WebComponent;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
@@ -38,38 +38,38 @@ import java.util.Optional;
  * The Lemon API. See the
  * <a href="https://github.com/naturalprogrammer/spring-lemon#documentation-and-resources">
  * API documentation</a> for details.
- * 
+ *
  * @author Sanjay Patel
  */
 @WebComponent
 public abstract class LemonController
 	<U extends AbstractUser<ID>, ID extends Serializable>
-			extends RapidController<U,ID> {
+			extends RapidController<U,ID,LemonService<U, ID,?>> {
 
 	private static final Log log = LogFactory.getLog(LemonController.class);
 
     private long jwtExpirationMillis;
-	private LemonService<U, ID,?> lemonService;
 
 	public LemonController(DtoMappingContext dtoMappingContext) {
 		super(dtoMappingContext);
-	}
-
-	public LemonController() {
-	}
-
-
-	@Autowired
-	public void createLemonController(
-			LemonProperties properties,
-			@Secured LemonService<U, ID,? extends AbstractUserRepository<U,ID>> lemonService) {
-		
-		this.jwtExpirationMillis = properties.getJwt().getExpirationMillis();
-		this.lemonService = lemonService;
-		
 		log.info("Created");
 	}
 
+//	public LemonController() {
+//	}
+
+	@Autowired
+	@Lazy
+	public void injectProperties(LemonProperties properties){
+		this.jwtExpirationMillis = properties.getJwt().getExpirationMillis();
+	}
+
+	@Autowired
+	@Secured
+	@Override
+	public void injectCrudService(LemonService<U, ID, ?> crudService) {
+		super.injectCrudService(crudService);
+	}
 
 	/**
 	 * A simple function for pinging this server.
@@ -77,10 +77,10 @@ public abstract class LemonController
 	@GetMapping("/ping")
 	@ResponseStatus(HttpStatus.NO_CONTENT)
 	public void ping() {
-		
+
 		log.debug("Received a ping");
 	}
-	
+
 
 	/**
 	 * Returns context properties needed at the client side,
@@ -93,12 +93,12 @@ public abstract class LemonController
 			HttpServletResponse response) {
 
 		log.debug("Getting context ");
-		Map<String, Object> context = lemonService.getContext(expirationMillis, response);
+		Map<String, Object> context = getCrudService().getContext(expirationMillis, response);
 		log.debug("Returning context: " + context);
 
 		return context;
 	}
-	
+
 
 	/**
 	 * Signs up a user, and
@@ -111,24 +111,24 @@ public abstract class LemonController
 							   HttpServletResponse response) throws BadEntityException {
 
 		log.debug("Signing up: " + user);
-		U saved = lemonService.signup(user);
+		U saved = getCrudService().signup(user);
 		log.debug("Signed up: " + user);
 
 		return userWithToken(response,saved);
 	}
-	
-	
+
+
 	/**
 	 * Resends verification mail
 	 */
 	@PostMapping("/users/{id}/resend-verification-mail")
 	@ResponseStatus(HttpStatus.NO_CONTENT)
 	public void resendVerificationMail(@PathVariable("id") U user) {
-		
+
 		log.debug("Resending verification mail for: " + user);
-		lemonService.resendVerificationMail(user);
+		getCrudService().resendVerificationMail(user);
 		log.debug("Resent verification mail for: " + user);
-	}	
+	}
 
 
 	/**
@@ -140,13 +140,13 @@ public abstract class LemonController
 			@PathVariable ID id,
 			@RequestParam String code,
 			HttpServletResponse response) {
-		
+
 		log.debug("Verifying user ...");
-		U saved = lemonService.verifyUser(id, code);
+		U saved = getCrudService().verifyUser(id, code);
 
 		return userWithToken(response,saved);
 	}
-	
+
 
 	/**
 	 * The forgot Password feature -> mail new password to email
@@ -154,11 +154,11 @@ public abstract class LemonController
 	@PostMapping("/forgot-password")
 	@ResponseStatus(HttpStatus.NO_CONTENT)
 	public void forgotPassword(@RequestParam String email) {
-		
-		log.debug("Received forgot password request for: " + email);				
-		lemonService.forgotPassword(email);
+
+		log.debug("Received forgot password request for: " + email);
+		getCrudService().forgotPassword(email);
 	}
-	
+
 
 	/**
 	 * Resets password after it's forgotten
@@ -168,9 +168,9 @@ public abstract class LemonController
 	public LemonUserDto resetPassword(
 			@RequestBody ResetPasswordForm form,
 			HttpServletResponse response) {
-		
+
 		log.debug("Resetting password ... ");
-		U saved = lemonService.resetPassword(form);
+		U saved = getCrudService().resetPassword(form);
 
 		return userWithToken(response,saved);
 	}
@@ -182,9 +182,9 @@ public abstract class LemonController
 	@PostMapping("/users/fetch-by-email")
 	@ResponseBody
 	public IdentifiableEntity<ID> fetchUserByEmail(@RequestParam String email) throws DtoMappingException {
-		
+
 		log.debug("Fetching user by email: " + email);
-		U byEmail = lemonService.findByEmail(email);
+		U byEmail = getCrudService().findByEmail(email);
 		LexUtils.ensureFound(byEmail);
 		byEmail.setPassword(null);
 		IdentifiableEntity<ID> dto = getDtoMapper().mapToDto(byEmail,
@@ -193,7 +193,7 @@ public abstract class LemonController
 	}
 
 
-	
+
 	/**
 	 * Updates a user
 	 */
@@ -211,7 +211,7 @@ public abstract class LemonController
 		LexUtils.ensureFound(user);
 		U updateUser = LmapUtils.applyPatch(user, patch); // create a patched form
 		//default security Rule checks for write permission
-		U updated = lemonService.updateUser(user, updateUser);
+		U updated = getCrudService().updateUser(user, updateUser);
 		LemonUserDto dto = updated.toUserDto();
 		dto.setPassword(null);
 		// Send a new token for logged in user in the response
@@ -221,8 +221,8 @@ public abstract class LemonController
 
 
 
-	
-	
+
+
 	/**
 	 * Changes password
 	 */
@@ -231,11 +231,11 @@ public abstract class LemonController
 	public void changePassword(@PathVariable("id") U user,
 			@RequestBody ChangePasswordForm changePasswordForm,
 			HttpServletResponse response) {
-		
-		log.debug("Changing password ... ");				
-		String username = lemonService.changePassword(user, changePasswordForm);
-		
-		lemonService.addAuthHeader(response, username, jwtExpirationMillis);
+
+		log.debug("Changing password ... ");
+		String username = getCrudService().changePassword(user, changePasswordForm);
+
+		getCrudService().addAuthHeader(response, username, jwtExpirationMillis);
 	}
 
 
@@ -246,9 +246,9 @@ public abstract class LemonController
 	@ResponseStatus(HttpStatus.NO_CONTENT)
 	public void requestEmailChange(@PathVariable("id") ID userId,
 								   @RequestBody U updatedUser) {
-		
-		log.debug("Requesting email change ... ");				
-		lemonService.requestEmailChange(userId, updatedUser);
+
+		log.debug("Requesting email change ... ");
+		getCrudService().requestEmailChange(userId, updatedUser);
 	}
 
 
@@ -261,9 +261,9 @@ public abstract class LemonController
 			@PathVariable ID userId,
 			@RequestParam String code,
 			HttpServletResponse response) {
-		
+
 		log.debug("Changing email of user ...");
-		U saved = lemonService.changeEmail(userId, code);
+		U saved = getCrudService().changeEmail(userId, code);
 
 		// return the currently logged in user with new email
 		return userWithToken(response,saved);
@@ -280,9 +280,9 @@ public abstract class LemonController
 			@RequestParam Optional<Long> expirationMillis,
 			@RequestParam Optional<String> username,
 			HttpServletResponse response) {
-		
+
 		log.debug("Fetching a new token ... ");
-		return LecUtils.mapOf("token", lemonService.fetchNewToken(expirationMillis, username));
+		return LecUtils.mapOf("token", getCrudService().fetchNewToken(expirationMillis, username));
 	}
 
 
@@ -292,19 +292,19 @@ public abstract class LemonController
 	@GetMapping("/fetch-full-token")
 	@ResponseBody
 	public Map<String, String> fetchFullToken(@RequestHeader(HttpHeaders.AUTHORIZATION) String authHeader) {
-		
-		log.debug("Fetching a micro token");
-		return lemonService.fetchFullToken(authHeader);
-	}	
 
-	
+		log.debug("Fetching a micro token");
+		return getCrudService().fetchFullToken(authHeader);
+	}
+
+
 	/**
 	 * returns the current user and puts a new authorization token in the response
 	 */
 	protected LemonUserDto userWithToken(HttpServletResponse response,U saved) {
 		LemonUtils.login(saved);
 		LemonUserDto currentUser = LecwUtils.currentUser();
-		lemonService.addAuthHeader(response, currentUser.getEmail(), jwtExpirationMillis);
+		getCrudService().addAuthHeader(response, currentUser.getEmail(), jwtExpirationMillis);
 		return currentUser;
 	}
 }
