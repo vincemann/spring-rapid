@@ -19,7 +19,6 @@ import java.io.Serializable;
 import java.util.*;
 
 @Aspect
-@Component
 @Slf4j
 /**
  * Advice that keeps BiDirRelationships intact for {@link io.github.vincemann.springrapid.core.service.CrudService#update(IdentifiableEntity, Boolean)} - operations.
