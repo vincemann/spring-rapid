@@ -57,7 +57,7 @@ public abstract class JPACrudService
     @Transactional
     @Override
     public Optional<E> findById(Id id) throws BadEntityException {
-        EntityUtils.checkNotNull(id,"No Id value set for Entity of type: " + entityClass.getSimpleName());
+        EntityUtils.checkNotNull(id,"Id");
         return jpaRepository.findById(id);
     }
 
@@ -81,7 +81,7 @@ public abstract class JPACrudService
 
 
     private E findOldEntity(Id id) throws BadEntityException, EntityNotFoundException {
-        EntityUtils.checkNotNull(id,"No Id value set for EntityType: " + entityClass.getSimpleName());
+        EntityUtils.checkNotNull(id,"id");
         Optional<E> entityToUpdate = findById(id);
         EntityUtils.checkPresent(entityToUpdate,id,getEntityClass());
         return entityToUpdate.get();
@@ -109,7 +109,7 @@ public abstract class JPACrudService
     @Transactional
     @Override
     public void deleteById(Id id) throws EntityNotFoundException, BadEntityException {
-        EntityUtils.checkNotNull(id,"No Id value set for EntityType: " + entityClass.getSimpleName());
+        EntityUtils.checkNotNull(id,"Id");
         Optional<E> entity = findById(id);
         EntityUtils.checkPresent(entity,id,entityClass);
         jpaRepository.deleteById(id);
