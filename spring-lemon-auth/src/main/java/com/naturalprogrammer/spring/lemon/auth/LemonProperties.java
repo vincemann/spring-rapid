@@ -18,7 +18,6 @@ import java.util.Map;
  */
 @Validated
 @Slf4j
-@ConfigurationProperties(prefix = "lemon")
 public class LemonProperties {
 	
 //    private static final Log log = LogFactory.getLog(LemonProperties.class);
