@@ -51,7 +51,7 @@ public abstract class MvcRapidControllerTest
         Id extends Serializable>
         extends MvcControllerTest
 {
-    private Class<E> entityClass = (Class<E>) ((ParameterizedType) this.getClass().getGenericSuperclass()).getActualTypeArguments()[0];
+    private Class<E> entityClass = (Class<E>) ((ParameterizedType) this.getClass().getGenericSuperclass()).getActualTypeArguments()[1];
     private DtoMappingContext dtoMappingContext;
     private String url;
     private RapidController<E, Id,S> controller;
