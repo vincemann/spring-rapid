@@ -5,13 +5,19 @@ import io.github.vincemann.springrapid.core.slicing.config.ServiceConfig;
 import io.github.vincemann.springrapid.entityrelationship.advice.BiDirEntityPersistAdvice;
 import io.github.vincemann.springrapid.entityrelationship.advice.BiDirEntityRemoveAdvice;
 import io.github.vincemann.springrapid.entityrelationship.advice.BiDirEntityUpdateAdvice;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.EnableAspectJAutoProxy;
 
 @ServiceConfig
 @EnableAspectJAutoProxy(proxyTargetClass = true)
+@Slf4j
 public class BiDirServiceAdviceAutoConfiguration {
+
+    public BiDirServiceAdviceAutoConfiguration() {
+        log.info("Created");
+    }
 
     @Bean
     @ConditionalOnMissingBean(BiDirEntityPersistAdvice.class)

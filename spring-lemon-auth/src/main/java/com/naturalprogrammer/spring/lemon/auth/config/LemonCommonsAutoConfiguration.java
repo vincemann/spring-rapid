@@ -42,7 +42,6 @@ import java.io.Serializable;
 
 @ServiceConfig
 //@ComponentScan(basePackageClasses= BadCredentialsExceptionHandler.class)
-@EnableAsync
 @AutoConfigureBefore({
 	LemonWebExceptionsAutoConfiguration.class})
 public class LemonCommonsAutoConfiguration {

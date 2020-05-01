@@ -1,9 +1,6 @@
 package com.naturalprogrammer.spring.lemon.auth.slicing.test;
 
-import com.naturalprogrammer.spring.lemon.auth.config.LemonAutoConfiguration;
-import com.naturalprogrammer.spring.lemon.auth.config.LemonCommonsAutoConfiguration;
-import com.naturalprogrammer.spring.lemon.auth.config.LemonCommonsJpaAutoConfiguration;
-import com.naturalprogrammer.spring.lemon.auth.config.LemonServiceAutoConfiguration;
+import com.naturalprogrammer.spring.lemon.auth.config.*;
 import org.springframework.boot.autoconfigure.ImportAutoConfiguration;
 
 import java.lang.annotation.*;
@@ -13,7 +10,7 @@ import java.lang.annotation.*;
 @Documented
 @Inherited
 @ImportAutoConfiguration({
-        LemonAutoConfiguration.class, LemonCommonsAutoConfiguration.class, LemonCommonsJpaAutoConfiguration.class, LemonServiceAutoConfiguration.class
+        LemonAutoConfiguration.class, LemonCommonsAutoConfiguration.class, LemonCommonsJpaAutoConfiguration.class, LemonServiceAutoConfiguration.class, LemonAsyncAutoConfiguration.class
 })
 @ImportLemonAuthGeneralConfig
 public @interface ImportLemonAuthServiceConfig {
