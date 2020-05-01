@@ -10,5 +10,5 @@ import java.lang.annotation.*;
 @Documented
 @Inherited
 @ImportAutoConfiguration(EntityIdResolvingMapperAutoConfiguration.class)
-public @interface ImportRapidEntityRelConfig {
+public @interface ImportRapidEntityRelWebConfig {
 }
