@@ -20,13 +20,13 @@ public class BiDirServiceAdviceAutoConfiguration {
     }
 
     @Bean
-    @ConditionalOnMissingBean(BiDirEntityPersistAdvice.class)
+    @ConditionalOnMissingBean(BiDirEntityRemoveAdvice.class)
     public BiDirEntityRemoveAdvice biDirEntityRemoveAdvice(CrudServiceLocator crudServiceLocator){
         return new BiDirEntityRemoveAdvice(crudServiceLocator);
     }
 
     @Bean
-    @ConditionalOnMissingBean(BiDirEntityPersistAdvice.class)
+    @ConditionalOnMissingBean(BiDirEntityUpdateAdvice.class)
     public BiDirEntityUpdateAdvice biDirEntityUpdateAdvice(CrudServiceLocator crudServiceLocator){
         return new BiDirEntityUpdateAdvice(crudServiceLocator);
     }

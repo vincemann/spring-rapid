@@ -23,7 +23,6 @@ import java.lang.reflect.Field;
 import java.util.Optional;
 
 @Aspect
-@Component
 @Slf4j
 //Transactional Method interceptor is called before this advice -> methods will be executed in repoTransaction
 //@Order(100)

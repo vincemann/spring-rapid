@@ -12,7 +12,6 @@ import java.util.Collection;
 import java.util.Set;
 
 @Aspect
-@Component
 @Slf4j
 /**
  * Advice that keeps BiDirRelationships intact for {@link io.github.vincemann.springrapid.core.service.CrudService#save(IdentifiableEntity)} - operations.
