@@ -2,7 +2,7 @@ package com.naturalprogrammer.spring.lemon.auth.controller;
 
 import com.fasterxml.jackson.annotation.JsonView;
 import com.github.fge.jsonpatch.JsonPatchException;
-import com.naturalprogrammer.spring.lemon.auth.LemonProperties;
+import com.naturalprogrammer.spring.lemon.auth.properties.LemonProperties;
 import com.naturalprogrammer.spring.lemon.auth.domain.AbstractUser;
 import com.naturalprogrammer.spring.lemon.auth.domain.ChangePasswordForm;
 import com.naturalprogrammer.spring.lemon.auth.domain.ResetPasswordForm;
@@ -23,7 +23,6 @@ import io.github.vincemann.springrapid.core.slicing.components.WebComponent;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Lazy;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
@@ -47,6 +46,7 @@ public abstract class LemonController
 			extends RapidController<U,ID,LemonService<U, ID,?>> {
 
 	private static final Log log = LogFactory.getLog(LemonController.class);
+//	public static final Long DEFAULT_JWT_EXPIRATION_MILLIS = 864000000L;// 10 days
 
     private long jwtExpirationMillis;
 
@@ -59,9 +59,11 @@ public abstract class LemonController
 //	}
 
 	@Autowired
-	@Lazy
+//	@Lazy
 	public void injectProperties(LemonProperties properties){
-		this.jwtExpirationMillis = properties.getJwt().getExpirationMillis();
+		this.jwtExpirationMillis =/* properties.getJwt() == null
+				? DEFAULT_JWT_EXPIRATION_MILLIS
+				:*/ properties.getJwt().getExpirationMillis();
 	}
 
 	@Autowired

@@ -1,6 +1,6 @@
 package com.naturalprogrammer.spring.lemon.auth.service;
 
-import com.naturalprogrammer.spring.lemon.auth.LemonProperties;
+import com.naturalprogrammer.spring.lemon.auth.properties.LemonProperties;
 import com.naturalprogrammer.spring.lemon.auth.domain.AbstractUser;
 import com.naturalprogrammer.spring.lemon.auth.domain.AbstractUserRepository;
 import com.naturalprogrammer.spring.lemon.auth.domain.ChangePasswordForm;

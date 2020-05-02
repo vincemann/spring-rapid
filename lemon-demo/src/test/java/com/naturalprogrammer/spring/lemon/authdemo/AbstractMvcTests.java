@@ -1,6 +1,7 @@
 package com.naturalprogrammer.spring.lemon.authdemo;
 
 import com.google.common.collect.Lists;
+import com.naturalprogrammer.spring.lemon.auth.config.LemonAdminAutoConfiguration;
 import com.naturalprogrammer.spring.lemon.authdemo.entities.User;
 import com.naturalprogrammer.spring.lemon.authdemo.repositories.UserRepository;
 import com.naturalprogrammer.spring.lemon.auth.mail.MailSender;
@@ -11,6 +12,7 @@ import io.github.vincemann.springrapid.acl.service.MockAuthService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.ImportAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.SpyBean;
@@ -52,6 +54,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
  */
 //just active everything for simplicity
 @ActiveProfiles(value = {"web", "service", "test", "webTest", "serviceTest", "dev"}, inheritProfiles = false)
+@ImportAutoConfiguration(exclude = LemonAdminAutoConfiguration.class)
 public abstract class AbstractMvcTests {
 
     protected static final long ADMIN_ID = 101L;

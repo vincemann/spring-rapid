@@ -1,13 +1,13 @@
 package com.naturalprogrammer.spring.lemon.auth.bootstrap;
 
 import com.google.common.collect.Lists;
-import com.naturalprogrammer.spring.lemon.auth.LemonProperties;
+import com.naturalprogrammer.spring.lemon.auth.properties.LemonProperties;
 import com.naturalprogrammer.spring.lemon.auth.domain.AbstractUser;
 import com.naturalprogrammer.spring.lemon.auth.service.LemonService;
 import io.github.vincemann.springrapid.acl.Role;
 import io.github.vincemann.springrapid.acl.service.AclManaging;
 import io.github.vincemann.springrapid.acl.service.MockAuthService;
-import io.github.vincemann.springrapid.core.bootstrap.DatabaseDataInitializer;
+import io.github.vincemann.springrapid.core.bootstrap.Initializer;
 import io.github.vincemann.springrapid.core.service.exception.BadEntityException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,21 +16,19 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetailsService;
-import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.Assert;
 
 import java.util.List;
 
 @Slf4j
-@Component
 /**
  * Adds admins from property file, if not already present in database.
  * Also adds lemon admin
  * @see LemonProperties#getAdmin()
  */
 //todo backend muss noch order3 und profile dev,prod machen
-public class AdminDatabaseDataInitializer extends DatabaseDataInitializer {
+public class AdminInitializer extends Initializer {
 
     @Value("#{'${database.init.admin.emails}'.split(',')}")
     private List<String> adminEmails;
@@ -40,14 +38,14 @@ public class AdminDatabaseDataInitializer extends DatabaseDataInitializer {
     //private SchoolService schoolService;
     private MockAuthService mockAuthService;
     private UserDetailsService userDetailsService;
-    private LemonService lemonService;
+    private LemonService<?,?,?> lemonService;
     private LemonProperties lemonProperties;
 
     @Autowired
-    public AdminDatabaseDataInitializer(@AclManaging LemonService lemonService,
-                                        MockAuthService mockAuthService,
-                                        UserDetailsService userDetailsService,
-                                        LemonProperties lemonProperties) {
+    public AdminInitializer(@AclManaging LemonService<?,?,?> lemonService,
+                            MockAuthService mockAuthService,
+                            UserDetailsService userDetailsService,
+                            LemonProperties lemonProperties) {
         this.lemonService = lemonService;
         this.mockAuthService = mockAuthService;
         this.userDetailsService = userDetailsService;
@@ -56,7 +54,7 @@ public class AdminDatabaseDataInitializer extends DatabaseDataInitializer {
 
     @Override
     @Transactional
-    public void loadInitData() {
+    public void init() {
         Assert.isTrue(!adminEmails.isEmpty());
         Assert.isTrue(!adminPasswords.isEmpty());
         Authentication adminAuth = new UsernamePasswordAuthenticationToken(
@@ -74,7 +72,6 @@ public class AdminDatabaseDataInitializer extends DatabaseDataInitializer {
                         throw new RuntimeException(e);
                     }
                 });
-        setInitialized(true);
     }
 
     private void addAdmins() throws BadEntityException {
@@ -88,7 +85,7 @@ public class AdminDatabaseDataInitializer extends DatabaseDataInitializer {
             log.debug("registering admin:: " + admin);
 
             // Check if the user already exists
-            AbstractUser byEmail = lemonService
+            AbstractUser<?> byEmail = lemonService
                     .findByEmail(admin);
             if (byEmail != null) {
                 // Doesn't exist. So, create it.

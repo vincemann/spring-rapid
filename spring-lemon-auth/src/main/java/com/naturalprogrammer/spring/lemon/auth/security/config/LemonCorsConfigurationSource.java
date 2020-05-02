@@ -1,6 +1,6 @@
 package com.naturalprogrammer.spring.lemon.auth.security.config;
 
-import com.naturalprogrammer.spring.lemon.auth.LemonProperties;
+import com.naturalprogrammer.spring.lemon.auth.properties.LemonProperties;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.web.cors.CorsConfiguration;
