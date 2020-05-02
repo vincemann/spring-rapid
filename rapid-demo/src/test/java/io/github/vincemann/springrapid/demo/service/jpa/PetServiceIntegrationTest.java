@@ -11,6 +11,7 @@ import io.github.vincemann.springrapid.entityrelationship.slicing.test.ImportRap
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.ImportAutoConfiguration;
 
 import java.time.LocalDate;
 

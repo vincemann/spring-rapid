@@ -1,7 +1,7 @@
 package com.naturalprogrammer.spring.lemon.auth.validation;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.naturalprogrammer.spring.lemon.auth.LemonProperties;
+import com.naturalprogrammer.spring.lemon.auth.properties.LemonProperties;
 import io.github.vincemann.springrapid.core.slicing.components.ServiceComponent;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;

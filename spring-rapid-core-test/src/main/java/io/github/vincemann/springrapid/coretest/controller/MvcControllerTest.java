@@ -7,6 +7,8 @@ import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.BeforeEach;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
+import org.springframework.boot.autoconfigure.ImportAutoConfiguration;
+import org.springframework.boot.autoconfigure.context.ConfigurationPropertiesAutoConfiguration;
 import org.springframework.boot.autoconfigure.context.PropertyPlaceholderAutoConfiguration;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -39,12 +41,13 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @ActiveProfiles(value = {"test","web","webTest"})
 @SpringBootTest
 //all service interaction is mocked -> no interaction with database -> no datasource config needed
-@TestPropertySource(properties =
-        "spring.autoconfigure.exclude=org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration")
+//@TestPropertySource(properties =
+//        "spring.autoconfigure.exclude=org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration")
+@ImportAutoConfiguration(exclude = DataSourceAutoConfiguration.class)
 @AutoConfigureMockMvc
 @ContextConfiguration(
-        loader = AutoMockServiceBeansGenericAnnotationWebConfigContextLoader.class//,
-//        classes = PropertyPlaceholderAutoConfiguration.class
+        loader = AutoMockServiceBeansGenericAnnotationWebConfigContextLoader.class/*,
+        classes = PropertyPlaceholderAutoConfiguration.class*/
 )
 public abstract class MvcControllerTest extends InitializingTest {
     private MockMvc mockMvc;

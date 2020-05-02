@@ -1,6 +1,6 @@
 package com.naturalprogrammer.spring.lemon.auth.security.config;
 
-import com.naturalprogrammer.spring.lemon.auth.LemonProperties;
+import com.naturalprogrammer.spring.lemon.auth.properties.LemonProperties;
 import com.naturalprogrammer.spring.lemon.auth.security.LemonJpaTokenAuthenticationFilter;
 import com.naturalprogrammer.spring.lemon.auth.security.handlers.LemonAuthenticationSuccessHandler;
 import com.naturalprogrammer.spring.lemon.auth.security.service.LemonUserDetailsService;

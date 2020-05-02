@@ -10,7 +10,9 @@ import java.lang.annotation.*;
 @Documented
 @Inherited
 @ImportAutoConfiguration({
-        LemonAuthExceptionHandlerAutoConfiguration.class, LemonCommonsWebAutoConfiguration.class, LemonWebAutoConfiguration.class
+        LemonAuthExceptionHandlerAutoConfiguration.class,
+        LemonCommonsWebAutoConfiguration.class,
+        LemonWebAutoConfiguration.class
 })
 @ImportLemonAuthGeneralConfig
 public @interface ImportLemonAuthWebConfig {

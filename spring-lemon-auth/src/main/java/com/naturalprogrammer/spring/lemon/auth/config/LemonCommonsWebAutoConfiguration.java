@@ -1,7 +1,7 @@
 package com.naturalprogrammer.spring.lemon.auth.config;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.naturalprogrammer.spring.lemon.auth.LemonProperties;
+import com.naturalprogrammer.spring.lemon.auth.properties.LemonProperties;
 import com.naturalprogrammer.spring.lemon.auth.security.config.LemonCorsConfigurationSource;
 import com.naturalprogrammer.spring.lemon.auth.security.config.LemonWebSecurityConfig;
 import com.naturalprogrammer.spring.lemon.auth.util.LmapUtils;

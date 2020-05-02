@@ -1,6 +1,6 @@
 package com.naturalprogrammer.spring.lemon.auth.config;
 
-import com.naturalprogrammer.spring.lemon.auth.LemonProperties;
+import com.naturalprogrammer.spring.lemon.auth.properties.LemonProperties;
 import com.naturalprogrammer.spring.lemon.auth.mail.MailSender;
 import com.naturalprogrammer.spring.lemon.auth.mail.MockMailSender;
 import com.naturalprogrammer.spring.lemon.auth.mail.SmtpMailSender;

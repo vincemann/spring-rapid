@@ -1,19 +1,19 @@
 package com.naturalprogrammer.spring.lemon.auth.config;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.naturalprogrammer.spring.lemon.auth.LemonProperties;
+import com.naturalprogrammer.spring.lemon.auth.properties.LemonProperties;
 import com.naturalprogrammer.spring.lemon.auth.util.LemonUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
-import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 
 @Configuration
 @Slf4j
-@EnableConfigurationProperties()
+@EnableConfigurationProperties
+//@ComponentScan("com.naturalprogrammer.spring.lemon.auth.properties")
 public class LemonGeneralAutoConfiguration {
 
     public LemonGeneralAutoConfiguration() {

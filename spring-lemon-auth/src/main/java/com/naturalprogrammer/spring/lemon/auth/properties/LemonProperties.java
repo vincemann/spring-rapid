@@ -1,4 +1,4 @@
-package com.naturalprogrammer.spring.lemon.auth;
+package com.naturalprogrammer.spring.lemon.auth.properties;
 
 import com.naturalprogrammer.spring.lemon.auth.util.LecUtils;
 import lombok.*;
@@ -7,6 +7,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.http.HttpHeaders;
+import org.springframework.stereotype.Component;
 import org.springframework.validation.annotation.Validated;
 
 import java.util.Map;
@@ -18,6 +19,7 @@ import java.util.Map;
  */
 @Validated
 @Slf4j
+//@Component
 public class LemonProperties {
 	
 //    private static final Log log = LogFactory.getLog(LemonProperties.class);
@@ -30,46 +32,46 @@ public class LemonProperties {
 	 * Client web application's base URL.
 	 * Used in the verification link mailed to the users, etc.
 	 */
-    private String applicationUrl = "http://localhost:9000";
+    public String applicationUrl = "http://localhost:9000";
     
 //	/**
 //	 * The default URL to redirect to after
 //	 * a user logs in using OAuth2/OpenIDConnect
 //	 */
-//    private String oauth2AuthenticationSuccessUrl = "http://localhost:9000/social-login-success?token=";
+//    public String oauth2AuthenticationSuccessUrl = "http://localhost:9000/social-login-success?token=";
 
 	/**
 	 * URL of the login endpoint 
 	 * e.g. POST /api/core/login
 	 */
-    private String loginUrl = "/api/core/login";
+    public String loginUrl = "/api/core/login";
 
     /**
 	 * Recaptcha related properties
 	 */
-	private Recaptcha recaptcha = new Recaptcha();
+	public Recaptcha recaptcha = new Recaptcha();
 	
     /**
 	 * CORS related properties
 	 */
-	private Cors cors = new Cors();
+	public Cors cors = new Cors();
 
     /**
 	 * Properties related to the initial Admin user to be created
 	 */
-	private Admin admin = new Admin();
+	public Admin admin = new Admin();
 	
 	
 	/**
      * Any shared properties you want to pass to the 
      * client should begin with lemon.shared.
      */
-	private Map<String, Object> shared;
+	public Map<String, Object> shared;
 
 	/**
 	 * JWT token generation related properties
 	 */
-	private Jwt jwt;
+	public Jwt jwt;
 
 
 	/**************************
@@ -84,12 +86,12 @@ public class LemonProperties {
 		/**
          * Google ReCaptcha Site Key
          */
-    	private String sitekey;
+    	public String sitekey;
     	        
         /**
          * Google ReCaptcha Secret Key
          */
-    	private String secretkey;
+    	public String secretkey;
 
 		public String getSitekey() {
 			return sitekey;
@@ -119,17 +121,17 @@ public class LemonProperties {
 		 * Should contain the applicationURL at the minimum.
 		 * Not providing this property would disable CORS configuration.
 		 */
-		private String[] allowedOrigins;
+		public String[] allowedOrigins;
 		
 		/**
 		 * Methods to be allowed, e.g. GET,POST,...
 		 */
-		private String[] allowedMethods = {"GET", "HEAD", "POST", "PUT", "DELETE", "TRACE", "OPTIONS", "PATCH"};
+		public String[] allowedMethods = {"GET", "HEAD", "POST", "PUT", "DELETE", "TRACE", "OPTIONS", "PATCH"};
 		
 		/**
 		 * Request headers to be allowed, e.g. content-type,accept,origin,x-requested-with,...
 		 */
-		private String[] allowedHeaders = {
+		public String[] allowedHeaders = {
 				"Accept",
 				"Accept-Encoding",
 				"Accept-Language",
@@ -155,7 +157,7 @@ public class LemonProperties {
 		 * See <a href="http://stackoverflow.com/questions/25673089/why-is-access-control-expose-headers-needed#answer-25673446">
 		 * here</a> to know why this could be needed.
 		 */		
-		private String[] exposedHeaders = {
+		public String[] exposedHeaders = {
 				"Cache-Control",
 				"Connection",
 				"Content-Type",
@@ -174,7 +176,7 @@ public class LemonProperties {
 		/**
 		 * CORS <code>maxAge</code> long property
 		 */
-		private long maxAge = 3600L;
+		public long maxAge = 3600L;
 
 		public String[] getAllowedOrigins() {
 			return allowedOrigins;
@@ -228,12 +230,12 @@ public class LemonProperties {
 		/**
 		 * Login ID of the initial Admin user to be created 
 		 */
-		private String email;
+		public String email;
 		
 		/**
 		 * Password of the initial Admin user to be created 
 		 */		
-		private String password;
+		public String password;
 
 		public String getEmail() {
 			return email;
@@ -258,21 +260,22 @@ public class LemonProperties {
 	 * @author Sanjay Patel
 	 */
 	public static class Jwt {
-		
+
+
 		/**
 		 * Secret for signing JWT
 		 */
-		private String secret;
+		public String secret;
 		
 		/**
 		 * Default expiration milliseconds
 		 */
-		private long expirationMillis = 864000000L; // 10 days
+		public long expirationMillis = 864000000L; // 10 days
 		
 		/**
 		 * Expiration milliseconds for short-lived tokens and cookies
 		 */
-		private int shortLivedMillis = 120000; // Two minutes
+		public int shortLivedMillis = 120000; // Two minutes
 
 		public String getSecret() {
 			return secret;
@@ -355,4 +358,6 @@ public class LemonProperties {
 	public void setJwt(Jwt jwt) {
 		this.jwt = jwt;
 	}
+
+
 }
