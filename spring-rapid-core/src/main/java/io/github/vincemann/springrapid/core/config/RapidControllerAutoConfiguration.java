@@ -51,7 +51,7 @@ public class RapidControllerAutoConfiguration {
         return new LongUrlParamIdFetchingStrategy(idUrlParamKey());
     }
 
-    @ConditionalOnMissingBean(EndpointsExposureContext.class)
+//    @ConditionalOnMissingBean(EndpointsExposureContext.class)
     @Bean
     @Scope(scopeName = ConfigurableBeanFactory.SCOPE_PROTOTYPE)
     public EndpointsExposureContext endpointsExposureContext(){

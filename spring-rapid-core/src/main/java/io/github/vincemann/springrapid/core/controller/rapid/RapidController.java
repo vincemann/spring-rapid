@@ -28,6 +28,7 @@ import org.springframework.context.event.ContextRefreshedEvent;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.accept.ContentNegotiationManager;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.servlet.mvc.method.RequestMappingInfo;
 
@@ -91,7 +92,6 @@ public abstract class RapidController
     private String deleteUrl;
     @Setter
     private String createUrl;
-
 
     @Getter
     @Value("${controller.update.full.queryParam:full}")
@@ -194,7 +194,7 @@ public abstract class RapidController
         return RequestMappingInfo
                 .paths(findUrl)
                 .methods(RequestMethod.GET)
-                .produces(MediaType.APPLICATION_JSON_UTF8_VALUE)
+                .produces(getMediaType())
                 .build();
     }
 
@@ -202,7 +202,7 @@ public abstract class RapidController
         return RequestMappingInfo
                 .paths(deleteUrl)
                 .methods(RequestMethod.DELETE)
-                .produces(MediaType.APPLICATION_JSON_UTF8_VALUE)
+                .produces(getMediaType())
                 .build();
     }
 
@@ -210,8 +210,8 @@ public abstract class RapidController
         return RequestMappingInfo
                 .paths(createUrl)
                 .methods(RequestMethod.POST)
-                .consumes(MediaType.APPLICATION_JSON_UTF8_VALUE)
-                .produces(MediaType.APPLICATION_JSON_UTF8_VALUE)
+                .consumes(getMediaType())
+                .produces(getMediaType())
                 .build();
     }
 
@@ -219,8 +219,8 @@ public abstract class RapidController
         return RequestMappingInfo
                 .paths(updateUrl)
                 .methods(RequestMethod.PUT)
-                .consumes(MediaType.APPLICATION_JSON_UTF8_VALUE)
-                .produces(MediaType.APPLICATION_JSON_UTF8_VALUE)
+                .consumes(getMediaType())
+                .produces(getMediaType())
                 .build();
     }
 
@@ -228,7 +228,7 @@ public abstract class RapidController
         return RequestMappingInfo
                 .paths(findAllUrl)
                 .methods(RequestMethod.GET)
-                .produces(MediaType.APPLICATION_JSON_UTF8_VALUE)
+                .produces(getMediaType())
                 .build();
     }
 
@@ -268,9 +268,7 @@ public abstract class RapidController
             IdentifiableEntity<Id> dto = getJsonMapper().readValue(json, dtoClass);
             beforeCreate(dto,request);
             IdentifiableEntity<Id> resultDto = super.create(dto);
-            return new ResponseEntity<>(
-                    jsonMapper.writeValueAsString(resultDto),
-                    HttpStatus.OK);
+            return ok(jsonMapper.writeValueAsString(resultDto));
         }catch (IOException e){
             throw new DtoSerializingException(e);
         }
@@ -291,9 +289,7 @@ public abstract class RapidController
             IdentifiableEntity<Id> dto  = getJsonMapper().readValue(json, dtoClass);
             beforeUpdate(dto,request,fullUpdate);
             IdentifiableEntity<Id> resultDto = super.update(dto, fullUpdate);
-            return new ResponseEntity<>(
-                    jsonMapper.writeValueAsString(resultDto),
-                    HttpStatus.OK);
+            return ok(jsonMapper.writeValueAsString(resultDto));
         }catch (IOException e){
             throw new DtoSerializingException(e);
         }
@@ -308,7 +304,7 @@ public abstract class RapidController
         log.debug("id fetched from request: " + id);
         beforeDelete(id,request);
         super.delete(id);
-        return ResponseEntity.ok().contentType(MediaType.APPLICATION_JSON_UTF8).build();
+        return ok();
     }
 
     protected boolean isFullUpdate(HttpServletRequest request) throws BadEntityException {

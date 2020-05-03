@@ -37,4 +37,10 @@ public class EntityUtils {
         }
     }
 
+    public static void checkPresent(Optional<Object> entity, Object id, Class clazz) throws EntityNotFoundException {
+        if(entity.isEmpty()){
+            throw new EntityNotFoundException(id,clazz);
+        }
+    }
+
 }

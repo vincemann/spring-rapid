@@ -24,6 +24,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
 
@@ -63,6 +64,10 @@ public abstract class JsonDtoCrudController
     private DtoMappingContext dtoMappingContext;
     private ValidationStrategy<Id> validationStrategy;
     private boolean serviceInteractionLogging = true;
+    //todo put centralized into autoConfig
+    @Getter
+    @Setter
+    private String mediaType = MediaType.APPLICATION_JSON_UTF8_VALUE;
 
     @SuppressWarnings("unchecked")
     private Class<E> entityClass = (Class<E>) ((ParameterizedType) this.getClass().getGenericSuperclass()).getActualTypeArguments()[0];
@@ -197,7 +202,15 @@ public abstract class JsonDtoCrudController
 
 
     protected ResponseEntity<String> ok(String jsonDto) {
-        return new ResponseEntity<>(jsonDto, HttpStatus.OK);
+        return ResponseEntity.ok()
+                .contentType(MediaType.valueOf(getMediaType()))
+                .body(jsonDto);
+    }
+
+    protected ResponseEntity<?> ok() {
+        return ResponseEntity.ok()
+                .contentType(MediaType.valueOf(getMediaType()))
+                .build();
     }
 
 }

@@ -1,5 +1,5 @@
 org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
-io.github.vincemann.springrapid.core.config.WebMvcAutoConfiguration,\
+io.github.vincemann.springrapid.core.config.ContentTypeAutoConfiguration,\
 io.github.vincemann.springrapid.core.config.CrudServiceLocatorAutoConfiguration,\
 io.github.vincemann.springrapid.core.config.DtoMapperAutoConfiguration,\
 io.github.vincemann.springrapid.core.config.EnableAdviceAutoConfiguration,\

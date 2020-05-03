@@ -6,6 +6,7 @@ import io.github.vincemann.springrapid.core.slicing.components.WebComponent;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -46,6 +47,9 @@ public class DefaultExceptionHandlerControllerAdvice<T extends Throwable> {
     		throw ex;
     	
     	log.warn("Handling exception", ex);
-        return new ResponseEntity<ErrorResponse>(errorResponse, HttpStatus.valueOf(errorResponse.getStatus()));
-    }
+    	return ResponseEntity
+				.status(HttpStatus.valueOf(errorResponse.getStatus()))
+				.contentType(MediaType.APPLICATION_JSON_UTF8)
+				.body(errorResponse);
+	}
 }

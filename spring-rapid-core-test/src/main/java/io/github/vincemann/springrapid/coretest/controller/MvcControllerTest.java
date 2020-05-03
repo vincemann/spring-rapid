@@ -54,16 +54,13 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 public abstract class MvcControllerTest extends InitializingTest {
     private MockMvc mockMvc;
     private DefaultMockMvcBuilder mockMvcBuilder;
+    private MediaType contentType = MediaType.APPLICATION_JSON_UTF8;
 
     @BeforeEach
     public void setupMvc(WebApplicationContext wac) {
-        String mediaType = MediaType.APPLICATION_JSON_UTF8_VALUE;
         mockMvcBuilder = MockMvcBuilders.webAppContextSetup(wac)
-                .defaultRequest(get("/")
-                        .accept(mediaType)
-                        .contentType(mediaType)
-                )
-                .alwaysExpect(content().contentType(mediaType))
+                //user has to check himself if he wants to
+//                .alwaysExpect(content().contentType(getContentType()))
                 .alwaysDo(print());
         mockMvc=mockMvcBuilder.build();
     }

@@ -342,8 +342,8 @@ class RapidControllerTest
         when(idFetchingStrategy.fetchId(any())).thenReturn(entityId);
 
         getMockMvc().perform(delete(getDeleteUrl())
-                .contentType(MediaType.APPLICATION_JSON_UTF8)
-                .accept(MediaType.APPLICATION_JSON_UTF8))
+                .contentType(getContentType())
+                .accept(getContentType()))
                 .andExpect(status().isOk())
                 .andExpect(content().string(""));
 
