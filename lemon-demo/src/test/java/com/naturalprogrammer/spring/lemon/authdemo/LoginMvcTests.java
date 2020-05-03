@@ -12,11 +12,10 @@ import io.github.vincemann.springrapid.acl.Role;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
-import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.web.servlet.MvcResult;
 
 import com.naturalprogrammer.spring.lemon.auth.util.LecUtils;
-import com.naturalprogrammer.spring.lemon.authdemo.entities.User;
+import com.naturalprogrammer.spring.lemon.authdemo.domain.User;
 
 public class LoginMvcTests extends AbstractMvcTests {
 	

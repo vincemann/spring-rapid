@@ -1,10 +1,7 @@
 package com.naturalprogrammer.spring.lemon.auth.service;
 
+import com.naturalprogrammer.spring.lemon.auth.domain.*;
 import com.naturalprogrammer.spring.lemon.auth.properties.LemonProperties;
-import com.naturalprogrammer.spring.lemon.auth.domain.AbstractUser;
-import com.naturalprogrammer.spring.lemon.auth.domain.AbstractUserRepository;
-import com.naturalprogrammer.spring.lemon.auth.domain.ChangePasswordForm;
-import com.naturalprogrammer.spring.lemon.auth.domain.ResetPasswordForm;
 import com.naturalprogrammer.spring.lemon.auth.util.UserUtils;
 import io.github.vincemann.springrapid.core.service.CrudService;
 import io.github.vincemann.springrapid.core.service.exception.BadEntityException;
@@ -34,7 +31,7 @@ public interface LemonService<U extends AbstractUser<ID>, ID extends Serializabl
     public U resetPassword(@Valid ResetPasswordForm form);
     public String changePassword(U user, @Valid ChangePasswordForm changePasswordForm);
     @Validated(UserUtils.ChangeEmailValidation.class)
-    public void requestEmailChange(ID userId, @Valid U updatedUser);
+    public void requestEmailChange(ID userId, @Valid RequestEmailChangeForm emailChangeForm);
     public U changeEmail(ID userId, @Valid @NotBlank String changeEmailCode);
     public String fetchNewToken(Optional<Long> expirationMillis, Optional<String> optionalUsername);
     public Map<String, String> fetchFullToken(String authHeader);

@@ -1,6 +1,6 @@
 package com.naturalprogrammer.spring.lemon.authdemo;
 
-import com.naturalprogrammer.spring.lemon.authdemo.entities.User;
+import com.naturalprogrammer.spring.lemon.authdemo.domain.User;
 import com.naturalprogrammer.spring.lemon.auth.security.domain.LemonRole;
 import com.naturalprogrammer.spring.lemon.auth.util.LecUtils;
 import io.github.vincemann.springrapid.acl.Role;
@@ -11,7 +11,6 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.Resource;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
-import org.springframework.test.context.jdbc.Sql;
 
 import java.io.IOException;
 

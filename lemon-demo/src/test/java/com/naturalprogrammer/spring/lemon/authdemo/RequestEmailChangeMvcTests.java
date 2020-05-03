@@ -1,9 +1,9 @@
 package com.naturalprogrammer.spring.lemon.authdemo;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.naturalprogrammer.spring.lemon.auth.domain.RequestEmailChangeForm;
 import com.naturalprogrammer.spring.lemon.auth.util.LmapUtils;
-import com.naturalprogrammer.spring.lemon.authdemo.entities.User;
-import com.naturalprogrammer.spring.lemon.auth.util.LecUtils;
+import com.naturalprogrammer.spring.lemon.authdemo.domain.User;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpHeaders;
@@ -22,13 +22,13 @@ public class RequestEmailChangeMvcTests extends AbstractMvcTests {
 	
 	private static final String NEW_EMAIL = "new.email@example.com";
 	
-	private User form() {
+	private RequestEmailChangeForm form() {
+
+		RequestEmailChangeForm changeForm = new RequestEmailChangeForm();
+		changeForm.setPassword(USER_PASSWORD);
+		changeForm.setNewEmail(NEW_EMAIL);
 		
-		User user = new User();
-		user.setPassword(USER_PASSWORD);
-		user.setNewEmail(NEW_EMAIL);
-		
-		return user;
+		return changeForm;
 	}
 
 	@Test
@@ -129,67 +129,67 @@ public class RequestEmailChangeMvcTests extends AbstractMvcTests {
 				.andExpect(status().is(422))
 				.andExpect(jsonPath("$.errors[*].field").value(hasSize(2)))
 				.andExpect(jsonPath("$.errors[*].field").value(hasItems(
-						"updatedUser.newEmail",
-						"updatedUser.password")));
+						"emailChangeForm.newEmail",
+						"emailChangeForm.password")));
     	
-		User updatedUser = new User();
-		updatedUser.setPassword("");
-		updatedUser.setNewEmail("");
+		RequestEmailChangeForm emailChangeForm = new RequestEmailChangeForm();
+		emailChangeForm.setPassword("");
+		emailChangeForm.setNewEmail("");
 		
     	// try with blank newEmail and password
 		mvc.perform(post("/api/core/users/{id}/email-change-request", UNVERIFIED_USER_ID)
 				.contentType(MediaType.APPLICATION_JSON)
 				.header(HttpHeaders.AUTHORIZATION, tokens.get(UNVERIFIED_USER_ID))
-				.content(LmapUtils.toJson(updatedUser)))
+				.content(LmapUtils.toJson(emailChangeForm)))
 				.andExpect(status().is(422))
 				.andExpect(jsonPath("$.errors[*].field").value(hasSize(4)))
 				.andExpect(jsonPath("$.errors[*].field").value(hasItems(
-						"updatedUser.newEmail",
-						"updatedUser.password")));
+						"emailChangeForm.newEmail",
+						"emailChangeForm.password")));
 
 		// try with invalid newEmail
-		updatedUser = form();
-		updatedUser.setNewEmail("an-invalid-email");
+		emailChangeForm = form();
+		emailChangeForm.setNewEmail("an-invalid-email");
 		mvc.perform(post("/api/core/users/{id}/email-change-request", UNVERIFIED_USER_ID)
 				.contentType(MediaType.APPLICATION_JSON)
 				.header(HttpHeaders.AUTHORIZATION, tokens.get(UNVERIFIED_USER_ID))
-				.content(LmapUtils.toJson(updatedUser)))
+				.content(LmapUtils.toJson(emailChangeForm)))
 				.andExpect(status().is(422))
 				.andExpect(jsonPath("$.errors[*].field").value(hasSize(1)))
-				.andExpect(jsonPath("$.errors[*].field").value(hasItems("updatedUser.newEmail")));
+				.andExpect(jsonPath("$.errors[*].field").value(hasItems("emailChangeForm.newEmail")));
 
 		// try with wrong password
-		updatedUser = form();
-		updatedUser.setPassword("wrong-password");
+		emailChangeForm = form();
+		emailChangeForm.setPassword("wrong-password");
 		mvc.perform(post("/api/core/users/{id}/email-change-request", UNVERIFIED_USER_ID)
 				.contentType(MediaType.APPLICATION_JSON)
 				.header(HttpHeaders.AUTHORIZATION, tokens.get(UNVERIFIED_USER_ID))
-				.content(LmapUtils.toJson(updatedUser)))
+				.content(LmapUtils.toJson(emailChangeForm)))
 				.andExpect(status().is(422))
 				.andExpect(jsonPath("$.errors[*].field").value(hasSize(1)))
 				.andExpect(jsonPath("$.errors[*].field").value(hasItems("updatedUser.password")));
 
 		// try with null password
-		updatedUser = form();
-		updatedUser.setPassword(null);
+		emailChangeForm = form();
+		emailChangeForm.setPassword(null);
 		mvc.perform(post("/api/core/users/{id}/email-change-request", UNVERIFIED_USER_ID)
 				.contentType(MediaType.APPLICATION_JSON)
 				.header(HttpHeaders.AUTHORIZATION, tokens.get(UNVERIFIED_USER_ID))
-				.content(LmapUtils.toJson(updatedUser)))
+				.content(LmapUtils.toJson(emailChangeForm)))
 				.andExpect(status().is(422))
 				.andExpect(jsonPath("$.errors[*].field").value(hasSize(1)))
-				.andExpect(jsonPath("$.errors[*].field").value(hasItems("updatedUser.password")));
+				.andExpect(jsonPath("$.errors[*].field").value(hasItems("emailChangeForm.password")));
 
 		// try with an existing email
-		updatedUser = form();
-		updatedUser.setNewEmail(ADMIN_EMAIL);;
+		emailChangeForm = form();
+		emailChangeForm.setNewEmail(ADMIN_EMAIL);;
 		mvc.perform(post("/api/core/users/{id}/email-change-request", UNVERIFIED_USER_ID)
 				.contentType(MediaType.APPLICATION_JSON)
 				.header(HttpHeaders.AUTHORIZATION, tokens.get(UNVERIFIED_USER_ID))
-				.content(LmapUtils.toJson(updatedUser)))
+				.content(LmapUtils.toJson(emailChangeForm)))
 				.andExpect(status().is(422))
 				.andExpect(jsonPath("$.errors[*].field").value(hasSize(1)))
-				.andExpect(jsonPath("$.errors[*].field").value(hasItems("updatedUser.newEmail")));
+				.andExpect(jsonPath("$.errors[*].field").value(hasItems("emailChangeForm.newEmail")));
 		
 		verify(mailSender, never()).send(any());
 	}

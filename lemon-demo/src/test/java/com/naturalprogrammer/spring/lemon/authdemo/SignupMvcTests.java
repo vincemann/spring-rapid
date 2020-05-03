@@ -1,13 +1,12 @@
 package com.naturalprogrammer.spring.lemon.authdemo;
 
 import com.naturalprogrammer.spring.lemon.auth.util.LmapUtils;
-import com.naturalprogrammer.spring.lemon.authdemo.entities.User;
+import com.naturalprogrammer.spring.lemon.authdemo.domain.User;
 import com.naturalprogrammer.spring.lemon.auth.security.domain.LemonRole;
 import com.naturalprogrammer.spring.lemon.auth.util.LecUtils;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.MediaType;
-import org.springframework.test.context.jdbc.Sql;
 
 import static org.hamcrest.Matchers.*;
 import static org.mockito.ArgumentMatchers.any;

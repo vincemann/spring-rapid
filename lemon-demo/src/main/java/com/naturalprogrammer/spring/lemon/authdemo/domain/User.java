@@ -1,4 +1,4 @@
-package com.naturalprogrammer.spring.lemon.authdemo.entities;
+package com.naturalprogrammer.spring.lemon.authdemo.domain;
 
 import com.fasterxml.jackson.annotation.JsonView;
 import com.naturalprogrammer.spring.lemon.auth.domain.AbstractUser;
@@ -10,7 +10,6 @@ import javax.persistence.Entity;
 import javax.persistence.Table;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Size;
-import java.io.Serializable;
 import java.util.Set;
 
 @Entity

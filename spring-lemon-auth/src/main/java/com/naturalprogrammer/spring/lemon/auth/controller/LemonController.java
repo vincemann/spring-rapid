@@ -2,10 +2,8 @@ package com.naturalprogrammer.spring.lemon.auth.controller;
 
 import com.fasterxml.jackson.annotation.JsonView;
 import com.github.fge.jsonpatch.JsonPatchException;
+import com.naturalprogrammer.spring.lemon.auth.domain.*;
 import com.naturalprogrammer.spring.lemon.auth.properties.LemonProperties;
-import com.naturalprogrammer.spring.lemon.auth.domain.AbstractUser;
-import com.naturalprogrammer.spring.lemon.auth.domain.ChangePasswordForm;
-import com.naturalprogrammer.spring.lemon.auth.domain.ResetPasswordForm;
 import com.naturalprogrammer.spring.lemon.auth.security.domain.LemonUserDto;
 import com.naturalprogrammer.spring.lemon.auth.service.LemonService;
 import com.naturalprogrammer.spring.lemon.auth.util.*;
@@ -28,6 +26,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletResponse;
+import javax.validation.Valid;
 import java.io.IOException;
 import java.io.Serializable;
 import java.util.Map;
@@ -42,7 +41,7 @@ import java.util.Optional;
  */
 @WebComponent
 public abstract class LemonController
-	<U extends AbstractUser<ID>, ID extends Serializable>
+	<U extends AbstractUser<ID>, ID extends Serializable,S extends LemonSignupForm>
 			extends RapidController<U,ID,LemonService<U, ID,?>> {
 
 	private static final Log log = LogFactory.getLog(LemonController.class);
@@ -109,12 +108,13 @@ public abstract class LemonController
 	@PostMapping("/users")
 	@ResponseStatus(HttpStatus.CREATED)
 	@ResponseBody
-	public LemonUserDto signup(@RequestBody @JsonView(UserUtils.SignupInput.class) U user,
-							   HttpServletResponse response) throws BadEntityException {
+	public LemonUserDto signup(@RequestBody @JsonView(UserUtils.SignupInput.class) S signupForm,
+							   HttpServletResponse response) throws BadEntityException, DtoMappingException {
 
-		log.debug("Signing up: " + user);
+		log.debug("Signing up: " + signupForm);
+		U user = getDtoMapper().mapToEntity(signupForm, getEntityClass());
 		U saved = getCrudService().signup(user);
-		log.debug("Signed up: " + user);
+		log.debug("Signed up: " + signupForm);
 
 		return userWithToken(response,saved);
 	}
@@ -247,10 +247,10 @@ public abstract class LemonController
 	@PostMapping("/users/{id}/email-change-request")
 	@ResponseStatus(HttpStatus.NO_CONTENT)
 	public void requestEmailChange(@PathVariable("id") ID userId,
-								   @RequestBody U updatedUser) {
+								   @RequestBody RequestEmailChangeForm emailChangeForm) {
 
 		log.debug("Requesting email change ... ");
-		getCrudService().requestEmailChange(userId, updatedUser);
+		getCrudService().requestEmailChange(userId, emailChangeForm);
 	}
 
 
