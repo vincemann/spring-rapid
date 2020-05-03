@@ -12,6 +12,7 @@ import org.springframework.boot.autoconfigure.context.ConfigurationPropertiesAut
 import org.springframework.boot.autoconfigure.context.PropertyPlaceholderAutoConfiguration;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
+import org.springframework.boot.test.context.ConfigFileApplicationContextInitializer;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.http.MediaType;
@@ -33,7 +34,9 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
  * BaseClass for Controller Integration tests performing basic {@link MockMvc} auto-config.
  * Does not load {@link io.github.vincemann.springrapid.core.slicing.components.ServiceComponent}s and {@link io.github.vincemann.springrapid.core.slicing.config.ServiceConfig}s.
  * All service beans are automatically mocked by {@link AutoMockServiceBeansGenericAnnotationWebConfigContextLoader}.
- * You can autowire them in with @{@link org.springframework.beans.factory.annotation.Autowired} and work with the mocks.
+ * You can get the mocks by using @{@link org.springframework.beans.factory.annotation.Autowired}.
+ *
+ * Spring Context is configured for a minimal AutoConfigSetup for webTests.
  */
 @Getter
 @Setter
@@ -41,13 +44,12 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @ActiveProfiles(value = {"test","web","webTest"})
 @SpringBootTest
 //all service interaction is mocked -> no interaction with database -> no datasource config needed
-//@TestPropertySource(properties =
-//        "spring.autoconfigure.exclude=org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration")
 @ImportAutoConfiguration(exclude = DataSourceAutoConfiguration.class)
 @AutoConfigureMockMvc
 @ContextConfiguration(
         loader = AutoMockServiceBeansGenericAnnotationWebConfigContextLoader.class/*,
-        classes = PropertyPlaceholderAutoConfiguration.class*/
+        classes = PropertyPlaceholderAutoConfiguration.class*/,
+        initializers = ConfigFileApplicationContextInitializer.class
 )
 public abstract class MvcControllerTest extends InitializingTest {
     private MockMvc mockMvc;

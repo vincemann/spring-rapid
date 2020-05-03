@@ -4,6 +4,7 @@ import com.naturalprogrammer.spring.lemon.auth.controller.LemonController;
 import com.naturalprogrammer.spring.lemon.auth.security.domain.LemonUserDto;
 import com.naturalprogrammer.spring.lemon.authdemo.dto.UserUpdateDto;
 import com.naturalprogrammer.spring.lemon.authdemo.entities.User;
+import com.naturalprogrammer.spring.lemon.authdemo.services.MyService;
 import io.github.vincemann.springrapid.acl.service.Secured;
 import io.github.vincemann.springrapid.core.controller.dtoMapper.context.CrudDtoEndpoint;
 import io.github.vincemann.springrapid.core.controller.dtoMapper.context.DtoMappingContextBuilder;
