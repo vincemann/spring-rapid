@@ -40,8 +40,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 //@ExtendWith(SpringExtension.class)
 @SpringBootTest({
-        "logging.level.com.naturalprogrammer=ERROR", // logging.level.root=ERROR does not work: https://stackoverflow.com/questions/49048298/springboottest-not-overriding-logging-level
-        "logging.level.org.springframework=ERROR",
+//        "logging.level.com.naturalprogrammer=ERROR", // logging.level.root=ERROR does not work: https://stackoverflow.com/questions/49048298/springboottest-not-overriding-logging-level
+//        "logging.level.org.springframework=ERROR",
         "lemon.recaptcha.sitekey="
 })
 @AutoConfigureMockMvc
@@ -112,7 +112,7 @@ public abstract class AbstractMvcTests {
 
     private void initAcl() throws SQLException {
         //only do this expensive stuff once -> permission stay the same
-        ScriptUtils.executeSqlScript(dataSource.getConnection(), new ClassPathResource("/test-data/removeAclInfo.sql"));
+        ScriptUtils.executeSqlScript(dataSource.getConnection(), new ClassPathResource("test-data/removeAclInfo.sql"));
         User admin = userRepository.findById(ADMIN_ID).get();
         Authentication adminAuth = new UsernamePasswordAuthenticationToken(admin.getName(), admin.getPassword()
                 , Lists.newArrayList(new SimpleGrantedAuthority(Role.ADMIN)));
