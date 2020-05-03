@@ -1,10 +1,7 @@
 package com.naturalprogrammer.spring.lemon.auth.service;
 
+import com.naturalprogrammer.spring.lemon.auth.domain.*;
 import com.naturalprogrammer.spring.lemon.auth.properties.LemonProperties;
-import com.naturalprogrammer.spring.lemon.auth.domain.AbstractUser;
-import com.naturalprogrammer.spring.lemon.auth.domain.AbstractUserRepository;
-import com.naturalprogrammer.spring.lemon.auth.domain.ChangePasswordForm;
-import com.naturalprogrammer.spring.lemon.auth.domain.ResetPasswordForm;
 import com.naturalprogrammer.spring.lemon.auth.mail.LemonMailData;
 import com.naturalprogrammer.spring.lemon.auth.mail.MailSender;
 import com.naturalprogrammer.spring.lemon.auth.security.domain.LemonRole;
@@ -376,19 +373,19 @@ public abstract class LemonServiceImpl
 	 * Requests for email change.
 	 */
 	@Transactional(propagation = Propagation.REQUIRED, readOnly = false)
-	public void requestEmailChange(ID userId, /*@Valid*/ U updatedUser) {
+	public void requestEmailChange(ID userId, /*@Valid*/ RequestEmailChangeForm emailChangeForm) {
 		log.debug("Requesting email change for userId " + userId);
 		// checks
 		Optional<U> byId = getRepository().findById(userId);
 		LexUtils.ensureFound(byId);
 		U user = byId.get();
 		LexUtils.validateField("updatedUser.password",
-				passwordEncoder.matches(updatedUser.getPassword(),
+				passwordEncoder.matches(emailChangeForm.getPassword(),
 						user.getPassword()),
 				"com.naturalprogrammer.spring.wrong.password").go();
 
 		// preserves the new email id
-		user.setNewEmail(updatedUser.getNewEmail());
+		user.setNewEmail(emailChangeForm.getNewEmail());
 		//user.setChangeEmailCode(LemonUtils.uid());
 		U saved = getRepository().save(user);
 

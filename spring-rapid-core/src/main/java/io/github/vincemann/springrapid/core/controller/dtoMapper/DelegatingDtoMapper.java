@@ -20,7 +20,7 @@ public class DelegatingDtoMapper implements DtoMapper {
     }
 
     @Override
-    public boolean isDtoClassSupported(Class<? extends IdentifiableEntity> clazz) {
+    public boolean isDtoClassSupported(Class<?> clazz) {
         try {
             findMapper(clazz);
             return true;
@@ -35,19 +35,19 @@ public class DelegatingDtoMapper implements DtoMapper {
 
     @LogInteraction
     @Override
-    public <T extends IdentifiableEntity> T mapToEntity(IdentifiableEntity dto, Class<T> destinationClass) throws DtoMappingException {
+    public <T extends IdentifiableEntity<?>> T mapToEntity(Object dto, Class<T> destinationClass) throws DtoMappingException {
         return findMapper(dto.getClass())
                 .mapToEntity(dto,destinationClass);
     }
 
     @LogInteraction
     @Override
-    public <T extends IdentifiableEntity> T mapToDto(IdentifiableEntity entity, Class<T> destinationClass) throws DtoMappingException {
+    public <T> T mapToDto(IdentifiableEntity<?> entity, Class<T> destinationClass) throws DtoMappingException {
         return findMapper(destinationClass)
                 .mapToDto(entity,destinationClass);
     }
 
-    private DtoMapper findMapper(Class<? extends IdentifiableEntity> dtoClass) {
+    private DtoMapper findMapper(Class<?> dtoClass) {
         List<DtoMapper> matchingMappers =
                 delegates.stream().
                         filter(mapper -> mapper.isDtoClassSupported(dtoClass)).

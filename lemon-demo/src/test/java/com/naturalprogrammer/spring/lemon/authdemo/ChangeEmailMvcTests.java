@@ -1,9 +1,8 @@
 package com.naturalprogrammer.spring.lemon.authdemo;
 
-import com.naturalprogrammer.spring.lemon.authdemo.entities.User;
+import com.naturalprogrammer.spring.lemon.authdemo.domain.User;
 import com.naturalprogrammer.spring.lemon.auth.security.service.GreenTokenService;
 import com.naturalprogrammer.spring.lemon.auth.util.LecUtils;
-import org.aspectj.lang.annotation.Before;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

@@ -27,7 +27,7 @@ public class IdResolvingDtoMapper extends BasicDtoMapper {
     }
 
     @Override
-    public boolean isDtoClassSupported(Class<? extends IdentifiableEntity> clazz) {
+    public boolean isDtoClassSupported(Class<?> clazz) {
         return BiDirChildDto.class.isAssignableFrom(clazz) ||
                 BiDirParentDto.class.isAssignableFrom(clazz) ||
                 UniDirParentDto.class.isAssignableFrom(clazz) ||
@@ -35,26 +35,26 @@ public class IdResolvingDtoMapper extends BasicDtoMapper {
     }
 
     @Override
-    public <E extends IdentifiableEntity> E mapToEntity(IdentifiableEntity source, Class<E> destinationClass) throws DtoMappingException {
-        E mappingResult = super.mapToEntity(source, destinationClass);
+    public <E extends IdentifiableEntity<?>> E mapToEntity(Object dto, Class<E> destinationClass) throws DtoMappingException {
+        E mappingResult = super.mapToEntity(dto, destinationClass);
         //yet unfinished
-        EntityIdResolver entityIdResolver = findResolver(source.getClass());
-        entityIdResolver.resolveEntityIds(mappingResult, source);
+        EntityIdResolver entityIdResolver = findResolver(dto.getClass());
+        entityIdResolver.resolveEntityIds(mappingResult, dto);
         //is now finished
         return mappingResult;
     }
 
     @Override
-    public <Dto extends IdentifiableEntity> Dto mapToDto(IdentifiableEntity source, Class<Dto> destinationClass) throws DtoMappingException {
-        Dto mappingResult = super.mapToDto(source, destinationClass);
+    public <Dto> Dto mapToDto(IdentifiableEntity<?> entity, Class<Dto> destinationClass) throws DtoMappingException {
+        Dto mappingResult = super.mapToDto(entity, destinationClass);
         //yet unfinished
         EntityIdResolver entityIdResolver = findResolver(destinationClass);
-        entityIdResolver.resolveDtoIds(mappingResult, source);
+        entityIdResolver.resolveDtoIds(mappingResult, entity);
         //is now finished
         return mappingResult;
     }
 
-    private EntityIdResolver findResolver(Class dstClass) throws DtoMappingException {
+    private EntityIdResolver findResolver(Class<?> dstClass) throws DtoMappingException {
         for (EntityIdResolver entityIdResolver : entityIdResolvers) {
             if (entityIdResolver.getDtoClass().isAssignableFrom(dstClass)) {
                 return entityIdResolver;

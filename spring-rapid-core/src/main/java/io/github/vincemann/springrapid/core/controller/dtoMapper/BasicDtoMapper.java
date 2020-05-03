@@ -18,12 +18,12 @@ public class BasicDtoMapper implements DtoMapper {
     private ModelMapper modelMapper;
 
     @Override
-    public boolean isDtoClassSupported(Class<? extends IdentifiableEntity> clazz) {
+    public boolean isDtoClassSupported(Class<?> clazz) {
         return true;
     }
 
     @Override
-    public <Dto extends IdentifiableEntity> Dto mapToDto(IdentifiableEntity source, Class<Dto> destinationClass) throws DtoMappingException {
+    public <Dto> Dto mapToDto(IdentifiableEntity<?> source, Class<Dto> destinationClass) throws DtoMappingException {
         return modelMapper.map(source,destinationClass);
     }
 
@@ -33,7 +33,7 @@ public class BasicDtoMapper implements DtoMapper {
     }
 
     @Override
-    public <E extends IdentifiableEntity> E mapToEntity(IdentifiableEntity source, Class<E> destinationClass) throws DtoMappingException {
+    public <E extends IdentifiableEntity<?>> E mapToEntity(Object source, Class<E> destinationClass) throws DtoMappingException {
         return modelMapper.map(source,destinationClass);
     }
 }

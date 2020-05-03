@@ -3,6 +3,7 @@ package com.naturalprogrammer.spring.lemon.auth.security;
 import com.naturalprogrammer.spring.lemon.auth.domain.AbstractUser;
 import com.naturalprogrammer.spring.lemon.auth.domain.AbstractUserRepository;
 import com.naturalprogrammer.spring.lemon.auth.domain.ChangePasswordForm;
+import com.naturalprogrammer.spring.lemon.auth.domain.RequestEmailChangeForm;
 import com.naturalprogrammer.spring.lemon.auth.security.domain.LemonRole;
 import io.github.vincemann.springrapid.acl.proxy.rules.ServiceSecurityRule;
 import io.github.vincemann.springrapid.core.proxy.CalledByProxy;
@@ -86,7 +87,7 @@ public class LemonServiceSecurityRule extends ServiceSecurityRule {
     }
 
     @CalledByProxy
-    public void preAuthorizeRequestEmailChange(Serializable userId, AbstractUser updatedUser, Class userClazz){
+    public void preAuthorizeRequestEmailChange(Serializable userId, RequestEmailChangeForm emailChangeForm, Class userClazz){
         LexUtils.ensureFound(userRepository.findById(userId));
         getSecurityChecker().checkPermission(userId,userClazz,getWritePermission());
     }
