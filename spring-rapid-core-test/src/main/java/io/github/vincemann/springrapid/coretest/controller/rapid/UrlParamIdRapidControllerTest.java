@@ -26,11 +26,13 @@ public abstract class UrlParamIdRapidControllerTest<S extends CrudService<E,Id,?
 
     public MockHttpServletRequestBuilder delete(Id id) throws Exception {
         return MockMvcRequestBuilders.delete(getDeleteUrl())
+                /*.contentType(getContentType())*/
         .param(entityIdParamKey,id.toString());
     }
 
     public MockHttpServletRequestBuilder find(Id id) throws Exception {
         return get(getFindUrl())
+                /*.contentType(getContentType())*/
                 .param(entityIdParamKey,id.toString());
     }
 

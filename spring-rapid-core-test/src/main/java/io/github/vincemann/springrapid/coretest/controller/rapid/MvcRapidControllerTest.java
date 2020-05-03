@@ -56,7 +56,6 @@ public abstract class MvcRapidControllerTest
     private String url;
     private RapidController<E, Id,S> controller;
 
-
     @Autowired
     private ObjectMapper objectMapper;
     @Autowired
@@ -86,7 +85,7 @@ public abstract class MvcRapidControllerTest
     public MockHttpServletRequestBuilder create(IdentifiableEntity<Id> dto) throws Exception {
         return post(getCreateUrl())
                         .content(serialize(dto))
-                        .contentType(MediaType.APPLICATION_JSON_UTF8);
+                        .contentType(getContentType());
     }
 
     public MockHttpServletRequestBuilder update(IdentifiableEntity<Id> updateDto, Boolean full) throws Exception {
@@ -94,7 +93,7 @@ public abstract class MvcRapidControllerTest
 
         return put(getUpdateUrl()+"?"+fullUpdateQueryParam+"="+full.toString())
                 .content(serialize(updateDto))
-                .contentType(MediaType.APPLICATION_JSON_UTF8);
+                .contentType(getContentType());
     }
 
     public MockHttpServletRequestBuilder fullUpdate(IdentifiableEntity<Id> updateDto) throws Exception {
@@ -106,7 +105,7 @@ public abstract class MvcRapidControllerTest
     }
 
     public MockHttpServletRequestBuilder findAll() throws Exception {
-        return get(getController().getFindAllUrl());
+        return get(getController().getFindAllUrl())/*.contentType(getContentType())*/;
     }
 
     public String getCreateUrl(){
