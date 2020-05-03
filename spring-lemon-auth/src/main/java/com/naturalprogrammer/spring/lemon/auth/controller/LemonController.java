@@ -23,6 +23,7 @@ import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.core.userdetails.User;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletResponse;
@@ -196,13 +197,14 @@ public abstract class LemonController
 
 
 
+	//todo remove and replace with rapidController update endpoint entirely...
 	/**
 	 * Updates a user
 	 */
 	@PatchMapping("/users/{id}")
 	@ResponseBody
 	public LemonUserDto authUpdate(
-			@PathVariable("id") U user,
+			@PathVariable("id") ID userId,
 			@RequestBody String patch,
 			HttpServletResponse response)
 			throws IOException, JsonPatchException, BadEntityException, EntityNotFoundException, DtoMappingException {
@@ -210,10 +212,11 @@ public abstract class LemonController
 		log.debug("Updating user ... ");
 
 		// ensure that the user exists
-		LexUtils.ensureFound(user);
-		U updateUser = LmapUtils.applyPatch(user, patch); // create a patched form
+		LexUtils.ensureFound(userId);
+		Optional<U> byId = getCrudService().findById(userId);
+		U updateUser = LmapUtils.applyPatch(byId.get(), patch); // create a patched form
 		//default security Rule checks for write permission
-		U updated = getCrudService().updateUser(user, updateUser);
+		U updated = getCrudService().updateUser(byId.get(), updateUser);
 		LemonUserDto dto = updated.toUserDto();
 		dto.setPassword(null);
 		// Send a new token for logged in user in the response

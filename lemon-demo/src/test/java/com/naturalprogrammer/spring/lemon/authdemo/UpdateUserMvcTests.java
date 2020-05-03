@@ -19,7 +19,7 @@ import static org.hamcrest.Matchers.hasSize;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
-public class UpdateUserMvcTests extends AbstractMvcTests {
+public class 	UpdateUserMvcTests extends AbstractMvcTests {
 	
 	private static final String UPDATED_NAME = "Edited name";
 	
@@ -126,7 +126,7 @@ public class UpdateUserMvcTests extends AbstractMvcTests {
 				.contentType(MediaType.APPLICATION_JSON)
 				.header(HttpHeaders.AUTHORIZATION, tokens.get(ADMIN_ID))
 				.content(userPatch))
-				.andExpect(status().is(404));
+				.andExpect(status().is(403));
     }
 	
 	/**
