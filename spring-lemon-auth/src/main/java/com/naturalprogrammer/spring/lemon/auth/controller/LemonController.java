@@ -13,6 +13,7 @@ import io.github.vincemann.springrapid.core.controller.dtoMapper.DtoMappingExcep
 import io.github.vincemann.springrapid.core.controller.dtoMapper.context.CrudDtoEndpoint;
 import io.github.vincemann.springrapid.core.controller.dtoMapper.context.Direction;
 import io.github.vincemann.springrapid.core.controller.dtoMapper.context.DtoMappingContext;
+import io.github.vincemann.springrapid.core.controller.rapid.DtoSerializingException;
 import io.github.vincemann.springrapid.core.controller.rapid.RapidController;
 import io.github.vincemann.springrapid.core.model.IdentifiableEntity;
 import io.github.vincemann.springrapid.core.service.exception.BadEntityException;
@@ -23,9 +24,11 @@ import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 import java.io.IOException;
@@ -184,16 +187,17 @@ public abstract class LemonController
 	 */
 	@PostMapping("/users/fetch-by-email")
 	@ResponseBody
-	public IdentifiableEntity<ID> fetchUserByEmail(@RequestParam String email) throws DtoMappingException {
+	public Object fetchUserByEmail(@RequestParam String email) throws DtoMappingException {
 
 		log.debug("Fetching user by email: " + email);
 		U byEmail = getCrudService().findByEmail(email);
 		LexUtils.ensureFound(byEmail);
 		byEmail.setPassword(null);
-		IdentifiableEntity<ID> dto = getDtoMapper().mapToDto(byEmail,
+		Object dto = getDtoMapper().mapToDto(byEmail,
 				findDtoClass(CrudDtoEndpoint.FIND, Direction.RESPONSE));
 		return dto;
 	}
+
 
 
 
@@ -220,13 +224,20 @@ public abstract class LemonController
 		LemonUserDto dto = updated.toUserDto();
 		dto.setPassword(null);
 		// Send a new token for logged in user in the response
-		userWithToken(response,updated);
+
 		return dto;
 	}
 
+	@Override
+	public void afterUpdate(Object dto, U updated, HttpServletRequest httpServletRequest, boolean full, HttpServletResponse response) {
+		super.afterUpdate(dto, updated, httpServletRequest, full, response);
+		userWithToken(response,updated);
+	}
 
-
-
+	@Override
+	protected U serviceUpdate(U update, boolean full) throws BadEntityException, EntityNotFoundException {
+		return super.serviceUpdate(update, full);
+	}
 
 	/**
 	 * Changes password

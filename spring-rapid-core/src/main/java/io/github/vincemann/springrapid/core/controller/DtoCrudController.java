@@ -5,7 +5,6 @@ import io.github.vincemann.springrapid.core.controller.rapid.DtoSerializingExcep
 import io.github.vincemann.springrapid.core.model.IdentifiableEntity;
 import io.github.vincemann.springrapid.core.service.exception.BadEntityException;
 import io.github.vincemann.springrapid.core.service.exception.EntityNotFoundException;
-import io.github.vincemann.springrapid.core.service.exception.BadEntityException;
 
 import java.io.Serializable;
 import java.util.Collection;
@@ -17,13 +16,13 @@ import java.util.Collection;
  */
 public interface DtoCrudController<Id extends Serializable> {
 
-    IdentifiableEntity<Id> create(IdentifiableEntity<Id> entity) throws BadEntityException, DtoMappingException, DtoSerializingException;
+    Object create(Object dto) throws BadEntityException, DtoMappingException, DtoSerializingException;
 
-    IdentifiableEntity<Id> find(Id id) throws BadEntityException, EntityNotFoundException, DtoMappingException, DtoSerializingException;
+    Object find(Id id) throws BadEntityException, EntityNotFoundException, DtoMappingException, DtoSerializingException;
 
     /**
      *
-     * @param entity
+     * @param dto
      * @param full      indicates whether all set values should be recognized as new values or only non null values
      *                  If you want to delete values (aka setting them null) with the update, then set this flag to true.
      * @return
@@ -32,9 +31,9 @@ public interface DtoCrudController<Id extends Serializable> {
      * @throws BadEntityException
      * @throws EntityNotFoundException
      */
-    IdentifiableEntity<Id> update(IdentifiableEntity<Id> entity, boolean full) throws DtoMappingException, BadEntityException, BadEntityException, EntityNotFoundException, DtoSerializingException;
+    Object update(Object dto, boolean full) throws DtoMappingException, BadEntityException, BadEntityException, EntityNotFoundException, DtoSerializingException;
 
     void delete(Id id) throws BadEntityException, EntityNotFoundException;
 
-    Collection<IdentifiableEntity<Id>> findAll() throws DtoMappingException, DtoSerializingException;
+    Collection<Object> findAll() throws DtoMappingException, DtoSerializingException;
 }

@@ -17,7 +17,7 @@ public interface ValidationStrategy<Id extends Serializable> {
      * @param dto           Dto Entity read from the {@link HttpServletRequest}
      * @throws ConstraintViolationException     is thrown, when Dto Entity {@param dto} is not valid
      */
-    public abstract void validateDto(IdentifiableEntity<Id> dto) throws ConstraintViolationException;
+    public abstract void validateDto(Object dto) throws ConstraintViolationException;
 
     /**
      * checks whether the Id, read from the {@link HttpServletRequest} is valid

@@ -39,5 +39,7 @@ public interface LemonService<U extends AbstractUser<ID>, ID extends Serializabl
     public abstract ID toId(String id);
     public void addAuthHeader(HttpServletResponse response, String username, Long expirationMillis);
     @Validated(UserUtils.UpdateValidation.class)
-    public U updateUser(U user, @Valid U updatedUser) throws BadEntityException, EntityNotFoundException;
+    @Override
+    U update(U entity, Boolean full) throws EntityNotFoundException, BadEntityException, BadEntityException;
+//    public U updateUser(U user, @Valid U updatedUser) throws BadEntityException, EntityNotFoundException;
 }

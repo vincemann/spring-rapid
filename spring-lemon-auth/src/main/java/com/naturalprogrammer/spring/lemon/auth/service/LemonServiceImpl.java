@@ -13,6 +13,8 @@ import com.nimbusds.jwt.JWTClaimsSet;
 import io.github.vincemann.springrapid.acl.Role;
 import io.github.vincemann.springrapid.core.service.exception.BadEntityException;
 import com.naturalprogrammer.spring.lemon.exceptions.util.LexUtils;
+import io.github.vincemann.springrapid.core.service.exception.EntityNotFoundException;
+import io.github.vincemann.springrapid.core.util.EntityUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.apache.commons.logging.Log;
@@ -28,7 +30,7 @@ import java.io.Serializable;
 import java.util.Collections;
 import java.util.Map;
 import java.util.Optional;
-
+import java.util.Set;
 
 
 /**
@@ -278,29 +280,37 @@ public abstract class LemonServiceImpl
 //		throw new IllegalArgumentException("Call updateUser instead");
 //	}
 
-	/**
-	 * Updates a user with the given data.
-	 */
+//	/**
+//	 * Updates a user with the given data.
+//	 */
+//	@Override
+//	@Transactional(propagation = Propagation.REQUIRED, readOnly = false)
+//	public U updateUser(U old, U newUser) {
+//
+//		log.debug("Updating user: " + old);
+//
+//		// checks
+////		LecjUtils.ensureCorrectVersion(user, updatedUser);
+//
+//		// delegates to updateUserFields
+//		updateRoles(old, newUser, LecwUtils.currentUser());
+//		U updated = getRepository().save(old);
+//		log.debug("Updated user: " + old);
+//
+////		LemonUserDto userDto = user.toUserDto();
+////		userDto.setPassword(null);
+//		return updated;
+//	}
+
 	@Override
-	@Transactional(propagation = Propagation.REQUIRED, readOnly = false)
-	public U updateUser(U user, U updatedUser) {
-
-		log.debug("Updating user: " + user);
-
-		// checks
-//		LecjUtils.ensureCorrectVersion(user, updatedUser);
-
-		// delegates to updateUserFields
-		updateUserFields(user, updatedUser, LecwUtils.currentUser());
-		U updated = getRepository().save(user);
-		log.debug("Updated user: " + user);
-
-//		LemonUserDto userDto = user.toUserDto();
-//		userDto.setPassword(null);
-		return updated;
+	public U update(U update, Boolean full) throws EntityNotFoundException, BadEntityException, BadEntityException {
+		Optional<U> old = getRepository().findById(update.getId());
+		EntityUtils.checkPresent(old,"Entity to update with id: " + update.getId() + " not found");
+		//update roles works in transaction -> changes are applied on the fly
+		updateRoles(old.get(),update,LecwUtils.currentUser());
+		update.setRoles(old.get().getRoles());
+		return super.update(update, full);
 	}
-
-
 
 	/**
 	 * Changes the password.
@@ -336,35 +346,34 @@ public abstract class LemonServiceImpl
 	/**
 	 * Updates the fields of the users. Override this if you have more fields.
 	 */
-	protected void updateUserFields(U user, U updatedUser, LemonUserDto currentUser) {
-
-		log.debug("Updating user fields for user: " + user);
+	protected void updateRoles(U old, U newUser, LemonUserDto currentUser) {
+		Set<String> roles = old.getRoles();
+		log.debug("Updating user fields for user: " + old);
 
 		// Good admin tries to edit
 		if (currentUser.isGoodAdmin() &&
-				!currentUser.getId().equals(user.getId().toString())) {
+				!currentUser.getId().equals(old.getId().toString())) {
 
-			log.debug("Updating roles for user: " + user);
+			log.debug("Updating roles for user: " + old);
 
 			// update the roles
 
-			if (user.getRoles().equals(updatedUser.getRoles())) // roles are same
+			if (old.getRoles().equals(newUser.getRoles())) // roles are same
 				return;
 
-			if (updatedUser.hasRole(LemonRole.UNVERIFIED)) {
+			if (newUser.hasRole(LemonRole.UNVERIFIED)) {
 
-				if (!user.hasRole(LemonRole.UNVERIFIED)) {
-
-					makeUnverified(user); // make user unverified
+				if (!old.hasRole(LemonRole.UNVERIFIED)) {
+					makeUnverified(old); // make user unverified
 				}
 			} else {
 
-				if (user.hasRole(LemonRole.UNVERIFIED))
-					user.getRoles().remove(LemonRole.UNVERIFIED); // make user verified
+				if (old.hasRole(LemonRole.UNVERIFIED))
+					old.getRoles().remove(LemonRole.UNVERIFIED); // make user verified
 			}
 
-			user.setRoles(updatedUser.getRoles());
-			user.setCredentialsUpdatedMillis(System.currentTimeMillis());
+			old.setRoles(newUser.getRoles());
+			old.setCredentialsUpdatedMillis(System.currentTimeMillis());
 		}
 	}
 
