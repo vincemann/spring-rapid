@@ -5,30 +5,31 @@ The goal is too **speed up** the developement process and stop rewriting the sam
 Instead there should be very well implemented modules for each task, that can be plugged in whenever needed.  
 One common task, that is very repetitive, is implementing **Crud-Operations** for all of your entities.  
 This library gives you a **fully functional** and autoconfigured (yet hightly configurable/ extendable) solution for implementing crud,  
-that only consists of **a few lines of code**.  
+that requires only **a few lines of code**.  
 The code needed for a working Controller handling multiple different Dto Types can be seen in the example section below.  
 Along with the Crud Module (Core) come many other modules building upon the core module, that can be plugged in when needed.  
   
 This project is inspired by **Spring-Lemon** which offers many good modules as well.  
+The packages, whos name starts with lemon are copied from spring-lemon, modified and integated to work together with rapid modules.  
 Any help with developement is greatly appreciated.  
 Feel free to use, download and modify any code you want.  
   
   
 # Features  
-* Generic Crud Implementation for Controller and Servicelayer                                        (Core)  
-* Proxybased PluginSystem for Service                                                                (Core)  
-* Basic Exception to ApiError translation                                                            (Exceptions)  
-* Dto-Mapping (support for different Dto's for each endpoint; diff request and response dto's)       (Core)  
-* Uni- and Bidirectional relationship management for all crud opeartions                             (Entity-Relationship)  
-* Automatic resolving of ids in dtos referencing other entities and vice versa                       (Entity-Relationship)  
-* Testsupport for service and controller layer                                                       (Core-Test)  
-* Out of the box working Acl Module with SecurityProxy solution for applying Acl-based, pluginlike 
-  rules that restrict access to service methods                                                       (Acl)            
+* Generic Crud Implementation for Controller and Servicelayer                                        (core)  
+* Proxybased PluginSystem for Service                                                                (core)  
+* Basic Exception to ApiError translation                                                            (lemon-exceptions)  
+* Dto-Mapping (support for different Dto's for each endpoint; diff request and response dto's)       (core)  
+* Uni- and Bidirectional relationship management for all crud opeartions                             (entity-relationship)  
+* Automatic resolving of ids in dtos referencing other entities and vice versa                       (entity-relationship)  
+* Testsupport for service and controller layer of rapid-core                                         (core-Test)  
+* SecurityProxy solution for applying Acl-based, plugin-like 
+  rules that restrict access to service methods + automatic Acl setup                                 (Acl)            
     
     
 # Example  
 **This is the typical setup required to run a fully functional controller exposing crud enpoints for one entity:**  
-**Check out the rapid-demo module for a more complete example!**  
+**Check out the rapid-demo module for a more complete example + tests!**  
 ## Controller    
   
 ```java
