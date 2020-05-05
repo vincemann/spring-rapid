@@ -10,7 +10,7 @@ import io.github.vincemann.springrapid.demo.repo.PetTypeRepository;
 import io.github.vincemann.springrapid.demo.repo.SpecialtyRepository;
 import io.github.vincemann.springrapid.core.model.IdentifiableEntity;
 import io.github.vincemann.springrapid.core.service.CrudService;
-import io.github.vincemann.springrapid.coretest.controller.rapid.UrlParamIdRapidControllerTest;
+import io.github.vincemann.springrapid.coretest.controller.rapid.AbstractUrlParamIdRapidControllerTest;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
@@ -24,7 +24,7 @@ import java.time.LocalDate;
 @Setter
 @Slf4j
 public abstract class TestDataInitControllerTest<S extends CrudService<E,Long,? extends CrudRepository<E,Long>>,E extends IdentifiableEntity<Long>>
-        extends UrlParamIdRapidControllerTest<S,E,Long>
+        extends AbstractUrlParamIdRapidControllerTest<S,E,Long>
 
 {
 

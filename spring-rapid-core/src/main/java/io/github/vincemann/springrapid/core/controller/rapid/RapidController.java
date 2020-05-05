@@ -93,8 +93,6 @@ public abstract class RapidController
     private String baseUrl;
     private String entityNameInUrl;
 
-//    @Value("${controller.update.full.queryParam:full}")
-//    private String fullUpdateQueryParam;
 
     private EndpointService endpointService;
     private ObjectMapper jsonMapper;
@@ -350,44 +348,20 @@ public abstract class RapidController
         try {
             String patchString = request.getReader().lines().collect(Collectors.joining(System.lineSeparator()));
             Id id = idIdFetchingStrategy.fetchId(request);
-//            boolean full = isFullUpdate(request,response);
-//            log.debug("full update mode: " + full);
             Class<?> dtoClass = findDtoClass(CrudDtoEndpoint.UPDATE, Direction.REQUEST);
-//            if(full) {
-//                dtoClass = findDtoClass(CrudDtoEndpoint.FULL_UPDATE, Direction.REQUEST);
-//            }else {
-//                dtoClass = findDtoClass(CrudDtoEndpoint.PARTIAL_UPDATE, Direction.REQUEST);
-//            }
-//            Object dto  = getJsonMapper().readValue(json, dtoClass);
             beforeUpdate(dtoClass,id,patchString, request, response);
 
-//            validationStrategy.validateDto(dto);
-//            log.debug("Dto successfully validated");
-            //i expect that dto has the right dto type -> callers responsibility
             Optional<E> saved = getUnsecuredService().findById(id);
             EntityUtils.checkPresent(saved, id, getEntityClass());
             E patched = MapperUtils.applyPatch(saved.get(), patchString);
+            Object requestDto = dtoMapper.mapToDto(patched, dtoClass);
+            validationStrategy.validateDto(requestDto);
             checkForInvalidUpdates(dtoClass,saved.get(),patched);
             logStateBeforeServiceCall("update", saved, patchString,patched);
             E updated = serviceUpdate(patched, true);
-//            E update = mapToEntity(dto);
-
-//            if (full) {
-//                Optional<E> toUpdate = getUnsecuredService().findById(update.getId());
-//                EntityUtils.checkPresent(toUpdate, update.getId(), getEntityClass());
-//                update = merge(toUpdate.get(), update, Arrays.stream(dto.getClass().getDeclaredFields())
-//                        .map(Field::getName)
-//                        .collect(Collectors.toSet()));
-//            }
-
             logServiceResult("update", updated);
             //no idea why casting is necessary here?
             Class<?> resultDtoClass = findDtoClass(CrudDtoEndpoint.UPDATE, Direction.RESPONSE);
-//            if (full) {
-//                resultDtoClass = findDtoClass(CrudDtoEndpoint.FULL_UPDATE, Direction.RESPONSE);
-//            } else {
-//                resultDtoClass = findDtoClass(CrudDtoEndpoint.PARTIAL_UPDATE, Direction.RESPONSE);
-//            }
             Object resultDto = dtoMapper.mapToDto(updated, resultDtoClass);
             afterUpdate(resultDto, updated, request, response);
             return ok(jsonMapper.writeValueAsString(resultDto));
@@ -418,16 +392,6 @@ public abstract class RapidController
     }
 
 
-//    @SneakyThrows
-//    protected E merge(E savedEntity, E updateEntity, Set<String> properties) {
-//        for (String property : properties) {
-//            BeanUtilsBean.getInstance().copyProperty(savedEntity, property,
-//                    BeanUtilsBean.getInstance().getProperty(updateEntity, property)
-//            );
-//        }
-//        return savedEntity;
-//    }
-
 
     public ResponseEntity<?> delete(HttpServletRequest request, HttpServletResponse response) throws IdFetchingException, BadEntityException, EntityNotFoundException, ConstraintViolationException {
         log.debug("Delete request arriving at controller: " + request);
@@ -441,20 +405,6 @@ public abstract class RapidController
         afterDelete(id, request, response);
         return ok();
     }
-
-//    protected boolean isFullUpdate(HttpServletRequest request, HttpServletResponse response) throws BadEntityException {
-//        Map<String, String[]> queryParameters = HttpServletRequestUtils.getQueryParameters(request);
-//        String[] fullUpdateParams = queryParameters.get(fullUpdateQueryParam);
-//        if (fullUpdateParams == null) {
-//            return false;
-//        }
-//        EntityUtils.checkProperEntity(!(fullUpdateParams.length > 1), "Multiple full update query params specified, there must be only one max. key: " + fullUpdateQueryParam);
-//        if (fullUpdateParams.length == 0) {
-//            return false;
-//        } else {
-//            return Boolean.parseBoolean(fullUpdateParams[0]);
-//        }
-//    }
 
     public Class<?> findDtoClass(String endpoint, Direction direction) {
         DtoMappingInfo endpointInfo = createEndpointInfo(endpoint, direction);
