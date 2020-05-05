@@ -1,21 +1,21 @@
 package com.naturalprogrammer.spring.lemon.auth.controller;
 
 import com.fasterxml.jackson.annotation.JsonView;
-import com.github.fge.jsonpatch.JsonPatchException;
 import com.naturalprogrammer.spring.lemon.auth.domain.*;
 import com.naturalprogrammer.spring.lemon.auth.properties.LemonProperties;
 import com.naturalprogrammer.spring.lemon.auth.security.domain.LemonUserDto;
 import com.naturalprogrammer.spring.lemon.auth.service.LemonService;
-import com.naturalprogrammer.spring.lemon.auth.util.*;
+import com.naturalprogrammer.spring.lemon.auth.util.LecUtils;
+import com.naturalprogrammer.spring.lemon.auth.util.LecwUtils;
+import com.naturalprogrammer.spring.lemon.auth.util.LemonUtils;
+import com.naturalprogrammer.spring.lemon.auth.util.UserUtils;
 import com.naturalprogrammer.spring.lemon.exceptions.util.LexUtils;
 import io.github.vincemann.springrapid.acl.service.Secured;
 import io.github.vincemann.springrapid.core.controller.dtoMapper.DtoMappingException;
 import io.github.vincemann.springrapid.core.controller.dtoMapper.context.CrudDtoEndpoint;
 import io.github.vincemann.springrapid.core.controller.dtoMapper.context.Direction;
 import io.github.vincemann.springrapid.core.controller.dtoMapper.context.DtoMappingContext;
-import io.github.vincemann.springrapid.core.controller.rapid.DtoSerializingException;
 import io.github.vincemann.springrapid.core.controller.rapid.RapidController;
-import io.github.vincemann.springrapid.core.model.IdentifiableEntity;
 import io.github.vincemann.springrapid.core.service.exception.BadEntityException;
 import io.github.vincemann.springrapid.core.service.exception.EntityNotFoundException;
 import io.github.vincemann.springrapid.core.slicing.components.WebComponent;
@@ -24,14 +24,12 @@ import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.userdetails.User;
 import org.springframework.web.bind.annotation.*;
 
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.validation.Valid;
-import java.io.IOException;
 import java.io.Serializable;
 import java.util.Map;
 import java.util.Optional;
@@ -42,6 +40,7 @@ import java.util.Optional;
  * API documentation</a> for details.
  *
  * @author Sanjay Patel
+ *
  */
 @WebComponent
 public abstract class LemonController
@@ -52,6 +51,8 @@ public abstract class LemonController
 //	public static final Long DEFAULT_JWT_EXPIRATION_MILLIS = 864000000L;// 10 days
 
     private long jwtExpirationMillis;
+    @PersistenceContext
+    private EntityManager entityManager;
 
 	public LemonController(DtoMappingContext dtoMappingContext) {
 		super(dtoMappingContext);
@@ -98,7 +99,7 @@ public abstract class LemonController
 			HttpServletResponse response) {
 
 		log.debug("Getting context ");
-		Map<String, Object> context = getCrudService().getContext(expirationMillis, response);
+		Map<String, Object> context = getService().getContext(expirationMillis, response);
 		log.debug("Returning context: " + context);
 
 		return context;
@@ -117,7 +118,7 @@ public abstract class LemonController
 
 		log.debug("Signing up: " + signupForm);
 		U user = getDtoMapper().mapToEntity(signupForm, getEntityClass());
-		U saved = getCrudService().signup(user);
+		U saved = getService().signup(user);
 		log.debug("Signed up: " + signupForm);
 
 		return userWithToken(response,saved);
@@ -132,7 +133,7 @@ public abstract class LemonController
 	public void resendVerificationMail(@PathVariable("id") U user) {
 
 		log.debug("Resending verification mail for: " + user);
-		getCrudService().resendVerificationMail(user);
+		getService().resendVerificationMail(user);
 		log.debug("Resent verification mail for: " + user);
 	}
 
@@ -148,7 +149,7 @@ public abstract class LemonController
 			HttpServletResponse response) {
 
 		log.debug("Verifying user ...");
-		U saved = getCrudService().verifyUser(id, code);
+		U saved = getService().verifyUser(id, code);
 
 		return userWithToken(response,saved);
 	}
@@ -162,7 +163,7 @@ public abstract class LemonController
 	public void forgotPassword(@RequestParam String email) {
 
 		log.debug("Received forgot password request for: " + email);
-		getCrudService().forgotPassword(email);
+		getService().forgotPassword(email);
 	}
 
 
@@ -176,7 +177,7 @@ public abstract class LemonController
 			HttpServletResponse response) {
 
 		log.debug("Resetting password ... ");
-		U saved = getCrudService().resetPassword(form);
+		U saved = getService().resetPassword(form);
 
 		return userWithToken(response,saved);
 	}
@@ -190,7 +191,7 @@ public abstract class LemonController
 	public Object fetchUserByEmail(@RequestParam String email) throws DtoMappingException {
 
 		log.debug("Fetching user by email: " + email);
-		U byEmail = getCrudService().findByEmail(email);
+		U byEmail = getService().findByEmail(email);
 		LexUtils.ensureFound(byEmail);
 		byEmail.setPassword(null);
 		Object dto = getDtoMapper().mapToDto(byEmail,
@@ -201,32 +202,32 @@ public abstract class LemonController
 
 
 
-	//todo remove and replace with rapidController update endpoint entirely...
-	/**
-	 * Updates a user
-	 */
-	@PatchMapping("/users/{id}")
-	@ResponseBody
-	public LemonUserDto authUpdate(
-			@PathVariable("id") ID userId,
-			@RequestBody String patch,
-			HttpServletResponse response)
-			throws IOException, JsonPatchException, BadEntityException, EntityNotFoundException, DtoMappingException {
-
-		log.debug("Updating user ... ");
-
-		// ensure that the user exists
-		LexUtils.ensureFound(userId);
-		Optional<U> byId = getCrudService().findById(userId);
-		U updateUser = LmapUtils.applyPatch(byId.get(), patch); // create a patched form
-		//default security Rule checks for write permission
-		U updated = getCrudService().updateUser(byId.get(), updateUser);
-		LemonUserDto dto = updated.toUserDto();
-		dto.setPassword(null);
-		// Send a new token for logged in user in the response
-
-		return dto;
-	}
+//	//todo remove and replace with rapidController update endpoint entirely...
+//	/**
+//	 * Updates a user
+//	 */
+//	@PatchMapping("/users/{id}")
+//	@ResponseBody
+//	public LemonUserDto authUpdate(
+//			@PathVariable("id") ID userId,
+//			@RequestBody String patch,
+//			HttpServletResponse response)
+//			throws IOException, JsonPatchException, BadEntityException, EntityNotFoundException, DtoMappingException {
+//
+//		log.debug("Updating user ... ");
+//
+//		// ensure that the user exists
+//		LexUtils.ensureFound(userId);
+//		Optional<U> byId = getCrudService().findById(userId);
+//		U updateUser = LmapUtils.applyPatch(byId.get(), patch); // create a patched form
+//		//default security Rule checks for write permission
+//		U updated = getCrudService().updateUser(byId.get(), updateUser);
+//		LemonUserDto dto = updated.toUserDto();
+//		dto.setPassword(null);
+//		// Send a new token for logged in user in the response
+//
+//		return dto;
+//	}
 
 	@Override
 	public void afterUpdate(Object dto, U updated, HttpServletRequest httpServletRequest, boolean full, HttpServletResponse response) {
@@ -236,7 +237,11 @@ public abstract class LemonController
 
 	@Override
 	protected U serviceUpdate(U update, boolean full) throws BadEntityException, EntityNotFoundException {
-		return super.serviceUpdate(update, full);
+		U updated = super.serviceUpdate(update, full);
+		//set password should not trigger immediate update
+		entityManager.detach(updated);
+		updated.setPassword(null);
+		return updated;
 	}
 
 	/**
@@ -249,9 +254,9 @@ public abstract class LemonController
 			HttpServletResponse response) {
 
 		log.debug("Changing password ... ");
-		String username = getCrudService().changePassword(user, changePasswordForm);
+		String username = getService().changePassword(user, changePasswordForm);
 
-		getCrudService().addAuthHeader(response, username, jwtExpirationMillis);
+		getService().addAuthHeader(response, username, jwtExpirationMillis);
 	}
 
 
@@ -264,7 +269,7 @@ public abstract class LemonController
 								   @RequestBody RequestEmailChangeForm emailChangeForm) {
 
 		log.debug("Requesting email change ... ");
-		getCrudService().requestEmailChange(userId, emailChangeForm);
+		getService().requestEmailChange(userId, emailChangeForm);
 	}
 
 
@@ -279,7 +284,7 @@ public abstract class LemonController
 			HttpServletResponse response) {
 
 		log.debug("Changing email of user ...");
-		U saved = getCrudService().changeEmail(userId, code);
+		U saved = getService().changeEmail(userId, code);
 
 		// return the currently logged in user with new email
 		return userWithToken(response,saved);
@@ -298,7 +303,7 @@ public abstract class LemonController
 			HttpServletResponse response) {
 
 		log.debug("Fetching a new token ... ");
-		return LecUtils.mapOf("token", getCrudService().fetchNewToken(expirationMillis, username));
+		return LecUtils.mapOf("token", getService().fetchNewToken(expirationMillis, username));
 	}
 
 
@@ -310,7 +315,7 @@ public abstract class LemonController
 	public Map<String, String> fetchFullToken(@RequestHeader(HttpHeaders.AUTHORIZATION) String authHeader) {
 
 		log.debug("Fetching a micro token");
-		return getCrudService().fetchFullToken(authHeader);
+		return getService().fetchFullToken(authHeader);
 	}
 
 
@@ -320,7 +325,7 @@ public abstract class LemonController
 	protected LemonUserDto userWithToken(HttpServletResponse response,U saved) {
 		LemonUtils.login(saved);
 		LemonUserDto currentUser = LecwUtils.currentUser();
-		getCrudService().addAuthHeader(response, currentUser.getEmail(), jwtExpirationMillis);
+		getService().addAuthHeader(response, currentUser.getEmail(), jwtExpirationMillis);
 		return currentUser;
 	}
 }

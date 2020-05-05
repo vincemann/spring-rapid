@@ -15,6 +15,7 @@ import io.github.vincemann.springrapid.core.service.exception.BadEntityException
 import com.naturalprogrammer.spring.lemon.exceptions.util.LexUtils;
 import io.github.vincemann.springrapid.core.service.exception.EntityNotFoundException;
 import io.github.vincemann.springrapid.core.util.EntityUtils;
+import io.github.vincemann.springrapid.core.util.MapperUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.apache.commons.logging.Log;
@@ -577,7 +578,7 @@ public abstract class LemonServiceImpl
 		LemonUserDto currentUser = LecwUtils.currentUser();
 
 		Map<String, Object> claimMap = Collections.singletonMap(BlueTokenService.USER_CLAIM,
-				LmapUtils.serialize(currentUser)); // Not serializing converts it to a JsonNode
+				MapperUtils.serialize(currentUser)); // Not serializing converts it to a JsonNode
 
 		Map<String, String> tokenMap = Collections.singletonMap("token", LecUtils.TOKEN_PREFIX +
 				blueTokenService.createToken(BlueTokenService.AUTH_AUDIENCE, currentUser.getEmail(),

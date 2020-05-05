@@ -2,15 +2,15 @@ package io.github.vincemann.springrapid.core.controller.rapid;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.github.fge.jsonpatch.JsonPatchException;
+import com.google.common.collect.Sets;
 import io.github.vincemann.springrapid.core.advice.log.LogComponentInteractionAdvice;
-import io.github.vincemann.springrapid.core.controller.DtoCrudController;
-import io.github.vincemann.springrapid.core.controller.JsonDtoCrudController;
 import io.github.vincemann.springrapid.core.controller.dtoMapper.Delegating;
 import io.github.vincemann.springrapid.core.controller.dtoMapper.DtoMapper;
+import io.github.vincemann.springrapid.core.controller.dtoMapper.DtoMappingException;
+import io.github.vincemann.springrapid.core.controller.dtoMapper.context.CrudDtoEndpoint;
 import io.github.vincemann.springrapid.core.controller.dtoMapper.context.Direction;
 import io.github.vincemann.springrapid.core.controller.dtoMapper.context.DtoMappingContext;
-import io.github.vincemann.springrapid.core.controller.dtoMapper.context.CrudDtoEndpoint;
-import io.github.vincemann.springrapid.core.controller.dtoMapper.DtoMappingException;
 import io.github.vincemann.springrapid.core.controller.dtoMapper.context.DtoMappingInfo;
 import io.github.vincemann.springrapid.core.controller.rapid.idFetchingStrategy.IdFetchingStrategy;
 import io.github.vincemann.springrapid.core.controller.rapid.idFetchingStrategy.UrlParamIdFetchingStrategy;
@@ -24,12 +24,15 @@ import io.github.vincemann.springrapid.core.service.exception.EntityNotFoundExce
 import io.github.vincemann.springrapid.core.util.AuthorityUtil;
 import io.github.vincemann.springrapid.core.util.EntityUtils;
 import io.github.vincemann.springrapid.core.util.HttpServletRequestUtils;
+import io.github.vincemann.springrapid.core.util.MapperUtils;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.beanutils.BeanUtilsBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.ApplicationListener;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.context.event.ContextRefreshedEvent;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -42,26 +45,24 @@ import javax.servlet.http.HttpServletResponse;
 import javax.validation.ConstraintViolationException;
 import java.io.IOException;
 import java.io.Serializable;
+import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.ParameterizedType;
 import java.util.*;
 import java.util.stream.Collectors;
 
 /**
- * Adapter that connects Springs Requirements for a Controller (which can be seen as an Interface),
- * with the {@link JsonDtoCrudController} Interface, resulting in a fully functional Spring @{@link org.springframework.web.bind.annotation.RestController}
- *
- * Fetches {@link Id} with given {@link IdFetchingStrategy} from HttpRequest.
- * Deserializes Json String from Requests to Dto and vice versa.
- *
+ * Fully Functional CrudController.
+ * <p>
  * Example-Request-URL's with {@link UrlParamIdFetchingStrategy}:
  * /entityName/httpMethod?entityIdName=id
- *
+ * <p>
  * /account/get?accountId=34
  * /account/get?accountId=44bedc08-8e71-11e9-bc42-526af7764f64
  *
- * @param <E>        Entity Type, of entity, which's crud operations are exposed, via endpoints,  by this Controller
- * @param <Id>       Id Type of {@link E}
- *<
+ * @param <E>  Entity Type, of entity, which's crud operations are exposed, via endpoints,  by this Controller
+ * @param <Id> Id Type of {@link E}
+ *             <
  */
 @Slf4j
 @Getter
@@ -69,22 +70,14 @@ public abstract class RapidController
         <
                 E extends IdentifiableEntity<Id>,
                 Id extends Serializable,
-                S extends CrudService<E,Id,?>
-        >
-        implements DtoCrudController<Id>, ApplicationListener<ContextRefreshedEvent> {
+                S extends CrudService<E, Id, ?>
+                >
+        implements ApplicationListener<ContextRefreshedEvent> {
 
-
-
-    private EndpointService endpointService;
-    @Setter
-    private ObjectMapper jsonMapper;
-    private String entityNameInUrl;
-    private String baseUrl;
-
-    public static final String FIND_METHOD_NAME ="get";
-    public static final String CREATE_METHOD_NAME ="create";
-    public static final String DELETE_METHOD_NAME ="delete";
-    public static final String UPDATE_METHOD_NAME ="update";
+    public static final String FIND_METHOD_NAME = "get";
+    public static final String CREATE_METHOD_NAME = "create";
+    public static final String DELETE_METHOD_NAME = "delete";
+    public static final String UPDATE_METHOD_NAME = "update";
     public static final String FIND_ALL_METHOD_NAME = "getAll";
 
     @Setter
@@ -97,19 +90,24 @@ public abstract class RapidController
     private String deleteUrl;
     @Setter
     private String createUrl;
+    private String baseUrl;
+    private String entityNameInUrl;
 
-    @Getter
-    @Value("${controller.update.full.queryParam:full}")
-    private String fullUpdateQueryParam;
+//    @Value("${controller.update.full.queryParam:full}")
+//    private String fullUpdateQueryParam;
 
+    private EndpointService endpointService;
+    private ObjectMapper jsonMapper;
     private IdFetchingStrategy<Id> idIdFetchingStrategy;
     private EndpointsExposureContext endpointsExposureContext;
-    private S crudService;
+    private S service;
+    private S unsecuredService;
     private DtoMapper dtoMapper;
     private DtoMappingContext dtoMappingContext;
     private ValidationStrategy<Id> validationStrategy;
+
+    @Setter
     private boolean serviceInteractionLogging = true;
-    @Getter
     @Setter
     private String mediaType = MediaType.APPLICATION_JSON_UTF8_VALUE;
 
@@ -117,8 +115,31 @@ public abstract class RapidController
     private Class<E> entityClass = (Class<E>) ((ParameterizedType) this.getClass().getGenericSuperclass()).getActualTypeArguments()[0];
 
     @Autowired
+    public RapidController(DtoMappingContext dtoMappingContext) {
+        this.dtoMappingContext = dtoMappingContext;
+        initUrls();
+    }
+
+    public RapidController() {
+        initUrls();
+    }
+
+    /**
+     * Override this with @Autowired @Qualifier("mySecuredService") if you are using a Security Proxy.
+     * If you are using Rapid Acl Package override with @Secured.
+     *
+     * @param crudService
+     */
+    @Autowired
+    @Lazy
     public void injectCrudService(S crudService) {
-        this.crudService = crudService;
+        this.service = crudService;
+    }
+
+    @Autowired
+    @Lazy
+    public void injectUnsecuredCrudService(S crudService) {
+        this.unsecuredService = crudService;
     }
 
     public void setDtoMappingContext(DtoMappingContext dtoMappingContext) {
@@ -130,21 +151,10 @@ public abstract class RapidController
         this.validationStrategy = validationStrategy;
     }
 
-
     @Delegating
     @Autowired
     public void injectDtoMapper(DtoMapper dtoMapper) {
         this.dtoMapper = dtoMapper;
-    }
-
-    public RapidController(DtoMappingContext dtoMappingContext) {
-        super(dtoMappingContext);
-        initUrls();
-    }
-
-    public RapidController(){
-        super(null);
-        initUrls();
     }
 
     @Override
@@ -168,66 +178,65 @@ public abstract class RapidController
     }
 
 
-
     @Autowired
     public void injectIdIdFetchingStrategy(IdFetchingStrategy<Id> idIdFetchingStrategy) {
         this.idIdFetchingStrategy = idIdFetchingStrategy;
     }
 
-    private void initUrls(){
-        this.entityNameInUrl=getEntityClass().getSimpleName().toLowerCase();
-        this.baseUrl="/"+entityNameInUrl+"/";
-        this.findUrl =baseUrl+FIND_METHOD_NAME;
-        this.findAllUrl =baseUrl+FIND_ALL_METHOD_NAME;
-        this.updateUrl=baseUrl+UPDATE_METHOD_NAME;
-        this.deleteUrl=baseUrl+DELETE_METHOD_NAME;
-        this.createUrl=baseUrl+CREATE_METHOD_NAME;
+    private void initUrls() {
+        this.entityNameInUrl = getEntityClass().getSimpleName().toLowerCase();
+        this.baseUrl = "/" + entityNameInUrl + "/";
+        this.findUrl = baseUrl + FIND_METHOD_NAME;
+        this.findAllUrl = baseUrl + FIND_ALL_METHOD_NAME;
+        this.updateUrl = baseUrl + UPDATE_METHOD_NAME;
+        this.deleteUrl = baseUrl + DELETE_METHOD_NAME;
+        this.createUrl = baseUrl + CREATE_METHOD_NAME;
     }
 
-    protected void initRequestMapping(){
+    protected void initRequestMapping() {
         try {
-            if(endpointsExposureContext.isCreateEndpointExposed()) {
+            if (endpointsExposureContext.isCreateEndpointExposed()) {
                 //CREATE
-                log.debug("Exposing create Endpoint for "+this.getClass().getSimpleName());
+                log.debug("Exposing create Endpoint for " + this.getClass().getSimpleName());
                 getEndpointService().addMapping(getCreateRequestMappingInfo(),
-                        this.getClass().getMethod("create", HttpServletRequest.class,HttpServletResponse.class), this);
+                        this.getClass().getMethod("create", HttpServletRequest.class, HttpServletResponse.class), this);
             }
 
-            if(endpointsExposureContext.isFindEndpointExposed()) {
+            if (endpointsExposureContext.isFindEndpointExposed()) {
                 //GET
-                log.debug("Exposing get Endpoint for "+this.getClass().getSimpleName());
+                log.debug("Exposing get Endpoint for " + this.getClass().getSimpleName());
                 getEndpointService().addMapping(getFindRequestMappingInfo(),
-                        this.getClass().getMethod("find", HttpServletRequest.class,HttpServletResponse.class), this);
+                        this.getClass().getMethod("find", HttpServletRequest.class, HttpServletResponse.class), this);
             }
 
-            if(endpointsExposureContext.isUpdateEndpointExposed()) {
+            if (endpointsExposureContext.isUpdateEndpointExposed()) {
                 //UPDATE
-                log.debug("Exposing update Endpoint for "+this.getClass().getSimpleName());
+                log.debug("Exposing update Endpoint for " + this.getClass().getSimpleName());
                 getEndpointService().addMapping(getUpdateRequestMappingInfo(),
-                        this.getClass().getMethod("update", HttpServletRequest.class,HttpServletResponse.class), this);
+                        this.getClass().getMethod("update", HttpServletRequest.class, HttpServletResponse.class), this);
             }
 
-            if(endpointsExposureContext.isDeleteEndpointExposed()) {
+            if (endpointsExposureContext.isDeleteEndpointExposed()) {
                 //DELETE
-                log.debug("Exposing delete Endpoint for "+this.getClass().getSimpleName());
+                log.debug("Exposing delete Endpoint for " + this.getClass().getSimpleName());
                 getEndpointService().addMapping(getDeleteRequestMappingInfo(),
                         this.getClass().getMethod("delete", HttpServletRequest.class, HttpServletResponse.class), this);
             }
 
-            if(endpointsExposureContext.isFindAllEndpointExposed()){
+            if (endpointsExposureContext.isFindAllEndpointExposed()) {
                 //DELETE
-                log.debug("Exposing findAll Endpoint for "+this.getClass().getSimpleName());
+                log.debug("Exposing findAll Endpoint for " + this.getClass().getSimpleName());
                 getEndpointService().addMapping(getFindAllRequestMappingInfo(),
-                        this.getClass().getMethod("findAll", HttpServletRequest.class,HttpServletResponse.class), this);
+                        this.getClass().getMethod("findAll", HttpServletRequest.class, HttpServletResponse.class), this);
             }
 
-        }catch (NoSuchMethodException e){
+        } catch (NoSuchMethodException e) {
             //should never happen
             throw new IllegalStateException(e);
         }
     }
 
-    public RequestMappingInfo getFindRequestMappingInfo(){
+    public RequestMappingInfo getFindRequestMappingInfo() {
         return RequestMappingInfo
                 .paths(findUrl)
                 .methods(RequestMethod.GET)
@@ -235,7 +244,7 @@ public abstract class RapidController
                 .build();
     }
 
-    public RequestMappingInfo getDeleteRequestMappingInfo(){
+    public RequestMappingInfo getDeleteRequestMappingInfo() {
         return RequestMappingInfo
                 .paths(deleteUrl)
                 .methods(RequestMethod.DELETE)
@@ -243,7 +252,7 @@ public abstract class RapidController
                 .build();
     }
 
-    public RequestMappingInfo getCreateRequestMappingInfo(){
+    public RequestMappingInfo getCreateRequestMappingInfo() {
         return RequestMappingInfo
                 .paths(createUrl)
                 .methods(RequestMethod.POST)
@@ -252,7 +261,7 @@ public abstract class RapidController
                 .build();
     }
 
-    public RequestMappingInfo getUpdateRequestMappingInfo(){
+    public RequestMappingInfo getUpdateRequestMappingInfo() {
         return RequestMappingInfo
                 .paths(updateUrl)
                 .methods(RequestMethod.PUT)
@@ -261,7 +270,7 @@ public abstract class RapidController
                 .build();
     }
 
-    public RequestMappingInfo getFindAllRequestMappingInfo(){
+    public RequestMappingInfo getFindAllRequestMappingInfo() {
         return RequestMappingInfo
                 .paths(findAllUrl)
                 .methods(RequestMethod.GET)
@@ -269,9 +278,9 @@ public abstract class RapidController
                 .build();
     }
 
-    public ResponseEntity<String> findAll(HttpServletRequest request,HttpServletResponse response) throws DtoMappingException, DtoSerializingException {
+    public ResponseEntity<String> findAll(HttpServletRequest request, HttpServletResponse response) throws DtoMappingException, DtoSerializingException {
         log.debug("FindAll request arriving at controller: " + request);
-        beforeFindAll(request,response);
+        beforeFindAll(request, response);
         logStateBeforeServiceCall("findAll");
         Set<E> foundEntities = serviceFindAll();
         logServiceResult("findAll", foundEntities);
@@ -280,7 +289,7 @@ public abstract class RapidController
             dtos.add(dtoMapper.mapToDto(e,
                     findDtoClass(CrudDtoEndpoint.FIND_ALL, Direction.RESPONSE)));
         }
-        afterFindAll(dtos,foundEntities,request,response);
+        afterFindAll(dtos, foundEntities, request, response);
         String json = null;
         try {
             json = jsonMapper.writeValueAsString(dtos);
@@ -291,12 +300,12 @@ public abstract class RapidController
     }
 
 
-    public ResponseEntity<String> find(HttpServletRequest request,HttpServletResponse response) throws IdFetchingException, EntityNotFoundException, BadEntityException, DtoMappingException, DtoSerializingException {
+    public ResponseEntity<String> find(HttpServletRequest request, HttpServletResponse response) throws IdFetchingException, EntityNotFoundException, BadEntityException, DtoMappingException, DtoSerializingException {
         log.debug("Find request arriving at controller: " + request);
         Id id = idIdFetchingStrategy.fetchId(request);
         log.debug("id fetched from request: " + id);
 
-        beforeFind(id,request,response);
+        beforeFind(id, request, response);
         validationStrategy.validateId(id);
         log.debug("id successfully validated");
         logStateBeforeServiceCall("findById", id);
@@ -305,21 +314,21 @@ public abstract class RapidController
         EntityUtils.checkPresent(optionalEntity, id, getEntityClass());
         Object dto = dtoMapper.mapToDto(optionalEntity.get(),
                 findDtoClass(CrudDtoEndpoint.FIND, Direction.RESPONSE));
-        afterFind(id,dto,optionalEntity,request,response);
+        afterFind(id, dto, optionalEntity, request, response);
         try {
             return ok(jsonMapper.writeValueAsString(dto));
-        }catch (JsonProcessingException e){
+        } catch (JsonProcessingException e) {
             throw new DtoSerializingException(e);
         }
     }
 
-    public ResponseEntity<String> create(HttpServletRequest request,HttpServletResponse response) throws BadEntityException, DtoMappingException, DtoSerializingException {
+    public ResponseEntity<String> create(HttpServletRequest request, HttpServletResponse response) throws BadEntityException, DtoMappingException, DtoSerializingException {
         log.debug("Create request arriving at controller: " + request);
         try {
             String json = request.getReader().lines().collect(Collectors.joining(System.lineSeparator()));
-            Class<? > dtoClass = findDtoClass(CrudDtoEndpoint.CREATE, Direction.REQUEST);
+            Class<?> dtoClass = findDtoClass(CrudDtoEndpoint.CREATE, Direction.REQUEST);
             Object dto = getJsonMapper().readValue(json, dtoClass);
-            beforeCreate(dto,request,response);
+            beforeCreate(dto, request, response);
             validationStrategy.validateDto(dto);
             log.debug("Dto successfully validated");
             //i expect that dto has the right dto type -> callers responsibility
@@ -329,80 +338,123 @@ public abstract class RapidController
             logServiceResult("save", savedEntity);
             Object resultDto = dtoMapper.mapToDto(savedEntity,
                     findDtoClass(CrudDtoEndpoint.CREATE, Direction.RESPONSE));
-            afterCreate(resultDto,entity,request,response);
+            afterCreate(resultDto, entity, request, response);
             return ok(jsonMapper.writeValueAsString(resultDto));
-        }catch (IOException e){
+        } catch (IOException e) {
             throw new DtoSerializingException(e);
         }
     }
 
-    public ResponseEntity<String> update(HttpServletRequest request,HttpServletResponse response) throws EntityNotFoundException, BadEntityException, BadEntityException, DtoMappingException, DtoSerializingException {
+    public ResponseEntity<String> update(HttpServletRequest request, HttpServletResponse response) throws EntityNotFoundException, BadEntityException, BadEntityException, DtoMappingException, DtoSerializingException, IdFetchingException, JsonPatchException {
         log.debug("Update request arriving at controller: " + request);
         try {
-            String json = request.getReader().lines().collect(Collectors.joining(System.lineSeparator()));
-            boolean full = isFullUpdate(request,response);
-            log.debug("full update mode: " + full);
-            Class<?> dtoClass;
-            if(full) {
-                dtoClass = findDtoClass(CrudDtoEndpoint.FULL_UPDATE, Direction.REQUEST);
-            }else {
-                dtoClass = findDtoClass(CrudDtoEndpoint.PARTIAL_UPDATE, Direction.REQUEST);
-            }
-            Object dto  = getJsonMapper().readValue(json, dtoClass);
-            beforeUpdate(dto,request,full,response);
+            String patchString = request.getReader().lines().collect(Collectors.joining(System.lineSeparator()));
+            Id id = idIdFetchingStrategy.fetchId(request);
+//            boolean full = isFullUpdate(request,response);
+//            log.debug("full update mode: " + full);
+            Class<?> dtoClass = findDtoClass(CrudDtoEndpoint.UPDATE, Direction.REQUEST);
+//            if(full) {
+//                dtoClass = findDtoClass(CrudDtoEndpoint.FULL_UPDATE, Direction.REQUEST);
+//            }else {
+//                dtoClass = findDtoClass(CrudDtoEndpoint.PARTIAL_UPDATE, Direction.REQUEST);
+//            }
+//            Object dto  = getJsonMapper().readValue(json, dtoClass);
+            beforeUpdate(dtoClass,id,patchString, request, response);
 
-            validationStrategy.validateDto(dto);
-            log.debug("Dto successfully validated");
+//            validationStrategy.validateDto(dto);
+//            log.debug("Dto successfully validated");
             //i expect that dto has the right dto type -> callers responsibility
-            E entity = mapToEntity(dto);
-            logStateBeforeServiceCall("update", entity, full);
-            E updatedEntity = serviceUpdate(entity,full);
+            Optional<E> saved = getUnsecuredService().findById(id);
+            EntityUtils.checkPresent(saved, id, getEntityClass());
+            E patched = MapperUtils.applyPatch(saved.get(), patchString);
+            checkForInvalidUpdates(dtoClass,saved.get(),patched);
+            logStateBeforeServiceCall("update", saved, patchString,patched);
+            E updated = serviceUpdate(patched, true);
+//            E update = mapToEntity(dto);
 
-            logServiceResult("update", updatedEntity);
+//            if (full) {
+//                Optional<E> toUpdate = getUnsecuredService().findById(update.getId());
+//                EntityUtils.checkPresent(toUpdate, update.getId(), getEntityClass());
+//                update = merge(toUpdate.get(), update, Arrays.stream(dto.getClass().getDeclaredFields())
+//                        .map(Field::getName)
+//                        .collect(Collectors.toSet()));
+//            }
+
+            logServiceResult("update", updated);
             //no idea why casting is necessary here?
-            Class<?> resultDtoClass;
-            if (full) {
-                resultDtoClass = findDtoClass(CrudDtoEndpoint.FULL_UPDATE, Direction.RESPONSE);
-            } else {
-                resultDtoClass = findDtoClass(CrudDtoEndpoint.PARTIAL_UPDATE, Direction.RESPONSE);
-            }
-            Object resultDto =  dtoMapper.mapToDto(updatedEntity, resultDtoClass);
-            afterUpdate(resultDto,entity,request,full,response);
+            Class<?> resultDtoClass = findDtoClass(CrudDtoEndpoint.UPDATE, Direction.RESPONSE);
+//            if (full) {
+//                resultDtoClass = findDtoClass(CrudDtoEndpoint.FULL_UPDATE, Direction.RESPONSE);
+//            } else {
+//                resultDtoClass = findDtoClass(CrudDtoEndpoint.PARTIAL_UPDATE, Direction.RESPONSE);
+//            }
+            Object resultDto = dtoMapper.mapToDto(updated, resultDtoClass);
+            afterUpdate(resultDto, updated, request, response);
             return ok(jsonMapper.writeValueAsString(resultDto));
-        }catch (IOException e){
+        } catch (IOException e) {
             throw new DtoSerializingException(e);
         }
     }
 
 
+    /**
+     * Only the properties defined in dtoClass can be changed.
+     */
+    protected void checkForInvalidUpdates(Class<?> dtoClass, E saved, E patched) throws BadEntityException{
+        try {
+            Set<Field> allowedFields = Sets.newHashSet(dtoClass.getDeclaredFields());
+            Set<Field> deniedFields = Sets.newHashSet(getEntityClass().getDeclaredFields());
+            allowedFields.forEach(deniedFields::remove);
+            for (Field deniedField : deniedFields) {
+                String savedProperty = BeanUtilsBean.getInstance().getProperty(saved, deniedField.getName());
+                String patchedProperty = BeanUtilsBean.getInstance().getProperty(patched, deniedField.getName());
+                if(!savedProperty.equals(patchedProperty)){
+                    throw new BadEntityException("Property: " + deniedField.getName() + " must not be updated by current user.");
+                }
+            }
+        }catch (IllegalAccessException|NoSuchMethodException| InvocationTargetException e){
+            throw new RuntimeException(e);
+        }
+    }
 
 
-    public ResponseEntity<?> delete(HttpServletRequest request,HttpServletResponse response) throws IdFetchingException, BadEntityException, EntityNotFoundException, ConstraintViolationException {
+//    @SneakyThrows
+//    protected E merge(E savedEntity, E updateEntity, Set<String> properties) {
+//        for (String property : properties) {
+//            BeanUtilsBean.getInstance().copyProperty(savedEntity, property,
+//                    BeanUtilsBean.getInstance().getProperty(updateEntity, property)
+//            );
+//        }
+//        return savedEntity;
+//    }
+
+
+    public ResponseEntity<?> delete(HttpServletRequest request, HttpServletResponse response) throws IdFetchingException, BadEntityException, EntityNotFoundException, ConstraintViolationException {
         log.debug("Delete request arriving at controller: " + request);
         Id id = idIdFetchingStrategy.fetchId(request);
         log.debug("id fetched from request: " + id);
-        beforeDelete(id,request,response);
+        beforeDelete(id, request, response);
         validationStrategy.validateId(id);
         log.debug("id successfully validated");
         logStateBeforeServiceCall("delete", id);
         serviceDelete(id);
-        afterDelete(id,request,response);
+        afterDelete(id, request, response);
         return ok();
     }
 
-    protected boolean isFullUpdate(HttpServletRequest request,HttpServletResponse response) throws BadEntityException {
-        Map<String, String[]> queryParameters = HttpServletRequestUtils.getQueryParameters(request);
-        String[] fullUpdateParams = queryParameters.get(fullUpdateQueryParam);
-        if(fullUpdateParams==null){
-            return false;
-        }
-        EntityUtils.checkProperEntity(!(fullUpdateParams.length>1),"Multiple full update query params specified, there must be only one max. key: " + fullUpdateQueryParam);
-        if(fullUpdateParams.length==0){
-            return false;
-        }else {
-            return Boolean.parseBoolean(fullUpdateParams[0]);
-        }
-    }
+//    protected boolean isFullUpdate(HttpServletRequest request, HttpServletResponse response) throws BadEntityException {
+//        Map<String, String[]> queryParameters = HttpServletRequestUtils.getQueryParameters(request);
+//        String[] fullUpdateParams = queryParameters.get(fullUpdateQueryParam);
+//        if (fullUpdateParams == null) {
+//            return false;
+//        }
+//        EntityUtils.checkProperEntity(!(fullUpdateParams.length > 1), "Multiple full update query params specified, there must be only one max. key: " + fullUpdateQueryParam);
+//        if (fullUpdateParams.length == 0) {
+//            return false;
+//        } else {
+//            return Boolean.parseBoolean(fullUpdateParams[0]);
+//        }
+//    }
 
     public Class<?> findDtoClass(String endpoint, Direction direction) {
         DtoMappingInfo endpointInfo = createEndpointInfo(endpoint, direction);
@@ -448,51 +500,57 @@ public abstract class RapidController
 
     // overrideable
     protected E serviceUpdate(E update, boolean full) throws BadEntityException, EntityNotFoundException {
-        return crudService.update(update, full);
+        return service.update(update, full);
     }
 
     protected E serviceCreate(E entity) throws BadEntityException {
-        return crudService.save(entity);
+        return service.save(entity);
     }
 
     protected void serviceDelete(Id id) throws BadEntityException, EntityNotFoundException {
-        crudService.deleteById(id);
+        service.deleteById(id);
     }
 
     protected Set<E> serviceFindAll() {
-        return crudService.findAll();
+        return service.findAll();
     }
 
     protected Optional<E> serviceFind(Id id) throws BadEntityException {
-        return crudService.findById(id);
+        return service.findById(id);
     }
 
 
     //callbacks
-    public void beforeCreate(Object dto, HttpServletRequest httpServletRequest,HttpServletResponse response){
+    public void beforeCreate(Object dto, HttpServletRequest httpServletRequest, HttpServletResponse response) {
     }
-    public void beforeUpdate(Object dto, HttpServletRequest httpServletRequest, boolean full,HttpServletResponse response){
+
+    public void beforeUpdate(Class<?> dtoClass, Id id, String patchString, HttpServletRequest request, HttpServletResponse response) {
     }
-    public void beforeDelete(Id id, HttpServletRequest httpServletRequest,HttpServletResponse response){
+
+    public void beforeDelete(Id id, HttpServletRequest httpServletRequest, HttpServletResponse response) {
     }
-    public void beforeFind(Id id, HttpServletRequest httpServletRequest,HttpServletResponse response){
+
+    public void beforeFind(Id id, HttpServletRequest httpServletRequest, HttpServletResponse response) {
     }
-    public void beforeFindAll(HttpServletRequest httpServletRequest,HttpServletResponse response){
+
+    public void beforeFindAll(HttpServletRequest httpServletRequest, HttpServletResponse response) {
     }
 
     //callbacks
-    public void afterCreate(Object dto,E created, HttpServletRequest httpServletRequest,HttpServletResponse response){
-    }
-    public void afterUpdate(Object dto,E updated, HttpServletRequest httpServletRequest, boolean full,HttpServletResponse response){
-    }
-    public void afterDelete(Id id, HttpServletRequest httpServletRequest,HttpServletResponse response){
-    }
-    public void afterFind(Id id, Object dto, Optional<E> found, HttpServletRequest httpServletRequest, HttpServletResponse response){
-    }
-    public void afterFindAll(Collection<Object> dtos,Set<E> found,  HttpServletRequest httpServletRequest,HttpServletResponse response){
+    public void afterCreate(Object dto, E created, HttpServletRequest httpServletRequest, HttpServletResponse response) {
     }
 
+    public void afterUpdate(Object dto, E updated, HttpServletRequest httpServletRequest, HttpServletResponse response) {
+    }
 
+    public void afterDelete(Id id, HttpServletRequest httpServletRequest, HttpServletResponse response) {
+    }
+
+    public void afterFind(Id id, Object dto, Optional<E> found, HttpServletRequest httpServletRequest, HttpServletResponse response) {
+    }
+
+    public void afterFindAll(Collection<Object> dtos, Set<E> found, HttpServletRequest httpServletRequest, HttpServletResponse response) {
+    }
 
 
 }

@@ -1,4 +1,4 @@
-package com.naturalprogrammer.spring.lemon.auth.util;
+package io.github.vincemann.springrapid.core.util;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.TreeNode;
@@ -6,22 +6,19 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.fge.jsonpatch.JsonPatch;
 import com.github.fge.jsonpatch.JsonPatchException;
-import com.naturalprogrammer.spring.lemon.auth.security.domain.LemonUserDto;
-import com.naturalprogrammer.spring.lemon.auth.security.service.BlueTokenService;
-import com.nimbusds.jwt.JWTClaimsSet;
 import org.apache.commons.lang3.SerializationUtils;
 
 import java.io.IOException;
 import java.io.Serializable;
 import java.util.Base64;
 
-public class LmapUtils {
+public class MapperUtils {
 
 
     public static ObjectMapper objectMapper;
 
-    public LmapUtils(ObjectMapper objectMapper) {
-        LmapUtils.objectMapper = objectMapper;
+    public MapperUtils(ObjectMapper objectMapper) {
+        MapperUtils.objectMapper = objectMapper;
     }
 
     public static ObjectMapper mapper() {
@@ -102,13 +99,4 @@ public class LmapUtils {
                 Base64.getUrlDecoder().decode(serializedObj));
     }
 
-    public static LemonUserDto getUserDto(JWTClaimsSet claims) {
-
-        Object userClaim = claims.getClaim(BlueTokenService.USER_CLAIM);
-
-        if (userClaim == null)
-            return null;
-
-        return LmapUtils.deserialize((String) userClaim);
-    }
 }

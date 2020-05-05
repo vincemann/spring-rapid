@@ -4,7 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.naturalprogrammer.spring.lemon.auth.properties.LemonProperties;
 import com.naturalprogrammer.spring.lemon.auth.security.config.LemonCorsConfigurationSource;
 import com.naturalprogrammer.spring.lemon.auth.security.config.LemonWebSecurityConfig;
-import com.naturalprogrammer.spring.lemon.auth.util.LmapUtils;
+import io.github.vincemann.springrapid.core.util.MapperUtils;
 import io.github.vincemann.springrapid.core.config.RapidJacksonAutoConfiguration;
 import io.github.vincemann.springrapid.core.slicing.config.WebConfig;
 import org.apache.commons.logging.Log;
@@ -67,8 +67,8 @@ public class LemonCommonsWebAutoConfiguration {
 	}
 
 	@Bean
-	public LmapUtils lmapUtils(ObjectMapper mapper){
-		return new LmapUtils(mapper);
+	public MapperUtils lmapUtils(ObjectMapper mapper){
+		return new MapperUtils(mapper);
 	}
 
 	/**

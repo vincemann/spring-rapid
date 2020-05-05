@@ -6,7 +6,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-import com.naturalprogrammer.spring.lemon.auth.util.LmapUtils;
+import io.github.vincemann.springrapid.core.util.MapperUtils;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
@@ -39,7 +39,7 @@ public class FetchNewTokenMvcTests extends AbstractMvcTests {
 				.andExpect(jsonPath("$.token").value(containsString(".")))
 				.andReturn();
 
-		Response response = LmapUtils.fromJson(result.getResponse().getContentAsString(), Response.class);
+		Response response = MapperUtils.fromJson(result.getResponse().getContentAsString(), Response.class);
 		ensureTokenWorks(response.getToken());
 	}
 	
@@ -53,7 +53,7 @@ public class FetchNewTokenMvcTests extends AbstractMvcTests {
                 .andExpect(status().is(200))
 				.andReturn();
 
-		Response response = LmapUtils.fromJson(result.getResponse().getContentAsString(), Response.class);
+		Response response = MapperUtils.fromJson(result.getResponse().getContentAsString(), Response.class);
 		ensureTokenWorks(response.getToken());
 
 		Thread.sleep(1001L);
@@ -75,7 +75,7 @@ public class FetchNewTokenMvcTests extends AbstractMvcTests {
                 .andExpect(status().is(200))
 				.andReturn();
 
-		Response response = LmapUtils.fromJson(result.getResponse().getContentAsString(), Response.class);
+		Response response = MapperUtils.fromJson(result.getResponse().getContentAsString(), Response.class);
 		ensureTokenWorks(response.getToken());
 	}
 	
