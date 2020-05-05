@@ -128,20 +128,6 @@ public class LecUtils {
 		if (!valid)
 			throw new BadCredentialsException(LexUtils.getMessage(messageKey));
 	}
-
-
-	/**
-	 * Reads a resource into a String
-	 */
-	public static String toStr(Resource resource) throws IOException {
-		
-		String text = null;
-	    try (Scanner scanner = new Scanner(resource.getInputStream(), StandardCharsets.UTF_8.name())) {
-	        text = scanner.useDelimiter("\\A").next();
-	    }
-	    
-	    return text;
-	}
 	
 
 

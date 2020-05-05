@@ -64,7 +64,7 @@ class DtoMappingContextTest {
     void findCreateEntryWithoutRoles_shouldFind() throws InvocationTargetException, NoSuchMethodException, InstantiationException, IllegalAccessException {
         //when
         createInfo.setAuthorities(new ArrayList<>());
-        Class<? extends IdentifiableEntity> foundClass = context.find(createInfo);
+        Class<?> foundClass = context.find(createInfo);
         //then
         Assertions.assertEquals(CreateDto.class,foundClass);
     }
@@ -73,7 +73,7 @@ class DtoMappingContextTest {
     void findCreateEntryWithRoles_shouldFindAndSilentIgnoreRoles() throws InvocationTargetException, NoSuchMethodException, InstantiationException, IllegalAccessException {
         //when
         createInfo.setAuthorities(roles);
-        Class<? extends IdentifiableEntity> foundClass = context.find(createInfo);
+        Class<?> foundClass = context.find(createInfo);
         //then
         Assertions.assertEquals(CreateDto.class,foundClass);
     }
@@ -82,7 +82,7 @@ class DtoMappingContextTest {
     void findFindEntryWithRoles_shouldFindPrivEntry() throws InvocationTargetException, NoSuchMethodException, InstantiationException, IllegalAccessException {
         //when
         findInfo.setAuthorities(roles);
-        Class<? extends IdentifiableEntity> foundClass = context.find(findInfo);
+        Class<?> foundClass = context.find(findInfo);
         //then
         Assertions.assertEquals(PrivilegedFindDto.class,foundClass);
     }
@@ -90,7 +90,7 @@ class DtoMappingContextTest {
     @Test
     void findFindEntryWithoutRoles_shouldFindLessPrivEntry() throws InvocationTargetException, NoSuchMethodException, InstantiationException, IllegalAccessException {
         findInfo.setAuthorities(new ArrayList<>());
-        Class<? extends IdentifiableEntity> foundClass = context.find(findInfo);
+        Class<?> foundClass = context.find(findInfo);
         //then
         Assertions.assertEquals(LessPrivilegedFindDto.class,foundClass);
     }
@@ -106,7 +106,7 @@ class DtoMappingContextTest {
         ArrayList<String> moreRoles = Lists.newArrayList(roles);
         moreRoles.add("NEW_FANCY_ROLE");
         findAllInfo.setAuthorities(moreRoles);
-        Class<? extends IdentifiableEntity> foundClass = context.find(findAllInfo);
+        Class<?> foundClass = context.find(findAllInfo);
         Assertions.assertEquals(PrivilegedFindDto.class,foundClass);
     }
 
@@ -115,7 +115,7 @@ class DtoMappingContextTest {
         ArrayList<String> lessRoles = Lists.newArrayList(roles);
         lessRoles.remove(0);
         findInfo.setAuthorities(lessRoles);
-        Class<? extends IdentifiableEntity> foundClass = context.find(findInfo);
+        Class<?> foundClass = context.find(findInfo);
         Assertions.assertEquals(LessPrivilegedFindDto.class,foundClass);
     }
 
@@ -135,7 +135,7 @@ class DtoMappingContextTest {
         wrongRoles.remove(roles.size()-1);
         wrongRoles.add("WRONG_ROLE");
         findInfo.setAuthorities(wrongRoles);
-        Class<? extends IdentifiableEntity> foundClass = context.find(findInfo);
+        Class<?> foundClass = context.find(findInfo);
         Assertions.assertEquals(LessPrivilegedFindDto.class,foundClass);
     }
 

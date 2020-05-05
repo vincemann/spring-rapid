@@ -17,7 +17,7 @@ public class PetController extends RapidController<Pet, Long, PetService> {
     public PetController() {
         super(DtoMappingContextBuilder.builder()
                 .forAll(BasePetDto.class)
-                .forEndpoint(CrudDtoEndpoint.PARTIAL_UPDATE, Direction.REQUEST, UpdatePetDto.class)
+                .forEndpoint(CrudDtoEndpoint.UPDATE, Direction.REQUEST, UpdatePetDto.class)
                 .build()
         );
     }

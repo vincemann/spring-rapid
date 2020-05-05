@@ -21,8 +21,8 @@ public class JavaXValidationStrategy<Id extends Serializable> implements Validat
     }
 
     @Override
-    public void validateDto(IdentifiableEntity<Id> dto) throws ConstraintViolationException {
-        Set<ConstraintViolation<IdentifiableEntity<Id>>> constraintViolations = validator.validate(dto);
+    public void validateDto(Object dto) throws ConstraintViolationException {
+        Set<ConstraintViolation<Object>> constraintViolations = validator.validate(dto);
         if(!constraintViolations.isEmpty())
             throw new ConstraintViolationException(constraintViolations);
     }

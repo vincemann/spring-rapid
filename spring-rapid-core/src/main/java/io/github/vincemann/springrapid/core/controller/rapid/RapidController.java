@@ -21,10 +21,7 @@ import io.github.vincemann.springrapid.core.service.CrudService;
 import io.github.vincemann.springrapid.core.service.EndpointService;
 import io.github.vincemann.springrapid.core.service.exception.BadEntityException;
 import io.github.vincemann.springrapid.core.service.exception.EntityNotFoundException;
-import io.github.vincemann.springrapid.core.util.AuthorityUtil;
-import io.github.vincemann.springrapid.core.util.EntityUtils;
-import io.github.vincemann.springrapid.core.util.HttpServletRequestUtils;
-import io.github.vincemann.springrapid.core.util.MapperUtils;
+import io.github.vincemann.springrapid.core.util.*;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
@@ -376,14 +373,14 @@ public abstract class RapidController
      */
     protected void checkForInvalidUpdates(Class<?> dtoClass, E saved, E patched) throws BadEntityException{
         try {
-            Set<Field> allowedFields = Sets.newHashSet(dtoClass.getDeclaredFields());
-            Set<Field> deniedFields = Sets.newHashSet(getEntityClass().getDeclaredFields());
-            allowedFields.forEach(deniedFields::remove);
-            for (Field deniedField : deniedFields) {
-                String savedProperty = BeanUtilsBean.getInstance().getProperty(saved, deniedField.getName());
-                String patchedProperty = BeanUtilsBean.getInstance().getProperty(patched, deniedField.getName());
+            Set<String> allowedProperties = Sets.newHashSet(ReflectionUtils.getDeclaredFields(dtoClass,true)).stream().map(Field::getName).collect(Collectors.toSet());
+            Set<String> deniedProperties = Sets.newHashSet(ReflectionUtils.getDeclaredFields(getEntityClass(),true)).stream().map(Field::getName).collect(Collectors.toSet());
+            allowedProperties.forEach(deniedProperties::remove);
+            for (String deniedProperty : deniedProperties) {
+                String savedProperty = BeanUtilsBean.getInstance().getProperty(saved, deniedProperty);
+                String patchedProperty = BeanUtilsBean.getInstance().getProperty(patched, deniedProperty);
                 if(!savedProperty.equals(patchedProperty)){
-                    throw new BadEntityException("Property: " + deniedField.getName() + " must not be updated by current user.");
+                    throw new BadEntityException("Property: " + deniedProperty + " must not be updated by current user.");
                 }
             }
         }catch (IllegalAccessException|NoSuchMethodException| InvocationTargetException e){
