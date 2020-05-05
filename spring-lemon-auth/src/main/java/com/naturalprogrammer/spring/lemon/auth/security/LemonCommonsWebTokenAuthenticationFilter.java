@@ -4,7 +4,7 @@ import com.naturalprogrammer.spring.lemon.auth.security.domain.LemonPrincipal;
 import com.naturalprogrammer.spring.lemon.auth.security.domain.LemonUserDto;
 import com.naturalprogrammer.spring.lemon.auth.security.service.BlueTokenService;
 import com.naturalprogrammer.spring.lemon.auth.util.LecUtils;
-import com.naturalprogrammer.spring.lemon.auth.util.LmapUtils;
+import com.naturalprogrammer.spring.lemon.auth.util.LemonUtils;
 import com.nimbusds.jwt.JWTClaimsSet;
 import com.naturalprogrammer.spring.lemon.exceptions.util.LexUtils;
 import lombok.AllArgsConstructor;
@@ -73,7 +73,7 @@ public class LemonCommonsWebTokenAuthenticationFilter extends OncePerRequestFilt
 	protected Authentication createAuthToken(String token) {
 		
 		JWTClaimsSet claims = blueTokenService.parseToken(token, BlueTokenService.AUTH_AUDIENCE);
-		LemonUserDto lemonUserDto = LmapUtils.getUserDto(claims);
+		LemonUserDto lemonUserDto = LemonUtils.getUserDto(claims);
 		if (lemonUserDto == null)
 			lemonUserDto = fetchUserDto(claims);
 		

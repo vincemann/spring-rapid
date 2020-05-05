@@ -4,7 +4,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.naturalprogrammer.spring.lemon.auth.domain.ResetPasswordForm;
 import com.naturalprogrammer.spring.lemon.auth.security.service.GreenTokenService;
 import com.naturalprogrammer.spring.lemon.auth.util.LecUtils;
-import com.naturalprogrammer.spring.lemon.auth.util.LmapUtils;
+import io.github.vincemann.springrapid.core.util.MapperUtils;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -81,6 +81,6 @@ public class ResetPasswordMvcTests extends AbstractMvcTests {
 		form.setCode(code);
 		form.setNewPassword(newPassword);
 		
-		return LmapUtils.toJson(form);
+		return MapperUtils.toJson(form);
 	}
 }

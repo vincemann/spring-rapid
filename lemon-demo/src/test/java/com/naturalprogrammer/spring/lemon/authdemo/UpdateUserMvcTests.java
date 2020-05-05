@@ -57,7 +57,8 @@ public class 	UpdateUserMvcTests extends AbstractMvcTests {
 	 */
 	@Test
     public void testUpdateSelf() throws Exception {
-		
+
+
 		mvc.perform(patch("/api/core/users/{id}", UNVERIFIED_USER_ID)
 				.contentType(MediaType.APPLICATION_JSON)
 				.header(HttpHeaders.AUTHORIZATION, tokens.get(UNVERIFIED_USER_ID))

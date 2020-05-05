@@ -2,11 +2,10 @@ package com.naturalprogrammer.spring.lemon.authdemo;
 
 import com.naturalprogrammer.spring.lemon.auth.domain.ChangePasswordForm;
 import com.naturalprogrammer.spring.lemon.auth.util.LecUtils;
-import com.naturalprogrammer.spring.lemon.auth.util.LmapUtils;
+import io.github.vincemann.springrapid.core.util.MapperUtils;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
-import org.springframework.test.context.jdbc.Sql;
 
 import static org.hamcrest.Matchers.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -35,7 +34,7 @@ public class ChangePasswordMvcTests extends AbstractMvcTests {
 		mvc.perform(post("/api/core/users/{id}/password", UNVERIFIED_USER_ID)
 				.header(HttpHeaders.AUTHORIZATION, tokens.get(UNVERIFIED_USER_ID))
 				.contentType(MediaType.APPLICATION_JSON)
-				.content(LmapUtils.toJson(changePasswordForm(USER_PASSWORD))))
+				.content(MapperUtils.toJson(changePasswordForm(USER_PASSWORD))))
 				.andExpect(status().is(204))
 				.andExpect(header().string(LecUtils.TOKEN_RESPONSE_HEADER_NAME, containsString(".")));
 		
@@ -52,7 +51,7 @@ public class ChangePasswordMvcTests extends AbstractMvcTests {
 		mvc.perform(post("/api/core/users/{id}/password", UNVERIFIED_USER_ID)
 				.header(HttpHeaders.AUTHORIZATION, tokens.get(ADMIN_ID))
 				.contentType(MediaType.APPLICATION_JSON)
-				.content(LmapUtils.toJson(changePasswordForm(ADMIN_PASSWORD))))
+				.content(MapperUtils.toJson(changePasswordForm(ADMIN_PASSWORD))))
 				.andExpect(status().is(204))
 				.andExpect(header().string(LecUtils.TOKEN_RESPONSE_HEADER_NAME, containsString(".")));
 		
@@ -69,7 +68,7 @@ public class ChangePasswordMvcTests extends AbstractMvcTests {
 		mvc.perform(post("/api/core/users/99/password")
 				.header(HttpHeaders.AUTHORIZATION, tokens.get(ADMIN_ID))
 				.contentType(MediaType.APPLICATION_JSON)
-				.content(LmapUtils.toJson(changePasswordForm(ADMIN_PASSWORD))))
+				.content(MapperUtils.toJson(changePasswordForm(ADMIN_PASSWORD))))
 				.andExpect(status().is(404));
 	}
 	
@@ -82,7 +81,7 @@ public class ChangePasswordMvcTests extends AbstractMvcTests {
 		mvc.perform(post("/api/core/users/{id}/password", UNVERIFIED_USER_ID)
 				.header(HttpHeaders.AUTHORIZATION, tokens.get(USER_ID))
 				.contentType(MediaType.APPLICATION_JSON)
-				.content(LmapUtils.toJson(changePasswordForm(USER_PASSWORD))))
+				.content(MapperUtils.toJson(changePasswordForm(USER_PASSWORD))))
 				.andExpect(status().is(403));
 		
 		// Ensure password didn't change
@@ -98,7 +97,7 @@ public class ChangePasswordMvcTests extends AbstractMvcTests {
 		mvc.perform(post("/api/core/users/{id}/password", UNVERIFIED_USER_ID)
 				.header(HttpHeaders.AUTHORIZATION, tokens.get(UNVERIFIED_ADMIN_ID))
 				.contentType(MediaType.APPLICATION_JSON)
-				.content(LmapUtils.toJson(changePasswordForm(ADMIN_PASSWORD))))
+				.content(MapperUtils.toJson(changePasswordForm(ADMIN_PASSWORD))))
 				.andExpect(status().is(403));
 		
 		// Ensure password didn't change
@@ -112,7 +111,7 @@ public class ChangePasswordMvcTests extends AbstractMvcTests {
 		mvc.perform(post("/api/core/users/{id}/password", UNVERIFIED_USER_ID)
 				.header(HttpHeaders.AUTHORIZATION, tokens.get(UNVERIFIED_USER_ID))
 				.contentType(MediaType.APPLICATION_JSON)
-				.content(LmapUtils.toJson(new ChangePasswordForm())))
+				.content(MapperUtils.toJson(new ChangePasswordForm())))
 				.andExpect(status().is(422))
 				.andExpect(jsonPath("$.errors[*].field").value(hasSize(3)))
 				.andExpect(jsonPath("$.errors[*].field").value(hasItems(
@@ -129,7 +128,7 @@ public class ChangePasswordMvcTests extends AbstractMvcTests {
 		mvc.perform(post("/api/core/users/{id}/password", UNVERIFIED_USER_ID)
 				.header(HttpHeaders.AUTHORIZATION, tokens.get(UNVERIFIED_USER_ID))
 				.contentType(MediaType.APPLICATION_JSON)
-				.content(LmapUtils.toJson(form)))
+				.content(MapperUtils.toJson(form)))
 				.andExpect(status().is(422))
 				.andExpect(jsonPath("$.errors[*].field").value(hasSize(3)))
 				.andExpect(jsonPath("$.errors[*].field").value(hasItems(
@@ -144,7 +143,7 @@ public class ChangePasswordMvcTests extends AbstractMvcTests {
 		mvc.perform(post("/api/core/users/{id}/password", UNVERIFIED_USER_ID)
 				.header(HttpHeaders.AUTHORIZATION, tokens.get(UNVERIFIED_USER_ID))
 				.contentType(MediaType.APPLICATION_JSON)
-				.content(LmapUtils.toJson(form)))
+				.content(MapperUtils.toJson(form)))
 				.andExpect(status().is(422))
 				.andExpect(jsonPath("$.errors[*].field").value(hasSize(2)))
 				.andExpect(jsonPath("$.errors[*].field").value(hasItems(
