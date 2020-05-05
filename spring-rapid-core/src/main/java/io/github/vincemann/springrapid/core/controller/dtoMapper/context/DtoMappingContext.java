@@ -16,7 +16,7 @@ import java.util.concurrent.atomic.AtomicReference;
  */
 @Slf4j
 public class DtoMappingContext {
-    private Map<DtoMappingInfo, Class<? extends IdentifiableEntity>> mappingEntries = new HashMap<>();
+    private Map<DtoMappingInfo, Class<?>> mappingEntries = new HashMap<>();
     //private Map<DtoMappingInfo,Class<? extends IdentifiableEntity>> mappingEntriesIgnoreRole = new HashMap<>();
     private boolean ignoreRole;
 
@@ -33,7 +33,7 @@ public class DtoMappingContext {
      * @return
      */
     @LogInteraction
-    public Class<? extends IdentifiableEntity> find(DtoMappingInfo dtoMappingInfo) {
+    public Class<?> find(DtoMappingInfo dtoMappingInfo) {
         AtomicReference<DtoMappingInfo> bestMatch = new AtomicReference<>();
         int mostMatchingRoles = 0;
         mappingEntries.entrySet().stream().forEach(entry -> {
@@ -66,24 +66,24 @@ public class DtoMappingContext {
         return mappingEntries.get(bestMatch.get());
     }
 
-    private Class<? extends IdentifiableEntity> findWithoutRole(DtoMappingInfo dtoMappingInfo) {
+    private Class<?> findWithoutRole(DtoMappingInfo dtoMappingInfo) {
         DtoMappingInfo clone = new DtoMappingInfo(dtoMappingInfo);
         clone.setAuthorities(new ArrayList<>());
         return notNull(mappingEntries.get(clone), clone);
     }
 
-    private Class<? extends IdentifiableEntity> notNull(Class<? extends IdentifiableEntity> clazz, DtoMappingInfo info) {
+    private Class<?> notNull(Class<?> clazz, DtoMappingInfo info) {
         if (clazz == null) {
             throw new IllegalArgumentException("No DtoClass mapped for info: " + info);
         }
         return clazz;
     }
 
-    Map<DtoMappingInfo, Class<? extends IdentifiableEntity>> getMappingEntries() {
+    Map<DtoMappingInfo, Class<?>> getMappingEntries() {
         return mappingEntries;
     }
 
-    void setMappingEntries(Map<DtoMappingInfo, Class<? extends IdentifiableEntity>> mappingEntries) {
+    void setMappingEntries(Map<DtoMappingInfo, Class<?>> mappingEntries) {
         this.mappingEntries = mappingEntries;
     }
 

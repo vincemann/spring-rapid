@@ -1,7 +1,9 @@
 package io.github.vincemann.springrapid.core.config;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import io.github.vincemann.springrapid.core.controller.dtoMapper.*;
 import io.github.vincemann.springrapid.core.slicing.config.WebConfig;
+import io.github.vincemann.springrapid.core.util.MapperUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
@@ -36,5 +38,11 @@ public class DtoMapperAutoConfiguration {
         dtoMappers.remove(defaultDtoMapper);
         dtoMappers.forEach(delegatingDtoMapper::registerDelegate);
         return delegatingDtoMapper;
+    }
+
+    @Bean
+    @ConditionalOnMissingBean(MapperUtils.class)
+    public MapperUtils mapperUtils(ObjectMapper objectMapper){
+        return new MapperUtils(objectMapper);
     }
 }

@@ -1,6 +1,7 @@
 package io.github.vincemann.springrapid.demo.controllers;
 
 
+import io.github.vincemann.springrapid.core.util.ResourceUtils;
 import io.github.vincemann.springrapid.coretest.controller.rapid.AbstractUrlParamIdRapidControllerTest;
 import io.github.vincemann.springrapid.demo.dtos.owner.CreateOwnerDto;
 import io.github.vincemann.springrapid.demo.dtos.owner.ReadOwnerDto;
@@ -8,11 +9,16 @@ import io.github.vincemann.springrapid.demo.dtos.owner.UpdateOwnerDto;
 import io.github.vincemann.springrapid.demo.model.Owner;
 import io.github.vincemann.springrapid.demo.service.OwnerService;
 import org.apache.commons.beanutils.BeanUtilsBean;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.ArgumentCaptor;
 import org.mockito.Mockito;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.core.io.Resource;
 
+import java.io.IOException;
 import java.util.HashSet;
 import java.util.Optional;
 
@@ -30,6 +36,19 @@ class OwnerControllerTest
     
     @MockBean
     OwnerService mockedService;
+
+    String addressPatch;
+    String blankCityPatch;
+
+    @Value("classpath:/update-owner/patch-address.json")
+    public void setUserPatch(Resource patch) throws IOException {
+        this.addressPatch = ResourceUtils.toStr(patch);
+    }
+
+    @Value("classpath:/update-owner/patch-blank-city.json")
+    public void setBlankCityPatch(Resource patch) throws IOException {
+        this.blankCityPatch = ResourceUtils.toStr(patch);
+    }
 
     @BeforeEach
     public void setup() throws Exception {
@@ -103,32 +122,36 @@ class OwnerControllerTest
     @Test
     public void partialUpdate_address_shouldSucceed() throws Exception {
         //given
-        UpdateOwnerDto diffAddressUpdate = UpdateOwnerDto.builder()
-                .address("other Street 12")
-                .build();
-        diffAddressUpdate.setId(owner.getId());
+//        UpdateOwnerDto diffAddressUpdate = UpdateOwnerDto.builder()
+//                .address()
+//                .build();
+//        diffAddressUpdate.setId(owner.getId());
+
+        String updatedAddress = "other Street 12";
 
         Owner updatedOwner = (Owner) BeanUtilsBean.getInstance().cloneBean(owner);
-        updatedOwner.setAddress(diffAddressUpdate.getAddress());
+        updatedOwner.setAddress(updatedAddress);
 
         when(mockedService.update(eq(owner),eq(false))).thenReturn(updatedOwner);
 
         //when
-        getMockMvc().perform(partialUpdate(diffAddressUpdate))
+        getMockMvc().perform(update(addressPatch,owner.getId()))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.address").value(updatedOwner.getAddress()));
 
-        Mockito.verify(mockedService).update(eq(owner),eq(false));
+        ArgumentCaptor<Owner> updateArg = ArgumentCaptor.forClass(Owner.class);
+        Mockito.verify(mockedService).update(updateArg.capture(),anyBoolean());
+        Assertions.assertEquals(updatedAddress,updateArg.getValue().getAddress());
     }
 
 
     @Test
-    public void partialUpdate_withBlankCity_shouldFail_withBadRequest() throws Exception {
-        UpdateOwnerDto blankCityUpdate = UpdateOwnerDto.builder()
-                //blank city
-                .city("")
-                .build();
-        getMockMvc().perform(partialUpdate(blankCityUpdate))
+    public void update_withBlankCity_shouldFail_with422() throws Exception {
+//        UpdateOwnerDto blankCityUpdate = UpdateOwnerDto.builder()
+//                //blank city
+//                .city("")
+//                .build();
+        getMockMvc().perform(update(blankCityPatch,owner.getId()))
                 .andExpect(status().isUnprocessableEntity());
 
         verify(mockedService,never()).update(any(),any());

@@ -1,4 +1,0 @@
-[
-  {"op": "replace", "path": "/email", "value": "should.not@get.replaced"},
-  {"op": "replace", "path": "/roles", "value": ["ROLE_ADMIN"]}
-]

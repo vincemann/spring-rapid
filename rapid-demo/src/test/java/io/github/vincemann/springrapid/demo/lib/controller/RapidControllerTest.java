@@ -29,11 +29,13 @@ import org.springframework.boot.test.mock.mockito.SpyBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Import;
 import org.springframework.context.annotation.Primary;
+import org.springframework.http.RequestEntity;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit.jupiter.web.SpringJUnitWebConfig;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Optional;
@@ -41,8 +43,7 @@ import java.util.Optional;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.*;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -63,51 +64,33 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 class RapidControllerTest
         extends AbstractMvcRapidControllerTest<ExampleService, ExampleEntity, Long> {
 
+    static final ExampleEntity requestEntity = new ExampleEntity("request testEntity");
+    static final ExampleEntity returnEntity = new ExampleEntity("return testEntity");
+    static final String updatedName = "new Name";
+    static final String updatePatch = "[{\"op\": \"replace\", \"path\": \"/name\", \"value\":\"" + updatedName + "\"}]";
+    static final ExampleReadDto returnDto = new ExampleReadDto("return TestDto");
+    static final ExampleWriteDto requestDto = new ExampleWriteDto("request Dto");
+    static final Long entityId = 42L;
+    static final String jsonReturnDto = "{ExampleReturnDto : name : returnDto } ";
     @SpyBean
     ExampleRapidController controllerSpy;
-
     @MockBean
     ExampleService service;
-
     @Autowired
     DtoMappingContext dtoMappingContext;
-
     @SpyBean
     @Delegating
     DtoMapper dtoMapper;
-
     @MockBean
     ValidationStrategy<Long> validationStrategy;
-
     @MockBean
     IdFetchingStrategy<Long> idFetchingStrategy;
-
     @Autowired
     MockHttpServletRequest mockHttpServletRequest;
-
     @SpyBean
     ObjectMapper objectMapper;
-
-
     Class readDtoClass = ExampleReadDto.class;
     Class writeDtoClass = ExampleWriteDto.class;
-
-    static final ExampleEntity requestEntity = new ExampleEntity("request testEntity");
-    static final ExampleEntity returnEntity = new ExampleEntity("return testEntity");
-    static final ExampleReadDto requestDto = new ExampleReadDto("request testDto");
-    static final ExampleWriteDto returnDto = new ExampleWriteDto("return TestDto");
-    static final Long entityId = 42L;
-    static final String jsonReturnDto = "{ExampleReturnDto : name : returnDto } ";
-
-    @TestConfiguration
-    public static class TestConfig  {
-        @Bean
-        @Primary
-        public DtoMappingContext getDtoMappingContext(){
-            return Mockito.mock(DtoMappingContext.class);
-        }
-
-    }
 
     @BeforeEach
     void setUp() throws Exception {
@@ -128,7 +111,7 @@ class RapidControllerTest
                 .thenReturn(new HashSet<>(Lists.newArrayList(returnEntity)));
         when(dtoMappingContext.find(eq(expectedResponseMappingInfo)))
                 .thenReturn(readDtoClass);
-        when(dtoMapper.mapToDto(returnEntity,readDtoClass))
+        when(dtoMapper.mapToDto(returnEntity, readDtoClass))
                 .thenReturn(returnDto);
         when(objectMapper.writeValueAsString(eq(new HashSet<>(Lists.newArrayList(returnDto)))))
                 .thenReturn(jsonReturnDto);
@@ -137,108 +120,127 @@ class RapidControllerTest
                 .andExpect(status().isOk())
                 .andExpect(content().string(jsonReturnDto));
 
-        verify(dtoMapper).mapToDto(returnEntity,readDtoClass);
+        verify(dtoMapper).mapToDto(returnEntity, readDtoClass);
         verify(objectMapper).writeValueAsString(eq(new HashSet<>(Lists.newArrayList(returnDto))));
-        verify(controllerSpy).beforeFindAll(any());
+        verify(controllerSpy).beforeFindAll(any(HttpServletRequest.class), any(HttpServletResponse.class));
         verify(service).findAll();
         verifyDtoMappingContextInteraction(expectedResponseMappingInfo);
     }
 
     @Test
-    void fullUpdate_shouldSucceed() throws Exception {
+    void update_shouldSucceed() throws Exception {
         DtoMappingInfo expectedRequestMappingInfo = DtoMappingInfo.builder()
                 .direction(Direction.REQUEST)
-                .endpoint(CrudDtoEndpoint.FULL_UPDATE)
+                .endpoint(CrudDtoEndpoint.UPDATE)
                 .authorities(new ArrayList<>())
                 .build();
         DtoMappingInfo expectedResponseMappingInfo = DtoMappingInfo.builder()
                 .direction(Direction.RESPONSE)
-                .endpoint(CrudDtoEndpoint.FULL_UPDATE)
+                .endpoint(CrudDtoEndpoint.UPDATE)
                 .authorities(new ArrayList<>())
                 .build();
+
+        ExampleEntity oldEntity = new ExampleEntity();
+        oldEntity.setName("old");
+
+        ExampleEntity patch = new ExampleEntity();
+        patch.setName(updatedName);
+
+        ExampleReadDto patchDto =new ExampleReadDto();
+        patchDto.setName(updatedName);
+
+        when(idFetchingStrategy.fetchId(any(HttpServletRequest.class)))
+                .thenReturn(entityId);
 
         when(dtoMappingContext.find(eq(expectedRequestMappingInfo)))
                 .thenReturn(readDtoClass);
         when(dtoMappingContext.find(eq(expectedResponseMappingInfo)))
                 .thenReturn(writeDtoClass);
 
-        update_shouldSucceed(true);
+        when(service.findById(entityId))
+                .thenReturn(Optional.of(oldEntity));
 
-        verifyDtoMappingContextInteraction(expectedRequestMappingInfo,expectedResponseMappingInfo);
-    }
 
-    private void verifyDtoMappingContextInteraction(DtoMappingInfo... info){
-        ArgumentCaptor<DtoMappingInfo> argumentCaptor = ArgumentCaptor.forClass(DtoMappingInfo.class);
-        verify(dtoMappingContext, times(info.length)).find(argumentCaptor.capture());
-        int index = 0;
-        for (DtoMappingInfo value : argumentCaptor.getAllValues()) {
-            Assertions.assertEquals(info[index],value);
-            index++;
-        }
-    }
-
-    @Test
-    void partialUpdate_shouldSucceed() throws Exception {
-        DtoMappingInfo expectedRequestMappingInfo = DtoMappingInfo.builder()
-                .direction(Direction.REQUEST)
-                .endpoint(CrudDtoEndpoint.PARTIAL_UPDATE)
-                .authorities(new ArrayList<>())
-                .build();
-        DtoMappingInfo expectedResponseMappingInfo = DtoMappingInfo.builder()
-                .direction(Direction.RESPONSE)
-                .endpoint(CrudDtoEndpoint.PARTIAL_UPDATE)
-                .authorities(new ArrayList<>())
-                .build();
-
-        when(dtoMappingContext.find(eq(expectedRequestMappingInfo)))
-                .thenReturn(readDtoClass);
-
-        when(dtoMappingContext.find(eq(expectedResponseMappingInfo)))
-                .thenReturn(writeDtoClass);
-
-        update_shouldSucceed(false);
-
-        verifyDtoMappingContextInteraction(expectedRequestMappingInfo,expectedResponseMappingInfo);
-    }
-
-    void update_shouldSucceed(boolean full) throws Exception {
+        doReturn(patchDto)
+                .when(dtoMapper).mapToDto(refEq(patch),eq(readDtoClass));
+//        when(dtoMapper.mapToDto(refEq(patch), eq(writeDtoClass)))
+//                .thenReturn(patchDto);
         //given
-        doReturn(requestDto)
-                .when(objectMapper).readValue(Mockito.anyString(), Mockito.eq(readDtoClass));
+//        doReturn(updatePatch)
+//                .when(objectMapper).readValue(Mockito.anyString(), Mockito.eq(readDtoClass));
 
-        when(dtoMapper.mapToEntity(requestDto, getController().getEntityClass()))
-                .thenReturn(requestEntity);
-
-        when(service.update(requestEntity,full))
+        when(service.update(refEq(patch), eq(true)))
                 .thenReturn(returnEntity);
 
-
-        when(dtoMapper.mapToDto(returnEntity, writeDtoClass))
+//        when(dtoMapper.mapToEntity(refEq(ExampleWriteDto.class), getController().getEntityClass()))
+//                .thenReturn(oldEntity);
+        when(dtoMapper.mapToDto(returnEntity,writeDtoClass))
                 .thenReturn(returnDto);
 
         when(objectMapper.writeValueAsString(returnDto))
                 .thenReturn(jsonReturnDto);
 
         //when
-        getMockMvc().perform(update(requestDto,full))
+        getMockMvc().perform(put(getUpdateUrl())
+                .content(updatePatch)
+                .contentType(getContentType()))
                 .andExpect(status().isOk())
                 .andExpect(content().string(jsonReturnDto));
 
         //then
-        verify(controllerSpy).update(any(HttpServletRequest.class));
-        verify(objectMapper).readValue(anyString(), eq(readDtoClass));
-        verify(validationStrategy).validateDto(eq(requestDto));
-        verify(controllerSpy).beforeUpdate(eq(requestDto), any(HttpServletRequest.class),eq(full));
-        verify(dtoMapper).mapToEntity(requestDto, getController().getEntityClass());
-        verify(service).update(requestEntity,full);
-        verify(dtoMapper).mapToDto(returnEntity, writeDtoClass);
-        verify(objectMapper,atLeastOnce()).writeValueAsString(returnDto);
+        verify(controllerSpy).update(any(HttpServletRequest.class), any(HttpServletResponse.class));
+//        verify(objectMapper).readValue(anyString(), eq(readDtoClass));
+        verify(validationStrategy).validateDto(refEq(patchDto));
+        verify(controllerSpy).beforeUpdate(eq(patchDto.getClass()), eq(entityId), eq(updatePatch), any(HttpServletRequest.class), any(HttpServletResponse.class));
+//        verify(dtoMapper).mapToEntity(requestDto, getController().getEntityClass());
+//        ArgumentCaptor<ExampleEntity> updateArg = ArgumentCaptor.forClass(ExampleEntity.class);
+        verify(service).update(refEq(patch), eq(true));
+//        Assertions.assertEquals(updatedName,updateArg.getValue().getName());
+        verify(dtoMapper).mapToDto(refEq(patch), eq(readDtoClass));
+        verify(dtoMapper).mapToDto(refEq(returnEntity), eq(writeDtoClass));
+        verify(objectMapper, atLeastOnce()).writeValueAsString(returnDto);
 
 
         verifyNoMoreInteractions(validationStrategy);
         verifyNoMoreInteractions(dtoMapper);
-        //verifyNoMoreInteractions(service);
+
+        verifyDtoMappingContextInteraction(expectedRequestMappingInfo, expectedResponseMappingInfo);
     }
+
+    private void verifyDtoMappingContextInteraction(DtoMappingInfo... info) {
+        ArgumentCaptor<DtoMappingInfo> argumentCaptor = ArgumentCaptor.forClass(DtoMappingInfo.class);
+        verify(dtoMappingContext, times(info.length)).find(argumentCaptor.capture());
+        int index = 0;
+        for (DtoMappingInfo value : argumentCaptor.getAllValues()) {
+            Assertions.assertEquals(info[index], value);
+            index++;
+        }
+    }
+
+
+//    @Test
+//    void partialUpdate_shouldSucceed() throws Exception {
+//        DtoMappingInfo expectedRequestMappingInfo = DtoMappingInfo.builder()
+//                .direction(Direction.REQUEST)
+//                .endpoint(CrudDtoEndpoint.PARTIAL_UPDATE)
+//                .authorities(new ArrayList<>())
+//                .build();
+//        DtoMappingInfo expectedResponseMappingInfo = DtoMappingInfo.builder()
+//                .direction(Direction.RESPONSE)
+//                .endpoint(CrudDtoEndpoint.PARTIAL_UPDATE)
+//                .authorities(new ArrayList<>())
+//                .build();
+//
+//        when(dtoMappingContext.find(eq(expectedRequestMappingInfo)))
+//                .thenReturn(readDtoClass);
+//
+//        when(dtoMappingContext.find(eq(expectedResponseMappingInfo)))
+//                .thenReturn(writeDtoClass);
+//
+//        update_shouldSucceed(false);
+//
+//        verifyDtoMappingContextInteraction(expectedRequestMappingInfo,expectedResponseMappingInfo);
+//    }
 
     @Test
     void create_shouldSucceed() throws Exception {
@@ -281,15 +283,15 @@ class RapidControllerTest
                 .andExpect(content().string(jsonReturnDto));
 
         //then
-        verify(controllerSpy).create(any(HttpServletRequest.class));
+        verify(controllerSpy).create(any(HttpServletRequest.class), any(HttpServletResponse.class));
         verify(objectMapper).readValue(anyString(), eq(readDtoClass));
         verify(validationStrategy).validateDto(eq(requestDto));
-        verify(controllerSpy).beforeCreate(eq(requestDto), any(HttpServletRequest.class));
+        verify(controllerSpy).beforeCreate(eq(requestDto), any(HttpServletRequest.class), any(HttpServletResponse.class));
         verify(dtoMapper).mapToEntity(requestDto, getController().getEntityClass());
         verify(service).save(requestEntity);
         verify(dtoMapper).mapToDto(returnEntity, writeDtoClass);
-        verify(objectMapper,atLeastOnce()).writeValueAsString(returnDto);
-        verifyDtoMappingContextInteraction(expectedRequestMappingInfo,expectedResponseMappingInfo);
+        verify(objectMapper, atLeastOnce()).writeValueAsString(returnDto);
+        verifyDtoMappingContextInteraction(expectedRequestMappingInfo, expectedResponseMappingInfo);
 
         verifyNoMoreInteractions(validationStrategy);
         verifyNoMoreInteractions(dtoMapper);
@@ -321,9 +323,9 @@ class RapidControllerTest
         getMockMvc().perform(get(getFindUrl()))
                 .andExpect(status().isOk());
 
-        verify(controllerSpy).find(any(HttpServletRequest.class));
+        verify(controllerSpy).find(any(HttpServletRequest.class), any(HttpServletResponse.class));
         verify(idFetchingStrategy).fetchId(any());
-        verify(controllerSpy).beforeFind(eq(entityId),any());
+        verify(controllerSpy).beforeFind(eq(entityId), any(HttpServletRequest.class), any(HttpServletResponse.class));
         verify(validationStrategy).validateId(eq(entityId));
         verify(service).findById(entityId);
         verify(dtoMapper).mapToDto(returnEntity, writeDtoClass);
@@ -348,13 +350,23 @@ class RapidControllerTest
 
         verify(idFetchingStrategy).fetchId(any());
         verify(validationStrategy).validateId(eq(entityId));
-        verify(controllerSpy).beforeDelete(eq(entityId),any());
-        verify(controllerSpy).delete(any(HttpServletRequest.class));
+        verify(controllerSpy).beforeDelete(eq(entityId), any(HttpServletRequest.class), any(HttpServletResponse.class));
+        verify(controllerSpy).delete(any(HttpServletRequest.class), any(HttpServletResponse.class));
         verify(service).deleteById(entityId);
     }
 
     @AfterEach
     void tearDown() {
         Mockito.clearInvocations(dtoMappingContext);
+    }
+
+    @TestConfiguration
+    public static class TestConfig {
+        @Bean
+        @Primary
+        public DtoMappingContext getDtoMappingContext() {
+            return Mockito.mock(DtoMappingContext.class);
+        }
+
     }
 }

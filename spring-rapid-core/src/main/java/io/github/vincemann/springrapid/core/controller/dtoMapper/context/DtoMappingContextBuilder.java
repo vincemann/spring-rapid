@@ -52,7 +52,7 @@ public class DtoMappingContextBuilder {
     }
 
     protected List<String> getUpdateEndpoints(){
-        return Lists.newArrayList(CrudDtoEndpoint.FULL_UPDATE, CrudDtoEndpoint.PARTIAL_UPDATE);
+        return Lists.newArrayList(CrudDtoEndpoint.UPDATE);
     }
 
     /**
