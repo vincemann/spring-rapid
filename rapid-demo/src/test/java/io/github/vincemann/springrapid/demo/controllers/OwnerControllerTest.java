@@ -1,7 +1,7 @@
 package io.github.vincemann.springrapid.demo.controllers;
 
 
-import io.github.vincemann.springrapid.coretest.controller.rapid.UrlParamIdRapidControllerTest;
+import io.github.vincemann.springrapid.coretest.controller.rapid.AbstractUrlParamIdRapidControllerTest;
 import io.github.vincemann.springrapid.demo.dtos.owner.CreateOwnerDto;
 import io.github.vincemann.springrapid.demo.dtos.owner.ReadOwnerDto;
 import io.github.vincemann.springrapid.demo.dtos.owner.UpdateOwnerDto;
@@ -22,7 +22,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 
 class OwnerControllerTest
-        extends UrlParamIdRapidControllerTest<OwnerService,Owner,Long> {
+        extends AbstractUrlParamIdRapidControllerTest<OwnerService,Owner,Long> {
 
     CreateOwnerDto createOwnerDto;
     ReadOwnerDto readOwnerDto;

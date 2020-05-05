@@ -48,26 +48,18 @@ public abstract class LemonController
 			extends RapidController<U,ID,LemonService<U, ID,?>> {
 
 	private static final Log log = LogFactory.getLog(LemonController.class);
-//	public static final Long DEFAULT_JWT_EXPIRATION_MILLIS = 864000000L;// 10 days
 
     private long jwtExpirationMillis;
-    @PersistenceContext
-    private EntityManager entityManager;
 
 	public LemonController(DtoMappingContext dtoMappingContext) {
 		super(dtoMappingContext);
 		log.info("Created");
 	}
 
-//	public LemonController() {
-//	}
 
 	@Autowired
-//	@Lazy
 	public void injectProperties(LemonProperties properties){
-		this.jwtExpirationMillis =/* properties.getJwt() == null
-				? DEFAULT_JWT_EXPIRATION_MILLIS
-				:*/ properties.getJwt().getExpirationMillis();
+		this.jwtExpirationMillis = properties.getJwt().getExpirationMillis();
 	}
 
 	@Autowired
@@ -229,9 +221,10 @@ public abstract class LemonController
 //		return dto;
 //	}
 
+
 	@Override
-	public void afterUpdate(Object dto, U updated, HttpServletRequest httpServletRequest, boolean full, HttpServletResponse response) {
-		super.afterUpdate(dto, updated, httpServletRequest, full, response);
+	public void afterUpdate(Object dto, U updated, HttpServletRequest httpServletRequest, HttpServletResponse response) {
+		super.afterUpdate(dto, updated, httpServletRequest, response);
 		userWithToken(response,updated);
 	}
 
@@ -239,7 +232,6 @@ public abstract class LemonController
 	protected U serviceUpdate(U update, boolean full) throws BadEntityException, EntityNotFoundException {
 		U updated = super.serviceUpdate(update, full);
 		//set password should not trigger immediate update
-		entityManager.detach(updated);
 		updated.setPassword(null);
 		return updated;
 	}

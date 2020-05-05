@@ -12,7 +12,7 @@ import io.github.vincemann.springrapid.core.controller.dtoMapper.context.DtoMapp
 import io.github.vincemann.springrapid.core.controller.rapid.idFetchingStrategy.IdFetchingStrategy;
 import io.github.vincemann.springrapid.core.controller.rapid.validationStrategy.ValidationStrategy;
 import io.github.vincemann.springrapid.core.util.Lists;
-import io.github.vincemann.springrapid.coretest.controller.rapid.MvcRapidControllerTest;
+import io.github.vincemann.springrapid.coretest.controller.rapid.AbstractMvcRapidControllerTest;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -29,8 +29,6 @@ import org.springframework.boot.test.mock.mockito.SpyBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Import;
 import org.springframework.context.annotation.Primary;
-import org.springframework.context.annotation.PropertySource;
-import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit.jupiter.web.SpringJUnitWebConfig;
@@ -63,7 +61,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @Import(RapidControllerTest.TestConfig.class)
 //@PropertySource({"classpath:application.properties","classpath:application-test.properties"})
 class RapidControllerTest
-        extends MvcRapidControllerTest<ExampleService, ExampleEntity, Long> {
+        extends AbstractMvcRapidControllerTest<ExampleService, ExampleEntity, Long> {
 
     @SpyBean
     ExampleRapidController controllerSpy;
