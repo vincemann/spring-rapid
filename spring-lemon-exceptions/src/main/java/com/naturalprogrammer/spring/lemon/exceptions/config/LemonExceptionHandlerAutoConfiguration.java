@@ -28,6 +28,12 @@ public class LemonExceptionHandlerAutoConfiguration {
     }
 
     @Bean
+    @ConditionalOnMissingBean(EntityNotFoundExceptionHandler.class)
+    public EntityNotFoundExceptionHandler entityNotFoundExceptionHandler() {
+        return new EntityNotFoundExceptionHandler();
+    }
+
+    @Bean
     @ConditionalOnMissingBean(JsonParseExceptionHandler.class)
     public JsonParseExceptionHandler jsonParseExceptionHandler(){
         return new JsonParseExceptionHandler();
