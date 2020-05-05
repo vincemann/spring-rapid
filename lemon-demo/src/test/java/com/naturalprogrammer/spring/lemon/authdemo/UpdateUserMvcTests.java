@@ -2,11 +2,13 @@ package com.naturalprogrammer.spring.lemon.authdemo;
 
 import com.naturalprogrammer.spring.lemon.auth.controller.LemonController;
 import com.naturalprogrammer.spring.lemon.auth.service.LemonService;
+import com.naturalprogrammer.spring.lemon.auth.util.LemonUtils;
 import com.naturalprogrammer.spring.lemon.authdemo.domain.User;
 import com.naturalprogrammer.spring.lemon.auth.security.domain.LemonRole;
 import com.naturalprogrammer.spring.lemon.auth.util.LecUtils;
 import io.github.vincemann.springrapid.acl.Role;
 
+import io.github.vincemann.springrapid.core.util.ResourceUtils;
 import io.github.vincemann.springrapid.coretest.controller.rapid.UrlParamIdRapidControllerTest;
 import lombok.Getter;
 import org.junit.jupiter.api.Test;
@@ -27,7 +29,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 public class UpdateUserMvcTests extends AbstractMvcTests
 		implements UrlParamIdRapidControllerTest<LemonService<User,Long,?>,User,Long> {
 	
-	private static final String UPDATED_NAME = "Edited name";
+//	private static final String UPDATED_NAME = "Edited name";
 	
     private String userPatch;
     private String userPatchAdminRole;
@@ -40,22 +42,22 @@ public class UpdateUserMvcTests extends AbstractMvcTests
 	
 	@Value("classpath:/update-user/patch-update-user.json")
 	public void setUserPatch(Resource patch) throws IOException {
-		this.userPatch = LecUtils.toStr(patch);
+		this.userPatch = ResourceUtils.toStr(patch);
 	}
 	
 	@Value("classpath:/update-user/patch-admin-role.json")
 	public void setUserPatchAdminRole(Resource patch) throws IOException {
-		this.userPatchAdminRole = LecUtils.toStr(patch);;
+		this.userPatchAdminRole = ResourceUtils.toStr(patch);;
 	}
 
 	@Value("classpath:/update-user/patch-null-name.json")
 	public void setUserPatchNullName(Resource patch) throws IOException {
-		this.userPatchNullName = LecUtils.toStr(patch);;
+		this.userPatchNullName = ResourceUtils.toStr(patch);;
 	}
 
 	@Value("classpath:/update-user/patch-long-name.json")
 	public void setUserPatchLongName(Resource patch) throws IOException {
-		this.userPatchLongName = LecUtils.toStr(patch);;
+		this.userPatchLongName = ResourceUtils.toStr(patch);;
 	}
 
 	/**

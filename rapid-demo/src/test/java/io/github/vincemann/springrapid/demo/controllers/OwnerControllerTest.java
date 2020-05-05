@@ -1,6 +1,7 @@
 package io.github.vincemann.springrapid.demo.controllers;
 
 
+import io.github.vincemann.springrapid.core.service.exception.BadEntityException;
 import io.github.vincemann.springrapid.core.util.ResourceUtils;
 import io.github.vincemann.springrapid.coretest.controller.rapid.AbstractUrlParamIdRapidControllerTest;
 import io.github.vincemann.springrapid.demo.dtos.owner.CreateOwnerDto;
@@ -120,7 +121,7 @@ class OwnerControllerTest
     }
 
     @Test
-    public void partialUpdate_address_shouldSucceed() throws Exception {
+    public void update_address_shouldSucceed() throws Exception {
         //given
 //        UpdateOwnerDto diffAddressUpdate = UpdateOwnerDto.builder()
 //                .address()
@@ -132,7 +133,9 @@ class OwnerControllerTest
         Owner updatedOwner = (Owner) BeanUtilsBean.getInstance().cloneBean(owner);
         updatedOwner.setAddress(updatedAddress);
 
-        when(mockedService.update(eq(owner),eq(false))).thenReturn(updatedOwner);
+        when(mockedService.findById(owner.getId()))
+                .thenReturn(Optional.of(owner));
+        when(mockedService.update(any(Owner.class),eq(true))).thenReturn(updatedOwner);
 
         //when
         getMockMvc().perform(update(addressPatch,owner.getId()))
@@ -151,8 +154,11 @@ class OwnerControllerTest
 //                //blank city
 //                .city("")
 //                .build();
+        when(mockedService.findById(owner.getId()))
+                .thenReturn(Optional.of(owner));
         getMockMvc().perform(update(blankCityPatch,owner.getId()))
                 .andExpect(status().isUnprocessableEntity());
+
 
         verify(mockedService,never()).update(any(),any());
     }
