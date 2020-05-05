@@ -346,16 +346,18 @@ public abstract class RapidController
             String patchString = request.getReader().lines().collect(Collectors.joining(System.lineSeparator()));
             Id id = idIdFetchingStrategy.fetchId(request);
             Class<?> dtoClass = findDtoClass(CrudDtoEndpoint.UPDATE, Direction.REQUEST);
-            beforeUpdate(dtoClass,id,patchString, request, response);
+            beforeUpdate(dtoClass, id, patchString, request, response);
 
             Optional<E> saved = getUnsecuredService().findById(id);
             EntityUtils.checkPresent(saved, id, getEntityClass());
-            E patched = MapperUtils.applyPatch(saved.get(), patchString);
-            Object requestDto = dtoMapper.mapToDto(patched, dtoClass);
-            validationStrategy.validateDto(requestDto);
-            checkForInvalidUpdates(dtoClass,saved.get(),patched);
-            logStateBeforeServiceCall("update", saved, patchString,patched);
-            E updated = serviceUpdate(patched, true);
+            Object patchDto = dtoMapper.mapToDto(saved.get(), dtoClass);
+            patchDto = MapperUtils.applyPatch(patchDto, patchString);
+            validationStrategy.validateDto(patchDto);
+            E patch = dtoMapper.mapToEntity(patchDto, getEntityClass());
+            E merged = merge(patch, saved.get(),dtoClass);
+//            checkForInvalidUpdates(dtoClass, saved.get(), merged);
+            logStateBeforeServiceCall("update", saved, patchString, merged);
+            E updated = serviceUpdate(merged, true);
             logServiceResult("update", updated);
             //no idea why casting is necessary here?
             Class<?> resultDtoClass = findDtoClass(CrudDtoEndpoint.UPDATE, Direction.RESPONSE);
@@ -367,27 +369,39 @@ public abstract class RapidController
         }
     }
 
-
-    /**
-     * Only the properties defined in dtoClass can be changed.
-     */
-    protected void checkForInvalidUpdates(Class<?> dtoClass, E saved, E patched) throws BadEntityException{
-        try {
-            Set<String> allowedProperties = Sets.newHashSet(ReflectionUtils.getDeclaredFields(dtoClass,true)).stream().map(Field::getName).collect(Collectors.toSet());
-            Set<String> deniedProperties = Sets.newHashSet(ReflectionUtils.getDeclaredFields(getEntityClass(),true)).stream().map(Field::getName).collect(Collectors.toSet());
-            allowedProperties.forEach(deniedProperties::remove);
-            for (String deniedProperty : deniedProperties) {
-                String savedProperty = BeanUtilsBean.getInstance().getProperty(saved, deniedProperty);
-                String patchedProperty = BeanUtilsBean.getInstance().getProperty(patched, deniedProperty);
-                if(!savedProperty.equals(patchedProperty)){
-                    throw new BadEntityException("Property: " + deniedProperty + " must not be updated by current user.");
-                }
+    protected E merge(E patch, E saved, Class<?> dtoClass) {
+        Set<String> properties = Arrays.stream(ReflectionUtils.getDeclaredFields(dtoClass, true))
+                .map(Field::getName)
+                .collect(Collectors.toSet());
+        for (String property : properties) {
+            try {
+                BeanUtilsBean.getInstance().copyProperty(saved, property, BeanUtilsBean.getInstance().getProperty(patch, property));
+            } catch (IllegalAccessException | InvocationTargetException | NoSuchMethodException e) {
+                throw new RuntimeException(e);
             }
-        }catch (IllegalAccessException|NoSuchMethodException| InvocationTargetException e){
-            throw new RuntimeException(e);
         }
+        return saved;
     }
 
+//    /**
+//     * Only the properties defined in dtoClass can be changed.
+//     */
+//    protected void checkForInvalidUpdates(Class<?> dtoClass, E saved, E patched) throws BadEntityException {
+//        try {
+//            Set<String> allowedProperties = Sets.newHashSet(ReflectionUtils.getDeclaredFields(dtoClass, true)).stream().map(Field::getName).collect(Collectors.toSet());
+//            Set<String> deniedProperties = Sets.newHashSet(ReflectionUtils.getDeclaredFields(getEntityClass(), true)).stream().map(Field::getName).collect(Collectors.toSet());
+//            allowedProperties.forEach(deniedProperties::remove);
+//            for (String deniedProperty : deniedProperties) {
+//                String savedProperty = BeanUtilsBean.getInstance().getProperty(saved, deniedProperty);
+//                String patchedProperty = BeanUtilsBean.getInstance().getProperty(patched, deniedProperty);
+//                if (!savedProperty.equals(patchedProperty)) {
+//                    throw new BadEntityException("Property: " + deniedProperty + " must not be updated by current user.");
+//                }
+//            }
+//        } catch (IllegalAccessException | NoSuchMethodException | InvocationTargetException e) {
+//            throw new RuntimeException(e);
+//        }
+//    }
 
 
     public ResponseEntity<?> delete(HttpServletRequest request, HttpServletResponse response) throws IdFetchingException, BadEntityException, EntityNotFoundException, ConstraintViolationException {

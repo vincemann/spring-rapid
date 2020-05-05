@@ -65,10 +65,11 @@ public abstract class JPACrudService
     @Override
     public E update(E update, Boolean full) throws EntityNotFoundException, BadEntityException, BadEntityException {
         try {
-            E entityToUpdate = findOldEntity(update.getId());
+            EntityUtils.checkPresent(update.getId(),"No Id set for update");
             if(full){
                 return save(update);
             }else {
+                E entityToUpdate = findOldEntity(update.getId());
                 //copy non null values from update to entityToUpdate
                 BeanUtilsBean notNull = new NullAwareBeanUtilsBean();
                 notNull.copyProperties(entityToUpdate, update);

@@ -23,11 +23,9 @@ public class MyUserController extends LemonController<User, Long, MySignupForm> 
         super(
                 DtoMappingContextBuilder.builder()
                         .forAll(LemonUserDto.class)
-                        .forEndpoint(CrudDtoEndpoint.PARTIAL_UPDATE, UserUpdateDto.class)
-                        .forEndpoint(CrudDtoEndpoint.FULL_UPDATE, UserUpdateDto.class)
+                        .forEndpoint(CrudDtoEndpoint.UPDATE, UserUpdateDto.class)
                         .withRoles(Role.ADMIN)
-                        .forEndpoint(CrudDtoEndpoint.PARTIAL_UPDATE, AdminUpdateUserDto.class)
-                        .forEndpoint(CrudDtoEndpoint.FULL_UPDATE, AdminUpdateUserDto.class)
+                        .forEndpoint(CrudDtoEndpoint.UPDATE, AdminUpdateUserDto.class)
                         .build()
         );
     }

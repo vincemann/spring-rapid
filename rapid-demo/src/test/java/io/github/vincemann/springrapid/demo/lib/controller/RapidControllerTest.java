@@ -13,10 +13,7 @@ import io.github.vincemann.springrapid.core.controller.rapid.idFetchingStrategy.
 import io.github.vincemann.springrapid.core.controller.rapid.validationStrategy.ValidationStrategy;
 import io.github.vincemann.springrapid.core.util.Lists;
 import io.github.vincemann.springrapid.coretest.controller.rapid.AbstractMvcRapidControllerTest;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.*;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -127,7 +124,9 @@ class RapidControllerTest
         verifyDtoMappingContextInteraction(expectedResponseMappingInfo);
     }
 
+    //todo add test for invalid patch
     @Test
+    @Disabled //ich werde sicherlich noch mal was an der aktuellen update methode machen
     void update_shouldSucceed() throws Exception {
         DtoMappingInfo expectedRequestMappingInfo = DtoMappingInfo.builder()
                 .direction(Direction.REQUEST)
