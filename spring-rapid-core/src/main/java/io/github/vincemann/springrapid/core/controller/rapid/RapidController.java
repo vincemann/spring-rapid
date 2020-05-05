@@ -26,6 +26,7 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.beanutils.BeanUtilsBean;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.ApplicationListener;
@@ -44,6 +45,7 @@ import java.io.IOException;
 import java.io.Serializable;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Modifier;
 import java.lang.reflect.ParameterizedType;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -370,13 +372,23 @@ public abstract class RapidController
     }
 
     protected E merge(E patch, E saved, Class<?> dtoClass) {
+//        Map<String, Field> dtoFields = ReflectionUtils.getNonStaticFieldMap(dtoClass);
+        Map<String, Field> entityFields = ReflectionUtils.getNonStaticFieldMap(getEntityClass());
         Set<String> properties = Arrays.stream(ReflectionUtils.getDeclaredFields(dtoClass, true))
+                //ignore static fields
+                .filter(field -> !Modifier.isStatic(field.getModifiers()))
                 .map(Field::getName)
                 .collect(Collectors.toSet());
         for (String property : properties) {
             try {
-                BeanUtilsBean.getInstance().copyProperty(saved, property, BeanUtilsBean.getInstance().getProperty(patch, property));
-            } catch (IllegalAccessException | InvocationTargetException | NoSuchMethodException e) {
+//                Field dtoField = dtoFields.get(property);
+                Field entityField = entityFields.get(property);
+//                dtoField.setAccessible(true);
+                entityField.setAccessible(true);
+                Object patchedValue =entityField.get(patch);
+                entityField.set(saved,patchedValue);
+//                BeanUtilsBean.getInstance().copyProperty(saved, property,patchedValue);
+            } catch (IllegalAccessException e) {
                 throw new RuntimeException(e);
             }
         }

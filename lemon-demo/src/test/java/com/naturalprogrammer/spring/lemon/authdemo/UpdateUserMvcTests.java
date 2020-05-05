@@ -68,20 +68,20 @@ public class UpdateUserMvcTests extends AbstractMvcTests
 	 * @throws Exception 
 	 */
 	@Test
-    public void testUpdateSelf() throws Exception {
+    public void testUpdateSelfWithInvalidPatch_should400() throws Exception {
 
 		mvc.perform(update(userPatch,UNVERIFIED_USER_ID)
 				.header(HttpHeaders.AUTHORIZATION, tokens.get(UNVERIFIED_USER_ID)))
-				.andExpect(status().is(200))
-				.andExpect(header().string(LecUtils.TOKEN_RESPONSE_HEADER_NAME, containsString(".")))
+				.andExpect(status().is(400));
+//				.andExpect(header().string(LecUtils.TOKEN_RESPONSE_HEADER_NAME, containsString(".")))
 //				.andExpect(jsonPath("$.tag.name").value(UPDATED_NAME))
-				.andExpect(jsonPath("$.roles").value(hasSize(1)))
-				.andExpect(jsonPath("$.roles[0]").value(LemonRole.UNVERIFIED))
-				.andExpect(jsonPath("$.email").value(UNVERIFIED_USER_EMAIL));
+//				.andExpect(jsonPath("$.roles").value(hasSize(1)))
+//				.andExpect(jsonPath("$.roles[0]").value(LemonRole.UNVERIFIED))
+//				.andExpect(jsonPath("$.email").value(UNVERIFIED_USER_EMAIL));
 		
 		User user = userRepository.findById(UNVERIFIED_USER_ID).get();
 		
-		// Ensure that data changed properly
+		// Ensure that data has not changed
 		Assertions.assertEquals(UNVERIFIED_USER_EMAIL, user.getEmail());
 		Assertions.assertEquals(1, user.getRoles().size());
 		Assertions.assertTrue(user.getRoles().contains(LemonRole.UNVERIFIED));
@@ -103,16 +103,17 @@ public class UpdateUserMvcTests extends AbstractMvcTests
 //				.content(userPatch))
 				.andExpect(status().is(200))
 				.andExpect(header().string(LecUtils.TOKEN_RESPONSE_HEADER_NAME, containsString(".")))
-				.andExpect(jsonPath("$.id").value(UNVERIFIED_USER_ID))
+//				.andExpect(jsonPath("$.id").value(UNVERIFIED_USER_ID))
 //				.andExpect(jsonPath("$.tag.name").value(UPDATED_NAME))
 				.andExpect(jsonPath("$.roles").value(hasSize(1)))
 				.andExpect(jsonPath("$.roles[0]").value(Role.ADMIN))
-				.andExpect(jsonPath("$.email").value(UNVERIFIED_USER_EMAIL));
+				.andExpect(jsonPath("$.email").value("should.not@get.replaced"));
 		
 		User user = userRepository.findById(UNVERIFIED_USER_ID).get();
     	
 		// Ensure that data changed properly
-		Assertions.assertEquals(UNVERIFIED_USER_EMAIL, user.getEmail());
+		//should get replaced because good admin has full power
+		Assertions.assertEquals("should.not@get.replaced", user.getEmail());
 		Assertions.assertEquals(1, user.getRoles().size());
 		Assertions.assertTrue(user.getRoles().contains(Role.ADMIN));
     }

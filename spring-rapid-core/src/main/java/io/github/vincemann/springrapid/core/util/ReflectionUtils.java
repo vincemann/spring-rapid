@@ -1,6 +1,7 @@
 package io.github.vincemann.springrapid.core.util;
 
 
+import com.google.common.collect.Sets;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.MultiValuedMap;
 import org.apache.commons.collections4.multimap.ArrayListValuedHashMap;
@@ -10,6 +11,7 @@ import org.apache.commons.lang3.reflect.FieldUtils;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -59,6 +61,16 @@ public class ReflectionUtils {
         }
 
         return fields.toArray(new Field[fields.size()]);
+    }
+
+    public static Map<String,Field> getNonStaticFieldMap(Class<?> clazz){
+        Map<String,Field> fieldMap = new HashMap<>();
+        for (Field entityField : Sets.newHashSet(ReflectionUtils.getDeclaredFields(clazz, true))) {
+            if (!Modifier.isStatic(entityField.getModifiers())) {
+                fieldMap.put(entityField.getName(), entityField);
+            }
+        }
+        return fieldMap;
     }
 
     /**

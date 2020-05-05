@@ -3,15 +3,21 @@ package com.naturalprogrammer.spring.lemon.authdemo.dto;
 import com.naturalprogrammer.spring.lemon.auth.security.domain.LemonUserDto;
 import lombok.*;
 
+import java.util.HashSet;
 import java.util.Set;
 
-@Getter @Setter @ToString @AllArgsConstructor
-public class AdminUpdateUserDto extends LemonUserDto {
+@Getter @Setter @ToString @NoArgsConstructor
+public class AdminUpdateUserDto {
     private String name;
+    private String email;
+    private String password;
+    private Set<String> roles = new HashSet<String>();
 
-    @Builder(builderMethodName = "Builder")
-    public AdminUpdateUserDto(String email, String password, Set<String> roles, boolean unverified, boolean blocked, boolean admin, boolean goodUser, boolean goodAdmin, String name) {
-        super(email, password, roles, unverified, blocked, admin, goodUser, goodAdmin);
+    @Builder
+    public AdminUpdateUserDto(String name, String email, String password, Set<String> roles) {
         this.name = name;
+        this.email = email;
+        this.password = password;
+        this.roles = roles;
     }
 }

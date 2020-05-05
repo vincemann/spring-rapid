@@ -60,7 +60,7 @@ public class DtoMappingContextBuilder {
      * @param defaultDtoClass
      * @return
      */
-    public DtoMappingContextBuilder forAll(Class<? extends IdentifiableEntity> defaultDtoClass){
+    public DtoMappingContextBuilder forAll(Class<?> defaultDtoClass){
         List<DtoMappingInfo> infoList = createInfos(getAllEndpoints());
         for (DtoMappingInfo info : infoList) {
             mc.getMappingEntries().put(info,defaultDtoClass);
@@ -68,15 +68,15 @@ public class DtoMappingContextBuilder {
         return this;
     }
 
-    public DtoMappingContextBuilder forResponse(Class<? extends IdentifiableEntity> responseDtoClass){
+    public DtoMappingContextBuilder forResponse(Class<?> responseDtoClass){
         return forDirection(Direction.RESPONSE,responseDtoClass);
     }
 
-    public DtoMappingContextBuilder forRequest(Class<? extends IdentifiableEntity> responseDtoClass){
+    public DtoMappingContextBuilder forRequest(Class<?> responseDtoClass){
         return forDirection(Direction.REQUEST,responseDtoClass);
     }
 
-    private DtoMappingContextBuilder forDirection(Direction direction,Class<? extends IdentifiableEntity> responseDtoClass){
+    private DtoMappingContextBuilder forDirection(Direction direction,Class<?> responseDtoClass){
         List<String> allEndpoints = getAllEndpoints();
         List<DtoMappingInfo> infoList = new ArrayList<>();
         for (String endpoint : allEndpoints) {
@@ -88,7 +88,7 @@ public class DtoMappingContextBuilder {
         return this;
     }
 
-    public DtoMappingContextBuilder forFind(Class<? extends IdentifiableEntity> readDtoClass){
+    public DtoMappingContextBuilder forFind(Class<?> readDtoClass){
         List<DtoMappingInfo> infoList = createInfos(getFindEndpoints());
         for (DtoMappingInfo info : infoList) {
             mc.getMappingEntries().put(info,readDtoClass);
@@ -96,7 +96,7 @@ public class DtoMappingContextBuilder {
         return this;
     }
 
-    public DtoMappingContextBuilder forWrite(Class<? extends IdentifiableEntity> writeDtoClass){
+    public DtoMappingContextBuilder forWrite(Class<?> writeDtoClass){
         List<DtoMappingInfo> infoList = createInfos(getWriteEndpoints());
         for (DtoMappingInfo info : infoList) {
             mc.getMappingEntries().put(info,writeDtoClass);
@@ -104,7 +104,7 @@ public class DtoMappingContextBuilder {
         return this;
     }
 
-    public DtoMappingContextBuilder forUpdate(Direction direction,Class<? extends IdentifiableEntity> updateDtoClass){
+    public DtoMappingContextBuilder forUpdate(Direction direction,Class<?> updateDtoClass){
         List<String> updateEndpoints = getUpdateEndpoints();
         for (String updateEndpoint : updateEndpoints) {
             mc.getMappingEntries().put(createInfo(updateEndpoint,direction),updateDtoClass);
@@ -112,7 +112,7 @@ public class DtoMappingContextBuilder {
         return this;
     }
 
-    public DtoMappingContextBuilder forUpdate(Class<? extends IdentifiableEntity> updateDtoClass){
+    public DtoMappingContextBuilder forUpdate(Class<?> updateDtoClass){
         List<String> updateEndpoints = getUpdateEndpoints();
         for (String updateEndpoint : updateEndpoints) {
             mc.getMappingEntries().put(createInfo(updateEndpoint,Direction.REQUEST),updateDtoClass);
@@ -121,26 +121,26 @@ public class DtoMappingContextBuilder {
         return this;
     }
 
-    public DtoMappingContextBuilder forEndpoint(String endpoint, Class<? extends IdentifiableEntity> dtoClass){
+    public DtoMappingContextBuilder forEndpoint(String endpoint, Class<?> dtoClass){
         mc.getMappingEntries().put(createInfo(endpoint,Direction.REQUEST),dtoClass);
         mc.getMappingEntries().put(createInfo(endpoint,Direction.RESPONSE),dtoClass);
         return this;
     }
 
 
-    public DtoMappingContextBuilder forEndpoint(String endpoint, Direction direction, Class<? extends IdentifiableEntity> dtoClass){
+    public DtoMappingContextBuilder forEndpoint(String endpoint, Direction direction, Class<?> dtoClass){
         mc.getMappingEntries().put(createInfo(endpoint,direction),dtoClass);
         return this;
     }
 
-    public DtoMappingContextBuilder forEndpointAndRoles(String endpoint, Direction direction, List<String> authorities, Class<? extends IdentifiableEntity> dtoClass){
+    public DtoMappingContextBuilder forEndpointAndRoles(String endpoint, Direction direction, List<String> authorities, Class<?> dtoClass){
         DtoMappingInfo info = createInfo(endpoint, direction);
         info.setAuthorities(authorities);
         mc.getMappingEntries().put(info,dtoClass);
         return this;
     }
 
-    public DtoMappingContextBuilder forInfo(DtoMappingInfo info, Class<? extends IdentifiableEntity> dtoClass){
+    public DtoMappingContextBuilder forInfo(DtoMappingInfo info, Class<?> dtoClass){
         mc.getMappingEntries().put(info,dtoClass);
         return this;
     }
