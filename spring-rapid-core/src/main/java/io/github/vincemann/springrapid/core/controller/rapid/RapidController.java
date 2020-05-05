@@ -371,7 +371,7 @@ public abstract class RapidController
         }
     }
 
-    protected E merge(E patch, E saved, Class<?> dtoClass) {
+    protected E merge(E patch, E saved, Class<?> dtoClass) throws BadEntityException {
 //        Map<String, Field> dtoFields = ReflectionUtils.getNonStaticFieldMap(dtoClass);
         Map<String, Field> entityFields = ReflectionUtils.getNonStaticFieldMap(getEntityClass());
         Set<String> properties = Arrays.stream(ReflectionUtils.getDeclaredFields(dtoClass, true))
@@ -383,6 +383,9 @@ public abstract class RapidController
             try {
 //                Field dtoField = dtoFields.get(property);
                 Field entityField = entityFields.get(property);
+                if(entityField==null){
+                    throw new BadEntityException("Unknown property: " + property);
+                }
 //                dtoField.setAccessible(true);
                 entityField.setAccessible(true);
                 Object patchedValue =entityField.get(patch);
