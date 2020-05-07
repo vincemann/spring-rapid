@@ -66,10 +66,10 @@ public class LemonCommonsWebAutoConfiguration {
         return converter;
 	}
 
-	@Bean
-	public MapperUtils lmapUtils(ObjectMapper mapper){
-		return new MapperUtils(mapper);
-	}
+//	@Bean
+//	public MapperUtils lmapUtils(ObjectMapper mapper){
+//		return new MapperUtils(mapper);
+//	}
 
 	/**
 	 * Configures LemonCorsConfig if missing and lemon.cors.allowed-origins is provided

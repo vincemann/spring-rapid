@@ -1,19 +1,15 @@
 package io.github.vincemann.springrapid.demo.controllers;
 
 
-import io.github.vincemann.springrapid.core.service.exception.BadEntityException;
 import io.github.vincemann.springrapid.core.util.ResourceUtils;
 import io.github.vincemann.springrapid.coretest.controller.rapid.AbstractUrlParamIdRapidControllerTest;
 import io.github.vincemann.springrapid.demo.dtos.owner.CreateOwnerDto;
 import io.github.vincemann.springrapid.demo.dtos.owner.ReadOwnerDto;
-import io.github.vincemann.springrapid.demo.dtos.owner.UpdateOwnerDto;
 import io.github.vincemann.springrapid.demo.model.Owner;
 import io.github.vincemann.springrapid.demo.service.OwnerService;
 import org.apache.commons.beanutils.BeanUtilsBean;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.ArgumentCaptor;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.mock.mockito.MockBean;
@@ -29,14 +25,15 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 
 class OwnerControllerTest
-        extends AbstractUrlParamIdRapidControllerTest<OwnerService,Owner,Long> {
+        extends AbstractUrlParamIdRapidControllerTest<OwnerService, Owner, Long> {
 
     CreateOwnerDto createOwnerDto;
     ReadOwnerDto readOwnerDto;
     Owner owner;
-    
+
     @MockBean
     OwnerService mockedService;
+
 
     String addressPatch;
     String blankCityPatch;
@@ -91,13 +88,13 @@ class OwnerControllerTest
     @Test
     public void create_shouldSucceed() throws Exception {
         String readOwnerDtoJson = serialize(readOwnerDto);
-        when(mockedService.save(refEq(owner,"id"))).thenReturn(owner);
+        when(mockedService.save(refEq(owner, "id"))).thenReturn(owner);
 
         getMockMvc().perform(create(createOwnerDto))
                 .andExpect(status().isOk())
                 .andExpect(content().json(readOwnerDtoJson));
 
-        Mockito.verify(mockedService).save(refEq(owner,"id"));
+        Mockito.verify(mockedService).save(refEq(owner, "id"));
     }
 
 
@@ -130,21 +127,22 @@ class OwnerControllerTest
 
         String updatedAddress = "other Street 12";
 
-        Owner updatedOwner = (Owner) BeanUtilsBean.getInstance().cloneBean(owner);
-        updatedOwner.setAddress(updatedAddress);
+        Owner ownerPatch = (Owner) BeanUtilsBean.getInstance().cloneBean(owner);
+        ownerPatch.setAddress(updatedAddress);
 
         when(mockedService.findById(owner.getId()))
                 .thenReturn(Optional.of(owner));
-        when(mockedService.update(any(Owner.class),eq(true))).thenReturn(updatedOwner);
+        when(mockedService.update(any(Owner.class), eq(true))).thenReturn(ownerPatch);
 
         //when
-        getMockMvc().perform(update(addressPatch,owner.getId()))
+        getMockMvc().perform(update(addressPatch, owner.getId()))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.address").value(updatedOwner.getAddress()));
+                .andExpect(jsonPath("$.address").value(updatedAddress));
 
-        ArgumentCaptor<Owner> updateArg = ArgumentCaptor.forClass(Owner.class);
-        Mockito.verify(mockedService).update(updateArg.capture(),anyBoolean());
-        Assertions.assertEquals(updatedAddress,updateArg.getValue().getAddress());
+//        ArgumentCaptor<Owner> updateArg = ArgumentCaptor.forClass(Owner.class);
+        Mockito.verify(mockedService).update(refEq(ownerPatch), anyBoolean());
+
+//        Assertions.assertEquals(updatedAddress,updateArg.getValue().getAddress());
     }
 
 
@@ -153,13 +151,15 @@ class OwnerControllerTest
 //        UpdateOwnerDto blankCityUpdate = UpdateOwnerDto.builder()
 //                //blank city
 //                .city("")
+        Owner ownerPatch = (Owner) BeanUtilsBean.getInstance().cloneBean(owner);
+        ownerPatch.setCity(null);
 //                .build();
         when(mockedService.findById(owner.getId()))
                 .thenReturn(Optional.of(owner));
-        getMockMvc().perform(update(blankCityPatch,owner.getId()))
+        getMockMvc().perform(update(blankCityPatch, owner.getId()))
                 .andExpect(status().isUnprocessableEntity());
 
 
-        verify(mockedService,never()).update(any(),any());
+        verify(mockedService, never()).update(any(), any());
     }
 }

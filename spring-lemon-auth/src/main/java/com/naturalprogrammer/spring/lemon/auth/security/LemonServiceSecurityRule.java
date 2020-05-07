@@ -14,6 +14,7 @@ import io.github.vincemann.springrapid.core.service.exception.BadEntityException
 import io.github.vincemann.springrapid.core.service.exception.EntityNotFoundException;
 import com.naturalprogrammer.spring.lemon.exceptions.util.LexUtils;
 import io.github.vincemann.springrapid.core.util.EntityUtils;
+import io.github.vincemann.springrapid.core.util.JpaUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.AccessDeniedException;
@@ -31,8 +32,7 @@ import java.util.function.Consumer;
 public class LemonServiceSecurityRule extends ServiceSecurityRule {
 
     private AbstractUserRepository userRepository;
-    @PersistenceContext
-    private EntityManager entityManager;
+
     @Autowired
     public LemonServiceSecurityRule(AbstractUserRepository userRepository) {
         this.userRepository = userRepository;
@@ -56,8 +56,8 @@ public class LemonServiceSecurityRule extends ServiceSecurityRule {
         byEmail.ifPresent(new Consumer<>() {
             @Override
             public void accept(AbstractUser o) {
-                entityManager.detach(o);
-                if(!hasWritePermission(o)){
+                AbstractUser detached = JpaUtils.detach(o);
+                if(!hasWritePermission(detached)){
                     result.setEmail(null);
                 }
             }
