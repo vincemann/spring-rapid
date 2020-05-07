@@ -19,12 +19,22 @@ public class DtoMappingInfo {
     private String endpoint;
     private Direction direction;
     private List<String> authorities = new ArrayList<>();
+    private DtoMappingInfo.Principal principal = DtoMappingInfo.Principal.ALL;
+
+    public enum Principal{
+        OWN,
+        FOREIGN,
+        ALL
+    }
 
     @Builder
-    public DtoMappingInfo(String endpoint, Direction direction, @Nullable List<String> authorities) {
+    public DtoMappingInfo(String endpoint, Direction direction, @Nullable List<String> authorities, DtoMappingInfo.Principal principal) {
         this.endpoint = endpoint;
         this.direction = direction;
-        this.authorities = authorities;
+        if (authorities!=null)
+            this.authorities = authorities;
+        if (principal!=null)
+            this.principal = principal;
     }
 
     public DtoMappingInfo(DtoMappingInfo info){

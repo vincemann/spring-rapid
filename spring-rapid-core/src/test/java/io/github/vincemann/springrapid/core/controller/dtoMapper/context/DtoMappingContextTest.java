@@ -1,8 +1,7 @@
 package io.github.vincemann.springrapid.core.controller.dtoMapper.context;
 
-import io.github.vincemann.springrapid.core.util.Lists;
-import io.github.vincemann.springrapid.core.model.IdentifiableEntity;
 import io.github.vincemann.springrapid.core.model.IdentifiableEntityImpl;
+import io.github.vincemann.springrapid.core.util.Lists;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -18,6 +17,10 @@ class DtoMappingContextTest {
     DtoMappingInfo createInfo;
     DtoMappingInfo findAllInfo;
     List<String> roles;
+    String userRole = "ROLE_USER";
+    String adminRole = "ROLE_ADMIN";
+    String peekRole = "ROLE_PEEK_DETAILED_USER_INFO";
+    DtoMappingInfo updateInfo;
 
 
     class PrivilegedFindDto extends IdentifiableEntityImpl<Long> {
@@ -28,17 +31,31 @@ class DtoMappingContextTest {
 
     }
 
+    class AdminUpdateForeignUserDto extends IdentifiableEntityImpl<Long>{
+
+    }
+
+    class AdminUpdateOwnDto extends IdentifiableEntityImpl<Long>{
+
+    }
+
     class LessPrivilegedFindDto extends IdentifiableEntityImpl<Long>{
 
     }
 
     @BeforeEach
     void setUp() {
-        roles = Lists.newArrayList("ROLE_USER", "ROLE_PEEK_DETAILED_USER_INFO");
+        roles = Lists.newArrayList(userRole,peekRole);
         context = DtoMappingContextBuilder.builder()
                 .withRoles(roles.toArray(new String[0]))
                 .forEndpoint(CrudDtoEndpoint.FIND,Direction.RESPONSE, PrivilegedFindDto.class)
                 .forEndpoint(CrudDtoEndpoint.FIND_ALL,Direction.RESPONSE,PrivilegedFindDto.class)
+                .withRoles(adminRole)
+                .principal(DtoMappingInfo.Principal.FOREIGN)
+                .forEndpoint(CrudDtoEndpoint.UPDATE,Direction.REQUEST,AdminUpdateForeignUserDto.class)
+                .principal(DtoMappingInfo.Principal.OWN)
+                .forEndpoint(CrudDtoEndpoint.UPDATE,Direction.REQUEST,AdminUpdateOwnDto.class)
+                .forAllPrincipals()
                 .withoutRole()
                 .forEndpoint(CrudDtoEndpoint.CREATE,CreateDto.class)
                 .forEndpoint(CrudDtoEndpoint.FIND,Direction.RESPONSE,LessPrivilegedFindDto.class)
@@ -57,6 +74,11 @@ class DtoMappingContextTest {
         createInfo = DtoMappingInfo.builder()
                 .direction(Direction.REQUEST)
                 .endpoint(CrudDtoEndpoint.CREATE)
+                .build();
+
+        updateInfo = DtoMappingInfo.builder()
+                .direction(Direction.REQUEST)
+                .endpoint(CrudDtoEndpoint.UPDATE)
                 .build();
     }
 
@@ -139,5 +161,20 @@ class DtoMappingContextTest {
         Assertions.assertEquals(LessPrivilegedFindDto.class,foundClass);
     }
 
+    @Test
+    public void adminUpdatesOwn(){
+        updateInfo.setAuthorities(Lists.newArrayList(adminRole));
+        updateInfo.setPrincipal(DtoMappingInfo.Principal.OWN);
+        Class<?> foundClass = context.find(updateInfo);
+        Assertions.assertEquals(AdminUpdateOwnDto.class,foundClass);
+    }
+
+    @Test
+    public void adminUpdatesForeign(){
+        updateInfo.setAuthorities(Lists.newArrayList(adminRole));
+        updateInfo.setPrincipal(DtoMappingInfo.Principal.FOREIGN);
+        Class<?> foundClass = context.find(updateInfo);
+        Assertions.assertEquals(AdminUpdateForeignUserDto.class,foundClass);
+    }
 
 }
