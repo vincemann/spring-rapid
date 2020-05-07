@@ -48,37 +48,37 @@ class DtoMappingContextTest {
         roles = Lists.newArrayList(userRole,peekRole);
         context = DtoMappingContextBuilder.builder()
                 .withRoles(roles.toArray(new String[0]))
-                .forEndpoint(CrudDtoEndpoint.FIND,Direction.RESPONSE, PrivilegedFindDto.class)
-                .forEndpoint(CrudDtoEndpoint.FIND_ALL,Direction.RESPONSE,PrivilegedFindDto.class)
+                .forEndpoint(RapidDtoEndpoint.FIND,Direction.RESPONSE, PrivilegedFindDto.class)
+                .forEndpoint(RapidDtoEndpoint.FIND_ALL,Direction.RESPONSE,PrivilegedFindDto.class)
                 .withRoles(adminRole)
                 .principal(DtoMappingInfo.Principal.FOREIGN)
-                .forEndpoint(CrudDtoEndpoint.UPDATE,Direction.REQUEST,AdminUpdateForeignUserDto.class)
+                .forEndpoint(RapidDtoEndpoint.UPDATE,Direction.REQUEST,AdminUpdateForeignUserDto.class)
                 .principal(DtoMappingInfo.Principal.OWN)
-                .forEndpoint(CrudDtoEndpoint.UPDATE,Direction.REQUEST,AdminUpdateOwnDto.class)
+                .forEndpoint(RapidDtoEndpoint.UPDATE,Direction.REQUEST,AdminUpdateOwnDto.class)
                 .forAllPrincipals()
                 .withoutRole()
-                .forEndpoint(CrudDtoEndpoint.CREATE,CreateDto.class)
-                .forEndpoint(CrudDtoEndpoint.FIND,Direction.RESPONSE,LessPrivilegedFindDto.class)
+                .forEndpoint(RapidDtoEndpoint.CREATE,CreateDto.class)
+                .forEndpoint(RapidDtoEndpoint.FIND,Direction.RESPONSE,LessPrivilegedFindDto.class)
                 .build();
 
         findInfo = DtoMappingInfo.builder()
                 .direction(Direction.RESPONSE)
-                .endpoint(CrudDtoEndpoint.FIND)
+                .endpoint(RapidDtoEndpoint.FIND)
                 .build();
 
         findAllInfo = DtoMappingInfo.builder()
-                .endpoint(CrudDtoEndpoint.FIND_ALL)
+                .endpoint(RapidDtoEndpoint.FIND_ALL)
                 .direction(Direction.RESPONSE)
                 .build();
 
         createInfo = DtoMappingInfo.builder()
                 .direction(Direction.REQUEST)
-                .endpoint(CrudDtoEndpoint.CREATE)
+                .endpoint(RapidDtoEndpoint.CREATE)
                 .build();
 
         updateInfo = DtoMappingInfo.builder()
                 .direction(Direction.REQUEST)
-                .endpoint(CrudDtoEndpoint.UPDATE)
+                .endpoint(RapidDtoEndpoint.UPDATE)
                 .build();
     }
 
@@ -146,7 +146,7 @@ class DtoMappingContextTest {
         DtoMappingInfo unknown = DtoMappingInfo.builder()
                 .authorities(new ArrayList<>())
                 .direction(Direction.REQUEST)
-                .endpoint(CrudDtoEndpoint.FIND)
+                .endpoint(RapidDtoEndpoint.FIND)
                 .build();
         Assertions.assertThrows(IllegalArgumentException.class,()-> context.find(unknown));
     }

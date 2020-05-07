@@ -12,7 +12,7 @@ import com.naturalprogrammer.spring.lemon.auth.util.UserUtils;
 import com.naturalprogrammer.spring.lemon.exceptions.util.LexUtils;
 import io.github.vincemann.springrapid.acl.service.Secured;
 import io.github.vincemann.springrapid.core.controller.dtoMapper.DtoMappingException;
-import io.github.vincemann.springrapid.core.controller.dtoMapper.context.CrudDtoEndpoint;
+import io.github.vincemann.springrapid.core.controller.dtoMapper.context.RapidDtoEndpoint;
 import io.github.vincemann.springrapid.core.controller.dtoMapper.context.Direction;
 import io.github.vincemann.springrapid.core.controller.dtoMapper.context.DtoMappingContext;
 import io.github.vincemann.springrapid.core.controller.rapid.RapidController;
@@ -26,8 +26,6 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.Serializable;
@@ -187,7 +185,7 @@ public abstract class LemonController
 		LexUtils.ensureFound(byEmail);
 		byEmail.setPassword(null);
 		Object dto = getDtoMapper().mapToDto(byEmail,
-				findDtoClass(CrudDtoEndpoint.FIND, Direction.RESPONSE));
+				findDtoClass(RapidDtoEndpoint.FIND, Direction.RESPONSE));
 		return dto;
 	}
 
