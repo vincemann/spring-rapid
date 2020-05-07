@@ -38,6 +38,8 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.servlet.mvc.method.RequestMappingInfo;
 
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.ConstraintViolationException;
@@ -91,6 +93,9 @@ public abstract class RapidController
     private String createUrl;
     private String baseUrl;
     private String entityNameInUrl;
+
+    @PersistenceContext
+    private EntityManager entityManager;
 
 
     private EndpointService endpointService;
@@ -351,11 +356,14 @@ public abstract class RapidController
             beforeUpdate(dtoClass, id, patchString, request, response);
 
             Optional<E> saved = getUnsecuredService().findById(id);
+            entityManager.detach(saved.get());
             EntityUtils.checkPresent(saved, id, getEntityClass());
             Object patchDto = dtoMapper.mapToDto(saved.get(), dtoClass);
             patchDto = MapperUtils.applyPatch(patchDto, patchString);
             validationStrategy.validateDto(patchDto);
             E patch = dtoMapper.mapToEntity(patchDto, getEntityClass());
+            //if id got lost bc dto does not have id
+//            patch.setId(id);
             E merged = merge(patch, saved.get(),dtoClass);
 //            checkForInvalidUpdates(dtoClass, saved.get(), merged);
             logStateBeforeServiceCall("update", saved, patchString, merged);
