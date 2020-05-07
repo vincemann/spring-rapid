@@ -7,7 +7,7 @@ import com.naturalprogrammer.spring.lemon.authdemo.dto.AdminUpdateUserDto;
 import com.naturalprogrammer.spring.lemon.authdemo.dto.UserUpdateDto;
 import com.naturalprogrammer.spring.lemon.authdemo.domain.User;
 import io.github.vincemann.springrapid.acl.Role;
-import io.github.vincemann.springrapid.core.controller.dtoMapper.context.CrudDtoEndpoint;
+import io.github.vincemann.springrapid.core.controller.dtoMapper.context.RapidDtoEndpoint;
 import io.github.vincemann.springrapid.core.controller.dtoMapper.context.DtoMappingContextBuilder;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -23,9 +23,9 @@ public class MyUserController extends LemonController<User, Long, MySignupForm> 
         super(
                 DtoMappingContextBuilder.builder()
                         .forAll(LemonUserDto.class)
-                        .forEndpoint(CrudDtoEndpoint.UPDATE, UserUpdateDto.class)
+                        .forEndpoint(RapidDtoEndpoint.UPDATE, UserUpdateDto.class)
                         .withRoles(Role.ADMIN)
-                        .forEndpoint(CrudDtoEndpoint.UPDATE, AdminUpdateUserDto.class)
+                        .forEndpoint(RapidDtoEndpoint.UPDATE, AdminUpdateUserDto.class)
                         .build()
         );
     }

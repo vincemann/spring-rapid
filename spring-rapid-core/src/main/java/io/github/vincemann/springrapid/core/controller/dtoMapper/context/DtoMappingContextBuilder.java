@@ -44,24 +44,24 @@ public class DtoMappingContextBuilder {
 
 
     protected List<String> getAllEndpoints(){
-        ArrayList<String> all = Lists.newArrayList(CrudDtoEndpoint.CREATE);
+        ArrayList<String> all = Lists.newArrayList(RapidDtoEndpoint.CREATE);
         all.addAll(getWriteEndpoints());
         all.addAll(getFindEndpoints());
         return all;
     }
 
     protected List<String> getFindEndpoints(){
-        return Lists.newArrayList(CrudDtoEndpoint.FIND, CrudDtoEndpoint.FIND_ALL);
+        return Lists.newArrayList(RapidDtoEndpoint.FIND, RapidDtoEndpoint.FIND_ALL);
     }
 
     protected List<String> getWriteEndpoints(){
-        ArrayList<String> writeEndpoints = Lists.newArrayList(CrudDtoEndpoint.CREATE);
+        ArrayList<String> writeEndpoints = Lists.newArrayList(RapidDtoEndpoint.CREATE);
         writeEndpoints.addAll(getUpdateEndpoints());
         return writeEndpoints;
     }
 
     protected List<String> getUpdateEndpoints(){
-        return Lists.newArrayList(CrudDtoEndpoint.UPDATE);
+        return Lists.newArrayList(RapidDtoEndpoint.UPDATE);
     }
 
     /**

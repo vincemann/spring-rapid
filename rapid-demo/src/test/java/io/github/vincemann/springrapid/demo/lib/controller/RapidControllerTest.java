@@ -5,7 +5,7 @@ import io.github.vincemann.springrapid.core.config.DtoMapperAutoConfiguration;
 import io.github.vincemann.springrapid.core.config.RapidControllerAutoConfiguration;
 import io.github.vincemann.springrapid.core.controller.dtoMapper.Delegating;
 import io.github.vincemann.springrapid.core.controller.dtoMapper.DtoMapper;
-import io.github.vincemann.springrapid.core.controller.dtoMapper.context.CrudDtoEndpoint;
+import io.github.vincemann.springrapid.core.controller.dtoMapper.context.RapidDtoEndpoint;
 import io.github.vincemann.springrapid.core.controller.dtoMapper.context.Direction;
 import io.github.vincemann.springrapid.core.controller.dtoMapper.context.DtoMappingContext;
 import io.github.vincemann.springrapid.core.controller.dtoMapper.context.DtoMappingInfo;
@@ -26,7 +26,6 @@ import org.springframework.boot.test.mock.mockito.SpyBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Import;
 import org.springframework.context.annotation.Primary;
-import org.springframework.http.RequestEntity;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit.jupiter.web.SpringJUnitWebConfig;
@@ -101,7 +100,7 @@ class RapidControllerTest
     void findAll_shouldSucceed() throws Exception {
         DtoMappingInfo expectedResponseMappingInfo = DtoMappingInfo.builder()
                 .direction(Direction.RESPONSE)
-                .endpoint(CrudDtoEndpoint.FIND_ALL)
+                .endpoint(RapidDtoEndpoint.FIND_ALL)
                 .authorities(new ArrayList<>())
                 .build();
         when(service.findAll())
@@ -130,12 +129,12 @@ class RapidControllerTest
     void update_shouldSucceed() throws Exception {
         DtoMappingInfo expectedRequestMappingInfo = DtoMappingInfo.builder()
                 .direction(Direction.REQUEST)
-                .endpoint(CrudDtoEndpoint.UPDATE)
+                .endpoint(RapidDtoEndpoint.UPDATE)
                 .authorities(new ArrayList<>())
                 .build();
         DtoMappingInfo expectedResponseMappingInfo = DtoMappingInfo.builder()
                 .direction(Direction.RESPONSE)
-                .endpoint(CrudDtoEndpoint.UPDATE)
+                .endpoint(RapidDtoEndpoint.UPDATE)
                 .authorities(new ArrayList<>())
                 .build();
 
@@ -248,7 +247,7 @@ class RapidControllerTest
         DtoMappingInfo expectedRequestMappingInfo = DtoMappingInfo.builder()
                 .authorities(new ArrayList<>())
                 .direction(Direction.REQUEST)
-                .endpoint(CrudDtoEndpoint.CREATE)
+                .endpoint(RapidDtoEndpoint.CREATE)
                 .build();
         when(dtoMappingContext.find(eq(expectedRequestMappingInfo)))
                 .thenReturn(readDtoClass);
@@ -264,7 +263,7 @@ class RapidControllerTest
         DtoMappingInfo expectedResponseMappingInfo = DtoMappingInfo.builder()
                 .authorities(new ArrayList<>())
                 .direction(Direction.RESPONSE)
-                .endpoint(CrudDtoEndpoint.CREATE)
+                .endpoint(RapidDtoEndpoint.CREATE)
                 .build();
 
         when(dtoMappingContext.find(eq(expectedResponseMappingInfo)))
@@ -302,7 +301,7 @@ class RapidControllerTest
         DtoMappingInfo expectedResponseMappingInfo = DtoMappingInfo.builder()
                 .authorities(new ArrayList<>())
                 .direction(Direction.RESPONSE)
-                .endpoint(CrudDtoEndpoint.FIND)
+                .endpoint(RapidDtoEndpoint.FIND)
                 .build();
 
         when(idFetchingStrategy.fetchId(any()))
