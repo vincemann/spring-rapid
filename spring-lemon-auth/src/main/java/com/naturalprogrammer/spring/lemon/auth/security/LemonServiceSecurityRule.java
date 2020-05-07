@@ -5,21 +5,29 @@ import com.naturalprogrammer.spring.lemon.auth.domain.AbstractUserRepository;
 import com.naturalprogrammer.spring.lemon.auth.domain.ChangePasswordForm;
 import com.naturalprogrammer.spring.lemon.auth.domain.RequestEmailChangeForm;
 import com.naturalprogrammer.spring.lemon.auth.security.domain.LemonRole;
+import com.naturalprogrammer.spring.lemon.auth.security.domain.LemonUserDto;
+import com.naturalprogrammer.spring.lemon.auth.util.LecwUtils;
+import io.github.vincemann.springrapid.acl.proxy.rules.OverrideDefaultSecurityRule;
 import io.github.vincemann.springrapid.acl.proxy.rules.ServiceSecurityRule;
 import io.github.vincemann.springrapid.core.proxy.CalledByProxy;
 import io.github.vincemann.springrapid.core.service.exception.BadEntityException;
 import io.github.vincemann.springrapid.core.service.exception.EntityNotFoundException;
 import com.naturalprogrammer.spring.lemon.exceptions.util.LexUtils;
+import io.github.vincemann.springrapid.core.util.EntityUtils;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
 import java.io.Serializable;
 import java.util.Optional;
 import java.util.function.Consumer;
 
 
-@Transactional(readOnly = true)
+@Transactional
+@Slf4j
 public class LemonServiceSecurityRule extends ServiceSecurityRule {
 
     private AbstractUserRepository userRepository;
@@ -56,8 +64,28 @@ public class LemonServiceSecurityRule extends ServiceSecurityRule {
     }
 
     @CalledByProxy
-    public void preAuthorizeUpdateUser(AbstractUser user, AbstractUser update) throws BadEntityException, EntityNotFoundException{
-        getSecurityChecker().checkPermission(user.getId(),update.getClass(), getWritePermission());
+    @OverrideDefaultSecurityRule
+    public void preAuthorizeUpdate(AbstractUser<?> update,boolean full) throws BadEntityException, EntityNotFoundException{
+        getSecurityChecker().checkPermission(update.getId(),update.getClass(), getWritePermission());
+        Optional<AbstractUser> byId = userRepository.findById(update.getId());
+        EntityUtils.checkPresent(byId,update.getId(),update.getClass());
+        LemonUserDto currentUser = LecwUtils.currentUser();
+        EntityUtils.checkNotNull(currentUser,"Authenticated user not found");
+        adjustRoles(byId.get(),update,currentUser);
+    }
+
+    /**
+     * Check current Users role and decide what role adjustments he can make.
+     */
+    protected void adjustRoles(AbstractUser<?> old, AbstractUser<?> newUser, LemonUserDto currentUser) {
+        // Good admin tries to edit
+        if (currentUser.isGoodAdmin() &&
+                !currentUser.getId().equals(old.getId().toString())) {
+            return;
+        }else {
+            //no update of roles possible
+            newUser.setRoles(old.getRoles());
+        }
     }
 
     @CalledByProxy
