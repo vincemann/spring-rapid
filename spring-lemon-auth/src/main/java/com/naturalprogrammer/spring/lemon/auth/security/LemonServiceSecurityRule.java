@@ -18,6 +18,7 @@ import io.github.vincemann.springrapid.core.util.JpaUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.AccessDeniedException;
+import org.springframework.security.acls.domain.BasePermission;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.EntityManager;
@@ -50,20 +51,29 @@ public class LemonServiceSecurityRule extends ServiceSecurityRule {
     }
 
     @CalledByProxy
-    public void postAuthorizeFindByEmail(String email, AbstractUser result){
+    public void preAuthorizeFindByEmail(String email) throws EntityNotFoundException {
         //only include email if user has write permission
         Optional<AbstractUser> byEmail = userRepository.findByEmail(email);
-        byEmail.ifPresent(new Consumer<>() {
-            @Override
-            public void accept(AbstractUser o) {
-                AbstractUser detached = JpaUtils.detach(o);
-                if(!hasWritePermission(detached)){
-                    result.setEmail(null);
-                }
-            }
-        });
-
+        EntityUtils.checkPresent(byEmail,"No User found with email: " +email);
+        getSecurityChecker().checkPermission(byEmail.get().getId(),byEmail.get().getClass(), getWritePermission());
     }
+
+    //this is done by mapping to specific dto
+//    @CalledByProxy
+//    public void postAuthorizeFindByEmail(String email, AbstractUser result){
+//        //only include email if user has write permission
+//        Optional<AbstractUser> byEmail = userRepository.findByEmail(email);
+//        byEmail.ifPresent(new Consumer<>() {
+//            @Override
+//            public void accept(AbstractUser o) {
+//                AbstractUser detached = JpaUtils.detach(o);
+//                if(!hasWritePermission(detached)){
+//                    result.setEmail(null);
+//                }
+//            }
+//        });
+//
+//    }
 
     @CalledByProxy
     @OverrideDefaultSecurityRule

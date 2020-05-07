@@ -5,6 +5,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
 import org.modelmapper.ModelMapper;
+import org.springframework.transaction.annotation.Transactional;
 
 
 /**
@@ -13,6 +14,7 @@ import org.modelmapper.ModelMapper;
 @Setter
 @Getter
 @AllArgsConstructor
+@Transactional
 public class BasicDtoMapper implements DtoMapper {
 
     private ModelMapper modelMapper;

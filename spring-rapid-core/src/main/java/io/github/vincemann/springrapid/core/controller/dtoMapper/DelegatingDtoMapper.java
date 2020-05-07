@@ -4,12 +4,14 @@ import io.github.vincemann.springrapid.core.advice.log.LogInteraction;
 import io.github.vincemann.springrapid.core.model.IdentifiableEntity;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
 @Slf4j
+@Transactional
 public class DelegatingDtoMapper implements DtoMapper {
 
     private List<DtoMapper> delegates = new ArrayList<>();

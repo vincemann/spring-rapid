@@ -36,10 +36,10 @@ public class EntityUtils {
         }
     }
 
-    public static void checkPresent(Optional<Object> entity, String msg) throws EntityNotFoundException {
-        if(entity.isEmpty()){
-            throw new EntityNotFoundException(msg);
-        }
-    }
+//    public static void checkPresent(Optional<Object> entity, String msg) throws EntityNotFoundException {
+//        if(entity.isEmpty()){
+//            throw new EntityNotFoundException(msg);
+//        }
+//    }
 
 }

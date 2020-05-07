@@ -67,6 +67,7 @@ public class FetchUserMvcTests extends AbstractMvcTests {
 
 	@Test
 	public void testUnauthenticated_fetchUserByEmail() throws Exception {
+		//todo create lemonDtoMappingContext with lemon endpoints like parentAware and create dto that only has id that maps for find,response,foreign,noRoles
 		
 		mvc.perform(post("/api/core/users/fetch-by-email")
                 .param("email", ADMIN_EMAIL)

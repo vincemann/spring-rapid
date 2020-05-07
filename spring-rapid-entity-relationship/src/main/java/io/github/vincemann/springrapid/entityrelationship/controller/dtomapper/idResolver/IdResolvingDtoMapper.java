@@ -8,6 +8,7 @@ import io.github.vincemann.springrapid.entityrelationship.dto.biDir.BiDirChildDt
 import io.github.vincemann.springrapid.entityrelationship.dto.biDir.BiDirParentDto;
 import io.github.vincemann.springrapid.entityrelationship.dto.uniDir.UniDirChildDto;
 import io.github.vincemann.springrapid.entityrelationship.dto.uniDir.UniDirParentDto;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -18,6 +19,7 @@ import java.util.List;
  *
  * @see EntityIdResolver
  */
+@Transactional
 public class IdResolvingDtoMapper extends BasicDtoMapper {
 
     private List<EntityIdResolver> entityIdResolvers;
