@@ -3,7 +3,6 @@ package io.github.vincemann.springrapid.core.controller.rapid;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.fge.jsonpatch.JsonPatchException;
-import com.google.common.collect.Sets;
 import io.github.vincemann.springrapid.core.advice.log.LogComponentInteractionAdvice;
 import io.github.vincemann.springrapid.core.controller.dtoMapper.Delegating;
 import io.github.vincemann.springrapid.core.controller.dtoMapper.DtoMapper;
@@ -26,9 +25,7 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.beanutils.BeanUtilsBean;
-import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.ApplicationListener;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.context.event.ContextRefreshedEvent;
@@ -38,8 +35,6 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.servlet.mvc.method.RequestMappingInfo;
 
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.ConstraintViolationException;
@@ -93,9 +88,6 @@ public abstract class RapidController
     private String createUrl;
     private String baseUrl;
     private String entityNameInUrl;
-
-    @PersistenceContext
-    private EntityManager entityManager;
 
 
     private EndpointService endpointService;
@@ -356,7 +348,6 @@ public abstract class RapidController
             beforeUpdate(dtoClass, id, patchString, request, response);
 
             Optional<E> saved = getUnsecuredService().findById(id);
-            entityManager.detach(saved.get());
             EntityUtils.checkPresent(saved, id, getEntityClass());
             Object patchDto = dtoMapper.mapToDto(saved.get(), dtoClass);
             patchDto = MapperUtils.applyPatch(patchDto, patchString);
@@ -364,7 +355,7 @@ public abstract class RapidController
             E patch = dtoMapper.mapToEntity(patchDto, getEntityClass());
             //if id got lost bc dto does not have id
 //            patch.setId(id);
-            E merged = merge(patch, saved.get(),dtoClass);
+            E merged = merge(patch, JpaUtils.detach(saved.get()),dtoClass);
 //            checkForInvalidUpdates(dtoClass, saved.get(), merged);
             logStateBeforeServiceCall("update", saved, patchString, merged);
             E updated = serviceUpdate(merged, true);
@@ -379,9 +370,10 @@ public abstract class RapidController
         }
     }
 
-    protected E merge(E patch, E saved, Class<?> dtoClass) throws BadEntityException {
-//        Map<String, Field> dtoFields = ReflectionUtils.getNonStaticFieldMap(dtoClass);
-        Map<String, Field> entityFields = ReflectionUtils.getNonStaticFieldMap(getEntityClass());
+
+    public E merge(E patch, E saved, Class<?> dtoClass) throws BadEntityException {
+        //        Map<String, Field> dtoFields = ReflectionUtils.getNonStaticFieldMap(dtoClass);
+        Map<String, Field> entityFields = ReflectionUtils.getNonStaticFieldMap(saved.getClass());
         Set<String> properties = Arrays.stream(ReflectionUtils.getDeclaredFields(dtoClass, true))
                 //ignore static fields
                 .filter(field -> !Modifier.isStatic(field.getModifiers()))
