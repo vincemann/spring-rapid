@@ -31,7 +31,8 @@ import java.util.function.Consumer;
 public class LemonServiceSecurityRule extends ServiceSecurityRule {
 
     private AbstractUserRepository userRepository;
-
+    @PersistenceContext
+    private EntityManager entityManager;
     @Autowired
     public LemonServiceSecurityRule(AbstractUserRepository userRepository) {
         this.userRepository = userRepository;
@@ -55,6 +56,7 @@ public class LemonServiceSecurityRule extends ServiceSecurityRule {
         byEmail.ifPresent(new Consumer<>() {
             @Override
             public void accept(AbstractUser o) {
+                entityManager.detach(o);
                 if(!hasWritePermission(o)){
                     result.setEmail(null);
                 }
