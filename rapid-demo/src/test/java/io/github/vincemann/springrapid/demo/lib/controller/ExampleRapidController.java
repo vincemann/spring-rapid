@@ -7,6 +7,12 @@ public class ExampleRapidController
         extends RapidController<ExampleEntity,Long,ExampleService>
 {
     public ExampleRapidController(DtoMappingContext dtoMappingContext) {
-        super(dtoMappingContext);
+        super();
+        setDtoMappingContext(dtoMappingContext);
+    }
+
+    @Override
+    public DtoMappingContext provideDtoMappingContext() {
+        return null;
     }
 }

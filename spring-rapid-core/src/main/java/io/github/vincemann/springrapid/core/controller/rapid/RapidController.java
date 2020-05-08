@@ -96,6 +96,7 @@ public abstract class RapidController
     private S service;
     private S unsecuredService;
     private DtoMapper dtoMapper;
+    @Setter
     private DtoMappingContext dtoMappingContext;
     private ValidationStrategy<Id> validationStrategy;
     private CurrentUserIdProvider currentUserIdProvider;
@@ -109,14 +110,13 @@ public abstract class RapidController
     private Class<E> entityClass = (Class<E>) ((ParameterizedType) this.getClass().getGenericSuperclass()).getActualTypeArguments()[0];
 
     @Autowired
-    public RapidController(DtoMappingContext dtoMappingContext) {
-        this.dtoMappingContext = dtoMappingContext;
+    public RapidController() {
+        this.dtoMappingContext = provideDtoMappingContext();
         initUrls();
     }
 
-    public RapidController() {
-        initUrls();
-    }
+    public abstract DtoMappingContext provideDtoMappingContext();
+
 
     /**
      * Override this with @Autowired @Qualifier("mySecuredService") if you are using a Security Proxy.
@@ -136,9 +136,6 @@ public abstract class RapidController
         this.unsecuredService = crudService;
     }
 
-    public void setDtoMappingContext(DtoMappingContext dtoMappingContext) {
-        this.dtoMappingContext = dtoMappingContext;
-    }
 
     @Autowired
     public void injectCurrentUserIdProvider(CurrentUserIdProvider currentUserIdProvider) {

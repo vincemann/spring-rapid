@@ -1,11 +1,13 @@
 package io.github.vincemann.springrapid.core.controller.dtoMapper.context;
 
 import io.github.vincemann.springrapid.core.util.Lists;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.util.Assert;
 
 import java.util.ArrayList;
 import java.util.List;
 
+@Slf4j
 public class DtoMappingContextBuilder {
     private List<String> currentRoles = new ArrayList<>();
     private DtoMappingContext mc;
@@ -16,8 +18,16 @@ public class DtoMappingContextBuilder {
         this.mc = new DtoMappingContext();
     }
 
+    public DtoMappingContextBuilder(DtoMappingContext mc) {
+        this.mc = mc;
+    }
+
     public static DtoMappingContextBuilder builder(){
         return new DtoMappingContextBuilder();
+    }
+
+    public static DtoMappingContextBuilder builder(DtoMappingContext mc){
+        return new DtoMappingContextBuilder(mc);
     }
 
 
@@ -73,7 +83,7 @@ public class DtoMappingContextBuilder {
         Assert.notNull(defaultDtoClass);
         List<DtoMappingInfo> infoList = createInfos(getAllEndpoints());
         for (DtoMappingInfo info : infoList) {
-            mc.getMappingEntries().put(info,defaultDtoClass);
+            addEntry(info,defaultDtoClass);
         }
         return this;
     }
@@ -97,7 +107,7 @@ public class DtoMappingContextBuilder {
             infoList.add(createInfo(endpoint,direction));
         }
         for (DtoMappingInfo info : infoList) {
-            mc.getMappingEntries().put(info,responseDtoClass);
+            addEntry(info,responseDtoClass);
         }
         return this;
     }
@@ -106,7 +116,7 @@ public class DtoMappingContextBuilder {
         Assert.notNull(readDtoClass);
         List<DtoMappingInfo> infoList = createInfos(getFindEndpoints());
         for (DtoMappingInfo info : infoList) {
-            mc.getMappingEntries().put(info,readDtoClass);
+            addEntry(info,readDtoClass);
         }
         return this;
     }
@@ -115,7 +125,7 @@ public class DtoMappingContextBuilder {
         Assert.notNull(writeDtoClass);
         List<DtoMappingInfo> infoList = createInfos(getWriteEndpoints());
         for (DtoMappingInfo info : infoList) {
-            mc.getMappingEntries().put(info,writeDtoClass);
+            addEntry(info,writeDtoClass);
         }
         return this;
     }
@@ -125,7 +135,7 @@ public class DtoMappingContextBuilder {
         Assert.notNull(direction);
         List<String> updateEndpoints = getUpdateEndpoints();
         for (String updateEndpoint : updateEndpoints) {
-            mc.getMappingEntries().put(createInfo(updateEndpoint,direction),updateDtoClass);
+            addEntry(createInfo(updateEndpoint,direction),updateDtoClass);
         }
         return this;
     }
@@ -134,8 +144,8 @@ public class DtoMappingContextBuilder {
         Assert.notNull(updateDtoClass);
         List<String> updateEndpoints = getUpdateEndpoints();
         for (String updateEndpoint : updateEndpoints) {
-            mc.getMappingEntries().put(createInfo(updateEndpoint,Direction.REQUEST),updateDtoClass);
-            mc.getMappingEntries().put(createInfo(updateEndpoint,Direction.RESPONSE),updateDtoClass);
+            addEntry(createInfo(updateEndpoint,Direction.REQUEST),updateDtoClass);
+            addEntry(createInfo(updateEndpoint,Direction.RESPONSE),updateDtoClass);
         }
         return this;
     }
@@ -143,8 +153,8 @@ public class DtoMappingContextBuilder {
     public DtoMappingContextBuilder forEndpoint(String endpoint, Class<?> dtoClass){
         Assert.notNull(endpoint);
         Assert.notNull(dtoClass);
-        mc.getMappingEntries().put(createInfo(endpoint,Direction.REQUEST),dtoClass);
-        mc.getMappingEntries().put(createInfo(endpoint,Direction.RESPONSE),dtoClass);
+        addEntry(createInfo(endpoint,Direction.REQUEST),dtoClass);
+        addEntry(createInfo(endpoint,Direction.RESPONSE),dtoClass);
         return this;
     }
 
@@ -153,7 +163,7 @@ public class DtoMappingContextBuilder {
         Assert.notNull(endpoint);
         Assert.notNull(dtoClass);
         Assert.notNull(direction);
-        mc.getMappingEntries().put(createInfo(endpoint,direction),dtoClass);
+        addEntry(createInfo(endpoint,direction),dtoClass);
         return this;
     }
 
@@ -165,15 +175,24 @@ public class DtoMappingContextBuilder {
         Assert.notNull(dtoClass);
         DtoMappingInfo info = createInfo(endpoint, direction);
         info.setAuthorities(authorities);
-        mc.getMappingEntries().put(info,dtoClass);
+        addEntry(info,dtoClass);
         return this;
     }
 
     public DtoMappingContextBuilder forInfo(DtoMappingInfo info, Class<?> dtoClass){
         Assert.notNull(dtoClass);
         Assert.notNull(info);
-        mc.getMappingEntries().put(info,dtoClass);
+        addEntry(info,dtoClass);
         return this;
+    }
+
+    protected void addEntry(DtoMappingInfo info, Class<?> dtoClass){
+        Class<?> overridden = mc.getMappingEntries().put(info, dtoClass);
+        if (overridden!=null) {
+            if (!overridden.equals(dtoClass)) {
+                log.warn("Overriding dto mapping info: " + info + ", old DtoClass: " + overridden + ", new DtoClass: " + dtoClass);
+            }
+        }
     }
 
     public DtoMappingContext build(){

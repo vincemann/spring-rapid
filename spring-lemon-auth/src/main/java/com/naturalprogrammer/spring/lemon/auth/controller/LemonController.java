@@ -3,8 +3,12 @@ package com.naturalprogrammer.spring.lemon.auth.controller;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.naturalprogrammer.spring.lemon.auth.domain.*;
 import com.naturalprogrammer.spring.lemon.auth.domain.dto.ChangePasswordForm;
+import com.naturalprogrammer.spring.lemon.auth.domain.dto.LemonSignupForm;
 import com.naturalprogrammer.spring.lemon.auth.domain.dto.RequestEmailChangeForm;
 import com.naturalprogrammer.spring.lemon.auth.domain.dto.ResetPasswordForm;
+import com.naturalprogrammer.spring.lemon.auth.domain.dto.user.LemonAdminUpdateUserDto;
+import com.naturalprogrammer.spring.lemon.auth.domain.dto.user.LemonFetchForeignByEmailDto;
+import com.naturalprogrammer.spring.lemon.auth.domain.dto.user.LemonReadUserDto;
 import com.naturalprogrammer.spring.lemon.auth.properties.LemonProperties;
 import com.naturalprogrammer.spring.lemon.auth.domain.dto.user.LemonUserDto;
 import com.naturalprogrammer.spring.lemon.auth.service.LemonService;
@@ -12,10 +16,12 @@ import com.naturalprogrammer.spring.lemon.auth.util.LecUtils;
 import com.naturalprogrammer.spring.lemon.auth.util.LecwUtils;
 import com.naturalprogrammer.spring.lemon.auth.util.LemonUtils;
 import com.naturalprogrammer.spring.lemon.exceptions.util.LexUtils;
+import io.github.vincemann.springrapid.acl.Role;
 import io.github.vincemann.springrapid.acl.service.Secured;
 import io.github.vincemann.springrapid.core.controller.dtoMapper.DtoMappingException;
 import io.github.vincemann.springrapid.core.controller.dtoMapper.context.Direction;
 import io.github.vincemann.springrapid.core.controller.dtoMapper.context.DtoMappingContext;
+import io.github.vincemann.springrapid.core.controller.dtoMapper.context.DtoMappingInfo;
 import io.github.vincemann.springrapid.core.controller.dtoMapper.context.RapidDtoEndpoint;
 import io.github.vincemann.springrapid.core.controller.rapid.RapidController;
 import io.github.vincemann.springrapid.core.service.exception.BadEntityException;
@@ -51,11 +57,6 @@ public abstract class LemonController
 	private static final Log log = LogFactory.getLog(LemonController.class);
 
     private long jwtExpirationMillis;
-
-	public LemonController(DtoMappingContext dtoMappingContext) {
-		super(dtoMappingContext);
-		log.info("Created");
-	}
 
 
 	@Autowired
@@ -98,6 +99,19 @@ public abstract class LemonController
 		return context;
 	}
 
+	@Override
+	public DtoMappingContext provideDtoMappingContext() {
+		return LemonDtoMappingContextBuilder.builder()
+				.forAll(LemonUserDto.class)
+				.forResponse(LemonReadUserDto.class)
+				.forEndpoint(LemonDtoEndpoint.SIGN_UP, Direction.REQUEST, LemonSignupForm.class)
+				.forPrincipal(DtoMappingInfo.Principal.FOREIGN)
+				.forEndpoint(LemonDtoEndpoint.FETCH_BY_EMAIL,Direction.RESPONSE, LemonFetchForeignByEmailDto.class)
+				.forAllPrincipals()
+				.withRoles(Role.ADMIN)
+				.forEndpoint(RapidDtoEndpoint.UPDATE, LemonAdminUpdateUserDto.class)
+				.build();
+	}
 
 	/**
 	 * Signs up a user, and
