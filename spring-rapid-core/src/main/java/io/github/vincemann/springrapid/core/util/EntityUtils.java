@@ -23,6 +23,11 @@ public class EntityUtils {
         if(entity==null){
             throw new EntityNotFoundException(msg);
         }
+        if (entity instanceof Optional){
+            if (((Optional) entity).isEmpty()){
+                throw new EntityNotFoundException(msg);
+            }
+        }
     }
 
     public static void checkPresent(Object entity, Object id, Class clazz) throws EntityNotFoundException {
@@ -35,6 +40,7 @@ public class EntityUtils {
             }
         }
     }
+
 
 //    public static void checkPresent(Optional<Object> entity, String msg) throws EntityNotFoundException {
 //        if(entity.isEmpty()){

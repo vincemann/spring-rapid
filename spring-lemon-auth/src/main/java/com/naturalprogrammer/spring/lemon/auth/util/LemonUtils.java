@@ -2,7 +2,7 @@ package com.naturalprogrammer.spring.lemon.auth.util;
 
 import com.naturalprogrammer.spring.lemon.auth.domain.AbstractUser;
 import com.naturalprogrammer.spring.lemon.auth.security.domain.LemonPrincipal;
-import com.naturalprogrammer.spring.lemon.auth.security.domain.LemonUserDto;
+import com.naturalprogrammer.spring.lemon.auth.domain.dto.user.LemonUserDto;
 import com.naturalprogrammer.spring.lemon.auth.security.service.BlueTokenService;
 import com.naturalprogrammer.spring.lemon.auth.security.service.LemonTokenService;
 import com.nimbusds.jwt.JWTClaimsSet;

@@ -1,4 +1,4 @@
-package com.naturalprogrammer.spring.lemon.auth.domain;
+package com.naturalprogrammer.spring.lemon.auth.domain.dto;
 
 import com.fasterxml.jackson.annotation.JsonView;
 import com.naturalprogrammer.spring.lemon.auth.util.UserUtils;

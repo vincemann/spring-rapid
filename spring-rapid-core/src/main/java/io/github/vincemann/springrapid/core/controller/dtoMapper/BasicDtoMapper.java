@@ -3,8 +3,12 @@ package io.github.vincemann.springrapid.core.controller.dtoMapper;
 import io.github.vincemann.springrapid.core.model.IdentifiableEntity;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.modelmapper.ModelMapper;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.Ordered;
+import org.springframework.core.annotation.Order;
 import org.springframework.transaction.annotation.Transactional;
 
 
@@ -13,8 +17,8 @@ import org.springframework.transaction.annotation.Transactional;
  */
 @Setter
 @Getter
-@AllArgsConstructor
 @Transactional
+@NoArgsConstructor
 public class BasicDtoMapper implements DtoMapper {
 
     private ModelMapper modelMapper;
@@ -29,9 +33,9 @@ public class BasicDtoMapper implements DtoMapper {
         return modelMapper.map(source,destinationClass);
     }
 
-
-    public BasicDtoMapper() {
-        this.modelMapper= new ModelMapper();
+    @Autowired
+    public void injectModelMapper(ModelMapper modelMapper) {
+        this.modelMapper = modelMapper;
     }
 
     @Override

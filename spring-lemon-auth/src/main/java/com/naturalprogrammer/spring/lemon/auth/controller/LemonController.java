@@ -1,33 +1,36 @@
 package com.naturalprogrammer.spring.lemon.auth.controller;
 
-import com.fasterxml.jackson.annotation.JsonView;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.naturalprogrammer.spring.lemon.auth.domain.*;
+import com.naturalprogrammer.spring.lemon.auth.domain.dto.ChangePasswordForm;
+import com.naturalprogrammer.spring.lemon.auth.domain.dto.RequestEmailChangeForm;
+import com.naturalprogrammer.spring.lemon.auth.domain.dto.ResetPasswordForm;
 import com.naturalprogrammer.spring.lemon.auth.properties.LemonProperties;
-import com.naturalprogrammer.spring.lemon.auth.security.domain.LemonUserDto;
+import com.naturalprogrammer.spring.lemon.auth.domain.dto.user.LemonUserDto;
 import com.naturalprogrammer.spring.lemon.auth.service.LemonService;
 import com.naturalprogrammer.spring.lemon.auth.util.LecUtils;
 import com.naturalprogrammer.spring.lemon.auth.util.LecwUtils;
 import com.naturalprogrammer.spring.lemon.auth.util.LemonUtils;
-import com.naturalprogrammer.spring.lemon.auth.util.UserUtils;
 import com.naturalprogrammer.spring.lemon.exceptions.util.LexUtils;
 import io.github.vincemann.springrapid.acl.service.Secured;
 import io.github.vincemann.springrapid.core.controller.dtoMapper.DtoMappingException;
-import io.github.vincemann.springrapid.core.controller.dtoMapper.context.RapidDtoEndpoint;
 import io.github.vincemann.springrapid.core.controller.dtoMapper.context.Direction;
 import io.github.vincemann.springrapid.core.controller.dtoMapper.context.DtoMappingContext;
+import io.github.vincemann.springrapid.core.controller.dtoMapper.context.RapidDtoEndpoint;
 import io.github.vincemann.springrapid.core.controller.rapid.RapidController;
 import io.github.vincemann.springrapid.core.service.exception.BadEntityException;
-import io.github.vincemann.springrapid.core.service.exception.EntityNotFoundException;
 import io.github.vincemann.springrapid.core.slicing.components.WebComponent;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
 import java.io.Serializable;
 import java.util.Map;
 import java.util.Optional;
@@ -42,7 +45,7 @@ import java.util.Optional;
  */
 @WebComponent
 public abstract class LemonController
-	<U extends AbstractUser<ID>, ID extends Serializable,S extends LemonSignupForm>
+	<U extends AbstractUser<ID>, ID extends Serializable>
 			extends RapidController<U,ID,LemonService<U, ID,?>> {
 
 	private static final Log log = LogFactory.getLog(LemonController.class);
@@ -103,15 +106,22 @@ public abstract class LemonController
 	@PostMapping("/users")
 	@ResponseStatus(HttpStatus.CREATED)
 	@ResponseBody
-	public LemonUserDto signup(@RequestBody @JsonView(UserUtils.SignupInput.class) S signupForm,
-							   HttpServletResponse response) throws BadEntityException, DtoMappingException {
+	public ResponseEntity<String> signup(/*@RequestBody @JsonView(UserUtils.SignupInput.class) S signupForm,*/
+							   HttpServletRequest request,
+							   HttpServletResponse response) throws BadEntityException, DtoMappingException, IOException {
 
-		log.debug("Signing up: " + signupForm);
-		U user = getDtoMapper().mapToEntity(signupForm, getEntityClass());
+		String signupForm = readBody(request);
+		Object signupDto = getJsonMapper().readValue(signupForm, findDtoClass(LemonDtoEndpoint.SIGN_UP, Direction.REQUEST, null));
+		getValidationStrategy().validateDto(signupDto);
+		log.debug("Signing up: " + signupDto);
+		U user = getDtoMapper().mapToEntity(signupDto, getEntityClass());
 		U saved = getService().signup(user);
 		log.debug("Signed up: " + signupForm);
 
-		return userWithToken(response,saved);
+		addAuthHeader(response,saved);
+		Object dto = getDtoMapper().mapToDto(saved,
+				findDtoClass(LemonDtoEndpoint.SIGN_UP, Direction.RESPONSE, saved.getId()));
+		return ok(getJsonMapper().writeValueAsString(dto));
 	}
 
 
@@ -133,15 +143,18 @@ public abstract class LemonController
 	 */
 	@PostMapping("/users/{id}/verification")
 	@ResponseBody
-	public LemonUserDto verifyUser(
+	public ResponseEntity<String> verifyUser(
 			@PathVariable ID id,
 			@RequestParam String code,
-			HttpServletResponse response) {
-
+			HttpServletResponse response) throws DtoMappingException, JsonProcessingException {
+		getValidationStrategy().validateId(id);
 		log.debug("Verifying user ...");
 		U saved = getService().verifyUser(id, code);
 
-		return userWithToken(response,saved);
+		addAuthHeader(response,saved);
+		Object dto = getDtoMapper().mapToDto(saved,
+				findDtoClass(LemonDtoEndpoint.VERIFY_USER, Direction.RESPONSE, saved.getId()));
+		return ok(getJsonMapper().writeValueAsString(dto));
 	}
 
 
@@ -162,14 +175,16 @@ public abstract class LemonController
 	 */
 	@PostMapping("/reset-password")
 	@ResponseBody
-	public LemonUserDto resetPassword(
+	public ResponseEntity<String> resetPassword(
 			@RequestBody ResetPasswordForm form,
-			HttpServletResponse response) {
+			HttpServletResponse response) throws DtoMappingException, JsonProcessingException {
 
 		log.debug("Resetting password ... ");
 		U saved = getService().resetPassword(form);
-
-		return userWithToken(response,saved);
+		addAuthHeader(response,saved);
+		Object dto = getDtoMapper().mapToDto(saved,
+				findDtoClass(LemonDtoEndpoint.RESET_PASSWORD, Direction.RESPONSE, saved.getId()));
+		return ok(getJsonMapper().writeValueAsString(dto));
 	}
 
 
@@ -178,15 +193,14 @@ public abstract class LemonController
 	 */
 	@PostMapping("/users/fetch-by-email")
 	@ResponseBody
-	public Object fetchUserByEmail(@RequestParam String email) throws DtoMappingException {
+	public ResponseEntity<String> fetchUserByEmail(@RequestParam String email) throws DtoMappingException, JsonProcessingException {
 
 		log.debug("Fetching user by email: " + email);
 		U byEmail = getService().findByEmail(email);
 		LexUtils.ensureFound(byEmail);
-		byEmail.setPassword(null);
-		Object dto = getDtoMapper().mapToDto(byEmail,
-				findDtoClass(RapidDtoEndpoint.FIND, Direction.RESPONSE));
-		return dto;
+		Object responseDto = getDtoMapper().mapToDto(byEmail,
+				findDtoClass(RapidDtoEndpoint.FIND, Direction.RESPONSE, byEmail.getId()));
+		return ok(getJsonMapper().writeValueAsString(responseDto));
 	}
 
 
@@ -223,16 +237,16 @@ public abstract class LemonController
 	@Override
 	public void afterUpdate(Object dto, U updated, HttpServletRequest httpServletRequest, HttpServletResponse response) {
 		super.afterUpdate(dto, updated, httpServletRequest, response);
-		userWithToken(response,updated);
+		addAuthHeader(response,updated);
 	}
 
-	@Override
-	protected U serviceUpdate(U update, boolean full) throws BadEntityException, EntityNotFoundException {
-		U updated = super.serviceUpdate(update, full);
-		//set password should not trigger immediate update
-		updated.setPassword(null);
-		return updated;
-	}
+//	@Override
+//	protected U serviceUpdate(U update, boolean full) throws BadEntityException, EntityNotFoundException {
+//		U updated = super.serviceUpdate(update, full);
+//		//set password should not trigger immediate update
+//		updated.setPassword(null);
+//		return updated;
+//	}
 
 	/**
 	 * Changes password
@@ -245,7 +259,7 @@ public abstract class LemonController
 
 		log.debug("Changing password ... ");
 		String username = getService().changePassword(user, changePasswordForm);
-
+		//todo warum gibts das im service und im controller?
 		getService().addAuthHeader(response, username, jwtExpirationMillis);
 	}
 
@@ -268,16 +282,17 @@ public abstract class LemonController
 	 */
 	@PostMapping("/users/{userId}/email")
 	@ResponseBody
-	public LemonUserDto changeEmail(
+	public ResponseEntity<String> changeEmail(
 			@PathVariable ID userId,
 			@RequestParam String code,
-			HttpServletResponse response) {
+			HttpServletResponse response) throws DtoMappingException, JsonProcessingException {
 
 		log.debug("Changing email of user ...");
 		U saved = getService().changeEmail(userId, code);
-
-		// return the currently logged in user with new email
-		return userWithToken(response,saved);
+		addAuthHeader(response,saved);
+		Object responseDto = getDtoMapper().mapToDto(saved,
+				findDtoClass(LemonDtoEndpoint.CHANGE_EMAIL, Direction.RESPONSE, userId));
+		return ok(getJsonMapper().writeValueAsString(responseDto));
 	}
 
 
@@ -312,10 +327,9 @@ public abstract class LemonController
 	/**
 	 * returns the current user and puts a new authorization token in the response
 	 */
-	protected LemonUserDto userWithToken(HttpServletResponse response,U saved) {
+	protected void addAuthHeader(HttpServletResponse response, U saved) {
 		LemonUtils.login(saved);
 		LemonUserDto currentUser = LecwUtils.currentUser();
 		getService().addAuthHeader(response, currentUser.getEmail(), jwtExpirationMillis);
-		return currentUser;
 	}
 }

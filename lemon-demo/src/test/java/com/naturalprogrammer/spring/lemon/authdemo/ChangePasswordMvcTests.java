@@ -1,6 +1,6 @@
 package com.naturalprogrammer.spring.lemon.authdemo;
 
-import com.naturalprogrammer.spring.lemon.auth.domain.ChangePasswordForm;
+import com.naturalprogrammer.spring.lemon.auth.domain.dto.ChangePasswordForm;
 import com.naturalprogrammer.spring.lemon.auth.util.LecUtils;
 import io.github.vincemann.springrapid.core.util.MapperUtils;
 import org.junit.jupiter.api.Test;

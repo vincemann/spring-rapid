@@ -51,7 +51,7 @@ public class DtoMappingContext {
     private MatchSet findPrincipalMatches(DtoMappingInfo userMappingInfo,Set<DtoMappingInfo> entries){
         MatchSet principalMatchSet = new MatchSet();
         entries.stream().forEach(info -> {
-            if (userMappingInfo.getPrincipal().equals(DtoMappingInfo.Principal.ALL)){
+            if (info.getPrincipal().equals(DtoMappingInfo.Principal.ALL)){
                 principalMatchSet.criteriaIndifferent.add(info);
             }else if (userMappingInfo.getPrincipal().equals(info.getPrincipal())){
                 principalMatchSet.matches.add(info);

@@ -1,6 +1,6 @@
 package com.naturalprogrammer.spring.lemon.auth.domain;
 
-import com.naturalprogrammer.spring.lemon.auth.security.domain.LemonUserDto;
+import com.naturalprogrammer.spring.lemon.auth.domain.dto.user.LemonUserDto;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;

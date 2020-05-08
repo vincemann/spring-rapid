@@ -1,6 +1,5 @@
 package com.naturalprogrammer.spring.lemon.authdemo.dto;
 
-import com.naturalprogrammer.spring.lemon.auth.security.domain.LemonUserDto;
 import lombok.*;
 
 import java.util.HashSet;

@@ -1,11 +1,13 @@
 package com.naturalprogrammer.spring.lemon.auth.config;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.naturalprogrammer.spring.lemon.auth.controller.LemonCurrentUserIdProvider;
 import com.naturalprogrammer.spring.lemon.auth.properties.LemonProperties;
 import com.naturalprogrammer.spring.lemon.auth.security.config.LemonJpaSecurityConfig;
 import com.naturalprogrammer.spring.lemon.auth.security.config.LemonWebSecurityConfig;
 import com.naturalprogrammer.spring.lemon.auth.security.handlers.LemonAuthenticationSuccessHandler;
 import com.naturalprogrammer.spring.lemon.auth.service.LemonService;
+import io.github.vincemann.springrapid.core.controller.rapid.CurrentUserIdProvider;
 import io.github.vincemann.springrapid.core.slicing.config.WebConfig;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.autoconfigure.AutoConfigureBefore;
@@ -56,5 +58,11 @@ public class LemonWebAutoConfiguration {
 
         log.info("Configuring LemonJpaSecurityConfig");
         return new LemonJpaSecurityConfig();
+    }
+
+    @Bean
+    @ConditionalOnMissingBean(CurrentUserIdProvider.class)
+    public CurrentUserIdProvider currentUserIdProvider(LemonService<?,?,?> lemonService){
+        return new LemonCurrentUserIdProvider(lemonService);
     }
 }

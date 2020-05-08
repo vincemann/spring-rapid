@@ -1,7 +1,7 @@
 package com.naturalprogrammer.spring.lemon.authdemo;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.naturalprogrammer.spring.lemon.auth.domain.ResetPasswordForm;
+import com.naturalprogrammer.spring.lemon.auth.domain.dto.ResetPasswordForm;
 import com.naturalprogrammer.spring.lemon.auth.security.service.GreenTokenService;
 import com.naturalprogrammer.spring.lemon.auth.util.LecUtils;
 import io.github.vincemann.springrapid.core.util.MapperUtils;

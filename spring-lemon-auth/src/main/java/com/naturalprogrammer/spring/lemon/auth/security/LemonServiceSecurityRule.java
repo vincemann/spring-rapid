@@ -2,10 +2,10 @@ package com.naturalprogrammer.spring.lemon.auth.security;
 
 import com.naturalprogrammer.spring.lemon.auth.domain.AbstractUser;
 import com.naturalprogrammer.spring.lemon.auth.domain.AbstractUserRepository;
-import com.naturalprogrammer.spring.lemon.auth.domain.ChangePasswordForm;
-import com.naturalprogrammer.spring.lemon.auth.domain.RequestEmailChangeForm;
+import com.naturalprogrammer.spring.lemon.auth.domain.dto.ChangePasswordForm;
+import com.naturalprogrammer.spring.lemon.auth.domain.dto.RequestEmailChangeForm;
 import com.naturalprogrammer.spring.lemon.auth.security.domain.LemonRole;
-import com.naturalprogrammer.spring.lemon.auth.security.domain.LemonUserDto;
+import com.naturalprogrammer.spring.lemon.auth.domain.dto.user.LemonUserDto;
 import com.naturalprogrammer.spring.lemon.auth.util.LecwUtils;
 import io.github.vincemann.springrapid.acl.proxy.rules.OverrideDefaultSecurityRule;
 import io.github.vincemann.springrapid.acl.proxy.rules.ServiceSecurityRule;
@@ -14,18 +14,13 @@ import io.github.vincemann.springrapid.core.service.exception.BadEntityException
 import io.github.vincemann.springrapid.core.service.exception.EntityNotFoundException;
 import com.naturalprogrammer.spring.lemon.exceptions.util.LexUtils;
 import io.github.vincemann.springrapid.core.util.EntityUtils;
-import io.github.vincemann.springrapid.core.util.JpaUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.AccessDeniedException;
-import org.springframework.security.acls.domain.BasePermission;
 import org.springframework.transaction.annotation.Transactional;
 
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
 import java.io.Serializable;
 import java.util.Optional;
-import java.util.function.Consumer;
 
 
 @Transactional
@@ -50,13 +45,13 @@ public class LemonServiceSecurityRule extends ServiceSecurityRule {
         getSecurityChecker().checkPermission(user.getId(),user.getClass(), getWritePermission());
     }
 
-    @CalledByProxy
-    public void preAuthorizeFindByEmail(String email) throws EntityNotFoundException {
-        //only include email if user has write permission
-        Optional<AbstractUser> byEmail = userRepository.findByEmail(email);
-        EntityUtils.checkPresent(byEmail,"No User found with email: " +email);
-        getSecurityChecker().checkPermission(byEmail.get().getId(),byEmail.get().getClass(), getWritePermission());
-    }
+//    @CalledByProxy
+//    public void preAuthorizeFindByEmail(String email) throws EntityNotFoundException {
+//        //only include email if user has write permission
+//        Optional<AbstractUser> byEmail = userRepository.findByEmail(email);
+//        EntityUtils.checkPresent(byEmail,"No User found with email: " +email);
+//        getSecurityChecker().checkPermission(byEmail.get().getId(),byEmail.get().getClass(), getWritePermission());
+//    }
 
     //this is done by mapping to specific dto
 //    @CalledByProxy

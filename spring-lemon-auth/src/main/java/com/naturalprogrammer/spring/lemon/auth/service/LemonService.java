@@ -1,6 +1,9 @@
 package com.naturalprogrammer.spring.lemon.auth.service;
 
 import com.naturalprogrammer.spring.lemon.auth.domain.*;
+import com.naturalprogrammer.spring.lemon.auth.domain.dto.ChangePasswordForm;
+import com.naturalprogrammer.spring.lemon.auth.domain.dto.RequestEmailChangeForm;
+import com.naturalprogrammer.spring.lemon.auth.domain.dto.ResetPasswordForm;
 import com.naturalprogrammer.spring.lemon.auth.properties.LemonProperties;
 import com.naturalprogrammer.spring.lemon.auth.util.UserUtils;
 import io.github.vincemann.springrapid.core.service.CrudService;
