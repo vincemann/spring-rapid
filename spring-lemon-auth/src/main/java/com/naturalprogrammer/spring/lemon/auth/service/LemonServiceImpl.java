@@ -1,11 +1,14 @@
 package com.naturalprogrammer.spring.lemon.auth.service;
 
 import com.naturalprogrammer.spring.lemon.auth.domain.*;
+import com.naturalprogrammer.spring.lemon.auth.domain.dto.ChangePasswordForm;
+import com.naturalprogrammer.spring.lemon.auth.domain.dto.RequestEmailChangeForm;
+import com.naturalprogrammer.spring.lemon.auth.domain.dto.ResetPasswordForm;
 import com.naturalprogrammer.spring.lemon.auth.properties.LemonProperties;
 import com.naturalprogrammer.spring.lemon.auth.mail.LemonMailData;
 import com.naturalprogrammer.spring.lemon.auth.mail.MailSender;
 import com.naturalprogrammer.spring.lemon.auth.security.domain.LemonRole;
-import com.naturalprogrammer.spring.lemon.auth.security.domain.LemonUserDto;
+import com.naturalprogrammer.spring.lemon.auth.domain.dto.user.LemonUserDto;
 import com.naturalprogrammer.spring.lemon.auth.security.service.BlueTokenService;
 import com.naturalprogrammer.spring.lemon.auth.security.service.GreenTokenService;
 import com.naturalprogrammer.spring.lemon.auth.util.*;
@@ -31,7 +34,6 @@ import java.io.Serializable;
 import java.util.Collections;
 import java.util.Map;
 import java.util.Optional;
-import java.util.Set;
 
 
 /**

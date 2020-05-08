@@ -1,6 +1,7 @@
 package com.naturalprogrammer.spring.lemon.auth.security.domain;
 
 import com.naturalprogrammer.spring.lemon.auth.domain.AbstractAuditorAware;
+import com.naturalprogrammer.spring.lemon.auth.domain.dto.user.LemonUserDto;
 import com.naturalprogrammer.spring.lemon.auth.util.LecwUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;

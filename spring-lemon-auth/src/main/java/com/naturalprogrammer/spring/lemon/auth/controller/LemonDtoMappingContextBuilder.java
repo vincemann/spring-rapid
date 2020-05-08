@@ -14,15 +14,22 @@ import static com.naturalprogrammer.spring.lemon.auth.controller.LemonDtoEndpoin
 @Setter
 @NoArgsConstructor
 public class LemonDtoMappingContextBuilder extends DtoMappingContextBuilder {
+
+    public static LemonDtoMappingContextBuilder builder(){
+        return new LemonDtoMappingContextBuilder();
+    }
+
     @Override
     protected List<String> getAllEndpoints() {
-        super.getAllEndpoints().addAll(Sets.newHashSet(SIGN_UP,RESET_PASSWORD,FETCH_BY_EMAIL,CHANGE_EMAIL));
-        return super.getAllEndpoints();
+        List<String> allEndpoints = super.getAllEndpoints();
+        allEndpoints.addAll(Sets.newHashSet(SIGN_UP,RESET_PASSWORD,FETCH_BY_EMAIL,CHANGE_EMAIL, VERIFY_USER));
+        return allEndpoints;
     }
 
     @Override
     protected List<String> getFindEndpoints() {
-        super.getFindEndpoints().add(FETCH_BY_EMAIL);
-        return super.getFindEndpoints();
+        List<String> findEndpoints = super.getFindEndpoints();
+        findEndpoints.add(FETCH_BY_EMAIL);
+        return findEndpoints;
     }
 }

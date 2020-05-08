@@ -1,5 +1,6 @@
 package com.naturalprogrammer.spring.lemon.auth.security.domain;
 
+import com.naturalprogrammer.spring.lemon.auth.domain.dto.user.LemonUserDto;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;

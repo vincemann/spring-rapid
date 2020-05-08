@@ -1,7 +1,7 @@
 package com.naturalprogrammer.spring.lemon.authdemo;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.naturalprogrammer.spring.lemon.auth.domain.RequestEmailChangeForm;
+import com.naturalprogrammer.spring.lemon.auth.domain.dto.RequestEmailChangeForm;
 import io.github.vincemann.springrapid.core.util.MapperUtils;
 import com.naturalprogrammer.spring.lemon.authdemo.domain.User;
 import org.junit.jupiter.api.Assertions;

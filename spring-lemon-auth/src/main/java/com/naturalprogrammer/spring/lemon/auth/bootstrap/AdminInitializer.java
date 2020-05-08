@@ -27,7 +27,6 @@ import java.util.List;
  * Also adds lemon admin
  * @see LemonProperties#getAdmin()
  */
-//todo backend muss noch order3 und profile dev,prod machen
 public class AdminInitializer extends Initializer {
 
     @Value("#{'${database.init.admin.emails}'.split(',')}")
@@ -57,14 +56,7 @@ public class AdminInitializer extends Initializer {
     public void init() {
         Assert.isTrue(!adminEmails.isEmpty());
         Assert.isTrue(!adminPasswords.isEmpty());
-        Authentication adminAuth = new UsernamePasswordAuthenticationToken(
-                adminEmails.get(0),
-                adminPasswords.get(0),
-                Lists.newArrayList(
-                        new SimpleGrantedAuthority(Role.ADMIN)
-                )
-        );
-        mockAuthService.runAuthenticatedAs(adminAuth,
+        mockAuthService.runAuthenticatedAsAdmin(
                 () -> {
                     try {
                         addAdmins();
@@ -85,8 +77,7 @@ public class AdminInitializer extends Initializer {
             log.debug("registering admin:: " + admin);
 
             // Check if the user already exists
-            AbstractUser<?> byEmail = lemonService
-                    .findByEmail(admin);
+            AbstractUser<?> byEmail = lemonService.findByEmail(admin);
             if (byEmail != null) {
                 // Doesn't exist. So, create it.
                 lemonService.createAdminUser(

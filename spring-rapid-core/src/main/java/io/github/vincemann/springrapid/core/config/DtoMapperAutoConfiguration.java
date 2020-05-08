@@ -5,6 +5,7 @@ import io.github.vincemann.springrapid.core.controller.dtoMapper.*;
 import io.github.vincemann.springrapid.core.slicing.config.WebConfig;
 import io.github.vincemann.springrapid.core.util.MapperUtils;
 import lombok.extern.slf4j.Slf4j;
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
@@ -29,10 +30,16 @@ public class DtoMapperAutoConfiguration {
         return new BasicDtoMapper();
     }
 
+    @Bean
+    @ConditionalOnMissingBean
+    public ModelMapper modelMapper(){
+        return new ModelMapper();
+    }
 
     @Delegating
     @ConditionalOnMissingBean(name = "delegatingDtoMapper")
     @Bean
+    //ordered List of DtoMappers gets injected @see Order
     public DtoMapper delegatingDtoMapper(List<DtoMapper> dtoMappers, @Default DtoMapper defaultDtoMapper){
         DelegatingDtoMapper delegatingDtoMapper = new DelegatingDtoMapper(defaultDtoMapper);
         dtoMappers.remove(defaultDtoMapper);

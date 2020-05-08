@@ -1,4 +1,4 @@
-package com.naturalprogrammer.spring.lemon.auth.domain;
+package com.naturalprogrammer.spring.lemon.auth.domain.dto;
 
 import com.naturalprogrammer.spring.lemon.auth.validation.Password;
 import com.naturalprogrammer.spring.lemon.auth.validation.RetypePassword;

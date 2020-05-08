@@ -4,6 +4,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.fge.jsonpatch.JsonPatchException;
 import io.github.vincemann.springrapid.core.advice.log.LogComponentInteractionAdvice;
+import io.github.vincemann.springrapid.core.controller.NullCurrentUserIdProvider;
 import io.github.vincemann.springrapid.core.controller.dtoMapper.Delegating;
 import io.github.vincemann.springrapid.core.controller.dtoMapper.DtoMapper;
 import io.github.vincemann.springrapid.core.controller.dtoMapper.DtoMappingException;
@@ -56,7 +57,7 @@ import java.util.stream.Collectors;
  *
  * @param <E>  Entity Type, of entity, which's crud operations are exposed, via endpoints,  by this Controller
  * @param <Id> Id Type of {@link E}
- *             <
+ *
  */
 @Slf4j
 @Getter
@@ -140,7 +141,11 @@ public abstract class RapidController
     }
 
     @Autowired
-    public void injectCurrentUserIdProvider(CurrentUserIdProvider<Id> currentUserIdProvider) {
+    public void injectCurrentUserIdProvider(CurrentUserIdProvider currentUserIdProvider) {
+        if (currentUserIdProvider instanceof NullCurrentUserIdProvider){
+            log.warn("Principal Mapping feature is disabled because no "+CurrentUserIdProvider.class.getSimpleName()+" bean is defined.");
+            log.warn("Consider defining your own " + CurrentUserIdProvider.class.getSimpleName() + " to use Principal DtoMapping Feature.");
+        }
         this.currentUserIdProvider = currentUserIdProvider;
     }
 
@@ -323,7 +328,7 @@ public abstract class RapidController
     public ResponseEntity<String> create(HttpServletRequest request, HttpServletResponse response) throws BadEntityException, DtoMappingException, DtoSerializingException {
         log.debug("Create request arriving at controller: " + request);
         try {
-            String json = request.getReader().lines().collect(Collectors.joining(System.lineSeparator()));
+            String json = readBody(request);
             Class<?> dtoClass = findDtoClass(RapidDtoEndpoint.CREATE, Direction.REQUEST,null);
             Object dto = getJsonMapper().readValue(json, dtoClass);
             beforeCreate(dto, request, response);
@@ -346,7 +351,7 @@ public abstract class RapidController
     public ResponseEntity<String> update(HttpServletRequest request, HttpServletResponse response) throws EntityNotFoundException, BadEntityException, BadEntityException, DtoMappingException, DtoSerializingException, IdFetchingException, JsonPatchException {
         log.debug("Update request arriving at controller: " + request);
         try {
-            String patchString = request.getReader().lines().collect(Collectors.joining(System.lineSeparator()));
+            String patchString = readBody(request);
             Id id = idIdFetchingStrategy.fetchId(request);
             Class<?> dtoClass = findDtoClass(RapidDtoEndpoint.UPDATE, Direction.REQUEST,id);
             beforeUpdate(dtoClass, id, patchString, request, response);
@@ -376,7 +381,6 @@ public abstract class RapidController
 
 
     public E merge(E patch, E saved, Class<?> dtoClass) throws BadEntityException {
-        //        Map<String, Field> dtoFields = ReflectionUtils.getNonStaticFieldMap(dtoClass);
         Map<String, Field> entityFields = ReflectionUtils.getNonStaticFieldMap(saved.getClass());
         Set<String> properties = Arrays.stream(ReflectionUtils.getDeclaredFields(dtoClass, true))
                 //ignore static fields
@@ -385,16 +389,13 @@ public abstract class RapidController
                 .collect(Collectors.toSet());
         for (String property : properties) {
             try {
-//                Field dtoField = dtoFields.get(property);
                 Field entityField = entityFields.get(property);
                 if(entityField==null){
                     throw new BadEntityException("Unknown property: " + property);
                 }
-//                dtoField.setAccessible(true);
                 entityField.setAccessible(true);
                 Object patchedValue =entityField.get(patch);
                 entityField.set(saved,patchedValue);
-//                BeanUtilsBean.getInstance().copyProperty(saved, property,patchedValue);
             } catch (IllegalAccessException e) {
                 throw new RuntimeException(e);
             }
@@ -402,25 +403,9 @@ public abstract class RapidController
         return saved;
     }
 
-//    /**
-//     * Only the properties defined in dtoClass can be changed.
-//     */
-//    protected void checkForInvalidUpdates(Class<?> dtoClass, E saved, E patched) throws BadEntityException {
-//        try {
-//            Set<String> allowedProperties = Sets.newHashSet(ReflectionUtils.getDeclaredFields(dtoClass, true)).stream().map(Field::getName).collect(Collectors.toSet());
-//            Set<String> deniedProperties = Sets.newHashSet(ReflectionUtils.getDeclaredFields(getEntityClass(), true)).stream().map(Field::getName).collect(Collectors.toSet());
-//            allowedProperties.forEach(deniedProperties::remove);
-//            for (String deniedProperty : deniedProperties) {
-//                String savedProperty = BeanUtilsBean.getInstance().getProperty(saved, deniedProperty);
-//                String patchedProperty = BeanUtilsBean.getInstance().getProperty(patched, deniedProperty);
-//                if (!savedProperty.equals(patchedProperty)) {
-//                    throw new BadEntityException("Property: " + deniedProperty + " must not be updated by current user.");
-//                }
-//            }
-//        } catch (IllegalAccessException | NoSuchMethodException | InvocationTargetException e) {
-//            throw new RuntimeException(e);
-//        }
-//    }
+    protected String readBody(HttpServletRequest request) throws IOException {
+        return request.getReader().lines().collect(Collectors.joining(System.lineSeparator()));
+    }
 
 
     public ResponseEntity<?> delete(HttpServletRequest request, HttpServletResponse response) throws IdFetchingException, BadEntityException, EntityNotFoundException, ConstraintViolationException {
@@ -443,8 +428,13 @@ public abstract class RapidController
 
     protected DtoMappingInfo createEndpointInfo(String endpoint, Direction direction,Id id) {
         DtoMappingInfo.Principal principal = null;
-        if (id!=null) {
-             principal = currentUserIdProvider.find().equals(id.toString())
+        String currId = currentUserIdProvider.find();
+//        if (currId==null) {
+//            log.warn("Id of current user could not be found -> ignore Principal for dto mapping of: " + endpoint + ", " + direction);
+//
+//        }
+        if (id!=null && currId !=null) {
+             principal = currId.equals(id.toString())
                     ? DtoMappingInfo.Principal.OWN
                     : DtoMappingInfo.Principal.FOREIGN;
         }

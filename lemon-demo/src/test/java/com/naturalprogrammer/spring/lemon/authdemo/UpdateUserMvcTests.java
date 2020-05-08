@@ -38,7 +38,7 @@ public class UpdateUserMvcTests extends AbstractMvcTests
 
     @Autowired
 	@Getter
-    private LemonController<User,Long,?> controller;
+    private LemonController<User,Long> controller;
 	private String namePatch;
 
 	@Value("classpath:/update-user/patch-update-user.json")

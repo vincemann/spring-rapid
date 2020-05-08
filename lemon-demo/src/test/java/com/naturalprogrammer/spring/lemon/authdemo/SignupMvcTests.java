@@ -51,7 +51,7 @@ public class SignupMvcTests extends AbstractMvcTests {
 		mvc.perform(post("/api/core/users")
 				.contentType(MediaType.APPLICATION_JSON)
 				.content(MapperUtils.toJson(user)))
-				.andExpect(status().is(201))
+				.andExpect(status().is(200))
 				.andExpect(header().string(LecUtils.TOKEN_RESPONSE_HEADER_NAME, containsString(".")))
 				.andExpect(jsonPath("$.id").exists())
 				.andExpect(jsonPath("$.password").doesNotExist())

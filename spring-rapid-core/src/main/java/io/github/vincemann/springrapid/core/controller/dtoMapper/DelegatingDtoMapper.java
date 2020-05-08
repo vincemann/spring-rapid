@@ -6,8 +6,10 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.lang.management.OperatingSystemMXBean;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -50,18 +52,15 @@ public class DelegatingDtoMapper implements DtoMapper {
     }
 
     private DtoMapper findMapper(Class<?> dtoClass) {
-        List<DtoMapper> matchingMappers =
+        Optional<DtoMapper> matchingMapper =
                 delegates.stream().
-                        filter(mapper -> mapper.isDtoClassSupported(dtoClass)).
-                        collect(Collectors.toList());
-        if(matchingMappers.isEmpty()){
+                        filter(mapper -> mapper.isDtoClassSupported(dtoClass))
+                        .findFirst();
+        if(matchingMapper.isEmpty()){
             log.debug("No dtoMapper found in user specified mappers, returning default mapper: " + defaultMapper);
             return defaultMapper;
-        }else if(matchingMappers.size()==1){
-            log.debug("found dto mapper matching dto class: " + dtoClass + " is:" + matchingMappers.get(0));
-            return matchingMappers.get(0);
         }else {
-            throw new IllegalArgumentException("Found multiple matching mappers for: " + dtoClass);
+            return matchingMapper.get();
         }
     }
 }

@@ -31,7 +31,7 @@ public class DtoMappingContextBuilder {
         return this;
     }
 
-    public DtoMappingContextBuilder principal(DtoMappingInfo.Principal principal){
+    public DtoMappingContextBuilder forPrincipal(DtoMappingInfo.Principal principal){
         Assert.notNull(principal);
         this.currPrincipal=principal;
         return this;

@@ -8,4 +8,5 @@ com.naturalprogrammer.spring.lemon.auth.config.LemonAuthExceptionHandlerAutoConf
 com.naturalprogrammer.spring.lemon.auth.config.LemonWebAutoConfiguration,\
 com.naturalprogrammer.spring.lemon.auth.config.LemonGeneralAutoConfiguration,\
 com.naturalprogrammer.spring.lemon.auth.config.LemonAsyncAutoConfiguration,\
-com.naturalprogrammer.spring.lemon.auth.config.LemonAdminAutoConfiguration
+com.naturalprogrammer.spring.lemon.auth.config.LemonAdminAutoConfiguration,\
+com.naturalprogrammer.spring.lemon.auth.config.LemonDtoAutoConfiguration

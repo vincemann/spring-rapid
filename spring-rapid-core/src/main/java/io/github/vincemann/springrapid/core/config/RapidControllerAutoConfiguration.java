@@ -1,5 +1,7 @@
 package io.github.vincemann.springrapid.core.config;
 
+import io.github.vincemann.springrapid.core.controller.NullCurrentUserIdProvider;
+import io.github.vincemann.springrapid.core.controller.rapid.CurrentUserIdProvider;
 import io.github.vincemann.springrapid.core.slicing.config.WebConfig;
 import io.github.vincemann.springrapid.core.controller.rapid.EndpointsExposureContext;
 import io.github.vincemann.springrapid.core.controller.rapid.idFetchingStrategy.IdFetchingStrategy;
@@ -36,6 +38,17 @@ public class RapidControllerAutoConfiguration {
     @Bean(name = "idUrlParamKey")
     public String idUrlParamKey(){
         return idUrlParamKey;
+    }
+
+
+    /**
+     * Define CurrentUserId Provider to use the Principal Feature in {@link io.github.vincemann.springrapid.core.controller.rapid.RapidController}
+     * @see: @{@link io.github.vincemann.springrapid.core.controller.dtoMapper.context.DtoMappingInfo.Principal}
+     */
+    @Bean
+    @ConditionalOnMissingBean(CurrentUserIdProvider.class)
+    public CurrentUserIdProvider nullCurrentUserIdProvider(){
+        return new NullCurrentUserIdProvider();
     }
 
 

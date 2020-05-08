@@ -2,7 +2,7 @@ package com.naturalprogrammer.spring.lemon.auth.security.handlers;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.naturalprogrammer.spring.lemon.auth.properties.LemonProperties;
-import com.naturalprogrammer.spring.lemon.auth.security.domain.LemonUserDto;
+import com.naturalprogrammer.spring.lemon.auth.domain.dto.user.LemonUserDto;
 import com.naturalprogrammer.spring.lemon.auth.service.LemonService;
 import com.naturalprogrammer.spring.lemon.auth.util.LecwUtils;
 import org.apache.commons.logging.Log;

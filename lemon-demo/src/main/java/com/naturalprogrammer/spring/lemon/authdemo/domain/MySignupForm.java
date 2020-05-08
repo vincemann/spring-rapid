@@ -1,7 +1,7 @@
 package com.naturalprogrammer.spring.lemon.authdemo.domain;
 
 import com.fasterxml.jackson.annotation.JsonView;
-import com.naturalprogrammer.spring.lemon.auth.domain.LemonSignupForm;
+import com.naturalprogrammer.spring.lemon.auth.domain.dto.LemonSignupForm;
 import com.naturalprogrammer.spring.lemon.auth.util.UserUtils;
 import lombok.Getter;
 import lombok.NoArgsConstructor;

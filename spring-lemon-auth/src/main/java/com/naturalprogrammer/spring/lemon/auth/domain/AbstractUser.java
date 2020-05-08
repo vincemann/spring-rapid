@@ -2,7 +2,8 @@ package com.naturalprogrammer.spring.lemon.auth.domain;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonView;
-import com.naturalprogrammer.spring.lemon.auth.security.domain.LemonUserDto;
+import com.google.common.collect.Sets;
+import com.naturalprogrammer.spring.lemon.auth.domain.dto.user.LemonUserDto;
 import com.naturalprogrammer.spring.lemon.auth.util.UserUtils;
 import com.naturalprogrammer.spring.lemon.auth.validation.Captcha;
 import com.naturalprogrammer.spring.lemon.auth.validation.Password;
@@ -85,22 +86,26 @@ public class AbstractUser<ID extends Serializable>
 	 */
 	public LemonUserDto toUserDto() {
 
-		LemonUserDto userDto = new LemonUserDto();
+		return LemonUserDto.builder()
+				.id(getId().toString())
+				.email(email)
+				.password(password)
+				.roles(Sets.newHashSet(roles))
+				.build();
+//		userDto.setId(getId().toString());
+//		userDto.setEmail(email);
+//		userDto.setPassword(password);
+//
+//		// roles would be org.hibernate.collection.internal.PersistentSet,
+//		// which is not in another microservices not having Hibernate.
+//		// So, let's convert it to HashSet
+//		userDto.setRoles(new HashSet<String>(roles));
+//
+////		userDto.setTag(toTag());
+//
+//		userDto.initialize();
 
-		userDto.setId(getId().toString());
-		userDto.setEmail(email);
-		userDto.setPassword(password);
-
-		// roles would be org.hibernate.collection.internal.PersistentSet,
-		// which is not in another microservices not having Hibernate.
-		// So, let's convert it to HashSet
-		userDto.setRoles(new HashSet<String>(roles));
-
-//		userDto.setTag(toTag());
-
-		userDto.initialize();
-
-		return userDto;
+//		return userDto;
 	}
 
 //	/**
