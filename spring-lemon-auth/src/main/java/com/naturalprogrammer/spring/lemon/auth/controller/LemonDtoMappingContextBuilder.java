@@ -1,6 +1,7 @@
 package com.naturalprogrammer.spring.lemon.auth.controller;
 
 import com.google.common.collect.Sets;
+import io.github.vincemann.springrapid.core.controller.dtoMapper.context.DtoMappingContext;
 import io.github.vincemann.springrapid.core.controller.dtoMapper.context.DtoMappingContextBuilder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -17,6 +18,14 @@ public class LemonDtoMappingContextBuilder extends DtoMappingContextBuilder {
 
     public static LemonDtoMappingContextBuilder builder(){
         return new LemonDtoMappingContextBuilder();
+    }
+
+    public static LemonDtoMappingContextBuilder builder(DtoMappingContext dtoMappingContext){
+        return new LemonDtoMappingContextBuilder(dtoMappingContext);
+    }
+
+    public LemonDtoMappingContextBuilder(DtoMappingContext mc) {
+        super(mc);
     }
 
     @Override

@@ -1,5 +1,6 @@
 package io.github.vincemann.springrapid.demo.controllers;
 
+import io.github.vincemann.springrapid.core.controller.dtoMapper.context.DtoMappingContext;
 import io.github.vincemann.springrapid.demo.dtos.owner.CreateOwnerDto;
 import io.github.vincemann.springrapid.demo.dtos.owner.ReadOwnerDto;
 import io.github.vincemann.springrapid.demo.dtos.owner.UpdateOwnerDto;
@@ -14,14 +15,12 @@ import io.github.vincemann.springrapid.demo.service.OwnerService;
 public class OwnerController extends RapidController<Owner, Long, OwnerService> {
 
 
-    public OwnerController() {
-        super(
-                DtoMappingContextBuilder.builder()
-                        .forEndpoint(RapidDtoEndpoint.CREATE, CreateOwnerDto.class)
-                        .forUpdate(UpdateOwnerDto.class)
-                        .forResponse(ReadOwnerDto.class)
-                        .build()
-        );
+    @Override
+    public DtoMappingContext provideDtoMappingContext() {
+        return DtoMappingContextBuilder.builder()
+                .forEndpoint(RapidDtoEndpoint.CREATE, CreateOwnerDto.class)
+                .forUpdate(UpdateOwnerDto.class)
+                .forResponse(ReadOwnerDto.class)
+                .build();
     }
-
 }
