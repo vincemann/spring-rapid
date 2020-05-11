@@ -5,8 +5,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.fge.jsonpatch.JsonPatchException;
 import io.github.vincemann.springrapid.core.advice.log.LogComponentInteractionAdvice;
 import io.github.vincemann.springrapid.core.controller.NullCurrentUserIdProvider;
-import io.github.vincemann.springrapid.core.controller.dtoMapper.Delegating;
-import io.github.vincemann.springrapid.core.controller.dtoMapper.DtoMapper;
+import io.github.vincemann.springrapid.core.controller.dtoMapper.DelegatingDtoMapper;
 import io.github.vincemann.springrapid.core.controller.dtoMapper.context.Direction;
 import io.github.vincemann.springrapid.core.controller.dtoMapper.context.DtoMappingContext;
 import io.github.vincemann.springrapid.core.controller.dtoMapper.context.DtoMappingInfo;
@@ -61,7 +60,6 @@ import java.util.stream.Collectors;
  *
  * @param <E>  Entity Type, of entity, which's crud operations are exposed, via endpoints,  by this Controller
  * @param <Id> Id Type of {@link E}
- *
  */
 @Slf4j
 @Getter
@@ -99,7 +97,7 @@ public abstract class RapidController
     private EndpointsExposureContext endpointsExposureContext;
     private S service;
     private S unsecuredService;
-    private DtoMapper dtoMapper;
+    private DelegatingDtoMapper dtoMapper;
     @Setter
     private DtoMappingContext dtoMappingContext;
     private ValidationStrategy<Id> validationStrategy;
@@ -148,8 +146,8 @@ public abstract class RapidController
 
     @Autowired
     public void injectCurrentUserIdProvider(CurrentUserIdProvider currentUserIdProvider) {
-        if (currentUserIdProvider instanceof NullCurrentUserIdProvider){
-            log.warn("Principal Mapping feature is disabled because no "+CurrentUserIdProvider.class.getSimpleName()+" bean is defined.");
+        if (currentUserIdProvider instanceof NullCurrentUserIdProvider) {
+            log.warn("Principal Mapping feature is disabled because no " + CurrentUserIdProvider.class.getSimpleName() + " bean is defined.");
             log.warn("Consider defining your own " + CurrentUserIdProvider.class.getSimpleName() + " to use Principal DtoMapping Feature.");
         }
         this.currentUserIdProvider = currentUserIdProvider;
@@ -160,9 +158,8 @@ public abstract class RapidController
         this.validationStrategy = validationStrategy;
     }
 
-    @Delegating
     @Autowired
-    public void injectDtoMapper(DtoMapper dtoMapper) {
+    public void injectDtoMapper(DelegatingDtoMapper dtoMapper) {
         this.dtoMapper = dtoMapper;
     }
 
@@ -287,29 +284,29 @@ public abstract class RapidController
                 .build();
     }
 
-    public ResponseEntity<String> findAll(HttpServletRequest request, HttpServletResponse response) throws  DtoSerializingException {
-        log.debug("FindAll request arriving at controller: " + request);
-        beforeFindAll(request, response);
-        logStateBeforeServiceCall("findAll");
-        Set<E> foundEntities = serviceFindAll();
-        logServiceResult("findAll", foundEntities);
-        Collection<Object> dtos = new HashSet<>();
-        for (E e : foundEntities) {
-            dtos.add(dtoMapper.mapToDto(e,
-                    findDtoClass(RapidDtoEndpoint.FIND_ALL, Direction.RESPONSE,null)));
-        }
-        afterFindAll(dtos, foundEntities, request, response);
-        String json = null;
+    public ResponseEntity<String> findAll(HttpServletRequest request, HttpServletResponse response) throws JsonProcessingException {
         try {
-            json = jsonMapper.writeValueAsString(dtos);
-        } catch (JsonProcessingException e) {
-            throw new DtoSerializingException(e);
+            log.debug("FindAll request arriving at controller: " + request);
+            beforeFindAll(request, response);
+            logStateBeforeServiceCall("findAll");
+            Set<E> foundEntities = serviceFindAll();
+            logServiceResult("findAll", foundEntities);
+            Collection<Object> dtos = new HashSet<>();
+            for (E e : foundEntities) {
+                dtos.add(dtoMapper.mapToDto(e,
+                        findDtoClass(RapidDtoEndpoint.FIND_ALL, Direction.RESPONSE, null)));
+            }
+            afterFindAll(dtos, foundEntities, request, response);
+            String json = jsonMapper.writeValueAsString(dtos);
+            return ok(json);
+        } catch (BadEntityException e) {
+            throw new RuntimeException(e);
         }
-        return ok(json);
+
     }
 
 
-    public ResponseEntity<String> find(HttpServletRequest request, HttpServletResponse response) throws IdFetchingException, EntityNotFoundException, BadEntityException,  DtoSerializingException {
+    public ResponseEntity<String> find(HttpServletRequest request, HttpServletResponse response) throws IdFetchingException, EntityNotFoundException, BadEntityException, JsonProcessingException {
         log.debug("Find request arriving at controller: " + request);
         Id id = idIdFetchingStrategy.fetchId(request);
         log.debug("id fetched from request: " + id);
@@ -322,67 +319,57 @@ public abstract class RapidController
         logServiceResult("findById", optionalEntity);
         EntityUtils.checkPresent(optionalEntity, id, getEntityClass());
         Object dto = dtoMapper.mapToDto(optionalEntity.get(),
-                findDtoClass(RapidDtoEndpoint.FIND, Direction.RESPONSE,id));
+                findDtoClass(RapidDtoEndpoint.FIND, Direction.RESPONSE, id));
         afterFind(id, dto, optionalEntity, request, response);
-        try {
-            return ok(jsonMapper.writeValueAsString(dto));
-        } catch (JsonProcessingException e) {
-            throw new DtoSerializingException(e);
-        }
+
+        return ok(jsonMapper.writeValueAsString(dto));
+
     }
 
-    public ResponseEntity<String> create(HttpServletRequest request, HttpServletResponse response) throws BadEntityException, DtoSerializingException, EntityNotFoundException {
+    public ResponseEntity<String> create(HttpServletRequest request, HttpServletResponse response) throws BadEntityException, EntityNotFoundException, IOException {
         log.debug("Create request arriving at controller: " + request);
-        try {
-            String json = readBody(request);
-            Class<?> dtoClass = findDtoClass(RapidDtoEndpoint.CREATE, Direction.REQUEST,null);
-            Object dto = getJsonMapper().readValue(json, dtoClass);
-            beforeCreate(dto, request, response);
-            validationStrategy.validateDto(dto);
-            log.debug("Dto successfully validated");
-            //i expect that dto has the right dto type -> callers responsibility
-            E entity = mapToEntity(dto);
-            logStateBeforeServiceCall("save", entity);
-            E savedEntity = serviceCreate(entity);
-            logServiceResult("save", savedEntity);
-            Object resultDto = dtoMapper.mapToDto(savedEntity,
-                    findDtoClass(RapidDtoEndpoint.CREATE, Direction.RESPONSE,null));
-            afterCreate(resultDto, entity, request, response);
-            return ok(jsonMapper.writeValueAsString(resultDto));
-        } catch (IOException e) {
-            throw new DtoSerializingException(e);
-        }
+        String json = readBody(request);
+        Class<?> dtoClass = findDtoClass(RapidDtoEndpoint.CREATE, Direction.REQUEST, null);
+        Object dto = getJsonMapper().readValue(json, dtoClass);
+        beforeCreate(dto, request, response);
+        validationStrategy.validateDto(dto);
+        log.debug("Dto successfully validated");
+        //i expect that dto has the right dto type -> callers responsibility
+        E entity = mapToEntity(dto);
+        logStateBeforeServiceCall("save", entity);
+        E savedEntity = serviceCreate(entity);
+        logServiceResult("save", savedEntity);
+        Object resultDto = dtoMapper.mapToDto(savedEntity,
+                findDtoClass(RapidDtoEndpoint.CREATE, Direction.RESPONSE, null));
+        afterCreate(resultDto, entity, request, response);
+        return ok(jsonMapper.writeValueAsString(resultDto));
     }
 
-    public ResponseEntity<String> update(HttpServletRequest request, HttpServletResponse response) throws EntityNotFoundException, BadEntityException, BadEntityException,  DtoSerializingException, IdFetchingException, JsonPatchException {
+    public ResponseEntity<String> update(HttpServletRequest request, HttpServletResponse response) throws EntityNotFoundException, BadEntityException, IdFetchingException, JsonPatchException, IOException {
         log.debug("Update request arriving at controller: " + request);
-        try {
-            String patchString = readBody(request);
-            Id id = idIdFetchingStrategy.fetchId(request);
-            Class<?> dtoClass = findDtoClass(RapidDtoEndpoint.UPDATE, Direction.REQUEST,id);
-            beforeUpdate(dtoClass, id, patchString, request, response);
+        String patchString = readBody(request);
+        Id id = idIdFetchingStrategy.fetchId(request);
+        Class<?> dtoClass = findDtoClass(RapidDtoEndpoint.UPDATE, Direction.REQUEST, id);
+        beforeUpdate(dtoClass, id, patchString, request, response);
 
-            Optional<E> saved = getUnsecuredService().findById(id);
-            EntityUtils.checkPresent(saved, id, getEntityClass());
-            Object patchDto = dtoMapper.mapToDto(saved.get(), dtoClass);
-            patchDto = MapperUtils.applyPatch(patchDto, patchString);
-            validationStrategy.validateDto(patchDto);
-            E patch = (E) dtoMapper.mapToEntity(patchDto, getEntityClass());
-            //if id got lost bc dto does not have id
+        Optional<E> saved = getUnsecuredService().findById(id);
+        EntityUtils.checkPresent(saved, id, getEntityClass());
+        Object patchDto = dtoMapper.mapToDto(saved.get(), dtoClass);
+        patchDto = MapperUtils.applyPatch(patchDto, patchString);
+        validationStrategy.validateDto(patchDto);
+        E patch = dtoMapper.mapToEntity(patchDto, getEntityClass());
+        //if id got lost bc dto does not have id
 //            patch.setId(id);
-            E merged = mergeUpdateStrategy.merge(patch, JpaUtils.detach(saved.get()),dtoClass);
+        E merged = mergeUpdateStrategy.merge(patch, JpaUtils.detach(saved.get()), dtoClass);
 //            checkForInvalidUpdates(dtoClass, saved.get(), merged);
-            logStateBeforeServiceCall("update", saved, patchString, merged);
-            E updated = serviceUpdate(merged, true);
-            logServiceResult("update", updated);
-            //no idea why casting is necessary here?
-            Class<?> resultDtoClass = findDtoClass(RapidDtoEndpoint.UPDATE, Direction.RESPONSE,id);
-            Object resultDto = dtoMapper.mapToDto(updated, resultDtoClass);
-            afterUpdate(resultDto, updated, request, response);
-            return ok(jsonMapper.writeValueAsString(resultDto));
-        } catch (IOException e) {
-            throw new DtoSerializingException(e);
-        }
+        logStateBeforeServiceCall("update", saved, patchString, merged);
+        E updated = serviceUpdate(merged, true);
+        logServiceResult("update", updated);
+        //no idea why casting is necessary here?
+        Class<?> resultDtoClass = findDtoClass(RapidDtoEndpoint.UPDATE, Direction.RESPONSE, id);
+        Object resultDto = dtoMapper.mapToDto(updated, resultDtoClass);
+        afterUpdate(resultDto, updated, request, response);
+        return ok(jsonMapper.writeValueAsString(resultDto));
     }
 
 
@@ -404,16 +391,16 @@ public abstract class RapidController
         return ok();
     }
 
-    public Class<?> findDtoClass(String endpoint, Direction direction,Id id) {
-        DtoMappingInfo endpointInfo = createEndpointInfo(endpoint, direction,id);
+    public Class<?> findDtoClass(String endpoint, Direction direction, Id id) {
+        DtoMappingInfo endpointInfo = createEndpointInfo(endpoint, direction, id);
         return getDtoMappingContext().find(endpointInfo);
     }
 
-    protected DtoMappingInfo createEndpointInfo(String endpoint, Direction direction,Id id) {
+    protected DtoMappingInfo createEndpointInfo(String endpoint, Direction direction, Id id) {
         DtoMappingInfo.Principal principal = null;
         String currId = currentUserIdProvider.find();
-        if (id!=null && currId !=null) {
-             principal = currId.equals(id.toString())
+        if (id != null && currId != null) {
+            principal = currId.equals(id.toString())
                     ? DtoMappingInfo.Principal.OWN
                     : DtoMappingInfo.Principal.FOREIGN;
         }
@@ -438,7 +425,7 @@ public abstract class RapidController
     }
 
     private E mapToEntity(Object dto) throws BadEntityException, EntityNotFoundException {
-        return (E) dtoMapper.mapToEntity(dto, entityClass);
+        return dtoMapper.mapToEntity(dto, entityClass);
     }
 
 

@@ -13,42 +13,41 @@ import java.util.Optional;
 
 @Slf4j
 @Transactional
-public class DelegatingDtoMapper implements DtoMapper<IdentifiableEntity<?>, Object> {
+public class DelegatingDtoMapper{
 
     private List<DtoMapper<?, ?>> delegates = new ArrayList<>();
-
-    @Override
-    public boolean supports(Class<?> dtoClass) {
-        DtoMapper<?,?> mapper = findMapper(dtoClass);
-        return mapper != null;
-
-    }
-
+    private List<DtoPostProcessor> postProcessors = new ArrayList<>();
 
     @LogInteraction
-    @Override
     public <T extends IdentifiableEntity<?>> T mapToEntity(Object dto, Class<T> destinationClass) throws EntityNotFoundException, BadEntityException {
-        return (T) findMapper(dto.getClass())
+        T mapped = (T) findMapper(dto.getClass())
                 .mapToEntity(dto, destinationClass);
+        for (DtoPostProcessor pp : postProcessors) {
+            if (pp.supports(mapped.getClass(), dto.getClass())) {
+                pp.postProcessEntity(mapped, dto);
+            }
+        }
+        return mapped;
     }
 
     public void registerDelegate(DtoMapper delegate) {
         this.delegates.add(delegate);
     }
 
-    @Override
-    public <T> T mapToDto(IdentifiableEntity<?> source, Class<T> destinationClass) {
-        return (T) findMapper(destinationClass)
-                .mapToDto(source, destinationClass);
+    public void registerPostProcessor(DtoPostProcessor postProcessor){
+        this.postProcessors.add(postProcessor);
     }
 
-
-    //    @LogInteraction
-//    @Override
-//    public <T> T mapToDto(IdentifiableEntity<?> entity, Class<T> destinationClass)  {
-//        return findMapper(destinationClass)
-//                .mapToDto(entity,destinationClass);
-//    }
+    public <T> T mapToDto(IdentifiableEntity<?> source, Class<T> destinationClass) throws BadEntityException {
+        T dto = (T) findMapper(destinationClass)
+                .mapToDto(source, destinationClass);
+        for (DtoPostProcessor pp : postProcessors) {
+            if (pp.supports(source.getClass(), dto.getClass())) {
+                pp.postProcessDto(dto, source);
+            }
+        }
+        return dto;
+    }
 
     private DtoMapper findMapper(Class<?> dtoClass) {
         Optional<DtoMapper<?, ?>> matchingMapper =

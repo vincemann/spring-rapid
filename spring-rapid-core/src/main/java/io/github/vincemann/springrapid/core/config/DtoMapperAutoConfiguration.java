@@ -1,9 +1,9 @@
 package io.github.vincemann.springrapid.core.config;
 
 import io.github.vincemann.springrapid.core.controller.dtoMapper.BasicDtoMapper;
-import io.github.vincemann.springrapid.core.controller.dtoMapper.Delegating;
 import io.github.vincemann.springrapid.core.controller.dtoMapper.DelegatingDtoMapper;
 import io.github.vincemann.springrapid.core.controller.dtoMapper.DtoMapper;
+import io.github.vincemann.springrapid.core.controller.dtoMapper.DtoPostProcessor;
 import io.github.vincemann.springrapid.core.slicing.config.WebConfig;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
@@ -32,13 +32,13 @@ public class DtoMapperAutoConfiguration {
         return new ModelMapper();
     }
 
-    @Delegating
     @ConditionalOnMissingBean(name = "delegatingDtoMapper")
     @Bean
     //ordered List of DtoMappers gets injected @see @Order
-    public DtoMapper delegatingDtoMapper(List<DtoMapper> dtoMappers){
+    public DelegatingDtoMapper delegatingDtoMapper(List<DtoMapper> dtoMappers, List<DtoPostProcessor> postProcessors){
         DelegatingDtoMapper delegatingDtoMapper = new DelegatingDtoMapper();
         dtoMappers.forEach(delegatingDtoMapper::registerDelegate);
+        postProcessors.forEach(delegatingDtoMapper::registerPostProcessor);
         return delegatingDtoMapper;
     }
 

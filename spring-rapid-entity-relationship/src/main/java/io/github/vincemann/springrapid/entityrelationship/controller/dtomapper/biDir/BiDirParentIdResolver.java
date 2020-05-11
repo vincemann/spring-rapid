@@ -4,7 +4,7 @@ package io.github.vincemann.springrapid.entityrelationship.controller.dtomapper.
 import io.github.vincemann.springrapid.core.service.exception.BadEntityException;
 import io.github.vincemann.springrapid.core.service.exception.EntityNotFoundException;
 import io.github.vincemann.springrapid.entityrelationship.controller.dtomapper.EntityIdResolver;
-import io.github.vincemann.springrapid.entityrelationship.controller.dtomapper.IdResolvingDtoMapper;
+import io.github.vincemann.springrapid.entityrelationship.controller.dtomapper.IdResolvingDtoPostProcessor;
 import io.github.vincemann.springrapid.entityrelationship.dto.biDir.BiDirParentDto;
 import io.github.vincemann.springrapid.entityrelationship.model.biDir.child.BiDirChild;
 import io.github.vincemann.springrapid.entityrelationship.model.biDir.parent.BiDirParent;
@@ -16,7 +16,7 @@ import java.util.Collection;
 import java.util.Map;
 
 /**
- * Used by {@link IdResolvingDtoMapper}.
+ * Used by {@link IdResolvingDtoPostProcessor}.
  * Resolves {@link io.github.vincemann.springrapid.entityrelationship.dto.biDir.BiDirChildId} to corresponding {@link io.github.vincemann.springrapid.entityrelationship.model.biDir.child.BiDirChildEntity}.
  * Sets {@link BiDirParent} as {@link BiDirChild}'s Parent > sets Backreference
  *

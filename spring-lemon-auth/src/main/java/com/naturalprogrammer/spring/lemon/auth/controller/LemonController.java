@@ -1,7 +1,7 @@
 package com.naturalprogrammer.spring.lemon.auth.controller;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.naturalprogrammer.spring.lemon.auth.domain.*;
+import com.naturalprogrammer.spring.lemon.auth.domain.AbstractUser;
 import com.naturalprogrammer.spring.lemon.auth.domain.dto.ChangePasswordForm;
 import com.naturalprogrammer.spring.lemon.auth.domain.dto.LemonSignupForm;
 import com.naturalprogrammer.spring.lemon.auth.domain.dto.RequestEmailChangeForm;
@@ -9,8 +9,8 @@ import com.naturalprogrammer.spring.lemon.auth.domain.dto.ResetPasswordForm;
 import com.naturalprogrammer.spring.lemon.auth.domain.dto.user.LemonAdminUpdateUserDto;
 import com.naturalprogrammer.spring.lemon.auth.domain.dto.user.LemonFetchForeignByEmailDto;
 import com.naturalprogrammer.spring.lemon.auth.domain.dto.user.LemonReadUserDto;
-import com.naturalprogrammer.spring.lemon.auth.properties.LemonProperties;
 import com.naturalprogrammer.spring.lemon.auth.domain.dto.user.LemonUserDto;
+import com.naturalprogrammer.spring.lemon.auth.properties.LemonProperties;
 import com.naturalprogrammer.spring.lemon.auth.service.LemonService;
 import com.naturalprogrammer.spring.lemon.auth.util.LecUtils;
 import com.naturalprogrammer.spring.lemon.auth.util.LecwUtils;
@@ -18,7 +18,6 @@ import com.naturalprogrammer.spring.lemon.auth.util.LemonUtils;
 import com.naturalprogrammer.spring.lemon.exceptions.util.LexUtils;
 import io.github.vincemann.springrapid.acl.Role;
 import io.github.vincemann.springrapid.acl.service.Secured;
-
 import io.github.vincemann.springrapid.core.controller.dtoMapper.context.Direction;
 import io.github.vincemann.springrapid.core.controller.dtoMapper.context.DtoMappingContext;
 import io.github.vincemann.springrapid.core.controller.dtoMapper.context.DtoMappingInfo;
@@ -106,9 +105,9 @@ public abstract class LemonController
 				.forAll(LemonUserDto.class)
 				.forResponse(LemonReadUserDto.class)
 				.forEndpoint(LemonDtoEndpoint.SIGN_UP, Direction.REQUEST, LemonSignupForm.class)
-				.forPrincipal(DtoMappingInfo.Principal.FOREIGN)
+				.withPrincipal(DtoMappingInfo.Principal.FOREIGN)
 				.forEndpoint(LemonDtoEndpoint.FETCH_BY_EMAIL,Direction.RESPONSE, LemonFetchForeignByEmailDto.class)
-				.forAllPrincipals()
+				.withAllPrincipals()
 				.withRoles(Role.ADMIN)
 				.forEndpoint(RapidDtoEndpoint.UPDATE, LemonAdminUpdateUserDto.class)
 				.build();
@@ -161,7 +160,7 @@ public abstract class LemonController
 	public ResponseEntity<String> verifyUser(
 			@PathVariable ID id,
 			@RequestParam String code,
-			HttpServletResponse response) throws  JsonProcessingException {
+			HttpServletResponse response) throws JsonProcessingException, BadEntityException {
 		getValidationStrategy().validateId(id);
 		log.debug("Verifying user ...");
 		U saved = getService().verifyUser(id, code);
@@ -192,7 +191,7 @@ public abstract class LemonController
 	@ResponseBody
 	public ResponseEntity<String> resetPassword(
 			@RequestBody ResetPasswordForm form,
-			HttpServletResponse response) throws  JsonProcessingException {
+			HttpServletResponse response) throws JsonProcessingException, BadEntityException {
 
 		log.debug("Resetting password ... ");
 		U saved = getService().resetPassword(form);
@@ -208,7 +207,7 @@ public abstract class LemonController
 	 */
 	@PostMapping("/users/fetch-by-email")
 	@ResponseBody
-	public ResponseEntity<String> fetchUserByEmail(@RequestParam String email) throws  JsonProcessingException {
+	public ResponseEntity<String> fetchUserByEmail(@RequestParam String email) throws JsonProcessingException, BadEntityException {
 
 		log.debug("Fetching user by email: " + email);
 		U byEmail = getService().findByEmail(email);
@@ -300,7 +299,7 @@ public abstract class LemonController
 	public ResponseEntity<String> changeEmail(
 			@PathVariable ID userId,
 			@RequestParam String code,
-			HttpServletResponse response) throws  JsonProcessingException {
+			HttpServletResponse response) throws JsonProcessingException, BadEntityException {
 
 		log.debug("Changing email of user ...");
 		U saved = getService().changeEmail(userId, code);

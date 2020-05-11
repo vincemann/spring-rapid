@@ -2,7 +2,6 @@ package io.github.vincemann.springrapid.core.controller.rapid.parentAware;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import io.github.vincemann.springrapid.core.controller.dtoMapper.context.Direction;
-import io.github.vincemann.springrapid.core.controller.rapid.DtoSerializingException;
 import io.github.vincemann.springrapid.core.controller.rapid.RapidController;
 import io.github.vincemann.springrapid.core.controller.rapid.idFetchingStrategy.IdFetchingStrategy;
 import io.github.vincemann.springrapid.core.controller.rapid.idFetchingStrategy.exception.IdFetchingException;
@@ -86,8 +85,7 @@ public abstract class ParentAwareRapidController
     }
 
 
-    public ResponseEntity<String> findAllOfParent(HttpServletRequest request) throws IdFetchingException, BadEntityException,  DtoSerializingException {
-        try {
+    public ResponseEntity<String> findAllOfParent(HttpServletRequest request) throws IdFetchingException, BadEntityException, JsonProcessingException {
             log.debug("FindAllOfParent request arriving at controller: " + request);
             PId id = parentIdFetchingStrategy.fetchId(request);
             log.debug("parentId: " + id);
@@ -102,9 +100,7 @@ public abstract class ParentAwareRapidController
             }
             String json = getJsonMapper().writeValueAsString(dtos);
             return ok(json);
-        } catch (JsonProcessingException e) {
-            throw new DtoSerializingException(e);
-        }
+
     }
 
 
