@@ -2,22 +2,22 @@ package io.github.vincemann.springrapid.core.config;
 
 import io.github.vincemann.springrapid.core.controller.NullCurrentUserIdProvider;
 import io.github.vincemann.springrapid.core.controller.rapid.CurrentUserIdProvider;
-import io.github.vincemann.springrapid.core.slicing.config.WebConfig;
 import io.github.vincemann.springrapid.core.controller.rapid.EndpointsExposureContext;
 import io.github.vincemann.springrapid.core.controller.rapid.idFetchingStrategy.IdFetchingStrategy;
 import io.github.vincemann.springrapid.core.controller.rapid.idFetchingStrategy.LongUrlParamIdFetchingStrategy;
+import io.github.vincemann.springrapid.core.controller.rapid.mergeUpdate.MergeUpdateStrategy;
+import io.github.vincemann.springrapid.core.controller.rapid.mergeUpdate.MergeUpdateStrategyImpl;
 import io.github.vincemann.springrapid.core.controller.rapid.validationStrategy.JavaXValidationStrategy;
 import io.github.vincemann.springrapid.core.controller.rapid.validationStrategy.ValidationStrategy;
 import io.github.vincemann.springrapid.core.service.EndpointService;
+import io.github.vincemann.springrapid.core.slicing.config.WebConfig;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Import;
 import org.springframework.context.annotation.Scope;
 import org.springframework.validation.beanvalidation.LocalValidatorFactoryBean;
 import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping;
@@ -40,6 +40,12 @@ public class RapidControllerAutoConfiguration {
         return idUrlParamKey;
     }
 
+
+    @Bean
+    @ConditionalOnMissingBean(MergeUpdateStrategy.class)
+    public MergeUpdateStrategy mergeUpdateStrategy(){
+        return new MergeUpdateStrategyImpl();
+    }
 
     /**
      * Define CurrentUserId Provider to use the Principal Feature in {@link io.github.vincemann.springrapid.core.controller.rapid.RapidController}

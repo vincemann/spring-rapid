@@ -5,4 +5,5 @@ io.github.vincemann.springrapid.core.config.DtoMapperAutoConfiguration,\
 io.github.vincemann.springrapid.core.config.EnableAdviceAutoConfiguration,\
 io.github.vincemann.springrapid.core.config.RapidControllerAutoConfiguration,\
 io.github.vincemann.springrapid.core.config.BootstrapAutoConfiguration,\
-io.github.vincemann.springrapid.core.config.RapidGeneralAutoConfiguration
+io.github.vincemann.springrapid.core.config.RapidGeneralAutoConfiguration,\
+io.github.vincemann.springrapid.core.config.RapidJacksonAutoConfiguration

@@ -1,6 +1,6 @@
 package io.github.vincemann.springrapid.entityrelationship.slicing.test;
 
-import io.github.vincemann.springrapid.entityrelationship.config.EntityIdResolvingMapperAutoConfiguration;
+import io.github.vincemann.springrapid.entityrelationship.config.IdResolvingDtoMapperAutoConfiguration;
 import org.springframework.boot.autoconfigure.ImportAutoConfiguration;
 
 import java.lang.annotation.*;
@@ -9,6 +9,6 @@ import java.lang.annotation.*;
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
 @Inherited
-@ImportAutoConfiguration(EntityIdResolvingMapperAutoConfiguration.class)
+@ImportAutoConfiguration(IdResolvingDtoMapperAutoConfiguration.class)
 public @interface ImportRapidEntityRelWebConfig {
 }

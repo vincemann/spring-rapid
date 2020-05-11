@@ -187,10 +187,11 @@ public class DtoMappingContextBuilder {
     }
 
     protected void addEntry(DtoMappingInfo info, Class<?> dtoClass){
-        Class<?> overridden = mc.getMappingEntries().put(info, dtoClass);
-        if (overridden!=null) {
-            if (!overridden.equals(dtoClass)) {
-                log.warn("Overriding dto mapping info: " + info + ", old DtoClass: " + overridden + ", new DtoClass: " + dtoClass);
+        Class<?> old = mc.getMappingEntries().get(info);
+        mc.getMappingEntries().put(info, dtoClass);
+        if (old!=null) {
+            if (!old.equals(dtoClass)) {
+                log.warn("Overriding dto mapping info: " + info + ", old DtoClass: " + old + ", new DtoClass: " + dtoClass);
             }
         }
     }
