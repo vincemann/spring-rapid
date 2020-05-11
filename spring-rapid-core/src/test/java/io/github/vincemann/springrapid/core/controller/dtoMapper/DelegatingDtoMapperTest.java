@@ -66,7 +66,7 @@ class DelegatingDtoMapperTest {
     }
 
     @Test
-    public void mapKnownEntityToDto_shouldDelegateToKnownMapper() {
+    public void mapKnownEntityToDto_shouldDelegateToKnownMapper() throws BadEntityException {
         KnownEntity entity = new KnownEntity();
         mapper.mapToDto(entity, KnownDto.class);
         verify(customEntityMapper).supports(KnownDto.class);
@@ -84,7 +84,7 @@ class DelegatingDtoMapperTest {
     }
 
     @Test
-    public void mapUnknownEntityToDto_shouldDelegateToDefaultMapper() {
+    public void mapUnknownEntityToDto_shouldDelegateToDefaultMapper() throws BadEntityException {
         UnknownEntity entity = new UnknownEntity();
         mapper.mapToDto(entity, UnknownDto.class);
         verify(customEntityMapper).supports(UnknownDto.class);

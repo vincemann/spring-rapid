@@ -1,6 +1,6 @@
 package io.github.vincemann.springrapid.entityrelationship.controller.dtomapper;
 
-import io.github.vincemann.springrapid.core.controller.dtoMapper.DtoMapper;
+import io.github.vincemann.springrapid.core.controller.dtoMapper.DtoPostProcessor;
 import io.github.vincemann.springrapid.core.model.IdentifiableEntity;
 import io.github.vincemann.springrapid.core.service.exception.BadEntityException;
 import io.github.vincemann.springrapid.core.service.exception.EntityNotFoundException;
@@ -25,20 +25,20 @@ import java.util.List;
  */
 @Order(1000)
 @Transactional
-public class IdResolvingDtoMapper implements DtoMapper<IdentifiableEntity<?>,Object> {
+public class IdResolvingDtoPostProcessor implements DtoPostProcessor<Object, IdentifiableEntity<?>> {
 
     private List<EntityIdResolver> entityIdResolvers;
     @Getter
     @Setter
     private ModelMapper modelMapper;
 
-    public IdResolvingDtoMapper(List<EntityIdResolver> entityIdResolvers) {
+    public IdResolvingDtoPostProcessor(List<EntityIdResolver> entityIdResolvers) {
         this.entityIdResolvers = entityIdResolvers;
-        this.modelMapper=new ModelMapper();
+        this.modelMapper = new ModelMapper();
     }
 
     @Override
-    public boolean supports(Class<?> dtoClass) {
+    public boolean supports(Class<?>entityClass, Class<?> dtoClass) {
         return (BiDirChildDto.class.isAssignableFrom(dtoClass) ||
                 BiDirParentDto.class.isAssignableFrom(dtoClass) ||
                 UniDirParentDto.class.isAssignableFrom(dtoClass) ||
@@ -46,31 +46,26 @@ public class IdResolvingDtoMapper implements DtoMapper<IdentifiableEntity<?>,Obj
     }
 
     @Override
-    public <T extends IdentifiableEntity<?>> T mapToEntity(Object dto, Class<T> destinationClass) throws EntityNotFoundException, BadEntityException {
-        T mappingResult = modelMapper.map(dto, destinationClass);
+    public void postProcessDto(Object dto, IdentifiableEntity<?> entity) {
         //yet unfinished
         EntityIdResolver entityIdResolver = findResolver(dto.getClass());
-        entityIdResolver.resolveEntityIds(mappingResult, dto);
-        //is now finished
-        return mappingResult;
+        entityIdResolver.resolveDtoIds(dto, entity);
     }
 
     @Override
-    public <Dto> Dto mapToDto(IdentifiableEntity<?> entity, Class<Dto> destinationClass) {
-        Dto mappingResult = modelMapper.map(entity, destinationClass);
+    public void postProcessEntity(IdentifiableEntity<?> entity, Object dto) throws BadEntityException, EntityNotFoundException {
         //yet unfinished
-        EntityIdResolver entityIdResolver = findResolver(destinationClass);
-        entityIdResolver.resolveDtoIds(mappingResult, entity);
-        //is now finished
-        return mappingResult;
+        EntityIdResolver entityIdResolver = findResolver(dto.getClass());
+        entityIdResolver.resolveEntityIds(entity, dto);
+
     }
 
-    private EntityIdResolver findResolver(Class<?> dstClass){
+    private EntityIdResolver findResolver(Class<?> dstClass) {
         for (EntityIdResolver entityIdResolver : entityIdResolvers) {
             if (entityIdResolver.getDtoClass().isAssignableFrom(dstClass)) {
                 return entityIdResolver;
             }
         }
-        throw new IllegalArgumentException("No "+EntityIdResolver.class.getSimpleName() + " found for dstClass: " + dstClass.getSimpleName());
+        throw new IllegalArgumentException("No " + EntityIdResolver.class.getSimpleName() + " found for dstClass: " + dstClass.getSimpleName());
     }
 }

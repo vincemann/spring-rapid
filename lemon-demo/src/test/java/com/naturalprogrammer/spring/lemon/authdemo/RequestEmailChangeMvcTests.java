@@ -120,12 +120,14 @@ public class RequestEmailChangeMvcTests extends AbstractMvcTests {
      */
 	@Test
 	public void tryingWithInvalidData() throws JsonProcessingException, Exception {
-		
-    	// try with null newEmail and password
+		RequestEmailChangeForm form = form();
+		form.setNewEmail(null);
+		form.setPassword(null);
+		// try with null newEmail and password
 		mvc.perform(post("/api/core/users/{id}/email-change-request", UNVERIFIED_USER_ID)
 				.contentType(MediaType.APPLICATION_JSON)
 				.header(HttpHeaders.AUTHORIZATION, tokens.get(UNVERIFIED_USER_ID))
-				.content(MapperUtils.toJson(new User())))
+				.content(MapperUtils.toJson(form)))
 				.andExpect(status().is(422))
 				.andExpect(jsonPath("$.errors[*].field").value(hasSize(2)))
 				.andExpect(jsonPath("$.errors[*].field").value(hasItems(

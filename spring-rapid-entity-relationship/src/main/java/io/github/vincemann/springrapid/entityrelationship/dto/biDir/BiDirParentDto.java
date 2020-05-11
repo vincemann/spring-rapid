@@ -1,7 +1,7 @@
 package io.github.vincemann.springrapid.entityrelationship.dto.biDir;
 
 import io.github.vincemann.springrapid.core.model.IdentifiableEntity;
-import io.github.vincemann.springrapid.entityrelationship.controller.dtomapper.IdResolvingDtoMapper;
+import io.github.vincemann.springrapid.entityrelationship.controller.dtomapper.IdResolvingDtoPostProcessor;
 import io.github.vincemann.springrapid.entityrelationship.model.biDir.child.BiDirChild;
 import io.github.vincemann.springrapid.entityrelationship.exception.UnknownChildTypeException;
 import io.github.vincemann.springrapid.core.util.ReflectionUtils;
@@ -16,7 +16,7 @@ import java.util.*;
  * Represents a Dto, that has n Child Entities.
  * Each Child/ ChildCollection is represented by an id Field, annotated with {@link BiDirChildId} / {@link BiDirChildIdCollection}.
  *
- * This Dto can be mapped to its Entity by using {@link IdResolvingDtoMapper}
+ * This Dto can be mapped to its Entity by using {@link IdResolvingDtoPostProcessor}
  */
 public interface BiDirParentDto {
 

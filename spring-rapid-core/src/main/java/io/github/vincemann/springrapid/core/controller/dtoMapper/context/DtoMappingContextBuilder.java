@@ -36,18 +36,18 @@ public class DtoMappingContextBuilder {
         return this;
     }
 
-    public DtoMappingContextBuilder withoutRole(){
+    public DtoMappingContextBuilder withAllRoles(){
         this.currentRoles = new ArrayList<>();
         return this;
     }
 
-    public DtoMappingContextBuilder forPrincipal(DtoMappingInfo.Principal principal){
+    public DtoMappingContextBuilder withPrincipal(DtoMappingInfo.Principal principal){
         Assert.notNull(principal);
         this.currPrincipal=principal;
         return this;
     }
 
-    public DtoMappingContextBuilder forAllPrincipals(){
+    public DtoMappingContextBuilder withAllPrincipals(){
         this.currPrincipal= DtoMappingInfo.Principal.ALL;
         return this;
     }

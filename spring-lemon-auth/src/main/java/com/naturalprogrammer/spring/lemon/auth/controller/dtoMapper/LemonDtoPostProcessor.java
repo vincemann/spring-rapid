@@ -3,6 +3,7 @@ package com.naturalprogrammer.spring.lemon.auth.controller.dtoMapper;
 import com.naturalprogrammer.spring.lemon.auth.domain.AbstractUser;
 import com.naturalprogrammer.spring.lemon.auth.domain.dto.user.AbstractLemonUserDto;
 import io.github.vincemann.springrapid.core.controller.dtoMapper.DtoMapper;
+import io.github.vincemann.springrapid.core.controller.dtoMapper.DtoPostProcessor;
 import io.github.vincemann.springrapid.core.model.IdentifiableEntity;
 import io.github.vincemann.springrapid.core.service.exception.BadEntityException;
 import io.github.vincemann.springrapid.core.service.exception.EntityNotFoundException;
@@ -13,33 +14,20 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.core.annotation.Order;
 
 @Order(value = 999)
-public class LemonDtoMapper implements DtoMapper<AbstractUser<?>,AbstractLemonUserDto> {
-
-    @Getter
-    private DtoMapper childMapper;
+public class LemonDtoPostProcessor implements DtoPostProcessor<AbstractLemonUserDto,AbstractUser<?>> {
 
     @Override
-    public boolean supports(Class<?> dtoClass) {
+    public boolean supports(Class<?> entityClazz, Class<?> dtoClass) {
         return AbstractLemonUserDto.class.isAssignableFrom(dtoClass);
     }
 
-    @Autowired
-    @Qualifier(value = "lemonChildMapper")
-    public void injectChildMapper(DtoMapper childMapper) {
-        this.childMapper = childMapper;
+    @Override
+    public void postProcessDto(AbstractLemonUserDto abstractLemonUserDto, AbstractUser<?> entity) throws BadEntityException {
+        abstractLemonUserDto.initialize();
     }
 
     @Override
-    public <T extends AbstractUser<?>> T mapToEntity(AbstractLemonUserDto source, Class<T> destinationClass) throws EntityNotFoundException, BadEntityException {
-        return (T) childMapper.mapToEntity(source,destinationClass);
+    public void postProcessEntity(AbstractUser<?> entity, AbstractLemonUserDto abstractLemonUserDto) throws BadEntityException {
     }
-
-    @Override
-    public <T extends AbstractLemonUserDto> T mapToDto(AbstractUser<?> source, Class<T> destinationClass) {
-        AbstractLemonUserDto dto = (AbstractLemonUserDto) childMapper.mapToDto(source, destinationClass);
-        dto.initialize();
-        return (T) dto;
-    }
-
 
 }
