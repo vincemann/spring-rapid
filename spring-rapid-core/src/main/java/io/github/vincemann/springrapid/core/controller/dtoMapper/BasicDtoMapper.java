@@ -1,10 +1,12 @@
 package io.github.vincemann.springrapid.core.controller.dtoMapper;
 
 import io.github.vincemann.springrapid.core.model.IdentifiableEntity;
-import lombok.AllArgsConstructor;
+import io.github.vincemann.springrapid.core.service.exception.BadEntityException;
+import io.github.vincemann.springrapid.core.service.exception.EntityNotFoundException;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.modelmapper.MappingException;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.Ordered;
@@ -19,18 +21,28 @@ import org.springframework.transaction.annotation.Transactional;
 @Getter
 @Transactional
 @NoArgsConstructor
-public class BasicDtoMapper implements DtoMapper {
+@Order(Ordered.LOWEST_PRECEDENCE)
+public class BasicDtoMapper implements DtoMapper<IdentifiableEntity<?>,Object> {
 
     private ModelMapper modelMapper;
 
     @Override
-    public boolean isDtoClassSupported(Class<?> clazz) {
+    public boolean supports(Class<?> dtoClass) {
         return true;
     }
 
     @Override
-    public <Dto> Dto mapToDto(IdentifiableEntity<?> source, Class<Dto> destinationClass) throws DtoMappingException {
-        return modelMapper.map(source,destinationClass);
+    public <T extends IdentifiableEntity<?>> T mapToEntity(Object source, Class<T> destinationClass) throws EntityNotFoundException, BadEntityException {
+        try {
+            return modelMapper.map(source, destinationClass);
+        }catch (MappingException e){
+            throw new BadEntityException(e);
+        }
+    }
+
+    @Override
+    public <T> T mapToDto(IdentifiableEntity<?> source, Class<T> destinationClass) {
+        return modelMapper.map(source, destinationClass);
     }
 
     @Autowired
@@ -38,8 +50,4 @@ public class BasicDtoMapper implements DtoMapper {
         this.modelMapper = modelMapper;
     }
 
-    @Override
-    public <E extends IdentifiableEntity<?>> E mapToEntity(Object source, Class<E> destinationClass) throws DtoMappingException {
-        return modelMapper.map(source,destinationClass);
-    }
 }

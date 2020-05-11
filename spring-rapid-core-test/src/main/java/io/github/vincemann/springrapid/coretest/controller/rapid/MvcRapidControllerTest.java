@@ -3,10 +3,12 @@ package io.github.vincemann.springrapid.coretest.controller.rapid;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JavaType;
-import io.github.vincemann.springrapid.core.controller.dtoMapper.DtoMappingException;
+
 import io.github.vincemann.springrapid.core.controller.rapid.RapidController;
 import io.github.vincemann.springrapid.core.model.IdentifiableEntity;
 import io.github.vincemann.springrapid.core.service.CrudService;
+import io.github.vincemann.springrapid.core.service.exception.BadEntityException;
+import io.github.vincemann.springrapid.core.service.exception.EntityNotFoundException;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
 
@@ -23,8 +25,8 @@ public interface MvcRapidControllerTest<S extends CrudService<E,Id,?>
     public RapidController<E, Id,S> getController();
 
 
-    public default E mapToEntity(IdentifiableEntity<Id> dto) throws DtoMappingException {
-        return getController().getDtoMapper().mapToEntity(dto,getController().getEntityClass());
+    public default E mapToEntity(IdentifiableEntity<Id> dto) throws BadEntityException, EntityNotFoundException {
+        return (E) getController().getDtoMapper().mapToEntity(dto,getController().getEntityClass());
     }
 
     public default MockHttpServletRequestBuilder create(Object dto) throws Exception {

@@ -1,5 +1,6 @@
 package com.naturalprogrammer.spring.lemon.authdemo;
 
+import com.naturalprogrammer.spring.lemon.authdemo.domain.MySignupForm;
 import io.github.vincemann.springrapid.core.util.MapperUtils;
 import com.naturalprogrammer.spring.lemon.authdemo.domain.User;
 import com.naturalprogrammer.spring.lemon.auth.security.domain.LemonRole;
@@ -20,11 +21,11 @@ public class SignupMvcTests extends AbstractMvcTests {
 	@Test
 	public void testSignupWithInvalidData() throws Exception {
 		
-		User invalidUser = new User("abc", "user1", null);
+		MySignupForm signupForm = new MySignupForm("abc", "user1", null);
 
 		mvc.perform(post("/api/core/users")
 				.contentType(MediaType.APPLICATION_JSON)
-				.content(MapperUtils.toJson(invalidUser)))
+				.content(MapperUtils.toJson(signupForm)))
 				.andExpect(status().is(422))
 				.andExpect(jsonPath("$.errors[*].field").value(hasSize(4)))
 				.andExpect(jsonPath("$.errors[*].field").value(hasItems(
@@ -46,11 +47,11 @@ public class SignupMvcTests extends AbstractMvcTests {
 	@Test
 	public void testSignup() throws Exception {
 		
-		User user = new User("user.foo@example.com", "user123", "User Foo");
+		MySignupForm signupForm = new MySignupForm("user.foo@example.com", "user123", "User Foo");
 
 		mvc.perform(post("/api/core/users")
 				.contentType(MediaType.APPLICATION_JSON)
-				.content(MapperUtils.toJson(user)))
+				.content(MapperUtils.toJson(signupForm)))
 				.andExpect(status().is(200))
 				.andExpect(header().string(LecUtils.TOKEN_RESPONSE_HEADER_NAME, containsString(".")))
 				.andExpect(jsonPath("$.id").exists())
@@ -73,12 +74,11 @@ public class SignupMvcTests extends AbstractMvcTests {
 	
 	@Test
 	public void testSignupDuplicateEmail() throws Exception {
-		
-		User user = new User("user@example.com", "user123", "User");
 
+		MySignupForm signupForm = new MySignupForm("user@example.com", "user123", "User");
 		mvc.perform(post("/api/core/users")
 				.contentType(MediaType.APPLICATION_JSON)
-				.content(MapperUtils.toJson(user)))
+				.content(MapperUtils.toJson(signupForm)))
 				.andExpect(status().is(422));
 		
 		verify(mailSender, never()).send(any());

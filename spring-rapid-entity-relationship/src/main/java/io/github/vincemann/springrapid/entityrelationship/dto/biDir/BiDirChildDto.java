@@ -1,6 +1,6 @@
 package io.github.vincemann.springrapid.entityrelationship.dto.biDir;
 
-import io.github.vincemann.springrapid.entityrelationship.controller.dtomapper.idResolver.IdResolvingDtoMapper;
+import io.github.vincemann.springrapid.entityrelationship.controller.dtomapper.IdResolvingDtoMapper;
 import io.github.vincemann.springrapid.core.model.IdentifiableEntity;
 import io.github.vincemann.springrapid.entityrelationship.model.biDir.parent.BiDirParent;
 import io.github.vincemann.springrapid.entityrelationship.exception.UnknownParentTypeException;

@@ -7,21 +7,24 @@ import io.github.vincemann.springrapid.core.advice.log.LogComponentInteractionAd
 import io.github.vincemann.springrapid.core.controller.NullCurrentUserIdProvider;
 import io.github.vincemann.springrapid.core.controller.dtoMapper.Delegating;
 import io.github.vincemann.springrapid.core.controller.dtoMapper.DtoMapper;
-import io.github.vincemann.springrapid.core.controller.dtoMapper.DtoMappingException;
-import io.github.vincemann.springrapid.core.controller.dtoMapper.context.RapidDtoEndpoint;
 import io.github.vincemann.springrapid.core.controller.dtoMapper.context.Direction;
 import io.github.vincemann.springrapid.core.controller.dtoMapper.context.DtoMappingContext;
 import io.github.vincemann.springrapid.core.controller.dtoMapper.context.DtoMappingInfo;
+import io.github.vincemann.springrapid.core.controller.dtoMapper.context.RapidDtoEndpoint;
 import io.github.vincemann.springrapid.core.controller.rapid.idFetchingStrategy.IdFetchingStrategy;
 import io.github.vincemann.springrapid.core.controller.rapid.idFetchingStrategy.UrlParamIdFetchingStrategy;
 import io.github.vincemann.springrapid.core.controller.rapid.idFetchingStrategy.exception.IdFetchingException;
+import io.github.vincemann.springrapid.core.controller.rapid.mergeUpdate.MergeUpdateStrategy;
 import io.github.vincemann.springrapid.core.controller.rapid.validationStrategy.ValidationStrategy;
 import io.github.vincemann.springrapid.core.model.IdentifiableEntity;
 import io.github.vincemann.springrapid.core.service.CrudService;
 import io.github.vincemann.springrapid.core.service.EndpointService;
 import io.github.vincemann.springrapid.core.service.exception.BadEntityException;
 import io.github.vincemann.springrapid.core.service.exception.EntityNotFoundException;
-import io.github.vincemann.springrapid.core.util.*;
+import io.github.vincemann.springrapid.core.util.AuthorityUtil;
+import io.github.vincemann.springrapid.core.util.EntityUtils;
+import io.github.vincemann.springrapid.core.util.JpaUtils;
+import io.github.vincemann.springrapid.core.util.MapperUtils;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
@@ -40,10 +43,11 @@ import javax.servlet.http.HttpServletResponse;
 import javax.validation.ConstraintViolationException;
 import java.io.IOException;
 import java.io.Serializable;
-import java.lang.reflect.Field;
-import java.lang.reflect.Modifier;
 import java.lang.reflect.ParameterizedType;
-import java.util.*;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 /**
@@ -100,6 +104,7 @@ public abstract class RapidController
     private DtoMappingContext dtoMappingContext;
     private ValidationStrategy<Id> validationStrategy;
     private CurrentUserIdProvider currentUserIdProvider;
+    private MergeUpdateStrategy<E> mergeUpdateStrategy;
 
     @Setter
     private boolean serviceInteractionLogging = true;
@@ -136,6 +141,10 @@ public abstract class RapidController
         this.unsecuredService = crudService;
     }
 
+    @Autowired
+    public void injectMergeUpdateStrategy(MergeUpdateStrategy<E> mergeUpdateStrategy) {
+        this.mergeUpdateStrategy = mergeUpdateStrategy;
+    }
 
     @Autowired
     public void injectCurrentUserIdProvider(CurrentUserIdProvider currentUserIdProvider) {
@@ -278,7 +287,7 @@ public abstract class RapidController
                 .build();
     }
 
-    public ResponseEntity<String> findAll(HttpServletRequest request, HttpServletResponse response) throws DtoMappingException, DtoSerializingException {
+    public ResponseEntity<String> findAll(HttpServletRequest request, HttpServletResponse response) throws  DtoSerializingException {
         log.debug("FindAll request arriving at controller: " + request);
         beforeFindAll(request, response);
         logStateBeforeServiceCall("findAll");
@@ -300,7 +309,7 @@ public abstract class RapidController
     }
 
 
-    public ResponseEntity<String> find(HttpServletRequest request, HttpServletResponse response) throws IdFetchingException, EntityNotFoundException, BadEntityException, DtoMappingException, DtoSerializingException {
+    public ResponseEntity<String> find(HttpServletRequest request, HttpServletResponse response) throws IdFetchingException, EntityNotFoundException, BadEntityException,  DtoSerializingException {
         log.debug("Find request arriving at controller: " + request);
         Id id = idIdFetchingStrategy.fetchId(request);
         log.debug("id fetched from request: " + id);
@@ -322,7 +331,7 @@ public abstract class RapidController
         }
     }
 
-    public ResponseEntity<String> create(HttpServletRequest request, HttpServletResponse response) throws BadEntityException, DtoMappingException, DtoSerializingException {
+    public ResponseEntity<String> create(HttpServletRequest request, HttpServletResponse response) throws BadEntityException, DtoSerializingException, EntityNotFoundException {
         log.debug("Create request arriving at controller: " + request);
         try {
             String json = readBody(request);
@@ -345,7 +354,7 @@ public abstract class RapidController
         }
     }
 
-    public ResponseEntity<String> update(HttpServletRequest request, HttpServletResponse response) throws EntityNotFoundException, BadEntityException, BadEntityException, DtoMappingException, DtoSerializingException, IdFetchingException, JsonPatchException {
+    public ResponseEntity<String> update(HttpServletRequest request, HttpServletResponse response) throws EntityNotFoundException, BadEntityException, BadEntityException,  DtoSerializingException, IdFetchingException, JsonPatchException {
         log.debug("Update request arriving at controller: " + request);
         try {
             String patchString = readBody(request);
@@ -358,10 +367,10 @@ public abstract class RapidController
             Object patchDto = dtoMapper.mapToDto(saved.get(), dtoClass);
             patchDto = MapperUtils.applyPatch(patchDto, patchString);
             validationStrategy.validateDto(patchDto);
-            E patch = dtoMapper.mapToEntity(patchDto, getEntityClass());
+            E patch = (E) dtoMapper.mapToEntity(patchDto, getEntityClass());
             //if id got lost bc dto does not have id
 //            patch.setId(id);
-            E merged = merge(patch, JpaUtils.detach(saved.get()),dtoClass);
+            E merged = mergeUpdateStrategy.merge(patch, JpaUtils.detach(saved.get()),dtoClass);
 //            checkForInvalidUpdates(dtoClass, saved.get(), merged);
             logStateBeforeServiceCall("update", saved, patchString, merged);
             E updated = serviceUpdate(merged, true);
@@ -376,29 +385,6 @@ public abstract class RapidController
         }
     }
 
-
-    public E merge(E patch, E saved, Class<?> dtoClass) throws BadEntityException {
-        Map<String, Field> entityFields = ReflectionUtils.getNonStaticFieldMap(saved.getClass());
-        Set<String> properties = Arrays.stream(ReflectionUtils.getDeclaredFields(dtoClass, true))
-                //ignore static fields
-                .filter(field -> !Modifier.isStatic(field.getModifiers()))
-                .map(Field::getName)
-                .collect(Collectors.toSet());
-        for (String property : properties) {
-            try {
-                Field entityField = entityFields.get(property);
-                if(entityField==null){
-                    throw new BadEntityException("Unknown property: " + property);
-                }
-                entityField.setAccessible(true);
-                Object patchedValue =entityField.get(patch);
-                entityField.set(saved,patchedValue);
-            } catch (IllegalAccessException e) {
-                throw new RuntimeException(e);
-            }
-        }
-        return saved;
-    }
 
     protected String readBody(HttpServletRequest request) throws IOException {
         return request.getReader().lines().collect(Collectors.joining(System.lineSeparator()));
@@ -426,10 +412,6 @@ public abstract class RapidController
     protected DtoMappingInfo createEndpointInfo(String endpoint, Direction direction,Id id) {
         DtoMappingInfo.Principal principal = null;
         String currId = currentUserIdProvider.find();
-//        if (currId==null) {
-//            log.warn("Id of current user could not be found -> ignore Principal for dto mapping of: " + endpoint + ", " + direction);
-//
-//        }
         if (id!=null && currId !=null) {
              principal = currId.equals(id.toString())
                     ? DtoMappingInfo.Principal.OWN
@@ -455,8 +437,8 @@ public abstract class RapidController
             LogComponentInteractionAdvice.logResult(methodName, result);
     }
 
-    private E mapToEntity(Object dto) throws DtoMappingException {
-        return dtoMapper.mapToEntity(dto, entityClass);
+    private E mapToEntity(Object dto) throws BadEntityException, EntityNotFoundException {
+        return (E) dtoMapper.mapToEntity(dto, entityClass);
     }
 
 

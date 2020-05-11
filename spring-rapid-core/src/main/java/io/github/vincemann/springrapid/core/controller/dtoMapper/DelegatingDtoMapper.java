@@ -2,64 +2,62 @@ package io.github.vincemann.springrapid.core.controller.dtoMapper;
 
 import io.github.vincemann.springrapid.core.advice.log.LogInteraction;
 import io.github.vincemann.springrapid.core.model.IdentifiableEntity;
+import io.github.vincemann.springrapid.core.service.exception.BadEntityException;
+import io.github.vincemann.springrapid.core.service.exception.EntityNotFoundException;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.lang.management.OperatingSystemMXBean;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 @Slf4j
 @Transactional
-public class DelegatingDtoMapper implements DtoMapper {
+public class DelegatingDtoMapper implements DtoMapper<IdentifiableEntity<?>, Object> {
 
-    private List<DtoMapper> delegates = new ArrayList<>();
-    private DtoMapper defaultMapper;
-
-    public DelegatingDtoMapper(DtoMapper defaultMapper) {
-        this.defaultMapper = defaultMapper;
-    }
+    private List<DtoMapper<?, ?>> delegates = new ArrayList<>();
 
     @Override
-    public boolean isDtoClassSupported(Class<?> clazz) {
-        try {
-            findMapper(clazz);
-            return true;
-        }catch (IllegalArgumentException e){
-            return false;
-        }
+    public boolean supports(Class<?> dtoClass) {
+        DtoMapper<?,?> mapper = findMapper(dtoClass);
+        return mapper != null;
+
+    }
+
+
+    @LogInteraction
+    @Override
+    public <T extends IdentifiableEntity<?>> T mapToEntity(Object dto, Class<T> destinationClass) throws EntityNotFoundException, BadEntityException {
+        return (T) findMapper(dto.getClass())
+                .mapToEntity(dto, destinationClass);
     }
 
     public void registerDelegate(DtoMapper delegate) {
         this.delegates.add(delegate);
     }
 
-    @LogInteraction
     @Override
-    public <T extends IdentifiableEntity<?>> T mapToEntity(Object dto, Class<T> destinationClass) throws DtoMappingException {
-        return findMapper(dto.getClass())
-                .mapToEntity(dto,destinationClass);
+    public <T> T mapToDto(IdentifiableEntity<?> source, Class<T> destinationClass) {
+        return (T) findMapper(destinationClass)
+                .mapToDto(source, destinationClass);
     }
 
-    @LogInteraction
-    @Override
-    public <T> T mapToDto(IdentifiableEntity<?> entity, Class<T> destinationClass) throws DtoMappingException {
-        return findMapper(destinationClass)
-                .mapToDto(entity,destinationClass);
-    }
+
+    //    @LogInteraction
+//    @Override
+//    public <T> T mapToDto(IdentifiableEntity<?> entity, Class<T> destinationClass)  {
+//        return findMapper(destinationClass)
+//                .mapToDto(entity,destinationClass);
+//    }
 
     private DtoMapper findMapper(Class<?> dtoClass) {
-        Optional<DtoMapper> matchingMapper =
+        Optional<DtoMapper<?, ?>> matchingMapper =
                 delegates.stream().
-                        filter(mapper -> mapper.isDtoClassSupported(dtoClass))
+                        filter(mapper -> mapper.supports(dtoClass))
                         .findFirst();
-        if(matchingMapper.isEmpty()){
-            log.debug("No dtoMapper found in user specified mappers, returning default mapper: " + defaultMapper);
-            return defaultMapper;
-        }else {
+        if (matchingMapper.isEmpty()) {
+            throw new IllegalArgumentException("No Mapper found for dtoClass: " + dtoClass);
+        } else {
             return matchingMapper.get();
         }
     }
