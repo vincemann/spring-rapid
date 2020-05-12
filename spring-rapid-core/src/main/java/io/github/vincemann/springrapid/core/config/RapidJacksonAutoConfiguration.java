@@ -25,6 +25,7 @@ public class RapidJacksonAutoConfiguration {
     @ConditionalOnMissingBean(ObjectMapper.class)
     @Bean
     public ObjectMapper objectMapper(){
+        log.debug("Created Rapid Logging JsonMapper.");
         ObjectMapper mapper= new LoggingObjectMapper();
         mapper.registerModule(new JavaTimeModule());
         mapper.configure(ACCEPT_SINGLE_VALUE_AS_ARRAY,true);

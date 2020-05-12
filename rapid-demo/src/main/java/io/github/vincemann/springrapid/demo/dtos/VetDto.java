@@ -16,7 +16,7 @@ import java.util.Set;
 @Getter
 @Setter
 @Validated
-@ToString
+@ToString(callSuper = true)
 public class VetDto extends PersonDto implements UniDirParentDto {
 
 

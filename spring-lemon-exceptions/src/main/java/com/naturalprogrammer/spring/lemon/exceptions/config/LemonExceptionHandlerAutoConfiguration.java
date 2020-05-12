@@ -22,6 +22,12 @@ public class LemonExceptionHandlerAutoConfiguration {
     }
 
     @Bean
+    @ConditionalOnMissingBean(JsonPatchExceptionHandler.class)
+    public JsonPatchExceptionHandler jsonPatchExceptionHandler(){
+        return new JsonPatchExceptionHandler();
+    }
+
+    @Bean
     @ConditionalOnMissingBean(BadEntityExceptionHandler.class)
     public BadEntityExceptionHandler badEntityExceptionHandler(){
         return new BadEntityExceptionHandler();

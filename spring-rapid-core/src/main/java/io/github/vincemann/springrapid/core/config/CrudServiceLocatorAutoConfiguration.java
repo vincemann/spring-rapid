@@ -25,19 +25,13 @@ public class CrudServiceLocatorAutoConfiguration {
         log.info("Created");
     }
 
-    @Primary
     @ConditionalOnMissingBean(CrudServiceLocator.class)
     @Bean
-    public CrudServiceLocator crudServiceLocator(){
-        return new CrudServiceLocatorImpl();
+    public CrudServiceLocator crudServiceLocator(ConfigurableApplicationContext context, ConfigurableListableBeanFactory beanFactory){
+        CrudServiceLocatorImpl csl = new CrudServiceLocatorImpl();
+        context.addBeanFactoryPostProcessor(csl);
+        csl.postProcessBeanFactory(beanFactory);
+        return csl;
     }
 
-    @Autowired
-    public void configure(CrudServiceLocator crudServiceLocator, ConfigurableApplicationContext context, ConfigurableListableBeanFactory beanFactory){
-        //todo ugly, do better
-        if (crudServiceLocator instanceof BeanFactoryPostProcessor) {
-            context.addBeanFactoryPostProcessor(((CrudServiceLocatorImpl) crudServiceLocator));
-            ((CrudServiceLocatorImpl) crudServiceLocator).postProcessBeanFactory(beanFactory);
-        }
-    }
 }

@@ -2,7 +2,7 @@ package io.github.vincemann.springrapid.core.slicing.test;
 
 import io.github.vincemann.springrapid.core.config.BootstrapAutoConfiguration;
 import io.github.vincemann.springrapid.core.config.CrudServiceLocatorAutoConfiguration;
-import io.github.vincemann.springrapid.core.config.EnableAdviceAutoConfiguration;
+import io.github.vincemann.springrapid.core.config.RapidAdviceAutoConfiguration;
 import org.springframework.boot.autoconfigure.ImportAutoConfiguration;
 
 import java.lang.annotation.*;
@@ -13,7 +13,7 @@ import java.lang.annotation.*;
 @Inherited
 @ImportAutoConfiguration({
 //import rapid core config that is relevant for service tests
-        BootstrapAutoConfiguration.class, CrudServiceLocatorAutoConfiguration.class, EnableAdviceAutoConfiguration.class
+        BootstrapAutoConfiguration.class, CrudServiceLocatorAutoConfiguration.class, RapidAdviceAutoConfiguration.class
 })
 public @interface ImportRapidCoreServiceConfig {
 }

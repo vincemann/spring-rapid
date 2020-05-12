@@ -1,7 +1,5 @@
 package io.github.vincemann.springrapid.coretest.controller.rapid;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.github.vincemann.springrapid.core.controller.dtoMapper.context.DtoMappingContext;
@@ -16,17 +14,11 @@ import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.BeforeEach;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
-import org.springframework.data.repository.CrudRepository;
-import org.springframework.http.MediaType;
-import org.springframework.test.web.servlet.MvcResult;
-import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
 import io.github.vincemann.springrapid.coretest.controller.MvcControllerTest;
 
-import java.io.IOException;
 import java.io.Serializable;
 import java.lang.reflect.ParameterizedType;
 
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 
 

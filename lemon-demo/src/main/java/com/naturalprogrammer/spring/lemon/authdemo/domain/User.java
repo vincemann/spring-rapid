@@ -17,6 +17,7 @@ import java.util.Set;
 @Getter
 @Setter
 @NoArgsConstructor
+@ToString(callSuper = true)
 public class User extends AbstractUser<Long> {
 
     private static final long serialVersionUID = 2716710947175132319L;

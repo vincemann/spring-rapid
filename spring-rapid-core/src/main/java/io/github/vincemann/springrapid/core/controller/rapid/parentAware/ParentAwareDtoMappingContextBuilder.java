@@ -1,6 +1,7 @@
 package io.github.vincemann.springrapid.core.controller.rapid.parentAware;
 
 import io.github.vincemann.springrapid.core.controller.dtoMapper.context.DtoMappingContext;
+import io.github.vincemann.springrapid.core.controller.dtoMapper.context.RapidDtoMappingContext;
 import io.github.vincemann.springrapid.core.controller.dtoMapper.context.DtoMappingContextBuilder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -17,11 +18,11 @@ public class ParentAwareDtoMappingContextBuilder extends DtoMappingContextBuilde
         return new ParentAwareDtoMappingContextBuilder();
     }
 
-    public static ParentAwareDtoMappingContextBuilder builder(DtoMappingContext mc){
+    public static ParentAwareDtoMappingContextBuilder builder(RapidDtoMappingContext mc){
         return new ParentAwareDtoMappingContextBuilder(mc);
     }
 
-    public ParentAwareDtoMappingContextBuilder(DtoMappingContext mc) {
+    public ParentAwareDtoMappingContextBuilder(RapidDtoMappingContext mc) {
         super(mc);
     }
 

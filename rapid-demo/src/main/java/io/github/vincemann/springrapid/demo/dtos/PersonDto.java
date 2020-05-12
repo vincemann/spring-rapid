@@ -11,7 +11,7 @@ import javax.validation.constraints.Size;
 @Getter
 @Setter
 @NoArgsConstructor
-@ToString
+@ToString(callSuper = true)
 @AllArgsConstructor
 public class PersonDto extends IdentifiableEntityImpl<Long> {
     @NotBlank

@@ -9,7 +9,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 @Getter
-@ToString
+@ToString(callSuper = true)
 @NoArgsConstructor
 @Setter
 public abstract class AbstractLemonUserDto extends IdentifiableEntityImpl<String> {

@@ -11,7 +11,7 @@ import javax.validation.constraints.Size;
 @NoArgsConstructor
 @Builder
 @AllArgsConstructor
-@ToString
+@ToString(callSuper = true)
 public class PetTypeDto extends IdentifiableEntityImpl<Long> {
     @NotBlank
     @Size(min = 2, max = 20)

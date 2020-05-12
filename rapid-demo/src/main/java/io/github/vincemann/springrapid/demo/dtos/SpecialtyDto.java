@@ -10,7 +10,7 @@ import javax.validation.constraints.Size;
 @Getter
 @Setter
 @NoArgsConstructor
-@ToString
+@ToString(callSuper = true)
 @AllArgsConstructor
 public class SpecialtyDto extends IdentifiableEntityImpl<Long> {
     @NotBlank

@@ -8,7 +8,7 @@ import lombok.ToString;
 
 @Getter
 @Setter
-@ToString
+@ToString(callSuper = true)
 @NoArgsConstructor
 //can only see id
 public class LemonFetchForeignByEmailDto extends IdentifiableEntityImpl<String> {

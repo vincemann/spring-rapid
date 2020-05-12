@@ -4,7 +4,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import io.github.vincemann.springrapid.core.config.DtoMapperAutoConfiguration;
 import io.github.vincemann.springrapid.core.config.RapidControllerAutoConfiguration;
 import io.github.vincemann.springrapid.core.controller.dtoMapper.DelegatingDtoMapper;
-import io.github.vincemann.springrapid.core.controller.dtoMapper.DtoMapper;
 import io.github.vincemann.springrapid.core.controller.dtoMapper.context.RapidDtoEndpoint;
 import io.github.vincemann.springrapid.core.controller.dtoMapper.context.Direction;
 import io.github.vincemann.springrapid.core.controller.dtoMapper.context.DtoMappingContext;

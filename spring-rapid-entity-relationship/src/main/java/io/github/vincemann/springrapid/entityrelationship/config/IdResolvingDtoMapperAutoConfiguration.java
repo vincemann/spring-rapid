@@ -1,5 +1,6 @@
 package io.github.vincemann.springrapid.entityrelationship.config;
 
+import io.github.vincemann.springrapid.core.config.CrudServiceLocatorAutoConfiguration;
 import io.github.vincemann.springrapid.core.config.DtoMapperAutoConfiguration;
 import io.github.vincemann.springrapid.core.controller.dtoMapper.DtoPostProcessor;
 import io.github.vincemann.springrapid.core.controller.rapid.mergeUpdate.MergeUpdateStrategy;
@@ -14,6 +15,7 @@ import io.github.vincemann.springrapid.entityrelationship.controller.dtomapper.b
 import io.github.vincemann.springrapid.entityrelationship.controller.dtomapper.biDir.BiDirParentIdResolver;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.AutoConfigureBefore;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.context.annotation.Bean;
@@ -22,7 +24,9 @@ import java.util.List;
 
 @WebConfig
 @Slf4j
+//overrides mergeUpdateStrategy
 @AutoConfigureBefore(DtoMapperAutoConfiguration.class)
+@AutoConfigureAfter(CrudServiceLocatorAutoConfiguration.class)
 public class IdResolvingDtoMapperAutoConfiguration {
 
     public IdResolvingDtoMapperAutoConfiguration() {
