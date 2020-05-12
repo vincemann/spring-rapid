@@ -14,7 +14,7 @@ import java.util.Set;
 @NoArgsConstructor
 @Getter
 @Setter
-@ToString
+@ToString(callSuper = true)
 public class ReadOwnerDto extends AbstractOwnerDto implements BiDirParentDto {
 
     @Builder

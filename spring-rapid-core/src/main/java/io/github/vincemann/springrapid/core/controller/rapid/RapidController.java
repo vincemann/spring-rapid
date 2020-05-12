@@ -6,10 +6,7 @@ import com.github.fge.jsonpatch.JsonPatchException;
 import io.github.vincemann.springrapid.core.advice.log.LogComponentInteractionAdvice;
 import io.github.vincemann.springrapid.core.controller.NullCurrentUserIdProvider;
 import io.github.vincemann.springrapid.core.controller.dtoMapper.DelegatingDtoMapper;
-import io.github.vincemann.springrapid.core.controller.dtoMapper.context.Direction;
-import io.github.vincemann.springrapid.core.controller.dtoMapper.context.DtoMappingContext;
-import io.github.vincemann.springrapid.core.controller.dtoMapper.context.DtoMappingInfo;
-import io.github.vincemann.springrapid.core.controller.dtoMapper.context.RapidDtoEndpoint;
+import io.github.vincemann.springrapid.core.controller.dtoMapper.context.*;
 import io.github.vincemann.springrapid.core.controller.rapid.idFetchingStrategy.IdFetchingStrategy;
 import io.github.vincemann.springrapid.core.controller.rapid.idFetchingStrategy.UrlParamIdFetchingStrategy;
 import io.github.vincemann.springrapid.core.controller.rapid.idFetchingStrategy.exception.IdFetchingException;
@@ -348,6 +345,7 @@ public abstract class RapidController
     public ResponseEntity<String> update(HttpServletRequest request, HttpServletResponse response) throws EntityNotFoundException, BadEntityException, IdFetchingException, JsonPatchException, IOException {
         log.debug("Update request arriving at controller: " + request);
         String patchString = readBody(request);
+        log.debug("patchString: " + patchString);
         Id id = idIdFetchingStrategy.fetchId(request);
         Class<?> dtoClass = findDtoClass(RapidDtoEndpoint.UPDATE, Direction.REQUEST, id);
         beforeUpdate(dtoClass, id, patchString, request, response);
@@ -356,13 +354,13 @@ public abstract class RapidController
         EntityUtils.checkPresent(saved, id, getEntityClass());
         Object patchDto = dtoMapper.mapToDto(saved.get(), dtoClass);
         patchDto = MapperUtils.applyPatch(patchDto, patchString);
+        log.debug("finished patchDto: " + patchDto);
         validationStrategy.validateDto(patchDto);
-        E patch = dtoMapper.mapToEntity(patchDto, getEntityClass());
-        //if id got lost bc dto does not have id
-//            patch.setId(id);
-        E merged = mergeUpdateStrategy.merge(patch, JpaUtils.detach(saved.get()), dtoClass);
-//            checkForInvalidUpdates(dtoClass, saved.get(), merged);
-        logStateBeforeServiceCall("update", saved, patchString, merged);
+        E patchEntity = dtoMapper.mapToEntity(patchDto, getEntityClass());
+        log.debug("finished patchEntity: " + patchEntity);
+        E merged = mergeUpdateStrategy.merge(patchEntity, JpaUtils.detach(saved.get()), dtoClass);
+        log.debug("merged Entity as input for service: ");
+        logStateBeforeServiceCall("update", merged, true);
         E updated = serviceUpdate(merged, true);
         logServiceResult("update", updated);
         //no idea why casting is necessary here?
@@ -393,7 +391,10 @@ public abstract class RapidController
 
     public Class<?> findDtoClass(String endpoint, Direction direction, Id id) {
         DtoMappingInfo endpointInfo = createEndpointInfo(endpoint, direction, id);
-        return getDtoMappingContext().find(endpointInfo);
+        log.debug("DtoMappingInfo of current Request: " +endpointInfo);
+        Class<?> dtoClazz = getDtoMappingContext().find(endpointInfo);
+        log.debug("Found DtoClass: " + dtoClazz);
+        return dtoClazz;
     }
 
     protected DtoMappingInfo createEndpointInfo(String endpoint, Direction direction, Id id) {

@@ -11,6 +11,7 @@ import com.naturalprogrammer.spring.lemon.auth.validation.UniqueEmail;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.ToString;
 
 import javax.persistence.*;
 import java.io.Serializable;

@@ -8,7 +8,7 @@ import java.util.Set;
 
 @Getter
 @Setter
-@ToString
+@ToString(callSuper = true)
 @NoArgsConstructor
 /**
  * Does not contain password

@@ -2,6 +2,7 @@ package io.github.vincemann.springrapid.demo.dtos.pet;
 
 import lombok.Builder;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
 
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
@@ -11,6 +12,7 @@ import java.time.LocalDate;
 
 
 @NoArgsConstructor
+@ToString(callSuper = true)
 public class BasePetDto extends AbstractPetDto {
 
 

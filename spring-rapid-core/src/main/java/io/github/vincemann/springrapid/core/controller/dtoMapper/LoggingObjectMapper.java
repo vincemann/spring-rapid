@@ -24,6 +24,8 @@ public class LoggingObjectMapper extends ObjectMapper {
         return super.readValue(content, valueTypeRef);
     }
 
+
+
     @LogInteraction
     @Override
     public <T> T readValue(String content, JavaType valueType) throws JsonProcessingException {

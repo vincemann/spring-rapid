@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import io.github.vincemann.springrapid.core.model.IdentifiableEntityImpl;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.ToString;
 import org.springframework.data.annotation.CreatedBy;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedBy;
@@ -24,6 +25,7 @@ import java.util.Date;
 @Getter @Setter
 @JsonIgnoreProperties({ "createdById", "lastModifiedById", "createdDate", "lastModifiedDate", "new" })
 @EntityListeners(AuditingEntityListener.class)
+@ToString(callSuper = true)
 public class LemonEntity<ID extends Serializable> extends IdentifiableEntityImpl<ID>
 {
 

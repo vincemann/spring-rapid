@@ -10,7 +10,6 @@ import java.util.Arrays;
 import java.util.concurrent.atomic.AtomicInteger;
 
 @Aspect
-@Component
 @Slf4j
 public class LogComponentInteractionAdvice {
     private static final String HARD_PADDING = "#";

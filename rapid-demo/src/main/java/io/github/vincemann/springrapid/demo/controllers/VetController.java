@@ -7,8 +7,6 @@ import io.github.vincemann.springrapid.core.slicing.components.WebController;
 import io.github.vincemann.springrapid.core.controller.dtoMapper.context.DtoMappingContextBuilder;
 import io.github.vincemann.springrapid.core.controller.rapid.RapidController;
 import io.github.vincemann.springrapid.demo.service.VetService;
-import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.RequestMapping;
 
 @WebController
 public class VetController

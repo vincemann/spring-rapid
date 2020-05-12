@@ -38,6 +38,7 @@ public class DelegatingDtoMapper{
         this.postProcessors.add(postProcessor);
     }
 
+    @LogInteraction
     public <T> T mapToDto(IdentifiableEntity<?> source, Class<T> destinationClass) throws BadEntityException {
         T dto = (T) findMapper(destinationClass)
                 .mapToDto(source, destinationClass);

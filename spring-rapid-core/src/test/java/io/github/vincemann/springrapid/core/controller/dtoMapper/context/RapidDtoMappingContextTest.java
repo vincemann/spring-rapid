@@ -10,9 +10,9 @@ import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.List;
 
-class DtoMappingContextTest {
+class RapidDtoMappingContextTest {
 
-    DtoMappingContext context;
+    RapidDtoMappingContext context;
     DtoMappingInfo findInfo;
     DtoMappingInfo createInfo;
     DtoMappingInfo findAllInfo;

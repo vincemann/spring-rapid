@@ -6,6 +6,7 @@ import io.github.vincemann.springrapid.entityrelationship.model.uniDir.child.Uni
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import lombok.ToString;
 import org.springframework.lang.Nullable;
 import io.github.vincemann.springrapid.core.model.IdentifiableEntityImpl;
 
@@ -17,6 +18,7 @@ import java.time.LocalDate;
 @Getter
 @Setter
 @NoArgsConstructor
+@ToString(callSuper = true)
 public class VisitDto extends IdentifiableEntityImpl<Long> implements UniDirChild {
 
     @Nullable

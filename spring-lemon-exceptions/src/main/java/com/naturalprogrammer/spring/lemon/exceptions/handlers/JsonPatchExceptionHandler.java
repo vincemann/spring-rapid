@@ -1,4 +1,4 @@
-package com.naturalprogrammer.spring.lemon.auth.handler;
+package com.naturalprogrammer.spring.lemon.exceptions.handlers;
 
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
