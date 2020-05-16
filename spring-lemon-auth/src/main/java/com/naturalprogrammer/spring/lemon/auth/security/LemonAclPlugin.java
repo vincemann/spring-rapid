@@ -40,6 +40,7 @@ public class LemonAclPlugin extends AbstractAclPlugin {
     }
 
     private void savePostSignupAclInfo(String email){
+        log.debug("saving acl info for signed up user: " + email);
         Optional<AbstractUser> byEmail = repository.findByEmail(email);
         if(!byEmail.isPresent()){
             log.warn("No user found after signup -> cant save acl permissions");

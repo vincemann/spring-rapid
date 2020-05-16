@@ -526,7 +526,7 @@ public abstract class LemonServiceImpl
     @Transactional(propagation = Propagation.REQUIRED, readOnly = false)
     //only called internally
     public void createAdminUser(LemonProperties.Admin admin) throws BadEntityException {
-        log.info("Creating the first admin user: " + admin.getEmail());
+        log.info("Creating admin user: " + admin.getEmail());
 
         // create the user
         U user = newUser();
@@ -535,9 +535,7 @@ public abstract class LemonServiceImpl
                 admin.getPassword()));
         user.getRoles().add(Role.ADMIN);
         getRepository().save(user);
-        //put in @AclManaging
-        //admins can admin themselfes
-//		permissionService.addPermissionForUserOver(saved,BasePermission.ADMINISTRATION,saved.getEmail());
+        log.debug("admin saved.");
     }
 
 
