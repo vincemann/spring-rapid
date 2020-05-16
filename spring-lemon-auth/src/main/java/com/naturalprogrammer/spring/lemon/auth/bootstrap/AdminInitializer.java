@@ -78,11 +78,13 @@ public class AdminInitializer extends Initializer {
 
             // Check if the user already exists
             AbstractUser<?> byEmail = lemonService.findByEmail(admin);
-            if (byEmail != null) {
+            if (byEmail == null) {
                 // Doesn't exist. So, create it.
-                lemonService.createAdminUser(
-                        new LemonProperties.Admin(admin, adminPasswords.get(index))
-                );
+                LemonProperties.Admin toCreate = new LemonProperties.Admin(admin, adminPasswords.get(index));
+                log.debug("admin does not exist yet, creating: " + toCreate);
+                lemonService.createAdminUser(toCreate);
+            }else {
+                log.debug("admin already existing.");
             }
             index++;
         }
