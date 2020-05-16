@@ -3,6 +3,7 @@ package io.github.vincemann.springrapid.core.config;
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.databind.MapperFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import io.github.vincemann.springrapid.core.slicing.config.WebConfig;
 import io.github.vincemann.springrapid.core.controller.dtoMapper.LoggingObjectMapper;
@@ -30,6 +31,8 @@ public class RapidJacksonAutoConfiguration {
         mapper.registerModule(new JavaTimeModule());
         mapper.configure(ACCEPT_SINGLE_VALUE_AS_ARRAY,true);
         mapper.configure(MapperFeature.USE_STATIC_TYPING,true);
+        //otherwise actuator fails sometimes
+        mapper.configure(SerializationFeature.FAIL_ON_EMPTY_BEANS,false);
         return mapper;
     }
 
