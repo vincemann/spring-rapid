@@ -129,17 +129,17 @@ public class LemonServiceSecurityRule extends ServiceSecurityRule {
 
     @CalledByProxy
     public void preAuthorizeChangeEmail(Serializable userId, String changeEmailCode) {
-        getSecurityChecker().checkIfAuthenticated();
+        getSecurityChecker().checkAuthenticated();
     }
 
     @CalledByProxy
     public void preAuthorizeFetchNewToken(Optional<Long> expirationMillis, Optional<String> optionalUsername){
-        getSecurityChecker().checkIfAuthenticated();
+        getSecurityChecker().checkAuthenticated();
     }
 
     @CalledByProxy
     public void preAuthorizeFetchFullToken(String authHeader){
-        getSecurityChecker().checkIfAuthenticated();
+        getSecurityChecker().checkAuthenticated();
     }
 
 

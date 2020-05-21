@@ -29,9 +29,9 @@ public interface SecurityChecker {
     C filter(C toFilter, String permission);
 
     /**
-     * Checks if currently logged in user is authenticated.
+     * Checks whether currently logged in user is authenticated.
      */
-    public void checkIfAuthenticated() throws AccessDeniedException;;
+    public void checkAuthenticated() throws AccessDeniedException;;
 
     /**
      * Checks if authenticated User has permission over Entity with given id & class

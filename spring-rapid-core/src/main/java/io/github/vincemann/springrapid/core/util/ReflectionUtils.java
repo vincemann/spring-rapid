@@ -14,6 +14,7 @@ import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.*;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 
 @Slf4j
@@ -45,7 +46,8 @@ public class ReflectionUtils {
 
     /**
      * Retrieving fields list of specified class.
-     * If @param recursively is true, retrieving fields from whole class hierarchy
+     * If @param recursively is true, retrieving fields from whole class hierarchy.
+     * Ignores Static fields
      */
     public static Field[] getDeclaredFields(Class clazz, boolean recursively) {
         List<Field> fields = new LinkedList<Field>();
@@ -59,11 +61,22 @@ public class ReflectionUtils {
             if (declaredFieldsOfSuper.length > 0)
                 Collections.addAll(fields, declaredFieldsOfSuper);
         }
-
-        return fields.toArray(new Field[fields.size()]);
+        List<Field> nonStaticFields = fields.stream().filter(f -> {
+            if (Modifier.isStatic(f.getModifiers())) {
+                return false;
+            } else {
+                return true;
+            }
+        }).collect(Collectors.toList());
+        return nonStaticFields.toArray(new Field[fields.size()]);
     }
 
-    public static Map<String,Field> getNonStaticFieldMap(Class<?> clazz){
+    /**
+     * Ignores static fields.
+     * @param clazz
+     * @return
+     */
+    public static Map<String,Field> getFieldMap(Class<?> clazz){
         Map<String,Field> fieldMap = new HashMap<>();
         for (Field entityField : Sets.newHashSet(ReflectionUtils.getDeclaredFields(clazz, true))) {
             if (!Modifier.isStatic(entityField.getModifiers())) {

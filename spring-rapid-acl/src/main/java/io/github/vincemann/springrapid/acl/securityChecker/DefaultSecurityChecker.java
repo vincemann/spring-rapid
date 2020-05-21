@@ -67,7 +67,7 @@ public class DefaultSecurityChecker implements SecurityChecker,ApplicationContex
     }
 
     @Override
-    public void checkIfAuthenticated(){
+    public void checkAuthenticated(){
         boolean authenticated = checkExpression("isAuthenticated()");
         if(!authenticated){
             throw new AccessDeniedException("User must be authenticated");
