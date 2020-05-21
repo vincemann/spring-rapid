@@ -4,6 +4,8 @@ import com.naturalprogrammer.spring.lemon.auth.properties.LemonProperties;
 import com.naturalprogrammer.spring.lemon.auth.security.LemonJpaTokenAuthenticationFilter;
 import com.naturalprogrammer.spring.lemon.auth.security.handlers.LemonAuthenticationSuccessHandler;
 import com.naturalprogrammer.spring.lemon.auth.security.service.LemonUserDetailsService;
+import lombok.Generated;
+import lombok.Getter;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,7 +26,9 @@ public class LemonJpaSecurityConfig extends LemonWebSecurityConfig {
 	private static final Log log = LogFactory.getLog(LemonJpaSecurityConfig.class);
 
 	private LemonProperties properties;
+	@Getter
 	private LemonUserDetailsService<?, ?> userDetailsService;
+	@Getter
 	private LemonAuthenticationSuccessHandler authenticationSuccessHandler;
 	
 	@Autowired

@@ -19,7 +19,7 @@ public class MergeUpdateStrategyImpl implements MergeUpdateStrategy<Identifiable
     @LogInteraction
     @Override
     public IdentifiableEntity<?> merge(IdentifiableEntity<?> patch, IdentifiableEntity<?> saved, Class<?> dtoClass) throws BadEntityException {
-        Map<String, Field> entityFields = ReflectionUtils.getNonStaticFieldMap(saved.getClass());
+        Map<String, Field> entityFields = ReflectionUtils.getFieldMap(saved.getClass());
         Set<String> properties = Arrays.stream(ReflectionUtils.getDeclaredFields(dtoClass, true))
                 //ignore static fields
                 .filter(field -> !Modifier.isStatic(field.getModifiers()))

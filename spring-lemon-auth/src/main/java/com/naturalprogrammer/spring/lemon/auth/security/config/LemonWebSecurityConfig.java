@@ -2,6 +2,7 @@ package com.naturalprogrammer.spring.lemon.auth.security.config;
 
 import com.naturalprogrammer.spring.lemon.auth.security.LemonCommonsWebTokenAuthenticationFilter;
 import com.naturalprogrammer.spring.lemon.auth.security.service.BlueTokenService;
+import lombok.Getter;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;

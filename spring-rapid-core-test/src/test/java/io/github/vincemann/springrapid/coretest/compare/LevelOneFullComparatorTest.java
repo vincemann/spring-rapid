@@ -1,6 +1,7 @@
 package io.github.vincemann.springrapid.coretest.compare;
 
 import io.github.vincemann.springrapid.core.model.IdentifiableEntityImpl;
+import io.github.vincemann.springrapid.coretest.compare.LevelOneFullComparator;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
