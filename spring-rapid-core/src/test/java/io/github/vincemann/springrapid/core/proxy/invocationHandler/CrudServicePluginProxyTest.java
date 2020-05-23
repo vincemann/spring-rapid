@@ -1,6 +1,6 @@
 package io.github.vincemann.springrapid.core.proxy.invocationHandler;
 
-import io.github.vincemann.springrapid.core.util.Lists;
+import io.github.vincemann.springrapid.commons.Lists;
 import io.github.vincemann.springrapid.core.model.IdentifiableEntityImpl;
 import io.github.vincemann.springrapid.core.proxy.CalledByProxy;
 import io.github.vincemann.springrapid.core.service.jpa.JPACrudService;

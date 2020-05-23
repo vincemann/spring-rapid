@@ -1,11 +1,11 @@
 package io.github.vincemann.springrapid.core.proxy.invocationHandler;
 
 
+import io.github.vincemann.springrapid.commons.NullableOptional;
 import io.github.vincemann.springrapid.core.proxy.invocationHandler.abs.CrudServiceExtensionProxy;
 import io.github.vincemann.springrapid.core.service.CrudService;
 import io.github.vincemann.springrapid.core.service.plugin.CrudServicePlugin;
-import io.github.vincemann.springrapid.core.util.Lists;
-import io.github.vincemann.springrapid.core.util.NullableOptional;
+import io.github.vincemann.springrapid.commons.Lists;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 

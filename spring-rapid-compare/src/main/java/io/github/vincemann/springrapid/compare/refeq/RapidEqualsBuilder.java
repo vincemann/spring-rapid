@@ -1,14 +1,15 @@
 package io.github.vincemann.springrapid.compare.refeq;
 
+import io.github.vincemann.springrapid.commons.Lists;
+import io.github.vincemann.springrapid.commons.ReflectionUtils;
 import lombok.*;
 import lombok.extern.slf4j.Slf4j;
 
 import java.lang.reflect.AccessibleObject;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
+import java.sql.Ref;
+import java.util.*;
 
 /**
  * Copied and modified from {@link org.mockito.internal.matchers.apachecommons.EqualsBuilder}.
@@ -90,7 +91,7 @@ class RapidEqualsBuilder {
      * @return <code>true</code> if the two Objects have tested equals.
      */
     public static MinimalDiff reflectionEquals(Object root, Object compare) {
-        return reflectionEquals(root, compare, false, null, null);
+        return reflectionEquals(root, compare, null, null);
     }
 
     /**
@@ -113,32 +114,9 @@ class RapidEqualsBuilder {
      * @return <code>true</code> if the two Objects have tested equals.
      */
     public static MinimalDiff reflectionEquals(Object root, Object compare, String[] excludeFields) {
-        return reflectionEquals(root, compare, false, null, excludeFields);
+        return reflectionEquals(root, compare,  null, excludeFields);
     }
 
-    /**
-     * <p>This method uses reflection to determine if the two <code>Object</code>s
-     * are equal.</p>
-     *
-     * <p>It uses <code>AccessibleObject.setAccessible</code> to gain access to private
-     * fields. This means that it will throw a security exception if run under
-     * a security manager, if the permissions are not set up correctly. It is also
-     * not as efficient as testing explicitly.</p>
-     *
-     * <p>If the TestTransients parameter is set to <code>true</code>, transient
-     * members will be tested, otherwise they are ignored, as they are likely
-     * derived fields, and not part of the value of the <code>Object</code>.</p>
-     *
-     * <p>Static fields will not be tested. Superclass fields will be included.</p>
-     *
-     * @param root  <code>this</code> object
-     * @param compare  the other object
-     * @param testTransients  whether to include transient fields
-     * @return <code>true</code> if the two Objects have tested equals.
-     */
-    public static MinimalDiff reflectionEquals(Object root, Object compare, boolean testTransients) {
-        return reflectionEquals(root, compare, testTransients, null, null);
-    }
 
     /**
      * <p>This method uses reflection to determine if the two <code>Object</code>s
@@ -159,14 +137,13 @@ class RapidEqualsBuilder {
      *
      * @param root  <code>this</code> object
      * @param compare  the other object
-     * @param testTransients  whether to include transient fields
      * @param reflectUpToClass  the superclass to reflect up to (inclusive),
      *  may be <code>null</code>
      * @return <code>true</code> if the two Objects have tested equals.
      * @since 2.1.0
      */
-    public static MinimalDiff reflectionEquals(Object root, Object compare, boolean testTransients, Class<?> reflectUpToClass) {
-        return reflectionEquals(root, compare, testTransients, reflectUpToClass, null);
+    public static MinimalDiff reflectionEquals(Object root, Object compare, Class<?> reflectUpToClass) {
+        return reflectionEquals(root, compare, reflectUpToClass, null);
     }
 
 
@@ -189,14 +166,13 @@ class RapidEqualsBuilder {
      *
      * @param root  <code>this</code> object
      * @param compare  the other object
-     * @param testTransients  whether to include transient fields
      * @param reflectUpToClass  the superclass to reflect up to (inclusive),
      *  may be <code>null</code>
      * @param excludeFields  array of field names to exclude from testing
      * @return <code>true</code> if the two Objects have tested equals.
      * @since 2.1.0
      */
-    public static MinimalDiff reflectionEquals(Object root, Object compare, boolean testTransients, Class<?> reflectUpToClass,
+    public static MinimalDiff reflectionEquals(Object root, Object compare, Class<?> reflectUpToClass,
                                            String[] excludeFields) {
 
         if (root == compare) {
@@ -211,13 +187,14 @@ class RapidEqualsBuilder {
         // then a subclass can test equals to a superclass.
 
         //always choose roots class for comparisson
-        Class<?> testClass = root.getClass();
+        Class<?> rootClass = root.getClass();
+        Class<?> compareClass = compare.getClass();
         RapidEqualsBuilder equalsBuilder = new RapidEqualsBuilder();
         try {
-            reflectionAppend(root, compare, testClass, equalsBuilder, testTransients, excludeFields);
-            while (testClass.getSuperclass() != null && testClass != reflectUpToClass) {
-                testClass = testClass.getSuperclass();
-                reflectionAppend(root, compare, testClass, equalsBuilder, testTransients, excludeFields);
+            reflectionAppend(root, compare, rootClass,compareClass, equalsBuilder, excludeFields);
+            while (rootClass.getSuperclass() != null && rootClass != reflectUpToClass) {
+                rootClass = rootClass.getSuperclass();
+                reflectionAppend(root, compare, rootClass,compareClass, equalsBuilder, excludeFields);
             }
         } catch (IllegalArgumentException e) {
             log.warn("Objects differ, but not exact property known: In this case, we tried to test a subclass vs. a superclass and\n" +
@@ -237,38 +214,41 @@ class RapidEqualsBuilder {
      *
      * @param root  the left hand object
      * @param compare  the right hand object
-     * @param clazz  the class to append details of
+     * @param rootClass  the class to append details of
      * @param builder  the builder to append to
-     * @param useTransients  whether to test transient fields
      * @param excludeFields  array of field names to exclude from testing
      */
     private static void reflectionAppend(
             Object root,
             Object compare,
-            Class<?> clazz,
+            Class<?> rootClass,
+            Class<?> compareClass,
             RapidEqualsBuilder builder,
-            boolean useTransients,
             String[] excludeFields) {
-        Field[] fields = clazz.getDeclaredFields();
-        List<String> excludedFieldList = excludeFields != null ? Arrays.asList(excludeFields) : Collections.<String>emptyList();
-        AccessibleObject.setAccessible(fields, true);
-        for (int i = 0; i < fields.length && builder.isEquals(); i++) {
-            Field f = fields[i];
-            //this all has to be true, otherwise the field is ignored
-            if (!excludedFieldList.contains(f.getName())
-                    && (f.getName().indexOf('$') == -1)
-                    && (useTransients || !Modifier.isTransient(f.getModifiers()))
-                    && (!Modifier.isStatic(f.getModifiers()))) {
-                try {
-                    builder.append(f.get(root), f.get(compare),f.getName());
-                } catch (IllegalAccessException e) {
-                    //this can't happen. Would get a Security exception instead
-                    //throw a runtime exception in case the impossible happens.
-                    throw new InternalError("Unexpected IllegalAccessException");
-                }
+
+        Set<String> properties = ReflectionUtils.findAllProperties(rootClass);
+        properties.removeAll(Lists.newArrayList(excludeFields));
+
+
+        for (String property : properties) {
+            Field rootField = ReflectionUtils.findField(rootClass,property);
+            Field compareField = ReflectionUtils.findField(compareClass,property);
+
+            rootField.setAccessible(true);
+            compareField.setAccessible(true);
+
+            try {
+                builder.append(rootField.get(root),compareField.get(compare),property);
+            }catch (IllegalAccessException e) {
+                //this can't happen. Would get a Security exception instead
+                //throw a runtime exception in case the impossible happens.
+                throw new InternalError("Unexpected IllegalAccessException");
             }
+
         }
     }
+
+
 
     //-------------------------------------------------------------------------
 

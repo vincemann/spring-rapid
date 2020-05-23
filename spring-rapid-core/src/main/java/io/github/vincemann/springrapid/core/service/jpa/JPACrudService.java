@@ -1,5 +1,6 @@
 package io.github.vincemann.springrapid.core.service.jpa;
 
+import io.github.vincemann.springrapid.commons.NullAwareBeanUtilsBean;
 import io.github.vincemann.springrapid.core.slicing.components.ServiceComponent;
 import io.github.vincemann.springrapid.core.model.IdentifiableEntity;
 import io.github.vincemann.springrapid.core.service.CrudService;
@@ -7,7 +8,6 @@ import io.github.vincemann.springrapid.core.service.exception.BadEntityException
 import io.github.vincemann.springrapid.core.service.exception.EntityNotFoundException;
 import io.github.vincemann.springrapid.core.util.DebugTransactionUtil;
 import io.github.vincemann.springrapid.core.util.EntityUtils;
-import io.github.vincemann.springrapid.core.util.NullAwareBeanUtilsBean;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.beanutils.BeanUtilsBean;
 import org.springframework.beans.factory.annotation.Autowired;

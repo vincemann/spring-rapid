@@ -1,6 +1,6 @@
 package io.github.vincemann.springrapid.core.controller.dtoMapper.context;
 
-import io.github.vincemann.springrapid.core.util.Lists;
+import io.github.vincemann.springrapid.commons.Lists;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.util.Assert;
 

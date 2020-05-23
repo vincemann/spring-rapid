@@ -3,7 +3,7 @@ package io.github.vincemann.springrapid.core.controller.rapid.mergeUpdate;
 import io.github.vincemann.springrapid.core.advice.log.LogInteraction;
 import io.github.vincemann.springrapid.core.model.IdentifiableEntity;
 import io.github.vincemann.springrapid.core.service.exception.BadEntityException;
-import io.github.vincemann.springrapid.core.util.ReflectionUtils;
+import io.github.vincemann.springrapid.commons.ReflectionUtils;
 import lombok.extern.slf4j.Slf4j;
 
 import java.lang.reflect.Field;

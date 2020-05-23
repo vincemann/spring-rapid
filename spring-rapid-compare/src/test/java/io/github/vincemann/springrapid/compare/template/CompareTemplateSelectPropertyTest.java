@@ -1,6 +1,8 @@
 package io.github.vincemann.springrapid.compare.template;
 
 import com.github.hervian.reflection.Types;
+import io.github.vincemann.springrapid.core.model.IdentifiableEntity;
+import io.github.vincemann.springrapid.core.model.IdentifiableEntityImpl;
 import lombok.*;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -16,8 +18,8 @@ class CompareTemplateSelectPropertyTest {
     @Getter
     @Setter
     @AllArgsConstructor
-    class Parent  {
-        long id;
+    class Parent  extends IdentifiableEntityImpl<Long> {
+
         String name;
         int age;
         CompareTemplateFullEqualTest.Child child;
@@ -27,7 +29,8 @@ class CompareTemplateSelectPropertyTest {
         }
 
         public Parent(CompareTemplateFullEqualTest.Parent copy){
-            this(copy.id,copy.name,copy.age,copy.child,copy.childSet);
+            this(copy.name,copy.age,copy.child,copy.childSet);
+            setId(copy.getId());
         }
     }
     @Getter
@@ -54,8 +57,7 @@ class CompareTemplateSelectPropertyTest {
 
     @Getter
     @Setter
-    class Child {
-        long id;
+    class Child extends IdentifiableEntityImpl<Long>{
         String name;
         String address;
         CompareTemplateFullEqualTest.Parent parent;

@@ -1,12 +1,12 @@
 package io.github.vincemann.springrapid.acl.proxy.create;
 
 import io.github.vincemann.springrapid.acl.proxy.CrudServiceSecurityProxy;
+import io.github.vincemann.springrapid.commons.ClassUtils;
 import io.github.vincemann.springrapid.core.model.IdentifiableEntity;
 import io.github.vincemann.springrapid.core.service.CrudService;
 import io.github.vincemann.springrapid.acl.proxy.rules.DefaultServiceSecurityRule;
 import io.github.vincemann.springrapid.acl.proxy.rules.ServiceSecurityRule;
 import io.github.vincemann.springrapid.acl.securityChecker.SecurityChecker;
-import io.github.vincemann.springrapid.core.util.ClassUtils;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.test.util.AopTestUtils;
 

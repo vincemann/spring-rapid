@@ -1,7 +1,8 @@
 package io.github.vincemann.springrapid.core.proxy.factory;
 
-import io.github.vincemann.springrapid.core.util.ClassUtils;
-import io.github.vincemann.springrapid.core.util.Lists;
+
+import io.github.vincemann.springrapid.commons.ClassUtils;
+import io.github.vincemann.springrapid.commons.Lists;
 import io.github.vincemann.springrapid.core.model.IdentifiableEntity;
 import io.github.vincemann.springrapid.core.proxy.invocationHandler.CrudServicePluginProxy;
 import io.github.vincemann.springrapid.core.service.CrudService;

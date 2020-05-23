@@ -4,6 +4,7 @@ import com.github.hervian.reflection.Types;
 import io.github.vincemann.springrapid.commons.ReflectionUtils;
 import io.github.vincemann.springrapid.compare.refeq.RapidEqualsBuilder;
 import io.github.vincemann.springrapid.compare.refeq.RapidReflectionEquals;
+import lombok.Getter;
 import org.junit.jupiter.api.Assertions;
 
 import java.lang.reflect.Field;
@@ -15,6 +16,7 @@ public class CompareTemplate implements ActorConfigurer, OptionalActorConfigurer
     private Object rootActor;
     private List<Object> actors = new ArrayList<>();
     private Set<String> properties = new HashSet<>();
+    @Getter
     private RapidEqualsBuilder.MinimalDiff minimalDiff;
 
     private CompareTemplate(Object rootActor) {
@@ -57,13 +59,13 @@ public class CompareTemplate implements ActorConfigurer, OptionalActorConfigurer
     public IgnoringPropertyConfigurer allOf(Object o) {
         Assertions.assertNotNull(o);
         Assertions.assertTrue(actors.contains(o) || rootActor.equals(o));
-        properties.addAll(getAllProperties(o));
+        properties.addAll(ReflectionUtils.findAllProperties(o.getClass()));
         return this;
     }
 
     @Override
     public IgnoringPropertyConfigurer all() {
-        properties.addAll(getAllProperties(rootActor));
+        properties.addAll(ReflectionUtils.findAllProperties(rootActor.getClass()));
         return this;
     }
 
@@ -100,7 +102,7 @@ public class CompareTemplate implements ActorConfigurer, OptionalActorConfigurer
     }
 
     private Set<String> getIgnoredProperties(){
-        Set<String> ignoredProperties = getAllProperties(rootActor);
+        Set<String> ignoredProperties = ReflectionUtils.findAllProperties(rootActor.getClass());
         ignoredProperties.removeAll(properties);
         return ignoredProperties;
     }
@@ -109,12 +111,8 @@ public class CompareTemplate implements ActorConfigurer, OptionalActorConfigurer
         Method method = Types.createMethod(getter);
         Assertions.assertTrue(method.getName().startsWith("get"), "Not a getter method: " + method.getName());
         String propertyName = method.getName().replaceFirst("get", "");
-        return propertyName.substring(0, 1).toUpperCase() + propertyName.substring(1);
+        return propertyName.substring(0, 1).toLowerCase() + propertyName.substring(1);
     }
 
-    private Set<String> getAllProperties(Object o) {
-        return Arrays.stream(ReflectionUtils.getDeclaredFields(o.getClass(), true))
-                .map(Field::getName)
-                .collect(Collectors.toSet());
-    }
+
 }
