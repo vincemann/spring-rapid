@@ -1,6 +1,6 @@
 package io.github.vincemann.springrapid.core.controller.dtoMapper.context;
 
-import io.github.vincemann.springrapid.core.util.Lists;
+import io.github.vincemann.springrapid.commons.Lists;
 import lombok.*;
 import org.springframework.lang.Nullable;
 

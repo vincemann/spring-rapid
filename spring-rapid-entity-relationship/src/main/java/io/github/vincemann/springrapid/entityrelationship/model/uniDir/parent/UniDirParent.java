@@ -6,7 +6,7 @@ import io.github.vincemann.springrapid.entityrelationship.model.uniDir.child.Uni
 import io.github.vincemann.springrapid.entityrelationship.model.uniDir.child.UniDirChildEntity;
 import io.github.vincemann.springrapid.entityrelationship.exception.UnknownChildTypeException;
 import io.github.vincemann.springrapid.entityrelationship.util.CollectionUtils;
-import io.github.vincemann.springrapid.core.util.ReflectionUtils;
+import io.github.vincemann.springrapid.commons.ReflectionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

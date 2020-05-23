@@ -19,6 +19,9 @@ import java.util.stream.Collectors;
 @Slf4j
 public class ReflectionUtils {
 
+    //todo use for all methods
+    private static Map<Class,List<Field>> fieldCache = new HashMap<>();
+
 //    public static <T> T getInstance(Class<T> clazz) {
 //        T t = null;
 //        try {
@@ -32,6 +35,25 @@ public class ReflectionUtils {
 //        return t;
 //    }
 
+
+    public static Field findField(Class clazz, String property) {
+        List<Field> cachedFields = fieldCache.get(clazz);
+        if(cachedFields==null){
+            cachedFields = Lists.newArrayList(ReflectionUtils.getDeclaredFields(clazz,true));
+        }
+        Optional<Field> field = cachedFields.stream().filter(f -> f.getName().equals(property)).findFirst();
+        if(!field.isPresent()){
+            throw new IllegalArgumentException("Field not found: " + property + " class: " + clazz);
+        }
+        return field.get();
+    }
+
+
+    public static Set<String> findAllProperties(Class c) {
+        return Arrays.stream(ReflectionUtils.getDeclaredFields(c, true))
+                .map(Field::getName)
+                .collect(Collectors.toSet());
+    }
 
     public static List<Method> findGetters(Class clazz) {
         List<Method> getters = new ArrayList<>();

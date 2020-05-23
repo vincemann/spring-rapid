@@ -21,6 +21,13 @@
 
         <dependency>
             <groupId>io.github.vincemann</groupId>
+            <artifactId>spring-rapid-core</artifactId>
+            <version>${project.version}</version>
+            <scope>test</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>io.github.vincemann</groupId>
             <artifactId>spring-rapid-commons</artifactId>
             <version>${project.version}</version>
         </dependency>

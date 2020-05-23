@@ -1,7 +1,7 @@
 package io.github.vincemann.springrapid.core.controller.dtoMapper.context;
 
 import io.github.vincemann.springrapid.core.model.IdentifiableEntityImpl;
-import io.github.vincemann.springrapid.core.util.Lists;
+import io.github.vincemann.springrapid.commons.Lists;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

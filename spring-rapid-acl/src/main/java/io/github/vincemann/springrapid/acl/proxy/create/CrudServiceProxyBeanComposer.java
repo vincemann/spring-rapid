@@ -1,6 +1,6 @@
 package io.github.vincemann.springrapid.acl.proxy.create;
 
-import io.github.vincemann.springrapid.core.util.Lists;
+import io.github.vincemann.springrapid.commons.Lists;
 import io.github.vincemann.springrapid.acl.proxy.SecurityProxy;
 import io.github.vincemann.springrapid.acl.proxy.rules.ServiceSecurityRule;
 import io.github.vincemann.springrapid.core.proxy.factory.CrudServicePluginProxyFactory;

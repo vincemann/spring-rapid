@@ -1,12 +1,12 @@
 package io.github.vincemann.springrapid.compare.template;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import io.github.vincemann.springrapid.core.model.IdentifiableEntityImpl;
+import lombok.*;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
+import java.io.Serializable;
+import java.util.Objects;
 import java.util.Set;
 
 import static io.github.vincemann.springrapid.compare.template.CompareTemplate.compare;
@@ -18,23 +18,24 @@ class CompareTemplateFullEqualTest {
     @Setter
     @NoArgsConstructor
     @AllArgsConstructor
-    class Parent {
-        long id;
+    class Parent extends IdentifiableEntityImpl<Long> {
         String name;
         int age;
         Child child;
         Set<Child> childSet;
 
+
+
         public Parent(Parent copy){
-            this(copy.getId(), copy.name,copy.age,copy.child,copy.childSet);
+            this(copy.name,copy.age,copy.child,copy.childSet);
+            setId(copy.getId());
         }
     }
 
     @Getter
     @Setter
     @NoArgsConstructor
-    class Child {
-        long id;
+    class Child extends IdentifiableEntityImpl<Long>{
         String name;
         String address;
         Parent parent;

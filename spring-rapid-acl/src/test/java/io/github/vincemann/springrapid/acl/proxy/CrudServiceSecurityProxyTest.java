@@ -1,6 +1,6 @@
 package io.github.vincemann.springrapid.acl.proxy;
 
-import io.github.vincemann.springrapid.core.util.Lists;
+import io.github.vincemann.springrapid.commons.Lists;
 import io.github.vincemann.springrapid.acl.proxy.rules.DontCallTargetMethod;
 import io.github.vincemann.springrapid.acl.proxy.rules.OverrideDefaultSecurityRule;
 import io.github.vincemann.springrapid.acl.proxy.rules.ServiceSecurityRule;

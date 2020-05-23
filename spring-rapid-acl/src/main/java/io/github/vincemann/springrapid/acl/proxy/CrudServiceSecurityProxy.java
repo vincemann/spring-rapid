@@ -1,10 +1,10 @@
 package io.github.vincemann.springrapid.acl.proxy;
 
-import io.github.vincemann.springrapid.core.util.Lists;
+import io.github.vincemann.springrapid.commons.Lists;
 import io.github.vincemann.springrapid.acl.proxy.create.CrudServiceSecurityProxyFactory;
 import io.github.vincemann.springrapid.acl.proxy.rules.DontCallTargetMethod;
 import io.github.vincemann.springrapid.acl.proxy.rules.OverrideDefaultSecurityRule;
-import io.github.vincemann.springrapid.core.util.NullableOptional;
+import io.github.vincemann.springrapid.commons.NullableOptional;
 import io.github.vincemann.springrapid.core.proxy.invocationHandler.abs.CrudServiceExtensionProxy;
 import io.github.vincemann.springrapid.core.service.CrudService;
 import io.github.vincemann.springrapid.acl.proxy.rules.ServiceSecurityRule;

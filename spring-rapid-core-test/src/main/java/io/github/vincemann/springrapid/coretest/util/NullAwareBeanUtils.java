@@ -1,6 +1,7 @@
 package io.github.vincemann.springrapid.coretest.util;
 
-import io.github.vincemann.springrapid.core.util.NullAwareBeanUtilsBean;
+
+import io.github.vincemann.springrapid.commons.NullAwareBeanUtilsBean;
 
 import java.lang.reflect.InvocationTargetException;
 

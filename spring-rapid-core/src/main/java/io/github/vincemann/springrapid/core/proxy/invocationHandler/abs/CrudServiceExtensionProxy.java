@@ -1,8 +1,8 @@
 package io.github.vincemann.springrapid.core.proxy.invocationHandler.abs;
 
-import io.github.vincemann.springrapid.core.util.Lists;
+import io.github.vincemann.springrapid.commons.Lists;
+import io.github.vincemann.springrapid.commons.NullableOptional;
 import io.github.vincemann.springrapid.core.service.CrudService;
-import io.github.vincemann.springrapid.core.util.NullableOptional;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
