@@ -1,12 +1,10 @@
 package io.github.vincemann.springrapid.acl.proxy;
 
-import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import io.github.vincemann.springrapid.core.util.Lists;
 import io.github.vincemann.springrapid.acl.proxy.create.CrudServiceSecurityProxyFactory;
 import io.github.vincemann.springrapid.acl.proxy.rules.DontCallTargetMethod;
 import io.github.vincemann.springrapid.acl.proxy.rules.OverrideDefaultSecurityRule;
 import io.github.vincemann.springrapid.core.util.NullableOptional;
-import io.github.vincemann.springrapid.core.model.IdentifiableEntity;
 import io.github.vincemann.springrapid.core.proxy.invocationHandler.abs.CrudServiceExtensionProxy;
 import io.github.vincemann.springrapid.core.service.CrudService;
 import io.github.vincemann.springrapid.acl.proxy.rules.ServiceSecurityRule;
@@ -17,14 +15,9 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.test.util.AopTestUtils;
 import org.springframework.util.Assert;
 
-import java.io.Serializable;
-import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
-import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.stream.Collectors;
 
 @Slf4j
 /**

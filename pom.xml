@@ -38,7 +38,8 @@
         <module>spring-rapid-entity-relationship</module>
         <module>spring-rapid-acl</module>
         <module>spring-rapid-core-test</module>
-
+        <module>spring-rapid-compare</module>
+        <module>spring-rapid-commons</module>
     </modules>
 
 
