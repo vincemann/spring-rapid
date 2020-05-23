@@ -1,18 +1,14 @@
 package io.github.vincemann.springrapid.core.proxy.invocationHandler.abs;
 
 import io.github.vincemann.springrapid.core.util.Lists;
-import io.github.vincemann.springrapid.core.model.IdentifiableEntity;
 import io.github.vincemann.springrapid.core.service.CrudService;
 import io.github.vincemann.springrapid.core.util.NullableOptional;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.data.repository.CrudRepository;
-import org.springframework.test.util.AopTestUtils;
 import org.springframework.util.Assert;
 
-import java.io.Serializable;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.InvocationHandler;
 

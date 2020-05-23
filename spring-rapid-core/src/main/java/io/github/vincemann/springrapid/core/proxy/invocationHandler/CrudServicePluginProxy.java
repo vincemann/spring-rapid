@@ -1,7 +1,6 @@
 package io.github.vincemann.springrapid.core.proxy.invocationHandler;
 
 
-import io.github.vincemann.springrapid.core.model.IdentifiableEntity;
 import io.github.vincemann.springrapid.core.proxy.invocationHandler.abs.CrudServiceExtensionProxy;
 import io.github.vincemann.springrapid.core.service.CrudService;
 import io.github.vincemann.springrapid.core.service.plugin.CrudServicePlugin;
@@ -9,9 +8,7 @@ import io.github.vincemann.springrapid.core.util.Lists;
 import io.github.vincemann.springrapid.core.util.NullableOptional;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.data.repository.CrudRepository;
 
-import java.io.Serializable;
 import java.lang.reflect.Method;
 import java.util.List;
 

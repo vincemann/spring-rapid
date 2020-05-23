@@ -8,7 +8,6 @@ import io.github.vincemann.springrapid.acl.proxy.rules.ServiceSecurityRule;
 import io.github.vincemann.springrapid.acl.securityChecker.SecurityChecker;
 import io.github.vincemann.springrapid.core.util.ClassUtils;
 import org.springframework.data.repository.CrudRepository;
-import org.springframework.stereotype.Component;
 import org.springframework.test.util.AopTestUtils;
 
 import java.io.Serializable;

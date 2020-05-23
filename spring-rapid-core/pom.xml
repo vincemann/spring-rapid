@@ -17,6 +17,12 @@
     <dependencies>
 
         <dependency>
+            <groupId>io.github.vincemann</groupId>
+            <artifactId>spring-rapid-commons</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+
+        <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-web</artifactId>
         </dependency>
@@ -67,18 +73,6 @@
             <version>4.5.8</version>
         </dependency>
 
-        <!-- transfer non null values reflectively while udating -->
-        <dependency>
-            <groupId>commons-beanutils</groupId>
-            <artifactId>commons-beanutils</artifactId>
-            <version>1.9.4</version>
-        </dependency>
-
-        <dependency>
-            <groupId>org.apache.commons</groupId>
-            <artifactId>commons-collections4</artifactId>
-            <version>4.4</version>
-        </dependency>
 
 
 

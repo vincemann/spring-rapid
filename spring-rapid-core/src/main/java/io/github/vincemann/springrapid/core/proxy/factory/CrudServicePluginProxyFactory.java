@@ -11,10 +11,6 @@ import org.springframework.test.util.AopTestUtils;
 
 import java.io.Serializable;
 import java.lang.reflect.Proxy;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
 
 public class CrudServicePluginProxyFactory {
     //we need the class explicitly here to avoid issues with other proxies. HibernateProxies for example, are not interfaces, so service.getClass returns no interface

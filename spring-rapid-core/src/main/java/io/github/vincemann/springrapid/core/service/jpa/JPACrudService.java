@@ -5,7 +5,6 @@ import io.github.vincemann.springrapid.core.model.IdentifiableEntity;
 import io.github.vincemann.springrapid.core.service.CrudService;
 import io.github.vincemann.springrapid.core.service.exception.BadEntityException;
 import io.github.vincemann.springrapid.core.service.exception.EntityNotFoundException;
-import io.github.vincemann.springrapid.core.service.exception.BadEntityException;
 import io.github.vincemann.springrapid.core.util.DebugTransactionUtil;
 import io.github.vincemann.springrapid.core.util.EntityUtils;
 import io.github.vincemann.springrapid.core.util.NullAwareBeanUtilsBean;
