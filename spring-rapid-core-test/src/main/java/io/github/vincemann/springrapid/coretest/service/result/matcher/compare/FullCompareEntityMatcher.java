@@ -1,10 +1,9 @@
 package io.github.vincemann.springrapid.coretest.service.result.matcher.compare;
 
 import com.github.hervian.reflection.Types;
+import io.github.vincemann.springrapid.compare.util.MethodNameUtil;
 import io.github.vincemann.springrapid.core.model.IdentifiableEntity;
-import io.github.vincemann.springrapid.coretest.compare.FullComparator;
 import io.github.vincemann.springrapid.coretest.service.result.matcher.ServiceResultMatcher;
-import io.github.vincemann.springrapid.coretest.util.MethodNameUtil;
 import org.apache.commons.beanutils.BeanUtilsBean;
 import org.junit.jupiter.api.Assertions;
 

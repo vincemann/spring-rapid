@@ -55,7 +55,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
         })
 //override config to define mock rules before context initialization
 @Import(RapidControllerTest.TestConfig.class)
-//@PropertySource({"classpath:application.properties","classpath:application-test.properties"})
 class RapidControllerTest
         extends AbstractMvcRapidControllerTest<ExampleService, ExampleEntity, Long> {
 

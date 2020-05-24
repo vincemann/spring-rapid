@@ -5,6 +5,7 @@ import io.github.vincemann.springrapid.commons.ReflectionUtils;
 import io.github.vincemann.springrapid.compare.refeq.RapidEqualsBuilder;
 import io.github.vincemann.springrapid.compare.refeq.RapidReflectionEquals;
 import lombok.Getter;
+import lombok.Setter;
 import org.junit.jupiter.api.Assertions;
 
 import java.lang.reflect.Field;
@@ -12,6 +13,8 @@ import java.lang.reflect.Method;
 import java.util.*;
 import java.util.stream.Collectors;
 
+@Getter
+@Setter
 public class CompareTemplate implements ActorConfigurer, OptionalActorConfigurer, PropertyConfigurer, IgnoringPropertyConfigurer, SelectingPropertyConfigurer, OptionalSelectingPropertyConfigurer, OperationConfigurer {
     private Object rootActor;
     private List<Object> actors = new ArrayList<>();
@@ -19,7 +22,7 @@ public class CompareTemplate implements ActorConfigurer, OptionalActorConfigurer
     @Getter
     private RapidEqualsBuilder.MinimalDiff minimalDiff;
 
-    private CompareTemplate(Object rootActor) {
+    protected CompareTemplate(Object rootActor) {
         this.rootActor = rootActor;
     }
 
