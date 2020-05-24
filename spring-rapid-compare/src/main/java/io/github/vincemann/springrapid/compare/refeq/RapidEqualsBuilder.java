@@ -21,8 +21,7 @@ import java.util.*;
  */
 @SuppressWarnings("unchecked")
 @Slf4j
-public
-class RapidEqualsBuilder {
+public class RapidEqualsBuilder {
 
     /**
      * If the fields tested are equals.

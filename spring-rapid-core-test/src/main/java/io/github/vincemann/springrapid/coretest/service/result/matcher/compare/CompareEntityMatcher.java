@@ -5,6 +5,7 @@ import lombok.Getter;
 
 @AllArgsConstructor
 @Getter
-public abstract class CompareEntityMatcher {
+public class CompareEntityMatcher {
+
     private CompareEntityMatcherContext compareEntityContext;
 }

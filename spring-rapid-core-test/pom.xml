@@ -20,6 +20,12 @@
             <version>${project.version}</version>
         </dependency>
 
+        <dependency>
+            <groupId>io.github.vincemann</groupId>
+            <artifactId>spring-rapid-compare</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+
 
 
     </dependencies>
