@@ -1,6 +1,11 @@
 package io.github.vincemann.springrapid.demo.service.jpa;
 
 import io.github.vincemann.springrapid.commons.Lists;
+import io.github.vincemann.springrapid.compare.template.CompareTemplate;
+import io.github.vincemann.springrapid.core.service.exception.BadEntityException;
+import io.github.vincemann.springrapid.core.service.exception.EntityNotFoundException;
+import io.github.vincemann.springrapid.coretest.service.CrudServiceIntegrationTest;
+import io.github.vincemann.springrapid.coretest.service.result.ServiceResult;
 import io.github.vincemann.springrapid.demo.EnableProjectComponentScan;
 import io.github.vincemann.springrapid.demo.model.Owner;
 import io.github.vincemann.springrapid.demo.model.Pet;
@@ -9,11 +14,6 @@ import io.github.vincemann.springrapid.demo.service.OwnerService;
 import io.github.vincemann.springrapid.demo.service.PetService;
 import io.github.vincemann.springrapid.demo.service.PetTypeService;
 import io.github.vincemann.springrapid.demo.service.plugin.OwnerOfTheYearPlugin;
-import io.github.vincemann.springrapid.core.service.exception.BadEntityException;
-import io.github.vincemann.springrapid.core.service.exception.EntityNotFoundException;
-import io.github.vincemann.springrapid.coretest.compare.FullComparator;
-import io.github.vincemann.springrapid.coretest.service.CrudServiceIntegrationTest;
-import io.github.vincemann.springrapid.coretest.service.result.ServiceResult;
 import io.github.vincemann.springrapid.entityrelationship.slicing.test.ImportRapidEntityRelServiceConfig;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -29,20 +29,15 @@ import java.util.Optional;
 import static io.github.vincemann.springrapid.coretest.service.request.CrudServiceRequestBuilders.*;
 import static io.github.vincemann.springrapid.coretest.service.result.matcher.ExceptionMatchers.noException;
 import static io.github.vincemann.springrapid.coretest.service.result.matcher.ExistenceMatchers.notPresentInDatabase;
-import static io.github.vincemann.springrapid.coretest.service.result.matcher.compare.CompareEntityMatchers.compare;
-import static io.github.vincemann.springrapid.coretest.service.result.matcher.compare.CompareEntityMatchers.propertyCompare;
-import static io.github.vincemann.springrapid.coretest.service.result.matcher.resolve.EntityPlaceholder.DB_ENTITY;
-import static io.github.vincemann.springrapid.coretest.service.result.matcher.resolve.EntityPlaceholder.SERVICE_INPUT_ENTITY;
-
+import static io.github.vincemann.springrapid.coretest.service.result.matcher.compare.CompareMatchers.compare;
+import static io.github.vincemann.springrapid.coretest.service.result.matcher.compare.CompareMatchers.propertyCompare;
+import static io.github.vincemann.springrapid.coretest.service.result.matcher.resolve.EntityPlaceholder.*;
 
 
 @EnableProjectComponentScan
 @ImportRapidEntityRelServiceConfig
 class OwnerServiceIntegrationTest
         extends CrudServiceIntegrationTest<OwnerService, Owner, Long> {
-
-    @Autowired
-    FullComparator<Owner> fullComparator;
 
     Owner ownerWithoutPets;
     Owner ownerWithOnePet;
@@ -94,8 +89,8 @@ class OwnerServiceIntegrationTest
                 .perform(save(ownerWithoutPets))
                 .andExpect(compare(ownerWithoutPets)
                         .with(DB_ENTITY)
-                        .withServiceReturnedEntity()
-                        .partialEqualCheck()
+                        .with(SERVICE_RETURNED_ENTITY)
+                        .properties()
                         .include(ownerWithoutPets::getTelephone)
                         .include(ownerWithoutPets::getAddress)
                         .isEqual())
@@ -109,9 +104,10 @@ class OwnerServiceIntegrationTest
         getTestTemplate()
                 .perform(save(ownerWithOnePet))
                 .andExpect(compare(SERVICE_INPUT_ENTITY)
-                        .withDbEntity()
-                        .fullEqualCheck()
-                        .ignoreId()
+                        .with(DB_ENTITY)
+                        .properties()
+                        .all()
+                        .ignore("id")
                         .isEqual());
         Assertions.assertTrue(getRepository().existsById(ownerWithOnePet.getId()));
     }
@@ -132,10 +128,11 @@ class OwnerServiceIntegrationTest
         getTestTemplate()
                 .perform(save(owner))
                 .andExpect(compare(owner)
-                        .withDbEntity()
-                        .withServiceReturnedEntity()
-                        .fullEqualCheck()
-                        .ignoreId()
+                        .with(DB_ENTITY)
+                        .with(SERVICE_RETURNED_ENTITY)
+                        .properties()
+                        .all()
+                        .ignore(owner::getId)
                         .isEqual()
                 );
     }
@@ -192,7 +189,7 @@ class OwnerServiceIntegrationTest
         getTestTemplate()
                 .perform(partialUpdate(ownerUpdateRequest))
                 .andExpect(propertyCompare(DB_ENTITY)
-                        .shouldMatchSize(ownerUpdateRequest::getPets,2)
+                        .shouldMatchSize(ownerUpdateRequest::getPets, 2)
                         .go()
                 );
     }
@@ -212,11 +209,17 @@ class OwnerServiceIntegrationTest
         Owner savedOwner = getRepository().save(ownerWithOnePet);
         Optional<Owner> byLastName = getServiceUnderTest().findByLastName(ownerWithOnePet.getLastName());
         Assertions.assertTrue(byLastName.isPresent());
-        Assertions.assertTrue(fullComparator.isEqual(savedOwner, byLastName.get()));
+        Assertions.assertTrue(
+                CompareTemplate.compare(savedOwner)
+                        .with(byLastName.get())
+                        .properties()
+                        .all()
+                        .isEqual()
+        );
     }
 
     @Test
-    public void deleteOwner_shouldSucceed(){
+    public void deleteOwner_shouldSucceed() {
         Owner savedOwner = getRepository().save(ownerWithOnePet);
         getTestTemplate()
                 .perform(deleteById(savedOwner.getId()))
