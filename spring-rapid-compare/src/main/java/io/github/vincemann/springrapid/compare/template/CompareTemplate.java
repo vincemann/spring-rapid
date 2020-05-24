@@ -4,14 +4,15 @@ import com.github.hervian.reflection.Types;
 import io.github.vincemann.springrapid.commons.ReflectionUtils;
 import io.github.vincemann.springrapid.compare.refeq.RapidEqualsBuilder;
 import io.github.vincemann.springrapid.compare.refeq.RapidReflectionEquals;
+import io.github.vincemann.springrapid.compare.util.MethodNameUtil;
 import lombok.Getter;
 import lombok.Setter;
 import org.junit.jupiter.api.Assertions;
 
-import java.lang.reflect.Field;
-import java.lang.reflect.Method;
-import java.util.*;
-import java.util.stream.Collectors;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 @Getter
 @Setter
@@ -45,15 +46,15 @@ public class CompareTemplate implements ActorConfigurer, OptionalActorConfigurer
 
     @Override
     public IgnoringPropertyConfigurer ignore(Types.Supplier<?> getter) {
-        String propertyName = getPropertyName(getter);
-        Assertions.assertTrue(properties.contains(propertyName));
+        String propertyName = MethodNameUtil.propertyNameOf(getter);
+        Assertions.assertTrue(properties.contains(propertyName),"No Property known named: " + propertyName + " that could be ignored.");
         properties.remove(propertyName);
         return this;
     }
 
     @Override
     public IgnoringPropertyConfigurer ignore(String propertyName) {
-        Assertions.assertTrue(properties.contains(propertyName));
+        Assertions.assertTrue(properties.contains(propertyName),"No Property known named: " + propertyName + " that could be ignored.");
         properties.remove(propertyName);
         return this;
     }
@@ -74,7 +75,7 @@ public class CompareTemplate implements ActorConfigurer, OptionalActorConfigurer
 
     @Override
     public OptionalSelectingPropertyConfigurer include(Types.Supplier<?> getter) {
-        properties.add(getPropertyName(getter));
+        properties.add(MethodNameUtil.propertyNameOf(getter));
         return this;
     }
 
@@ -108,13 +109,6 @@ public class CompareTemplate implements ActorConfigurer, OptionalActorConfigurer
         Set<String> ignoredProperties = ReflectionUtils.findAllProperties(rootActor.getClass());
         ignoredProperties.removeAll(properties);
         return ignoredProperties;
-    }
-
-    private String getPropertyName(Types.Supplier<?> getter) {
-        Method method = Types.createMethod(getter);
-        Assertions.assertTrue(method.getName().startsWith("get"), "Not a getter method: " + method.getName());
-        String propertyName = method.getName().replaceFirst("get", "");
-        return propertyName.substring(0, 1).toLowerCase() + propertyName.substring(1);
     }
 
 

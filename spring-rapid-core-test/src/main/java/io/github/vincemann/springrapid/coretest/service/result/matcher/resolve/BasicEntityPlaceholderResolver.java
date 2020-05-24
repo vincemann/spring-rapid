@@ -21,33 +21,33 @@ public class BasicEntityPlaceholderResolver implements EntityPlaceholderResolver
                     return byId.get();
                 }
             case SERVICE_INPUT_ENTITY:
-                IdentifiableEntity firstEntity = findFirstEntity(testContext.getServiceResult().getServiceRequest().getArgs());
-                if(firstEntity==null){
+                IdentifiableEntity firstEntity = findFirstEntityWithSetId(testContext.getServiceResult().getServiceRequest().getArgs());
+                if (firstEntity == null) {
                     throw new IllegalArgumentException("Could not find Service Input entity");
                 }
             case SERVICE_RETURNED_ENTITY:
-                Object result =  testContext.getServiceResult().getResult();
-                Assert.notNull(result,"Service Result is null");
-                if(result instanceof IdentifiableEntity){
+                Object result = testContext.getServiceResult().getResult();
+                Assert.notNull(result, "Service Result is null");
+                if (result instanceof IdentifiableEntity) {
                     return ((IdentifiableEntity) result);
-                }else if (result instanceof Optional){
+                } else if (result instanceof Optional) {
                     return (IdentifiableEntity) ((Optional) result).get();
-                }else{
+                } else {
                     throw new IllegalArgumentException("Result Entity is of wrong type: " + result.getClass());
                 }
         }
-        throw new IllegalArgumentException("Could not resolve ComapareEntityResolvable");
+        throw new IllegalArgumentException("Could not resolve EntityPlaceholder: " + entityPlaceholder);
     }
 
     /**
-     * finds id from service result entity or first Entity arg
+     * Finds id from service result entity or first Entity arg with set id
      *
      * @param testContext
      * @return
      */
     private Serializable findDbEntityId(ServiceTestContext testContext) {
         Object result = testContext.getServiceResult().getResult();
-        if(result instanceof Optional){
+        if (result instanceof Optional) {
             result = ((Optional) result).get();
         }
         if (result instanceof IdentifiableEntity) {
@@ -58,20 +58,21 @@ public class BasicEntityPlaceholderResolver implements EntityPlaceholderResolver
         }
         List<Object> args = testContext.getServiceResult().getServiceRequest().getArgs();
         if (args != null) {
-            IdentifiableEntity firstEntity = findFirstEntity(args);
-            if(firstEntity!=null) {
-                if (firstEntity.getId() != null) {
-                    return firstEntity.getId();
-                }
+            IdentifiableEntity firstEntity = findFirstEntityWithSetId(args);
+            if (firstEntity.getId() != null) {
+                return firstEntity.getId();
             }
         }
         throw new IllegalArgumentException("Id for db Entity could not be found");
     }
 
-    private IdentifiableEntity findFirstEntity(List<Object> args){
+    private IdentifiableEntity findFirstEntityWithSetId(List<Object> args) {
         for (Object arg : args) {
             if (arg instanceof IdentifiableEntity) {
-                return ((IdentifiableEntity) arg);
+                IdentifiableEntity entity = (IdentifiableEntity) arg;
+                if (entity.getId() != null) {
+                    return entity;
+                }
             }
         }
         return null;

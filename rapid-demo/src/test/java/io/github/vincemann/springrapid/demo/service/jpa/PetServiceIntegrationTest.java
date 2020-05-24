@@ -1,5 +1,6 @@
 package io.github.vincemann.springrapid.demo.service.jpa;
 
+import io.github.vincemann.springrapid.coretest.service.result.matcher.resolve.EntityPlaceholder;
 import io.github.vincemann.springrapid.demo.EnableProjectComponentScan;
 import io.github.vincemann.springrapid.demo.model.Pet;
 import io.github.vincemann.springrapid.demo.model.PetType;
@@ -11,12 +12,11 @@ import io.github.vincemann.springrapid.entityrelationship.slicing.test.ImportRap
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.autoconfigure.ImportAutoConfiguration;
 
 import java.time.LocalDate;
 
 import static io.github.vincemann.springrapid.coretest.service.request.CrudServiceRequestBuilders.save;
-import static io.github.vincemann.springrapid.coretest.service.result.matcher.compare.CompareEntityMatchers.compare;
+import static io.github.vincemann.springrapid.coretest.service.result.matcher.compare.CompareMatchers.compare;
 
 @EnableProjectComponentScan
 @ImportRapidEntityRelServiceConfig
@@ -45,9 +45,10 @@ class PetServiceIntegrationTest
         getTestTemplate()
                 .perform(save(dogWithDogType))
                 .andExpect(compare(dogWithDogType)
-                        .withDbEntity()
-                        .fullEqualCheck()
-                        .ignoreId()
+                        .with(EntityPlaceholder.DB_ENTITY)
+                        .properties()
+                        .all()
+                        .ignore("id")
                         .isEqual());
     }
 }

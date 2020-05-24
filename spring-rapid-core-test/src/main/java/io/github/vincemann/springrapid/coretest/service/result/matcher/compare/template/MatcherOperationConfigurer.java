@@ -1,4 +1,4 @@
-package io.github.vincemann.springrapid.coretest.service.result.matcher.newcompare;
+package io.github.vincemann.springrapid.coretest.service.result.matcher.compare.template;
 
 import io.github.vincemann.springrapid.coretest.service.result.matcher.ServiceResultMatcher;
 
