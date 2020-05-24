@@ -1,10 +1,10 @@
 package io.github.vincemann.springrapid.entityrelationship.model.uniDir.child;
 
+import io.github.vincemann.springrapid.core.util.ReflectionUtilsBean;
+import io.github.vincemann.springrapid.entityrelationship.exception.UnknownParentTypeException;
 import io.github.vincemann.springrapid.entityrelationship.model.uniDir.UniDirEntity;
 import io.github.vincemann.springrapid.entityrelationship.model.uniDir.parent.UniDirParent;
 import io.github.vincemann.springrapid.entityrelationship.model.uniDir.parent.UniDirParentEntity;
-import io.github.vincemann.springrapid.entityrelationship.exception.UnknownParentTypeException;
-import io.github.vincemann.springrapid.commons.ReflectionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -70,7 +70,7 @@ public interface UniDirChild extends UniDirEntity {
     public default Field[] _findParentFields(){
         Field[] parentFieldsFromCache = uniDirParentFieldsCache.get(this.getClass());
         if(parentFieldsFromCache==null){
-            Field[] parentFields = ReflectionUtils.getDeclaredFieldsAnnotatedWith(getClass(), UniDirParentEntity.class, true);
+            Field[] parentFields = ReflectionUtilsBean.instance.getFieldsWithAnnotation(getClass(), UniDirParentEntity.class);
             uniDirParentFieldsCache.put(this.getClass(),parentFields);
             return parentFields;
         }else {

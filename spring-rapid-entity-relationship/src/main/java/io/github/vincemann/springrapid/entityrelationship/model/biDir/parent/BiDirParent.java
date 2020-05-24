@@ -1,13 +1,13 @@
 package io.github.vincemann.springrapid.entityrelationship.model.biDir.parent;
 
+import io.github.vincemann.springrapid.core.util.ReflectionUtilsBean;
+import io.github.vincemann.springrapid.entityrelationship.exception.UnknownChildTypeException;
+import io.github.vincemann.springrapid.entityrelationship.exception.UnknownParentTypeException;
 import io.github.vincemann.springrapid.entityrelationship.model.biDir.BiDirEntity;
 import io.github.vincemann.springrapid.entityrelationship.model.biDir.child.BiDirChild;
 import io.github.vincemann.springrapid.entityrelationship.model.biDir.child.BiDirChildCollection;
 import io.github.vincemann.springrapid.entityrelationship.model.biDir.child.BiDirChildEntity;
-import io.github.vincemann.springrapid.entityrelationship.exception.UnknownChildTypeException;
-import io.github.vincemann.springrapid.entityrelationship.exception.UnknownParentTypeException;
 import io.github.vincemann.springrapid.entityrelationship.util.CollectionUtils;
-import io.github.vincemann.springrapid.commons.ReflectionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -155,7 +155,7 @@ public interface BiDirParent extends BiDirEntity/*,DisposableBean*/ {
     default Field[] findChildrenCollectionFields(){
         Field[] childrenCollectionFieldsFromCache = biDirChildrenCollectionFieldsCache.get(this.getClass());
         if(childrenCollectionFieldsFromCache==null){
-            Field[] childrenCollectionFields = ReflectionUtils.getDeclaredFieldsAnnotatedWith(this.getClass(),BiDirChildCollection.class,true);
+            Field[] childrenCollectionFields = ReflectionUtilsBean.instance.getFieldsWithAnnotation(this.getClass(),BiDirChildCollection.class);
             biDirChildrenCollectionFieldsCache.put(this.getClass(),childrenCollectionFields);
             return childrenCollectionFields;
         }else {
@@ -166,7 +166,7 @@ public interface BiDirParent extends BiDirEntity/*,DisposableBean*/ {
     default Field[] findChildrenEntityFields(){
         Field[] childEntityFieldsFromCache = biDirChildEntityFieldsCache.get(this.getClass());
         if(childEntityFieldsFromCache==null){
-            Field[] childEntityFields = ReflectionUtils.getDeclaredFieldsAnnotatedWith(this.getClass(),BiDirChildEntity.class,true);
+            Field[] childEntityFields = ReflectionUtilsBean.instance.getFieldsWithAnnotation(this.getClass(),BiDirChildEntity.class);
             biDirChildEntityFieldsCache.put(this.getClass(),childEntityFields);
             return childEntityFields;
         }else {

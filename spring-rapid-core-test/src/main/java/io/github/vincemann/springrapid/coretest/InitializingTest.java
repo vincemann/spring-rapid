@@ -1,11 +1,14 @@
 package io.github.vincemann.springrapid.coretest;
 
-import io.github.vincemann.springrapid.commons.Lists;
+import io.github.vincemann.springrapid.commons.ReflectionUtils;
+import io.github.vincemann.springrapid.core.util.ReflectionUtilsBean;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.BeforeEach;
 
 import java.lang.reflect.Field;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Set;
 
 /**
  * BaseClass for Tests that wish to initialize members that implement {@link BeforeEachMethodInitializable}s and/or {@link TestContextAware} and/or
@@ -25,7 +28,7 @@ public abstract class InitializingTest{
     @BeforeEach
     public void setup() throws Exception{
         if(!init){
-            List<Field> testMemberFields = getAllFields(new ArrayList<>(), this.getClass());
+            Set<Field> testMemberFields = ReflectionUtilsBean.instance.getFields(this.getClass());
             initializables = findMember(testMemberFields,TestInitializable.class);
             beforeEachMethodInitializables = findMember(testMemberFields,BeforeEachMethodInitializable.class);
             testContextAwareList = findMember(testMemberFields,TestContextAware.class);
@@ -47,7 +50,7 @@ public abstract class InitializingTest{
         });
     }
 
-    private <T> List<T> findMember(List<Field> memberFields, Class<T> type){
+    private <T> List<T> findMember(Set<Field> memberFields, Class<T> type){
         List<T> members = new ArrayList<>();
         for (Field memberField : memberFields) {
             if(type.isAssignableFrom(memberField.getType())){
@@ -64,13 +67,5 @@ public abstract class InitializingTest{
        return members;
     }
 
-    private static List<Field> getAllFields(List<Field> fields, Class<?> type) {
-        fields.addAll(Lists.newArrayList(type.getDeclaredFields()));
-        if (type.getSuperclass() != null) {
-            getAllFields(fields, type.getSuperclass());
-        }
-
-        return fields;
-    }
 
 }

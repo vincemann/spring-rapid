@@ -18,7 +18,7 @@ import io.github.vincemann.springrapid.core.service.EndpointService;
 import io.github.vincemann.springrapid.core.service.exception.BadEntityException;
 import io.github.vincemann.springrapid.core.service.exception.EntityNotFoundException;
 import io.github.vincemann.springrapid.core.util.AuthorityUtil;
-import io.github.vincemann.springrapid.core.util.EntityUtils;
+import io.github.vincemann.springrapid.core.util.RapidUtils;
 import io.github.vincemann.springrapid.core.util.JpaUtils;
 import io.github.vincemann.springrapid.core.util.MapperUtils;
 import lombok.Getter;
@@ -314,7 +314,7 @@ public abstract class RapidController
         logStateBeforeServiceCall("findById", id);
         Optional<E> optionalEntity = serviceFind(id);
         logServiceResult("findById", optionalEntity);
-        EntityUtils.checkPresent(optionalEntity, id, getEntityClass());
+        RapidUtils.checkPresent(optionalEntity, id, getEntityClass());
         Object dto = dtoMapper.mapToDto(optionalEntity.get(),
                 findDtoClass(RapidDtoEndpoint.FIND, Direction.RESPONSE, id));
         afterFind(id, dto, optionalEntity, request, response);
@@ -351,7 +351,7 @@ public abstract class RapidController
         beforeUpdate(dtoClass, id, patchString, request, response);
 
         Optional<E> saved = getUnsecuredService().findById(id);
-        EntityUtils.checkPresent(saved, id, getEntityClass());
+        RapidUtils.checkPresent(saved, id, getEntityClass());
         Object patchDto = dtoMapper.mapToDto(saved.get(), dtoClass);
         patchDto = MapperUtils.applyPatch(patchDto, patchString);
         log.debug("finished patchDto: " + patchDto);

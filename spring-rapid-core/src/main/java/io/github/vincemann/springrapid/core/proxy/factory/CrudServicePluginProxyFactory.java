@@ -1,12 +1,12 @@
 package io.github.vincemann.springrapid.core.proxy.factory;
 
 
-import io.github.vincemann.springrapid.commons.ClassUtils;
 import io.github.vincemann.springrapid.commons.Lists;
 import io.github.vincemann.springrapid.core.model.IdentifiableEntity;
 import io.github.vincemann.springrapid.core.proxy.invocationHandler.CrudServicePluginProxy;
 import io.github.vincemann.springrapid.core.service.CrudService;
 import io.github.vincemann.springrapid.core.service.plugin.CrudServicePlugin;
+import org.apache.commons.lang3.ClassUtils;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.test.util.AopTestUtils;
 
@@ -26,7 +26,8 @@ public class CrudServicePluginProxyFactory {
         //resolve spring aop proxy
         S unproxied = AopTestUtils.getUltimateTargetObject(crudService);
         S proxyInstance = (S) Proxy.newProxyInstance(
-                unproxied.getClass().getClassLoader(), ClassUtils.getAllInterfaces(unproxied.getClass()),
+                unproxied.getClass().getClassLoader(),
+                ClassUtils.getAllInterfaces(unproxied.getClass()).toArray(new Class[0]),
                 new CrudServicePluginProxy(unproxied, Lists.newArrayList(plugins)));
 
         return proxyInstance;

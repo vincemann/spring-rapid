@@ -1,19 +1,17 @@
 package io.github.vincemann.springrapid.entityrelationship.advice;
 
 import io.github.vincemann.springrapid.core.model.IdentifiableEntity;
-import io.github.vincemann.springrapid.core.util.EntityUtils;
+import io.github.vincemann.springrapid.core.util.RapidUtils;
 import io.github.vincemann.springrapid.entityrelationship.model.biDir.child.BiDirChild;
 import io.github.vincemann.springrapid.entityrelationship.model.biDir.parent.BiDirParent;
 import io.github.vincemann.springrapid.core.service.CrudService;
 import io.github.vincemann.springrapid.core.service.exception.BadEntityException;
 import io.github.vincemann.springrapid.core.service.exception.EntityNotFoundException;
-import io.github.vincemann.springrapid.core.service.exception.BadEntityException;
 import io.github.vincemann.springrapid.core.service.locator.CrudServiceLocator;
 import lombok.extern.slf4j.Slf4j;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Before;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
 
 import java.io.Serializable;
 import java.util.*;
@@ -67,7 +65,7 @@ public class BiDirEntityUpdateAdvice {
         //find already persisted biDirChild (preUpdateState of child)
         CrudService service = serviceLocator.find((Class<? extends IdentifiableEntity>) newBiDirChild.getClass());
         Optional<BiDirChild> oldBiDirChildOptional = service.findById(((IdentifiableEntity<Serializable>) newBiDirChild).getId());
-        EntityUtils.checkPresent(oldBiDirChildOptional,((IdentifiableEntity<Serializable>) newBiDirChild).getId(),newBiDirChild.getClass());
+        RapidUtils.checkPresent(oldBiDirChildOptional,((IdentifiableEntity<Serializable>) newBiDirChild).getId(),newBiDirChild.getClass());
         BiDirChild oldBiDirChild = oldBiDirChildOptional.get();
         Collection<BiDirParent> oldParents = oldBiDirChild.findParents();
         Collection<BiDirParent> newParents = newBiDirChild.findParents();
@@ -102,7 +100,7 @@ public class BiDirEntityUpdateAdvice {
     private void updateBiDirParentRelations(BiDirParent newBiDirParent) throws BadEntityException, EntityNotFoundException, IllegalAccessException {
         CrudService service = serviceLocator.find((Class<? extends IdentifiableEntity>) newBiDirParent.getClass());
         Optional<BiDirParent> oldBiDirParentOptional = service.findById(((IdentifiableEntity<Serializable>) newBiDirParent).getId());
-        EntityUtils.checkPresent(oldBiDirParentOptional,((IdentifiableEntity<Serializable>) newBiDirParent).getId(),newBiDirParent.getClass());
+        RapidUtils.checkPresent(oldBiDirParentOptional,((IdentifiableEntity<Serializable>) newBiDirParent).getId(),newBiDirParent.getClass());
         BiDirParent oldBiDirParent = oldBiDirParentOptional.get();
 
         Set<? extends BiDirChild> oldChildren = oldBiDirParent.getChildren();

@@ -63,13 +63,13 @@ public class CompareTemplate implements ActorConfigurer, OptionalActorConfigurer
     public IgnoringPropertyConfigurer allOf(Object o) {
         Assertions.assertNotNull(o);
         Assertions.assertTrue(actors.contains(o) || rootActor.equals(o));
-        properties.addAll(ReflectionUtils.findAllProperties(o.getClass()));
+        properties.addAll(ReflectionUtils.getProperties(o.getClass()));
         return this;
     }
 
     @Override
     public IgnoringPropertyConfigurer all() {
-        properties.addAll(ReflectionUtils.findAllProperties(rootActor.getClass()));
+        properties.addAll(ReflectionUtils.getProperties(rootActor.getClass()));
         return this;
     }
 
@@ -106,7 +106,7 @@ public class CompareTemplate implements ActorConfigurer, OptionalActorConfigurer
     }
 
     private Set<String> getIgnoredProperties(){
-        Set<String> ignoredProperties = ReflectionUtils.findAllProperties(rootActor.getClass());
+        Set<String> ignoredProperties = ReflectionUtils.getProperties(rootActor.getClass());
         ignoredProperties.removeAll(properties);
         return ignoredProperties;
     }

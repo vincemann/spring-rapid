@@ -20,7 +20,7 @@ import java.lang.reflect.InvocationTargetException;
 
 /**
  * Template similar to {@link org.springframework.test.web.servlet.MockMvc}, but build for testing of service layer ({@link CrudService}).
- * With this template you can build the test, that shall be executed against a {@link CrudService} in a fluent-API manner.
+ * With this template you can build the test, that shall be executed against a {@link CrudService} in a fluent-API like manner.
  */
 @Slf4j
 public class ServiceTestTemplate
@@ -91,7 +91,7 @@ public class ServiceTestTemplate
     private ServiceResult execute(ServiceRequest serviceRequest) {
         try {
             Object result = serviceRequest.getServiceMethod().invoke(
-                    //todo ist das hier nicht bs? warum sollte ich die aspekt proxys deactivieren? damit deaktiviere ich auch meinen aspekt..
+                    //todo ist das hier nicht bs? warum sollte ich die aspekt proxys deactivieren?
                     AopTestUtils.getUltimateTargetObject(serviceUnderTest),
                     //serviceUnderTest,
                     serviceRequest.getArgs().toArray()
