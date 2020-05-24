@@ -6,8 +6,7 @@ import io.github.vincemann.springrapid.core.model.IdentifiableEntity;
 import io.github.vincemann.springrapid.core.service.CrudService;
 import io.github.vincemann.springrapid.core.service.exception.BadEntityException;
 import io.github.vincemann.springrapid.core.service.exception.EntityNotFoundException;
-import io.github.vincemann.springrapid.core.util.DebugTransactionUtil;
-import io.github.vincemann.springrapid.core.util.EntityUtils;
+import io.github.vincemann.springrapid.core.util.RapidUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.beanutils.BeanUtilsBean;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -56,7 +55,7 @@ public abstract class JPACrudService
     @Transactional
     @Override
     public Optional<E> findById(Id id) throws BadEntityException {
-        EntityUtils.checkNotNull(id,"Id");
+        RapidUtils.checkNotNull(id,"Id");
         return jpaRepository.findById(id);
     }
 
@@ -64,7 +63,7 @@ public abstract class JPACrudService
     @Override
     public E update(E update, Boolean full) throws EntityNotFoundException, BadEntityException, BadEntityException {
         try {
-            EntityUtils.checkPresent(update.getId(),"No Id set for update");
+            RapidUtils.checkPresent(update.getId(),"No Id set for update");
             if(full){
                 return save(update);
             }else {
@@ -81,16 +80,15 @@ public abstract class JPACrudService
 
 
     private E findOldEntity(Id id) throws BadEntityException, EntityNotFoundException {
-        EntityUtils.checkNotNull(id,"id");
+        RapidUtils.checkNotNull(id,"id");
         Optional<E> entityToUpdate = findById(id);
-        EntityUtils.checkPresent(entityToUpdate,id,getEntityClass());
+        RapidUtils.checkPresent(entityToUpdate,id,getEntityClass());
         return entityToUpdate.get();
     }
 
     @Transactional
     @Override
     public E save(E entity) throws BadEntityException {
-        DebugTransactionUtil.showTransactionStatus(this.getClass(),"save");
         try {
             return jpaRepository.save(entity);
         }
@@ -109,9 +107,9 @@ public abstract class JPACrudService
     @Transactional
     @Override
     public void deleteById(Id id) throws EntityNotFoundException, BadEntityException {
-        EntityUtils.checkNotNull(id,"Id");
+        RapidUtils.checkNotNull(id,"Id");
         Optional<E> entity = findById(id);
-        EntityUtils.checkPresent(entity,id,entityClass);
+        RapidUtils.checkPresent(entity,id,entityClass);
         jpaRepository.deleteById(id);
     }
 

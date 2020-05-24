@@ -4,11 +4,9 @@ import io.github.vincemann.springrapid.commons.Lists;
 import io.github.vincemann.springrapid.commons.ReflectionUtils;
 import lombok.*;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.reflect.FieldUtils;
 
-import java.lang.reflect.AccessibleObject;
 import java.lang.reflect.Field;
-import java.lang.reflect.Modifier;
-import java.sql.Ref;
 import java.util.*;
 
 /**
@@ -225,16 +223,15 @@ public class RapidEqualsBuilder {
             RapidEqualsBuilder builder,
             String[] excludeFields) {
 
-        Set<String> properties = ReflectionUtils.findAllProperties(rootClass);
+        Set<String> properties = ReflectionUtils.getProperties(rootClass);
         properties.removeAll(Lists.newArrayList(excludeFields));
 
 
         for (String property : properties) {
-            Field rootField = ReflectionUtils.findField(rootClass,property);
-            Field compareField = ReflectionUtils.findField(compareClass,property);
-
-            rootField.setAccessible(true);
-            compareField.setAccessible(true);
+            Field rootField = FieldUtils.getField(rootClass,property,true);
+            Field compareField = FieldUtils.getField(compareClass,property,true);
+//            rootField.setAccessible(true);
+//            compareField.setAccessible(true);
 
             try {
                 builder.append(rootField.get(root),compareField.get(compare),property);

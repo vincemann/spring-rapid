@@ -5,7 +5,7 @@ import io.github.vincemann.springrapid.core.service.exception.EntityNotFoundExce
 
 import java.util.Optional;
 
-public class EntityUtils {
+public class RapidUtils {
 
     public static void checkNotNull(Object entity,String property) throws BadEntityException {
         if(entity==null){
@@ -41,11 +41,5 @@ public class EntityUtils {
         }
     }
 
-
-//    public static void checkPresent(Optional<Object> entity, String msg) throws EntityNotFoundException {
-//        if(entity.isEmpty()){
-//            throw new EntityNotFoundException(msg);
-//        }
-//    }
 
 }

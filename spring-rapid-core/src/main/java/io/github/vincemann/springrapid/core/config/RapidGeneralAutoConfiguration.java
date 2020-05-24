@@ -1,6 +1,8 @@
 package io.github.vincemann.springrapid.core.config;
 
+import io.github.vincemann.springrapid.commons.ReflectionUtils;
 import io.github.vincemann.springrapid.core.util.JpaUtils;
+import io.github.vincemann.springrapid.core.util.ReflectionUtilsBean;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
@@ -24,5 +26,15 @@ public class RapidGeneralAutoConfiguration {
     @ConditionalOnMissingBean(JpaUtils.class)
     public JpaUtils jpaUtils(){
         return new JpaUtils(entityManager);
+    }
+
+    @Bean
+    public ReflectionUtilsBean reflectionUtilsBean(){
+        return new ReflectionUtilsBean();
+    }
+
+    @Autowired
+    public void configureReflectionUtilsBean(ReflectionUtilsBean reflectionUtilsBean){
+        ReflectionUtilsBean.instance=reflectionUtilsBean;
     }
 }

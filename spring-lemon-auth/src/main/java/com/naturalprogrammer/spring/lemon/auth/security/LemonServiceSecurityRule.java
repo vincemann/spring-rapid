@@ -13,7 +13,7 @@ import io.github.vincemann.springrapid.core.proxy.CalledByProxy;
 import io.github.vincemann.springrapid.core.service.exception.BadEntityException;
 import io.github.vincemann.springrapid.core.service.exception.EntityNotFoundException;
 import com.naturalprogrammer.spring.lemon.exceptions.util.LexUtils;
-import io.github.vincemann.springrapid.core.util.EntityUtils;
+import io.github.vincemann.springrapid.core.util.RapidUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.AccessDeniedException;
@@ -75,9 +75,9 @@ public class LemonServiceSecurityRule extends ServiceSecurityRule {
     public void preAuthorizeUpdate(AbstractUser<?> update,boolean full) throws BadEntityException, EntityNotFoundException{
         getSecurityChecker().checkPermission(update.getId(),update.getClass(), getWritePermission());
         Optional<AbstractUser> byId = userRepository.findById(update.getId());
-        EntityUtils.checkPresent(byId,update.getId(),update.getClass());
+        RapidUtils.checkPresent(byId,update.getId(),update.getClass());
         LemonUserDto currentUser = LecwUtils.currentUser();
-        EntityUtils.checkNotNull(currentUser,"Authenticated user not found");
+        RapidUtils.checkNotNull(currentUser,"Authenticated user not found");
         adjustRoles(byId.get(),update,currentUser);
     }
 

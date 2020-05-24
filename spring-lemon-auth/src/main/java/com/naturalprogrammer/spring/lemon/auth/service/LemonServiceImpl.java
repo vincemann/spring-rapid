@@ -17,7 +17,7 @@ import io.github.vincemann.springrapid.acl.Role;
 import io.github.vincemann.springrapid.core.service.exception.BadEntityException;
 import com.naturalprogrammer.spring.lemon.exceptions.util.LexUtils;
 import io.github.vincemann.springrapid.core.service.exception.EntityNotFoundException;
-import io.github.vincemann.springrapid.core.util.EntityUtils;
+import io.github.vincemann.springrapid.core.util.RapidUtils;
 import io.github.vincemann.springrapid.core.util.MapperUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
@@ -305,7 +305,7 @@ public abstract class LemonServiceImpl
     @Override
     public U update(U update, Boolean full) throws EntityNotFoundException, BadEntityException, BadEntityException {
         Optional<U> old = getRepository().findById(update.getId());
-        EntityUtils.checkPresent(old, "Entity to update with id: " + update.getId() + " not found");
+        RapidUtils.checkPresent(old, "Entity to update with id: " + update.getId() + " not found");
         //update roles works in transaction -> changes are applied on the fly
         updateRoles(old.get(), update);
         update.setRoles(old.get().getRoles());
