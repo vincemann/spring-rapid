@@ -228,6 +228,7 @@ public class RapidEqualsBuilder {
 
 
         for (String property : properties) {
+            //cant use ReflectionUtilsBean bc this module is not Spring specific
             Field rootField = FieldUtils.getField(rootClass,property,true);
             Field compareField = FieldUtils.getField(compareClass,property,true);
 //            rootField.setAccessible(true);

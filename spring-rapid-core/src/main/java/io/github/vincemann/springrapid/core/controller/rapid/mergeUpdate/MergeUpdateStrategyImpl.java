@@ -3,8 +3,7 @@ package io.github.vincemann.springrapid.core.controller.rapid.mergeUpdate;
 import io.github.vincemann.springrapid.core.advice.log.LogInteraction;
 import io.github.vincemann.springrapid.core.model.IdentifiableEntity;
 import io.github.vincemann.springrapid.core.service.exception.BadEntityException;
-import io.github.vincemann.springrapid.commons.ReflectionUtils;
-import io.github.vincemann.springrapid.core.util.ReflectionUtilsBean;
+import io.github.vincemann.springrapid.core.config.ReflectionUtilsBean;
 import lombok.extern.slf4j.Slf4j;
 
 import java.lang.reflect.Field;
@@ -17,8 +16,8 @@ public class MergeUpdateStrategyImpl implements MergeUpdateStrategy<Identifiable
     @LogInteraction
     @Override
     public IdentifiableEntity<?> merge(IdentifiableEntity<?> patch, IdentifiableEntity<?> saved, Class<?> dtoClass) throws BadEntityException {
-        Map<String, Field> entityFields = ReflectionUtilsBean.instance.getNameFieldMap(saved.getClass());
-        Set<String> properties = ReflectionUtilsBean.instance.getProperties(dtoClass);
+        Map<String, Field> entityFields = ReflectionUtilsBean.getInstance().getNameFieldMap(saved.getClass());
+        Set<String> properties = ReflectionUtilsBean.getInstance().getProperties(dtoClass);
         for (String property : properties) {
             try {
                 Field entityField = resolve(property, entityFields);

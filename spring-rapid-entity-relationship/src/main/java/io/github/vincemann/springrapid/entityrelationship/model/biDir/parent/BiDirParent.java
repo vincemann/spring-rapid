@@ -1,6 +1,6 @@
 package io.github.vincemann.springrapid.entityrelationship.model.biDir.parent;
 
-import io.github.vincemann.springrapid.core.util.ReflectionUtilsBean;
+import io.github.vincemann.springrapid.core.config.ReflectionUtilsBean;
 import io.github.vincemann.springrapid.entityrelationship.exception.UnknownChildTypeException;
 import io.github.vincemann.springrapid.entityrelationship.exception.UnknownParentTypeException;
 import io.github.vincemann.springrapid.entityrelationship.model.biDir.BiDirEntity;
@@ -155,7 +155,7 @@ public interface BiDirParent extends BiDirEntity/*,DisposableBean*/ {
     default Field[] findChildrenCollectionFields(){
         Field[] childrenCollectionFieldsFromCache = biDirChildrenCollectionFieldsCache.get(this.getClass());
         if(childrenCollectionFieldsFromCache==null){
-            Field[] childrenCollectionFields = ReflectionUtilsBean.instance.getFieldsWithAnnotation(this.getClass(),BiDirChildCollection.class);
+            Field[] childrenCollectionFields = ReflectionUtilsBean.getInstance().getFieldsWithAnnotation(this.getClass(),BiDirChildCollection.class);
             biDirChildrenCollectionFieldsCache.put(this.getClass(),childrenCollectionFields);
             return childrenCollectionFields;
         }else {
@@ -166,7 +166,7 @@ public interface BiDirParent extends BiDirEntity/*,DisposableBean*/ {
     default Field[] findChildrenEntityFields(){
         Field[] childEntityFieldsFromCache = biDirChildEntityFieldsCache.get(this.getClass());
         if(childEntityFieldsFromCache==null){
-            Field[] childEntityFields = ReflectionUtilsBean.instance.getFieldsWithAnnotation(this.getClass(),BiDirChildEntity.class);
+            Field[] childEntityFields = ReflectionUtilsBean.getInstance().getFieldsWithAnnotation(this.getClass(),BiDirChildEntity.class);
             biDirChildEntityFieldsCache.put(this.getClass(),childEntityFields);
             return childEntityFields;
         }else {

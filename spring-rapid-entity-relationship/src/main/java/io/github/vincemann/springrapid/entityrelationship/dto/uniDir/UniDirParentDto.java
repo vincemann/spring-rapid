@@ -1,7 +1,7 @@
 package io.github.vincemann.springrapid.entityrelationship.dto.uniDir;
 
 import io.github.vincemann.springrapid.core.model.IdentifiableEntity;
-import io.github.vincemann.springrapid.core.util.ReflectionUtilsBean;
+import io.github.vincemann.springrapid.core.config.ReflectionUtilsBean;
 import io.github.vincemann.springrapid.entityrelationship.exception.UnknownChildTypeException;
 import io.github.vincemann.springrapid.entityrelationship.model.uniDir.child.UniDirChild;
 import org.slf4j.Logger;
@@ -108,12 +108,12 @@ public interface UniDirParentDto {
     }
 
     default Field[] findUniDirChildrenIdCollectionFields() {
-        Field[] childrenIdCollectionFields = ReflectionUtilsBean.instance.getFieldsWithAnnotation(this.getClass(), UniDirChildIdCollection.class);
+        Field[] childrenIdCollectionFields = ReflectionUtilsBean.getInstance().getFieldsWithAnnotation(this.getClass(), UniDirChildIdCollection.class);
         return childrenIdCollectionFields;
     }
 
     default Field[] findUniDirChildrenIdFields() {
-        Field[] childrenIdFields = ReflectionUtilsBean.instance.getFieldsWithAnnotation(getClass(), UniDirChildId.class);
+        Field[] childrenIdFields = ReflectionUtilsBean.getInstance().getFieldsWithAnnotation(getClass(), UniDirChildId.class);
         return childrenIdFields;
     }
 }

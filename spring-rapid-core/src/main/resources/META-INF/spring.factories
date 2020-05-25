@@ -6,4 +6,5 @@ io.github.vincemann.springrapid.core.config.RapidAdviceAutoConfiguration,\
 io.github.vincemann.springrapid.core.config.RapidControllerAutoConfiguration,\
 io.github.vincemann.springrapid.core.config.BootstrapAutoConfiguration,\
 io.github.vincemann.springrapid.core.config.RapidGeneralAutoConfiguration,\
-io.github.vincemann.springrapid.core.config.RapidJacksonAutoConfiguration
+io.github.vincemann.springrapid.core.config.RapidJacksonAutoConfiguration,\
+io.github.vincemann.springrapid.core.config.ReflectionCacheAutoConfiguration
