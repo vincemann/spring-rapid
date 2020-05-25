@@ -1,7 +1,7 @@
 package io.github.vincemann.springrapid.entityrelationship.dto.biDir;
 
 import io.github.vincemann.springrapid.core.model.IdentifiableEntity;
-import io.github.vincemann.springrapid.core.util.ReflectionUtilsBean;
+import io.github.vincemann.springrapid.core.config.ReflectionUtilsBean;
 import io.github.vincemann.springrapid.entityrelationship.controller.dtomapper.IdResolvingDtoPostProcessor;
 import io.github.vincemann.springrapid.entityrelationship.exception.UnknownChildTypeException;
 import io.github.vincemann.springrapid.entityrelationship.model.biDir.child.BiDirChild;
@@ -114,12 +114,12 @@ public interface BiDirParentDto {
     }
 
     default Field[] findBiDirChildrenIdCollectionFields() {
-        Field[] childrenIdCollectionFields = ReflectionUtilsBean.instance.getFieldsWithAnnotation(this.getClass(), BiDirChildIdCollection.class);
+        Field[] childrenIdCollectionFields = ReflectionUtilsBean.getInstance().getFieldsWithAnnotation(this.getClass(), BiDirChildIdCollection.class);
         return childrenIdCollectionFields;
     }
 
     default Field[] findBiDirChildrenIdFields() {
-        Field[] childrenIdFields = ReflectionUtilsBean.instance.getFieldsWithAnnotation(getClass(), BiDirChildId.class);
+        Field[] childrenIdFields = ReflectionUtilsBean.getInstance().getFieldsWithAnnotation(getClass(), BiDirChildId.class);
         return childrenIdFields;
     }
 }

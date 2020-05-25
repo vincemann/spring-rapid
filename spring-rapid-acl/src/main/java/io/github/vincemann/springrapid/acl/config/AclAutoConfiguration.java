@@ -5,14 +5,17 @@ import io.github.vincemann.springrapid.acl.framework.NoModSecurityCheckAclAuthor
 import io.github.vincemann.springrapid.acl.framework.LenientPermissionGrantingStrategy;
 import io.github.vincemann.springrapid.acl.service.MockAuthService;
 import io.github.vincemann.springrapid.acl.service.SecurityContextMockAuthService;
+import io.github.vincemann.springrapid.core.config.ReflectionCacheAutoConfiguration;
 import io.github.vincemann.springrapid.core.slicing.config.ServiceConfig;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.AutoConfigureBefore;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
+import org.springframework.cache.CacheManager;
 import org.springframework.cache.ehcache.EhCacheFactoryBean;
 import org.springframework.cache.ehcache.EhCacheManagerFactoryBean;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Primary;
 import org.springframework.security.access.PermissionEvaluator;
 import org.springframework.security.access.expression.method.DefaultMethodSecurityExpressionHandler;
 import org.springframework.security.access.expression.method.MethodSecurityExpressionHandler;
@@ -35,7 +38,7 @@ import javax.sql.DataSource;
 @ServiceConfig
 @Slf4j
 //@ConditionalOnClass(DataSource.class)
-@AutoConfigureBefore(AclPluginAutoConfiguration.class)
+@AutoConfigureBefore({AclPluginAutoConfiguration.class, ReflectionCacheAutoConfiguration.class})
 public class AclAutoConfiguration {
 
     public AclAutoConfiguration() {
@@ -55,18 +58,20 @@ public class AclAutoConfiguration {
         );
     }
 
+
     @ConditionalOnMissingBean(EhCacheFactoryBean.class)
     @Bean
     public EhCacheFactoryBean aclEhCacheFactoryBean() {
         EhCacheFactoryBean ehCacheFactoryBean = new EhCacheFactoryBean();
-        ehCacheFactoryBean.setCacheManager(aclCacheManager().getObject());
+        ehCacheFactoryBean.setCacheManager(aclCacheManagerBean().getObject());
         ehCacheFactoryBean.setCacheName("aclCache");
         return ehCacheFactoryBean;
     }
 
     @ConditionalOnMissingBean(EhCacheManagerFactoryBean.class)
     @Bean
-    public EhCacheManagerFactoryBean aclCacheManager() {
+    @Primary
+    public EhCacheManagerFactoryBean aclCacheManagerBean() {
         //for unit tests, es soll nicht immer wieder neuer manager erstellt werden, der dann cacheFactory mit selben name kreiert, was die rules violated
         EhCacheManagerFactoryBean ehCacheManagerFactoryBean = new EhCacheManagerFactoryBean();
         ehCacheManagerFactoryBean.setShared(true);

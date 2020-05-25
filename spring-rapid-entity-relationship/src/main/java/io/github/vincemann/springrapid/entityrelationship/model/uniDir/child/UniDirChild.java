@@ -1,6 +1,6 @@
 package io.github.vincemann.springrapid.entityrelationship.model.uniDir.child;
 
-import io.github.vincemann.springrapid.core.util.ReflectionUtilsBean;
+import io.github.vincemann.springrapid.core.config.ReflectionUtilsBean;
 import io.github.vincemann.springrapid.entityrelationship.exception.UnknownParentTypeException;
 import io.github.vincemann.springrapid.entityrelationship.model.uniDir.UniDirEntity;
 import io.github.vincemann.springrapid.entityrelationship.model.uniDir.parent.UniDirParent;
@@ -70,7 +70,7 @@ public interface UniDirChild extends UniDirEntity {
     public default Field[] _findParentFields(){
         Field[] parentFieldsFromCache = uniDirParentFieldsCache.get(this.getClass());
         if(parentFieldsFromCache==null){
-            Field[] parentFields = ReflectionUtilsBean.instance.getFieldsWithAnnotation(getClass(), UniDirParentEntity.class);
+            Field[] parentFields = ReflectionUtilsBean.getInstance().getFieldsWithAnnotation(getClass(), UniDirParentEntity.class);
             uniDirParentFieldsCache.put(this.getClass(),parentFields);
             return parentFields;
         }else {

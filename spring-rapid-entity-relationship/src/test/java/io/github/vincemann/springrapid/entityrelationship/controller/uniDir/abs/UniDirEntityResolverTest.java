@@ -1,6 +1,8 @@
 package io.github.vincemann.springrapid.entityrelationship.controller.uniDir.abs;
 
 
+import io.github.vincemann.springrapid.core.config.ReflectionCacheAutoConfiguration;
+import io.github.vincemann.springrapid.core.config.ReflectionUtilsBean;
 import io.github.vincemann.springrapid.entityrelationship.controller.uniDir.testEntities.UniDirEntityChild;
 import io.github.vincemann.springrapid.entityrelationship.controller.uniDir.testEntities.UniDirEntityChildsParent;
 import io.github.vincemann.springrapid.entityrelationship.controller.uniDir.testEntities.UniDirEntityParent;
@@ -13,6 +15,8 @@ import org.junit.jupiter.api.BeforeEach;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.springframework.data.repository.CrudRepository;
+import org.springframework.test.context.junit.jupiter.SpringJUnitConfig;
+import org.springframework.test.context.junit.jupiter.web.SpringJUnitWebConfig;
 
 import java.util.Optional;
 
@@ -20,6 +24,7 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.when;
 
 @Getter
+@SpringJUnitConfig(ReflectionCacheAutoConfiguration.class)
 public abstract class UniDirEntityResolverTest {
 
     @Mock
@@ -41,6 +46,7 @@ public abstract class UniDirEntityResolverTest {
 
     @BeforeEach
     public void setUp() throws BadEntityException {
+        //instead of mocking
         MockitoAnnotations.initMocks(this);
 
         Long entityParentId = 1L;

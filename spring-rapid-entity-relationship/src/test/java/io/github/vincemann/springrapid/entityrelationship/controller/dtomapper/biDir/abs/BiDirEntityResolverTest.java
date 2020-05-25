@@ -1,5 +1,6 @@
 package io.github.vincemann.springrapid.entityrelationship.controller.dtomapper.biDir.abs;
 
+import io.github.vincemann.springrapid.core.config.ReflectionCacheAutoConfiguration;
 import io.github.vincemann.springrapid.entityrelationship.controller.dtomapper.biDir.testEntities.BiDirEntityChild;
 import io.github.vincemann.springrapid.entityrelationship.controller.dtomapper.biDir.testEntities.BiDirEntityParent;
 import io.github.vincemann.springrapid.entityrelationship.controller.dtomapper.biDir.testEntities.BiDirSecondEntityParent;
@@ -11,6 +12,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.springframework.data.repository.CrudRepository;
+import org.springframework.test.context.junit.jupiter.SpringJUnitConfig;
 
 import java.util.Optional;
 
@@ -20,6 +22,7 @@ import static org.mockito.Mockito.when;
 /**
  * Requires @MockitoSettings(strictness = Strictness.LENIENT) class level annotation on ChildClass
  */
+@SpringJUnitConfig(ReflectionCacheAutoConfiguration.class)
 public abstract class BiDirEntityResolverTest {
 
     @Mock

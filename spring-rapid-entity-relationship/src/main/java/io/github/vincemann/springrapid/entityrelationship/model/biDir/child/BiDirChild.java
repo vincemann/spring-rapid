@@ -1,6 +1,6 @@
 package io.github.vincemann.springrapid.entityrelationship.model.biDir.child;
 
-import io.github.vincemann.springrapid.core.util.ReflectionUtilsBean;
+import io.github.vincemann.springrapid.core.config.ReflectionUtilsBean;
 import io.github.vincemann.springrapid.entityrelationship.exception.UnknownChildTypeException;
 import io.github.vincemann.springrapid.entityrelationship.exception.UnknownParentTypeException;
 import io.github.vincemann.springrapid.entityrelationship.model.biDir.BiDirEntity;
@@ -87,7 +87,7 @@ public interface BiDirChild extends BiDirEntity {
     public default Field[] findParentFields(){
         Field[] parentFieldsFromCache = biDirParentFieldsCache.get(this.getClass());
         if(parentFieldsFromCache==null){
-            Field[] parentFields = ReflectionUtilsBean.instance.getFieldsWithAnnotation(getClass(), BiDirParentEntity.class);
+            Field[] parentFields = ReflectionUtilsBean.getInstance().getFieldsWithAnnotation(getClass(), BiDirParentEntity.class);
             biDirParentFieldsCache.put(this.getClass(),parentFields);
             return parentFields;
         }else {

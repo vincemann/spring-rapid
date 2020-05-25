@@ -1,7 +1,6 @@
 package io.github.vincemann.springrapid.coretest;
 
-import io.github.vincemann.springrapid.commons.ReflectionUtils;
-import io.github.vincemann.springrapid.core.util.ReflectionUtilsBean;
+import io.github.vincemann.springrapid.core.config.ReflectionUtilsBean;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.BeforeEach;
 
@@ -28,7 +27,7 @@ public abstract class InitializingTest{
     @BeforeEach
     public void setup() throws Exception{
         if(!init){
-            Set<Field> testMemberFields = ReflectionUtilsBean.instance.getFields(this.getClass());
+            Set<Field> testMemberFields = ReflectionUtilsBean.getInstance().getFields(this.getClass());
             initializables = findMember(testMemberFields,TestInitializable.class);
             beforeEachMethodInitializables = findMember(testMemberFields,BeforeEachMethodInitializable.class);
             testContextAwareList = findMember(testMemberFields,TestContextAware.class);
