@@ -4,7 +4,6 @@ import io.github.vincemann.springrapid.commons.Lists;
 import io.github.vincemann.springrapid.core.model.IdentifiableEntityImpl;
 import io.github.vincemann.springrapid.core.proxy.CalledByProxy;
 import io.github.vincemann.springrapid.core.service.jpa.JPACrudService;
-import io.github.vincemann.springrapid.core.service.plugin.CrudServicePlugin;
 import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
 import org.junit.jupiter.api.BeforeEach;

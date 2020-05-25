@@ -1,7 +1,7 @@
 package io.github.vincemann.springrapid.acl.proxy;
 
 import io.github.vincemann.springrapid.acl.proxy.rules.ServiceSecurityRule;
-import io.github.vincemann.springrapid.core.service.plugin.CrudServicePlugin;
+import io.github.vincemann.springrapid.core.proxy.invocationHandler.CrudServicePlugin;
 
 import java.lang.annotation.*;
 
