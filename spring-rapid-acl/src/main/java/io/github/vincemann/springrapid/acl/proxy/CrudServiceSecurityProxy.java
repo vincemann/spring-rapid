@@ -36,11 +36,14 @@ public class CrudServiceSecurityProxy
         boolean invokeTargetMethod = true;
         boolean overrideDefaultPreAuthMethod = false;
         boolean overrideDefaultPostAuthMethod = false;
+
         MethodHandle targetMethod;
         String targetMethodName;
         Object target;
         Object[] targetMethodArgs;
         NullableOptional<Object> result = NullableOptional.empty();
+
+        private State(){}
 
         public static State create(Method targetMethod, Object target, Object[] targetMethodArgs) {
             State state = new State();
@@ -165,5 +168,7 @@ public class CrudServiceSecurityProxy
             invokePostAuthorizeMethod(rule);
         }
     }
+
+
 
 }

@@ -5,7 +5,7 @@ import io.github.vincemann.springrapid.acl.proxy.SecurityProxy;
 import io.github.vincemann.springrapid.acl.proxy.rules.ServiceSecurityRule;
 import io.github.vincemann.springrapid.core.proxy.factory.CrudServicePluginProxyFactory;
 import io.github.vincemann.springrapid.core.service.CrudService;
-import io.github.vincemann.springrapid.core.service.plugin.CrudServicePlugin;
+import io.github.vincemann.springrapid.core.proxy.invocationHandler.CrudServicePlugin;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.annotation.Autowired;

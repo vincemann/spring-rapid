@@ -6,7 +6,7 @@
     <groupId>io.github.vincemann</groupId>
     <artifactId>spring-rapid</artifactId>
 <!--    <version>${rapid.version}</version>-->
-    <version>0.0.92</version>
+    <version>0.0.93</version>
     <packaging>pom</packaging>
 
 

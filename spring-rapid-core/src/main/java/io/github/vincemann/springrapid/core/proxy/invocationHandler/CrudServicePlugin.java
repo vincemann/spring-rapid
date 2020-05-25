@@ -1,4 +1,4 @@
-package io.github.vincemann.springrapid.core.service.plugin;
+package io.github.vincemann.springrapid.core.proxy.invocationHandler;
 
 import io.github.vincemann.springrapid.core.service.CrudService;
 import io.github.vincemann.springrapid.core.slicing.components.ServiceComponent;
@@ -7,6 +7,8 @@ import lombok.Getter;
 import lombok.Setter;
 
 import java.io.Serializable;
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * Represents a Plugin accepted by {@link io.github.vincemann.springrapid.core.proxy.invocationHandler.CrudServicePluginProxy}.
@@ -20,8 +22,6 @@ import java.io.Serializable;
  * T onAfterServiceMethod(all,args,of,service,method, Class entityClass)
  *
  */
-@Getter
-@Setter
 @ServiceComponent
 public abstract class CrudServicePlugin<E extends IdentifiableEntity<Id>, Id extends Serializable> {
 
@@ -36,4 +36,5 @@ public abstract class CrudServicePlugin<E extends IdentifiableEntity<Id>, Id ext
 //    public void onAfterDeleteById(Id id, Class<? extends E> entityClass){}
 //    public void onAfterFindById(Id id,  Class<? extends E> entityClass){}
 //    public Set<E> onAfterFindAll(Set<E> found, Class<? extends E> entityClass){return found;}
+
 }

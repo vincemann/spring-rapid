@@ -5,7 +5,7 @@ import io.github.vincemann.springrapid.commons.Lists;
 import io.github.vincemann.springrapid.core.model.IdentifiableEntity;
 import io.github.vincemann.springrapid.core.proxy.invocationHandler.CrudServicePluginProxy;
 import io.github.vincemann.springrapid.core.service.CrudService;
-import io.github.vincemann.springrapid.core.service.plugin.CrudServicePlugin;
+import io.github.vincemann.springrapid.core.proxy.invocationHandler.CrudServicePlugin;
 import org.apache.commons.lang3.ClassUtils;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.test.util.AopTestUtils;
