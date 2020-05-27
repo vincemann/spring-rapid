@@ -15,4 +15,9 @@ public @interface ApplyIfRole {
     String[] is() default {};
     @AliasFor("is")
     String[] value() default {};
+
+    /**
+     * Security Context Authentication is null and there are no required roles, call PluginMethod yes or no?
+     */
+    boolean allowAnon() default true;
 }

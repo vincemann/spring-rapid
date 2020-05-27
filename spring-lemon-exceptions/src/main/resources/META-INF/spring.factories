@@ -1,4 +1,4 @@
 org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
-com.naturalprogrammer.spring.lemon.exceptions.config.LemonWebExceptionsAutoConfiguration,\
-com.naturalprogrammer.spring.lemon.exceptions.config.LemonExceptionHandlerAutoConfiguration,\
-com.naturalprogrammer.spring.lemon.exceptions.config.LemonExceptionUtilsAutoConfiguration
+io.github.vincemann.spring.lemon.exceptions.config.LemonWebExceptionsAutoConfiguration,\
+io.github.vincemann.spring.lemon.exceptions.config.LemonExceptionHandlerAutoConfiguration,\
+io.github.vincemann.spring.lemon.exceptions.config.LemonExceptionUtilsAutoConfiguration

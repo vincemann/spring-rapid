@@ -1,0 +1,99 @@
+package io.github.spring.lemon.auth.config;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
+import io.github.spring.lemon.auth.properties.LemonProperties;
+import io.github.spring.lemon.auth.security.config.LemonCorsConfigurationSource;
+import io.github.spring.lemon.auth.security.config.LemonWebSecurityConfig;
+import io.github.vincemann.springrapid.core.config.RapidJacksonAutoConfiguration;
+import io.github.vincemann.springrapid.core.slicing.config.WebConfig;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.springframework.boot.autoconfigure.AutoConfigureAfter;
+import org.springframework.boot.autoconfigure.AutoConfigureBefore;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.boot.autoconfigure.security.servlet.SecurityAutoConfiguration;
+import org.springframework.boot.autoconfigure.security.servlet.SecurityFilterAutoConfiguration;
+import org.springframework.boot.autoconfigure.web.servlet.WebMvcAutoConfiguration;
+import org.springframework.boot.autoconfigure.web.servlet.error.ErrorMvcAutoConfiguration;
+import org.springframework.context.annotation.Bean;
+import org.springframework.data.web.config.EnableSpringDataWebSupport;
+import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
+import org.springframework.web.cors.CorsConfigurationSource;
+
+@WebConfig
+@EnableSpringDataWebSupport
+//@EnableGlobalMethodSecurity(prePostEnabled = true)
+@AutoConfigureAfter(RapidJacksonAutoConfiguration.class)
+@AutoConfigureBefore({
+	WebMvcAutoConfiguration.class,
+	ErrorMvcAutoConfiguration.class,
+	SecurityAutoConfiguration.class,
+	SecurityFilterAutoConfiguration.class,
+	LemonCommonsAutoConfiguration.class})
+public class LemonCommonsWebAutoConfiguration {
+
+	/**
+	 * For handling JSON vulnerability,
+	 * JSON response bodies would be prefixed with
+	 * this string.
+	 */
+	public final static String JSON_PREFIX = ")]}',\n";
+
+	private static final Log log = LogFactory.getLog(LemonCommonsWebAutoConfiguration.class);
+	
+	public LemonCommonsWebAutoConfiguration() {
+		log.info("Created");
+	}
+	
+    /**
+	 * Prefixes JSON responses for JSON vulnerability. Disabled by default.
+	 * To enable, add this to your application properties:
+	 *     lemon.enabled.json-prefix: true
+	 */
+	@Bean
+	@ConditionalOnProperty(name="lemon.enabled.json-prefix")
+	public MappingJackson2HttpMessageConverter mappingJackson2HttpMessageConverter(
+			ObjectMapper objectMapper) {
+		
+        log.info("Configuring JSON vulnerability prefix");       
+
+        MappingJackson2HttpMessageConverter converter =
+        		new MappingJackson2HttpMessageConverter(objectMapper);
+        converter.setJsonPrefix(JSON_PREFIX);
+        
+        return converter;
+	}
+
+//	@Bean
+//	public MapperUtils lmapUtils(ObjectMapper mapper){
+//		return new MapperUtils(mapper);
+//	}
+
+	/**
+	 * Configures LemonCorsConfig if missing and lemon.cors.allowed-origins is provided
+	 */
+	@Bean
+	@ConditionalOnProperty(name="lemon.cors.allowed-origins")
+	@ConditionalOnMissingBean(CorsConfigurationSource.class)
+	public LemonCorsConfigurationSource corsConfigurationSource(LemonProperties properties) {
+		
+        log.info("Configuring LemonCorsConfigurationSource");       
+		return new LemonCorsConfigurationSource(properties);		
+	}
+	
+	/**
+	 * Configures LemonSecurityConfig if missing
+	 */
+	@Bean
+	@ConditionalOnMissingBean(LemonWebSecurityConfig.class)	
+	public LemonWebSecurityConfig lemonSecurityConfig() {
+		
+        log.info("Configuring LemonWebSecurityConfig");       
+		return new LemonWebSecurityConfig();
+	}
+	
+
+
+
+}

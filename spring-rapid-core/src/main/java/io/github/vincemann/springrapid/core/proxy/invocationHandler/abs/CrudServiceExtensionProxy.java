@@ -100,14 +100,32 @@ public abstract class CrudServiceExtensionProxy
             ApplyIfRole annotation = method.getMethod().getAnnotation(ApplyIfRole.class);
             HashSet<String> requiredRoles = new HashSet<>(Lists.newArrayList(annotation.is()));
             HashSet<String> blacklistedRoles = new HashSet<>(Lists.newArrayList(annotation.isNot()));
+            boolean allowAnon = annotation.allowAnon();
             Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
             if (authentication != null) {
                 Set<String> userRoles = authentication.getAuthorities().stream()
                         .map(GrantedAuthority::getAuthority)
-                        .collect(Collectors.toSet()
-                        );
+                        .collect(Collectors.toSet());
+                //forbidden roles
+                for (String userRole : userRoles) {
+                    if (blacklistedRoles.contains(userRole)){
+                        log.debug("Method: " + method + " does not apply for curr user, bc user has blacklisted role: " + userRole);
+                        return false;
+                    }
+                }
+                //required roles
+                for (String requiredRole : requiredRoles) {
+                    if (!userRoles.contains(requiredRole)){
+                        log.debug("Method: " + method + " does not apply for curr user, bc user does not have required role : " + requiredRole);
+                        return false;
+                    }
+                }
             } else {
-                return requiredRoles.isEmpty() && blacklistedRoles.isEmpty();
+                if (requiredRoles.isEmpty())
+                    return allowAnon;
+                else
+                    return false;
+//                return requiredRoles.isEmpty() && blacklistedRoles.isEmpty();
             }
         }
         return true;
@@ -118,8 +136,13 @@ public abstract class CrudServiceExtensionProxy
         if (isEntityClassWanted(method, args.length)) {
             finalArgs.add(getService().getEntityClass());
         }
-        return method.execute(finalArgs.toArray());
+        if (needsToBeInvoked(method)) {
+            return method.execute(finalArgs.toArray());
+        }else {
+            return NullableOptional.empty();
+        }
     }
+
 
     private boolean isEntityClassWanted(MethodHandle methodHandle, int amountDefaultArgs) {
         int amountArgs = methodHandle.getMethod().getParameterTypes().length;
