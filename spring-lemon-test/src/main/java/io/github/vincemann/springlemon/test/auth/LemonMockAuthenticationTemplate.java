@@ -1,8 +1,8 @@
 package io.github.vincemann.springlemon.test.auth;
 
 import com.google.common.collect.Sets;
-import io.github.spring.lemon.auth.domain.AbstractUser;
-import io.github.spring.lemon.auth.security.domain.LemonRole;
+import io.github.vincemann.springlemon.auth.domain.AbstractUser;
+import io.github.vincemann.springlemon.auth.security.domain.LemonRole;
 import io.github.vincemann.springrapid.acl.Role;
 import io.github.vincemann.springrapid.coretest.auth.MockAuthenticationTemplate;
 

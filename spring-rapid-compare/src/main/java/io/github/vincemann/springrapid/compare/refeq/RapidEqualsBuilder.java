@@ -725,16 +725,17 @@ public class RapidEqualsBuilder {
         return this;
     }
 
+
+    public MinimalDiff getDiff() {
+        return this.minimalDiff;
+    }
+
     /**
      * <p>Returns <code>true</code> if the fields that have been checked
      * are all equal.</p>
      *
      * @return boolean
      */
-    public MinimalDiff getDiff() {
-        return this.minimalDiff;
-    }
-
     public boolean isEquals() {
         return this.minimalDiff.isEmpty();
     }

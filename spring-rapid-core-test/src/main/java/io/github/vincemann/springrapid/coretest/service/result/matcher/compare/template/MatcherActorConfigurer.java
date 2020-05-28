@@ -3,6 +3,6 @@ package io.github.vincemann.springrapid.coretest.service.result.matcher.compare.
 import io.github.vincemann.springrapid.coretest.service.result.matcher.resolve.EntityPlaceholder;
 
 public interface MatcherActorConfigurer {
-    public MatcherOptionalActorConfigurer with(Object actor);
-    public MatcherOptionalActorConfigurer with(EntityPlaceholder actor);
+    public MatcherAdditionalActorConfigurer with(Object actor);
+    public MatcherAdditionalActorConfigurer with(EntityPlaceholder actor);
 }

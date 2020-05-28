@@ -111,7 +111,6 @@ class CompareTemplateSelectPropertyTest {
 
     @Test
     public void entity_selectedPropertiesNotEqual_diffType_shouldBeConsideredNotEqual(){
-        //todo fails bc diff type ergibt immer equal... außer ich vergleiche id??
         Parent parent = new Parent();
         //parent.setId(1L);
         parent.setAge(42);
@@ -129,7 +128,6 @@ class CompareTemplateSelectPropertyTest {
 
     @Test
     public void entity_selectedPropertyNotEqual_idsEqual_diffType_shouldBeConsideredNotEqual(){
-        //todo mit id unterschiedlich klappt es dann obwohl id gar nicht im scope des vergleichs ist..
         Parent parent = new Parent();
         parent.setId(1L);
         parent.setAge(42);
@@ -146,7 +144,6 @@ class CompareTemplateSelectPropertyTest {
 
     @Test
     public void selectedPropertiesNotEqual_diffType_shouldBeConsideredNotEqual(){
-        //todo fails bc diff type ergibt immer equal... außer es gibt eine id, dann nimmt er die zum vergleich..
         NoEntity parent = new NoEntity();
         parent.setAge(42);
         parent.setName("meierDiff");

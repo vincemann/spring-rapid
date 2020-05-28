@@ -5,7 +5,7 @@ import io.github.vincemann.springrapid.compare.template.*;
 import io.github.vincemann.springrapid.compare.util.MethodNameUtil;
 import io.github.vincemann.springrapid.coretest.service.result.ServiceTestContext;
 import io.github.vincemann.springrapid.coretest.service.result.matcher.ServiceResultMatcher;
-import io.github.vincemann.springrapid.coretest.service.result.matcher.resolve.BasicEntityPlaceholderResolver;
+import io.github.vincemann.springrapid.coretest.service.result.matcher.resolve.RapidEntityPlaceholderResolver;
 import io.github.vincemann.springrapid.coretest.service.result.matcher.resolve.EntityPlaceholder;
 import io.github.vincemann.springrapid.coretest.service.result.matcher.resolve.EntityPlaceholderResolver;
 import org.junit.jupiter.api.Assertions;
@@ -14,9 +14,9 @@ import org.springframework.lang.Nullable;
 import java.util.HashSet;
 import java.util.Set;
 
-public class PlaceholderResolvingCompareTemplateMatcher implements MatcherActorConfigurer, MatcherOptionalActorConfigurer, MatcherPropertyConfigurer, MatcherSelectingPropertyConfigurer, MatcherIgnoringPropertyConfigurer, MatcherOptionalSelectingPropertyConfigurer, MatcherOperationConfigurer{
+public class PlaceholderResolvingCompareTemplateMatcher implements MatcherActorConfigurer, MatcherAdditionalActorConfigurer, MatcherPropertyConfigurer, MatcherSelectingPropertyConfigurer, MatcherIgnoringPropertyConfigurer, MatcherAdditionalSelectingPropertyConfigurer, MatcherOperationConfigurer{
     //todo über config reinwiren
-    private EntityPlaceholderResolver resolver = new BasicEntityPlaceholderResolver();
+    private EntityPlaceholderResolver resolver = new RapidEntityPlaceholderResolver();
     private CompareTemplate compareTemplate;
     private ToCall toCall = new ToCall();
     private ToResolve toResolve = new ToResolve();
@@ -61,13 +61,13 @@ public class PlaceholderResolvingCompareTemplateMatcher implements MatcherActorC
     }
 
     @Override
-    public MatcherOptionalActorConfigurer with(EntityPlaceholder actor) {
+    public MatcherAdditionalActorConfigurer with(EntityPlaceholder actor) {
         this.toResolve.comparePlaceholders.add(actor);
         return this;
     }
 
     @Override
-    public MatcherOptionalActorConfigurer with(Object actor) {
+    public MatcherAdditionalActorConfigurer with(Object actor) {
         compareTemplate.with(actor);
         return this;
     }
@@ -109,13 +109,13 @@ public class PlaceholderResolvingCompareTemplateMatcher implements MatcherActorC
     }
 
     @Override
-    public MatcherOptionalSelectingPropertyConfigurer include(Types.Supplier<?> getter) {
+    public MatcherAdditionalSelectingPropertyConfigurer include(Types.Supplier<?> getter) {
         compareTemplate.include(getter);
         return this;
     }
 
     @Override
-    public MatcherOptionalSelectingPropertyConfigurer include(String propertyName) {
+    public MatcherAdditionalSelectingPropertyConfigurer include(String propertyName) {
         compareTemplate.include(propertyName);
         return this;
     }

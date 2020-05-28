@@ -19,5 +19,7 @@ public interface MockAuthenticationTemplate {
     public void enableMocking();
     public void disableMocking();
     public boolean isMocked();
+    public void setUpAuthMocks();
+
 
 }

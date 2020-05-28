@@ -7,6 +7,7 @@ import io.github.vincemann.springrapid.compare.refeq.RapidReflectionEquals;
 import io.github.vincemann.springrapid.compare.util.MethodNameUtil;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Assertions;
 
 import java.util.ArrayList;
@@ -16,10 +17,14 @@ import java.util.Set;
 
 @Getter
 @Setter
-public class CompareTemplate implements ActorConfigurer, OptionalActorConfigurer, PropertyConfigurer, IgnoringPropertyConfigurer, SelectingPropertyConfigurer, OptionalSelectingPropertyConfigurer, OperationConfigurer {
+@Slf4j
+public class CompareTemplate implements ActorConfigurer, AdditionalActorConfigurer, PropertyConfigurer, IgnoringPropertyConfigurer, SelectingPropertyConfigurer, AdditionalSelectingPropertyConfigurer, OperationConfigurer {
+    public static Set<String> ALWAYS_IGNORE = new HashSet<>();
+
     private Object rootActor;
     private List<Object> actors = new ArrayList<>();
     private Set<String> properties = new HashSet<>();
+    private Set<String> explicitlyIncluded = new HashSet<>();
     @Getter
     private RapidEqualsBuilder.MinimalDiff minimalDiff;
 
@@ -33,7 +38,7 @@ public class CompareTemplate implements ActorConfigurer, OptionalActorConfigurer
 
 
     @Override
-    public OptionalActorConfigurer with(Object actor) {
+    public AdditionalActorConfigurer with(Object actor) {
         actors.add(actor);
         return this;
     }
@@ -74,19 +79,21 @@ public class CompareTemplate implements ActorConfigurer, OptionalActorConfigurer
     }
 
     @Override
-    public OptionalSelectingPropertyConfigurer include(Types.Supplier<?> getter) {
-        properties.add(MethodNameUtil.propertyNameOf(getter));
+    public AdditionalSelectingPropertyConfigurer include(Types.Supplier<?> getter) {
+        include(MethodNameUtil.propertyNameOf(getter));
         return this;
     }
 
     @Override
-    public OptionalSelectingPropertyConfigurer include(String propertyName) {
+    public AdditionalSelectingPropertyConfigurer include(String propertyName) {
         properties.add(propertyName);
+        explicitlyIncluded.add(propertyName);
         return this;
     }
 
     @Override
     public boolean isEqual() {
+        ignoreDefaultProperties();
         RapidReflectionEquals equalMatcher = new RapidReflectionEquals(rootActor, getIgnoredProperties().toArray(new String[0]));
         boolean finalEqual = true;
         for (Object actor : actors) {
@@ -98,6 +105,26 @@ public class CompareTemplate implements ActorConfigurer, OptionalActorConfigurer
         }
         this.minimalDiff = equalMatcher.getMinimalDiff();
         return finalEqual;
+    }
+
+    @Override
+    public void assertEqual() {
+        Assertions.assertTrue(isEqual());
+    }
+
+    @Override
+    public RapidEqualsBuilder.MinimalDiff assertNotEqual() {
+        Assertions.assertFalse(isEqual());
+        return minimalDiff;
+    }
+
+    protected void ignoreDefaultProperties(){
+        for (String ignoreMe : ALWAYS_IGNORE) {
+            if (!explicitlyIncluded.contains(ignoreMe))
+                properties.remove(ignoreMe);
+            else
+                log.debug("Explicitly included property on always ignore list: " +ignoreMe + "-> will compare property.");
+        }
     }
 
     @Override
