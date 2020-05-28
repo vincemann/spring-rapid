@@ -1,6 +1,6 @@
 package io.github.vincemann.springrapid.coretest.service.result.matcher;
 
-import io.github.vincemann.springrapid.coretest.service.result.matcher.resolve.BasicEntityPlaceholderResolver;
+import io.github.vincemann.springrapid.coretest.service.result.matcher.resolve.RapidEntityPlaceholderResolver;
 import io.github.vincemann.springrapid.coretest.service.result.matcher.resolve.EntityPlaceholder;
 import io.github.vincemann.springrapid.coretest.service.result.matcher.resolve.EntityPlaceholderResolver;
 import org.junit.jupiter.api.Assertions;
@@ -10,7 +10,7 @@ import java.util.Optional;
 
 public class ExistenceMatchers {
 
-    private static EntityPlaceholderResolver entityPlaceholderResolver = new BasicEntityPlaceholderResolver();
+    private static EntityPlaceholderResolver entityPlaceholderResolver = new RapidEntityPlaceholderResolver();
 
     public static ServiceResultMatcher notPresentInDatabase(Serializable id) {
         return (testContext) -> {

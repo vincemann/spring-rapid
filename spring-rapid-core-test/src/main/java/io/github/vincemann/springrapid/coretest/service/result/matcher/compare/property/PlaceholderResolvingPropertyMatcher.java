@@ -4,7 +4,7 @@ import com.github.hervian.reflection.Types;
 import io.github.vincemann.springrapid.core.model.IdentifiableEntity;
 import io.github.vincemann.springrapid.coretest.service.result.ServiceTestContext;
 import io.github.vincemann.springrapid.coretest.service.result.matcher.ServiceResultMatcher;
-import io.github.vincemann.springrapid.coretest.service.result.matcher.resolve.BasicEntityPlaceholderResolver;
+import io.github.vincemann.springrapid.coretest.service.result.matcher.resolve.RapidEntityPlaceholderResolver;
 import io.github.vincemann.springrapid.coretest.service.result.matcher.resolve.EntityPlaceholder;
 import io.github.vincemann.springrapid.coretest.service.result.matcher.resolve.EntityPlaceholderResolver;
 import lombok.AllArgsConstructor;
@@ -19,7 +19,7 @@ import java.util.*;
  * Asserts GetterValues of Entity, that can either be a concrete entity or a {@link EntityPlaceholder}.
  */
 public class PlaceholderResolvingPropertyMatcher {
-    private EntityPlaceholderResolver resolver = new BasicEntityPlaceholderResolver();
+    private EntityPlaceholderResolver resolver = new RapidEntityPlaceholderResolver();
     private Object compareRoot;
     private EntityPlaceholder compareRootPlaceholder;
     private Map<Method, Object> getterValueMap = new LinkedHashMap<>();

@@ -1,6 +1,6 @@
 package io.github.vincemann.springrapid.compare.template;
 
 
-public interface OptionalActorConfigurer extends ActorConfigurer{
+public interface AdditionalActorConfigurer extends ActorConfigurer{
     public PropertyConfigurer properties();
 }
