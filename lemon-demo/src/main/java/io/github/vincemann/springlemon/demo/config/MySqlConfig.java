@@ -3,6 +3,7 @@ package io.github.vincemann.springlemon.demo.config;
 import io.github.vincemann.springrapid.core.slicing.config.ServiceConfig;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.acls.domain.AclImpl;
 import org.springframework.security.acls.jdbc.JdbcMutableAclService;
 
 @Configuration
