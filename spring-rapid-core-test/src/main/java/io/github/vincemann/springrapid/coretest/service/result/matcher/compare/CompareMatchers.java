@@ -1,9 +1,7 @@
 package io.github.vincemann.springrapid.coretest.service.result.matcher.compare;
 
 import io.github.vincemann.springrapid.core.model.IdentifiableEntity;
-import io.github.vincemann.springrapid.coretest.service.result.matcher.compare.template.PlaceholderResolvingCompareTemplateMatcher;
-import io.github.vincemann.springrapid.coretest.service.result.matcher.compare.template.MatcherActorConfigurer;
-import io.github.vincemann.springrapid.coretest.service.result.matcher.compare.property.PlaceholderResolvingPropertyMatcher;
+import io.github.vincemann.springrapid.coretest.service.PlaceholderResolvingComparison;
 import io.github.vincemann.springrapid.coretest.service.result.matcher.resolve.EntityPlaceholder;
 
 /**
@@ -16,12 +14,12 @@ public class CompareMatchers {
      * @param compareRoot supply own Entity
      * @return
      */
-    public static MatcherActorConfigurer compare(IdentifiableEntity compareRoot){
-        return new PlaceholderResolvingCompareTemplateMatcher(compareRoot);
+    public static PlaceholderResolvingActorConfigurer compare(IdentifiableEntity compareRoot){
+        return new PlaceholderResolvingComparison(compareRoot);
     }
 
-    public static MatcherActorConfigurer compare(EntityPlaceholder rootCompareResolvable){
-        return new PlaceholderResolvingCompareTemplateMatcher(rootCompareResolvable);
+    public static PlaceholderResolvingActorConfigurer compare(EntityPlaceholder rootCompareResolvable){
+        return new PlaceholderResolvingComparison(rootCompareResolvable);
     }
 
     /**
