@@ -1,4 +1,4 @@
-package io.github.vincemann.springrapid.coretest.service.result.matcher.resolve;
+package io.github.vincemann.springrapid.coretest.service.resolve;
 
 import io.github.vincemann.springrapid.core.model.IdentifiableEntity;
 import io.github.vincemann.springrapid.coretest.service.result.ServiceTestContext;
@@ -12,13 +12,13 @@ import java.util.Optional;
 public class RapidEntityPlaceholderResolver implements EntityPlaceholderResolver {
 
     @Override
-    public IdentifiableEntity resolve(EntityPlaceholder entityPlaceholder, ServiceTestContext testContext) {
+    public <E extends IdentifiableEntity> E resolve(EntityPlaceholder entityPlaceholder, ServiceTestContext testContext) {
         switch (entityPlaceholder) {
             case DB_ENTITY:
                 Serializable id = findDbEntityId(testContext);
                 Optional<IdentifiableEntity> byId = testContext.getRepository().findById(id);
                 if (byId.isPresent()) {
-                    return byId.get();
+                    return (E) byId.get();
                 }
             case SERVICE_INPUT_ENTITY:
                 IdentifiableEntity firstEntity = findFirstEntityWithSetId(testContext.getServiceResult().getServiceRequest().getArgs());
@@ -29,9 +29,9 @@ public class RapidEntityPlaceholderResolver implements EntityPlaceholderResolver
                 Object result = testContext.getServiceResult().getResult();
                 Assert.notNull(result, "Service Result is null");
                 if (result instanceof IdentifiableEntity) {
-                    return ((IdentifiableEntity) result);
+                    return (E) result;
                 } else if (result instanceof Optional) {
-                    return (IdentifiableEntity) ((Optional) result).get();
+                    return (E) ((Optional) result).get();
                 } else {
                     throw new IllegalArgumentException("Result Entity is of wrong type: " + result.getClass());
                 }
@@ -45,7 +45,7 @@ public class RapidEntityPlaceholderResolver implements EntityPlaceholderResolver
      * @param testContext
      * @return
      */
-    private Serializable findDbEntityId(ServiceTestContext testContext) {
+    protected Serializable findDbEntityId(ServiceTestContext testContext) {
         Object result = testContext.getServiceResult().getResult();
         if (result instanceof Optional) {
             result = ((Optional) result).get();
@@ -66,7 +66,7 @@ public class RapidEntityPlaceholderResolver implements EntityPlaceholderResolver
         throw new IllegalArgumentException("Id for db Entity could not be found");
     }
 
-    private IdentifiableEntity findFirstEntityWithSetId(List<Object> args) {
+    protected IdentifiableEntity findFirstEntityWithSetId(List<Object> args) {
         for (Object arg : args) {
             if (arg instanceof IdentifiableEntity) {
                 IdentifiableEntity entity = (IdentifiableEntity) arg;

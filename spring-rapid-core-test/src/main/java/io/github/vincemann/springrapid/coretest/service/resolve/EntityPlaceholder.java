@@ -1,4 +1,4 @@
-package io.github.vincemann.springrapid.coretest.service.result.matcher.resolve;
+package io.github.vincemann.springrapid.coretest.service.resolve;
 
 import io.github.vincemann.springrapid.core.model.IdentifiableEntity;
 
