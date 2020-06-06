@@ -19,7 +19,7 @@ public class ServiceResult {
     private Object result;
     private ServiceRequest serviceRequest;
 
-    public boolean wasSuccessful(){
+    public boolean successful(){
         return raisedException==null;
     }
 

@@ -1,6 +1,7 @@
 package io.github.vincemann.springrapid.demo.service.jpa;
 
-import io.github.vincemann.springrapid.coretest.service.result.matcher.resolve.EntityPlaceholder;
+import io.github.vincemann.springrapid.coretest.service.result.matcher.compare.CompareMatchers;
+import io.github.vincemann.springrapid.coretest.service.resolve.EntityPlaceholder;
 import io.github.vincemann.springrapid.demo.EnableProjectComponentScan;
 import io.github.vincemann.springrapid.demo.model.Pet;
 import io.github.vincemann.springrapid.demo.model.PetType;
@@ -16,7 +17,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import java.time.LocalDate;
 
 import static io.github.vincemann.springrapid.coretest.service.request.CrudServiceRequestBuilders.save;
-import static io.github.vincemann.springrapid.coretest.service.result.matcher.compare.CompareMatchers.compare;
+import static io.github.vincemann.springrapid.coretest.service.result.matcher.compare.CompareMatchers.apply;
 
 @EnableProjectComponentScan
 @ImportRapidEntityRelServiceConfig
@@ -44,7 +45,7 @@ class PetServiceIntegrationTest
                 .build();
         getTestTemplate()
                 .perform(save(dogWithDogType))
-                .andExpect(compare(dogWithDogType)
+                .andExpect(CompareMatchers.apply(dogWithDogType)
                         .with(EntityPlaceholder.DB_ENTITY)
                         .properties()
                         .all()

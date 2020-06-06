@@ -28,12 +28,18 @@ public class ServiceTestTemplate
 {
 
     private static ServiceTestContext TEST_CONTEXT;
-    static ServiceTestContext getTestContext(){
+
+    /**
+     * Use to get latest TestContext instance.
+     * Dont call before Test is initiated by {@link this#perform(ServiceRequestBuilder)}
+     */
+    public static ServiceTestContext getTestContext(){
         if (TEST_CONTEXT== null){
             throw new IllegalStateException("Text Context not initialized.");
         }
         return TEST_CONTEXT;
     }
+
 
     private EntityManager entityManager;
     private CrudService serviceUnderTest;
@@ -65,7 +71,7 @@ public class ServiceTestTemplate
         ServiceRequest serviceRequest = serviceRequestBuilder.create(serviceUnderTest);
         serviceRequest.setService(serviceUnderTest);
         ServiceResult serviceResult = execute(serviceRequest);
-        ServiceTestContext testContext = ServiceTestContext.builder()
+        TEST_CONTEXT = ServiceTestContext.builder()
                 .applicationContext(applicationContext)
                 .repository(repository)
                 .serviceResult(serviceResult)
@@ -79,13 +85,13 @@ public class ServiceTestTemplate
         return new ServiceResultActions() {
             @Override
             public ServiceResultActions andExpect(ServiceResultMatcher matcher) {
-                matcher.match(testContext);
+                matcher.match();
                 return this;
             }
 
             @Override
             public ServiceResultActions andDo(ServiceResultHandler handler) {
-                handler.handle(testContext);
+                handler.handle();
                 return this;
             }
 

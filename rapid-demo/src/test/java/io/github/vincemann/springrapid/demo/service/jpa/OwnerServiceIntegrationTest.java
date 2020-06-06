@@ -6,6 +6,7 @@ import io.github.vincemann.springrapid.core.service.exception.BadEntityException
 import io.github.vincemann.springrapid.core.service.exception.EntityNotFoundException;
 import io.github.vincemann.springrapid.coretest.service.CrudServiceIntegrationTest;
 import io.github.vincemann.springrapid.coretest.service.result.ServiceResult;
+import io.github.vincemann.springrapid.coretest.service.result.matcher.compare.CompareMatchers;
 import io.github.vincemann.springrapid.demo.EnableProjectComponentScan;
 import io.github.vincemann.springrapid.demo.model.Owner;
 import io.github.vincemann.springrapid.demo.model.Pet;
@@ -26,12 +27,14 @@ import java.time.LocalDate;
 import java.util.HashSet;
 import java.util.Optional;
 
+import static io.github.vincemann.springrapid.compare.template.CompareTemplate.compare;
+import static io.github.vincemann.springrapid.coretest.config.GlobalEntityPlaceholderResolver.resolve;
 import static io.github.vincemann.springrapid.coretest.service.request.CrudServiceRequestBuilders.*;
 import static io.github.vincemann.springrapid.coretest.service.result.matcher.ExceptionMatchers.noException;
 import static io.github.vincemann.springrapid.coretest.service.result.matcher.ExistenceMatchers.notPresentInDatabase;
-import static io.github.vincemann.springrapid.coretest.service.result.matcher.compare.CompareMatchers.compare;
+import static io.github.vincemann.springrapid.coretest.service.result.matcher.compare.CompareMatchers.apply;
 import static io.github.vincemann.springrapid.coretest.service.result.matcher.compare.CompareMatchers.propertyCompare;
-import static io.github.vincemann.springrapid.coretest.service.result.matcher.resolve.EntityPlaceholder.*;
+import static io.github.vincemann.springrapid.coretest.service.resolve.EntityPlaceholder.*;
 
 
 @EnableProjectComponentScan
@@ -87,9 +90,8 @@ class OwnerServiceIntegrationTest
     public void saveOwnerWithoutPets_ShouldSucceed() {
         ServiceResult entityServiceResult = getTestTemplate()
                 .perform(save(ownerWithoutPets))
-                .andExpect(compare(ownerWithoutPets)
-                        .with(DB_ENTITY)
-                        .with(SERVICE_RETURNED_ENTITY)
+                .andExpect(() -> compare(ownerWithoutPets)
+                        .with(resolve(DB_ENTITY))
                         .properties()
                         .include(ownerWithoutPets::getTelephone)
                         .include(ownerWithoutPets::getAddress)
@@ -103,12 +105,13 @@ class OwnerServiceIntegrationTest
     public void saveOwnerWithPet_ShouldSucceed() throws BadEntityException {
         getTestTemplate()
                 .perform(save(ownerWithOnePet))
-                .andExpect(compare(SERVICE_INPUT_ENTITY)
-                        .with(DB_ENTITY)
+                .andDo(compare(resolve(SERVICE_INPUT_ENTITY))
+                        .with(resolve(DB_ENTITY))
                         .properties()
                         .all()
                         .ignore("id")
-                        .isEqual());
+                        .
+                        );
         Assertions.assertTrue(getRepository().existsById(ownerWithOnePet.getId()));
     }
 
@@ -127,7 +130,7 @@ class OwnerServiceIntegrationTest
 
         getTestTemplate()
                 .perform(save(owner))
-                .andExpect(compare(owner)
+                .andExpect(CompareMatchers.apply(owner)
                         .with(DB_ENTITY)
                         .with(SERVICE_RETURNED_ENTITY)
                         .properties()
@@ -210,7 +213,7 @@ class OwnerServiceIntegrationTest
         Optional<Owner> byLastName = getServiceUnderTest().findByLastName(ownerWithOnePet.getLastName());
         Assertions.assertTrue(byLastName.isPresent());
         Assertions.assertTrue(
-                CompareTemplate.compare(savedOwner)
+                compare(savedOwner)
                         .with(byLastName.get())
                         .properties()
                         .all()
