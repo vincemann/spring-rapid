@@ -27,6 +27,14 @@ public class ServiceTestTemplate
     implements ApplicationContextAware
 {
 
+    private static ServiceTestContext TEST_CONTEXT;
+    static ServiceTestContext getTestContext(){
+        if (TEST_CONTEXT== null){
+            throw new IllegalStateException("Text Context not initialized.");
+        }
+        return TEST_CONTEXT;
+    }
+
     private EntityManager entityManager;
     private CrudService serviceUnderTest;
     private CrudRepository repository;

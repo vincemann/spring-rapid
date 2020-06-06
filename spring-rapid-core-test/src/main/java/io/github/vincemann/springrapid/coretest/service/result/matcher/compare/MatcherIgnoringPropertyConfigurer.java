@@ -1,4 +1,4 @@
-package io.github.vincemann.springrapid.coretest.service.result.matcher.compare.template;
+package io.github.vincemann.springrapid.coretest.service.result.matcher.compare;
 
 import com.github.hervian.reflection.Types;
 
