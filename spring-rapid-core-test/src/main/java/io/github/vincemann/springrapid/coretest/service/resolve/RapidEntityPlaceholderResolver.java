@@ -1,6 +1,8 @@
 package io.github.vincemann.springrapid.coretest.service.resolve;
 
 import io.github.vincemann.springrapid.core.model.IdentifiableEntity;
+import io.github.vincemann.springrapid.coretest.service.request.ServiceRequest;
+import io.github.vincemann.springrapid.coretest.service.result.ServiceResult;
 import io.github.vincemann.springrapid.coretest.service.result.ServiceTestContext;
 import org.springframework.util.Assert;
 
@@ -8,7 +10,20 @@ import java.io.Serializable;
 import java.util.List;
 import java.util.Optional;
 
-
+/**
+ * DB_ENTITY -> get id
+ *                  {@link ServiceResult#getResult()}
+ *              or
+ *                  from first arg in {@link ServiceRequest#getArgs()} that is of type {@link IdentifiableEntity} and has non null id
+ *              in that order.
+ *              Then get db entity by calling {@link org.springframework.data.repository.CrudRepository#findById(Object)}.
+ *
+ * SERVICE_INPUT_ENTITY -> get first arg in {@link ServiceRequest#getArgs()} that is of type {@link IdentifiableEntity} and has non null id.
+ *
+ *
+ * SERVICE_RETURNED_ENTITY -> {@link ServiceResult#getResult()}
+ *
+ */
 public class RapidEntityPlaceholderResolver implements EntityPlaceholderResolver {
 
     @Override

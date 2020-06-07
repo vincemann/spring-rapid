@@ -10,5 +10,5 @@ public interface ServiceResultHandler {
     /**
      * Get {@link ServiceTestContext} via {@link ServiceTestTemplate#getTestContext()}
      */
-    ServiceResultActions handle();
+    void handle();
 }
