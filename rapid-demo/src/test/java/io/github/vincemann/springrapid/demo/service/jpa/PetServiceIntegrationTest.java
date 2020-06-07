@@ -1,14 +1,13 @@
 package io.github.vincemann.springrapid.demo.service.jpa;
 
-import io.github.vincemann.springrapid.coretest.service.result.matcher.compare.CompareMatchers;
+import io.github.vincemann.springrapid.core.service.exception.BadEntityException;
+import io.github.vincemann.springrapid.coretest.service.CrudServiceIntegrationTest;
 import io.github.vincemann.springrapid.coretest.service.resolve.EntityPlaceholder;
 import io.github.vincemann.springrapid.demo.EnableProjectComponentScan;
 import io.github.vincemann.springrapid.demo.model.Pet;
 import io.github.vincemann.springrapid.demo.model.PetType;
 import io.github.vincemann.springrapid.demo.service.PetService;
 import io.github.vincemann.springrapid.demo.service.PetTypeService;
-import io.github.vincemann.springrapid.core.service.exception.BadEntityException;
-import io.github.vincemann.springrapid.coretest.service.CrudServiceIntegrationTest;
 import io.github.vincemann.springrapid.entityrelationship.slicing.test.ImportRapidEntityRelServiceConfig;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -16,8 +15,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import java.time.LocalDate;
 
+import static io.github.vincemann.ezcompare.Comparison.compare;
+import static io.github.vincemann.springrapid.coretest.config.GlobalEntityPlaceholderResolver.resolve;
 import static io.github.vincemann.springrapid.coretest.service.request.CrudServiceRequestBuilders.save;
-import static io.github.vincemann.springrapid.coretest.service.result.matcher.compare.CompareMatchers.apply;
 
 @EnableProjectComponentScan
 @ImportRapidEntityRelServiceConfig
@@ -45,11 +45,11 @@ class PetServiceIntegrationTest
                 .build();
         getTestTemplate()
                 .perform(save(dogWithDogType))
-                .andExpect(CompareMatchers.apply(dogWithDogType)
-                        .with(EntityPlaceholder.DB_ENTITY)
+                .andExpect(() -> compare(dogWithDogType)
+                        .with(resolve(EntityPlaceholder.DB_ENTITY))
                         .properties()
                         .all()
                         .ignore("id")
-                        .isEqual());
+                        .assertEqual());
     }
 }

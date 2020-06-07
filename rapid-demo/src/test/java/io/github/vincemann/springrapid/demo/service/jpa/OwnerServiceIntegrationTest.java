@@ -1,12 +1,10 @@
 package io.github.vincemann.springrapid.demo.service.jpa;
 
 import io.github.vincemann.springrapid.commons.Lists;
-import io.github.vincemann.springrapid.compare.template.CompareTemplate;
 import io.github.vincemann.springrapid.core.service.exception.BadEntityException;
 import io.github.vincemann.springrapid.core.service.exception.EntityNotFoundException;
 import io.github.vincemann.springrapid.coretest.service.CrudServiceIntegrationTest;
 import io.github.vincemann.springrapid.coretest.service.result.ServiceResult;
-import io.github.vincemann.springrapid.coretest.service.result.matcher.compare.CompareMatchers;
 import io.github.vincemann.springrapid.demo.EnableProjectComponentScan;
 import io.github.vincemann.springrapid.demo.model.Owner;
 import io.github.vincemann.springrapid.demo.model.Pet;
@@ -28,15 +26,12 @@ import java.util.HashSet;
 import java.util.Optional;
 
 import static io.github.vincemann.ezcompare.Comparison.compare;
-import static io.github.vincemann.springrapid.compare.template.CompareTemplate.compare;
 import static io.github.vincemann.springrapid.coretest.config.GlobalEntityPlaceholderResolver.resolve;
 import static io.github.vincemann.springrapid.coretest.service.request.CrudServiceRequestBuilders.*;
+import static io.github.vincemann.springrapid.coretest.service.resolve.EntityPlaceholder.*;
 import static io.github.vincemann.springrapid.coretest.service.result.matcher.ExceptionMatchers.noException;
 import static io.github.vincemann.springrapid.coretest.service.result.matcher.ExistenceMatchers.notPresentInDatabase;
 import static io.github.vincemann.springrapid.coretest.service.result.matcher.PropertyMatchers.propertyAssert;
-import static io.github.vincemann.springrapid.coretest.service.result.matcher.compare.CompareMatchers.apply;
-import static io.github.vincemann.springrapid.coretest.service.result.matcher.compare.CompareMatchers.propertyCompare;
-import static io.github.vincemann.springrapid.coretest.service.resolve.EntityPlaceholder.*;
 
 
 @EnableProjectComponentScan
@@ -97,8 +92,7 @@ class OwnerServiceIntegrationTest
                         .properties()
                         .include(ownerWithoutPets::getTelephone)
                         .include(ownerWithoutPets::getAddress)
-                        .go()
-                        .isEqual())
+                        .assertEqual())
                 .andReturn();
         Assertions.assertEquals(0, ((Owner) serviceResult.getResult()).getPets().size());
     }
@@ -137,8 +131,7 @@ class OwnerServiceIntegrationTest
                         .properties()
                         .all()
                         .ignore(owner::getId)
-                        .go()
-                        .isEqual()
+                        .assertEqual()
                 );
     }
 
@@ -216,8 +209,7 @@ class OwnerServiceIntegrationTest
                 .with(byLastName.get())
                 .properties()
                 .all()
-                .assertEqual()
-
+                .assertEqual();
     }
 
     @Test
