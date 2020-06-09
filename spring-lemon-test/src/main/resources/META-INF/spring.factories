@@ -1,2 +1,2 @@
 org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
-io.github.vincemann.springlemon.test.auth.LemonTestAutoConfiguration
+com.github.vincemann.springlemon.test.auth.LemonTestAutoConfiguration

@@ -11,34 +11,34 @@
 	<description>Demo project for Spring Lemon Auth</description>
 
 	<parent>
-		<groupId>io.github.vincemann</groupId>
+		<groupId>com.github.vincemann</groupId>
 		<artifactId>spring-rapid</artifactId>
-		<version>0.0.93</version>
+		<version>1.0.0-SNAPSHOT</version>
 	</parent>
 
 	<dependencies>
 
 		<dependency>
-			<groupId>io.github.vincemann</groupId>
+			<groupId>com.github.vincemann</groupId>
 			<artifactId>spring-rapid-core</artifactId>
 			<version>${project.version}</version>
 		</dependency>
 
 		<dependency>
-			<groupId>io.github.vincemann</groupId>
+			<groupId>com.github.vincemann</groupId>
 			<artifactId>spring-rapid-core-test</artifactId>
 			<version>${project.version}</version>
 			<scope>test</scope>
 		</dependency>
 
 		<dependency>
-			<groupId>io.github.vincemann</groupId>
+			<groupId>com.github.vincemann</groupId>
 			<artifactId>spring-rapid-acl</artifactId>
 			<version>${project.version}</version>
 		</dependency>
 
 		<dependency>
-			<groupId>io.github.vincemann</groupId>
+			<groupId>com.github.vincemann</groupId>
 			<artifactId>spring-lemon-exceptions</artifactId>
 			<version>${project.version}</version>
 		</dependency>
@@ -47,6 +47,8 @@
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-devtools</artifactId>
 		</dependency>
+
+
 
 <!--		<dependency>-->
 <!--			<groupId>org.hsqldb</groupId>-->
@@ -67,7 +69,7 @@
 <!--		</dependency>-->
 
 		<dependency>
-			<groupId>io.github.vincemann</groupId>
+			<groupId>com.github.vincemann</groupId>
 			<artifactId>spring-lemon-auth</artifactId>
 			<version>${project.version}</version>
 		</dependency>

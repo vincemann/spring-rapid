@@ -4,8 +4,8 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <parent>
         <artifactId>spring-rapid</artifactId>
-        <groupId>io.github.vincemann</groupId>
-        <version>0.0.93</version>
+        <groupId>com.github.vincemann</groupId>
+        <version>1.0.0-SNAPSHOT</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
@@ -14,13 +14,13 @@
 
     <dependencies>
         <dependency>
-            <groupId>io.github.vincemann</groupId>
+            <groupId>com.github.vincemann</groupId>
             <artifactId>spring-rapid-core-test</artifactId>
             <version>${project.version}</version>
         </dependency>
 
         <dependency>
-            <groupId>io.github.vincemann</groupId>
+            <groupId>com.github.vincemann</groupId>
             <artifactId>spring-lemon-auth</artifactId>
             <version>${project.version}</version>
         </dependency>

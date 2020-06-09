@@ -9,9 +9,9 @@
 
 
     <parent>
-        <groupId>io.github.vincemann</groupId>
+        <groupId>com.github.vincemann</groupId>
         <artifactId>spring-rapid</artifactId>
-        <version>0.0.93</version>
+        <version>1.0.0-SNAPSHOT</version>
     </parent>
 
 
@@ -19,32 +19,32 @@
     <dependencies>
 
         <dependency>
-            <groupId>io.github.vincemann</groupId>
+            <groupId>com.github.vincemann</groupId>
             <artifactId>spring-rapid-core</artifactId>
             <version>${project.version}</version>
         </dependency>
 
         <dependency>
-            <groupId>io.github.vincemann</groupId>
+            <groupId>com.github.vincemann</groupId>
             <artifactId>spring-rapid-entity-relationship</artifactId>
             <version>${project.version}</version>
         </dependency>
 
 <!--        Lemon Exceptions Module is better-->
 <!--        <dependency>-->
-<!--            <groupId>io.github.vincemann</groupId>-->
+<!--            <groupId>com.github.vincemann</groupId>-->
 <!--            <artifactId>spring-rapid-exceptions</artifactId>-->
 <!--            <version>${project.version}</version>-->
 <!--        </dependency>-->
 
         <dependency>
-            <groupId>io.github.vincemann</groupId>
+            <groupId>com.github.vincemann</groupId>
             <artifactId>spring-lemon-exceptions</artifactId>
             <version>${project.version}</version>
         </dependency>
 
         <dependency>
-            <groupId>io.github.vincemann</groupId>
+            <groupId>com.github.vincemann</groupId>
             <artifactId>spring-rapid-core-test</artifactId>
             <version>${project.version}</version>
             <scope>test</scope>

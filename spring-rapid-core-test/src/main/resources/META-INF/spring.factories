@@ -1,2 +1,2 @@
 org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
-io.github.vincemann.springrapid.coretest.config.RapidCoreTestAutoConfiguration
+com.github.vincemann.springrapid.coretest.config.RapidCoreTestAutoConfiguration

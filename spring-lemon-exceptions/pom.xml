@@ -10,15 +10,15 @@
     <description>Helper exception handling library for Spring Boot REST APIs</description>
 
     <parent>
-        <groupId>io.github.vincemann</groupId>
+        <groupId>com.github.vincemann</groupId>
         <artifactId>spring-rapid</artifactId>
-        <version>0.0.93</version>
+        <version>1.0.0-SNAPSHOT</version>
     </parent>
 
     <dependencies>
 
         <dependency>
-            <groupId>io.github.vincemann</groupId>
+            <groupId>com.github.vincemann</groupId>
             <artifactId>spring-rapid-core</artifactId>
             <version>${project.version}</version>
         </dependency>
