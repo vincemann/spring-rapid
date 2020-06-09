@@ -24,9 +24,11 @@ Feel free to use, download and modify any code you want.
 * Resolving of ids in dtos referencing other entities and vice versa                       (entity-relationship)  
 * Testsupport for service and controller layer of rapid-core                                         (core-Test)  
 * SecurityProxy solution for applying Acl-based, plugin-like 
-  rules that restrict access to service methods + automatic Acl setup                                 (Acl)            
+  rules that restrict access to service methods + automatic Acl setup                                 (acl)            
     
- ## Include  
+ # Include  
+* replace MODULE with the module you want to include (module-name = directory-name)  
+* replace VERSION with valid version from [releases](https://github.com/vincemann/spring-rapid/releases)  
  ### Maven  
  ```code  
 <repositories>    
@@ -39,7 +41,7 @@ Feel free to use, download and modify any code you want.
 <dependency>  
     <groupId>com.github.vincemann.spring-rapid</groupId>  
     <artifactId>MODULE</artifactId>  
-    <version>1.0.0-SNAPSHOT.1</version>  
+    <version>VERSION</version>  
 </dependency>  
 ```  
 ### Gradle  
@@ -49,7 +51,7 @@ repositories {
     maven { url "https://jitpack.io" }  
 }  
 dependencies {  
-     implementation 'com.github.vincemann.spring-rapid:MODULE:1.0.0-SNAPSHOT.1'  
+     implementation 'com.github.vincemann.spring-rapid:MODULE:VERSION'  
 }  
 ```  
   
