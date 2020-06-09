@@ -26,7 +26,33 @@ Feel free to use, download and modify any code you want.
 * SecurityProxy solution for applying Acl-based, plugin-like 
   rules that restrict access to service methods + automatic Acl setup                                 (Acl)            
     
-    
+ ## Include  
+ ### Maven  
+ ```code  
+<repositories>    
+    <repository>   
+        <id>jitpack.io</id>  
+        <url>https://jitpack.io</url>  
+    </repository>  
+</repositories>  
+  
+<dependency>  
+    <groupId>com.github.vincemann.spring-rapid</groupId>  
+    <artifactId>MODULE</artifactId>  
+    <version>1.0.0-SNAPSHOT</version>  
+</dependency>  
+```  
+### Gradle  
+```code
+repositories {  
+    jcenter()  
+    maven { url "https://jitpack.io" }  
+}  
+dependencies {  
+     implementation 'com.github.vincemann.spring-rapid:MODULE:1.0.0-SNAPSHOT'  
+}  
+```  
+  
 # Example  
 **This is the typical setup required to run a fully functional controller exposing crud enpoints for one entity:**  
 **Check out the rapid-demo module for a more complete example + tests!**  
@@ -122,7 +148,5 @@ public class ModuleServiceConfig  {
 }
 ```  
   
-## Installation  
-See 'Packages' section in this repo for maven dependencies tag and artifacts.  
 
 
