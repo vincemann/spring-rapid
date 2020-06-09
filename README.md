@@ -9,7 +9,7 @@ that requires only **a few lines of code**.
 The code needed for a working Controller handling multiple different Dto Types can be seen in the example section below.  
 Along with the Crud Module (Core) come many other modules building upon the core module, that can be plugged in when needed.  
   
-This project is inspired by **Spring-Lemon** which offers many good modules as well.  
+This project is inspired by [**Spring-Lemon**](https://github.com/naturalprogrammer/spring-lemon) which offers many good modules as well.  
 The packages, whos name starts with lemon are copied from spring-lemon, modified and integated to work together with rapid modules.  
 Any help with developement is greatly appreciated.  
 Feel free to use, download and modify any code you want.  
@@ -21,7 +21,7 @@ Feel free to use, download and modify any code you want.
 * Basic Exception to ApiError translation                                                            (lemon-exceptions)  
 * Dto-Mapping (support for different Dto's for each endpoint; diff request and response dto's)       (core)  
 * Uni- and Bidirectional relationship management for all crud opeartions                             (entity-relationship)  
-* Automatic resolving of ids in dtos referencing other entities and vice versa                       (entity-relationship)  
+* Resolving of ids in dtos referencing other entities and vice versa                       (entity-relationship)  
 * Testsupport for service and controller layer of rapid-core                                         (core-Test)  
 * SecurityProxy solution for applying Acl-based, plugin-like 
   rules that restrict access to service methods + automatic Acl setup                                 (Acl)            
