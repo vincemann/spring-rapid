@@ -3,48 +3,80 @@
     xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
+
     <groupId>com.github.vincemann</groupId>
     <artifactId>spring-rapid</artifactId>
-<!--    <version>${rapid.version}</version>-->
-    <version>1.0.0-SNAPSHOT</version>
+    <version>1.0.0-SNAPSHOT.1</version>
     <packaging>pom</packaging>
-
 
     <parent>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
         <version>2.2.1.RELEASE</version>
-        <relativePath /> <!-- lookup parent from repository -->
+        <relativePath />
     </parent>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <maven.compiler.source>11</maven.compiler.source>
         <maven.compiler.target>11</maven.compiler.target>
+
         <lemon.version>1.0.0.RC3</lemon.version>
-        <ez-compare.version>1.0.1-SNAPSHOT</ez-compare.version>
-<!--        <rapid.version>0.0.8</rapid.version>-->
+        <ez-compare.version>1.0.0-SNAPSHOT.1</ez-compare.version>
+        <lombok.version>1.18.8</lombok.version>
+        <javax.validation.version>2.0.1.Final</javax.validation.version>
+        <guava.version>28.2-jre</guava.version>
     </properties>
-
-
 
     <modules>
 <!--        lemon-->
+        <module>lemon-auth</module>
+        <module>lemon-exceptions</module>
+        <module>lemon-test</module>
         <module>lemon-demo</module>
-        <module>spring-lemon-auth</module>
-        <module>spring-lemon-exceptions</module>
 <!--         rapid-->
-        <module>rapid-demo</module>
-        <module>spring-rapid-core</module>
-        <module>spring-rapid-entity-relationship</module>
-        <module>spring-rapid-acl</module>
-        <module>spring-rapid-core-test</module>
-        <module>spring-rapid-commons</module>
-        <module>spring-lemon-test</module>
+        <module>core</module>
+        <module>entity-relationship</module>
+        <module>acl</module>
+        <module>commons</module>
+        <module>core-test</module>
+        <module>demo</module>
     </modules>
 
-
     <dependencies>
+
+        <dependency>
+            <groupId>org.projectlombok</groupId>
+            <artifactId>lombok</artifactId>
+            <version>${lombok.version}</version>
+            <scope>compile</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>javax.validation</groupId>
+            <artifactId>validation-api</artifactId>
+            <version>${javax.validation.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>com.google.guava</groupId>
+            <artifactId>guava</artifactId>
+            <version>${guava.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-simple</artifactId>
+            <version>2.0.0-alpha0</version>
+            <optional>true</optional>
+        </dependency>
+
+        <!-- Junit 5-->
+        <dependency>
+            <groupId>org.junit.jupiter</groupId>
+            <artifactId>junit-jupiter</artifactId>
+            <scope>provided</scope>
+        </dependency>
 
         <dependency>
             <groupId>org.springframework.boot</groupId>
@@ -58,12 +90,6 @@
             </exclusions>
         </dependency>
 
-        <dependency>
-            <groupId>org.projectlombok</groupId>
-            <artifactId>lombok</artifactId>
-            <version>1.18.8</version>
-            <scope>compile</scope>
-        </dependency>
 
         <dependency>
             <groupId>org.mockito</groupId>
@@ -79,44 +105,6 @@
             <scope>test</scope>
         </dependency>
 
-        <dependency>
-            <groupId>org.slf4j</groupId>
-            <artifactId>slf4j-simple</artifactId>
-            <version>2.0.0-alpha0</version>
-            <optional>true</optional>
-        </dependency>
-
-        <dependency>
-            <groupId>com.google.guava</groupId>
-            <artifactId>guava</artifactId>
-            <version>28.2-jre</version>
-        </dependency>
-
-        <!-- Junit 5-->
-        <dependency>
-            <groupId>org.junit.jupiter</groupId>
-            <artifactId>junit-jupiter</artifactId>
-            <scope>provided</scope>
-        </dependency>
-
-<!--        Validation-->
-<!--        <dependency>-->
-<!--            <groupId>org.hibernate.validator</groupId>-->
-<!--            <artifactId>hibernate-validator</artifactId>-->
-<!--            <version>6.0.2.Final</version>-->
-<!--        </dependency>-->
-<!--        <dependency>-->
-<!--            <groupId>org.hibernate.validator</groupId>-->
-<!--            <artifactId>hibernate-validator-annotation-processor</artifactId>-->
-<!--            <version>6.0.2.Final</version>-->
-<!--        </dependency>-->
-
-        <dependency>
-            <groupId>javax.validation</groupId>
-            <artifactId>validation-api</artifactId>
-            <version>2.0.1.Final</version>
-        </dependency>
-
     </dependencies>
 
     <repositories>
@@ -127,22 +115,6 @@
         </repository>
 
     </repositories>
-
-
-<!--    <distributionManagement>-->
-<!--        <repository>-->
-<!--            <id>github</id>-->
-<!--            <name>GitHub vincemann Apache Maven Packages</name>-->
-<!--            <url>https://maven.pkg.github.com/vincemann/spring-rapid</url>-->
-<!--        </repository>-->
-
-<!--        <snapshotRepository>-->
-<!--            <id>github</id>-->
-<!--            <name>GitHub vincemann Apache Maven Snapshots</name>-->
-<!--            <url>https://maven.pkg.github.com/vincemann/spring-rapid</url>-->
-<!--        </snapshotRepository>-->
-
-<!--    </distributionManagement>-->
 
 
     <build>
@@ -162,6 +134,7 @@
             </plugin>
 
 
+<!--            todo: fix-->
             <!--            <plugin>-->
 <!--                <groupId>org.apache.maven.plugins</groupId>-->
 <!--                <artifactId>maven-javadoc-plugin</artifactId>-->
@@ -180,10 +153,4 @@
 
         </plugins>
     </build>
-
-
-
-
-
-
 </project>

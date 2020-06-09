@@ -3,57 +3,45 @@
     xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <artifactId>rapid-demo</artifactId>
-    <packaging>jar</packaging>
-
-
+    <groupId>com.github.vincemann.spring-rapid</groupId>
+    <artifactId>demo</artifactId>
 
     <parent>
         <groupId>com.github.vincemann</groupId>
         <artifactId>spring-rapid</artifactId>
-        <version>1.0.0-SNAPSHOT</version>
+        <version>1.0.0-SNAPSHOT.1</version>
     </parent>
-
-
 
     <dependencies>
 
         <dependency>
-            <groupId>com.github.vincemann</groupId>
-            <artifactId>spring-rapid-core</artifactId>
+            <groupId>com.github.vincemann.spring-rapid</groupId>
+            <artifactId>core</artifactId>
             <version>${project.version}</version>
         </dependency>
 
         <dependency>
-            <groupId>com.github.vincemann</groupId>
-            <artifactId>spring-rapid-entity-relationship</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-
-<!--        Lemon Exceptions Module is better-->
-<!--        <dependency>-->
-<!--            <groupId>com.github.vincemann</groupId>-->
-<!--            <artifactId>spring-rapid-exceptions</artifactId>-->
-<!--            <version>${project.version}</version>-->
-<!--        </dependency>-->
-
-        <dependency>
-            <groupId>com.github.vincemann</groupId>
-            <artifactId>spring-lemon-exceptions</artifactId>
+            <groupId>com.github.vincemann.spring-rapid</groupId>
+            <artifactId>entity-relationship</artifactId>
             <version>${project.version}</version>
         </dependency>
 
         <dependency>
-            <groupId>com.github.vincemann</groupId>
-            <artifactId>spring-rapid-core-test</artifactId>
+            <groupId>com.github.vincemann.spring-rapid</groupId>
+            <artifactId>lemon-exceptions</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>com.github.vincemann.spring-rapid</groupId>
+            <artifactId>core-test</artifactId>
             <version>${project.version}</version>
             <scope>test</scope>
         </dependency>
 
-
         <dependency>
             <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-actuator</artifactId>
+            <artifactId>spring-boot-starter-web</artifactId>
         </dependency>
 
         <dependency>
@@ -73,31 +61,22 @@
 
         <dependency>
             <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-web</artifactId>
+            <artifactId>spring-boot-devtools</artifactId>
+            <optional>true</optional>
         </dependency>
 
         <dependency>
             <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-thymeleaf</artifactId>
+            <artifactId>spring-boot-starter-actuator</artifactId>
         </dependency>
 
         <dependency>
             <groupId>com.h2database</groupId>
             <artifactId>h2</artifactId>
+            <scope>runtime</scope>
         </dependency>
 
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-devtools</artifactId>
-            <optional>true</optional>
-        </dependency>
 
-        <!-- provided by core-->
-<!--        <dependency>-->
-<!--            <groupId>com.github.Hervian</groupId>-->
-<!--            <artifactId>safety-mirror</artifactId>-->
-<!--            <version>1.0.0</version>-->
-<!--        </dependency>-->
 
     </dependencies>
 
