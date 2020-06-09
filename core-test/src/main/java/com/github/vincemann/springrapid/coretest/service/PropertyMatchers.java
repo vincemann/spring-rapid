@@ -1,4 +1,4 @@
-package com.github.vincemann.springrapid.coretest.service.result.matcher;
+package com.github.vincemann.springrapid.coretest.service;
 
 import com.github.vincemann.springrapid.core.model.IdentifiableEntity;
 import com.github.vincemann.springrapid.coretest.service.result.matcher.property.PropertyMatcher;

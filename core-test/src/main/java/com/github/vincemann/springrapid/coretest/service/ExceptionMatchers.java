@@ -1,13 +1,13 @@
-package com.github.vincemann.springrapid.coretest.service.result.matcher;
+package com.github.vincemann.springrapid.coretest.service;
 
-import com.github.vincemann.springrapid.coretest.service.ServiceTestTemplate;
+import com.github.vincemann.springrapid.coretest.service.result.matcher.ServiceResultMatcher;
 import org.junit.jupiter.api.Assertions;
 
 public class ExceptionMatchers {
 
     public static ServiceResultMatcher exception(Class<? extends Exception> e){
         return () -> {
-            Exception raisedException = ServiceTestTemplate.getTestContext().getServiceResult().getRaisedException();
+            Exception raisedException = ServiceTestTemplate.getInstance().getContext().getServiceResult().getRaisedException();
             if(raisedException==null){
                 throw new AssertionError("No Exception thrown");
             }
@@ -20,7 +20,7 @@ public class ExceptionMatchers {
 
     public static ServiceResultMatcher exceptionCauseIs(Class<? extends Exception> e){
         return () -> {
-            Exception raisedException = ServiceTestTemplate.getTestContext().getServiceResult().getRaisedException();
+            Exception raisedException = ServiceTestTemplate.getInstance().getContext().getServiceResult().getRaisedException();
             if(raisedException==null){
                 throw new AssertionError("No Exception thrown");
             }
@@ -30,7 +30,7 @@ public class ExceptionMatchers {
 
     public static ServiceResultMatcher noException(){
         return () -> {
-            Exception raisedException = ServiceTestTemplate.getTestContext().getServiceResult().getRaisedException();
+            Exception raisedException = ServiceTestTemplate.getInstance().getContext().getServiceResult().getRaisedException();
             if(raisedException!=null){
                 throw new AssertionError("Exception was thrown: ",raisedException);
             }

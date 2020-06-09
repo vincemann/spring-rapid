@@ -1,6 +1,6 @@
 package com.github.vincemann.springrapid.coretest.slicing.test;
 
-import com.github.vincemann.springrapid.coretest.config.RapidCoreTestAutoConfiguration;
+import com.github.vincemann.springrapid.coretest.service.RapidServiceTestAutoConfiguration;
 import org.springframework.boot.autoconfigure.ImportAutoConfiguration;
 
 import java.lang.annotation.*;
@@ -10,7 +10,7 @@ import java.lang.annotation.*;
 @Documented
 @Inherited
 @ImportAutoConfiguration({
-        RapidCoreTestAutoConfiguration.class
+        RapidServiceTestAutoConfiguration.class
 })
 public @interface ImportRapidCoreTestConfig {
 }

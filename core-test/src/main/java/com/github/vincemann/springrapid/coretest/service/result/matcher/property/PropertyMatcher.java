@@ -2,6 +2,7 @@ package com.github.vincemann.springrapid.coretest.service.result.matcher.propert
 
 import com.github.hervian.reflection.Types;
 import com.github.vincemann.springrapid.core.model.IdentifiableEntity;
+import org.apache.commons.lang3.StringUtils;
 import org.junit.jupiter.api.Assertions;
 
 import java.lang.reflect.InvocationTargetException;
@@ -14,6 +15,7 @@ import java.util.Collection;
 public class PropertyMatcher {
     private Object compareRoot;
 
+    //todo add support for propertyname in string form instead of getter method ref
 
     public PropertyMatcher(IdentifiableEntity compareRoot) {
         this.compareRoot = compareRoot;
@@ -35,6 +37,7 @@ public class PropertyMatcher {
         Assertions.assertEquals(collectionSize,collection.size());
         return this;
     }
+
 
     private <T> T call(Types.Supplier<?> getter) {
         try {
