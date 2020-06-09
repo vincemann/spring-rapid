@@ -36,7 +36,7 @@ public class RapidEntityPlaceholderResolver implements EntityPlaceholderResolver
                     return (E) byId.get();
                 }
             case SERVICE_INPUT_ENTITY:
-                IdentifiableEntity firstEntity = findFirstEntityWithSetId(testContext.getServiceResult().getServiceRequest().getArgs());
+                IdentifiableEntity firstEntity = findFirstEntityWithSetId(testContext.getServiceRequest().getArgs());
                 if (firstEntity == null) {
                     throw new IllegalArgumentException("Could not find Service Input entity");
                 }
@@ -71,7 +71,7 @@ public class RapidEntityPlaceholderResolver implements EntityPlaceholderResolver
                 return returnedEntityId;
             }
         }
-        List<Object> args = testContext.getServiceResult().getServiceRequest().getArgs();
+        List<Object> args = testContext.getServiceRequest().getArgs();
         if (args != null) {
             IdentifiableEntity firstEntity = findFirstEntityWithSetId(args);
             if (firstEntity.getId() != null) {

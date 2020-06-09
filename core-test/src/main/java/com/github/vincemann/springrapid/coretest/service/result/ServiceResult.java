@@ -17,7 +17,6 @@ import lombok.*;
 public class ServiceResult {
     private Exception raisedException;
     private Object result;
-    private ServiceRequest serviceRequest;
 
     public boolean successful(){
         return raisedException==null;

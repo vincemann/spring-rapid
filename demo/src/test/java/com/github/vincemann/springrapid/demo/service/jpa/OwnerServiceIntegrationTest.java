@@ -26,12 +26,11 @@ import java.util.HashSet;
 import java.util.Optional;
 
 import static com.github.vincemann.ezcompare.Comparison.compare;
-import static com.github.vincemann.springrapid.coretest.config.GlobalEntityPlaceholderResolver.resolve;
 import static com.github.vincemann.springrapid.coretest.service.request.CrudServiceRequestBuilders.*;
 import static com.github.vincemann.springrapid.coretest.service.resolve.EntityPlaceholder.*;
-import static com.github.vincemann.springrapid.coretest.service.result.matcher.ExceptionMatchers.noException;
-import static com.github.vincemann.springrapid.coretest.service.result.matcher.ExistenceMatchers.notPresentInDatabase;
-import static com.github.vincemann.springrapid.coretest.service.result.matcher.PropertyMatchers.propertyAssert;
+import static com.github.vincemann.springrapid.coretest.service.ExceptionMatchers.noException;
+import static com.github.vincemann.springrapid.coretest.service.ExistenceMatchers.notPresentInDatabase;
+import static com.github.vincemann.springrapid.coretest.service.PropertyMatchers.propertyAssert;
 
 
 @EnableProjectComponentScan

@@ -2,11 +2,19 @@ package com.github.vincemann.springrapid.coretest.service;
 
 import com.github.vincemann.springrapid.core.model.IdentifiableEntity;
 import com.github.vincemann.springrapid.core.service.CrudService;
+import com.github.vincemann.springrapid.core.service.locator.CrudServiceLocator;
 import com.github.vincemann.springrapid.core.slicing.test.ImportRapidCoreServiceConfig;
 import com.github.vincemann.springrapid.coretest.InitializingTest;
+import com.github.vincemann.springrapid.coretest.service.request.ServiceRequestBuilder;
+import com.github.vincemann.springrapid.coretest.service.resolve.EntityPlaceholder;
+import com.github.vincemann.springrapid.coretest.service.resolve.EntityPlaceholderResolver;
 import com.github.vincemann.springrapid.coretest.slicing.test.ImportRapidCoreTestConfig;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.TestInfo;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,6 +29,8 @@ import org.springframework.transaction.annotation.Transactional;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import java.io.Serializable;
+
+import static com.github.vincemann.springrapid.coretest.util.RapidTestUtil.mustBePresentIn;
 
 
 @Slf4j
@@ -50,12 +60,14 @@ public abstract class CrudServiceIntegrationTest
     private ServiceTestTemplate testTemplate;
     private ApplicationContext applicationContext;
     private S serviceUnderTest;
+    private EntityPlaceholderResolver entityPlaceholderResolver;
+    private CrudServiceLocator crudServiceLocator;
+    private TestInfo currentTestInfo;
 
     @Autowired
     public void injectRepository(CrudRepository<E,Id> repository) {
         this.repository=repository;
     }
-
 
     @Override
     public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
@@ -64,11 +76,55 @@ public abstract class CrudServiceIntegrationTest
 
     @Override
     public void afterPropertiesSet() throws Exception {
-        testTemplate = new ServiceTestTemplate();
-        testTemplate.setEntityManager(entityManager);
-        testTemplate.setServiceUnderTest(serviceUnderTest);
-        testTemplate.setRepository(repository);
-        testTemplate.setApplicationContext(applicationContext);
+        testTemplate = ServiceTestTemplate.builder()
+                .serviceUnderTest(serviceUnderTest)
+                .applicationContext(applicationContext)
+                .entityManager(entityManager)
+                .repository(repository)
+                .build();
+    }
+
+    @Autowired
+    public void injectEntityPlaceholderResolver(EntityPlaceholderResolver entityPlaceholderResolver) {
+        this.entityPlaceholderResolver = entityPlaceholderResolver;
+    }
+
+    @Autowired
+    public void injectCrudServiceLocator(CrudServiceLocator crudServiceLocator) {
+        this.crudServiceLocator = crudServiceLocator;
+    }
+
+    @BeforeEach
+    public final void injectTestInfo(TestInfo testInfo){
+        testTemplate.setTestInfo(testInfo);
+        this.currentTestInfo=testInfo;
+    }
+
+    @AfterEach
+    public final void clearTestContext(TestInfo testInfo){
+        ServiceTestContextContainer.remove(testInfo);
+    }
+
+
+    public E byId(Id id){
+        return mustBePresentIn(getRepository(),id);
+    }
+
+    /**
+     * Uses {@link CrudServiceLocator} to find entity of type @param entityClass by @param id.
+     */
+    public <T extends IdentifiableEntity> T byId(Serializable id, Class<T> entityClass){
+        CrudService service = crudServiceLocator.find(entityClass);
+        return mustBePresentIn(service.getRepository(),id);
+    }
+
+
+    /**
+     * Only use in combination with {@link ServiceTestTemplate} and after calling {@link ServiceTestTemplate#perform(ServiceRequestBuilder)}.
+     * @see ServiceTestTemplate
+     */
+    public E resolve(EntityPlaceholder entityPlaceholder){
+        return entityPlaceholderResolver.resolve(entityPlaceholder,ServiceTestContextContainer.findTestContext(currentTestInfo));
     }
 
     @Autowired
