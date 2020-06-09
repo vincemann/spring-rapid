@@ -39,7 +39,7 @@ Feel free to use, download and modify any code you want.
 <dependency>  
     <groupId>com.github.vincemann.spring-rapid</groupId>  
     <artifactId>MODULE</artifactId>  
-    <version>1.0.0-SNAPSHOT</version>  
+    <version>1.0.0-SNAPSHOT.1</version>  
 </dependency>  
 ```  
 ### Gradle  
@@ -49,7 +49,7 @@ repositories {
     maven { url "https://jitpack.io" }  
 }  
 dependencies {  
-     implementation 'com.github.vincemann.spring-rapid:MODULE:1.0.0-SNAPSHOT'  
+     implementation 'com.github.vincemann.spring-rapid:MODULE:1.0.0-SNAPSHOT.1'  
 }  
 ```  
   
