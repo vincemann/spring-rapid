@@ -1,0 +1,33 @@
+package com.github.vincemann.springrapid.coretest.service.result;
+
+
+import com.github.vincemann.springrapid.core.service.CrudService;
+import com.github.vincemann.springrapid.coretest.service.request.ServiceRequest;
+import lombok.*;
+
+/**
+ * Represents the result of {@link CrudService} method in a test scenario.
+ * @see ServiceRequest
+ */
+@AllArgsConstructor
+@Getter
+@Setter
+@NoArgsConstructor
+@Builder
+public class ServiceResult {
+    private Exception raisedException;
+    private Object result;
+    private ServiceRequest serviceRequest;
+
+    public boolean successful(){
+        return raisedException==null;
+    }
+
+    public <T> T getResult(){
+        try {
+            return (T)result;
+        }catch (ClassCastException e) {
+            throw new IllegalArgumentException("Wrong Service Result Handler/Matcher chosen");
+        }
+    }
+}

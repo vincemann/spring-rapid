@@ -3,10 +3,10 @@
     xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>io.github.vincemann</groupId>
+    <groupId>com.github.vincemann</groupId>
     <artifactId>spring-rapid</artifactId>
 <!--    <version>${rapid.version}</version>-->
-    <version>0.0.93</version>
+    <version>1.0.0-SNAPSHOT</version>
     <packaging>pom</packaging>
 
 
@@ -22,7 +22,7 @@
         <maven.compiler.source>11</maven.compiler.source>
         <maven.compiler.target>11</maven.compiler.target>
         <lemon.version>1.0.0.RC3</lemon.version>
-        <ez-compare.version>1.1.0</ez-compare.version>
+        <ez-compare.version>1.0.1-SNAPSHOT</ez-compare.version>
 <!--        <rapid.version>0.0.8</rapid.version>-->
     </properties>
 
@@ -73,7 +73,7 @@
         </dependency>
 
         <dependency>
-            <groupId>io.github.vincemann</groupId>
+            <groupId>com.github.vincemann</groupId>
             <artifactId>ez-compare</artifactId>
             <version>${ez-compare.version}</version>
             <scope>test</scope>
@@ -129,20 +129,20 @@
     </repositories>
 
 
-    <distributionManagement>
-        <repository>
-            <id>github</id>
-            <name>GitHub vincemann Apache Maven Packages</name>
-            <url>https://maven.pkg.github.com/vincemann/spring-rapid</url>
-        </repository>
+<!--    <distributionManagement>-->
+<!--        <repository>-->
+<!--            <id>github</id>-->
+<!--            <name>GitHub vincemann Apache Maven Packages</name>-->
+<!--            <url>https://maven.pkg.github.com/vincemann/spring-rapid</url>-->
+<!--        </repository>-->
 
-        <snapshotRepository>
-            <id>github</id>
-            <name>GitHub vincemann Apache Maven Snapshots</name>
-            <url>https://maven.pkg.github.com/vincemann/spring-rapid</url>
-        </snapshotRepository>
+<!--        <snapshotRepository>-->
+<!--            <id>github</id>-->
+<!--            <name>GitHub vincemann Apache Maven Snapshots</name>-->
+<!--            <url>https://maven.pkg.github.com/vincemann/spring-rapid</url>-->
+<!--        </snapshotRepository>-->
 
-    </distributionManagement>
+<!--    </distributionManagement>-->
 
 
     <build>

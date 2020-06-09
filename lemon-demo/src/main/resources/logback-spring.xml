@@ -7,7 +7,7 @@
     <root level="INFO">
         <appender-ref ref="CONSOLE"/>
     </root>
-    <logger name="io.github.vincemann" level="DEBUG"/>
+    <logger name="com.github.vincemann" level="DEBUG"/>
     <logger name="com.naturalprogrammer.spring" level="DEBUG"/>
     <logger name="org.springframework.security.acls" level="DEBUG"/>
     <logger name="com.zaxxer.hikari" level="debug" additivity="false"/>
