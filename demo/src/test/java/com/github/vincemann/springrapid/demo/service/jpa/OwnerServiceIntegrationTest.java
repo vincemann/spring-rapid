@@ -1,6 +1,7 @@
 package com.github.vincemann.springrapid.demo.service.jpa;
 
 import com.github.vincemann.springrapid.commons.Lists;
+import com.github.vincemann.springrapid.commons.TestTypeInstances;
 import com.github.vincemann.springrapid.core.service.exception.BadEntityException;
 import com.github.vincemann.springrapid.core.service.exception.EntityNotFoundException;
 import com.github.vincemann.springrapid.coretest.service.CrudServiceIntegrationTest;
@@ -37,6 +38,8 @@ import static com.github.vincemann.springrapid.coretest.service.PropertyMatchers
 @ImportRapidEntityRelServiceConfig
 class OwnerServiceIntegrationTest
         extends CrudServiceIntegrationTest<OwnerService, Owner, Long> {
+    //Types
+    Owner OwnerType = TestTypeInstances.create();
 
     Owner ownerWithoutPets;
     Owner ownerWithOnePet;
@@ -84,23 +87,26 @@ class OwnerServiceIntegrationTest
 
     @Test
     public void saveOwnerWithoutPets_ShouldSucceed() {
-        ServiceResult serviceResult = getTestTemplate()
-                .perform(save(ownerWithoutPets))
-                .andExpect(() -> compare(ownerWithoutPets)
-                        .with(resolve(DB_ENTITY))
-                        .properties()
-                        .include(ownerWithoutPets::getTelephone)
-                        .include(ownerWithoutPets::getAddress)
-                        .assertEqual())
-                .andReturn();
+        ServiceResult serviceResult =
+                test(save(ownerWithoutPets))
+                        .andExpect(() -> compare(ownerWithoutPets)
+                                .with(resolve(DB_ENTITY))
+                                .properties()
+                                .include(OwnerType::getTelephone)
+                                .include(OwnerType::getAddress)
+                                .assertEqual())
+                        .andExpect(()-> propertyAssert(resolve(SERVICE_RETURNED_ENTITY))
+                                .shouldBeEmpty(OwnerType::getPets)
+                        )
+                        .andReturn();
         Assertions.assertEquals(0, ((Owner) serviceResult.getResult()).getPets().size());
     }
 
 
+
     @Test
     public void saveOwnerWithPet_ShouldSucceed() throws BadEntityException {
-        getTestTemplate()
-                .perform(save(ownerWithOnePet))
+        test(save(ownerWithOnePet))
                 .andDo(() -> compare(resolve(SERVICE_INPUT_ENTITY))
                         .with(resolve(DB_ENTITY))
                         .properties()
@@ -123,13 +129,12 @@ class OwnerServiceIntegrationTest
                 .pets(new HashSet<>(Lists.newArrayList(savedPet)))
                 .build();
 
-        getTestTemplate()
-                .perform(save(owner))
+        test(save(owner))
                 .andExpect(() -> compare(owner)
                         .with(resolve(SERVICE_RETURNED_ENTITY))
                         .properties()
                         .all()
-                        .ignore(owner::getId)
+                        .ignore(OwnerType::getId)
                         .assertEqual()
                 );
     }
@@ -144,11 +149,10 @@ class OwnerServiceIntegrationTest
         Owner toUpdate = getRepository().save(ownerWithoutPets);
         diffTelephoneNumberUpdate.setId(toUpdate.getId());
 
-        getTestTemplate()
-                .perform(partialUpdate(diffTelephoneNumberUpdate))
+        test(partialUpdate(diffTelephoneNumberUpdate))
                 .andExpect(() ->
                         propertyAssert(resolve(DB_ENTITY))
-                                .shouldMatch(toUpdate::getTelephone, newNumber)
+                                .shouldMatch(OwnerType::getTelephone, newNumber)
                 );
     }
 
@@ -182,10 +186,9 @@ class OwnerServiceIntegrationTest
         Owner saved = getRepository().save(owner);
         ownerUpdateRequest.setId(saved.getId());
 
-        getTestTemplate()
-                .perform(partialUpdate(ownerUpdateRequest))
+        test(partialUpdate(ownerUpdateRequest))
                 .andExpect(() -> propertyAssert(resolve(DB_ENTITY))
-                        .shouldMatchSize(ownerUpdateRequest::getPets, 2)
+                        .shouldMatchSize(OwnerType::getPets, 2)
                 );
     }
 
@@ -214,8 +217,7 @@ class OwnerServiceIntegrationTest
     @Test
     public void deleteOwner_shouldSucceed() {
         Owner savedOwner = getRepository().save(ownerWithOnePet);
-        getTestTemplate()
-                .perform(deleteById(savedOwner.getId()))
+        test(deleteById(savedOwner.getId()))
                 .andExpect(noException())
                 .andExpect(notPresentInDatabase(savedOwner.getId()));
     }

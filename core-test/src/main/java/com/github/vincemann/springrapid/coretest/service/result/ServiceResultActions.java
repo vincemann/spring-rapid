@@ -14,5 +14,7 @@ public interface ServiceResultActions {
 
     ServiceResultActions andDo(ServiceResultHandler handler);
 
+    ServiceResultActions andDo(ContextAwareResultHandler handler);
+
     ServiceResult andReturn();
 }

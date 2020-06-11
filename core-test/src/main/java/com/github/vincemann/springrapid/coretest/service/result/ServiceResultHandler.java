@@ -7,8 +7,5 @@ import com.github.vincemann.springrapid.coretest.service.ServiceTestTemplate;
  * {@link ServiceTestTemplate}.
  */
 public interface ServiceResultHandler {
-    /**
-     * Get {@link ServiceTestContext} via {@link ServiceTestTemplate#getContext()}
-     */
     void handle();
 }
