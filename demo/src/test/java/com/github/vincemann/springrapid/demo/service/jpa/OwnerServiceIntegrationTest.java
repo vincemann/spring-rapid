@@ -92,7 +92,8 @@ class OwnerServiceIntegrationTest
                         .andExpect(() -> compare(ownerWithoutPets)
                                 .with(resolve(DB_ENTITY))
                                 .properties()
-                                .include(OwnerType::getTelephone)
+                                //per instance or Type is both possible Owner::getAnything wont work
+                                .include(ownerWithoutPets::getTelephone)
                                 .include(OwnerType::getAddress)
                                 .assertEqual())
                         .andExpect(()-> propertyAssert(resolve(SERVICE_RETURNED_ENTITY))
@@ -111,6 +112,7 @@ class OwnerServiceIntegrationTest
                         .with(resolve(DB_ENTITY))
                         .properties()
                         .all()
+                        //ignoring/adding properties via their name as a string is also possible but not recommended
                         .ignore("id")
                         .assertEqual());
         Assertions.assertTrue(getRepository().existsById(ownerWithOnePet.getId()));
