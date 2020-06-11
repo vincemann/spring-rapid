@@ -2,7 +2,6 @@ package com.github.vincemann.springrapid.coretest.service.result.matcher.propert
 
 import com.github.hervian.reflection.Types;
 import com.github.vincemann.springrapid.core.model.IdentifiableEntity;
-import org.apache.commons.lang3.StringUtils;
 import org.junit.jupiter.api.Assertions;
 
 import java.lang.reflect.InvocationTargetException;
@@ -38,6 +37,10 @@ public class PropertyMatcher {
         return this;
     }
 
+
+    public PropertyMatcher shouldBeEmpty(Types.Supplier<?> getter) {
+        return shouldMatchSize(getter,0);
+    }
 
     private <T> T call(Types.Supplier<?> getter) {
         try {

@@ -1,4 +1,4 @@
-package com.github.vincemann.springrapid.coretest.service;
+package com.github.vincemann.springrapid.coretest.config;
 
 import com.github.vincemann.springrapid.core.config.CrudServiceLocatorAutoConfiguration;
 import com.github.vincemann.springrapid.core.service.locator.CrudServiceLocator;

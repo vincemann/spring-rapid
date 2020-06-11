@@ -1,13 +1,13 @@
 package com.github.vincemann.springrapid.coretest.service;
 
-import com.github.vincemann.springrapid.coretest.service.result.matcher.ServiceResultMatcher;
+import com.github.vincemann.springrapid.coretest.service.result.ContextAwareServiceResultMatcher;
 import org.junit.jupiter.api.Assertions;
 
 public class ExceptionMatchers {
 
-    public static ServiceResultMatcher exception(Class<? extends Exception> e){
-        return () -> {
-            Exception raisedException = ServiceTestTemplate.getInstance().getContext().getServiceResult().getRaisedException();
+    public static ContextAwareServiceResultMatcher exception(Class<? extends Exception> e){
+        return (testContext) -> {
+            Exception raisedException = testContext.getServiceResult().getRaisedException();
             if(raisedException==null){
                 throw new AssertionError("No Exception thrown");
             }
@@ -18,9 +18,9 @@ public class ExceptionMatchers {
         };
     }
 
-    public static ServiceResultMatcher exceptionCauseIs(Class<? extends Exception> e){
-        return () -> {
-            Exception raisedException = ServiceTestTemplate.getInstance().getContext().getServiceResult().getRaisedException();
+    public static ContextAwareServiceResultMatcher exceptionCauseIs(Class<? extends Exception> e){
+        return (testContext) -> {
+            Exception raisedException = testContext.getServiceResult().getRaisedException();
             if(raisedException==null){
                 throw new AssertionError("No Exception thrown");
             }
@@ -28,9 +28,9 @@ public class ExceptionMatchers {
         };
     }
 
-    public static ServiceResultMatcher noException(){
-        return () -> {
-            Exception raisedException = ServiceTestTemplate.getInstance().getContext().getServiceResult().getRaisedException();
+    public static ContextAwareServiceResultMatcher noException(){
+        return (testContext) -> {
+            Exception raisedException = testContext.getServiceResult().getRaisedException();
             if(raisedException!=null){
                 throw new AssertionError("Exception was thrown: ",raisedException);
             }

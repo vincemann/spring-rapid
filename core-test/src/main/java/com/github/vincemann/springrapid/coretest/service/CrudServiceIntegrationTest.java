@@ -8,6 +8,7 @@ import com.github.vincemann.springrapid.coretest.InitializingTest;
 import com.github.vincemann.springrapid.coretest.service.request.ServiceRequestBuilder;
 import com.github.vincemann.springrapid.coretest.service.resolve.EntityPlaceholder;
 import com.github.vincemann.springrapid.coretest.service.resolve.EntityPlaceholderResolver;
+import com.github.vincemann.springrapid.coretest.service.result.ServiceResultActions;
 import com.github.vincemann.springrapid.coretest.slicing.test.ImportRapidCoreTestConfig;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
@@ -34,7 +35,6 @@ import static com.github.vincemann.springrapid.coretest.util.RapidTestUtil.mustB
 
 
 @Slf4j
-@Getter
 //only include project beans that are relevant for service tests
 @ActiveProfiles(value = {"test","service","serviceTest"})
 @Transactional
@@ -55,14 +55,16 @@ public abstract class CrudServiceIntegrationTest
 
     private CrudRepository<E,Id> repository;
 
+    @Getter
     @PersistenceContext
     private EntityManager entityManager;
     private ServiceTestTemplate testTemplate;
+    @Getter
     private ApplicationContext applicationContext;
+    @Getter
     private S serviceUnderTest;
     private EntityPlaceholderResolver entityPlaceholderResolver;
     private CrudServiceLocator crudServiceLocator;
-    private TestInfo currentTestInfo;
 
     @Autowired
     public void injectRepository(CrudRepository<E,Id> repository) {
@@ -94,20 +96,18 @@ public abstract class CrudServiceIntegrationTest
         this.crudServiceLocator = crudServiceLocator;
     }
 
-    @BeforeEach
-    public final void injectTestInfo(TestInfo testInfo){
-        testTemplate.setTestInfo(testInfo);
-        this.currentTestInfo=testInfo;
+    public ServiceResultActions test(ServiceRequestBuilder serviceRequestBuilder){
+        return testTemplate.perform(serviceRequestBuilder);
     }
 
     @AfterEach
-    public final void clearTestContext(TestInfo testInfo){
-        ServiceTestContextContainer.remove(testInfo);
+    public final void resetTestContext(){
+        this.testTemplate.reset();
     }
 
 
     public E byId(Id id){
-        return mustBePresentIn(getRepository(),id);
+        return mustBePresentIn(getServiceUnderTest().getRepository(),id);
     }
 
     /**
@@ -124,7 +124,11 @@ public abstract class CrudServiceIntegrationTest
      * @see ServiceTestTemplate
      */
     public E resolve(EntityPlaceholder entityPlaceholder){
-        return entityPlaceholderResolver.resolve(entityPlaceholder,ServiceTestContextContainer.findTestContext(currentTestInfo));
+        return entityPlaceholderResolver.resolve(entityPlaceholder,testTemplate.getTestContext());
+    }
+
+    public <R extends CrudRepository<E,Id>> R getRepository(){
+        return (R) serviceUnderTest.getRepository();
     }
 
     @Autowired

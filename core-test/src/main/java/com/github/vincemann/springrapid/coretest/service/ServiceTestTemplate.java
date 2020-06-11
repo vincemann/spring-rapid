@@ -7,6 +7,7 @@ import com.github.vincemann.springrapid.coretest.service.result.*;
 import com.github.vincemann.springrapid.coretest.service.result.matcher.ServiceResultMatcher;
 import lombok.AccessLevel;
 import lombok.Builder;
+import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.TestInfo;
 import org.springframework.context.ApplicationContext;
@@ -21,10 +22,9 @@ import java.lang.reflect.InvocationTargetException;
  * Template similar to {@link org.springframework.test.web.servlet.MockMvc}, but build for testing of service layer ({@link CrudService}).
  * With this template you can build the test, that shall be executed against a {@link CrudService} in a fluent-API like manner.
  *
- * Creates a stateful {@link ServiceTestContext} that can be queried after test is {@link this#perform(ServiceRequestBuilder)}ed.
+ * Creates a stateful {@link this#getTestContext()} that can be queried after test is {@link this#perform(ServiceRequestBuilder)}ed.
  * Other test-support framework-components make use of this context and can therefor only be used after a service test is performed.
  *
- * Because of the static stateful context, Parallel Tests are not supported!
  */
 @Slf4j
 public class ServiceTestTemplate
@@ -33,7 +33,8 @@ public class ServiceTestTemplate
     private CrudService serviceUnderTest;
     private CrudRepository repository;
     private ApplicationContext applicationContext;
-    private TestInfo testInfo;
+    @Getter
+    private ServiceTestContext testContext;
 
 
     //    private List<EntityServiceResultMatcher<E>> defaultEntityServiceResultMatchers;
@@ -41,12 +42,11 @@ public class ServiceTestTemplate
 //    private List<ServiceResultHandler> defaultServiceResultHandler;
 
     @Builder(access = AccessLevel.PROTECTED)
-    protected ServiceTestTemplate(EntityManager entityManager, CrudService serviceUnderTest, CrudRepository repository, ApplicationContext applicationContext, TestInfo testInfo) {
+    protected ServiceTestTemplate(EntityManager entityManager, CrudService serviceUnderTest, CrudRepository repository, ApplicationContext applicationContext) {
         this.entityManager = entityManager;
         this.serviceUnderTest = serviceUnderTest;
         this.repository = repository;
         this.applicationContext = applicationContext;
-        this.testInfo = testInfo;
     }
 
 
@@ -54,13 +54,12 @@ public class ServiceTestTemplate
         ServiceRequest serviceRequest = serviceRequestBuilder.create(serviceUnderTest);
         serviceRequest.setService(serviceUnderTest);
         ServiceResult serviceResult = execute(serviceRequest);
-        ServiceTestContext testContext = ServiceTestContext.builder()
+        testContext = ServiceTestContext.builder()
                 .applicationContext(applicationContext)
                 .repository(repository)
                 .serviceRequest(serviceRequest)
                 .serviceResult(serviceResult)
                 .build();
-        ServiceTestContextContainer.register(testInfo,testContext);
         entityManager.flush();
         if (serviceResult.getRaisedException() != null) {
             log.warn("Service threw exception, this might have been wanted. Stacktrace: ");
@@ -70,13 +69,8 @@ public class ServiceTestTemplate
         return new ServiceResultActions() {
 
             @Override
-            public ServiceResultActions andExpect(ContextAwareServiceResultMatcher matcher) {
-                return null;
-            }
-
-            @Override
-            public ServiceResultActions andExpect(ServiceResultMatcher matcher) {
-                matcher.match();
+            public ServiceResultActions andDo(ContextAwareResultHandler handler) {
+                handler.handle(testContext);
                 return this;
             }
 
@@ -87,10 +81,26 @@ public class ServiceTestTemplate
             }
 
             @Override
+            public ServiceResultActions andExpect(ContextAwareServiceResultMatcher matcher) {
+                matcher.match(testContext);
+                return this;
+            }
+
+            @Override
+            public ServiceResultActions andExpect(ServiceResultMatcher matcher) {
+                matcher.match();
+                return this;
+            }
+
+            @Override
             public ServiceResult andReturn() {
                 return serviceResult;
             }
         };
+    }
+
+    protected void reset(){
+        this.testContext=null;
     }
 
     private ServiceResult execute(ServiceRequest serviceRequest) {
@@ -123,6 +133,7 @@ public class ServiceTestTemplate
         }
     }
 
+
     protected EntityManager getEntityManager() {
         return entityManager;
     }
@@ -153,13 +164,5 @@ public class ServiceTestTemplate
 
     protected void setApplicationContext(ApplicationContext applicationContext) {
         this.applicationContext = applicationContext;
-    }
-
-    protected TestInfo getTestInfo() {
-        return testInfo;
-    }
-
-    protected void setTestInfo(TestInfo testInfo) {
-        this.testInfo = testInfo;
     }
 }

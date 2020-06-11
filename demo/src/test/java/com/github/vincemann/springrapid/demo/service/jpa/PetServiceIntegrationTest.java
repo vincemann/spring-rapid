@@ -21,18 +21,17 @@ import static com.github.vincemann.springrapid.coretest.service.request.CrudServ
 @EnableProjectComponentScan
 @ImportRapidEntityRelServiceConfig
 class PetServiceIntegrationTest
-        extends CrudServiceIntegrationTest<PetService,Pet,Long> {
+        extends CrudServiceIntegrationTest<PetService, Pet, Long> {
 
     @Autowired
     private PetTypeService petTypeService;
     private PetType dogPetType;
 
 
-
     @BeforeEach
     public void setUp() throws Exception {
         super.setup();
-        this.dogPetType= petTypeService.save(new PetType("Dog"));
+        this.dogPetType = petTypeService.save(new PetType("Dog"));
     }
 
     @Test
@@ -42,8 +41,8 @@ class PetServiceIntegrationTest
                 .birthDate(LocalDate.now())
                 .name("bello")
                 .build();
-        getTestTemplate()
-                .perform(save(dogWithDogType))
+
+        test(save(dogWithDogType))
                 .andExpect(() -> compare(dogWithDogType)
                         .with(resolve(EntityPlaceholder.DB_ENTITY))
                         .properties()
