@@ -39,7 +39,7 @@ import static com.github.vincemann.springrapid.coretest.service.PropertyMatchers
 class OwnerServiceIntegrationTest
         extends CrudServiceIntegrationTest<OwnerService, Owner, Long> {
     //Types
-    Owner OwnerType = TestTypeInstances.create();
+    Owner OwnerType = TestTypeInstances.create(Owner.class);
 
     Owner ownerWithoutPets;
     Owner ownerWithOnePet;
