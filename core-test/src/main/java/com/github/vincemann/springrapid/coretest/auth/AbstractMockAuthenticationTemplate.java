@@ -1,7 +1,9 @@
 package com.github.vincemann.springrapid.coretest.auth;
 
+import com.github.vincemann.springrapid.core.controller.rapid.CurrentUserIdProvider;
 import com.github.vincemann.springrapid.coretest.BeforeEachMethodInitializable;
 import org.mockito.Mockito;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -13,10 +15,12 @@ public abstract class AbstractMockAuthenticationTemplate implements MockAuthenti
 
     private Authentication authenticationMock;
     private SecurityContext securityContextMock;
+    private CurrentUserIdProvider currentUserIdProviderMock;
 
     private boolean mocked;
     private SecurityContext realSecurityContext;
     private Authentication realAuthentication;
+    private CurrentUserIdProvider realCurrentUserIdProvider;
 
 
     @Override
@@ -30,6 +34,10 @@ public abstract class AbstractMockAuthenticationTemplate implements MockAuthenti
         setUpAuthMocks();
     }
 
+    @Autowired
+    public void injectCurrentUserIdProviderMock(CurrentUserIdProvider currentUserIdProviderMock) {
+        this.realCurrentUserIdProvider = currentUserIdProviderMock;
+    }
 
     public void setUpAuthMocks() {
         realSecurityContext = SecurityContextHolder.getContext()==null
@@ -44,6 +52,7 @@ public abstract class AbstractMockAuthenticationTemplate implements MockAuthenti
         authenticationMock = Mockito.spy(Authentication.class);
         // Mockito.whens() for your authorization object
         securityContextMock = Mockito.spy(SecurityContext.class);
+        currentUserIdProviderMock=Mockito.spy(CurrentUserIdProvider.class);
         mocked =true;
     }
 
