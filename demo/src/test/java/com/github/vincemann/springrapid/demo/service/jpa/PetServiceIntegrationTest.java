@@ -15,7 +15,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import java.time.LocalDate;
 
-import static com.github.vincemann.ezcompare.Comparison.compare;
+import static com.github.vincemann.ezcompare.Comparator.compare;
 import static com.github.vincemann.springrapid.coretest.service.request.CrudServiceRequestBuilders.save;
 
 @EnableProjectComponentScan

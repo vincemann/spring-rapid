@@ -5,6 +5,7 @@ import com.github.vincemann.springrapid.demo.model.abs.Person;
 import com.github.vincemann.springrapid.core.model.IdentifiableEntityImpl;
 import com.github.vincemann.springrapid.entityrelationship.model.biDir.child.BiDirChildCollection;
 import com.github.vincemann.springrapid.entityrelationship.model.biDir.parent.BiDirParent;
+import com.github.vincemann.springrapid.entityrelationship.model.uniDir.parent.UniDirParent;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;

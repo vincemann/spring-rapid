@@ -1,4 +1,4 @@
-package com.github.vincemann.springrapid.core.controller.dtoMapper.locate;
+package com.github.vincemann.springrapid.core.controller.rapid;
 
 import com.github.vincemann.springrapid.core.controller.dtoMapper.context.DtoMappingContext;
 import com.github.vincemann.springrapid.core.controller.dtoMapper.context.DtoMappingInfo;

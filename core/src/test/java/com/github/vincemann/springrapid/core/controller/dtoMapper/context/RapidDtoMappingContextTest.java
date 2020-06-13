@@ -1,5 +1,7 @@
 package com.github.vincemann.springrapid.core.controller.dtoMapper.context;
 
+import com.github.vincemann.springrapid.core.controller.rapid.DtoClassLocator;
+import com.github.vincemann.springrapid.core.controller.rapid.RapidDtoClassLocator;
 import com.github.vincemann.springrapid.core.model.IdentifiableEntityImpl;
 import com.github.vincemann.springrapid.commons.Lists;
 import org.junit.jupiter.api.Assertions;
@@ -21,6 +23,8 @@ class RapidDtoMappingContextTest {
     String adminRole = "ROLE_ADMIN";
     String peekRole = "ROLE_PEEK_DETAILED_USER_INFO";
     DtoMappingInfo updateInfo;
+    
+    DtoClassLocator locator;
 
 
     class PrivilegedFindDto extends IdentifiableEntityImpl<Long> {
@@ -45,6 +49,7 @@ class RapidDtoMappingContextTest {
 
     @BeforeEach
     void setUp() {
+        locator = new RapidDtoClassLocator();
         roles = Lists.newArrayList(userRole,peekRole);
         context = DtoMappingContextBuilder.builder()
                 .withRoles(roles.toArray(new String[0]))
@@ -86,7 +91,7 @@ class RapidDtoMappingContextTest {
     void findCreateEntryWithoutRoles_shouldFind() throws InvocationTargetException, NoSuchMethodException, InstantiationException, IllegalAccessException {
         //when
         createInfo.setAuthorities(new ArrayList<>());
-        Class<?> foundClass = context.find(createInfo);
+        Class<?> foundClass = locator.find(createInfo,context);
         //then
         Assertions.assertEquals(CreateDto.class,foundClass);
     }
@@ -95,7 +100,7 @@ class RapidDtoMappingContextTest {
     void findCreateEntryWithRoles_shouldFindAndSilentIgnoreRoles() throws InvocationTargetException, NoSuchMethodException, InstantiationException, IllegalAccessException {
         //when
         createInfo.setAuthorities(roles);
-        Class<?> foundClass = context.find(createInfo);
+        Class<?> foundClass = locator.find(createInfo,context);
         //then
         Assertions.assertEquals(CreateDto.class,foundClass);
     }
@@ -104,7 +109,7 @@ class RapidDtoMappingContextTest {
     void findFindEntryWithRoles_shouldFindPrivEntry() throws InvocationTargetException, NoSuchMethodException, InstantiationException, IllegalAccessException {
         //when
         findInfo.setAuthorities(roles);
-        Class<?> foundClass = context.find(findInfo);
+        Class<?> foundClass = locator.find(findInfo,context);
         //then
         Assertions.assertEquals(PrivilegedFindDto.class,foundClass);
     }
@@ -112,7 +117,7 @@ class RapidDtoMappingContextTest {
     @Test
     void findFindEntryWithoutRoles_shouldFindLessPrivEntry() throws InvocationTargetException, NoSuchMethodException, InstantiationException, IllegalAccessException {
         findInfo.setAuthorities(new ArrayList<>());
-        Class<?> foundClass = context.find(findInfo);
+        Class<?> foundClass = locator.find(findInfo,context);
         //then
         Assertions.assertEquals(LessPrivilegedFindDto.class,foundClass);
     }
@@ -120,7 +125,7 @@ class RapidDtoMappingContextTest {
     @Test
     void findOnlyAdminEntryWithoutRoles_shouldNotFind() throws InvocationTargetException, NoSuchMethodException, InstantiationException, IllegalAccessException {
         findAllInfo.setAuthorities(new ArrayList<>());
-        Assertions.assertThrows(IllegalArgumentException.class,()-> context.find(findAllInfo));
+        Assertions.assertThrows(IllegalArgumentException.class,()-> locator.find(findAllInfo,context));
     }
 
     @Test
@@ -128,7 +133,7 @@ class RapidDtoMappingContextTest {
         ArrayList<String> moreRoles = Lists.newArrayList(roles);
         moreRoles.add("NEW_FANCY_ROLE");
         findAllInfo.setAuthorities(moreRoles);
-        Class<?> foundClass = context.find(findAllInfo);
+        Class<?> foundClass = locator.find(findAllInfo,context);
         Assertions.assertEquals(PrivilegedFindDto.class,foundClass);
     }
 
@@ -137,7 +142,7 @@ class RapidDtoMappingContextTest {
         ArrayList<String> lessRoles = Lists.newArrayList(roles);
         lessRoles.remove(0);
         findInfo.setAuthorities(lessRoles);
-        Class<?> foundClass = context.find(findInfo);
+        Class<?> foundClass = locator.find(findInfo,context);
         Assertions.assertEquals(LessPrivilegedFindDto.class,foundClass);
     }
 
@@ -148,7 +153,7 @@ class RapidDtoMappingContextTest {
                 .direction(Direction.REQUEST)
                 .endpoint(RapidDtoEndpoint.FIND)
                 .build();
-        Assertions.assertThrows(IllegalArgumentException.class,()-> context.find(unknown));
+        Assertions.assertThrows(IllegalArgumentException.class,()-> locator.find(unknown,context));
     }
 
     @Test
@@ -157,7 +162,7 @@ class RapidDtoMappingContextTest {
         wrongRoles.remove(roles.size()-1);
         wrongRoles.add("WRONG_ROLE");
         findInfo.setAuthorities(wrongRoles);
-        Class<?> foundClass = context.find(findInfo);
+        Class<?> foundClass = locator.find(findInfo,context);
         Assertions.assertEquals(LessPrivilegedFindDto.class,foundClass);
     }
 
@@ -165,7 +170,7 @@ class RapidDtoMappingContextTest {
     public void adminUpdatesOwn(){
         updateInfo.setAuthorities(Lists.newArrayList(adminRole));
         updateInfo.setPrincipal(DtoMappingInfo.Principal.OWN);
-        Class<?> foundClass = context.find(updateInfo);
+        Class<?> foundClass = locator.find(updateInfo,context);
         Assertions.assertEquals(AdminUpdateOwnDto.class,foundClass);
     }
 
@@ -173,7 +178,7 @@ class RapidDtoMappingContextTest {
     public void adminUpdatesForeign(){
         updateInfo.setAuthorities(Lists.newArrayList(adminRole));
         updateInfo.setPrincipal(DtoMappingInfo.Principal.FOREIGN);
-        Class<?> foundClass = context.find(updateInfo);
+        Class<?> foundClass = locator.find(updateInfo,context);
         Assertions.assertEquals(AdminUpdateForeignUserDto.class,foundClass);
     }
 
