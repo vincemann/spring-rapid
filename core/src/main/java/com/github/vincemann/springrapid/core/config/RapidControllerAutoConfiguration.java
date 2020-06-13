@@ -1,7 +1,7 @@
 package com.github.vincemann.springrapid.core.config;
 
-import com.github.vincemann.springrapid.core.controller.NullCurrentUserIdProvider;
-import com.github.vincemann.springrapid.core.controller.rapid.CurrentUserIdProvider;
+import com.github.vincemann.springrapid.core.controller.owner.DelegatingOwnerLocator;
+import com.github.vincemann.springrapid.core.controller.owner.OwnerLocator;
 import com.github.vincemann.springrapid.core.controller.rapid.EndpointsExposureContext;
 import com.github.vincemann.springrapid.core.controller.rapid.idFetchingStrategy.IdFetchingStrategy;
 import com.github.vincemann.springrapid.core.controller.rapid.idFetchingStrategy.LongUrlParamIdFetchingStrategy;
@@ -21,6 +21,8 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Scope;
 import org.springframework.validation.beanvalidation.LocalValidatorFactoryBean;
 import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping;
+
+import java.util.List;
 
 @SuppressWarnings("rawtypes")
 @AutoConfigureAfter(DtoMapperAutoConfiguration.class)
@@ -47,14 +49,12 @@ public class RapidControllerAutoConfiguration {
         return new MergeUpdateStrategyImpl();
     }
 
-    /**
-     * Define CurrentUserId Provider to use the Principal Feature in {@link com.github.vincemann.springrapid.core.controller.rapid.RapidController}
-     * @see: @{@link com.github.vincemann.springrapid.core.controller.dtoMapper.context.DtoMappingInfo.Principal}
-     */
     @Bean
-    @ConditionalOnMissingBean(CurrentUserIdProvider.class)
-    public CurrentUserIdProvider nullCurrentUserIdProvider(){
-        return new NullCurrentUserIdProvider();
+    @ConditionalOnMissingBean(name = "delegatingOwnerLocator")
+    public DelegatingOwnerLocator delegatingOwnerLocator(List<OwnerLocator> locators){
+        DelegatingOwnerLocator delegatingLocator = new DelegatingOwnerLocator();
+        locators.forEach(delegatingLocator::register);
+        return delegatingLocator;
     }
 
 

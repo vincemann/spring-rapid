@@ -95,7 +95,7 @@ public abstract class ParentAwareRapidController
             Set<E> children = getService().findAllOfParent(id);
             Collection<Object> dtos = new HashSet<>();
             for (E e : children) {
-                Class<?> dtoClass = findDtoClass(ParentAwareDtoEndpoint.FIND_ALL_OF_PARENT, Direction.RESPONSE, null);
+                Class<?> dtoClass = createDtoClass(ParentAwareDtoEndpoint.FIND_ALL_OF_PARENT, Direction.RESPONSE, null);
                 dtos.add(getDtoMapper().mapToDto(e, dtoClass));
             }
             String json = getJsonMapper().writeValueAsString(dtos);
