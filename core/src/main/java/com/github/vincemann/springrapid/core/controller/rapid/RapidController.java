@@ -369,8 +369,8 @@ public abstract class RapidController
         log.debug("patchString: " + patchString);
         Id id = idIdFetchingStrategy.fetchId(request);
         Optional<E> savedOptional = getUnsecuredService().findById(id);
+        RapidUtils.checkPresent(savedOptional, id, getEntityClass());
         E saved = savedOptional.get();
-        RapidUtils.checkPresent(saved, id, getEntityClass());
         Class<?> dtoClass = createDtoClass(RapidDtoEndpoint.UPDATE, Direction.REQUEST, saved);
         beforeUpdate(dtoClass, id, patchString, request, response);
 
