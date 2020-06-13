@@ -14,7 +14,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.BeforeEach;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
-import com.github.vincemann.springrapid.coretest.controller.MvcControllerTest;
+import com.github.vincemann.springrapid.coretest.controller.AutoMockMvcControllerTest;
 
 import java.io.Serializable;
 import java.lang.reflect.ParameterizedType;
@@ -28,7 +28,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.
  * Offers basic crud methods to interact with controller and convenience methods to use Controllers {@link ObjectMapper} to
  * {@link this#serialize(Object)} and {@link this#deserialize(String, JavaType)} raw JSON Strings.
  *
- * @see MvcControllerTest
+ * @see AutoMockMvcControllerTest
  *
  * @param <S>  Service Type used by Controller
  * @param <E>  EntityType managed by Service
@@ -41,7 +41,7 @@ public abstract class AbstractMvcRapidControllerTest
         <S extends CrudService<E,Id,?>
         ,E extends IdentifiableEntity<Id>,
         Id extends Serializable>
-        extends MvcControllerTest implements MvcRapidControllerTest<S,E,Id>
+        extends AutoMockMvcControllerTest implements MvcRapidControllerTest<S,E,Id>
 {
     private Class<E> entityClass = (Class<E>) ((ParameterizedType) this.getClass().getGenericSuperclass()).getActualTypeArguments()[1];
     private DtoMappingContext dtoMappingContext;

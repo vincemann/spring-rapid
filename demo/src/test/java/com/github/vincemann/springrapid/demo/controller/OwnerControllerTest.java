@@ -1,19 +1,23 @@
-package com.github.vincemann.springrapid.demo.controllers;
+package com.github.vincemann.springrapid.demo.controller;
 
 
 import com.github.vincemann.springrapid.core.service.locator.CrudServiceLocator;
 import com.github.vincemann.springrapid.core.util.ResourceUtils;
+import com.github.vincemann.springrapid.coretest.auth.RapidMockAuthenticationTemplate;
 import com.github.vincemann.springrapid.coretest.controller.rapid.AbstractUrlParamIdRapidControllerTest;
 import com.github.vincemann.springrapid.demo.dtos.owner.CreateOwnerDto;
-import com.github.vincemann.springrapid.demo.dtos.owner.ReadOwnerDto;
+import com.github.vincemann.springrapid.demo.dtos.owner.ReadForeignOwnerDto;
+import com.github.vincemann.springrapid.demo.dtos.owner.ReadOwnOwnerDto;
 import com.github.vincemann.springrapid.demo.model.Owner;
 import com.github.vincemann.springrapid.demo.model.Pet;
 import com.github.vincemann.springrapid.demo.service.OwnerService;
 import com.github.vincemann.springrapid.demo.service.PetService;
+import com.google.common.collect.Sets;
 import org.apache.commons.beanutils.BeanUtilsBean;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.core.io.Resource;
@@ -31,7 +35,8 @@ class OwnerControllerTest
         extends AbstractUrlParamIdRapidControllerTest<OwnerService, Owner, Long> {
 
     CreateOwnerDto createOwnerDto;
-    ReadOwnerDto readOwnerDto;
+    ReadForeignOwnerDto readForeignOwnerDto;
+    ReadOwnOwnerDto readOwnOwnerDto;
     Owner owner;
 
     @MockBean
@@ -42,9 +47,18 @@ class OwnerControllerTest
     @MockBean
     CrudServiceLocator crudServiceLocator;
 
+
+
+    @Autowired
+    RapidMockAuthenticationTemplate mockAuthenticationTemplate;
+
     String addressPatch;
     String blankCityPatch;
     String addPetPatch;
+
+
+
+
 
     @Value("classpath:/update-owner/patch-address.json")
     public void setAddressPatch(Resource patch) throws IOException {
@@ -79,13 +93,23 @@ class OwnerControllerTest
                 .telephone(telephone)
                 .build();
 
-        readOwnerDto = ReadOwnerDto.builder()
+        readForeignOwnerDto = ReadForeignOwnerDto.builder()
                 .address(address)
                 .city(city)
                 .telephone(telephone)
                 .petIds(new HashSet<>())
                 .build();
-        readOwnerDto.setId(id);
+        readForeignOwnerDto.setId(id);
+
+        readOwnOwnerDto = ReadOwnOwnerDto.Builder()
+                .address(address)
+                .city(city)
+                .telephone(telephone)
+                .petIds(new HashSet<>())
+                .build();
+        readOwnOwnerDto.setId(id);
+        readOwnOwnerDto.setDirtySecret(ReadOwnOwnerDto.DIRTY_SECRET);
+
 
         owner = Owner.builder()
                 .firstName(firstName)
@@ -99,8 +123,8 @@ class OwnerControllerTest
     }
 
     @Test
-    public void create_shouldSucceed() throws Exception {
-        String readOwnerDtoJson = serialize(readOwnerDto);
+    public void create() throws Exception {
+        String readOwnerDtoJson = serialize(readForeignOwnerDto);
         when(ownerService.save(refEq(owner, "id"))).thenReturn(owner);
 
         getMockMvc().perform(create(createOwnerDto))
@@ -112,7 +136,7 @@ class OwnerControllerTest
 
 
     @Test
-    public void delete_shouldSucceed() throws Exception {
+    public void delete() throws Exception {
         getMockMvc().perform(delete(owner.getId()))
                 .andExpect(status().isOk());
         Mockito.verify(ownerService).deleteById(owner.getId());
@@ -120,9 +144,9 @@ class OwnerControllerTest
 
 
     @Test
-    public void findById_shouldSucceed() throws Exception {
+    public void findForeignById() throws Exception {
         when(ownerService.findById(owner.getId())).thenReturn(Optional.of(owner));
-        String readDtoJson = serialize(readOwnerDto);
+        String readDtoJson = serialize(readForeignOwnerDto);
 
         getMockMvc().perform(find(owner.getId()))
                 .andExpect(status().isOk())
@@ -131,7 +155,21 @@ class OwnerControllerTest
     }
 
     @Test
-    public void update_address_shouldSucceed() throws Exception {
+    public void findOwnById() throws Exception {
+        //see OwnerOwnerLocator
+        mockAuthenticationTemplate.mockAs(owner.getLastName(),"myPass", Sets.newHashSet());
+
+        when(ownerService.findById(owner.getId())).thenReturn(Optional.of(owner));
+        String readDtoJson = serialize(readOwnOwnerDto);
+
+        getMockMvc().perform(find(owner.getId()))
+                .andExpect(status().isOk())
+                .andExpect(content().json(readDtoJson));
+        Mockito.verify(ownerService).findById(owner.getId());
+    }
+
+    @Test
+    public void update_address() throws Exception {
         //given
         String updatedAddress = "other Street 12";
 

@@ -1,13 +1,12 @@
-package com.github.vincemann.springrapid.demo.controllers;
+package com.github.vincemann.springrapid.demo.controller;
 
-import com.github.vincemann.springrapid.core.controller.dtoMapper.context.DtoMappingContext;
+import com.github.vincemann.springrapid.core.controller.dtoMapper.context.*;
 import com.github.vincemann.springrapid.demo.dtos.owner.CreateOwnerDto;
-import com.github.vincemann.springrapid.demo.dtos.owner.ReadOwnerDto;
+import com.github.vincemann.springrapid.demo.dtos.owner.ReadForeignOwnerDto;
+import com.github.vincemann.springrapid.demo.dtos.owner.ReadOwnOwnerDto;
 import com.github.vincemann.springrapid.demo.dtos.owner.UpdateOwnerDto;
 import com.github.vincemann.springrapid.demo.model.Owner;
 import com.github.vincemann.springrapid.core.slicing.components.WebController;
-import com.github.vincemann.springrapid.core.controller.dtoMapper.context.DtoMappingContextBuilder;
-import com.github.vincemann.springrapid.core.controller.dtoMapper.context.RapidDtoEndpoint;
 import com.github.vincemann.springrapid.core.controller.rapid.RapidController;
 import com.github.vincemann.springrapid.demo.service.OwnerService;
 
@@ -20,7 +19,15 @@ public class OwnerController extends RapidController<Owner, Long, OwnerService> 
         return DtoMappingContextBuilder.builder()
                 .forEndpoint(RapidDtoEndpoint.CREATE, CreateOwnerDto.class)
                 .forUpdate(UpdateOwnerDto.class)
-                .forResponse(ReadOwnerDto.class)
+                //response dto config
+                //authenticated
+                .withPrincipal(DtoMappingInfo.Principal.OWN)
+                .forResponse(ReadOwnOwnerDto.class)
+                .withPrincipal(DtoMappingInfo.Principal.FOREIGN)
+                .forResponse(ReadForeignOwnerDto.class)
+                //not authenticated
+                .withAllPrincipals()
+                .forResponse(ReadForeignOwnerDto.class)
                 .build();
     }
 }

@@ -1,4 +1,4 @@
-package com.github.vincemann.springrapid.demo.controllers;
+package com.github.vincemann.springrapid.demo.controller;
 
 import com.github.vincemann.springrapid.demo.model.Owner;
 import com.github.vincemann.springrapid.demo.model.Pet;
