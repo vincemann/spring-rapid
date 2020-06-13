@@ -8,6 +8,7 @@ import com.github.vincemann.springrapid.core.controller.dtoMapper.context.RapidD
 import com.github.vincemann.springrapid.core.controller.dtoMapper.context.Direction;
 import com.github.vincemann.springrapid.core.controller.dtoMapper.context.DtoMappingContext;
 import com.github.vincemann.springrapid.core.controller.dtoMapper.context.DtoMappingInfo;
+import com.github.vincemann.springrapid.core.controller.rapid.DtoClassLocator;
 import com.github.vincemann.springrapid.core.controller.rapid.idFetchingStrategy.IdFetchingStrategy;
 import com.github.vincemann.springrapid.core.controller.rapid.validationStrategy.ValidationStrategy;
 import com.github.vincemann.springrapid.commons.Lists;
@@ -73,6 +74,8 @@ class RapidControllerIntegrationTest
     @Autowired
     DtoMappingContext dtoMappingContext;
     @SpyBean
+    DtoClassLocator dtoClassLocator;
+    @SpyBean
     DelegatingDtoMapper dtoMapper;
     @MockBean
     ValidationStrategy<Long> validationStrategy;
@@ -102,7 +105,7 @@ class RapidControllerIntegrationTest
                 .build();
         when(service.findAll())
                 .thenReturn(new HashSet<>(Lists.newArrayList(returnEntity)));
-        when(dtoMappingContext.find(eq(expectedResponseMappingInfo)))
+        when(dtoClassLocator.find(eq(expectedResponseMappingInfo),eq(dtoMappingContext)))
                 .thenReturn(readDtoClass);
         when(dtoMapper.mapToDto(returnEntity, readDtoClass))
                 .thenReturn(returnDto);
@@ -147,9 +150,9 @@ class RapidControllerIntegrationTest
         when(idFetchingStrategy.fetchId(any(HttpServletRequest.class)))
                 .thenReturn(entityId);
 
-        when(dtoMappingContext.find(eq(expectedRequestMappingInfo)))
+        when(dtoClassLocator.find(eq(expectedRequestMappingInfo),eq(dtoMappingContext)))
                 .thenReturn(readDtoClass);
-        when(dtoMappingContext.find(eq(expectedResponseMappingInfo)))
+        when(dtoClassLocator.find(eq(expectedResponseMappingInfo),eq(dtoMappingContext)))
                 .thenReturn(writeDtoClass);
 
         when(service.findById(entityId))
@@ -204,7 +207,7 @@ class RapidControllerIntegrationTest
 
     private void verifyDtoMappingContextInteraction(DtoMappingInfo... info) {
         ArgumentCaptor<DtoMappingInfo> argumentCaptor = ArgumentCaptor.forClass(DtoMappingInfo.class);
-        verify(dtoMappingContext, times(info.length)).find(argumentCaptor.capture());
+        verify(dtoClassLocator, times(info.length)).find(argumentCaptor.capture(),eq(dtoMappingContext));
         int index = 0;
         for (DtoMappingInfo value : argumentCaptor.getAllValues()) {
             Assertions.assertEquals(info[index], value);
@@ -226,10 +229,10 @@ class RapidControllerIntegrationTest
 //                .authorities(new ArrayList<>())
 //                .build();
 //
-//        when(dtoMappingContext.find(eq(expectedRequestMappingInfo)))
+//        when(dtoClassLocator.find(eq(expectedRequestMappingInfo)))
 //                .thenReturn(readDtoClass);
 //
-//        when(dtoMappingContext.find(eq(expectedResponseMappingInfo)))
+//        when(dtoClassLocator.find(eq(expectedResponseMappingInfo)))
 //                .thenReturn(writeDtoClass);
 //
 //        update_shouldSucceed(false);
@@ -246,7 +249,7 @@ class RapidControllerIntegrationTest
                 .direction(Direction.REQUEST)
                 .endpoint(RapidDtoEndpoint.CREATE)
                 .build();
-        when(dtoMappingContext.find(eq(expectedRequestMappingInfo)))
+        when(dtoClassLocator.find(eq(expectedRequestMappingInfo),eq(dtoMappingContext)))
                 .thenReturn(readDtoClass);
 
         doReturn(requestDto)
@@ -263,7 +266,7 @@ class RapidControllerIntegrationTest
                 .endpoint(RapidDtoEndpoint.CREATE)
                 .build();
 
-        when(dtoMappingContext.find(eq(expectedResponseMappingInfo)))
+        when(dtoClassLocator.find(eq(expectedResponseMappingInfo),eq(dtoMappingContext)))
                 .thenReturn(writeDtoClass);
 
         when(dtoMapper.mapToDto(returnEntity, writeDtoClass))
@@ -307,7 +310,7 @@ class RapidControllerIntegrationTest
         when(service.findById(entityId))
                 .thenReturn(Optional.of(returnEntity));
 
-        when(dtoMappingContext.find(eq(expectedResponseMappingInfo)))
+        when(dtoClassLocator.find(eq(expectedResponseMappingInfo),eq(dtoMappingContext)))
                 .thenReturn(writeDtoClass);
 
         when(dtoMapper.mapToDto(returnEntity, writeDtoClass))

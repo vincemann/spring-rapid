@@ -9,7 +9,6 @@ import com.github.vincemann.springrapid.core.controller.dtoMapper.context.Direct
 import com.github.vincemann.springrapid.core.controller.dtoMapper.context.DtoMappingContext;
 import com.github.vincemann.springrapid.core.controller.dtoMapper.context.DtoMappingInfo;
 import com.github.vincemann.springrapid.core.controller.dtoMapper.context.RapidDtoEndpoint;
-import com.github.vincemann.springrapid.core.controller.dtoMapper.locate.ExtendableDtoClassLocator;
 import com.github.vincemann.springrapid.core.controller.owner.DelegatingOwnerLocator;
 import com.github.vincemann.springrapid.core.controller.rapid.idFetchingStrategy.IdFetchingStrategy;
 import com.github.vincemann.springrapid.core.controller.rapid.idFetchingStrategy.UrlParamIdFetchingStrategy;
@@ -28,6 +27,7 @@ import com.github.vincemann.springrapid.core.util.RapidUtils;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationListener;
 import org.springframework.context.annotation.Lazy;
@@ -70,7 +70,7 @@ public abstract class RapidController
                 Id extends Serializable,
                 S extends CrudService<E, Id, ?>
                 >
-        implements ApplicationListener<ContextRefreshedEvent> {
+        implements ApplicationListener<ContextRefreshedEvent>, InitializingBean {
 
     public static final String FIND_METHOD_NAME = "get";
     public static final String CREATE_METHOD_NAME = "create";
@@ -123,11 +123,17 @@ public abstract class RapidController
     protected abstract DtoMappingContext provideDtoMappingContext();
 
     /**
-     * Override this method if you want to register {@link com.github.vincemann.springrapid.core.controller.dtoMapper.locate.LocalDtoClassLocator}
+     * Override this method if you want to register {@link LocalDtoClassLocator}
      * @param locator
      */
     protected void configureDtoClassLocator(ExtendableDtoClassLocator locator){
 
+    }
+
+    @Override
+    public void afterPropertiesSet() throws Exception {
+        dtoClassLocator.setContext(dtoMappingContext);
+        configureDtoClassLocator(dtoClassLocator);
     }
 
     /**
@@ -166,7 +172,6 @@ public abstract class RapidController
     @Autowired
     public void injectDtoClassLocator(ExtendableDtoClassLocator dtoClassLocator) {
         this.dtoClassLocator = dtoClassLocator;
-        configureDtoClassLocator(dtoClassLocator);
     }
 
     @Autowired

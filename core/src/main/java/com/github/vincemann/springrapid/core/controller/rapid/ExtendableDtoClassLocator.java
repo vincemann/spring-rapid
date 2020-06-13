@@ -1,4 +1,4 @@
-package com.github.vincemann.springrapid.core.controller.dtoMapper.locate;
+package com.github.vincemann.springrapid.core.controller.rapid;
 
 import com.github.vincemann.springrapid.core.controller.dtoMapper.context.DtoMappingContext;
 import com.github.vincemann.springrapid.core.controller.dtoMapper.context.DtoMappingInfo;
@@ -23,6 +23,7 @@ public class ExtendableDtoClassLocator {
     private DtoClassLocator globalLocator;
 
     public Class<?> find(DtoMappingInfo info){
+        Assert.notNull(context,"Context must be initialized");
         //local
         Optional<LocalDtoClassLocator> addOn = localLocators.stream()
                 .filter(a -> a.supports(info))

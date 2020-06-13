@@ -1,9 +1,7 @@
 package com.github.vincemann.springrapid.coretest.auth;
 
-import com.github.vincemann.springrapid.core.controller.rapid.CurrentUserIdProvider;
 import com.github.vincemann.springrapid.coretest.BeforeEachMethodInitializable;
 import org.mockito.Mockito;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -15,7 +13,6 @@ public abstract class AbstractMockAuthenticationTemplate implements MockAuthenti
 
     private Authentication authenticationMock;
     private SecurityContext securityContextMock;
-    private CurrentUserIdProvider currentUserIdProviderSpy;
 
     private boolean mocked;
     private SecurityContext realSecurityContext;
@@ -33,11 +30,6 @@ public abstract class AbstractMockAuthenticationTemplate implements MockAuthenti
         setUpAuthMocks();
     }
 
-    //injecting spy from RapidTestAutoConfiguration
-    @Autowired
-    public void injectCurrentUserIdProviderSpy(CurrentUserIdProvider currentUserIdProviderSpy) {
-        this.currentUserIdProviderSpy = currentUserIdProviderSpy;
-    }
 
     public void setUpAuthMocks() {
         realSecurityContext = SecurityContextHolder.getContext()==null

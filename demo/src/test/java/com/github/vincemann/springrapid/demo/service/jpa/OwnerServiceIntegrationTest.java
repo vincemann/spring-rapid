@@ -26,7 +26,8 @@ import java.time.LocalDate;
 import java.util.HashSet;
 import java.util.Optional;
 
-import static com.github.vincemann.ezcompare.Comparison.compare;
+
+import static com.github.vincemann.ezcompare.Comparator.compare;
 import static com.github.vincemann.springrapid.coretest.service.request.CrudServiceRequestBuilders.*;
 import static com.github.vincemann.springrapid.coretest.service.resolve.EntityPlaceholder.*;
 import static com.github.vincemann.springrapid.coretest.service.ExceptionMatchers.noException;
