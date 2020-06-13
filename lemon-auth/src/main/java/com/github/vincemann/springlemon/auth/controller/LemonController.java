@@ -42,11 +42,10 @@ import java.util.Map;
 import java.util.Optional;
 
 /**
- * The Lemon API. See the
- * <a href="https://github.com/naturalprogrammer/spring-lemon#documentation-and-resources">
- * API documentation</a> for details.
+ * Lemon API.
  *
  * @author Sanjay Patel
+ * @modified vincemann
  *
  */
 @WebComponent
