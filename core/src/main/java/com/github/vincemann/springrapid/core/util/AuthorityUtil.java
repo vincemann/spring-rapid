@@ -4,10 +4,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.LinkedList;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 
 public class AuthorityUtil {
@@ -30,5 +27,17 @@ public class AuthorityUtil {
             result.add(authority.getAuthority());
         }
         return result;
+    }
+
+    public static Optional<String> getAuthenticatedName(){
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if(authentication==null){
+            return Optional.empty();
+        }
+        String name = authentication.getName();
+        if (name==null){
+            return Optional.empty();
+        }
+        return Optional.of(name);
     }
 }

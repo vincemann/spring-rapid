@@ -1,13 +1,14 @@
 package com.github.vincemann.springlemon.auth.config;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.github.vincemann.springlemon.auth.controller.LemonCurrentUserIdProvider;
+import com.github.vincemann.springlemon.auth.controller.owner.LemonOwnerLocator;
 import com.github.vincemann.springlemon.auth.properties.LemonProperties;
 import com.github.vincemann.springlemon.auth.security.config.LemonJpaSecurityConfig;
 import com.github.vincemann.springlemon.auth.security.config.LemonWebSecurityConfig;
 import com.github.vincemann.springlemon.auth.security.handlers.LemonAuthenticationSuccessHandler;
 import com.github.vincemann.springlemon.auth.service.LemonService;
-import com.github.vincemann.springrapid.core.controller.rapid.CurrentUserIdProvider;
+import com.github.vincemann.springrapid.core.config.RapidControllerAutoConfiguration;
+import com.github.vincemann.springrapid.core.controller.owner.OwnerLocator;
 import com.github.vincemann.springrapid.core.slicing.config.WebConfig;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.autoconfigure.AutoConfigureBefore;
@@ -18,13 +19,19 @@ import org.springframework.security.web.authentication.SimpleUrlAuthenticationFa
 
 @WebConfig
 @Slf4j
-@AutoConfigureBefore({LemonAutoConfiguration.class})
+@AutoConfigureBefore({LemonAutoConfiguration.class,RapidControllerAutoConfiguration.class})
 public class LemonWebAutoConfiguration {
 
     public LemonWebAutoConfiguration() {
         log.info("Created");
     }
 
+
+    @Bean
+    @ConditionalOnMissingBean(name = "lemonOwnerLocator")
+    public OwnerLocator lemonOwnerLocator(LemonService lemonService){
+        return new LemonOwnerLocator(lemonService);
+    }
 
     /**
      * Configures AuthenticationSuccessHandler if missing
@@ -60,9 +67,4 @@ public class LemonWebAutoConfiguration {
         return new LemonJpaSecurityConfig();
     }
 
-    @Bean
-    @ConditionalOnMissingBean(CurrentUserIdProvider.class)
-    public CurrentUserIdProvider currentUserIdProvider(LemonService<?,?,?> lemonService){
-        return new LemonCurrentUserIdProvider(lemonService);
-    }
 }

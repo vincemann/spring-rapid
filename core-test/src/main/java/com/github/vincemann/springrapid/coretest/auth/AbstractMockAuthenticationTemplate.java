@@ -15,12 +15,11 @@ public abstract class AbstractMockAuthenticationTemplate implements MockAuthenti
 
     private Authentication authenticationMock;
     private SecurityContext securityContextMock;
-    private CurrentUserIdProvider currentUserIdProviderMock;
+    private CurrentUserIdProvider currentUserIdProviderSpy;
 
     private boolean mocked;
     private SecurityContext realSecurityContext;
     private Authentication realAuthentication;
-    private CurrentUserIdProvider realCurrentUserIdProvider;
 
 
     @Override
@@ -34,9 +33,10 @@ public abstract class AbstractMockAuthenticationTemplate implements MockAuthenti
         setUpAuthMocks();
     }
 
+    //injecting spy from RapidTestAutoConfiguration
     @Autowired
-    public void injectCurrentUserIdProviderMock(CurrentUserIdProvider currentUserIdProviderMock) {
-        this.realCurrentUserIdProvider = currentUserIdProviderMock;
+    public void injectCurrentUserIdProviderSpy(CurrentUserIdProvider currentUserIdProviderSpy) {
+        this.currentUserIdProviderSpy = currentUserIdProviderSpy;
     }
 
     public void setUpAuthMocks() {
@@ -52,7 +52,6 @@ public abstract class AbstractMockAuthenticationTemplate implements MockAuthenti
         authenticationMock = Mockito.spy(Authentication.class);
         // Mockito.whens() for your authorization object
         securityContextMock = Mockito.spy(SecurityContext.class);
-        currentUserIdProviderMock=Mockito.spy(CurrentUserIdProvider.class);
         mocked =true;
     }
 
