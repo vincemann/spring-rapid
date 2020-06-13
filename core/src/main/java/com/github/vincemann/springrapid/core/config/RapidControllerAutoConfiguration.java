@@ -1,5 +1,8 @@
 package com.github.vincemann.springrapid.core.config;
 
+import com.github.vincemann.springrapid.core.controller.dtoMapper.locate.DtoClassLocator;
+import com.github.vincemann.springrapid.core.controller.dtoMapper.locate.ExtendableDtoClassLocator;
+import com.github.vincemann.springrapid.core.controller.dtoMapper.locate.RapidDtoClassLocator;
 import com.github.vincemann.springrapid.core.controller.owner.DelegatingOwnerLocator;
 import com.github.vincemann.springrapid.core.controller.owner.OwnerLocator;
 import com.github.vincemann.springrapid.core.controller.rapid.EndpointsExposureContext;
@@ -23,6 +26,8 @@ import org.springframework.validation.beanvalidation.LocalValidatorFactoryBean;
 import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping;
 
 import java.util.List;
+
+import static org.springframework.beans.factory.config.ConfigurableBeanFactory.SCOPE_PROTOTYPE;
 
 @SuppressWarnings("rawtypes")
 @AutoConfigureAfter(DtoMapperAutoConfiguration.class)
@@ -53,8 +58,25 @@ public class RapidControllerAutoConfiguration {
     @ConditionalOnMissingBean(name = "delegatingOwnerLocator")
     public DelegatingOwnerLocator delegatingOwnerLocator(List<OwnerLocator> locators){
         DelegatingOwnerLocator delegatingLocator = new DelegatingOwnerLocator();
+        if (locators.isEmpty()){
+            log.warn("No OwnerLocatorBean found -> dtoMapping principal feature will be ignored.");
+        }
         locators.forEach(delegatingLocator::register);
         return delegatingLocator;
+    }
+
+    @Bean
+    @ConditionalOnMissingBean(DtoClassLocator.class)
+    @Scope(SCOPE_PROTOTYPE)
+    public DtoClassLocator dtoClassLocator(){
+        return new RapidDtoClassLocator();
+    }
+
+
+    @Bean
+    @ConditionalOnMissingBean(name = "extendableDtoClassLocator")
+    public ExtendableDtoClassLocator extendableDtoClassLocator(DtoClassLocator globalLocator){
+        return new ExtendableDtoClassLocator(globalLocator);
     }
 
 
@@ -72,7 +94,7 @@ public class RapidControllerAutoConfiguration {
 
 //    @ConditionalOnMissingBean(EndpointsExposureContext.class)
     @Bean
-    @Scope(scopeName = ConfigurableBeanFactory.SCOPE_PROTOTYPE)
+    @Scope(scopeName = SCOPE_PROTOTYPE)
     public EndpointsExposureContext endpointsExposureContext(){
         return new EndpointsExposureContext();
     }

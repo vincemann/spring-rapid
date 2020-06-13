@@ -9,6 +9,7 @@ import com.github.vincemann.springrapid.core.controller.dtoMapper.context.Direct
 import com.github.vincemann.springrapid.core.controller.dtoMapper.context.DtoMappingContext;
 import com.github.vincemann.springrapid.core.controller.dtoMapper.context.DtoMappingInfo;
 import com.github.vincemann.springrapid.core.controller.dtoMapper.context.RapidDtoEndpoint;
+import com.github.vincemann.springrapid.core.controller.dtoMapper.locate.ExtendableDtoClassLocator;
 import com.github.vincemann.springrapid.core.controller.owner.DelegatingOwnerLocator;
 import com.github.vincemann.springrapid.core.controller.rapid.idFetchingStrategy.IdFetchingStrategy;
 import com.github.vincemann.springrapid.core.controller.rapid.idFetchingStrategy.UrlParamIdFetchingStrategy;
@@ -99,6 +100,7 @@ public abstract class RapidController
     private S unsecuredService;
     private DelegatingDtoMapper dtoMapper;
     private DelegatingOwnerLocator ownerLocator;
+    private ExtendableDtoClassLocator dtoClassLocator;
     @Setter
     private DtoMappingContext dtoMappingContext;
     private ValidationStrategy<Id> validationStrategy;
@@ -118,8 +120,15 @@ public abstract class RapidController
         initUrls();
     }
 
-    public abstract DtoMappingContext provideDtoMappingContext();
+    protected abstract DtoMappingContext provideDtoMappingContext();
 
+    /**
+     * Override this method if you want to register {@link com.github.vincemann.springrapid.core.controller.dtoMapper.locate.LocalDtoClassLocator}
+     * @param locator
+     */
+    protected void configureDtoClassLocator(ExtendableDtoClassLocator locator){
+
+    }
 
     /**
      * Override this with @Autowired @Qualifier("mySecuredService") if you are using a Security Proxy.
@@ -152,6 +161,12 @@ public abstract class RapidController
     @Autowired
     public void injectValidationStrategy(ValidationStrategy<Id> validationStrategy) {
         this.validationStrategy = validationStrategy;
+    }
+
+    @Autowired
+    public void injectDtoClassLocator(ExtendableDtoClassLocator dtoClassLocator) {
+        this.dtoClassLocator = dtoClassLocator;
+        configureDtoClassLocator(dtoClassLocator);
     }
 
     @Autowired
@@ -394,7 +409,7 @@ public abstract class RapidController
     public Class<?> createDtoClass(String endpoint, Direction direction, E entity) {
         DtoMappingInfo endpointInfo = createEndpointInfo(endpoint, direction, entity);
         log.debug("DtoMappingInfo of current Request: " +endpointInfo);
-        Class<?> dtoClazz = getDtoMappingContext().find(endpointInfo);
+        Class<?> dtoClazz = dtoClassLocator.find(endpointInfo);
         log.debug("Found DtoClass: " + dtoClazz);
         return dtoClazz;
     }

@@ -12,7 +12,7 @@ import java.util.List;
 
 class RapidDtoMappingContextTest {
 
-    RapidDtoMappingContext context;
+    DtoMappingContext context;
     DtoMappingInfo findInfo;
     DtoMappingInfo createInfo;
     DtoMappingInfo findAllInfo;
