@@ -15,10 +15,10 @@ import java.util.Set;
 @Getter
 @Setter
 @ToString(callSuper = true)
-public class ReadOwnerDto extends AbstractOwnerDto implements BiDirParentDto {
+public class ReadForeignOwnerDto extends AbstractOwnerDto implements BiDirParentDto {
 
     @Builder
-    public ReadOwnerDto(Set<Long> petIds, @Size(min = 10, max = 255) @NotBlank String address, @NotBlank String city, @Size(min = 10, max = 10) String telephone) {
+    public ReadForeignOwnerDto(Set<Long> petIds, @Size(min = 10, max = 255) @NotBlank String address, @NotBlank String city, @Size(min = 10, max = 10) String telephone) {
         super(address, city, telephone);
         this.petIds=petIds;
     }

@@ -134,7 +134,7 @@ public abstract class LemonController
 
 		addAuthHeader(response,saved);
 		Object dto = getDtoMapper().mapToDto(saved,
-				createDtoClass(LemonDtoEndpoint.SIGN_UP, Direction.RESPONSE, saved.getId()));
+				createDtoClass(LemonDtoEndpoint.SIGN_UP, Direction.RESPONSE, saved));
 		return ok(getJsonMapper().writeValueAsString(dto));
 	}
 
@@ -167,7 +167,7 @@ public abstract class LemonController
 
 		addAuthHeader(response,saved);
 		Object dto = getDtoMapper().mapToDto(saved,
-				createDtoClass(LemonDtoEndpoint.VERIFY_USER, Direction.RESPONSE, saved.getId()));
+				createDtoClass(LemonDtoEndpoint.VERIFY_USER, Direction.RESPONSE, saved));
 		return ok(getJsonMapper().writeValueAsString(dto));
 	}
 
@@ -197,7 +197,7 @@ public abstract class LemonController
 		U saved = getService().resetPassword(form);
 		addAuthHeader(response,saved);
 		Object dto = getDtoMapper().mapToDto(saved,
-				createDtoClass(LemonDtoEndpoint.RESET_PASSWORD, Direction.RESPONSE, saved.getId()));
+				createDtoClass(LemonDtoEndpoint.RESET_PASSWORD, Direction.RESPONSE, saved));
 		return ok(getJsonMapper().writeValueAsString(dto));
 	}
 
@@ -213,7 +213,7 @@ public abstract class LemonController
 		U byEmail = getService().findByEmail(email);
 		LexUtils.ensureFound(byEmail);
 		Object responseDto = getDtoMapper().mapToDto(byEmail,
-				createDtoClass(RapidDtoEndpoint.FIND, Direction.RESPONSE, byEmail.getId()));
+				createDtoClass(RapidDtoEndpoint.FIND, Direction.RESPONSE, byEmail));
 		return ok(getJsonMapper().writeValueAsString(responseDto));
 	}
 
@@ -305,7 +305,7 @@ public abstract class LemonController
 		U saved = getService().changeEmail(userId, code);
 		addAuthHeader(response,saved);
 		Object responseDto = getDtoMapper().mapToDto(saved,
-				createDtoClass(LemonDtoEndpoint.CHANGE_EMAIL, Direction.RESPONSE, userId));
+				createDtoClass(LemonDtoEndpoint.CHANGE_EMAIL, Direction.RESPONSE, saved));
 		return ok(getJsonMapper().writeValueAsString(responseDto));
 	}
 

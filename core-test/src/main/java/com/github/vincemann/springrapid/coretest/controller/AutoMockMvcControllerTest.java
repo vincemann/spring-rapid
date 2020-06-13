@@ -35,7 +35,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.
 @Slf4j
 @ActiveProfiles(value = {"test","web","webTest"})
 @SpringBootTest
-//all service interaction is mocked -> no interaction with database -> no datasource config needed
+//complete service interaction is mocked -> no interaction with database -> no datasource config needed
 @ImportAutoConfiguration(exclude = DataSourceAutoConfiguration.class)
 @AutoConfigureMockMvc
 @ContextConfiguration(
@@ -43,7 +43,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.
         classes = PropertyPlaceholderAutoConfiguration.class*/,
         initializers = ConfigFileApplicationContextInitializer.class
 )
-public abstract class MvcControllerTest extends InitializingTest {
+public abstract class AutoMockMvcControllerTest extends InitializingTest {
     private MockMvc mockMvc;
     private DefaultMockMvcBuilder mockMvcBuilder;
     private MediaType contentType = MediaType.APPLICATION_JSON_UTF8;
