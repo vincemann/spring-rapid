@@ -4,6 +4,7 @@ import com.github.vincemann.springrapid.core.controller.dtoMapper.BasicDtoMapper
 import com.github.vincemann.springrapid.core.controller.dtoMapper.DelegatingDtoMapper;
 import com.github.vincemann.springrapid.core.controller.dtoMapper.DtoMapper;
 import com.github.vincemann.springrapid.core.controller.dtoMapper.DtoPostProcessor;
+import com.github.vincemann.springrapid.core.controller.dtoMapper.locate.DtoClassLocator;
 import com.github.vincemann.springrapid.core.slicing.config.WebConfig;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
@@ -41,6 +42,7 @@ public class DtoMapperAutoConfiguration {
         postProcessors.forEach(delegatingDtoMapper::registerPostProcessor);
         return delegatingDtoMapper;
     }
+
 
 
 }

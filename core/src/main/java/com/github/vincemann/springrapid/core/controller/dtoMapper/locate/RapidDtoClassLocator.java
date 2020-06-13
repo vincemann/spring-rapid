@@ -1,23 +1,16 @@
-package com.github.vincemann.springrapid.core.controller.dtoMapper.context;
+package com.github.vincemann.springrapid.core.controller.dtoMapper.locate;
 
+import com.github.vincemann.springrapid.core.controller.dtoMapper.context.DtoMappingContext;
+import com.github.vincemann.springrapid.core.controller.dtoMapper.context.DtoMappingInfo;
 import lombok.*;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.util.Assert;
 
-import java.util.*;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
 
-@SuppressWarnings("ALL")
-/**
- * Represents the Context that contains the information when which dto class should be used for mapping.
- * Offers a find method, for finding the right Dto class for the current situation (represented by {@link DtoMappingInfo}).
- */
-@Slf4j
-public class RapidDtoMappingContext implements DtoMappingContext {
-    private Map<DtoMappingInfo, Class<?>> mappingEntries = new HashMap<>();
-
-    RapidDtoMappingContext() {
-    }
+public class RapidDtoClassLocator implements DtoClassLocator {
 
     /**
      * Ignores role if no role was configured for this MappingContext.
@@ -27,8 +20,10 @@ public class RapidDtoMappingContext implements DtoMappingContext {
      * @param info
      * @return
      */
-    public Class<?> find(DtoMappingInfo info) {
-        Set<DtoMappingInfo> endpointMatches = findEndpointMatches(info, mappingEntries.keySet());
+    @Override
+    public Class<?> find(DtoMappingInfo info, DtoMappingContext context) {
+        Map<DtoMappingInfo, Class<?>> mappingEntries = context.getMappingEntries();
+        Set<DtoMappingInfo> endpointMatches = findEndpointMatches(info,context);
         MatchSet roleMatchSet = findRoleMatchSet(info, endpointMatches);
         Set<DtoMappingInfo> roleFilteredEntries = roleMatchSet.matches.isEmpty() ? roleMatchSet.criteriaIndifferent : roleMatchSet.matches;
         MatchSet principalMatchSet = findPrincipalMatches(info, roleFilteredEntries);
@@ -59,8 +54,8 @@ public class RapidDtoMappingContext implements DtoMappingContext {
     }
 
 
-    private Set<DtoMappingInfo> findEndpointMatches(DtoMappingInfo userMappingInfo, Set<DtoMappingInfo> entries) {
-        return mappingEntries.keySet().stream()
+    private Set<DtoMappingInfo> findEndpointMatches(DtoMappingInfo userMappingInfo,DtoMappingContext context) {
+        return context.getMappingEntries().keySet().stream()
                 .filter(info -> info.getDirection().equals(userMappingInfo.getDirection())
                         && info.getEndpoint().equals(userMappingInfo.getEndpoint()))
                 .collect(Collectors.toSet());
@@ -87,14 +82,6 @@ public class RapidDtoMappingContext implements DtoMappingContext {
         return roleMatchSet;
     }
 
-    Map<DtoMappingInfo, Class<?>> getMappingEntries() {
-        return mappingEntries;
-    }
-
-    void setMappingEntries(Map<DtoMappingInfo, Class<?>> mappingEntries) {
-        this.mappingEntries = mappingEntries;
-    }
-
     @Getter
     @AllArgsConstructor
     @NoArgsConstructor
@@ -104,5 +91,4 @@ public class RapidDtoMappingContext implements DtoMappingContext {
         Set<DtoMappingInfo> matches = new HashSet<>();
         Set<DtoMappingInfo> criteriaIndifferent = new HashSet<>();
     }
-
 }

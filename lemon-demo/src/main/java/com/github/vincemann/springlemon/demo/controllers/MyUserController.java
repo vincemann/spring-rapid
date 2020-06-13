@@ -11,7 +11,6 @@ import com.github.vincemann.springrapid.acl.Role;
 import com.github.vincemann.springrapid.core.controller.dtoMapper.context.Direction;
 import com.github.vincemann.springrapid.core.controller.dtoMapper.context.DtoMappingContext;
 import com.github.vincemann.springrapid.core.controller.dtoMapper.context.RapidDtoEndpoint;
-import com.github.vincemann.springrapid.core.controller.dtoMapper.context.RapidDtoMappingContext;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 
@@ -24,7 +23,7 @@ public class MyUserController extends LemonController<User, Long> {
 
     @Override
     public DtoMappingContext provideDtoMappingContext() {
-        return LemonDtoMappingContextBuilder.builder((RapidDtoMappingContext) super.provideDtoMappingContext())
+        return LemonDtoMappingContextBuilder.builder((DtoMappingContext) super.provideDtoMappingContext())
                 .forEndpoint(RapidDtoEndpoint.UPDATE, UserUpdateDto.class)
                 .forEndpoint(LemonDtoEndpoint.SIGN_UP, Direction.REQUEST,MySignupForm.class)
                 .withRoles(Role.ADMIN)

@@ -11,15 +11,15 @@ import java.util.List;
 //todo rename to Rapid...
 public class DtoMappingContextBuilder {
     private List<String> currentRoles = new ArrayList<>();
-    private RapidDtoMappingContext mc;
+    private DtoMappingContext mc;
     private DtoMappingInfo.Principal currPrincipal = DtoMappingInfo.Principal.ALL;
 
 
     public DtoMappingContextBuilder() {
-        this.mc = new RapidDtoMappingContext();
+        this.mc = new DtoMappingContext();
     }
 
-    public DtoMappingContextBuilder(RapidDtoMappingContext mc) {
+    public DtoMappingContextBuilder(DtoMappingContext mc) {
         this.mc = mc;
     }
 
@@ -27,7 +27,7 @@ public class DtoMappingContextBuilder {
         return new DtoMappingContextBuilder();
     }
 
-    public static DtoMappingContextBuilder builder(RapidDtoMappingContext mc){
+    public static DtoMappingContextBuilder builder(DtoMappingContext mc){
         return new DtoMappingContextBuilder(mc);
     }
 
@@ -197,7 +197,7 @@ public class DtoMappingContextBuilder {
         }
     }
 
-    public RapidDtoMappingContext build(){
+    public DtoMappingContext build(){
         //create ignore Role Map
 //        mc.getMappingEntries().entrySet().forEach(e ->{
 //            DtoMappingInfo ignoreRoleInfo = new DtoMappingInfo(e.getKey());
