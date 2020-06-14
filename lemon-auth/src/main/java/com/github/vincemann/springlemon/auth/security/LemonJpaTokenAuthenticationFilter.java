@@ -5,6 +5,7 @@ import com.github.vincemann.springlemon.auth.domain.dto.user.LemonUserDto;
 import com.github.vincemann.springlemon.auth.security.service.BlueTokenService;
 import com.github.vincemann.springlemon.auth.security.service.LemonUserDetailsService;
 import com.github.vincemann.springlemon.auth.util.LemonUtils;
+import com.github.vincemann.springrapid.core.advice.log.LogInteraction;
 import com.nimbusds.jwt.JWTClaimsSet;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -29,6 +30,7 @@ public class LemonJpaTokenAuthenticationFilter<U extends AbstractUser<ID>, ID ex
 		log.info("Created");		
 	}
 
+	@LogInteraction(level = LogInteraction.Level.TRACE)
 	@Override
 	protected LemonUserDto fetchUserDto(JWTClaimsSet claims) {
 		

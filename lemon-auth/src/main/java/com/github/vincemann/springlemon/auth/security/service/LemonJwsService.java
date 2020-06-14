@@ -1,5 +1,6 @@
 package com.github.vincemann.springlemon.auth.security.service;
 
+import com.github.vincemann.springrapid.core.advice.log.LogInteraction;
 import com.nimbusds.jose.*;
 import com.nimbusds.jose.crypto.MACSigner;
 import com.nimbusds.jose.crypto.MACVerifier;
@@ -26,6 +27,7 @@ public class LemonJwsService extends AbstractJwtService implements BlueTokenServ
 		verifier = new MACVerifier(secret);
 	}
 
+	@LogInteraction(level = LogInteraction.Level.TRACE)
 	@Override
 	public String createToken(String aud, String subject, Long expirationMillis, Map<String, Object> claimMap) {
 		
@@ -48,6 +50,7 @@ public class LemonJwsService extends AbstractJwtService implements BlueTokenServ
 		return jwsObject.serialize();
 	}
 
+	@LogInteraction(level = LogInteraction.Level.TRACE)
 	/**
 	 * Parses a token
 	 */
