@@ -4,6 +4,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.fge.jsonpatch.JsonPatchException;
 import com.github.vincemann.springrapid.core.advice.log.LogComponentInteractionAdvice;
+import com.github.vincemann.springrapid.core.advice.log.LogInteraction;
 import com.github.vincemann.springrapid.core.controller.dtoMapper.DelegatingDtoMapper;
 import com.github.vincemann.springrapid.core.controller.dtoMapper.context.Direction;
 import com.github.vincemann.springrapid.core.controller.dtoMapper.context.DtoMappingContext;
@@ -106,8 +107,6 @@ public abstract class RapidController
     private ValidationStrategy<Id> validationStrategy;
     private MergeUpdateStrategy<E> mergeUpdateStrategy;
 
-    @Setter
-    private boolean serviceInteractionLogging = true;
     @Setter
     private String mediaType = MediaType.APPLICATION_JSON_UTF8_VALUE;
 
@@ -445,15 +444,12 @@ public abstract class RapidController
     }
 
     protected void logStateBeforeServiceCall(String methodName, Object... args) {
-        if (serviceInteractionLogging) {
-            LogComponentInteractionAdvice.logCall(methodName,this.getClass().getSimpleName(), args);
-            log.info("SecurityContexts Authentication right before service call: " + SecurityContextHolder.getContext().getAuthentication());
-        }
+        log.debug("SecurityContexts Authentication right before service call: " + SecurityContextHolder.getContext().getAuthentication());
+        LogComponentInteractionAdvice.logCall(methodName,this.getClass().getSimpleName(), LogInteraction.Level.DEBUG, args);
     }
 
     protected void logServiceResult(String methodName, Object result) {
-        if (serviceInteractionLogging)
-            LogComponentInteractionAdvice.logResult(methodName,this.getClass().getSimpleName(), result);
+        LogComponentInteractionAdvice.logResult(methodName,this.getClass().getSimpleName(),LogInteraction.Level.DEBUG, result);
     }
 
     private E mapToEntity(Object dto) throws BadEntityException, EntityNotFoundException {

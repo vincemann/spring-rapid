@@ -4,6 +4,7 @@ import com.github.vincemann.springlemon.auth.domain.AbstractUser;
 import com.github.vincemann.springlemon.auth.domain.AbstractUserRepository;
 import com.github.vincemann.springlemon.auth.security.domain.LemonPrincipal;
 import com.github.vincemann.springlemon.exceptions.util.LexUtils;
+import com.github.vincemann.springrapid.core.advice.log.LogInteraction;
 import com.github.vincemann.springrapid.core.slicing.components.ServiceComponent;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -32,7 +33,8 @@ implements UserDetailsService {
 		this.userRepository = userRepository;
 		log.info("Created");
 	}
-	
+
+	@LogInteraction(level = LogInteraction.Level.TRACE)
 	@Override
 	public LemonPrincipal loadUserByUsername(String username)
 			throws UsernameNotFoundException {

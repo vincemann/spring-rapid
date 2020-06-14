@@ -1,6 +1,7 @@
 package com.github.vincemann.springlemon.auth.security.service;
 
 import com.github.vincemann.springlemon.auth.util.LecUtils;
+import com.github.vincemann.springrapid.core.advice.log.LogInteraction;
 import com.nimbusds.jose.Payload;
 import com.nimbusds.jwt.JWTClaimsSet;
 import com.github.vincemann.springrapid.core.slicing.components.ServiceComponent;
@@ -37,14 +38,15 @@ public abstract class AbstractJwtService implements LemonTokenService {
     	return new Payload(claims.toJSONObject());
 	}
 
-	
+
+	@LogInteraction(level = LogInteraction.Level.TRACE)
 	@Override
 	public String createToken(String audience, String subject, Long expirationMillis) {
 
 		return createToken(audience, subject, expirationMillis, new HashMap<>());
 	}
 
-	
+	@LogInteraction(level = LogInteraction.Level.TRACE)
 	@Override
 	public JWTClaimsSet parseToken(String token, String audience) {
 
@@ -66,6 +68,7 @@ public abstract class AbstractJwtService implements LemonTokenService {
 	}
 
 
+	@LogInteraction(level = LogInteraction.Level.TRACE)
 	@Override
 	public JWTClaimsSet parseToken(String token, String audience, long issuedAfter) {
 		
@@ -79,6 +82,7 @@ public abstract class AbstractJwtService implements LemonTokenService {
 	}
 
 
+	@LogInteraction(level = LogInteraction.Level.TRACE)
 	@Override
 	public <T> T parseClaim(String token, String claim) {
 		

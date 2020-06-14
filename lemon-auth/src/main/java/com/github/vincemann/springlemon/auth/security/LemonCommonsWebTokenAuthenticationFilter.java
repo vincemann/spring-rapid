@@ -5,6 +5,7 @@ import com.github.vincemann.springlemon.auth.domain.dto.user.LemonUserDto;
 import com.github.vincemann.springlemon.auth.security.service.BlueTokenService;
 import com.github.vincemann.springlemon.auth.util.LecUtils;
 import com.github.vincemann.springlemon.auth.util.LemonUtils;
+import com.github.vincemann.springrapid.core.advice.log.LogInteraction;
 import com.nimbusds.jwt.JWTClaimsSet;
 import com.github.vincemann.springlemon.exceptions.util.LexUtils;
 import lombok.AllArgsConstructor;
@@ -70,7 +71,8 @@ public class LemonCommonsWebTokenAuthenticationFilter extends OncePerRequestFilt
 		filterChain.doFilter(request, response);
 	}
 
-	protected Authentication createAuthToken(String token) {
+	@LogInteraction(level = LogInteraction.Level.TRACE)
+	public Authentication createAuthToken(String token) {
 		
 		JWTClaimsSet claims = blueTokenService.parseToken(token, BlueTokenService.AUTH_AUDIENCE);
 		LemonUserDto lemonUserDto = LemonUtils.getUserDto(claims);
