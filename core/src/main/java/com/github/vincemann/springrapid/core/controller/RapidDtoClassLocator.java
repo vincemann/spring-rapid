@@ -1,8 +1,10 @@
-package com.github.vincemann.springrapid.core.controller.rapid;
+package com.github.vincemann.springrapid.core.controller;
 
+import com.github.vincemann.springrapid.core.advice.log.LogInteraction;
 import com.github.vincemann.springrapid.core.controller.dtoMapper.context.DtoMappingContext;
 import com.github.vincemann.springrapid.core.controller.dtoMapper.context.DtoMappingInfo;
 import lombok.*;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.util.Assert;
 
 import java.util.HashSet;
@@ -10,6 +12,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+@Slf4j
 public class RapidDtoClassLocator implements DtoClassLocator {
 
     /**
@@ -21,6 +24,7 @@ public class RapidDtoClassLocator implements DtoClassLocator {
      * @return
      */
     @Override
+    @LogInteraction
     public Class<?> find(DtoMappingInfo info, DtoMappingContext context) {
         Map<DtoMappingInfo, Class<?>> mappingEntries = context.getMappingEntries();
         Set<DtoMappingInfo> endpointMatches = findEndpointMatches(info,context);
@@ -31,13 +35,17 @@ public class RapidDtoClassLocator implements DtoClassLocator {
         Set<DtoMappingInfo> inDifferentPrincipalMatches = principalMatchSet.criteriaIndifferent;
         if (!matches.isEmpty()) {
             Assert.isTrue(matches.size() == 1, "Ambigious Mapping, found multiple Dto Matches: " + matches);
-            return mappingEntries.get(matches.stream().findFirst().get());
+            DtoMappingInfo match = matches.stream().findFirst().get();
+            log.debug("Matching DtoMappingEntry: " + match);
+            return mappingEntries.get(match);
         } else {
             if (inDifferentPrincipalMatches.isEmpty()) {
                 throw new IllegalArgumentException("No DtoClass mapped for info: " + info);
             }
             Assert.isTrue(inDifferentPrincipalMatches.size() == 1, "Ambigious Mapping, found multiple Dto Matches: " + inDifferentPrincipalMatches);
-            return mappingEntries.get(inDifferentPrincipalMatches.stream().findFirst().get());
+            DtoMappingInfo match = inDifferentPrincipalMatches.stream().findFirst().get();
+            log.debug("Matching DtoMappingEntry: " + match);
+            return mappingEntries.get(match);
         }
     }
 

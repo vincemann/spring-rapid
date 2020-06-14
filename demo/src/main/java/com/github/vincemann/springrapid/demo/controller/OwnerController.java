@@ -7,7 +7,7 @@ import com.github.vincemann.springrapid.demo.dtos.owner.ReadOwnOwnerDto;
 import com.github.vincemann.springrapid.demo.dtos.owner.UpdateOwnerDto;
 import com.github.vincemann.springrapid.demo.model.Owner;
 import com.github.vincemann.springrapid.core.slicing.components.WebController;
-import com.github.vincemann.springrapid.core.controller.rapid.RapidController;
+import com.github.vincemann.springrapid.core.controller.RapidController;
 import com.github.vincemann.springrapid.demo.service.OwnerService;
 
 @WebController

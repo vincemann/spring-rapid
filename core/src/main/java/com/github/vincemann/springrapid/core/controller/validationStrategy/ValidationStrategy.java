@@ -1,4 +1,4 @@
-package com.github.vincemann.springrapid.core.controller.rapid.validationStrategy;
+package com.github.vincemann.springrapid.core.controller.validationStrategy;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.ConstraintViolationException;

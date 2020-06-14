@@ -1,4 +1,4 @@
-package com.github.vincemann.springrapid.core.controller.rapid;
+package com.github.vincemann.springrapid.core.controller;
 
 import lombok.Builder;
 import lombok.Getter;

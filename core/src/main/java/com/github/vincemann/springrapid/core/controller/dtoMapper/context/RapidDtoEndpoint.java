@@ -1,7 +1,9 @@
 package com.github.vincemann.springrapid.core.controller.dtoMapper.context;
 
+import com.github.vincemann.springrapid.core.controller.RapidController;
+
 /**
- * Represents an Endpoint exposed by {@link com.github.vincemann.springrapid.core.controller.rapid.RapidController} that
+ * Represents an Endpoint exposed by {@link RapidController} that
  * has a Dto either in the request or Response.
  *
  */

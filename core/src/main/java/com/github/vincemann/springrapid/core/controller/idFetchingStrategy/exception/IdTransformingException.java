@@ -1,8 +1,8 @@
-package com.github.vincemann.springrapid.core.controller.rapid.idFetchingStrategy.exception;
+package com.github.vincemann.springrapid.core.controller.idFetchingStrategy.exception;
 
 /**
  * Indicates, that the fetched id could not be transformed into the desired Type.
- * @see com.github.vincemann.springrapid.core.controller.rapid.idFetchingStrategy.IdFetchingStrategy
+ * @see com.github.vincemann.springrapid.core.controller.idFetchingStrategy.IdFetchingStrategy
  */
 public class IdTransformingException extends Exception{
 

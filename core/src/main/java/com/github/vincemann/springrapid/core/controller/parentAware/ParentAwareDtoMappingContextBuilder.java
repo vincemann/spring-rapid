@@ -1,4 +1,4 @@
-package com.github.vincemann.springrapid.core.controller.rapid.parentAware;
+package com.github.vincemann.springrapid.core.controller.parentAware;
 
 import com.github.vincemann.springrapid.core.controller.dtoMapper.context.DtoMappingContext;
 import com.github.vincemann.springrapid.core.controller.dtoMapper.context.DtoMappingContextBuilder;

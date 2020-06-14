@@ -1,5 +1,6 @@
-package com.github.vincemann.springrapid.core.controller.rapid;
+package com.github.vincemann.springrapid.core.controller;
 
+import com.github.vincemann.springrapid.core.advice.log.LogInteraction;
 import com.github.vincemann.springrapid.core.controller.dtoMapper.context.DtoMappingContext;
 import com.github.vincemann.springrapid.core.controller.dtoMapper.context.DtoMappingInfo;
 import org.springframework.util.Assert;
@@ -22,6 +23,7 @@ public class ExtendableDtoClassLocator {
 
     private DtoClassLocator globalLocator;
 
+    @LogInteraction
     public Class<?> find(DtoMappingInfo info){
         Assert.notNull(context,"Context must be initialized");
         //local

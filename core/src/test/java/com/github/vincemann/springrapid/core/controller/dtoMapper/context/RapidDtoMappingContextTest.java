@@ -1,7 +1,7 @@
 package com.github.vincemann.springrapid.core.controller.dtoMapper.context;
 
-import com.github.vincemann.springrapid.core.controller.rapid.DtoClassLocator;
-import com.github.vincemann.springrapid.core.controller.rapid.RapidDtoClassLocator;
+import com.github.vincemann.springrapid.core.controller.DtoClassLocator;
+import com.github.vincemann.springrapid.core.controller.RapidDtoClassLocator;
 import com.github.vincemann.springrapid.core.model.IdentifiableEntityImpl;
 import com.github.vincemann.springrapid.commons.Lists;
 import org.junit.jupiter.api.Assertions;

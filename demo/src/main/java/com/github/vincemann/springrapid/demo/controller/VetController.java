@@ -5,7 +5,7 @@ import com.github.vincemann.springrapid.demo.dtos.VetDto;
 import com.github.vincemann.springrapid.demo.model.Vet;
 import com.github.vincemann.springrapid.core.slicing.components.WebController;
 import com.github.vincemann.springrapid.core.controller.dtoMapper.context.DtoMappingContextBuilder;
-import com.github.vincemann.springrapid.core.controller.rapid.RapidController;
+import com.github.vincemann.springrapid.core.controller.RapidController;
 import com.github.vincemann.springrapid.demo.service.VetService;
 
 @WebController

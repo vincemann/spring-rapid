@@ -1,4 +1,4 @@
-package com.github.vincemann.springrapid.core.controller.rapid;
+package com.github.vincemann.springrapid.core.controller;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -10,11 +10,11 @@ import com.github.vincemann.springrapid.core.controller.dtoMapper.context.DtoMap
 import com.github.vincemann.springrapid.core.controller.dtoMapper.context.DtoMappingInfo;
 import com.github.vincemann.springrapid.core.controller.dtoMapper.context.RapidDtoEndpoint;
 import com.github.vincemann.springrapid.core.controller.owner.DelegatingOwnerLocator;
-import com.github.vincemann.springrapid.core.controller.rapid.idFetchingStrategy.IdFetchingStrategy;
-import com.github.vincemann.springrapid.core.controller.rapid.idFetchingStrategy.UrlParamIdFetchingStrategy;
-import com.github.vincemann.springrapid.core.controller.rapid.idFetchingStrategy.exception.IdFetchingException;
-import com.github.vincemann.springrapid.core.controller.rapid.mergeUpdate.MergeUpdateStrategy;
-import com.github.vincemann.springrapid.core.controller.rapid.validationStrategy.ValidationStrategy;
+import com.github.vincemann.springrapid.core.controller.idFetchingStrategy.IdFetchingStrategy;
+import com.github.vincemann.springrapid.core.controller.idFetchingStrategy.UrlParamIdFetchingStrategy;
+import com.github.vincemann.springrapid.core.controller.idFetchingStrategy.exception.IdFetchingException;
+import com.github.vincemann.springrapid.core.controller.mergeUpdate.MergeUpdateStrategy;
+import com.github.vincemann.springrapid.core.controller.validationStrategy.ValidationStrategy;
 import com.github.vincemann.springrapid.core.model.IdentifiableEntity;
 import com.github.vincemann.springrapid.core.service.CrudService;
 import com.github.vincemann.springrapid.core.service.EndpointService;
@@ -117,6 +117,7 @@ public abstract class RapidController
     @Autowired
     public RapidController() {
         this.dtoMappingContext = provideDtoMappingContext();
+        log.debug("DtoMappingContext: " + dtoMappingContext);
         initUrls();
     }
 
@@ -445,14 +446,14 @@ public abstract class RapidController
 
     protected void logStateBeforeServiceCall(String methodName, Object... args) {
         if (serviceInteractionLogging) {
-            LogComponentInteractionAdvice.logArgs(methodName, args);
+            LogComponentInteractionAdvice.logCall(methodName,this.getClass().getSimpleName(), args);
             log.info("SecurityContexts Authentication right before service call: " + SecurityContextHolder.getContext().getAuthentication());
         }
     }
 
     protected void logServiceResult(String methodName, Object result) {
         if (serviceInteractionLogging)
-            LogComponentInteractionAdvice.logResult(methodName, result);
+            LogComponentInteractionAdvice.logResult(methodName,this.getClass().getSimpleName(), result);
     }
 
     private E mapToEntity(Object dto) throws BadEntityException, EntityNotFoundException {

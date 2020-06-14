@@ -1,5 +1,6 @@
 package com.github.vincemann.springrapid.core.controller.owner;
 
+import com.github.vincemann.springrapid.core.advice.log.LogInteraction;
 import com.github.vincemann.springrapid.core.model.IdentifiableEntity;
 
 import java.util.ArrayList;
@@ -17,6 +18,7 @@ public class DelegatingOwnerLocator {
         ownerLocators.add(ownerLocator);
     }
 
+    @LogInteraction
     public Optional<String> find(IdentifiableEntity<?> entity){
         Optional<OwnerLocator> locator = ownerLocators.stream()
                 .filter(l -> l.supports(entity.getClass()))

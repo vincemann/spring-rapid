@@ -192,7 +192,7 @@ public class DtoMappingContextBuilder {
         mc.getMappingEntries().put(info, dtoClass);
         if (old!=null) {
             if (!old.equals(dtoClass)) {
-                log.warn("Overriding dto mapping info: " + info + ", old DtoClass: " + old + ", new DtoClass: " + dtoClass);
+                log.debug("Overriding dto mapping info: " + info + ", old DtoClass: " + old + ", new DtoClass: " + dtoClass);
             }
         }
     }
