@@ -8,9 +8,9 @@ import com.github.vincemann.springrapid.core.controller.dtoMapper.context.RapidD
 import com.github.vincemann.springrapid.core.controller.dtoMapper.context.Direction;
 import com.github.vincemann.springrapid.core.controller.dtoMapper.context.DtoMappingContext;
 import com.github.vincemann.springrapid.core.controller.dtoMapper.context.DtoMappingInfo;
-import com.github.vincemann.springrapid.core.controller.rapid.DtoClassLocator;
-import com.github.vincemann.springrapid.core.controller.rapid.idFetchingStrategy.IdFetchingStrategy;
-import com.github.vincemann.springrapid.core.controller.rapid.validationStrategy.ValidationStrategy;
+import com.github.vincemann.springrapid.core.controller.DtoClassLocator;
+import com.github.vincemann.springrapid.core.controller.idFetchingStrategy.IdFetchingStrategy;
+import com.github.vincemann.springrapid.core.controller.validationStrategy.ValidationStrategy;
 import com.github.vincemann.springrapid.commons.Lists;
 import com.github.vincemann.springrapid.coretest.controller.rapid.AbstractMvcRapidControllerTest;
 import org.junit.jupiter.api.*;

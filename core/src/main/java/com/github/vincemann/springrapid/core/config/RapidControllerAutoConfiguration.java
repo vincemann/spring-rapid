@@ -1,17 +1,17 @@
 package com.github.vincemann.springrapid.core.config;
 
-import com.github.vincemann.springrapid.core.controller.rapid.DtoClassLocator;
-import com.github.vincemann.springrapid.core.controller.rapid.ExtendableDtoClassLocator;
-import com.github.vincemann.springrapid.core.controller.rapid.RapidDtoClassLocator;
+import com.github.vincemann.springrapid.core.controller.DtoClassLocator;
+import com.github.vincemann.springrapid.core.controller.ExtendableDtoClassLocator;
+import com.github.vincemann.springrapid.core.controller.RapidDtoClassLocator;
 import com.github.vincemann.springrapid.core.controller.owner.DelegatingOwnerLocator;
 import com.github.vincemann.springrapid.core.controller.owner.OwnerLocator;
-import com.github.vincemann.springrapid.core.controller.rapid.EndpointsExposureContext;
-import com.github.vincemann.springrapid.core.controller.rapid.idFetchingStrategy.IdFetchingStrategy;
-import com.github.vincemann.springrapid.core.controller.rapid.idFetchingStrategy.LongUrlParamIdFetchingStrategy;
-import com.github.vincemann.springrapid.core.controller.rapid.mergeUpdate.MergeUpdateStrategy;
-import com.github.vincemann.springrapid.core.controller.rapid.mergeUpdate.MergeUpdateStrategyImpl;
-import com.github.vincemann.springrapid.core.controller.rapid.validationStrategy.JavaXValidationStrategy;
-import com.github.vincemann.springrapid.core.controller.rapid.validationStrategy.ValidationStrategy;
+import com.github.vincemann.springrapid.core.controller.EndpointsExposureContext;
+import com.github.vincemann.springrapid.core.controller.idFetchingStrategy.IdFetchingStrategy;
+import com.github.vincemann.springrapid.core.controller.idFetchingStrategy.LongUrlParamIdFetchingStrategy;
+import com.github.vincemann.springrapid.core.controller.mergeUpdate.MergeUpdateStrategy;
+import com.github.vincemann.springrapid.core.controller.mergeUpdate.MergeUpdateStrategyImpl;
+import com.github.vincemann.springrapid.core.controller.validationStrategy.JavaXValidationStrategy;
+import com.github.vincemann.springrapid.core.controller.validationStrategy.ValidationStrategy;
 import com.github.vincemann.springrapid.core.service.EndpointService;
 import com.github.vincemann.springrapid.core.slicing.config.WebConfig;
 import lombok.extern.slf4j.Slf4j;

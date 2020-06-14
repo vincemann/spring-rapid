@@ -1,6 +1,6 @@
-package com.github.vincemann.springrapid.core.controller.rapid.idFetchingStrategy;
+package com.github.vincemann.springrapid.core.controller.idFetchingStrategy;
 
-import com.github.vincemann.springrapid.core.controller.rapid.idFetchingStrategy.exception.IdTransformingException;
+import com.github.vincemann.springrapid.core.controller.idFetchingStrategy.exception.IdTransformingException;
 import org.springframework.lang.Nullable;
 
 /**
