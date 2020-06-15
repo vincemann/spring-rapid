@@ -9,7 +9,7 @@ import java.lang.annotation.*;
  * Includes Arguments, return Value.
  * @see LogComponentInteractionAdvice
  */
-@Target({ElementType.METHOD})
+@Target({ElementType.METHOD,ElementType.TYPE})
 @Retention(RetentionPolicy.RUNTIME)
 @Inherited
 public @interface LogInteraction {

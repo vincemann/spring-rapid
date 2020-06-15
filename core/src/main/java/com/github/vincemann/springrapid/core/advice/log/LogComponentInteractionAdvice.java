@@ -1,6 +1,7 @@
 package com.github.vincemann.springrapid.core.advice.log;
 
 import lombok.AllArgsConstructor;
+import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.reflect.MethodUtils;
 import org.aspectj.lang.JoinPoint;
@@ -8,15 +9,15 @@ import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.AfterThrowing;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
+import org.aspectj.lang.reflect.MethodSignature;
+import org.springframework.test.util.AopTestUtils;
 import org.springframework.util.Assert;
 
 import java.lang.reflect.Method;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 
-@Aspect
+@Aspect()
 @Slf4j
 public class LogComponentInteractionAdvice {
     private static final Map<Thread, Integer> thread_amountOpenMethodCalls = new HashMap<>();
@@ -130,20 +131,42 @@ public class LogComponentInteractionAdvice {
         return paddingChar.repeat(paddingLength);
     }
 
+    /**
+     * get annotation from target method, if not present from target class
+     * @param joinPoint
+     * @return
+     */
+    @SneakyThrows
     private static LogInteraction extractAnnotation(JoinPoint joinPoint) {
-        int paramCount = joinPoint.getArgs().length;
-        List<Method> methods = MethodUtils.getMethodsListWithAnnotation(joinPoint.getTarget().getClass(), LogInteraction.class);
-        Optional<Method> method = methods.stream().filter(m -> m.getName().equals(joinPoint.getSignature().getName())
-                && m.getParameterCount() == paramCount
-        ).findFirst();
-        return method
-                .map(value -> value.getAnnotation(LogInteraction.class))
-                .orElse(null);
-    }
+        MethodSignature signature = (MethodSignature) joinPoint.getSignature();
+        Class<?> targetClass = AopTestUtils.getUltimateTargetObject(joinPoint.getTarget()).getClass();
+        Method method = MethodUtils.getMatchingMethod(targetClass,
+                signature.getMethod().getName(),
+                signature.getMethod().getParameterTypes()
+        );
+        LogInteraction logInteraction = method.getAnnotation(LogInteraction.class);
 
-    @Around("@annotation(com.github.vincemann.springrapid.core.advice.log.LogInteraction)")
+//        int paramCount = joinPoint.getArgs().length;
+//        List<Method> methods = MethodUtils.getMethodsListWithAnnotation(joinPoint.getTarget().getClass(), LogInteraction.class);
+//        Optional<Method> method = methods.stream().filter(m -> m.getName().equals(joinPoint.getSignature().getName())
+//                && m.getParameterCount() == paramCount
+//        ).findFirst();
+//        LogInteraction methodAnnotation = method
+//                .map(value -> value.getAnnotation(LogInteraction.class))
+//                .orElse(null);
+        return logInteraction == null ?
+                //from class
+                targetClass.getDeclaredAnnotation(LogInteraction.class)
+                //from method
+                : logInteraction;
+    }
+//"@target(com.github.vincemann.springrapid.core.advice.log.LogInteraction) && within(com.github.vincemann.*)"
+    @Around("target(com.github.vincemann.springrapid.core.advice.log.InteractionLoggable)"/*"@annotation(com.github.vincemann.springrapid.core.advice.log.LogInteraction)"*/)
     public Object log(ProceedingJoinPoint joinPoint) throws Throwable {
         LogInteraction logInteraction = extractAnnotation(joinPoint);
+
+        if (logInteraction==null)
+            return joinPoint.proceed();
         if (!logWanted(logInteraction.level()))
             return joinPoint.proceed();
 
@@ -201,9 +224,15 @@ public class LogComponentInteractionAdvice {
         throw new IllegalStateException("Unknown log level");
     }
 
-    @AfterThrowing("@annotation(com.github.vincemann.springrapid.core.advice.log.LogInteraction)")
+    @AfterThrowing("target(com.github.vincemann.springrapid.core.advice.log.InteractionLoggable)"/*"@annotation(com.github.vincemann.springrapid.core.advice.log.LogInteraction)"*/)
     public void onException(JoinPoint joinPoint){
         LogInteraction logInteraction = extractAnnotation(joinPoint);
+        if (logInteraction==null)
+            return;
+        if (!logWanted(logInteraction.level()))
+            return;
+
+
         String methodName = joinPoint.getSignature().getName();
         String clazzName = joinPoint.getTarget().getClass().getSimpleName();
         logResult(

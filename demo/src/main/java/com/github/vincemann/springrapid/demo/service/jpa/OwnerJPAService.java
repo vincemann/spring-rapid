@@ -1,5 +1,7 @@
 package com.github.vincemann.springrapid.demo.service.jpa;
 
+import com.github.vincemann.springrapid.core.advice.log.InteractionLoggable;
+import com.github.vincemann.springrapid.core.advice.log.LogInteraction;
 import com.github.vincemann.springrapid.demo.model.Owner;
 import com.github.vincemann.springrapid.demo.repo.OwnerRepository;
 import com.github.vincemann.springrapid.demo.service.OwnerService;
@@ -14,7 +16,8 @@ import java.util.Optional;
 @Qualifier("noProxy")
 @Service
 @ServiceComponent
-public class OwnerJPAService extends JPACrudService<Owner,Long, OwnerRepository> implements OwnerService {
+@LogInteraction
+public class OwnerJPAService extends JPACrudService<Owner,Long, OwnerRepository> implements OwnerService, InteractionLoggable {
 
 
     @Transactional

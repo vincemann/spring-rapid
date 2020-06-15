@@ -1,5 +1,6 @@
 package com.github.vincemann.springrapid.core.service;
 
+import com.github.vincemann.springrapid.core.advice.log.LogInteraction;
 import com.github.vincemann.springrapid.core.slicing.components.ServiceComponent;
 import com.github.vincemann.springrapid.core.service.exception.BadEntityException;
 import com.github.vincemann.springrapid.core.model.IdentifiableEntity;

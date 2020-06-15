@@ -1,6 +1,7 @@
 package com.github.vincemann.springrapid.core.service.jpa;
 
 import com.github.vincemann.springrapid.commons.NullAwareBeanUtilsBean;
+import com.github.vincemann.springrapid.core.advice.log.LogInteraction;
 import com.github.vincemann.springrapid.core.slicing.components.ServiceComponent;
 import com.github.vincemann.springrapid.core.model.IdentifiableEntity;
 import com.github.vincemann.springrapid.core.service.CrudService;
