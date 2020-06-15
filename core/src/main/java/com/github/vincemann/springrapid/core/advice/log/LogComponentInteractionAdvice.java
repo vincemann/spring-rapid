@@ -144,6 +144,9 @@ public class LogComponentInteractionAdvice {
     @Around("@annotation(com.github.vincemann.springrapid.core.advice.log.LogInteraction)")
     public Object log(ProceedingJoinPoint joinPoint) throws Throwable {
         LogInteraction logInteraction = extractAnnotation(joinPoint);
+        if (!logWanted(logInteraction.level()))
+            return joinPoint.proceed();
+
         String methodName = joinPoint.getSignature().getName();
         String clazzName = joinPoint.getTarget().getClass().getSimpleName();
         Object ret;
@@ -180,6 +183,22 @@ public class LogComponentInteractionAdvice {
             );
         }
         return ret;
+    }
+
+    private static boolean logWanted(LogInteraction.Level level){
+        switch (level){
+            case TRACE:
+                return log.isTraceEnabled();
+            case ERROR:
+                return log.isErrorEnabled();
+            case DEBUG:
+                return log.isDebugEnabled();
+            case WARN:
+                return log.isWarnEnabled();
+            case INFO:
+                return log.isInfoEnabled();
+        }
+        throw new IllegalStateException("Unknown log level");
     }
 
     @AfterThrowing("@annotation(com.github.vincemann.springrapid.core.advice.log.LogInteraction)")

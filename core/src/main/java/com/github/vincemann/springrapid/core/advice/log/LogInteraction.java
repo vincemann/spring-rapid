@@ -1,5 +1,7 @@
 package com.github.vincemann.springrapid.core.advice.log;
 
+import org.springframework.core.annotation.AliasFor;
+
 import java.lang.annotation.*;
 
 /**
@@ -11,7 +13,10 @@ import java.lang.annotation.*;
 @Retention(RetentionPolicy.RUNTIME)
 @Inherited
 public @interface LogInteraction {
+    @AliasFor("value")
     Level level() default Level.DEBUG;
+    @AliasFor("level")
+    Level value() default Level.DEBUG;
 
     public enum Level{
         DEBUG,INFO,WARN,ERROR,TRACE

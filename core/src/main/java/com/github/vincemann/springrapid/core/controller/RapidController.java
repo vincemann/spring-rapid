@@ -445,11 +445,11 @@ public abstract class RapidController
 
     protected void logStateBeforeServiceCall(String methodName, Object... args) {
         log.debug("SecurityContexts Authentication right before service call: " + SecurityContextHolder.getContext().getAuthentication());
-        LogComponentInteractionAdvice.logCall(methodName,this.getClass().getSimpleName(), LogInteraction.Level.DEBUG, args);
+        LogComponentInteractionAdvice.logCall(methodName,getService().getClass().getSimpleName(), LogInteraction.Level.DEBUG, args);
     }
 
     protected void logServiceResult(String methodName, Object result) {
-        LogComponentInteractionAdvice.logResult(methodName,this.getClass().getSimpleName(),LogInteraction.Level.DEBUG, result);
+        LogComponentInteractionAdvice.logResult(methodName,getService().getClass().getSimpleName(),LogInteraction.Level.DEBUG, result);
     }
 
     private E mapToEntity(Object dto) throws BadEntityException, EntityNotFoundException {
