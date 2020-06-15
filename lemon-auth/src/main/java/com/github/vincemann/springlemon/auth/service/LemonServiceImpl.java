@@ -142,6 +142,18 @@ public abstract class LemonServiceImpl
     }
 
 
+    @Transactional(propagation = Propagation.SUPPORTS, readOnly = false)
+    @Override
+    public U save(U entity) throws BadEntityException {
+        return super.save(entity);
+    }
+
+    @Transactional(propagation = Propagation.SUPPORTS, readOnly = false)
+    @Override
+    public void deleteById(ID id) throws EntityNotFoundException, BadEntityException {
+        super.deleteById(id);
+    }
+
     /**
      * Makes a user unverified
      */
@@ -307,6 +319,7 @@ public abstract class LemonServiceImpl
 //		return updated;
 //	}
 
+    @Transactional(propagation = Propagation.REQUIRED, readOnly = false)
     @Override
     public U update(U update, Boolean full) throws EntityNotFoundException, BadEntityException, BadEntityException {
         Optional<U> old = getRepository().findById(update.getId());
