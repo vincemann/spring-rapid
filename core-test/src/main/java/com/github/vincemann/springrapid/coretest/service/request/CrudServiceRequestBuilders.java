@@ -3,8 +3,10 @@ package com.github.vincemann.springrapid.coretest.service.request;
 import com.github.vincemann.springrapid.commons.Lists;
 import com.github.vincemann.springrapid.core.model.IdentifiableEntity;
 import com.github.vincemann.springrapid.core.service.CrudService;
+import org.apache.commons.lang3.reflect.MethodUtils;
 
 import java.io.Serializable;
+import java.lang.reflect.Method;
 import java.util.List;
 
 /**
@@ -13,35 +15,35 @@ import java.util.List;
 public class CrudServiceRequestBuilders {
 
     public static ServiceRequestBuilder save(IdentifiableEntity entityToSave) {
-        return createBuilder("save", Lists.newArrayList(entityToSave),IdentifiableEntity.class);
+        return createBuilder("save", Lists.newArrayList(entityToSave), IdentifiableEntity.class);
     }
 
     public static ServiceRequestBuilder update(IdentifiableEntity updateEntity) {
-        return createBuilder("update", Lists.newArrayList(updateEntity,true),IdentifiableEntity.class,Boolean.class);
+        return createBuilder("update", Lists.newArrayList(updateEntity, true), IdentifiableEntity.class, Boolean.class);
     }
 
     public static ServiceRequestBuilder partialUpdate(IdentifiableEntity updateEntity) {
-        return createBuilder("update", Lists.newArrayList(updateEntity,false),IdentifiableEntity.class, Boolean.class);
+        return createBuilder("update", Lists.newArrayList(updateEntity, false), IdentifiableEntity.class, Boolean.class);
     }
 
     public static ServiceRequestBuilder deleteById(Serializable id) {
-        return createBuilder("deleteById", Lists.newArrayList(id),Serializable.class);
+        return createBuilder("deleteById", Lists.newArrayList(id), Serializable.class);
     }
 
     public static ServiceRequestBuilder findById(Serializable id) {
-        return createBuilder("findById", Lists.newArrayList(id),Serializable.class);
+        return createBuilder("findById", Lists.newArrayList(id), Serializable.class);
     }
 
-    protected static ServiceRequestBuilder createBuilder(String methodName, List<Object> args,Class... types) {
+    protected static ServiceRequestBuilder createBuilder(String methodName, List<Object> args, Class... types) {
         return serviceUnderTest -> {
-            try {
-                return ServiceRequest.builder()
-                        .args(args)
-                        .serviceMethod(CrudService.class.getMethod(methodName,types ))
-                        .build();
-            } catch (NoSuchMethodException e) {
-                throw new IllegalArgumentException(e);
+            Method method = MethodUtils.getMatchingMethod(serviceUnderTest.getClass(), methodName, types);
+            if (method == null) {
+                throw new IllegalArgumentException("Cant find method: " + methodName + " in service: " + serviceUnderTest);
             }
+            return ServiceRequest.builder()
+                    .args(args)
+                    .serviceMethod(method)
+                    .build();
         };
     }
 
