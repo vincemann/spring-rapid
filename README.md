@@ -1,5 +1,4 @@
 # Overview  
-!! Under Active Developement !!  
 Spring Rapid consists of modules encapsulating solutions for **common issues** when developing Spring REST APIs.  
 The goal is too **speed up** the developement process and stop rewriting the same code over and over again.  
 Instead there should be very well implemented modules for each task, that can be plugged in whenever needed.  
