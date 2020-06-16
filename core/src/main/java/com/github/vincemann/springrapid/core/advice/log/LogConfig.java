@@ -6,5 +6,6 @@ import java.lang.annotation.*;
 @Retention(RetentionPolicy.RUNTIME)
 @Inherited
 public @interface LogConfig {
-    boolean ignoreGetters() default false;
+    boolean ignoreGetters() default true;
+    boolean ignoreSetters() default true;
 }

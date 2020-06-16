@@ -11,12 +11,12 @@ import javax.persistence.EntityManager;
 
 @Configuration
 @Slf4j
-public class RapidGeneralAutoConfiguration {
+public class RapidUtilAutoConfiguration {
 
     @Autowired(required = false)
     EntityManager entityManager;
 
-    public RapidGeneralAutoConfiguration() {
+    public RapidUtilAutoConfiguration() {
         log.info("Created");
     }
 

@@ -7,7 +7,7 @@ import java.lang.annotation.*;
 /**
  * Annotate any Implementation's public Method with this annotation to log all interactions with this method.
  * Includes Arguments, return Value.
- * @see LogComponentInteractionAdvice
+ * @see LogInteractionAdvice
  */
 @Target({ElementType.METHOD,ElementType.TYPE})
 @Retention(RetentionPolicy.RUNTIME)
