@@ -20,8 +20,8 @@ The packages, whos name starts with lemon are copied from spring-lemon, modified
 * Uni- and Bidirectional relationship management for all crud opeartions                             (entity-relationship)  
 * Resolving of ids in dtos referencing other entities and vice versa                       (entity-relationship)  
 * Testsupport for service and controller layer of rapid-core                                         (core-Test)  
-* SecurityProxy solution for applying Acl-based, plugin-like 
-  rules that restrict access to service methods + automatic Acl setup                                 (acl)            
+* SecurityProxy for applying acl-based rule-plugins
+   that restrict access to service methods + automatic acl setup                                 (acl)            
     
  # Include  
 * replace MODULE with the module you want to include (module-name = directory-name)  
