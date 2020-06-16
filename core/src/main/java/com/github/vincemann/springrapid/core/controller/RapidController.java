@@ -3,8 +3,6 @@ package com.github.vincemann.springrapid.core.controller;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.fge.jsonpatch.JsonPatchException;
-import com.github.vincemann.springrapid.core.advice.log.LogComponentInteractionAdvice;
-import com.github.vincemann.springrapid.core.advice.log.LogInteraction;
 import com.github.vincemann.springrapid.core.controller.dtoMapper.DelegatingDtoMapper;
 import com.github.vincemann.springrapid.core.controller.dtoMapper.context.Direction;
 import com.github.vincemann.springrapid.core.controller.dtoMapper.context.DtoMappingContext;

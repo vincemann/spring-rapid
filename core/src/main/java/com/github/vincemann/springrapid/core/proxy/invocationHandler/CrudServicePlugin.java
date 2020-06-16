@@ -1,6 +1,7 @@
 package com.github.vincemann.springrapid.core.proxy.invocationHandler;
 
 import com.github.vincemann.springrapid.core.advice.log.AopLoggable;
+import com.github.vincemann.springrapid.core.advice.log.LogConfig;
 import com.github.vincemann.springrapid.core.advice.log.LogInteraction;
 import com.github.vincemann.springrapid.core.service.CrudService;
 import com.github.vincemann.springrapid.core.slicing.components.ServiceComponent;
@@ -22,6 +23,7 @@ import java.io.Serializable;
  */
 @ServiceComponent
 @LogInteraction
+@LogConfig
 public abstract class CrudServicePlugin<E extends IdentifiableEntity<Id>, Id extends Serializable> implements AopLoggable {
 
 //    public void onBeforeSave(E toSave, Class<? extends E> entityClass){}
