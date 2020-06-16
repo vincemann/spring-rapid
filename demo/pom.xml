@@ -76,6 +76,13 @@
             <scope>runtime</scope>
         </dependency>
 
+        <dependency>
+            <groupId>com.github.nickvl</groupId>
+            <artifactId>xspring-aop-logging</artifactId>
+            <version>0.3.2</version>
+        </dependency>
+
+
 
 
     </dependencies>

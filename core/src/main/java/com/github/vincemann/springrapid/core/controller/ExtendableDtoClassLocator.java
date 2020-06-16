@@ -13,7 +13,7 @@ import java.util.Optional;
  * Every controller has one. -> scope = Prototype.
  * Can have {@link this#localLocators}, that will be called before {@link this#globalLocator}.
  */
-@LogInteraction
+//@LogInteraction
 public class ExtendableDtoClassLocator {
     private DtoMappingContext context;
     private List<LocalDtoClassLocator> localLocators = new ArrayList<>();
@@ -24,7 +24,7 @@ public class ExtendableDtoClassLocator {
 
     private DtoClassLocator globalLocator;
 
-//    @LogInteraction
+//    //@LogInteraction
     public Class<?> find(DtoMappingInfo info){
         Assert.notNull(context,"Context must be initialized");
         //local

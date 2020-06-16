@@ -26,25 +26,25 @@ public class LemonAclPlugin extends AbstractAclPlugin {
         this.repository = repository;
     }
 
-    @LogInteraction(level = LogInteraction.Level.TRACE)
+    ////@LogInteraction(level = LogInteraction.Level.TRACE)
     @CalledByProxy
     public void onAfterSave(AbstractUser toSave, AbstractUser saved){
         savePostSignupAclInfo(saved.getEmail());
     }
 
-    @LogInteraction(level = LogInteraction.Level.TRACE)
+    ////@LogInteraction(level = LogInteraction.Level.TRACE)
     @CalledByProxy
     public void onAfterSignup(AbstractUser registerAttempt,AbstractUser saved){
         savePostSignupAclInfo(registerAttempt.getEmail());
     }
 
-    @LogInteraction(level = LogInteraction.Level.TRACE)
+    ////@LogInteraction(level = LogInteraction.Level.TRACE)
     @CalledByProxy
     public void onAfterCreateAdminUser(LemonProperties.Admin admin){
         savePostSignupAclInfo(admin.getEmail());
     }
 
-    @LogInteraction(level = LogInteraction.Level.TRACE)
+    ////@LogInteraction(level = LogInteraction.Level.TRACE)
     public void savePostSignupAclInfo(String email){
         log.debug("saving acl info for signed up user: " + email);
         Optional<AbstractUser> byEmail = repository.findByEmail(email);

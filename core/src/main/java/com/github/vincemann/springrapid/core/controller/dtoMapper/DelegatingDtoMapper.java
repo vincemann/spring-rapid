@@ -18,7 +18,7 @@ public class DelegatingDtoMapper{
     private List<DtoMapper<?, ?>> delegates = new ArrayList<>();
     private List<DtoPostProcessor> postProcessors = new ArrayList<>();
 
-    @LogInteraction
+    //@LogInteraction
     public <T extends IdentifiableEntity<?>> T mapToEntity(Object dto, Class<T> destinationClass) throws EntityNotFoundException, BadEntityException {
         T mapped = (T) findMapper(dto.getClass())
                 .mapToEntity(dto, destinationClass);
@@ -38,7 +38,7 @@ public class DelegatingDtoMapper{
         this.postProcessors.add(postProcessor);
     }
 
-    @LogInteraction
+    //@LogInteraction
     public <T> T mapToDto(IdentifiableEntity<?> source, Class<T> destinationClass) throws BadEntityException {
         T dto = (T) findMapper(destinationClass)
                 .mapToDto(source, destinationClass);

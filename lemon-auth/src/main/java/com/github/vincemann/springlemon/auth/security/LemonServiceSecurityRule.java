@@ -35,13 +35,13 @@ public class LemonServiceSecurityRule extends ServiceSecurityRule {
         this.userRepository = userRepository;
     }
 
-    @LogInteraction(level = LogInteraction.Level.TRACE)
+    ////@LogInteraction(level = LogInteraction.Level.TRACE)
     @CalledByProxy
     public void preAuthorizeSave(AbstractUser toSave){
         getSecurityChecker().checkRole(LemonRole.GOOD_ADMIN);
     }
 
-    @LogInteraction(level = LogInteraction.Level.TRACE)
+    ////@LogInteraction(level = LogInteraction.Level.TRACE)
     @CalledByProxy
     public void preAuthorizeResendVerificationMail(AbstractUser user){
         LexUtils.ensureFound(user);
@@ -73,7 +73,7 @@ public class LemonServiceSecurityRule extends ServiceSecurityRule {
 //
 //    }
 
-    @LogInteraction(level = LogInteraction.Level.TRACE)
+    ////@LogInteraction(level = LogInteraction.Level.TRACE)
     @CalledByProxy
     @OverrideDefaultSecurityRule
     public void preAuthorizeUpdate(AbstractUser<?> update,boolean full) throws BadEntityException, EntityNotFoundException{
@@ -99,7 +99,7 @@ public class LemonServiceSecurityRule extends ServiceSecurityRule {
         }
     }
 
-    @LogInteraction(level = LogInteraction.Level.TRACE)
+    ////@LogInteraction(level = LogInteraction.Level.TRACE)
     @CalledByProxy
     public void postAuthorizeProcessUser(AbstractUser user, AbstractUser result){
         //only include email if user has write permission
@@ -108,7 +108,7 @@ public class LemonServiceSecurityRule extends ServiceSecurityRule {
         }
     }
 
-    @LogInteraction(level = LogInteraction.Level.TRACE)
+    ////@LogInteraction(level = LogInteraction.Level.TRACE)
     @CalledByProxy
     public void preAuthorizeForgotPassword(String email){
         //check if write permission over user
@@ -120,29 +120,29 @@ public class LemonServiceSecurityRule extends ServiceSecurityRule {
         }
     }
 
-    @LogInteraction(level = LogInteraction.Level.TRACE)
+    ////@LogInteraction(level = LogInteraction.Level.TRACE)
     @CalledByProxy
     public void preAuthorizeChangePassword(AbstractUser user, ChangePasswordForm changePasswordForm){
         LexUtils.ensureFound(user);
         getSecurityChecker().checkPermission(user.getId(),user.getClass(), getWritePermission());
     }
-    @LogInteraction(level = LogInteraction.Level.TRACE)
+    ////@LogInteraction(level = LogInteraction.Level.TRACE)
     @CalledByProxy
     public void preAuthorizeRequestEmailChange(Serializable userId, RequestEmailChangeForm emailChangeForm, Class userClazz){
         LexUtils.ensureFound(userRepository.findById(userId));
         getSecurityChecker().checkPermission(userId,userClazz,getWritePermission());
     }
-    @LogInteraction(level = LogInteraction.Level.TRACE)
+    ////@LogInteraction(level = LogInteraction.Level.TRACE)
     @CalledByProxy
     public void preAuthorizeChangeEmail(Serializable userId, String changeEmailCode) {
         getSecurityChecker().checkAuthenticated();
     }
-    @LogInteraction(level = LogInteraction.Level.TRACE)
+    ////@LogInteraction(level = LogInteraction.Level.TRACE)
     @CalledByProxy
     public void preAuthorizeFetchNewToken(Optional<Long> expirationMillis, Optional<String> optionalUsername){
         getSecurityChecker().checkAuthenticated();
     }
-    @LogInteraction(level = LogInteraction.Level.TRACE)
+    ////@LogInteraction(level = LogInteraction.Level.TRACE)
     @CalledByProxy
     public void preAuthorizeFetchFullToken(String authHeader){
         getSecurityChecker().checkAuthenticated();

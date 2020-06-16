@@ -24,7 +24,7 @@ public class LemonOwnerLocator implements OwnerLocator<LemonEntity> {
         return LemonEntity.class.isAssignableFrom(clazz);
     }
 
-    @LogInteraction
+    //@LogInteraction
     @Override
     public Optional<String> find(LemonEntity entity) {
         try {

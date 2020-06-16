@@ -30,7 +30,7 @@ public class LemonJpaTokenAuthenticationFilter<U extends AbstractUser<ID>, ID ex
 		log.info("Created");		
 	}
 
-	@LogInteraction(level = LogInteraction.Level.TRACE)
+	////@LogInteraction(level = LogInteraction.Level.TRACE)
 	@Override
 	protected LemonUserDto fetchUserDto(JWTClaimsSet claims) {
 		

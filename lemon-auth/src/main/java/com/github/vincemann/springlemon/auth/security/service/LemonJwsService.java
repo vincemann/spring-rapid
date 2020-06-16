@@ -27,7 +27,7 @@ public class LemonJwsService extends AbstractJwtService implements BlueTokenServ
 		verifier = new MACVerifier(secret);
 	}
 
-	@LogInteraction(level = LogInteraction.Level.TRACE)
+	////@LogInteraction(level = LogInteraction.Level.TRACE)
 	@Override
 	public String createToken(String aud, String subject, Long expirationMillis, Map<String, Object> claimMap) {
 		
@@ -50,7 +50,7 @@ public class LemonJwsService extends AbstractJwtService implements BlueTokenServ
 		return jwsObject.serialize();
 	}
 
-	@LogInteraction(level = LogInteraction.Level.TRACE)
+	////@LogInteraction(level = LogInteraction.Level.TRACE)
 	/**
 	 * Parses a token
 	 */

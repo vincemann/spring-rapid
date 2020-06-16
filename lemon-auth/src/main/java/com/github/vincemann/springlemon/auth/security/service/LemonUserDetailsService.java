@@ -34,7 +34,7 @@ implements UserDetailsService {
 		log.info("Created");
 	}
 
-	@LogInteraction(level = LogInteraction.Level.TRACE)
+	////@LogInteraction(level = LogInteraction.Level.TRACE)
 	@Override
 	public LemonPrincipal loadUserByUsername(String username)
 			throws UsernameNotFoundException {

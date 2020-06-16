@@ -1,7 +1,9 @@
 package com.github.vincemann.springrapid.demo.service.jpa;
 
+import com.github.nickvl.xspring.core.log.aop.annotation.LogDebug;
 import com.github.vincemann.springrapid.core.advice.log.InteractionLoggable;
 import com.github.vincemann.springrapid.core.advice.log.LogInteraction;
+import com.github.vincemann.springrapid.core.service.exception.BadEntityException;
 import com.github.vincemann.springrapid.demo.model.Owner;
 import com.github.vincemann.springrapid.demo.repo.OwnerRepository;
 import com.github.vincemann.springrapid.demo.service.OwnerService;
@@ -16,7 +18,7 @@ import java.util.Optional;
 @Qualifier("noProxy")
 @Service
 @ServiceComponent
-@LogInteraction
+//@LogInteraction
 public class OwnerJPAService extends JPACrudService<Owner,Long, OwnerRepository> implements OwnerService, InteractionLoggable {
 
 
@@ -24,6 +26,13 @@ public class OwnerJPAService extends JPACrudService<Owner,Long, OwnerRepository>
     @Override
     public Optional<Owner> findByLastName(String lastName) {
         return getRepository().findByLastName(lastName);
+    }
+
+    @LogInteraction
+    @Transactional
+    @Override
+    public Owner save(Owner entity) throws BadEntityException {
+        return super.save(entity);
     }
 
     /**
