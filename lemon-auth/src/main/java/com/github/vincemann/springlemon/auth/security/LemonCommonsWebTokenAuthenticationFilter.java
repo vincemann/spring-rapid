@@ -71,7 +71,7 @@ public class LemonCommonsWebTokenAuthenticationFilter extends OncePerRequestFilt
 		filterChain.doFilter(request, response);
 	}
 
-	@LogInteraction(level = LogInteraction.Level.TRACE)
+	////@LogInteraction(level = LogInteraction.Level.TRACE)
 	public Authentication createAuthToken(String token) {
 		
 		JWTClaimsSet claims = blueTokenService.parseToken(token, BlueTokenService.AUTH_AUDIENCE);

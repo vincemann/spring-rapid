@@ -6,10 +6,11 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.reflect.MethodUtils;
 import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.ProceedingJoinPoint;
-import org.aspectj.lang.annotation.AfterThrowing;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.reflect.MethodSignature;
+import org.springframework.aop.framework.Advised;
+import org.springframework.aop.support.AopUtils;
 import org.springframework.test.util.AopTestUtils;
 import org.springframework.util.Assert;
 
@@ -139,12 +140,12 @@ public class LogComponentInteractionAdvice {
     @SneakyThrows
     private static LogInteraction extractAnnotation(JoinPoint joinPoint) {
         MethodSignature signature = (MethodSignature) joinPoint.getSignature();
-        Class<?> targetClass = AopTestUtils.getUltimateTargetObject(joinPoint.getTarget()).getClass();
+        Class<?> targetClass = AopUtils.getTargetClass(joinPoint.getTarget());
         Method method = MethodUtils.getMatchingMethod(targetClass,
                 signature.getMethod().getName(),
                 signature.getMethod().getParameterTypes()
         );
-        LogInteraction logInteraction = method.getAnnotation(LogInteraction.class);
+        LogInteraction logInteraction = method.getDeclaredAnnotation(LogInteraction.class);
 
 //        int paramCount = joinPoint.getArgs().length;
 //        List<Method> methods = MethodUtils.getMethodsListWithAnnotation(joinPoint.getTarget().getClass(), LogInteraction.class);
@@ -160,8 +161,49 @@ public class LogComponentInteractionAdvice {
                 //from method
                 : logInteraction;
     }
-//"@target(com.github.vincemann.springrapid.core.advice.log.LogInteraction) && within(com.github.vincemann.*)"
-    @Around("target(com.github.vincemann.springrapid.core.advice.log.InteractionLoggable)"/*"@annotation(com.github.vincemann.springrapid.core.advice.log.LogInteraction)"*/)
+
+    @SuppressWarnings({"unchecked"})
+    private static <T> T getTargetObject(Object proxy) throws Exception {
+        Object target = proxy;
+        while (isProxy(target)) {
+            Advised advised = (Advised) proxy;
+            try {
+                target =  advised.getTargetSource().getTarget();
+            } catch (Exception e) {
+                return (T) target;
+            }
+        }
+        return (T) target;
+    }
+
+    private static boolean isProxy(final Object target) {
+        return target.getClass().getCanonicalName().contains("$Proxy");
+    }
+
+
+
+//    @Around("execution(* (@LogInteraction *).*(..)) || execution(@LogInteraction * *(..))")
+//    public Object process(ProceedingJoinPoint joinPoint) throws Throwable {
+//        LogInteraction logInteraction = null;
+//        for (Annotation annotation : ((MethodSignature) joinPoint.getSignature()).getMethod().getDeclaredAnnotations()) {
+//            if (annotation instanceof LogInteraction) {
+//                logInteraction = (LogInteraction) annotation;
+//                break;
+//            }
+//        }
+//        if (logInteraction == null) {
+//            logInteraction = joinPoint.getTarget().getClass().getAnnotationsByType(LogInteraction.class)[0];
+//        }
+//        log.debug("AspectA: logInteraction target:" + joinPoint.getTarget().getClass().getSimpleName());
+//        log.debug(" level:" + logInteraction.level());
+//        return joinPoint.proceed();
+//    }
+
+
+
+
+    //"@target(com.github.vincemann.springrapid.core.advice.log.LogInteraction) && within(com.github.vincemann.*)"
+    @Around("target(InteractionLoggable)"/*"@annotation(com.github.vincemann.springrapid.core.advice.log.LogInteraction)"*/)
     public Object log(ProceedingJoinPoint joinPoint) throws Throwable {
         LogInteraction logInteraction = extractAnnotation(joinPoint);
 
@@ -224,7 +266,7 @@ public class LogComponentInteractionAdvice {
         throw new IllegalStateException("Unknown log level");
     }
 
-    @AfterThrowing("target(com.github.vincemann.springrapid.core.advice.log.InteractionLoggable)"/*"@annotation(com.github.vincemann.springrapid.core.advice.log.LogInteraction)"*/)
+//    @AfterThrowing("target(com.github.vincemann.springrapid.core.advice.log.InteractionLoggable)"/*"@annotation(com.github.vincemann.springrapid.core.advice.log.LogInteraction)"*/)
     public void onException(JoinPoint joinPoint){
         LogInteraction logInteraction = extractAnnotation(joinPoint);
         if (logInteraction==null)

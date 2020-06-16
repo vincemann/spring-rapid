@@ -107,7 +107,7 @@ public class CrudServiceLocatorImpl implements CrudServiceLocator, ApplicationCo
 //        return infoCrudServiceMap;
 //    }
 
-    @LogInteraction
+    //@LogInteraction
     @Override
     public synchronized CrudService find(Class<? extends IdentifiableEntity> entityClass, Class<? extends ServiceBeanType> annotation) {
 //        return infoCrudServiceMap.entrySet().stream()
@@ -128,7 +128,7 @@ public class CrudServiceLocatorImpl implements CrudServiceLocator, ApplicationCo
 //        return (CrudService) applicationContext.getBean(beanName);
 //    }
 
-    @LogInteraction
+    //@LogInteraction
     @Override
     public synchronized CrudService find(Class<? extends IdentifiableEntity> entityClass) {
 //        return infoCrudServiceMap.entrySet().stream()

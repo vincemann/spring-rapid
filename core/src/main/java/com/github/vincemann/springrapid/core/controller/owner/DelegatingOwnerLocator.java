@@ -18,7 +18,7 @@ public class DelegatingOwnerLocator {
         ownerLocators.add(ownerLocator);
     }
 
-    @LogInteraction
+    //@LogInteraction
     public Optional<String> find(IdentifiableEntity<?> entity){
         Optional<OwnerLocator> locator = ownerLocators.stream()
                 .filter(l -> l.supports(entity.getClass()))

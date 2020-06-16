@@ -6,6 +6,7 @@ import com.github.vincemann.springrapid.core.model.IdentifiableEntity;
 import com.github.vincemann.springrapid.core.proxy.invocationHandler.CrudServicePluginProxy;
 import com.github.vincemann.springrapid.core.service.CrudService;
 import com.github.vincemann.springrapid.core.proxy.invocationHandler.CrudServicePlugin;
+import net.sf.cglib.proxy.Enhancer;
 import org.apache.commons.lang3.ClassUtils;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.test.util.AopTestUtils;
@@ -29,7 +30,6 @@ public class CrudServicePluginProxyFactory {
                 unproxied.getClass().getClassLoader(),
                 ClassUtils.getAllInterfaces(unproxied.getClass()).toArray(new Class[0]),
                 new CrudServicePluginProxy(unproxied, Lists.newArrayList(plugins)));
-
         return proxyInstance;
     }
 

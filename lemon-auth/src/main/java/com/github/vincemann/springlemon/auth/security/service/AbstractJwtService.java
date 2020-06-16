@@ -39,14 +39,14 @@ public abstract class AbstractJwtService implements LemonTokenService {
 	}
 
 
-	@LogInteraction(level = LogInteraction.Level.TRACE)
+	////@LogInteraction(level = LogInteraction.Level.TRACE)
 	@Override
 	public String createToken(String audience, String subject, Long expirationMillis) {
 
 		return createToken(audience, subject, expirationMillis, new HashMap<>());
 	}
 
-	@LogInteraction(level = LogInteraction.Level.TRACE)
+	////@LogInteraction(level = LogInteraction.Level.TRACE)
 	@Override
 	public JWTClaimsSet parseToken(String token, String audience) {
 
@@ -68,7 +68,7 @@ public abstract class AbstractJwtService implements LemonTokenService {
 	}
 
 
-	@LogInteraction(level = LogInteraction.Level.TRACE)
+	////@LogInteraction(level = LogInteraction.Level.TRACE)
 	@Override
 	public JWTClaimsSet parseToken(String token, String audience, long issuedAfter) {
 		
@@ -82,7 +82,7 @@ public abstract class AbstractJwtService implements LemonTokenService {
 	}
 
 
-	@LogInteraction(level = LogInteraction.Level.TRACE)
+	////@LogInteraction(level = LogInteraction.Level.TRACE)
 	@Override
 	public <T> T parseClaim(String token, String claim) {
 		

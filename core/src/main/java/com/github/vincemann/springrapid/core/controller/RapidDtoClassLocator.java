@@ -24,7 +24,7 @@ public class RapidDtoClassLocator implements DtoClassLocator {
      * @return
      */
     @Override
-    @LogInteraction
+    //@LogInteraction
     public Class<?> find(DtoMappingInfo info, DtoMappingContext context) {
         Map<DtoMappingInfo, Class<?>> mappingEntries = context.getMappingEntries();
         Set<DtoMappingInfo> endpointMatches = findEndpointMatches(info,context);

@@ -13,7 +13,7 @@ import java.util.Set;
 @Slf4j
 public class MergeUpdateStrategyImpl implements MergeUpdateStrategy<IdentifiableEntity<?>> {
 
-    @LogInteraction
+    ////@LogInteraction
     @Override
     public IdentifiableEntity<?> merge(IdentifiableEntity<?> patch, IdentifiableEntity<?> saved, Class<?> dtoClass) throws BadEntityException {
         Map<String, Field> entityFields = ReflectionUtilsBean.getInstance().getNameFieldMap(saved.getClass());

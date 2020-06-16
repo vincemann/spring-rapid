@@ -52,7 +52,7 @@ public class LemonJweService extends AbstractJwtService implements GreenTokenSer
 	}
 
 
-	@LogInteraction(level = LogInteraction.Level.TRACE)
+	////@LogInteraction(level = LogInteraction.Level.TRACE)
 	@Override
 	public String createToken(String aud, String subject, Long expirationMillis, Map<String, Object> claimMap) {
 		
@@ -75,7 +75,7 @@ public class LemonJweService extends AbstractJwtService implements GreenTokenSer
 	}
 
 
-	@LogInteraction(level = LogInteraction.Level.TRACE)
+	////@LogInteraction(level = LogInteraction.Level.TRACE)
 	/**
 	 * Parses a token
 	 */

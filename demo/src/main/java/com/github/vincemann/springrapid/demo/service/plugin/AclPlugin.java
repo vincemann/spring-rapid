@@ -1,5 +1,7 @@
 package com.github.vincemann.springrapid.demo.service.plugin;
 
+import com.github.nickvl.xspring.core.log.aop.annotation.LogDebug;
+import com.github.vincemann.springrapid.core.advice.log.LogInteraction;
 import com.github.vincemann.springrapid.core.slicing.components.ServiceComponent;
 import com.github.vincemann.springrapid.core.model.IdentifiableEntity;
 import com.github.vincemann.springrapid.core.proxy.invocationHandler.CrudServicePlugin;
@@ -7,6 +9,7 @@ import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @ServiceComponent
+@LogInteraction
 public class AclPlugin extends CrudServicePlugin<IdentifiableEntity<Long>,Long> {
 
     public void onBeforeSave(IdentifiableEntity<Long> toSave, Class<? extends IdentifiableEntity<Long>> entityClass) {

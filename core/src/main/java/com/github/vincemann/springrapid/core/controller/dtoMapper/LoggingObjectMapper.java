@@ -9,13 +9,13 @@ import com.github.vincemann.springrapid.core.advice.log.LogInteraction;
 
 public class LoggingObjectMapper extends ObjectMapper {
 
-    @LogInteraction
+    //@LogInteraction
     @Override
     public <T> T readValue(String content, Class<T> valueType) throws JsonProcessingException {
         return super.readValue(content, valueType);
     }
 
-    @LogInteraction
+    //@LogInteraction
     @Override
     public <T> T readValue(String content, TypeReference<T> valueTypeRef) throws JsonProcessingException, JsonMappingException {
         return super.readValue(content, valueTypeRef);
@@ -23,13 +23,13 @@ public class LoggingObjectMapper extends ObjectMapper {
 
 
 
-    @LogInteraction
+    //@LogInteraction
     @Override
     public <T> T readValue(String content, JavaType valueType) throws JsonProcessingException {
         return super.readValue(content, valueType);
     }
 
-    @LogInteraction
+    //@LogInteraction
     @Override
     public String writeValueAsString(Object value) throws JsonProcessingException {
         return super.writeValueAsString(value);

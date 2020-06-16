@@ -7,6 +7,7 @@ import com.github.vincemann.springrapid.core.service.exception.EntityNotFoundExc
 import com.github.vincemann.springrapid.coretest.service.CrudServiceIntegrationTest;
 import com.github.vincemann.springrapid.coretest.service.result.ServiceResult;
 import com.github.vincemann.springrapid.demo.EnableProjectComponentScan;
+import com.github.vincemann.springrapid.demo.config.AopLoggingConfig;
 import com.github.vincemann.springrapid.demo.model.Owner;
 import com.github.vincemann.springrapid.demo.model.Pet;
 import com.github.vincemann.springrapid.demo.model.PetType;
@@ -21,6 +22,7 @@ import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.mock.mockito.SpyBean;
+import org.springframework.context.annotation.Import;
 
 import java.time.LocalDate;
 import java.util.HashSet;
@@ -37,6 +39,7 @@ import static com.github.vincemann.springrapid.coretest.service.PropertyMatchers
 
 @EnableProjectComponentScan
 @ImportRapidEntityRelServiceConfig
+@Import(AopLoggingConfig.class)
 class OwnerServiceIntegrationTest
         extends CrudServiceIntegrationTest<OwnerService, Owner, Long> {
     //Types
