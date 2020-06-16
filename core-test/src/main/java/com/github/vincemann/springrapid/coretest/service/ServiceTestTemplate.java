@@ -107,8 +107,8 @@ public class ServiceTestTemplate
         try {
             Object result = serviceRequest.getServiceMethod().invoke(
                     //todo ist das hier nicht bs? warum sollte ich die aspekt proxys deactivieren?
-                    AopTestUtils.getUltimateTargetObject(serviceUnderTest),
-                    //serviceUnderTest,
+//                    AopTestUtils.getUltimateTargetObject(serviceUnderTest),
+                    serviceUnderTest,
                     serviceRequest.getArgs().toArray()
             );
             return ServiceResult.builder()

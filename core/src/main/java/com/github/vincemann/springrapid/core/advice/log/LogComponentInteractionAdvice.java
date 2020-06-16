@@ -3,19 +3,19 @@ package com.github.vincemann.springrapid.core.advice.log;
 import lombok.AllArgsConstructor;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.ClassUtils;
 import org.apache.commons.lang3.reflect.MethodUtils;
 import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.reflect.MethodSignature;
-import org.springframework.aop.framework.Advised;
-import org.springframework.aop.support.AopUtils;
 import org.springframework.test.util.AopTestUtils;
 import org.springframework.util.Assert;
 
 import java.lang.reflect.Method;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 @Aspect()
@@ -132,81 +132,13 @@ public class LogComponentInteractionAdvice {
         return paddingChar.repeat(paddingLength);
     }
 
-    /**
-     * get annotation from target method, if not present from target class
-     * @param joinPoint
-     * @return
-     */
-    @SneakyThrows
-    private static LogInteraction extractAnnotation(JoinPoint joinPoint) {
-        MethodSignature signature = (MethodSignature) joinPoint.getSignature();
-        Class<?> targetClass = AopUtils.getTargetClass(joinPoint.getTarget());
-        Method method = MethodUtils.getMatchingMethod(targetClass,
-                signature.getMethod().getName(),
-                signature.getMethod().getParameterTypes()
-        );
-        LogInteraction logInteraction = method.getDeclaredAnnotation(LogInteraction.class);
-
-//        int paramCount = joinPoint.getArgs().length;
-//        List<Method> methods = MethodUtils.getMethodsListWithAnnotation(joinPoint.getTarget().getClass(), LogInteraction.class);
-//        Optional<Method> method = methods.stream().filter(m -> m.getName().equals(joinPoint.getSignature().getName())
-//                && m.getParameterCount() == paramCount
-//        ).findFirst();
-//        LogInteraction methodAnnotation = method
-//                .map(value -> value.getAnnotation(LogInteraction.class))
-//                .orElse(null);
-        return logInteraction == null ?
-                //from class
-                targetClass.getDeclaredAnnotation(LogInteraction.class)
-                //from method
-                : logInteraction;
-    }
-
-    @SuppressWarnings({"unchecked"})
-    private static <T> T getTargetObject(Object proxy) throws Exception {
-        Object target = proxy;
-        while (isProxy(target)) {
-            Advised advised = (Advised) proxy;
-            try {
-                target =  advised.getTargetSource().getTarget();
-            } catch (Exception e) {
-                return (T) target;
-            }
-        }
-        return (T) target;
-    }
-
-    private static boolean isProxy(final Object target) {
-        return target.getClass().getCanonicalName().contains("$Proxy");
-    }
-
-
-
-//    @Around("execution(* (@LogInteraction *).*(..)) || execution(@LogInteraction * *(..))")
-//    public Object process(ProceedingJoinPoint joinPoint) throws Throwable {
-//        LogInteraction logInteraction = null;
-//        for (Annotation annotation : ((MethodSignature) joinPoint.getSignature()).getMethod().getDeclaredAnnotations()) {
-//            if (annotation instanceof LogInteraction) {
-//                logInteraction = (LogInteraction) annotation;
-//                break;
-//            }
-//        }
-//        if (logInteraction == null) {
-//            logInteraction = joinPoint.getTarget().getClass().getAnnotationsByType(LogInteraction.class)[0];
-//        }
-//        log.debug("AspectA: logInteraction target:" + joinPoint.getTarget().getClass().getSimpleName());
-//        log.debug(" level:" + logInteraction.level());
-//        return joinPoint.proceed();
-//    }
 
 
 
 
-    //"@target(com.github.vincemann.springrapid.core.advice.log.LogInteraction) && within(com.github.vincemann.*)"
-    @Around("target(InteractionLoggable)"/*"@annotation(com.github.vincemann.springrapid.core.advice.log.LogInteraction)"*/)
+    @Around("this(com.github.vincemann.springrapid.core.advice.log.AopLoggable)")
     public Object log(ProceedingJoinPoint joinPoint) throws Throwable {
         LogInteraction logInteraction = extractAnnotation(joinPoint);
-
         if (logInteraction==null)
             return joinPoint.proceed();
         if (!logWanted(logInteraction.level()))
@@ -250,6 +182,63 @@ public class LogComponentInteractionAdvice {
         return ret;
     }
 
+    @SneakyThrows
+    private static LogInteraction extractAnnotation(JoinPoint joinPoint) {
+        MethodSignature signature = (MethodSignature) joinPoint.getSignature();
+        //resolve aop and cglib proxies, jdk runtime proxies remain
+        Object target = AopTestUtils.getUltimateTargetObject(joinPoint.getTarget());
+        Class<?> targetClass = target.getClass();
+
+        LogInteraction found = null;
+        //proxy
+        if (isProxyClass(targetClass)){
+            found =  extractFromInterfaces(targetClass,signature);
+        }
+        //no proxy
+        else {
+            Method method = MethodUtils.getMatchingMethod(targetClass, signature.getName(), signature.getParameterTypes());
+            LogInteraction methodAnnotation = method.getDeclaredAnnotation(LogInteraction.class);
+            if (methodAnnotation!=null){
+                return methodAnnotation;
+            }
+            LogInteraction classAnnotation = targetClass.getDeclaredAnnotation(LogInteraction.class);
+            if (classAnnotation!=null){
+                return classAnnotation;
+            }
+            return extractFromInterfaces(targetClass,signature);
+        }
+    }
+
+    //go through all interfaces in order low -> high in hierarchy and return first match's annotation
+    //method gets checked first than type (for each)
+    //todo cache this
+    private static LogInteraction extractFromInterfaces(Class<?> targetClass,MethodSignature signature){
+        //order is: first match will be lowest in hierachy -> first match will be latest
+        List<Class<?>> interfaces = ClassUtils.getAllInterfaces(targetClass);
+        for (Class<?> candidate :interfaces){
+            Method method = MethodUtils.getMatchingMethod(candidate, signature.getName(), signature.getParameterTypes());
+            if (method!=null) {
+                //interface has method
+                //method
+                LogInteraction annotation = method.getAnnotation(LogInteraction.class);
+                if (annotation != null) {
+                    return annotation;
+                }
+                //type
+                LogInteraction classAnnotation = candidate.getAnnotation(LogInteraction.class);
+                if (classAnnotation!=null){
+                    return classAnnotation;
+                }
+            }
+
+        }
+        return null;
+    }
+
+    private static boolean isProxyClass(final Class target) {
+        return target.getCanonicalName().contains("$Proxy");
+    }
+
     private static boolean logWanted(LogInteraction.Level level){
         switch (level){
             case TRACE:
@@ -267,24 +256,24 @@ public class LogComponentInteractionAdvice {
     }
 
 //    @AfterThrowing("target(com.github.vincemann.springrapid.core.advice.log.InteractionLoggable)"/*"@annotation(com.github.vincemann.springrapid.core.advice.log.LogInteraction)"*/)
-    public void onException(JoinPoint joinPoint){
-        LogInteraction logInteraction = extractAnnotation(joinPoint);
-        if (logInteraction==null)
-            return;
-        if (!logWanted(logInteraction.level()))
-            return;
-
-
-        String methodName = joinPoint.getSignature().getName();
-        String clazzName = joinPoint.getTarget().getClass().getSimpleName();
-        logResult(
-                methodName,
-                clazzName,
-                logInteraction.level(),
-                true,
-                "Exception thrown"
-        );
-    }
+//    public void onException(JoinPoint joinPoint){
+//        LogInteraction logInteraction = extractAnnotation(joinPoint);
+//        if (logInteraction==null)
+//            return;
+//        if (!logWanted(logInteraction.level()))
+//            return;
+//
+//
+//        String methodName = joinPoint.getSignature().getName();
+//        String clazzName = joinPoint.getTarget().getClass().getSimpleName();
+//        logResult(
+//                methodName,
+//                clazzName,
+//                logInteraction.level(),
+//                true,
+//                "Exception thrown"
+//        );
+//    }
 
     @AllArgsConstructor
     private static class Logger {

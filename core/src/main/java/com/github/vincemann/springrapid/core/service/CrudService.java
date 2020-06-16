@@ -1,5 +1,6 @@
 package com.github.vincemann.springrapid.core.service;
 
+import com.github.vincemann.springrapid.core.advice.log.AopLoggable;
 import com.github.vincemann.springrapid.core.advice.log.LogInteraction;
 import com.github.vincemann.springrapid.core.slicing.components.ServiceComponent;
 import com.github.vincemann.springrapid.core.service.exception.BadEntityException;
@@ -23,8 +24,10 @@ public interface CrudService
                 Id extends Serializable,
                 R extends CrudRepository<E,Id>
         >
+    extends AopLoggable
 {
 
+    @LogInteraction
     Optional<E> findById(Id id) throws BadEntityException;
 
     /**
@@ -35,12 +38,16 @@ public interface CrudService
      * @param entity
      * @return updated (database) entity
      */
+    @LogInteraction
     E update(E entity, Boolean full) throws EntityNotFoundException, BadEntityException, BadEntityException;
 
+    @LogInteraction
     E save(E entity) throws  BadEntityException;
 
+    @LogInteraction
     Set<E> findAll();
 
+    @LogInteraction
     void deleteById(Id id) throws EntityNotFoundException, BadEntityException;
 
     Class<E> getEntityClass();

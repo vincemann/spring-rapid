@@ -74,8 +74,10 @@ public class RapidEntityPlaceholderResolver implements EntityPlaceholderResolver
         List<Object> args = testContext.getServiceRequest().getArgs();
         if (args != null) {
             IdentifiableEntity firstEntity = findFirstEntityWithSetId(args);
-            if (firstEntity.getId() != null) {
-                return firstEntity.getId();
+            if (firstEntity!=null) {
+                if (firstEntity.getId() != null) {
+                    return firstEntity.getId();
+                }
             }
         }
         throw new IllegalArgumentException("Id for db Entity could not be found");
