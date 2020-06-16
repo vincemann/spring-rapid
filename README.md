@@ -10,8 +10,6 @@ Along with the Crud Module (Core) come many other modules building upon the core
   
 This project is inspired by [**Spring-Lemon**](https://github.com/naturalprogrammer/spring-lemon) which offers many good modules as well.  
 The packages, whos name starts with lemon are copied from spring-lemon, modified and integated to work together with rapid modules.  
-Any help with developement is greatly appreciated.  
-Feel free to use, download and modify any code you want.  
   
   
 # Features  
