@@ -1,7 +1,5 @@
-package com.github.vincemann.springrapid.log.nickvl.rapid.resolve;
+package com.github.vincemann.springrapid.log.nickvl;
 
-import com.github.vincemann.springrapid.log.nickvl.AnnotationInfo;
-import com.github.vincemann.springrapid.log.nickvl.ClassAnnotationInfo;
 import org.springframework.core.annotation.AnnotationUtils;
 
 import java.lang.annotation.Annotation;
@@ -17,7 +15,8 @@ import java.lang.reflect.Method;
 // *
 // **/
 //todo cache all
-public class HierarchicAnnotationParser implements AnnotationParser {
+public class HierarchicalAnnotationParser implements AnnotationParser {
+
 
     @Override
     public <A extends Annotation> A fromMethod(Method method, Class<A> type) {
@@ -41,7 +40,7 @@ public class HierarchicAnnotationParser implements AnnotationParser {
             return fromClass==null ? null
                     : new AnnotationInfo<>(fromClass);
         }else {
-            return AnnotationInfo.<A>builder().annotation(fromMethod).classLevel(false).build();
+            return AnnotationInfo.<A>Builder().annotation(fromMethod).classLevel(false).build();
         }
     }
 

@@ -1,4 +1,4 @@
-package com.github.vincemann.springrapid.log.nickvl.rapid.resolve;
+package com.github.vincemann.springrapid.log.nickvl;
 
 import com.github.vincemann.springrapid.log.nickvl.AnnotationInfo;
 import com.github.vincemann.springrapid.log.nickvl.ClassAnnotationInfo;
