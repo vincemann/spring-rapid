@@ -4,7 +4,7 @@ import com.github.vincemann.springrapid.core.slicing.components.ServiceComponent
 import com.github.vincemann.springrapid.core.service.exception.BadEntityException;
 import com.github.vincemann.springrapid.core.model.IdentifiableEntity;
 import com.github.vincemann.springrapid.core.service.exception.EntityNotFoundException;
-import com.github.vincemann.springrapid.log.nickvl.annotation.InteractionLoggable;
+import com.github.vincemann.springrapid.log.nickvl.annotation.AopLoggable;
 import com.github.vincemann.springrapid.log.nickvl.annotation.LogDebug;
 import org.springframework.data.repository.CrudRepository;
 
@@ -24,7 +24,7 @@ public interface CrudService
                 Id extends Serializable,
                 R extends CrudRepository<E,Id>
         >
-    extends InteractionLoggable
+    extends AopLoggable
 {
 
     @LogDebug

@@ -20,13 +20,12 @@ import static org.junit.Assert.*;
 /**
  * Tests {@link com.github.vincemann.springrapid.log.nickvl.InvocationDescriptor} with log annotated methods and class.
  */
-@LogInfo
-@LogDebug(LogPoint.OUT)
+@Log(logPoint = LogPoint.OUT,level = Severity.INFO)
 @LogException
 public class InvocationDescriptorClassTestCase {
 
     private Method currMethod;
-    private AnnotationInfo<Logging> loggingAnnotationInfo;
+    private AnnotationInfo<Log> loggingAnnotationInfo;
     private AnnotationInfo<LogException> logExceptionAnnotationInfo;
     private AnnotationParser annotationParser = new HierarchicalAnnotationParser();
 
@@ -35,7 +34,7 @@ public class InvocationDescriptorClassTestCase {
     public MethodRule watchman = new TestWatchman() {
         public void starting(FrameworkMethod method) {
             currMethod = method.getMethod();
-            loggingAnnotationInfo = annotationParser.fromMethodOrClass(currMethod, Logging.class);
+            loggingAnnotationInfo = annotationParser.fromMethodOrClass(currMethod, Log.class);
             logExceptionAnnotationInfo = annotationParser.fromMethodOrClass(currMethod, LogException.class);
         }
     };
@@ -56,7 +55,7 @@ public class InvocationDescriptorClassTestCase {
     }
 
     @Test
-    @LogTrace
+    @Log(Severity.TRACE)
     public void testGetSeverityByMethodPriority() throws Exception {
         InvocationDescriptor descriptor = new InvocationDescriptor.Builder(loggingAnnotationInfo,logExceptionAnnotationInfo).build();
         assertSame(Severity.TRACE, descriptor.getBeforeSeverity());

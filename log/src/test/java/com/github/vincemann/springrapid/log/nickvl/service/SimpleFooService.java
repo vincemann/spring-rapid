@@ -19,7 +19,7 @@ import static com.github.vincemann.springrapid.log.nickvl.annotation.LogExceptio
 @Service
 public class SimpleFooService implements FooService {
 
-    @LogDebug(LogPoint.IN)
+    @Log(logPoint = LogPoint.IN)
     @LogTrace
     @Override
     public void voidMethodZero() {

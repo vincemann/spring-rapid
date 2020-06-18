@@ -5,14 +5,16 @@
 
 package com.github.vincemann.springrapid.log.nickvl.service;
 
-import com.github.vincemann.springrapid.log.nickvl.annotation.LogWarn;
+
+import com.github.vincemann.springrapid.log.nickvl.annotation.Log;
+import com.github.vincemann.springrapid.log.nickvl.Severity;
 
 /**
  * Bar service interface.
  */
 public interface BarService {
 
-    @LogWarn
+    @Log(Severity.WARN)
     void inExtendedLogInSuperOnly(String iFirst, String iSecond);
 
     void inAbstract(String iFirst, String iSecond);

@@ -7,7 +7,6 @@ package com.github.vincemann.springrapid.log.nickvl;
 
 import com.github.vincemann.springrapid.log.nickvl.annotation.*;
 import org.junit.*;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.rules.MethodRule;
 import org.junit.rules.TestWatchman;
 import org.junit.runners.model.FrameworkMethod;
@@ -22,7 +21,7 @@ import static org.junit.Assert.*;
 public class InvocationDescriptorTestCase {
 
     private Method currMethod;
-    private AnnotationInfo<Logging> loggingAnnotationInfo;
+    private AnnotationInfo<Log> loggingAnnotationInfo;
     private AnnotationInfo<LogException> logExceptionAnnotationInfo;
     private AnnotationParser annotationParser = new HierarchicalAnnotationParser();
 
@@ -31,7 +30,7 @@ public class InvocationDescriptorTestCase {
     public MethodRule watchman = new TestWatchman() {
         public void starting(FrameworkMethod method) {
             currMethod = method.getMethod();
-            loggingAnnotationInfo = annotationParser.fromMethodOrClass(currMethod, Logging.class);
+            loggingAnnotationInfo = annotationParser.fromMethodOrClass(currMethod, Log.class);
             logExceptionAnnotationInfo = annotationParser.fromMethodOrClass(currMethod, LogException.class);
         }
     };
@@ -52,7 +51,7 @@ public class InvocationDescriptorTestCase {
     }
 
     @Test
-    @LogDebug(LogPoint.IN)
+    @Log(logPoint = LogPoint.IN)
     public void testGetBeforeSeverity() throws Exception {
         InvocationDescriptor descriptor = new InvocationDescriptor.Builder(loggingAnnotationInfo,logExceptionAnnotationInfo).build();
         assertSame(Severity.DEBUG, descriptor.getBeforeSeverity());
@@ -61,8 +60,8 @@ public class InvocationDescriptorTestCase {
     }
 
     @Test
-    @LogInfo(LogPoint.IN)
-    @LogDebug(LogPoint.IN)
+    @Log(logPoint = LogPoint.IN,level = Severity.INFO)
+    @Log(logPoint = LogPoint.IN)
     public void testGetBeforeSeverityByPriority() throws Exception {
         InvocationDescriptor descriptor = new InvocationDescriptor.Builder(loggingAnnotationInfo,logExceptionAnnotationInfo).build();
         assertSame(Severity.INFO, descriptor.getBeforeSeverity());
@@ -101,7 +100,7 @@ public class InvocationDescriptorTestCase {
     @Test
     @LogWarn
     @LogInfo(LogPoint.OUT)
-    @LogDebug(LogPoint.IN)
+    @Log(logPoint = LogPoint.IN)
     @LogTrace
     public void testGetSeverityByPriority() throws Exception {
         InvocationDescriptor descriptor = new InvocationDescriptor.Builder(loggingAnnotationInfo,logExceptionAnnotationInfo).build();

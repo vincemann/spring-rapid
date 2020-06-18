@@ -5,7 +5,7 @@
 
 package com.github.vincemann.springrapid.log.nickvl.benchmark;
 
-import com.github.vincemann.springrapid.log.nickvl.annotation.LogTrace;
+import com.github.vincemann.springrapid.log.nickvl.Severity;
 import com.github.vincemann.springrapid.log.nickvl.annotation.Lp;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -31,7 +31,7 @@ public class LoggableServiceImpl implements LoggableService {
         return res;
     }
 
-    @LogTrace
+    @com.github.vincemann.springrapid.log.nickvl.annotation.Log(Severity.TRACE)
     @Override
     public int aopLogMethod(String a, @Lp int b) {
         return b + 1;

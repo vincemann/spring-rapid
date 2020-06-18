@@ -8,7 +8,7 @@ package com.github.vincemann.springrapid.log.nickvl;
 /**
  * Log level severity enumeration in acceding order.
  */
-enum Severity {
+public enum Severity {
     TRACE,
     DEBUG,
     INFO,

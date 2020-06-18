@@ -2,9 +2,7 @@ package com.github.vincemann.springrapid.log.nickvl;
 
 import com.github.vincemann.springrapid.log.nickvl.annotation.*;
 import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Getter;
-import org.apache.commons.logging.Log;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
@@ -55,77 +53,83 @@ public class AOPLogger implements InitializingBean {
         this.annotationParser = annotationParser;
     }
 
+    @Around("this(com.github.vincemann.springrapid.log.nickvl.annotation.AopLoggable)")
+    public Object log(ProceedingJoinPoint joinPoint) throws Throwable {
+        LoggedMethodCall loggedCall = new LoggedMethodCall(joinPoint);
+
+        if (!loggedCall.methodWanted() || !loggedCall.isLoggingOn()){
+            return loggedCall.proceed();
+        }
+
+        if (loggedCall.isInvocationLoggingOn()) {
+            loggedCall.logInvocation();
+        }
+
+        if (!loggedCall.isExceptionLoggingOn()) {
+            loggedCall.proceed();
+        } else {
+            try {
+                loggedCall.proceed();
+            } catch (Exception e) {
+                loggedCall.logException(e);
+                throw e;
+            }
+        }
+
+        if (loggedCall.isResultLoggingOn()) {
+            loggedCall.logResult();
+        }
+        return loggedCall.getResult();
+    }
+
     @Getter
     @AllArgsConstructor
     public class LoggedMethodCall{
         Method method;
         Class<?> targetClass;
         Object[] args;
-        AnnotationInfo<Logging> logInfo;
+        AnnotationInfo<Log> logInfo;
         AnnotationInfo<LogException> logExceptionInfo;
         LogConfig logConfig;
         MethodDescriptor methodDescriptor;
         InvocationDescriptor invocationDescriptor;
         ArgumentDescriptor argumentDescriptor;
         ProceedingJoinPoint joinPoint;
-        Log logger;
+        org.apache.commons.logging.Log logger;
 
         Object result;
-        boolean exceptionLoggingOn;
 
         LoggedMethodCall(ProceedingJoinPoint joinPoint) throws NoSuchMethodException {
             this.joinPoint = joinPoint;
             this.method = extractMethod(joinPoint);
             this.targetClass = joinPoint.getTarget().getClass();
-            this.logInfo = annotationParser.fromMethodOrClass(method,Logging.class);
+            this.logInfo = annotationParser.fromMethodOrClass(method, Log.class);
             this.logExceptionInfo = annotationParser.fromMethodOrClass(method,LogException.class);
             this.logConfig  =  extractConfig(logInfo);
             this.methodDescriptor = evalMethodDescriptor(method,logInfo,logExceptionInfo);
             this.invocationDescriptor = methodDescriptor.getInvocationDescriptor();
             this.args = joinPoint.getArgs();
             this.logger = logAdapter.getLog(targetClass);
-            this.exceptionLoggingOn =exceptionLoggingOn();
             this.argumentDescriptor=evalArgumentDescriptor(methodDescriptor,method,args.length);
         }
 
-        //if dont log is present at all in method hierachy, then it wont be logged, cant be overridden again
-        //in class hierachy the latest config is winning (lowest in hierarchy)
-        private boolean exceptionLoggingOn(){
-            if (logExceptionInfo==null){
-                return false;
-            }
-            if (logExceptionInfo.isClassLevel()){
-                ClassAnnotationInfo<DontLogException> dontLog = annotationParser.fromClass(targetClass, DontLogException.class);
-                if (dontLog!=null){
-                    if (logInfo==null){
-                        return false;
-                    }else {
-                        if (logInfo.getTargetClass().isAssignableFrom(dontLog.getTargetClass())){
-                            return false;
-                        }
-                    }
+
+        boolean methodWanted(){
+            if (logConfig!=null){
+                if (logConfig.ignoreGetters() && (method.getName().startsWith("get") || method.getName().startsWith("is"))){
+                    return false;
                 }
-            }else {
-                DontLogException methodDontLog = annotationParser.fromMethod(method, DontLogException.class);
-                if (methodDontLog!=null){
+                if (logConfig.ignoreSetters() && (method.getName().startsWith("set"))){
                     return false;
                 }
             }
-            return true;
-        }
-
-        boolean methodWanted(){
-            if (logConfig==null){
-                return true;
+            if (logInfo==null){
+                return false;
             }
-            //are getters & setters ignored ?
-            return !(logConfig.ignoreGetters()
-                    && (method.getName().startsWith("get") || method.getName().startsWith("is"))
-            )
-                    &&
-                    !(logConfig.ignoreSetters()
-                            && (method.getName().startsWith("set"))
-                    );
+            if (logInfo.getAnnotation().disabled()){
+                return false;
+            }
+            return true;
         }
 
         Object proceed() throws Throwable {
@@ -162,6 +166,18 @@ public class AOPLogger implements InitializingBean {
             return isLoggingOn(invocationDescriptor.getAfterSeverity());
         }
 
+        boolean isExceptionLoggingOn(){
+            if (logExceptionInfo==null){
+                return false;
+            }
+            return (logExceptionInfo.getAnnotation().value().length>0 && isLoggingOn(Severity.ERROR))||
+                    (logExceptionInfo.getAnnotation().fatal().length>0 && isLoggingOn(Severity.FATAL)) ||
+                    (logExceptionInfo.getAnnotation().trace().length>0 && isLoggingOn(Severity.TRACE))||
+                    (logExceptionInfo.getAnnotation().debug().length>0 && isLoggingOn(Severity.DEBUG))||
+                    (logExceptionInfo.getAnnotation().info().length>0 && isLoggingOn(Severity.INFO))||
+                    (logExceptionInfo.getAnnotation().warn().length>0 && isLoggingOn(Severity.WARN));
+        }
+
         boolean isLoggingOn(){
             return isInvocationLoggingOn() || isResultLoggingOn() || isExceptionLoggingOn();
         }
@@ -169,43 +185,11 @@ public class AOPLogger implements InitializingBean {
         private boolean isLoggingOn(Severity severity) {
             return severity != null && logStrategies.get(severity).isLogEnabled(logger);
         }
-
     }
-    
-
-    @Around("this(com.github.vincemann.springrapid.log.nickvl.annotation.InteractionLoggable)")
-    public Object log(ProceedingJoinPoint joinPoint) throws Throwable {
-        LoggedMethodCall loggedCall = new LoggedMethodCall(joinPoint);
-
-        if (!loggedCall.methodWanted() || !loggedCall.isLoggingOn()){
-            return loggedCall.proceed();
-        }
-
-        if (loggedCall.isInvocationLoggingOn()) {
-            loggedCall.logInvocation();
-        }
-
-        if (!loggedCall.isExceptionLoggingOn()) {
-            loggedCall.proceed();
-        } else {
-            try {
-                loggedCall.proceed();
-            } catch (Exception e) {
-                loggedCall.logException(e);
-                throw e;
-            }
-        }
-
-        if (loggedCall.isResultLoggingOn()) {
-            loggedCall.logResult();
-        }
-        return loggedCall.getResult();
-    }
-
 
 
     //config is only valid if present on same class as class level Logging annotation
-    protected LogConfig extractConfig(AnnotationInfo<Logging> loggingInfo){
+    protected LogConfig extractConfig(AnnotationInfo<Log> loggingInfo){
         if (loggingInfo==null){
             return null;
         }
@@ -218,7 +202,7 @@ public class AOPLogger implements InitializingBean {
 
 
 
-    private MethodDescriptor evalMethodDescriptor(Method method,AnnotationInfo<Logging> loggingInfo, @Nullable AnnotationInfo<LogException> logExceptionInfo) {
+    private MethodDescriptor evalMethodDescriptor(Method method, AnnotationInfo<Log> loggingInfo, @Nullable AnnotationInfo<LogException> logExceptionInfo) {
         MethodDescriptor cached = cache.get(method);
         if (cached != null) {
             return cached;
