@@ -1,7 +1,7 @@
 package com.github.vincemann.springrapid.demo.config;
 
-import com.github.nickvl.xspring.core.log.aop.AOPLogger;
-import com.github.nickvl.xspring.core.log.aop.UniversalLogAdapter;
+import com.github.vincemann.springrapid.log.nickvl.AOPLogger;
+import com.github.vincemann.springrapid.log.nickvl.UniversalLogAdapter;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.EnableAspectJAutoProxy;
