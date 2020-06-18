@@ -41,6 +41,7 @@
         <module>commons</module>
         <module>core-test</module>
         <module>demo</module>
+        <module>log</module>
     </modules>
 
     <dependencies>

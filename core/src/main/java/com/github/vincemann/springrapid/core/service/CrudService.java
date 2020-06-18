@@ -1,6 +1,6 @@
 package com.github.vincemann.springrapid.core.service;
 
-import com.github.vincemann.springrapid.core.advice.log.AopLoggable;
+import com.github.vincemann.springrapid.core.advice.log.InteractionLoggable;
 import com.github.vincemann.springrapid.core.advice.log.LogInteraction;
 import com.github.vincemann.springrapid.core.slicing.components.ServiceComponent;
 import com.github.vincemann.springrapid.core.service.exception.BadEntityException;
@@ -24,7 +24,7 @@ public interface CrudService
                 Id extends Serializable,
                 R extends CrudRepository<E,Id>
         >
-    extends AopLoggable
+    extends InteractionLoggable
 {
 
     @LogInteraction

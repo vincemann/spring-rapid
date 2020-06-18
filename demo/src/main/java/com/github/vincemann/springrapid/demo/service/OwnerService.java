@@ -1,8 +1,6 @@
 package com.github.vincemann.springrapid.demo.service;
 
-import com.github.vincemann.springrapid.core.advice.log.AopLoggable;
 import com.github.vincemann.springrapid.core.advice.log.LogInteraction;
-import com.github.vincemann.springrapid.core.service.exception.BadEntityException;
 import com.github.vincemann.springrapid.demo.model.Owner;
 import com.github.vincemann.springrapid.demo.repo.OwnerRepository;
 import com.github.vincemann.springrapid.core.slicing.components.ServiceComponent;
