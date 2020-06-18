@@ -1,10 +1,9 @@
 package com.github.vincemann.springrapid.log.nickvl;
 
-import com.github.vincemann.springrapid.log.nickvl.annotation.LogConfig;
-import com.github.vincemann.springrapid.log.nickvl.annotation.LogException;
-import com.github.vincemann.springrapid.log.nickvl.annotation.Logging;
+import com.github.vincemann.springrapid.log.nickvl.annotation.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
+import lombok.Getter;
 import org.apache.commons.logging.Log;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
@@ -56,96 +55,150 @@ public class AOPLogger implements InitializingBean {
         this.annotationParser = annotationParser;
     }
 
+    @Getter
     @Builder
     @AllArgsConstructor
     public class LoggedMethodCall{
         Method method;
         Class<?> targetClass;
         Object[] args;
-
         AnnotationInfo<Logging> logInfo;
         AnnotationInfo<LogException> logExceptionInfo;
         LogConfig logConfig;
-
         MethodDescriptor methodDescriptor;
         InvocationDescriptor invocationDescriptor;
         ArgumentDescriptor argumentDescriptor;
-
+        ProceedingJoinPoint joinPoint;
         Log logger;
 
+        Object result;
+        boolean exceptionLoggingOn;
+
         LoggedMethodCall(ProceedingJoinPoint joinPoint) throws NoSuchMethodException {
-            method = extractMethod(joinPoint);
-            targetClass = joinPoint.getTarget().getClass();
-            logInfo = annotationParser.fromMethodOrClass(method,Logging.class);
-            logExceptionInfo = annotationParser.fromMethodOrClass(method,LogException.class);
-            logConfig  =  extractConfig(logInfo);
-            methodDescriptor = getMethodDescriptor(method,logInfo,logExceptionInfo);
-            invocationDescriptor = methodDescriptor.getInvocationDescriptor();
-            args = joinPoint.getArgs();
-            logger = logAdapter.getLog(targetClass);
+            this.joinPoint = joinPoint;
+            this.method = extractMethod(joinPoint);
+            this.targetClass = joinPoint.getTarget().getClass();
+            this.logInfo = annotationParser.fromMethodOrClass(method,Logging.class);
+            this.logExceptionInfo = annotationParser.fromMethodOrClass(method,LogException.class);
+            this.logConfig  =  extractConfig(logInfo);
+            this.methodDescriptor = getMethodDescriptor(method,logInfo,logExceptionInfo);
+            this.invocationDescriptor = methodDescriptor.getInvocationDescriptor();
+            this.args = joinPoint.getArgs();
+            this.logger = logAdapter.getLog(targetClass);
+            this.exceptionLoggingOn =exceptionLoggingOn();
         }
 
-        boolean logBefore(){
-
+        //if dont log is present at all in method hierachy, then it wont be logged, cant be overridden again
+        //in class hierachy the latest config is winning (lowest in hierarchy)
+        private boolean exceptionLoggingOn(){
+            if (logExceptionInfo==null){
+                return false;
+            }
+            if (logExceptionInfo.isClassLevel()){
+                ClassAnnotationInfo<DontLogException> dontLog = annotationParser.fromClass(targetClass, DontLogException.class);
+                if (dontLog!=null){
+                    if (logInfo.getTargetClass().isAssignableFrom(dontLog.getTargetClass())){
+                        return false;
+                    }
+                }
+            }else {
+                DontLogException methodDontLog = annotationParser.fromMethod(method, DontLogException.class);
+                if (methodDontLog!=null){
+                    return false;
+                }
+            }
+            return true;
         }
 
-        void logCall(){
-            logStrategies.get(invocationDescriptor.getBeforeSeverity()).logBefore(logger, method.getName(), args, argumentDescriptor);
+        boolean methodWanted(){
+            if (logConfig==null){
+                return true;
+            }
+            //are getters & setters ignored ?
+            return !(logConfig.ignoreGetters()
+                    && (method.getName().startsWith("get") || method.getName().startsWith("is"))
+            )
+                    &&
+                    !(logConfig.ignoreSetters()
+                            && (method.getName().startsWith("set"))
+                    );
         }
 
+        Object proceed() throws Throwable {
+            result = joinPoint.proceed(args);
+            return result;
+        }
 
+        void logException(Exception e){
+            ExceptionDescriptor exceptionDescriptor = getExceptionDescriptor(methodDescriptor, invocationDescriptor);
+            Class<? extends Exception> resolved = exceptionResolver.resolve(exceptionDescriptor, e);
+            if (resolved != null) {
+                ExceptionSeverity excSeverity = exceptionDescriptor.getExceptionSeverity(resolved);
+                if (isLoggingOn(excSeverity.getSeverity())) {
+                    logStrategies.get(excSeverity.getSeverity()).logException(logger, method.getName(), args.length, e, excSeverity.getStackTrace());
+                }
+            }
+        }
+
+        void logInvocation(){
+            logStrategies.get(invocationDescriptor.getBeforeSeverity())
+                    .logBefore(logger, method.getName(), args, argumentDescriptor);
+        }
+
+        void logResult(){
+            Object loggedResult = (method.getReturnType() == Void.TYPE) ? Void.TYPE : result;
+            logStrategies.get(invocationDescriptor.getAfterSeverity()).logAfter(logger, method.getName(), args.length, loggedResult);
+        }
+
+        boolean isInvocationLoggingOn() {
+            return isLoggingOn(invocationDescriptor.getBeforeSeverity());
+        }
+
+        boolean isResultLoggingOn() {
+            return isLoggingOn(invocationDescriptor.getAfterSeverity());
+        }
+
+        boolean isLoggingOn(){
+            return isInvocationLoggingOn() || isResultLoggingOn() || isExceptionLoggingOn();
+        }
+
+        private boolean isLoggingOn(Severity severity) {
+            return severity != null && logStrategies.get(severity).isLogEnabled(logger);
+        }
 
     }
     
 
     @Around("this(com.github.vincemann.springrapid.log.nickvl.annotation.InteractionLoggable)")
     public Object log(ProceedingJoinPoint joinPoint) throws Throwable {
+        LoggedMethodCall loggedCall = new LoggedMethodCall(joinPoint);
 
-
-
-        if (!methodWanted(logConfig,methodName))
-            return joinPoint.proceed();
-        if (!logWanted(logInfo)){
-            return
+        if (!loggedCall.methodWanted() || !loggedCall.isLoggingOn()){
+            return loggedCall.proceed();
         }
 
-
-
-
-
-        if (beforeLoggingOn(invocationDescriptor, logger)) {
-            ArgumentDescriptor argumentDescriptor = getArgumentDescriptor(descriptor, method, args.length);
-            logStrategies.get(invocationDescriptor.getBeforeSeverity()).logBefore(logger, methodName, args, argumentDescriptor);
+        if (loggedCall.isInvocationLoggingOn()) {
+            loggedCall.logInvocation();
         }
 
-        Object result;
-        if (invocationDescriptor.getExceptionAnnotation() == null) {
-            result = joinPoint.proceed(args);
+        if (!loggedCall.isExceptionLoggingOn()) {
+            loggedCall.proceed();
         } else {
             try {
-                result = joinPoint.proceed(args);
+                loggedCall.proceed();
             } catch (Exception e) {
-
+                loggedCall.logException(e);
                 throw e;
             }
         }
-        if (afterLoggingOn(invocationDescriptor, logger)) {
-            Object loggedResult = (method.getReturnType() == Void.TYPE) ? Void.TYPE : result;
-            logStrategies.get(invocationDescriptor.getAfterSeverity()).logAfter(logger, methodName, args.length, loggedResult);
+
+        if (loggedCall.isResultLoggingOn()) {
+            loggedCall.logResult();
         }
-        return result;
+        return loggedCall.getResult();
     }
 
-    protected void logException(Exception e, MethodDescriptor descriptor,InvocationDescriptor invocationDescriptor, Log logger,String methodName,Object[] args){
-        ExceptionDescriptor exceptionDescriptor = getExceptionDescriptor(descriptor, invocationDescriptor);
-        Class<? extends Exception> resolved = exceptionResolver.resolve(exceptionDescriptor, e);
-        if (resolved != null) {
-            ExceptionSeverity excSeverity = exceptionDescriptor.getExceptionSeverity(resolved);
-            if (isLoggingOn(excSeverity.getSeverity(), logger)) {
-                logStrategies.get(excSeverity.getSeverity()).logException(logger, methodName, args.length, e, excSeverity.getStackTrace());
-            }
-        }
-    }
+
 
     //config is only valid if present on same class as class level Logging annotation
     protected LogConfig extractConfig(AnnotationInfo<Logging> loggingInfo){
@@ -157,19 +210,6 @@ public class AOPLogger implements InitializingBean {
     }
 
 
-    private static boolean methodWanted(LogConfig logConfig, String methodName){
-        if (logConfig==null){
-            return true;
-        }
-        //are getters & setters ignored ?
-        return !(logConfig.ignoreGetters()
-                && (methodName.startsWith("get") || methodName.startsWith("is"))
-                )
-                    &&
-                !(logConfig.ignoreSetters()
-                && (methodName.startsWith("set"))
-                );
-    }
 
     private MethodDescriptor getMethodDescriptor(Method method,AnnotationInfo<Logging> loggingInfo, @Nullable AnnotationInfo<LogException> logExceptionInfo) {
         MethodDescriptor cached = cache.get(method);
@@ -211,16 +251,5 @@ public class AOPLogger implements InitializingBean {
         }
     }
 
-    private boolean beforeLoggingOn(InvocationDescriptor descriptor, Log logger) {
-        return isLoggingOn(descriptor.getBeforeSeverity(), logger);
-    }
-
-    private boolean afterLoggingOn(InvocationDescriptor descriptor, Log logger) {
-        return isLoggingOn(descriptor.getAfterSeverity(), logger);
-    }
-
-    private boolean isLoggingOn(Severity severity, Log logger) {
-        return severity != null && logStrategies.get(severity).isLogEnabled(logger);
-    }
 
 }
