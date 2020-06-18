@@ -1,6 +1,6 @@
 package com.github.vincemann.springrapid.core.controller.owner;
 
-import com.github.vincemann.springrapid.core.advice.log.LogInteraction;
+
 import com.github.vincemann.springrapid.core.model.IdentifiableEntity;
 
 import java.util.ArrayList;

@@ -5,7 +5,7 @@ import com.github.vincemann.springlemon.auth.domain.dto.user.LemonUserDto;
 import com.github.vincemann.springlemon.auth.security.service.BlueTokenService;
 import com.github.vincemann.springlemon.auth.util.LecUtils;
 import com.github.vincemann.springlemon.auth.util.LemonUtils;
-import com.github.vincemann.springrapid.core.advice.log.LogInteraction;
+
 import com.nimbusds.jwt.JWTClaimsSet;
 import com.github.vincemann.springlemon.exceptions.util.LexUtils;
 import lombok.AllArgsConstructor;

@@ -1,36 +1,31 @@
 package com.github.vincemann.springrapid.core.config;
 
-import com.github.vincemann.springrapid.core.advice.log.IndentingInteractionLogger;
-import com.github.vincemann.springrapid.core.advice.log.InteractionLogger;
-import com.github.vincemann.springrapid.core.advice.log.LogInteractionAdvice;
-import com.github.vincemann.springrapid.log.nickvl.rapid.resolve.LogInteractionInfoResolver;
-import com.github.vincemann.springrapid.log.nickvl.rapid.resolve.ProxyAwareLogInteractionInfoResolver;
+import com.github.vincemann.springrapid.log.nickvl.AOPLogger;
+import com.github.vincemann.springrapid.log.nickvl.HierarchicalAnnotationParser;
+import com.github.vincemann.springrapid.log.nickvl.ThreadAwareIndentingLogAdapter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.EnableAspectJAutoProxy;
 
+import java.util.Collections;
+import java.util.Set;
+
 @Configuration
 @EnableAspectJAutoProxy(proxyTargetClass = true)
 @Slf4j
 public class LogInteractionAutoConfiguration {
 
-    @ConditionalOnMissingBean
-    @Bean
-    public LogInteractionInfoResolver logInteractionInfoResolver(){
-        return new ProxyAwareLogInteractionInfoResolver();
-    }
+    private static final boolean SKIP_NULL_FIELDS = true;
+    private static final int CROP_THRESHOLD = 7;
+    private static final Set<String> EXCLUDE_SECURE_FIELD_NAMES = Collections.<String>emptySet();
 
-    @ConditionalOnMissingBean(InteractionLogger.class)
+    @ConditionalOnMissingBean(AOPLogger.class)
     @Bean
-    public InteractionLogger interactionLogger(){
-        return new IndentingInteractionLogger();
-    }
-
-    @ConditionalOnMissingBean(LogInteractionAdvice.class)
-    @Bean
-    public LogInteractionAdvice logInteractionAdvice(){
-        return new LogInteractionAdvice(interactionLogger(),logInteractionInfoResolver());
+    public AOPLogger aopLogger() {
+        AOPLogger aopLogger = new AOPLogger(new HierarchicalAnnotationParser());
+        aopLogger.setLogAdapter(new ThreadAwareIndentingLogAdapter(SKIP_NULL_FIELDS, CROP_THRESHOLD, EXCLUDE_SECURE_FIELD_NAMES));
+        return aopLogger;
     }
 }

@@ -7,7 +7,7 @@ import com.github.vincemann.springlemon.auth.util.LemonUtils;
 import com.github.vincemann.springrapid.acl.plugin.AbstractAclPlugin;
 import com.github.vincemann.springrapid.acl.service.LocalPermissionService;
 import com.github.vincemann.springrapid.acl.service.MockAuthService;
-import com.github.vincemann.springrapid.core.advice.log.LogInteraction;
+
 import com.github.vincemann.springrapid.core.proxy.CalledByProxy;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.acls.domain.BasePermission;

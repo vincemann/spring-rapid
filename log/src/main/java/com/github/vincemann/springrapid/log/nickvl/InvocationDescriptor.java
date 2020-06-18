@@ -48,7 +48,7 @@ final class InvocationDescriptor {
         private Severity classAfterSeverity;
         private Severity classDefaultSeverity;
 
-        public Builder(AnnotationInfo<Logging> loggingInfo, @Nullable AnnotationInfo<LogException> logExceptionInfo) {
+        public Builder(@Nullable AnnotationInfo<Logging> loggingInfo, @Nullable AnnotationInfo<LogException> logExceptionInfo) {
             this.loggingInfo = loggingInfo;
             this.logExceptionInfo = logExceptionInfo;
         }
@@ -75,6 +75,9 @@ final class InvocationDescriptor {
         }
 
         private void parseSeverity(AnnotationInfo<Logging> loggingInfo) {
+            if (loggingInfo==null){
+                return;
+            }
             Logging annotation = loggingInfo.getAnnotation();
 //            LogException logExceptionAnnotation = null;
 

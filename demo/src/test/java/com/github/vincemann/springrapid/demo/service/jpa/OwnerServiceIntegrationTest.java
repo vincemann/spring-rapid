@@ -2,12 +2,12 @@ package com.github.vincemann.springrapid.demo.service.jpa;
 
 import com.github.vincemann.springrapid.commons.Lists;
 import com.github.vincemann.springrapid.commons.TestTypeInstances;
+import com.github.vincemann.springrapid.core.config.LogInteractionAutoConfiguration;
 import com.github.vincemann.springrapid.core.service.exception.BadEntityException;
 import com.github.vincemann.springrapid.core.service.exception.EntityNotFoundException;
 import com.github.vincemann.springrapid.coretest.service.CrudServiceIntegrationTest;
 import com.github.vincemann.springrapid.coretest.service.result.ServiceResult;
 import com.github.vincemann.springrapid.demo.EnableProjectComponentScan;
-import com.github.vincemann.springrapid.demo.config.AopLoggingConfig;
 import com.github.vincemann.springrapid.demo.model.Owner;
 import com.github.vincemann.springrapid.demo.model.Pet;
 import com.github.vincemann.springrapid.demo.model.PetType;
@@ -39,7 +39,7 @@ import static com.github.vincemann.springrapid.coretest.service.PropertyMatchers
 
 @EnableProjectComponentScan
 @ImportRapidEntityRelServiceConfig
-@Import(AopLoggingConfig.class)
+@Import(LogInteractionAutoConfiguration.class)
 class OwnerServiceIntegrationTest
         extends CrudServiceIntegrationTest<OwnerService, Owner, Long> {
     //Types

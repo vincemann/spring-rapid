@@ -1,11 +1,11 @@
 package com.github.vincemann.springrapid.core.service;
 
-import com.github.vincemann.springrapid.core.advice.log.InteractionLoggable;
-import com.github.vincemann.springrapid.core.advice.log.LogInteraction;
 import com.github.vincemann.springrapid.core.slicing.components.ServiceComponent;
 import com.github.vincemann.springrapid.core.service.exception.BadEntityException;
 import com.github.vincemann.springrapid.core.model.IdentifiableEntity;
 import com.github.vincemann.springrapid.core.service.exception.EntityNotFoundException;
+import com.github.vincemann.springrapid.log.nickvl.annotation.InteractionLoggable;
+import com.github.vincemann.springrapid.log.nickvl.annotation.LogDebug;
 import org.springframework.data.repository.CrudRepository;
 
 import java.io.Serializable;
@@ -27,7 +27,7 @@ public interface CrudService
     extends InteractionLoggable
 {
 
-    @LogInteraction
+    @LogDebug
     Optional<E> findById(Id id) throws BadEntityException;
 
     /**
@@ -38,16 +38,16 @@ public interface CrudService
      * @param entity
      * @return updated (database) entity
      */
-    @LogInteraction
+    @LogDebug
     E update(E entity, Boolean full) throws EntityNotFoundException, BadEntityException, BadEntityException;
 
-    @LogInteraction
+    @LogDebug
     E save(E entity) throws  BadEntityException;
 
-    @LogInteraction
+    @LogDebug
     Set<E> findAll();
 
-    @LogInteraction
+    @LogDebug
     void deleteById(Id id) throws EntityNotFoundException, BadEntityException;
 
     Class<E> getEntityClass();

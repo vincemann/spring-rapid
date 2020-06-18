@@ -1,6 +1,6 @@
 package com.github.vincemann.springlemon.auth.security.service;
 
-import com.github.vincemann.springrapid.core.advice.log.LogInteraction;
+
 import com.nimbusds.jose.*;
 import com.nimbusds.jose.crypto.MACSigner;
 import com.nimbusds.jose.crypto.MACVerifier;

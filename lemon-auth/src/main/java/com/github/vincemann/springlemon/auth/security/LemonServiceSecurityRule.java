@@ -9,7 +9,7 @@ import com.github.vincemann.springlemon.auth.domain.dto.user.LemonUserDto;
 import com.github.vincemann.springlemon.auth.util.LecwUtils;
 import com.github.vincemann.springrapid.acl.proxy.rules.OverrideDefaultSecurityRule;
 import com.github.vincemann.springrapid.acl.proxy.rules.ServiceSecurityRule;
-import com.github.vincemann.springrapid.core.advice.log.LogInteraction;
+
 import com.github.vincemann.springrapid.core.proxy.CalledByProxy;
 import com.github.vincemann.springrapid.core.service.exception.BadEntityException;
 import com.github.vincemann.springrapid.core.service.exception.EntityNotFoundException;

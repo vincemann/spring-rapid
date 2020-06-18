@@ -14,6 +14,7 @@
 
     <dependencies>
 
+
         <dependency>
             <groupId>com.github.vincemann.spring-rapid</groupId>
             <artifactId>core</artifactId>
@@ -75,14 +76,6 @@
             <artifactId>h2</artifactId>
             <scope>runtime</scope>
         </dependency>
-
-        <dependency>
-            <groupId>com.github.nickvl</groupId>
-            <artifactId>xspring-aop-logging</artifactId>
-            <version>0.3.2</version>
-        </dependency>
-
-
 
 
     </dependencies>
