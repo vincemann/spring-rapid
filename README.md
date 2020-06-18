@@ -1,5 +1,4 @@
 # Overview  
-!! Under Active Developement !!  
 Spring Rapid consists of modules encapsulating solutions for **common issues** when developing Spring REST APIs.  
 The goal is too **speed up** the developement process and stop rewriting the same code over and over again.  
 Instead there should be very well implemented modules for each task, that can be plugged in whenever needed.  
@@ -11,8 +10,6 @@ Along with the Crud Module (Core) come many other modules building upon the core
   
 This project is inspired by [**Spring-Lemon**](https://github.com/naturalprogrammer/spring-lemon) which offers many good modules as well.  
 The packages, whos name starts with lemon are copied from spring-lemon, modified and integated to work together with rapid modules.  
-Any help with developement is greatly appreciated.  
-Feel free to use, download and modify any code you want.  
   
   
 # Features  
@@ -23,8 +20,8 @@ Feel free to use, download and modify any code you want.
 * Uni- and Bidirectional relationship management for all crud opeartions                             (entity-relationship)  
 * Resolving of ids in dtos referencing other entities and vice versa                       (entity-relationship)  
 * Testsupport for service and controller layer of rapid-core                                         (core-Test)  
-* SecurityProxy solution for applying Acl-based, plugin-like 
-  rules that restrict access to service methods + automatic Acl setup                                 (acl)            
+* SecurityProxy for applying acl-based rule-plugins
+   that restrict access to service methods + automatic acl setup                                 (acl)            
     
  # Include  
 * replace MODULE with the module you want to include (module-name = directory-name)  
