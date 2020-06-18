@@ -6,10 +6,14 @@ import lombok.Getter;
 
 import java.lang.annotation.Annotation;
 
-@Builder
-@AllArgsConstructor
 @Getter
-public class ClassAnnotationInfo<A extends Annotation> {
+class ClassAnnotationInfo<A extends Annotation> {
     private A annotation;
     private Class<?> targetClass;
+
+    @Builder
+    public ClassAnnotationInfo(A annotation, Class<?> targetClass) {
+        this.annotation = annotation;
+        this.targetClass = targetClass;
+    }
 }
