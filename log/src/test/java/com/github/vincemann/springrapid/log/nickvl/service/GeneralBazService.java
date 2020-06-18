@@ -5,12 +5,14 @@
 
 package com.github.vincemann.springrapid.log.nickvl.service;
 
-import com.github.vincemann.springrapid.log.nickvl.annotation.LogInfo;
+
+import com.github.vincemann.springrapid.log.nickvl.annotation.Log;
+import com.github.vincemann.springrapid.log.nickvl.Severity;
 
 /**
  * Implements {@link com.github.vincemann.springrapid.log.nickvl.service.BazService}.
  */
-@LogInfo
+@Log(Severity.INFO)
 public class GeneralBazService extends AbstractBazService {
 
     @Override

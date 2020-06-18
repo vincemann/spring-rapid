@@ -39,7 +39,7 @@ final class InvocationDescriptor {
      * Builder.
      */
     public static final class Builder {
-        private AnnotationInfo<Logging> loggingInfo;
+        private AnnotationInfo<Log> loggingInfo;
         private AnnotationInfo<LogException> logExceptionInfo;
         private Severity beforeSeverity;
         private Severity afterSeverity;
@@ -48,15 +48,17 @@ final class InvocationDescriptor {
         private Severity classAfterSeverity;
         private Severity classDefaultSeverity;
 
-        public Builder(@Nullable AnnotationInfo<Logging> loggingInfo, @Nullable AnnotationInfo<LogException> logExceptionInfo) {
+        public Builder(@Nullable AnnotationInfo<Log> loggingInfo, @Nullable AnnotationInfo<LogException> logExceptionInfo) {
             this.loggingInfo = loggingInfo;
             this.logExceptionInfo = logExceptionInfo;
         }
 
         public InvocationDescriptor build() {
             LogException logException = logExceptionInfo== null ? null : logExceptionInfo.getAnnotation();
-            parseSeverity(loggingInfo);
-
+            if (loggingInfo!=null){
+                Log annotation = loggingInfo.getAnnotation();
+                setSeverity(annotation.logPoint(),annotation.level(),!loggingInfo.isClassLevel());
+            }
 
             if (Utils.hasNotNull(beforeSeverity, defaultSeverity, afterSeverity)) {
                 return new InvocationDescriptor(
@@ -74,36 +76,6 @@ final class InvocationDescriptor {
 
         }
 
-        private void parseSeverity(AnnotationInfo<Logging> loggingInfo) {
-            if (loggingInfo==null){
-                return;
-            }
-            Logging annotation = loggingInfo.getAnnotation();
-//            LogException logExceptionAnnotation = null;
-
-               /* if (currAnnotation.annotationType().equals(LogException.class)) {
-                    logExceptionAnnotation = (LogException) currAnnotation;
-                } else */
-            if (annotation.annotationType().equals(LogFatal.class)) {
-                LogFatal logAnnotation = (LogFatal) annotation;
-                setSeverity(logAnnotation.value(), Severity.FATAL, !loggingInfo.isClassLevel());
-            } else if (annotation.annotationType().equals(LogError.class)) {
-                LogError logAnnotation = (LogError) annotation;
-                setSeverity(logAnnotation.value(), Severity.ERROR, !loggingInfo.isClassLevel());
-            } else if (annotation.annotationType().equals(LogWarn.class)) {
-                LogWarn logAnnotation = (LogWarn) annotation;
-                setSeverity(logAnnotation.value(), Severity.WARN, !loggingInfo.isClassLevel());
-            } else if (annotation.annotationType().equals(LogInfo.class)) {
-                LogInfo logAnnotation = (LogInfo) annotation;
-                setSeverity(logAnnotation.value(), Severity.INFO, !loggingInfo.isClassLevel());
-            } else if (annotation.annotationType().equals(LogDebug.class)) {
-                LogDebug logAnnotation = (LogDebug) annotation;
-                setSeverity(logAnnotation.value(), Severity.DEBUG, !loggingInfo.isClassLevel());
-            } else if (annotation.annotationType().equals(LogTrace.class)) {
-                LogTrace logAnnotation = (LogTrace) annotation;
-                setSeverity(logAnnotation.value(), Severity.TRACE, !loggingInfo.isClassLevel());
-            }
-        }
 
         private void setSeverity(LogPoint logPoint, Severity targetSeverity, boolean fromMethod) {
             if (fromMethod) {

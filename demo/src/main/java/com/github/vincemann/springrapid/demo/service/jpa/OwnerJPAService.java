@@ -5,7 +5,7 @@ import com.github.vincemann.springrapid.demo.repo.OwnerRepository;
 import com.github.vincemann.springrapid.demo.service.OwnerService;
 import com.github.vincemann.springrapid.core.slicing.components.ServiceComponent;
 import com.github.vincemann.springrapid.core.service.jpa.JPACrudService;
-import com.github.vincemann.springrapid.log.nickvl.annotation.InteractionLoggable;
+import com.github.vincemann.springrapid.log.nickvl.annotation.AopLoggable;
 import com.github.vincemann.springrapid.log.nickvl.annotation.LogDebug;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
@@ -16,7 +16,7 @@ import java.util.Optional;
 @Qualifier("noProxy")
 @Service
 @ServiceComponent
-public class OwnerJPAService extends JPACrudService<Owner,Long, OwnerRepository> implements OwnerService, InteractionLoggable {
+public class OwnerJPAService extends JPACrudService<Owner,Long, OwnerRepository> implements OwnerService, AopLoggable {
 
 
     @LogDebug

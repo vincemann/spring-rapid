@@ -5,7 +5,7 @@
 
 package com.github.vincemann.springrapid.log.nickvl.config;
 
-import com.github.vincemann.springrapid.log.nickvl.annotation.LogDebug;
+import com.github.vincemann.springrapid.log.nickvl.annotation.Log;
 import com.github.vincemann.springrapid.log.nickvl.annotation.LogPoint;
 import org.springframework.stereotype.Component;
 
@@ -15,12 +15,12 @@ import org.springframework.stereotype.Component;
 @Component
 public class FooComponent {
 
-    @LogDebug(LogPoint.OUT)
+    @Log(logPoint = LogPoint.OUT)
     void voidMethodZero() {
         // nothing to do
     }
 
-    @LogDebug(LogPoint.OUT)
+    @Log(logPoint = LogPoint.OUT)
     public IntHolder intMethodZero() {
         return new IntHolder();
     }

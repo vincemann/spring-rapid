@@ -5,12 +5,13 @@
 
 package com.github.vincemann.springrapid.log.nickvl.service;
 
-import com.github.vincemann.springrapid.log.nickvl.annotation.LogDebug;
+
+import com.github.vincemann.springrapid.log.nickvl.annotation.Log;
 
 /**
  * Implements {@link BazService}.
  */
-@LogDebug
+@Log
 public class AuxBazService extends AbstractBazService {
 
     @Override

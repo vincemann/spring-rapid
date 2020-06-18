@@ -5,7 +5,9 @@
 
 package com.github.vincemann.springrapid.log.nickvl.service;
 
-import com.github.vincemann.springrapid.log.nickvl.annotation.LogInfo;
+
+import com.github.vincemann.springrapid.log.nickvl.annotation.Log;
+import com.github.vincemann.springrapid.log.nickvl.Severity;
 import com.github.vincemann.springrapid.log.nickvl.annotation.Lp;
 
 /**
@@ -13,19 +15,19 @@ import com.github.vincemann.springrapid.log.nickvl.annotation.Lp;
  */
 public abstract class AbstractBarService implements BarService {
 
-    @LogInfo
+    @Log(Severity.INFO)
     @Override
     public void inAbstract(String aFirst, String aSecond) {
         // do not override
     }
 
-    @LogInfo
+    @Log(Severity.INFO)
     @Override
     public void overridden(@Lp String aFirst, String aSecond) {
         // should be overridden
     }
 
-    @LogInfo
+    @Log(Severity.INFO)
     @Override
     public void overriddenLogInAbstractOnly(String aFirst, String aSecond) {
         // should be overridden

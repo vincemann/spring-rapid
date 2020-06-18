@@ -3,7 +3,6 @@ package com.github.vincemann.springrapid.core.proxy.invocationHandler;
 import com.github.vincemann.springrapid.core.model.IdentifiableEntity;
 import com.github.vincemann.springrapid.core.service.CrudService;
 import com.github.vincemann.springrapid.core.slicing.components.ServiceComponent;
-import com.github.vincemann.springrapid.log.nickvl.annotation.InteractionLoggable;
 
 import java.io.Serializable;
 
