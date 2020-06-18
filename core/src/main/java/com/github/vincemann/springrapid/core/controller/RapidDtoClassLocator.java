@@ -1,6 +1,5 @@
 package com.github.vincemann.springrapid.core.controller;
 
-import com.github.vincemann.springrapid.core.advice.log.LogInteraction;
 import com.github.vincemann.springrapid.core.controller.dtoMapper.context.DtoMappingContext;
 import com.github.vincemann.springrapid.core.controller.dtoMapper.context.DtoMappingInfo;
 import lombok.*;

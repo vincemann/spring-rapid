@@ -1,6 +1,7 @@
 package com.github.vincemann.springrapid.log.nickvl;
 
 import org.springframework.core.annotation.AnnotationUtils;
+import org.springframework.util.Assert;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
@@ -26,9 +27,14 @@ public class HierarchicalAnnotationParser implements AnnotationParser {
     @Override
     public <A extends Annotation> ClassAnnotationInfo<A> fromClass(Class<?> clazz, Class<A> type) {
         A annotation = AnnotationUtils.findAnnotation(clazz, type);
+        if (annotation==null){
+            return null;
+        }
+        Class<?> annotationDeclaringClass = AnnotationUtils.findAnnotationDeclaringClass(type, clazz);
+        Assert.notNull(annotationDeclaringClass);
         return ClassAnnotationInfo.<A>builder()
                 .annotation(annotation)
-                .targetClass(AnnotationUtils.findAnnotationDeclaringClass(type,type))
+                .targetClass(annotationDeclaringClass)
                 .build();
     }
 

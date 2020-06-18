@@ -1,7 +1,7 @@
 package com.github.vincemann.springlemon.auth.security.service;
 
 import com.github.vincemann.springlemon.auth.util.LecUtils;
-import com.github.vincemann.springrapid.core.advice.log.LogInteraction;
+
 import com.nimbusds.jose.Payload;
 import com.nimbusds.jwt.JWTClaimsSet;
 import com.github.vincemann.springrapid.core.slicing.components.ServiceComponent;

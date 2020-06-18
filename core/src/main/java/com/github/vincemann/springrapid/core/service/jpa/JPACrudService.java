@@ -1,12 +1,11 @@
 package com.github.vincemann.springrapid.core.service.jpa;
 
 import com.github.vincemann.springrapid.commons.NullAwareBeanUtilsBean;
-import com.github.vincemann.springrapid.core.advice.log.LogInteraction;
-import com.github.vincemann.springrapid.core.slicing.components.ServiceComponent;
 import com.github.vincemann.springrapid.core.model.IdentifiableEntity;
 import com.github.vincemann.springrapid.core.service.CrudService;
 import com.github.vincemann.springrapid.core.service.exception.BadEntityException;
 import com.github.vincemann.springrapid.core.service.exception.EntityNotFoundException;
+import com.github.vincemann.springrapid.core.slicing.components.ServiceComponent;
 import com.github.vincemann.springrapid.core.util.RapidUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.beanutils.BeanUtilsBean;

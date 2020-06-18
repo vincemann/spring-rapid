@@ -1,11 +1,9 @@
 package com.github.vincemann.springrapid.core.proxy.invocationHandler;
 
-import com.github.vincemann.springrapid.core.advice.log.InteractionLoggable;
-import com.github.vincemann.springrapid.core.advice.log.LogConfig;
-import com.github.vincemann.springrapid.core.advice.log.LogInteraction;
+import com.github.vincemann.springrapid.core.model.IdentifiableEntity;
 import com.github.vincemann.springrapid.core.service.CrudService;
 import com.github.vincemann.springrapid.core.slicing.components.ServiceComponent;
-import com.github.vincemann.springrapid.core.model.IdentifiableEntity;
+import com.github.vincemann.springrapid.log.nickvl.annotation.InteractionLoggable;
 
 import java.io.Serializable;
 
@@ -22,9 +20,7 @@ import java.io.Serializable;
  *
  */
 @ServiceComponent
-@LogInteraction
-@LogConfig
-public abstract class CrudServicePlugin<E extends IdentifiableEntity<Id>, Id extends Serializable> implements InteractionLoggable {
+public abstract class CrudServicePlugin<E extends IdentifiableEntity<Id>, Id extends Serializable> {
 
 //    public void onBeforeSave(E toSave, Class<? extends E> entityClass){}
 //    public void onBeforeUpdate(E toUpdate, boolean full, Class<? extends E> entityClass){}

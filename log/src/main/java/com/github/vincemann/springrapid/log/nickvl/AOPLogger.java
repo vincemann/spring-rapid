@@ -56,7 +56,6 @@ public class AOPLogger implements InitializingBean {
     }
 
     @Getter
-    @Builder
     @AllArgsConstructor
     public class LoggedMethodCall{
         Method method;
@@ -81,11 +80,12 @@ public class AOPLogger implements InitializingBean {
             this.logInfo = annotationParser.fromMethodOrClass(method,Logging.class);
             this.logExceptionInfo = annotationParser.fromMethodOrClass(method,LogException.class);
             this.logConfig  =  extractConfig(logInfo);
-            this.methodDescriptor = getMethodDescriptor(method,logInfo,logExceptionInfo);
+            this.methodDescriptor = evalMethodDescriptor(method,logInfo,logExceptionInfo);
             this.invocationDescriptor = methodDescriptor.getInvocationDescriptor();
             this.args = joinPoint.getArgs();
             this.logger = logAdapter.getLog(targetClass);
             this.exceptionLoggingOn =exceptionLoggingOn();
+            this.argumentDescriptor=evalArgumentDescriptor(methodDescriptor,method,args.length);
         }
 
         //if dont log is present at all in method hierachy, then it wont be logged, cant be overridden again
@@ -97,8 +97,12 @@ public class AOPLogger implements InitializingBean {
             if (logExceptionInfo.isClassLevel()){
                 ClassAnnotationInfo<DontLogException> dontLog = annotationParser.fromClass(targetClass, DontLogException.class);
                 if (dontLog!=null){
-                    if (logInfo.getTargetClass().isAssignableFrom(dontLog.getTargetClass())){
+                    if (logInfo==null){
                         return false;
+                    }else {
+                        if (logInfo.getTargetClass().isAssignableFrom(dontLog.getTargetClass())){
+                            return false;
+                        }
                     }
                 }
             }else {
@@ -130,7 +134,7 @@ public class AOPLogger implements InitializingBean {
         }
 
         void logException(Exception e){
-            ExceptionDescriptor exceptionDescriptor = getExceptionDescriptor(methodDescriptor, invocationDescriptor);
+            ExceptionDescriptor exceptionDescriptor = evalExceptionDescriptor(methodDescriptor, invocationDescriptor);
             Class<? extends Exception> resolved = exceptionResolver.resolve(exceptionDescriptor, e);
             if (resolved != null) {
                 ExceptionSeverity excSeverity = exceptionDescriptor.getExceptionSeverity(resolved);
@@ -202,6 +206,9 @@ public class AOPLogger implements InitializingBean {
 
     //config is only valid if present on same class as class level Logging annotation
     protected LogConfig extractConfig(AnnotationInfo<Logging> loggingInfo){
+        if (loggingInfo==null){
+            return null;
+        }
         if (loggingInfo.isClassLevel()){
             return loggingInfo.getTargetClass().getDeclaredAnnotation(LogConfig.class);
         }else {
@@ -211,7 +218,7 @@ public class AOPLogger implements InitializingBean {
 
 
 
-    private MethodDescriptor getMethodDescriptor(Method method,AnnotationInfo<Logging> loggingInfo, @Nullable AnnotationInfo<LogException> logExceptionInfo) {
+    private MethodDescriptor evalMethodDescriptor(Method method,AnnotationInfo<Logging> loggingInfo, @Nullable AnnotationInfo<LogException> logExceptionInfo) {
         MethodDescriptor cached = cache.get(method);
         if (cached != null) {
             return cached;
@@ -221,7 +228,7 @@ public class AOPLogger implements InitializingBean {
         return prev == null ? cached : prev;
     }
 
-    private ArgumentDescriptor getArgumentDescriptor(MethodDescriptor descriptor, Method method, int argumentCount) {
+    private ArgumentDescriptor evalArgumentDescriptor(MethodDescriptor descriptor, Method method, int argumentCount) {
         if (descriptor.getArgumentDescriptor() != null) {
             return descriptor.getArgumentDescriptor();
         }
@@ -230,7 +237,7 @@ public class AOPLogger implements InitializingBean {
         return argumentDescriptor;
     }
 
-    private ExceptionDescriptor getExceptionDescriptor(MethodDescriptor descriptor, InvocationDescriptor invocationDescriptor) {
+    private ExceptionDescriptor evalExceptionDescriptor(MethodDescriptor descriptor, InvocationDescriptor invocationDescriptor) {
         if (descriptor.getExceptionDescriptor() != null) {
             return descriptor.getExceptionDescriptor();
         }

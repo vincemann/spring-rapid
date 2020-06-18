@@ -5,7 +5,7 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.github.vincemann.springrapid.core.advice.log.LogInteraction;
+
 
 public class LoggingObjectMapper extends ObjectMapper {
 

@@ -16,6 +16,12 @@
 
         <dependency>
             <groupId>com.github.vincemann.spring-rapid</groupId>
+            <artifactId>log</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>com.github.vincemann.spring-rapid</groupId>
             <artifactId>commons</artifactId>
             <version>${project.version}</version>
         </dependency>
