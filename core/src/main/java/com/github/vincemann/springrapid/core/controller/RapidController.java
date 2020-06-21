@@ -103,7 +103,7 @@ public abstract class RapidController
     @Setter
     private DtoMappingContext dtoMappingContext;
     private ValidationStrategy<Id> validationStrategy;
-    private MergeUpdateStrategy<E> mergeUpdateStrategy;
+    private MergeUpdateStrategy mergeUpdateStrategy;
 
     @Setter
     private String mediaType = MediaType.APPLICATION_JSON_UTF8_VALUE;
@@ -153,7 +153,7 @@ public abstract class RapidController
     }
 
     @Autowired
-    public void injectMergeUpdateStrategy(MergeUpdateStrategy<E> mergeUpdateStrategy) {
+    public void injectMergeUpdateStrategy(MergeUpdateStrategy mergeUpdateStrategy) {
         this.mergeUpdateStrategy = mergeUpdateStrategy;
     }
 

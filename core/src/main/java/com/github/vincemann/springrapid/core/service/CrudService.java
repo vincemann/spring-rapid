@@ -1,11 +1,13 @@
 package com.github.vincemann.springrapid.core.service;
 
+import com.github.vincemann.aoplog.annotation.LogConfig;
 import com.github.vincemann.springrapid.core.slicing.components.ServiceComponent;
 import com.github.vincemann.springrapid.core.service.exception.BadEntityException;
 import com.github.vincemann.springrapid.core.model.IdentifiableEntity;
 import com.github.vincemann.springrapid.core.service.exception.EntityNotFoundException;
-import com.github.vincemann.springrapid.log.nickvl.annotation.AopLoggable;
-import com.github.vincemann.springrapid.log.nickvl.annotation.LogDebug;
+import com.github.vincemann.aoplog.annotation.AopLoggable;
+
+import com.github.vincemann.aoplog.annotation.Log;
 import org.springframework.data.repository.CrudRepository;
 
 import java.io.Serializable;
@@ -18,6 +20,8 @@ import java.util.Set;
  * @param <Id>      Id Type of E
  */
 @ServiceComponent
+@Log
+@LogConfig(ignoreGetters = true)
 public interface CrudService
         <
                 E extends IdentifiableEntity<Id>,
@@ -27,7 +31,6 @@ public interface CrudService
     extends AopLoggable
 {
 
-    @LogDebug
     Optional<E> findById(Id id) throws BadEntityException;
 
     /**
@@ -38,16 +41,12 @@ public interface CrudService
      * @param entity
      * @return updated (database) entity
      */
-    @LogDebug
     E update(E entity, Boolean full) throws EntityNotFoundException, BadEntityException, BadEntityException;
 
-    @LogDebug
     E save(E entity) throws  BadEntityException;
 
-    @LogDebug
     Set<E> findAll();
 
-    @LogDebug
     void deleteById(Id id) throws EntityNotFoundException, BadEntityException;
 
     Class<E> getEntityClass();

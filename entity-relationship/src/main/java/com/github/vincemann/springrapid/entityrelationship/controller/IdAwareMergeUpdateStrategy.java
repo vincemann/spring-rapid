@@ -11,20 +11,16 @@ public class IdAwareMergeUpdateStrategy extends MergeUpdateStrategyImpl {
     public static final String ID_SUFFIX = "Id";
     public static final String IDS_SUFFIX = "Ids";
 
-
     @Override
-    protected Field resolve(String property, Map<String, Field> entityFields) {
-        Field entityField = entityFields.get(property);
-        if (entityField == null) {
-            if (property.endsWith(ID_SUFFIX)) {
-                entityField = entityFields.get(property.substring(0, property.length() - ID_SUFFIX.length()));
-            }
-            else if (property.endsWith(IDS_SUFFIX)) {
-                entityField = entityFields.get(property.substring(0, property.length() - IDS_SUFFIX.length()) +"s");
-            }
+    protected String transform(String dtoPropertyName) {
+        if (dtoPropertyName.endsWith(ID_SUFFIX)) {
+            return dtoPropertyName.substring(0, dtoPropertyName.length() - ID_SUFFIX.length());
         }
-        return entityField;
+        else if (dtoPropertyName.endsWith(IDS_SUFFIX)) {
+            return dtoPropertyName.substring(0, dtoPropertyName.length() - IDS_SUFFIX.length()) +"s";
+        }else {
+            return dtoPropertyName;
+        }
     }
-
 
 }

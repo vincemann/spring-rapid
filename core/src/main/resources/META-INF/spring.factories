@@ -2,7 +2,7 @@ org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
 com.github.vincemann.springrapid.core.config.ContentTypeAutoConfiguration,\
 com.github.vincemann.springrapid.core.config.CrudServiceLocatorAutoConfiguration,\
 com.github.vincemann.springrapid.core.config.DtoMapperAutoConfiguration,\
-com.github.vincemann.springrapid.core.config.LogInteractionAutoConfiguration,\
+com.github.vincemann.springrapid.core.config.AopLogAutoConfiguration,\
 com.github.vincemann.springrapid.core.config.RapidControllerAutoConfiguration,\
 com.github.vincemann.springrapid.core.config.BootstrapAutoConfiguration,\
 com.github.vincemann.springrapid.core.config.RapidUtilAutoConfiguration,\
