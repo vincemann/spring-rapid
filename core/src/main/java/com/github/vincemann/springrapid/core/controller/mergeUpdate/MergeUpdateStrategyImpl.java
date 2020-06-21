@@ -4,39 +4,46 @@ package com.github.vincemann.springrapid.core.controller.mergeUpdate;
 import com.github.vincemann.springrapid.core.model.IdentifiableEntity;
 import com.github.vincemann.springrapid.core.service.exception.BadEntityException;
 import com.github.vincemann.springrapid.core.config.ReflectionUtilsBean;
+import lombok.Getter;
+import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.util.Assert;
+import org.springframework.util.ReflectionUtils;
 
 import java.lang.reflect.Field;
 import java.util.Map;
 import java.util.Set;
 
 @Slf4j
-public class MergeUpdateStrategyImpl implements MergeUpdateStrategy<IdentifiableEntity<?>> {
+@Setter
+@Getter
+public class MergeUpdateStrategyImpl implements MergeUpdateStrategy {
+    private boolean strict = false;
 
     ////@LogInteraction
     @Override
-    public IdentifiableEntity<?> merge(IdentifiableEntity<?> patch, IdentifiableEntity<?> saved, Class<?> dtoClass) throws BadEntityException {
-        Map<String, Field> entityFields = ReflectionUtilsBean.getInstance().getNameFieldMap(saved.getClass());
-        Set<String> properties = ReflectionUtilsBean.getInstance().getProperties(dtoClass);
-        for (String property : properties) {
-            try {
-                Field entityField = resolve(property, entityFields);
-                if (entityField==null){
-//                    throw new BadEntityException("Unknown Property: " +property);
-                    log.warn("Dto property: " + property + " is not known in entity. skipping");
-                    continue;
+    public <E extends IdentifiableEntity<?>> E merge(E patch, E saved, Class<?> dtoClass) {
+        ReflectionUtils.doWithFields(dtoClass,dtoField -> {
+            Class<? extends IdentifiableEntity> entityClass = patch.getClass();
+            String propertyName = transform(dtoField.getName());
+
+            Field entityField = ReflectionUtils.findField(entityClass, propertyName);
+            if (entityField==null){
+                if (strict) {
+                    throw new IllegalArgumentException("Unknown Property: " +propertyName);
+                }else {
+                    log.warn("Dto property: " + propertyName + " is not known in entity. skipping");
+                    return;
                 }
-                entityField.setAccessible(true);
-                Object patchedValue = entityField.get(patch);
-                entityField.set(saved, patchedValue);
-            } catch (IllegalAccessException e) {
-                throw new RuntimeException(e);
             }
-        }
+            ReflectionUtils.makeAccessible(entityField);
+            Object patchedValue = entityField.get(patch);
+            entityField.set(saved,patchedValue);
+        });
         return saved;
     }
 
-    protected Field resolve(String property, Map<String, Field> entityFields) throws BadEntityException{
-        return entityFields.get(property);
+    protected String transform(String propertyName){
+        return propertyName;
     }
 }

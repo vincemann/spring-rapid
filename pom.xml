@@ -26,6 +26,7 @@
         <lombok.version>1.18.8</lombok.version>
         <javax.validation.version>2.0.1.Final</javax.validation.version>
         <guava.version>28.2-jre</guava.version>
+        <aop-log.version>1.0.0-SNAPSHOT.1</aop-log.version>
     </properties>
 
     <modules>
@@ -41,7 +42,6 @@
         <module>commons</module>
         <module>core-test</module>
         <module>demo</module>
-        <module>log</module>
     </modules>
 
     <dependencies>

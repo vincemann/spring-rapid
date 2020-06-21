@@ -15,9 +15,9 @@
     <dependencies>
 
         <dependency>
-            <groupId>com.github.vincemann.spring-rapid</groupId>
-            <artifactId>log</artifactId>
-            <version>${project.version}</version>
+            <groupId>com.github.vincemann</groupId>
+            <artifactId>aop-log</artifactId>
+            <version>${aop-log.version}</version>
         </dependency>
 
         <dependency>
