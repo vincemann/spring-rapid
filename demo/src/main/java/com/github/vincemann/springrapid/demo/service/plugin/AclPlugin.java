@@ -2,7 +2,7 @@ package com.github.vincemann.springrapid.demo.service.plugin;
 
 import com.github.vincemann.springrapid.core.slicing.components.ServiceComponent;
 import com.github.vincemann.springrapid.core.model.IdentifiableEntity;
-import com.github.vincemann.springrapid.core.proxy.invocationHandler.CrudServicePlugin;
+import com.github.vincemann.springrapid.core.proxy.CrudServicePlugin;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j

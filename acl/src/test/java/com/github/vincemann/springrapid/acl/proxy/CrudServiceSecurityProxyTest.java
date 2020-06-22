@@ -4,7 +4,7 @@ import com.github.vincemann.springrapid.commons.Lists;
 import com.github.vincemann.springrapid.acl.proxy.rules.DontCallTargetMethod;
 import com.github.vincemann.springrapid.acl.proxy.rules.OverrideDefaultSecurityRule;
 import com.github.vincemann.springrapid.acl.proxy.rules.ServiceSecurityRule;
-import com.github.vincemann.springrapid.acl.securityChecker.SecurityChecker;
+import com.github.vincemann.springrapid.acl.SecurityChecker;
 import com.github.vincemann.springrapid.core.model.IdentifiableEntityImpl;
 import com.github.vincemann.springrapid.core.proxy.CalledByProxy;
 import com.github.vincemann.springrapid.core.service.jpa.JPACrudService;

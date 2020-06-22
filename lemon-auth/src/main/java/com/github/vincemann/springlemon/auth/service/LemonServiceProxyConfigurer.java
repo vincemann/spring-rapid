@@ -4,7 +4,7 @@ import com.github.vincemann.springlemon.auth.config.LemonServiceAutoConfiguratio
 import com.github.vincemann.springrapid.acl.proxy.CrudServiceSecurityProxy;
 import com.github.vincemann.springrapid.acl.service.AclManaging;
 import com.github.vincemann.springrapid.acl.service.Secured;
-import com.github.vincemann.springrapid.core.proxy.invocationHandler.CrudServicePluginProxy;
+import com.github.vincemann.springrapid.core.proxy.CrudServicePluginProxy;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.util.AopTestUtils;
@@ -12,7 +12,7 @@ import org.springframework.test.util.AopTestUtils;
 import java.lang.reflect.Proxy;
 
 /**
- * Extend this class to further configure PreConfigured and created {@link LemonService}s.
+ * Extend this class to further configure PreConfigured {@link LemonService} Proxies.
  * Used primarily to add more plugins.
  *
  * @see LemonServiceAutoConfiguration

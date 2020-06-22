@@ -20,8 +20,7 @@ import java.util.Set;
  * @param <Id>      Id Type of E
  */
 @ServiceComponent
-@Log
-@LogConfig(ignoreGetters = true)
+@Log(config = @LogConfig(ignoreGetters = true))
 public interface CrudService
         <
                 E extends IdentifiableEntity<Id>,

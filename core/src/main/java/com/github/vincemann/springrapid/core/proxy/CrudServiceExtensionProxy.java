@@ -1,4 +1,4 @@
-package com.github.vincemann.springrapid.core.proxy.invocationHandler.abs;
+package com.github.vincemann.springrapid.core.proxy;
 
 import com.github.vincemann.springrapid.commons.Lists;
 import com.github.vincemann.springrapid.commons.NullableOptional;
@@ -8,13 +8,14 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
+import net.sf.cglib.proxy.MethodInterceptor;
+import net.sf.cglib.proxy.MethodProxy;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.util.Assert;
 
 import java.lang.annotation.Annotation;
-import java.lang.reflect.InvocationHandler;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -25,30 +26,31 @@ import java.util.stream.Collectors;
 @Setter
 @Slf4j
 public abstract class CrudServiceExtensionProxy
-        implements InvocationHandler {
+        implements MethodInterceptor {
 
-    private final Map<String, Method> methods = new HashMap<>();
+//    private final Map<String, Method> methods = new HashMap<>();
     private List<String> ignoredMethods = Lists.newArrayList("getEntityClass", "getRepository", "toString", "equals", "hashCode", "getClass", "clone", "notify", "notifyAll", "wait", "finalize");
     private CrudService service;
-    public CrudServiceExtensionProxy(CrudService service, String... ignoredMethods) {
+    protected CrudServiceExtensionProxy(CrudService service, String... ignoredMethods) {
         this.service = service;
-        for (Method method : service.getClass().getMethods()) {
-            this.methods.put(method.getName(), method);
-        }
+//        for (Method method : service.getClass().getMethods()) {
+//            this.methods.put(method.getName(), method);
+//        }
         this.ignoredMethods.addAll(Lists.newArrayList(ignoredMethods));
 
     }
 
     @Override
-    public final Object invoke(Object o, Method method, Object[] args) throws Throwable {
+    public Object intercept(Object o, Method method, Object[] args, MethodProxy proxy) throws Throwable {
         if (isMethodIgnored(method)) {
-            return getMethods().get(method.getName())
-                    .invoke(getService(), args);
+            return proxy.invokeSuper(o,args);
+//            return getMethods().get(method.getName())
+//                    .invoke(getService(), args);
         } else {
             if (args == null) {
                 args = new Object[]{};
             }
-            return proxy(o, method, args);
+            return proxy(o, method, args,proxy);
         }
     }
 
@@ -60,10 +62,10 @@ public abstract class CrudServiceExtensionProxy
                 )
                 .collect(Collectors.toList());
         if (methods.size() > 1) {
-            return MethodHandle.create(extractOverridingMethod(methods), target);
+            return new MethodHandle(extractOverridingMethod(methods), target);
         }
         //Assert.isTrue(!methods.isEmpty(),"Could not find method with name: " + name + " on target: " + target);
-        return methods.isEmpty() ? null : MethodHandle.create(methods.get(0), target);
+        return methods.isEmpty() ? null : new MethodHandle(methods.get(0), target);
     }
 
     private Method extractOverridingMethod(List<Method> conflicting) {
@@ -157,11 +159,12 @@ public abstract class CrudServiceExtensionProxy
         }
     }
 
-    protected abstract Object proxy(Object o, Method method, Object[] args) throws Throwable;
+    protected abstract Object proxy(Object o, Method method, Object[] args, MethodProxy methodProxy) throws Throwable;
 
     public boolean isMethodIgnored(Method method) {
         return getIgnoredMethods().contains(method.getName());
     }
+
 
     @NoArgsConstructor
     @Getter
@@ -171,16 +174,17 @@ public abstract class CrudServiceExtensionProxy
         private Method method;
         private Object target;
 
-        public static MethodHandle create(Method method, Object target) {
+        public MethodHandle(Method method, Object target) {
             Assert.isTrue(method.getName().length() > 3, "Method names are expected to be at least 2 characters long");
             Assert.notNull(target, "Target Object must not be null");
-            MethodHandle methodHandle = new MethodHandle();
-            methodHandle.target = target;
-            methodHandle.voidMethod = method.getReturnType().equals(Void.TYPE);
-            methodHandle.name = method.getName();
-            methodHandle.method = method;
-            return methodHandle;
+//            MethodHandle methodHandle = new MethodHandle();
+            this.target = target;
+            this.voidMethod = method.getReturnType().equals(Void.TYPE);
+            this.name = method.getName();
+            this.method = method;
+//            return methodHandle;
         }
+
 
         public boolean hasAnnotation(Class<? extends Annotation> type) {
             return method.isAnnotationPresent(type);
@@ -201,4 +205,5 @@ public abstract class CrudServiceExtensionProxy
             }
         }
     }
+
 }

@@ -1,6 +1,5 @@
-package com.github.vincemann.springrapid.acl.securityChecker;
+package com.github.vincemann.springrapid.acl;
 
-import com.github.vincemann.springrapid.core.slicing.components.ServiceComponent;
 import com.github.vincemann.springrapid.core.model.IdentifiableEntity;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeansException;

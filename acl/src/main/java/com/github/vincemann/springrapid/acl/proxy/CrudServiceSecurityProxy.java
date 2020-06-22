@@ -1,17 +1,17 @@
 package com.github.vincemann.springrapid.acl.proxy;
 
 import com.github.vincemann.springrapid.commons.Lists;
-import com.github.vincemann.springrapid.acl.proxy.create.CrudServiceSecurityProxyFactory;
 import com.github.vincemann.springrapid.acl.proxy.rules.DontCallTargetMethod;
 import com.github.vincemann.springrapid.acl.proxy.rules.OverrideDefaultSecurityRule;
 import com.github.vincemann.springrapid.commons.NullableOptional;
-import com.github.vincemann.springrapid.core.proxy.invocationHandler.abs.CrudServiceExtensionProxy;
+import com.github.vincemann.springrapid.core.proxy.CrudServiceExtensionProxy;
 import com.github.vincemann.springrapid.core.service.CrudService;
 import com.github.vincemann.springrapid.acl.proxy.rules.ServiceSecurityRule;
-import com.github.vincemann.springrapid.acl.securityChecker.SecurityChecker;
+import com.github.vincemann.springrapid.acl.SecurityChecker;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
+import net.sf.cglib.proxy.MethodProxy;
 import org.springframework.test.util.AopTestUtils;
 import org.springframework.util.Assert;
 
@@ -25,7 +25,7 @@ import java.util.List;
  * After all Rules have been applied in the order they were given in for construction, the {@link com.github.vincemann.springrapid.acl.proxy.rules.DefaultServiceSecurityRule}
  * is applied if not prohibited (@see {@link OverrideDefaultSecurityRule})
  *
- * Is created by {@link CrudServiceSecurityProxyFactory} or by {@link com.github.vincemann.springrapid.acl.proxy.create.ConfigureProxies}.
+ * Is created by {@link CrudServiceSecurityProxyFactory} or by {@link ConfigureProxies}.
  */
 public class CrudServiceSecurityProxy
         extends CrudServiceExtensionProxy {
@@ -48,7 +48,7 @@ public class CrudServiceSecurityProxy
         public static State create(Method targetMethod, Object target, Object[] targetMethodArgs) {
             State state = new State();
             state.targetMethodArgs = targetMethodArgs;
-            state.targetMethod = MethodHandle.create(targetMethod, target);
+            state.targetMethod = new MethodHandle(targetMethod, target);
             state.overrideDefaultPostAuthMethod = false;
             state.overrideDefaultPreAuthMethod = false;
             state.invokeTargetMethod = true;
@@ -68,7 +68,7 @@ public class CrudServiceSecurityProxy
     private ServiceSecurityRule defaultSecurityRule;
     private State state;
 
-    public CrudServiceSecurityProxy(CrudService service,
+    protected CrudServiceSecurityProxy(CrudService service,
                                     SecurityChecker securityChecker,
                                     ServiceSecurityRule defaultSecurityRule,
                                     ServiceSecurityRule... rules) {
@@ -82,12 +82,12 @@ public class CrudServiceSecurityProxy
 
     }
 
-
-
     @Override
-    protected Object proxy(Object target, Method method, Object[] args) throws Throwable {
-        log.debug("SecurityProxy intercepting method: " + method.getName() + " of Class: " + AopTestUtils.getUltimateTargetObject(target).getClass());
-        state = State.create(getMethods().get(method.getName()), getService(),args);
+    protected Object proxy(Object proxied, Method method, Object[] args, MethodProxy methodProxy) throws Throwable {
+        log.debug("SecurityProxy intercepting method: " + method.getName() + " of Class: " + AopTestUtils.getUltimateTargetObject(proxied).getClass());
+        Object target = AopTestUtils.getTargetObject(proxied);
+        Method targetMethod = target.getClass().getMethod(method.getName(), method.getParameterTypes());
+        state = State.create(targetMethod, target,args);
 
         invokePreAuthorizeMethods();
         if (!state.overrideDefaultPreAuthMethod) {

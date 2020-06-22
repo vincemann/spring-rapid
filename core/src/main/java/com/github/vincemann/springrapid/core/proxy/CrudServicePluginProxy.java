@@ -1,12 +1,13 @@
-package com.github.vincemann.springrapid.core.proxy.invocationHandler;
+package com.github.vincemann.springrapid.core.proxy;
 
 
 import com.github.vincemann.springrapid.commons.NullableOptional;
-import com.github.vincemann.springrapid.core.proxy.invocationHandler.abs.CrudServiceExtensionProxy;
 import com.github.vincemann.springrapid.core.service.CrudService;
 import com.github.vincemann.springrapid.commons.Lists;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
+import net.sf.cglib.proxy.MethodProxy;
+import org.springframework.test.util.AopTestUtils;
 
 import java.lang.reflect.Method;
 import java.util.List;
@@ -26,19 +27,23 @@ public class CrudServicePluginProxy
     @Getter
     private List<CrudServicePlugin> plugins;
 
-    public CrudServicePluginProxy(CrudService service, List<CrudServicePlugin> plugins, String... ignoredMethods) {
+    protected CrudServicePluginProxy(CrudService service, List<CrudServicePlugin> plugins, String... ignoredMethods) {
         super(service, ignoredMethods);
         this.plugins = plugins;
     }
 
     @Override
-    protected Object proxy(Object target, Method method, Object[] args) throws Throwable {
+    protected Object proxy(Object proxied, Method method, Object[] args, MethodProxy proxy) throws Throwable {
 //        List<Method> methods = Arrays.stream(target.getClass().getMethods())
 //                .filter(m -> m.getName().equals(method.getName()))
 //                .collect(Collectors.toList());
 //        Assert.isTrue(methods.size()==1);
 
-        MethodHandle targetMethod = MethodHandle.create(getMethods().get(method.getName()),getService());
+        Object target = AopTestUtils.getTargetObject(proxied);
+        Method targetMethod = target.getClass().getMethod(method.getName(), method.getParameterTypes());
+        MethodHandle targetMethodHandle =new MethodHandle(/*getMethods().get(method.getName()*/targetMethod,target/*getService()*/);
+
+
         NullableOptional<Object> result;
         //call before method of plugins
         for (Object plugin : plugins) {
@@ -51,7 +56,8 @@ public class CrudServicePluginProxy
 
         //actual call
 
-        result = targetMethod.execute(args);
+        result = targetMethodHandle.execute(args);
+//        result = proxy.invokeSuper(proxied,args);
 
         for (Object plugin : plugins) {
             MethodHandle afterMethod = findMethod(createPrefixedMethodName(AFTER_METHOD_PREFIX, method.getName()), plugin);
@@ -69,7 +75,8 @@ public class CrudServicePluginProxy
                 }
             }
         }
-
         return result.get();
     }
+
+
 }
