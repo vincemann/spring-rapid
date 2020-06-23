@@ -13,4 +13,8 @@ import org.springframework.stereotype.Service;
 @ServiceComponent
 public class VetJPAService extends JPACrudService<Vet,Long, VetRepository> implements VetService {
 
+    @Override
+    public Class<?> getTargetClass() {
+        return VetJPAService.class;
+    }
 }

@@ -26,7 +26,7 @@ public class UniDirChildIdResolver extends EntityIdResolver<UniDirChild, UniDirC
 
     public void resolveEntityIds(UniDirChild mappedUniDirChild, UniDirChildDto uniDirChildDto) throws BadEntityException, EntityNotFoundException {
         try {
-            Map<Class, Serializable> allParentIdToClassMappings = uniDirChildDto.findAllUniDirParentIds();
+            Map<Class, Serializable> allParentIdToClassMappings = uniDirChildDto.findTypeUniDirParentIdMap();
             for (Map.Entry<Class, Serializable> parentIdToClassMapping : allParentIdToClassMappings.entrySet()) {
                 Object parent = findEntityFromService(parentIdToClassMapping);
                 try {

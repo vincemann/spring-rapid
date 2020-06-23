@@ -30,7 +30,7 @@ public class BiDirChildIdResolver extends EntityIdResolver<BiDirChild, BiDirChil
 
     public void resolveEntityIds(BiDirChild mappedBiDirChild, BiDirChildDto biDirChildDto) throws BadEntityException, EntityNotFoundException {
         try {
-            Map<Class, Serializable> allParentIdToClassMappings = biDirChildDto.findAllBiDirParentIds();
+            Map<Class, Serializable> allParentIdToClassMappings = biDirChildDto.findTypeBiDirParentIdMap();
             for (Map.Entry<Class, Serializable> parentIdToClassMapping : allParentIdToClassMappings.entrySet()) {
                 Object parent = findEntityFromService(parentIdToClassMapping);
                 try {
