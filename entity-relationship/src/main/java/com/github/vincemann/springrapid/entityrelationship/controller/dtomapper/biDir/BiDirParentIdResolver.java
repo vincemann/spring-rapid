@@ -31,13 +31,13 @@ public class BiDirParentIdResolver extends EntityIdResolver<BiDirParent, BiDirPa
     public void resolveEntityIds(BiDirParent mappedBiDirParent, BiDirParentDto biDirParentDto) throws BadEntityException, EntityNotFoundException {
         try {
             //find and handle single Children
-            Map<Class, Serializable> allChildIdToClassMappings = biDirParentDto.findBiDirChildrenIds();
+            Map<Class, Serializable> allChildIdToClassMappings = biDirParentDto.findTypeBiDirIdMap();
             for (Map.Entry<Class, Serializable> childIdToClassMapping : allChildIdToClassMappings.entrySet()) {
                 Object child = findEntityFromService(childIdToClassMapping);
                 resolveBiDirChildFromService(child,mappedBiDirParent);
             }
             //find and handle children collections
-            Map<Class, Collection<Serializable>> allChildrenIdCollection = biDirParentDto.findBiDirChildrenIdCollections();
+            Map<Class, Collection<Serializable>> allChildrenIdCollection = biDirParentDto.findTypeBiDirChildrenIdCollectionMap();
             for (Map.Entry<Class, Collection<Serializable>> entry: allChildrenIdCollection.entrySet()){
                 Collection<Serializable> idCollection = entry.getValue();
                 for(Serializable id: idCollection){
