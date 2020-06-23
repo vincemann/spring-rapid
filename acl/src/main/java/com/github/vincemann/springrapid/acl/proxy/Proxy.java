@@ -1,11 +1,12 @@
-package com.github.vincemann.springrapid.acl.proxy.create;
+package com.github.vincemann.springrapid.acl.proxy;
 
-import com.github.vincemann.springrapid.core.proxy.invocationHandler.CrudServicePlugin;
+import com.github.vincemann.springrapid.core.proxy.CrudServicePlugin;
+import com.github.vincemann.springrapid.core.proxy.CrudServicePluginProxy;
 
 import java.lang.annotation.*;
 
 /**
- * Represents meta information about a {@link com.github.vincemann.springrapid.core.proxy.invocationHandler.CrudServicePluginProxy}, that can be dynamically created,
+ * Represents meta information about a {@link CrudServicePluginProxy}, that can be dynamically created,
  * when used together with {@link ConfigureProxies}.
  *
  * @see ConfigureProxies

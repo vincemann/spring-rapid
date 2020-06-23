@@ -1,12 +1,12 @@
 package com.github.vincemann.springrapid.acl.config;
 
-import com.github.vincemann.springrapid.acl.proxy.create.CrudServiceProxyBeanComposer;
-import com.github.vincemann.springrapid.acl.proxy.create.CrudServiceSecurityProxyFactory;
+import com.github.vincemann.springrapid.acl.proxy.CrudServiceProxyBeanComposer;
+import com.github.vincemann.springrapid.acl.proxy.CrudServiceSecurityProxyFactory;
 import com.github.vincemann.springrapid.acl.proxy.rules.DefaultCrudSecurityRule;
 import com.github.vincemann.springrapid.acl.proxy.rules.DefaultServiceSecurityRule;
 import com.github.vincemann.springrapid.acl.proxy.rules.ServiceSecurityRule;
-import com.github.vincemann.springrapid.acl.securityChecker.DefaultSecurityChecker;
-import com.github.vincemann.springrapid.acl.securityChecker.SecurityChecker;
+import com.github.vincemann.springrapid.acl.DefaultSecurityChecker;
+import com.github.vincemann.springrapid.acl.SecurityChecker;
 import com.github.vincemann.springrapid.core.slicing.config.ServiceConfig;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;

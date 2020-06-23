@@ -1,8 +1,7 @@
-package com.github.vincemann.springrapid.core.proxy.invocationHandler;
+package com.github.vincemann.springrapid.core.proxy;
 
 
 import com.github.vincemann.springrapid.commons.NullableOptional;
-import com.github.vincemann.springrapid.core.proxy.invocationHandler.abs.CrudServiceExtensionProxy;
 import com.github.vincemann.springrapid.core.service.CrudService;
 import com.github.vincemann.springrapid.commons.Lists;
 import lombok.Getter;
@@ -26,7 +25,7 @@ public class CrudServicePluginProxy
     @Getter
     private List<CrudServicePlugin> plugins;
 
-    public CrudServicePluginProxy(CrudService service, List<CrudServicePlugin> plugins, String... ignoredMethods) {
+    protected CrudServicePluginProxy(CrudService service, List<CrudServicePlugin> plugins, String... ignoredMethods) {
         super(service, ignoredMethods);
         this.plugins = plugins;
     }

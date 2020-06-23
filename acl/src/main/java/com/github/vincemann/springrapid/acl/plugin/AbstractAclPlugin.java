@@ -4,7 +4,7 @@ import com.github.vincemann.springrapid.acl.Role;
 import com.github.vincemann.springrapid.acl.service.LocalPermissionService;
 import com.github.vincemann.springrapid.acl.service.MockAuthService;
 import com.github.vincemann.springrapid.core.model.IdentifiableEntity;
-import com.github.vincemann.springrapid.core.proxy.invocationHandler.CrudServicePlugin;
+import com.github.vincemann.springrapid.core.proxy.CrudServicePlugin;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import org.springframework.security.acls.domain.BasePermission;

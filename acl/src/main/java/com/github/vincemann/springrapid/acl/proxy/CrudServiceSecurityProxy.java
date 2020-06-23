@@ -1,14 +1,13 @@
 package com.github.vincemann.springrapid.acl.proxy;
 
 import com.github.vincemann.springrapid.commons.Lists;
-import com.github.vincemann.springrapid.acl.proxy.create.CrudServiceSecurityProxyFactory;
 import com.github.vincemann.springrapid.acl.proxy.rules.DontCallTargetMethod;
 import com.github.vincemann.springrapid.acl.proxy.rules.OverrideDefaultSecurityRule;
 import com.github.vincemann.springrapid.commons.NullableOptional;
-import com.github.vincemann.springrapid.core.proxy.invocationHandler.abs.CrudServiceExtensionProxy;
+import com.github.vincemann.springrapid.core.proxy.CrudServiceExtensionProxy;
 import com.github.vincemann.springrapid.core.service.CrudService;
 import com.github.vincemann.springrapid.acl.proxy.rules.ServiceSecurityRule;
-import com.github.vincemann.springrapid.acl.securityChecker.SecurityChecker;
+import com.github.vincemann.springrapid.acl.SecurityChecker;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
@@ -25,7 +24,7 @@ import java.util.List;
  * After all Rules have been applied in the order they were given in for construction, the {@link com.github.vincemann.springrapid.acl.proxy.rules.DefaultServiceSecurityRule}
  * is applied if not prohibited (@see {@link OverrideDefaultSecurityRule})
  *
- * Is created by {@link CrudServiceSecurityProxyFactory} or by {@link com.github.vincemann.springrapid.acl.proxy.create.ConfigureProxies}.
+ * Is created by {@link CrudServiceSecurityProxyFactory} or by {@link ConfigureProxies}.
  */
 public class CrudServiceSecurityProxy
         extends CrudServiceExtensionProxy {
@@ -68,7 +67,7 @@ public class CrudServiceSecurityProxy
     private ServiceSecurityRule defaultSecurityRule;
     private State state;
 
-    public CrudServiceSecurityProxy(CrudService service,
+    protected CrudServiceSecurityProxy(CrudService service,
                                     SecurityChecker securityChecker,
                                     ServiceSecurityRule defaultSecurityRule,
                                     ServiceSecurityRule... rules) {

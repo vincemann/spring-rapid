@@ -1,4 +1,4 @@
-package com.github.vincemann.springrapid.core.proxy.invocationHandler;
+package com.github.vincemann.springrapid.core.proxy;
 
 import com.github.vincemann.springrapid.core.model.IdentifiableEntity;
 import com.github.vincemann.springrapid.core.service.CrudService;
@@ -7,7 +7,7 @@ import com.github.vincemann.springrapid.core.slicing.components.ServiceComponent
 import java.io.Serializable;
 
 /**
- * Represents a Plugin accepted by {@link com.github.vincemann.springrapid.core.proxy.invocationHandler.CrudServicePluginProxy}.
+ * Represents a Plugin accepted by {@link CrudServicePluginProxy}.
  * Define hook methods as follows:
  *
  * void onBeforeServiceMethod(all,args,of,service,method)
