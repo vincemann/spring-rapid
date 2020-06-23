@@ -29,7 +29,6 @@ import java.util.Set;
  * @param <R>       {@link JpaRepository} Type
  */
 @ServiceComponent
-@Slf4j
 public abstract class JPACrudService
                 <
                           E extends IdentifiableEntity<Id>,

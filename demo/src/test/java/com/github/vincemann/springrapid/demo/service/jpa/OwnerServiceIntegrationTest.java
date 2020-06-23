@@ -15,6 +15,7 @@ import com.github.vincemann.springrapid.demo.service.PetService;
 import com.github.vincemann.springrapid.demo.service.PetTypeService;
 import com.github.vincemann.springrapid.demo.service.plugin.OwnerOfTheYearPlugin;
 import com.github.vincemann.springrapid.entityrelationship.slicing.test.ImportRapidEntityRelServiceConfig;
+import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -61,7 +62,6 @@ class OwnerServiceIntegrationTest
     @BeforeEach
     public void setUp() throws Exception {
         super.setup();
-        //proxyfy service
         savedDogPetType = petTypeService.save(new PetType("Dog"));
 
         testPet = Pet.builder()

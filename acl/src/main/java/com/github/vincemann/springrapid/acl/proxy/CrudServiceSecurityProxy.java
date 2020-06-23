@@ -11,6 +11,7 @@ import com.github.vincemann.springrapid.acl.SecurityChecker;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
+import net.sf.cglib.proxy.MethodProxy;
 import org.springframework.test.util.AopTestUtils;
 import org.springframework.util.Assert;
 
@@ -47,7 +48,7 @@ public class CrudServiceSecurityProxy
         public static State create(Method targetMethod, Object target, Object[] targetMethodArgs) {
             State state = new State();
             state.targetMethodArgs = targetMethodArgs;
-            state.targetMethod = MethodHandle.create(targetMethod, target);
+            state.targetMethod = new MethodHandle(targetMethod, target);
             state.overrideDefaultPostAuthMethod = false;
             state.overrideDefaultPreAuthMethod = false;
             state.invokeTargetMethod = true;
@@ -81,12 +82,12 @@ public class CrudServiceSecurityProxy
 
     }
 
-
-
     @Override
-    protected Object proxy(Object target, Method method, Object[] args) throws Throwable {
-        log.debug("SecurityProxy intercepting method: " + method.getName() + " of Class: " + AopTestUtils.getUltimateTargetObject(target).getClass());
-        state = State.create(getMethods().get(method.getName()), getService(),args);
+    protected Object proxy(Object proxied, Method method, Object[] args, MethodProxy methodProxy) throws Throwable {
+        log.debug("SecurityProxy intercepting method: " + method.getName() + " of Class: " + AopTestUtils.getUltimateTargetObject(proxied).getClass());
+        Object target = AopTestUtils.getTargetObject(proxied);
+        Method targetMethod = target.getClass().getMethod(method.getName(), method.getParameterTypes());
+        state = State.create(targetMethod, target,args);
 
         invokePreAuthorizeMethods();
         if (!state.overrideDefaultPreAuthMethod) {

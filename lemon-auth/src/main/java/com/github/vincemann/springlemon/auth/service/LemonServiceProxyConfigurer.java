@@ -12,7 +12,7 @@ import org.springframework.test.util.AopTestUtils;
 import java.lang.reflect.Proxy;
 
 /**
- * Extend this class to further configure PreConfigured and created {@link LemonService}s.
+ * Extend this class to further configure PreConfigured {@link LemonService} Proxies.
  * Used primarily to add more plugins.
  *
  * @see LemonServiceAutoConfiguration
