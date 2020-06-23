@@ -1,6 +1,6 @@
 package com.github.vincemann.springrapid.core.config;
 
-import com.github.vincemann.aoplog.AOPLogger;
+import com.github.vincemann.aoplog.ProxyAwareAopLogger;
 import com.github.vincemann.aoplog.HierarchicalAnnotationParser;
 import com.github.vincemann.aoplog.ThreadAwareIndentingLogAdapter;
 import com.google.common.collect.Sets;
@@ -18,14 +18,15 @@ import java.util.Set;
 public class AopLogAutoConfiguration {
 
     private static final boolean SKIP_NULL_FIELDS = true;
+    private static final boolean FORCE_REFLECTION = true;
     private static final int CROP_THRESHOLD = 7;
     private static final Set<String> EXCLUDE_SECURE_FIELD_NAMES = Sets.newHashSet("password");
 
-    @ConditionalOnMissingBean(AOPLogger.class)
+    @ConditionalOnMissingBean(ProxyAwareAopLogger.class)
     @Bean
-    public AOPLogger aopLogger() {
-        AOPLogger aopLogger = new AOPLogger(new HierarchicalAnnotationParser());
-        aopLogger.setLogAdapter(new ThreadAwareIndentingLogAdapter(SKIP_NULL_FIELDS, CROP_THRESHOLD, EXCLUDE_SECURE_FIELD_NAMES));
+    public ProxyAwareAopLogger aopLogger() {
+        ProxyAwareAopLogger aopLogger = new ProxyAwareAopLogger(new HierarchicalAnnotationParser());
+        aopLogger.setLogAdapter(new ThreadAwareIndentingLogAdapter(SKIP_NULL_FIELDS, CROP_THRESHOLD, EXCLUDE_SECURE_FIELD_NAMES,FORCE_REFLECTION));
         return aopLogger;
     }
 }

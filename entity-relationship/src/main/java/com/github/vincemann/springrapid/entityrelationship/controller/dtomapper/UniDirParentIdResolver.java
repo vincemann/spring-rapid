@@ -29,13 +29,13 @@ public class UniDirParentIdResolver extends EntityIdResolver<UniDirParent, UniDi
     public void resolveEntityIds(UniDirParent mappedUniDirParent, UniDirParentDto uniDirParentDto) throws BadEntityException, EntityNotFoundException {
         try {
             //find and handle single Children
-            Map<Class, Serializable> allChildIdToClassMappings = uniDirParentDto.findUniDirChildrenIds();
+            Map<Class, Serializable> allChildIdToClassMappings = uniDirParentDto.findTypeUniDirChildIdMap();
             for (Map.Entry<Class, Serializable> childIdToClassMapping : allChildIdToClassMappings.entrySet()) {
                 Object child = findEntityFromService(childIdToClassMapping);
                 mappedUniDirParent._addChild(child);
             }
             //find and handle children collections
-            Map<Class, Collection<Serializable>> allChildrenIdCollection = uniDirParentDto.findUniDirChildrenIdCollections();
+            Map<Class, Collection<Serializable>> allChildrenIdCollection = uniDirParentDto.findTypeUniDirChildrenIdCollectionMap();
             for (Map.Entry<Class, Collection<Serializable>> entry : allChildrenIdCollection.entrySet()) {
                 Collection<Serializable> idCollection = entry.getValue();
                 for (Serializable id : idCollection) {

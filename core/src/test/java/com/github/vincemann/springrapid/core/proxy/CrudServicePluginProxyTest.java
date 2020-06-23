@@ -1,4 +1,4 @@
-package com.github.vincemann.springrapid.core.proxy.invocationHandler;
+package com.github.vincemann.springrapid.core.proxy;
 
 import com.github.vincemann.springrapid.commons.Lists;
 import com.github.vincemann.springrapid.core.model.IdentifiableEntityImpl;
@@ -44,6 +44,11 @@ class CrudServicePluginProxyTest {
     class ExampleService extends JPACrudService<ExampleEntity, Long, JpaRepository<ExampleEntity, Long>> {
         public ExampleEntity customMethod(String arg) {
             return new ExampleEntity("serviceCustomEntity");
+        }
+
+        @Override
+        public Class<?> getTargetClass() {
+            return ExampleService.class;
         }
     }
 

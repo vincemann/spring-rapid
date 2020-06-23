@@ -6,10 +6,7 @@ import com.github.vincemann.springrapid.core.model.IdentifiableEntityImpl;
 import com.github.vincemann.springrapid.entityrelationship.model.biDir.child.BiDirChildCollection;
 import com.github.vincemann.springrapid.entityrelationship.model.biDir.parent.BiDirParent;
 import com.github.vincemann.springrapid.entityrelationship.model.uniDir.parent.UniDirParent;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 import javax.persistence.*;
 import java.util.Arrays;

@@ -28,7 +28,7 @@ public class ReflectionUtilsBean {
 
     @Cacheable(cacheNames = "reflections", cacheManager = "reflectionCacheManager")
     public Field[] getFieldsWithAnnotation(final Class<?> cls, final Class<? extends Annotation> annotationCls) {
-        log.debug("get fields with annotations: " + cls.getSimpleName() + " ac: " + annotationCls.getSimpleName());
+//        log.debug("get fields with annotations: " + cls.getSimpleName() + " ac: " + annotationCls.getSimpleName());
         return FieldUtils.getFieldsWithAnnotation(cls, annotationCls);
     }
 

@@ -12,4 +12,8 @@ import org.springframework.stereotype.Service;
 @Service
 @ServiceComponent
 public class PetJPAService extends JPACrudService<Pet, Long, PetRepository> implements PetService {
+    @Override
+    public Class<?> getTargetClass() {
+        return PetJPAService.class;
+    }
 }

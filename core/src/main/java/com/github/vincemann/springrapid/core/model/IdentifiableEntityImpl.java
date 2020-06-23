@@ -11,6 +11,7 @@ import java.util.Objects;
 
 @MappedSuperclass
 @NoArgsConstructor
+@ToString
 public class IdentifiableEntityImpl<Id extends Serializable> implements IdentifiableEntity<Id> {
 
 

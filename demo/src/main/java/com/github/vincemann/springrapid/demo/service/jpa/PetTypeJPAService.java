@@ -14,4 +14,8 @@ import com.github.vincemann.springrapid.core.service.jpa.JPACrudService;
 @ServiceComponent
 public class PetTypeJPAService extends JPACrudService<PetType,Long, PetTypeRepository> implements PetTypeService {
 
+    @Override
+    public Class<?> getTargetClass() {
+        return PetTypeJPAService.class;
+    }
 }

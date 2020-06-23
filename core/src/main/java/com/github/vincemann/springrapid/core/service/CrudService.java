@@ -1,14 +1,12 @@
 package com.github.vincemann.springrapid.core.service;
 
-import com.github.vincemann.aoplog.annotation.LogConfig;
-import com.github.vincemann.springrapid.core.proxy.UltimateTargetClassAware;
+import com.github.vincemann.aoplog.api.InteractionLoggable;
+import com.github.vincemann.aoplog.api.LogAll;
+import com.github.vincemann.aoplog.api.UltimateTargetClassAware;
 import com.github.vincemann.springrapid.core.slicing.components.ServiceComponent;
 import com.github.vincemann.springrapid.core.service.exception.BadEntityException;
 import com.github.vincemann.springrapid.core.model.IdentifiableEntity;
 import com.github.vincemann.springrapid.core.service.exception.EntityNotFoundException;
-import com.github.vincemann.aoplog.annotation.AopLoggable;
-
-import com.github.vincemann.aoplog.annotation.Log;
 import org.springframework.data.repository.CrudRepository;
 
 import java.io.Serializable;
@@ -21,14 +19,14 @@ import java.util.Set;
  * @param <Id>      Id Type of E
  */
 @ServiceComponent
-@Log(config = @LogConfig(ignoreGetters = true))
+@LogAll(/*ignoreGetters = true,ignoreSetters = true*/)
 public interface CrudService
         <
                 E extends IdentifiableEntity<Id>,
                 Id extends Serializable,
                 R extends CrudRepository<E,Id>
         >
-    extends AopLoggable, UltimateTargetClassAware
+    extends InteractionLoggable, UltimateTargetClassAware
 {
 
     Optional<E> findById(Id id) throws BadEntityException;
