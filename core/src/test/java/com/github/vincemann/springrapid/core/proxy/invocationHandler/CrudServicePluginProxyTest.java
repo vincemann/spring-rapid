@@ -4,6 +4,8 @@ import com.github.vincemann.springrapid.commons.Lists;
 import com.github.vincemann.springrapid.core.model.IdentifiableEntityImpl;
 import com.github.vincemann.springrapid.core.proxy.ApplyIfRole;
 import com.github.vincemann.springrapid.core.proxy.CalledByProxy;
+import com.github.vincemann.springrapid.core.proxy.CrudServicePlugin;
+import com.github.vincemann.springrapid.core.proxy.CrudServicePluginProxy;
 import com.github.vincemann.springrapid.core.service.jpa.JPACrudService;
 import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;

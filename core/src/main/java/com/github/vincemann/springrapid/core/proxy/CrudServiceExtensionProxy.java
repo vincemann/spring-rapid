@@ -1,4 +1,4 @@
-package com.github.vincemann.springrapid.core.proxy.invocationHandler.abs;
+package com.github.vincemann.springrapid.core.proxy;
 
 import com.github.vincemann.springrapid.commons.Lists;
 import com.github.vincemann.springrapid.commons.NullableOptional;

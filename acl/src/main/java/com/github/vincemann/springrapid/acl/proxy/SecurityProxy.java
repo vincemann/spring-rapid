@@ -1,13 +1,13 @@
 package com.github.vincemann.springrapid.acl.proxy;
 
 import com.github.vincemann.springrapid.acl.proxy.rules.ServiceSecurityRule;
-import com.github.vincemann.springrapid.core.proxy.invocationHandler.CrudServicePlugin;
+import com.github.vincemann.springrapid.core.proxy.CrudServicePlugin;
 
 import java.lang.annotation.*;
 
 /**
- * Represents a {@link CrudServiceSecurityProxy} in {@link com.github.vincemann.springrapid.acl.proxy.create.ConfigureProxies}.
- * @see com.github.vincemann.springrapid.acl.proxy.create.Proxy
+ * Represents a {@link CrudServiceSecurityProxy} in {@link ConfigureProxies}.
+ * @see Proxy
  */
 @Target(ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)

@@ -1,11 +1,10 @@
-package com.github.vincemann.springrapid.acl.proxy.create;
+package com.github.vincemann.springrapid.acl.proxy;
 
 import com.github.vincemann.springrapid.commons.Lists;
-import com.github.vincemann.springrapid.acl.proxy.SecurityProxy;
 import com.github.vincemann.springrapid.acl.proxy.rules.ServiceSecurityRule;
-import com.github.vincemann.springrapid.core.proxy.factory.CrudServicePluginProxyFactory;
+import com.github.vincemann.springrapid.core.proxy.CrudServicePluginProxyFactory;
 import com.github.vincemann.springrapid.core.service.CrudService;
-import com.github.vincemann.springrapid.core.proxy.invocationHandler.CrudServicePlugin;
+import com.github.vincemann.springrapid.core.proxy.CrudServicePlugin;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.annotation.Autowired;

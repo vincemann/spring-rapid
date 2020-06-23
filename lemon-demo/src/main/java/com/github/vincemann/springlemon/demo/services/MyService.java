@@ -19,4 +19,9 @@ public class MyService extends LemonServiceImpl<User, Long, UserRepository> {
 	public Long toId(String id) {
 		return Long.valueOf(id);
 	}
+
+	@Override
+	public Class<?> getTargetClass() {
+		return MyService.class;
+	}
 }

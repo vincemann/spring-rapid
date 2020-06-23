@@ -1,8 +1,8 @@
 package com.github.vincemann.springrapid.acl.proxy.rules;
 
 
-import com.github.vincemann.springrapid.acl.securityChecker.SecurityChecker;
-import com.github.vincemann.springrapid.core.proxy.invocationHandler.CrudServicePlugin;
+import com.github.vincemann.springrapid.acl.SecurityChecker;
+import com.github.vincemann.springrapid.core.proxy.CrudServicePlugin;
 import com.github.vincemann.springrapid.core.slicing.components.ServiceComponent;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
