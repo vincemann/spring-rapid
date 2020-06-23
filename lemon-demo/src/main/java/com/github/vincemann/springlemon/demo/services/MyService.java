@@ -19,4 +19,9 @@ public class MyService extends LemonServiceImpl<User, Long, UserRepository> {
 	public Long toId(String id) {
 		return Long.valueOf(id);
 	}
+
+	@Override
+	protected Class<User> provideEntityClass() {
+		return User.class;
+	}
 }

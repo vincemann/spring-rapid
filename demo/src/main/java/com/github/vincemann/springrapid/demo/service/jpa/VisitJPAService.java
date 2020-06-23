@@ -12,4 +12,9 @@ import org.springframework.stereotype.Service;
 @Service
 @ServiceComponent
 public class VisitJPAService extends JPACrudService<Visit,Long, VisitRepository> implements VisitService {
+
+    @Override
+    protected Class<Visit> provideEntityClass() {
+        return Visit.class;
+    }
 }

@@ -122,6 +122,11 @@ class CrudServiceSecurityProxyTest {
         public ExampleEntity customMethod(String arg){
             return new ExampleEntity("serviceCustomEntity");
         }
+
+        @Override
+        protected Class<ExampleEntity> provideEntityClass() {
+            return ExampleEntity.class;
+        }
     }
 
     CrudServiceSecurityProxy proxy;
@@ -280,6 +285,6 @@ class CrudServiceSecurityProxyTest {
     private <T> T invokeProxy(String methodName, Object... args) throws Throwable {
         Method customMethod
                 = Arrays.stream(service.getClass().getMethods()).filter(m -> m.getName().equals(methodName)).findFirst().get();
-        return (T) proxy.invoke(service,customMethod, args);
+        return (T) proxy.proxy(service,customMethod, args,null);
     }
 }

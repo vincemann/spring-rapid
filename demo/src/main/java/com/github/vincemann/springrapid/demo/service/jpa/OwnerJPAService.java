@@ -29,6 +29,11 @@ public class OwnerJPAService extends JPACrudService<Owner,Long, OwnerRepository>
     }
 
 
+    @Override
+    protected Class<Owner> provideEntityClass() {
+        return Owner.class;
+    }
+
     /**
      * Owner named "42" is owner of the year
      * @return

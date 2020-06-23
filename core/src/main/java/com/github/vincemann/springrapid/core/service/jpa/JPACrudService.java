@@ -9,6 +9,7 @@ import com.github.vincemann.springrapid.core.slicing.components.ServiceComponent
 import com.github.vincemann.springrapid.core.util.RapidUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.beanutils.BeanUtilsBean;
+import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.NonTransientDataAccessException;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -40,10 +41,17 @@ public abstract class JPACrudService
 
     private R jpaRepository;
     @SuppressWarnings("unchecked")
-    private Class<E> entityClass = (Class<E>) ((ParameterizedType) this.getClass().getGenericSuperclass()).getActualTypeArguments()[0];
+    //does not work because cglib does not preserve generic type information
+    private Class<E> entityClass/* = (Class<E>) ((ParameterizedType) this.getClass().getGenericSuperclass()).getActualTypeArguments()[0]*/;
 
+
+    //there needs to be no-args constructor, so cglib can instantiate this class and super classes
     public JPACrudService() {
+        this.entityClass=provideEntityClass();
     }
+
+    //i do it like this bc cglib needs no args constructor and i want to avoid that entity class is not set and null
+    protected abstract Class<E> provideEntityClass();
 
     @SuppressWarnings("SpringJavaInjectionPointsAutowiringInspection")
     @Autowired
@@ -120,4 +128,5 @@ public abstract class JPACrudService
     public Class<E> getEntityClass() {
         return entityClass;
     }
+
 }

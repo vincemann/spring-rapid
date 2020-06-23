@@ -13,6 +13,7 @@ import com.github.vincemann.springrapid.core.service.exception.BadEntityExceptio
 import com.github.vincemann.springrapid.core.service.jpa.JPACrudService;
 import com.github.vincemann.springlemon.exceptions.util.LexUtils;
 import com.github.vincemann.springrapid.core.slicing.components.ServiceComponent;
+import lombok.NoArgsConstructor;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -23,6 +24,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 @ServiceComponent
+@NoArgsConstructor
 public abstract class AbstractLemonService
 	<U extends AbstractUser<ID>, ID extends Serializable,R extends AbstractUserRepository<U,ID>>
 			extends JPACrudService<U,ID,R> {
@@ -33,7 +35,6 @@ public abstract class AbstractLemonService
 	protected BlueTokenService blueTokenService;
 	protected GreenTokenService greenTokenService;
 	protected MailSender mailSender;
-
 
 
 	protected Map<String, Object> buildContext() {

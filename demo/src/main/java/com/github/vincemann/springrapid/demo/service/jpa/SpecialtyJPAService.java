@@ -13,4 +13,8 @@ import org.springframework.stereotype.Service;
 @ServiceComponent
 public class SpecialtyJPAService extends JPACrudService<Specialty,Long, SpecialtyRepository> implements SpecialtyService {
 
+    @Override
+    protected Class<Specialty> provideEntityClass() {
+        return Specialty.class;
+    }
 }
