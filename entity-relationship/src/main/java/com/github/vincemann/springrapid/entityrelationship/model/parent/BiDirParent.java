@@ -6,6 +6,8 @@ import com.github.vincemann.springrapid.entityrelationship.model.BiDirEntity;
 import com.github.vincemann.springrapid.entityrelationship.model.child.BiDirChild;
 import com.github.vincemann.springrapid.entityrelationship.model.child.annotation.BiDirChildCollection;
 import com.github.vincemann.springrapid.entityrelationship.model.child.annotation.BiDirChildEntity;
+import com.github.vincemann.springrapid.entityrelationship.model.child.annotation.UniDirChildCollection;
+import com.github.vincemann.springrapid.entityrelationship.model.child.annotation.UniDirChildEntity;
 import com.github.vincemann.springrapid.entityrelationship.model.parent.annotation.BiDirParentEntity;
 import com.github.vincemann.springrapid.entityrelationship.util.CollectionUtils;
 import org.slf4j.Logger;
@@ -25,30 +27,38 @@ public interface BiDirParent extends BiDirEntity/*,DisposableBean*/ , DirParent 
 //    Map<Class,Field[]> biDirChildrenCollectionFieldsCache = new HashMap<>();
 //    Map<Class,Field[]> biDirChildEntityFieldsCache = new HashMap<>();
 
-    /**
-     * All children {@link BiDirChild} of this parent wont know about this parent, after this operation.
-     * Clear all {@link BiDirChildCollection}s of this parent.
-     * Call this, before you want to delete this parent.
-     * @throws UnknownParentTypeException
-     * @throws IllegalAccessException
-     */
-    default void dismissChildrensParent() throws UnknownParentTypeException, IllegalAccessException {
-        for(BiDirChild child: findBiDirChildren()){
-            child.dismissBiDirParent(this);
-        }
-        for(Map.Entry<Collection<? extends BiDirChild>,Class<? extends BiDirChild>> entry: findAllBiDirChildrenCollections().entrySet()){
-            Collection<? extends BiDirChild> childrenCollection = entry.getKey();
-            for(BiDirChild biDirChild: childrenCollection){
-                biDirChild.dismissBiDirParent(this);
-            }
-            childrenCollection.clear();
-        }
-    }
+
 
 //    @Override
 //    default void destroy() throws Exception {
 //        this.dismissChildrensParent();
 //    }
+
+    /**
+     * Find the BiDirChildren Collections (all fields of this parent annotated with {@link BiDirChildCollection} )
+     * and the Type of the Entities in the Collection.
+     * @return
+     */
+    default Map<Collection<BiDirChild>,Class<BiDirChild>> findAllBiDirChildCollections(){
+        return findAllChildCollections(BiDirChildCollection.class);
+
+//        Field[] collectionFields =findChildrenCollectionFields();
+//        for(Field field : collectionFields){
+//            field.setAccessible(true);
+//            Collection<? extends BiDirChild> biDirChildren = (Collection<? extends BiDirChild>) field.get(this);
+//            if(biDirChildren == null){
+//                //throw new IllegalArgumentException("Null idCollection found in BiDirParent "+ this + " for ChildCollectionField with name: " + field.getName());
+//                log.warn("Auto-generating Collection for nullIdCollection Field: " + field);
+//                Collection emptyCollection = CollectionUtils.createEmptyCollection(field);
+//                field.set(this,emptyCollection);
+//                biDirChildren=emptyCollection;
+//            }
+//            Class<? extends BiDirChild> collectionEntityType = field.getAnnotation(BiDirChildCollection.class).value();
+//            childCollection_childTypeMap.put(biDirChildren,collectionEntityType);
+//        }
+
+//        return childCollection_childTypeMap;
+    }
 
     /**
      * Add a new Child to this parent.
@@ -57,30 +67,9 @@ public interface BiDirParent extends BiDirEntity/*,DisposableBean*/ , DirParent 
      * Child wont be added and UnknownChildTypeException will be thrown when corresponding {@link BiDirChildCollection} is null.
      * @param newChild
      * @throws UnknownChildTypeException
-     * @throws IllegalAccessException
      */
-   default void addBiDirChild(BiDirChild newChild) throws UnknownChildTypeException, IllegalAccessException {
-       AtomicBoolean addedChild = new AtomicBoolean(false);
-       //add to matching child collections
-       for(Map.Entry entry: findAllBiDirChildrenCollections().entrySet()){
-           Class targetClass = (Class) entry.getValue();
-           if(newChild.getClass().equals(targetClass)){
-               ((Collection)entry.getKey()).add(newChild);
-               addedChild.set(true);
-           }
-       }
-       //set matching child
-       ReflectionUtils.doWithFields(getClass(), childField -> {
-           if (childField.getType().equals(newChild.getClass())) {
-               ReflectionUtils.makeAccessible(childField);
-               BiDirChild oldChild = (BiDirChild) childField.get(this);
-               if (oldChild != null) {
-                   log.warn("Overriding old child: "+oldChild+" with new Child "+newChild+" of parent "+this);
-               }
-               childField.set(this,newChild);
-               addedChild.set(true);
-           }
-       }, new org.springframework.data.util.ReflectionUtils.AnnotationFieldFilter(BiDirChildEntity.class));
+   default void addBiDirChild(BiDirChild newChild) throws UnknownChildTypeException{
+       addChild(newChild, BiDirChildEntity.class, BiDirChildCollection.class);
 
 //       Field[] entityFields = findChildrenEntityFields();
 //       for(Field childField: entityFields) {
@@ -95,10 +84,14 @@ public interface BiDirParent extends BiDirEntity/*,DisposableBean*/ , DirParent 
 //           }
 //       }
 
-       if(!addedChild.get()){
-           throw new UnknownChildTypeException(getClass(),newChild.getClass());
-       }
+//       if(!addedChild.get()){
+//           throw new UnknownChildTypeException(getClass(),newChild.getClass());
+//       }
    }
+
+
+
+
 
     /*default Field[] findChildrenCollectionFields(){
         return ReflectionUtils.getAnnotatedDeclaredFieldsAssignableFrom(this.getClass(),BiDirChildSet.class, Collection.class,true);
@@ -125,7 +118,7 @@ public interface BiDirParent extends BiDirEntity/*,DisposableBean*/ , DirParent 
      */
     default void dismissBiDirChild(BiDirChild biDirChildToRemove) throws UnknownChildTypeException, IllegalAccessException {
         AtomicBoolean deletedChild = new AtomicBoolean(false);
-        for(Map.Entry<Collection<? extends BiDirChild>,Class<? extends BiDirChild>> entry: findAllBiDirChildrenCollections().entrySet()){
+        for(Map.Entry<Collection<? extends BiDirChild>,Class<? extends BiDirChild>> entry: findAllBiDirChildCollections().entrySet()){
             Collection<? extends BiDirChild> childrenCollection = entry.getKey();
             if(childrenCollection!=null){
                 if(!childrenCollection.isEmpty()){
@@ -198,44 +191,7 @@ public interface BiDirParent extends BiDirEntity/*,DisposableBean*/ , DirParent 
 //        }
 //
 //    }
-    /**
-     * Find the BiDirChildren Collections (all fields of this parent annotated with {@link BiDirChildCollection} )
-     * and the Type of the Entities in the Collection.
-     * @return
-     */
-    default Map<Collection<? extends BiDirChild>,Class<? extends BiDirChild>> findAllBiDirChildrenCollections() throws IllegalAccessException {
-        Map<Collection<? extends BiDirChild>,Class<? extends BiDirChild>> childCollection_childTypeMap = new HashMap<>();
-        ReflectionUtils.doWithFields(getClass(), field -> {
-            ReflectionUtils.makeAccessible(field);
-            Collection<? extends BiDirChild> biDirChildren = (Collection<? extends BiDirChild>) field.get(this);
-            if(biDirChildren == null){
-                //throw new IllegalArgumentException("Null idCollection found in BiDirParent "+ this + " for ChildCollectionField with name: " + field.getName());
-                log.warn("Auto-generating Collection for null valued BiDirChildCollection Field: " + field);
-                Collection emptyCollection = CollectionUtils.createEmptyCollection(field);
-                field.set(this,emptyCollection);
-                biDirChildren=emptyCollection;
-            }
-            Class<? extends BiDirChild> childType = field.getAnnotation(BiDirChildCollection.class).value();
-            childCollection_childTypeMap.put(biDirChildren,childType);
-        }, new org.springframework.data.util.ReflectionUtils.AnnotationFieldFilter(BiDirChildCollection.class));
 
-//        Field[] collectionFields =findChildrenCollectionFields();
-//        for(Field field : collectionFields){
-//            field.setAccessible(true);
-//            Collection<? extends BiDirChild> biDirChildren = (Collection<? extends BiDirChild>) field.get(this);
-//            if(biDirChildren == null){
-//                //throw new IllegalArgumentException("Null idCollection found in BiDirParent "+ this + " for ChildCollectionField with name: " + field.getName());
-//                log.warn("Auto-generating Collection for nullIdCollection Field: " + field);
-//                Collection emptyCollection = CollectionUtils.createEmptyCollection(field);
-//                field.set(this,emptyCollection);
-//                biDirChildren=emptyCollection;
-//            }
-//            Class<? extends BiDirChild> collectionEntityType = field.getAnnotation(BiDirChildCollection.class).value();
-//            childCollection_childTypeMap.put(biDirChildren,collectionEntityType);
-//        }
-
-        return childCollection_childTypeMap;
-    }
 
 
     /**
@@ -267,5 +223,25 @@ public interface BiDirParent extends BiDirEntity/*,DisposableBean*/ , DirParent 
 //            children.add(biDirChild);
 //        }
         return children;
+    }
+
+    /**
+     * All children {@link BiDirChild} of this parent wont know about this parent, after this operation.
+     * Clear all {@link BiDirChildCollection}s of this parent.
+     * Call this, before you want to delete this parent.
+     * @throws UnknownParentTypeException
+     * @throws IllegalAccessException
+     */
+    default void dismissChildrensParent() throws UnknownParentTypeException, IllegalAccessException {
+        for(BiDirChild child: findBiDirChildren()){
+            child.dismissBiDirParent(this);
+        }
+        for(Map.Entry<Collection<? extends BiDirChild>,Class<? extends BiDirChild>> entry: findAllBiDirChildCollections().entrySet()){
+            Collection<? extends BiDirChild> childrenCollection = entry.getKey();
+            for(BiDirChild biDirChild: childrenCollection){
+                biDirChild.dismissBiDirParent(this);
+            }
+            childrenCollection.clear();
+        }
     }
 }

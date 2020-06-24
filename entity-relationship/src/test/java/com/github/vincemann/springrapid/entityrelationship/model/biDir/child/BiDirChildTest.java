@@ -94,7 +94,7 @@ class BiDirChildTest {
         Assertions.assertNull(testEntityChild.getUnusedParent());
         Assertions.assertNull(testEntityChild.getSecondEntityParent());
         //when
-        testEntityChild.setParentRefIfNull(testEntityParent);
+        testEntityChild.addBiDirParentIfNull(testEntityParent);
         //then
         Assertions.assertSame(testEntityParent,testEntityChild.getEntityParent());
         Assertions.assertNull(testEntityChild.getUnusedParent());
@@ -110,7 +110,7 @@ class BiDirChildTest {
         Assertions.assertNull(testEntityChild.getUnusedParent());
         Assertions.assertNull(testEntityChild.getSecondEntityParent());
         //when
-        testEntityChild.setParentRefIfNull(testEntityParent);
+        testEntityChild.addBiDirParentIfNull(testEntityParent);
         //then
         //test entity parent is NOT set
         Assertions.assertSame(newEntityParent,testEntityChild.getEntityParent());

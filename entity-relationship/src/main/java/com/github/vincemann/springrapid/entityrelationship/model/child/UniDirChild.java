@@ -3,6 +3,7 @@ package com.github.vincemann.springrapid.entityrelationship.model.child;
 import com.github.vincemann.springrapid.entityrelationship.exception.UnknownParentTypeException;
 import com.github.vincemann.springrapid.entityrelationship.model.UniDirEntity;
 import com.github.vincemann.springrapid.entityrelationship.model.parent.UniDirParent;
+import com.github.vincemann.springrapid.entityrelationship.model.parent.annotation.BiDirParentEntity;
 import com.github.vincemann.springrapid.entityrelationship.model.parent.annotation.UniDirParentEntity;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -16,25 +17,15 @@ import java.util.concurrent.atomic.AtomicBoolean;
  * Same as {@link BiDirChild} but for a unidirectional relationship.
  */
 public interface UniDirChild extends UniDirEntity, DirChild {
-    Logger log = LoggerFactory.getLogger(UniDirChild.class);
+//    Logger log = LoggerFactory.getLogger(UniDirChild.class);
 //    Map<Class, Field[]> uniDirParentFieldsCache = new HashMap<>();
 
     /**
      * @param parentToSet
      * @throws UnknownParentTypeException when supplied Parent does not match any of the fields in child class anntoated with {@link UniDirParentEntity}
      */
-    public default void addUniDirParent(Object parentToSet) throws UnknownParentTypeException {
-        AtomicBoolean parentSet = new AtomicBoolean(false);
-        ReflectionUtils.doWithFields(getClass(), field -> {
-            if (parentToSet.getClass().equals(field.getType())) {
-                ReflectionUtils.makeAccessible(field);
-                field.set(this, parentToSet);
-                parentSet.set(true);
-            }
-        }, new org.springframework.data.util.ReflectionUtils.AnnotationFieldFilter(UniDirParentEntity.class));
-        if (!parentSet.get()) {
-            throw new UnknownParentTypeException(this.getClass(), parentToSet.getClass());
-        }
+    public default void addUniDirParent(UniDirParent parentToSet) throws UnknownParentTypeException {
+        addParent(parentToSet, UniDirParentEntity.class);
 
 //        AtomicBoolean parentSet = new AtomicBoolean(false);
 //        for(Field parentField: _findParentFields()){
@@ -60,16 +51,7 @@ public interface UniDirChild extends UniDirEntity, DirChild {
      * @return true, if parent was null and is set to {@param parentToSet}, otherwise false
      */
     public default boolean addUniDirParentIfNull(UniDirParent parentToSet) {
-        AtomicBoolean parentSet = new AtomicBoolean(false);
-        ReflectionUtils.doWithFields(getClass(), field -> {
-            if (parentToSet.getClass().equals(field.getType())) {
-                ReflectionUtils.makeAccessible(field);
-                if (field.get(this) == null) {
-                    parentSet.set(true);
-                    field.set(this, parentToSet);
-                }
-            }
-        }, new org.springframework.data.util.ReflectionUtils.AnnotationFieldFilter(UniDirParentEntity.class));
+        return addParentIfNull(parentToSet,UniDirParentEntity.class);
 //        for(Field parentField: _findParentFields()){
 //            if(parentToSet.getClass().equals(parentField.getType())){
 //                parentField.setAccessible(true);
@@ -78,7 +60,7 @@ public interface UniDirChild extends UniDirEntity, DirChild {
 //                }
 //            }
 //        }
-        return parentSet.get();
+//        return parentSet.get();
     }
 
 //    /**
@@ -101,14 +83,7 @@ public interface UniDirChild extends UniDirEntity, DirChild {
      * @return all parent of this, that are not null
      */
     public default Collection<UniDirParent> findUniDirParents() {
-        Collection<UniDirParent> result = new ArrayList<>();
-        ReflectionUtils.doWithFields(getClass(), field -> {
-            ReflectionUtils.makeAccessible(field);
-            UniDirParent uniDirParent = (UniDirParent) field.get(this);
-            if (uniDirParent != null) {
-                result.add(uniDirParent);
-            }
-        }, new org.springframework.data.util.ReflectionUtils.AnnotationFieldFilter(UniDirParentEntity.class));
+        return findParents(UniDirParentEntity.class);
 //        Collection result = new ArrayList<>();
 //        Field[] parentFields = _findParentFields();
 //        for (Field parentField : parentFields) {
@@ -118,7 +93,7 @@ public interface UniDirChild extends UniDirEntity, DirChild {
 //                result.add(uniDirParent);
 //            }
 //        }
-        return result;
+//        return result;
     }
 
     /**
@@ -129,17 +104,7 @@ public interface UniDirChild extends UniDirEntity, DirChild {
      * @throws UnknownParentTypeException thrown, if parentToDelete is of unknown type -> no field , annotated as {@link UniDirParentEntity}, with the most specific type of parentToDelete, exists in Child (this).
      */
     public default void dismissUniDirParent(UniDirParent parentToDelete) throws UnknownParentTypeException {
-        AtomicBoolean parentRemoved = new AtomicBoolean(false);
-        ReflectionUtils.doWithFields(getClass(), field -> {
-            ReflectionUtils.makeAccessible(field);
-            UniDirParent parent = (UniDirParent) field.get(this);
-            if (parent != null) {
-                if (parentToDelete.getClass().equals(parent.getClass())) {
-                    field.set(this, null);
-                    parentRemoved.set(true);
-                }
-            }
-        }, new org.springframework.data.util.ReflectionUtils.AnnotationFieldFilter(UniDirParentEntity.class));
+        dismissParent(parentToDelete,UniDirParentEntity.class);
 //        Field[] parentFields = _findParentFields();
 //        for (Field parentField : parentFields) {
 //            parentField.setAccessible(true);
@@ -151,8 +116,8 @@ public interface UniDirChild extends UniDirEntity, DirChild {
 //                }
 //            }
 //        }
-        if (!parentRemoved.get()) {
-            throw new UnknownParentTypeException(this.getClass(), parentToDelete.getClass());
-        }
+//        if (!parentRemoved.get()) {
+//            throw new UnknownParentTypeException(this.getClass(), parentToDelete.getClass());
+//        }
     }
 }

@@ -38,7 +38,7 @@ public class BiDirEntityPersistAdvice {
         for (BiDirChild child : children) {
             child.addBiDirParent(biDirParent);
         }
-        Set<Collection<? extends BiDirChild>> childCollections = biDirParent.findAllBiDirChildrenCollections().keySet();
+        Set<Collection<? extends BiDirChild>> childCollections = biDirParent.findAllBiDirChildCollections().keySet();
         for (Collection<? extends BiDirChild> childCollection : childCollections) {
             for (BiDirChild biDirChild : childCollection) {
                 biDirChild.addBiDirParent(biDirParent);

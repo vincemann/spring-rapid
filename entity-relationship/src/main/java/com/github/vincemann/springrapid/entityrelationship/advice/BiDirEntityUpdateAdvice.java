@@ -106,8 +106,8 @@ public class BiDirEntityUpdateAdvice {
         Set<? extends BiDirChild> oldChildren = oldBiDirParent.findBiDirChildren();
         Set<? extends BiDirChild> newChildren = newBiDirParent.findBiDirChildren();
 
-        Set<Collection<? extends BiDirChild>> oldChildrenCollections = oldBiDirParent.findAllBiDirChildrenCollections().keySet();
-        Set<Collection<? extends BiDirChild>> newChildrenCollections = newBiDirParent.findAllBiDirChildrenCollections().keySet();
+        Set<Collection<? extends BiDirChild>> oldChildrenCollections = oldBiDirParent.findAllBiDirChildCollections().keySet();
+        Set<Collection<? extends BiDirChild>> newChildrenCollections = newBiDirParent.findAllBiDirChildCollections().keySet();
 
         //find removed Children
         List<BiDirChild> removedChildren = new ArrayList<>();

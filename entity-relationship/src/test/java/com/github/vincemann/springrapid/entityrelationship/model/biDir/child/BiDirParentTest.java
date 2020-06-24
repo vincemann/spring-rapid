@@ -194,7 +194,7 @@ class BiDirParentTest {
         HashSet<SecondEntityChild> secondEntityChildSet = new HashSet<>();
         testEntityParent.setSecondEntityChildSet(secondEntityChildSet);
         //when
-        Map<Collection<? extends BiDirChild>, Class<? extends BiDirChild>> childrenCollections = testEntityParent.findAllBiDirChildrenCollections();
+        Map<Collection<? extends BiDirChild>, Class<? extends BiDirChild>> childrenCollections = testEntityParent.findAllBiDirChildCollections();
         //then
         Assertions.assertEquals(1,childrenCollections.size());
         Map.Entry<Collection<? extends BiDirChild>, Class<? extends BiDirChild>> entry = childrenCollections.entrySet().stream().findFirst().get();
@@ -206,7 +206,7 @@ class BiDirParentTest {
     void getNullChildrenCollection_shouldCreateEmptyCollection() throws IllegalAccessException {
         //given
         testEntityParent.setSecondEntityChildSet(null);
-        Map<Collection<? extends BiDirChild>, Class<? extends BiDirChild>> childrenCollections = testEntityParent.findAllBiDirChildrenCollections();
+        Map<Collection<? extends BiDirChild>, Class<? extends BiDirChild>> childrenCollections = testEntityParent.findAllBiDirChildCollections();
         for (Map.Entry<Collection<? extends BiDirChild>, Class<? extends BiDirChild>> collectionClassEntry : childrenCollections.entrySet()) {
             Assertions.assertNotNull(collectionClassEntry.getKey());
             Assertions.assertTrue(collectionClassEntry.getKey().isEmpty());
