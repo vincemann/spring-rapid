@@ -1,22 +1,22 @@
 package com.github.vincemann.springrapid.entityrelationship.model.parent;
 
 import com.github.vincemann.springrapid.entityrelationship.exception.UnknownChildTypeException;
-import com.github.vincemann.springrapid.entityrelationship.model.UniDirEntity;
 import com.github.vincemann.springrapid.entityrelationship.model.child.UniDirChild;
 import com.github.vincemann.springrapid.entityrelationship.model.child.annotation.UniDirChildCollection;
 import com.github.vincemann.springrapid.entityrelationship.model.child.annotation.UniDirChildEntity;
-import com.github.vincemann.springrapid.entityrelationship.util.CollectionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.lang.reflect.Field;
-import java.util.*;
-import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
 
 /**
  * Same as {@link BiDirParent} but for a unidirectional relationship.
  */
-public interface UniDirParent extends UniDirEntity, DirParent {
+public interface UniDirParent extends DirParent {
     Logger log = LoggerFactory.getLogger(UniDirParent.class);
 
     /**
@@ -89,7 +89,7 @@ public interface UniDirParent extends UniDirEntity, DirParent {
         return ReflectionUtils.getAnnotatedDeclaredFieldsAssignableFrom(this.getClass(),UniDirChildSet.class, Collection.class,true);
     }
 
-    default Collection<Collection> getChildrenCollections(Field[] childrenSetFields) throws IllegalAccessException {
+    default Collection<Collection> getChildrenCollections(Field[] childrenSetFields)  {
         Collection<Collection> childrenCollections = new ArrayList<>();
         for(Field childrenSetField : childrenSetFields){
             childrenSetField.setAccessible(true);
@@ -105,45 +105,47 @@ public interface UniDirParent extends UniDirEntity, DirParent {
      * Case 1: Remove Child {@link UniDirChild} from all {@link UniDirChildCollection}s from this parent.
      * Case 2: Set {@link UniDirChildEntity}Field to null if child is not saved in a collection in this parent.
      *
-     * @param uniDirChildToRemove
+     * @param toRemove
      * @throws UnknownChildTypeException
-     * @throws IllegalAccessException
      */
-    default void dismissUniDirChild(Object uniDirChildToRemove) throws UnknownChildTypeException, IllegalAccessException {
-        AtomicBoolean deletedChild = new AtomicBoolean(false);
-        for (Map.Entry<Collection, Class<? extends UniDirChild>> entry : findAllUniDirChildCollections().entrySet()) {
-            Collection<? extends UniDirChild> childrenCollection = entry.getKey();
-            if (childrenCollection != null) {
-                if (!childrenCollection.isEmpty()) {
-                    Optional<? extends UniDirChild> optionalUniDirChild = childrenCollection.stream().findFirst();
-                    optionalUniDirChild.ifPresent(child -> {
-                        if (uniDirChildToRemove.getClass().equals(child.getClass())) {
-                            //this set needs to remove the child
-                            boolean successfulRemove = childrenCollection.remove(uniDirChildToRemove);
-                            if (!successfulRemove) {
-                                log.warn("UniDirChild: " + uniDirChildToRemove + " was not present in children set of parent: " + this + " when trying to delete.");
-                            } else {
-                                deletedChild.set(true);
-                            }
-                        }
-                    });
-                }
-            }
-        }
-        for (Field childField : _findChildrenEntityFields()) {
-            childField.setAccessible(true);
-            UniDirChild child = (UniDirChild) childField.get(this);
-            if (child != null) {
-                if (child.getClass().equals(uniDirChildToRemove.getClass())) {
-                    childField.set(this, null);
-                    deletedChild.set(true);
-                }
-            }
-        }
-        if (!deletedChild.get()) {
-            throw new UnknownChildTypeException(this.getClass(), uniDirChildToRemove.getClass());
-        }
+    default void dismissUniDirChild(UniDirChild toRemove) throws UnknownChildTypeException{
+        dismissChild(toRemove,UniDirChildEntity.class,UniDirChildCollection.class);
+//        AtomicBoolean deletedChild = new AtomicBoolean(false);
+//        for (Map.Entry<Collection, Class<? extends UniDirChild>> entry : findAllUniDirChildCollections().entrySet()) {
+//            Collection<? extends UniDirChild> childrenCollection = entry.getKey();
+//            if (childrenCollection != null) {
+//                if (!childrenCollection.isEmpty()) {
+//                    Optional<? extends UniDirChild> optionalUniDirChild = childrenCollection.stream().findFirst();
+//                    optionalUniDirChild.ifPresent(child -> {
+//                        if (uniDirChildToRemove.getClass().equals(child.getClass())) {
+//                            //this set needs to remove the child
+//                            boolean successfulRemove = childrenCollection.remove(uniDirChildToRemove);
+//                            if (!successfulRemove) {
+//                                log.warn("UniDirChild: " + uniDirChildToRemove + " was not present in children set of parent: " + this + " when trying to delete.");
+//                            } else {
+//                                deletedChild.set(true);
+//                            }
+//                        }
+//                    });
+//                }
+//            }
+//        }
+//        for (Field childField : _findChildrenEntityFields()) {
+//            childField.setAccessible(true);
+//            UniDirChild child = (UniDirChild) childField.get(this);
+//            if (child != null) {
+//                if (child.getClass().equals(uniDirChildToRemove.getClass())) {
+//                    childField.set(this, null);
+//                    deletedChild.set(true);
+//                }
+//            }
+//        }
+//        if (!deletedChild.get()) {
+//            throw new UnknownChildTypeException(this.getClass(), uniDirChildToRemove.getClass());
+//        }
     }
+
+
 
 //    default Field[] findUniDirChildrenCollectionFields() {
 //        Field[] childrenCollectionFields = ReflectionUtilsBean.getInstance().getFieldsWithAnnotation(this.getClass(), UniDirChildCollection.class);
@@ -160,22 +162,21 @@ public interface UniDirParent extends UniDirEntity, DirParent {
 
     /**
      * Find the single UniDirChildren (all fields of this parent annotated with {@link UniDirChildEntity} and not null.
-     *
      * @return
-     * @throws IllegalAccessException
      */
-    default Set findUniDirChildren() throws IllegalAccessException {
-        Set children = new HashSet<>();
-        Field[] entityFields = _findChildrenEntityFields();
-        for (Field field : entityFields) {
-            field.setAccessible(true);
-            Object child = field.get(this);
-            if (child == null) {
-                //skip
-                continue;
-            }
-            children.add(child);
-        }
-        return children;
+    default Set<UniDirChild> findSingleUniDirChildren() {
+        return findSingleChildren(UniDirChildEntity.class);
+//        Set children = new HashSet<>();
+//        Field[] entityFields = _findChildrenEntityFields();
+//        for (Field field : entityFields) {
+//            field.setAccessible(true);
+//            Object child = field.get(this);
+//            if (child == null) {
+//                //skip
+//                continue;
+//            }
+//            children.add(child);
+//        }
+//        return children;
     }
 }

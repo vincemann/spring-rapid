@@ -20,7 +20,7 @@ public class BiDirEntityPersistAdvice {
     @Before("com.github.vincemann.springrapid.core.advice.SystemArchitecture.saveOperation() && " +
             "com.github.vincemann.springrapid.core.advice.SystemArchitecture.repoOperation() && " +
             "args(biDirParent)")
-    public void prePersistBiDirParent(BiDirParent biDirParent) throws IllegalAccessException {
+    public void prePersistBiDirParent(BiDirParent biDirParent) {
         log.debug("pre persist biDirParent hook reached for: " + biDirParent);
         setChildrensParentRef(biDirParent);
     }
@@ -28,18 +28,18 @@ public class BiDirEntityPersistAdvice {
     @Before("com.github.vincemann.springrapid.core.advice.SystemArchitecture.saveOperation() && " +
             "com.github.vincemann.springrapid.core.advice.SystemArchitecture.repoOperation() && " +
             "args(biDirChild)")
-    public void prePersistBiDiChild(BiDirChild biDirChild) throws IllegalAccessException {
+    public void prePersistBiDiChild(BiDirChild biDirChild) {
         log.debug("pre persist biDirChild hook reached for: " + biDirChild);
         setParentsChildRef(biDirChild);
     }
 
-    private void setChildrensParentRef(BiDirParent biDirParent) throws IllegalAccessException {
-        Set<? extends BiDirChild> children = biDirParent.findBiDirChildren();
+    private void setChildrensParentRef(BiDirParent biDirParent){
+        Set<? extends BiDirChild> children = biDirParent.findBiDirSingleChildren();
         for (BiDirChild child : children) {
             child.addBiDirParent(biDirParent);
         }
-        Set<Collection<? extends BiDirChild>> childCollections = biDirParent.findAllBiDirChildCollections().keySet();
-        for (Collection<? extends BiDirChild> childCollection : childCollections) {
+        Set<Collection<BiDirChild>> childCollections = biDirParent.findAllBiDirChildCollections().keySet();
+        for (Collection<BiDirChild> childCollection : childCollections) {
             for (BiDirChild biDirChild : childCollection) {
                 biDirChild.addBiDirParent(biDirParent);
             }
@@ -47,7 +47,7 @@ public class BiDirEntityPersistAdvice {
     }
 
 
-    private void setParentsChildRef(BiDirChild biDirChild) throws IllegalAccessException {
+    private void setParentsChildRef(BiDirChild biDirChild) {
         //set backreferences
         for (BiDirParent parent : biDirChild.findBiDirParents()) {
             parent.addBiDirChild(biDirChild);

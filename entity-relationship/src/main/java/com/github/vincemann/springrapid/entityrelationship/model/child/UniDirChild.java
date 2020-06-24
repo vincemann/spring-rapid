@@ -1,22 +1,15 @@
 package com.github.vincemann.springrapid.entityrelationship.model.child;
 
 import com.github.vincemann.springrapid.entityrelationship.exception.UnknownParentTypeException;
-import com.github.vincemann.springrapid.entityrelationship.model.UniDirEntity;
 import com.github.vincemann.springrapid.entityrelationship.model.parent.UniDirParent;
-import com.github.vincemann.springrapid.entityrelationship.model.parent.annotation.BiDirParentEntity;
 import com.github.vincemann.springrapid.entityrelationship.model.parent.annotation.UniDirParentEntity;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.util.ReflectionUtils;
 
-import java.util.ArrayList;
 import java.util.Collection;
-import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
  * Same as {@link BiDirChild} but for a unidirectional relationship.
  */
-public interface UniDirChild extends UniDirEntity, DirChild {
+public interface UniDirChild extends DirChild {
 //    Logger log = LoggerFactory.getLogger(UniDirChild.class);
 //    Map<Class, Field[]> uniDirParentFieldsCache = new HashMap<>();
 

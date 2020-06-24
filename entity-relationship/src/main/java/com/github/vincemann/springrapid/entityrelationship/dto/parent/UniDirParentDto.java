@@ -1,17 +1,14 @@
 package com.github.vincemann.springrapid.entityrelationship.dto.parent;
 
-import com.github.vincemann.springrapid.core.model.IdentifiableEntity;
 import com.github.vincemann.springrapid.entityrelationship.dto.child.annotation.UniDirChildId;
 import com.github.vincemann.springrapid.entityrelationship.dto.child.annotation.UniDirChildIdCollection;
 import com.github.vincemann.springrapid.entityrelationship.exception.UnknownChildTypeException;
 import com.github.vincemann.springrapid.entityrelationship.model.child.UniDirChild;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.util.ReflectionUtils;
 
 import java.io.Serializable;
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.Map;
 
 /**
@@ -65,19 +62,8 @@ public interface UniDirParentDto extends DirParentDto{
 
 
 
-    default Map<Class, Collection<Serializable>> findAllUniDirChildIdCollections() throws IllegalAccessException {
-        final Map<Class, Collection<Serializable>> result = new HashMap<>();
-        ReflectionUtils.doWithFields(this.getClass(),field -> {
-            ReflectionUtils.makeAccessible(field);
-            Collection<Serializable> idCollection = (Collection<Serializable>) field.get(this);
-            if (idCollection != null) {
-                result.put(field.getAnnotation(UniDirChildIdCollection.class).value(), idCollection);
-            }/*else {
-               throw new IllegalArgumentException("Null idCollection found in UniDirParentDto "+ this + " for ChildIdCollectionField with name: " + field.getName());
-            }*/
-        },new org.springframework.data.util.ReflectionUtils.AnnotationFieldFilter(UniDirChildIdCollection.class));
-
-        return result;
+    default Map<Class<UniDirChild>, Collection<Serializable>> findAllUniDirChildIdCollections(){
+        return findAllChildIdCollections(UniDirChildIdCollection.class);
 //        Map<Class, Collection<Serializable>> childrenIdCollections = new HashMap<>();
 //        Field[] childIdCollectionFields = findUniDirChildrenIdCollectionFields();
 //        for (Field field : childIdCollectionFields) {
@@ -96,32 +82,8 @@ public interface UniDirParentDto extends DirParentDto{
      *
      * @param child
      */
-    default void addUniDirChildsId(IdentifiableEntity child) throws IllegalAccessException {
-        Serializable biDirChildId = child.getId();
-        if (biDirChildId == null) {
-            throw new IllegalArgumentException("Id from Child must not be null");
-        }
-        Map<Class, Collection<Serializable>> allChildrenIdCollections = findAllUniDirChildIdCollections();
-        //child collections
-        for (Map.Entry<Class, Collection<Serializable>> childrenIdCollectionEntry : allChildrenIdCollections.entrySet()) {
-            if (childrenIdCollectionEntry.getKey().equals(child.getClass())) {
-                //need to add
-                Collection<Serializable> idCollection = childrenIdCollectionEntry.getValue();
-                //biDirChild is always an Identifiable Child
-                idCollection.add(biDirChildId);
-            }
-        }
-        ReflectionUtils.doWithFields(this.getClass(),field -> {
-            ReflectionUtils.makeAccessible(field);
-            Class<? extends UniDirChild> clazzBelongingToId = field.getAnnotation(UniDirChildId.class).value();
-            if (clazzBelongingToId.equals(child.getClass())) {
-                Object prevChild = field.get(this);
-                if (prevChild != null) {
-                    log.warn("Warning: previous Child was not null -> overriding child:  " + prevChild + " from this parent: " + this + " with new value: " + child);
-                }
-                field.set(this, biDirChildId);
-            }
-        },new org.springframework.data.util.ReflectionUtils.AnnotationFieldFilter(UniDirChildId.class));
+    default void addUniDirChildsId(UniDirChild child) {
+        addChildsId(child, UniDirChildId.class, UniDirChildIdCollection.class);
 //        //single children
 //        Field[] childrenIdFields = findUniDirChildrenIdFields();
 //        for (Field field : childrenIdFields) {

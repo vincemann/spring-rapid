@@ -1,6 +1,7 @@
 package com.github.vincemann.springrapid.entityrelationship.controller.dtomapper;
 
 
+import com.github.vincemann.springrapid.core.model.IdentifiableEntity;
 import com.github.vincemann.springrapid.core.service.CrudService;
 import com.github.vincemann.springrapid.core.service.locator.CrudServiceLocator;
 import com.github.vincemann.springrapid.core.service.exception.EntityNotFoundException;
@@ -41,20 +42,19 @@ public abstract class EntityIdResolver<E, Dto> {
     public abstract void resolveDtoIds(Dto mappedDto, E entity);
 
 
-    protected Object findEntityFromService(Map.Entry<Class, Serializable> entityClassToIdMapping) throws EntityNotFoundException, BadEntityException {
-        CrudService entityService = crudServiceLocator.find(entityClassToIdMapping.getKey());
+    protected <T> T findEntityFromService(Class<IdentifiableEntity> entityClass, Serializable id) throws EntityNotFoundException, BadEntityException {
+        CrudService entityService = crudServiceLocator.find(entityClass);
         if (entityService == null) {
-            throw new IllegalArgumentException("No Service found for entityClass: " + entityClassToIdMapping.getKey().getSimpleName());
+            throw new IllegalArgumentException("No Service found for entityClass: " + entityClass.getSimpleName());
         }
         Optional optionalParent;
         try {
-            Serializable id = entityClassToIdMapping.getValue();
             optionalParent = entityService.findById(id);
         } catch (ClassCastException e) {
-            throw new IllegalArgumentException("ParentId: " + entityClassToIdMapping.getValue() + " was of wrong type for Service: " + entityService, e);
+            throw new IllegalArgumentException("ParentId: " + id + " was of wrong type for Service: " + entityService, e);
         }
-        RapidUtils.checkPresent(optionalParent, "No Parent of Type: " + entityClassToIdMapping.getKey().getSimpleName() + " found with id: " + entityClassToIdMapping.getValue());
-        return optionalParent.get();
+        RapidUtils.checkPresent(optionalParent, "No Parent of Type: " +entityClass.getSimpleName() + " found with id: " + id);
+        return (T) optionalParent.get();
 
     }
 

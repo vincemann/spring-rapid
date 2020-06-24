@@ -1,6 +1,9 @@
 package com.github.vincemann.springrapid.entityrelationship.dto.parent;
 
+import com.github.vincemann.springrapid.core.model.IdentifiableEntity;
+import com.github.vincemann.springrapid.entityrelationship.dto.child.annotation.BiDirChildId;
 import com.github.vincemann.springrapid.entityrelationship.exception.UnknownChildTypeException;
+import com.github.vincemann.springrapid.entityrelationship.model.child.BiDirChild;
 import com.github.vincemann.springrapid.entityrelationship.model.child.DirChild;
 import com.github.vincemann.springrapid.entityrelationship.util.EntityIdAnnotationUtils;
 import com.github.vincemann.springrapid.entityrelationship.util.EntityReflectionUtils;
@@ -74,4 +77,27 @@ public interface DirParentDto {
         return result;
     }
 
+    default void addChildsId(DirChild child,Class<? extends Annotation> childIdAnnotationType,Class<? extends Annotation> childCollectionIdAnnotationType) {
+        Serializable biDirChildId = ((IdentifiableEntity) child).getId();
+        if (biDirChildId == null) {
+            throw new IllegalArgumentException("Id from Child must not be null");
+        }
+        Map<Class<DirChild>, Collection<Serializable>> allChildrenIdCollections = findAllChildIdCollections(childCollectionIdAnnotationType);
+        //child collections
+        for (Map.Entry<Class<DirChild>, Collection<Serializable>> childrenIdCollectionEntry : allChildrenIdCollections.entrySet()) {
+            if (childrenIdCollectionEntry.getKey().equals(child.getClass())) {
+                //need to add
+                Collection<Serializable> idCollection = childrenIdCollectionEntry.getValue();
+                //dirChild is always an Identifiable Child
+                idCollection.add(biDirChildId);
+            }
+        }
+        EntityReflectionUtils.doWithIdFieldsWithEntityType(child.getClass(),childIdAnnotationType,getClass(),field -> {
+            Object prevChild = field.get(this);
+            if (prevChild != null) {
+                log.warn("Warning: previous Child was not null -> overriding child:  " + prevChild + " from this parent: " + this + " with new value: " + child);
+            }
+            field.set(this, biDirChildId);
+        });
+    }
 }

@@ -46,7 +46,7 @@ public interface DirChildDto {
         return result;
     }
 
-    default void addParentsId(DirParent parent,Class<? extends Annotation> parentIdAnnotationClass) throws IllegalAccessException {
+    default void addParentsId(DirParent parent,Class<? extends Annotation> parentIdAnnotationClass) {
         Serializable parentId = ((IdentifiableEntity) parent).getId();
         if (parentId == null) {
             throw new IllegalArgumentException("ParentId must not be null");

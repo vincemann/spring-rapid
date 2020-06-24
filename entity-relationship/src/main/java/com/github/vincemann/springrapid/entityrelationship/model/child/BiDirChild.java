@@ -2,25 +2,21 @@ package com.github.vincemann.springrapid.entityrelationship.model.child;
 
 import com.github.vincemann.springrapid.entityrelationship.exception.UnknownChildTypeException;
 import com.github.vincemann.springrapid.entityrelationship.exception.UnknownParentTypeException;
-import com.github.vincemann.springrapid.entityrelationship.model.BiDirEntity;
 import com.github.vincemann.springrapid.entityrelationship.model.child.annotation.BiDirChildCollection;
 import com.github.vincemann.springrapid.entityrelationship.model.child.annotation.BiDirChildEntity;
 import com.github.vincemann.springrapid.entityrelationship.model.parent.BiDirParent;
 import com.github.vincemann.springrapid.entityrelationship.model.parent.annotation.BiDirParentEntity;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.util.ReflectionUtils;
 
-import java.util.ArrayList;
 import java.util.Collection;
-import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
  * Represents a Child of a Bidirectional relation ship (i.e. Entity with @ManyToOne typically would implement this interface).
  * The Parent of the Relation ship should implement {@link BiDirParent} and annotate its ChildCollections (containing Entities of this Type) with {@link BiDirChildCollection}
  * or its single Children (bidirectional @OneToOne) with {@link BiDirChildEntity}.
  */
-public interface BiDirChild extends BiDirEntity, DirChild {
+public interface BiDirChild extends DirChild {
     Logger log = LoggerFactory.getLogger(BiDirChild.class);
 //    Map<Class,Field[]> biDirParentFieldsCache = new HashMap<>();
 
@@ -28,7 +24,6 @@ public interface BiDirChild extends BiDirEntity, DirChild {
      *
      * @param parentToSet
      * @throws UnknownParentTypeException   when supplied Parent does not match any of the fields in child class anntoated with {@link BiDirParentEntity}
-     * @throws IllegalAccessException
      */
     public default void addBiDirParent(BiDirParent parentToSet) throws UnknownParentTypeException {
        addParent(parentToSet,BiDirParentEntity.class);
@@ -47,9 +42,8 @@ public interface BiDirChild extends BiDirEntity, DirChild {
 
     /**
      * Adds this child to its parents
-     * @throws IllegalAccessException
      */
-    public default void addToBiDirParents() throws IllegalAccessException {
+    public default void addToBiDirParents(){
         Collection<BiDirParent> parents = findBiDirParents();
         for(BiDirParent parent: parents){
             if(parent!=null) {
@@ -98,7 +92,6 @@ public interface BiDirChild extends BiDirEntity, DirChild {
     /**
      *
      * @return  all parent of this, that are not null
-     * @throws IllegalAccessException
      */
     public default Collection<BiDirParent> findBiDirParents() {
         return findParents(BiDirParentEntity.class);
