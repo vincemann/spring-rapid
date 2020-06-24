@@ -2,8 +2,8 @@ package com.github.vincemann.springrapid.entityrelationship.advice;
 
 import com.github.vincemann.springrapid.core.model.IdentifiableEntity;
 import com.github.vincemann.springrapid.core.util.RapidUtils;
-import com.github.vincemann.springrapid.entityrelationship.model.biDir.child.BiDirChild;
-import com.github.vincemann.springrapid.entityrelationship.model.biDir.parent.BiDirParent;
+import com.github.vincemann.springrapid.entityrelationship.model.child.BiDirChild;
+import com.github.vincemann.springrapid.entityrelationship.model.parent.BiDirParent;
 import com.github.vincemann.springrapid.core.service.CrudService;
 import com.github.vincemann.springrapid.core.service.exception.BadEntityException;
 import com.github.vincemann.springrapid.core.service.exception.EntityNotFoundException;
@@ -67,8 +67,8 @@ public class BiDirEntityUpdateAdvice {
         Optional<BiDirChild> oldBiDirChildOptional = service.findById(((IdentifiableEntity<Serializable>) newBiDirChild).getId());
         RapidUtils.checkPresent(oldBiDirChildOptional,((IdentifiableEntity<Serializable>) newBiDirChild).getId(),newBiDirChild.getClass());
         BiDirChild oldBiDirChild = oldBiDirChildOptional.get();
-        Collection<BiDirParent> oldParents = oldBiDirChild.findParents();
-        Collection<BiDirParent> newParents = newBiDirChild.findParents();
+        Collection<BiDirParent> oldParents = oldBiDirChild.findBiDirParents();
+        Collection<BiDirParent> newParents = newBiDirChild.findBiDirParents();
         //find removed parents
         List<BiDirParent> removedParents = new ArrayList<>();
         for (BiDirParent oldParent : oldParents) {
@@ -86,12 +86,12 @@ public class BiDirEntityUpdateAdvice {
 
         //dismiss removed Parents Children
         for (BiDirParent removedParent : removedParents) {
-            removedParent.dismissChild(newBiDirChild);
+            removedParent.dismissBiDirChild(newBiDirChild);
         }
 
         //add added Parent to child
         for (BiDirParent addedParent : addedParents) {
-            addedParent.addChild(newBiDirChild);
+            addedParent.addBiDirChild(newBiDirChild);
         }
     }
 
@@ -103,11 +103,11 @@ public class BiDirEntityUpdateAdvice {
         RapidUtils.checkPresent(oldBiDirParentOptional,((IdentifiableEntity<Serializable>) newBiDirParent).getId(),newBiDirParent.getClass());
         BiDirParent oldBiDirParent = oldBiDirParentOptional.get();
 
-        Set<? extends BiDirChild> oldChildren = oldBiDirParent.getChildren();
-        Set<? extends BiDirChild> newChildren = newBiDirParent.getChildren();
+        Set<? extends BiDirChild> oldChildren = oldBiDirParent.findBiDirChildren();
+        Set<? extends BiDirChild> newChildren = newBiDirParent.findBiDirChildren();
 
-        Set<Collection<? extends BiDirChild>> oldChildrenCollections = oldBiDirParent.getChildrenCollections().keySet();
-        Set<Collection<? extends BiDirChild>> newChildrenCollections = newBiDirParent.getChildrenCollections().keySet();
+        Set<Collection<? extends BiDirChild>> oldChildrenCollections = oldBiDirParent.findAllBiDirChildrenCollections().keySet();
+        Set<Collection<? extends BiDirChild>> newChildrenCollections = newBiDirParent.findAllBiDirChildrenCollections().keySet();
 
         //find removed Children
         List<BiDirChild> removedChildren = new ArrayList<>();
@@ -143,13 +143,13 @@ public class BiDirEntityUpdateAdvice {
         //dismiss removed Children from newParent
         for (BiDirChild removedChild : removedChildren) {
             log.debug("dismissing child: " + removedChild + " from parent: " +newBiDirParent);
-            removedChild.dismissParent(oldBiDirParent);
+            removedChild.dismissBiDirParent(oldBiDirParent);
         }
 
         //add added Children to newParent
         for (BiDirChild addedChild : addedChildren) {
             log.debug("adding child: " + addedChild + " to parent: " +newBiDirParent);
-            addedChild.setParentRef(newBiDirParent);
+            addedChild.addBiDirParent(newBiDirParent);
         }
     }
 }

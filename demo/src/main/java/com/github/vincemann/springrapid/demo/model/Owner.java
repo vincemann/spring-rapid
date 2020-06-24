@@ -3,9 +3,8 @@ package com.github.vincemann.springrapid.demo.model;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.github.vincemann.springrapid.demo.model.abs.Person;
 import com.github.vincemann.springrapid.core.model.IdentifiableEntityImpl;
-import com.github.vincemann.springrapid.entityrelationship.model.biDir.child.BiDirChildCollection;
-import com.github.vincemann.springrapid.entityrelationship.model.biDir.parent.BiDirParent;
-import com.github.vincemann.springrapid.entityrelationship.model.uniDir.parent.UniDirParent;
+import com.github.vincemann.springrapid.entityrelationship.model.child.annotation.BiDirChildCollection;
+import com.github.vincemann.springrapid.entityrelationship.model.parent.BiDirParent;
 import lombok.*;
 
 import javax.persistence.*;

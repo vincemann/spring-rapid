@@ -1,8 +1,8 @@
 package com.github.vincemann.springrapid.demo.model;
 
 import com.github.vincemann.springrapid.demo.model.abs.Person;
-import com.github.vincemann.springrapid.entityrelationship.model.uniDir.child.UniDirChildCollection;
-import com.github.vincemann.springrapid.entityrelationship.model.uniDir.parent.UniDirParent;
+import com.github.vincemann.springrapid.entityrelationship.model.child.annotation.UniDirChildCollection;
+import com.github.vincemann.springrapid.entityrelationship.model.parent.UniDirParent;
 import lombok.*;
 
 import javax.persistence.*;

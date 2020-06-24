@@ -1,8 +1,8 @@
 package com.github.vincemann.springrapid.entityrelationship.controller.uniDir.testEntities;
 
 import com.github.vincemann.springrapid.core.model.IdentifiableEntityImpl;
-import com.github.vincemann.springrapid.entityrelationship.model.uniDir.child.UniDirChild;
-import com.github.vincemann.springrapid.entityrelationship.model.uniDir.parent.UniDirParentEntity;
+import com.github.vincemann.springrapid.entityrelationship.model.child.UniDirChild;
+import com.github.vincemann.springrapid.entityrelationship.model.parent.annotation.UniDirParentEntity;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;

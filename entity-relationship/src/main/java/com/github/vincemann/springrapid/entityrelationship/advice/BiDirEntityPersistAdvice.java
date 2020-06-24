@@ -1,8 +1,8 @@
 package com.github.vincemann.springrapid.entityrelationship.advice;
 
 import com.github.vincemann.springrapid.core.model.IdentifiableEntity;
-import com.github.vincemann.springrapid.entityrelationship.model.biDir.child.BiDirChild;
-import com.github.vincemann.springrapid.entityrelationship.model.biDir.parent.BiDirParent;
+import com.github.vincemann.springrapid.entityrelationship.model.child.BiDirChild;
+import com.github.vincemann.springrapid.entityrelationship.model.parent.BiDirParent;
 import lombok.extern.slf4j.Slf4j;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Before;
@@ -34,14 +34,14 @@ public class BiDirEntityPersistAdvice {
     }
 
     private void setChildrensParentRef(BiDirParent biDirParent) throws IllegalAccessException {
-        Set<? extends BiDirChild> children = biDirParent.getChildren();
+        Set<? extends BiDirChild> children = biDirParent.findBiDirChildren();
         for (BiDirChild child : children) {
-            child.setParentRef(biDirParent);
+            child.addBiDirParent(biDirParent);
         }
-        Set<Collection<? extends BiDirChild>> childCollections = biDirParent.getChildrenCollections().keySet();
+        Set<Collection<? extends BiDirChild>> childCollections = biDirParent.findAllBiDirChildrenCollections().keySet();
         for (Collection<? extends BiDirChild> childCollection : childCollections) {
             for (BiDirChild biDirChild : childCollection) {
-                biDirChild.setParentRef(biDirParent);
+                biDirChild.addBiDirParent(biDirParent);
             }
         }
     }
@@ -49,8 +49,8 @@ public class BiDirEntityPersistAdvice {
 
     private void setParentsChildRef(BiDirChild biDirChild) throws IllegalAccessException {
         //set backreferences
-        for (BiDirParent parent : biDirChild.findParents()) {
-            parent.addChild(biDirChild);
+        for (BiDirParent parent : biDirChild.findBiDirParents()) {
+            parent.addBiDirChild(biDirChild);
         }
     }
 }

@@ -1,7 +1,7 @@
 package com.github.vincemann.springrapid.entityrelationship.advice;
 
-import com.github.vincemann.springrapid.entityrelationship.model.biDir.child.BiDirChild;
-import com.github.vincemann.springrapid.entityrelationship.model.biDir.parent.BiDirParent;
+import com.github.vincemann.springrapid.entityrelationship.model.child.BiDirChild;
+import com.github.vincemann.springrapid.entityrelationship.model.parent.BiDirParent;
 import com.github.vincemann.springrapid.core.service.CrudService;
 import com.github.vincemann.springrapid.core.service.exception.BadEntityException;
 import com.github.vincemann.springrapid.core.service.locator.CrudServiceLocator;
@@ -60,10 +60,10 @@ public class BiDirEntityRemoveAdvice /*implements MethodInterceptor*/ {
         if (BiDirChild.class.isAssignableFrom(entity.getClass())) {
             log.debug("applying pre remove BiDirChild logic for: " + entity);
             BiDirChild biDirChild = (BiDirChild) entity;
-            for (BiDirParent parent : biDirChild.findParents()) {
-                parent.dismissChild(biDirChild);
+            for (BiDirParent parent : biDirChild.findBiDirParents()) {
+                parent.dismissBiDirChild(biDirChild);
             }
-            biDirChild.dismissParents();
+            biDirChild.dismissBiDirParents();
         }
     }
 

@@ -1,7 +1,7 @@
 package com.github.vincemann.springrapid.demo.dtos.owner;
 
 
-import com.github.vincemann.springrapid.entityrelationship.dto.biDir.BiDirParentDto;
+import com.github.vincemann.springrapid.entityrelationship.dto.parent.BiDirParentDto;
 import lombok.*;
 import org.springframework.lang.Nullable;
 

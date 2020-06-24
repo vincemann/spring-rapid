@@ -1,8 +1,8 @@
 package com.github.vincemann.springrapid.entityrelationship.controller.dtomapper.biDir.testEntities;
 
-import com.github.vincemann.springrapid.entityrelationship.dto.biDir.BiDirChildDto;
+import com.github.vincemann.springrapid.entityrelationship.dto.child.BiDirChildDto;
 import com.github.vincemann.springrapid.core.model.IdentifiableEntityImpl;
-import com.github.vincemann.springrapid.entityrelationship.dto.biDir.BiDirParentId;
+import com.github.vincemann.springrapid.entityrelationship.dto.parent.annotation.BiDirParentId;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;

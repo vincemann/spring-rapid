@@ -4,10 +4,10 @@ import com.github.vincemann.springrapid.core.controller.dtoMapper.DtoPostProcess
 import com.github.vincemann.springrapid.core.model.IdentifiableEntity;
 import com.github.vincemann.springrapid.core.service.exception.BadEntityException;
 import com.github.vincemann.springrapid.core.service.exception.EntityNotFoundException;
-import com.github.vincemann.springrapid.entityrelationship.dto.biDir.BiDirChildDto;
-import com.github.vincemann.springrapid.entityrelationship.dto.biDir.BiDirParentDto;
-import com.github.vincemann.springrapid.entityrelationship.dto.uniDir.UniDirChildDto;
-import com.github.vincemann.springrapid.entityrelationship.dto.uniDir.UniDirParentDto;
+import com.github.vincemann.springrapid.entityrelationship.dto.child.BiDirChildDto;
+import com.github.vincemann.springrapid.entityrelationship.dto.parent.BiDirParentDto;
+import com.github.vincemann.springrapid.entityrelationship.dto.child.UniDirChildDto;
+import com.github.vincemann.springrapid.entityrelationship.dto.parent.UniDirParentDto;
 import lombok.Getter;
 import lombok.Setter;
 import org.modelmapper.ModelMapper;
