@@ -7,6 +7,7 @@ import java.lang.annotation.Target;
 
 @Target(ElementType.FIELD)
 @Retention(RetentionPolicy.RUNTIME)
+@DirChildId
 public @interface UniDirChildIdCollection {
     /**
      * Type of Child which belongs to the annotated child id Collection

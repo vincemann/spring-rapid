@@ -63,9 +63,10 @@ public class BiDirEntityUpdateAdvice {
     @SuppressWarnings("Duplicates")
     private void updateBiDirChildRelations(BiDirChild newBiDirChild) throws BadEntityException, EntityNotFoundException, IllegalAccessException {
         //find already persisted biDirChild (preUpdateState of child)
-        CrudService service = serviceLocator.find((Class<? extends IdentifiableEntity>) newBiDirChild.getClass());
+        Class entityClazz = newBiDirChild.getClass();
+        CrudService service = serviceLocator.find((Class<IdentifiableEntity>) entityClazz);
         Optional<BiDirChild> oldBiDirChildOptional = service.findById(((IdentifiableEntity<Serializable>) newBiDirChild).getId());
-        RapidUtils.checkPresent(oldBiDirChildOptional,((IdentifiableEntity<Serializable>) newBiDirChild).getId(),newBiDirChild.getClass());
+        RapidUtils.checkPresent(oldBiDirChildOptional,((IdentifiableEntity<Serializable>) newBiDirChild).getId(), entityClazz);
         BiDirChild oldBiDirChild = oldBiDirChildOptional.get();
         Collection<BiDirParent> oldParents = oldBiDirChild.findBiDirParents();
         Collection<BiDirParent> newParents = newBiDirChild.findBiDirParents();
@@ -98,16 +99,17 @@ public class BiDirEntityUpdateAdvice {
 
     @SuppressWarnings("Duplicates")
     private void updateBiDirParentRelations(BiDirParent newBiDirParent) throws BadEntityException, EntityNotFoundException, IllegalAccessException {
-        CrudService service = serviceLocator.find((Class<? extends IdentifiableEntity>) newBiDirParent.getClass());
+        Class entityClass = newBiDirParent.getClass();
+        CrudService service = serviceLocator.find((Class<IdentifiableEntity>)entityClass);
         Optional<BiDirParent> oldBiDirParentOptional = service.findById(((IdentifiableEntity<Serializable>) newBiDirParent).getId());
         RapidUtils.checkPresent(oldBiDirParentOptional,((IdentifiableEntity<Serializable>) newBiDirParent).getId(),newBiDirParent.getClass());
         BiDirParent oldBiDirParent = oldBiDirParentOptional.get();
 
-        Set<? extends BiDirChild> oldChildren = oldBiDirParent.findBiDirChildren();
-        Set<? extends BiDirChild> newChildren = newBiDirParent.findBiDirChildren();
+        Set<BiDirChild> oldChildren = oldBiDirParent.findBiDirSingleChildren();
+        Set<BiDirChild> newChildren = newBiDirParent.findBiDirSingleChildren();
 
-        Set<Collection<? extends BiDirChild>> oldChildrenCollections = oldBiDirParent.findAllBiDirChildCollections().keySet();
-        Set<Collection<? extends BiDirChild>> newChildrenCollections = newBiDirParent.findAllBiDirChildCollections().keySet();
+        Set<Collection<BiDirChild>> oldChildrenCollections = oldBiDirParent.findAllBiDirChildCollections().keySet();
+        Set<Collection<BiDirChild>> newChildrenCollections = newBiDirParent.findAllBiDirChildCollections().keySet();
 
         //find removed Children
         List<BiDirChild> removedChildren = new ArrayList<>();

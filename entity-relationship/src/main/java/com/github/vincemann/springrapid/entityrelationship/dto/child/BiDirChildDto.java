@@ -48,7 +48,7 @@ public interface BiDirChildDto extends DirChildDto {
 //        return parentIds;
     }
 
-    default void addBiDirParentsId(BiDirParent biDirParent) throws IllegalAccessException {
+    default void addBiDirParentsId(BiDirParent biDirParent) {
         addParentsId(biDirParent,BiDirParentId.class);
 
 //        Serializable parentId = ((IdentifiableEntity) biDirParent).getId();

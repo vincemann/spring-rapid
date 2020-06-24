@@ -28,7 +28,7 @@ public interface UniDirChildDto extends DirChildDto {
 //        throw new UnknownParentTypeException(this.getClass(), parentClazz);
     }
 
-    default Map<Class<UniDirParent>, Serializable> findAllUniDirParentIds() throws IllegalAccessException {
+    default Map<Class<UniDirParent>, Serializable> findAllUniDirParentIds()  {
         return findAllParentIds(UniDirParentId.class);
 
 
@@ -46,7 +46,7 @@ public interface UniDirChildDto extends DirChildDto {
 //        return parentIds;
     }
 
-    default void addUniDirParentsId(UniDirParent uniDirParent) throws IllegalAccessException {
+    default void addUniDirParentsId(UniDirParent uniDirParent) {
         addParentsId(uniDirParent,UniDirParentId.class);
 //        for (Field parentIdField : findUniDirParentIdFields()) {
 //            if (parentIdField.getAnnotation(UniDirParentId.class).value().equals(uniDirParent.getClass())) {

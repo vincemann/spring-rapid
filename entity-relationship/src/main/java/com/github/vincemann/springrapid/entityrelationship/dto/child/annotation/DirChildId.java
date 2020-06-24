@@ -5,15 +5,7 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
-@Target(ElementType.FIELD)
+@Target(ElementType.ANNOTATION_TYPE)
 @Retention(RetentionPolicy.RUNTIME)
-@DirChildId
-public @interface UniDirChildId {
-
-    /**
-     * Type of Child which belongs to the annotated child id
-     * @return
-     */
-    Class value();
-
+public @interface DirChildId {
 }

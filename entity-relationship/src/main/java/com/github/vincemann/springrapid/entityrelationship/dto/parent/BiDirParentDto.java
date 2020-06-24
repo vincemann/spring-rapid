@@ -1,12 +1,10 @@
 package com.github.vincemann.springrapid.entityrelationship.dto.parent;
 
-import com.github.vincemann.springrapid.core.model.IdentifiableEntity;
 import com.github.vincemann.springrapid.entityrelationship.controller.dtomapper.IdResolvingDtoPostProcessor;
 import com.github.vincemann.springrapid.entityrelationship.dto.child.annotation.BiDirChildId;
 import com.github.vincemann.springrapid.entityrelationship.dto.child.annotation.BiDirChildIdCollection;
 import com.github.vincemann.springrapid.entityrelationship.exception.UnknownChildTypeException;
 import com.github.vincemann.springrapid.entityrelationship.model.child.BiDirChild;
-import com.github.vincemann.springrapid.entityrelationship.util.EntityReflectionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -38,7 +36,7 @@ public interface BiDirParentDto extends DirParentDto{
 //        throw new UnknownChildTypeException(this.getClass(), childClazz);
     }
 
-    default Map<Class<BiDirChild>, Serializable> findAllBiDirChildIds() throws IllegalAccessException {
+    default Map<Class<BiDirChild>, Serializable> findAllBiDirChildIds() {
         return findAllChildIds(BiDirChildId.class);
 //        Map<Class, Serializable> childrenIds = new HashMap<>();
 //        Field[] childIdFields = findBiDirChildrenIdFields();
@@ -54,7 +52,7 @@ public interface BiDirParentDto extends DirParentDto{
 //        return childrenIds;
     }
 
-    default <ChildId extends Serializable> Collection<ChildId> findBiDirChildrenIdCollection(Class<? extends BiDirChild> childClazz) throws IllegalAccessException {
+    default <ChildId extends Serializable> Collection<ChildId> findBiDirChildrenIdCollection(Class<? extends BiDirChild> childClazz)  {
         return findChildIdCollection(childClazz,BiDirChildIdCollection.class);
 //        Field[] childrenIdCollectionFields = findBiDirChildrenIdCollectionFields();
 //        for (Field field : childrenIdCollectionFields) {
@@ -91,30 +89,7 @@ public interface BiDirParentDto extends DirParentDto{
      * @param child
      */
     default void addBiDirChildsId(BiDirChild child) {
-        Serializable biDirChildId = ((IdentifiableEntity) child).getId();
-        if (biDirChildId == null) {
-            throw new IllegalArgumentException("Id from Child must not be null");
-        }
-        Map<Class<BiDirChild>, Collection<Serializable>> allChildrenIdCollections = findAllBiDirChildIdCollections();
-        //child collections
-        for (Map.Entry<Class<BiDirChild>, Collection<Serializable>> childrenIdCollectionEntry : allChildrenIdCollections.entrySet()) {
-            if (childrenIdCollectionEntry.getKey().equals(child.getClass())) {
-                //need to add
-                Collection<Serializable> idCollection = childrenIdCollectionEntry.getValue();
-                //biDirChild is always an Identifiable Child
-                idCollection.add(biDirChildId);
-            }
-        }
-        EntityReflectionUtils.doWithAnnotatedFields(BiDirChildId.class,getClass(),field -> {
-            Class<? extends BiDirChild> clazzBelongingToId = field.getAnnotation(BiDirChildId.class).value();
-            if (clazzBelongingToId.equals(child.getClass())) {
-                Object prevChild = field.get(this);
-                if (prevChild != null) {
-                    log.warn("Warning: previous Child was not null -> overriding child:  " + prevChild + " from this parent: " + this + " with new value: " + child);
-                }
-                field.set(this, biDirChildId);
-            }
-        });
+        addChildsId(child,BiDirChildId.class,BiDirChildIdCollection.class);
 //        Serializable biDirChildId = ((IdentifiableEntity) child).getId();
 //        if (biDirChildId == null) {
 //            throw new IllegalArgumentException("Id from Child must not be null");

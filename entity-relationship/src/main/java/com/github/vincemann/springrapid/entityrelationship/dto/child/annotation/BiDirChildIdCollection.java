@@ -9,6 +9,7 @@ import java.lang.annotation.Target;
 
 @Target(ElementType.FIELD)
 @Retention(RetentionPolicy.RUNTIME)
+@DirChildId
 public @interface BiDirChildIdCollection {
 
     /**

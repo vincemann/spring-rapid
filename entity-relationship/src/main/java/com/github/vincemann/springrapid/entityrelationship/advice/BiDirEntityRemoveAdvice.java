@@ -52,7 +52,7 @@ public class BiDirEntityRemoveAdvice /*implements MethodInterceptor*/ {
     }
 
 
-    private void preRemoveEntity(Object entity) throws IllegalAccessException {
+    private void preRemoveEntity(Object entity)  {
         if (BiDirParent.class.isAssignableFrom(entity.getClass())) {
             log.debug("applying pre remove BiDirParent logic for: " + entity.getClass());
             ((BiDirParent) entity).dismissChildrensParent();
