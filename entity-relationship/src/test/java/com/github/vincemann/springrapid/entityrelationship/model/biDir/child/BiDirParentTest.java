@@ -2,8 +2,11 @@ package com.github.vincemann.springrapid.entityrelationship.model.biDir.child;
 
 import com.github.vincemann.springrapid.commons.Lists;
 import com.github.vincemann.springrapid.core.model.IdentifiableEntityImpl;
-import com.github.vincemann.springrapid.entityrelationship.model.biDir.parent.BiDirParent;
-import com.github.vincemann.springrapid.entityrelationship.model.biDir.parent.BiDirParentEntity;
+import com.github.vincemann.springrapid.entityrelationship.model.parent.BiDirParent;
+import com.github.vincemann.springrapid.entityrelationship.model.parent.annotation.BiDirParentEntity;
+import com.github.vincemann.springrapid.entityrelationship.model.child.BiDirChild;
+import com.github.vincemann.springrapid.entityrelationship.model.child.annotation.BiDirChildCollection;
+import com.github.vincemann.springrapid.entityrelationship.model.child.annotation.BiDirChildEntity;
 import lombok.Getter;
 import lombok.Setter;
 import org.junit.jupiter.api.Assertions;
@@ -106,7 +109,7 @@ class BiDirParentTest {
     @Test
     void addChild() throws IllegalAccessException {
         //when
-        testEntityParent.addChild(testEntityChild);
+        testEntityParent.addBiDirChild(testEntityChild);
         //then
         Assertions.assertSame(testEntityChild,testEntityParent.getEntityChild());
     }
@@ -116,7 +119,7 @@ class BiDirParentTest {
         //given
         Assertions.assertNotNull(testEntityParent.getSecondEntityChildSet());
         //when
-        testEntityParent.addChild(testSecondEntityChild);
+        testEntityParent.addBiDirChild(testSecondEntityChild);
         //then
         Assertions.assertEquals(1,testEntityParent.getSecondEntityChildSet().size());
         Assertions.assertSame(testSecondEntityChild,testEntityParent.getSecondEntityChildSet().stream().findFirst().get());
@@ -126,7 +129,7 @@ class BiDirParentTest {
     void addChildToNullCollection_shouldAutoCreateCollectionAndWork() throws IllegalAccessException {
         //given
         testEntityParent.setSecondEntityChildSet(null);
-        testEntityParent.addChild(testSecondEntityChild);
+        testEntityParent.addBiDirChild(testSecondEntityChild);
         Assertions.assertEquals(testSecondEntityChild,testEntityParent.getSecondEntityChildSet().stream().findFirst().get());
     }
 
@@ -135,7 +138,7 @@ class BiDirParentTest {
         //given
         testEntityParent.setEntityChild(testEntityChild);
         //when
-        testEntityParent.dismissChild(testEntityChild);
+        testEntityParent.dismissBiDirChild(testEntityChild);
         //then
         Assertions.assertNull(testEntityParent.getEntityChild());
     }
@@ -145,7 +148,7 @@ class BiDirParentTest {
         //given
         testEntityParent.setSecondEntityChildSet(new HashSet<>(Collections.singleton(testSecondEntityChild)));
         //when
-        testEntityParent.dismissChild(testSecondEntityChild);
+        testEntityParent.dismissBiDirChild(testSecondEntityChild);
         //then
         Assertions.assertTrue(testEntityParent.getSecondEntityChildSet().isEmpty());
     }
@@ -160,7 +163,7 @@ class BiDirParentTest {
         secondEntityChildren.add(second);
         testEntityParent.setSecondEntityChildSet(secondEntityChildren);
         //when
-        testEntityParent.dismissChild(testSecondEntityChild);
+        testEntityParent.dismissBiDirChild(testSecondEntityChild);
         //then
         Assertions.assertEquals(1,testEntityParent.getSecondEntityChildSet().size());
         Assertions.assertSame(second,testEntityParent.getSecondEntityChildSet().stream().findFirst().get());
@@ -191,7 +194,7 @@ class BiDirParentTest {
         HashSet<SecondEntityChild> secondEntityChildSet = new HashSet<>();
         testEntityParent.setSecondEntityChildSet(secondEntityChildSet);
         //when
-        Map<Collection<? extends BiDirChild>, Class<? extends BiDirChild>> childrenCollections = testEntityParent.getChildrenCollections();
+        Map<Collection<? extends BiDirChild>, Class<? extends BiDirChild>> childrenCollections = testEntityParent.findAllBiDirChildrenCollections();
         //then
         Assertions.assertEquals(1,childrenCollections.size());
         Map.Entry<Collection<? extends BiDirChild>, Class<? extends BiDirChild>> entry = childrenCollections.entrySet().stream().findFirst().get();
@@ -203,7 +206,7 @@ class BiDirParentTest {
     void getNullChildrenCollection_shouldCreateEmptyCollection() throws IllegalAccessException {
         //given
         testEntityParent.setSecondEntityChildSet(null);
-        Map<Collection<? extends BiDirChild>, Class<? extends BiDirChild>> childrenCollections = testEntityParent.getChildrenCollections();
+        Map<Collection<? extends BiDirChild>, Class<? extends BiDirChild>> childrenCollections = testEntityParent.findAllBiDirChildrenCollections();
         for (Map.Entry<Collection<? extends BiDirChild>, Class<? extends BiDirChild>> collectionClassEntry : childrenCollections.entrySet()) {
             Assertions.assertNotNull(collectionClassEntry.getKey());
             Assertions.assertTrue(collectionClassEntry.getKey().isEmpty());
@@ -216,7 +219,7 @@ class BiDirParentTest {
         //given
         testEntityParent.setEntityChild(testEntityChild);
         //when
-        Set<? extends BiDirChild> children = testEntityParent.getChildren();
+        Set<? extends BiDirChild> children = testEntityParent.findBiDirChildren();
         //then
         Assertions.assertEquals(1,children.size());
         Assertions.assertSame(testEntityChild,children.stream().findFirst().get());
@@ -227,7 +230,7 @@ class BiDirParentTest {
         //given
         testEntityParent.setEntityChild(null);
         //when
-        Set<? extends BiDirChild> children = testEntityParent.getChildren();
+        Set<? extends BiDirChild> children = testEntityParent.findBiDirChildren();
         //then
         Assertions.assertTrue(children.isEmpty());
     }

@@ -5,10 +5,12 @@ import com.github.vincemann.springrapid.core.service.exception.BadEntityExceptio
 import com.github.vincemann.springrapid.core.service.exception.EntityNotFoundException;
 import com.github.vincemann.springrapid.entityrelationship.controller.dtomapper.EntityIdResolver;
 import com.github.vincemann.springrapid.entityrelationship.controller.dtomapper.IdResolvingDtoPostProcessor;
-import com.github.vincemann.springrapid.entityrelationship.dto.biDir.BiDirParentDto;
-import com.github.vincemann.springrapid.entityrelationship.model.biDir.child.BiDirChild;
-import com.github.vincemann.springrapid.entityrelationship.model.biDir.parent.BiDirParent;
+import com.github.vincemann.springrapid.entityrelationship.dto.parent.BiDirParentDto;
+import com.github.vincemann.springrapid.entityrelationship.dto.child.annotation.BiDirChildId;
+import com.github.vincemann.springrapid.entityrelationship.model.child.BiDirChild;
+import com.github.vincemann.springrapid.entityrelationship.model.parent.BiDirParent;
 import com.github.vincemann.springrapid.core.service.locator.CrudServiceLocator;
+import com.github.vincemann.springrapid.entityrelationship.model.child.annotation.BiDirChildEntity;
 
 import java.io.Serializable;
 import java.util.AbstractMap;
@@ -17,7 +19,7 @@ import java.util.Map;
 
 /**
  * Used by {@link IdResolvingDtoPostProcessor}.
- * Resolves {@link com.github.vincemann.springrapid.entityrelationship.dto.biDir.BiDirChildId} to corresponding {@link com.github.vincemann.springrapid.entityrelationship.model.biDir.child.BiDirChildEntity}.
+ * Resolves {@link BiDirChildId} to corresponding {@link BiDirChildEntity}.
  * Sets {@link BiDirParent} as {@link BiDirChild}'s Parent > sets Backreference
  *
  * @see EntityIdResolver
@@ -31,13 +33,13 @@ public class BiDirParentIdResolver extends EntityIdResolver<BiDirParent, BiDirPa
     public void resolveEntityIds(BiDirParent mappedBiDirParent, BiDirParentDto biDirParentDto) throws BadEntityException, EntityNotFoundException {
         try {
             //find and handle single Children
-            Map<Class, Serializable> allChildIdToClassMappings = biDirParentDto.findTypeBiDirIdMap();
+            Map<Class, Serializable> allChildIdToClassMappings = biDirParentDto.findAllBiDirChildIds();
             for (Map.Entry<Class, Serializable> childIdToClassMapping : allChildIdToClassMappings.entrySet()) {
                 Object child = findEntityFromService(childIdToClassMapping);
                 resolveBiDirChildFromService(child,mappedBiDirParent);
             }
             //find and handle children collections
-            Map<Class, Collection<Serializable>> allChildrenIdCollection = biDirParentDto.findTypeBiDirChildrenIdCollectionMap();
+            Map<Class, Collection<Serializable>> allChildrenIdCollection = biDirParentDto.findAllBiDirChildIdCollections();
             for (Map.Entry<Class, Collection<Serializable>> entry: allChildrenIdCollection.entrySet()){
                 Collection<Serializable> idCollection = entry.getValue();
                 for(Serializable id: idCollection){
@@ -53,10 +55,10 @@ public class BiDirParentIdResolver extends EntityIdResolver<BiDirParent, BiDirPa
     @Override
     public void resolveDtoIds(BiDirParentDto mappedDto, BiDirParent serviceEntity) {
         try {
-            for(BiDirChild biDirChild: serviceEntity.getChildren()){
+            for(BiDirChild biDirChild: serviceEntity.findBiDirChildren()){
                 mappedDto.addBiDirChildsId(biDirChild);
             }
-            for(Collection<? extends BiDirChild> childrenCollection: serviceEntity.getChildrenCollections().keySet()){
+            for(Collection<? extends BiDirChild> childrenCollection: serviceEntity.findAllBiDirChildrenCollections().keySet()){
                 for(BiDirChild biDirChild: childrenCollection){
                     mappedDto.addBiDirChildsId(biDirChild);
                 }
@@ -70,7 +72,7 @@ public class BiDirParentIdResolver extends EntityIdResolver<BiDirParent, BiDirPa
         try {
             BiDirChild biDirChild = ((BiDirChild) child);
             //set child of mapped parent
-            mappedBiDirParent.addChild(biDirChild);
+            mappedBiDirParent.addBiDirChild(biDirChild);
             //backreference gets set in BiDirParentListener
         }catch (ClassCastException e){
             throw new IllegalArgumentException("Found Child " + child + " is not of Type BiDirChild");

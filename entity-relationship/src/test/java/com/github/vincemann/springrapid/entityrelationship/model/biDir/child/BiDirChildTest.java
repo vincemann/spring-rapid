@@ -1,9 +1,11 @@
 package com.github.vincemann.springrapid.entityrelationship.model.biDir.child;
 
 import com.github.vincemann.springrapid.core.model.IdentifiableEntityImpl;
-import com.github.vincemann.springrapid.entityrelationship.model.biDir.parent.BiDirParent;
-import com.github.vincemann.springrapid.entityrelationship.model.biDir.parent.BiDirParentEntity;
+import com.github.vincemann.springrapid.entityrelationship.model.parent.BiDirParent;
+import com.github.vincemann.springrapid.entityrelationship.model.parent.annotation.BiDirParentEntity;
 import com.github.vincemann.springrapid.entityrelationship.exception.UnknownParentTypeException;
+import com.github.vincemann.springrapid.entityrelationship.model.child.BiDirChild;
+import com.github.vincemann.springrapid.entityrelationship.model.child.annotation.BiDirChildEntity;
 import lombok.Getter;
 import lombok.Setter;
 import org.junit.jupiter.api.AfterEach;
@@ -63,7 +65,7 @@ class BiDirChildTest {
         Assertions.assertNull(testEntityChild.getUnusedParent());
         Assertions.assertNull(testEntityChild.getSecondEntityParent());
         //when
-        testEntityChild.setParentRef(testEntityParent);
+        testEntityChild.addBiDirParent(testEntityParent);
         //then
         Assertions.assertSame(testEntityChild.getEntityParent(),testEntityParent);
         Assertions.assertNull(testEntityChild.getUnusedParent());
@@ -79,7 +81,7 @@ class BiDirChildTest {
         Assertions.assertNull(testEntityParent.getEntityChild());
         Assertions.assertNull(testSecondEntityParent.getEntityChild());
         //when
-        testEntityChild.addChildToParents();
+        testEntityChild.addToBiDirParents();
         //then
         Assertions.assertSame(testEntityChild,testEntityParent.getEntityChild());
         Assertions.assertSame(testEntityChild,testSecondEntityParent.getEntityChild());
@@ -156,7 +158,7 @@ class BiDirChildTest {
         testEntityChild.setEntityParent(testEntityParent);
         testEntityChild.setSecondEntityParent(testSecondEntityParent);
         //when
-        Collection<BiDirParent> parents = testEntityChild.findParents();
+        Collection<BiDirParent> parents = testEntityChild.findBiDirParents();
         //then
         Assertions.assertEquals(2,parents.size());
     }
@@ -167,7 +169,7 @@ class BiDirChildTest {
         Assertions.assertNull(testEntityChild.getSecondEntityParent());
         Assertions.assertNull(testEntityChild.getUnusedParent());
         //when
-        Collection<BiDirParent> parents = testEntityChild.findParents();
+        Collection<BiDirParent> parents = testEntityChild.findBiDirParents();
         //then
         Assertions.assertEquals(1,parents.size());
         Optional<BiDirParent> biDirParent = parents.stream().findFirst();
@@ -181,7 +183,7 @@ class BiDirChildTest {
         testEntityChild.setEntityParent(testEntityParent);
         testEntityChild.setSecondEntityParent(testSecondEntityParent);
         //when
-        testEntityChild.dismissParents();
+        testEntityChild.dismissBiDirParents();
         //then
         Assertions.assertNull(testEntityChild.getEntityParent());
         Assertions.assertNull(testEntityChild.getSecondEntityParent());
@@ -192,7 +194,7 @@ class BiDirChildTest {
         //given
         testEntityChild.setEntityParent(testEntityParent);
         //when
-        testEntityChild.dismissParent(testEntityParent);
+        testEntityChild.dismissBiDirParent(testEntityParent);
         //then
         Assertions.assertNull(testEntityChild.getEntityParent());
     }
@@ -205,7 +207,7 @@ class BiDirChildTest {
         Assertions.assertThrows(UnknownParentTypeException.class, new Executable() {
             @Override
             public void execute() throws Throwable {
-                testEntityChild.dismissParent(testEntityParent);
+                testEntityChild.dismissBiDirParent(testEntityParent);
             }
         });
     }
@@ -216,7 +218,7 @@ class BiDirChildTest {
         testEntityChild.setEntityParent(testEntityParent);
         testEntityChild.setSecondEntityParent(testSecondEntityParent);
         //when
-        testEntityChild.dismissParent(testEntityParent);
+        testEntityChild.dismissBiDirParent(testEntityParent);
         //then
         Assertions.assertNull(testEntityChild.getEntityParent());
         Assertions.assertSame(testSecondEntityParent,testEntityChild.getSecondEntityParent());
