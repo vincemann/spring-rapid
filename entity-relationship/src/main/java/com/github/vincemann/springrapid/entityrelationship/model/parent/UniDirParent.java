@@ -19,6 +19,33 @@ import java.util.concurrent.atomic.AtomicBoolean;
 public interface UniDirParent extends UniDirEntity, DirParent {
     Logger log = LoggerFactory.getLogger(UniDirParent.class);
 
+    /**
+     * Find the UniDirChildren Collections (all fields of this parent annotated with {@link UniDirChildCollection} and not null )
+     * and the Type of the Entities in the Collection.
+     *
+     * @return
+     */
+    default Map<Collection<UniDirChild>, Class<UniDirChild>> findAllUniDirChildCollections()  {
+        return findAllChildCollections(UniDirChildCollection.class);
+//        Map<Collection, Class<? extends UniDirChild>> childrenCollection_CollectionTypeMap = new HashMap<>();
+//        Field[] collectionFields = findUniDirChildrenCollectionFields();
+//
+//        for (Field field : collectionFields) {
+//            field.setAccessible(true);
+//            Collection uniDirChildren = (Collection) field.get(this);
+//            if (uniDirChildren == null) {
+//                //throw new IllegalArgumentException("Null idCollection found in UniDirParent "+ this + " for ChildCollectionField with name: " + field.getName());
+//                log.warn("Auto-generating Collection for null valued UniDirChildIdCollection Field: " + field);
+//                Collection emptyCollection = CollectionUtils.createEmptyCollection(field);
+//                field.set(this, emptyCollection);
+//                uniDirChildren = emptyCollection;
+//            }
+//            Class<? extends UniDirChild> collectionEntityType = field.getAnnotation(UniDirChildCollection.class).value();
+//            childrenCollection_CollectionTypeMap.put(uniDirChildren, collectionEntityType);
+//        }
+//
+//        return childrenCollection_CollectionTypeMap;
+    }
 
     /**
      * Add a new Child to this parent.
@@ -28,34 +55,34 @@ public interface UniDirParent extends UniDirEntity, DirParent {
      *
      * @param newChild
      * @throws UnknownChildTypeException
-     * @throws IllegalAccessException
      */
-    default void addUniDirChild(Object newChild) throws UnknownChildTypeException, IllegalAccessException {
-        AtomicBoolean addedChild = new AtomicBoolean(false);
-        for (Map.Entry entry : findAllUniDirChildCollections().entrySet()) {
-            Class targetClass = (Class) entry.getValue();
-            if (newChild.getClass().equals(targetClass)) {
-                ((Collection) entry.getKey()).add(newChild);
-                addedChild.set(true);
-            }
-        }
-
-        Field[] entityFields = _findChildrenEntityFields();
-        for (Field childField : entityFields) {
-            if (childField.getType().equals(newChild.getClass())) {
-                childField.setAccessible(true);
-                Object oldChild = childField.get(this);
-                if (oldChild != null) {
-                    log.warn("Overriding old child: " + oldChild + " with new Child: " + newChild + " of parent: " + this);
-                }
-                childField.set(this, newChild);
-                addedChild.set(true);
-            }
-        }
-
-        if (!addedChild.get()) {
-            throw new UnknownChildTypeException(getClass(), newChild.getClass());
-        }
+    default void addUniDirChild(UniDirChild newChild) throws UnknownChildTypeException{
+        addChild(newChild,UniDirChildEntity.class,UniDirChildCollection.class);
+//        AtomicBoolean addedChild = new AtomicBoolean(false);
+//        for (Map.Entry entry : findAllUniDirChildCollections().entrySet()) {
+//            Class targetClass = (Class) entry.getValue();
+//            if (newChild.getClass().equals(targetClass)) {
+//                ((Collection) entry.getKey()).add(newChild);
+//                addedChild.set(true);
+//            }
+//        }
+//
+//        Field[] entityFields = _findChildrenEntityFields();
+//        for (Field childField : entityFields) {
+//            if (childField.getType().equals(newChild.getClass())) {
+//                childField.setAccessible(true);
+//                Object oldChild = childField.get(this);
+//                if (oldChild != null) {
+//                    log.warn("Overriding old child: " + oldChild + " with new Child: " + newChild + " of parent: " + this);
+//                }
+//                childField.set(this, newChild);
+//                addedChild.set(true);
+//            }
+//        }
+//
+//        if (!addedChild.get()) {
+//            throw new UnknownChildTypeException(getClass(), newChild.getClass());
+//        }
     }
 
     /*default Field[] findChildrenCollectionFields(){
@@ -128,32 +155,7 @@ public interface UniDirParent extends UniDirEntity, DirParent {
 //        return childEntityFields;
 //    }
 
-    /**
-     * Find the UniDirChildren Collections (all fields of this parent annotated with {@link UniDirChildCollection} and not null )
-     * and the Type of the Entities in the Collection.
-     *
-     * @return
-     */
-    default Map<Collection, Class<? extends UniDirChild>> findAllUniDirChildCollections() throws IllegalAccessException {
-        Map<Collection, Class<? extends UniDirChild>> childrenCollection_CollectionTypeMap = new HashMap<>();
-        Field[] collectionFields = findUniDirChildrenCollectionFields();
 
-        for (Field field : collectionFields) {
-            field.setAccessible(true);
-            Collection uniDirChildren = (Collection) field.get(this);
-            if (uniDirChildren == null) {
-                //throw new IllegalArgumentException("Null idCollection found in UniDirParent "+ this + " for ChildCollectionField with name: " + field.getName());
-                log.warn("Auto-generating Collection for null valued UniDirChildIdCollection Field: " + field);
-                Collection emptyCollection = CollectionUtils.createEmptyCollection(field);
-                field.set(this, emptyCollection);
-                uniDirChildren = emptyCollection;
-            }
-            Class<? extends UniDirChild> collectionEntityType = field.getAnnotation(UniDirChildCollection.class).value();
-            childrenCollection_CollectionTypeMap.put(uniDirChildren, collectionEntityType);
-        }
-
-        return childrenCollection_CollectionTypeMap;
-    }
 
 
     /**

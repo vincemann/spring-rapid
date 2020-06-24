@@ -30,18 +30,8 @@ public interface BiDirChild extends BiDirEntity, DirChild {
      * @throws UnknownParentTypeException   when supplied Parent does not match any of the fields in child class anntoated with {@link BiDirParentEntity}
      * @throws IllegalAccessException
      */
-    public default void addBiDirParent(BiDirParent parentToSet) throws UnknownParentTypeException, IllegalAccessException {
-        AtomicBoolean parentSet = new AtomicBoolean(false);
-        ReflectionUtils.doWithFields(getClass(), field -> {
-            if (parentToSet.getClass().equals(field.getType())) {
-                ReflectionUtils.makeAccessible(field);
-                field.set(this, parentToSet);
-                parentSet.set(true);
-            }
-        }, new org.springframework.data.util.ReflectionUtils.AnnotationFieldFilter(BiDirParentEntity.class));
-        if (!parentSet.get()) {
-            throw new UnknownParentTypeException(this.getClass(), parentToSet.getClass());
-        }
+    public default void addBiDirParent(BiDirParent parentToSet) throws UnknownParentTypeException {
+       addParent(parentToSet,BiDirParentEntity.class);
 //        AtomicBoolean parentSet = new AtomicBoolean(false);
 //        for(Field parentField: findParentFields()){
 //            if(parentToSet.getClass().equals(parentField.getType())){
@@ -76,19 +66,8 @@ public interface BiDirChild extends BiDirEntity, DirChild {
      * @param parentToSet
      * @return  true, if parent was null and set
      */
-    public default boolean setParentRefIfNull(BiDirParent parentToSet)  {
-        AtomicBoolean parentSet = new AtomicBoolean(false);
-        ReflectionUtils.doWithFields(getClass(), field -> {
-            if (parentToSet.getClass().equals(field.getType())) {
-                if(parentToSet.getClass().equals(field.getType())){
-                    ReflectionUtils.makeAccessible(field);
-                    if(field.get(this)==null) {
-                        field.set(this, parentToSet);
-                        parentSet.set(true);
-                    }
-                }
-            }
-        }, new org.springframework.data.util.ReflectionUtils.AnnotationFieldFilter(BiDirParentEntity.class));
+    public default boolean addBiDirParentIfNull(BiDirParent parentToSet)  {
+       return addParentIfNull(parentToSet,BiDirParentEntity.class);
 //        for(Field parentField: findParentFields()){
 //            if(parentToSet.getClass().equals(parentField.getType())){
 //                parentField.setAccessible(true);
@@ -97,7 +76,7 @@ public interface BiDirChild extends BiDirEntity, DirChild {
 //                }
 //            }
 //        }
-        return parentSet.get();
+//        return parentSet.get();
     }
 
 //    /**
@@ -122,14 +101,7 @@ public interface BiDirChild extends BiDirEntity, DirChild {
      * @throws IllegalAccessException
      */
     public default Collection<BiDirParent> findBiDirParents() {
-        Collection<BiDirParent> result = new ArrayList<>();
-        ReflectionUtils.doWithFields(getClass(), field -> {
-            ReflectionUtils.makeAccessible(field);
-            BiDirParent biDirParent = (BiDirParent) field.get(this);
-            if(biDirParent!=null) {
-                result.add(biDirParent);
-            }
-        }, new org.springframework.data.util.ReflectionUtils.AnnotationFieldFilter(BiDirParentEntity.class));
+        return findParents(BiDirParentEntity.class);
 //        Collection<BiDirParent> result = new ArrayList<>();
 //        Field[] parentFields = findParentFields();
 //        for(Field parentField: parentFields) {
@@ -139,7 +111,7 @@ public interface BiDirChild extends BiDirEntity, DirChild {
 //                result.add(biDirParent);
 //            }
 //        }
-        return result;
+//        return result;
     }
 
 
@@ -160,17 +132,7 @@ public interface BiDirChild extends BiDirEntity, DirChild {
      * @throws UnknownParentTypeException   thrown, if parentToDelete is of unknown type -> no field , annotated as {@link BiDirParentEntity}, with the most specific type of parentToDelete, exists in Child (this).
      */
     public default void dismissBiDirParent(BiDirParent parentToDelete) throws UnknownParentTypeException {
-        AtomicBoolean parentRemoved = new AtomicBoolean(false);
-        ReflectionUtils.doWithFields(getClass(), field -> {
-            ReflectionUtils.makeAccessible(field);
-            BiDirParent  parent = (BiDirParent) field.get(this);
-            if(parent!=null) {
-                if (parentToDelete.getClass().equals(parent.getClass())) {
-                    field.set(this,null);
-                    parentRemoved.set(true);
-                }
-            }
-        }, new org.springframework.data.util.ReflectionUtils.AnnotationFieldFilter(BiDirParentEntity.class));
+        dismissParent(parentToDelete,BiDirParentEntity.class);
 //        AtomicBoolean parentRemoved = new AtomicBoolean(false);
 //        Field[] parentFields = findParentFields();
 //        for(Field parentField: parentFields){
@@ -183,8 +145,8 @@ public interface BiDirChild extends BiDirEntity, DirChild {
 //                }
 //            }
 //        }
-        if(!parentRemoved.get()){
-            throw new UnknownParentTypeException(this.getClass(),parentToDelete.getClass());
-        }
+//        if(!parentRemoved.get()){
+//            throw new UnknownParentTypeException(this.getClass(),parentToDelete.getClass());
+//        }
     }
 }
