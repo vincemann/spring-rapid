@@ -122,6 +122,11 @@ class CrudServiceSecurityProxyTest {
         public ExampleEntity customMethod(String arg){
             return new ExampleEntity("serviceCustomEntity");
         }
+
+        @Override
+        public Class<?> getTargetClass() {
+            return ExampleService.class;
+        }
     }
 
     CrudServiceSecurityProxy proxy;
