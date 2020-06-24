@@ -29,14 +29,14 @@ public interface DirChild {
     }
 
     public default boolean addParentIfNull(DirParent parentToSet,Class<? extends Annotation> parentEntityAnnotationClass)  {
-        AtomicBoolean parentSet = new AtomicBoolean(false);
-        EntityReflectionUtils.doWithAnnotatedFieldsOfType(parentSet.getClass(),parentEntityAnnotationClass,getClass(),field -> {
+        AtomicBoolean added = new AtomicBoolean(false);
+        EntityReflectionUtils.doWithAnnotatedFieldsOfType(parentToSet.getClass(),parentEntityAnnotationClass,getClass(),field -> {
             if(field.get(this)==null) {
                 field.set(this, parentToSet);
-                parentSet.set(true);
+                added.set(true);
             }
         });
-        return parentSet.get();
+        return added.get();
     }
 
     /**
