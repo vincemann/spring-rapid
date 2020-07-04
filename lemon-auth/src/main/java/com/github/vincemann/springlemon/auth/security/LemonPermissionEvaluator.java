@@ -1,5 +1,7 @@
 package com.github.vincemann.springlemon.auth.security;
 
+import com.github.vincemann.aoplog.api.AopLoggable;
+import com.github.vincemann.aoplog.api.LogInteraction;
 import com.github.vincemann.springlemon.auth.domain.dto.user.LemonUserDto;
 import com.github.vincemann.springlemon.auth.util.LecUtils;
 import org.apache.commons.logging.Log;
@@ -15,7 +17,7 @@ import java.io.Serializable;
  * Denys any access if any user is blocked or if admin is unverified
  * -> unverified Users are let through, so you can treat Role_GoodUser and Role_User differently in access logic
  */
-public class LemonPermissionEvaluator extends AclPermissionEvaluator {
+public class LemonPermissionEvaluator extends AclPermissionEvaluator implements AopLoggable {
 
     private static final Log log = LogFactory.getLog(LemonPermissionEvaluator.class);
 
@@ -33,13 +35,14 @@ public class LemonPermissionEvaluator extends AclPermissionEvaluator {
      * @param permission			What permission is being checked for, e.g. 'WRITE'
      * @see org.springframework.security.acls.domain.BasePermission
      */
+    @LogInteraction
     @Override
     public boolean hasPermission(Authentication auth,
                                  Object targetDomainObject, Object permission) {
 
-        log.debug("Checking whether " + auth
-                + "\n  has " + permission + " permission for "
-                + targetDomainObject);
+//        log.debug("Checking whether " + auth
+//                + "\n  has " + permission + " permission for "
+//                + targetDomainObject);
 
         if (targetDomainObject == null)	// if no domain object is provided,
             return true;				// let's pass, allowing the service method
@@ -50,6 +53,7 @@ public class LemonPermissionEvaluator extends AclPermissionEvaluator {
     }
 
 
+    @LogInteraction
     @Override
     public boolean hasPermission(Authentication authentication,
                                  Serializable targetId, String targetType, Object permission) {

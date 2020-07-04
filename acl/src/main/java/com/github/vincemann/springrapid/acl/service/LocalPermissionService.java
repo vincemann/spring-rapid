@@ -1,5 +1,8 @@
 package com.github.vincemann.springrapid.acl.service;
 
+import com.github.vincemann.aoplog.api.AopLoggable;
+import com.github.vincemann.aoplog.api.LogException;
+import com.github.vincemann.aoplog.api.LogInteraction;
 import com.github.vincemann.springrapid.acl.util.PermissionUtils;
 import com.github.vincemann.springrapid.core.slicing.components.ServiceComponent;
 import com.github.vincemann.springrapid.core.model.IdentifiableEntity;
@@ -21,7 +24,8 @@ import java.io.Serializable;
 @Transactional
 //todo test
 @Slf4j
-public class LocalPermissionService {
+@LogException
+public class LocalPermissionService implements AopLoggable {
 
     private MutableAclService aclService;
 
@@ -30,12 +34,14 @@ public class LocalPermissionService {
         this.aclService = aclService;
     }
 
+
     /**
      *
      * @param targetObj
      * @param permission
      * @param username      username of user, that gains permission over target object
      */
+    @LogInteraction
     public void addPermissionForUserOver(IdentifiableEntity<? extends Serializable> targetObj, Permission permission, String username) {
         final Sid sid = new PrincipalSid(username);
         addPermissionForSid(targetObj, permission, sid);
@@ -47,6 +53,7 @@ public class LocalPermissionService {
      * @param permission
      * @param authority     the authority that gains the given permission over the target obj
      */
+    @LogInteraction
     public void addPermissionForAuthorityOver(IdentifiableEntity<? extends Serializable> targetObj, Permission permission, String authority) {
         final Sid sid = new GrantedAuthoritySid(authority);
         addPermissionForSid(targetObj, permission, sid);
@@ -58,10 +65,11 @@ public class LocalPermissionService {
      * @param parent
      * @throws AclNotFoundException
      */
+    @LogInteraction
     public void inheritPermissions(IdentifiableEntity<? extends Serializable> targetObj,IdentifiableEntity<? extends Serializable> parent) throws AclNotFoundException {
         final ObjectIdentity childOi = new ObjectIdentityImpl(targetObj.getClass(), targetObj.getId());
         final ObjectIdentity parentOi = new ObjectIdentityImpl(parent.getClass(), parent.getId());
-        log.debug("Entity: " + targetObj + " will inherit permissions from: " + parent);
+//        log.debug("Entity: " + targetObj + " will inherit permissions from: " + parent);
         MutableAcl childAcl = null;
         MutableAcl parentAcl =null;
 
@@ -85,8 +93,9 @@ public class LocalPermissionService {
         log.trace("Updated Child Acl: " + updated);
     }
 
+
     private void addPermissionForSid(IdentifiableEntity<? extends Serializable> targetObj, Permission permission, Sid sid) {
-        log.debug("sid: "+ sid +" will gain permission: " + PermissionUtils.toString(permission) +" over entity: " + targetObj);
+//        log.debug("sid: "+ sid +" will gain permission: " + PermissionUtils.toString(permission) +" over entity: " + targetObj);
         final ObjectIdentity oi = new ObjectIdentityImpl(targetObj.getClass(), targetObj.getId());
 
         MutableAcl acl = null;

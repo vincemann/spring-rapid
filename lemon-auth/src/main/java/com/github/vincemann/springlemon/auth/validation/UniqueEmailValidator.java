@@ -1,5 +1,7 @@
 package com.github.vincemann.springlemon.auth.validation;
 
+import com.github.vincemann.aoplog.api.AopLoggable;
+import com.github.vincemann.aoplog.api.LogInteraction;
 import com.github.vincemann.springlemon.auth.domain.AbstractUserRepository;
 import com.github.vincemann.springrapid.core.slicing.components.ServiceComponent;
 import org.apache.commons.logging.Log;
@@ -16,7 +18,7 @@ import javax.validation.ConstraintValidatorContext;
  */
 @ServiceComponent
 public class UniqueEmailValidator
-implements ConstraintValidator<UniqueEmail, String> {
+implements ConstraintValidator<UniqueEmail, String>, AopLoggable {
 
 	private static final Log log = LogFactory.getLog(UniqueEmailValidator.class);
 
@@ -28,6 +30,7 @@ implements ConstraintValidator<UniqueEmail, String> {
 		log.info("Created");
 	}
 
+	@LogInteraction
 	@Override
 	public boolean isValid(String email, ConstraintValidatorContext context) {
 		

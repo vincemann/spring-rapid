@@ -35,13 +35,11 @@ public class LemonServiceSecurityRule extends ServiceSecurityRule {
         this.userRepository = userRepository;
     }
 
-    ////@LogInteraction(level = LogInteraction.Level.TRACE)
     @CalledByProxy
     public void preAuthorizeSave(AbstractUser toSave){
         getSecurityChecker().checkRole(LemonRole.GOOD_ADMIN);
     }
 
-    ////@LogInteraction(level = LogInteraction.Level.TRACE)
     @CalledByProxy
     public void preAuthorizeResendVerificationMail(AbstractUser user){
         LexUtils.ensureFound(user);

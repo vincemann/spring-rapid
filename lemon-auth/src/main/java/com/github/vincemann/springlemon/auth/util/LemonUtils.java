@@ -1,5 +1,6 @@
 package com.github.vincemann.springlemon.auth.util;
 
+import com.github.vincemann.aoplog.api.AopLoggable;
 import com.github.vincemann.springlemon.auth.domain.AbstractUser;
 import com.github.vincemann.springlemon.auth.security.domain.LemonPrincipal;
 import com.github.vincemann.springlemon.auth.domain.dto.user.LemonUserDto;

@@ -1,12 +1,13 @@
 package com.github.vincemann.springrapid.core.service;
 
-import com.github.vincemann.aoplog.api.InteractionLoggable;
-import com.github.vincemann.aoplog.api.LogAll;
+import com.github.vincemann.aoplog.api.AopLoggable;
+import com.github.vincemann.aoplog.api.LogConfig;
+import com.github.vincemann.aoplog.api.LogInteraction;
 import com.github.vincemann.aoplog.api.UltimateTargetClassAware;
-import com.github.vincemann.springrapid.core.slicing.components.ServiceComponent;
-import com.github.vincemann.springrapid.core.service.exception.BadEntityException;
 import com.github.vincemann.springrapid.core.model.IdentifiableEntity;
+import com.github.vincemann.springrapid.core.service.exception.BadEntityException;
 import com.github.vincemann.springrapid.core.service.exception.EntityNotFoundException;
+import com.github.vincemann.springrapid.core.slicing.components.ServiceComponent;
 import org.springframework.data.repository.CrudRepository;
 
 import java.io.Serializable;
@@ -19,14 +20,15 @@ import java.util.Set;
  * @param <Id>      Id Type of E
  */
 @ServiceComponent
-@LogAll(/*ignoreGetters = true,ignoreSetters = true*/)
+@LogInteraction
+@LogConfig(ignoreGetters = true,ignoreSetters = true)
 public interface CrudService
         <
                 E extends IdentifiableEntity<Id>,
                 Id extends Serializable,
                 R extends CrudRepository<E,Id>
         >
-    extends InteractionLoggable, UltimateTargetClassAware
+    extends AopLoggable, UltimateTargetClassAware
 {
 
     Optional<E> findById(Id id) throws BadEntityException;
@@ -39,7 +41,7 @@ public interface CrudService
      * @param entity
      * @return updated (database) entity
      */
-    E update(E entity, Boolean full) throws EntityNotFoundException, BadEntityException, BadEntityException;
+    E update(E entity, Boolean full) throws EntityNotFoundException, BadEntityException;
 
     E save(E entity) throws  BadEntityException;
 

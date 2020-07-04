@@ -1,5 +1,8 @@
 package com.github.vincemann.springlemon.auth.security.service;
 
+import com.github.vincemann.aoplog.Severity;
+import com.github.vincemann.aoplog.api.AopLoggable;
+import com.github.vincemann.aoplog.api.LogInteraction;
 import com.github.vincemann.springlemon.auth.domain.AbstractUser;
 import com.github.vincemann.springlemon.auth.domain.AbstractUserRepository;
 import com.github.vincemann.springlemon.auth.security.domain.LemonPrincipal;
@@ -20,9 +23,10 @@ import java.util.Optional;
  * @author Sanjay Patel
  */
 @ServiceComponent
+@LogInteraction(Severity.TRACE)
 public class LemonUserDetailsService
 	<U extends AbstractUser<ID>, ID extends Serializable>
-implements UserDetailsService {
+implements UserDetailsService, AopLoggable {
 
 	private static final Log log = LogFactory.getLog(LemonUserDetailsService.class);
 
@@ -34,7 +38,7 @@ implements UserDetailsService {
 		log.info("Created");
 	}
 
-	////@LogInteraction(level = LogInteraction.Level.TRACE)
+
 	@Override
 	public LemonPrincipal loadUserByUsername(String username)
 			throws UsernameNotFoundException {

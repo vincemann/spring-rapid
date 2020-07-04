@@ -278,10 +278,6 @@ class CrudServiceSecurityProxyTest {
         inOrder.verify(defaultRule).postAuthorizeSave(exampleEntity,null);
     }
 
-
-
-
-
     private <T> T invokeProxy(String methodName, Object... args) throws Throwable {
         Method customMethod
                 = Arrays.stream(service.getClass().getMethods()).filter(m -> m.getName().equals(methodName)).findFirst().get();

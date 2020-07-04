@@ -1,5 +1,8 @@
 package com.github.vincemann.springlemon.auth.util;
 
+import com.github.vincemann.aoplog.Severity;
+import com.github.vincemann.aoplog.api.AopLoggable;
+import com.github.vincemann.aoplog.api.LogInteraction;
 import com.github.vincemann.springlemon.auth.security.domain.LemonPrincipal;
 import com.github.vincemann.springlemon.auth.domain.dto.user.LemonUserDto;
 import com.github.vincemann.springlemon.exceptions.util.LexUtils;
@@ -19,7 +22,7 @@ import java.util.*;
  * 
  * @author Sanjay Patel
  */
-public class LecUtils {
+public class LecUtils{
 	
 	private static final Log log = LogFactory.getLog(LecUtils.class);
 	

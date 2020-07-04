@@ -1,5 +1,9 @@
 package com.github.vincemann.springrapid.acl;
 
+import com.github.vincemann.aoplog.Severity;
+import com.github.vincemann.aoplog.api.LogConfig;
+import com.github.vincemann.aoplog.api.LogException;
+import com.github.vincemann.aoplog.api.LogInteraction;
 import com.github.vincemann.springrapid.core.model.IdentifiableEntity;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeansException;
@@ -29,6 +33,9 @@ import java.util.stream.Collectors;
  * Uses {@link MethodSecurityExpressionHandler} for expression evaluation and {@link org.springframework.security.core.context.SecurityContext}
  * to get information about authenticated user.
  */
+@LogInteraction
+@LogException
+@LogConfig(ignoreGetters = true,ignoreSetters = true)
 public class DefaultSecurityChecker implements SecurityChecker,ApplicationContextAware {
 
 
@@ -63,6 +70,7 @@ public class DefaultSecurityChecker implements SecurityChecker,ApplicationContex
         return (C) filtered;
     }
 
+    @LogInteraction(Severity.TRACE)
     @Override
     public void checkAuthenticated(){
         boolean authenticated = checkExpression("isAuthenticated()");
