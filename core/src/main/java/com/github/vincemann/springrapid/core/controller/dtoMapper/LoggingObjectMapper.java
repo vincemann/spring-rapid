@@ -5,9 +5,12 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.github.vincemann.aoplog.api.AopLoggable;
+import com.github.vincemann.aoplog.api.LogInteraction;
 
 
-public class LoggingObjectMapper extends ObjectMapper {
+@LogInteraction
+public class LoggingObjectMapper extends ObjectMapper implements AopLoggable {
 
     //@LogInteraction
     @Override

@@ -1,5 +1,9 @@
 package com.github.vincemann.springlemon.auth.service;
 
+import com.github.vincemann.aoplog.Severity;
+import com.github.vincemann.aoplog.api.AopLoggable;
+import com.github.vincemann.aoplog.api.LogException;
+import com.github.vincemann.aoplog.api.LogInteraction;
 import com.github.vincemann.springlemon.auth.domain.AbstractUser;
 import com.github.vincemann.springlemon.auth.domain.AbstractUserRepository;
 import com.github.vincemann.springlemon.auth.domain.dto.ChangePasswordForm;
@@ -23,8 +27,10 @@ import java.util.Optional;
 
 @Validated
 @ServiceComponent
+@LogInteraction
+@LogException
 public interface LemonService<U extends AbstractUser<ID>, ID extends Serializable, R extends AbstractUserRepository<U,ID>>
-        extends CrudService<U,ID, R> {
+        extends CrudService<U,ID, R>, AopLoggable {
     public Map<String, Object> getContext(Optional<Long> expirationMillis, HttpServletResponse response);
     @Validated(UserUtils.SignUpValidation.class)
     public U signup(@Valid U user) throws BadEntityException;
@@ -40,7 +46,9 @@ public interface LemonService<U extends AbstractUser<ID>, ID extends Serializabl
     public String fetchNewToken(Optional<Long> expirationMillis, Optional<String> optionalUsername);
     public Map<String, String> fetchFullToken(String authHeader);
     public void createAdminUser(LemonProperties.Admin admin) throws BadEntityException;
+    @LogInteraction(Severity.TRACE)
     public abstract ID toId(String id);
+    @LogInteraction(Severity.TRACE)
     public void addAuthHeader(HttpServletResponse response, String username, Long expirationMillis);
     @Validated(UserUtils.UpdateValidation.class)
     @Override

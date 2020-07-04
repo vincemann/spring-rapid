@@ -1,5 +1,7 @@
 package com.github.vincemann.springrapid.acl.plugin;
 
+import com.github.vincemann.aoplog.Severity;
+import com.github.vincemann.aoplog.api.LogInteraction;
 import com.github.vincemann.springrapid.acl.Role;
 import com.github.vincemann.springrapid.acl.service.LocalPermissionService;
 import com.github.vincemann.springrapid.acl.service.MockAuthService;
@@ -22,6 +24,7 @@ public abstract class AbstractAclPlugin extends CrudServicePlugin {
     private MutableAclService mutableAclService;
     private MockAuthService mockAuthService;
 
+    @LogInteraction(Severity.TRACE)
     protected void saveFullPermissionForAdminOver(IdentifiableEntity<Serializable> entity){
         mockAuthService.runAuthenticatedAsAdmin(() -> {
             getPermissionService().addPermissionForAuthorityOver(entity,
@@ -29,6 +32,7 @@ public abstract class AbstractAclPlugin extends CrudServicePlugin {
         });
     }
 
+    @LogInteraction(Severity.TRACE)
     protected void savePermissionForAuthenticatedOver(IdentifiableEntity<Serializable> entity, Permission permission){
         String own = findAuthenticatedName();
         //not needed, acl, SecurityContext already has right name...

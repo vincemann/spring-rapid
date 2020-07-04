@@ -18,9 +18,6 @@ import java.lang.annotation.*;
 @Retention(RetentionPolicy.RUNTIME)
 @Inherited
 public @interface ConfigureProxies {
-    @AliasFor("value")
-    Proxy[] proxies() default {};
-    @AliasFor("proxies")
     Proxy[] value() default {};
     SecurityProxy[] securityProxies() default {};
 }

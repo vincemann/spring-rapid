@@ -1,6 +1,9 @@
 package com.github.vincemann.springlemon.auth.controller;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.github.vincemann.aoplog.Severity;
+import com.github.vincemann.aoplog.api.LogInteraction;
+import com.github.vincemann.aoplog.api.Lp;
 import com.github.vincemann.springlemon.auth.domain.AbstractUser;
 import com.github.vincemann.springlemon.auth.domain.dto.ChangePasswordForm;
 import com.github.vincemann.springlemon.auth.domain.dto.LemonSignupForm;
@@ -87,8 +90,9 @@ public abstract class LemonController
 	 */
 	@GetMapping("/context")
 	@ResponseBody
+	@LogInteraction
 	public Map<String, Object> getContext(
-			@RequestParam Optional<Long> expirationMillis,
+			@Lp @RequestParam Optional<Long> expirationMillis,
 			HttpServletResponse response) {
 
 		log.debug("Getting context ");
@@ -119,8 +123,9 @@ public abstract class LemonController
 	@PostMapping("/users")
 	@ResponseStatus(HttpStatus.CREATED)
 	@ResponseBody
+	@LogInteraction
 	public ResponseEntity<String> signup(/*@RequestBody @JsonView(UserUtils.SignupInput.class) S signupForm,*/
-							   HttpServletRequest request,
+							   @Lp HttpServletRequest request,
 							   HttpServletResponse response) throws BadEntityException, IOException, EntityNotFoundException {
 
 		String signupForm = readBody(request);
@@ -143,6 +148,7 @@ public abstract class LemonController
 	 */
 	@PostMapping("/users/{id}/resend-verification-mail")
 	@ResponseStatus(HttpStatus.NO_CONTENT)
+	@LogInteraction
 	public void resendVerificationMail(@PathVariable("id") U user) {
 
 		log.debug("Resending verification mail for: " + user);
@@ -156,9 +162,10 @@ public abstract class LemonController
 	 */
 	@PostMapping("/users/{id}/verification")
 	@ResponseBody
+	@LogInteraction
 	public ResponseEntity<String> verifyUser(
-			@PathVariable ID id,
-			@RequestParam String code,
+			@Lp @PathVariable ID id,
+			@Lp @RequestParam String code,
 			HttpServletResponse response) throws JsonProcessingException, BadEntityException {
 		getValidationStrategy().validateId(id);
 		log.debug("Verifying user ...");
@@ -176,6 +183,7 @@ public abstract class LemonController
 	 */
 	@PostMapping("/forgot-password")
 	@ResponseStatus(HttpStatus.NO_CONTENT)
+	@LogInteraction
 	public void forgotPassword(@RequestParam String email) {
 
 		log.debug("Received forgot password request for: " + email);
@@ -188,8 +196,9 @@ public abstract class LemonController
 	 */
 	@PostMapping("/reset-password")
 	@ResponseBody
+	@LogInteraction
 	public ResponseEntity<String> resetPassword(
-			@RequestBody ResetPasswordForm form,
+			@Lp @RequestBody ResetPasswordForm form,
 			HttpServletResponse response) throws JsonProcessingException, BadEntityException {
 
 		log.debug("Resetting password ... ");
@@ -206,6 +215,7 @@ public abstract class LemonController
 	 */
 	@PostMapping("/users/fetch-by-email")
 	@ResponseBody
+	@LogInteraction
 	public ResponseEntity<String> fetchUserByEmail(@RequestParam String email) throws JsonProcessingException, BadEntityException {
 
 		log.debug("Fetching user by email: " + email);
@@ -266,8 +276,9 @@ public abstract class LemonController
 	 */
 	@PostMapping("/users/{id}/password")
 	@ResponseStatus(HttpStatus.NO_CONTENT)
-	public void changePassword(@PathVariable("id") U user,
-			@RequestBody ChangePasswordForm changePasswordForm,
+	@LogInteraction
+	public void changePassword(@Lp @PathVariable("id") U user,
+			@Lp @RequestBody ChangePasswordForm changePasswordForm,
 			HttpServletResponse response) {
 
 		log.debug("Changing password ... ");
@@ -282,6 +293,7 @@ public abstract class LemonController
 	 */
 	@PostMapping("/users/{id}/email-change-request")
 	@ResponseStatus(HttpStatus.NO_CONTENT)
+	@LogInteraction
 	public void requestEmailChange(@PathVariable("id") ID userId,
 								   @RequestBody RequestEmailChangeForm emailChangeForm) {
 
@@ -295,9 +307,10 @@ public abstract class LemonController
 	 */
 	@PostMapping("/users/{userId}/email")
 	@ResponseBody
+	@LogInteraction
 	public ResponseEntity<String> changeEmail(
-			@PathVariable ID userId,
-			@RequestParam String code,
+			@Lp @PathVariable ID userId,
+			@Lp @RequestParam String code,
 			HttpServletResponse response) throws JsonProcessingException, BadEntityException {
 
 		log.debug("Changing email of user ...");
@@ -315,10 +328,10 @@ public abstract class LemonController
 	 */
 	@PostMapping("/fetch-new-auth-token")
 	@ResponseBody
+	@LogInteraction
 	public Map<String, String> fetchNewToken(
 			@RequestParam Optional<Long> expirationMillis,
-			@RequestParam Optional<String> username,
-			HttpServletResponse response) {
+			@RequestParam Optional<String> username) {
 
 		log.debug("Fetching a new token ... ");
 		return LecUtils.mapOf("token", getService().fetchNewToken(expirationMillis, username));
@@ -330,6 +343,7 @@ public abstract class LemonController
 	 */
 	@GetMapping("/fetch-full-token")
 	@ResponseBody
+	@LogInteraction
 	public Map<String, String> fetchFullToken(@RequestHeader(HttpHeaders.AUTHORIZATION) String authHeader) {
 
 		log.debug("Fetching a micro token");
@@ -340,6 +354,7 @@ public abstract class LemonController
 	/**
 	 * returns the current user and puts a new authorization token in the response
 	 */
+	@LogInteraction(Severity.TRACE)
 	protected void addAuthHeader(HttpServletResponse response, U saved) {
 		LemonUtils.login(saved);
 		LemonUserDto currentUser = LecwUtils.currentUser();

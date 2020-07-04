@@ -1,7 +1,7 @@
 package com.github.vincemann.springrapid.core.config;
 
 import com.github.vincemann.springrapid.core.controller.DtoClassLocator;
-import com.github.vincemann.springrapid.core.controller.ExtendableDtoClassLocator;
+import com.github.vincemann.springrapid.core.controller.DelegatingDtoClassLocator;
 import com.github.vincemann.springrapid.core.controller.RapidDtoClassLocator;
 import com.github.vincemann.springrapid.core.controller.owner.DelegatingOwnerLocator;
 import com.github.vincemann.springrapid.core.controller.owner.OwnerLocator;
@@ -74,8 +74,8 @@ public class RapidControllerAutoConfiguration {
     @Bean
     @ConditionalOnMissingBean(name = "extendableDtoClassLocator")
     @Scope(SCOPE_PROTOTYPE)
-    public ExtendableDtoClassLocator extendableDtoClassLocator(DtoClassLocator globalLocator){
-        return new ExtendableDtoClassLocator(globalLocator);
+    public DelegatingDtoClassLocator extendableDtoClassLocator(DtoClassLocator globalLocator){
+        return new DelegatingDtoClassLocator(globalLocator);
     }
 
 

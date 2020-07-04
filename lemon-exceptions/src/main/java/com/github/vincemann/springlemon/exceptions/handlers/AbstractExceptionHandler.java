@@ -2,6 +2,8 @@ package com.github.vincemann.springlemon.exceptions.handlers;
 
 import java.util.Collection;
 
+import com.github.vincemann.aoplog.api.AopLoggable;
+import com.github.vincemann.aoplog.api.LogInteraction;
 import com.github.vincemann.springlemon.exceptions.ErrorResponse;
 import com.github.vincemann.springlemon.exceptions.LemonFieldError;
 import com.github.vincemann.springlemon.exceptions.util.LexUtils;
@@ -12,7 +14,7 @@ import org.springframework.http.HttpStatus;
 /**
  * Extend this to code an exception handler
  */
-public abstract class AbstractExceptionHandler<T extends Throwable> {
+public abstract class AbstractExceptionHandler<T extends Throwable> implements AopLoggable {
 	
 	protected final Log log = LogFactory.getLog(this.getClass());
 	
@@ -42,6 +44,7 @@ public abstract class AbstractExceptionHandler<T extends Throwable> {
 		return null;
 	}
 
+	@LogInteraction
 	public ErrorResponse getErrorResponse(T ex) {
     	
 		ErrorResponse errorResponse = new ErrorResponse();

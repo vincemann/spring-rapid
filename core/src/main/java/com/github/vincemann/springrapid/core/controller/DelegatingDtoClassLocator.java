@@ -11,38 +11,38 @@ import java.util.Optional;
 
 /**
  * Every controller has one. -> scope = Prototype.
- * Can have {@link this#localLocators}, that will be called before {@link this#globalLocator}.
+ * Can have {@link this#localDelegates}, that will be called before {@link this#globalDelegate}.
  */
 //@LogInteraction
-public class ExtendableDtoClassLocator {
+public class DelegatingDtoClassLocator {
     private DtoMappingContext context;
-    private List<LocalDtoClassLocator> localLocators = new ArrayList<>();
+    private List<LocalDtoClassLocator> localDelegates = new ArrayList<>();
 
-    public ExtendableDtoClassLocator(DtoClassLocator globalLocator) {
-        this.globalLocator = globalLocator;
+    public DelegatingDtoClassLocator(DtoClassLocator globalDelegate) {
+        this.globalDelegate = globalDelegate;
     }
 
-    private DtoClassLocator globalLocator;
+    private DtoClassLocator globalDelegate;
 
 //    //@LogInteraction
     public Class<?> find(DtoMappingInfo info){
         Assert.notNull(context,"Context must be initialized");
         //local
-        Optional<LocalDtoClassLocator> addOn = localLocators.stream()
+        Optional<LocalDtoClassLocator> locator = localDelegates.stream()
                 .filter(a -> a.supports(info))
                 .findFirst();
-        if (addOn.isPresent()){
-            return addOn.get().find(info);
+        if (locator.isPresent()){
+            return locator.get().find(info);
         }else {
             //global
-            return globalLocator.find(info,context);
+            return globalDelegate.find(info,context);
         }
     }
 
     public void registerLocalLocator(LocalDtoClassLocator locator){
         Assert.notNull(context);
         locator.setContext(context);
-        localLocators.add(locator);
+        localDelegates.add(locator);
     }
 
     protected DtoMappingContext getContext() {

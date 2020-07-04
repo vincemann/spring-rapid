@@ -1,12 +1,16 @@
 package com.github.vincemann.springlemon.auth.security.service;
 
+import com.github.vincemann.aoplog.Severity;
+import com.github.vincemann.aoplog.api.AopLoggable;
+import com.github.vincemann.aoplog.api.LogInteraction;
 import com.nimbusds.jwt.JWTClaimsSet;
 import com.github.vincemann.springrapid.core.slicing.components.ServiceComponent;
 
 import java.util.Map;
 
 @ServiceComponent
-public interface LemonTokenService {
+@LogInteraction(Severity.TRACE)
+public interface LemonTokenService extends AopLoggable {
 
 	String LEMON_IAT = "lemon-iat";
 

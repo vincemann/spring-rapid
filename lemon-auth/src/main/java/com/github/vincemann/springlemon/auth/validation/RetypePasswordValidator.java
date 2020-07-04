@@ -1,5 +1,7 @@
 package com.github.vincemann.springlemon.auth.validation;
 
+import com.github.vincemann.aoplog.api.AopLoggable;
+import com.github.vincemann.aoplog.api.LogInteraction;
 import com.github.vincemann.springrapid.core.slicing.components.ServiceComponent;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -18,10 +20,11 @@ import java.util.Objects;
  */
 @ServiceComponent
 public class RetypePasswordValidator
-implements ConstraintValidator<RetypePassword, RetypePasswordForm> {
+implements ConstraintValidator<RetypePassword, RetypePasswordForm> , AopLoggable {
 	
 	private static final Log log = LogFactory.getLog(RetypePasswordValidator.class);
 
+	@LogInteraction
 	@Override
 	public boolean isValid(RetypePasswordForm retypePasswordForm,
 		ConstraintValidatorContext context) {

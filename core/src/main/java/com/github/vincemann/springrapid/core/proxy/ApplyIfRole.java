@@ -1,7 +1,5 @@
 package com.github.vincemann.springrapid.core.proxy;
 
-import org.springframework.core.annotation.AliasFor;
-
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -13,8 +11,6 @@ public @interface ApplyIfRole {
 
     String[] isNot() default {};
     String[] is() default {};
-    @AliasFor("is")
-    String[] value() default {};
 
     /**
      * Security Context Authentication is null and there are no required roles, call PluginMethod yes or no?
