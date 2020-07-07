@@ -1,5 +1,6 @@
 package com.github.vincemann.springlemon.demo.controllers;
 
+import com.github.vincemann.aoplog.api.AopLoggable;
 import com.github.vincemann.springlemon.auth.controller.LemonController;
 import com.github.vincemann.springlemon.auth.controller.LemonDtoEndpoint;
 import com.github.vincemann.springlemon.auth.controller.LemonDtoMappingContextBuilder;
@@ -16,7 +17,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 
 @Controller
 @RequestMapping(MyUserController.BASE_URI)
-public class MyUserController extends LemonController<User, Long> {
+public class MyUserController extends LemonController<User, Long>  {
 
     public static final String BASE_URI = "/api/core";
 

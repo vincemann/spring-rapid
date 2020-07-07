@@ -2,6 +2,7 @@ package com.github.vincemann.springlemon.auth.controller;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.github.vincemann.aoplog.Severity;
+import com.github.vincemann.aoplog.api.AopLoggable;
 import com.github.vincemann.aoplog.api.LogInteraction;
 import com.github.vincemann.aoplog.api.Lp;
 import com.github.vincemann.springlemon.auth.domain.AbstractUser;
@@ -29,6 +30,7 @@ import com.github.vincemann.springrapid.core.controller.RapidController;
 import com.github.vincemann.springrapid.core.service.exception.BadEntityException;
 import com.github.vincemann.springrapid.core.service.exception.EntityNotFoundException;
 import com.github.vincemann.springrapid.core.slicing.components.WebComponent;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -52,11 +54,10 @@ import java.util.Optional;
  *
  */
 @WebComponent
+@Slf4j
 public abstract class LemonController
 	<U extends AbstractUser<ID>, ID extends Serializable>
-			extends RapidController<U,ID, LemonService<U, ID,?>> {
-
-	private static final Log log = LogFactory.getLog(LemonController.class);
+			extends RapidController<U,ID, LemonService<U, ID,?>>  {
 
     private long jwtExpirationMillis;
 
@@ -78,6 +79,7 @@ public abstract class LemonController
 	 */
 	@GetMapping("/ping")
 	@ResponseStatus(HttpStatus.NO_CONTENT)
+	@LogInteraction
 	public void ping() {
 
 		log.debug("Received a ping");
