@@ -27,7 +27,6 @@ import java.util.Optional;
 
 @Validated
 @ServiceComponent
-@LogInteraction
 @LogException
 public interface LemonService<U extends AbstractUser<ID>, ID extends Serializable, R extends AbstractUserRepository<U,ID>>
         extends CrudService<U,ID, R>, AopLoggable {
@@ -52,6 +51,6 @@ public interface LemonService<U extends AbstractUser<ID>, ID extends Serializabl
     public void addAuthHeader(HttpServletResponse response, String username, Long expirationMillis);
     @Validated(UserUtils.UpdateValidation.class)
     @Override
-    U update(U entity, Boolean full) throws EntityNotFoundException, BadEntityException, BadEntityException;
+    U update(U entity, Boolean full) throws EntityNotFoundException,  BadEntityException;
 //    public U updateUser(U user, @Valid U updatedUser) throws BadEntityException, EntityNotFoundException;
 }
