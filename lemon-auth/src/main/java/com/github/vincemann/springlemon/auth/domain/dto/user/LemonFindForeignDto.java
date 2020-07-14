@@ -11,6 +11,6 @@ import lombok.ToString;
 @ToString(callSuper = true)
 @NoArgsConstructor
 //can only see id
-public class LemonFetchForeignByEmailDto extends IdentifiableEntityImpl<String> {
+public class LemonFindForeignDto extends IdentifiableEntityImpl<String> {
 
 }

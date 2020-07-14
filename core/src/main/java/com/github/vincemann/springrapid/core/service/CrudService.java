@@ -21,7 +21,7 @@ import java.util.Set;
  */
 @ServiceComponent
 @LogInteraction
-@LogConfig(ignoreGetters = true,ignoreSetters = true)
+@LogConfig(ignoreGetters = true,ignoreSetters = true,logAllChildrenMethods = true)
 public interface CrudService
         <
                 E extends IdentifiableEntity<Id>,

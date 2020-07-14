@@ -72,7 +72,7 @@ public abstract class RapidController
                 Id extends Serializable,
                 S extends CrudService<E, Id, ?>
                 >
-        implements ApplicationListener<ContextRefreshedEvent>, InitializingBean, AopLoggable {
+        implements ApplicationListener<ContextRefreshedEvent>, InitializingBean/*, AopLoggable*/ {
 
     public static final String FIND_METHOD_NAME = "get";
     public static final String CREATE_METHOD_NAME = "create";
@@ -117,7 +117,7 @@ public abstract class RapidController
     @Autowired
     public RapidController() {
         this.dtoMappingContext = provideDtoMappingContext();
-        log.debug("DtoMappingContext: " + dtoMappingContext);
+        log.debug("DtoMappingContext: " + dtoMappingContext.toPrettyString());
         initUrls();
     }
 
@@ -301,7 +301,7 @@ public abstract class RapidController
                 .build();
     }
 
-    @LogInteraction
+//    @LogInteraction
     public ResponseEntity<String> findAll(@Lp HttpServletRequest request, HttpServletResponse response) throws JsonProcessingException {
         try {
             beforeFindAll(request, response);
@@ -322,7 +322,7 @@ public abstract class RapidController
     }
 
 
-    @LogInteraction
+//    @LogInteraction
     public ResponseEntity<String> find(@Lp HttpServletRequest request, HttpServletResponse response) throws IdFetchingException, EntityNotFoundException, BadEntityException, JsonProcessingException {
         Id id = idIdFetchingStrategy.fetchId(request);
         log.debug("id fetched from request: " + id);
@@ -343,7 +343,7 @@ public abstract class RapidController
 
     }
 
-    @LogInteraction
+//    @LogInteraction
     public ResponseEntity<String> create(@Lp HttpServletRequest request, HttpServletResponse response) throws BadEntityException, EntityNotFoundException, IOException {
         String json = readBody(request);
         Class<?> dtoClass = createDtoClass(RapidDtoEndpoint.CREATE, Direction.REQUEST, null);
@@ -361,7 +361,7 @@ public abstract class RapidController
         return ok(jsonMapper.writeValueAsString(resultDto));
     }
 
-    @LogInteraction
+//    @LogInteraction
     public ResponseEntity<String> update(@Lp HttpServletRequest request, HttpServletResponse response) throws EntityNotFoundException, BadEntityException, IdFetchingException, JsonPatchException, IOException {
         String patchString = readBody(request);
         log.debug("patchString: " + patchString);
@@ -395,7 +395,7 @@ public abstract class RapidController
     }
 
 
-    @LogInteraction
+//    @LogInteraction
     public ResponseEntity<?> delete(@Lp HttpServletRequest request, HttpServletResponse response) throws IdFetchingException, BadEntityException, EntityNotFoundException, ConstraintViolationException {
         Id id = idIdFetchingStrategy.fetchId(request);
         log.debug("id fetched from request: " + id);

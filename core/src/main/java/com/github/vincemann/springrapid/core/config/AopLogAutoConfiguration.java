@@ -14,7 +14,7 @@ import org.springframework.context.annotation.EnableAspectJAutoProxy;
 import java.util.Set;
 
 @Configuration
-@EnableAspectJAutoProxy
+@EnableAspectJAutoProxy(proxyTargetClass = true)
 @Slf4j
 public class AopLogAutoConfiguration {
 

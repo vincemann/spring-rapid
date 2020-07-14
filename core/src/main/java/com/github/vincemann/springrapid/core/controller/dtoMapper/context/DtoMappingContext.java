@@ -21,4 +21,13 @@ public class DtoMappingContext{
     DtoMappingContext() {
     }
 
+
+    public String toPrettyString() {
+        StringBuilder sb = new StringBuilder("DtoMappingContext{mappings:");
+        mappingEntries.forEach((k,v) ->
+                sb.append("info: ").append(k).append("-> ").append(v.getSimpleName()).append(System.lineSeparator())
+        );
+        sb.append("}");
+        return sb.toString();
+    }
 }
