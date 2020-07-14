@@ -310,7 +310,7 @@ public abstract class RapidController
             Collection<Object> dtos = new HashSet<>();
             for (E e : foundEntities) {
                 dtos.add(dtoMapper.mapToDto(e,
-                        createDtoClass(RapidDtoEndpoint.FIND_ALL, Direction.RESPONSE, null)));
+                        createDtoClass(RapidDtoEndpoint.FIND_ALL, Direction.RESPONSE, e)));
             }
             afterFindAll(dtos, foundEntities, request, response);
             String json = jsonMapper.writeValueAsString(dtos);
@@ -356,7 +356,7 @@ public abstract class RapidController
         logSecurityContext();
         E savedEntity = serviceCreate(entity);
         Object resultDto = dtoMapper.mapToDto(savedEntity,
-                createDtoClass(RapidDtoEndpoint.CREATE, Direction.RESPONSE, null));
+                createDtoClass(RapidDtoEndpoint.CREATE, Direction.RESPONSE, savedEntity));
         afterCreate(resultDto, entity, request, response);
         return ok(jsonMapper.writeValueAsString(resultDto));
     }
@@ -383,7 +383,7 @@ public abstract class RapidController
         logSecurityContext();
         E updated = serviceUpdate(merged, true);
         //no idea why casting is necessary here?
-        Class<?> resultDtoClass = createDtoClass(RapidDtoEndpoint.UPDATE, Direction.RESPONSE, saved);
+        Class<?> resultDtoClass = createDtoClass(RapidDtoEndpoint.UPDATE, Direction.RESPONSE, updated);
         Object resultDto = dtoMapper.mapToDto(updated, resultDtoClass);
         afterUpdate(resultDto, updated, request, response);
         return ok(jsonMapper.writeValueAsString(resultDto));
