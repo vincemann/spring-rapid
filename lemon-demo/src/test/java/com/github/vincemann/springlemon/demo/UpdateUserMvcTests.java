@@ -74,7 +74,7 @@ public class UpdateUserMvcTests extends AbstractMvcTests
 	 * @throws Exception 
 	 */
 	@Test
-    public void testUpdateSelfWithInvalidPatch_should400() throws Exception {
+    public void testUpdateWithUnknownPathVariables_should400() throws Exception {
 
 		mvc.perform(update(userPatch,UNVERIFIED_USER_ID)
 				.header(HttpHeaders.AUTHORIZATION, tokens.get(UNVERIFIED_USER_ID)))
@@ -137,6 +137,21 @@ public class UpdateUserMvcTests extends AbstractMvcTests
 //				.content(userPatch))
 				.andExpect(status().is(404));
     }
+
+
+
+//	/**
+//	 * Providing an unknown id should return 404.
+//	 */
+//	@Test
+//	public void testUpdateOwnRolesAsNonAdmin_should403() throws Exception {
+//
+//		mvc.perform(update(userPatch,99L)
+////				.contentType(MediaType.APPLICATION_JSON)
+//				.header(HttpHeaders.AUTHORIZATION, tokens.get(ADMIN_ID)))
+////				.content(userPatch))
+//				.andExpect(status().is(404));
+//	}
 	
 	/**
 	 * A non-admin trying to update the name and roles of another user should throw exception

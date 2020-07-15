@@ -17,7 +17,7 @@ import java.util.Set;
  * Represents a parent of a bidirectional relationship (i.e. Entity with @OneToMany typically would implement this interface).
  * The Child of the relationship should implement {@link BiDirChild} and annotate its parents with {@link BiDirParentEntity}.
  */
-public interface BiDirParent extends  DirParent {
+public interface  BiDirParent extends  DirParent {
     Logger log = LoggerFactory.getLogger(BiDirParent.class);
 
 //    Map<Class,Field[]> biDirChildrenCollectionFieldsCache = new HashMap<>();

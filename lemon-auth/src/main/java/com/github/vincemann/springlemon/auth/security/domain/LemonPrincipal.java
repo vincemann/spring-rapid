@@ -1,10 +1,7 @@
 package com.github.vincemann.springlemon.auth.security.domain;
 
 import com.github.vincemann.springlemon.auth.domain.dto.user.LemonUserDto;
-import lombok.AccessLevel;
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 import org.springframework.security.core.CredentialsContainer;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -18,7 +15,7 @@ import java.util.stream.Collectors;
 /**
  * Spring Security Principal, implementing both OidcUser, UserDetails
  */
-@Getter @Setter @RequiredArgsConstructor
+@Getter @Setter @RequiredArgsConstructor @ToString
 public class LemonPrincipal implements UserDetails, CredentialsContainer {
 
 	private static final long serialVersionUID = -7849730155307434535L;

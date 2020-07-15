@@ -11,6 +11,7 @@ import com.github.vincemann.springlemon.auth.validation.UniqueEmail;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.ToString;
 
 import javax.persistence.*;
 import java.io.Serializable;
@@ -26,6 +27,7 @@ import java.util.Set;
 @Getter @Setter
 @MappedSuperclass
 @AllArgsConstructor
+@ToString(callSuper = true)
 public class AbstractUser<ID extends Serializable>
 	extends LemonEntity<ID>
 	implements LemonUser<ID> {
@@ -72,13 +74,13 @@ public class AbstractUser<ID extends Serializable>
 	}
 
 	
-	/**
-	 * A convenient toString method
-	 */
-	@Override
-	public String toString() {
-		return "AbstractUser [id= "+getId()+"email=" + email + ", roles=" + roles + "]";
-	}
+//	/**
+//	 * A convenient toString method
+//	 */
+//	@Override
+//	public String toString() {
+//		return "AbstractUser [id= "+getId()+"email=" + email + ", roles=" + roles + "]";
+//	}
 
 
 	/**
