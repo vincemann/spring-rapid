@@ -117,7 +117,10 @@ public abstract class RapidController
     @Autowired
     public RapidController() {
         this.dtoMappingContext = provideDtoMappingContext();
-        log.debug("DtoMappingContext: " + dtoMappingContext.toPrettyString());
+        if (dtoMappingContext!=null)
+            log.debug("DtoMappingContext: " + dtoMappingContext.toPrettyString());
+        else
+            log.debug("DtoMappingContext: " + dtoMappingContext);
         initUrls();
     }
 

@@ -11,6 +11,7 @@ import org.springframework.util.Assert;
 import org.springframework.util.ReflectionUtils;
 
 import java.lang.reflect.Field;
+import java.lang.reflect.Modifier;
 import java.util.Map;
 import java.util.Set;
 
@@ -24,21 +25,23 @@ public class MergeUpdateStrategyImpl implements MergeUpdateStrategy {
     @Override
     public <E extends IdentifiableEntity<?>> E merge(E patch, E saved, Class<?> dtoClass) {
         ReflectionUtils.doWithFields(dtoClass,dtoField -> {
-            Class<? extends IdentifiableEntity> entityClass = patch.getClass();
-            String propertyName = transform(dtoField.getName());
+            if (!Modifier.isStatic(dtoField.getModifiers())) {
+                Class<? extends IdentifiableEntity> entityClass = patch.getClass();
+                String propertyName = transform(dtoField.getName());
 
-            Field entityField = ReflectionUtils.findField(entityClass, propertyName);
-            if (entityField==null){
-                if (strict) {
-                    throw new IllegalArgumentException("Unknown Property: " +propertyName);
-                }else {
-                    log.warn("Dto property: " + propertyName + " is not known in entity. skipping");
-                    return;
+                Field entityField = ReflectionUtils.findField(entityClass, propertyName);
+                if (entityField == null) {
+                    if (strict) {
+                        throw new IllegalArgumentException("Unknown Property: " + propertyName);
+                    } else {
+                        log.warn("Dto property: " + propertyName + " is not known in entity. skipping");
+                        return;
+                    }
                 }
+                ReflectionUtils.makeAccessible(entityField);
+                Object patchedValue = entityField.get(patch);
+                entityField.set(saved, patchedValue);
             }
-            ReflectionUtils.makeAccessible(entityField);
-            Object patchedValue = entityField.get(patch);
-            entityField.set(saved,patchedValue);
         });
         return saved;
     }

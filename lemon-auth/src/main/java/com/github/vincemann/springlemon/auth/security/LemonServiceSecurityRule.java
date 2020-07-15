@@ -80,20 +80,23 @@ public class LemonServiceSecurityRule extends ServiceSecurityRule {
         RapidUtils.checkPresent(byId,update.getId(),update.getClass());
         LemonUserDto currentUser = LecwUtils.currentUser();
         RapidUtils.checkNotNull(currentUser,"Authenticated user not found");
-        adjustRoles(byId.get(),update,currentUser);
+        checkRoleChangingPermissions(byId.get(),update,currentUser);
     }
 
     /**
      * Check current Users role and decide what role adjustments he can make.
      */
-    protected void adjustRoles(AbstractUser<?> old, AbstractUser<?> newUser, LemonUserDto currentUser) {
+    protected void checkRoleChangingPermissions(AbstractUser<?> old, AbstractUser<?> newUser, LemonUserDto currentUser) {
         // Good admin tries to edit
         if (currentUser.isGoodAdmin() &&
                 !currentUser.getId().equals(old.getId().toString())) {
             return;
         }else {
             //no update of roles possible
-            newUser.setRoles(old.getRoles());
+            if (!old.getRoles().equals(newUser.getRoles())){
+                throw new AccessDeniedException("Only Admin can update Roles");
+            }
+//            newUser.setRoles(old.getRoles());
         }
     }
 
