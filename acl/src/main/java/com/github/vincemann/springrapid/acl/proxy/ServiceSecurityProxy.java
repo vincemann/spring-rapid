@@ -4,10 +4,10 @@ import com.github.vincemann.springrapid.commons.Lists;
 import com.github.vincemann.springrapid.acl.proxy.rules.DontCallTargetMethod;
 import com.github.vincemann.springrapid.acl.proxy.rules.OverrideDefaultSecurityRule;
 import com.github.vincemann.springrapid.commons.NullableOptional;
-import com.github.vincemann.springrapid.core.proxy.CrudServiceExtensionProxy;
+import com.github.vincemann.springrapid.core.proxy.ServiceExtensionProxy;
 import com.github.vincemann.springrapid.core.service.CrudService;
 import com.github.vincemann.springrapid.acl.proxy.rules.ServiceSecurityRule;
-import com.github.vincemann.springrapid.acl.SecurityChecker;
+import com.github.vincemann.springrapid.acl.AclSecurityChecker;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
@@ -26,8 +26,10 @@ import java.util.List;
  *
  * Is created by {@link CrudServiceSecurityProxyFactory} or by {@link ConfigureProxies}.
  */
-public class CrudServiceSecurityProxy
-        extends CrudServiceExtensionProxy {
+public class ServiceSecurityProxy
+        extends ServiceExtensionProxy {
+
+
 
     @Getter
     @Setter
@@ -67,10 +69,10 @@ public class CrudServiceSecurityProxy
     private ServiceSecurityRule defaultSecurityRule;
     private State state;
 
-    protected CrudServiceSecurityProxy(CrudService service,
-                                    SecurityChecker securityChecker,
-                                    ServiceSecurityRule defaultSecurityRule,
-                                    ServiceSecurityRule... rules) {
+    protected ServiceSecurityProxy(CrudService service,
+                                   AclSecurityChecker securityChecker,
+                                   ServiceSecurityRule defaultSecurityRule,
+                                   ServiceSecurityRule... rules) {
         super(service);
         this.defaultSecurityRule = defaultSecurityRule;
         this.rules.addAll(Lists.newArrayList(rules));
@@ -86,7 +88,7 @@ public class CrudServiceSecurityProxy
     @Override
     protected Object proxy(Object target, Method method, Object[] args) throws Throwable {
         log.debug("SecurityProxy intercepting method: " + method.getName() + " of Class: " + AopTestUtils.getUltimateTargetObject(target).getClass());
-        state = State.create(getMethods().get(method.getName()), getService(),args);
+        state = State.create(getMethods().get(method.getName()), getProxied(),args);
 
         //todo replace logging with @LogInteraction after method names of rules are changed
         invokePreAuthorizeMethods();

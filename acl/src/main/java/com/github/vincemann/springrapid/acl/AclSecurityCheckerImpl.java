@@ -29,23 +29,23 @@ import java.util.stream.Collectors;
  * Copied an modified from:
  * https://gist.github.com/matteocedroni/b0e5a935127316603dfb
  *
- * DefaultImpl of {@link SecurityChecker}.
+ * DefaultImpl of {@link AclSecurityChecker}.
  * Uses {@link MethodSecurityExpressionHandler} for expression evaluation and {@link org.springframework.security.core.context.SecurityContext}
  * to get information about authenticated user.
  */
 @LogInteraction
 @LogException
 @LogConfig(ignoreGetters = true,ignoreSetters = true)
-public class DefaultSecurityChecker implements SecurityChecker,ApplicationContextAware {
+public class AclSecurityCheckerImpl implements AclSecurityChecker,ApplicationContextAware {
 
 
     private Method triggerCheckMethod;
     private SpelExpressionParser parser;
     private ApplicationContext applicationContext;
 
-    public DefaultSecurityChecker() {
+    public AclSecurityCheckerImpl() {
         try {
-            this.triggerCheckMethod = DefaultSecurityChecker.SecurityObject.class.getMethod("triggerCheck");
+            this.triggerCheckMethod = AclSecurityCheckerImpl.SecurityObject.class.getMethod("triggerCheck");
         } catch (NoSuchMethodException e) {
             log.error(e.getMessage(), e);
         }
@@ -110,7 +110,7 @@ public class DefaultSecurityChecker implements SecurityChecker,ApplicationContex
     public boolean checkExpression(String securityExpression) {
         logExpression(securityExpression);
 
-        DefaultSecurityChecker.SecurityObject securityObject = new DefaultSecurityChecker.SecurityObject();
+        AclSecurityCheckerImpl.SecurityObject securityObject = new AclSecurityCheckerImpl.SecurityObject();
         MethodSecurityExpressionHandler expressionHandler = applicationContext.getBean(MethodSecurityExpressionHandler.class);
         //gibt dem einfach nen gemockten Methodenaufruf und nen gemocktes securityObject rein
         EvaluationContext evaluationContext = expressionHandler.createEvaluationContext(

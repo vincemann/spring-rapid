@@ -2,10 +2,6 @@ package com.github.vincemann.springrapid.core.proxy;
 
 import com.github.vincemann.springrapid.commons.Lists;
 import com.github.vincemann.springrapid.core.model.IdentifiableEntityImpl;
-import com.github.vincemann.springrapid.core.proxy.ApplyIfRole;
-import com.github.vincemann.springrapid.core.proxy.CalledByProxy;
-import com.github.vincemann.springrapid.core.proxy.CrudServicePlugin;
-import com.github.vincemann.springrapid.core.proxy.CrudServicePluginProxy;
 import com.github.vincemann.springrapid.core.service.jpa.JPACrudService;
 import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
@@ -88,7 +84,7 @@ class CrudServicePluginProxyTest {
     //cant use mock auth template bc of cyclic dependency and maven test scope is not taken into consideration by intellij
     Authentication authenticationMock = Mockito.spy(Authentication.class);
     SecurityContext securityContextMock = Mockito.spy(SecurityContext.class);
-    CrudServicePluginProxy proxy;
+    ServicePluginProxy proxy;
     @Mock
     ExampleService service;
     @Mock
@@ -99,7 +95,7 @@ class CrudServicePluginProxyTest {
     @BeforeEach
     void setUp() {
         MockitoAnnotations.initMocks(this);
-        proxy = new CrudServicePluginProxy(service, Lists.newArrayList(plugin));
+        proxy = new ServicePluginProxy(service, Lists.newArrayList(plugin));
     }
 
     @Test

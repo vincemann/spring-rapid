@@ -1,6 +1,6 @@
 package com.github.vincemann.springrapid.acl.proxy;
 
-import com.github.vincemann.springrapid.acl.SecurityChecker;
+import com.github.vincemann.springrapid.acl.AclSecurityChecker;
 import com.github.vincemann.springrapid.acl.proxy.rules.DefaultServiceSecurityRule;
 import com.github.vincemann.springrapid.acl.proxy.rules.ServiceSecurityRule;
 import com.github.vincemann.springrapid.core.model.IdentifiableEntity;
@@ -14,10 +14,10 @@ import java.lang.reflect.Proxy;
 
 public class CrudServiceSecurityProxyFactory {
 
-    private SecurityChecker securityChecker;
+    private AclSecurityChecker securityChecker;
     private ServiceSecurityRule defaultServiceSecurityRule;
 
-    public CrudServiceSecurityProxyFactory(SecurityChecker securityChecker,
+    public CrudServiceSecurityProxyFactory(AclSecurityChecker securityChecker,
                                            @DefaultServiceSecurityRule ServiceSecurityRule defaultServiceSecurityRule
     ) {
         this.securityChecker = securityChecker;
@@ -32,7 +32,7 @@ public class CrudServiceSecurityProxyFactory {
         S proxyInstance = (S) Proxy.newProxyInstance(
                 unproxied.getClass().getClassLoader(),
                 ClassUtils.getAllInterfaces(unproxied.getClass()).toArray(new Class[0]),
-                new CrudServiceSecurityProxy(unproxied, securityChecker, defaultServiceSecurityRule,rules));
+                new ServiceSecurityProxy(unproxied, securityChecker, defaultServiceSecurityRule,rules));
         return proxyInstance;
     }
 }

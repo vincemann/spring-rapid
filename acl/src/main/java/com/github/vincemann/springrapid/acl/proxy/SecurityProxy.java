@@ -6,7 +6,7 @@ import com.github.vincemann.springrapid.core.proxy.CrudServicePlugin;
 import java.lang.annotation.*;
 
 /**
- * Represents a {@link CrudServiceSecurityProxy} in {@link ConfigureProxies}.
+ * Represents a {@link ServiceSecurityProxy} in {@link ConfigureProxies}.
  * @see Proxy
  */
 @Target(ElementType.TYPE)
