@@ -7,8 +7,16 @@
     <root level="INFO">
         <appender-ref ref="CONSOLE"/>
     </root>
-    <logger name="com.github.vincemann" level="DEBUG"/>
-    <logger name="com.naturalprogrammer.spring" level="DEBUG"/>
-    <logger name="org.springframework.security.acls" level="DEBUG"/>
-    <logger name="com.zaxxer.hikari" level="debug" additivity="false"/>
+    <logger name="com.github.vincemann" level="DEBUG" additivity="false">
+        <appender-ref ref="CONSOLE"/>
+    </logger>
+    <logger name="com.naturalprogrammer.spring" level="DEBUG" additivity="false">
+        <appender-ref ref="CONSOLE"/>
+    </logger>
+    <logger name="org.springframework.security.acls" level="DEBUG" additivity="false">
+        <appender-ref ref="CONSOLE"/>
+    </logger>
+    <logger name="com.zaxxer.hikari" level="debug" additivity="false">
+        <appender-ref ref="CONSOLE"/>
+    </logger>
 </configuration>

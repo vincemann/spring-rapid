@@ -25,13 +25,13 @@ spring:
             client-id: 548349525905412
             client-secret: 15a20c560c4c780dabdc0e637c02087a
 
-logging:
-  level:
-    root: INFO
-    org.springframework: INFO
-    org.springframework.security.oauth2.client: DEBUG
-    com.naturalprogrammer: DEBUG
-    #file: /home/vince/lemon.log
+#logging:
+#  level:
+#    root: INFO
+#    org.springframework: INFO
+#    org.springframework.security.oauth2.client: DEBUG
+#    com.naturalprogrammer: DEBUG
+#    #file: /home/vince/lemon.log
 
 lemon:
 
