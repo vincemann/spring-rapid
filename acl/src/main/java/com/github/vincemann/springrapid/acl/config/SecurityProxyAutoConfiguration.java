@@ -5,8 +5,8 @@ import com.github.vincemann.springrapid.acl.proxy.CrudServiceSecurityProxyFactor
 import com.github.vincemann.springrapid.acl.proxy.rules.DefaultCrudSecurityRule;
 import com.github.vincemann.springrapid.acl.proxy.rules.DefaultServiceSecurityRule;
 import com.github.vincemann.springrapid.acl.proxy.rules.ServiceSecurityRule;
-import com.github.vincemann.springrapid.acl.DefaultSecurityChecker;
-import com.github.vincemann.springrapid.acl.SecurityChecker;
+import com.github.vincemann.springrapid.acl.AclSecurityCheckerImpl;
+import com.github.vincemann.springrapid.acl.AclSecurityChecker;
 import com.github.vincemann.springrapid.core.slicing.config.ServiceConfig;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
@@ -35,9 +35,9 @@ public class SecurityProxyAutoConfiguration {
     }
 
     @Bean
-    @ConditionalOnMissingBean(SecurityChecker.class)
-    public SecurityChecker securityChecker(){
-        return new DefaultSecurityChecker();
+    @ConditionalOnMissingBean(AclSecurityChecker.class)
+    public AclSecurityChecker securityChecker(){
+        return new AclSecurityCheckerImpl();
     }
 
     @Bean

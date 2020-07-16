@@ -1,7 +1,8 @@
 package com.github.vincemann.springrapid.acl.proxy.rules;
 
 
-import com.github.vincemann.springrapid.acl.SecurityChecker;
+import com.github.vincemann.springrapid.acl.AclSecurityChecker;
+import com.github.vincemann.springrapid.acl.proxy.ServiceSecurityProxy;
 import com.github.vincemann.springrapid.core.proxy.CrudServicePlugin;
 import com.github.vincemann.springrapid.core.slicing.components.ServiceComponent;
 import lombok.Getter;
@@ -12,7 +13,7 @@ import lombok.NoArgsConstructor;
 @Getter
 @ServiceComponent
 /**
- * Base Class for Rules applied by {@link com.github.vincemann.springrapid.acl.proxy.CrudServiceSecurityProxy}.
+ * Base Class for Rules applied by {@link ServiceSecurityProxy}.
  * Naming Convention for defining hook methods:
  *
  * void onBeforeMyServiceMethod(all,args,in,service,method,Class<ServiceEntityType>)
@@ -28,7 +29,7 @@ public abstract class ServiceSecurityRule extends CrudServicePlugin{
     private String deletePermission = "DELETE";
     private String administrationPermission = "ADMINISTRATION";
 
-    private SecurityChecker securityChecker;
+    private AclSecurityChecker securityChecker;
 
     protected String getReadPermission() {
         return readPermission;
@@ -54,11 +55,11 @@ public abstract class ServiceSecurityRule extends CrudServicePlugin{
         this.deletePermission = deletePermission;
     }
 
-    protected SecurityChecker getSecurityChecker() {
+    protected AclSecurityChecker getSecurityChecker() {
         return securityChecker;
     }
 
-    public void setSecurityChecker(SecurityChecker securityChecker) {
+    public void setSecurityChecker(AclSecurityChecker securityChecker) {
         this.securityChecker = securityChecker;
     }
 }

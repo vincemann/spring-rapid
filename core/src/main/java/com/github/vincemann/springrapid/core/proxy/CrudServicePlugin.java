@@ -7,7 +7,7 @@ import com.github.vincemann.springrapid.core.slicing.components.ServiceComponent
 import java.io.Serializable;
 
 /**
- * Represents a Plugin accepted by {@link CrudServicePluginProxy}.
+ * Represents a Plugin accepted by {@link ServicePluginProxy}.
  * Define hook methods as follows:
  *
  * void onBeforeServiceMethod(all,args,of,service,method)

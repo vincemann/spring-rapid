@@ -3,6 +3,7 @@ package com.github.vincemann.springrapid.acl;
 import com.github.vincemann.aoplog.api.AopLoggable;
 import com.github.vincemann.aoplog.api.LogException;
 import com.github.vincemann.aoplog.api.LogInteraction;
+import com.github.vincemann.springrapid.core.service.SecurityChecker;
 import com.github.vincemann.springrapid.core.slicing.components.ServiceComponent;
 import com.github.vincemann.springrapid.core.model.IdentifiableEntity;
 import org.springframework.security.access.AccessDeniedException;
@@ -17,7 +18,7 @@ import java.util.Set;
 @LogInteraction
 @LogException
 @ServiceComponent
-public interface SecurityChecker extends AopLoggable {
+public interface AclSecurityChecker extends SecurityChecker, AopLoggable {
 
     public boolean checkExpression(String securityExpression);
 
@@ -33,10 +34,7 @@ public interface SecurityChecker extends AopLoggable {
     public <E extends IdentifiableEntity<? extends Serializable>, C extends Collection<E>>
     C filter(C toFilter, String permission);
 
-    /**
-     * Checks whether currently logged in user is authenticated.
-     */
-    public void checkAuthenticated() throws AccessDeniedException;;
+
 
     /**
      * Checks if authenticated User has permission over Entity with given id & class
@@ -46,9 +44,5 @@ public interface SecurityChecker extends AopLoggable {
      */
     public void checkPermission(Serializable id,Class<?> clazz,String permission) throws AccessDeniedException;
 
-    /**
-     * Check if authenticated user has @role
-     * @param role
-     */
-    public void checkRole(String role) throws AccessDeniedException;;
+
 }

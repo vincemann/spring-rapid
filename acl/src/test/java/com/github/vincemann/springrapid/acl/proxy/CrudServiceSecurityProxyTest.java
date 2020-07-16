@@ -4,7 +4,7 @@ import com.github.vincemann.springrapid.commons.Lists;
 import com.github.vincemann.springrapid.acl.proxy.rules.DontCallTargetMethod;
 import com.github.vincemann.springrapid.acl.proxy.rules.OverrideDefaultSecurityRule;
 import com.github.vincemann.springrapid.acl.proxy.rules.ServiceSecurityRule;
-import com.github.vincemann.springrapid.acl.SecurityChecker;
+import com.github.vincemann.springrapid.acl.AclSecurityChecker;
 import com.github.vincemann.springrapid.core.model.IdentifiableEntityImpl;
 import com.github.vincemann.springrapid.core.proxy.CalledByProxy;
 import com.github.vincemann.springrapid.core.service.jpa.JPACrudService;
@@ -129,11 +129,11 @@ class CrudServiceSecurityProxyTest {
         }
     }
 
-    CrudServiceSecurityProxy proxy;
+    ServiceSecurityProxy proxy;
     @Mock
     ExampleService service;
     @Mock
-    SecurityChecker securityChecker;
+    AclSecurityChecker securityChecker;
     @Mock
     ExampleRule rule;
     @Mock
@@ -143,7 +143,7 @@ class CrudServiceSecurityProxyTest {
 
     @BeforeEach
     void setUp() {
-        proxy = new CrudServiceSecurityProxy(service,securityChecker,defaultRule,rule);
+        proxy = new ServiceSecurityProxy(service,securityChecker,defaultRule,rule);
     }
 
     @Test
