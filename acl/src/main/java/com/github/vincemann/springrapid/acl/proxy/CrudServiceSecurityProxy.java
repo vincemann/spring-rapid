@@ -88,6 +88,7 @@ public class CrudServiceSecurityProxy
         log.debug("SecurityProxy intercepting method: " + method.getName() + " of Class: " + AopTestUtils.getUltimateTargetObject(target).getClass());
         state = State.create(getMethods().get(method.getName()), getService(),args);
 
+        //todo replace logging with @LogInteraction after method names of rules are changed
         invokePreAuthorizeMethods();
         if (!state.overrideDefaultPreAuthMethod) {
             log.debug("Applying preAuthorize method of default SecurityRule: " + defaultSecurityRule.getClass().getSimpleName());
