@@ -5,7 +5,7 @@ import com.github.vincemann.springlemon.auth.security.LemonAclPlugin;
 import com.github.vincemann.springlemon.auth.service.LemonService;
 import com.github.vincemann.springlemon.auth.security.LemonServiceSecurityRule;
 import com.github.vincemann.springrapid.acl.plugin.CleanUpAclPlugin;
-import com.github.vincemann.springrapid.acl.proxy.CrudServiceSecurityProxyFactory;
+import com.github.vincemann.springrapid.acl.proxy.SecurityServiceProxyFactory;
 import com.github.vincemann.springrapid.acl.service.AclManaging;
 import com.github.vincemann.springrapid.acl.service.LocalPermissionService;
 import com.github.vincemann.springrapid.acl.service.MockAuthService;
@@ -23,7 +23,7 @@ import org.springframework.security.acls.model.MutableAclService;
 public class LemonServiceAutoConfiguration {
 
     @Autowired
-    CrudServiceSecurityProxyFactory securityProxyFactory;
+    SecurityServiceProxyFactory securityProxyFactory;
 
     @Autowired
     LocalPermissionService permissionService;

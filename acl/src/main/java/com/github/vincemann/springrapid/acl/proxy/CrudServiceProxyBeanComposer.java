@@ -1,10 +1,9 @@
 package com.github.vincemann.springrapid.acl.proxy;
 
 import com.github.vincemann.springrapid.commons.Lists;
-import com.github.vincemann.springrapid.acl.proxy.rules.ServiceSecurityRule;
 import com.github.vincemann.springrapid.core.proxy.ServiceExtensionProxyFactory;
 import com.github.vincemann.springrapid.core.service.CrudService;
-import com.github.vincemann.springrapid.core.proxy.CrudServicePlugin;
+import com.github.vincemann.springrapid.core.proxy.ServiceExtension;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,10 +32,10 @@ import java.util.Optional;
 public class CrudServiceProxyBeanComposer implements BeanPostProcessor, ApplicationContextAware {
 
     private DefaultListableBeanFactory beanFactory;
-    private CrudServiceSecurityProxyFactory securityProxyFactory;
+    private SecurityServiceProxyFactory securityProxyFactory;
 
     @Autowired
-    public CrudServiceProxyBeanComposer(CrudServiceSecurityProxyFactory securityProxyFactory) {
+    public CrudServiceProxyBeanComposer(SecurityServiceProxyFactory securityProxyFactory) {
         this.securityProxyFactory = securityProxyFactory;
     }
 
@@ -80,7 +79,7 @@ public class CrudServiceProxyBeanComposer implements BeanPostProcessor, Applicat
                     proxiedBean = lastProxiedBean;
                 }
                 CrudService proxyBean = ServiceExtensionProxyFactory.create(proxiedBean,
-                        resolvePlugins(proxy.plugins()).toArray(new CrudServicePlugin[0]));
+                        resolvePlugins(proxy.plugins()).toArray(new ServiceExtension[0]));
 
                 log.trace("creating proxyBean : " + proxyBean);
                 log.trace("Registering beanDef of proxyBean first: " + proxyBeanDef);
@@ -97,15 +96,15 @@ public class CrudServiceProxyBeanComposer implements BeanPostProcessor, Applicat
                     }
                     primaryBeanRegistered=true;
                 }
-                List<Class<? extends CrudServicePlugin>> pluginTypes = Lists.newArrayList(securityProxy.plugins());
+                List<Class<? extends ServiceExtension>> pluginTypes = Lists.newArrayList(securityProxy.plugins());
                 if(!pluginTypes.isEmpty()){
-                    lastProxiedBean = ServiceExtensionProxyFactory.create(lastProxiedBean, resolvePlugins(securityProxy.plugins()).toArray(new CrudServicePlugin[0]));
+                    lastProxiedBean = ServiceExtensionProxyFactory.create(lastProxiedBean, resolvePlugins(securityProxy.plugins()).toArray(new ServiceExtension[0]));
                 }
                 GenericBeanDefinition beanDef
                         = createBeanDef(securityProxy.qualifiers(), securityProxy.primary(), ((Class<? extends CrudService>) serviceInterface));
                 String proxyBeanName = resolveProxyName(securityProxy.qualifiers(),securityProxy.primary(),securityProxy.name(),unwrappedBean.getClass());
                 CrudService securityProxyBean = securityProxyFactory.create(lastProxiedBean,
-                        (resolveRules(securityProxy).toArray(new ServiceSecurityRule[0])));
+                        (resolveRules(securityProxy).toArray(new SecurityServiceExtension[0])));
                 log.debug("Creating proxyBean with name: " + proxyBeanName);
                 log.debug("Creating security proxyBean : " + securityProxyBean);
                 log.debug("Registering beanDef of securityProxyBean first: " + beanDef);
@@ -157,11 +156,11 @@ public class CrudServiceProxyBeanComposer implements BeanPostProcessor, Applicat
         return name;
     }
 
-    private List<CrudServicePlugin> resolvePlugins(Class<? extends CrudServicePlugin>[] pluginTypeArray){
-        List<CrudServicePlugin> plugins = new ArrayList<>();
-        ArrayList<Class<? extends CrudServicePlugin>> pluginTypes = Lists.newArrayList(pluginTypeArray);
-        for (Class<? extends CrudServicePlugin> pluginType : pluginTypes) {
-            CrudServicePlugin plugin = beanFactory.getBean(pluginType);
+    private List<ServiceExtension> resolvePlugins(Class<? extends ServiceExtension>[] pluginTypeArray){
+        List<ServiceExtension> plugins = new ArrayList<>();
+        ArrayList<Class<? extends ServiceExtension>> pluginTypes = Lists.newArrayList(pluginTypeArray);
+        for (Class<? extends ServiceExtension> pluginType : pluginTypes) {
+            ServiceExtension plugin = beanFactory.getBean(pluginType);
             beanFactory.autowireBean(plugin);
             //beanFactory.autowireBeanProperties();
             plugins.add(plugin);
@@ -169,11 +168,11 @@ public class CrudServiceProxyBeanComposer implements BeanPostProcessor, Applicat
         return plugins;
     }
 
-    private List<ServiceSecurityRule> resolveRules(SecurityProxy proxy){
-        List<ServiceSecurityRule> rules = new ArrayList<>();
-        ArrayList<Class<? extends ServiceSecurityRule>> pluginTypes = Lists.newArrayList(proxy.rules());
-        for (Class<? extends ServiceSecurityRule> ruleType : pluginTypes) {
-            ServiceSecurityRule rule = beanFactory.getBean(ruleType);
+    private List<SecurityServiceExtension> resolveRules(SecurityProxy proxy){
+        List<SecurityServiceExtension> rules = new ArrayList<>();
+        ArrayList<Class<? extends SecurityServiceExtension>> pluginTypes = Lists.newArrayList(proxy.rules());
+        for (Class<? extends SecurityServiceExtension> ruleType : pluginTypes) {
+            SecurityServiceExtension rule = beanFactory.getBean(ruleType);
             rules.add(rule);
         }
         return rules;

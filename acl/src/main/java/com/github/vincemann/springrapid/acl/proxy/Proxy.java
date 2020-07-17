@@ -1,12 +1,11 @@
 package com.github.vincemann.springrapid.acl.proxy;
 
-import com.github.vincemann.springrapid.core.proxy.CrudServicePlugin;
-import com.github.vincemann.springrapid.core.proxy.ServicePluginProxy;
+import com.github.vincemann.springrapid.core.proxy.ServiceExtension;
 
 import java.lang.annotation.*;
 
 /**
- * Represents meta information about a {@link ServicePluginProxy}, that can be dynamically created,
+ * Represents meta information about a {@link com.github.vincemann.springrapid.core.proxy.ExtensionServiceProxy}, that can be dynamically created,
  * when used together with {@link ConfigureProxies}.
  *
  * @see ConfigureProxies
@@ -21,7 +20,7 @@ public @interface Proxy {
 
     Class<? extends Annotation>[] qualifiers() default {};
 
-    Class<? extends CrudServicePlugin>[] plugins() default {};
+    Class<? extends ServiceExtension>[] plugins() default {};
 
     boolean primary() default false;
 
