@@ -2,7 +2,7 @@ package com.github.vincemann.springrapid.acl.proxy;
 
 import com.github.vincemann.springrapid.commons.Lists;
 import com.github.vincemann.springrapid.acl.proxy.rules.ServiceSecurityRule;
-import com.github.vincemann.springrapid.core.proxy.CrudServicePluginProxyFactory;
+import com.github.vincemann.springrapid.core.proxy.ServiceExtensionProxyFactory;
 import com.github.vincemann.springrapid.core.service.CrudService;
 import com.github.vincemann.springrapid.core.proxy.CrudServicePlugin;
 import lombok.extern.slf4j.Slf4j;
@@ -79,7 +79,7 @@ public class CrudServiceProxyBeanComposer implements BeanPostProcessor, Applicat
                 }else {
                     proxiedBean = lastProxiedBean;
                 }
-                CrudService proxyBean = CrudServicePluginProxyFactory.create(proxiedBean,
+                CrudService proxyBean = ServiceExtensionProxyFactory.create(proxiedBean,
                         resolvePlugins(proxy.plugins()).toArray(new CrudServicePlugin[0]));
 
                 log.trace("creating proxyBean : " + proxyBean);
@@ -99,7 +99,7 @@ public class CrudServiceProxyBeanComposer implements BeanPostProcessor, Applicat
                 }
                 List<Class<? extends CrudServicePlugin>> pluginTypes = Lists.newArrayList(securityProxy.plugins());
                 if(!pluginTypes.isEmpty()){
-                    lastProxiedBean = CrudServicePluginProxyFactory.create(lastProxiedBean, resolvePlugins(securityProxy.plugins()).toArray(new CrudServicePlugin[0]));
+                    lastProxiedBean = ServiceExtensionProxyFactory.create(lastProxiedBean, resolvePlugins(securityProxy.plugins()).toArray(new CrudServicePlugin[0]));
                 }
                 GenericBeanDefinition beanDef
                         = createBeanDef(securityProxy.qualifiers(), securityProxy.primary(), ((Class<? extends CrudService>) serviceInterface));

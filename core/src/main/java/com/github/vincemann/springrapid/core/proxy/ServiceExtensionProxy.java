@@ -20,7 +20,7 @@ import java.util.concurrent.ConcurrentHashMap;
 @Setter
 @Slf4j
 public class ServiceExtensionProxy<S extends CrudService<?,?,?>>
-        implements ServiceExtensionProxyController, InvocationHandler {
+        implements ChainController, InvocationHandler {
 
     private final Map<MethodIdentifier, Method> methods = new HashMap<>();
     private List<String> ignoredMethods = Lists.newArrayList("getEntityClass", "getRepository", "toString", "equals", "hashCode", "getClass", "clone", "notify", "notifyAll", "wait", "finalize");
@@ -42,19 +42,19 @@ public class ServiceExtensionProxy<S extends CrudService<?,?,?>>
     private static class State{
         @Getter
         private MethodIdentifier methodIdentifier;
-        private boolean callTargetMethod;
+//        private boolean callTargetMethod;
 
         public State(Method method) {
             this.methodIdentifier = new MethodIdentifier(method);
         }
 
-        public boolean isCallTargetMethod() {
-            return callTargetMethod;
-        }
-
-        public void setCallTargetMethod(boolean callTargetMethod) {
-            this.callTargetMethod = callTargetMethod;
-        }
+//        public boolean isCallTargetMethod() {
+//            return callTargetMethod;
+//        }
+//
+//        public void setCallTargetMethod(boolean callTargetMethod) {
+//            this.callTargetMethod = callTargetMethod;
+//        }
     }
 
     @EqualsAndHashCode
@@ -68,6 +68,11 @@ public class ServiceExtensionProxy<S extends CrudService<?,?,?>>
             this.argTypes=method.getParameterTypes();
         }
 
+    }
+
+    @Override
+    public CrudService getLast() {
+        return proxied;
     }
 
     //link of a chain
@@ -102,7 +107,7 @@ public class ServiceExtensionProxy<S extends CrudService<?,?,?>>
 
     private Object invokeProxied(Method method,Object... args) throws InvocationTargetException, IllegalAccessException {
         return getMethods().get(new MethodIdentifier(method))
-                .invoke(getProxied(), args);
+                .invoke(getLast(), args);
     }
 
     @Override
@@ -114,12 +119,28 @@ public class ServiceExtensionProxy<S extends CrudService<?,?,?>>
         if (nextIndex>=extensionChain.size()){
             //no further extension available, return proxied
             //this cast is safe
-            return (T) proxied;
+//            if (state.callTargetMethod) {
+                return (T) proxied;
+//            }else {
+//
+//            }
         }else {
             //this cast is also safe
             return (T) extensionChain.get(nextIndex);
         }
     }
+
+//    private <T> T createNoopProxy(){
+//        return (T) Proxy.newProxyInstance(
+//                proxied.getClass().getClassLoader(),
+//                ClassUtils.getAllInterfaces(proxied.getClass()).toArray(new Class[0]),
+//                new InvocationHandler() {
+//                    @Override
+//                    public Object invoke(Object o, Method method, Object[] objects) throws Throwable {
+//                        return null;
+//                    }
+//                }))
+//    }
 
     protected List<ExtensionLink> createExtensionChain(Method method){
         MethodIdentifier methodIdentifier = new MethodIdentifier(method);
@@ -148,11 +169,11 @@ public class ServiceExtensionProxy<S extends CrudService<?,?,?>>
         return getIgnoredMethods().contains(method.getName());
     }
 
-    @Override
-    public void dontCallTargetMethod() {
-
-    }
-
+//    @Override
+//    public void dontCallTargetMethod() {
+//
+//    }
+//
 
     //    protected MethodHandle findMethod(String name, Object target) {
 //        List<Method> methods = Arrays.stream(target.getClass().getMethods())
