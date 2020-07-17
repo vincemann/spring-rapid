@@ -1,9 +1,9 @@
 package com.github.vincemann.springrapid.acl.config;
 
-import com.github.vincemann.springrapid.acl.plugin.AdminFullAccessAclPlugin;
-import com.github.vincemann.springrapid.acl.plugin.AuthenticatedFullAccessAclPlugin;
-import com.github.vincemann.springrapid.acl.plugin.CleanUpAclPlugin;
-import com.github.vincemann.springrapid.acl.plugin.InheritParentAclPlugin;
+import com.github.vincemann.springrapid.acl.plugin.AdminFullAccessAclServiceExtension;
+import com.github.vincemann.springrapid.acl.plugin.AuthenticatedFullAccessAclServiceExtension;
+import com.github.vincemann.springrapid.acl.plugin.CleanUpAclServiceExtension;
+import com.github.vincemann.springrapid.acl.plugin.InheritParentAclServiceExtension;
 import com.github.vincemann.springrapid.acl.service.LocalPermissionService;
 import com.github.vincemann.springrapid.acl.service.MockAuthService;
 import com.github.vincemann.springrapid.core.config.RapidJacksonAutoConfiguration;
@@ -30,27 +30,27 @@ public class AclPluginAutoConfiguration {
         return new LocalPermissionService(aclService);
     }
 
-    @ConditionalOnMissingBean(AdminFullAccessAclPlugin.class)
+    @ConditionalOnMissingBean(AdminFullAccessAclServiceExtension.class)
     @Bean
-    public AdminFullAccessAclPlugin adminFullAccessAclPlugin(MutableAclService mutableAclService, MockAuthService mockAuthService){
-        return new AdminFullAccessAclPlugin(localPermissionService(mutableAclService),mutableAclService,mockAuthService);
+    public AdminFullAccessAclServiceExtension adminFullAccessAclPlugin(MutableAclService mutableAclService, MockAuthService mockAuthService){
+        return new AdminFullAccessAclServiceExtension(localPermissionService(mutableAclService),mutableAclService,mockAuthService);
     }
 
-    @ConditionalOnMissingBean(AuthenticatedFullAccessAclPlugin.class)
+    @ConditionalOnMissingBean(AuthenticatedFullAccessAclServiceExtension.class)
     @Bean
-    public AuthenticatedFullAccessAclPlugin authenticatedFullAccessAclPlugin(MutableAclService mutableAclService,MockAuthService mockAuthService){
-        return new AuthenticatedFullAccessAclPlugin(localPermissionService(mutableAclService),mutableAclService,mockAuthService);
-    }
-
-    @Bean
-    @ConditionalOnMissingBean(InheritParentAclPlugin.class)
-    public InheritParentAclPlugin inheritParentAclPlugin(MutableAclService aclService,MockAuthService mockAuthService){
-        return new InheritParentAclPlugin(localPermissionService(aclService),aclService,mockAuthService);
+    public AuthenticatedFullAccessAclServiceExtension authenticatedFullAccessAclPlugin(MutableAclService mutableAclService, MockAuthService mockAuthService){
+        return new AuthenticatedFullAccessAclServiceExtension(localPermissionService(mutableAclService),mutableAclService,mockAuthService);
     }
 
     @Bean
-    @ConditionalOnMissingBean(CleanUpAclPlugin.class)
-    public CleanUpAclPlugin cleanUpAclPlugin(MutableAclService aclService,MockAuthService mockAuthService){
-        return new CleanUpAclPlugin(localPermissionService(aclService),aclService,mockAuthService);
+    @ConditionalOnMissingBean(InheritParentAclServiceExtension.class)
+    public InheritParentAclServiceExtension inheritParentAclPlugin(MutableAclService aclService, MockAuthService mockAuthService){
+        return new InheritParentAclServiceExtension(localPermissionService(aclService),aclService,mockAuthService);
+    }
+
+    @Bean
+    @ConditionalOnMissingBean(CleanUpAclServiceExtension.class)
+    public CleanUpAclServiceExtension cleanUpAclPlugin(MutableAclService aclService, MockAuthService mockAuthService){
+        return new CleanUpAclServiceExtension(localPermissionService(aclService),aclService,mockAuthService);
     }
 }

@@ -6,9 +6,12 @@ import com.github.vincemann.springrapid.acl.Role;
 import com.github.vincemann.springrapid.acl.service.LocalPermissionService;
 import com.github.vincemann.springrapid.acl.service.MockAuthService;
 import com.github.vincemann.springrapid.core.model.IdentifiableEntity;
-import com.github.vincemann.springrapid.core.proxy.CrudServicePlugin;
+import com.github.vincemann.springrapid.core.proxy.AbstractCrudServiceExtension;
+import com.github.vincemann.springrapid.core.proxy.ServiceExtension;
+import com.github.vincemann.springrapid.core.service.CrudService;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
+import org.springframework.data.repository.CrudRepository;
 import org.springframework.security.acls.domain.BasePermission;
 import org.springframework.security.acls.model.MutableAclService;
 import org.springframework.security.acls.model.Permission;
@@ -19,7 +22,9 @@ import java.io.Serializable;
 
 @AllArgsConstructor
 @Getter
-public abstract class AbstractAclPlugin extends CrudServicePlugin {
+public abstract class AbstractAclServiceExtension<S extends CrudService<E,Id,?>,E extends IdentifiableEntity<Id>,Id extends Serializable>
+        extends AbstractCrudServiceExtension<S,E,Id> {
+
     private LocalPermissionService permissionService;
     private MutableAclService mutableAclService;
     private MockAuthService mockAuthService;

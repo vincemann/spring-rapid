@@ -2,9 +2,8 @@ package com.github.vincemann.springrapid.acl.plugin;
 
 import com.github.vincemann.springrapid.acl.service.LocalPermissionService;
 import com.github.vincemann.springrapid.acl.service.MockAuthService;
-import com.github.vincemann.springrapid.core.proxy.CalledByProxy;
-import com.github.vincemann.springrapid.core.service.exception.EntityNotFoundException;
 import com.github.vincemann.springrapid.core.service.exception.BadEntityException;
+import com.github.vincemann.springrapid.core.service.exception.EntityNotFoundException;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
@@ -21,21 +20,26 @@ import java.io.Serializable;
  * Removes Acl's on delete, if existing.
  */
 @Transactional
-public class CleanUpAclPlugin
-    extends AbstractAclPlugin
+public class CleanUpAclServiceExtension
+    extends AbstractAclServiceExtension
 {
-
     @Setter
     private boolean deleteCascade = true;
 
-    public CleanUpAclPlugin(LocalPermissionService permissionService, MutableAclService mutableAclService, MockAuthService mockAuthService) {
+    public CleanUpAclServiceExtension(LocalPermissionService permissionService, MutableAclService mutableAclService, MockAuthService mockAuthService) {
         super(permissionService, mutableAclService, mockAuthService);
     }
 
-    @CalledByProxy
-    public void onAfterDeleteById(Serializable id,Class entityClass) throws EntityNotFoundException, BadEntityException {
-        deleteAcl(id,entityClass);
+    @Override
+    public void deleteById(Serializable id) throws EntityNotFoundException, BadEntityException {
+        super.deleteById(id);
+        deleteAcl(id,getEntityClass());
     }
+
+//    @CalledByProxy
+//    public void onAfterDeleteById(Serializable id,Class entityClass) throws EntityNotFoundException, BadEntityException {
+//
+//    }
 
     private void deleteAcl(Serializable id, Class entityClass){
         log.debug("deleting acl for entity with id: " + id + " and class: " + entityClass);

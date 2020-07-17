@@ -1,10 +1,10 @@
 package com.github.vincemann.springlemon.auth.config;
 
 import com.github.vincemann.springlemon.auth.domain.AbstractUserRepository;
-import com.github.vincemann.springlemon.auth.security.LemonAclPlugin;
+import com.github.vincemann.springlemon.auth.security.LemonAclServiceExtension;
 import com.github.vincemann.springlemon.auth.service.LemonService;
 import com.github.vincemann.springlemon.auth.security.LemonServiceSecurityRule;
-import com.github.vincemann.springrapid.acl.plugin.CleanUpAclPlugin;
+import com.github.vincemann.springrapid.acl.plugin.CleanUpAclServiceExtension;
 import com.github.vincemann.springrapid.acl.proxy.SecurityServiceProxyFactory;
 import com.github.vincemann.springrapid.acl.service.AclManaging;
 import com.github.vincemann.springrapid.acl.service.LocalPermissionService;
@@ -48,9 +48,9 @@ public class LemonServiceAutoConfiguration {
     }
 
     @Bean
-    @ConditionalOnMissingBean(LemonAclPlugin.class)
-    public LemonAclPlugin lemonAclPlugin(){
-        return new LemonAclPlugin(permissionService,mutableAclService,mockAuthService,userRepository);
+    @ConditionalOnMissingBean(LemonAclServiceExtension.class)
+    public LemonAclServiceExtension lemonAclPlugin(){
+        return new LemonAclServiceExtension(permissionService,mutableAclService,mockAuthService,userRepository);
     }
 
     @ConditionalOnMissingBean(name = "aclManagingLemonService")
@@ -59,7 +59,7 @@ public class LemonServiceAutoConfiguration {
     public LemonService<?,?,?> aclManagingLemonService(LemonService<?,?,?> service,
 //                                                                            AdminFullAccessAclPlugin adminFullAccess,
 //                                                                            AuthenticatedFullAccessAclPlugin authenticatedFullAccessAclPlugin,
-                                                       CleanUpAclPlugin cleanUpAclPlugin){
+                                                       CleanUpAclServiceExtension cleanUpAclPlugin){
         return ServiceExtensionProxyFactory.create(service/*,adminFullAccess*/,lemonAclPlugin(),/*authenticatedFullAccessAclPlugin,*/cleanUpAclPlugin);
     }
 

@@ -1,12 +1,8 @@
 package com.github.vincemann.springrapid.acl.config;
 
-import com.github.vincemann.springrapid.acl.proxy.CrudServiceProxyBeanComposer;
-import com.github.vincemann.springrapid.acl.proxy.DefaultSecurityServiceExtensionImpl;
-import com.github.vincemann.springrapid.acl.proxy.SecurityServiceProxyFactory;
-import com.github.vincemann.springrapid.acl.proxy.DefaultSecurityServiceExtension;
-import com.github.vincemann.springrapid.acl.proxy.rules.ServiceSecurityRule;
-import com.github.vincemann.springrapid.acl.AclSecurityCheckerImpl;
 import com.github.vincemann.springrapid.acl.AclSecurityChecker;
+import com.github.vincemann.springrapid.acl.AclSecurityCheckerImpl;
+import com.github.vincemann.springrapid.acl.proxy.*;
 import com.github.vincemann.springrapid.core.slicing.config.ServiceConfig;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
@@ -24,19 +20,19 @@ public class SecurityProxyAutoConfiguration {
     @ConditionalOnMissingBean(name = "defaultServiceSecurityRule")
     @DefaultSecurityServiceExtension
     @Bean
-    public ServiceSecurityRule defaultServiceSecurityRule(){
+    public SecurityServiceExtension defaultServiceSecurityRule(){
         return new DefaultSecurityServiceExtensionImpl();
     }
 
     @ConditionalOnMissingBean(SecurityServiceProxyFactory.class)
     @Bean
     public SecurityServiceProxyFactory crudServiceSecurityProxyFactory(){
-        return new SecurityServiceProxyFactory(securityChecker(),defaultServiceSecurityRule());
+        return new SecurityServiceProxyFactory(defaultServiceSecurityRule());
     }
 
     @Bean
     @ConditionalOnMissingBean(AclSecurityChecker.class)
-    public AclSecurityChecker securityChecker(){
+    public AclSecurityChecker aclSecurityChecker(){
         return new AclSecurityCheckerImpl();
     }
 
