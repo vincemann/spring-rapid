@@ -1,12 +1,8 @@
 package com.github.vincemann.springrapid.core.proxy;
 
-import java.lang.reflect.ParameterizedType;
-import java.util.List;
 
-
-public class AbstractServiceExtension<T,P extends ServiceExtensionProxyController> {
-    private P proxyController;
-    private List<ServiceExtensionProxy.ExtensionLink> chain;
+public class AbstractServiceExtension<T,P extends ChainController> {
+    private P chain;
 //
 //    @SuppressWarnings("unchecked")
 //    private Class<T> nextClass = (Class<T>) ((ParameterizedType) this.getClass().getGenericSuperclass()).getActualTypeArguments()[0];
@@ -19,19 +15,16 @@ public class AbstractServiceExtension<T,P extends ServiceExtensionProxyControlle
 //    }
 
 
-    void setChain(List<ServiceExtensionProxy.ExtensionLink> chain) {
+
+    void setChain(P chain) {
         this.chain = chain;
     }
 
-    void setProxyController(P proxyController) {
-        this.proxyController = proxyController;
-    }
-
     public final T getNext() {
-        return proxyController.getNext(this);
+        return chain.getNext(this);
     }
 
-    public P getProxyController() {
-        return proxyController;
+    public P getChain() {
+        return chain;
     }
 }

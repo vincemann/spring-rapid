@@ -88,7 +88,7 @@ public class ServiceSecurityProxy
     @Override
     protected Object proxy(Object target, Method method, Object[] args) throws Throwable {
         log.debug("SecurityProxy intercepting method: " + method.getName() + " of Class: " + AopTestUtils.getUltimateTargetObject(target).getClass());
-        state = State.create(getMethods().get(method.getName()), getProxied(),args);
+        state = State.create(getMethods().get(method.getName()), getLast(),args);
 
         //todo replace logging with @LogInteraction after method names of rules are changed
         invokePreAuthorizeMethods();

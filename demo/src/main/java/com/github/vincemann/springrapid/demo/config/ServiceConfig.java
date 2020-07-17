@@ -5,7 +5,7 @@ import com.github.vincemann.springrapid.demo.service.PetService;
 import com.github.vincemann.springrapid.demo.service.plugin.AclPlugin;
 import com.github.vincemann.springrapid.demo.service.plugin.OwnerOfTheYearPlugin;
 import com.github.vincemann.springrapid.demo.service.plugin.SaveNameToWordPressDbPlugin;
-import com.github.vincemann.springrapid.core.proxy.CrudServicePluginProxyFactory;
+import com.github.vincemann.springrapid.core.proxy.ServiceExtensionProxyFactory;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Primary;
@@ -17,7 +17,7 @@ public class ServiceConfig {
     @Bean
     public PetService extendedPetService(@Qualifier("noProxy") PetService petService,
                                          AclPlugin aclPlugin) {
-        return CrudServicePluginProxyFactory.create(petService,
+        return ServiceExtensionProxyFactory.create(petService,
                 aclPlugin
         );
     }
@@ -28,7 +28,7 @@ public class ServiceConfig {
                                      SaveNameToWordPressDbPlugin saveNameToWordPressDbPlugin,
                                      OwnerOfTheYearPlugin ownerOfTheYearPlugin,
                                      AclPlugin aclPlugin) {
-        return CrudServicePluginProxyFactory.create(ownerService,
+        return ServiceExtensionProxyFactory.create(ownerService,
                 saveNameToWordPressDbPlugin,
                 ownerOfTheYearPlugin,
                 aclPlugin
