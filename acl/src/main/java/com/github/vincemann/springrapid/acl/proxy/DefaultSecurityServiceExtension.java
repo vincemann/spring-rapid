@@ -1,4 +1,4 @@
-package com.github.vincemann.springrapid.acl.proxy.rules;
+package com.github.vincemann.springrapid.acl.proxy;
 
 import org.springframework.beans.factory.annotation.Qualifier;
 
@@ -12,5 +12,5 @@ import java.lang.annotation.*;
 @Retention(RetentionPolicy.RUNTIME)
 @Qualifier("defaultServiceSecurityRule")
 @Inherited
-public @interface DefaultServiceSecurityRule {
+public @interface DefaultSecurityServiceExtension {
 }

@@ -10,6 +10,6 @@ public interface ChainController {
      * @return
      */
     CrudService getLast();
-    <T> T getNext(ServiceExtension<T> extension);
+    <T> T getNext(AbstractServiceExtension<T,?> extension);
 
 }

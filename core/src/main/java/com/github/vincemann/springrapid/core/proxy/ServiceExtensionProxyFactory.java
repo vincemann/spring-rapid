@@ -15,7 +15,7 @@ public class ServiceExtensionProxyFactory {
     //-> this would make this crash
 
     /**
-     * Creates a {@link ServiceExtensionProxy} of @param crudService with given {@link CrudServicePlugin}s.
+     * Creates a {@link ExtensionServiceProxy} of @param crudService with given {@link CrudServicePlugin}s.
      * The plugins will be called in the order you give them to this Factory.
      */
     public static <Id extends Serializable, E extends IdentifiableEntity<Id>, S extends CrudService<E, Id, ? extends CrudRepository<E, Id>>> S
@@ -25,7 +25,7 @@ public class ServiceExtensionProxyFactory {
         S proxyInstance = (S) Proxy.newProxyInstance(
                 unproxied.getClass().getClassLoader(),
                 ClassUtils.getAllInterfaces(unproxied.getClass()).toArray(new Class[0]),
-                new ServiceExtensionProxy<S>(unproxied, plugins));
+                new ExtensionServiceProxy<S>(unproxied, plugins));
         return proxyInstance;
     }
 

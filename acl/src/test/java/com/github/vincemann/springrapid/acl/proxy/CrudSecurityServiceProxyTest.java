@@ -29,7 +29,7 @@ import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
-class CrudServiceSecurityProxyTest {
+class CrudSecurityServiceProxyTest {
 
     @AllArgsConstructor
     @NoArgsConstructor
@@ -129,7 +129,7 @@ class CrudServiceSecurityProxyTest {
         }
     }
 
-    ServiceSecurityProxy proxy;
+    SecurityExtensionServiceProxy proxy;
     @Mock
     ExampleService service;
     @Mock
@@ -143,7 +143,7 @@ class CrudServiceSecurityProxyTest {
 
     @BeforeEach
     void setUp() {
-        proxy = new ServiceSecurityProxy(service,securityChecker,defaultRule,rule);
+        proxy = new SecurityExtensionServiceProxy(service, defaultExtension, securityChecker,defaultRule,rule);
     }
 
     @Test
