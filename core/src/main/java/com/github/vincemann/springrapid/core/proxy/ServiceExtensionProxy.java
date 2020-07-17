@@ -3,14 +3,18 @@ package com.github.vincemann.springrapid.core.proxy;
 import com.github.vincemann.aoplog.MethodUtils;
 import com.github.vincemann.springrapid.commons.Lists;
 import com.github.vincemann.springrapid.core.service.CrudService;
+import lombok.AllArgsConstructor;
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 
 import java.lang.reflect.InvocationHandler;
 
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 
 @Getter
 @Setter
@@ -18,79 +22,126 @@ import java.util.*;
 public class ServiceExtensionProxy<S extends CrudService<?,?,?>>
         implements ServiceExtensionProxyController, InvocationHandler {
 
-    private final Map<String, Method> methods = new HashMap<>();
+    private final Map<MethodIdentifier, Method> methods = new HashMap<>();
     private List<String> ignoredMethods = Lists.newArrayList("getEntityClass", "getRepository", "toString", "equals", "hashCode", "getClass", "clone", "notify", "notifyAll", "wait", "finalize");
     private S proxied;
     private List<ServiceExtension> extensions = new ArrayList<>();
+    private ConcurrentHashMap<MethodIdentifier,List<ExtensionLink>> methodExtensionChains = new ConcurrentHashMap<>();
+    private ConcurrentHashMap<Thread, State> thead_method_map = new ConcurrentHashMap<>();
 
     public ServiceExtensionProxy(S proxied, ServiceExtension<? super S>... extensions) {
+        for (Method method : proxied.getClass().getMethods()) {
+            this.methods.put(new MethodIdentifier(method), method);
+        }
+
         this.proxied = proxied;
         this.extensions.addAll(Arrays.asList(extensions));
-        initExtensionChain();
     }
 
-    @SuppressWarnings("unchecked")
-    //sets next property for every serviceExtension creating a chain that calls last elements from extensions first
-    protected void initExtensionChain(){
-        if (extensions.isEmpty()){
-            return;
-        }
-        for (int i = extensions.size()-1; i > 0 ; i--) {
-            ServiceExtension extension = extensions.get(i);
-            extension.setProxyController(this);
-            //find next in chain and wire up
-            for (int j = i; i > 0; i--){
-                ServiceExtension extensionBelow = extensions.get(j);
-                if (extension.getNextClass().isAssignableFrom(extensionBelow.getNextClass())){
-                    extension.setNext(extensionBelow);
-                    break;
-                }
-            }
-        }
-        assert extensions.get(0).getNext()==null;
 
-        //todo in order to implement dontCallTargetMethod I need to supply a very basic proxy of proxied here, that
-        //stores a boolean for every method, that indicates whether the method should be called
-        extensions.get(0).setNext(proxied);
+    private static class State{
+        @Getter
+        private MethodIdentifier methodIdentifier;
+        private boolean callTargetMethod;
+
+        public State(Method method) {
+            this.methodIdentifier = new MethodIdentifier(method);
+        }
+
+        public boolean isCallTargetMethod() {
+            return callTargetMethod;
+        }
+
+        public void setCallTargetMethod(boolean callTargetMethod) {
+            this.callTargetMethod = callTargetMethod;
+        }
+    }
+
+    @EqualsAndHashCode
+    @AllArgsConstructor
+    private static class MethodIdentifier{
+        String methodName;
+        Class<?>[] argTypes;
+
+        public MethodIdentifier(Method method){
+            this.methodName=method.getName();
+            this.argTypes=method.getParameterTypes();
+        }
+
+    }
+
+    //link of a chain
+    @AllArgsConstructor
+    class ExtensionLink {
+        ServiceExtension serviceExtension;
+        Method method;
+
+        Object invoke(Object... args) throws InvocationTargetException, IllegalAccessException {
+            return method.invoke(serviceExtension,args);
+        }
     }
 
     @Override
     public final Object invoke(Object o, Method method, Object[] args) throws Throwable {
         if (isIgnored(method)) {
-            return getMethods().get(method.getName())
-                    .invoke(getProxied(), args);
+            return invokeProxied(method,args);
         } else {
             if (args == null) {
                 args = new Object[]{};
             }
-            Map.Entry<Method, ServiceExtension<?>> firstMatch = findFirstMatchingExtension(method);
-            if (firstMatch==null){
-                //no extensions matches -> just call proxied
-                return getMethods().get(method.getName())
-                        .invoke(getProxied(), args);
+
+            List<ExtensionLink> extensionChain = createExtensionChain(method);
+            if (!extensionChain.isEmpty()){
+                thead_method_map.put(Thread.currentThread(),new State(method));
+                return extensionChain.get(0).invoke(args);
             }else {
-                //found extension -> invoke extension (first matching entry in chain)
-                return firstMatch.getKey().invoke(firstMatch.getValue(),args);
+                return invokeProxied(method,args);
             }
         }
     }
 
-    //find first extension in chain, that has the proxied method
-    //starting from the end of the last -> last in first called
-    protected HashMap.Entry<Method,ServiceExtension<?>> findFirstMatchingExtension(Method method){
-        Map.Entry<Method,ServiceExtension<?>> found = null;
-        for (int i = extensions.size()-1; i > 0 ; i--) {
-            ServiceExtension<?> extension = extensions.get(i);
-            try {
-                found = new HashMap.SimpleEntry<>(
-                        MethodUtils.findMethod(extension.getClass(), method.getName(), method.getParameterTypes()),
-                        extension
-                );
-            } catch (NoSuchMethodException e) {
+    private Object invokeProxied(Method method,Object... args) throws InvocationTargetException, IllegalAccessException {
+        return getMethods().get(new MethodIdentifier(method))
+                .invoke(getProxied(), args);
+    }
 
-            }
+    @Override
+    public <T> T getNext(ServiceExtension<T> extension) {
+        State state = thead_method_map.get(Thread.currentThread());
+        List<ExtensionLink> extensionChain = methodExtensionChains.get(state.getMethodIdentifier());
+        int extensionIndex = extensionChain.indexOf(extension);
+        int nextIndex = extensionIndex+1;
+        if (nextIndex>=extensionChain.size()){
+            //no further extension available, return proxied
+            //this cast is safe
+            return (T) proxied;
+        }else {
+            //this cast is also safe
+            return (T) extensionChain.get(nextIndex);
         }
-        return found;
+    }
+
+    protected List<ExtensionLink> createExtensionChain(Method method){
+        MethodIdentifier methodIdentifier = new MethodIdentifier(method);
+        //first look in cache
+        List<ExtensionLink> extensionChain = methodExtensionChains.get(methodIdentifier);
+        if (extensionChain==null){
+            //start from end of extensions for start and identify all extensions having the requested method
+            //all matching methods together form a chain
+            //each link of the chain also saves its declared method
+            Map.Entry<MethodIdentifier,List<ExtensionLink>> method_chain_entry = new HashMap.SimpleEntry<>(methodIdentifier,new ArrayList<>());
+            for (int i = extensions.size()-1; i > 0 ; i--) {
+                ServiceExtension<?> extension = extensions.get(i);
+                try {
+                    Method extensionsMethod = MethodUtils.findMethod(extension.getClass(), method.getName(), method.getParameterTypes());
+                    method_chain_entry.getValue().add(new ExtensionLink(extension,extensionsMethod));
+                } catch (NoSuchMethodException e) {
+                }
+            }
+            methodExtensionChains.entrySet().add(method_chain_entry);
+            extensionChain = methodExtensionChains.get(methodIdentifier);
+        }
+        return extensionChain;
     }
 
     protected boolean isIgnored(Method method) {
