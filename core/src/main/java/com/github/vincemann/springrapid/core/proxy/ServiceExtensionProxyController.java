@@ -10,4 +10,6 @@ public interface ServiceExtensionProxyController {
      * @return
      */
     CrudService getProxied();
+    <T> T getNext(ServiceExtension<T> extension);
+
 }
