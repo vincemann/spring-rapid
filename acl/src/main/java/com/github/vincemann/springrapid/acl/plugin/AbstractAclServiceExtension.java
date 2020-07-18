@@ -6,7 +6,7 @@ import com.github.vincemann.springrapid.acl.Role;
 import com.github.vincemann.springrapid.acl.service.LocalPermissionService;
 import com.github.vincemann.springrapid.acl.service.MockAuthService;
 import com.github.vincemann.springrapid.core.model.IdentifiableEntity;
-import com.github.vincemann.springrapid.core.proxy.AbstractCrudServiceExtension;
+import com.github.vincemann.springrapid.core.proxy.CrudServiceExtension;
 import com.github.vincemann.springrapid.core.proxy.ServiceExtension;
 import com.github.vincemann.springrapid.core.service.CrudService;
 import lombok.AllArgsConstructor;
@@ -20,10 +20,15 @@ import org.springframework.security.core.context.SecurityContextHolder;
 
 import java.io.Serializable;
 
+/**
+ * Base class for acl info managing {@link ServiceExtension}s.
+ *
+ * @param <S>
+ */
 @AllArgsConstructor
 @Getter
-public abstract class AbstractAclServiceExtension<S extends CrudService<E,Id,?>,E extends IdentifiableEntity<Id>,Id extends Serializable>
-        extends AbstractCrudServiceExtension<S,E,Id> {
+public abstract class AbstractAclServiceExtension<S>
+        extends ServiceExtension<S> {
 
     private LocalPermissionService permissionService;
     private MutableAclService mutableAclService;

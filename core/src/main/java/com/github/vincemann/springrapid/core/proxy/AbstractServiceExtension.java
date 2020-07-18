@@ -1,8 +1,13 @@
 package com.github.vincemann.springrapid.core.proxy;
 
 
-public class AbstractServiceExtension<T,P extends ChainController> {
-    private P chain;
+import com.github.vincemann.springrapid.core.service.CrudService;
+
+public class AbstractServiceExtension<T,P extends ProxyController>
+        implements NextLinkAware<T>{
+
+    private ChainController<T> chain;
+    private P proxyController;
 //
 //    @SuppressWarnings("unchecked")
 //    private Class<T> nextClass = (Class<T>) ((ParameterizedType) this.getClass().getGenericSuperclass()).getActualTypeArguments()[0];
@@ -15,16 +20,24 @@ public class AbstractServiceExtension<T,P extends ChainController> {
 //    }
 
 
+    public void setProxyController(P proxyController) {
+        this.proxyController = proxyController;
+    }
 
-    void setChain(P chain) {
+    void setChain(ChainController<T> chain) {
         this.chain = chain;
     }
 
-    public final T getNext() {
+    public T getNext() {
         return chain.getNext(this);
     }
 
-    public P getChain() {
-        return chain;
+    //can be safely casted to crudservice
+    public T getLast(){
+        return chain.getLast();
+    }
+
+    protected P getProxyController() {
+        return proxyController;
     }
 }

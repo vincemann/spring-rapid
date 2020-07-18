@@ -11,7 +11,10 @@ import com.github.vincemann.springlemon.auth.util.LemonUtils;
 import com.github.vincemann.springrapid.acl.plugin.AbstractAclServiceExtension;
 import com.github.vincemann.springrapid.acl.service.LocalPermissionService;
 import com.github.vincemann.springrapid.acl.service.MockAuthService;
+import com.github.vincemann.springrapid.core.model.IdentifiableEntity;
+import com.github.vincemann.springrapid.core.proxy.CrudServiceExtension;
 import com.github.vincemann.springrapid.core.service.exception.BadEntityException;
+import com.github.vincemann.springrapid.core.service.exception.EntityNotFoundException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.acls.domain.BasePermission;
 import org.springframework.security.acls.model.MutableAclService;
@@ -29,8 +32,8 @@ import java.util.Optional;
 @Slf4j
 @Transactional
 public class LemonAclServiceExtension
-        extends AbstractAclServiceExtension<LemonService<AbstractUser<Serializable>,Serializable,?>,AbstractUser<Serializable>, Serializable>
-            implements LemonService<AbstractUser<Serializable>,Serializable,?>
+        extends AbstractAclServiceExtension<LemonService>
+            implements LemonService, CrudServiceExtension<LemonService>
 {
     //todo rename methods and switch from proxies naming convention to annotations + add @LogInteraction when method names say something
     private AbstractUserRepository repository;
@@ -40,43 +43,47 @@ public class LemonAclServiceExtension
         this.repository = repository;
     }
 
+
+
     @Override
-    public AbstractUser<Serializable> save(AbstractUser<Serializable> entity) throws BadEntityException {
-        AbstractUser<Serializable> saved = super.save(entity);
+    public IdentifiableEntity save(IdentifiableEntity entity) throws BadEntityException {
+        AbstractUser saved = (AbstractUser) getNext().save(entity);
         savePostSignupAclInfo(saved.getEmail());
         return saved;
     }
 
-//    @CalledByProxy
-//    public void onAfterSave(AbstractUser toSave, AbstractUser saved){
-//
-//    }
+
+    @Override
+    public AbstractUser update(AbstractUser entity, Boolean full) throws EntityNotFoundException, BadEntityException {
+        return getNext().update(entity,full);
+    }
+
 
 
     @Override
-    public Map<String, Object> getContext(Optional<Long> expirationMillis, HttpServletResponse response) {
+    public Map<String, Object> getContext(Optional expirationMillis, HttpServletResponse response) {
         return getNext().getContext(expirationMillis,response);
     }
 
     @Override
-    public AbstractUser<Serializable> signup(@Valid AbstractUser<Serializable> user) throws BadEntityException {
-        AbstractUser<Serializable> saved = getNext().signup(user);
+    public AbstractUser signup(@Valid AbstractUser user) throws BadEntityException {
+        AbstractUser saved = getNext().signup(user);
         savePostSignupAclInfo(user.getEmail());
         return saved;
     }
 
     @Override
-    public void resendVerificationMail(AbstractUser<Serializable> user) {
+    public void resendVerificationMail(AbstractUser user) {
         getNext().resendVerificationMail(user);
     }
 
     @Override
-    public AbstractUser<Serializable> findByEmail(@Valid @Email @NotBlank String email) {
+    public AbstractUser findByEmail(@Valid @Email @NotBlank String email) {
         return getNext().findByEmail(email);
     }
 
     @Override
-    public AbstractUser<Serializable> verifyUser(Serializable userId, String verificationCode) {
+    public AbstractUser verifyUser(Serializable userId, String verificationCode) {
         return getNext().verifyUser(userId,verificationCode);
     }
 
@@ -86,12 +93,12 @@ public class LemonAclServiceExtension
     }
 
     @Override
-    public AbstractUser<Serializable> resetPassword(@Valid ResetPasswordForm form) {
+    public AbstractUser resetPassword(@Valid ResetPasswordForm form) {
         return getNext().resetPassword(form);
     }
 
     @Override
-    public String changePassword(AbstractUser<Serializable> user, @Valid ChangePasswordForm changePasswordForm) {
+    public String changePassword(AbstractUser user, @Valid ChangePasswordForm changePasswordForm) {
         return getNext().changePassword(user,changePasswordForm);
     }
 
@@ -101,12 +108,13 @@ public class LemonAclServiceExtension
     }
 
     @Override
-    public AbstractUser<Serializable> changeEmail(Serializable userId, @Valid @NotBlank String changeEmailCode) {
+    public AbstractUser changeEmail(Serializable userId, @Valid @NotBlank String changeEmailCode) {
         return getNext().changeEmail(userId,changeEmailCode);
     }
 
+
     @Override
-    public String fetchNewToken(Optional<Long> expirationMillis, Optional<String> optionalUsername) {
+    public String fetchNewToken(Optional expirationMillis, Optional optionalUsername) {
         return getNext().fetchNewToken(expirationMillis,optionalUsername);
     }
 
@@ -131,15 +139,6 @@ public class LemonAclServiceExtension
         getNext().addAuthHeader(response,username,expirationMillis);
     }
 
-//    @CalledByProxy
-//    public void onAfterSignup(AbstractUser registerAttempt,AbstractUser saved){
-//
-//    }
-//
-//    @CalledByProxy
-//    public void onAfterCreateAdminUser(LemonProperties.Admin admin){
-//
-//    }
 
     public void savePostSignupAclInfo(String email){
         log.debug("saving acl info for signed up user: " + email);

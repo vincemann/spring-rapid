@@ -3,6 +3,8 @@ package com.github.vincemann.springrapid.acl.plugin;
 import com.github.vincemann.springrapid.acl.service.LocalPermissionService;
 import com.github.vincemann.springrapid.acl.service.MockAuthService;
 import com.github.vincemann.springrapid.core.model.IdentifiableEntity;
+import com.github.vincemann.springrapid.core.proxy.CrudServiceExtension;
+import com.github.vincemann.springrapid.core.service.CrudService;
 import com.github.vincemann.springrapid.core.service.exception.BadEntityException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.acls.domain.BasePermission;
@@ -12,7 +14,7 @@ import org.springframework.transaction.annotation.Transactional;
 @Slf4j
 @Transactional
 public class AuthenticatedFullAccessAclServiceExtension
-        extends AbstractAclServiceExtension {
+        extends AbstractAclServiceExtension<CrudService> implements CrudServiceExtension<CrudService> {
 
 
     public AuthenticatedFullAccessAclServiceExtension(LocalPermissionService permissionService, MutableAclService mutableAclService, MockAuthService mockAuthService) {
@@ -21,7 +23,7 @@ public class AuthenticatedFullAccessAclServiceExtension
 
     @Override
     public IdentifiableEntity save(IdentifiableEntity entity) throws BadEntityException {
-        IdentifiableEntity saved = super.save(entity);
+        IdentifiableEntity saved = getNext().save(entity);
         savePermissionForAuthenticatedOver(saved, BasePermission.ADMINISTRATION);
         return saved;
     }

@@ -6,7 +6,7 @@ import lombok.Getter;
 import org.springframework.beans.factory.annotation.Autowired;
 
 @Getter
-public class SecurityServiceExtension<T> extends AbstractServiceExtension<T, SecurityExtensionServiceProxy<? extends T>> {
+public class SecurityServiceExtension<T> extends AbstractServiceExtension<T, SecurityProxyController> {
     private String readPermission = "READ";
     private String writePermission = "WRITE";
     private String createPermission = "CREATE";

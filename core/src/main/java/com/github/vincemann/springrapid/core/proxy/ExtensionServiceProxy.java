@@ -11,7 +11,7 @@ import java.lang.reflect.Method;
 @Setter
 @Slf4j
 public class ExtensionServiceProxy<S extends CrudService<?,?,?>>
-        extends AbstractExtensionServiceProxy<S,ServiceExtension<? super S>, AbstractExtensionServiceProxy.State> {
+        extends AbstractExtensionServiceProxy<S,ServiceExtension<? super S>, AbstractExtensionServiceProxy.State,ExtensionServiceProxy> {
 
     public ExtensionServiceProxy(S proxied, ServiceExtension<? super S>... extensions) {
         super(proxied, extensions);
