@@ -6,16 +6,9 @@ public class AbstractServiceExtension<T,P extends ProxyController>
 
     private ChainController<T> chain;
     private P proxyController;
-//
-//    @SuppressWarnings("unchecked")
-//    private Class<T> nextClass = (Class<T>) ((ParameterizedType) this.getClass().getGenericSuperclass()).getActualTypeArguments()[0];
 
     public AbstractServiceExtension() {
     }
-
-//    public AbstractServiceExtension(Class<T> nextClass) {
-//        this.nextClass = nextClass;
-//    }
 
 
     public void setProxyController(P proxyController) {
