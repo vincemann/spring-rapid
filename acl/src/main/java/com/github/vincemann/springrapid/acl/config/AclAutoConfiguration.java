@@ -1,11 +1,10 @@
 package com.github.vincemann.springrapid.acl.config;
 
 import com.github.vincemann.springrapid.acl.Role;
-import com.github.vincemann.springrapid.acl.framework.NoModSecurityCheckAclAuthorizationStrategy;
 import com.github.vincemann.springrapid.acl.framework.LenientPermissionGrantingStrategy;
+import com.github.vincemann.springrapid.acl.framework.NoModSecurityCheckAclAuthorizationStrategy;
 import com.github.vincemann.springrapid.acl.service.MockAuthService;
 import com.github.vincemann.springrapid.acl.service.SecurityContextMockAuthService;
-import com.github.vincemann.springrapid.core.config.ReflectionCacheAutoConfiguration;
 import com.github.vincemann.springrapid.core.slicing.config.ServiceConfig;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -37,7 +36,7 @@ import javax.sql.DataSource;
 @ServiceConfig
 @Slf4j
 //@ConditionalOnClass(DataSource.class)
-@AutoConfigureBefore({AclPluginAutoConfiguration.class, ReflectionCacheAutoConfiguration.class})
+@AutoConfigureBefore({AclPluginAutoConfiguration.class})
 public class AclAutoConfiguration {
 
     public AclAutoConfiguration() {

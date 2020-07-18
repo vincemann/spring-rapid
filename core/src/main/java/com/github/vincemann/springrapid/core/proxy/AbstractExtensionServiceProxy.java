@@ -15,15 +15,24 @@ import java.lang.reflect.Method;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
+/**
+ *
+ * @param <S>
+ * @param <E>
+ * @param <St>
+ * @param <P>    This needs to be castable to P
+ */
 @Getter
 @Setter
 @Slf4j
 public abstract class AbstractExtensionServiceProxy
-        <S extends CrudService<?,?,?>,
-        E extends AbstractServiceExtension<? super S,? extends AbstractExtensionServiceProxy>,
-        St extends AbstractExtensionServiceProxy.State>
+        <
+                S extends CrudService<?,?,?>,
+                E  extends AbstractServiceExtension<? super S,P>,
+                St extends AbstractExtensionServiceProxy.State,
+                P extends ProxyController>
 
-        implements ChainController, InvocationHandler {
+        implements ChainController, InvocationHandler, ProxyController {
 
     private final Map<MethodIdentifier, Method> methods = new HashMap<>();
     private List<String> ignoredMethods = Lists.newArrayList("getEntityClass", "getRepository", "toString", "equals", "hashCode", "getClass", "clone", "notify", "notifyAll", "wait", "finalize");
@@ -37,6 +46,12 @@ public abstract class AbstractExtensionServiceProxy
             this.methods.put(new MethodIdentifier(method), method);
         }
         this.proxied = proxied;
+        this.extensions.forEach(e -> {
+            //extension expects chainController<T>, gets ChainController<S>, T is always superclass of S -> so this is safe
+            e.setChain(this);
+            //docs state that this must be castable to P
+            e.setProxyController((P) this);
+        });
         this.extensions.addAll(Arrays.asList(extensions));
     }
 
@@ -44,22 +59,27 @@ public abstract class AbstractExtensionServiceProxy
         return thead_state_map.get(Thread.currentThread());
     }
 
+    @Override
+    public void dontCallTargetMethod() {
+        getState().setCallTargetMethod(false);
+    }
+
     protected static class State{
         @Getter
         private MethodIdentifier methodIdentifier;
-//        private boolean callTargetMethod;
+        private boolean callTargetMethod;
 
         public State(Method method) {
             this.methodIdentifier = new MethodIdentifier(method);
         }
 
-//        public boolean isCallTargetMethod() {
-//            return callTargetMethod;
-//        }
-//
-//        public void setCallTargetMethod(boolean callTargetMethod) {
-//            this.callTargetMethod = callTargetMethod;
-//        }
+        public boolean isCallTargetMethod() {
+            return callTargetMethod;
+        }
+
+        public void setCallTargetMethod(boolean callTargetMethod) {
+            this.callTargetMethod = callTargetMethod;
+        }
     }
 
     @EqualsAndHashCode
@@ -131,7 +151,12 @@ public abstract class AbstractExtensionServiceProxy
     }
 
     @Override
-    public <T> T getNext(AbstractServiceExtension<T, ?> extension) {
+    public Object getNext(AbstractServiceExtension extension) {
+        return null;
+    }
+
+    @Override
+    public <T> T getNext(AbstractServiceExtension<Object,?> extension) {
         State state = thead_state_map.get(Thread.currentThread());
         List<ExtensionChainLink> extensionChain = method_extensionChain_map.get(state.getMethodIdentifier());
         int extensionIndex = extensionChain.indexOf(extension);
