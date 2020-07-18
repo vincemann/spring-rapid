@@ -1,8 +1,6 @@
 package com.github.vincemann.springrapid.core.proxy;
 
 
-import com.github.vincemann.springrapid.core.service.CrudService;
-
 public class AbstractServiceExtension<T,P extends ProxyController>
         implements NextLinkAware<T>{
 

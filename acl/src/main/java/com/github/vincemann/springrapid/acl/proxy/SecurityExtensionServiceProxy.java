@@ -18,7 +18,7 @@ import java.lang.reflect.Method;
  *
  * Is created by {@link SecurityServiceProxyFactory} or by {@link ConfigureProxies}.
  */
-public class SecurityExtensionServiceProxy<S extends CrudService<?,?,?>>
+class SecurityExtensionServiceProxy<S extends CrudService<?,?,?>>
         extends AbstractExtensionServiceProxy<S,SecurityServiceExtension<? super S>, SecurityExtensionServiceProxy.State,SecurityProxyController>
             implements SecurityProxyController
 {
@@ -32,10 +32,10 @@ public class SecurityExtensionServiceProxy<S extends CrudService<?,?,?>>
 
 
     @Override
-    public <T> T getNext(AbstractServiceExtension<T, ?> extension) {
-        T next = super.getNext(extension);
+    public Object getNext(AbstractServiceExtension extension) {
+        Object next = super.getNext(extension);
         if (next.equals(defaultExtension) && getState().overrideDefaultExtension){
-            return (T) getProxied();
+            return getProxied();
         }
         return next;
     }
