@@ -16,7 +16,7 @@ import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
- *
+ * Thread safe
  * @param <S>
  * @param <E>
  * @param <St>
@@ -59,10 +59,10 @@ public abstract class AbstractExtensionServiceProxy
         return thead_state_map.get(Thread.currentThread());
     }
 
-    @Override
-    public void dontCallTargetMethod() {
-        getState().setCallTargetMethod(false);
-    }
+//    @Override
+//    public void dontCallTargetMethod() {
+//        getState().setCallTargetMethod(false);
+//    }
 
 
     protected P provideProxyController(){
@@ -72,19 +72,19 @@ public abstract class AbstractExtensionServiceProxy
     protected static class State{
         @Getter
         private MethodIdentifier methodIdentifier;
-        private boolean callTargetMethod;
+//        private boolean callTargetMethod;
 
         public State(Method method) {
             this.methodIdentifier = new MethodIdentifier(method);
         }
 
-        public boolean isCallTargetMethod() {
-            return callTargetMethod;
-        }
-
-        public void setCallTargetMethod(boolean callTargetMethod) {
-            this.callTargetMethod = callTargetMethod;
-        }
+//        public boolean isCallTargetMethod() {
+//            return callTargetMethod;
+//        }
+//
+//        public void setCallTargetMethod(boolean callTargetMethod) {
+//            this.callTargetMethod = callTargetMethod;
+//        }
     }
 
     @EqualsAndHashCode

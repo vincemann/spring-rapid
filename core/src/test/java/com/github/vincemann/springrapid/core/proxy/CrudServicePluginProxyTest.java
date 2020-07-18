@@ -6,16 +6,15 @@ import com.github.vincemann.springrapid.core.service.CrudService;
 import com.github.vincemann.springrapid.core.service.jpa.JPACrudService;
 import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.InOrder;
-import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
-import org.mockito.Spy;
+import org.mockito.*;
 import org.mockito.internal.InOrderImpl;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.util.Assert;
 
 import static org.mockito.ArgumentMatchers.any;
 
@@ -32,6 +31,7 @@ class CrudServiceExtensionProxyTest {
 
     interface Service extends CrudService<Entity, Long, JpaRepository<Entity, Long>>, SubInterface, OverlappingInterface{
 
+        public void noExtensionKnowsMe();
     }
 
     class ServiceImpl extends JPACrudService<Entity, Long, JpaRepository<Entity, Long>>
@@ -43,12 +43,17 @@ class CrudServiceExtensionProxyTest {
         }
 
         @Override
-        public void overlappingMethod() {
-
+        public Class overlappingMethod() {
+            return ServiceImpl.class;
         }
 
         @Override
         public void onceOnlyMethod() {
+
+        }
+
+        @Override
+        public void noExtensionKnowsMe() {
 
         }
     }
@@ -58,7 +63,7 @@ class CrudServiceExtensionProxyTest {
     }
 
     interface SubInterface {
-        public void overlappingMethod();
+        public Class overlappingMethod();
     }
 
     class FooCrudServiceExtension
@@ -70,19 +75,20 @@ class CrudServiceExtensionProxyTest {
 
         @Override
         public void onceOnlyMethod() {
-
+            getNext().onceOnlyMethod();
         }
 
         @Override
-        public void overlappingMethod() {
+        public Class overlappingMethod() {
             getNext().overlappingMethod();
+            return OverlappingExtension.class;
         }
     }
 
     class SubExtension extends ServiceExtension<SubInterface> implements SubInterface{
         @Override
-        public void overlappingMethod() {
-            getNext().overlappingMethod();
+        public Class overlappingMethod() {
+            return getNext().overlappingMethod();
         }
     }
 
@@ -113,6 +119,35 @@ class CrudServiceExtensionProxyTest {
         inOrder.verify(subExtension).overlappingMethod();
         inOrder.verify(overlappingExtension).overlappingMethod();
         inOrder.verify(service).overlappingMethod();
+    }
+
+    @Test
+    public void invokeOnlyOnceMethod() throws Throwable {
+        InOrder inOrder = new InOrderImpl(Lists.newArrayList(service,overlappingExtension));
+        proxy.onceOnlyMethod();
+        inOrder.verify(overlappingExtension).onceOnlyMethod();
+        inOrder.verify(service).onceOnlyMethod();
+    }
+
+    @Test
+    public void invokeServiceExtensionOnlyMethod() throws Throwable {
+        InOrder inOrder = new InOrderImpl(Lists.newArrayList(service,serviceExtension));
+        proxy.save(entity);
+        inOrder.verify(serviceExtension).save(entity);
+        inOrder.verify(service).save(entity);
+    }
+
+
+    @Test
+    public void invokeServiceOnlyMethod() throws Throwable {
+        proxy.noExtensionKnowsMe();
+        Mockito.verify(service).noExtensionKnowsMe();
+    }
+
+    @Test
+    public void extensionModifiesReturnValue() throws Throwable {
+        Class result = proxy.overlappingMethod();
+        Assertions.assertEquals(OverlappingExtension.class,result);
     }
 
 //    @Test
