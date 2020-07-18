@@ -10,11 +10,7 @@ import java.io.Serializable;
 import java.util.Optional;
 import java.util.Set;
 
-/**
- * Works like an abstract class, that only delegates to next element in chain, without the limitation of needing to be extended rather than implemented.
- * User together with {@link ServiceExtension}
- * @param <S>
- */
+
 public interface CrudServiceExtension<S extends CrudService>
             extends CrudService, NextLinkAware<S>{
 

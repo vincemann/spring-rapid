@@ -1,13 +1,10 @@
 package com.github.vincemann.springrapid.core.proxy;
 
-import com.github.vincemann.springrapid.core.service.CrudService;
-
-public interface ChainController<T> {
-//    void dontCallTargetMethod();
+interface ChainController<T>{
 
     /**
-     * If {@link ServiceExtension} calls this, then result can safely be casted to <T>.
-     * @return
+     * Last element in chain is for all extensions within the same chain the same, thats why no extension as arg is needed.
+     * Last element is always the proxied service. (Could be a proxy still, if the proxy factory was given a proxy as the service to proxy)
      */
     T getLast();
     T getNext(AbstractServiceExtension<T,?> extension);

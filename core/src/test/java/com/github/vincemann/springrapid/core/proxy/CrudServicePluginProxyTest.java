@@ -2,174 +2,185 @@ package com.github.vincemann.springrapid.core.proxy;
 
 import com.github.vincemann.springrapid.commons.Lists;
 import com.github.vincemann.springrapid.core.model.IdentifiableEntityImpl;
+import com.github.vincemann.springrapid.core.service.CrudService;
 import com.github.vincemann.springrapid.core.service.jpa.JPACrudService;
 import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
-import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InOrder;
 import org.mockito.Mock;
-import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
+import org.mockito.Spy;
+import org.mockito.internal.InOrderImpl;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import org.springframework.security.core.context.SecurityContext;
-import org.springframework.security.core.context.SecurityContextHolder;
-
-import java.lang.reflect.Method;
-import java.util.Arrays;
-import java.util.stream.Collectors;
 
 import static org.mockito.ArgumentMatchers.any;
 
 
 @ExtendWith(MockitoExtension.class)
-class CrudServicePluginProxyTest {
+class CrudServiceExtensionProxyTest {
 
 
     @AllArgsConstructor
     @NoArgsConstructor
-    class ExampleEntity extends IdentifiableEntityImpl<Long> {
+    class Entity extends IdentifiableEntityImpl<Long> {
         String name;
     }
 
-    class ExampleService extends JPACrudService<ExampleEntity, Long, JpaRepository<ExampleEntity, Long>> {
-        public ExampleEntity customMethod(String arg) {
-            return new ExampleEntity("serviceCustomEntity");
-        }
+    interface Service extends CrudService<Entity, Long, JpaRepository<Entity, Long>>, SubInterface, OverlappingInterface{
+
+    }
+
+    class ServiceImpl extends JPACrudService<Entity, Long, JpaRepository<Entity, Long>>
+            implements Service{
 
         @Override
         public Class<?> getTargetClass() {
-            return ExampleService.class;
+            return ServiceImpl.class;
+        }
+
+        @Override
+        public void overlappingMethod() {
+
+        }
+
+        @Override
+        public void onceOnlyMethod() {
+
         }
     }
 
-    class ExamplePlugin extends CrudServicePlugin {
+    interface OverlappingInterface extends SubInterface {
+        public void onceOnlyMethod();
+    }
 
-        @CalledByProxy
-        public void onBeforeSave(ExampleEntity exampleEntity) {
+    interface SubInterface {
+        public void overlappingMethod();
+    }
+
+    class FooCrudServiceExtension
+            extends ServiceExtension<CrudService>
+                    implements CrudServiceExtension<CrudService>{
+    }
+
+    class OverlappingExtension extends ServiceExtension<OverlappingInterface> implements OverlappingInterface{
+
+        @Override
+        public void onceOnlyMethod() {
 
         }
 
-        @ApplyIfRole(isNot = BAD_BOY_ROLE)
-        @CalledByProxy
-        public void onAfterSave(ExampleEntity exampleEntity, ExampleEntity res) {
-
+        @Override
+        public void overlappingMethod() {
+            getNext().overlappingMethod();
         }
+    }
 
-        @ApplyIfRole(isNot = BAD_BOY_ROLE, allowAnon = false)
-        @CalledByProxy
-        public void onAfterUpdate(ExampleEntity exampleEntity,Boolean full, ExampleEntity res) {
-
-        }
-
-        @CalledByProxy
-        @ApplyIfRole(is = ADMIN_ROLE, isNot = SPECIFIC_ADMIN_ROLE)
-        public void onAfterDeleteById(Long id){
-            //admin stuff
+    class SubExtension extends ServiceExtension<SubInterface> implements SubInterface{
+        @Override
+        public void overlappingMethod() {
+            getNext().overlappingMethod();
         }
     }
 
 
-
-    public static final String BAD_BOY_ROLE = "ROLE_BAD_BOI";
-    public static final String ADMIN_ROLE = "ADMIN_BOI";
-    public static final String SPECIFIC_ADMIN_ROLE = "SPECIFIC_ADMIN_BOI";
-    public static final String NEUTRAL_ROLE = "NEUTRAL_BOI";
-
-    //cant use mock auth template bc of cyclic dependency and maven test scope is not taken into consideration by intellij
-    Authentication authenticationMock = Mockito.spy(Authentication.class);
-    SecurityContext securityContextMock = Mockito.spy(SecurityContext.class);
-    ServicePluginProxy proxy;
+    Service proxy;
+    @Spy
+    Service service;
+    
+    @Spy
+    SubExtension subExtension;
+    @Spy
+    OverlappingExtension overlappingExtension;
+    @Spy
+    FooCrudServiceExtension serviceExtension;
     @Mock
-    ExampleService service;
-    @Mock
-    ExamplePlugin plugin;
-    @Mock
-    ExampleEntity entity;
+    Entity entity;
 
     @BeforeEach
     void setUp() {
         MockitoAnnotations.initMocks(this);
-        proxy = new ServicePluginProxy(service, Lists.newArrayList(plugin));
+        proxy = ServiceExtensionProxyFactory.create(service, subExtension,serviceExtension,overlappingExtension);
     }
 
     @Test
-    public void callMethod_shouldCallPluginsBeforeMethod() throws Throwable {
-        invokeProxy("save", entity);
-        Mockito.verify(plugin).onBeforeSave(entity);
+    public void invokeOverlappingMethod() throws Throwable {
+        InOrder inOrder = new InOrderImpl(Lists.newArrayList(service,subExtension,overlappingExtension));
+        proxy.overlappingMethod();
+        inOrder.verify(subExtension).overlappingMethod();
+        inOrder.verify(overlappingExtension).overlappingMethod();
+        inOrder.verify(service).overlappingMethod();
     }
 
-    @Test
-    public void callMethod_shouldCallPluginsAfterMethod_with_serviceResult_asLastArg() throws Throwable {
-        ExampleEntity result = new ExampleEntity("res");
-        Mockito.when(service.save(entity))
-                .thenReturn(result);
-        invokeProxy("save", entity);
-        Mockito.verify(plugin).onAfterSave(entity, result);
-    }
-
-    @Test
-    public void call_roleLimitedMethod_with_blacklistedRole_shouldNotCallPluginMethod() throws Throwable {
-        mockWithRoles(BAD_BOY_ROLE);
-        invokeProxy("save", entity);
-        Mockito.verify(plugin,Mockito.never()).onAfterSave(any(ExampleEntity.class),any(ExampleEntity.class));
-    }
-
-    @Test
-    public void call_roleLimitedMethod_with_requiredRole_shouldCallPluginMethod() throws Throwable {
-        mockWithRoles(ADMIN_ROLE);
-        invokeProxy("deleteById", 42L);
-        Mockito.verify(plugin).onAfterDeleteById(any(Long.class));
-    }
-
-    @Test
-    public void call_roleLimitedMethod_without_requiredRole_shouldNotCallPluginMethod() throws Throwable {
-        mockWithRoles(NEUTRAL_ROLE);
-        invokeProxy("deleteById", 42L);
-        Mockito.verify(plugin,Mockito.never()).onAfterDeleteById(any(Long.class));
-    }
-
-    @Test
-    public void call_roleLimitedMethod_with_required_and_blacklisted_Role_shouldNotCallPluginMethod() throws Throwable {
-        mockWithRoles(ADMIN_ROLE,SPECIFIC_ADMIN_ROLE);
-        invokeProxy("deleteById", 42L);
-        Mockito.verify(plugin,Mockito.never()).onAfterDeleteById(any(Long.class));
-    }
-
-    @Test
-    public void call_roleLimitedMethod_withDontAllowAnon_as_anon_shouldNotCallPluginMethod() throws Throwable {
-        invokeProxy("update", entity,true);
-        Mockito.verify(plugin,Mockito.never()).onAfterUpdate(any(ExampleEntity.class),any(Boolean.class),any(ExampleEntity.class));
-    }
-
-    private <T> T invokeProxy(String methodName, Object... args) throws Throwable {
-        Method customMethod = Arrays.stream(service.getClass().getMethods())
-                .filter(m -> m.getName().equals(methodName))
-                .findFirst().get();
-        return (T) proxy.invoke(service, customMethod, args);
-    }
-
-    private void mockWithRoles(String... roles) {
-        UsernamePasswordAuthenticationToken token = new UsernamePasswordAuthenticationToken("test", "test",
-                Arrays.stream(roles)
-                        .map(r -> new SimpleGrantedAuthority(r))
-                        .collect(Collectors.toSet())
-        );
-        Mockito.when(securityContextMock.getAuthentication()).thenReturn(token);
-        SecurityContextHolder.setContext(securityContextMock);
-    }
-
-    @AfterEach
-    void tearDown() {
-        Mockito.when(securityContextMock.getAuthentication()).thenReturn(null);
-    }
-
-    //see some analog tests in CrudServiceSecurityProxyTest for oder and entityClassArg appending
+//    @Test
+//    public void callMethod_shouldCallExtensionsAfterMethod_with_serviceResult_asLastArg() throws Throwable {
+//        Entity result = new Entity("res");
+//        Mockito.when(service.save(entity))
+//                .thenReturn(result);
+//        invokeProxy("save", entity);
+//        Mockito.verify(fooCrudServiceExtension).onAfterSave(entity, result);
+//    }
+//
+//    @Test
+//    public void call_roleLimitedMethod_with_blacklistedRole_shouldNotCallExtensionMethod() throws Throwable {
+//        mockWithRoles(BAD_BOY_ROLE);
+//        invokeProxy("save", entity);
+//        Mockito.verify(fooCrudServiceExtension,Mockito.never()).onAfterSave(any(Entity.class),any(Entity.class));
+//    }
+//
+//    @Test
+//    public void call_roleLimitedMethod_with_requiredRole_shouldCallExtensionMethod() throws Throwable {
+//        mockWithRoles(ADMIN_ROLE);
+//        invokeProxy("deleteById", 42L);
+//        Mockito.verify(fooCrudServiceExtension).onAfterDeleteById(any(Long.class));
+//    }
+//
+//    @Test
+//    public void call_roleLimitedMethod_without_requiredRole_shouldNotCallExtensionMethod() throws Throwable {
+//        mockWithRoles(NEUTRAL_ROLE);
+//        invokeProxy("deleteById", 42L);
+//        Mockito.verify(fooCrudServiceExtension,Mockito.never()).onAfterDeleteById(any(Long.class));
+//    }
+//
+//    @Test
+//    public void call_roleLimitedMethod_with_required_and_blacklisted_Role_shouldNotCallExtensionMethod() throws Throwable {
+//        mockWithRoles(ADMIN_ROLE,SPECIFIC_ADMIN_ROLE);
+//        invokeProxy("deleteById", 42L);
+//        Mockito.verify(fooCrudServiceExtension,Mockito.never()).onAfterDeleteById(any(Long.class));
+//    }
+//
+//    @Test
+//    public void call_roleLimitedMethod_withDontAllowAnon_as_anon_shouldNotCallExtensionMethod() throws Throwable {
+//        invokeProxy("update", entity,true);
+//        Mockito.verify(fooCrudServiceExtension,Mockito.never()).onAfterUpdate(any(Entity.class),any(Boolean.class),any(Entity.class));
+//    }
+//
+//    private <T> T invokeProxy(String methodName, Object... args) throws Throwable {
+//        Method customMethod = Arrays.stream(service.getClass().getMethods())
+//                .filter(m -> m.getName().equals(methodName))
+//                .findFirst().get();
+//        return (T) proxy.invoke(service, customMethod, args);
+//    }
+//
+//    private void mockWithRoles(String... roles) {
+//        UsernamePasswordAuthenticationToken token = new UsernamePasswordAuthenticationToken("test", "test",
+//                Arrays.stream(roles)
+//                        .map(r -> new SimpleGrantedAuthority(r))
+//                        .collect(Collectors.toSet())
+//        );
+//        Mockito.when(securityContextMock.getAuthentication()).thenReturn(token);
+//        SecurityContextHolder.setContext(securityContextMock);
+//    }
+//
+//    @AfterEach
+//    void tearDown() {
+//        Mockito.when(securityContextMock.getAuthentication()).thenReturn(null);
+//    }
+//
+//    //see some analog tests in CrudServiceSecurityProxyTest for oder and entityClassArg appending
 
 
 

@@ -20,7 +20,7 @@ import java.util.concurrent.ConcurrentHashMap;
  * @param <S>
  * @param <E>
  * @param <St>
- * @param <P>    This needs to be castable to P
+ * @param <P> By default this must be instance of P. You change that behavior by overriding {@link this#provideProxyController()}
  */
 @Getter
 @Setter
@@ -46,13 +46,13 @@ public abstract class AbstractExtensionServiceProxy
             this.methods.put(new MethodIdentifier(method), method);
         }
         this.proxied = proxied;
+        this.extensions.addAll(Arrays.asList(extensions));
         this.extensions.forEach(e -> {
             //extension expects chainController<T>, gets ChainController<S>, T is always superclass of S -> so this is safe
             e.setChain(this);
             //docs state that this must be castable to P
-            e.setProxyController((P) this);
+            e.setProxyController(provideProxyController());
         });
-        this.extensions.addAll(Arrays.asList(extensions));
     }
 
     protected St getState(){
@@ -62,6 +62,11 @@ public abstract class AbstractExtensionServiceProxy
     @Override
     public void dontCallTargetMethod() {
         getState().setCallTargetMethod(false);
+    }
+
+
+    protected P provideProxyController(){
+        return (P) this;
     }
 
     protected static class State{
@@ -84,6 +89,7 @@ public abstract class AbstractExtensionServiceProxy
 
     @EqualsAndHashCode
     @AllArgsConstructor
+    @Getter
     private static class MethodIdentifier{
         String methodName;
         Class<?>[] argTypes;
@@ -102,13 +108,16 @@ public abstract class AbstractExtensionServiceProxy
 
     //link of a chain
     @AllArgsConstructor
+    @Getter
     protected class ExtensionChainLink {
-        E E;
+        E extension;
         Method method;
 
         Object invoke(Object... args) throws InvocationTargetException, IllegalAccessException {
-            return method.invoke(E,args);
+            return method.invoke(extension,args);
         }
+
+
     }
 
     @Override
@@ -152,26 +161,24 @@ public abstract class AbstractExtensionServiceProxy
 
     @Override
     public Object getNext(AbstractServiceExtension extension) {
-        return null;
-    }
-
-    @Override
-    public <T> T getNext(AbstractServiceExtension<Object,?> extension) {
         State state = thead_state_map.get(Thread.currentThread());
         List<ExtensionChainLink> extensionChain = method_extensionChain_map.get(state.getMethodIdentifier());
-        int extensionIndex = extensionChain.indexOf(extension);
+        ExtensionChainLink link = extensionChain.stream()
+                .filter(e -> e.getExtension().equals(extension))
+                .findFirst().get();
+        int extensionIndex = extensionChain.indexOf(link);
         int nextIndex = extensionIndex+1;
         if (nextIndex>=extensionChain.size()){
             //no further extension available, return proxied
             //this cast is safe
 //            if (state.callTargetMethod) {
-            return (T) proxied;
+            return proxied;
 //            }else {
 //
 //            }
         }else {
             //this cast is also safe
-            return (T) extensionChain.get(nextIndex);
+            return extensionChain.get(nextIndex).getExtension();
         }
     }
 
@@ -197,7 +204,7 @@ public abstract class AbstractExtensionServiceProxy
             //all matching methods together form a chain
             //each link of the chain also saves its declared method
             Map.Entry<MethodIdentifier,List<ExtensionChainLink>> method_chain_entry = new HashMap.SimpleEntry<>(methodIdentifier,new ArrayList<>());
-            for (int i = extensions.size()-1; i > 0 ; i--) {
+            for (int i = 0; i < extensions.size() ; i++) {
                 E extension = extensions.get(i);
                 try {
                     Method extensionsMethod = MethodUtils.findMethod(extension.getClass(), method.getName(), method.getParameterTypes());

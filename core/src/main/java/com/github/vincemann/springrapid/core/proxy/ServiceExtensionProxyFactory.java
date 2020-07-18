@@ -1,13 +1,10 @@
 package com.github.vincemann.springrapid.core.proxy;
 
 
-import com.github.vincemann.springrapid.core.model.IdentifiableEntity;
 import com.github.vincemann.springrapid.core.service.CrudService;
 import org.apache.commons.lang3.ClassUtils;
-import org.springframework.data.repository.CrudRepository;
 import org.springframework.test.util.AopTestUtils;
 
-import java.io.Serializable;
 import java.lang.reflect.Proxy;
 
 public class ServiceExtensionProxyFactory {
@@ -15,17 +12,17 @@ public class ServiceExtensionProxyFactory {
     //-> this would make this crash
 
     /**
-     * Creates a {@link ExtensionServiceProxy} of @param crudService with given {@link CrudServicePlugin}s.
-     * The plugins will be called in the order you give them to this Factory.
+     * Creates a {@link ExtensionServiceProxy} of @param crudService with given {@link ServiceExtension}s.
+     * The extensions will be called in the order you give them to this Factory.
      */
-    public static <Id extends Serializable, E extends IdentifiableEntity<Id>, S extends CrudService<E, Id, ? extends CrudRepository<E, Id>>> S
-    create(S crudService, ServiceExtension<? super S>... plugins) {
+    public static <S extends CrudService> S
+    create(S crudService, ServiceExtension<? super S>... extensions) {
         //resolve spring aop proxy
         S unproxied = AopTestUtils.getUltimateTargetObject(crudService);
         S proxyInstance = (S) Proxy.newProxyInstance(
                 unproxied.getClass().getClassLoader(),
                 ClassUtils.getAllInterfaces(unproxied.getClass()).toArray(new Class[0]),
-                new ExtensionServiceProxy<S>(unproxied, plugins));
+                new ExtensionServiceProxy(unproxied, extensions));
         return proxyInstance;
     }
 
