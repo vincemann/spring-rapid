@@ -1,6 +1,5 @@
 package com.github.vincemann.springrapid.acl.proxy;
 
-import com.github.vincemann.springrapid.commons.Lists;
 import com.github.vincemann.springrapid.core.proxy.AbstractExtensionServiceProxy;
 import com.github.vincemann.springrapid.core.proxy.AbstractServiceExtension;
 import com.github.vincemann.springrapid.core.service.CrudService;
@@ -16,7 +15,7 @@ import java.lang.reflect.Method;
  * After all Rules have been applied in the order they were given in for construction, the {@link DefaultSecurityServiceExtension}
  * is applied if not prohibited (@see {@link OverrideDefaultSecurityRule})
  *
- * Is created by {@link SecurityServiceProxyFactory} or by {@link ConfigureProxies}.
+ * Is created by {@link SecurityExtensionServiceProxyFactory} or by {@link ConfigureProxies}.
  */
 class SecurityExtensionServiceProxy<S extends CrudService<?,?,?>>
         extends AbstractExtensionServiceProxy<S,SecurityServiceExtension<? super S>, SecurityExtensionServiceProxy.State,SecurityProxyController>
@@ -26,7 +25,8 @@ class SecurityExtensionServiceProxy<S extends CrudService<?,?,?>>
     private SecurityServiceExtension<? super S> defaultExtension;
 
     public SecurityExtensionServiceProxy(S proxied, SecurityServiceExtension<? super S> defaultExtension, SecurityServiceExtension<? super S>... extensions) {
-        super(proxied, Lists.newArrayList(defaultExtension,extensions).toArray(new SecurityServiceExtension[0]));
+        super(proxied,defaultExtension);
+        addExtension(extensions);
         this.defaultExtension = defaultExtension;
     }
 
@@ -34,7 +34,7 @@ class SecurityExtensionServiceProxy<S extends CrudService<?,?,?>>
     @Override
     public Object getNext(AbstractServiceExtension extension) {
         Object next = super.getNext(extension);
-        if (next.equals(defaultExtension) && getState().overrideDefaultExtension){
+        if (next.equals(defaultExtension) && getState().isOverrideDefaultExtension()){
             return getProxied();
         }
         return next;

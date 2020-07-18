@@ -1,8 +1,6 @@
 package com.github.vincemann.springlemon.auth.controller;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.github.vincemann.aoplog.Severity;
-import com.github.vincemann.aoplog.api.LogInteraction;
 import com.github.vincemann.aoplog.api.Lp;
 import com.github.vincemann.springlemon.auth.domain.AbstractUser;
 import com.github.vincemann.springlemon.auth.domain.dto.ChangePasswordForm;
@@ -20,7 +18,7 @@ import com.github.vincemann.springlemon.auth.util.LecwUtils;
 import com.github.vincemann.springlemon.auth.util.LemonUtils;
 import com.github.vincemann.springlemon.exceptions.util.LexUtils;
 import com.github.vincemann.springrapid.acl.Role;
-import com.github.vincemann.springrapid.acl.service.Secured;
+import com.github.vincemann.springrapid.acl.proxy.Secured;
 import com.github.vincemann.springrapid.core.controller.dtoMapper.context.Direction;
 import com.github.vincemann.springrapid.core.controller.dtoMapper.context.DtoMappingContext;
 import com.github.vincemann.springrapid.core.controller.dtoMapper.context.DtoMappingInfo;

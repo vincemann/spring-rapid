@@ -9,11 +9,11 @@ import org.springframework.test.util.AopTestUtils;
 import java.io.Serializable;
 import java.lang.reflect.Proxy;
 
-public class SecurityServiceProxyFactory {
+public class SecurityExtensionServiceProxyFactory {
 
     private SecurityServiceExtension defaultServiceSecurityExtension;
 
-    public SecurityServiceProxyFactory(@DefaultSecurityServiceExtension SecurityServiceExtension defaultServiceSecurityExtension
+    public SecurityExtensionServiceProxyFactory(@DefaultSecurityServiceExtension SecurityServiceExtension defaultServiceSecurityExtension
     ) {
         this.defaultServiceSecurityExtension = defaultServiceSecurityExtension;
     }

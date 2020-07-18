@@ -1,4 +1,4 @@
-package com.github.vincemann.springrapid.acl.service;
+package com.github.vincemann.springrapid.acl.proxy;
 
 import com.github.vincemann.springrapid.core.service.ServiceBeanType;
 import org.springframework.beans.factory.annotation.Qualifier;

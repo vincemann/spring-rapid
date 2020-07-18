@@ -24,10 +24,10 @@ public class SecurityProxyAutoConfiguration {
         return new DefaultSecurityServiceExtensionImpl();
     }
 
-    @ConditionalOnMissingBean(SecurityServiceProxyFactory.class)
+    @ConditionalOnMissingBean(SecurityExtensionServiceProxyFactory.class)
     @Bean
-    public SecurityServiceProxyFactory crudServiceSecurityProxyFactory(){
-        return new SecurityServiceProxyFactory(defaultServiceSecurityRule());
+    public SecurityExtensionServiceProxyFactory crudServiceSecurityProxyFactory(){
+        return new SecurityExtensionServiceProxyFactory(defaultServiceSecurityRule());
     }
 
     @Bean

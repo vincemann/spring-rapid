@@ -46,7 +46,7 @@ public abstract class AbstractExtensionServiceProxy
             this.methods.put(new MethodIdentifier(method), method);
         }
         this.proxied = proxied;
-        this.extensions.addAll(Arrays.asList(extensions));
+        this.extensions.addAll(Lists.newArrayList(extensions));
         this.extensions.forEach(e -> {
             //extension expects chainController<T>, gets ChainController<S>, T is always superclass of S -> so this is safe
             e.setChain(this);
@@ -54,6 +54,18 @@ public abstract class AbstractExtensionServiceProxy
             e.setProxyController(provideProxyController());
         });
     }
+
+    protected void addExtension(E... extension){
+        this.extensions.addAll(Lists.newArrayList(extension));
+        extensions.forEach(e -> {
+            //extension expects chainController<T>, gets ChainController<S>, T is always superclass of S -> so this is safe
+            e.setChain(this);
+            //docs state that this must be castable to P
+            e.setProxyController(provideProxyController());
+        });
+    }
+
+
 
     protected St getState(){
         return thead_state_map.get(Thread.currentThread());

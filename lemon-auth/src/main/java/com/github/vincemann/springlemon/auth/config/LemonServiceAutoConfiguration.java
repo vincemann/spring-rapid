@@ -5,11 +5,11 @@ import com.github.vincemann.springlemon.auth.security.LemonAclServiceExtension;
 import com.github.vincemann.springlemon.auth.service.LemonService;
 import com.github.vincemann.springlemon.auth.security.LemonServiceSecurityRule;
 import com.github.vincemann.springrapid.acl.plugin.CleanUpAclServiceExtension;
-import com.github.vincemann.springrapid.acl.proxy.SecurityServiceProxyFactory;
-import com.github.vincemann.springrapid.acl.service.AclManaging;
+import com.github.vincemann.springrapid.acl.proxy.SecurityExtensionServiceProxyFactory;
+import com.github.vincemann.springrapid.acl.proxy.AclManaging;
 import com.github.vincemann.springrapid.acl.service.LocalPermissionService;
 import com.github.vincemann.springrapid.acl.service.MockAuthService;
-import com.github.vincemann.springrapid.acl.service.Secured;
+import com.github.vincemann.springrapid.acl.proxy.Secured;
 import com.github.vincemann.springrapid.core.proxy.ServiceExtensionProxyFactory;
 import com.github.vincemann.springrapid.core.slicing.config.ServiceConfig;
 import lombok.extern.slf4j.Slf4j;
@@ -23,7 +23,7 @@ import org.springframework.security.acls.model.MutableAclService;
 public class LemonServiceAutoConfiguration {
 
     @Autowired
-    SecurityServiceProxyFactory securityProxyFactory;
+    SecurityExtensionServiceProxyFactory securityProxyFactory;
 
     @Autowired
     LocalPermissionService permissionService;

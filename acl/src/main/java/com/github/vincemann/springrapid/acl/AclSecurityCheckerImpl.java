@@ -5,6 +5,7 @@ import com.github.vincemann.aoplog.api.LogConfig;
 import com.github.vincemann.aoplog.api.LogException;
 import com.github.vincemann.aoplog.api.LogInteraction;
 import com.github.vincemann.springrapid.core.model.IdentifiableEntity;
+import com.github.vincemann.springrapid.core.service.SecurityCheckerImpl;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
@@ -36,7 +37,7 @@ import java.util.stream.Collectors;
 @LogInteraction
 @LogException
 @LogConfig(ignoreGetters = true,ignoreSetters = true)
-public class AclSecurityCheckerImpl implements AclSecurityChecker,ApplicationContextAware {
+public class AclSecurityCheckerImpl extends SecurityCheckerImpl implements AclSecurityChecker,ApplicationContextAware {
 
 
     private Method triggerCheckMethod;

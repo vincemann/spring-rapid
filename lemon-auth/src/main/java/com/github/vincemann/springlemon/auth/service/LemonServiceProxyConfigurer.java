@@ -2,8 +2,8 @@ package com.github.vincemann.springlemon.auth.service;
 
 import com.github.vincemann.springlemon.auth.config.LemonServiceAutoConfiguration;
 import com.github.vincemann.springrapid.acl.proxy.SecurityExtensionServiceProxy;
-import com.github.vincemann.springrapid.acl.service.AclManaging;
-import com.github.vincemann.springrapid.acl.service.Secured;
+import com.github.vincemann.springrapid.acl.proxy.AclManaging;
+import com.github.vincemann.springrapid.acl.proxy.Secured;
 import com.github.vincemann.springrapid.core.proxy.ServicePluginProxy;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
