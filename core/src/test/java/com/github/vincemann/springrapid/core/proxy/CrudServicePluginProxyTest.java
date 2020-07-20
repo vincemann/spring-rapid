@@ -14,7 +14,6 @@ import org.mockito.*;
 import org.mockito.internal.InOrderImpl;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.util.Assert;
 
 import static org.mockito.ArgumentMatchers.any;
 
@@ -109,7 +108,7 @@ class CrudServiceExtensionProxyTest {
     @BeforeEach
     void setUp() {
         MockitoAnnotations.initMocks(this);
-        proxy = ServiceExtensionProxyFactory.create(service, subExtension,serviceExtension,overlappingExtension);
+        proxy = ServiceExtensionProxyBuilder.create(service, subExtension,serviceExtension,overlappingExtension);
     }
 
     @Test

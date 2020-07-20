@@ -1,12 +1,15 @@
 package com.github.vincemann.springrapid.acl.proxy;
 
+import com.github.vincemann.springrapid.core.model.IdentifiableEntity;
 import com.github.vincemann.springrapid.core.proxy.AbstractExtensionServiceProxy;
 import com.github.vincemann.springrapid.core.proxy.AbstractServiceExtension;
 import com.github.vincemann.springrapid.core.service.CrudService;
+import com.github.vincemann.springrapid.core.service.SimpleCrudService;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 
+import java.io.Serializable;
 import java.lang.reflect.Method;
 
 @Slf4j
@@ -17,15 +20,19 @@ import java.lang.reflect.Method;
  *
  * Is created by {@link SecurityExtensionServiceProxyFactory} or by {@link ConfigureProxies}.
  */
-class SecurityExtensionServiceProxy<S extends CrudService<?,?,?>>
-        extends AbstractExtensionServiceProxy<S,SecurityServiceExtension<? super S>, SecurityExtensionServiceProxy.State,SecurityProxyController>
+class SecurityExtensionServiceProxy<S extends SimpleCrudService<E,Id>, E extends IdentifiableEntity<Id>, Id extends Serializable>
+        extends AbstractExtensionServiceProxy
+        <S,E,Id,
+                SecurityServiceExtension<? extends SimpleCrudService<? super E, ? super Id>>,
+                SecurityExtensionServiceProxy.State,
+                SecurityProxyController>
             implements SecurityProxyController
 {
 
-    private SecurityServiceExtension<? super S> defaultExtension;
+    private SecurityServiceExtension<? extends SimpleCrudService<? super E, ? super Id>> defaultExtension;
 
-    public SecurityExtensionServiceProxy(S proxied, SecurityServiceExtension<? super S> defaultExtension, SecurityServiceExtension<? super S>... extensions) {
-        super(proxied,extensions);
+    public SecurityExtensionServiceProxy(S proxied, SecurityServiceExtension<? extends SimpleCrudService<? super E, ? super Id>> defaultExtension, SecurityServiceExtension<? extends SimpleCrudService<? super E, ? super Id>>... extensions) {
+        super(proxied, extensions);
         addExtension(defaultExtension);
         this.defaultExtension = defaultExtension;
     }

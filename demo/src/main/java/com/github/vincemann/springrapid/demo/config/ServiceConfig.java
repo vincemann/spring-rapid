@@ -1,7 +1,6 @@
 package com.github.vincemann.springrapid.demo.config;
 
-import com.github.vincemann.springrapid.core.proxy.ServiceExtension;
-import com.github.vincemann.springrapid.core.proxy.ServiceExtensionProxyFactory;
+import com.github.vincemann.springrapid.core.proxy.ServiceExtensionProxyBuilder;
 import com.github.vincemann.springrapid.demo.service.OwnerService;
 import com.github.vincemann.springrapid.demo.service.PetService;
 import com.github.vincemann.springrapid.demo.service.plugin.AclPlugin;
@@ -18,9 +17,9 @@ public class ServiceConfig {
     @Bean
     public PetService extendedPetService(@Qualifier("noProxy") PetService petService,
                                          AclPlugin aclPlugin) {
-        return ServiceExtensionProxyFactory.create(petService,
-                aclPlugin
-        );
+        return ServiceExtensionProxyBuilder.builder(petService)
+                .addSuperExtensions(aclPlugin)
+                .build();
     }
 
     @Primary
@@ -29,10 +28,9 @@ public class ServiceConfig {
                                      SaveNameToWordPressDbPlugin saveNameToWordPressDbPlugin,
                                      OwnerOfTheYearPlugin ownerOfTheYearPlugin,
                                      AclPlugin aclPlugin) {
-        return ServiceExtensionProxyFactory.create(ownerService,
-                saveNameToWordPressDbPlugin,
-                ownerOfTheYearPlugin,
-                aclPlugin
-        );
+        return ServiceExtensionProxyBuilder.builder(ownerService)
+                .addServiceExtensions(saveNameToWordPressDbPlugin, ownerOfTheYearPlugin)
+                .addSuperExtensions(aclPlugin)
+                .build();
     }
 }

@@ -2,6 +2,7 @@ package com.github.vincemann.springrapid.core.proxy;
 
 import com.github.vincemann.aoplog.MethodUtils;
 import com.github.vincemann.springrapid.commons.Lists;
+import com.github.vincemann.springrapid.core.model.IdentifiableEntity;
 import com.github.vincemann.springrapid.core.service.CrudService;
 import com.github.vincemann.springrapid.core.service.SimpleCrudService;
 import lombok.AllArgsConstructor;
@@ -10,6 +11,7 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 
+import java.io.Serializable;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -29,7 +31,7 @@ import java.util.concurrent.ConcurrentHashMap;
 public abstract class AbstractExtensionServiceProxy
         <
                 S extends SimpleCrudService<?,?>,
-                E  extends AbstractServiceExtension<? super S,P>,
+                E  extends AbstractServiceExtension<?,P>,
                 St extends AbstractExtensionServiceProxy.State,
                 P extends ProxyController>
 
@@ -54,17 +56,18 @@ public abstract class AbstractExtensionServiceProxy
             //docs state that this must be castable to P
             e.setProxyController(provideProxyController());
         });
+
     }
 
-    protected void addExtension(E... extension){
-        this.extensions.addAll(Lists.newArrayList(extension));
-        extensions.forEach(e -> {
-            //extension expects chainController<T>, gets ChainController<S>, T is always superclass of S -> so this is safe
-            e.setChain(this);
-            //docs state that this must be castable to P
-            e.setProxyController(provideProxyController());
-        });
+
+    protected void addExtension(E extension){
+        this.extensions.add(extension);
+        //extension expects chainController<T>, gets ChainController<S>, T is always superclass of S -> so this is safe
+        extension.setChain(this);
+        //docs state that this must be castable to P
+        extension.setProxyController(provideProxyController());
     }
+
 
 
 

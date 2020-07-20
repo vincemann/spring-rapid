@@ -1,6 +1,7 @@
 package com.github.vincemann.springrapid.demo.service.plugin;
 
 import com.github.vincemann.springrapid.core.proxy.CrudServiceExtension;
+import com.github.vincemann.springrapid.core.proxy.GenericCrudServiceExtension;
 import com.github.vincemann.springrapid.core.proxy.ServiceExtension;
 import com.github.vincemann.springrapid.core.service.CrudService;
 import com.github.vincemann.springrapid.core.service.SimpleCrudService;
@@ -14,7 +15,8 @@ import java.io.Serializable;
 
 @Slf4j
 @ServiceComponent
-public class AclPlugin extends ServiceExtension<SimpleCrudService>  implements CrudServiceExtension<SimpleCrudService> {
+public class AclPlugin extends ServiceExtension<SimpleCrudService>
+        implements CrudServiceExtension<SimpleCrudService> {
 
     @Override
     public IdentifiableEntity save(IdentifiableEntity entity) throws BadEntityException {
