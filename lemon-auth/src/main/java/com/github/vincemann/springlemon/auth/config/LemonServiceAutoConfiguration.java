@@ -10,7 +10,7 @@ import com.github.vincemann.springrapid.acl.proxy.AclManaging;
 import com.github.vincemann.springrapid.acl.service.LocalPermissionService;
 import com.github.vincemann.springrapid.acl.service.MockAuthService;
 import com.github.vincemann.springrapid.acl.proxy.Secured;
-import com.github.vincemann.springrapid.core.proxy.ServiceExtensionProxyFactory;
+import com.github.vincemann.springrapid.core.proxy.ServiceExtensionProxyBuilder;
 import com.github.vincemann.springrapid.core.slicing.config.ServiceConfig;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -60,7 +60,7 @@ public class LemonServiceAutoConfiguration {
 //                                                                            AdminFullAccessAclPlugin adminFullAccess,
 //                                                                            AuthenticatedFullAccessAclPlugin authenticatedFullAccessAclPlugin,
                                                        CleanUpAclServiceExtension cleanUpAclPlugin){
-        return ServiceExtensionProxyFactory.create(service/*,adminFullAccess*/,lemonAclPlugin(),/*authenticatedFullAccessAclPlugin,*/cleanUpAclPlugin);
+        return ServiceExtensionProxyBuilder.create(service/*,adminFullAccess*/,lemonAclPlugin(),/*authenticatedFullAccessAclPlugin,*/cleanUpAclPlugin);
     }
 
 
