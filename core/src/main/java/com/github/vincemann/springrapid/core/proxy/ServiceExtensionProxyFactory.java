@@ -1,10 +1,12 @@
 package com.github.vincemann.springrapid.core.proxy;
 
 
-import com.github.vincemann.springrapid.core.service.CrudService;
+import com.github.vincemann.springrapid.core.model.IdentifiableEntity;
+import com.github.vincemann.springrapid.core.service.SimpleCrudService;
 import org.apache.commons.lang3.ClassUtils;
 import org.springframework.test.util.AopTestUtils;
 
+import java.io.Serializable;
 import java.lang.reflect.Proxy;
 
 public class ServiceExtensionProxyFactory {
@@ -15,7 +17,7 @@ public class ServiceExtensionProxyFactory {
      * Creates a {@link ExtensionServiceProxy} of @param crudService with given {@link ServiceExtension}s.
      * The extensions will be called in the order you give them to this Factory.
      */
-    public static <S extends CrudService> S
+    public static <E extends IdentifiableEntity<Id>,Id extends Serializable, S extends SimpleCrudService<E,Id>> S
     create(S crudService, ServiceExtension<? super S>... extensions) {
         //resolve spring aop proxy
         S unproxied = AopTestUtils.getUltimateTargetObject(crudService);

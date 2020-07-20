@@ -1,9 +1,12 @@
 package com.github.vincemann.springrapid.demo.service.plugin;
 
-import com.github.vincemann.springrapid.demo.model.abs.Person;
-import com.github.vincemann.springrapid.core.slicing.components.ServiceComponent;
 import com.github.vincemann.springrapid.core.controller.RapidController;
-import com.github.vincemann.springrapid.core.proxy.CrudServicePlugin;
+import com.github.vincemann.springrapid.core.proxy.GenericCrudServiceExtension;
+import com.github.vincemann.springrapid.core.proxy.ServiceExtension;
+import com.github.vincemann.springrapid.core.service.SimpleCrudService;
+import com.github.vincemann.springrapid.core.service.exception.BadEntityException;
+import com.github.vincemann.springrapid.core.slicing.components.ServiceComponent;
+import com.github.vincemann.springrapid.demo.model.abs.Person;
 import lombok.extern.slf4j.Slf4j;
 
 /**
@@ -11,10 +14,14 @@ import lombok.extern.slf4j.Slf4j;
  */
 @Slf4j
 @ServiceComponent
-public class SaveNameToWordPressDbPlugin extends CrudServicePlugin<Person,Long> {
+public class SaveNameToWordPressDbPlugin extends ServiceExtension<SimpleCrudService<Person,Long>>
+        implements GenericCrudServiceExtension<SimpleCrudService<Person,Long>,Person,Long> {
 
-    public void onBeforeSave(Person toSave, Class<? extends Person> entityClass) {
-        if(toSave!=null)
-            log.debug("saving Persons name: "+ toSave.getFirstName() + " into wordpress database");
+
+    @Override
+    public Person save(Person entity) throws BadEntityException {
+        if(entity!=null)
+            log.debug("saving Persons name: "+ entity.getFirstName() + " into wordpress database");
+        return getNext().save(entity);
     }
 }

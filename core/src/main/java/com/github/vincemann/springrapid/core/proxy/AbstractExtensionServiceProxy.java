@@ -3,6 +3,7 @@ package com.github.vincemann.springrapid.core.proxy;
 import com.github.vincemann.aoplog.MethodUtils;
 import com.github.vincemann.springrapid.commons.Lists;
 import com.github.vincemann.springrapid.core.service.CrudService;
+import com.github.vincemann.springrapid.core.service.SimpleCrudService;
 import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
@@ -27,7 +28,7 @@ import java.util.concurrent.ConcurrentHashMap;
 @Slf4j
 public abstract class AbstractExtensionServiceProxy
         <
-                S extends CrudService<?,?,?>,
+                S extends SimpleCrudService<?,?>,
                 E  extends AbstractServiceExtension<? super S,P>,
                 St extends AbstractExtensionServiceProxy.State,
                 P extends ProxyController>
@@ -114,7 +115,7 @@ public abstract class AbstractExtensionServiceProxy
     }
 
     @Override
-    public CrudService getLast() {
+    public SimpleCrudService<?, ?> getLast() {
         return proxied;
     }
 
