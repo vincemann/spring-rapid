@@ -25,8 +25,8 @@ class SecurityExtensionServiceProxy<S extends CrudService<?,?,?>>
     private SecurityServiceExtension<? super S> defaultExtension;
 
     public SecurityExtensionServiceProxy(S proxied, SecurityServiceExtension<? super S> defaultExtension, SecurityServiceExtension<? super S>... extensions) {
-        super(proxied,defaultExtension);
-        addExtension(extensions);
+        super(proxied,extensions);
+        addExtension(defaultExtension);
         this.defaultExtension = defaultExtension;
     }
 
