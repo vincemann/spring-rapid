@@ -14,10 +14,13 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InOrder;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.Spy;
 import org.mockito.internal.InOrderImpl;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.data.jpa.repository.JpaRepository;
+
+import static org.mockito.ArgumentMatchers.any;
 
 @ExtendWith(MockitoExtension.class)
 class CrudSecurityServiceProxyTest {
@@ -90,7 +93,18 @@ class CrudSecurityServiceProxyTest {
     }
 
     @Test
-    public void testOverrideDefaultRule(){
+    public void testOverrideDefaultRule() throws BadEntityException {
+        InOrder inOrder = new InOrderImpl(Lists.newArrayList(service,fooSecurityExtension));
+        proxy.save(entity);
+        inOrder.verify(fooSecurityExtension).save(entity);
+        inOrder.verify(service).save(entity);
 
+        Mockito.verify(defaultSecurityExtension,Mockito.never()).save(any());
+    }
+
+    @Test
+    public void testOverrideDefaultRule_callNonOverridingMethod() throws BadEntityException {
+        testOverrideDefaultRule();
+        testCallDefaultRule();
     }
 }
