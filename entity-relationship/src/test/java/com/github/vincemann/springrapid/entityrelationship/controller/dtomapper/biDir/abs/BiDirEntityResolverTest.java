@@ -1,6 +1,5 @@
 package com.github.vincemann.springrapid.entityrelationship.controller.dtomapper.biDir.abs;
 
-import com.github.vincemann.springrapid.core.config.ReflectionCacheAutoConfiguration;
 import com.github.vincemann.springrapid.entityrelationship.controller.dtomapper.biDir.testEntities.BiDirEntityChild;
 import com.github.vincemann.springrapid.entityrelationship.controller.dtomapper.biDir.testEntities.BiDirEntityParent;
 import com.github.vincemann.springrapid.entityrelationship.controller.dtomapper.biDir.testEntities.BiDirSecondEntityParent;
@@ -22,7 +21,6 @@ import static org.mockito.Mockito.when;
 /**
  * Requires @MockitoSettings(strictness = Strictness.LENIENT) class level annotation on ChildClass
  */
-@SpringJUnitConfig(ReflectionCacheAutoConfiguration.class)
 public abstract class BiDirEntityResolverTest {
 
     @Mock

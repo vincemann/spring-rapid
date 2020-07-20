@@ -1,19 +1,31 @@
 package com.github.vincemann.springrapid.demo.service.plugin;
 
+import com.github.vincemann.springrapid.core.proxy.CrudServiceExtension;
+import com.github.vincemann.springrapid.core.proxy.ServiceExtension;
+import com.github.vincemann.springrapid.core.service.CrudService;
+import com.github.vincemann.springrapid.core.service.SimpleCrudService;
+import com.github.vincemann.springrapid.core.service.exception.BadEntityException;
+import com.github.vincemann.springrapid.core.service.exception.EntityNotFoundException;
 import com.github.vincemann.springrapid.core.slicing.components.ServiceComponent;
 import com.github.vincemann.springrapid.core.model.IdentifiableEntity;
-import com.github.vincemann.springrapid.core.proxy.CrudServicePlugin;
 import lombok.extern.slf4j.Slf4j;
+
+import java.io.Serializable;
 
 @Slf4j
 @ServiceComponent
-public class AclPlugin extends CrudServicePlugin<IdentifiableEntity<Long>,Long>  {
+public class AclPlugin extends ServiceExtension<SimpleCrudService>  implements CrudServiceExtension<SimpleCrudService> {
 
-    public void onBeforeSave(IdentifiableEntity<Long> toSave, Class<? extends IdentifiableEntity<Long>> entityClass) {
-        log.debug("creating acl list for Entity with class: " + entityClass);
+    @Override
+    public IdentifiableEntity save(IdentifiableEntity entity) throws BadEntityException {
+        log.debug("creating acl list for Entity with class: " + getEntityClass());
+        return getNext().save(entity);
     }
 
-    public void onBeforeDeleteById(Long id, Class<? extends IdentifiableEntity<Long>> entityClass) {
-        log.debug("deleting acl list for Entity with class: " + entityClass);
+    @Override
+    public void deleteById(Serializable id) throws EntityNotFoundException, BadEntityException {
+        log.debug("deleting acl list for Entity with class: " + getEntityClass());
+        getNext().deleteById(id);
     }
+
 }

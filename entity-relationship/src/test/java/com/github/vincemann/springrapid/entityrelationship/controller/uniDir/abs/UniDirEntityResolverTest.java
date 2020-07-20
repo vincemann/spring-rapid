@@ -1,7 +1,6 @@
 package com.github.vincemann.springrapid.entityrelationship.controller.uniDir.abs;
 
 
-import com.github.vincemann.springrapid.core.config.ReflectionCacheAutoConfiguration;
 import com.github.vincemann.springrapid.entityrelationship.controller.uniDir.testEntities.UniDirEntityChild;
 import com.github.vincemann.springrapid.entityrelationship.controller.uniDir.testEntities.UniDirEntityChildsParent;
 import com.github.vincemann.springrapid.entityrelationship.controller.uniDir.testEntities.UniDirEntityParent;
@@ -22,7 +21,6 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.when;
 
 @Getter
-@SpringJUnitConfig(ReflectionCacheAutoConfiguration.class)
 public abstract class UniDirEntityResolverTest {
 
     @Mock

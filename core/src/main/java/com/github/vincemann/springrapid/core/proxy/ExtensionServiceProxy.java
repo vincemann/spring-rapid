@@ -1,6 +1,6 @@
 package com.github.vincemann.springrapid.core.proxy;
 
-import com.github.vincemann.springrapid.core.service.CrudService;
+import com.github.vincemann.springrapid.core.service.SimpleCrudService;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
@@ -10,7 +10,7 @@ import java.lang.reflect.Method;
 @Getter
 @Setter
 @Slf4j
-public class ExtensionServiceProxy<S extends CrudService<?,?,?>>
+public class ExtensionServiceProxy<S extends SimpleCrudService<?,?>>
         extends AbstractExtensionServiceProxy<S,ServiceExtension<? super S>, AbstractExtensionServiceProxy.State,ExtensionServiceProxy> {
 
     public ExtensionServiceProxy(S proxied, ServiceExtension<? super S>... extensions) {

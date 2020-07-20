@@ -7,15 +7,19 @@ import com.github.vincemann.springlemon.auth.domain.dto.RequestEmailChangeForm;
 import com.github.vincemann.springlemon.auth.domain.dto.ResetPasswordForm;
 import com.github.vincemann.springlemon.auth.properties.LemonProperties;
 import com.github.vincemann.springlemon.auth.service.LemonService;
+import com.github.vincemann.springlemon.auth.service.SimpleLemonService;
 import com.github.vincemann.springlemon.auth.util.LemonUtils;
 import com.github.vincemann.springrapid.acl.plugin.AbstractAclServiceExtension;
 import com.github.vincemann.springrapid.acl.service.LocalPermissionService;
 import com.github.vincemann.springrapid.acl.service.MockAuthService;
 import com.github.vincemann.springrapid.core.model.IdentifiableEntity;
 import com.github.vincemann.springrapid.core.proxy.CrudServiceExtension;
+import com.github.vincemann.springrapid.core.proxy.GenericCrudServiceExtension;
+import com.github.vincemann.springrapid.core.service.SimpleCrudService;
 import com.github.vincemann.springrapid.core.service.exception.BadEntityException;
 import com.github.vincemann.springrapid.core.service.exception.EntityNotFoundException;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.repository.CrudRepository;
 import org.springframework.security.acls.domain.BasePermission;
 import org.springframework.security.acls.model.MutableAclService;
 import org.springframework.transaction.annotation.Transactional;
@@ -32,8 +36,9 @@ import java.util.Optional;
 @Slf4j
 @Transactional
 public class LemonAclServiceExtension
-        extends AbstractAclServiceExtension<LemonService>
-            implements LemonService, CrudServiceExtension<LemonService>
+        extends AbstractAclServiceExtension<SimpleLemonService<AbstractUser<Serializable>,Serializable>>
+            implements SimpleLemonService<AbstractUser<Serializable>,Serializable>,
+                    GenericCrudServiceExtension<SimpleLemonService<AbstractUser<Serializable>,Serializable>,AbstractUser<Serializable>,Serializable>
 {
     //todo rename methods and switch from proxies naming convention to annotations + add @LogInteraction when method names say something
     private AbstractUserRepository repository;
@@ -45,13 +50,20 @@ public class LemonAclServiceExtension
 
 
 
+//    @Override
+//    public IdentifiableEntity save(IdentifiableEntity entity) throws BadEntityException {
+//        AbstractUser saved = (AbstractUser) getNext().save(entity);
+//        savePostSignupAclInfo(saved.getEmail());
+//        return saved;
+//    }
+
+
     @Override
-    public IdentifiableEntity save(IdentifiableEntity entity) throws BadEntityException {
-        AbstractUser saved = (AbstractUser) getNext().save(entity);
+    public AbstractUser<Serializable> save(AbstractUser<Serializable> entity) throws BadEntityException {
+        AbstractUser saved = getNext().save(entity);
         savePostSignupAclInfo(saved.getEmail());
         return saved;
     }
-
 
     @Override
     public AbstractUser update(AbstractUser entity, Boolean full) throws EntityNotFoundException, BadEntityException {
