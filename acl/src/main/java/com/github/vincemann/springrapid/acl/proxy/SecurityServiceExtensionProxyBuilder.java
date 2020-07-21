@@ -11,11 +11,12 @@ import java.lang.reflect.Proxy;
 public class SecurityServiceExtensionProxyBuilder<S extends SimpleCrudService<E,Id>,E extends IdentifiableEntity<Id>, Id extends Serializable> {
 
     private SecurityExtensionServiceProxy<S> proxy;
+    private SecurityServiceExtension<?> defaultSecurityExtension;
 
 
     protected SecurityServiceExtensionProxyBuilder(S proxied,SecurityServiceExtension<?> defaultSecurityExtension){
         this.proxy= new SecurityExtensionServiceProxy<>(proxied);
-        this.proxy.addExtension(defaultSecurityExtension);
+        this.defaultSecurityExtension = defaultSecurityExtension;
     }
 
 
@@ -43,6 +44,8 @@ public class SecurityServiceExtensionProxyBuilder<S extends SimpleCrudService<E,
 
 
     public S build(){
+        this.proxy.addExtension(defaultSecurityExtension);
+        this.proxy.setDefaultExtension(defaultSecurityExtension);
         S unproxied = AopTestUtils.getUltimateTargetObject(proxy.getProxied());
         S proxyInstance = (S) Proxy.newProxyInstance(
                 unproxied.getClass().getClassLoader(),

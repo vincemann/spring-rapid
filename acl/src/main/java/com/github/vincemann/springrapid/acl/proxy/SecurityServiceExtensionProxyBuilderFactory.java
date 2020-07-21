@@ -15,7 +15,8 @@ public class SecurityServiceExtensionProxyBuilderFactory {
         this.defaultSecurityExtension = defaultSecurityExtension;
     }
 
-    public <S extends SimpleCrudService<E,Id>,E extends IdentifiableEntity<Id>, Id extends Serializable> SecurityServiceExtensionProxyBuilder<S,E,Id> create(S proxied){
+    public <S extends SimpleCrudService<E,Id>,E extends IdentifiableEntity<Id>, Id extends Serializable> SecurityServiceExtensionProxyBuilder<S,E,Id>
+    create(S proxied){
         return new SecurityServiceExtensionProxyBuilder<>(proxied,defaultSecurityExtension);
     }
 }

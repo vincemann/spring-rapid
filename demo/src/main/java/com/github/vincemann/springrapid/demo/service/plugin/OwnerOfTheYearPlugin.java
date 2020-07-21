@@ -1,6 +1,6 @@
 package com.github.vincemann.springrapid.demo.service.plugin;
 
-import com.github.vincemann.springrapid.core.proxy.GenericCrudServiceExtension;
+import com.github.vincemann.springrapid.core.proxy.GenericSimpleCrudServiceExtension;
 import com.github.vincemann.springrapid.core.proxy.ServiceExtension;
 import com.github.vincemann.springrapid.core.slicing.components.ServiceComponent;
 import com.github.vincemann.springrapid.demo.model.Owner;
@@ -10,7 +10,7 @@ import com.github.vincemann.springrapid.demo.service.OwnerService;
 import java.util.Optional;
 
 @ServiceComponent
-public class OwnerOfTheYearPlugin extends ServiceExtension<OwnerService> implements OwnerService, GenericCrudServiceExtension<OwnerService,Owner,Long> {
+public class OwnerOfTheYearPlugin extends ServiceExtension<OwnerService> implements OwnerService, GenericSimpleCrudServiceExtension<OwnerService,Owner,Long> {
 
 
     @Override

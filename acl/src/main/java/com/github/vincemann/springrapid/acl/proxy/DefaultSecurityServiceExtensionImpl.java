@@ -1,7 +1,7 @@
 package com.github.vincemann.springrapid.acl.proxy;
 
 import com.github.vincemann.springrapid.core.model.IdentifiableEntity;
-import com.github.vincemann.springrapid.core.proxy.CrudServiceExtension;
+import com.github.vincemann.springrapid.core.proxy.SimpleCrudServiceExtension;
 import com.github.vincemann.springrapid.core.service.CrudService;
 import com.github.vincemann.springrapid.core.service.exception.BadEntityException;
 import com.github.vincemann.springrapid.core.service.exception.EntityNotFoundException;
@@ -14,7 +14,7 @@ import java.util.Set;
  * Does basic acl permission checks on crud Methods defined in {@link com.github.vincemann.springrapid.core.service.CrudService}.
  * @see com.github.vincemann.springrapid.acl.proxy.DefaultSecurityServiceExtension
  */
-public class DefaultSecurityServiceExtensionImpl extends SecurityServiceExtension<CrudService> implements CrudServiceExtension<CrudService> {
+public class DefaultSecurityServiceExtensionImpl extends SecurityServiceExtension<CrudService> implements SimpleCrudServiceExtension<CrudService> {
 
     private Class<?> entityClass;
 

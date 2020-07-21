@@ -3,8 +3,9 @@ package com.github.vincemann.springrapid.acl.proxy;
 import com.github.vincemann.springrapid.commons.Lists;
 import com.github.vincemann.springrapid.core.model.IdentifiableEntity;
 import com.github.vincemann.springrapid.core.model.IdentifiableEntityImpl;
-import com.github.vincemann.springrapid.core.proxy.CrudServiceExtension;
+import com.github.vincemann.springrapid.core.proxy.SimpleCrudServiceExtension;
 import com.github.vincemann.springrapid.core.service.CrudService;
+import com.github.vincemann.springrapid.core.service.SimpleCrudService;
 import com.github.vincemann.springrapid.core.service.exception.BadEntityException;
 import com.github.vincemann.springrapid.core.service.jpa.JPACrudService;
 import lombok.AllArgsConstructor;
@@ -93,7 +94,7 @@ class CrudSecurityServiceProxyTest {
         }
     }
 
-    class FooSecurityExtension extends SecurityServiceExtension<CrudService> implements CrudServiceExtension<CrudService> {
+    class FooSecurityExtension extends SecurityServiceExtension<SimpleCrudService> implements SimpleCrudServiceExtension<SimpleCrudService> {
 
         @Override
         public IdentifiableEntity save(IdentifiableEntity entity) throws BadEntityException {
@@ -103,7 +104,7 @@ class CrudSecurityServiceProxyTest {
 
     }
 
-    class DefaultSecurityExtension extends SecurityServiceExtension<CrudService> implements CrudServiceExtension<CrudService> {
+    class DefaultSecurityExtension extends SecurityServiceExtension<SimpleCrudService> implements SimpleCrudServiceExtension<SimpleCrudService> {
 
 
     }
