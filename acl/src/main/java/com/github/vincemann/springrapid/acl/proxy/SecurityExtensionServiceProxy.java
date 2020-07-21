@@ -20,23 +20,26 @@ import java.lang.reflect.Method;
  *
  * Is created by {@link SecurityExtensionServiceProxyFactory} or by {@link ConfigureProxies}.
  */
-class SecurityExtensionServiceProxy<S extends SimpleCrudService<E,Id>, E extends IdentifiableEntity<Id>, Id extends Serializable>
+class SecurityExtensionServiceProxy<S extends SimpleCrudService<?,?>>
         extends AbstractExtensionServiceProxy
-        <S,E,Id,
-                SecurityServiceExtension<? extends SimpleCrudService<? super E, ? super Id>>,
+        <       S,
+                SecurityServiceExtension<?>,
                 SecurityExtensionServiceProxy.State,
                 SecurityProxyController>
             implements SecurityProxyController
 {
 
-    private SecurityServiceExtension<? extends SimpleCrudService<? super E, ? super Id>> defaultExtension;
+    private SecurityServiceExtension<?> defaultExtension;
 
-    public SecurityExtensionServiceProxy(S proxied, SecurityServiceExtension<? extends SimpleCrudService<? super E, ? super Id>> defaultExtension, SecurityServiceExtension<? extends SimpleCrudService<? super E, ? super Id>>... extensions) {
+    public SecurityExtensionServiceProxy(S proxied, SecurityServiceExtension<?> defaultExtension, SecurityServiceExtension<?>... extensions) {
         super(proxied, extensions);
         addExtension(defaultExtension);
         this.defaultExtension = defaultExtension;
     }
 
+    public SecurityExtensionServiceProxy(S proxied, SecurityServiceExtension<?>... extensions) {
+        super(proxied, extensions);
+    }
 
     @Override
     public Object getNext(AbstractServiceExtension extension) {

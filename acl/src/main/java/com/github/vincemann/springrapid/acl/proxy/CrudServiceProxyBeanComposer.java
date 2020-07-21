@@ -32,10 +32,10 @@ import java.util.Optional;
 public class CrudServiceProxyBeanComposer implements BeanPostProcessor, ApplicationContextAware {
 
     private DefaultListableBeanFactory beanFactory;
-    private SecurityExtensionServiceProxyFactory securityProxyFactory;
+    private SecurityServiceExtensionProxyBuilderFactory securityProxyFactory;
 
     @Autowired
-    public CrudServiceProxyBeanComposer(SecurityExtensionServiceProxyFactory securityProxyFactory) {
+    public CrudServiceProxyBeanComposer(SecurityServiceExtensionProxyBuilderFactory securityProxyFactory) {
         this.securityProxyFactory = securityProxyFactory;
     }
 
