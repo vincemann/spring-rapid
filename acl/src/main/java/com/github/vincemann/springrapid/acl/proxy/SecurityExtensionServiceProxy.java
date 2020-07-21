@@ -1,6 +1,5 @@
 package com.github.vincemann.springrapid.acl.proxy;
 
-import com.github.vincemann.springrapid.core.model.IdentifiableEntity;
 import com.github.vincemann.springrapid.core.proxy.AbstractExtensionServiceProxy;
 import com.github.vincemann.springrapid.core.proxy.AbstractServiceExtension;
 import com.github.vincemann.springrapid.core.service.CrudService;
@@ -9,7 +8,6 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 
-import java.io.Serializable;
 import java.lang.reflect.Method;
 
 @Slf4j

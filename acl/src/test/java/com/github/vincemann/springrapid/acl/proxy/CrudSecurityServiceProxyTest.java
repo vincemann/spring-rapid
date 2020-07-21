@@ -25,9 +25,56 @@ import static org.mockito.ArgumentMatchers.any;
 @ExtendWith(MockitoExtension.class)
 class CrudSecurityServiceProxyTest {
 
+    Service proxy;
+    @Spy
+    Service service;
+    @Spy
+    DefaultSecurityExtension defaultSecurityExtension;
+    @Spy
+    FooSecurityExtension fooSecurityExtension;
+    @Mock
+    Entity entity;
+
+    @BeforeEach
+    void setUp() {
+        proxy = new SecurityServiceExtensionProxyBuilderFactory(defaultSecurityExtension)
+                .create(service)
+                .addSuperExtensions(fooSecurityExtension)
+                .build();
+    }
+
+    @Test
+    public void testCallDefaultRule() throws BadEntityException {
+        Long id = 42L;
+        InOrder inOrder = new InOrderImpl(Lists.newArrayList(service, defaultSecurityExtension, fooSecurityExtension));
+        proxy.findById(id);
+        inOrder.verify(fooSecurityExtension).findById(id);
+        inOrder.verify(defaultSecurityExtension).findById(id);
+        inOrder.verify(service).findById(id);
+    }
+
+    @Test
+    public void testOverrideDefaultRule() throws BadEntityException {
+        InOrder inOrder = new InOrderImpl(Lists.newArrayList(service, fooSecurityExtension));
+        proxy.save(entity);
+        inOrder.verify(fooSecurityExtension).save(entity);
+        inOrder.verify(service).save(entity);
+
+        Mockito.verify(defaultSecurityExtension, Mockito.never()).save(any());
+    }
+
+    @Test
+    public void testOverrideDefaultRule_callNonOverridingMethod() throws BadEntityException {
+        testOverrideDefaultRule();
+        testCallDefaultRule();
+    }
+
+    interface Service extends CrudService<Entity, Long, JpaRepository<Entity, Long>> {
+    }
+
     @AllArgsConstructor
     @NoArgsConstructor
-    class ExampleEntity extends IdentifiableEntityImpl<Long>{
+    class ExampleEntity extends IdentifiableEntityImpl<Long> {
         String name;
     }
 
@@ -37,11 +84,8 @@ class CrudSecurityServiceProxyTest {
         String name;
     }
 
-    interface Service extends CrudService<Entity, Long, JpaRepository<Entity, Long>>{
-    }
-
     class ServiceImpl extends JPACrudService<Entity, Long, JpaRepository<Entity, Long>>
-            implements Service{
+            implements Service {
 
         @Override
         public Class<?> getTargetClass() {
@@ -59,52 +103,8 @@ class CrudSecurityServiceProxyTest {
 
     }
 
-    class DefaultSecurityExtension extends SecurityServiceExtension<CrudService> implements CrudServiceExtension<CrudService>{
+    class DefaultSecurityExtension extends SecurityServiceExtension<CrudService> implements CrudServiceExtension<CrudService> {
 
 
-    }
-
-    Service proxy;
-    @Spy
-    Service service;
-
-    @Spy
-    DefaultSecurityExtension defaultSecurityExtension;
-
-    @Spy
-    FooSecurityExtension fooSecurityExtension;
-
-    @Mock
-    Entity entity;
-
-    @BeforeEach
-    void setUp() {
-        proxy = new SecurityExtensionServiceProxyFactory(defaultSecurityExtension).create(service,fooSecurityExtension);
-    }
-
-    @Test
-    public void testCallDefaultRule() throws BadEntityException {
-        Long id = 42L;
-        InOrder inOrder = new InOrderImpl(Lists.newArrayList(service,defaultSecurityExtension,fooSecurityExtension));
-        proxy.findById(id);
-        inOrder.verify(fooSecurityExtension).findById(id);
-        inOrder.verify(defaultSecurityExtension).findById(id);
-        inOrder.verify(service).findById(id);
-    }
-
-    @Test
-    public void testOverrideDefaultRule() throws BadEntityException {
-        InOrder inOrder = new InOrderImpl(Lists.newArrayList(service,fooSecurityExtension));
-        proxy.save(entity);
-        inOrder.verify(fooSecurityExtension).save(entity);
-        inOrder.verify(service).save(entity);
-
-        Mockito.verify(defaultSecurityExtension,Mockito.never()).save(any());
-    }
-
-    @Test
-    public void testOverrideDefaultRule_callNonOverridingMethod() throws BadEntityException {
-        testOverrideDefaultRule();
-        testCallDefaultRule();
     }
 }
