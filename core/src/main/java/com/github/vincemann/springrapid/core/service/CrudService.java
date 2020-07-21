@@ -1,6 +1,5 @@
 package com.github.vincemann.springrapid.core.service;
 
-import com.github.vincemann.aoplog.api.UltimateTargetClassAware;
 import com.github.vincemann.springrapid.core.model.IdentifiableEntity;
 import com.github.vincemann.springrapid.core.slicing.components.ServiceComponent;
 import org.springframework.data.repository.CrudRepository;

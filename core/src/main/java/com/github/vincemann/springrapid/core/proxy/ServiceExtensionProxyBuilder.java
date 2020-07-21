@@ -12,13 +12,17 @@ import java.lang.reflect.Proxy;
 public class ServiceExtensionProxyBuilder<S extends SimpleCrudService<E,Id>,E extends IdentifiableEntity<Id>, Id extends Serializable> {
     private ServiceExtensionProxy<S> proxy;
 
-    private ServiceExtensionProxyBuilder(S proxied) {
+    public ServiceExtensionProxyBuilder(S proxied) {
         this.proxy = new ServiceExtensionProxy<>(proxied);
     }
 
-    public static <S extends SimpleCrudService<E,Id>,E extends IdentifiableEntity<Id>, Id extends Serializable> ServiceExtensionProxyBuilder<S,E,Id> builder(S proxied){
-        return new ServiceExtensionProxyBuilder<>(proxied);
-    }
+//    public static <S extends SimpleCrudService<E,Id>,E extends IdentifiableEntity<Id>, Id extends Serializable> ServiceExtensionProxyBuilder<S,E,Id> builder(S proxied){
+//        return new ServiceExtensionProxyBuilder<>(proxied);
+//    }
+//
+//    public ServiceExtensionProxyBuilder(S proxy) {
+//        this.proxy = proxy;
+//    }
 
     //diese aufsplittung muss ich machen weil ich nicht sagen kann <T super S | T extends SimpleCrudService<? super E, ? super Id>>
     //das oder wird durch 2 seperate methoden realisiert

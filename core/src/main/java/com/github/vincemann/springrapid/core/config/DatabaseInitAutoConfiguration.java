@@ -7,9 +7,9 @@ import org.springframework.context.annotation.Bean;
 
 @ServiceConfig
 @Slf4j
-public class BootstrapAutoConfiguration {
+public class DatabaseInitAutoConfiguration {
 
-    public BootstrapAutoConfiguration() {
+    public DatabaseInitAutoConfiguration() {
         log.info("Created");
     }
 

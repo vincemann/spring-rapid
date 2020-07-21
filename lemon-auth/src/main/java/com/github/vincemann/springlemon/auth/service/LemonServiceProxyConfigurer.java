@@ -4,7 +4,7 @@ import com.github.vincemann.springlemon.auth.config.LemonServiceAutoConfiguratio
 import com.github.vincemann.springrapid.acl.proxy.SecurityExtensionServiceProxy;
 import com.github.vincemann.springrapid.acl.proxy.AclManaging;
 import com.github.vincemann.springrapid.acl.proxy.Secured;
-import com.github.vincemann.springrapid.core.proxy.ServicePluginProxy;
+import com.github.vincemann.springrapid.core.proxy.ServiceExtensionProxy;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.util.AopTestUtils;
@@ -36,10 +36,10 @@ public abstract class LemonServiceProxyConfigurer  implements InitializingBean {
 
     @Override
     public void afterPropertiesSet() throws Exception {
-        configureAclManaging((ServicePluginProxy) Proxy.getInvocationHandler(AopTestUtils.getUltimateTargetObject(acl)));
+        configureAclManaging((ServiceExtensionProxy) Proxy.getInvocationHandler(AopTestUtils.getUltimateTargetObject(acl)));
         configureSecured((SecurityExtensionServiceProxy) Proxy.getInvocationHandler(AopTestUtils.getUltimateTargetObject(secured)));
     }
 
-    public void configureAclManaging(ServicePluginProxy proxy){}
+    public void configureAclManaging(ServiceExtensionProxy proxy){}
     public void configureSecured(SecurityExtensionServiceProxy proxy){}
 }

@@ -8,13 +8,16 @@ import com.github.vincemann.springrapid.core.service.exception.BadEntityExceptio
 import com.github.vincemann.springrapid.core.slicing.components.ServiceComponent;
 import com.github.vincemann.springrapid.demo.model.abs.Person;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.config.ConfigurableBeanFactory;
+import org.springframework.context.annotation.Scope;
 
 /**
- *Plugin that can be plugged in to all {@link RapidController} dealing with Person Objects
+ *Extension that can be plugged in to all {@link RapidController} dealing with Person Objects
  */
 @Slf4j
 @ServiceComponent
-public class SaveNameToWordPressDbPlugin extends ServiceExtension<SimpleCrudService<Person,Long>>
+@Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
+public class SaveNameToWordPressDbExtension extends ServiceExtension<SimpleCrudService<Person,Long>>
         implements GenericSimpleCrudServiceExtension<SimpleCrudService<Person,Long>,Person,Long> {
 
 

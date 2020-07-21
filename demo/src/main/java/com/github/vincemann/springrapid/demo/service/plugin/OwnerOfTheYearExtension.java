@@ -6,11 +6,14 @@ import com.github.vincemann.springrapid.core.slicing.components.ServiceComponent
 import com.github.vincemann.springrapid.demo.model.Owner;
 import com.github.vincemann.springrapid.demo.repo.OwnerRepository;
 import com.github.vincemann.springrapid.demo.service.OwnerService;
+import org.springframework.beans.factory.config.ConfigurableBeanFactory;
+import org.springframework.context.annotation.Scope;
 
 import java.util.Optional;
 
 @ServiceComponent
-public class OwnerOfTheYearPlugin extends ServiceExtension<OwnerService> implements OwnerService, GenericSimpleCrudServiceExtension<OwnerService,Owner,Long> {
+@Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
+public class OwnerOfTheYearExtension extends ServiceExtension<OwnerService> implements OwnerService, GenericSimpleCrudServiceExtension<OwnerService,Owner,Long> {
 
 
     @Override
