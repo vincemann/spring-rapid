@@ -29,13 +29,13 @@ class SecurityExtensionServiceProxy<S extends SimpleCrudService<?,?>>
 
     private SecurityServiceExtension<?> defaultExtension;
 
-    public SecurityExtensionServiceProxy(S proxied, SecurityServiceExtension<?> defaultExtension, SecurityServiceExtension<?>... extensions) {
+    protected SecurityExtensionServiceProxy(S proxied, SecurityServiceExtension<?> defaultExtension, SecurityServiceExtension<?>... extensions) {
         super(proxied, extensions);
         addExtension(defaultExtension);
         this.defaultExtension = defaultExtension;
     }
 
-    public SecurityExtensionServiceProxy(S proxied, SecurityServiceExtension<?>... extensions) {
+    protected SecurityExtensionServiceProxy(S proxied, SecurityServiceExtension<?>... extensions) {
         super(proxied, extensions);
     }
 
@@ -50,7 +50,7 @@ class SecurityExtensionServiceProxy<S extends SimpleCrudService<?,?>>
 
     @Override
     public void overrideDefaultExtension() {
-        getState().overrideDefaultExtension=true;
+        getState().setOverrideDefaultExtension(true);
     }
 
     @Getter
@@ -66,5 +66,9 @@ class SecurityExtensionServiceProxy<S extends SimpleCrudService<?,?>>
     @Override
     protected State createState(Object o, Method method, Object[] args) {
         return new State(method);
+    }
+
+    protected void setDefaultExtension(SecurityServiceExtension<?> defaultExtension) {
+        this.defaultExtension = defaultExtension;
     }
 }

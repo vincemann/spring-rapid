@@ -44,7 +44,7 @@ public abstract class AbstractExtensionServiceProxy
     private ConcurrentHashMap<MethodIdentifier,List<ExtensionChainLink>> method_extensionChain_map = new ConcurrentHashMap<>();
     private ConcurrentHashMap<Thread, St> thead_state_map = new ConcurrentHashMap<>();
 
-    public AbstractExtensionServiceProxy(S proxied, E... extensions) {
+    public  AbstractExtensionServiceProxy(S proxied, E... extensions) {
         for (Method method : proxied.getClass().getMethods()) {
             this.methods.put(new MethodIdentifier(method), method);
         }

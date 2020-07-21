@@ -67,7 +67,7 @@ class CrudServiceExtensionProxyTest {
 
     class FooCrudServiceExtension
             extends ServiceExtension<CrudService>
-                    implements CrudServiceExtension<CrudService>{
+                    implements SimpleCrudServiceExtension<CrudService>{
     }
 
     class OverlappingExtension extends ServiceExtension<OverlappingInterface> implements OverlappingInterface{

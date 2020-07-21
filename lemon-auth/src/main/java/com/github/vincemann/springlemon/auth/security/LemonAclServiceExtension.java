@@ -6,20 +6,15 @@ import com.github.vincemann.springlemon.auth.domain.dto.ChangePasswordForm;
 import com.github.vincemann.springlemon.auth.domain.dto.RequestEmailChangeForm;
 import com.github.vincemann.springlemon.auth.domain.dto.ResetPasswordForm;
 import com.github.vincemann.springlemon.auth.properties.LemonProperties;
-import com.github.vincemann.springlemon.auth.service.LemonService;
 import com.github.vincemann.springlemon.auth.service.SimpleLemonService;
 import com.github.vincemann.springlemon.auth.util.LemonUtils;
 import com.github.vincemann.springrapid.acl.plugin.AbstractAclServiceExtension;
 import com.github.vincemann.springrapid.acl.service.LocalPermissionService;
 import com.github.vincemann.springrapid.acl.service.MockAuthService;
-import com.github.vincemann.springrapid.core.model.IdentifiableEntity;
-import com.github.vincemann.springrapid.core.proxy.CrudServiceExtension;
-import com.github.vincemann.springrapid.core.proxy.GenericCrudServiceExtension;
-import com.github.vincemann.springrapid.core.service.SimpleCrudService;
+import com.github.vincemann.springrapid.core.proxy.GenericSimpleCrudServiceExtension;
 import com.github.vincemann.springrapid.core.service.exception.BadEntityException;
 import com.github.vincemann.springrapid.core.service.exception.EntityNotFoundException;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.data.repository.CrudRepository;
 import org.springframework.security.acls.domain.BasePermission;
 import org.springframework.security.acls.model.MutableAclService;
 import org.springframework.transaction.annotation.Transactional;
@@ -38,7 +33,7 @@ import java.util.Optional;
 public class LemonAclServiceExtension
         extends AbstractAclServiceExtension<SimpleLemonService<AbstractUser<Serializable>,Serializable>>
             implements SimpleLemonService<AbstractUser<Serializable>,Serializable>,
-                    GenericCrudServiceExtension<SimpleLemonService<AbstractUser<Serializable>,Serializable>,AbstractUser<Serializable>,Serializable>
+                    GenericSimpleCrudServiceExtension<SimpleLemonService<AbstractUser<Serializable>,Serializable>,AbstractUser<Serializable>,Serializable>
 {
     //todo rename methods and switch from proxies naming convention to annotations + add @LogInteraction when method names say something
     private AbstractUserRepository repository;
