@@ -15,7 +15,6 @@ public class SecurityServiceExtension<T> extends AbstractServiceExtension<T, Sec
 
     private AclSecurityChecker securityChecker;
 
-
     @Autowired
     public void injectAclSecurityChecker(AclSecurityChecker securityChecker) {
         this.securityChecker = securityChecker;
