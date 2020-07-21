@@ -13,7 +13,7 @@ import org.springframework.security.acls.model.MutableAclService;
 import org.springframework.transaction.annotation.Transactional;
 
 /**
- * Abstract Acl Plugin, granting {@link BasePermission#ADMINISTRATION} for creator and admin(role) of entity saved by {@link com.github.vincemann.springrapid.core.service.CrudService}.
+ * Abstract Acl Extension, granting {@link BasePermission#ADMINISTRATION} for creator and admin(role) of entity saved by {@link com.github.vincemann.springrapid.core.service.CrudService}.
  */
 @Slf4j
 @Getter

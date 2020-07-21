@@ -8,13 +8,21 @@ import com.github.vincemann.springrapid.core.service.exception.EntityNotFoundExc
 import com.github.vincemann.springrapid.core.slicing.components.ServiceComponent;
 import com.github.vincemann.springrapid.core.model.IdentifiableEntity;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.config.ConfigurableBeanFactory;
+import org.springframework.context.annotation.Scope;
+import org.springframework.context.annotation.ScopedProxyMode;
 
 import java.io.Serializable;
 
 @Slf4j
 @ServiceComponent
-public class AclPlugin extends ServiceExtension<SimpleCrudService>
+@Scope(value = ConfigurableBeanFactory.SCOPE_PROTOTYPE)
+public class AclServiceExtension extends ServiceExtension<SimpleCrudService>
         implements SimpleCrudServiceExtension<SimpleCrudService> {
+
+    public AclServiceExtension() {
+        log.debug("creating acl service extension: " + this);
+    }
 
     @Override
     public IdentifiableEntity save(IdentifiableEntity entity) throws BadEntityException {

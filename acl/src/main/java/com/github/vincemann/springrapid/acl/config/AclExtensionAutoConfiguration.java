@@ -17,9 +17,9 @@ import org.springframework.security.acls.model.MutableAclService;
 @ServiceConfig
 @Slf4j
 @AutoConfigureAfter(RapidJacksonAutoConfiguration.class)
-public class AclPluginAutoConfiguration {
+public class AclExtensionAutoConfiguration {
 
-    public AclPluginAutoConfiguration() {
+    public AclExtensionAutoConfiguration() {
         log.info("Created");
     }
 
@@ -32,25 +32,25 @@ public class AclPluginAutoConfiguration {
 
     @ConditionalOnMissingBean(AdminFullAccessAclServiceExtension.class)
     @Bean
-    public AdminFullAccessAclServiceExtension adminFullAccessAclPlugin(MutableAclService mutableAclService, MockAuthService mockAuthService){
+    public AdminFullAccessAclServiceExtension adminFullAccessAclExtension(MutableAclService mutableAclService, MockAuthService mockAuthService){
         return new AdminFullAccessAclServiceExtension(localPermissionService(mutableAclService),mutableAclService,mockAuthService);
     }
 
     @ConditionalOnMissingBean(AuthenticatedFullAccessAclServiceExtension.class)
     @Bean
-    public AuthenticatedFullAccessAclServiceExtension authenticatedFullAccessAclPlugin(MutableAclService mutableAclService, MockAuthService mockAuthService){
+    public AuthenticatedFullAccessAclServiceExtension authenticatedFullAccessAclExtension(MutableAclService mutableAclService, MockAuthService mockAuthService){
         return new AuthenticatedFullAccessAclServiceExtension(localPermissionService(mutableAclService),mutableAclService,mockAuthService);
     }
 
     @Bean
     @ConditionalOnMissingBean(InheritParentAclServiceExtension.class)
-    public InheritParentAclServiceExtension inheritParentAclPlugin(MutableAclService aclService, MockAuthService mockAuthService){
+    public InheritParentAclServiceExtension inheritParentAclExtension(MutableAclService aclService, MockAuthService mockAuthService){
         return new InheritParentAclServiceExtension(localPermissionService(aclService),aclService,mockAuthService);
     }
 
     @Bean
     @ConditionalOnMissingBean(CleanUpAclServiceExtension.class)
-    public CleanUpAclServiceExtension cleanUpAclPlugin(MutableAclService aclService, MockAuthService mockAuthService){
+    public CleanUpAclServiceExtension cleanUpAclExtension(MutableAclService aclService, MockAuthService mockAuthService){
         return new CleanUpAclServiceExtension(localPermissionService(aclService),aclService,mockAuthService);
     }
 }

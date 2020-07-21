@@ -49,7 +49,7 @@ public class LemonServiceAutoConfiguration {
 
     @Bean
     @ConditionalOnMissingBean(LemonAclServiceExtension.class)
-    public LemonAclServiceExtension lemonAclPlugin(){
+    public LemonAclServiceExtension lemonAclExtension(){
         return new LemonAclServiceExtension(permissionService,mutableAclService,mockAuthService,userRepository);
     }
 
@@ -57,10 +57,10 @@ public class LemonServiceAutoConfiguration {
     @Bean
     @AclManaging
     public LemonService<?,?,?> aclManagingLemonService(LemonService<?,?,?> service,
-//                                                                            AdminFullAccessAclPlugin adminFullAccess,
-//                                                                            AuthenticatedFullAccessAclPlugin authenticatedFullAccessAclPlugin,
-                                                       CleanUpAclServiceExtension cleanUpAclPlugin){
-        return ServiceExtensionProxyBuilder.create(service/*,adminFullAccess*/,lemonAclPlugin(),/*authenticatedFullAccessAclPlugin,*/cleanUpAclPlugin);
+//                                                                            AdminFullAccessAclExtension adminFullAccess,
+//                                                                            AuthenticatedFullAccessAclExtension authenticatedFullAccessAclExtension,
+                                                       CleanUpAclServiceExtension cleanUpAclExtension){
+        return ServiceExtensionProxyBuilder.create(service/*,adminFullAccess*/,lemonAclExtension(),/*authenticatedFullAccessAclExtension,*/cleanUpAclExtension);
     }
 
 

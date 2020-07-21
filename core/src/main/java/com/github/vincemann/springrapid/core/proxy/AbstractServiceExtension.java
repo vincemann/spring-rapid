@@ -15,7 +15,7 @@ public class AbstractServiceExtension<T,P extends ProxyController>
         this.proxyController = proxyController;
     }
 
-    void setChain(ChainController<T> chain) {
+    public void setChain(ChainController<T> chain) {
         this.chain = chain;
     }
 
@@ -28,7 +28,7 @@ public class AbstractServiceExtension<T,P extends ProxyController>
         return chain.getLast();
     }
 
-    protected P getProxyController() {
+    public P getProxyController() {
         return proxyController;
     }
 }

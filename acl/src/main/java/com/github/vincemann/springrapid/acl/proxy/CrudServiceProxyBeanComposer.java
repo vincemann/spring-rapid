@@ -78,8 +78,8 @@ public class CrudServiceProxyBeanComposer implements BeanPostProcessor, Applicat
                 }else {
                     proxiedBean = lastProxiedBean;
                 }
-                SimpleCrudService proxyBean = ServiceExtensionProxyBuilder.builder(proxiedBean)
-                        .addServiceExtensions(resolvePlugins(proxy.plugins()).toArray(new ServiceExtension[0])).build();
+                SimpleCrudService proxyBean = new ServiceExtensionProxyBuilder<>(proxiedBean)
+                        .addServiceExtensions(resolveExtensions(proxy.plugins()).toArray(new ServiceExtension[0])).build();
 
                 log.trace("creating proxyBean : " + proxyBean);
                 log.trace("Registering beanDef of proxyBean first: " + proxyBeanDef);
@@ -98,8 +98,8 @@ public class CrudServiceProxyBeanComposer implements BeanPostProcessor, Applicat
                 }
                 List<Class<? extends ServiceExtension>> pluginTypes = Lists.newArrayList(securityProxy.plugins());
                 if(!pluginTypes.isEmpty()){
-                    lastProxiedBean = ServiceExtensionProxyBuilder.builder(lastProxiedBean)
-                            .addServiceExtensions(resolvePlugins(securityProxy.plugins()).toArray(new ServiceExtension[0]))
+                    lastProxiedBean = new ServiceExtensionProxyBuilder<>(lastProxiedBean)
+                            .addServiceExtensions(resolveExtensions(securityProxy.plugins()).toArray(new ServiceExtension[0]))
                             .build();
                 }
                 GenericBeanDefinition beanDef
@@ -159,7 +159,7 @@ public class CrudServiceProxyBeanComposer implements BeanPostProcessor, Applicat
         return name;
     }
 
-    private List<ServiceExtension> resolvePlugins(Class<? extends ServiceExtension>[] pluginTypeArray){
+    private List<ServiceExtension> resolveExtensions(Class<? extends ServiceExtension>[] pluginTypeArray){
         List<ServiceExtension> plugins = new ArrayList<>();
         ArrayList<Class<? extends ServiceExtension>> pluginTypes = Lists.newArrayList(pluginTypeArray);
         for (Class<? extends ServiceExtension> pluginType : pluginTypes) {

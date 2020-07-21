@@ -36,7 +36,7 @@ import javax.sql.DataSource;
 @ServiceConfig
 @Slf4j
 //@ConditionalOnClass(DataSource.class)
-@AutoConfigureBefore({AclPluginAutoConfiguration.class})
+@AutoConfigureBefore({AclExtensionAutoConfiguration.class})
 public class AclAutoConfiguration {
 
     public AclAutoConfiguration() {

@@ -11,10 +11,7 @@ import java.lang.reflect.Method;
 @Setter
 @Slf4j
 public class ServiceExtensionProxy<S extends SimpleCrudService<?,?>>
-        extends AbstractExtensionServiceProxy
-                <S, ServiceExtension<?>,
-                AbstractExtensionServiceProxy.State,
-                        ServiceExtensionProxy>
+        extends AbstractExtensionServiceProxy<S, ServiceExtension<?>, AbstractExtensionServiceProxy.State, ServiceExtensionProxy>
 {
 
 

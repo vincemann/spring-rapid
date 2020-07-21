@@ -4,7 +4,7 @@ com.github.vincemann.springrapid.core.config.CrudServiceLocatorAutoConfiguration
 com.github.vincemann.springrapid.core.config.DtoMapperAutoConfiguration,\
 com.github.vincemann.springrapid.core.config.AopLogAutoConfiguration,\
 com.github.vincemann.springrapid.core.config.RapidControllerAutoConfiguration,\
-com.github.vincemann.springrapid.core.config.BootstrapAutoConfiguration,\
+com.github.vincemann.springrapid.core.config.DatabaseInitAutoConfiguration,\
 com.github.vincemann.springrapid.core.config.RapidUtilAutoConfiguration,\
 com.github.vincemann.springrapid.core.config.RapidJacksonAutoConfiguration,\
 com.github.vincemann.springrapid.core.config.ReflectionCacheAutoConfiguration

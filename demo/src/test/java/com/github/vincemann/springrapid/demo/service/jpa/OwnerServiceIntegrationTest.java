@@ -13,7 +13,7 @@ import com.github.vincemann.springrapid.demo.model.PetType;
 import com.github.vincemann.springrapid.demo.service.OwnerService;
 import com.github.vincemann.springrapid.demo.service.PetService;
 import com.github.vincemann.springrapid.demo.service.PetTypeService;
-import com.github.vincemann.springrapid.demo.service.plugin.OwnerOfTheYearPlugin;
+import com.github.vincemann.springrapid.demo.service.plugin.OwnerOfTheYearExtension;
 import com.github.vincemann.springrapid.entityrelationship.slicing.test.ImportRapidEntityRelServiceConfig;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Assertions;
@@ -51,7 +51,7 @@ class OwnerServiceIntegrationTest
     PetType savedDogPetType;
 
     @SpyBean
-    OwnerOfTheYearPlugin ownerOfTheYearPlugin;
+    OwnerOfTheYearExtension ownerOfTheYearExtension;
 
     @Autowired
     PetService petService;
@@ -198,13 +198,13 @@ class OwnerServiceIntegrationTest
     }
 
     @Test
-    public void findOwnerOfTheYear_shouldSucceed_andTriggerPluginCallback() {
+    public void findOwnerOfTheYear_shouldSucceed_andTriggerExtensionCallback() {
         //owner of the years name is 42
         ownerWithOnePet.setFirstName("42");
         Owner savedOwner = getRepository().save(ownerWithOnePet);
         Optional<Owner> ownerOfTheYear = getServiceUnderTest().findOwnerOfTheYear();
         Assertions.assertTrue(ownerOfTheYear.isPresent());
-        Mockito.verify(ownerOfTheYearPlugin).onAfterFindOwnerOfTheYear(ownerOfTheYear);
+        Mockito.verify(ownerOfTheYearExtension).findOwnerOfTheYear();
     }
 
     @Test

@@ -3,19 +3,13 @@ package com.github.vincemann.springrapid.core.proxy;
 import com.github.vincemann.aoplog.MethodUtils;
 import com.github.vincemann.springrapid.commons.Lists;
 import com.github.vincemann.springrapid.core.service.SimpleCrudService;
-import lombok.AllArgsConstructor;
-import lombok.EqualsAndHashCode;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 import lombok.extern.slf4j.Slf4j;
 
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
@@ -125,6 +119,7 @@ public abstract class AbstractExtensionServiceProxy
     //link of a chain
     @AllArgsConstructor
     @Getter
+    @ToString
     protected class ExtensionChainLink {
         E extension;
         Method method;
@@ -179,9 +174,12 @@ public abstract class AbstractExtensionServiceProxy
     public Object getNext(AbstractServiceExtension extension) {
         State state = thead_state_map.get(Thread.currentThread());
         List<ExtensionChainLink> extensionChain = method_extensionChain_map.get(state.getMethodIdentifier());
-        ExtensionChainLink link = extensionChain.stream()
+        Optional<ExtensionChainLink> link = extensionChain.stream()
                 .filter(e -> e.getExtension().equals(extension))
-                .findFirst().get();
+                .findFirst();
+        if (link.isEmpty()){
+            throw new IllegalArgumentException("Already called Extension: " + extension + " not part of extension chain: " + extensionChain);
+        }
         int extensionIndex = extensionChain.indexOf(link);
         int nextIndex = extensionIndex+1;
         if (nextIndex>=extensionChain.size()){
