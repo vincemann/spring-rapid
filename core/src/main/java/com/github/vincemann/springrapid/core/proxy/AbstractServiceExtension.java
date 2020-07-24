@@ -1,8 +1,17 @@
 package com.github.vincemann.springrapid.core.proxy;
 
 
+import com.github.vincemann.aoplog.api.AopLoggable;
+import com.github.vincemann.aoplog.api.LogConfig;
+import com.github.vincemann.aoplog.api.LogInteraction;
+import com.google.common.base.Objects;
+
+// dont log extensions methods -> otherwise you will have log for i.E. save 3 times for 2 extensions..
+// explicitly log methods you want to log
+@LogInteraction(disabled = true)
+@LogConfig(logAllChildrenMethods = true)
 public class AbstractServiceExtension<T,P extends ProxyController>
-        implements NextLinkAware<T>{
+        implements NextLinkAware<T>, AopLoggable {
 
     private ChainController<T> chain;
     private P proxyController;
@@ -11,24 +20,42 @@ public class AbstractServiceExtension<T,P extends ProxyController>
     }
 
 
-    public void setProxyController(P proxyController) {
+    protected void setProxyController(P proxyController) {
         this.proxyController = proxyController;
     }
 
-    public void setChain(ChainController<T> chain) {
+    protected void setChain(ChainController<T> chain) {
         this.chain = chain;
+    }
+
+    protected ChainController<T> getChain() {
+        return chain;
     }
 
     public T getNext() {
         return chain.getNext(this);
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        AbstractServiceExtension<?, ?> that = (AbstractServiceExtension<?, ?>) o;
+        return Objects.equal(getChain(), that.getChain()) &&
+                Objects.equal(getProxyController(), that.getProxyController());
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hashCode(getChain(), getProxyController());
+    }
+
     //can be safely casted to crudservice
-    public T getLast(){
+    protected T getLast(){
         return chain.getLast();
     }
 
-    public P getProxyController() {
+    protected P getProxyController() {
         return proxyController;
     }
 }

@@ -14,8 +14,6 @@ public interface SimpleCrudServiceExtension<S extends SimpleCrudService>
             extends SimpleCrudService, NextLinkAware<S>{
 
 
-    public S getNext();
-
     @Override
     default Optional findById(Serializable id) throws BadEntityException {
         return getNext().findById(id);
