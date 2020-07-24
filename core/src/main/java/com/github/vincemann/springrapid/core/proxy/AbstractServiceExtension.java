@@ -4,14 +4,15 @@ package com.github.vincemann.springrapid.core.proxy;
 import com.github.vincemann.aoplog.api.AopLoggable;
 import com.github.vincemann.aoplog.api.LogConfig;
 import com.github.vincemann.aoplog.api.LogInteraction;
+import com.github.vincemann.aoplog.api.UltimateTargetClassAware;
 import com.google.common.base.Objects;
 
 // dont log extensions methods -> otherwise you will have log for i.E. save 3 times for 2 extensions..
 // explicitly log methods you want to log
 @LogInteraction(disabled = true)
-@LogConfig(logAllChildrenMethods = true)
-public class AbstractServiceExtension<T,P extends ProxyController>
-        implements NextLinkAware<T>, AopLoggable {
+@LogConfig(logAllChildrenMethods = true,ignoreGetters = true,ignoreSetters = true)
+public abstract class AbstractServiceExtension<T,P extends ProxyController>
+        implements NextLinkAware<T>, AopLoggable, UltimateTargetClassAware {
 
     private ChainController<T> chain;
     private P proxyController;
@@ -36,6 +37,12 @@ public class AbstractServiceExtension<T,P extends ProxyController>
         return chain.getNext(this);
     }
 
+    //dont use proxied target class here -> we dont want to use same logger for extension and service
+    @Override
+    public Class<?> getTargetClass() {
+        return getClass();
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -44,6 +51,8 @@ public class AbstractServiceExtension<T,P extends ProxyController>
         return Objects.equal(getChain(), that.getChain()) &&
                 Objects.equal(getProxyController(), that.getProxyController());
     }
+
+
 
     @Override
     public int hashCode() {

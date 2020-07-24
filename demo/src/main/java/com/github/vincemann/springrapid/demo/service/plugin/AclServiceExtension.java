@@ -21,7 +21,7 @@ public class AclServiceExtension extends ServiceExtension<SimpleCrudService>
         implements SimpleCrudServiceExtension<SimpleCrudService> {
 
     public AclServiceExtension() {
-        log.debug("creating acl service extension: " + this);
+//        log.debug("creating acl service extension: " + this);
     }
 
     @Override
