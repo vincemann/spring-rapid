@@ -2,6 +2,7 @@ package com.github.vincemann.springrapid.core.proxy;
 
 import com.github.vincemann.aoplog.MethodUtils;
 import com.github.vincemann.springrapid.commons.Lists;
+import com.github.vincemann.springrapid.commons.ProxyUtils;
 import com.github.vincemann.springrapid.core.service.SimpleCrudService;
 import lombok.*;
 import lombok.extern.slf4j.Slf4j;
@@ -31,11 +32,13 @@ public abstract class AbstractExtensionServiceProxy
 
         implements ChainController, InvocationHandler, ProxyController {
 
+    private List<String> ignoredMethodNames = Lists.newArrayList("getEntityClass", "getRepository", "toString", "equals", "hashCode", "getClass", "clone", "notify", "notifyAll", "wait", "finalize");
+    private List<MethodIdentifier> learnedIgnoredMethods = new ArrayList<>();
     private final Map<MethodIdentifier, Method> methods = new HashMap<>();
-    private List<String> ignoredMethods = Lists.newArrayList("getEntityClass", "getRepository", "toString", "equals", "hashCode", "getClass", "clone", "notify", "notifyAll", "wait", "finalize");
     private S proxied;
     private List<E> extensions = new ArrayList<>();
     private ConcurrentHashMap<MethodIdentifier,List<ExtensionChainLink>> method_extensionChain_map = new ConcurrentHashMap<>();
+    private ConcurrentHashMap<StateExtension,Object> state_next_map = new ConcurrentHashMap<>();
     private ConcurrentHashMap<Thread, St> thead_state_map = new ConcurrentHashMap<>();
 
     public  AbstractExtensionServiceProxy(S proxied, E... extensions) {
@@ -43,16 +46,14 @@ public abstract class AbstractExtensionServiceProxy
             this.methods.put(new MethodIdentifier(method), method);
         }
         this.proxied = proxied;
-        this.extensions.addAll(Lists.newArrayList(extensions));
-        this.extensions.forEach(e -> {
-            //extension expects chainController<T>, gets ChainController<S>, T is always superclass of S -> so this is safe
-            e.setChain(this);
-            //docs state that this must be castable to P
-            e.setProxyController(provideProxyController());
-        });
-
+        for (E extension : extensions) {
+            addExtension(extension);
+        }
     }
 
+    private void resetLearnedIgnoredMethods(){
+        this.learnedIgnoredMethods.clear();
+    }
 
     public void addExtension(E extension){
         this.extensions.add(extension);
@@ -60,6 +61,7 @@ public abstract class AbstractExtensionServiceProxy
         extension.setChain(this);
         //docs state that this must be castable to P
         extension.setProxyController(provideProxyController());
+        resetLearnedIgnoredMethods();
     }
 
 
@@ -79,6 +81,7 @@ public abstract class AbstractExtensionServiceProxy
         return (P) this;
     }
 
+    @EqualsAndHashCode
     protected static class State{
         @Getter
         private MethodIdentifier methodIdentifier;
@@ -97,9 +100,16 @@ public abstract class AbstractExtensionServiceProxy
 //        }
     }
 
+    @AllArgsConstructor
     @EqualsAndHashCode
+    private static class StateExtension{
+        private State state;
+        private AbstractServiceExtension extension;
+    }
+
     @AllArgsConstructor
     @Getter
+    @EqualsAndHashCode
     private static class MethodIdentifier{
         String methodName;
         Class<?>[] argTypes;
@@ -108,6 +118,7 @@ public abstract class AbstractExtensionServiceProxy
             this.methodName=method.getName();
             this.argTypes=method.getParameterTypes();
         }
+
 
     }
 
@@ -146,6 +157,7 @@ public abstract class AbstractExtensionServiceProxy
                     thead_state_map.put(Thread.currentThread(),createState(o,method,args));
                     return extensionChain.get(0).invoke(args);
                 }else {
+                    learnedIgnoredMethods.add(new MethodIdentifier(method));
                     return invokeProxied(method,args);
                 }
             }finally {
@@ -173,27 +185,37 @@ public abstract class AbstractExtensionServiceProxy
     @Override
     public Object getNext(AbstractServiceExtension extension) {
         State state = thead_state_map.get(Thread.currentThread());
+        StateExtension stateExtension = new StateExtension(state,extension);
+        Object cached = state_next_map.get(stateExtension);
+        if (cached!=null){
+            return cached;
+        }
         List<ExtensionChainLink> extensionChain = method_extensionChain_map.get(state.getMethodIdentifier());
         Optional<ExtensionChainLink> link = extensionChain.stream()
-                .filter(e -> e.getExtension().equals(extension))
+                .filter(e -> ProxyUtils.isEqual(e.getExtension(),(extension)))
                 .findFirst();
         if (link.isEmpty()){
             throw new IllegalArgumentException("Already called Extension: " + extension + " not part of extension chain: " + extensionChain);
         }
-        int extensionIndex = extensionChain.indexOf(link);
+
+        int extensionIndex = extensionChain.indexOf(link.get());
         int nextIndex = extensionIndex+1;
+        Object result;
         if (nextIndex>=extensionChain.size()){
             //no further extension available, return proxied
             //this cast is safe
 //            if (state.callTargetMethod) {
-            return proxied;
+
+            result =  proxied;
 //            }else {
 //
 //            }
         }else {
             //this cast is also safe
-            return extensionChain.get(nextIndex).getExtension();
+            result = extensionChain.get(nextIndex).getExtension();
         }
+        state_next_map.put(stateExtension,result);
+        return result;
     }
 
 
@@ -233,6 +255,7 @@ public abstract class AbstractExtensionServiceProxy
     }
 
     protected boolean isIgnored(Method method) {
-        return getIgnoredMethods().contains(method.getName());
+        return getIgnoredMethodNames().contains(method.getName())
+                || getLearnedIgnoredMethods().contains(new MethodIdentifier(method));
     }
 }

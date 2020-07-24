@@ -1,6 +1,7 @@
 package com.github.vincemann.springrapid.core.proxy;
 
 import com.github.vincemann.springrapid.core.service.SecurityChecker;
+import com.google.common.base.Objects;
 import lombok.Getter;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -22,5 +23,19 @@ public abstract class ServiceExtension<T>
     @Autowired
     public void injectSecurityChecker(SecurityChecker securityChecker) {
         this.securityChecker = securityChecker;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof ServiceExtension)) return false;
+        if (!super.equals(o)) return false;
+        ServiceExtension<?> that = (ServiceExtension<?>) o;
+        return Objects.equal(getSecurityChecker(), that.getSecurityChecker());
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hashCode(super.hashCode(), getSecurityChecker());
     }
 }

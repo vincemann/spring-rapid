@@ -2,6 +2,7 @@ package com.github.vincemann.springrapid.core.service.locator;
 
 
 import com.github.vincemann.springrapid.core.model.IdentifiableEntity;
+import com.github.vincemann.springrapid.core.proxy.AbstractServiceExtension;
 import com.github.vincemann.springrapid.core.service.CrudService;
 import com.github.vincemann.springrapid.core.service.ServiceBeanType;
 import lombok.extern.slf4j.Slf4j;
@@ -47,6 +48,10 @@ public class CrudServiceLocatorImpl implements CrudServiceLocator, ApplicationCo
         for (String beanName : beanNames) {
             BeanDefinition bd = beanFactory.getBeanDefinition(beanName);
             CrudService bean = ((CrudService) beanFactory.getBean(beanName));
+            //skip extensions
+            if (bean instanceof AbstractServiceExtension){
+                continue;
+            }
             if (bd.isPrimary()) {
                 entityClassPrimaryServiceMap.put(bean.getEntityClass(),bean);
             }else {

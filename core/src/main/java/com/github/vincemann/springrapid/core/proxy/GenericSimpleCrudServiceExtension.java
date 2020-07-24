@@ -12,8 +12,6 @@ import java.util.Set;
 public interface GenericSimpleCrudServiceExtension<S extends SimpleCrudService<E,Id>,E extends IdentifiableEntity<Id>,Id extends Serializable>
         extends SimpleCrudService<E,Id>, NextLinkAware<S>{
 
-    public S getNext();
-
     @Override
     default Optional<E> findById(Id id) throws BadEntityException {
         return getNext().findById(id);
