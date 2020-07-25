@@ -3,4 +3,4 @@ com.github.vincemann.springrapid.acl.config.AclAutoConfiguration,\
 com.github.vincemann.springrapid.acl.config.AclMethodSecurityAutoConfiguration,\
 com.github.vincemann.springrapid.acl.config.AclSchemaAutoConfiguration,\
 com.github.vincemann.springrapid.acl.config.SecurityProxyAutoConfiguration,\
-com.github.vincemann.springrapid.acl.config.AclPluginAutoConfiguration
+com.github.vincemann.springrapid.acl.config.AclExtensionAutoConfiguration

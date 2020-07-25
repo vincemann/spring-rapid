@@ -121,7 +121,7 @@ public class LemonServiceSecurityExtension
     @Override
     public void requestEmailChange(Serializable userId, @Valid RequestEmailChangeForm emailChangeForm) {
         LexUtils.ensureFound(userRepository.findById(userId));
-        getSecurityChecker().checkPermission(userId,getEntityClass(),getWritePermission());
+        getSecurityChecker().checkPermission(userId,getLast().getEntityClass(),getWritePermission());
         getNext().requestEmailChange(userId,emailChangeForm);
     }
 

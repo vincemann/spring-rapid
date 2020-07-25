@@ -54,13 +54,12 @@ public class LemonServiceAutoConfiguration {
     @ConditionalOnMissingBean(name = "aclManagingLemonService")
     @Bean
     @AclManaging
-    public LemonService aclManagingLemonService(LemonService service,
+    public LemonService<?,?,?> aclManagingLemonService(LemonService<?,?,?> service,
 //                                                                            AdminFullAccessAclExtension adminFullAccess,
 //                                                                            AuthenticatedFullAccessAclExtension authenticatedFullAccessAclExtension,
                                                        CleanUpAclServiceExtension cleanUpAclExtension){
         return extensionProxyBuilderFactory.create(service)
-                .addSuperExtensions(cleanUpAclExtension)
-//                .addServiceExtensions(cleanUpAclExtension)
+                .addSuperExtensions(lemonAclExtension(),cleanUpAclExtension)
                 .build();
     }
 
