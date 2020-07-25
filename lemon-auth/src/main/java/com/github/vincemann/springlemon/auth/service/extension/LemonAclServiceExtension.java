@@ -52,7 +52,7 @@ public class LemonAclServiceExtension
 
 
     @Override
-    public AbstractUser signup(@Valid AbstractUser user) throws BadEntityException {
+    public AbstractUser signup(AbstractUser user) throws BadEntityException {
         AbstractUser saved = getNext().signup(user);
         savePostSignupAclInfo(user.getEmail());
         return saved;

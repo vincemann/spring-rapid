@@ -39,7 +39,7 @@ public class ServiceExtensionProxyBuilder<S extends SimpleCrudService<E,Id>,E ex
 
     // service extension can be any super class of service
     // also types that are not of type SimpleService
-    public ServiceExtensionProxyBuilder<S,E,Id> addSuperExtensions(ServiceExtension<? super S>... extensions){
+    public ServiceExtensionProxyBuilder<S,E,Id> addExtensions(ServiceExtension<? super S>... extensions){
         for (ServiceExtension<? super S> extension : extensions) {
             proxy.addExtension(extension);
         }

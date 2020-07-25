@@ -98,7 +98,7 @@ public class LemonServiceSecurityExtension
 
 
     @Override
-    public void forgotPassword(@Valid @Email @NotBlank String email) {
+    public void forgotPassword(String email) {
         //check if write permission over user
         Optional<AbstractUser> byEmail = userRepository.findByEmail(email);
         if(byEmail.isPresent()){
@@ -111,7 +111,7 @@ public class LemonServiceSecurityExtension
 
 
     @Override
-    public String changePassword(AbstractUser user, @Valid ChangePasswordForm changePasswordForm) {
+    public String changePassword(AbstractUser user,  ChangePasswordForm changePasswordForm) {
         LexUtils.ensureFound(user);
         getSecurityChecker().checkPermission(user.getId(),user.getClass(), getWritePermission());
         return getNext().changePassword(user,changePasswordForm);
@@ -119,7 +119,7 @@ public class LemonServiceSecurityExtension
 
 
     @Override
-    public void requestEmailChange(Serializable userId, @Valid RequestEmailChangeForm emailChangeForm) {
+    public void requestEmailChange(Serializable userId,  RequestEmailChangeForm emailChangeForm) {
         LexUtils.ensureFound(userRepository.findById(userId));
         getSecurityChecker().checkPermission(userId,getLast().getEntityClass(),getWritePermission());
         getNext().requestEmailChange(userId,emailChangeForm);
@@ -127,7 +127,7 @@ public class LemonServiceSecurityExtension
 
 
     @Override
-    public AbstractUser changeEmail(Serializable userId, @Valid @NotBlank String changeEmailCode) {
+    public AbstractUser changeEmail(Serializable userId, String changeEmailCode) {
         getSecurityChecker().checkAuthenticated();
         return getNext().changeEmail(userId,changeEmailCode);
     }

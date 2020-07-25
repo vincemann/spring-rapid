@@ -41,7 +41,7 @@ class CrudSecurityServiceProxyTest {
     void setUp() {
         proxy = new SecurityServiceExtensionProxyBuilderFactory(defaultSecurityExtension)
                 .create(service)
-                .addSuperExtensions(fooSecurityExtension)
+                .addExtensions(fooSecurityExtension)
                 .build();
     }
 
