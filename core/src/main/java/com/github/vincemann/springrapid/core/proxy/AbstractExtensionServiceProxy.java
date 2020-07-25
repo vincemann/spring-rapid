@@ -19,9 +19,7 @@ import java.util.concurrent.ConcurrentHashMap;
 /**
  * Thread safe
  * @param <S>
- * @param <E>
  * @param <St>
- * @param <P> By default this must be instance of P. You change that behavior by overriding {@link this#provideProxyController()}
  */
 @Getter
 @Setter
@@ -29,9 +27,9 @@ import java.util.concurrent.ConcurrentHashMap;
 public abstract class AbstractExtensionServiceProxy
         <
                 S extends SimpleCrudService<?,?>,
-                E  extends AbstractServiceExtension<?,P>,
                 St extends AbstractExtensionServiceProxy.State,
-                P extends ProxyController>
+                P extends ProxyController
+        >
 
         implements ChainController, InvocationHandler, ProxyController {
 
@@ -39,18 +37,18 @@ public abstract class AbstractExtensionServiceProxy
     private List<MethodIdentifier> learnedIgnoredMethods = new ArrayList<>();
     private final Map<MethodIdentifier, Method> methods = new HashMap<>();
     private S proxied;
-    private List<E> extensions = new ArrayList<>();
+    private List<AbstractServiceExtension<?,? super P>> extensions = new ArrayList<>();
     private ConcurrentHashMap<MethodIdentifier,List<ExtensionChainLink>> method_extensionChain_map = new ConcurrentHashMap<>();
     private ConcurrentHashMap<StateExtension,Object> state_next_map = new ConcurrentHashMap<>();
     private ConcurrentHashMap<Thread, St> thead_state_map = new ConcurrentHashMap<>();
 
-    public  AbstractExtensionServiceProxy(S proxied, E... extensions) {
+    public  AbstractExtensionServiceProxy(S proxied, AbstractServiceExtension<?,? super P>... extensions) {
         for (Method method : proxied.getClass().getMethods()) {
             this.methods.put(new MethodIdentifier(method), method);
         }
         this.proxied = proxied;
-        for (E extension : extensions) {
-            addExtension(extension);
+        for (AbstractServiceExtension<?,? super P> extension : extensions) {
+            addExtension( extension);
         }
     }
 
@@ -58,7 +56,7 @@ public abstract class AbstractExtensionServiceProxy
         this.learnedIgnoredMethods.clear();
     }
 
-    public void addExtension(E extension){
+    public void addExtension(AbstractServiceExtension<?,? super P> extension){
         this.extensions.add(extension);
         //extension expects chainController<T>, gets ChainController<S>, T is always superclass of S -> so this is safe
         extension.setChain(this);
@@ -66,6 +64,10 @@ public abstract class AbstractExtensionServiceProxy
         extension.setProxyController(provideProxyController());
         resetLearnedIgnoredMethods();
     }
+
+
+
+
 
 
 
@@ -135,7 +137,7 @@ public abstract class AbstractExtensionServiceProxy
     @Getter
     @ToString
     protected class ExtensionChainLink {
-        E extension;
+        AbstractServiceExtension<?,? super P> extension;
         Method method;
 
         Object invoke(Object... args) throws InvocationTargetException, IllegalAccessException {
@@ -261,7 +263,7 @@ public abstract class AbstractExtensionServiceProxy
             //each link of the chain also saves its declared method
             Map.Entry<MethodIdentifier,List<ExtensionChainLink>> method_chain_entry = new HashMap.SimpleEntry<>(methodIdentifier,new ArrayList<>());
             for (int i = 0; i < extensions.size() ; i++) {
-                E extension = extensions.get(i);
+                AbstractServiceExtension<?,? super P> extension = extensions.get(i);
                 try {
                     Method extensionsMethod = MethodUtils.findMethod(extension.getClass(), method.getName(), method.getParameterTypes());
                     method_chain_entry.getValue().add(new ExtensionChainLink(extension,extensionsMethod));

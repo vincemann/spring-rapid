@@ -2,6 +2,7 @@ package com.github.vincemann.springrapid.acl.proxy;
 
 import com.github.vincemann.springrapid.core.proxy.AbstractExtensionServiceProxy;
 import com.github.vincemann.springrapid.core.proxy.AbstractServiceExtension;
+import com.github.vincemann.springrapid.core.proxy.ServiceExtension;
 import com.github.vincemann.springrapid.core.service.CrudService;
 import com.github.vincemann.springrapid.core.service.SimpleCrudService;
 import lombok.Getter;
@@ -21,23 +22,23 @@ import java.lang.reflect.Method;
 class SecurityExtensionServiceProxy<S extends SimpleCrudService<?,?>>
         extends AbstractExtensionServiceProxy
         <       S,
-                SecurityServiceExtension<?>,
                 SecurityExtensionServiceProxy.State,
                 SecurityProxyController>
             implements SecurityProxyController
 {
 
-    private SecurityServiceExtension<?> defaultExtension;
+    private AbstractServiceExtension<?,? super SecurityProxyController> defaultExtension;
 
-    protected SecurityExtensionServiceProxy(S proxied, SecurityServiceExtension<?> defaultExtension, SecurityServiceExtension<?>... extensions) {
+    public SecurityExtensionServiceProxy(S proxied, ServiceExtension<?> defaultExtension, ServiceExtension<?>... extensions) {
         super(proxied, extensions);
-        addExtension(defaultExtension);
         this.defaultExtension = defaultExtension;
+        addExtension(defaultExtension);
     }
 
-    protected SecurityExtensionServiceProxy(S proxied, SecurityServiceExtension<?>... extensions) {
+    public SecurityExtensionServiceProxy(S proxied, ServiceExtension<?>... extensions) {
         super(proxied, extensions);
     }
+
 
     @Override
     public Object getNext(AbstractServiceExtension extension) {
@@ -68,7 +69,7 @@ class SecurityExtensionServiceProxy<S extends SimpleCrudService<?,?>>
         return new State(method);
     }
 
-    protected void setDefaultExtension(SecurityServiceExtension<?> defaultExtension) {
+    protected void setDefaultExtension(AbstractServiceExtension<?,? super SecurityProxyController> defaultExtension) {
         this.defaultExtension = defaultExtension;
     }
 }

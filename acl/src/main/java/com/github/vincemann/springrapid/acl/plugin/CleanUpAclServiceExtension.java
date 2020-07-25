@@ -4,6 +4,7 @@ import com.github.vincemann.springrapid.acl.service.LocalPermissionService;
 import com.github.vincemann.springrapid.acl.service.MockAuthService;
 import com.github.vincemann.springrapid.core.proxy.SimpleCrudServiceExtension;
 import com.github.vincemann.springrapid.core.service.CrudService;
+import com.github.vincemann.springrapid.core.service.SimpleCrudService;
 import com.github.vincemann.springrapid.core.service.exception.BadEntityException;
 import com.github.vincemann.springrapid.core.service.exception.EntityNotFoundException;
 import lombok.Getter;
@@ -23,7 +24,8 @@ import java.io.Serializable;
  */
 @Transactional
 public class CleanUpAclServiceExtension
-        extends AbstractAclServiceExtension<CrudService> implements SimpleCrudServiceExtension<CrudService>
+        extends AbstractAclServiceExtension<SimpleCrudService>
+                implements SimpleCrudServiceExtension<SimpleCrudService>
 {
     @Setter
     private boolean deleteCascade = true;

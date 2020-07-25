@@ -6,6 +6,7 @@ import com.github.vincemann.springrapid.acl.service.LocalPermissionService;
 import com.github.vincemann.springrapid.acl.service.MockAuthService;
 import com.github.vincemann.springrapid.core.model.IdentifiableEntity;
 import com.github.vincemann.springrapid.core.service.CrudService;
+import com.github.vincemann.springrapid.core.service.SimpleCrudService;
 import com.github.vincemann.springrapid.core.service.exception.BadEntityException;
 import com.github.vincemann.springrapid.core.service.exception.EntityNotFoundException;
 import org.springframework.data.repository.CrudRepository;
@@ -23,8 +24,8 @@ import java.util.Set;
  */
 @Transactional
 public class InheritParentAclServiceExtension<E extends IdentifiableEntity<Id> & AclParentAware,Id extends Serializable>
-        extends AbstractAclServiceExtension<CrudService<E,Id,?>>
-                                 implements CrudService<E,Id,CrudRepository<E,Id>> {
+        extends AbstractAclServiceExtension<SimpleCrudService<E,Id>>
+                                 implements SimpleCrudService<E,Id> {
 
     public InheritParentAclServiceExtension(LocalPermissionService permissionService, MutableAclService mutableAclService, MockAuthService mockAuthService) {
         super(permissionService, mutableAclService, mockAuthService);
@@ -62,15 +63,7 @@ public class InheritParentAclServiceExtension<E extends IdentifiableEntity<Id> &
         return getNext().getEntityClass();
     }
 
-    @Override
-    public CrudRepository<E,Id> getRepository() {
-        return getNext().getRepository();
-    }
 
-    @Override
-    public Class<?> getTargetClass() {
-        return getNext().getTargetClass();
-    }
     
 
 //    @Transactional

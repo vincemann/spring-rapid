@@ -16,7 +16,7 @@ import org.springframework.beans.factory.annotation.Autowired;
  */
 @Getter
 public abstract class ServiceExtension<T>
-        extends AbstractServiceExtension<T, ServiceExtensionProxy> {
+        extends AbstractServiceExtension<T, ProxyController> {
 
     private SecurityChecker securityChecker;
 

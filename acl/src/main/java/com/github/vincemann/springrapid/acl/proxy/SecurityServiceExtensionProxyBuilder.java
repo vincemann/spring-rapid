@@ -1,6 +1,10 @@
 package com.github.vincemann.springrapid.acl.proxy;
 
 import com.github.vincemann.springrapid.core.model.IdentifiableEntity;
+import com.github.vincemann.springrapid.core.proxy.AbstractServiceExtension;
+import com.github.vincemann.springrapid.core.proxy.ProxyController;
+import com.github.vincemann.springrapid.core.proxy.ServiceExtension;
+import com.github.vincemann.springrapid.core.proxy.ServiceExtensionProxyBuilder;
 import com.github.vincemann.springrapid.core.service.SimpleCrudService;
 import org.apache.commons.lang3.ClassUtils;
 import org.springframework.test.util.AopTestUtils;
@@ -8,7 +12,8 @@ import org.springframework.test.util.AopTestUtils;
 import java.io.Serializable;
 import java.lang.reflect.Proxy;
 
-public class SecurityServiceExtensionProxyBuilder<S extends SimpleCrudService<E,Id>,E extends IdentifiableEntity<Id>, Id extends Serializable> {
+public class SecurityServiceExtensionProxyBuilder<S extends SimpleCrudService<E,Id>,E extends IdentifiableEntity<Id>, Id extends Serializable>
+{
 
     private SecurityExtensionServiceProxy<S> proxy;
     private SecurityServiceExtension<?> defaultSecurityExtension;
@@ -26,8 +31,8 @@ public class SecurityServiceExtensionProxyBuilder<S extends SimpleCrudService<E,
     // this method is used to add SimpleService implementing extensions, to ensure down casting works
     // service extension can either be superclass, same class or child class of S, the only thing that matters, is that I can cast
     // from E to extension entity type. i.E. I can cast IdentEntity to Owner -> ? super E aka ? super Owner is correct
-    public SecurityServiceExtensionProxyBuilder<S,E,Id> addServiceExtensions(SecurityServiceExtension<? extends SimpleCrudService<? super E,? super Id>>... extensions){
-        for (SecurityServiceExtension<? extends SimpleCrudService<? super E, ? super Id>> extension : extensions) {
+    public SecurityServiceExtensionProxyBuilder<S,E,Id> addServiceExtensions(AbstractServiceExtension<? extends SimpleCrudService<? super E,? super Id>,? super SecurityProxyController>... extensions){
+        for (AbstractServiceExtension<? extends SimpleCrudService<? super E, ? super Id>,? super SecurityProxyController> extension : extensions) {
             proxy.addExtension(extension);
         }
         return this;
@@ -35,12 +40,13 @@ public class SecurityServiceExtensionProxyBuilder<S extends SimpleCrudService<E,
 
     // service extension can be any super class of service
     // also types that are not of type SimpleService
-    public SecurityServiceExtensionProxyBuilder<S,E,Id> addSuperExtensions(SecurityServiceExtension<? super S>... extensions){
-        for (SecurityServiceExtension<? super S> extension : extensions) {
+    public SecurityServiceExtensionProxyBuilder<S,E,Id> addSuperExtensions(AbstractServiceExtension<? super S,? super SecurityProxyController>... extensions){
+        for (AbstractServiceExtension<? super S, ? super SecurityProxyController> extension : extensions) {
             proxy.addExtension(extension);
         }
         return this;
     }
+
 
 
     public S build(){
