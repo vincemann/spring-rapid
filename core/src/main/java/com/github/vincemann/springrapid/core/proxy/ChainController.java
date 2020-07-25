@@ -7,6 +7,8 @@ interface ChainController<T>{
      * Last element is always the proxied service. (Could be a proxy still, if the proxy factory was given a proxy as the service to proxy)
      */
     T getLast();
+
+
     T getNext(AbstractServiceExtension<T,?> extension);
 
 }

@@ -44,13 +44,10 @@ public interface SimpleCrudServiceExtension<S extends SimpleCrudService>
         return getNext().getEntityClass();
     }
 
-//    @Override
+
+    //    @Override
 //    public default CrudRepository getRepository() {
 //        return getNext().getRepository();
 //    }
 
-    @Override
-    public default Class<?> getTargetClass() {
-        return getNext().getTargetClass();
-    }
 }

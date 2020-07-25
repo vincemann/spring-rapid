@@ -4,15 +4,19 @@ package com.github.vincemann.springrapid.core.proxy;
 import com.github.vincemann.aoplog.api.AopLoggable;
 import com.github.vincemann.aoplog.api.LogConfig;
 import com.github.vincemann.aoplog.api.LogInteraction;
-import com.github.vincemann.aoplog.api.UltimateTargetClassAware;
 import com.google.common.base.Objects;
+import org.springframework.beans.factory.annotation.Configurable;
+import org.springframework.test.util.AopTestUtils;
 
 // dont log extensions methods -> otherwise you will have log for i.E. save 3 times for 2 extensions..
 // explicitly log methods you want to log
-@LogInteraction(disabled = true)
-@LogConfig(logAllChildrenMethods = true,ignoreGetters = true,ignoreSetters = true)
+//// todo this is not applied bc crudservice is closer in hierarchy so its config is used instead of this one
+//@LogInteraction(disabled = true)
+//@LogConfig(logAllChildrenMethods = true,ignoreGetters = true,ignoreSetters = true)
+//dependencys will be injected by aspectj, you should create the extensions with new
+//this is done, so the extensions are not in the container as duplicate beans for service interfaces
 public abstract class AbstractServiceExtension<T,P extends ProxyController>
-        implements NextLinkAware<T>, AopLoggable, UltimateTargetClassAware {
+        implements NextLinkAware<T>{
 
     private ChainController<T> chain;
     private P proxyController;
@@ -33,15 +37,27 @@ public abstract class AbstractServiceExtension<T,P extends ProxyController>
         return chain;
     }
 
+
+    /**
+     * Only use this to call the proxied method.
+     * Result may not actually have all methods of Type T, but always has the callee method.
+     * I.e.
+     * you can do this:
+     * public void save(Owner entity){
+     *     getNext().save(entity);
+     * }
+     *
+     * never do something like this:
+     * public void save(Owner entity){
+     *     getNext().diffMethod();
+     * }
+     *
+     * @return
+     */
     public T getNext() {
         return chain.getNext(this);
     }
 
-    //dont use proxied target class here -> we dont want to use same logger for extension and service
-    @Override
-    public Class<?> getTargetClass() {
-        return getClass();
-    }
 
     @Override
     public boolean equals(Object o) {

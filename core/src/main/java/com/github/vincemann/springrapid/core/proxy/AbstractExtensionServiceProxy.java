@@ -6,10 +6,13 @@ import com.github.vincemann.springrapid.commons.ProxyUtils;
 import com.github.vincemann.springrapid.core.service.SimpleCrudService;
 import lombok.*;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.ClassUtils;
+import org.springframework.aop.support.AopUtils;
 
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.lang.reflect.Proxy;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -212,10 +215,27 @@ public abstract class AbstractExtensionServiceProxy
 //            }
         }else {
             //this cast is also safe
-            result = extensionChain.get(nextIndex).getExtension();
+            result = createProxiedExtension(extensionChain.get(nextIndex).getExtension());
         }
         state_next_map.put(stateExtension,result);
+
         return result;
+    }
+
+    //simply delegates all calls to extension -> used so casting to ServiceType in Extensions work
+    //it is made sure the extension always has the method in question, so the cast is safe
+    private Object createProxiedExtension(Object extension){
+        Class<?> proxiedClass = AopUtils.getTargetClass(proxied);
+        return Proxy.newProxyInstance(
+                proxiedClass.getClassLoader(),
+                ClassUtils.getAllInterfaces(proxiedClass).toArray(new Class[0]),
+                new InvocationHandler() {
+                    @Override
+                    public Object invoke(Object o, Method method, Object[] objects) throws Throwable {
+                        //this should always work, there should never get a method called, that does not exist in extension
+                        return method.invoke(extension,objects);
+                    }
+                });
     }
 
 

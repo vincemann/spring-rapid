@@ -15,8 +15,7 @@ public class ServiceConfig {
 
     @Primary
     @Bean
-    public PetService extendedPetService(@Qualifier("noProxy") PetService petService,
-                                         AclServiceExtension aclServiceExtension) {
+    public PetService extendedPetService(@Qualifier("noProxy") PetService petService, AclServiceExtension aclServiceExtension) {
         return new ServiceExtensionProxyBuilder<>(petService)
                 .addSuperExtensions(aclServiceExtension)
                 .build();
@@ -25,12 +24,12 @@ public class ServiceConfig {
     @Primary
     @Bean
     public OwnerService ownerService(@Qualifier("noProxy") OwnerService ownerService,
-                                     SaveNameToWordPressDbExtension saveNameToWordPressDbExtension,
-                                     OwnerOfTheYearExtension ownerOfTheYearExtension
-                                    /* AclServiceExtension aclServiceExtension*/) {
+                                     OwnerOfTheYearExtension ownerOfTheYearExtension,
+                                     AclServiceExtension aclServiceExtension,
+                                     SaveNameToWordPressDbExtension saveNameToWordPressDbExtension) {
         return new ServiceExtensionProxyBuilder<>(ownerService)
                 .addServiceExtensions(saveNameToWordPressDbExtension, ownerOfTheYearExtension)
-//                .addSuperExtensions(aclServiceExtension)
+                .addSuperExtensions(aclServiceExtension)
                 .build();
     }
 }
