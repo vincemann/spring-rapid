@@ -1,15 +1,13 @@
-package com.github.vincemann.springrapid.acl.plugin;
+package com.github.vincemann.springrapid.acl.service.extensions;
 
 
 import com.github.vincemann.springrapid.acl.model.AclParentAware;
 import com.github.vincemann.springrapid.acl.service.LocalPermissionService;
 import com.github.vincemann.springrapid.acl.service.MockAuthService;
 import com.github.vincemann.springrapid.core.model.IdentifiableEntity;
-import com.github.vincemann.springrapid.core.service.CrudService;
 import com.github.vincemann.springrapid.core.service.SimpleCrudService;
 import com.github.vincemann.springrapid.core.service.exception.BadEntityException;
 import com.github.vincemann.springrapid.core.service.exception.EntityNotFoundException;
-import org.springframework.data.repository.CrudRepository;
 import org.springframework.security.acls.model.MutableAclService;
 import org.springframework.transaction.annotation.Transactional;
 

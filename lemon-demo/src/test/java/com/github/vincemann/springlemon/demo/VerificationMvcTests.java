@@ -1,7 +1,7 @@
 package com.github.vincemann.springlemon.demo;
 
 import com.github.vincemann.springlemon.demo.domain.User;
-import com.github.vincemann.springlemon.auth.security.service.GreenTokenService;
+import com.github.vincemann.springlemon.auth.service.GreenTokenService;
 import com.github.vincemann.springlemon.auth.util.LecUtils;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

@@ -1,4 +1,4 @@
-package com.github.vincemann.springlemon.auth.security.domain;
+package com.github.vincemann.springlemon.auth.domain;
 
 import com.github.vincemann.springrapid.acl.Role;
 

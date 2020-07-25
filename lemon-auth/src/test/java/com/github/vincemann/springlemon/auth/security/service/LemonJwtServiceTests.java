@@ -1,5 +1,8 @@
 package com.github.vincemann.springlemon.auth.security.service;
 
+import com.github.vincemann.springlemon.auth.service.LemonJweService;
+import com.github.vincemann.springlemon.auth.service.LemonJwsService;
+import com.github.vincemann.springlemon.auth.service.LemonTokenService;
 import com.github.vincemann.springlemon.auth.util.LecUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;

@@ -1,9 +1,9 @@
-package com.github.vincemann.springlemon.auth.security.config;
+package com.github.vincemann.springlemon.auth.config;
 
 import com.github.vincemann.springlemon.auth.properties.LemonProperties;
 import com.github.vincemann.springlemon.auth.security.LemonJpaTokenAuthenticationFilter;
-import com.github.vincemann.springlemon.auth.security.handlers.LemonAuthenticationSuccessHandler;
-import com.github.vincemann.springlemon.auth.security.service.LemonUserDetailsService;
+import com.github.vincemann.springlemon.auth.handler.LemonAuthenticationSuccessHandler;
+import com.github.vincemann.springlemon.auth.service.LemonUserDetailsService;
 import lombok.Getter;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;

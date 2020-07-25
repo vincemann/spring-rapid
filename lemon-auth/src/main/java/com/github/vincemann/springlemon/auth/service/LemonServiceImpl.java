@@ -1,8 +1,6 @@
 package com.github.vincemann.springlemon.auth.service;
 
 
-import com.github.vincemann.aoplog.Severity;
-import com.github.vincemann.aoplog.api.LogInteraction;
 import com.nimbusds.jwt.JWTClaimsSet;
 import com.github.vincemann.springlemon.auth.domain.AbstractUser;
 import com.github.vincemann.springlemon.auth.domain.AbstractUserRepository;
@@ -13,9 +11,7 @@ import com.github.vincemann.springlemon.auth.domain.dto.user.LemonUserDto;
 import com.github.vincemann.springlemon.auth.mail.LemonMailData;
 import com.github.vincemann.springlemon.auth.mail.MailSender;
 import com.github.vincemann.springlemon.auth.properties.LemonProperties;
-import com.github.vincemann.springlemon.auth.security.domain.LemonRole;
-import com.github.vincemann.springlemon.auth.security.service.BlueTokenService;
-import com.github.vincemann.springlemon.auth.security.service.GreenTokenService;
+import com.github.vincemann.springlemon.auth.domain.LemonRole;
 import com.github.vincemann.springlemon.auth.util.LecUtils;
 import com.github.vincemann.springlemon.auth.util.LecjUtils;
 import com.github.vincemann.springlemon.auth.util.LecwUtils;

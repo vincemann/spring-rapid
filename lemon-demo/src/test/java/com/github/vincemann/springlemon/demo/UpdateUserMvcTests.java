@@ -3,7 +3,7 @@ package com.github.vincemann.springlemon.demo;
 import com.github.vincemann.springlemon.auth.controller.LemonController;
 import com.github.vincemann.springlemon.demo.domain.User;
 import com.github.vincemann.springlemon.auth.service.LemonService;
-import com.github.vincemann.springlemon.auth.security.domain.LemonRole;
+import com.github.vincemann.springlemon.auth.domain.LemonRole;
 import com.github.vincemann.springlemon.auth.util.LecUtils;
 import com.github.vincemann.springrapid.acl.Role;
 

@@ -2,8 +2,6 @@ package com.github.vincemann.springlemon.auth.config;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.vincemann.springlemon.auth.properties.LemonProperties;
-import com.github.vincemann.springlemon.auth.security.config.LemonCorsConfigurationSource;
-import com.github.vincemann.springlemon.auth.security.config.LemonWebSecurityConfig;
 import com.github.vincemann.springrapid.core.config.RapidJacksonAutoConfiguration;
 import com.github.vincemann.springrapid.core.slicing.config.WebConfig;
 import org.apache.commons.logging.Log;

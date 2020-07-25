@@ -1,4 +1,4 @@
-package com.github.vincemann.springlemon.auth.security.service;
+package com.github.vincemann.springlemon.auth.service;
 
 import org.springframework.security.access.prepost.PreAuthorize;
 

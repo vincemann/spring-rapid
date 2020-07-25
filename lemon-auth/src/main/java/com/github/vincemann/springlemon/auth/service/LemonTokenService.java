@@ -1,4 +1,4 @@
-package com.github.vincemann.springlemon.auth.security.service;
+package com.github.vincemann.springlemon.auth.service;
 
 import com.github.vincemann.aoplog.Severity;
 import com.github.vincemann.aoplog.api.AopLoggable;

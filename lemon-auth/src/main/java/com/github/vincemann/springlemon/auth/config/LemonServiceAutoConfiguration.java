@@ -1,16 +1,14 @@
 package com.github.vincemann.springlemon.auth.config;
 
 import com.github.vincemann.springlemon.auth.domain.AbstractUserRepository;
-import com.github.vincemann.springlemon.auth.security.LemonAclServiceExtension;
+import com.github.vincemann.springlemon.auth.service.extension.LemonAclServiceExtension;
 import com.github.vincemann.springlemon.auth.service.LemonService;
-import com.github.vincemann.springlemon.auth.security.LemonServiceSecurityRule;
-import com.github.vincemann.springrapid.acl.plugin.CleanUpAclServiceExtension;
+import com.github.vincemann.springlemon.auth.service.extension.LemonServiceSecurityExtension;
+import com.github.vincemann.springrapid.acl.service.extensions.CleanUpAclServiceExtension;
 import com.github.vincemann.springrapid.acl.proxy.AclManaging;
 import com.github.vincemann.springrapid.acl.proxy.SecurityServiceExtensionProxyBuilderFactory;
 import com.github.vincemann.springrapid.acl.service.LocalPermissionService;
 import com.github.vincemann.springrapid.acl.service.MockAuthService;
-import com.github.vincemann.springrapid.acl.proxy.Secured;
-import com.github.vincemann.springrapid.core.proxy.ServiceExtensionProxyBuilder;
 import com.github.vincemann.springrapid.core.slicing.config.ServiceConfig;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -41,10 +39,10 @@ public class LemonServiceAutoConfiguration {
         log.info("Created");
     }
 
-    @ConditionalOnMissingBean(LemonServiceSecurityRule.class)
+    @ConditionalOnMissingBean(LemonServiceSecurityExtension.class)
     @Bean
-    public LemonServiceSecurityRule lemonServiceSecurityRule(AbstractUserRepository<?,?> repository){
-        return new LemonServiceSecurityRule(repository);
+    public LemonServiceSecurityExtension lemonServiceSecurityRule(AbstractUserRepository<?,?> repository){
+        return new LemonServiceSecurityExtension(repository);
     }
 
     @Bean

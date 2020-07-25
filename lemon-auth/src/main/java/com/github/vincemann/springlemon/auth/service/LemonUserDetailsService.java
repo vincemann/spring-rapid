@@ -1,11 +1,11 @@
-package com.github.vincemann.springlemon.auth.security.service;
+package com.github.vincemann.springlemon.auth.service;
 
 import com.github.vincemann.aoplog.Severity;
 import com.github.vincemann.aoplog.api.AopLoggable;
 import com.github.vincemann.aoplog.api.LogInteraction;
 import com.github.vincemann.springlemon.auth.domain.AbstractUser;
 import com.github.vincemann.springlemon.auth.domain.AbstractUserRepository;
-import com.github.vincemann.springlemon.auth.security.domain.LemonPrincipal;
+import com.github.vincemann.springlemon.auth.domain.LemonPrincipal;
 import com.github.vincemann.springlemon.exceptions.util.LexUtils;
 
 import com.github.vincemann.springrapid.core.slicing.components.ServiceComponent;
