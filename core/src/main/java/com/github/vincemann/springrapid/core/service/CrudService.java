@@ -2,6 +2,7 @@ package com.github.vincemann.springrapid.core.service;
 
 import com.github.vincemann.springrapid.core.model.IdentifiableEntity;
 import com.github.vincemann.springrapid.core.slicing.components.ServiceComponent;
+import org.springframework.aop.TargetClassAware;
 import org.springframework.data.repository.CrudRepository;
 
 import java.io.Serializable;
@@ -18,7 +19,7 @@ public interface CrudService
                 Id extends Serializable,
                 R extends CrudRepository<E,Id>
         >
-    extends  SimpleCrudService<E,Id>
+    extends  SimpleCrudService<E,Id>, TargetClassAware
 {
 
 

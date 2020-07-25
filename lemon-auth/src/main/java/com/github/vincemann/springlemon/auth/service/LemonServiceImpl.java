@@ -46,10 +46,9 @@ import java.util.Optional;
  */
 @Validated
 @Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
-public abstract class LemonServiceImpl
-        <U extends AbstractUser<ID>, ID extends Serializable, R extends AbstractUserRepository<U, ID>>
-        extends AbstractLemonService<U, ID, R>
-        implements LemonService<U, ID, R> {
+public abstract class LemonServiceImpl<U extends AbstractUser<ID>, ID extends Serializable, R extends AbstractUserRepository<U, ID>>
+            extends AbstractLemonService<U, ID, R>
+                    implements LemonService<U, ID, R> {
 
     private static final Log log = LogFactory.getLog(LemonServiceImpl.class);
 

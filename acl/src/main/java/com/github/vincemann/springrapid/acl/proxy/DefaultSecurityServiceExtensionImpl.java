@@ -16,21 +16,16 @@ import java.util.Set;
  */
 public class DefaultSecurityServiceExtensionImpl extends SecurityServiceExtension<CrudService> implements SimpleCrudServiceExtension<CrudService> {
 
-    private Class<?> entityClass;
-
-    public DefaultSecurityServiceExtensionImpl() {
-        this.entityClass = getLast().getEntityClass();
-    }
 
     @Override
     public Optional findById(Serializable id) throws BadEntityException {
-        getSecurityChecker().checkPermission(id,entityClass,getReadPermission());
+        getSecurityChecker().checkPermission(id,getLast().getEntityClass(),getReadPermission());
         return getNext().findById(id);
     }
 
     @Override
     public IdentifiableEntity update(IdentifiableEntity entity, Boolean full) throws EntityNotFoundException, BadEntityException {
-        getSecurityChecker().checkPermission(entity.getId(),entityClass,getWritePermission());
+        getSecurityChecker().checkPermission(entity.getId(),getLast().getEntityClass(),getWritePermission());
         return getNext().update(entity,full);
     }
 
@@ -42,7 +37,7 @@ public class DefaultSecurityServiceExtensionImpl extends SecurityServiceExtensio
 
     @Override
     public void deleteById(Serializable id) throws EntityNotFoundException, BadEntityException {
-        getSecurityChecker().checkPermission(id,entityClass,getDeletePermission());
+        getSecurityChecker().checkPermission(id,getLast().getEntityClass(),getDeletePermission());
         getNext().deleteById(id);
     }
 
