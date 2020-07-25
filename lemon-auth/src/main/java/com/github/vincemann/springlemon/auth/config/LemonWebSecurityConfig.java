@@ -1,7 +1,7 @@
-package com.github.vincemann.springlemon.auth.security.config;
+package com.github.vincemann.springlemon.auth.config;
 
 import com.github.vincemann.springlemon.auth.security.LemonCommonsWebTokenAuthenticationFilter;
-import com.github.vincemann.springlemon.auth.security.service.BlueTokenService;
+import com.github.vincemann.springlemon.auth.service.BlueTokenService;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;

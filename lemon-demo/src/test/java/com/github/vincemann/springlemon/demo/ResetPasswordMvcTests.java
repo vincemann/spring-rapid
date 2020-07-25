@@ -2,7 +2,7 @@ package com.github.vincemann.springlemon.demo;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.github.vincemann.springlemon.auth.domain.dto.ResetPasswordForm;
-import com.github.vincemann.springlemon.auth.security.service.GreenTokenService;
+import com.github.vincemann.springlemon.auth.service.GreenTokenService;
 import com.github.vincemann.springlemon.auth.util.LecUtils;
 import com.github.vincemann.springrapid.core.util.MapperUtils;
 import org.junit.jupiter.api.BeforeEach;

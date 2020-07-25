@@ -1,9 +1,9 @@
 package com.github.vincemann.springrapid.acl.config;
 
-import com.github.vincemann.springrapid.acl.plugin.AdminFullAccessAclServiceExtension;
-import com.github.vincemann.springrapid.acl.plugin.AuthenticatedFullAccessAclServiceExtension;
-import com.github.vincemann.springrapid.acl.plugin.CleanUpAclServiceExtension;
-import com.github.vincemann.springrapid.acl.plugin.InheritParentAclServiceExtension;
+import com.github.vincemann.springrapid.acl.service.extensions.AdminFullAccessAclServiceExtension;
+import com.github.vincemann.springrapid.acl.service.extensions.AuthenticatedFullAccessAclServiceExtension;
+import com.github.vincemann.springrapid.acl.service.extensions.CleanUpAclServiceExtension;
+import com.github.vincemann.springrapid.acl.service.extensions.InheritParentAclServiceExtension;
 import com.github.vincemann.springrapid.acl.service.LocalPermissionService;
 import com.github.vincemann.springrapid.acl.service.MockAuthService;
 import com.github.vincemann.springrapid.core.config.RapidJacksonAutoConfiguration;

@@ -2,8 +2,8 @@ package com.github.vincemann.springlemon.auth.security;
 
 import com.github.vincemann.springlemon.auth.domain.AbstractUser;
 import com.github.vincemann.springlemon.auth.domain.dto.user.LemonUserDto;
-import com.github.vincemann.springlemon.auth.security.service.BlueTokenService;
-import com.github.vincemann.springlemon.auth.security.service.LemonUserDetailsService;
+import com.github.vincemann.springlemon.auth.service.BlueTokenService;
+import com.github.vincemann.springlemon.auth.service.LemonUserDetailsService;
 import com.github.vincemann.springlemon.auth.util.LemonUtils;
 
 import com.nimbusds.jwt.JWTClaimsSet;

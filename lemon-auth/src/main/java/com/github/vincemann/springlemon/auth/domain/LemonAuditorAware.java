@@ -1,6 +1,5 @@
-package com.github.vincemann.springlemon.auth.security.domain;
+package com.github.vincemann.springlemon.auth.domain;
 
-import com.github.vincemann.springlemon.auth.domain.AbstractAuditorAware;
 import com.github.vincemann.springlemon.auth.domain.dto.user.LemonUserDto;
 import com.github.vincemann.springlemon.auth.util.LecwUtils;
 import org.apache.commons.logging.Log;

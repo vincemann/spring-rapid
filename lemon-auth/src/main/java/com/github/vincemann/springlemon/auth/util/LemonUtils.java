@@ -1,11 +1,10 @@
 package com.github.vincemann.springlemon.auth.util;
 
-import com.github.vincemann.aoplog.api.AopLoggable;
 import com.github.vincemann.springlemon.auth.domain.AbstractUser;
-import com.github.vincemann.springlemon.auth.security.domain.LemonPrincipal;
+import com.github.vincemann.springlemon.auth.domain.LemonPrincipal;
 import com.github.vincemann.springlemon.auth.domain.dto.user.LemonUserDto;
-import com.github.vincemann.springlemon.auth.security.service.BlueTokenService;
-import com.github.vincemann.springlemon.auth.security.service.LemonTokenService;
+import com.github.vincemann.springlemon.auth.service.BlueTokenService;
+import com.github.vincemann.springlemon.auth.service.LemonTokenService;
 import com.nimbusds.jwt.JWTClaimsSet;
 import com.github.vincemann.springrapid.core.util.MapperUtils;
 import org.apache.commons.logging.Log;

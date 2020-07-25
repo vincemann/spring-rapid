@@ -1,4 +1,4 @@
-package com.github.vincemann.springlemon.auth.security.domain;
+package com.github.vincemann.springlemon.auth.domain;
 
 import org.springframework.security.core.GrantedAuthority;
 

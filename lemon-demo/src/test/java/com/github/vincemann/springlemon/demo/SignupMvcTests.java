@@ -2,7 +2,7 @@ package com.github.vincemann.springlemon.demo;
 
 import com.github.vincemann.springlemon.demo.domain.MySignupForm;
 import com.github.vincemann.springrapid.core.util.MapperUtils;
-import com.github.vincemann.springlemon.auth.security.domain.LemonRole;
+import com.github.vincemann.springlemon.auth.domain.LemonRole;
 import com.github.vincemann.springlemon.auth.util.LecUtils;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;

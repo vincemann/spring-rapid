@@ -1,8 +1,8 @@
 package com.github.vincemann.springlemon.auth.security;
 
-import com.github.vincemann.springlemon.auth.security.domain.LemonPrincipal;
+import com.github.vincemann.springlemon.auth.domain.LemonPrincipal;
 import com.github.vincemann.springlemon.auth.domain.dto.user.LemonUserDto;
-import com.github.vincemann.springlemon.auth.security.service.BlueTokenService;
+import com.github.vincemann.springlemon.auth.service.BlueTokenService;
 import com.github.vincemann.springlemon.auth.util.LecUtils;
 import com.github.vincemann.springlemon.auth.util.LemonUtils;
 

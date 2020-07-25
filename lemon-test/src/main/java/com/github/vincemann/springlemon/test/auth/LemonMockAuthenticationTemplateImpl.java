@@ -1,7 +1,7 @@
 package com.github.vincemann.springlemon.test.auth;
 
 import com.github.vincemann.springlemon.auth.domain.dto.user.LemonUserDto;
-import com.github.vincemann.springlemon.auth.security.domain.LemonPrincipal;
+import com.github.vincemann.springlemon.auth.domain.LemonPrincipal;
 import com.github.vincemann.springrapid.coretest.BeforeEachMethodInitializable;
 import com.github.vincemann.springrapid.coretest.auth.AbstractMockAuthenticationTemplate;
 import org.mockito.Mockito;

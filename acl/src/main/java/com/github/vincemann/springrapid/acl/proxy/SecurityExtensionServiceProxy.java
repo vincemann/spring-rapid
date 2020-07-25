@@ -19,7 +19,7 @@ import java.lang.reflect.Method;
  *
  * Is created by {@link SecurityExtensionServiceProxyFactory} or by {@link ConfigureProxies}.
  */
-class SecurityExtensionServiceProxy<S extends SimpleCrudService<?,?>>
+public class SecurityExtensionServiceProxy<S extends SimpleCrudService<?,?>>
         extends AbstractExtensionServiceProxy
         <       S,
                 SecurityExtensionServiceProxy.State,

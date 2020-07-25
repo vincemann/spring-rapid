@@ -1,4 +1,4 @@
-package com.github.vincemann.springlemon.auth.security.service;
+package com.github.vincemann.springlemon.auth.service;
 
 import com.github.vincemann.springrapid.core.slicing.components.ServiceComponent;
 

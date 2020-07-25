@@ -1,4 +1,4 @@
-package com.github.vincemann.springlemon.auth.security.config;
+package com.github.vincemann.springlemon.auth.config;
 
 import com.github.vincemann.springlemon.auth.properties.LemonProperties;
 import org.apache.commons.logging.Log;

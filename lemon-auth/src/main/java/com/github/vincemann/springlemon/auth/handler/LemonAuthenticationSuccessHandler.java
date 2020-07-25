@@ -1,4 +1,4 @@
-package com.github.vincemann.springlemon.auth.security.handlers;
+package com.github.vincemann.springlemon.auth.handler;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.vincemann.springlemon.auth.properties.LemonProperties;

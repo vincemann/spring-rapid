@@ -1,6 +1,6 @@
 package com.github.vincemann.springlemon.auth.domain.dto.user;
 
-import com.github.vincemann.springlemon.auth.security.domain.LemonRole;
+import com.github.vincemann.springlemon.auth.domain.LemonRole;
 import com.github.vincemann.springrapid.acl.Role;
 import com.github.vincemann.springrapid.core.model.IdentifiableEntityImpl;
 import lombok.*;
