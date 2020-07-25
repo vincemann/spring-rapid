@@ -7,10 +7,7 @@ import com.github.vincemann.springlemon.auth.domain.dto.RequestEmailChangeForm;
 import com.github.vincemann.springlemon.auth.security.domain.LemonRole;
 import com.github.vincemann.springlemon.auth.domain.dto.user.LemonUserDto;
 import com.github.vincemann.springlemon.auth.util.LecwUtils;
-import com.github.vincemann.springrapid.acl.proxy.rules.OverrideDefaultSecurityRule;
-import com.github.vincemann.springrapid.acl.proxy.rules.ServiceSecurityRule;
 
-import com.github.vincemann.springrapid.core.proxy.CalledByProxy;
 import com.github.vincemann.springrapid.core.service.exception.BadEntityException;
 import com.github.vincemann.springrapid.core.service.exception.EntityNotFoundException;
 import com.github.vincemann.springlemon.exceptions.util.LexUtils;
