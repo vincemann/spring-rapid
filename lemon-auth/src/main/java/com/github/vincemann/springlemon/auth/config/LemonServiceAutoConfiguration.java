@@ -4,11 +4,13 @@ import com.github.vincemann.springlemon.auth.domain.AbstractUserRepository;
 import com.github.vincemann.springlemon.auth.service.extension.LemonAclServiceExtension;
 import com.github.vincemann.springlemon.auth.service.LemonService;
 import com.github.vincemann.springlemon.auth.service.extension.LemonServiceSecurityExtension;
+import com.github.vincemann.springrapid.acl.proxy.Secured;
 import com.github.vincemann.springrapid.acl.service.extensions.CleanUpAclServiceExtension;
 import com.github.vincemann.springrapid.acl.proxy.AclManaging;
 import com.github.vincemann.springrapid.acl.proxy.SecurityServiceExtensionProxyBuilderFactory;
 import com.github.vincemann.springrapid.acl.service.LocalPermissionService;
 import com.github.vincemann.springrapid.acl.service.MockAuthService;
+import com.github.vincemann.springrapid.core.proxy.ServiceExtensionProxyBuilder;
 import com.github.vincemann.springrapid.core.slicing.config.ServiceConfig;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,7 +23,7 @@ import org.springframework.security.acls.model.MutableAclService;
 public class LemonServiceAutoConfiguration {
 
     @Autowired
-    SecurityServiceExtensionProxyBuilderFactory extensionProxyBuilderFactory;
+    SecurityServiceExtensionProxyBuilderFactory securityExtensionProxyBuilderFactory;
 
     @Autowired
     LocalPermissionService permissionService;
@@ -30,7 +32,7 @@ public class LemonServiceAutoConfiguration {
     MutableAclService mutableAclService;
 
     @Autowired
-    AbstractUserRepository<?,?> userRepository;
+    AbstractUserRepository<?, ?> userRepository;
 
     @Autowired
     MockAuthService mockAuthService;
@@ -41,34 +43,36 @@ public class LemonServiceAutoConfiguration {
 
     @ConditionalOnMissingBean(LemonServiceSecurityExtension.class)
     @Bean
-    public LemonServiceSecurityExtension lemonServiceSecurityRule(AbstractUserRepository<?,?> repository){
+    public LemonServiceSecurityExtension lemonServiceSecurityRule(AbstractUserRepository<?, ?> repository) {
         return new LemonServiceSecurityExtension(repository);
     }
 
     @Bean
     @ConditionalOnMissingBean(LemonAclServiceExtension.class)
-    public LemonAclServiceExtension lemonAclExtension(){
-        return new LemonAclServiceExtension(permissionService,mutableAclService,mockAuthService,userRepository);
+    public LemonAclServiceExtension lemonAclExtension() {
+        return new LemonAclServiceExtension(permissionService, mutableAclService, mockAuthService, userRepository);
     }
 
     @ConditionalOnMissingBean(name = "aclManagingLemonService")
     @Bean
     @AclManaging
-    public LemonService<?,?,?> aclManagingLemonService(LemonService<?,?,?> service,
+    public LemonService<?, ?, ?> aclManagingLemonService(LemonService<?, ?, ?> service,
 //                                                                            AdminFullAccessAclExtension adminFullAccess,
 //                                                                            AuthenticatedFullAccessAclExtension authenticatedFullAccessAclExtension,
-                                                       CleanUpAclServiceExtension cleanUpAclExtension){
-        return extensionProxyBuilderFactory.create(service)
-                .addSuperExtensions(lemonAclExtension(),cleanUpAclExtension)
+                                                         CleanUpAclServiceExtension cleanUpAclExtension) {
+        return new ServiceExtensionProxyBuilder<>(service)
+                .addExtensions(lemonAclExtension(), cleanUpAclExtension)
                 .build();
     }
 
 
-//    @ConditionalOnMissingBean(name = "securedLemonService")
-//    @Bean
-//    @Secured
-//    public LemonService<?,?,?> securedLemonService(@AclManaging LemonService<?,?,?> service,
-//                                                LemonServiceSecurityRule securityRule){
-//        return securityProxyFactory.create(service,securityRule);
-//    }
+    @ConditionalOnMissingBean(name = "securedLemonService")
+    @Bean
+    @Secured
+    public LemonService<?, ?, ?> securedLemonService(@AclManaging LemonService<?, ?, ?> service,
+                                                     LemonServiceSecurityExtension securityRule) {
+        return securityExtensionProxyBuilderFactory.create(service)
+                .addExtensions(securityRule)
+                .build();
+    }
 }

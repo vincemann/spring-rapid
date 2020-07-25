@@ -1,7 +1,10 @@
 package com.github.vincemann.springrapid.commons;
 
 import org.springframework.aop.support.AopUtils;
+import org.springframework.core.NestedExceptionUtils;
 import org.springframework.test.util.AopTestUtils;
+
+import java.lang.reflect.InvocationTargetException;
 
 public class ProxyUtils {
 
@@ -15,4 +18,6 @@ public class ProxyUtils {
             return o1.equals(o2);
         }
     }
+
+
 }
