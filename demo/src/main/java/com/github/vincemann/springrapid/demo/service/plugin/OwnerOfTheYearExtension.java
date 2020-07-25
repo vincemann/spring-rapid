@@ -12,16 +12,15 @@ import org.springframework.context.annotation.Scope;
 import java.util.Optional;
 
 @ServiceComponent
-@Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
-public class OwnerOfTheYearExtension extends ServiceExtension<OwnerService> implements OwnerService, GenericSimpleCrudServiceExtension<OwnerService,Owner,Long> {
+//@Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
+public class OwnerOfTheYearExtension
+        extends ServiceExtension<OwnerService>
+            implements OwnerService, GenericSimpleCrudServiceExtension<OwnerService,Owner,Long> {
 
 
     @Override
     public Optional<Owner> findOwnerOfTheYear() {
-        Optional<Owner> ownerOfTheYear = getNext().findOwnerOfTheYear();
-        System.out.println("onAfterFindOwnerOfTheYear Hookmethod called");
-        System.out.println("Owner of the year : " + ownerOfTheYear);
-        return ownerOfTheYear;
+        return getNext().findOwnerOfTheYear();
     }
 
     @Override

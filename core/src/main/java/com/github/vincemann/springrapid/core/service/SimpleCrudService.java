@@ -3,7 +3,6 @@ package com.github.vincemann.springrapid.core.service;
 import com.github.vincemann.aoplog.api.AopLoggable;
 import com.github.vincemann.aoplog.api.LogConfig;
 import com.github.vincemann.aoplog.api.LogInteraction;
-import com.github.vincemann.aoplog.api.UltimateTargetClassAware;
 import com.github.vincemann.springrapid.core.model.IdentifiableEntity;
 import com.github.vincemann.springrapid.core.service.exception.BadEntityException;
 import com.github.vincemann.springrapid.core.service.exception.EntityNotFoundException;
@@ -17,7 +16,7 @@ import java.util.Set;
 @LogInteraction
 @LogConfig(ignoreGetters = true,ignoreSetters = true,logAllChildrenMethods = true)
 public interface SimpleCrudService<E extends IdentifiableEntity<Id>,Id extends Serializable>
-        extends AopLoggable, UltimateTargetClassAware{
+        extends AopLoggable{
 
         Class<E> getEntityClass();
 

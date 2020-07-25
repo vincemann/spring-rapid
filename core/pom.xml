@@ -20,6 +20,14 @@
             <version>${aop-log.version}</version>
         </dependency>
 
+
+<!--&lt;!&ndash;        https://www.baeldung.com/spring-inject-bean-into-unmanaged-objects&ndash;&gt;-->
+<!--        <dependency>-->
+<!--            <groupId>org.springframework</groupId>-->
+<!--            <artifactId>spring-aspects</artifactId>-->
+<!--        </dependency>-->
+
+
         <dependency>
             <groupId>com.github.vincemann.spring-rapid</groupId>
             <artifactId>commons</artifactId>
@@ -40,6 +48,8 @@
             <groupId>org.springframework.security</groupId>
             <artifactId>spring-security-core</artifactId>
         </dependency>
+
+
 
         <dependency>
             <groupId>com.github.fge</groupId>
@@ -72,7 +82,39 @@
         </dependency>
 
 
+
     </dependencies>
+
+<!--    &lt;!&ndash;        https://www.baeldung.com/spring-inject-bean-into-unmanaged-objects&ndash;&gt;-->
+<!--    <build>-->
+<!--        <plugins>-->
+<!--            <plugin>-->
+<!--                <groupId>org.codehaus.mojo</groupId>-->
+<!--                <artifactId>aspectj-maven-plugin</artifactId>-->
+<!--                <version>1.11</version>-->
+<!--                &lt;!&ndash; configuration and executions &ndash;&gt;-->
+<!--                <configuration>-->
+<!--                    <complianceLevel>1.8</complianceLevel>-->
+<!--                    <Xlint>ignore</Xlint>-->
+<!--                    <aspectLibraries>-->
+<!--                        <aspectLibrary>-->
+<!--                            <groupId>org.springframework</groupId>-->
+<!--                            <artifactId>spring-aspects</artifactId>-->
+<!--                        </aspectLibrary>-->
+<!--                    </aspectLibraries>-->
+<!--                </configuration>-->
+<!--                <executions>-->
+<!--                    <execution>-->
+<!--                        <goals>-->
+<!--                            <goal>compile</goal>-->
+<!--                        </goals>-->
+<!--                    </execution>-->
+<!--                </executions>-->
+
+<!--            </plugin>-->
+<!--        </plugins>-->
+
+<!--    </build>-->
 
 </project>
 

@@ -42,8 +42,4 @@ public interface GenericSimpleCrudServiceExtension<S extends SimpleCrudService<E
         return getNext().getEntityClass();
     }
 
-    @Override
-    default Class<?> getTargetClass() {
-        return getNext().getTargetClass();
-    }
 }

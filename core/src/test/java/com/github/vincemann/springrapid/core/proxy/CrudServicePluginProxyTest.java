@@ -13,6 +13,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.*;
 import org.mockito.internal.InOrderImpl;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.aop.TargetClassAware;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import static org.mockito.ArgumentMatchers.any;
@@ -34,7 +35,7 @@ class CrudServiceExtensionProxyTest {
     }
 
     class ServiceImpl extends JPACrudService<Entity, Long, JpaRepository<Entity, Long>>
-            implements Service{
+            implements Service, TargetClassAware {
 
         @Override
         public Class<?> getTargetClass() {

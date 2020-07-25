@@ -8,8 +8,11 @@ import com.github.vincemann.springrapid.demo.model.Owner;
 import com.github.vincemann.springrapid.demo.repo.OwnerRepository;
 import com.github.vincemann.springrapid.demo.service.OwnerService;
 import lombok.extern.java.Log;
+import org.springframework.aop.TargetClassAware;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Service;
+import org.springframework.test.util.AopTestUtils;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Optional;
@@ -17,7 +20,9 @@ import java.util.Optional;
 @Qualifier("noProxy")
 @Service
 @ServiceComponent
-public class OwnerJPAService extends JPACrudService<Owner,Long, OwnerRepository> implements OwnerService, AopLoggable {
+public class OwnerJPAService
+        extends JPACrudService<Owner,Long, OwnerRepository>
+                implements OwnerService, AopLoggable, TargetClassAware {
 
 
     @LogInteraction
@@ -27,10 +32,11 @@ public class OwnerJPAService extends JPACrudService<Owner,Long, OwnerRepository>
         return getRepository().findByLastName(lastName);
     }
 
-    @Override
-    public Class<?> getTargetClass() {
+
+    public Class<?> getTargetClass(){
         return OwnerJPAService.class;
     }
+
 
     /**
      * Owner named "42" is owner of the year

@@ -39,7 +39,7 @@ import static com.github.vincemann.springrapid.coretest.service.PropertyMatchers
 
 @EnableProjectComponentScan
 @ImportRapidEntityRelServiceConfig
-@Import(AopLogAutoConfiguration.class)
+//@Import(AopLogAutoConfiguration.class)
 class OwnerServiceIntegrationTest
         extends CrudServiceIntegrationTest<OwnerService, Owner, Long> {
     //Types
