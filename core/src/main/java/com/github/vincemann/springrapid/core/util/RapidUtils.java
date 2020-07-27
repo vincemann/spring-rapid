@@ -20,24 +20,26 @@ public class RapidUtils {
     }
 
     public static void checkPresent(Object entity, String msg) throws EntityNotFoundException {
-        if(entity==null){
+        if (!checkPresent(entity)){
             throw new EntityNotFoundException(msg);
-        }
-        if (entity instanceof Optional){
-            if (((Optional) entity).isEmpty()){
-                throw new EntityNotFoundException(msg);
-            }
         }
     }
 
-    public static void checkPresent(Object entity, Object id, Class clazz) throws EntityNotFoundException {
+    public static boolean checkPresent(Object entity){
         if(entity==null){
-            throw new EntityNotFoundException(id,clazz);
+            return false;
         }
         if (entity instanceof Optional){
             if (((Optional) entity).isEmpty()){
-                throw new EntityNotFoundException(id,clazz);
+                return false;
             }
+        }
+        return true;
+    }
+
+    public static void checkPresent(Object entity, Object id, Class clazz) throws EntityNotFoundException {
+        if (!checkPresent(entity)){
+            throw new EntityNotFoundException(id,clazz);
         }
     }
 

@@ -9,6 +9,7 @@ import java.lang.reflect.InvocationTargetException;
 public class ProxyUtils {
 
 
+    //use whenever you get errors comparing cglib proxy (all fields null) with normal object or other proxy
     public static boolean isEqual(Object o1, Object o2){
         //other way around is no problem
         //dont forget to actually implement the equals method with getters !
