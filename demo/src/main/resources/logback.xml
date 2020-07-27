@@ -11,15 +11,9 @@
         <appender-ref ref="CONSOLE"/>
     </logger>
 
-<!--    <logger name="com.github.vincemann.aoplog" level="trace" additivity="false">-->
-<!--        <appender-ref ref="CONSOLE"/>-->
-<!--    </logger>-->
-
-<!--    <springProfile name="test">-->
-<!--            <logger name="com.github.vincemann.aoplog" level="trace" additivity="false">-->
-<!--                <appender-ref ref="CONSOLE"/>-->
-<!--            </logger>-->
-<!--    </springProfile>-->
+    <logger name="com.github.vincemann.aoplog" level="info" additivity="false">
+        <appender-ref ref="CONSOLE"/>
+    </logger>
 
 
     <root level="info">

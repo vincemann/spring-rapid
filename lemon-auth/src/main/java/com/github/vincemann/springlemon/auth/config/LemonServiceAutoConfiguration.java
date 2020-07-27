@@ -14,8 +14,10 @@ import com.github.vincemann.springrapid.core.proxy.ServiceExtensionProxyBuilder;
 import com.github.vincemann.springrapid.core.slicing.config.ServiceConfig;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Scope;
 import org.springframework.security.acls.model.MutableAclService;
 
 @ServiceConfig
@@ -49,6 +51,7 @@ public class LemonServiceAutoConfiguration {
 
     @Bean
     @ConditionalOnMissingBean(LemonAclServiceExtension.class)
+    @Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
     public LemonAclServiceExtension lemonAclExtension() {
         return new LemonAclServiceExtension(permissionService, mutableAclService, mockAuthService, userRepository);
     }

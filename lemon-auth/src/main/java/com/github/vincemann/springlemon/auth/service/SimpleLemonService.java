@@ -35,6 +35,7 @@ public interface SimpleLemonService<U extends AbstractUser<ID>, ID extends Seria
     @Validated(UserUtils.SignUpValidation.class)
     public U signup(@Valid U user) throws BadEntityException;
     public void resendVerificationMail(U user);
+    @LogInteraction(Severity.TRACE)
     public U findByEmail(@Valid @Email @NotBlank String email);
     public U verifyUser(ID userId, String verificationCode);
     public void forgotPassword(@Valid @Email @NotBlank String email);
@@ -43,7 +44,9 @@ public interface SimpleLemonService<U extends AbstractUser<ID>, ID extends Seria
     @Validated(UserUtils.ChangeEmailValidation.class)
     public void requestEmailChange(ID userId, @Valid RequestEmailChangeForm emailChangeForm);
     public U changeEmail(ID userId, @Valid @NotBlank String changeEmailCode);
+    @LogInteraction(Severity.TRACE)
     public String fetchNewToken(Optional<Long> expirationMillis, Optional<String> optionalUsername);
+    @LogInteraction(Severity.TRACE)
     public Map<String, String> fetchFullToken(String authHeader);
     public void createAdminUser(LemonProperties.Admin admin) throws BadEntityException;
     @LogInteraction(Severity.TRACE)
