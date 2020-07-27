@@ -9,6 +9,7 @@ import com.github.vincemann.springrapid.acl.Role;
 
 import com.github.vincemann.springrapid.core.util.ResourceUtils;
 import com.github.vincemann.springrapid.coretest.controller.rapid.UrlParamIdRapidControllerTest;
+import com.mysql.cj.jdbc.exceptions.MysqlDataTruncation;
 import lombok.Getter;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
@@ -19,7 +20,9 @@ import org.springframework.core.io.Resource;
 import org.springframework.http.HttpHeaders;
 
 import java.io.IOException;
+import java.sql.SQLIntegrityConstraintViolationException;
 
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.hasSize;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
@@ -214,17 +217,19 @@ public class UpdateUserMvcTests extends AbstractMvcTests
     public void testUpdateUserInvalidNewName() throws Exception {
 
 		// Null name
-		mvc.perform(update(userPatchNullName, UNVERIFIED_USER_ID)
+		assertThatThrownBy(() -> mvc.perform(update(userPatchNullName, UNVERIFIED_USER_ID)
 //				.contentType(MediaType.APPLICATION_JSON)
 				.header(HttpHeaders.AUTHORIZATION, tokens.get(UNVERIFIED_USER_ID)))
 //				.content(userPatchNullName))
-				.andExpect(status().is(400));
+				.andExpect(status().is(400)))
+				.hasRootCauseInstanceOf(SQLIntegrityConstraintViolationException.class);
 
 		// Too long name
-		mvc.perform(update(userPatchLongName, UNVERIFIED_USER_ID)
+		assertThatThrownBy(() -> mvc.perform(update(userPatchLongName, UNVERIFIED_USER_ID)
 //				.contentType(MediaType.APPLICATION_JSON)
 				.header(HttpHeaders.AUTHORIZATION, tokens.get(UNVERIFIED_USER_ID)))
 //				.content(userPatchLongName))
-				.andExpect(status().is(400));
+				.andExpect(status().is(400)))
+				.hasRootCauseInstanceOf(MysqlDataTruncation.class);
     }
 }

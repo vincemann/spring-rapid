@@ -8,8 +8,10 @@ import lombok.*;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.ClassUtils;
 import org.springframework.aop.support.AopUtils;
+import org.springframework.core.NestedExceptionUtils;
 
 import java.lang.reflect.InvocationHandler;
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
 import java.util.*;
@@ -119,12 +121,12 @@ public abstract class AbstractExtensionServiceProxy
     protected abstract St createState(Object o, Method method, Object[] args);
 
     protected Object invokeProxied(Method method, Object... args) throws Throwable {
-//        try {
+        try {
             return getMethods().get(new MethodIdentifier(method))
                     .invoke(getLast(), args);
-//        } catch (Exception e) {
-//            throw NestedExceptionUtils.getRootCause(e);
-//        }
+        } catch (InvocationTargetException e) {
+            throw e.getTargetException();
+        }
     }
 
     @Override
@@ -273,11 +275,11 @@ public abstract class AbstractExtensionServiceProxy
         Method method;
 
         Object invoke(Object... args) throws Throwable {
-//            try {
+            try {
                 return method.invoke(extension, args);
-//            } catch (Exception e) {
-//                throw NestedExceptionUtils.getRootCause(e);
-//            }
+            } catch (InvocationTargetException e) {
+                throw e.getTargetException();
+            }
 
         }
     }
