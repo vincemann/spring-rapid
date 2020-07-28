@@ -8,7 +8,7 @@ import java.io.Serializable;
 import java.util.Set;
 
 @ServiceComponent
-public interface ParentAwareCrudService
+public interface ParentAwareService
         <
                 E extends IdentifiableEntity<?>,
                 PId extends Serializable
