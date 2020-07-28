@@ -167,7 +167,7 @@ public abstract class AbstractExtensionServiceProxy
     }
 
     //simply delegates all calls to extension -> used so casting to ServiceType in Extensions work
-    //it is made sure the extension always has the method in question, so the cast is safe
+    //it is made sure the extension always has the method in question, so the cast is safe as long as only the callee method is called
     private Object createProxiedExtension(Object extension) {
         Class<?> proxiedClass = AopUtils.getTargetClass(proxied);
         return Proxy.newProxyInstance(
@@ -178,8 +178,13 @@ public abstract class AbstractExtensionServiceProxy
                     public Object invoke(Object o, Method method, Object[] objects) throws Throwable {
 //                        System.err.println("Calling method: " + method + " on extension: " + extension);
                         //this should always work, there should never get a method called, that does not exist in extension
-                        return MethodUtils.findMethod(extension.getClass(), method.getName(), method.getParameterTypes())
-                                .invoke(extension, objects);
+                        try {
+                            return MethodUtils.findMethod(extension.getClass(), method.getName(), method.getParameterTypes())
+                                    .invoke(extension, objects);
+                        }catch (InvocationTargetException e){
+                            throw e.getTargetException();
+                        }
+
                     }
                 });
     }
