@@ -8,7 +8,7 @@ import com.github.vincemann.springrapid.core.controller.idFetchingStrategy.excep
 import com.github.vincemann.springrapid.core.controller.validationStrategy.ValidationStrategy;
 import com.github.vincemann.springrapid.core.model.IdentifiableEntity;
 import com.github.vincemann.springrapid.core.service.CrudService;
-import com.github.vincemann.springrapid.core.service.ParentAwareCrudService;
+import com.github.vincemann.springrapid.core.service.ParentAwareService;
 import com.github.vincemann.springrapid.core.service.exception.BadEntityException;
 import lombok.Getter;
 import lombok.Setter;
@@ -41,7 +41,7 @@ public abstract class ParentAwareRapidController
                 E extends IdentifiableEntity<Id>,
                 Id extends Serializable,
                 PId extends Serializable,
-                S extends CrudService<E, Id, ?> & ParentAwareCrudService<E, PId>
+                S extends CrudService<E, Id, ?> & ParentAwareService<E, PId>
                 >
         extends RapidController<E, Id, S> {
 
