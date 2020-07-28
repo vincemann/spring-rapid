@@ -9,7 +9,7 @@ spring:
       hibernate.jdbc.lob.non_contextual_creation: true
   datasource:
     url: jdbc:mysql://${MYSQL_HOST:localhost}:6603/lemonDb?useSSL=false&allowPublicKeyRetrieval=true
-    username: root
+    username: rapid
     password: mypassword
   security:
     oauth2:
