@@ -20,9 +20,11 @@ import org.mockito.Spy;
 import org.mockito.internal.InOrderImpl;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.aop.TargetClassAware;
+import org.springframework.context.ApplicationContext;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 
 @ExtendWith(MockitoExtension.class)
 class CrudSecurityServiceProxyTest {
@@ -37,9 +39,16 @@ class CrudSecurityServiceProxyTest {
     @Mock
     Entity entity;
 
+    @Mock
+    ApplicationContext applicationContext;
+
     @BeforeEach
     void setUp() {
-        proxy = new SecurityServiceExtensionProxyBuilderFactory(defaultSecurityExtension)
+        Mockito.when(applicationContext.getBean(eq("defaultServiceSecurityRule")))
+                .thenReturn(defaultSecurityExtension);
+        SecurityServiceExtensionProxyBuilderFactory factory = new SecurityServiceExtensionProxyBuilderFactory();
+        factory.setApplicationContext(applicationContext);
+        proxy = factory
                 .create(service)
                 .addExtensions(fooSecurityExtension)
                 .build();
