@@ -19,7 +19,8 @@ import org.springframework.transaction.annotation.Transactional;
 @Getter
 @Transactional
 public class AdminFullAccessAclServiceExtension
-        extends AbstractAclServiceExtension<SimpleCrudService> implements SimpleCrudServiceExtension<SimpleCrudService> {
+        extends AbstractAclServiceExtension<SimpleCrudService>
+                implements SimpleCrudServiceExtension<SimpleCrudService> {
 
 
     public AdminFullAccessAclServiceExtension(LocalPermissionService permissionService, MutableAclService mutableAclService, MockAuthService mockAuthService) {
