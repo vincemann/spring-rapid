@@ -61,15 +61,8 @@ public abstract class JPACrudService
         RapidUtils.checkNotNull(id, "Id");
         try {
             return jpaRepository.findById(id);
-        } catch (Exception e) {
-            Throwable rootCause = NestedExceptionUtils.getRootCause(e);
-            if (rootCause instanceof NonTransientDataAccessException) {
-                throw new BadEntityException(e);
-            }
-            if (rootCause instanceof BadEntityException) {
-                throw (BadEntityException) rootCause;
-            }
-            throw new RuntimeException(e);
+        } catch (NonTransientDataAccessException e) {
+            throw new BadEntityException(e);
         }
     }
 
@@ -87,18 +80,10 @@ public abstract class JPACrudService
                 notNull.copyProperties(entityToUpdate, update);
                 return save(entityToUpdate);
             }
-        } catch (Exception e) {
-            Throwable rootCause = NestedExceptionUtils.getRootCause(e);
-            if (rootCause instanceof NonTransientDataAccessException) {
-                throw new BadEntityException(e);
-            }
-            if (rootCause instanceof EntityNotFoundException) {
-                throw (EntityNotFoundException) rootCause;
-            }
-            if (rootCause instanceof BadEntityException) {
-                throw (BadEntityException) rootCause;
-            }
-            throw new RuntimeException(e);
+        } catch (NonTransientDataAccessException e) {
+            throw new BadEntityException(e);
+        } catch (IllegalAccessException|InvocationTargetException e) {
+           throw new RuntimeException(e);
         }
     }
 
@@ -115,15 +100,8 @@ public abstract class JPACrudService
     public E save(E entity) throws BadEntityException {
         try {
             return jpaRepository.save(entity);
-        } catch (Exception e) {
-            Throwable rootCause = NestedExceptionUtils.getRootCause(e);
-            if (rootCause instanceof NonTransientDataAccessException) {
-                throw new BadEntityException(e);
-            }
-            if (rootCause instanceof BadEntityException) {
-                throw (BadEntityException) rootCause;
-            }
-            throw new RuntimeException(e);
+        } catch (NonTransientDataAccessException e) {
+            throw new BadEntityException(e);
         }
     }
 
@@ -142,18 +120,8 @@ public abstract class JPACrudService
             Optional<E> entity = findById(id);
             RapidUtils.checkPresent(entity, id, entityClass);
             jpaRepository.deleteById(id);
-        } catch (Exception e) {
-            Throwable rootCause = NestedExceptionUtils.getRootCause(e);
-            if (rootCause instanceof NonTransientDataAccessException) {
-                throw new BadEntityException(e);
-            }
-            if (rootCause instanceof EntityNotFoundException) {
-                throw (EntityNotFoundException) rootCause;
-            }
-            if (rootCause instanceof BadEntityException) {
-                throw (BadEntityException) rootCause;
-            }
-            throw new RuntimeException(e);
+        } catch (NonTransientDataAccessException e) {
+            throw new BadEntityException(e);
         }
 
     }
