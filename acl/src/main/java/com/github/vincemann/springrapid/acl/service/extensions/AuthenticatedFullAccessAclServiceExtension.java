@@ -14,7 +14,8 @@ import org.springframework.transaction.annotation.Transactional;
 @Slf4j
 @Transactional
 public class AuthenticatedFullAccessAclServiceExtension
-        extends AbstractAclServiceExtension<SimpleCrudService> implements SimpleCrudServiceExtension<SimpleCrudService> {
+        extends AbstractAclServiceExtension<SimpleCrudService>
+                implements SimpleCrudServiceExtension<SimpleCrudService> {
 
 
     public AuthenticatedFullAccessAclServiceExtension(LocalPermissionService permissionService, MutableAclService mutableAclService, MockAuthService mockAuthService) {

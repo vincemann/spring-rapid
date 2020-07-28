@@ -95,6 +95,10 @@ public abstract class AbstractExtensionServiceProxy
         if (isIgnored(method)) {
             return invokeProxied(method, args);
         } else {
+            //trying to figure out target class -> dont even ask extensions, go straight to proxied (one step closer to target)
+            if (isGetTargetClassMethod(method)){
+                return invokeProxied(method, args);
+            }
             try {
                 if (args == null) {
                     args = new Object[]{};
@@ -111,6 +115,14 @@ public abstract class AbstractExtensionServiceProxy
             } finally {
                 resetState(o, method, args);
             }
+        }
+    }
+
+    protected boolean isGetTargetClassMethod(Method method){
+        if (method.getName().equals("getTargetClass") && method.getParameterTypes().length==0){
+            return true;
+        }else {
+            return false;
         }
     }
 
