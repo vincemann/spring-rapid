@@ -13,6 +13,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.io.Serializable;
 import java.util.Optional;
@@ -21,9 +22,11 @@ import java.util.Optional;
  * UserDetailsService, as required by Spring Security.
  * 
  * @author Sanjay Patel
+ * @modified vincemann
  */
 @ServiceComponent
 @LogInteraction(Severity.TRACE)
+@Transactional
 public class LemonUserDetailsService
 	<U extends AbstractUser<ID>, ID extends Serializable>
 implements UserDetailsService, AopLoggable {
@@ -43,23 +46,27 @@ implements UserDetailsService, AopLoggable {
 	public LemonPrincipal loadUserByUsername(String username)
 			throws UsernameNotFoundException {
 		
-		log.debug("Loading user having username: " + username);
+		log.debug("Loading user having email: " + username);
 		
 		// delegates to findUserByUsername
-		U user = findUserByUsername(username)
-			.orElseThrow(() -> new UsernameNotFoundException(
-				LexUtils.getMessage("com.naturalprogrammer.spring.userNotFound", username)));
+		Optional<U> user = findUserByEmail(username);
+		if (user.isEmpty()){
+			log.debug("Cant find user with username: " + username);
+			throw new UsernameNotFoundException(LexUtils.getMessage("com.naturalprogrammer.spring.userNotFound", username));
+		}
 
 		log.debug("Loaded user having username: " + username);
 
-		return new LemonPrincipal(user.toUserDto());
+		LemonPrincipal lemonPrincipal = new LemonPrincipal(user.get().toUserDto());
+		log.debug("Loaded principal: " + lemonPrincipal);
+		return lemonPrincipal;
 	}
 
 	/**
 	 * Finds a user by the given username. Override this
 	 * if you aren't using email as the username.
 	 */
-	public Optional<U> findUserByUsername(String username) {
+	public Optional<U> findUserByEmail(String username) {
 		return userRepository.findByEmail(username);
 	}
 }

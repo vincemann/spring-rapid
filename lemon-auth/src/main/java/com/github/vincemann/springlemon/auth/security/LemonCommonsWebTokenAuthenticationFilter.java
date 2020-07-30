@@ -65,7 +65,7 @@ public class LemonCommonsWebTokenAuthenticationFilter extends OncePerRequestFilt
 		    }
 		    
 		} else
-			//todo wird hier einfach ohne token durchgelassen? oder soll es dann einfach am null Authentication scheitern?
+			//no token found -> let downstream filters log user in or block this request
 			log.debug("Token authentication skipped");
 		
 		filterChain.doFilter(request, response);
