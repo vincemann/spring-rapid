@@ -8,6 +8,7 @@ import com.github.vincemann.springlemon.auth.util.LecUtils;
 import com.github.vincemann.springrapid.acl.Role;
 import com.github.vincemann.springrapid.acl.service.LocalPermissionService;
 import com.github.vincemann.springrapid.acl.service.MockAuthService;
+import org.aspectj.lang.annotation.Before;
 import org.junit.jupiter.api.BeforeEach;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.ImportAutoConfiguration;
@@ -25,12 +26,15 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
+import org.springframework.test.web.servlet.setup.MockMvcBuilders;
+import org.springframework.web.context.WebApplicationContext;
 
 import javax.sql.DataSource;
 import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.Map;
 
+import static org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers.springSecurity;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -41,7 +45,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 //        "logging.level.org.springframework=ERROR",
         "lemon.recaptcha.sitekey="
 })
-@AutoConfigureMockMvc
+//@AutoConfigureMockMvc
+
 //@AutoConfigureTestDatabase(connection = EmbeddedDatabaseConnection.HSQL)
 //see application-dev.yml config for expected database config
 @Sql({"/test-data/resetTestData.sql"})
@@ -66,10 +71,9 @@ public abstract class AbstractMvcTests {
 
     protected static final String USER_PASSWORD = "Sanjay99!";
     protected static final String UNVERIFIED_USER_EMAIL = "unverifieduser@example.com";
+
     private static boolean aclInitialized = false;
-    protected Map<Long, String> tokens = new HashMap<>(6);
-    @Autowired
-    protected MockMvc mvc;
+
     @Autowired
     protected UserRepository userRepository;
     @Autowired
@@ -77,10 +81,38 @@ public abstract class AbstractMvcTests {
     @SpyBean
     protected MailSender<?> mailSender;
     @Autowired
-    private MockAuthService mockAuthService;
+    protected MockAuthService mockAuthService;
     @Autowired
-    private DataSource dataSource;
+    protected DataSource dataSource;
+    @Autowired
+    private WebApplicationContext context;
 
+    protected MockMvc mvc;
+    protected Map<Long, String> tokens = new HashMap<>(6);
+
+    @BeforeEach
+    public void baseSetUp() throws Exception {
+        initMockMvc();
+        initAcl();
+        loginTestUsers();
+    }
+
+    protected void initMockMvc(){
+        mvc = MockMvcBuilders
+                .webAppContextSetup(context)
+                .apply(springSecurity())
+                .build();
+    }
+
+
+    protected void loginTestUsers() throws Exception {
+        tokens.put(ADMIN_ID, login(ADMIN_EMAIL, ADMIN_PASSWORD));
+        tokens.put(UNVERIFIED_ADMIN_ID, login("unverifiedadmin@example.com", ADMIN_PASSWORD));
+        tokens.put(BLOCKED_ADMIN_ID, login("blockedadmin@example.com", ADMIN_PASSWORD));
+        tokens.put(USER_ID, login("user@example.com", USER_PASSWORD));
+        tokens.put(UNVERIFIED_USER_ID, login(UNVERIFIED_USER_EMAIL, USER_PASSWORD));
+        tokens.put(BLOCKED_USER_ID, login("blockeduser@example.com", USER_PASSWORD));
+    }
 
     protected String login(String userName, String password) throws Exception {
         MvcResult result = mvc.perform(post("/api/core/login")
@@ -93,31 +125,19 @@ public abstract class AbstractMvcTests {
         return result.getResponse().getHeader(LecUtils.TOKEN_RESPONSE_HEADER_NAME);
     }
 
-
-    @BeforeEach
-    public void baseSetUp() throws Exception {
+    protected void initAcl() throws SQLException {
         if (!aclInitialized) {
-            initAcl();
-            aclInitialized = true;
-        }
-        tokens.put(ADMIN_ID, login(ADMIN_EMAIL, ADMIN_PASSWORD));
-        tokens.put(UNVERIFIED_ADMIN_ID, login("unverifiedadmin@example.com", ADMIN_PASSWORD));
-        tokens.put(BLOCKED_ADMIN_ID, login("blockedadmin@example.com", ADMIN_PASSWORD));
-        tokens.put(USER_ID, login("user@example.com", USER_PASSWORD));
-        tokens.put(UNVERIFIED_USER_ID, login(UNVERIFIED_USER_EMAIL, USER_PASSWORD));
-        tokens.put(BLOCKED_USER_ID, login("blockeduser@example.com", USER_PASSWORD));
-    }
-
-    private void initAcl() throws SQLException {
-        //only do this expensive stuff once -> permission stay the same
-        ScriptUtils.executeSqlScript(dataSource.getConnection(), new ClassPathResource("test-data/removeAclInfo.sql"));
+            //only do this expensive stuff once -> permission stay the same
+            ScriptUtils.executeSqlScript(dataSource.getConnection(), new ClassPathResource("test-data/removeAclInfo.sql"));
 //        User admin = userRepository.findById(ADMIN_ID).get();
 //        Authentication adminAuth = new UsernamePasswordAuthenticationToken(admin.getName(), admin.getPassword()
 //                , Lists.newArrayList(new SimpleGrantedAuthority(Role.ADMIN)));
-        mockAuthService.runAuthenticatedAsAdmin(() -> {
-            giveAdminFullPermissionOver(USER_ID, UNVERIFIED_USER_ID, BLOCKED_USER_ID, ADMIN_ID, UNVERIFIED_ADMIN_ID, BLOCKED_ADMIN_ID);
-            giveFullPermissionAboutSelf(ADMIN_ID, UNVERIFIED_ADMIN_ID, BLOCKED_ADMIN_ID, USER_ID, UNVERIFIED_USER_ID, BLOCKED_USER_ID);
-        });
+            mockAuthService.runAuthenticatedAsAdmin(() -> {
+                giveAdminFullPermissionOver(USER_ID, UNVERIFIED_USER_ID, BLOCKED_USER_ID, ADMIN_ID, UNVERIFIED_ADMIN_ID, BLOCKED_ADMIN_ID);
+                giveFullPermissionAboutSelf(ADMIN_ID, UNVERIFIED_ADMIN_ID, BLOCKED_ADMIN_ID, USER_ID, UNVERIFIED_USER_ID, BLOCKED_USER_ID);
+            });
+            aclInitialized = true;
+        }
     }
 
     protected void giveFullPermissionAboutSelf(Long... ids) {
@@ -136,7 +156,6 @@ public abstract class AbstractMvcTests {
 
 
     protected void ensureTokenWorks(String token) throws Exception {
-
         mvc.perform(get("/api/core/context")
                 .header(HttpHeaders.AUTHORIZATION, token))
                 .andExpect(status().is(200))

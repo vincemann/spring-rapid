@@ -79,7 +79,7 @@ public class UpdateUserMvcTests extends AbstractMvcTests
 	@Test
     public void testUpdateWithUnknownPathVariables_should400() throws Exception {
 
-		mvc.perform(update(userPatch,UNVERIFIED_USER_ID)
+			mvc.perform(update(userPatch,UNVERIFIED_USER_ID)
 				.header(HttpHeaders.AUTHORIZATION, tokens.get(UNVERIFIED_USER_ID)))
 				.andExpect(status().is(400));
 //				.andExpect(header().string(LecUtils.TOKEN_RESPONSE_HEADER_NAME, containsString(".")))
