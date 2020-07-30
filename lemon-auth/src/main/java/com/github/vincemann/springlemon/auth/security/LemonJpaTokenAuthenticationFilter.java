@@ -35,7 +35,7 @@ public class LemonJpaTokenAuthenticationFilter<U extends AbstractUser<ID>, ID ex
 	protected LemonUserDto fetchUserDto(JWTClaimsSet claims) {
 		
         String username = claims.getSubject();
-        U user = userDetailsService.findUserByUsername(username)
+        U user = userDetailsService.findUserByEmail(username)
         		.orElseThrow(() -> new UsernameNotFoundException(username));
 
         log.debug("User found ...");
