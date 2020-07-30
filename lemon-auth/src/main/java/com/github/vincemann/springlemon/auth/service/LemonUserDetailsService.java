@@ -25,7 +25,7 @@ import java.util.Optional;
  * @modified vincemann
  */
 @ServiceComponent
-@LogInteraction(Severity.TRACE)
+@LogInteraction
 @Transactional
 public class LemonUserDetailsService
 	<U extends AbstractUser<ID>, ID extends Serializable>
@@ -46,7 +46,7 @@ implements UserDetailsService, AopLoggable {
 	public LemonPrincipal loadUserByUsername(String username)
 			throws UsernameNotFoundException {
 		
-		log.debug("Loading user having email: " + username);
+//		log.debug("Loading user having email: " + username);
 		
 		// delegates to findUserByUsername
 		Optional<U> user = findUserByEmail(username);
@@ -55,11 +55,11 @@ implements UserDetailsService, AopLoggable {
 			throw new UsernameNotFoundException(LexUtils.getMessage("com.naturalprogrammer.spring.userNotFound", username));
 		}
 
-		log.debug("Loaded user having username: " + username);
+//		log.debug("Loaded user having username: " + username);
 
-		LemonPrincipal lemonPrincipal = new LemonPrincipal(user.get().toUserDto());
-		log.debug("Loaded principal: " + lemonPrincipal);
-		return lemonPrincipal;
+		return new LemonPrincipal(user.get().toUserDto());
+//		log.debug("Loaded principal: " + lemonPrincipal);
+//		return lemonPrincipal;
 	}
 
 	/**
