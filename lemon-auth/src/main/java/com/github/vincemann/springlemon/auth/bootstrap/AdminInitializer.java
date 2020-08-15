@@ -7,6 +7,7 @@ import com.github.vincemann.springrapid.acl.proxy.AclManaging;
 import com.github.vincemann.springrapid.acl.service.MockAuthService;
 import com.github.vincemann.springrapid.core.bootstrap.Initializer;
 import com.github.vincemann.springrapid.core.service.exception.BadEntityException;
+import com.github.vincemann.springrapid.core.service.exception.EntityNotFoundException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -55,13 +56,13 @@ public class AdminInitializer extends Initializer {
                 () -> {
                     try {
                         addAdmins();
-                    } catch (BadEntityException e) {
+                    } catch (BadEntityException | EntityNotFoundException e) {
                         throw new RuntimeException(e);
                     }
                 });
     }
 
-    private void addAdmins() throws BadEntityException {
+    private void addAdmins() throws BadEntityException, EntityNotFoundException {
         //add lemon admin
         LemonProperties.Admin lemonAdmin = lemonProperties.getAdmin();
         adminEmails.add(lemonAdmin.getEmail());

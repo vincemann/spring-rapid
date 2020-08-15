@@ -51,7 +51,7 @@ public class ChangePasswordMvcTests extends AbstractMvcTests {
 		mvc.perform(post("/api/core/users/{id}/password", UNVERIFIED_USER_ID)
 				.header(HttpHeaders.AUTHORIZATION, tokens.get(ADMIN_ID))
 				.contentType(MediaType.APPLICATION_JSON)
-				.content(MapperUtils.toJson(changePasswordForm(ADMIN_PASSWORD))))
+				.content(MapperUtils.toJson(changePasswordForm(USER_PASSWORD))))
 				.andExpect(status().is(204))
 				.andExpect(header().string(LecUtils.TOKEN_RESPONSE_HEADER_NAME, containsString(".")));
 		

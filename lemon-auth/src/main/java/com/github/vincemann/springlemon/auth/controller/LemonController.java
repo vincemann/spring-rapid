@@ -27,6 +27,7 @@ import com.github.vincemann.springrapid.core.controller.RapidController;
 import com.github.vincemann.springrapid.core.service.exception.BadEntityException;
 import com.github.vincemann.springrapid.core.service.exception.EntityNotFoundException;
 import com.github.vincemann.springrapid.core.slicing.components.WebComponent;
+import com.github.vincemann.springrapid.core.util.RapidUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
@@ -55,6 +56,7 @@ public abstract class LemonController
 			extends RapidController<U,ID, LemonService<U, ID,?>>  {
 
     private long jwtExpirationMillis;
+	private LemonService<U, ID, ?> unsecuredService;
 
 
 	@Autowired
@@ -67,6 +69,11 @@ public abstract class LemonController
 	@Override
 	public void injectCrudService(LemonService<U, ID, ?> crudService) {
 		super.injectCrudService(crudService);
+	}
+
+	@Autowired
+	public void injectUnsecuredService(LemonService<U, ID, ?> unsecuredService) {
+		this.unsecuredService = unsecuredService;
 	}
 
 	/**
@@ -146,11 +153,11 @@ public abstract class LemonController
 	@PostMapping("/users/{id}/resend-verification-mail")
 	@ResponseStatus(HttpStatus.NO_CONTENT)
 	//@LogInteraction
-	public void resendVerificationMail(@PathVariable("id") U user) {
-
-		log.debug("Resending verification mail for: " + user);
+	public void resendVerificationMail(@PathVariable("id") ID id) throws BadEntityException, EntityNotFoundException {
+		log.debug("Resending verification mail for user with id " + id);
+		U user = fetchUser(id);
 		getService().resendVerificationMail(user);
-		log.debug("Resent verification mail for: " + user);
+//		log.debug("Resent verification mail for " + user);
 	}
 
 
@@ -161,12 +168,13 @@ public abstract class LemonController
 	@ResponseBody
 	//@LogInteraction
 	public ResponseEntity<String> verifyUser(
-			@Lp @PathVariable ID id,
+			@Lp @PathVariable("id") ID id,
 			@Lp @RequestParam String code,
-			HttpServletResponse response) throws JsonProcessingException, BadEntityException {
+			HttpServletResponse response) throws JsonProcessingException, BadEntityException, EntityNotFoundException {
 		getValidationStrategy().validateId(id);
-		log.debug("Verifying user ...");
-		U saved = getService().verifyUser(id, code);
+		log.debug("Verifying user with id: " + id);
+		U user = fetchUser(id);
+		U saved = getService().verifyUser(user, code);
 
 		addAuthHeader(response,saved);
 		Object dto = getDtoMapper().mapToDto(saved,
@@ -181,8 +189,7 @@ public abstract class LemonController
 	@PostMapping("/forgot-password")
 	@ResponseStatus(HttpStatus.NO_CONTENT)
 	//@LogInteraction
-	public void forgotPassword(@RequestParam String email) {
-
+	public void forgotPassword(@RequestParam String email) throws EntityNotFoundException {
 		log.debug("Received forgot password request for: " + email);
 		getService().forgotPassword(email);
 	}
@@ -196,7 +203,7 @@ public abstract class LemonController
 	//@LogInteraction
 	public ResponseEntity<String> resetPassword(
 			@Lp @RequestBody ResetPasswordForm form,
-			HttpServletResponse response) throws JsonProcessingException, BadEntityException {
+			HttpServletResponse response) throws JsonProcessingException, BadEntityException, EntityNotFoundException {
 
 		log.debug("Resetting password ... ");
 		U saved = getService().resetPassword(form);
@@ -213,11 +220,11 @@ public abstract class LemonController
 	@PostMapping("/users/fetch-by-email")
 	@ResponseBody
 	//@LogInteraction
-	public ResponseEntity<String> fetchUserByEmail(@RequestParam String email) throws JsonProcessingException, BadEntityException {
+	public ResponseEntity<String> fetchUserByEmail(@RequestParam String email) throws JsonProcessingException, BadEntityException, EntityNotFoundException {
 
 		log.debug("Fetching user by email: " + email);
 		U byEmail = getService().findByEmail(email);
-		LexUtils.ensureFound(byEmail);
+//		LexUtils.ensureFound(byEmail);
 		Object responseDto = getDtoMapper().mapToDto(byEmail,
 				createDtoClass(RapidDtoEndpoint.FIND, Direction.RESPONSE, byEmail));
 		return ok(getJsonMapper().writeValueAsString(responseDto));
@@ -274,11 +281,12 @@ public abstract class LemonController
 	@PostMapping("/users/{id}/password")
 	@ResponseStatus(HttpStatus.NO_CONTENT)
 	//@LogInteraction
-	public void changePassword(@Lp @PathVariable("id") U user,
+	public void changePassword(@Lp @PathVariable("id") ID id,
 			@Lp @RequestBody ChangePasswordForm changePasswordForm,
-			HttpServletResponse response) {
+			HttpServletResponse response) throws BadEntityException, EntityNotFoundException {
 
-		log.debug("Changing password ... ");
+		log.debug("Changing password of user with id: " + id);
+		U user = fetchUser(id);
 		String username = getService().changePassword(user, changePasswordForm);
 		//todo warum gibts das im service und im controller?
 		getService().addAuthHeader(response, username, jwtExpirationMillis);
@@ -291,27 +299,28 @@ public abstract class LemonController
 	@PostMapping("/users/{id}/email-change-request")
 	@ResponseStatus(HttpStatus.NO_CONTENT)
 	//@LogInteraction
-	public void requestEmailChange(@PathVariable("id") ID userId,
-								   @RequestBody RequestEmailChangeForm emailChangeForm) {
-
-		log.debug("Requesting email change ... ");
-		getService().requestEmailChange(userId, emailChangeForm);
+	public void requestEmailChange(@PathVariable("id") ID id,
+								   @RequestBody RequestEmailChangeForm emailChangeForm) throws BadEntityException, EntityNotFoundException {
+		log.debug("Requesting email change for user with " + id);
+		U user = fetchUser(id);
+		getService().requestEmailChange(user, emailChangeForm);
 	}
 
 
 	/**
 	 * Changes the email
 	 */
-	@PostMapping("/users/{userId}/email")
+	@PostMapping("/users/{id}/email")
 	@ResponseBody
 	//@LogInteraction
 	public ResponseEntity<String> changeEmail(
-			@Lp @PathVariable ID userId,
+			@Lp @PathVariable("id") ID id,
 			@Lp @RequestParam String code,
-			HttpServletResponse response) throws JsonProcessingException, BadEntityException {
+			HttpServletResponse response) throws JsonProcessingException, BadEntityException, EntityNotFoundException {
 
-		log.debug("Changing email of user ...");
-		U saved = getService().changeEmail(userId, code);
+		log.debug("Changing email of user with id: " + id);
+		U user = fetchUser(id);
+		U saved = getService().changeEmail(user, code);
 		addAuthHeader(response,saved);
 		Object responseDto = getDtoMapper().mapToDto(saved,
 				createDtoClass(LemonDtoEndpoint.CHANGE_EMAIL, Direction.RESPONSE, saved));
@@ -356,5 +365,11 @@ public abstract class LemonController
 		LemonUtils.login(saved);
 		LemonUserDto currentUser = LecwUtils.currentUser();
 		getService().addAuthHeader(response, currentUser.getEmail(), jwtExpirationMillis);
+	}
+
+	protected U fetchUser(ID userId) throws BadEntityException, EntityNotFoundException {
+		Optional<U> byId = unsecuredService.findById(userId);
+		RapidUtils.checkPresent(byId,"User with id: "+userId+" not found");
+		return byId.get();
 	}
 }

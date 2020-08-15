@@ -1,11 +1,5 @@
 package com.github.vincemann.springlemon.exceptions.util;
 
-import java.util.Optional;
-import java.util.function.Supplier;
-
-import javax.annotation.PostConstruct;
-import javax.validation.ConstraintViolationException;
-
 import com.github.vincemann.springlemon.exceptions.ExceptionIdMaker;
 import com.github.vincemann.springlemon.exceptions.MultiErrorException;
 import org.apache.commons.logging.Log;
@@ -14,6 +8,9 @@ import org.springframework.context.MessageSource;
 import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.http.HttpStatus;
 import org.springframework.validation.beanvalidation.LocalValidatorFactoryBean;
+
+import javax.annotation.PostConstruct;
+import javax.validation.ConstraintViolationException;
 
 /**
  * Useful helper methods
@@ -69,7 +66,8 @@ public class LexUtils {
 				LocaleContextHolder.getLocale());
 	}	
 
-	
+
+	//todo replace with BadEntityException maybe?
 	/**
 	 * Creates a MultiErrorException out of the given parameters
 	 */
@@ -102,34 +100,34 @@ public class LexUtils {
 	}
 
 	
-	/**
-	 * Throws 404 Error is the entity isn't found
-	 */
-	public static <T> void ensureFound(T entity) {
-		
-		LexUtils.validate(entity != null,
-			"com.naturalprogrammer.spring.notFound")
-			.httpStatus(HttpStatus.NOT_FOUND).go();
-	}
+//	/**
+//	 * Throws 404 Error is the entity isn't found
+//	 */
+//	public static <T> void ensureFound(T entity) {
+//
+//		LexUtils.validate(entity != null,
+//			"com.naturalprogrammer.spring.notFound")
+//			.httpStatus(HttpStatus.NOT_FOUND).go();
+//	}
 
-	/**
-	 * Throws 404 Error is the entity isn't found
-	 */
-	public static <T> void ensureFound(Optional<T> entity) {
-
-		LexUtils.validate(entity.isPresent(),
-				"com.naturalprogrammer.spring.notFound")
-				.httpStatus(HttpStatus.NOT_FOUND).go();
-	}
+//	/**
+//	 * Throws 404 Error is the entity isn't found
+//	 */
+//	public static <T> void ensureFound(Optional<T> entity) {
+//
+//		LexUtils.validate(entity.isPresent(),
+//				"com.naturalprogrammer.spring.notFound")
+//				.httpStatus(HttpStatus.NOT_FOUND).go();
+//	}
 
 	
-	/**
-	 * Supplys a 404 exception
-	 */
-	public static Supplier<MultiErrorException> notFoundSupplier() {
-		
-		return () -> NOT_FOUND_EXCEPTION;
-	}
+//	/**
+//	 * Supplys a 404 exception
+//	 */
+//	public static Supplier<MultiErrorException> notFoundSupplier() {
+//
+//		return () -> NOT_FOUND_EXCEPTION;
+//	}
 	
 
 	public static String getExceptionId(Throwable ex) {

@@ -34,43 +34,43 @@ public interface SimpleLemonServiceExtension<S extends SimpleLemonService>
     }
 
     @Override
-    default void resendVerificationMail(AbstractUser user) {
+    default void resendVerificationMail(AbstractUser user) throws EntityNotFoundException {
         getNext().resendVerificationMail(user);
     }
 
     @Override
-    default AbstractUser findByEmail(@Valid @Email @NotBlank String email) {
+    default AbstractUser findByEmail(@Valid @Email @NotBlank String email) throws EntityNotFoundException {
         return getNext().findByEmail(email);
     }
 
     @Override
-    default AbstractUser verifyUser(Serializable userId, String verificationCode) {
-        return getNext().verifyUser(userId,verificationCode);
+    default AbstractUser verifyUser(AbstractUser user, String verificationCode) throws EntityNotFoundException {
+        return getNext().verifyUser(user,verificationCode);
     }
 
     @Override
-    default void forgotPassword(@Valid @Email @NotBlank String email) {
+    default void forgotPassword(@Valid @Email @NotBlank String email) throws EntityNotFoundException {
         getNext().forgotPassword(email);
     }
 
     @Override
-    default AbstractUser resetPassword(@Valid ResetPasswordForm form) {
+    default AbstractUser resetPassword(@Valid ResetPasswordForm form) throws EntityNotFoundException {
         return getNext().resetPassword(form);
     }
 
     @Override
-    default String changePassword(AbstractUser user, @Valid ChangePasswordForm changePasswordForm) {
+    default String changePassword(AbstractUser user, @Valid ChangePasswordForm changePasswordForm) throws EntityNotFoundException {
         return getNext().changePassword(user,changePasswordForm);
     }
 
     @Override
-    default void requestEmailChange(Serializable userId, @Valid RequestEmailChangeForm emailChangeForm) {
-        getNext().requestEmailChange(userId,emailChangeForm);
+    default void requestEmailChange(AbstractUser user, @Valid RequestEmailChangeForm emailChangeForm) throws EntityNotFoundException {
+        getNext().requestEmailChange(user,emailChangeForm);
     }
 
     @Override
-    default AbstractUser changeEmail(Serializable userId, @Valid @NotBlank String changeEmailCode) {
-        return getNext().changeEmail(userId,changeEmailCode);
+    default AbstractUser changeEmail(AbstractUser user, @Valid @NotBlank String changeEmailCode) throws EntityNotFoundException {
+        return getNext().changeEmail(user,changeEmailCode);
     }
 
     @Override
