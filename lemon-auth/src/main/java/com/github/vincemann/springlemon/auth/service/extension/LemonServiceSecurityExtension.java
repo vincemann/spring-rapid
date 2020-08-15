@@ -43,14 +43,14 @@ public class LemonServiceSecurityExtension
 
     @Override
     public void resendVerificationMail(AbstractUser user) throws EntityNotFoundException {
-        getSecurityChecker().checkPermission(user.getId(),user.getClass(), getWritePermission());
+        getSecurityChecker().checkPermission(user.getId(),getLast().getEntityClass(), getWritePermission());
         getNext().resendVerificationMail(user);
     }
 
 
     @Override
     public AbstractUser update(AbstractUser update, Boolean full) throws EntityNotFoundException, BadEntityException {
-        getSecurityChecker().checkPermission(update.getId(),update.getClass(), getWritePermission());
+        getSecurityChecker().checkPermission(update.getId(),getLast().getEntityClass(), getWritePermission());
         Optional<AbstractUser> byId = userRepository.findById(update.getId());
         RapidUtils.checkPresent(byId,update.getId(),update.getClass());
         LemonUserDto currentUser = LecwUtils.currentUser();
@@ -96,7 +96,7 @@ public class LemonServiceSecurityExtension
         //check if write permission over user
         Optional<AbstractUser> byEmail = userRepository.findByEmail(email);
         if(byEmail.isPresent()){
-            getSecurityChecker().checkPermission(byEmail.get().getId(),byEmail.get().getClass(), getWritePermission());
+            getSecurityChecker().checkPermission(byEmail.get().getId(),getLast().getEntityClass(), getWritePermission());
         }else {
             //let service throw more detailed exception
         }
@@ -107,7 +107,7 @@ public class LemonServiceSecurityExtension
     @Override
     public String changePassword(AbstractUser user,  ChangePasswordForm changePasswordForm) throws EntityNotFoundException {
 //        LexUtils.ensureFound(user);
-        getSecurityChecker().checkPermission(user.getId(),user.getClass(), getWritePermission());
+        getSecurityChecker().checkPermission(user.getId(),getLast().getEntityClass(), getWritePermission());
         return getNext().changePassword(user,changePasswordForm);
     }
 
