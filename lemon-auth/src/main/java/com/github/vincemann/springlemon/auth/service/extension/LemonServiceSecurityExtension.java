@@ -8,7 +8,6 @@ import com.github.vincemann.springlemon.auth.domain.dto.RequestEmailChangeForm;
 import com.github.vincemann.springlemon.auth.domain.dto.user.LemonUserDto;
 import com.github.vincemann.springlemon.auth.service.SimpleLemonService;
 import com.github.vincemann.springlemon.auth.util.LecwUtils;
-import com.github.vincemann.springlemon.exceptions.util.LexUtils;
 import com.github.vincemann.springrapid.acl.proxy.SecurityServiceExtension;
 import com.github.vincemann.springrapid.core.model.IdentifiableEntity;
 import com.github.vincemann.springrapid.core.service.exception.BadEntityException;
@@ -19,10 +18,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.transaction.annotation.Transactional;
 
-import javax.validation.Valid;
-import javax.validation.constraints.Email;
-import javax.validation.constraints.NotBlank;
-import java.io.Serializable;
 import java.util.Map;
 import java.util.Optional;
 
@@ -47,8 +42,7 @@ public class LemonServiceSecurityExtension
     }
 
     @Override
-    public void resendVerificationMail(AbstractUser user) {
-        LexUtils.ensureFound(user);
+    public void resendVerificationMail(AbstractUser user) throws EntityNotFoundException {
         getSecurityChecker().checkPermission(user.getId(),user.getClass(), getWritePermission());
         getNext().resendVerificationMail(user);
     }
@@ -98,7 +92,7 @@ public class LemonServiceSecurityExtension
 
 
     @Override
-    public void forgotPassword(String email) {
+    public void forgotPassword(String email) throws EntityNotFoundException {
         //check if write permission over user
         Optional<AbstractUser> byEmail = userRepository.findByEmail(email);
         if(byEmail.isPresent()){
@@ -111,25 +105,26 @@ public class LemonServiceSecurityExtension
 
 
     @Override
-    public String changePassword(AbstractUser user,  ChangePasswordForm changePasswordForm) {
-        LexUtils.ensureFound(user);
+    public String changePassword(AbstractUser user,  ChangePasswordForm changePasswordForm) throws EntityNotFoundException {
+//        LexUtils.ensureFound(user);
         getSecurityChecker().checkPermission(user.getId(),user.getClass(), getWritePermission());
         return getNext().changePassword(user,changePasswordForm);
     }
 
 
     @Override
-    public void requestEmailChange(Serializable userId,  RequestEmailChangeForm emailChangeForm) {
-        LexUtils.ensureFound(userRepository.findById(userId));
-        getSecurityChecker().checkPermission(userId,getLast().getEntityClass(),getWritePermission());
-        getNext().requestEmailChange(userId,emailChangeForm);
+    public void requestEmailChange(AbstractUser user,  RequestEmailChangeForm emailChangeForm) throws EntityNotFoundException {
+//        LexUtils.ensureFound(userRepository.findById(user));
+        getSecurityChecker().checkPermission(user.getId(),getLast().getEntityClass(),getWritePermission());
+        getNext().requestEmailChange(user,emailChangeForm);
     }
 
 
     @Override
-    public AbstractUser changeEmail(Serializable userId, String changeEmailCode) {
-        getSecurityChecker().checkAuthenticated();
-        return getNext().changeEmail(userId,changeEmailCode);
+    public AbstractUser changeEmail(AbstractUser user, String changeEmailCode) throws EntityNotFoundException {
+//        getSecurityChecker().checkAuthenticated();
+        getSecurityChecker().checkPermission(user.getId(),getLast().getEntityClass(),getWritePermission());
+        return getNext().changeEmail(user,changeEmailCode);
     }
 
 
@@ -146,15 +141,15 @@ public class LemonServiceSecurityExtension
     }
 
 
-    private boolean hasWritePermission(AbstractUser user){
-        try {
-            getSecurityChecker().checkPermission(user.getId(),user.getClass(), getWritePermission());
-            return true;
-        }catch (AccessDeniedException e){
-            return false;
-        }
-    }
 
+//    private boolean hasWritePermission(AbstractUser user){
+//        try {
+//            getSecurityChecker().checkPermission(user.getId(),user.getClass(), getWritePermission());
+//            return true;
+//        }catch (AccessDeniedException e){
+//            return false;
+//        }
+//    }
 
     //    @CalledByProxy
 //    public void preAuthorizeFindByEmail(String email) throws EntityNotFoundException {

@@ -34,16 +34,16 @@ public interface SimpleLemonService<U extends AbstractUser<ID>, ID extends Seria
     public Map<String, Object> getContext(Optional<Long> expirationMillis, HttpServletResponse response);
     @Validated(UserUtils.SignUpValidation.class)
     public U signup(@Valid U user) throws BadEntityException;
-    public void resendVerificationMail(U user);
+    public void resendVerificationMail(U user) throws EntityNotFoundException;
     @LogInteraction(Severity.TRACE)
-    public U findByEmail(@Valid @Email @NotBlank String email);
-    public U verifyUser(ID userId, String verificationCode);
-    public void forgotPassword(@Valid @Email @NotBlank String email);
-    public U resetPassword(@Valid ResetPasswordForm form);
-    public String changePassword(U user, @Valid ChangePasswordForm changePasswordForm);
+    public U findByEmail(@Valid @Email @NotBlank String email) throws EntityNotFoundException;
+    public U verifyUser(U user, String verificationCode) throws EntityNotFoundException;
+    public void forgotPassword(@Valid @Email @NotBlank String email) throws EntityNotFoundException;
+    public U resetPassword(@Valid ResetPasswordForm form) throws EntityNotFoundException;
+    public String changePassword(U user, @Valid ChangePasswordForm changePasswordForm) throws EntityNotFoundException;
     @Validated(UserUtils.ChangeEmailValidation.class)
-    public void requestEmailChange(ID userId, @Valid RequestEmailChangeForm emailChangeForm);
-    public U changeEmail(ID userId, @Valid @NotBlank String changeEmailCode);
+    public void requestEmailChange(U user, @Valid RequestEmailChangeForm emailChangeForm) throws EntityNotFoundException;
+    public U changeEmail(U user, @Valid @NotBlank String changeEmailCode) throws EntityNotFoundException;
     @LogInteraction(Severity.TRACE)
     public String fetchNewToken(Optional<Long> expirationMillis, Optional<String> optionalUsername);
     @LogInteraction(Severity.TRACE)

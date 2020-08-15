@@ -34,43 +34,43 @@ public interface GenericSimpleLemonServiceExtension<S extends SimpleLemonService
     }
 
     @Override
-    default void resendVerificationMail(U user) {
+    default void resendVerificationMail(U user) throws EntityNotFoundException {
         getNext().resendVerificationMail(user);
     }
 
     @Override
-    default U findByEmail(@Valid @Email @NotBlank String email) {
+    default U findByEmail(@Valid @Email @NotBlank String email) throws EntityNotFoundException {
         return getNext().findByEmail(email);
     }
 
     @Override
-    default U verifyUser(Id userId, String verificationCode) {
-        return getNext().verifyUser(userId,verificationCode);
+    default U verifyUser(U user, String verificationCode) throws EntityNotFoundException {
+        return getNext().verifyUser(user,verificationCode);
     }
 
     @Override
-    default void forgotPassword(@Valid @Email @NotBlank String email) {
+    default void forgotPassword(@Valid @Email @NotBlank String email) throws EntityNotFoundException {
         getNext().forgotPassword(email);
     }
 
     @Override
-    default U resetPassword(@Valid ResetPasswordForm form) {
+    default U resetPassword(@Valid ResetPasswordForm form) throws EntityNotFoundException {
         return getNext().resetPassword(form);
     }
 
     @Override
-    default String changePassword(U user, @Valid ChangePasswordForm changePasswordForm) {
+    default String changePassword(U user, @Valid ChangePasswordForm changePasswordForm) throws EntityNotFoundException {
         return getNext().changePassword(user,changePasswordForm);
     }
 
     @Override
-    default void requestEmailChange(Id userId, @Valid RequestEmailChangeForm emailChangeForm) {
-        getNext().requestEmailChange(userId,emailChangeForm);
+    default void requestEmailChange(U user, @Valid RequestEmailChangeForm emailChangeForm) throws EntityNotFoundException {
+        getNext().requestEmailChange(user,emailChangeForm);
     }
 
     @Override
-    default U changeEmail(Id userId, @Valid @NotBlank String changeEmailCode) {
-        return getNext().changeEmail(userId,changeEmailCode);
+    default U changeEmail(U user, @Valid @NotBlank String changeEmailCode) throws EntityNotFoundException {
+        return getNext().changeEmail(user,changeEmailCode);
     }
 
     @Override

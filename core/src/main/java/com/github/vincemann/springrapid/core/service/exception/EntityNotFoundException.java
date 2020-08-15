@@ -9,7 +9,7 @@ public class EntityNotFoundException extends Exception {
         this("No Entity of type:" +type.getSimpleName()+" found with id: "+ id.toString());
     }
 
-    public EntityNotFoundException(String message) {
+    public  EntityNotFoundException(String message) {
         super(message);
     }
 

@@ -97,7 +97,7 @@ public abstract class LemonServiceImpl<U extends AbstractUser<ID>, ID extends Se
      */
     public Map<String, Object> getContext(Optional<Long> expirationMillis, HttpServletResponse response) {
 
-        log.debug("Getting context ...");
+//        log.debug("Getting context ...");
 
         Map<String, Object> context = buildContext();
 
@@ -118,7 +118,7 @@ public abstract class LemonServiceImpl<U extends AbstractUser<ID>, ID extends Se
     //todo wo findet captcha statt, hier sollte captcha stattfinden, Aop Solution: https://medium.com/@cristi.rosu4/protecting-your-spring-boot-rest-endpoints-with-google-recaptcha-and-aop-31328a3f56b7
     @Transactional(propagation = Propagation.REQUIRED, readOnly = false)
     public U signup(U user) throws BadEntityException {
-        log.debug("Signing up user: " + user);
+//        log.debug("Signing up user: " + user);
         U initialized = initUser(user);// sets right all fields of the user
         log.debug("initialized user: " + initialized);
         U saved = save(initialized);
@@ -164,11 +164,12 @@ public abstract class LemonServiceImpl<U extends AbstractUser<ID>, ID extends Se
     /**
      * Resends verification mail to the user.
      */
-    public void resendVerificationMail(U user) {
+    public void resendVerificationMail(U user) throws EntityNotFoundException {
 
-        // The user must exist
-        LexUtils.ensureFound(user);
+//        // The user must exist
+//        LexUtils.ensureFound(user);
 
+        RapidUtils.checkPresent(user,"User not found");
         // must be unverified
         LexUtils.validate(user.getRoles().contains(LemonRole.UNVERIFIED),
                 "com.naturalprogrammer.spring.alreadyVerified").go();
@@ -181,9 +182,11 @@ public abstract class LemonServiceImpl<U extends AbstractUser<ID>, ID extends Se
     /**
      * Fetches a user by email
      */
-    public U findByEmail(String email) {
-        log.debug("Fetching user by email: " + email);
-        return getRepository().findByEmail(email).orElse(null);
+    public U findByEmail(String email) throws EntityNotFoundException {
+//        log.debug("Fetching user by email: " + email);
+        Optional<U> byEmail = getRepository().findByEmail(email);
+        RapidUtils.checkPresent(byEmail,"Entity with email: " + email + " not found");
+        return byEmail.get();
     }
 
 
@@ -193,12 +196,13 @@ public abstract class LemonServiceImpl<U extends AbstractUser<ID>, ID extends Se
      * @return
      */
     @Transactional(propagation = Propagation.REQUIRED, readOnly = false)
-    public U verifyUser(ID userId, String verificationCode) {
+    public U verifyUser(U user, String verificationCode) throws EntityNotFoundException {
 
-        log.debug("Verifying user ...");
+//        log.debug("Verifying user ...");
 
-        U user = getRepository().findById(userId).orElseThrow(LexUtils.notFoundSupplier());
+//        U user = getRepository().findById(userId).orElseThrow(LexUtils.notFoundSupplier());
 
+        RapidUtils.checkPresent(user,"User not found");
         // ensure that he is unverified
         LexUtils.validate(user.hasRole(LemonRole.UNVERIFIED),
                 "com.naturalprogrammer.spring.alreadyVerified").go();
@@ -233,14 +237,14 @@ public abstract class LemonServiceImpl<U extends AbstractUser<ID>, ID extends Se
      * Forgot password.
      */
     @Transactional(propagation = Propagation.REQUIRED, readOnly = false)
-    public void forgotPassword(String email) {
+    public void forgotPassword(String email) throws EntityNotFoundException {
 
-        log.debug("Processing forgot password for email: " + email);
+//        log.debug("Processing forgot password for email: " + email);
 
         // fetch the user record from database
-        U user = getRepository().findByEmail(email)
-                .orElseThrow(LexUtils.notFoundSupplier());
-
+        Optional<U> byId = getRepository().findByEmail(email);
+        RapidUtils.checkPresent(byId,"User with email: "+email+" not found");
+        U user = byId.get();
         mailForgotPasswordLink(user);
     }
 
@@ -251,8 +255,8 @@ public abstract class LemonServiceImpl<U extends AbstractUser<ID>, ID extends Se
      * @return
      */
     @Transactional(propagation = Propagation.REQUIRED, readOnly = false)
-    public U resetPassword(ResetPasswordForm form) {
-        log.debug("Resetting password ...");
+    public U resetPassword(ResetPasswordForm form) throws EntityNotFoundException {
+//        log.debug("Resetting password ...");
 
         JWTClaimsSet claims = greenTokenService.parseToken(form.getCode(),
                 GreenTokenService.FORGOT_PASSWORD_AUDIENCE);
@@ -260,7 +264,9 @@ public abstract class LemonServiceImpl<U extends AbstractUser<ID>, ID extends Se
         String email = claims.getSubject();
 
         // fetch the user
-        U user = getRepository().findByEmail(email).orElseThrow(LexUtils.notFoundSupplier());
+        Optional<U> byId = getRepository().findByEmail(email);
+        RapidUtils.checkPresent(byId,"User with email: "+email+" not found");
+        U user = byId.get();
         LemonUtils.ensureCredentialsUpToDate(claims, user);
 
         // sets the password
@@ -331,17 +337,17 @@ public abstract class LemonServiceImpl<U extends AbstractUser<ID>, ID extends Se
      * Changes the password.
      */
     @Transactional(propagation = Propagation.REQUIRED, readOnly = false)
-    public String changePassword(U user, ChangePasswordForm changePasswordForm) {
+    public String changePassword(U user, ChangePasswordForm changePasswordForm) throws EntityNotFoundException {
 
-        log.debug("Changing password for user: " + user);
+//        log.debug("Changing password for user: " + user);
 
         // Get the old password of the logged in user (logged in user may be an ADMIN)
-        LemonUserDto currentUser = LecwUtils.currentUser();
-        U loggedIn = getRepository().findById(toId(currentUser.getId())).get();
-        String oldPassword = loggedIn.getPassword();
+//        LemonUserDto currentUser = LecwUtils.currentUser();
+//        U loggedIn = getRepository().findById(toId(currentUser.getId())).get();
+        RapidUtils.checkPresent(user,"User not found");
+        String oldPassword = user.getPassword();
 
         // checks
-        LexUtils.ensureFound(user);
         LexUtils.validateField("changePasswordForm.oldPassword",
                 passwordEncoder.matches(changePasswordForm.getOldPassword(),
                         oldPassword),
@@ -387,12 +393,13 @@ public abstract class LemonServiceImpl<U extends AbstractUser<ID>, ID extends Se
      * Requests for email change.
      */
     @Transactional(propagation = Propagation.REQUIRED, readOnly = false)
-    public void requestEmailChange(ID userId, /*@Valid*/ RequestEmailChangeForm emailChangeForm) {
-        log.debug("Requesting email change for userId " + userId);
+    public void requestEmailChange(U user, /*@Valid*/ RequestEmailChangeForm emailChangeForm) throws EntityNotFoundException {
+//        log.debug("Requesting email change for user" + user);
         // checks
-        Optional<U> byId = getRepository().findById(userId);
-        LexUtils.ensureFound(byId);
-        U user = byId.get();
+//        Optional<U> byId = getRepository().findById(userId);
+//        LexUtils.ensureFound(byId);
+//        U user = byId.get();
+        RapidUtils.checkPresent(user,"User not found");
         LexUtils.validateField("updatedUser.password",
                 passwordEncoder.matches(emailChangeForm.getPassword(),
                         user.getPassword()),
@@ -463,18 +470,19 @@ public abstract class LemonServiceImpl<U extends AbstractUser<ID>, ID extends Se
      * @return
      */
     @Transactional(propagation = Propagation.REQUIRED, readOnly = false)
-    public U changeEmail(ID userId, /*@Valid @NotBlank*/ String changeEmailCode) {
+    public U changeEmail(U user, /*@Valid @NotBlank*/ String changeEmailCode) throws EntityNotFoundException {
 
-        log.debug("Changing email of current user ...");
+//        log.debug("Changing email of current user ...");
 
-        // fetch the current-user
-        LemonUserDto currentUser = LecwUtils.currentUser();
+//        // fetch the current-user
+//        LemonUserDto currentUser = LecwUtils.currentUser();
+//
+//        LexUtils.validate(userId.equals(toId(currentUser.getId())),
+//                "com.naturalprogrammer.spring.wrong.login").go();
+//
+//        U user = getRepository().findById(userId).orElseThrow(LexUtils.notFoundSupplier());
 
-        LexUtils.validate(userId.equals(toId(currentUser.getId())),
-                "com.naturalprogrammer.spring.wrong.login").go();
-
-        U user = getRepository().findById(userId).orElseThrow(LexUtils.notFoundSupplier());
-
+        RapidUtils.checkPresent(user,"User not found");
         LexUtils.validate(StringUtils.isNotBlank(user.getNewEmail()),
                 "com.naturalprogrammer.spring.blank.newEmail").go();
 
@@ -541,7 +549,7 @@ public abstract class LemonServiceImpl<U extends AbstractUser<ID>, ID extends Se
     @Transactional(propagation = Propagation.REQUIRED, readOnly = false)
     //only called internally
     public void createAdminUser(LemonProperties.Admin admin) throws BadEntityException {
-        log.info("Creating admin user: " + admin.getEmail());
+//        log.info("Creating admin user: " + admin.getEmail());
 
         // create the user
         U user = newUser();
