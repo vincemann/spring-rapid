@@ -9,6 +9,7 @@ import com.github.vincemann.springlemon.auth.service.SimpleLemonService;
 import com.github.vincemann.springrapid.core.proxy.GenericSimpleCrudServiceExtension;
 import com.github.vincemann.springrapid.core.service.exception.BadEntityException;
 import com.github.vincemann.springrapid.core.service.exception.EntityNotFoundException;
+import org.springframework.transaction.annotation.Transactional;
 
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
@@ -18,6 +19,7 @@ import java.io.Serializable;
 import java.util.Map;
 import java.util.Optional;
 
+@Transactional
 public interface GenericSimpleLemonServiceExtension<S extends SimpleLemonService<U,Id>,U extends AbstractUser<Id>, Id extends Serializable>
         extends SimpleLemonService<U,Id>, GenericSimpleCrudServiceExtension<S,U,Id>
 {
@@ -39,7 +41,7 @@ public interface GenericSimpleLemonServiceExtension<S extends SimpleLemonService
     }
 
     @Override
-    default U findByEmail(@Valid @Email @NotBlank String email) throws EntityNotFoundException {
+    default U findByEmail(/*@Valid @Email @NotBlank*/ String email) throws EntityNotFoundException {
         return getNext().findByEmail(email);
     }
 
@@ -49,27 +51,27 @@ public interface GenericSimpleLemonServiceExtension<S extends SimpleLemonService
     }
 
     @Override
-    default void forgotPassword(@Valid @Email @NotBlank String email) throws EntityNotFoundException {
+    default void forgotPassword(/*@Valid @Email @NotBlank*/ String email) throws EntityNotFoundException {
         getNext().forgotPassword(email);
     }
 
     @Override
-    default U resetPassword(@Valid ResetPasswordForm form) throws EntityNotFoundException {
+    default U resetPassword(/*@Valid*/ ResetPasswordForm form) throws EntityNotFoundException {
         return getNext().resetPassword(form);
     }
 
     @Override
-    default String changePassword(U user, @Valid ChangePasswordForm changePasswordForm) throws EntityNotFoundException {
+    default String changePassword(U user, /*@Valid*/ ChangePasswordForm changePasswordForm) throws EntityNotFoundException {
         return getNext().changePassword(user,changePasswordForm);
     }
 
     @Override
-    default void requestEmailChange(U user, @Valid RequestEmailChangeForm emailChangeForm) throws EntityNotFoundException {
+    default void requestEmailChange(U user, /*@Valid*/ RequestEmailChangeForm emailChangeForm) throws EntityNotFoundException {
         getNext().requestEmailChange(user,emailChangeForm);
     }
 
     @Override
-    default U changeEmail(U user, @Valid @NotBlank String changeEmailCode) throws EntityNotFoundException {
+    default U changeEmail(U user, /*@Valid @NotBlank */String changeEmailCode) throws EntityNotFoundException {
         return getNext().changeEmail(user,changeEmailCode);
     }
 
