@@ -1,5 +1,7 @@
 package com.github.vincemann.springrapid.core.util;
 
+import com.github.vincemann.springrapid.core.service.RapidAuthenticatedPrincipal;
+import org.springframework.security.core.AuthenticatedPrincipal;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -7,13 +9,10 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import java.util.*;
 import java.util.stream.Collectors;
 
-public class AuthorityUtil {
+public class Authenticated {
 
-    /**
-     * Get all authorities from currently logged in user
-     * @return
-     */
-    public static List<String> getAuthorities() {
+
+    public static List<String> getRoles() {
         List<String> result = new LinkedList<>();
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         if(authentication==null){
@@ -29,7 +28,7 @@ public class AuthorityUtil {
         return result;
     }
 
-    public static Optional<String> getAuthenticatedName(){
+    public static Optional<String> getName(){
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         if(authentication==null){
             return Optional.empty();
@@ -39,5 +38,13 @@ public class AuthorityUtil {
             return Optional.empty();
         }
         return Optional.of(name);
+    }
+
+    public static <T extends RapidAuthenticatedPrincipal> T get(){
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (authentication==null){
+            return null;
+        }
+        return (T) authentication.getPrincipal();
     }
 }

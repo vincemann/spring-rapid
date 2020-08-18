@@ -2,7 +2,7 @@ package com.github.vincemann.springlemon.auth.security;
 
 import com.github.vincemann.springlemon.auth.domain.AbstractUser;
 import com.github.vincemann.springlemon.auth.domain.dto.user.LemonUserDto;
-import com.github.vincemann.springlemon.auth.service.BlueTokenService;
+import com.github.vincemann.springlemon.auth.service.AuthorizationTokenService;
 import com.github.vincemann.springlemon.auth.service.LemonUserDetailsService;
 import com.github.vincemann.springlemon.auth.util.LemonUtils;
 
@@ -21,10 +21,10 @@ public class LemonJpaTokenAuthenticationFilter<U extends AbstractUser<ID>, ID ex
 
     private LemonUserDetailsService<U, ID> userDetailsService;
 	
-	public LemonJpaTokenAuthenticationFilter(BlueTokenService blueTokenService,
-											 LemonUserDetailsService<U, ID> userDetailsService) {
+	public LemonJpaTokenAuthenticationFilter(AuthorizationTokenService authorizationTokenService,
+                                             LemonUserDetailsService<U, ID> userDetailsService) {
 		
-		super(blueTokenService);
+		super(authorizationTokenService);
 		this.userDetailsService = userDetailsService;
 		
 		log.info("Created");		

@@ -3,8 +3,6 @@ package com.github.vincemann.springrapid.core.controller;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.fge.jsonpatch.JsonPatchException;
-import com.github.vincemann.aoplog.api.AopLoggable;
-import com.github.vincemann.aoplog.api.LogInteraction;
 import com.github.vincemann.aoplog.api.Lp;
 import com.github.vincemann.springrapid.core.controller.dtoMapper.DelegatingDtoMapper;
 import com.github.vincemann.springrapid.core.controller.dtoMapper.context.Direction;
@@ -22,10 +20,10 @@ import com.github.vincemann.springrapid.core.service.CrudService;
 import com.github.vincemann.springrapid.core.service.EndpointService;
 import com.github.vincemann.springrapid.core.service.exception.BadEntityException;
 import com.github.vincemann.springrapid.core.service.exception.EntityNotFoundException;
-import com.github.vincemann.springrapid.core.util.AuthorityUtil;
+import com.github.vincemann.springrapid.core.util.Authenticated;
 import com.github.vincemann.springrapid.core.util.JpaUtils;
 import com.github.vincemann.springrapid.core.util.MapperUtils;
-import com.github.vincemann.springrapid.core.util.RapidUtils;
+import com.github.vincemann.springrapid.core.util.EntityUtils;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
@@ -335,7 +333,7 @@ public abstract class RapidController
         log.debug("id successfully validated");
         logSecurityContext();
         Optional<E> optionalEntity = serviceFind(id);
-        RapidUtils.checkPresent(optionalEntity, id, getEntityClass());
+        EntityUtils.checkPresent(optionalEntity, id, getEntityClass());
         E found = optionalEntity.get();
         Object dto = dtoMapper.mapToDto(
                 found,
@@ -370,7 +368,7 @@ public abstract class RapidController
         log.debug("patchString: " + patchString);
         Id id = idIdFetchingStrategy.fetchId(request);
         Optional<E> savedOptional = getUnsecuredService().findById(id);
-        RapidUtils.checkPresent(savedOptional, id, getEntityClass());
+        EntityUtils.checkPresent(savedOptional, id, getEntityClass());
         E saved = savedOptional.get();
         Class<?> dtoClass = createDtoClass(RapidDtoEndpoint.UPDATE, Direction.REQUEST, saved);
         beforeUpdate(dtoClass, id, patchString, request, response);
@@ -419,7 +417,7 @@ public abstract class RapidController
     protected DtoMappingInfo createEndpointInfo(String endpoint, Direction direction, E entity) {
         DtoMappingInfo.Principal principal = currentPrincipal(entity);
         return DtoMappingInfo.builder()
-                .authorities(AuthorityUtil.getAuthorities())
+                .authorities(Authenticated.getRoles())
                 .direction(direction)
                 .principal(principal)
                 .endpoint(endpoint)
@@ -429,7 +427,7 @@ public abstract class RapidController
     protected DtoMappingInfo.Principal currentPrincipal(E entity){
         DtoMappingInfo.Principal principal = DtoMappingInfo.Principal.ALL;
         if (entity!=null) {
-            Optional<String> authenticated = AuthorityUtil.getAuthenticatedName();
+            Optional<String> authenticated = Authenticated.getName();
             Optional<String> queried = ownerLocator.find(entity);
             if (queried.isPresent() && authenticated.isPresent()) {
                 principal = queried.equals(authenticated)

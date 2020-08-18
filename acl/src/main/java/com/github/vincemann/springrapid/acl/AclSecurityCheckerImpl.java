@@ -6,6 +6,7 @@ import com.github.vincemann.aoplog.api.LogException;
 import com.github.vincemann.aoplog.api.LogInteraction;
 import com.github.vincemann.springrapid.core.model.IdentifiableEntity;
 import com.github.vincemann.springrapid.core.service.SecurityCheckerImpl;
+import com.github.vincemann.springrapid.core.util.Authenticated;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
@@ -15,6 +16,7 @@ import org.springframework.expression.spel.standard.SpelExpressionParser;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.access.expression.ExpressionUtils;
 import org.springframework.security.access.expression.method.MethodSecurityExpressionHandler;
+import org.springframework.security.core.AuthenticatedPrincipal;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.util.SimpleMethodInvocation;
@@ -23,6 +25,7 @@ import java.io.Serializable;
 import java.lang.reflect.Method;
 import java.util.Collection;
 import java.util.HashSet;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -88,8 +91,9 @@ public class AclSecurityCheckerImpl extends SecurityCheckerImpl implements AclSe
         }
         boolean permitted = checkExpression("hasPermission(" + id + ",'" + clazz.getName() + "','" + permission + "')");
         if(!permitted){
-            String principal = SecurityContextHolder.getContext().getAuthentication().getName();
-            throw new AccessDeniedException("Permission not Granted! Principal: "+principal+" with roles:"
+            Optional<String> name = Authenticated.getName();
+
+            throw new AccessDeniedException("Permission not Granted! User: "+name+" with roles:"
                     +SecurityContextHolder.getContext().getAuthentication().getAuthorities()
                             .stream()
                             .map(GrantedAuthority::getAuthority)
@@ -100,16 +104,18 @@ public class AclSecurityCheckerImpl extends SecurityCheckerImpl implements AclSe
 
     @Override
     public void checkRole(String role){
-        String principal = SecurityContextHolder.getContext().getAuthentication().getName();
+        String name = SecurityContextHolder.getContext().getAuthentication().getName();
         boolean permitted = checkExpression("hasRole('" + role + "')");
         if(!permitted){
-            throw new AccessDeniedException("Permission not Granted! Principal : " + principal + " does not have role: " + role);
+            throw new AccessDeniedException("Permission not Granted! User : " + name + " does not have role: " + role);
         }
     }
 
     @Override
     public boolean checkExpression(String securityExpression) {
-        logExpression(securityExpression);
+        if (log.isDebugEnabled()) {
+            log.debug("EVALUATING SECURITY EXPRESSION: [" + securityExpression + "]...");
+        }
 
         AclSecurityCheckerImpl.SecurityObject securityObject = new AclSecurityCheckerImpl.SecurityObject();
         MethodSecurityExpressionHandler expressionHandler = applicationContext.getBean(MethodSecurityExpressionHandler.class);
@@ -120,7 +126,7 @@ public class AclSecurityCheckerImpl extends SecurityCheckerImpl implements AclSe
         );
         boolean checkResult = ExpressionUtils.evaluateAsBoolean(parser.parseExpression(securityExpression), evaluationContext);
         if (log.isDebugEnabled()) {
-            log.debug("Check result: " + checkResult);
+            log.debug("SECURITY EXPRESSION EVALUATED AS: " + checkResult);
         }
         return checkResult;
     }
@@ -129,10 +135,5 @@ public class AclSecurityCheckerImpl extends SecurityCheckerImpl implements AclSe
         public void triggerCheck() { /*NOP*/ }
     }
 
-    private static void logExpression(String securityExpression) {
-        if (log.isDebugEnabled()) {
-            log.debug("Checking security expression [" + securityExpression + "]...");
-        }
-    }
 
 }

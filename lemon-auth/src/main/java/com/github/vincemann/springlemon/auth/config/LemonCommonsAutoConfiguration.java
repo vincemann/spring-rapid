@@ -5,8 +5,8 @@ import com.github.vincemann.springlemon.auth.mail.MailSender;
 import com.github.vincemann.springlemon.auth.mail.MockMailSender;
 import com.github.vincemann.springlemon.auth.mail.SmtpMailSender;
 import com.github.vincemann.springlemon.auth.security.LemonPermissionEvaluator;
-import com.github.vincemann.springlemon.auth.service.BlueTokenService;
-import com.github.vincemann.springlemon.auth.service.GreenTokenService;
+import com.github.vincemann.springlemon.auth.service.AuthorizationTokenService;
+import com.github.vincemann.springlemon.auth.service.VerificationTokenService;
 import com.github.vincemann.springlemon.auth.service.LemonJweService;
 import com.github.vincemann.springlemon.auth.service.LemonJwsService;
 import com.github.vincemann.springlemon.auth.util.LecUtils;
@@ -48,7 +48,7 @@ public class LemonCommonsAutoConfiguration {
 	@ConditionalOnMissingBean(PermissionEvaluator.class)
 	@Bean
 	public PermissionEvaluator lemonPermissionEvaluator(AclService aclService){
-		return new LemonPermissionEvaluator(aclService);
+		return new LemonPermissionEvaluator(aclService, crudServiceLocator);
 	}
 
 
@@ -70,8 +70,8 @@ public class LemonCommonsAutoConfiguration {
 	 * Configures AuthTokenService if missing
 	 */
 	@Bean
-	@ConditionalOnMissingBean(BlueTokenService.class)
-	public BlueTokenService blueTokenService(LemonProperties properties) throws JOSEException {
+	@ConditionalOnMissingBean(AuthorizationTokenService.class)
+	public AuthorizationTokenService blueTokenService(LemonProperties properties) throws JOSEException {
 		
         log.info("Configuring AuthTokenService");       
 		return new LemonJwsService(properties.getJwt().getSecret());
@@ -82,8 +82,8 @@ public class LemonCommonsAutoConfiguration {
 	 * Configures ExternalTokenService if missing
 	 */
 	@Bean
-	@ConditionalOnMissingBean(GreenTokenService.class)
-	public GreenTokenService greenTokenService(LemonProperties properties) throws KeyLengthException {
+	@ConditionalOnMissingBean(VerificationTokenService.class)
+	public VerificationTokenService greenTokenService(LemonProperties properties) throws KeyLengthException {
 		
         log.info("Configuring ExternalTokenService");       
 		return new LemonJweService(properties.getJwt().getSecret());

@@ -8,7 +8,7 @@ import com.github.vincemann.springrapid.core.slicing.components.ServiceComponent
 import org.springframework.aop.TargetClassAware;
 import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Service;
-import com.github.vincemann.springrapid.core.service.jpa.JPACrudService;
+import com.github.vincemann.springrapid.core.service.JPACrudService;
 
 @Primary
 @Service

@@ -3,7 +3,7 @@ package com.github.vincemann.springlemon.auth.util;
 import com.github.vincemann.springlemon.auth.domain.AbstractUser;
 import com.github.vincemann.springlemon.auth.domain.LemonPrincipal;
 import com.github.vincemann.springlemon.auth.domain.dto.user.LemonUserDto;
-import com.github.vincemann.springlemon.auth.service.BlueTokenService;
+import com.github.vincemann.springlemon.auth.service.AuthorizationTokenService;
 import com.github.vincemann.springlemon.auth.service.LemonTokenService;
 import com.nimbusds.jwt.JWTClaimsSet;
 import com.github.vincemann.springrapid.core.util.MapperUtils;
@@ -63,7 +63,7 @@ public class LemonUtils {
 
 	public static LemonUserDto getUserDto(JWTClaimsSet claims) {
 
-		Object userClaim = claims.getClaim(BlueTokenService.USER_CLAIM);
+		Object userClaim = claims.getClaim(AuthorizationTokenService.USER_CLAIM);
 
 		if (userClaim == null)
 			return null;

@@ -6,8 +6,8 @@ import com.github.vincemann.springrapid.core.service.CrudService;
 import com.github.vincemann.springrapid.core.service.ServiceBeanType;
 
 /**
- * API for finding a specific {@link CrudService}, that is in the Spring Container.
- * @see ServiceBeanType
+ * API for finding specific {@link CrudService}s, that are in the current Spring Container.
+ * @see ServiceBeanType in order to differntiate between seperate services of the same type
  */
 @ServiceComponent
 public interface CrudServiceLocator {

@@ -1,7 +1,7 @@
 package com.github.vincemann.springlemon.auth.config;
 
 import com.github.vincemann.springlemon.auth.security.LemonCommonsWebTokenAuthenticationFilter;
-import com.github.vincemann.springlemon.auth.service.BlueTokenService;
+import com.github.vincemann.springlemon.auth.service.AuthorizationTokenService;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,12 +22,12 @@ public class LemonWebSecurityConfig extends WebSecurityConfigurerAdapter {
 	
 	private static final Log log = LogFactory.getLog(LemonWebSecurityConfig.class);
 
-	protected BlueTokenService blueTokenService;
+	protected AuthorizationTokenService authorizationTokenService;
 	
 	@Autowired
-	public void createLemonWebSecurityConfig(BlueTokenService blueTokenService) {
+	public void createLemonWebSecurityConfig(AuthorizationTokenService authorizationTokenService) {
 
-		this.blueTokenService = blueTokenService;		
+		this.authorizationTokenService = authorizationTokenService;
 		log.info("Created");
 	}
 
@@ -90,7 +90,7 @@ public class LemonWebSecurityConfig extends WebSecurityConfigurerAdapter {
 	 */
 	protected void tokenAuthentication(HttpSecurity http) throws Exception {
 		
-		http.addFilterBefore(new LemonCommonsWebTokenAuthenticationFilter(blueTokenService),
+		http.addFilterBefore(new LemonCommonsWebTokenAuthenticationFilter(authorizationTokenService),
 				UsernamePasswordAuthenticationFilter.class);
 	}
 
