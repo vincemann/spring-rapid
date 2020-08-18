@@ -20,12 +20,12 @@ import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 @MockitoSettings(strictness = Strictness.LENIENT)
-class LenientPermissionGrantingStrategyTest {
+class HierarchicPermissionGrantingStrategyTest {
 
     @Mock
     AuditLogger auditLogger;
     @InjectMocks
-    LenientPermissionGrantingStrategy permissionGrantingStrategy;
+    HierarchicPermissionGrantingStrategy permissionGrantingStrategy;
     @Mock
     AccessControlEntry entry;
     Permission readPermission;
