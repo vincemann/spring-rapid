@@ -50,8 +50,10 @@ public class LenientPermissionGrantingStrategy extends DefaultPermissionGranting
                             if (!administrativeMode) {
                                 auditLogger.logIfNeeded(true, ace);
                             }
-
+                            log.debug("Match! Sid: " + sid + " has sufficient permissions for operation");
                             return true;
+                        }else {
+                            log.trace("Sid: " + sid + " does not have sufficient permissions for operation...");
                         }
 
                         // Failure for this permission, so stop search
@@ -108,10 +110,10 @@ public class LenientPermissionGrantingStrategy extends DefaultPermissionGranting
 //            if(givenPermissionMask== BasePermission.ADMINISTRATION.getMask()){
 //                return true;
 //            }
-            log.debug("Requested permission: " + PermissionUtils.toString(p)/*+", mask: " + requestedPermissionMask*/);
-            log.trace("Checking ace with id:"+ ace.getId() /*", " + PermissionUtils.toString(ace.getPermission()) +*/);
-            log.trace("Content of that ace: " + ace);
-            log.debug("Sid: " + ace.getSid()+ " has permission: " + PermissionUtils.toString(ace.getPermission()) /*+", mask: " + givenPermissionMask*/);
+//            log.debug("Requested permission: " + PermissionUtils.toString(p)/*+", mask: " + requestedPermissionMask*/);
+            log.debug("Checking ace with id:"+ ace.getId() /*", " + PermissionUtils.toString(ace.getPermission()) +*/);
+//            log.trace("Content of that ace: " + ace);
+            log.debug("Sid of ace: " + ace.getSid()+ " has permission: " + PermissionUtils.toString(ace.getPermission()) /*+", mask: " + givenPermissionMask*/);
 
             return givenPermissionMask >= requestedPermissionMask;
             //return (ace.getPermission().getMask() & p.getMask()) == 0;

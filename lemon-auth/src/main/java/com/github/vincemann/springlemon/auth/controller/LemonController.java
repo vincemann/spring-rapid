@@ -26,7 +26,7 @@ import com.github.vincemann.springrapid.core.controller.RapidController;
 import com.github.vincemann.springrapid.core.service.exception.BadEntityException;
 import com.github.vincemann.springrapid.core.service.exception.EntityNotFoundException;
 import com.github.vincemann.springrapid.core.slicing.components.WebComponent;
-import com.github.vincemann.springrapid.core.util.EntityUtils;
+import com.github.vincemann.springrapid.core.util.EntityAssert;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
@@ -368,7 +368,7 @@ public abstract class LemonController
 
 	protected U fetchUser(ID userId) throws BadEntityException, EntityNotFoundException {
 		Optional<U> byId = unsecuredService.findById(userId);
-		EntityUtils.checkPresent(byId,"User with id: "+userId+" not found");
+		EntityAssert.isPresent(byId,"User with id: "+userId+" not found");
 		return byId.get();
 	}
 }

@@ -28,17 +28,14 @@ public class Authenticated {
         return result;
     }
 
-    public static Optional<String> getName(){
+    public static String getName(){
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         if(authentication==null){
-            return Optional.empty();
+            return null;
         }
-        String name = authentication.getName();
-        if (name==null){
-            return Optional.empty();
-        }
-        return Optional.of(name);
+        return authentication.getName();
     }
+
 
     public static <T extends RapidAuthenticatedPrincipal> T get(){
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();

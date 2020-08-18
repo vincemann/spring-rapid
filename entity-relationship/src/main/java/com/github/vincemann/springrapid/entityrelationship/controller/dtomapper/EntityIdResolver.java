@@ -9,7 +9,7 @@ import com.github.vincemann.springrapid.core.service.CrudService;
 import com.github.vincemann.springrapid.core.service.locator.CrudServiceLocator;
 import com.github.vincemann.springrapid.core.service.exception.EntityNotFoundException;
 import com.github.vincemann.springrapid.core.service.exception.BadEntityException;
-import com.github.vincemann.springrapid.core.util.EntityUtils;
+import com.github.vincemann.springrapid.core.util.EntityAssert;
 import lombok.Getter;
 
 import java.io.Serializable;
@@ -57,7 +57,7 @@ public abstract class EntityIdResolver<E, Dto> implements AopLoggable {
         } catch (ClassCastException e) {
             throw new IllegalArgumentException("ParentId: " + id + " was of wrong type for Service: " + entityService, e);
         }
-        EntityUtils.checkPresent(optionalParent, "No Parent of Type: " +entityClass.getSimpleName() + " found with id: " + id);
+        EntityAssert.isPresent(optionalParent, "No Parent of Type: " +entityClass.getSimpleName() + " found with id: " + id);
         return (T) optionalParent.get();
 
     }
