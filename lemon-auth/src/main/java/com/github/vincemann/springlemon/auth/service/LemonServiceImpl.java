@@ -21,7 +21,7 @@ import com.github.vincemann.springrapid.acl.Role;
 import com.github.vincemann.springrapid.core.service.exception.BadEntityException;
 import com.github.vincemann.springrapid.core.service.exception.EntityNotFoundException;
 import com.github.vincemann.springrapid.core.util.MapperUtils;
-import com.github.vincemann.springrapid.core.util.EntityUtils;
+import com.github.vincemann.springrapid.core.util.EntityAssert;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.apache.commons.logging.Log;
@@ -169,7 +169,7 @@ public abstract class LemonServiceImpl<U extends AbstractUser<ID>, ID extends Se
 //        // The user must exist
 //        LexUtils.ensureFound(user);
 
-        EntityUtils.checkPresent(user,"User not found");
+        EntityAssert.isPresent(user,"User not found");
         // must be unverified
         LexUtils.validate(user.getRoles().contains(LemonRole.UNVERIFIED),
                 "com.naturalprogrammer.spring.alreadyVerified").go();
@@ -185,7 +185,7 @@ public abstract class LemonServiceImpl<U extends AbstractUser<ID>, ID extends Se
     public U findByEmail(String email) throws EntityNotFoundException {
 //        log.debug("Fetching user by email: " + email);
         Optional<U> byEmail = getRepository().findByEmail(email);
-        EntityUtils.checkPresent(byEmail,"Entity with email: " + email + " not found");
+        EntityAssert.isPresent(byEmail,"Entity with email: " + email + " not found");
         return byEmail.get();
     }
 
@@ -202,7 +202,7 @@ public abstract class LemonServiceImpl<U extends AbstractUser<ID>, ID extends Se
 
 //        U user = getRepository().findById(userId).orElseThrow(LexUtils.notFoundSupplier());
 
-        EntityUtils.checkPresent(user,"User not found");
+        EntityAssert.isPresent(user,"User not found");
         // ensure that he is unverified
         LexUtils.validate(user.hasRole(LemonRole.UNVERIFIED),
                 "com.naturalprogrammer.spring.alreadyVerified").go();
@@ -243,7 +243,7 @@ public abstract class LemonServiceImpl<U extends AbstractUser<ID>, ID extends Se
 
         // fetch the user record from database
         Optional<U> byId = getRepository().findByEmail(email);
-        EntityUtils.checkPresent(byId,"User with email: "+email+" not found");
+        EntityAssert.isPresent(byId,"User with email: "+email+" not found");
         U user = byId.get();
         mailForgotPasswordLink(user);
     }
@@ -265,7 +265,7 @@ public abstract class LemonServiceImpl<U extends AbstractUser<ID>, ID extends Se
 
         // fetch the user
         Optional<U> byId = getRepository().findByEmail(email);
-        EntityUtils.checkPresent(byId,"User with email: "+email+" not found");
+        EntityAssert.isPresent(byId,"User with email: "+email+" not found");
         U user = byId.get();
         LemonUtils.ensureCredentialsUpToDate(claims, user);
 
@@ -326,7 +326,7 @@ public abstract class LemonServiceImpl<U extends AbstractUser<ID>, ID extends Se
     @Override
     public U update(U update, Boolean full) throws EntityNotFoundException, BadEntityException, BadEntityException {
         Optional<U> old = getRepository().findById(update.getId());
-        EntityUtils.checkPresent(old, "Entity to update with id: " + update.getId() + " not found");
+        EntityAssert.isPresent(old, "Entity to update with id: " + update.getId() + " not found");
         //update roles works in transaction -> changes are applied on the fly
         updateRoles(old.get(), update);
         update.setRoles(old.get().getRoles());
@@ -344,7 +344,7 @@ public abstract class LemonServiceImpl<U extends AbstractUser<ID>, ID extends Se
         // Get the old password of the logged in user (logged in user may be an ADMIN)
 //        LemonUserDto currentUser = LecwUtils.currentUser();
 //        U loggedIn = getRepository().findById(toId(currentUser.getId())).get();
-        EntityUtils.checkPresent(user,"User not found");
+        EntityAssert.isPresent(user,"User not found");
         String oldPassword = user.getPassword();
 
         // checks
@@ -399,7 +399,7 @@ public abstract class LemonServiceImpl<U extends AbstractUser<ID>, ID extends Se
 //        Optional<U> byId = getRepository().findById(userId);
 //        LexUtils.ensureFound(byId);
 //        U user = byId.get();
-        EntityUtils.checkPresent(user,"User not found");
+        EntityAssert.isPresent(user,"User not found");
         LexUtils.validateField("updatedUser.password",
                 passwordEncoder.matches(emailChangeForm.getPassword(),
                         user.getPassword()),
@@ -482,7 +482,7 @@ public abstract class LemonServiceImpl<U extends AbstractUser<ID>, ID extends Se
 //
 //        U user = getRepository().findById(userId).orElseThrow(LexUtils.notFoundSupplier());
 
-        EntityUtils.checkPresent(user,"User not found");
+        EntityAssert.isPresent(user,"User not found");
         LexUtils.validate(StringUtils.isNotBlank(user.getNewEmail()),
                 "com.naturalprogrammer.spring.blank.newEmail").go();
 

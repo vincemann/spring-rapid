@@ -5,27 +5,27 @@ import com.github.vincemann.springrapid.core.service.exception.EntityNotFoundExc
 
 import java.util.Optional;
 
-public class EntityUtils {
+public class EntityAssert {
 
-    public static void checkNotNull(Object entity,String property) throws BadEntityException {
+    public static void notNull(Object entity, String property) throws BadEntityException {
         if(entity==null){
             throw new BadEntityException("Property: " + property + " must not be null");
         }
     }
 
-    public static void checkProperEntity(boolean expression, String msg) throws BadEntityException {
+    public static void isTrue(boolean expression, String msg) throws BadEntityException {
         if(!expression){
             throw new BadEntityException(msg);
         }
     }
 
-    public static void checkPresent(Object entity, String msg) throws EntityNotFoundException {
-        if (!checkPresent(entity)){
+    public static void isPresent(Object entity, String msg) throws EntityNotFoundException {
+        if (!isPresent(entity)){
             throw new EntityNotFoundException(msg);
         }
     }
 
-    public static boolean checkPresent(Object entity){
+    public static boolean isPresent(Object entity){
         if(entity==null){
             return false;
         }
@@ -37,8 +37,8 @@ public class EntityUtils {
         return true;
     }
 
-    public static void checkPresent(Object entity, Object id, Class clazz) throws EntityNotFoundException {
-        if (!checkPresent(entity)){
+    public static void isPresent(Object entity, Object id, Class clazz) throws EntityNotFoundException {
+        if (!isPresent(entity)){
             throw new EntityNotFoundException(id,clazz);
         }
     }

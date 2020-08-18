@@ -4,6 +4,7 @@ import com.github.vincemann.aoplog.Severity;
 import com.github.vincemann.aoplog.api.LogConfig;
 import com.github.vincemann.aoplog.api.LogException;
 import com.github.vincemann.aoplog.api.LogInteraction;
+import com.github.vincemann.springrapid.commons.Assert;
 import com.github.vincemann.springrapid.core.model.IdentifiableEntity;
 import com.github.vincemann.springrapid.core.service.SecurityCheckerImpl;
 import com.github.vincemann.springrapid.core.util.Authenticated;
@@ -91,8 +92,7 @@ public class AclSecurityCheckerImpl extends SecurityCheckerImpl implements AclSe
         }
         boolean permitted = checkExpression("hasPermission(" + id + ",'" + clazz.getName() + "','" + permission + "')");
         if(!permitted){
-            Optional<String> name = Authenticated.getName();
-
+            String name = Assert.isPresent(Authenticated.getName());
             throw new AccessDeniedException("Permission not Granted! User: "+name+" with roles:"
                     +SecurityContextHolder.getContext().getAuthentication().getAuthorities()
                             .stream()

@@ -5,7 +5,7 @@ import com.github.vincemann.springrapid.core.service.CrudService;
 import com.github.vincemann.springrapid.core.service.exception.BadEntityException;
 import com.github.vincemann.springrapid.core.service.exception.EntityNotFoundException;
 import com.github.vincemann.springrapid.core.service.locator.CrudServiceLocator;
-import com.github.vincemann.springrapid.core.util.EntityUtils;
+import com.github.vincemann.springrapid.core.util.EntityAssert;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.acls.model.ObjectIdentity;
 
@@ -35,7 +35,7 @@ public class RapidObjectIdentityResolver {
                 throw new UnresolvableOidException("Entity class: " + entityClass + " does not map to service.");
             }
             Optional byId = crudService.findById(objectIdentity.getIdentifier());
-            EntityUtils.checkPresent(byId, objectIdentity.getIdentifier(), entityClass);
+            EntityAssert.isPresent(byId, objectIdentity.getIdentifier(), entityClass);
             return (T) byId.get();
 
         } catch (ClassNotFoundException | BadEntityException | EntityNotFoundException | ClassCastException e) {

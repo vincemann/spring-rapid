@@ -2,11 +2,10 @@ package com.github.vincemann.springrapid.core.service;
 
 import com.github.vincemann.springrapid.commons.NullAwareBeanUtilsBean;
 import com.github.vincemann.springrapid.core.model.IdentifiableEntity;
-import com.github.vincemann.springrapid.core.service.CrudService;
 import com.github.vincemann.springrapid.core.service.exception.BadEntityException;
 import com.github.vincemann.springrapid.core.service.exception.EntityNotFoundException;
 import com.github.vincemann.springrapid.core.slicing.components.ServiceComponent;
-import com.github.vincemann.springrapid.core.util.EntityUtils;
+import com.github.vincemann.springrapid.core.util.EntityAssert;
 import org.apache.commons.beanutils.BeanUtilsBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.NonTransientDataAccessException;
@@ -54,7 +53,7 @@ public abstract class JPACrudService
     @Transactional
     @Override
     public Optional<E> findById(Id id) throws BadEntityException {
-        EntityUtils.checkNotNull(id, "Id");
+        EntityAssert.notNull(id, "Id");
         try {
             return jpaRepository.findById(id);
         } catch (NonTransientDataAccessException e) {
@@ -66,7 +65,7 @@ public abstract class JPACrudService
     @Override
     public E update(E update, Boolean full) throws EntityNotFoundException, BadEntityException {
         try {
-            EntityUtils.checkPresent(update.getId(), "No Id set for update");
+            EntityAssert.isPresent(update.getId(), "No Id set for update");
             if (full) {
                 return save(update);
             } else {
@@ -85,9 +84,9 @@ public abstract class JPACrudService
 
 
     private E findOldEntity(Id id) throws BadEntityException, EntityNotFoundException {
-        EntityUtils.checkNotNull(id, "id");
+        EntityAssert.notNull(id, "id");
         Optional<E> entityToUpdate = findById(id);
-        EntityUtils.checkPresent(entityToUpdate, id, getEntityClass());
+        EntityAssert.isPresent(entityToUpdate, id, getEntityClass());
         return entityToUpdate.get();
     }
 
@@ -112,9 +111,9 @@ public abstract class JPACrudService
     @Override
     public void deleteById(Id id) throws EntityNotFoundException, BadEntityException {
         try {
-            EntityUtils.checkNotNull(id, "Id");
+            EntityAssert.notNull(id, "Id");
             Optional<E> entity = findById(id);
-            EntityUtils.checkPresent(entity, id, entityClass);
+            EntityAssert.isPresent(entity, id, entityClass);
             jpaRepository.deleteById(id);
         } catch (NonTransientDataAccessException e) {
             throw new BadEntityException(e);

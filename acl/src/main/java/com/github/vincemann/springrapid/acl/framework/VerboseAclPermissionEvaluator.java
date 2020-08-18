@@ -3,7 +3,9 @@ package com.github.vincemann.springrapid.acl.framework;
 import com.github.vincemann.aoplog.api.AopLoggable;
 import com.github.vincemann.aoplog.api.LogInteraction;
 import com.github.vincemann.springrapid.acl.framework.oidresolve.RapidObjectIdentityResolver;
-import com.github.vincemann.springrapid.core.service.locator.CrudServiceLocator;
+import com.github.vincemann.springrapid.acl.framework.oidresolve.UnresolvableOidException;
+import com.github.vincemann.springrapid.core.model.IdentifiableEntity;
+import com.github.vincemann.springrapid.core.util.Authenticated;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.acls.AclPermissionEvaluator;
 import org.springframework.security.acls.domain.DefaultPermissionFactory;
@@ -19,7 +21,7 @@ import java.util.List;
 import java.util.Locale;
 
 @Slf4j
-public class LoggingAclPermissionEvaluator extends AclPermissionEvaluator implements AopLoggable {
+public class VerboseAclPermissionEvaluator extends AclPermissionEvaluator implements AopLoggable {
 
     private final AclService aclService;
     private ObjectIdentityRetrievalStrategy objectIdentityRetrievalStrategy = new ObjectIdentityRetrievalStrategyImpl();
@@ -28,19 +30,19 @@ public class LoggingAclPermissionEvaluator extends AclPermissionEvaluator implem
     private PermissionFactory permissionFactory = new DefaultPermissionFactory();
     private RapidObjectIdentityResolver objectIdentityResolver;
 
-    public LoggingAclPermissionEvaluator(AclService aclService) {
+    public VerboseAclPermissionEvaluator(AclService aclService) {
         super(aclService);
-        this.aclService=aclService;
+        this.aclService = aclService;
         log.debug("created");
     }
 
     /**
      * Called by Spring Security to evaluate the permission
      *
-     * @param auth	Spring Security authentication object,
-     * 				from which the current-user can be found
-     * @param targetDomainObject	Object for which permission is being checked
-     * @param permission			What permission is being checked for, e.g. 'WRITE'
+     * @param auth               Spring Security authentication object,
+     *                           from which the current-user can be found
+     * @param targetDomainObject Object for which permission is being checked
+     * @param permission         What permission is being checked for, e.g. 'WRITE'
      * @see org.springframework.security.acls.domain.BasePermission
      */
     @LogInteraction
@@ -77,40 +79,56 @@ public class LoggingAclPermissionEvaluator extends AclPermissionEvaluator implem
         List<Sid> sids = sidRetrievalStrategy.getSids(authentication);
         List<Permission> requiredPermission = resolvePermission(permission);
 
-        if (log.isTraceEnabled()){
 
-            LemonUserDto user = LecwUtils.currentUser();
-            log.trace("Does User: " + user.getEmail() + " have permissions: " + requiredPermission +"\n"+
-                    "that are required for an operation over: " +
+        IdentifiableEntity resolvedOid = null;
+        if (log.isTraceEnabled()) {
+            try {
+                resolvedOid = objectIdentityResolver.resolve(oid);
+            } catch (UnresolvableOidException e) {
+                e.printStackTrace();
+            }
+        }
+        String name = Authenticated.getName();
+        //expensive trace logging
+        if (log.isTraceEnabled()) {
+            if (resolvedOid!=null) {
+                log.trace("Checking if User: " + name + " has permissions: " + requiredPermission + "\n" +
+                        "that are required for an operation over: " +resolvedOid +" ?"
+                );
+            }else {
+                log.trace("Checking if User: " + name + " has permissions: " + requiredPermission + "\n" +
+                        "that are required for an operation over: " + oid + " ?"
+                );
+            }
+        } else {
+            log.debug("Checking if User: " + name + " has permissions: " + requiredPermission + "\n" +
+                    "that are required for an operation over: " + oid + " ?"
             );
         }
 
+        log.debug("User has sid's: " + sids);
+
         try {
-            // Lookup only ACLs for SIDs we're interested in
+            // Lookup only ACL for SIDs we're interested in
             Acl acl = aclService.readAclById(oid, sids);
 
             if (acl.isGranted(requiredPermission, sids, false)) {
-                if (debug) {
-                    logger.debug("Access is granted");
-                }
-
+                log.debug("Access granted");
                 return true;
             }
 
-            if (debug) {
-                logger.debug("Returning false - ACLs returned, but insufficient permissions for this principal");
-            }
+            log.debug("No Sid has sufficient permissions for operation");
+            log.debug("Access not granted");
 
-        }
-        catch (NotFoundException nfe) {
-            if (debug) {
-                logger.debug("Returning false - no ACLs apply for this principal");
-            }
+        } catch (NotFoundException nfe) {
+            log.debug("No ACL found for sids of user.");
+            log.debug("Access not granted");
         }
 
         return false;
 
     }
+
 
     List<Permission> resolvePermission(Object permission) {
         if (permission instanceof Integer) {
@@ -131,8 +149,7 @@ public class LoggingAclPermissionEvaluator extends AclPermissionEvaluator implem
 
             try {
                 p = permissionFactory.buildFromName(permString);
-            }
-            catch (IllegalArgumentException notfound) {
+            } catch (IllegalArgumentException notfound) {
                 p = permissionFactory.buildFromName(permString.toUpperCase(Locale.ENGLISH));
             }
 
@@ -164,7 +181,4 @@ public class LoggingAclPermissionEvaluator extends AclPermissionEvaluator implem
         return permissionFactory;
     }
 
-    protected CrudServiceLocator getCrudServiceLocator() {
-        return crudServiceLocator;
-    }
 }
