@@ -8,7 +8,7 @@ import com.github.vincemann.springlemon.auth.mail.MailSender;
 import com.github.vincemann.springlemon.auth.domain.LemonRole;
 import com.github.vincemann.springlemon.auth.util.LecUtils;
 import com.github.vincemann.springrapid.core.service.exception.BadEntityException;
-import com.github.vincemann.springrapid.core.service.jpa.JPACrudService;
+import com.github.vincemann.springrapid.core.service.JPACrudService;
 import com.github.vincemann.springlemon.exceptions.util.LexUtils;
 import com.github.vincemann.springrapid.core.slicing.components.ServiceComponent;
 import org.apache.commons.lang3.exception.ExceptionUtils;
@@ -28,8 +28,8 @@ public abstract class AbstractLemonService
     private static final Log log = LogFactory.getLog(AbstractLemonService.class);
 	protected PasswordEncoder passwordEncoder;
 	protected LemonProperties properties;
-	protected BlueTokenService blueTokenService;
-	protected GreenTokenService greenTokenService;
+	protected AuthorizationTokenService authorizationTokenService;
+	protected VerificationTokenService verificationTokenService;
 	protected MailSender mailSender;
 
 
@@ -71,8 +71,11 @@ public abstract class AbstractLemonService
 			
 			log.debug("Sending verification mail to: " + user);
 			
-			String verificationCode = greenTokenService.createToken(GreenTokenService.VERIFY_AUDIENCE,
-					user.getId().toString(), properties.getJwt().getExpirationMillis(),
+			String verificationCode = verificationTokenService.createToken(
+					VerificationTokenService.VERIFY_AUDIENCE,
+					user.getId().toString(),
+					properties.getJwt().getExpirationMillis(),
+					//payload
 					LecUtils.mapOf("email", user.getEmail()));
 
 			// make the link
@@ -112,8 +115,8 @@ public abstract class AbstractLemonService
 		
 		log.debug("Mailing forgot password link to user: " + user);
 
-		String forgotPasswordCode = greenTokenService.createToken(
-				GreenTokenService.FORGOT_PASSWORD_AUDIENCE,
+		String forgotPasswordCode = verificationTokenService.createToken(
+				VerificationTokenService.FORGOT_PASSWORD_AUDIENCE,
 				user.getEmail(), properties.getJwt().getExpirationMillis());
 
 		// make the link

@@ -2,7 +2,7 @@ package com.github.vincemann.springlemon.auth.security;
 
 import com.github.vincemann.springlemon.auth.domain.LemonPrincipal;
 import com.github.vincemann.springlemon.auth.domain.dto.user.LemonUserDto;
-import com.github.vincemann.springlemon.auth.service.BlueTokenService;
+import com.github.vincemann.springlemon.auth.service.AuthorizationTokenService;
 import com.github.vincemann.springlemon.auth.util.LecUtils;
 import com.github.vincemann.springlemon.auth.util.LemonUtils;
 
@@ -32,7 +32,7 @@ public class LemonCommonsWebTokenAuthenticationFilter extends OncePerRequestFilt
 	
     private static final Log log = LogFactory.getLog(LemonCommonsWebTokenAuthenticationFilter.class);
     
-    private BlueTokenService blueTokenService;
+    private AuthorizationTokenService authorizationTokenService;
 
 	@Override
 	protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
@@ -74,7 +74,7 @@ public class LemonCommonsWebTokenAuthenticationFilter extends OncePerRequestFilt
 	////@LogInteraction(level = LogInteraction.Level.TRACE)
 	public Authentication createAuthToken(String token) {
 		
-		JWTClaimsSet claims = blueTokenService.parseToken(token, BlueTokenService.AUTH_AUDIENCE);
+		JWTClaimsSet claims = authorizationTokenService.parseToken(token, AuthorizationTokenService.AUTH_AUDIENCE);
 		LemonUserDto lemonUserDto = LemonUtils.getUserDto(claims);
 		if (lemonUserDto == null)
 			lemonUserDto = fetchUserDto(claims);

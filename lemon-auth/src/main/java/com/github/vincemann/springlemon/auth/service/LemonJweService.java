@@ -12,8 +12,7 @@ import com.nimbusds.jose.proc.SimpleSecurityContext;
 import com.nimbusds.jwt.JWTClaimsSet;
 import com.nimbusds.jwt.proc.ConfigurableJWTProcessor;
 import com.nimbusds.jwt.proc.DefaultJWTProcessor;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.BadCredentialsException;
 
 import java.text.ParseException;
@@ -21,16 +20,15 @@ import java.util.Map;
 
 /**
  * JWE Service
- * 
+ * Appends claims with header and encrypts the whole thing, using a secret.
  * References:
  * 
  * https://connect2id.com/products/nimbus-jose-jwt/examples/jwe-with-shared-key
  * https://connect2id.com/products/nimbus-jose-jwt/examples/validating-jwt-access-tokens
  */
-public class LemonJweService extends AbstractJwtService implements GreenTokenService {
-	
-	private static final Log log = LogFactory.getLog(LemonJweService.class);
-	
+@Slf4j
+public class LemonJweService extends AbstractJwtService implements VerificationTokenService {
+
 	private DirectEncrypter encrypter;
     private JWEHeader header = new JWEHeader(JWEAlgorithm.DIR, EncryptionMethod.A128CBC_HS256);
     private ConfigurableJWTProcessor<SimpleSecurityContext> jwtProcessor;

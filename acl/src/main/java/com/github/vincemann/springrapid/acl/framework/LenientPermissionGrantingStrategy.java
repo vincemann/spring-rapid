@@ -7,6 +7,8 @@ import org.springframework.security.acls.domain.BasePermission;
 import org.springframework.security.acls.domain.DefaultPermissionGrantingStrategy;
 import org.springframework.security.acls.model.*;
 
+import java.util.List;
+
 /**
  * No exact Permission match is needed.
  * If Entity has create Permission for example (mask = 4), then it implicitly also has read (mask = 1) permission,
@@ -16,8 +18,82 @@ import org.springframework.security.acls.model.*;
 @Slf4j
 public class LenientPermissionGrantingStrategy extends DefaultPermissionGrantingStrategy {
 
+    private final transient AuditLogger auditLogger;
+
     public LenientPermissionGrantingStrategy(AuditLogger auditLogger) {
         super(auditLogger);
+        this.auditLogger = auditLogger;
+    }
+
+
+    @Override
+    public boolean isGranted(Acl acl, List<Permission> permission, List<Sid> sids,
+                             boolean administrativeMode) throws NotFoundException {
+
+        final List<AccessControlEntry> aces = acl.getEntries();
+
+        AccessControlEntry firstRejection = null;
+
+        for (Permission p : permission) {
+            for (Sid sid : sids) {
+                // Attempt to find exact match for this permission mask and SID
+                boolean scanNextSid = true;
+
+                for (AccessControlEntry ace : aces) {
+
+                    if (isGranted(ace, p)
+                            && ace.getSid().equals(sid)) {
+                        // Found a matching ACE, so its authorization decision will
+                        // prevail
+                        if (ace.isGranting()) {
+                            // Success
+                            if (!administrativeMode) {
+                                auditLogger.logIfNeeded(true, ace);
+                            }
+
+                            return true;
+                        }
+
+                        // Failure for this permission, so stop search
+                        // We will see if they have a different permission
+                        // (this permission is 100% rejected for this SID)
+                        if (firstRejection == null) {
+                            // Store first rejection for auditing reasons
+                            firstRejection = ace;
+                        }
+
+                        scanNextSid = false; // helps break the loop
+
+                        break; // exit aces loop
+                    }
+                }
+
+                if (!scanNextSid) {
+                    break; // exit SID for loop (now try next permission)
+                }
+            }
+        }
+
+        if (firstRejection != null) {
+            // We found an ACE to reject the request at this point, as no
+            // other ACEs were found that granted a different permission
+            if (!administrativeMode) {
+                auditLogger.logIfNeeded(false, firstRejection);
+            }
+
+            return false;
+        }
+
+        // No matches have been found so far
+        if (acl.isEntriesInheriting() && (acl.getParentAcl() != null)) {
+            // We have a parent, so let them try to find a matching ACE
+            return acl.getParentAcl().isGranted(permission, sids, false);
+        }
+        else {
+            // We either have no parent, or we're the uppermost parent
+            throw new NotFoundException(
+                    "Unable to locate a matching ACE for passed permissions and SIDs");
+        }
     }
 
     @Override
@@ -32,9 +108,11 @@ public class LenientPermissionGrantingStrategy extends DefaultPermissionGranting
 //            if(givenPermissionMask== BasePermission.ADMINISTRATION.getMask()){
 //                return true;
 //            }
-            log.debug("Checking ace: id:"+ ace.getId() /*", " + PermissionUtils.toString(ace.getPermission()) +*/);
-            log.debug("Sid: " + ace.getSid()+ " has permission: " + PermissionUtils.toString(ace.getPermission()) +", mask: " + givenPermissionMask);
-            log.debug("Requested permission: " + PermissionUtils.toString(p)+", mask: " + requestedPermissionMask);
+            log.debug("Requested permission: " + PermissionUtils.toString(p)/*+", mask: " + requestedPermissionMask*/);
+            log.trace("Checking ace with id:"+ ace.getId() /*", " + PermissionUtils.toString(ace.getPermission()) +*/);
+            log.trace("Content of that ace: " + ace);
+            log.debug("Sid: " + ace.getSid()+ " has permission: " + PermissionUtils.toString(ace.getPermission()) /*+", mask: " + givenPermissionMask*/);
+
             return givenPermissionMask >= requestedPermissionMask;
             //return (ace.getPermission().getMask() & p.getMask()) == 0;
         } else {

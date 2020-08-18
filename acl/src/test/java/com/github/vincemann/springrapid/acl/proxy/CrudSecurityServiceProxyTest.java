@@ -7,7 +7,7 @@ import com.github.vincemann.springrapid.core.proxy.SimpleCrudServiceExtension;
 import com.github.vincemann.springrapid.core.service.CrudService;
 import com.github.vincemann.springrapid.core.service.SimpleCrudService;
 import com.github.vincemann.springrapid.core.service.exception.BadEntityException;
-import com.github.vincemann.springrapid.core.service.jpa.JPACrudService;
+import com.github.vincemann.springrapid.core.service.JPACrudService;
 import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
 import org.junit.jupiter.api.BeforeEach;

@@ -42,7 +42,6 @@ public abstract class AbstractJwtService implements LemonTokenService {
 	////@LogInteraction(level = LogInteraction.Level.TRACE)
 	@Override
 	public String createToken(String audience, String subject, Long expirationMillis) {
-
 		return createToken(audience, subject, expirationMillis, new HashMap<>());
 	}
 
@@ -73,7 +72,9 @@ public abstract class AbstractJwtService implements LemonTokenService {
 	public JWTClaimsSet parseToken(String token, String audience, long issuedAfter) {
 		
 		JWTClaimsSet claims = parseToken(token, audience);
-		
+
+		//is token still valid?
+		//todo difference to expired?
 		long issueTime = (long) claims.getClaim(LEMON_IAT);
 		LecUtils.ensureCredentials(issueTime >= issuedAfter,
 				"com.naturalprogrammer.spring.obsoleteToken");

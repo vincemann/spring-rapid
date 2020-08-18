@@ -12,10 +12,12 @@ import java.util.Map;
 
 /**
  * JWS Service
+ * Token only gets signed, not encrypted.
+ * Encryption should be performed via TLS/HTTPS -> double encryption is avoided.
  * 
  * Reference: https://connect2id.com/products/nimbus-jose-jwt/examples/jws-with-hmac
  */
-public class LemonJwsService extends AbstractJwtService implements BlueTokenService {
+public class LemonJwsService extends AbstractJwtService implements AuthorizationTokenService {
 
 	private JWSSigner signer;
 	private JWSVerifier verifier;

@@ -1,7 +1,7 @@
 package com.github.vincemann.springlemon.demo;
 
 import com.github.vincemann.springlemon.demo.domain.User;
-import com.github.vincemann.springlemon.auth.service.GreenTokenService;
+import com.github.vincemann.springlemon.auth.service.VerificationTokenService;
 import com.github.vincemann.springlemon.auth.util.LecUtils;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -21,7 +21,7 @@ public class ChangeEmailMvcTests extends AbstractMvcTests {
 	private String changeEmailCode;
 	
 	@Autowired
-	private GreenTokenService greenTokenService;
+	private VerificationTokenService verificationTokenService;
 	
 	@BeforeEach
 	public void setUp() {
@@ -30,8 +30,8 @@ public class ChangeEmailMvcTests extends AbstractMvcTests {
 		user.setNewEmail(NEW_EMAIL);
 		userRepository.save(user);
 		
-		changeEmailCode = greenTokenService.createToken(
-				GreenTokenService.CHANGE_EMAIL_AUDIENCE,
+		changeEmailCode = verificationTokenService.createToken(
+				VerificationTokenService.CHANGE_EMAIL_AUDIENCE,
 				Long.toString(UNVERIFIED_USER_ID), 60000L,
 				LecUtils.mapOf("newEmail", NEW_EMAIL));
 	}
@@ -74,7 +74,7 @@ public class ChangeEmailMvcTests extends AbstractMvcTests {
 		        .andExpect(status().is(422));
 
 		// Wrong audience
-		String code = greenTokenService.createToken(
+		String code = verificationTokenService.createToken(
 				"", // blank audience
 				Long.toString(UNVERIFIED_USER_ID), 60000L,
 				LecUtils.mapOf("newEmail", NEW_EMAIL));
@@ -86,8 +86,8 @@ public class ChangeEmailMvcTests extends AbstractMvcTests {
 		        .andExpect(status().is(401));
 
 		// Wrong userId subject
-		code = greenTokenService.createToken(
-				GreenTokenService.CHANGE_EMAIL_AUDIENCE,
+		code = verificationTokenService.createToken(
+				VerificationTokenService.CHANGE_EMAIL_AUDIENCE,
 				Long.toString(ADMIN_ID), 60000L,
 				LecUtils.mapOf("newEmail", NEW_EMAIL));
 		
@@ -98,8 +98,8 @@ public class ChangeEmailMvcTests extends AbstractMvcTests {
 		        .andExpect(status().is(403));
 		
 		// Wrong new email
-		code = greenTokenService.createToken(
-				GreenTokenService.CHANGE_EMAIL_AUDIENCE,
+		code = verificationTokenService.createToken(
+				VerificationTokenService.CHANGE_EMAIL_AUDIENCE,
 				Long.toString(UNVERIFIED_USER_ID), 60000L,
 				LecUtils.mapOf("newEmail", "wrong.new.email@example.com"));
 		

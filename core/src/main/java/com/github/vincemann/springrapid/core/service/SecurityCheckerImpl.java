@@ -1,6 +1,6 @@
 package com.github.vincemann.springrapid.core.service;
 
-import com.github.vincemann.springrapid.core.util.AuthorityUtil;
+import com.github.vincemann.springrapid.core.util.Authenticated;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContext;
@@ -43,6 +43,6 @@ public class SecurityCheckerImpl implements SecurityChecker {
 
     @Override
     public boolean hasRole(String role) {
-        return AuthorityUtil.getAuthorities().contains(role);
+        return Authenticated.getRoles().contains(role);
     }
 }

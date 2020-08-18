@@ -79,7 +79,7 @@ public class AclAutoConfiguration {
     @ConditionalOnMissingBean(PermissionGrantingStrategy.class)
     @Bean
     public PermissionGrantingStrategy permissionGrantingStrategy() {
-        return new LenientPermissionGrantingStrategy(new ConsoleAuditLogger());
+        return new LenientPermissionGrantingStrategy(new ConsoleAuditLogger(), auditLogger1);
     }
 
     @ConditionalOnMissingBean(AclAuthorizationStrategy.class)

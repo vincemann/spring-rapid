@@ -1,7 +1,6 @@
 package com.github.vincemann.springrapid.entityrelationship.controller.dtomapper;
 
 
-import com.github.vincemann.aoplog.Severity;
 import com.github.vincemann.aoplog.api.AopLoggable;
 import com.github.vincemann.aoplog.api.LogConfig;
 import com.github.vincemann.aoplog.api.LogInteraction;
@@ -10,11 +9,10 @@ import com.github.vincemann.springrapid.core.service.CrudService;
 import com.github.vincemann.springrapid.core.service.locator.CrudServiceLocator;
 import com.github.vincemann.springrapid.core.service.exception.EntityNotFoundException;
 import com.github.vincemann.springrapid.core.service.exception.BadEntityException;
-import com.github.vincemann.springrapid.core.util.RapidUtils;
+import com.github.vincemann.springrapid.core.util.EntityUtils;
 import lombok.Getter;
 
 import java.io.Serializable;
-import java.util.Map;
 import java.util.Optional;
 
 @Getter
@@ -59,7 +57,7 @@ public abstract class EntityIdResolver<E, Dto> implements AopLoggable {
         } catch (ClassCastException e) {
             throw new IllegalArgumentException("ParentId: " + id + " was of wrong type for Service: " + entityService, e);
         }
-        RapidUtils.checkPresent(optionalParent, "No Parent of Type: " +entityClass.getSimpleName() + " found with id: " + id);
+        EntityUtils.checkPresent(optionalParent, "No Parent of Type: " +entityClass.getSimpleName() + " found with id: " + id);
         return (T) optionalParent.get();
 
     }

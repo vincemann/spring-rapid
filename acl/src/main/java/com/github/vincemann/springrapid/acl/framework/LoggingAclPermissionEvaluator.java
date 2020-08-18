@@ -1,13 +1,10 @@
-package com.github.vincemann.springlemon.auth.security;
+package com.github.vincemann.springrapid.acl.framework;
 
 import com.github.vincemann.aoplog.api.AopLoggable;
 import com.github.vincemann.aoplog.api.LogInteraction;
-import com.github.vincemann.springlemon.auth.domain.dto.user.LemonUserDto;
-import com.github.vincemann.springlemon.auth.util.LecUtils;
-import com.github.vincemann.springlemon.auth.util.LecwUtils;
+import com.github.vincemann.springrapid.acl.framework.oidresolve.RapidObjectIdentityResolver;
 import com.github.vincemann.springrapid.core.service.locator.CrudServiceLocator;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.acls.AclPermissionEvaluator;
 import org.springframework.security.acls.domain.DefaultPermissionFactory;
 import org.springframework.security.acls.domain.ObjectIdentityRetrievalStrategyImpl;
@@ -21,26 +18,19 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
 
-/**
- * Denys any access if any user is blocked or if admin is unverified
- * -> unverified Users are let through, so you can treat Role_GoodUser and Role_User differently in access logic.
- *
- * Improves logging
- */
 @Slf4j
-public class LemonPermissionEvaluator extends AclPermissionEvaluator implements AopLoggable {
+public class LoggingAclPermissionEvaluator extends AclPermissionEvaluator implements AopLoggable {
 
     private final AclService aclService;
     private ObjectIdentityRetrievalStrategy objectIdentityRetrievalStrategy = new ObjectIdentityRetrievalStrategyImpl();
     private ObjectIdentityGenerator objectIdentityGenerator = new ObjectIdentityRetrievalStrategyImpl();
     private SidRetrievalStrategy sidRetrievalStrategy = new SidRetrievalStrategyImpl();
     private PermissionFactory permissionFactory = new DefaultPermissionFactory();
-    private CrudServiceLocator crudServiceLocator;
+    private RapidObjectIdentityResolver objectIdentityResolver;
 
-    public LemonPermissionEvaluator(AclService aclService, CrudServiceLocator crudServiceLocator) {
+    public LoggingAclPermissionEvaluator(AclService aclService) {
         super(aclService);
         this.aclService=aclService;
-        this.crudServiceLocator = crudServiceLocator;
         log.debug("created");
     }
 
@@ -58,11 +48,12 @@ public class LemonPermissionEvaluator extends AclPermissionEvaluator implements 
     public boolean hasPermission(Authentication auth,
                                  Object targetDomainObject, Object permission) {
 
-        if (targetDomainObject == null)	// if no domain object is provided,
-            return true;				// let's pass, allowing the service method
+        // if no domain object is provided,
+        // let's pass, allowing the service method
         // to throw a more sensible error message
+        if (targetDomainObject == null)
+            return true;
 
-        performChecks(auth);
         ObjectIdentity objectIdentity = objectIdentityRetrievalStrategy
                 .getObjectIdentity(targetDomainObject);
 
@@ -73,7 +64,6 @@ public class LemonPermissionEvaluator extends AclPermissionEvaluator implements 
     @Override
     public boolean hasPermission(Authentication authentication,
                                  Serializable targetId, String targetType, Object permission) {
-        performChecks(authentication);
         ObjectIdentity objectIdentity = objectIdentityGenerator.createObjectIdentity(
                 targetId, targetType);
         return checkPermission(authentication, objectIdentity, permission);
@@ -88,10 +78,11 @@ public class LemonPermissionEvaluator extends AclPermissionEvaluator implements 
         List<Permission> requiredPermission = resolvePermission(permission);
 
         if (log.isTraceEnabled()){
+
             LemonUserDto user = LecwUtils.currentUser();
             log.trace("Does User: " + user.getEmail() + " have permissions: " + requiredPermission +"\n"+
                     "that are required for an operation over: " +
-                    );
+            );
         }
 
         try {
@@ -153,23 +144,27 @@ public class LemonPermissionEvaluator extends AclPermissionEvaluator implements 
         throw new IllegalArgumentException("Unsupported permission: " + permission);
     }
 
-
-
-
-    private void performChecks(Authentication authentication){
-        //check if blocked or unverified
-        LemonUserDto lemonUserDto = LecUtils.currentUser(authentication);
-        log.debug("Checking if current User: " + lemonUserDto.getEmail() + " is blocked or an unverified admin.");
-        if(lemonUserDto ==null){
-            return;
-        }
-        if(lemonUserDto.isBlocked()){
-            throw new AccessDeniedException("User is Blocked");
-        }
-        if(lemonUserDto.isAdmin() && lemonUserDto.isUnverified()){
-            throw new AccessDeniedException("Admin is Unverified");
-        }
-        log.debug("Current User is NOT blocked or an unverified admin.");
+    protected AclService getAclService() {
+        return aclService;
     }
 
+    protected ObjectIdentityRetrievalStrategy getObjectIdentityRetrievalStrategy() {
+        return objectIdentityRetrievalStrategy;
+    }
+
+    protected ObjectIdentityGenerator getObjectIdentityGenerator() {
+        return objectIdentityGenerator;
+    }
+
+    protected SidRetrievalStrategy getSidRetrievalStrategy() {
+        return sidRetrievalStrategy;
+    }
+
+    protected PermissionFactory getPermissionFactory() {
+        return permissionFactory;
+    }
+
+    protected CrudServiceLocator getCrudServiceLocator() {
+        return crudServiceLocator;
+    }
 }

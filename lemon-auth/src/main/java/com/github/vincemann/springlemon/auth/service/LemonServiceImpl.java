@@ -21,7 +21,7 @@ import com.github.vincemann.springrapid.acl.Role;
 import com.github.vincemann.springrapid.core.service.exception.BadEntityException;
 import com.github.vincemann.springrapid.core.service.exception.EntityNotFoundException;
 import com.github.vincemann.springrapid.core.util.MapperUtils;
-import com.github.vincemann.springrapid.core.util.RapidUtils;
+import com.github.vincemann.springrapid.core.util.EntityUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.apache.commons.logging.Log;
@@ -57,14 +57,14 @@ public abstract class LemonServiceImpl<U extends AbstractUser<ID>, ID extends Se
     public void createLemonService(LemonProperties properties,
                                    PasswordEncoder passwordEncoder,
                                    MailSender<?> mailSender,
-                                   BlueTokenService blueTokenService,
-                                   GreenTokenService greenTokenService) {
+                                   AuthorizationTokenService authorizationTokenService,
+                                   VerificationTokenService verificationTokenService) {
 
         this.properties = properties;
         this.passwordEncoder = passwordEncoder;
         this.mailSender = mailSender;
-        this.blueTokenService = blueTokenService;
-        this.greenTokenService = greenTokenService;
+        this.authorizationTokenService = authorizationTokenService;
+        this.verificationTokenService = verificationTokenService;
         log.info("Created");
     }
 
@@ -169,7 +169,7 @@ public abstract class LemonServiceImpl<U extends AbstractUser<ID>, ID extends Se
 //        // The user must exist
 //        LexUtils.ensureFound(user);
 
-        RapidUtils.checkPresent(user,"User not found");
+        EntityUtils.checkPresent(user,"User not found");
         // must be unverified
         LexUtils.validate(user.getRoles().contains(LemonRole.UNVERIFIED),
                 "com.naturalprogrammer.spring.alreadyVerified").go();
@@ -185,7 +185,7 @@ public abstract class LemonServiceImpl<U extends AbstractUser<ID>, ID extends Se
     public U findByEmail(String email) throws EntityNotFoundException {
 //        log.debug("Fetching user by email: " + email);
         Optional<U> byEmail = getRepository().findByEmail(email);
-        RapidUtils.checkPresent(byEmail,"Entity with email: " + email + " not found");
+        EntityUtils.checkPresent(byEmail,"Entity with email: " + email + " not found");
         return byEmail.get();
     }
 
@@ -202,13 +202,13 @@ public abstract class LemonServiceImpl<U extends AbstractUser<ID>, ID extends Se
 
 //        U user = getRepository().findById(userId).orElseThrow(LexUtils.notFoundSupplier());
 
-        RapidUtils.checkPresent(user,"User not found");
+        EntityUtils.checkPresent(user,"User not found");
         // ensure that he is unverified
         LexUtils.validate(user.hasRole(LemonRole.UNVERIFIED),
                 "com.naturalprogrammer.spring.alreadyVerified").go();
         //verificationCode is jwtToken
-        JWTClaimsSet claims = greenTokenService.parseToken(verificationCode,
-                GreenTokenService.VERIFY_AUDIENCE, user.getCredentialsUpdatedMillis());
+        JWTClaimsSet claims = verificationTokenService.parseToken(verificationCode,
+                VerificationTokenService.VERIFY_AUDIENCE, user.getCredentialsUpdatedMillis());
 
         LecUtils.ensureAuthority(
                 claims.getSubject().equals(user.getId().toString()) &&
@@ -243,7 +243,7 @@ public abstract class LemonServiceImpl<U extends AbstractUser<ID>, ID extends Se
 
         // fetch the user record from database
         Optional<U> byId = getRepository().findByEmail(email);
-        RapidUtils.checkPresent(byId,"User with email: "+email+" not found");
+        EntityUtils.checkPresent(byId,"User with email: "+email+" not found");
         U user = byId.get();
         mailForgotPasswordLink(user);
     }
@@ -258,14 +258,14 @@ public abstract class LemonServiceImpl<U extends AbstractUser<ID>, ID extends Se
     public U resetPassword(ResetPasswordForm form) throws EntityNotFoundException {
 //        log.debug("Resetting password ...");
 
-        JWTClaimsSet claims = greenTokenService.parseToken(form.getCode(),
-                GreenTokenService.FORGOT_PASSWORD_AUDIENCE);
+        JWTClaimsSet claims = verificationTokenService.parseToken(form.getCode(),
+                VerificationTokenService.FORGOT_PASSWORD_AUDIENCE);
 
         String email = claims.getSubject();
 
         // fetch the user
         Optional<U> byId = getRepository().findByEmail(email);
-        RapidUtils.checkPresent(byId,"User with email: "+email+" not found");
+        EntityUtils.checkPresent(byId,"User with email: "+email+" not found");
         U user = byId.get();
         LemonUtils.ensureCredentialsUpToDate(claims, user);
 
@@ -326,7 +326,7 @@ public abstract class LemonServiceImpl<U extends AbstractUser<ID>, ID extends Se
     @Override
     public U update(U update, Boolean full) throws EntityNotFoundException, BadEntityException, BadEntityException {
         Optional<U> old = getRepository().findById(update.getId());
-        RapidUtils.checkPresent(old, "Entity to update with id: " + update.getId() + " not found");
+        EntityUtils.checkPresent(old, "Entity to update with id: " + update.getId() + " not found");
         //update roles works in transaction -> changes are applied on the fly
         updateRoles(old.get(), update);
         update.setRoles(old.get().getRoles());
@@ -344,7 +344,7 @@ public abstract class LemonServiceImpl<U extends AbstractUser<ID>, ID extends Se
         // Get the old password of the logged in user (logged in user may be an ADMIN)
 //        LemonUserDto currentUser = LecwUtils.currentUser();
 //        U loggedIn = getRepository().findById(toId(currentUser.getId())).get();
-        RapidUtils.checkPresent(user,"User not found");
+        EntityUtils.checkPresent(user,"User not found");
         String oldPassword = user.getPassword();
 
         // checks
@@ -399,7 +399,7 @@ public abstract class LemonServiceImpl<U extends AbstractUser<ID>, ID extends Se
 //        Optional<U> byId = getRepository().findById(userId);
 //        LexUtils.ensureFound(byId);
 //        U user = byId.get();
-        RapidUtils.checkPresent(user,"User not found");
+        EntityUtils.checkPresent(user,"User not found");
         LexUtils.validateField("updatedUser.password",
                 passwordEncoder.matches(emailChangeForm.getPassword(),
                         user.getPassword()),
@@ -422,8 +422,8 @@ public abstract class LemonServiceImpl<U extends AbstractUser<ID>, ID extends Se
      */
     protected void mailChangeEmailLink(U user) {
 
-        String changeEmailCode = greenTokenService.createToken(
-                GreenTokenService.CHANGE_EMAIL_AUDIENCE,
+        String changeEmailCode = verificationTokenService.createToken(
+                VerificationTokenService.CHANGE_EMAIL_AUDIENCE,
                 user.getId().toString(), properties.getJwt().getExpirationMillis(),
                 LecUtils.mapOf("newEmail", user.getNewEmail()));
 
@@ -482,12 +482,12 @@ public abstract class LemonServiceImpl<U extends AbstractUser<ID>, ID extends Se
 //
 //        U user = getRepository().findById(userId).orElseThrow(LexUtils.notFoundSupplier());
 
-        RapidUtils.checkPresent(user,"User not found");
+        EntityUtils.checkPresent(user,"User not found");
         LexUtils.validate(StringUtils.isNotBlank(user.getNewEmail()),
                 "com.naturalprogrammer.spring.blank.newEmail").go();
 
-        JWTClaimsSet claims = greenTokenService.parseToken(changeEmailCode,
-                GreenTokenService.CHANGE_EMAIL_AUDIENCE,
+        JWTClaimsSet claims = verificationTokenService.parseToken(changeEmailCode,
+                VerificationTokenService.CHANGE_EMAIL_AUDIENCE,
                 user.getCredentialsUpdatedMillis());
 
         LecUtils.ensureAuthority(
@@ -542,7 +542,7 @@ public abstract class LemonServiceImpl<U extends AbstractUser<ID>, ID extends Se
         //todo kann sich hier jeder user nen token mit beliebiger expiration ausstellen lassen?
         //ist das ein problem?
         return LecUtils.TOKEN_PREFIX +
-                blueTokenService.createToken(BlueTokenService.AUTH_AUDIENCE, username,
+                authorizationTokenService.createToken(AuthorizationTokenService.AUTH_AUDIENCE, username,
                         expirationMillis.orElse(properties.getJwt().getExpirationMillis()));
     }
 
@@ -583,16 +583,16 @@ public abstract class LemonServiceImpl<U extends AbstractUser<ID>, ID extends Se
 
     public Map<String, String> fetchFullToken(String authHeader) {
 
-        LecUtils.ensureCredentials(blueTokenService.parseClaim(authHeader.substring(LecUtils.TOKEN_PREFIX_LENGTH),
-                BlueTokenService.USER_CLAIM) == null, "com.naturalprogrammer.spring.fullTokenNotAllowed");
+        LecUtils.ensureCredentials(authorizationTokenService.parseClaim(authHeader.substring(LecUtils.TOKEN_PREFIX_LENGTH),
+                AuthorizationTokenService.USER_CLAIM) == null, "com.naturalprogrammer.spring.fullTokenNotAllowed");
 
         LemonUserDto currentUser = LecwUtils.currentUser();
 
-        Map<String, Object> claimMap = Collections.singletonMap(BlueTokenService.USER_CLAIM,
+        Map<String, Object> claimMap = Collections.singletonMap(AuthorizationTokenService.USER_CLAIM,
                 MapperUtils.serialize(currentUser)); // Not serializing converts it to a JsonNode
 
         Map<String, String> tokenMap = Collections.singletonMap("token", LecUtils.TOKEN_PREFIX +
-                blueTokenService.createToken(BlueTokenService.AUTH_AUDIENCE, currentUser.getEmail(),
+                authorizationTokenService.createToken(AuthorizationTokenService.AUTH_AUDIENCE, currentUser.getEmail(),
                         Long.valueOf(properties.getJwt().getShortLivedMillis()),
                         claimMap));
 
@@ -606,7 +606,7 @@ public abstract class LemonServiceImpl<U extends AbstractUser<ID>, ID extends Se
     public void addAuthHeader(HttpServletResponse response, String username, Long expirationMillis) {
 
         response.addHeader(LecUtils.TOKEN_RESPONSE_HEADER_NAME, LecUtils.TOKEN_PREFIX +
-                blueTokenService.createToken(BlueTokenService.AUTH_AUDIENCE, username, expirationMillis));
+                authorizationTokenService.createToken(AuthorizationTokenService.AUTH_AUDIENCE, username, expirationMillis));
     }
 
 

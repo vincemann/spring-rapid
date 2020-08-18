@@ -16,7 +16,6 @@ import com.github.vincemann.springlemon.auth.service.LemonService;
 import com.github.vincemann.springlemon.auth.util.LecUtils;
 import com.github.vincemann.springlemon.auth.util.LecwUtils;
 import com.github.vincemann.springlemon.auth.util.LemonUtils;
-import com.github.vincemann.springlemon.exceptions.util.LexUtils;
 import com.github.vincemann.springrapid.acl.Role;
 import com.github.vincemann.springrapid.acl.proxy.Secured;
 import com.github.vincemann.springrapid.core.controller.dtoMapper.context.Direction;
@@ -27,7 +26,7 @@ import com.github.vincemann.springrapid.core.controller.RapidController;
 import com.github.vincemann.springrapid.core.service.exception.BadEntityException;
 import com.github.vincemann.springrapid.core.service.exception.EntityNotFoundException;
 import com.github.vincemann.springrapid.core.slicing.components.WebComponent;
-import com.github.vincemann.springrapid.core.util.RapidUtils;
+import com.github.vincemann.springrapid.core.util.EntityUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
@@ -369,7 +368,7 @@ public abstract class LemonController
 
 	protected U fetchUser(ID userId) throws BadEntityException, EntityNotFoundException {
 		Optional<U> byId = unsecuredService.findById(userId);
-		RapidUtils.checkPresent(byId,"User with id: "+userId+" not found");
+		EntityUtils.checkPresent(byId,"User with id: "+userId+" not found");
 		return byId.get();
 	}
 }
