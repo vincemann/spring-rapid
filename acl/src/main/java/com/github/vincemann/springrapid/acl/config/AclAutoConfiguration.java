@@ -1,7 +1,7 @@
 package com.github.vincemann.springrapid.acl.config;
 
 import com.github.vincemann.springrapid.acl.Role;
-import com.github.vincemann.springrapid.acl.framework.LenientPermissionGrantingStrategy;
+import com.github.vincemann.springrapid.acl.framework.HierarchicPermissionGrantingStrategy;
 import com.github.vincemann.springrapid.acl.framework.NoModSecurityCheckAclAuthorizationStrategy;
 import com.github.vincemann.springrapid.acl.service.MockAuthService;
 import com.github.vincemann.springrapid.acl.service.SecurityContextMockAuthService;
@@ -79,7 +79,7 @@ public class AclAutoConfiguration {
     @ConditionalOnMissingBean(PermissionGrantingStrategy.class)
     @Bean
     public PermissionGrantingStrategy permissionGrantingStrategy() {
-        return new LenientPermissionGrantingStrategy(new ConsoleAuditLogger(), auditLogger1);
+        return new HierarchicPermissionGrantingStrategy(new ConsoleAuditLogger(), auditLogger1);
     }
 
     @ConditionalOnMissingBean(AclAuthorizationStrategy.class)

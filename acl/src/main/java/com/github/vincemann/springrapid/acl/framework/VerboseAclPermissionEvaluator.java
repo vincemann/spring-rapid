@@ -30,9 +30,10 @@ public class VerboseAclPermissionEvaluator extends AclPermissionEvaluator implem
     private PermissionFactory permissionFactory = new DefaultPermissionFactory();
     private RapidObjectIdentityResolver objectIdentityResolver;
 
-    public VerboseAclPermissionEvaluator(AclService aclService) {
+    public VerboseAclPermissionEvaluator(AclService aclService, RapidObjectIdentityResolver objectIdentityResolver) {
         super(aclService);
         this.aclService = aclService;
+        this.objectIdentityResolver = objectIdentityResolver;
         log.debug("created");
     }
 

@@ -16,11 +16,11 @@ import java.util.List;
  * @see BasePermission
  */
 @Slf4j
-public class LenientPermissionGrantingStrategy extends DefaultPermissionGrantingStrategy {
+public class HierarchicPermissionGrantingStrategy extends DefaultPermissionGrantingStrategy {
 
     private final transient AuditLogger auditLogger;
 
-    public LenientPermissionGrantingStrategy(AuditLogger auditLogger) {
+    public HierarchicPermissionGrantingStrategy(AuditLogger auditLogger) {
         super(auditLogger);
         this.auditLogger = auditLogger;
     }
