@@ -1,6 +1,6 @@
 package com.github.vincemann.springlemon.auth.util;
 
-import com.github.vincemann.springlemon.auth.domain.LemonPrincipal;
+import com.github.vincemann.springlemon.auth.domain.LemonAuthenticatedPrincipal;
 import com.github.vincemann.springlemon.auth.domain.dto.user.LemonUserDto;
 import com.github.vincemann.springlemon.exceptions.util.LexUtils;
 import org.apache.commons.logging.Log;
@@ -62,8 +62,8 @@ public class LecUtils{
 		
 	    if (auth != null) {
 	      Object principal = auth.getPrincipal();
-	      if (principal instanceof LemonPrincipal) {
-	        return ((LemonPrincipal) principal).currentUser();
+	      if (principal instanceof LemonAuthenticatedPrincipal) {
+	        return ((LemonAuthenticatedPrincipal) principal).currentUser();
 	      }
 	    }
 	    return null;	  

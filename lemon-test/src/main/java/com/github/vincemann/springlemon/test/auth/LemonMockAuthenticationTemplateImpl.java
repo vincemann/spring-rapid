@@ -1,7 +1,7 @@
 package com.github.vincemann.springlemon.test.auth;
 
 import com.github.vincemann.springlemon.auth.domain.dto.user.LemonUserDto;
-import com.github.vincemann.springlemon.auth.domain.LemonPrincipal;
+import com.github.vincemann.springlemon.auth.domain.LemonAuthenticatedPrincipal;
 import com.github.vincemann.springrapid.coretest.BeforeEachMethodInitializable;
 import com.github.vincemann.springrapid.coretest.auth.AbstractMockAuthenticationTemplate;
 import org.mockito.Mockito;
@@ -40,7 +40,7 @@ public class LemonMockAuthenticationTemplateImpl extends AbstractMockAuthenticat
         lemonUserDto.setPassword(password);
         lemonUserDto.setRoles(roles);
         lemonUserDto.setId(id);
-        LemonPrincipal lemonPrincipal = new LemonPrincipal(lemonUserDto);
+        LemonAuthenticatedPrincipal lemonPrincipal = new LemonAuthenticatedPrincipal(lemonUserDto);
 
         UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken = new UsernamePasswordAuthenticationToken(
                 lemonPrincipal,
