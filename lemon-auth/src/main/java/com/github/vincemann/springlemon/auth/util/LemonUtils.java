@@ -1,7 +1,7 @@
 package com.github.vincemann.springlemon.auth.util;
 
 import com.github.vincemann.springlemon.auth.domain.AbstractUser;
-import com.github.vincemann.springlemon.auth.domain.LemonPrincipal;
+import com.github.vincemann.springlemon.auth.domain.LemonAuthenticatedPrincipal;
 import com.github.vincemann.springlemon.auth.domain.dto.user.LemonUserDto;
 import com.github.vincemann.springlemon.auth.service.AuthorizationTokenService;
 import com.github.vincemann.springlemon.auth.service.LemonTokenService;
@@ -38,7 +38,7 @@ public class LemonUtils {
 	public static <U extends AbstractUser<ID>, ID extends Serializable>
 	void login(U user) {
 		
-		LemonPrincipal principal = new LemonPrincipal(user.toUserDto());
+		LemonAuthenticatedPrincipal principal = new LemonAuthenticatedPrincipal(user.toUserDto());
 
 		Authentication authentication = // make the authentication object
 	    	new UsernamePasswordAuthenticationToken(principal, null, principal.getAuthorities());

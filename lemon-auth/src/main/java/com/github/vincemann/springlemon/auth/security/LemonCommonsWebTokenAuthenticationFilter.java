@@ -1,6 +1,6 @@
 package com.github.vincemann.springlemon.auth.security;
 
-import com.github.vincemann.springlemon.auth.domain.LemonPrincipal;
+import com.github.vincemann.springlemon.auth.domain.LemonAuthenticatedPrincipal;
 import com.github.vincemann.springlemon.auth.domain.dto.user.LemonUserDto;
 import com.github.vincemann.springlemon.auth.service.AuthorizationTokenService;
 import com.github.vincemann.springlemon.auth.util.LecUtils;
@@ -79,7 +79,7 @@ public class LemonCommonsWebTokenAuthenticationFilter extends OncePerRequestFilt
 		if (lemonUserDto == null)
 			lemonUserDto = fetchUserDto(claims);
 		
-        LemonPrincipal principal = new LemonPrincipal(lemonUserDto);
+        LemonAuthenticatedPrincipal principal = new LemonAuthenticatedPrincipal(lemonUserDto);
         		
         return new UsernamePasswordAuthenticationToken(principal, token, principal.getAuthorities());
 	}

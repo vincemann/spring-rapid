@@ -15,6 +15,9 @@ import lombok.Setter;
 public class LemonGrantedAuthority implements GrantedAuthority {
 
 	private static final long serialVersionUID = -1447095521180508501L;
-	
+
+    /**
+     * Role or name
+     */
     private String authority;
 }

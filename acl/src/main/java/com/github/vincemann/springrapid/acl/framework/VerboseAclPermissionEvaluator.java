@@ -20,6 +20,9 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
 
+/**
+ * Adds more verbose logging
+ */
 @Slf4j
 public class VerboseAclPermissionEvaluator extends AclPermissionEvaluator implements AopLoggable {
 
@@ -46,7 +49,6 @@ public class VerboseAclPermissionEvaluator extends AclPermissionEvaluator implem
      * @param permission         What permission is being checked for, e.g. 'WRITE'
      * @see org.springframework.security.acls.domain.BasePermission
      */
-    @LogInteraction
     @Override
     public boolean hasPermission(Authentication auth,
                                  Object targetDomainObject, Object permission) {
@@ -63,7 +65,6 @@ public class VerboseAclPermissionEvaluator extends AclPermissionEvaluator implem
         return checkPermission(auth, objectIdentity, permission);
     }
 
-    @LogInteraction
     @Override
     public boolean hasPermission(Authentication authentication,
                                  Serializable targetId, String targetType, Object permission) {

@@ -1,11 +1,10 @@
 package com.github.vincemann.springlemon.auth.service;
 
-import com.github.vincemann.aoplog.Severity;
 import com.github.vincemann.aoplog.api.AopLoggable;
 import com.github.vincemann.aoplog.api.LogInteraction;
 import com.github.vincemann.springlemon.auth.domain.AbstractUser;
 import com.github.vincemann.springlemon.auth.domain.AbstractUserRepository;
-import com.github.vincemann.springlemon.auth.domain.LemonPrincipal;
+import com.github.vincemann.springlemon.auth.domain.LemonAuthenticatedPrincipal;
 import com.github.vincemann.springlemon.exceptions.util.LexUtils;
 
 import com.github.vincemann.springrapid.core.slicing.components.ServiceComponent;
@@ -43,7 +42,7 @@ implements UserDetailsService, AopLoggable {
 
 
 	@Override
-	public LemonPrincipal loadUserByUsername(String username)
+	public LemonAuthenticatedPrincipal loadUserByUsername(String username)
 			throws UsernameNotFoundException {
 		
 //		log.debug("Loading user having email: " + username);
@@ -57,7 +56,7 @@ implements UserDetailsService, AopLoggable {
 
 //		log.debug("Loaded user having username: " + username);
 
-		return new LemonPrincipal(user.get().toUserDto());
+		return new LemonAuthenticatedPrincipal(user.get().toUserDto());
 //		log.debug("Loaded principal: " + lemonPrincipal);
 //		return lemonPrincipal;
 	}

@@ -36,6 +36,14 @@ public class Authenticated {
         return authentication.getName();
     }
 
+    public static Object getCredentials(){
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (authentication==null){
+            return null;
+        }
+        return authentication.getCredentials();
+    }
+
 
     public static <T extends RapidAuthenticatedPrincipal> T get(){
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
