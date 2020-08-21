@@ -12,10 +12,9 @@ import com.github.vincemann.springlemon.auth.domain.dto.user.LemonFindForeignDto
 import com.github.vincemann.springlemon.auth.domain.dto.user.LemonReadUserDto;
 import com.github.vincemann.springlemon.auth.domain.dto.user.LemonUserDto;
 import com.github.vincemann.springlemon.auth.properties.LemonProperties;
+import com.github.vincemann.springlemon.auth.service.AuthorizationTokenService;
 import com.github.vincemann.springlemon.auth.service.LemonService;
 import com.github.vincemann.springlemon.auth.util.LecUtils;
-import com.github.vincemann.springlemon.auth.util.LecwUtils;
-import com.github.vincemann.springlemon.auth.util.LemonUtils;
 import com.github.vincemann.springrapid.core.service.security.Role;
 import com.github.vincemann.springrapid.acl.proxy.Secured;
 import com.github.vincemann.springrapid.core.controller.dtoMapper.context.Direction;
@@ -56,7 +55,12 @@ public abstract class LemonController
 
     private long jwtExpirationMillis;
 	private LemonService<U, ID, ?> unsecuredService;
+	private AuthorizationTokenService authTokenService;
 
+	@Autowired
+	public void injectAuthTokenService(AuthorizationTokenService authTokenService) {
+		this.authTokenService = authTokenService;
+	}
 
 	@Autowired
 	public void injectProperties(LemonProperties properties){
@@ -135,7 +139,7 @@ public abstract class LemonController
 		U saved = getService().signup(user);
 		log.debug("Signed up: " + signupForm);
 
-		addAuthHeader(response,saved);
+		appendFreshToken(response,saved);
 		Object dto = getDtoMapper().mapToDto(saved,
 				createDtoClass(LemonDtoEndpoint.SIGN_UP, Direction.RESPONSE, saved));
 		return ok(getJsonMapper().writeValueAsString(dto));
@@ -171,7 +175,7 @@ public abstract class LemonController
 		U user = fetchUser(id);
 		U saved = getService().verifyUser(user, code);
 
-		addAuthHeader(response,saved);
+		appendFreshToken(response,saved);
 		Object dto = getDtoMapper().mapToDto(saved,
 				createDtoClass(LemonDtoEndpoint.VERIFY_USER, Direction.RESPONSE, saved));
 		return ok(getJsonMapper().writeValueAsString(dto));
@@ -202,7 +206,7 @@ public abstract class LemonController
 
 		log.debug("Resetting password ... ");
 		U saved = getService().resetPassword(form);
-		addAuthHeader(response,saved);
+		appendFreshToken(saved,response);
 		Object dto = getDtoMapper().mapToDto(saved,
 				createDtoClass(LemonDtoEndpoint.RESET_PASSWORD, Direction.RESPONSE, saved));
 		return ok(getJsonMapper().writeValueAsString(dto));
@@ -216,10 +220,8 @@ public abstract class LemonController
 	@ResponseBody
 	//@LogInteraction
 	public ResponseEntity<String> fetchUserByEmail(@RequestParam String email) throws JsonProcessingException, BadEntityException, EntityNotFoundException {
-
 		log.debug("Fetching user by email: " + email);
 		U byEmail = getService().findByEmail(email);
-//		LexUtils.ensureFound(byEmail);
 		Object responseDto = getDtoMapper().mapToDto(byEmail,
 				createDtoClass(RapidDtoEndpoint.FIND, Direction.RESPONSE, byEmail));
 		return ok(getJsonMapper().writeValueAsString(responseDto));
@@ -259,7 +261,7 @@ public abstract class LemonController
 	@Override
 	public void afterUpdate(Object dto, U updated, HttpServletRequest httpServletRequest, HttpServletResponse response) {
 		super.afterUpdate(dto, updated, httpServletRequest, response);
-		addAuthHeader(response,updated);
+		appendFreshToken(updated,response);
 	}
 
 //	@Override
@@ -282,9 +284,9 @@ public abstract class LemonController
 
 		log.debug("Changing password of user with id: " + id);
 		U user = fetchUser(id);
-		String username = getService().changePassword(user, changePasswordForm);
-		//todo warum gibts das im service und im controller?
-		getService().addAuthHeader(response, username, jwtExpirationMillis);
+		getService().changePassword(user, changePasswordForm);
+		appendFreshToken(user,response);
+//		getService().addAuthHeader(response, username, jwtExpirationMillis);
 	}
 
 
@@ -316,7 +318,7 @@ public abstract class LemonController
 		log.debug("Changing email of user with id: " + id);
 		U user = fetchUser(id);
 		U saved = getService().changeEmail(user, code);
-		addAuthHeader(response,saved);
+		appendFreshToken(saved,response);
 		Object responseDto = getDtoMapper().mapToDto(saved,
 				createDtoClass(LemonDtoEndpoint.CHANGE_EMAIL, Direction.RESPONSE, saved));
 		return ok(getJsonMapper().writeValueAsString(responseDto));
@@ -351,15 +353,12 @@ public abstract class LemonController
 		return getService().fetchFullToken(authHeader);
 	}
 
-
 	/**
-	 * returns the current user and puts a new authorization token in the response
+	 * Adds a Lemon-Authorization header to the response
 	 */
-	//@LogInteraction(Severity.TRACE)
-	protected void addAuthHeader(HttpServletResponse response, U saved) {
-		LemonUtils.login(saved);
-		LemonUserDto currentUser = LecwUtils.currentUser();
-		getService().addAuthHeader(response, currentUser.getEmail(), jwtExpirationMillis);
+	public void appendFreshToken(U user, HttpServletResponse response) {
+		String token = authTokenService.createToken(AuthorizationTokenService.AUTH_AUDIENCE, user.getEmail(), jwtExpirationMillis);
+		response.addHeader(LecUtils.TOKEN_RESPONSE_HEADER_NAME, LecUtils.TOKEN_PREFIX + token);
 	}
 
 	protected U fetchUser(ID userId) throws BadEntityException, EntityNotFoundException {

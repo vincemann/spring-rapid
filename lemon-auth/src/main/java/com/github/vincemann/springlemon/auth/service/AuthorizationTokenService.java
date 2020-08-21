@@ -11,6 +11,5 @@ public interface AuthorizationTokenService extends JwtService {
 	/**
 	 * claim key to retrieve {@link AbstractUser#getId()}
 	 */
-	String USER_EMAIL_CLAIM = "user-id";
 	String AUTH_AUDIENCE = "auth";
 }

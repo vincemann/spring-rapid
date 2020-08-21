@@ -33,7 +33,6 @@ public class LemonJpaJwtAuthenticationFilter<U extends AbstractUser<ID>, ID exte
 	////@LogInteraction(level = LogInteraction.Level.TRACE)
 	@Override
 	protected LemonUserDto fetchUserDto(JWTClaimsSet claims) {
-		
         String username = claims.getSubject();
         U user = userDetailsService.findUserByEmail(username)
         		.orElseThrow(() -> new UsernameNotFoundException(username));

@@ -12,6 +12,7 @@ import com.nimbusds.jwt.JWTClaimsSet;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationCredentialsNotFoundException;
 
+import java.util.HashMap;
 import java.util.Map;
 
 public class LemonJwtClaimsUserConverter implements JwtClaimsUserConverter {
@@ -27,7 +28,7 @@ public class LemonJwtClaimsUserConverter implements JwtClaimsUserConverter {
     public AbstractUser toUser(JWTClaimsSet claims) throws AuthenticationCredentialsNotFoundException {
         String email = claims.getSubject();
         if (email == null)
-            throw new AuthenticationCredentialsNotFoundException("claim with key: " + AuthorizationTokenService.USER_EMAIL_CLAIM + " not found");
+            throw new AuthenticationCredentialsNotFoundException("subject of claims-set not found");
         try {
             return lemonService.findByEmail(email);
         } catch (EntityNotFoundException e) {
@@ -35,9 +36,11 @@ public class LemonJwtClaimsUserConverter implements JwtClaimsUserConverter {
         }
     }
 
+    //issuer will always be users email
     @Override
     public Map<String, Object> toClaimsPayload(AbstractUser user) {
 //        Assert.notNull(user.getEmail(),"email");
-        return LecUtils.mapOf(SUBJECT_CLAIMS_KEY,user.getEmail());
+//        return LecUtils.mapOf(SUBJECT_CLAIMS_KEY,user.getEmail());
+        return new HashMap<>();
     }
 }

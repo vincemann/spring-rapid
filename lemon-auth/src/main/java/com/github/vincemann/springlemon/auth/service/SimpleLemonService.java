@@ -52,8 +52,6 @@ public interface SimpleLemonService<U extends AbstractUser<ID>, ID extends Seria
     public void createAdminUser(LemonProperties.Admin admin) throws BadEntityException;
     @LogInteraction(Severity.TRACE)
     public abstract ID toId(String id);
-    @LogInteraction(Severity.TRACE)
-    public void addAuthHeader(HttpServletResponse response, String username, Long expirationMillis);
     @Validated(UserUtils.UpdateValidation.class)
     @Override
     U update(U entity, Boolean full) throws EntityNotFoundException,  BadEntityException;
