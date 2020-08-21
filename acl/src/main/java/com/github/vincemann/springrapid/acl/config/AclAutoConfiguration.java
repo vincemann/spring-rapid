@@ -1,10 +1,11 @@
 package com.github.vincemann.springrapid.acl.config;
 
-import com.github.vincemann.springrapid.acl.Role;
+import com.github.vincemann.springrapid.core.service.security.Role;
 import com.github.vincemann.springrapid.acl.framework.HierarchicPermissionGrantingStrategy;
 import com.github.vincemann.springrapid.acl.framework.NoModSecurityCheckAclAuthorizationStrategy;
-import com.github.vincemann.springrapid.acl.service.MockAuthService;
-import com.github.vincemann.springrapid.acl.service.SecurityContextMockAuthService;
+import com.github.vincemann.springrapid.acl.framework.VerboseAclPermissionEvaluator;
+import com.github.vincemann.springrapid.acl.framework.oidresolve.RapidObjectIdentityResolver;
+import com.github.vincemann.springrapid.core.service.locator.CrudServiceLocator;
 import com.github.vincemann.springrapid.core.slicing.config.ServiceConfig;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,7 +19,6 @@ import org.springframework.security.access.PermissionEvaluator;
 import org.springframework.security.access.expression.method.DefaultMethodSecurityExpressionHandler;
 import org.springframework.security.access.expression.method.MethodSecurityExpressionHandler;
 import org.springframework.security.acls.AclPermissionCacheOptimizer;
-import org.springframework.security.acls.AclPermissionEvaluator;
 import org.springframework.security.acls.domain.AclAuthorizationStrategy;
 import org.springframework.security.acls.domain.ConsoleAuditLogger;
 import org.springframework.security.acls.domain.EhCacheBasedAclCache;
@@ -79,7 +79,21 @@ public class AclAutoConfiguration {
     @ConditionalOnMissingBean(PermissionGrantingStrategy.class)
     @Bean
     public PermissionGrantingStrategy permissionGrantingStrategy() {
-        return new HierarchicPermissionGrantingStrategy(new ConsoleAuditLogger(), auditLogger1);
+        return new HierarchicPermissionGrantingStrategy(new ConsoleAuditLogger());
+    }
+
+
+    //only used for verbose logging so far
+    @Bean
+    @ConditionalOnMissingBean(RapidObjectIdentityResolver.class)
+    public RapidObjectIdentityResolver rapidObjectIdentityResolver(CrudServiceLocator crudServiceLocator){
+        return new RapidObjectIdentityResolver(crudServiceLocator);
+    }
+
+    @Bean
+    @ConditionalOnMissingBean(PermissionEvaluator.class)
+    public PermissionEvaluator permissionEvaluator(RapidObjectIdentityResolver rapidObjectIdentityResolver){
+        return new VerboseAclPermissionEvaluator(aclService(),rapidObjectIdentityResolver);
     }
 
     @ConditionalOnMissingBean(AclAuthorizationStrategy.class)
@@ -102,13 +116,6 @@ public class AclAutoConfiguration {
         return expressionHandler;
     }
 
-
-    @Bean
-    @ConditionalOnMissingBean(MockAuthService.class)
-    public MockAuthService mockAuthService(){
-        return new SecurityContextMockAuthService();
-    }
-
     @ConditionalOnMissingBean(LookupStrategy.class)
     @Bean
     public LookupStrategy lookupStrategy() {
@@ -121,11 +128,11 @@ public class AclAutoConfiguration {
         return new JdbcMutableAclService(dataSource, lookupStrategy(), aclCache());
     }
 
-    @ConditionalOnMissingBean(PermissionEvaluator.class)
-    @Bean
-    public PermissionEvaluator permissionEvaluator(){
-        return new AclPermissionEvaluator(aclService());
-    }
+//    @ConditionalOnMissingBean(PermissionEvaluator.class)
+//    @Bean
+//    public PermissionEvaluator permissionEvaluator(){
+//        return new AclPermissionEvaluator(aclService());
+//    }
 
 }
 

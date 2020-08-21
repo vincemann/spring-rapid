@@ -1,9 +1,8 @@
-package com.github.vincemann.springrapid.acl.service;
+package com.github.vincemann.springrapid.core.service.security;
 
 import com.github.vincemann.aoplog.api.AopLoggable;
 import com.github.vincemann.aoplog.api.LogInteraction;
 import com.google.common.collect.Sets;
-import com.github.vincemann.springrapid.acl.Role;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;

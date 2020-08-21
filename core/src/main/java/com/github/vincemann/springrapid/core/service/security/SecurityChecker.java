@@ -1,4 +1,4 @@
-package com.github.vincemann.springrapid.core.service;
+package com.github.vincemann.springrapid.core.service.security;
 
 import org.springframework.security.access.AccessDeniedException;
 

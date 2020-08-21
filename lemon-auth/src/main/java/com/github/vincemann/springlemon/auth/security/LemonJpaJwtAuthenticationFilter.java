@@ -14,15 +14,15 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import java.io.Serializable;
 
 //Einfach impl von Filter der Brücke zu jpa macht
-public class LemonJpaTokenAuthenticationFilter<U extends AbstractUser<ID>, ID extends Serializable>
-	extends LemonCommonsWebTokenAuthenticationFilter {
+public class LemonJpaJwtAuthenticationFilter<U extends AbstractUser<ID>, ID extends Serializable>
+	extends LemonJwtAuthenticationFilter {
 
-    private static final Log log = LogFactory.getLog(LemonJpaTokenAuthenticationFilter.class);
+    private static final Log log = LogFactory.getLog(LemonJpaJwtAuthenticationFilter.class);
 
     private LemonUserDetailsService<U, ID> userDetailsService;
 	
-	public LemonJpaTokenAuthenticationFilter(AuthorizationTokenService authorizationTokenService,
-                                             LemonUserDetailsService<U, ID> userDetailsService) {
+	public LemonJpaJwtAuthenticationFilter(AuthorizationTokenService authorizationTokenService,
+										   LemonUserDetailsService<U, ID> userDetailsService) {
 		
 		super(authorizationTokenService);
 		this.userDetailsService = userDetailsService;

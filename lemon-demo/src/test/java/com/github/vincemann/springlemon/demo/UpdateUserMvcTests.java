@@ -5,7 +5,7 @@ import com.github.vincemann.springlemon.demo.domain.User;
 import com.github.vincemann.springlemon.auth.service.LemonService;
 import com.github.vincemann.springlemon.auth.domain.LemonRole;
 import com.github.vincemann.springlemon.auth.util.LecUtils;
-import com.github.vincemann.springrapid.acl.Role;
+import com.github.vincemann.springrapid.core.service.security.Role;
 
 import com.github.vincemann.springrapid.core.util.ResourceUtils;
 import com.github.vincemann.springrapid.coretest.controller.rapid.UrlParamIdRapidControllerTest;

@@ -1,6 +1,5 @@
 package com.github.vincemann.springlemon.demo.controllers;
 
-import com.github.vincemann.aoplog.api.AopLoggable;
 import com.github.vincemann.springlemon.auth.controller.LemonController;
 import com.github.vincemann.springlemon.auth.controller.LemonDtoEndpoint;
 import com.github.vincemann.springlemon.auth.controller.LemonDtoMappingContextBuilder;
@@ -8,7 +7,7 @@ import com.github.vincemann.springlemon.demo.domain.User;
 import com.github.vincemann.springlemon.demo.domain.MySignupForm;
 import com.github.vincemann.springlemon.demo.dto.AdminUpdateUserDto;
 import com.github.vincemann.springlemon.demo.dto.UserUpdateDto;
-import com.github.vincemann.springrapid.acl.Role;
+import com.github.vincemann.springrapid.core.service.security.Role;
 import com.github.vincemann.springrapid.core.controller.dtoMapper.context.Direction;
 import com.github.vincemann.springrapid.core.controller.dtoMapper.context.DtoMappingContext;
 import com.github.vincemann.springrapid.core.controller.dtoMapper.context.RapidDtoEndpoint;

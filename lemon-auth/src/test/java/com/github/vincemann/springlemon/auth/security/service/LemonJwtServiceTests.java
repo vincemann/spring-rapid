@@ -2,7 +2,7 @@ package com.github.vincemann.springlemon.auth.security.service;
 
 import com.github.vincemann.springlemon.auth.service.LemonJweService;
 import com.github.vincemann.springlemon.auth.service.LemonJwsService;
-import com.github.vincemann.springlemon.auth.service.LemonTokenService;
+import com.github.vincemann.springlemon.auth.service.JwtService;
 import com.github.vincemann.springlemon.auth.util.LecUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -42,7 +42,7 @@ public class LemonJwtServiceTests {
 		testParseToken(jwsService1);
 	}
 	
-	private void testParseToken(LemonTokenService service) {
+	private void testParseToken(JwtService service) {
 		
 		log.info("Creating token ..." + service.getClass().getSimpleName());
 		String token = service.createToken("auth", "subject", 5000L,
@@ -68,7 +68,7 @@ public class LemonJwtServiceTests {
 	}
 	
 
-	private void testParseTokenWrongAudience(LemonTokenService service) {
+	private void testParseTokenWrongAudience(JwtService service) {
 		
 		String token = service.createToken("auth", "subject", 5000L);
 		service.parseToken(token, "auth2");
@@ -86,7 +86,7 @@ public class LemonJwtServiceTests {
 		Assertions.assertThrows(BadCredentialsException.class,() -> testParseTokenExpired(jwsService1));
 	}
 
-	private void testParseTokenExpired(LemonTokenService service) throws InterruptedException {
+	private void testParseTokenExpired(JwtService service) throws InterruptedException {
 		
 		String token = service.createToken("auth", "subject", 1L);
 		Thread.sleep(1L);
@@ -105,7 +105,7 @@ public class LemonJwtServiceTests {
 		Assertions.assertThrows(BadCredentialsException.class,() -> testParseTokenWrongSecret(jwsService1, jwsService2));
 	}
 
-	private void testParseTokenWrongSecret(LemonTokenService service1, LemonTokenService service2) {
+	private void testParseTokenWrongSecret(JwtService service1, JwtService service2) {
 		
 		String token = service1.createToken("auth", "subject", 5000L);
 		service2.parseToken(token, "auth");
@@ -124,7 +124,7 @@ public class LemonJwtServiceTests {
 	}
 
 
-	private void testParseTokenCutoffTime(LemonTokenService service) throws InterruptedException {
+	private void testParseTokenCutoffTime(JwtService service) throws InterruptedException {
 		
 		String token = service.createToken("auth", "subject", 5000L);
 		Thread.sleep(1L);				

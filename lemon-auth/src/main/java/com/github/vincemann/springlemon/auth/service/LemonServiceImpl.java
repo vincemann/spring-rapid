@@ -17,7 +17,7 @@ import com.github.vincemann.springlemon.auth.util.LecjUtils;
 import com.github.vincemann.springlemon.auth.util.LecwUtils;
 import com.github.vincemann.springlemon.auth.util.LemonUtils;
 import com.github.vincemann.springlemon.exceptions.util.LexUtils;
-import com.github.vincemann.springrapid.acl.Role;
+import com.github.vincemann.springrapid.core.service.security.Role;
 import com.github.vincemann.springrapid.core.service.exception.BadEntityException;
 import com.github.vincemann.springrapid.core.service.exception.EntityNotFoundException;
 import com.github.vincemann.springrapid.core.util.MapperUtils;
@@ -581,6 +581,7 @@ public abstract class LemonServiceImpl<U extends AbstractUser<ID>, ID extends Se
 //	}
 
 
+    //todo understand and change this
     public Map<String, String> fetchFullToken(String authHeader) {
 
         LecUtils.ensureCredentials(authorizationTokenService.parseClaim(authHeader.substring(LecUtils.TOKEN_PREFIX_LENGTH),

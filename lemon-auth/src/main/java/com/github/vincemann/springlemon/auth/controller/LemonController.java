@@ -16,7 +16,7 @@ import com.github.vincemann.springlemon.auth.service.LemonService;
 import com.github.vincemann.springlemon.auth.util.LecUtils;
 import com.github.vincemann.springlemon.auth.util.LecwUtils;
 import com.github.vincemann.springlemon.auth.util.LemonUtils;
-import com.github.vincemann.springrapid.acl.Role;
+import com.github.vincemann.springrapid.core.service.security.Role;
 import com.github.vincemann.springrapid.acl.proxy.Secured;
 import com.github.vincemann.springrapid.core.controller.dtoMapper.context.Direction;
 import com.github.vincemann.springrapid.core.controller.dtoMapper.context.DtoMappingContext;

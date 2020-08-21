@@ -1,6 +1,6 @@
 package com.github.vincemann.springlemon.auth.domain;
 
-import com.github.vincemann.springrapid.acl.Role;
+import com.github.vincemann.springrapid.core.service.security.Role;
 
 public interface LemonRole extends Role {
     String UNVERIFIED = "ROLE_UNVERIFIED";

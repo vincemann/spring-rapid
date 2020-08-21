@@ -1,4 +1,4 @@
-package com.github.vincemann.springrapid.acl;
+package com.github.vincemann.springrapid.core.service.security;
 
 public interface Role {
         static final String USER = "ROLE_USER";
