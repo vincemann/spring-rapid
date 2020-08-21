@@ -10,15 +10,15 @@ import java.util.Map;
 
 @ServiceComponent
 @LogInteraction(Severity.TRACE)
-public interface LemonTokenService extends AopLoggable {
+public interface JwtService extends AopLoggable {
 
 	/**
-	 * Time when this Token was created
+	 * Time when this JWT was created
 	 */
 	String LEMON_IAT = "lemon-iat";
 
 	/**
-	 * Create Token with specific payload.
+	 * Create JWT with specific payload.
 	 * The first key-value pairs of the payload are mandatory,
 	 * the rest of the payload is obligatory and can contain anything.
 	 *

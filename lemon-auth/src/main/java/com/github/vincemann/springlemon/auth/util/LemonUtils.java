@@ -4,7 +4,7 @@ import com.github.vincemann.springlemon.auth.domain.AbstractUser;
 import com.github.vincemann.springlemon.auth.domain.LemonAuthenticatedPrincipal;
 import com.github.vincemann.springlemon.auth.domain.dto.user.LemonUserDto;
 import com.github.vincemann.springlemon.auth.service.AuthorizationTokenService;
-import com.github.vincemann.springlemon.auth.service.LemonTokenService;
+import com.github.vincemann.springlemon.auth.service.JwtService;
 import com.nimbusds.jwt.JWTClaimsSet;
 import com.github.vincemann.springrapid.core.util.MapperUtils;
 import org.apache.commons.logging.Log;
@@ -55,19 +55,19 @@ public class LemonUtils {
 	public static <U extends AbstractUser<ID>, ID extends Serializable>
 	void ensureCredentialsUpToDate(JWTClaimsSet claims, U user) {
 		
-		long issueTime = (long) claims.getClaim(LemonTokenService.LEMON_IAT);
+		long issueTime = (long) claims.getClaim(JwtService.LEMON_IAT);
 
 		LecUtils.ensureCredentials(issueTime >= user.getCredentialsUpdatedMillis(),
 				"com.naturalprogrammer.spring.obsoleteToken");
 	}
-
-	public static LemonUserDto getUserDto(JWTClaimsSet claims) {
-
-		Object userClaim = claims.getClaim(AuthorizationTokenService.USER_CLAIM);
-
-		if (userClaim == null)
-			return null;
-
-		return MapperUtils.deserialize((String) userClaim);
-	}
+//
+//	public static LemonUserDto getUserDto(JWTClaimsSet claims) {
+//
+//		Object userClaim = claims.getClaim(AuthorizationTokenService.USER_CLAIM);
+//
+//		if (userClaim == null)
+//			return null;
+//
+//		return MapperUtils.deserialize((String) userClaim);
+//	}
 }

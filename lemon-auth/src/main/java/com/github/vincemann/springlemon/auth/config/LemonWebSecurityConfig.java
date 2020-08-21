@@ -1,6 +1,6 @@
 package com.github.vincemann.springlemon.auth.config;
 
-import com.github.vincemann.springlemon.auth.security.LemonCommonsWebTokenAuthenticationFilter;
+import com.github.vincemann.springlemon.auth.security.LemonJwtAuthenticationFilter;
 import com.github.vincemann.springlemon.auth.service.AuthorizationTokenService;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -90,7 +90,7 @@ public class LemonWebSecurityConfig extends WebSecurityConfigurerAdapter {
 	 */
 	protected void tokenAuthentication(HttpSecurity http) throws Exception {
 		
-		http.addFilterBefore(new LemonCommonsWebTokenAuthenticationFilter(authorizationTokenService),
+		http.addFilterBefore(new LemonJwtAuthenticationFilter(authorizationTokenService),
 				UsernamePasswordAuthenticationFilter.class);
 	}
 

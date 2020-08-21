@@ -1,7 +1,6 @@
 package com.github.vincemann.springrapid.acl.framework;
 
 import com.github.vincemann.aoplog.api.AopLoggable;
-import com.github.vincemann.aoplog.api.LogInteraction;
 import com.github.vincemann.springrapid.acl.framework.oidresolve.RapidObjectIdentityResolver;
 import com.github.vincemann.springrapid.acl.framework.oidresolve.UnresolvableOidException;
 import com.github.vincemann.springrapid.core.model.IdentifiableEntity;
@@ -77,7 +76,6 @@ public class VerboseAclPermissionEvaluator extends AclPermissionEvaluator implem
     private boolean checkPermission(Authentication authentication, ObjectIdentity oid,
                                     Object permission) {
         // Obtain the SIDs applicable to the principal
-
         List<Sid> sids = sidRetrievalStrategy.getSids(authentication);
         List<Permission> requiredPermission = resolvePermission(permission);
 

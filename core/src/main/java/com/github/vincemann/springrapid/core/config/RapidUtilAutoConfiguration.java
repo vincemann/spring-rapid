@@ -1,7 +1,9 @@
 package com.github.vincemann.springrapid.core.config;
 
-import com.github.vincemann.springrapid.core.service.SecurityChecker;
-import com.github.vincemann.springrapid.core.service.SecurityCheckerImpl;
+import com.github.vincemann.springrapid.core.service.security.MockAuthService;
+import com.github.vincemann.springrapid.core.service.security.SecurityChecker;
+import com.github.vincemann.springrapid.core.service.security.SecurityCheckerImpl;
+import com.github.vincemann.springrapid.core.service.security.SecurityContextMockAuthService;
 import com.github.vincemann.springrapid.core.util.JpaUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,5 +34,11 @@ public class RapidUtilAutoConfiguration {
     @ConditionalOnMissingBean(SecurityChecker.class)
     public SecurityChecker securityChecker(){
         return new SecurityCheckerImpl();
+    }
+
+    @Bean
+    @ConditionalOnMissingBean(MockAuthService.class)
+    public MockAuthService mockAuthService(){
+        return new SecurityContextMockAuthService();
     }
 }

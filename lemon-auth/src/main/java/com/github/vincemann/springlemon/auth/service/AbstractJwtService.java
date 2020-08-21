@@ -16,7 +16,7 @@ import java.util.Map;
  * Common JWT Service
  */
 @ServiceComponent
-public abstract class AbstractJwtService implements LemonTokenService {
+public abstract class AbstractJwtService implements JwtService {
 	
 	private static final Log log = LogFactory.getLog(AbstractJwtService.class);
 	

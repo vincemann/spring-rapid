@@ -1,4 +1,4 @@
-package com.github.vincemann.springrapid.acl.service;
+package com.github.vincemann.springrapid.core.service.security;
 
 import com.github.vincemann.springrapid.core.slicing.components.ServiceComponent;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;

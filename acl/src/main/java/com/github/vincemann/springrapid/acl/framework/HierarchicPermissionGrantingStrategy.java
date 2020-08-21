@@ -11,6 +11,7 @@ import java.util.List;
 
 /**
  * No exact Permission match is needed.
+ * I.e.:
  * If Entity has create Permission for example (mask = 4), then it implicitly also has read (mask = 1) permission,
  * bc this permission is below create in the Hierarchy.
  * @see BasePermission

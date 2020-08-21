@@ -1,6 +1,6 @@
 package com.github.vincemann.springrapid.core.proxy;
 
-import com.github.vincemann.springrapid.core.service.SecurityChecker;
+import com.github.vincemann.springrapid.core.service.security.SecurityChecker;
 import com.google.common.base.Objects;
 import lombok.Getter;
 import org.springframework.beans.factory.annotation.Autowired;

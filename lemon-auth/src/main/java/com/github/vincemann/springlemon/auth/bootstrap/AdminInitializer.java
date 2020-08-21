@@ -4,7 +4,7 @@ import com.github.vincemann.springlemon.auth.properties.LemonProperties;
 import com.github.vincemann.springlemon.auth.domain.AbstractUser;
 import com.github.vincemann.springlemon.auth.service.LemonService;
 import com.github.vincemann.springrapid.acl.proxy.AclManaging;
-import com.github.vincemann.springrapid.acl.service.MockAuthService;
+import com.github.vincemann.springrapid.core.service.security.MockAuthService;
 import com.github.vincemann.springrapid.core.bootstrap.Initializer;
 import com.github.vincemann.springrapid.core.service.exception.BadEntityException;
 import com.github.vincemann.springrapid.core.service.exception.EntityNotFoundException;

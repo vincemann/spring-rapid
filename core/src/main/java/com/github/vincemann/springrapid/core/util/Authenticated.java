@@ -1,14 +1,18 @@
 package com.github.vincemann.springrapid.core.util;
 
-import com.github.vincemann.springrapid.core.service.RapidAuthenticatedPrincipal;
-import org.springframework.security.core.AuthenticatedPrincipal;
+import com.github.vincemann.springrapid.core.service.security.AbstractAuthenticatedPrincipal;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 
 import java.util.*;
-import java.util.stream.Collectors;
 
+/**
+ * Implemented in this static way, bc all over the framework {@link SecurityContextHolder} is accessed in a static way,
+ * so there is no way to provide a diff impl of getting role info ect. than statically via {@link SecurityContextHolder}, without getting into trouble with all other spring components.
+ * Use this class as a wrapper for {@link SecurityContextHolder}.
+ * Rather use {@link #get()} to get the {@link AbstractAuthenticatedPrincipal} instead of using the {@link Authentication} object directly.
+ */
 public class Authenticated {
 
 
@@ -45,7 +49,7 @@ public class Authenticated {
     }
 
 
-    public static <T extends RapidAuthenticatedPrincipal> T get(){
+    public static <T extends AbstractAuthenticatedPrincipal> T get(){
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         if (authentication==null){
             return null;

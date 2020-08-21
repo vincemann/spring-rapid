@@ -6,6 +6,7 @@ import com.github.vincemann.springlemon.auth.service.AuthorizationTokenService;
 import com.github.vincemann.springlemon.auth.util.LecUtils;
 import com.github.vincemann.springlemon.auth.util.LemonUtils;
 
+import com.github.vincemann.springrapid.core.service.security.AbstractAuthenticatedPrincipal;
 import com.nimbusds.jwt.JWTClaimsSet;
 import com.github.vincemann.springlemon.exceptions.util.LexUtils;
 import lombok.AllArgsConstructor;
@@ -28,11 +29,12 @@ import java.io.IOException;
  * Filter for token authentication
  */
 @AllArgsConstructor
-public class LemonCommonsWebTokenAuthenticationFilter extends OncePerRequestFilter {
+public class LemonJwtAuthenticationFilter extends OncePerRequestFilter {
 	
-    private static final Log log = LogFactory.getLog(LemonCommonsWebTokenAuthenticationFilter.class);
+    private static final Log log = LogFactory.getLog(LemonJwtAuthenticationFilter.class);
     
     private AuthorizationTokenService authorizationTokenService;
+    private JwtAuthenticatedPrincipalFactory authenticatedPrincipalFactory;
 
 	@Override
 	protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
@@ -75,22 +77,22 @@ public class LemonCommonsWebTokenAuthenticationFilter extends OncePerRequestFilt
 	public Authentication createAuthToken(String token) {
 		
 		JWTClaimsSet claims = authorizationTokenService.parseToken(token, AuthorizationTokenService.AUTH_AUDIENCE);
-		LemonUserDto lemonUserDto = LemonUtils.getUserDto(claims);
-		if (lemonUserDto == null)
-			lemonUserDto = fetchUserDto(claims);
-		
-        LemonAuthenticatedPrincipal principal = new LemonAuthenticatedPrincipal(lemonUserDto);
-        		
-        return new UsernamePasswordAuthenticationToken(principal, token, principal.getAuthorities());
+		AbstractAuthenticatedPrincipal authenticatedPrincipal = authenticatedPrincipalFactory.create(claims);
+//		LemonUserDto lemonUserDto = LemonUtils.getUserDto(claims);
+//		if (lemonUserDto == null)
+//			lemonUserDto = fetchUserDto(claims);
+//
+//        LemonAuthenticatedPrincipal principal = new LemonAuthenticatedPrincipal(lemonUserDto);
+        return new UsernamePasswordAuthenticationToken(authenticatedPrincipal, token, authenticatedPrincipal.getAuthorities());
 	}
 
-	/**
-	 * Default behaviour is to throw error. To be overridden in auth service.
-	 * 
-	 * @return
-	 */
-	protected LemonUserDto fetchUserDto(JWTClaimsSet claims) {
-		throw new AuthenticationCredentialsNotFoundException(
-				LexUtils.getMessage("com.naturalprogrammer.spring.userClaimAbsent"));
-	}
+//	/**
+//	 * Default behaviour is to throw error. To be overridden in auth service.
+//	 *
+//	 * @return
+//	 */
+//	protected LemonUserDto fetchUserDto(JWTClaimsSet claims) {
+//		throw new AuthenticationCredentialsNotFoundException(
+//				LexUtils.getMessage("com.naturalprogrammer.spring.userClaimAbsent"));
+//	}
 }

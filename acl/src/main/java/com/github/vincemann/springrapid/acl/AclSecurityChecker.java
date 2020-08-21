@@ -3,14 +3,13 @@ package com.github.vincemann.springrapid.acl;
 import com.github.vincemann.aoplog.api.AopLoggable;
 import com.github.vincemann.aoplog.api.LogException;
 import com.github.vincemann.aoplog.api.LogInteraction;
-import com.github.vincemann.springrapid.core.service.SecurityChecker;
+import com.github.vincemann.springrapid.core.service.security.SecurityChecker;
 import com.github.vincemann.springrapid.core.slicing.components.ServiceComponent;
 import com.github.vincemann.springrapid.core.model.IdentifiableEntity;
 import org.springframework.security.access.AccessDeniedException;
 
 import java.io.Serializable;
 import java.util.Collection;
-import java.util.Set;
 
 /**
  * API for dynamic acl permission checking.
