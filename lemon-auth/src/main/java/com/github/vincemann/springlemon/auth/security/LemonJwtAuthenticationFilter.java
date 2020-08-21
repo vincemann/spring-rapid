@@ -1,7 +1,9 @@
 package com.github.vincemann.springlemon.auth.security;
 
+import com.github.vincemann.springlemon.auth.domain.AbstractUser;
 import com.github.vincemann.springlemon.auth.service.AuthorizationTokenService;
 import com.github.vincemann.springlemon.auth.util.LecUtils;
+import com.github.vincemann.springlemon.auth.util.LemonAuthenticated;
 import com.github.vincemann.springrapid.core.service.security.AbstractAuthenticatedPrincipal;
 import com.github.vincemann.springrapid.core.util.Authenticated;
 import com.nimbusds.jwt.JWTClaimsSet;
@@ -26,7 +28,7 @@ public class LemonJwtAuthenticationFilter extends OncePerRequestFilter {
     private static final Log log = LogFactory.getLog(LemonJwtAuthenticationFilter.class);
     
     private AuthorizationTokenService authorizationTokenService;
-    private JwtClaimsUserConverter authenticatedPrincipalFactory;
+    private JwtClaimsUserConverter jwtClaimsUserConverter;
 
 	@Override
 	protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
@@ -43,9 +45,8 @@ public class LemonJwtAuthenticationFilter extends OncePerRequestFilter {
 		    
 		    try {
 				JWTClaimsSet claims = authorizationTokenService.parseToken(token, AuthorizationTokenService.AUTH_AUDIENCE);
-				String email = (String) claims.getClaim(AuthorizationTokenService.USER_EMAIL_CLAIM);
-				AbstractAuthenticatedPrincipal principal = authenticatedPrincipalFactory.toUser(claims);
-				Authenticated.login(principal);
+				AbstractUser<?> user = jwtClaimsUserConverter.toUser(claims);
+				LemonAuthenticated.login(user);
 				log.debug("Token authentication successful");
 				    		    	
 		    } catch (Exception e) {

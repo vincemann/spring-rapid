@@ -322,7 +322,7 @@ public abstract class LemonServiceImpl<U extends AbstractUser<ID>, ID extends Se
      * Changes the password.
      */
     @Transactional(propagation = Propagation.REQUIRED, readOnly = false)
-    public String changePassword(U user, ChangePasswordForm changePasswordForm) throws EntityNotFoundException {
+    public void changePassword(U user, ChangePasswordForm changePasswordForm) throws EntityNotFoundException {
 
 //        log.debug("Changing password for user: " + user);
 
@@ -344,7 +344,7 @@ public abstract class LemonServiceImpl<U extends AbstractUser<ID>, ID extends Se
         getRepository().save(user);
 
         log.debug("Changed password for user: " + user);
-        return user.toUserDto().getEmail();
+//        return user.toUserDto().getEmail();
     }
 
 
@@ -586,13 +586,7 @@ public abstract class LemonServiceImpl<U extends AbstractUser<ID>, ID extends Se
 //    }
 
 
-    /**
-     * Adds a Lemon-Authorization header to the response
-     */
-    public void addAuthHeader(HttpServletResponse response, String email, Long expirationMillis) {
-        response.addHeader(LecUtils.TOKEN_RESPONSE_HEADER_NAME, LecUtils.TOKEN_PREFIX +
-                authorizationTokenService.createToken(AuthorizationTokenService.AUTH_AUDIENCE, email, expirationMillis));
-    }
+
 
 
     public Optional<U> findUserById(String id) {

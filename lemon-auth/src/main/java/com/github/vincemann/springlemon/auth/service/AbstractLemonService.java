@@ -107,8 +107,7 @@ public abstract class AbstractLemonService
 				user.getEmail(), properties.getJwt().getExpirationMillis());
 
 		// make the link
-		String forgotPasswordLink =	properties.getApplicationUrl()
-			    + "/reset-password?code=" + forgotPasswordCode;
+		String forgotPasswordLink =	properties.getApplicationUrl() + "/reset-password?code=" + forgotPasswordCode;
 		
 		mailForgotPasswordLink(user, forgotPasswordLink);
 		
