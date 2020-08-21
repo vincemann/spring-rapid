@@ -12,9 +12,6 @@ import com.github.vincemann.springrapid.core.service.exception.EntityNotFoundExc
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.servlet.http.HttpServletResponse;
-import javax.validation.Valid;
-import javax.validation.constraints.Email;
-import javax.validation.constraints.NotBlank;
 import java.io.Serializable;
 import java.util.Map;
 import java.util.Optional;
@@ -27,7 +24,7 @@ public interface GenericSimpleLemonServiceExtension<S extends SimpleLemonService
 
     @Override
     default Map<String, Object> getContext(Optional<Long> expirationMillis, HttpServletResponse response) {
-        return getNext().getContext(expirationMillis,response);
+        return getNext().getSharedProperties(expirationMillis,response);
     }
 
     @Override

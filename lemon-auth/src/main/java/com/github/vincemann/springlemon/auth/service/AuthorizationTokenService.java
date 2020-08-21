@@ -1,5 +1,6 @@
 package com.github.vincemann.springlemon.auth.service;
 
+import com.github.vincemann.springlemon.auth.domain.AbstractUser;
 import com.github.vincemann.springrapid.core.slicing.components.ServiceComponent;
 
 /**
@@ -7,6 +8,9 @@ import com.github.vincemann.springrapid.core.slicing.components.ServiceComponent
  */
 @ServiceComponent
 public interface AuthorizationTokenService extends JwtService {
-	String USER_CLAIM = "user";
+	/**
+	 * claim key to retrieve {@link AbstractUser#getId()}
+	 */
+	String USER_EMAIL_CLAIM = "user-id";
 	String AUTH_AUDIENCE = "auth";
 }

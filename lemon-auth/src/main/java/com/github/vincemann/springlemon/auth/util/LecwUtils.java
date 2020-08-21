@@ -28,11 +28,5 @@ public class LecwUtils {
 //		return Optional.empty();
 //	}
 
-	/**
-	 * Gets the current-user
-	 */
-	public static LemonUserDto currentUser() {
-		return LecUtils.currentUser(SecurityContextHolder.getContext());
-	}
 
 }

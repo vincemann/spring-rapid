@@ -12,7 +12,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 @Getter
-public abstract class AbstractAuthenticatedPrincipal implements AuthenticatedPrincipal, CredentialsContainer,UserDetails {
+public abstract class AbstractAuthenticatedPrincipal implements AuthenticatedPrincipal, CredentialsContainer, UserDetails {
     private String name;
     private Set<String> roles;
     private Collection<? extends GrantedAuthority> authorities;

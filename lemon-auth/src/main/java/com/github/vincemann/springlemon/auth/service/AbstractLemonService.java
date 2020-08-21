@@ -33,19 +33,6 @@ public abstract class AbstractLemonService
 	protected MailSender mailSender;
 
 
-
-	protected Map<String, Object> buildContext() {
-		
-		// make the context
-		Map<String, Object> sharedProperties = new HashMap<String, Object>(2);
-		sharedProperties.put("reCaptchaSiteKey", properties.getRecaptcha().getSitekey());
-		sharedProperties.put("shared", properties.getShared());
-		
-		Map<String, Object> context = new HashMap<>();
-		context.put("context", sharedProperties);
-		
-		return context;		
-	}
 	
 	protected U initUser(U user) throws BadEntityException {
 		

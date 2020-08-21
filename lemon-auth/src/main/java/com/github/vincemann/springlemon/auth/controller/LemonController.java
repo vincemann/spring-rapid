@@ -88,20 +88,16 @@ public abstract class LemonController
 
 
 	/**
-	 * Returns context properties needed at the client side,
-	 * current-user data and an Authorization token as a response header.
+	 * Returns public shared context properties needed at the client side,
 	 */
 	@GetMapping("/context")
 	@ResponseBody
 	//@LogInteraction
-	public Map<String, Object> getContext(
-			@Lp @RequestParam Optional<Long> expirationMillis,
-			HttpServletResponse response) {
+	public Map<String, Object> getContext() {
 
 		log.debug("Getting context ");
-		Map<String, Object> context = getService().getContext(expirationMillis, response);
+		Map<String, Object> context = getService().getSharedProperties();
 		log.debug("Returning context: " + context);
-
 		return context;
 	}
 

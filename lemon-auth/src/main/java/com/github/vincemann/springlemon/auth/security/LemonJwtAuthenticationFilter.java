@@ -1,22 +1,14 @@
 package com.github.vincemann.springlemon.auth.security;
 
-import com.github.vincemann.springlemon.auth.domain.LemonAuthenticatedPrincipal;
-import com.github.vincemann.springlemon.auth.domain.dto.user.LemonUserDto;
 import com.github.vincemann.springlemon.auth.service.AuthorizationTokenService;
 import com.github.vincemann.springlemon.auth.util.LecUtils;
-import com.github.vincemann.springlemon.auth.util.LemonUtils;
-
 import com.github.vincemann.springrapid.core.service.security.AbstractAuthenticatedPrincipal;
+import com.github.vincemann.springrapid.core.util.Authenticated;
 import com.nimbusds.jwt.JWTClaimsSet;
-import com.github.vincemann.springlemon.exceptions.util.LexUtils;
 import lombok.AllArgsConstructor;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.http.HttpHeaders;
-import org.springframework.security.authentication.AuthenticationCredentialsNotFoundException;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import javax.servlet.FilterChain;
@@ -34,7 +26,7 @@ public class LemonJwtAuthenticationFilter extends OncePerRequestFilter {
     private static final Log log = LogFactory.getLog(LemonJwtAuthenticationFilter.class);
     
     private AuthorizationTokenService authorizationTokenService;
-    private JwtAuthenticatedPrincipalFactory authenticatedPrincipalFactory;
+    private JwtClaimsUserConverter authenticatedPrincipalFactory;
 
 	@Override
 	protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
@@ -50,10 +42,10 @@ public class LemonJwtAuthenticationFilter extends OncePerRequestFilter {
 		    String token = header.substring(7);
 		    
 		    try {
-		    	
-		    	Authentication auth = createAuthToken(token);
-		    	SecurityContextHolder.getContext().setAuthentication(auth);
-		    	
+				JWTClaimsSet claims = authorizationTokenService.parseToken(token, AuthorizationTokenService.AUTH_AUDIENCE);
+				String email = (String) claims.getClaim(AuthorizationTokenService.USER_EMAIL_CLAIM);
+				AbstractAuthenticatedPrincipal principal = authenticatedPrincipalFactory.toUser(claims);
+				Authenticated.login(principal);
 				log.debug("Token authentication successful");
 				    		    	
 		    } catch (Exception e) {
@@ -73,18 +65,17 @@ public class LemonJwtAuthenticationFilter extends OncePerRequestFilter {
 		filterChain.doFilter(request, response);
 	}
 
-	////@LogInteraction(level = LogInteraction.Level.TRACE)
-	public Authentication createAuthToken(String token) {
-		
-		JWTClaimsSet claims = authorizationTokenService.parseToken(token, AuthorizationTokenService.AUTH_AUDIENCE);
-		AbstractAuthenticatedPrincipal authenticatedPrincipal = authenticatedPrincipalFactory.create(claims);
-//		LemonUserDto lemonUserDto = LemonUtils.getUserDto(claims);
-//		if (lemonUserDto == null)
-//			lemonUserDto = fetchUserDto(claims);
+//	////@LogInteraction(level = LogInteraction.Level.TRACE)
+//	public Authentication createAuthToken(String token) {
 //
-//        LemonAuthenticatedPrincipal principal = new LemonAuthenticatedPrincipal(lemonUserDto);
-        return new UsernamePasswordAuthenticationToken(authenticatedPrincipal, token, authenticatedPrincipal.getAuthorities());
-	}
+//
+////		LemonUserDto lemonUserDto = LemonUtils.getUserDto(claims);
+////		if (lemonUserDto == null)
+////			lemonUserDto = fetchUserDto(claims);
+////
+////        LemonAuthenticatedPrincipal principal = new LemonAuthenticatedPrincipal(lemonUserDto);
+//        return new UsernamePasswordAuthenticationToken(authenticatedPrincipal, token, authenticatedPrincipal.getAuthorities());
+//	}
 
 //	/**
 //	 * Default behaviour is to throw error. To be overridden in auth service.
