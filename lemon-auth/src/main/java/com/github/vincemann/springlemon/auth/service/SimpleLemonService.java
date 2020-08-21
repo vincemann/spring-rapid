@@ -31,7 +31,8 @@ public interface SimpleLemonService<U extends AbstractUser<ID>, ID extends Seria
         extends AopLoggable, SimpleCrudService<U,ID>
 {
 
-    public Map<String, Object> getContext(Optional<Long> expirationMillis, HttpServletResponse response);
+    public Map<String, Object> getSharedProperties();
+
     @Validated(UserUtils.SignUpValidation.class)
     public U signup(@Valid U user) throws BadEntityException;
     public void resendVerificationMail(U user) throws EntityNotFoundException;

@@ -30,22 +30,22 @@ public class LemonUtils {
 	}
 
 
-	/**
-	 * Signs a user in
-	 * 
-	 * @param user
-	 */
-	public static <U extends AbstractUser<ID>, ID extends Serializable>
-	void login(U user) {
-		
-		LemonAuthenticatedPrincipal principal = new LemonAuthenticatedPrincipal(user.toUserDto());
-
-		Authentication authentication = // make the authentication object
-	    	new UsernamePasswordAuthenticationToken(principal, null, principal.getAuthorities());
-
-	    SecurityContextHolder.getContext().setAuthentication(authentication); // put that in the security context
-	    principal.eraseCredentials();
-	}
+//	/**
+//	 * Signs a user in
+//	 *
+//	 * @param user
+//	 */
+//	public static <U extends AbstractUser<ID>, ID extends Serializable>
+//	void login(U user) {
+//
+//		LemonAuthenticatedPrincipal principal = new LemonAuthenticatedPrincipal(user.toUserDto());
+//
+//		Authentication authentication = // make the authentication object
+//	    	new UsernamePasswordAuthenticationToken(principal, null, principal.getAuthorities());
+//
+//	    SecurityContextHolder.getContext().setAuthentication(authentication); // put that in the security context
+//	    principal.eraseCredentials();
+//	}
 	
 	
 	/**

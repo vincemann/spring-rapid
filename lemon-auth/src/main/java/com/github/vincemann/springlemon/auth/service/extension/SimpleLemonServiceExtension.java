@@ -7,7 +7,6 @@ import com.github.vincemann.springlemon.auth.domain.dto.ResetPasswordForm;
 import com.github.vincemann.springlemon.auth.properties.LemonProperties;
 import com.github.vincemann.springlemon.auth.service.SimpleLemonService;
 import com.github.vincemann.springrapid.core.proxy.SimpleCrudServiceExtension;
-import com.github.vincemann.springrapid.core.service.SimpleCrudService;
 import com.github.vincemann.springrapid.core.service.exception.BadEntityException;
 import com.github.vincemann.springrapid.core.service.exception.EntityNotFoundException;
 
@@ -25,7 +24,7 @@ public interface SimpleLemonServiceExtension<S extends SimpleLemonService>
 
     @Override
     default Map<String, Object> getContext(Optional expirationMillis, HttpServletResponse response) {
-        return getNext().getContext(expirationMillis,response);
+        return getNext().getSharedProperties(expirationMillis,response);
     }
 
     @Override

@@ -35,6 +35,7 @@ import org.springframework.validation.annotation.Validated;
 import javax.servlet.http.HttpServletResponse;
 import java.io.Serializable;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 
@@ -81,32 +82,16 @@ public abstract class LemonServiceImpl<U extends AbstractUser<ID>, ID extends Se
     public abstract U newUser();
 
 
-    /**
-     * Returns the context data to be sent to the client,
-     * i.e. <code>reCaptchaSiteKey</code> and all the properties
-     * prefixed with <code>lemon.shared</code>.
-     * <p>
-     * To send custom properties, put those in your application
-     * properties in the format <em>lemon.shared.fooBar</em>.
-     * <p>
-     * If a user is logged in, it also returns the user data
-     * and a new authorization token. If expirationMillis is not provided,
-     * the expiration of the new token is set to the default.
-     * <p>
-     * Override this method if needed.
-     */
-    public Map<String, Object> getContext(Optional<Long> expirationMillis, HttpServletResponse response) {
+    @Override
+    public Map<String, Object> getSharedProperties() {
 
-//        log.debug("Getting context ...");
+        // make the context
+        Map<String, Object> sharedProperties = new HashMap<String, Object>(2);
+        sharedProperties.put("reCaptchaSiteKey", properties.getRecaptcha().getSitekey());
+        sharedProperties.put("shared", properties.getShared());
 
-        Map<String, Object> context = buildContext();
-
-        LemonUserDto currentUser = LecwUtils.currentUser();
-        if (currentUser != null) {
-            addAuthHeader(response, currentUser.getEmail(),
-                    expirationMillis.orElse(properties.getJwt().getExpirationMillis()));
-            context.put("user", currentUser);
-        }
+        Map<String, Object> context = new HashMap<>();
+        context.put("context", sharedProperties);
 
         return context;
     }
@@ -534,15 +519,15 @@ public abstract class LemonServiceImpl<U extends AbstractUser<ID>, ID extends Se
                                 Optional<String> optionalUsername) {
 
         LemonUserDto currentUser = LecwUtils.currentUser();
-        String username = optionalUsername.orElse(currentUser.getEmail());
+        String email = optionalUsername.orElse(currentUser.getEmail());
 
-        LecUtils.ensureAuthority(currentUser.getEmail().equals(username) ||
+        LecUtils.ensureAuthority(currentUser.getEmail().equals(email) ||
                 currentUser.isGoodAdmin(), "com.naturalprogrammer.spring.notGoodAdminOrSameUser");
 
         //todo kann sich hier jeder user nen token mit beliebiger expiration ausstellen lassen?
         //ist das ein problem?
         return LecUtils.TOKEN_PREFIX +
-                authorizationTokenService.createToken(AuthorizationTokenService.AUTH_AUDIENCE, username,
+                authorizationTokenService.createToken(AuthorizationTokenService.AUTH_AUDIENCE, email,
                         expirationMillis.orElse(properties.getJwt().getExpirationMillis()));
     }
 
@@ -581,33 +566,32 @@ public abstract class LemonServiceImpl<U extends AbstractUser<ID>, ID extends Se
 //	}
 
 
-    //todo understand and change this
-    public Map<String, String> fetchFullToken(String authHeader) {
-
-        LecUtils.ensureCredentials(authorizationTokenService.parseClaim(authHeader.substring(LecUtils.TOKEN_PREFIX_LENGTH),
-                AuthorizationTokenService.USER_CLAIM) == null, "com.naturalprogrammer.spring.fullTokenNotAllowed");
-
-        LemonUserDto currentUser = LecwUtils.currentUser();
-
-        Map<String, Object> claimMap = Collections.singletonMap(AuthorizationTokenService.USER_CLAIM,
-                MapperUtils.serialize(currentUser)); // Not serializing converts it to a JsonNode
-
-        Map<String, String> tokenMap = Collections.singletonMap("token", LecUtils.TOKEN_PREFIX +
-                authorizationTokenService.createToken(AuthorizationTokenService.AUTH_AUDIENCE, currentUser.getEmail(),
-                        Long.valueOf(properties.getJwt().getShortLivedMillis()),
-                        claimMap));
-
-        return tokenMap;
-    }
+//    //todo I dont think that i need this. Every information needed by the client is in the UserDto he can get by sending GET user?id=myId
+//    public Map<String, String> fetchFullToken(String authHeader) {
+//
+//        LecUtils.ensureCredentials(authorizationTokenService.parseClaim(authHeader.substring(LecUtils.TOKEN_PREFIX_LENGTH),
+//                AuthorizationTokenService.USER_CLAIM) == null, "com.naturalprogrammer.spring.fullTokenNotAllowed");
+//
+//        LemonUserDto currentUser = LecwUtils.currentUser();
+//
+//        Map<String, Object> claimMap = Collections.singletonMap(AuthorizationTokenService.USER_CLAIM,
+//                MapperUtils.serialize(currentUser)); // Not serializing converts it to a JsonNode
+//
+//        Map<String, String> tokenMap = Collections.singletonMap("token", LecUtils.TOKEN_PREFIX +
+//                authorizationTokenService.createToken(AuthorizationTokenService.AUTH_AUDIENCE, currentUser.getEmail(),
+//                        Long.valueOf(properties.getJwt().getShortLivedMillis()),
+//                        claimMap));
+//
+//        return tokenMap;
+//    }
 
 
     /**
      * Adds a Lemon-Authorization header to the response
      */
-    public void addAuthHeader(HttpServletResponse response, String username, Long expirationMillis) {
-
+    public void addAuthHeader(HttpServletResponse response, String email, Long expirationMillis) {
         response.addHeader(LecUtils.TOKEN_RESPONSE_HEADER_NAME, LecUtils.TOKEN_PREFIX +
-                authorizationTokenService.createToken(AuthorizationTokenService.AUTH_AUDIENCE, username, expirationMillis));
+                authorizationTokenService.createToken(AuthorizationTokenService.AUTH_AUDIENCE, email, expirationMillis));
     }
 
 

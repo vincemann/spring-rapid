@@ -1,18 +1,15 @@
 package com.github.vincemann.springlemon.auth.util;
 
-import com.github.vincemann.springlemon.auth.domain.LemonAuthenticatedPrincipal;
-import com.github.vincemann.springlemon.auth.domain.dto.user.LemonUserDto;
 import com.github.vincemann.springlemon.exceptions.util.LexUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.context.ApplicationContext;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.authentication.BadCredentialsException;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContext;
 
-import java.io.Serializable;
-import java.util.*;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.UUID;
 
 /**
  * Useful helper methods
@@ -23,8 +20,8 @@ public class LecUtils{
 	
 	private static final Log log = LogFactory.getLog(LecUtils.class);
 	
-	public static final String AUTHORIZATION_REQUEST_COOKIE_NAME = "lemon_oauth2_authorization_request";
-	public static final String LEMON_REDIRECT_URI_COOKIE_PARAM_NAME = "lemon_redirect_uri";
+//	public static final String AUTHORIZATION_REQUEST_COOKIE_NAME = "lemon_oauth2_authorization_request";
+//	public static final String LEMON_REDIRECT_URI_COOKIE_PARAM_NAME = "lemon_redirect_uri";
 
 	
 	// JWT Token related
@@ -39,34 +36,6 @@ public class LecUtils{
 		
 		LecUtils.applicationContext = applicationContext;
 		log.info("Created");
-	}
-	
-	
-	/**
-	 * Extracts the current-user from authentication object
-
-	 * @return
-	 */
-	public static <ID extends Serializable> LemonUserDto currentUser(SecurityContext context) {
-		return currentUser(context.getAuthentication());
-	}
-
-	
-	/**
-	 * Extracts the current-user from authentication object
-	 * 
-	 * @param auth
-	 * @return
-	 */
-	public static <ID extends Serializable> LemonUserDto currentUser(Authentication auth) {
-		
-	    if (auth != null) {
-	      Object principal = auth.getPrincipal();
-	      if (principal instanceof LemonAuthenticatedPrincipal) {
-	        return ((LemonAuthenticatedPrincipal) principal).currentUser();
-	      }
-	    }
-	    return null;	  
 	}
 
 

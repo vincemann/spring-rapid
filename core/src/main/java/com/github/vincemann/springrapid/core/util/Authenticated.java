@@ -1,6 +1,7 @@
 package com.github.vincemann.springrapid.core.util;
 
 import com.github.vincemann.springrapid.core.service.security.AbstractAuthenticatedPrincipal;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -49,11 +50,5 @@ public class Authenticated {
     }
 
 
-    public static <T extends AbstractAuthenticatedPrincipal> T get(){
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        if (authentication==null){
-            return null;
-        }
-        return (T) authentication.getPrincipal();
-    }
+
 }

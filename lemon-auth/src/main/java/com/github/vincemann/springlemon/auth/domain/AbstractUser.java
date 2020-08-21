@@ -2,6 +2,7 @@ package com.github.vincemann.springlemon.auth.domain;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonView;
+import com.github.vincemann.springrapid.core.service.security.Role;
 import com.google.common.collect.Sets;
 import com.github.vincemann.springlemon.auth.domain.dto.user.LemonUserDto;
 import com.github.vincemann.springlemon.auth.util.UserUtils;
@@ -12,25 +13,27 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
+import org.springframework.security.core.AuthenticatedPrincipal;
+import org.springframework.security.core.CredentialsContainer;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
 
 import javax.persistence.*;
 import java.io.Serializable;
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 
-/**
- * Base class for User entity
- * 
- * @author Sanjay Patel
- */
+
 @Getter @Setter
 @MappedSuperclass
 @AllArgsConstructor
 @ToString(callSuper = true)
 public class AbstractUser<ID extends Serializable>
-	extends LemonEntity<ID>
-	implements LemonUser<ID> {
+	extends LemonEntity<ID> implements AuthenticatedPrincipal, CredentialsContainer, UserDetails
+		/*implements LemonUser<ID>*/ {
 	
 	// email
 	@JsonView(UserUtils.SignupInput.class)
@@ -73,6 +76,91 @@ public class AbstractUser<ID extends Serializable>
 	public AbstractUser() {
 	}
 
+//	protected Collection<? extends GrantedAuthority> createAuthorities() {
+//		initFlags();
+//		//create Springs Wrapper for String authorities
+//		Collection<GrantedAuthority> authorities = getRoles().stream()
+//				.map(LemonGrantedAuthority::new)
+//				.collect(Collectors.toSet());
+//		if (isGoodUser()) {
+//			authorities.add(new LemonGrantedAuthority(LemonRole.GOOD_USER));
+//			if (isGoodAdmin())
+//				authorities.add(new LemonGrantedAuthority(LemonRole.GOOD_ADMIN));
+//		}
+//		return authorities;
+//	}
+
+	@Override
+	public void eraseCredentials() {
+		this.password=null;
+	}
+
+	@Override
+	public Collection<? extends GrantedAuthority> getAuthorities() {
+		return roles.stream().map(LemonGrantedAuthority::new).collect(Collectors.toSet());
+	}
+
+	public boolean isUnverified() {
+		return getRoles().contains(LemonRole.UNVERIFIED);
+	}
+
+	public boolean isBlocked() {
+		return getRoles().contains(LemonRole.BLOCKED);
+	}
+
+	public boolean isAdmin() {
+		return getRoles().contains(Role.ADMIN);
+	}
+
+	public boolean isGoodUser() {
+//		return !(isUnverified() || isBlocked());
+		return getRoles().contains(LemonRole.GOOD_USER);
+	}
+
+	public boolean isGoodAdmin() {
+//		return isGoodUser() && isAdmin();
+		return getRoles().contains(LemonRole.GOOD_ADMIN);
+	}
+
+	// UserDetails ...
+
+	@Override
+	public String getPassword() {
+		return getPassword();
+	}
+
+	//username is always email in spring lemon
+	@Override
+	public String getName() {
+		return email;
+	}
+
+	//username is always email in spring lemon
+	@Override
+	public String getUsername() {
+		return email;
+	}
+
+	@Override
+	public boolean isAccountNonExpired() {
+		return true;
+	}
+
+	@Override
+	public boolean isAccountNonLocked() {
+		return true;
+	}
+
+	@Override
+	public boolean isCredentialsNonExpired() {
+		return true;
+	}
+
+	@Override
+	public boolean isEnabled() {
+		return true;
+	}
+
 	
 //	/**
 //	 * A convenient toString method
@@ -83,17 +171,17 @@ public class AbstractUser<ID extends Serializable>
 //	}
 
 
-	/**
-	 * Makes a User DTO
-	 */
-	public LemonUserDto toUserDto() {
-
-		return LemonUserDto.builder()
-				.id(getId().toString())
-				.email(email)
-				.password(password)
-				.roles(Sets.newHashSet(roles))
-				.build();
+//	/**
+//	 * Makes a User DTO
+//	 */
+//	public LemonUserDto toUserDto() {
+//
+//		return LemonUserDto.builder()
+//				.id(getId().toString())
+//				.email(email)
+//				.password(password)
+//				.roles(Sets.newHashSet(roles))
+//				.build();
 //		userDto.setId(getId().toString());
 //		userDto.setEmail(email);
 //		userDto.setPassword(password);
