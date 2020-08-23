@@ -12,7 +12,7 @@ import com.github.vincemann.springlemon.auth.domain.dto.user.LemonFindForeignDto
 import com.github.vincemann.springlemon.auth.domain.dto.user.LemonReadUserDto;
 import com.github.vincemann.springlemon.auth.domain.dto.user.LemonUserDto;
 import com.github.vincemann.springlemon.auth.properties.LemonProperties;
-import com.github.vincemann.springlemon.auth.service.AuthorizationTokenService;
+import com.github.vincemann.springlemon.auth.service.token.JwsTokenService;
 import com.github.vincemann.springlemon.auth.service.LemonService;
 import com.github.vincemann.springlemon.auth.util.LecUtils;
 import com.github.vincemann.springrapid.core.security.RapidRole;
@@ -55,10 +55,10 @@ public abstract class LemonController
 
     private long jwtExpirationMillis;
 	private LemonService<U, ID, ?> unsecuredService;
-	private AuthorizationTokenService authTokenService;
+	private JwsTokenService authTokenService;
 
 	@Autowired
-	public void injectAuthTokenService(AuthorizationTokenService authTokenService) {
+	public void injectAuthTokenService(JwsTokenService authTokenService) {
 		this.authTokenService = authTokenService;
 	}
 
@@ -357,8 +357,8 @@ public abstract class LemonController
 	 * Adds a Lemon-Authorization header to the response
 	 */
 	public void appendFreshToken(U user, HttpServletResponse response) {
-		String token = authTokenService.createToken(AuthorizationTokenService.AUTH_AUDIENCE, user.getEmail(), jwtExpirationMillis);
-		response.addHeader(LecUtils.TOKEN_RESPONSE_HEADER_NAME, LecUtils.TOKEN_PREFIX + token);
+		String token = authTokenService.createToken(JwsTokenService.AUTH_AUDIENCE, user.getEmail(), jwtExpirationMillis);
+//		response.addHeader(LecUtils.TOKEN_RESPONSE_HEADER_NAME, LecUtils.TOKEN_PREFIX + token);
 	}
 
 	protected U fetchUser(ID userId) throws BadEntityException, EntityNotFoundException {

@@ -1,4 +1,4 @@
-package com.github.vincemann.springlemon.auth.service;
+package com.github.vincemann.springlemon.auth.service.token;
 
 
 import com.nimbusds.jose.*;
@@ -14,10 +14,12 @@ import java.util.Map;
  * JWS Service
  * Token only gets signed, not encrypted.
  * Encryption should be performed via TLS/HTTPS -> double encryption is avoided.
+ *
+ *
  * 
  * Reference: https://connect2id.com/products/nimbus-jose-jwt/examples/jws-with-hmac
  */
-public class LemonJwsService extends AbstractJwtService implements AuthorizationTokenService {
+public class LemonJwsService extends AbstractJwtService implements JwsTokenService {
 
 	private JWSSigner signer;
 	private JWSVerifier verifier;

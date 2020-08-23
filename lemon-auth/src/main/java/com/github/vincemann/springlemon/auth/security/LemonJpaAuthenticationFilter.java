@@ -2,7 +2,7 @@ package com.github.vincemann.springlemon.auth.security;
 
 import com.github.vincemann.springlemon.auth.domain.AbstractUser;
 import com.github.vincemann.springlemon.auth.domain.dto.user.LemonUserDto;
-import com.github.vincemann.springlemon.auth.service.AuthorizationTokenService;
+import com.github.vincemann.springlemon.auth.service.token.JwsTokenService;
 import com.github.vincemann.springlemon.auth.service.LemonUserDetailsService;
 import com.github.vincemann.springlemon.auth.util.LemonUtils;
 
@@ -14,17 +14,17 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import java.io.Serializable;
 
 //Einfach impl von Filter der Brücke zu jpa macht
-public class LemonJpaJwtAuthenticationFilter<U extends AbstractUser<ID>, ID extends Serializable>
-	extends LemonJwtAuthenticationFilter {
+public class LemonJpaAuthenticationFilter<U extends AbstractUser<ID>, ID extends Serializable>
+	extends LemonAuthenticationFilter {
 
-    private static final Log log = LogFactory.getLog(LemonJpaJwtAuthenticationFilter.class);
+    private static final Log log = LogFactory.getLog(LemonJpaAuthenticationFilter.class);
 
     private LemonUserDetailsService<U, ID> userDetailsService;
 	
-	public LemonJpaJwtAuthenticationFilter(AuthorizationTokenService authorizationTokenService,
-										   LemonUserDetailsService<U, ID> userDetailsService) {
+	public LemonJpaAuthenticationFilter(JwsTokenService jwsTokenService,
+										LemonUserDetailsService<U, ID> userDetailsService) {
 		
-		super(authorizationTokenService);
+		super(jwsTokenService);
 		this.userDetailsService = userDetailsService;
 		
 		log.info("Created");

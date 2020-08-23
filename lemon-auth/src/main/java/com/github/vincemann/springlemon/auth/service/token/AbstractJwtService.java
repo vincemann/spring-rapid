@@ -1,4 +1,4 @@
-package com.github.vincemann.springlemon.auth.service;
+package com.github.vincemann.springlemon.auth.service.token;
 
 import com.github.vincemann.springlemon.auth.util.LecUtils;
 

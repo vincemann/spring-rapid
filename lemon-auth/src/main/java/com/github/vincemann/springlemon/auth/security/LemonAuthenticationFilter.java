@@ -1,9 +1,13 @@
 package com.github.vincemann.springlemon.auth.security;
 
 import com.github.vincemann.springlemon.auth.domain.AbstractUser;
-import com.github.vincemann.springlemon.auth.service.AuthorizationTokenService;
+import com.github.vincemann.springlemon.auth.domain.LemonAuthenticatedPrincipal;
+import com.github.vincemann.springlemon.auth.service.token.AuthorizationTokenService;
+import com.github.vincemann.springlemon.auth.service.token.HttpTokenService;
+import com.github.vincemann.springlemon.auth.service.token.JwsTokenService;
 import com.github.vincemann.springlemon.auth.util.LecUtils;
 import com.github.vincemann.springlemon.auth.util.LemonAuthenticated;
+import com.github.vincemann.springrapid.core.security.RapidSecurityContext;
 import com.nimbusds.jwt.JWTClaimsSet;
 import lombok.AllArgsConstructor;
 import org.apache.commons.logging.Log;
@@ -21,19 +25,29 @@ import java.io.IOException;
  * Filter for token authentication
  */
 @AllArgsConstructor
-public class LemonJwtAuthenticationFilter extends OncePerRequestFilter {
+public class LemonAuthenticationFilter extends OncePerRequestFilter {
 	
-    private static final Log log = LogFactory.getLog(LemonJwtAuthenticationFilter.class);
+    private static final Log log = LogFactory.getLog(LemonAuthenticationFilter.class);
     
-    private AuthorizationTokenService authorizationTokenService;
-    private JwtClaimsUserConverter jwtClaimsUserConverter;
+    private JwsTokenService jwsTokenService;
+    private JwtPrincipalConverter jwtPrincipalConverter;
+
+
+    private HttpTokenService httpTokenService;
+    private AuthorizationTokenService<LemonAuthenticatedPrincipal> authorizationTokenService;
+    private RapidSecurityContext<LemonAuthenticatedPrincipal>
+
 
 	@Override
 	protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
 			throws ServletException, IOException {
-		
+
+
 		log.debug("Inside LemonTokenAuthenticationFilter ...");
-		
+
+		String token = httpTokenService.extractToken(request);
+
+
 		String header = request.getHeader(HttpHeaders.AUTHORIZATION);				
 		
     	if (header != null && header.startsWith(LecUtils.TOKEN_PREFIX)) { // token present
@@ -42,8 +56,8 @@ public class LemonJwtAuthenticationFilter extends OncePerRequestFilter {
 		    String token = header.substring(7);
 		    
 		    try {
-				JWTClaimsSet claims = authorizationTokenService.parseToken(token, AuthorizationTokenService.AUTH_AUDIENCE);
-				AbstractUser<?> user = jwtClaimsUserConverter.toUser(claims);
+				JWTClaimsSet claims = jwsTokenService.parseToken(token, JwsTokenService.AUTH_AUDIENCE);
+				AbstractUser<?> user = jwtPrincipalConverter.toPrincipal(claims);
 				LemonAuthenticated.login(user);
 				log.debug("Token authentication successful");
 				    		    	

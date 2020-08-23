@@ -6,6 +6,8 @@ import com.github.vincemann.springlemon.auth.domain.AbstractUserRepository;
 import com.github.vincemann.springlemon.auth.mail.LemonMailData;
 import com.github.vincemann.springlemon.auth.mail.MailSender;
 import com.github.vincemann.springlemon.auth.domain.LemonRole;
+import com.github.vincemann.springlemon.auth.service.token.JwsTokenService;
+import com.github.vincemann.springlemon.auth.service.token.JweTokenService;
 import com.github.vincemann.springlemon.auth.util.LecUtils;
 import com.github.vincemann.springrapid.core.service.exception.BadEntityException;
 import com.github.vincemann.springrapid.core.service.JPACrudService;
@@ -17,8 +19,6 @@ import org.apache.commons.logging.LogFactory;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.io.Serializable;
-import java.util.HashMap;
-import java.util.Map;
 
 @ServiceComponent
 public abstract class AbstractLemonService
@@ -28,8 +28,8 @@ public abstract class AbstractLemonService
     private static final Log log = LogFactory.getLog(AbstractLemonService.class);
 	protected PasswordEncoder passwordEncoder;
 	protected LemonProperties properties;
-	protected AuthorizationTokenService authorizationTokenService;
-	protected VerificationTokenService verificationTokenService;
+	protected JwsTokenService jwsTokenService;
+	protected JweTokenService jweTokenService;
 	protected MailSender mailSender;
 
 
@@ -58,8 +58,8 @@ public abstract class AbstractLemonService
 			
 			log.debug("Sending verification mail to: " + user);
 			
-			String verificationCode = verificationTokenService.createToken(
-					VerificationTokenService.VERIFY_AUDIENCE,
+			String verificationCode = jweTokenService.createToken(
+					JweTokenService.VERIFY_AUDIENCE,
 					user.getId().toString(),
 					properties.getJwt().getExpirationMillis(),
 					//payload
@@ -102,8 +102,8 @@ public abstract class AbstractLemonService
 		
 		log.debug("Mailing forgot password link to user: " + user);
 
-		String forgotPasswordCode = verificationTokenService.createToken(
-				VerificationTokenService.FORGOT_PASSWORD_AUDIENCE,
+		String forgotPasswordCode = jweTokenService.createToken(
+				JweTokenService.FORGOT_PASSWORD_AUDIENCE,
 				user.getEmail(), properties.getJwt().getExpirationMillis());
 
 		// make the link

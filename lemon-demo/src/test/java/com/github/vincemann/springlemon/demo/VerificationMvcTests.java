@@ -1,7 +1,7 @@
 package com.github.vincemann.springlemon.demo;
 
 import com.github.vincemann.springlemon.demo.domain.User;
-import com.github.vincemann.springlemon.auth.service.VerificationTokenService;
+import com.github.vincemann.springlemon.auth.service.token.JweTokenService;
 import com.github.vincemann.springlemon.auth.util.LecUtils;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -18,12 +18,12 @@ public class VerificationMvcTests extends AbstractMvcTests {
 	private String verificationCode;
 	
 	@Autowired
-	private VerificationTokenService verificationTokenService;
+	private JweTokenService jweTokenService;
 	
 	@BeforeEach
 	public void setUp() {
 		
-		verificationCode = verificationTokenService.createToken(VerificationTokenService.VERIFY_AUDIENCE,
+		verificationCode = jweTokenService.createToken(JweTokenService.VERIFY_AUDIENCE,
 				Long.toString(UNVERIFIED_USER_ID), 60000L,
 				LecUtils.mapOf("email", UNVERIFIED_USER_EMAIL));
 	}
@@ -72,7 +72,7 @@ public class VerificationMvcTests extends AbstractMvcTests {
                 .andExpect(status().is(401));
 
 		// Wrong audience
-		String token = verificationTokenService.createToken("wrong-audience",
+		String token = jweTokenService.createToken("wrong-audience",
 				Long.toString(UNVERIFIED_USER_ID), 60000L,
 				LecUtils.mapOf("email", UNVERIFIED_USER_EMAIL));
 		mvc.perform(post("/api/core/users/{userId}/verification", UNVERIFIED_USER_ID)
@@ -81,7 +81,7 @@ public class VerificationMvcTests extends AbstractMvcTests {
                 .andExpect(status().is(401));
 		
 		// Wrong email
-		token = verificationTokenService.createToken(VerificationTokenService.VERIFY_AUDIENCE,
+		token = jweTokenService.createToken(JweTokenService.VERIFY_AUDIENCE,
 				Long.toString(UNVERIFIED_USER_ID), 60000L,
 				LecUtils.mapOf("email", "wrong.email@example.com"));
 		mvc.perform(post("/api/core/users/{userId}/verification", UNVERIFIED_USER_ID)
@@ -90,7 +90,7 @@ public class VerificationMvcTests extends AbstractMvcTests {
                 .andExpect(status().is(403));
 
 		// expired token
-		token = verificationTokenService.createToken(VerificationTokenService.VERIFY_AUDIENCE,
+		token = jweTokenService.createToken(JweTokenService.VERIFY_AUDIENCE,
 				Long.toString(UNVERIFIED_USER_ID), 1L,
 				LecUtils.mapOf("email", UNVERIFIED_USER_EMAIL));	
 		// Thread.sleep(1001L);

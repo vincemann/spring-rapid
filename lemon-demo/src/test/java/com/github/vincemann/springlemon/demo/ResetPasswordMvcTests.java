@@ -2,7 +2,7 @@ package com.github.vincemann.springlemon.demo;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.github.vincemann.springlemon.auth.domain.dto.ResetPasswordForm;
-import com.github.vincemann.springlemon.auth.service.VerificationTokenService;
+import com.github.vincemann.springlemon.auth.service.token.JweTokenService;
 import com.github.vincemann.springlemon.auth.util.LecUtils;
 import com.github.vincemann.springrapid.core.util.MapperUtils;
 import org.junit.jupiter.api.BeforeEach;
@@ -19,13 +19,13 @@ public class ResetPasswordMvcTests extends AbstractMvcTests {
 	private String forgotPasswordCode;
 	
 	@Autowired
-	private VerificationTokenService verificationTokenService;
+	private JweTokenService jweTokenService;
 	
 	@BeforeEach
 	public void setUp() {
 		
-		forgotPasswordCode = verificationTokenService.createToken(
-				VerificationTokenService.FORGOT_PASSWORD_AUDIENCE,
+		forgotPasswordCode = jweTokenService.createToken(
+				JweTokenService.FORGOT_PASSWORD_AUDIENCE,
 				ADMIN_EMAIL, 60000L);
 	}
 
