@@ -1,7 +1,7 @@
 package com.github.vincemann.springlemon.auth.controller.owner;
 
 import com.github.vincemann.springlemon.auth.domain.AbstractUser;
-import com.github.vincemann.springlemon.auth.domain.LemonEntity;
+import com.github.vincemann.springlemon.auth.domain.AuditingEntity;
 import com.github.vincemann.springlemon.auth.service.LemonService;
 
 import com.github.vincemann.springrapid.core.controller.owner.OwnerLocator;
@@ -11,7 +11,7 @@ import lombok.extern.slf4j.Slf4j;
 import java.util.Optional;
 
 @Slf4j
-public class LemonOwnerLocator implements OwnerLocator<LemonEntity> {
+public class LemonOwnerLocator implements OwnerLocator<AuditingEntity> {
 
     private LemonService lemonService;
 
@@ -21,12 +21,12 @@ public class LemonOwnerLocator implements OwnerLocator<LemonEntity> {
 
     @Override
     public boolean supports(Class clazz) {
-        return LemonEntity.class.isAssignableFrom(clazz);
+        return AuditingEntity.class.isAssignableFrom(clazz);
     }
 
     //@LogInteraction
     @Override
-    public Optional<String> find(LemonEntity entity) {
+    public Optional<String> find(AuditingEntity entity) {
         try {
             Optional<AbstractUser> byId = lemonService.findById(entity.getCreatedById());
             return byId.map(AbstractUser::getEmail);

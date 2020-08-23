@@ -27,7 +27,7 @@ public class LemonJpaJwtAuthenticationFilter<U extends AbstractUser<ID>, ID exte
 		super(authorizationTokenService);
 		this.userDetailsService = userDetailsService;
 		
-		log.info("Created");		
+		log.info("Created");
 	}
 
 	////@LogInteraction(level = LogInteraction.Level.TRACE)

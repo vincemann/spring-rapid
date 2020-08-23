@@ -11,9 +11,9 @@ import org.springframework.context.annotation.Bean;
 
 @ServiceConfig
 @Slf4j
-public class CrudServiceLocatorAutoConfiguration {
+public class RapidCrudServiceLocatorAutoConfiguration {
 
-    public CrudServiceLocatorAutoConfiguration() {
+    public RapidCrudServiceLocatorAutoConfiguration() {
         log.info("Created");
     }
 

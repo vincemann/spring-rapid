@@ -29,7 +29,7 @@ import java.util.List;
 import static org.springframework.beans.factory.config.ConfigurableBeanFactory.SCOPE_PROTOTYPE;
 
 @SuppressWarnings("rawtypes")
-@AutoConfigureAfter(DtoMapperAutoConfiguration.class)
+@AutoConfigureAfter(RapidDtoMapperAutoConfiguration.class)
 @WebConfig
 @Slf4j
 public class RapidControllerAutoConfiguration {

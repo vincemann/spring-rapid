@@ -17,10 +17,9 @@ import com.github.vincemann.springlemon.auth.util.LecjUtils;
 import com.github.vincemann.springlemon.auth.util.LecwUtils;
 import com.github.vincemann.springlemon.auth.util.LemonUtils;
 import com.github.vincemann.springlemon.exceptions.util.LexUtils;
-import com.github.vincemann.springrapid.core.service.security.Role;
+import com.github.vincemann.springrapid.core.security.RapidRole;
 import com.github.vincemann.springrapid.core.service.exception.BadEntityException;
 import com.github.vincemann.springrapid.core.service.exception.EntityNotFoundException;
-import com.github.vincemann.springrapid.core.util.MapperUtils;
 import com.github.vincemann.springrapid.core.util.EntityAssert;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
@@ -32,9 +31,7 @@ import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.annotation.Validated;
 
-import javax.servlet.http.HttpServletResponse;
 import java.io.Serializable;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
@@ -541,7 +538,7 @@ public abstract class LemonServiceImpl<U extends AbstractUser<ID>, ID extends Se
         user.setEmail(admin.getEmail());
         user.setPassword(passwordEncoder.encode(
                 admin.getPassword()));
-        user.getRoles().add(Role.ADMIN);
+        user.getRoles().add(RapidRole.ADMIN);
         getRepository().save(user);
         log.debug("admin saved.");
     }

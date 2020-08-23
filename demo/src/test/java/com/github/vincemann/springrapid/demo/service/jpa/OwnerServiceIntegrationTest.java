@@ -1,7 +1,6 @@
 package com.github.vincemann.springrapid.demo.service.jpa;
 
 import com.github.vincemann.springrapid.commons.Lists;
-import com.github.vincemann.springrapid.core.config.AopLogAutoConfiguration;
 import com.github.vincemann.springrapid.core.service.exception.BadEntityException;
 import com.github.vincemann.springrapid.core.service.exception.EntityNotFoundException;
 import com.github.vincemann.springrapid.coretest.service.CrudServiceIntegrationTest;
@@ -15,14 +14,12 @@ import com.github.vincemann.springrapid.demo.service.PetService;
 import com.github.vincemann.springrapid.demo.service.PetTypeService;
 import com.github.vincemann.springrapid.demo.service.plugin.OwnerOfTheYearExtension;
 import com.github.vincemann.springrapid.entityrelationship.slicing.test.ImportRapidEntityRelServiceConfig;
-import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.mock.mockito.SpyBean;
-import org.springframework.context.annotation.Import;
 
 import java.time.LocalDate;
 import java.util.HashSet;

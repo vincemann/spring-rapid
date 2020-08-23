@@ -1,6 +1,6 @@
 package com.github.vincemann.springrapid.acl.config;
 
-import com.github.vincemann.springrapid.core.service.security.Role;
+import com.github.vincemann.springrapid.core.security.RapidRole;
 import com.github.vincemann.springrapid.acl.framework.HierarchicPermissionGrantingStrategy;
 import com.github.vincemann.springrapid.acl.framework.NoModSecurityCheckAclAuthorizationStrategy;
 import com.github.vincemann.springrapid.acl.framework.VerboseAclPermissionEvaluator;
@@ -102,7 +102,7 @@ public class AclAutoConfiguration {
         //admin is allowed to change all acl db tables, but he is not automatically allowed to do anything acl restricted bc of this statement
         //return new AclAuthorizationStrategyImpl(new SimpleGrantedAuthority(AuthorityName.ROLE_ADMIN.toString()));
         return new NoModSecurityCheckAclAuthorizationStrategy(
-                new SimpleGrantedAuthority(Role.ADMIN)
+                new SimpleGrantedAuthority(RapidRole.ADMIN)
         );
     }
 

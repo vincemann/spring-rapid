@@ -9,7 +9,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.github.vincemann.springlemon.demo.domain.User;
-import com.github.vincemann.springrapid.core.service.security.Role;
+import com.github.vincemann.springrapid.core.security.RapidRole;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
@@ -32,7 +32,7 @@ public class LoginMvcTests extends AbstractMvcTests {
 				.andExpect(jsonPath("$.password").doesNotExist())
 				.andExpect(jsonPath("$.email").value("admin@example.com"))
 				.andExpect(jsonPath("$.roles").value(hasSize(1)))
-				.andExpect(jsonPath("$.roles[0]").value(Role.ADMIN))
+				.andExpect(jsonPath("$.roles[0]").value(RapidRole.ADMIN))
 //				.andExpect(jsonPath("$.tag.name").value("Admin 1"))
 				.andExpect(jsonPath("$.unverified").value(false))
 				.andExpect(jsonPath("$.blocked").value(false))

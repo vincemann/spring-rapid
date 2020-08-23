@@ -7,9 +7,9 @@ import org.springframework.context.annotation.Bean;
 
 @ServiceConfig
 @Slf4j
-public class DatabaseInitAutoConfiguration {
+public class RapidDatabaseInitAutoConfiguration {
 
-    public DatabaseInitAutoConfiguration() {
+    public RapidDatabaseInitAutoConfiguration() {
         log.info("Created");
     }
 

@@ -3,7 +3,7 @@ package com.github.vincemann.springrapid.acl.service.extensions;
 
 import com.github.vincemann.springrapid.acl.model.AclParentAware;
 import com.github.vincemann.springrapid.acl.service.LocalPermissionService;
-import com.github.vincemann.springrapid.core.service.security.MockAuthService;
+import com.github.vincemann.springrapid.core.security.MockAuthService;
 import com.github.vincemann.springrapid.core.model.IdentifiableEntity;
 import com.github.vincemann.springrapid.core.proxy.GenericSimpleCrudServiceExtension;
 import com.github.vincemann.springrapid.core.service.SimpleCrudService;

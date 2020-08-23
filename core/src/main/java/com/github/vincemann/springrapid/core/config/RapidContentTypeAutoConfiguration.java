@@ -11,9 +11,9 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 @EnableWebMvc
 //@ComponentScan
 @Slf4j
-public class ContentTypeAutoConfiguration implements WebMvcConfigurer {
+public class RapidContentTypeAutoConfiguration implements WebMvcConfigurer {
 
-    public ContentTypeAutoConfiguration() {
+    public RapidContentTypeAutoConfiguration() {
         log.info("Created");
     }
 
