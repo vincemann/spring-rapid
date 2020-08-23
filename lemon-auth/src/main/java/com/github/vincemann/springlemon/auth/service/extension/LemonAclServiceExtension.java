@@ -7,7 +7,7 @@ import com.github.vincemann.springlemon.auth.service.SimpleLemonService;
 import com.github.vincemann.springlemon.auth.util.LemonUtils;
 import com.github.vincemann.springrapid.acl.service.extensions.AbstractAclServiceExtension;
 import com.github.vincemann.springrapid.acl.service.LocalPermissionService;
-import com.github.vincemann.springrapid.core.service.security.MockAuthService;
+import com.github.vincemann.springrapid.core.security.MockAuthService;
 import com.github.vincemann.springrapid.core.model.IdentifiableEntity;
 import com.github.vincemann.springrapid.core.service.exception.BadEntityException;
 import lombok.extern.slf4j.Slf4j;

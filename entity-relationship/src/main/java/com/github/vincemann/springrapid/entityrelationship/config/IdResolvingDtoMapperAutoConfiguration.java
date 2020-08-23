@@ -1,7 +1,7 @@
 package com.github.vincemann.springrapid.entityrelationship.config;
 
-import com.github.vincemann.springrapid.core.config.CrudServiceLocatorAutoConfiguration;
-import com.github.vincemann.springrapid.core.config.DtoMapperAutoConfiguration;
+import com.github.vincemann.springrapid.core.config.RapidCrudServiceLocatorAutoConfiguration;
+import com.github.vincemann.springrapid.core.config.RapidDtoMapperAutoConfiguration;
 import com.github.vincemann.springrapid.core.controller.dtoMapper.DtoPostProcessor;
 import com.github.vincemann.springrapid.core.controller.mergeUpdate.MergeUpdateStrategy;
 import com.github.vincemann.springrapid.core.service.locator.CrudServiceLocator;
@@ -24,8 +24,8 @@ import java.util.List;
 @WebConfig
 @Slf4j
 //overrides mergeUpdateStrategy
-@AutoConfigureBefore(DtoMapperAutoConfiguration.class)
-@AutoConfigureAfter(CrudServiceLocatorAutoConfiguration.class)
+@AutoConfigureBefore(RapidDtoMapperAutoConfiguration.class)
+@AutoConfigureAfter(RapidCrudServiceLocatorAutoConfiguration.class)
 public class IdResolvingDtoMapperAutoConfiguration {
 
     public IdResolvingDtoMapperAutoConfiguration() {

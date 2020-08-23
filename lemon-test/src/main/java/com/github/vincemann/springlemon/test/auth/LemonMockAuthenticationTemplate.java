@@ -3,7 +3,7 @@ package com.github.vincemann.springlemon.test.auth;
 import com.google.common.collect.Sets;
 import com.github.vincemann.springlemon.auth.domain.AbstractUser;
 import com.github.vincemann.springlemon.auth.domain.LemonRole;
-import com.github.vincemann.springrapid.core.service.security.Role;
+import com.github.vincemann.springrapid.core.security.RapidRole;
 import com.github.vincemann.springrapid.coretest.auth.MockAuthenticationTemplate;
 
 import java.util.Set;
@@ -16,11 +16,11 @@ public interface LemonMockAuthenticationTemplate extends MockAuthenticationTempl
 
 
     public default Set<String> getDefaultAuthorities(){
-        return Sets.newHashSet(LemonRole.GOOD_USER, Role.USER);
+        return Sets.newHashSet(LemonRole.GOOD_USER, RapidRole.USER);
     }
 
     public default void mockAsAdmin(){
-        mockAs("admin@mockAuthTemplate.com", Sets.newHashSet(Role.ADMIN,LemonRole.GOOD_ADMIN), UNKNOWN_ID);
+        mockAs("admin@mockAuthTemplate.com", Sets.newHashSet(RapidRole.ADMIN,LemonRole.GOOD_ADMIN), UNKNOWN_ID);
     }
 
     public default void mockAs(String authenticatedEmail, Set<String> roles,String id){

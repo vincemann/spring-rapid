@@ -16,7 +16,7 @@ import java.util.Set;
 @Configuration
 @EnableAspectJAutoProxy(proxyTargetClass = true)
 @Slf4j
-public class AopLogAutoConfiguration {
+public class RapidAopLogAutoConfiguration {
 
     private static final boolean SKIP_NULL_FIELDS = true;
     private static final boolean FORCE_REFLECTION = false;

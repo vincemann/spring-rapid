@@ -1,7 +1,7 @@
 package com.github.vincemann.springrapid.demo.lib.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.github.vincemann.springrapid.core.config.DtoMapperAutoConfiguration;
+import com.github.vincemann.springrapid.core.config.RapidDtoMapperAutoConfiguration;
 import com.github.vincemann.springrapid.core.config.RapidControllerAutoConfiguration;
 import com.github.vincemann.springrapid.core.controller.dtoMapper.DelegatingDtoMapper;
 import com.github.vincemann.springrapid.core.controller.dtoMapper.context.RapidDtoEndpoint;
@@ -52,7 +52,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
                 RapidControllerAutoConfiguration.class,
                 ValidationAutoConfiguration.class,
                 PropertyPlaceholderAutoConfiguration.class,
-                DtoMapperAutoConfiguration.class
+                RapidDtoMapperAutoConfiguration.class
         })
 //override config to define mock rules before context initialization
 @Import(RapidControllerIntegrationTest.TestConfig.class)

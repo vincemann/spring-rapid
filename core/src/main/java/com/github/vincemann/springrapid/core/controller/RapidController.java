@@ -9,21 +9,21 @@ import com.github.vincemann.springrapid.core.controller.dtoMapper.context.Direct
 import com.github.vincemann.springrapid.core.controller.dtoMapper.context.DtoMappingContext;
 import com.github.vincemann.springrapid.core.controller.dtoMapper.context.DtoMappingInfo;
 import com.github.vincemann.springrapid.core.controller.dtoMapper.context.RapidDtoEndpoint;
-import com.github.vincemann.springrapid.core.controller.owner.DelegatingOwnerLocator;
 import com.github.vincemann.springrapid.core.controller.idFetchingStrategy.IdFetchingStrategy;
 import com.github.vincemann.springrapid.core.controller.idFetchingStrategy.UrlParamIdFetchingStrategy;
 import com.github.vincemann.springrapid.core.controller.idFetchingStrategy.exception.IdFetchingException;
 import com.github.vincemann.springrapid.core.controller.mergeUpdate.MergeUpdateStrategy;
+import com.github.vincemann.springrapid.core.controller.owner.DelegatingOwnerLocator;
 import com.github.vincemann.springrapid.core.controller.validationStrategy.ValidationStrategy;
 import com.github.vincemann.springrapid.core.model.IdentifiableEntity;
 import com.github.vincemann.springrapid.core.service.CrudService;
 import com.github.vincemann.springrapid.core.service.EndpointService;
 import com.github.vincemann.springrapid.core.service.exception.BadEntityException;
 import com.github.vincemann.springrapid.core.service.exception.EntityNotFoundException;
-import com.github.vincemann.springrapid.core.util.Authenticated;
+import com.github.vincemann.springrapid.core.security.RapidSecurityContext;
+import com.github.vincemann.springrapid.core.util.EntityAssert;
 import com.github.vincemann.springrapid.core.util.JpaUtils;
 import com.github.vincemann.springrapid.core.util.MapperUtils;
-import com.github.vincemann.springrapid.core.util.EntityAssert;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
@@ -417,7 +417,7 @@ public abstract class RapidController
     protected DtoMappingInfo createEndpointInfo(String endpoint, Direction direction, E entity) {
         DtoMappingInfo.Principal principal = currentPrincipal(entity);
         return DtoMappingInfo.builder()
-                .authorities(Authenticated.getRoles())
+                .authorities(RapidSecurityContext.getRoles())
                 .direction(direction)
                 .principal(principal)
                 .endpoint(endpoint)
@@ -427,10 +427,10 @@ public abstract class RapidController
     protected DtoMappingInfo.Principal currentPrincipal(E entity){
         DtoMappingInfo.Principal principal = DtoMappingInfo.Principal.ALL;
         if (entity!=null) {
-            Optional<String> authenticated = Authenticated.getName();
+            String authenticated = RapidSecurityContext.getName();
             Optional<String> queried = ownerLocator.find(entity);
-            if (queried.isPresent() && authenticated.isPresent()) {
-                principal = queried.equals(authenticated)
+            if (queried.isPresent() && authenticated!=null) {
+                principal = queried.get().equals(authenticated)
                         ? DtoMappingInfo.Principal.OWN
                         : DtoMappingInfo.Principal.FOREIGN;
             }

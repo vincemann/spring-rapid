@@ -4,8 +4,6 @@ import com.github.vincemann.springlemon.auth.domain.AbstractUser;
 import com.github.vincemann.springlemon.auth.service.AuthorizationTokenService;
 import com.github.vincemann.springlemon.auth.util.LecUtils;
 import com.github.vincemann.springlemon.auth.util.LemonAuthenticated;
-import com.github.vincemann.springrapid.core.service.security.AbstractAuthenticatedPrincipal;
-import com.github.vincemann.springrapid.core.util.Authenticated;
 import com.nimbusds.jwt.JWTClaimsSet;
 import lombok.AllArgsConstructor;
 import org.apache.commons.logging.Log;

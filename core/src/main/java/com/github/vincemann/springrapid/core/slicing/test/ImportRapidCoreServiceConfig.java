@@ -1,9 +1,9 @@
 package com.github.vincemann.springrapid.core.slicing.test;
 
-import com.github.vincemann.springrapid.core.config.DatabaseInitAutoConfiguration;
-import com.github.vincemann.springrapid.core.config.CrudServiceLocatorAutoConfiguration;
-import com.github.vincemann.springrapid.core.config.AopLogAutoConfiguration;
-import com.github.vincemann.springrapid.core.config.RapidUtilAutoConfiguration;
+import com.github.vincemann.springrapid.core.config.RapidDatabaseInitAutoConfiguration;
+import com.github.vincemann.springrapid.core.config.RapidCrudServiceLocatorAutoConfiguration;
+import com.github.vincemann.springrapid.core.config.RapidAopLogAutoConfiguration;
+import com.github.vincemann.springrapid.core.config.RapidJpaUtilAutoConfiguration;
 import org.springframework.boot.autoconfigure.ImportAutoConfiguration;
 
 import java.lang.annotation.*;
@@ -14,7 +14,7 @@ import java.lang.annotation.*;
 @Inherited
 @ImportAutoConfiguration({
 //import rapid core config that is relevant for service tests
-        DatabaseInitAutoConfiguration.class, CrudServiceLocatorAutoConfiguration.class, AopLogAutoConfiguration.class, AopLogAutoConfiguration.class, RapidUtilAutoConfiguration.class
+        RapidDatabaseInitAutoConfiguration.class, RapidCrudServiceLocatorAutoConfiguration.class, RapidAopLogAutoConfiguration.class, RapidAopLogAutoConfiguration.class, RapidJpaUtilAutoConfiguration.class
 })
 public @interface ImportRapidCoreServiceConfig {
 }

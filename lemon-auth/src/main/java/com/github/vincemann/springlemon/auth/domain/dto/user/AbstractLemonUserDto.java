@@ -1,7 +1,7 @@
 package com.github.vincemann.springlemon.auth.domain.dto.user;
 
 import com.github.vincemann.springlemon.auth.domain.LemonRole;
-import com.github.vincemann.springrapid.core.service.security.Role;
+import com.github.vincemann.springrapid.core.security.RapidRole;
 import com.github.vincemann.springrapid.core.model.IdentifiableEntityImpl;
 import lombok.*;
 
@@ -33,7 +33,7 @@ public abstract class AbstractLemonUserDto extends IdentifiableEntityImpl<String
     public void initialize() {
         unverified = roles.contains(LemonRole.UNVERIFIED);
         blocked = roles.contains(LemonRole.BLOCKED);
-        admin = roles.contains(Role.ADMIN);
+        admin = roles.contains(RapidRole.ADMIN);
         goodUser = !(unverified || blocked);
         goodAdmin = goodUser && admin;
     }

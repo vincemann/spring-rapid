@@ -1,7 +1,8 @@
-package com.github.vincemann.springrapid.core.service.security;
+package com.github.vincemann.springrapid.core.security;
 
 import lombok.Getter;
 import org.springframework.security.core.AuthenticatedPrincipal;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.CredentialsContainer;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -11,30 +12,28 @@ import java.util.Collection;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+/**
+ * Represents logged in user.
+ * Also contains {@link Authentication#getDetails()} information.
+ */
 @Getter
-public abstract class AbstractAuthenticatedPrincipal implements AuthenticatedPrincipal, CredentialsContainer, UserDetails {
+public class RapidAuthenticatedPrincipal implements AuthenticatedPrincipal, CredentialsContainer, UserDetails {
     private String name;
     private Set<String> roles;
-    private Collection<? extends GrantedAuthority> authorities;
-    private Object credentials;
+    private String password;
 
-    public AbstractAuthenticatedPrincipal(String name, Object credentials, Set<String> roles) {
+    public RapidAuthenticatedPrincipal(String name, String password, Set<String> roles) {
         this.name = name;
-        this.credentials = credentials;
+        this.password = password;
         this.roles = roles;
-        this.authorities = createAuthorities();
-    }
-
-    protected Collection<? extends GrantedAuthority> createAuthorities(){
-        return roles.stream().map(SimpleGrantedAuthority::new).collect(Collectors.toSet());
     }
 
     protected void setName(String name) {
         this.name = name;
     }
 
-    protected void setCredentials(Object credentials) {
-        this.credentials = credentials;
+    protected void setPassword(String password) {
+        this.password = password;
     }
 
     protected void setRoles(Set<String> roles) {
@@ -43,12 +42,12 @@ public abstract class AbstractAuthenticatedPrincipal implements AuthenticatedPri
 
     @Override
     public void eraseCredentials() {
-        this.credentials=null;
+        this.password =null;
     }
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return authorities;
+        return roles.stream().map(SimpleGrantedAuthority::new).collect(Collectors.toSet());
     }
 
     // UserDetails ...
@@ -63,7 +62,6 @@ public abstract class AbstractAuthenticatedPrincipal implements AuthenticatedPri
         return getName();
     }
 
-    //username is always email in spring lemon
     @Override
     public String getUsername() {
         return getName();

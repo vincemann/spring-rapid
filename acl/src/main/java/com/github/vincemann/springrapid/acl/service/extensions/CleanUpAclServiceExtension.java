@@ -1,7 +1,7 @@
 package com.github.vincemann.springrapid.acl.service.extensions;
 
 import com.github.vincemann.springrapid.acl.service.LocalPermissionService;
-import com.github.vincemann.springrapid.core.service.security.MockAuthService;
+import com.github.vincemann.springrapid.core.security.MockAuthService;
 import com.github.vincemann.springrapid.core.proxy.SimpleCrudServiceExtension;
 import com.github.vincemann.springrapid.core.service.SimpleCrudService;
 import com.github.vincemann.springrapid.core.service.exception.BadEntityException;

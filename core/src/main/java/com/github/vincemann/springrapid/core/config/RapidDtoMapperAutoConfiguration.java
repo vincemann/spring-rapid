@@ -14,9 +14,9 @@ import java.util.List;
 
 @WebConfig
 @Slf4j
-public class DtoMapperAutoConfiguration {
+public class RapidDtoMapperAutoConfiguration {
 
-    public DtoMapperAutoConfiguration() {
+    public RapidDtoMapperAutoConfiguration() {
         log.info("Created");
     }
 

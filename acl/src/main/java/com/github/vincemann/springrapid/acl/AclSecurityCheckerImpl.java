@@ -1,15 +1,15 @@
 package com.github.vincemann.springrapid.acl;
 
 import com.github.vincemann.aoplog.Severity;
-import com.github.vincemann.aoplog.api.LogConfig;
-import com.github.vincemann.aoplog.api.LogException;
 import com.github.vincemann.aoplog.api.LogInteraction;
-import com.github.vincemann.springrapid.commons.Assert;
 import com.github.vincemann.springrapid.core.model.IdentifiableEntity;
-import com.github.vincemann.springrapid.core.service.security.SecurityCheckerImpl;
+import com.github.vincemann.springrapid.core.security.RapidAuthenticatedPrincipal;
+import com.github.vincemann.springrapid.core.security.RapidSecurityContext;
+import com.github.vincemann.springrapid.core.security.SecurityCheckerImpl;
 import com.github.vincemann.springrapid.core.util.Authenticated;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeansException;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.expression.EvaluationContext;
@@ -17,7 +17,6 @@ import org.springframework.expression.spel.standard.SpelExpressionParser;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.access.expression.ExpressionUtils;
 import org.springframework.security.access.expression.method.MethodSecurityExpressionHandler;
-import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.util.SimpleMethodInvocation;
 
@@ -25,7 +24,6 @@ import java.io.Serializable;
 import java.lang.reflect.Method;
 import java.util.Collection;
 import java.util.HashSet;
-import java.util.stream.Collectors;
 
 @Slf4j
 /**
@@ -36,15 +34,13 @@ import java.util.stream.Collectors;
  * Uses {@link MethodSecurityExpressionHandler} for expression evaluation and {@link org.springframework.security.core.context.SecurityContext}
  * to get information about authenticated user.
  */
-@LogInteraction
-@LogException
-@LogConfig(ignoreGetters = true,ignoreSetters = true)
 public class AclSecurityCheckerImpl extends SecurityCheckerImpl implements AclSecurityChecker,ApplicationContextAware {
 
 
     private Method triggerCheckMethod;
     private SpelExpressionParser parser;
     private ApplicationContext applicationContext;
+    private RapidSecurityContext<?> rapidSecurityContext;
 
     public AclSecurityCheckerImpl() {
         try {
@@ -53,6 +49,11 @@ public class AclSecurityCheckerImpl extends SecurityCheckerImpl implements AclSe
             log.error(e.getMessage(), e);
         }
         parser = new SpelExpressionParser();
+    }
+
+    @Autowired
+    public void injectRapidSecurityContext(RapidSecurityContext<?> rapidSecurityContext) {
+        this.rapidSecurityContext = rapidSecurityContext;
     }
 
     @Override
@@ -90,30 +91,26 @@ public class AclSecurityCheckerImpl extends SecurityCheckerImpl implements AclSe
         }
         boolean permitted = checkExpression("hasPermission(" + id + ",'" + clazz.getName() + "','" + permission + "')");
         if(!permitted){
-            String name = Assert.isPresent(Authenticated.getName());
-            throw new AccessDeniedException("Permission not Granted! User: "+name+" with roles:"
-                    +SecurityContextHolder.getContext().getAuthentication().getAuthorities()
-                            .stream()
-                            .map(GrantedAuthority::getAuthority)
-                            .collect(Collectors.toList())
-                    +" does not have Permission " + permission + " for entity: {"+clazz.getSimpleName() + ", id: " + id+"}");
+            RapidAuthenticatedPrincipal principal = rapidSecurityContext.currentPrincipal();
+            throw new AccessDeniedException("Permission not Granted! Principal: "+principal+
+                    " does not have Permission: " + permission + " for entity: {"+clazz.getSimpleName() + ", id: " + id+"}");
         }
     }
 
     @Override
     public void checkRole(String role){
-        String name = SecurityContextHolder.getContext().getAuthentication().getName();
         boolean permitted = checkExpression("hasRole('" + role + "')");
         if(!permitted){
-            throw new AccessDeniedException("Permission not Granted! User : " + name + " does not have role: " + role);
+            throw new AccessDeniedException("Permission not Granted! Principal : " + rapidSecurityContext.currentPrincipal()
+                    + " does not have requested role: " + role);
         }
     }
 
     @Override
     public boolean checkExpression(String securityExpression) {
-        if (log.isDebugEnabled()) {
-            log.debug("EVALUATING SECURITY EXPRESSION: [" + securityExpression + "]...");
-        }
+//        if (log.isDebugEnabled()) {
+//            log.debug("EVALUATING SECURITY EXPRESSION: [" + securityExpression + "]...");
+//        }
 
         AclSecurityCheckerImpl.SecurityObject securityObject = new AclSecurityCheckerImpl.SecurityObject();
         MethodSecurityExpressionHandler expressionHandler = applicationContext.getBean(MethodSecurityExpressionHandler.class);
@@ -123,9 +120,9 @@ public class AclSecurityCheckerImpl extends SecurityCheckerImpl implements AclSe
                 new SimpleMethodInvocation(securityObject, triggerCheckMethod)
         );
         boolean checkResult = ExpressionUtils.evaluateAsBoolean(parser.parseExpression(securityExpression), evaluationContext);
-        if (log.isDebugEnabled()) {
-            log.debug("SECURITY EXPRESSION EVALUATED AS: " + checkResult);
-        }
+//        if (log.isDebugEnabled()) {
+//            log.debug("SECURITY EXPRESSION EVALUATED AS: " + checkResult);
+//        }
         return checkResult;
     }
 

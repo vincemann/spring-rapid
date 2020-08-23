@@ -16,17 +16,17 @@ import java.io.Serializable;
 import java.util.Date;
 
 /**
- * Base class for all entities.
+ * Base class for all entities that want auditing.
  * 
  * @author Sanjay Patel
+ * @modifiedBy vincemann
   */
-//todo alle meine Entites sollten hier von erben -> meine TimeStamp abstract Entity raushauen
 @MappedSuperclass
 @Getter @Setter
 @JsonIgnoreProperties({ "createdById", "lastModifiedById", "createdDate", "lastModifiedDate", "new" })
 @EntityListeners(AuditingEntityListener.class)
 @ToString(callSuper = true)
-public class LemonEntity<ID extends Serializable> extends IdentifiableEntityImpl<ID>
+public class AuditingEntity<ID extends Serializable> extends IdentifiableEntityImpl<ID>
 {
 
 	private static final long serialVersionUID = -8151190931948396443L;

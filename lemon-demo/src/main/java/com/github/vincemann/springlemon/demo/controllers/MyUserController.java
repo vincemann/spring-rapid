@@ -7,7 +7,7 @@ import com.github.vincemann.springlemon.demo.domain.User;
 import com.github.vincemann.springlemon.demo.domain.MySignupForm;
 import com.github.vincemann.springlemon.demo.dto.AdminUpdateUserDto;
 import com.github.vincemann.springlemon.demo.dto.UserUpdateDto;
-import com.github.vincemann.springrapid.core.service.security.Role;
+import com.github.vincemann.springrapid.core.security.RapidRole;
 import com.github.vincemann.springrapid.core.controller.dtoMapper.context.Direction;
 import com.github.vincemann.springrapid.core.controller.dtoMapper.context.DtoMappingContext;
 import com.github.vincemann.springrapid.core.controller.dtoMapper.context.RapidDtoEndpoint;
@@ -26,7 +26,7 @@ public class MyUserController extends LemonController<User, Long>  {
         return LemonDtoMappingContextBuilder.builder((DtoMappingContext) super.provideDtoMappingContext())
                 .forEndpoint(RapidDtoEndpoint.UPDATE, UserUpdateDto.class)
                 .forEndpoint(LemonDtoEndpoint.SIGN_UP, Direction.REQUEST,MySignupForm.class)
-                .withRoles(Role.ADMIN)
+                .withRoles(RapidRole.ADMIN)
                 .forEndpoint(RapidDtoEndpoint.UPDATE, AdminUpdateUserDto.class)
                 .build();
     }

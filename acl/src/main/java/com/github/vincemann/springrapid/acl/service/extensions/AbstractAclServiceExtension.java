@@ -2,9 +2,9 @@ package com.github.vincemann.springrapid.acl.service.extensions;
 
 import com.github.vincemann.aoplog.Severity;
 import com.github.vincemann.aoplog.api.LogInteraction;
-import com.github.vincemann.springrapid.core.service.security.Role;
+import com.github.vincemann.springrapid.core.security.RapidRole;
 import com.github.vincemann.springrapid.acl.service.LocalPermissionService;
-import com.github.vincemann.springrapid.core.service.security.MockAuthService;
+import com.github.vincemann.springrapid.core.security.MockAuthService;
 import com.github.vincemann.springrapid.core.model.IdentifiableEntity;
 import com.github.vincemann.springrapid.core.proxy.ServiceExtension;
 import lombok.AllArgsConstructor;
@@ -36,7 +36,7 @@ public abstract class AbstractAclServiceExtension<S>
         //todo rethink design with mock auth service
         mockAuthService.runAuthenticatedAsAdmin(() -> {
             getPermissionService().addPermissionForAuthorityOver(entity,
-                    BasePermission.ADMINISTRATION, Role.ADMIN);
+                    BasePermission.ADMINISTRATION, RapidRole.ADMIN);
         });
     }
 
