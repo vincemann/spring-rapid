@@ -1,6 +1,8 @@
 package com.github.vincemann.springlemon.auth.service;
 
 
+import com.github.vincemann.springlemon.auth.service.token.JwsTokenService;
+import com.github.vincemann.springlemon.auth.service.token.JweTokenService;
 import com.nimbusds.jwt.JWTClaimsSet;
 import com.github.vincemann.springlemon.auth.domain.AbstractUser;
 import com.github.vincemann.springlemon.auth.domain.AbstractUserRepository;
@@ -55,14 +57,14 @@ public abstract class LemonServiceImpl<U extends AbstractUser<ID>, ID extends Se
     public void createLemonService(LemonProperties properties,
                                    PasswordEncoder passwordEncoder,
                                    MailSender<?> mailSender,
-                                   AuthorizationTokenService authorizationTokenService,
-                                   VerificationTokenService verificationTokenService) {
+                                   JwsTokenService jwsTokenService,
+                                   JweTokenService jweTokenService) {
 
         this.properties = properties;
         this.passwordEncoder = passwordEncoder;
         this.mailSender = mailSender;
-        this.authorizationTokenService = authorizationTokenService;
-        this.verificationTokenService = verificationTokenService;
+        this.jwsTokenService = jwsTokenService;
+        this.jweTokenService = jweTokenService;
         log.info("Created");
     }
 
@@ -189,8 +191,8 @@ public abstract class LemonServiceImpl<U extends AbstractUser<ID>, ID extends Se
         LexUtils.validate(user.hasRole(LemonRole.UNVERIFIED),
                 "com.naturalprogrammer.spring.alreadyVerified").go();
         //verificationCode is jwtToken
-        JWTClaimsSet claims = verificationTokenService.parseToken(verificationCode,
-                VerificationTokenService.VERIFY_AUDIENCE, user.getCredentialsUpdatedMillis());
+        JWTClaimsSet claims = jweTokenService.parseToken(verificationCode,
+                JweTokenService.VERIFY_AUDIENCE, user.getCredentialsUpdatedMillis());
 
         LecUtils.ensureAuthority(
                 claims.getSubject().equals(user.getId().toString()) &&
@@ -240,8 +242,8 @@ public abstract class LemonServiceImpl<U extends AbstractUser<ID>, ID extends Se
     public U resetPassword(ResetPasswordForm form) throws EntityNotFoundException {
 //        log.debug("Resetting password ...");
 
-        JWTClaimsSet claims = verificationTokenService.parseToken(form.getCode(),
-                VerificationTokenService.FORGOT_PASSWORD_AUDIENCE);
+        JWTClaimsSet claims = jweTokenService.parseToken(form.getCode(),
+                JweTokenService.FORGOT_PASSWORD_AUDIENCE);
 
         String email = claims.getSubject();
 
@@ -404,8 +406,8 @@ public abstract class LemonServiceImpl<U extends AbstractUser<ID>, ID extends Se
      */
     protected void mailChangeEmailLink(U user) {
 
-        String changeEmailCode = verificationTokenService.createToken(
-                VerificationTokenService.CHANGE_EMAIL_AUDIENCE,
+        String changeEmailCode = jweTokenService.createToken(
+                JweTokenService.CHANGE_EMAIL_AUDIENCE,
                 user.getId().toString(), properties.getJwt().getExpirationMillis(),
                 LecUtils.mapOf("newEmail", user.getNewEmail()));
 
@@ -468,8 +470,8 @@ public abstract class LemonServiceImpl<U extends AbstractUser<ID>, ID extends Se
         LexUtils.validate(StringUtils.isNotBlank(user.getNewEmail()),
                 "com.naturalprogrammer.spring.blank.newEmail").go();
 
-        JWTClaimsSet claims = verificationTokenService.parseToken(changeEmailCode,
-                VerificationTokenService.CHANGE_EMAIL_AUDIENCE,
+        JWTClaimsSet claims = jweTokenService.parseToken(changeEmailCode,
+                JweTokenService.CHANGE_EMAIL_AUDIENCE,
                 user.getCredentialsUpdatedMillis());
 
         LecUtils.ensureAuthority(
@@ -524,7 +526,7 @@ public abstract class LemonServiceImpl<U extends AbstractUser<ID>, ID extends Se
         //todo kann sich hier jeder user nen token mit beliebiger expiration ausstellen lassen?
         //ist das ein problem?
         return LecUtils.TOKEN_PREFIX +
-                authorizationTokenService.createToken(AuthorizationTokenService.AUTH_AUDIENCE, email,
+                jwsTokenService.createToken(JwsTokenService.AUTH_AUDIENCE, email,
                         expirationMillis.orElse(properties.getJwt().getExpirationMillis()));
     }
 

@@ -1,4 +1,4 @@
-package com.github.vincemann.springlemon.auth.service;
+package com.github.vincemann.springlemon.auth.service.token;
 
 import com.github.vincemann.aoplog.Severity;
 import com.github.vincemann.aoplog.api.AopLoggable;
@@ -31,7 +31,6 @@ public interface JwtService extends AopLoggable {
 	String createToken(String aud, String subject, Long expirationMillis, Map<String, Object> claimMap);
 	String createToken(String audience, String subject, Long expirationMillis);
 
-	//Audience = Whos the recipient of the token
 	JWTClaimsSet parseToken(String token, String audience);
 	JWTClaimsSet parseToken(String token, String audience, long issuedAfter);
 

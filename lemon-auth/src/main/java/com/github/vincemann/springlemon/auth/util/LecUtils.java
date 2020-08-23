@@ -24,10 +24,10 @@ public class LecUtils{
 //	public static final String LEMON_REDIRECT_URI_COOKIE_PARAM_NAME = "lemon_redirect_uri";
 
 	
-	// JWT Token related
-	public static final String TOKEN_PREFIX = "Bearer ";
-	public static final int TOKEN_PREFIX_LENGTH = 7;
-	public static final String TOKEN_RESPONSE_HEADER_NAME = "Lemon-Authorization";
+//	// JWT Token related
+//	public static final String TOKEN_PREFIX = "Bearer ";
+//	public static final int TOKEN_PREFIX_LENGTH = 7;
+//	public static final String TOKEN_RESPONSE_HEADER_NAME = "Lemon-Authorization";
 
 
 	public static ApplicationContext applicationContext;

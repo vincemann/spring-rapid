@@ -1,4 +1,4 @@
-package com.github.vincemann.springlemon.auth.service;
+package com.github.vincemann.springlemon.auth.service.token;
 
 
 import com.nimbusds.jose.*;
@@ -27,7 +27,7 @@ import java.util.Map;
  * https://connect2id.com/products/nimbus-jose-jwt/examples/validating-jwt-access-tokens
  */
 @Slf4j
-public class LemonJweService extends AbstractJwtService implements VerificationTokenService {
+public class LemonJweService extends AbstractJwtService implements JweTokenService {
 
 	private DirectEncrypter encrypter;
     private JWEHeader header = new JWEHeader(JWEAlgorithm.DIR, EncryptionMethod.A128CBC_HS256);

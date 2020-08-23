@@ -1,7 +1,7 @@
 package com.github.vincemann.springlemon.auth.config;
 
-import com.github.vincemann.springlemon.auth.security.LemonJwtAuthenticationFilter;
-import com.github.vincemann.springlemon.auth.service.AuthorizationTokenService;
+import com.github.vincemann.springlemon.auth.security.LemonAuthenticationFilter;
+import com.github.vincemann.springlemon.auth.service.token.JwsTokenService;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,12 +22,12 @@ public class LemonWebSecurityConfig extends WebSecurityConfigurerAdapter {
 	
 	private static final Log log = LogFactory.getLog(LemonWebSecurityConfig.class);
 
-	protected AuthorizationTokenService authorizationTokenService;
+	protected JwsTokenService jwsTokenService;
 	
 	@Autowired
-	public void createLemonWebSecurityConfig(AuthorizationTokenService authorizationTokenService) {
+	public void createLemonWebSecurityConfig(JwsTokenService jwsTokenService) {
 
-		this.authorizationTokenService = authorizationTokenService;
+		this.jwsTokenService = jwsTokenService;
 		log.info("Created");
 	}
 
@@ -90,7 +90,7 @@ public class LemonWebSecurityConfig extends WebSecurityConfigurerAdapter {
 	 */
 	protected void tokenAuthentication(HttpSecurity http) throws Exception {
 		
-		http.addFilterBefore(new LemonJwtAuthenticationFilter(authorizationTokenService),
+		http.addFilterBefore(new LemonAuthenticationFilter(jwsTokenService),
 				UsernamePasswordAuthenticationFilter.class);
 	}
 

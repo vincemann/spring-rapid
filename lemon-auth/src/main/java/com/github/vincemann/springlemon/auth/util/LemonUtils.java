@@ -1,17 +1,10 @@
 package com.github.vincemann.springlemon.auth.util;
 
 import com.github.vincemann.springlemon.auth.domain.AbstractUser;
-import com.github.vincemann.springlemon.auth.domain.LemonAuthenticatedPrincipal;
-import com.github.vincemann.springlemon.auth.domain.dto.user.LemonUserDto;
-import com.github.vincemann.springlemon.auth.service.AuthorizationTokenService;
-import com.github.vincemann.springlemon.auth.service.JwtService;
+import com.github.vincemann.springlemon.auth.service.token.JwtService;
 import com.nimbusds.jwt.JWTClaimsSet;
-import com.github.vincemann.springrapid.core.util.MapperUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 
 import java.io.Serializable;
 
