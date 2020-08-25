@@ -20,24 +20,28 @@ public abstract class AbstractJwtService implements JwtService {
 	
 	private static final Log log = LogFactory.getLog(AbstractJwtService.class);
 	
-	protected Payload createPayload(String aud, String subject, Long expirationMillis, Map<String, Object> claimMap) {
-		
-		JWTClaimsSet.Builder builder = new JWTClaimsSet.Builder();
-		
-		builder
-    		//.issueTime(new Date())
-    		.expirationTime(new Date(System.currentTimeMillis() + expirationMillis))
-    		.audience(aud)
-    		.subject(subject)
-    		.claim(LEMON_IAT, System.currentTimeMillis());
-		
-		claimMap.forEach(builder::claim);
-		
-		JWTClaimsSet claims = builder.build();
+//	protected Payload createPayload(String aud, String subject, Long expirationMillis, Map<String, Object> claimMap) {
+//
+//		JWTClaimsSet.Builder builder = new JWTClaimsSet.Builder();
+//
+//		builder
+//    		//.issueTime(new Date())
+//    		.expirationTime(new Date(System.currentTimeMillis() + expirationMillis))
+//    		.audience(aud)
+//    		.subject(subject)
+//    		.claim(LEMON_IAT, System.currentTimeMillis());
+//
+//		claimMap.forEach(builder::claim);
+//
+//		JWTClaimsSet claims = builder.build();
+//
+//    	return new Payload(claims.toJSONObject());
+//	}
 
-    	return new Payload(claims.toJSONObject());
+	@Override
+	public String createToken(JWTClaimsSet claimsSet) {
+		return null;
 	}
-
 
 	////@LogInteraction(level = LogInteraction.Level.TRACE)
 	@Override
@@ -74,7 +78,6 @@ public abstract class AbstractJwtService implements JwtService {
 		JWTClaimsSet claims = parseToken(token, audience);
 
 		//is token still valid?
-		//todo difference to expired?
 		long issueTime = (long) claims.getClaim(LEMON_IAT);
 		LecUtils.ensureCredentials(issueTime >= issuedAfter,
 				"com.naturalprogrammer.spring.obsoleteToken");
@@ -83,13 +86,13 @@ public abstract class AbstractJwtService implements JwtService {
 	}
 
 
-	////@LogInteraction(level = LogInteraction.Level.TRACE)
-	@Override
-	public <T> T parseClaim(String token, String claim) {
-		
-		JWTClaimsSet claims = parseToken(token);
-		return (T) claims.getClaim(claim);
-	}
+//	////@LogInteraction(level = LogInteraction.Level.TRACE)
+//	@Override
+//	public <T> T parseClaim(String token, String claim) {
+//
+//		JWTClaimsSet claims = parseToken(token);
+//		return (T) claims.getClaim(claim);
+//	}
 	
 
 	protected abstract JWTClaimsSet parseToken(String token);	

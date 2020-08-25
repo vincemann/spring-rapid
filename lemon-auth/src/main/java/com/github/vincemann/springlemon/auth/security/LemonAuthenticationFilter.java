@@ -30,7 +30,7 @@ public class LemonAuthenticationFilter extends OncePerRequestFilter {
     private static final Log log = LogFactory.getLog(LemonAuthenticationFilter.class);
     
     private JwsTokenService jwsTokenService;
-    private JwtPrincipalConverter jwtPrincipalConverter;
+    private JwtClaimsPrincipalConverter jwtPrincipalConverter;
 
 
     private HttpTokenService httpTokenService;
