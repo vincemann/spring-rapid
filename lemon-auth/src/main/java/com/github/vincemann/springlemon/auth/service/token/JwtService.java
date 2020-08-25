@@ -12,27 +12,14 @@ import java.util.Map;
 @LogInteraction(Severity.TRACE)
 public interface JwtService extends AopLoggable {
 
-	/**
-	 * Time when this JWT was created
-	 */
-	String LEMON_IAT = "lemon-iat";
 
-	/**
-	 * Create JWT with specific payload.
-	 * The first key-value pairs of the payload are mandatory,
-	 * the rest of the payload is obligatory and can contain anything.
-	 *
-	 * @param aud				What is this token for?
-	 * @param subject			Who is this token for?
-	 * @param expirationMillis	When will this token expire?
-	 * @param claimMap			payload
-	 * @return					token
-	 */
-	String createToken(String aud, String subject, Long expirationMillis, Map<String, Object> claimMap);
-	String createToken(String audience, String subject, Long expirationMillis);
+//	String createToken(String aud, String subject, Long expirationMillis, Map<String, Object> claimMap);
+//	String createToken(String audience, String subject, Long expirationMillis);
+	String createToken(JWTClaimsSet claimsSet);
+	JWTClaimsSet parseToken(String token);
 
-	JWTClaimsSet parseToken(String token, String audience);
-	JWTClaimsSet parseToken(String token, String audience, long issuedAfter);
-
-	<T> T parseClaim(String token, String claim);
+//	JWTClaimsSet parseToken(String token, String audience);
+//	JWTClaimsSet parseToken(String token, String audience, long issuedAfter);
+//
+//	<T> T parseClaim(String token, String claim);
 }
