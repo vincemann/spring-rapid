@@ -1,9 +1,14 @@
 package com.github.vincemann.springlemon.auth.service;
 
 
+import com.github.vincemann.springlemon.auth.domain.LemonAuthenticatedPrincipal;
+import com.github.vincemann.springlemon.auth.service.token.AuthorizationTokenService;
 import com.github.vincemann.springlemon.auth.service.token.BadTokenException;
 import com.github.vincemann.springlemon.auth.service.token.JwsTokenService;
 import com.github.vincemann.springlemon.auth.service.token.JweTokenService;
+import com.github.vincemann.springlemon.auth.util.*;
+import com.github.vincemann.springrapid.core.security.RapidAuthenticatedPrincipal;
+import com.github.vincemann.springrapid.core.security.RapidSecurityContext;
 import com.nimbusds.jwt.JWTClaimsSet;
 import com.github.vincemann.springlemon.auth.domain.AbstractUser;
 import com.github.vincemann.springlemon.auth.domain.AbstractUserRepository;
@@ -15,10 +20,6 @@ import com.github.vincemann.springlemon.auth.mail.LemonMailData;
 import com.github.vincemann.springlemon.auth.mail.MailSender;
 import com.github.vincemann.springlemon.auth.properties.LemonProperties;
 import com.github.vincemann.springlemon.auth.domain.LemonRole;
-import com.github.vincemann.springlemon.auth.util.LecUtils;
-import com.github.vincemann.springlemon.auth.util.LecjUtils;
-import com.github.vincemann.springlemon.auth.util.LecwUtils;
-import com.github.vincemann.springlemon.auth.util.LemonUtils;
 import com.github.vincemann.springlemon.exceptions.util.LexUtils;
 import com.github.vincemann.springrapid.core.security.RapidRole;
 import com.github.vincemann.springrapid.core.service.exception.BadEntityException;
@@ -53,25 +54,13 @@ public abstract class LemonServiceImpl<U extends AbstractUser<ID>, ID extends Se
                     implements LemonService<U, ID, R> {
 
     private static final Log log = LogFactory.getLog(LemonServiceImpl.class);
-    private static final String VERIFY_AUDIENCE = "verify";
-    private static final String FORGOT_PASSWORD_AUDIENCE = "forgot-password";
-    private static final String CHANGE_EMAIL_AUDIENCE = "change-email";
+    protected static final String CHANGE_EMAIL_AUDIENCE = "change-email";
+
+    private AuthorizationTokenService<LemonAuthenticatedPrincipal> authorizationTokenService;
+    private RapidSecurityContext<LemonAuthenticatedPrincipal> securityContext;
 
 
-    @Autowired
-    public void createLemonService(LemonProperties properties,
-                                   PasswordEncoder passwordEncoder,
-                                   MailSender<?> mailSender,
-                                   JwsTokenService jwsTokenService,
-                                   JweTokenService jweTokenService) {
 
-        this.properties = properties;
-        this.passwordEncoder = passwordEncoder;
-        this.mailSender = mailSender;
-        this.jwsTokenService = jwsTokenService;
-        this.jweTokenService = jweTokenService;
-        log.info("Created");
-    }
 
     /**
      * Creates a new user object. Must be overridden in the
@@ -276,39 +265,6 @@ public abstract class LemonServiceImpl<U extends AbstractUser<ID>, ID extends Se
         return saved;
     }
 
-
-//	@Override
-//	public U update(U updatedUser, Boolean full) throws EntityNotFoundException, BadEntityException, BadEntityException {
-////		// checks
-////		Optional<U> byId = getRepository().findById(updatedUser.getId());
-////		LexUtils.ensureFound(byId);
-////		U old = byId.get();
-////
-////		return super.update(updatedUser, full);
-//		throw new IllegalArgumentException("Call updateUser instead");
-//	}
-
-//	/**
-//	 * Updates a user with the given data.
-//	 */
-//	@Override
-//	@Transactional(propagation = Propagation.REQUIRED, readOnly = false)
-//	public U updateUser(U old, U newUser) {
-//
-//		log.debug("Updating user: " + old);
-//
-//		// checks
-////		LecjUtils.ensureCorrectVersion(user, updatedUser);
-//
-//		// delegates to updateUserFields
-//		updateRoles(old, newUser, LecwUtils.currentUser());
-//		U updated = getRepository().save(old);
-//		log.debug("Updated user: " + old);
-//
-////		LemonUserDto userDto = user.toUserDto();
-////		userDto.setPassword(null);
-//		return updated;
-//	}
 
     @Transactional(propagation = Propagation.REQUIRED, readOnly = false)
     @Override
@@ -515,12 +471,12 @@ public abstract class LemonServiceImpl<U extends AbstractUser<ID>, ID extends Se
      *
      * @return
      */
-    public String fetchNewToken(Optional<Long> expirationMillis,
-                                Optional<String> optionalUsername) {
+    @Override
+    public String fetchNewAuthToken(Optional<String> optionalEmail) {
 
-
-        LemonUserDto currentUser = LecwUtils.currentUser();
-        String email = optionalUsername.orElse(currentUser.getEmail());
+        LemonAuthenticatedPrincipal currentUser = securityContext.currentPrincipal();
+//        LemonUserDto currentUser = LecwUtils.currentUser();
+        String email = optionalEmail.orElse(currentUser.getEmail());
 
         //todo den check durch nen acl check ersetzen maybe
         LecUtils.ensureAuthority(currentUser.getEmail().equals(email) ||
@@ -528,9 +484,7 @@ public abstract class LemonServiceImpl<U extends AbstractUser<ID>, ID extends Se
 
         //todo kann sich hier jeder user nen token mit beliebiger expiration ausstellen lassen?
         //ist das ein problem?
-        return LecUtils.TOKEN_PREFIX +
-                jwsTokenService.createToken(JwsTokenService.AUTH_AUDIENCE, email,
-                        expirationMillis.orElse(properties.getJwt().getExpirationMillis()));
+        return authorizationTokenService.createToken(currentUser);
     }
 
     @Transactional(propagation = Propagation.REQUIRED, readOnly = false)
@@ -549,44 +503,22 @@ public abstract class LemonServiceImpl<U extends AbstractUser<ID>, ID extends Se
     }
 
 
-    protected String createToken(String aud, String subject, long expirationMillis, Map<String,Object> otherClaims){
-        JWTClaimsSet.Builder builder = new JWTClaimsSet.Builder();
 
-        builder
-                //.issueTime(new Date())
-                .expirationTime(new Date(System.currentTimeMillis() + expirationMillis))
-                .audience(aud)
-                .subject(subject)
-                .issueTime(new Date());
-
-        otherClaims.forEach(builder::claim);
-        JWTClaimsSet claims = builder.build();
-        return jweTokenService.createToken(claims);
+    @Autowired
+    public void injectAuthorizationTokenService(AuthorizationTokenService<LemonAuthenticatedPrincipal> authorizationTokenService) {
+        this.authorizationTokenService = authorizationTokenService;
     }
 
-    protected JWTClaimsSet parseToken(String token, String audience) throws BadTokenException {
-        JWTClaimsSet claims = jweTokenService.parseToken(token);
-        LecUtils.ensureCredentials(audience != null &&
-                        claims.getAudience().contains(audience),
-                "com.naturalprogrammer.spring.wrong.audience");
-        long expirationTime = claims.getExpirationTime().getTime();
-        long currentTime = System.currentTimeMillis();
-
-        log.debug("Parsing JWT. Expiration time = " + expirationTime
-                + ". Current time = " + currentTime);
-
-        LecUtils.ensureCredentials(expirationTime >= currentTime,
-                "com.naturalprogrammer.spring.expiredToken");
-        return claims;
+    public Optional<U> findUserById(String id) {
+        return getRepository().findById(toId(id));
     }
 
-    protected JWTClaimsSet parseToken(String token, String expectedAud,long issuedAfter) throws BadTokenException {
-        JWTClaimsSet claims = parseToken(token, expectedAud);
-        long issueTime = claims.getIssueTime().getTime();
-        LecUtils.ensureCredentials(issueTime >= issuedAfter,
-                "com.naturalprogrammer.spring.obsoleteToken");
-        return claims;
+    @Autowired
+
+    public void injectSecurityContext(RapidSecurityContext<LemonAuthenticatedPrincipal> securityContext) {
+        this.securityContext = securityContext;
     }
+
 
 
 //	/**
@@ -608,7 +540,7 @@ public abstract class LemonServiceImpl<U extends AbstractUser<ID>, ID extends Se
 //	}
 
 
-//    //todo I dont think that i need this. Every information needed by the client is in the UserDto he can get by sending GET user?id=myId
+    //    //todo I dont think that i need this. Every information needed by the client is in the UserDto he can get by sending GET user?id=myId
 //    public Map<String, String> fetchFullToken(String authHeader) {
 //
 //        LecUtils.ensureCredentials(authorizationTokenService.parseClaim(authHeader.substring(LecUtils.TOKEN_PREFIX_LENGTH),
@@ -630,8 +562,36 @@ public abstract class LemonServiceImpl<U extends AbstractUser<ID>, ID extends Se
 
 
 
+//	@Override
+//	public U update(U updatedUser, Boolean full) throws EntityNotFoundException, BadEntityException, BadEntityException {
+////		// checks
+////		Optional<U> byId = getRepository().findById(updatedUser.getId());
+////		LexUtils.ensureFound(byId);
+////		U old = byId.get();
+////
+////		return super.update(updatedUser, full);
+//		throw new IllegalArgumentException("Call updateUser instead");
+//	}
 
-    public Optional<U> findUserById(String id) {
-        return getRepository().findById(toId(id));
-    }
+//	/**
+//	 * Updates a user with the given data.
+//	 */
+//	@Override
+//	@Transactional(propagation = Propagation.REQUIRED, readOnly = false)
+//	public U updateUser(U old, U newUser) {
+//
+//		log.debug("Updating user: " + old);
+//
+//		// checks
+////		LecjUtils.ensureCorrectVersion(user, updatedUser);
+//
+//		// delegates to updateUserFields
+//		updateRoles(old, newUser, LecwUtils.currentUser());
+//		U updated = getRepository().save(old);
+//		log.debug("Updated user: " + old);
+//
+////		LemonUserDto userDto = user.toUserDto();
+////		userDto.setPassword(null);
+//		return updated;
+//	}
 }

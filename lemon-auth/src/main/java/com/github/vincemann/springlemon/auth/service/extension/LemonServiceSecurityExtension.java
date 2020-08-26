@@ -131,7 +131,7 @@ public class LemonServiceSecurityExtension
     @Override
     public String fetchNewToken(Optional expirationMillis, Optional optionalUsername) {
         getSecurityChecker().checkAuthenticated();
-        return getNext().fetchNewToken(expirationMillis,optionalUsername);
+        return getNext().fetchNewAuthToken(expirationMillis,optionalUsername);
     }
 
     @Override

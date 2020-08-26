@@ -52,6 +52,10 @@ public class LemonAuthenticatedPrincipal extends RapidAuthenticatedPrincipal {
 		goodUser = !(unverified || blocked);
 		goodAdmin = goodUser && admin;
 	}
+
+	public String getEmail(){
+		return getName();
+	}
 	
 //	public LemonUserDto currentUser() {
 //		return lemonUserDto;

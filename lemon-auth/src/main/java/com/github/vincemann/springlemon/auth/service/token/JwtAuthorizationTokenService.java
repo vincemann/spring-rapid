@@ -12,7 +12,7 @@ import java.util.Date;
 import java.util.Map;
 
 @Slf4j
-public class JwtAuthorizationTokenService<P extends RapidAuthenticatedPrincipal> implements AuthorizationTokenService<P> {
+public abstract class JwtAuthorizationTokenService<P extends RapidAuthenticatedPrincipal> implements AuthorizationTokenService<P> {
 
     private static final String AUTH_AUDIENCE = "auth";
     private static final String PRINCIPAL_CLAIMS_KEY = "rapid-principal";
@@ -27,13 +27,6 @@ public class JwtAuthorizationTokenService<P extends RapidAuthenticatedPrincipal>
     private JwtClaimsPrincipalConverter<P> jwtPrincipalConverter;
     private LemonProperties properties;
 
-
-    @Autowired
-    public JwtAuthorizationTokenService(JwsTokenService jwsTokenService, JwtClaimsPrincipalConverter<P> jwtPrincipalConverter, LemonProperties properties) {
-        this.jwsTokenService = jwsTokenService;
-        this.jwtPrincipalConverter = jwtPrincipalConverter;
-        this.properties = properties;
-    }
 
     @Override
     public String createToken(P principal) {
@@ -59,12 +52,13 @@ public class JwtAuthorizationTokenService<P extends RapidAuthenticatedPrincipal>
     @Override
     public P parseToken(String token) throws BadTokenException {
         JWTClaimsSet jwtClaimsSet = jwsTokenService.parseToken(token);
-        verifyToken(jwtClaimsSet);
         Map<String, Object> principalClaims = (Map<String, Object>) jwtClaimsSet.getClaim(PRINCIPAL_CLAIMS_KEY);
-        return jwtPrincipalConverter.toPrincipal(principalClaims);
+        P principal = jwtPrincipalConverter.toPrincipal(principalClaims);
+        verifyToken(jwtClaimsSet,principal);
+        return principal;
     }
 
-    protected void verifyToken(JWTClaimsSet claims){
+    public void verifyToken(JWTClaimsSet claims, P principal){
         //expired?
         long expirationTime = claims.getExpirationTime().getTime();
         long currentTime = System.currentTimeMillis();
@@ -82,5 +76,20 @@ public class JwtAuthorizationTokenService<P extends RapidAuthenticatedPrincipal>
 //        LecUtils.ensureCredentials(issueTime >= issuedAfter,
 //                "com.naturalprogrammer.spring.obsoleteToken");
 
+    }
+
+    @Autowired
+    public void injectJwsTokenService(JwsTokenService jwsTokenService) {
+        this.jwsTokenService = jwsTokenService;
+    }
+
+    @Autowired
+    public void injectJwtPrincipalConverter(JwtClaimsPrincipalConverter<P> jwtPrincipalConverter) {
+        this.jwtPrincipalConverter = jwtPrincipalConverter;
+    }
+
+    @Autowired
+    public void injectProperties(LemonProperties properties) {
+        this.properties = properties;
     }
 }
