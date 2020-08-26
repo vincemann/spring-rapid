@@ -41,7 +41,7 @@ public class RapidSecurityContextImpl<P extends RapidAuthenticatedPrincipal> imp
     }
 
     protected Authentication createToken(String name, String password, Set<String> roles) {
-        RapidAuthenticatedPrincipal principal = new RapidAuthenticatedPrincipal(name, password, roles);
+        RapidAuthenticatedPrincipal principal = new RapidAuthenticatedPrincipal(name, password, roles, id);
         return new UsernamePasswordAuthenticationToken(
                 principal,
                 password,

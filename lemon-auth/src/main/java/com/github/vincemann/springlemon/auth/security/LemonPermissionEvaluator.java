@@ -5,6 +5,7 @@ import com.github.vincemann.aoplog.api.LogInteraction;
 import com.github.vincemann.springlemon.auth.domain.dto.user.LemonUserDto;
 import com.github.vincemann.springlemon.auth.util.LecUtils;
 import com.github.vincemann.springlemon.auth.util.LecwUtils;
+import com.github.vincemann.springrapid.core.security.RapidSecurityContext;
 import com.github.vincemann.springrapid.core.service.locator.CrudServiceLocator;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.access.AccessDeniedException;
@@ -88,10 +89,9 @@ public class LemonPermissionEvaluator extends AclPermissionEvaluator implements 
         List<Permission> requiredPermission = resolvePermission(permission);
 
         if (log.isTraceEnabled()){
-            LemonUserDto user = LecwUtils.currentUser();
-            log.trace("Does User: " + user.getEmail() + " have permissions: " + requiredPermission +"\n"+
-                    "that are required for an operation over: " +
-                    );
+            String authenticated = RapidSecurityContext.getName();
+            log.trace("Does authenticated User: " + authenticated + " have permissions: " + requiredPermission +"\n"+
+                    "that are required for an operation over: " + );
         }
 
         try {

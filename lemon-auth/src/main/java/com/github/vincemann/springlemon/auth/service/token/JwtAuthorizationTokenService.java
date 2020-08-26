@@ -1,6 +1,6 @@
 package com.github.vincemann.springlemon.auth.service.token;
 
-import com.github.vincemann.springlemon.auth.properties.LemonProperties;
+import com.github.vincemann.springlemon.auth.LemonProperties;
 import com.github.vincemann.springlemon.auth.security.JwtClaimsPrincipalConverter;
 import com.github.vincemann.springlemon.auth.util.LecUtils;
 import com.github.vincemann.springrapid.core.security.RapidAuthenticatedPrincipal;
@@ -16,11 +16,6 @@ public abstract class JwtAuthorizationTokenService<P extends RapidAuthenticatedP
 
     private static final String AUTH_AUDIENCE = "auth";
     private static final String PRINCIPAL_CLAIMS_KEY = "rapid-principal";
-
-    /**
-     * Time when this JWT was created
-     */
-//    private static final String ISSUED_AT_CLAIM_KEY = "rapid-iat";
 
 
     private JwsTokenService jwsTokenService;
@@ -41,11 +36,7 @@ public abstract class JwtAuthorizationTokenService<P extends RapidAuthenticatedP
                 .issueTime(new Date())
                 .claim(PRINCIPAL_CLAIMS_KEY,principalClaims)
                 .build();
-//                .claim(ISSUED_AT_CLAIM_KEY, System.currentTimeMillis());
 
-
-
-//        Object subject = claims.remove("sub");
         return jwsTokenService.createToken(claims);
     }
 

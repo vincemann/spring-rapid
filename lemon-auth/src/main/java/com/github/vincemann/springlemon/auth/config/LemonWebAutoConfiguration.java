@@ -2,7 +2,7 @@ package com.github.vincemann.springlemon.auth.config;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.vincemann.springlemon.auth.controller.owner.LemonOwnerLocator;
-import com.github.vincemann.springlemon.auth.properties.LemonProperties;
+import com.github.vincemann.springlemon.auth.LemonProperties;
 import com.github.vincemann.springlemon.auth.handler.LemonAuthenticationSuccessHandler;
 import com.github.vincemann.springlemon.auth.service.LemonService;
 import com.github.vincemann.springrapid.core.config.RapidControllerAutoConfiguration;

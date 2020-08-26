@@ -1,7 +1,7 @@
 package com.github.vincemann.springlemon.auth.handler;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.github.vincemann.springlemon.auth.properties.LemonProperties;
+import com.github.vincemann.springlemon.auth.LemonProperties;
 import com.github.vincemann.springlemon.auth.domain.dto.user.LemonUserDto;
 import com.github.vincemann.springlemon.auth.service.LemonService;
 import com.github.vincemann.springlemon.auth.util.LecwUtils;

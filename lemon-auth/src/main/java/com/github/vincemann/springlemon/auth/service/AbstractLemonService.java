@@ -1,13 +1,12 @@
 package com.github.vincemann.springlemon.auth.service;
 
-import com.github.vincemann.springlemon.auth.properties.LemonProperties;
+import com.github.vincemann.springlemon.auth.LemonProperties;
 import com.github.vincemann.springlemon.auth.domain.AbstractUser;
 import com.github.vincemann.springlemon.auth.domain.AbstractUserRepository;
 import com.github.vincemann.springlemon.auth.mail.LemonMailData;
 import com.github.vincemann.springlemon.auth.mail.MailSender;
 import com.github.vincemann.springlemon.auth.domain.LemonRole;
 import com.github.vincemann.springlemon.auth.service.token.BadTokenException;
-import com.github.vincemann.springlemon.auth.service.token.JwsTokenService;
 import com.github.vincemann.springlemon.auth.service.token.JweTokenService;
 import com.github.vincemann.springlemon.auth.util.LecUtils;
 import com.github.vincemann.springrapid.core.service.exception.BadEntityException;
