@@ -1,6 +1,6 @@
 package com.github.vincemann.springlemon.auth.config;
 
-import com.github.vincemann.springlemon.auth.properties.LemonProperties;
+import com.github.vincemann.springlemon.auth.LemonProperties;
 import com.github.vincemann.springlemon.auth.bootstrap.AdminInitializer;
 import com.github.vincemann.springlemon.auth.service.LemonService;
 import com.github.vincemann.springrapid.core.security.MockAuthService;

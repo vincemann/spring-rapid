@@ -21,24 +21,15 @@ public class RapidAuthenticatedPrincipal implements AuthenticatedPrincipal, Cred
     private String name;
     private Set<String> roles;
     private String password;
+    private String id;
 
-    public RapidAuthenticatedPrincipal(String name, String password, Set<String> roles) {
+    public RapidAuthenticatedPrincipal(String name, String password, Set<String> roles, String id) {
         this.name = name;
         this.password = password;
         this.roles = roles;
+        this.id = id;
     }
 
-    protected void setName(String name) {
-        this.name = name;
-    }
-
-    protected void setPassword(String password) {
-        this.password = password;
-    }
-
-    protected void setRoles(Set<String> roles) {
-        this.roles = roles;
-    }
 
     @Override
     public void eraseCredentials() {
@@ -85,5 +76,17 @@ public class RapidAuthenticatedPrincipal implements AuthenticatedPrincipal, Cred
     @Override
     public boolean isEnabled() {
         return true;
+    }
+
+    protected void setName(String name) {
+        this.name = name;
+    }
+
+    protected void setPassword(String password) {
+        this.password = password;
+    }
+
+    protected void setRoles(Set<String> roles) {
+        this.roles = roles;
     }
 }

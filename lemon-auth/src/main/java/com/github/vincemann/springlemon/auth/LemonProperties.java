@@ -1,7 +1,8 @@
-package com.github.vincemann.springlemon.auth.properties;
+package com.github.vincemann.springlemon.auth;
 
-import com.github.vincemann.springlemon.auth.util.LecUtils;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.NoArgsConstructor;
+import lombok.ToString;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpHeaders;
 import org.springframework.validation.annotation.Validated;
@@ -167,7 +168,7 @@ public class LemonProperties {
 				"X-XSS-Protection",
 				"X-Frame-Options",
 				"X-Application-Context",
-				LecUtils.TOKEN_RESPONSE_HEADER_NAME};
+				HttpHeaders.AUTHORIZATION};
 		
 		/**
 		 * CORS <code>maxAge</code> long property

@@ -3,7 +3,7 @@ package com.github.vincemann.springlemon.auth.validation;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.github.vincemann.aoplog.api.AopLoggable;
 import com.github.vincemann.aoplog.api.LogInteraction;
-import com.github.vincemann.springlemon.auth.properties.LemonProperties;
+import com.github.vincemann.springlemon.auth.LemonProperties;
 import com.github.vincemann.springrapid.core.slicing.components.ServiceComponent;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;

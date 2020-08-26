@@ -1,8 +1,7 @@
 package com.github.vincemann.springlemon.auth.domain;
 
 import com.github.vincemann.springlemon.auth.domain.dto.user.LemonUserDto;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.AuditorAware;
 
@@ -15,30 +14,29 @@ import java.util.Optional;
  *  
  * @author Sanjay Patel
  */
+@Slf4j
 public abstract class AbstractAuditorAware<ID extends Serializable>
-implements AuditorAware<ID> {
+				implements AuditorAware<ID> {
 
-    private static final Log log = LogFactory.getLog(AbstractAuditorAware.class);
-    
-    private IdConverter<ID> idConverter;
-    
-    @Autowired
-	public void setIdConverter(IdConverter<ID> idConverter) {
-		
-		this.idConverter = idConverter;
-		log.info("Created");
-	}
 
-	protected abstract LemonUserDto currentUser();
+//    private IdConverter<ID> idConverter;
+
+	protected abstract ID currentId();
 	
 	@Override
 	public Optional<ID> getCurrentAuditor() {
-		
-		LemonUserDto user = currentUser();
-		
-		if (user == null)
+
+		ID id = currentId();
+
+		if (id == null)
 			return Optional.empty();
 		
-		return Optional.of(idConverter.toId(user.getId()));
-	}	
+		return Optional.of(id);
+	}
+
+//	@Autowired
+//	public void injectIdConverter(IdConverter<ID> idConverter) {
+//		this.idConverter = idConverter;
+//		log.info("Created");
+//	}
 }
