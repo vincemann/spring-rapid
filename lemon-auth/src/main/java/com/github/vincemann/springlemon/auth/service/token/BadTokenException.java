@@ -1,5 +1,8 @@
 package com.github.vincemann.springlemon.auth.service.token;
 
+/**
+ * Indicates that token is malformed.
+ */
 public class BadTokenException extends Exception {
     public BadTokenException() {
     }

@@ -12,6 +12,7 @@ import java.util.Map;
 @LogInteraction(Severity.TRACE)
 public interface JwtService extends AopLoggable {
 
+	String TOKEN_PREFIX = "Bearer ";
 
 	String createToken(JWTClaimsSet claimsSet);
 	JWTClaimsSet parseToken(String token) throws BadTokenException;

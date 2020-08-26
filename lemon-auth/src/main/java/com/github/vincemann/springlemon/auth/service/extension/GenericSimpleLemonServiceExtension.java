@@ -74,7 +74,7 @@ public interface GenericSimpleLemonServiceExtension<S extends SimpleLemonService
 
     @Override
     default String fetchNewToken(Optional<Long> expirationMillis, Optional<String> optionalUsername) {
-        return getNext().fetchNewToken(expirationMillis,optionalUsername);
+        return getNext().fetchNewAuthToken(expirationMillis,optionalUsername);
     }
 
     @Override

@@ -1,7 +1,7 @@
 package com.github.vincemann.springlemon.auth.config;
 
 import com.github.vincemann.springlemon.auth.properties.LemonProperties;
-import com.github.vincemann.springlemon.auth.security.LemonJpaAuthenticationFilter;
+import com.github.vincemann.springlemon.auth.security.LemonJwtJpaAuthenticationFilter;
 import com.github.vincemann.springlemon.auth.handler.LemonAuthenticationSuccessHandler;
 import com.github.vincemann.springlemon.auth.service.LemonUserDetailsService;
 import lombok.Getter;
@@ -95,7 +95,7 @@ public class LemonJpaSecurityConfig extends LemonWebSecurityConfig {
 	@Override
 	protected void tokenAuthentication(HttpSecurity http) throws Exception {
 		
-		http.addFilterBefore(new LemonJpaAuthenticationFilter(jwsTokenService, userDetailsService),
+		http.addFilterBefore(new LemonJwtJpaAuthenticationFilter(jwsTokenService, userDetailsService),
 				UsernamePasswordAuthenticationFilter.class);
 	}
 }

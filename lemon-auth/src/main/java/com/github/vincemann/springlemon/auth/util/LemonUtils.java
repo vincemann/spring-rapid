@@ -45,10 +45,9 @@ public class LemonUtils {
 	 * Throws BadCredentialsException if 
 	 * user's credentials were updated after the JWT was issued
 	 */
-	public static <U extends AbstractUser<ID>, ID extends Serializable>
-	void ensureCredentialsUpToDate(JWTClaimsSet claims, U user) {
+	public static void ensureCredentialsUpToDate(JWTClaimsSet claims, AbstractUser<?> user) {
 		
-		long issueTime = (long) claims.getClaim(JwtService.LEMON_IAT);
+		long issueTime = claims.getIssueTime().getTime();
 
 		LecUtils.ensureCredentials(issueTime >= user.getCredentialsUpdatedMillis(),
 				"com.naturalprogrammer.spring.obsoleteToken");

@@ -6,6 +6,7 @@ import com.github.vincemann.springlemon.auth.domain.AbstractUserRepository;
 import com.github.vincemann.springlemon.auth.mail.LemonMailData;
 import com.github.vincemann.springlemon.auth.mail.MailSender;
 import com.github.vincemann.springlemon.auth.domain.LemonRole;
+import com.github.vincemann.springlemon.auth.service.token.BadTokenException;
 import com.github.vincemann.springlemon.auth.service.token.JwsTokenService;
 import com.github.vincemann.springlemon.auth.service.token.JweTokenService;
 import com.github.vincemann.springlemon.auth.util.LecUtils;
@@ -13,12 +14,17 @@ import com.github.vincemann.springrapid.core.service.exception.BadEntityExceptio
 import com.github.vincemann.springrapid.core.service.JPACrudService;
 import com.github.vincemann.springlemon.exceptions.util.LexUtils;
 import com.github.vincemann.springrapid.core.slicing.components.ServiceComponent;
+import com.nimbusds.jwt.JWTClaimsSet;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.io.Serializable;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 
 @ServiceComponent
 public abstract class AbstractLemonService
@@ -26,14 +32,17 @@ public abstract class AbstractLemonService
 			extends JPACrudService<U,ID,R> {
 
     private static final Log log = LogFactory.getLog(AbstractLemonService.class);
+	protected static final String VERIFY_AUDIENCE = "verify";
+	protected static final String FORGOT_PASSWORD_AUDIENCE = "forgot-password";
+
+
 	protected PasswordEncoder passwordEncoder;
 	protected LemonProperties properties;
-	protected JwsTokenService jwsTokenService;
 	protected JweTokenService jweTokenService;
 	protected MailSender mailSender;
 
 
-	
+
 	protected U initUser(U user) throws BadEntityException {
 		
 		log.debug("Initializing user: " + user);
@@ -58,8 +67,8 @@ public abstract class AbstractLemonService
 			
 			log.debug("Sending verification mail to: " + user);
 			
-			String verificationCode = jweTokenService.createToken(
-					JweTokenService.VERIFY_AUDIENCE,
+			String verificationCode = createToken(
+					VERIFY_AUDIENCE,
 					user.getId().toString(),
 					properties.getJwt().getExpirationMillis(),
 					//payload
@@ -102,9 +111,10 @@ public abstract class AbstractLemonService
 		
 		log.debug("Mailing forgot password link to user: " + user);
 
-		String forgotPasswordCode = jweTokenService.createToken(
-				JweTokenService.FORGOT_PASSWORD_AUDIENCE,
-				user.getEmail(), properties.getJwt().getExpirationMillis());
+		String forgotPasswordCode = createToken(FORGOT_PASSWORD_AUDIENCE,
+				user.getEmail(),
+				properties.getJwt().getExpirationMillis()
+		);
 
 		// make the link
 		String forgotPasswordLink =	properties.getApplicationUrl() + "/reset-password?code=" + forgotPasswordCode;
@@ -128,5 +138,66 @@ public abstract class AbstractLemonService
 				LexUtils.getMessage("com.naturalprogrammer.spring.forgotPasswordEmail",
 					forgotPasswordLink)));
 	}
+	protected String createToken(String aud, String subject, long expirationMillis){
+		return createToken(aud,subject,expirationMillis,new HashMap<>());
+	}
 
+	protected String createToken(String aud, String subject, long expirationMillis, Map<String,Object> otherClaims)	{
+		JWTClaimsSet.Builder builder = new JWTClaimsSet.Builder();
+
+		builder
+				//.issueTime(new Date())
+				.expirationTime(new Date(System.currentTimeMillis() + expirationMillis))
+				.audience(aud)
+				.subject(subject)
+				.issueTime(new Date());
+
+		otherClaims.forEach(builder::claim);
+		JWTClaimsSet claims = builder.build();
+		return jweTokenService.createToken(claims);
+	}
+
+	protected JWTClaimsSet parseToken(String token, String audience) throws BadTokenException {
+		JWTClaimsSet claims = jweTokenService.parseToken(token);
+		LecUtils.ensureCredentials(audience != null &&
+						claims.getAudience().contains(audience),
+				"com.naturalprogrammer.spring.wrong.audience");
+		long expirationTime = claims.getExpirationTime().getTime();
+		long currentTime = System.currentTimeMillis();
+
+		log.debug("Parsing JWT. Expiration time = " + expirationTime
+				+ ". Current time = " + currentTime);
+
+		LecUtils.ensureCredentials(expirationTime >= currentTime,
+				"com.naturalprogrammer.spring.expiredToken");
+		return claims;
+	}
+
+	protected JWTClaimsSet parseToken(String token, String expectedAud,long issuedAfter) throws BadTokenException {
+		JWTClaimsSet claims = parseToken(token, expectedAud);
+		long issueTime = claims.getIssueTime().getTime();
+		LecUtils.ensureCredentials(issueTime >= issuedAfter,
+				"com.naturalprogrammer.spring.obsoleteToken");
+		return claims;
+	}
+
+	@Autowired
+	public void injectPasswordEncoder(PasswordEncoder passwordEncoder) {
+		this.passwordEncoder = passwordEncoder;
+	}
+
+	@Autowired
+	public void injectProperties(LemonProperties properties) {
+		this.properties = properties;
+	}
+
+	@Autowired
+	public void injectJweTokenService(JweTokenService jweTokenService) {
+		this.jweTokenService = jweTokenService;
+	}
+
+	@Autowired
+	public void injectMailSender(MailSender mailSender) {
+		this.mailSender = mailSender;
+	}
 }

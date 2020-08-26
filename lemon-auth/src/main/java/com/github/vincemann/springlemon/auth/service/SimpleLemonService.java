@@ -36,23 +36,33 @@ public interface SimpleLemonService<U extends AbstractUser<ID>, ID extends Seria
 
     @Validated(UserUtils.SignUpValidation.class)
     public U signup(@Valid U user) throws BadEntityException;
+
     public void resendVerificationMail(U user) throws EntityNotFoundException;
+
     @LogInteraction(Severity.TRACE)
     public U findByEmail(@Valid @Email @NotBlank String email) throws EntityNotFoundException;
+
     public U verifyUser(U user, String verificationCode) throws EntityNotFoundException, BadTokenException;
     public void forgotPassword(@Valid @Email @NotBlank String email) throws EntityNotFoundException;
     public U resetPassword(@Valid ResetPasswordForm form) throws EntityNotFoundException, BadTokenException;
-    public String changePassword(U user, @Valid ChangePasswordForm changePasswordForm) throws EntityNotFoundException;
+    public void changePassword(U user, @Valid ChangePasswordForm changePasswordForm) throws EntityNotFoundException;
+
     @Validated(UserUtils.ChangeEmailValidation.class)
     public void requestEmailChange(U user, @Valid RequestEmailChangeForm emailChangeForm) throws EntityNotFoundException;
+
     public U changeEmail(U user, @Valid @NotBlank String changeEmailCode) throws EntityNotFoundException, BadTokenException;
+
     @LogInteraction(Severity.TRACE)
-    public String fetchNewToken(Optional<Long> expirationMillis, Optional<String> optionalUsername);
+    public String fetchNewAuthToken(Optional<String> optionalUsername);
+
     @LogInteraction(Severity.TRACE)
     public Map<String, String> fetchFullToken(String authHeader);
+
     public void createAdminUser(LemonProperties.Admin admin) throws BadEntityException;
+
     @LogInteraction(Severity.TRACE)
     public abstract ID toId(String id);
+
     @Validated(UserUtils.UpdateValidation.class)
     @Override
     U update(U entity, Boolean full) throws EntityNotFoundException,  BadEntityException;
