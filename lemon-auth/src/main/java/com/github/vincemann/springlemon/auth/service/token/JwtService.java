@@ -13,13 +13,6 @@ import java.util.Map;
 public interface JwtService extends AopLoggable {
 
 
-//	String createToken(String aud, String subject, Long expirationMillis, Map<String, Object> claimMap);
-//	String createToken(String audience, String subject, Long expirationMillis);
 	String createToken(JWTClaimsSet claimsSet);
-	JWTClaimsSet parseToken(String token);
-
-//	JWTClaimsSet parseToken(String token, String audience);
-//	JWTClaimsSet parseToken(String token, String audience, long issuedAfter);
-//
-//	<T> T parseClaim(String token, String claim);
+	JWTClaimsSet parseToken(String token) throws BadTokenException;
 }

@@ -57,7 +57,7 @@ public class JwtAuthorizationTokenService<P extends RapidAuthenticatedPrincipal>
     }
 
     @Override
-    public P parseToken(String token) {
+    public P parseToken(String token) throws BadTokenException {
         JWTClaimsSet jwtClaimsSet = jwsTokenService.parseToken(token);
         verifyToken(jwtClaimsSet);
         Map<String, Object> principalClaims = (Map<String, Object>) jwtClaimsSet.getClaim(PRINCIPAL_CLAIMS_KEY);

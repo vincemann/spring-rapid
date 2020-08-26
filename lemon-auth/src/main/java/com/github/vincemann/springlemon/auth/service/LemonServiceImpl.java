@@ -1,6 +1,7 @@
 package com.github.vincemann.springlemon.auth.service;
 
 
+import com.github.vincemann.springlemon.auth.service.token.BadTokenException;
 import com.github.vincemann.springlemon.auth.service.token.JwsTokenService;
 import com.github.vincemann.springlemon.auth.service.token.JweTokenService;
 import com.nimbusds.jwt.JWTClaimsSet;
@@ -34,6 +35,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.annotation.Validated;
 
 import java.io.Serializable;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
@@ -51,6 +53,9 @@ public abstract class LemonServiceImpl<U extends AbstractUser<ID>, ID extends Se
                     implements LemonService<U, ID, R> {
 
     private static final Log log = LogFactory.getLog(LemonServiceImpl.class);
+    private static final String VERIFY_AUDIENCE = "verify";
+    private static final String FORGOT_PASSWORD_AUDIENCE = "forgot-password";
+    private static final String CHANGE_EMAIL_AUDIENCE = "change-email";
 
 
     @Autowired
@@ -180,7 +185,7 @@ public abstract class LemonServiceImpl<U extends AbstractUser<ID>, ID extends Se
      * @return
      */
     @Transactional(propagation = Propagation.REQUIRED, readOnly = false)
-    public U verifyUser(U user, String verificationCode) throws EntityNotFoundException {
+    public U verifyUser(U user, String verificationCode) throws EntityNotFoundException, BadTokenException {
 
 //        log.debug("Verifying user ...");
 
@@ -191,8 +196,8 @@ public abstract class LemonServiceImpl<U extends AbstractUser<ID>, ID extends Se
         LexUtils.validate(user.hasRole(LemonRole.UNVERIFIED),
                 "com.naturalprogrammer.spring.alreadyVerified").go();
         //verificationCode is jwtToken
-        JWTClaimsSet claims = jweTokenService.parseToken(verificationCode,
-                JweTokenService.VERIFY_AUDIENCE, user.getCredentialsUpdatedMillis());
+        JWTClaimsSet claims = parseToken(verificationCode,
+                VERIFY_AUDIENCE, user.getCredentialsUpdatedMillis());
 
         LecUtils.ensureAuthority(
                 claims.getSubject().equals(user.getId().toString()) &&
@@ -239,11 +244,10 @@ public abstract class LemonServiceImpl<U extends AbstractUser<ID>, ID extends Se
      * @return
      */
     @Transactional(propagation = Propagation.REQUIRED, readOnly = false)
-    public U resetPassword(ResetPasswordForm form) throws EntityNotFoundException {
+    public U resetPassword(ResetPasswordForm form) throws EntityNotFoundException, BadTokenException {
 //        log.debug("Resetting password ...");
 
-        JWTClaimsSet claims = jweTokenService.parseToken(form.getCode(),
-                JweTokenService.FORGOT_PASSWORD_AUDIENCE);
+        JWTClaimsSet claims = parseToken(form.getCode(), FORGOT_PASSWORD_AUDIENCE);
 
         String email = claims.getSubject();
 
@@ -347,9 +351,6 @@ public abstract class LemonServiceImpl<U extends AbstractUser<ID>, ID extends Se
     }
 
 
-    /**
-     * Updates the fields of the users. Override this if you have more fields.
-     */
     protected void updateRoles(U old, U newUser) {
         log.debug("Updating user fields for user: " + old);
         // update the roles
@@ -406,9 +407,10 @@ public abstract class LemonServiceImpl<U extends AbstractUser<ID>, ID extends Se
      */
     protected void mailChangeEmailLink(U user) {
 
-        String changeEmailCode = jweTokenService.createToken(
-                JweTokenService.CHANGE_EMAIL_AUDIENCE,
-                user.getId().toString(), properties.getJwt().getExpirationMillis(),
+        String changeEmailCode = createToken(
+                CHANGE_EMAIL_AUDIENCE,
+                user.getId().toString(),
+                properties.getJwt().getExpirationMillis(),
                 LecUtils.mapOf("newEmail", user.getNewEmail()));
 
         try {
@@ -438,7 +440,6 @@ public abstract class LemonServiceImpl<U extends AbstractUser<ID>, ID extends Se
      * Override this method if you're using a different MailData
      */
     protected void mailChangeEmailLink(U user, String changeEmailLink) {
-
         mailSender.send(LemonMailData.of(user.getNewEmail(),
                 LexUtils.getMessage(
                         "com.naturalprogrammer.spring.changeEmailSubject"),
@@ -454,7 +455,7 @@ public abstract class LemonServiceImpl<U extends AbstractUser<ID>, ID extends Se
      * @return
      */
     @Transactional(propagation = Propagation.REQUIRED, readOnly = false)
-    public U changeEmail(U user, /*@Valid @NotBlank*/ String changeEmailCode) throws EntityNotFoundException {
+    public U changeEmail(U user, /*@Valid @NotBlank*/ String changeEmailCode) throws EntityNotFoundException, BadTokenException {
 
 //        log.debug("Changing email of current user ...");
 
@@ -470,8 +471,8 @@ public abstract class LemonServiceImpl<U extends AbstractUser<ID>, ID extends Se
         LexUtils.validate(StringUtils.isNotBlank(user.getNewEmail()),
                 "com.naturalprogrammer.spring.blank.newEmail").go();
 
-        JWTClaimsSet claims = jweTokenService.parseToken(changeEmailCode,
-                JweTokenService.CHANGE_EMAIL_AUDIENCE,
+        JWTClaimsSet claims = parseToken(changeEmailCode,
+                CHANGE_EMAIL_AUDIENCE,
                 user.getCredentialsUpdatedMillis());
 
         LecUtils.ensureAuthority(
@@ -517,9 +518,11 @@ public abstract class LemonServiceImpl<U extends AbstractUser<ID>, ID extends Se
     public String fetchNewToken(Optional<Long> expirationMillis,
                                 Optional<String> optionalUsername) {
 
+
         LemonUserDto currentUser = LecwUtils.currentUser();
         String email = optionalUsername.orElse(currentUser.getEmail());
 
+        //todo den check durch nen acl check ersetzen maybe
         LecUtils.ensureAuthority(currentUser.getEmail().equals(email) ||
                 currentUser.isGoodAdmin(), "com.naturalprogrammer.spring.notGoodAdminOrSameUser");
 
@@ -543,6 +546,46 @@ public abstract class LemonServiceImpl<U extends AbstractUser<ID>, ID extends Se
         user.getRoles().add(RapidRole.ADMIN);
         getRepository().save(user);
         log.debug("admin saved.");
+    }
+
+
+    protected String createToken(String aud, String subject, long expirationMillis, Map<String,Object> otherClaims){
+        JWTClaimsSet.Builder builder = new JWTClaimsSet.Builder();
+
+        builder
+                //.issueTime(new Date())
+                .expirationTime(new Date(System.currentTimeMillis() + expirationMillis))
+                .audience(aud)
+                .subject(subject)
+                .issueTime(new Date());
+
+        otherClaims.forEach(builder::claim);
+        JWTClaimsSet claims = builder.build();
+        return jweTokenService.createToken(claims);
+    }
+
+    protected JWTClaimsSet parseToken(String token, String audience) throws BadTokenException {
+        JWTClaimsSet claims = jweTokenService.parseToken(token);
+        LecUtils.ensureCredentials(audience != null &&
+                        claims.getAudience().contains(audience),
+                "com.naturalprogrammer.spring.wrong.audience");
+        long expirationTime = claims.getExpirationTime().getTime();
+        long currentTime = System.currentTimeMillis();
+
+        log.debug("Parsing JWT. Expiration time = " + expirationTime
+                + ". Current time = " + currentTime);
+
+        LecUtils.ensureCredentials(expirationTime >= currentTime,
+                "com.naturalprogrammer.spring.expiredToken");
+        return claims;
+    }
+
+    protected JWTClaimsSet parseToken(String token, String expectedAud,long issuedAfter) throws BadTokenException {
+        JWTClaimsSet claims = parseToken(token, expectedAud);
+        long issueTime = claims.getIssueTime().getTime();
+        LecUtils.ensureCredentials(issueTime >= issuedAfter,
+                "com.naturalprogrammer.spring.obsoleteToken");
+        return claims;
     }
 
 
