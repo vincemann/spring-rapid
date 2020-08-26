@@ -19,7 +19,7 @@ import java.util.Map;
  * 
  * Reference: https://connect2id.com/products/nimbus-jose-jwt/examples/jws-with-hmac
  */
-public class LemonJwsService extends AbstractJwtService implements JwsTokenService {
+public class LemonJwsService extends JsonJwtService implements JwsTokenService {
 
 	private JWSSigner signer;
 	private JWSVerifier verifier;
@@ -31,11 +31,10 @@ public class LemonJwsService extends AbstractJwtService implements JwsTokenServi
 		verifier = new MACVerifier(secret);
 	}
 
-	////@LogInteraction(level = LogInteraction.Level.TRACE)
 	@Override
-	public String createToken(String aud, String subject, Long expirationMillis, Map<String, Object> claimMap) {
+	public String createToken(JWTClaimsSet jwtClaimsSet) {
 		
-		Payload payload = createPayload(aud, subject, expirationMillis, claimMap);
+		Payload payload = createPayload(jwtClaimsSet);
 
 	   	// Prepare JWS object
 		JWSObject jwsObject = new JWSObject(new JWSHeader(JWSAlgorithm.HS256), payload);
@@ -54,11 +53,11 @@ public class LemonJwsService extends AbstractJwtService implements JwsTokenServi
 		return jwsObject.serialize();
 	}
 
-	////@LogInteraction(level = LogInteraction.Level.TRACE)
 	/**
 	 * Parses a token
 	 */
-	protected JWTClaimsSet parseToken(String token) {
+	@Override
+	public JWTClaimsSet parseToken(String token) {
 		
 		// Parse the JWS and verify it, e.g. on client-side
 		JWSObject jwsObject;

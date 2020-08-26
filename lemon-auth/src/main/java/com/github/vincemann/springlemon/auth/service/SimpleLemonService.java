@@ -9,6 +9,7 @@ import com.github.vincemann.springlemon.auth.domain.dto.ChangePasswordForm;
 import com.github.vincemann.springlemon.auth.domain.dto.RequestEmailChangeForm;
 import com.github.vincemann.springlemon.auth.domain.dto.ResetPasswordForm;
 import com.github.vincemann.springlemon.auth.properties.LemonProperties;
+import com.github.vincemann.springlemon.auth.service.token.BadTokenException;
 import com.github.vincemann.springlemon.auth.util.UserUtils;
 import com.github.vincemann.springrapid.core.service.SimpleCrudService;
 import com.github.vincemann.springrapid.core.service.exception.BadEntityException;
@@ -38,13 +39,13 @@ public interface SimpleLemonService<U extends AbstractUser<ID>, ID extends Seria
     public void resendVerificationMail(U user) throws EntityNotFoundException;
     @LogInteraction(Severity.TRACE)
     public U findByEmail(@Valid @Email @NotBlank String email) throws EntityNotFoundException;
-    public U verifyUser(U user, String verificationCode) throws EntityNotFoundException;
+    public U verifyUser(U user, String verificationCode) throws EntityNotFoundException, BadTokenException;
     public void forgotPassword(@Valid @Email @NotBlank String email) throws EntityNotFoundException;
-    public U resetPassword(@Valid ResetPasswordForm form) throws EntityNotFoundException;
+    public U resetPassword(@Valid ResetPasswordForm form) throws EntityNotFoundException, BadTokenException;
     public String changePassword(U user, @Valid ChangePasswordForm changePasswordForm) throws EntityNotFoundException;
     @Validated(UserUtils.ChangeEmailValidation.class)
     public void requestEmailChange(U user, @Valid RequestEmailChangeForm emailChangeForm) throws EntityNotFoundException;
-    public U changeEmail(U user, @Valid @NotBlank String changeEmailCode) throws EntityNotFoundException;
+    public U changeEmail(U user, @Valid @NotBlank String changeEmailCode) throws EntityNotFoundException, BadTokenException;
     @LogInteraction(Severity.TRACE)
     public String fetchNewToken(Optional<Long> expirationMillis, Optional<String> optionalUsername);
     @LogInteraction(Severity.TRACE)

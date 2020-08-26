@@ -27,7 +27,7 @@ import java.util.Map;
  * https://connect2id.com/products/nimbus-jose-jwt/examples/validating-jwt-access-tokens
  */
 @Slf4j
-public class LemonJweService extends AbstractJwtService implements JweTokenService {
+public class LemonJweService extends JsonJwtService implements JweTokenService {
 
 	private DirectEncrypter encrypter;
     private JWEHeader header = new JWEHeader(JWEAlgorithm.DIR, EncryptionMethod.A128CBC_HS256);
@@ -50,42 +50,34 @@ public class LemonJweService extends AbstractJwtService implements JweTokenServi
 	}
 
 
-	////@LogInteraction(level = LogInteraction.Level.TRACE)
 	@Override
-	public String createToken(String aud, String subject, Long expirationMillis, Map<String, Object> claimMap) {
-		
-		Payload payload = createPayload(aud, subject, expirationMillis, claimMap);
-				
+	public String createToken(JWTClaimsSet claimsSet) {
+		Payload payload = createPayload(claimsSet);
 		// Create the JWE object and encrypt it
-    	JWEObject jweObject = new JWEObject(header, payload);
-    	
-    	try {
-    		
+		JWEObject jweObject = new JWEObject(header, payload);
+
+		try {
+
 			jweObject.encrypt(encrypter);
-			
+
 		} catch (JOSEException e) {
-			
+
 			throw new RuntimeException(e);
 		}
 
-    	// Serialize to compact JOSE form...
-    	return jweObject.serialize();
+		// Serialize to compact JOSE form...
+		return jweObject.serialize();
 	}
 
-
-	////@LogInteraction(level = LogInteraction.Level.TRACE)
 	/**
 	 * Parses a token
 	 */
-	protected JWTClaimsSet parseToken(String token) {
-		
+	@Override
+	public JWTClaimsSet parseToken(String token) throws BadTokenException {
 		try {
-			
 			return jwtProcessor.process(token, null);
-			
 		} catch (ParseException | BadJOSEException | JOSEException e) {
-			
-			throw new BadCredentialsException(e.getMessage());
+			throw new BadTokenException(e);
 		}
 	}
 }
