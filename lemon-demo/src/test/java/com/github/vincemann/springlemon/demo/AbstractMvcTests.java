@@ -128,7 +128,7 @@ public abstract class AbstractMvcTests {
 //        User admin = userRepository.findById(ADMIN_ID).get();
 //        Authentication adminAuth = new UsernamePasswordAuthenticationToken(admin.getName(), admin.getPassword()
 //                , Lists.newArrayList(new SimpleGrantedAuthority(Role.ADMIN)));
-            mockAuthService.runAuthenticatedAsAdmin(() -> {
+            securityContext.runAsAdmin(() -> {
                 giveAdminFullPermissionOver(USER_ID, UNVERIFIED_USER_ID, BLOCKED_USER_ID, ADMIN_ID, UNVERIFIED_ADMIN_ID, BLOCKED_ADMIN_ID);
                 giveFullPermissionAboutSelf(ADMIN_ID, UNVERIFIED_ADMIN_ID, BLOCKED_ADMIN_ID, USER_ID, UNVERIFIED_USER_ID, BLOCKED_USER_ID);
             });

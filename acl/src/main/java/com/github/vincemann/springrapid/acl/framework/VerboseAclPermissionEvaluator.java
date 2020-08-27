@@ -4,8 +4,10 @@ import com.github.vincemann.aoplog.api.AopLoggable;
 import com.github.vincemann.springrapid.acl.framework.oidresolve.RapidObjectIdentityResolver;
 import com.github.vincemann.springrapid.acl.framework.oidresolve.UnresolvableOidException;
 import com.github.vincemann.springrapid.core.model.IdentifiableEntity;
-import com.github.vincemann.springrapid.core.util.Authenticated;
+import com.github.vincemann.springrapid.core.security.RapidSecurityContext;
+import com.github.vincemann.springrapid.core.service.locator.CrudServiceLocator;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.acls.AclPermissionEvaluator;
 import org.springframework.security.acls.domain.DefaultPermissionFactory;
 import org.springframework.security.acls.domain.ObjectIdentityRetrievalStrategyImpl;
@@ -32,10 +34,9 @@ public class VerboseAclPermissionEvaluator extends AclPermissionEvaluator implem
     private PermissionFactory permissionFactory = new DefaultPermissionFactory();
     private RapidObjectIdentityResolver objectIdentityResolver;
 
-    public VerboseAclPermissionEvaluator(AclService aclService, RapidObjectIdentityResolver objectIdentityResolver) {
+    public VerboseAclPermissionEvaluator(AclService aclService) {
         super(aclService);
         this.aclService = aclService;
-        this.objectIdentityResolver = objectIdentityResolver;
         log.debug("created");
     }
 
@@ -73,7 +74,7 @@ public class VerboseAclPermissionEvaluator extends AclPermissionEvaluator implem
     }
 
 
-    private boolean checkPermission(Authentication authentication, ObjectIdentity oid,
+    protected boolean checkPermission(Authentication authentication, ObjectIdentity oid,
                                     Object permission) {
         // Obtain the SIDs applicable to the principal
         List<Sid> sids = sidRetrievalStrategy.getSids(authentication);
@@ -88,7 +89,7 @@ public class VerboseAclPermissionEvaluator extends AclPermissionEvaluator implem
                 e.printStackTrace();
             }
         }
-        String name = Authenticated.getName();
+        String name = RapidSecurityContext.getName();
         //expensive trace logging
         if (log.isTraceEnabled()) {
             if (resolvedOid!=null) {
@@ -181,4 +182,8 @@ public class VerboseAclPermissionEvaluator extends AclPermissionEvaluator implem
         return permissionFactory;
     }
 
+    @Autowired
+    public void createObjectIdentityResolver(CrudServiceLocator crudServiceLocator) {
+        this.objectIdentityResolver = new RapidObjectIdentityResolver(crudServiceLocator);
+    }
 }

@@ -54,8 +54,8 @@ public interface SimpleLemonService<U extends AbstractUser<ID>, ID extends Seria
     @LogInteraction(Severity.TRACE)
     public String fetchNewAuthToken(Optional<String> optionalUsername);
 
-    @LogInteraction(Severity.TRACE)
-    public Map<String, String> fetchFullToken(String authHeader);
+//    @LogInteraction(Severity.TRACE)
+//    public Map<String, String> fetchFullToken(String authHeader);
 
     public void createAdminUser(LemonProperties.Admin admin) throws BadEntityException;
 

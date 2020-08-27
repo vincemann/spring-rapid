@@ -1,16 +1,16 @@
 package com.github.vincemann.springlemon.auth.service.extension;
 
+import com.github.vincemann.springlemon.auth.LemonProperties;
 import com.github.vincemann.springlemon.auth.domain.AbstractUser;
 import com.github.vincemann.springlemon.auth.domain.dto.ChangePasswordForm;
 import com.github.vincemann.springlemon.auth.domain.dto.RequestEmailChangeForm;
 import com.github.vincemann.springlemon.auth.domain.dto.ResetPasswordForm;
-import com.github.vincemann.springlemon.auth.LemonProperties;
 import com.github.vincemann.springlemon.auth.service.SimpleLemonService;
+import com.github.vincemann.springlemon.auth.service.token.BadTokenException;
 import com.github.vincemann.springrapid.core.proxy.SimpleCrudServiceExtension;
 import com.github.vincemann.springrapid.core.service.exception.BadEntityException;
 import com.github.vincemann.springrapid.core.service.exception.EntityNotFoundException;
 
-import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
@@ -23,8 +23,8 @@ public interface SimpleLemonServiceExtension<S extends SimpleLemonService>
 {
 
     @Override
-    default Map<String, Object> getContext(Optional expirationMillis, HttpServletResponse response) {
-        return getNext().getSharedProperties(expirationMillis,response);
+    default Map<String, Object> getSharedProperties(){
+        return getNext().getSharedProperties();
     }
 
     @Override
@@ -43,7 +43,7 @@ public interface SimpleLemonServiceExtension<S extends SimpleLemonService>
     }
 
     @Override
-    default AbstractUser verifyUser(AbstractUser user, String verificationCode) throws EntityNotFoundException {
+    default AbstractUser verifyUser(AbstractUser user, String verificationCode) throws EntityNotFoundException, BadTokenException {
         return getNext().verifyUser(user,verificationCode);
     }
 
@@ -53,13 +53,13 @@ public interface SimpleLemonServiceExtension<S extends SimpleLemonService>
     }
 
     @Override
-    default AbstractUser resetPassword(@Valid ResetPasswordForm form) throws EntityNotFoundException {
+    default AbstractUser resetPassword(@Valid ResetPasswordForm form) throws EntityNotFoundException, BadTokenException {
         return getNext().resetPassword(form);
     }
 
     @Override
-    default String changePassword(AbstractUser user, @Valid ChangePasswordForm changePasswordForm) throws EntityNotFoundException {
-        return getNext().changePassword(user,changePasswordForm);
+    default void changePassword(AbstractUser user, @Valid ChangePasswordForm changePasswordForm) throws EntityNotFoundException {
+        getNext().changePassword(user,changePasswordForm);
     }
 
     @Override
@@ -68,19 +68,19 @@ public interface SimpleLemonServiceExtension<S extends SimpleLemonService>
     }
 
     @Override
-    default AbstractUser changeEmail(AbstractUser user, @Valid @NotBlank String changeEmailCode) throws EntityNotFoundException {
+    default AbstractUser changeEmail(AbstractUser user, @Valid @NotBlank String changeEmailCode) throws EntityNotFoundException, BadTokenException {
         return getNext().changeEmail(user,changeEmailCode);
     }
 
     @Override
-    default String fetchNewToken(Optional expirationMillis, Optional optionalUsername) {
-        return getNext().fetchNewAuthToken(expirationMillis,optionalUsername);
+    default String fetchNewAuthToken(Optional optionalUsername) {
+        return getNext().fetchNewAuthToken(optionalUsername);
     }
 
-    @Override
-    default Map<String, String> fetchFullToken(String authHeader) {
-        return getNext().fetchFullToken(authHeader);
-    }
+//    @Override
+//    default Map<String, String> fetchFullToken(String authHeader) {
+//        return getNext().fetchFullToken(authHeader);
+//    }
 
     @Override
     default void createAdminUser(LemonProperties.Admin admin) throws BadEntityException {
@@ -92,10 +92,10 @@ public interface SimpleLemonServiceExtension<S extends SimpleLemonService>
         return getNext().toId(id);
     }
 
-    @Override
-    default void addAuthHeader(HttpServletResponse response, String username, Long expirationMillis) {
-        getNext().addAuthHeader(response,username,expirationMillis);
-    }
+//    @Override
+//    default void addAuthHeader(HttpServletResponse response, String username, Long expirationMillis) {
+//        getNext().addAuthHeader(response,username,expirationMillis);
+//    }
 
     @Override
     default AbstractUser update(AbstractUser entity, Boolean full) throws EntityNotFoundException, BadEntityException {

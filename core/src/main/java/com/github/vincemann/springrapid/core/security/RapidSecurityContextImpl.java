@@ -25,6 +25,9 @@ public class RapidSecurityContextImpl<P extends RapidAuthenticatedPrincipal> imp
     private static final String TEMP_ADMIN_NAME = "tempAdminName@RapidSecurityContextImpl.com";
     private static final String TEMP_ADMIN_PASSWORD = "tempAdminPassword123@";
 
+    //is always invalid
+    private static final String TEMP_ID = "-1";
+
     @Override
     public P login(P principal) {
         P old = currentPrincipal();
@@ -41,7 +44,7 @@ public class RapidSecurityContextImpl<P extends RapidAuthenticatedPrincipal> imp
     }
 
     protected Authentication createToken(String name, String password, Set<String> roles) {
-        RapidAuthenticatedPrincipal principal = new RapidAuthenticatedPrincipal(name, password, roles, id);
+        RapidAuthenticatedPrincipal principal = new RapidAuthenticatedPrincipal(name, password, roles,TEMP_ID);
         return new UsernamePasswordAuthenticationToken(
                 principal,
                 password,

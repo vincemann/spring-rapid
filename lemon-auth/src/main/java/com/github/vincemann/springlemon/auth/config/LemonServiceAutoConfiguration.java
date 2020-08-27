@@ -53,7 +53,7 @@ public class LemonServiceAutoConfiguration {
     @ConditionalOnMissingBean(LemonAclServiceExtension.class)
     @Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
     public LemonAclServiceExtension lemonAclExtension() {
-        return new LemonAclServiceExtension(permissionService, mutableAclService, mockAuthService, userRepository);
+        return new LemonAclServiceExtension(permissionService, mutableAclService, userRepository);
     }
 
     @ConditionalOnMissingBean(name = "aclManagingLemonService")

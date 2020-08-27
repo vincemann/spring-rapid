@@ -1,17 +1,17 @@
 package com.github.vincemann.springlemon.auth.service.extension;
 
+import com.github.vincemann.springlemon.auth.LemonProperties;
 import com.github.vincemann.springlemon.auth.domain.AbstractUser;
 import com.github.vincemann.springlemon.auth.domain.dto.ChangePasswordForm;
 import com.github.vincemann.springlemon.auth.domain.dto.RequestEmailChangeForm;
 import com.github.vincemann.springlemon.auth.domain.dto.ResetPasswordForm;
-import com.github.vincemann.springlemon.auth.LemonProperties;
 import com.github.vincemann.springlemon.auth.service.SimpleLemonService;
+import com.github.vincemann.springlemon.auth.service.token.BadTokenException;
 import com.github.vincemann.springrapid.core.proxy.GenericSimpleCrudServiceExtension;
 import com.github.vincemann.springrapid.core.service.exception.BadEntityException;
 import com.github.vincemann.springrapid.core.service.exception.EntityNotFoundException;
 import org.springframework.transaction.annotation.Transactional;
 
-import javax.servlet.http.HttpServletResponse;
 import java.io.Serializable;
 import java.util.Map;
 import java.util.Optional;
@@ -23,8 +23,8 @@ public interface GenericSimpleLemonServiceExtension<S extends SimpleLemonService
 
 
     @Override
-    default Map<String, Object> getContext(Optional<Long> expirationMillis, HttpServletResponse response) {
-        return getNext().getSharedProperties(expirationMillis,response);
+    default Map<String, Object> getSharedProperties(){
+        return getNext().getSharedProperties();
     }
 
     @Override
@@ -43,7 +43,7 @@ public interface GenericSimpleLemonServiceExtension<S extends SimpleLemonService
     }
 
     @Override
-    default U verifyUser(U user, String verificationCode) throws EntityNotFoundException {
+    default U verifyUser(U user, String verificationCode) throws EntityNotFoundException, BadTokenException {
         return getNext().verifyUser(user,verificationCode);
     }
 
@@ -53,13 +53,13 @@ public interface GenericSimpleLemonServiceExtension<S extends SimpleLemonService
     }
 
     @Override
-    default U resetPassword(/*@Valid*/ ResetPasswordForm form) throws EntityNotFoundException {
+    default U resetPassword(/*@Valid*/ ResetPasswordForm form) throws EntityNotFoundException, BadTokenException {
         return getNext().resetPassword(form);
     }
 
     @Override
-    default String changePassword(U user, /*@Valid*/ ChangePasswordForm changePasswordForm) throws EntityNotFoundException {
-        return getNext().changePassword(user,changePasswordForm);
+    default void changePassword(U user, /*@Valid*/ ChangePasswordForm changePasswordForm) throws EntityNotFoundException {
+        getNext().changePassword(user,changePasswordForm);
     }
 
     @Override
@@ -68,18 +68,13 @@ public interface GenericSimpleLemonServiceExtension<S extends SimpleLemonService
     }
 
     @Override
-    default U changeEmail(U user, /*@Valid @NotBlank */String changeEmailCode) throws EntityNotFoundException {
+    default U changeEmail(U user, /*@Valid @NotBlank */String changeEmailCode) throws EntityNotFoundException, BadTokenException {
         return getNext().changeEmail(user,changeEmailCode);
     }
 
     @Override
-    default String fetchNewToken(Optional<Long> expirationMillis, Optional<String> optionalUsername) {
-        return getNext().fetchNewAuthToken(expirationMillis,optionalUsername);
-    }
-
-    @Override
-    default Map<String, String> fetchFullToken(String authHeader) {
-        return getNext().fetchFullToken(authHeader);
+    default String fetchNewAuthToken(Optional<String> optionalUsername) {
+        return getNext().fetchNewAuthToken(optionalUsername);
     }
 
     @Override
@@ -92,10 +87,6 @@ public interface GenericSimpleLemonServiceExtension<S extends SimpleLemonService
         return getNext().toId(id);
     }
 
-    @Override
-    default void addAuthHeader(HttpServletResponse response, String username, Long expirationMillis) {
-        getNext().addAuthHeader(response,username,expirationMillis);
-    }
 
     @Override
     default U update(U entity, Boolean full) throws EntityNotFoundException, BadEntityException {
