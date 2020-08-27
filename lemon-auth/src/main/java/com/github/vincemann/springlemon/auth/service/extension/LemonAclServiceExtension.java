@@ -1,21 +1,17 @@
 package com.github.vincemann.springlemon.auth.service.extension;
 
-import com.github.vincemann.springlemon.auth.domain.AbstractUser;
-import com.github.vincemann.springlemon.auth.domain.AbstractUserRepository;
 import com.github.vincemann.springlemon.auth.LemonProperties;
+import com.github.vincemann.springlemon.auth.domain.AbstractUser;
+import com.github.vincemann.springlemon.auth.service.LemonService;
 import com.github.vincemann.springlemon.auth.service.SimpleLemonService;
-import com.github.vincemann.springlemon.auth.util.LemonUtils;
 import com.github.vincemann.springrapid.acl.service.extensions.AbstractAclServiceExtension;
-import com.github.vincemann.springrapid.acl.service.LocalPermissionService;
-import com.github.vincemann.springrapid.core.security.MockAuthService;
 import com.github.vincemann.springrapid.core.model.IdentifiableEntity;
 import com.github.vincemann.springrapid.core.service.exception.BadEntityException;
+import com.github.vincemann.springrapid.core.service.exception.EntityNotFoundException;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.acls.domain.BasePermission;
-import org.springframework.security.acls.model.MutableAclService;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.util.Optional;
 
 
 @Slf4j
@@ -24,12 +20,7 @@ public class LemonAclServiceExtension
         extends AbstractAclServiceExtension<SimpleLemonService>
             implements SimpleLemonServiceExtension<SimpleLemonService>
 {
-    private AbstractUserRepository repository;
-
-    public LemonAclServiceExtension(LocalPermissionService permissionService, MutableAclService mutableAclService, MockAuthService mockAuthService, AbstractUserRepository repository) {
-        super(permissionService, mutableAclService, mockAuthService);
-        this.repository = repository;
-    }
+    private LemonService<AbstractUser<?>,?,?> unsecuredUserService;
 
 
     @Override
@@ -54,19 +45,21 @@ public class LemonAclServiceExtension
     }
 
 
-    public void savePostSignupAclInfo(String email){
-        log.debug("saving acl info for signed up user: " + email);
-        Optional<AbstractUser> byEmail = repository.findByEmail(email);
-        if(!byEmail.isPresent()){
+    public void savePostSignupAclInfo(String emailOfSignedUp){
+        log.debug("saving acl info for signed up user: " + emailOfSignedUp);
+        AbstractUser user = null;
+        try {
+            user = unsecuredUserService.findByEmail(emailOfSignedUp);
+        } catch (EntityNotFoundException e) {
             log.warn("No user found after signup -> cant save acl permissions");
             return;
         }
-        //login is needed for save full permission for authenticated
-        LemonUtils.login(byEmail.get());
-        savePermissionForAuthenticatedOver(byEmail.get(), BasePermission.ADMINISTRATION);
-        saveFullPermissionForAdminOver(byEmail.get());
+        savePermissionForUserOver(emailOfSignedUp,user, BasePermission.ADMINISTRATION);
+        saveFullPermissionForAdminOver(user);
     }
 
-
-
+    @Autowired
+    public void injectUnsecuredUserService(LemonService<AbstractUser<?>, ?, ?> unsecuredUserService) {
+        this.unsecuredUserService = unsecuredUserService;
+    }
 }

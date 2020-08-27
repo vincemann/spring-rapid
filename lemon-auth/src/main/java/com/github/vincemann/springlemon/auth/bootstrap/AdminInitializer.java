@@ -52,7 +52,7 @@ public class AdminInitializer extends Initializer {
     public void init() {
         Assert.isTrue(!adminEmails.isEmpty());
         Assert.isTrue(!adminPasswords.isEmpty());
-        mockAuthService.runAuthenticatedAsAdmin(
+        securityContext.runAsAdmin(
                 () -> {
                     try {
                         addAdmins();

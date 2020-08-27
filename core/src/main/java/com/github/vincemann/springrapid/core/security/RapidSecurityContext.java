@@ -14,7 +14,13 @@ import java.util.*;
 public interface RapidSecurityContext<P extends RapidAuthenticatedPrincipal> {
     P login(P principal);
     P currentPrincipal();
+
+    //Convenience methods that could all be realized by using login
     void runAs(P principal, Runnable runnable);
+    public void runWithRoles(Set<String> roles, Runnable runnable);
+    public void runAuthenticated(Runnable runnable);
+    public void runAsAdmin(Runnable privRunnable);
+    public void runWithName(String name, Runnable runnable);
 
 
     // i hardcode these methods as static, because this information is retrieved like that in the whole framework

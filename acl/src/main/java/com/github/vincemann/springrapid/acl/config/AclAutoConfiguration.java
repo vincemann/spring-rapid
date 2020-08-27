@@ -82,18 +82,10 @@ public class AclAutoConfiguration {
         return new HierarchicPermissionGrantingStrategy(new ConsoleAuditLogger());
     }
 
-
-    //only used for verbose logging so far
-    @Bean
-    @ConditionalOnMissingBean(RapidObjectIdentityResolver.class)
-    public RapidObjectIdentityResolver rapidObjectIdentityResolver(CrudServiceLocator crudServiceLocator){
-        return new RapidObjectIdentityResolver(crudServiceLocator);
-    }
-
     @Bean
     @ConditionalOnMissingBean(PermissionEvaluator.class)
-    public PermissionEvaluator permissionEvaluator(RapidObjectIdentityResolver rapidObjectIdentityResolver){
-        return new VerboseAclPermissionEvaluator(aclService(),rapidObjectIdentityResolver);
+    public PermissionEvaluator permissionEvaluator(){
+        return new VerboseAclPermissionEvaluator(aclService());
     }
 
     @ConditionalOnMissingBean(AclAuthorizationStrategy.class)

@@ -4,7 +4,7 @@ import com.github.vincemann.springlemon.auth.LemonProperties;
 import com.github.vincemann.springlemon.auth.mail.MailSender;
 import com.github.vincemann.springlemon.auth.mail.MockMailSender;
 import com.github.vincemann.springlemon.auth.mail.SmtpMailSender;
-import com.github.vincemann.springlemon.auth.security.LemonPermissionEvaluator;
+import com.github.vincemann.springlemon.auth.security.LemonAclPermissionEvaluator;
 import com.github.vincemann.springlemon.auth.service.token.JwsTokenService;
 import com.github.vincemann.springlemon.auth.service.token.JweTokenService;
 import com.github.vincemann.springlemon.auth.service.token.LemonJweService;
@@ -48,7 +48,7 @@ public class LemonCommonsAutoConfiguration {
 	@ConditionalOnMissingBean(PermissionEvaluator.class)
 	@Bean
 	public PermissionEvaluator lemonPermissionEvaluator(AclService aclService){
-		return new LemonPermissionEvaluator(aclService, crudServiceLocator);
+		return new LemonAclPermissionEvaluator(aclService, crudServiceLocator);
 	}
 
 
