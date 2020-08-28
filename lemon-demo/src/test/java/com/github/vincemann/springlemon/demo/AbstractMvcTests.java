@@ -4,7 +4,7 @@ import com.github.vincemann.springlemon.auth.config.LemonAdminAutoConfiguration;
 import com.github.vincemann.springlemon.demo.domain.User;
 import com.github.vincemann.springlemon.demo.repositories.UserRepository;
 import com.github.vincemann.springlemon.auth.mail.MailSender;
-import com.github.vincemann.springlemon.auth.util.LecUtils;
+import com.github.vincemann.springlemon.auth.util.ValidationUtils;
 import com.github.vincemann.springrapid.core.security.RapidRole;
 import com.github.vincemann.springrapid.acl.service.LocalPermissionService;
 import com.github.vincemann.springrapid.core.security.MockAuthService;
@@ -118,7 +118,7 @@ public abstract class AbstractMvcTests {
                 .andExpect(status().is(200))
                 .andReturn();
 
-        return result.getResponse().getHeader(LecUtils.TOKEN_RESPONSE_HEADER_NAME);
+        return result.getResponse().getHeader(ValidationUtils.TOKEN_RESPONSE_HEADER_NAME);
     }
 
     protected void initAcl() throws SQLException {

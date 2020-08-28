@@ -9,4 +9,5 @@ com.github.vincemann.springlemon.auth.config.LemonWebAutoConfiguration,\
 com.github.vincemann.springlemon.auth.config.LemonGeneralAutoConfiguration,\
 com.github.vincemann.springlemon.auth.config.LemonAsyncAutoConfiguration,\
 com.github.vincemann.springlemon.auth.config.LemonAdminAutoConfiguration,\
-com.github.vincemann.springlemon.auth.config.LemonDtoAutoConfiguration
+com.github.vincemann.springlemon.auth.config.LemonDtoAutoConfiguration,\
+com.github.vincemann.springlemon.auth.config.com.github.vincemann.springlemon.auth.config.LemonServiceSecurityAutoConfiguration

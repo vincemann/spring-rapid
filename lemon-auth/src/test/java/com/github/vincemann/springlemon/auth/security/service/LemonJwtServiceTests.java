@@ -3,7 +3,7 @@ package com.github.vincemann.springlemon.auth.security.service;
 import com.github.vincemann.springlemon.auth.service.token.LemonJweService;
 import com.github.vincemann.springlemon.auth.service.token.LemonJwsService;
 import com.github.vincemann.springlemon.auth.service.token.JwtService;
-import com.github.vincemann.springlemon.auth.util.LecUtils;
+import com.github.vincemann.springlemon.auth.util.ValidationUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.junit.jupiter.api.Assertions;
@@ -46,7 +46,7 @@ public class LemonJwtServiceTests {
 		
 		log.info("Creating token ..." + service.getClass().getSimpleName());
 		String token = service.createToken("auth", "subject", 5000L,
-				LecUtils.mapOf("username", "abc@example.com"));
+				ValidationUtils.mapOf("username", "abc@example.com"));
 		
 		log.info("Parsing token ...");
 		JWTClaimsSet claims = service.parseToken(token, "auth");

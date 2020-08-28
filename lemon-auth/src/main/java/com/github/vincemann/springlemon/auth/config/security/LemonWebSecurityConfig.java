@@ -1,14 +1,19 @@
-package com.github.vincemann.springlemon.auth.config;
+package com.github.vincemann.springlemon.auth.config.security;
 
+import com.github.vincemann.springlemon.auth.LemonProperties;
+import com.github.vincemann.springlemon.auth.domain.LemonAuthenticatedPrincipal;
+import com.github.vincemann.springlemon.auth.handler.LemonAuthenticationSuccessHandler;
 import com.github.vincemann.springlemon.auth.security.LemonJwtAuthenticationFilter;
-import com.github.vincemann.springlemon.auth.service.token.JwsTokenService;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import com.github.vincemann.springlemon.auth.service.token.AuthorizationTokenService;
+import com.github.vincemann.springlemon.auth.service.token.HttpTokenService;
+import com.github.vincemann.springrapid.core.security.RapidSecurityContext;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.authentication.Http403ForbiddenEntryPoint;
+import org.springframework.security.web.authentication.SimpleUrlAuthenticationFailureHandler;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 /**
@@ -18,16 +23,17 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
  * 
  * @author Sanjay Patel
  */
+@Slf4j
 public class LemonWebSecurityConfig extends WebSecurityConfigurerAdapter {
-	
-	private static final Log log = LogFactory.getLog(LemonWebSecurityConfig.class);
 
-	protected JwsTokenService jwsTokenService;
-	
-	@Autowired
-	public void createLemonWebSecurityConfig(JwsTokenService jwsTokenService) {
 
-		this.jwsTokenService = jwsTokenService;
+	private LemonProperties properties;
+	private HttpTokenService httpTokenService;
+	private AuthorizationTokenService<LemonAuthenticatedPrincipal> authorizationTokenService;
+	private RapidSecurityContext<LemonAuthenticatedPrincipal> securityContext;
+	private LemonAuthenticationSuccessHandler authenticationSuccessHandler;
+
+	public LemonWebSecurityConfig() {
 		log.info("Created");
 	}
 
@@ -45,8 +51,44 @@ public class LemonWebSecurityConfig extends WebSecurityConfigurerAdapter {
 		cors(http); // CORS configuration
 		authorizeRequests(http); // authorize requests
 		otherConfigurations(http); // override this to add more configurations
+		login(http); // authentication
+		exceptionHandling(http); // exception handling
 	}
 
+
+	/**
+	 * Configuring authentication.
+	 */
+	protected void login(HttpSecurity http) throws Exception {
+
+		http
+				.formLogin() // form login
+				.loginPage(loginPage())
+
+				/******************************************
+				 * Setting a successUrl would redirect the user there. Instead,
+				 * let's send 200 and the userDto along with an Authorization token.
+				 *****************************************/
+				.successHandler(authenticationSuccessHandler)
+
+				/*******************************************
+				 * Setting the failureUrl will redirect the user to
+				 * that url if login fails. Instead, we need to send
+				 * 401. So, let's set failureHandler instead.
+				 *******************************************/
+				.failureHandler(new SimpleUrlAuthenticationFailureHandler());
+	}
+
+
+	/**
+	 * Override this to change login URL
+	 *
+	 * @return
+	 */
+	protected String loginPage() {
+
+		return properties.getLoginUrl();
+	}
 	
 	/**
 	 * Configuring session creation policy
@@ -90,7 +132,7 @@ public class LemonWebSecurityConfig extends WebSecurityConfigurerAdapter {
 	 */
 	protected void tokenAuthentication(HttpSecurity http) throws Exception {
 		
-		http.addFilterBefore(new LemonJwtAuthenticationFilter(jwsTokenService),
+		http.addFilterBefore(new LemonJwtAuthenticationFilter(httpTokenService,authorizationTokenService,securityContext),
 				UsernamePasswordAuthenticationFilter.class);
 	}
 
@@ -133,5 +175,29 @@ public class LemonWebSecurityConfig extends WebSecurityConfigurerAdapter {
 	 */
 	protected void otherConfigurations(HttpSecurity http)  throws Exception {
 
+	}
+
+
+	@Autowired
+	public void injectHttpTokenService(HttpTokenService httpTokenService) {
+		this.httpTokenService = httpTokenService;
+	}
+	@Autowired
+	public void injectAuthorizationTokenService(AuthorizationTokenService<LemonAuthenticatedPrincipal> authorizationTokenService) {
+		this.authorizationTokenService = authorizationTokenService;
+	}
+	@Autowired
+	public void injectSecurityContext(RapidSecurityContext<LemonAuthenticatedPrincipal> securityContext) {
+		this.securityContext = securityContext;
+	}
+
+	@Autowired
+	public void injectProperties(LemonProperties properties) {
+		this.properties = properties;
+	}
+
+	@Autowired
+	public void injectAuthenticationSuccessHandler(LemonAuthenticationSuccessHandler authenticationSuccessHandler) {
+		this.authenticationSuccessHandler = authenticationSuccessHandler;
 	}
 }

@@ -1,6 +1,6 @@
 package com.github.vincemann.springlemon.auth.validation;
 
-import com.github.vincemann.springlemon.auth.util.UserUtils;
+import com.github.vincemann.springlemon.auth.util.UserVerifyUtils;
 
 import javax.validation.Constraint;
 import javax.validation.Payload;
@@ -19,7 +19,7 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
  *
  */
 @NotBlank(message="{com.naturalprogrammer.spring.blank.password}")
-@Size(min= UserUtils.PASSWORD_MIN, max=UserUtils.PASSWORD_MAX,
+@Size(min= UserVerifyUtils.PASSWORD_MIN, max= UserVerifyUtils.PASSWORD_MAX,
 	message="{com.naturalprogrammer.spring.invalid.password.size}")
 @Retention(RUNTIME)
 @Constraint(validatedBy = { })

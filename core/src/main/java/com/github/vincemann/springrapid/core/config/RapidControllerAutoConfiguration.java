@@ -38,8 +38,7 @@ public class RapidControllerAutoConfiguration {
         log.info("Created");
     }
 
-    @Value("${controller.idFetchingStrategy.idUrlParamKey:id}")
-    private String idUrlParamKey;
+    @Value("${controller.idFetchingStrategy.idUrlParamKey:id}") private String idUrlParamKey;
 
     @Bean(name = "idUrlParamKey")
     public String idUrlParamKey(){
@@ -72,9 +71,9 @@ public class RapidControllerAutoConfiguration {
 
 
     @Bean
-    @ConditionalOnMissingBean(name = "extendableDtoClassLocator")
+    @ConditionalOnMissingBean(name = "delegatingDtoClassLocator")
     @Scope(SCOPE_PROTOTYPE)
-    public DelegatingDtoClassLocator extendableDtoClassLocator(DtoClassLocator globalLocator){
+    public DelegatingDtoClassLocator delegatingDtoClassLocator(DtoClassLocator globalLocator){
         return new DelegatingDtoClassLocator(globalLocator);
     }
 

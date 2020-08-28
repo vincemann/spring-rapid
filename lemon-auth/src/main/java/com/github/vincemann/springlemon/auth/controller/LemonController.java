@@ -15,7 +15,7 @@ import com.github.vincemann.springlemon.auth.LemonProperties;
 import com.github.vincemann.springlemon.auth.service.token.BadTokenException;
 import com.github.vincemann.springlemon.auth.service.token.HttpTokenService;
 import com.github.vincemann.springlemon.auth.service.LemonService;
-import com.github.vincemann.springlemon.auth.util.LecUtils;
+import com.github.vincemann.springlemon.auth.util.ValidationUtils;
 import com.github.vincemann.springrapid.core.security.RapidRole;
 import com.github.vincemann.springrapid.acl.proxy.Secured;
 import com.github.vincemann.springrapid.core.controller.dtoMapper.context.Direction;
@@ -268,7 +268,7 @@ public abstract class LemonController
 
 		log.debug("Fetching a new token ... ");
 		// result = {token:asfsdfjsdjfnd}
-		return LecUtils.mapOf("token", getService().fetchNewAuthToken(email));
+		return ValidationUtils.mapOf("token", getService().fetchNewAuthToken(email));
 	}
 
 	/**
@@ -277,7 +277,7 @@ public abstract class LemonController
 	public void appendFreshToken(U user, HttpServletResponse response) {
 		String token = getService().fetchNewAuthToken(Optional.of(user.getEmail()));
 		httpTokenService.appendToken(token,response);
-//		response.addHeader(LecUtils.TOKEN_RESPONSE_HEADER_NAME, LecUtils.TOKEN_PREFIX + token);
+//		response.addHeader(LecUtils.TOKEN_RESPONSE_HEADER_NAME, JwtService.TOKEN_PREFIX + token);
 	}
 
 	protected U fetchUser(ID userId) throws BadEntityException, EntityNotFoundException {

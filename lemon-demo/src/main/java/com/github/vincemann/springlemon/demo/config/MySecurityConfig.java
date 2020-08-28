@@ -1,7 +1,7 @@
 package com.github.vincemann.springlemon.demo.config;
 
 
-import com.github.vincemann.springlemon.auth.config.LemonJpaSecurityConfig;
+import com.github.vincemann.springlemon.auth.config.security.LemonJpaSecurityConfig;
 import com.github.vincemann.springlemon.auth.domain.LemonRole;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;

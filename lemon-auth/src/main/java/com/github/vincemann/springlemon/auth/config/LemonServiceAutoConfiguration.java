@@ -1,81 +1,149 @@
 package com.github.vincemann.springlemon.auth.config;
 
 import com.github.vincemann.springlemon.auth.domain.AbstractUserRepository;
-import com.github.vincemann.springlemon.auth.service.extension.LemonAclServiceExtension;
+import com.github.vincemann.springlemon.auth.domain.IdConverter;
+import com.github.vincemann.springlemon.auth.domain.LemonAuditorAware;
+import com.github.vincemann.springlemon.auth.mail.MailSender;
+import com.github.vincemann.springlemon.auth.mail.MockMailSender;
+import com.github.vincemann.springlemon.auth.mail.SmtpMailSender;
 import com.github.vincemann.springlemon.auth.service.LemonService;
+import com.github.vincemann.springlemon.auth.service.LemonUserDetailsService;
+import com.github.vincemann.springlemon.auth.service.extension.LemonAclServiceExtension;
 import com.github.vincemann.springlemon.auth.service.extension.LemonServiceSecurityExtension;
-import com.github.vincemann.springrapid.acl.proxy.Secured;
-import com.github.vincemann.springrapid.acl.service.extensions.CleanUpAclServiceExtension;
+import com.github.vincemann.springlemon.auth.validation.RetypePasswordValidator;
+import com.github.vincemann.springlemon.auth.validation.UniqueEmailValidator;
+import com.github.vincemann.springrapid.acl.config.AclAutoConfiguration;
 import com.github.vincemann.springrapid.acl.proxy.AclManaging;
+import com.github.vincemann.springrapid.acl.proxy.Secured;
 import com.github.vincemann.springrapid.acl.proxy.SecurityServiceExtensionProxyBuilderFactory;
 import com.github.vincemann.springrapid.acl.service.LocalPermissionService;
-import com.github.vincemann.springrapid.core.security.MockAuthService;
+import com.github.vincemann.springrapid.acl.service.extensions.CleanUpAclServiceExtension;
 import com.github.vincemann.springrapid.core.proxy.ServiceExtensionProxyBuilder;
 import com.github.vincemann.springrapid.core.slicing.config.ServiceConfig;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
+import org.springframework.boot.autoconfigure.AutoConfigureBefore;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Primary;
 import org.springframework.context.annotation.Scope;
+import org.springframework.data.domain.AuditorAware;
+import org.springframework.data.jpa.repository.config.EnableJpaAuditing;
+import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.security.acls.model.MutableAclService;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.crypto.factory.PasswordEncoderFactories;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.transaction.annotation.EnableTransactionManagement;
+
+import java.io.Serializable;
 
 @ServiceConfig
 @Slf4j
+@EnableJpaAuditing
+@EnableTransactionManagement
+//@AutoConfigureBefore({AclAutoConfiguration.class})
 public class LemonServiceAutoConfiguration {
 
-    @Autowired
-    SecurityServiceExtensionProxyBuilderFactory securityExtensionProxyBuilderFactory;
-
-    @Autowired
-    LocalPermissionService permissionService;
-
-    @Autowired
-    MutableAclService mutableAclService;
-
-    @Autowired
-    AbstractUserRepository<?, ?> userRepository;
-
-    @Autowired
-    MockAuthService mockAuthService;
 
     public LemonServiceAutoConfiguration() {
         log.info("Created");
     }
 
-    @ConditionalOnMissingBean(LemonServiceSecurityExtension.class)
+    /**
+     * Configures an Auditor Aware if missing
+     */
     @Bean
-    public LemonServiceSecurityExtension lemonServiceSecurityRule(AbstractUserRepository<?, ?> repository) {
-        return new LemonServiceSecurityExtension(repository);
+    @ConditionalOnMissingBean(AuditorAware.class)
+    public <ID extends Serializable>
+    AuditorAware<ID> auditorAware() {
+
+        log.info("Configuring LemonAuditorAware");
+        return new LemonAuditorAware<ID>();
+    }
+
+    /**
+     * Configures RetypePasswordValidator if missing
+     */
+    @Bean
+    @ConditionalOnMissingBean(RetypePasswordValidator.class)
+    public RetypePasswordValidator retypePasswordValidator() {
+
+        log.info("Configuring RetypePasswordValidator");
+        return new RetypePasswordValidator();
+    }
+
+    /**
+     * Configures UniqueEmailValidator if missing
+     */
+    @Bean
+    public UniqueEmailValidator uniqueEmailValidator(AbstractUserRepository<?, ?> userRepository) {
+
+        log.info("Configuring UniqueEmailValidator");
+        return new UniqueEmailValidator(userRepository);
+    }
+
+    /**
+     * Configures UserDetailsService if missing
+     */
+    @Bean
+    @Primary
+    @ConditionalOnMissingBean(UserDetailsService.class)
+    public LemonUserDetailsService userDetailService() {
+        log.info("Configuring LemonUserDetailsService");
+        return new LemonUserDetailsService();
     }
 
     @Bean
-    @ConditionalOnMissingBean(LemonAclServiceExtension.class)
-    @Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
-    public LemonAclServiceExtension lemonAclExtension() {
-        return new LemonAclServiceExtension(permissionService, mutableAclService, userRepository);
+    @ConditionalOnMissingBean(IdConverter.class)
+    public <ID extends Serializable>
+    IdConverter<ID> idConverter(LemonService<?,ID,?> lemonService) {
+        return id -> lemonService.toId(id);
     }
 
-    @ConditionalOnMissingBean(name = "aclManagingLemonService")
+
+    /**
+     * Configures Password encoder if missing
+     */
     @Bean
-    @AclManaging
-    public LemonService<?, ?, ?> aclManagingLemonService(LemonService<?, ?, ?> service,
-//                                                                            AdminFullAccessAclExtension adminFullAccess,
-//                                                                            AuthenticatedFullAccessAclExtension authenticatedFullAccessAclExtension,
-                                                         CleanUpAclServiceExtension cleanUpAclExtension) {
-        return new ServiceExtensionProxyBuilder<>(service)
-                .addExtensions(lemonAclExtension(), cleanUpAclExtension)
-                .build();
+    @ConditionalOnMissingBean(PasswordEncoder.class)
+    public PasswordEncoder passwordEncoder() {
+
+        log.info("Configuring PasswordEncoder");
+        return PasswordEncoderFactories.createDelegatingPasswordEncoder();
     }
 
 
-    @ConditionalOnMissingBean(name = "securedLemonService")
+    /**
+     * Configures a MockMailSender when the property
+     * <code>spring.mail.host</code> isn't defined.
+     */
     @Bean
-    @Secured
-    public LemonService<?, ?, ?> securedLemonService(@AclManaging LemonService<?, ?, ?> service,
-                                                     LemonServiceSecurityExtension securityRule) {
-        return securityExtensionProxyBuilderFactory.create(service)
-                .addExtensions(securityRule)
-                .build();
+    @ConditionalOnMissingBean(MailSender.class)
+    @ConditionalOnProperty(name="spring.mail.host", havingValue="foo", matchIfMissing=true)
+    public MailSender<?> mockMailSender() {
+
+        log.info("Configuring MockMailSender");
+        return new MockMailSender();
     }
+
+
+    /**
+     * Configures an SmtpMailSender when the property
+     * <code>spring.mail.host</code> is defined.
+     */
+    @Bean
+    @ConditionalOnMissingBean(MailSender.class)
+    @ConditionalOnProperty("spring.mail.host")
+    public MailSender<?> smtpMailSender(JavaMailSender javaMailSender) {
+
+        log.info("Configuring SmtpMailSender");
+        return new SmtpMailSender(javaMailSender);
+    }
+
+
+
+
 }

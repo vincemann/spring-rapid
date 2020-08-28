@@ -15,7 +15,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MvcResult;
 
-import com.github.vincemann.springlemon.auth.util.LecUtils;
+import com.github.vincemann.springlemon.auth.util.ValidationUtils;
 
 public class LoginMvcTests extends AbstractMvcTests {
 	
@@ -27,7 +27,7 @@ public class LoginMvcTests extends AbstractMvcTests {
                 .param("password", ADMIN_PASSWORD)
                 .header("contentType",  MediaType.APPLICATION_FORM_URLENCODED))
                 .andExpect(status().is(200))
-				.andExpect(header().string(LecUtils.TOKEN_RESPONSE_HEADER_NAME, containsString(".")))
+				.andExpect(header().string(ValidationUtils.TOKEN_RESPONSE_HEADER_NAME, containsString(".")))
 				.andExpect(jsonPath("$.id").value(ADMIN_ID))
 				.andExpect(jsonPath("$.password").doesNotExist())
 				.andExpect(jsonPath("$.email").value("admin@example.com"))
@@ -133,6 +133,6 @@ public class LoginMvcTests extends AbstractMvcTests {
                 .header("contentType",  MediaType.APPLICATION_FORM_URLENCODED))
                 .andReturn();
 
-		return result.getResponse().getHeader(LecUtils.TOKEN_RESPONSE_HEADER_NAME);     
+		return result.getResponse().getHeader(ValidationUtils.TOKEN_RESPONSE_HEADER_NAME);
 	}
 }

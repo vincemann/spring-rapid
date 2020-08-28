@@ -1,10 +1,13 @@
 package com.github.vincemann.springlemon.auth.config;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.github.vincemann.springlemon.auth.controller.owner.LemonOwnerLocator;
 import com.github.vincemann.springlemon.auth.LemonProperties;
+import com.github.vincemann.springlemon.auth.config.security.LemonWebSecurityConfig;
+import com.github.vincemann.springlemon.auth.controller.owner.LemonOwnerLocator;
 import com.github.vincemann.springlemon.auth.handler.LemonAuthenticationSuccessHandler;
 import com.github.vincemann.springlemon.auth.service.LemonService;
+import com.github.vincemann.springlemon.auth.service.token.AuthHeaderHttpTokenService;
+import com.github.vincemann.springlemon.auth.service.token.HttpTokenService;
 import com.github.vincemann.springrapid.core.config.RapidControllerAutoConfiguration;
 import com.github.vincemann.springrapid.core.controller.owner.OwnerLocator;
 import com.github.vincemann.springrapid.core.slicing.config.WebConfig;
@@ -17,13 +20,20 @@ import org.springframework.security.web.authentication.SimpleUrlAuthenticationFa
 
 @WebConfig
 @Slf4j
-@AutoConfigureBefore({LemonAutoConfiguration.class,RapidControllerAutoConfiguration.class})
+//we want to override the OwnerLocator
+@AutoConfigureBefore({RapidControllerAutoConfiguration.class})
 public class LemonWebAutoConfiguration {
 
     public LemonWebAutoConfiguration() {
         log.info("Created");
     }
 
+
+    @Bean
+    @ConditionalOnMissingBean(HttpTokenService.class)
+    public HttpTokenService httpTokenService(){
+        return new AuthHeaderHttpTokenService();
+    }
 
     @Bean
     @ConditionalOnMissingBean(name = "lemonOwnerLocator")
@@ -59,10 +69,10 @@ public class LemonWebAutoConfiguration {
      */
     @Bean
     @ConditionalOnMissingBean(LemonWebSecurityConfig.class)
-    public LemonWebSecurityConfig lemonSecurityConfig() {
+    public LemonWebSecurityConfig lemonWebSecurityConfig() {
 
-        log.info("Configuring LemonJpaSecurityConfig");
-        return new LemonJpaSecurityConfig();
+        log.info("Configuring LemonWebSecurityConfig");
+        return new LemonWebSecurityConfig();
     }
 
 }

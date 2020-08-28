@@ -10,7 +10,7 @@ import com.github.vincemann.springrapid.core.security.RapidRole;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpHeaders;
 
-import com.github.vincemann.springlemon.auth.util.LecUtils;
+import com.github.vincemann.springlemon.auth.util.ValidationUtils;
 
 public class BasicMvcTests extends AbstractMvcTests {
 	
@@ -27,7 +27,7 @@ public class BasicMvcTests extends AbstractMvcTests {
 		mvc.perform(get("/api/core/context")
 				.header(HttpHeaders.AUTHORIZATION, tokens.get(ADMIN_ID)))
 				.andExpect(status().is(200))
-				.andExpect(header().string(LecUtils.TOKEN_RESPONSE_HEADER_NAME, containsString(".")))
+				.andExpect(header().string(ValidationUtils.TOKEN_RESPONSE_HEADER_NAME, containsString(".")))
 				.andExpect(jsonPath("$.context.reCaptchaSiteKey").isString())
 				.andExpect(jsonPath("$.user.id").value(ADMIN_ID))
 				.andExpect(jsonPath("$.user.roles[0]").value(RapidRole.ADMIN))
@@ -39,7 +39,7 @@ public class BasicMvcTests extends AbstractMvcTests {
 		
 		mvc.perform(get("/api/core/context"))
 				.andExpect(status().is(200))
-				.andExpect(header().doesNotExist(LecUtils.TOKEN_RESPONSE_HEADER_NAME))
+				.andExpect(header().doesNotExist(ValidationUtils.TOKEN_RESPONSE_HEADER_NAME))
 				.andExpect(jsonPath("$.context.reCaptchaSiteKey").isString())
 				.andExpect(jsonPath("$.user").doesNotExist());
 	}	

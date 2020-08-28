@@ -2,7 +2,7 @@ package com.github.vincemann.springlemon.demo;
 
 import com.github.vincemann.springlemon.demo.domain.User;
 import com.github.vincemann.springlemon.auth.service.token.JweTokenService;
-import com.github.vincemann.springlemon.auth.util.LecUtils;
+import com.github.vincemann.springlemon.auth.util.ValidationUtils;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -33,7 +33,7 @@ public class ChangeEmailMvcTests extends AbstractMvcTests {
 		changeEmailCode = jweTokenService.createToken(
 				JweTokenService.CHANGE_EMAIL_AUDIENCE,
 				Long.toString(UNVERIFIED_USER_ID), 60000L,
-				LecUtils.mapOf("newEmail", NEW_EMAIL));
+				ValidationUtils.mapOf("newEmail", NEW_EMAIL));
 	}
 
 	@Test
@@ -45,7 +45,7 @@ public class ChangeEmailMvcTests extends AbstractMvcTests {
                 .header("contentType",  MediaType.APPLICATION_FORM_URLENCODED))
 		        .andExpect(status().is(200))
 				//gets new token for new email to use
-				.andExpect(header().string(LecUtils.TOKEN_RESPONSE_HEADER_NAME, containsString(".")))
+				.andExpect(header().string(ValidationUtils.TOKEN_RESPONSE_HEADER_NAME, containsString(".")))
 				.andExpect(jsonPath("$.id").value(UNVERIFIED_USER_ID));
 		
 		User updatedUser = userRepository.findById(UNVERIFIED_USER_ID).get();
@@ -77,7 +77,7 @@ public class ChangeEmailMvcTests extends AbstractMvcTests {
 		String code = jweTokenService.createToken(
 				"", // blank audience
 				Long.toString(UNVERIFIED_USER_ID), 60000L,
-				LecUtils.mapOf("newEmail", NEW_EMAIL));
+				ValidationUtils.mapOf("newEmail", NEW_EMAIL));
 		
 		mvc.perform(post("/api/core/users/{id}/email", UNVERIFIED_USER_ID)
                 .param("code", code)
@@ -89,7 +89,7 @@ public class ChangeEmailMvcTests extends AbstractMvcTests {
 		code = jweTokenService.createToken(
 				JweTokenService.CHANGE_EMAIL_AUDIENCE,
 				Long.toString(ADMIN_ID), 60000L,
-				LecUtils.mapOf("newEmail", NEW_EMAIL));
+				ValidationUtils.mapOf("newEmail", NEW_EMAIL));
 		
 		mvc.perform(post("/api/core/users/{id}/email", UNVERIFIED_USER_ID)
                 .param("code", code)
@@ -101,7 +101,7 @@ public class ChangeEmailMvcTests extends AbstractMvcTests {
 		code = jweTokenService.createToken(
 				JweTokenService.CHANGE_EMAIL_AUDIENCE,
 				Long.toString(UNVERIFIED_USER_ID), 60000L,
-				LecUtils.mapOf("newEmail", "wrong.new.email@example.com"));
+				ValidationUtils.mapOf("newEmail", "wrong.new.email@example.com"));
 		
 		mvc.perform(post("/api/core/users/{id}/email", UNVERIFIED_USER_ID)
                 .param("code", code)

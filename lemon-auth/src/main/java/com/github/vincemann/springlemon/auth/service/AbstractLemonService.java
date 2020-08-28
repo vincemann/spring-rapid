@@ -8,7 +8,7 @@ import com.github.vincemann.springlemon.auth.mail.MailSender;
 import com.github.vincemann.springlemon.auth.domain.LemonRole;
 import com.github.vincemann.springlemon.auth.service.token.BadTokenException;
 import com.github.vincemann.springlemon.auth.service.token.JweTokenService;
-import com.github.vincemann.springlemon.auth.util.LecUtils;
+import com.github.vincemann.springlemon.auth.util.ValidationUtils;
 import com.github.vincemann.springrapid.core.service.exception.BadEntityException;
 import com.github.vincemann.springrapid.core.service.JPACrudService;
 import com.github.vincemann.springlemon.exceptions.util.LexUtils;
@@ -71,7 +71,7 @@ public abstract class AbstractLemonService
 					user.getId().toString(),
 					properties.getJwt().getExpirationMillis(),
 					//payload
-					LecUtils.mapOf("email", user.getEmail()));
+					ValidationUtils.mapOf("email", user.getEmail()));
 
 			// make the link
 			String verifyLink = properties.getApplicationUrl()
@@ -158,7 +158,7 @@ public abstract class AbstractLemonService
 
 	protected JWTClaimsSet parseToken(String token, String audience) throws BadTokenException {
 		JWTClaimsSet claims = jweTokenService.parseToken(token);
-		LecUtils.ensureCredentials(audience != null &&
+		ValidationUtils.ensureCredentials(audience != null &&
 						claims.getAudience().contains(audience),
 				"com.naturalprogrammer.spring.wrong.audience");
 		long expirationTime = claims.getExpirationTime().getTime();
@@ -167,7 +167,7 @@ public abstract class AbstractLemonService
 		log.debug("Parsing JWT. Expiration time = " + expirationTime
 				+ ". Current time = " + currentTime);
 
-		LecUtils.ensureCredentials(expirationTime >= currentTime,
+		ValidationUtils.ensureCredentials(expirationTime >= currentTime,
 				"com.naturalprogrammer.spring.expiredToken");
 		return claims;
 	}
@@ -175,7 +175,7 @@ public abstract class AbstractLemonService
 	protected JWTClaimsSet parseToken(String token, String expectedAud,long issuedAfter) throws BadTokenException {
 		JWTClaimsSet claims = parseToken(token, expectedAud);
 		long issueTime = claims.getIssueTime().getTime();
-		LecUtils.ensureCredentials(issueTime >= issuedAfter,
+		ValidationUtils.ensureCredentials(issueTime >= issuedAfter,
 				"com.naturalprogrammer.spring.obsoleteToken");
 		return claims;
 	}

@@ -1,6 +1,7 @@
 package com.github.vincemann.springrapid.core.security;
 
 import lombok.Getter;
+import lombok.ToString;
 import org.springframework.security.core.AuthenticatedPrincipal;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.CredentialsContainer;
@@ -16,6 +17,7 @@ import java.util.stream.Collectors;
  * Represents logged in user.
  * Also contains {@link Authentication#getDetails()} information.
  */
+@ToString
 @Getter
 public class RapidAuthenticatedPrincipal implements AuthenticatedPrincipal, CredentialsContainer, UserDetails {
     private String name;

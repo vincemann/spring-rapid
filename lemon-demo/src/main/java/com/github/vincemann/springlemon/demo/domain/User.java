@@ -2,7 +2,7 @@ package com.github.vincemann.springlemon.demo.domain;
 
 import com.fasterxml.jackson.annotation.JsonView;
 import com.github.vincemann.springlemon.auth.domain.AbstractUser;
-import com.github.vincemann.springlemon.auth.util.UserUtils;
+import com.github.vincemann.springlemon.auth.util.UserVerifyUtils;
 import lombok.*;
 
 import javax.persistence.Column;
@@ -37,9 +37,9 @@ public class User extends AbstractUser<Long> {
 		this.name = name;
 	}
 
-	@JsonView(UserUtils.SignupInput.class)
-	@NotBlank(message = "{blank.name}", groups = {UserUtils.SignUpValidation.class, UserUtils.UpdateValidation.class})
-    @Size(min=NAME_MIN, max=NAME_MAX, groups = {UserUtils.SignUpValidation.class, UserUtils.UpdateValidation.class})
+	@JsonView(UserVerifyUtils.SignupInput.class)
+	@NotBlank(message = "{blank.name}", groups = {UserVerifyUtils.SignUpValidation.class, UserVerifyUtils.UpdateValidation.class})
+    @Size(min=NAME_MIN, max=NAME_MAX, groups = {UserVerifyUtils.SignUpValidation.class, UserVerifyUtils.UpdateValidation.class})
     @Column(nullable = false, length = NAME_MAX)
     private String name;
 
