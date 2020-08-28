@@ -23,7 +23,7 @@
 //
 //public class LoginWithNonceMvcTests extends AbstractMvcTests {
 //	
-//	private static final String NONCE = LemonUtils.uid();
+//	private static final String NONCE = LemonValidationUtils.uid();
 //	
 //	private NonceForm<Long> form(Long jwtExpirationMillis) {
 //		
@@ -56,7 +56,7 @@
 //		// Retry should fail
 //		mvc.perform(post("/api/core/login-with-nonce")
 //				.contentType(MediaType.APPLICATION_JSON)
-//				.content(LemonUtils.toJson(form(null))))
+//				.content(LemonValidationUtils.toJson(form(null))))
 //				.andExpect(status().is(401));
 //	}
 //	
@@ -83,7 +83,7 @@
 //		
 //		mvc.perform(post("/api/core/login-with-nonce")
 //				.contentType(MediaType.APPLICATION_JSON)
-//				.content(LemonUtils.toJson(new NonceForm<Long>())))
+//				.content(LemonValidationUtils.toJson(new NonceForm<Long>())))
 //				.andExpect(status().is(422))
 //				.andExpect(jsonPath("$.errors[*].field").value(hasSize(2)))
 //				.andExpect(jsonPath("$.errors[*].field").value(hasItems(
@@ -99,7 +99,7 @@
 //		
 //		mvc.perform(post("/api/core/login-with-nonce")
 //				.contentType(MediaType.APPLICATION_JSON)
-//				.content(LemonUtils.toJson(form)))
+//				.content(LemonValidationUtils.toJson(form)))
 //				.andExpect(status().is(404));
 //	}
 //
@@ -111,7 +111,7 @@
 //		
 //		mvc.perform(post("/api/core/login-with-nonce")
 //				.contentType(MediaType.APPLICATION_JSON)
-//				.content(LemonUtils.toJson(form)))
+//				.content(LemonValidationUtils.toJson(form)))
 //				.andExpect(status().is(401));
 //	}
 //
@@ -119,7 +119,7 @@
 //
 //        MvcResult result = mvc.perform(post("/api/core/login-with-nonce")
 //				.contentType(MediaType.APPLICATION_JSON)
-//				.content(LemonUtils.toJson(form(jwtExpirationMillis))))
+//				.content(LemonValidationUtils.toJson(form(jwtExpirationMillis))))
 //				.andExpect(status().is(200))
 //				.andExpect(header().string(LemonSecurityConfig.TOKEN_RESPONSE_HEADER_NAME, containsString(".")))
 //				.andExpect(jsonPath("$.id").value(UNVERIFIED_USER_ID))

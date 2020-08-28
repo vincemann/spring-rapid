@@ -25,7 +25,7 @@ public class LemonJwtAuthorizationTokenService extends JwtAuthorizationTokenServ
         super.verifyToken(claims, principal);
         try {
             AbstractUser<?> byEmail = lemonService.findByEmail(principal.getEmail());
-            LemonUtils.ensureCredentialsUpToDate(claims,byEmail);
+            LemonValidationUtils.ensureCredentialsUpToDate(claims,byEmail);
         } catch (EntityNotFoundException e) {
             throw new BadCredentialsException("User encoded in token not found",e);
         }

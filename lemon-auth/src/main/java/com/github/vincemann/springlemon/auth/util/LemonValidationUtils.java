@@ -4,12 +4,8 @@ import com.github.vincemann.springlemon.auth.domain.AbstractUser;
 import com.github.vincemann.springlemon.exceptions.util.LexUtils;
 import com.nimbusds.jwt.JWTClaimsSet;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.context.ApplicationContext;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.authentication.BadCredentialsException;
-
-import java.util.HashMap;
-import java.util.Map;
 
 /**
  * Useful helper methods
@@ -17,7 +13,7 @@ import java.util.Map;
  * @author Sanjay Patel
  */
 @Slf4j
-public class ValidationUtils {
+public class LemonValidationUtils {
 	
 
 //	public static final String AUTHORIZATION_REQUEST_COOKIE_NAME = "lemon_oauth2_authorization_request";
@@ -71,7 +67,7 @@ public class ValidationUtils {
 
 		long issueTime = claims.getIssueTime().getTime();
 
-		ValidationUtils.ensureCredentials(issueTime >= user.getCredentialsUpdatedMillis(),
+		LemonValidationUtils.ensureCredentials(issueTime >= user.getCredentialsUpdatedMillis(),
 				"com.naturalprogrammer.spring.obsoleteToken");
 	}
 	

@@ -19,8 +19,7 @@ import java.util.Map;
 //@Component
 public class LemonProperties {
 	
-//    private static final Log log = LogFactory.getLog(LemonProperties.class);
-    
+
     public LemonProperties() {
 		log.info("Created");
 	}

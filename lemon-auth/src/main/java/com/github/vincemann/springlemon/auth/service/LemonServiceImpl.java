@@ -20,10 +20,9 @@ import com.github.vincemann.springrapid.core.security.RapidRole;
 import com.github.vincemann.springrapid.core.service.exception.BadEntityException;
 import com.github.vincemann.springrapid.core.service.exception.EntityNotFoundException;
 import com.github.vincemann.springrapid.core.util.EntityAssert;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
@@ -42,11 +41,11 @@ import java.util.Optional;
  */
 @Validated
 @Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
+@Slf4j
 public abstract class LemonServiceImpl<U extends AbstractUser<ID>, ID extends Serializable, R extends AbstractUserRepository<U, ID>>
             extends AbstractLemonService<U, ID, R>
                     implements LemonService<U, ID, R> {
 
-    private static final Log log = LogFactory.getLog(LemonServiceImpl.class);
     protected static final String CHANGE_EMAIL_AUDIENCE = "change-email";
 
     private AuthorizationTokenService<LemonAuthenticatedPrincipal> authorizationTokenService;
@@ -181,7 +180,7 @@ public abstract class LemonServiceImpl<U extends AbstractUser<ID>, ID extends Se
         JWTClaimsSet claims = parseToken(verificationCode,
                 VERIFY_AUDIENCE, user.getCredentialsUpdatedMillis());
 
-        ValidationUtils.ensureAuthority(
+        LemonValidationUtils.ensureAuthority(
                 claims.getSubject().equals(user.getId().toString()) &&
                         claims.getClaim("email").equals(user.getEmail()),
                 "com.naturalprogrammer.spring.wrong.verificationCode");
@@ -191,7 +190,7 @@ public abstract class LemonServiceImpl<U extends AbstractUser<ID>, ID extends Se
         U saved = getRepository().save(user);
 
         // Re-login the user, so that the UNVERIFIED role is removed
-//		LemonUtils.login(saved);
+//		LemonValidationUtils.login(saved);
         log.debug("Re-logged-in the user for removing UNVERIFIED role.");
 //		// after successful commit,
 //		LecjUtils.afterCommit(() -> {
@@ -237,7 +236,7 @@ public abstract class LemonServiceImpl<U extends AbstractUser<ID>, ID extends Se
         Optional<U> byId = getRepository().findByEmail(email);
         EntityAssert.isPresent(byId,"User with email: "+email+" not found");
         U user = byId.get();
-        LemonUtils.ensureCredentialsUpToDate(claims, user);
+        LemonValidationUtils.ensureCredentialsUpToDate(claims, user);
 
         // sets the password
         user.setPassword(passwordEncoder.encode(form.getNewPassword()));
@@ -247,7 +246,7 @@ public abstract class LemonServiceImpl<U extends AbstractUser<ID>, ID extends Se
         U saved = getRepository().save(user);
 
         // Login the user
-//		LemonUtils.login(saved);
+//		LemonValidationUtils.login(saved);
 //		// after successful commit,
 //		LecjUtils.afterCommit(() -> {
 //
@@ -341,7 +340,7 @@ public abstract class LemonServiceImpl<U extends AbstractUser<ID>, ID extends Se
 
         // preserves the new email id
         user.setNewEmail(emailChangeForm.getNewEmail());
-        //user.setChangeEmailCode(LemonUtils.uid());
+        //user.setChangeEmailCode(LemonValidationUtils.uid());
         U saved = getRepository().save(user);
 
         // after successful commit, mails a link to the user
@@ -360,7 +359,7 @@ public abstract class LemonServiceImpl<U extends AbstractUser<ID>, ID extends Se
                 CHANGE_EMAIL_AUDIENCE,
                 user.getId().toString(),
                 properties.getJwt().getExpirationMillis(),
-                ValidationUtils.mapOf("newEmail", user.getNewEmail()));
+                LemonValidationUtils.mapOf("newEmail", user.getNewEmail()));
 
         try {
 
@@ -424,7 +423,7 @@ public abstract class LemonServiceImpl<U extends AbstractUser<ID>, ID extends Se
                 CHANGE_EMAIL_AUDIENCE,
                 user.getCredentialsUpdatedMillis());
 
-        ValidationUtils.ensureAuthority(
+        LemonValidationUtils.ensureAuthority(
                 claims.getSubject().equals(user.getId().toString()) &&
                         claims.getClaim("newEmail").equals(user.getNewEmail()),
                 "com.naturalprogrammer.spring.wrong.changeEmailCode");
@@ -447,7 +446,7 @@ public abstract class LemonServiceImpl<U extends AbstractUser<ID>, ID extends Se
         U saved = getRepository().save(user);
 
         // Login the user
-//		LemonUtils.login(saved);
+//		LemonValidationUtils.login(saved);
 //		// after successful commit,
 //		LecjUtils.afterCommit(() -> {
 //
@@ -472,7 +471,7 @@ public abstract class LemonServiceImpl<U extends AbstractUser<ID>, ID extends Se
         String email = optionalEmail.orElse(currentUser.getEmail());
 
         //todo den check durch nen acl check ersetzen maybe
-        ValidationUtils.ensureAuthority(currentUser.getEmail().equals(email) ||
+        LemonValidationUtils.ensureAuthority(currentUser.getEmail().equals(email) ||
                 currentUser.isGoodAdmin(), "com.naturalprogrammer.spring.notGoodAdminOrSameUser");
 
         //todo kann sich hier jeder user nen token mit beliebiger expiration ausstellen lassen?

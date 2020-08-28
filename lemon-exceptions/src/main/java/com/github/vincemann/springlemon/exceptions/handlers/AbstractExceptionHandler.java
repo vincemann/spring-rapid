@@ -7,17 +7,19 @@ import com.github.vincemann.aoplog.api.LogInteraction;
 import com.github.vincemann.springlemon.exceptions.ErrorResponse;
 import com.github.vincemann.springlemon.exceptions.LemonFieldError;
 import com.github.vincemann.springlemon.exceptions.util.LexUtils;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.springframework.context.annotation.Scope;
 import org.springframework.http.HttpStatus;
 
 /**
  * Extend this to code an exception handler
  */
+@Slf4j
 public abstract class AbstractExceptionHandler<T extends Throwable> implements AopLoggable {
 	
-	protected final Log log = LogFactory.getLog(this.getClass());
-	
+
 	private Class<?> exceptionClass;
 	
 	public AbstractExceptionHandler(Class<?> exceptionClass) {

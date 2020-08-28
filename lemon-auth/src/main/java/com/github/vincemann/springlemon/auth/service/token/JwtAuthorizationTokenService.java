@@ -2,7 +2,7 @@ package com.github.vincemann.springlemon.auth.service.token;
 
 import com.github.vincemann.springlemon.auth.LemonProperties;
 import com.github.vincemann.springlemon.auth.security.JwtClaimsPrincipalConverter;
-import com.github.vincemann.springlemon.auth.util.ValidationUtils;
+import com.github.vincemann.springlemon.auth.util.LemonValidationUtils;
 import com.github.vincemann.springrapid.core.security.RapidAuthenticatedPrincipal;
 import com.nimbusds.jwt.JWTClaimsSet;
 import lombok.extern.slf4j.Slf4j;
@@ -57,7 +57,7 @@ public abstract class JwtAuthorizationTokenService<P extends RapidAuthenticatedP
         log.debug("Parsing JWT. Expiration time = " + expirationTime
                 + ". Current time = " + currentTime);
 
-        ValidationUtils.ensureCredentials(expirationTime >= currentTime,
+        LemonValidationUtils.ensureCredentials(expirationTime >= currentTime,
                 "com.naturalprogrammer.spring.expiredToken");
 
         //todo put into EmailVerificationTokenService

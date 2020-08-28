@@ -15,7 +15,7 @@ import com.github.vincemann.springlemon.auth.LemonProperties;
 import com.github.vincemann.springlemon.auth.service.token.BadTokenException;
 import com.github.vincemann.springlemon.auth.service.token.HttpTokenService;
 import com.github.vincemann.springlemon.auth.service.LemonService;
-import com.github.vincemann.springlemon.auth.util.ValidationUtils;
+import com.github.vincemann.springlemon.auth.util.LemonValidationUtils;
 import com.github.vincemann.springrapid.core.security.RapidRole;
 import com.github.vincemann.springrapid.acl.proxy.Secured;
 import com.github.vincemann.springrapid.core.controller.dtoMapper.context.Direction;
@@ -268,7 +268,7 @@ public abstract class LemonController
 
 		log.debug("Fetching a new token ... ");
 		// result = {token:asfsdfjsdjfnd}
-		return ValidationUtils.mapOf("token", getService().fetchNewAuthToken(email));
+		return LemonValidationUtils.mapOf("token", getService().fetchNewAuthToken(email));
 	}
 
 	/**

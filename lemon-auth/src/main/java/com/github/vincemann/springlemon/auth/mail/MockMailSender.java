@@ -1,5 +1,6 @@
 package com.github.vincemann.springlemon.auth.mail;
 
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -9,10 +10,10 @@ import org.apache.commons.logging.LogFactory;
  * 
  * @author Sanjay Patel
  */
+@Slf4j
 public class MockMailSender implements MailSender<LemonMailData> {
 	
-	private static final Log log = LogFactory.getLog(MockMailSender.class);
-	
+
 	public MockMailSender() {
 		log.info("Created");
 	}

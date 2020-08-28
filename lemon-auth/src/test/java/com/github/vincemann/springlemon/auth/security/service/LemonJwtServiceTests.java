@@ -3,7 +3,8 @@ package com.github.vincemann.springlemon.auth.security.service;
 import com.github.vincemann.springlemon.auth.service.token.LemonJweService;
 import com.github.vincemann.springlemon.auth.service.token.LemonJwsService;
 import com.github.vincemann.springlemon.auth.service.token.JwtService;
-import com.github.vincemann.springlemon.auth.util.ValidationUtils;
+import com.github.vincemann.springlemon.auth.util.LemonValidationUtils;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.junit.jupiter.api.Assertions;
@@ -13,9 +14,9 @@ import org.springframework.security.authentication.BadCredentialsException;
 import com.nimbusds.jose.JOSEException;
 import com.nimbusds.jwt.JWTClaimsSet;
 
+@Slf4j
 public class LemonJwtServiceTests {
 	
-	private static final Log log = LogFactory.getLog(LemonJwtServiceTests.class);	
 
 	// An aes-128-cbc key generated at https://asecuritysite.com/encryption/keygen (take the "key" field)
 	private static final String SECRET1 = "926D96C90030DD58429D2751AC1BDBBC";
@@ -46,7 +47,7 @@ public class LemonJwtServiceTests {
 		
 		log.info("Creating token ..." + service.getClass().getSimpleName());
 		String token = service.createToken("auth", "subject", 5000L,
-				ValidationUtils.mapOf("username", "abc@example.com"));
+				LemonValidationUtils.mapOf("username", "abc@example.com"));
 		
 		log.info("Parsing token ...");
 		JWTClaimsSet claims = service.parseToken(token, "auth");

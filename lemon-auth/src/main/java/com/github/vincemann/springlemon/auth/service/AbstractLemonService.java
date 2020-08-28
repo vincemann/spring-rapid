@@ -8,15 +8,14 @@ import com.github.vincemann.springlemon.auth.mail.MailSender;
 import com.github.vincemann.springlemon.auth.domain.LemonRole;
 import com.github.vincemann.springlemon.auth.service.token.BadTokenException;
 import com.github.vincemann.springlemon.auth.service.token.JweTokenService;
-import com.github.vincemann.springlemon.auth.util.ValidationUtils;
+import com.github.vincemann.springlemon.auth.util.LemonValidationUtils;
 import com.github.vincemann.springrapid.core.service.exception.BadEntityException;
 import com.github.vincemann.springrapid.core.service.JPACrudService;
 import com.github.vincemann.springlemon.exceptions.util.LexUtils;
 import com.github.vincemann.springrapid.core.slicing.components.ServiceComponent;
 import com.nimbusds.jwt.JWTClaimsSet;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.exception.ExceptionUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
@@ -26,11 +25,11 @@ import java.util.HashMap;
 import java.util.Map;
 
 @ServiceComponent
+@Slf4j
 public abstract class AbstractLemonService
 	<U extends AbstractUser<ID>, ID extends Serializable,R extends AbstractUserRepository<U,ID>>
 			extends JPACrudService<U,ID,R> {
 
-    private static final Log log = LogFactory.getLog(AbstractLemonService.class);
 	protected static final String VERIFY_AUDIENCE = "verify";
 	protected static final String FORGOT_PASSWORD_AUDIENCE = "forgot-password";
 
@@ -71,7 +70,7 @@ public abstract class AbstractLemonService
 					user.getId().toString(),
 					properties.getJwt().getExpirationMillis(),
 					//payload
-					ValidationUtils.mapOf("email", user.getEmail()));
+					LemonValidationUtils.mapOf("email", user.getEmail()));
 
 			// make the link
 			String verifyLink = properties.getApplicationUrl()
@@ -158,7 +157,7 @@ public abstract class AbstractLemonService
 
 	protected JWTClaimsSet parseToken(String token, String audience) throws BadTokenException {
 		JWTClaimsSet claims = jweTokenService.parseToken(token);
-		ValidationUtils.ensureCredentials(audience != null &&
+		LemonValidationUtils.ensureCredentials(audience != null &&
 						claims.getAudience().contains(audience),
 				"com.naturalprogrammer.spring.wrong.audience");
 		long expirationTime = claims.getExpirationTime().getTime();
@@ -167,7 +166,7 @@ public abstract class AbstractLemonService
 		log.debug("Parsing JWT. Expiration time = " + expirationTime
 				+ ". Current time = " + currentTime);
 
-		ValidationUtils.ensureCredentials(expirationTime >= currentTime,
+		LemonValidationUtils.ensureCredentials(expirationTime >= currentTime,
 				"com.naturalprogrammer.spring.expiredToken");
 		return claims;
 	}
@@ -175,7 +174,7 @@ public abstract class AbstractLemonService
 	protected JWTClaimsSet parseToken(String token, String expectedAud,long issuedAfter) throws BadTokenException {
 		JWTClaimsSet claims = parseToken(token, expectedAud);
 		long issueTime = claims.getIssueTime().getTime();
-		ValidationUtils.ensureCredentials(issueTime >= issuedAfter,
+		LemonValidationUtils.ensureCredentials(issueTime >= issuedAfter,
 				"com.naturalprogrammer.spring.obsoleteToken");
 		return claims;
 	}

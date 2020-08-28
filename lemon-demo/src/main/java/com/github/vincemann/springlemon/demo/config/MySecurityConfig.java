@@ -2,7 +2,9 @@ package com.github.vincemann.springlemon.demo.config;
 
 
 import com.github.vincemann.springlemon.auth.config.security.LemonJpaSecurityConfig;
+import com.github.vincemann.springlemon.auth.config.security.LemonWebSecurityConfig;
 import com.github.vincemann.springlemon.auth.domain.LemonRole;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.context.annotation.Configuration;
@@ -10,10 +12,10 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 
 
 @Configuration
-public class MySecurityConfig extends LemonJpaSecurityConfig {
+@Slf4j
+public class MySecurityConfig extends LemonWebSecurityConfig {
 	
-	private static final Log log = LogFactory.getLog(MySecurityConfig.class);
-	
+
 	public MySecurityConfig() {
 		log.info("Created");
 	}

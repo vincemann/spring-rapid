@@ -7,6 +7,7 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import com.github.vincemann.springlemon.exceptions.handlers.AbstractExceptionHandler;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.core.annotation.AnnotationAwareOrderComparator;
@@ -14,10 +15,10 @@ import org.springframework.core.annotation.AnnotationAwareOrderComparator;
 /**
  * Given an exception, builds a response.
  */
+@Slf4j
 public class ErrorResponseComposer<T extends Throwable> {
 	
-    private static final Log log = LogFactory.getLog(ErrorResponseComposer.class);
-	
+
 	private final Map<Class<?>, AbstractExceptionHandler<T>> handlers;
 	
 	public ErrorResponseComposer(List<AbstractExceptionHandler<T>> handlers) {
