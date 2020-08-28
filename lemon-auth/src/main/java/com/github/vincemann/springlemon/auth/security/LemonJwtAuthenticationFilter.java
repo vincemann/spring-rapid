@@ -76,7 +76,7 @@ public class LemonJwtAuthenticationFilter extends OncePerRequestFilter {
 //	public Authentication createAuthToken(String token) {
 //
 //
-////		LemonUserDto lemonUserDto = LemonUtils.getUserDto(claims);
+////		LemonUserDto lemonUserDto = LemonValidationUtils.getUserDto(claims);
 ////		if (lemonUserDto == null)
 ////			lemonUserDto = fetchUserDto(claims);
 ////

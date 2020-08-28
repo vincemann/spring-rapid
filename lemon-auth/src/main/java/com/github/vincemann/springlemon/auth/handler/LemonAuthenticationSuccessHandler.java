@@ -5,6 +5,7 @@ import com.github.vincemann.springlemon.auth.LemonProperties;
 import com.github.vincemann.springlemon.auth.domain.dto.user.LemonUserDto;
 import com.github.vincemann.springlemon.auth.service.LemonService;
 import com.github.vincemann.springlemon.auth.util.LecwUtils;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.http.MediaType;
@@ -22,11 +23,11 @@ import java.io.IOException;
  * 
  * @author Sanjay Patel
  */
+@Slf4j
 public class LemonAuthenticationSuccessHandler
 	extends SimpleUrlAuthenticationSuccessHandler {
 	
-	private static final Log log = LogFactory.getLog(LemonAuthenticationSuccessHandler.class);
-	
+
     private ObjectMapper objectMapper;    
     private LemonService<?, ?,?> lemonService;
     private long defaultExpirationMillis;
@@ -36,7 +37,6 @@ public class LemonAuthenticationSuccessHandler
 		this.objectMapper = objectMapper;
 		this.lemonService = lemonService;
 		this.defaultExpirationMillis = properties.getJwt().getExpirationMillis();
-		
 		log.info("Created");
 	}
 

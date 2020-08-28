@@ -2,6 +2,7 @@ package com.github.vincemann.springlemon.exceptions.util;
 
 import com.github.vincemann.springlemon.exceptions.ExceptionIdMaker;
 import com.github.vincemann.springlemon.exceptions.MultiErrorException;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.context.MessageSource;
@@ -17,9 +18,9 @@ import javax.validation.ConstraintViolationException;
  * 
  * @author Sanjay Patel
  */
+@Slf4j
 public class LexUtils {
 	
-	private static final Log log = LogFactory.getLog(LexUtils.class);
 
 	private static MessageSource messageSource;
 	private static LocalValidatorFactoryBean validator;

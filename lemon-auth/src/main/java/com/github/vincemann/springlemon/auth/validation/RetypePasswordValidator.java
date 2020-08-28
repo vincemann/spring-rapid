@@ -3,6 +3,7 @@ package com.github.vincemann.springlemon.auth.validation;
 import com.github.vincemann.aoplog.api.AopLoggable;
 import com.github.vincemann.aoplog.api.LogInteraction;
 import com.github.vincemann.springrapid.core.slicing.components.ServiceComponent;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -18,11 +19,12 @@ import java.util.Objects;
  * 
  * @author Sanjay Patel
  */
+@Slf4j
 @ServiceComponent
 public class RetypePasswordValidator
 implements ConstraintValidator<RetypePassword, RetypePasswordForm> , AopLoggable {
 	
-	private static final Log log = LogFactory.getLog(RetypePasswordValidator.class);
+
 
 	@LogInteraction
 	@Override

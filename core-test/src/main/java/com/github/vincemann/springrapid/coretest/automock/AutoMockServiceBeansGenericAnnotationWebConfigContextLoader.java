@@ -1,6 +1,7 @@
 package com.github.vincemann.springrapid.coretest.automock;
 
 
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.support.DefaultListableBeanFactory;
@@ -28,10 +29,10 @@ import javax.servlet.ServletContext;
 /**
  * copied version with one change according to https://stackoverflow.com/questions/49124887/how-to-mock-absent-bean-definitions-in-springjunit4classrunner/49220187#49220187
  */
+@Slf4j
 public class AutoMockServiceBeansGenericAnnotationWebConfigContextLoader extends AbstractContextLoader{
 
-
-    private static final Log logger = LogFactory.getLog(AnnotationConfigWebContextLoader.class);
+    
 
 
     // SmartContextLoader
@@ -132,8 +133,8 @@ public class AutoMockServiceBeansGenericAnnotationWebConfigContextLoader extends
             GenericWebApplicationContext context, WebMergedContextConfiguration webMergedConfig) {
 
         Class<?>[] annotatedClasses = webMergedConfig.getClasses();
-        if (logger.isDebugEnabled()) {
-            logger.debug("Registering annotated classes: " + ObjectUtils.nullSafeToString(annotatedClasses));
+        if (log.isDebugEnabled()) {
+            log.debug("Registering annotated classes: " + ObjectUtils.nullSafeToString(annotatedClasses));
         }
         new AnnotatedBeanDefinitionReader(context).register(annotatedClasses);
     }
@@ -150,7 +151,7 @@ public class AutoMockServiceBeansGenericAnnotationWebConfigContextLoader extends
                             "(or 'value') attribute %s, but %s does not support resource locations.",
                     webMergedConfig.getTestClass().getName(),
                     ObjectUtils.nullSafeToString(webMergedConfig.getLocations()), getClass().getSimpleName());
-            logger.error(msg);
+            log.error(msg);
             throw new IllegalStateException(msg);
         }
     }
@@ -204,8 +205,8 @@ public class AutoMockServiceBeansGenericAnnotationWebConfigContextLoader extends
 
         WebMergedContextConfiguration webMergedConfig = (WebMergedContextConfiguration) mergedConfig;
 
-        if (logger.isDebugEnabled()) {
-            logger.debug(String.format("Loading WebApplicationContext for merged context configuration %s.",
+        if (log.isDebugEnabled()) {
+            log.debug(String.format("Loading WebApplicationContext for merged context configuration %s.",
                     webMergedConfig));
         }
 

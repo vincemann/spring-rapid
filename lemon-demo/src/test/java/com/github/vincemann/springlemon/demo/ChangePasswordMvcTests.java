@@ -1,7 +1,7 @@
 package com.github.vincemann.springlemon.demo;
 
 import com.github.vincemann.springlemon.auth.domain.dto.ChangePasswordForm;
-import com.github.vincemann.springlemon.auth.util.ValidationUtils;
+import com.github.vincemann.springlemon.auth.util.LemonValidationUtils;
 import com.github.vincemann.springrapid.core.util.MapperUtils;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpHeaders;
@@ -36,7 +36,7 @@ public class ChangePasswordMvcTests extends AbstractMvcTests {
 				.contentType(MediaType.APPLICATION_JSON)
 				.content(MapperUtils.toJson(changePasswordForm(USER_PASSWORD))))
 				.andExpect(status().is(204))
-				.andExpect(header().string(ValidationUtils.TOKEN_RESPONSE_HEADER_NAME, containsString(".")));
+				.andExpect(header().string(LemonValidationUtils.TOKEN_RESPONSE_HEADER_NAME, containsString(".")));
 		
 		// Ensure able to login with new password
 		login(UNVERIFIED_USER_EMAIL, NEW_PASSWORD);
@@ -53,7 +53,7 @@ public class ChangePasswordMvcTests extends AbstractMvcTests {
 				.contentType(MediaType.APPLICATION_JSON)
 				.content(MapperUtils.toJson(changePasswordForm(USER_PASSWORD))))
 				.andExpect(status().is(204))
-				.andExpect(header().string(ValidationUtils.TOKEN_RESPONSE_HEADER_NAME, containsString(".")));
+				.andExpect(header().string(LemonValidationUtils.TOKEN_RESPONSE_HEADER_NAME, containsString(".")));
 		
 		// Ensure able to login with new password
 		login(UNVERIFIED_USER_EMAIL, NEW_PASSWORD);

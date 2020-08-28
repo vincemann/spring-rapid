@@ -4,6 +4,7 @@ import com.github.vincemann.aoplog.api.AopLoggable;
 import com.github.vincemann.aoplog.api.LogInteraction;
 import com.github.vincemann.springlemon.auth.domain.AbstractUserRepository;
 import com.github.vincemann.springrapid.core.slicing.components.ServiceComponent;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -17,10 +18,10 @@ import javax.validation.ConstraintValidatorContext;
  * @author Sanjay Patel
  */
 @ServiceComponent
+@Slf4j
 public class UniqueEmailValidator
 implements ConstraintValidator<UniqueEmail, String>, AopLoggable {
 
-	private static final Log log = LogFactory.getLog(UniqueEmailValidator.class);
 
 	private AbstractUserRepository<?,?> userRepository;
 

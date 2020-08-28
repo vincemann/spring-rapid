@@ -3,6 +3,7 @@ package com.github.vincemann.springlemon.exceptions.web;
 import com.github.vincemann.springlemon.exceptions.ErrorResponse;
 import com.github.vincemann.springlemon.exceptions.ErrorResponseComposer;
 import com.github.vincemann.springrapid.core.slicing.components.WebComponent;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.http.HttpStatus;
@@ -17,9 +18,9 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
  */
 @RestControllerAdvice
 @WebComponent
+@Slf4j
 public class DefaultExceptionHandlerControllerAdvice<T extends Throwable> {
 	
-	private static final Log log = LogFactory.getLog(DefaultExceptionHandlerControllerAdvice.class);
 
 	/**
 	 * Component that actually builds the error response

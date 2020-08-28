@@ -34,13 +34,4 @@ public class LemonGeneralAutoConfiguration {
         return new LemonProperties();
     }
 
-    /**
-     * Configures LemonUtils
-     */
-    @Bean
-    @ConditionalOnMissingBean(LemonUtils.class)
-    public LemonUtils lemonUtils() {
-        log.info("Configuring LemonUtils");
-        return new LemonUtils();
-    }
 }
