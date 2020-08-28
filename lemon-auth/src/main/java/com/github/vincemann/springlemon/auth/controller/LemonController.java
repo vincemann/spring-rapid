@@ -61,7 +61,6 @@ public abstract class LemonController
 	 */
 	@GetMapping("/ping")
 	@ResponseStatus(HttpStatus.NO_CONTENT)
-	
 	public void ping() {
 
 		log.debug("Received a ping");
@@ -73,7 +72,6 @@ public abstract class LemonController
 	 */
 	@GetMapping("/context")
 	@ResponseBody
-	
 	public Map<String, Object> getContext() {
 
 		log.debug("Getting context ");
