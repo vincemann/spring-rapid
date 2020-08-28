@@ -47,7 +47,7 @@ public class LemonJwtServiceTests {
 		
 		log.info("Creating token ..." + service.getClass().getSimpleName());
 		String token = service.createToken("auth", "subject", 5000L,
-				LemonValidationUtils.mapOf("username", "abc@example.com"));
+				LemonMapUtils.mapOf("username", "abc@example.com"));
 		
 		log.info("Parsing token ...");
 		JWTClaimsSet claims = service.parseToken(token, "auth");

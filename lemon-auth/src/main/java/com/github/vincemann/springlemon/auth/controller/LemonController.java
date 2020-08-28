@@ -15,8 +15,8 @@ import com.github.vincemann.springlemon.auth.LemonProperties;
 import com.github.vincemann.springlemon.auth.service.token.BadTokenException;
 import com.github.vincemann.springlemon.auth.service.token.HttpTokenService;
 import com.github.vincemann.springlemon.auth.service.LemonService;
-import com.github.vincemann.springlemon.auth.util.LemonValidationUtils;
-import com.github.vincemann.springrapid.core.security.RapidRole;
+import com.github.vincemann.springlemon.auth.util.LemonMapUtils;
+import com.github.vincemann.springrapid.core.security.RapidRoles;
 import com.github.vincemann.springrapid.acl.proxy.Secured;
 import com.github.vincemann.springrapid.core.controller.dtoMapper.context.Direction;
 import com.github.vincemann.springrapid.core.controller.dtoMapper.context.DtoMappingContext;
@@ -26,7 +26,7 @@ import com.github.vincemann.springrapid.core.controller.RapidController;
 import com.github.vincemann.springrapid.core.service.exception.BadEntityException;
 import com.github.vincemann.springrapid.core.service.exception.EntityNotFoundException;
 import com.github.vincemann.springrapid.core.slicing.components.WebComponent;
-import com.github.vincemann.springrapid.core.util.EntityAssert;
+import com.github.vincemann.springrapid.core.util.VerifyEntity;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -92,7 +92,7 @@ public abstract class LemonController
 				.withPrincipal(DtoMappingInfo.Principal.FOREIGN)
 				.forEndpoint(LemonDtoEndpoint.FETCH_BY_EMAIL,Direction.RESPONSE, LemonFindForeignDto.class)
 				.withAllPrincipals()
-				.withRoles(RapidRole.ADMIN)
+				.withRoles(RapidRoles.ADMIN)
 				.forEndpoint(RapidDtoEndpoint.UPDATE, LemonAdminUpdateUserDto.class)
 				.build();
 	}
@@ -268,7 +268,7 @@ public abstract class LemonController
 
 		log.debug("Fetching a new token ... ");
 		// result = {token:asfsdfjsdjfnd}
-		return LemonValidationUtils.mapOf("token", getService().fetchNewAuthToken(email));
+		return LemonMapUtils.mapOf("token", getService().fetchNewAuthToken(email));
 	}
 
 	/**
@@ -282,7 +282,7 @@ public abstract class LemonController
 
 	protected U fetchUser(ID userId) throws BadEntityException, EntityNotFoundException {
 		Optional<U> byId = unsecuredService.findById(userId);
-		EntityAssert.isPresent(byId,"User with id: "+userId+" not found");
+		VerifyEntity.isPresent(byId,"User with id: "+userId+" not found");
 		return byId.get();
 	}
 	

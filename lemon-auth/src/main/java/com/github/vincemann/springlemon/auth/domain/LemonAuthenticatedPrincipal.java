@@ -1,6 +1,6 @@
 package com.github.vincemann.springlemon.auth.domain;
 
-import com.github.vincemann.springrapid.core.security.RapidRole;
+import com.github.vincemann.springrapid.core.security.RapidRoles;
 import com.github.vincemann.springrapid.core.security.RapidAuthenticatedPrincipal;
 import lombok.Getter;
 import lombok.ToString;
@@ -40,19 +40,19 @@ public class LemonAuthenticatedPrincipal extends RapidAuthenticatedPrincipal {
 				.collect(Collectors.toSet());
 		if (isGoodUser()) {
 
-			authorities.add(new SimpleGrantedAuthority(LemonRole.GOOD_USER));
+			authorities.add(new SimpleGrantedAuthority(LemonRoles.GOOD_USER));
 
 			if (isGoodAdmin())
-				authorities.add(new SimpleGrantedAuthority(LemonRole.GOOD_ADMIN));
+				authorities.add(new SimpleGrantedAuthority(LemonRoles.GOOD_ADMIN));
 		}
 		return authorities;
 	}
 
 	public void initFlags() {
 		//init role flags
-		unverified = getRoles().contains(LemonRole.UNVERIFIED);
-		blocked = getRoles().contains(LemonRole.BLOCKED);
-		admin = getRoles().contains(RapidRole.ADMIN);
+		unverified = getRoles().contains(LemonRoles.UNVERIFIED);
+		blocked = getRoles().contains(LemonRoles.BLOCKED);
+		admin = getRoles().contains(RapidRoles.ADMIN);
 		goodUser = !(unverified || blocked);
 		goodAdmin = goodUser && admin;
 	}

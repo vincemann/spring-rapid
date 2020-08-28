@@ -2,7 +2,7 @@ package com.github.vincemann.springlemon.demo;
 
 import com.github.vincemann.springlemon.demo.domain.MySignupForm;
 import com.github.vincemann.springrapid.core.util.MapperUtils;
-import com.github.vincemann.springlemon.auth.domain.LemonRole;
+import com.github.vincemann.springlemon.auth.domain.LemonRoles;
 import com.github.vincemann.springlemon.auth.util.LemonValidationUtils;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -57,7 +57,7 @@ public class SignupMvcTests extends AbstractMvcTests {
 				.andExpect(jsonPath("$.password").doesNotExist())
 				.andExpect(jsonPath("$.email").value("user.foo@example.com"))
 				.andExpect(jsonPath("$.roles").value(hasSize(1)))
-				.andExpect(jsonPath("$.roles[0]").value(LemonRole.UNVERIFIED))
+				.andExpect(jsonPath("$.roles[0]").value(LemonRoles.UNVERIFIED))
 //				.andExpect(jsonPath("$.tag.name").value("User Foo"))
 				.andExpect(jsonPath("$.unverified").value(true))
 				.andExpect(jsonPath("$.blocked").value(false))

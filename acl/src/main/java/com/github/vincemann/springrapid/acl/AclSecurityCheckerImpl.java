@@ -5,7 +5,7 @@ import com.github.vincemann.aoplog.api.LogInteraction;
 import com.github.vincemann.springrapid.core.model.IdentifiableEntity;
 import com.github.vincemann.springrapid.core.security.RapidAuthenticatedPrincipal;
 import com.github.vincemann.springrapid.core.security.RapidSecurityContext;
-import com.github.vincemann.springrapid.core.security.SecurityCheckerImpl;
+import com.github.vincemann.springrapid.core.security.RapidSecurityChecker;
 import com.github.vincemann.springrapid.core.util.Authenticated;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeansException;
@@ -34,7 +34,7 @@ import java.util.HashSet;
  * Uses {@link MethodSecurityExpressionHandler} for expression evaluation and {@link org.springframework.security.core.context.SecurityContext}
  * to get information about authenticated user.
  */
-public class AclSecurityCheckerImpl extends SecurityCheckerImpl implements AclSecurityChecker,ApplicationContextAware {
+public class AclSecurityCheckerImpl extends RapidSecurityChecker implements AclSecurityChecker,ApplicationContextAware {
 
 
     private Method triggerCheckMethod;
@@ -98,7 +98,7 @@ public class AclSecurityCheckerImpl extends SecurityCheckerImpl implements AclSe
     }
 
     @Override
-    public void checkRole(String role){
+    public void checkHasRole(String role){
         boolean permitted = checkExpression("hasRole('" + role + "')");
         if(!permitted){
             throw new AccessDeniedException("Permission not Granted! Principal : " + rapidSecurityContext.currentPrincipal()

@@ -1,11 +1,9 @@
 package com.github.vincemann.springrapid.acl.config;
 
-import com.github.vincemann.springrapid.core.security.RapidRole;
+import com.github.vincemann.springrapid.core.security.RapidRoles;
 import com.github.vincemann.springrapid.acl.framework.HierarchicPermissionGrantingStrategy;
 import com.github.vincemann.springrapid.acl.framework.NoModSecurityCheckAclAuthorizationStrategy;
 import com.github.vincemann.springrapid.acl.framework.VerboseAclPermissionEvaluator;
-import com.github.vincemann.springrapid.acl.framework.oidresolve.RapidObjectIdentityResolver;
-import com.github.vincemann.springrapid.core.service.locator.CrudServiceLocator;
 import com.github.vincemann.springrapid.core.slicing.config.ServiceConfig;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -94,7 +92,7 @@ public class AclAutoConfiguration {
         //admin is allowed to change all acl db tables, but he is not automatically allowed to do anything acl restricted bc of this statement
         //return new AclAuthorizationStrategyImpl(new SimpleGrantedAuthority(AuthorityName.ROLE_ADMIN.toString()));
         return new NoModSecurityCheckAclAuthorizationStrategy(
-                new SimpleGrantedAuthority(RapidRole.ADMIN)
+                new SimpleGrantedAuthority(RapidRoles.ADMIN)
         );
     }
 

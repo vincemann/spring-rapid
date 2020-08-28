@@ -13,7 +13,7 @@ public class RapidSecurityAutoConfiguration {
     @Bean
     @ConditionalOnMissingBean(SecurityChecker.class)
     public SecurityChecker securityChecker(){
-        return new SecurityCheckerImpl();
+        return new RapidSecurityChecker();
     }
 
     @Bean

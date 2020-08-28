@@ -5,7 +5,7 @@ import com.github.vincemann.springlemon.demo.domain.User;
 import com.github.vincemann.springlemon.demo.repositories.UserRepository;
 import com.github.vincemann.springlemon.auth.mail.MailSender;
 import com.github.vincemann.springlemon.auth.util.LemonValidationUtils;
-import com.github.vincemann.springrapid.core.security.RapidRole;
+import com.github.vincemann.springrapid.core.security.RapidRoles;
 import com.github.vincemann.springrapid.acl.service.LocalPermissionService;
 import com.github.vincemann.springrapid.core.security.MockAuthService;
 import org.junit.jupiter.api.BeforeEach;
@@ -146,7 +146,7 @@ public abstract class AbstractMvcTests {
     protected void giveAdminFullPermissionOver(Long... ids) {
         for (Long id : ids) {
             User user = userRepository.findById(id).get();
-            permissionService.addPermissionForAuthorityOver(user, BasePermission.ADMINISTRATION, RapidRole.ADMIN);
+            permissionService.addPermissionForAuthorityOver(user, BasePermission.ADMINISTRATION, RapidRoles.ADMIN);
         }
     }
 

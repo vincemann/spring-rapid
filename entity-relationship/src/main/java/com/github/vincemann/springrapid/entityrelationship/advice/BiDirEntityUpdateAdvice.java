@@ -1,7 +1,7 @@
 package com.github.vincemann.springrapid.entityrelationship.advice;
 
 import com.github.vincemann.springrapid.core.model.IdentifiableEntity;
-import com.github.vincemann.springrapid.core.util.EntityAssert;
+import com.github.vincemann.springrapid.core.util.VerifyEntity;
 import com.github.vincemann.springrapid.entityrelationship.model.child.BiDirChild;
 import com.github.vincemann.springrapid.entityrelationship.model.parent.BiDirParent;
 import com.github.vincemann.springrapid.core.service.CrudService;
@@ -66,7 +66,7 @@ public class BiDirEntityUpdateAdvice {
         Class entityClazz = newBiDirChild.getClass();
         CrudService service = serviceLocator.find((Class<IdentifiableEntity>) entityClazz);
         Optional<BiDirChild> oldBiDirChildOptional = service.findById(((IdentifiableEntity<Serializable>) newBiDirChild).getId());
-        EntityAssert.isPresent(oldBiDirChildOptional,((IdentifiableEntity<Serializable>) newBiDirChild).getId(), entityClazz);
+        VerifyEntity.isPresent(oldBiDirChildOptional,((IdentifiableEntity<Serializable>) newBiDirChild).getId(), entityClazz);
         BiDirChild oldBiDirChild = oldBiDirChildOptional.get();
         Collection<BiDirParent> oldParents = oldBiDirChild.findBiDirParents();
         Collection<BiDirParent> newParents = newBiDirChild.findBiDirParents();
@@ -102,7 +102,7 @@ public class BiDirEntityUpdateAdvice {
         Class entityClass = newBiDirParent.getClass();
         CrudService service = serviceLocator.find((Class<IdentifiableEntity>)entityClass);
         Optional<BiDirParent> oldBiDirParentOptional = service.findById(((IdentifiableEntity<Serializable>) newBiDirParent).getId());
-        EntityAssert.isPresent(oldBiDirParentOptional,((IdentifiableEntity<Serializable>) newBiDirParent).getId(),newBiDirParent.getClass());
+        VerifyEntity.isPresent(oldBiDirParentOptional,((IdentifiableEntity<Serializable>) newBiDirParent).getId(),newBiDirParent.getClass());
         BiDirParent oldBiDirParent = oldBiDirParentOptional.get();
 
         Set<BiDirChild> oldChildren = oldBiDirParent.findBiDirSingleChildren();
