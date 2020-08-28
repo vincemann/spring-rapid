@@ -16,6 +16,7 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.util.Optional;
 
 /**
  * Authentication success handler for sending the response
@@ -30,36 +31,26 @@ public class LemonAuthenticationSuccessHandler
 
     private ObjectMapper objectMapper;    
     private LemonService<?, ?,?> lemonService;
-    private long defaultExpirationMillis;
-    
+	private LemonProperties properties;
+
 	public LemonAuthenticationSuccessHandler(ObjectMapper objectMapper, LemonService<?, ?,?> lemonService, LemonProperties properties) {
 		
 		this.objectMapper = objectMapper;
 		this.lemonService = lemonService;
-		this.defaultExpirationMillis = properties.getJwt().getExpirationMillis();
+		this.properties = properties;
 		log.info("Created");
 	}
 
 	
 	@Override
-    public void onAuthenticationSuccess(HttpServletRequest request,
-    		HttpServletResponse response,
-            Authentication authentication)
-    throws IOException, ServletException {
+    public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication)
+			throws IOException {
 
         // Instead of handle(request, response, authentication),
 		// the statements below are introduced
     	response.setStatus(HttpServletResponse.SC_OK);
     	response.setContentType(MediaType.APPLICATION_JSON_VALUE);
-
-    	String expirationMillisStr = request.getParameter("expirationMillis");
-    	long expirationMillis = expirationMillisStr == null ?
-    			defaultExpirationMillis : Long.valueOf(expirationMillisStr);
- 
-    	// get the current-user
-    	LemonUserDto currentUser = LecwUtils.currentUser();
-
-    	lemonService.addAuthHeader(response, currentUser.getEmail(), expirationMillis);
+    	lemonService.fetchNewAuthToken(Optional.empty());
     	
     	// write current-user data to the response  
     	response.getOutputStream().print(
