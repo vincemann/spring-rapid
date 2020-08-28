@@ -91,7 +91,7 @@ public class LemonServiceAutoConfiguration {
     @Bean
     @Primary
     @ConditionalOnMissingBean(UserDetailsService.class)
-    public LemonUserDetailsService userDetailService() {
+    public UserDetailsService userDetailService() {
         log.info("Configuring LemonUserDetailsService");
         return new LemonUserDetailsService();
     }

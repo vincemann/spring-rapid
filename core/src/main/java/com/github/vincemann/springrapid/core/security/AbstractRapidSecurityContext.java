@@ -1,6 +1,5 @@
 package com.github.vincemann.springrapid.core.security;
 
-import com.github.vincemann.aoplog.api.AopLoggable;
 import com.google.common.collect.Sets;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -26,8 +25,8 @@ import java.util.stream.Collectors;
  **/
 @Slf4j
 public class AbstractRapidSecurityContext<P extends RapidAuthenticatedPrincipal>
-        implements RapidSecurityContext<P>,
-        AopLoggable {
+        implements RapidSecurityContext<P>
+{
 
     private static final String TEMP_USER_NAME = "tempUserName@RapidSecurityContextImpl.com";
     private static final String TEMP_USER_PASSWORD = "tempUserPassword123@";

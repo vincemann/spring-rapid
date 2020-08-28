@@ -12,7 +12,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 
-@Getter @ToString
+@Getter @ToString(callSuper = true)
 public class LemonAuthenticatedPrincipal extends RapidAuthenticatedPrincipal {
 
 	private static final long serialVersionUID = -7849730155307434535L;
@@ -32,22 +32,6 @@ public class LemonAuthenticatedPrincipal extends RapidAuthenticatedPrincipal {
 		this(user.getEmail(), user.getPassword(),user.getRoles(), user.getId().toString());
 	}
 
-	@Override
-	public Collection<? extends GrantedAuthority> getAuthorities() {
-		//create Springs Wrapper for String authorities
-		Collection<GrantedAuthority> authorities = getRoles().stream()
-				.map(SimpleGrantedAuthority::new)
-				.collect(Collectors.toSet());
-		if (isGoodUser()) {
-
-			authorities.add(new SimpleGrantedAuthority(LemonRoles.GOOD_USER));
-
-			if (isGoodAdmin())
-				authorities.add(new SimpleGrantedAuthority(LemonRoles.GOOD_ADMIN));
-		}
-		return authorities;
-	}
-
 	public void initFlags() {
 		//init role flags
 		unverified = getRoles().contains(LemonRoles.UNVERIFIED);
@@ -60,6 +44,29 @@ public class LemonAuthenticatedPrincipal extends RapidAuthenticatedPrincipal {
 	public String getEmail(){
 		return getName();
 	}
+
+	//removed because i dont want to support runtime roles to keep it simple, see LemonSecurityCheckerHelper
+
+//	@Override
+//	public Collection<? extends GrantedAuthority> getAuthorities() {
+//		//create Springs Wrapper for String authorities
+//		Collection<GrantedAuthority> authorities = getRoles().stream()
+//				.map(SimpleGrantedAuthority::new)
+//				.collect(Collectors.toSet());
+//		if (isGoodUser()) {
+//
+//			authorities.add(new SimpleGrantedAuthority(LemonRoles.GOOD_USER));
+//
+//			if (isGoodAdmin())
+//				authorities.add(new SimpleGrantedAuthority(LemonRoles.GOOD_ADMIN));
+//		}
+//		return authorities;
+//	}
+
+
+
+
+
 	
 //	public LemonUserDto currentUser() {
 //		return lemonUserDto;

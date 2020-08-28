@@ -7,7 +7,7 @@ import com.github.vincemann.springrapid.core.controller.dtoMapper.context.DtoMap
 import com.github.vincemann.springrapid.core.controller.dtoMapper.context.DtoMappingInfo;
 
 /**
- * Offers a find method, for finding the right Dto class for the current situation (represented by {@link DtoMappingInfo}).
+ * Offers a find method, for finding the right Dto class ,for the entity-dto-mapping, in current situation (represented by {@link DtoMappingInfo}).
  */
 @LogInteraction
 public interface DtoClassLocator extends AopLoggable {

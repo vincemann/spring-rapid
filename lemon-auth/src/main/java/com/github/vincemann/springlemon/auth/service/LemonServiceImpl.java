@@ -6,6 +6,7 @@ import com.github.vincemann.springlemon.auth.security.PrincipalUserConverter;
 import com.github.vincemann.springlemon.auth.service.token.AuthorizationTokenService;
 import com.github.vincemann.springlemon.auth.service.token.BadTokenException;
 import com.github.vincemann.springlemon.auth.util.*;
+import com.github.vincemann.springrapid.acl.proxy.Unsecured;
 import com.github.vincemann.springrapid.core.security.RapidSecurityContext;
 import com.nimbusds.jwt.JWTClaimsSet;
 import com.github.vincemann.springlemon.auth.domain.AbstractUser;
@@ -61,7 +62,7 @@ public abstract class LemonServiceImpl
 
 
 
-    private LemonService<U,ID,R> unsecuredService;
+    private LemonService<U,ID,R> unsecuredLemonService;
 
     /**
      * Creates a new user object. Must be overridden in the
@@ -191,7 +192,7 @@ public abstract class LemonServiceImpl
 
         user.getRoles().remove(LemonRoles.UNVERIFIED); // make him verified
         user.setCredentialsUpdatedMillis(System.currentTimeMillis());
-        U saved = unsecuredService.save(user);
+        U saved = unsecuredLemonService.save(user);
 
         // Re-login the user, so that the UNVERIFIED role is removed, but only if transaction really succeeds
         TransactionalUtils.afterCommit(() -> {
@@ -511,9 +512,10 @@ public abstract class LemonServiceImpl
         this.securityContext = securityContext;
     }
 
+    @Unsecured
     @Autowired
-    public void injectUnsecuredService(LemonService<U, ID, R> unsecuredService) {
-        this.unsecuredService = unsecuredService;
+    public void injectUnsecuredLemonService(LemonService<U, ID, R> unsecuredService) {
+        this.unsecuredLemonService = unsecuredService;
     }
 
     @Autowired

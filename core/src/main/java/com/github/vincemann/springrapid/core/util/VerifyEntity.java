@@ -34,7 +34,7 @@ public class VerifyEntity {
         return (T) entity;
     }
 
-    public static <T> T isPresent(Object entity){
+    static <T> T isPresent(Object entity){
         if(entity==null){
             return null;
         }

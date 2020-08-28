@@ -11,11 +11,11 @@ import com.github.vincemann.springlemon.auth.domain.dto.user.LemonAdminUpdateUse
 import com.github.vincemann.springlemon.auth.domain.dto.user.LemonFindForeignDto;
 import com.github.vincemann.springlemon.auth.domain.dto.user.LemonReadUserDto;
 import com.github.vincemann.springlemon.auth.domain.dto.user.LemonUserDto;
-import com.github.vincemann.springlemon.auth.LemonProperties;
 import com.github.vincemann.springlemon.auth.service.token.BadTokenException;
 import com.github.vincemann.springlemon.auth.service.token.HttpTokenService;
 import com.github.vincemann.springlemon.auth.service.LemonService;
 import com.github.vincemann.springlemon.auth.util.LemonMapUtils;
+import com.github.vincemann.springrapid.acl.proxy.Unsecured;
 import com.github.vincemann.springrapid.core.security.RapidRoles;
 import com.github.vincemann.springrapid.acl.proxy.Secured;
 import com.github.vincemann.springrapid.core.controller.dtoMapper.context.Direction;
@@ -53,8 +53,7 @@ public abstract class LemonController
 	<U extends AbstractUser<ID>, ID extends Serializable>
 			extends RapidController<U,ID, LemonService<U, ID,?>>  {
 
-    private LemonProperties properties;
-	private LemonService<U, ID, ?> unsecuredService;
+	private LemonService<U, ID, ?> unsecuredLemonService;
 	private HttpTokenService httpTokenService;
 
 	/**
@@ -86,14 +85,18 @@ public abstract class LemonController
 	@Override
 	public DtoMappingContext provideDtoMappingContext() {
 		return LemonDtoMappingContextBuilder.builder()
+				.withAllPrincipals()
 				.forAll(LemonUserDto.class)
 				.forResponse(LemonReadUserDto.class)
 				.forEndpoint(LemonDtoEndpoint.SIGN_UP, Direction.REQUEST, LemonSignupForm.class)
+
 				.withPrincipal(DtoMappingInfo.Principal.FOREIGN)
 				.forEndpoint(LemonDtoEndpoint.FETCH_BY_EMAIL,Direction.RESPONSE, LemonFindForeignDto.class)
+
 				.withAllPrincipals()
 				.withRoles(RapidRoles.ADMIN)
 				.forEndpoint(RapidDtoEndpoint.UPDATE, LemonAdminUpdateUserDto.class)
+
 				.build();
 	}
 
@@ -281,18 +284,11 @@ public abstract class LemonController
 	}
 
 	protected U fetchUser(ID userId) throws BadEntityException, EntityNotFoundException {
-		Optional<U> byId = unsecuredService.findById(userId);
+		Optional<U> byId = unsecuredLemonService.findById(userId);
 		VerifyEntity.isPresent(byId,"User with id: "+userId+" not found");
 		return byId.get();
 	}
-	
-	
-	
 
-	@Autowired
-	public void injectProperties(LemonProperties properties){
-		this.properties=properties;
-	}
 
 	@Autowired
 	public void injectHttpTokenService(HttpTokenService httpTokenService) {
@@ -306,9 +302,10 @@ public abstract class LemonController
 		super.injectCrudService(crudService);
 	}
 
+	@Unsecured
 	@Autowired
 	public void injectUnsecuredService(LemonService<U, ID, ?> unsecuredService) {
-		this.unsecuredService = unsecuredService;
+		this.unsecuredLemonService = unsecuredService;
 	}
 
 

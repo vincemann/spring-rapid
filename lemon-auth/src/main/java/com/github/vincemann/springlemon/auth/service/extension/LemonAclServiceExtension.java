@@ -4,6 +4,7 @@ import com.github.vincemann.springlemon.auth.LemonProperties;
 import com.github.vincemann.springlemon.auth.domain.AbstractUser;
 import com.github.vincemann.springlemon.auth.service.LemonService;
 import com.github.vincemann.springlemon.auth.service.SimpleLemonService;
+import com.github.vincemann.springrapid.acl.proxy.Unsecured;
 import com.github.vincemann.springrapid.acl.service.extensions.AbstractAclServiceExtension;
 import com.github.vincemann.springrapid.core.model.IdentifiableEntity;
 import com.github.vincemann.springrapid.core.service.exception.BadEntityException;
@@ -20,7 +21,7 @@ public class LemonAclServiceExtension
         extends AbstractAclServiceExtension<SimpleLemonService>
             implements SimpleLemonServiceExtension<SimpleLemonService>
 {
-    private LemonService<AbstractUser<?>,?,?> unsecuredUserService;
+    private SimpleLemonService<AbstractUser<?>,?> unsecuredLemonService;
 
 
     @Override
@@ -49,7 +50,7 @@ public class LemonAclServiceExtension
         log.debug("saving acl info for signed up user: " + emailOfSignedUp);
         AbstractUser user = null;
         try {
-            user = unsecuredUserService.findByEmail(emailOfSignedUp);
+            user = unsecuredLemonService.findByEmail(emailOfSignedUp);
         } catch (EntityNotFoundException e) {
             log.warn("No user found after signup -> cant save acl permissions");
             return;
@@ -58,8 +59,9 @@ public class LemonAclServiceExtension
         saveFullPermissionForAdminOver(user);
     }
 
+    @Unsecured
     @Autowired
-    public void injectUnsecuredUserService(LemonService<AbstractUser<?>, ?, ?> unsecuredUserService) {
-        this.unsecuredUserService = unsecuredUserService;
+    public void injectUnsecuredUserService(SimpleLemonService<AbstractUser<?>, ?> unsecuredUserService) {
+        this.unsecuredLemonService = unsecuredUserService;
     }
 }

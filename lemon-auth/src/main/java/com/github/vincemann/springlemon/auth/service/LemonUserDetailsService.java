@@ -4,10 +4,14 @@ import com.github.vincemann.aoplog.api.AopLoggable;
 import com.github.vincemann.aoplog.api.LogInteraction;
 import com.github.vincemann.springlemon.auth.domain.AbstractUser;
 import com.github.vincemann.springlemon.auth.domain.LemonAuthenticatedPrincipal;
+import com.github.vincemann.springlemon.auth.security.PrincipalUserConverter;
 import com.github.vincemann.springlemon.exceptions.util.LexUtils;
 
+import com.github.vincemann.springrapid.acl.proxy.Unsecured;
+import com.github.vincemann.springrapid.core.security.RapidAuthenticatedPrincipal;
 import com.github.vincemann.springrapid.core.service.exception.EntityNotFoundException;
 import com.github.vincemann.springrapid.core.slicing.components.ServiceComponent;
+import com.sun.xml.bind.v2.model.core.ID;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -22,42 +26,47 @@ import java.util.Optional;
 /**
  * UserDetailsService, as required by Spring Security.
  * 
- * @author Sanjay Patel
- * @modified vincemann
  */
 @ServiceComponent
 @Slf4j
 public class LemonUserDetailsService
-	<U extends AbstractUser<ID>, ID extends Serializable>
-				implements UserDetailsService, AopLoggable {
-	private SimpleLemonService<U,ID> unsecuredLemonService;
+		implements UserDetailsService, AopLoggable {
 
+	private SimpleLemonService<AbstractUser<?>, ?> unsecuredLemonService;
+	private PrincipalUserConverter<RapidAuthenticatedPrincipal,AbstractUser<?>> principalUserConverter;
 
 	@Transactional
 	@LogInteraction
 	@Override
-	public LemonAuthenticatedPrincipal loadUserByUsername(String email) throws UsernameNotFoundException {
-		U user;
+	public RapidAuthenticatedPrincipal loadUserByUsername(String email) throws UsernameNotFoundException {
+		AbstractUser<?> user;
 		try {
 			user = findUserByEmail(email);
 		} catch (EntityNotFoundException e) {
-			log.debug("Cant find user with email: " + email);
-			throw new UsernameNotFoundException(LexUtils.getMessage("com.naturalprogrammer.spring.userNotFound", email),e);
+			throw new UsernameNotFoundException(
+					LexUtils.getMessage("com.naturalprogrammer.spring.userNotFound", email)
+					,e);
 		}
 
-		return new LemonAuthenticatedPrincipal(user);
+		return principalUserConverter.toPrincipal(user);
 	}
 
 	/**
 	 * Finds a user by the given username. Override this
 	 * if you aren't using email as the username.
 	 */
-	protected U findUserByEmail(String username) throws EntityNotFoundException {
+	protected AbstractUser<?> findUserByEmail(String username) throws EntityNotFoundException {
 		return unsecuredLemonService.findByEmail(username);
 	}
 
 	@Autowired
-	public void injectUnsecuredLemonService(SimpleLemonService<U, ID> unsecuredLemonService) {
+	public void injectPrincipalUserConverter(PrincipalUserConverter<RapidAuthenticatedPrincipal, AbstractUser<?>> principalUserConverter) {
+		this.principalUserConverter = principalUserConverter;
+	}
+
+	@Unsecured
+	@Autowired
+	public void injectUnsecuredLemonService(SimpleLemonService<AbstractUser<?>, ?> unsecuredLemonService) {
 		this.unsecuredLemonService = unsecuredLemonService;
 	}
 }

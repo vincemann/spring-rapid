@@ -10,7 +10,7 @@ import java.util.stream.Collectors;
 @SuppressWarnings("ALL")
 /**
  * Represents the Context that contains the information when which dto class should be used for mapping.
- * Create with {@link DtoMappingContext} impl.
+ * Create with {@link DtoMappingContextBuilder}.
  */
 @Slf4j
 @Getter

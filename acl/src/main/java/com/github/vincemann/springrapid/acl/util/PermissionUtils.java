@@ -1,6 +1,5 @@
 package com.github.vincemann.springrapid.acl.util;
 
-import org.springframework.security.acls.domain.BasePermission;
 import org.springframework.security.acls.model.Permission;
 
 public class PermissionUtils {
