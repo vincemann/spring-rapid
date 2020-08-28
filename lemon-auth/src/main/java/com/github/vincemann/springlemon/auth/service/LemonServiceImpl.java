@@ -2,12 +2,14 @@ package com.github.vincemann.springlemon.auth.service;
 
 
 import com.github.vincemann.springlemon.auth.domain.LemonAuthenticatedPrincipal;
+import com.github.vincemann.springlemon.auth.security.LemonSecurityContext;
 import com.github.vincemann.springlemon.auth.security.PrincipalUserConverter;
 import com.github.vincemann.springlemon.auth.service.token.AuthorizationTokenService;
 import com.github.vincemann.springlemon.auth.service.token.BadTokenException;
 import com.github.vincemann.springlemon.auth.util.*;
 import com.github.vincemann.springrapid.acl.proxy.Unsecured;
 import com.github.vincemann.springrapid.core.security.RapidSecurityContext;
+import com.github.vincemann.springrapid.core.util.VerifyAccess;
 import com.nimbusds.jwt.JWTClaimsSet;
 import com.github.vincemann.springlemon.auth.domain.AbstractUser;
 import com.github.vincemann.springlemon.auth.domain.AbstractUserRepository;
@@ -466,19 +468,20 @@ public abstract class LemonServiceImpl
      * @return
      */
     @Override
-    public String fetchNewAuthToken(Optional<String> optionalEmail) {
+    public String fetchNewAuthToken(String targetUserEmail) {
+        P currentUser = securityContext.currentPrincipal();
 
-        LemonAuthenticatedPrincipal currentUser = securityContext.currentPrincipal();
-//        LemonUserDto currentUser = LecwUtils.currentUser();
-        String email = optionalEmail.orElse(currentUser.getEmail());
-
-        //todo den check durch nen acl check ersetzen maybe
-        LemonValidationUtils.ensureAuthority(currentUser.getEmail().equals(email) ||
+        //todo das hier muss in LemonSecurityRule und anstatt zu checken ob die email gleich ist usw, einfach check of current User acl-Admin-Rechte über user mit der email hat
+        LemonValidationUtils.ensureAuthority(currentUser.getEmail().equals(targetUserEmail) ||
                 currentUser.isGoodAdmin(), "com.naturalprogrammer.spring.notGoodAdminOrSameUser");
 
-        //todo kann sich hier jeder user nen token mit beliebiger expiration ausstellen lassen?
-        //ist das ein problem?
+
         return authorizationTokenService.createToken(currentUser);
+    }
+
+    @Override
+    public String fetchNewAuthToken(){
+        return fetchNewAuthToken(securityContext.currentPrincipal().getEmail());
     }
 
     @Transactional(propagation = Propagation.REQUIRED, readOnly = false)
@@ -496,11 +499,6 @@ public abstract class LemonServiceImpl
         log.debug("admin saved.");
     }
 
-
-
-    public Optional<U> findUserById(String id) {
-        return getRepository().findById(toId(id));
-    }
 
     @Autowired
     public void injectAuthorizationTokenService(AuthorizationTokenService<P> authorizationTokenService) {

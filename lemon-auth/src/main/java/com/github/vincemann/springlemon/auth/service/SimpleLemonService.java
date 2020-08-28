@@ -51,8 +51,12 @@ public interface SimpleLemonService<U extends AbstractUser<ID>, ID extends Seria
 
     public U changeEmail(U user, @Valid @NotBlank String changeEmailCode) throws EntityNotFoundException, BadTokenException;
 
+
+
     @LogInteraction(Severity.TRACE)
-    public String fetchNewAuthToken(Optional<String> optionalUsername);
+    public String fetchNewAuthToken(String targetUserEmail);
+
+    public String fetchNewAuthToken();
 
 //    @LogInteraction(Severity.TRACE)
 //    public Map<String, String> fetchFullToken(String authHeader);
