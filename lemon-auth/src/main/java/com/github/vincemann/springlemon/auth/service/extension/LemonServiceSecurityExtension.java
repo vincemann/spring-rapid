@@ -2,18 +2,18 @@ package com.github.vincemann.springlemon.auth.service.extension;
 
 import com.github.vincemann.springlemon.auth.domain.AbstractUser;
 import com.github.vincemann.springlemon.auth.domain.LemonAuthenticatedPrincipal;
-import com.github.vincemann.springlemon.auth.domain.LemonRole;
 import com.github.vincemann.springlemon.auth.domain.dto.ChangePasswordForm;
 import com.github.vincemann.springlemon.auth.domain.dto.RequestEmailChangeForm;
 import com.github.vincemann.springlemon.auth.service.LemonService;
 import com.github.vincemann.springlemon.auth.service.SimpleLemonService;
 import com.github.vincemann.springlemon.auth.service.token.BadTokenException;
+import com.github.vincemann.springlemon.auth.util.LemonSecurityCheckerHelper;
 import com.github.vincemann.springrapid.acl.proxy.SecurityServiceExtension;
 import com.github.vincemann.springrapid.core.model.IdentifiableEntity;
 import com.github.vincemann.springrapid.core.security.RapidSecurityContext;
 import com.github.vincemann.springrapid.core.service.exception.BadEntityException;
 import com.github.vincemann.springrapid.core.service.exception.EntityNotFoundException;
-import com.github.vincemann.springrapid.core.util.EntityAssert;
+import com.github.vincemann.springrapid.core.util.VerifyEntity;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.AccessDeniedException;
@@ -34,7 +34,7 @@ public class LemonServiceSecurityExtension
 
     @Override
     public IdentifiableEntity save(IdentifiableEntity entity) throws BadEntityException {
-        getSecurityChecker().checkRole(LemonRole.GOOD_ADMIN);
+        LemonSecurityCheckerHelper.checkGoodAdmin(getSecurityChecker());
         return getNext().save(entity);
     }
 
@@ -49,9 +49,9 @@ public class LemonServiceSecurityExtension
     public AbstractUser update(AbstractUser update, Boolean full) throws EntityNotFoundException, BadEntityException {
         getSecurityChecker().checkPermission(update.getId(), getLast().getEntityClass(), getWritePermission());
         Optional<AbstractUser<Serializable>> byId = unsecuredUserService.findById(update.getId());
-        EntityAssert.isPresent(byId, update.getId(), update.getClass());
+        VerifyEntity.isPresent(byId, update.getId(), update.getClass());
         LemonAuthenticatedPrincipal currentPrincipal = securityContext.currentPrincipal();
-        EntityAssert.notNull(currentPrincipal, "Authenticated user not found");
+        VerifyEntity.notNull(currentPrincipal, "Authenticated user not found");
         checkRoleChangingPermissions(byId.get(), update, currentPrincipal);
         getProxyController().overrideDefaultExtension();
         return getNext().update(update, full);

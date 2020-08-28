@@ -3,9 +3,9 @@ package com.github.vincemann.springlemon.demo;
 import com.github.vincemann.springlemon.auth.controller.LemonController;
 import com.github.vincemann.springlemon.demo.domain.User;
 import com.github.vincemann.springlemon.auth.service.LemonService;
-import com.github.vincemann.springlemon.auth.domain.LemonRole;
+import com.github.vincemann.springlemon.auth.domain.LemonRoles;
 import com.github.vincemann.springlemon.auth.util.LemonValidationUtils;
-import com.github.vincemann.springrapid.core.security.RapidRole;
+import com.github.vincemann.springrapid.core.security.RapidRoles;
 
 import com.github.vincemann.springrapid.core.util.ResourceUtils;
 import com.github.vincemann.springrapid.coretest.controller.rapid.UrlParamIdRapidControllerTest;
@@ -93,7 +93,7 @@ public class UpdateUserMvcTests extends AbstractMvcTests
 		// Ensure that data has not changed
 		Assertions.assertEquals(UNVERIFIED_USER_EMAIL, user.getEmail());
 		Assertions.assertEquals(1, user.getRoles().size());
-		Assertions.assertTrue(user.getRoles().contains(LemonRole.UNVERIFIED));
+		Assertions.assertTrue(user.getRoles().contains(LemonRoles.UNVERIFIED));
     }
 
 	/**
@@ -116,7 +116,7 @@ public class UpdateUserMvcTests extends AbstractMvcTests
 //				.andExpect(jsonPath("$.id").value(UNVERIFIED_USER_ID))
 //				.andExpect(jsonPath("$.tag.name").value(UPDATED_NAME))
 				.andExpect(jsonPath("$.roles").value(hasSize(1)))
-				.andExpect(jsonPath("$.roles[0]").value(RapidRole.ADMIN))
+				.andExpect(jsonPath("$.roles[0]").value(RapidRoles.ADMIN))
 				.andExpect(jsonPath("$.email").value(userPatchUpdatedEmail));
 		
 		User user = userRepository.findById(UNVERIFIED_USER_ID).get();
@@ -125,7 +125,7 @@ public class UpdateUserMvcTests extends AbstractMvcTests
 		//should get replaced because good admin has full power
 		Assertions.assertEquals(userPatchUpdatedEmail, user.getEmail());
 		Assertions.assertEquals(1, user.getRoles().size());
-		Assertions.assertTrue(user.getRoles().contains(RapidRole.ADMIN));
+		Assertions.assertTrue(user.getRoles().contains(RapidRoles.ADMIN));
     }
 	
 	/**
@@ -206,7 +206,7 @@ public class UpdateUserMvcTests extends AbstractMvcTests
 				.andExpect(status().is(200))
 //				.andExpect(jsonPath("$.tag.name").value(UPDATED_NAME))
 				.andExpect(jsonPath("$.roles").value(hasSize(1)))
-				.andExpect(jsonPath("$.roles[0]").value(RapidRole.ADMIN));
+				.andExpect(jsonPath("$.roles[0]").value(RapidRoles.ADMIN));
     }
 	
 	/**

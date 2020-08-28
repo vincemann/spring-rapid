@@ -6,7 +6,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-import com.github.vincemann.springrapid.core.security.RapidRole;
+import com.github.vincemann.springrapid.core.security.RapidRoles;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpHeaders;
 
@@ -30,7 +30,7 @@ public class BasicMvcTests extends AbstractMvcTests {
 				.andExpect(header().string(LemonValidationUtils.TOKEN_RESPONSE_HEADER_NAME, containsString(".")))
 				.andExpect(jsonPath("$.context.reCaptchaSiteKey").isString())
 				.andExpect(jsonPath("$.user.id").value(ADMIN_ID))
-				.andExpect(jsonPath("$.user.roles[0]").value(RapidRole.ADMIN))
+				.andExpect(jsonPath("$.user.roles[0]").value(RapidRoles.ADMIN))
 				.andExpect(jsonPath("$.user.password").doesNotExist());
 	}
 	

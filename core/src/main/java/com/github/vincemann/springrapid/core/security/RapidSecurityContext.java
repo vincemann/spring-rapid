@@ -52,4 +52,17 @@ public interface RapidSecurityContext<P extends RapidAuthenticatedPrincipal> {
         }
         return authentication.getName();
     }
+
+    public static boolean isAuthenticated() {
+        SecurityContext context = SecurityContextHolder.getContext();
+        if (context == null) {
+            return false;
+        }
+        Authentication authentication = context.getAuthentication();
+        if (authentication==null){
+            return false;
+        }else {
+            return true;
+        }
+    }
 }

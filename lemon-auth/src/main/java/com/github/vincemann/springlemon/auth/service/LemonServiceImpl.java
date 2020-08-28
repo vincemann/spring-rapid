@@ -2,6 +2,7 @@ package com.github.vincemann.springlemon.auth.service;
 
 
 import com.github.vincemann.springlemon.auth.domain.LemonAuthenticatedPrincipal;
+import com.github.vincemann.springlemon.auth.security.PrincipalUserConverter;
 import com.github.vincemann.springlemon.auth.service.token.AuthorizationTokenService;
 import com.github.vincemann.springlemon.auth.service.token.BadTokenException;
 import com.github.vincemann.springlemon.auth.util.*;
@@ -14,12 +15,12 @@ import com.github.vincemann.springlemon.auth.domain.dto.RequestEmailChangeForm;
 import com.github.vincemann.springlemon.auth.domain.dto.ResetPasswordForm;
 import com.github.vincemann.springlemon.auth.mail.LemonMailData;
 import com.github.vincemann.springlemon.auth.LemonProperties;
-import com.github.vincemann.springlemon.auth.domain.LemonRole;
+import com.github.vincemann.springlemon.auth.domain.LemonRoles;
 import com.github.vincemann.springlemon.exceptions.util.LexUtils;
-import com.github.vincemann.springrapid.core.security.RapidRole;
+import com.github.vincemann.springrapid.core.security.RapidRoles;
 import com.github.vincemann.springrapid.core.service.exception.BadEntityException;
 import com.github.vincemann.springrapid.core.service.exception.EntityNotFoundException;
-import com.github.vincemann.springrapid.core.util.EntityAssert;
+import com.github.vincemann.springrapid.core.util.VerifyEntity;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
@@ -42,17 +43,25 @@ import java.util.Optional;
 @Validated
 @Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
 @Slf4j
-public abstract class LemonServiceImpl<U extends AbstractUser<ID>, ID extends Serializable, R extends AbstractUserRepository<U, ID>>
+public abstract class LemonServiceImpl
+        <
+                U extends AbstractUser<ID>,
+                ID extends Serializable,
+                P extends LemonAuthenticatedPrincipal,
+                R extends AbstractUserRepository<U, ID>
+         >
             extends AbstractLemonService<U, ID, R>
                     implements LemonService<U, ID, R> {
 
     protected static final String CHANGE_EMAIL_AUDIENCE = "change-email";
 
-    private AuthorizationTokenService<LemonAuthenticatedPrincipal> authorizationTokenService;
-    private RapidSecurityContext<LemonAuthenticatedPrincipal> securityContext;
+    private AuthorizationTokenService<P> authorizationTokenService;
+    private RapidSecurityContext<P> securityContext;
+    private PrincipalUserConverter<P,U> principalUserConverter;
 
 
 
+    private LemonService<U,ID,R> unsecuredService;
 
     /**
      * Creates a new user object. Must be overridden in the
@@ -88,11 +97,10 @@ public abstract class LemonServiceImpl<U extends AbstractUser<ID>, ID extends Se
     //todo wo findet captcha statt, hier sollte captcha stattfinden, Aop Solution: https://medium.com/@cristi.rosu4/protecting-your-spring-boot-rest-endpoints-with-google-recaptcha-and-aop-31328a3f56b7
     @Transactional(propagation = Propagation.REQUIRED, readOnly = false)
     public U signup(U user) throws BadEntityException {
-//        log.debug("Signing up user: " + user);
-        U initialized = initUser(user);// sets right all fields of the user
+        U initialized = initUser(user);
         log.debug("initialized user: " + initialized);
         U saved = save(initialized);
-        makeUnverified(saved); // make the user unverified
+        makeUnverified(saved);
         log.debug("saved and unverified user: " + saved);
         return saved;
     }
@@ -102,8 +110,7 @@ public abstract class LemonServiceImpl<U extends AbstractUser<ID>, ID extends Se
      * Initializes the user based on the input data,
      * e.g. encrypts the password
      */
-    protected U initUser(U user) throws BadEntityException {
-        log.debug("Initializing user: " + user);
+    protected U initUser(U user){
         user.setPassword(passwordEncoder.encode(user.getPassword())); // encode the password
         return user;
     }
@@ -126,8 +133,7 @@ public abstract class LemonServiceImpl<U extends AbstractUser<ID>, ID extends Se
      */
     protected void makeUnverified(U user) {
         super.makeUnverified(user);
-        /*LecjUtils.afterCommit(() -> */
-        sendVerificationMail(user);/*);*/// send a verification mail to the user
+        TransactionalUtils.afterCommit(()-> sendVerificationMail(user));
     }
 
 
@@ -137,11 +143,10 @@ public abstract class LemonServiceImpl<U extends AbstractUser<ID>, ID extends Se
     public void resendVerificationMail(U user) throws EntityNotFoundException {
 
 //        // The user must exist
-//        LexUtils.ensureFound(user);
 
-        EntityAssert.isPresent(user,"User not found");
+        VerifyEntity.isPresent(user,"User not found");
         // must be unverified
-        LexUtils.validate(user.getRoles().contains(LemonRole.UNVERIFIED),
+        LexUtils.validate(user.getRoles().contains(LemonRoles.UNVERIFIED),
                 "com.naturalprogrammer.spring.alreadyVerified").go();
 
         // send the verification mail
@@ -153,9 +158,8 @@ public abstract class LemonServiceImpl<U extends AbstractUser<ID>, ID extends Se
      * Fetches a user by email
      */
     public U findByEmail(String email) throws EntityNotFoundException {
-//        log.debug("Fetching user by email: " + email);
         Optional<U> byEmail = getRepository().findByEmail(email);
-        EntityAssert.isPresent(byEmail,"Entity with email: " + email + " not found");
+        VerifyEntity.isPresent(byEmail,"Entity with email: " + email + " not found");
         return byEmail.get();
     }
 
@@ -166,15 +170,15 @@ public abstract class LemonServiceImpl<U extends AbstractUser<ID>, ID extends Se
      * @return
      */
     @Transactional(propagation = Propagation.REQUIRED, readOnly = false)
-    public U verifyUser(U user, String verificationCode) throws EntityNotFoundException, BadTokenException {
+    public U verifyUser(U user, String verificationCode) throws EntityNotFoundException, BadTokenException, BadEntityException {
 
 //        log.debug("Verifying user ...");
 
 //        U user = getRepository().findById(userId).orElseThrow(LexUtils.notFoundSupplier());
 
-        EntityAssert.isPresent(user,"User not found");
+        VerifyEntity.isPresent(user,"User not found");
         // ensure that he is unverified
-        LexUtils.validate(user.hasRole(LemonRole.UNVERIFIED),
+        LexUtils.validate(user.hasRole(LemonRoles.UNVERIFIED),
                 "com.naturalprogrammer.spring.alreadyVerified").go();
         //verificationCode is jwtToken
         JWTClaimsSet claims = parseToken(verificationCode,
@@ -185,18 +189,15 @@ public abstract class LemonServiceImpl<U extends AbstractUser<ID>, ID extends Se
                         claims.getClaim("email").equals(user.getEmail()),
                 "com.naturalprogrammer.spring.wrong.verificationCode");
 
-        user.getRoles().remove(LemonRole.UNVERIFIED); // make him verified
+        user.getRoles().remove(LemonRoles.UNVERIFIED); // make him verified
         user.setCredentialsUpdatedMillis(System.currentTimeMillis());
-        U saved = getRepository().save(user);
+        U saved = unsecuredService.save(user);
 
-        // Re-login the user, so that the UNVERIFIED role is removed
-//		LemonValidationUtils.login(saved);
-        log.debug("Re-logged-in the user for removing UNVERIFIED role.");
-//		// after successful commit,
-//		LecjUtils.afterCommit(() -> {
-//
-//
-//		});
+        // Re-login the user, so that the UNVERIFIED role is removed, but only if transaction really succeeds
+        TransactionalUtils.afterCommit(() -> {
+            securityContext.login(principalUserConverter.toPrincipal(saved));
+            log.debug("Re-logged-in the user for removing UNVERIFIED role.");
+        });
 
         log.debug("Verified user: " + saved);
         return saved;
@@ -213,7 +214,7 @@ public abstract class LemonServiceImpl<U extends AbstractUser<ID>, ID extends Se
 
         // fetch the user record from database
         Optional<U> byId = getRepository().findByEmail(email);
-        EntityAssert.isPresent(byId,"User with email: "+email+" not found");
+        VerifyEntity.isPresent(byId,"User with email: "+email+" not found");
         U user = byId.get();
         mailForgotPasswordLink(user);
     }
@@ -234,7 +235,7 @@ public abstract class LemonServiceImpl<U extends AbstractUser<ID>, ID extends Se
 
         // fetch the user
         Optional<U> byId = getRepository().findByEmail(email);
-        EntityAssert.isPresent(byId,"User with email: "+email+" not found");
+        VerifyEntity.isPresent(byId,"User with email: "+email+" not found");
         U user = byId.get();
         LemonValidationUtils.ensureCredentialsUpToDate(claims, user);
 
@@ -262,7 +263,7 @@ public abstract class LemonServiceImpl<U extends AbstractUser<ID>, ID extends Se
     @Override
     public U update(U update, Boolean full) throws EntityNotFoundException, BadEntityException, BadEntityException {
         Optional<U> old = getRepository().findById(update.getId());
-        EntityAssert.isPresent(old, "Entity to update with id: " + update.getId() + " not found");
+        VerifyEntity.isPresent(old, "Entity to update with id: " + update.getId() + " not found");
         //update roles works in transaction -> changes are applied on the fly
         updateRoles(old.get(), update);
         update.setRoles(old.get().getRoles());
@@ -280,7 +281,7 @@ public abstract class LemonServiceImpl<U extends AbstractUser<ID>, ID extends Se
         // Get the old password of the logged in user (logged in user may be an ADMIN)
 //        LemonUserDto currentUser = LecwUtils.currentUser();
 //        U loggedIn = getRepository().findById(toId(currentUser.getId())).get();
-        EntityAssert.isPresent(user,"User not found");
+        VerifyEntity.isPresent(user,"User not found");
         String oldPassword = user.getPassword();
 
         // checks
@@ -306,15 +307,15 @@ public abstract class LemonServiceImpl<U extends AbstractUser<ID>, ID extends Se
         if (old.getRoles().equals(newUser.getRoles())) // roles are same
             return;
 
-        if (newUser.hasRole(LemonRole.UNVERIFIED)) {
+        if (newUser.hasRole(LemonRoles.UNVERIFIED)) {
 
-            if (!old.hasRole(LemonRole.UNVERIFIED)) {
+            if (!old.hasRole(LemonRoles.UNVERIFIED)) {
                 makeUnverified(old); // make user unverified
             }
         } else {
 
-            if (old.hasRole(LemonRole.UNVERIFIED))
-                old.getRoles().remove(LemonRole.UNVERIFIED); // make user verified
+            if (old.hasRole(LemonRoles.UNVERIFIED))
+                old.getRoles().remove(LemonRoles.UNVERIFIED); // make user verified
         }
 
         old.setRoles(newUser.getRoles());
@@ -332,7 +333,7 @@ public abstract class LemonServiceImpl<U extends AbstractUser<ID>, ID extends Se
 //        Optional<U> byId = getRepository().findById(userId);
 //        LexUtils.ensureFound(byId);
 //        U user = byId.get();
-        EntityAssert.isPresent(user,"User not found");
+        VerifyEntity.isPresent(user,"User not found");
         LexUtils.validateField("updatedUser.password",
                 passwordEncoder.matches(emailChangeForm.getPassword(),
                         user.getPassword()),
@@ -359,7 +360,7 @@ public abstract class LemonServiceImpl<U extends AbstractUser<ID>, ID extends Se
                 CHANGE_EMAIL_AUDIENCE,
                 user.getId().toString(),
                 properties.getJwt().getExpirationMillis(),
-                LemonValidationUtils.mapOf("newEmail", user.getNewEmail()));
+                LemonMapUtils.mapOf("newEmail", user.getNewEmail()));
 
         try {
 
@@ -415,7 +416,7 @@ public abstract class LemonServiceImpl<U extends AbstractUser<ID>, ID extends Se
 //
 //        U user = getRepository().findById(userId).orElseThrow(LexUtils.notFoundSupplier());
 
-        EntityAssert.isPresent(user,"User not found");
+        VerifyEntity.isPresent(user,"User not found");
         LexUtils.validate(StringUtils.isNotBlank(user.getNewEmail()),
                 "com.naturalprogrammer.spring.blank.newEmail").go();
 
@@ -440,8 +441,8 @@ public abstract class LemonServiceImpl<U extends AbstractUser<ID>, ID extends Se
         user.setCredentialsUpdatedMillis(System.currentTimeMillis());
 
         // make the user verified if he is not
-        if (user.hasRole(LemonRole.UNVERIFIED))
-            user.getRoles().remove(LemonRole.UNVERIFIED);
+        if (user.hasRole(LemonRoles.UNVERIFIED))
+            user.getRoles().remove(LemonRoles.UNVERIFIED);
 
         U saved = getRepository().save(user);
 
@@ -489,31 +490,38 @@ public abstract class LemonServiceImpl<U extends AbstractUser<ID>, ID extends Se
         user.setEmail(admin.getEmail());
         user.setPassword(passwordEncoder.encode(
                 admin.getPassword()));
-        user.getRoles().add(RapidRole.ADMIN);
+        user.getRoles().add(RapidRoles.ADMIN);
         getRepository().save(user);
         log.debug("admin saved.");
     }
 
 
 
-    @Autowired
-    public void injectAuthorizationTokenService(AuthorizationTokenService<LemonAuthenticatedPrincipal> authorizationTokenService) {
-        this.authorizationTokenService = authorizationTokenService;
-    }
-
     public Optional<U> findUserById(String id) {
         return getRepository().findById(toId(id));
     }
 
     @Autowired
+    public void injectAuthorizationTokenService(AuthorizationTokenService<P> authorizationTokenService) {
+        this.authorizationTokenService = authorizationTokenService;
+    }
 
-    public void injectSecurityContext(RapidSecurityContext<LemonAuthenticatedPrincipal> securityContext) {
+    @Autowired
+    public void injectSecurityContext(RapidSecurityContext<P> securityContext) {
         this.securityContext = securityContext;
     }
 
+    @Autowired
+    public void injectUnsecuredService(LemonService<U, ID, R> unsecuredService) {
+        this.unsecuredService = unsecuredService;
+    }
 
+    @Autowired
+    public void injectPrincipalUserConverter(PrincipalUserConverter<P, U> principalUserConverter) {
+        this.principalUserConverter = principalUserConverter;
+    }
 
-//	/**
+    //	/**
 //	 * Hides the confidential fields before sending to client
 //	 */
 //	protected void hideConfidentialFields(U user) {

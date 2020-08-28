@@ -33,7 +33,7 @@ public class ChangeEmailMvcTests extends AbstractMvcTests {
 		changeEmailCode = jweTokenService.createToken(
 				JweTokenService.CHANGE_EMAIL_AUDIENCE,
 				Long.toString(UNVERIFIED_USER_ID), 60000L,
-				LemonValidationUtils.mapOf("newEmail", NEW_EMAIL));
+				LemonMapUtils.mapOf("newEmail", NEW_EMAIL));
 	}
 
 	@Test
@@ -77,7 +77,7 @@ public class ChangeEmailMvcTests extends AbstractMvcTests {
 		String code = jweTokenService.createToken(
 				"", // blank audience
 				Long.toString(UNVERIFIED_USER_ID), 60000L,
-				LemonValidationUtils.mapOf("newEmail", NEW_EMAIL));
+				LemonMapUtils.mapOf("newEmail", NEW_EMAIL));
 		
 		mvc.perform(post("/api/core/users/{id}/email", UNVERIFIED_USER_ID)
                 .param("code", code)
@@ -89,7 +89,7 @@ public class ChangeEmailMvcTests extends AbstractMvcTests {
 		code = jweTokenService.createToken(
 				JweTokenService.CHANGE_EMAIL_AUDIENCE,
 				Long.toString(ADMIN_ID), 60000L,
-				LemonValidationUtils.mapOf("newEmail", NEW_EMAIL));
+				LemonMapUtils.mapOf("newEmail", NEW_EMAIL));
 		
 		mvc.perform(post("/api/core/users/{id}/email", UNVERIFIED_USER_ID)
                 .param("code", code)
@@ -101,7 +101,7 @@ public class ChangeEmailMvcTests extends AbstractMvcTests {
 		code = jweTokenService.createToken(
 				JweTokenService.CHANGE_EMAIL_AUDIENCE,
 				Long.toString(UNVERIFIED_USER_ID), 60000L,
-				LemonValidationUtils.mapOf("newEmail", "wrong.new.email@example.com"));
+				LemonMapUtils.mapOf("newEmail", "wrong.new.email@example.com"));
 		
 		mvc.perform(post("/api/core/users/{id}/email", UNVERIFIED_USER_ID)
                 .param("code", code)

@@ -5,7 +5,7 @@ import com.github.vincemann.springlemon.auth.domain.AbstractUser;
 import com.github.vincemann.springlemon.auth.domain.AbstractUserRepository;
 import com.github.vincemann.springlemon.auth.mail.LemonMailData;
 import com.github.vincemann.springlemon.auth.mail.MailSender;
-import com.github.vincemann.springlemon.auth.domain.LemonRole;
+import com.github.vincemann.springlemon.auth.domain.LemonRoles;
 import com.github.vincemann.springlemon.auth.service.token.BadTokenException;
 import com.github.vincemann.springlemon.auth.service.token.JweTokenService;
 import com.github.vincemann.springlemon.auth.util.LemonValidationUtils;
@@ -53,7 +53,7 @@ public abstract class AbstractLemonService
 	 * Makes a user unverified
 	 */
 	protected void makeUnverified(U user) {
-		user.getRoles().add(LemonRole.UNVERIFIED);
+		user.getRoles().add(LemonRoles.UNVERIFIED);
 		user.setCredentialsUpdatedMillis(System.currentTimeMillis());
 	}
     
@@ -70,7 +70,7 @@ public abstract class AbstractLemonService
 					user.getId().toString(),
 					properties.getJwt().getExpirationMillis(),
 					//payload
-					LemonValidationUtils.mapOf("email", user.getEmail()));
+					LemonMapUtils.mapOf("email", user.getEmail()));
 
 			// make the link
 			String verifyLink = properties.getApplicationUrl()

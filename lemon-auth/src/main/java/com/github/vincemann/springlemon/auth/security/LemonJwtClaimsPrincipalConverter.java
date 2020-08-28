@@ -27,7 +27,7 @@ public class LemonJwtClaimsPrincipalConverter
 
     @Override
     public Map<String,Object> toClaims(LemonAuthenticatedPrincipal user) {
-        return LemonValidationUtils.mapOf("email",user.getEmail());
+        return LemonMapUtils.mapOf("email",user.getEmail());
     }
 
 

@@ -41,7 +41,7 @@ public interface SimpleLemonService<U extends AbstractUser<ID>, ID extends Seria
     @LogInteraction(Severity.TRACE)
     public U findByEmail(@Valid @Email @NotBlank String email) throws EntityNotFoundException;
 
-    public U verifyUser(U user, String verificationCode) throws EntityNotFoundException, BadTokenException;
+    public U verifyUser(U user, String verificationCode) throws EntityNotFoundException, BadTokenException, BadEntityException;
     public void forgotPassword(@Valid @Email @NotBlank String email) throws EntityNotFoundException;
     public U resetPassword(@Valid ResetPasswordForm form) throws EntityNotFoundException, BadTokenException;
     public void changePassword(U user, @Valid ChangePasswordForm changePasswordForm) throws EntityNotFoundException;

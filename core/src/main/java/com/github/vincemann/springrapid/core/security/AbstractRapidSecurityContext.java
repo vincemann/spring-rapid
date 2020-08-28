@@ -25,7 +25,9 @@ import java.util.stream.Collectors;
  * Since all info is encapsulated there, there is no gain in giving control about different Authentication impls (realized via AuthenticationFactories for example)
  **/
 @Slf4j
-public class AbstractRapidSecurityContext<P extends RapidAuthenticatedPrincipal> implements RapidSecurityContext<P>, AopLoggable {
+public class AbstractRapidSecurityContext<P extends RapidAuthenticatedPrincipal>
+        implements RapidSecurityContext<P>,
+        AopLoggable {
 
     private static final String TEMP_USER_NAME = "tempUserName@RapidSecurityContextImpl.com";
     private static final String TEMP_USER_PASSWORD = "tempUserPassword123@";
@@ -46,6 +48,7 @@ public class AbstractRapidSecurityContext<P extends RapidAuthenticatedPrincipal>
         SecurityContextHolder.getContext().setAuthentication(auth);
         return old;
     }
+
 
     protected Authentication createToken(P principal) {
         return new UsernamePasswordAuthenticationToken(principal, principal.getPassword(), principal.getAuthorities());
@@ -100,7 +103,7 @@ public class AbstractRapidSecurityContext<P extends RapidAuthenticatedPrincipal>
     public void runAsAdmin(Runnable privRunnable) {
         runAs(createToken(TEMP_ADMIN_NAME,
                 TEMP_ADMIN_PASSWORD,
-                Sets.newHashSet(RapidRole.ADMIN)
+                Sets.newHashSet(RapidRoles.ADMIN)
         ), privRunnable);
     }
 

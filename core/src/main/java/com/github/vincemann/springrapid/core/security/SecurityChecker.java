@@ -21,6 +21,10 @@ public interface SecurityChecker extends AopLoggable {
      * Check if authenticated user has @role
      * @param role
      */
-    public void checkRole(String role) throws AccessDeniedException;
+    public void checkHasRoles(String... role) throws AccessDeniedException;
+
+
+    public void checkHasNotRoles(String... role) throws AccessDeniedException;
+
 
 }

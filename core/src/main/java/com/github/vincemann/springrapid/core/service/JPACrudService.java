@@ -5,7 +5,7 @@ import com.github.vincemann.springrapid.core.model.IdentifiableEntity;
 import com.github.vincemann.springrapid.core.service.exception.BadEntityException;
 import com.github.vincemann.springrapid.core.service.exception.EntityNotFoundException;
 import com.github.vincemann.springrapid.core.slicing.components.ServiceComponent;
-import com.github.vincemann.springrapid.core.util.EntityAssert;
+import com.github.vincemann.springrapid.core.util.VerifyEntity;
 import org.apache.commons.beanutils.BeanUtilsBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.NonTransientDataAccessException;
@@ -53,7 +53,7 @@ public abstract class JPACrudService
     @Transactional
     @Override
     public Optional<E> findById(Id id) throws BadEntityException {
-        EntityAssert.notNull(id, "Id");
+        VerifyEntity.notNull(id, "Id");
         try {
             return jpaRepository.findById(id);
         } catch (NonTransientDataAccessException e) {
@@ -65,7 +65,7 @@ public abstract class JPACrudService
     @Override
     public E update(E update, Boolean full) throws EntityNotFoundException, BadEntityException {
         try {
-            EntityAssert.isPresent(update.getId(), "No Id set for update");
+            VerifyEntity.isPresent(update.getId(), "No Id set for update");
             if (full) {
                 return save(update);
             } else {
@@ -84,9 +84,9 @@ public abstract class JPACrudService
 
 
     private E findOldEntity(Id id) throws BadEntityException, EntityNotFoundException {
-        EntityAssert.notNull(id, "id");
+        VerifyEntity.notNull(id, "id");
         Optional<E> entityToUpdate = findById(id);
-        EntityAssert.isPresent(entityToUpdate, id, getEntityClass());
+        VerifyEntity.isPresent(entityToUpdate, id, getEntityClass());
         return entityToUpdate.get();
     }
 
@@ -111,9 +111,9 @@ public abstract class JPACrudService
     @Override
     public void deleteById(Id id) throws EntityNotFoundException, BadEntityException {
         try {
-            EntityAssert.notNull(id, "Id");
+            VerifyEntity.notNull(id, "Id");
             Optional<E> entity = findById(id);
-            EntityAssert.isPresent(entity, id, entityClass);
+            VerifyEntity.isPresent(entity, id, entityClass);
             jpaRepository.deleteById(id);
         } catch (NonTransientDataAccessException e) {
             throw new BadEntityException(e);

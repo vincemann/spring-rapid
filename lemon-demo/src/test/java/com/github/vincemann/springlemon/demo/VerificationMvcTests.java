@@ -25,7 +25,7 @@ public class VerificationMvcTests extends AbstractMvcTests {
 		
 		verificationCode = jweTokenService.createToken(JweTokenService.VERIFY_AUDIENCE,
 				Long.toString(UNVERIFIED_USER_ID), 60000L,
-				LemonValidationUtils.mapOf("email", UNVERIFIED_USER_EMAIL));
+				LemonMapUtils.mapOf("email", UNVERIFIED_USER_EMAIL));
 	}
 	
 	@Test
@@ -74,7 +74,7 @@ public class VerificationMvcTests extends AbstractMvcTests {
 		// Wrong audience
 		String token = jweTokenService.createToken("wrong-audience",
 				Long.toString(UNVERIFIED_USER_ID), 60000L,
-				LemonValidationUtils.mapOf("email", UNVERIFIED_USER_EMAIL));
+				LemonMapUtils.mapOf("email", UNVERIFIED_USER_EMAIL));
 		mvc.perform(post("/api/core/users/{userId}/verification", UNVERIFIED_USER_ID)
                 .param("code", token)
                 .header("contentType",  MediaType.APPLICATION_FORM_URLENCODED))
@@ -83,7 +83,7 @@ public class VerificationMvcTests extends AbstractMvcTests {
 		// Wrong email
 		token = jweTokenService.createToken(JweTokenService.VERIFY_AUDIENCE,
 				Long.toString(UNVERIFIED_USER_ID), 60000L,
-				LemonValidationUtils.mapOf("email", "wrong.email@example.com"));
+				LemonMapUtils.mapOf("email", "wrong.email@example.com"));
 		mvc.perform(post("/api/core/users/{userId}/verification", UNVERIFIED_USER_ID)
                 .param("code", token)
                 .header("contentType",  MediaType.APPLICATION_FORM_URLENCODED))
@@ -92,7 +92,7 @@ public class VerificationMvcTests extends AbstractMvcTests {
 		// expired token
 		token = jweTokenService.createToken(JweTokenService.VERIFY_AUDIENCE,
 				Long.toString(UNVERIFIED_USER_ID), 1L,
-				LemonValidationUtils.mapOf("email", UNVERIFIED_USER_EMAIL));
+				LemonMapUtils.mapOf("email", UNVERIFIED_USER_EMAIL));
 		// Thread.sleep(1001L);
 		mvc.perform(post("/api/core/users/{userId}/verification", UNVERIFIED_USER_ID)
                 .param("code", token)
