@@ -3,9 +3,8 @@ package com.github.vincemann.springlemon.auth.security;
 import com.github.vincemann.springlemon.auth.domain.AbstractUser;
 import com.github.vincemann.springlemon.auth.domain.LemonAuthenticatedPrincipal;
 import com.github.vincemann.springlemon.auth.service.LemonService;
-import com.github.vincemann.springlemon.auth.util.LecUtils;
+import com.github.vincemann.springlemon.auth.util.ValidationUtils;
 import com.github.vincemann.springrapid.core.service.exception.EntityNotFoundException;
-import com.nimbusds.jwt.JWTClaimsSet;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationCredentialsNotFoundException;
 import org.springframework.transaction.annotation.Transactional;
@@ -28,7 +27,7 @@ public class LemonJwtClaimsPrincipalConverter
 
     @Override
     public Map<String,Object> toClaims(LemonAuthenticatedPrincipal user) {
-        return LecUtils.mapOf("email",user.getEmail());
+        return ValidationUtils.mapOf("email",user.getEmail());
     }
 
 

@@ -23,9 +23,13 @@ public class LemonAuthenticatedPrincipal extends RapidAuthenticatedPrincipal {
 	private boolean goodAdmin = false;
 	private boolean unverified = false;
 
-	public LemonAuthenticatedPrincipal(String email,String password,String id, Set<String> roles) {
+	public LemonAuthenticatedPrincipal(String email,String password, Set<String> roles, String id) {
 		super(email, password,roles, id);
 		initFlags();
+	}
+
+	public LemonAuthenticatedPrincipal(AbstractUser<?> user) {
+		this(user.getEmail(), user.getPassword(),user.getRoles(), user.getId().toString());
 	}
 
 	@Override

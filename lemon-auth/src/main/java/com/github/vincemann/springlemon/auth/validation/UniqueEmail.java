@@ -1,6 +1,6 @@
 package com.github.vincemann.springlemon.auth.validation;
 
-import com.github.vincemann.springlemon.auth.util.UserUtils;
+import com.github.vincemann.springlemon.auth.util.UserVerifyUtils;
 
 import javax.validation.Constraint;
 import javax.validation.constraints.Email;
@@ -17,7 +17,7 @@ import java.lang.annotation.RetentionPolicy;
  * @author Sanjay Patel
  */
 @NotBlank(message = "{com.naturalprogrammer.spring.blank.email}")
-@Size(min= UserUtils.EMAIL_MIN, max=UserUtils.EMAIL_MAX,
+@Size(min= UserVerifyUtils.EMAIL_MIN, max= UserVerifyUtils.EMAIL_MAX,
 	message = "{com.naturalprogrammer.spring.invalid.email.size}")
 @Email(message = "{com.naturalprogrammer.spring.invalid.email}")
 @Retention(RetentionPolicy.RUNTIME)

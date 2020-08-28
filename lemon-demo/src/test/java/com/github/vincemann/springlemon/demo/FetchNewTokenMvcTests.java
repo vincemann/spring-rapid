@@ -6,15 +6,20 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+import com.github.vincemann.springlemon.auth.LemonProperties;
+import com.github.vincemann.springlemon.auth.service.token.JwtService;
 import com.github.vincemann.springrapid.core.util.MapperUtils;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
+import org.springframework.boot.test.mock.mockito.SpyBean;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MvcResult;
 
-import com.github.vincemann.springlemon.auth.util.LecUtils;
-
 public class FetchNewTokenMvcTests extends AbstractMvcTests {
+
+	@SpyBean
+	private LemonProperties properties;
 	
 	public static class Response {
 		
@@ -47,10 +52,15 @@ public class FetchNewTokenMvcTests extends AbstractMvcTests {
 	
 	@Test
 	public void testFetchNewToken_waitForExpire_shouldNotBeUsableAfter() throws Exception {
-		
+		//mock expire time
+		long oldExpireTime = properties.getJwt().getExpirationMillis();
+		long mockedExpireTime = 1000L;
+		Mockito.when(properties.getJwt().getExpirationMillis())
+				.thenReturn(mockedExpireTime);
+
 		MvcResult result = mvc.perform(post("/api/core/fetch-new-auth-token")
 				.header(HttpHeaders.AUTHORIZATION, tokens.get(UNVERIFIED_USER_ID))
-		        .param("expirationMillis", "1000")
+//		        .param("expirationMillis", "1000")
                 .header("contentType",  MediaType.APPLICATION_FORM_URLENCODED))
                 .andExpect(status().is(200))
 				.andReturn();
@@ -58,13 +68,15 @@ public class FetchNewTokenMvcTests extends AbstractMvcTests {
 		Response response = MapperUtils.fromJson(result.getResponse().getContentAsString(), Response.class);
 		ensureTokenWorks(response.getToken());
 
-		Thread.sleep(1001L);
+		Thread.sleep(mockedExpireTime+1L);
 		//token is now expired
 		mvc.perform(get("/api/core/context")
 				.header(HttpHeaders.AUTHORIZATION,
-						LecUtils.TOKEN_PREFIX + response.getToken()))
+						JwtService.TOKEN_PREFIX + response.getToken()))
 				.andExpect(status().is(401));
-		
+
+		//reset expire time
+		Mockito.reset(properties);
 	}
 
 	@Test

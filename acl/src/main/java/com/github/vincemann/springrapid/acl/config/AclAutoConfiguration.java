@@ -120,11 +120,6 @@ public class AclAutoConfiguration {
         return new JdbcMutableAclService(dataSource, lookupStrategy(), aclCache());
     }
 
-//    @ConditionalOnMissingBean(PermissionEvaluator.class)
-//    @Bean
-//    public PermissionEvaluator permissionEvaluator(){
-//        return new AclPermissionEvaluator(aclService());
-//    }
 
 }
 

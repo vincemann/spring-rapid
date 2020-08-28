@@ -1,6 +1,6 @@
 package com.github.vincemann.springlemon.auth.domain.dto;
 
-import com.github.vincemann.springlemon.auth.util.UserUtils;
+import com.github.vincemann.springlemon.auth.util.UserVerifyUtils;
 import com.github.vincemann.springlemon.auth.validation.Password;
 import com.github.vincemann.springlemon.auth.validation.UniqueEmail;
 import lombok.Getter;
@@ -13,8 +13,8 @@ import lombok.ToString;
 @Setter
 @ToString
 public class RequestEmailChangeForm {
-    @Password(groups = {UserUtils.ChangeEmailValidation.class})
+    @Password(groups = {UserVerifyUtils.ChangeEmailValidation.class})
     private String password;
-    @UniqueEmail(groups = {UserUtils.ChangeEmailValidation.class})
+    @UniqueEmail(groups = {UserVerifyUtils.ChangeEmailValidation.class})
     private String newEmail;
 }

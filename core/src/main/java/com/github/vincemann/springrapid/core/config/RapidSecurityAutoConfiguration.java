@@ -19,6 +19,6 @@ public class RapidSecurityAutoConfiguration {
     @Bean
     @ConditionalOnMissingBean(RapidSecurityContext.class)
     public RapidSecurityContext<RapidAuthenticatedPrincipal> rapidSecurityContext(){
-        return new RapidSecurityContextImpl<>();
+        return new AbstractRapidSecurityContext<>();
     }
 }

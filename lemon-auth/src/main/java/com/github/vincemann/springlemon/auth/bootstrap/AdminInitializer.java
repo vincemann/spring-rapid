@@ -38,7 +38,7 @@ public class AdminInitializer extends Initializer {
 
     @Autowired
     public AdminInitializer(@AclManaging LemonService<?,?,?> lemonService,
-                            MockAuthService mockAuthService,
+
                             UserDetailsService userDetailsService,
                             LemonProperties lemonProperties) {
         this.lemonService = lemonService;

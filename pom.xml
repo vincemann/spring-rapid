@@ -33,7 +33,6 @@
 <!--        lemon-->
         <module>lemon-auth</module>
         <module>lemon-exceptions</module>
-        <module>lemon-test</module>
         <module>lemon-demo</module>
 <!--         rapid-->
         <module>core</module>

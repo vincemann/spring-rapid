@@ -10,7 +10,7 @@ import com.github.vincemann.springlemon.auth.domain.dto.RequestEmailChangeForm;
 import com.github.vincemann.springlemon.auth.domain.dto.ResetPasswordForm;
 import com.github.vincemann.springlemon.auth.LemonProperties;
 import com.github.vincemann.springlemon.auth.service.token.BadTokenException;
-import com.github.vincemann.springlemon.auth.util.UserUtils;
+import com.github.vincemann.springlemon.auth.util.UserVerifyUtils;
 import com.github.vincemann.springrapid.core.service.SimpleCrudService;
 import com.github.vincemann.springrapid.core.service.exception.BadEntityException;
 import com.github.vincemann.springrapid.core.service.exception.EntityNotFoundException;
@@ -33,7 +33,7 @@ public interface SimpleLemonService<U extends AbstractUser<ID>, ID extends Seria
 
     public Map<String, Object> getSharedProperties();
 
-    @Validated(UserUtils.SignUpValidation.class)
+    @Validated(UserVerifyUtils.SignUpValidation.class)
     public U signup(@Valid U user) throws BadEntityException;
 
     public void resendVerificationMail(U user) throws EntityNotFoundException;
@@ -46,7 +46,7 @@ public interface SimpleLemonService<U extends AbstractUser<ID>, ID extends Seria
     public U resetPassword(@Valid ResetPasswordForm form) throws EntityNotFoundException, BadTokenException;
     public void changePassword(U user, @Valid ChangePasswordForm changePasswordForm) throws EntityNotFoundException;
 
-    @Validated(UserUtils.ChangeEmailValidation.class)
+    @Validated(UserVerifyUtils.ChangeEmailValidation.class)
     public void requestEmailChange(U user, @Valid RequestEmailChangeForm emailChangeForm) throws EntityNotFoundException;
 
     public U changeEmail(U user, @Valid @NotBlank String changeEmailCode) throws EntityNotFoundException, BadTokenException;
@@ -62,7 +62,7 @@ public interface SimpleLemonService<U extends AbstractUser<ID>, ID extends Seria
     @LogInteraction(Severity.TRACE)
     public abstract ID toId(String id);
 
-    @Validated(UserUtils.UpdateValidation.class)
+    @Validated(UserVerifyUtils.UpdateValidation.class)
     @Override
     U update(U entity, Boolean full) throws EntityNotFoundException,  BadEntityException;
 

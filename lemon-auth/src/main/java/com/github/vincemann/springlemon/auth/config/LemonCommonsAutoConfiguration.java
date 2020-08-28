@@ -1,147 +1,61 @@
 package com.github.vincemann.springlemon.auth.config;
 
 import com.github.vincemann.springlemon.auth.LemonProperties;
-import com.github.vincemann.springlemon.auth.mail.MailSender;
-import com.github.vincemann.springlemon.auth.mail.MockMailSender;
-import com.github.vincemann.springlemon.auth.mail.SmtpMailSender;
-import com.github.vincemann.springlemon.auth.security.LemonAclPermissionEvaluator;
-import com.github.vincemann.springlemon.auth.service.token.JwsTokenService;
 import com.github.vincemann.springlemon.auth.service.token.JweTokenService;
+import com.github.vincemann.springlemon.auth.service.token.JwsTokenService;
 import com.github.vincemann.springlemon.auth.service.token.LemonJweService;
 import com.github.vincemann.springlemon.auth.service.token.LemonJwsService;
-import com.github.vincemann.springlemon.auth.util.LecUtils;
-import com.github.vincemann.springlemon.auth.util.LecwUtils;
 import com.github.vincemann.springlemon.auth.validation.CaptchaValidator;
 import com.github.vincemann.springlemon.exceptions.config.LemonWebExceptionsAutoConfiguration;
+import com.github.vincemann.springrapid.core.slicing.config.ServiceConfig;
 import com.nimbusds.jose.JOSEException;
 import com.nimbusds.jose.KeyLengthException;
-import com.github.vincemann.springrapid.acl.config.AclAutoConfiguration;
-import com.github.vincemann.springrapid.core.slicing.config.ServiceConfig;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.autoconfigure.AutoConfigureBefore;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
-import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
-import org.springframework.mail.javamail.JavaMailSender;
-import org.springframework.security.access.PermissionEvaluator;
-import org.springframework.security.acls.model.AclService;
-import org.springframework.security.crypto.factory.PasswordEncoderFactories;
-import org.springframework.security.crypto.password.PasswordEncoder;
 
 @ServiceConfig
-//@ComponentScan(basePackageClasses= BadCredentialsExceptionHandler.class)
-@AutoConfigureBefore({AclAutoConfiguration.class,
-	LemonWebExceptionsAutoConfiguration.class})
+@AutoConfigureBefore({LemonWebExceptionsAutoConfiguration.class})
+@Slf4j
 public class LemonCommonsAutoConfiguration {
 
-	private static final Log log = LogFactory.getLog(LemonCommonsAutoConfiguration.class);
 
 	public LemonCommonsAutoConfiguration() {
 		log.info("Created");
 	}
 
-	//should override bean in AclConfig
-	//todo solve this more elegantly
-//	@Primary
-	@ConditionalOnMissingBean(PermissionEvaluator.class)
-	@Bean
-	public PermissionEvaluator lemonPermissionEvaluator(AclService aclService){
-		return new LemonAclPermissionEvaluator(aclService, crudServiceLocator);
-	}
-
-
-
-
 
 	/**
-	 * Configures LemonUtils
-	 */
-	@Bean
-	public LecwUtils lecwUtils() {
-		log.info("Configuring LecwUtils");
-		return new LecwUtils();
-	}
-
-	
-
-	/**
-	 * Configures AuthTokenService if missing
+	 * Configures JwsTokenService if missing
 	 */
 	@Bean
 	@ConditionalOnMissingBean(JwsTokenService.class)
-	public JwsTokenService blueTokenService(LemonProperties properties) throws JOSEException {
+	public JwsTokenService jwsTokenService(LemonProperties properties) throws JOSEException {
 		
-        log.info("Configuring AuthTokenService");       
+        log.info("Configuring JwsTokenService");
 		return new LemonJwsService(properties.getJwt().getSecret());
 	}
 
 
 	/**
-	 * Configures ExternalTokenService if missing
+	 * Configures JweTokenService if missing
 	 */
 	@Bean
 	@ConditionalOnMissingBean(JweTokenService.class)
-	public JweTokenService greenTokenService(LemonProperties properties) throws KeyLengthException {
+	public JweTokenService jweTokenService(LemonProperties properties) throws KeyLengthException {
 		
-        log.info("Configuring ExternalTokenService");       
+        log.info("Configuring JweTokenService");
 		return new LemonJweService(properties.getJwt().getSecret());
 	}
 
 
-	/**
-	 * Configures Password encoder if missing
-	 */
-	@Bean
-	@ConditionalOnMissingBean(PasswordEncoder.class)
-    public PasswordEncoder passwordEncoder() {
-	
-		log.info("Configuring PasswordEncoder");		
-        return PasswordEncoderFactories.createDelegatingPasswordEncoder();
-    }
-
-
-	/**
-	 * Configures a MockMailSender when the property
-	 * <code>spring.mail.host</code> isn't defined.
-	 */
-	@Bean
-	@ConditionalOnMissingBean(MailSender.class)
-	@ConditionalOnProperty(name="spring.mail.host", havingValue="foo", matchIfMissing=true)
-	public MailSender<?> mockMailSender() {
-
-        log.info("Configuring MockMailSender");       
-        return new MockMailSender();
-	}
-
-	
-	/**
-	 * Configures an SmtpMailSender when the property
-	 * <code>spring.mail.host</code> is defined.
-	 */
-	@Bean
-	@ConditionalOnMissingBean(MailSender.class)
-	@ConditionalOnProperty("spring.mail.host")
-	public MailSender<?> smtpMailSender(JavaMailSender javaMailSender) {
-		
-        log.info("Configuring SmtpMailSender");       
-		return new SmtpMailSender(javaMailSender);
-	}
-
-	@Bean
-	public LecUtils lecUtils(ApplicationContext applicationContext) {
-		return new LecUtils(applicationContext);
-	}
-	
 	/**
 	 * Configures CaptchaValidator if missing
 	 */
 	@Bean
 	@ConditionalOnMissingBean(CaptchaValidator.class)
 	public CaptchaValidator captchaValidator(LemonProperties properties) {
-		
-        log.info("Configuring LemonUserDetailsService");       
 		return new CaptchaValidator(properties);
 	}
 }

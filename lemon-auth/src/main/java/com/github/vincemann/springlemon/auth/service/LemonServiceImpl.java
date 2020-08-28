@@ -181,7 +181,7 @@ public abstract class LemonServiceImpl<U extends AbstractUser<ID>, ID extends Se
         JWTClaimsSet claims = parseToken(verificationCode,
                 VERIFY_AUDIENCE, user.getCredentialsUpdatedMillis());
 
-        LecUtils.ensureAuthority(
+        ValidationUtils.ensureAuthority(
                 claims.getSubject().equals(user.getId().toString()) &&
                         claims.getClaim("email").equals(user.getEmail()),
                 "com.naturalprogrammer.spring.wrong.verificationCode");
@@ -345,7 +345,7 @@ public abstract class LemonServiceImpl<U extends AbstractUser<ID>, ID extends Se
         U saved = getRepository().save(user);
 
         // after successful commit, mails a link to the user
-        LecjUtils.afterCommit(() -> mailChangeEmailLink(saved));
+        TransactionalUtils.afterCommit(() -> mailChangeEmailLink(saved));
 
         log.debug("Requested email change: " + user);
     }
@@ -360,7 +360,7 @@ public abstract class LemonServiceImpl<U extends AbstractUser<ID>, ID extends Se
                 CHANGE_EMAIL_AUDIENCE,
                 user.getId().toString(),
                 properties.getJwt().getExpirationMillis(),
-                LecUtils.mapOf("newEmail", user.getNewEmail()));
+                ValidationUtils.mapOf("newEmail", user.getNewEmail()));
 
         try {
 
@@ -424,7 +424,7 @@ public abstract class LemonServiceImpl<U extends AbstractUser<ID>, ID extends Se
                 CHANGE_EMAIL_AUDIENCE,
                 user.getCredentialsUpdatedMillis());
 
-        LecUtils.ensureAuthority(
+        ValidationUtils.ensureAuthority(
                 claims.getSubject().equals(user.getId().toString()) &&
                         claims.getClaim("newEmail").equals(user.getNewEmail()),
                 "com.naturalprogrammer.spring.wrong.changeEmailCode");
@@ -472,7 +472,7 @@ public abstract class LemonServiceImpl<U extends AbstractUser<ID>, ID extends Se
         String email = optionalEmail.orElse(currentUser.getEmail());
 
         //todo den check durch nen acl check ersetzen maybe
-        LecUtils.ensureAuthority(currentUser.getEmail().equals(email) ||
+        ValidationUtils.ensureAuthority(currentUser.getEmail().equals(email) ||
                 currentUser.isGoodAdmin(), "com.naturalprogrammer.spring.notGoodAdminOrSameUser");
 
         //todo kann sich hier jeder user nen token mit beliebiger expiration ausstellen lassen?
@@ -536,7 +536,7 @@ public abstract class LemonServiceImpl<U extends AbstractUser<ID>, ID extends Se
     //    //todo I dont think that i need this. Every information needed by the client is in the UserDto he can get by sending GET user?id=myId
 //    public Map<String, String> fetchFullToken(String authHeader) {
 //
-//        LecUtils.ensureCredentials(authorizationTokenService.parseClaim(authHeader.substring(LecUtils.TOKEN_PREFIX_LENGTH),
+//        LecUtils.ensureCredentials(authorizationTokenService.parseClaim(authHeader.substring(JwtService.TOKEN_PREFIX_LENGTH),
 //                AuthorizationTokenService.USER_CLAIM) == null, "com.naturalprogrammer.spring.fullTokenNotAllowed");
 //
 //        LemonUserDto currentUser = LecwUtils.currentUser();
@@ -544,7 +544,7 @@ public abstract class LemonServiceImpl<U extends AbstractUser<ID>, ID extends Se
 //        Map<String, Object> claimMap = Collections.singletonMap(AuthorizationTokenService.USER_CLAIM,
 //                MapperUtils.serialize(currentUser)); // Not serializing converts it to a JsonNode
 //
-//        Map<String, String> tokenMap = Collections.singletonMap("token", LecUtils.TOKEN_PREFIX +
+//        Map<String, String> tokenMap = Collections.singletonMap("token", JwtService.TOKEN_PREFIX +
 //                authorizationTokenService.createToken(AuthorizationTokenService.AUTH_AUDIENCE, currentUser.getEmail(),
 //                        Long.valueOf(properties.getJwt().getShortLivedMillis()),
 //                        claimMap));

@@ -26,7 +26,8 @@ import java.util.Date;
 @JsonIgnoreProperties({ "createdById", "lastModifiedById", "createdDate", "lastModifiedDate", "new" })
 @EntityListeners(AuditingEntityListener.class)
 @ToString(callSuper = true)
-public class AuditingEntity<ID extends Serializable> extends IdentifiableEntityImpl<ID>
+public class AuditingEntity<ID extends Serializable>
+			extends IdentifiableEntityImpl<ID>
 {
 
 	private static final long serialVersionUID = -8151190931948396443L;

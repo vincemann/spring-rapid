@@ -1,6 +1,7 @@
 package com.github.vincemann.springlemon.auth.config;
 
 import com.github.vincemann.springlemon.auth.LemonProperties;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.web.cors.CorsConfiguration;
@@ -13,14 +14,13 @@ import java.util.Arrays;
 /**
  * CORS Configuration
  */
+@Slf4j
 public class LemonCorsConfigurationSource implements CorsConfigurationSource {
 
-	private static final Log log = LogFactory.getLog(LemonCorsConfigurationSource.class);
 
 	private LemonProperties.Cors cors;
 
 	public LemonCorsConfigurationSource(LemonProperties properties) {
-
 		this.cors = properties.getCors();
 		log.info("Created");
 	}

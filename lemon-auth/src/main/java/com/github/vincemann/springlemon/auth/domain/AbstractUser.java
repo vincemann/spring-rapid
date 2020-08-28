@@ -2,7 +2,7 @@ package com.github.vincemann.springlemon.auth.domain;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonView;
-import com.github.vincemann.springlemon.auth.util.UserUtils;
+import com.github.vincemann.springlemon.auth.util.UserVerifyUtils;
 import com.github.vincemann.springlemon.auth.validation.Captcha;
 import com.github.vincemann.springlemon.auth.validation.Password;
 import com.github.vincemann.springlemon.auth.validation.UniqueEmail;
@@ -23,29 +23,30 @@ import java.util.Set;
 @ToString(callSuper = true)
 public class AbstractUser<ID extends Serializable>
 	extends AuditingEntity<ID>
-		/*implements LemonUser<ID>*/ {
+{
 	
 	// email
-	@JsonView(UserUtils.SignupInput.class)
-	@UniqueEmail(groups = {UserUtils.SignUpValidation.class})
-	@Column(nullable = false, unique=true, length = UserUtils.EMAIL_MAX)
+	@JsonView(UserVerifyUtils.SignupInput.class)
+	@UniqueEmail(groups = {UserVerifyUtils.SignUpValidation.class})
+	@Column(nullable = false, unique=true, length = UserVerifyUtils.EMAIL_MAX)
 	protected String email;
 	
 	// password
-	@JsonView(UserUtils.SignupInput.class)
-	@Password(groups = {UserUtils.SignUpValidation.class, UserUtils.ChangeEmailValidation.class})
+	@JsonView(UserVerifyUtils.SignupInput.class)
+	@Password(groups = {UserVerifyUtils.SignUpValidation.class, UserVerifyUtils.ChangeEmailValidation.class})
 	@Column(nullable = false) // no length because it will be encrypted
 	protected String password;
 	
 	// roles collection
 	@ElementCollection(fetch = FetchType.EAGER)
+	//todo change this to user_role ??
     @CollectionTable(name="usr_role", joinColumns=@JoinColumn(name="user_id"))
     @Column(name="role")
 	protected Set<String> roles = new HashSet<>();
 	
 	// in the email-change process, temporarily stores the new email
-	@UniqueEmail(groups = {UserUtils.ChangeEmailValidation.class})
-	@Column(length = UserUtils.EMAIL_MAX)
+	@UniqueEmail(groups = {UserVerifyUtils.ChangeEmailValidation.class})
+	@Column(length = UserVerifyUtils.EMAIL_MAX)
 	protected String newEmail;
 
 	// A JWT issued before this won't be valid
@@ -55,8 +56,8 @@ public class AbstractUser<ID extends Serializable>
 
 	// holds reCAPTCHA response while signing up
 	@Transient
-	@JsonView(UserUtils.SignupInput.class)
-	@Captcha(groups = {UserUtils.SignUpValidation.class})
+	@JsonView(UserVerifyUtils.SignupInput.class)
+	@Captcha(groups = {UserVerifyUtils.SignUpValidation.class})
 	private String captchaResponse;
 	
 	public final boolean hasRole(String role) {

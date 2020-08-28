@@ -4,7 +4,7 @@ import com.github.vincemann.springlemon.auth.controller.LemonController;
 import com.github.vincemann.springlemon.demo.domain.User;
 import com.github.vincemann.springlemon.auth.service.LemonService;
 import com.github.vincemann.springlemon.auth.domain.LemonRole;
-import com.github.vincemann.springlemon.auth.util.LecUtils;
+import com.github.vincemann.springlemon.auth.util.ValidationUtils;
 import com.github.vincemann.springrapid.core.security.RapidRole;
 
 import com.github.vincemann.springrapid.core.util.ResourceUtils;
@@ -112,7 +112,7 @@ public class UpdateUserMvcTests extends AbstractMvcTests
 				.header(HttpHeaders.AUTHORIZATION, tokens.get(ADMIN_ID)))
 //				.content(userPatch))
 				.andExpect(status().is(200))
-				.andExpect(header().string(LecUtils.TOKEN_RESPONSE_HEADER_NAME, containsString(".")))
+				.andExpect(header().string(ValidationUtils.TOKEN_RESPONSE_HEADER_NAME, containsString(".")))
 //				.andExpect(jsonPath("$.id").value(UNVERIFIED_USER_ID))
 //				.andExpect(jsonPath("$.tag.name").value(UPDATED_NAME))
 				.andExpect(jsonPath("$.roles").value(hasSize(1)))

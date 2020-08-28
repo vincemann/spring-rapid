@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.vincemann.springlemon.auth.LemonProperties;
 import com.github.vincemann.springrapid.core.config.RapidJacksonAutoConfiguration;
 import com.github.vincemann.springrapid.core.slicing.config.WebConfig;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
@@ -29,6 +30,7 @@ import org.springframework.web.cors.CorsConfigurationSource;
 	SecurityAutoConfiguration.class,
 	SecurityFilterAutoConfiguration.class,
 	LemonCommonsAutoConfiguration.class})
+@Slf4j
 public class LemonCommonsWebAutoConfiguration {
 
 	/**
@@ -38,8 +40,7 @@ public class LemonCommonsWebAutoConfiguration {
 	 */
 	public final static String JSON_PREFIX = ")]}',\n";
 
-	private static final Log log = LogFactory.getLog(LemonCommonsWebAutoConfiguration.class);
-	
+
 	public LemonCommonsWebAutoConfiguration() {
 		log.info("Created");
 	}
@@ -80,16 +81,7 @@ public class LemonCommonsWebAutoConfiguration {
 		return new LemonCorsConfigurationSource(properties);		
 	}
 	
-	/**
-	 * Configures LemonSecurityConfig if missing
-	 */
-	@Bean
-	@ConditionalOnMissingBean(LemonWebSecurityConfig.class)	
-	public LemonWebSecurityConfig lemonSecurityConfig() {
-		
-        log.info("Configuring LemonWebSecurityConfig");       
-		return new LemonWebSecurityConfig();
-	}
+
 	
 
 

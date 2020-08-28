@@ -5,6 +5,7 @@ import com.github.vincemann.aoplog.api.AopLoggable;
 import com.github.vincemann.aoplog.api.LogInteraction;
 import com.github.vincemann.springlemon.auth.LemonProperties;
 import com.github.vincemann.springrapid.core.slicing.components.ServiceComponent;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.apache.commons.logging.Log;
@@ -28,10 +29,9 @@ import java.util.Collection;
  *
  */
 @ServiceComponent
+@Slf4j
 public class CaptchaValidator implements ConstraintValidator<Captcha, String>, AopLoggable {
-	
-	private static final Log log = LogFactory.getLog(CaptchaValidator.class);
-	
+
 	/**
 	 * A class to receive the response
 	 * from Google 
