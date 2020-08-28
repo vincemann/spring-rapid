@@ -75,6 +75,10 @@ public abstract class RapidController
         ApplicationListener<ContextRefreshedEvent>,
         InitializingBean {
 
+
+    //              CONSTANTS
+
+
     public static final String MEDIA_TYPE_BEAN_NAME = "rapidMediaType";
 
     public static final String FIND_METHOD_NAME = "get";
@@ -82,6 +86,10 @@ public abstract class RapidController
     public static final String DELETE_METHOD_NAME = "delete";
     public static final String UPDATE_METHOD_NAME = "update";
     public static final String FIND_ALL_METHOD_NAME = "getAll";
+
+
+    //              URLS
+
 
     @Setter
     private String findUrl;
@@ -95,6 +103,9 @@ public abstract class RapidController
     private String createUrl;
     private String baseUrl;
     private String entityNameInUrl;
+
+
+    //              DEPENDENCIES
 
 
     private EndpointService endpointService;
@@ -111,103 +122,207 @@ public abstract class RapidController
     private MergeUpdateStrategy mergeUpdateStrategy;
     @Setter
     private String mediaType;
+    private Class<E> entityClass;
 
-    @SuppressWarnings("unchecked")
-    private Class<E> entityClass = (Class<E>) ((ParameterizedType) this.getClass().getGenericSuperclass()).getActualTypeArguments()[0];
+
+    //              CRUD-CONTROLLER METHODS
+
+
+    public ResponseEntity<String> findAll(@Lp HttpServletRequest request, HttpServletResponse response) throws JsonProcessingException {
+        try {
+            beforeFindAll(request, response);
+            logSecurityContext();
+            Set<E> foundEntities = serviceFindAll();
+            Collection<Object> dtos = new HashSet<>();
+            for (E e : foundEntities) {
+                dtos.add(dtoMapper.mapToDto(e,
+                        createDtoClass(RapidDtoEndpoint.FIND_ALL, Direction.RESPONSE, e)));
+            }
+            afterFindAll(dtos, foundEntities, request, response);
+            String json = jsonMapper.writeValueAsString(dtos);
+            return ok(json);
+        } catch (BadEntityException e) {
+            throw new RuntimeException(e);
+        }
+
+    }
+
+    public ResponseEntity<String> find(@Lp HttpServletRequest request, HttpServletResponse response) throws IdFetchingException, EntityNotFoundException, BadEntityException, JsonProcessingException {
+        Id id = idIdFetchingStrategy.fetchId(request);
+        log.debug("id fetched from request: " + id);
+
+        beforeFind(id, request, response);
+        validationStrategy.validateId(id);
+        log.debug("id successfully validated");
+        logSecurityContext();
+        Optional<E> optionalEntity = serviceFind(id);
+        VerifyEntity.isPresent(optionalEntity, id, getEntityClass());
+        E found = optionalEntity.get();
+        Object dto = dtoMapper.mapToDto(
+                found,
+                createDtoClass(RapidDtoEndpoint.FIND, Direction.RESPONSE, found)
+        );
+        afterFind(id, dto, optionalEntity, request, response);
+        return ok(jsonMapper.writeValueAsString(dto));
+
+    }
+
+    public ResponseEntity<String> create(@Lp HttpServletRequest request, HttpServletResponse response) throws BadEntityException, EntityNotFoundException, IOException {
+        String json = readBody(request);
+        Class<?> dtoClass = createDtoClass(RapidDtoEndpoint.CREATE, Direction.REQUEST, null);
+        Object dto = getJsonMapper().readValue(json, dtoClass);
+        beforeCreate(dto, request, response);
+        validationStrategy.validateDto(dto);
+        log.debug("Dto successfully validated");
+        //i expect that dto has the right dto type -> callers responsibility
+        E entity = mapToEntity(dto);
+        logSecurityContext();
+        E savedEntity = serviceCreate(entity);
+        Object resultDto = dtoMapper.mapToDto(savedEntity,
+                createDtoClass(RapidDtoEndpoint.CREATE, Direction.RESPONSE, savedEntity));
+        afterCreate(resultDto, entity, request, response);
+        return ok(jsonMapper.writeValueAsString(resultDto));
+    }
+
+    public ResponseEntity<String> update(@Lp HttpServletRequest request, HttpServletResponse response) throws EntityNotFoundException, BadEntityException, IdFetchingException, JsonPatchException, IOException {
+        String patchString = readBody(request);
+        log.debug("patchString: " + patchString);
+        Id id = idIdFetchingStrategy.fetchId(request);
+        //user does also need read permission if he wants to update user, so i can check read permission here instead of using unsecured service
+        Optional<E> savedOptional = getService().findById(id);
+        VerifyEntity.isPresent(savedOptional, id, getEntityClass());
+        E saved = savedOptional.get();
+        Class<?> dtoClass = createDtoClass(RapidDtoEndpoint.UPDATE, Direction.REQUEST, saved);
+        beforeUpdate(dtoClass, id, patchString, request, response);
+
+        Object patchDto = dtoMapper.mapToDto(saved, dtoClass);
+        patchDto = MapperUtils.applyPatch(patchDto, patchString);
+        log.debug("finished patchDto: " + patchDto);
+        validationStrategy.validateDto(patchDto);
+        E patchEntity = dtoMapper.mapToEntity(patchDto, getEntityClass());
+        log.debug("finished patchEntity: " + patchEntity);
+        E merged = mergeUpdateStrategy.merge(patchEntity, JpaUtils.detach(saved), dtoClass);
+        log.debug("merged Entity as input for service: ");
+        logSecurityContext();
+        E updated = serviceUpdate(merged, true);
+        //no idea why casting is necessary here?
+        Class<?> resultDtoClass = createDtoClass(RapidDtoEndpoint.UPDATE, Direction.RESPONSE, updated);
+        Object resultDto = dtoMapper.mapToDto(updated, resultDtoClass);
+        afterUpdate(resultDto, updated, request, response);
+        return ok(jsonMapper.writeValueAsString(resultDto));
+    }
+
+    public ResponseEntity<?> delete(@Lp HttpServletRequest request, HttpServletResponse response) throws IdFetchingException, BadEntityException, EntityNotFoundException, ConstraintViolationException {
+        Id id = idIdFetchingStrategy.fetchId(request);
+        log.debug("id fetched from request: " + id);
+        beforeDelete(id, request, response);
+        validationStrategy.validateId(id);
+        log.debug("id successfully validated");
+        logSecurityContext();
+        serviceDelete(id);
+        afterDelete(id, request, response);
+        return ok();
+    }
+
+
+    //              HELPERS
+
+
+    public Class<?> createDtoClass(String endpoint, Direction direction, E entity) {
+        DtoMappingInfo endpointInfo = createEndpointInfo(endpoint, direction, entity);
+        return dtoClassLocator.find(endpointInfo);
+    }
+
+    protected DtoMappingInfo createEndpointInfo(String endpoint, Direction direction, E entity) {
+        DtoMappingInfo.Principal principal = currentPrincipal(entity);
+        return DtoMappingInfo.builder()
+                .authorities(RapidSecurityContext.getRoles())
+                .direction(direction)
+                .principal(principal)
+                .endpoint(endpoint)
+                .build();
+    }
+
+    protected DtoMappingInfo.Principal currentPrincipal(E entity) {
+        DtoMappingInfo.Principal principal = DtoMappingInfo.Principal.ALL;
+        if (entity != null) {
+            String authenticated = RapidSecurityContext.getName();
+            Optional<String> queried = ownerLocator.find(entity);
+            if (queried.isPresent() && authenticated != null) {
+                principal = queried.get().equals(authenticated)
+                        ? DtoMappingInfo.Principal.OWN
+                        : DtoMappingInfo.Principal.FOREIGN;
+            }
+        }
+        return principal;
+    }
+
+    private E mapToEntity(Object dto) throws BadEntityException, EntityNotFoundException {
+        return dtoMapper.mapToEntity(dto, entityClass);
+    }
+
+    protected String readBody(HttpServletRequest request) throws IOException {
+        return request.getReader().lines().collect(Collectors.joining(System.lineSeparator()));
+    }
+
+    protected ResponseEntity<String> ok(String jsonDto) {
+        return ResponseEntity.ok()
+                .contentType(MediaType.valueOf(getMediaType()))
+                .body(jsonDto);
+    }
+
+    protected ResponseEntity<?> ok() {
+        return ResponseEntity.ok()
+                .contentType(MediaType.valueOf(getMediaType()))
+                .build();
+    }
+
+    protected void logSecurityContext() {
+        log.debug("SecurityContexts Authentication before service call: " + SecurityContextHolder.getContext().getAuthentication());
+    }
+
+    protected void printDtoMappingContext(){
+        if (dtoMappingContext != null) {
+            log.debug("DtoMappingContext: " + dtoMappingContext.toPrettyString());
+        } else {
+            log.debug("DtoMappingContext: " + dtoMappingContext);
+        }
+    }
+
+
+    //             INIT
+
 
     @Autowired
+    @SuppressWarnings("unchecked")
     public RapidController() {
+        this.entityClass =  (Class<E>) ((ParameterizedType) this.getClass().getGenericSuperclass()).getActualTypeArguments()[0];
         this.dtoMappingContext = provideDtoMappingContext();
-        if (dtoMappingContext != null)
-            log.debug("DtoMappingContext: " + dtoMappingContext.toPrettyString());
-        else
-            log.debug("DtoMappingContext: " + dtoMappingContext);
+        printDtoMappingContext();
         initUrls();
     }
 
     protected abstract DtoMappingContext provideDtoMappingContext();
-
-    /**
-     * Override this method if you want to register {@link LocalDtoClassLocator}
-     *
-     * @param locator
-     */
-    protected void configureDtoClassLocator(DelegatingDtoClassLocator locator) {
-
-    }
-
-    @Override
-    public void afterPropertiesSet() throws Exception {
-        dtoClassLocator.setContext(dtoMappingContext);
-        configureDtoClassLocator(dtoClassLocator);
-    }
-
-
-    @Autowired
-    @Lazy
-    public void injectCrudService(S crudService) {
-        this.service = crudService;
-    }
-
-
-    @Autowired
-    public void injectMergeUpdateStrategy(MergeUpdateStrategy mergeUpdateStrategy) {
-        this.mergeUpdateStrategy = mergeUpdateStrategy;
-    }
-
-    @Autowired
-    public void injectOwnerLocator(DelegatingOwnerLocator ownerLocator) {
-        this.ownerLocator = ownerLocator;
-    }
-
-    @Autowired
-    public void injectValidationStrategy(ValidationStrategy<Id> validationStrategy) {
-        this.validationStrategy = validationStrategy;
-    }
-
-    @Autowired
-    public void injectDtoClassLocator(DelegatingDtoClassLocator dtoClassLocator) {
-        this.dtoClassLocator = dtoClassLocator;
-    }
-
-    @Autowired
-    public void injectDtoMapper(DelegatingDtoMapper dtoMapper) {
-        this.dtoMapper = dtoMapper;
-    }
 
     @Override
     public void onApplicationEvent(ContextRefreshedEvent event) {
         initRequestMapping();
     }
 
-    @Autowired
-    public void injectEndpointService(EndpointService endpointService) {
-        this.endpointService = endpointService;
+    @Override
+    public void afterPropertiesSet() {
+        dtoClassLocator.setContext(dtoMappingContext);
+        configureDtoClassLocator(dtoClassLocator);
     }
 
-    @Autowired
-    public void injectEndpointsExposureContext(EndpointsExposureContext endpointsExposureContext) {
-        this.endpointsExposureContext = endpointsExposureContext;
+    /**
+     * Override this method if you want to register {@link LocalDtoClassLocator}
+     */
+    protected void configureDtoClassLocator(DelegatingDtoClassLocator locator) {
+
     }
 
-    @Qualifier(MEDIA_TYPE_BEAN_NAME)
-    @Autowired
-    public void injectMediaType(String mediaType) {
-        this.mediaType = mediaType;
-    }
-
-    @Autowired
-    public void injectJsonMapper(ObjectMapper mapper) {
-        this.jsonMapper = mapper;
-    }
-
-
-    @Autowired
-    public void injectIdIdFetchingStrategy(IdFetchingStrategy<Id> idIdFetchingStrategy) {
-        this.idIdFetchingStrategy = idIdFetchingStrategy;
-    }
-
-    private void initUrls() {
+    protected void initUrls() {
         this.entityNameInUrl = getEntityClass().getSimpleName().toLowerCase();
         this.baseUrl = "/" + entityNameInUrl + "/";
         this.findUrl = baseUrl + FIND_METHOD_NAME;
@@ -302,166 +417,10 @@ public abstract class RapidController
                 .build();
     }
 
-    //    @LogInteraction
-    public ResponseEntity<String> findAll(@Lp HttpServletRequest request, HttpServletResponse response) throws JsonProcessingException {
-        try {
-            beforeFindAll(request, response);
-            logSecurityContext();
-            Set<E> foundEntities = serviceFindAll();
-            Collection<Object> dtos = new HashSet<>();
-            for (E e : foundEntities) {
-                dtos.add(dtoMapper.mapToDto(e,
-                        createDtoClass(RapidDtoEndpoint.FIND_ALL, Direction.RESPONSE, e)));
-            }
-            afterFindAll(dtos, foundEntities, request, response);
-            String json = jsonMapper.writeValueAsString(dtos);
-            return ok(json);
-        } catch (BadEntityException e) {
-            throw new RuntimeException(e);
-        }
 
-    }
+    //              SERVICE HOOKS
 
 
-    //    @LogInteraction
-    public ResponseEntity<String> find(@Lp HttpServletRequest request, HttpServletResponse response) throws IdFetchingException, EntityNotFoundException, BadEntityException, JsonProcessingException {
-        Id id = idIdFetchingStrategy.fetchId(request);
-        log.debug("id fetched from request: " + id);
-
-        beforeFind(id, request, response);
-        validationStrategy.validateId(id);
-        log.debug("id successfully validated");
-        logSecurityContext();
-        Optional<E> optionalEntity = serviceFind(id);
-        VerifyEntity.isPresent(optionalEntity, id, getEntityClass());
-        E found = optionalEntity.get();
-        Object dto = dtoMapper.mapToDto(
-                found,
-                createDtoClass(RapidDtoEndpoint.FIND, Direction.RESPONSE, found)
-        );
-        afterFind(id, dto, optionalEntity, request, response);
-        return ok(jsonMapper.writeValueAsString(dto));
-
-    }
-
-    //    @LogInteraction
-    public ResponseEntity<String> create(@Lp HttpServletRequest request, HttpServletResponse response) throws BadEntityException, EntityNotFoundException, IOException {
-        String json = readBody(request);
-        Class<?> dtoClass = createDtoClass(RapidDtoEndpoint.CREATE, Direction.REQUEST, null);
-        Object dto = getJsonMapper().readValue(json, dtoClass);
-        beforeCreate(dto, request, response);
-        validationStrategy.validateDto(dto);
-        log.debug("Dto successfully validated");
-        //i expect that dto has the right dto type -> callers responsibility
-        E entity = mapToEntity(dto);
-        logSecurityContext();
-        E savedEntity = serviceCreate(entity);
-        Object resultDto = dtoMapper.mapToDto(savedEntity,
-                createDtoClass(RapidDtoEndpoint.CREATE, Direction.RESPONSE, savedEntity));
-        afterCreate(resultDto, entity, request, response);
-        return ok(jsonMapper.writeValueAsString(resultDto));
-    }
-
-    //    @LogInteraction
-    public ResponseEntity<String> update(@Lp HttpServletRequest request, HttpServletResponse response) throws EntityNotFoundException, BadEntityException, IdFetchingException, JsonPatchException, IOException {
-        String patchString = readBody(request);
-        log.debug("patchString: " + patchString);
-        Id id = idIdFetchingStrategy.fetchId(request);
-        //user does also need read permission if he wants to update user, so i can check read permission here instead of using unsecured service
-        Optional<E> savedOptional = getService().findById(id);
-        VerifyEntity.isPresent(savedOptional, id, getEntityClass());
-        E saved = savedOptional.get();
-        Class<?> dtoClass = createDtoClass(RapidDtoEndpoint.UPDATE, Direction.REQUEST, saved);
-        beforeUpdate(dtoClass, id, patchString, request, response);
-
-        Object patchDto = dtoMapper.mapToDto(saved, dtoClass);
-        patchDto = MapperUtils.applyPatch(patchDto, patchString);
-        log.debug("finished patchDto: " + patchDto);
-        validationStrategy.validateDto(patchDto);
-        E patchEntity = dtoMapper.mapToEntity(patchDto, getEntityClass());
-        log.debug("finished patchEntity: " + patchEntity);
-        E merged = mergeUpdateStrategy.merge(patchEntity, JpaUtils.detach(saved), dtoClass);
-        log.debug("merged Entity as input for service: ");
-        logSecurityContext();
-        E updated = serviceUpdate(merged, true);
-        //no idea why casting is necessary here?
-        Class<?> resultDtoClass = createDtoClass(RapidDtoEndpoint.UPDATE, Direction.RESPONSE, updated);
-        Object resultDto = dtoMapper.mapToDto(updated, resultDtoClass);
-        afterUpdate(resultDto, updated, request, response);
-        return ok(jsonMapper.writeValueAsString(resultDto));
-    }
-
-
-    protected String readBody(HttpServletRequest request) throws IOException {
-        return request.getReader().lines().collect(Collectors.joining(System.lineSeparator()));
-    }
-
-
-    //    @LogInteraction
-    public ResponseEntity<?> delete(@Lp HttpServletRequest request, HttpServletResponse response) throws IdFetchingException, BadEntityException, EntityNotFoundException, ConstraintViolationException {
-        Id id = idIdFetchingStrategy.fetchId(request);
-        log.debug("id fetched from request: " + id);
-        beforeDelete(id, request, response);
-        validationStrategy.validateId(id);
-        log.debug("id successfully validated");
-        logSecurityContext();
-        serviceDelete(id);
-        afterDelete(id, request, response);
-        return ok();
-    }
-
-    public Class<?> createDtoClass(String endpoint, Direction direction, E entity) {
-        DtoMappingInfo endpointInfo = createEndpointInfo(endpoint, direction, entity);
-        return dtoClassLocator.find(endpointInfo);
-    }
-
-    protected DtoMappingInfo createEndpointInfo(String endpoint, Direction direction, E entity) {
-        DtoMappingInfo.Principal principal = currentPrincipal(entity);
-        return DtoMappingInfo.builder()
-                .authorities(RapidSecurityContext.getRoles())
-                .direction(direction)
-                .principal(principal)
-                .endpoint(endpoint)
-                .build();
-    }
-
-    protected DtoMappingInfo.Principal currentPrincipal(E entity) {
-        DtoMappingInfo.Principal principal = DtoMappingInfo.Principal.ALL;
-        if (entity != null) {
-            String authenticated = RapidSecurityContext.getName();
-            Optional<String> queried = ownerLocator.find(entity);
-            if (queried.isPresent() && authenticated != null) {
-                principal = queried.get().equals(authenticated)
-                        ? DtoMappingInfo.Principal.OWN
-                        : DtoMappingInfo.Principal.FOREIGN;
-            }
-        }
-        return principal;
-    }
-
-    protected void logSecurityContext() {
-        log.debug("SecurityContexts Authentication before service call: " + SecurityContextHolder.getContext().getAuthentication());
-    }
-
-    private E mapToEntity(Object dto) throws BadEntityException, EntityNotFoundException {
-        return dtoMapper.mapToEntity(dto, entityClass);
-    }
-
-
-    protected ResponseEntity<String> ok(String jsonDto) {
-        return ResponseEntity.ok()
-                .contentType(MediaType.valueOf(getMediaType()))
-                .body(jsonDto);
-    }
-
-    protected ResponseEntity<?> ok() {
-        return ResponseEntity.ok()
-                .contentType(MediaType.valueOf(getMediaType()))
-                .build();
-    }
-
-
-    // overrideable
     protected E serviceUpdate(E update, boolean full) throws BadEntityException, EntityNotFoundException {
         return service.update(update, full);
     }
@@ -483,7 +442,9 @@ public abstract class RapidController
     }
 
 
-    //callbacks
+    //              CONTROLLER HOOKS
+
+
     protected void beforeCreate(Object dto, HttpServletRequest httpServletRequest, HttpServletResponse response) {
     }
 
@@ -499,7 +460,6 @@ public abstract class RapidController
     protected void beforeFindAll(HttpServletRequest httpServletRequest, HttpServletResponse response) {
     }
 
-    //callbacks
     protected void afterCreate(Object dto, E created, HttpServletRequest httpServletRequest, HttpServletResponse response) {
     }
 
@@ -516,4 +476,53 @@ public abstract class RapidController
     }
 
 
+    //              INJECT DEPENDENCIES
+
+
+    @Autowired
+    @Lazy
+    public void injectCrudService(S crudService) {
+        this.service = crudService;
+    }
+    @Autowired
+    public void injectMergeUpdateStrategy(MergeUpdateStrategy mergeUpdateStrategy) {
+        this.mergeUpdateStrategy = mergeUpdateStrategy;
+    }
+    @Autowired
+    public void injectOwnerLocator(DelegatingOwnerLocator ownerLocator) {
+        this.ownerLocator = ownerLocator;
+    }
+    @Autowired
+    public void injectValidationStrategy(ValidationStrategy<Id> validationStrategy) {
+        this.validationStrategy = validationStrategy;
+    }
+    @Autowired
+    public void injectDtoClassLocator(DelegatingDtoClassLocator dtoClassLocator) {
+        this.dtoClassLocator = dtoClassLocator;
+    }
+    @Autowired
+    public void injectDtoMapper(DelegatingDtoMapper dtoMapper) {
+        this.dtoMapper = dtoMapper;
+    }
+    @Autowired
+    public void injectEndpointService(EndpointService endpointService) {
+        this.endpointService = endpointService;
+    }
+    @Autowired
+    public void injectEndpointsExposureContext(EndpointsExposureContext endpointsExposureContext) {
+        this.endpointsExposureContext = endpointsExposureContext;
+    }
+    @Qualifier(MEDIA_TYPE_BEAN_NAME)
+    @Autowired
+    public void injectMediaType(String mediaType) {
+        this.mediaType = mediaType;
+    }
+    @Autowired
+    public void injectJsonMapper(ObjectMapper mapper) {
+        this.jsonMapper = mapper;
+    }
+    @Autowired
+    public void injectIdIdFetchingStrategy(IdFetchingStrategy<Id> idIdFetchingStrategy) {
+        this.idIdFetchingStrategy = idIdFetchingStrategy;
+    }
 }
