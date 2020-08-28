@@ -1,6 +1,7 @@
 package com.github.vincemann.springrapid.core.security;
 
 public interface RapidRoles {
+
     String USER = "ROLE_USER";
     String USER_RAW = "USER";
 

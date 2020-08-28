@@ -1,5 +1,8 @@
 package com.github.vincemann.springrapid.core.security;
 
+import com.github.vincemann.aoplog.Severity;
+import com.github.vincemann.aoplog.api.AopLoggable;
+import com.github.vincemann.aoplog.api.LogInteraction;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContext;
@@ -11,8 +14,13 @@ import java.util.*;
  * Wrapper for Springs {@link SecurityContext#getAuthentication()} in a type safe manner for {@link Authentication#getPrincipal()}.
  * @param <P> Principal Type
  */
-public interface RapidSecurityContext<P extends RapidAuthenticatedPrincipal> {
+@LogInteraction(Severity.TRACE)
+public interface RapidSecurityContext<P extends RapidAuthenticatedPrincipal>
+        extends AopLoggable {
+
+    @LogInteraction(Severity.DEBUG)
     P login(P principal);
+    @LogInteraction(Severity.DEBUG)
     P currentPrincipal();
 
     //Convenience methods that could all be realized by using login

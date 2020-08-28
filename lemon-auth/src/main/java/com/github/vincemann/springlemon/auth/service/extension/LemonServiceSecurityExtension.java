@@ -4,13 +4,14 @@ import com.github.vincemann.springlemon.auth.domain.AbstractUser;
 import com.github.vincemann.springlemon.auth.domain.LemonAuthenticatedPrincipal;
 import com.github.vincemann.springlemon.auth.domain.dto.ChangePasswordForm;
 import com.github.vincemann.springlemon.auth.domain.dto.RequestEmailChangeForm;
+import com.github.vincemann.springlemon.auth.security.LemonSecurityContextChecker;
 import com.github.vincemann.springlemon.auth.service.LemonService;
 import com.github.vincemann.springlemon.auth.service.SimpleLemonService;
 import com.github.vincemann.springlemon.auth.service.token.BadTokenException;
-import com.github.vincemann.springlemon.auth.util.LemonSecurityCheckerHelper;
 import com.github.vincemann.springrapid.acl.proxy.SecurityServiceExtension;
+import com.github.vincemann.springrapid.acl.proxy.Unsecured;
 import com.github.vincemann.springrapid.core.model.IdentifiableEntity;
-import com.github.vincemann.springrapid.core.security.RapidSecurityContext;
+import com.github.vincemann.springrapid.core.security.RapidSecurityContextChecker;
 import com.github.vincemann.springrapid.core.service.exception.BadEntityException;
 import com.github.vincemann.springrapid.core.service.exception.EntityNotFoundException;
 import com.github.vincemann.springrapid.core.util.VerifyEntity;
@@ -29,12 +30,13 @@ public class LemonServiceSecurityExtension
         extends SecurityServiceExtension<SimpleLemonService>
             implements SimpleLemonServiceExtension<SimpleLemonService> {
 
+
     private LemonService<AbstractUser<Serializable>, Serializable, ?> unsecuredUserService;
-    private RapidSecurityContext<LemonAuthenticatedPrincipal> securityContext;
+    private LemonSecurityContextChecker securityContextChecker;
 
     @Override
     public IdentifiableEntity save(IdentifiableEntity entity) throws BadEntityException {
-        LemonSecurityCheckerHelper.checkGoodAdmin(getSecurityChecker());
+        securityContextChecker.checkGoodAdmin();
         return getNext().save(entity);
     }
 
@@ -48,11 +50,11 @@ public class LemonServiceSecurityExtension
     @Override
     public AbstractUser update(AbstractUser update, Boolean full) throws EntityNotFoundException, BadEntityException {
         getSecurityChecker().checkPermission(update.getId(), getLast().getEntityClass(), getWritePermission());
-        Optional<AbstractUser<Serializable>> byId = unsecuredUserService.findById(update.getId());
-        VerifyEntity.isPresent(byId, update.getId(), update.getClass());
-        LemonAuthenticatedPrincipal currentPrincipal = securityContext.currentPrincipal();
-        VerifyEntity.notNull(currentPrincipal, "Authenticated user not found");
-        checkRoleChangingPermissions(byId.get(), update, currentPrincipal);
+        Optional<AbstractUser<Serializable>> oldUserOp = unsecuredUserService.findById(update.getId());
+        AbstractUser oldUser = VerifyEntity.isPresent(oldUserOp, update.getId(), update.getClass());
+        RapidSecurityContextChecker.checkAuthenticated();
+        LemonAuthenticatedPrincipal currPrincipal = securityContextChecker.getSecurityContext().currentPrincipal();
+        checkRoleChangingPermissions(oldUser, update, currPrincipal);
         getProxyController().overrideDefaultExtension();
         return getNext().update(update, full);
     }
@@ -93,7 +95,7 @@ public class LemonServiceSecurityExtension
 
     @Override
     public void requestEmailChange(AbstractUser user, RequestEmailChangeForm emailChangeForm) throws EntityNotFoundException {
-//        LexUtils.ensureFound(userRepository.findById(user));
+        VerifyEntity.isPresent(user,"User who's email should get changed does not exist");
         getSecurityChecker().checkPermission(user.getId(), getLast().getEntityClass(), getWritePermission());
         getNext().requestEmailChange(user, emailChangeForm);
     }
@@ -101,7 +103,7 @@ public class LemonServiceSecurityExtension
 
     @Override
     public AbstractUser changeEmail(AbstractUser user, String changeEmailCode) throws EntityNotFoundException, BadTokenException {
-//        getSecurityChecker().checkAuthenticated();
+        VerifyEntity.isPresent(user,"User who's email should get changed does not exist");
         getSecurityChecker().checkPermission(user.getId(), getLast().getEntityClass(), getWritePermission());
         return getNext().changeEmail(user, changeEmailCode);
     }
@@ -109,19 +111,20 @@ public class LemonServiceSecurityExtension
 
     @Override
     public String fetchNewAuthToken(Optional optionalUsername) {
-        getSecurityChecker().checkAuthenticated();
+        RapidSecurityContextChecker.checkAuthenticated();
         return getNext().fetchNewAuthToken(optionalUsername);
     }
 
 
+    @Unsecured
     @Autowired
     public void injectUnsecuredUserService(LemonService<AbstractUser<Serializable>, Serializable, ?> unsecuredUserService) {
         this.unsecuredUserService = unsecuredUserService;
     }
 
     @Autowired
-    public void injectSecurityContext(RapidSecurityContext<LemonAuthenticatedPrincipal> securityContext) {
-        this.securityContext = securityContext;
+    public void injectSecurityContextChecker(LemonSecurityContextChecker securityContextChecker) {
+        this.securityContextChecker = securityContextChecker;
     }
 
     //todo did not find method... problems?

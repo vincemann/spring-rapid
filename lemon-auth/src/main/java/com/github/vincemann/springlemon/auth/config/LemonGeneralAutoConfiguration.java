@@ -1,7 +1,6 @@
 package com.github.vincemann.springlemon.auth.config;
 
 import com.github.vincemann.springlemon.auth.LemonProperties;
-import com.github.vincemann.springlemon.auth.util.LemonUtils;
 import com.github.vincemann.springrapid.core.config.RapidControllerAutoConfiguration;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.autoconfigure.AutoConfigureBefore;

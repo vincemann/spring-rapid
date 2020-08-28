@@ -1,6 +1,8 @@
 package com.github.vincemann.springrapid.acl;
 
 import com.github.vincemann.aoplog.api.AopLoggable;
+import com.github.vincemann.aoplog.api.LogException;
+import com.github.vincemann.aoplog.api.LogInteraction;
 import com.github.vincemann.springrapid.core.security.SecurityChecker;
 import com.github.vincemann.springrapid.core.slicing.components.ServiceComponent;
 import com.github.vincemann.springrapid.core.model.IdentifiableEntity;
@@ -13,12 +15,14 @@ import java.util.Collection;
  * API for dynamic acl permission checking.
  */
 @ServiceComponent
-public interface AclSecurityChecker extends SecurityChecker, AopLoggable {
+@LogInteraction
+@LogException
+public interface AclSecurityChecker extends AopLoggable {
 
     public boolean checkExpression(String securityExpression);
 
     /**
-     * Filters a collection based on permission the currently logged in user has.
+     * Filters a collection based on permission the authenticated User has.
      *
      * @param toFilter
      * @param permission

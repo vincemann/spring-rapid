@@ -29,6 +29,7 @@ import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.ApplicationListener;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.context.event.ContextRefreshedEvent;
@@ -70,7 +71,11 @@ public abstract class RapidController
                 Id extends Serializable,
                 S extends CrudService<E, Id, ?>
                 >
-        implements ApplicationListener<ContextRefreshedEvent>, InitializingBean/*, AopLoggable*/ {
+        implements
+        ApplicationListener<ContextRefreshedEvent>,
+        InitializingBean {
+
+    public static final String MEDIA_TYPE_BEAN_NAME = "rapidMediaType";
 
     public static final String FIND_METHOD_NAME = "get";
     public static final String CREATE_METHOD_NAME = "create";
@@ -97,7 +102,6 @@ public abstract class RapidController
     private IdFetchingStrategy<Id> idIdFetchingStrategy;
     private EndpointsExposureContext endpointsExposureContext;
     private S service;
-    private S unsecuredService;
     private DelegatingDtoMapper dtoMapper;
     private DelegatingOwnerLocator ownerLocator;
     private DelegatingDtoClassLocator dtoClassLocator;
@@ -105,9 +109,8 @@ public abstract class RapidController
     private DtoMappingContext dtoMappingContext;
     private ValidationStrategy<Id> validationStrategy;
     private MergeUpdateStrategy mergeUpdateStrategy;
-
     @Setter
-    private String mediaType = MediaType.APPLICATION_JSON_UTF8_VALUE;
+    private String mediaType;
 
     @SuppressWarnings("unchecked")
     private Class<E> entityClass = (Class<E>) ((ParameterizedType) this.getClass().getGenericSuperclass()).getActualTypeArguments()[0];
@@ -115,7 +118,7 @@ public abstract class RapidController
     @Autowired
     public RapidController() {
         this.dtoMappingContext = provideDtoMappingContext();
-        if (dtoMappingContext!=null)
+        if (dtoMappingContext != null)
             log.debug("DtoMappingContext: " + dtoMappingContext.toPrettyString());
         else
             log.debug("DtoMappingContext: " + dtoMappingContext);
@@ -126,9 +129,10 @@ public abstract class RapidController
 
     /**
      * Override this method if you want to register {@link LocalDtoClassLocator}
+     *
      * @param locator
      */
-    protected void configureDtoClassLocator(DelegatingDtoClassLocator locator){
+    protected void configureDtoClassLocator(DelegatingDtoClassLocator locator) {
 
     }
 
@@ -138,23 +142,13 @@ public abstract class RapidController
         configureDtoClassLocator(dtoClassLocator);
     }
 
-    /**
-     * Override this with @Autowired @Qualifier("mySecuredService") if you are using a Security Proxy.
-     * If you are using Rapid Acl Package override with @Secured.
-     *
-     * @param crudService
-     */
+
     @Autowired
     @Lazy
     public void injectCrudService(S crudService) {
         this.service = crudService;
     }
 
-    @Autowired
-    @Lazy
-    public void injectUnsecuredCrudService(S crudService) {
-        this.unsecuredService = crudService;
-    }
 
     @Autowired
     public void injectMergeUpdateStrategy(MergeUpdateStrategy mergeUpdateStrategy) {
@@ -194,6 +188,12 @@ public abstract class RapidController
     @Autowired
     public void injectEndpointsExposureContext(EndpointsExposureContext endpointsExposureContext) {
         this.endpointsExposureContext = endpointsExposureContext;
+    }
+
+    @Qualifier(MEDIA_TYPE_BEAN_NAME)
+    @Autowired
+    public void injectMediaType(String mediaType) {
+        this.mediaType = mediaType;
     }
 
     @Autowired
@@ -302,7 +302,7 @@ public abstract class RapidController
                 .build();
     }
 
-//    @LogInteraction
+    //    @LogInteraction
     public ResponseEntity<String> findAll(@Lp HttpServletRequest request, HttpServletResponse response) throws JsonProcessingException {
         try {
             beforeFindAll(request, response);
@@ -323,7 +323,7 @@ public abstract class RapidController
     }
 
 
-//    @LogInteraction
+    //    @LogInteraction
     public ResponseEntity<String> find(@Lp HttpServletRequest request, HttpServletResponse response) throws IdFetchingException, EntityNotFoundException, BadEntityException, JsonProcessingException {
         Id id = idIdFetchingStrategy.fetchId(request);
         log.debug("id fetched from request: " + id);
@@ -337,14 +337,14 @@ public abstract class RapidController
         E found = optionalEntity.get();
         Object dto = dtoMapper.mapToDto(
                 found,
-                createDtoClass(RapidDtoEndpoint.FIND, Direction.RESPONSE,found)
+                createDtoClass(RapidDtoEndpoint.FIND, Direction.RESPONSE, found)
         );
         afterFind(id, dto, optionalEntity, request, response);
         return ok(jsonMapper.writeValueAsString(dto));
 
     }
 
-//    @LogInteraction
+    //    @LogInteraction
     public ResponseEntity<String> create(@Lp HttpServletRequest request, HttpServletResponse response) throws BadEntityException, EntityNotFoundException, IOException {
         String json = readBody(request);
         Class<?> dtoClass = createDtoClass(RapidDtoEndpoint.CREATE, Direction.REQUEST, null);
@@ -362,12 +362,13 @@ public abstract class RapidController
         return ok(jsonMapper.writeValueAsString(resultDto));
     }
 
-//    @LogInteraction
+    //    @LogInteraction
     public ResponseEntity<String> update(@Lp HttpServletRequest request, HttpServletResponse response) throws EntityNotFoundException, BadEntityException, IdFetchingException, JsonPatchException, IOException {
         String patchString = readBody(request);
         log.debug("patchString: " + patchString);
         Id id = idIdFetchingStrategy.fetchId(request);
-        Optional<E> savedOptional = getUnsecuredService().findById(id);
+        //user does also need read permission if he wants to update user, so i can check read permission here instead of using unsecured service
+        Optional<E> savedOptional = getService().findById(id);
         VerifyEntity.isPresent(savedOptional, id, getEntityClass());
         E saved = savedOptional.get();
         Class<?> dtoClass = createDtoClass(RapidDtoEndpoint.UPDATE, Direction.REQUEST, saved);
@@ -396,7 +397,7 @@ public abstract class RapidController
     }
 
 
-//    @LogInteraction
+    //    @LogInteraction
     public ResponseEntity<?> delete(@Lp HttpServletRequest request, HttpServletResponse response) throws IdFetchingException, BadEntityException, EntityNotFoundException, ConstraintViolationException {
         Id id = idIdFetchingStrategy.fetchId(request);
         log.debug("id fetched from request: " + id);
@@ -424,12 +425,12 @@ public abstract class RapidController
                 .build();
     }
 
-    protected DtoMappingInfo.Principal currentPrincipal(E entity){
+    protected DtoMappingInfo.Principal currentPrincipal(E entity) {
         DtoMappingInfo.Principal principal = DtoMappingInfo.Principal.ALL;
-        if (entity!=null) {
+        if (entity != null) {
             String authenticated = RapidSecurityContext.getName();
             Optional<String> queried = ownerLocator.find(entity);
-            if (queried.isPresent() && authenticated!=null) {
+            if (queried.isPresent() && authenticated != null) {
                 principal = queried.get().equals(authenticated)
                         ? DtoMappingInfo.Principal.OWN
                         : DtoMappingInfo.Principal.FOREIGN;
@@ -483,35 +484,35 @@ public abstract class RapidController
 
 
     //callbacks
-    public void beforeCreate(Object dto, HttpServletRequest httpServletRequest, HttpServletResponse response) {
+    protected void beforeCreate(Object dto, HttpServletRequest httpServletRequest, HttpServletResponse response) {
     }
 
-    public void beforeUpdate(Class<?> dtoClass, Id id, String patchString, HttpServletRequest request, HttpServletResponse response) {
+    protected void beforeUpdate(Class<?> dtoClass, Id id, String patchString, HttpServletRequest request, HttpServletResponse response) {
     }
 
-    public void beforeDelete(Id id, HttpServletRequest httpServletRequest, HttpServletResponse response) {
+    protected void beforeDelete(Id id, HttpServletRequest httpServletRequest, HttpServletResponse response) {
     }
 
-    public void beforeFind(Id id, HttpServletRequest httpServletRequest, HttpServletResponse response) {
+    protected void beforeFind(Id id, HttpServletRequest httpServletRequest, HttpServletResponse response) {
     }
 
-    public void beforeFindAll(HttpServletRequest httpServletRequest, HttpServletResponse response) {
+    protected void beforeFindAll(HttpServletRequest httpServletRequest, HttpServletResponse response) {
     }
 
     //callbacks
-    public void afterCreate(Object dto, E created, HttpServletRequest httpServletRequest, HttpServletResponse response) {
+    protected void afterCreate(Object dto, E created, HttpServletRequest httpServletRequest, HttpServletResponse response) {
     }
 
-    public void afterUpdate(Object dto, E updated, HttpServletRequest httpServletRequest, HttpServletResponse response) {
+    protected void afterUpdate(Object dto, E updated, HttpServletRequest httpServletRequest, HttpServletResponse response) {
     }
 
-    public void afterDelete(Id id, HttpServletRequest httpServletRequest, HttpServletResponse response) {
+    protected void afterDelete(Id id, HttpServletRequest httpServletRequest, HttpServletResponse response) {
     }
 
-    public void afterFind(Id id, Object dto, Optional<E> found, HttpServletRequest httpServletRequest, HttpServletResponse response) {
+    protected void afterFind(Id id, Object dto, Optional<E> found, HttpServletRequest httpServletRequest, HttpServletResponse response) {
     }
 
-    public void afterFindAll(Collection<Object> dtos, Set<E> found, HttpServletRequest httpServletRequest, HttpServletResponse response) {
+    protected void afterFindAll(Collection<Object> dtos, Set<E> found, HttpServletRequest httpServletRequest, HttpServletResponse response) {
     }
 
 

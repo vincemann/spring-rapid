@@ -10,6 +10,8 @@ import java.util.List;
 import java.util.Optional;
 
 /**
+ * Delegating version of {@link DtoClassLocator}.
+ *
  * Every controller has one. -> scope = Prototype.
  * Can have {@link this#localDelegates}, that will be called before {@link this#globalDelegate}.
  */

@@ -13,17 +13,19 @@ import java.lang.reflect.Method;
 
 @Slf4j
 /**
- * Proxy for {@link CrudService}, that applys {@link ServiceSecurityRule}s before calling service method.
- * After all Rules have been applied in the order they were given in for construction, the {@link DefaultSecurityServiceExtension}
- * is applied if not prohibited (@see {@link OverrideDefaultSecurityRule})
+ * Proxy for {@link CrudService}, that applies {@link ServiceSecurityRule}s before calling service method.
+ * After all Rules have been applied in the order they were given in for construction of this proxy, the {@link DefaultSecurityServiceExtension}
+ * is applied if not prohibited (@see {@link OverrideDefaultSecurityRule}).
  *
- * Is created by {@link SecurityExtensionServiceProxyFactory} or by {@link ConfigureProxies}.
+ * Is created by {@link SecurityServiceExtensionProxyBuilder} or by {@link ConfigureProxies}.
  */
 public class SecurityExtensionServiceProxy<S extends SimpleCrudService<?,?>>
         extends AbstractExtensionServiceProxy
-        <       S,
+        <
+                S,
                 SecurityExtensionServiceProxy.State,
-                SecurityProxyController>
+                SecurityProxyController
+                >
             implements SecurityProxyController
 {
 
