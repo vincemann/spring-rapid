@@ -43,7 +43,7 @@ public interface GenericSimpleUserServiceExtension<S extends SimpleUserService<U
     }
 
     @Override
-    default U verifyUser(U user, String verificationCode) throws EntityNotFoundException, BadTokenException {
+    default U verifyUser(U user, String verificationCode) throws EntityNotFoundException, BadTokenException, BadEntityException {
         return getNext().verifyUser(user,verificationCode);
     }
 
@@ -73,8 +73,13 @@ public interface GenericSimpleUserServiceExtension<S extends SimpleUserService<U
     }
 
     @Override
-    default String fetchNewAuthToken(Optional<String> optionalUsername) {
-        return getNext().fetchNewAuthToken(optionalUsername);
+    default String fetchNewAuthToken(String targetUserEmail){
+        return getNext().fetchNewAuthToken(targetUserEmail);
+    }
+
+    @Override
+    default String fetchNewAuthToken(){
+        return getNext().fetchNewAuthToken();
     }
 
     @Override
