@@ -143,7 +143,7 @@ public abstract class AbstractUserController
 		U user = fetchUser(id);
 		U saved = getService().verifyUser(user, code);
 
-		appendFreshTokenOf(saved,response);
+		appendFreshToken(response);
 		Object dto = getDtoMapper().mapToDto(saved,
 				createDtoClass(LemonDtoEndpoint.VERIFY_USER, Direction.RESPONSE, saved));
 		return ok(getJsonMapper().writeValueAsString(dto));
@@ -172,7 +172,7 @@ public abstract class AbstractUserController
 
 		log.debug("Resetting password ... ");
 		U saved = getService().resetPassword(form);
-		appendFreshTokenOf(saved,response);
+		appendFreshToken(response);
 		Object dto = getDtoMapper().mapToDto(saved,
 				createDtoClass(LemonDtoEndpoint.RESET_PASSWORD, Direction.RESPONSE, saved));
 		return ok(getJsonMapper().writeValueAsString(dto));
@@ -195,7 +195,7 @@ public abstract class AbstractUserController
 	@Override
 	public void afterUpdate(Object dto, U updated, HttpServletRequest httpServletRequest, HttpServletResponse response) {
 		super.afterUpdate(dto, updated, httpServletRequest, response);
-		appendFreshTokenOf(updated,response);
+		appendFreshToken(response);
 	}
 	
 	/**
@@ -210,7 +210,7 @@ public abstract class AbstractUserController
 		log.debug("Changing password of user with id: " + id);
 		U user = fetchUser(id);
 		getService().changePassword(user, changePasswordForm);
-		appendFreshTokenOf(user,response);
+		appendFreshToken(response);
 	}
 
 
@@ -240,7 +240,7 @@ public abstract class AbstractUserController
 		log.debug("Changing email of user with id: " + id);
 		U user = fetchUser(id);
 		U saved = getService().changeEmail(user, code);
-		appendFreshTokenOf(saved,response);
+		appendFreshToken(response);
 		Object responseDto = getDtoMapper().mapToDto(saved,
 				createDtoClass(LemonDtoEndpoint.CHANGE_EMAIL, Direction.RESPONSE, saved));
 		return ok(getJsonMapper().writeValueAsString(responseDto));
@@ -276,17 +276,22 @@ public abstract class AbstractUserController
 		log.debug("Received a ping");
 	}
 
-
-	//todo massives sicherheitsproblem, wenn zb nen admin die email changed, bekommt der admin nen token von dem fremden user von dem er die mail gechanged hat
-	//todo es muss stattdessen ein token vom logged in user generiert und appended werden
-	//todo und es muss im service mit logins aufgepasst werden -> am besten login ganz in den controller verschieben
 	/**
-	 * Adds an Authorization header to the response
+	 * Adds an Authorization header to the response for certain user
 	 */
 	public void appendFreshTokenOf(U user, HttpServletResponse response) {
-		String token = getService().fetchNewAuthToken(Optional.of(user.getEmail()));
+		String token = getService().fetchNewAuthToken(user.getEmail());
 		httpTokenService.appendToken(token,response);
 //		response.addHeader(LecUtils.TOKEN_RESPONSE_HEADER_NAME, JwtService.TOKEN_PREFIX + token);
+	}
+
+
+	/**
+	 * Adds an Authorization header to the response for logged in user
+	 */
+	public void appendFreshToken(HttpServletResponse response){
+		String token = getService().fetchNewAuthToken();
+		httpTokenService.appendToken(token,response);
 	}
 
 	protected U fetchUser(ID userId) throws BadEntityException, EntityNotFoundException {
