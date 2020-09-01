@@ -2,7 +2,7 @@ package com.github.vincemann.springlemon.auth.controller.owner;
 
 import com.github.vincemann.springlemon.auth.domain.AbstractUser;
 import com.github.vincemann.springlemon.auth.domain.AuditingEntity;
-import com.github.vincemann.springlemon.auth.service.LemonService;
+import com.github.vincemann.springlemon.auth.service.UserService;
 
 import com.github.vincemann.springrapid.core.controller.owner.OwnerLocator;
 import com.github.vincemann.springrapid.core.service.exception.BadEntityException;
@@ -13,10 +13,10 @@ import java.util.Optional;
 @Slf4j
 public class LemonOwnerLocator implements OwnerLocator<AuditingEntity> {
 
-    private LemonService lemonService;
+    private UserService userService;
 
-    public LemonOwnerLocator(LemonService<?, ?, ?> lemonService) {
-        this.lemonService = lemonService;
+    public LemonOwnerLocator(UserService<?, ?, ?> userService) {
+        this.userService = userService;
     }
 
     @Override
@@ -28,7 +28,7 @@ public class LemonOwnerLocator implements OwnerLocator<AuditingEntity> {
     @Override
     public Optional<String> find(AuditingEntity entity) {
         try {
-            Optional<AbstractUser> byId = lemonService.findById(entity.getCreatedById());
+            Optional<AbstractUser> byId = userService.findById(entity.getCreatedById());
             return byId.map(AbstractUser::getEmail);
         } catch (BadEntityException e) {
             log.warn("Could not find Owner by createdById",e);

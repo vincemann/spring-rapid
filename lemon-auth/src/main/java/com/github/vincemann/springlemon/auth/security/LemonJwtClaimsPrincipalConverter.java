@@ -2,8 +2,7 @@ package com.github.vincemann.springlemon.auth.security;
 
 import com.github.vincemann.springlemon.auth.domain.AbstractUser;
 import com.github.vincemann.springlemon.auth.domain.LemonAuthenticatedPrincipal;
-import com.github.vincemann.springlemon.auth.service.LemonService;
-import com.github.vincemann.springlemon.auth.util.LemonValidationUtils;
+import com.github.vincemann.springlemon.auth.service.UserService;
 import com.github.vincemann.springrapid.core.service.exception.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationCredentialsNotFoundException;
@@ -18,11 +17,11 @@ import java.util.Map;
 public class LemonJwtClaimsPrincipalConverter
             implements JwtClaimsPrincipalConverter<LemonAuthenticatedPrincipal> {
 
-    private LemonService<AbstractUser<?>, ?, ?> lemonService;
+    private UserService<AbstractUser<?>, ?, ?> userService;
 
     @Autowired
-    public LemonJwtClaimsPrincipalConverter(LemonService<AbstractUser<?>, ?, ?> lemonService) {
-        this.lemonService = lemonService;
+    public LemonJwtClaimsPrincipalConverter(UserService<AbstractUser<?>, ?, ?> userService) {
+        this.userService = userService;
     }
 
     @Override
@@ -37,7 +36,7 @@ public class LemonJwtClaimsPrincipalConverter
         if (email == null)
             throw new AuthenticationCredentialsNotFoundException("email claim of claims-set not found");
         try {
-            AbstractUser<?> user = lemonService.findByEmail(email);
+            AbstractUser<?> user = userService.findByEmail(email);
             return new LemonAuthenticatedPrincipal(user.getEmail(), user.getPassword(),user.getId().toString(), user.getRoles());
         } catch (EntityNotFoundException e) {
             throw new AuthenticationCredentialsNotFoundException("User with in token encoded email: " + email + " does not exist.", e);

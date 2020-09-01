@@ -2,7 +2,7 @@ package com.github.vincemann.springlemon.auth.bootstrap;
 
 import com.github.vincemann.springlemon.auth.LemonProperties;
 import com.github.vincemann.springlemon.auth.domain.AbstractUser;
-import com.github.vincemann.springlemon.auth.service.LemonService;
+import com.github.vincemann.springlemon.auth.service.UserService;
 import com.github.vincemann.springrapid.acl.proxy.AclManaging;
 import com.github.vincemann.springrapid.core.security.MockAuthService;
 import com.github.vincemann.springrapid.core.bootstrap.Initializer;
@@ -33,15 +33,15 @@ public class AdminInitializer extends Initializer {
     //private SchoolService schoolService;
     private MockAuthService mockAuthService;
     private UserDetailsService userDetailsService;
-    private LemonService<?,?,?> lemonService;
+    private UserService<?,?,?> userService;
     private LemonProperties lemonProperties;
 
     @Autowired
-    public AdminInitializer(@AclManaging LemonService<?,?,?> lemonService,
+    public AdminInitializer(@AclManaging UserService<?,?,?> userService,
 
                             UserDetailsService userDetailsService,
                             LemonProperties lemonProperties) {
-        this.lemonService = lemonService;
+        this.userService = userService;
         this.mockAuthService = mockAuthService;
         this.userDetailsService = userDetailsService;
         this.lemonProperties = lemonProperties;
@@ -73,12 +73,12 @@ public class AdminInitializer extends Initializer {
             log.debug("registering admin:: " + admin);
 
             // Check if the user already exists
-            AbstractUser<?> byEmail = lemonService.findByEmail(admin);
+            AbstractUser<?> byEmail = userService.findByEmail(admin);
             if (byEmail == null) {
                 // Doesn't exist. So, create it.
                 LemonProperties.Admin toCreate = new LemonProperties.Admin(admin, adminPasswords.get(index));
                 log.debug("admin does not exist yet, creating: " + toCreate);
-                lemonService.createAdminUser(toCreate);
+                userService.createAdminUser(toCreate);
             }else {
                 log.debug("admin already existing.");
             }
