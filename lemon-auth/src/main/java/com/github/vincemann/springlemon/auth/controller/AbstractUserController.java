@@ -13,7 +13,7 @@ import com.github.vincemann.springlemon.auth.domain.dto.user.LemonReadUserDto;
 import com.github.vincemann.springlemon.auth.domain.dto.user.LemonUserDto;
 import com.github.vincemann.springlemon.auth.service.token.BadTokenException;
 import com.github.vincemann.springlemon.auth.service.token.HttpTokenService;
-import com.github.vincemann.springlemon.auth.service.LemonService;
+import com.github.vincemann.springlemon.auth.service.UserService;
 import com.github.vincemann.springlemon.auth.util.LemonMapUtils;
 import com.github.vincemann.springrapid.acl.proxy.Unsecured;
 import com.github.vincemann.springrapid.core.security.RapidRoles;
@@ -49,23 +49,12 @@ import java.util.Optional;
  */
 @WebComponent
 @Slf4j
-public abstract class LemonController
+public abstract class AbstractUserController
 	<U extends AbstractUser<ID>, ID extends Serializable>
-			extends RapidController<U,ID, LemonService<U, ID,?>>  {
+			extends RapidController<U,ID, UserService<U, ID,?>>  {
 
-	private LemonService<U, ID, ?> unsecuredLemonService;
+	private UserService<U, ID, ?> unsecuredUserService;
 	private HttpTokenService httpTokenService;
-
-	/**
-	 * A simple function for pinging this server.
-	 */
-	@GetMapping("/ping")
-	@ResponseStatus(HttpStatus.NO_CONTENT)
-	public void ping() {
-
-		log.debug("Received a ping");
-	}
-
 
 	/**
 	 * Returns public shared context properties needed at the client side,
@@ -111,10 +100,11 @@ public abstract class LemonController
 							   HttpServletResponse response) throws BadEntityException, IOException, EntityNotFoundException {
 
 		String signupForm = readBody(request);
-		Object signupDto = getJsonMapper().readValue(signupForm, createDtoClass(LemonDtoEndpoint.SIGN_UP, Direction.REQUEST, null));
+		Object signupDto = getJsonMapper().readValue(signupForm,
+				createDtoClass(LemonDtoEndpoint.SIGN_UP, Direction.REQUEST, null));
 		getValidationStrategy().validateDto(signupDto);
 		log.debug("Signing up: " + signupDto);
-		U user = (U) getDtoMapper().mapToEntity(signupDto, getEntityClass());
+		U user = getDtoMapper().mapToEntity(signupDto, getEntityClass());
 		U saved = getService().signup(user);
 		log.debug("Signed up: " + signupForm);
 
@@ -277,6 +267,15 @@ public abstract class LemonController
 		return LemonMapUtils.mapOf("token", token);
 	}
 
+	/**
+	 * A simple function for pinging this server.
+	 */
+	@GetMapping("/ping")
+	@ResponseStatus(HttpStatus.NO_CONTENT)
+	public void ping() {
+		log.debug("Received a ping");
+	}
+
 
 	//todo massives sicherheitsproblem, wenn zb nen admin die email changed, bekommt der admin nen token von dem fremden user von dem er die mail gechanged hat
 	//todo es muss stattdessen ein token vom logged in user generiert und appended werden
@@ -291,7 +290,7 @@ public abstract class LemonController
 	}
 
 	protected U fetchUser(ID userId) throws BadEntityException, EntityNotFoundException {
-		Optional<U> byId = unsecuredLemonService.findById(userId);
+		Optional<U> byId = unsecuredUserService.findById(userId);
 		VerifyEntity.isPresent(byId,"User with id: "+userId+" not found");
 		return byId.get();
 	}
@@ -305,14 +304,14 @@ public abstract class LemonController
 	@Autowired
 	@Secured
 	@Override
-	public void injectCrudService(LemonService<U, ID, ?> crudService) {
+	public void injectCrudService(UserService<U, ID, ?> crudService) {
 		super.injectCrudService(crudService);
 	}
 
 	@Unsecured
 	@Autowired
-	public void injectUnsecuredService(LemonService<U, ID, ?> unsecuredService) {
-		this.unsecuredLemonService = unsecuredService;
+	public void injectUnsecuredService(UserService<U, ID, ?> unsecuredService) {
+		this.unsecuredUserService = unsecuredService;
 	}
 
 

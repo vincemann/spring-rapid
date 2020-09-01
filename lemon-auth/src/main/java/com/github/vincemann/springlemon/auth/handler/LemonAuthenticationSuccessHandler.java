@@ -2,17 +2,13 @@ package com.github.vincemann.springlemon.auth.handler;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.vincemann.springlemon.auth.LemonProperties;
-import com.github.vincemann.springlemon.auth.domain.dto.user.LemonUserDto;
-import com.github.vincemann.springlemon.auth.service.LemonService;
+import com.github.vincemann.springlemon.auth.service.UserService;
 import com.github.vincemann.springlemon.auth.util.LecwUtils;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.springframework.http.MediaType;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.web.authentication.SimpleUrlAuthenticationSuccessHandler;
 
-import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
@@ -30,13 +26,13 @@ public class LemonAuthenticationSuccessHandler
 	
 
     private ObjectMapper objectMapper;    
-    private LemonService<?, ?,?> lemonService;
+    private UserService<?, ?,?> userService;
 	private LemonProperties properties;
 
-	public LemonAuthenticationSuccessHandler(ObjectMapper objectMapper, LemonService<?, ?,?> lemonService, LemonProperties properties) {
+	public LemonAuthenticationSuccessHandler(ObjectMapper objectMapper, UserService<?, ?,?> userService, LemonProperties properties) {
 		
 		this.objectMapper = objectMapper;
-		this.lemonService = lemonService;
+		this.userService = userService;
 		this.properties = properties;
 		log.info("Created");
 	}
@@ -50,7 +46,7 @@ public class LemonAuthenticationSuccessHandler
 		// the statements below are introduced
     	response.setStatus(HttpServletResponse.SC_OK);
     	response.setContentType(MediaType.APPLICATION_JSON_VALUE);
-    	lemonService.fetchNewAuthToken(Optional.empty());
+    	userService.fetchNewAuthToken(Optional.empty());
     	
     	// write current-user data to the response  
     	response.getOutputStream().print(

@@ -1,8 +1,8 @@
 package com.github.vincemann.springlemon.demo;
 
-import com.github.vincemann.springlemon.auth.controller.LemonController;
+import com.github.vincemann.springlemon.auth.controller.AbstractUserController;
 import com.github.vincemann.springlemon.demo.domain.User;
-import com.github.vincemann.springlemon.auth.service.LemonService;
+import com.github.vincemann.springlemon.auth.service.UserService;
 import com.github.vincemann.springlemon.auth.domain.LemonRoles;
 import com.github.vincemann.springlemon.auth.util.LemonValidationUtils;
 import com.github.vincemann.springrapid.core.security.RapidRoles;
@@ -29,7 +29,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 public class UpdateUserMvcTests extends AbstractMvcTests
-		implements UrlParamIdRapidControllerTest<LemonService<User,Long,?>,User,Long> {
+		implements UrlParamIdRapidControllerTest<UserService<User,Long,?>,User,Long> {
 	
 //	private static final String UPDATED_NAME = "Edited name";
 	
@@ -41,7 +41,7 @@ public class UpdateUserMvcTests extends AbstractMvcTests
 
     @Autowired
 	@Getter
-    private LemonController<User,Long> controller;
+    private AbstractUserController<User,Long> controller;
 	private String namePatch;
 
 	@Value("classpath:/update-user/patch-update-user.json")

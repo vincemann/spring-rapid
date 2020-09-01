@@ -6,33 +6,19 @@ import com.github.vincemann.springlemon.auth.domain.LemonAuditorAware;
 import com.github.vincemann.springlemon.auth.mail.MailSender;
 import com.github.vincemann.springlemon.auth.mail.MockMailSender;
 import com.github.vincemann.springlemon.auth.mail.SmtpMailSender;
-import com.github.vincemann.springlemon.auth.service.LemonService;
+import com.github.vincemann.springlemon.auth.service.UserService;
 import com.github.vincemann.springlemon.auth.service.LemonUserDetailsService;
-import com.github.vincemann.springlemon.auth.service.extension.LemonAclServiceExtension;
-import com.github.vincemann.springlemon.auth.service.extension.LemonServiceSecurityExtension;
 import com.github.vincemann.springlemon.auth.validation.RetypePasswordValidator;
 import com.github.vincemann.springlemon.auth.validation.UniqueEmailValidator;
-import com.github.vincemann.springrapid.acl.config.AclAutoConfiguration;
-import com.github.vincemann.springrapid.acl.proxy.AclManaging;
-import com.github.vincemann.springrapid.acl.proxy.Secured;
-import com.github.vincemann.springrapid.acl.proxy.SecurityServiceExtensionProxyBuilderFactory;
-import com.github.vincemann.springrapid.acl.service.LocalPermissionService;
-import com.github.vincemann.springrapid.acl.service.extensions.CleanUpAclServiceExtension;
-import com.github.vincemann.springrapid.core.proxy.ServiceExtensionProxyBuilder;
 import com.github.vincemann.springrapid.core.slicing.config.ServiceConfig;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.config.ConfigurableBeanFactory;
-import org.springframework.boot.autoconfigure.AutoConfigureBefore;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Primary;
-import org.springframework.context.annotation.Scope;
 import org.springframework.data.domain.AuditorAware;
 import org.springframework.data.jpa.repository.config.EnableJpaAuditing;
 import org.springframework.mail.javamail.JavaMailSender;
-import org.springframework.security.acls.model.MutableAclService;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.factory.PasswordEncoderFactories;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -99,8 +85,8 @@ public class LemonServiceAutoConfiguration {
     @Bean
     @ConditionalOnMissingBean(IdConverter.class)
     public <ID extends Serializable>
-    IdConverter<ID> idConverter(LemonService<?,ID,?> lemonService) {
-        return id -> lemonService.toId(id);
+    IdConverter<ID> idConverter(UserService<?,ID,?> userService) {
+        return id -> userService.toId(id);
     }
 
 

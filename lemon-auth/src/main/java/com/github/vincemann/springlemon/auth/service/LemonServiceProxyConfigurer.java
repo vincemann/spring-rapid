@@ -12,25 +12,25 @@ import org.springframework.test.util.AopTestUtils;
 import java.lang.reflect.Proxy;
 
 /**
- * Extend this class to further configure PreConfigured {@link LemonService} Proxies.
+ * Extend this class to further configure PreConfigured {@link UserService} Proxies.
  * Used primarily to add more plugins.
  *
  * @see LemonServiceAutoConfiguration
  */
 public abstract class LemonServiceProxyConfigurer  implements InitializingBean {
 
-    private LemonService acl;
-    private LemonService secured;
+    private UserService acl;
+    private UserService secured;
 
     @Autowired
     @AclManaging
-    public void setAcl(LemonService acl) {
+    public void setAcl(UserService acl) {
         this.acl=acl;
     }
 
     @Autowired
     @Secured
-    public void setSecured(LemonService secured) {
+    public void setSecured(UserService secured) {
         this.secured = secured;
     }
 

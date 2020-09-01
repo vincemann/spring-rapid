@@ -5,7 +5,7 @@ import com.github.vincemann.springlemon.auth.LemonProperties;
 import com.github.vincemann.springlemon.auth.config.security.LemonWebSecurityConfig;
 import com.github.vincemann.springlemon.auth.controller.owner.LemonOwnerLocator;
 import com.github.vincemann.springlemon.auth.handler.LemonAuthenticationSuccessHandler;
-import com.github.vincemann.springlemon.auth.service.LemonService;
+import com.github.vincemann.springlemon.auth.service.UserService;
 import com.github.vincemann.springlemon.auth.service.token.AuthHeaderHttpTokenService;
 import com.github.vincemann.springlemon.auth.service.token.HttpTokenService;
 import com.github.vincemann.springrapid.core.config.RapidControllerAutoConfiguration;
@@ -37,8 +37,8 @@ public class LemonWebAutoConfiguration {
 
     @Bean
     @ConditionalOnMissingBean(name = "lemonOwnerLocator")
-    public OwnerLocator lemonOwnerLocator(LemonService lemonService){
-        return new LemonOwnerLocator(lemonService);
+    public OwnerLocator lemonOwnerLocator(UserService userService){
+        return new LemonOwnerLocator(userService);
     }
 
     /**
@@ -47,10 +47,10 @@ public class LemonWebAutoConfiguration {
     @Bean
     @ConditionalOnMissingBean(LemonAuthenticationSuccessHandler.class)
     public LemonAuthenticationSuccessHandler authenticationSuccessHandler(
-            ObjectMapper objectMapper, LemonService<?, ?,?> lemonService, LemonProperties properties) {
+            ObjectMapper objectMapper, UserService<?, ?,?> userService, LemonProperties properties) {
 
         log.info("Configuring AuthenticationSuccessHandler");
-        return new LemonAuthenticationSuccessHandler(objectMapper, lemonService, properties);
+        return new LemonAuthenticationSuccessHandler(objectMapper, userService, properties);
     }
 
     /**

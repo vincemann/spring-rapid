@@ -2,14 +2,15 @@ package com.github.vincemann.springlemon.auth.service;
 
 
 import com.github.vincemann.springlemon.auth.domain.LemonAuthenticatedPrincipal;
-import com.github.vincemann.springlemon.auth.security.LemonSecurityContext;
+import com.github.vincemann.springlemon.auth.mail.MailSender;
 import com.github.vincemann.springlemon.auth.security.PrincipalUserConverter;
 import com.github.vincemann.springlemon.auth.service.token.AuthorizationTokenService;
 import com.github.vincemann.springlemon.auth.service.token.BadTokenException;
+import com.github.vincemann.springlemon.auth.service.token.EmailJwtService;
 import com.github.vincemann.springlemon.auth.util.*;
 import com.github.vincemann.springrapid.acl.proxy.Unsecured;
 import com.github.vincemann.springrapid.core.security.RapidSecurityContext;
-import com.github.vincemann.springrapid.core.util.VerifyAccess;
+import com.github.vincemann.springrapid.core.service.JPACrudService;
 import com.nimbusds.jwt.JWTClaimsSet;
 import com.github.vincemann.springlemon.auth.domain.AbstractUser;
 import com.github.vincemann.springlemon.auth.domain.AbstractUserRepository;
@@ -28,6 +29,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.annotation.Validated;
@@ -38,33 +40,34 @@ import java.util.Map;
 import java.util.Optional;
 
 
-/**
- * The Lemon Service class
- *
- * @author Sanjay Patel
- */
 @Validated
 @Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
 @Slf4j
-public abstract class LemonServiceImpl
+public abstract class AbstractUserService
         <
                 U extends AbstractUser<ID>,
                 ID extends Serializable,
                 P extends LemonAuthenticatedPrincipal,
                 R extends AbstractUserRepository<U, ID>
          >
-            extends AbstractLemonService<U, ID, R>
-                    implements LemonService<U, ID, R> {
+        extends JPACrudService<U,ID,R>
+                    implements UserService<U, ID, R> {
 
     protected static final String CHANGE_EMAIL_AUDIENCE = "change-email";
+    protected static final String VERIFY_AUDIENCE = "verify";
+    protected static final String FORGOT_PASSWORD_AUDIENCE = "forgot-password";
 
     private AuthorizationTokenService<P> authorizationTokenService;
     private RapidSecurityContext<P> securityContext;
     private PrincipalUserConverter<P,U> principalUserConverter;
+    private PasswordEncoder passwordEncoder;
+    private LemonProperties properties;
+    private MailSender mailSender;
+    private EmailJwtService emailTokenService;
 
 
 
-    private LemonService<U,ID,R> unsecuredLemonService;
+    private UserService<U,ID,R> unsecuredUserService;
 
     /**
      * Creates a new user object. Must be overridden in the
@@ -135,7 +138,8 @@ public abstract class LemonServiceImpl
      * Makes a user unverified
      */
     protected void makeUnverified(U user) {
-        super.makeUnverified(user);
+        user.getRoles().add(LemonRoles.UNVERIFIED);
+        user.setCredentialsUpdatedMillis(System.currentTimeMillis());
         TransactionalUtils.afterCommit(()-> sendVerificationMail(user));
     }
 
@@ -184,7 +188,7 @@ public abstract class LemonServiceImpl
         LexUtils.validate(user.hasRole(LemonRoles.UNVERIFIED),
                 "com.naturalprogrammer.spring.alreadyVerified").go();
         //verificationCode is jwtToken
-        JWTClaimsSet claims = parseToken(verificationCode,
+        JWTClaimsSet claims = emailTokenService.parseToken(verificationCode,
                 VERIFY_AUDIENCE, user.getCredentialsUpdatedMillis());
 
         LemonValidationUtils.ensureAuthority(
@@ -194,7 +198,7 @@ public abstract class LemonServiceImpl
 
         user.getRoles().remove(LemonRoles.UNVERIFIED); // make him verified
         user.setCredentialsUpdatedMillis(System.currentTimeMillis());
-        U saved = unsecuredLemonService.save(user);
+        U saved = unsecuredUserService.save(user);
 
         // Re-login the user, so that the UNVERIFIED role is removed, but only if transaction really succeeds
         TransactionalUtils.afterCommit(() -> {
@@ -219,7 +223,7 @@ public abstract class LemonServiceImpl
         Optional<U> byId = getRepository().findByEmail(email);
         VerifyEntity.isPresent(byId,"User with email: "+email+" not found");
         U user = byId.get();
-        mailForgotPasswordLink(user);
+        sendForgotPasswordMail(user);
     }
 
 
@@ -232,7 +236,7 @@ public abstract class LemonServiceImpl
     public U resetPassword(ResetPasswordForm form) throws EntityNotFoundException, BadTokenException {
 //        log.debug("Resetting password ...");
 
-        JWTClaimsSet claims = parseToken(form.getCode(), FORGOT_PASSWORD_AUDIENCE);
+        JWTClaimsSet claims = emailTokenService.parseToken(form.getCode(), FORGOT_PASSWORD_AUDIENCE);
 
         String email = claims.getSubject();
 
@@ -359,7 +363,7 @@ public abstract class LemonServiceImpl
      */
     protected void mailChangeEmailLink(U user) {
 
-        String changeEmailCode = createToken(
+        String changeEmailCode = emailTokenService.createToken(
                 CHANGE_EMAIL_AUDIENCE,
                 user.getId().toString(),
                 properties.getJwt().getExpirationMillis(),
@@ -423,7 +427,7 @@ public abstract class LemonServiceImpl
         LexUtils.validate(StringUtils.isNotBlank(user.getNewEmail()),
                 "com.naturalprogrammer.spring.blank.newEmail").go();
 
-        JWTClaimsSet claims = parseToken(changeEmailCode,
+        JWTClaimsSet claims = emailTokenService.parseToken(changeEmailCode,
                 CHANGE_EMAIL_AUDIENCE,
                 user.getCredentialsUpdatedMillis());
 
@@ -499,6 +503,85 @@ public abstract class LemonServiceImpl
         log.debug("admin saved.");
     }
 
+    /**
+     * Sends verification mail to a unverified user.
+     */
+    protected void sendVerificationMail(final U user) {
+        try {
+
+            log.debug("Sending verification mail to: " + user);
+
+            String verificationCode = emailTokenService.createToken(
+                    VERIFY_AUDIENCE,
+                    user.getId().toString(),
+                    properties.getJwt().getExpirationMillis(),
+                    //payload
+                    LemonMapUtils.mapOf("email", user.getEmail()));
+
+            // make the link
+            String verifyLink = properties.getApplicationUrl()
+                    + "/users/" + user.getId() + "/verification?code=" + verificationCode;
+
+            // send the mail
+            sendVerificationMail(user, verifyLink);
+
+            log.debug("Verification mail to " + user.getEmail() + " queued.");
+
+        } catch (Throwable e) {
+            // In case of exception, just log the error and keep silent
+            log.error(ExceptionUtils.getStackTrace(e));
+        }
+    }
+
+    /**
+     * Sends verification mail to a unverified user.
+     * Override this method if you're using a different MailData
+     */
+    protected void sendVerificationMail(final U user, String verifyLink) {
+
+        mailSender.send(LemonMailData.of(user.getEmail(),
+                LexUtils.getMessage("com.naturalprogrammer.spring.verifySubject"),
+                LexUtils.getMessage(
+                        "com.naturalprogrammer.spring.verifyEmail",	verifyLink)));
+    }
+
+    /**
+     * Mails the forgot password link.
+     *
+     * @param user
+     */
+    public void sendForgotPasswordMail(U user) {
+
+        log.debug("Mailing forgot password link to user: " + user);
+
+        String forgotPasswordCode = emailTokenService.createToken(FORGOT_PASSWORD_AUDIENCE,
+                user.getEmail(),
+                properties.getJwt().getExpirationMillis()
+        );
+
+        // make the link
+        String forgotPasswordLink =	properties.getApplicationUrl() + "/reset-password?code=" + forgotPasswordCode;
+
+        sendForgotPasswordMail(user, forgotPasswordLink);
+
+        log.debug("Forgot password link mail queued.");
+    }
+
+
+    /**
+     * Mails the forgot password link.
+     *
+     * Override this method if you're using a different MailData
+     */
+    public void sendForgotPasswordMail(U user, String forgotPasswordLink) {
+
+        // send the mail
+        mailSender.send(LemonMailData.of(user.getEmail(),
+                LexUtils.getMessage("com.naturalprogrammer.spring.forgotPasswordSubject"),
+                LexUtils.getMessage("com.naturalprogrammer.spring.forgotPasswordEmail",
+                        forgotPasswordLink)));
+    }
+
 
     @Autowired
     public void injectAuthorizationTokenService(AuthorizationTokenService<P> authorizationTokenService) {
@@ -512,14 +595,36 @@ public abstract class LemonServiceImpl
 
     @Unsecured
     @Autowired
-    public void injectUnsecuredLemonService(LemonService<U, ID, R> unsecuredService) {
-        this.unsecuredLemonService = unsecuredService;
+    public void injectUnsecuredLemonService(UserService<U, ID, R> unsecuredService) {
+        this.unsecuredUserService = unsecuredService;
     }
 
     @Autowired
     public void injectPrincipalUserConverter(PrincipalUserConverter<P, U> principalUserConverter) {
         this.principalUserConverter = principalUserConverter;
     }
+
+    @Autowired
+    public void injectPasswordEncoder(PasswordEncoder passwordEncoder) {
+        this.passwordEncoder = passwordEncoder;
+    }
+
+    @Autowired
+    public void injectProperties(LemonProperties properties) {
+        this.properties = properties;
+    }
+
+
+    @Autowired
+    public void injectMailSender(MailSender mailSender) {
+        this.mailSender = mailSender;
+    }
+
+    @Autowired
+    public void injectEmailJwtService(EmailJwtService emailJwtService) {
+        this.emailTokenService = emailJwtService;
+    }
+
 
     //	/**
 //	 * Hides the confidential fields before sending to client

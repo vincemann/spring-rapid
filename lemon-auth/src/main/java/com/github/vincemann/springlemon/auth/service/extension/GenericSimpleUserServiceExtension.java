@@ -5,7 +5,7 @@ import com.github.vincemann.springlemon.auth.domain.AbstractUser;
 import com.github.vincemann.springlemon.auth.domain.dto.ChangePasswordForm;
 import com.github.vincemann.springlemon.auth.domain.dto.RequestEmailChangeForm;
 import com.github.vincemann.springlemon.auth.domain.dto.ResetPasswordForm;
-import com.github.vincemann.springlemon.auth.service.SimpleLemonService;
+import com.github.vincemann.springlemon.auth.service.SimpleUserService;
 import com.github.vincemann.springlemon.auth.service.token.BadTokenException;
 import com.github.vincemann.springrapid.core.proxy.GenericSimpleCrudServiceExtension;
 import com.github.vincemann.springrapid.core.service.exception.BadEntityException;
@@ -17,8 +17,8 @@ import java.util.Map;
 import java.util.Optional;
 
 @Transactional
-public interface GenericSimpleLemonServiceExtension<S extends SimpleLemonService<U,Id>,U extends AbstractUser<Id>, Id extends Serializable>
-        extends SimpleLemonService<U,Id>, GenericSimpleCrudServiceExtension<S,U,Id>
+public interface GenericSimpleUserServiceExtension<S extends SimpleUserService<U,Id>,U extends AbstractUser<Id>, Id extends Serializable>
+        extends SimpleUserService<U,Id>, GenericSimpleCrudServiceExtension<S,U,Id>
 {
 
 

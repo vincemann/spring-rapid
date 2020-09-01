@@ -1,6 +1,6 @@
 package com.github.vincemann.springlemon.demo.controllers;
 
-import com.github.vincemann.springlemon.auth.controller.LemonController;
+import com.github.vincemann.springlemon.auth.controller.AbstractUserController;
 import com.github.vincemann.springlemon.auth.controller.LemonDtoEndpoint;
 import com.github.vincemann.springlemon.auth.controller.LemonDtoMappingContextBuilder;
 import com.github.vincemann.springlemon.demo.domain.User;
@@ -16,7 +16,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 
 @Controller
 @RequestMapping(MyUserController.BASE_URI)
-public class MyUserController extends LemonController<User, Long>  {
+public class MyUserController extends AbstractUserController<User, Long>  {
 
     public static final String BASE_URI = "/api/core";
 

@@ -3,7 +3,6 @@ package com.github.vincemann.springlemon.auth.service;
 import com.github.vincemann.aoplog.api.AopLoggable;
 import com.github.vincemann.aoplog.api.LogInteraction;
 import com.github.vincemann.springlemon.auth.domain.AbstractUser;
-import com.github.vincemann.springlemon.auth.domain.LemonAuthenticatedPrincipal;
 import com.github.vincemann.springlemon.auth.security.PrincipalUserConverter;
 import com.github.vincemann.springlemon.exceptions.util.LexUtils;
 
@@ -11,17 +10,11 @@ import com.github.vincemann.springrapid.acl.proxy.Unsecured;
 import com.github.vincemann.springrapid.core.security.RapidAuthenticatedPrincipal;
 import com.github.vincemann.springrapid.core.service.exception.EntityNotFoundException;
 import com.github.vincemann.springrapid.core.slicing.components.ServiceComponent;
-import com.sun.xml.bind.v2.model.core.ID;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.io.Serializable;
-import java.util.Optional;
 
 /**
  * UserDetailsService, as required by Spring Security.
@@ -32,7 +25,7 @@ import java.util.Optional;
 public class LemonUserDetailsService
 		implements UserDetailsService, AopLoggable {
 
-	private SimpleLemonService<AbstractUser<?>, ?> unsecuredLemonService;
+	private SimpleUserService<AbstractUser<?>, ?> unsecuredLemonService;
 	private PrincipalUserConverter<RapidAuthenticatedPrincipal,AbstractUser<?>> principalUserConverter;
 
 	@Transactional
@@ -66,7 +59,7 @@ public class LemonUserDetailsService
 
 	@Unsecured
 	@Autowired
-	public void injectUnsecuredLemonService(SimpleLemonService<AbstractUser<?>, ?> unsecuredLemonService) {
+	public void injectUnsecuredLemonService(SimpleUserService<AbstractUser<?>, ?> unsecuredLemonService) {
 		this.unsecuredLemonService = unsecuredLemonService;
 	}
 }

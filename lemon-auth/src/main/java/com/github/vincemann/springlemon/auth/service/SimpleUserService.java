@@ -27,7 +27,7 @@ import java.util.Optional;
 @Validated
 @ServiceComponent
 @LogException
-public interface SimpleLemonService<U extends AbstractUser<ID>, ID extends Serializable>
+public interface SimpleUserService<U extends AbstractUser<ID>, ID extends Serializable>
         extends AopLoggable, SimpleCrudService<U,ID>
 {
 

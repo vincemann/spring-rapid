@@ -11,6 +11,9 @@ import java.io.Serializable;
 
 @Validated
 @ServiceComponent
-public interface LemonService<U extends AbstractUser<ID>, ID extends Serializable, R extends AbstractUserRepository<U,ID>>
-        extends CrudService<U,ID, R>, AopLoggable, SimpleLemonService<U,ID> {
+public interface UserService<U extends AbstractUser<ID>, ID extends Serializable, R extends AbstractUserRepository<U,ID>>
+        extends
+        CrudService<U,ID, R>,
+        AopLoggable,
+        SimpleUserService<U,ID> {
 }

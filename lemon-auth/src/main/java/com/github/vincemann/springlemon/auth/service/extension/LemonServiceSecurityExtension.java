@@ -5,8 +5,8 @@ import com.github.vincemann.springlemon.auth.domain.LemonAuthenticatedPrincipal;
 import com.github.vincemann.springlemon.auth.domain.dto.ChangePasswordForm;
 import com.github.vincemann.springlemon.auth.domain.dto.RequestEmailChangeForm;
 import com.github.vincemann.springlemon.auth.security.LemonSecurityContextChecker;
-import com.github.vincemann.springlemon.auth.service.LemonService;
-import com.github.vincemann.springlemon.auth.service.SimpleLemonService;
+import com.github.vincemann.springlemon.auth.service.UserService;
+import com.github.vincemann.springlemon.auth.service.SimpleUserService;
 import com.github.vincemann.springlemon.auth.service.token.BadTokenException;
 import com.github.vincemann.springrapid.acl.proxy.SecurityServiceExtension;
 import com.github.vincemann.springrapid.acl.proxy.Unsecured;
@@ -27,11 +27,11 @@ import java.util.Optional;
 @Transactional
 @Slf4j
 public class LemonServiceSecurityExtension
-        extends SecurityServiceExtension<SimpleLemonService>
-            implements SimpleLemonServiceExtension<SimpleLemonService> {
+        extends SecurityServiceExtension<SimpleUserService>
+            implements SimpleUserServiceExtension<SimpleUserService> {
 
 
-    private LemonService<AbstractUser<Serializable>, Serializable, ?> unsecuredUserService;
+    private UserService<AbstractUser<Serializable>, Serializable, ?> unsecuredUserService;
     private LemonSecurityContextChecker securityContextChecker;
 
     @Override
@@ -118,7 +118,7 @@ public class LemonServiceSecurityExtension
 
     @Unsecured
     @Autowired
-    public void injectUnsecuredUserService(LemonService<AbstractUser<Serializable>, Serializable, ?> unsecuredUserService) {
+    public void injectUnsecuredUserService(UserService<AbstractUser<Serializable>, Serializable, ?> unsecuredUserService) {
         this.unsecuredUserService = unsecuredUserService;
     }
 

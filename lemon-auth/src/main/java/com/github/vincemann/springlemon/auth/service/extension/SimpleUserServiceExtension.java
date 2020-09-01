@@ -5,7 +5,7 @@ import com.github.vincemann.springlemon.auth.domain.AbstractUser;
 import com.github.vincemann.springlemon.auth.domain.dto.ChangePasswordForm;
 import com.github.vincemann.springlemon.auth.domain.dto.RequestEmailChangeForm;
 import com.github.vincemann.springlemon.auth.domain.dto.ResetPasswordForm;
-import com.github.vincemann.springlemon.auth.service.SimpleLemonService;
+import com.github.vincemann.springlemon.auth.service.SimpleUserService;
 import com.github.vincemann.springlemon.auth.service.token.BadTokenException;
 import com.github.vincemann.springrapid.core.proxy.SimpleCrudServiceExtension;
 import com.github.vincemann.springrapid.core.service.exception.BadEntityException;
@@ -18,8 +18,8 @@ import java.io.Serializable;
 import java.util.Map;
 import java.util.Optional;
 
-public interface SimpleLemonServiceExtension<S extends SimpleLemonService>
-        extends SimpleCrudServiceExtension<S>, SimpleLemonService
+public interface SimpleUserServiceExtension<S extends SimpleUserService>
+        extends SimpleCrudServiceExtension<S>, SimpleUserService
 {
 
     @Override
