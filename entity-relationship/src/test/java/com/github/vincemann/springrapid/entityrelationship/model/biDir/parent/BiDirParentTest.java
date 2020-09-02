@@ -1,6 +1,6 @@
 package com.github.vincemann.springrapid.entityrelationship.model.biDir.parent;
 
-import com.github.vincemann.springrapid.commons.Lists;
+import com.github.vincemann.springrapid.core.util.Lists;
 import com.github.vincemann.springrapid.core.model.IdentifiableEntityImpl;
 import com.github.vincemann.springrapid.entityrelationship.model.parent.BiDirParent;
 import com.github.vincemann.springrapid.entityrelationship.model.parent.annotation.BiDirParentEntity;
@@ -13,7 +13,6 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import java.lang.reflect.Field;
 import java.util.*;
 
 class BiDirParentTest {

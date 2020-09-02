@@ -1,6 +1,6 @@
 package com.github.vincemann.springrapid.demo.service.jpa;
 
-import com.github.vincemann.springrapid.commons.Lists;
+import com.github.vincemann.springrapid.core.util.Lists;
 import com.github.vincemann.springrapid.core.service.exception.BadEntityException;
 import com.github.vincemann.springrapid.core.service.exception.EntityNotFoundException;
 import com.github.vincemann.springrapid.coretest.service.CrudServiceIntegrationTest;

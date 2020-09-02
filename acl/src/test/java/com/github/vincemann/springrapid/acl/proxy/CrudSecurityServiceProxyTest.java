@@ -1,6 +1,6 @@
 package com.github.vincemann.springrapid.acl.proxy;
 
-import com.github.vincemann.springrapid.commons.Lists;
+import com.github.vincemann.springrapid.core.util.Lists;
 import com.github.vincemann.springrapid.core.model.IdentifiableEntity;
 import com.github.vincemann.springrapid.core.model.IdentifiableEntityImpl;
 import com.github.vincemann.springrapid.core.proxy.SimpleCrudServiceExtension;

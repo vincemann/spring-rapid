@@ -1,14 +1,13 @@
 package com.github.vincemann.springrapid.core.proxy;
 
 import com.github.vincemann.aoplog.MethodUtils;
-import com.github.vincemann.springrapid.commons.Lists;
-import com.github.vincemann.springrapid.commons.ProxyUtils;
+import com.github.vincemann.springrapid.core.util.Lists;
+import com.github.vincemann.springrapid.core.util.ProxyUtils;
 import com.github.vincemann.springrapid.core.service.SimpleCrudService;
 import lombok.*;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.ClassUtils;
 import org.springframework.aop.support.AopUtils;
-import org.springframework.core.NestedExceptionUtils;
 
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.InvocationTargetException;

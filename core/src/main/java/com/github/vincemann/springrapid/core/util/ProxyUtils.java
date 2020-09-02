@@ -1,4 +1,4 @@
-package com.github.vincemann.springrapid.commons;
+package com.github.vincemann.springrapid.core.util;
 
 import org.springframework.aop.support.AopUtils;
 import org.springframework.core.NestedExceptionUtils;

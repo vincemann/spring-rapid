@@ -38,7 +38,6 @@
         <module>core</module>
         <module>entity-relationship</module>
         <module>acl</module>
-        <module>commons</module>
         <module>core-test</module>
         <module>demo</module>
     </modules>

@@ -1,4 +1,4 @@
-package com.github.vincemann.springrapid.commons;
+package com.github.vincemann.springrapid.core.util;
 import java.lang.reflect.InvocationTargetException;
 import org.apache.commons.beanutils.BeanUtilsBean;
 

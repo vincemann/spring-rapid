@@ -1,4 +1,4 @@
-package com.github.vincemann.springrapid.commons;
+package com.github.vincemann.springrapid.core.util;
 
 import com.google.common.annotations.GwtCompatible;
 import com.google.common.annotations.VisibleForTesting;

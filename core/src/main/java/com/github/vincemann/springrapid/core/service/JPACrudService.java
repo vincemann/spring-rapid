@@ -1,6 +1,6 @@
 package com.github.vincemann.springrapid.core.service;
 
-import com.github.vincemann.springrapid.commons.NullAwareBeanUtilsBean;
+import com.github.vincemann.springrapid.core.util.NullAwareBeanUtilsBean;
 import com.github.vincemann.springrapid.core.model.IdentifiableEntity;
 import com.github.vincemann.springrapid.core.service.exception.BadEntityException;
 import com.github.vincemann.springrapid.core.service.exception.EntityNotFoundException;

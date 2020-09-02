@@ -6,7 +6,7 @@ import com.github.vincemann.springrapid.core.proxy.AbstractServiceExtension;
 import com.github.vincemann.springrapid.core.service.CrudService;
 import com.github.vincemann.springrapid.core.service.ServiceBeanType;
 import lombok.extern.slf4j.Slf4j;
-import com.github.vincemann.springrapid.commons.Lists;
+import com.github.vincemann.springrapid.core.util.Lists;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
