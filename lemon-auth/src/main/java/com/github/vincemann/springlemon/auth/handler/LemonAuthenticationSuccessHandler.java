@@ -1,39 +1,34 @@
 package com.github.vincemann.springlemon.auth.handler;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.github.vincemann.springlemon.auth.LemonProperties;
 import com.github.vincemann.springlemon.auth.service.UserService;
-import com.github.vincemann.springlemon.auth.util.LecwUtils;
+import com.github.vincemann.springrapid.core.controller.RapidMediaType;
+import com.github.vincemann.springrapid.core.security.RapidSecurityContext;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.MediaType;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.web.authentication.SimpleUrlAuthenticationSuccessHandler;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.util.Optional;
 
 /**
  * Authentication success handler for sending the response
  * to the client after successful authentication.
  * 
  * @author Sanjay Patel
+ * @modifiedBy vincemann
  */
 @Slf4j
 public class LemonAuthenticationSuccessHandler
 	extends SimpleUrlAuthenticationSuccessHandler {
 	
 
-    private ObjectMapper objectMapper;    
     private UserService<?, ?,?> userService;
-	private LemonProperties properties;
+	private String mediaType;
 
-	public LemonAuthenticationSuccessHandler(ObjectMapper objectMapper, UserService<?, ?,?> userService, LemonProperties properties) {
-		
-		this.objectMapper = objectMapper;
+	public LemonAuthenticationSuccessHandler(UserService<?, ?,?> userService) {
 		this.userService = userService;
-		this.properties = properties;
 		log.info("Created");
 	}
 
@@ -45,16 +40,22 @@ public class LemonAuthenticationSuccessHandler
         // Instead of handle(request, response, authentication),
 		// the statements below are introduced
     	response.setStatus(HttpServletResponse.SC_OK);
-    	response.setContentType(MediaType.APPLICATION_JSON_VALUE);
-    	userService.fetchNewAuthToken(Optional.empty());
+    	response.setContentType(mediaType);
+    	userService.fetchNewAuthToken();
     	
-    	// write current-user data to the response  
-    	response.getOutputStream().print(
-    			objectMapper.writeValueAsString(currentUser));
+//    	// write current-user data to the response
+//    	response.getOutputStream().print(
+//    			objectMapper.writeValueAsString(currentUser));
 
     	// as done in the base class
     	clearAuthenticationAttributes(request);
         
-        log.debug("Authentication succeeded for user: " + currentUser);        
+        log.debug("Authentication succeeded for user: " + RapidSecurityContext.getName());
     }
+
+    @RapidMediaType
+	@Autowired
+	public void injectMediaType(String mediaType) {
+		this.mediaType = mediaType;
+	}
 }

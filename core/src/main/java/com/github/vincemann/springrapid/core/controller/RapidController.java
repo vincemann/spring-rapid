@@ -29,7 +29,6 @@ import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.ApplicationListener;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.context.event.ContextRefreshedEvent;
@@ -79,7 +78,7 @@ public abstract class RapidController
     //              CONSTANTS
 
 
-    public static final String MEDIA_TYPE_BEAN_NAME = "rapidMediaType";
+//    public static final String MEDIA_TYPE_BEAN_NAME = "rapidMediaType";
 
     public static final String FIND_METHOD_NAME = "get";
     public static final String CREATE_METHOD_NAME = "create";
@@ -512,7 +511,8 @@ public abstract class RapidController
     public void injectEndpointsExposureContext(EndpointsExposureContext endpointsExposureContext) {
         this.endpointsExposureContext = endpointsExposureContext;
     }
-    @Qualifier(MEDIA_TYPE_BEAN_NAME)
+
+    @RapidMediaType
     @Autowired
     public void injectMediaType(String mediaType) {
         this.mediaType = mediaType;

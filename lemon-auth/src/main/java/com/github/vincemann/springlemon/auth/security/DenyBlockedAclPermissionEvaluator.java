@@ -11,14 +11,14 @@ import org.springframework.security.core.Authentication;
 import java.io.Serializable;
 
 /**
- * Denys any access if any user is blocked*
+ * Denys any access if any user is blocked
  */
 @Slf4j
-public class LemonAclPermissionEvaluator extends VerboseAclPermissionEvaluator {
+public class DenyBlockedAclPermissionEvaluator extends VerboseAclPermissionEvaluator {
 
 //    private RapidSecurityContext<LemonAuthenticatedPrincipal> securityContext;
 
-    public LemonAclPermissionEvaluator(AclService aclService) {
+    public DenyBlockedAclPermissionEvaluator(AclService aclService) {
         super(aclService);
     }
 

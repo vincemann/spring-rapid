@@ -38,7 +38,9 @@ public class RapidControllerAutoConfiguration {
         log.info("Created");
     }
 
-    @Value("${controller.idFetchingStrategy.idUrlParamKey:id}") private String idUrlParamKey;
+    //todo auslagern in rapid configuration file
+    @Value("${controller.idFetchingStrategy.idUrlParamKey:id}")
+    private String idUrlParamKey;
 
     @Bean(name = "idUrlParamKey")
     public String idUrlParamKey(){

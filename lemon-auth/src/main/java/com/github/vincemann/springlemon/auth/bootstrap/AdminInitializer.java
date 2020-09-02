@@ -4,14 +4,13 @@ import com.github.vincemann.springlemon.auth.LemonProperties;
 import com.github.vincemann.springlemon.auth.domain.AbstractUser;
 import com.github.vincemann.springlemon.auth.service.UserService;
 import com.github.vincemann.springrapid.acl.proxy.AclManaging;
-import com.github.vincemann.springrapid.core.security.MockAuthService;
-import com.github.vincemann.springrapid.core.bootstrap.Initializer;
+import com.github.vincemann.springrapid.core.bootstrap.DatabaseDataInitializer;
+import com.github.vincemann.springrapid.core.security.RapidSecurityContext;
 import com.github.vincemann.springrapid.core.service.exception.BadEntityException;
 import com.github.vincemann.springrapid.core.service.exception.EntityNotFoundException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.Assert;
 
@@ -23,28 +22,24 @@ import java.util.List;
  * Also adds lemon admin
  * @see LemonProperties#getAdmin()
  */
-public class AdminInitializer extends Initializer {
+public class AdminInitializer extends DatabaseDataInitializer {
 
     @Value("#{'${database.init.admin.emails}'.split(',')}")
     private List<String> adminEmails;
     @Value("#{'${database.init.admin.passwords}'.split(',')}")
     private List<String> adminPasswords;
 
-    //private SchoolService schoolService;
-    private MockAuthService mockAuthService;
-    private UserDetailsService userDetailsService;
     private UserService<?,?,?> userService;
     private LemonProperties lemonProperties;
+    private RapidSecurityContext<?> securityContext;
 
     @Autowired
-    public AdminInitializer(@AclManaging UserService<?,?,?> userService,
-
-                            UserDetailsService userDetailsService,
-                            LemonProperties lemonProperties) {
+    public AdminInitializer(@AclManaging UserService<?, ?, ?> userService,
+                            LemonProperties lemonProperties,
+                            RapidSecurityContext<?> securityContext) {
         this.userService = userService;
-        this.mockAuthService = mockAuthService;
-        this.userDetailsService = userDetailsService;
         this.lemonProperties = lemonProperties;
+        this.securityContext = securityContext;
     }
 
     @Override

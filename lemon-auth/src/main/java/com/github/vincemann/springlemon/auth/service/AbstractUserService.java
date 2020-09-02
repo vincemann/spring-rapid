@@ -47,7 +47,6 @@ public abstract class AbstractUserService
         <
                 U extends AbstractUser<ID>,
                 ID extends Serializable,
-                P extends LemonAuthenticatedPrincipal,
                 R extends AbstractUserRepository<U, ID>
          >
         extends JPACrudService<U,ID,R>
@@ -57,12 +56,11 @@ public abstract class AbstractUserService
     protected static final String VERIFY_AUDIENCE = "verify";
     protected static final String FORGOT_PASSWORD_AUDIENCE = "forgot-password";
 
-    private AuthorizationTokenService<P> authorizationTokenService;
-    private RapidSecurityContext<P> securityContext;
-    private PrincipalUserConverter<P,U> principalUserConverter;
+    private AuthorizationTokenService<LemonAuthenticatedPrincipal> authorizationTokenService;
+    private RapidSecurityContext<LemonAuthenticatedPrincipal> securityContext;
     private PasswordEncoder passwordEncoder;
     private LemonProperties properties;
-    private MailSender mailSender;
+    private MailSender<LemonMailData> mailSender;
     private EmailJwtService emailTokenService;
 
 
@@ -107,7 +105,7 @@ public abstract class AbstractUserService
         log.debug("initialized user: " + initialized);
         U saved = save(initialized);
         makeUnverified(saved);
-        log.debug("saved and unverified user: " + saved);
+        log.debug("saved and send verification mail for unverified new user: " + saved);
         return saved;
     }
 
@@ -156,7 +154,6 @@ public abstract class AbstractUserService
         LexUtils.validate(user.getRoles().contains(LemonRoles.UNVERIFIED),
                 "com.naturalprogrammer.spring.alreadyVerified").go();
 
-        // send the verification mail
         sendVerificationMail(user);
     }
 
@@ -178,13 +175,9 @@ public abstract class AbstractUserService
      */
     @Transactional(propagation = Propagation.REQUIRED, readOnly = false)
     public U verifyUser(U user, String verificationCode) throws EntityNotFoundException, BadTokenException, BadEntityException {
-
-//        log.debug("Verifying user ...");
-
-//        U user = getRepository().findById(userId).orElseThrow(LexUtils.notFoundSupplier());
-
         VerifyEntity.isPresent(user,"User not found");
         // ensure that he is unverified
+        // this makes sense to do here not in security plugin
         LexUtils.validate(user.hasRole(LemonRoles.UNVERIFIED),
                 "com.naturalprogrammer.spring.alreadyVerified").go();
         //verificationCode is jwtToken
@@ -196,16 +189,17 @@ public abstract class AbstractUserService
                         claims.getClaim("email").equals(user.getEmail()),
                 "com.naturalprogrammer.spring.wrong.verificationCode");
 
-        user.getRoles().remove(LemonRoles.UNVERIFIED); // make him verified
+
+
+        //no login needed bc token of user is appended in controller -> we avoid dynamic logins in a stateless env
+        //also to be able to use read-only security test -> generic principal type does not need to be passed into this class
+        return verifyUser(user);
+    }
+
+    protected U verifyUser(U user) throws BadEntityException {
+        user.getRoles().remove(LemonRoles.UNVERIFIED);
         user.setCredentialsUpdatedMillis(System.currentTimeMillis());
         U saved = unsecuredUserService.save(user);
-
-        // Re-login the user, so that the UNVERIFIED role is removed, but only if transaction really succeeds
-        TransactionalUtils.afterCommit(() -> {
-            securityContext.login(principalUserConverter.toPrincipal(saved));
-            log.debug("Re-logged-in the user for removing UNVERIFIED role.");
-        });
-
         log.debug("Verified user: " + saved);
         return saved;
     }
@@ -216,9 +210,6 @@ public abstract class AbstractUserService
      */
     @Transactional(propagation = Propagation.REQUIRED, readOnly = false)
     public void forgotPassword(String email) throws EntityNotFoundException {
-
-//        log.debug("Processing forgot password for email: " + email);
-
         // fetch the user record from database
         Optional<U> byId = getRepository().findByEmail(email);
         VerifyEntity.isPresent(byId,"User with email: "+email+" not found");
@@ -234,7 +225,6 @@ public abstract class AbstractUserService
      */
     @Transactional(propagation = Propagation.REQUIRED, readOnly = false)
     public U resetPassword(ResetPasswordForm form) throws EntityNotFoundException, BadTokenException {
-//        log.debug("Resetting password ...");
 
         JWTClaimsSet claims = emailTokenService.parseToken(form.getCode(), FORGOT_PASSWORD_AUDIENCE);
 
@@ -251,17 +241,12 @@ public abstract class AbstractUserService
         user.setCredentialsUpdatedMillis(System.currentTimeMillis());
         //user.setForgotPasswordCode(null);
 
-        U saved = getRepository().save(user);
-
-        // Login the user
-//		LemonValidationUtils.login(saved);
-//		// after successful commit,
-//		LecjUtils.afterCommit(() -> {
-//
-//
-//		});
-
-        log.debug("Password reset.");
+        U saved = null;
+        try {
+            saved = unsecuredUserService.save(user);
+        } catch (BadEntityException e) {
+            throw new RuntimeException("Could not reset users password",e);
+        }
         return saved;
     }
 
@@ -282,12 +267,6 @@ public abstract class AbstractUserService
      */
     @Transactional(propagation = Propagation.REQUIRED, readOnly = false)
     public void changePassword(U user, ChangePasswordForm changePasswordForm) throws EntityNotFoundException {
-
-//        log.debug("Changing password for user: " + user);
-
-        // Get the old password of the logged in user (logged in user may be an ADMIN)
-//        LemonUserDto currentUser = LecwUtils.currentUser();
-//        U loggedIn = getRepository().findById(toId(currentUser.getId())).get();
         VerifyEntity.isPresent(user,"User not found");
         String oldPassword = user.getPassword();
 
@@ -300,10 +279,12 @@ public abstract class AbstractUserService
         // sets the password
         user.setPassword(passwordEncoder.encode(changePasswordForm.getPassword()));
         user.setCredentialsUpdatedMillis(System.currentTimeMillis());
-        getRepository().save(user);
+        try {
+            unsecuredUserService.save(user);
+        } catch (BadEntityException e) {
+            throw new RuntimeException("Could not change users password",e);
+        }
 
-        log.debug("Changed password for user: " + user);
-//        return user.toUserDto().getEmail();
     }
 
 
@@ -413,16 +394,6 @@ public abstract class AbstractUserService
     @Transactional(propagation = Propagation.REQUIRED, readOnly = false)
     public U changeEmail(U user, /*@Valid @NotBlank*/ String changeEmailCode) throws EntityNotFoundException, BadTokenException {
 
-//        log.debug("Changing email of current user ...");
-
-//        // fetch the current-user
-//        LemonUserDto currentUser = LecwUtils.currentUser();
-//
-//        LexUtils.validate(userId.equals(toId(currentUser.getId())),
-//                "com.naturalprogrammer.spring.wrong.login").go();
-//
-//        U user = getRepository().findById(userId).orElseThrow(LexUtils.notFoundSupplier());
-
         VerifyEntity.isPresent(user,"User not found");
         LexUtils.validate(StringUtils.isNotBlank(user.getNewEmail()),
                 "com.naturalprogrammer.spring.blank.newEmail").go();
@@ -451,18 +422,11 @@ public abstract class AbstractUserService
         if (user.hasRole(LemonRoles.UNVERIFIED))
             user.getRoles().remove(LemonRoles.UNVERIFIED);
 
-        U saved = getRepository().save(user);
-
-        // Login the user
-//		LemonValidationUtils.login(saved);
-//		// after successful commit,
-//		LecjUtils.afterCommit(() -> {
-//
-//
-//		});
-
-        log.debug("Changed email of user: " + user);
-        return saved;
+        try {
+            return unsecuredUserService.save(user);
+        } catch (BadEntityException e) {
+            throw new RuntimeException("Could not update users email",e);
+        }
     }
 
 
@@ -473,14 +437,7 @@ public abstract class AbstractUserService
      */
     @Override
     public String fetchNewAuthToken(String targetUserEmail) {
-        P currentUser = securityContext.currentPrincipal();
-
-        //todo das hier muss in LemonSecurityRule und anstatt zu checken ob die email gleich ist usw, einfach check of current User acl-Admin-Rechte über user mit der email hat
-        LemonValidationUtils.ensureAuthority(currentUser.getEmail().equals(targetUserEmail) ||
-                currentUser.isGoodAdmin(), "com.naturalprogrammer.spring.notGoodAdminOrSameUser");
-
-
-        return authorizationTokenService.createToken(currentUser);
+        return authorizationTokenService.createToken(securityContext.currentPrincipal());
     }
 
     @Override
@@ -584,12 +541,12 @@ public abstract class AbstractUserService
 
 
     @Autowired
-    public void injectAuthorizationTokenService(AuthorizationTokenService<P> authorizationTokenService) {
+    public void injectAuthorizationTokenService(AuthorizationTokenService<LemonAuthenticatedPrincipal> authorizationTokenService) {
         this.authorizationTokenService = authorizationTokenService;
     }
 
     @Autowired
-    public void injectSecurityContext(RapidSecurityContext<P> securityContext) {
+    public void injectSecurityContext(RapidSecurityContext<LemonAuthenticatedPrincipal> securityContext) {
         this.securityContext = securityContext;
     }
 
@@ -597,11 +554,6 @@ public abstract class AbstractUserService
     @Autowired
     public void injectUnsecuredLemonService(UserService<U, ID, R> unsecuredService) {
         this.unsecuredUserService = unsecuredService;
-    }
-
-    @Autowired
-    public void injectPrincipalUserConverter(PrincipalUserConverter<P, U> principalUserConverter) {
-        this.principalUserConverter = principalUserConverter;
     }
 
     @Autowired
@@ -616,7 +568,7 @@ public abstract class AbstractUserService
 
 
     @Autowired
-    public void injectMailSender(MailSender mailSender) {
+    public void injectMailSender(MailSender<LemonMailData> mailSender) {
         this.mailSender = mailSender;
     }
 
