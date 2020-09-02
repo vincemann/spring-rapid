@@ -1,5 +1,4 @@
 org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
-com.github.vincemann.springrapid.core.config.RapidDefaultMediaTypeAutoConfiguration,\
 com.github.vincemann.springrapid.core.config.RapidCrudServiceLocatorAutoConfiguration,\
 com.github.vincemann.springrapid.core.config.RapidDtoMapperAutoConfiguration,\
 com.github.vincemann.springrapid.core.config.RapidAopLogAutoConfiguration,\

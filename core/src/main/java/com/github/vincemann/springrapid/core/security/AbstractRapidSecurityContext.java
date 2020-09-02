@@ -24,7 +24,7 @@ import java.util.stream.Collectors;
  * Since all info is encapsulated there, there is no gain in giving control about different Authentication impls (realized via AuthenticationFactories for example)
  **/
 @Slf4j
-public class AbstractRapidSecurityContext<P extends RapidAuthenticatedPrincipal>
+public abstract class AbstractRapidSecurityContext<P extends RapidAuthenticatedPrincipal>
         implements RapidSecurityContext<P>
 {
 

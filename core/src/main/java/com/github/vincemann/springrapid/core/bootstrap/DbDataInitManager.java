@@ -7,19 +7,19 @@ import java.util.ArrayList;
 import java.util.List;
 
 //test executes this via TestExecutionListener
-public class DatabaseInitManager implements CommandLineRunner {
+public class DbDataInitManager implements CommandLineRunner {
 
-    private List<Initializer> initializers = new ArrayList<>();
+    private List<DatabaseDataInitializer> initializers = new ArrayList<>();
 
     //todo not required?
     @Autowired(required = false)
-    public void injectInitializers(List<Initializer> initializers) {
+    public void injectInitializers(List<DatabaseDataInitializer> initializers) {
         this.initializers = initializers;
     }
 
     @Override
     public void run(String... args) throws Exception {
-        for (Initializer initializer : initializers) {
+        for (DatabaseDataInitializer initializer : initializers) {
             initializer.init();
         }
     }

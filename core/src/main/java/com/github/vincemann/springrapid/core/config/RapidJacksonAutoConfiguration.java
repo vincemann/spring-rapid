@@ -4,21 +4,39 @@ import com.fasterxml.jackson.databind.MapperFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
+import com.github.vincemann.springrapid.core.controller.RapidMediaType;
 import com.github.vincemann.springrapid.core.slicing.config.WebConfig;
 import com.github.vincemann.springrapid.core.controller.dtoMapper.LoggingObjectMapper;
 import com.github.vincemann.springrapid.core.util.MapperUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.context.annotation.Bean;
+import org.springframework.http.MediaType;
+import org.springframework.web.servlet.config.annotation.ContentNegotiationConfigurer;
+import org.springframework.web.servlet.config.annotation.EnableWebMvc;
+import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 import static com.fasterxml.jackson.databind.DeserializationFeature.ACCEPT_SINGLE_VALUE_AS_ARRAY;
 
 @WebConfig
 @Slf4j
-public class RapidJacksonAutoConfiguration {
+@EnableWebMvc
+public class RapidJacksonAutoConfiguration implements WebMvcConfigurer {
 
     public RapidJacksonAutoConfiguration() {
         log.info("Created");
+    }
+
+    @Bean
+    @RapidMediaType
+    @ConditionalOnMissingBean(name = "rapidMediaType")
+    public String rapidMediaType(){
+        return MediaType.APPLICATION_JSON_UTF8_VALUE;
+    }
+
+    @Override
+    public void configureContentNegotiation (ContentNegotiationConfigurer configurer) {
+        configurer.defaultContentType(MediaType.valueOf(rapidMediaType()));
     }
 
     @ConditionalOnMissingBean(ObjectMapper.class)

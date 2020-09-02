@@ -131,7 +131,7 @@ public class LemonWebSecurityConfig extends WebSecurityConfigurerAdapter {
 	 * Configuring token authentication filter
 	 */
 	protected void tokenAuthentication(HttpSecurity http) throws Exception {
-		
+		//needs to be created with new, cant be autowired for some spring internal reasons
 		http.addFilterBefore(new LemonJwtAuthenticationFilter(httpTokenService,authorizationTokenService,securityContext),
 				UsernamePasswordAuthenticationFilter.class);
 	}
@@ -162,7 +162,7 @@ public class LemonWebSecurityConfig extends WebSecurityConfigurerAdapter {
 	 */
 	protected void authorizeRequests(HttpSecurity http) throws Exception {
 		http.authorizeRequests()
-			.mvcMatchers("/**").permitAll();                  
+			.mvcMatchers("/**").permitAll();
 	}
 	
 
@@ -182,10 +182,12 @@ public class LemonWebSecurityConfig extends WebSecurityConfigurerAdapter {
 	public void injectHttpTokenService(HttpTokenService httpTokenService) {
 		this.httpTokenService = httpTokenService;
 	}
+
 	@Autowired
 	public void injectAuthorizationTokenService(AuthorizationTokenService<LemonAuthenticatedPrincipal> authorizationTokenService) {
 		this.authorizationTokenService = authorizationTokenService;
 	}
+
 	@Autowired
 	public void injectSecurityContext(RapidSecurityContext<LemonAuthenticatedPrincipal> securityContext) {
 		this.securityContext = securityContext;

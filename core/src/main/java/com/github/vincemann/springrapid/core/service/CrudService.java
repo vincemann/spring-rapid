@@ -21,7 +21,5 @@ public interface CrudService
         >
     extends  SimpleCrudService<E,Id>, TargetClassAware
 {
-
-
     R getRepository();
 }

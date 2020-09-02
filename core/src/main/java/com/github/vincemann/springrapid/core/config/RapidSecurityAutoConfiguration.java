@@ -10,15 +10,10 @@ import org.springframework.context.annotation.Configuration;
 @Slf4j
 public class RapidSecurityAutoConfiguration {
 
-    @Bean
-    @ConditionalOnMissingBean(SecurityChecker.class)
-    public SecurityChecker securityChecker(){
-        return new RapidSecurityContextChecker();
-    }
 
     @Bean
     @ConditionalOnMissingBean(RapidSecurityContext.class)
     public RapidSecurityContext<RapidAuthenticatedPrincipal> rapidSecurityContext(){
-        return new AbstractRapidSecurityContext<>();
+        return new RapidSecurityContextImpl();
     }
 }
