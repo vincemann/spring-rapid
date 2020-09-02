@@ -11,7 +11,7 @@ import com.github.vincemann.springrapid.core.controller.dtoMapper.context.DtoMap
 import com.github.vincemann.springrapid.core.controller.DtoClassLocator;
 import com.github.vincemann.springrapid.core.controller.idFetchingStrategy.IdFetchingStrategy;
 import com.github.vincemann.springrapid.core.controller.validationStrategy.ValidationStrategy;
-import com.github.vincemann.springrapid.commons.Lists;
+import com.github.vincemann.springrapid.core.util.Lists;
 import com.github.vincemann.springrapid.coretest.controller.rapid.AbstractMvcRapidControllerTest;
 import org.junit.jupiter.api.*;
 import org.mockito.ArgumentCaptor;

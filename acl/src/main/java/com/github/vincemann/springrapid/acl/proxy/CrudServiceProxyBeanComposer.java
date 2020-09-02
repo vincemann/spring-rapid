@@ -1,6 +1,6 @@
 package com.github.vincemann.springrapid.acl.proxy;
 
-import com.github.vincemann.springrapid.commons.Lists;
+import com.github.vincemann.springrapid.core.util.Lists;
 import com.github.vincemann.springrapid.core.proxy.ServiceExtensionProxyBuilder;
 import com.github.vincemann.springrapid.core.service.SimpleCrudService;
 import com.github.vincemann.springrapid.core.proxy.ServiceExtension;
