@@ -4,7 +4,7 @@ import com.github.vincemann.aoplog.Severity;
 import com.github.vincemann.aoplog.api.LogInteraction;
 import com.github.vincemann.springrapid.acl.service.LocalPermissionService;
 import com.github.vincemann.springrapid.core.model.IdentifiableEntity;
-import com.github.vincemann.springrapid.core.proxy.ServiceExtension;
+import com.github.vincemann.springrapid.core.proxy.BasicServiceExtension;
 import com.github.vincemann.springrapid.core.security.RapidAuthenticatedPrincipal;
 import com.github.vincemann.springrapid.core.security.RapidRoles;
 import com.github.vincemann.springrapid.core.security.RapidSecurityContext;
@@ -17,13 +17,13 @@ import org.springframework.security.acls.model.Permission;
 import java.io.Serializable;
 
 /**
- * Base class for acl info managing {@link ServiceExtension}s.
+ * Base class for acl info managing {@link BasicServiceExtension}s.
  *
  * @param <S>
  */
 @Getter
 public abstract class AbstractAclServiceExtension<S>
-        extends ServiceExtension<S> {
+        extends BasicServiceExtension<S> {
 
     private LocalPermissionService permissionService;
     private MutableAclService mutableAclService;

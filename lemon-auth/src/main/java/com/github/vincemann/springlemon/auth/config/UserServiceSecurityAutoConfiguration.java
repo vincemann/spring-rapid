@@ -2,7 +2,7 @@ package com.github.vincemann.springlemon.auth.config;
 
 import com.github.vincemann.springlemon.auth.service.UserService;
 import com.github.vincemann.springlemon.auth.service.extension.LemonAclServiceExtension;
-import com.github.vincemann.springlemon.auth.service.extension.LemonServiceSecurityExtension;
+import com.github.vincemann.springlemon.auth.service.extension.UserServiceSecurityExtension;
 import com.github.vincemann.springrapid.acl.config.AclAutoConfiguration;
 import com.github.vincemann.springrapid.acl.proxy.AclManaging;
 import com.github.vincemann.springrapid.acl.proxy.Secured;
@@ -29,21 +29,24 @@ import org.springframework.security.acls.model.MutableAclService;
 @Slf4j
 //we need the acl beans here
 @AutoConfigureAfter({AclAutoConfiguration.class})
-public class LemonServiceSecurityAutoConfiguration {
+public class UserServiceSecurityAutoConfiguration {
 
-    public LemonServiceSecurityAutoConfiguration() {
+    public UserServiceSecurityAutoConfiguration() {
         log.info("Created");
     }
 
-    @Autowired SecurityServiceExtensionProxyBuilderFactory securityExtensionProxyBuilderFactory;
-    @Autowired LocalPermissionService permissionService;
-    @Autowired MutableAclService mutableAclService;
+    @Autowired
+    SecurityServiceExtensionProxyBuilderFactory securityExtensionProxyBuilderFactory;
+    @Autowired
+    LocalPermissionService permissionService;
+    @Autowired
+    MutableAclService mutableAclService;
 
 
-    @ConditionalOnMissingBean(LemonServiceSecurityExtension.class)
+    @ConditionalOnMissingBean(UserServiceSecurityExtension.class)
     @Bean
-    public LemonServiceSecurityExtension lemonServiceSecurityRule() {
-        return new LemonServiceSecurityExtension();
+    public UserServiceSecurityExtension userServiceSecurityRule() {
+        return new UserServiceSecurityExtension();
     }
 
     @Bean
@@ -54,10 +57,10 @@ public class LemonServiceSecurityAutoConfiguration {
     }
 
 
-    @ConditionalOnMissingBean(name = "aclManagingLemonService")
+    @ConditionalOnMissingBean(name = "aclManagingUserService")
     @Bean
     @AclManaging
-    public UserService<?, ?, ?> aclManagingLemonService(UserService<?, ?, ?> service,
+    public UserService<?, ?, ?> aclManagingUserService(UserService<?, ?, ?> service,
 //                                                                            AdminFullAccessAclExtension adminFullAccess,
 //                                                                            AuthenticatedFullAccessAclExtension authenticatedFullAccessAclExtension,
                                                         CleanUpAclServiceExtension cleanUpAclExtension) {
@@ -67,11 +70,11 @@ public class LemonServiceSecurityAutoConfiguration {
     }
 
 
-    @ConditionalOnMissingBean(name = "securedLemonService")
+    @ConditionalOnMissingBean(name = "securedUserService")
     @Bean
     @Secured
-    public UserService<?, ?, ?> securedLemonService(@AclManaging UserService<?, ?, ?> service,
-                                                    LemonServiceSecurityExtension securityRule) {
+    public UserService<?, ?, ?> securedUserService(@AclManaging UserService<?, ?, ?> service,
+                                                    UserServiceSecurityExtension securityRule) {
         return securityExtensionProxyBuilderFactory.create(service)
                 .addExtensions(securityRule)
                 .build();

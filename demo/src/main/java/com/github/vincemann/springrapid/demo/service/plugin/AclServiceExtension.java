@@ -1,17 +1,15 @@
 package com.github.vincemann.springrapid.demo.service.plugin;
 
 import com.github.vincemann.springrapid.core.proxy.SimpleCrudServiceExtension;
-import com.github.vincemann.springrapid.core.proxy.ServiceExtension;
+import com.github.vincemann.springrapid.core.proxy.BasicServiceExtension;
 import com.github.vincemann.springrapid.core.service.SimpleCrudService;
 import com.github.vincemann.springrapid.core.service.exception.BadEntityException;
 import com.github.vincemann.springrapid.core.service.exception.EntityNotFoundException;
 import com.github.vincemann.springrapid.core.slicing.components.ServiceComponent;
 import com.github.vincemann.springrapid.core.model.IdentifiableEntity;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Configurable;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.context.annotation.Scope;
-import org.springframework.context.annotation.ScopedProxyMode;
 
 import java.io.Serializable;
 
@@ -19,7 +17,7 @@ import java.io.Serializable;
 @ServiceComponent
 @Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
 public class AclServiceExtension
-        extends ServiceExtension<SimpleCrudService>
+        extends BasicServiceExtension<SimpleCrudService>
             implements SimpleCrudServiceExtension<SimpleCrudService> {
 
     public AclServiceExtension() {

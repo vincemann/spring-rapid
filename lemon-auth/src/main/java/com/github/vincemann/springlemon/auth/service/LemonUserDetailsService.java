@@ -25,7 +25,7 @@ import org.springframework.transaction.annotation.Transactional;
 public class LemonUserDetailsService
 		implements UserDetailsService, AopLoggable {
 
-	private SimpleUserService<AbstractUser<?>, ?> unsecuredLemonService;
+	private SimpleUserService<AbstractUser<?>, ?> unsecuredUserService;
 	private PrincipalUserConverter<RapidAuthenticatedPrincipal,AbstractUser<?>> principalUserConverter;
 
 	@Transactional
@@ -49,7 +49,7 @@ public class LemonUserDetailsService
 	 * if you aren't using email as the username.
 	 */
 	protected AbstractUser<?> findUserByEmail(String username) throws EntityNotFoundException {
-		return unsecuredLemonService.findByEmail(username);
+		return unsecuredUserService.findByEmail(username);
 	}
 
 	@Autowired
@@ -59,7 +59,7 @@ public class LemonUserDetailsService
 
 	@Unsecured
 	@Autowired
-	public void injectUnsecuredLemonService(SimpleUserService<AbstractUser<?>, ?> unsecuredLemonService) {
-		this.unsecuredLemonService = unsecuredLemonService;
+	public void injectUnsecuredUserService(SimpleUserService<AbstractUser<?>, ?> unsecuredUserService) {
+		this.unsecuredUserService = unsecuredUserService;
 	}
 }

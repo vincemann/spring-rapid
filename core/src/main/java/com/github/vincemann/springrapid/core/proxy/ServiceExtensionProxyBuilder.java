@@ -30,8 +30,8 @@ public class ServiceExtensionProxyBuilder<S extends SimpleCrudService<E,Id>,E ex
     // this method is used to add SimpleService implementing extensions, to ensure down casting works
     // service extension can either be superclass, same class or child class of S, the only thing that matters, is that I can cast
     // from E to extension entity type. i.E. I can cast IdentEntity to Owner -> ? super E aka ? super Owner is correct
-    public ServiceExtensionProxyBuilder<S,E,Id> addServiceExtensions(ServiceExtension<? extends SimpleCrudService<? super E,? super Id>>... extensions){
-        for (ServiceExtension<? extends SimpleCrudService<? super E, ? super Id>> extension : extensions) {
+    public ServiceExtensionProxyBuilder<S,E,Id> addServiceExtensions(BasicServiceExtension<? extends SimpleCrudService<? super E,? super Id>>... extensions){
+        for (BasicServiceExtension<? extends SimpleCrudService<? super E, ? super Id>> extension : extensions) {
             proxy.addExtension(extension);
         }
         return this;
@@ -39,8 +39,8 @@ public class ServiceExtensionProxyBuilder<S extends SimpleCrudService<E,Id>,E ex
 
     // service extension can be any super class of service
     // also types that are not of type SimpleService
-    public ServiceExtensionProxyBuilder<S,E,Id> addExtensions(ServiceExtension<? super S>... extensions){
-        for (ServiceExtension<? super S> extension : extensions) {
+    public ServiceExtensionProxyBuilder<S,E,Id> addExtensions(BasicServiceExtension<? super S>... extensions){
+        for (BasicServiceExtension<? super S> extension : extensions) {
             proxy.addExtension(extension);
         }
         return this;

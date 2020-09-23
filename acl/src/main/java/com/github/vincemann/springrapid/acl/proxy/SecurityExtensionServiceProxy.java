@@ -2,7 +2,7 @@ package com.github.vincemann.springrapid.acl.proxy;
 
 import com.github.vincemann.springrapid.core.proxy.AbstractExtensionServiceProxy;
 import com.github.vincemann.springrapid.core.proxy.AbstractServiceExtension;
-import com.github.vincemann.springrapid.core.proxy.ServiceExtension;
+import com.github.vincemann.springrapid.core.proxy.BasicServiceExtension;
 import com.github.vincemann.springrapid.core.service.CrudService;
 import com.github.vincemann.springrapid.core.service.SimpleCrudService;
 import lombok.Getter;
@@ -31,13 +31,13 @@ public class SecurityExtensionServiceProxy<S extends SimpleCrudService<?,?>>
 
     private AbstractServiceExtension<?,? super SecurityProxyController> defaultExtension;
 
-    public SecurityExtensionServiceProxy(S proxied, ServiceExtension<?> defaultExtension, ServiceExtension<?>... extensions) {
+    public SecurityExtensionServiceProxy(S proxied, BasicServiceExtension<?> defaultExtension, BasicServiceExtension<?>... extensions) {
         super(proxied, extensions);
         this.defaultExtension = defaultExtension;
         addExtension(defaultExtension);
     }
 
-    public SecurityExtensionServiceProxy(S proxied, ServiceExtension<?>... extensions) {
+    public SecurityExtensionServiceProxy(S proxied, BasicServiceExtension<?>... extensions) {
         super(proxied, extensions);
     }
 

@@ -8,9 +8,9 @@ import com.github.vincemann.springlemon.demo.domain.MySignupForm;
 import com.github.vincemann.springlemon.demo.dto.AdminUpdateUserDto;
 import com.github.vincemann.springlemon.demo.dto.UserUpdateDto;
 import com.github.vincemann.springrapid.core.security.RapidRoles;
-import com.github.vincemann.springrapid.core.controller.dtoMapper.context.Direction;
-import com.github.vincemann.springrapid.core.controller.dtoMapper.context.DtoMappingContext;
-import com.github.vincemann.springrapid.core.controller.dtoMapper.context.RapidDtoEndpoint;
+import com.github.vincemann.springrapid.core.controller.dto.mapper.context.Direction;
+import com.github.vincemann.springrapid.core.controller.dto.mapper.context.DtoMappingContext;
+import com.github.vincemann.springrapid.core.controller.dto.mapper.context.RapidDtoEndpoint;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 

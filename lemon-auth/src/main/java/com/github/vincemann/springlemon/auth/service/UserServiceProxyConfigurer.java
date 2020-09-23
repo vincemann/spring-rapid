@@ -1,6 +1,6 @@
 package com.github.vincemann.springlemon.auth.service;
 
-import com.github.vincemann.springlemon.auth.config.LemonServiceAutoConfiguration;
+import com.github.vincemann.springlemon.auth.config.UserServiceAutoConfiguration;
 import com.github.vincemann.springrapid.acl.proxy.SecurityExtensionServiceProxy;
 import com.github.vincemann.springrapid.acl.proxy.AclManaging;
 import com.github.vincemann.springrapid.acl.proxy.Secured;
@@ -15,9 +15,9 @@ import java.lang.reflect.Proxy;
  * Extend this class to further configure PreConfigured {@link UserService} Proxies.
  * Used primarily to add more plugins.
  *
- * @see LemonServiceAutoConfiguration
+ * @see UserServiceAutoConfiguration
  */
-public abstract class LemonServiceProxyConfigurer  implements InitializingBean {
+public abstract class UserServiceProxyConfigurer  implements InitializingBean {
 
     private UserService acl;
     private UserService secured;

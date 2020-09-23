@@ -1,7 +1,7 @@
 package com.github.vincemann.springrapid.core.controller;
 
-import com.github.vincemann.springrapid.core.controller.dtoMapper.context.DtoMappingContext;
-import com.github.vincemann.springrapid.core.controller.dtoMapper.context.DtoMappingInfo;
+import com.github.vincemann.springrapid.core.controller.dto.mapper.context.DtoMappingContext;
+import com.github.vincemann.springrapid.core.controller.dto.mapper.context.DtoMappingInfo;
 import lombok.*;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.util.Assert;

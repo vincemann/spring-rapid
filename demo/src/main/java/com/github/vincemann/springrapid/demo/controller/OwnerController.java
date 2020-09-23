@@ -1,6 +1,6 @@
 package com.github.vincemann.springrapid.demo.controller;
 
-import com.github.vincemann.springrapid.core.controller.dtoMapper.context.*;
+import com.github.vincemann.springrapid.core.controller.dto.mapper.context.*;
 import com.github.vincemann.springrapid.demo.dtos.owner.CreateOwnerDto;
 import com.github.vincemann.springrapid.demo.dtos.owner.ReadForeignOwnerDto;
 import com.github.vincemann.springrapid.demo.dtos.owner.ReadOwnOwnerDto;

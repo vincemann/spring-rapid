@@ -3,7 +3,7 @@ package com.github.vincemann.springrapid.acl.proxy;
 import com.github.vincemann.springrapid.core.util.Lists;
 import com.github.vincemann.springrapid.core.proxy.ServiceExtensionProxyBuilder;
 import com.github.vincemann.springrapid.core.service.SimpleCrudService;
-import com.github.vincemann.springrapid.core.proxy.ServiceExtension;
+import com.github.vincemann.springrapid.core.proxy.BasicServiceExtension;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -79,7 +79,7 @@ public class CrudServiceProxyBeanComposer implements BeanPostProcessor, Applicat
                     proxiedBean = lastProxiedBean;
                 }
                 SimpleCrudService proxyBean = new ServiceExtensionProxyBuilder<>(proxiedBean)
-                        .addServiceExtensions(resolveExtensions(proxy.plugins()).toArray(new ServiceExtension[0])).build();
+                        .addServiceExtensions(resolveExtensions(proxy.plugins()).toArray(new BasicServiceExtension[0])).build();
 
                 log.trace("creating proxyBean : " + proxyBean);
                 log.trace("Registering beanDef of proxyBean first: " + proxyBeanDef);
@@ -96,10 +96,10 @@ public class CrudServiceProxyBeanComposer implements BeanPostProcessor, Applicat
                     }
                     primaryBeanRegistered=true;
                 }
-                List<Class<? extends ServiceExtension>> pluginTypes = Lists.newArrayList(securityProxy.plugins());
+                List<Class<? extends BasicServiceExtension>> pluginTypes = Lists.newArrayList(securityProxy.plugins());
                 if(!pluginTypes.isEmpty()){
                     lastProxiedBean = new ServiceExtensionProxyBuilder<>(lastProxiedBean)
-                            .addServiceExtensions(resolveExtensions(securityProxy.plugins()).toArray(new ServiceExtension[0]))
+                            .addServiceExtensions(resolveExtensions(securityProxy.plugins()).toArray(new BasicServiceExtension[0]))
                             .build();
                 }
                 GenericBeanDefinition beanDef
@@ -159,11 +159,11 @@ public class CrudServiceProxyBeanComposer implements BeanPostProcessor, Applicat
         return name;
     }
 
-    private List<ServiceExtension> resolveExtensions(Class<? extends ServiceExtension>[] pluginTypeArray){
-        List<ServiceExtension> plugins = new ArrayList<>();
-        ArrayList<Class<? extends ServiceExtension>> pluginTypes = Lists.newArrayList(pluginTypeArray);
-        for (Class<? extends ServiceExtension> pluginType : pluginTypes) {
-            ServiceExtension plugin = beanFactory.getBean(pluginType);
+    private List<BasicServiceExtension> resolveExtensions(Class<? extends BasicServiceExtension>[] pluginTypeArray){
+        List<BasicServiceExtension> plugins = new ArrayList<>();
+        ArrayList<Class<? extends BasicServiceExtension>> pluginTypes = Lists.newArrayList(pluginTypeArray);
+        for (Class<? extends BasicServiceExtension> pluginType : pluginTypes) {
+            BasicServiceExtension plugin = beanFactory.getBean(pluginType);
             beanFactory.autowireBean(plugin);
             //beanFactory.autowireBeanProperties();
             plugins.add(plugin);

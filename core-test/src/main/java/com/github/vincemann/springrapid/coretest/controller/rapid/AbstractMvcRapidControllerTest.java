@@ -2,7 +2,7 @@ package com.github.vincemann.springrapid.coretest.controller.rapid;
 
 import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.github.vincemann.springrapid.core.controller.dtoMapper.context.DtoMappingContext;
+import com.github.vincemann.springrapid.core.controller.dto.mapper.context.DtoMappingContext;
 
 import com.github.vincemann.springrapid.core.controller.RapidController;
 import com.github.vincemann.springrapid.core.model.IdentifiableEntity;

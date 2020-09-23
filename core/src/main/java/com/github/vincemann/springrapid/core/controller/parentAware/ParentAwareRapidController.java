@@ -1,7 +1,7 @@
 package com.github.vincemann.springrapid.core.controller.parentAware;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.github.vincemann.springrapid.core.controller.dtoMapper.context.Direction;
+import com.github.vincemann.springrapid.core.controller.dto.mapper.context.Direction;
 import com.github.vincemann.springrapid.core.controller.RapidController;
 import com.github.vincemann.springrapid.core.controller.idFetchingStrategy.IdFetchingStrategy;
 import com.github.vincemann.springrapid.core.controller.idFetchingStrategy.exception.IdFetchingException;
@@ -26,13 +26,13 @@ import java.util.HashSet;
 import java.util.Set;
 
 /**
- * Controller for ChildEntity. Child Entity has one to n relationship with Parent.
+ * Controller for ChildEntity. Parent Entity has one to n relationship with ChildEntity.
  * This Controller offers endpoint for finding all children for given parent(-id).
  *
- * @param <E>
- * @param <Id>
- * @param <PId>
- * @param <S>
+ * @param <E>   Child Entity Type
+ * @param <Id>  Child Entity Id Type
+ * @param <PId> Parent Entity Id Type
+ * @param <S>   ChildService Type
  */
 @Slf4j
 @Getter

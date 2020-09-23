@@ -5,6 +5,11 @@ import com.github.vincemann.springrapid.core.proxy.AbstractServiceExtension;
 import lombok.Getter;
 import org.springframework.beans.factory.annotation.Autowired;
 
+/**
+ *
+ * Write extensions for protected Services, managed by {@link SecurityExtensionServiceProxy}.
+ * @see com.github.vincemann.springrapid.core.proxy.BasicServiceExtension
+ */
 @Getter
 public class SecurityServiceExtension<T>
         extends AbstractServiceExtension<T, SecurityProxyController> {
