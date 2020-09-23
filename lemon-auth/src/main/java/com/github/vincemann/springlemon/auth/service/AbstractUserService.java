@@ -552,7 +552,7 @@ public abstract class AbstractUserService
 
     @Unsecured
     @Autowired
-    public void injectUnsecuredLemonService(UserService<U, ID, R> unsecuredService) {
+    public void injectUnsecuredUserService(UserService<U, ID, R> unsecuredService) {
         this.unsecuredUserService = unsecuredService;
     }
 

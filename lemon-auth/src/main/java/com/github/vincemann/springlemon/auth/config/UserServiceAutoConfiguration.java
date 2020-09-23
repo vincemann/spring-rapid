@@ -31,10 +31,10 @@ import java.io.Serializable;
 @EnableJpaAuditing
 @EnableTransactionManagement
 //@AutoConfigureBefore({AclAutoConfiguration.class})
-public class LemonServiceAutoConfiguration {
+public class UserServiceAutoConfiguration {
 
 
-    public LemonServiceAutoConfiguration() {
+    public UserServiceAutoConfiguration() {
         log.info("Created");
     }
 

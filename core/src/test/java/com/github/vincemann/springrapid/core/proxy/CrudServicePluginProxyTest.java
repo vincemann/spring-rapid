@@ -67,11 +67,11 @@ class CrudServiceExtensionProxyTest {
     }
 
     class FooCrudServiceExtension
-            extends ServiceExtension<CrudService>
+            extends BasicServiceExtension<CrudService>
                     implements SimpleCrudServiceExtension<CrudService>{
     }
 
-    class OverlappingExtension extends ServiceExtension<OverlappingInterface> implements OverlappingInterface{
+    class OverlappingExtension extends BasicServiceExtension<OverlappingInterface> implements OverlappingInterface{
 
         @Override
         public void onceOnlyMethod() {
@@ -85,7 +85,7 @@ class CrudServiceExtensionProxyTest {
         }
     }
 
-    class SubExtension extends ServiceExtension<SubInterface> implements SubInterface{
+    class SubExtension extends BasicServiceExtension<SubInterface> implements SubInterface{
         @Override
         public Class overlappingMethod() {
             return getNext().overlappingMethod();

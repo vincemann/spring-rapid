@@ -1,4 +1,4 @@
-package com.github.vincemann.springrapid.core.controller.dtoMapper;
+package com.github.vincemann.springrapid.core.controller.dto.mapper;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;

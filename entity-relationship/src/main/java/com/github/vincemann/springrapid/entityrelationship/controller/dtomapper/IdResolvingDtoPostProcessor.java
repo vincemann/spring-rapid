@@ -1,6 +1,6 @@
 package com.github.vincemann.springrapid.entityrelationship.controller.dtomapper;
 
-import com.github.vincemann.springrapid.core.controller.dtoMapper.DtoPostProcessor;
+import com.github.vincemann.springrapid.core.controller.dto.mapper.DtoPostProcessor;
 import com.github.vincemann.springrapid.core.model.IdentifiableEntity;
 import com.github.vincemann.springrapid.core.service.exception.BadEntityException;
 import com.github.vincemann.springrapid.core.service.exception.EntityNotFoundException;

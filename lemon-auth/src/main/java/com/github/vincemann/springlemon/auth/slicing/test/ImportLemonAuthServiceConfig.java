@@ -16,7 +16,7 @@ import java.lang.annotation.*;
         LemonAutoConfiguration.class,
         LemonCommonsAutoConfiguration.class,
         LemonCommonsJpaAutoConfiguration.class,
-        LemonServiceAutoConfiguration.class,
+        UserServiceAutoConfiguration.class,
         LemonAsyncAutoConfiguration.class,
         LemonAdminAutoConfiguration.class,
 })

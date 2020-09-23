@@ -2,9 +2,6 @@ package com.github.vincemann.springrapid.acl.proxy;
 
 import com.github.vincemann.springrapid.core.model.IdentifiableEntity;
 import com.github.vincemann.springrapid.core.proxy.AbstractServiceExtension;
-import com.github.vincemann.springrapid.core.proxy.ProxyController;
-import com.github.vincemann.springrapid.core.proxy.ServiceExtension;
-import com.github.vincemann.springrapid.core.proxy.ServiceExtensionProxyBuilder;
 import com.github.vincemann.springrapid.core.service.SimpleCrudService;
 import org.apache.commons.lang3.ClassUtils;
 import org.springframework.test.util.AopTestUtils;

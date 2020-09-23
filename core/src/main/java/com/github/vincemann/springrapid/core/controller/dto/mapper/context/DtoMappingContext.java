@@ -1,11 +1,9 @@
-package com.github.vincemann.springrapid.core.controller.dtoMapper.context;
+package com.github.vincemann.springrapid.core.controller.dto.mapper.context;
 
 import lombok.*;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.util.Assert;
 
 import java.util.*;
-import java.util.stream.Collectors;
 
 @SuppressWarnings("ALL")
 /**

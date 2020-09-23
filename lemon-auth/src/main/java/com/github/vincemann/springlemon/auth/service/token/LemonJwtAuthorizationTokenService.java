@@ -16,7 +16,7 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 public class LemonJwtAuthorizationTokenService extends JwtAuthorizationTokenService<LemonAuthenticatedPrincipal> {
 
-    private SimpleUserService<AbstractUser<?>,?> lemonService;
+    private SimpleUserService<AbstractUser<?>,?> userService;
 
 
     @Transactional
@@ -24,7 +24,7 @@ public class LemonJwtAuthorizationTokenService extends JwtAuthorizationTokenServ
     public void verifyToken(JWTClaimsSet claims, LemonAuthenticatedPrincipal principal) {
         super.verifyToken(claims, principal);
         try {
-            AbstractUser<?> byEmail = lemonService.findByEmail(principal.getEmail());
+            AbstractUser<?> byEmail = userService.findByEmail(principal.getEmail());
             LemonValidationUtils.ensureCredentialsUpToDate(claims,byEmail);
         } catch (EntityNotFoundException e) {
             throw new BadCredentialsException("User encoded in token not found",e);
@@ -32,7 +32,7 @@ public class LemonJwtAuthorizationTokenService extends JwtAuthorizationTokenServ
     }
 
     @Autowired
-    public void injectLemonService(SimpleUserService<AbstractUser<?>, ?> lemonService) {
-        this.lemonService = lemonService;
+    public void injectUserService(SimpleUserService<AbstractUser<?>, ?> userService) {
+        this.userService = userService;
     }
 }

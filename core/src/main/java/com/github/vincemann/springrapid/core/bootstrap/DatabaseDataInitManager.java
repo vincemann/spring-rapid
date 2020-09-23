@@ -7,7 +7,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 //test executes this via TestExecutionListener
-public class DbDataInitManager implements CommandLineRunner {
+public class DatabaseDataInitManager implements CommandLineRunner {
 
     private List<DatabaseDataInitializer> initializers = new ArrayList<>();
 

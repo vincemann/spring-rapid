@@ -15,7 +15,7 @@ public class ServiceExtensionProxy<S extends SimpleCrudService<?,?>>
 {
 
 
-    protected ServiceExtensionProxy(S proxied, ServiceExtension<?>... extensions) {
+    protected ServiceExtensionProxy(S proxied, BasicServiceExtension<?>... extensions) {
         super(proxied, extensions);
     }
 

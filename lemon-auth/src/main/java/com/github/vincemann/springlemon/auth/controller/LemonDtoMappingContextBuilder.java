@@ -1,8 +1,8 @@
 package com.github.vincemann.springlemon.auth.controller;
 
 import com.google.common.collect.Sets;
-import com.github.vincemann.springrapid.core.controller.dtoMapper.context.DtoMappingContextBuilder;
-import com.github.vincemann.springrapid.core.controller.dtoMapper.context.DtoMappingContext;
+import com.github.vincemann.springrapid.core.controller.dto.mapper.context.DtoMappingContextBuilder;
+import com.github.vincemann.springrapid.core.controller.dto.mapper.context.DtoMappingContext;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;

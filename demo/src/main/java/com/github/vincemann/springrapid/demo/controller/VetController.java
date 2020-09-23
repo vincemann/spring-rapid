@@ -1,10 +1,10 @@
 package com.github.vincemann.springrapid.demo.controller;
 
-import com.github.vincemann.springrapid.core.controller.dtoMapper.context.DtoMappingContext;
+import com.github.vincemann.springrapid.core.controller.dto.mapper.context.DtoMappingContext;
 import com.github.vincemann.springrapid.demo.dtos.VetDto;
 import com.github.vincemann.springrapid.demo.model.Vet;
 import com.github.vincemann.springrapid.core.slicing.components.WebController;
-import com.github.vincemann.springrapid.core.controller.dtoMapper.context.DtoMappingContextBuilder;
+import com.github.vincemann.springrapid.core.controller.dto.mapper.context.DtoMappingContextBuilder;
 import com.github.vincemann.springrapid.core.controller.RapidController;
 import com.github.vincemann.springrapid.demo.service.VetService;
 

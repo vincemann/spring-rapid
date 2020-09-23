@@ -1,6 +1,6 @@
 package com.github.vincemann.springrapid.acl.proxy;
 
-import com.github.vincemann.springrapid.core.proxy.ServiceExtension;
+import com.github.vincemann.springrapid.core.proxy.BasicServiceExtension;
 import com.github.vincemann.springrapid.core.proxy.ServiceExtensionProxy;
 
 import java.lang.annotation.*;
@@ -21,7 +21,7 @@ public @interface Proxy {
 
     Class<? extends Annotation>[] qualifiers() default {};
 
-    Class<? extends ServiceExtension>[] plugins() default {};
+    Class<? extends BasicServiceExtension>[] plugins() default {};
 
     boolean primary() default false;
 

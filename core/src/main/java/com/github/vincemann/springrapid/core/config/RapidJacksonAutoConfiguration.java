@@ -6,7 +6,7 @@ import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.github.vincemann.springrapid.core.controller.RapidMediaType;
 import com.github.vincemann.springrapid.core.slicing.config.WebConfig;
-import com.github.vincemann.springrapid.core.controller.dtoMapper.LoggingObjectMapper;
+import com.github.vincemann.springrapid.core.controller.dto.mapper.LoggingObjectMapper;
 import com.github.vincemann.springrapid.core.util.MapperUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;

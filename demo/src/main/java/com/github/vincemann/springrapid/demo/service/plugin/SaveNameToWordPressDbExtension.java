@@ -2,7 +2,7 @@ package com.github.vincemann.springrapid.demo.service.plugin;
 
 import com.github.vincemann.springrapid.core.controller.RapidController;
 import com.github.vincemann.springrapid.core.proxy.GenericSimpleCrudServiceExtension;
-import com.github.vincemann.springrapid.core.proxy.ServiceExtension;
+import com.github.vincemann.springrapid.core.proxy.BasicServiceExtension;
 import com.github.vincemann.springrapid.core.service.SimpleCrudService;
 import com.github.vincemann.springrapid.core.service.exception.BadEntityException;
 import com.github.vincemann.springrapid.core.slicing.components.ServiceComponent;
@@ -17,7 +17,7 @@ import org.springframework.context.annotation.Scope;
 @Slf4j
 @ServiceComponent
 @Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
-public class SaveNameToWordPressDbExtension extends ServiceExtension<SimpleCrudService<Person,Long>>
+public class SaveNameToWordPressDbExtension extends BasicServiceExtension<SimpleCrudService<Person,Long>>
         implements GenericSimpleCrudServiceExtension<SimpleCrudService<Person,Long>,Person,Long> {
 
 

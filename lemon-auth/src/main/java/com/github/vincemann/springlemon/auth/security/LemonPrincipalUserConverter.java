@@ -8,7 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 public class LemonPrincipalUserConverter implements PrincipalUserConverter<LemonAuthenticatedPrincipal, AbstractUser<?>> {
 
-    private SimpleUserService<AbstractUser<?>,?> lemonService;
+    private SimpleUserService<AbstractUser<?>,?> userService;
 
     @Override
     public LemonAuthenticatedPrincipal toPrincipal(AbstractUser<?> user) {
@@ -17,11 +17,11 @@ public class LemonPrincipalUserConverter implements PrincipalUserConverter<Lemon
 
     @Override
     public AbstractUser<?> toUser(LemonAuthenticatedPrincipal principal) throws EntityNotFoundException {
-        return lemonService.findByEmail(principal.getEmail());
+        return userService.findByEmail(principal.getEmail());
     }
 
     @Autowired
-    public void injectLemonService(SimpleUserService<AbstractUser<?>, ?> lemonService) {
-        this.lemonService = lemonService;
+    public void injectUserService(SimpleUserService<AbstractUser<?>, ?> userService) {
+        this.userService = userService;
     }
 }

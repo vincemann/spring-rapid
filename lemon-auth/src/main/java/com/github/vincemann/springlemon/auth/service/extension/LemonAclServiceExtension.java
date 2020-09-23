@@ -20,7 +20,7 @@ public class LemonAclServiceExtension
         extends AbstractAclServiceExtension<SimpleUserService>
             implements SimpleUserServiceExtension<SimpleUserService>
 {
-    private SimpleUserService<AbstractUser<?>,?> unsecuredLemonService;
+    private SimpleUserService<AbstractUser<?>,?> unsecuredUserService;
 
 
     @Override
@@ -49,7 +49,7 @@ public class LemonAclServiceExtension
         log.debug("saving acl info for signed up user: " + emailOfSignedUp);
         AbstractUser user = null;
         try {
-            user = unsecuredLemonService.findByEmail(emailOfSignedUp);
+            user = unsecuredUserService.findByEmail(emailOfSignedUp);
         } catch (EntityNotFoundException e) {
             log.warn("No user found after signup -> cant save acl permissions");
             return;
@@ -61,6 +61,6 @@ public class LemonAclServiceExtension
     @Unsecured
     @Autowired
     public void injectUnsecuredUserService(SimpleUserService<AbstractUser<?>, ?> unsecuredUserService) {
-        this.unsecuredLemonService = unsecuredUserService;
+        this.unsecuredUserService = unsecuredUserService;
     }
 }

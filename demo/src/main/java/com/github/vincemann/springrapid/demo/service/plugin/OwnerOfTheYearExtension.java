@@ -1,14 +1,12 @@
 package com.github.vincemann.springrapid.demo.service.plugin;
 
 import com.github.vincemann.springrapid.core.proxy.GenericSimpleCrudServiceExtension;
-import com.github.vincemann.springrapid.core.proxy.ServiceExtension;
+import com.github.vincemann.springrapid.core.proxy.BasicServiceExtension;
 import com.github.vincemann.springrapid.core.slicing.components.ServiceComponent;
 import com.github.vincemann.springrapid.demo.model.Owner;
 import com.github.vincemann.springrapid.demo.repo.OwnerRepository;
 import com.github.vincemann.springrapid.demo.service.OwnerService;
 import com.github.vincemann.springrapid.demo.service.jpa.OwnerJPAService;
-import org.springframework.beans.factory.config.ConfigurableBeanFactory;
-import org.springframework.context.annotation.Scope;
 
 import java.util.Optional;
 
@@ -16,7 +14,7 @@ import java.util.Optional;
 //leave the scope as singleton in this case, bc it is hard to verify interactions with prototype scopes in test
 //@Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
 public class OwnerOfTheYearExtension
-        extends ServiceExtension<OwnerService>
+        extends BasicServiceExtension<OwnerService>
             implements OwnerService, GenericSimpleCrudServiceExtension<OwnerService,Owner,Long> {
 
 

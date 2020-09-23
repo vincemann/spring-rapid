@@ -27,7 +27,7 @@ import java.util.Optional;
 
 @Transactional
 @Slf4j
-public class LemonServiceSecurityExtension
+public class UserServiceSecurityExtension
         extends SecurityServiceExtension<SimpleUserService>
             implements SimpleUserServiceExtension<SimpleUserService> {
 
