@@ -50,12 +50,12 @@ public class RapidAuthenticatedPrincipal implements AuthenticatedPrincipal, Cred
 
     @Override
     public String getPassword() {
-        return getPassword();
+        return this.password;
     }
 
     @Override
     public String getName() {
-        return getName();
+        return this.name;
     }
 
     @Override
