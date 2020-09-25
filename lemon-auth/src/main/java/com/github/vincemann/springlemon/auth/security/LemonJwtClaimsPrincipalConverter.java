@@ -3,6 +3,7 @@ package com.github.vincemann.springlemon.auth.security;
 import com.github.vincemann.springlemon.auth.domain.AbstractUser;
 import com.github.vincemann.springlemon.auth.domain.LemonAuthenticatedPrincipal;
 import com.github.vincemann.springlemon.auth.service.UserService;
+import com.github.vincemann.springlemon.auth.util.LemonMapUtils;
 import com.github.vincemann.springrapid.core.service.exception.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationCredentialsNotFoundException;
@@ -19,10 +20,6 @@ public class LemonJwtClaimsPrincipalConverter
 
     private UserService<AbstractUser<?>, ?, ?> userService;
 
-    @Autowired
-    public LemonJwtClaimsPrincipalConverter(UserService<AbstractUser<?>, ?, ?> userService) {
-        this.userService = userService;
-    }
 
     @Override
     public Map<String,Object> toClaims(LemonAuthenticatedPrincipal user) {
@@ -37,11 +34,14 @@ public class LemonJwtClaimsPrincipalConverter
             throw new AuthenticationCredentialsNotFoundException("email claim of claims-set not found");
         try {
             AbstractUser<?> user = userService.findByEmail(email);
-            return new LemonAuthenticatedPrincipal(user.getEmail(), user.getPassword(),user.getId().toString(), user.getRoles());
+            return new LemonAuthenticatedPrincipal(user);
         } catch (EntityNotFoundException e) {
             throw new AuthenticationCredentialsNotFoundException("User with in token encoded email: " + email + " does not exist.", e);
         }
     }
 
-
+    @Autowired
+    public void injectUserService(UserService<AbstractUser<?>, ?, ?> userService) {
+        this.userService = userService;
+    }
 }

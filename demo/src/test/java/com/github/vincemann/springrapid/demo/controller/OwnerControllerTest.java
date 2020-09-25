@@ -1,9 +1,11 @@
 package com.github.vincemann.springrapid.demo.controller;
 
 
+import com.github.vincemann.springrapid.core.security.RapidAuthenticatedPrincipal;
+import com.github.vincemann.springrapid.core.security.RapidSecurityContext;
 import com.github.vincemann.springrapid.core.service.locator.CrudServiceLocator;
 import com.github.vincemann.springrapid.core.util.ResourceUtils;
-import com.github.vincemann.springrapid.coretest.auth.RapidMockAuthenticationTemplate;
+import com.github.vincemann.springrapid.coretest.TestPrincipal;
 import com.github.vincemann.springrapid.coretest.controller.rapid.AbstractUrlParamIdRapidControllerTest;
 import com.github.vincemann.springrapid.demo.dtos.owner.CreateOwnerDto;
 import com.github.vincemann.springrapid.demo.dtos.owner.ReadForeignOwnerDto;
@@ -47,17 +49,12 @@ class OwnerControllerTest
     @MockBean
     CrudServiceLocator crudServiceLocator;
 
-
-
     @Autowired
-    RapidMockAuthenticationTemplate mockAuthenticationTemplate;
+    RapidSecurityContext<RapidAuthenticatedPrincipal> rapidSecurityContext;
 
     String addressPatch;
     String blankCityPatch;
     String addPetPatch;
-
-
-
 
 
     @Value("classpath:/update-owner/patch-address.json")
@@ -156,8 +153,7 @@ class OwnerControllerTest
 
     @Test
     public void findOwnById() throws Exception {
-        //see OwnerOwnerLocator
-        mockAuthenticationTemplate.mockAs(owner.getLastName(),"myPass", Sets.newHashSet());
+        rapidSecurityContext.login(TestPrincipal.withName(owner.getLastName()));
 
         when(ownerService.findById(owner.getId())).thenReturn(Optional.of(owner));
         String readDtoJson = serialize(readOwnOwnerDto);
@@ -166,6 +162,8 @@ class OwnerControllerTest
                 .andExpect(status().isOk())
                 .andExpect(content().json(readDtoJson));
         Mockito.verify(ownerService).findById(owner.getId());
+
+        rapidSecurityContext.logout();
     }
 
     @Test
@@ -219,13 +217,13 @@ class OwnerControllerTest
                 .thenReturn(Optional.of(pet));
         when(crudServiceLocator.find(Pet.class))
                 .thenReturn(petService);
-        when(ownerService.update(refEq(ownerPatch),eq(true)))
+        when(ownerService.update(refEq(ownerPatch), eq(true)))
                 .thenReturn(ownerPatch);
 
-        getMockMvc().perform(update(addPetPatch,owner.getId()))
+        getMockMvc().perform(update(addPetPatch, owner.getId()))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.petIds[0]").value(petId));
 
-        verify(ownerService).update(refEq(ownerPatch),eq(true));
+        verify(ownerService).update(refEq(ownerPatch), eq(true));
     }
 }

@@ -28,11 +28,11 @@ public abstract class AbstractRapidSecurityContext<P extends RapidAuthenticatedP
         implements RapidSecurityContext<P>
 {
 
-    private static final String TEMP_USER_NAME = "tempUserName@RapidSecurityContextImpl.com";
-    private static final String TEMP_USER_PASSWORD = "tempUserPassword123@";
+    public static final String TEMP_USER_NAME = "tempUserName@RapidSecurityContextImpl.com";
+    public static final String TEMP_USER_PASSWORD = "tempUserPassword123@";
 
-    private static final String TEMP_ADMIN_NAME = "tempAdminName@RapidSecurityContextImpl.com";
-    private static final String TEMP_ADMIN_PASSWORD = "tempAdminPassword123@";
+    public static final String TEMP_ADMIN_NAME = "tempAdminName@RapidSecurityContextImpl.com";
+    public static final String TEMP_ADMIN_PASSWORD = "tempAdminPassword123@";
 
     //is always invalid
     private static final String TEMP_ID = "-1";
@@ -41,7 +41,7 @@ public abstract class AbstractRapidSecurityContext<P extends RapidAuthenticatedP
     public P login(P principal) {
         P old = currentPrincipal();
         if (old != null) {
-            log.warn("Principal: " + old + " was already logged in. This login will override old principal session");
+            log.warn("Principal: " + old + " was already logged in. This login will override old principals session");
         }
         Authentication auth = createToken(principal);
         SecurityContextHolder.getContext().setAuthentication(auth);
@@ -68,6 +68,11 @@ public abstract class AbstractRapidSecurityContext<P extends RapidAuthenticatedP
             return null;
         }
         return (P) authentication.getPrincipal();
+    }
+
+    @Override
+    public void logout() {
+        SecurityContextHolder.clearContext();
     }
 
     protected GrantedAuthority map(String role) {

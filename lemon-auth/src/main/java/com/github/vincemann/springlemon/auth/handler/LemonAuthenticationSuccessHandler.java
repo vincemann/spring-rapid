@@ -1,6 +1,7 @@
 package com.github.vincemann.springlemon.auth.handler;
 
 import com.github.vincemann.springlemon.auth.service.UserService;
+import com.github.vincemann.springlemon.auth.service.token.HttpTokenService;
 import com.github.vincemann.springrapid.core.controller.RapidMediaType;
 import com.github.vincemann.springrapid.core.security.RapidSecurityContext;
 import lombok.extern.slf4j.Slf4j;
@@ -15,6 +16,8 @@ import java.io.IOException;
 /**
  * Authentication success handler for sending the response
  * to the client after successful authentication.
+ *
+ * Adds token to response.
  * 
  * @author Sanjay Patel
  * @modifiedBy vincemann
@@ -25,10 +28,12 @@ public class LemonAuthenticationSuccessHandler
 	
 
     private UserService<?, ?,?> userService;
+    private HttpTokenService httpTokenService;
 	private String mediaType;
 
-	public LemonAuthenticationSuccessHandler(UserService<?, ?,?> userService) {
+	public LemonAuthenticationSuccessHandler(UserService<?, ?, ?> userService, HttpTokenService httpTokenService) {
 		this.userService = userService;
+		this.httpTokenService = httpTokenService;
 		log.info("Created");
 	}
 
@@ -41,8 +46,9 @@ public class LemonAuthenticationSuccessHandler
 		// the statements below are introduced
     	response.setStatus(HttpServletResponse.SC_OK);
     	response.setContentType(mediaType);
-    	userService.fetchNewAuthToken();
-    	
+		String token = userService.createNewAuthToken();
+		httpTokenService.appendToken(token,response);
+
 //    	// write current-user data to the response
 //    	response.getOutputStream().print(
 //    			objectMapper.writeValueAsString(currentUser));

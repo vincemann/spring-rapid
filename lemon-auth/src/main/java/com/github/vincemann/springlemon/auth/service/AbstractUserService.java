@@ -3,12 +3,11 @@ package com.github.vincemann.springlemon.auth.service;
 
 import com.github.vincemann.springlemon.auth.domain.LemonAuthenticatedPrincipal;
 import com.github.vincemann.springlemon.auth.mail.MailSender;
-import com.github.vincemann.springlemon.auth.security.PrincipalUserConverter;
 import com.github.vincemann.springlemon.auth.service.token.AuthorizationTokenService;
 import com.github.vincemann.springlemon.auth.service.token.BadTokenException;
 import com.github.vincemann.springlemon.auth.service.token.EmailJwtService;
 import com.github.vincemann.springlemon.auth.util.*;
-import com.github.vincemann.springrapid.acl.proxy.Unsecured;
+
 import com.github.vincemann.springrapid.core.security.RapidSecurityContext;
 import com.github.vincemann.springrapid.core.service.JPACrudService;
 import com.nimbusds.jwt.JWTClaimsSet;
@@ -431,18 +430,18 @@ public abstract class AbstractUserService
 
 
     /**
-     * Fetches a new token - for session scrolling etc.
+     * Fetches a new token
      *
      * @return
      */
     @Override
-    public String fetchNewAuthToken(String targetUserEmail) {
+    public String createNewAuthToken(String targetUserEmail) {
         return authorizationTokenService.createToken(securityContext.currentPrincipal());
     }
 
     @Override
-    public String fetchNewAuthToken(){
-        return fetchNewAuthToken(securityContext.currentPrincipal().getEmail());
+    public String createNewAuthToken(){
+        return createNewAuthToken(securityContext.currentPrincipal().getEmail());
     }
 
     @Transactional(propagation = Propagation.REQUIRED, readOnly = false)
@@ -550,7 +549,6 @@ public abstract class AbstractUserService
         this.securityContext = securityContext;
     }
 
-    @Unsecured
     @Autowired
     public void injectUnsecuredUserService(UserService<U, ID, R> unsecuredService) {
         this.unsecuredUserService = unsecuredService;

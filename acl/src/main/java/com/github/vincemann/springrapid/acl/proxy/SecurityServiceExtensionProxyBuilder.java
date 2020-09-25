@@ -9,6 +9,7 @@ import org.springframework.test.util.AopTestUtils;
 import java.io.Serializable;
 import java.lang.reflect.Proxy;
 
+
 public class SecurityServiceExtensionProxyBuilder<S extends SimpleCrudService<E,Id>,E extends IdentifiableEntity<Id>, Id extends Serializable>
 {
 
@@ -16,10 +17,11 @@ public class SecurityServiceExtensionProxyBuilder<S extends SimpleCrudService<E,
     private SecurityServiceExtension<?> defaultSecurityExtension;
 
 
-    protected SecurityServiceExtensionProxyBuilder(S proxied,SecurityServiceExtension<?> defaultSecurityExtension){
+    public SecurityServiceExtensionProxyBuilder(S proxied,SecurityServiceExtension<?> defaultSecurityExtension){
         this.proxy= new SecurityExtensionServiceProxy<>(proxied);
         this.defaultSecurityExtension = defaultSecurityExtension;
     }
+
 
 
     //diese aufsplittung muss ich machen weil ich nicht sagen kann <T super S | T extends SimpleCrudService<? super E, ? super Id>>

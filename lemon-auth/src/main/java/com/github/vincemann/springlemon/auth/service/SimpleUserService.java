@@ -54,9 +54,9 @@ public interface SimpleUserService<U extends AbstractUser<ID>, ID extends Serial
 
 
     @LogInteraction(Severity.TRACE)
-    public String fetchNewAuthToken(String targetUserEmail);
+    public String createNewAuthToken(String targetUserEmail);
 
-    public String fetchNewAuthToken();
+    public String createNewAuthToken();
 
 //    @LogInteraction(Severity.TRACE)
 //    public Map<String, String> fetchFullToken(String authHeader);
