@@ -517,6 +517,7 @@ public abstract class RapidController
     public void injectMediaType(String mediaType) {
         this.mediaType = mediaType;
     }
+
     @Autowired
     public void injectJsonMapper(ObjectMapper mapper) {
         this.jsonMapper = mapper;
