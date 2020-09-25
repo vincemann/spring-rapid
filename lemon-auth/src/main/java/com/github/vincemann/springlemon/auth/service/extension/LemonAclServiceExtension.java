@@ -60,7 +60,7 @@ public class LemonAclServiceExtension
 
 
     @Autowired
-    public void injectUnsecuredUserService(SimpleUserService<AbstractUser<?>, ?> unsecuredUserService) {
+    public void injectUnsecuredUserService(SimpleUserService unsecuredUserService) {
         this.unsecuredUserService = unsecuredUserService;
     }
 }

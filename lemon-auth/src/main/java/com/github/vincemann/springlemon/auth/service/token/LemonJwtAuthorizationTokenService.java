@@ -14,9 +14,9 @@ import org.springframework.transaction.annotation.Transactional;
 
 @ServiceComponent
 @Service
-public class LemonJwtAuthorizationTokenService extends JwtAuthorizationTokenService<LemonAuthenticatedPrincipal> {
+public class LemonJwtAuthorizationTokenService extends AbstractJwtAuthorizationTokenService<LemonAuthenticatedPrincipal> {
 
-    private SimpleUserService<AbstractUser<?>,?> userService;
+    private SimpleUserService userService;
 
 
     @Transactional
@@ -32,7 +32,7 @@ public class LemonJwtAuthorizationTokenService extends JwtAuthorizationTokenServ
     }
 
     @Autowired
-    public void injectUserService(SimpleUserService<AbstractUser<?>, ?> userService) {
+    public void injectUserService(SimpleUserService userService) {
         this.userService = userService;
     }
 }

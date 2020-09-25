@@ -12,7 +12,7 @@ import java.util.Date;
 import java.util.Map;
 
 @Slf4j
-public abstract class JwtAuthorizationTokenService<P extends RapidAuthenticatedPrincipal>
+public abstract class AbstractJwtAuthorizationTokenService<P extends RapidAuthenticatedPrincipal>
         implements AuthorizationTokenService<P> {
 
     private static final String AUTH_AUDIENCE = "auth";

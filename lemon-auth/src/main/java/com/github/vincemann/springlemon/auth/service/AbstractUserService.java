@@ -550,11 +550,6 @@ public abstract class AbstractUserService
     }
 
     @Autowired
-    public void injectUnsecuredUserService(UserService<U, ID, R> unsecuredService) {
-        this.unsecuredUserService = unsecuredService;
-    }
-
-    @Autowired
     public void injectPasswordEncoder(PasswordEncoder passwordEncoder) {
         this.passwordEncoder = passwordEncoder;
     }

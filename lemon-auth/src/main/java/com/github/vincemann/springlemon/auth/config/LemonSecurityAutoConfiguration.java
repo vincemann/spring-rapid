@@ -33,4 +33,10 @@ public class LemonSecurityAutoConfiguration {
     public JwtClaimsPrincipalConverter<LemonAuthenticatedPrincipal> jwtClaimsPrincipalConverter(){
         return new LemonJwtClaimsPrincipalConverter();
     }
+
+    @Bean
+    @ConditionalOnMissingBean(LemonSecurityContextChecker.class)
+    public LemonSecurityContextChecker lemonSecurityContextChecker(){
+        return new LemonSecurityContextChecker();
+    }
 }

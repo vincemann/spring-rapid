@@ -32,7 +32,7 @@ public class UserServiceSecurityExtension
             implements SimpleUserServiceExtension<SimpleUserService> {
 
 
-    private UserService<AbstractUser<Serializable>, Serializable, ?> unsecuredUserService;
+    private UserService unsecuredUserService;
     private LemonSecurityContextChecker securityContextChecker;
 
     @Override
@@ -121,7 +121,7 @@ public class UserServiceSecurityExtension
 
 
     @Autowired
-    public void injectUnsecuredUserService(UserService<AbstractUser<Serializable>, Serializable, ?> unsecuredUserService) {
+    public void injectUnsecuredUserService(UserService unsecuredUserService) {
         this.unsecuredUserService = unsecuredUserService;
     }
 
