@@ -4,9 +4,7 @@ import com.github.vincemann.springlemon.auth.service.UserService;
 import com.github.vincemann.springlemon.auth.service.extension.LemonAclServiceExtension;
 import com.github.vincemann.springlemon.auth.service.extension.UserServiceSecurityExtension;
 import com.github.vincemann.springrapid.acl.config.AclAutoConfiguration;
-import com.github.vincemann.springrapid.acl.proxy.AclManaging;
-import com.github.vincemann.springrapid.acl.proxy.Secured;
-import com.github.vincemann.springrapid.acl.proxy.SecurityServiceExtensionProxyBuilderFactory;
+import com.github.vincemann.springrapid.acl.proxy.*;
 import com.github.vincemann.springrapid.acl.service.LocalPermissionService;
 import com.github.vincemann.springrapid.acl.service.extensions.CleanUpAclServiceExtension;
 import com.github.vincemann.springrapid.core.proxy.ServiceExtensionProxyBuilder;
@@ -36,7 +34,9 @@ public class UserServiceSecurityAutoConfiguration {
     }
 
     @Autowired
-    SecurityServiceExtensionProxyBuilderFactory securityExtensionProxyBuilderFactory;
+    @DefaultSecurityServiceExtension
+    SecurityServiceExtension<?> defaultSecurityServiceExtension;
+
     @Autowired
     LocalPermissionService permissionService;
     @Autowired
@@ -75,7 +75,7 @@ public class UserServiceSecurityAutoConfiguration {
     @Secured
     public UserService<?, ?, ?> securedUserService(@AclManaging UserService<?, ?, ?> service,
                                                     UserServiceSecurityExtension securityRule) {
-        return securityExtensionProxyBuilderFactory.create(service)
+        return new SecurityServiceExtensionProxyBuilder<>(service,defaultSecurityServiceExtension)
                 .addExtensions(securityRule)
                 .build();
     }

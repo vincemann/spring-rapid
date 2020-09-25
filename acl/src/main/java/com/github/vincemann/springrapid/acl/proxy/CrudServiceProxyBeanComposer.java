@@ -32,11 +32,10 @@ import java.util.Optional;
 public class CrudServiceProxyBeanComposer implements BeanPostProcessor, ApplicationContextAware {
 
     private DefaultListableBeanFactory beanFactory;
-    private SecurityServiceExtensionProxyBuilderFactory securityProxyBuilderFactory;
+    private SecurityServiceExtension<?> defaultSecurityServiceExtension;
 
-    @Autowired
-    public CrudServiceProxyBeanComposer(SecurityServiceExtensionProxyBuilderFactory securityProxyBuilderFactory) {
-        this.securityProxyBuilderFactory = securityProxyBuilderFactory;
+    public CrudServiceProxyBeanComposer(SecurityServiceExtension<?> defaultSecurityServiceExtension) {
+        this.defaultSecurityServiceExtension = defaultSecurityServiceExtension;
     }
 
 
@@ -105,7 +104,7 @@ public class CrudServiceProxyBeanComposer implements BeanPostProcessor, Applicat
                 GenericBeanDefinition beanDef
                         = createBeanDef(securityProxy.qualifiers(), securityProxy.primary(), ((Class<? extends SimpleCrudService>) serviceInterface));
                 String proxyBeanName = resolveProxyName(securityProxy.qualifiers(),securityProxy.primary(),securityProxy.name(),unwrappedBean.getClass());
-                SimpleCrudService securityProxyBean = securityProxyBuilderFactory.create(lastProxiedBean)
+                SimpleCrudService securityProxyBean = new SecurityServiceExtensionProxyBuilder<>(lastProxiedBean,defaultSecurityServiceExtension)
                         .addServiceExtensions(resolveRules(securityProxy).toArray(new SecurityServiceExtension[0]))
                         .build();
                 log.debug("Creating proxyBean with name: " + proxyBeanName);

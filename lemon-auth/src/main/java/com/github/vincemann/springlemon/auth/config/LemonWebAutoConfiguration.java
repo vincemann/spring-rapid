@@ -1,8 +1,5 @@
 package com.github.vincemann.springlemon.auth.config;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.github.vincemann.springlemon.auth.LemonProperties;
-import com.github.vincemann.springlemon.auth.config.security.LemonWebSecurityConfig;
 import com.github.vincemann.springlemon.auth.controller.owner.LemonOwnerLocator;
 import com.github.vincemann.springlemon.auth.handler.LemonAuthenticationSuccessHandler;
 import com.github.vincemann.springlemon.auth.service.UserService;
@@ -46,11 +43,10 @@ public class LemonWebAutoConfiguration {
      */
     @Bean
     @ConditionalOnMissingBean(LemonAuthenticationSuccessHandler.class)
-    public LemonAuthenticationSuccessHandler authenticationSuccessHandler(
-            ObjectMapper objectMapper, UserService<?, ?,?> userService, LemonProperties properties) {
+    public LemonAuthenticationSuccessHandler authenticationSuccessHandler(UserService<?, ?,?> userService) {
 
         log.info("Configuring AuthenticationSuccessHandler");
-        return new LemonAuthenticationSuccessHandler(objectMapper, userService, properties);
+        return new LemonAuthenticationSuccessHandler(userService, httpTokenService());
     }
 
     /**

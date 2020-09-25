@@ -444,34 +444,34 @@ public abstract class RapidController
     //              CONTROLLER HOOKS
 
 
-    protected void beforeCreate(Object dto, HttpServletRequest httpServletRequest, HttpServletResponse response) {
+    public void beforeCreate(Object dto, HttpServletRequest httpServletRequest, HttpServletResponse response) {
     }
 
-    protected void beforeUpdate(Class<?> dtoClass, Id id, String patchString, HttpServletRequest request, HttpServletResponse response) {
+    public void beforeUpdate(Class<?> dtoClass, Id id, String patchString, HttpServletRequest request, HttpServletResponse response) {
     }
 
-    protected void beforeDelete(Id id, HttpServletRequest httpServletRequest, HttpServletResponse response) {
+    public void beforeDelete(Id id, HttpServletRequest httpServletRequest, HttpServletResponse response) {
     }
 
-    protected void beforeFind(Id id, HttpServletRequest httpServletRequest, HttpServletResponse response) {
+    public void beforeFind(Id id, HttpServletRequest httpServletRequest, HttpServletResponse response) {
     }
 
-    protected void beforeFindAll(HttpServletRequest httpServletRequest, HttpServletResponse response) {
+    public void beforeFindAll(HttpServletRequest httpServletRequest, HttpServletResponse response) {
     }
 
-    protected void afterCreate(Object dto, E created, HttpServletRequest httpServletRequest, HttpServletResponse response) {
+    public void afterCreate(Object dto, E created, HttpServletRequest httpServletRequest, HttpServletResponse response) {
     }
 
-    protected void afterUpdate(Object dto, E updated, HttpServletRequest httpServletRequest, HttpServletResponse response) {
+    public void afterUpdate(Object dto, E updated, HttpServletRequest httpServletRequest, HttpServletResponse response) {
     }
 
-    protected void afterDelete(Id id, HttpServletRequest httpServletRequest, HttpServletResponse response) {
+    public void afterDelete(Id id, HttpServletRequest httpServletRequest, HttpServletResponse response) {
     }
 
-    protected void afterFind(Id id, Object dto, Optional<E> found, HttpServletRequest httpServletRequest, HttpServletResponse response) {
+    public void afterFind(Id id, Object dto, Optional<E> found, HttpServletRequest httpServletRequest, HttpServletResponse response) {
     }
 
-    protected void afterFindAll(Collection<Object> dtos, Set<E> found, HttpServletRequest httpServletRequest, HttpServletResponse response) {
+    public void afterFindAll(Collection<Object> dtos, Set<E> found, HttpServletRequest httpServletRequest, HttpServletResponse response) {
     }
 
 

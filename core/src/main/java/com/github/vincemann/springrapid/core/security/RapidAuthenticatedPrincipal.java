@@ -1,6 +1,7 @@
 package com.github.vincemann.springrapid.core.security;
 
 import lombok.Getter;
+import lombok.Setter;
 import lombok.ToString;
 import org.springframework.security.core.AuthenticatedPrincipal;
 import org.springframework.security.core.Authentication;
@@ -32,6 +33,8 @@ public class RapidAuthenticatedPrincipal implements AuthenticatedPrincipal, Cred
         this.id = id;
     }
 
+    public RapidAuthenticatedPrincipal() {
+    }
 
     @Override
     public void eraseCredentials() {
@@ -80,15 +83,15 @@ public class RapidAuthenticatedPrincipal implements AuthenticatedPrincipal, Cred
         return true;
     }
 
-    protected void setName(String name) {
+    public void setName(String name) {
         this.name = name;
     }
 
-    protected void setPassword(String password) {
+    public void setPassword(String password) {
         this.password = password;
     }
 
-    protected void setRoles(Set<String> roles) {
+    public void setRoles(Set<String> roles) {
         this.roles = roles;
     }
 }

@@ -6,7 +6,7 @@ import com.github.vincemann.springlemon.auth.domain.AbstractUser;
 import com.github.vincemann.springlemon.auth.security.PrincipalUserConverter;
 import com.github.vincemann.springlemon.exceptions.util.LexUtils;
 
-import com.github.vincemann.springrapid.acl.proxy.Unsecured;
+
 import com.github.vincemann.springrapid.core.security.RapidAuthenticatedPrincipal;
 import com.github.vincemann.springrapid.core.service.exception.EntityNotFoundException;
 import com.github.vincemann.springrapid.core.slicing.components.ServiceComponent;
@@ -57,7 +57,7 @@ public class LemonUserDetailsService
 		this.principalUserConverter = principalUserConverter;
 	}
 
-	@Unsecured
+
 	@Autowired
 	public void injectUnsecuredUserService(SimpleUserService<AbstractUser<?>, ?> unsecuredUserService) {
 		this.unsecuredUserService = unsecuredUserService;

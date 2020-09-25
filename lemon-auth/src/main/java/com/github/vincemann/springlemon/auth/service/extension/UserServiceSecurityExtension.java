@@ -10,7 +10,7 @@ import com.github.vincemann.springlemon.auth.service.SimpleUserService;
 import com.github.vincemann.springlemon.auth.service.token.BadTokenException;
 import com.github.vincemann.springlemon.auth.util.LemonValidationUtils;
 import com.github.vincemann.springrapid.acl.proxy.SecurityServiceExtension;
-import com.github.vincemann.springrapid.acl.proxy.Unsecured;
+
 import com.github.vincemann.springrapid.core.model.IdentifiableEntity;
 import com.github.vincemann.springrapid.core.security.RapidSecurityContextChecker;
 import com.github.vincemann.springrapid.core.service.exception.BadEntityException;
@@ -111,15 +111,15 @@ public class UserServiceSecurityExtension
 
 
     @Override
-    public String fetchNewAuthToken(String email) {
+    public String createNewAuthToken(String email) {
         LemonAuthenticatedPrincipal authenticated = securityContextChecker.getSecurityContext().currentPrincipal();
         LemonValidationUtils.ensureAuthority(authenticated.getEmail().equals(email) ||
                 authenticated.isGoodAdmin(), "com.naturalprogrammer.spring.notGoodAdminOrSameUser");
-        return getNext().fetchNewAuthToken(email);
+        return getNext().createNewAuthToken(email);
     }
 
 
-    @Unsecured
+
     @Autowired
     public void injectUnsecuredUserService(UserService<AbstractUser<Serializable>, Serializable, ?> unsecuredUserService) {
         this.unsecuredUserService = unsecuredUserService;

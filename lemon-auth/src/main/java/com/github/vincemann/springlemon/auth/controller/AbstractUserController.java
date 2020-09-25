@@ -15,7 +15,7 @@ import com.github.vincemann.springlemon.auth.service.token.BadTokenException;
 import com.github.vincemann.springlemon.auth.service.token.HttpTokenService;
 import com.github.vincemann.springlemon.auth.service.UserService;
 import com.github.vincemann.springlemon.auth.util.LemonMapUtils;
-import com.github.vincemann.springrapid.acl.proxy.Unsecured;
+
 import com.github.vincemann.springrapid.core.security.RapidRoles;
 import com.github.vincemann.springrapid.acl.proxy.Secured;
 import com.github.vincemann.springrapid.core.controller.dto.mapper.context.Direction;
@@ -259,9 +259,9 @@ public abstract class AbstractUserController
 		log.debug("Fetching a new auth token ... ");
 		String token;
 		if (email.isEmpty()){
-			token = getService().fetchNewAuthToken();
+			token = getService().createNewAuthToken();
 		}else {
-			token = getService().fetchNewAuthToken(email.get());
+			token = getService().createNewAuthToken(email.get());
 		}
 		// result = {token:asfsdfjsdjfnd}
 		return LemonMapUtils.mapOf("token", token);
@@ -280,7 +280,7 @@ public abstract class AbstractUserController
 	 * Adds an Authorization header to the response for certain user
 	 */
 	public void appendFreshTokenOf(U user, HttpServletResponse response) {
-		String token = getService().fetchNewAuthToken(user.getEmail());
+		String token = getService().createNewAuthToken(user.getEmail());
 		httpTokenService.appendToken(token,response);
 //		response.addHeader(LecUtils.TOKEN_RESPONSE_HEADER_NAME, JwtService.TOKEN_PREFIX + token);
 	}
@@ -290,7 +290,7 @@ public abstract class AbstractUserController
 	 * Adds an Authorization header to the response for logged in user
 	 */
 	public void appendFreshToken(HttpServletResponse response){
-		String token = getService().fetchNewAuthToken();
+		String token = getService().createNewAuthToken();
 		httpTokenService.appendToken(token,response);
 	}
 
@@ -313,7 +313,7 @@ public abstract class AbstractUserController
 		super.injectCrudService(crudService);
 	}
 
-	@Unsecured
+
 	@Autowired
 	public void injectUnsecuredService(UserService<U, ID, ?> unsecuredService) {
 		this.unsecuredUserService = unsecuredService;

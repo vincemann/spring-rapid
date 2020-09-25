@@ -23,6 +23,8 @@ public interface RapidSecurityContext<P extends RapidAuthenticatedPrincipal>
     @LogInteraction(Severity.DEBUG)
     P currentPrincipal();
 
+    void logout();
+
     //Convenience methods that could all be realized by using login
     void runAs(P principal, Runnable runnable);
     public void runWithRoles(Set<String> roles, Runnable runnable);

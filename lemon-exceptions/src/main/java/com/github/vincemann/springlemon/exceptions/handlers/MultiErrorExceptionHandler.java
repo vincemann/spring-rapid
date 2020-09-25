@@ -4,12 +4,14 @@ import java.util.Collection;
 
 import com.github.vincemann.springlemon.exceptions.LemonFieldError;
 import com.github.vincemann.springlemon.exceptions.MultiErrorException;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
 import org.springframework.http.HttpStatus;
 
 //@Component
 @Order(Ordered.LOWEST_PRECEDENCE)
+@Slf4j
 public class MultiErrorExceptionHandler extends AbstractExceptionHandler<MultiErrorException> {
 
 	public MultiErrorExceptionHandler() {

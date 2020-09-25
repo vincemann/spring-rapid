@@ -12,7 +12,8 @@ import java.util.Date;
 import java.util.Map;
 
 @Slf4j
-public abstract class JwtAuthorizationTokenService<P extends RapidAuthenticatedPrincipal> implements AuthorizationTokenService<P> {
+public abstract class JwtAuthorizationTokenService<P extends RapidAuthenticatedPrincipal>
+        implements AuthorizationTokenService<P> {
 
     private static final String AUTH_AUDIENCE = "auth";
     private static final String PRINCIPAL_CLAIMS_KEY = "rapid-principal";
@@ -29,7 +30,6 @@ public abstract class JwtAuthorizationTokenService<P extends RapidAuthenticatedP
         JWTClaimsSet.Builder builder = new JWTClaimsSet.Builder();
 
         JWTClaimsSet claims = builder
-                //.issueTime(new Date())
                 .expirationTime(new Date(System.currentTimeMillis() + properties.getJwt().getExpirationMillis()))
                 .audience(AUTH_AUDIENCE)
                 .subject(principal.getName())

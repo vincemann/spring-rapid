@@ -16,7 +16,6 @@ import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
 import java.io.Serializable;
 import java.util.Map;
-import java.util.Optional;
 
 public interface SimpleUserServiceExtension<S extends SimpleUserService>
         extends SimpleCrudServiceExtension<S>, SimpleUserService
@@ -73,13 +72,13 @@ public interface SimpleUserServiceExtension<S extends SimpleUserService>
     }
 
     @Override
-    default String fetchNewAuthToken(String targetUserEmail){
-        return getNext().fetchNewAuthToken(targetUserEmail);
+    default String createNewAuthToken(String targetUserEmail){
+        return getNext().createNewAuthToken(targetUserEmail);
     }
 
     @Override
-    default String fetchNewAuthToken(){
-        return getNext().fetchNewAuthToken();
+    default String createNewAuthToken(){
+        return getNext().createNewAuthToken();
     }
 
 //    @Override

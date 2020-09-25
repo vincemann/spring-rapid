@@ -14,7 +14,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.io.Serializable;
 import java.util.Map;
-import java.util.Optional;
 
 @Transactional
 public interface GenericSimpleUserServiceExtension<S extends SimpleUserService<U,Id>,U extends AbstractUser<Id>, Id extends Serializable>
@@ -73,13 +72,13 @@ public interface GenericSimpleUserServiceExtension<S extends SimpleUserService<U
     }
 
     @Override
-    default String fetchNewAuthToken(String targetUserEmail){
-        return getNext().fetchNewAuthToken(targetUserEmail);
+    default String createNewAuthToken(String targetUserEmail){
+        return getNext().createNewAuthToken(targetUserEmail);
     }
 
     @Override
-    default String fetchNewAuthToken(){
-        return getNext().fetchNewAuthToken();
+    default String createNewAuthToken(){
+        return getNext().createNewAuthToken();
     }
 
     @Override
