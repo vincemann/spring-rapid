@@ -1,11 +1,14 @@
 package com.github.vincemann.springlemon.demo;
 
+import com.github.vincemann.springlemon.auth.service.AbstractUserService;
+import com.github.vincemann.springlemon.auth.service.token.EmailJwtService;
+import com.github.vincemann.springlemon.auth.util.LemonMapUtils;
 import com.github.vincemann.springlemon.demo.domain.User;
 import com.github.vincemann.springlemon.auth.service.token.JweTokenService;
-import com.github.vincemann.springlemon.auth.util.LemonValidationUtils;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 
 import static org.hamcrest.Matchers.containsString;
@@ -18,12 +21,12 @@ public class VerificationMvcTests extends AbstractMvcTests {
 	private String verificationCode;
 	
 	@Autowired
-	private JweTokenService jweTokenService;
+	private EmailJwtService emailJwtService;
 	
 	@BeforeEach
 	public void setUp() {
 		
-		verificationCode = jweTokenService.createToken(JweTokenService.VERIFY_AUDIENCE,
+		verificationCode = emailJwtService.createToken(AbstractUserService.VERIFY_AUDIENCE,
 				Long.toString(UNVERIFIED_USER_ID), 60000L,
 				LemonMapUtils.mapOf("email", UNVERIFIED_USER_EMAIL));
 	}
@@ -35,7 +38,7 @@ public class VerificationMvcTests extends AbstractMvcTests {
                 .param("code", verificationCode)
                 .header("contentType",  MediaType.APPLICATION_FORM_URLENCODED))
                 .andExpect(status().is(200))
-				.andExpect(header().string(LemonValidationUtils.TOKEN_RESPONSE_HEADER_NAME, containsString(".")))
+				.andExpect(header().string(HttpHeaders.AUTHORIZATION, containsString(".")))
 				.andExpect(jsonPath("$.id").value(UNVERIFIED_USER_ID))
 				.andExpect(jsonPath("$.roles").value(hasSize(0)))
 				.andExpect(jsonPath("$.unverified").value(false))
@@ -72,7 +75,7 @@ public class VerificationMvcTests extends AbstractMvcTests {
                 .andExpect(status().is(401));
 
 		// Wrong audience
-		String token = jweTokenService.createToken("wrong-audience",
+		String token = emailJwtService.createToken("wrong-audience",
 				Long.toString(UNVERIFIED_USER_ID), 60000L,
 				LemonMapUtils.mapOf("email", UNVERIFIED_USER_EMAIL));
 		mvc.perform(post("/api/core/users/{userId}/verification", UNVERIFIED_USER_ID)
@@ -81,7 +84,7 @@ public class VerificationMvcTests extends AbstractMvcTests {
                 .andExpect(status().is(401));
 		
 		// Wrong email
-		token = jweTokenService.createToken(JweTokenService.VERIFY_AUDIENCE,
+		token = emailJwtService.createToken(AbstractUserService.VERIFY_AUDIENCE,
 				Long.toString(UNVERIFIED_USER_ID), 60000L,
 				LemonMapUtils.mapOf("email", "wrong.email@example.com"));
 		mvc.perform(post("/api/core/users/{userId}/verification", UNVERIFIED_USER_ID)
@@ -90,7 +93,7 @@ public class VerificationMvcTests extends AbstractMvcTests {
                 .andExpect(status().is(403));
 
 		// expired token
-		token = jweTokenService.createToken(JweTokenService.VERIFY_AUDIENCE,
+		token = emailJwtService.createToken(AbstractUserService.VERIFY_AUDIENCE,
 				Long.toString(UNVERIFIED_USER_ID), 1L,
 				LemonMapUtils.mapOf("email", UNVERIFIED_USER_EMAIL));
 		// Thread.sleep(1001L);

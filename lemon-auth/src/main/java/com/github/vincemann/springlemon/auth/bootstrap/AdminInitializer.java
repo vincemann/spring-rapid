@@ -33,14 +33,6 @@ public class AdminInitializer extends DatabaseDataInitializer {
     private LemonProperties lemonProperties;
     private RapidSecurityContext<?> securityContext;
 
-    @Autowired
-    public AdminInitializer(@AclManaging UserService<?, ?, ?> userService,
-                            LemonProperties lemonProperties,
-                            RapidSecurityContext<?> securityContext) {
-        this.userService = userService;
-        this.lemonProperties = lemonProperties;
-        this.securityContext = securityContext;
-    }
 
     @Override
     @Transactional
@@ -79,5 +71,21 @@ public class AdminInitializer extends DatabaseDataInitializer {
             }
             index++;
         }
+    }
+
+    @Autowired
+    @AclManaging
+    public void injectUserService(UserService<?, ?, ?> userService) {
+        this.userService = userService;
+    }
+
+    @Autowired
+    public void injectLemonProperties(LemonProperties lemonProperties) {
+        this.lemonProperties = lemonProperties;
+    }
+
+    @Autowired
+    public void injectSecurityContext(RapidSecurityContext<?> securityContext) {
+        this.securityContext = securityContext;
     }
 }

@@ -36,7 +36,7 @@ public class ChangePasswordMvcTests extends AbstractMvcTests {
 				.contentType(MediaType.APPLICATION_JSON)
 				.content(MapperUtils.toJson(changePasswordForm(USER_PASSWORD))))
 				.andExpect(status().is(204))
-				.andExpect(header().string(LemonValidationUtils.TOKEN_RESPONSE_HEADER_NAME, containsString(".")));
+				.andExpect(header().string(HttpHeaders.AUTHORIZATION, containsString(".")));
 		
 		// Ensure able to login with new password
 		login(UNVERIFIED_USER_EMAIL, NEW_PASSWORD);
@@ -53,7 +53,7 @@ public class ChangePasswordMvcTests extends AbstractMvcTests {
 				.contentType(MediaType.APPLICATION_JSON)
 				.content(MapperUtils.toJson(changePasswordForm(USER_PASSWORD))))
 				.andExpect(status().is(204))
-				.andExpect(header().string(LemonValidationUtils.TOKEN_RESPONSE_HEADER_NAME, containsString(".")));
+				.andExpect(header().string(HttpHeaders.AUTHORIZATION, containsString(".")));
 		
 		// Ensure able to login with new password
 		login(UNVERIFIED_USER_EMAIL, NEW_PASSWORD);

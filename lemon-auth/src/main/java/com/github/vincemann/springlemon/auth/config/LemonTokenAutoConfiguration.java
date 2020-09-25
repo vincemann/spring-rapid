@@ -1,10 +1,7 @@
 package com.github.vincemann.springlemon.auth.config;
 
 import com.github.vincemann.springlemon.auth.LemonProperties;
-import com.github.vincemann.springlemon.auth.service.token.JweTokenService;
-import com.github.vincemann.springlemon.auth.service.token.JwsTokenService;
-import com.github.vincemann.springlemon.auth.service.token.LemonJweService;
-import com.github.vincemann.springlemon.auth.service.token.LemonJwsService;
+import com.github.vincemann.springlemon.auth.service.token.*;
 import com.github.vincemann.springlemon.auth.validation.CaptchaValidator;
 import com.github.vincemann.springlemon.exceptions.config.LemonWebExceptionsAutoConfiguration;
 import com.github.vincemann.springrapid.core.slicing.config.ServiceConfig;
@@ -18,10 +15,10 @@ import org.springframework.context.annotation.Bean;
 @ServiceConfig
 @AutoConfigureBefore({LemonWebExceptionsAutoConfiguration.class})
 @Slf4j
-public class LemonCommonsAutoConfiguration {
+public class LemonTokenAutoConfiguration {
 
 
-	public LemonCommonsAutoConfiguration() {
+	public LemonTokenAutoConfiguration() {
 		log.info("Created");
 	}
 
@@ -49,13 +46,11 @@ public class LemonCommonsAutoConfiguration {
 		return new LemonJweService(properties.getJwt().getSecret());
 	}
 
-
-	/**
-	 * Configures CaptchaValidator if missing
-	 */
 	@Bean
-	@ConditionalOnMissingBean(CaptchaValidator.class)
-	public CaptchaValidator captchaValidator(LemonProperties properties) {
-		return new CaptchaValidator(properties);
+	@ConditionalOnMissingBean(EmailJwtService.class)
+	public EmailJwtService emailJwtService(){
+		return new LemonEmailJwtService();
 	}
+
+
 }

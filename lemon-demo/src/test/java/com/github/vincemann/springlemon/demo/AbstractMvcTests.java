@@ -1,13 +1,13 @@
 package com.github.vincemann.springlemon.demo;
 
 import com.github.vincemann.springlemon.auth.config.LemonAdminAutoConfiguration;
+import com.github.vincemann.springlemon.auth.mail.MailSender;
 import com.github.vincemann.springlemon.demo.domain.User;
 import com.github.vincemann.springlemon.demo.repositories.UserRepository;
-import com.github.vincemann.springlemon.auth.mail.MailSender;
-import com.github.vincemann.springlemon.auth.util.LemonValidationUtils;
-import com.github.vincemann.springrapid.core.security.RapidRoles;
 import com.github.vincemann.springrapid.acl.service.LocalPermissionService;
-import com.github.vincemann.springrapid.core.security.MockAuthService;
+import com.github.vincemann.springrapid.core.security.RapidAuthenticatedPrincipal;
+import com.github.vincemann.springrapid.core.security.RapidRoles;
+import com.github.vincemann.springrapid.core.security.RapidSecurityContext;
 import org.junit.jupiter.api.BeforeEach;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.ImportAutoConfiguration;
@@ -77,7 +77,7 @@ public abstract class AbstractMvcTests {
     @SpyBean
     protected MailSender<?> mailSender;
     @Autowired
-    protected MockAuthService mockAuthService;
+    protected RapidSecurityContext<RapidAuthenticatedPrincipal> securityContext;
     @Autowired
     protected DataSource dataSource;
     @Autowired
@@ -118,7 +118,7 @@ public abstract class AbstractMvcTests {
                 .andExpect(status().is(200))
                 .andReturn();
 
-        return result.getResponse().getHeader(LemonValidationUtils.TOKEN_RESPONSE_HEADER_NAME);
+        return result.getResponse().getHeader(HttpHeaders.AUTHORIZATION);
     }
 
     protected void initAcl() throws SQLException {

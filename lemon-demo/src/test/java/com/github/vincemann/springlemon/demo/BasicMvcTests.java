@@ -27,7 +27,7 @@ public class BasicMvcTests extends AbstractMvcTests {
 		mvc.perform(get("/api/core/context")
 				.header(HttpHeaders.AUTHORIZATION, tokens.get(ADMIN_ID)))
 				.andExpect(status().is(200))
-				.andExpect(header().string(LemonValidationUtils.TOKEN_RESPONSE_HEADER_NAME, containsString(".")))
+				.andExpect(header().string(HttpHeaders.AUTHORIZATION, containsString(".")))
 				.andExpect(jsonPath("$.context.reCaptchaSiteKey").isString())
 				.andExpect(jsonPath("$.user.id").value(ADMIN_ID))
 				.andExpect(jsonPath("$.user.roles[0]").value(RapidRoles.ADMIN))
@@ -39,7 +39,7 @@ public class BasicMvcTests extends AbstractMvcTests {
 		
 		mvc.perform(get("/api/core/context"))
 				.andExpect(status().is(200))
-				.andExpect(header().doesNotExist(LemonValidationUtils.TOKEN_RESPONSE_HEADER_NAME))
+				.andExpect(header().doesNotExist(HttpHeaders.AUTHORIZATION))
 				.andExpect(jsonPath("$.context.reCaptchaSiteKey").isString())
 				.andExpect(jsonPath("$.user").doesNotExist());
 	}	

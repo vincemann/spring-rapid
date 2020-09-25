@@ -1,6 +1,7 @@
 package com.github.vincemann.springlemon.auth.config;
 
 import com.github.vincemann.springlemon.auth.LemonProperties;
+import com.github.vincemann.springlemon.auth.validation.CaptchaValidator;
 import com.github.vincemann.springrapid.core.config.RapidControllerAutoConfiguration;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.autoconfigure.AutoConfigureBefore;
@@ -31,6 +32,15 @@ public class LemonGeneralAutoConfiguration {
 
         log.info("Configuring LemonProperties");
         return new LemonProperties();
+    }
+
+    /**
+     * Configures CaptchaValidator if missing
+     */
+    @Bean
+    @ConditionalOnMissingBean(CaptchaValidator.class)
+    public CaptchaValidator captchaValidator(LemonProperties properties) {
+        return new CaptchaValidator(properties);
     }
 
 }
