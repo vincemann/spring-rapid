@@ -1,6 +1,7 @@
 package com.github.vincemann.springlemon.auth.config;
 
 import com.github.vincemann.springlemon.auth.LemonProperties;
+import com.github.vincemann.springlemon.auth.domain.LemonAuthenticatedPrincipal;
 import com.github.vincemann.springlemon.auth.service.token.*;
 import com.github.vincemann.springlemon.auth.validation.CaptchaValidator;
 import com.github.vincemann.springlemon.exceptions.config.LemonWebExceptionsAutoConfiguration;
@@ -21,6 +22,8 @@ public class LemonTokenAutoConfiguration {
 	public LemonTokenAutoConfiguration() {
 		log.info("Created");
 	}
+
+
 
 
 	/**
@@ -50,6 +53,13 @@ public class LemonTokenAutoConfiguration {
 	@ConditionalOnMissingBean(EmailJwtService.class)
 	public EmailJwtService emailJwtService(){
 		return new LemonEmailJwtService();
+	}
+
+
+	@Bean
+	@ConditionalOnMissingBean(AuthorizationTokenService.class)
+	public AuthorizationTokenService<LemonAuthenticatedPrincipal> authorizationTokenService(){
+		return new LemonJwtAuthorizationTokenService();
 	}
 
 

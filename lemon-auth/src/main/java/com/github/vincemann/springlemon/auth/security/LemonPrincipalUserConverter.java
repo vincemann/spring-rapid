@@ -8,7 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 public class LemonPrincipalUserConverter implements PrincipalUserConverter<LemonAuthenticatedPrincipal, AbstractUser<?>> {
 
-    private SimpleUserService<AbstractUser<?>,?> userService;
+    private SimpleUserService userService;
 
     @Override
     public LemonAuthenticatedPrincipal toPrincipal(AbstractUser<?> user) {
@@ -21,7 +21,7 @@ public class LemonPrincipalUserConverter implements PrincipalUserConverter<Lemon
     }
 
     @Autowired
-    public void injectUserService(SimpleUserService<AbstractUser<?>, ?> userService) {
+    public void injectUserService(SimpleUserService userService) {
         this.userService = userService;
     }
 }

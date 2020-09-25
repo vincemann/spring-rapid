@@ -18,7 +18,7 @@ import java.util.Map;
 public class LemonJwtClaimsPrincipalConverter
             implements JwtClaimsPrincipalConverter<LemonAuthenticatedPrincipal> {
 
-    private UserService<AbstractUser<?>, ?, ?> userService;
+    private UserService userService;
 
 
     @Override
@@ -41,7 +41,7 @@ public class LemonJwtClaimsPrincipalConverter
     }
 
     @Autowired
-    public void injectUserService(UserService<AbstractUser<?>, ?, ?> userService) {
+    public void injectUserService(UserService userService) {
         this.userService = userService;
     }
 }

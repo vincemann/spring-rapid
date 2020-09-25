@@ -20,7 +20,7 @@ public class MySecurityConfig extends LemonWebSecurityConfig {
 	@Override
 	protected void authorizeRequests(HttpSecurity http) throws Exception {
 		http.authorizeRequests()
-			.mvcMatchers("/admin/**").hasRole(LemonRoles.ADMIN);
+			.mvcMatchers("/admin/**").hasRole(LemonRoles.ADMIN_RAW);
 		super.authorizeRequests(http);
 	}
 }
