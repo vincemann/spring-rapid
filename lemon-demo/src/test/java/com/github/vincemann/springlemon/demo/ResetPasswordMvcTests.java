@@ -2,12 +2,13 @@ package com.github.vincemann.springlemon.demo;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.github.vincemann.springlemon.auth.domain.dto.ResetPasswordForm;
-import com.github.vincemann.springlemon.auth.service.token.JweTokenService;
-import com.github.vincemann.springlemon.auth.util.LemonValidationUtils;
+import com.github.vincemann.springlemon.auth.service.AbstractUserService;
+import com.github.vincemann.springlemon.auth.service.token.EmailJwtService;
 import com.github.vincemann.springrapid.core.util.MapperUtils;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 
 import static org.hamcrest.Matchers.containsString;
@@ -19,13 +20,13 @@ public class ResetPasswordMvcTests extends AbstractMvcTests {
 	private String forgotPasswordCode;
 	
 	@Autowired
-	private JweTokenService jweTokenService;
+	private EmailJwtService emailJwtService;
 	
 	@BeforeEach
 	public void setUp() {
 		
-		forgotPasswordCode = jweTokenService.createToken(
-				JweTokenService.FORGOT_PASSWORD_AUDIENCE,
+		forgotPasswordCode = emailJwtService.createToken(
+				AbstractUserService.FORGOT_PASSWORD_AUDIENCE,
 				ADMIN_EMAIL, 60000L);
 	}
 
@@ -40,7 +41,7 @@ public class ResetPasswordMvcTests extends AbstractMvcTests {
 				.contentType(MediaType.APPLICATION_JSON)
 				.content(form(forgotPasswordCode, NEW_PASSWORD)))
 		        .andExpect(status().is(200))
-				.andExpect(header().string(LemonValidationUtils.TOKEN_RESPONSE_HEADER_NAME, containsString(".")))
+				.andExpect(header().string(HttpHeaders.AUTHORIZATION, containsString(".")))
 				.andExpect(jsonPath("$.id").value(ADMIN_ID));
 		
 		// New password should work

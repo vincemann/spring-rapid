@@ -1,8 +1,9 @@
 package com.github.vincemann.springlemon.demo;
 
+import com.github.vincemann.springlemon.auth.service.AbstractUserService;
+import com.github.vincemann.springlemon.auth.service.token.EmailJwtService;
+import com.github.vincemann.springlemon.auth.util.LemonMapUtils;
 import com.github.vincemann.springlemon.demo.domain.User;
-import com.github.vincemann.springlemon.auth.service.token.JweTokenService;
-import com.github.vincemann.springlemon.auth.util.LemonValidationUtils;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -21,7 +22,7 @@ public class ChangeEmailMvcTests extends AbstractMvcTests {
 	private String changeEmailCode;
 	
 	@Autowired
-	private JweTokenService jweTokenService;
+	private EmailJwtService emailJwtService;
 	
 	@BeforeEach
 	public void setUp() {
@@ -30,9 +31,10 @@ public class ChangeEmailMvcTests extends AbstractMvcTests {
 		user.setNewEmail(NEW_EMAIL);
 		userRepository.save(user);
 		
-		changeEmailCode = jweTokenService.createToken(
-				JweTokenService.CHANGE_EMAIL_AUDIENCE,
-				Long.toString(UNVERIFIED_USER_ID), 60000L,
+		changeEmailCode = emailJwtService.createToken(
+				AbstractUserService.CHANGE_EMAIL_AUDIENCE,
+				Long.toString(UNVERIFIED_USER_ID),
+				60000L,
 				LemonMapUtils.mapOf("newEmail", NEW_EMAIL));
 	}
 
@@ -45,7 +47,7 @@ public class ChangeEmailMvcTests extends AbstractMvcTests {
                 .header("contentType",  MediaType.APPLICATION_FORM_URLENCODED))
 		        .andExpect(status().is(200))
 				//gets new token for new email to use
-				.andExpect(header().string(LemonValidationUtils.TOKEN_RESPONSE_HEADER_NAME, containsString(".")))
+				.andExpect(header().string(HttpHeaders.AUTHORIZATION, containsString(".")))
 				.andExpect(jsonPath("$.id").value(UNVERIFIED_USER_ID));
 		
 		User updatedUser = userRepository.findById(UNVERIFIED_USER_ID).get();
@@ -74,7 +76,7 @@ public class ChangeEmailMvcTests extends AbstractMvcTests {
 		        .andExpect(status().is(422));
 
 		// Wrong audience
-		String code = jweTokenService.createToken(
+		String code = emailJwtService.createToken(
 				"", // blank audience
 				Long.toString(UNVERIFIED_USER_ID), 60000L,
 				LemonMapUtils.mapOf("newEmail", NEW_EMAIL));
@@ -86,8 +88,8 @@ public class ChangeEmailMvcTests extends AbstractMvcTests {
 		        .andExpect(status().is(401));
 
 		// Wrong userId subject
-		code = jweTokenService.createToken(
-				JweTokenService.CHANGE_EMAIL_AUDIENCE,
+		code = emailJwtService.createToken(
+				AbstractUserService.CHANGE_EMAIL_AUDIENCE,
 				Long.toString(ADMIN_ID), 60000L,
 				LemonMapUtils.mapOf("newEmail", NEW_EMAIL));
 		
@@ -98,8 +100,8 @@ public class ChangeEmailMvcTests extends AbstractMvcTests {
 		        .andExpect(status().is(403));
 		
 		// Wrong new email
-		code = jweTokenService.createToken(
-				JweTokenService.CHANGE_EMAIL_AUDIENCE,
+		code = emailJwtService.createToken(
+				AbstractUserService.CHANGE_EMAIL_AUDIENCE,
 				Long.toString(UNVERIFIED_USER_ID), 60000L,
 				LemonMapUtils.mapOf("newEmail", "wrong.new.email@example.com"));
 		

@@ -27,7 +27,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 
 @ExtendWith(MockitoExtension.class)
-class CrudSecurityServiceProxyTest {
+class SecurityServiceExtensionProxyTest {
 
     Service proxy;
     @Spy
@@ -39,19 +39,22 @@ class CrudSecurityServiceProxyTest {
     @Mock
     Entity entity;
 
-    @Mock
-    ApplicationContext applicationContext;
+//    @Mock
+//    ApplicationContext applicationContext;
 
     @BeforeEach
     void setUp() {
-        Mockito.when(applicationContext.getBean(eq("defaultServiceSecurityRule")))
-                .thenReturn(defaultSecurityExtension);
-        SecurityServiceExtensionProxyBuilderFactory factory = new SecurityServiceExtensionProxyBuilderFactory();
-        factory.setApplicationContext(applicationContext);
-        proxy = factory
-                .create(service)
+//        Mockito.when(applicationContext.getBean(eq("defaultServiceSecurityRule")))
+//                .thenReturn(defaultSecurityExtension);
+        proxy = new SecurityServiceExtensionProxyBuilder<>(service, defaultSecurityExtension)
                 .addExtensions(fooSecurityExtension)
                 .build();
+//        SecurityServiceExtensionProxyBuilderFactory factory = new SecurityServiceExtensionProxyBuilderFactory();
+//        factory.setApplicationContext(applicationContext);
+//        proxy = factory
+//                .create(service)
+//                .addExtensions(fooSecurityExtension)
+//                .build();
     }
 
     @Test

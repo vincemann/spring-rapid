@@ -112,7 +112,7 @@ public class UpdateUserMvcTests extends AbstractMvcTests
 				.header(HttpHeaders.AUTHORIZATION, tokens.get(ADMIN_ID)))
 //				.content(userPatch))
 				.andExpect(status().is(200))
-				.andExpect(header().string(LemonValidationUtils.TOKEN_RESPONSE_HEADER_NAME, containsString(".")))
+				.andExpect(header().string(HttpHeaders.AUTHORIZATION, containsString(".")))
 //				.andExpect(jsonPath("$.id").value(UNVERIFIED_USER_ID))
 //				.andExpect(jsonPath("$.tag.name").value(UPDATED_NAME))
 				.andExpect(jsonPath("$.roles").value(hasSize(1)))

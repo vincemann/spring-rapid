@@ -51,9 +51,9 @@ public abstract class AbstractUserService
         extends JPACrudService<U,ID,R>
                     implements UserService<U, ID, R> {
 
-    protected static final String CHANGE_EMAIL_AUDIENCE = "change-email";
-    protected static final String VERIFY_AUDIENCE = "verify";
-    protected static final String FORGOT_PASSWORD_AUDIENCE = "forgot-password";
+    public static final String CHANGE_EMAIL_AUDIENCE = "change-email";
+    public static final String VERIFY_AUDIENCE = "verify";
+    public static final String FORGOT_PASSWORD_AUDIENCE = "forgot-password";
 
     private AuthorizationTokenService<LemonAuthenticatedPrincipal> authorizationTokenService;
     private RapidSecurityContext<LemonAuthenticatedPrincipal> securityContext;

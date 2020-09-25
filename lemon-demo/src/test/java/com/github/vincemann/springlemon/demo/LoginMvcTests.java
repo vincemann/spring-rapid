@@ -27,7 +27,7 @@ public class LoginMvcTests extends AbstractMvcTests {
                 .param("password", ADMIN_PASSWORD)
                 .header("contentType",  MediaType.APPLICATION_FORM_URLENCODED))
                 .andExpect(status().is(200))
-				.andExpect(header().string(LemonValidationUtils.TOKEN_RESPONSE_HEADER_NAME, containsString(".")))
+				.andExpect(header().string(HttpHeaders.AUTHORIZATION, containsString(".")))
 				.andExpect(jsonPath("$.id").value(ADMIN_ID))
 				.andExpect(jsonPath("$.password").doesNotExist())
 				.andExpect(jsonPath("$.email").value("admin@example.com"))
@@ -133,6 +133,6 @@ public class LoginMvcTests extends AbstractMvcTests {
                 .header("contentType",  MediaType.APPLICATION_FORM_URLENCODED))
                 .andReturn();
 
-		return result.getResponse().getHeader(LemonValidationUtils.TOKEN_RESPONSE_HEADER_NAME);
+		return result.getResponse().getHeader(HttpHeaders.AUTHORIZATION);
 	}
 }

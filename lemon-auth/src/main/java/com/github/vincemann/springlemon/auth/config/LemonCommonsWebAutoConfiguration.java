@@ -5,8 +5,6 @@ import com.github.vincemann.springlemon.auth.LemonProperties;
 import com.github.vincemann.springrapid.core.config.RapidJacksonAutoConfiguration;
 import com.github.vincemann.springrapid.core.slicing.config.WebConfig;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.AutoConfigureBefore;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
@@ -29,7 +27,7 @@ import org.springframework.web.cors.CorsConfigurationSource;
 	ErrorMvcAutoConfiguration.class,
 	SecurityAutoConfiguration.class,
 	SecurityFilterAutoConfiguration.class,
-	LemonCommonsAutoConfiguration.class})
+	LemonTokenAutoConfiguration.class})
 @Slf4j
 public class LemonCommonsWebAutoConfiguration {
 

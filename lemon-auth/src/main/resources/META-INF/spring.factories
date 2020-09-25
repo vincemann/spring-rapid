@@ -1,6 +1,6 @@
 org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
 com.github.vincemann.springlemon.auth.config.LemonAutoConfiguration,\
-com.github.vincemann.springlemon.auth.config.LemonCommonsAutoConfiguration,\
+com.github.vincemann.springlemon.auth.config.LemonTokenAutoConfiguration,\
 com.github.vincemann.springlemon.auth.config.LemonCommonsJpaAutoConfiguration,\
 com.github.vincemann.springlemon.auth.config.LemonCommonsWebAutoConfiguration,\
 com.github.vincemann.springlemon.auth.config.UserServiceAutoConfiguration,\
@@ -11,4 +11,5 @@ com.github.vincemann.springlemon.auth.config.LemonAsyncAutoConfiguration,\
 com.github.vincemann.springlemon.auth.config.LemonAdminAutoConfiguration,\
 com.github.vincemann.springlemon.auth.config.LemonDtoAutoConfiguration,\
 com.github.vincemann.springlemon.auth.config.com.github.vincemann.springlemon.auth.config.UserServiceSecurityAutoConfiguration,\
-com.github.vincemann.springlemon.auth.config.LemonSecurityAutoConfiguration
+com.github.vincemann.springlemon.auth.config.LemonSecurityAutoConfiguration,\
+com.github.vincemann.springlemon.auth.config.LemonAclAutoConfiguration
