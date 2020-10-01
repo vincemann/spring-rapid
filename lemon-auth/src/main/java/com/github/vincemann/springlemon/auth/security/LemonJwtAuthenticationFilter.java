@@ -39,10 +39,14 @@ public class LemonJwtAuthenticationFilter extends OncePerRequestFilter {
         String rawToken = httpTokenService.extractToken(request);
 //		String header = request.getHeader(HttpHeaders.AUTHORIZATION);
 
-        if (rawToken != null && rawToken.startsWith(JwtService.TOKEN_PREFIX)) { // token present
+        if (rawToken != null) { // token present
 
             log.debug("Found a jwt");
-            String token = rawToken.substring(7);
+            String token = rawToken;
+
+            if (rawToken.startsWith(JwtService.TOKEN_PREFIX)) {
+                 token = rawToken.substring(7);
+            }
 
             try {
                 LemonAuthenticatedPrincipal principal = authorizationTokenService.parseToken(token);

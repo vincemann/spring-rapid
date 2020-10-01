@@ -123,9 +123,11 @@ public abstract class AbstractRapidSecurityContext<P extends RapidAuthenticatedP
     protected void runAs(Authentication token, Runnable runnable) {
         Authentication old = SecurityContextHolder.getContext().getAuthentication();
         log.debug("saving old security context authentication: " + old);
+        SecurityContextHolder.getContext().setAuthentication(token);
         runnable.run();
         //restore
         log.debug("restoring old security context authentication: " + old);
-        SecurityContextHolder.getContext().setAuthentication(token);
+        SecurityContextHolder.getContext().setAuthentication(old);
+
     }
 }

@@ -64,7 +64,7 @@ public abstract class AbstractUserService
 
 
 
-    private UserService<U,ID,R> unsecuredUserService;
+    private SimpleUserService<U,ID> unsecuredUserService;
 
     /**
      * Creates a new user object. Must be overridden in the
@@ -570,6 +570,10 @@ public abstract class AbstractUserService
         this.emailTokenService = emailJwtService;
     }
 
+    @Autowired
+    public void injectUnsecuredUserService(SimpleUserService<U, ID> unsecuredUserService) {
+        this.unsecuredUserService = unsecuredUserService;
+    }
 
     //	/**
 //	 * Hides the confidential fields before sending to client

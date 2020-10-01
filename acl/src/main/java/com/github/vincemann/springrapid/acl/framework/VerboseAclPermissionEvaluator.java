@@ -3,6 +3,7 @@ package com.github.vincemann.springrapid.acl.framework;
 import com.github.vincemann.aoplog.api.AopLoggable;
 import com.github.vincemann.springrapid.acl.framework.oidresolve.RapidObjectIdentityResolver;
 import com.github.vincemann.springrapid.acl.framework.oidresolve.UnresolvableOidException;
+import com.github.vincemann.springrapid.acl.util.PermissionUtils;
 import com.github.vincemann.springrapid.core.model.IdentifiableEntity;
 import com.github.vincemann.springrapid.core.security.RapidSecurityContext;
 import com.github.vincemann.springrapid.core.service.locator.CrudServiceLocator;
@@ -20,6 +21,7 @@ import java.io.Serializable;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
+import java.util.stream.Collectors;
 
 /**
  * Adds more verbose logging
@@ -78,7 +80,8 @@ public class VerboseAclPermissionEvaluator extends AclPermissionEvaluator implem
                                     Object permission) {
         // Obtain the SIDs applicable to the principal
         List<Sid> sids = sidRetrievalStrategy.getSids(authentication);
-        List<Permission> requiredPermission = resolvePermission(permission);
+        List<Permission> requiredPermissions = resolvePermission(permission);
+        List<String> stringPermissions = requiredPermissions.parallelStream().map(p -> PermissionUtils.toString(p)).collect(Collectors.toList());
 
 
         IdentifiableEntity resolvedOid = null;
@@ -91,18 +94,19 @@ public class VerboseAclPermissionEvaluator extends AclPermissionEvaluator implem
         }
         String name = RapidSecurityContext.getName();
         //expensive trace logging
+
         if (log.isTraceEnabled()) {
             if (resolvedOid!=null) {
-                log.trace("Checking if User: " + name + " has permissions: " + requiredPermission + "\n" +
+                log.trace("Checking if User: " + name + " has permissions: " + stringPermissions + "\n" +
                         "that are required for an operation over: " +resolvedOid +" ?"
                 );
             }else {
-                log.trace("Checking if User: " + name + " has permissions: " + requiredPermission + "\n" +
+                log.trace("Checking if User: " + name + " has permissions: " + stringPermissions + "\n" +
                         "that are required for an operation over: " + oid + " ?"
                 );
             }
         } else {
-            log.debug("Checking if User: " + name + " has permissions: " + requiredPermission + "\n" +
+            log.debug("Checking if User: " + name + " has permissions: " + stringPermissions + "\n" +
                     "that are required for an operation over: " + oid + " ?"
             );
         }
@@ -113,7 +117,7 @@ public class VerboseAclPermissionEvaluator extends AclPermissionEvaluator implem
             // Lookup only ACL for SIDs we're interested in
             Acl acl = aclService.readAclById(oid, sids);
 
-            if (acl.isGranted(requiredPermission, sids, false)) {
+            if (acl.isGranted(requiredPermissions, sids, false)) {
                 log.debug("Access granted");
                 return true;
             }

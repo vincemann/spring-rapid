@@ -11,6 +11,10 @@
         <appender-ref ref="CONSOLE"/>
     </logger>
 
+    <logger name="com.github.vincemann.springrapid.acl.framework" level="trace" additivity="false">
+        <appender-ref ref="CONSOLE"/>
+    </logger>
+
     <logger name="com.github.vincemann.aoplog" level="info" additivity="false">
         <appender-ref ref="CONSOLE"/>
     </logger>
