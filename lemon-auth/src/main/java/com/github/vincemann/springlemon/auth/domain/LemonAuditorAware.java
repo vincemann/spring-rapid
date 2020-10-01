@@ -1,5 +1,6 @@
 package com.github.vincemann.springlemon.auth.domain;
 
+import com.github.vincemann.springrapid.core.security.RapidAuthenticatedPrincipal;
 import com.github.vincemann.springrapid.core.security.RapidSecurityContext;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,7 +26,15 @@ public class LemonAuditorAware<ID extends Serializable>
 
 	@Override
 	protected ID currentId() {
-		return idIdConverter.toId(securityContext.currentPrincipal().getId());
+		RapidAuthenticatedPrincipal principal = securityContext.currentPrincipal();
+		if (principal==null){
+			return null;
+		}
+		String id = principal.getId();
+		if (id==null){
+			return null;
+		}
+		return idIdConverter.toId(id);
 	}
 
 	@Autowired

@@ -42,32 +42,38 @@ public class HierarchicPermissionGrantingStrategy extends DefaultPermissionGrant
 
                 for (AccessControlEntry ace : aces) {
 
-                    if (isGranted(ace, p)
-                            && ace.getSid().equals(sid)) {
-                        // Found a matching ACE, so its authorization decision will
-                        // prevail
-                        if (ace.isGranting()) {
-                            // Success
-                            if (!administrativeMode) {
-                                auditLogger.logIfNeeded(true, ace);
+                    if (ace.getSid().equals(sid)) {
+                        log.debug("Checking ace with id:" + ace.getId() /*", " + PermissionUtils.toString(ace.getPermission()) +*/);
+                        log.debug("Sid of ace: " + ace.getSid()+ " has permission: " + PermissionUtils.toString(ace.getPermission()) /*+", mask: " + givenPermissionMask*/);
+                        if (isGranted(ace, p)) {
+
+                            // Found a matching ACE, so its authorization decision will
+                            // prevail
+                            if (ace.isGranting()) {
+                                // Success
+                                if (!administrativeMode) {
+                                    auditLogger.logIfNeeded(true, ace);
+                                }
+                                log.debug("Match! Sid: " + sid + " has sufficient permissions for operation");
+                                return true;
+                            } else {
+                                log.warn("Sid: " + sid + " is not granting");
                             }
-                            log.debug("Match! Sid: " + sid + " has sufficient permissions for operation");
-                            return true;
+
+                            // Failure for this permission, so stop search
+                            // We will see if they have a different permission
+                            // (this permission is 100% rejected for this SID)
+                            if (firstRejection == null) {
+                                // Store first rejection for auditing reasons
+                                firstRejection = ace;
+                            }
+
+                            scanNextSid = false; // helps break the loop
+
+                            break; // exit aces loop
                         }else {
-                            log.trace("Sid: " + sid + " does not have sufficient permissions for operation...");
+                            log.debug("Sid: " + sid + " does not have sufficient permissions for operation...");
                         }
-
-                        // Failure for this permission, so stop search
-                        // We will see if they have a different permission
-                        // (this permission is 100% rejected for this SID)
-                        if (firstRejection == null) {
-                            // Store first rejection for auditing reasons
-                            firstRejection = ace;
-                        }
-
-                        scanNextSid = false; // helps break the loop
-
-                        break; // exit aces loop
                     }
                 }
 
@@ -112,9 +118,9 @@ public class HierarchicPermissionGrantingStrategy extends DefaultPermissionGrant
 //                return true;
 //            }
 //            log.debug("Requested permission: " + PermissionUtils.toString(p)/*+", mask: " + requestedPermissionMask*/);
-            log.debug("Checking ace with id:"+ ace.getId() /*", " + PermissionUtils.toString(ace.getPermission()) +*/);
+//            log.debug("Checking ace with id:"+ ace.getId() /*", " + PermissionUtils.toString(ace.getPermission()) +*/);
 //            log.trace("Content of that ace: " + ace);
-            log.debug("Sid of ace: " + ace.getSid()+ " has permission: " + PermissionUtils.toString(ace.getPermission()) /*+", mask: " + givenPermissionMask*/);
+//            log.debug("Sid of ace: " + ace.getSid()+ " has permission: " + PermissionUtils.toString(ace.getPermission()) /*+", mask: " + givenPermissionMask*/);
 
             return givenPermissionMask >= requestedPermissionMask;
             //return (ace.getPermission().getMask() & p.getMask()) == 0;
