@@ -16,6 +16,7 @@ import com.github.vincemann.springlemon.auth.service.token.HttpTokenService;
 import com.github.vincemann.springlemon.auth.service.UserService;
 import com.github.vincemann.springlemon.auth.util.LemonMapUtils;
 
+import com.github.vincemann.springrapid.acl.proxy.Unsecured;
 import com.github.vincemann.springrapid.core.security.RapidRoles;
 import com.github.vincemann.springrapid.acl.proxy.Secured;
 import com.github.vincemann.springrapid.core.controller.dto.mapper.context.Direction;
@@ -315,6 +316,7 @@ public abstract class AbstractUserController
 
 
 	@Autowired
+	@Unsecured
 	public void injectUnsecuredService(UserService<U, ID, ?> unsecuredService) {
 		this.unsecuredUserService = unsecuredService;
 	}

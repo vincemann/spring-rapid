@@ -8,6 +8,7 @@ import com.github.vincemann.springlemon.auth.service.token.BadTokenException;
 import com.github.vincemann.springlemon.auth.service.token.EmailJwtService;
 import com.github.vincemann.springlemon.auth.util.*;
 
+import com.github.vincemann.springrapid.acl.proxy.Unsecured;
 import com.github.vincemann.springrapid.core.security.RapidSecurityContext;
 import com.github.vincemann.springrapid.core.service.JPACrudService;
 import com.nimbusds.jwt.JWTClaimsSet;
@@ -27,7 +28,12 @@ import com.github.vincemann.springrapid.core.util.VerifyEntity;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
+import org.springframework.beans.BeansException;
+import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.ApplicationContextAware;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
@@ -61,9 +67,6 @@ public abstract class AbstractUserService
     private LemonProperties properties;
     private MailSender<LemonMailData> mailSender;
     private EmailJwtService emailTokenService;
-
-
-
     private SimpleUserService<U,ID> unsecuredUserService;
 
     /**
@@ -77,6 +80,7 @@ public abstract class AbstractUserService
      * </pre>
      */
     public abstract U newUser();
+
 
 
     @Override
@@ -571,7 +575,9 @@ public abstract class AbstractUserService
     }
 
     @Autowired
-    public void injectUnsecuredUserService(SimpleUserService<U, ID> unsecuredUserService) {
+    @Unsecured
+    @Lazy
+    public void injectUnsecuredUserService(SimpleUserService<U,ID> unsecuredUserService) {
         this.unsecuredUserService = unsecuredUserService;
     }
 
