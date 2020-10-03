@@ -25,7 +25,7 @@ public class LemonSecurityAutoConfiguration {
     // if user wishes to create AuthPrincipal differently or with diff subtypes he can define own bean
     @Bean
     @ConditionalOnMissingBean(AuthenticatedPrincipalFactory.class)
-    public AuthenticatedPrincipalFactory<LemonAuthenticatedPrincipal, AbstractUser<?>> lemonAuthPrincipalAbstractUserConverter(){
+    public AuthenticatedPrincipalFactory authenticatedPrincipalFactory(){
         return new LemonAuthenticatedPrincipalFactory<>();
     }
 
