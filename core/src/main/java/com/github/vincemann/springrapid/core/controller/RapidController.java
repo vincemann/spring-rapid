@@ -17,6 +17,7 @@ import com.github.vincemann.springrapid.core.controller.owner.DelegatingOwnerLoc
 import com.github.vincemann.springrapid.core.controller.validationStrategy.ValidationStrategy;
 import com.github.vincemann.springrapid.core.model.IdentifiableEntity;
 import com.github.vincemann.springrapid.core.service.CrudService;
+import com.github.vincemann.springrapid.core.service.CrudService;
 import com.github.vincemann.springrapid.core.service.EndpointService;
 import com.github.vincemann.springrapid.core.service.exception.BadEntityException;
 import com.github.vincemann.springrapid.core.service.exception.EntityNotFoundException;
@@ -68,7 +69,7 @@ public abstract class RapidController
         <
                 E extends IdentifiableEntity<Id>,
                 Id extends Serializable,
-                S extends CrudService<E, Id, ?>
+                S extends CrudService<E, Id>
                 >
         implements
         ApplicationListener<ContextRefreshedEvent>,

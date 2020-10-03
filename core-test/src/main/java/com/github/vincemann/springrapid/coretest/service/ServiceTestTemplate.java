@@ -9,10 +9,8 @@ import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
-import org.junit.jupiter.api.TestInfo;
 import org.springframework.context.ApplicationContext;
 import org.springframework.data.repository.CrudRepository;
-import org.springframework.test.util.AopTestUtils;
 
 import javax.persistence.EntityManager;
 import java.lang.reflect.InvocationTargetException;

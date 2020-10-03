@@ -17,7 +17,7 @@ import java.util.Optional;
 @Qualifier("noProxy")
 @Service
 @ServiceComponent
-public class OwnerJPAService
+public class JpaOwnerService
         extends JPACrudService<Owner,Long, OwnerRepository>
                 implements OwnerService, AopLoggable, TargetClassAware {
 
@@ -31,7 +31,7 @@ public class OwnerJPAService
 
 
     public Class<?> getTargetClass(){
-        return OwnerJPAService.class;
+        return JpaOwnerService.class;
     }
 
 

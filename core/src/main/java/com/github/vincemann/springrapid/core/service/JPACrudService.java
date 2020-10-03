@@ -21,7 +21,7 @@ import java.util.Set;
 
 
 /**
- * Implementation of {@link CrudService} that utilizes Jpa's {@link JpaRepository}.
+ * Implementation of {@link AbstractCrudService} that utilizes Jpa's {@link JpaRepository}.
  *
  * @param <E>  Type of Entity which's crud operations are exposed by this Service
  * @param <Id> Id type of E
@@ -34,20 +34,10 @@ public abstract class JPACrudService
                 Id extends Serializable,
                 R extends JpaRepository<E, Id>
                 >
-        implements CrudService<E, Id, R> {
+        extends AbstractCrudService<E, Id, R> {
 
-
-    private R jpaRepository;
-    @SuppressWarnings("unchecked")
-    private Class<E> entityClass = (Class<E>) ((ParameterizedType) this.getClass().getGenericSuperclass()).getActualTypeArguments()[0];
 
     public JPACrudService() {
-    }
-
-    @SuppressWarnings("SpringJavaInjectionPointsAutowiringInspection")
-    @Autowired
-    public void injectJpaRepository(R jpaRepository) {
-        this.jpaRepository = jpaRepository;
     }
 
     @Transactional
@@ -55,7 +45,7 @@ public abstract class JPACrudService
     public Optional<E> findById(Id id) throws BadEntityException {
         VerifyEntity.notNull(id, "Id");
         try {
-            return jpaRepository.findById(id);
+            return getRepository().findById(id);
         } catch (NonTransientDataAccessException e) {
             throw new BadEntityException(e);
         }
@@ -94,7 +84,7 @@ public abstract class JPACrudService
     @Override
     public E save(E entity) throws BadEntityException {
         try {
-            return jpaRepository.save(entity);
+            return getRepository().save(entity);
         } catch (NonTransientDataAccessException e) {
             throw new BadEntityException(e);
         }
@@ -103,7 +93,7 @@ public abstract class JPACrudService
     @Transactional
     @Override
     public Set<E> findAll() {
-        return new HashSet<>(jpaRepository.findAll());
+        return new HashSet<>(getRepository().findAll());
     }
 
 
@@ -113,20 +103,11 @@ public abstract class JPACrudService
         try {
             VerifyEntity.notNull(id, "Id");
             Optional<E> entity = findById(id);
-            VerifyEntity.isPresent(entity, id, entityClass);
-            jpaRepository.deleteById(id);
+            VerifyEntity.isPresent(entity, id, getEntityClass());
+            getRepository().deleteById(id);
         } catch (NonTransientDataAccessException e) {
             throw new BadEntityException(e);
         }
 
-    }
-
-    @Override
-    public R getRepository() {
-        return jpaRepository;
-    }
-
-    public Class<E> getEntityClass() {
-        return entityClass;
     }
 }

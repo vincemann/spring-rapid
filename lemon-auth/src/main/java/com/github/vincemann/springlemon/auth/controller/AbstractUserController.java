@@ -50,11 +50,10 @@ import java.util.Optional;
  */
 @WebComponent
 @Slf4j
-public abstract class AbstractUserController
-	<U extends AbstractUser<ID>, ID extends Serializable>
-			extends RapidController<U,ID, UserService<U, ID,?>>  {
+public abstract class AbstractUserController<U extends AbstractUser<ID>, ID extends Serializable>
+			extends RapidController<U,ID, UserService<U, ID>>  {
 
-	private UserService<U, ID, ?> unsecuredUserService;
+	private UserService<U, ID> unsecuredUserService;
 	private HttpTokenService httpTokenService;
 
 	/**
@@ -310,14 +309,14 @@ public abstract class AbstractUserController
 	@Autowired
 	@Secured
 	@Override
-	public void injectCrudService(UserService<U, ID, ?> crudService) {
+	public void injectCrudService(UserService<U, ID> crudService) {
 		super.injectCrudService(crudService);
 	}
 
 
 	@Autowired
 	@Unsecured
-	public void injectUnsecuredService(UserService<U, ID, ?> unsecuredService) {
+	public void injectUnsecuredService(UserService<U, ID> unsecuredService) {
 		this.unsecuredUserService = unsecuredService;
 	}
 

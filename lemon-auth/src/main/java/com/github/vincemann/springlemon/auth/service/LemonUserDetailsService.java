@@ -3,7 +3,6 @@ package com.github.vincemann.springlemon.auth.service;
 import com.github.vincemann.aoplog.api.AopLoggable;
 import com.github.vincemann.aoplog.api.LogInteraction;
 import com.github.vincemann.springlemon.auth.domain.AbstractUser;
-import com.github.vincemann.springlemon.auth.domain.LemonAuthenticatedPrincipal;
 import com.github.vincemann.springlemon.auth.security.PrincipalUserConverter;
 import com.github.vincemann.springlemon.exceptions.util.LexUtils;
 
@@ -27,7 +26,7 @@ import org.springframework.transaction.annotation.Transactional;
 public class LemonUserDetailsService
 		implements UserDetailsService, AopLoggable {
 
-	private SimpleUserService unsecuredUserService;
+	private UserService unsecuredUserService;
 	private PrincipalUserConverter<? extends RapidAuthenticatedPrincipal,AbstractUser<?>> principalUserConverter;
 
 	@Transactional
@@ -62,7 +61,7 @@ public class LemonUserDetailsService
 
 	@Autowired
 	@Unsecured
-	public void injectUnsecuredUserService(SimpleUserService unsecuredUserService) {
+	public void injectUnsecuredUserService(UserService unsecuredUserService) {
 		this.unsecuredUserService = unsecuredUserService;
 	}
 }

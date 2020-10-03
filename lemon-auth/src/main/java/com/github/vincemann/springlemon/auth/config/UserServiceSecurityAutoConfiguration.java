@@ -60,7 +60,7 @@ public class UserServiceSecurityAutoConfiguration {
     @ConditionalOnMissingBean(name = "aclManagingUserService")
     @Bean
     @AclManaging
-    public UserService<?, ?, ?> aclManagingUserService(UserService<?, ?, ?> service,
+    public UserService<?, ?> aclManagingUserService(UserService<?, ?> service,
 //                                                                            AdminFullAccessAclExtension adminFullAccess,
 //                                                                            AuthenticatedFullAccessAclExtension authenticatedFullAccessAclExtension,
                                                         CleanUpAclServiceExtension cleanUpAclExtension) {
@@ -73,7 +73,7 @@ public class UserServiceSecurityAutoConfiguration {
     @ConditionalOnMissingBean(name = "securedUserService")
     @Bean
     @Secured
-    public UserService<?, ?, ?> securedUserService(@AclManaging UserService<?, ?, ?> service,
+    public UserService<?, ?> securedUserService(@AclManaging UserService<?, ?> service,
                                                     UserServiceSecurityExtension securityRule) {
         return new SecurityServiceExtensionProxyBuilder<>(service,defaultSecurityServiceExtension)
                 .addExtensions(securityRule)

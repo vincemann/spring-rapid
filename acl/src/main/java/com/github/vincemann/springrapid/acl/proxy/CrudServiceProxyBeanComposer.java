@@ -2,11 +2,10 @@ package com.github.vincemann.springrapid.acl.proxy;
 
 import com.github.vincemann.springrapid.core.util.Lists;
 import com.github.vincemann.springrapid.core.proxy.ServiceExtensionProxyBuilder;
-import com.github.vincemann.springrapid.core.service.SimpleCrudService;
+import com.github.vincemann.springrapid.core.service.CrudService;
 import com.github.vincemann.springrapid.core.proxy.BasicServiceExtension;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeansException;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.config.BeanPostProcessor;
 import org.springframework.beans.factory.support.AutowireCandidateQualifier;
@@ -25,7 +24,7 @@ import java.util.List;
 import java.util.Optional;
 
 /**
- * Used to create {@link SimpleCrudService} Proxy's dynamically by resolving {@link ConfigureProxies} annotation.
+ * Used to create {@link CrudService} Proxy's dynamically by resolving {@link ConfigureProxies} annotation.
  * @see ConfigureProxies
  */
 @Slf4j
@@ -48,7 +47,7 @@ public class CrudServiceProxyBeanComposer implements BeanPostProcessor, Applicat
     public Object postProcessAfterInitialization(Object bean, String beanName) throws BeansException {
         //log.debug("postProcessing bean : " + beanName);
         Object unwrappedBean = AopTestUtils.getUltimateTargetObject(bean);
-        if(unwrappedBean instanceof SimpleCrudService){
+        if(unwrappedBean instanceof CrudService){
             ConfigureProxies proxiesConfig = AnnotationUtils.findAnnotation(unwrappedBean.getClass(), ConfigureProxies.class);
             if(proxiesConfig==null){
                 return bean;
@@ -59,7 +58,7 @@ public class CrudServiceProxyBeanComposer implements BeanPostProcessor, Applicat
             ArrayList<SecurityProxy> securityProxies = Lists.newArrayList(proxiesConfig.securityProxies());
             log.debug("Identified Proxies of bean: " + beanName + " : " + proxies);
             log.debug("Identified SecurityProxies of bean: " + beanName + " : " + securityProxies);
-            SimpleCrudService lastProxiedBean = null;
+            CrudService lastProxiedBean = null;
             for (Proxy proxy : proxies) {
                 if(proxy.primary()){
                     if(primaryBeanRegistered){
@@ -68,16 +67,16 @@ public class CrudServiceProxyBeanComposer implements BeanPostProcessor, Applicat
                     primaryBeanRegistered=true;
                 }
                 GenericBeanDefinition proxyBeanDef
-                        = createBeanDef(proxy.qualifiers(), proxy.primary(), ((Class<? extends SimpleCrudService>) serviceInterface));
+                        = createBeanDef(proxy.qualifiers(), proxy.primary(), ((Class<? extends CrudService>) serviceInterface));
                 String proxyBeanName = resolveProxyName(proxy.qualifiers(),proxy.primary(),proxy.name(),unwrappedBean.getClass());
                 log.debug("creating proxyBean with name: " + proxyBeanName);
-                SimpleCrudService proxiedBean;
+                CrudService proxiedBean;
                 if(lastProxiedBean==null){
-                     proxiedBean= ((SimpleCrudService) bean);
+                     proxiedBean= ((CrudService) bean);
                 }else {
                     proxiedBean = lastProxiedBean;
                 }
-                SimpleCrudService proxyBean = new ServiceExtensionProxyBuilder<>(proxiedBean)
+                CrudService proxyBean = new ServiceExtensionProxyBuilder<>(proxiedBean)
                         .addServiceExtensions(resolveExtensions(proxy.plugins()).toArray(new BasicServiceExtension[0])).build();
 
                 log.trace("creating proxyBean : " + proxyBean);
@@ -102,9 +101,9 @@ public class CrudServiceProxyBeanComposer implements BeanPostProcessor, Applicat
                             .build();
                 }
                 GenericBeanDefinition beanDef
-                        = createBeanDef(securityProxy.qualifiers(), securityProxy.primary(), ((Class<? extends SimpleCrudService>) serviceInterface));
+                        = createBeanDef(securityProxy.qualifiers(), securityProxy.primary(), ((Class<? extends CrudService>) serviceInterface));
                 String proxyBeanName = resolveProxyName(securityProxy.qualifiers(),securityProxy.primary(),securityProxy.name(),unwrappedBean.getClass());
-                SimpleCrudService securityProxyBean = new SecurityServiceExtensionProxyBuilder<>(lastProxiedBean,defaultSecurityServiceExtension)
+                CrudService securityProxyBean = new SecurityServiceExtensionProxyBuilder<>(lastProxiedBean,defaultSecurityServiceExtension)
                         .addServiceExtensions(resolveRules(securityProxy).toArray(new SecurityServiceExtension[0]))
                         .build();
                 log.debug("Creating proxyBean with name: " + proxyBeanName);
@@ -121,7 +120,7 @@ public class CrudServiceProxyBeanComposer implements BeanPostProcessor, Applicat
 
 
     private Class resolveServiceInterface(Object bean, String beanName){
-        String entityName = ((SimpleCrudService) bean).getEntityClass().getSimpleName();
+        String entityName = ((CrudService) bean).getEntityClass().getSimpleName();
         String interfaceName = entityName + "Service";
         Optional<Class<?>> serviceInterfaceClass = Lists.newArrayList(bean.getClass().getInterfaces()).stream()
                 .filter(i -> i.getSimpleName().equals(interfaceName))
@@ -130,7 +129,7 @@ public class CrudServiceProxyBeanComposer implements BeanPostProcessor, Applicat
         return serviceInterfaceClass.get();
     }
 
-    private GenericBeanDefinition createBeanDef(Class<? extends Annotation>[] qualifiers,boolean primary, Class<? extends SimpleCrudService> beanClass){
+    private GenericBeanDefinition createBeanDef(Class<? extends Annotation>[] qualifiers,boolean primary, Class<? extends CrudService> beanClass){
         final GenericBeanDefinition serviceBeanDef = new GenericBeanDefinition();
         for (Class<? extends Annotation> qualifier : qualifiers) {
             Assert.isTrue(qualifier.isAnnotationPresent(Qualifier.class));

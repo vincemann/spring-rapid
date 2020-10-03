@@ -3,8 +3,8 @@ package com.github.vincemann.springrapid.acl.proxy;
 import com.github.vincemann.springrapid.core.proxy.AbstractExtensionServiceProxy;
 import com.github.vincemann.springrapid.core.proxy.AbstractServiceExtension;
 import com.github.vincemann.springrapid.core.proxy.BasicServiceExtension;
+import com.github.vincemann.springrapid.core.service.AbstractCrudService;
 import com.github.vincemann.springrapid.core.service.CrudService;
-import com.github.vincemann.springrapid.core.service.SimpleCrudService;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
@@ -13,13 +13,13 @@ import java.lang.reflect.Method;
 
 @Slf4j
 /**
- * Proxy for {@link CrudService}, that applies {@link ServiceSecurityRule}s before calling service method.
+ * Proxy for {@link AbstractCrudService}, that applies {@link ServiceSecurityRule}s before calling service method.
  * After all Rules have been applied in the order they were given in for construction of this proxy, the {@link DefaultSecurityServiceExtension}
  * is applied if not prohibited (@see {@link OverrideDefaultSecurityRule}).
  *
  * Is created by {@link SecurityServiceExtensionProxyBuilder} or by {@link ConfigureProxies}.
  */
-public class SecurityExtensionServiceProxy<S extends SimpleCrudService<?,?>>
+public class SecurityExtensionServiceProxy<S extends CrudService<?,?>>
         extends AbstractExtensionServiceProxy
         <
                 S,

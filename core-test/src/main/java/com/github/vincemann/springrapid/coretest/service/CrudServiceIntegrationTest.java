@@ -1,6 +1,7 @@
 package com.github.vincemann.springrapid.coretest.service;
 
 import com.github.vincemann.springrapid.core.model.IdentifiableEntity;
+import com.github.vincemann.springrapid.core.service.AbstractCrudService;
 import com.github.vincemann.springrapid.core.service.CrudService;
 import com.github.vincemann.springrapid.core.service.locator.CrudServiceLocator;
 import com.github.vincemann.springrapid.core.slicing.test.ImportRapidCoreServiceConfig;
@@ -12,10 +13,7 @@ import com.github.vincemann.springrapid.coretest.service.result.ServiceResultAct
 import com.github.vincemann.springrapid.coretest.slicing.test.ImportRapidCoreTestConfig;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
-import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.TestInfo;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -45,15 +43,13 @@ import static com.github.vincemann.springrapid.coretest.util.RapidTestUtil.mustB
 @ImportRapidCoreTestConfig
 public abstract class CrudServiceIntegrationTest
                 <
-                        S extends CrudService<E,Id,? extends CrudRepository<E,Id>>,
+                        S extends AbstractCrudService<E,Id,? extends CrudRepository<E,Id>>,
                         E extends IdentifiableEntity<Id>,
                         Id extends Serializable
                 >
     extends InitializingTest
     implements InitializingBean, ApplicationContextAware
 {
-
-    private CrudRepository<E,Id> repository;
 
     @Getter
     @PersistenceContext
@@ -66,10 +62,6 @@ public abstract class CrudServiceIntegrationTest
     private EntityPlaceholderResolver entityPlaceholderResolver;
     private CrudServiceLocator crudServiceLocator;
 
-    @Autowired
-    public void injectRepository(CrudRepository<E,Id> repository) {
-        this.repository=repository;
-    }
 
     @Override
     public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
@@ -82,7 +74,7 @@ public abstract class CrudServiceIntegrationTest
                 .serviceUnderTest(serviceUnderTest)
                 .applicationContext(applicationContext)
                 .entityManager(entityManager)
-                .repository(repository)
+                .repository(getServiceUnderTest().getRepository())
                 .build();
     }
 
@@ -115,7 +107,7 @@ public abstract class CrudServiceIntegrationTest
      */
     public <T extends IdentifiableEntity> T byId(Serializable id, Class<T> entityClass){
         CrudService service = crudServiceLocator.find(entityClass);
-        return mustBePresentIn(service.getRepository(),id);
+        return mustBePresentIn(service,id);
     }
 
 

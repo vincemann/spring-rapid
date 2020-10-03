@@ -35,25 +35,25 @@ public abstract class AbstractControllerTest<S extends CrudService<E,Long,? exte
 
     private CrudService<Owner,Long, OwnerRepository> ownerService;
     private CrudService<Pet,Long, PetRepository> petService;
-    private CrudService<PetType,Long, PetTypeRepository> petTypeService;
-    private CrudService<Specialty,Long,SpecialtyRepository> specialtyService;
+    private AbstractCrudService<PetType,Long, PetTypeRepository> petTypeService;
+    private AbstractCrudService<Specialty,Long,SpecialtyRepository> specialtyService;
 
 
 
     @Autowired
-    public void setOwnerService(CrudService<Owner, Long, OwnerRepository> ownerService) {
+    public void setOwnerService(AbstractCrudService<Owner, Long, OwnerRepository> ownerService) {
         this.ownerService = ownerService;
     }
     @Autowired
-    public void setPetService(CrudService<Pet, Long, PetRepository> petService) {
+    public void setPetService(AbstractCrudService<Pet, Long, PetRepository> petService) {
         this.petService = petService;
     }
     @Autowired
-    public void setPetTypeService(CrudService<PetType, Long, PetTypeRepository> petTypeService) {
+    public void setPetTypeService(AbstractCrudService<PetType, Long, PetTypeRepository> petTypeService) {
         this.petTypeService = petTypeService;
     }
     @Autowired
-    public void setSpecialtyService(CrudService<Specialty, Long, SpecialtyRepository> specialtyService) {
+    public void setSpecialtyService(AbstractCrudService<Specialty, Long, SpecialtyRepository> specialtyService) {
         this.specialtyService = specialtyService;
     }
 

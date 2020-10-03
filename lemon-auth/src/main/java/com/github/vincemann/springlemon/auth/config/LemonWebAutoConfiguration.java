@@ -43,7 +43,7 @@ public class LemonWebAutoConfiguration {
      */
     @Bean
     @ConditionalOnMissingBean(LemonAuthenticationSuccessHandler.class)
-    public LemonAuthenticationSuccessHandler authenticationSuccessHandler(UserService<?, ?,?> userService) {
+    public LemonAuthenticationSuccessHandler authenticationSuccessHandler(UserService<?, ?> userService) {
 
         log.info("Configuring AuthenticationSuccessHandler");
         return new LemonAuthenticationSuccessHandler(userService, httpTokenService());

@@ -2,13 +2,13 @@ package com.github.vincemann.springlemon.auth.security;
 
 import com.github.vincemann.springlemon.auth.domain.AbstractUser;
 import com.github.vincemann.springlemon.auth.domain.LemonAuthenticatedPrincipal;
-import com.github.vincemann.springlemon.auth.service.SimpleUserService;
+import com.github.vincemann.springlemon.auth.service.UserService;
 import com.github.vincemann.springrapid.core.service.exception.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 
 public class LemonPrincipalUserConverter implements PrincipalUserConverter<LemonAuthenticatedPrincipal, AbstractUser<?>> {
 
-    private SimpleUserService userService;
+    private UserService userService;
 
     @Override
     public LemonAuthenticatedPrincipal toPrincipal(AbstractUser<?> user) {
@@ -21,7 +21,7 @@ public class LemonPrincipalUserConverter implements PrincipalUserConverter<Lemon
     }
 
     @Autowired
-    public void injectUserService(SimpleUserService userService) {
+    public void injectUserService(UserService userService) {
         this.userService = userService;
     }
 }

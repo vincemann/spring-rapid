@@ -41,7 +41,7 @@ public abstract class ParentAwareRapidController
                 E extends IdentifiableEntity<Id>,
                 Id extends Serializable,
                 PId extends Serializable,
-                S extends CrudService<E, Id, ?> & ParentAwareService<E, PId>
+                S extends CrudService<E, Id> & ParentAwareService<E, PId>
                 >
         extends RapidController<E, Id, S> {
 

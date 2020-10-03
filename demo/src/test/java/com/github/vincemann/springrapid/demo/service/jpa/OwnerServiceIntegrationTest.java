@@ -37,7 +37,7 @@ import static com.github.vincemann.springrapid.coretest.service.PropertyMatchers
 @EnableProjectComponentScan
 @ImportRapidEntityRelServiceConfig
 class OwnerServiceIntegrationTest
-        extends CrudServiceIntegrationTest<OwnerService, Owner, Long> {
+        extends CrudServiceIntegrationTest<JpaOwnerService, Owner, Long> {
     //Types
     Owner OwnerType = new Owner();
 

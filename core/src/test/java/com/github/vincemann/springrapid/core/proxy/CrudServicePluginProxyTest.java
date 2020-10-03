@@ -29,7 +29,7 @@ class CrudServiceExtensionProxyTest {
         String name;
     }
 
-    interface Service extends CrudService<Entity, Long, JpaRepository<Entity, Long>>, SubInterface, OverlappingInterface{
+    interface Service extends CrudService<Entity, Long>, SubInterface, OverlappingInterface{
 
         public void noExtensionKnowsMe();
     }
@@ -68,7 +68,7 @@ class CrudServiceExtensionProxyTest {
 
     class FooCrudServiceExtension
             extends BasicServiceExtension<CrudService>
-                    implements SimpleCrudServiceExtension<CrudService>{
+                    implements CrudServiceExtension<CrudService>{
     }
 
     class OverlappingExtension extends BasicServiceExtension<OverlappingInterface> implements OverlappingInterface{

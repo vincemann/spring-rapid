@@ -6,8 +6,8 @@ import java.lang.annotation.*;
 
 
 /**
- * Annotate your {@link com.github.vincemann.springrapid.core.service.CrudService} with this annotation to
- * induce the dynamic creation of Proxies for a {@link com.github.vincemann.springrapid.core.service.CrudService}.
+ * Annotate your {@link com.github.vincemann.springrapid.core.service.AbstractCrudService} with this annotation to
+ * induce the dynamic creation of Proxies for a {@link com.github.vincemann.springrapid.core.service.AbstractCrudService}.
  * This is an alternative solution for {@link SecurityServiceExtensionProxyBuilder}
  * and {@link ServiceExtensionProxyBuilder}.
  *
