@@ -1,7 +1,7 @@
 package com.github.vincemann.springrapid.core.proxy;
 
 import com.github.vincemann.springrapid.core.model.IdentifiableEntity;
-import com.github.vincemann.springrapid.core.service.SimpleCrudService;
+import com.github.vincemann.springrapid.core.service.CrudService;
 import com.github.vincemann.springrapid.core.service.exception.BadEntityException;
 import com.github.vincemann.springrapid.core.service.exception.EntityNotFoundException;
 
@@ -9,8 +9,8 @@ import java.io.Serializable;
 import java.util.Optional;
 import java.util.Set;
 
-public interface GenericSimpleCrudServiceExtension<S extends SimpleCrudService<E,Id>,E extends IdentifiableEntity<Id>,Id extends Serializable>
-        extends SimpleCrudService<E,Id>, NextLinkAware<S>{
+public interface GenericSimpleCrudServiceExtension<S extends CrudService<E,Id>,E extends IdentifiableEntity<Id>,Id extends Serializable>
+        extends CrudService<E,Id>, NextLinkAware<S>{
 
     @Override
     default Optional<E> findById(Id id) throws BadEntityException {

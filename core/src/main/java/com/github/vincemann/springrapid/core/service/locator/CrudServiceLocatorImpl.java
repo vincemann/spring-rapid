@@ -4,6 +4,7 @@ package com.github.vincemann.springrapid.core.service.locator;
 import com.github.vincemann.springrapid.core.model.IdentifiableEntity;
 import com.github.vincemann.springrapid.core.proxy.AbstractServiceExtension;
 import com.github.vincemann.springrapid.core.service.CrudService;
+import com.github.vincemann.springrapid.core.service.CrudService;
 import com.github.vincemann.springrapid.core.service.ServiceBeanType;
 import lombok.extern.slf4j.Slf4j;
 import com.github.vincemann.springrapid.core.util.Lists;
@@ -22,12 +23,12 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 /**
- * Utilizes {@link ConfigurableListableBeanFactory} to find the {@link CrudService} in question.
+ * Utilizes {@link ConfigurableListableBeanFactory} to find the {@link com.github.vincemann.springrapid.core.service.CrudService} in question.
  * @see ServiceBeanType
  */
 @Slf4j
 public class CrudServiceLocatorImpl implements CrudServiceLocator, ApplicationContextAware, ApplicationListener<ContextRefreshedEvent>, BeanDefinitionRegistryPostProcessor {
-    private Map<Class<? extends IdentifiableEntity>,CrudService> entityClassPrimaryServiceMap = new HashMap<>();
+    private Map<Class<? extends IdentifiableEntity>, CrudService> entityClassPrimaryServiceMap = new HashMap<>();
     private ApplicationContext applicationContext;
 
     private ConfigurableListableBeanFactory beanFactory;
@@ -49,7 +50,7 @@ public class CrudServiceLocatorImpl implements CrudServiceLocator, ApplicationCo
             BeanDefinition bd = beanFactory.getBeanDefinition(beanName);
             CrudService bean = ((CrudService) beanFactory.getBean(beanName));
             //skip extensions
-            if (bean instanceof AbstractServiceExtension){
+            if (bean instanceof CrudService){
                 continue;
             }
             if (bd.isPrimary()) {

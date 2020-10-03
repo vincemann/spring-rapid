@@ -6,7 +6,7 @@ import com.github.vincemann.springrapid.core.slicing.components.ServiceComponent
 import com.github.vincemann.springrapid.demo.model.Owner;
 import com.github.vincemann.springrapid.demo.repo.OwnerRepository;
 import com.github.vincemann.springrapid.demo.service.OwnerService;
-import com.github.vincemann.springrapid.demo.service.jpa.OwnerJPAService;
+import com.github.vincemann.springrapid.demo.service.jpa.JpaOwnerService;
 
 import java.util.Optional;
 
@@ -35,7 +35,7 @@ public class OwnerOfTheYearExtension
     }
 
     public Class<?> getTargetClass(){
-        return OwnerJPAService.class;
+        return JpaOwnerService.class;
     }
 
 }

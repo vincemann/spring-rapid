@@ -15,7 +15,7 @@ public class LemonOwnerLocator implements OwnerLocator<AuditingEntity> {
 
     private UserService userService;
 
-    public LemonOwnerLocator(UserService<?, ?, ?> userService) {
+    public LemonOwnerLocator(UserService<?, ?> userService) {
         this.userService = userService;
     }
 

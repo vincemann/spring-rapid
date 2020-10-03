@@ -1,8 +1,8 @@
 package com.github.vincemann.springrapid.acl.service.extensions;
 
 import com.github.vincemann.springrapid.core.model.IdentifiableEntity;
-import com.github.vincemann.springrapid.core.proxy.SimpleCrudServiceExtension;
-import com.github.vincemann.springrapid.core.service.SimpleCrudService;
+import com.github.vincemann.springrapid.core.proxy.CrudServiceExtension;
+import com.github.vincemann.springrapid.core.service.CrudService;
 import com.github.vincemann.springrapid.core.service.exception.BadEntityException;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
@@ -16,8 +16,8 @@ import org.springframework.transaction.annotation.Transactional;
 @Getter
 @Transactional
 public class AdminFullAccessAclServiceExtension
-        extends AbstractAclServiceExtension<SimpleCrudService>
-                implements SimpleCrudServiceExtension<SimpleCrudService> {
+        extends AbstractAclServiceExtension<CrudService>
+                implements CrudServiceExtension<CrudService> {
 
 
     @Override

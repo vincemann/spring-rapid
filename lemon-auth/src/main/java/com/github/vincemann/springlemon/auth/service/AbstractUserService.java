@@ -28,11 +28,7 @@ import com.github.vincemann.springrapid.core.util.VerifyEntity;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
-import org.springframework.beans.BeansException;
-import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.ApplicationContext;
-import org.springframework.context.ApplicationContextAware;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.transaction.annotation.Propagation;
@@ -55,7 +51,7 @@ public abstract class AbstractUserService
                 R extends AbstractUserRepository<U, ID>
          >
         extends JPACrudService<U,ID,R>
-                    implements UserService<U, ID, R> {
+                    implements UserService<U, ID> {
 
     public static final String CHANGE_EMAIL_AUDIENCE = "change-email";
     public static final String VERIFY_AUDIENCE = "verify";
@@ -67,7 +63,7 @@ public abstract class AbstractUserService
     private LemonProperties properties;
     private MailSender<LemonMailData> mailSender;
     private EmailJwtService emailTokenService;
-    private SimpleUserService<U,ID> unsecuredUserService;
+    private UserService<U,ID> unsecuredUserService;
 
     /**
      * Creates a new user object. Must be overridden in the
@@ -577,7 +573,7 @@ public abstract class AbstractUserService
     @Autowired
     @Unsecured
     @Lazy
-    public void injectUnsecuredUserService(SimpleUserService<U,ID> unsecuredUserService) {
+    public void injectUnsecuredUserService(UserService<U,ID> unsecuredUserService) {
         this.unsecuredUserService = unsecuredUserService;
     }
 

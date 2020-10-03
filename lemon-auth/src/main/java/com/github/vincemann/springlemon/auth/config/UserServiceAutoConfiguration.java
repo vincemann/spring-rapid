@@ -85,7 +85,7 @@ public class UserServiceAutoConfiguration {
     @Bean
     @ConditionalOnMissingBean(IdConverter.class)
     public <ID extends Serializable>
-    IdConverter<ID> idConverter(UserService<?,ID,?> userService) {
+    IdConverter<ID> idConverter(UserService<?,ID> userService) {
         return id -> userService.toId(id);
     }
 

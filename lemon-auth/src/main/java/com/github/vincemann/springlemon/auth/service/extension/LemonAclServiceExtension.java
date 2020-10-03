@@ -2,7 +2,7 @@ package com.github.vincemann.springlemon.auth.service.extension;
 
 import com.github.vincemann.springlemon.auth.LemonProperties;
 import com.github.vincemann.springlemon.auth.domain.AbstractUser;
-import com.github.vincemann.springlemon.auth.service.SimpleUserService;
+import com.github.vincemann.springlemon.auth.service.UserService;
 
 import com.github.vincemann.springrapid.acl.proxy.Unsecured;
 import com.github.vincemann.springrapid.acl.service.extensions.AbstractAclServiceExtension;
@@ -18,10 +18,10 @@ import org.springframework.transaction.annotation.Transactional;
 @Slf4j
 @Transactional
 public class LemonAclServiceExtension
-        extends AbstractAclServiceExtension<SimpleUserService>
-            implements SimpleUserServiceExtension<SimpleUserService>
+        extends AbstractAclServiceExtension<UserService>
+            implements UserServiceExtension<UserService>
 {
-    private SimpleUserService<AbstractUser<?>,?> unsecuredUserService;
+    private UserService<AbstractUser<?>,?> unsecuredUserService;
 
 
     @Override
@@ -62,7 +62,7 @@ public class LemonAclServiceExtension
 
     @Autowired
     @Unsecured
-    public void injectUnsecuredUserService(SimpleUserService unsecuredUserService) {
+    public void injectUnsecuredUserService(UserService unsecuredUserService) {
         this.unsecuredUserService = unsecuredUserService;
     }
 }

@@ -1,8 +1,8 @@
 package com.github.vincemann.springrapid.demo.service.plugin;
 
-import com.github.vincemann.springrapid.core.proxy.SimpleCrudServiceExtension;
+import com.github.vincemann.springrapid.core.proxy.CrudServiceExtension;
 import com.github.vincemann.springrapid.core.proxy.BasicServiceExtension;
-import com.github.vincemann.springrapid.core.service.SimpleCrudService;
+import com.github.vincemann.springrapid.core.service.CrudService;
 import com.github.vincemann.springrapid.core.service.exception.BadEntityException;
 import com.github.vincemann.springrapid.core.service.exception.EntityNotFoundException;
 import com.github.vincemann.springrapid.core.slicing.components.ServiceComponent;
@@ -17,8 +17,8 @@ import java.io.Serializable;
 @ServiceComponent
 @Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
 public class AclServiceExtension
-        extends BasicServiceExtension<SimpleCrudService>
-            implements SimpleCrudServiceExtension<SimpleCrudService> {
+        extends BasicServiceExtension<CrudService>
+            implements CrudServiceExtension<CrudService> {
 
     public AclServiceExtension() {
 //        log.debug("creating acl service extension: " + this);

@@ -1,7 +1,7 @@
 package com.github.vincemann.springrapid.acl.proxy;
 
 import com.github.vincemann.springrapid.core.model.IdentifiableEntity;
-import com.github.vincemann.springrapid.core.proxy.SimpleCrudServiceExtension;
+import com.github.vincemann.springrapid.core.proxy.CrudServiceExtension;
 import com.github.vincemann.springrapid.core.service.CrudService;
 import com.github.vincemann.springrapid.core.service.exception.BadEntityException;
 import com.github.vincemann.springrapid.core.service.exception.EntityNotFoundException;
@@ -16,7 +16,7 @@ import java.util.Set;
  */
 public class AclDefaultSecurityServiceExtension
         extends SecurityServiceExtension<CrudService>
-                implements SimpleCrudServiceExtension<CrudService> {
+                implements CrudServiceExtension<CrudService> {
 
 
     @Override

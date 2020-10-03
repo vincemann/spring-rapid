@@ -1,7 +1,7 @@
 package com.github.vincemann.springrapid.acl.service.extensions;
 
-import com.github.vincemann.springrapid.core.proxy.SimpleCrudServiceExtension;
-import com.github.vincemann.springrapid.core.service.SimpleCrudService;
+import com.github.vincemann.springrapid.core.proxy.CrudServiceExtension;
+import com.github.vincemann.springrapid.core.service.CrudService;
 import com.github.vincemann.springrapid.core.service.exception.BadEntityException;
 import com.github.vincemann.springrapid.core.service.exception.EntityNotFoundException;
 import lombok.Getter;
@@ -20,8 +20,8 @@ import java.io.Serializable;
  */
 @Transactional
 public class CleanUpAclServiceExtension
-        extends AbstractAclServiceExtension<SimpleCrudService>
-                implements SimpleCrudServiceExtension<SimpleCrudService>
+        extends AbstractAclServiceExtension<CrudService>
+                implements CrudServiceExtension<CrudService>
 {
     @Setter
     private boolean deleteCascade = true;

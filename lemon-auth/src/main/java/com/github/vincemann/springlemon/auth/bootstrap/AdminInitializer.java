@@ -29,7 +29,7 @@ public class AdminInitializer extends DatabaseDataInitializer {
     @Value("#{'${database.init.admin.passwords}'.split(',')}")
     private List<String> adminPasswords;
 
-    private UserService<?,?,?> userService;
+    private UserService<?,?> userService;
     private LemonProperties lemonProperties;
     private RapidSecurityContext<?> securityContext;
 
@@ -75,7 +75,7 @@ public class AdminInitializer extends DatabaseDataInitializer {
 
     @Autowired
     @AclManaging
-    public void injectUserService(UserService<?, ?, ?> userService) {
+    public void injectUserService(UserService<?, ?> userService) {
         this.userService = userService;
     }
 

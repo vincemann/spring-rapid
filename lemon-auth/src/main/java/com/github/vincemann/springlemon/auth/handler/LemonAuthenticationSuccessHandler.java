@@ -27,11 +27,11 @@ public class LemonAuthenticationSuccessHandler
 	extends SimpleUrlAuthenticationSuccessHandler {
 	
 
-    private UserService<?, ?,?> userService;
+    private UserService<?, ?> userService;
     private HttpTokenService httpTokenService;
 	private String mediaType;
 
-	public LemonAuthenticationSuccessHandler(UserService<?, ?, ?> userService, HttpTokenService httpTokenService) {
+	public LemonAuthenticationSuccessHandler(UserService<?, ?> userService, HttpTokenService httpTokenService) {
 		this.userService = userService;
 		this.httpTokenService = httpTokenService;
 		log.info("Created");

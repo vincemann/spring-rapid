@@ -29,7 +29,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 public class UpdateUserMvcTests extends AbstractMvcTests
-		implements UrlParamIdRapidControllerTest<UserService<User,Long,?>,User,Long> {
+		implements UrlParamIdRapidControllerTest<UserService<User,Long>,User,Long> {
 	
 //	private static final String UPDATED_NAME = "Edited name";
 	

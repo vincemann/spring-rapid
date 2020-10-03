@@ -3,9 +3,9 @@ package com.github.vincemann.springrapid.acl.proxy;
 import com.github.vincemann.springrapid.core.util.Lists;
 import com.github.vincemann.springrapid.core.model.IdentifiableEntity;
 import com.github.vincemann.springrapid.core.model.IdentifiableEntityImpl;
-import com.github.vincemann.springrapid.core.proxy.SimpleCrudServiceExtension;
+import com.github.vincemann.springrapid.core.proxy.CrudServiceExtension;
+import com.github.vincemann.springrapid.core.service.AbstractCrudService;
 import com.github.vincemann.springrapid.core.service.CrudService;
-import com.github.vincemann.springrapid.core.service.SimpleCrudService;
 import com.github.vincemann.springrapid.core.service.exception.BadEntityException;
 import com.github.vincemann.springrapid.core.service.JPACrudService;
 import lombok.AllArgsConstructor;
@@ -20,7 +20,6 @@ import org.mockito.Spy;
 import org.mockito.internal.InOrderImpl;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.aop.TargetClassAware;
-import org.springframework.context.ApplicationContext;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import static org.mockito.ArgumentMatchers.any;
@@ -83,7 +82,7 @@ class SecurityServiceExtensionProxyTest {
         testCallDefaultRule();
     }
 
-    interface Service extends CrudService<Entity, Long, JpaRepository<Entity, Long>> {
+    interface Service extends CrudService<Entity, Long> {
     }
 
     @AllArgsConstructor
@@ -107,7 +106,7 @@ class SecurityServiceExtensionProxyTest {
         }
     }
 
-    class FooSecurityExtension extends SecurityServiceExtension<SimpleCrudService> implements SimpleCrudServiceExtension<SimpleCrudService> {
+    class FooSecurityExtension extends SecurityServiceExtension<CrudService> implements CrudServiceExtension<CrudService> {
 
         @Override
         public IdentifiableEntity save(IdentifiableEntity entity) throws BadEntityException {
@@ -117,7 +116,7 @@ class SecurityServiceExtensionProxyTest {
 
     }
 
-    class DefaultSecurityExtension extends SecurityServiceExtension<SimpleCrudService> implements SimpleCrudServiceExtension<SimpleCrudService> {
+    class DefaultSecurityExtension extends SecurityServiceExtension<CrudService> implements CrudServiceExtension<CrudService> {
 
 
     }

@@ -2,7 +2,7 @@ package com.github.vincemann.springrapid.acl.proxy;
 
 import com.github.vincemann.springrapid.core.model.IdentifiableEntity;
 import com.github.vincemann.springrapid.core.proxy.AbstractServiceExtension;
-import com.github.vincemann.springrapid.core.service.SimpleCrudService;
+import com.github.vincemann.springrapid.core.service.CrudService;
 import org.apache.commons.lang3.ClassUtils;
 import org.springframework.test.util.AopTestUtils;
 
@@ -10,7 +10,7 @@ import java.io.Serializable;
 import java.lang.reflect.Proxy;
 
 
-public class SecurityServiceExtensionProxyBuilder<S extends SimpleCrudService<E,Id>,E extends IdentifiableEntity<Id>, Id extends Serializable>
+public class SecurityServiceExtensionProxyBuilder<S extends CrudService<E,Id>,E extends IdentifiableEntity<Id>, Id extends Serializable>
 {
 
     private SecurityExtensionServiceProxy<S> proxy;
@@ -30,8 +30,8 @@ public class SecurityServiceExtensionProxyBuilder<S extends SimpleCrudService<E,
     // this method is used to add SimpleService implementing extensions, to ensure down casting works
     // service extension can either be superclass, same class or child class of S, the only thing that matters, is that I can cast
     // from E to extension entity type. i.E. I can cast IdentEntity to Owner -> ? super E aka ? super Owner is correct
-    public SecurityServiceExtensionProxyBuilder<S,E,Id> addServiceExtensions(AbstractServiceExtension<? extends SimpleCrudService<? super E,? super Id>,? super SecurityProxyController>... extensions){
-        for (AbstractServiceExtension<? extends SimpleCrudService<? super E, ? super Id>,? super SecurityProxyController> extension : extensions) {
+    public SecurityServiceExtensionProxyBuilder<S,E,Id> addServiceExtensions(AbstractServiceExtension<? extends CrudService<? super E,? super Id>,? super SecurityProxyController>... extensions){
+        for (AbstractServiceExtension<? extends CrudService<? super E, ? super Id>,? super SecurityProxyController> extension : extensions) {
             proxy.addExtension(extension);
         }
         return this;

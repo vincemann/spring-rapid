@@ -2,7 +2,7 @@ package com.github.vincemann.springlemon.auth.service.token;
 
 import com.github.vincemann.springlemon.auth.domain.AbstractUser;
 import com.github.vincemann.springlemon.auth.domain.LemonAuthenticatedPrincipal;
-import com.github.vincemann.springlemon.auth.service.SimpleUserService;
+import com.github.vincemann.springlemon.auth.service.UserService;
 import com.github.vincemann.springlemon.auth.util.LemonValidationUtils;
 import com.github.vincemann.springrapid.core.service.exception.EntityNotFoundException;
 import com.github.vincemann.springrapid.core.slicing.components.ServiceComponent;
@@ -16,7 +16,7 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 public class LemonJwtAuthorizationTokenService extends AbstractJwtAuthorizationTokenService<LemonAuthenticatedPrincipal> {
 
-    private SimpleUserService userService;
+    private UserService userService;
 
 
     @Transactional
@@ -32,7 +32,7 @@ public class LemonJwtAuthorizationTokenService extends AbstractJwtAuthorizationT
     }
 
     @Autowired
-    public void injectUserService(SimpleUserService userService) {
+    public void injectUserService(UserService userService) {
         this.userService = userService;
     }
 }

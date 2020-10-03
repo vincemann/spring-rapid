@@ -10,7 +10,7 @@ import java.io.Serializable;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 
-public interface UrlParamIdRapidControllerTest<S extends CrudService<E,Id,?>
+public interface UrlParamIdRapidControllerTest<S extends CrudService<E,Id>
         ,E extends IdentifiableEntity<Id>,
         Id extends Serializable> extends MvcRapidControllerTest<S,E,Id> {
 

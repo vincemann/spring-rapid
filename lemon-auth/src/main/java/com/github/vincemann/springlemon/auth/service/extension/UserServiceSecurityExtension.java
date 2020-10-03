@@ -6,7 +6,6 @@ import com.github.vincemann.springlemon.auth.domain.dto.ChangePasswordForm;
 import com.github.vincemann.springlemon.auth.domain.dto.RequestEmailChangeForm;
 import com.github.vincemann.springlemon.auth.security.LemonSecurityContextChecker;
 import com.github.vincemann.springlemon.auth.service.UserService;
-import com.github.vincemann.springlemon.auth.service.SimpleUserService;
 import com.github.vincemann.springlemon.auth.service.token.BadTokenException;
 import com.github.vincemann.springlemon.auth.util.LemonValidationUtils;
 import com.github.vincemann.springrapid.acl.proxy.SecurityServiceExtension;
@@ -28,8 +27,8 @@ import java.util.Optional;
 @Transactional
 @Slf4j
 public class UserServiceSecurityExtension
-        extends SecurityServiceExtension<SimpleUserService>
-            implements SimpleUserServiceExtension<SimpleUserService> {
+        extends SecurityServiceExtension<UserService>
+            implements UserServiceExtension<UserService> {
 
 
     private UserService unsecuredUserService;

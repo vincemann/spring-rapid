@@ -18,7 +18,7 @@ import java.io.Serializable;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 
-public interface MvcRapidControllerTest<S extends CrudService<E,Id,?>
+public interface MvcRapidControllerTest<S extends CrudService<E,Id>
         ,E extends IdentifiableEntity<Id>,
         Id extends Serializable> {
 

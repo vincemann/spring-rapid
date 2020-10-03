@@ -38,7 +38,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.
 @Setter
 @Slf4j
 public abstract class AbstractMvcRapidControllerTest
-        <S extends CrudService<E,Id,?>
+        <S extends CrudService<E,Id>
         ,E extends IdentifiableEntity<Id>,
         Id extends Serializable>
         extends AutoMockMvcControllerTest implements MvcRapidControllerTest<S,E,Id>
