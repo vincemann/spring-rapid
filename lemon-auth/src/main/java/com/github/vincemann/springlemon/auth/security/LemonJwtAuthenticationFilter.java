@@ -1,10 +1,12 @@
 package com.github.vincemann.springlemon.auth.security;
 
 import com.github.vincemann.springlemon.auth.domain.LemonAuthenticatedPrincipal;
+import com.github.vincemann.springlemon.auth.domain.LemonRoles;
 import com.github.vincemann.springlemon.auth.service.token.AuthorizationTokenService;
 import com.github.vincemann.springlemon.auth.service.token.HttpTokenService;
 import com.github.vincemann.springlemon.auth.service.token.JwtService;
 import com.github.vincemann.springrapid.core.security.RapidSecurityContext;
+import com.google.common.collect.Sets;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.filter.OncePerRequestFilter;
@@ -73,7 +75,8 @@ public class LemonJwtAuthenticationFilter extends OncePerRequestFilter {
     }
 
     protected void loginAnon() {
-
+        LemonAuthenticatedPrincipal anon = new LemonAuthenticatedPrincipal("anonymousUser",null, Sets.newHashSet(LemonRoles.ANON),null);
+        securityContext.login(anon);
     }
 
 //	////@LogInteraction(level = LogInteraction.Level.TRACE)

@@ -8,4 +8,7 @@ public interface LemonRoles extends RapidRoles {
 
     String BLOCKED = "ROLE_BLOCKED";
     String BLOCKED_RAW = "BLOCKED";
+
+    String ANON = "ROLE_ANONYMOUS";
+    String ANON_RAW = "ANONYMOUS";
 }

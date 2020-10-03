@@ -1,11 +1,9 @@
 package com.github.vincemann.springlemon.demo;
 
-import com.github.vincemann.springlemon.auth.security.LemonPrincipalUserConverter;
 import com.github.vincemann.springlemon.auth.service.AbstractUserService;
 import com.github.vincemann.springlemon.auth.service.token.EmailJwtService;
 import com.github.vincemann.springlemon.auth.util.LemonMapUtils;
 import com.github.vincemann.springlemon.demo.domain.User;
-import com.github.vincemann.springrapid.core.security.RapidSecurityContext;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

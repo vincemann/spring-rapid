@@ -67,7 +67,11 @@ public abstract class AbstractRapidSecurityContext<P extends RapidAuthenticatedP
         if (authentication == null) {
             return null;
         }
-        return (P) authentication.getPrincipal();
+        try {
+            return (P) authentication.getPrincipal();
+        }catch (ClassCastException e){
+            throw new IllegalArgumentException("Security Context is malformed. Create with RapidSecurityContext.login(...)");
+        }
     }
 
     @Override

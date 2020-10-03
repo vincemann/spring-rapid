@@ -3,7 +3,8 @@ package com.github.vincemann.springlemon.auth.service;
 import com.github.vincemann.aoplog.api.AopLoggable;
 import com.github.vincemann.aoplog.api.LogInteraction;
 import com.github.vincemann.springlemon.auth.domain.AbstractUser;
-import com.github.vincemann.springlemon.auth.security.PrincipalUserConverter;
+import com.github.vincemann.springlemon.auth.domain.LemonAuthenticatedPrincipal;
+import com.github.vincemann.springlemon.auth.security.AuthenticatedPrincipalFactory;
 import com.github.vincemann.springlemon.exceptions.util.LexUtils;
 
 
@@ -27,7 +28,8 @@ public class LemonUserDetailsService
 		implements UserDetailsService, AopLoggable {
 
 	private UserService unsecuredUserService;
-	private PrincipalUserConverter<? extends RapidAuthenticatedPrincipal,AbstractUser<?>> principalUserConverter;
+	//keep it typeless...
+	private AuthenticatedPrincipalFactory authenticatedPrincipalFactory;
 
 	@Transactional
 	@LogInteraction
@@ -42,7 +44,7 @@ public class LemonUserDetailsService
 					,e);
 		}
 
-		return principalUserConverter.toPrincipal(user);
+		return authenticatedPrincipalFactory.create(user);
 	}
 
 	/**
@@ -54,8 +56,8 @@ public class LemonUserDetailsService
 	}
 
 	@Autowired
-	public void injectPrincipalUserConverter(PrincipalUserConverter<? extends RapidAuthenticatedPrincipal, AbstractUser<?>> principalUserConverter) {
-		this.principalUserConverter = principalUserConverter;
+	public void injectPrincipalUserConverter(AuthenticatedPrincipalFactory authenticatedPrincipalFactory) {
+		this.authenticatedPrincipalFactory = authenticatedPrincipalFactory;
 	}
 
 
