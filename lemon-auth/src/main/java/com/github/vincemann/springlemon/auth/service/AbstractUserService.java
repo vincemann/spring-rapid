@@ -60,7 +60,7 @@ public abstract class AbstractUserService
 
     private AuthorizationTokenService<LemonAuthenticatedPrincipal> authorizationTokenService;
     private RapidSecurityContext<LemonAuthenticatedPrincipal> securityContext;
-    private AuthenticatedPrincipalFactory<LemonAuthenticatedPrincipal,AbstractUser<?>> authenticatedPrincipalFactory;
+    private AuthenticatedPrincipalFactory authenticatedPrincipalFactory;
     private PasswordEncoder passwordEncoder;
     private LemonProperties properties;
     private MailSender<LemonMailData> mailSender;
@@ -582,7 +582,7 @@ public abstract class AbstractUserService
     }
 
     @Autowired
-    public void injectPrincipalUserConverter(AuthenticatedPrincipalFactory<LemonAuthenticatedPrincipal, AbstractUser<?>> authenticatedPrincipalFactory) {
+    public void injectPrincipalUserConverter(AuthenticatedPrincipalFactory authenticatedPrincipalFactory) {
         this.authenticatedPrincipalFactory = authenticatedPrincipalFactory;
     }
 
