@@ -7,7 +7,7 @@ import com.github.vincemann.springlemon.auth.domain.dto.RequestEmailChangeForm;
 import com.github.vincemann.springlemon.auth.domain.dto.ResetPasswordForm;
 import com.github.vincemann.springlemon.auth.service.UserService;
 import com.github.vincemann.springlemon.auth.service.token.BadTokenException;
-import com.github.vincemann.springrapid.core.proxy.GenericSimpleCrudServiceExtension;
+import com.github.vincemann.springrapid.core.proxy.GenericCrudServiceExtension;
 import com.github.vincemann.springrapid.core.service.exception.BadEntityException;
 import com.github.vincemann.springrapid.core.service.exception.EntityNotFoundException;
 import org.springframework.transaction.annotation.Transactional;
@@ -17,7 +17,7 @@ import java.util.Map;
 
 @Transactional
 public interface GenericUserServiceExtension<S extends UserService<U,Id>,U extends AbstractUser<Id>, Id extends Serializable>
-        extends UserService<U,Id>, GenericSimpleCrudServiceExtension<S,U,Id>
+        extends UserService<U,Id>, GenericCrudServiceExtension<S,U,Id>
 {
 
 

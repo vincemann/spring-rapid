@@ -16,7 +16,7 @@ import javax.persistence.EntityManager;
 import java.lang.reflect.InvocationTargetException;
 
 /**
- * Use together with {@link CrudServiceIntegrationTest}.
+ * Use together with {@link AbstractCrudServiceIntegrationTest}.
  * Template similar to {@link org.springframework.test.web.servlet.MockMvc}, but build for testing of service layer ({@link CrudService}).
  * With this template you can build the test, that shall be executed against a {@link CrudService} in a fluent-API like manner.
  *

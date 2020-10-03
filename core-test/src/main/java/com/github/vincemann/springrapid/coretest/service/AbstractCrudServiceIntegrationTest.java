@@ -41,9 +41,9 @@ import static com.github.vincemann.springrapid.coretest.util.RapidTestUtil.mustB
 @DataJpaTest
 @ImportRapidCoreServiceConfig
 @ImportRapidCoreTestConfig
-public abstract class CrudServiceIntegrationTest
+public abstract class AbstractCrudServiceIntegrationTest
                 <
-                        S extends AbstractCrudService<E,Id,? extends CrudRepository<E,Id>>,
+                        S extends CrudService<E,Id>,
                         E extends IdentifiableEntity<Id>,
                         Id extends Serializable
                 >
@@ -61,6 +61,7 @@ public abstract class CrudServiceIntegrationTest
     private S serviceUnderTest;
     private EntityPlaceholderResolver entityPlaceholderResolver;
     private CrudServiceLocator crudServiceLocator;
+    private CrudRepository<E,Id> crudRepository;
 
 
     @Override
@@ -74,7 +75,7 @@ public abstract class CrudServiceIntegrationTest
                 .serviceUnderTest(serviceUnderTest)
                 .applicationContext(applicationContext)
                 .entityManager(entityManager)
-                .repository(getServiceUnderTest().getRepository())
+                .repository(crudRepository)
                 .build();
     }
 
@@ -99,7 +100,7 @@ public abstract class CrudServiceIntegrationTest
 
 
     public E byId(Id id){
-        return mustBePresentIn(getServiceUnderTest().getRepository(),id);
+        return mustBePresentIn(crudRepository,id);
     }
 
     /**
@@ -120,7 +121,7 @@ public abstract class CrudServiceIntegrationTest
     }
 
     public <R extends CrudRepository<E,Id>> R getRepository(){
-        return (R) serviceUnderTest.getRepository();
+        return (R) crudRepository;
     }
 
     @Autowired
@@ -134,5 +135,10 @@ public abstract class CrudServiceIntegrationTest
 
     public S getServiceUnderTest() {
         return (S) serviceUnderTest;
+    }
+
+    @Autowired
+    public void injectCrudRepository(CrudRepository<E, Id> crudRepository) {
+        this.crudRepository = crudRepository;
     }
 }

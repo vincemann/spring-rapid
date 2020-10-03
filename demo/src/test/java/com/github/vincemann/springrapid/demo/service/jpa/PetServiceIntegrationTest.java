@@ -1,7 +1,7 @@
 package com.github.vincemann.springrapid.demo.service.jpa;
 
 import com.github.vincemann.springrapid.core.service.exception.BadEntityException;
-import com.github.vincemann.springrapid.coretest.service.CrudServiceIntegrationTest;
+import com.github.vincemann.springrapid.coretest.service.AbstractCrudServiceIntegrationTest;
 import com.github.vincemann.springrapid.coretest.service.resolve.EntityPlaceholder;
 import com.github.vincemann.springrapid.demo.EnableProjectComponentScan;
 import com.github.vincemann.springrapid.demo.model.Pet;
@@ -21,7 +21,7 @@ import static com.github.vincemann.springrapid.coretest.service.request.CrudServ
 @EnableProjectComponentScan
 @ImportRapidEntityRelServiceConfig
 class PetServiceIntegrationTest
-        extends CrudServiceIntegrationTest<PetService, Pet, Long> {
+        extends AbstractCrudServiceIntegrationTest<PetService, Pet, Long> {
 
     @Autowired
     private PetTypeService petTypeService;

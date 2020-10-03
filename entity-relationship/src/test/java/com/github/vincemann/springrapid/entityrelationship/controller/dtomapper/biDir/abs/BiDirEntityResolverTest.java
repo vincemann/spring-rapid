@@ -25,11 +25,11 @@ public abstract class BiDirEntityResolverTest {
     @Mock
     private CrudServiceLocator crudServiceLocator;
     @Mock
-    private CrudService<BiDirEntityChild,Long, CrudRepository<BiDirEntityChild,Long>> entityChildCrudService;
+    private CrudService<BiDirEntityChild,Long> entityChildCrudService;
     @Mock
-    private CrudService<BiDirEntityParent,Long,CrudRepository<BiDirEntityParent,Long>> entityParentCrudService;
+    private CrudService<BiDirEntityParent,Long> entityParentCrudService;
     @Mock
-    private CrudService<BiDirSecondEntityParent,Long,CrudRepository<BiDirSecondEntityParent,Long>> secondEntityParentCrudService;
+    private CrudService<BiDirSecondEntityParent,Long> secondEntityParentCrudService;
 
     private BiDirEntityParent biDirEntityParent = new BiDirEntityParent();
     private BiDirSecondEntityParent biDirSecondEntityParent = new BiDirSecondEntityParent();

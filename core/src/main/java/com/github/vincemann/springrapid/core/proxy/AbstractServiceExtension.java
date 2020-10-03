@@ -5,6 +5,7 @@ import com.github.vincemann.aoplog.api.AopLoggable;
 import com.github.vincemann.aoplog.api.LogConfig;
 import com.github.vincemann.aoplog.api.LogInteraction;
 import com.google.common.base.Objects;
+import org.springframework.aop.TargetClassAware;
 import org.springframework.beans.factory.annotation.Configurable;
 import org.springframework.test.util.AopTestUtils;
 
@@ -16,7 +17,7 @@ import org.springframework.test.util.AopTestUtils;
 //dependencys will be injected by aspectj, you should create the extensions with new
 //this is done, so the extensions are not in the container as duplicate beans for service interfaces
 public abstract class AbstractServiceExtension<T,P extends ProxyController>
-        implements NextLinkAware<T>{
+        implements NextLinkAware<T> {
 
     private ChainController<T> chain;
     private P proxyController;

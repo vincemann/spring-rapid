@@ -1,7 +1,7 @@
 package com.github.vincemann.springrapid.demo.service.plugin;
 
 import com.github.vincemann.springrapid.core.controller.RapidController;
-import com.github.vincemann.springrapid.core.proxy.GenericSimpleCrudServiceExtension;
+import com.github.vincemann.springrapid.core.proxy.GenericCrudServiceExtension;
 import com.github.vincemann.springrapid.core.proxy.BasicServiceExtension;
 import com.github.vincemann.springrapid.core.service.CrudService;
 import com.github.vincemann.springrapid.core.service.exception.BadEntityException;
@@ -18,7 +18,7 @@ import org.springframework.context.annotation.Scope;
 @ServiceComponent
 @Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
 public class SaveNameToWordPressDbExtension extends BasicServiceExtension<CrudService<Person,Long>>
-        implements GenericSimpleCrudServiceExtension<CrudService<Person,Long>,Person,Long> {
+        implements GenericCrudServiceExtension<CrudService<Person,Long>,Person,Long> {
 
 
     @Override

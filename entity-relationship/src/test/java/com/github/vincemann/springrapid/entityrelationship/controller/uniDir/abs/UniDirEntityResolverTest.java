@@ -25,13 +25,13 @@ public abstract class UniDirEntityResolverTest {
     @Mock
     private CrudServiceLocator crudServiceLocator;
     @Mock
-    private CrudService<UniDirEntityChild,Long, CrudRepository<UniDirEntityChild,Long>> entityChildCrudService;
+    private CrudService<UniDirEntityChild,Long> entityChildCrudService;
     @Mock
-    private CrudService<UniDirEntityChildsParent,Long,CrudRepository<UniDirEntityChildsParent,Long>> entityChildsParentCrudService;
+    private CrudService<UniDirEntityChildsParent,Long> entityChildsParentCrudService;
     @Mock
-    private CrudService<UniDirEntityParent,Long,CrudRepository<UniDirEntityParent,Long>> entityParentCrudService;
+    private CrudService<UniDirEntityParent,Long> entityParentCrudService;
     @Mock
-    private CrudService<UniDirEntityParentsChild,Long,CrudRepository<UniDirEntityParentsChild,Long>> entityParentsChildCrudService;
+    private CrudService<UniDirEntityParentsChild,Long> entityParentsChildCrudService;
 
 
     private UniDirEntityParent uniDirEntityParent = new UniDirEntityParent();

@@ -12,9 +12,9 @@ import org.springframework.stereotype.Service;
 @Qualifier("noProxy")
 @Service
 @ServiceComponent
-public class PetJPAService extends JPACrudService<Pet, Long, PetRepository> implements PetService, TargetClassAware {
+public class JpaPetService extends JPACrudService<Pet, Long, PetRepository> implements PetService, TargetClassAware {
     @Override
     public Class<?> getTargetClass() {
-        return PetJPAService.class;
+        return JpaPetService.class;
     }
 }
