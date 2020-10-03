@@ -3,6 +3,7 @@ package com.github.vincemann.springlemon.auth.service;
 
 import com.github.vincemann.springlemon.auth.domain.LemonAuthenticatedPrincipal;
 import com.github.vincemann.springlemon.auth.mail.MailSender;
+import com.github.vincemann.springlemon.auth.security.AuthenticatedPrincipalFactory;
 import com.github.vincemann.springlemon.auth.service.token.AuthorizationTokenService;
 import com.github.vincemann.springlemon.auth.service.token.BadTokenException;
 import com.github.vincemann.springlemon.auth.service.token.EmailJwtService;
@@ -59,6 +60,7 @@ public abstract class AbstractUserService
 
     private AuthorizationTokenService<LemonAuthenticatedPrincipal> authorizationTokenService;
     private RapidSecurityContext<LemonAuthenticatedPrincipal> securityContext;
+    private AuthenticatedPrincipalFactory<LemonAuthenticatedPrincipal,AbstractUser<?>> authenticatedPrincipalFactory;
     private PasswordEncoder passwordEncoder;
     private LemonProperties properties;
     private MailSender<LemonMailData> mailSender;
@@ -105,6 +107,8 @@ public abstract class AbstractUserService
         U saved = save(initialized);
         makeUnverified(saved);
         log.debug("saved and send verification mail for unverified new user: " + saved);
+        //logout anon and login user, it is expected that signed up user is logged in after this method is called
+        securityContext.login(authenticatedPrincipalFactory.create(saved));
         return saved;
     }
 
@@ -575,6 +579,11 @@ public abstract class AbstractUserService
     @Lazy
     public void injectUnsecuredUserService(UserService<U,ID> unsecuredUserService) {
         this.unsecuredUserService = unsecuredUserService;
+    }
+
+    @Autowired
+    public void injectPrincipalUserConverter(AuthenticatedPrincipalFactory<LemonAuthenticatedPrincipal, AbstractUser<?>> authenticatedPrincipalFactory) {
+        this.authenticatedPrincipalFactory = authenticatedPrincipalFactory;
     }
 
     //	/**
