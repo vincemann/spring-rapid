@@ -9,7 +9,7 @@ import java.io.Serializable;
 import java.util.Optional;
 import java.util.Set;
 
-public interface GenericSimpleCrudServiceExtension<S extends CrudService<E,Id>,E extends IdentifiableEntity<Id>,Id extends Serializable>
+public interface GenericCrudServiceExtension<S extends CrudService<E,Id>,E extends IdentifiableEntity<Id>,Id extends Serializable>
         extends CrudService<E,Id>, NextLinkAware<S>{
 
     @Override

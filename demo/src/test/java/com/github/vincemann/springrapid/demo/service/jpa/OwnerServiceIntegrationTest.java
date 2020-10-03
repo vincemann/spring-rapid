@@ -3,7 +3,7 @@ package com.github.vincemann.springrapid.demo.service.jpa;
 import com.github.vincemann.springrapid.core.util.Lists;
 import com.github.vincemann.springrapid.core.service.exception.BadEntityException;
 import com.github.vincemann.springrapid.core.service.exception.EntityNotFoundException;
-import com.github.vincemann.springrapid.coretest.service.CrudServiceIntegrationTest;
+import com.github.vincemann.springrapid.coretest.service.AbstractCrudServiceIntegrationTest;
 import com.github.vincemann.springrapid.coretest.service.result.ServiceResult;
 import com.github.vincemann.springrapid.demo.EnableProjectComponentScan;
 import com.github.vincemann.springrapid.demo.model.Owner;
@@ -37,7 +37,7 @@ import static com.github.vincemann.springrapid.coretest.service.PropertyMatchers
 @EnableProjectComponentScan
 @ImportRapidEntityRelServiceConfig
 class OwnerServiceIntegrationTest
-        extends CrudServiceIntegrationTest<JpaOwnerService, Owner, Long> {
+        extends AbstractCrudServiceIntegrationTest<OwnerService, Owner, Long> {
     //Types
     Owner OwnerType = new Owner();
 

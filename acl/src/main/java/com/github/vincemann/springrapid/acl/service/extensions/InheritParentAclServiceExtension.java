@@ -3,7 +3,7 @@ package com.github.vincemann.springrapid.acl.service.extensions;
 
 import com.github.vincemann.springrapid.acl.model.AclParentAware;
 import com.github.vincemann.springrapid.core.model.IdentifiableEntity;
-import com.github.vincemann.springrapid.core.proxy.GenericSimpleCrudServiceExtension;
+import com.github.vincemann.springrapid.core.proxy.GenericCrudServiceExtension;
 import com.github.vincemann.springrapid.core.service.CrudService;
 import com.github.vincemann.springrapid.core.service.exception.BadEntityException;
 import org.springframework.transaction.annotation.Transactional;
@@ -18,7 +18,7 @@ import java.io.Serializable;
 @Transactional
 public class InheritParentAclServiceExtension<E extends IdentifiableEntity<Id> & AclParentAware,Id extends Serializable>
                         extends AbstractAclServiceExtension<CrudService<E,Id>>
-                                 implements GenericSimpleCrudServiceExtension<CrudService<E,Id>,E,Id> {
+                                 implements GenericCrudServiceExtension<CrudService<E,Id>,E,Id> {
 
 
     @Override

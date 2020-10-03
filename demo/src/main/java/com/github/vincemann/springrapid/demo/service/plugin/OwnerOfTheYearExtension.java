@@ -1,12 +1,13 @@
 package com.github.vincemann.springrapid.demo.service.plugin;
 
-import com.github.vincemann.springrapid.core.proxy.GenericSimpleCrudServiceExtension;
+import com.github.vincemann.springrapid.core.proxy.GenericCrudServiceExtension;
 import com.github.vincemann.springrapid.core.proxy.BasicServiceExtension;
 import com.github.vincemann.springrapid.core.slicing.components.ServiceComponent;
 import com.github.vincemann.springrapid.demo.model.Owner;
 import com.github.vincemann.springrapid.demo.repo.OwnerRepository;
 import com.github.vincemann.springrapid.demo.service.OwnerService;
 import com.github.vincemann.springrapid.demo.service.jpa.JpaOwnerService;
+import org.springframework.aop.TargetClassAware;
 
 import java.util.Optional;
 
@@ -15,7 +16,7 @@ import java.util.Optional;
 //@Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
 public class OwnerOfTheYearExtension
         extends BasicServiceExtension<OwnerService>
-            implements OwnerService, GenericSimpleCrudServiceExtension<OwnerService,Owner,Long> {
+            implements OwnerService, GenericCrudServiceExtension<OwnerService,Owner,Long> {
 
 
     @Override
@@ -28,14 +29,9 @@ public class OwnerOfTheYearExtension
         return getNext().findByLastName(lastName);
     }
 
-
-    @Override
-    public OwnerRepository getRepository() {
-        return getNext().getRepository();
-    }
-
-    public Class<?> getTargetClass(){
-        return JpaOwnerService.class;
-    }
+//    @Override
+//    public Class<?> getTargetClass(){
+//        return JpaOwnerService.class;
+//    }
 
 }
