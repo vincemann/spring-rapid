@@ -13,8 +13,8 @@ import lombok.ToString;
 @Setter
 @ToString
 public class RequestEmailChangeForm {
-    @Password(groups = {UserVerifyUtils.ChangeEmailValidation.class})
-    private String password;
+//    @Password(groups = {UserVerifyUtils.ChangeEmailValidation.class})
+//    private String password;
     @UniqueEmail(groups = {UserVerifyUtils.ChangeEmailValidation.class})
     private String newEmail;
 }

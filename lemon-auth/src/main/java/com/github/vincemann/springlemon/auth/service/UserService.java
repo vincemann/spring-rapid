@@ -60,7 +60,7 @@ public interface UserService<U extends AbstractUser<ID>, ID extends Serializable
 //    @LogInteraction(Severity.TRACE)
 //    public Map<String, String> fetchFullToken(String authHeader);
 
-    public void createAdminUser(LemonProperties.Admin admin) throws BadEntityException;
+    public U createAdminUser(LemonProperties.Admin admin) throws BadEntityException;
 
     @LogInteraction(Severity.TRACE)
     public abstract ID toId(String id);

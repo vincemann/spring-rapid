@@ -2,6 +2,7 @@ package com.github.vincemann.springlemon.auth.service.extension;
 
 import com.github.vincemann.springlemon.auth.LemonProperties;
 import com.github.vincemann.springlemon.auth.domain.AbstractUser;
+import com.github.vincemann.springlemon.auth.domain.LemonRoles;
 import com.github.vincemann.springlemon.auth.service.UserService;
 
 import com.github.vincemann.springrapid.acl.proxy.Unsecured;
@@ -27,7 +28,7 @@ public class LemonAclServiceExtension
     @Override
     public IdentifiableEntity save(IdentifiableEntity entity) throws BadEntityException {
         AbstractUser saved = (AbstractUser) getNext().save(entity);
-        savePostSignupAclInfo(saved.getEmail());
+        savePostSignupAclInfo(saved);
         return saved;
     }
 
@@ -35,28 +36,25 @@ public class LemonAclServiceExtension
     @Override
     public AbstractUser signup(AbstractUser user) throws BadEntityException {
         AbstractUser saved = getNext().signup(user);
-        savePostSignupAclInfo(user.getEmail());
+        savePostSignupAclInfo(user);
         return saved;
     }
 
     @Override
-    public void createAdminUser(LemonProperties.Admin admin) throws BadEntityException {
-        getNext().createAdminUser(admin);
-        savePostSignupAclInfo(admin.getEmail());
+    public AbstractUser createAdminUser(LemonProperties.Admin admin) throws BadEntityException {
+        AbstractUser saved = getNext().createAdminUser(admin);
+        savePostSignupAclInfo(saved);
+        return saved;
     }
 
 
-    public void savePostSignupAclInfo(String emailOfSignedUp){
-        log.debug("saving acl info for signed up user: " + emailOfSignedUp);
-        AbstractUser user = null;
-        try {
-            user = unsecuredUserService.findByEmail(emailOfSignedUp);
-        } catch (EntityNotFoundException e) {
-            log.warn("No user found after signup -> cant save acl permissions");
-            return;
+    public void savePostSignupAclInfo(AbstractUser saved){
+        savePermissionForUserOver(saved.getEmail(),saved, BasePermission.ADMINISTRATION);
+        if (!saved.getRoles().contains(LemonRoles.ADMIN)) {
+            saveFullPermissionForAdminOver(saved);
+        }else {
+            savePermissionForUserOver(LemonRoles.ADMIN,saved, BasePermission.READ);
         }
-        savePermissionForUserOver(emailOfSignedUp,user, BasePermission.ADMINISTRATION);
-        saveFullPermissionForAdminOver(user);
     }
 
 

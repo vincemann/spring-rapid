@@ -30,11 +30,11 @@ public class ResendVerificationMailMvcTests extends AbstractMvcTests {
 	}
 
 	@Test
-	public void testBadAdminResendVerificationMailOtherUser() throws Exception {
+	public void testBlockedAdminResendVerificationMailOtherUser_shouldFail() throws Exception {
 		
-		mvc.perform(post("/api/core/users/{id}/resend-verification-mail", UNVERIFIED_USER_ID)
-				.header(HttpHeaders.AUTHORIZATION, tokens.get(UNVERIFIED_ADMIN_ID)))
-			.andExpect(status().is(403));
+//		mvc.perform(post("/api/core/users/{id}/resend-verification-mail", UNVERIFIED_USER_ID)
+//				.header(HttpHeaders.AUTHORIZATION, tokens.get(UNVERIFIED_ADMIN_ID)))
+//			.andExpect(status().is(403));
 		
 		mvc.perform(post("/api/core/users/{id}/resend-verification-mail", UNVERIFIED_USER_ID)
 				.header(HttpHeaders.AUTHORIZATION, tokens.get(BLOCKED_ADMIN_ID)))

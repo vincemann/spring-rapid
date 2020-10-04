@@ -82,8 +82,8 @@ public interface GenericUserServiceExtension<S extends UserService<U,Id>,U exten
     }
 
     @Override
-    default void createAdminUser(LemonProperties.Admin admin) throws BadEntityException {
-        getNext().createAdminUser(admin);
+    default U createAdminUser(LemonProperties.Admin admin) throws BadEntityException {
+        return getNext().createAdminUser(admin);
     }
 
     @Override
