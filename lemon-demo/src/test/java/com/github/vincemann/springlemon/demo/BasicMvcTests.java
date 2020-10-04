@@ -25,11 +25,11 @@ public class BasicMvcTests extends AbstractMvcTests {
 	public void testGetContextLoggedIn() throws Exception {
 		
 		mvc.perform(get("/api/core/context")
-				.header(HttpHeaders.AUTHORIZATION, tokens.get(ADMIN_ID)))
+				.header(HttpHeaders.AUTHORIZATION, tokens.get(admin.getId())))
 				.andExpect(status().is(200))
 //				.andExpect(header().string(HttpHeaders.AUTHORIZATION, containsString(".")))
 				.andExpect(jsonPath("$.context.reCaptchaSiteKey").isString())
-				.andExpect(jsonPath("$.user.id").value(ADMIN_ID))
+				.andExpect(jsonPath("$.user.id").value(admin.getId()))
 				.andExpect(jsonPath("$.user.roles[0]").value(RapidRoles.ADMIN))
 				.andExpect(jsonPath("$.user.password").doesNotExist());
 	}

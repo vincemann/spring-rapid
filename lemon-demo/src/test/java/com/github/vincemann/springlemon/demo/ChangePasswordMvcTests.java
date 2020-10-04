@@ -30,8 +30,8 @@ public class ChangePasswordMvcTests extends AbstractMvcTests {
 	@Test
 	public void testChangePassword() throws Exception {
 		
-		mvc.perform(post("/api/core/users/{id}/password", UNVERIFIED_USER_ID)
-				.header(HttpHeaders.AUTHORIZATION, tokens.get(UNVERIFIED_USER_ID))
+		mvc.perform(post("/api/core/users/{id}/password", unverifiedUser.getId())
+				.header(HttpHeaders.AUTHORIZATION, tokens.get(unverifiedUser.getId()))
 				.contentType(MediaType.APPLICATION_JSON)
 				.content(MapperUtils.toJson(changePasswordForm(USER_PASSWORD))))
 				.andExpect(status().is(204))
@@ -47,8 +47,8 @@ public class ChangePasswordMvcTests extends AbstractMvcTests {
 	@Test
 	public void testAdminChangePasswordOfAnotherUser() throws Exception {
 		
-		mvc.perform(post("/api/core/users/{id}/password", UNVERIFIED_USER_ID)
-				.header(HttpHeaders.AUTHORIZATION, tokens.get(ADMIN_ID))
+		mvc.perform(post("/api/core/users/{id}/password", unverifiedUser.getId())
+				.header(HttpHeaders.AUTHORIZATION, tokens.get(admin.getId()))
 				.contentType(MediaType.APPLICATION_JSON)
 				.content(MapperUtils.toJson(changePasswordForm(USER_PASSWORD))))
 				.andExpect(status().is(204))
@@ -65,7 +65,7 @@ public class ChangePasswordMvcTests extends AbstractMvcTests {
 	public void testChangePasswordOfUnknownId_shouldFail() throws Exception {
 		
 		mvc.perform(post("/api/core/users/99/password")
-				.header(HttpHeaders.AUTHORIZATION, tokens.get(ADMIN_ID))
+				.header(HttpHeaders.AUTHORIZATION, tokens.get(admin.getId()))
 				.contentType(MediaType.APPLICATION_JSON)
 				.content(MapperUtils.toJson(changePasswordForm(ADMIN_PASSWORD))))
 				.andExpect(status().is(404));
@@ -77,8 +77,8 @@ public class ChangePasswordMvcTests extends AbstractMvcTests {
 	@Test
 	public void testChangePasswordOfAnotherUser_shouldFail() throws Exception {
 		
-		mvc.perform(post("/api/core/users/{id}/password", UNVERIFIED_USER_ID)
-				.header(HttpHeaders.AUTHORIZATION, tokens.get(USER_ID))
+		mvc.perform(post("/api/core/users/{id}/password", unverifiedUser.getId())
+				.header(HttpHeaders.AUTHORIZATION, tokens.get(user.getId()))
 				.contentType(MediaType.APPLICATION_JSON)
 				.content(MapperUtils.toJson(changePasswordForm(USER_PASSWORD))))
 				.andExpect(status().is(403));
@@ -93,8 +93,8 @@ public class ChangePasswordMvcTests extends AbstractMvcTests {
 	@Test
 	public void testBadAdminChangePasswordOfAnotherUser_shouldFail() throws Exception {
 		
-		mvc.perform(post("/api/core/users/{id}/password", UNVERIFIED_USER_ID)
-				.header(HttpHeaders.AUTHORIZATION, tokens.get(SECOND_ADMIN_ID))
+		mvc.perform(post("/api/core/users/{id}/password", unverifiedUser.getId())
+				.header(HttpHeaders.AUTHORIZATION, tokens.get(secondAdmin.getId()))
 				.contentType(MediaType.APPLICATION_JSON)
 				.content(MapperUtils.toJson(changePasswordForm(ADMIN_PASSWORD))))
 				.andExpect(status().is(403));
@@ -107,8 +107,8 @@ public class ChangePasswordMvcTests extends AbstractMvcTests {
 	public void testChangePasswordInvalidData() throws Exception {
 		
 		// All fields null
-		mvc.perform(post("/api/core/users/{id}/password", UNVERIFIED_USER_ID)
-				.header(HttpHeaders.AUTHORIZATION, tokens.get(UNVERIFIED_USER_ID))
+		mvc.perform(post("/api/core/users/{id}/password", unverifiedUser.getId())
+				.header(HttpHeaders.AUTHORIZATION, tokens.get(unverifiedUser.getId()))
 				.contentType(MediaType.APPLICATION_JSON)
 				.content(MapperUtils.toJson(new ChangePasswordForm())))
 				.andExpect(status().is(422))
@@ -124,8 +124,8 @@ public class ChangePasswordMvcTests extends AbstractMvcTests {
 		form.setPassword("short");
 		form.setRetypePassword("short");
 
-		mvc.perform(post("/api/core/users/{id}/password", UNVERIFIED_USER_ID)
-				.header(HttpHeaders.AUTHORIZATION, tokens.get(UNVERIFIED_USER_ID))
+		mvc.perform(post("/api/core/users/{id}/password", unverifiedUser.getId())
+				.header(HttpHeaders.AUTHORIZATION, tokens.get(unverifiedUser.getId()))
 				.contentType(MediaType.APPLICATION_JSON)
 				.content(MapperUtils.toJson(form)))
 				.andExpect(status().is(422))
@@ -139,8 +139,8 @@ public class ChangePasswordMvcTests extends AbstractMvcTests {
 		form = changePasswordForm(USER_PASSWORD);
 		form.setRetypePassword("different-retype-password");
 
-		mvc.perform(post("/api/core/users/{id}/password", UNVERIFIED_USER_ID)
-				.header(HttpHeaders.AUTHORIZATION, tokens.get(UNVERIFIED_USER_ID))
+		mvc.perform(post("/api/core/users/{id}/password", unverifiedUser.getId())
+				.header(HttpHeaders.AUTHORIZATION, tokens.get(unverifiedUser.getId()))
 				.contentType(MediaType.APPLICATION_JSON)
 				.content(MapperUtils.toJson(form)))
 				.andExpect(status().is(422))

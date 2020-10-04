@@ -1,6 +1,7 @@
 package com.github.vincemann.springlemon.demo;
 
 import com.github.vincemann.springlemon.auth.controller.AbstractUserController;
+import com.github.vincemann.springlemon.auth.domain.AbstractUser;
 import com.github.vincemann.springlemon.demo.domain.User;
 import com.github.vincemann.springlemon.auth.service.UserService;
 import com.github.vincemann.springlemon.auth.domain.LemonRoles;
@@ -78,16 +79,16 @@ public class UpdateUserMvcTests extends AbstractMvcTests
 	@Test
     public void testUpdateWithUnknownPathVariables_should400() throws Exception {
 
-			mvc.perform(update(userPatch,UNVERIFIED_USER_ID)
-				.header(HttpHeaders.AUTHORIZATION, tokens.get(UNVERIFIED_USER_ID)))
+			mvc.perform(update(userPatch,unverifiedUser.getId())
+				.header(HttpHeaders.AUTHORIZATION, tokens.get(unverifiedUser.getId())))
 				.andExpect(status().is(400));
 //				.andExpect(header().string(LecUtils.TOKEN_RESPONSE_HEADER_NAME, containsString(".")))
 //				.andExpect(jsonPath("$.tag.name").value(UPDATED_NAME))
 //				.andExpect(jsonPath("$.roles").value(hasSize(1)))
 //				.andExpect(jsonPath("$.roles[0]").value(LemonRole.UNVERIFIED))
 //				.andExpect(jsonPath("$.email").value(UNVERIFIED_USER_EMAIL));
-		
-		User user = userRepository.findById(UNVERIFIED_USER_ID).get();
+
+		AbstractUser<Long> user = userRepository.findById(unverifiedUser.getId()).get();
 		
 		// Ensure that data has not changed
 		Assertions.assertEquals(UNVERIFIED_USER_EMAIL, user.getEmail());
@@ -106,19 +107,19 @@ public class UpdateUserMvcTests extends AbstractMvcTests
     public void testGoodAdminCanUpdateOther() throws Exception {
 
 		
-		mvc.perform(update(userPatch,UNVERIFIED_USER_ID)
+		mvc.perform(update(userPatch,unverifiedUser.getId())
 //				.contentType(MediaType.APPLICATION_JSON)
-				.header(HttpHeaders.AUTHORIZATION, tokens.get(ADMIN_ID)))
+				.header(HttpHeaders.AUTHORIZATION, tokens.get(admin.getId())))
 //				.content(userPatch))
 				.andExpect(status().is(200))
 				.andExpect(header().string(HttpHeaders.AUTHORIZATION, containsString(".")))
-//				.andExpect(jsonPath("$.id").value(UNVERIFIED_USER_ID))
+//				.andExpect(jsonPath("$.id").value(unverifiedUser.getId()))
 //				.andExpect(jsonPath("$.tag.name").value(UPDATED_NAME))
 				.andExpect(jsonPath("$.roles").value(hasSize(1)))
 				.andExpect(jsonPath("$.roles[0]").value(RapidRoles.ADMIN))
 				.andExpect(jsonPath("$.email").value(userPatchUpdatedEmail));
-		
-		User user = userRepository.findById(UNVERIFIED_USER_ID).get();
+
+		AbstractUser<Long> user = userRepository.findById(unverifiedUser.getId()).get();
     	
 		// Ensure that data changed properly
 		//should get replaced because admin has full power
@@ -135,7 +136,7 @@ public class UpdateUserMvcTests extends AbstractMvcTests
     	
 		mvc.perform(update(userPatch,99L)
 //				.contentType(MediaType.APPLICATION_JSON)
-				.header(HttpHeaders.AUTHORIZATION, tokens.get(ADMIN_ID)))
+				.header(HttpHeaders.AUTHORIZATION, tokens.get(admin.getId())))
 //				.content(userPatch))
 				.andExpect(status().is(404));
     }
@@ -150,7 +151,7 @@ public class UpdateUserMvcTests extends AbstractMvcTests
 //
 //		mvc.perform(update(userPatch,99L)
 ////				.contentType(MediaType.APPLICATION_JSON)
-//				.header(HttpHeaders.AUTHORIZATION, tokens.get(ADMIN_ID)))
+//				.header(HttpHeaders.AUTHORIZATION, tokens.get(admin.getId())))
 ////				.content(userPatch))
 //				.andExpect(status().is(404));
 //	}
@@ -162,9 +163,9 @@ public class UpdateUserMvcTests extends AbstractMvcTests
 	@Test
     public void testUpdateAnotherUser() throws Exception {
     	
-		mvc.perform(update(namePatch,ADMIN_ID)
+		mvc.perform(update(namePatch,admin.getId())
 //				.contentType(MediaType.APPLICATION_JSON)
-				.header(HttpHeaders.AUTHORIZATION, tokens.get(UNVERIFIED_USER_ID)))
+				.header(HttpHeaders.AUTHORIZATION, tokens.get(unverifiedUser.getId())))
 //				.content(userPatch))
 				.andExpect(status().is(403));
     }
@@ -176,15 +177,15 @@ public class UpdateUserMvcTests extends AbstractMvcTests
 	@Test
     public void testBadAdminUpdateAnotherUser() throws Exception {
 		
-		mvc.perform(update(userPatch, UNVERIFIED_USER_ID)
+		mvc.perform(update(userPatch, unverifiedUser.getId())
 //				.contentType(MediaType.APPLICATION_JSON)
-				.header(HttpHeaders.AUTHORIZATION, tokens.get(SECOND_ADMIN_ID)))
+				.header(HttpHeaders.AUTHORIZATION, tokens.get(secondAdmin.getId())))
 //				.content(userPatch))
 				.andExpect(status().is(403));
 
-		mvc.perform(update( userPatch,UNVERIFIED_USER_ID)
+		mvc.perform(update( userPatch,unverifiedUser.getId())
 //				.contentType(MediaType.APPLICATION_JSON)
-				.header(HttpHeaders.AUTHORIZATION, tokens.get(BLOCKED_ADMIN_ID)))
+				.header(HttpHeaders.AUTHORIZATION, tokens.get(blockedAdmin.getId())))
 //				.content(userPatch))
 				.andExpect(status().is(403));
 	}
@@ -198,9 +199,9 @@ public class UpdateUserMvcTests extends AbstractMvcTests
 	//why not?
     public void adminCanNotUpdateSelfRoles() throws Exception {
     	
-		mvc.perform(update(userPatchAdminRole,ADMIN_ID)
+		mvc.perform(update(userPatchAdminRole,admin.getId())
 //				.contentType(MediaType.APPLICATION_JSON)
-				.header(HttpHeaders.AUTHORIZATION, tokens.get(ADMIN_ID)))
+				.header(HttpHeaders.AUTHORIZATION, tokens.get(admin.getId())))
 //				.content(userPatchAdminRole))
 				.andExpect(status().is(200))
 //				.andExpect(jsonPath("$.tag.name").value(UPDATED_NAME))
@@ -216,17 +217,17 @@ public class UpdateUserMvcTests extends AbstractMvcTests
     public void testUpdateUserInvalidNewName() throws Exception {
 
 		// Null name
-		assertThatThrownBy(() -> mvc.perform(update(userPatchNullName, UNVERIFIED_USER_ID)
+		assertThatThrownBy(() -> mvc.perform(update(userPatchNullName, unverifiedUser.getId())
 //				.contentType(MediaType.APPLICATION_JSON)
-				.header(HttpHeaders.AUTHORIZATION, tokens.get(UNVERIFIED_USER_ID)))
+				.header(HttpHeaders.AUTHORIZATION, tokens.get(unverifiedUser.getId())))
 //				.content(userPatchNullName))
 				.andExpect(status().is(400)))
 				.hasRootCauseInstanceOf(SQLIntegrityConstraintViolationException.class);
 
 		// Too long name
-		assertThatThrownBy(() -> mvc.perform(update(userPatchLongName, UNVERIFIED_USER_ID)
+		assertThatThrownBy(() -> mvc.perform(update(userPatchLongName, unverifiedUser.getId())
 //				.contentType(MediaType.APPLICATION_JSON)
-				.header(HttpHeaders.AUTHORIZATION, tokens.get(UNVERIFIED_USER_ID)))
+				.header(HttpHeaders.AUTHORIZATION, tokens.get(unverifiedUser.getId())))
 //				.content(userPatchLongName))
 				.andExpect(status().is(400)))
 				.hasRootCauseInstanceOf(MysqlDataTruncation.class);

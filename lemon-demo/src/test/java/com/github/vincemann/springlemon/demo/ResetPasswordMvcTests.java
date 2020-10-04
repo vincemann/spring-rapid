@@ -42,7 +42,7 @@ public class ResetPasswordMvcTests extends AbstractMvcTests {
 				.content(form(forgotPasswordCode, NEW_PASSWORD)))
 		        .andExpect(status().is(200))
 				.andExpect(header().string(HttpHeaders.AUTHORIZATION, containsString(".")))
-				.andExpect(jsonPath("$.id").value(ADMIN_ID));
+				.andExpect(jsonPath("$.id").value(admin.getId()));
 		
 		// New password should work
 		login(ADMIN_EMAIL, NEW_PASSWORD);

@@ -14,8 +14,8 @@ public class ResendVerificationMailMvcTests extends AbstractMvcTests {
 	@Test
 	public void testResendVerificationMail() throws Exception {
 		
-		mvc.perform(post("/api/core/users/{id}/resend-verification-mail", UNVERIFIED_USER_ID)
-				.header(HttpHeaders.AUTHORIZATION, tokens.get(UNVERIFIED_USER_ID)))
+		mvc.perform(post("/api/core/users/{id}/resend-verification-mail", unverifiedUser.getId())
+				.header(HttpHeaders.AUTHORIZATION, tokens.get(unverifiedUser.getId())))
 			.andExpect(status().is(204));
 		
 		verify(mailSender).send(any());
@@ -24,20 +24,20 @@ public class ResendVerificationMailMvcTests extends AbstractMvcTests {
 	@Test
 	public void testAdminResendVerificationMailOtherUser() throws Exception {
 		
-		mvc.perform(post("/api/core/users/{id}/resend-verification-mail", UNVERIFIED_USER_ID)
-				.header(HttpHeaders.AUTHORIZATION, tokens.get(ADMIN_ID)))
+		mvc.perform(post("/api/core/users/{id}/resend-verification-mail", unverifiedUser.getId())
+				.header(HttpHeaders.AUTHORIZATION, tokens.get(admin.getId())))
 			.andExpect(status().is(204));
 	}
 
 	@Test
 	public void testBlockedAdminResendVerificationMailOtherUser_shouldFail() throws Exception {
 		
-//		mvc.perform(post("/api/core/users/{id}/resend-verification-mail", UNVERIFIED_USER_ID)
+//		mvc.perform(post("/api/core/users/{id}/resend-verification-mail", unverifiedUser.getId())
 //				.header(HttpHeaders.AUTHORIZATION, tokens.get(UNVERIFIED_ADMIN_ID)))
 //			.andExpect(status().is(403));
 		
-		mvc.perform(post("/api/core/users/{id}/resend-verification-mail", UNVERIFIED_USER_ID)
-				.header(HttpHeaders.AUTHORIZATION, tokens.get(BLOCKED_ADMIN_ID)))
+		mvc.perform(post("/api/core/users/{id}/resend-verification-mail", unverifiedUser.getId())
+				.header(HttpHeaders.AUTHORIZATION, tokens.get(blockedAdmin.getId())))
 			.andExpect(status().is(403));
 		
 		verify(mailSender, never()).send(any());
@@ -46,7 +46,7 @@ public class ResendVerificationMailMvcTests extends AbstractMvcTests {
 	@Test
 	public void testResendVerificationMailUnauthenticated() throws Exception {
 		
-		mvc.perform(post("/api/core/users/{id}/resend-verification-mail", UNVERIFIED_USER_ID))
+		mvc.perform(post("/api/core/users/{id}/resend-verification-mail", unverifiedUser.getId()))
 			.andExpect(status().is(403));
 		
 		verify(mailSender, never()).send(any());
@@ -55,8 +55,8 @@ public class ResendVerificationMailMvcTests extends AbstractMvcTests {
 	@Test
 	public void testResendVerificationMailAlreadyVerified() throws Exception {
 		
-		mvc.perform(post("/api/core/users/{id}/resend-verification-mail", USER_ID)
-				.header(HttpHeaders.AUTHORIZATION, tokens.get(USER_ID)))
+		mvc.perform(post("/api/core/users/{id}/resend-verification-mail", user.getId())
+				.header(HttpHeaders.AUTHORIZATION, tokens.get(user.getId())))
 			.andExpect(status().is(422));
 		
 		verify(mailSender, never()).send(any());
@@ -65,8 +65,8 @@ public class ResendVerificationMailMvcTests extends AbstractMvcTests {
 	@Test
 	public void testResendVerificationMailOtherUser() throws Exception {
 		
-		mvc.perform(post("/api/core/users/{id}/resend-verification-mail", UNVERIFIED_USER_ID)
-				.header(HttpHeaders.AUTHORIZATION, tokens.get(USER_ID)))
+		mvc.perform(post("/api/core/users/{id}/resend-verification-mail", unverifiedUser.getId())
+				.header(HttpHeaders.AUTHORIZATION, tokens.get(user.getId())))
 			.andExpect(status().is(403));
 		
 		verify(mailSender, never()).send(any());
@@ -76,7 +76,7 @@ public class ResendVerificationMailMvcTests extends AbstractMvcTests {
 	public void testResendVerificationMailNonExistingUser() throws Exception {
 		
 		mvc.perform(post("/api/core/users/99/resend-verification-mail")
-				.header(HttpHeaders.AUTHORIZATION, tokens.get(ADMIN_ID)))
+				.header(HttpHeaders.AUTHORIZATION, tokens.get(admin.getId())))
 			.andExpect(status().is(404));
 		
 		verify(mailSender, never()).send(any());

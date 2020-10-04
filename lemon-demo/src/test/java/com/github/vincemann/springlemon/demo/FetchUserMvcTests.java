@@ -14,9 +14,9 @@ public class FetchUserMvcTests extends AbstractMvcTests {
 //	@Disabled //replaced by rapid controller find by Id
 //	public void testUnauthenticated_fetchUserById_shouldOnlyHaveNamePayLoad() throws Exception {
 //
-//		mvc.perform(get("/api/core/users/{id}", ADMIN_ID))
+//		mvc.perform(get("/api/core/users/{id}", admin.getId()))
 //                .andExpect(status().is(200))
-//				.andExpect(jsonPath("$.id").value(ADMIN_ID))
+//				.andExpect(jsonPath("$.id").value(admin.getId()))
 //				.andExpect(jsonPath("$.email").doesNotExist())
 //				.andExpect(jsonPath("$.password").doesNotExist())
 //				.andExpect(jsonPath("$.credentialsUpdatedAt").doesNotExist());
@@ -27,27 +27,27 @@ public class FetchUserMvcTests extends AbstractMvcTests {
 //	public void testFetchUserByIdLoggedIn() throws Exception {
 //		//can see email = can see everything relevant
 //		// Same user logged in -> can also see its email but that's it
-//		mvc.perform(get("/api/core/users/{id}", ADMIN_ID)
-//				.header(HttpHeaders.AUTHORIZATION, tokens.get(ADMIN_ID)))
+//		mvc.perform(get("/api/core/users/{id}", admin.getId())
+//				.header(HttpHeaders.AUTHORIZATION, tokens.get(admin.getId())))
 //                .andExpect(status().is(200))
-//				.andExpect(jsonPath("$.id").value(ADMIN_ID))
+//				.andExpect(jsonPath("$.id").value(admin.getId()))
 //				.andExpect(jsonPath("$.email").value(ADMIN_EMAIL))
 //				.andExpect(jsonPath("$.password").doesNotExist())
 //				.andExpect(jsonPath("$.credentialsUpdatedAt").doesNotExist());
 ////				.andExpect(jsonPath("$.name").value("Admin 1"));
 //
 //		// Another user logged in, can see the same as unauthenticated
-//		mvc.perform(get("/api/core/users/{id}", ADMIN_ID)
-//				.header(HttpHeaders.AUTHORIZATION, tokens.get(UNVERIFIED_USER_ID)))
+//		mvc.perform(get("/api/core/users/{id}", admin.getId())
+//				.header(HttpHeaders.AUTHORIZATION, tokens.get(unverifiedUser.getId())))
 //                .andExpect(status().is(200))
-//				.andExpect(jsonPath("$.id").value(ADMIN_ID))
+//				.andExpect(jsonPath("$.id").value(admin.getId()))
 //				.andExpect(jsonPath("$.email").doesNotExist());
 //
 //		// Admin user logged in - fetching another user can see email
-//		MvcResult mvcResult = mvc.perform(get("/api/core/users/{id}", UNVERIFIED_USER_ID)
-//				.header(HttpHeaders.AUTHORIZATION, tokens.get(ADMIN_ID)))
+//		MvcResult mvcResult = mvc.perform(get("/api/core/users/{id}", unverifiedUser.getId())
+//				.header(HttpHeaders.AUTHORIZATION, tokens.get(admin.getId())))
 //				.andExpect(status().is(200))
-//				.andExpect(jsonPath("$.id").value(UNVERIFIED_USER_ID))
+//				.andExpect(jsonPath("$.id").value(unverifiedUser.getId()))
 //				.andExpect(jsonPath("$.email").value(UNVERIFIED_USER_EMAIL))
 //				.andReturn();
 //
@@ -69,7 +69,7 @@ public class FetchUserMvcTests extends AbstractMvcTests {
                 .param("email", ADMIN_EMAIL)
                 .header("contentType",  MediaType.APPLICATION_FORM_URLENCODED))
                 .andExpect(status().is(200))
-				.andExpect(jsonPath("$.id").value(ADMIN_ID))
+				.andExpect(jsonPath("$.id").value(admin.getId()))
 				.andExpect(jsonPath("$.password").doesNotExist())
 				.andExpect(jsonPath("$.credentialsUpdatedAt").doesNotExist());
 //				.andExpect(jsonPath("$.name").value("Admin 1"));

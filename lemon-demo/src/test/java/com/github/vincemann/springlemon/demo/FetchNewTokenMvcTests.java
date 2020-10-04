@@ -40,7 +40,7 @@ public class FetchNewTokenMvcTests extends AbstractMvcTests {
 	public void testFetchNewToken() throws Exception {
 		
 		MvcResult result = mvc.perform(post("/api/core/fetch-new-auth-token")
-				.header(HttpHeaders.AUTHORIZATION, tokens.get(UNVERIFIED_USER_ID))
+				.header(HttpHeaders.AUTHORIZATION, tokens.get(unverifiedUser.getId()))
                 .header("contentType",  MediaType.APPLICATION_FORM_URLENCODED))
                 .andExpect(status().is(200))
 				.andExpect(jsonPath("$.token").value(containsString(".")))
@@ -58,7 +58,7 @@ public class FetchNewTokenMvcTests extends AbstractMvcTests {
 		Mockito.doReturn(mockedExpireTime).when(properties.getJwt().getExpirationMillis());
 
 		MvcResult result = mvc.perform(post("/api/core/fetch-new-auth-token")
-				.header(HttpHeaders.AUTHORIZATION, tokens.get(UNVERIFIED_USER_ID))
+				.header(HttpHeaders.AUTHORIZATION, tokens.get(unverifiedUser.getId()))
 //		        .param("expirationMillis", "1000")
                 .header("contentType",  MediaType.APPLICATION_FORM_URLENCODED))
                 .andExpect(status().is(200))
@@ -82,7 +82,7 @@ public class FetchNewTokenMvcTests extends AbstractMvcTests {
 	public void testFetchNewTokenByAdminForAnotherUser() throws Exception {
 		
 		MvcResult result = mvc.perform(post("/api/core/fetch-new-auth-token")
-				.header(HttpHeaders.AUTHORIZATION, tokens.get(ADMIN_ID))
+				.header(HttpHeaders.AUTHORIZATION, tokens.get(admin.getId()))
 		        .param("email", UNVERIFIED_USER_EMAIL)
                 .header("contentType",  MediaType.APPLICATION_FORM_URLENCODED))
                 .andExpect(status().is(200))
@@ -96,7 +96,7 @@ public class FetchNewTokenMvcTests extends AbstractMvcTests {
 	public void testFetchNewTokenByNonAdminForAnotherUser_shouldFail() throws Exception {
 		
 		mvc.perform(post("/api/core/fetch-new-auth-token")
-				.header(HttpHeaders.AUTHORIZATION, tokens.get(UNVERIFIED_USER_ID))
+				.header(HttpHeaders.AUTHORIZATION, tokens.get(unverifiedUser.getId()))
 		        .param("email", ADMIN_EMAIL)
                 .header("contentType",  MediaType.APPLICATION_FORM_URLENCODED))
                 .andExpect(status().is(403));

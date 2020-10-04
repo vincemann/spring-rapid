@@ -1,7 +1,7 @@
 package com.github.vincemann.springlemon.auth.config;
 
 import com.github.vincemann.springlemon.auth.service.UserService;
-import com.github.vincemann.springlemon.auth.service.extension.LemonAclServiceExtension;
+import com.github.vincemann.springlemon.auth.service.extension.AclUserServiceExtension;
 import com.github.vincemann.springlemon.auth.service.extension.UserServiceSecurityExtension;
 import com.github.vincemann.springrapid.acl.config.AclAutoConfiguration;
 import com.github.vincemann.springrapid.acl.proxy.*;
@@ -50,10 +50,10 @@ public class UserServiceSecurityAutoConfiguration {
     }
 
     @Bean
-    @ConditionalOnMissingBean(LemonAclServiceExtension.class)
+    @ConditionalOnMissingBean(AclUserServiceExtension.class)
     @Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
-    public LemonAclServiceExtension lemonAclExtension() {
-        return new LemonAclServiceExtension();
+    public AclUserServiceExtension lemonAclExtension() {
+        return new AclUserServiceExtension();
     }
 
 
