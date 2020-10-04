@@ -48,7 +48,7 @@ public class RequestEmailChangeMvcTests extends AbstractMvcTests {
 	}
 	
 	/**
-     * A good admin should be able to request changing email of another user.
+     * A admin should be able to request changing email of another user.
      */
 	@Test
 	public void testGoodAdminRequestEmailChange() throws Exception {
@@ -104,7 +104,7 @@ public class RequestEmailChangeMvcTests extends AbstractMvcTests {
 		//unverified admins are not treated differently than verified admins
 		mvc.perform(post("/api/core/users/{id}/email-change-request", ADMIN_ID)
 				.contentType(MediaType.APPLICATION_JSON)
-				.header(HttpHeaders.AUTHORIZATION, tokens.get(UNVERIFIED_ADMIN_ID))
+				.header(HttpHeaders.AUTHORIZATION, tokens.get(SECOND_ADMIN_ID))
 				.content(MapperUtils.toJson(form())))
 				.andExpect(status().is(403));
 		

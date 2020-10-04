@@ -1,7 +1,6 @@
 package com.github.vincemann.springlemon.demo;
 
 import com.github.vincemann.springlemon.auth.domain.dto.ChangePasswordForm;
-import com.github.vincemann.springlemon.auth.util.LemonValidationUtils;
 import com.github.vincemann.springrapid.core.util.MapperUtils;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpHeaders;
@@ -95,7 +94,7 @@ public class ChangePasswordMvcTests extends AbstractMvcTests {
 	public void testBadAdminChangePasswordOfAnotherUser_shouldFail() throws Exception {
 		
 		mvc.perform(post("/api/core/users/{id}/password", UNVERIFIED_USER_ID)
-				.header(HttpHeaders.AUTHORIZATION, tokens.get(UNVERIFIED_ADMIN_ID))
+				.header(HttpHeaders.AUTHORIZATION, tokens.get(SECOND_ADMIN_ID))
 				.contentType(MediaType.APPLICATION_JSON)
 				.content(MapperUtils.toJson(changePasswordForm(ADMIN_PASSWORD))))
 				.andExpect(status().is(403));

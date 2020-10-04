@@ -20,7 +20,6 @@ public class LemonAuthenticatedPrincipal extends RapidAuthenticatedPrincipal {
 	private boolean blocked = false;
 	private boolean admin = false;
 	private boolean goodUser = false;
-	private boolean goodAdmin = false;
 	private boolean unverified = false;
 
 	public LemonAuthenticatedPrincipal(String email,String password, Set<String> roles, String id) {
@@ -38,7 +37,7 @@ public class LemonAuthenticatedPrincipal extends RapidAuthenticatedPrincipal {
 		blocked = getRoles().contains(LemonRoles.BLOCKED);
 		admin = getRoles().contains(RapidRoles.ADMIN);
 		goodUser = !(unverified || blocked);
-		goodAdmin = goodUser && admin;
+//		goodAdmin = goodUser && admin;
 	}
 
 	public String getEmail(){
