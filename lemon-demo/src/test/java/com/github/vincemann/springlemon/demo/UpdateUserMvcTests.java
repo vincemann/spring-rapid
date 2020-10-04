@@ -4,7 +4,6 @@ import com.github.vincemann.springlemon.auth.controller.AbstractUserController;
 import com.github.vincemann.springlemon.demo.domain.User;
 import com.github.vincemann.springlemon.auth.service.UserService;
 import com.github.vincemann.springlemon.auth.domain.LemonRoles;
-import com.github.vincemann.springlemon.auth.util.LemonValidationUtils;
 import com.github.vincemann.springrapid.core.security.RapidRoles;
 
 import com.github.vincemann.springrapid.core.util.ResourceUtils;
@@ -97,7 +96,7 @@ public class UpdateUserMvcTests extends AbstractMvcTests
     }
 
 	/**
-	 * A good ADMIN should be able to update another user's name and roles.
+	 * A ADMIN should be able to update another user's name and roles.
 	 * The name of security principal object should NOT change in the process,
 	 * and the verification code should get set/unset on addition/deletion of
 	 * the UNVERIFIED role. 
@@ -122,7 +121,7 @@ public class UpdateUserMvcTests extends AbstractMvcTests
 		User user = userRepository.findById(UNVERIFIED_USER_ID).get();
     	
 		// Ensure that data changed properly
-		//should get replaced because good admin has full power
+		//should get replaced because admin has full power
 		Assertions.assertEquals(userPatchUpdatedEmail, user.getEmail());
 		Assertions.assertEquals(1, user.getRoles().size());
 		Assertions.assertTrue(user.getRoles().contains(RapidRoles.ADMIN));
@@ -179,7 +178,7 @@ public class UpdateUserMvcTests extends AbstractMvcTests
 		
 		mvc.perform(update(userPatch, UNVERIFIED_USER_ID)
 //				.contentType(MediaType.APPLICATION_JSON)
-				.header(HttpHeaders.AUTHORIZATION, tokens.get(UNVERIFIED_ADMIN_ID)))
+				.header(HttpHeaders.AUTHORIZATION, tokens.get(SECOND_ADMIN_ID)))
 //				.content(userPatch))
 				.andExpect(status().is(403));
 
@@ -191,13 +190,13 @@ public class UpdateUserMvcTests extends AbstractMvcTests
 	}
 
 	/**
-	 * A good ADMIN should not be able to change his own roles
+	 * A ADMIN should not be able to change his own roles
 	 * @throws Exception 
 	 */
 	@Test
 	@Disabled
 	//why not?
-    public void goodAdminCanNotUpdateSelfRoles() throws Exception {
+    public void adminCanNotUpdateSelfRoles() throws Exception {
     	
 		mvc.perform(update(userPatchAdminRole,ADMIN_ID)
 //				.contentType(MediaType.APPLICATION_JSON)

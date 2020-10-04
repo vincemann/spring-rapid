@@ -21,7 +21,7 @@ public abstract class AbstractLemonUserDto extends IdentifiableEntityImpl<String
     private boolean blocked = false;
     private boolean admin = false;
     private boolean goodUser = false;
-    private boolean goodAdmin = false;
+//    private boolean goodAdmin = false;
 
     public AbstractLemonUserDto(String email, Set<String> roles,String id) {
         this.email = email;
@@ -35,6 +35,6 @@ public abstract class AbstractLemonUserDto extends IdentifiableEntityImpl<String
         blocked = roles.contains(LemonRoles.BLOCKED);
         admin = roles.contains(RapidRoles.ADMIN);
         goodUser = !(unverified || blocked);
-        goodAdmin = goodUser && admin;
+//        goodAdmin = goodUser && admin;
     }
 }

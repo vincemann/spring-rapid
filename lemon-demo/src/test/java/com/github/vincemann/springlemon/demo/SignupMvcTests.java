@@ -63,8 +63,8 @@ public class SignupMvcTests extends AbstractMvcTests {
 				.andExpect(jsonPath("$.unverified").value(true))
 				.andExpect(jsonPath("$.blocked").value(false))
 				.andExpect(jsonPath("$.admin").value(false))
-				.andExpect(jsonPath("$.goodUser").value(false))
-				.andExpect(jsonPath("$.goodAdmin").value(false));
+				.andExpect(jsonPath("$.goodUser").value(false));
+//				.andExpect(jsonPath("$.goodAdmin").value(false));
 				
 		verify(mailSender).send(any());
 

@@ -18,10 +18,10 @@ public class LemonSecurityContextChecker {
 
     private RapidSecurityContext<LemonAuthenticatedPrincipal> securityContext;
 
-    public void checkGoodAdmin(){
+    public void checkAdmin(){
         RapidSecurityContextChecker.checkAuthenticated();
         LemonAuthenticatedPrincipal principal = securityContext.currentPrincipal();
-        VerifyAccess.isTrue(principal.isGoodAdmin(),"User is not good admin");
+        VerifyAccess.isTrue(principal.isAdmin(),"User is not admin");
     }
 
     public void checkGoodUser(){

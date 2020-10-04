@@ -12,6 +12,7 @@ import com.github.vincemann.springlemon.auth.util.*;
 import com.github.vincemann.springrapid.acl.proxy.Unsecured;
 import com.github.vincemann.springrapid.core.security.RapidSecurityContext;
 import com.github.vincemann.springrapid.core.service.JPACrudService;
+import com.google.common.collect.Sets;
 import com.nimbusds.jwt.JWTClaimsSet;
 import com.github.vincemann.springlemon.auth.domain.AbstractUser;
 import com.github.vincemann.springlemon.auth.domain.AbstractUserRepository;
@@ -102,10 +103,12 @@ public abstract class AbstractUserService
     //todo wo findet captcha statt, hier sollte captcha stattfinden, Aop Solution: https://medium.com/@cristi.rosu4/protecting-your-spring-boot-rest-endpoints-with-google-recaptcha-and-aop-31328a3f56b7
     @Transactional(propagation = Propagation.REQUIRED, readOnly = false)
     public U signup(U user) throws BadEntityException {
-        U initialized = initUser(user);
-        log.debug("initialized user: " + initialized);
-        U saved = save(initialized);
-        makeUnverified(saved);
+        //admins get created with createAdminMethod
+        user.setPassword(passwordEncoder.encode(user.getPassword()));
+        user.setRoles(Sets.newHashSet(LemonRoles.USER));
+        makeUnverified(user);
+        U saved = unsecuredUserService.save(user);
+
         log.debug("saved and send verification mail for unverified new user: " + saved);
         //logout anon and login user, it is expected that signed up user is logged in after this method is called
         securityContext.login(authenticatedPrincipalFactory.create(saved));
@@ -113,14 +116,6 @@ public abstract class AbstractUserService
     }
 
 
-    /**
-     * Initializes the user based on the input data,
-     * e.g. encrypts the password
-     */
-    protected U initUser(U user){
-        user.setPassword(passwordEncoder.encode(user.getPassword())); // encode the password
-        return user;
-    }
 
 
     @Transactional(propagation = Propagation.SUPPORTS, readOnly = false)
@@ -459,8 +454,8 @@ public abstract class AbstractUserService
         user.setEmail(admin.getEmail());
         user.setPassword(passwordEncoder.encode(
                 admin.getPassword()));
-        user.getRoles().add(RapidRoles.ADMIN);
-        U saved = getRepository().save(user);
+        user.getRoles().add(LemonRoles.ADMIN);
+        U saved = unsecuredUserService.save(user);
         log.debug("admin saved.");
         return saved;
     }

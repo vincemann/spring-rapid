@@ -37,8 +37,8 @@ public class LoginMvcTests extends AbstractMvcTests {
 				.andExpect(jsonPath("$.unverified").value(false))
 				.andExpect(jsonPath("$.blocked").value(false))
 				.andExpect(jsonPath("$.admin").value(true))
-				.andExpect(jsonPath("$.goodUser").value(true))
-				.andExpect(jsonPath("$.goodAdmin").value(true));
+				.andExpect(jsonPath("$.goodUser").value(true));
+//				.andExpect(jsonPath("$.goodAdmin").value(true));
 	}
 
 	@Test

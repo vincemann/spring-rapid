@@ -36,7 +36,7 @@ public class UserServiceSecurityExtension
 
     @Override
     public IdentifiableEntity save(IdentifiableEntity entity) throws BadEntityException {
-        securityContextChecker.checkGoodAdmin();
+        securityContextChecker.checkAdmin();
         return getNext().save(entity);
     }
 
@@ -63,8 +63,8 @@ public class UserServiceSecurityExtension
      * Check current Users role and decide what role adjustments he can make.
      */
     protected void checkRoleChangingPermissions(AbstractUser<?> old, AbstractUser<?> newUser, LemonAuthenticatedPrincipal currentUser) {
-        // Good admin tries to edit
-        if (currentUser.isGoodAdmin() &&
+        // admin tries to edit
+        if (currentUser.isAdmin() &&
                 !currentUser.getId().equals(old.getId().toString())) {
             return;
         } else {
@@ -113,7 +113,7 @@ public class UserServiceSecurityExtension
     public String createNewAuthToken(String email) {
         LemonAuthenticatedPrincipal authenticated = securityContextChecker.getSecurityContext().currentPrincipal();
         LemonValidationUtils.ensureAuthority(authenticated.getEmail().equals(email) ||
-                authenticated.isGoodAdmin(), "com.naturalprogrammer.spring.notGoodAdminOrSameUser");
+                authenticated.isAdmin(), "com.naturalprogrammer.spring.notGoodAdminOrSameUser");
         return getNext().createNewAuthToken(email);
     }
 
