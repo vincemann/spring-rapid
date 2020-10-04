@@ -55,8 +55,7 @@ public class FetchNewTokenMvcTests extends AbstractMvcTests {
 		//mock expire time
 		long oldExpireTime = properties.getJwt().getExpirationMillis();
 		long mockedExpireTime = 1000L;
-		Mockito.when(properties.getJwt().getExpirationMillis())
-				.thenReturn(mockedExpireTime);
+		Mockito.doReturn(mockedExpireTime).when(properties.getJwt().getExpirationMillis());
 
 		MvcResult result = mvc.perform(post("/api/core/fetch-new-auth-token")
 				.header(HttpHeaders.AUTHORIZATION, tokens.get(UNVERIFIED_USER_ID))
@@ -84,7 +83,7 @@ public class FetchNewTokenMvcTests extends AbstractMvcTests {
 		
 		MvcResult result = mvc.perform(post("/api/core/fetch-new-auth-token")
 				.header(HttpHeaders.AUTHORIZATION, tokens.get(ADMIN_ID))
-		        .param("username", UNVERIFIED_USER_EMAIL)
+		        .param("email", UNVERIFIED_USER_EMAIL)
                 .header("contentType",  MediaType.APPLICATION_FORM_URLENCODED))
                 .andExpect(status().is(200))
 				.andReturn();
@@ -98,7 +97,7 @@ public class FetchNewTokenMvcTests extends AbstractMvcTests {
 		
 		mvc.perform(post("/api/core/fetch-new-auth-token")
 				.header(HttpHeaders.AUTHORIZATION, tokens.get(UNVERIFIED_USER_ID))
-		        .param("username", ADMIN_EMAIL)
+		        .param("email", ADMIN_EMAIL)
                 .header("contentType",  MediaType.APPLICATION_FORM_URLENCODED))
                 .andExpect(status().is(403));
 	}

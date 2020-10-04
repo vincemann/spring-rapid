@@ -325,10 +325,11 @@ public abstract class AbstractUserService
 //        LexUtils.ensureFound(byId);
 //        U user = byId.get();
         VerifyEntity.isPresent(user,"User not found");
-        LexUtils.validateField("updatedUser.password",
-                passwordEncoder.matches(emailChangeForm.getPassword(),
-                        user.getPassword()),
-                "com.naturalprogrammer.spring.wrong.password").go();
+
+//        LexUtils.validateField("updatedUser.password",
+//                passwordEncoder.matches(emailChangeForm.getPassword(),
+//                        user.getPassword()),
+//                "com.naturalprogrammer.spring.wrong.password").go();
 
         // preserves the new email id
         user.setNewEmail(emailChangeForm.getNewEmail());
@@ -450,7 +451,7 @@ public abstract class AbstractUserService
 
     @Transactional(propagation = Propagation.REQUIRED, readOnly = false)
     //only called internally
-    public void createAdminUser(LemonProperties.Admin admin) throws BadEntityException {
+    public U createAdminUser(LemonProperties.Admin admin) throws BadEntityException {
 //        log.info("Creating admin user: " + admin.getEmail());
 
         // create the user
@@ -459,8 +460,9 @@ public abstract class AbstractUserService
         user.setPassword(passwordEncoder.encode(
                 admin.getPassword()));
         user.getRoles().add(RapidRoles.ADMIN);
-        getRepository().save(user);
+        U saved = getRepository().save(user);
         log.debug("admin saved.");
+        return saved;
     }
 
     /**
