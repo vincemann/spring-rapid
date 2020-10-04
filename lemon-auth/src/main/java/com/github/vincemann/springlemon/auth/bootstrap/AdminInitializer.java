@@ -15,6 +15,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.Assert;
 
 import java.util.List;
+import java.util.Optional;
 
 @Slf4j
 /**
@@ -43,13 +44,13 @@ public class AdminInitializer extends DatabaseDataInitializer {
                 () -> {
                     try {
                         addAdmins();
-                    } catch (BadEntityException | EntityNotFoundException e) {
+                    } catch (BadEntityException e) {
                         throw new RuntimeException(e);
                     }
                 });
     }
 
-    private void addAdmins() throws BadEntityException, EntityNotFoundException {
+    private void addAdmins() throws BadEntityException{
         //add lemon admin
         LemonProperties.Admin lemonAdmin = lemonProperties.getAdmin();
         adminEmails.add(lemonAdmin.getEmail());
@@ -60,14 +61,14 @@ public class AdminInitializer extends DatabaseDataInitializer {
             log.debug("registering admin:: " + admin);
 
             // Check if the user already exists
-            AbstractUser<?> byEmail = userService.findByEmail(admin);
-            if (byEmail == null) {
+            Optional<? extends AbstractUser<?>> byEmail = userService.findByEmail(admin);
+            if (byEmail.isPresent()) {
                 // Doesn't exist. So, create it.
                 LemonProperties.Admin toCreate = new LemonProperties.Admin(admin, adminPasswords.get(index));
                 log.debug("admin does not exist yet, creating: " + toCreate);
                 userService.createAdminUser(toCreate);
             }else {
-                log.debug("admin already existing.");
+                log.debug("admin already exists.");
             }
             index++;
         }

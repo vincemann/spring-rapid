@@ -1,5 +1,6 @@
 package com.github.vincemann.springlemon.demo;
 
+import com.github.vincemann.springlemon.auth.domain.AbstractUser;
 import com.github.vincemann.springlemon.demo.domain.MySignupForm;
 import com.github.vincemann.springrapid.core.util.MapperUtils;
 import com.github.vincemann.springlemon.auth.domain.LemonRoles;
@@ -69,7 +70,7 @@ public class SignupMvcTests extends AbstractMvcTests {
 		verify(mailSender).send(any());
 
 		// Ensure that password got encrypted
-		Assertions.assertNotEquals("user123", userRepository.findByEmail("user.foo@example.com").get().getPassword());
+		Assertions.assertNotEquals("user123", ((AbstractUser) userRepository.findByEmail("user.foo@example.com").get()).getPassword());
 	}
 	
 	@Test

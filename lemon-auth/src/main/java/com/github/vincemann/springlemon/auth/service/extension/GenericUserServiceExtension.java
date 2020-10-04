@@ -14,6 +14,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.io.Serializable;
 import java.util.Map;
+import java.util.Optional;
 
 @Transactional
 public interface GenericUserServiceExtension<S extends UserService<U,Id>,U extends AbstractUser<Id>, Id extends Serializable>
@@ -37,7 +38,7 @@ public interface GenericUserServiceExtension<S extends UserService<U,Id>,U exten
     }
 
     @Override
-    default U findByEmail(/*@Valid @Email @NotBlank*/ String email) throws EntityNotFoundException {
+    default Optional<U> findByEmail(/*@Valid @Email @NotBlank*/ String email){
         return getNext().findByEmail(email);
     }
 

@@ -186,9 +186,11 @@ public abstract class AbstractUserController<U extends AbstractUser<ID>, ID exte
 	@ResponseBody
 	public ResponseEntity<String> fetchUserByEmail(@RequestParam String email) throws JsonProcessingException, BadEntityException, EntityNotFoundException {
 		log.debug("Fetching user by email: " + email);
-		U byEmail = getService().findByEmail(email);
-		Object responseDto = getDtoMapper().mapToDto(byEmail,
-				createDtoClass(RapidDtoEndpoint.FIND, Direction.RESPONSE, byEmail));
+		Optional<U> byEmail = getService().findByEmail(email);
+		VerifyEntity.isPresent(byEmail,"User with email: "+email+" not found");
+		U user = byEmail.get();
+		Object responseDto = getDtoMapper().mapToDto(user,
+				createDtoClass(RapidDtoEndpoint.FIND, Direction.RESPONSE, user));
 		return ok(getJsonMapper().writeValueAsString(responseDto));
 	}
 

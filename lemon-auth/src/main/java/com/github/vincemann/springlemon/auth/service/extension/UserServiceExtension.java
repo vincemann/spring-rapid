@@ -16,6 +16,7 @@ import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
 import java.io.Serializable;
 import java.util.Map;
+import java.util.Optional;
 
 public interface UserServiceExtension<S extends UserService>
         extends CrudServiceExtension<S>, UserService
@@ -37,7 +38,7 @@ public interface UserServiceExtension<S extends UserService>
     }
 
     @Override
-    default AbstractUser findByEmail(@Valid @Email @NotBlank String email) throws EntityNotFoundException {
+    default Optional<AbstractUser> findByEmail(@Valid @Email @NotBlank String email)  {
         return getNext().findByEmail(email);
     }
 

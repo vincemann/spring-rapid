@@ -4,19 +4,23 @@ import com.github.vincemann.springlemon.auth.domain.AbstractUser;
 import com.github.vincemann.springlemon.auth.domain.LemonAuthenticatedPrincipal;
 import com.github.vincemann.springlemon.auth.service.UserService;
 import com.github.vincemann.springlemon.auth.util.LemonValidationUtils;
+import com.github.vincemann.springrapid.acl.proxy.Unsecured;
 import com.github.vincemann.springrapid.core.service.exception.EntityNotFoundException;
 import com.github.vincemann.springrapid.core.slicing.components.ServiceComponent;
+import com.github.vincemann.springrapid.core.util.VerifyEntity;
 import com.nimbusds.jwt.JWTClaimsSet;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Optional;
+
 @ServiceComponent
 @Service
 public class LemonJwtAuthorizationTokenService extends AbstractJwtAuthorizationTokenService<LemonAuthenticatedPrincipal> {
 
-    private UserService userService;
+    private UserService unsecuredUserService;
 
 
     @Transactional
@@ -24,15 +28,18 @@ public class LemonJwtAuthorizationTokenService extends AbstractJwtAuthorizationT
     public void verifyToken(JWTClaimsSet claims, LemonAuthenticatedPrincipal principal) {
         super.verifyToken(claims, principal);
         try {
-            AbstractUser<?> byEmail = userService.findByEmail(principal.getEmail());
-            LemonValidationUtils.ensureCredentialsUpToDate(claims,byEmail);
+            Optional<AbstractUser<?>> byEmail = unsecuredUserService.findByEmail(principal.getEmail());
+            VerifyEntity.isPresent(byEmail,"User with email: "+principal.getEmail()+" not found");
+            AbstractUser<?> user = byEmail.get();
+            LemonValidationUtils.ensureCredentialsUpToDate(claims,user);
         } catch (EntityNotFoundException e) {
             throw new BadCredentialsException("User encoded in token not found",e);
         }
     }
 
+    @Unsecured
     @Autowired
-    public void injectUserService(UserService userService) {
-        this.userService = userService;
+    public void injectUnsecuredUserService(UserService userService) {
+        this.unsecuredUserService = userService;
     }
 }

@@ -22,6 +22,7 @@ import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
 import java.io.Serializable;
 import java.util.Map;
+import java.util.Optional;
 
 @Validated
 @ServiceComponent
@@ -38,7 +39,7 @@ public interface UserService<U extends AbstractUser<ID>, ID extends Serializable
     public void resendVerificationMail(U user) throws EntityNotFoundException;
 
     @LogInteraction(Severity.TRACE)
-    public U findByEmail(@Valid @Email @NotBlank String email) throws EntityNotFoundException;
+    public Optional<U> findByEmail(@Valid @Email @NotBlank String email);
 
     public U verifyUser(U user, String verificationCode) throws EntityNotFoundException, BadTokenException, BadEntityException;
     public void forgotPassword(@Valid @Email @NotBlank String email) throws EntityNotFoundException;
