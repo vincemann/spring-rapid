@@ -48,7 +48,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 //@AutoConfigureTestDatabase(connection = EmbeddedDatabaseConnection.HSQL)
 //see application-dev.yml config for expected database config
-@Sql({"/test-data/resetTestData.sql"})
+//@Sql({"/test-data/resetTestData.sql"})
 /**
  * Fills tokens Map in an integration test manner by logging all users in
  */
@@ -56,14 +56,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @ActiveProfiles(value = {"web", "service", "test", "webTest", "serviceTest", "dev"}, inheritProfiles = false)
 @ImportAutoConfiguration(exclude = LemonAdminAutoConfiguration.class)
 public abstract class AbstractMvcTests {
-
-    protected static final long ADMIN_ID = 101L;
-    protected static final long SECOND_ADMIN_ID = 102L;
-    protected static final long BLOCKED_ADMIN_ID = 103L;
-
-    protected static final long USER_ID = 104L;
-    protected static final long UNVERIFIED_USER_ID = 105L;
-    protected static final long BLOCKED_USER_ID = 106L;
 
     protected static final String ADMIN_EMAIL = "admin@example.com";
     protected static final String ADMIN_PASSWORD = "admin!";
@@ -95,8 +87,6 @@ public abstract class AbstractMvcTests {
     @SpyBean
     protected MailSender<?> mailSender;
     @Autowired
-    protected RapidSecurityContext<RapidAuthenticatedPrincipal> securityContext;
-    @Autowired
     protected DataSource dataSource;
     @Autowired
     private WebApplicationContext context;
@@ -104,12 +94,12 @@ public abstract class AbstractMvcTests {
     protected MockMvc mvc;
     protected Map<Long, String> tokens = new HashMap<>(6);
 
-    protected AbstractUser admin;
-    protected AbstractUser secondAdmin;
-    protected AbstractUser blockedAdmin;
-    protected AbstractUser user;
-    protected AbstractUser unverifiedUser;
-    protected AbstractUser blockedUser;
+    protected AbstractUser<Long> admin;
+    protected AbstractUser<Long> secondAdmin;
+    protected AbstractUser<Long> blockedAdmin;
+    protected AbstractUser<Long> user;
+    protected AbstractUser<Long> unverifiedUser;
+    protected AbstractUser<Long> blockedUser;
 
     @BeforeEach
     public void baseSetUp() throws Exception {
@@ -143,17 +133,21 @@ public abstract class AbstractMvcTests {
         blockedUser = aclUserService.save(createUser(BLOCKED_USER_EMAIL, BLOCKED_USER_PASSWORD, LemonRoles.USER,LemonRoles.BLOCKED));
     }
 
-    protected AbstractUser createUser(String email, String password, String... roles){
+    /**
+     * Change this method to integrate tests in your project.
+     */
+    protected AbstractUser<Long> createUser(String email, String password, String... roles){
         return new User(email, password, roles);
     }
 
     protected void loginTestUsers() throws Exception {
-        tokens.put(ADMIN_ID, login(ADMIN_EMAIL, ADMIN_PASSWORD));
-        tokens.put(SECOND_ADMIN_ID, login(SECOND_ADMIN_EMAIL, SECOND_ADMIN_PASSWORD));
-        tokens.put(BLOCKED_ADMIN_ID, login("blockedadmin@example.com", ADMIN_PASSWORD));
-        tokens.put(USER_ID, login(USER_EMAIL, USER_PASSWORD));
-        tokens.put(UNVERIFIED_USER_ID, login(UNVERIFIED_USER_EMAIL, USER_PASSWORD));
-        tokens.put(BLOCKED_USER_ID, login("blockeduser@example.com", USER_PASSWORD));
+        tokens.put(admin.getId(), login(ADMIN_EMAIL, ADMIN_PASSWORD));
+        tokens.put(secondAdmin.getId(), login(SECOND_ADMIN_EMAIL, SECOND_ADMIN_PASSWORD));
+        tokens.put(blockedAdmin.getId(), login("blockedadmin@example.com", ADMIN_PASSWORD));
+
+        tokens.put(user.getId(), login(USER_EMAIL, USER_PASSWORD));
+        tokens.put(unverifiedUser.getId(), login(UNVERIFIED_USER_EMAIL, USER_PASSWORD));
+        tokens.put(blockedUser.getId(), login("blockeduser@example.com", USER_PASSWORD));
     }
 
     protected String login(String userName, String password) throws Exception {
@@ -171,20 +165,20 @@ public abstract class AbstractMvcTests {
         mvc.perform(get("/api/core/context")
                 .header(HttpHeaders.AUTHORIZATION, token))
                 .andExpect(status().is(200));
-//                .andExpect(jsonPath("$.user.id").value(UNVERIFIED_USER_ID));
+//                .andExpect(jsonPath("$.user.id").value(unverifiedUser.getId()));
     }
 
 //    protected void initAcl() throws SQLException {
 //        if (!initialized) {
 //            //only do this expensive stuff once -> permissions stay the same
 //            ScriptUtils.executeSqlScript(dataSource.getConnection(), new ClassPathResource("test-data/removeAclInfo.sql"));
-////        User admin = userRepository.findById(ADMIN_ID).get();
+////        User admin = userRepository.findById(admin.getId()).get();
 ////        Authentication adminAuth = new UsernamePasswordAuthenticationToken(admin.getName(), admin.getPassword()
 ////                , Lists.newArrayList(new SimpleGrantedAuthority(Role.ADMIN)));
 //            securityContext.runAsAdmin(() -> {
 //                try {
-//                    giveAdminFullPermissionOver(USER_ID, UNVERIFIED_USER_ID, BLOCKED_USER_ID /*ADMIN_ID, SECOND_ADMIN_ID, BLOCKED_ADMIN_ID*/);
-//                    giveFullPermissionAboutSelf(ADMIN_ID, SECOND_ADMIN_ID, BLOCKED_ADMIN_ID, USER_ID, UNVERIFIED_USER_ID, BLOCKED_USER_ID);
+//                    giveAdminFullPermissionOver(user.getId(), unverifiedUser.getId(), BLOCKED_USER_ID /*admin.getId(), secondAdmin.getId(), blockedAdmin.getId()*/);
+//                    giveFullPermissionAboutSelf(admin.getId(), secondAdmin.getId(), blockedAdmin.getId(), user.getId(), unverifiedUser.getId(), BLOCKED_USER_ID);
 //                }catch (Exception e){
 //                    throw new RuntimeException(e);
 //                }

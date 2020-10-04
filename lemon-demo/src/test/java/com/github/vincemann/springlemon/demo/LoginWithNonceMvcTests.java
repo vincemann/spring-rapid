@@ -29,7 +29,7 @@
 //		
 //		NonceForm<Long> nonceForm = new NonceForm<>();
 //		nonceForm.setNonce(NONCE);
-//		nonceForm.setUserId(UNVERIFIED_USER_ID);
+//		nonceForm.setUserId(unverifiedUser.getId());
 //		nonceForm.setExpirationMillis(jwtExpirationMillis);
 //		
 //		return nonceForm;
@@ -38,7 +38,7 @@
 //	@Before
 //	public void setUp() {
 //		
-//		User user = userRepository.findById(UNVERIFIED_USER_ID).get();
+//		User user = userRepository.findById(unverifiedUser.getId()).get();
 //		user.setNonce(NONCE);
 //		userRepository.save(user);
 //	}
@@ -48,7 +48,7 @@
 //		
 //		String token = loginWithNonce(null);
 //		
-//		User user = userRepository.findById(UNVERIFIED_USER_ID).get();
+//		User user = userRepository.findById(unverifiedUser.getId()).get();
 //		Assertions.assertNull(user.getNonce());
 //	
 //		ensureTokenWorks(token);
@@ -122,7 +122,7 @@
 //				.content(LemonValidationUtils.toJson(form(jwtExpirationMillis))))
 //				.andExpect(status().is(200))
 //				.andExpect(header().string(LemonSecurityConfig.TOKEN_RESPONSE_HEADER_NAME, containsString(".")))
-//				.andExpect(jsonPath("$.id").value(UNVERIFIED_USER_ID))
+//				.andExpect(jsonPath("$.id").value(unverifiedUser.getId()))
 //                .andReturn();
 //
 //        return result.getResponse().getHeader(LemonSecurityConfig.TOKEN_RESPONSE_HEADER_NAME);

@@ -8,6 +8,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+import com.github.vincemann.springlemon.auth.domain.AbstractUser;
 import com.github.vincemann.springlemon.demo.domain.User;
 import com.github.vincemann.springrapid.core.security.RapidRoles;
 import org.junit.jupiter.api.Test;
@@ -28,7 +29,7 @@ public class LoginMvcTests extends AbstractMvcTests {
                 .header("contentType",  MediaType.APPLICATION_FORM_URLENCODED))
                 .andExpect(status().is(200))
 				.andExpect(header().string(HttpHeaders.AUTHORIZATION, containsString(".")))
-				.andExpect(jsonPath("$.id").value(ADMIN_ID))
+				.andExpect(jsonPath("$.id").value(admin.getId()))
 				.andExpect(jsonPath("$.password").doesNotExist())
 				.andExpect(jsonPath("$.email").value("admin@example.com"))
 				.andExpect(jsonPath("$.roles").value(hasSize(1)))
@@ -47,7 +48,7 @@ public class LoginMvcTests extends AbstractMvcTests {
 //		// Test that default token does not expire before 10 days		
 //		Thread.sleep(1001L);
 //		mvc.perform(get("/api/core/ping")
-//				.header(LemonSecurityConfig.TOKEN_REQUEST_HEADER_NAME, tokens.get(ADMIN_ID)))
+//				.header(LemonSecurityConfig.TOKEN_REQUEST_HEADER_NAME, tokens.get(admin.getId())))
 //				.andExpect(status().is(204));
 		
 		// Test that a 500ms token does not expire before 500ms
@@ -70,12 +71,12 @@ public class LoginMvcTests extends AbstractMvcTests {
 		
 		// credentials updated
 		// Thread.sleep(1001L);		
-		User user = userRepository.findById(ADMIN_ID).get();
+		AbstractUser<Long> user = userRepository.findById(admin.getId()).get();
 		user.setCredentialsUpdatedMillis(System.currentTimeMillis());
 		userRepository.save(user);
 		
 		mvc.perform(get("/api/core/ping")
-				.header(HttpHeaders.AUTHORIZATION, tokens.get(ADMIN_ID)))
+				.header(HttpHeaders.AUTHORIZATION, tokens.get(admin.getId())))
 				.andExpect(status().is(401));
 	}
 
@@ -103,9 +104,9 @@ public class LoginMvcTests extends AbstractMvcTests {
 	public void testTokenLogin() throws Exception {
 
 		mvc.perform(get("/api/core/context")
-				.header(HttpHeaders.AUTHORIZATION, tokens.get(ADMIN_ID)))
+				.header(HttpHeaders.AUTHORIZATION, tokens.get(admin.getId())))
 				.andExpect(status().is(200))
-				.andExpect(jsonPath("$.user.id").value(ADMIN_ID))
+				.andExpect(jsonPath("$.user.id").value(admin.getId()))
 				.andReturn();
 	}
 
