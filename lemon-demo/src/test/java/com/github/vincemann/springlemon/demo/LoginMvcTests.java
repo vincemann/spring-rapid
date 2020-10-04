@@ -71,7 +71,7 @@ public class LoginMvcTests extends AbstractMvcTests {
 		
 		// credentials updated
 		// Thread.sleep(1001L);		
-		AbstractUser<Long> user = userRepository.findById(admin.getId()).get();
+		AbstractUser<Long> user = (AbstractUser<Long>) userRepository.findById(admin.getId()).get();
 		user.setCredentialsUpdatedMillis(System.currentTimeMillis());
 		userRepository.save(user);
 		

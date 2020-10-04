@@ -38,6 +38,10 @@ public interface CrudService<E extends IdentifiableEntity<Id>,Id extends Seriali
          */
         E update(E entity, Boolean full) throws EntityNotFoundException, BadEntityException;
 
+        default E update(E entity) throws BadEntityException, EntityNotFoundException {
+                return update(entity,true);
+        }
+
         E save(E entity) throws  BadEntityException;
 
         Set<E> findAll();

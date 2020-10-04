@@ -109,7 +109,7 @@ public class VerificationMvcTests extends AbstractMvcTests {
 		
 		// Credentials updated after the verification token is issued
 		Thread.sleep(1L);
-		AbstractUser<Long> user = userRepository.findById(unverifiedUser.getId()).get();
+		AbstractUser<Long> user = (AbstractUser<Long>) userRepository.findById(unverifiedUser.getId()).get();
 		user.setCredentialsUpdatedMillis(System.currentTimeMillis());
 		userRepository.save(user);
 		

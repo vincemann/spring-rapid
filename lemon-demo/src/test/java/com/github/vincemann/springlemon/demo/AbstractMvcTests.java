@@ -82,7 +82,7 @@ public abstract class AbstractMvcTests {
     protected UserService<AbstractUser<Long>,Long> aclUserService;
 
     @Autowired
-    protected AbstractUserRepository<AbstractUser<Long>,Long> userRepository;
+    protected AbstractUserRepository userRepository;
 
     @SpyBean
     protected MailSender<?> mailSender;
@@ -143,11 +143,11 @@ public abstract class AbstractMvcTests {
     protected void loginTestUsers() throws Exception {
         tokens.put(admin.getId(), login(ADMIN_EMAIL, ADMIN_PASSWORD));
         tokens.put(secondAdmin.getId(), login(SECOND_ADMIN_EMAIL, SECOND_ADMIN_PASSWORD));
-        tokens.put(blockedAdmin.getId(), login("blockedadmin@example.com", ADMIN_PASSWORD));
+        tokens.put(blockedAdmin.getId(), login(BLOCKED_ADMIN_EMAIL, BLOCKED_ADMIN_PASSWORD));
 
         tokens.put(user.getId(), login(USER_EMAIL, USER_PASSWORD));
-        tokens.put(unverifiedUser.getId(), login(UNVERIFIED_USER_EMAIL, USER_PASSWORD));
-        tokens.put(blockedUser.getId(), login("blockeduser@example.com", USER_PASSWORD));
+        tokens.put(unverifiedUser.getId(), login(UNVERIFIED_USER_EMAIL, UNVERIFIED_USER_PASSWORD));
+        tokens.put(blockedUser.getId(), login(BLOCKED_USER_EMAIL, BLOCKED_USER_PASSWORD));
     }
 
     protected String login(String userName, String password) throws Exception {

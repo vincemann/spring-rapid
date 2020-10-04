@@ -51,9 +51,9 @@ public abstract class AbstractUserService
                 U extends AbstractUser<ID>,
                 ID extends Serializable,
                 R extends AbstractUserRepository<U, ID>
-         >
-        extends JPACrudService<U,ID,R>
-                    implements UserService<U, ID> {
+                >
+        extends JPACrudService<U, ID, R>
+        implements UserService<U, ID> {
 
     public static final String CHANGE_EMAIL_AUDIENCE = "change-email";
     public static final String VERIFY_AUDIENCE = "verify";
@@ -66,7 +66,7 @@ public abstract class AbstractUserService
     private LemonProperties properties;
     private MailSender<LemonMailData> mailSender;
     private EmailJwtService emailTokenService;
-    private UserService<U,ID> unsecuredUserService;
+    private UserService<U, ID> unsecuredUserService;
 
     /**
      * Creates a new user object. Must be overridden in the
@@ -79,7 +79,6 @@ public abstract class AbstractUserService
      * </pre>
      */
     public abstract U newUser();
-
 
 
     @Override
@@ -116,11 +115,10 @@ public abstract class AbstractUserService
     }
 
 
-
-
     @Transactional(propagation = Propagation.SUPPORTS, readOnly = false)
     @Override
     public U save(U entity) throws BadEntityException {
+        entity.setPassword(passwordEncoder.encode(entity.getPassword()));
         return super.save(entity);
     }
 
@@ -136,7 +134,7 @@ public abstract class AbstractUserService
     protected void makeUnverified(U user) {
         user.getRoles().add(LemonRoles.UNVERIFIED);
         user.setCredentialsUpdatedMillis(System.currentTimeMillis());
-        TransactionalUtils.afterCommit(()-> sendVerificationMail(user));
+        TransactionalUtils.afterCommit(() -> sendVerificationMail(user));
     }
 
 
@@ -147,7 +145,7 @@ public abstract class AbstractUserService
 
 //        // The user must exist
 
-        VerifyEntity.isPresent(user,"User not found");
+        VerifyEntity.isPresent(user, "User not found");
         // must be unverified
         LexUtils.validate(user.getRoles().contains(LemonRoles.UNVERIFIED),
                 "com.naturalprogrammer.spring.alreadyVerified").go();
@@ -159,10 +157,8 @@ public abstract class AbstractUserService
     /**
      * Fetches a user by email
      */
-    public U findByEmail(String email) throws EntityNotFoundException {
-        Optional<U> byEmail = getRepository().findByEmail(email);
-        VerifyEntity.isPresent(byEmail,"Entity with email: " + email + " not found");
-        return byEmail.get();
+    public Optional<U> findByEmail(String email){
+        return getRepository().findByEmail(email);
     }
 
 
@@ -173,7 +169,7 @@ public abstract class AbstractUserService
      */
     @Transactional(propagation = Propagation.REQUIRED, readOnly = false)
     public U verifyUser(U user, String verificationCode) throws EntityNotFoundException, BadTokenException, BadEntityException {
-        VerifyEntity.isPresent(user,"User not found");
+        VerifyEntity.isPresent(user, "User not found");
         // ensure that he is unverified
         // this makes sense to do here not in security plugin
         LexUtils.validate(user.hasRole(LemonRoles.UNVERIFIED),
@@ -188,16 +184,15 @@ public abstract class AbstractUserService
                 "com.naturalprogrammer.spring.wrong.verificationCode");
 
 
-
         //no login needed bc token of user is appended in controller -> we avoid dynamic logins in a stateless env
         //also to be able to use read-only security test -> generic principal type does not need to be passed into this class
         return verifyUser(user);
     }
 
-    protected U verifyUser(U user) throws BadEntityException {
+    protected U verifyUser(U user) throws BadEntityException, EntityNotFoundException {
         user.getRoles().remove(LemonRoles.UNVERIFIED);
         user.setCredentialsUpdatedMillis(System.currentTimeMillis());
-        U saved = unsecuredUserService.save(user);
+        U saved = unsecuredUserService.update(user);
         log.debug("Verified user: " + saved);
         return saved;
     }
@@ -209,9 +204,9 @@ public abstract class AbstractUserService
     @Transactional(propagation = Propagation.REQUIRED, readOnly = false)
     public void forgotPassword(String email) throws EntityNotFoundException {
         // fetch the user record from database
-        Optional<U> byId = getRepository().findByEmail(email);
-        VerifyEntity.isPresent(byId,"User with email: "+email+" not found");
-        U user = byId.get();
+        Optional<U> byEmail = unsecuredUserService.findByEmail(email);
+        VerifyEntity.isPresent(byEmail,"User with email: "+email+" not found");
+        U user = byEmail.get();
         sendForgotPasswordMail(user);
     }
 
@@ -229,9 +224,9 @@ public abstract class AbstractUserService
         String email = claims.getSubject();
 
         // fetch the user
-        Optional<U> byId = getRepository().findByEmail(email);
-        VerifyEntity.isPresent(byId,"User with email: "+email+" not found");
-        U user = byId.get();
+        Optional<U> byEmail = unsecuredUserService.findByEmail(email);
+        VerifyEntity.isPresent(byEmail,"User with email: "+email+" not found");
+        U user = byEmail.get();
         LemonValidationUtils.ensureCredentialsUpToDate(claims, user);
 
         // sets the password
@@ -241,9 +236,9 @@ public abstract class AbstractUserService
 
         U saved = null;
         try {
-            saved = unsecuredUserService.save(user);
+            saved = unsecuredUserService.update(user);
         } catch (BadEntityException e) {
-            throw new RuntimeException("Could not reset users password",e);
+            throw new RuntimeException("Could not reset users password", e);
         }
         return saved;
     }
@@ -252,7 +247,7 @@ public abstract class AbstractUserService
     @Transactional(propagation = Propagation.REQUIRED, readOnly = false)
     @Override
     public U update(U update, Boolean full) throws EntityNotFoundException, BadEntityException, BadEntityException {
-        Optional<U> old = getRepository().findById(update.getId());
+        Optional<U> old = unsecuredUserService.findById(update.getId());
         VerifyEntity.isPresent(old, "Entity to update with id: " + update.getId() + " not found");
         //update roles works in transaction -> changes are applied on the fly
         updateRoles(old.get(), update);
@@ -265,7 +260,7 @@ public abstract class AbstractUserService
      */
     @Transactional(propagation = Propagation.REQUIRED, readOnly = false)
     public void changePassword(U user, ChangePasswordForm changePasswordForm) throws EntityNotFoundException {
-        VerifyEntity.isPresent(user,"User not found");
+        VerifyEntity.isPresent(user, "User not found");
         String oldPassword = user.getPassword();
 
         // checks
@@ -278,9 +273,9 @@ public abstract class AbstractUserService
         user.setPassword(passwordEncoder.encode(changePasswordForm.getPassword()));
         user.setCredentialsUpdatedMillis(System.currentTimeMillis());
         try {
-            unsecuredUserService.save(user);
+            unsecuredUserService.update(user);
         } catch (BadEntityException e) {
-            throw new RuntimeException("Could not change users password",e);
+            throw new RuntimeException("Could not change users password", e);
         }
 
     }
@@ -316,10 +311,10 @@ public abstract class AbstractUserService
     public void requestEmailChange(U user, /*@Valid*/ RequestEmailChangeForm emailChangeForm) throws EntityNotFoundException {
 //        log.debug("Requesting email change for user" + user);
         // checks
-//        Optional<U> byId = getRepository().findById(userId);
+//        Optional<U> byId = unsecuredUserService.findById(userId);
 //        LexUtils.ensureFound(byId);
 //        U user = byId.get();
-        VerifyEntity.isPresent(user,"User not found");
+        VerifyEntity.isPresent(user, "User not found");
 
 //        LexUtils.validateField("updatedUser.password",
 //                passwordEncoder.matches(emailChangeForm.getPassword(),
@@ -329,10 +324,13 @@ public abstract class AbstractUserService
         // preserves the new email id
         user.setNewEmail(emailChangeForm.getNewEmail());
         //user.setChangeEmailCode(LemonValidationUtils.uid());
-        U saved = getRepository().save(user);
-
-        // after successful commit, mails a link to the user
-        TransactionalUtils.afterCommit(() -> mailChangeEmailLink(saved));
+        try {
+            U saved = unsecuredUserService.update(user);
+            // after successful commit, mails a link to the user
+            TransactionalUtils.afterCommit(() -> mailChangeEmailLink(saved));
+        } catch (BadEntityException e) {
+            throw new RuntimeException("Email was malformed, although validation check was successful");
+        }
 
         log.debug("Requested email change: " + user);
     }
@@ -393,7 +391,7 @@ public abstract class AbstractUserService
     @Transactional(propagation = Propagation.REQUIRED, readOnly = false)
     public U changeEmail(U user, /*@Valid @NotBlank*/ String changeEmailCode) throws EntityNotFoundException, BadTokenException {
 
-        VerifyEntity.isPresent(user,"User not found");
+        VerifyEntity.isPresent(user, "User not found");
         LexUtils.validate(StringUtils.isNotBlank(user.getNewEmail()),
                 "com.naturalprogrammer.spring.blank.newEmail").go();
 
@@ -408,7 +406,7 @@ public abstract class AbstractUserService
 
         // Ensure that the email would be unique
         LexUtils.validate(
-                !getRepository().findByEmail(user.getNewEmail()).isPresent(),
+                !unsecuredUserService.findByEmail(user.getNewEmail()).isPresent(),
                 "com.naturalprogrammer.spring.duplicate.email").go();
 
         // update the fields
@@ -422,9 +420,9 @@ public abstract class AbstractUserService
             user.getRoles().remove(LemonRoles.UNVERIFIED);
 
         try {
-            return unsecuredUserService.save(user);
+            return unsecuredUserService.update(user);
         } catch (BadEntityException e) {
-            throw new RuntimeException("Could not update users email",e);
+            throw new RuntimeException("Could not update users email", e);
         }
     }
 
@@ -440,7 +438,7 @@ public abstract class AbstractUserService
     }
 
     @Override
-    public String createNewAuthToken(){
+    public String createNewAuthToken() {
         return createNewAuthToken(securityContext.currentPrincipal().getEmail());
     }
 
@@ -452,8 +450,7 @@ public abstract class AbstractUserService
         // create the user
         U user = newUser();
         user.setEmail(admin.getEmail());
-        user.setPassword(passwordEncoder.encode(
-                admin.getPassword()));
+        user.setPassword(admin.getPassword());
         user.getRoles().add(LemonRoles.ADMIN);
         U saved = unsecuredUserService.save(user);
         log.debug("admin saved.");
@@ -499,7 +496,7 @@ public abstract class AbstractUserService
         mailSender.send(LemonMailData.of(user.getEmail(),
                 LexUtils.getMessage("com.naturalprogrammer.spring.verifySubject"),
                 LexUtils.getMessage(
-                        "com.naturalprogrammer.spring.verifyEmail",	verifyLink)));
+                        "com.naturalprogrammer.spring.verifyEmail", verifyLink)));
     }
 
     /**
@@ -517,7 +514,7 @@ public abstract class AbstractUserService
         );
 
         // make the link
-        String forgotPasswordLink =	properties.getApplicationUrl() + "/reset-password?code=" + forgotPasswordCode;
+        String forgotPasswordLink = properties.getApplicationUrl() + "/reset-password?code=" + forgotPasswordCode;
 
         sendForgotPasswordMail(user, forgotPasswordLink);
 
@@ -527,7 +524,7 @@ public abstract class AbstractUserService
 
     /**
      * Mails the forgot password link.
-     *
+     * <p>
      * Override this method if you're using a different MailData
      */
     public void sendForgotPasswordMail(U user, String forgotPasswordLink) {
@@ -574,7 +571,7 @@ public abstract class AbstractUserService
     @Autowired
     @Unsecured
     @Lazy
-    public void injectUnsecuredUserService(UserService<U,ID> unsecuredUserService) {
+    public void injectUnsecuredUserService(UserService<U, ID> unsecuredUserService) {
         this.unsecuredUserService = unsecuredUserService;
     }
 
@@ -620,8 +617,6 @@ public abstract class AbstractUserService
 //
 //        return tokenMap;
 //    }
-
-
 
 
 //	@Override

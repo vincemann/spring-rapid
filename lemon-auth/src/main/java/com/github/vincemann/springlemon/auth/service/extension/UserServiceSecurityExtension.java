@@ -79,8 +79,10 @@ public class UserServiceSecurityExtension
     @Override
     public void forgotPassword(String email) throws EntityNotFoundException {
         //check if write permission over user
-        AbstractUser byEmail = unsecuredUserService.findByEmail(email);
-        getSecurityChecker().checkPermission(byEmail.getId(), getLast().getEntityClass(), getWritePermission());
+        Optional<AbstractUser> byEmail = unsecuredUserService.findByEmail(email);
+        VerifyEntity.isPresent(byEmail,"User with email: "+email+" not found");
+        AbstractUser user = byEmail.get();
+        getSecurityChecker().checkPermission(user.getId(), getLast().getEntityClass(), getWritePermission());
         getNext().forgotPassword(email);
     }
 

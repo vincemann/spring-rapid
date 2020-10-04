@@ -4,12 +4,15 @@ import com.github.vincemann.springlemon.auth.domain.AbstractUser;
 import com.github.vincemann.springlemon.auth.domain.LemonAuthenticatedPrincipal;
 import com.github.vincemann.springlemon.auth.service.UserService;
 import com.github.vincemann.springlemon.auth.util.LemonMapUtils;
+import com.github.vincemann.springrapid.acl.proxy.Unsecured;
 import com.github.vincemann.springrapid.core.service.exception.EntityNotFoundException;
+import com.github.vincemann.springrapid.core.util.VerifyEntity;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationCredentialsNotFoundException;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Map;
+import java.util.Optional;
 
 /**
  * Only stores email in token and fetches user args for principal lazily
@@ -18,7 +21,7 @@ import java.util.Map;
 public class LemonJwtClaimsPrincipalConverter
             implements JwtClaimsPrincipalConverter<LemonAuthenticatedPrincipal> {
 
-    private UserService userService;
+    private UserService unsecuredUserService;
 
 
     @Override
@@ -33,15 +36,18 @@ public class LemonJwtClaimsPrincipalConverter
         if (email == null)
             throw new AuthenticationCredentialsNotFoundException("email claim of claims-set not found");
         try {
-            AbstractUser<?> user = userService.findByEmail(email);
+            Optional<AbstractUser<?>> byEmail = unsecuredUserService.findByEmail(email);
+            VerifyEntity.isPresent(byEmail,"User with email: "+email+" not found");
+            AbstractUser<?> user = byEmail.get();
             return new LemonAuthenticatedPrincipal(user);
         } catch (EntityNotFoundException e) {
             throw new AuthenticationCredentialsNotFoundException("User with in token encoded email: " + email + " does not exist.", e);
         }
     }
 
+    @Unsecured
     @Autowired
-    public void injectUserService(UserService userService) {
-        this.userService = userService;
+    public void injectUnsecuredUserService(UserService userService) {
+        this.unsecuredUserService = userService;
     }
 }

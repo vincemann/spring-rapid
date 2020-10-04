@@ -28,7 +28,7 @@ public class ChangeEmailMvcTests extends AbstractMvcTests {
 	@BeforeEach
 	public void setUp() {
 
-		AbstractUser<Long> user = userRepository.findById(unverifiedUser.getId()).get();
+		AbstractUser<Long> user = (AbstractUser<Long>) userRepository.findById(unverifiedUser.getId()).get();
 		user.setNewEmail(NEW_EMAIL);
 
 //		securityContext.login(principalUserConverter.toPrincipal(user));
@@ -62,7 +62,7 @@ public class ChangeEmailMvcTests extends AbstractMvcTests {
 				.andExpect(header().string(HttpHeaders.AUTHORIZATION, containsString(".")))
 				.andExpect(jsonPath("$.id").value(unverifiedUser.getId()));
 		
-		AbstractUser<Long> updatedUser = userRepository.findById(unverifiedUser.getId()).get();
+		AbstractUser<Long> updatedUser = (AbstractUser<Long>) userRepository.findById(unverifiedUser.getId()).get();
 		Assertions.assertNull(updatedUser.getNewEmail());
 		Assertions.assertEquals(NEW_EMAIL, updatedUser.getEmail());
 		
@@ -132,12 +132,12 @@ public class ChangeEmailMvcTests extends AbstractMvcTests {
 
 		// credentials updated after the request for email change was made
 		Thread.sleep(1L);
-		AbstractUser<Long> user = userRepository.findById(unverifiedUser.getId()).get();
+		AbstractUser<Long> user = (AbstractUser<Long>) userRepository.findById(unverifiedUser.getId()).get();
 		user.setCredentialsUpdatedMillis(System.currentTimeMillis());
 		userRepository.save(user);
 		
 		// A new auth token is needed, because old one would be obsolete!
-		String authToken = login(UNVERIFIED_USER_EMAIL, USER_PASSWORD);
+		String authToken = login(UNVERIFIED_USER_EMAIL, UNVERIFIED_USER_PASSWORD);
 		
 		// now ready to test!
 		mvc.perform(post("/api/core/users/{id}/email", unverifiedUser.getId())
@@ -169,7 +169,7 @@ public class ChangeEmailMvcTests extends AbstractMvcTests {
 	public void testChangeEmailNonUniqueEmail() throws Exception {
 		
 		// Some other user changed to the same email
-		AbstractUser<Long> user = userRepository.findById(admin.getId()).get();
+		AbstractUser<Long> user = (AbstractUser<Long>) userRepository.findById(admin.getId()).get();
 		user.setEmail(NEW_EMAIL);
 		userRepository.save(user);
 		

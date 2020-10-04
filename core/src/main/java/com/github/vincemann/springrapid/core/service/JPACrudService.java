@@ -57,7 +57,7 @@ public abstract class JPACrudService
         try {
             VerifyEntity.isPresent(update.getId(), "No Id set for update");
             if (full) {
-                return save(update);
+                return getRepository().save(update);
             } else {
                 E entityToUpdate = findOldEntity(update.getId());
                 //copy non null values from update to entityToUpdate

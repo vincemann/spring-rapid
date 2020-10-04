@@ -88,7 +88,7 @@ public class UpdateUserMvcTests extends AbstractMvcTests
 //				.andExpect(jsonPath("$.roles[0]").value(LemonRole.UNVERIFIED))
 //				.andExpect(jsonPath("$.email").value(UNVERIFIED_USER_EMAIL));
 
-		AbstractUser<Long> user = userRepository.findById(unverifiedUser.getId()).get();
+		AbstractUser<Long> user = (AbstractUser<Long>) userRepository.findById(unverifiedUser.getId()).get();
 		
 		// Ensure that data has not changed
 		Assertions.assertEquals(UNVERIFIED_USER_EMAIL, user.getEmail());
@@ -119,7 +119,7 @@ public class UpdateUserMvcTests extends AbstractMvcTests
 				.andExpect(jsonPath("$.roles[0]").value(RapidRoles.ADMIN))
 				.andExpect(jsonPath("$.email").value(userPatchUpdatedEmail));
 
-		AbstractUser<Long> user = userRepository.findById(unverifiedUser.getId()).get();
+		AbstractUser<Long> user = (AbstractUser<Long>) userRepository.findById(unverifiedUser.getId()).get();
     	
 		// Ensure that data changed properly
 		//should get replaced because admin has full power

@@ -12,11 +12,14 @@ import com.github.vincemann.springrapid.acl.proxy.Unsecured;
 import com.github.vincemann.springrapid.core.security.RapidAuthenticatedPrincipal;
 import com.github.vincemann.springrapid.core.service.exception.EntityNotFoundException;
 import com.github.vincemann.springrapid.core.slicing.components.ServiceComponent;
+import com.github.vincemann.springrapid.core.util.VerifyEntity;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.Optional;
 
 /**
  * UserDetailsService, as required by Spring Security.
@@ -37,7 +40,9 @@ public class LemonUserDetailsService
 	public RapidAuthenticatedPrincipal loadUserByUsername(String email) throws UsernameNotFoundException {
 		AbstractUser<?> user;
 		try {
-			user = findUserByEmail(email);
+			Optional<AbstractUser<?>> byEmail = unsecuredUserService.findByEmail(email);
+			VerifyEntity.isPresent(byEmail,"User with email: "+email+" not found");
+			user = byEmail.get();
 		} catch (EntityNotFoundException e) {
 			throw new UsernameNotFoundException(
 					LexUtils.getMessage("com.naturalprogrammer.spring.userNotFound", email)
@@ -47,13 +52,7 @@ public class LemonUserDetailsService
 		return authenticatedPrincipalFactory.create(user);
 	}
 
-	/**
-	 * Finds a user by the given username. Override this
-	 * if you aren't using email as the username.
-	 */
-	protected AbstractUser<?> findUserByEmail(String username) throws EntityNotFoundException {
-		return unsecuredUserService.findByEmail(username);
-	}
+
 
 	@Autowired
 	public void injectPrincipalUserConverter(AuthenticatedPrincipalFactory authenticatedPrincipalFactory) {
