@@ -12,6 +12,7 @@ import com.github.vincemann.springrapid.core.security.RapidAuthenticatedPrincipa
 import com.github.vincemann.springrapid.core.security.RapidSecurityContext;
 import com.github.vincemann.springrapid.core.service.exception.BadEntityException;
 import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.ImportAutoConfiguration;
@@ -20,6 +21,7 @@ import org.springframework.boot.test.mock.mockito.SpyBean;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
+import org.springframework.jdbc.datasource.DataSourceUtils;
 import org.springframework.jdbc.datasource.init.ScriptUtils;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.jdbc.Sql;
@@ -29,6 +31,8 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 
 import javax.sql.DataSource;
+import javax.transaction.Transactional;
+import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.Map;
@@ -54,6 +58,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
  */
 //just activate everything for simplicity
 @ActiveProfiles(value = {"web", "service", "test", "webTest", "serviceTest", "dev"}, inheritProfiles = false)
+//@Transactional dont do transactional bc controller will be wrapped in transaction as well -> lazyLoad Exceptions ect. wont be detected
 @ImportAutoConfiguration(exclude = LemonAdminAutoConfiguration.class)
 public abstract class AbstractMvcTests {
 
@@ -105,11 +110,14 @@ public abstract class AbstractMvcTests {
     public void setup() throws Exception {
         initMockMvc();
 //        if (!initialized) {
-        clearTestData();
+        System.err.println("creating test users");
         createTestUsers();
+        System.err.println("test users created");
 //            initialized = true;
 //        }
+        System.err.println("logging in test users");
         loginTestUsers();
+        System.err.println("test users logged in");
     }
 
     protected void initMockMvc() {
@@ -120,8 +128,14 @@ public abstract class AbstractMvcTests {
     }
 
     protected void clearTestData() throws SQLException {
-        ScriptUtils.executeSqlScript(dataSource.getConnection(), new ClassPathResource("test-data/removeAclInfo.sql"));
+        System.err.println("deleting users");
         userRepository.deleteAll();
+        System.err.println("deleted users");
+        System.err.println("deleting acl info");
+        Connection connection = DataSourceUtils.getConnection(dataSource);
+        ScriptUtils.executeSqlScript(connection, new ClassPathResource("test-data/removeAclInfo.sql"));
+        DataSourceUtils.releaseConnection(connection,dataSource);
+        System.err.println("deleted acl info");
     }
 
     protected void createTestUsers() throws BadEntityException {
@@ -169,7 +183,14 @@ public abstract class AbstractMvcTests {
 //                .andExpect(jsonPath("$.user.id").value(unverifiedUser.getId()));
     }
 
-//    protected void initAcl() throws SQLException {
+    @AfterEach
+    void tearDown() throws SQLException {
+        System.err.println("clearing test data");
+        clearTestData();
+        System.err.println("test data cleared");
+    }
+
+    //    protected void initAcl() throws SQLException {
 //        if (!initialized) {
 //            //only do this expensive stuff once -> permissions stay the same
 //            ScriptUtils.executeSqlScript(dataSource.getConnection(), new ClassPathResource("test-data/removeAclInfo.sql"));

@@ -28,17 +28,17 @@ public class SignupMvcTests extends AbstractMvcTests {
 				.contentType(MediaType.APPLICATION_JSON)
 				.content(MapperUtils.toJson(signupForm)))
 				.andExpect(status().is(422))
-				.andExpect(jsonPath("$.errors[*].field").value(hasSize(4)))
+				.andExpect(jsonPath("$.errors[*].field").value(hasSize(3)))
 				.andExpect(jsonPath("$.errors[*].field").value(hasItems(
-					"user.email", "user.password", "user.name")))
+					"user.email", "user.password"/*, "user.name"*/)))
 				.andExpect(jsonPath("$.errors[*].code").value(hasItems(
 						"{com.naturalprogrammer.spring.invalid.email}",
-						"{blank.name}",
+						/*"{blank.name}",*/
 						"{com.naturalprogrammer.spring.invalid.email.size}",
 						"{com.naturalprogrammer.spring.invalid.password.size}")))
 				.andExpect(jsonPath("$.errors[*].message").value(hasItems(
 						"Not a well formed email address",
-						"Name required",
+						/*"Name required",*/
 						"Email must be between 4 and 250 characters",
 						"Password must be between 6 and 50 characters")));
 		
@@ -58,8 +58,8 @@ public class SignupMvcTests extends AbstractMvcTests {
 				.andExpect(jsonPath("$.id").exists())
 				.andExpect(jsonPath("$.password").doesNotExist())
 				.andExpect(jsonPath("$.email").value("user.foo@example.com"))
-				.andExpect(jsonPath("$.roles").value(hasSize(1)))
-				.andExpect(jsonPath("$.roles[0]").value(LemonRoles.UNVERIFIED))
+				.andExpect(jsonPath("$.roles").value(hasSize(2)))
+				.andExpect(jsonPath("$.roles").value(hasItems(LemonRoles.UNVERIFIED,LemonRoles.USER)))
 //				.andExpect(jsonPath("$.tag.name").value("User Foo"))
 				.andExpect(jsonPath("$.unverified").value(true))
 				.andExpect(jsonPath("$.blocked").value(false))

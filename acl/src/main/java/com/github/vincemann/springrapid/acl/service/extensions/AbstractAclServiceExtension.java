@@ -14,6 +14,7 @@ import org.springframework.security.acls.domain.BasePermission;
 import org.springframework.security.acls.model.MutableAclService;
 import org.springframework.security.acls.model.Permission;
 
+import javax.transaction.Transactional;
 import java.io.Serializable;
 
 /**
@@ -32,23 +33,23 @@ public abstract class AbstractAclServiceExtension<S>
 
 
     @LogInteraction(Severity.TRACE)
-    protected void saveFullPermissionForAdminOver(IdentifiableEntity<Serializable> entity){
+    public void saveFullPermissionForAdminOver(IdentifiableEntity<Serializable> entity){
         //acl framework uses internally springs Authentication object
         securityContext.runAsAdmin(() -> getPermissionService().addPermissionForAuthorityOver(entity,
                 BasePermission.ADMINISTRATION, RapidRoles.ADMIN));
     }
 
     @LogInteraction(Severity.TRACE)
-    protected void savePermissionForAuthenticatedOver(IdentifiableEntity<Serializable> entity, Permission permission){
+    public void savePermissionForAuthenticatedOver(IdentifiableEntity<Serializable> entity, Permission permission){
         String own = findAuthenticatedName();
         getPermissionService().addPermissionForUserOver(entity, permission,own);
     }
 
-    protected void savePermissionForUserOver(String user, IdentifiableEntity<Serializable> entity, Permission permission){
+    public void savePermissionForUserOver(String user, IdentifiableEntity<Serializable> entity, Permission permission){
         securityContext.runWithName(user,() -> getPermissionService().addPermissionForUserOver(entity, permission,user));
     }
 
-    protected String findAuthenticatedName(){
+    public String findAuthenticatedName(){
         String name = RapidSecurityContext.getName();
         //Nicht auslagern. MutableAclService macht das intern auch so -> use @MockUser(username="testUser") in tests
         if(name==null){

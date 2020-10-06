@@ -22,7 +22,7 @@ public class AclUserServiceExtension
         extends AbstractAclServiceExtension<UserService>
             implements UserServiceExtension<UserService>
 {
-    private UserService<AbstractUser<?>,?> unsecuredUserService;
+
 
 
     @Override
@@ -57,10 +57,4 @@ public class AclUserServiceExtension
         }
     }
 
-
-    @Autowired
-    @Unsecured
-    public void injectUnsecuredUserService(UserService unsecuredUserService) {
-        this.unsecuredUserService = unsecuredUserService;
-    }
 }

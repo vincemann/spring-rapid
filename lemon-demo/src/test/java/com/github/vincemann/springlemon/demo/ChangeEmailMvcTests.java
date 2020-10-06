@@ -6,6 +6,7 @@ import com.github.vincemann.springlemon.auth.service.token.EmailJwtService;
 import com.github.vincemann.springlemon.auth.util.LemonMapUtils;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
@@ -26,11 +27,20 @@ public class ChangeEmailMvcTests extends AbstractMvcTests {
 
 	@BeforeEach
 	public void setup() throws Exception {
-		super.setup();
+		initMockMvc();
+		System.err.println("creating test users");
+		createTestUsers();
+		System.err.println("test users created");
+
 		AbstractUser<Long> user = (AbstractUser<Long>) userRepository.findById(unverifiedUser.getId()).get();
 		user.setNewEmail(NEW_EMAIL);
 
 		userRepository.save(user);
+
+		System.err.println("logging in test users");
+		loginTestUsers();
+		System.err.println("test users logged in");
+
 
 		changeEmailCode = emailJwtService.createToken(
 				AbstractUserService.CHANGE_EMAIL_AUDIENCE,
@@ -39,6 +49,8 @@ public class ChangeEmailMvcTests extends AbstractMvcTests {
 				LemonMapUtils.mapOf("newEmail", NEW_EMAIL));
 	}
 
+	//works solo but token is obsolete when run in group
+//	@Disabled
 	@Test
 	public void testChangeEmail() throws Exception {
 		
