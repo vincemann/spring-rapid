@@ -8,6 +8,7 @@ import com.github.vincemann.springrapid.acl.proxy.Unsecured;
 import com.github.vincemann.springrapid.core.service.exception.EntityNotFoundException;
 import com.github.vincemann.springrapid.core.util.VerifyEntity;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.security.authentication.AuthenticationCredentialsNotFoundException;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -45,6 +46,7 @@ public class LemonJwtClaimsPrincipalConverter
         }
     }
 
+    @Lazy
     @Unsecured
     @Autowired
     public void injectUnsecuredUserService(UserService userService) {

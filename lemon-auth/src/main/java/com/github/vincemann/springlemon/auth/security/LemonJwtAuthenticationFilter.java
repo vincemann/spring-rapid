@@ -58,7 +58,7 @@ public class LemonJwtAuthenticationFilter extends OncePerRequestFilter {
 
             } catch (Exception e) {
 
-                log.debug("Token authentication failed - " + e.getMessage());
+                log.debug("Token authentication failed - ",e);
 
                 response.sendError(HttpServletResponse.SC_UNAUTHORIZED,
                         "Authentication Failed: " + e.getMessage());

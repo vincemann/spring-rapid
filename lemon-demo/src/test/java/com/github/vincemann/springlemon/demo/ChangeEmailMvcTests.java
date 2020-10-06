@@ -4,7 +4,6 @@ import com.github.vincemann.springlemon.auth.domain.AbstractUser;
 import com.github.vincemann.springlemon.auth.service.AbstractUserService;
 import com.github.vincemann.springlemon.auth.service.token.EmailJwtService;
 import com.github.vincemann.springlemon.auth.util.LemonMapUtils;
-import com.github.vincemann.springlemon.demo.domain.User;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -26,29 +25,19 @@ public class ChangeEmailMvcTests extends AbstractMvcTests {
 	private EmailJwtService emailJwtService;
 
 	@BeforeEach
-	public void setUp() {
-
+	public void setup() throws Exception {
+		super.setup();
 		AbstractUser<Long> user = (AbstractUser<Long>) userRepository.findById(unverifiedUser.getId()).get();
 		user.setNewEmail(NEW_EMAIL);
 
-//		securityContext.login(principalUserConverter.toPrincipal(user));
-
 		userRepository.save(user);
-
-//		securityContext.logout();
 
 		changeEmailCode = emailJwtService.createToken(
 				AbstractUserService.CHANGE_EMAIL_AUDIENCE,
 				Long.toString(unverifiedUser.getId()),
-				60000L,
+				600000L,
 				LemonMapUtils.mapOf("newEmail", NEW_EMAIL));
 	}
-
-//	@Autowired
-//	RapidSecurityContext securityContext;
-//
-//	@Autowired
-//	LemonPrincipalUserConverter principalUserConverter;
 
 	@Test
 	public void testChangeEmail() throws Exception {
