@@ -1,5 +1,7 @@
 package com.github.vincemann.springlemon.auth.service.token;
 
+import com.github.vincemann.aoplog.api.AopLoggable;
+import com.github.vincemann.aoplog.api.LogInteraction;
 import com.github.vincemann.springlemon.auth.LemonProperties;
 import com.github.vincemann.springlemon.auth.security.JwtClaimsPrincipalConverter;
 import com.github.vincemann.springlemon.auth.util.LemonValidationUtils;
@@ -13,7 +15,7 @@ import java.util.Map;
 
 @Slf4j
 public abstract class AbstractJwtAuthorizationTokenService<P extends RapidAuthenticatedPrincipal>
-        implements AuthorizationTokenService<P> {
+        implements AuthorizationTokenService<P>, AopLoggable {
 
     private static final String AUTH_AUDIENCE = "auth";
     private static final String PRINCIPAL_CLAIMS_KEY = "rapid-principal";
@@ -24,6 +26,7 @@ public abstract class AbstractJwtAuthorizationTokenService<P extends RapidAuthen
     private LemonProperties properties;
 
 
+    @LogInteraction
     @Override
     public String createToken(P principal) {
         Map<String, Object> principalClaims = jwtPrincipalConverter.toClaims(principal);
@@ -40,6 +43,7 @@ public abstract class AbstractJwtAuthorizationTokenService<P extends RapidAuthen
         return jwsTokenService.createToken(claims);
     }
 
+    @LogInteraction
     @Override
     public P parseToken(String token) throws BadTokenException {
         JWTClaimsSet jwtClaimsSet = jwsTokenService.parseToken(token);

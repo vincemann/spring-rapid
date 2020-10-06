@@ -75,11 +75,11 @@ public abstract class AbstractMvcTests {
     protected static final String BLOCKED_USER_EMAIL = "blockedUser@example.com";
     protected static final String BLOCKED_USER_PASSWORD = "Sanjay99!blocked";
 
-    private static boolean initialized = false;
+//    private static boolean initialized = false;
 
     @Autowired
     @AclManaging
-    protected UserService<AbstractUser<Long>,Long> aclUserService;
+    protected UserService<AbstractUser<Long>, Long> aclUserService;
 
     @Autowired
     protected AbstractUserRepository userRepository;
@@ -102,16 +102,17 @@ public abstract class AbstractMvcTests {
     protected AbstractUser<Long> blockedUser;
 
     @BeforeEach
-    public void baseSetUp() throws Exception {
+    public void setup() throws Exception {
         initMockMvc();
-        if (!initialized) {
-            clearTestData();
-            createTestUsers();
-            loginTestUsers();
-        }
+//        if (!initialized) {
+        clearTestData();
+        createTestUsers();
+//            initialized = true;
+//        }
+        loginTestUsers();
     }
 
-    protected void initMockMvc(){
+    protected void initMockMvc() {
         mvc = MockMvcBuilders
                 .webAppContextSetup(context)
                 .apply(springSecurity())
@@ -126,17 +127,17 @@ public abstract class AbstractMvcTests {
     protected void createTestUsers() throws BadEntityException {
         admin = aclUserService.save(createUser(ADMIN_EMAIL, ADMIN_PASSWORD, LemonRoles.ADMIN));
         secondAdmin = aclUserService.save(createUser(SECOND_ADMIN_EMAIL, SECOND_ADMIN_PASSWORD, LemonRoles.ADMIN));
-        blockedAdmin = aclUserService.save(createUser(BLOCKED_ADMIN_EMAIL, BLOCKED_ADMIN_PASSWORD, LemonRoles.ADMIN,LemonRoles.BLOCKED));
+        blockedAdmin = aclUserService.save(createUser(BLOCKED_ADMIN_EMAIL, BLOCKED_ADMIN_PASSWORD, LemonRoles.ADMIN, LemonRoles.BLOCKED));
 
         user = aclUserService.save(createUser(USER_EMAIL, USER_PASSWORD, LemonRoles.USER));
-        unverifiedUser = aclUserService.save(createUser(UNVERIFIED_USER_EMAIL, UNVERIFIED_USER_PASSWORD, LemonRoles.USER));
-        blockedUser = aclUserService.save(createUser(BLOCKED_USER_EMAIL, BLOCKED_USER_PASSWORD, LemonRoles.USER,LemonRoles.BLOCKED));
+        unverifiedUser = aclUserService.save(createUser(UNVERIFIED_USER_EMAIL, UNVERIFIED_USER_PASSWORD, LemonRoles.USER,LemonRoles.UNVERIFIED));
+        blockedUser = aclUserService.save(createUser(BLOCKED_USER_EMAIL, BLOCKED_USER_PASSWORD, LemonRoles.USER, LemonRoles.BLOCKED));
     }
 
     /**
      * Change this method to integrate tests in your project.
      */
-    protected AbstractUser<Long> createUser(String email, String password, String... roles){
+    protected AbstractUser<Long> createUser(String email, String password, String... roles) {
         return new User(email, password, roles);
     }
 
@@ -200,7 +201,6 @@ public abstract class AbstractMvcTests {
 //            permissionService.addPermissionForAuthorityOver(user, BasePermission.ADMINISTRATION, RapidRoles.ADMIN);
 //        }
 //    }
-
 
 
 }
