@@ -51,9 +51,8 @@ public class FetchNewTokenMvcTests extends AbstractMvcTests {
 	@Test
 	public void testFetchNewToken_waitForExpire_shouldNotBeUsableAfter() throws Exception {
 		//mock expire time
-		long oldExpireTime = properties.getJwt().getExpirationMillis();
 		long mockedExpireTime = 1000L;
-		Mockito.doReturn(mockedExpireTime).when(properties.getJwt().getExpirationMillis());
+		Mockito.doReturn(mockedExpireTime).when(jwt).getExpirationMillis();
 
 		MvcResult result = mvc.perform(post("/api/core/fetch-new-auth-token")
 				.header(HttpHeaders.AUTHORIZATION, tokens.get(unverifiedUser.getId()))

@@ -51,7 +51,8 @@ public class UserServiceSecurityExtension
     public AbstractUser update(AbstractUser update, Boolean full) throws EntityNotFoundException, BadEntityException {
         getSecurityChecker().checkPermission(update.getId(), getLast().getEntityClass(), getWritePermission());
         Optional<AbstractUser<Serializable>> oldUserOp = unsecuredUserService.findById(update.getId());
-        AbstractUser oldUser = VerifyEntity.isPresent(oldUserOp, update.getId(), update.getClass());
+        VerifyEntity.isPresent(oldUserOp, update.getId(), update.getClass());
+        AbstractUser oldUser = oldUserOp.get();
         RapidSecurityContextChecker.checkAuthenticated();
         LemonAuthenticatedPrincipal currPrincipal = securityContextChecker.getSecurityContext().currentPrincipal();
         checkRoleChangingPermissions(oldUser, update, currPrincipal);

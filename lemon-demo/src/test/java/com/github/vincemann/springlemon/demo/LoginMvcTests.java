@@ -12,6 +12,7 @@ import com.github.vincemann.springlemon.auth.domain.AbstractUser;
 import com.github.vincemann.springlemon.demo.domain.User;
 import com.github.vincemann.springrapid.core.security.RapidRoles;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MvcResult;
@@ -29,16 +30,18 @@ public class LoginMvcTests extends AbstractMvcTests {
                 .header("contentType",  MediaType.APPLICATION_FORM_URLENCODED))
                 .andExpect(status().is(200))
 				.andExpect(header().string(HttpHeaders.AUTHORIZATION, containsString(".")))
-				.andExpect(jsonPath("$.id").value(admin.getId()))
-				.andExpect(jsonPath("$.password").doesNotExist())
-				.andExpect(jsonPath("$.email").value("admin@example.com"))
-				.andExpect(jsonPath("$.roles").value(hasSize(1)))
-				.andExpect(jsonPath("$.roles[0]").value(RapidRoles.ADMIN))
-//				.andExpect(jsonPath("$.tag.name").value("Admin 1"))
-				.andExpect(jsonPath("$.unverified").value(false))
-				.andExpect(jsonPath("$.blocked").value(false))
-				.andExpect(jsonPath("$.admin").value(true))
-				.andExpect(jsonPath("$.goodUser").value(true));
+//				.andExpect(jsonPath("$.id").value(admin.getId()))
+				.andExpect(jsonPath("$.id").doesNotExist())
+				.andExpect(jsonPath("$.password").doesNotExist());
+		//get data via /context with token
+//				.andExpect(jsonPath("$.email").value("admin@example.com"))
+//				.andExpect(jsonPath("$.roles").value(hasSize(1)))
+//				.andExpect(jsonPath("$.roles[0]").value(RapidRoles.ADMIN))
+////				.andExpect(jsonPath("$.tag.name").value("Admin 1"))
+//				.andExpect(jsonPath("$.unverified").value(false))
+//				.andExpect(jsonPath("$.blocked").value(false))
+//				.andExpect(jsonPath("$.admin").value(true))
+//				.andExpect(jsonPath("$.goodUser").value(true));
 //				.andExpect(jsonPath("$.goodAdmin").value(true));
 	}
 
@@ -52,10 +55,7 @@ public class LoginMvcTests extends AbstractMvcTests {
 //				.andExpect(status().is(204));
 		
 		// Test that a 500ms token does not expire before 500ms
-		String token = login(ADMIN_EMAIL, ADMIN_PASSWORD, 500L);
-//		mvc.perform(get("/api/core/ping")
-//				.header(LemonSecurityConfig.TOKEN_REQUEST_HEADER_NAME, token))
-//				.andExpect(status().is(204));
+		String token = successful_login(ADMIN_EMAIL, ADMIN_PASSWORD, 500L);
 		// but, does expire after 500ms
 		Thread.sleep(501L);
 		mvc.perform(get("/api/core/ping")
@@ -74,7 +74,8 @@ public class LoginMvcTests extends AbstractMvcTests {
 		AbstractUser<Long> user = (AbstractUser<Long>) userRepository.findById(admin.getId()).get();
 		user.setCredentialsUpdatedMillis(System.currentTimeMillis());
 		userRepository.save(user);
-		
+		Thread.sleep(300);
+
 		mvc.perform(get("/api/core/ping")
 				.header(HttpHeaders.AUTHORIZATION, tokens.get(admin.getId())))
 				.andExpect(status().is(401));
@@ -82,26 +83,18 @@ public class LoginMvcTests extends AbstractMvcTests {
 
 	@Test
 	public void testLoginWrongPassword() throws Exception {
-		
-		mvc.perform(post("/api/core/login")
-                .param("username", ADMIN_EMAIL)
-                .param("password", "wrong-password")
-                .header("contentType",  MediaType.APPLICATION_FORM_URLENCODED))
-                .andExpect(status().is(401));
+		login(ADMIN_EMAIL,"wrong-password")
+				.andExpect(status().is(401));
 	}
 
 	@Test
 	public void testLoginBlankPassword() throws Exception {
-		
-		mvc.perform(post("/api/core/login")
-                .param("username", ADMIN_EMAIL)
-                .param("password", "")
-                .header("contentType",  MediaType.APPLICATION_FORM_URLENCODED))
-                .andExpect(status().is(401));
+		login(ADMIN_EMAIL,"")
+				.andExpect(status().is(401));
 	}
 
 	@Test
-	public void testTokenLogin() throws Exception {
+	public void testGetUserIdByToken() throws Exception {
 
 		mvc.perform(get("/api/core/context")
 				.header(HttpHeaders.AUTHORIZATION, tokens.get(admin.getId())))
@@ -123,17 +116,5 @@ public class LoginMvcTests extends AbstractMvcTests {
 		
 		mvc.perform(post("/logout"))
                 .andExpect(status().is(404));
-	}
-	
-	private String login(String username, String password, long expirationMillis) throws Exception {
-		
-		MvcResult result = mvc.perform(post("/api/core/login")
-                .param("username", ADMIN_EMAIL)
-                .param("password", ADMIN_PASSWORD)
-                .param("expirationMillis", Long.toString(expirationMillis))
-                .header("contentType",  MediaType.APPLICATION_FORM_URLENCODED))
-                .andReturn();
-
-		return result.getResponse().getHeader(HttpHeaders.AUTHORIZATION);
 	}
 }

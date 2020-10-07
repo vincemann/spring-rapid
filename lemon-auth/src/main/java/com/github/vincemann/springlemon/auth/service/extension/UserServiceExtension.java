@@ -23,8 +23,8 @@ public interface UserServiceExtension<S extends UserService>
 {
 
     @Override
-    default Map<String, Object> getSharedProperties(){
-        return getNext().getSharedProperties();
+    default Map<String, Object> getContext(){
+        return getNext().getContext();
     }
 
     @Override

@@ -2,9 +2,9 @@ package com.github.vincemann.springlemon.demo;
 
 import static org.hamcrest.Matchers.hasEntry;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
+import com.github.vincemann.springrapid.core.security.RapidRoles;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.http.HttpHeaders;
@@ -36,21 +36,26 @@ public class BasicMvcTests extends AbstractMvcTests {
 				.header(HttpHeaders.AUTHORIZATION, tokens.get(admin.getId())))
 				.andExpect(status().is(200))
 //				.andExpect(header().string(HttpHeaders.AUTHORIZATION, containsString(".")))
-				.andExpect(jsonPath("$.context.reCaptchaSiteKey").isString())
-				.andExpect(jsonPath("$.context.shared").value(hasEntry("testKey","testValue")))
-				.andExpect(jsonPath("$.user").doesNotExist());
-//				.andExpect(jsonPath("$.user.id").value(admin.getId()))
-//				.andExpect(jsonPath("$.user.roles[0]").value(RapidRoles.ADMIN))
-//				.andExpect(jsonPath("$.user.password").doesNotExist());
+				.andExpect(jsonPath("$.reCaptchaSiteKey").isString())
+				.andExpect(jsonPath("$.shared").value(hasEntry("testKey","testValue")))
+
+				.andExpect(jsonPath("$.user.id").value(admin.getId()))
+				.andExpect(jsonPath("$.user.roles[0]").value(RapidRoles.ADMIN))
+				.andExpect(jsonPath("$.user.password").doesNotExist())
+				.andExpect(jsonPath("$.user.unverified").value(false))
+				.andExpect(jsonPath("$.user.blocked").value(false))
+				.andExpect(jsonPath("$.user.admin").value(true))
+				.andExpect(jsonPath("$.user.goodUser").value(true));
 	}
 	
-//	@Test
-//	public void testGetContextWithoutLoggedIn_shouldOnlyReturnCaptcha() throws Exception {
-//
-//		mvc.perform(get("/api/core/context"))
-//				.andExpect(status().is(200))
-//				.andExpect(header().doesNotExist(HttpHeaders.AUTHORIZATION))
-//				.andExpect(jsonPath("$.context.reCaptchaSiteKey").isString())
-//				.andExpect(jsonPath("$.user").doesNotExist());
-//	}
+	@Test
+	public void testGetContextWithoutLoggedIn_shouldOnlyReturnPublicContext() throws Exception {
+
+		mvc.perform(get("/api/core/context"))
+				.andExpect(status().is(200))
+				.andExpect(header().doesNotExist(HttpHeaders.AUTHORIZATION))
+				.andExpect(jsonPath("$.reCaptchaSiteKey").isString())
+				.andExpect(jsonPath("$.shared").value(hasEntry("testKey","testValue")))
+				.andExpect(jsonPath("$.user").doesNotExist());
+	}
 }

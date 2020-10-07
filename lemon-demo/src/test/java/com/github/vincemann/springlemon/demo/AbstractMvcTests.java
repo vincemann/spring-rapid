@@ -15,6 +15,7 @@ import com.github.vincemann.springrapid.core.service.exception.BadEntityExceptio
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
+import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.ImportAutoConfiguration;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -28,6 +29,7 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
+import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 
@@ -92,11 +94,14 @@ public abstract class AbstractMvcTests {
 
     @SpyBean
     protected MailSender<?> mailSender;
+
     @Autowired
     protected DataSource dataSource;
 
+    //use for stubbing i.E. Mockito.doReturn(mockedExpireTime).when(jwt).getExpirationMillis();
     @SpyBean
     protected LemonProperties properties;
+    protected LemonProperties.Jwt jwt;
 
     @Autowired
     private WebApplicationContext context;
@@ -114,15 +119,18 @@ public abstract class AbstractMvcTests {
     @BeforeEach
     public void setup() throws Exception {
         initMockMvc();
-//        if (!initialized) {
         System.err.println("creating test users");
         createTestUsers();
         System.err.println("test users created");
-//            initialized = true;
-//        }
         System.err.println("logging in test users");
         loginTestUsers();
         System.err.println("test users logged in");
+        setupSpies();
+    }
+
+    protected void setupSpies(){
+        jwt = Mockito.spy(properties.getJwt());
+        Mockito.doReturn(jwt).when(properties).getJwt();
     }
 
     protected void initMockMvc() {
@@ -145,41 +153,51 @@ public abstract class AbstractMvcTests {
     }
 
     protected void createTestUsers() throws BadEntityException {
-        admin = aclUserService.save(createUser(ADMIN_EMAIL, ADMIN_PASSWORD, LemonRoles.ADMIN));
-        secondAdmin = aclUserService.save(createUser(SECOND_ADMIN_EMAIL, SECOND_ADMIN_PASSWORD, LemonRoles.ADMIN));
-        blockedAdmin = aclUserService.save(createUser(BLOCKED_ADMIN_EMAIL, BLOCKED_ADMIN_PASSWORD, LemonRoles.ADMIN, LemonRoles.BLOCKED));
+        admin = aclUserService.save(createUser(ADMIN_EMAIL,"Admin", ADMIN_PASSWORD, LemonRoles.ADMIN));
+        secondAdmin = aclUserService.save(createUser(SECOND_ADMIN_EMAIL,"Second Admin", SECOND_ADMIN_PASSWORD, LemonRoles.ADMIN));
+        blockedAdmin = aclUserService.save(createUser(BLOCKED_ADMIN_EMAIL,"Blocked Admin", BLOCKED_ADMIN_PASSWORD, LemonRoles.ADMIN, LemonRoles.BLOCKED));
 
-        user = aclUserService.save(createUser(USER_EMAIL, USER_PASSWORD, LemonRoles.USER));
-        unverifiedUser = aclUserService.save(createUser(UNVERIFIED_USER_EMAIL, UNVERIFIED_USER_PASSWORD, LemonRoles.USER,LemonRoles.UNVERIFIED));
-        blockedUser = aclUserService.save(createUser(BLOCKED_USER_EMAIL, BLOCKED_USER_PASSWORD, LemonRoles.USER, LemonRoles.BLOCKED));
+        user = aclUserService.save(createUser(USER_EMAIL,"User", USER_PASSWORD, LemonRoles.USER));
+        unverifiedUser = aclUserService.save(createUser(UNVERIFIED_USER_EMAIL,"Unverified User", UNVERIFIED_USER_PASSWORD, LemonRoles.USER,LemonRoles.UNVERIFIED));
+        blockedUser = aclUserService.save(createUser(BLOCKED_USER_EMAIL,"Blocked User", BLOCKED_USER_PASSWORD, LemonRoles.USER, LemonRoles.BLOCKED));
     }
 
     /**
      * Change this method to integrate tests in your project.
      */
-    protected AbstractUser<Long> createUser(String email, String password, String... roles) {
-        return new User(email, password, roles);
+    protected AbstractUser<Long> createUser(String email,String name, String password, String... roles) {
+        return new User(email, password,name, roles);
     }
 
     protected void loginTestUsers() throws Exception {
-        tokens.put(admin.getId(), login(ADMIN_EMAIL, ADMIN_PASSWORD));
-        tokens.put(secondAdmin.getId(), login(SECOND_ADMIN_EMAIL, SECOND_ADMIN_PASSWORD));
-        tokens.put(blockedAdmin.getId(), login(BLOCKED_ADMIN_EMAIL, BLOCKED_ADMIN_PASSWORD));
+        tokens.put(admin.getId(), successful_login(ADMIN_EMAIL, ADMIN_PASSWORD));
+        tokens.put(secondAdmin.getId(), successful_login(SECOND_ADMIN_EMAIL, SECOND_ADMIN_PASSWORD));
+        tokens.put(blockedAdmin.getId(), successful_login(BLOCKED_ADMIN_EMAIL, BLOCKED_ADMIN_PASSWORD));
 
-        tokens.put(user.getId(), login(USER_EMAIL, USER_PASSWORD));
-        tokens.put(unverifiedUser.getId(), login(UNVERIFIED_USER_EMAIL, UNVERIFIED_USER_PASSWORD));
-        tokens.put(blockedUser.getId(), login(BLOCKED_USER_EMAIL, BLOCKED_USER_PASSWORD));
+        tokens.put(user.getId(), successful_login(USER_EMAIL, USER_PASSWORD));
+        tokens.put(unverifiedUser.getId(), successful_login(UNVERIFIED_USER_EMAIL, UNVERIFIED_USER_PASSWORD));
+        tokens.put(blockedUser.getId(), successful_login(BLOCKED_USER_EMAIL, BLOCKED_USER_PASSWORD));
+        Thread.sleep(500);
     }
 
-    protected String login(String userName, String password) throws Exception {
-        MvcResult result = mvc.perform(post("/api/core/login")
+    protected ResultActions login(String userName, String password) throws Exception {
+        return mvc.perform(post("/api/core/login")
                 .param("username", userName)
                 .param("password", password)
-                .header("contentType", MediaType.APPLICATION_FORM_URLENCODED))
+                .header("contentType", MediaType.APPLICATION_FORM_URLENCODED));
+    }
+
+    protected String successful_login(String userName, String password) throws Exception {
+        MvcResult result = login(userName,password)
                 .andExpect(status().is(200))
                 .andReturn();
 
         return result.getResponse().getHeader(HttpHeaders.AUTHORIZATION);
+    }
+
+    protected String successful_login(String username, String password, long expirationMillis) throws Exception {
+        Mockito.doReturn(expirationMillis).when(jwt).getExpirationMillis();
+        return successful_login(username,password);
     }
 
     protected void ensureTokenWorks(String token) throws Exception {
@@ -192,8 +210,11 @@ public abstract class AbstractMvcTests {
     @AfterEach
     void tearDown() throws SQLException {
         System.err.println("clearing test data");
+        tokens.clear();
         clearTestData();
         System.err.println("test data cleared");
+        Mockito.reset(properties);
+        Mockito.reset(jwt);
     }
 
     //    protected void initAcl() throws SQLException {

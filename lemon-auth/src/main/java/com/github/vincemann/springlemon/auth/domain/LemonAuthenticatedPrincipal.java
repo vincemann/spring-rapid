@@ -30,6 +30,9 @@ public class LemonAuthenticatedPrincipal extends RapidAuthenticatedPrincipal {
 	public LemonAuthenticatedPrincipal(AbstractUser<?> user) {
 		this(user.getEmail(), user.getPassword(),user.getRoles(), user.getId().toString());
 	}
+	public LemonAuthenticatedPrincipal(LemonAuthenticatedPrincipal user) {
+		this(user.getEmail(), user.getPassword(),user.getRoles(), user.getId());
+	}
 
 	public void initFlags() {
 		//init role flags
