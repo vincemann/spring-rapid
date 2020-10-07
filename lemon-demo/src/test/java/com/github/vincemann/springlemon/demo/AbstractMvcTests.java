@@ -1,5 +1,6 @@
 package com.github.vincemann.springlemon.demo;
 
+import com.github.vincemann.springlemon.auth.LemonProperties;
 import com.github.vincemann.springlemon.auth.config.LemonAdminAutoConfiguration;
 import com.github.vincemann.springlemon.auth.domain.AbstractUser;
 import com.github.vincemann.springlemon.auth.domain.AbstractUserRepository;
@@ -93,6 +94,10 @@ public abstract class AbstractMvcTests {
     protected MailSender<?> mailSender;
     @Autowired
     protected DataSource dataSource;
+
+    @SpyBean
+    protected LemonProperties properties;
+
     @Autowired
     private WebApplicationContext context;
 
@@ -131,6 +136,7 @@ public abstract class AbstractMvcTests {
         System.err.println("deleting users");
         userRepository.deleteAll();
         System.err.println("deleted users");
+
         System.err.println("deleting acl info");
         Connection connection = DataSourceUtils.getConnection(dataSource);
         ScriptUtils.executeSqlScript(connection, new ClassPathResource("test-data/removeAclInfo.sql"));
