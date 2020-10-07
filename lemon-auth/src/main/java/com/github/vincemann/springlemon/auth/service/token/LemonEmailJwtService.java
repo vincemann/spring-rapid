@@ -53,6 +53,8 @@ public class LemonEmailJwtService implements EmailJwtService {
     public JWTClaimsSet parseToken(String token, String expectedAud,long issuedAfter) throws BadTokenException {
         JWTClaimsSet claims = parseToken(token, expectedAud);
         long issueTime = claims.getIssueTime().getTime();
+
+//        log.debug("token issued at: " + new Date(issueTime) + ", user creds updated at: " + new Date(issuedAfter));
         LemonValidationUtils.ensureCredentials(issueTime >= issuedAfter,
                 "com.naturalprogrammer.spring.obsoleteToken");
         return claims;

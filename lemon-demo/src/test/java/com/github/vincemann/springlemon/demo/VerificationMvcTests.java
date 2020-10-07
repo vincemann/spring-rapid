@@ -25,7 +25,7 @@ public class VerificationMvcTests extends AbstractMvcTests {
 	private EmailJwtService emailJwtService;
 	
 	@BeforeEach
-	public void setUp() throws Exception {
+	public void setup() throws Exception {
 		super.setup();
 		verificationCode = emailJwtService.createToken(AbstractUserService.VERIFY_AUDIENCE,
 				Long.toString(unverifiedUser.getId()), 60000L,
@@ -34,7 +34,7 @@ public class VerificationMvcTests extends AbstractMvcTests {
 	
 	@Test
 	public void testEmailVerification() throws Exception {
-		
+		Thread.sleep(1L);
 		mvc.perform(post("/api/core/users/{userId}/verification", unverifiedUser.getId())
                 .param("code", verificationCode)
                 .header("contentType",  MediaType.APPLICATION_FORM_URLENCODED))

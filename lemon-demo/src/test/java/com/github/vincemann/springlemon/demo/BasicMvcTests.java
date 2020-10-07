@@ -1,20 +1,13 @@
 package com.github.vincemann.springlemon.demo;
 
-import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.hasEntry;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-import com.github.vincemann.springlemon.auth.LemonProperties;
-import com.github.vincemann.springrapid.core.security.RapidRoles;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
-import org.springframework.boot.test.mock.mockito.SpyBean;
 import org.springframework.http.HttpHeaders;
-
-import com.github.vincemann.springlemon.auth.util.LemonValidationUtils;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -28,8 +21,7 @@ public class BasicMvcTests extends AbstractMvcTests {
 				.andExpect(status().is(204));
 	}
 
-	@SpyBean
-	LemonProperties properties;
+
 
 	@Test
 	public void testGetContextLoggedIn() throws Exception {

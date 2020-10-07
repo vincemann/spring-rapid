@@ -67,7 +67,8 @@ public class AbstractUser<ID extends Serializable>
 	public AbstractUser() {
 	}
 
-//	protected Collection<? extends GrantedAuthority> createAuthorities() {
+
+	//	protected Collection<? extends GrantedAuthority> createAuthorities() {
 //		initFlags();
 //		//create Springs Wrapper for String authorities
 //		Collection<GrantedAuthority> authorities = getRoles().stream()
