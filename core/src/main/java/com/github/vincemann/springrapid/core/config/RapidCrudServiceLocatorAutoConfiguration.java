@@ -14,7 +14,7 @@ import org.springframework.context.annotation.Bean;
 public class RapidCrudServiceLocatorAutoConfiguration {
 
     public RapidCrudServiceLocatorAutoConfiguration() {
-        log.info("Created");
+
     }
 
     @ConditionalOnMissingBean(CrudServiceLocator.class)

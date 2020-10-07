@@ -22,7 +22,7 @@ public class LemonCorsConfigurationSource implements CorsConfigurationSource {
 
 	public LemonCorsConfigurationSource(LemonProperties properties) {
 		this.cors = properties.getCors();
-		log.info("Created");
+
 	}
 
 	@Override

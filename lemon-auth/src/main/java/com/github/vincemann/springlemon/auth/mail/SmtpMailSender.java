@@ -27,7 +27,7 @@ public class SmtpMailSender implements MailSender<LemonMailData> {
 	public SmtpMailSender(JavaMailSender javaMailSender) {
 		
 		this.javaMailSender = javaMailSender;
-		log.info("Created");
+
 	}
 
 

@@ -66,7 +66,7 @@ public class CaptchaValidator implements ConstraintValidator<Captcha, String>, A
 		
 		this.properties = properties;
 		this.restTemplate = new RestTemplate();
-		log.info("Created");
+
 	}
 
 

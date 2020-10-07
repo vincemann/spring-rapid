@@ -34,7 +34,7 @@ public class LemonWebSecurityConfig extends WebSecurityConfigurerAdapter {
 	private LemonAuthenticationSuccessHandler authenticationSuccessHandler;
 
 	public LemonWebSecurityConfig() {
-		log.info("Created");
+
 	}
 
 	/**

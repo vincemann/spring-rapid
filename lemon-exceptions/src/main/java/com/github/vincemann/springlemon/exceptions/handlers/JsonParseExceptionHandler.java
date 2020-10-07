@@ -14,6 +14,6 @@ public class JsonParseExceptionHandler extends AbstractBadRequestExceptionHandle
 	public JsonParseExceptionHandler() {
 		
 		super(JsonParseException.class);
-		log.info("Created");
+
 	}
 }

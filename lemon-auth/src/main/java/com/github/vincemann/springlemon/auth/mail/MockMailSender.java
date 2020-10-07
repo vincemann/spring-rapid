@@ -15,7 +15,7 @@ public class MockMailSender implements MailSender<LemonMailData> {
 	
 
 	public MockMailSender() {
-		log.info("Created");
+
 	}
 
 	@Override

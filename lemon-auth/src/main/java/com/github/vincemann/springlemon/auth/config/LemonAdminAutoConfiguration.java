@@ -11,7 +11,7 @@ import org.springframework.context.annotation.Bean;
 public class LemonAdminAutoConfiguration {
 
     public LemonAdminAutoConfiguration() {
-        log.info("Created");
+
     }
 
     @Bean

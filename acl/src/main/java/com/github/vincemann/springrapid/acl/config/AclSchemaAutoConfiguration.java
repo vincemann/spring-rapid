@@ -18,7 +18,7 @@ import javax.sql.DataSource;
 public class AclSchemaAutoConfiguration {
 
     public AclSchemaAutoConfiguration() {
-        log.info("Created");
+
     }
 
     @Bean

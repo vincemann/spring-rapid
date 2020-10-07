@@ -26,7 +26,7 @@ public class LemonErrorAttributes<T extends Throwable> extends DefaultErrorAttri
     public LemonErrorAttributes(ErrorResponseComposer<T> errorResponseComposer) {
 
 		this.errorResponseComposer = errorResponseComposer;
-		log.info("Created");
+
 	}
 	
     /**

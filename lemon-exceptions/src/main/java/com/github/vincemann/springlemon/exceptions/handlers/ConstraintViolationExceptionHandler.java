@@ -17,7 +17,7 @@ public class ConstraintViolationExceptionHandler extends AbstractValidationExcep
 	public ConstraintViolationExceptionHandler() {
 		
 		super(ConstraintViolationException.class);
-		log.info("Created");
+
 	}
 	
 	@Override

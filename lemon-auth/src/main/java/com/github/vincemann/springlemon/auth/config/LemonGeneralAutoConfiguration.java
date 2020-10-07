@@ -19,7 +19,7 @@ import org.springframework.context.annotation.Configuration;
 public class LemonGeneralAutoConfiguration {
 
     public LemonGeneralAutoConfiguration() {
-        log.info("Created");
+
     }
 
     /**

@@ -30,7 +30,7 @@ public class DefaultExceptionHandlerControllerAdvice<T extends Throwable> {
     public DefaultExceptionHandlerControllerAdvice(ErrorResponseComposer<T> errorResponseComposer) {
 
 		this.errorResponseComposer = errorResponseComposer;
-		log.info("Created");
+
 	}
 
 

@@ -20,7 +20,7 @@ import org.springframework.security.acls.model.MutableAclService;
 public class AclExtensionAutoConfiguration {
 
     public AclExtensionAutoConfiguration() {
-        log.info("Created");
+
     }
 
 

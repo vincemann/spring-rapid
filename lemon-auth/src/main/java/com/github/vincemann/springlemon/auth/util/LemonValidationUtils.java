@@ -26,12 +26,12 @@ public class LemonValidationUtils {
 //	public ValidationUtils(ApplicationContext applicationContext) {
 //
 //		ValidationUtils.applicationContext = applicationContext;
-//		log.info("Created");
+//
 //	}
 
 
 //	public ValidationUtils() {
-//		log.info("Created");
+//
 //	}
 
 	/**

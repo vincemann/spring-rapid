@@ -35,7 +35,7 @@ import static org.springframework.beans.factory.config.ConfigurableBeanFactory.S
 public class RapidControllerAutoConfiguration {
 
     public RapidControllerAutoConfiguration() {
-        log.info("Created");
+
     }
 
     //todo auslagern in rapid configuration file

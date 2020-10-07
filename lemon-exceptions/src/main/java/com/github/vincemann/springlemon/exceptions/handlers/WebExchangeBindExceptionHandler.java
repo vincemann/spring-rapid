@@ -16,7 +16,7 @@ public class WebExchangeBindExceptionHandler extends AbstractValidationException
 	public WebExchangeBindExceptionHandler() {
 		
 		super(WebExchangeBindException.class);
-		log.info("Created");
+
 	}
 	
 	@Override

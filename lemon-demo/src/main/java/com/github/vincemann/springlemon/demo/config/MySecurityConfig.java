@@ -19,7 +19,7 @@ public class MySecurityConfig extends LemonWebSecurityConfig {
 	
 
 	public MySecurityConfig() {
-		log.info("Created");
+
 	}
 
 	@Override

@@ -19,7 +19,7 @@ public class LemonExceptionUtilsAutoConfiguration
 {
 
     public LemonExceptionUtilsAutoConfiguration() {
-            log.info("Created");
+
     }
 
     @Bean

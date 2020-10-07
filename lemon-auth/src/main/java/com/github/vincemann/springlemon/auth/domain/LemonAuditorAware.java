@@ -21,7 +21,7 @@ public class LemonAuditorAware<ID extends Serializable>
 	private IdConverter<ID> idIdConverter;
 
 	public LemonAuditorAware() {
-		log.info("Created");
+
 	}
 
 	@Override

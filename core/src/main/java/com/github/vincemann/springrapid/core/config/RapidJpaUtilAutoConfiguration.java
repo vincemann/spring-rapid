@@ -17,7 +17,7 @@ public class RapidJpaUtilAutoConfiguration {
     EntityManager entityManager;
 
     public RapidJpaUtilAutoConfiguration() {
-        log.info("Created");
+
     }
 
     @Bean

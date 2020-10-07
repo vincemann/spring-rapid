@@ -16,7 +16,7 @@ public class AccessDeniedExceptionHandler extends AbstractExceptionHandler<Acces
 	public AccessDeniedExceptionHandler() {
 		
 		super(AccessDeniedException.class);
-		log.info("Created");
+
 	}
 	
 	@Override

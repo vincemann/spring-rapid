@@ -24,7 +24,7 @@ import static com.fasterxml.jackson.databind.DeserializationFeature.ACCEPT_SINGL
 public class RapidJacksonAutoConfiguration implements WebMvcConfigurer {
 
     public RapidJacksonAutoConfiguration() {
-        log.info("Created");
+
     }
 
     @Bean

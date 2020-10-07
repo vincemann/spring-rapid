@@ -17,7 +17,7 @@ import java.util.List;
 public class RapidDtoMapperAutoConfiguration {
 
     public RapidDtoMapperAutoConfiguration() {
-        log.info("Created");
+
     }
 
     @ConditionalOnMissingBean(name = "defaultDtoMapper")

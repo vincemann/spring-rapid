@@ -40,7 +40,7 @@ public class LemonCommonsWebAutoConfiguration {
 
 
 	public LemonCommonsWebAutoConfiguration() {
-		log.info("Created");
+
 	}
 	
     /**

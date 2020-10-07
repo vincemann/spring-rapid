@@ -9,6 +9,6 @@ import org.springframework.scheduling.annotation.EnableAsync;
 @Slf4j
 public class LemonAsyncAutoConfiguration {
     public LemonAsyncAutoConfiguration() {
-        log.info("Created");
+
     }
 }
