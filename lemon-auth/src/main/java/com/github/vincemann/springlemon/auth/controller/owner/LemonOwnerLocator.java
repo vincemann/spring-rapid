@@ -28,6 +28,9 @@ public class LemonOwnerLocator implements OwnerLocator<AuditingEntity> {
     @Override
     public Optional<String> find(AuditingEntity entity) {
         try {
+            if (entity.getCreatedById()==null){
+                return Optional.empty();
+            }
             Optional<AbstractUser> byId = userService.findById(entity.getCreatedById());
             return byId.map(AbstractUser::getEmail);
         } catch (BadEntityException e) {

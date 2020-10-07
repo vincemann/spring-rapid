@@ -82,15 +82,18 @@ public abstract class AbstractUserService
 
 
     @Override
-    public Map<String, Object> getSharedProperties() {
+    public Map<String, Object> getContext() {
 
         // make the context
-        Map<String, Object> sharedProperties = new HashMap<String, Object>(2);
-        sharedProperties.put("reCaptchaSiteKey", properties.getRecaptcha().getSitekey());
-        sharedProperties.put("shared", properties.getShared());
-
-        Map<String, Object> context = new HashMap<>();
-        context.put("context", sharedProperties);
+        Map<String, Object> context = new HashMap<String, Object>(2);
+        context.put("reCaptchaSiteKey", properties.getRecaptcha().getSitekey());
+        context.put("shared", properties.getShared());
+        LemonAuthenticatedPrincipal principal = securityContext.currentPrincipal();
+        if (principal!=null) {
+            LemonAuthenticatedPrincipal withoutPw = new LemonAuthenticatedPrincipal(principal);
+            withoutPw.setPassword(null);
+            context.put("user", withoutPw);
+        }
 
         return context;
     }

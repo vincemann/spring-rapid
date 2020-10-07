@@ -31,7 +31,7 @@ public interface UserService<U extends AbstractUser<ID>, ID extends Serializable
         extends AopLoggable, CrudService<U,ID>
 {
 
-    public Map<String, Object> getSharedProperties();
+    public Map<String, Object> getContext();
 
     @Validated(UserVerifyUtils.SignUpValidation.class)
     public U signup(@Valid U user) throws BadEntityException;

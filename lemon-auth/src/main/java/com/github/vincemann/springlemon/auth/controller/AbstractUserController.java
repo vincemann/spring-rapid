@@ -64,7 +64,7 @@ public abstract class AbstractUserController<U extends AbstractUser<ID>, ID exte
 	public Map<String, Object> getContext() {
 
 		log.debug("Getting context ");
-		Map<String, Object> context = getService().getSharedProperties();
+		Map<String, Object> context = getService().getContext();
 		log.debug("Returning context: " + context);
 		return context;
 	}
@@ -94,7 +94,6 @@ public abstract class AbstractUserController<U extends AbstractUser<ID>, ID exte
 	@PostMapping("/users")
 	@ResponseStatus(HttpStatus.CREATED)
 	@ResponseBody
-	
 	public ResponseEntity<String> signup(/*@RequestBody @JsonView(UserUtils.SignupInput.class) S signupForm,*/
 							   @Lp HttpServletRequest request,
 							   HttpServletResponse response) throws BadEntityException, IOException, EntityNotFoundException {
@@ -194,11 +193,11 @@ public abstract class AbstractUserController<U extends AbstractUser<ID>, ID exte
 		return ok(getJsonMapper().writeValueAsString(responseDto));
 	}
 
-	@Override
-	public void afterUpdate(Object dto, U updated, HttpServletRequest httpServletRequest, HttpServletResponse response) {
-		super.afterUpdate(dto, updated, httpServletRequest, response);
-		appendFreshToken(response);
-	}
+//	@Override
+//	public void afterUpdate(Object dto, U updated, HttpServletRequest httpServletRequest, HttpServletResponse response) {
+//		super.afterUpdate(dto, updated, httpServletRequest, response);
+//		appendFreshToken(response);
+//	}
 	
 	/**
 	 * Changes password

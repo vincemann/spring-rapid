@@ -47,6 +47,8 @@ public class ChangeEmailMvcTests extends AbstractMvcTests {
 				Long.toString(unverifiedUser.getId()),
 				600000L,
 				LemonMapUtils.mapOf("newEmail", NEW_EMAIL));
+
+		setupSpies();
 	}
 
 	//works solo but token is obsolete when run in group
@@ -132,13 +134,15 @@ public class ChangeEmailMvcTests extends AbstractMvcTests {
 	public void testChangeEmailObsoleteCode() throws Exception {
 
 		// credentials updated after the request for email change was made
-		Thread.sleep(1L);
+//		Thread.sleep(1L);
 		AbstractUser<Long> user = (AbstractUser<Long>) userRepository.findById(unverifiedUser.getId()).get();
 		user.setCredentialsUpdatedMillis(System.currentTimeMillis());
 		userRepository.save(user);
-		
+
+		Thread.sleep(1L);
+
 		// A new auth token is needed, because old one would be obsolete!
-		String authToken = login(UNVERIFIED_USER_EMAIL, UNVERIFIED_USER_PASSWORD);
+		String authToken = successful_login(UNVERIFIED_USER_EMAIL, UNVERIFIED_USER_PASSWORD);
 		
 		// now ready to test!
 		mvc.perform(post("/api/core/users/{id}/email", unverifiedUser.getId())
