@@ -28,7 +28,7 @@ implements ConstraintValidator<UniqueEmail, String>, AopLoggable {
 	public UniqueEmailValidator(AbstractUserRepository<?, ?> userRepository) {
 		
 		this.userRepository = userRepository;
-		log.info("Created");
+
 	}
 
 	@LogInteraction

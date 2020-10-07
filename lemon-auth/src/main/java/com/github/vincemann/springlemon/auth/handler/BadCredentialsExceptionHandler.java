@@ -16,7 +16,7 @@ public class BadCredentialsExceptionHandler extends AbstractExceptionHandler<Bad
 	public BadCredentialsExceptionHandler() {
 		
 		super(BadCredentialsException.class);
-		log.info("Created");
+
 	}
 	
 	@Override

@@ -32,7 +32,7 @@ public class ErrorResponseComposer<T extends Throwable> {
 	            					handler1 : handler2;
 	            		}));
 		
-		log.info("Created");
+
 	}
 
 	/**

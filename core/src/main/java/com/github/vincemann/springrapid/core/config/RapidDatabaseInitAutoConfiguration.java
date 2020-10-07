@@ -10,7 +10,7 @@ import org.springframework.context.annotation.Bean;
 public class RapidDatabaseInitAutoConfiguration {
 
     public RapidDatabaseInitAutoConfiguration() {
-        log.info("Created");
+
     }
 
     @Bean

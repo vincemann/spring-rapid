@@ -20,7 +20,7 @@ public class LemonTokenAutoConfiguration {
 
 
 	public LemonTokenAutoConfiguration() {
-		log.info("Created");
+
 	}
 
 

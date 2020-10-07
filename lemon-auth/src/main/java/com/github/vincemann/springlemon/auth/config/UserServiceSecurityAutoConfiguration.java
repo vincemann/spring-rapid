@@ -30,7 +30,7 @@ import org.springframework.security.acls.model.MutableAclService;
 public class UserServiceSecurityAutoConfiguration {
 
     public UserServiceSecurityAutoConfiguration() {
-        log.info("Created");
+
     }
 
     @Autowired

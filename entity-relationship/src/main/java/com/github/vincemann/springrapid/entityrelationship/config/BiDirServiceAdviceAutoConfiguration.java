@@ -16,7 +16,7 @@ import org.springframework.context.annotation.EnableAspectJAutoProxy;
 public class BiDirServiceAdviceAutoConfiguration {
 
     public BiDirServiceAdviceAutoConfiguration() {
-        log.info("Created");
+
     }
 
     @Bean

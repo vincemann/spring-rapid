@@ -38,7 +38,7 @@ import javax.sql.DataSource;
 public class AclAutoConfiguration {
 
     public AclAutoConfiguration() {
-        log.info("Created");
+
     }
 
     @Autowired

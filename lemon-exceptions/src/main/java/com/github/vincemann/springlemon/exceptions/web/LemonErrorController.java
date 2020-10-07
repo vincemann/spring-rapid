@@ -30,7 +30,7 @@ public class LemonErrorController extends BasicErrorController {
 			List<ErrorViewResolver> errorViewResolvers) {
 		
 		super(errorAttributes, serverProperties.getError(), errorViewResolvers);
-		log.info("Created");
+
 	}
 
     /**

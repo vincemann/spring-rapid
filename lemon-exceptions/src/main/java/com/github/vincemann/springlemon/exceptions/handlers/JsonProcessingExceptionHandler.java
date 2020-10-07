@@ -14,6 +14,6 @@ public class JsonProcessingExceptionHandler extends AbstractBadRequestExceptionH
 	public JsonProcessingExceptionHandler() {
 		
 		super(JsonProcessingException.class);
-		log.info("Created");
+
 	}
 }

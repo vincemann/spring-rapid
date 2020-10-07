@@ -14,7 +14,7 @@ import org.springframework.context.annotation.Bean;
 public class LemonAuthExceptionHandlerAutoConfiguration {
 
     public LemonAuthExceptionHandlerAutoConfiguration() {
-        log.info("Created");
+
     }
 
     @Bean

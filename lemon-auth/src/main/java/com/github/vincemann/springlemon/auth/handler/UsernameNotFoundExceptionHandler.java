@@ -16,7 +16,7 @@ public class UsernameNotFoundExceptionHandler extends AbstractExceptionHandler<U
 	public UsernameNotFoundExceptionHandler() {
 		
 		super(UsernameNotFoundException.class);
-		log.info("Created");
+
 	}
 	
 	@Override

@@ -21,7 +21,7 @@ public class LemonProperties {
 	
 
     public LemonProperties() {
-		log.info("Created");
+
 	}
 
 	/**

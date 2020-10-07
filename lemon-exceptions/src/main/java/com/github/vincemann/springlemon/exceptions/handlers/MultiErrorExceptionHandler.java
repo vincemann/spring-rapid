@@ -17,7 +17,7 @@ public class MultiErrorExceptionHandler extends AbstractExceptionHandler<MultiEr
 	public MultiErrorExceptionHandler() {
 		
 		super(MultiErrorException.class);
-		log.info("Created");
+
 	}
 	
 	@Override

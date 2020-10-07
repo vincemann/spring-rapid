@@ -34,7 +34,7 @@ public class LemonAuthenticationSuccessHandler
 	public LemonAuthenticationSuccessHandler(UserService<?, ?> userService, HttpTokenService httpTokenService) {
 		this.userService = userService;
 		this.httpTokenService = httpTokenService;
-		log.info("Created");
+
 	}
 
 	

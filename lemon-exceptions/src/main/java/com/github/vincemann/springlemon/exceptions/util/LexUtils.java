@@ -39,7 +39,7 @@ public class LexUtils {
 		LexUtils.validator = validator;
 		LexUtils.exceptionIdMaker = exceptionIdMaker;
 		
-		log.info("Created");
+
 	}
 
 	

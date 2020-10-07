@@ -29,7 +29,7 @@ import java.util.List;
 public class IdResolvingDtoMapperAutoConfiguration {
 
     public IdResolvingDtoMapperAutoConfiguration() {
-        log.info("Created");
+
     }
 
     @Bean

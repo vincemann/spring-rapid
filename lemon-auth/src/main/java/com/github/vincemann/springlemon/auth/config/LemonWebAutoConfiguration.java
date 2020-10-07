@@ -22,7 +22,7 @@ import org.springframework.security.web.authentication.SimpleUrlAuthenticationFa
 public class LemonWebAutoConfiguration {
 
     public LemonWebAutoConfiguration() {
-        log.info("Created");
+
     }
 
 

@@ -24,7 +24,7 @@ public class LemonWebExceptionsAutoConfiguration {
 
 
 	public LemonWebExceptionsAutoConfiguration() {
-		log.info("Created");
+
 	}
 
 

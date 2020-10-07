@@ -35,7 +35,7 @@ public class UserServiceAutoConfiguration {
 
 
     public UserServiceAutoConfiguration() {
-        log.info("Created");
+
     }
 
     /**
