@@ -11,7 +11,6 @@ import com.github.vincemann.springrapid.core.util.ResourceUtils;
 import com.github.vincemann.springrapid.coretest.controller.rapid.UrlParamIdRapidControllerTest;
 import com.mysql.cj.jdbc.exceptions.MysqlDataTruncation;
 import lombok.Getter;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.Assertions;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,7 +22,6 @@ import java.io.IOException;
 import java.sql.SQLIntegrityConstraintViolationException;
 
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.hasSize;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
@@ -31,96 +29,60 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 public class UpdateUserMvcTests extends AbstractMvcTests
 		implements UrlParamIdRapidControllerTest<UserService<User,Long>,User,Long> {
 
+	static final String UPDATED_EMAIL = "updated@e.mail";
+	static final String FIELD_DUMMY_VALUE = "name";
 
-    String userPatch;
-    String userEmailPatch;
-	String userPatchUpdatedEmail = "updated@e.mail";
+    String patchEmailAndRole;
+	String patchRole;
+    String patchEmail;
 
-	String userPatchAdminRole;
-	String userPatchNullName;
+	String patchField;
+	String patchNullField;
+    String patchLongField;
 
-    String userPatchLongName;
+
 	@Autowired
 	@Getter
-    private AbstractUserController<User,Long> controller;
-
-	private String namePatch;
-
-	@Value("classpath:/update-user/patch-update-user.json")
-	public void setUserPatch(Resource patch) throws IOException {
-		this.userPatch = ResourceUtils.toStr(patch);
-	}
-	@Value("classpath:/update-user/patch-email.json")
-	public void setUserEmailPatch(Resource patch) throws IOException {
-		this.userEmailPatch = ResourceUtils.toStr(patch);
-	}
-
-	@Value("classpath:/update-user/patch-name.json")
-	public void setNamePatch(Resource patch) throws IOException {
-		this.namePatch = ResourceUtils.toStr(patch);
-	}
-
-	@Value("classpath:/update-user/patch-admin-role.json")
-	public void setUserPatchAdminRole(Resource patch) throws IOException {
-		this.userPatchAdminRole = ResourceUtils.toStr(patch);;
-	}
-
-	@Value("classpath:/update-user/patch-null-name.json")
-	public void setUserPatchNullName(Resource patch) throws IOException {
-		this.userPatchNullName = ResourceUtils.toStr(patch);;
-	}
-
-	@Value("classpath:/update-user/patch-long-name.json")
-	public void setUserPatchLongName(Resource patch) throws IOException {
-		this.userPatchLongName = ResourceUtils.toStr(patch);;
-	}
+	private AbstractUserController<User,Long> controller;
 
 	/**
-	 * A non-admin user should be able to update his own name,
+	 * A non-admin user should be able to update his own field,
 	 * but changes in roles should be skipped.
-	 * The name of security principal object should also
-	 * change in the process.
 	 * @throws Exception
 	 */
 	@Test
-    public void testUpdateWithUnknownPathVariables_should400() throws Exception {
+    public void testUserUpdatesOwnRoles_should400() throws Exception {
 
-			mvc.perform(update(userPatch,unverifiedUser.getId())
-				.header(HttpHeaders.AUTHORIZATION, tokens.get(unverifiedUser.getId())))
+			mvc.perform(update(patchRole,user.getId())
+				.header(HttpHeaders.AUTHORIZATION, tokens.get(user.getId())))
 				.andExpect(status().is(400));
 
-		AbstractUser<Long> user = (AbstractUser<Long>) userRepository.findById(unverifiedUser.getId()).get();
+		AbstractUser<Long> updated = (AbstractUser<Long>) userRepository.findById(user.getId()).get();
 
 		// Ensure that data has not changed
-		Assertions.assertEquals(UNVERIFIED_USER_EMAIL, user.getEmail());
-		Assertions.assertEquals(2, user.getRoles().size());
-		Assertions.assertTrue(user.getRoles().contains(LemonRoles.UNVERIFIED));
-		Assertions.assertTrue(user.getRoles().contains(LemonRoles.USER));
+		Assertions.assertEquals(USER_EMAIL, updated.getEmail());
+		Assertions.assertEquals(1, updated.getRoles().size());
+//		Assertions.assertTrue(user.getRoles().contains(LemonRoles.UNVERIFIED));
+		Assertions.assertTrue(updated.getRoles().contains(LemonRoles.USER));
     }
 
 	/**
-	 * A ADMIN should be able to update another user's name and roles.
-	 * The name of security principal object should NOT change in the process,
-	 * and the verification code should get set/unset on addition/deletion of
-	 * the UNVERIFIED role.
-	 * @throws Exception
+	 * An ADMIN should be able to update another user's email and roles.
 	 */
 	@Test
     public void testAdminCanUpdateOther() throws Exception {
-
-
-		mvc.perform(update(userPatch,unverifiedUser.getId())
+		mvc.perform(update(patchEmailAndRole,unverifiedUser.getId())
 				.header(HttpHeaders.AUTHORIZATION, tokens.get(admin.getId())))
 				.andExpect(status().is(200))
 				.andExpect(jsonPath("$.roles").value(hasSize(1)))
 				.andExpect(jsonPath("$.roles[0]").value(RapidRoles.ADMIN))
-				.andExpect(jsonPath("$.email").value(userPatchUpdatedEmail));
+				.andExpect(jsonPath("$.email").value(UPDATED_EMAIL));
 
 		AbstractUser<Long> user = (AbstractUser<Long>) userRepository.findById(unverifiedUser.getId()).get();
 
 		// Ensure that data changed properly
 		//should get replaced because admin has full power
-		Assertions.assertEquals(userPatchUpdatedEmail, user.getEmail());
+		Assertions.assertEquals(UPDATED_EMAIL, user.getEmail());
 		Assertions.assertEquals(1, user.getRoles().size());
 		Assertions.assertTrue(user.getRoles().contains(RapidRoles.ADMIN));
     }
@@ -129,9 +91,8 @@ public class UpdateUserMvcTests extends AbstractMvcTests
 	 * Providing an unknown id should return 404.
 	 */
 	@Test
-    public void testUpdateUnknownId() throws Exception {
-
-		mvc.perform(update(userPatch,99L)
+    public void testUpdateUnknownId_should403() throws Exception {
+		mvc.perform(update(patchEmailAndRole,99L)
 				.header(HttpHeaders.AUTHORIZATION, tokens.get(admin.getId())))
 				.andExpect(status().is(403));
     }
@@ -141,16 +102,16 @@ public class UpdateUserMvcTests extends AbstractMvcTests
 	 * @throws Exception
 	 */
 	@Test
-	public void testUpdateUserInvalidNewName() throws Exception {
+	public void testUpdateUserInvalidFieldConstraints_should400() throws Exception {
 		// Null name
-		assertThatThrownBy(() -> mvc.perform(update(userPatchNullName, unverifiedUser.getId())
-				.header(HttpHeaders.AUTHORIZATION, tokens.get(unverifiedUser.getId())))
+		assertThatThrownBy(() -> mvc.perform(update(patchNullField, user.getId())
+				.header(HttpHeaders.AUTHORIZATION, tokens.get(user.getId())))
 				.andExpect(status().is(400)))
 				.hasRootCauseInstanceOf(SQLIntegrityConstraintViolationException.class);
 
 		// Too long name
-		assertThatThrownBy(() -> mvc.perform(update(userPatchLongName, unverifiedUser.getId())
-				.header(HttpHeaders.AUTHORIZATION, tokens.get(unverifiedUser.getId())))
+		assertThatThrownBy(() -> mvc.perform(update(patchLongField, user.getId())
+				.header(HttpHeaders.AUTHORIZATION, tokens.get(user.getId())))
 				.andExpect(status().is(400)))
 				.hasRootCauseInstanceOf(MysqlDataTruncation.class);
 	}
@@ -160,19 +121,58 @@ public class UpdateUserMvcTests extends AbstractMvcTests
 	 * @throws Exception
 	 */
 	@Test
-	public void testUpdateAnotherUser() throws Exception {
-		mvc.perform(update(namePatch,admin.getId())
-				.header(HttpHeaders.AUTHORIZATION, tokens.get(unverifiedUser.getId())))
+	public void testUserUpdatesAnotherUser_should403() throws Exception {
+		mvc.perform(update(patchField,unverifiedUser.getId())
+				.header(HttpHeaders.AUTHORIZATION, tokens.get(user.getId())))
 				.andExpect(status().is(403));
 	}
 
 	@Test
-	public void testUserUpdatesOwnEmail_shouldFail() throws Exception {
-		mvc.perform(update(userEmailPatch,unverifiedUser.getId())
-				.header(HttpHeaders.AUTHORIZATION, tokens.get(unverifiedUser.getId())))
+	public void testUserUpdatesAnotherAdmin_should403() throws Exception {
+		mvc.perform(update(patchField,admin.getId())
+				.header(HttpHeaders.AUTHORIZATION, tokens.get(user.getId())))
+				.andExpect(status().is(403));
+	}
+
+	@Test
+	public void testUserUpdatesOwnEmail_should400() throws Exception {
+		mvc.perform(update(patchEmail,user.getId())
+				.header(HttpHeaders.AUTHORIZATION, tokens.get(user.getId())))
 				.andExpect(status().is(400));
 	}
 
+
+	@Value("classpath:/update-user/patch-email-and-role.json")
+	public void setPatchEmailAndRole(Resource patch) throws IOException {
+		this.patchEmailAndRole = ResourceUtils.toStr(patch);
+	}
+
+	@Value("classpath:/update-user/patch-role.json")
+	public void setPatchRole(Resource patch) throws IOException {
+		this.patchRole = ResourceUtils.toStr(patch);
+	}
+
+	@Value("classpath:/update-user/patch-email.json")
+	public void setPatchEmail(Resource patch) throws IOException {
+		this.patchEmail = ResourceUtils.toStr(patch);
+	}
+
+
+
+	@Value("classpath:/update-user/patch-field.json")
+	public void setPatchField(Resource patch) throws IOException {
+		this.patchField = ResourceUtils.toStr(patch).replace(FIELD_DUMMY_VALUE,testUserAdapter.getUpdatableUserField());
+	}
+
+	@Value("classpath:/update-user/patch-null-field.json")
+	public void setPatchNullField(Resource patch) throws IOException {
+		this.patchNullField = ResourceUtils.toStr(patch).replace(FIELD_DUMMY_VALUE,testUserAdapter.getUpdatableUserField());
+	}
+
+	@Value("classpath:/update-user/patch-long-field.json")
+	public void setPatchLongField(Resource patch) throws IOException {
+		this.patchLongField = ResourceUtils.toStr(patch).replace(FIELD_DUMMY_VALUE,testUserAdapter.getUpdatableUserField());
+	}
 
 //	/**
 //	 * Providing an unknown id should return 404.
