@@ -40,7 +40,7 @@ public class LemonAuthenticatedPrincipal extends RapidAuthenticatedPrincipal {
 		unverified = getRoles().contains(LemonRoles.UNVERIFIED);
 		blocked = getRoles().contains(LemonRoles.BLOCKED);
 		admin = getRoles().contains(RapidRoles.ADMIN);
-		goodUser = getRoles().contains(LemonRoles.USER) && !unverified && !blocked;
+		goodUser = (getRoles().contains(LemonRoles.USER) | admin) && !unverified && !blocked;
 		anon = getRoles().contains(LemonRoles.ANON);
 //		goodAdmin = goodUser && admin;
 	}

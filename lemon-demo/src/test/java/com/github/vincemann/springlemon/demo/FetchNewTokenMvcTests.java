@@ -32,7 +32,6 @@ public class FetchNewTokenMvcTests extends AbstractMvcTests {
 		}		
 	}
 
-	//todo: expiration millis einfach in mocked lemonProperties ändern für den jeweiligen test
 
 	@Test
 	public void testFetchNewToken() throws Exception {
