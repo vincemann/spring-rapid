@@ -1,4 +1,4 @@
-package com.github.vincemann.springlemon.demo;
+package com.github.vincemann.springlemon.auth.tests;
 
 import com.github.vincemann.springlemon.auth.domain.dto.ChangePasswordForm;
 import com.github.vincemann.springrapid.core.util.MapperUtils;

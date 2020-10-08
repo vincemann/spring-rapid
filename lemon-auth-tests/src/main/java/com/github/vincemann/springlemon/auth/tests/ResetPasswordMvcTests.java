@@ -1,4 +1,4 @@
-package com.github.vincemann.springlemon.demo;
+package com.github.vincemann.springlemon.auth.tests;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.github.vincemann.springlemon.auth.domain.dto.ResetPasswordForm;

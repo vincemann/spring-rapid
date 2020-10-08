@@ -1,15 +1,13 @@
-package com.github.vincemann.springlemon.demo;
+package com.github.vincemann.springlemon.auth.tests;
 
 import com.github.vincemann.springlemon.auth.controller.AbstractUserController;
 import com.github.vincemann.springlemon.auth.domain.AbstractUser;
-import com.github.vincemann.springlemon.demo.domain.User;
 import com.github.vincemann.springlemon.auth.service.UserService;
 import com.github.vincemann.springlemon.auth.domain.LemonRoles;
 import com.github.vincemann.springrapid.core.security.RapidRoles;
 
 import com.github.vincemann.springrapid.core.util.ResourceUtils;
 import com.github.vincemann.springrapid.coretest.controller.rapid.UrlParamIdRapidControllerTest;
-import com.mysql.cj.jdbc.exceptions.MysqlDataTruncation;
 import lombok.Getter;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.Assertions;
@@ -19,6 +17,7 @@ import org.springframework.core.io.Resource;
 import org.springframework.http.HttpHeaders;
 
 import java.io.IOException;
+import java.sql.DataTruncation;
 import java.sql.SQLIntegrityConstraintViolationException;
 
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -27,7 +26,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 public class UpdateUserMvcTests extends AbstractMvcTests
-		implements UrlParamIdRapidControllerTest<UserService<User,Long>,User,Long> {
+		implements UrlParamIdRapidControllerTest<UserService<AbstractUser<Long>,Long>,AbstractUser<Long>,Long> {
 
 	static final String UPDATED_EMAIL = "updated@e.mail";
 	static final String FIELD_DUMMY_VALUE = "name";
@@ -43,7 +42,7 @@ public class UpdateUserMvcTests extends AbstractMvcTests
 
 	@Autowired
 	@Getter
-	private AbstractUserController<User,Long> controller;
+	private AbstractUserController<AbstractUser<Long>,Long> controller;
 
 	/**
 	 * A non-admin user should be able to update his own field,
@@ -113,7 +112,7 @@ public class UpdateUserMvcTests extends AbstractMvcTests
 		assertThatThrownBy(() -> mvc.perform(update(patchLongField, user.getId())
 				.header(HttpHeaders.AUTHORIZATION, tokens.get(user.getId())))
 				.andExpect(status().is(400)))
-				.hasRootCauseInstanceOf(MysqlDataTruncation.class);
+				.hasRootCauseInstanceOf(DataTruncation.class);
 	}
 
 	/**
@@ -161,17 +160,17 @@ public class UpdateUserMvcTests extends AbstractMvcTests
 
 	@Value("classpath:/update-user/patch-field.json")
 	public void setPatchField(Resource patch) throws IOException {
-		this.patchField = ResourceUtils.toStr(patch).replace(FIELD_DUMMY_VALUE,testUserAdapter.getUpdatableUserField());
+		this.patchField = ResourceUtils.toStr(patch).replace(FIELD_DUMMY_VALUE, testAdapter.getUpdatableUserField());
 	}
 
 	@Value("classpath:/update-user/patch-null-field.json")
 	public void setPatchNullField(Resource patch) throws IOException {
-		this.patchNullField = ResourceUtils.toStr(patch).replace(FIELD_DUMMY_VALUE,testUserAdapter.getUpdatableUserField());
+		this.patchNullField = ResourceUtils.toStr(patch).replace(FIELD_DUMMY_VALUE, testAdapter.getUpdatableUserField());
 	}
 
 	@Value("classpath:/update-user/patch-long-field.json")
 	public void setPatchLongField(Resource patch) throws IOException {
-		this.patchLongField = ResourceUtils.toStr(patch).replace(FIELD_DUMMY_VALUE,testUserAdapter.getUpdatableUserField());
+		this.patchLongField = ResourceUtils.toStr(patch).replace(FIELD_DUMMY_VALUE, testAdapter.getUpdatableUserField());
 	}
 
 //	/**

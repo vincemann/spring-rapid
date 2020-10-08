@@ -34,6 +34,7 @@
         <module>lemon-auth</module>
         <module>lemon-exceptions</module>
         <module>lemon-demo</module>
+        <module>lemon-auth-tests</module>
 <!--         rapid-->
         <module>core</module>
         <module>entity-relationship</module>

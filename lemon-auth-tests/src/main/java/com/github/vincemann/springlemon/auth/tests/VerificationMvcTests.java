@@ -1,19 +1,19 @@
-package com.github.vincemann.springlemon.demo;
+package com.github.vincemann.springlemon.auth.tests;
 
 import com.github.vincemann.springlemon.auth.domain.AbstractUser;
 import com.github.vincemann.springlemon.auth.domain.LemonRoles;
 import com.github.vincemann.springlemon.auth.service.AbstractUserService;
 import com.github.vincemann.springlemon.auth.service.token.EmailJwtService;
 import com.github.vincemann.springlemon.auth.util.LemonMapUtils;
-import com.github.vincemann.springlemon.demo.domain.User;
-import com.github.vincemann.springlemon.auth.service.token.JweTokenService;
+import org.hamcrest.Matchers;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 
-import static org.hamcrest.Matchers.*;
+import static org.hamcrest.Matchers.containsString;
+import static org.hamcrest.Matchers.hasSize;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
@@ -42,7 +42,7 @@ public class VerificationMvcTests extends AbstractMvcTests {
 				.andExpect(header().string(HttpHeaders.AUTHORIZATION, containsString(".")))
 				.andExpect(jsonPath("$.id").value(unverifiedUser.getId()))
 				.andExpect(jsonPath("$.roles").value(hasSize(1)))
-				.andExpect(jsonPath("$.roles").value(hasItem(LemonRoles.USER)))
+				.andExpect(jsonPath("$.roles").value(Matchers.hasItem(LemonRoles.USER)))
 				.andExpect(jsonPath("$.unverified").value(false))
 				.andExpect(jsonPath("$.goodUser").value(true));
 		

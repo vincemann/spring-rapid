@@ -1,8 +1,7 @@
-package com.github.vincemann.springlemon.demo;
+package com.github.vincemann.springlemon.auth.tests;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.github.vincemann.springlemon.auth.domain.AbstractUser;
-import com.github.vincemann.springlemon.demo.domain.User;
 import com.github.vincemann.springlemon.auth.domain.dto.RequestEmailChangeForm;
 import com.github.vincemann.springrapid.core.util.MapperUtils;
 import org.junit.jupiter.api.Assertions;
