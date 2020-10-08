@@ -1,4 +1,4 @@
-package com.github.vincemann.springlemon.auth.tests;
+package com.github.vincemann.springlemon.authtests;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.github.vincemann.springlemon.auth.domain.AbstractUser;

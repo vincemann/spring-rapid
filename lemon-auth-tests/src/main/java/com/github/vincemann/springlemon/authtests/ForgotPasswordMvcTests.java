@@ -1,4 +1,4 @@
-package com.github.vincemann.springlemon.auth.tests;
+package com.github.vincemann.springlemon.authtests;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.never;

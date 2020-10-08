@@ -1,4 +1,4 @@
-package com.github.vincemann.springlemon.auth.tests;
+package com.github.vincemann.springlemon.authtests;
 
 import static org.hamcrest.Matchers.hasEntry;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
