@@ -5,6 +5,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 import com.github.vincemann.springrapid.core.security.RapidRoles;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.http.HttpHeaders;
@@ -13,6 +14,16 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class BasicMvcTests extends AbstractMvcTests {
+
+	@BeforeEach
+	public void setup() throws Exception {
+		super.setup();
+		Map<String,Object> testSharedProperties = new HashMap<>();
+		testSharedProperties.put("testKey","testValue");
+
+		Mockito.when(properties.getShared())
+				.thenReturn(testSharedProperties);
+	}
 
 	@Test
 	public void testPing() throws Exception {
@@ -26,11 +37,7 @@ public class BasicMvcTests extends AbstractMvcTests {
 	@Test
 	public void testGetContextLoggedIn() throws Exception {
 
-		Map<String,Object> testSharedProperties = new HashMap<>();
-		testSharedProperties.put("testKey","testValue");
 
-		Mockito.when(properties.getShared())
-				.thenReturn(testSharedProperties);
 
 		mvc.perform(get("/api/core/context")
 				.header(HttpHeaders.AUTHORIZATION, tokens.get(admin.getId())))

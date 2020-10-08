@@ -53,7 +53,6 @@ public class LemonCommonsWebAutoConfiguration {
 	public MappingJackson2HttpMessageConverter mappingJackson2HttpMessageConverter(
 			ObjectMapper objectMapper) {
 		
-        log.info("Configuring JSON vulnerability prefix");       
 
         MappingJackson2HttpMessageConverter converter =
         		new MappingJackson2HttpMessageConverter(objectMapper);
@@ -75,8 +74,7 @@ public class LemonCommonsWebAutoConfiguration {
 	@ConditionalOnMissingBean(CorsConfigurationSource.class)
 	public LemonCorsConfigurationSource corsConfigurationSource(LemonProperties properties) {
 		
-        log.info("Configuring LemonCorsConfigurationSource");       
-		return new LemonCorsConfigurationSource(properties);		
+		return new LemonCorsConfigurationSource(properties);
 	}
 	
 

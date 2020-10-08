@@ -7,4 +7,7 @@ public interface RapidRoles {
 
     String ADMIN = "ROLE_ADMIN";
     String ADMIN_RAW = "ADMIN";
+
+    String ANON = "ROLE_ANONYMOUS";
+    String ANON_RAW = "ANONYMOUS";
 }

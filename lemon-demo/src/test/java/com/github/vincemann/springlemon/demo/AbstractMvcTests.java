@@ -152,7 +152,7 @@ public abstract class AbstractMvcTests {
         System.err.println("deleted acl info");
     }
 
-    protected void createTestUsers() throws BadEntityException {
+    protected void createTestUsers() throws BadEntityException, InterruptedException {
         admin = aclUserService.save(createUser(ADMIN_EMAIL,"Admin", ADMIN_PASSWORD, LemonRoles.ADMIN));
         secondAdmin = aclUserService.save(createUser(SECOND_ADMIN_EMAIL,"Second Admin", SECOND_ADMIN_PASSWORD, LemonRoles.ADMIN));
         blockedAdmin = aclUserService.save(createUser(BLOCKED_ADMIN_EMAIL,"Blocked Admin", BLOCKED_ADMIN_PASSWORD, LemonRoles.ADMIN, LemonRoles.BLOCKED));
@@ -160,6 +160,8 @@ public abstract class AbstractMvcTests {
         user = aclUserService.save(createUser(USER_EMAIL,"User", USER_PASSWORD, LemonRoles.USER));
         unverifiedUser = aclUserService.save(createUser(UNVERIFIED_USER_EMAIL,"Unverified User", UNVERIFIED_USER_PASSWORD, LemonRoles.USER,LemonRoles.UNVERIFIED));
         blockedUser = aclUserService.save(createUser(BLOCKED_USER_EMAIL,"Blocked User", BLOCKED_USER_PASSWORD, LemonRoles.USER, LemonRoles.BLOCKED));
+        // sleep so login shortly after wont result in obsolete token
+        Thread.sleep(200);
     }
 
     /**
@@ -177,7 +179,6 @@ public abstract class AbstractMvcTests {
         tokens.put(user.getId(), successful_login(USER_EMAIL, USER_PASSWORD));
         tokens.put(unverifiedUser.getId(), successful_login(UNVERIFIED_USER_EMAIL, UNVERIFIED_USER_PASSWORD));
         tokens.put(blockedUser.getId(), successful_login(BLOCKED_USER_EMAIL, BLOCKED_USER_PASSWORD));
-        Thread.sleep(500);
     }
 
     protected ResultActions login(String userName, String password) throws Exception {

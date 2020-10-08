@@ -37,7 +37,6 @@ public class LemonWebExceptionsAutoConfiguration {
 	public <T extends Throwable>
 	ErrorResponseComposer<T> errorResponseComposer(List<AbstractExceptionHandler<T>> handlers) {
 		
-        log.info("Configuring ErrorResponseComposer");       
 		return new ErrorResponseComposer<T>(handlers);
 	}
 
@@ -51,7 +50,6 @@ public class LemonWebExceptionsAutoConfiguration {
 	DefaultExceptionHandlerControllerAdvice<T> defaultExceptionHandlerControllerAdvice(
 			ErrorResponseComposer<T> errorResponseComposer) {
 
-		log.info("Configuring DefaultExceptionHandlerControllerAdvice");
 		return new DefaultExceptionHandlerControllerAdvice<T>(errorResponseComposer);
 	}
 
@@ -63,7 +61,6 @@ public class LemonWebExceptionsAutoConfiguration {
 	public <T extends Throwable>
 	ErrorAttributes errorAttributes(ErrorResponseComposer<T> errorResponseComposer) {
 
-		log.info("Configuring LemonErrorAttributes");
 		return new LemonErrorAttributes<T>(errorResponseComposer);
 	}
 
@@ -76,7 +73,6 @@ public class LemonWebExceptionsAutoConfiguration {
 										   ServerProperties serverProperties,
 										   List<ErrorViewResolver> errorViewResolvers) {
 
-		log.info("Configuring LemonErrorController");
 		return new LemonErrorController(errorAttributes, serverProperties, errorViewResolvers);
 	}
 

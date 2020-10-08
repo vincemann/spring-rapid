@@ -85,14 +85,16 @@ public abstract class AbstractUserService
     public Map<String, Object> getContext() {
 
         // make the context
-        Map<String, Object> context = new HashMap<String, Object>(2);
+        Map<String, Object> context = new HashMap<String, Object>(3);
         context.put("reCaptchaSiteKey", properties.getRecaptcha().getSitekey());
         context.put("shared", properties.getShared());
         LemonAuthenticatedPrincipal principal = securityContext.currentPrincipal();
         if (principal!=null) {
-            LemonAuthenticatedPrincipal withoutPw = new LemonAuthenticatedPrincipal(principal);
-            withoutPw.setPassword(null);
-            context.put("user", withoutPw);
+            if (!principal.isAnon()) {
+                LemonAuthenticatedPrincipal withoutPw = new LemonAuthenticatedPrincipal(principal);
+                withoutPw.setPassword(null);
+                context.put("user", withoutPw);
+            }
         }
 
         return context;
