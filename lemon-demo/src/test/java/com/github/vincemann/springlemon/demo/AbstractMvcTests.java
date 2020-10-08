@@ -166,7 +166,7 @@ public abstract class AbstractMvcTests {
         unverifiedUser = aclUserService.save(testUserAdapter.createTestUser(UNVERIFIED_USER_EMAIL,/*"Unverified User",*/ UNVERIFIED_USER_PASSWORD, LemonRoles.USER,LemonRoles.UNVERIFIED));
         blockedUser = aclUserService.save(testUserAdapter.createTestUser(BLOCKED_USER_EMAIL,/*"Blocked User",*/ BLOCKED_USER_PASSWORD, LemonRoles.USER, LemonRoles.BLOCKED));
         // sleep so login shortly after wont result in obsolete token
-        Thread.sleep(200);
+        Thread.sleep(300);
     }
 
 
