@@ -20,6 +20,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.ImportAutoConfiguration;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.SpyBean;
+import org.springframework.context.annotation.Import;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
@@ -61,6 +62,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
  */
 //just activate everything for simplicity
 @ActiveProfiles(value = {"web", "service", "test", "webTest", "serviceTest", "dev"}, inheritProfiles = false)
+@Import(MyTestUserAdapter.class)
 //@Transactional dont do transactional bc controller will be wrapped in transaction as well -> lazyLoad Exceptions ect. wont be detected
 @ImportAutoConfiguration(exclude = LemonAdminAutoConfiguration.class)
 public abstract class AbstractMvcTests {
@@ -104,7 +106,7 @@ public abstract class AbstractMvcTests {
     protected LemonProperties.Jwt jwt;
 
     @Autowired
-    private WebApplicationContext context;
+    protected WebApplicationContext context;
 
     protected MockMvc mvc;
     protected Map<Long, String> tokens = new HashMap<>(6);
@@ -115,6 +117,9 @@ public abstract class AbstractMvcTests {
     protected AbstractUser<Long> user;
     protected AbstractUser<Long> unverifiedUser;
     protected AbstractUser<Long> blockedUser;
+
+    @Autowired
+    protected TestUserAdapter testUserAdapter;
 
     @BeforeEach
     public void setup() throws Exception {
@@ -153,23 +158,18 @@ public abstract class AbstractMvcTests {
     }
 
     protected void createTestUsers() throws BadEntityException, InterruptedException {
-        admin = aclUserService.save(createUser(ADMIN_EMAIL,"Admin", ADMIN_PASSWORD, LemonRoles.ADMIN));
-        secondAdmin = aclUserService.save(createUser(SECOND_ADMIN_EMAIL,"Second Admin", SECOND_ADMIN_PASSWORD, LemonRoles.ADMIN));
-        blockedAdmin = aclUserService.save(createUser(BLOCKED_ADMIN_EMAIL,"Blocked Admin", BLOCKED_ADMIN_PASSWORD, LemonRoles.ADMIN, LemonRoles.BLOCKED));
+        admin = aclUserService.save(testUserAdapter.createTestUser(ADMIN_EMAIL,/*"Admin",*/ ADMIN_PASSWORD, LemonRoles.ADMIN));
+        secondAdmin = aclUserService.save(testUserAdapter.createTestUser(SECOND_ADMIN_EMAIL,/*"Second Admin",*/ SECOND_ADMIN_PASSWORD, LemonRoles.ADMIN));
+        blockedAdmin = aclUserService.save(testUserAdapter.createTestUser(BLOCKED_ADMIN_EMAIL,/*"Blocked Admin",*/ BLOCKED_ADMIN_PASSWORD, LemonRoles.ADMIN, LemonRoles.BLOCKED));
 
-        user = aclUserService.save(createUser(USER_EMAIL,"User", USER_PASSWORD, LemonRoles.USER));
-        unverifiedUser = aclUserService.save(createUser(UNVERIFIED_USER_EMAIL,"Unverified User", UNVERIFIED_USER_PASSWORD, LemonRoles.USER,LemonRoles.UNVERIFIED));
-        blockedUser = aclUserService.save(createUser(BLOCKED_USER_EMAIL,"Blocked User", BLOCKED_USER_PASSWORD, LemonRoles.USER, LemonRoles.BLOCKED));
+        user = aclUserService.save(testUserAdapter.createTestUser(USER_EMAIL,/*"User",*/ USER_PASSWORD, LemonRoles.USER));
+        unverifiedUser = aclUserService.save(testUserAdapter.createTestUser(UNVERIFIED_USER_EMAIL,/*"Unverified User",*/ UNVERIFIED_USER_PASSWORD, LemonRoles.USER,LemonRoles.UNVERIFIED));
+        blockedUser = aclUserService.save(testUserAdapter.createTestUser(BLOCKED_USER_EMAIL,/*"Blocked User",*/ BLOCKED_USER_PASSWORD, LemonRoles.USER, LemonRoles.BLOCKED));
         // sleep so login shortly after wont result in obsolete token
         Thread.sleep(200);
     }
 
-    /**
-     * Change this method to integrate tests in your project.
-     */
-    protected AbstractUser<Long> createUser(String email,String name, String password, String... roles) {
-        return new User(email, password,name, roles);
-    }
+
 
     protected void loginTestUsers() throws Exception {
         tokens.put(admin.getId(), successful_login(ADMIN_EMAIL, ADMIN_PASSWORD));
