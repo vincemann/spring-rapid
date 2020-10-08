@@ -1,4 +1,4 @@
-package com.github.vincemann.springlemon.demo;
+package com.github.vincemann.springlemon.auth.tests;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.http.MediaType;

@@ -1,11 +1,12 @@
 package com.github.vincemann.springlemon.demo;
 
 import com.github.vincemann.springlemon.auth.domain.AbstractUser;
+import com.github.vincemann.springlemon.auth.tests.LemonTestAdapter;
 import com.github.vincemann.springlemon.demo.domain.User;
 import org.springframework.boot.test.context.TestComponent;
 
 @TestComponent
-public class MyTestUserAdapter implements TestUserAdapter{
+public class MyLemonTestAdapter implements LemonTestAdapter {
 
     private int nameCount = 0;
     private static final String NAME = "testUserName";

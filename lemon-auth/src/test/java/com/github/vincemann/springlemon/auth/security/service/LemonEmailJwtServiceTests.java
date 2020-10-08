@@ -104,7 +104,7 @@ public class LemonEmailJwtServiceTests {
 	@Test()
 	public void testParseJweTokenWrongSecret() {
 
-		Assertions.assertThrows(BadCredentialsException.class,() -> testParseTokenWrongSecret(emailService1, emailService2));
+		Assertions.assertThrows(BadTokenException.class,() -> testParseTokenWrongSecret(emailService1, emailService2));
 	}
 
 //	@Test()

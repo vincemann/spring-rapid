@@ -1,10 +1,10 @@
-package com.github.vincemann.springlemon.demo;
+package com.github.vincemann.springlemon.auth.tests;
 
 import com.github.vincemann.springlemon.auth.domain.AbstractUser;
-import com.github.vincemann.springlemon.demo.domain.MySignupForm;
-import com.github.vincemann.springrapid.core.util.MapperUtils;
 import com.github.vincemann.springlemon.auth.domain.LemonRoles;
-import com.github.vincemann.springlemon.auth.util.LemonValidationUtils;
+import com.github.vincemann.springlemon.auth.domain.dto.LemonSignupForm;
+import com.github.vincemann.springrapid.core.util.MapperUtils;
+import org.hamcrest.Matchers;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpHeaders;
@@ -18,11 +18,12 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 public class SignupMvcTests extends AbstractMvcTests {
-	
+
+
 	@Test
 	public void testSignupWithInvalidData() throws Exception {
 		
-		MySignupForm signupForm = new MySignupForm("abc", "user1", null);
+		LemonSignupForm signupForm = testAdapter.createSignupForm("abc", "user1");
 
 		mvc.perform(post("/api/core/users")
 				.contentType(MediaType.APPLICATION_JSON)
@@ -48,7 +49,9 @@ public class SignupMvcTests extends AbstractMvcTests {
 	@Test
 	public void testSignup() throws Exception {
 		
-		MySignupForm signupForm = new MySignupForm("user.foo@example.com", "user123", "User Foo");
+//		MySignupForm signupForm = new MySignupForm("user.foo@example.com", "user123", "User Foo");
+
+		LemonSignupForm signupForm = testAdapter.createSignupForm("user.foo@example.com", "user123");
 
 		mvc.perform(post("/api/core/users")
 				.contentType(MediaType.APPLICATION_JSON)
@@ -59,7 +62,7 @@ public class SignupMvcTests extends AbstractMvcTests {
 				.andExpect(jsonPath("$.password").doesNotExist())
 				.andExpect(jsonPath("$.email").value("user.foo@example.com"))
 				.andExpect(jsonPath("$.roles").value(hasSize(2)))
-				.andExpect(jsonPath("$.roles").value(hasItems(LemonRoles.UNVERIFIED,LemonRoles.USER)))
+				.andExpect(jsonPath("$.roles").value(Matchers.hasItems(LemonRoles.UNVERIFIED,LemonRoles.USER)))
 //				.andExpect(jsonPath("$.tag.name").value("User Foo"))
 				.andExpect(jsonPath("$.unverified").value(true))
 				.andExpect(jsonPath("$.blocked").value(false))
@@ -76,7 +79,9 @@ public class SignupMvcTests extends AbstractMvcTests {
 	@Test
 	public void testSignupDuplicateEmail() throws Exception {
 
-		MySignupForm signupForm = new MySignupForm("user@example.com", "user123", "User");
+//		MySignupForm signupForm = new MySignupForm("user@example.com", "user123", "User");
+		LemonSignupForm signupForm = testAdapter.createSignupForm("user.foo@example.com", "user123");
+
 		mvc.perform(post("/api/core/users")
 				.contentType(MediaType.APPLICATION_JSON)
 				.content(MapperUtils.toJson(signupForm)))
