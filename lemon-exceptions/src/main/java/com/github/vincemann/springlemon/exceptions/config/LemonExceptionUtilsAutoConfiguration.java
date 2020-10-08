@@ -35,7 +35,6 @@ public class LemonExceptionUtilsAutoConfiguration
     @ConditionalOnMissingBean(ExceptionIdMaker.class)
     public ExceptionIdMaker exceptionIdMaker() {
 
-        log.info("Configuring ExceptionIdMaker");
         return ex -> {
 
             if (ex == null)
@@ -53,7 +52,6 @@ public class LemonExceptionUtilsAutoConfiguration
                              LocalValidatorFactoryBean validator,
                              ExceptionIdMaker exceptionIdMaker) {
 
-        log.info("Configuring LexUtils");
         return new LexUtils(messageSource, validator, exceptionIdMaker);
     }
 }

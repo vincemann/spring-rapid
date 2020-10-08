@@ -45,7 +45,6 @@ public class LemonWebAutoConfiguration {
     @ConditionalOnMissingBean(LemonAuthenticationSuccessHandler.class)
     public LemonAuthenticationSuccessHandler authenticationSuccessHandler(UserService<?, ?> userService) {
 
-        log.info("Configuring AuthenticationSuccessHandler");
         return new LemonAuthenticationSuccessHandler(userService, httpTokenService());
     }
 
@@ -56,7 +55,6 @@ public class LemonWebAutoConfiguration {
     @ConditionalOnMissingBean(AuthenticationFailureHandler.class)
     public AuthenticationFailureHandler authenticationFailureHandler() {
 
-        log.info("Configuring SimpleUrlAuthenticationFailureHandler");
         return new SimpleUrlAuthenticationFailureHandler();
     }
 
@@ -67,7 +65,6 @@ public class LemonWebAutoConfiguration {
     @ConditionalOnMissingBean(LemonWebSecurityConfig.class)
     public LemonWebSecurityConfig lemonWebSecurityConfig() {
 
-        log.info("Configuring LemonWebSecurityConfig");
         return new LemonWebSecurityConfig();
     }
 

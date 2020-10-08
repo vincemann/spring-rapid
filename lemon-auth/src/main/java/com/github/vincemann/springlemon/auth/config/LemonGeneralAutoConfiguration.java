@@ -30,7 +30,6 @@ public class LemonGeneralAutoConfiguration {
     @Bean
     public LemonProperties lemonProperties() {
 
-        log.info("Configuring LemonProperties");
         return new LemonProperties();
     }
 

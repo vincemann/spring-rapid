@@ -46,7 +46,6 @@ public class UserServiceAutoConfiguration {
     public <ID extends Serializable>
     AuditorAware<ID> auditorAware() {
 
-        log.info("Configuring LemonAuditorAware");
         return new LemonAuditorAware<ID>();
     }
 
@@ -57,7 +56,6 @@ public class UserServiceAutoConfiguration {
     @ConditionalOnMissingBean(RetypePasswordValidator.class)
     public RetypePasswordValidator retypePasswordValidator() {
 
-        log.info("Configuring RetypePasswordValidator");
         return new RetypePasswordValidator();
     }
 
@@ -67,7 +65,6 @@ public class UserServiceAutoConfiguration {
     @Bean
     public UniqueEmailValidator uniqueEmailValidator(AbstractUserRepository<?, ?> userRepository) {
 
-        log.info("Configuring UniqueEmailValidator");
         return new UniqueEmailValidator(userRepository);
     }
 
@@ -78,7 +75,6 @@ public class UserServiceAutoConfiguration {
     @Primary
     @ConditionalOnMissingBean(UserDetailsService.class)
     public UserDetailsService userDetailService() {
-        log.info("Configuring LemonUserDetailsService");
         return new LemonUserDetailsService();
     }
 
@@ -97,7 +93,6 @@ public class UserServiceAutoConfiguration {
     @ConditionalOnMissingBean(PasswordEncoder.class)
     public PasswordEncoder passwordEncoder() {
 
-        log.info("Configuring PasswordEncoder");
         return PasswordEncoderFactories.createDelegatingPasswordEncoder();
     }
 
@@ -111,7 +106,6 @@ public class UserServiceAutoConfiguration {
     @ConditionalOnProperty(name="spring.mail.host", havingValue="foo", matchIfMissing=true)
     public MailSender<?> mockMailSender() {
 
-        log.info("Configuring MockMailSender");
         return new MockMailSender();
     }
 
@@ -125,7 +119,6 @@ public class UserServiceAutoConfiguration {
     @ConditionalOnProperty("spring.mail.host")
     public MailSender<?> smtpMailSender(JavaMailSender javaMailSender) {
 
-        log.info("Configuring SmtpMailSender");
         return new SmtpMailSender(javaMailSender);
     }
 

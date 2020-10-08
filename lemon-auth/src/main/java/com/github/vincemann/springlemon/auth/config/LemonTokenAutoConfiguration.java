@@ -33,7 +33,6 @@ public class LemonTokenAutoConfiguration {
 	@ConditionalOnMissingBean(JwsTokenService.class)
 	public JwsTokenService jwsTokenService(LemonProperties properties) throws JOSEException {
 		
-        log.info("Configuring JwsTokenService");
 		return new LemonJwsService(properties.getJwt().getSecret());
 	}
 
@@ -45,7 +44,6 @@ public class LemonTokenAutoConfiguration {
 	@ConditionalOnMissingBean(JweTokenService.class)
 	public JweTokenService jweTokenService(LemonProperties properties) throws KeyLengthException {
 		
-        log.info("Configuring JweTokenService");
 		return new LemonJweService(properties.getJwt().getSecret());
 	}
 

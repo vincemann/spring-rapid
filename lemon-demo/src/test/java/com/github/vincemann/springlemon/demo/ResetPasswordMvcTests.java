@@ -23,7 +23,7 @@ public class ResetPasswordMvcTests extends AbstractMvcTests {
 	private EmailJwtService emailJwtService;
 	
 	@BeforeEach
-	public void setUp() throws Exception {
+	public void setup() throws Exception {
 		super.setup();
 		forgotPasswordCode = emailJwtService.createToken(
 				AbstractUserService.FORGOT_PASSWORD_AUDIENCE,
