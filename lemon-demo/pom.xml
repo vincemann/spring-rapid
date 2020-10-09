@@ -15,17 +15,17 @@
 
 	<dependencies>
 
-		<dependency>
-			<groupId>com.github.vincemann.spring-rapid</groupId>
-			<artifactId>core</artifactId>
-			<version>${project.version}</version>
-		</dependency>
+<!--		<dependency>-->
+<!--			<groupId>com.github.vincemann.spring-rapid</groupId>-->
+<!--			<artifactId>core</artifactId>-->
+<!--			<version>${project.version}</version>-->
+<!--		</dependency>-->
 
-		<dependency>
-			<groupId>com.github.vincemann.spring-rapid</groupId>
-			<artifactId>acl</artifactId>
-			<version>${project.version}</version>
-		</dependency>
+<!--		<dependency>-->
+<!--			<groupId>com.github.vincemann.spring-rapid</groupId>-->
+<!--			<artifactId>acl</artifactId>-->
+<!--			<version>${project.version}</version>-->
+<!--		</dependency>-->
 
 		<dependency>
 			<groupId>com.github.vincemann.spring-rapid</groupId>
