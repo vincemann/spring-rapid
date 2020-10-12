@@ -1,4 +1,4 @@
-package com.github.vincemann.springlemon.demo;
+package com.github.vincemann.springlemon.demo.adapter;
 
 import com.github.vincemann.springlemon.auth.domain.AbstractUser;
 import com.github.vincemann.springlemon.authtests.adapter.LemonTestAdapter;
