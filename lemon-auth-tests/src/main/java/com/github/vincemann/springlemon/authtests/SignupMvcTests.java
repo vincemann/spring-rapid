@@ -73,7 +73,7 @@ public class SignupMvcTests extends AbstractMvcTests {
 		verify(mailSender).send(any());
 
 		// Ensure that password got encrypted
-		Assertions.assertNotEquals("user123", ((AbstractUser) userRepository.findByEmail("user.foo@example.com").get()).getPassword());
+		Assertions.assertNotEquals("user123", ((AbstractUser<Long>)unsecuredUserService.findByEmail("user.foo@example.com").get()).getPassword());
 	}
 	
 	@Test
@@ -81,7 +81,7 @@ public class SignupMvcTests extends AbstractMvcTests {
 
 //		MySignupForm signupForm = new MySignupForm("user@example.com", "user123", "User");
 		String duplicateEmail = "user.foo@example.com";
-		userRepository.save(testAdapter.createTestUser(duplicateEmail,"user1234",LemonRoles.USER));
+		unsecuredUserService.save(testAdapter.createTestUser(duplicateEmail,"user1234",LemonRoles.USER));
 
 		LemonSignupForm signupForm = testAdapter.createSignupForm(duplicateEmail, "user123");
 

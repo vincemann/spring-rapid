@@ -9,6 +9,7 @@ import com.github.vincemann.springlemon.auth.mail.MailSender;
 import com.github.vincemann.springlemon.auth.service.UserService;
 import com.github.vincemann.springlemon.authtests.adapter.LemonTestAdapter;
 import com.github.vincemann.springrapid.acl.proxy.AclManaging;
+import com.github.vincemann.springrapid.acl.proxy.Unsecured;
 import com.github.vincemann.springrapid.core.service.exception.BadEntityException;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -87,7 +88,12 @@ public abstract class AbstractMvcTests {
 
     //cant autowire if used with types, even with ? extends AbstractUser
     @Autowired
-    protected AbstractUserRepository userRepository;
+    @Unsecured
+    protected UserService/*<AbstractUser<Long>, Long>*/ unsecuredUserService;
+
+    //cant autowire if used with types, even with ? extends AbstractUser
+    @Autowired
+    private AbstractUserRepository/*<AbstractUser<Long>, Long>*/ userRepository;
 
     @SpyBean
     protected MailSender<?> mailSender;
@@ -140,7 +146,8 @@ public abstract class AbstractMvcTests {
                 .build();
     }
 
-    protected void clearTestData() throws SQLException {
+
+    protected void removeTestUsers(){
         System.err.println("deleting users");
         userRepository.deleteAll();
         System.err.println("deleted users");
@@ -151,6 +158,7 @@ public abstract class AbstractMvcTests {
         DataSourceUtils.releaseConnection(connection,dataSource);
         System.err.println("deleted acl info");
     }
+
 
     protected void createTestUsers() throws BadEntityException, InterruptedException {
         admin = aclUserService.save(testAdapter.createTestUser(ADMIN_EMAIL,/*"Admin",*/ ADMIN_PASSWORD, LemonRoles.ADMIN));
@@ -207,7 +215,7 @@ public abstract class AbstractMvcTests {
     void tearDown() throws SQLException {
         System.err.println("clearing test data");
         tokens.clear();
-        clearTestData();
+        removeTestUsers();
         System.err.println("test data cleared");
         Mockito.reset(properties);
         Mockito.reset(jwt);

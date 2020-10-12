@@ -31,10 +31,10 @@ public class ChangeEmailMvcTests extends AbstractMvcTests {
 		createTestUsers();
 		System.err.println("test users created");
 
-		AbstractUser<Long> user = (AbstractUser<Long>) userRepository.findById(unverifiedUser.getId()).get();
+		AbstractUser<Long> user = (AbstractUser<Long>) unsecuredUserService.findById(unverifiedUser.getId()).get();
 		user.setNewEmail(NEW_EMAIL);
 
-		userRepository.save(user);
+		unsecuredUserService.save(user);
 
 		System.err.println("logging in test users");
 		loginTestUsers();
@@ -64,7 +64,7 @@ public class ChangeEmailMvcTests extends AbstractMvcTests {
 				.andExpect(header().string(HttpHeaders.AUTHORIZATION, containsString(".")))
 				.andExpect(jsonPath("$.id").value(unverifiedUser.getId()));
 		
-		AbstractUser<Long> updatedUser = (AbstractUser<Long>) userRepository.findById(unverifiedUser.getId()).get();
+		AbstractUser<Long> updatedUser = (AbstractUser<Long>) unsecuredUserService.findById(unverifiedUser.getId()).get();
 		Assertions.assertNull(updatedUser.getNewEmail());
 		Assertions.assertEquals(NEW_EMAIL, updatedUser.getEmail());
 		
@@ -134,9 +134,9 @@ public class ChangeEmailMvcTests extends AbstractMvcTests {
 
 		// credentials updated after the request for email change was made
 //		Thread.sleep(1L);
-		AbstractUser<Long> user = (AbstractUser<Long>) userRepository.findById(unverifiedUser.getId()).get();
+		AbstractUser<Long> user = (AbstractUser<Long>) unsecuredUserService.findById(unverifiedUser.getId()).get();
 		user.setCredentialsUpdatedMillis(System.currentTimeMillis());
-		userRepository.save(user);
+		unsecuredUserService.save(user);
 
 		Thread.sleep(1L);
 
@@ -173,9 +173,9 @@ public class ChangeEmailMvcTests extends AbstractMvcTests {
 	public void testChangeEmailNonUniqueEmail() throws Exception {
 		
 		// Some other user changed to the same email
-		AbstractUser<Long> user = (AbstractUser<Long>) userRepository.findById(admin.getId()).get();
+		AbstractUser<Long> user = (AbstractUser<Long>) unsecuredUserService.findById(admin.getId()).get();
 		user.setEmail(NEW_EMAIL);
-		userRepository.save(user);
+		unsecuredUserService.save(user);
 		
 		mvc.perform(post("/api/core/users/{id}/email", unverifiedUser.getId())
                 .param("code", changeEmailCode)

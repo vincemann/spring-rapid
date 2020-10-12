@@ -62,9 +62,9 @@ public class LoginMvcTests extends AbstractMvcTests {
 		
 		// credentials updated
 		// Thread.sleep(1001L);		
-		AbstractUser<Long> user = (AbstractUser<Long>) userRepository.findById(admin.getId()).get();
+		AbstractUser<Long> user = (AbstractUser<Long>) unsecuredUserService.findById(admin.getId()).get();
 		user.setCredentialsUpdatedMillis(System.currentTimeMillis());
-		userRepository.save(user);
+		unsecuredUserService.save(user);
 		Thread.sleep(300);
 
 		mvc.perform(get("/api/core/ping")

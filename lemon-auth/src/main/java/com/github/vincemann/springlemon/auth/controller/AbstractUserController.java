@@ -296,7 +296,7 @@ public abstract class AbstractUserController<U extends AbstractUser<ID>, ID exte
 	}
 
 	protected U fetchUser(ID userId) throws BadEntityException, EntityNotFoundException {
-		Optional<U> byId = unsecuredUserService.findById(userId);
+		Optional<U> byId =  unsecuredUserService.findById(userId);
 		VerifyEntity.isPresent(byId,"User with id: "+userId+" not found");
 		return byId.get();
 	}
