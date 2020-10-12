@@ -12,7 +12,6 @@ import com.github.vincemann.springrapid.acl.proxy.AclManaging;
 import com.github.vincemann.springrapid.core.service.exception.BadEntityException;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.ImportAutoConfiguration;
@@ -25,9 +24,6 @@ import org.springframework.jdbc.datasource.DataSourceUtils;
 import org.springframework.jdbc.datasource.init.ScriptUtils;
 import org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers;
 import org.springframework.test.context.ActiveProfiles;
-import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.TestPropertySource;
-import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.ResultActions;
@@ -44,25 +40,24 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+
+
+//@AutoConfigureMockMvc
+//@AutoConfigureTestDatabase(connection = EmbeddedDatabaseConnection.HSQL)
+//see application-dev.yml config for expected database config
+//@Sql({"/test-data/resetTestData.sql"})
+
+/**
+ * Fills tokens Map in an integration test manner by creating and logging all users in
+ */
+//@Transactional dont do transactional bc controller will be wrapped in transaction as well -> lazyLoad Exceptions ect. wont be detected
 @SpringBootTest({
 //        "logging.level.com.naturalprogrammer=ERROR", // logging.level.root=ERROR does not work: https://stackoverflow.com/questions/49048298/springboottest-not-overriding-logging-level
 //        "logging.level.org.springframework=ERROR",
         "lemon.recaptcha.sitekey="
 })
-//@ExtendWith(SpringExtension.class)
-//@ContextConfiguration(loader = )
-//@TestPropertySource(properties = {"lemon.recaptcha.sitekey="})
-//@AutoConfigureMockMvc
-
-//@AutoConfigureTestDatabase(connection = EmbeddedDatabaseConnection.HSQL)
-//see application-dev.yml config for expected database config
-//@Sql({"/test-data/resetTestData.sql"})
-/**
- * Fills tokens Map in an integration test manner by creating and logging all users in
- */
 //activate everything for full integration tests
 @ActiveProfiles(value = {"web", "service", "test", "webTest", "serviceTest", "dev"}, inheritProfiles = false)
-//@Transactional dont do transactional bc controller will be wrapped in transaction as well -> lazyLoad Exceptions ect. wont be detected
 @ImportAutoConfiguration(exclude = LemonAdminAutoConfiguration.class)
 public abstract class AbstractMvcTests {
 
