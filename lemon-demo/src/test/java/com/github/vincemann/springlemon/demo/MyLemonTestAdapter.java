@@ -1,7 +1,7 @@
 package com.github.vincemann.springlemon.demo;
 
 import com.github.vincemann.springlemon.auth.domain.AbstractUser;
-import com.github.vincemann.springlemon.authtests.LemonTestAdapter;
+import com.github.vincemann.springlemon.authtests.adapter.LemonTestAdapter;
 import com.github.vincemann.springlemon.demo.domain.User;
 import org.springframework.boot.test.context.TestComponent;
 
