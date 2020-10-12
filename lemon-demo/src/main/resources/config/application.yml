@@ -30,11 +30,12 @@ server.servlet.session.persistent: false
 # Spring Lemon related properties
 lemon:
 
-  # First ADMIN user
-  admin:
-    email: admin@example.com
-    password: admin!
-    
+  # ADMIN users
+  admins:
+    - email: admin@example.com
+      password: admin!
+    - email: secondAdmin@example.com
+      password: admin2!
    # Spring Lemon flags
    # enabled:
       # json-prefix: false

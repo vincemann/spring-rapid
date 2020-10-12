@@ -34,7 +34,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 
 class OwnerControllerTest
-        extends AbstractUrlParamIdRapidControllerTest<OwnerService, Owner, Long> {
+        extends AbstractUrlParamIdRapidControllerTest<OwnerController,Long> {
 
     CreateOwnerDto createOwnerDto;
     ReadForeignOwnerDto readForeignOwnerDto;
