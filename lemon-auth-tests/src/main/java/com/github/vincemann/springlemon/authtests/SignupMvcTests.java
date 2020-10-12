@@ -80,7 +80,10 @@ public class SignupMvcTests extends AbstractMvcTests {
 	public void testSignupDuplicateEmail() throws Exception {
 
 //		MySignupForm signupForm = new MySignupForm("user@example.com", "user123", "User");
-		LemonSignupForm signupForm = testAdapter.createSignupForm("user.foo@example.com", "user123");
+		String duplicateEmail = "user.foo@example.com";
+		userRepository.save(testAdapter.createTestUser(duplicateEmail,"user1234",LemonRoles.USER));
+
+		LemonSignupForm signupForm = testAdapter.createSignupForm(duplicateEmail, "user123");
 
 		mvc.perform(post("/api/core/users")
 				.contentType(MediaType.APPLICATION_JSON)

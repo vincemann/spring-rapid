@@ -7,6 +7,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpHeaders;
 import org.springframework.validation.annotation.Validated;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -53,9 +55,9 @@ public class LemonProperties {
 	public Cors cors = new Cors();
 
     /**
-	 * Properties related to the initial Admin user to be created
+	 * Properties related to the initial Admins to be created
 	 */
-	public Admin admin = new Admin();
+	public List<Admin> admins = new ArrayList<>();
 	
 	
 	/**
@@ -331,12 +333,12 @@ public class LemonProperties {
 		this.cors = cors;
 	}
 
-	public Admin getAdmin() {
-		return admin;
+	public List<Admin> getAdmins() {
+		return admins;
 	}
 
-	public void setAdmin(Admin admin) {
-		this.admin = admin;
+	public void setAdmins(List<Admin> admins) {
+		this.admins = admins;
 	}
 
 	public Map<String, Object> getShared() {

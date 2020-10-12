@@ -85,6 +85,7 @@ public abstract class AbstractMvcTests {
     @AclManaging
     protected UserService<AbstractUser<Long>, Long> aclUserService;
 
+    //cant autowire if used with types, even with ? extends AbstractUser
     @Autowired
     protected AbstractUserRepository userRepository;
 
@@ -160,7 +161,7 @@ public abstract class AbstractMvcTests {
         unverifiedUser = aclUserService.save(testAdapter.createTestUser(UNVERIFIED_USER_EMAIL,/*"Unverified User",*/ UNVERIFIED_USER_PASSWORD, LemonRoles.USER,LemonRoles.UNVERIFIED));
         blockedUser = aclUserService.save(testAdapter.createTestUser(BLOCKED_USER_EMAIL,/*"Blocked User",*/ BLOCKED_USER_PASSWORD, LemonRoles.USER, LemonRoles.BLOCKED));
         // sleep so login shortly after wont result in obsolete token
-        Thread.sleep(300);
+        Thread.sleep(400);
     }
 
 

@@ -7,7 +7,6 @@ import com.github.vincemann.springrapid.acl.proxy.AclManaging;
 import com.github.vincemann.springrapid.core.bootstrap.DatabaseDataInitializer;
 import com.github.vincemann.springrapid.core.security.RapidSecurityContext;
 import com.github.vincemann.springrapid.core.service.exception.BadEntityException;
-import com.github.vincemann.springrapid.core.service.exception.EntityNotFoundException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -20,15 +19,14 @@ import java.util.Optional;
 @Slf4j
 /**
  * Adds admins from property file, if not already present in database.
- * Also adds lemon admin
- * @see LemonProperties#getAdmin()
+ * @see LemonProperties#getAdmins()
  */
 public class AdminInitializer extends DatabaseDataInitializer {
 
-    @Value("#{'${database.init.admin.emails}'.split(',')}")
-    private List<String> adminEmails;
-    @Value("#{'${database.init.admin.passwords}'.split(',')}")
-    private List<String> adminPasswords;
+//    @Value("#{'${database.init.admin.emails}'.split(',')}")
+//    private List<String> adminEmails;
+//    @Value("#{'${database.init.admin.passwords}'.split(',')}")
+//    private List<String> adminPasswords;
 
     private UserService<?,?> userService;
     private LemonProperties lemonProperties;
@@ -38,8 +36,8 @@ public class AdminInitializer extends DatabaseDataInitializer {
     @Override
     @Transactional
     public void init() {
-        Assert.isTrue(!adminEmails.isEmpty());
-        Assert.isTrue(!adminPasswords.isEmpty());
+//        Assert.isTrue(!adminEmails.isEmpty());
+//        Assert.isTrue(!adminPasswords.isEmpty());
         securityContext.runAsAdmin(
                 () -> {
                     try {
@@ -50,27 +48,22 @@ public class AdminInitializer extends DatabaseDataInitializer {
                 });
     }
 
-    private void addAdmins() throws BadEntityException{
-        //add lemon admin
-        LemonProperties.Admin lemonAdmin = lemonProperties.getAdmin();
-        adminEmails.add(lemonAdmin.getEmail());
-        adminPasswords.add(lemonAdmin.getPassword());
-        //add rapid admins
-        int index = 0;
-        for (String admin : adminEmails) {
-            log.debug("registering admin:: " + admin);
+    protected void addAdmins() throws BadEntityException{
+        List<LemonProperties.Admin> admins = lemonProperties.getAdmins();
+//        int index = 0;
+        for (LemonProperties.Admin admin : admins) {
+            log.debug("registering admin:: " + admin.getEmail());
 
             // Check if the user already exists
-            Optional<? extends AbstractUser<?>> byEmail = userService.findByEmail(admin);
+            Optional<? extends AbstractUser<?>> byEmail = userService.findByEmail(admin.getEmail());
             if (byEmail.isPresent()) {
                 // Doesn't exist. So, create it.
-                LemonProperties.Admin toCreate = new LemonProperties.Admin(admin, adminPasswords.get(index));
-                log.debug("admin does not exist yet, creating: " + toCreate);
-                userService.createAdminUser(toCreate);
+                log.debug("admin does not exist yet, creating: " + admin);
+                userService.createAdminUser(admin);
             }else {
-                log.debug("admin already exists.");
+                log.debug("admin already exists. skipping.");
             }
-            index++;
+//            index++;
         }
     }
 
