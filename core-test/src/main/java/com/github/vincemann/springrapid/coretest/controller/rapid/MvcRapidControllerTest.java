@@ -18,14 +18,14 @@ import java.io.Serializable;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 
-public interface MvcRapidControllerTest<S extends CrudService<E,Id>
-        ,E extends IdentifiableEntity<Id>,
-        Id extends Serializable> {
+public interface MvcRapidControllerTest
+        <C extends RapidController<?,?,?>>
+{
 
-    public RapidController<E, Id,S> getController();
+    public C getController();
 
 
-    public default E mapToEntity(IdentifiableEntity<Id> dto) throws BadEntityException, EntityNotFoundException {
+    public default <E extends IdentifiableEntity<?>> E mapToEntity(Object dto) throws BadEntityException, EntityNotFoundException {
         return (E) getController().getDtoMapper().mapToEntity(dto,getController().getEntityClass());
     }
 

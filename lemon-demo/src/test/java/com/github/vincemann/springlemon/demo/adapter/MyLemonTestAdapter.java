@@ -1,8 +1,13 @@
 package com.github.vincemann.springlemon.demo.adapter;
 
+import com.fasterxml.jackson.annotation.JsonView;
 import com.github.vincemann.springlemon.auth.domain.AbstractUser;
+import com.github.vincemann.springlemon.auth.domain.dto.LemonSignupForm;
+import com.github.vincemann.springlemon.auth.util.UserVerifyUtils;
 import com.github.vincemann.springlemon.authtests.adapter.LemonTestAdapter;
 import com.github.vincemann.springlemon.demo.domain.User;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 import org.springframework.boot.test.context.TestComponent;
 
 @TestComponent
@@ -11,11 +16,32 @@ public class MyLemonTestAdapter implements LemonTestAdapter {
     private int nameCount = 0;
     private static final String NAME = "testUserName";
 
+    @NoArgsConstructor
+    @Getter
+    static class MySignupForm extends LemonSignupForm{
+        @JsonView(UserVerifyUtils.SignupInput.class)
+        private String name;
+
+        public MySignupForm(String email, String password, String name) {
+            super(email, password);
+            this.name = name;
+        }
+    }
+
     @Override
     public AbstractUser<Long> createTestUser(String email, String password, String... roles) {
+        return new User(email,password,createUniqueName(),roles);
+    }
+
+    @Override
+    public LemonSignupForm createSignupForm(String email, String password) {
+        return new MySignupForm(email,password,createUniqueName());
+    }
+
+    private String createUniqueName(){
         String name = NAME+nameCount;
         nameCount++;
-        return new User(email,password,name,roles);
+        return name;
     }
 
     @Override

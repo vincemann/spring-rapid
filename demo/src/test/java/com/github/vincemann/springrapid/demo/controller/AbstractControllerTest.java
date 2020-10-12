@@ -1,5 +1,6 @@
 package com.github.vincemann.springrapid.demo.controller;
 
+import com.github.vincemann.springrapid.core.controller.RapidController;
 import com.github.vincemann.springrapid.core.service.AbstractCrudService;
 import com.github.vincemann.springrapid.demo.model.Owner;
 import com.github.vincemann.springrapid.demo.model.Pet;
@@ -24,8 +25,8 @@ import java.time.LocalDate;
 @Getter
 @Setter
 @Slf4j
-public abstract class AbstractControllerTest<S extends CrudService<E,Long>,E extends IdentifiableEntity<Long>>
-        extends AbstractUrlParamIdRapidControllerTest<S,E,Long>
+public abstract class AbstractControllerTest<C extends RapidController<?,Long,?>>
+        extends AbstractUrlParamIdRapidControllerTest<C,Long>
 
 {
 
