@@ -59,7 +59,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 //override config to define mock rules before context initialization
 @Import(RapidControllerIntegrationTest.TestConfig.class)
 class RapidControllerIntegrationTest
-        extends AbstractMvcRapidControllerTest<ExampleService, ExampleEntity, Long> {
+        extends AbstractMvcRapidControllerTest<ExampleRapidController> {
 
     static final ExampleEntity requestEntity = new ExampleEntity("request testEntity");
     static final ExampleEntity returnEntity = new ExampleEntity("return testEntity");

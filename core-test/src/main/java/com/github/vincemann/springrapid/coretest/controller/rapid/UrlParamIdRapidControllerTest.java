@@ -1,5 +1,6 @@
 package com.github.vincemann.springrapid.coretest.controller.rapid;
 
+import com.github.vincemann.springrapid.core.controller.RapidController;
 import com.github.vincemann.springrapid.core.model.IdentifiableEntity;
 import com.github.vincemann.springrapid.core.service.CrudService;
 import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
@@ -10,9 +11,10 @@ import java.io.Serializable;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 
-public interface UrlParamIdRapidControllerTest<S extends CrudService<E,Id>
-        ,E extends IdentifiableEntity<Id>,
-        Id extends Serializable> extends MvcRapidControllerTest<S,E,Id> {
+public interface UrlParamIdRapidControllerTest
+        <C extends RapidController<?,Id,?>,
+        Id extends Serializable>
+            extends MvcRapidControllerTest<C> {
 
     public default MockHttpServletRequestBuilder delete(Id id) throws Exception {
         return MockMvcRequestBuilders.delete(getDeleteUrl())

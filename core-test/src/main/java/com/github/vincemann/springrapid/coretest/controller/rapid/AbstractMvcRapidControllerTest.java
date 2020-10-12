@@ -30,28 +30,23 @@ import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.
  *
  * @see AutoMockMvcControllerTest
  *
- * @param <S>  Service Type used by Controller
- * @param <E>  EntityType managed by Service
- * @param <Id> IdType of Entity
  */
 @Getter
 @Setter
 @Slf4j
-public abstract class AbstractMvcRapidControllerTest
-        <S extends CrudService<E,Id>
-        ,E extends IdentifiableEntity<Id>,
-        Id extends Serializable>
-        extends AutoMockMvcControllerTest implements MvcRapidControllerTest<S,E,Id>
+public abstract class AbstractMvcRapidControllerTest<C extends RapidController<?,?,?>>
+        extends AutoMockMvcControllerTest
+            implements MvcRapidControllerTest<C>
 {
-    private Class<E> entityClass = (Class<E>) ((ParameterizedType) this.getClass().getGenericSuperclass()).getActualTypeArguments()[1];
+//    private Class<E> entityClass = (Class<E>) ((ParameterizedType) this.getClass().getGenericSuperclass()).getActualTypeArguments()[1];
     private DtoMappingContext dtoMappingContext;
-    private RapidController<E, Id,S> controller;
+    private C controller;
     @Autowired
     private ApplicationContext applicationContext;
 
 
     @Autowired
-    public void injectController(RapidController<E, Id,S> controller) {
+    public void injectController(C controller) {
         this.controller = controller;
     }
 
