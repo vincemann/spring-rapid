@@ -7,16 +7,17 @@ import com.github.vincemann.springlemon.auth.domain.AbstractUserRepository;
 import com.github.vincemann.springlemon.auth.domain.LemonRoles;
 import com.github.vincemann.springlemon.auth.mail.MailSender;
 import com.github.vincemann.springlemon.auth.service.UserService;
+import com.github.vincemann.springlemon.authtests.adapter.LemonTestAdapter;
 import com.github.vincemann.springrapid.acl.proxy.AclManaging;
 import com.github.vincemann.springrapid.core.service.exception.BadEntityException;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.ImportAutoConfiguration;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.SpyBean;
-import org.springframework.context.annotation.ComponentScan;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
@@ -24,6 +25,9 @@ import org.springframework.jdbc.datasource.DataSourceUtils;
 import org.springframework.jdbc.datasource.init.ScriptUtils;
 import org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers;
 import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.TestPropertySource;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.ResultActions;
@@ -45,6 +49,9 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 //        "logging.level.org.springframework=ERROR",
         "lemon.recaptcha.sitekey="
 })
+//@ExtendWith(SpringExtension.class)
+//@ContextConfiguration(loader = )
+//@TestPropertySource(properties = {"lemon.recaptcha.sitekey="})
 //@AutoConfigureMockMvc
 
 //@AutoConfigureTestDatabase(connection = EmbeddedDatabaseConnection.HSQL)
@@ -245,3 +252,4 @@ public abstract class AbstractMvcTests {
 
 
 }
+
