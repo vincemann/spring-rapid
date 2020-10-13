@@ -34,15 +34,15 @@ public class RequestEmailChangeMvcTests extends AbstractMvcTests {
 	@Test
 	public void testRequestEmailChange() throws Exception {
 		
-		mvc.perform(post("/api/core/users/{id}/email-change-request", unverifiedUser.getId())
+		mvc.perform(post("/api/core/users/{id}/email-change-request", getUnverifiedUser().getId())
 				.contentType(MediaType.APPLICATION_JSON)
-				.header(HttpHeaders.AUTHORIZATION, tokens.get(unverifiedUser.getId()))
+				.header(HttpHeaders.AUTHORIZATION, tokens.get(getUnverifiedUser().getId()))
 				.content(MapperUtils.toJson(form())))
 				.andExpect(status().is(204));
 		
 		verify(mailSender).send(any());
 
-		AbstractUser<Long> updatedUser = (AbstractUser<Long>) unsecuredUserService.findById(unverifiedUser.getId()).get();
+		AbstractUser<Long> updatedUser = getUnsecuredUserService().findById(getUnverifiedUser().getId()).get();
 		Assertions.assertEquals(NEW_EMAIL, updatedUser.getNewEmail());
 		Assertions.assertEquals(UNVERIFIED_USER_EMAIL, updatedUser.getEmail());
 	}
@@ -53,13 +53,13 @@ public class RequestEmailChangeMvcTests extends AbstractMvcTests {
 	@Test
 	public void testGoodAdminRequestEmailChange() throws Exception {
 		
-		mvc.perform(post("/api/core/users/{id}/email-change-request", unverifiedUser.getId())
+		mvc.perform(post("/api/core/users/{id}/email-change-request", getUnverifiedUser().getId())
 				.contentType(MediaType.APPLICATION_JSON)
-				.header(HttpHeaders.AUTHORIZATION, tokens.get(admin.getId()))
+				.header(HttpHeaders.AUTHORIZATION, tokens.get(getAdmin().getId()))
 				.content(MapperUtils.toJson(form())))
 				.andExpect(status().is(204));
 
-		AbstractUser<Long> updatedUser = (AbstractUser<Long>) unsecuredUserService.findById(unverifiedUser.getId()).get();
+		AbstractUser<Long> updatedUser = getUnsecuredUserService().findById(getUnverifiedUser().getId()).get();
 		Assertions.assertEquals(NEW_EMAIL, updatedUser.getNewEmail());
 	}	
 	
@@ -71,7 +71,7 @@ public class RequestEmailChangeMvcTests extends AbstractMvcTests {
 		
 		mvc.perform(post("/api/core/users/99/email-change-request")
 				.contentType(MediaType.APPLICATION_JSON)
-				.header(HttpHeaders.AUTHORIZATION, tokens.get(admin.getId()))
+				.header(HttpHeaders.AUTHORIZATION, tokens.get(getAdmin().getId()))
 				.content(MapperUtils.toJson(form())))
 				.andExpect(status().is(404));
 		
@@ -85,15 +85,15 @@ public class RequestEmailChangeMvcTests extends AbstractMvcTests {
 	@Test
 	public void testNonAdminRequestEmailChangeAnotherUser() throws Exception {
 		
-		mvc.perform(post("/api/core/users/{id}/email-change-request", admin.getId())
+		mvc.perform(post("/api/core/users/{id}/email-change-request", getAdmin().getId())
 				.contentType(MediaType.APPLICATION_JSON)
-				.header(HttpHeaders.AUTHORIZATION, tokens.get(user.getId()))
+				.header(HttpHeaders.AUTHORIZATION, tokens.get(getUser().getId()))
 				.content(MapperUtils.toJson(form())))
 				.andExpect(status().is(403));
 		
 		verify(mailSender, never()).send(any());
 
-		AbstractUser<Long> updatedUser = (AbstractUser<Long>) unsecuredUserService.findById(unverifiedUser.getId()).get();
+		AbstractUser<Long> updatedUser = getUnsecuredUserService().findById(getUnverifiedUser().getId()).get();
 		Assertions.assertNull(updatedUser.getNewEmail());
 	}
 	
@@ -102,9 +102,9 @@ public class RequestEmailChangeMvcTests extends AbstractMvcTests {
 	public void testAdmin_triesToRequestEmailChange_ofDifferentAdmin_shouldFail() throws Exception {
 
 		//unverified admins are not treated differently than verified admins
-		mvc.perform(post("/api/core/users/{id}/email-change-request", admin.getId())
+		mvc.perform(post("/api/core/users/{id}/email-change-request", getAdmin().getId())
 				.contentType(MediaType.APPLICATION_JSON)
-				.header(HttpHeaders.AUTHORIZATION, tokens.get(secondAdmin.getId()))
+				.header(HttpHeaders.AUTHORIZATION, tokens.get(getSecondAdmin().getId()))
 				.content(MapperUtils.toJson(form())))
 				.andExpect(status().is(403));
 		
@@ -122,9 +122,9 @@ public class RequestEmailChangeMvcTests extends AbstractMvcTests {
 		form.setNewEmail(null);
 //		form.setPassword(null);
 		// try with null newEmail
-		mvc.perform(post("/api/core/users/{id}/email-change-request", unverifiedUser.getId())
+		mvc.perform(post("/api/core/users/{id}/email-change-request", getUnverifiedUser().getId())
 				.contentType(MediaType.APPLICATION_JSON)
-				.header(HttpHeaders.AUTHORIZATION, tokens.get(unverifiedUser.getId()))
+				.header(HttpHeaders.AUTHORIZATION, tokens.get(getUnverifiedUser().getId()))
 				.content(MapperUtils.toJson(form)))
 				.andExpect(status().is(422))
 				.andExpect(jsonPath("$.errors[*].field").value(hasSize(1)))
@@ -137,9 +137,9 @@ public class RequestEmailChangeMvcTests extends AbstractMvcTests {
 		emailChangeForm.setNewEmail("");
 		
     	// try with blank newEmail
-		mvc.perform(post("/api/core/users/{id}/email-change-request", unverifiedUser.getId())
+		mvc.perform(post("/api/core/users/{id}/email-change-request", getUnverifiedUser().getId())
 				.contentType(MediaType.APPLICATION_JSON)
-				.header(HttpHeaders.AUTHORIZATION, tokens.get(unverifiedUser.getId()))
+				.header(HttpHeaders.AUTHORIZATION, tokens.get(getUnverifiedUser().getId()))
 				.content(MapperUtils.toJson(emailChangeForm)))
 				.andExpect(status().is(422))
 				.andExpect(jsonPath("$.errors[*].field").value(hasSize(2)))
@@ -150,9 +150,9 @@ public class RequestEmailChangeMvcTests extends AbstractMvcTests {
 		// try with invalid newEmail
 		emailChangeForm = form();
 		emailChangeForm.setNewEmail("an-invalid-email");
-		mvc.perform(post("/api/core/users/{id}/email-change-request", unverifiedUser.getId())
+		mvc.perform(post("/api/core/users/{id}/email-change-request", getUnverifiedUser().getId())
 				.contentType(MediaType.APPLICATION_JSON)
-				.header(HttpHeaders.AUTHORIZATION, tokens.get(unverifiedUser.getId()))
+				.header(HttpHeaders.AUTHORIZATION, tokens.get(getUnverifiedUser().getId()))
 				.content(MapperUtils.toJson(emailChangeForm)))
 				.andExpect(status().is(422))
 				.andExpect(jsonPath("$.errors[*].field").value(hasSize(1)))
@@ -161,9 +161,9 @@ public class RequestEmailChangeMvcTests extends AbstractMvcTests {
 		// try with wrong password
 //		emailChangeForm = form();
 //		emailChangeForm.setPassword("wrong-password");
-//		mvc.perform(post("/api/core/users/{id}/email-change-request", unverifiedUser.getId())
+//		mvc.perform(post("/api/core/users/{id}/email-change-request", getUnverifiedUser().getId())
 //				.contentType(MediaType.APPLICATION_JSON)
-//				.header(HttpHeaders.AUTHORIZATION, tokens.get(unverifiedUser.getId()))
+//				.header(HttpHeaders.AUTHORIZATION, tokens.get(getUnverifiedUser().getId()))
 //				.content(MapperUtils.toJson(emailChangeForm)))
 //				.andExpect(status().is(422))
 //				.andExpect(jsonPath("$.errors[*].field").value(hasSize(1)))
@@ -172,9 +172,9 @@ public class RequestEmailChangeMvcTests extends AbstractMvcTests {
 		// try with null password
 //		emailChangeForm = form();
 //		emailChangeForm.setPassword(null);
-//		mvc.perform(post("/api/core/users/{id}/email-change-request", unverifiedUser.getId())
+//		mvc.perform(post("/api/core/users/{id}/email-change-request", getUnverifiedUser().getId())
 //				.contentType(MediaType.APPLICATION_JSON)
-//				.header(HttpHeaders.AUTHORIZATION, tokens.get(unverifiedUser.getId()))
+//				.header(HttpHeaders.AUTHORIZATION, tokens.get(getUnverifiedUser().getId()))
 //				.content(MapperUtils.toJson(emailChangeForm)))
 //				.andExpect(status().is(422))
 //				.andExpect(jsonPath("$.errors[*].field").value(hasSize(1)))
@@ -183,9 +183,9 @@ public class RequestEmailChangeMvcTests extends AbstractMvcTests {
 		// try with an existing email
 		emailChangeForm = form();
 		emailChangeForm.setNewEmail(ADMIN_EMAIL);;
-		mvc.perform(post("/api/core/users/{id}/email-change-request", unverifiedUser.getId())
+		mvc.perform(post("/api/core/users/{id}/email-change-request", getUnverifiedUser().getId())
 				.contentType(MediaType.APPLICATION_JSON)
-				.header(HttpHeaders.AUTHORIZATION, tokens.get(unverifiedUser.getId()))
+				.header(HttpHeaders.AUTHORIZATION, tokens.get(getUnverifiedUser().getId()))
 				.content(MapperUtils.toJson(emailChangeForm)))
 				.andExpect(status().is(422))
 				.andExpect(jsonPath("$.errors[*].field").value(hasSize(1)))

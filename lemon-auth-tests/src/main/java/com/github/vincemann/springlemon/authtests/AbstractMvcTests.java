@@ -11,6 +11,7 @@ import com.github.vincemann.springlemon.authtests.adapter.LemonTestAdapter;
 import com.github.vincemann.springrapid.acl.proxy.AclManaging;
 import com.github.vincemann.springrapid.acl.proxy.Unsecured;
 import com.github.vincemann.springrapid.core.service.exception.BadEntityException;
+import lombok.Getter;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.mockito.Mockito;
@@ -60,6 +61,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 //activate everything for full integration tests
 @ActiveProfiles(value = {"web", "service", "test", "webTest", "serviceTest", "dev"}, inheritProfiles = false)
 @ImportAutoConfiguration(exclude = LemonAdminAutoConfiguration.class)
+@Getter
 public abstract class AbstractMvcTests {
 
     protected static final String ADMIN_EMAIL = "admin@example.com";
@@ -84,12 +86,12 @@ public abstract class AbstractMvcTests {
 
     @Autowired
     @AclManaging
-    protected UserService<AbstractUser<Long>, Long> aclUserService;
+    private UserService<AbstractUser<Long>, Long> aclUserService;
 
     //cant autowire if used with types, even with ? extends AbstractUser
     @Autowired
     @Unsecured
-    protected UserService/*<AbstractUser<Long>, Long>*/ unsecuredUserService;
+    private UserService<AbstractUser<Long>, Long> unsecuredUserService;
 
     //cant autowire if used with types, even with ? extends AbstractUser
     @Autowired
@@ -112,19 +114,19 @@ public abstract class AbstractMvcTests {
     protected MockMvc mvc;
     protected Map<Long, String> tokens = new HashMap<>(6);
 
-    protected AbstractUser<Long> admin;
-    protected AbstractUser<Long> secondAdmin;
-    protected AbstractUser<Long> blockedAdmin;
-    protected AbstractUser<Long> user;
-    protected AbstractUser<Long> unverifiedUser;
-    protected AbstractUser<Long> blockedUser;
+    private AbstractUser<Long> admin;
+    private AbstractUser<Long> secondAdmin;
+    private AbstractUser<Long> blockedAdmin;
+    private AbstractUser<Long> user;
+    private AbstractUser<Long> unverifiedUser;
+    private AbstractUser<Long> blockedUser;
 
     @Autowired
     protected LemonTestAdapter testAdapter;
 
     @BeforeEach
     public void setup() throws Exception {
-        initMockMvc();
+        configureMvc();
         System.err.println("creating test users");
         createTestUsers();
         System.err.println("test users created");
@@ -139,7 +141,7 @@ public abstract class AbstractMvcTests {
         Mockito.doReturn(jwt).when(properties).getJwt();
     }
 
-    protected void initMockMvc() {
+    protected void configureMvc() {
         mvc = MockMvcBuilders
                 .webAppContextSetup(context)
                 .apply(SecurityMockMvcConfigurers.springSecurity())
@@ -175,13 +177,13 @@ public abstract class AbstractMvcTests {
 
 
     protected void loginTestUsers() throws Exception {
-        tokens.put(admin.getId(), successful_login(ADMIN_EMAIL, ADMIN_PASSWORD));
-        tokens.put(secondAdmin.getId(), successful_login(SECOND_ADMIN_EMAIL, SECOND_ADMIN_PASSWORD));
-        tokens.put(blockedAdmin.getId(), successful_login(BLOCKED_ADMIN_EMAIL, BLOCKED_ADMIN_PASSWORD));
+        tokens.put(getAdmin().getId(), successful_login(ADMIN_EMAIL, ADMIN_PASSWORD));
+        tokens.put(getSecondAdmin().getId(), successful_login(SECOND_ADMIN_EMAIL, SECOND_ADMIN_PASSWORD));
+        tokens.put(getBlockedAdmin().getId(), successful_login(BLOCKED_ADMIN_EMAIL, BLOCKED_ADMIN_PASSWORD));
 
-        tokens.put(user.getId(), successful_login(USER_EMAIL, USER_PASSWORD));
-        tokens.put(unverifiedUser.getId(), successful_login(UNVERIFIED_USER_EMAIL, UNVERIFIED_USER_PASSWORD));
-        tokens.put(blockedUser.getId(), successful_login(BLOCKED_USER_EMAIL, BLOCKED_USER_PASSWORD));
+        tokens.put(getUser().getId(), successful_login(USER_EMAIL, USER_PASSWORD));
+        tokens.put(getUnverifiedUser().getId(), successful_login(UNVERIFIED_USER_EMAIL, UNVERIFIED_USER_PASSWORD));
+        tokens.put(getBlockedUser().getId(), successful_login(BLOCKED_USER_EMAIL, BLOCKED_USER_PASSWORD));
     }
 
     protected ResultActions login(String userName, String password) throws Exception {
@@ -208,7 +210,7 @@ public abstract class AbstractMvcTests {
         mvc.perform(get("/api/core/context")
                 .header(HttpHeaders.AUTHORIZATION, token))
                 .andExpect(status().is(200));
-//                .andExpect(jsonPath("$.user.id").value(unverifiedUser.getId()));
+//                .andExpect(jsonPath("$.user.id").value(getUnverifiedUser().getId()));
     }
 
     @AfterEach
@@ -225,13 +227,13 @@ public abstract class AbstractMvcTests {
 //        if (!initialized) {
 //            //only do this expensive stuff once -> permissions stay the same
 //            ScriptUtils.executeSqlScript(dataSource.getConnection(), new ClassPathResource("test-data/removeAclInfo.sql"));
-////        User admin = userRepository.findById(admin.getId()).get();
+////        User admin = userRepository.findById(getAdmin().getId()).get();
 ////        Authentication adminAuth = new UsernamePasswordAuthenticationToken(admin.getName(), admin.getPassword()
 ////                , Lists.newArrayList(new SimpleGrantedAuthority(Role.ADMIN)));
 //            securityContext.runAsAdmin(() -> {
 //                try {
-//                    giveAdminFullPermissionOver(user.getId(), unverifiedUser.getId(), BLOCKED_USER_ID /*admin.getId(), secondAdmin.getId(), blockedAdmin.getId()*/);
-//                    giveFullPermissionAboutSelf(admin.getId(), secondAdmin.getId(), blockedAdmin.getId(), user.getId(), unverifiedUser.getId(), BLOCKED_USER_ID);
+//                    giveAdminFullPermissionOver(getUser().getId(), getUnverifiedUser().getId(), BLOCKED_USER_ID /*getAdmin().getId(), secondAdmin.getId(), blockedAdmin.getId()*/);
+//                    giveFullPermissionAboutSelf(getAdmin().getId(), secondAdmin.getId(), blockedAdmin.getId(), getUser().getId(), getUnverifiedUser().getId(), BLOCKED_USER_ID);
 //                }catch (Exception e){
 //                    throw new RuntimeException(e);
 //                }

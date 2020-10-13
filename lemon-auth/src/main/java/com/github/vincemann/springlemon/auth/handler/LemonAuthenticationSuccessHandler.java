@@ -2,6 +2,7 @@ package com.github.vincemann.springlemon.auth.handler;
 
 import com.github.vincemann.springlemon.auth.service.UserService;
 import com.github.vincemann.springlemon.auth.service.token.HttpTokenService;
+import com.github.vincemann.springrapid.acl.proxy.Unsecured;
 import com.github.vincemann.springrapid.core.controller.RapidMediaType;
 import com.github.vincemann.springrapid.core.security.RapidSecurityContext;
 import lombok.extern.slf4j.Slf4j;
@@ -27,15 +28,9 @@ public class LemonAuthenticationSuccessHandler
 	extends SimpleUrlAuthenticationSuccessHandler {
 	
 
-    private UserService<?, ?> userService;
+    private UserService<?, ?> unsecuredUserService;
     private HttpTokenService httpTokenService;
 	private String mediaType;
-
-	public LemonAuthenticationSuccessHandler(UserService<?, ?> userService, HttpTokenService httpTokenService) {
-		this.userService = userService;
-		this.httpTokenService = httpTokenService;
-
-	}
 
 	
 	@Override
@@ -46,7 +41,7 @@ public class LemonAuthenticationSuccessHandler
 		// the statements below are introduced
     	response.setStatus(HttpServletResponse.SC_OK);
     	response.setContentType(mediaType);
-		String token = userService.createNewAuthToken();
+		String token = unsecuredUserService.createNewAuthToken();
 		httpTokenService.appendToken(token,response);
 
 //    	// write current-user data to the response
@@ -63,5 +58,16 @@ public class LemonAuthenticationSuccessHandler
 	@Autowired
 	public void injectMediaType(String mediaType) {
 		this.mediaType = mediaType;
+	}
+
+	@Autowired
+	@Unsecured
+	public void injectUnsecuredUserService(UserService<?, ?> userService) {
+		this.unsecuredUserService = userService;
+	}
+
+	@Autowired
+	public void injectHttpTokenService(HttpTokenService httpTokenService) {
+		this.httpTokenService = httpTokenService;
 	}
 }

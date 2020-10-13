@@ -52,11 +52,11 @@ public class UpdateUserMvcTests extends AbstractMvcTests
 	@Test
     public void testUserUpdatesOwnRoles_should400() throws Exception {
 
-			mvc.perform(update(patchRole,user.getId())
-				.header(HttpHeaders.AUTHORIZATION, tokens.get(user.getId())))
+			mvc.perform(update(patchRole,getUser().getId())
+				.header(HttpHeaders.AUTHORIZATION, tokens.get(getUser().getId())))
 				.andExpect(status().is(400));
 
-		AbstractUser<Long> updated = (AbstractUser<Long>) unsecuredUserService.findById(user.getId()).get();
+		AbstractUser<Long> updated = getUnsecuredUserService().findById(getUser().getId()).get();
 
 		// Ensure that data has not changed
 		Assertions.assertEquals(USER_EMAIL, updated.getEmail());
@@ -70,14 +70,14 @@ public class UpdateUserMvcTests extends AbstractMvcTests
 	 */
 	@Test
     public void testAdminCanUpdateOther() throws Exception {
-		mvc.perform(update(patchEmailAndRole,unverifiedUser.getId())
-				.header(HttpHeaders.AUTHORIZATION, tokens.get(admin.getId())))
+		mvc.perform(update(patchEmailAndRole,getUnverifiedUser().getId())
+				.header(HttpHeaders.AUTHORIZATION, tokens.get(getAdmin().getId())))
 				.andExpect(status().is(200))
 				.andExpect(jsonPath("$.roles").value(hasSize(1)))
 				.andExpect(jsonPath("$.roles[0]").value(RapidRoles.ADMIN))
 				.andExpect(jsonPath("$.email").value(UPDATED_EMAIL));
 
-		AbstractUser<Long> user = (AbstractUser<Long>) unsecuredUserService.findById(unverifiedUser.getId()).get();
+		AbstractUser<Long> user = getUnsecuredUserService().findById(getUnverifiedUser().getId()).get();
 
 		// Ensure that data changed properly
 		//should get replaced because admin has full power
@@ -92,7 +92,7 @@ public class UpdateUserMvcTests extends AbstractMvcTests
 	@Test
     public void testUpdateUnknownId_should403() throws Exception {
 		mvc.perform(update(patchEmailAndRole,99L)
-				.header(HttpHeaders.AUTHORIZATION, tokens.get(admin.getId())))
+				.header(HttpHeaders.AUTHORIZATION, tokens.get(getAdmin().getId())))
 				.andExpect(status().is(403));
     }
 
@@ -103,14 +103,14 @@ public class UpdateUserMvcTests extends AbstractMvcTests
 	@Test
 	public void testUpdateUserInvalidFieldConstraints_should400() throws Exception {
 		// Null name
-		assertThatThrownBy(() -> mvc.perform(update(patchNullField, user.getId())
-				.header(HttpHeaders.AUTHORIZATION, tokens.get(user.getId())))
+		assertThatThrownBy(() -> mvc.perform(update(patchNullField, getUser().getId())
+				.header(HttpHeaders.AUTHORIZATION, tokens.get(getUser().getId())))
 				.andExpect(status().is(400)))
 				.hasRootCauseInstanceOf(SQLIntegrityConstraintViolationException.class);
 
 		// Too long name
-		assertThatThrownBy(() -> mvc.perform(update(patchLongField, user.getId())
-				.header(HttpHeaders.AUTHORIZATION, tokens.get(user.getId())))
+		assertThatThrownBy(() -> mvc.perform(update(patchLongField, getUser().getId())
+				.header(HttpHeaders.AUTHORIZATION, tokens.get(getUser().getId())))
 				.andExpect(status().is(400)))
 				.hasRootCauseInstanceOf(DataTruncation.class);
 	}
@@ -121,22 +121,22 @@ public class UpdateUserMvcTests extends AbstractMvcTests
 	 */
 	@Test
 	public void testUserUpdatesAnotherUser_should403() throws Exception {
-		mvc.perform(update(patchField,unverifiedUser.getId())
-				.header(HttpHeaders.AUTHORIZATION, tokens.get(user.getId())))
+		mvc.perform(update(patchField,getUnverifiedUser().getId())
+				.header(HttpHeaders.AUTHORIZATION, tokens.get(getUser().getId())))
 				.andExpect(status().is(403));
 	}
 
 	@Test
 	public void testUserUpdatesAnotherAdmin_should403() throws Exception {
-		mvc.perform(update(patchField,admin.getId())
-				.header(HttpHeaders.AUTHORIZATION, tokens.get(user.getId())))
+		mvc.perform(update(patchField,getAdmin().getId())
+				.header(HttpHeaders.AUTHORIZATION, tokens.get(getUser().getId())))
 				.andExpect(status().is(403));
 	}
 
 	@Test
 	public void testUserUpdatesOwnEmail_should400() throws Exception {
-		mvc.perform(update(patchEmail,user.getId())
-				.header(HttpHeaders.AUTHORIZATION, tokens.get(user.getId())))
+		mvc.perform(update(patchEmail,getUser().getId())
+				.header(HttpHeaders.AUTHORIZATION, tokens.get(getUser().getId())))
 				.andExpect(status().is(400));
 	}
 
@@ -181,7 +181,7 @@ public class UpdateUserMvcTests extends AbstractMvcTests
 //
 //		mvc.perform(update(userPatch,99L)
 ////				.contentType(MediaType.APPLICATION_JSON)
-//				.header(HttpHeaders.AUTHORIZATION, tokens.get(admin.getId())))
+//				.header(HttpHeaders.AUTHORIZATION, tokens.get(getAdmin().getId())))
 ////				.content(userPatch))
 //				.andExpect(status().is(404));
 
@@ -195,11 +195,11 @@ public class UpdateUserMvcTests extends AbstractMvcTests
 //	@Test
 //    public void testBadAdminUpdateAnotherUser() throws Exception {
 //
-//		mvc.perform(update(userPatch, unverifiedUser.getId())
+//		mvc.perform(update(userPatch, getUnverifiedUser().getId())
 //				.header(HttpHeaders.AUTHORIZATION, tokens.get(secondAdmin.getId())))
 //				.andExpect(status().is(403));
 //
-//		mvc.perform(update( userPatch,unverifiedUser.getId())
+//		mvc.perform(update( userPatch,getUnverifiedUser().getId())
 //				.header(HttpHeaders.AUTHORIZATION, tokens.get(blockedAdmin.getId())))
 //				.andExpect(status().is(403));
 
@@ -213,9 +213,9 @@ public class UpdateUserMvcTests extends AbstractMvcTests
 //	//why not?
 //    public void adminCanNotUpdateSelfRoles() throws Exception {
 //
-//		mvc.perform(update(userPatchAdminRole,admin.getId())
+//		mvc.perform(update(userPatchAdminRole,getAdmin().getId())
 ////				.contentType(MediaType.APPLICATION_JSON)
-//				.header(HttpHeaders.AUTHORIZATION, tokens.get(admin.getId())))
+//				.header(HttpHeaders.AUTHORIZATION, tokens.get(getAdmin().getId())))
 ////				.content(userPatchAdminRole))
 //				.andExpect(status().is(200))
 ////				.andExpect(jsonPath("$.tag.name").value(UPDATED_NAME))

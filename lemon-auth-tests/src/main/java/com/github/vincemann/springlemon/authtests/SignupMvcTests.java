@@ -1,6 +1,5 @@
 package com.github.vincemann.springlemon.authtests;
 
-import com.github.vincemann.springlemon.auth.domain.AbstractUser;
 import com.github.vincemann.springlemon.auth.domain.LemonRoles;
 import com.github.vincemann.springlemon.auth.domain.dto.LemonSignupForm;
 import com.github.vincemann.springrapid.core.util.MapperUtils;
@@ -73,7 +72,7 @@ public class SignupMvcTests extends AbstractMvcTests {
 		verify(mailSender).send(any());
 
 		// Ensure that password got encrypted
-		Assertions.assertNotEquals("user123", ((AbstractUser<Long>)unsecuredUserService.findByEmail("user.foo@example.com").get()).getPassword());
+		Assertions.assertNotEquals("user123", getUnsecuredUserService().findByEmail("user.foo@example.com").get().getPassword());
 	}
 	
 	@Test
@@ -81,7 +80,7 @@ public class SignupMvcTests extends AbstractMvcTests {
 
 //		MySignupForm signupForm = new MySignupForm("user@example.com", "user123", "User");
 		String duplicateEmail = "user.foo@example.com";
-		unsecuredUserService.save(testAdapter.createTestUser(duplicateEmail,"user1234",LemonRoles.USER));
+		getUnsecuredUserService().save(testAdapter.createTestUser(duplicateEmail,"user1234",LemonRoles.USER));
 
 		LemonSignupForm signupForm = testAdapter.createSignupForm(duplicateEmail, "user123");
 

@@ -5,6 +5,7 @@ import com.github.vincemann.springlemon.auth.handler.LemonAuthenticationSuccessH
 import com.github.vincemann.springlemon.auth.service.UserService;
 import com.github.vincemann.springlemon.auth.service.token.AuthHeaderHttpTokenService;
 import com.github.vincemann.springlemon.auth.service.token.HttpTokenService;
+import com.github.vincemann.springrapid.acl.proxy.Unsecured;
 import com.github.vincemann.springrapid.core.config.RapidControllerAutoConfiguration;
 import com.github.vincemann.springrapid.core.controller.owner.OwnerLocator;
 import com.github.vincemann.springrapid.core.slicing.config.WebConfig;
@@ -21,11 +22,6 @@ import org.springframework.security.web.authentication.SimpleUrlAuthenticationFa
 @AutoConfigureBefore({RapidControllerAutoConfiguration.class})
 public class LemonWebAutoConfiguration {
 
-    public LemonWebAutoConfiguration() {
-
-    }
-
-
     @Bean
     @ConditionalOnMissingBean(HttpTokenService.class)
     public HttpTokenService httpTokenService(){
@@ -34,8 +30,8 @@ public class LemonWebAutoConfiguration {
 
     @Bean
     @ConditionalOnMissingBean(name = "lemonOwnerLocator")
-    public OwnerLocator lemonOwnerLocator(UserService userService){
-        return new LemonOwnerLocator(userService);
+    public OwnerLocator lemonOwnerLocator(){
+        return new LemonOwnerLocator();
     }
 
     /**
@@ -43,9 +39,8 @@ public class LemonWebAutoConfiguration {
      */
     @Bean
     @ConditionalOnMissingBean(LemonAuthenticationSuccessHandler.class)
-    public LemonAuthenticationSuccessHandler authenticationSuccessHandler(UserService<?, ?> userService) {
-
-        return new LemonAuthenticationSuccessHandler(userService, httpTokenService());
+    public LemonAuthenticationSuccessHandler authenticationSuccessHandler() {
+        return new LemonAuthenticationSuccessHandler();
     }
 
     /**
@@ -54,7 +49,6 @@ public class LemonWebAutoConfiguration {
     @Bean
     @ConditionalOnMissingBean(AuthenticationFailureHandler.class)
     public AuthenticationFailureHandler authenticationFailureHandler() {
-
         return new SimpleUrlAuthenticationFailureHandler();
     }
 
@@ -64,7 +58,6 @@ public class LemonWebAutoConfiguration {
     @Bean
     @ConditionalOnMissingBean(LemonWebSecurityConfig.class)
     public LemonWebSecurityConfig lemonWebSecurityConfig() {
-
         return new LemonWebSecurityConfig();
     }
 

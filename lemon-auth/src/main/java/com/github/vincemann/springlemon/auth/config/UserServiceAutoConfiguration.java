@@ -10,6 +10,7 @@ import com.github.vincemann.springlemon.auth.service.UserService;
 import com.github.vincemann.springlemon.auth.service.LemonUserDetailsService;
 import com.github.vincemann.springlemon.auth.validation.RetypePasswordValidator;
 import com.github.vincemann.springlemon.auth.validation.UniqueEmailValidator;
+import com.github.vincemann.springrapid.acl.proxy.Unsecured;
 import com.github.vincemann.springrapid.core.slicing.config.ServiceConfig;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
@@ -34,10 +35,6 @@ import java.io.Serializable;
 public class UserServiceAutoConfiguration {
 
 
-    public UserServiceAutoConfiguration() {
-
-    }
-
     /**
      * Configures an Auditor Aware if missing
      */
@@ -55,7 +52,6 @@ public class UserServiceAutoConfiguration {
     @Bean
     @ConditionalOnMissingBean(RetypePasswordValidator.class)
     public RetypePasswordValidator retypePasswordValidator() {
-
         return new RetypePasswordValidator();
     }
 
@@ -64,7 +60,6 @@ public class UserServiceAutoConfiguration {
      */
     @Bean
     public UniqueEmailValidator uniqueEmailValidator(AbstractUserRepository<?, ?> userRepository) {
-
         return new UniqueEmailValidator(userRepository);
     }
 
@@ -81,7 +76,7 @@ public class UserServiceAutoConfiguration {
     @Bean
     @ConditionalOnMissingBean(IdConverter.class)
     public <ID extends Serializable>
-    IdConverter<ID> idConverter(UserService<?,ID> userService) {
+    IdConverter<ID> idConverter(@Unsecured UserService<?,ID> userService) {
         return id -> userService.toId(id);
     }
 
@@ -92,7 +87,6 @@ public class UserServiceAutoConfiguration {
     @Bean
     @ConditionalOnMissingBean(PasswordEncoder.class)
     public PasswordEncoder passwordEncoder() {
-
         return PasswordEncoderFactories.createDelegatingPasswordEncoder();
     }
 
@@ -105,7 +99,6 @@ public class UserServiceAutoConfiguration {
     @ConditionalOnMissingBean(MailSender.class)
     @ConditionalOnProperty(name="spring.mail.host", havingValue="foo", matchIfMissing=true)
     public MailSender<?> mockMailSender() {
-
         return new MockMailSender();
     }
 
@@ -118,7 +111,6 @@ public class UserServiceAutoConfiguration {
     @ConditionalOnMissingBean(MailSender.class)
     @ConditionalOnProperty("spring.mail.host")
     public MailSender<?> smtpMailSender(JavaMailSender javaMailSender) {
-
         return new SmtpMailSender(javaMailSender);
     }
 
