@@ -3,28 +3,27 @@ package com.github.vincemann.springrapid.core.controller;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.fge.jsonpatch.JsonPatchException;
-import com.github.vincemann.aoplog.api.Lp;
+import com.github.vincemann.aoplog.api.LogParam;
+import com.github.vincemann.springrapid.core.RapidCoreProperties;
 import com.github.vincemann.springrapid.core.controller.dto.mapper.DelegatingDtoMapper;
 import com.github.vincemann.springrapid.core.controller.dto.mapper.context.Direction;
 import com.github.vincemann.springrapid.core.controller.dto.mapper.context.DtoMappingContext;
 import com.github.vincemann.springrapid.core.controller.dto.mapper.context.DtoMappingInfo;
-import com.github.vincemann.springrapid.core.controller.dto.mapper.context.RapidDtoEndpoint;
+import com.github.vincemann.springrapid.core.controller.idFetchingStrategy.IdFetchingException;
 import com.github.vincemann.springrapid.core.controller.idFetchingStrategy.IdFetchingStrategy;
 import com.github.vincemann.springrapid.core.controller.idFetchingStrategy.UrlParamIdFetchingStrategy;
-import com.github.vincemann.springrapid.core.controller.idFetchingStrategy.exception.IdFetchingException;
 import com.github.vincemann.springrapid.core.controller.mergeUpdate.MergeUpdateStrategy;
 import com.github.vincemann.springrapid.core.controller.owner.DelegatingOwnerLocator;
 import com.github.vincemann.springrapid.core.controller.validationStrategy.ValidationStrategy;
 import com.github.vincemann.springrapid.core.model.IdentifiableEntity;
-import com.github.vincemann.springrapid.core.service.CrudService;
+import com.github.vincemann.springrapid.core.security.RapidSecurityContext;
 import com.github.vincemann.springrapid.core.service.CrudService;
 import com.github.vincemann.springrapid.core.service.EndpointService;
 import com.github.vincemann.springrapid.core.service.exception.BadEntityException;
 import com.github.vincemann.springrapid.core.service.exception.EntityNotFoundException;
-import com.github.vincemann.springrapid.core.security.RapidSecurityContext;
-import com.github.vincemann.springrapid.core.util.VerifyEntity;
 import com.github.vincemann.springrapid.core.util.JpaUtils;
-import com.github.vincemann.springrapid.core.util.MapperUtils;
+import com.github.vincemann.springrapid.core.util.JsonUtils;
+import com.github.vincemann.springrapid.core.util.VerifyEntity;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
@@ -60,12 +59,12 @@ import java.util.stream.Collectors;
  * /account/get?accountId=34
  * /account/get?accountId=44bedc08-8e71-11e9-bc42-526af7764f64
  *
- * @param <E>  Entity Type, of entity, which's crud operations are exposed, via endpoints,  by this Controller
+ * @param <E>  Entity Type, of entity, who's crud operations are exposed, via endpoints,  by this Controller
  * @param <Id> Id Type of {@link E}
  */
 @Slf4j
 @Getter
-public abstract class RapidController
+public abstract class CrudController
         <
                 E extends IdentifiableEntity<Id>,
                 Id extends Serializable,
@@ -81,11 +80,11 @@ public abstract class RapidController
 
 //    public static final String MEDIA_TYPE_BEAN_NAME = "rapidMediaType";
 
-    public static final String FIND_METHOD_NAME = "get";
-    public static final String CREATE_METHOD_NAME = "create";
-    public static final String DELETE_METHOD_NAME = "delete";
-    public static final String UPDATE_METHOD_NAME = "update";
-    public static final String FIND_ALL_METHOD_NAME = "getAll";
+//    public static final String FIND_METHOD_NAME = "get";
+//    public static final String CREATE_METHOD_NAME = "create";
+//    public static final String DELETE_METHOD_NAME = "delete";
+//    public static final String UPDATE_METHOD_NAME = "update";
+//    public static final String FIND_ALL_METHOD_NAME = "getAll";
 
 
     //              URLS
@@ -101,13 +100,13 @@ public abstract class RapidController
     private String deleteUrl;
     @Setter
     private String createUrl;
-    private String baseUrl;
+    private String entityBaseUrl;
     private String entityNameInUrl;
 
 
     //              DEPENDENCIES
 
-
+    private RapidCoreProperties coreProperties;
     private EndpointService endpointService;
     private ObjectMapper jsonMapper;
     private IdFetchingStrategy<Id> idIdFetchingStrategy;
@@ -120,15 +119,13 @@ public abstract class RapidController
     private DtoMappingContext dtoMappingContext;
     private ValidationStrategy<Id> validationStrategy;
     private MergeUpdateStrategy mergeUpdateStrategy;
-    @Setter
-    private String mediaType;
     private Class<E> entityClass;
 
 
     //              CRUD-CONTROLLER METHODS
 
 
-    public ResponseEntity<String> findAll(@Lp HttpServletRequest request, HttpServletResponse response) throws JsonProcessingException {
+    public ResponseEntity<String> findAll(@LogParam HttpServletRequest request, HttpServletResponse response) throws JsonProcessingException {
         try {
             beforeFindAll(request, response);
             logSecurityContext();
@@ -136,7 +133,7 @@ public abstract class RapidController
             Collection<Object> dtos = new HashSet<>();
             for (E e : foundEntities) {
                 dtos.add(dtoMapper.mapToDto(e,
-                        createDtoClass(RapidDtoEndpoint.FIND_ALL, Direction.RESPONSE, e)));
+                        createDtoClass(coreProperties.controller.endpoints.findAll, Direction.RESPONSE, e)));
             }
             afterFindAll(dtos, foundEntities, request, response);
             String json = jsonMapper.writeValueAsString(dtos);
@@ -147,7 +144,7 @@ public abstract class RapidController
 
     }
 
-    public ResponseEntity<String> find(@Lp HttpServletRequest request, HttpServletResponse response) throws IdFetchingException, EntityNotFoundException, BadEntityException, JsonProcessingException {
+    public ResponseEntity<String> find(@LogParam HttpServletRequest request, HttpServletResponse response) throws IdFetchingException, EntityNotFoundException, BadEntityException, JsonProcessingException {
         Id id = idIdFetchingStrategy.fetchId(request);
         log.debug("id fetched from request: " + id);
 
@@ -160,16 +157,16 @@ public abstract class RapidController
         E found = optionalEntity.get();
         Object dto = dtoMapper.mapToDto(
                 found,
-                createDtoClass(RapidDtoEndpoint.FIND, Direction.RESPONSE, found)
+                createDtoClass(coreProperties.controller.endpoints.find, Direction.RESPONSE, found)
         );
         afterFind(id, dto, optionalEntity, request, response);
         return ok(jsonMapper.writeValueAsString(dto));
 
     }
 
-    public ResponseEntity<String> create(@Lp HttpServletRequest request, HttpServletResponse response) throws BadEntityException, EntityNotFoundException, IOException {
+    public ResponseEntity<String> create(@LogParam HttpServletRequest request, HttpServletResponse response) throws BadEntityException, EntityNotFoundException, IOException {
         String json = readBody(request);
-        Class<?> dtoClass = createDtoClass(RapidDtoEndpoint.CREATE, Direction.REQUEST, null);
+        Class<?> dtoClass = createDtoClass(coreProperties.controller.endpoints.create, Direction.REQUEST, null);
         Object dto = getJsonMapper().readValue(json, dtoClass);
         beforeCreate(dto, request, response);
         validationStrategy.validateDto(dto);
@@ -179,12 +176,12 @@ public abstract class RapidController
         logSecurityContext();
         E savedEntity = serviceCreate(entity);
         Object resultDto = dtoMapper.mapToDto(savedEntity,
-                createDtoClass(RapidDtoEndpoint.CREATE, Direction.RESPONSE, savedEntity));
+                createDtoClass(coreProperties.controller.endpoints.create, Direction.RESPONSE, savedEntity));
         afterCreate(resultDto, entity, request, response);
         return ok(jsonMapper.writeValueAsString(resultDto));
     }
 
-    public ResponseEntity<String> update(@Lp HttpServletRequest request, HttpServletResponse response) throws EntityNotFoundException, BadEntityException, IdFetchingException, JsonPatchException, IOException {
+    public ResponseEntity<String> update(@LogParam HttpServletRequest request, HttpServletResponse response) throws EntityNotFoundException, BadEntityException, IdFetchingException, JsonPatchException, IOException {
         String patchString = readBody(request);
         log.debug("patchString: " + patchString);
         Id id = idIdFetchingStrategy.fetchId(request);
@@ -192,11 +189,11 @@ public abstract class RapidController
         Optional<E> savedOptional = getService().findById(id);
         VerifyEntity.isPresent(savedOptional, id, getEntityClass());
         E saved = savedOptional.get();
-        Class<?> dtoClass = createDtoClass(RapidDtoEndpoint.UPDATE, Direction.REQUEST, saved);
+        Class<?> dtoClass = createDtoClass(coreProperties.controller.endpoints.update, Direction.REQUEST, saved);
         beforeUpdate(dtoClass, id, patchString, request, response);
 
         Object patchDto = dtoMapper.mapToDto(saved, dtoClass);
-        patchDto = MapperUtils.applyPatch(patchDto, patchString);
+        patchDto = JsonUtils.applyPatch(patchDto, patchString);
         log.debug("finished patchDto: " + patchDto);
         validationStrategy.validateDto(patchDto);
         E patchEntity = dtoMapper.mapToEntity(patchDto, getEntityClass());
@@ -206,13 +203,13 @@ public abstract class RapidController
         logSecurityContext();
         E updated = serviceUpdate(merged, true);
         //no idea why casting is necessary here?
-        Class<?> resultDtoClass = createDtoClass(RapidDtoEndpoint.UPDATE, Direction.RESPONSE, updated);
+        Class<?> resultDtoClass = createDtoClass(coreProperties.controller.endpoints.update, Direction.RESPONSE, updated);
         Object resultDto = dtoMapper.mapToDto(updated, resultDtoClass);
         afterUpdate(resultDto, updated, request, response);
         return ok(jsonMapper.writeValueAsString(resultDto));
     }
 
-    public ResponseEntity<?> delete(@Lp HttpServletRequest request, HttpServletResponse response) throws IdFetchingException, BadEntityException, EntityNotFoundException, ConstraintViolationException {
+    public ResponseEntity<?> delete(@LogParam HttpServletRequest request, HttpServletResponse response) throws IdFetchingException, BadEntityException, EntityNotFoundException, ConstraintViolationException {
         Id id = idIdFetchingStrategy.fetchId(request);
         log.debug("id fetched from request: " + id);
         beforeDelete(id, request, response);
@@ -267,13 +264,13 @@ public abstract class RapidController
 
     protected ResponseEntity<String> ok(String jsonDto) {
         return ResponseEntity.ok()
-                .contentType(MediaType.valueOf(getMediaType()))
+                .contentType(MediaType.valueOf(coreProperties.controller.mediaType))
                 .body(jsonDto);
     }
 
     protected ResponseEntity<?> ok() {
         return ResponseEntity.ok()
-                .contentType(MediaType.valueOf(getMediaType()))
+                .contentType(MediaType.valueOf(coreProperties.controller.mediaType))
                 .build();
     }
 
@@ -295,13 +292,16 @@ public abstract class RapidController
 
     @Autowired
     @SuppressWarnings("unchecked")
-    public RapidController() {
+    public CrudController() {
         this.entityClass =  (Class<E>) ((ParameterizedType) this.getClass().getGenericSuperclass()).getActualTypeArguments()[0];
         this.dtoMappingContext = provideDtoMappingContext();
         printDtoMappingContext();
         initUrls();
     }
 
+    /**
+     * Use one of the {@link com.github.vincemann.springrapid.core.controller.dto.mapper.context.DtoMappingContextBuilder}s by autowiring them in.
+     */
     protected abstract DtoMappingContext provideDtoMappingContext();
 
     @Override
@@ -324,12 +324,12 @@ public abstract class RapidController
 
     protected void initUrls() {
         this.entityNameInUrl = getEntityClass().getSimpleName().toLowerCase();
-        this.baseUrl = "/" + entityNameInUrl + "/";
-        this.findUrl = baseUrl + FIND_METHOD_NAME;
-        this.findAllUrl = baseUrl + FIND_ALL_METHOD_NAME;
-        this.updateUrl = baseUrl + UPDATE_METHOD_NAME;
-        this.deleteUrl = baseUrl + DELETE_METHOD_NAME;
-        this.createUrl = baseUrl + CREATE_METHOD_NAME;
+        this.entityBaseUrl = coreProperties.baseUrl + "/" + entityNameInUrl + "/";
+        this.findUrl = entityBaseUrl + coreProperties.controller.endpoints.find;
+        this.findAllUrl = entityBaseUrl + coreProperties.controller.endpoints.findAll;
+        this.updateUrl = entityBaseUrl + coreProperties.controller.endpoints.update;
+        this.deleteUrl = entityBaseUrl + coreProperties.controller.endpoints.delete;
+        this.createUrl = entityBaseUrl + coreProperties.controller.endpoints.create;
     }
 
     protected void initRequestMapping() {
@@ -371,7 +371,7 @@ public abstract class RapidController
 
         } catch (NoSuchMethodException e) {
             //should never happen
-            throw new IllegalStateException(e);
+            throw new RuntimeException(e);
         }
     }
 
@@ -379,7 +379,7 @@ public abstract class RapidController
         return RequestMappingInfo
                 .paths(findUrl)
                 .methods(RequestMethod.GET)
-                .produces(getMediaType())
+                .produces(coreProperties.controller.mediaType)
                 .build();
     }
 
@@ -387,7 +387,7 @@ public abstract class RapidController
         return RequestMappingInfo
                 .paths(deleteUrl)
                 .methods(RequestMethod.DELETE)
-                .produces(getMediaType())
+                .produces(coreProperties.controller.mediaType)
                 .build();
     }
 
@@ -395,8 +395,8 @@ public abstract class RapidController
         return RequestMappingInfo
                 .paths(createUrl)
                 .methods(RequestMethod.POST)
-                .consumes(getMediaType())
-                .produces(getMediaType())
+                .consumes(coreProperties.controller.mediaType)
+                .produces(coreProperties.controller.mediaType)
                 .build();
     }
 
@@ -404,8 +404,8 @@ public abstract class RapidController
         return RequestMappingInfo
                 .paths(updateUrl)
                 .methods(RequestMethod.PUT)
-                .consumes(getMediaType())
-                .produces(getMediaType())
+                .consumes(coreProperties.controller.mediaType)
+                .produces(coreProperties.controller.mediaType)
                 .build();
     }
 
@@ -413,12 +413,12 @@ public abstract class RapidController
         return RequestMappingInfo
                 .paths(findAllUrl)
                 .methods(RequestMethod.GET)
-                .produces(getMediaType())
+                .produces(coreProperties.controller.mediaType)
                 .build();
     }
 
 
-    //              SERVICE HOOKS
+    //              SERVICE CALLBACKS
 
 
     protected E serviceUpdate(E update, boolean full) throws BadEntityException, EntityNotFoundException {
@@ -442,7 +442,7 @@ public abstract class RapidController
     }
 
 
-    //              CONTROLLER HOOKS
+    //              CONTROLLER CALLBACKS
 
 
     public void beforeCreate(Object dto, HttpServletRequest httpServletRequest, HttpServletResponse response) {
@@ -512,13 +512,6 @@ public abstract class RapidController
     public void injectEndpointsExposureContext(EndpointsExposureContext endpointsExposureContext) {
         this.endpointsExposureContext = endpointsExposureContext;
     }
-
-    @RapidMediaType
-    @Autowired
-    public void injectMediaType(String mediaType) {
-        this.mediaType = mediaType;
-    }
-
     @Autowired
     public void injectJsonMapper(ObjectMapper mapper) {
         this.jsonMapper = mapper;
@@ -526,5 +519,9 @@ public abstract class RapidController
     @Autowired
     public void injectIdIdFetchingStrategy(IdFetchingStrategy<Id> idIdFetchingStrategy) {
         this.idIdFetchingStrategy = idIdFetchingStrategy;
+    }
+    @Autowired
+    public void injectCoreProperties(RapidCoreProperties properties) {
+        this.coreProperties = properties;
     }
 }

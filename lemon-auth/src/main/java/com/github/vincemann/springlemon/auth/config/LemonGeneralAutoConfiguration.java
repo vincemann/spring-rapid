@@ -18,9 +18,6 @@ import org.springframework.context.annotation.Configuration;
 //@ComponentScan("com.naturalprogrammer.spring.lemon.auth.properties")
 public class LemonGeneralAutoConfiguration {
 
-    public LemonGeneralAutoConfiguration() {
-
-    }
 
     /**
      * Spring Lemon related properties
@@ -29,7 +26,6 @@ public class LemonGeneralAutoConfiguration {
     @ConditionalOnMissingBean(LemonProperties.class)
     @Bean
     public LemonProperties lemonProperties() {
-
         return new LemonProperties();
     }
 

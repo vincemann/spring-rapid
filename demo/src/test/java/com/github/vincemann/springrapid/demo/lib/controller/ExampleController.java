@@ -1,12 +1,12 @@
 package com.github.vincemann.springrapid.demo.lib.controller;
 
 import com.github.vincemann.springrapid.core.controller.dto.mapper.context.DtoMappingContext;
-import com.github.vincemann.springrapid.core.controller.RapidController;
+import com.github.vincemann.springrapid.core.controller.CrudController;
 
-public class ExampleRapidController
-        extends RapidController<ExampleEntity,Long,ExampleService>
+public class ExampleController
+        extends CrudController<ExampleEntity,Long,ExampleService>
 {
-    public ExampleRapidController(DtoMappingContext dtoMappingContext) {
+    public ExampleController(DtoMappingContext dtoMappingContext) {
         super();
         setDtoMappingContext(dtoMappingContext);
     }

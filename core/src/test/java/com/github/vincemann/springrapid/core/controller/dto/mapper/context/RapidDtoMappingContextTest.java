@@ -57,12 +57,12 @@ class RapidDtoMappingContextTest {
                 .forEndpoint(RapidDtoEndpoint.FIND_ALL,Direction.RESPONSE,PrivilegedFindDto.class)
                 .withRoles(adminRole)
                 .withPrincipal(DtoMappingInfo.Principal.FOREIGN)
-                .forEndpoint(RapidDtoEndpoint.UPDATE,Direction.REQUEST,AdminUpdateForeignUserDto.class)
+                .forEndpoint(properties.controller.endpoints.update,Direction.REQUEST,AdminUpdateForeignUserDto.class)
                 .withPrincipal(DtoMappingInfo.Principal.OWN)
-                .forEndpoint(RapidDtoEndpoint.UPDATE,Direction.REQUEST,AdminUpdateOwnDto.class)
+                .forEndpoint(properties.controller.endpoints.update,Direction.REQUEST,AdminUpdateOwnDto.class)
                 .withAllPrincipals()
                 .withAllRoles()
-                .forEndpoint(RapidDtoEndpoint.CREATE,CreateDto.class)
+                .forEndpoint(properties.controller.endpoints.create,CreateDto.class)
                 .forEndpoint(RapidDtoEndpoint.FIND,Direction.RESPONSE,LessPrivilegedFindDto.class)
                 .build();
 
@@ -78,12 +78,12 @@ class RapidDtoMappingContextTest {
 
         createInfo = DtoMappingInfo.builder()
                 .direction(Direction.REQUEST)
-                .endpoint(RapidDtoEndpoint.CREATE)
+                .endpoint(properties.controller.endpoints.create)
                 .build();
 
         updateInfo = DtoMappingInfo.builder()
                 .direction(Direction.REQUEST)
-                .endpoint(RapidDtoEndpoint.UPDATE)
+                .endpoint(properties.controller.endpoints.update)
                 .build();
     }
 

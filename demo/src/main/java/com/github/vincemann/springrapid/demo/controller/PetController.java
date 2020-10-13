@@ -8,18 +8,18 @@ import com.github.vincemann.springrapid.core.slicing.components.WebController;
 import com.github.vincemann.springrapid.core.controller.dto.mapper.context.Direction;
 import com.github.vincemann.springrapid.core.controller.dto.mapper.context.DtoMappingContextBuilder;
 import com.github.vincemann.springrapid.core.controller.dto.mapper.context.RapidDtoEndpoint;
-import com.github.vincemann.springrapid.core.controller.RapidController;
+import com.github.vincemann.springrapid.core.controller.CrudController;
 import com.github.vincemann.springrapid.demo.service.PetService;
 
 
 @WebController
-public class PetController extends RapidController<Pet, Long, PetService> {
+public class PetController extends CrudController<Pet, Long, PetService> {
 
     @Override
     public DtoMappingContext provideDtoMappingContext() {
         return DtoMappingContextBuilder.builder()
                 .forAll(BasePetDto.class)
-                .forEndpoint(RapidDtoEndpoint.UPDATE, Direction.REQUEST, UpdatePetDto.class)
+                .forEndpoint(properties.controller.endpoints.update, Direction.REQUEST, UpdatePetDto.class)
                 .build();
     }
 }

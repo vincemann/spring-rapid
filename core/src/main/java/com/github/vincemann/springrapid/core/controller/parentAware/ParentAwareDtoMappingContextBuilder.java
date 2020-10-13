@@ -28,14 +28,14 @@ public class ParentAwareDtoMappingContextBuilder extends DtoMappingContextBuilde
     @Override
     protected List<String> getAllEndpoints() {
         List<String> allEndpoints = super.getAllEndpoints();
-        allEndpoints.add(ParentAwareDtoEndpoint.FIND_ALL_OF_PARENT);
+        allEndpoints.add(getCoreProperties().controller.endpoints.findAllOfParent);
         return allEndpoints;
     }
 
     @Override
     protected List<String> getFindEndpoints() {
         List<String> findEndpoints = super.getFindEndpoints();
-        findEndpoints.add(ParentAwareDtoEndpoint.FIND_ALL_OF_PARENT);
+        findEndpoints.add(getCoreProperties().controller.endpoints.findAllOfParent);
         return findEndpoints;
     }
 }

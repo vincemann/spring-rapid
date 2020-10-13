@@ -1,7 +1,5 @@
 package com.github.vincemann.springrapid.core.controller.idFetchingStrategy;
 
-import com.github.vincemann.springrapid.core.controller.idFetchingStrategy.exception.IdFetchingException;
-
 import javax.servlet.http.HttpServletRequest;
 
 /**

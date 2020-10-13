@@ -2,7 +2,7 @@ package com.github.vincemann.springlemon.auth.config;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.vincemann.springlemon.auth.LemonProperties;
-import com.github.vincemann.springrapid.core.config.RapidJacksonAutoConfiguration;
+import com.github.vincemann.springrapid.core.config.RapidJsonAutoConfiguration;
 import com.github.vincemann.springrapid.core.slicing.config.WebConfig;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
@@ -21,7 +21,7 @@ import org.springframework.web.cors.CorsConfigurationSource;
 @WebConfig
 @EnableSpringDataWebSupport
 //@EnableGlobalMethodSecurity(prePostEnabled = true)
-@AutoConfigureAfter(RapidJacksonAutoConfiguration.class)
+@AutoConfigureAfter(RapidJsonAutoConfiguration.class)
 @AutoConfigureBefore({
 	WebMvcAutoConfiguration.class,
 	ErrorMvcAutoConfiguration.class,
@@ -52,8 +52,6 @@ public class LemonCommonsWebAutoConfiguration {
 	@ConditionalOnProperty(name="lemon.enabled.json-prefix")
 	public MappingJackson2HttpMessageConverter mappingJackson2HttpMessageConverter(
 			ObjectMapper objectMapper) {
-		
-
         MappingJackson2HttpMessageConverter converter =
         		new MappingJackson2HttpMessageConverter(objectMapper);
         converter.setJsonPrefix(JSON_PREFIX);
@@ -73,7 +71,6 @@ public class LemonCommonsWebAutoConfiguration {
 	@ConditionalOnProperty(name="lemon.cors.allowed-origins")
 	@ConditionalOnMissingBean(CorsConfigurationSource.class)
 	public LemonCorsConfigurationSource corsConfigurationSource(LemonProperties properties) {
-		
 		return new LemonCorsConfigurationSource(properties);
 	}
 	

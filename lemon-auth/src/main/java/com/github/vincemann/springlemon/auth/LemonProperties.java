@@ -1,8 +1,6 @@
 package com.github.vincemann.springlemon.auth;
 
-import lombok.AllArgsConstructor;
-import lombok.NoArgsConstructor;
-import lombok.ToString;
+import lombok.*;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpHeaders;
 import org.springframework.validation.annotation.Validated;
@@ -26,6 +24,27 @@ public class LemonProperties {
 
 	}
 
+	public Controller controller = new Controller();
+
+	@Getter
+	@Setter
+	public static class Controller{
+
+		public Endpoints endpoints = new Endpoints();
+
+		@Getter
+		@Setter
+    	public static class Endpoints{
+    		public String login = "login";
+    		public String signup = "signup";
+    		public String resetPassword = "resetPassword";
+    		public String fetchByEmail = "fetchByEmail";
+    		public String changeEmail = "changeEmail";
+    		public String verifyUser = "verifyUser";
+		}
+	}
+
+
 	/**
 	 * Client web application's base URL.
 	 * Used in the verification link mailed to the users, etc.
@@ -38,11 +57,11 @@ public class LemonProperties {
 //	 */
 //    public String oauth2AuthenticationSuccessUrl = "http://localhost:9000/social-login-success?token=";
 
-	/**
-	 * URL of the login endpoint 
-	 * e.g. POST /api/core/login
-	 */
-    public String loginUrl = "/api/core/login";
+//	/**
+//	 * URL of the login endpoint
+//	 * e.g. POST /api/core/login
+//	 */
+//    public String loginUrl = "/api/core/login";
 
     /**
 	 * Recaptcha related properties

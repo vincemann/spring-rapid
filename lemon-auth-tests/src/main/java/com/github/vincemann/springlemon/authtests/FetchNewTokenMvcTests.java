@@ -7,7 +7,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.github.vincemann.springlemon.auth.service.token.JwtService;
-import com.github.vincemann.springrapid.core.util.MapperUtils;
+import com.github.vincemann.springrapid.core.util.JsonUtils;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.http.HttpHeaders;
@@ -41,7 +41,7 @@ public class FetchNewTokenMvcTests extends AbstractMvcTests {
 				.andExpect(jsonPath("$.token").value(containsString(".")))
 				.andReturn();
 
-		Response response = MapperUtils.fromJson(result.getResponse().getContentAsString(), Response.class);
+		Response response = JsonUtils.fromJson(result.getResponse().getContentAsString(), Response.class);
 		ensureTokenWorks(response.getToken());
 	}
 	
@@ -58,7 +58,7 @@ public class FetchNewTokenMvcTests extends AbstractMvcTests {
                 .andExpect(status().is(200))
 				.andReturn();
 
-		Response response = MapperUtils.fromJson(result.getResponse().getContentAsString(), Response.class);
+		Response response = JsonUtils.fromJson(result.getResponse().getContentAsString(), Response.class);
 		ensureTokenWorks(response.getToken());
 
 		Thread.sleep(mockedExpireTime+1L);
@@ -82,7 +82,7 @@ public class FetchNewTokenMvcTests extends AbstractMvcTests {
                 .andExpect(status().is(200))
 				.andReturn();
 
-		Response response = MapperUtils.fromJson(result.getResponse().getContentAsString(), Response.class);
+		Response response = JsonUtils.fromJson(result.getResponse().getContentAsString(), Response.class);
 		ensureTokenWorks(response.getToken());
 	}
 	

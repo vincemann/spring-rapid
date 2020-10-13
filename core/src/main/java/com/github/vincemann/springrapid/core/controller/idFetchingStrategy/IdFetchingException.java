@@ -1,4 +1,4 @@
-package com.github.vincemann.springrapid.core.controller.idFetchingStrategy.exception;
+package com.github.vincemann.springrapid.core.controller.idFetchingStrategy;
 
 import com.github.vincemann.springrapid.core.controller.idFetchingStrategy.IdFetchingStrategy;
 

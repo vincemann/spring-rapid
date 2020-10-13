@@ -7,17 +7,24 @@ import com.github.vincemann.springrapid.demo.dtos.owner.ReadOwnOwnerDto;
 import com.github.vincemann.springrapid.demo.dtos.owner.UpdateOwnerDto;
 import com.github.vincemann.springrapid.demo.model.Owner;
 import com.github.vincemann.springrapid.core.slicing.components.WebController;
-import com.github.vincemann.springrapid.core.controller.RapidController;
+import com.github.vincemann.springrapid.core.controller.CrudController;
 import com.github.vincemann.springrapid.demo.service.OwnerService;
+import org.springframework.beans.factory.annotation.Autowired;
 
 @WebController
-public class OwnerController extends RapidController<Owner, Long, OwnerService> {
+public class OwnerController extends CrudController<Owner, Long, OwnerService> {
 
+    private DtoMappingContextBuilder dtoMappingContextBuilder;
+
+    @Autowired
+    public OwnerController(DtoMappingContextBuilder dtoMappingContextBuilder) {
+        this.dtoMappingContextBuilder = dtoMappingContextBuilder;
+    }
 
     @Override
     public DtoMappingContext provideDtoMappingContext() {
-        return DtoMappingContextBuilder.builder()
-                .forEndpoint(RapidDtoEndpoint.CREATE, CreateOwnerDto.class)
+        return dtoMappingContextBuilder
+                .forEndpoint(getCoreProperties().controller.endpoints.create, CreateOwnerDto.class)
                 .forUpdate(UpdateOwnerDto.class)
                 //response dto config
                 //authenticated

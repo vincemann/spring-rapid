@@ -18,6 +18,7 @@ public class JpaUtils {
     public static  <T> T detach(T entity){
         if (entityManager==null){
             try {
+                log.warn("Entity Manager is null. Cloning entity instead of detaching.");
                 return (T) BeanUtilsBean.getInstance().cloneBean(entity);
             } catch (IllegalAccessException | InstantiationException | InvocationTargetException | NoSuchMethodException e) {
                 throw new RuntimeException(e);

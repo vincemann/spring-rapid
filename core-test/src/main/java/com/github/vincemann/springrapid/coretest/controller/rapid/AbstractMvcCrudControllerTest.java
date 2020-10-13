@@ -4,9 +4,7 @@ import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.vincemann.springrapid.core.controller.dto.mapper.context.DtoMappingContext;
 
-import com.github.vincemann.springrapid.core.controller.RapidController;
-import com.github.vincemann.springrapid.core.model.IdentifiableEntity;
-import com.github.vincemann.springrapid.core.service.CrudService;
+import com.github.vincemann.springrapid.core.controller.CrudController;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -16,14 +14,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import com.github.vincemann.springrapid.coretest.controller.AutoMockMvcControllerTest;
 
-import java.io.Serializable;
-import java.lang.reflect.ParameterizedType;
-
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 
 
 /**
- * Use this base class to perform integration tests of your {@link RapidController}.
+ * Use this base class to perform integration tests of your {@link CrudController}.
  *
  * Offers basic crud methods to interact with controller and convenience methods to use Controllers {@link ObjectMapper} to
  * {@link this#serialize(Object)} and {@link this#deserialize(String, JavaType)} raw JSON Strings.
@@ -34,7 +29,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.
 @Getter
 @Setter
 @Slf4j
-public abstract class AbstractMvcRapidControllerTest<C extends RapidController<?,?,?>>
+public abstract class AbstractMvcCrudControllerTest<C extends CrudController<?,?,?>>
         extends AutoMockMvcControllerTest
             implements MvcRapidControllerTest<C>
 {

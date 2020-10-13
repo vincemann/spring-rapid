@@ -4,7 +4,7 @@ import com.github.vincemann.springrapid.acl.service.LocalPermissionService;
 import com.github.vincemann.springrapid.acl.service.extensions.AuthenticatedFullAccessAclServiceExtension;
 import com.github.vincemann.springrapid.acl.service.extensions.CleanUpAclServiceExtension;
 import com.github.vincemann.springrapid.acl.service.extensions.InheritParentAclServiceExtension;
-import com.github.vincemann.springrapid.core.config.RapidJacksonAutoConfiguration;
+import com.github.vincemann.springrapid.core.config.RapidJsonAutoConfiguration;
 import com.github.vincemann.springrapid.core.slicing.config.ServiceConfig;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
@@ -16,7 +16,7 @@ import org.springframework.security.acls.model.MutableAclService;
 
 @ServiceConfig
 @Slf4j
-@AutoConfigureAfter(RapidJacksonAutoConfiguration.class)
+@AutoConfigureAfter(RapidJsonAutoConfiguration.class)
 public class AclExtensionAutoConfiguration {
 
     public AclExtensionAutoConfiguration() {

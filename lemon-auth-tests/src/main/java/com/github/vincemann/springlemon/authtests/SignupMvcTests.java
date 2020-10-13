@@ -2,7 +2,7 @@ package com.github.vincemann.springlemon.authtests;
 
 import com.github.vincemann.springlemon.auth.domain.LemonRoles;
 import com.github.vincemann.springlemon.auth.domain.dto.LemonSignupForm;
-import com.github.vincemann.springrapid.core.util.MapperUtils;
+import com.github.vincemann.springrapid.core.util.JsonUtils;
 import org.hamcrest.Matchers;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -26,7 +26,7 @@ public class SignupMvcTests extends AbstractMvcTests {
 
 		mvc.perform(post("/api/core/users")
 				.contentType(MediaType.APPLICATION_JSON)
-				.content(MapperUtils.toJson(signupForm)))
+				.content(JsonUtils.toJson(signupForm)))
 				.andExpect(status().is(422))
 //				.andExpect(jsonPath("$.errors[*].field").value(hasSize(3)))
 				.andExpect(jsonPath("$.errors[*].field").value(hasItems(
@@ -54,7 +54,7 @@ public class SignupMvcTests extends AbstractMvcTests {
 
 		mvc.perform(post("/api/core/users")
 				.contentType(MediaType.APPLICATION_JSON)
-				.content(MapperUtils.toJson(signupForm)))
+				.content(JsonUtils.toJson(signupForm)))
 				.andExpect(status().is(200))
 				.andExpect(header().string(HttpHeaders.AUTHORIZATION, containsString(".")))
 				.andExpect(jsonPath("$.id").exists())
@@ -86,7 +86,7 @@ public class SignupMvcTests extends AbstractMvcTests {
 
 		mvc.perform(post("/api/core/users")
 				.contentType(MediaType.APPLICATION_JSON)
-				.content(MapperUtils.toJson(signupForm)))
+				.content(JsonUtils.toJson(signupForm)))
 				.andExpect(status().is(422));
 		
 		verify(mailSender, never()).send(any());

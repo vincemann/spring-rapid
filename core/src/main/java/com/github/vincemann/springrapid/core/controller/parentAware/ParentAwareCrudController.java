@@ -2,9 +2,9 @@ package com.github.vincemann.springrapid.core.controller.parentAware;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.github.vincemann.springrapid.core.controller.dto.mapper.context.Direction;
-import com.github.vincemann.springrapid.core.controller.RapidController;
+import com.github.vincemann.springrapid.core.controller.CrudController;
 import com.github.vincemann.springrapid.core.controller.idFetchingStrategy.IdFetchingStrategy;
-import com.github.vincemann.springrapid.core.controller.idFetchingStrategy.exception.IdFetchingException;
+import com.github.vincemann.springrapid.core.controller.idFetchingStrategy.IdFetchingException;
 import com.github.vincemann.springrapid.core.controller.validationStrategy.ValidationStrategy;
 import com.github.vincemann.springrapid.core.model.IdentifiableEntity;
 import com.github.vincemann.springrapid.core.service.CrudService;
@@ -36,14 +36,14 @@ import java.util.Set;
  */
 @Slf4j
 @Getter
-public abstract class ParentAwareRapidController
+public abstract class ParentAwareCrudController
         <
                 E extends IdentifiableEntity<Id>,
                 Id extends Serializable,
                 PId extends Serializable,
                 S extends CrudService<E, Id> & ParentAwareService<E, PId>
                 >
-        extends RapidController<E, Id, S> {
+        extends CrudController<E, Id, S> {
 
     public static final String FIND_ALL_OF_PARENT_METHOD_NAME = "getAllOfParent";
     private IdFetchingStrategy<PId> parentIdFetchingStrategy;
@@ -61,7 +61,7 @@ public abstract class ParentAwareRapidController
     @Override
     public void onApplicationEvent(ContextRefreshedEvent event) {
         super.onApplicationEvent(event);
-        this.findAllOfParentUrl = getBaseUrl() + FIND_ALL_OF_PARENT_METHOD_NAME;
+        this.findAllOfParentUrl = getEntityBaseUrl() + FIND_ALL_OF_PARENT_METHOD_NAME;
         registerFindByParentIdRequestMapping();
     }
 
@@ -80,7 +80,7 @@ public abstract class ParentAwareRapidController
         return RequestMappingInfo
                 .paths(findAllOfParentUrl)
                 .methods(RequestMethod.GET)
-                .produces(getMediaType())
+                .produces(getCoreProperties().controller.mediaType)
                 .build();
     }
 
@@ -95,7 +95,7 @@ public abstract class ParentAwareRapidController
             Set<E> children = getService().findAllOfParent(id);
             Collection<Object> dtos = new HashSet<>();
             for (E e : children) {
-                Class<?> dtoClass = createDtoClass(ParentAwareDtoEndpoint.FIND_ALL_OF_PARENT, Direction.RESPONSE, null);
+                Class<?> dtoClass = createDtoClass(getCoreProperties().controller.endpoints.findAllOfParent, Direction.RESPONSE, null);
                 dtos.add(getDtoMapper().mapToDto(e, dtoClass));
             }
             String json = getJsonMapper().writeValueAsString(dtos);

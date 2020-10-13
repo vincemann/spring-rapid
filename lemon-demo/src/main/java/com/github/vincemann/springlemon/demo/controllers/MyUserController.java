@@ -24,10 +24,10 @@ public class MyUserController extends AbstractUserController<User, Long>  {
     @Override
     public DtoMappingContext provideDtoMappingContext() {
         return LemonDtoMappingContextBuilder.builder((DtoMappingContext) super.provideDtoMappingContext())
-                .forEndpoint(RapidDtoEndpoint.UPDATE, UserUpdateDto.class)
-                .forEndpoint(LemonDtoEndpoint.SIGN_UP, Direction.REQUEST,MySignupForm.class)
+                .forEndpoint(properties.controller.endpoints.update, UserUpdateDto.class)
+                .forEndpoint(lemonProperties.controller.endpoints.signup, Direction.REQUEST,MySignupForm.class)
                 .withRoles(RapidRoles.ADMIN)
-                .forEndpoint(RapidDtoEndpoint.UPDATE, AdminUpdateUserDto.class)
+                .forEndpoint(properties.controller.endpoints.update, AdminUpdateUserDto.class)
                 .build();
     }
 }

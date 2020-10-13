@@ -1,46 +1,32 @@
 package com.github.vincemann.springrapid.core.controller.idFetchingStrategy;
 
-import com.github.vincemann.springrapid.core.controller.idFetchingStrategy.exception.IdFetchingException;
-import com.github.vincemann.springrapid.core.controller.idFetchingStrategy.exception.IdTransformingException;
-import org.springframework.lang.Nullable;
-
 import javax.servlet.http.HttpServletRequest;
 
 /**
- * Fetches the Id from a {@link HttpServletRequest} by a url param with the key given by
- * {@link UrlParamIdFetchingStrategy#idUrlParamKey}
+ * Fetches the Id from a {@link HttpServletRequest} by a url param with the key "id"
+ *
  * @param <Id>
  */
 public abstract class UrlParamIdFetchingStrategy<Id> implements IdFetchingStrategy<Id> {
-    private static final String DEFAULT_ID_URL_PARAM_KEY = "id";
 
-    private String idUrlParamKey;
-
-    public UrlParamIdFetchingStrategy(@Nullable String idUrlParamKey) {
-        if(idUrlParamKey==null){
-            this.idUrlParamKey=DEFAULT_ID_URL_PARAM_KEY;
-        }else {
-            this.idUrlParamKey = idUrlParamKey;
-        }
+    public UrlParamIdFetchingStrategy() {
     }
 
     @Override
     public Id fetchId(HttpServletRequest request) throws IdFetchingException {
-        String id=  request.getParameter(idUrlParamKey);
-        if(id==null){
-            throw new IdFetchingException("No value for idUrlParamKey: " + idUrlParamKey);
-        }else {
+        String id = request.getParameter("id");
+        if (id == null) {
+            throw new IdFetchingException("No id found in request");
+        } else {
             try {
-                return transformToIdType(id);
-            }catch (IdTransformingException e){
-                throw new IdFetchingException(e);
+                return convert(id);
+            }catch (Exception e){
+                throw new IdFetchingException("Id in request cant be converted to target type",e);
             }
+
         }
     }
 
-    protected abstract Id transformToIdType(String id) throws IdTransformingException;
+    protected abstract Id convert(String id);
 
-    public String getIdUrlParamKey() {
-        return idUrlParamKey;
-    }
 }

@@ -4,11 +4,12 @@ import com.fasterxml.jackson.databind.MapperFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
-import com.github.vincemann.springrapid.core.controller.RapidMediaType;
-import com.github.vincemann.springrapid.core.slicing.config.WebConfig;
+import com.github.vincemann.springrapid.core.RapidCoreProperties;
 import com.github.vincemann.springrapid.core.controller.dto.mapper.LoggingObjectMapper;
-import com.github.vincemann.springrapid.core.util.MapperUtils;
+import com.github.vincemann.springrapid.core.slicing.config.WebConfig;
+import com.github.vincemann.springrapid.core.util.JsonUtils;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.http.MediaType;
@@ -21,22 +22,18 @@ import static com.fasterxml.jackson.databind.DeserializationFeature.ACCEPT_SINGL
 @WebConfig
 @Slf4j
 @EnableWebMvc
-public class RapidJacksonAutoConfiguration implements WebMvcConfigurer {
+public class RapidJsonAutoConfiguration implements WebMvcConfigurer {
 
-    public RapidJacksonAutoConfiguration() {
+    @Autowired
+    private RapidCoreProperties coreProperties;
 
-    }
+    public RapidJsonAutoConfiguration() {
 
-    @Bean
-    @RapidMediaType
-    @ConditionalOnMissingBean(name = "rapidMediaType")
-    public String rapidMediaType(){
-        return MediaType.APPLICATION_JSON_UTF8_VALUE;
     }
 
     @Override
     public void configureContentNegotiation (ContentNegotiationConfigurer configurer) {
-        configurer.defaultContentType(MediaType.valueOf(rapidMediaType()));
+        configurer.defaultContentType(MediaType.valueOf(coreProperties.controller.mediaType));
     }
 
     @ConditionalOnMissingBean(ObjectMapper.class)
@@ -53,9 +50,9 @@ public class RapidJacksonAutoConfiguration implements WebMvcConfigurer {
     }
 
     @Bean
-    @ConditionalOnMissingBean(MapperUtils.class)
-    public MapperUtils mapperUtils(ObjectMapper objectMapper){
-        return new MapperUtils(objectMapper);
+    @ConditionalOnMissingBean(JsonUtils.class)
+    public JsonUtils mapperUtils(ObjectMapper objectMapper){
+        return new JsonUtils(objectMapper);
     }
 
 }

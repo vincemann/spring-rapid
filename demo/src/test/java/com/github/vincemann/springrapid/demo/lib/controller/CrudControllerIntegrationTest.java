@@ -3,7 +3,7 @@ package com.github.vincemann.springrapid.demo.lib.controller;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.vincemann.springrapid.core.config.RapidDtoMapperAutoConfiguration;
 import com.github.vincemann.springrapid.core.config.RapidControllerAutoConfiguration;
-import com.github.vincemann.springrapid.core.config.RapidJacksonAutoConfiguration;
+import com.github.vincemann.springrapid.core.config.RapidJsonAutoConfiguration;
 import com.github.vincemann.springrapid.core.controller.dto.mapper.DelegatingDtoMapper;
 import com.github.vincemann.springrapid.core.controller.dto.mapper.context.RapidDtoEndpoint;
 import com.github.vincemann.springrapid.core.controller.dto.mapper.context.Direction;
@@ -13,7 +13,7 @@ import com.github.vincemann.springrapid.core.controller.DtoClassLocator;
 import com.github.vincemann.springrapid.core.controller.idFetchingStrategy.IdFetchingStrategy;
 import com.github.vincemann.springrapid.core.controller.validationStrategy.ValidationStrategy;
 import com.github.vincemann.springrapid.core.util.Lists;
-import com.github.vincemann.springrapid.coretest.controller.rapid.AbstractMvcRapidControllerTest;
+import com.github.vincemann.springrapid.coretest.controller.rapid.AbstractMvcCrudControllerTest;
 import org.junit.jupiter.api.*;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mockito;
@@ -48,18 +48,18 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 //manually add only the autoConfiguration rly needed
 @SpringJUnitWebConfig(
         {
-                ExampleRapidController.class,
+                ExampleController.class,
                 WebMvcAutoConfiguration.class,
                 RapidControllerAutoConfiguration.class,
                 ValidationAutoConfiguration.class,
                 PropertyPlaceholderAutoConfiguration.class,
                 RapidDtoMapperAutoConfiguration.class,
-                RapidJacksonAutoConfiguration.class
+                RapidJsonAutoConfiguration.class
         })
 //override config to define mock rules before context initialization
-@Import(RapidControllerIntegrationTest.TestConfig.class)
-class RapidControllerIntegrationTest
-        extends AbstractMvcRapidControllerTest<ExampleRapidController> {
+@Import(CrudControllerIntegrationTest.TestConfig.class)
+class CrudControllerIntegrationTest
+        extends AbstractMvcCrudControllerTest<ExampleController> {
 
     static final ExampleEntity requestEntity = new ExampleEntity("request testEntity");
     static final ExampleEntity returnEntity = new ExampleEntity("return testEntity");
@@ -70,7 +70,7 @@ class RapidControllerIntegrationTest
     static final Long entityId = 42L;
     static final String jsonReturnDto = "{ExampleReturnDto : name : returnDto } ";
     @SpyBean
-    ExampleRapidController controllerSpy;
+    ExampleController controllerSpy;
     @MockBean
     ExampleService service;
     @Autowired
@@ -132,12 +132,12 @@ class RapidControllerIntegrationTest
     void update_shouldSucceed() throws Exception {
         DtoMappingInfo expectedRequestMappingInfo = DtoMappingInfo.builder()
                 .direction(Direction.REQUEST)
-                .endpoint(RapidDtoEndpoint.UPDATE)
+                .endpoint(properties.controller.endpoints.update)
                 .authorities(new ArrayList<>())
                 .build();
         DtoMappingInfo expectedResponseMappingInfo = DtoMappingInfo.builder()
                 .direction(Direction.RESPONSE)
-                .endpoint(RapidDtoEndpoint.UPDATE)
+                .endpoint(properties.controller.endpoints.update)
                 .authorities(new ArrayList<>())
                 .build();
 
@@ -250,7 +250,7 @@ class RapidControllerIntegrationTest
         DtoMappingInfo expectedRequestMappingInfo = DtoMappingInfo.builder()
                 .authorities(new ArrayList<>())
                 .direction(Direction.REQUEST)
-                .endpoint(RapidDtoEndpoint.CREATE)
+                .endpoint(properties.controller.endpoints.create)
                 .build();
         doReturn(readDtoClass)
                 .when(dtoClassLocator).find(eq(expectedRequestMappingInfo),eq(dtoMappingContext));
@@ -266,7 +266,7 @@ class RapidControllerIntegrationTest
         DtoMappingInfo expectedResponseMappingInfo = DtoMappingInfo.builder()
                 .authorities(new ArrayList<>())
                 .direction(Direction.RESPONSE)
-                .endpoint(RapidDtoEndpoint.CREATE)
+                .endpoint(properties.controller.endpoints.create)
                 .build();
 
         doReturn(writeDtoClass)

@@ -1,7 +1,8 @@
 package com.github.vincemann.springlemon.auth.controller;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.github.vincemann.aoplog.api.Lp;
+import com.github.vincemann.aoplog.api.LogParam;
+import com.github.vincemann.springlemon.auth.LemonProperties;
 import com.github.vincemann.springlemon.auth.domain.AbstractUser;
 import com.github.vincemann.springlemon.auth.domain.dto.ChangePasswordForm;
 import com.github.vincemann.springlemon.auth.domain.dto.LemonSignupForm;
@@ -11,19 +12,17 @@ import com.github.vincemann.springlemon.auth.domain.dto.user.LemonAdminUpdateUse
 import com.github.vincemann.springlemon.auth.domain.dto.user.LemonFindForeignDto;
 import com.github.vincemann.springlemon.auth.domain.dto.user.LemonReadUserDto;
 import com.github.vincemann.springlemon.auth.domain.dto.user.LemonUserDto;
+import com.github.vincemann.springlemon.auth.service.UserService;
 import com.github.vincemann.springlemon.auth.service.token.BadTokenException;
 import com.github.vincemann.springlemon.auth.service.token.HttpTokenService;
-import com.github.vincemann.springlemon.auth.service.UserService;
 import com.github.vincemann.springlemon.auth.util.LemonMapUtils;
-
-import com.github.vincemann.springrapid.acl.proxy.Unsecured;
-import com.github.vincemann.springrapid.core.security.RapidRoles;
 import com.github.vincemann.springrapid.acl.proxy.Secured;
+import com.github.vincemann.springrapid.acl.proxy.Unsecured;
+import com.github.vincemann.springrapid.core.controller.CrudController;
 import com.github.vincemann.springrapid.core.controller.dto.mapper.context.Direction;
 import com.github.vincemann.springrapid.core.controller.dto.mapper.context.DtoMappingContext;
 import com.github.vincemann.springrapid.core.controller.dto.mapper.context.DtoMappingInfo;
-import com.github.vincemann.springrapid.core.controller.dto.mapper.context.RapidDtoEndpoint;
-import com.github.vincemann.springrapid.core.controller.RapidController;
+import com.github.vincemann.springrapid.core.security.RapidRoles;
 import com.github.vincemann.springrapid.core.service.exception.BadEntityException;
 import com.github.vincemann.springrapid.core.service.exception.EntityNotFoundException;
 import com.github.vincemann.springrapid.core.slicing.components.WebComponent;
@@ -51,10 +50,11 @@ import java.util.Optional;
 @WebComponent
 @Slf4j
 public abstract class AbstractUserController<U extends AbstractUser<ID>, ID extends Serializable>
-			extends RapidController<U,ID, UserService<U, ID>>  {
+			extends CrudController<U,ID, UserService<U, ID>> {
 
 	private UserService<U, ID> unsecuredUserService;
 	private HttpTokenService httpTokenService;
+	private LemonProperties lemonProperties;
 
 	/**
 	 * Returns public shared context properties needed at the client side,
@@ -75,14 +75,14 @@ public abstract class AbstractUserController<U extends AbstractUser<ID>, ID exte
 				.withAllPrincipals()
 				.forAll(LemonUserDto.class)
 				.forResponse(LemonReadUserDto.class)
-				.forEndpoint(LemonDtoEndpoint.SIGN_UP, Direction.REQUEST, LemonSignupForm.class)
+				.forEndpoint(lemonProperties.controller.endpoints.signup, Direction.REQUEST, LemonSignupForm.class)
 
 				.withPrincipal(DtoMappingInfo.Principal.FOREIGN)
-				.forEndpoint(LemonDtoEndpoint.FETCH_BY_EMAIL,Direction.RESPONSE, LemonFindForeignDto.class)
+				.forEndpoint(lemonProperties.controller.endpoints.fetchByEmail,Direction.RESPONSE, LemonFindForeignDto.class)
 
 				.withAllPrincipals()
 				.withRoles(RapidRoles.ADMIN)
-				.forEndpoint(RapidDtoEndpoint.UPDATE, LemonAdminUpdateUserDto.class)
+				.forEndpoint(getCoreProperties().controller.endpoints.update, LemonAdminUpdateUserDto.class)
 
 				.build();
 	}
@@ -95,12 +95,12 @@ public abstract class AbstractUserController<U extends AbstractUser<ID>, ID exte
 	@ResponseStatus(HttpStatus.CREATED)
 	@ResponseBody
 	public ResponseEntity<String> signup(/*@RequestBody @JsonView(UserUtils.SignupInput.class) S signupForm,*/
-							   @Lp HttpServletRequest request,
+							   @LogParam HttpServletRequest request,
 							   HttpServletResponse response) throws BadEntityException, IOException, EntityNotFoundException {
 
 		String signupForm = readBody(request);
 		Object signupDto = getJsonMapper().readValue(signupForm,
-				createDtoClass(LemonDtoEndpoint.SIGN_UP, Direction.REQUEST, null));
+				createDtoClass(lemonProperties.controller.endpoints.signup, Direction.REQUEST, null));
 		getValidationStrategy().validateDto(signupDto);
 		log.debug("Signing up: " + signupDto);
 		U user = getDtoMapper().mapToEntity(signupDto, getEntityClass());
@@ -109,7 +109,7 @@ public abstract class AbstractUserController<U extends AbstractUser<ID>, ID exte
 
 		appendFreshTokenOf(saved,response);
 		Object dto = getDtoMapper().mapToDto(saved,
-				createDtoClass(LemonDtoEndpoint.SIGN_UP, Direction.RESPONSE, saved));
+				createDtoClass(lemonProperties.controller.endpoints.signup, Direction.RESPONSE, saved));
 		return ok(getJsonMapper().writeValueAsString(dto));
 	}
 
@@ -134,8 +134,8 @@ public abstract class AbstractUserController<U extends AbstractUser<ID>, ID exte
 	@ResponseBody
 	
 	public ResponseEntity<String> verifyUser(
-			@Lp @PathVariable("id") ID id,
-			@Lp @RequestParam String code,
+			@LogParam @PathVariable("id") ID id,
+			@LogParam @RequestParam String code,
 			HttpServletResponse response) throws JsonProcessingException, BadEntityException, EntityNotFoundException, BadTokenException {
 		getValidationStrategy().validateId(id);
 		log.debug("Verifying user with id: " + id);
@@ -144,7 +144,7 @@ public abstract class AbstractUserController<U extends AbstractUser<ID>, ID exte
 
 		appendFreshToken(response);
 		Object dto = getDtoMapper().mapToDto(saved,
-				createDtoClass(LemonDtoEndpoint.VERIFY_USER, Direction.RESPONSE, saved));
+				createDtoClass(lemonProperties.controller.endpoints.verifyUser, Direction.RESPONSE, saved));
 		return ok(getJsonMapper().writeValueAsString(dto));
 	}
 
@@ -166,14 +166,14 @@ public abstract class AbstractUserController<U extends AbstractUser<ID>, ID exte
 	@PostMapping("/reset-password")
 	@ResponseBody
 	public ResponseEntity<String> resetPassword(
-			@Lp @RequestBody ResetPasswordForm form,
+			@LogParam @RequestBody ResetPasswordForm form,
 			HttpServletResponse response) throws JsonProcessingException, BadEntityException, EntityNotFoundException, BadTokenException {
 
 		log.debug("Resetting password ... ");
 		U saved = getService().resetPassword(form);
 		appendFreshToken(response);
 		Object dto = getDtoMapper().mapToDto(saved,
-				createDtoClass(LemonDtoEndpoint.RESET_PASSWORD, Direction.RESPONSE, saved));
+				createDtoClass(lemonProperties.controller.endpoints.resetPassword, Direction.RESPONSE, saved));
 		return ok(getJsonMapper().writeValueAsString(dto));
 	}
 
@@ -189,7 +189,7 @@ public abstract class AbstractUserController<U extends AbstractUser<ID>, ID exte
 		VerifyEntity.isPresent(byEmail,"User with email: "+email+" not found");
 		U user = byEmail.get();
 		Object responseDto = getDtoMapper().mapToDto(user,
-				createDtoClass(RapidDtoEndpoint.FIND, Direction.RESPONSE, user));
+				createDtoClass(lemonProperties.controller.endpoints.fetchByEmail, Direction.RESPONSE, user));
 		return ok(getJsonMapper().writeValueAsString(responseDto));
 	}
 
@@ -204,8 +204,8 @@ public abstract class AbstractUserController<U extends AbstractUser<ID>, ID exte
 	 */
 	@PostMapping("/users/{id}/password")
 	@ResponseStatus(HttpStatus.NO_CONTENT)
-	public void changePassword(@Lp @PathVariable("id") ID id,
-			@Lp @RequestBody ChangePasswordForm changePasswordForm,
+	public void changePassword(@LogParam @PathVariable("id") ID id,
+			@LogParam @RequestBody ChangePasswordForm changePasswordForm,
 			HttpServletResponse response) throws BadEntityException, EntityNotFoundException {
 
 		log.debug("Changing password of user with id: " + id);
@@ -234,8 +234,8 @@ public abstract class AbstractUserController<U extends AbstractUser<ID>, ID exte
 	@PostMapping("/users/{id}/email")
 	@ResponseBody
 	public ResponseEntity<String> changeEmail(
-			@Lp @PathVariable("id") ID id,
-			@Lp @RequestParam String code,
+			@LogParam @PathVariable("id") ID id,
+			@LogParam @RequestParam String code,
 			HttpServletResponse response) throws JsonProcessingException, BadEntityException, EntityNotFoundException, BadTokenException {
 
 		log.debug("Changing email of user with id: " + id);
@@ -243,7 +243,7 @@ public abstract class AbstractUserController<U extends AbstractUser<ID>, ID exte
 		U saved = getService().changeEmail(user, code);
 		appendFreshToken(response);
 		Object responseDto = getDtoMapper().mapToDto(saved,
-				createDtoClass(LemonDtoEndpoint.CHANGE_EMAIL, Direction.RESPONSE, saved));
+				createDtoClass(lemonProperties.controller.endpoints.changeEmail, Direction.RESPONSE, saved));
 		return ok(getJsonMapper().writeValueAsString(responseDto));
 	}
 
@@ -321,8 +321,10 @@ public abstract class AbstractUserController<U extends AbstractUser<ID>, ID exte
 		this.unsecuredUserService = unsecuredService;
 	}
 
-
-
+	@Autowired
+	public void injectLemonProperties(LemonProperties lemonProperties) {
+		this.lemonProperties = lemonProperties;
+	}
 
 	//	/**
 //	 * Fetch a self-sufficient token with embedded UserDto - for interservice communications
