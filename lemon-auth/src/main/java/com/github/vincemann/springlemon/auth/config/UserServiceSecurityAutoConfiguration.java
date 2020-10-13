@@ -29,10 +29,7 @@ import org.springframework.security.acls.model.MutableAclService;
 @AutoConfigureAfter({AclAutoConfiguration.class})
 public class UserServiceSecurityAutoConfiguration {
 
-    public UserServiceSecurityAutoConfiguration() {
-
-    }
-
+    
     @Autowired
     @DefaultSecurityServiceExtension
     SecurityServiceExtension<?> defaultSecurityServiceExtension;
@@ -60,7 +57,7 @@ public class UserServiceSecurityAutoConfiguration {
     @ConditionalOnMissingBean(name = "aclManagingUserService")
     @Bean
     @AclManaging
-    public UserService<?, ?> aclManagingUserService(UserService<?, ?> service,
+    public UserService<?, ?> aclManagingUserService(@Unsecured UserService<?, ?> service,
 //                                                                            AdminFullAccessAclExtension adminFullAccess,
 //                                                                            AuthenticatedFullAccessAclExtension authenticatedFullAccessAclExtension,
                                                         CleanUpAclServiceExtension cleanUpAclExtension) {

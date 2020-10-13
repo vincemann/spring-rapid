@@ -21,7 +21,7 @@ public class LoginMvcTests extends AbstractMvcTests {
                 .header("contentType",  MediaType.APPLICATION_FORM_URLENCODED))
                 .andExpect(status().is(200))
 				.andExpect(header().string(HttpHeaders.AUTHORIZATION, containsString(".")))
-//				.andExpect(jsonPath("$.id").value(admin.getId()))
+//				.andExpect(jsonPath("$.id").value(getAdmin().getId()))
 				.andExpect(jsonPath("$.id").doesNotExist())
 				.andExpect(jsonPath("$.password").doesNotExist());
 		//get data via /context with token
@@ -42,7 +42,7 @@ public class LoginMvcTests extends AbstractMvcTests {
 //		// Test that default token does not expire before 10 days		
 //		Thread.sleep(1001L);
 //		mvc.perform(get("/api/core/ping")
-//				.header(LemonSecurityConfig.TOKEN_REQUEST_HEADER_NAME, tokens.get(admin.getId())))
+//				.header(LemonSecurityConfig.TOKEN_REQUEST_HEADER_NAME, tokens.get(getAdmin().getId())))
 //				.andExpect(status().is(204));
 		
 		// Test that a 500ms token does not expire before 500ms
@@ -62,13 +62,13 @@ public class LoginMvcTests extends AbstractMvcTests {
 		
 		// credentials updated
 		// Thread.sleep(1001L);		
-		AbstractUser<Long> user = (AbstractUser<Long>) unsecuredUserService.findById(admin.getId()).get();
+		AbstractUser<Long> user = getUnsecuredUserService().findById(getAdmin().getId()).get();
 		user.setCredentialsUpdatedMillis(System.currentTimeMillis());
-		unsecuredUserService.save(user);
+		getUnsecuredUserService().save(user);
 		Thread.sleep(300);
 
 		mvc.perform(get("/api/core/ping")
-				.header(HttpHeaders.AUTHORIZATION, tokens.get(admin.getId())))
+				.header(HttpHeaders.AUTHORIZATION, tokens.get(getAdmin().getId())))
 				.andExpect(status().is(401));
 	}
 
@@ -88,9 +88,9 @@ public class LoginMvcTests extends AbstractMvcTests {
 	public void testGetUserIdByToken() throws Exception {
 
 		mvc.perform(get("/api/core/context")
-				.header(HttpHeaders.AUTHORIZATION, tokens.get(admin.getId())))
+				.header(HttpHeaders.AUTHORIZATION, tokens.get(getAdmin().getId())))
 				.andExpect(status().is(200))
-				.andExpect(jsonPath("$.user.id").value(admin.getId()))
+				.andExpect(jsonPath("$.user.id").value(getAdmin().getId()))
 				.andReturn();
 	}
 

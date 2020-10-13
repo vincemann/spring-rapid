@@ -7,10 +7,10 @@ import com.github.vincemann.springrapid.acl.proxy.Unsecured;
 import com.github.vincemann.springrapid.core.slicing.components.ServiceComponent;
 import org.springframework.context.annotation.Primary;
 
-@ServiceComponent
-@Unsecured
-@Primary
-public class MyService extends AbstractUserService<User, Long, UserRepository> {
+//@ServiceComponent
+//@Unsecured
+//@Primary
+public class MyUserService extends AbstractUserService<User, Long, UserRepository> {
 
 	@Override
     public User newUser() {
@@ -24,7 +24,7 @@ public class MyService extends AbstractUserService<User, Long, UserRepository> {
 
 	@Override
 	public Class<?> getTargetClass() {
-		return MyService.class;
+		return MyUserService.class;
 	}
 
 }

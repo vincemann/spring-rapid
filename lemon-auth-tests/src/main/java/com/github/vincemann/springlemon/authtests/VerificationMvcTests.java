@@ -28,26 +28,26 @@ public class VerificationMvcTests extends AbstractMvcTests {
 	public void setup() throws Exception {
 		super.setup();
 		verificationCode = emailJwtService.createToken(AbstractUserService.VERIFY_AUDIENCE,
-				Long.toString(unverifiedUser.getId()), 60000L,
+				Long.toString(getUnverifiedUser().getId()), 60000L,
 				LemonMapUtils.mapOf("email", UNVERIFIED_USER_EMAIL));
 	}
 	
 	@Test
 	public void testEmailVerification() throws Exception {
 		Thread.sleep(1L);
-		mvc.perform(post("/api/core/users/{userId}/verification", unverifiedUser.getId())
+		mvc.perform(post("/api/core/users/{userId}/verification", getUnverifiedUser().getId())
                 .param("code", verificationCode)
                 .header("contentType",  MediaType.APPLICATION_FORM_URLENCODED))
                 .andExpect(status().is(200))
 				.andExpect(header().string(HttpHeaders.AUTHORIZATION, containsString(".")))
-				.andExpect(jsonPath("$.id").value(unverifiedUser.getId()))
+				.andExpect(jsonPath("$.id").value(getUnverifiedUser().getId()))
 				.andExpect(jsonPath("$.roles").value(hasSize(1)))
 				.andExpect(jsonPath("$.roles").value(Matchers.hasItem(LemonRoles.USER)))
 				.andExpect(jsonPath("$.unverified").value(false))
 				.andExpect(jsonPath("$.goodUser").value(true));
 		
 		// Already verified
-		mvc.perform(post("/api/core/users/{userId}/verification", unverifiedUser.getId())
+		mvc.perform(post("/api/core/users/{userId}/verification", getUnverifiedUser().getId())
                 .param("code", verificationCode)
                 .header("contentType",  MediaType.APPLICATION_FORM_URLENCODED))
                 .andExpect(status().is(422));
@@ -66,40 +66,40 @@ public class VerificationMvcTests extends AbstractMvcTests {
 	public void testEmailVerificationWrongToken() throws Exception {
 		
 		// null token
-		mvc.perform(post("/api/core/users/{userId}/verification", unverifiedUser.getId())
+		mvc.perform(post("/api/core/users/{userId}/verification", getUnverifiedUser().getId())
                 .header("contentType",  MediaType.APPLICATION_FORM_URLENCODED))
                 .andExpect(status().is(400));
 
 		// blank token
-		mvc.perform(post("/api/core/users/{userId}/verification", unverifiedUser.getId())
+		mvc.perform(post("/api/core/users/{userId}/verification", getUnverifiedUser().getId())
                 .param("code", "")
                 .header("contentType",  MediaType.APPLICATION_FORM_URLENCODED))
                 .andExpect(status().is(401));
 
 		// Wrong audience
 		String token = emailJwtService.createToken("wrong-audience",
-				Long.toString(unverifiedUser.getId()), 60000L,
+				Long.toString(getUnverifiedUser().getId()), 60000L,
 				LemonMapUtils.mapOf("email", UNVERIFIED_USER_EMAIL));
-		mvc.perform(post("/api/core/users/{userId}/verification", unverifiedUser.getId())
+		mvc.perform(post("/api/core/users/{userId}/verification", getUnverifiedUser().getId())
                 .param("code", token)
                 .header("contentType",  MediaType.APPLICATION_FORM_URLENCODED))
                 .andExpect(status().is(401));
 		
 		// Wrong email
 		token = emailJwtService.createToken(AbstractUserService.VERIFY_AUDIENCE,
-				Long.toString(unverifiedUser.getId()), 60000L,
+				Long.toString(getUnverifiedUser().getId()), 60000L,
 				LemonMapUtils.mapOf("email", "wrong.email@example.com"));
-		mvc.perform(post("/api/core/users/{userId}/verification", unverifiedUser.getId())
+		mvc.perform(post("/api/core/users/{userId}/verification", getUnverifiedUser().getId())
                 .param("code", token)
                 .header("contentType",  MediaType.APPLICATION_FORM_URLENCODED))
                 .andExpect(status().is(403));
 
 		// expired token
 		token = emailJwtService.createToken(AbstractUserService.VERIFY_AUDIENCE,
-				Long.toString(unverifiedUser.getId()), 1L,
+				Long.toString(getUnverifiedUser().getId()), 1L,
 				LemonMapUtils.mapOf("email", UNVERIFIED_USER_EMAIL));
 		// Thread.sleep(1001L);
-		mvc.perform(post("/api/core/users/{userId}/verification", unverifiedUser.getId())
+		mvc.perform(post("/api/core/users/{userId}/verification", getUnverifiedUser().getId())
                 .param("code", token)
                 .header("contentType",  MediaType.APPLICATION_FORM_URLENCODED))
                 .andExpect(status().is(401));
@@ -110,12 +110,12 @@ public class VerificationMvcTests extends AbstractMvcTests {
 		
 		// Credentials updated after the verification token is issued
 //		Thread.sleep(1L);
-		AbstractUser<Long> user = (AbstractUser<Long>) unsecuredUserService.findById(unverifiedUser.getId()).get();
+		AbstractUser<Long> user = getUnsecuredUserService().findById(getUnverifiedUser().getId()).get();
 		user.setCredentialsUpdatedMillis(System.currentTimeMillis());
-		unsecuredUserService.save(user);
+		getUnsecuredUserService().save(user);
 
 		Thread.sleep(300);
-		mvc.perform(post("/api/core/users/{userId}/verification", unverifiedUser.getId())
+		mvc.perform(post("/api/core/users/{userId}/verification", getUnverifiedUser().getId())
                 .param("code", verificationCode)
                 .header("contentType",  MediaType.APPLICATION_FORM_URLENCODED))
                 .andExpect(status().is(401));

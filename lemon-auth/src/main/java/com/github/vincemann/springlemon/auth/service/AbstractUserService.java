@@ -316,7 +316,7 @@ public abstract class AbstractUserService
     public void requestEmailChange(U user, /*@Valid*/ RequestEmailChangeForm emailChangeForm) throws EntityNotFoundException {
 //        log.debug("Requesting email change for user" + user);
         // checks
-//        Optional<U> byId = (AbstractUser<Long>) unsecuredUserService.findById(userId);
+//        Optional<U> byId = getUnsecuredUserService().findById(userId);
 //        LexUtils.ensureFound(byId);
 //        U user = byId.get();
         VerifyEntity.isPresent(user, "User not found");

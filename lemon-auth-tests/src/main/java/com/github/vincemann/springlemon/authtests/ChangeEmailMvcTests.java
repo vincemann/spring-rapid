@@ -26,15 +26,15 @@ public class ChangeEmailMvcTests extends AbstractMvcTests {
 
 	@BeforeEach
 	public void setup() throws Exception {
-		initMockMvc();
+		configureMvc();
 		System.err.println("creating test users");
 		createTestUsers();
 		System.err.println("test users created");
 
-		AbstractUser<Long> user = (AbstractUser<Long>) unsecuredUserService.findById(unverifiedUser.getId()).get();
+		AbstractUser<Long> user = getUnsecuredUserService().findById(getUnverifiedUser().getId()).get();
 		user.setNewEmail(NEW_EMAIL);
 
-		unsecuredUserService.update(user);
+		getUnsecuredUserService().update(user);
 
 		System.err.println("logging in test users");
 		loginTestUsers();
@@ -43,7 +43,7 @@ public class ChangeEmailMvcTests extends AbstractMvcTests {
 
 		changeEmailCode = emailJwtService.createToken(
 				AbstractUserService.CHANGE_EMAIL_AUDIENCE,
-				Long.toString(unverifiedUser.getId()),
+				Long.toString(getUnverifiedUser().getId()),
 				600000L,
 				LemonMapUtils.mapOf("newEmail", NEW_EMAIL));
 
@@ -55,23 +55,23 @@ public class ChangeEmailMvcTests extends AbstractMvcTests {
 	@Test
 	public void testChangeEmail() throws Exception {
 		
-		mvc.perform(post("/api/core/users/{id}/email", unverifiedUser.getId())
+		mvc.perform(post("/api/core/users/{id}/email", getUnverifiedUser().getId())
                 .param("code", changeEmailCode)
-				.header(HttpHeaders.AUTHORIZATION, tokens.get(unverifiedUser.getId()))
+				.header(HttpHeaders.AUTHORIZATION, tokens.get(getUnverifiedUser().getId()))
                 .header("contentType",  MediaType.APPLICATION_FORM_URLENCODED))
 		        .andExpect(status().is(200))
 				//gets new token for new email to use
 				.andExpect(header().string(HttpHeaders.AUTHORIZATION, containsString(".")))
-				.andExpect(jsonPath("$.id").value(unverifiedUser.getId()));
+				.andExpect(jsonPath("$.id").value(getUnverifiedUser().getId()));
 		
-		AbstractUser<Long> updatedUser = (AbstractUser<Long>) unsecuredUserService.findById(unverifiedUser.getId()).get();
+		AbstractUser<Long> updatedUser = getUnsecuredUserService().findById(getUnverifiedUser().getId()).get();
 		Assertions.assertNull(updatedUser.getNewEmail());
 		Assertions.assertEquals(NEW_EMAIL, updatedUser.getEmail());
 		
 		// Shouldn't be able to login with old token
-		mvc.perform(post("/api/core/users/{id}/email", unverifiedUser.getId())
+		mvc.perform(post("/api/core/users/{id}/email", getUnverifiedUser().getId())
                 .param("code", changeEmailCode)
-				.header(HttpHeaders.AUTHORIZATION, tokens.get(unverifiedUser.getId()))
+				.header(HttpHeaders.AUTHORIZATION, tokens.get(getUnverifiedUser().getId()))
                 .header("contentType",  MediaType.APPLICATION_FORM_URLENCODED))
 		        .andExpect(status().is(401));
 	}
@@ -83,45 +83,45 @@ public class ChangeEmailMvcTests extends AbstractMvcTests {
 	public void testChangeEmail_withWrongCode() throws Exception {
 		
 		// Blank token
-		mvc.perform(post("/api/core/users/{id}/email", unverifiedUser.getId())
+		mvc.perform(post("/api/core/users/{id}/email", getUnverifiedUser().getId())
                 .param("code", "")
-				.header(HttpHeaders.AUTHORIZATION, tokens.get(unverifiedUser.getId()))
+				.header(HttpHeaders.AUTHORIZATION, tokens.get(getUnverifiedUser().getId()))
                 .header("contentType",  MediaType.APPLICATION_FORM_URLENCODED))
 		        .andExpect(status().is(422));
 
 		// Wrong audience
 		String code = emailJwtService.createToken(
 				"", // blank audience
-				Long.toString(unverifiedUser.getId()), 60000L,
+				Long.toString(getUnverifiedUser().getId()), 60000L,
 				LemonMapUtils.mapOf("newEmail", NEW_EMAIL));
 		
-		mvc.perform(post("/api/core/users/{id}/email", unverifiedUser.getId())
+		mvc.perform(post("/api/core/users/{id}/email", getUnverifiedUser().getId())
                 .param("code", code)
-				.header(HttpHeaders.AUTHORIZATION, tokens.get(unverifiedUser.getId()))
+				.header(HttpHeaders.AUTHORIZATION, tokens.get(getUnverifiedUser().getId()))
                 .header("contentType",  MediaType.APPLICATION_FORM_URLENCODED))
 		        .andExpect(status().is(401));
 
 		// Wrong userId subject
 		code = emailJwtService.createToken(
 				AbstractUserService.CHANGE_EMAIL_AUDIENCE,
-				Long.toString(admin.getId()), 60000L,
+				Long.toString(getAdmin().getId()), 60000L,
 				LemonMapUtils.mapOf("newEmail", NEW_EMAIL));
 		
-		mvc.perform(post("/api/core/users/{id}/email", unverifiedUser.getId())
+		mvc.perform(post("/api/core/users/{id}/email", getUnverifiedUser().getId())
                 .param("code", code)
-				.header(HttpHeaders.AUTHORIZATION, tokens.get(unverifiedUser.getId()))
+				.header(HttpHeaders.AUTHORIZATION, tokens.get(getUnverifiedUser().getId()))
                 .header("contentType",  MediaType.APPLICATION_FORM_URLENCODED))
 		        .andExpect(status().is(403));
 		
 		// Wrong new email
 		code = emailJwtService.createToken(
 				AbstractUserService.CHANGE_EMAIL_AUDIENCE,
-				Long.toString(unverifiedUser.getId()), 60000L,
+				Long.toString(getUnverifiedUser().getId()), 60000L,
 				LemonMapUtils.mapOf("newEmail", "wrong.new.email@example.com"));
 		
-		mvc.perform(post("/api/core/users/{id}/email", unverifiedUser.getId())
+		mvc.perform(post("/api/core/users/{id}/email", getUnverifiedUser().getId())
                 .param("code", code)
-				.header(HttpHeaders.AUTHORIZATION, tokens.get(unverifiedUser.getId()))
+				.header(HttpHeaders.AUTHORIZATION, tokens.get(getUnverifiedUser().getId()))
                 .header("contentType",  MediaType.APPLICATION_FORM_URLENCODED))
 		        .andExpect(status().is(403));
 	}
@@ -134,9 +134,9 @@ public class ChangeEmailMvcTests extends AbstractMvcTests {
 
 		// credentials updated after the request for email change was made
 //		Thread.sleep(1L);
-		AbstractUser<Long> user = (AbstractUser<Long>) unsecuredUserService.findById(unverifiedUser.getId()).get();
+		AbstractUser<Long> user = getUnsecuredUserService().findById(getUnverifiedUser().getId()).get();
 		user.setCredentialsUpdatedMillis(System.currentTimeMillis());
-		unsecuredUserService.update(user);
+		getUnsecuredUserService().update(user);
 
 		Thread.sleep(1L);
 
@@ -144,7 +144,7 @@ public class ChangeEmailMvcTests extends AbstractMvcTests {
 		String authToken = successful_login(UNVERIFIED_USER_EMAIL, UNVERIFIED_USER_PASSWORD);
 		
 		// now ready to test!
-		mvc.perform(post("/api/core/users/{id}/email", unverifiedUser.getId())
+		mvc.perform(post("/api/core/users/{id}/email", getUnverifiedUser().getId())
                 .param("code", changeEmailCode)
 				.header(HttpHeaders.AUTHORIZATION, authToken)
                 .header("contentType",  MediaType.APPLICATION_FORM_URLENCODED))
@@ -158,9 +158,9 @@ public class ChangeEmailMvcTests extends AbstractMvcTests {
 	@Test
 	public void testChangeEmailWithoutAnyRequest() throws Exception {
 
-		mvc.perform(post("/api/core/users/{id}/email", user.getId())
+		mvc.perform(post("/api/core/users/{id}/email", getUser().getId())
                 .param("code", changeEmailCode)
-				.header(HttpHeaders.AUTHORIZATION, tokens.get(user.getId()))
+				.header(HttpHeaders.AUTHORIZATION, tokens.get(getUser().getId()))
                 .header("contentType",  MediaType.APPLICATION_FORM_URLENCODED))
 		        .andExpect(status().is(422));
 	}
@@ -173,13 +173,13 @@ public class ChangeEmailMvcTests extends AbstractMvcTests {
 	public void testChangeEmailNonUniqueEmail() throws Exception {
 		
 		// Some other user changed to the same email
-		AbstractUser<Long> user = (AbstractUser<Long>) unsecuredUserService.findById(admin.getId()).get();
+		AbstractUser<Long> user = getUnsecuredUserService().findById(getAdmin().getId()).get();
 		user.setEmail(NEW_EMAIL);
-		unsecuredUserService.update(user);
+		getUnsecuredUserService().update(user);
 		
-		mvc.perform(post("/api/core/users/{id}/email", unverifiedUser.getId())
+		mvc.perform(post("/api/core/users/{id}/email", getUnverifiedUser().getId())
                 .param("code", changeEmailCode)
-				.header(HttpHeaders.AUTHORIZATION, tokens.get(unverifiedUser.getId()))
+				.header(HttpHeaders.AUTHORIZATION, tokens.get(getUnverifiedUser().getId()))
                 .header("contentType",  MediaType.APPLICATION_FORM_URLENCODED))
 		        .andExpect(status().is(422));
 	}

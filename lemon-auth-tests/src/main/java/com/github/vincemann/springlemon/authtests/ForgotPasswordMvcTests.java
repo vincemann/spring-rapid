@@ -28,7 +28,7 @@ public class ForgotPasswordMvcTests extends AbstractMvcTests {
 
 		mvc.perform(post("/api/core/forgot-password")
 				.param("email", ADMIN_EMAIL)
-				.header(HttpHeaders.AUTHORIZATION, tokens.get(admin.getId()))
+				.header(HttpHeaders.AUTHORIZATION, tokens.get(getAdmin().getId()))
 				.header("contentType",  MediaType.APPLICATION_FORM_URLENCODED))
 				.andExpect(status().is(204));
 
