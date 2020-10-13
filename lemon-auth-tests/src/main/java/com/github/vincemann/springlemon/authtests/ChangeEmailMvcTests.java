@@ -34,7 +34,7 @@ public class ChangeEmailMvcTests extends AbstractMvcTests {
 		AbstractUser<Long> user = (AbstractUser<Long>) unsecuredUserService.findById(unverifiedUser.getId()).get();
 		user.setNewEmail(NEW_EMAIL);
 
-		unsecuredUserService.save(user);
+		unsecuredUserService.update(user);
 
 		System.err.println("logging in test users");
 		loginTestUsers();
@@ -136,7 +136,7 @@ public class ChangeEmailMvcTests extends AbstractMvcTests {
 //		Thread.sleep(1L);
 		AbstractUser<Long> user = (AbstractUser<Long>) unsecuredUserService.findById(unverifiedUser.getId()).get();
 		user.setCredentialsUpdatedMillis(System.currentTimeMillis());
-		unsecuredUserService.save(user);
+		unsecuredUserService.update(user);
 
 		Thread.sleep(1L);
 
@@ -175,7 +175,7 @@ public class ChangeEmailMvcTests extends AbstractMvcTests {
 		// Some other user changed to the same email
 		AbstractUser<Long> user = (AbstractUser<Long>) unsecuredUserService.findById(admin.getId()).get();
 		user.setEmail(NEW_EMAIL);
-		unsecuredUserService.save(user);
+		unsecuredUserService.update(user);
 		
 		mvc.perform(post("/api/core/users/{id}/email", unverifiedUser.getId())
                 .param("code", changeEmailCode)
