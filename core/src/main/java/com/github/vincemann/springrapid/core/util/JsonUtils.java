@@ -12,13 +12,13 @@ import java.io.IOException;
 import java.io.Serializable;
 import java.util.Base64;
 
-public class MapperUtils {
+public class JsonUtils {
 
 
     public static ObjectMapper objectMapper;
 
-    public MapperUtils(ObjectMapper objectMapper) {
-        MapperUtils.objectMapper = objectMapper;
+    public JsonUtils(ObjectMapper objectMapper) {
+        JsonUtils.objectMapper = objectMapper;
     }
 
     public static ObjectMapper mapper() {

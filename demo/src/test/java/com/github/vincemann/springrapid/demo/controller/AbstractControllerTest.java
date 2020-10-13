@@ -1,16 +1,10 @@
 package com.github.vincemann.springrapid.demo.controller;
 
-import com.github.vincemann.springrapid.core.controller.RapidController;
-import com.github.vincemann.springrapid.core.service.AbstractCrudService;
+import com.github.vincemann.springrapid.core.controller.CrudController;
 import com.github.vincemann.springrapid.demo.model.Owner;
 import com.github.vincemann.springrapid.demo.model.Pet;
 import com.github.vincemann.springrapid.demo.model.PetType;
 import com.github.vincemann.springrapid.demo.model.Specialty;
-import com.github.vincemann.springrapid.demo.repo.OwnerRepository;
-import com.github.vincemann.springrapid.demo.repo.PetRepository;
-import com.github.vincemann.springrapid.demo.repo.PetTypeRepository;
-import com.github.vincemann.springrapid.demo.repo.SpecialtyRepository;
-import com.github.vincemann.springrapid.core.model.IdentifiableEntity;
 import com.github.vincemann.springrapid.core.service.CrudService;
 import com.github.vincemann.springrapid.coretest.controller.rapid.AbstractUrlParamIdRapidControllerTest;
 import lombok.Getter;
@@ -18,14 +12,13 @@ import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.BeforeEach;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.repository.CrudRepository;
 
 import java.time.LocalDate;
 
 @Getter
 @Setter
 @Slf4j
-public abstract class AbstractControllerTest<C extends RapidController<?,Long,?>>
+public abstract class AbstractControllerTest<C extends CrudController<?,Long,?>>
         extends AbstractUrlParamIdRapidControllerTest<C,Long>
 
 {

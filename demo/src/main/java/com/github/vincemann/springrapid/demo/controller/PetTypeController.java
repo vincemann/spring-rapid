@@ -4,11 +4,11 @@ import com.github.vincemann.springrapid.core.controller.dto.mapper.context.DtoMa
 import com.github.vincemann.springrapid.demo.model.PetType;
 import com.github.vincemann.springrapid.core.slicing.components.WebController;
 import com.github.vincemann.springrapid.core.controller.dto.mapper.context.DtoMappingContextBuilder;
-import com.github.vincemann.springrapid.core.controller.RapidController;
+import com.github.vincemann.springrapid.core.controller.CrudController;
 import com.github.vincemann.springrapid.demo.service.PetTypeService;
 
 @WebController
-public class PetTypeController extends RapidController<PetType, Long, PetTypeService> {
+public class PetTypeController extends CrudController<PetType, Long, PetTypeService> {
 
     @Override
     public DtoMappingContext provideDtoMappingContext() {

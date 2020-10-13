@@ -5,12 +5,12 @@ import com.github.vincemann.springrapid.demo.dtos.VetDto;
 import com.github.vincemann.springrapid.demo.model.Vet;
 import com.github.vincemann.springrapid.core.slicing.components.WebController;
 import com.github.vincemann.springrapid.core.controller.dto.mapper.context.DtoMappingContextBuilder;
-import com.github.vincemann.springrapid.core.controller.RapidController;
+import com.github.vincemann.springrapid.core.controller.CrudController;
 import com.github.vincemann.springrapid.demo.service.VetService;
 
 @WebController
 public class VetController
-        extends RapidController<Vet, Long, VetService> {
+        extends CrudController<Vet, Long, VetService> {
 
     @Override
     public DtoMappingContext provideDtoMappingContext() {

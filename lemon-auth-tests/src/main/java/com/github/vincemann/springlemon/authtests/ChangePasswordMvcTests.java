@@ -1,7 +1,7 @@
 package com.github.vincemann.springlemon.authtests;
 
 import com.github.vincemann.springlemon.auth.domain.dto.ChangePasswordForm;
-import com.github.vincemann.springrapid.core.util.MapperUtils;
+import com.github.vincemann.springrapid.core.util.JsonUtils;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
@@ -33,7 +33,7 @@ public class ChangePasswordMvcTests extends AbstractMvcTests {
 		mvc.perform(post("/api/core/users/{id}/password", getUnverifiedUser().getId())
 				.header(HttpHeaders.AUTHORIZATION, tokens.get(getUnverifiedUser().getId()))
 				.contentType(MediaType.APPLICATION_JSON)
-				.content(MapperUtils.toJson(changePasswordForm(UNVERIFIED_USER_PASSWORD))))
+				.content(JsonUtils.toJson(changePasswordForm(UNVERIFIED_USER_PASSWORD))))
 				.andExpect(status().is(204))
 				.andExpect(header().string(HttpHeaders.AUTHORIZATION, containsString(".")));
 		
@@ -50,7 +50,7 @@ public class ChangePasswordMvcTests extends AbstractMvcTests {
 		mvc.perform(post("/api/core/users/{id}/password", getUnverifiedUser().getId())
 				.header(HttpHeaders.AUTHORIZATION, tokens.get(getAdmin().getId()))
 				.contentType(MediaType.APPLICATION_JSON)
-				.content(MapperUtils.toJson(changePasswordForm(UNVERIFIED_USER_PASSWORD))))
+				.content(JsonUtils.toJson(changePasswordForm(UNVERIFIED_USER_PASSWORD))))
 				.andExpect(status().is(204))
 				.andExpect(header().string(HttpHeaders.AUTHORIZATION, containsString(".")));
 		
@@ -67,7 +67,7 @@ public class ChangePasswordMvcTests extends AbstractMvcTests {
 		mvc.perform(post("/api/core/users/99/password")
 				.header(HttpHeaders.AUTHORIZATION, tokens.get(getAdmin().getId()))
 				.contentType(MediaType.APPLICATION_JSON)
-				.content(MapperUtils.toJson(changePasswordForm(ADMIN_PASSWORD))))
+				.content(JsonUtils.toJson(changePasswordForm(ADMIN_PASSWORD))))
 				.andExpect(status().is(404));
 	}
 	
@@ -80,7 +80,7 @@ public class ChangePasswordMvcTests extends AbstractMvcTests {
 		mvc.perform(post("/api/core/users/{id}/password", getUnverifiedUser().getId())
 				.header(HttpHeaders.AUTHORIZATION, tokens.get(getUser().getId()))
 				.contentType(MediaType.APPLICATION_JSON)
-				.content(MapperUtils.toJson(changePasswordForm(UNVERIFIED_USER_PASSWORD))))
+				.content(JsonUtils.toJson(changePasswordForm(UNVERIFIED_USER_PASSWORD))))
 				.andExpect(status().is(403));
 		
 		// Ensure password didn't change
@@ -110,7 +110,7 @@ public class ChangePasswordMvcTests extends AbstractMvcTests {
 		mvc.perform(post("/api/core/users/{id}/password", getUnverifiedUser().getId())
 				.header(HttpHeaders.AUTHORIZATION, tokens.get(getUnverifiedUser().getId()))
 				.contentType(MediaType.APPLICATION_JSON)
-				.content(MapperUtils.toJson(new ChangePasswordForm())))
+				.content(JsonUtils.toJson(new ChangePasswordForm())))
 				.andExpect(status().is(422))
 				.andExpect(jsonPath("$.errors[*].field").value(hasSize(3)))
 				.andExpect(jsonPath("$.errors[*].field").value(hasItems(
@@ -127,7 +127,7 @@ public class ChangePasswordMvcTests extends AbstractMvcTests {
 		mvc.perform(post("/api/core/users/{id}/password", getUnverifiedUser().getId())
 				.header(HttpHeaders.AUTHORIZATION, tokens.get(getUnverifiedUser().getId()))
 				.contentType(MediaType.APPLICATION_JSON)
-				.content(MapperUtils.toJson(form)))
+				.content(JsonUtils.toJson(form)))
 				.andExpect(status().is(422))
 				.andExpect(jsonPath("$.errors[*].field").value(hasSize(3)))
 				.andExpect(jsonPath("$.errors[*].field").value(hasItems(
@@ -142,7 +142,7 @@ public class ChangePasswordMvcTests extends AbstractMvcTests {
 		mvc.perform(post("/api/core/users/{id}/password", getUnverifiedUser().getId())
 				.header(HttpHeaders.AUTHORIZATION, tokens.get(getUnverifiedUser().getId()))
 				.contentType(MediaType.APPLICATION_JSON)
-				.content(MapperUtils.toJson(form)))
+				.content(JsonUtils.toJson(form)))
 				.andExpect(status().is(422))
 				.andExpect(jsonPath("$.errors[*].field").value(hasSize(2)))
 				.andExpect(jsonPath("$.errors[*].field").value(hasItems(

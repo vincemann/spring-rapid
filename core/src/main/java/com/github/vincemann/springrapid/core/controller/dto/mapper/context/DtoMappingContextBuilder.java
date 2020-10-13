@@ -1,7 +1,9 @@
 package com.github.vincemann.springrapid.core.controller.dto.mapper.context;
 
+import com.github.vincemann.springrapid.core.RapidCoreProperties;
 import com.github.vincemann.springrapid.core.util.Lists;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.Assert;
 
 import java.util.ArrayList;
@@ -15,20 +17,26 @@ public class DtoMappingContextBuilder {
     private DtoMappingInfo.Principal currPrincipal = DtoMappingInfo.Principal.ALL;
 
 
-    public DtoMappingContextBuilder() {
+    private RapidCoreProperties coreProperties;
+
+
+    public DtoMappingContextBuilder(RapidCoreProperties coreProperties) {
+        this.coreProperties = coreProperties;
         this.mc = new DtoMappingContext();
     }
 
-    public DtoMappingContextBuilder(DtoMappingContext mc) {
+    public DtoMappingContextBuilder(DtoMappingContext mc,RapidCoreProperties coreProperties) {
         this.mc = mc;
     }
 
-    public static DtoMappingContextBuilder builder(){
-        return new DtoMappingContextBuilder();
-    }
+//    public static DtoMappingContextBuilder builder(){
+//        return new DtoMappingContextBuilder();
+//    }
 
     public static DtoMappingContextBuilder builder(DtoMappingContext mc){
-        return new DtoMappingContextBuilder(mc);
+        DtoMappingContextBuilder builder = new DtoMappingContextBuilder(mc);
+        builder.injectCoreProperties(builder.coreProperties);
+        return builder;
     }
 
 
@@ -55,24 +63,24 @@ public class DtoMappingContextBuilder {
 
 
     protected List<String> getAllEndpoints(){
-        ArrayList<String> all = Lists.newArrayList(RapidDtoEndpoint.CREATE);
+        ArrayList<String> all = Lists.newArrayList(coreProperties.controller.endpoints.create);
         all.addAll(getWriteEndpoints());
         all.addAll(getFindEndpoints());
         return all;
     }
 
     protected List<String> getFindEndpoints(){
-        return Lists.newArrayList(RapidDtoEndpoint.FIND, RapidDtoEndpoint.FIND_ALL);
+        return Lists.newArrayList(coreProperties.controller.endpoints.find, coreProperties.controller.endpoints.findAll);
     }
 
     protected List<String> getWriteEndpoints(){
-        ArrayList<String> writeEndpoints = Lists.newArrayList(RapidDtoEndpoint.CREATE);
+        ArrayList<String> writeEndpoints = Lists.newArrayList(coreProperties.controller.endpoints.create);
         writeEndpoints.addAll(getUpdateEndpoints());
         return writeEndpoints;
     }
 
     protected List<String> getUpdateEndpoints(){
-        return Lists.newArrayList(RapidDtoEndpoint.UPDATE);
+        return Lists.newArrayList(coreProperties.controller.endpoints.update);
     }
 
     /**
@@ -230,5 +238,10 @@ public class DtoMappingContextBuilder {
                 .principal(currPrincipal)
                 .direction(direction)
                 .build();
+    }
+
+    @Autowired
+    public void injectCoreProperties(RapidCoreProperties coreProperties) {
+        this.coreProperties = coreProperties;
     }
 }

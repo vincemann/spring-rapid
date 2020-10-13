@@ -1,8 +1,6 @@
 package com.github.vincemann.springrapid.coretest.controller.rapid;
 
-import com.github.vincemann.springrapid.core.controller.RapidController;
-import com.github.vincemann.springrapid.core.model.IdentifiableEntity;
-import com.github.vincemann.springrapid.core.service.CrudService;
+import com.github.vincemann.springrapid.core.controller.CrudController;
 import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
@@ -12,7 +10,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 
 public interface UrlParamIdRapidControllerTest
-        <C extends RapidController<?,Id,?>,
+        <C extends CrudController<?,Id,?>,
         Id extends Serializable>
             extends MvcRapidControllerTest<C> {
 

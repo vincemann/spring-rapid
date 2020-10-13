@@ -38,15 +38,6 @@ public class RapidControllerAutoConfiguration {
 
     }
 
-    //todo auslagern in rapid configuration file
-    @Value("${controller.idFetchingStrategy.idUrlParamKey:id}")
-    private String idUrlParamKey;
-
-    @Bean(name = "idUrlParamKey")
-    public String idUrlParamKey(){
-        return idUrlParamKey;
-    }
-
 
     @Bean
     @ConditionalOnMissingBean(MergeUpdateStrategy.class)
@@ -89,7 +80,7 @@ public class RapidControllerAutoConfiguration {
     @ConditionalOnMissingBean(IdFetchingStrategy.class)
     @Bean
     public IdFetchingStrategy<Long> longIdFetchingStrategy(){
-        return new LongUrlParamIdFetchingStrategy(idUrlParamKey());
+        return new LongUrlParamIdFetchingStrategy();
     }
 
 //    @ConditionalOnMissingBean(EndpointsExposureContext.class)

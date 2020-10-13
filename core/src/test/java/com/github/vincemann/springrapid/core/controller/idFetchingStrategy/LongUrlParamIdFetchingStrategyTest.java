@@ -1,6 +1,5 @@
 package com.github.vincemann.springrapid.core.controller.idFetchingStrategy;
 
-import com.github.vincemann.springrapid.core.controller.idFetchingStrategy.exception.IdFetchingException;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -27,10 +26,9 @@ class LongUrlParamIdFetchingStrategyTest {
     @Test
     void fetchId() throws IdFetchingException {
         //given
-        String idKey = "id";
         Long testId = 42L;
-        LongUrlParamIdFetchingStrategy longUrlParamIdFetchingStrategy = new LongUrlParamIdFetchingStrategy(idKey);
-        when(httpServletRequest.getParameter(idKey))
+        LongUrlParamIdFetchingStrategy longUrlParamIdFetchingStrategy = new LongUrlParamIdFetchingStrategy();
+        when(httpServletRequest.getParameter("id"))
                 .thenReturn(String.valueOf(testId));
 
         //when

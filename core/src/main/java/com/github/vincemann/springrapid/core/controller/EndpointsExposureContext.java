@@ -7,7 +7,7 @@ import lombok.Setter;
 @Getter
 @Setter
 /**
- * Gives User fine grained control about which endpoints should be exposed by {@link RapidController}.
+ * Gives User fine grained control about which endpoints should be exposed by {@link CrudController}.
  */
 public class EndpointsExposureContext {
     private boolean createEndpointExposed=true;

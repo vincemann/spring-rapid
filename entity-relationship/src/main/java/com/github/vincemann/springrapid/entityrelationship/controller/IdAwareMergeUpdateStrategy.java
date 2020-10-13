@@ -6,7 +6,9 @@ import java.lang.reflect.Field;
 import java.util.Map;
 
 
-
+/**
+ * Translates i.E. ownerId to owner when merging.
+ */
 public class IdAwareMergeUpdateStrategy extends MergeUpdateStrategyImpl {
     public static final String ID_SUFFIX = "Id";
     public static final String IDS_SUFFIX = "Ids";
