@@ -15,14 +15,14 @@ import java.util.List;
 class RapidDtoMappingContextTest {
 
     DtoMappingContext context;
-    DtoMappingInfo findInfo;
-    DtoMappingInfo createInfo;
-    DtoMappingInfo findAllInfo;
+    DtoRequestInfo findInfo;
+    DtoRequestInfo createInfo;
+    DtoRequestInfo findAllInfo;
     List<String> roles;
     String userRole = "ROLE_USER";
     String adminRole = "ROLE_ADMIN";
     String peekRole = "ROLE_PEEK_DETAILED_USER_INFO";
-    DtoMappingInfo updateInfo;
+    DtoRequestInfo updateInfo;
     
     DtoClassLocator locator;
 
@@ -56,9 +56,9 @@ class RapidDtoMappingContextTest {
                 .forEndpoint(RapidDtoEndpoint.FIND,Direction.RESPONSE, PrivilegedFindDto.class)
                 .forEndpoint(RapidDtoEndpoint.FIND_ALL,Direction.RESPONSE,PrivilegedFindDto.class)
                 .withRoles(adminRole)
-                .withPrincipal(DtoMappingInfo.Principal.FOREIGN)
+                .withPrincipal(DtoRequestInfo.Principal.FOREIGN)
                 .forEndpoint(properties.controller.endpoints.update,Direction.REQUEST,AdminUpdateForeignUserDto.class)
-                .withPrincipal(DtoMappingInfo.Principal.OWN)
+                .withPrincipal(DtoRequestInfo.Principal.OWN)
                 .forEndpoint(properties.controller.endpoints.update,Direction.REQUEST,AdminUpdateOwnDto.class)
                 .withAllPrincipals()
                 .withAllRoles()
@@ -66,22 +66,22 @@ class RapidDtoMappingContextTest {
                 .forEndpoint(RapidDtoEndpoint.FIND,Direction.RESPONSE,LessPrivilegedFindDto.class)
                 .build();
 
-        findInfo = DtoMappingInfo.builder()
+        findInfo = DtoRequestInfo.builder()
                 .direction(Direction.RESPONSE)
                 .endpoint(RapidDtoEndpoint.FIND)
                 .build();
 
-        findAllInfo = DtoMappingInfo.builder()
+        findAllInfo = DtoRequestInfo.builder()
                 .endpoint(RapidDtoEndpoint.FIND_ALL)
                 .direction(Direction.RESPONSE)
                 .build();
 
-        createInfo = DtoMappingInfo.builder()
+        createInfo = DtoRequestInfo.builder()
                 .direction(Direction.REQUEST)
                 .endpoint(properties.controller.endpoints.create)
                 .build();
 
-        updateInfo = DtoMappingInfo.builder()
+        updateInfo = DtoRequestInfo.builder()
                 .direction(Direction.REQUEST)
                 .endpoint(properties.controller.endpoints.update)
                 .build();
@@ -148,7 +148,7 @@ class RapidDtoMappingContextTest {
 
     @Test
     void findUnknownEntry_shouldNotFind(){
-        DtoMappingInfo unknown = DtoMappingInfo.builder()
+        DtoRequestInfo unknown = DtoRequestInfo.builder()
                 .authorities(new ArrayList<>())
                 .direction(Direction.REQUEST)
                 .endpoint(RapidDtoEndpoint.FIND)
@@ -169,7 +169,7 @@ class RapidDtoMappingContextTest {
     @Test
     public void adminUpdatesOwn(){
         updateInfo.setAuthorities(Lists.newArrayList(adminRole));
-        updateInfo.setPrincipal(DtoMappingInfo.Principal.OWN);
+        updateInfo.setPrincipal(DtoRequestInfo.Principal.OWN);
         Class<?> foundClass = locator.find(updateInfo,context);
         Assertions.assertEquals(AdminUpdateOwnDto.class,foundClass);
     }
@@ -177,7 +177,7 @@ class RapidDtoMappingContextTest {
     @Test
     public void adminUpdatesForeign(){
         updateInfo.setAuthorities(Lists.newArrayList(adminRole));
-        updateInfo.setPrincipal(DtoMappingInfo.Principal.FOREIGN);
+        updateInfo.setPrincipal(DtoRequestInfo.Principal.FOREIGN);
         Class<?> foundClass = locator.find(updateInfo,context);
         Assertions.assertEquals(AdminUpdateForeignUserDto.class,foundClass);
     }

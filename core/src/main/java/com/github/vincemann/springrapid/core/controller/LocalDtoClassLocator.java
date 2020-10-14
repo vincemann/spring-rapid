@@ -1,7 +1,7 @@
 package com.github.vincemann.springrapid.core.controller;
 
 import com.github.vincemann.springrapid.core.controller.dto.mapper.context.DtoMappingContext;
-import com.github.vincemann.springrapid.core.controller.dto.mapper.context.DtoMappingInfo;
+import com.github.vincemann.springrapid.core.controller.dto.mapper.context.DtoRequestInfo;
 
 public abstract class LocalDtoClassLocator {
     private DtoMappingContext context;
@@ -10,9 +10,9 @@ public abstract class LocalDtoClassLocator {
         this.context = context;
     }
 
-    public abstract boolean supports(DtoMappingInfo info);
+    public abstract boolean supports(DtoRequestInfo info);
 
-    public abstract Class<?> find(DtoMappingInfo mappingInfo);
+    public abstract Class<?> find(DtoRequestInfo mappingInfo);
 
     DtoMappingContext getContext() {
         return context;

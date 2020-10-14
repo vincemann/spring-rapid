@@ -8,7 +8,7 @@ import com.github.vincemann.springrapid.core.controller.dto.mapper.DelegatingDto
 import com.github.vincemann.springrapid.core.controller.dto.mapper.context.Direction;
 import com.github.vincemann.springrapid.core.controller.dto.mapper.context.DtoMappingContext;
 import com.github.vincemann.springrapid.core.controller.dto.mapper.context.DtoMappingContextBuilder;
-import com.github.vincemann.springrapid.core.controller.dto.mapper.context.DtoMappingInfo;
+import com.github.vincemann.springrapid.core.controller.dto.mapper.context.DtoRequestInfo;
 import com.github.vincemann.springrapid.core.controller.idFetchingStrategy.IdFetchingException;
 import com.github.vincemann.springrapid.core.controller.idFetchingStrategy.IdFetchingStrategy;
 import com.github.vincemann.springrapid.core.controller.idFetchingStrategy.UrlParamIdFetchingStrategy;
@@ -79,36 +79,8 @@ public abstract class GenericCrudController
         InitializingBean {
 
 
-    //              CONSTANTS
-
-
-//    public static final String MEDIA_TYPE_BEAN_NAME = "rapidMediaType";
-
-//    public static final String FIND_METHOD_NAME = "get";
-//    public static final String CREATE_METHOD_NAME = "create";
-//    public static final String DELETE_METHOD_NAME = "delete";
-//    public static final String UPDATE_METHOD_NAME = "update";
-//    public static final String FIND_ALL_METHOD_NAME = "getAll";
-
-
-    //              URLS
-
-
-    @Setter
-    private String findUrl;
-    @Setter
-    private String updateUrl;
-    @Setter
-    private String findAllUrl;
-    @Setter
-    private String deleteUrl;
-    @Setter
-    private String createUrl;
-    private String entityBaseUrl;
-    private String entityNameInUrl;
-
-
     //              DEPENDENCIES
+
 
     private RapidCoreProperties coreProperties;
     private EndpointService endpointService;
@@ -127,7 +99,7 @@ public abstract class GenericCrudController
     private Class<E> entityClass;
 
 
-    //              CRUD-CONTROLLER METHODS
+    //              CONTROLLER METHODS
 
 
     public ResponseEntity<String> findAll(HttpServletRequest request, HttpServletResponse response) throws JsonProcessingException {
@@ -231,13 +203,13 @@ public abstract class GenericCrudController
 
 
     public Class<?> createDtoClass(String endpoint, Direction direction, E entity) {
-        DtoMappingInfo endpointInfo = createEndpointInfo(endpoint, direction, entity);
-        return dtoClassLocator.find(endpointInfo);
+        DtoRequestInfo dtoRequestInfo = createDtoRequestInfo(endpoint, direction, entity);
+        return dtoClassLocator.find(dtoRequestInfo);
     }
 
-    protected DtoMappingInfo createEndpointInfo(String endpoint, Direction direction, E entity) {
-        DtoMappingInfo.Principal principal = currentPrincipal(entity);
-        return DtoMappingInfo.builder()
+    protected DtoRequestInfo createDtoRequestInfo(String endpoint, Direction direction, E entity) {
+        DtoRequestInfo.Principal principal = currentPrincipal(entity);
+        return DtoRequestInfo.builder()
                 .authorities(RapidSecurityContext.getRoles())
                 .direction(direction)
                 .principal(principal)
@@ -245,15 +217,15 @@ public abstract class GenericCrudController
                 .build();
     }
 
-    protected DtoMappingInfo.Principal currentPrincipal(E entity) {
-        DtoMappingInfo.Principal principal = DtoMappingInfo.Principal.ALL;
+    protected DtoRequestInfo.Principal currentPrincipal(E entity) {
+        DtoRequestInfo.Principal principal = DtoRequestInfo.Principal.ALL;
         if (entity != null) {
             String authenticated = RapidSecurityContext.getName();
             Optional<String> queried = ownerLocator.find(entity);
             if (queried.isPresent() && authenticated != null) {
                 principal = queried.get().equals(authenticated)
-                        ? DtoMappingInfo.Principal.OWN
-                        : DtoMappingInfo.Principal.FOREIGN;
+                        ? DtoRequestInfo.Principal.OWN
+                        : DtoRequestInfo.Principal.FOREIGN;
             }
         }
         return principal;
@@ -318,7 +290,7 @@ public abstract class GenericCrudController
     public void onApplicationEvent(ContextRefreshedEvent event) {
         configureEndpointInfo(endpointInfo);
         try {
-            initEndpoints();
+            registerEndpoints();
         } catch (NoSuchMethodException e) {
             //should never happen
             throw new RuntimeException(e);
@@ -348,9 +320,30 @@ public abstract class GenericCrudController
 
     }
 
+    protected String createUrlEntityName(){
+        return getEntityClass().getSimpleName().toLowerCase();
+    }
+
+
+    //              URLS
+
+
+    @Setter
+    private String findUrl;
+    @Setter
+    private String updateUrl;
+    @Setter
+    private String findAllUrl;
+    @Setter
+    private String deleteUrl;
+    @Setter
+    private String createUrl;
+    private String entityBaseUrl;
+    private String urlEntityName;
+
     protected void initUrls() {
-        this.entityNameInUrl = getEntityClass().getSimpleName().toLowerCase();
-        this.entityBaseUrl = coreProperties.baseUrl + "/" + entityNameInUrl + "/";
+        this.urlEntityName = createUrlEntityName();
+        this.entityBaseUrl = coreProperties.baseUrl + "/" + urlEntityName + "/";
         this.findUrl = entityBaseUrl + coreProperties.controller.endpoints.find;
         this.findAllUrl = entityBaseUrl + coreProperties.controller.endpoints.findAll;
         this.updateUrl = entityBaseUrl + coreProperties.controller.endpoints.update;
@@ -358,7 +351,11 @@ public abstract class GenericCrudController
         this.createUrl = entityBaseUrl + coreProperties.controller.endpoints.create;
     }
 
-    protected void initEndpoints() throws NoSuchMethodException {
+
+    //              REGISTER ENDPOINTS
+
+
+    protected void registerEndpoints() throws NoSuchMethodException {
         if (endpointInfo.isExposeCreate()) {
             registerEndpoint(createCreateRequestMappingInfo(), "create");
         }

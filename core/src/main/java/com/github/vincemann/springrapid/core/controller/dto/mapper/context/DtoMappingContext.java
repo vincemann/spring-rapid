@@ -14,7 +14,7 @@ import java.util.*;
 @Getter
 @ToString
 public class DtoMappingContext{
-    private Map<DtoMappingInfo, Class<?>> mappingEntries = new HashMap<>();
+    private Map<DtoRequestInfo, Class<?>> mappingEntries = new HashMap<>();
 
     DtoMappingContext() {
     }

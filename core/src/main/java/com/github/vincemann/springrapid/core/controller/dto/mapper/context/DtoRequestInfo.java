@@ -8,17 +8,17 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Represents information about current Request in Regard to dto-entity Mapping.
+ * Represents information about current Request.
  */
 @Getter
 @Setter
 @ToString
 @EqualsAndHashCode
-public class DtoMappingInfo {
+public class DtoRequestInfo {
     private String endpoint;
     private Direction direction;
     private List<String> authorities = new ArrayList<>();
-    private DtoMappingInfo.Principal principal = DtoMappingInfo.Principal.ALL;
+    private DtoRequestInfo.Principal principal = DtoRequestInfo.Principal.ALL;
 
     public enum Principal{
         OWN,
@@ -27,7 +27,7 @@ public class DtoMappingInfo {
     }
 
     @Builder
-    public DtoMappingInfo(String endpoint, Direction direction, @Nullable List<String> authorities, DtoMappingInfo.Principal principal) {
+    public DtoRequestInfo(String endpoint, Direction direction, @Nullable List<String> authorities, DtoRequestInfo.Principal principal) {
         this.endpoint = endpoint;
         this.direction = direction;
         if (authorities!=null)
@@ -36,13 +36,13 @@ public class DtoMappingInfo {
             this.principal = principal;
     }
 
-    public DtoMappingInfo(DtoMappingInfo info){
+    public DtoRequestInfo(DtoRequestInfo info){
         this.endpoint=info.endpoint;
         this.direction=info.direction;
         this.authorities = Lists.newArrayList(info.authorities);
     }
 
-    public DtoMappingInfo(String endpoint, Direction direction) {
+    public DtoRequestInfo(String endpoint, Direction direction) {
         this.endpoint = endpoint;
         this.direction = direction;
     }

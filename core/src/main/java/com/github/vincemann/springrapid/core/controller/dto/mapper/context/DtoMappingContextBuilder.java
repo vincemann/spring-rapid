@@ -16,7 +16,7 @@ import java.util.List;
 public class DtoMappingContextBuilder {
     private List<String> currentRoles = new ArrayList<>();
     private DtoMappingContext mc;
-    private DtoMappingInfo.Principal currPrincipal = DtoMappingInfo.Principal.ALL;
+    private DtoRequestInfo.Principal currPrincipal = DtoRequestInfo.Principal.ALL;
 
 
     private RapidCoreProperties coreProperties;
@@ -52,14 +52,14 @@ public class DtoMappingContextBuilder {
         return this;
     }
 
-    public DtoMappingContextBuilder withPrincipal(DtoMappingInfo.Principal principal){
+    public DtoMappingContextBuilder withPrincipal(DtoRequestInfo.Principal principal){
         Assert.notNull(principal);
         this.currPrincipal=principal;
         return this;
     }
 
     public DtoMappingContextBuilder withAllPrincipals(){
-        this.currPrincipal= DtoMappingInfo.Principal.ALL;
+        this.currPrincipal= DtoRequestInfo.Principal.ALL;
         return this;
     }
 
@@ -92,8 +92,8 @@ public class DtoMappingContextBuilder {
      */
     public DtoMappingContextBuilder forAll(Class<?> defaultDtoClass){
         Assert.notNull(defaultDtoClass);
-        List<DtoMappingInfo> infoList = createInfos(getAllEndpoints());
-        for (DtoMappingInfo info : infoList) {
+        List<DtoRequestInfo> infoList = createInfos(getAllEndpoints());
+        for (DtoRequestInfo info : infoList) {
             addEntry(info,defaultDtoClass);
         }
         return this;
@@ -113,11 +113,11 @@ public class DtoMappingContextBuilder {
         Assert.notNull(direction);
         Assert.notNull(responseDtoClass);
         List<String> allEndpoints = getAllEndpoints();
-        List<DtoMappingInfo> infoList = new ArrayList<>();
+        List<DtoRequestInfo> infoList = new ArrayList<>();
         for (String endpoint : allEndpoints) {
             infoList.add(createInfo(endpoint,direction));
         }
-        for (DtoMappingInfo info : infoList) {
+        for (DtoRequestInfo info : infoList) {
             addEntry(info,responseDtoClass);
         }
         return this;
@@ -125,8 +125,8 @@ public class DtoMappingContextBuilder {
 
     public DtoMappingContextBuilder forFind(Class<?> readDtoClass){
         Assert.notNull(readDtoClass);
-        List<DtoMappingInfo> infoList = createInfos(getFindEndpoints());
-        for (DtoMappingInfo info : infoList) {
+        List<DtoRequestInfo> infoList = createInfos(getFindEndpoints());
+        for (DtoRequestInfo info : infoList) {
             addEntry(info,readDtoClass);
         }
         return this;
@@ -134,8 +134,8 @@ public class DtoMappingContextBuilder {
 
     public DtoMappingContextBuilder forWrite(Class<?> writeDtoClass){
         Assert.notNull(writeDtoClass);
-        List<DtoMappingInfo> infoList = createInfos(getWriteEndpoints());
-        for (DtoMappingInfo info : infoList) {
+        List<DtoRequestInfo> infoList = createInfos(getWriteEndpoints());
+        for (DtoRequestInfo info : infoList) {
             addEntry(info,writeDtoClass);
         }
         return this;
@@ -184,20 +184,20 @@ public class DtoMappingContextBuilder {
         Assert.notNull(direction);
         Assert.notNull(authorities);
         Assert.notNull(dtoClass);
-        DtoMappingInfo info = createInfo(endpoint, direction);
+        DtoRequestInfo info = createInfo(endpoint, direction);
         info.setAuthorities(authorities);
         addEntry(info,dtoClass);
         return this;
     }
 
-    public DtoMappingContextBuilder forInfo(DtoMappingInfo info, Class<?> dtoClass){
+    public DtoMappingContextBuilder forInfo(DtoRequestInfo info, Class<?> dtoClass){
         Assert.notNull(dtoClass);
         Assert.notNull(info);
         addEntry(info,dtoClass);
         return this;
     }
 
-    protected void addEntry(DtoMappingInfo info, Class<?> dtoClass){
+    protected void addEntry(DtoRequestInfo info, Class<?> dtoClass){
         Class<?> old = mc.getMappingEntries().get(info);
         mc.getMappingEntries().put(info, dtoClass);
         if (old!=null) {
@@ -224,8 +224,8 @@ public class DtoMappingContextBuilder {
      * @param endpoints
      * @return
      */
-    private List<DtoMappingInfo> createInfos(List<String> endpoints) {
-        List<DtoMappingInfo> infoList = new ArrayList<>();
+    private List<DtoRequestInfo> createInfos(List<String> endpoints) {
+        List<DtoRequestInfo> infoList = new ArrayList<>();
         for (String endpoint : endpoints) {
             infoList.add(createInfo(endpoint,Direction.REQUEST));
             infoList.add(createInfo(endpoint,Direction.RESPONSE));
@@ -233,8 +233,8 @@ public class DtoMappingContextBuilder {
         return infoList;
     }
 
-    private DtoMappingInfo createInfo(String endpoint, Direction direction){
-        return DtoMappingInfo.builder()
+    private DtoRequestInfo createInfo(String endpoint, Direction direction){
+        return DtoRequestInfo.builder()
                 .authorities(currentRoles)
                 .endpoint(endpoint)
                 .principal(currPrincipal)

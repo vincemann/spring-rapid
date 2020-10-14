@@ -2,7 +2,7 @@ package com.github.vincemann.springrapid.core.controller;
 
 
 import com.github.vincemann.springrapid.core.controller.dto.mapper.context.DtoMappingContext;
-import com.github.vincemann.springrapid.core.controller.dto.mapper.context.DtoMappingInfo;
+import com.github.vincemann.springrapid.core.controller.dto.mapper.context.DtoRequestInfo;
 import org.springframework.util.Assert;
 
 import java.util.ArrayList;
@@ -27,7 +27,7 @@ public class DelegatingDtoClassLocator {
 
 
 //    //@LogInteraction
-    public Class<?> find(DtoMappingInfo info){
+    public Class<?> find(DtoRequestInfo info){
         Assert.notNull(context,"Context must be initialized");
         //local
         Optional<LocalDtoClassLocator> locator = localDelegates.stream()
