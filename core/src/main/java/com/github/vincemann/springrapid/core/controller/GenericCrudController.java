@@ -72,8 +72,8 @@ public abstract class GenericCrudController
                 S extends CrudService<E, Id>,
 
                 //internal generic params
-                EndpointInfos extends CrudEndpointInfo,
-                DtoMappingsContextBuilder extends DtoMappingContextBuilder
+                EndpointInfo extends CrudEndpointInfo,
+                DTOMappingContextBuilder extends DtoMappingContextBuilder
                 >
         implements
         ApplicationListener<ContextRefreshedEvent>,
@@ -115,14 +115,14 @@ public abstract class GenericCrudController
     private EndpointService endpointService;
     private ObjectMapper jsonMapper;
     private IdFetchingStrategy<Id> idIdFetchingStrategy;
-    private EndpointInfos endpointInfo;
+    private EndpointInfo endpointInfo;
     private S service;
     private DelegatingDtoMapper dtoMapper;
     private DelegatingOwnerLocator ownerLocator;
     private DelegatingDtoClassLocator dtoClassLocator;
     @Setter
     private DtoMappingContext dtoMappingContext;
-    private DtoMappingsContextBuilder dtoMappingContextBuilder;
+    private DTOMappingContextBuilder dtoMappingContextBuilder;
     private ValidationStrategy<Id> validationStrategy;
     private MergeUpdateStrategy mergeUpdateStrategy;
     private Class<E> entityClass;
@@ -131,7 +131,7 @@ public abstract class GenericCrudController
     //              CRUD-CONTROLLER METHODS
 
 
-    public ResponseEntity<String> findAll(@LogParam HttpServletRequest request, HttpServletResponse response) throws JsonProcessingException {
+    public ResponseEntity<String> findAll(HttpServletRequest request, HttpServletResponse response) throws JsonProcessingException {
         try {
             beforeFindAll(request, response);
             logSecurityContext();
@@ -150,7 +150,7 @@ public abstract class GenericCrudController
 
     }
 
-    public ResponseEntity<String> find(@LogParam HttpServletRequest request, HttpServletResponse response) throws IdFetchingException, EntityNotFoundException, BadEntityException, JsonProcessingException {
+    public ResponseEntity<String> find(HttpServletRequest request, HttpServletResponse response) throws IdFetchingException, EntityNotFoundException, BadEntityException, JsonProcessingException {
         Id id = idIdFetchingStrategy.fetchId(request);
         log.debug("id fetched from request: " + id);
 
@@ -170,7 +170,7 @@ public abstract class GenericCrudController
 
     }
 
-    public ResponseEntity<String> create(@LogParam HttpServletRequest request, HttpServletResponse response) throws BadEntityException, EntityNotFoundException, IOException {
+    public ResponseEntity<String> create(HttpServletRequest request, HttpServletResponse response) throws BadEntityException, EntityNotFoundException, IOException {
         String json = readBody(request);
         Class<?> dtoClass = createDtoClass(coreProperties.controller.endpoints.create, Direction.REQUEST, null);
         Object dto = getJsonMapper().readValue(json, dtoClass);
@@ -187,7 +187,7 @@ public abstract class GenericCrudController
         return ok(jsonMapper.writeValueAsString(resultDto));
     }
 
-    public ResponseEntity<String> update(@LogParam HttpServletRequest request, HttpServletResponse response) throws EntityNotFoundException, BadEntityException, IdFetchingException, JsonPatchException, IOException {
+    public ResponseEntity<String> update(HttpServletRequest request, HttpServletResponse response) throws EntityNotFoundException, BadEntityException, IdFetchingException, JsonPatchException, IOException {
         String patchString = readBody(request);
         log.debug("patchString: " + patchString);
         Id id = idIdFetchingStrategy.fetchId(request);
@@ -215,7 +215,7 @@ public abstract class GenericCrudController
         return ok(jsonMapper.writeValueAsString(resultDto));
     }
 
-    public ResponseEntity<?> delete(@LogParam HttpServletRequest request, HttpServletResponse response) throws IdFetchingException, BadEntityException, EntityNotFoundException, ConstraintViolationException {
+    public ResponseEntity<?> delete(HttpServletRequest request, HttpServletResponse response) throws IdFetchingException, BadEntityException, EntityNotFoundException, ConstraintViolationException {
         Id id = idIdFetchingStrategy.fetchId(request);
         log.debug("id fetched from request: " + id);
         beforeDelete(id, request, response);
@@ -300,6 +300,7 @@ public abstract class GenericCrudController
     @SuppressWarnings("unchecked")
     public GenericCrudController() {
         this.entityClass =  (Class<E>) ((ParameterizedType) this.getClass().getGenericSuperclass()).getActualTypeArguments()[0];
+        preConfigureDtoMappingContextBuilder(dtoMappingContextBuilder);
         this.dtoMappingContext = provideDtoMappingContext(dtoMappingContextBuilder);
         logDtoMappingContext();
         initUrls();
@@ -308,7 +309,11 @@ public abstract class GenericCrudController
     /**
      * Use one of the {@link com.github.vincemann.springrapid.core.controller.dto.mapper.context.DtoMappingContextBuilder}s by autowiring them in.
      */
-    protected abstract DtoMappingContext provideDtoMappingContext(DtoMappingsContextBuilder builder);
+    protected abstract DtoMappingContext provideDtoMappingContext(DTOMappingContextBuilder builder);
+
+    protected void preConfigureDtoMappingContextBuilder(DTOMappingContextBuilder builder){
+
+    }
 
     @Override
     public void onApplicationEvent(ContextRefreshedEvent event) {
@@ -333,7 +338,7 @@ public abstract class GenericCrudController
      * Override this method to manage exposure of endpoints
      * @param endpointInfo
      */
-    protected void configureEndpointInfo(EndpointInfos endpointInfo){
+    protected void configureEndpointInfo(EndpointInfo endpointInfo){
 
     }
 
@@ -525,12 +530,12 @@ public abstract class GenericCrudController
     }
 
     @Autowired
-    public void injectEndpointInfo(EndpointInfos endpointInfo) {
+    public void injectEndpointInfo(EndpointInfo endpointInfo) {
         this.endpointInfo = endpointInfo;
     }
 
     @Autowired
-    public void injectDtoMappingContextBuilder(DtoMappingsContextBuilder dtoMappingContextBuilder) {
+    public void injectDtoMappingContextBuilder(DTOMappingContextBuilder dtoMappingContextBuilder) {
         this.dtoMappingContextBuilder = dtoMappingContextBuilder;
     }
 

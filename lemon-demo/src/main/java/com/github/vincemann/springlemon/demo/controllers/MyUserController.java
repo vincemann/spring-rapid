@@ -2,7 +2,7 @@ package com.github.vincemann.springlemon.demo.controllers;
 
 import com.github.vincemann.springlemon.auth.controller.AbstractUserController;
 import com.github.vincemann.springlemon.auth.controller.LemonDtoEndpoint;
-import com.github.vincemann.springlemon.auth.controller.LemonDtoMappingContextBuilder;
+import com.github.vincemann.springlemon.auth.controller.UserDtoMappingContextBuilder;
 import com.github.vincemann.springlemon.demo.domain.User;
 import com.github.vincemann.springlemon.demo.domain.MySignupForm;
 import com.github.vincemann.springlemon.demo.dto.AdminUpdateUserDto;
@@ -22,8 +22,13 @@ public class MyUserController extends AbstractUserController<User, Long>  {
 
 
     @Override
+    protected DtoMappingContext provideDtoMappingContext(UserDtoMappingContextBuilder builder) {
+        return builder.context(super.provideDtoMappingContext(builder))
+    }
+
+    @Override
     public DtoMappingContext provideDtoMappingContext() {
-        return LemonDtoMappingContextBuilder.builder((DtoMappingContext) super.provideDtoMappingContext())
+        return UserDtoMappingContextBuilder.builder((DtoMappingContext) super.provideDtoMappingContext())
                 .forEndpoint(properties.controller.endpoints.update, UserUpdateDto.class)
                 .forEndpoint(lemonProperties.controller.endpoints.signup, Direction.REQUEST,MySignupForm.class)
                 .withRoles(RapidRoles.ADMIN)
