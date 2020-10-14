@@ -1,6 +1,6 @@
 package com.github.vincemann.springrapid.demo.controller;
 
-import com.github.vincemann.springrapid.core.controller.CrudController;
+import com.github.vincemann.springrapid.core.controller.GenericCrudController;
 import com.github.vincemann.springrapid.demo.model.Owner;
 import com.github.vincemann.springrapid.demo.model.Pet;
 import com.github.vincemann.springrapid.demo.model.PetType;
@@ -18,7 +18,7 @@ import java.time.LocalDate;
 @Getter
 @Setter
 @Slf4j
-public abstract class AbstractControllerTest<C extends CrudController<?,Long,?>>
+public abstract class AbstractControllerTest<C extends GenericCrudController<?,Long,?>>
         extends AbstractUrlParamIdRapidControllerTest<C,Long>
 
 {

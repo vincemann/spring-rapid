@@ -2,6 +2,7 @@ package com.github.vincemann.springrapid.core.controller.dto.mapper.context;
 
 import com.github.vincemann.springrapid.core.RapidCoreProperties;
 import com.github.vincemann.springrapid.core.util.Lists;
+import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.Assert;
@@ -11,6 +12,7 @@ import java.util.List;
 
 @Slf4j
 //todo rename to Rapid...
+@NoArgsConstructor
 public class DtoMappingContextBuilder {
     private List<String> currentRoles = new ArrayList<>();
     private DtoMappingContext mc;
@@ -20,23 +22,18 @@ public class DtoMappingContextBuilder {
     private RapidCoreProperties coreProperties;
 
 
-    public DtoMappingContextBuilder(RapidCoreProperties coreProperties) {
-        this.coreProperties = coreProperties;
-        this.mc = new DtoMappingContext();
-    }
-
-    public DtoMappingContextBuilder(DtoMappingContext mc,RapidCoreProperties coreProperties) {
+    protected DtoMappingContextBuilder(DtoMappingContext mc,RapidCoreProperties coreProperties) {
         this.mc = mc;
+        this.coreProperties = coreProperties;
     }
 
+    // normal use case is injecting this Builder, so coreProperties are already set
 //    public static DtoMappingContextBuilder builder(){
 //        return new DtoMappingContextBuilder();
 //    }
 
-    public static DtoMappingContextBuilder builder(DtoMappingContext mc){
-        DtoMappingContextBuilder builder = new DtoMappingContextBuilder(mc);
-        builder.injectCoreProperties(builder.coreProperties);
-        return builder;
+    public static DtoMappingContextBuilder builder(DtoMappingContext mc,RapidCoreProperties coreProperties){
+        return new DtoMappingContextBuilder(mc,coreProperties);
     }
 
 
@@ -238,6 +235,10 @@ public class DtoMappingContextBuilder {
                 .principal(currPrincipal)
                 .direction(direction)
                 .build();
+    }
+
+    protected RapidCoreProperties getCoreProperties() {
+        return coreProperties;
     }
 
     @Autowired

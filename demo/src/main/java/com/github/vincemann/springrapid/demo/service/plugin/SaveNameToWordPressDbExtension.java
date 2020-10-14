@@ -1,6 +1,6 @@
 package com.github.vincemann.springrapid.demo.service.plugin;
 
-import com.github.vincemann.springrapid.core.controller.CrudController;
+import com.github.vincemann.springrapid.core.controller.GenericCrudController;
 import com.github.vincemann.springrapid.core.proxy.GenericCrudServiceExtension;
 import com.github.vincemann.springrapid.core.proxy.BasicServiceExtension;
 import com.github.vincemann.springrapid.core.service.CrudService;
@@ -12,7 +12,7 @@ import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.context.annotation.Scope;
 
 /**
- *Extension that can be plugged in to all {@link CrudController} dealing with Person Objects
+ *Extension that can be plugged in to all {@link GenericCrudController} dealing with Person Objects
  */
 @Slf4j
 @ServiceComponent

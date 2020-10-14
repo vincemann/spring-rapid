@@ -23,7 +23,7 @@ public class RapidDtoMapperAutoConfiguration {
 
     }
 
-    // no conditional on missing bean bc multiple diff builders must coexist
+    // no conditional on missing bean bc multiple diff type builders must coexist
     @Bean
     @Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
     public DtoMappingContextBuilder dtoMappingContextBuilder(){

@@ -7,12 +7,12 @@ import com.github.vincemann.springrapid.demo.dtos.owner.ReadOwnOwnerDto;
 import com.github.vincemann.springrapid.demo.dtos.owner.UpdateOwnerDto;
 import com.github.vincemann.springrapid.demo.model.Owner;
 import com.github.vincemann.springrapid.core.slicing.components.WebController;
-import com.github.vincemann.springrapid.core.controller.CrudController;
+import com.github.vincemann.springrapid.core.controller.GenericCrudController;
 import com.github.vincemann.springrapid.demo.service.OwnerService;
 import org.springframework.beans.factory.annotation.Autowired;
 
 @WebController
-public class OwnerController extends CrudController<Owner, Long, OwnerService> {
+public class OwnerController extends GenericCrudController<Owner, Long, OwnerService> {
 
     private DtoMappingContextBuilder dtoMappingContextBuilder;
 

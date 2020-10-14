@@ -1,6 +1,6 @@
 package com.github.vincemann.springrapid.coretest.controller.rapid;
 
-import com.github.vincemann.springrapid.core.controller.CrudController;
+import com.github.vincemann.springrapid.core.controller.GenericCrudController;
 import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
@@ -10,7 +10,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 
 public interface UrlParamIdRapidControllerTest
-        <C extends CrudController<?,Id,?>,
+        <C extends GenericCrudController<?,Id,?>,
         Id extends Serializable>
             extends MvcRapidControllerTest<C> {
 

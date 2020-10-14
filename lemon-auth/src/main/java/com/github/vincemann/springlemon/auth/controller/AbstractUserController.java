@@ -18,7 +18,7 @@ import com.github.vincemann.springlemon.auth.service.token.HttpTokenService;
 import com.github.vincemann.springlemon.auth.util.LemonMapUtils;
 import com.github.vincemann.springrapid.acl.proxy.Secured;
 import com.github.vincemann.springrapid.acl.proxy.Unsecured;
-import com.github.vincemann.springrapid.core.controller.CrudController;
+import com.github.vincemann.springrapid.core.controller.GenericCrudController;
 import com.github.vincemann.springrapid.core.controller.dto.mapper.context.Direction;
 import com.github.vincemann.springrapid.core.controller.dto.mapper.context.DtoMappingContext;
 import com.github.vincemann.springrapid.core.controller.dto.mapper.context.DtoMappingInfo;
@@ -50,7 +50,7 @@ import java.util.Optional;
 @WebComponent
 @Slf4j
 public abstract class AbstractUserController<U extends AbstractUser<ID>, ID extends Serializable>
-			extends CrudController<U,ID, UserService<U, ID>> {
+			extends GenericCrudController<U,ID, UserService<U, ID>> {
 
 	private UserService<U, ID> unsecuredUserService;
 	private HttpTokenService httpTokenService;

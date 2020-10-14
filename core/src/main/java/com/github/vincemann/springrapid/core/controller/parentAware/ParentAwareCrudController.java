@@ -2,7 +2,7 @@ package com.github.vincemann.springrapid.core.controller.parentAware;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.github.vincemann.springrapid.core.controller.dto.mapper.context.Direction;
-import com.github.vincemann.springrapid.core.controller.CrudController;
+import com.github.vincemann.springrapid.core.controller.GenericCrudController;
 import com.github.vincemann.springrapid.core.controller.idFetchingStrategy.IdFetchingStrategy;
 import com.github.vincemann.springrapid.core.controller.idFetchingStrategy.IdFetchingException;
 import com.github.vincemann.springrapid.core.controller.validationStrategy.ValidationStrategy;
@@ -14,7 +14,6 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.event.ContextRefreshedEvent;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.servlet.mvc.method.RequestMappingInfo;
@@ -43,9 +42,8 @@ public abstract class ParentAwareCrudController
                 PId extends Serializable,
                 S extends CrudService<E, Id> & ParentAwareService<E, PId>
                 >
-        extends CrudController<E, Id, S> {
+        extends GenericCrudController<E, Id, S,ParentAwareEndpointInfo,ParentAwareDtoMappingContextBuilder> {
 
-    public static final String FIND_ALL_OF_PARENT_METHOD_NAME = "getAllOfParent";
     private IdFetchingStrategy<PId> parentIdFetchingStrategy;
     private ValidationStrategy<PId> parentValidationStrategy;
     @Setter
@@ -57,26 +55,27 @@ public abstract class ParentAwareCrudController
         super.injectCrudService(service);
     }
 
-
     @Override
-    public void onApplicationEvent(ContextRefreshedEvent event) {
-        super.onApplicationEvent(event);
-        this.findAllOfParentUrl = getEntityBaseUrl() + FIND_ALL_OF_PARENT_METHOD_NAME;
-        registerFindByParentIdRequestMapping();
+    protected void initUrls() {
+        super.initUrls();
+        this.findAllOfParentUrl = getEntityBaseUrl() + getCoreProperties().controller.endpoints.findAllOfParent;
     }
 
-    private void registerFindByParentIdRequestMapping() {
+    @Override
+    protected void initRequestMapping() {
+        super.initRequestMapping();
         try {
             log.debug("Exposing findAllOfParent Endpoint for " + this.getClass().getSimpleName());
             getEndpointService().addMapping(getFindAllOfParentRequestMappingInfo(),
                     this.getClass().getMethod("findAllOfParent", HttpServletRequest.class), this);
         } catch (NoSuchMethodException e) {
             //should never happen
-            throw new IllegalStateException(e);
+            throw new RuntimeException(e);
         }
     }
 
-    public RequestMappingInfo getFindAllOfParentRequestMappingInfo() {
+
+    protected RequestMappingInfo getFindAllOfParentRequestMappingInfo() {
         return RequestMappingInfo
                 .paths(findAllOfParentUrl)
                 .methods(RequestMethod.GET)

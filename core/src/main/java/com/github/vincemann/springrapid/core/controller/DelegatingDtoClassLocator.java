@@ -19,12 +19,12 @@ import java.util.Optional;
 public class DelegatingDtoClassLocator {
     private DtoMappingContext context;
     private List<LocalDtoClassLocator> localDelegates = new ArrayList<>();
+    private DtoClassLocator globalDelegate;
 
     public DelegatingDtoClassLocator(DtoClassLocator globalDelegate) {
         this.globalDelegate = globalDelegate;
     }
 
-    private DtoClassLocator globalDelegate;
 
 //    //@LogInteraction
     public Class<?> find(DtoMappingInfo info){
