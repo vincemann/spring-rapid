@@ -1,7 +1,5 @@
 package com.github.vincemann.springrapid.core.controller.parentAware;
 
-import com.github.vincemann.springrapid.core.RapidCoreProperties;
-import com.github.vincemann.springrapid.core.controller.dto.mapper.context.DtoMappingContext;
 import com.github.vincemann.springrapid.core.controller.dto.mapper.context.DtoMappingContextBuilder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -14,13 +12,6 @@ import java.util.List;
 @NoArgsConstructor
 public class ParentAwareDtoMappingContextBuilder extends DtoMappingContextBuilder {
 
-    public ParentAwareDtoMappingContextBuilder(DtoMappingContext mc, RapidCoreProperties coreProperties) {
-        super(mc, coreProperties);
-    }
-
-    public static ParentAwareDtoMappingContextBuilder builder(DtoMappingContext mc, RapidCoreProperties coreProperties){
-        return new ParentAwareDtoMappingContextBuilder(mc,coreProperties);
-    }
 
     @Override
     protected List<String> getAllEndpoints() {

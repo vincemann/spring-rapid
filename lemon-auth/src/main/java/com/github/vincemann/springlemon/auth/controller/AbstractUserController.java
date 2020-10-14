@@ -50,7 +50,7 @@ import java.util.Optional;
 @WebComponent
 @Slf4j
 public abstract class AbstractUserController<U extends AbstractUser<ID>, ID extends Serializable>
-			extends GenericCrudController<U,ID, UserService<U, ID>> {
+			extends GenericCrudController<U,ID, UserService<U, ID>,UserEndpointInfo,UserDtoMappingContextBuilder> {
 
 	private UserService<U, ID> unsecuredUserService;
 	private HttpTokenService httpTokenService;
@@ -69,10 +69,15 @@ public abstract class AbstractUserController<U extends AbstractUser<ID>, ID exte
 		return context;
 	}
 
+	/**
+	 * Preconfigured UserDtoMappingContextBuilder.
+	 * To extend configuration override {@link this#provideDtoMappingContext(UserDtoMappingContextBuilder)} and continue configuring.
+	 * To remove pre-configuration, override this method with empty impl and then override {@link this#provideDtoMappingContext(UserDtoMappingContextBuilder)}.
+	 */
 	@Override
-	public DtoMappingContext provideDtoMappingContext() {
-		return LemonDtoMappingContextBuilder.builder()
-				.withAllPrincipals()
+	protected void preConfigureDtoMappingContextBuilder(UserDtoMappingContextBuilder builder) {
+		super.preConfigureDtoMappingContextBuilder(builder);
+		builder.withAllPrincipals()
 				.forAll(LemonUserDto.class)
 				.forResponse(LemonReadUserDto.class)
 				.forEndpoint(lemonProperties.controller.endpoints.signup, Direction.REQUEST, LemonSignupForm.class)
@@ -82,9 +87,12 @@ public abstract class AbstractUserController<U extends AbstractUser<ID>, ID exte
 
 				.withAllPrincipals()
 				.withRoles(RapidRoles.ADMIN)
-				.forEndpoint(getCoreProperties().controller.endpoints.update, LemonAdminUpdateUserDto.class)
+				.forEndpoint(getCoreProperties().controller.endpoints.update, LemonAdminUpdateUserDto.class);
+	}
 
-				.build();
+	@Override
+	protected DtoMappingContext provideDtoMappingContext(UserDtoMappingContextBuilder builder) {
+		return builder.build();
 	}
 
 	/**
@@ -95,7 +103,7 @@ public abstract class AbstractUserController<U extends AbstractUser<ID>, ID exte
 	@ResponseStatus(HttpStatus.CREATED)
 	@ResponseBody
 	public ResponseEntity<String> signup(/*@RequestBody @JsonView(UserUtils.SignupInput.class) S signupForm,*/
-							   @LogParam HttpServletRequest request,
+							   HttpServletRequest request,
 							   HttpServletResponse response) throws BadEntityException, IOException, EntityNotFoundException {
 
 		String signupForm = readBody(request);
@@ -134,8 +142,8 @@ public abstract class AbstractUserController<U extends AbstractUser<ID>, ID exte
 	@ResponseBody
 	
 	public ResponseEntity<String> verifyUser(
-			@LogParam @PathVariable("id") ID id,
-			@LogParam @RequestParam String code,
+			@PathVariable("id") ID id,
+			@RequestParam String code,
 			HttpServletResponse response) throws JsonProcessingException, BadEntityException, EntityNotFoundException, BadTokenException {
 		getValidationStrategy().validateId(id);
 		log.debug("Verifying user with id: " + id);
@@ -166,7 +174,7 @@ public abstract class AbstractUserController<U extends AbstractUser<ID>, ID exte
 	@PostMapping("/reset-password")
 	@ResponseBody
 	public ResponseEntity<String> resetPassword(
-			@LogParam @RequestBody ResetPasswordForm form,
+			@RequestBody ResetPasswordForm form,
 			HttpServletResponse response) throws JsonProcessingException, BadEntityException, EntityNotFoundException, BadTokenException {
 
 		log.debug("Resetting password ... ");
@@ -204,8 +212,8 @@ public abstract class AbstractUserController<U extends AbstractUser<ID>, ID exte
 	 */
 	@PostMapping("/users/{id}/password")
 	@ResponseStatus(HttpStatus.NO_CONTENT)
-	public void changePassword(@LogParam @PathVariable("id") ID id,
-			@LogParam @RequestBody ChangePasswordForm changePasswordForm,
+	public void changePassword(@PathVariable("id") ID id,
+			@RequestBody ChangePasswordForm changePasswordForm,
 			HttpServletResponse response) throws BadEntityException, EntityNotFoundException {
 
 		log.debug("Changing password of user with id: " + id);
@@ -234,8 +242,8 @@ public abstract class AbstractUserController<U extends AbstractUser<ID>, ID exte
 	@PostMapping("/users/{id}/email")
 	@ResponseBody
 	public ResponseEntity<String> changeEmail(
-			@LogParam @PathVariable("id") ID id,
-			@LogParam @RequestParam String code,
+			@PathVariable("id") ID id,
+			@RequestParam String code,
 			HttpServletResponse response) throws JsonProcessingException, BadEntityException, EntityNotFoundException, BadTokenException {
 
 		log.debug("Changing email of user with id: " + id);

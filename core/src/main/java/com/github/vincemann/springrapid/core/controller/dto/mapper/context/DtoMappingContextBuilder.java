@@ -22,18 +22,23 @@ public class DtoMappingContextBuilder {
     private RapidCoreProperties coreProperties;
 
 
-    protected DtoMappingContextBuilder(DtoMappingContext mc,RapidCoreProperties coreProperties) {
-        this.mc = mc;
-        this.coreProperties = coreProperties;
-    }
+//    protected DtoMappingContextBuilder(DtoMappingContext mc,RapidCoreProperties coreProperties) {
+//        this.mc = mc;
+//        this.coreProperties = coreProperties;
+//    }
 
     // normal use case is injecting this Builder, so coreProperties are already set
 //    public static DtoMappingContextBuilder builder(){
 //        return new DtoMappingContextBuilder();
 //    }
 
-    public static DtoMappingContextBuilder builder(DtoMappingContext mc,RapidCoreProperties coreProperties){
-        return new DtoMappingContextBuilder(mc,coreProperties);
+//    public static DtoMappingContextBuilder builder(DtoMappingContext mc,RapidCoreProperties coreProperties){
+//        return new DtoMappingContextBuilder(mc,coreProperties);
+//    }
+
+    public DtoMappingContextBuilder context(DtoMappingContext mc){
+        this.mc=mc;
+        return this;
     }
 
 
