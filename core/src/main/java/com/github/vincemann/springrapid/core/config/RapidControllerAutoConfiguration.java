@@ -5,7 +5,7 @@ import com.github.vincemann.springrapid.core.controller.DelegatingDtoClassLocato
 import com.github.vincemann.springrapid.core.controller.RapidDtoClassLocator;
 import com.github.vincemann.springrapid.core.controller.owner.DelegatingOwnerLocator;
 import com.github.vincemann.springrapid.core.controller.owner.OwnerLocator;
-import com.github.vincemann.springrapid.core.controller.EndpointsExposureContext;
+import com.github.vincemann.springrapid.core.controller.CrudEndpointInfo;
 import com.github.vincemann.springrapid.core.controller.idFetchingStrategy.IdFetchingStrategy;
 import com.github.vincemann.springrapid.core.controller.idFetchingStrategy.LongUrlParamIdFetchingStrategy;
 import com.github.vincemann.springrapid.core.controller.mergeUpdate.MergeUpdateStrategy;
@@ -16,7 +16,6 @@ import com.github.vincemann.springrapid.core.service.EndpointService;
 import com.github.vincemann.springrapid.core.slicing.config.WebConfig;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.context.annotation.Bean;
@@ -86,8 +85,8 @@ public class RapidControllerAutoConfiguration {
 //    @ConditionalOnMissingBean(EndpointsExposureContext.class)
     @Bean
     @Scope(scopeName = SCOPE_PROTOTYPE)
-    public EndpointsExposureContext endpointsExposureContext(){
-        return new EndpointsExposureContext();
+    public CrudEndpointInfo endpointsExposureContext(){
+        return new CrudEndpointInfo();
     }
 
     @ConditionalOnMissingBean(ValidationStrategy.class)

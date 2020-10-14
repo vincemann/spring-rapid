@@ -2,6 +2,7 @@ package com.github.vincemann.springrapid.acl;
 
 import com.github.vincemann.springrapid.acl.proxy.Secured;
 import com.github.vincemann.springrapid.core.controller.CrudController;
+import com.github.vincemann.springrapid.core.controller.GenericCrudController;
 import com.github.vincemann.springrapid.core.model.IdentifiableEntity;
 import com.github.vincemann.springrapid.core.service.AbstractCrudService;
 import org.springframework.context.annotation.Lazy;

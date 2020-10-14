@@ -8,8 +8,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Bundle of information that maps to dto class for
- * entity -> dto mapping.
+ * Represents information about current Request in Regard to dto-entity Mapping.
  */
 @Getter
 @Setter
