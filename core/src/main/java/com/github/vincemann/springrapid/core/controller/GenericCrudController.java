@@ -3,7 +3,6 @@ package com.github.vincemann.springrapid.core.controller;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.fge.jsonpatch.JsonPatchException;
-import com.github.vincemann.aoplog.api.LogParam;
 import com.github.vincemann.springrapid.core.RapidCoreProperties;
 import com.github.vincemann.springrapid.core.controller.dto.mapper.DelegatingDtoMapper;
 import com.github.vincemann.springrapid.core.controller.dto.mapper.context.Direction;
@@ -284,7 +283,7 @@ public abstract class GenericCrudController
         log.debug("SecurityContexts Authentication before service call: " + SecurityContextHolder.getContext().getAuthentication());
     }
 
-    protected void logDtoMappingContext(){
+    protected void logDtoMappingContext() {
         if (dtoMappingContext != null) {
             log.debug("DtoMappingContext: " + dtoMappingContext.toPrettyString());
         } else {
@@ -299,7 +298,7 @@ public abstract class GenericCrudController
     @Autowired
     @SuppressWarnings("unchecked")
     public GenericCrudController() {
-        this.entityClass =  (Class<E>) ((ParameterizedType) this.getClass().getGenericSuperclass()).getActualTypeArguments()[0];
+        this.entityClass = (Class<E>) ((ParameterizedType) this.getClass().getGenericSuperclass()).getActualTypeArguments()[0];
         preConfigureDtoMappingContextBuilder(dtoMappingContextBuilder);
         this.dtoMappingContext = provideDtoMappingContext(dtoMappingContextBuilder);
         logDtoMappingContext();
@@ -311,14 +310,20 @@ public abstract class GenericCrudController
      */
     protected abstract DtoMappingContext provideDtoMappingContext(DTOMappingContextBuilder builder);
 
-    protected void preConfigureDtoMappingContextBuilder(DTOMappingContextBuilder builder){
+    protected void preConfigureDtoMappingContextBuilder(DTOMappingContextBuilder builder) {
 
     }
 
     @Override
     public void onApplicationEvent(ContextRefreshedEvent event) {
         configureEndpointInfo(endpointInfo);
-        initRequestMapping();
+        try {
+            initEndpoints();
+        } catch (NoSuchMethodException e) {
+            //should never happen
+            throw new RuntimeException(e);
+        }
+
     }
 
     @Override
@@ -336,9 +341,10 @@ public abstract class GenericCrudController
 
     /**
      * Override this method to manage exposure of endpoints
+     *
      * @param endpointInfo
      */
-    protected void configureEndpointInfo(EndpointInfo endpointInfo){
+    protected void configureEndpointInfo(EndpointInfo endpointInfo) {
 
     }
 
@@ -352,50 +358,31 @@ public abstract class GenericCrudController
         this.createUrl = entityBaseUrl + coreProperties.controller.endpoints.create;
     }
 
-    protected void initRequestMapping() {
-        try {
-            if (endpointInfo.isExposeCreate()) {
-                //CREATE
-                log.debug("Exposing create Endpoint for " + this.getClass().getSimpleName());
-                getEndpointService().addMapping(getCreateRequestMappingInfo(),
-                        this.getClass().getMethod("create", HttpServletRequest.class, HttpServletResponse.class), this);
-            }
-
-            if (endpointInfo.isExposeFind()) {
-                //GET
-                log.debug("Exposing get Endpoint for " + this.getClass().getSimpleName());
-                getEndpointService().addMapping(getFindRequestMappingInfo(),
-                        this.getClass().getMethod("find", HttpServletRequest.class, HttpServletResponse.class), this);
-            }
-
-            if (endpointInfo.isExposeUpdate()) {
-                //UPDATE
-                log.debug("Exposing update Endpoint for " + this.getClass().getSimpleName());
-                getEndpointService().addMapping(getUpdateRequestMappingInfo(),
-                        this.getClass().getMethod("update", HttpServletRequest.class, HttpServletResponse.class), this);
-            }
-
-            if (endpointInfo.isExposeDelete()) {
-                //DELETE
-                log.debug("Exposing delete Endpoint for " + this.getClass().getSimpleName());
-                getEndpointService().addMapping(getDeleteRequestMappingInfo(),
-                        this.getClass().getMethod("delete", HttpServletRequest.class, HttpServletResponse.class), this);
-            }
-
-            if (endpointInfo.isExposeFindAll()) {
-                //DELETE
-                log.debug("Exposing findAll Endpoint for " + this.getClass().getSimpleName());
-                getEndpointService().addMapping(getFindAllRequestMappingInfo(),
-                        this.getClass().getMethod("findAll", HttpServletRequest.class, HttpServletResponse.class), this);
-            }
-
-        } catch (NoSuchMethodException e) {
-            //should never happen
-            throw new RuntimeException(e);
+    protected void initEndpoints() throws NoSuchMethodException {
+        if (endpointInfo.isExposeCreate()) {
+            registerEndpoint(createCreateRequestMappingInfo(), "create");
+        }
+        if (endpointInfo.isExposeFind()) {
+            registerEndpoint(createFindRequestMappingInfo(), "find");
+        }
+        if (endpointInfo.isExposeUpdate()) {
+            registerEndpoint(createUpdateRequestMappingInfo(), "update");
+        }
+        if (endpointInfo.isExposeDelete()) {
+            registerEndpoint(createDeleteRequestMappingInfo(), "delete");
+        }
+        if (endpointInfo.isExposeFindAll()) {
+            registerEndpoint(createFindAllRequestMappingInfo(), "findAll");
         }
     }
 
-    protected RequestMappingInfo getFindRequestMappingInfo() {
+    protected void registerEndpoint(RequestMappingInfo requestMappingInfo, String methodName) throws NoSuchMethodException {
+        log.debug("Exposing " + methodName + " Endpoint for " + this.getClass().getSimpleName());
+        getEndpointService().addMapping(requestMappingInfo,
+                this.getClass().getMethod(methodName, HttpServletRequest.class, HttpServletResponse.class), this);
+    }
+
+    protected RequestMappingInfo createFindRequestMappingInfo() {
         return RequestMappingInfo
                 .paths(findUrl)
                 .methods(RequestMethod.GET)
@@ -403,7 +390,7 @@ public abstract class GenericCrudController
                 .build();
     }
 
-    protected RequestMappingInfo getDeleteRequestMappingInfo() {
+    protected RequestMappingInfo createDeleteRequestMappingInfo() {
         return RequestMappingInfo
                 .paths(deleteUrl)
                 .methods(RequestMethod.DELETE)
@@ -411,7 +398,7 @@ public abstract class GenericCrudController
                 .build();
     }
 
-    protected RequestMappingInfo getCreateRequestMappingInfo() {
+    protected RequestMappingInfo createCreateRequestMappingInfo() {
         return RequestMappingInfo
                 .paths(createUrl)
                 .methods(RequestMethod.POST)
@@ -420,7 +407,7 @@ public abstract class GenericCrudController
                 .build();
     }
 
-    protected RequestMappingInfo getUpdateRequestMappingInfo() {
+    protected RequestMappingInfo createUpdateRequestMappingInfo() {
         return RequestMappingInfo
                 .paths(updateUrl)
                 .methods(RequestMethod.PUT)
@@ -429,7 +416,7 @@ public abstract class GenericCrudController
                 .build();
     }
 
-    protected RequestMappingInfo getFindAllRequestMappingInfo() {
+    protected RequestMappingInfo createFindAllRequestMappingInfo() {
         return RequestMappingInfo
                 .paths(findAllUrl)
                 .methods(RequestMethod.GET)
@@ -504,26 +491,32 @@ public abstract class GenericCrudController
     public void injectCrudService(S crudService) {
         this.service = crudService;
     }
+
     @Autowired
     public void injectMergeUpdateStrategy(MergeUpdateStrategy mergeUpdateStrategy) {
         this.mergeUpdateStrategy = mergeUpdateStrategy;
     }
+
     @Autowired
     public void injectOwnerLocator(DelegatingOwnerLocator ownerLocator) {
         this.ownerLocator = ownerLocator;
     }
+
     @Autowired
     public void injectValidationStrategy(ValidationStrategy<Id> validationStrategy) {
         this.validationStrategy = validationStrategy;
     }
+
     @Autowired
     public void injectDtoClassLocator(DelegatingDtoClassLocator dtoClassLocator) {
         this.dtoClassLocator = dtoClassLocator;
     }
+
     @Autowired
     public void injectDtoMapper(DelegatingDtoMapper dtoMapper) {
         this.dtoMapper = dtoMapper;
     }
+
     @Autowired
     public void injectEndpointService(EndpointService endpointService) {
         this.endpointService = endpointService;
@@ -543,10 +536,12 @@ public abstract class GenericCrudController
     public void injectJsonMapper(ObjectMapper mapper) {
         this.jsonMapper = mapper;
     }
+
     @Autowired
     public void injectIdIdFetchingStrategy(IdFetchingStrategy<Id> idIdFetchingStrategy) {
         this.idIdFetchingStrategy = idIdFetchingStrategy;
     }
+
     @Autowired
     public void injectCoreProperties(RapidCoreProperties properties) {
         this.coreProperties = properties;

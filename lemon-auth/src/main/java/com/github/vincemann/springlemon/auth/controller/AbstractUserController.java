@@ -27,6 +27,7 @@ import com.github.vincemann.springrapid.core.service.exception.BadEntityExceptio
 import com.github.vincemann.springrapid.core.service.exception.EntityNotFoundException;
 import com.github.vincemann.springrapid.core.slicing.components.WebComponent;
 import com.github.vincemann.springrapid.core.util.VerifyEntity;
+import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -49,10 +50,11 @@ import java.util.Optional;
  */
 @WebComponent
 @Slf4j
-public abstract class AbstractUserController<U extends AbstractUser<ID>, ID extends Serializable>
-			extends GenericCrudController<U,ID, UserService<U, ID>,UserEndpointInfo,UserDtoMappingContextBuilder> {
+@Getter
+public abstract class AbstractUserController<U extends AbstractUser<ID>, ID extends Serializable, S extends UserService<U,ID>>
+			extends GenericCrudController<U,ID, S,UserEndpointInfo,UserDtoMappingContextBuilder> {
 
-	private UserService<U, ID> unsecuredUserService;
+	private S unsecuredUserService;
 	private HttpTokenService httpTokenService;
 	private LemonProperties lemonProperties;
 
@@ -288,7 +290,7 @@ public abstract class AbstractUserController<U extends AbstractUser<ID>, ID exte
 	/**
 	 * Adds an Authorization header to the response for certain user
 	 */
-	public void appendFreshTokenOf(U user, HttpServletResponse response) {
+	protected void appendFreshTokenOf(U user, HttpServletResponse response) {
 		String token = getService().createNewAuthToken(user.getEmail());
 		httpTokenService.appendToken(token,response);
 //		response.addHeader(LecUtils.TOKEN_RESPONSE_HEADER_NAME, JwtService.TOKEN_PREFIX + token);
@@ -298,7 +300,7 @@ public abstract class AbstractUserController<U extends AbstractUser<ID>, ID exte
 	/**
 	 * Adds an Authorization header to the response for logged in user
 	 */
-	public void appendFreshToken(HttpServletResponse response){
+	protected void appendFreshToken(HttpServletResponse response){
 		String token = getService().createNewAuthToken();
 		httpTokenService.appendToken(token,response);
 	}
@@ -318,14 +320,14 @@ public abstract class AbstractUserController<U extends AbstractUser<ID>, ID exte
 	@Autowired
 	@Secured
 	@Override
-	public void injectCrudService(UserService<U, ID> crudService) {
+	public void injectCrudService(S crudService) {
 		super.injectCrudService(crudService);
 	}
 
 
 	@Autowired
 	@Unsecured
-	public void injectUnsecuredService(UserService<U, ID> unsecuredService) {
+	public void injectUnsecuredService(S unsecuredService) {
 		this.unsecuredUserService = unsecuredService;
 	}
 

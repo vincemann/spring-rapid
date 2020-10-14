@@ -7,6 +7,7 @@ import com.github.vincemann.springlemon.demo.domain.User;
 import com.github.vincemann.springlemon.demo.domain.MySignupForm;
 import com.github.vincemann.springlemon.demo.dto.AdminUpdateUserDto;
 import com.github.vincemann.springlemon.demo.dto.UserUpdateDto;
+import com.github.vincemann.springlemon.demo.services.MyUserService;
 import com.github.vincemann.springrapid.core.security.RapidRoles;
 import com.github.vincemann.springrapid.core.controller.dto.mapper.context.Direction;
 import com.github.vincemann.springrapid.core.controller.dto.mapper.context.DtoMappingContext;
@@ -15,24 +16,20 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 @Controller
-@RequestMapping(MyUserController.BASE_URI)
-public class MyUserController extends AbstractUserController<User, Long>  {
+//@RequestMapping(MyUserController.BASE_URI)
+public class MyUserController extends AbstractUserController<User, Long, MyUserService>  {
 
-    public static final String BASE_URI = "/api/core";
+//    public static final String BASE_URI = "/api/core";
 
 
     @Override
     protected DtoMappingContext provideDtoMappingContext(UserDtoMappingContextBuilder builder) {
-        return builder.context(super.provideDtoMappingContext(builder))
-    }
-
-    @Override
-    public DtoMappingContext provideDtoMappingContext() {
-        return UserDtoMappingContextBuilder.builder((DtoMappingContext) super.provideDtoMappingContext())
-                .forEndpoint(properties.controller.endpoints.update, UserUpdateDto.class)
-                .forEndpoint(lemonProperties.controller.endpoints.signup, Direction.REQUEST,MySignupForm.class)
+        return builder
+                .forEndpoint(getCoreProperties().controller.endpoints.update, UserUpdateDto.class)
+                .forEndpoint(getLemonProperties().controller.endpoints.signup, Direction.REQUEST,MySignupForm.class)
                 .withRoles(RapidRoles.ADMIN)
-                .forEndpoint(properties.controller.endpoints.update, AdminUpdateUserDto.class)
+                .forEndpoint(getCoreProperties().controller.endpoints.update, AdminUpdateUserDto.class)
                 .build();
     }
+
 }
