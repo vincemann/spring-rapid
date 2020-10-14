@@ -62,8 +62,8 @@ public abstract class ParentAwareCrudController
     }
 
     @Override
-    protected void initEndpoints() throws NoSuchMethodException {
-        super.initEndpoints();
+    protected void registerEndpoints() throws NoSuchMethodException {
+        super.registerEndpoints();
         registerEndpoint(createFindAllOfParentRequestMappingInfo(),"findAllOfParent");
     }
 

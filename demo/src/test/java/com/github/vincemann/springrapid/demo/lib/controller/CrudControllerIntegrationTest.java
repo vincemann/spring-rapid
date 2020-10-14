@@ -8,7 +8,7 @@ import com.github.vincemann.springrapid.core.controller.dto.mapper.DelegatingDto
 import com.github.vincemann.springrapid.core.controller.dto.mapper.context.RapidDtoEndpoint;
 import com.github.vincemann.springrapid.core.controller.dto.mapper.context.Direction;
 import com.github.vincemann.springrapid.core.controller.dto.mapper.context.DtoMappingContext;
-import com.github.vincemann.springrapid.core.controller.dto.mapper.context.DtoMappingInfo;
+import com.github.vincemann.springrapid.core.controller.dto.mapper.context.DtoRequestInfo;
 import com.github.vincemann.springrapid.core.controller.DtoClassLocator;
 import com.github.vincemann.springrapid.core.controller.idFetchingStrategy.IdFetchingStrategy;
 import com.github.vincemann.springrapid.core.controller.validationStrategy.ValidationStrategy;
@@ -100,7 +100,7 @@ class CrudControllerIntegrationTest
 
     @Test
     void findAll_shouldSucceed() throws Exception {
-        DtoMappingInfo expectedResponseMappingInfo = DtoMappingInfo.builder()
+        DtoRequestInfo expectedResponseMappingInfo = DtoRequestInfo.builder()
                 .direction(Direction.RESPONSE)
                 .endpoint(RapidDtoEndpoint.FIND_ALL)
                 .authorities(new ArrayList<>())
@@ -130,12 +130,12 @@ class CrudControllerIntegrationTest
     @Test
     @Disabled //ich werde sicherlich noch mal was an der aktuellen update methode machen
     void update_shouldSucceed() throws Exception {
-        DtoMappingInfo expectedRequestMappingInfo = DtoMappingInfo.builder()
+        DtoRequestInfo expectedRequestMappingInfo = DtoRequestInfo.builder()
                 .direction(Direction.REQUEST)
                 .endpoint(properties.controller.endpoints.update)
                 .authorities(new ArrayList<>())
                 .build();
-        DtoMappingInfo expectedResponseMappingInfo = DtoMappingInfo.builder()
+        DtoRequestInfo expectedResponseMappingInfo = DtoRequestInfo.builder()
                 .direction(Direction.RESPONSE)
                 .endpoint(properties.controller.endpoints.update)
                 .authorities(new ArrayList<>())
@@ -208,11 +208,11 @@ class CrudControllerIntegrationTest
         verifyDtoMappingContextInteraction(expectedRequestMappingInfo, expectedResponseMappingInfo);
     }
 
-    private void verifyDtoMappingContextInteraction(DtoMappingInfo... info) {
-        ArgumentCaptor<DtoMappingInfo> argumentCaptor = ArgumentCaptor.forClass(DtoMappingInfo.class);
+    private void verifyDtoMappingContextInteraction(DtoRequestInfo... info) {
+        ArgumentCaptor<DtoRequestInfo> argumentCaptor = ArgumentCaptor.forClass(DtoRequestInfo.class);
         verify(dtoClassLocator, times(info.length)).find(argumentCaptor.capture(),eq(dtoMappingContext));
         int index = 0;
-        for (DtoMappingInfo value : argumentCaptor.getAllValues()) {
+        for (DtoRequestInfo value : argumentCaptor.getAllValues()) {
             Assertions.assertEquals(info[index], value);
             index++;
         }
@@ -247,7 +247,7 @@ class CrudControllerIntegrationTest
     void create_shouldSucceed() throws Exception {
         //given
 
-        DtoMappingInfo expectedRequestMappingInfo = DtoMappingInfo.builder()
+        DtoRequestInfo expectedRequestMappingInfo = DtoRequestInfo.builder()
                 .authorities(new ArrayList<>())
                 .direction(Direction.REQUEST)
                 .endpoint(properties.controller.endpoints.create)
@@ -263,7 +263,7 @@ class CrudControllerIntegrationTest
 
         when(service.save(requestEntity)).thenReturn(returnEntity);
 
-        DtoMappingInfo expectedResponseMappingInfo = DtoMappingInfo.builder()
+        DtoRequestInfo expectedResponseMappingInfo = DtoRequestInfo.builder()
                 .authorities(new ArrayList<>())
                 .direction(Direction.RESPONSE)
                 .endpoint(properties.controller.endpoints.create)
@@ -301,7 +301,7 @@ class CrudControllerIntegrationTest
 
     @Test
     void find_shouldSucceed() throws Exception {
-        DtoMappingInfo expectedResponseMappingInfo = DtoMappingInfo.builder()
+        DtoRequestInfo expectedResponseMappingInfo = DtoRequestInfo.builder()
                 .authorities(new ArrayList<>())
                 .direction(Direction.RESPONSE)
                 .endpoint(RapidDtoEndpoint.FIND)

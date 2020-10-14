@@ -1,7 +1,7 @@
 package com.github.vincemann.springrapid.core.controller;
 
 import com.github.vincemann.springrapid.core.controller.dto.mapper.context.DtoMappingContext;
-import com.github.vincemann.springrapid.core.controller.dto.mapper.context.DtoMappingInfo;
+import com.github.vincemann.springrapid.core.controller.dto.mapper.context.DtoRequestInfo;
 import lombok.*;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.util.Assert;
@@ -16,7 +16,7 @@ public class RapidDtoClassLocator implements DtoClassLocator {
 
     /**
      * Ignores role if no role was configured for this MappingContext.
-     * Otherwise role and all other properties of {@link DtoMappingInfo} must match for a match.
+     * Otherwise role and all other properties of {@link DtoRequestInfo} must match for a match.
      * If no match was found with a role, it falls back on searching for dtoClass without Role Information.
      *
      * @param info
@@ -24,17 +24,17 @@ public class RapidDtoClassLocator implements DtoClassLocator {
      */
     @Override
     //@LogInteraction
-    public Class<?> find(DtoMappingInfo info, DtoMappingContext context) {
-        Map<DtoMappingInfo, Class<?>> mappingEntries = context.getMappingEntries();
-        Set<DtoMappingInfo> endpointMatches = findEndpointMatches(info,context);
+    public Class<?> find(DtoRequestInfo info, DtoMappingContext context) {
+        Map<DtoRequestInfo, Class<?>> mappingEntries = context.getMappingEntries();
+        Set<DtoRequestInfo> endpointMatches = findEndpointMatches(info,context);
         MatchSet roleMatchSet = findRoleMatchSet(info, endpointMatches);
-        Set<DtoMappingInfo> roleFilteredEntries = roleMatchSet.matches.isEmpty() ? roleMatchSet.criteriaIndifferent : roleMatchSet.matches;
+        Set<DtoRequestInfo> roleFilteredEntries = roleMatchSet.matches.isEmpty() ? roleMatchSet.criteriaIndifferent : roleMatchSet.matches;
         MatchSet principalMatchSet = findPrincipalMatches(info, roleFilteredEntries);
-        Set<DtoMappingInfo> matches = principalMatchSet.matches;
-        Set<DtoMappingInfo> inDifferentPrincipalMatches = principalMatchSet.criteriaIndifferent;
+        Set<DtoRequestInfo> matches = principalMatchSet.matches;
+        Set<DtoRequestInfo> inDifferentPrincipalMatches = principalMatchSet.criteriaIndifferent;
         if (!matches.isEmpty()) {
             Assert.isTrue(matches.size() == 1, "Ambigious Mapping, found multiple Dto Matches: " + matches);
-            DtoMappingInfo match = matches.stream().findFirst().get();
+            DtoRequestInfo match = matches.stream().findFirst().get();
             log.debug("Matching DtoMappingEntry: " + match);
             return mappingEntries.get(match);
         } else {
@@ -42,16 +42,16 @@ public class RapidDtoClassLocator implements DtoClassLocator {
                 throw new IllegalArgumentException("No DtoClass mapped for info: " + info);
             }
             Assert.isTrue(inDifferentPrincipalMatches.size() == 1, "Ambigious Mapping, found multiple Dto Matches: " + inDifferentPrincipalMatches);
-            DtoMappingInfo match = inDifferentPrincipalMatches.stream().findFirst().get();
+            DtoRequestInfo match = inDifferentPrincipalMatches.stream().findFirst().get();
             log.debug("Matching DtoMappingEntry: " + match);
             return mappingEntries.get(match);
         }
     }
 
-    private MatchSet findPrincipalMatches(DtoMappingInfo userMappingInfo, Set<DtoMappingInfo> entries) {
+    private MatchSet findPrincipalMatches(DtoRequestInfo userMappingInfo, Set<DtoRequestInfo> entries) {
         MatchSet principalMatchSet = new MatchSet();
         entries.stream().forEach(info -> {
-            if (info.getPrincipal().equals(DtoMappingInfo.Principal.ALL)) {
+            if (info.getPrincipal().equals(DtoRequestInfo.Principal.ALL)) {
                 principalMatchSet.criteriaIndifferent.add(info);
             } else if (userMappingInfo.getPrincipal().equals(info.getPrincipal())) {
                 principalMatchSet.matches.add(info);
@@ -61,7 +61,7 @@ public class RapidDtoClassLocator implements DtoClassLocator {
     }
 
 
-    private Set<DtoMappingInfo> findEndpointMatches(DtoMappingInfo userMappingInfo,DtoMappingContext context) {
+    private Set<DtoRequestInfo> findEndpointMatches(DtoRequestInfo userMappingInfo, DtoMappingContext context) {
         return context.getMappingEntries().keySet().stream()
                 .filter(info -> info.getDirection().equals(userMappingInfo.getDirection())
                         && info.getEndpoint().equals(userMappingInfo.getEndpoint()))
@@ -69,7 +69,7 @@ public class RapidDtoClassLocator implements DtoClassLocator {
     }
 
 
-    private MatchSet findRoleMatchSet(DtoMappingInfo userMappingInfo, Set<DtoMappingInfo> entries) {
+    private MatchSet findRoleMatchSet(DtoRequestInfo userMappingInfo, Set<DtoRequestInfo> entries) {
         MatchSet roleMatchSet = new MatchSet();
         entries.stream()
                 .forEach(info -> {
@@ -95,7 +95,7 @@ public class RapidDtoClassLocator implements DtoClassLocator {
     @Builder
     @Setter
     static class MatchSet {
-        Set<DtoMappingInfo> matches = new HashSet<>();
-        Set<DtoMappingInfo> criteriaIndifferent = new HashSet<>();
+        Set<DtoRequestInfo> matches = new HashSet<>();
+        Set<DtoRequestInfo> criteriaIndifferent = new HashSet<>();
     }
 }

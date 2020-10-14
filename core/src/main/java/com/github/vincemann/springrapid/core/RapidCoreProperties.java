@@ -32,9 +32,9 @@ public class RapidCoreProperties {
             public String update = "update";
             public String create = "create";
             public String find = "find";
-            public String findAll = "findAll";
+            public String findAll = "find-all";
             public String delete = "delete";
-            public String findAllOfParent = "findAllOfParent";
+            public String findAllOfParent = "find-all-of-parent";
         }
     }
 

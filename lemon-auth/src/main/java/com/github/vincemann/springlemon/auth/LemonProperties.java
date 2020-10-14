@@ -31,16 +31,24 @@ public class LemonProperties {
 	public static class Controller{
 
 		public Endpoints endpoints = new Endpoints();
+		public String userUrlPrefix = "/user";
 
 		@Getter
 		@Setter
     	public static class Endpoints{
     		public String login = "login";
     		public String signup = "signup";
-    		public String resetPassword = "resetPassword";
-    		public String fetchByEmail = "fetchByEmail";
-    		public String changeEmail = "changeEmail";
-    		public String verifyUser = "verifyUser";
+    		public String resetPassword = "reset-password";
+    		public String fetchByEmail = "fetch-by-email";
+    		public String changeEmail = "change-email";
+    		public String verifyUser = "verify-user";
+    		public String context = "context";
+			public String resendVerificationEmail = "resend-verification-email";
+			public String forgotPassword = "forgot-password";
+			public String changePassword = "change-password";
+			public String requestEmailChange = "request-email-change";
+			public String fetchNewAuthToken = "fetch-new-auth-token";
+			public String ping = "ping";
 		}
 	}
 

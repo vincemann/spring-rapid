@@ -28,9 +28,9 @@ public class OwnerController extends GenericCrudController<Owner, Long, OwnerSer
                 .forUpdate(UpdateOwnerDto.class)
                 //response dto config
                 //authenticated
-                .withPrincipal(DtoMappingInfo.Principal.OWN)
+                .withPrincipal(DtoRequestInfo.Principal.OWN)
                 .forResponse(ReadOwnOwnerDto.class)
-                .withPrincipal(DtoMappingInfo.Principal.FOREIGN)
+                .withPrincipal(DtoRequestInfo.Principal.FOREIGN)
                 .forResponse(ReadForeignOwnerDto.class)
                 //not authenticated
                 .withAllPrincipals()
