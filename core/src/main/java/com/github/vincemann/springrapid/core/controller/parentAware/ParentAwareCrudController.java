@@ -62,20 +62,12 @@ public abstract class ParentAwareCrudController
     }
 
     @Override
-    protected void initRequestMapping() {
-        super.initRequestMapping();
-        try {
-            log.debug("Exposing findAllOfParent Endpoint for " + this.getClass().getSimpleName());
-            getEndpointService().addMapping(getFindAllOfParentRequestMappingInfo(),
-                    this.getClass().getMethod("findAllOfParent", HttpServletRequest.class), this);
-        } catch (NoSuchMethodException e) {
-            //should never happen
-            throw new RuntimeException(e);
-        }
+    protected void initEndpoints() throws NoSuchMethodException {
+        super.initEndpoints();
+        registerEndpoint(createFindAllOfParentRequestMappingInfo(),"findAllOfParent");
     }
 
-
-    protected RequestMappingInfo getFindAllOfParentRequestMappingInfo() {
+    protected RequestMappingInfo createFindAllOfParentRequestMappingInfo() {
         return RequestMappingInfo
                 .paths(findAllOfParentUrl)
                 .methods(RequestMethod.GET)
