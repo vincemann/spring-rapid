@@ -28,7 +28,7 @@ public class RapidCoreProperties {
         @Getter
         @Setter
         public static class Endpoints{
-
+            // just the names of the method in url, since url is dynamically build
             public String update = "update";
             public String create = "create";
             public String find = "find";
