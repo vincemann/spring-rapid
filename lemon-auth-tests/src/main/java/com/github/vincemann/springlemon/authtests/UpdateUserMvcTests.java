@@ -2,12 +2,11 @@ package com.github.vincemann.springlemon.authtests;
 
 import com.github.vincemann.springlemon.auth.controller.AbstractUserController;
 import com.github.vincemann.springlemon.auth.domain.AbstractUser;
-import com.github.vincemann.springlemon.auth.service.UserService;
 import com.github.vincemann.springlemon.auth.domain.LemonRoles;
 import com.github.vincemann.springrapid.core.security.RapidRoles;
 
 import com.github.vincemann.springrapid.core.util.ResourceUtils;
-import com.github.vincemann.springrapid.coretest.controller.rapid.UrlParamIdRapidControllerTest;
+import com.github.vincemann.springrapid.coretest.controller.rapid.UrlParamIdCrudControllerTest;
 import lombok.Getter;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.Assertions;
@@ -26,7 +25,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 public class UpdateUserMvcTests extends AbstractMvcTests
-		implements UrlParamIdRapidControllerTest<AbstractUserController<?,Long,?>,Long> {
+		implements UrlParamIdCrudControllerTest<AbstractUserController<?,Long,?>,Long> {
 
 	static final String UPDATED_EMAIL = "updated@e.mail";
 	static final String FIELD_DUMMY_VALUE = "name";

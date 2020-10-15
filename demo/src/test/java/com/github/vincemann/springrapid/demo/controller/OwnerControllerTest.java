@@ -6,7 +6,7 @@ import com.github.vincemann.springrapid.core.security.RapidSecurityContext;
 import com.github.vincemann.springrapid.core.service.locator.CrudServiceLocator;
 import com.github.vincemann.springrapid.core.util.ResourceUtils;
 import com.github.vincemann.springrapid.coretest.TestPrincipal;
-import com.github.vincemann.springrapid.coretest.controller.rapid.AbstractUrlParamIdRapidControllerTest;
+import com.github.vincemann.springrapid.coretest.controller.rapid.AbstractUrlParamIdCrudControllerTest;
 import com.github.vincemann.springrapid.demo.dtos.owner.CreateOwnerDto;
 import com.github.vincemann.springrapid.demo.dtos.owner.ReadForeignOwnerDto;
 import com.github.vincemann.springrapid.demo.dtos.owner.ReadOwnOwnerDto;
@@ -14,7 +14,6 @@ import com.github.vincemann.springrapid.demo.model.Owner;
 import com.github.vincemann.springrapid.demo.model.Pet;
 import com.github.vincemann.springrapid.demo.service.OwnerService;
 import com.github.vincemann.springrapid.demo.service.PetService;
-import com.google.common.collect.Sets;
 import org.apache.commons.beanutils.BeanUtilsBean;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -34,7 +33,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 
 class OwnerControllerTest
-        extends AbstractUrlParamIdRapidControllerTest<OwnerController,Long> {
+        extends AbstractUrlParamIdCrudControllerTest<OwnerController,Long> {
 
     CreateOwnerDto createOwnerDto;
     ReadForeignOwnerDto readForeignOwnerDto;

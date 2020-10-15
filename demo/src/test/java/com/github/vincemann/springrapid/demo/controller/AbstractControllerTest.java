@@ -6,7 +6,7 @@ import com.github.vincemann.springrapid.demo.model.Pet;
 import com.github.vincemann.springrapid.demo.model.PetType;
 import com.github.vincemann.springrapid.demo.model.Specialty;
 import com.github.vincemann.springrapid.core.service.CrudService;
-import com.github.vincemann.springrapid.coretest.controller.rapid.AbstractUrlParamIdRapidControllerTest;
+import com.github.vincemann.springrapid.coretest.controller.rapid.AbstractUrlParamIdCrudControllerTest;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
@@ -18,8 +18,8 @@ import java.time.LocalDate;
 @Getter
 @Setter
 @Slf4j
-public abstract class AbstractControllerTest<C extends GenericCrudController<?,Long,?>>
-        extends AbstractUrlParamIdRapidControllerTest<C,Long>
+public abstract class AbstractControllerTest<C extends GenericCrudController<?,Long,?,?,?>>
+        extends AbstractUrlParamIdCrudControllerTest<C,Long>
 
 {
 

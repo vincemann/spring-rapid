@@ -32,7 +32,7 @@ public class BasicDtoMapper implements DtoMapper<IdentifiableEntity<?>,Object> {
     }
 
     @Override
-    public <T extends IdentifiableEntity<?>> T mapToEntity(Object source, Class<T> destinationClass) throws EntityNotFoundException, BadEntityException {
+    public <T extends IdentifiableEntity<?>> T mapToEntity(Object source, Class<T> destinationClass) throws BadEntityException {
         try {
             return modelMapper.map(source, destinationClass);
         }catch (MappingException e){

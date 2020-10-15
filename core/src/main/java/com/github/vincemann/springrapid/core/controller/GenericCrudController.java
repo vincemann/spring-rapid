@@ -254,11 +254,6 @@ public abstract class GenericCrudController
     @SuppressWarnings("unchecked")
     public GenericCrudController() {
         this.entityClass = (Class<E>) ((ParameterizedType) this.getClass().getGenericSuperclass()).getActualTypeArguments()[0];
-        this.dtoMappingContextBuilder = createDtoMappingContextBuilder();
-        preConfigureDtoMappingContextBuilder(dtoMappingContextBuilder);
-        this.dtoMappingContext = provideDtoMappingContext(dtoMappingContextBuilder);
-        logDtoMappingContext();
-        initUrls();
     }
 
     /**
@@ -268,7 +263,7 @@ public abstract class GenericCrudController
 
     protected abstract DTOMappingContextBuilder createDtoMappingContextBuilder();
 
-    protected void preConfigureDtoMappingContextBuilder(DTOMappingContextBuilder builder) {
+    protected void preconfigureDtoMappingContextBuilder(DTOMappingContextBuilder builder) {
 
     }
 
@@ -286,6 +281,11 @@ public abstract class GenericCrudController
 
     @Override
     public void afterPropertiesSet() {
+        initUrls();
+        this.dtoMappingContextBuilder = createDtoMappingContextBuilder();
+        preconfigureDtoMappingContextBuilder(dtoMappingContextBuilder);
+        this.dtoMappingContext = provideDtoMappingContext(dtoMappingContextBuilder);
+        logDtoMappingContext();
         dtoClassLocator.setContext(dtoMappingContext);
         configureDtoClassLocator(dtoClassLocator);
     }

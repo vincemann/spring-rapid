@@ -3,6 +3,7 @@ package com.github.vincemann.springlemon.auth;
 import com.github.vincemann.springrapid.core.RapidCoreProperties;
 import lombok.*;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
 import org.springframework.validation.annotation.Validated;
 
@@ -14,23 +15,19 @@ import java.util.Map;
 @Slf4j
 public class LemonProperties {
 
-	private static RapidCoreProperties coreProperties;
-
-    public LemonProperties(RapidCoreProperties coreProperties) {
-		LemonProperties.coreProperties = coreProperties;
-	}
+	@Value("${rapid.core.baseUrl}")
+	private static String baseUrl;
 
 	public UserController userController = new UserController();
 
-	@Getter
-	@Setter
+
 	public static class UserController {
 
-		public String userBaseUrl = coreProperties.baseUrl+"/user";
+		public String userBaseUrl = baseUrl+"/user";
 
-		public String loginUrl = coreProperties.baseUrl+"/login";
-		public String pingUrl = coreProperties.baseUrl+"/ping";
-		public String contextUrl = coreProperties.baseUrl+"/context";
+		public String loginUrl = baseUrl+"/login";
+		public String pingUrl = baseUrl+"/ping";
+		public String contextUrl = baseUrl+"/context";
 
 		public String signupUrl = userBaseUrl +"/signup";
 		public String resetPasswordUrl = userBaseUrl +"/reset-password";
@@ -43,7 +40,117 @@ public class LemonProperties {
 		public String requestEmailChangeUrl = userBaseUrl +"/request-email-change";
 		public String newAuthTokenUrl = userBaseUrl +"/new-auth-token";
 
+		public String getUserBaseUrl() {
+			return userBaseUrl;
+		}
 
+		public void setUserBaseUrl(String userBaseUrl) {
+			this.userBaseUrl = userBaseUrl;
+		}
+
+		public String getLoginUrl() {
+			return loginUrl;
+		}
+
+		public void setLoginUrl(String loginUrl) {
+			this.loginUrl = loginUrl;
+		}
+
+		public String getPingUrl() {
+			return pingUrl;
+		}
+
+		public void setPingUrl(String pingUrl) {
+			this.pingUrl = pingUrl;
+		}
+
+		public String getContextUrl() {
+			return contextUrl;
+		}
+
+		public void setContextUrl(String contextUrl) {
+			this.contextUrl = contextUrl;
+		}
+
+		public String getSignupUrl() {
+			return signupUrl;
+		}
+
+		public void setSignupUrl(String signupUrl) {
+			this.signupUrl = signupUrl;
+		}
+
+		public String getResetPasswordUrl() {
+			return resetPasswordUrl;
+		}
+
+		public void setResetPasswordUrl(String resetPasswordUrl) {
+			this.resetPasswordUrl = resetPasswordUrl;
+		}
+
+		public String getFetchByEmailUrl() {
+			return fetchByEmailUrl;
+		}
+
+		public void setFetchByEmailUrl(String fetchByEmailUrl) {
+			this.fetchByEmailUrl = fetchByEmailUrl;
+		}
+
+		public String getChangeEmailUrl() {
+			return changeEmailUrl;
+		}
+
+		public void setChangeEmailUrl(String changeEmailUrl) {
+			this.changeEmailUrl = changeEmailUrl;
+		}
+
+		public String getVerifyUserUrl() {
+			return verifyUserUrl;
+		}
+
+		public void setVerifyUserUrl(String verifyUserUrl) {
+			this.verifyUserUrl = verifyUserUrl;
+		}
+
+		public String getResendVerificationEmailUrl() {
+			return resendVerificationEmailUrl;
+		}
+
+		public void setResendVerificationEmailUrl(String resendVerificationEmailUrl) {
+			this.resendVerificationEmailUrl = resendVerificationEmailUrl;
+		}
+
+		public String getForgotPasswordUrl() {
+			return forgotPasswordUrl;
+		}
+
+		public void setForgotPasswordUrl(String forgotPasswordUrl) {
+			this.forgotPasswordUrl = forgotPasswordUrl;
+		}
+
+		public String getChangePasswordUrl() {
+			return changePasswordUrl;
+		}
+
+		public void setChangePasswordUrl(String changePasswordUrl) {
+			this.changePasswordUrl = changePasswordUrl;
+		}
+
+		public String getRequestEmailChangeUrl() {
+			return requestEmailChangeUrl;
+		}
+
+		public void setRequestEmailChangeUrl(String requestEmailChangeUrl) {
+			this.requestEmailChangeUrl = requestEmailChangeUrl;
+		}
+
+		public String getNewAuthTokenUrl() {
+			return newAuthTokenUrl;
+		}
+
+		public void setNewAuthTokenUrl(String newAuthTokenUrl) {
+			this.newAuthTokenUrl = newAuthTokenUrl;
+		}
 	}
 
 

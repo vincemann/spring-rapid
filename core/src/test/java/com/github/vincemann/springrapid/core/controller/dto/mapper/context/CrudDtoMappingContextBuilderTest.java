@@ -12,7 +12,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.List;
 
-class RapidDtoMappingContextTest {
+class CrudDtoMappingContextBuilderTest {
 
     DtoMappingContext context;
     DtoRequestInfo findInfo;
@@ -49,44 +49,47 @@ class RapidDtoMappingContextTest {
 
     private static final String FIND_URL = "/api/core/find";
     private static final String FIND_ALL_URL = "/api/core/find";
+    private static final String CREATE_URL = "/api/core/create";
+    private static final String UPDATE_URL = "/api/core/update";
 
     @BeforeEach
     void setUp() {
         locator = new RapidDtoClassLocator();
         roles = Lists.newArrayList(userRole,peekRole);
-        context = CrudDtoMappingContextBuilder.builder()
+        // controller not needed bc all endpoints are manually supplied
+        context = new CrudDtoMappingContextBuilder(null)
                 .withRoles(roles.toArray(new String[0]))
-                .forEndpoint(RapidDtoEndpoint.FIND,Direction.RESPONSE, PrivilegedFindDto.class)
-                .forEndpoint(RapidDtoEndpoint.FIND_ALL,Direction.RESPONSE,PrivilegedFindDto.class)
+                .forEndpoint(FIND_URL,Direction.RESPONSE, PrivilegedFindDto.class)
+                .forEndpoint(FIND_ALL_URL,Direction.RESPONSE,PrivilegedFindDto.class)
                 .withRoles(adminRole)
                 .withPrincipal(DtoRequestInfo.Principal.FOREIGN)
-                .forEndpoint(properties.controller.endpoints.update,Direction.REQUEST,AdminUpdateForeignUserDto.class)
+                .forEndpoint(UPDATE_URL,Direction.REQUEST,AdminUpdateForeignUserDto.class)
                 .withPrincipal(DtoRequestInfo.Principal.OWN)
-                .forEndpoint(properties.controller.endpoints.update,Direction.REQUEST,AdminUpdateOwnDto.class)
+                .forEndpoint(UPDATE_URL,Direction.REQUEST,AdminUpdateOwnDto.class)
                 .withAllPrincipals()
                 .withAllRoles()
-                .forEndpoint(properties.controller.endpoints.create,CreateDto.class)
-                .forEndpoint(RapidDtoEndpoint.FIND,Direction.RESPONSE,LessPrivilegedFindDto.class)
+                .forEndpoint(CREATE_URL,CreateDto.class)
+                .forEndpoint(FIND_URL,Direction.RESPONSE,LessPrivilegedFindDto.class)
                 .build();
 
         findInfo = DtoRequestInfo.builder()
                 .direction(Direction.RESPONSE)
-                .endpoint(RapidDtoEndpoint.FIND)
+                .endpoint(FIND_URL)
                 .build();
 
         findAllInfo = DtoRequestInfo.builder()
-                .endpoint(RapidDtoEndpoint.FIND_ALL)
+                .endpoint(FIND_ALL_URL)
                 .direction(Direction.RESPONSE)
                 .build();
 
         createInfo = DtoRequestInfo.builder()
                 .direction(Direction.REQUEST)
-                .endpoint(properties.controller.endpoints.create)
+                .endpoint(CREATE_URL)
                 .build();
 
         updateInfo = DtoRequestInfo.builder()
                 .direction(Direction.REQUEST)
-                .endpoint(properties.controller.endpoints.update)
+                .endpoint(UPDATE_URL)
                 .build();
     }
 
@@ -154,7 +157,7 @@ class RapidDtoMappingContextTest {
         DtoRequestInfo unknown = DtoRequestInfo.builder()
                 .authorities(new ArrayList<>())
                 .direction(Direction.REQUEST)
-                .endpoint(RapidDtoEndpoint.FIND)
+                .endpoint(FIND_URL)
                 .build();
         Assertions.assertThrows(IllegalArgumentException.class,()-> locator.find(unknown,context));
     }
