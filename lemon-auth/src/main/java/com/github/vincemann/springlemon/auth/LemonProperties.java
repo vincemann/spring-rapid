@@ -1,5 +1,6 @@
 package com.github.vincemann.springlemon.auth;
 
+import com.github.vincemann.springrapid.core.RapidCoreProperties;
 import lombok.*;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpHeaders;
@@ -9,19 +10,14 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-/**
- * Lemon Properties
- * 
- * @author Sanjay Patel
- */
 @Validated
 @Slf4j
-//@Component
 public class LemonProperties {
-	
 
-    public LemonProperties() {
+	private static RapidCoreProperties coreProperties;
 
+    public LemonProperties(RapidCoreProperties coreProperties) {
+		LemonProperties.coreProperties = coreProperties;
 	}
 
 	public UserController userController = new UserController();
@@ -30,22 +26,22 @@ public class LemonProperties {
 	@Setter
 	public static class UserController {
 
-		public String userUrlPrefix = "/user";
+		public String userBaseUrl = coreProperties.baseUrl+"/user";
 
-		public String login = "/login";
-		public String ping = "ping";
-		public String context = "context";
+		public String loginUrl = coreProperties.baseUrl+"/login";
+		public String pingUrl = coreProperties.baseUrl+"/ping";
+		public String contextUrl = coreProperties.baseUrl+"/context";
 
-		public String signupUrl = userUrlPrefix+"/signup";
-		public String resetPasswordUrl = userUrlPrefix+"/reset-password";
-		public String fetchByEmailUrl = userUrlPrefix+"/fetch-by-email";
-		public String changeEmailUrl = userUrlPrefix+"/change-email";
-		public String verifyUserUrl = userUrlPrefix+"/verify";
-		public String resendVerificationEmailUrl = userUrlPrefix+"/resend-verification-email";
-		public String forgotPasswordUrl = userUrlPrefix+"/forgot-password";
-		public String changePasswordUrl = userUrlPrefix+"/change-password";
-		public String requestEmailChangeUrl = userUrlPrefix+"/request-email-change";
-		public String newAuthTokenUrl = userUrlPrefix+"/new-auth-token";
+		public String signupUrl = userBaseUrl +"/signup";
+		public String resetPasswordUrl = userBaseUrl +"/reset-password";
+		public String fetchByEmailUrl = userBaseUrl +"/fetch-by-email";
+		public String changeEmailUrl = userBaseUrl +"/change-email";
+		public String verifyUserUrl = userBaseUrl +"/verify";
+		public String resendVerificationEmailUrl = userBaseUrl +"/resend-verification-email";
+		public String forgotPasswordUrl = userBaseUrl +"/forgot-password";
+		public String changePasswordUrl = userBaseUrl +"/change-password";
+		public String requestEmailChangeUrl = userBaseUrl +"/request-email-change";
+		public String newAuthTokenUrl = userBaseUrl +"/new-auth-token";
 
 
 	}
@@ -79,8 +75,9 @@ public class LemonProperties {
 	 */
 	public Cors cors = new Cors();
 
-    /**
-	 * Properties related to the initial Admins to be created
+
+	/**
+	 * These admins will be created on Application start, if not present already
 	 */
 	public List<Admin> admins = new ArrayList<>();
 	
@@ -334,14 +331,6 @@ public class LemonProperties {
 		this.applicationUrl = applicationUrl;
 	}
 
-	public String getLoginUrl() {
-		return loginUrl;
-	}
-
-	public void setLoginUrl(String loginUrl) {
-		this.loginUrl = loginUrl;
-	}
-
 	public Recaptcha getRecaptcha() {
 		return recaptcha;
 	}
@@ -382,5 +371,11 @@ public class LemonProperties {
 		this.jwt = jwt;
 	}
 
+	public UserController getUserController() {
+		return userController;
+	}
 
+	public void setUserController(UserController userController) {
+		this.userController = userController;
+	}
 }

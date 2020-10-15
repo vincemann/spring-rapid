@@ -44,9 +44,9 @@ import java.io.Serializable;
 import java.util.Map;
 import java.util.Optional;
 
+
 @Slf4j
 @Getter
-@RequestMapping("${rapid.core.baseUrl}")
 public abstract class AbstractUserController<U extends AbstractUser<ID>, ID extends Serializable, S extends UserService<U,ID>>
 			extends GenericCrudController<U,ID, S,UserEndpointInfo,UserDtoMappingContextBuilder> {
 
@@ -268,6 +268,11 @@ public abstract class AbstractUserController<U extends AbstractUser<ID>, ID exte
 	//             INIT
 
 
+	@Override
+	protected UserDtoMappingContextBuilder createDtoMappingContextBuilder() {
+		return new UserDtoMappingContextBuilder(this);
+	}
+
 	/**
 	 * Preconfigured UserDtoMappingContextBuilder.
 	 * To extend configuration override {@link this#provideDtoMappingContext(UserDtoMappingContextBuilder)} and continue configuring.
@@ -276,7 +281,9 @@ public abstract class AbstractUserController<U extends AbstractUser<ID>, ID exte
 	@Override
 	protected void preConfigureDtoMappingContextBuilder(UserDtoMappingContextBuilder builder) {
 		super.preConfigureDtoMappingContextBuilder(builder);
-		builder.withAllPrincipals()
+		builder
+
+				.withAllPrincipals()
 				.forAll(LemonUserDto.class)
 				.forResponse(LemonReadUserDto.class)
 				.forEndpoint(lemonProperties.userController.signupUrl, Direction.REQUEST, LemonSignupForm.class)
@@ -286,7 +293,7 @@ public abstract class AbstractUserController<U extends AbstractUser<ID>, ID exte
 
 				.withAllPrincipals()
 				.withRoles(RapidRoles.ADMIN)
-				.forEndpoint(getCoreProperties().controller.endpoints.update, LemonAdminUpdateUserDto.class);
+				.forEndpoint(getUpdateUrl(), LemonAdminUpdateUserDto.class);
 	}
 
 	@Override

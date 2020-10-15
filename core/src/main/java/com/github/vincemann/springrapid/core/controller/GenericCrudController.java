@@ -5,13 +5,9 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.fge.jsonpatch.JsonPatchException;
 import com.github.vincemann.springrapid.core.RapidCoreProperties;
 import com.github.vincemann.springrapid.core.controller.dto.mapper.DelegatingDtoMapper;
-import com.github.vincemann.springrapid.core.controller.dto.mapper.context.Direction;
-import com.github.vincemann.springrapid.core.controller.dto.mapper.context.DtoMappingContext;
-import com.github.vincemann.springrapid.core.controller.dto.mapper.context.DtoMappingContextBuilder;
-import com.github.vincemann.springrapid.core.controller.dto.mapper.context.DtoRequestInfo;
+import com.github.vincemann.springrapid.core.controller.dto.mapper.context.*;
 import com.github.vincemann.springrapid.core.controller.idFetchingStrategy.IdFetchingException;
 import com.github.vincemann.springrapid.core.controller.idFetchingStrategy.IdFetchingStrategy;
-import com.github.vincemann.springrapid.core.controller.idFetchingStrategy.UrlParamIdFetchingStrategy;
 import com.github.vincemann.springrapid.core.controller.mergeUpdate.MergeUpdateStrategy;
 import com.github.vincemann.springrapid.core.controller.owner.DelegatingOwnerLocator;
 import com.github.vincemann.springrapid.core.controller.validationStrategy.ValidationStrategy;
@@ -50,18 +46,7 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-/**
- * Fully Functional CrudController.
- * <p>
- * Example-Request-URL's with {@link UrlParamIdFetchingStrategy}:
- * /entityName/httpMethod?entityIdName=id
- * <p>
- * /account/get?accountId=34
- * /account/get?accountId=44bedc08-8e71-11e9-bc42-526af7764f64
- *
- * @param <E>  Entity Type, of entity, who's crud operations are exposed, via endpoints,  by this Controller
- * @param <ID> Id Type of {@link E}
- */
+
 @Slf4j
 @Getter
 public abstract class GenericCrudController
@@ -72,7 +57,7 @@ public abstract class GenericCrudController
 
                 //internal generic params
                 EndpointInfo extends CrudEndpointInfo,
-                DTOMappingContextBuilder extends DtoMappingContextBuilder
+                DTOMappingContextBuilder extends AbstractDtoMappingContextBuilder
                 >
         implements
         ApplicationListener<ContextRefreshedEvent>,
@@ -110,7 +95,7 @@ public abstract class GenericCrudController
             Collection<Object> dtos = new HashSet<>();
             for (E e : foundEntities) {
                 dtos.add(dtoMapper.mapToDto(e,
-                        createDtoClass(coreProperties.controller.endpoints.findAll, Direction.RESPONSE, e)));
+                        createDtoClass(getFindAllUrl(), Direction.RESPONSE, e)));
             }
             afterFindAll(dtos, foundEntities, request, response);
             String json = jsonMapper.writeValueAsString(dtos);
@@ -130,7 +115,7 @@ public abstract class GenericCrudController
         E found = optionalEntity.get();
         Object dto = dtoMapper.mapToDto(
                 found,
-                createDtoClass(coreProperties.controller.endpoints.find, Direction.RESPONSE, found)
+                createDtoClass(getFindUrl(), Direction.RESPONSE, found)
         );
         afterFind(id, dto, optionalEntity, request, response);
         return ok(jsonMapper.writeValueAsString(dto));
@@ -139,7 +124,7 @@ public abstract class GenericCrudController
 
     public ResponseEntity<String> create(HttpServletRequest request, HttpServletResponse response) throws BadEntityException, EntityNotFoundException, IOException {
         String json = readBody(request);
-        Class<?> dtoClass = createDtoClass(coreProperties.controller.endpoints.create, Direction.REQUEST, null);
+        Class<?> dtoClass = createDtoClass(getCreateUrl(), Direction.REQUEST, null);
         Object dto = getJsonMapper().readValue(json, dtoClass);
         beforeCreate(dto, request, response);
         validationStrategy.validateDto(dto);
@@ -148,7 +133,7 @@ public abstract class GenericCrudController
         logSecurityContext();
         E savedEntity = serviceCreate(entity);
         Object resultDto = dtoMapper.mapToDto(savedEntity,
-                createDtoClass(coreProperties.controller.endpoints.create, Direction.RESPONSE, savedEntity));
+                createDtoClass(getCreateUrl(), Direction.RESPONSE, savedEntity));
         afterCreate(resultDto, entity, request, response);
         return ok(jsonMapper.writeValueAsString(resultDto));
     }
@@ -161,7 +146,7 @@ public abstract class GenericCrudController
         Optional<E> savedOptional = getService().findById(id);
         VerifyEntity.isPresent(savedOptional, id, getEntityClass());
         E saved = savedOptional.get();
-        Class<?> dtoClass = createDtoClass(coreProperties.controller.endpoints.update, Direction.REQUEST, saved);
+        Class<?> dtoClass = createDtoClass(getUpdateUrl(), Direction.REQUEST, saved);
         beforeUpdate(dtoClass, id, patchString, request, response);
 
         Object patchDto = dtoMapper.mapToDto(saved, dtoClass);
@@ -175,7 +160,7 @@ public abstract class GenericCrudController
         logSecurityContext();
         E updated = serviceUpdate(merged, true);
         //no idea why casting is necessary here?
-        Class<?> resultDtoClass = createDtoClass(coreProperties.controller.endpoints.update, Direction.RESPONSE, updated);
+        Class<?> resultDtoClass = createDtoClass(getUpdateUrl(), Direction.RESPONSE, updated);
         Object resultDto = dtoMapper.mapToDto(updated, resultDtoClass);
         afterUpdate(resultDto, updated, request, response);
         return ok(jsonMapper.writeValueAsString(resultDto));
@@ -269,6 +254,7 @@ public abstract class GenericCrudController
     @SuppressWarnings("unchecked")
     public GenericCrudController() {
         this.entityClass = (Class<E>) ((ParameterizedType) this.getClass().getGenericSuperclass()).getActualTypeArguments()[0];
+        this.dtoMappingContextBuilder = createDtoMappingContextBuilder();
         preConfigureDtoMappingContextBuilder(dtoMappingContextBuilder);
         this.dtoMappingContext = provideDtoMappingContext(dtoMappingContextBuilder);
         logDtoMappingContext();
@@ -276,9 +262,11 @@ public abstract class GenericCrudController
     }
 
     /**
-     * Use one of the {@link com.github.vincemann.springrapid.core.controller.dto.mapper.context.DtoMappingContextBuilder}s by autowiring them in.
+     * Use one of the {@link CrudDtoMappingContextBuilder}s by autowiring them in.
      */
     protected abstract DtoMappingContext provideDtoMappingContext(DTOMappingContextBuilder builder);
+
+    protected abstract DTOMappingContextBuilder createDtoMappingContextBuilder();
 
     protected void preConfigureDtoMappingContextBuilder(DTOMappingContextBuilder builder) {
 
@@ -322,6 +310,15 @@ public abstract class GenericCrudController
         return getEntityClass().getSimpleName().toLowerCase();
     }
 
+    /**
+     * Override this if your API for this controller changes.
+     * I.e. from /api/v1 to /api/v2
+     * @return
+     */
+    protected String createBaseUrl(){
+        return coreProperties.baseUrl;
+    }
+
 
     //              URLS
 
@@ -336,12 +333,14 @@ public abstract class GenericCrudController
     private String deleteUrl;
     @Setter
     private String createUrl;
+    private String baseUrl;
     private String entityBaseUrl;
     private String urlEntityName;
 
     protected void initUrls() {
         this.urlEntityName = createUrlEntityName();
-        this.entityBaseUrl = coreProperties.baseUrl + "/" + urlEntityName + "/";
+        this.baseUrl = createBaseUrl();
+        this.entityBaseUrl = baseUrl + "/" + urlEntityName + "/";
         this.findUrl = entityBaseUrl + coreProperties.controller.endpoints.find;
         this.findAllUrl = entityBaseUrl + coreProperties.controller.endpoints.findAll;
         this.updateUrl = entityBaseUrl + coreProperties.controller.endpoints.update;

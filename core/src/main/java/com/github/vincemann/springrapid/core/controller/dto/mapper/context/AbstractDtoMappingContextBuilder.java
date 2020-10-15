@@ -1,88 +1,72 @@
 package com.github.vincemann.springrapid.core.controller.dto.mapper.context;
 
-import com.github.vincemann.springrapid.core.RapidCoreProperties;
+import com.github.vincemann.springrapid.core.controller.GenericCrudController;
 import com.github.vincemann.springrapid.core.util.Lists;
-import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.Assert;
 
 import java.util.ArrayList;
 import java.util.List;
 
 @Slf4j
-//todo rename to Rapid...
-@NoArgsConstructor
-public class DtoMappingContextBuilder {
+public abstract class AbstractDtoMappingContextBuilder<C extends GenericCrudController, B extends AbstractDtoMappingContextBuilder> {
     private List<String> currentRoles = new ArrayList<>();
     private DtoMappingContext mc;
     private DtoRequestInfo.Principal currPrincipal = DtoRequestInfo.Principal.ALL;
 
 
-    private RapidCoreProperties coreProperties;
+    private C controller;
 
+    public AbstractDtoMappingContextBuilder(C controller) {
+        this.controller = controller;
+    }
 
-//    protected DtoMappingContextBuilder(DtoMappingContext mc,RapidCoreProperties coreProperties) {
-//        this.mc = mc;
-//        this.coreProperties = coreProperties;
-//    }
-
-    // normal use case is injecting this Builder, so coreProperties are already set
-//    public static DtoMappingContextBuilder builder(){
-//        return new DtoMappingContextBuilder();
-//    }
-
-//    public static DtoMappingContextBuilder builder(DtoMappingContext mc,RapidCoreProperties coreProperties){
-//        return new DtoMappingContextBuilder(mc,coreProperties);
-//    }
-
-    public DtoMappingContextBuilder context(DtoMappingContext mc){
+    public B context(DtoMappingContext mc){
         this.mc=mc;
-        return this;
+        return (B) this;
     }
 
-
-    public DtoMappingContextBuilder withRoles(String... roles){
-        this.currentRoles =Lists.newArrayList(roles);
-        return this;
+    public B withRoles(String... roles){
+        this.currentRoles = Lists.newArrayList(roles);
+        return (B) this;
     }
 
-    public DtoMappingContextBuilder withAllRoles(){
+    public B withAllRoles(){
         this.currentRoles = new ArrayList<>();
-        return this;
+        return (B) this;
     }
 
-    public DtoMappingContextBuilder withPrincipal(DtoRequestInfo.Principal principal){
+    public B withPrincipal(DtoRequestInfo.Principal principal){
         Assert.notNull(principal);
         this.currPrincipal=principal;
-        return this;
+        return (B) this;
     }
 
-    public DtoMappingContextBuilder withAllPrincipals(){
+    public B withAllPrincipals(){
         this.currPrincipal= DtoRequestInfo.Principal.ALL;
-        return this;
+        return (B) this;
     }
 
 
     protected List<String> getAllEndpoints(){
-        ArrayList<String> all = Lists.newArrayList(coreProperties.controller.endpoints.create);
+        ArrayList<String> all = Lists.newArrayList(controller.getCreateUrl());
         all.addAll(getWriteEndpoints());
         all.addAll(getFindEndpoints());
         return all;
     }
 
     protected List<String> getFindEndpoints(){
-        return Lists.newArrayList(coreProperties.controller.endpoints.find, coreProperties.controller.endpoints.findAll);
+        return Lists.newArrayList(controller.getFindUrl(), controller.getFindAllUrl());
     }
 
     protected List<String> getWriteEndpoints(){
-        ArrayList<String> writeEndpoints = Lists.newArrayList(coreProperties.controller.endpoints.create);
+        ArrayList<String> writeEndpoints = Lists.newArrayList(controller.getCreateUrl());
         writeEndpoints.addAll(getUpdateEndpoints());
         return writeEndpoints;
     }
 
     protected List<String> getUpdateEndpoints(){
-        return Lists.newArrayList(coreProperties.controller.endpoints.update);
+        return Lists.newArrayList(controller.getUpdateUrl());
     }
 
     /**
@@ -90,26 +74,26 @@ public class DtoMappingContextBuilder {
      * @param defaultDtoClass
      * @return
      */
-    public DtoMappingContextBuilder forAll(Class<?> defaultDtoClass){
+    public B forAll(Class<?> defaultDtoClass){
         Assert.notNull(defaultDtoClass);
         List<DtoRequestInfo> infoList = createInfos(getAllEndpoints());
         for (DtoRequestInfo info : infoList) {
             addEntry(info,defaultDtoClass);
         }
-        return this;
+        return (B) this;
     }
 
-    public DtoMappingContextBuilder forResponse(Class<?> responseDtoClass){
+    public B forResponse(Class<?> responseDtoClass){
         Assert.notNull(responseDtoClass);
         return forDirection(Direction.RESPONSE,responseDtoClass);
     }
 
-    public DtoMappingContextBuilder forRequest(Class<?> responseDtoClass){
+    public B forRequest(Class<?> responseDtoClass){
         Assert.notNull(responseDtoClass);
         return forDirection(Direction.REQUEST,responseDtoClass);
     }
 
-    private DtoMappingContextBuilder forDirection(Direction direction,Class<?> responseDtoClass){
+    private B forDirection(Direction direction,Class<?> responseDtoClass){
         Assert.notNull(direction);
         Assert.notNull(responseDtoClass);
         List<String> allEndpoints = getAllEndpoints();
@@ -120,65 +104,65 @@ public class DtoMappingContextBuilder {
         for (DtoRequestInfo info : infoList) {
             addEntry(info,responseDtoClass);
         }
-        return this;
+        return (B) this;
     }
 
-    public DtoMappingContextBuilder forFind(Class<?> readDtoClass){
+    public B forFind(Class<?> readDtoClass){
         Assert.notNull(readDtoClass);
         List<DtoRequestInfo> infoList = createInfos(getFindEndpoints());
         for (DtoRequestInfo info : infoList) {
             addEntry(info,readDtoClass);
         }
-        return this;
+        return (B) this;
     }
 
-    public DtoMappingContextBuilder forWrite(Class<?> writeDtoClass){
+    public B forWrite(Class<?> writeDtoClass){
         Assert.notNull(writeDtoClass);
         List<DtoRequestInfo> infoList = createInfos(getWriteEndpoints());
         for (DtoRequestInfo info : infoList) {
             addEntry(info,writeDtoClass);
         }
-        return this;
+        return (B) this;
     }
 
-    public DtoMappingContextBuilder forUpdate(Direction direction,Class<?> updateDtoClass){
+    public B forUpdate(Direction direction,Class<?> updateDtoClass){
         Assert.notNull(updateDtoClass);
         Assert.notNull(direction);
         List<String> updateEndpoints = getUpdateEndpoints();
         for (String updateEndpoint : updateEndpoints) {
             addEntry(createInfo(updateEndpoint,direction),updateDtoClass);
         }
-        return this;
+        return (B) this;
     }
 
-    public DtoMappingContextBuilder forUpdate(Class<?> updateDtoClass){
+    public B forUpdate(Class<?> updateDtoClass){
         Assert.notNull(updateDtoClass);
         List<String> updateEndpoints = getUpdateEndpoints();
         for (String updateEndpoint : updateEndpoints) {
             addEntry(createInfo(updateEndpoint,Direction.REQUEST),updateDtoClass);
             addEntry(createInfo(updateEndpoint,Direction.RESPONSE),updateDtoClass);
         }
-        return this;
+        return (B) this;
     }
 
-    public DtoMappingContextBuilder forEndpoint(String endpoint, Class<?> dtoClass){
+    public B forEndpoint(String endpoint, Class<?> dtoClass){
         Assert.notNull(endpoint);
         Assert.notNull(dtoClass);
         addEntry(createInfo(endpoint,Direction.REQUEST),dtoClass);
         addEntry(createInfo(endpoint,Direction.RESPONSE),dtoClass);
-        return this;
+        return (B) this;
     }
 
 
-    public DtoMappingContextBuilder forEndpoint(String endpoint, Direction direction, Class<?> dtoClass){
+    public B forEndpoint(String endpoint, Direction direction, Class<?> dtoClass){
         Assert.notNull(endpoint);
         Assert.notNull(dtoClass);
         Assert.notNull(direction);
         addEntry(createInfo(endpoint,direction),dtoClass);
-        return this;
+        return (B) this;
     }
 
-    public DtoMappingContextBuilder forEndpointAndRoles(String endpoint, Direction direction, List<String> authorities, Class<?> dtoClass){
+    public B forEndpointAndRoles(String endpoint, Direction direction, List<String> authorities, Class<?> dtoClass){
         Assert.notNull(endpoint);
         Assert.notNull(dtoClass);
         Assert.notNull(direction);
@@ -187,14 +171,14 @@ public class DtoMappingContextBuilder {
         DtoRequestInfo info = createInfo(endpoint, direction);
         info.setAuthorities(authorities);
         addEntry(info,dtoClass);
-        return this;
+        return (B) this;
     }
 
-    public DtoMappingContextBuilder forInfo(DtoRequestInfo info, Class<?> dtoClass){
+    public B forInfo(DtoRequestInfo info, Class<?> dtoClass){
         Assert.notNull(dtoClass);
         Assert.notNull(info);
         addEntry(info,dtoClass);
-        return this;
+        return (B) this;
     }
 
     protected void addEntry(DtoRequestInfo info, Class<?> dtoClass){
@@ -242,12 +226,7 @@ public class DtoMappingContextBuilder {
                 .build();
     }
 
-    protected RapidCoreProperties getCoreProperties() {
-        return coreProperties;
-    }
-
-    @Autowired
-    public void injectCoreProperties(RapidCoreProperties coreProperties) {
-        this.coreProperties = coreProperties;
+    protected C getController() {
+        return controller;
     }
 }

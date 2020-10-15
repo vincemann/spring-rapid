@@ -4,7 +4,7 @@ import com.github.vincemann.springrapid.core.controller.dto.mapper.context.DtoMa
 import com.github.vincemann.springrapid.demo.dtos.SpecialtyDto;
 import com.github.vincemann.springrapid.demo.model.Specialty;
 import com.github.vincemann.springrapid.core.slicing.components.WebController;
-import com.github.vincemann.springrapid.core.controller.dto.mapper.context.DtoMappingContextBuilder;
+import com.github.vincemann.springrapid.core.controller.dto.mapper.context.CrudDtoMappingContextBuilder;
 import com.github.vincemann.springrapid.core.controller.GenericCrudController;
 import com.github.vincemann.springrapid.demo.service.SpecialtyService;
 
@@ -13,7 +13,7 @@ public class SpecialtyController extends GenericCrudController<Specialty,Long, S
 
     @Override
     public DtoMappingContext provideDtoMappingContext() {
-        return DtoMappingContextBuilder.builder()
+        return CrudDtoMappingContextBuilder.builder()
                 .forAll(SpecialtyDto.class)
                 .build();
     }

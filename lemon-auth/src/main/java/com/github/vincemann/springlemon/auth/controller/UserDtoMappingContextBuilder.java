@@ -1,7 +1,9 @@
 package com.github.vincemann.springlemon.auth.controller;
 
 import com.github.vincemann.springlemon.auth.LemonProperties;
-import com.github.vincemann.springrapid.core.controller.dto.mapper.context.DtoMappingContextBuilder;
+import com.github.vincemann.springrapid.core.controller.GenericCrudController;
+import com.github.vincemann.springrapid.core.controller.dto.mapper.context.AbstractDtoMappingContextBuilder;
+import com.github.vincemann.springrapid.core.controller.dto.mapper.context.CrudDtoMappingContextBuilder;
 import com.google.common.collect.Sets;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -10,35 +12,30 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.List;
 
-@Getter
-@Setter
-@NoArgsConstructor
-public class UserDtoMappingContextBuilder extends DtoMappingContextBuilder {
+public class UserDtoMappingContextBuilder extends AbstractDtoMappingContextBuilder<AbstractUserController,UserDtoMappingContextBuilder> {
 
-    private LemonProperties lemonProperties;
 
+    public UserDtoMappingContextBuilder(AbstractUserController controller) {
+        super(controller);
+    }
 
     @Override
     protected List<String> getAllEndpoints() {
         List<String> allEndpoints = super.getAllEndpoints();
         allEndpoints.addAll(Sets.newHashSet(
-                lemonProperties.userController.signupUrl,
-                lemonProperties.userController.resetPasswordUrl,
-                lemonProperties.userController.fetchByEmailUrl,
-                lemonProperties.userController.changeEmailUrl,
-                lemonProperties.userController.verifyUserUrl));
+                getController().getLemonProperties().userController.signupUrl,
+                getController().getLemonProperties().userController.resetPasswordUrl,
+                getController().getLemonProperties().userController.fetchByEmailUrl,
+                getController().getLemonProperties().userController.changeEmailUrl,
+                getController().getLemonProperties().userController.verifyUserUrl));
         return allEndpoints;
     }
 
     @Override
     protected List<String> getFindEndpoints() {
         List<String> findEndpoints = super.getFindEndpoints();
-        findEndpoints.add(lemonProperties.userController.fetchByEmailUrl);
+        findEndpoints.add(getController().getLemonProperties().userController.fetchByEmailUrl);
         return findEndpoints;
     }
-
-    @Autowired
-    public void injectLemonProperties(LemonProperties lemonProperties) {
-        this.lemonProperties = lemonProperties;
-    }
+    
 }
