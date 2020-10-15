@@ -47,11 +47,14 @@ class RapidDtoMappingContextTest {
 
     }
 
+    private static final String FIND_URL = "/api/core/find";
+    private static final String FIND_ALL_URL = "/api/core/find";
+
     @BeforeEach
     void setUp() {
         locator = new RapidDtoClassLocator();
         roles = Lists.newArrayList(userRole,peekRole);
-        context = DtoMappingContextBuilder.builder()
+        context = CrudDtoMappingContextBuilder.builder()
                 .withRoles(roles.toArray(new String[0]))
                 .forEndpoint(RapidDtoEndpoint.FIND,Direction.RESPONSE, PrivilegedFindDto.class)
                 .forEndpoint(RapidDtoEndpoint.FIND_ALL,Direction.RESPONSE,PrivilegedFindDto.class)

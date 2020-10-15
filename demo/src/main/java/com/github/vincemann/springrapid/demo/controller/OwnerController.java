@@ -14,10 +14,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 @WebController
 public class OwnerController extends GenericCrudController<Owner, Long, OwnerService> {
 
-    private DtoMappingContextBuilder dtoMappingContextBuilder;
+    private CrudDtoMappingContextBuilder dtoMappingContextBuilder;
 
     @Autowired
-    public OwnerController(DtoMappingContextBuilder dtoMappingContextBuilder) {
+    public OwnerController(CrudDtoMappingContextBuilder dtoMappingContextBuilder) {
         this.dtoMappingContextBuilder = dtoMappingContextBuilder;
     }
 

@@ -1,6 +1,6 @@
 package com.github.vincemann.springrapid.core.controller.parentAware;
 
-import com.github.vincemann.springrapid.core.controller.dto.mapper.context.DtoMappingContextBuilder;
+import com.github.vincemann.springrapid.core.controller.dto.mapper.context.CrudDtoMappingContextBuilder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -10,7 +10,7 @@ import java.util.List;
 @Getter
 @Setter
 @NoArgsConstructor
-public class ParentAwareDtoMappingContextBuilder extends DtoMappingContextBuilder {
+public class ParentAwareDtoMappingContextBuilder extends CrudDtoMappingContextBuilder {
 
 
     @Override

@@ -4,7 +4,7 @@ import com.github.vincemann.springrapid.core.controller.dto.mapper.BasicDtoMappe
 import com.github.vincemann.springrapid.core.controller.dto.mapper.DelegatingDtoMapper;
 import com.github.vincemann.springrapid.core.controller.dto.mapper.DtoMapper;
 import com.github.vincemann.springrapid.core.controller.dto.mapper.DtoPostProcessor;
-import com.github.vincemann.springrapid.core.controller.dto.mapper.context.DtoMappingContextBuilder;
+import com.github.vincemann.springrapid.core.controller.dto.mapper.context.CrudDtoMappingContextBuilder;
 import com.github.vincemann.springrapid.core.slicing.config.WebConfig;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
@@ -23,12 +23,12 @@ public class RapidDtoMapperAutoConfiguration {
 
     }
 
-    // no conditional on missing bean bc multiple diff type builders must coexist
-    @Bean
-    @Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
-    public DtoMappingContextBuilder dtoMappingContextBuilder(){
-        return new DtoMappingContextBuilder();
-    }
+//    // no conditional on missing bean bc multiple diff type builders must coexist
+//    @Bean
+//    @Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
+//    public CrudDtoMappingContextBuilder dtoMappingContextBuilder(){
+//        return new CrudDtoMappingContextBuilder();
+//    }
 
     @ConditionalOnMissingBean(name = "defaultDtoMapper")
     @Bean

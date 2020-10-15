@@ -4,7 +4,7 @@ import com.github.vincemann.springrapid.core.controller.dto.mapper.context.DtoMa
 import com.github.vincemann.springrapid.demo.dtos.VetDto;
 import com.github.vincemann.springrapid.demo.model.Vet;
 import com.github.vincemann.springrapid.core.slicing.components.WebController;
-import com.github.vincemann.springrapid.core.controller.dto.mapper.context.DtoMappingContextBuilder;
+import com.github.vincemann.springrapid.core.controller.dto.mapper.context.CrudDtoMappingContextBuilder;
 import com.github.vincemann.springrapid.core.controller.GenericCrudController;
 import com.github.vincemann.springrapid.demo.service.VetService;
 
@@ -14,7 +14,7 @@ public class VetController
 
     @Override
     public DtoMappingContext provideDtoMappingContext() {
-        return DtoMappingContextBuilder.builder()
+        return CrudDtoMappingContextBuilder.builder()
                 .forAll(VetDto.class)
                 .build();
     }

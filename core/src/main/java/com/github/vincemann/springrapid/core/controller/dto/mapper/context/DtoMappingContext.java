@@ -8,7 +8,7 @@ import java.util.*;
 @SuppressWarnings("ALL")
 /**
  * Represents the Context that contains the information when which dto class should be used for mapping.
- * Create with {@link DtoMappingContextBuilder}.
+ * Create with {@link CrudDtoMappingContextBuilder}.
  */
 @Slf4j
 @Getter
