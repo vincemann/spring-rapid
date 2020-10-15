@@ -16,8 +16,8 @@ import java.io.IOException;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 
-public interface MvcRapidControllerTest
-        <C extends GenericCrudController<?,?,?>>
+public interface MvcCrudControllerTest
+        <C extends GenericCrudController>
 {
 
     public C getController();
@@ -30,7 +30,7 @@ public interface MvcRapidControllerTest
     public default MockHttpServletRequestBuilder create(Object dto) throws Exception {
         return post(getCreateUrl())
                 .content(serialize(dto))
-                .contentType(getController().getMediaType());
+                .contentType(getController().getCoreProperties().controller.mediaType);
     }
 
     public default MockHttpServletRequestBuilder findAll() throws Exception {

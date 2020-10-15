@@ -9,6 +9,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Slf4j
+//needs to use full urls for endpoint matching
 public abstract class AbstractDtoMappingContextBuilder<C extends GenericCrudController, B extends AbstractDtoMappingContextBuilder> {
     private List<String> currentRoles = new ArrayList<>();
     private DtoMappingContext mc;

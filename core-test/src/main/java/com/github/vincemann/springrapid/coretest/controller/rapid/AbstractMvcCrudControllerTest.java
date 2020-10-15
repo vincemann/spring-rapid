@@ -29,9 +29,9 @@ import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.
 @Getter
 @Setter
 @Slf4j
-public abstract class AbstractMvcCrudControllerTest<C extends GenericCrudController<?,?,?>>
+public abstract class AbstractMvcCrudControllerTest<C extends GenericCrudController>
         extends AutoMockMvcControllerTest
-            implements MvcRapidControllerTest<C>
+            implements MvcCrudControllerTest<C>
 {
 //    private Class<E> entityClass = (Class<E>) ((ParameterizedType) this.getClass().getGenericSuperclass()).getActualTypeArguments()[1];
     private DtoMappingContext dtoMappingContext;

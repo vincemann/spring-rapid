@@ -9,10 +9,10 @@ import java.io.Serializable;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 
-public interface UrlParamIdRapidControllerTest
-        <C extends GenericCrudController<?,Id,?>,
+public interface UrlParamIdCrudControllerTest
+        <C extends GenericCrudController<?,Id,?,?,?>,
         Id extends Serializable>
-            extends MvcRapidControllerTest<C> {
+            extends MvcCrudControllerTest<C> {
 
     public default MockHttpServletRequestBuilder delete(Id id) throws Exception {
         return MockMvcRequestBuilders.delete(getDeleteUrl())
@@ -32,6 +32,6 @@ public interface UrlParamIdRapidControllerTest
         return put(getUpdateUrl())
                 .param("id",id.toString())
                 .content(patchString)
-                .contentType(getController().getMediaType());
+                .contentType(getController().getCoreProperties().controller.mediaType);
     }
 }

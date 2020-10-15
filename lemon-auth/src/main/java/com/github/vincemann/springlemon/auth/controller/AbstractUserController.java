@@ -25,17 +25,13 @@ import com.github.vincemann.springrapid.core.controller.idFetchingStrategy.IdFet
 import com.github.vincemann.springrapid.core.security.RapidRoles;
 import com.github.vincemann.springrapid.core.service.exception.BadEntityException;
 import com.github.vincemann.springrapid.core.service.exception.EntityNotFoundException;
-import com.github.vincemann.springrapid.core.slicing.components.WebComponent;
-import com.github.vincemann.springrapid.core.slicing.components.WebController;
 import com.github.vincemann.springrapid.core.util.VerifyEntity;
 import lombok.Getter;
-import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.servlet.mvc.method.RequestMappingInfo;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -279,8 +275,8 @@ public abstract class AbstractUserController<U extends AbstractUser<ID>, ID exte
 	 * To remove pre-configuration, override this method with empty impl and then override {@link this#provideDtoMappingContext(UserDtoMappingContextBuilder)}.
 	 */
 	@Override
-	protected void preConfigureDtoMappingContextBuilder(UserDtoMappingContextBuilder builder) {
-		super.preConfigureDtoMappingContextBuilder(builder);
+	protected void preconfigureDtoMappingContextBuilder(UserDtoMappingContextBuilder builder) {
+		super.preconfigureDtoMappingContextBuilder(builder);
 		builder
 
 				.withAllPrincipals()

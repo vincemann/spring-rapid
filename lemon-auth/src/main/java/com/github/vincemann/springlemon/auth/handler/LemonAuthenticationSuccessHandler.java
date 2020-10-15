@@ -3,7 +3,7 @@ package com.github.vincemann.springlemon.auth.handler;
 import com.github.vincemann.springlemon.auth.service.UserService;
 import com.github.vincemann.springlemon.auth.service.token.HttpTokenService;
 import com.github.vincemann.springrapid.acl.proxy.Unsecured;
-import com.github.vincemann.springrapid.core.controller.RapidMediaType;
+import com.github.vincemann.springrapid.core.RapidCoreProperties;
 import com.github.vincemann.springrapid.core.security.RapidSecurityContext;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,8 +30,7 @@ public class LemonAuthenticationSuccessHandler
 
     private UserService<?, ?> unsecuredUserService;
     private HttpTokenService httpTokenService;
-	private String mediaType;
-
+	private RapidCoreProperties properties;
 	
 	@Override
     public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication)
@@ -40,7 +39,7 @@ public class LemonAuthenticationSuccessHandler
         // Instead of handle(request, response, authentication),
 		// the statements below are introduced
     	response.setStatus(HttpServletResponse.SC_OK);
-    	response.setContentType(mediaType);
+    	response.setContentType(properties.controller.mediaType);
 		String token = unsecuredUserService.createNewAuthToken();
 		httpTokenService.appendToken(token,response);
 
@@ -54,10 +53,9 @@ public class LemonAuthenticationSuccessHandler
         log.debug("Authentication succeeded for user: " + RapidSecurityContext.getName());
     }
 
-    @RapidMediaType
-	@Autowired
-	public void injectMediaType(String mediaType) {
-		this.mediaType = mediaType;
+    @Autowired
+	public void injectProperties(RapidCoreProperties properties) {
+		this.properties = properties;
 	}
 
 	@Autowired
