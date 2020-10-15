@@ -26,7 +26,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 public class UpdateUserMvcTests extends AbstractMvcTests
-		implements UrlParamIdRapidControllerTest<AbstractUserController<?,Long>,Long> {
+		implements UrlParamIdRapidControllerTest<AbstractUserController<?,Long,?>,Long> {
 
 	static final String UPDATED_EMAIL = "updated@e.mail";
 	static final String FIELD_DUMMY_VALUE = "name";
@@ -42,7 +42,7 @@ public class UpdateUserMvcTests extends AbstractMvcTests
 
 	@Autowired
 	@Getter
-	private AbstractUserController<? extends AbstractUser<Long>,Long> controller;
+	private AbstractUserController<? extends AbstractUser<Long>,Long,?> controller;
 
 	/**
 	 * A non-admin user should be able to update his own field,

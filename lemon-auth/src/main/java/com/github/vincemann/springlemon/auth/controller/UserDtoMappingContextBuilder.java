@@ -22,18 +22,18 @@ public class UserDtoMappingContextBuilder extends DtoMappingContextBuilder {
     protected List<String> getAllEndpoints() {
         List<String> allEndpoints = super.getAllEndpoints();
         allEndpoints.addAll(Sets.newHashSet(
-                lemonProperties.controller.endpoints.signup,
-                lemonProperties.controller.endpoints.resetPassword,
-                lemonProperties.controller.endpoints.fetchByEmail,
-                lemonProperties.controller.endpoints.changeEmail,
-                lemonProperties.controller.endpoints.verifyUser));
+                lemonProperties.userController.signupUrl,
+                lemonProperties.userController.resetPasswordUrl,
+                lemonProperties.userController.fetchByEmailUrl,
+                lemonProperties.userController.changeEmailUrl,
+                lemonProperties.userController.verifyUserUrl));
         return allEndpoints;
     }
 
     @Override
     protected List<String> getFindEndpoints() {
         List<String> findEndpoints = super.getFindEndpoints();
-        findEndpoints.add(lemonProperties.controller.endpoints.fetchByEmail);
+        findEndpoints.add(lemonProperties.userController.fetchByEmailUrl);
         return findEndpoints;
     }
 

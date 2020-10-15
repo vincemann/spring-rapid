@@ -21,10 +21,12 @@ import com.github.vincemann.springrapid.core.controller.GenericCrudController;
 import com.github.vincemann.springrapid.core.controller.dto.mapper.context.Direction;
 import com.github.vincemann.springrapid.core.controller.dto.mapper.context.DtoMappingContext;
 import com.github.vincemann.springrapid.core.controller.dto.mapper.context.DtoRequestInfo;
+import com.github.vincemann.springrapid.core.controller.idFetchingStrategy.IdFetchingException;
 import com.github.vincemann.springrapid.core.security.RapidRoles;
 import com.github.vincemann.springrapid.core.service.exception.BadEntityException;
 import com.github.vincemann.springrapid.core.service.exception.EntityNotFoundException;
 import com.github.vincemann.springrapid.core.slicing.components.WebComponent;
+import com.github.vincemann.springrapid.core.slicing.components.WebController;
 import com.github.vincemann.springrapid.core.util.VerifyEntity;
 import lombok.Getter;
 import lombok.Setter;
@@ -42,16 +44,9 @@ import java.io.Serializable;
 import java.util.Map;
 import java.util.Optional;
 
-/**
- * Lemon API.
- *
- * @author Sanjay Patel
- * @modified vincemann
- *
- */
-@WebComponent
 @Slf4j
 @Getter
+@RequestMapping("${rapid.core.baseUrl}")
 public abstract class AbstractUserController<U extends AbstractUser<ID>, ID extends Serializable, S extends UserService<U,ID>>
 			extends GenericCrudController<U,ID, S,UserEndpointInfo,UserDtoMappingContextBuilder> {
 
@@ -70,7 +65,7 @@ public abstract class AbstractUserController<U extends AbstractUser<ID>, ID exte
 	/**
 	 * Returns public shared context properties needed at the client side,
 	 */
-	@GetMapping("/context")
+	@GetMapping("${lemon.userController.contextUrl}")
 	@ResponseBody
 	public Map<String, Object> getContext() {
 
@@ -84,7 +79,7 @@ public abstract class AbstractUserController<U extends AbstractUser<ID>, ID exte
 	 * Signs up a user, and
 	 * returns current-user data and an Authorization token as a response header.
 	 */
-	@PostMapping("/users")
+	@PostMapping("${lemon.userController.signupUrl}")
 	@ResponseStatus(HttpStatus.CREATED)
 	@ResponseBody
 	public ResponseEntity<String> signup(/*@RequestBody @JsonView(UserUtils.SignupInput.class) S signupForm,*/
@@ -93,7 +88,7 @@ public abstract class AbstractUserController<U extends AbstractUser<ID>, ID exte
 
 		String signupForm = readBody(request);
 		Object signupDto = getJsonMapper().readValue(signupForm,
-				createDtoClass(lemonProperties.controller.endpoints.signup, Direction.REQUEST, null));
+				createDtoClass(lemonProperties.userController.signupUrl, Direction.REQUEST, null));
 		getValidationStrategy().validateDto(signupDto);
 		log.debug("Signing up: " + signupDto);
 		U user = getDtoMapper().mapToEntity(signupDto, getEntityClass());
@@ -102,7 +97,7 @@ public abstract class AbstractUserController<U extends AbstractUser<ID>, ID exte
 
 		appendFreshTokenOf(saved,response);
 		Object dto = getDtoMapper().mapToDto(saved,
-				createDtoClass(lemonProperties.controller.endpoints.signup, Direction.RESPONSE, saved));
+				createDtoClass(lemonProperties.userController.signupUrl, Direction.RESPONSE, saved));
 		return ok(getJsonMapper().writeValueAsString(dto));
 	}
 
@@ -110,9 +105,10 @@ public abstract class AbstractUserController<U extends AbstractUser<ID>, ID exte
 	/**
 	 * Resends verification mail
 	 */
-	@PostMapping("/users/{id}/resend-verification-mail")
+	@PostMapping("${lemon.userController.resendVerificationEmailUrl}")
 	@ResponseStatus(HttpStatus.NO_CONTENT)
-	public void resendVerificationMail(@PathVariable("id") ID id) throws BadEntityException, EntityNotFoundException {
+	public void resendVerificationMail(HttpServletRequest request) throws BadEntityException, EntityNotFoundException, IdFetchingException {
+		ID id = fetchId(request);
 		log.debug("Resending verification mail for user with id " + id);
 		U user = fetchUser(id);
 		getService().resendVerificationMail(user);
@@ -122,20 +118,21 @@ public abstract class AbstractUserController<U extends AbstractUser<ID>, ID exte
 	/**
 	 * Verifies current-user -> send code per email
 	 */
-	@PostMapping("/users/{id}/verification")
+	@PostMapping("${lemon.userController.verifyUserUrl}")
 	@ResponseBody
 	public ResponseEntity<String> verifyUser(
-			@PathVariable("id") ID id,
+			HttpServletRequest request,
 			@RequestParam String code,
-			HttpServletResponse response) throws JsonProcessingException, BadEntityException, EntityNotFoundException, BadTokenException {
-		getValidationStrategy().validateId(id);
+			HttpServletResponse response) throws JsonProcessingException, BadEntityException, EntityNotFoundException, BadTokenException, IdFetchingException {
+		ID id = fetchId(request);
+
 		log.debug("Verifying user with id: " + id);
 		U user = fetchUser(id);
 		U saved = getService().verifyUser(user, code);
 
 		appendFreshToken(response);
 		Object dto = getDtoMapper().mapToDto(saved,
-				createDtoClass(lemonProperties.controller.endpoints.verifyUser, Direction.RESPONSE, saved));
+				createDtoClass(lemonProperties.userController.verifyUserUrl, Direction.RESPONSE, saved));
 		return ok(getJsonMapper().writeValueAsString(dto));
 	}
 
@@ -143,7 +140,7 @@ public abstract class AbstractUserController<U extends AbstractUser<ID>, ID exte
 	/**
 	 * The forgot Password feature -> mail new password to email
 	 */
-	@PostMapping("/forgot-password")
+	@PostMapping("${lemon.userController.forgotPasswordUrl}")
 	@ResponseStatus(HttpStatus.NO_CONTENT)
 	public void forgotPassword(@RequestParam String email) throws EntityNotFoundException {
 		log.debug("Received forgot password request for: " + email);
@@ -154,7 +151,7 @@ public abstract class AbstractUserController<U extends AbstractUser<ID>, ID exte
 	/**
 	 * Resets password after it's forgotten
 	 */
-	@PostMapping("/reset-password")
+	@PostMapping("${lemon.userController.resetPasswordUrl}")
 	@ResponseBody
 	public ResponseEntity<String> resetPassword(
 			@RequestBody ResetPasswordForm form,
@@ -164,7 +161,7 @@ public abstract class AbstractUserController<U extends AbstractUser<ID>, ID exte
 		U saved = getService().resetPassword(form);
 		appendFreshToken(response);
 		Object dto = getDtoMapper().mapToDto(saved,
-				createDtoClass(lemonProperties.controller.endpoints.resetPassword, Direction.RESPONSE, saved));
+				createDtoClass(lemonProperties.userController.resetPasswordUrl, Direction.RESPONSE, saved));
 		return ok(getJsonMapper().writeValueAsString(dto));
 	}
 
@@ -172,7 +169,7 @@ public abstract class AbstractUserController<U extends AbstractUser<ID>, ID exte
 	/**
 	 * Fetches a user by email
 	 */
-	@PostMapping("/users/fetch-by-email")
+	@PostMapping("${lemon.userController.fetchByEmailUrl}")
 	@ResponseBody
 	public ResponseEntity<String> fetchByEmail(@RequestParam String email) throws JsonProcessingException, BadEntityException, EntityNotFoundException {
 		log.debug("Fetching user by email: " + email);
@@ -180,7 +177,7 @@ public abstract class AbstractUserController<U extends AbstractUser<ID>, ID exte
 		VerifyEntity.isPresent(byEmail,"User with email: "+email+" not found");
 		U user = byEmail.get();
 		Object responseDto = getDtoMapper().mapToDto(user,
-				createDtoClass(lemonProperties.controller.endpoints.fetchByEmail, Direction.RESPONSE, user));
+				createDtoClass(lemonProperties.userController.fetchByEmailUrl, Direction.RESPONSE, user));
 		return ok(getJsonMapper().writeValueAsString(responseDto));
 	}
 
@@ -189,12 +186,12 @@ public abstract class AbstractUserController<U extends AbstractUser<ID>, ID exte
 	/**
 	 * Changes password
 	 */
-	@PostMapping("/users/{id}/password")
+	@PostMapping("${lemon.userController.changePasswordUrl}")
 	@ResponseStatus(HttpStatus.NO_CONTENT)
-	public void changePassword(@PathVariable("id") ID id,
+	public void changePassword(HttpServletRequest request,
 			@RequestBody ChangePasswordForm changePasswordForm,
-			HttpServletResponse response) throws BadEntityException, EntityNotFoundException {
-
+			HttpServletResponse response) throws BadEntityException, EntityNotFoundException, IdFetchingException {
+		ID id = fetchId(request);
 		log.debug("Changing password of user with id: " + id);
 		U user = fetchUser(id);
 		getService().changePassword(user, changePasswordForm);
@@ -205,10 +202,11 @@ public abstract class AbstractUserController<U extends AbstractUser<ID>, ID exte
 	/**
 	 * Requests for changing email
 	 */
-	@PostMapping("/users/{id}/email-change-request")
+	@PostMapping("${lemon.userController.requestEmailChangeUrl}")
 	@ResponseStatus(HttpStatus.NO_CONTENT)
-	public void requestEmailChange(@PathVariable("id") ID id,
-								   @RequestBody RequestEmailChangeForm emailChangeForm) throws BadEntityException, EntityNotFoundException {
+	public void requestEmailChange(HttpServletRequest request,
+								   @RequestBody RequestEmailChangeForm emailChangeForm) throws BadEntityException, EntityNotFoundException, IdFetchingException {
+		ID id = fetchId(request);
 		log.debug("Requesting email change for user with " + id);
 		U user = fetchUser(id);
 		getService().requestEmailChange(user, emailChangeForm);
@@ -218,19 +216,19 @@ public abstract class AbstractUserController<U extends AbstractUser<ID>, ID exte
 	/**
 	 * Changes the email
 	 */
-	@PostMapping("/users/{id}/email")
+	@PostMapping("${lemon.userController.changeEmailUrl}")
 	@ResponseBody
 	public ResponseEntity<String> changeEmail(
-			@PathVariable("id") ID id,
+			HttpServletRequest request,
 			@RequestParam String code,
-			HttpServletResponse response) throws JsonProcessingException, BadEntityException, EntityNotFoundException, BadTokenException {
-
+			HttpServletResponse response) throws JsonProcessingException, BadEntityException, EntityNotFoundException, BadTokenException, IdFetchingException {
+		ID id = fetchId(request);
 		log.debug("Changing email of user with id: " + id);
 		U user = fetchUser(id);
 		U saved = getService().changeEmail(user, code);
 		appendFreshToken(response);
 		Object responseDto = getDtoMapper().mapToDto(saved,
-				createDtoClass(lemonProperties.controller.endpoints.changeEmail, Direction.RESPONSE, saved));
+				createDtoClass(lemonProperties.userController.changeEmailUrl, Direction.RESPONSE, saved));
 		return ok(getJsonMapper().writeValueAsString(responseDto));
 	}
 
@@ -239,7 +237,7 @@ public abstract class AbstractUserController<U extends AbstractUser<ID>, ID exte
 	 * Fetch a new token - for session sliding, switch user etc.
 	 *
 	 */
-	@PostMapping("/fetch-new-auth-token")
+	@PostMapping("${lemon.userController.newAuthTokenUrl}")
 	@ResponseBody
 	public Map<String, String> fetchNewAuthToken(
 			@RequestParam Optional<String> email) {
@@ -247,8 +245,10 @@ public abstract class AbstractUserController<U extends AbstractUser<ID>, ID exte
 		log.debug("Fetching a new auth token ... ");
 		String token;
 		if (email.isEmpty()){
+			// for logged in user
 			token = getService().createNewAuthToken();
 		}else {
+			// for foreign user
 			token = getService().createNewAuthToken(email.get());
 		}
 		// result = {token:asfsdfjsdjfnd}
@@ -258,7 +258,7 @@ public abstract class AbstractUserController<U extends AbstractUser<ID>, ID exte
 	/**
 	 * A simple function for pinging this server.
 	 */
-	@GetMapping("/ping")
+	@GetMapping("${lemon.userController.pingUrl}")
 	@ResponseStatus(HttpStatus.NO_CONTENT)
 	public void ping() {
 		log.debug("Received a ping");
@@ -279,10 +279,10 @@ public abstract class AbstractUserController<U extends AbstractUser<ID>, ID exte
 		builder.withAllPrincipals()
 				.forAll(LemonUserDto.class)
 				.forResponse(LemonReadUserDto.class)
-				.forEndpoint(lemonProperties.controller.endpoints.signup, Direction.REQUEST, LemonSignupForm.class)
+				.forEndpoint(lemonProperties.userController.signupUrl, Direction.REQUEST, LemonSignupForm.class)
 
 				.withPrincipal(DtoRequestInfo.Principal.FOREIGN)
-				.forEndpoint(lemonProperties.controller.endpoints.fetchByEmail,Direction.RESPONSE, LemonFindForeignDto.class)
+				.forEndpoint(lemonProperties.userController.fetchByEmailUrl,Direction.RESPONSE, LemonFindForeignDto.class)
 
 				.withAllPrincipals()
 				.withRoles(RapidRoles.ADMIN)
@@ -293,73 +293,6 @@ public abstract class AbstractUserController<U extends AbstractUser<ID>, ID exte
 	protected DtoMappingContext provideDtoMappingContext(UserDtoMappingContextBuilder builder) {
 		return builder.build();
 	}
-
-
-	//              URLS
-
-	@Setter
-	public String loginUrl = "login";
-	@Setter
-	public String signupUrl = "signup";
-	@Setter
-	public String resetPasswordUrl = "reset-password";
-	@Setter
-	public String fetchByEmailUrl = "fetch-by-email";
-	@Setter
-	public String changeEmailUrl = "change-email";
-	@Setter
-	public String verifyUserUrl = "verify-user";
-	@Setter
-	public String contextUrl = "context";
-	@Setter
-	public String resendVerificationEmailUrl = "resend-verification-email";
-	@Setter
-	public String forgotPasswordUrl = "forgot-password";
-	@Setter
-	public String changePasswordUrl = "change-password";
-	@Setter
-	public String requestEmailChangeUrl = "request-email-change";
-	@Setter
-	public String fetchNewAuthTokenUrl = "fetch-new-auth-token";
-	@Setter
-	public String pingUrl = "ping";
-
-	protected String createUserBaseUrl(){
-		return getCoreProperties().baseUrl + "/" + getLemonProperties().controller.userUrlPrefix + "/";
-	}
-
-	@Override
-	protected void initUrls() {
-		super.initUrls();
-		String base = createUserBaseUrl();
-		this.loginUrl=base+lemonProperties.controller.endpoints.login;
-		this.signupUrl=base+lemonProperties.controller.endpoints.signup;
-		this.resetPasswordUrl=base+lemonProperties.controller.endpoints.resetPassword;
-		this.fetchByEmailUrl=base+lemonProperties.controller.endpoints.fetchByEmail;
-		this.changeEmailUrl=base+lemonProperties.controller.endpoints.changeEmail;
-		this.verifyUserUrl=base+lemonProperties.controller.endpoints.verifyUser;
-		this.contextUrl=base+lemonProperties.controller.endpoints.context;
-		this.resendVerificationEmailUrl =base+lemonProperties.controller.endpoints.resendVerificationEmail;
-		this.forgotPasswordUrl=base+lemonProperties.controller.endpoints.forgotPassword;
-		this.changePasswordUrl=base+lemonProperties.controller.endpoints.changePassword;
-		this.requestEmailChangeUrl=base+lemonProperties.controller.endpoints.requestEmailChange;
-		this.fetchNewAuthTokenUrl=base+lemonProperties.controller.endpoints.fetchNewAuthToken;
-		this.pingUrl=base+lemonProperties.controller.endpoints.ping;
-
-	}
-
-
-	//              REGISTER ENDPOINTS
-
-
-	protected RequestMappingInfo createSignupRequestMappingInfo() {
-		return RequestMappingInfo
-				.paths(findUrl)
-				.methods(RequestMethod.GET)
-				.produces(coreProperties.controller.mediaType)
-				.build();
-	}
-
 
 
 	//				HELPERS

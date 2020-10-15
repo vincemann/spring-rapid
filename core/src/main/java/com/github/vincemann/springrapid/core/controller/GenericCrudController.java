@@ -60,15 +60,15 @@ import java.util.stream.Collectors;
  * /account/get?accountId=44bedc08-8e71-11e9-bc42-526af7764f64
  *
  * @param <E>  Entity Type, of entity, who's crud operations are exposed, via endpoints,  by this Controller
- * @param <Id> Id Type of {@link E}
+ * @param <ID> Id Type of {@link E}
  */
 @Slf4j
 @Getter
 public abstract class GenericCrudController
         <
-                E extends IdentifiableEntity<Id>,
-                Id extends Serializable,
-                S extends CrudService<E, Id>,
+                E extends IdentifiableEntity<ID>,
+                ID extends Serializable,
+                S extends CrudService<E, ID>,
 
                 //internal generic params
                 EndpointInfo extends CrudEndpointInfo,
@@ -85,7 +85,7 @@ public abstract class GenericCrudController
     private RapidCoreProperties coreProperties;
     private EndpointService endpointService;
     private ObjectMapper jsonMapper;
-    private IdFetchingStrategy<Id> idIdFetchingStrategy;
+    private IdFetchingStrategy<ID> idIdFetchingStrategy;
     private EndpointInfo endpointInfo;
     private S service;
     private DelegatingDtoMapper dtoMapper;
@@ -94,7 +94,7 @@ public abstract class GenericCrudController
     @Setter
     private DtoMappingContext dtoMappingContext;
     private DTOMappingContextBuilder dtoMappingContextBuilder;
-    private ValidationStrategy<Id> validationStrategy;
+    private ValidationStrategy<ID> validationStrategy;
     private MergeUpdateStrategy mergeUpdateStrategy;
     private Class<E> entityClass;
 
@@ -122,12 +122,8 @@ public abstract class GenericCrudController
     }
 
     public ResponseEntity<String> find(HttpServletRequest request, HttpServletResponse response) throws IdFetchingException, EntityNotFoundException, BadEntityException, JsonProcessingException {
-        Id id = idIdFetchingStrategy.fetchId(request);
-        log.debug("id fetched from request: " + id);
-
+        ID id = fetchId(request);
         beforeFind(id, request, response);
-        validationStrategy.validateId(id);
-        log.debug("id successfully validated");
         logSecurityContext();
         Optional<E> optionalEntity = serviceFind(id);
         VerifyEntity.isPresent(optionalEntity, id, getEntityClass());
@@ -147,7 +143,6 @@ public abstract class GenericCrudController
         Object dto = getJsonMapper().readValue(json, dtoClass);
         beforeCreate(dto, request, response);
         validationStrategy.validateDto(dto);
-        log.debug("Dto successfully validated");
         //i expect that dto has the right dto type -> callers responsibility
         E entity = mapToEntity(dto);
         logSecurityContext();
@@ -161,7 +156,7 @@ public abstract class GenericCrudController
     public ResponseEntity<String> update(HttpServletRequest request, HttpServletResponse response) throws EntityNotFoundException, BadEntityException, IdFetchingException, JsonPatchException, IOException {
         String patchString = readBody(request);
         log.debug("patchString: " + patchString);
-        Id id = idIdFetchingStrategy.fetchId(request);
+        ID id = fetchId(request);
         //user does also need read permission if he wants to update user, so i can check read permission here instead of using unsecured service
         Optional<E> savedOptional = getService().findById(id);
         VerifyEntity.isPresent(savedOptional, id, getEntityClass());
@@ -187,11 +182,8 @@ public abstract class GenericCrudController
     }
 
     public ResponseEntity<?> delete(HttpServletRequest request, HttpServletResponse response) throws IdFetchingException, BadEntityException, EntityNotFoundException, ConstraintViolationException {
-        Id id = idIdFetchingStrategy.fetchId(request);
-        log.debug("id fetched from request: " + id);
+        ID id = fetchId(request);
         beforeDelete(id, request, response);
-        validationStrategy.validateId(id);
-        log.debug("id successfully validated");
         logSecurityContext();
         serviceDelete(id);
         afterDelete(id, request, response);
@@ -229,6 +221,12 @@ public abstract class GenericCrudController
             }
         }
         return principal;
+    }
+
+    protected ID fetchId(HttpServletRequest request) throws IdFetchingException {
+        ID id = getIdIdFetchingStrategy().fetchId(request);
+        getValidationStrategy().validateId(id);
+        return id;
     }
 
     private E mapToEntity(Object dto) throws BadEntityException, EntityNotFoundException {
@@ -433,7 +431,7 @@ public abstract class GenericCrudController
         return service.save(entity);
     }
 
-    protected void serviceDelete(Id id) throws BadEntityException, EntityNotFoundException {
+    protected void serviceDelete(ID id) throws BadEntityException, EntityNotFoundException {
         service.deleteById(id);
     }
 
@@ -441,7 +439,7 @@ public abstract class GenericCrudController
         return service.findAll();
     }
 
-    protected Optional<E> serviceFind(Id id) throws BadEntityException {
+    protected Optional<E> serviceFind(ID id) throws BadEntityException {
         return service.findById(id);
     }
 
@@ -452,13 +450,13 @@ public abstract class GenericCrudController
     public void beforeCreate(Object dto, HttpServletRequest httpServletRequest, HttpServletResponse response) {
     }
 
-    public void beforeUpdate(Class<?> dtoClass, Id id, String patchString, HttpServletRequest request, HttpServletResponse response) {
+    public void beforeUpdate(Class<?> dtoClass, ID id, String patchString, HttpServletRequest request, HttpServletResponse response) {
     }
 
-    public void beforeDelete(Id id, HttpServletRequest httpServletRequest, HttpServletResponse response) {
+    public void beforeDelete(ID id, HttpServletRequest httpServletRequest, HttpServletResponse response) {
     }
 
-    public void beforeFind(Id id, HttpServletRequest httpServletRequest, HttpServletResponse response) {
+    public void beforeFind(ID id, HttpServletRequest httpServletRequest, HttpServletResponse response) {
     }
 
     public void beforeFindAll(HttpServletRequest httpServletRequest, HttpServletResponse response) {
@@ -470,10 +468,10 @@ public abstract class GenericCrudController
     public void afterUpdate(Object dto, E updated, HttpServletRequest httpServletRequest, HttpServletResponse response) {
     }
 
-    public void afterDelete(Id id, HttpServletRequest httpServletRequest, HttpServletResponse response) {
+    public void afterDelete(ID id, HttpServletRequest httpServletRequest, HttpServletResponse response) {
     }
 
-    public void afterFind(Id id, Object dto, Optional<E> found, HttpServletRequest httpServletRequest, HttpServletResponse response) {
+    public void afterFind(ID id, Object dto, Optional<E> found, HttpServletRequest httpServletRequest, HttpServletResponse response) {
     }
 
     public void afterFindAll(Collection<Object> dtos, Set<E> found, HttpServletRequest httpServletRequest, HttpServletResponse response) {
@@ -500,7 +498,7 @@ public abstract class GenericCrudController
     }
 
     @Autowired
-    public void injectValidationStrategy(ValidationStrategy<Id> validationStrategy) {
+    public void injectValidationStrategy(ValidationStrategy<ID> validationStrategy) {
         this.validationStrategy = validationStrategy;
     }
 
@@ -535,7 +533,7 @@ public abstract class GenericCrudController
     }
 
     @Autowired
-    public void injectIdIdFetchingStrategy(IdFetchingStrategy<Id> idIdFetchingStrategy) {
+    public void injectIdIdFetchingStrategy(IdFetchingStrategy<ID> idIdFetchingStrategy) {
         this.idIdFetchingStrategy = idIdFetchingStrategy;
     }
 
