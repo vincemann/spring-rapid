@@ -17,18 +17,18 @@ public class UserDtoMappingContextBuilder extends AbstractDtoMappingContextBuild
     protected List<String> getAllEndpoints() {
         List<String> allEndpoints = super.getAllEndpoints();
         allEndpoints.addAll(Sets.newHashSet(
-                getController().getLemonProperties().controller.signupUrl,
-                getController().getLemonProperties().controller.resetPasswordUrl,
-                getController().getLemonProperties().controller.fetchByEmailUrl,
-                getController().getLemonProperties().controller.changeEmailUrl,
-                getController().getLemonProperties().controller.verifyUserUrl));
+                getController().getLemonProperties().getController().getSignupUrl(),
+                getController().getLemonProperties().getController().getResetPasswordUrl(),
+                getController().getLemonProperties().getController().getFetchByEmailUrl(),
+                getController().getLemonProperties().getController().getChangeEmailUrl(),
+                getController().getLemonProperties().getController().getVerifyUserUrl()));
         return allEndpoints;
     }
 
     @Override
     protected List<String> getFindEndpoints() {
         List<String> findEndpoints = super.getFindEndpoints();
-        findEndpoints.add(getController().getLemonProperties().controller.fetchByEmailUrl);
+        findEndpoints.add(getController().getLemonProperties().getController().getFetchByEmailUrl());
         return findEndpoints;
     }
     

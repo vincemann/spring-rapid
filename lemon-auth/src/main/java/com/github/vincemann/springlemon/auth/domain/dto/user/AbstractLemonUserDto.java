@@ -27,10 +27,10 @@ public abstract class AbstractLemonUserDto extends IdentifiableEntityImpl<String
         this.email = email;
         this.roles = roles;
         this.setId(id);
-        initialize();
+        initFlags();
     }
 
-    public void initialize() {
+    public void initFlags() {
         unverified = roles.contains(LemonRoles.UNVERIFIED);
         blocked = roles.contains(LemonRoles.BLOCKED);
         admin = roles.contains(RapidRoles.ADMIN);

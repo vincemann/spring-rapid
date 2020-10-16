@@ -29,6 +29,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationListener;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.context.event.ContextRefreshedEvent;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -249,6 +250,12 @@ public abstract class GenericCrudController
 
     protected ResponseEntity<String> ok(String jsonDto) {
         return ResponseEntity.ok()
+                .contentType(MediaType.valueOf(coreProperties.controller.mediaType))
+                .body(jsonDto);
+    }
+
+    protected ResponseEntity<String> okCreated(String jsonDto) {
+        return ResponseEntity.status(HttpStatus.CREATED)
                 .contentType(MediaType.valueOf(coreProperties.controller.mediaType))
                 .body(jsonDto);
     }
@@ -548,11 +555,6 @@ public abstract class GenericCrudController
     @Autowired
     public void injectEndpointInfo(EndpointInfo endpointInfo) {
         this.endpointInfo = endpointInfo;
-    }
-
-    @Autowired
-    public void injectDtoMappingContextBuilder(DTOMappingContextBuilder dtoMappingContextBuilder) {
-        this.dtoMappingContextBuilder = dtoMappingContextBuilder;
     }
 
     @Autowired

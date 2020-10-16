@@ -20,6 +20,7 @@ public abstract class AbstractDtoMappingContextBuilder<C extends GenericCrudCont
 
     public AbstractDtoMappingContextBuilder(C controller) {
         this.controller = controller;
+        this.mc=new DtoMappingContext();
     }
 
     public B context(DtoMappingContext mc){

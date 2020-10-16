@@ -16,7 +16,7 @@ public class LemonDtoPostProcessor implements DtoPostProcessor<AbstractLemonUser
 
     @Override
     public void postProcessDto(AbstractLemonUserDto abstractLemonUserDto, AbstractUser<?> entity) throws BadEntityException {
-        abstractLemonUserDto.initialize();
+        abstractLemonUserDto.initFlags();
     }
 
     @Override

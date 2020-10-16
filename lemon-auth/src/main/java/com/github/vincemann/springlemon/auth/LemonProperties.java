@@ -485,11 +485,11 @@ public class LemonProperties {
 		this.jwt = jwt;
 	}
 
-	public Controller getUserController() {
+	public Controller getController() {
 		return controller;
 	}
 
-	public void setUserController(Controller controller) {
+	public void setController(Controller controller) {
 		this.controller = controller;
 	}
 }

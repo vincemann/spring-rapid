@@ -37,7 +37,7 @@ CREATE TABLE `acl_class` (
   `class` varchar(255) NOT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `unique_uk_2` (`class`)
-) ENGINE=InnoDB AUTO_INCREMENT=853 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=864 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -46,6 +46,7 @@ CREATE TABLE `acl_class` (
 
 LOCK TABLES `acl_class` WRITE;
 /*!40000 ALTER TABLE `acl_class` DISABLE KEYS */;
+INSERT INTO `acl_class` VALUES (863,'com.github.vincemann.springlemon.demo.domain.User');
 /*!40000 ALTER TABLE `acl_class` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -426,6 +427,14 @@ CREATE TABLE `acl_entry` (
   CONSTRAINT `acl_entry_ibfk_419` FOREIGN KEY (`acl_object_identity`) REFERENCES `acl_object_identity` (`id`),
   CONSTRAINT `acl_entry_ibfk_42` FOREIGN KEY (`sid`) REFERENCES `acl_sid` (`id`),
   CONSTRAINT `acl_entry_ibfk_420` FOREIGN KEY (`sid`) REFERENCES `acl_sid` (`id`),
+  CONSTRAINT `acl_entry_ibfk_421` FOREIGN KEY (`acl_object_identity`) REFERENCES `acl_object_identity` (`id`),
+  CONSTRAINT `acl_entry_ibfk_422` FOREIGN KEY (`sid`) REFERENCES `acl_sid` (`id`),
+  CONSTRAINT `acl_entry_ibfk_423` FOREIGN KEY (`acl_object_identity`) REFERENCES `acl_object_identity` (`id`),
+  CONSTRAINT `acl_entry_ibfk_424` FOREIGN KEY (`sid`) REFERENCES `acl_sid` (`id`),
+  CONSTRAINT `acl_entry_ibfk_425` FOREIGN KEY (`acl_object_identity`) REFERENCES `acl_object_identity` (`id`),
+  CONSTRAINT `acl_entry_ibfk_426` FOREIGN KEY (`sid`) REFERENCES `acl_sid` (`id`),
+  CONSTRAINT `acl_entry_ibfk_427` FOREIGN KEY (`acl_object_identity`) REFERENCES `acl_object_identity` (`id`),
+  CONSTRAINT `acl_entry_ibfk_428` FOREIGN KEY (`sid`) REFERENCES `acl_sid` (`id`),
   CONSTRAINT `acl_entry_ibfk_43` FOREIGN KEY (`acl_object_identity`) REFERENCES `acl_object_identity` (`id`),
   CONSTRAINT `acl_entry_ibfk_44` FOREIGN KEY (`sid`) REFERENCES `acl_sid` (`id`),
   CONSTRAINT `acl_entry_ibfk_45` FOREIGN KEY (`acl_object_identity`) REFERENCES `acl_object_identity` (`id`),
@@ -488,7 +497,7 @@ CREATE TABLE `acl_entry` (
   CONSTRAINT `acl_entry_ibfk_97` FOREIGN KEY (`acl_object_identity`) REFERENCES `acl_object_identity` (`id`),
   CONSTRAINT `acl_entry_ibfk_98` FOREIGN KEY (`sid`) REFERENCES `acl_sid` (`id`),
   CONSTRAINT `acl_entry_ibfk_99` FOREIGN KEY (`acl_object_identity`) REFERENCES `acl_object_identity` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=15808 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=16003 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -497,6 +506,7 @@ CREATE TABLE `acl_entry` (
 
 LOCK TABLES `acl_entry` WRITE;
 /*!40000 ALTER TABLE `acl_entry` DISABLE KEYS */;
+INSERT INTO `acl_entry` VALUES (15989,5192,0,7297,16,1,0,0),(15990,5192,1,7298,1,1,0,0),(15992,5193,0,7299,16,1,0,0),(15993,5193,1,7298,1,1,0,0),(15995,5194,0,7300,16,1,0,0),(15996,5194,1,7298,1,1,0,0),(15998,5195,0,7301,16,1,0,0),(15999,5195,1,7302,16,1,0,0),(16001,5196,0,7303,16,1,0,0),(16002,5196,1,7302,16,1,0,0);
 /*!40000 ALTER TABLE `acl_entry` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -1102,7 +1112,18 @@ CREATE TABLE `acl_object_identity` (
   CONSTRAINT `acl_object_identity_ibfk_622` FOREIGN KEY (`parent_object`) REFERENCES `acl_object_identity` (`id`),
   CONSTRAINT `acl_object_identity_ibfk_623` FOREIGN KEY (`object_id_class`) REFERENCES `acl_class` (`id`),
   CONSTRAINT `acl_object_identity_ibfk_624` FOREIGN KEY (`owner_sid`) REFERENCES `acl_sid` (`id`),
+  CONSTRAINT `acl_object_identity_ibfk_625` FOREIGN KEY (`parent_object`) REFERENCES `acl_object_identity` (`id`),
+  CONSTRAINT `acl_object_identity_ibfk_626` FOREIGN KEY (`object_id_class`) REFERENCES `acl_class` (`id`),
+  CONSTRAINT `acl_object_identity_ibfk_627` FOREIGN KEY (`owner_sid`) REFERENCES `acl_sid` (`id`),
+  CONSTRAINT `acl_object_identity_ibfk_628` FOREIGN KEY (`parent_object`) REFERENCES `acl_object_identity` (`id`),
+  CONSTRAINT `acl_object_identity_ibfk_629` FOREIGN KEY (`object_id_class`) REFERENCES `acl_class` (`id`),
   CONSTRAINT `acl_object_identity_ibfk_63` FOREIGN KEY (`owner_sid`) REFERENCES `acl_sid` (`id`),
+  CONSTRAINT `acl_object_identity_ibfk_630` FOREIGN KEY (`owner_sid`) REFERENCES `acl_sid` (`id`),
+  CONSTRAINT `acl_object_identity_ibfk_631` FOREIGN KEY (`parent_object`) REFERENCES `acl_object_identity` (`id`),
+  CONSTRAINT `acl_object_identity_ibfk_632` FOREIGN KEY (`object_id_class`) REFERENCES `acl_class` (`id`),
+  CONSTRAINT `acl_object_identity_ibfk_633` FOREIGN KEY (`parent_object`) REFERENCES `acl_object_identity` (`id`),
+  CONSTRAINT `acl_object_identity_ibfk_634` FOREIGN KEY (`object_id_class`) REFERENCES `acl_class` (`id`),
+  CONSTRAINT `acl_object_identity_ibfk_635` FOREIGN KEY (`owner_sid`) REFERENCES `acl_sid` (`id`),
   CONSTRAINT `acl_object_identity_ibfk_64` FOREIGN KEY (`parent_object`) REFERENCES `acl_object_identity` (`id`),
   CONSTRAINT `acl_object_identity_ibfk_65` FOREIGN KEY (`object_id_class`) REFERENCES `acl_class` (`id`),
   CONSTRAINT `acl_object_identity_ibfk_66` FOREIGN KEY (`owner_sid`) REFERENCES `acl_sid` (`id`),
@@ -1142,7 +1163,7 @@ CREATE TABLE `acl_object_identity` (
   CONSTRAINT `acl_object_identity_ibfk_97` FOREIGN KEY (`parent_object`) REFERENCES `acl_object_identity` (`id`),
   CONSTRAINT `acl_object_identity_ibfk_98` FOREIGN KEY (`object_id_class`) REFERENCES `acl_class` (`id`),
   CONSTRAINT `acl_object_identity_ibfk_99` FOREIGN KEY (`owner_sid`) REFERENCES `acl_sid` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=5132 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=5197 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -1151,6 +1172,7 @@ CREATE TABLE `acl_object_identity` (
 
 LOCK TABLES `acl_object_identity` WRITE;
 /*!40000 ALTER TABLE `acl_object_identity` DISABLE KEYS */;
+INSERT INTO `acl_object_identity` VALUES (5192,863,61,NULL,7297,1),(5193,863,62,NULL,7299,1),(5194,863,63,NULL,7300,1),(5195,863,64,NULL,7301,1),(5196,863,65,NULL,7303,1);
 /*!40000 ALTER TABLE `acl_object_identity` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -1167,7 +1189,7 @@ CREATE TABLE `acl_sid` (
   `sid` varchar(100) NOT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `unique_uk_1` (`sid`,`principal`)
-) ENGINE=InnoDB AUTO_INCREMENT=7217 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=7304 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -1176,6 +1198,7 @@ CREATE TABLE `acl_sid` (
 
 LOCK TABLES `acl_sid` WRITE;
 /*!40000 ALTER TABLE `acl_sid` DISABLE KEYS */;
+INSERT INTO `acl_sid` VALUES (7297,1,'admin@example.com'),(7300,1,'blockedAdmin@example.com'),(7302,0,'ROLE_ADMIN'),(7298,1,'ROLE_ADMIN'),(7299,1,'secondAdmin@example.com'),(7303,1,'unverifiedUser@example.com'),(7301,1,'user@example.com');
 /*!40000 ALTER TABLE `acl_sid` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -1222,7 +1245,7 @@ CREATE TABLE `usr` (
   `name` varchar(50) NOT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `UK_g9l96r670qkidthshajdtxrqf` (`email`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=66 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -1231,6 +1254,7 @@ CREATE TABLE `usr` (
 
 LOCK TABLES `usr` WRITE;
 /*!40000 ALTER TABLE `usr` DISABLE KEYS */;
+INSERT INTO `usr` VALUES (61,NULL,'2020-10-16 17:10:46.934000',NULL,'2020-10-16 17:10:46.934000',1602868246833,'admin@example.com',NULL,'{bcrypt}$2a$10$4k.bpO5K/d6SKHuQr33jkew6xMMyENSr7mDVZEuUvXiDMbWtusEaa','testUserName60'),(62,NULL,'2020-10-16 17:10:47.069000',NULL,'2020-10-16 17:10:47.069000',1602868246971,'secondAdmin@example.com',NULL,'{bcrypt}$2a$10$go4lutRTWmnkRbojrZB8DeQB3aq9ekJM.EqGJmJrXUc5yPGiWmrce','testUserName61'),(63,NULL,'2020-10-16 17:10:47.209000',NULL,'2020-10-16 17:10:47.209000',1602868247106,'blockedAdmin@example.com',NULL,'{bcrypt}$2a$10$osVghg7rx0OzLFOYV8NrpOjXWDO8VSPx1oHcM.UfZaMjhbJYHdtbO','testUserName62'),(64,NULL,'2020-10-16 17:10:47.339000',NULL,'2020-10-16 17:10:47.339000',1602868247240,'user@example.com',NULL,'{bcrypt}$2a$10$utmVsP5zJY1vCBFydjNa..2ZgJVeQHrd3raOVW6176qZcSVwWyXIu','testUserName63'),(65,NULL,'2020-10-16 17:10:47.501000',NULL,'2020-10-16 17:10:47.501000',1602868247382,'unverifiedUser@example.com',NULL,'{bcrypt}$2a$10$.OvKaEzjmJJOO8fkJbtlGuFD0kctXVNFKJq/pbE4P4i/ztHPci162','testUserName64');
 /*!40000 ALTER TABLE `usr` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -1255,6 +1279,7 @@ CREATE TABLE `usr_role` (
 
 LOCK TABLES `usr_role` WRITE;
 /*!40000 ALTER TABLE `usr_role` DISABLE KEYS */;
+INSERT INTO `usr_role` VALUES (61,'ROLE_ADMIN'),(62,'ROLE_ADMIN'),(63,'ROLE_ADMIN'),(63,'ROLE_BLOCKED'),(64,'ROLE_USER'),(65,'ROLE_USER'),(65,'ROLE_UNVERIFIED');
 /*!40000 ALTER TABLE `usr_role` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -1592,7 +1617,7 @@ UNLOCK TABLES;
 --
 
 /*!40000 ALTER TABLE `innodb_index_stats` DISABLE KEYS */;
-INSERT  IGNORE INTO `innodb_index_stats` VALUES ('lemonDb','#sql-1_6d','PRIMARY','2020-10-06 07:07:05','n_diff_pfx01',0,1,'id'),('lemonDb','#sql-1_6d','PRIMARY','2020-10-06 07:07:05','n_leaf_pages',1,NULL,'Number of leaf pages in the index'),('lemonDb','#sql-1_6d','PRIMARY','2020-10-06 07:07:05','size',1,NULL,'Number of pages in the index'),('lemonDb','#sql-1_6d','owner_sid','2020-10-06 07:07:05','n_diff_pfx01',0,1,'owner_sid'),('lemonDb','#sql-1_6d','owner_sid','2020-10-06 07:07:05','n_diff_pfx02',0,1,'owner_sid,id'),('lemonDb','#sql-1_6d','owner_sid','2020-10-06 07:07:05','n_leaf_pages',1,NULL,'Number of leaf pages in the index'),('lemonDb','#sql-1_6d','owner_sid','2020-10-06 07:07:05','size',1,NULL,'Number of pages in the index'),('lemonDb','#sql-1_6d','parent_object','2020-10-06 07:07:05','n_diff_pfx01',0,1,'parent_object'),('lemonDb','#sql-1_6d','parent_object','2020-10-06 07:07:05','n_diff_pfx02',0,1,'parent_object,id'),('lemonDb','#sql-1_6d','parent_object','2020-10-06 07:07:05','n_leaf_pages',1,NULL,'Number of leaf pages in the index'),('lemonDb','#sql-1_6d','parent_object','2020-10-06 07:07:05','size',1,NULL,'Number of pages in the index'),('lemonDb','#sql-1_6d','unique_uk_3','2020-10-06 07:07:05','n_diff_pfx01',0,1,'object_id_class'),('lemonDb','#sql-1_6d','unique_uk_3','2020-10-06 07:07:05','n_diff_pfx02',0,1,'object_id_class,object_id_identity'),('lemonDb','#sql-1_6d','unique_uk_3','2020-10-06 07:07:05','n_leaf_pages',1,NULL,'Number of leaf pages in the index'),('lemonDb','#sql-1_6d','unique_uk_3','2020-10-06 07:07:05','size',1,NULL,'Number of pages in the index'),('lemonDb','acl_class','PRIMARY','2020-10-13 08:28:32','n_diff_pfx01',0,1,'id'),('lemonDb','acl_class','PRIMARY','2020-10-13 08:28:32','n_leaf_pages',1,NULL,'Number of leaf pages in the index'),('lemonDb','acl_class','PRIMARY','2020-10-13 08:28:32','size',1,NULL,'Number of pages in the index'),('lemonDb','acl_class','unique_uk_2','2020-10-13 08:28:32','n_diff_pfx01',0,1,'class'),('lemonDb','acl_class','unique_uk_2','2020-10-13 08:28:32','n_leaf_pages',1,NULL,'Number of leaf pages in the index'),('lemonDb','acl_class','unique_uk_2','2020-10-13 08:28:32','size',1,NULL,'Number of pages in the index'),('lemonDb','acl_entry','PRIMARY','2020-10-13 08:28:22','n_diff_pfx01',0,1,'id'),('lemonDb','acl_entry','PRIMARY','2020-10-13 08:28:22','n_leaf_pages',1,NULL,'Number of leaf pages in the index'),('lemonDb','acl_entry','PRIMARY','2020-10-13 08:28:22','size',1,NULL,'Number of pages in the index'),('lemonDb','acl_entry','sid','2020-10-13 08:28:22','n_diff_pfx01',0,1,'sid'),('lemonDb','acl_entry','sid','2020-10-13 08:28:22','n_diff_pfx02',0,1,'sid,id'),('lemonDb','acl_entry','sid','2020-10-13 08:28:22','n_leaf_pages',1,NULL,'Number of leaf pages in the index'),('lemonDb','acl_entry','sid','2020-10-13 08:28:22','size',1,NULL,'Number of pages in the index'),('lemonDb','acl_entry','unique_uk_4','2020-10-13 08:28:22','n_diff_pfx01',0,1,'acl_object_identity'),('lemonDb','acl_entry','unique_uk_4','2020-10-13 08:28:22','n_diff_pfx02',0,1,'acl_object_identity,ace_order'),('lemonDb','acl_entry','unique_uk_4','2020-10-13 08:28:22','n_leaf_pages',1,NULL,'Number of leaf pages in the index'),('lemonDb','acl_entry','unique_uk_4','2020-10-13 08:28:22','size',1,NULL,'Number of pages in the index'),('lemonDb','acl_object_identity','PRIMARY','2020-10-13 08:28:12','n_diff_pfx01',0,1,'id'),('lemonDb','acl_object_identity','PRIMARY','2020-10-13 08:28:12','n_leaf_pages',1,NULL,'Number of leaf pages in the index'),('lemonDb','acl_object_identity','PRIMARY','2020-10-13 08:28:12','size',1,NULL,'Number of pages in the index'),('lemonDb','acl_object_identity','owner_sid','2020-10-13 08:28:12','n_diff_pfx01',0,1,'owner_sid'),('lemonDb','acl_object_identity','owner_sid','2020-10-13 08:28:12','n_diff_pfx02',0,1,'owner_sid,id'),('lemonDb','acl_object_identity','owner_sid','2020-10-13 08:28:12','n_leaf_pages',1,NULL,'Number of leaf pages in the index'),('lemonDb','acl_object_identity','owner_sid','2020-10-13 08:28:12','size',1,NULL,'Number of pages in the index'),('lemonDb','acl_object_identity','parent_object','2020-10-13 08:28:12','n_diff_pfx01',0,1,'parent_object'),('lemonDb','acl_object_identity','parent_object','2020-10-13 08:28:12','n_diff_pfx02',0,1,'parent_object,id'),('lemonDb','acl_object_identity','parent_object','2020-10-13 08:28:12','n_leaf_pages',1,NULL,'Number of leaf pages in the index'),('lemonDb','acl_object_identity','parent_object','2020-10-13 08:28:12','size',1,NULL,'Number of pages in the index'),('lemonDb','acl_object_identity','unique_uk_3','2020-10-13 08:28:12','n_diff_pfx01',0,1,'object_id_class'),('lemonDb','acl_object_identity','unique_uk_3','2020-10-13 08:28:12','n_diff_pfx02',0,1,'object_id_class,object_id_identity'),('lemonDb','acl_object_identity','unique_uk_3','2020-10-13 08:28:12','n_leaf_pages',1,NULL,'Number of leaf pages in the index'),('lemonDb','acl_object_identity','unique_uk_3','2020-10-13 08:28:12','size',1,NULL,'Number of pages in the index'),('lemonDb','acl_sid','PRIMARY','2020-10-13 08:28:02','n_diff_pfx01',0,1,'id'),('lemonDb','acl_sid','PRIMARY','2020-10-13 08:28:02','n_leaf_pages',1,NULL,'Number of leaf pages in the index'),('lemonDb','acl_sid','PRIMARY','2020-10-13 08:28:02','size',1,NULL,'Number of pages in the index'),('lemonDb','acl_sid','unique_uk_1','2020-10-13 08:28:02','n_diff_pfx01',0,1,'sid'),('lemonDb','acl_sid','unique_uk_1','2020-10-13 08:28:02','n_diff_pfx02',0,1,'sid,principal'),('lemonDb','acl_sid','unique_uk_1','2020-10-13 08:28:02','n_leaf_pages',1,NULL,'Number of leaf pages in the index'),('lemonDb','acl_sid','unique_uk_1','2020-10-13 08:28:02','size',1,NULL,'Number of pages in the index'),('lemonDb','system_message','PRIMARY','2020-07-31 13:25:15','n_diff_pfx01',0,1,'id'),('lemonDb','system_message','PRIMARY','2020-07-31 13:25:15','n_leaf_pages',1,NULL,'Number of leaf pages in the index'),('lemonDb','system_message','PRIMARY','2020-07-31 13:25:15','size',1,NULL,'Number of pages in the index'),('lemonDb','usr','PRIMARY','2020-10-16 09:20:05','n_diff_pfx01',0,1,'id'),('lemonDb','usr','PRIMARY','2020-10-16 09:20:05','n_leaf_pages',1,NULL,'Number of leaf pages in the index'),('lemonDb','usr','PRIMARY','2020-10-16 09:20:05','size',1,NULL,'Number of pages in the index'),('lemonDb','usr','UK_g9l96r670qkidthshajdtxrqf','2020-10-16 09:20:05','n_diff_pfx01',0,1,'email'),('lemonDb','usr','UK_g9l96r670qkidthshajdtxrqf','2020-10-16 09:20:05','n_leaf_pages',1,NULL,'Number of leaf pages in the index'),('lemonDb','usr','UK_g9l96r670qkidthshajdtxrqf','2020-10-16 09:20:05','size',1,NULL,'Number of pages in the index'),('lemonDb','usr_role','FKjl6gufvtdoy0djihposug5sbv','2020-10-16 09:20:05','n_diff_pfx01',0,1,'user_id'),('lemonDb','usr_role','FKjl6gufvtdoy0djihposug5sbv','2020-10-16 09:20:05','n_diff_pfx02',0,1,'user_id,DB_ROW_ID'),('lemonDb','usr_role','FKjl6gufvtdoy0djihposug5sbv','2020-10-16 09:20:05','n_leaf_pages',1,NULL,'Number of leaf pages in the index'),('lemonDb','usr_role','FKjl6gufvtdoy0djihposug5sbv','2020-10-16 09:20:05','size',1,NULL,'Number of pages in the index'),('lemonDb','usr_role','GEN_CLUST_INDEX','2020-10-16 09:20:05','n_diff_pfx01',0,1,'DB_ROW_ID'),('lemonDb','usr_role','GEN_CLUST_INDEX','2020-10-16 09:20:05','n_leaf_pages',1,NULL,'Number of leaf pages in the index'),('lemonDb','usr_role','GEN_CLUST_INDEX','2020-10-16 09:20:05','size',1,NULL,'Number of pages in the index'),('mysql','component','PRIMARY','2020-07-31 13:25:06','n_diff_pfx01',0,1,'component_id'),('mysql','component','PRIMARY','2020-07-31 13:25:06','n_leaf_pages',1,NULL,'Number of leaf pages in the index'),('mysql','component','PRIMARY','2020-07-31 13:25:06','size',1,NULL,'Number of pages in the index'),('mysql','gtid_executed','PRIMARY','2020-07-31 13:25:06','n_diff_pfx01',0,1,'source_uuid'),('mysql','gtid_executed','PRIMARY','2020-07-31 13:25:06','n_diff_pfx02',0,1,'source_uuid,interval_start'),('mysql','gtid_executed','PRIMARY','2020-07-31 13:25:06','n_leaf_pages',1,NULL,'Number of leaf pages in the index'),('mysql','gtid_executed','PRIMARY','2020-07-31 13:25:06','size',1,NULL,'Number of pages in the index'),('sys','sys_config','PRIMARY','2020-07-31 13:25:07','n_diff_pfx01',6,1,'variable'),('sys','sys_config','PRIMARY','2020-07-31 13:25:07','n_leaf_pages',1,NULL,'Number of leaf pages in the index'),('sys','sys_config','PRIMARY','2020-07-31 13:25:07','size',1,NULL,'Number of pages in the index');
+INSERT  IGNORE INTO `innodb_index_stats` VALUES ('lemonDb','#sql-1_6d','PRIMARY','2020-10-06 07:07:05','n_diff_pfx01',0,1,'id'),('lemonDb','#sql-1_6d','PRIMARY','2020-10-06 07:07:05','n_leaf_pages',1,NULL,'Number of leaf pages in the index'),('lemonDb','#sql-1_6d','PRIMARY','2020-10-06 07:07:05','size',1,NULL,'Number of pages in the index'),('lemonDb','#sql-1_6d','owner_sid','2020-10-06 07:07:05','n_diff_pfx01',0,1,'owner_sid'),('lemonDb','#sql-1_6d','owner_sid','2020-10-06 07:07:05','n_diff_pfx02',0,1,'owner_sid,id'),('lemonDb','#sql-1_6d','owner_sid','2020-10-06 07:07:05','n_leaf_pages',1,NULL,'Number of leaf pages in the index'),('lemonDb','#sql-1_6d','owner_sid','2020-10-06 07:07:05','size',1,NULL,'Number of pages in the index'),('lemonDb','#sql-1_6d','parent_object','2020-10-06 07:07:05','n_diff_pfx01',0,1,'parent_object'),('lemonDb','#sql-1_6d','parent_object','2020-10-06 07:07:05','n_diff_pfx02',0,1,'parent_object,id'),('lemonDb','#sql-1_6d','parent_object','2020-10-06 07:07:05','n_leaf_pages',1,NULL,'Number of leaf pages in the index'),('lemonDb','#sql-1_6d','parent_object','2020-10-06 07:07:05','size',1,NULL,'Number of pages in the index'),('lemonDb','#sql-1_6d','unique_uk_3','2020-10-06 07:07:05','n_diff_pfx01',0,1,'object_id_class'),('lemonDb','#sql-1_6d','unique_uk_3','2020-10-06 07:07:05','n_diff_pfx02',0,1,'object_id_class,object_id_identity'),('lemonDb','#sql-1_6d','unique_uk_3','2020-10-06 07:07:05','n_leaf_pages',1,NULL,'Number of leaf pages in the index'),('lemonDb','#sql-1_6d','unique_uk_3','2020-10-06 07:07:05','size',1,NULL,'Number of pages in the index'),('lemonDb','acl_class','PRIMARY','2020-10-16 17:10:47','n_diff_pfx01',1,1,'id'),('lemonDb','acl_class','PRIMARY','2020-10-16 17:10:47','n_leaf_pages',1,NULL,'Number of leaf pages in the index'),('lemonDb','acl_class','PRIMARY','2020-10-16 17:10:47','size',1,NULL,'Number of pages in the index'),('lemonDb','acl_class','unique_uk_2','2020-10-16 17:10:47','n_diff_pfx01',1,1,'class'),('lemonDb','acl_class','unique_uk_2','2020-10-16 17:10:47','n_leaf_pages',1,NULL,'Number of leaf pages in the index'),('lemonDb','acl_class','unique_uk_2','2020-10-16 17:10:47','size',1,NULL,'Number of pages in the index'),('lemonDb','acl_entry','PRIMARY','2020-10-16 17:10:37','n_diff_pfx01',4,1,'id'),('lemonDb','acl_entry','PRIMARY','2020-10-16 17:10:37','n_leaf_pages',1,NULL,'Number of leaf pages in the index'),('lemonDb','acl_entry','PRIMARY','2020-10-16 17:10:37','size',1,NULL,'Number of pages in the index'),('lemonDb','acl_entry','sid','2020-10-16 17:10:37','n_diff_pfx01',3,1,'sid'),('lemonDb','acl_entry','sid','2020-10-16 17:10:37','n_diff_pfx02',4,1,'sid,id'),('lemonDb','acl_entry','sid','2020-10-16 17:10:37','n_leaf_pages',1,NULL,'Number of leaf pages in the index'),('lemonDb','acl_entry','sid','2020-10-16 17:10:37','size',1,NULL,'Number of pages in the index'),('lemonDb','acl_entry','unique_uk_4','2020-10-16 17:10:37','n_diff_pfx01',2,1,'acl_object_identity'),('lemonDb','acl_entry','unique_uk_4','2020-10-16 17:10:37','n_diff_pfx02',4,1,'acl_object_identity,ace_order'),('lemonDb','acl_entry','unique_uk_4','2020-10-16 17:10:37','n_leaf_pages',1,NULL,'Number of leaf pages in the index'),('lemonDb','acl_entry','unique_uk_4','2020-10-16 17:10:37','size',1,NULL,'Number of pages in the index'),('lemonDb','acl_object_identity','PRIMARY','2020-10-16 17:10:36','n_diff_pfx01',1,1,'id'),('lemonDb','acl_object_identity','PRIMARY','2020-10-16 17:10:36','n_leaf_pages',1,NULL,'Number of leaf pages in the index'),('lemonDb','acl_object_identity','PRIMARY','2020-10-16 17:10:36','size',1,NULL,'Number of pages in the index'),('lemonDb','acl_object_identity','owner_sid','2020-10-16 17:10:36','n_diff_pfx01',1,1,'owner_sid'),('lemonDb','acl_object_identity','owner_sid','2020-10-16 17:10:36','n_diff_pfx02',1,1,'owner_sid,id'),('lemonDb','acl_object_identity','owner_sid','2020-10-16 17:10:36','n_leaf_pages',1,NULL,'Number of leaf pages in the index'),('lemonDb','acl_object_identity','owner_sid','2020-10-16 17:10:36','size',1,NULL,'Number of pages in the index'),('lemonDb','acl_object_identity','parent_object','2020-10-16 17:10:36','n_diff_pfx01',1,1,'parent_object'),('lemonDb','acl_object_identity','parent_object','2020-10-16 17:10:36','n_diff_pfx02',1,1,'parent_object,id'),('lemonDb','acl_object_identity','parent_object','2020-10-16 17:10:36','n_leaf_pages',1,NULL,'Number of leaf pages in the index'),('lemonDb','acl_object_identity','parent_object','2020-10-16 17:10:36','size',1,NULL,'Number of pages in the index'),('lemonDb','acl_object_identity','unique_uk_3','2020-10-16 17:10:36','n_diff_pfx01',1,1,'object_id_class'),('lemonDb','acl_object_identity','unique_uk_3','2020-10-16 17:10:36','n_diff_pfx02',1,1,'object_id_class,object_id_identity'),('lemonDb','acl_object_identity','unique_uk_3','2020-10-16 17:10:36','n_leaf_pages',1,NULL,'Number of leaf pages in the index'),('lemonDb','acl_object_identity','unique_uk_3','2020-10-16 17:10:36','size',1,NULL,'Number of pages in the index'),('lemonDb','acl_sid','PRIMARY','2020-10-16 17:10:47','n_diff_pfx01',4,1,'id'),('lemonDb','acl_sid','PRIMARY','2020-10-16 17:10:47','n_leaf_pages',1,NULL,'Number of leaf pages in the index'),('lemonDb','acl_sid','PRIMARY','2020-10-16 17:10:47','size',1,NULL,'Number of pages in the index'),('lemonDb','acl_sid','unique_uk_1','2020-10-16 17:10:47','n_diff_pfx01',4,1,'sid'),('lemonDb','acl_sid','unique_uk_1','2020-10-16 17:10:47','n_diff_pfx02',4,1,'sid,principal'),('lemonDb','acl_sid','unique_uk_1','2020-10-16 17:10:47','n_leaf_pages',1,NULL,'Number of leaf pages in the index'),('lemonDb','acl_sid','unique_uk_1','2020-10-16 17:10:47','size',1,NULL,'Number of pages in the index'),('lemonDb','system_message','PRIMARY','2020-07-31 13:25:15','n_diff_pfx01',0,1,'id'),('lemonDb','system_message','PRIMARY','2020-07-31 13:25:15','n_leaf_pages',1,NULL,'Number of leaf pages in the index'),('lemonDb','system_message','PRIMARY','2020-07-31 13:25:15','size',1,NULL,'Number of pages in the index'),('lemonDb','usr','PRIMARY','2020-10-16 17:10:57','n_diff_pfx01',5,1,'id'),('lemonDb','usr','PRIMARY','2020-10-16 17:10:57','n_leaf_pages',1,NULL,'Number of leaf pages in the index'),('lemonDb','usr','PRIMARY','2020-10-16 17:10:57','size',1,NULL,'Number of pages in the index'),('lemonDb','usr','UK_g9l96r670qkidthshajdtxrqf','2020-10-16 17:10:57','n_diff_pfx01',5,1,'email'),('lemonDb','usr','UK_g9l96r670qkidthshajdtxrqf','2020-10-16 17:10:57','n_leaf_pages',1,NULL,'Number of leaf pages in the index'),('lemonDb','usr','UK_g9l96r670qkidthshajdtxrqf','2020-10-16 17:10:57','size',1,NULL,'Number of pages in the index'),('lemonDb','usr_role','FKjl6gufvtdoy0djihposug5sbv','2020-10-16 17:10:47','n_diff_pfx01',2,1,'user_id'),('lemonDb','usr_role','FKjl6gufvtdoy0djihposug5sbv','2020-10-16 17:10:47','n_diff_pfx02',2,1,'user_id,DB_ROW_ID'),('lemonDb','usr_role','FKjl6gufvtdoy0djihposug5sbv','2020-10-16 17:10:47','n_leaf_pages',1,NULL,'Number of leaf pages in the index'),('lemonDb','usr_role','FKjl6gufvtdoy0djihposug5sbv','2020-10-16 17:10:47','size',1,NULL,'Number of pages in the index'),('lemonDb','usr_role','GEN_CLUST_INDEX','2020-10-16 17:10:47','n_diff_pfx01',2,1,'DB_ROW_ID'),('lemonDb','usr_role','GEN_CLUST_INDEX','2020-10-16 17:10:47','n_leaf_pages',1,NULL,'Number of leaf pages in the index'),('lemonDb','usr_role','GEN_CLUST_INDEX','2020-10-16 17:10:47','size',1,NULL,'Number of pages in the index'),('mysql','component','PRIMARY','2020-07-31 13:25:06','n_diff_pfx01',0,1,'component_id'),('mysql','component','PRIMARY','2020-07-31 13:25:06','n_leaf_pages',1,NULL,'Number of leaf pages in the index'),('mysql','component','PRIMARY','2020-07-31 13:25:06','size',1,NULL,'Number of pages in the index'),('mysql','gtid_executed','PRIMARY','2020-07-31 13:25:06','n_diff_pfx01',0,1,'source_uuid'),('mysql','gtid_executed','PRIMARY','2020-07-31 13:25:06','n_diff_pfx02',0,1,'source_uuid,interval_start'),('mysql','gtid_executed','PRIMARY','2020-07-31 13:25:06','n_leaf_pages',1,NULL,'Number of leaf pages in the index'),('mysql','gtid_executed','PRIMARY','2020-07-31 13:25:06','size',1,NULL,'Number of pages in the index'),('sys','sys_config','PRIMARY','2020-07-31 13:25:07','n_diff_pfx01',6,1,'variable'),('sys','sys_config','PRIMARY','2020-07-31 13:25:07','n_leaf_pages',1,NULL,'Number of leaf pages in the index'),('sys','sys_config','PRIMARY','2020-07-31 13:25:07','size',1,NULL,'Number of pages in the index');
 /*!40000 ALTER TABLE `innodb_index_stats` ENABLE KEYS */;
 
 --
@@ -1600,7 +1625,7 @@ INSERT  IGNORE INTO `innodb_index_stats` VALUES ('lemonDb','#sql-1_6d','PRIMARY'
 --
 
 /*!40000 ALTER TABLE `innodb_table_stats` DISABLE KEYS */;
-INSERT  IGNORE INTO `innodb_table_stats` VALUES ('lemonDb','#sql-1_6d','2020-10-06 07:07:05',0,1,3),('lemonDb','acl_class','2020-10-13 08:28:32',0,1,1),('lemonDb','acl_entry','2020-10-13 08:28:22',0,1,2),('lemonDb','acl_object_identity','2020-10-13 08:28:12',0,1,3),('lemonDb','acl_sid','2020-10-13 08:28:02',0,1,1),('lemonDb','system_message','2020-07-31 13:25:15',0,1,0),('lemonDb','usr','2020-10-16 09:20:05',0,1,0),('lemonDb','usr_role','2020-10-16 09:20:05',0,1,1),('mysql','component','2020-07-31 13:25:06',0,1,0),('mysql','gtid_executed','2020-07-31 13:25:06',0,1,0),('sys','sys_config','2020-07-31 13:25:07',6,1,0);
+INSERT  IGNORE INTO `innodb_table_stats` VALUES ('lemonDb','#sql-1_6d','2020-10-06 07:07:05',0,1,3),('lemonDb','acl_class','2020-10-16 17:10:47',1,1,1),('lemonDb','acl_entry','2020-10-16 17:10:37',4,1,2),('lemonDb','acl_object_identity','2020-10-16 17:10:36',1,1,3),('lemonDb','acl_sid','2020-10-16 17:10:47',4,1,1),('lemonDb','system_message','2020-07-31 13:25:15',0,1,0),('lemonDb','usr','2020-10-16 17:10:57',5,1,1),('lemonDb','usr_role','2020-10-16 17:10:47',2,1,1),('mysql','component','2020-07-31 13:25:06',0,1,0),('mysql','gtid_executed','2020-07-31 13:25:06',0,1,0),('sys','sys_config','2020-07-31 13:25:07',6,1,0);
 /*!40000 ALTER TABLE `innodb_table_stats` ENABLE KEYS */;
 
 --
@@ -2171,4 +2196,4 @@ CREATE TABLE IF NOT EXISTS `slow_log` (
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2020-10-16 10:38:03
+-- Dump completed on 2020-10-16 17:10:58
