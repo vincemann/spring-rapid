@@ -45,13 +45,13 @@ import java.util.Optional;
 @Slf4j
 @Getter
 public abstract class AbstractUserController<U extends AbstractUser<ID>, ID extends Serializable, S extends UserService<U,ID>>
-			extends GenericCrudController<U,ID, S,UserEndpointInfo,UserDtoMappingContextBuilder> {
+			extends GenericCrudController<U,ID, UserService<U,ID>,UserEndpointInfo,UserDtoMappingContextBuilder> {
 
 
 	//              DEPENDENCIES
 
 
-	private S unsecuredUserService;
+	private UserService<U,ID> unsecuredUserService;
 	private HttpTokenService httpTokenService;
 	private LemonProperties lemonProperties;
 
@@ -63,12 +63,12 @@ public abstract class AbstractUserController<U extends AbstractUser<ID>, ID exte
 	 */
 //	@GetMapping("#{lemon.userController.contextUrl}")
 //	@ResponseBody
-	public Map<String, Object> context() {
+	public ResponseEntity<String> context(HttpServletRequest request,HttpServletResponse response) throws JsonProcessingException {
 
 		log.debug("Getting context ");
 		Map<String, Object> context = getService().getContext();
 		log.debug("Returning context: " + context);
-		return context;
+		return ok(getJsonMapper().writeValueAsString(context));
 	}
 
 
@@ -78,7 +78,7 @@ public abstract class AbstractUserController<U extends AbstractUser<ID>, ID exte
 	 * returns current-user data and an Authorization token as a response header.
 	 */
 //	@PostMapping("${lemon.userController.signupUrl}")
-	@ResponseStatus(HttpStatus.CREATED)
+//	@ResponseStatus(HttpStatus.CREATED)
 //	@ResponseBody
 	public ResponseEntity<String> signup(/*@RequestBody @JsonView(UserUtils.SignupInput.class) S signupForm,*/
 			HttpServletRequest request,
@@ -86,7 +86,7 @@ public abstract class AbstractUserController<U extends AbstractUser<ID>, ID exte
 
 		String signupForm = readBody(request);
 		Object signupDto = getJsonMapper().readValue(signupForm,
-				createDtoClass(lemonProperties.controller.signupUrl, Direction.REQUEST, null));
+				createDtoClass(getLemonProperties().getController().getSignupUrl(), Direction.REQUEST, null));
 		getValidationStrategy().validateDto(signupDto);
 		log.debug("Signing up: " + signupDto);
 		U user = getDtoMapper().mapToEntity(signupDto, getEntityClass());
@@ -95,8 +95,8 @@ public abstract class AbstractUserController<U extends AbstractUser<ID>, ID exte
 
 		appendFreshTokenOf(saved,response);
 		Object dto = getDtoMapper().mapToDto(saved,
-				createDtoClass(lemonProperties.controller.signupUrl, Direction.RESPONSE, saved));
-		return ok(getJsonMapper().writeValueAsString(dto));
+				createDtoClass(getLemonProperties().getController().getSignupUrl(), Direction.RESPONSE, saved));
+		return okCreated(getJsonMapper().writeValueAsString(dto));
 	}
 
 	/**
@@ -104,11 +104,12 @@ public abstract class AbstractUserController<U extends AbstractUser<ID>, ID exte
 	 */
 //	@PostMapping("${lemon.userController.resendVerificationEmailUrl}")
 //	@ResponseStatus(HttpStatus.NO_CONTENT)
-	public void resendVerificationMail(HttpServletRequest request) throws BadEntityException, EntityNotFoundException, IdFetchingException {
+	public ResponseEntity<?> resendVerificationMail(HttpServletRequest request,HttpServletResponse response) throws BadEntityException, EntityNotFoundException, IdFetchingException {
 		ID id = fetchId(request);
 		log.debug("Resending verification mail for user with id " + id);
 		U user = fetchUser(id);
 		getService().resendVerificationMail(user);
+		return ok();
 	}
 
 
@@ -130,7 +131,7 @@ public abstract class AbstractUserController<U extends AbstractUser<ID>, ID exte
 
 		appendFreshToken(response);
 		Object dto = getDtoMapper().mapToDto(saved,
-				createDtoClass(lemonProperties.controller.verifyUserUrl, Direction.RESPONSE, saved));
+				createDtoClass(getLemonProperties().getController().getVerifyUserUrl(), Direction.RESPONSE, saved));
 		return ok(getJsonMapper().writeValueAsString(dto));
 	}
 
@@ -140,10 +141,11 @@ public abstract class AbstractUserController<U extends AbstractUser<ID>, ID exte
 	 */
 //	@PostMapping("${lemon.userController.forgotPasswordUrl}")
 //	@ResponseStatus(HttpStatus.NO_CONTENT)
-	public void forgotPassword(HttpServletRequest request,HttpServletResponse response/*@RequestParam String email*/) throws EntityNotFoundException, BadEntityException {
+	public ResponseEntity<?> forgotPassword(HttpServletRequest request,HttpServletResponse response/*@RequestParam String email*/) throws EntityNotFoundException, BadEntityException {
 		String email = readRequestParam(request, "email");
 		log.debug("Received forgot password request for: " + email);
 		getService().forgotPassword(email);
+		return ok();
 	}
 
 
@@ -162,7 +164,7 @@ public abstract class AbstractUserController<U extends AbstractUser<ID>, ID exte
 		U saved = getService().resetPassword(form);
 		appendFreshToken(response);
 		Object dto = getDtoMapper().mapToDto(saved,
-				createDtoClass(lemonProperties.controller.resetPasswordUrl, Direction.RESPONSE, saved));
+				createDtoClass(getLemonProperties().getController().resetPasswordUrl, Direction.RESPONSE, saved));
 		return ok(getJsonMapper().writeValueAsString(dto));
 	}
 
@@ -179,7 +181,7 @@ public abstract class AbstractUserController<U extends AbstractUser<ID>, ID exte
 		VerifyEntity.isPresent(byEmail,"User with email: "+email+" not found");
 		U user = byEmail.get();
 		Object responseDto = getDtoMapper().mapToDto(user,
-				createDtoClass(lemonProperties.controller.fetchByEmailUrl, Direction.RESPONSE, user));
+				createDtoClass(getLemonProperties().getController().getFetchByEmailUrl(), Direction.RESPONSE, user));
 		return ok(getJsonMapper().writeValueAsString(responseDto));
 	}
 
@@ -189,7 +191,7 @@ public abstract class AbstractUserController<U extends AbstractUser<ID>, ID exte
 	 */
 //	@PostMapping("${lemon.userController.changePasswordUrl}")
 //	@ResponseStatus(HttpStatus.NO_CONTENT)
-	public void changePassword(HttpServletRequest request,
+	public ResponseEntity<?> changePassword(HttpServletRequest request,
 //			@RequestBody ChangePasswordForm changePasswordForm,
 			HttpServletResponse response) throws BadEntityException, EntityNotFoundException, IdFetchingException, IOException {
 		ID id = fetchId(request);
@@ -200,6 +202,7 @@ public abstract class AbstractUserController<U extends AbstractUser<ID>, ID exte
 		U user = fetchUser(id);
 		getService().changePassword(user, form);
 		appendFreshToken(response);
+		return ok();
 	}
 
 
@@ -208,7 +211,7 @@ public abstract class AbstractUserController<U extends AbstractUser<ID>, ID exte
 	 */
 //	@PostMapping("${lemon.userController.requestEmailChangeUrl}")
 //	@ResponseStatus(HttpStatus.NO_CONTENT)
-	public void requestEmailChange(HttpServletRequest request
+	public ResponseEntity<?> requestEmailChange(HttpServletRequest request
 								   /*@RequestBody RequestEmailChangeForm emailChangeForm*/,HttpServletResponse response) throws BadEntityException, EntityNotFoundException, IdFetchingException, IOException {
 		ID id = fetchId(request);
 		String body = readBody(request);
@@ -216,6 +219,7 @@ public abstract class AbstractUserController<U extends AbstractUser<ID>, ID exte
 		log.debug("Requesting email change for user with " + id);
 		U user = fetchUser(id);
 		getService().requestEmailChange(user, form);
+		return ok();
 	}
 
 
@@ -235,7 +239,7 @@ public abstract class AbstractUserController<U extends AbstractUser<ID>, ID exte
 		U saved = getService().changeEmail(user, code);
 		appendFreshToken(response);
 		Object responseDto = getDtoMapper().mapToDto(saved,
-				createDtoClass(lemonProperties.controller.changeEmailUrl, Direction.RESPONSE, saved));
+				createDtoClass(getLemonProperties().getController().changeEmailUrl, Direction.RESPONSE, saved));
 		return ok(getJsonMapper().writeValueAsString(responseDto));
 	}
 
@@ -269,8 +273,9 @@ public abstract class AbstractUserController<U extends AbstractUser<ID>, ID exte
 	 */
 //	@GetMapping("${lemon.userController.pingUrl}")
 //	@ResponseStatus(HttpStatus.NO_CONTENT)
-	public void ping() {
+	public ResponseEntity<?> ping(HttpServletRequest request,HttpServletResponse response) {
 		log.debug("Received a ping");
+		return ok();
 	}
 
 
@@ -295,10 +300,10 @@ public abstract class AbstractUserController<U extends AbstractUser<ID>, ID exte
 				.withAllPrincipals()
 				.forAll(LemonUserDto.class)
 				.forResponse(LemonReadUserDto.class)
-				.forEndpoint(lemonProperties.controller.signupUrl, Direction.REQUEST, LemonSignupForm.class)
+				.forEndpoint(getLemonProperties().getController().getSignupUrl(), Direction.REQUEST, LemonSignupForm.class)
 
 				.withPrincipal(DtoRequestInfo.Principal.FOREIGN)
-				.forEndpoint(lemonProperties.controller.fetchByEmailUrl,Direction.RESPONSE, LemonFindForeignDto.class)
+				.forEndpoint(getLemonProperties().getController().getFetchByEmailUrl(),Direction.RESPONSE, LemonFindForeignDto.class)
 
 				.withAllPrincipals()
 				.withRoles(RapidRoles.ADMIN)
@@ -357,7 +362,7 @@ public abstract class AbstractUserController<U extends AbstractUser<ID>, ID exte
 
 	protected RequestMappingInfo createContextRequestMappingInfo() {
 		return RequestMappingInfo
-				.paths(lemonProperties.controller.contextUrl)
+				.paths(getLemonProperties().getController().contextUrl)
 				.methods(RequestMethod.GET)
 				.produces(getMediaType())
 				.build();
@@ -365,7 +370,7 @@ public abstract class AbstractUserController<U extends AbstractUser<ID>, ID exte
 
 	protected RequestMappingInfo createSignupRequestMappingInfo() {
 		return RequestMappingInfo
-				.paths(lemonProperties.controller.signupUrl)
+				.paths(getLemonProperties().getController().getSignupUrl())
 				.methods(RequestMethod.POST)
 				.consumes(getMediaType())
 				.produces(getMediaType())
@@ -374,7 +379,7 @@ public abstract class AbstractUserController<U extends AbstractUser<ID>, ID exte
 
 	protected RequestMappingInfo createResendVerificationEmailRequestMappingInfo() {
 		return RequestMappingInfo
-				.paths(lemonProperties.controller.resendVerificationEmailUrl)
+				.paths(getLemonProperties().getController().getResendVerificationEmailUrl())
 				.methods(RequestMethod.POST)
 				.consumes(getMediaType())
 				.build();
@@ -382,7 +387,7 @@ public abstract class AbstractUserController<U extends AbstractUser<ID>, ID exte
 
 	protected RequestMappingInfo createVerifyUserRequestMappingInfo() {
 		return RequestMappingInfo
-				.paths(lemonProperties.controller.verifyUserUrl)
+				.paths(getLemonProperties().getController().getVerifyUserUrl())
 				.methods(RequestMethod.POST)
 				.consumes(getMediaType())
 				.produces(getMediaType())
@@ -391,7 +396,7 @@ public abstract class AbstractUserController<U extends AbstractUser<ID>, ID exte
 
 	protected RequestMappingInfo createForgotPasswordRequestMappingInfo() {
 		return RequestMappingInfo
-				.paths(lemonProperties.controller.forgotPasswordUrl)
+				.paths(getLemonProperties().getController().getForgotPasswordUrl())
 				.methods(RequestMethod.POST)
 				.consumes(getMediaType())
 				.build();
@@ -399,7 +404,7 @@ public abstract class AbstractUserController<U extends AbstractUser<ID>, ID exte
 
 	protected RequestMappingInfo createResetPasswordRequestMappingInfo() {
 		return RequestMappingInfo
-				.paths(lemonProperties.controller.resetPasswordUrl)
+				.paths(getLemonProperties().getController().getResetPasswordUrl())
 				.methods(RequestMethod.POST)
 				.produces(getMediaType())
 				.consumes(getMediaType())
@@ -409,7 +414,7 @@ public abstract class AbstractUserController<U extends AbstractUser<ID>, ID exte
 
 	protected RequestMappingInfo createFetchByEmailRequestMappingInfo() {
 		return RequestMappingInfo
-				.paths(lemonProperties.controller.fetchByEmailUrl)
+				.paths(getLemonProperties().getController().getFetchByEmailUrl())
 				.methods(RequestMethod.POST)
 				.produces(getMediaType())
 				.consumes(getMediaType())
@@ -420,7 +425,7 @@ public abstract class AbstractUserController<U extends AbstractUser<ID>, ID exte
 
 	protected RequestMappingInfo createChangePasswordRequestMappingInfo() {
 		return RequestMappingInfo
-				.paths(lemonProperties.controller.changePasswordUrl)
+				.paths(getLemonProperties().getController().getChangePasswordUrl())
 				.methods(RequestMethod.POST)
 				.consumes(getMediaType())
 				.build();
@@ -430,7 +435,7 @@ public abstract class AbstractUserController<U extends AbstractUser<ID>, ID exte
 
 	protected RequestMappingInfo createRequestEmailChangeRequestMappingInfo() {
 		return RequestMappingInfo
-				.paths(lemonProperties.controller.requestEmailChangeUrl)
+				.paths(getLemonProperties().getController().getRequestEmailChangeUrl())
 				.methods(RequestMethod.POST)
 				.consumes(getMediaType())
 				.build();
@@ -438,7 +443,7 @@ public abstract class AbstractUserController<U extends AbstractUser<ID>, ID exte
 
 	protected RequestMappingInfo createChangeEmailRequestMappingInfo() {
 		return RequestMappingInfo
-				.paths(lemonProperties.controller.changeEmailUrl)
+				.paths(getLemonProperties().getController().getChangeEmailUrl())
 				.methods(RequestMethod.POST)
 				.produces(getMediaType())
 				.consumes(getMediaType())
@@ -447,7 +452,7 @@ public abstract class AbstractUserController<U extends AbstractUser<ID>, ID exte
 
 	protected RequestMappingInfo createNewAuthTokenRequestMappingInfo() {
 		return RequestMappingInfo
-				.paths(lemonProperties.controller.newAuthTokenUrl)
+				.paths(getLemonProperties().getController().getNewAuthTokenUrl())
 				.methods(RequestMethod.POST)
 				.produces(getMediaType())
 				.consumes(getMediaType())
@@ -456,7 +461,7 @@ public abstract class AbstractUserController<U extends AbstractUser<ID>, ID exte
 
 	protected RequestMappingInfo createPingRequestMappingInfo() {
 		return RequestMappingInfo
-				.paths(lemonProperties.controller.pingUrl)
+				.paths(getLemonProperties().getController().getPingUrl())
 				.methods(RequestMethod.GET)
 				.build();
 	}
@@ -500,20 +505,32 @@ public abstract class AbstractUserController<U extends AbstractUser<ID>, ID exte
 	public void injectHttpTokenService(HttpTokenService httpTokenService) {
 		this.httpTokenService = httpTokenService;
 	}
+
 	@Autowired
 	@Secured
 	@Override
-	public void injectCrudService(S crudService) {
+	public void injectCrudService(UserService<U,ID> crudService) {
 		super.injectCrudService(crudService);
 	}
+
 	@Autowired
 	@Unsecured
 	public void injectUnsecuredService(S unsecuredService) {
 		this.unsecuredUserService = unsecuredService;
 	}
+
 	@Autowired
 	public void injectLemonProperties(LemonProperties lemonProperties) {
 		this.lemonProperties = lemonProperties;
+	}
+
+	public S getUnsecuredUserService() {
+		return (S) unsecuredUserService;
+	}
+
+	@Override
+	public S getService() {
+		return (S) super.getService();
 	}
 
 	//	@Override

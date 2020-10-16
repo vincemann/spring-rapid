@@ -9,6 +9,7 @@ import com.github.vincemann.springlemon.auth.service.token.HttpTokenService;
 import com.github.vincemann.springrapid.core.security.RapidSecurityContext;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.config.http.SessionCreationPolicy;
@@ -86,7 +87,7 @@ public class LemonWebSecurityConfig extends WebSecurityConfigurerAdapter {
 	 * @return
 	 */
 	protected String loginPage() {
-		return properties.controller.loginUrl;
+		return properties.getController().getLoginUrl();
 	}
 	
 	/**
@@ -175,6 +176,7 @@ public class LemonWebSecurityConfig extends WebSecurityConfigurerAdapter {
 	protected void otherConfigurations(HttpSecurity http)  throws Exception {
 
 	}
+
 
 
 	@Autowired

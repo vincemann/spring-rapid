@@ -4,14 +4,11 @@ import com.github.vincemann.springrapid.core.controller.dto.mapper.BasicDtoMappe
 import com.github.vincemann.springrapid.core.controller.dto.mapper.DelegatingDtoMapper;
 import com.github.vincemann.springrapid.core.controller.dto.mapper.DtoMapper;
 import com.github.vincemann.springrapid.core.controller.dto.mapper.DtoPostProcessor;
-import com.github.vincemann.springrapid.core.controller.dto.mapper.context.CrudDtoMappingContextBuilder;
 import com.github.vincemann.springrapid.core.slicing.config.WebConfig;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
-import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Scope;
 
 import java.util.List;
 
@@ -29,6 +26,8 @@ public class RapidDtoMapperAutoConfiguration {
 //    public CrudDtoMappingContextBuilder dtoMappingContextBuilder(){
 //        return new CrudDtoMappingContextBuilder();
 //    }
+
+    //  HOW TO MAP, WHEN DTO CLASS IS FOUND
 
     @ConditionalOnMissingBean(name = "defaultDtoMapper")
     @Bean

@@ -10,6 +10,7 @@ import com.github.vincemann.springrapid.core.config.RapidControllerAutoConfigura
 import com.github.vincemann.springrapid.core.controller.owner.OwnerLocator;
 import com.github.vincemann.springrapid.core.slicing.config.WebConfig;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.AutoConfigureBefore;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.context.annotation.Bean;
@@ -18,21 +19,11 @@ import org.springframework.security.web.authentication.SimpleUrlAuthenticationFa
 
 @WebConfig
 @Slf4j
-//we want to override the OwnerLocator
-@AutoConfigureBefore({RapidControllerAutoConfiguration.class})
-public class LemonWebAutoConfiguration {
+//we need httpTokenService
+@AutoConfigureAfter(LemonControllerAutoConfiguration.class)
+public class LemonAuthenticationAutoConfiguration {
 
-    @Bean
-    @ConditionalOnMissingBean(HttpTokenService.class)
-    public HttpTokenService httpTokenService(){
-        return new AuthHeaderHttpTokenService();
-    }
 
-    @Bean
-    @ConditionalOnMissingBean(name = "lemonOwnerLocator")
-    public OwnerLocator lemonOwnerLocator(){
-        return new LemonOwnerLocator();
-    }
 
     /**
      * Configures AuthenticationSuccessHandler if missing

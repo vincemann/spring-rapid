@@ -13,7 +13,9 @@ public class MyUserServiceConfig {
     @Profile("service")
     @Bean
     @Unsecured
-    public UserService<?,?> unsecuredUserService(){
+    public UserService<?, ?> unsecuredUserService(){
         return new MyUserService();
     }
+
+
 }

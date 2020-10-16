@@ -28,7 +28,7 @@ import java.util.List;
 import static org.springframework.beans.factory.config.ConfigurableBeanFactory.SCOPE_PROTOTYPE;
 
 @SuppressWarnings("rawtypes")
-@AutoConfigureAfter(RapidDtoMapperAutoConfiguration.class)
+@AutoConfigureAfter({RapidDtoMapperAutoConfiguration.class, RapidDtoLocatorAutoConfiguration.class})
 @WebConfig
 @Slf4j
 public class RapidControllerAutoConfiguration {
@@ -37,36 +37,10 @@ public class RapidControllerAutoConfiguration {
 
     }
 
-
     @Bean
     @ConditionalOnMissingBean(MergeUpdateStrategy.class)
     public MergeUpdateStrategy mergeUpdateStrategy(){
         return new MergeUpdateStrategyImpl();
-    }
-
-    @Bean
-    @ConditionalOnMissingBean(name = "delegatingOwnerLocator")
-    public DelegatingOwnerLocator delegatingOwnerLocator(List<OwnerLocator> locators){
-        DelegatingOwnerLocator delegatingLocator = new DelegatingOwnerLocator();
-        if (locators.isEmpty()){
-            log.warn("No OwnerLocatorBean found -> dtoMapping principal feature will be ignored.");
-        }
-        locators.forEach(delegatingLocator::register);
-        return delegatingLocator;
-    }
-
-    @Bean
-    @ConditionalOnMissingBean(DtoClassLocator.class)
-    public DtoClassLocator dtoClassLocator(){
-        return new RapidDtoClassLocator();
-    }
-
-
-    @Bean
-    @ConditionalOnMissingBean(name = "delegatingDtoClassLocator")
-    @Scope(SCOPE_PROTOTYPE)
-    public DelegatingDtoClassLocator delegatingDtoClassLocator(DtoClassLocator globalLocator){
-        return new DelegatingDtoClassLocator(globalLocator);
     }
 
 
@@ -85,7 +59,7 @@ public class RapidControllerAutoConfiguration {
 //    @ConditionalOnMissingBean(EndpointsExposureContext.class)
     @Bean
     @Scope(scopeName = SCOPE_PROTOTYPE)
-    public CrudEndpointInfo endpointsExposureContext(){
+    public CrudEndpointInfo crudEndpointInfo(){
         return new CrudEndpointInfo();
     }
 

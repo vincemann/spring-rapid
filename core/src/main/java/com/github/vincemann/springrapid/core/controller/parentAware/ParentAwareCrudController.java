@@ -50,9 +50,11 @@ public abstract class ParentAwareCrudController
     private String findAllOfParentUrl;
 
 
-    @Autowired
-    public void injectService(S service) {
-        super.injectCrudService(service);
+    // init
+
+    @Override
+    protected ParentAwareDtoMappingContextBuilder createDtoMappingContextBuilder() {
+        return new ParentAwareDtoMappingContextBuilder(this);
     }
 
     @Override
@@ -60,6 +62,9 @@ public abstract class ParentAwareCrudController
         super.initUrls();
         this.findAllOfParentUrl = getEntityBaseUrl() + getCoreProperties().controller.endpoints.findAllOfParent;
     }
+
+
+    //endpoints
 
     @Override
     protected void registerEndpoints() throws NoSuchMethodException {
@@ -75,6 +80,8 @@ public abstract class ParentAwareCrudController
                 .build();
     }
 
+
+    // controller methods
 
     public ResponseEntity<String> findAllOfParent(HttpServletRequest request) throws IdFetchingException, BadEntityException, JsonProcessingException {
             log.debug("FindAllOfParent request arriving at controller: " + request);
@@ -99,6 +106,9 @@ public abstract class ParentAwareCrudController
     protected void beforeFindAllByParent(PId parentId, HttpServletRequest httpServletRequest) {
     }
 
+
+    //dependencies
+
     @Autowired
     public void injectParentIdFetchingStrategy(IdFetchingStrategy<PId> parentIdFetchingStrategy) {
         this.parentIdFetchingStrategy = parentIdFetchingStrategy;
@@ -107,5 +117,10 @@ public abstract class ParentAwareCrudController
     @Autowired
     public void injectParentValidationStrategy(ValidationStrategy<PId> parentValidationStrategy) {
         this.parentValidationStrategy = parentValidationStrategy;
+    }
+
+    @Autowired
+    public void injectService(S service) {
+        super.injectCrudService(service);
     }
 }
