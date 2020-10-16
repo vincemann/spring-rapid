@@ -1,14 +1,7 @@
 package com.github.vincemann.springlemon.auth.controller;
 
-import com.github.vincemann.springlemon.auth.LemonProperties;
-import com.github.vincemann.springrapid.core.controller.GenericCrudController;
 import com.github.vincemann.springrapid.core.controller.dto.mapper.context.AbstractDtoMappingContextBuilder;
-import com.github.vincemann.springrapid.core.controller.dto.mapper.context.CrudDtoMappingContextBuilder;
 import com.google.common.collect.Sets;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
-import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.List;
 
@@ -24,18 +17,18 @@ public class UserDtoMappingContextBuilder extends AbstractDtoMappingContextBuild
     protected List<String> getAllEndpoints() {
         List<String> allEndpoints = super.getAllEndpoints();
         allEndpoints.addAll(Sets.newHashSet(
-                getController().getLemonProperties().userController.signupUrl,
-                getController().getLemonProperties().userController.resetPasswordUrl,
-                getController().getLemonProperties().userController.fetchByEmailUrl,
-                getController().getLemonProperties().userController.changeEmailUrl,
-                getController().getLemonProperties().userController.verifyUserUrl));
+                getController().getLemonProperties().controller.signupUrl,
+                getController().getLemonProperties().controller.resetPasswordUrl,
+                getController().getLemonProperties().controller.fetchByEmailUrl,
+                getController().getLemonProperties().controller.changeEmailUrl,
+                getController().getLemonProperties().controller.verifyUserUrl));
         return allEndpoints;
     }
 
     @Override
     protected List<String> getFindEndpoints() {
         List<String> findEndpoints = super.getFindEndpoints();
-        findEndpoints.add(getController().getLemonProperties().userController.fetchByEmailUrl);
+        findEndpoints.add(getController().getLemonProperties().controller.fetchByEmailUrl);
         return findEndpoints;
     }
     

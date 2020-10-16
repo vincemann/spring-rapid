@@ -1,9 +1,10 @@
 package com.github.vincemann.springlemon.auth;
 
 import com.github.vincemann.springrapid.core.RapidCoreProperties;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.NoArgsConstructor;
+import lombok.ToString;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
 import org.springframework.validation.annotation.Validated;
 
@@ -15,19 +16,24 @@ import java.util.Map;
 @Slf4j
 public class LemonProperties {
 
-	@Value("${rapid.core.baseUrl}")
-	private static String baseUrl;
 
-	public UserController userController = new UserController();
+	private static RapidCoreProperties coreProperties;
+
+	public LemonProperties(RapidCoreProperties coreProperties) {
+		LemonProperties.coreProperties = coreProperties;
+		this.controller = new Controller();
+	}
+
+	public Controller controller;
 
 
-	public static class UserController {
+	public static class Controller {
 
-		public String userBaseUrl = baseUrl+"/user";
+		public String userBaseUrl = coreProperties.baseUrl+"/user";
 
-		public String loginUrl = baseUrl+"/login";
-		public String pingUrl = baseUrl+"/ping";
-		public String contextUrl = baseUrl+"/context";
+		public String loginUrl = coreProperties.baseUrl+"/login";
+		public String pingUrl = coreProperties.baseUrl+"/ping";
+		public String contextUrl = coreProperties.baseUrl+"/context";
 
 		public String signupUrl = userBaseUrl +"/signup";
 		public String resetPasswordUrl = userBaseUrl +"/reset-password";
@@ -151,6 +157,7 @@ public class LemonProperties {
 		public void setNewAuthTokenUrl(String newAuthTokenUrl) {
 			this.newAuthTokenUrl = newAuthTokenUrl;
 		}
+
 	}
 
 
@@ -478,11 +485,11 @@ public class LemonProperties {
 		this.jwt = jwt;
 	}
 
-	public UserController getUserController() {
-		return userController;
+	public Controller getUserController() {
+		return controller;
 	}
 
-	public void setUserController(UserController userController) {
-		this.userController = userController;
+	public void setUserController(Controller controller) {
+		this.controller = controller;
 	}
 }

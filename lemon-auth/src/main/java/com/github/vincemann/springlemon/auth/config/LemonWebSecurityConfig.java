@@ -86,7 +86,7 @@ public class LemonWebSecurityConfig extends WebSecurityConfigurerAdapter {
 	 * @return
 	 */
 	protected String loginPage() {
-		return properties.userController.loginUrl;
+		return properties.controller.loginUrl;
 	}
 	
 	/**
