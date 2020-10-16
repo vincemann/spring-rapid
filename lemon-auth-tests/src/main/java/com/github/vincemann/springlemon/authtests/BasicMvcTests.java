@@ -28,7 +28,7 @@ public class BasicMvcTests extends AbstractMvcTests {
 	@Test
 	public void testPing() throws Exception {
 
-		mvc.perform(get("/api/core/ping"))
+		mvc.perform(get(lemonProperties.getController().getPingUrl()))
 				.andExpect(status().is(204));
 	}
 
@@ -39,7 +39,7 @@ public class BasicMvcTests extends AbstractMvcTests {
 
 
 
-		mvc.perform(get("/api/core/context")
+		mvc.perform(get(lemonProperties.getController().getContextUrl())
 				.header(HttpHeaders.AUTHORIZATION, tokens.get(getAdmin().getId())))
 				.andExpect(status().is(200))
 //				.andExpect(header().string(HttpHeaders.AUTHORIZATION, containsString(".")))
@@ -58,7 +58,7 @@ public class BasicMvcTests extends AbstractMvcTests {
 	@Test
 	public void testGetContextWithoutLoggedIn_shouldOnlyReturnPublicContext() throws Exception {
 
-		mvc.perform(get("/api/core/context"))
+		mvc.perform(get(lemonProperties.getController().getContextUrl()))
 				.andExpect(status().is(200))
 				.andExpect(header().doesNotExist(HttpHeaders.AUTHORIZATION))
 				.andExpect(jsonPath("$.reCaptchaSiteKey").isString())

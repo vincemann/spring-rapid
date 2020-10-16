@@ -172,7 +172,7 @@ public abstract class GenericCrudController
         logSecurityContext();
         serviceDelete(id);
         afterDelete(id, request, response);
-        return ok();
+        return okNoContent();
     }
 
 
@@ -252,6 +252,10 @@ public abstract class GenericCrudController
         return ResponseEntity.ok()
                 .contentType(MediaType.valueOf(coreProperties.controller.mediaType))
                 .body(jsonDto);
+    }
+
+    protected ResponseEntity<?> okNoContent(){
+        return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
 
     protected ResponseEntity<String> okCreated(String jsonDto) {
