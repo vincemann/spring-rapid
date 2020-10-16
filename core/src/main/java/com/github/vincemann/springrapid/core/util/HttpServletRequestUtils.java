@@ -9,7 +9,7 @@ import java.util.Map;
 
 public class HttpServletRequestUtils {
 
-    public static Map<String, String[]> getQueryParameters(HttpServletRequest request) {
+    public static Map<String, String[]> getRequestParameters(HttpServletRequest request) {
         Map<String, String[]> queryParameters = new HashMap<>();
         String queryString = request.getQueryString();
 

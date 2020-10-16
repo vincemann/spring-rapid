@@ -17,6 +17,7 @@ import com.github.vincemann.springrapid.core.service.CrudService;
 import com.github.vincemann.springrapid.core.service.EndpointService;
 import com.github.vincemann.springrapid.core.service.exception.BadEntityException;
 import com.github.vincemann.springrapid.core.service.exception.EntityNotFoundException;
+import com.github.vincemann.springrapid.core.util.HttpServletRequestUtils;
 import com.github.vincemann.springrapid.core.util.JpaUtils;
 import com.github.vincemann.springrapid.core.util.JsonUtils;
 import com.github.vincemann.springrapid.core.util.VerifyEntity;
@@ -31,6 +32,7 @@ import org.springframework.context.event.ContextRefreshedEvent;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.util.Assert;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.servlet.mvc.method.RequestMappingInfo;
 
@@ -40,10 +42,7 @@ import javax.validation.ConstraintViolationException;
 import java.io.IOException;
 import java.io.Serializable;
 import java.lang.reflect.ParameterizedType;
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 
@@ -222,6 +221,32 @@ public abstract class GenericCrudController
         return request.getReader().lines().collect(Collectors.joining(System.lineSeparator()));
     }
 
+    protected Map<String, String[]> readRequestParams(HttpServletRequest request){
+        return HttpServletRequestUtils.getRequestParameters(request);
+    }
+
+    protected String readRequestParam(HttpServletRequest request, String key) throws BadEntityException {
+        Optional<String> param = readOptionalRequestParam(request, key);
+        if (param.isEmpty()){
+            throw new BadEntityException("RequestParam with key: " + key + " not found");
+        }else {
+            return param.get();
+        }
+    }
+
+    protected Optional<String> readOptionalRequestParam(HttpServletRequest request, String key) throws BadEntityException {
+        Map<String, String[]> params = readRequestParams(request);
+        String[] values = params.get(key);
+        if (values==null){
+            return Optional.empty();
+        }
+        if (values.length!=1){
+            return Optional.empty();
+        }
+        return Optional.of(values[0]);
+    }
+
+
     protected ResponseEntity<String> ok(String jsonDto) {
         return ResponseEntity.ok()
                 .contentType(MediaType.valueOf(coreProperties.controller.mediaType))
@@ -265,6 +290,10 @@ public abstract class GenericCrudController
 
     protected void preconfigureDtoMappingContextBuilder(DTOMappingContextBuilder builder) {
 
+    }
+
+    protected String getMediaType(){
+        return coreProperties.controller.mediaType;
     }
 
     @Override
@@ -380,7 +409,7 @@ public abstract class GenericCrudController
         return RequestMappingInfo
                 .paths(findUrl)
                 .methods(RequestMethod.GET)
-                .produces(coreProperties.controller.mediaType)
+                .produces(getMediaType())
                 .build();
     }
 
@@ -388,7 +417,7 @@ public abstract class GenericCrudController
         return RequestMappingInfo
                 .paths(deleteUrl)
                 .methods(RequestMethod.DELETE)
-                .produces(coreProperties.controller.mediaType)
+                .produces(getMediaType())
                 .build();
     }
 
@@ -396,8 +425,8 @@ public abstract class GenericCrudController
         return RequestMappingInfo
                 .paths(createUrl)
                 .methods(RequestMethod.POST)
-                .consumes(coreProperties.controller.mediaType)
-                .produces(coreProperties.controller.mediaType)
+                .consumes(getMediaType())
+                .produces(getMediaType())
                 .build();
     }
 
@@ -405,8 +434,8 @@ public abstract class GenericCrudController
         return RequestMappingInfo
                 .paths(updateUrl)
                 .methods(RequestMethod.PUT)
-                .consumes(coreProperties.controller.mediaType)
-                .produces(coreProperties.controller.mediaType)
+                .consumes(getMediaType())
+                .produces(getMediaType())
                 .build();
     }
 
@@ -414,7 +443,7 @@ public abstract class GenericCrudController
         return RequestMappingInfo
                 .paths(findAllUrl)
                 .methods(RequestMethod.GET)
-                .produces(coreProperties.controller.mediaType)
+                .produces(getMediaType())
                 .build();
     }
 

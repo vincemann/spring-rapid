@@ -2,8 +2,10 @@ package com.github.vincemann.springlemon.auth.config;
 
 import com.github.vincemann.springlemon.auth.LemonProperties;
 import com.github.vincemann.springlemon.auth.validation.CaptchaValidator;
+import com.github.vincemann.springrapid.core.RapidCoreProperties;
 import com.github.vincemann.springrapid.core.config.RapidControllerAutoConfiguration;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.AutoConfigureBefore;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.context.properties.ConfigurationProperties;
@@ -24,8 +26,8 @@ public class LemonGeneralAutoConfiguration {
     @ConfigurationProperties(prefix="lemon")
     @ConditionalOnMissingBean(LemonProperties.class)
     @Bean
-    public LemonProperties lemonProperties() {
-        return new LemonProperties();
+    public LemonProperties lemonProperties(RapidCoreProperties coreProperties) {
+        return new LemonProperties(coreProperties);
     }
 
     /**
