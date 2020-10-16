@@ -124,6 +124,9 @@ public abstract class AbstractMvcTests {
     @Autowired
     protected LemonTestAdapter testAdapter;
 
+    @Autowired
+    protected LemonProperties lemonProperties;
+
     @BeforeEach
     public void setup() throws Exception {
         configureMvc();
@@ -187,7 +190,7 @@ public abstract class AbstractMvcTests {
     }
 
     protected ResultActions login(String userName, String password) throws Exception {
-        return mvc.perform(post("/api/core/login")
+        return mvc.perform(post(lemonProperties.getController().getLoginUrl())
                 .param("username", userName)
                 .param("password", password)
                 .header("contentType", MediaType.APPLICATION_FORM_URLENCODED));

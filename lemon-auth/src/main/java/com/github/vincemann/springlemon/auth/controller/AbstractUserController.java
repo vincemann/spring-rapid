@@ -109,7 +109,7 @@ public abstract class AbstractUserController<U extends AbstractUser<ID>, ID exte
 		log.debug("Resending verification mail for user with id " + id);
 		U user = fetchUser(id);
 		getService().resendVerificationMail(user);
-		return ok();
+		return okNoContent();
 	}
 
 
@@ -145,7 +145,7 @@ public abstract class AbstractUserController<U extends AbstractUser<ID>, ID exte
 		String email = readRequestParam(request, "email");
 		log.debug("Received forgot password request for: " + email);
 		getService().forgotPassword(email);
-		return ok();
+		return okNoContent();
 	}
 
 
@@ -202,7 +202,7 @@ public abstract class AbstractUserController<U extends AbstractUser<ID>, ID exte
 		U user = fetchUser(id);
 		getService().changePassword(user, form);
 		appendFreshToken(response);
-		return ok();
+		return okNoContent();
 	}
 
 
@@ -219,7 +219,7 @@ public abstract class AbstractUserController<U extends AbstractUser<ID>, ID exte
 		log.debug("Requesting email change for user with " + id);
 		U user = fetchUser(id);
 		getService().requestEmailChange(user, form);
-		return ok();
+		return okNoContent();
 	}
 
 
@@ -275,7 +275,7 @@ public abstract class AbstractUserController<U extends AbstractUser<ID>, ID exte
 //	@ResponseStatus(HttpStatus.NO_CONTENT)
 	public ResponseEntity<?> ping(HttpServletRequest request,HttpServletResponse response) {
 		log.debug("Received a ping");
-		return ok();
+		return okNoContent();
 	}
 
 
