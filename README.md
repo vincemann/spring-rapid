@@ -9,7 +9,7 @@ The code needed for a working Controller handling multiple different Dto Types c
 Along with the Crud Module (Core) come many other modules building upon the core module, that can be plugged in when needed.  
   
 This project is inspired by [**Spring-Lemon**](https://github.com/naturalprogrammer/spring-lemon) which offers many good modules as well.  
-The packages, whose names start with 'lemon', are copied from spring-lemon, modified and integated to work together with rapid modules.  
+The packages, whose names start with 'lemon', are copied from spring-lemon, modified and integrated to work together with rapid modules.  
   
   
 # Features  
