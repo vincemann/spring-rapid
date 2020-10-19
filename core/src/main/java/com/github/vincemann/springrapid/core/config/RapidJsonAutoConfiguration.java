@@ -34,7 +34,7 @@ public class RapidJsonAutoConfiguration implements WebMvcConfigurer {
 
     @Override
     public void configureContentNegotiation (ContentNegotiationConfigurer configurer) {
-        configurer.defaultContentType(MediaType.valueOf(coreProperties.controller.mediaType));
+        configurer.defaultContentType(MediaType.valueOf(coreProperties.getController().getMediaType()));
     }
 
     @ConditionalOnMissingBean(ObjectMapper.class)

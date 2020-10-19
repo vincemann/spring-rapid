@@ -167,7 +167,7 @@ public class ChangeEmailMvcTests extends AbstractMvcTests {
 
 		mvc.perform(post(lemonProperties.getController().getChangeEmailUrl(), getUser().getId())
                 .param("code", changeEmailCode)
-				.param("id",getUnverifiedUser().getId().toString())
+				.param("id",getUser().getId().toString())
 				.header(HttpHeaders.AUTHORIZATION, tokens.get(getUser().getId()))
                 .header("contentType",  MediaType.APPLICATION_FORM_URLENCODED))
 		        .andExpect(status().is(422));

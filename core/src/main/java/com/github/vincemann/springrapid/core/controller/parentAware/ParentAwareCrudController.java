@@ -76,7 +76,7 @@ public abstract class ParentAwareCrudController
         return RequestMappingInfo
                 .paths(findAllOfParentUrl)
                 .methods(RequestMethod.GET)
-                .produces(getCoreProperties().controller.mediaType)
+                .produces(getCoreProperties().getController().getMediaType())
                 .build();
     }
 

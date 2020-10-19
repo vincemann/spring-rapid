@@ -97,7 +97,7 @@ public abstract class AbstractUserController<U extends AbstractUser<ID>, ID exte
 		appendFreshTokenOf(saved,response);
 		Object dto = getDtoMapper().mapToDto(saved,
 				createDtoClass(getLemonProperties().getController().getSignupUrl(), Direction.RESPONSE, saved));
-		return okCreated(getJsonMapper().writeValueAsString(dto));
+		return ok(getJsonMapper().writeValueAsString(dto));
 	}
 
 	/**
@@ -251,9 +251,9 @@ public abstract class AbstractUserController<U extends AbstractUser<ID>, ID exte
 	 */
 //	@PostMapping("${lemon.userController.newAuthTokenUrl}")
 //	@ResponseBody
-	public Map<String, String> createNewAuthToken(
+	public ResponseEntity<String> createNewAuthToken(
 			/*@RequestParam Optional<String> email,*/HttpServletRequest request,
-			HttpServletResponse response) throws BadEntityException {
+			HttpServletResponse response) throws BadEntityException, JsonProcessingException {
 
 		log.debug("Fetching a new auth token ... ");
 		Optional<String> email = readOptionalRequestParam(request, "email");
@@ -266,7 +266,9 @@ public abstract class AbstractUserController<U extends AbstractUser<ID>, ID exte
 			token = getService().createNewAuthToken(email.get());
 		}
 		// result = {token:asfsdfjsdjfnd}
-		return LemonMapUtils.mapOf("token", token);
+		return ok(
+				getJsonMapper().writeValueAsString(
+						LemonMapUtils.mapOf("token", token)));
 	}
 
 	/**
@@ -304,11 +306,15 @@ public abstract class AbstractUserController<U extends AbstractUser<ID>, ID exte
 				.forEndpoint(getLemonProperties().getController().getSignupUrl(), Direction.REQUEST, LemonSignupForm.class)
 
 				.withPrincipal(DtoRequestInfo.Principal.FOREIGN)
-				.forEndpoint(getLemonProperties().getController().getFetchByEmailUrl(),Direction.RESPONSE, LemonFindForeignDto.class)
+				.forFind(LemonFindForeignDto.class)
 
 				.withAllPrincipals()
 				.withRoles(RapidRoles.ADMIN)
-				.forEndpoint(getUpdateUrl(), LemonAdminUpdateUserDto.class);
+				.forEndpoint(getUpdateUrl(), LemonAdminUpdateUserDto.class)
+				.forFind(LemonReadUserDto.class)
+
+				//if this is not set then it would be unexpected when builder.furtherConfigure(...) configures for admin role
+				.withAllRoles();
 	}
 
 	@Override

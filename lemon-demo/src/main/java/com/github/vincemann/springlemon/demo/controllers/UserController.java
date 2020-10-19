@@ -19,10 +19,11 @@ public class UserController extends AbstractUserController<User, Long, MyUserSer
     @Override
     protected DtoMappingContext provideDtoMappingContext(UserDtoMappingContextBuilder builder) {
         return builder
-                .forEndpoint(getCoreProperties().controller.endpoints.update, UserUpdateDto.class)
-                .forEndpoint(getLemonProperties().getController().getSignupUrl(), Direction.REQUEST,MySignupForm.class)
+                .forEndpoint(getUpdateUrl(), UserUpdateDto.class)
+                .forEndpoint(getLemonProperties().getController().getSignupUrl(), Direction.REQUEST, MySignupForm.class)
+
                 .withRoles(RapidRoles.ADMIN)
-                .forEndpoint(getCoreProperties().controller.endpoints.update, AdminUpdatesUserDto.class)
+                .forEndpoint(getUpdateUrl(), AdminUpdatesUserDto.class)
                 .build();
     }
 
