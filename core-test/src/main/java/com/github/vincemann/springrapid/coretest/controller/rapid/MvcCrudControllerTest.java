@@ -30,7 +30,7 @@ public interface MvcCrudControllerTest
     public default MockHttpServletRequestBuilder create(Object dto) throws Exception {
         return post(getCreateUrl())
                 .content(serialize(dto))
-                .contentType(getController().getCoreProperties().controller.mediaType);
+                .contentType(getController().getCoreProperties().getController().getMediaType());
     }
 
     public default MockHttpServletRequestBuilder findAll() throws Exception {

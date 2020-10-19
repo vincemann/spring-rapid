@@ -32,6 +32,6 @@ public interface UrlParamIdCrudControllerTest
         return put(getUpdateUrl())
                 .param("id",id.toString())
                 .content(patchString)
-                .contentType(getController().getCoreProperties().controller.mediaType);
+                .contentType(getController().getCoreProperties().getController().getMediaType());
     }
 }

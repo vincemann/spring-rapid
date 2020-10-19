@@ -243,7 +243,7 @@ public abstract class GenericCrudController
 
     protected ResponseEntity<String> ok(String jsonDto) {
         return ResponseEntity.ok()
-                .contentType(MediaType.valueOf(coreProperties.controller.mediaType))
+                .contentType(MediaType.valueOf(coreProperties.getController().getMediaType()))
                 .body(jsonDto);
     }
 
@@ -251,15 +251,15 @@ public abstract class GenericCrudController
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
 
-    protected ResponseEntity<String> okCreated(String jsonDto) {
-        return ResponseEntity.status(HttpStatus.CREATED)
-                .contentType(MediaType.valueOf(coreProperties.controller.mediaType))
-                .body(jsonDto);
-    }
+//    protected ResponseEntity<String> okCreated(String jsonDto) {
+//        return ResponseEntity.status(HttpStatus.CREATED)
+//                .contentType(MediaType.valueOf(coreProperties.getController().getMediaType()))
+//                .body(jsonDto);
+//    }
 
     protected ResponseEntity<?> ok() {
         return ResponseEntity.ok()
-                .contentType(MediaType.valueOf(coreProperties.controller.mediaType))
+                .contentType(MediaType.valueOf(coreProperties.getController().getMediaType()))
                 .build();
     }
 
@@ -297,7 +297,7 @@ public abstract class GenericCrudController
     }
 
     protected String getMediaType(){
-        return coreProperties.controller.mediaType;
+        return coreProperties.getController().getMediaType();
     }
 
     @Override
