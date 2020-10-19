@@ -222,29 +222,22 @@ public abstract class GenericCrudController
         return request.getReader().lines().collect(Collectors.joining(System.lineSeparator()));
     }
 
-    protected Map<String, String[]> readRequestParams(HttpServletRequest request){
-        return HttpServletRequestUtils.getRequestParameters(request);
-    }
-
     protected String readRequestParam(HttpServletRequest request, String key) throws BadEntityException {
-        Optional<String> param = readOptionalRequestParam(request, key);
-        if (param.isEmpty()){
+        String param = request.getParameter(key);
+        if (param==null){
             throw new BadEntityException("RequestParam with key: " + key + " not found");
         }else {
-            return param.get();
+            return param;
         }
     }
 
-    protected Optional<String> readOptionalRequestParam(HttpServletRequest request, String key) throws BadEntityException {
-        Map<String, String[]> params = readRequestParams(request);
-        String[] values = params.get(key);
-        if (values==null){
+    protected Optional<String> readOptionalRequestParam(HttpServletRequest request, String key) {
+        String param = request.getParameter(key);
+        if (param!=null){
+            return Optional.of(param);
+        }else {
             return Optional.empty();
         }
-        if (values.length!=1){
-            return Optional.empty();
-        }
-        return Optional.of(values[0]);
     }
 
 

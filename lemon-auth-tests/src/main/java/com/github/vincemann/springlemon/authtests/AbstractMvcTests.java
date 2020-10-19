@@ -10,6 +10,7 @@ import com.github.vincemann.springlemon.auth.service.UserService;
 import com.github.vincemann.springlemon.authtests.adapter.LemonTestAdapter;
 import com.github.vincemann.springrapid.acl.proxy.AclManaging;
 import com.github.vincemann.springrapid.acl.proxy.Unsecured;
+import com.github.vincemann.springrapid.core.RapidCoreProperties;
 import com.github.vincemann.springrapid.core.service.exception.BadEntityException;
 import lombok.Getter;
 import org.junit.jupiter.api.AfterEach;
@@ -82,6 +83,8 @@ public abstract class AbstractMvcTests {
     protected static final String BLOCKED_USER_EMAIL = "blockedUser@example.com";
     protected static final String BLOCKED_USER_PASSWORD = "Sanjay99!blocked";
 
+    protected static String UNKNOWN_USER_ID = "99";
+
 //    private static boolean initialized = false;
 
     @Autowired
@@ -106,6 +109,9 @@ public abstract class AbstractMvcTests {
     //use for stubbing i.E. Mockito.doReturn(mockedExpireTime).when(jwt).getExpirationMillis();
     @SpyBean
     protected LemonProperties properties;
+    @SpyBean
+    protected RapidCoreProperties coreProperties;
+
     protected LemonProperties.Jwt jwt;
 
     @Autowired
@@ -137,6 +143,7 @@ public abstract class AbstractMvcTests {
         loginTestUsers();
         System.err.println("test users logged in");
         setupSpies();
+        System.err.println("TEST STARTS HERE -----------------------------------------------------------------------------------------------------------------");
     }
 
     protected void setupSpies(){
@@ -210,7 +217,7 @@ public abstract class AbstractMvcTests {
     }
 
     protected void ensureTokenWorks(String token) throws Exception {
-        mvc.perform(get("/api/core/context")
+        mvc.perform(get(lemonProperties.getController().getContextUrl())
                 .header(HttpHeaders.AUTHORIZATION, token))
                 .andExpect(status().is(200));
 //                .andExpect(jsonPath("$.user.id").value(getUnverifiedUser().getId()));
@@ -218,11 +225,13 @@ public abstract class AbstractMvcTests {
 
     @AfterEach
     void tearDown() throws SQLException {
+        System.err.println("TEST ENDS HERE -----------------------------------------------------------------------------------------------------------------");
         System.err.println("clearing test data");
         tokens.clear();
         removeTestUsers();
         System.err.println("test data cleared");
         Mockito.reset(properties);
+        Mockito.reset(coreProperties);
         Mockito.reset(jwt);
     }
 

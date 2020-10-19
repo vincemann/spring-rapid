@@ -34,7 +34,8 @@ public class RequestEmailChangeMvcTests extends AbstractMvcTests {
 	@Test
 	public void testRequestEmailChange() throws Exception {
 		
-		mvc.perform(post("/api/core/users/{id}/email-change-request", getUnverifiedUser().getId())
+		mvc.perform(post(lemonProperties.getController().getRequestEmailChangeUrl())
+				.param("id",getUnverifiedUser().getId().toString())
 				.contentType(MediaType.APPLICATION_JSON)
 				.header(HttpHeaders.AUTHORIZATION, tokens.get(getUnverifiedUser().getId()))
 				.content(JsonUtils.toJson(form())))
@@ -52,8 +53,9 @@ public class RequestEmailChangeMvcTests extends AbstractMvcTests {
      */
 	@Test
 	public void testGoodAdminRequestEmailChange() throws Exception {
-		
-		mvc.perform(post("/api/core/users/{id}/email-change-request", getUnverifiedUser().getId())
+
+		mvc.perform(post(lemonProperties.getController().getRequestEmailChangeUrl())
+				.param("id",getUnverifiedUser().getId().toString())
 				.contentType(MediaType.APPLICATION_JSON)
 				.header(HttpHeaders.AUTHORIZATION, tokens.get(getAdmin().getId()))
 				.content(JsonUtils.toJson(form())))
@@ -68,8 +70,9 @@ public class RequestEmailChangeMvcTests extends AbstractMvcTests {
      */
 	@Test
 	public void testRequestEmailChangeUnknownUser() throws Exception {
-		
-		mvc.perform(post("/api/core/users/99/email-change-request")
+
+		mvc.perform(post(lemonProperties.getController().getRequestEmailChangeUrl())
+				.param("id",UNKNOWN_USER_ID)
 				.contentType(MediaType.APPLICATION_JSON)
 				.header(HttpHeaders.AUTHORIZATION, tokens.get(getAdmin().getId()))
 				.content(JsonUtils.toJson(form())))
@@ -84,8 +87,9 @@ public class RequestEmailChangeMvcTests extends AbstractMvcTests {
 	 */
 	@Test
 	public void testNonAdminRequestEmailChangeAnotherUser() throws Exception {
-		
-		mvc.perform(post("/api/core/users/{id}/email-change-request", getAdmin().getId())
+
+		mvc.perform(post(lemonProperties.getController().getRequestEmailChangeUrl())
+				.param("id",getAdmin().getId().toString())
 				.contentType(MediaType.APPLICATION_JSON)
 				.header(HttpHeaders.AUTHORIZATION, tokens.get(getUser().getId()))
 				.content(JsonUtils.toJson(form())))
@@ -102,7 +106,8 @@ public class RequestEmailChangeMvcTests extends AbstractMvcTests {
 	public void testAdmin_triesToRequestEmailChange_ofDifferentAdmin_shouldFail() throws Exception {
 
 		//unverified admins are not treated differently than verified admins
-		mvc.perform(post("/api/core/users/{id}/email-change-request", getAdmin().getId())
+		mvc.perform(post(lemonProperties.getController().getRequestEmailChangeUrl())
+				.param("id",getAdmin().getId().toString())
 				.contentType(MediaType.APPLICATION_JSON)
 				.header(HttpHeaders.AUTHORIZATION, tokens.get(getSecondAdmin().getId()))
 				.content(JsonUtils.toJson(form())))
@@ -122,7 +127,8 @@ public class RequestEmailChangeMvcTests extends AbstractMvcTests {
 		form.setNewEmail(null);
 //		form.setPassword(null);
 		// try with null newEmail
-		mvc.perform(post("/api/core/users/{id}/email-change-request", getUnverifiedUser().getId())
+		mvc.perform(post(lemonProperties.getController().getRequestEmailChangeUrl())
+				.param("id",getUnverifiedUser().getId().toString())
 				.contentType(MediaType.APPLICATION_JSON)
 				.header(HttpHeaders.AUTHORIZATION, tokens.get(getUnverifiedUser().getId()))
 				.content(JsonUtils.toJson(form)))
@@ -137,7 +143,8 @@ public class RequestEmailChangeMvcTests extends AbstractMvcTests {
 		emailChangeForm.setNewEmail("");
 		
     	// try with blank newEmail
-		mvc.perform(post("/api/core/users/{id}/email-change-request", getUnverifiedUser().getId())
+		mvc.perform(post(lemonProperties.getController().getRequestEmailChangeUrl())
+				.param("id",getUnverifiedUser().getId().toString())
 				.contentType(MediaType.APPLICATION_JSON)
 				.header(HttpHeaders.AUTHORIZATION, tokens.get(getUnverifiedUser().getId()))
 				.content(JsonUtils.toJson(emailChangeForm)))
@@ -150,7 +157,8 @@ public class RequestEmailChangeMvcTests extends AbstractMvcTests {
 		// try with invalid newEmail
 		emailChangeForm = form();
 		emailChangeForm.setNewEmail("an-invalid-email");
-		mvc.perform(post("/api/core/users/{id}/email-change-request", getUnverifiedUser().getId())
+		mvc.perform(post(lemonProperties.getController().getRequestEmailChangeUrl())
+				.param("id",getUnverifiedUser().getId().toString())
 				.contentType(MediaType.APPLICATION_JSON)
 				.header(HttpHeaders.AUTHORIZATION, tokens.get(getUnverifiedUser().getId()))
 				.content(JsonUtils.toJson(emailChangeForm)))
@@ -183,7 +191,8 @@ public class RequestEmailChangeMvcTests extends AbstractMvcTests {
 		// try with an existing email
 		emailChangeForm = form();
 		emailChangeForm.setNewEmail(ADMIN_EMAIL);;
-		mvc.perform(post("/api/core/users/{id}/email-change-request", getUnverifiedUser().getId())
+		mvc.perform(post(lemonProperties.getController().getRequestEmailChangeUrl())
+				.param("id",getUnverifiedUser().getId().toString())
 				.contentType(MediaType.APPLICATION_JSON)
 				.header(HttpHeaders.AUTHORIZATION, tokens.get(getUnverifiedUser().getId()))
 				.content(JsonUtils.toJson(emailChangeForm)))

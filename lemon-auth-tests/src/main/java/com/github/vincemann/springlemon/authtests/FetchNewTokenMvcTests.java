@@ -34,7 +34,7 @@ public class FetchNewTokenMvcTests extends AbstractMvcTests {
 	@Test
 	public void testFetchNewToken() throws Exception {
 		
-		MvcResult result = mvc.perform(post("/api/core/fetch-new-auth-token")
+		MvcResult result = mvc.perform(post(lemonProperties.getController().getNewAuthTokenUrl())
 				.header(HttpHeaders.AUTHORIZATION, tokens.get(getUnverifiedUser().getId()))
                 .header("contentType",  MediaType.APPLICATION_FORM_URLENCODED))
                 .andExpect(status().is(200))
@@ -51,7 +51,7 @@ public class FetchNewTokenMvcTests extends AbstractMvcTests {
 		long mockedExpireTime = 1000L;
 		Mockito.doReturn(mockedExpireTime).when(jwt).getExpirationMillis();
 
-		MvcResult result = mvc.perform(post("/api/core/fetch-new-auth-token")
+		MvcResult result = mvc.perform(post(lemonProperties.getController().getNewAuthTokenUrl())
 				.header(HttpHeaders.AUTHORIZATION, tokens.get(getUnverifiedUser().getId()))
 //		        .param("expirationMillis", "1000")
                 .header("contentType",  MediaType.APPLICATION_FORM_URLENCODED))
@@ -63,7 +63,7 @@ public class FetchNewTokenMvcTests extends AbstractMvcTests {
 
 		Thread.sleep(mockedExpireTime+1L);
 		//token is now expired
-		mvc.perform(get("/api/core/context")
+		mvc.perform(get(lemonProperties.getController().getContextUrl())
 				.header(HttpHeaders.AUTHORIZATION,
 						JwtService.TOKEN_PREFIX + response.getToken()))
 				.andExpect(status().is(401));
@@ -75,7 +75,7 @@ public class FetchNewTokenMvcTests extends AbstractMvcTests {
 	@Test
 	public void testFetchNewTokenByAdminForAnotherUser() throws Exception {
 		
-		MvcResult result = mvc.perform(post("/api/core/fetch-new-auth-token")
+		MvcResult result = mvc.perform(post(lemonProperties.getController().getNewAuthTokenUrl())
 				.header(HttpHeaders.AUTHORIZATION, tokens.get(getAdmin().getId()))
 		        .param("email", UNVERIFIED_USER_EMAIL)
                 .header("contentType",  MediaType.APPLICATION_FORM_URLENCODED))
@@ -89,7 +89,7 @@ public class FetchNewTokenMvcTests extends AbstractMvcTests {
 	@Test
 	public void testFetchNewTokenByNonAdminForAnotherUser_shouldFail() throws Exception {
 		
-		mvc.perform(post("/api/core/fetch-new-auth-token")
+		mvc.perform(post(lemonProperties.getController().getNewAuthTokenUrl())
 				.header(HttpHeaders.AUTHORIZATION, tokens.get(getUnverifiedUser().getId()))
 		        .param("email", ADMIN_EMAIL)
                 .header("contentType",  MediaType.APPLICATION_FORM_URLENCODED))

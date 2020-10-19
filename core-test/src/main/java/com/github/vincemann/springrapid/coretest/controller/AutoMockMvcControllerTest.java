@@ -1,11 +1,13 @@
 package com.github.vincemann.springrapid.coretest.controller;
 
+import com.github.vincemann.springrapid.core.RapidCoreProperties;
 import com.github.vincemann.springrapid.coretest.InitializingTest;
 import com.github.vincemann.springrapid.coretest.automock.AutoMockServiceBeansGenericAnnotationWebConfigContextLoader;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.BeforeEach;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.ImportAutoConfiguration;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -48,8 +50,12 @@ public abstract class AutoMockMvcControllerTest extends InitializingTest {
     private DefaultMockMvcBuilder mockMvcBuilder;
     private MediaType contentType = MediaType.APPLICATION_JSON_UTF8;
 
+    @Autowired
+    private RapidCoreProperties coreProperties;
+
     @BeforeEach
     public void setupMvc(WebApplicationContext wac) {
+        this.contentType = MediaType.valueOf(coreProperties.getController().getMediaType());
         mockMvcBuilder = MockMvcBuilders.webAppContextSetup(wac)
                 //user has to check himself if he wants to
 //                .alwaysExpect(content().contentType(getContentType()))

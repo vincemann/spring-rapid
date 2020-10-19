@@ -65,7 +65,7 @@ public class FetchUserMvcTests extends AbstractMvcTests {
 	public void testUnauthenticated_fetchUserByEmail() throws Exception {
 		//todo create lemonDtoMappingContext with lemon endpoints like parentAware and create dto that only has id that maps for find,response,foreign,noRoles
 		
-		mvc.perform(post("/api/core/users/fetch-by-email")
+		mvc.perform(post(lemonProperties.getController().getFetchByEmailUrl())
                 .param("email", ADMIN_EMAIL)
                 .header("contentType",  MediaType.APPLICATION_FORM_URLENCODED))
                 .andExpect(status().is(200))
@@ -79,19 +79,19 @@ public class FetchUserMvcTests extends AbstractMvcTests {
 	public void testFetchUserByInvalidEmail() throws Exception {
 		
 		// email does not exist
-		mvc.perform(post("/api/core/users/fetch-by-email")
+		mvc.perform(post(lemonProperties.getController().getFetchByEmailUrl())
                 .param("email", "foo@example.com")
                 .header("contentType",  MediaType.APPLICATION_FORM_URLENCODED))
                 .andExpect(status().is(404));
 
 		// Blank email
-		mvc.perform(post("/api/core/users/fetch-by-email")
+		mvc.perform(post(lemonProperties.getController().getFetchByEmailUrl())
                 .param("email", "")
                 .header("contentType",  MediaType.APPLICATION_FORM_URLENCODED))
                 .andExpect(status().is(422));
 
 		// Invalid email
-		mvc.perform(post("/api/core/users/fetch-by-email")
+		mvc.perform(post(lemonProperties.getController().getFetchByEmailUrl())
                 .param("email", "invalid-email")
                 .header("contentType",  MediaType.APPLICATION_FORM_URLENCODED))
                 .andExpect(status().is(422));

@@ -37,7 +37,7 @@ public class ResetPasswordMvcTests extends AbstractMvcTests {
 		
 		//Thread.sleep(1001L);
 		
-		mvc.perform(post("/api/core/reset-password")
+		mvc.perform(post(lemonProperties.getController().getResetPasswordUrl())
 				.contentType(MediaType.APPLICATION_JSON)
 				.content(form(forgotPasswordCode, NEW_PASSWORD)))
 		        .andExpect(status().is(200))
@@ -48,7 +48,7 @@ public class ResetPasswordMvcTests extends AbstractMvcTests {
 		login(ADMIN_EMAIL, NEW_PASSWORD);
 		
 	    // Repeating shouldn't work
-		mvc.perform(post("/api/core/reset-password")
+		mvc.perform(post(lemonProperties.getController().getResetPasswordUrl())
 				.contentType(MediaType.APPLICATION_JSON)
 				.content(form(forgotPasswordCode, NEW_PASSWORD)))
 		        .andExpect(status().is(401));
@@ -58,19 +58,19 @@ public class ResetPasswordMvcTests extends AbstractMvcTests {
 	public void testResetPasswordInvalidData() throws Exception {
 		
 		// Wrong code
-		mvc.perform(post("/api/core/reset-password")
+		mvc.perform(post(lemonProperties.getController().getResetPasswordUrl())
 				.contentType(MediaType.APPLICATION_JSON)
 				.content(form("wrong-code", "abc99!")))
 		        .andExpect(status().is(401));
 
 		// Blank password
-		mvc.perform(post("/api/core/reset-password")
+		mvc.perform(post(lemonProperties.getController().getResetPasswordUrl())
 				.contentType(MediaType.APPLICATION_JSON)
 				.content(form(forgotPasswordCode, "")))
 		        .andExpect(status().is(422));
 
 		// Invalid password
-		mvc.perform(post("/api/core/reset-password")
+		mvc.perform(post(lemonProperties.getController().getResetPasswordUrl())
 				.contentType(MediaType.APPLICATION_JSON)
 				.content(form(forgotPasswordCode, "abc")))
 		        .andExpect(status().is(422));

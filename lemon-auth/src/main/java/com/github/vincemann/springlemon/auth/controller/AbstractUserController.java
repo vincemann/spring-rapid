@@ -30,6 +30,7 @@ import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.method.RequestMappingInfo;
@@ -381,7 +382,7 @@ public abstract class AbstractUserController<U extends AbstractUser<ID>, ID exte
 		return RequestMappingInfo
 				.paths(getLemonProperties().getController().getResendVerificationEmailUrl())
 				.methods(RequestMethod.POST)
-				.consumes(getMediaType())
+				//.consumes(MediaType.APPLICATION_FORM_URLENCODED_VALUE)
 				.build();
 	}
 
@@ -389,7 +390,7 @@ public abstract class AbstractUserController<U extends AbstractUser<ID>, ID exte
 		return RequestMappingInfo
 				.paths(getLemonProperties().getController().getVerifyUserUrl())
 				.methods(RequestMethod.POST)
-				.consumes(getMediaType())
+				//.consumes(MediaType.APPLICATION_FORM_URLENCODED_VALUE)
 				.produces(getMediaType())
 				.build();
 	}
@@ -398,7 +399,7 @@ public abstract class AbstractUserController<U extends AbstractUser<ID>, ID exte
 		return RequestMappingInfo
 				.paths(getLemonProperties().getController().getForgotPasswordUrl())
 				.methods(RequestMethod.POST)
-				.consumes(getMediaType())
+				//.consumes(MediaType.APPLICATION_FORM_URLENCODED_VALUE)
 				.build();
 	}
 
@@ -416,8 +417,8 @@ public abstract class AbstractUserController<U extends AbstractUser<ID>, ID exte
 		return RequestMappingInfo
 				.paths(getLemonProperties().getController().getFetchByEmailUrl())
 				.methods(RequestMethod.POST)
+				//.consumes(MediaType.APPLICATION_FORM_URLENCODED_VALUE)
 				.produces(getMediaType())
-				.consumes(getMediaType())
 				.build();
 	}
 
@@ -427,7 +428,7 @@ public abstract class AbstractUserController<U extends AbstractUser<ID>, ID exte
 		return RequestMappingInfo
 				.paths(getLemonProperties().getController().getChangePasswordUrl())
 				.methods(RequestMethod.POST)
-				.consumes(getMediaType())
+				//.consumes(MediaType.APPLICATION_FORM_URLENCODED_VALUE)
 				.build();
 	}
 
@@ -445,8 +446,8 @@ public abstract class AbstractUserController<U extends AbstractUser<ID>, ID exte
 		return RequestMappingInfo
 				.paths(getLemonProperties().getController().getChangeEmailUrl())
 				.methods(RequestMethod.POST)
+				//.consumes(MediaType.APPLICATION_FORM_URLENCODED_VALUE)
 				.produces(getMediaType())
-				.consumes(getMediaType())
 				.build();
 	}
 
@@ -454,8 +455,8 @@ public abstract class AbstractUserController<U extends AbstractUser<ID>, ID exte
 		return RequestMappingInfo
 				.paths(getLemonProperties().getController().getNewAuthTokenUrl())
 				.methods(RequestMethod.POST)
+				//.consumes(MediaType.APPLICATION_FORM_URLENCODED_VALUE)
 				.produces(getMediaType())
-				.consumes(getMediaType())
 				.build();
 	}
 
