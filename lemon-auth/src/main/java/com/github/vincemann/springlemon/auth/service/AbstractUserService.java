@@ -9,9 +9,12 @@ import com.github.vincemann.springlemon.auth.service.token.BadTokenException;
 import com.github.vincemann.springlemon.auth.service.token.EmailJwtService;
 import com.github.vincemann.springlemon.auth.util.*;
 
+import com.github.vincemann.springlemon.exceptions.util.Validate;
 import com.github.vincemann.springrapid.acl.proxy.Unsecured;
 import com.github.vincemann.springrapid.core.security.RapidSecurityContext;
 import com.github.vincemann.springrapid.core.service.JPACrudService;
+import com.github.vincemann.springrapid.core.util.Message;
+import com.github.vincemann.springrapid.core.util.VerifyAccess;
 import com.google.common.collect.Sets;
 import com.nimbusds.jwt.JWTClaimsSet;
 import com.github.vincemann.springlemon.auth.domain.AbstractUser;
@@ -22,8 +25,6 @@ import com.github.vincemann.springlemon.auth.domain.dto.ResetPasswordForm;
 import com.github.vincemann.springlemon.auth.mail.LemonMailData;
 import com.github.vincemann.springlemon.auth.LemonProperties;
 import com.github.vincemann.springlemon.auth.domain.LemonRoles;
-import com.github.vincemann.springlemon.exceptions.util.LexUtils;
-import com.github.vincemann.springrapid.core.security.RapidRoles;
 import com.github.vincemann.springrapid.core.service.exception.BadEntityException;
 import com.github.vincemann.springrapid.core.service.exception.EntityNotFoundException;
 import com.github.vincemann.springrapid.core.util.VerifyEntity;
@@ -89,7 +90,7 @@ public abstract class AbstractUserService
         context.put("reCaptchaSiteKey", properties.getRecaptcha().getSitekey());
         context.put("shared", properties.getShared());
         LemonAuthenticatedPrincipal principal = securityContext.currentPrincipal();
-        if (principal!=null) {
+        if (principal != null) {
             if (!principal.isAnon()) {
                 LemonAuthenticatedPrincipal withoutPw = new LemonAuthenticatedPrincipal(principal);
                 withoutPw.setPassword(null);
@@ -152,7 +153,7 @@ public abstract class AbstractUserService
 
         VerifyEntity.isPresent(user, "User not found");
         // must be unverified
-        LexUtils.validate(user.getRoles().contains(LemonRoles.UNVERIFIED),
+        Validate.condition(user.getRoles().contains(LemonRoles.UNVERIFIED),
                 "com.naturalprogrammer.spring.alreadyVerified").go();
 
         sendVerificationMail(user);
@@ -162,7 +163,7 @@ public abstract class AbstractUserService
     /**
      * Fetches a user by email
      */
-    public Optional<U> findByEmail(String email){
+    public Optional<U> findByEmail(String email) {
         return getRepository().findByEmail(email);
     }
 
@@ -177,16 +178,15 @@ public abstract class AbstractUserService
         VerifyEntity.isPresent(user, "User not found");
         // ensure that he is unverified
         // this makes sense to do here not in security plugin
-        LexUtils.validate(user.hasRole(LemonRoles.UNVERIFIED),
+        Validate.condition(user.hasRole(LemonRoles.UNVERIFIED),
                 "com.naturalprogrammer.spring.alreadyVerified").go();
         //verificationCode is jwtToken
         JWTClaimsSet claims = emailTokenService.parseToken(verificationCode,
                 VERIFY_AUDIENCE, user.getCredentialsUpdatedMillis());
 
-        LemonValidationUtils.ensureAuthority(
-                claims.getSubject().equals(user.getId().toString()) &&
+        VerifyAccess.condition(claims.getSubject().equals(user.getId().toString()) &&
                         claims.getClaim("email").equals(user.getEmail()),
-                "com.naturalprogrammer.spring.wrong.verificationCode");
+                Message.get("com.naturalprogrammer.spring.wrong.verificationCode"));
 
 
         //no login needed bc token of user is appended in controller -> we avoid dynamic logins in a stateless env
@@ -210,7 +210,7 @@ public abstract class AbstractUserService
     public void forgotPassword(String email) throws EntityNotFoundException {
         // fetch the user record from database
         Optional<U> byEmail = unsecuredUserService.findByEmail(email);
-        VerifyEntity.isPresent(byEmail,"User with email: "+email+" not found");
+        VerifyEntity.isPresent(byEmail, "User with email: " + email + " not found");
         U user = byEmail.get();
         sendForgotPasswordMail(user);
     }
@@ -230,9 +230,9 @@ public abstract class AbstractUserService
 
         // fetch the user
         Optional<U> byEmail = unsecuredUserService.findByEmail(email);
-        VerifyEntity.isPresent(byEmail,"User with email: "+email+" not found");
+        VerifyEntity.isPresent(byEmail, "User with email: " + email + " not found");
         U user = byEmail.get();
-        LemonValidationUtils.ensureCredentialsUpToDate(claims, user);
+        JwtUtils.ensureCredentialsUpToDate(claims, user);
 
         // sets the password
         user.setPassword(passwordEncoder.encode(form.getNewPassword()));
@@ -269,7 +269,7 @@ public abstract class AbstractUserService
         String oldPassword = user.getPassword();
 
         // checks
-        LexUtils.validateField("changePasswordForm.oldPassword",
+        Validate.field("changePasswordForm.oldPassword",
                 passwordEncoder.matches(changePasswordForm.getOldPassword(),
                         oldPassword),
                 "com.naturalprogrammer.spring.wrong.password").go();
@@ -380,9 +380,9 @@ public abstract class AbstractUserService
      */
     protected void mailChangeEmailLink(U user, String changeEmailLink) {
         mailSender.send(LemonMailData.of(user.getNewEmail(),
-                LexUtils.getMessage(
+                Message.get(
                         "com.naturalprogrammer.spring.changeEmailSubject"),
-                LexUtils.getMessage(
+                Message.get(
                         "com.naturalprogrammer.spring.changeEmailEmail",
                         changeEmailLink)));
     }
@@ -397,20 +397,20 @@ public abstract class AbstractUserService
     public U changeEmail(U user, /*@Valid @NotBlank*/ String changeEmailCode) throws EntityNotFoundException, BadTokenException {
 
         VerifyEntity.isPresent(user, "User not found");
-        LexUtils.validate(StringUtils.isNotBlank(user.getNewEmail()),
+        Validate.condition(StringUtils.isNotBlank(user.getNewEmail()),
                 "com.naturalprogrammer.spring.blank.newEmail").go();
 
         JWTClaimsSet claims = emailTokenService.parseToken(changeEmailCode,
                 CHANGE_EMAIL_AUDIENCE,
                 user.getCredentialsUpdatedMillis());
 
-        LemonValidationUtils.ensureAuthority(
+        VerifyAccess.condition(
                 claims.getSubject().equals(user.getId().toString()) &&
                         claims.getClaim("newEmail").equals(user.getNewEmail()),
-                "com.naturalprogrammer.spring.wrong.changeEmailCode");
+                Message.get("com.naturalprogrammer.spring.wrong.changeEmailCode"));
 
         // Ensure that the email would be unique
-        LexUtils.validate(
+        Validate.condition(
                 !unsecuredUserService.findByEmail(user.getNewEmail()).isPresent(),
                 "com.naturalprogrammer.spring.duplicate.email").go();
 
@@ -499,8 +499,8 @@ public abstract class AbstractUserService
     protected void sendVerificationMail(final U user, String verifyLink) {
 
         mailSender.send(LemonMailData.of(user.getEmail(),
-                LexUtils.getMessage("com.naturalprogrammer.spring.verifySubject"),
-                LexUtils.getMessage(
+                Message.get("com.naturalprogrammer.spring.verifySubject"),
+                Message.get(
                         "com.naturalprogrammer.spring.verifyEmail", verifyLink)));
     }
 
@@ -536,8 +536,8 @@ public abstract class AbstractUserService
 
         // send the mail
         mailSender.send(LemonMailData.of(user.getEmail(),
-                LexUtils.getMessage("com.naturalprogrammer.spring.forgotPasswordSubject"),
-                LexUtils.getMessage("com.naturalprogrammer.spring.forgotPasswordEmail",
+                Message.get("com.naturalprogrammer.spring.forgotPasswordSubject"),
+                Message.get("com.naturalprogrammer.spring.forgotPasswordEmail",
                         forgotPasswordLink)));
     }
 

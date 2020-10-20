@@ -3,15 +3,15 @@ package com.github.vincemann.springlemon.auth.service;
 import com.github.vincemann.aoplog.api.AopLoggable;
 import com.github.vincemann.aoplog.api.LogInteraction;
 import com.github.vincemann.springlemon.auth.domain.AbstractUser;
-import com.github.vincemann.springlemon.auth.domain.LemonAuthenticatedPrincipal;
 import com.github.vincemann.springlemon.auth.security.AuthenticatedPrincipalFactory;
-import com.github.vincemann.springlemon.exceptions.util.LexUtils;
+import com.github.vincemann.springlemon.exceptions.util.LemonExceptionUtils;
 
 
 import com.github.vincemann.springrapid.acl.proxy.Unsecured;
 import com.github.vincemann.springrapid.core.security.RapidAuthenticatedPrincipal;
 import com.github.vincemann.springrapid.core.service.exception.EntityNotFoundException;
 import com.github.vincemann.springrapid.core.slicing.components.ServiceComponent;
+import com.github.vincemann.springrapid.core.util.Message;
 import com.github.vincemann.springrapid.core.util.VerifyEntity;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -45,7 +45,7 @@ public class LemonUserDetailsService
 			user = byEmail.get();
 		} catch (EntityNotFoundException e) {
 			throw new UsernameNotFoundException(
-					LexUtils.getMessage("com.naturalprogrammer.spring.userNotFound", email)
+					Message.get("com.naturalprogrammer.spring.userNotFound", email)
 					,e);
 		}
 

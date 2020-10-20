@@ -1,17 +1,12 @@
 package com.github.vincemann.springrapid.core.config;
 
-import com.github.vincemann.springrapid.core.controller.DtoClassLocator;
-import com.github.vincemann.springrapid.core.controller.DelegatingDtoClassLocator;
-import com.github.vincemann.springrapid.core.controller.RapidDtoClassLocator;
-import com.github.vincemann.springrapid.core.controller.owner.DelegatingOwnerLocator;
-import com.github.vincemann.springrapid.core.controller.owner.OwnerLocator;
 import com.github.vincemann.springrapid.core.controller.CrudEndpointInfo;
 import com.github.vincemann.springrapid.core.controller.idFetchingStrategy.IdFetchingStrategy;
 import com.github.vincemann.springrapid.core.controller.idFetchingStrategy.LongUrlParamIdFetchingStrategy;
 import com.github.vincemann.springrapid.core.controller.mergeUpdate.MergeUpdateStrategy;
 import com.github.vincemann.springrapid.core.controller.mergeUpdate.MergeUpdateStrategyImpl;
-import com.github.vincemann.springrapid.core.controller.validationStrategy.JavaXValidationStrategy;
-import com.github.vincemann.springrapid.core.controller.validationStrategy.ValidationStrategy;
+import com.github.vincemann.springrapid.core.controller.validationStrategy.JavaXDtoValidationStrategy;
+import com.github.vincemann.springrapid.core.controller.validationStrategy.DtoValidationStrategy;
 import com.github.vincemann.springrapid.core.service.EndpointService;
 import com.github.vincemann.springrapid.core.slicing.config.WebConfig;
 import lombok.extern.slf4j.Slf4j;
@@ -22,8 +17,6 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Scope;
 import org.springframework.validation.beanvalidation.LocalValidatorFactoryBean;
 import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping;
-
-import java.util.List;
 
 import static org.springframework.beans.factory.config.ConfigurableBeanFactory.SCOPE_PROTOTYPE;
 
@@ -63,11 +56,11 @@ public class RapidControllerAutoConfiguration {
         return new CrudEndpointInfo();
     }
 
-    @ConditionalOnMissingBean(ValidationStrategy.class)
+    @ConditionalOnMissingBean(DtoValidationStrategy.class)
     @Bean
-    public ValidationStrategy validationStrategy(LocalValidatorFactoryBean localValidatorFactoryBean){
+    public DtoValidationStrategy validationStrategy(LocalValidatorFactoryBean localValidatorFactoryBean){
         //use spring validator, so dependency injection is supported
-        return new JavaXValidationStrategy(localValidatorFactoryBean.getValidator());
+        return new JavaXDtoValidationStrategy(localValidatorFactoryBean.getValidator());
     }
 
 

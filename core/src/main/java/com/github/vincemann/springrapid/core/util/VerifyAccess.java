@@ -11,17 +11,17 @@ public class VerifyAccess {
         return entity;
     }
 
-    public static void isTrue(boolean expression, String msg) throws AccessDeniedException {
+    public static void condition(boolean expression, String msg) throws AccessDeniedException {
         if(!expression){
             throw new AccessDeniedException(msg);
         }
     }
 
-    public static void isNot(boolean expression, String msg) throws AccessDeniedException {
-        if(expression){
-            throw new AccessDeniedException(msg);
-        }
-    }
+//    public static void isNot(boolean expression, String msg) throws AccessDeniedException {
+//        if(expression){
+//            throw new AccessDeniedException(msg);
+//        }
+//    }
 
     public static <T> T isPresent(Object entity, String msg) throws AccessDeniedException {
         Object present = VerifyEntity.isPresent(entity);

@@ -2,10 +2,7 @@ package com.github.vincemann.springlemon.auth.security.service;
 
 import com.github.vincemann.springlemon.auth.service.token.*;
 import com.github.vincemann.springlemon.auth.util.LemonMapUtils;
-import com.github.vincemann.springlemon.auth.util.LemonValidationUtils;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.security.authentication.BadCredentialsException;

@@ -29,8 +29,6 @@ import com.github.vincemann.springrapid.core.util.VerifyEntity;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.method.RequestMappingInfo;
@@ -88,7 +86,7 @@ public abstract class AbstractUserController<U extends AbstractUser<ID>, ID exte
 		String signupForm = readBody(request);
 		Object signupDto = getJsonMapper().readValue(signupForm,
 				createDtoClass(getLemonProperties().getController().getSignupUrl(), Direction.REQUEST, null));
-		getValidationStrategy().validateDto(signupDto);
+		getDtoValidationStrategy().validate(signupDto);
 		log.debug("Signing up: " + signupDto);
 		U user = getDtoMapper().mapToEntity(signupDto, getEntityClass());
 		U saved = getService().signup(user);
@@ -160,6 +158,7 @@ public abstract class AbstractUserController<U extends AbstractUser<ID>, ID exte
 			HttpServletRequest request,HttpServletResponse response) throws IOException, BadEntityException, EntityNotFoundException, BadTokenException {
 		String body = readBody(request);
 		ResetPasswordForm form = getJsonMapper().readValue(body, ResetPasswordForm.class);
+		getDtoValidationStrategy().validate(form);
 
 		log.debug("Resetting password ... ");
 		U saved = getService().resetPassword(form);
@@ -198,6 +197,7 @@ public abstract class AbstractUserController<U extends AbstractUser<ID>, ID exte
 		ID id = fetchId(request);
 		String body = readBody(request);
 		ChangePasswordForm form = getJsonMapper().readValue(body, ChangePasswordForm.class);
+		getDtoValidationStrategy().validate(form);
 
 		log.debug("Changing password of user with id: " + id);
 		U user = fetchUser(id);
@@ -217,6 +217,7 @@ public abstract class AbstractUserController<U extends AbstractUser<ID>, ID exte
 		ID id = fetchId(request);
 		String body = readBody(request);
 		RequestEmailChangeForm form = getJsonMapper().readValue(body, RequestEmailChangeForm.class);
+		getDtoValidationStrategy().validate(form);
 		log.debug("Requesting email change for user with " + id);
 		U user = fetchUser(id);
 		getService().requestEmailChange(user, form);

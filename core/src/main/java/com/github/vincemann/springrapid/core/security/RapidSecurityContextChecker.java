@@ -12,7 +12,7 @@ public class RapidSecurityContextChecker {
 
     public static void checkAuthenticated() throws AccessDeniedException {
         boolean authenticated = RapidSecurityContext.isAuthenticated();
-        VerifyAccess.isTrue(authenticated,"No Authenticated User");
+        VerifyAccess.condition(authenticated,"No Authenticated User");
     }
 
 

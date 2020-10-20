@@ -89,7 +89,7 @@ public class VerificationMvcTests extends AbstractMvcTests {
 				.param("id",getUnverifiedUser().getId().toString())
                 .param("code", token)
                 .header("contentType",  MediaType.APPLICATION_FORM_URLENCODED))
-                .andExpect(status().is(401));
+                .andExpect(status().is(403));
 		
 		// Wrong email
 		token = emailJwtService.createToken(AbstractUserService.VERIFY_AUDIENCE,
@@ -127,6 +127,6 @@ public class VerificationMvcTests extends AbstractMvcTests {
 				.param("id",getUnverifiedUser().getId().toString())
                 .param("code", verificationCode)
                 .header("contentType",  MediaType.APPLICATION_FORM_URLENCODED))
-                .andExpect(status().is(401));
+                .andExpect(status().is(403));
 	}
 }

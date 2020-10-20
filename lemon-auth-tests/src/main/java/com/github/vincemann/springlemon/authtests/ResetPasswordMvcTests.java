@@ -51,7 +51,7 @@ public class ResetPasswordMvcTests extends AbstractMvcTests {
 		mvc.perform(post(lemonProperties.getController().getResetPasswordUrl())
 				.contentType(MediaType.APPLICATION_JSON)
 				.content(form(forgotPasswordCode, NEW_PASSWORD)))
-		        .andExpect(status().is(401));
+		        .andExpect(status().is(403));
 	}
 	
 	@Test

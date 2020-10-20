@@ -10,14 +10,13 @@ import com.github.vincemann.springrapid.core.controller.idFetchingStrategy.IdFet
 import com.github.vincemann.springrapid.core.controller.idFetchingStrategy.IdFetchingStrategy;
 import com.github.vincemann.springrapid.core.controller.mergeUpdate.MergeUpdateStrategy;
 import com.github.vincemann.springrapid.core.controller.owner.DelegatingOwnerLocator;
-import com.github.vincemann.springrapid.core.controller.validationStrategy.ValidationStrategy;
+import com.github.vincemann.springrapid.core.controller.validationStrategy.DtoValidationStrategy;
 import com.github.vincemann.springrapid.core.model.IdentifiableEntity;
 import com.github.vincemann.springrapid.core.security.RapidSecurityContext;
 import com.github.vincemann.springrapid.core.service.CrudService;
 import com.github.vincemann.springrapid.core.service.EndpointService;
 import com.github.vincemann.springrapid.core.service.exception.BadEntityException;
 import com.github.vincemann.springrapid.core.service.exception.EntityNotFoundException;
-import com.github.vincemann.springrapid.core.util.HttpServletRequestUtils;
 import com.github.vincemann.springrapid.core.util.JpaUtils;
 import com.github.vincemann.springrapid.core.util.JsonUtils;
 import com.github.vincemann.springrapid.core.util.VerifyEntity;
@@ -33,7 +32,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.util.Assert;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.servlet.mvc.method.RequestMappingInfo;
 
@@ -79,7 +77,7 @@ public abstract class GenericCrudController
     @Setter
     private DtoMappingContext dtoMappingContext;
     private DTOMappingContextBuilder dtoMappingContextBuilder;
-    private ValidationStrategy<ID> validationStrategy;
+    private DtoValidationStrategy dtoValidationStrategy;
     private MergeUpdateStrategy mergeUpdateStrategy;
     private Class<E> entityClass;
 
@@ -127,7 +125,7 @@ public abstract class GenericCrudController
         Class<?> dtoClass = createDtoClass(getCreateUrl(), Direction.REQUEST, null);
         Object dto = getJsonMapper().readValue(json, dtoClass);
         beforeCreate(dto, request, response);
-        validationStrategy.validateDto(dto);
+        dtoValidationStrategy.validate(dto);
         //i expect that dto has the right dto type -> callers responsibility
         E entity = mapToEntity(dto);
         logSecurityContext();
@@ -152,7 +150,7 @@ public abstract class GenericCrudController
         Object patchDto = dtoMapper.mapToDto(saved, dtoClass);
         patchDto = JsonUtils.applyPatch(patchDto, patchString);
         log.debug("finished patchDto: " + patchDto);
-        validationStrategy.validateDto(patchDto);
+        dtoValidationStrategy.validate(patchDto);
         E patchEntity = dtoMapper.mapToEntity(patchDto, getEntityClass());
         log.debug("finished patchEntity: " + patchEntity);
         E merged = mergeUpdateStrategy.merge(patchEntity, JpaUtils.detach(saved), dtoClass);
@@ -209,9 +207,7 @@ public abstract class GenericCrudController
     }
 
     protected ID fetchId(HttpServletRequest request) throws IdFetchingException {
-        ID id = getIdIdFetchingStrategy().fetchId(request);
-        getValidationStrategy().validateId(id);
-        return id;
+        return getIdIdFetchingStrategy().fetchId(request);
     }
 
     private E mapToEntity(Object dto) throws BadEntityException, EntityNotFoundException {
@@ -530,8 +526,8 @@ public abstract class GenericCrudController
     }
 
     @Autowired
-    public void injectValidationStrategy(ValidationStrategy<ID> validationStrategy) {
-        this.validationStrategy = validationStrategy;
+    public void injectValidationStrategy(DtoValidationStrategy dtoValidationStrategy) {
+        this.dtoValidationStrategy = dtoValidationStrategy;
     }
 
     @Autowired

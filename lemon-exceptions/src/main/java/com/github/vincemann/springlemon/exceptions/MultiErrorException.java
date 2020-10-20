@@ -7,7 +7,8 @@ import java.util.stream.Collectors;
 
 import javax.validation.ConstraintViolation;
 
-import com.github.vincemann.springlemon.exceptions.util.LexUtils;
+import com.github.vincemann.springlemon.exceptions.util.LemonExceptionUtils;
+import com.github.vincemann.springrapid.core.util.Message;
 import org.springframework.http.HttpStatus;
 
 import lombok.AccessLevel;
@@ -73,7 +74,7 @@ public class MultiErrorException extends RuntimeException {
 		
 		if (!valid)
 			errors.add(new LemonFieldError(fieldName, messageKey,
-				LexUtils.getMessage(messageKey, args)));
+				Message.get(messageKey, args)));
 			
 		return this;
 	}
@@ -91,7 +92,7 @@ public class MultiErrorException extends RuntimeException {
 	public <T> MultiErrorException validateBean(String beanName, T bean) {
 		
 		Set<? extends ConstraintViolation<T>> constraintViolations = 
-				LexUtils.validator().validate(bean, validationGroups);
+				LemonExceptionUtils.validator().validate(bean, validationGroups);
 		
 		addErrors(constraintViolations, beanName);
 		return this;
