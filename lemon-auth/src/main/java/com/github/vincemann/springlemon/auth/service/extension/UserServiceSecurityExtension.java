@@ -7,13 +7,14 @@ import com.github.vincemann.springlemon.auth.domain.dto.RequestEmailChangeForm;
 import com.github.vincemann.springlemon.auth.security.LemonSecurityContextChecker;
 import com.github.vincemann.springlemon.auth.service.UserService;
 import com.github.vincemann.springlemon.auth.service.token.BadTokenException;
-import com.github.vincemann.springlemon.auth.util.LemonValidationUtils;
 import com.github.vincemann.springrapid.acl.proxy.SecurityServiceExtension;
 
 import com.github.vincemann.springrapid.core.model.IdentifiableEntity;
 import com.github.vincemann.springrapid.core.security.RapidSecurityContextChecker;
 import com.github.vincemann.springrapid.core.service.exception.BadEntityException;
 import com.github.vincemann.springrapid.core.service.exception.EntityNotFoundException;
+import com.github.vincemann.springrapid.core.util.Message;
+import com.github.vincemann.springrapid.core.util.VerifyAccess;
 import com.github.vincemann.springrapid.core.util.VerifyEntity;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -115,8 +116,8 @@ public class UserServiceSecurityExtension
     @Override
     public String createNewAuthToken(String email) {
         LemonAuthenticatedPrincipal authenticated = securityContextChecker.getSecurityContext().currentPrincipal();
-        LemonValidationUtils.ensureAuthority(authenticated.getEmail().equals(email) ||
-                authenticated.isAdmin(), "com.naturalprogrammer.spring.notGoodAdminOrSameUser");
+        VerifyAccess.condition(authenticated.getEmail().equals(email) ||
+                authenticated.isAdmin(), Message.get("com.naturalprogrammer.spring.notGoodAdminOrSameUser"));
         return getNext().createNewAuthToken(email);
     }
 

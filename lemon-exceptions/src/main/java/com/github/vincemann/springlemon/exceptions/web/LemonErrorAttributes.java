@@ -1,10 +1,8 @@
 package com.github.vincemann.springlemon.exceptions.web;
 
 import com.github.vincemann.springlemon.exceptions.ErrorResponseComposer;
-import com.github.vincemann.springlemon.exceptions.util.LexUtils;
+import com.github.vincemann.springlemon.exceptions.util.LemonExceptionUtils;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.springframework.boot.web.servlet.error.DefaultErrorAttributes;
 import org.springframework.web.context.request.WebRequest;
 
@@ -76,6 +74,6 @@ public class LemonErrorAttributes<T extends Throwable> extends DefaultErrorAttri
 		});
 		
 		if (errorAttributes.get("exceptionId") == null)
-			errorAttributes.put("exceptionId", LexUtils.getExceptionId(ex));
+			errorAttributes.put("exceptionId", LemonExceptionUtils.getExceptionId(ex));
 	}
 }

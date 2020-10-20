@@ -10,7 +10,7 @@ import com.github.vincemann.springrapid.core.controller.dto.mapper.context.DtoMa
 import com.github.vincemann.springrapid.core.controller.dto.mapper.context.DtoRequestInfo;
 import com.github.vincemann.springrapid.core.controller.DtoClassLocator;
 import com.github.vincemann.springrapid.core.controller.idFetchingStrategy.IdFetchingStrategy;
-import com.github.vincemann.springrapid.core.controller.validationStrategy.ValidationStrategy;
+import com.github.vincemann.springrapid.core.controller.validationStrategy.DtoValidationStrategy;
 import com.github.vincemann.springrapid.core.util.Lists;
 import com.github.vincemann.springrapid.coretest.controller.rapid.AbstractMvcCrudControllerTest;
 import org.junit.jupiter.api.*;
@@ -79,7 +79,7 @@ class CrudControllerIntegrationTest
     @SpyBean
     DelegatingDtoMapper dtoMapper;
     @MockBean
-    ValidationStrategy<Long> validationStrategy;
+    DtoValidationStrategy dtoValidationStrategy;
     @MockBean
     IdFetchingStrategy<Long> idFetchingStrategy;
     @Autowired
@@ -190,7 +190,7 @@ class CrudControllerIntegrationTest
         //then
         verify(controllerSpy).update(any(HttpServletRequest.class), any(HttpServletResponse.class));
 //        verify(objectMapper).readValue(anyString(), eq(readDtoClass));
-        verify(validationStrategy).validateDto(refEq(patchDto));
+        verify(dtoValidationStrategy).validate(refEq(patchDto));
         verify(controllerSpy).beforeUpdate(eq(patchDto.getClass()), eq(entityId), eq(updatePatch), any(HttpServletRequest.class), any(HttpServletResponse.class));
 //        verify(dtoMapper).mapToEntity(requestDto, getController().getEntityClass());
 //        ArgumentCaptor<ExampleEntity> updateArg = ArgumentCaptor.forClass(ExampleEntity.class);
@@ -201,7 +201,7 @@ class CrudControllerIntegrationTest
         verify(objectMapper, atLeastOnce()).writeValueAsString(returnDto);
 
 
-        verifyNoMoreInteractions(validationStrategy);
+        verifyNoMoreInteractions(dtoValidationStrategy);
         verifyNoMoreInteractions(dtoMapper);
 
         verifyDtoMappingContextInteraction(expectedRequestMappingInfo, expectedResponseMappingInfo);
@@ -285,7 +285,7 @@ class CrudControllerIntegrationTest
         //then
         verify(controllerSpy).create(any(HttpServletRequest.class), any(HttpServletResponse.class));
         verify(objectMapper).readValue(anyString(), eq(readDtoClass));
-        verify(validationStrategy).validateDto(eq(requestDto));
+        verify(dtoValidationStrategy).validate(eq(requestDto));
         verify(controllerSpy).beforeCreate(eq(requestDto), any(HttpServletRequest.class), any(HttpServletResponse.class));
         verify(dtoMapper).mapToEntity(requestDto, getController().getEntityClass());
         verify(service).save(requestEntity);
@@ -293,7 +293,7 @@ class CrudControllerIntegrationTest
         verify(objectMapper, atLeastOnce()).writeValueAsString(returnDto);
         verifyDtoMappingContextInteraction(expectedRequestMappingInfo, expectedResponseMappingInfo);
 
-        verifyNoMoreInteractions(validationStrategy);
+        verifyNoMoreInteractions(dtoValidationStrategy);
         verifyNoMoreInteractions(dtoMapper);
         verifyNoMoreInteractions(service);
     }
@@ -326,13 +326,12 @@ class CrudControllerIntegrationTest
         verify(controllerSpy).find(any(HttpServletRequest.class), any(HttpServletResponse.class));
         verify(idFetchingStrategy).fetchId(any());
         verify(controllerSpy).beforeFind(eq(entityId), any(HttpServletRequest.class), any(HttpServletResponse.class));
-        verify(validationStrategy).validateId(eq(entityId));
         verify(service).findById(entityId);
         verify(dtoMapper).mapToDto(returnEntity, writeDtoClass);
         verifyDtoMappingContextInteraction(expectedResponseMappingInfo);
 
 
-        verifyNoMoreInteractions(validationStrategy);
+        verifyNoMoreInteractions(dtoValidationStrategy);
         verifyNoMoreInteractions(dtoMapper);
         verifyNoMoreInteractions(service);
     }
@@ -349,7 +348,6 @@ class CrudControllerIntegrationTest
 
 
         verify(idFetchingStrategy).fetchId(any());
-        verify(validationStrategy).validateId(eq(entityId));
         verify(controllerSpy).beforeDelete(eq(entityId), any(HttpServletRequest.class), any(HttpServletResponse.class));
         verify(controllerSpy).delete(any(HttpServletRequest.class), any(HttpServletResponse.class));
         verify(service).deleteById(entityId);

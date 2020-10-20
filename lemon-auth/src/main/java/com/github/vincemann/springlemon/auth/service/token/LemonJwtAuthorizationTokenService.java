@@ -3,7 +3,7 @@ package com.github.vincemann.springlemon.auth.service.token;
 import com.github.vincemann.springlemon.auth.domain.AbstractUser;
 import com.github.vincemann.springlemon.auth.domain.LemonAuthenticatedPrincipal;
 import com.github.vincemann.springlemon.auth.service.UserService;
-import com.github.vincemann.springlemon.auth.util.LemonValidationUtils;
+import com.github.vincemann.springlemon.auth.util.JwtUtils;
 import com.github.vincemann.springrapid.acl.proxy.Unsecured;
 import com.github.vincemann.springrapid.core.service.exception.EntityNotFoundException;
 import com.github.vincemann.springrapid.core.slicing.components.ServiceComponent;
@@ -32,7 +32,7 @@ public class LemonJwtAuthorizationTokenService extends AbstractJwtAuthorizationT
             Optional<AbstractUser<?>> byEmail = unsecuredUserService.findByEmail(principal.getEmail());
             VerifyEntity.isPresent(byEmail,"User with email: "+principal.getEmail()+" not found");
             AbstractUser<?> user = byEmail.get();
-            LemonValidationUtils.ensureCredentialsUpToDate(claims,user);
+            JwtUtils.ensureCredentialsUpToDate(claims,user);
         } catch (EntityNotFoundException e) {
             throw new BadCredentialsException("User encoded in token not found",e);
         }

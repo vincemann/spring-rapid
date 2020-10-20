@@ -1,10 +1,10 @@
 package com.github.vincemann.springlemon.auth.util;
 
 import com.github.vincemann.springlemon.auth.domain.AbstractUser;
-import com.github.vincemann.springlemon.exceptions.util.LexUtils;
+import com.github.vincemann.springrapid.core.util.Message;
+import com.github.vincemann.springrapid.core.util.VerifyAccess;
 import com.nimbusds.jwt.JWTClaimsSet;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.authentication.BadCredentialsException;
 
 /**
@@ -13,7 +13,19 @@ import org.springframework.security.authentication.BadCredentialsException;
  * @author Sanjay Patel
  */
 @Slf4j
-public class LemonValidationUtils {
+public class JwtUtils {
+
+	/**
+	 * Throws BadCredentialsException if
+	 * user's credentials were updated after the JWT was issued
+	 */
+	public static void ensureCredentialsUpToDate(JWTClaimsSet claims, AbstractUser<?> user) {
+
+		long issueTime = claims.getIssueTime().getTime();
+
+		VerifyAccess.condition(issueTime >= user.getCredentialsUpdatedMillis(),
+				Message.get("com.naturalprogrammer.spring.obsoleteToken"));
+	}
 	
 
 //	public static final String AUTHORIZATION_REQUEST_COOKIE_NAME = "lemon_oauth2_authorization_request";
@@ -34,42 +46,21 @@ public class LemonValidationUtils {
 //
 //	}
 
-	/**
-	 * Throws AccessDeniedException is not authorized
-	 * 
-	 * @param authorized
-	 * @param messageKey
-	 */
-	public static void ensureAuthority(boolean authorized, String messageKey) {
-		
-		if (!authorized)
-			throw new AccessDeniedException(LexUtils.getMessage(messageKey));
-	}
+//	/**
+//	 * Throws AccessDeniedException is not authorized
+//	 *
+//	 * @param authorized
+//	 * @param messageKey
+//	 */
+//	public static void ensureAuthority(boolean authorized, String messageKey) {
+//
+//		if (!authorized)
+//			throw new AccessDeniedException(Message.get(messageKey));
+//	}
 
 
-	/**
-	 * Throws BadCredentialsException if not valid
-	 * 
-	 * @param valid
-	 * @param messageKey
-	 */
-	public static void ensureCredentials(boolean valid, String messageKey) {
-		
-		if (!valid)
-			throw new BadCredentialsException(LexUtils.getMessage(messageKey));
-	}
 
-	/**
-	 * Throws BadCredentialsException if
-	 * user's credentials were updated after the JWT was issued
-	 */
-	public static void ensureCredentialsUpToDate(JWTClaimsSet claims, AbstractUser<?> user) {
 
-		long issueTime = claims.getIssueTime().getTime();
-
-		LemonValidationUtils.ensureCredentials(issueTime >= user.getCredentialsUpdatedMillis(),
-				"com.naturalprogrammer.spring.obsoleteToken");
-	}
 	
 
 

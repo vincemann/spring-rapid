@@ -1,6 +1,7 @@
 package com.github.vincemann.springlemon.auth.service.token;
 
-import com.github.vincemann.springlemon.auth.util.LemonValidationUtils;
+import com.github.vincemann.springrapid.core.util.Message;
+import com.github.vincemann.springrapid.core.util.VerifyAccess;
 import com.nimbusds.jwt.JWTClaimsSet;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -36,7 +37,7 @@ public class LemonEmailJwtService implements EmailJwtService {
 
     public JWTClaimsSet parseToken(String token, String expectedAud) throws BadTokenException {
         JWTClaimsSet claims = jweTokenService.parseToken(token);
-        LemonValidationUtils.ensureCredentials(expectedAud != null &&
+        VerifyAccess.condition(expectedAud != null &&
                         claims.getAudience().contains(expectedAud),
                 "com.naturalprogrammer.spring.wrong.audience");
         long expirationTime = claims.getExpirationTime().getTime();
@@ -45,8 +46,8 @@ public class LemonEmailJwtService implements EmailJwtService {
         log.debug("Parsing JWT. Expiration time = " + expirationTime
                 + ". Current time = " + currentTime);
 
-        LemonValidationUtils.ensureCredentials(expirationTime >= currentTime,
-                "com.naturalprogrammer.spring.expiredToken");
+        VerifyAccess.condition(expirationTime >= currentTime,
+                Message.get("com.naturalprogrammer.spring.expiredToken"));
         return claims;
     }
 
@@ -55,8 +56,8 @@ public class LemonEmailJwtService implements EmailJwtService {
         long issueTime = claims.getIssueTime().getTime();
 
 //        log.debug("token issued at: " + new Date(issueTime) + ", user creds updated at: " + new Date(issuedAfter));
-        LemonValidationUtils.ensureCredentials(issueTime >= issuedAfter,
-                "com.naturalprogrammer.spring.obsoleteToken");
+        VerifyAccess.condition(issueTime >= issuedAfter,
+                Message.get("com.naturalprogrammer.spring.obsoleteToken"));
         return claims;
     }
 

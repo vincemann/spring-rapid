@@ -6,11 +6,8 @@ import com.github.vincemann.aoplog.api.AopLoggable;
 import com.github.vincemann.aoplog.api.LogInteraction;
 import com.github.vincemann.springlemon.exceptions.ErrorResponse;
 import com.github.vincemann.springlemon.exceptions.LemonFieldError;
-import com.github.vincemann.springlemon.exceptions.util.LexUtils;
+import com.github.vincemann.springlemon.exceptions.util.LemonExceptionUtils;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-import org.springframework.context.annotation.Scope;
 import org.springframework.http.HttpStatus;
 
 /**
@@ -31,7 +28,7 @@ public abstract class AbstractExceptionHandler<T extends Throwable> implements A
 	}
 	
 	protected String getExceptionId(T ex) {
-		return LexUtils.getExceptionId(ex);
+		return LemonExceptionUtils.getExceptionId(ex);
 	}
 
 	protected String getMessage(T ex) {

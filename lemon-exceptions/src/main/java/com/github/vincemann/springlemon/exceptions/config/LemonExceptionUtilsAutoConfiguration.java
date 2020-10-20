@@ -1,7 +1,7 @@
 package com.github.vincemann.springlemon.exceptions.config;
 
 import com.github.vincemann.springlemon.exceptions.ExceptionIdMaker;
-import com.github.vincemann.springlemon.exceptions.util.LexUtils;
+import com.github.vincemann.springlemon.exceptions.util.LemonExceptionUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
@@ -15,8 +15,7 @@ import org.springframework.validation.beanvalidation.LocalValidatorFactoryBean;
 @Configuration
 @Slf4j
 @AutoConfigureAfter({ValidationAutoConfiguration.class})
-public class LemonExceptionUtilsAutoConfiguration
-{
+public class LemonExceptionUtilsAutoConfiguration {
 
     public LemonExceptionUtilsAutoConfiguration() {
 
@@ -48,10 +47,9 @@ public class LemonExceptionUtilsAutoConfiguration
      * Configures LexUtils
      */
     @Bean
-    public LexUtils lexUtils(MessageSource messageSource,
-                             LocalValidatorFactoryBean validator,
-                             ExceptionIdMaker exceptionIdMaker) {
-
-        return new LexUtils(messageSource, validator, exceptionIdMaker);
+    public LemonExceptionUtils lemonExceptionUtils(
+            LocalValidatorFactoryBean validator,
+            ExceptionIdMaker exceptionIdMaker) {
+        return new LemonExceptionUtils(validator, exceptionIdMaker);
     }
 }

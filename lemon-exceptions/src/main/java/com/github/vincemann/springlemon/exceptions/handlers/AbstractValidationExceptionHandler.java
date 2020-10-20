@@ -1,6 +1,6 @@
 package com.github.vincemann.springlemon.exceptions.handlers;
 
-import com.github.vincemann.springlemon.exceptions.util.LexUtils;
+import com.github.vincemann.springrapid.core.util.Message;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
 import org.springframework.http.HttpStatus;
@@ -22,6 +22,6 @@ public abstract class AbstractValidationExceptionHandler<T extends Throwable> ex
 	
 	@Override
 	public String getMessage(T ex) {
-		return LexUtils.getMessage("com.naturalprogrammer.spring.validationError");
+		return Message.get("com.naturalprogrammer.spring.validationError");
 	}
 }

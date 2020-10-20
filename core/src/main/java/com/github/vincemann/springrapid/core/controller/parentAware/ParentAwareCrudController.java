@@ -5,7 +5,7 @@ import com.github.vincemann.springrapid.core.controller.dto.mapper.context.Direc
 import com.github.vincemann.springrapid.core.controller.GenericCrudController;
 import com.github.vincemann.springrapid.core.controller.idFetchingStrategy.IdFetchingStrategy;
 import com.github.vincemann.springrapid.core.controller.idFetchingStrategy.IdFetchingException;
-import com.github.vincemann.springrapid.core.controller.validationStrategy.ValidationStrategy;
+import com.github.vincemann.springrapid.core.controller.validationStrategy.DtoValidationStrategy;
 import com.github.vincemann.springrapid.core.model.IdentifiableEntity;
 import com.github.vincemann.springrapid.core.service.CrudService;
 import com.github.vincemann.springrapid.core.service.ParentAwareService;
@@ -45,7 +45,7 @@ public abstract class ParentAwareCrudController
         extends GenericCrudController<E, Id, S,ParentAwareEndpointInfo,ParentAwareDtoMappingContextBuilder> {
 
     private IdFetchingStrategy<PId> parentIdFetchingStrategy;
-    private ValidationStrategy<PId> parentValidationStrategy;
+    private DtoValidationStrategy parentDtoValidationStrategy;
     @Setter
     private String findAllOfParentUrl;
 
@@ -87,8 +87,6 @@ public abstract class ParentAwareCrudController
             log.debug("FindAllOfParent request arriving at controller: " + request);
             PId id = parentIdFetchingStrategy.fetchId(request);
             log.debug("parentId: " + id);
-            parentValidationStrategy.validateId(id);
-            log.debug("id successfully validated");
             beforeFindAllByParent(id, request);
             Set<E> children = getService().findAllOfParent(id);
             Collection<Object> dtos = new HashSet<>();
@@ -115,8 +113,8 @@ public abstract class ParentAwareCrudController
     }
 
     @Autowired
-    public void injectParentValidationStrategy(ValidationStrategy<PId> parentValidationStrategy) {
-        this.parentValidationStrategy = parentValidationStrategy;
+    public void injectParentValidationStrategy(DtoValidationStrategy parentDtoValidationStrategy) {
+        this.parentDtoValidationStrategy = parentDtoValidationStrategy;
     }
 
     @Autowired
