@@ -3,7 +3,7 @@ package com.github.vincemann.springrapid.core.controller;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.fge.jsonpatch.JsonPatchException;
-import com.github.vincemann.springrapid.core.RapidCoreProperties;
+import com.github.vincemann.springrapid.core.CoreProperties;
 import com.github.vincemann.springrapid.core.controller.dto.mapper.DelegatingDtoMapper;
 import com.github.vincemann.springrapid.core.controller.dto.mapper.context.*;
 import com.github.vincemann.springrapid.core.controller.idFetchingStrategy.IdFetchingException;
@@ -65,7 +65,7 @@ public abstract class GenericCrudController
     //              DEPENDENCIES
 
 
-    private RapidCoreProperties coreProperties;
+    private CoreProperties coreProperties;
     private EndpointService endpointService;
     private ObjectMapper jsonMapper;
     private IdFetchingStrategy<ID> idIdFetchingStrategy;
@@ -561,7 +561,7 @@ public abstract class GenericCrudController
     }
 
     @Autowired
-    public void injectCoreProperties(RapidCoreProperties properties) {
+    public void injectCoreProperties(CoreProperties properties) {
         this.coreProperties = properties;
     }
 }

@@ -1,0 +1,26 @@
+package com.github.vincemann.springlemon.demo.config;
+
+
+import com.github.vincemann.springlemon.auth.config.RapidWebSecurityConfig;
+import com.github.vincemann.springlemon.auth.domain.AuthRoles;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+
+
+@Configuration
+@Slf4j
+public class MySecurityConfig extends RapidWebSecurityConfig {
+	
+
+	public MySecurityConfig() {
+
+	}
+
+	@Override
+	protected void authorizeRequests(HttpSecurity http) throws Exception {
+		http.authorizeRequests()
+			.mvcMatchers("/admin/**").hasRole(AuthRoles.ADMIN_RAW);
+		super.authorizeRequests(http);
+	}
+}

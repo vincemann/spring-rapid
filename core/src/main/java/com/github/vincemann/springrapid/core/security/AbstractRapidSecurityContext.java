@@ -111,7 +111,7 @@ public abstract class AbstractRapidSecurityContext<P extends RapidAuthenticatedP
     public void runAsAdmin(Runnable privRunnable) {
         runAs(createToken(TEMP_ADMIN_NAME,
                 TEMP_ADMIN_PASSWORD,
-                Sets.newHashSet(RapidRoles.ADMIN)
+                Sets.newHashSet(Roles.ADMIN)
         ), privRunnable);
     }
 

@@ -4,7 +4,7 @@ import com.fasterxml.jackson.databind.MapperFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
-import com.github.vincemann.springrapid.core.RapidCoreProperties;
+import com.github.vincemann.springrapid.core.CoreProperties;
 import com.github.vincemann.springrapid.core.controller.dto.mapper.LoggingObjectMapper;
 import com.github.vincemann.springrapid.core.slicing.config.WebConfig;
 import com.github.vincemann.springrapid.core.util.JsonUtils;
@@ -26,7 +26,7 @@ import static com.fasterxml.jackson.databind.DeserializationFeature.ACCEPT_SINGL
 public class RapidJsonAutoConfiguration implements WebMvcConfigurer {
 
     @Autowired
-    private RapidCoreProperties coreProperties;
+    private CoreProperties coreProperties;
 
     public RapidJsonAutoConfiguration() {
 

@@ -30,17 +30,15 @@
     </properties>
 
     <modules>
-<!--        lemon-->
-        <module>lemon-auth</module>
+        <module>auth</module>
         <module>lemon-exceptions</module>
-        <module>lemon-demo</module>
-        <module>lemon-auth-tests</module>
-<!--         rapid-->
+        <module>auth-demo</module>
+        <module>auth-tests</module>
         <module>core</module>
         <module>entity-relationship</module>
         <module>acl</module>
         <module>core-test</module>
-        <module>demo</module>
+        <module>core-demo</module>
     </modules>
 
     <dependencies>

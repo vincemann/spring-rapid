@@ -2,7 +2,7 @@ package com.github.vincemann.springrapid.core.config;
 
 import com.github.vincemann.springrapid.core.controller.DelegatingDtoClassLocator;
 import com.github.vincemann.springrapid.core.controller.DtoClassLocator;
-import com.github.vincemann.springrapid.core.controller.RapidDtoClassLocator;
+import com.github.vincemann.springrapid.core.controller.RoleFallbackDtoClassLocator;
 import com.github.vincemann.springrapid.core.controller.owner.DelegatingOwnerLocator;
 import com.github.vincemann.springrapid.core.controller.owner.OwnerLocator;
 import com.github.vincemann.springrapid.core.slicing.config.WebConfig;
@@ -35,7 +35,7 @@ public class RapidDtoLocatorAutoConfiguration {
     @Bean
     @ConditionalOnMissingBean(DtoClassLocator.class)
     public DtoClassLocator dtoClassLocator(){
-        return new RapidDtoClassLocator();
+        return new RoleFallbackDtoClassLocator();
     }
 
 

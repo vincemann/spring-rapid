@@ -9,6 +9,6 @@ import java.lang.annotation.*;
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
 @Inherited
-@ImportAutoConfiguration({AclAutoConfiguration.class, AclMethodSecurityAutoConfiguration.class, AclExtensionAutoConfiguration.class, AclSchemaAutoConfiguration.class, SecurityProxyAutoConfiguration.class})
+@ImportAutoConfiguration({RapidAclAutoConfiguration.class, RapidAclMethodSecurityAutoConfiguration.class, RapidAclExtensionsAutoConfiguration.class, RapidAclSchemaAutoConfiguration.class, RapidSecurityProxyAutoConfiguration.class})
 public @interface ImportRapidAclConfig {
 }
