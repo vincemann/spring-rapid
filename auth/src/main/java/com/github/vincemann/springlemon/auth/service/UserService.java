@@ -8,7 +8,7 @@ import com.github.vincemann.springlemon.auth.domain.AbstractUser;
 import com.github.vincemann.springlemon.auth.domain.dto.ChangePasswordForm;
 import com.github.vincemann.springlemon.auth.domain.dto.RequestEmailChangeForm;
 import com.github.vincemann.springlemon.auth.domain.dto.ResetPasswordForm;
-import com.github.vincemann.springlemon.auth.LemonProperties;
+import com.github.vincemann.springlemon.auth.AuthProperties;
 import com.github.vincemann.springlemon.auth.service.token.BadTokenException;
 import com.github.vincemann.springlemon.auth.util.UserVerifyUtils;
 import com.github.vincemann.springrapid.core.service.CrudService;
@@ -61,7 +61,7 @@ public interface UserService<U extends AbstractUser<ID>, ID extends Serializable
 //    @LogInteraction(Severity.TRACE)
 //    public Map<String, String> fetchFullToken(String authHeader);
 
-    public U createAdminUser(LemonProperties.Admin admin) throws BadEntityException;
+    public U createAdminUser(AuthProperties.Admin admin) throws BadEntityException;
 
     @LogInteraction(Severity.TRACE)
     public abstract ID toId(String id);

@@ -14,13 +14,13 @@ import java.util.Map;
 
 @Validated
 @Slf4j
-public class LemonProperties {
+public class AuthProperties {
 
 
 	private static CoreProperties coreProperties;
 
-	public LemonProperties(CoreProperties coreProperties) {
-		LemonProperties.coreProperties = coreProperties;
+	public AuthProperties(CoreProperties coreProperties) {
+		AuthProperties.coreProperties = coreProperties;
 		this.controller = new Controller();
 	}
 

@@ -1,6 +1,6 @@
 package com.github.vincemann.springlemon.auth.config;
 
-import com.github.vincemann.springlemon.auth.LemonProperties;
+import com.github.vincemann.springlemon.auth.AuthProperties;
 import com.github.vincemann.springlemon.auth.domain.RapidAuthAuthenticatedPrincipal;
 import com.github.vincemann.springlemon.auth.service.token.*;
 import com.github.vincemann.springlemon.exceptions.config.LemonWebExceptionsAutoConfiguration;
@@ -28,8 +28,8 @@ public class RapidTokenServiceAutoConfiguration {
 	 */
 	@Bean
 	@ConditionalOnMissingBean(JwsTokenService.class)
-	public JwsTokenService jwsTokenService(LemonProperties properties) throws JOSEException {
-		return new LemonJwsService(properties.getJwt().getSecret());
+	public JwsTokenService jwsTokenService(AuthProperties properties) throws JOSEException {
+		return new RapidJwsService(properties.getJwt().getSecret());
 	}
 
 
@@ -38,7 +38,7 @@ public class RapidTokenServiceAutoConfiguration {
 	 */
 	@Bean
 	@ConditionalOnMissingBean(JweTokenService.class)
-	public JweTokenService jweTokenService(LemonProperties properties) throws KeyLengthException {
+	public JweTokenService jweTokenService(AuthProperties properties) throws KeyLengthException {
 		return new RapidJweService(properties.getJwt().getSecret());
 	}
 

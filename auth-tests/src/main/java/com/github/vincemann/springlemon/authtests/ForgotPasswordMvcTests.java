@@ -15,7 +15,7 @@ public class ForgotPasswordMvcTests extends AbstractMvcTests {
 	@Test
 	public void testAnonForgotPassword_shouldNotWork() throws Exception {
 		
-		mvc.perform(post(lemonProperties.getController().getForgotPasswordUrl())
+		mvc.perform(post(authProperties.getController().getForgotPasswordUrl())
                 .param("email", ADMIN_EMAIL)
                 .header("contentType",  MediaType.APPLICATION_FORM_URLENCODED))
                 .andExpect(status().is(403));
@@ -26,7 +26,7 @@ public class ForgotPasswordMvcTests extends AbstractMvcTests {
 	@Test
 	public void testForgotPassword() throws Exception {
 
-		mvc.perform(post(lemonProperties.getController().getForgotPasswordUrl())
+		mvc.perform(post(authProperties.getController().getForgotPasswordUrl())
 				.param("email", ADMIN_EMAIL)
 				.header(HttpHeaders.AUTHORIZATION, tokens.get(getAdmin().getId()))
 				.header("contentType",  MediaType.APPLICATION_FORM_URLENCODED))
@@ -39,24 +39,24 @@ public class ForgotPasswordMvcTests extends AbstractMvcTests {
 	public void testForgotPasswordInvalidEmail() throws Exception {
 		
 		// Unknown email
-		mvc.perform(post(lemonProperties.getController().getForgotPasswordUrl())
+		mvc.perform(post(authProperties.getController().getForgotPasswordUrl())
                 .param("email", "unknown@example.com")
                 .header("contentType",  MediaType.APPLICATION_FORM_URLENCODED))
                 .andExpect(status().is(404));
 
 		// Null email
-		mvc.perform(post(lemonProperties.getController().getForgotPasswordUrl())
+		mvc.perform(post(authProperties.getController().getForgotPasswordUrl())
                 .header("contentType",  MediaType.APPLICATION_FORM_URLENCODED))
                 .andExpect(status().is(400));
 
 		// Blank email
-		mvc.perform(post(lemonProperties.getController().getForgotPasswordUrl())
+		mvc.perform(post(authProperties.getController().getForgotPasswordUrl())
                 .param("email", "")
                 .header("contentType",  MediaType.APPLICATION_FORM_URLENCODED))
                 .andExpect(status().is(422));
 		
 		// Wrong email format
-		mvc.perform(post(lemonProperties.getController().getForgotPasswordUrl())
+		mvc.perform(post(authProperties.getController().getForgotPasswordUrl())
                 .param("email", "wrong-email-format")
                 .header("contentType",  MediaType.APPLICATION_FORM_URLENCODED))
                 .andExpect(status().is(422));

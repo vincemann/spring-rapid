@@ -35,7 +35,7 @@ public class VerificationMvcTests extends AbstractMvcTests {
 	@Test
 	public void testEmailVerification() throws Exception {
 		Thread.sleep(1L);
-		mvc.perform(post(lemonProperties.getController().getVerifyUserUrl())
+		mvc.perform(post(authProperties.getController().getVerifyUserUrl())
 				.param("id",getUnverifiedUser().getId().toString())
                 .param("code", verificationCode)
                 .header("contentType",  MediaType.APPLICATION_FORM_URLENCODED))
@@ -48,7 +48,7 @@ public class VerificationMvcTests extends AbstractMvcTests {
 				.andExpect(jsonPath("$.goodUser").value(true));
 		
 		// Already verified
-		mvc.perform(post(lemonProperties.getController().getVerifyUserUrl())
+		mvc.perform(post(authProperties.getController().getVerifyUserUrl())
 				.param("id",getUnverifiedUser().getId().toString())
                 .param("code", verificationCode)
                 .header("contentType",  MediaType.APPLICATION_FORM_URLENCODED))
@@ -58,7 +58,7 @@ public class VerificationMvcTests extends AbstractMvcTests {
 	@Test
 	public void testEmailVerificationNonExistingUser() throws Exception {
 
-		mvc.perform(post(lemonProperties.getController().getVerifyUserUrl())
+		mvc.perform(post(authProperties.getController().getVerifyUserUrl())
 				.param("id",UNKNOWN_USER_ID)
                 .param("code", verificationCode)
                 .header("contentType",  MediaType.APPLICATION_FORM_URLENCODED))
@@ -69,13 +69,13 @@ public class VerificationMvcTests extends AbstractMvcTests {
 	public void testEmailVerificationWrongToken() throws Exception {
 		
 		// null token
-		mvc.perform(post(lemonProperties.getController().getVerifyUserUrl())
+		mvc.perform(post(authProperties.getController().getVerifyUserUrl())
 				.param("id",getUnverifiedUser().getId().toString())
                 .header("contentType",  MediaType.APPLICATION_FORM_URLENCODED))
                 .andExpect(status().is(400));
 
 		// blank token
-		mvc.perform(post(lemonProperties.getController().getVerifyUserUrl())
+		mvc.perform(post(authProperties.getController().getVerifyUserUrl())
 				.param("id",getUnverifiedUser().getId().toString())
                 .param("code", "")
                 .header("contentType",  MediaType.APPLICATION_FORM_URLENCODED))
@@ -85,7 +85,7 @@ public class VerificationMvcTests extends AbstractMvcTests {
 		String token = emailJwtService.createToken("wrong-audience",
 				Long.toString(getUnverifiedUser().getId()), 60000L,
 				LemonMapUtils.mapOf("email", UNVERIFIED_USER_EMAIL));
-		mvc.perform(post(lemonProperties.getController().getVerifyUserUrl())
+		mvc.perform(post(authProperties.getController().getVerifyUserUrl())
 				.param("id",getUnverifiedUser().getId().toString())
                 .param("code", token)
                 .header("contentType",  MediaType.APPLICATION_FORM_URLENCODED))
@@ -95,7 +95,7 @@ public class VerificationMvcTests extends AbstractMvcTests {
 		token = emailJwtService.createToken(AbstractUserService.VERIFY_AUDIENCE,
 				Long.toString(getUnverifiedUser().getId()), 60000L,
 				LemonMapUtils.mapOf("email", "wrong.email@example.com"));
-		mvc.perform(post(lemonProperties.getController().getVerifyUserUrl())
+		mvc.perform(post(authProperties.getController().getVerifyUserUrl())
 				.param("id",getUnverifiedUser().getId().toString())
                 .param("code", token)
                 .header("contentType",  MediaType.APPLICATION_FORM_URLENCODED))
@@ -106,11 +106,11 @@ public class VerificationMvcTests extends AbstractMvcTests {
 				Long.toString(getUnverifiedUser().getId()), 1L,
 				LemonMapUtils.mapOf("email", UNVERIFIED_USER_EMAIL));
 		// Thread.sleep(1001L);
-		mvc.perform(post(lemonProperties.getController().getVerifyUserUrl())
+		mvc.perform(post(authProperties.getController().getVerifyUserUrl())
 				.param("id",getUnverifiedUser().getId().toString())
                 .param("code", token)
                 .header("contentType",  MediaType.APPLICATION_FORM_URLENCODED))
-                .andExpect(status().is(401));
+                .andExpect(status().is(403));
 	}
 	
 	@Test
@@ -123,7 +123,7 @@ public class VerificationMvcTests extends AbstractMvcTests {
 		getUnsecuredUserService().save(user);
 
 		Thread.sleep(300);
-		mvc.perform(post(lemonProperties.getController().getVerifyUserUrl())
+		mvc.perform(post(authProperties.getController().getVerifyUserUrl())
 				.param("id",getUnverifiedUser().getId().toString())
                 .param("code", verificationCode)
                 .header("contentType",  MediaType.APPLICATION_FORM_URLENCODED))

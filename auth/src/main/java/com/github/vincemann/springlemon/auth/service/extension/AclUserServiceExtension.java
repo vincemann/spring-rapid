@@ -1,6 +1,6 @@
 package com.github.vincemann.springlemon.auth.service.extension;
 
-import com.github.vincemann.springlemon.auth.LemonProperties;
+import com.github.vincemann.springlemon.auth.AuthProperties;
 import com.github.vincemann.springlemon.auth.domain.AbstractUser;
 import com.github.vincemann.springlemon.auth.domain.AuthRoles;
 import com.github.vincemann.springlemon.auth.service.UserService;
@@ -38,7 +38,7 @@ public class AclUserServiceExtension
     }
 
     @Override
-    public AbstractUser createAdminUser(LemonProperties.Admin admin) throws BadEntityException {
+    public AbstractUser createAdminUser(AuthProperties.Admin admin) throws BadEntityException {
         AbstractUser saved = getNext().createAdminUser(admin);
         savePostSignupAclInfo(saved);
         return saved;

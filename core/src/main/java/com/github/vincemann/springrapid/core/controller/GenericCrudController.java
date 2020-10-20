@@ -74,7 +74,6 @@ public abstract class GenericCrudController
     private DelegatingDtoMapper dtoMapper;
     private DelegatingOwnerLocator ownerLocator;
     private DelegatingDtoClassLocator dtoClassLocator;
-    @Setter
     private DtoMappingContext dtoMappingContext;
     private DTOMappingContextBuilder dtoMappingContextBuilder;
     private DtoValidationStrategy dtoValidationStrategy;
@@ -563,5 +562,9 @@ public abstract class GenericCrudController
     @Autowired
     public void injectCoreProperties(CoreProperties properties) {
         this.coreProperties = properties;
+    }
+
+    protected void setDtoMappingContext(DtoMappingContext dtoMappingContext) {
+        this.dtoMappingContext = dtoMappingContext;
     }
 }

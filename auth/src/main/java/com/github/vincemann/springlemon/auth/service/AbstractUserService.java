@@ -23,7 +23,7 @@ import com.github.vincemann.springlemon.auth.domain.dto.ChangePasswordForm;
 import com.github.vincemann.springlemon.auth.domain.dto.RequestEmailChangeForm;
 import com.github.vincemann.springlemon.auth.domain.dto.ResetPasswordForm;
 import com.github.vincemann.springlemon.auth.mail.MailData;
-import com.github.vincemann.springlemon.auth.LemonProperties;
+import com.github.vincemann.springlemon.auth.AuthProperties;
 import com.github.vincemann.springlemon.auth.domain.AuthRoles;
 import com.github.vincemann.springrapid.core.service.exception.BadEntityException;
 import com.github.vincemann.springrapid.core.service.exception.EntityNotFoundException;
@@ -64,7 +64,7 @@ public abstract class AbstractUserService
     private RapidSecurityContext<RapidAuthAuthenticatedPrincipal> securityContext;
     private AuthenticatedPrincipalFactory authenticatedPrincipalFactory;
     private PasswordEncoder passwordEncoder;
-    private LemonProperties properties;
+    private AuthProperties properties;
     private MailSender<MailData> mailSender;
     private EmailJwtService emailTokenService;
     private UserService<U, ID> unsecuredUserService;
@@ -449,7 +449,7 @@ public abstract class AbstractUserService
 
     @Transactional(propagation = Propagation.REQUIRED, readOnly = false)
     //only called internally
-    public U createAdminUser(LemonProperties.Admin admin) throws BadEntityException {
+    public U createAdminUser(AuthProperties.Admin admin) throws BadEntityException {
 //        log.info("Creating admin user: " + admin.getEmail());
 
         // create the user
@@ -558,7 +558,7 @@ public abstract class AbstractUserService
     }
 
     @Autowired
-    public void injectProperties(LemonProperties properties) {
+    public void injectProperties(AuthProperties properties) {
         this.properties = properties;
     }
 

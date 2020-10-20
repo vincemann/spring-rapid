@@ -2,7 +2,7 @@ package com.github.vincemann.springlemon.auth.service.token;
 
 import com.github.vincemann.aoplog.api.AopLoggable;
 import com.github.vincemann.aoplog.api.LogInteraction;
-import com.github.vincemann.springlemon.auth.LemonProperties;
+import com.github.vincemann.springlemon.auth.AuthProperties;
 import com.github.vincemann.springlemon.auth.security.JwtClaimsPrincipalConverter;
 import com.github.vincemann.springrapid.core.security.RapidAuthenticatedPrincipal;
 import com.github.vincemann.springrapid.core.util.Message;
@@ -24,7 +24,7 @@ public abstract class AbstractJwtAuthorizationTokenService<P extends RapidAuthen
 
     private JwsTokenService jwsTokenService;
     private JwtClaimsPrincipalConverter<P> jwtPrincipalConverter;
-    private LemonProperties properties;
+    private AuthProperties properties;
 
 
     @LogInteraction
@@ -85,7 +85,7 @@ public abstract class AbstractJwtAuthorizationTokenService<P extends RapidAuthen
     }
 
     @Autowired
-    public void injectProperties(LemonProperties properties) {
+    public void injectProperties(AuthProperties properties) {
         this.properties = properties;
     }
 }

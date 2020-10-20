@@ -1,9 +1,7 @@
 package com.github.vincemann.springrapid.demo.lib.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.github.vincemann.springrapid.core.config.RapidDtoMapperAutoConfiguration;
-import com.github.vincemann.springrapid.core.config.RapidCrudControllerAutoConfiguration;
-import com.github.vincemann.springrapid.core.config.RapidJsonAutoConfiguration;
+import com.github.vincemann.springrapid.core.config.*;
 import com.github.vincemann.springrapid.core.controller.dto.mapper.DelegatingDtoMapper;
 import com.github.vincemann.springrapid.core.controller.dto.mapper.context.Direction;
 import com.github.vincemann.springrapid.core.controller.dto.mapper.context.DtoMappingContext;
@@ -50,8 +48,10 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
                 ExampleController.class,
                 WebMvcAutoConfiguration.class,
                 RapidCrudControllerAutoConfiguration.class,
+                RapidGeneralAutoConfiguration.class,
                 ValidationAutoConfiguration.class,
                 PropertyPlaceholderAutoConfiguration.class,
+                RapidDtoLocatorAutoConfiguration.class,
                 RapidDtoMapperAutoConfiguration.class,
                 RapidJsonAutoConfiguration.class
         })
@@ -343,7 +343,7 @@ class CrudControllerIntegrationTest
         getMockMvc().perform(delete(getDeleteUrl())
                 .contentType(getContentType())
                 .accept(getContentType()))
-                .andExpect(status().isOk())
+                .andExpect(status().is2xxSuccessful())
                 .andExpect(content().string(""));
 
 

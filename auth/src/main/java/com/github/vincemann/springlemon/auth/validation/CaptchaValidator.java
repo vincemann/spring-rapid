@@ -3,13 +3,11 @@ package com.github.vincemann.springlemon.auth.validation;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.github.vincemann.aoplog.api.AopLoggable;
 import com.github.vincemann.aoplog.api.LogInteraction;
-import com.github.vincemann.springlemon.auth.LemonProperties;
+import com.github.vincemann.springlemon.auth.AuthProperties;
 import com.github.vincemann.springrapid.core.slicing.components.ServiceComponent;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
@@ -59,10 +57,10 @@ public class CaptchaValidator implements ConstraintValidator<Captcha, String>, A
 		}
 	}
 	
-	private LemonProperties properties;
+	private AuthProperties properties;
 	private RestTemplate restTemplate;
 	
-	public CaptchaValidator(LemonProperties properties) {
+	public CaptchaValidator(AuthProperties properties) {
 		
 		this.properties = properties;
 		this.restTemplate = new RestTemplate();

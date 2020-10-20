@@ -1,7 +1,7 @@
 package com.github.vincemann.springlemon.auth.config;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.github.vincemann.springlemon.auth.LemonProperties;
+import com.github.vincemann.springlemon.auth.AuthProperties;
 import com.github.vincemann.springrapid.core.config.RapidJsonAutoConfiguration;
 import com.github.vincemann.springrapid.core.slicing.config.WebConfig;
 import lombok.extern.slf4j.Slf4j;
@@ -70,7 +70,7 @@ public class RapidCommonsWebAutoConfiguration {
 	@Bean
 	@ConditionalOnProperty(name="lemon.cors.allowed-origins")
 	@ConditionalOnMissingBean(CorsConfigurationSource.class)
-	public RapidCorsConfigurationSource corsConfigurationSource(LemonProperties properties) {
+	public RapidCorsConfigurationSource corsConfigurationSource(AuthProperties properties) {
 		return new RapidCorsConfigurationSource(properties);
 	}
 	

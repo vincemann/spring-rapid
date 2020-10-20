@@ -19,12 +19,12 @@ import java.util.Map;
  * 
  * Reference: https://connect2id.com/products/nimbus-jose-jwt/examples/jws-with-hmac
  */
-public class LemonJwsService extends JsonJwtService implements JwsTokenService {
+public class RapidJwsService extends JsonJwtService implements JwsTokenService {
 
 	private JWSSigner signer;
 	private JWSVerifier verifier;
 
-	public LemonJwsService(String secret) throws JOSEException {
+	public RapidJwsService(String secret) throws JOSEException {
 		
 		byte[] secretKey = secret.getBytes();
 		signer = new MACSigner(secret);

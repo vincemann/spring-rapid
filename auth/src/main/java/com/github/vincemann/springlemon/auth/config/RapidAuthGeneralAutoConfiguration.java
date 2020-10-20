@@ -1,6 +1,6 @@
 package com.github.vincemann.springlemon.auth.config;
 
-import com.github.vincemann.springlemon.auth.LemonProperties;
+import com.github.vincemann.springlemon.auth.AuthProperties;
 import com.github.vincemann.springlemon.auth.validation.CaptchaValidator;
 import com.github.vincemann.springrapid.core.CoreProperties;
 import com.github.vincemann.springrapid.core.config.RapidCrudControllerAutoConfiguration;
@@ -23,10 +23,10 @@ public class RapidAuthGeneralAutoConfiguration {
      * Spring Lemon related properties
      */
     @ConfigurationProperties(prefix="lemon")
-    @ConditionalOnMissingBean(LemonProperties.class)
+    @ConditionalOnMissingBean(AuthProperties.class)
     @Bean
-    public LemonProperties lemonProperties(CoreProperties coreProperties) {
-        return new LemonProperties(coreProperties);
+    public AuthProperties lemonProperties(CoreProperties coreProperties) {
+        return new AuthProperties(coreProperties);
     }
 
     /**
@@ -34,7 +34,7 @@ public class RapidAuthGeneralAutoConfiguration {
      */
     @Bean
     @ConditionalOnMissingBean(CaptchaValidator.class)
-    public CaptchaValidator captchaValidator(LemonProperties properties) {
+    public CaptchaValidator captchaValidator(AuthProperties properties) {
         return new CaptchaValidator(properties);
     }
 
