@@ -1,6 +1,6 @@
 package com.github.vincemann.springlemon.auth.service.extension;
 
-import com.github.vincemann.springlemon.auth.LemonProperties;
+import com.github.vincemann.springlemon.auth.AuthProperties;
 import com.github.vincemann.springlemon.auth.domain.AbstractUser;
 import com.github.vincemann.springlemon.auth.domain.dto.ChangePasswordForm;
 import com.github.vincemann.springlemon.auth.domain.dto.RequestEmailChangeForm;
@@ -83,7 +83,7 @@ public interface GenericUserServiceExtension<S extends UserService<U,Id>,U exten
     }
 
     @Override
-    default U createAdminUser(LemonProperties.Admin admin) throws BadEntityException {
+    default U createAdminUser(AuthProperties.Admin admin) throws BadEntityException {
         return getNext().createAdminUser(admin);
     }
 

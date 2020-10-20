@@ -1,6 +1,6 @@
 package com.github.vincemann.springlemon.auth.config;
 
-import com.github.vincemann.springlemon.auth.LemonProperties;
+import com.github.vincemann.springlemon.auth.AuthProperties;
 import com.github.vincemann.springlemon.auth.domain.RapidAuthAuthenticatedPrincipal;
 import com.github.vincemann.springlemon.auth.handler.RapidAuthenticationSuccessHandler;
 import com.github.vincemann.springlemon.auth.security.JwtAuthenticationFilter;
@@ -27,7 +27,7 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 public class RapidWebSecurityConfig extends WebSecurityConfigurerAdapter {
 
 
-	private LemonProperties properties;
+	private AuthProperties properties;
 	private HttpTokenService httpTokenService;
 	private AuthorizationTokenService<RapidAuthAuthenticatedPrincipal> authorizationTokenService;
 	private RapidSecurityContext<RapidAuthAuthenticatedPrincipal> securityContext;
@@ -194,7 +194,7 @@ public class RapidWebSecurityConfig extends WebSecurityConfigurerAdapter {
 	}
 
 	@Autowired
-	public void injectProperties(LemonProperties properties) {
+	public void injectProperties(AuthProperties properties) {
 		this.properties = properties;
 	}
 

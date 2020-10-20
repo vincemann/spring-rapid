@@ -1,9 +1,7 @@
 package com.github.vincemann.springlemon.auth.config;
 
-import com.github.vincemann.springlemon.auth.LemonProperties;
+import com.github.vincemann.springlemon.auth.AuthProperties;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 
@@ -18,9 +16,9 @@ import java.util.Arrays;
 public class RapidCorsConfigurationSource implements CorsConfigurationSource {
 
 
-	private LemonProperties.Cors cors;
+	private AuthProperties.Cors cors;
 
-	public RapidCorsConfigurationSource(LemonProperties properties) {
+	public RapidCorsConfigurationSource(AuthProperties properties) {
 		this.cors = properties.getCors();
 
 	}

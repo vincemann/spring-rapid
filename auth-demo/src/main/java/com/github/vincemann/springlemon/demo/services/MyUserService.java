@@ -1,14 +1,14 @@
 package com.github.vincemann.springlemon.demo.services;
 
-import com.github.vincemann.springlemon.demo.domain.MyUser;
+import com.github.vincemann.springlemon.demo.domain.User;
 import com.github.vincemann.springlemon.demo.repositories.UserRepository;
 import com.github.vincemann.springlemon.auth.service.AbstractUserService;
 
-public class MyUserService extends AbstractUserService<MyUser, Long, UserRepository> {
+public class MyUserService extends AbstractUserService<User, Long, UserRepository> {
 
 	@Override
-    public MyUser newUser() {
-        return new MyUser();
+    public User newUser() {
+        return new User();
     }
 
 	@Override

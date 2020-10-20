@@ -1,6 +1,6 @@
 package com.github.vincemann.springlemon.authtests;
 
-import com.github.vincemann.springlemon.auth.LemonProperties;
+import com.github.vincemann.springlemon.auth.AuthProperties;
 import com.github.vincemann.springlemon.auth.config.RapidAdminAutoConfiguration;
 import com.github.vincemann.springlemon.auth.domain.AbstractUser;
 import com.github.vincemann.springlemon.auth.domain.AbstractUserRepository;
@@ -108,11 +108,11 @@ public abstract class AbstractMvcTests {
 
     //use for stubbing i.E. Mockito.doReturn(mockedExpireTime).when(jwt).getExpirationMillis();
     @SpyBean
-    protected LemonProperties properties;
+    protected AuthProperties properties;
     @SpyBean
     protected CoreProperties coreProperties;
 
-    protected LemonProperties.Jwt jwt;
+    protected AuthProperties.Jwt jwt;
 
     @Autowired
     protected WebApplicationContext context;
@@ -131,7 +131,7 @@ public abstract class AbstractMvcTests {
     protected LemonTestAdapter testAdapter;
 
     @Autowired
-    protected LemonProperties lemonProperties;
+    protected AuthProperties authProperties;
 
     @BeforeEach
     public void setup() throws Exception {
@@ -197,7 +197,7 @@ public abstract class AbstractMvcTests {
     }
 
     protected ResultActions login(String userName, String password) throws Exception {
-        return mvc.perform(post(lemonProperties.getController().getLoginUrl())
+        return mvc.perform(post(authProperties.getController().getLoginUrl())
                 .param("username", userName)
                 .param("password", password)
                 .header("contentType", MediaType.APPLICATION_FORM_URLENCODED));
@@ -217,7 +217,7 @@ public abstract class AbstractMvcTests {
     }
 
     protected void ensureTokenWorks(String token) throws Exception {
-        mvc.perform(get(lemonProperties.getController().getContextUrl())
+        mvc.perform(get(authProperties.getController().getContextUrl())
                 .header(HttpHeaders.AUTHORIZATION, token))
                 .andExpect(status().is(200));
 //                .andExpect(jsonPath("$.user.id").value(getUnverifiedUser().getId()));

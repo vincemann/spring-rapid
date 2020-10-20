@@ -14,7 +14,7 @@ public class ResendVerificationMailMvcTests extends AbstractMvcTests {
 	@Test
 	public void testResendVerificationMail() throws Exception {
 
-		mvc.perform(post(lemonProperties.getController().getResendVerificationEmailUrl())
+		mvc.perform(post(authProperties.getController().getResendVerificationEmailUrl())
 				.param("id",getUnverifiedUser().getId().toString())
 				.header(HttpHeaders.AUTHORIZATION, tokens.get(getUnverifiedUser().getId())))
 			.andExpect(status().is(204));
@@ -25,7 +25,7 @@ public class ResendVerificationMailMvcTests extends AbstractMvcTests {
 	@Test
 	public void testAdminResendVerificationMailOtherUser() throws Exception {
 
-		mvc.perform(post(lemonProperties.getController().getResendVerificationEmailUrl())
+		mvc.perform(post(authProperties.getController().getResendVerificationEmailUrl())
 				.param("id",getUnverifiedUser().getId().toString())
 				.header(HttpHeaders.AUTHORIZATION, tokens.get(getAdmin().getId())))
 			.andExpect(status().is(204));
@@ -38,7 +38,7 @@ public class ResendVerificationMailMvcTests extends AbstractMvcTests {
 //				.header(HttpHeaders.AUTHORIZATION, tokens.get(UNVERIFIED_ADMIN_ID)))
 //			.andExpect(status().is(403));
 
-		mvc.perform(post(lemonProperties.getController().getResendVerificationEmailUrl())
+		mvc.perform(post(authProperties.getController().getResendVerificationEmailUrl())
 				.param("id",getUnverifiedUser().getId().toString())
 				.header(HttpHeaders.AUTHORIZATION, tokens.get(getBlockedAdmin().getId())))
 			.andExpect(status().is(403));
@@ -49,7 +49,7 @@ public class ResendVerificationMailMvcTests extends AbstractMvcTests {
 	@Test
 	public void testResendVerificationMailUnauthenticated() throws Exception {
 
-		mvc.perform(post(lemonProperties.getController().getResendVerificationEmailUrl())
+		mvc.perform(post(authProperties.getController().getResendVerificationEmailUrl())
 				.param("id",getUnverifiedUser().getId().toString()))
 				.andExpect(status().is(403));
 		
@@ -59,7 +59,7 @@ public class ResendVerificationMailMvcTests extends AbstractMvcTests {
 	@Test
 	public void testResendVerificationMailAlreadyVerified() throws Exception {
 
-		mvc.perform(post(lemonProperties.getController().getResendVerificationEmailUrl())
+		mvc.perform(post(authProperties.getController().getResendVerificationEmailUrl())
 				.param("id",getUser().getId().toString())
 				.header(HttpHeaders.AUTHORIZATION, tokens.get(getUser().getId())))
 			.andExpect(status().is(422));
@@ -70,7 +70,7 @@ public class ResendVerificationMailMvcTests extends AbstractMvcTests {
 	@Test
 	public void testResendVerificationMailOtherUser() throws Exception {
 
-		mvc.perform(post(lemonProperties.getController().getResendVerificationEmailUrl())
+		mvc.perform(post(authProperties.getController().getResendVerificationEmailUrl())
 				.param("id",getUnverifiedUser().getId().toString())
 				.header(HttpHeaders.AUTHORIZATION, tokens.get(getUser().getId())))
 			.andExpect(status().is(403));
@@ -81,7 +81,7 @@ public class ResendVerificationMailMvcTests extends AbstractMvcTests {
 	@Test
 	public void testResendVerificationMailNonExistingUser() throws Exception {
 
-		mvc.perform(post(lemonProperties.getController().getResendVerificationEmailUrl())
+		mvc.perform(post(authProperties.getController().getResendVerificationEmailUrl())
 				.param("id",UNKNOWN_USER_ID)
 				.header(HttpHeaders.AUTHORIZATION, tokens.get(getAdmin().getId())))
 			.andExpect(status().is(404));

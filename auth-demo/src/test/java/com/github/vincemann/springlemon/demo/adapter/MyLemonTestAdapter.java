@@ -5,7 +5,7 @@ import com.github.vincemann.springlemon.auth.domain.AbstractUser;
 import com.github.vincemann.springlemon.auth.domain.dto.SignupForm;
 import com.github.vincemann.springlemon.auth.util.UserVerifyUtils;
 import com.github.vincemann.springlemon.authtests.adapter.LemonTestAdapter;
-import com.github.vincemann.springlemon.demo.domain.MyUser;
+import com.github.vincemann.springlemon.demo.domain.User;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.springframework.boot.test.context.TestComponent;
@@ -30,7 +30,7 @@ public class MyLemonTestAdapter implements LemonTestAdapter {
 
     @Override
     public AbstractUser<Long> createTestUser(String email, String password, String... roles) {
-        return new MyUser(email,password,createUniqueName(),roles);
+        return new User(email,password,createUniqueName(),roles);
     }
 
     @Override

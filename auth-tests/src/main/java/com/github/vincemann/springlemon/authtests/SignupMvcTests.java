@@ -24,7 +24,7 @@ public class SignupMvcTests extends AbstractMvcTests {
 		
 		SignupForm signupForm = testAdapter.createSignupForm("abc", "user1");
 
-		mvc.perform(post(lemonProperties.getController().getSignupUrl())
+		mvc.perform(post(authProperties.getController().getSignupUrl())
 				.contentType(MediaType.APPLICATION_JSON)
 				.content(JsonUtils.toJson(signupForm)))
 				.andExpect(status().is(422))
@@ -52,7 +52,7 @@ public class SignupMvcTests extends AbstractMvcTests {
 
 		SignupForm signupForm = testAdapter.createSignupForm("user.foo@example.com", "user123");
 
-		mvc.perform(post(lemonProperties.getController().getSignupUrl())
+		mvc.perform(post(authProperties.getController().getSignupUrl())
 				.contentType(MediaType.APPLICATION_JSON)
 				.content(JsonUtils.toJson(signupForm)))
 				.andExpect(status().is(200))
@@ -84,7 +84,7 @@ public class SignupMvcTests extends AbstractMvcTests {
 
 		SignupForm signupForm = testAdapter.createSignupForm(duplicateEmail, "user123");
 
-		mvc.perform(post(lemonProperties.getController().getSignupUrl())
+		mvc.perform(post(authProperties.getController().getSignupUrl())
 				.contentType(MediaType.APPLICATION_JSON)
 				.content(JsonUtils.toJson(signupForm)))
 				.andExpect(status().is(422));

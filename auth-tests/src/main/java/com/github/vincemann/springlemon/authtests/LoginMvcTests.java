@@ -15,7 +15,7 @@ public class LoginMvcTests extends AbstractMvcTests {
 	@Test
 	public void testLogin() throws Exception {
 		
-		mvc.perform(post(lemonProperties.getController().getLoginUrl())
+		mvc.perform(post(authProperties.getController().getLoginUrl())
                 .param("username", ADMIN_EMAIL)
                 .param("password", ADMIN_PASSWORD)
                 .header("contentType",  MediaType.APPLICATION_FORM_URLENCODED))
@@ -67,7 +67,7 @@ public class LoginMvcTests extends AbstractMvcTests {
 		getUnsecuredUserService().save(user);
 		Thread.sleep(300);
 
-		mvc.perform(get(lemonProperties.getController().getPingUrl())
+		mvc.perform(get(authProperties.getController().getPingUrl())
 				.header(HttpHeaders.AUTHORIZATION, tokens.get(getAdmin().getId())))
 				.andExpect(status().is(401));
 	}
@@ -87,7 +87,7 @@ public class LoginMvcTests extends AbstractMvcTests {
 	@Test
 	public void testGetUserIdByToken() throws Exception {
 
-		mvc.perform(get(lemonProperties.getController().getContextUrl())
+		mvc.perform(get(authProperties.getController().getContextUrl())
 				.header(HttpHeaders.AUTHORIZATION, tokens.get(getAdmin().getId())))
 				.andExpect(status().is(200))
 				.andExpect(jsonPath("$.user.id").value(getAdmin().getId()))
@@ -97,7 +97,7 @@ public class LoginMvcTests extends AbstractMvcTests {
 	@Test
 	public void testTokenLoginWrongToken() throws Exception {
 		
-		mvc.perform(get(lemonProperties.getController().getContextUrl())
+		mvc.perform(get(authProperties.getController().getContextUrl())
 				.header(HttpHeaders.AUTHORIZATION, "Bearer a-wrong-token"))
 				.andExpect(status().is(401));
 	}

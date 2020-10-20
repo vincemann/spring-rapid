@@ -1,6 +1,6 @@
 package com.github.vincemann.springlemon.auth.bootstrap;
 
-import com.github.vincemann.springlemon.auth.LemonProperties;
+import com.github.vincemann.springlemon.auth.AuthProperties;
 import com.github.vincemann.springlemon.auth.domain.AbstractUser;
 import com.github.vincemann.springlemon.auth.service.UserService;
 import com.github.vincemann.springrapid.acl.proxy.AclManaging;
@@ -9,9 +9,7 @@ import com.github.vincemann.springrapid.core.security.RapidSecurityContext;
 import com.github.vincemann.springrapid.core.service.exception.BadEntityException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.util.Assert;
 
 import java.util.List;
 import java.util.Optional;
@@ -19,7 +17,7 @@ import java.util.Optional;
 @Slf4j
 /**
  * Adds admins from property file, if not already present in database.
- * @see LemonProperties#getAdmins()
+ * @see AuthProperties#getAdmins()
  */
 public class AdminInitializer extends DatabaseDataInitializer {
 
@@ -29,7 +27,7 @@ public class AdminInitializer extends DatabaseDataInitializer {
 //    private List<String> adminPasswords;
 
     private UserService<?,?> userService;
-    private LemonProperties lemonProperties;
+    private AuthProperties authProperties;
     private RapidSecurityContext<?> securityContext;
 
 
@@ -49,9 +47,9 @@ public class AdminInitializer extends DatabaseDataInitializer {
     }
 
     protected void addAdmins() throws BadEntityException{
-        List<LemonProperties.Admin> admins = lemonProperties.getAdmins();
+        List<AuthProperties.Admin> admins = authProperties.getAdmins();
 //        int index = 0;
-        for (LemonProperties.Admin admin : admins) {
+        for (AuthProperties.Admin admin : admins) {
             log.debug("registering admin:: " + admin.getEmail());
 
             // Check if the user already exists
@@ -74,8 +72,8 @@ public class AdminInitializer extends DatabaseDataInitializer {
     }
 
     @Autowired
-    public void injectLemonProperties(LemonProperties lemonProperties) {
-        this.lemonProperties = lemonProperties;
+    public void injectLemonProperties(AuthProperties authProperties) {
+        this.authProperties = authProperties;
     }
 
     @Autowired

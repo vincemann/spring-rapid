@@ -134,7 +134,7 @@ class OwnerControllerTest
     @Test
     public void delete() throws Exception {
         getMockMvc().perform(delete(owner.getId()))
-                .andExpect(status().isOk());
+                .andExpect(status().is2xxSuccessful());
         Mockito.verify(ownerService).deleteById(owner.getId());
     }
 

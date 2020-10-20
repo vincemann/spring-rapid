@@ -8,14 +8,16 @@ import com.github.vincemann.springrapid.core.controller.GenericCrudController;
 public class ExampleController
         extends CrudController<ExampleEntity,Long,ExampleService>
 {
+    private DtoMappingContext mock;
+
     public ExampleController(DtoMappingContext dtoMappingContext) {
         super();
-        setDtoMappingContext(dtoMappingContext);
+        this.mock = dtoMappingContext;
     }
 
     @Override
     protected DtoMappingContext provideDtoMappingContext(CrudDtoMappingContextBuilder builder) {
-        return null;
+        return mock;
     }
 
 }
