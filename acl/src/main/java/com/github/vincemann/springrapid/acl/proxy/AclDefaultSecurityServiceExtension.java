@@ -1,5 +1,7 @@
 package com.github.vincemann.springrapid.acl.proxy;
 
+import com.github.vincemann.aoplog.Severity;
+import com.github.vincemann.aoplog.api.LogInteraction;
 import com.github.vincemann.springrapid.core.model.IdentifiableEntity;
 import com.github.vincemann.springrapid.core.proxy.CrudServiceExtension;
 import com.github.vincemann.springrapid.core.service.CrudService;
@@ -14,6 +16,7 @@ import java.util.Set;
  * Does basic acl permission checks on crud Methods defined in {@link com.github.vincemann.springrapid.core.service.CrudService}.
  * @see com.github.vincemann.springrapid.acl.proxy.DefaultSecurityServiceExtension
  */
+@LogInteraction(Severity.TRACE)
 public class AclDefaultSecurityServiceExtension
         extends SecurityServiceExtension<CrudService>
                 implements CrudServiceExtension<CrudService> {

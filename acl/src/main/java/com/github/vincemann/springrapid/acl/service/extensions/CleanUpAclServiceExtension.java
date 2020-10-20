@@ -1,5 +1,7 @@
 package com.github.vincemann.springrapid.acl.service.extensions;
 
+import com.github.vincemann.aoplog.Severity;
+import com.github.vincemann.aoplog.api.LogInteraction;
 import com.github.vincemann.springrapid.core.proxy.CrudServiceExtension;
 import com.github.vincemann.springrapid.core.service.CrudService;
 import com.github.vincemann.springrapid.core.service.exception.BadEntityException;
@@ -19,6 +21,7 @@ import java.io.Serializable;
  * Removes Acl's on delete, if existing.
  */
 @Transactional
+@LogInteraction(Severity.TRACE)
 public class CleanUpAclServiceExtension
         extends AbstractAclServiceExtension<CrudService>
                 implements CrudServiceExtension<CrudService>

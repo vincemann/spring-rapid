@@ -1,6 +1,8 @@
 package com.github.vincemann.springrapid.acl.service.extensions;
 
 
+import com.github.vincemann.aoplog.Severity;
+import com.github.vincemann.aoplog.api.LogInteraction;
 import com.github.vincemann.springrapid.acl.model.AclParentAware;
 import com.github.vincemann.springrapid.core.model.IdentifiableEntity;
 import com.github.vincemann.springrapid.core.proxy.GenericCrudServiceExtension;
@@ -16,6 +18,7 @@ import java.io.Serializable;
 
  */
 @Transactional
+@LogInteraction(Severity.TRACE)
 public class InheritParentAclServiceExtension<E extends IdentifiableEntity<Id> & AclParentAware,Id extends Serializable>
                         extends AbstractAclServiceExtension<CrudService<E,Id>>
                                  implements GenericCrudServiceExtension<CrudService<E,Id>,E,Id> {
