@@ -1,5 +1,7 @@
 package com.github.vincemann.springlemon.auth.service.extension;
 
+import com.github.vincemann.aoplog.Severity;
+import com.github.vincemann.aoplog.api.LogInteraction;
 import com.github.vincemann.springlemon.auth.AuthProperties;
 import com.github.vincemann.springlemon.auth.domain.AbstractUser;
 import com.github.vincemann.springlemon.auth.domain.AuthRoles;
@@ -15,6 +17,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 @Slf4j
 @Transactional
+@LogInteraction(Severity.TRACE)
 public class AclUserServiceExtension
         extends AbstractAclServiceExtension<UserService>
             implements UserServiceExtension<UserService>

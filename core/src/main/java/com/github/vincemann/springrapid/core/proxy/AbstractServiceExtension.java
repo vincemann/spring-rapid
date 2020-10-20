@@ -17,7 +17,7 @@ import org.springframework.test.util.AopTestUtils;
 //dependencys will be injected by aspectj, you should create the extensions with new
 //this is done, so the extensions are not in the container as duplicate beans for service interfaces
 public abstract class AbstractServiceExtension<T,P extends ProxyController>
-        implements NextLinkAware<T> {
+        implements NextLinkAware<T>,AopLoggable {
 
     private ChainController<T> chain;
     private P proxyController;

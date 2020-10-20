@@ -1,5 +1,7 @@
 package com.github.vincemann.springrapid.acl.service.extensions;
 
+import com.github.vincemann.aoplog.Severity;
+import com.github.vincemann.aoplog.api.LogInteraction;
 import com.github.vincemann.springrapid.core.model.IdentifiableEntity;
 import com.github.vincemann.springrapid.core.proxy.CrudServiceExtension;
 import com.github.vincemann.springrapid.core.service.CrudService;
@@ -10,6 +12,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 @Slf4j
 @Transactional
+@LogInteraction(Severity.TRACE)
 public class AuthenticatedFullAccessAclServiceExtension
         extends AbstractAclServiceExtension<CrudService>
                 implements CrudServiceExtension<CrudService> {
