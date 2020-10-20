@@ -1,6 +1,6 @@
 package com.github.vincemann.springrapid.coretest.controller;
 
-import com.github.vincemann.springrapid.core.RapidCoreProperties;
+import com.github.vincemann.springrapid.core.CoreProperties;
 import com.github.vincemann.springrapid.coretest.InitializingTest;
 import com.github.vincemann.springrapid.coretest.automock.AutoMockServiceBeansGenericAnnotationWebConfigContextLoader;
 import lombok.Getter;
@@ -51,7 +51,7 @@ public abstract class AutoMockMvcControllerTest extends InitializingTest {
     private MediaType contentType = MediaType.APPLICATION_JSON_UTF8;
 
     @Autowired
-    private RapidCoreProperties coreProperties;
+    private CoreProperties coreProperties;
 
     @BeforeEach
     public void setupMvc(WebApplicationContext wac) {

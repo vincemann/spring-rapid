@@ -1,7 +1,7 @@
 package com.github.vincemann.springrapid.core.controller.mergeUpdate;
 
 
-import com.github.vincemann.springrapid.core.RapidCoreProperties;
+import com.github.vincemann.springrapid.core.CoreProperties;
 import com.github.vincemann.springrapid.core.model.IdentifiableEntity;
 import com.github.vincemann.springrapid.core.service.exception.BadEntityException;
 import lombok.Getter;
@@ -18,7 +18,7 @@ import java.lang.reflect.Modifier;
 @Getter
 public class MergeUpdateStrategyImpl implements MergeUpdateStrategy {
 
-    private RapidCoreProperties coreProperties;
+    private CoreProperties coreProperties;
 
     ////@LogInteraction
     @Override
@@ -57,7 +57,7 @@ public class MergeUpdateStrategyImpl implements MergeUpdateStrategy {
     }
 
     @Autowired
-    public void injectCoreProperties(RapidCoreProperties coreProperties) {
+    public void injectCoreProperties(CoreProperties coreProperties) {
         this.coreProperties = coreProperties;
     }
 }

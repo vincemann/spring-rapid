@@ -1,7 +1,7 @@
 package com.github.vincemann.springrapid.core.controller.dto.mapper.context;
 
 import com.github.vincemann.springrapid.core.controller.DtoClassLocator;
-import com.github.vincemann.springrapid.core.controller.RapidDtoClassLocator;
+import com.github.vincemann.springrapid.core.controller.RoleFallbackDtoClassLocator;
 import com.github.vincemann.springrapid.core.model.IdentifiableEntityImpl;
 import com.github.vincemann.springrapid.core.util.Lists;
 import org.junit.jupiter.api.Assertions;
@@ -48,26 +48,30 @@ class CrudDtoMappingContextBuilderTest {
     }
 
     private static final String FIND_URL = "/api/core/find";
-    private static final String FIND_ALL_URL = "/api/core/find";
+    private static final String FIND_ALL_URL = "/api/core/findAll";
     private static final String CREATE_URL = "/api/core/create";
     private static final String UPDATE_URL = "/api/core/update";
 
     @BeforeEach
     void setUp() {
-        locator = new RapidDtoClassLocator();
+        locator = new RoleFallbackDtoClassLocator();
         roles = Lists.newArrayList(userRole,peekRole);
         // controller not needed bc all endpoints are manually supplied
         context = new CrudDtoMappingContextBuilder(null)
+                //user role and peek role
                 .withRoles(roles.toArray(new String[0]))
                 .forEndpoint(FIND_URL,Direction.RESPONSE, PrivilegedFindDto.class)
                 .forEndpoint(FIND_ALL_URL,Direction.RESPONSE,PrivilegedFindDto.class)
+
                 .withRoles(adminRole)
                 .withPrincipal(DtoRequestInfo.Principal.FOREIGN)
                 .forEndpoint(UPDATE_URL,Direction.REQUEST,AdminUpdateForeignUserDto.class)
                 .withPrincipal(DtoRequestInfo.Principal.OWN)
                 .forEndpoint(UPDATE_URL,Direction.REQUEST,AdminUpdateOwnDto.class)
-                .withAllPrincipals()
+
+
                 .withAllRoles()
+                .withAllPrincipals()
                 .forEndpoint(CREATE_URL,CreateDto.class)
                 .forEndpoint(FIND_URL,Direction.RESPONSE,LessPrivilegedFindDto.class)
                 .build();
@@ -132,6 +136,8 @@ class CrudDtoMappingContextBuilderTest {
     void findOnlyAdminEntryWithoutRoles_shouldNotFind() throws InvocationTargetException, NoSuchMethodException, InstantiationException, IllegalAccessException {
         findAllInfo.setAuthorities(new ArrayList<>());
         Assertions.assertThrows(IllegalArgumentException.class,()-> locator.find(findAllInfo,context));
+//        Class<?> dtoClass = locator.find(findAllInfo, context);
+//        Assertions.assertEquals(LessPrivilegedFindDto.class,dtoClass);
     }
 
     @Test

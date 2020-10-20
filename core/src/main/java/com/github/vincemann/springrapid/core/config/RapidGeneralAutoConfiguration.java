@@ -1,6 +1,6 @@
 package com.github.vincemann.springrapid.core.config;
 
-import com.github.vincemann.springrapid.core.RapidCoreProperties;
+import com.github.vincemann.springrapid.core.CoreProperties;
 import com.github.vincemann.springrapid.core.util.JpaUtils;
 import com.github.vincemann.springrapid.core.util.Message;
 import lombok.extern.slf4j.Slf4j;
@@ -32,10 +32,10 @@ public class RapidGeneralAutoConfiguration {
     }
 
     @Bean
-    @ConditionalOnMissingBean(RapidCoreProperties.class)
+    @ConditionalOnMissingBean(CoreProperties.class)
     @ConfigurationProperties(prefix = "rapid.core")
-    public RapidCoreProperties rapidCoreProperties(){
-        return new RapidCoreProperties();
+    public CoreProperties rapidCoreProperties(){
+        return new CoreProperties();
     }
 
     @Bean

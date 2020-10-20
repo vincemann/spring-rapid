@@ -6,7 +6,7 @@ import com.github.vincemann.springrapid.acl.service.LocalPermissionService;
 import com.github.vincemann.springrapid.core.model.IdentifiableEntity;
 import com.github.vincemann.springrapid.core.proxy.BasicServiceExtension;
 import com.github.vincemann.springrapid.core.security.RapidAuthenticatedPrincipal;
-import com.github.vincemann.springrapid.core.security.RapidRoles;
+import com.github.vincemann.springrapid.core.security.Roles;
 import com.github.vincemann.springrapid.core.security.RapidSecurityContext;
 import lombok.Getter;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,7 +14,6 @@ import org.springframework.security.acls.domain.BasePermission;
 import org.springframework.security.acls.model.MutableAclService;
 import org.springframework.security.acls.model.Permission;
 
-import javax.transaction.Transactional;
 import java.io.Serializable;
 
 /**
@@ -36,7 +35,7 @@ public abstract class AbstractAclServiceExtension<S>
     public void saveFullPermissionForAdminOver(IdentifiableEntity<Serializable> entity){
         //acl framework uses internally springs Authentication object
         securityContext.runAsAdmin(() -> getPermissionService().addPermissionForAuthorityOver(entity,
-                BasePermission.ADMINISTRATION, RapidRoles.ADMIN));
+                BasePermission.ADMINISTRATION, Roles.ADMIN));
     }
 
     @LogInteraction(Severity.TRACE)

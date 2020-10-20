@@ -1,0 +1,14 @@
+org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
+com.github.vincemann.springlemon.auth.config.RapidTokenServiceAutoConfiguration,\
+com.github.vincemann.springlemon.auth.config.RapidCommonsWebAutoConfiguration,\
+com.github.vincemann.springlemon.auth.config.RapidUserServiceAutoConfiguration,\
+com.github.vincemann.springlemon.auth.config.RapidAuthExceptionHandlerAutoConfiguration,\
+com.github.vincemann.springlemon.auth.config.RapidAuthenticationAutoConfiguration,\
+com.github.vincemann.springlemon.auth.config.RapidAuthGeneralAutoConfiguration,\
+com.github.vincemann.springlemon.auth.config.RapidAsyncAutoConfiguration,\
+com.github.vincemann.springlemon.auth.config.RapidAdminAutoConfiguration,\
+com.github.vincemann.springlemon.auth.config.RapidAuthDtoAutoConfiguration,\
+com.github.vincemann.springlemon.auth.config.RapidUserServiceSecurityAutoConfiguration,\
+com.github.vincemann.springlemon.auth.config.RapidAuthSecurityAutoConfiguration,\
+com.github.vincemann.springlemon.auth.config.RapidAuthAclAutoConfiguration,\
+com.github.vincemann.springlemon.auth.config.RapidAuthControllerAutoConfiguration
