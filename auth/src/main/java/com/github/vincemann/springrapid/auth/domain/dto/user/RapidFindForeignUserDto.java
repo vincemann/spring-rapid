@@ -11,6 +11,6 @@ import lombok.ToString;
 @ToString(callSuper = true)
 @NoArgsConstructor
 //can only see id
-public class FindForeignUserDto extends IdentifiableEntityImpl<String> {
+public class RapidFindForeignUserDto extends IdentifiableEntityImpl<String> {
 
 }

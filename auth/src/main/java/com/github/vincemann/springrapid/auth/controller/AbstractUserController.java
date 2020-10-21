@@ -7,10 +7,10 @@ import com.github.vincemann.springrapid.auth.domain.dto.ChangePasswordForm;
 import com.github.vincemann.springrapid.auth.domain.dto.SignupForm;
 import com.github.vincemann.springrapid.auth.domain.dto.RequestEmailChangeForm;
 import com.github.vincemann.springrapid.auth.domain.dto.ResetPasswordForm;
-import com.github.vincemann.springrapid.auth.domain.dto.user.AdminUpdateUserDto;
-import com.github.vincemann.springrapid.auth.domain.dto.user.FindForeignUserDto;
-import com.github.vincemann.springrapid.auth.domain.dto.user.FindUserDto;
-import com.github.vincemann.springrapid.auth.domain.dto.user.UserDto;
+import com.github.vincemann.springrapid.auth.domain.dto.user.RapidAdminUpdateUserDto;
+import com.github.vincemann.springrapid.auth.domain.dto.user.RapidFindForeignUserDto;
+import com.github.vincemann.springrapid.auth.domain.dto.user.RapidFindUserDto;
+import com.github.vincemann.springrapid.auth.domain.dto.user.RapidUserDto;
 import com.github.vincemann.springrapid.auth.service.UserService;
 import com.github.vincemann.springrapid.auth.service.token.BadTokenException;
 import com.github.vincemann.springrapid.auth.service.token.HttpTokenService;
@@ -29,6 +29,7 @@ import com.github.vincemann.springrapid.core.util.VerifyEntity;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.method.RequestMappingInfo;
@@ -302,17 +303,17 @@ public abstract class AbstractUserController<U extends AbstractUser<ID>, ID exte
 		builder
 
 				.withAllPrincipals()
-				.forAll(UserDto.class)
-				.forResponse(FindUserDto.class)
+				.forAll(RapidUserDto.class)
+				.forResponse(RapidFindUserDto.class)
 				.forEndpoint(getAuthProperties().getController().getSignupUrl(), Direction.REQUEST, SignupForm.class)
 
 				.withPrincipal(DtoRequestInfo.Principal.FOREIGN)
-				.forFind(FindForeignUserDto.class)
+				.forFind(RapidFindForeignUserDto.class)
 
 				.withAllPrincipals()
 				.withRoles(Roles.ADMIN)
-				.forEndpoint(getUpdateUrl(), AdminUpdateUserDto.class)
-				.forFind(FindUserDto.class)
+				.forEndpoint(getUpdateUrl(), RapidAdminUpdateUserDto.class)
+				.forFind(RapidFindUserDto.class)
 
 				//if this is not set then it would be unexpected when builder.furtherConfigure(...) configures for admin role
 				.withAllRoles();
@@ -514,6 +515,7 @@ public abstract class AbstractUserController<U extends AbstractUser<ID>, ID exte
 		this.httpTokenService = httpTokenService;
 	}
 
+	@Lazy
 	@Autowired
 	@Secured
 	@Override
