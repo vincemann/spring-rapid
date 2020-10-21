@@ -12,7 +12,7 @@ import java.util.Set;
 @ToString(callSuper = true)
 @NoArgsConstructor
 @Setter
-public abstract class AbstractUserDto extends IdentifiableEntityImpl<String> {
+public abstract class RapidAbstractUserDto extends IdentifiableEntityImpl<String> {
 
     private String email;
     private Set<String> roles = new HashSet<String>();
@@ -23,7 +23,7 @@ public abstract class AbstractUserDto extends IdentifiableEntityImpl<String> {
     private boolean goodUser = false;
 //    private boolean goodAdmin = false;
 
-    public AbstractUserDto(String email, Set<String> roles, String id) {
+    public RapidAbstractUserDto(String email, Set<String> roles, String id) {
         this.email = email;
         this.roles = roles;
         this.setId(id);
