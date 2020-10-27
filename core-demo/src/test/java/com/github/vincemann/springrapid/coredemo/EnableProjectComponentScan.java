@@ -7,6 +7,7 @@ import java.lang.annotation.*;
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.TYPE)
 @Documented
-@ComponentScan(value = "com.github.vincemann.springrapid.authdemo")
+@ComponentScan(value = "com.github.vincemann.springrapid.coredemo")
 public @interface EnableProjectComponentScan {
+
 }

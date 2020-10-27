@@ -14,6 +14,7 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.servlet.mvc.method.RequestMappingInfo;
@@ -120,5 +121,12 @@ public abstract class ParentAwareCrudController
     @Autowired
     public void injectService(S service) {
         super.injectCrudService(service);
+    }
+
+    @Autowired
+    @Qualifier("parentAwareEndpointInfo")
+    @Override
+    public void injectEndpointInfo(ParentAwareEndpointInfo endpointInfo) {
+        super.injectEndpointInfo(endpointInfo);
     }
 }

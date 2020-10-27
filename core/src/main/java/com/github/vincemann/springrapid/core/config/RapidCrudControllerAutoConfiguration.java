@@ -5,6 +5,7 @@ import com.github.vincemann.springrapid.core.controller.idFetchingStrategy.IdFet
 import com.github.vincemann.springrapid.core.controller.idFetchingStrategy.LongUrlParamIdFetchingStrategy;
 import com.github.vincemann.springrapid.core.controller.mergeUpdate.MergeUpdateStrategy;
 import com.github.vincemann.springrapid.core.controller.mergeUpdate.MergeUpdateStrategyImpl;
+import com.github.vincemann.springrapid.core.controller.parentAware.ParentAwareEndpointInfo;
 import com.github.vincemann.springrapid.core.controller.validationStrategy.JavaXDtoValidationStrategy;
 import com.github.vincemann.springrapid.core.controller.validationStrategy.DtoValidationStrategy;
 import com.github.vincemann.springrapid.core.service.EndpointService;
@@ -51,9 +52,17 @@ public class RapidCrudControllerAutoConfiguration {
 
 //    @ConditionalOnMissingBean(EndpointsExposureContext.class)
     @Bean
+    @ConditionalOnMissingBean(name = "crudEndpointInfo")
     @Scope(scopeName = SCOPE_PROTOTYPE)
     public CrudEndpointInfo crudEndpointInfo(){
         return new CrudEndpointInfo();
+    }
+
+    @Bean
+    @ConditionalOnMissingBean(name = "parentAwareEndpointInfo")
+    @Scope(scopeName = SCOPE_PROTOTYPE)
+    public ParentAwareEndpointInfo parentAwareEndpointInfo(){
+        return new ParentAwareEndpointInfo();
     }
 
     @ConditionalOnMissingBean(DtoValidationStrategy.class)

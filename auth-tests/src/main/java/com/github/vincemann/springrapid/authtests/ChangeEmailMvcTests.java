@@ -155,7 +155,7 @@ public class ChangeEmailMvcTests extends AbstractMvcTests {
 				.param("id",getUnverifiedUser().getId().toString())
 				.header(HttpHeaders.AUTHORIZATION, authToken)
                 .header("contentType",  MediaType.APPLICATION_FORM_URLENCODED))
-		        .andExpect(status().is(401));
+		        .andExpect(status().is(403));
 	}
 	
 	/**

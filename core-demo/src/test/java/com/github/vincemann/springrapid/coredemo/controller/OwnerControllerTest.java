@@ -1,20 +1,19 @@
 package com.github.vincemann.springrapid.coredemo.controller;
 
 
-import com.github.vincemann.springrapid.authdemo.controller.OwnerController;
 import com.github.vincemann.springrapid.core.security.RapidAuthenticatedPrincipal;
 import com.github.vincemann.springrapid.core.security.RapidSecurityContext;
 import com.github.vincemann.springrapid.core.service.locator.CrudServiceLocator;
 import com.github.vincemann.springrapid.core.util.ResourceUtils;
 import com.github.vincemann.springrapid.coretest.TestPrincipal;
 import com.github.vincemann.springrapid.coretest.controller.rapid.AbstractUrlParamIdCrudControllerTest;
-import com.github.vincemann.springrapid.authdemo.dtos.owner.CreateOwnerDto;
-import com.github.vincemann.springrapid.authdemo.dtos.owner.ReadForeignOwnerDto;
-import com.github.vincemann.springrapid.authdemo.dtos.owner.ReadOwnOwnerDto;
-import com.github.vincemann.springrapid.authdemo.model.Owner;
-import com.github.vincemann.springrapid.authdemo.model.Pet;
-import com.github.vincemann.springrapid.authdemo.service.OwnerService;
-import com.github.vincemann.springrapid.authdemo.service.PetService;
+import com.github.vincemann.springrapid.coredemo.dtos.owner.CreateOwnerDto;
+import com.github.vincemann.springrapid.coredemo.dtos.owner.ReadForeignOwnerDto;
+import com.github.vincemann.springrapid.coredemo.dtos.owner.ReadOwnOwnerDto;
+import com.github.vincemann.springrapid.coredemo.model.Owner;
+import com.github.vincemann.springrapid.coredemo.model.Pet;
+import com.github.vincemann.springrapid.coredemo.service.OwnerService;
+import com.github.vincemann.springrapid.coredemo.service.PetService;
 import org.apache.commons.beanutils.BeanUtilsBean;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

@@ -1,10 +1,10 @@
 package com.github.vincemann.springrapid.coredemo.controller;
 
 import com.github.vincemann.springrapid.core.controller.GenericCrudController;
-import com.github.vincemann.springrapid.authdemo.model.Owner;
-import com.github.vincemann.springrapid.authdemo.model.Pet;
-import com.github.vincemann.springrapid.authdemo.model.PetType;
-import com.github.vincemann.springrapid.authdemo.model.Specialty;
+import com.github.vincemann.springrapid.coredemo.model.Owner;
+import com.github.vincemann.springrapid.coredemo.model.Pet;
+import com.github.vincemann.springrapid.coredemo.model.PetType;
+import com.github.vincemann.springrapid.coredemo.model.Specialty;
 import com.github.vincemann.springrapid.core.service.CrudService;
 import com.github.vincemann.springrapid.coretest.controller.rapid.AbstractUrlParamIdCrudControllerTest;
 import lombok.Getter;

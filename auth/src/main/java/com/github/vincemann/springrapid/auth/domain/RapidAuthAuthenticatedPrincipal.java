@@ -3,12 +3,13 @@ package com.github.vincemann.springrapid.auth.domain;
 import com.github.vincemann.springrapid.core.security.Roles;
 import com.github.vincemann.springrapid.core.security.RapidAuthenticatedPrincipal;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.ToString;
 
 import java.util.Set;
 
 
-@Getter @ToString(callSuper = true)
+@Getter @ToString(callSuper = true) @NoArgsConstructor
 public class RapidAuthAuthenticatedPrincipal extends RapidAuthenticatedPrincipal {
 
 	private static final long serialVersionUID = -7849730155307434535L;
