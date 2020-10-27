@@ -24,13 +24,13 @@ public abstract class UserServiceProxyConfigurer  implements InitializingBean {
 
     @Autowired
     @AclManaging
-    public void setAcl(UserService acl) {
+    public void injectAcl(UserService acl) {
         this.acl=acl;
     }
 
     @Autowired
     @Secured
-    public void setSecured(UserService secured) {
+    public void injectSecured(UserService secured) {
         this.secured = secured;
     }
 

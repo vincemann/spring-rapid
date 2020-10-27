@@ -1,4 +1,4 @@
-package com.github.vincemann.springrapid.authdemo.services;
+package com.github.vincemann.springrapid.authdemo.service;
 
 import com.github.vincemann.springrapid.authdemo.domain.User;
 import com.github.vincemann.springrapid.authdemo.repositories.UserRepository;

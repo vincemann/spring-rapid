@@ -20,6 +20,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.servlet.mvc.method.RequestMappingInfo;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import java.io.Serializable;
 import java.util.Collection;
 import java.util.HashSet;
@@ -84,7 +85,7 @@ public abstract class ParentAwareCrudController
 
     // controller methods
 
-    public ResponseEntity<String> findAllOfParent(HttpServletRequest request) throws IdFetchingException, BadEntityException, JsonProcessingException {
+    public ResponseEntity<String> findAllOfParent(HttpServletRequest request, HttpServletResponse response) throws IdFetchingException, BadEntityException, JsonProcessingException {
             log.debug("FindAllOfParent request arriving at controller: " + request);
             PId id = parentIdFetchingStrategy.fetchId(request);
             log.debug("parentId: " + id);
