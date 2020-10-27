@@ -6,7 +6,7 @@ import com.github.vincemann.springrapid.authdemo.domain.MySignupForm;
 import com.github.vincemann.springrapid.authdemo.domain.User;
 import com.github.vincemann.springrapid.authdemo.dto.AdminUpdatesUserDto;
 import com.github.vincemann.springrapid.authdemo.dto.UserUpdateDto;
-import com.github.vincemann.springrapid.authdemo.services.MyUserService;
+import com.github.vincemann.springrapid.authdemo.service.MyUserService;
 import com.github.vincemann.springrapid.core.controller.dto.mapper.context.Direction;
 import com.github.vincemann.springrapid.core.controller.dto.mapper.context.DtoMappingContext;
 import com.github.vincemann.springrapid.core.security.Roles;
