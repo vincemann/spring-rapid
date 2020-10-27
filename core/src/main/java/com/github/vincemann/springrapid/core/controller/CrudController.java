@@ -4,6 +4,8 @@ import com.github.vincemann.springrapid.core.controller.dto.mapper.context.CrudD
 import com.github.vincemann.springrapid.core.controller.idFetchingStrategy.UrlParamIdFetchingStrategy;
 import com.github.vincemann.springrapid.core.model.IdentifiableEntity;
 import com.github.vincemann.springrapid.core.service.CrudService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 
 import java.io.Serializable;
 
@@ -31,5 +33,12 @@ public abstract class CrudController
     @Override
     protected CrudDtoMappingContextBuilder createDtoMappingContextBuilder() {
         return new CrudDtoMappingContextBuilder(this);
+    }
+
+    @Autowired
+    @Qualifier("crudEndpointInfo")
+    @Override
+    public void injectEndpointInfo(CrudEndpointInfo endpointInfo) {
+        super.injectEndpointInfo(endpointInfo);
     }
 }

@@ -4,10 +4,10 @@ import com.github.vincemann.springrapid.core.service.exception.BadEntityExceptio
 import com.github.vincemann.springrapid.coretest.service.AbstractCrudServiceIntegrationTest;
 import com.github.vincemann.springrapid.coretest.service.resolve.EntityPlaceholder;
 import com.github.vincemann.springrapid.coredemo.EnableProjectComponentScan;
-import com.github.vincemann.springrapid.authdemo.model.Pet;
-import com.github.vincemann.springrapid.authdemo.model.PetType;
-import com.github.vincemann.springrapid.authdemo.service.PetService;
-import com.github.vincemann.springrapid.authdemo.service.PetTypeService;
+import com.github.vincemann.springrapid.coredemo.model.Pet;
+import com.github.vincemann.springrapid.coredemo.model.PetType;
+import com.github.vincemann.springrapid.coredemo.service.PetService;
+import com.github.vincemann.springrapid.coredemo.service.PetTypeService;
 import com.github.vincemann.springrapid.entityrelationship.slicing.test.ImportRapidEntityRelServiceConfig;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

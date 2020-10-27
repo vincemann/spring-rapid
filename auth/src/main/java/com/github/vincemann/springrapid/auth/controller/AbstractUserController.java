@@ -29,6 +29,7 @@ import com.github.vincemann.springrapid.core.util.VerifyEntity;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -541,6 +542,13 @@ public abstract class AbstractUserController<U extends AbstractUser<ID>, ID exte
 	@Override
 	public S getService() {
 		return (S) super.getService();
+	}
+
+	@Autowired
+	@Qualifier("userEndpointInfo")
+	@Override
+	public void injectEndpointInfo(UserEndpointInfo endpointInfo) {
+		super.injectEndpointInfo(endpointInfo);
 	}
 
 	//	@Override
