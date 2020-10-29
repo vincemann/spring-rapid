@@ -19,7 +19,7 @@ public class ResendVerificationMailMvcTests extends AbstractMvcTests {
 				.header(HttpHeaders.AUTHORIZATION, tokens.get(getUnverifiedUser().getId())))
 			.andExpect(status().is(204));
 		
-		verify(mailSender).send(any());
+		verify(unproxySpy(mailSender)).send(any());
 	}
 
 	@Test
@@ -43,7 +43,7 @@ public class ResendVerificationMailMvcTests extends AbstractMvcTests {
 				.header(HttpHeaders.AUTHORIZATION, tokens.get(getBlockedAdmin().getId())))
 			.andExpect(status().is(403));
 		
-		verify(mailSender, never()).send(any());
+		verify(unproxySpy(mailSender), never()).send(any());
 	}
 
 	@Test
@@ -53,7 +53,7 @@ public class ResendVerificationMailMvcTests extends AbstractMvcTests {
 				.param("id",getUnverifiedUser().getId().toString()))
 				.andExpect(status().is(403));
 		
-		verify(mailSender, never()).send(any());
+		verify(unproxySpy(mailSender), never()).send(any());
 	}
 	
 	@Test
@@ -64,7 +64,7 @@ public class ResendVerificationMailMvcTests extends AbstractMvcTests {
 				.header(HttpHeaders.AUTHORIZATION, tokens.get(getUser().getId())))
 			.andExpect(status().is(422));
 		
-		verify(mailSender, never()).send(any());
+		verify(unproxySpy(mailSender), never()).send(any());
 	}
 	
 	@Test
@@ -75,7 +75,7 @@ public class ResendVerificationMailMvcTests extends AbstractMvcTests {
 				.header(HttpHeaders.AUTHORIZATION, tokens.get(getUser().getId())))
 			.andExpect(status().is(403));
 		
-		verify(mailSender, never()).send(any());
+		verify(unproxySpy(mailSender), never()).send(any());
 	}
 	
 	@Test
@@ -86,6 +86,6 @@ public class ResendVerificationMailMvcTests extends AbstractMvcTests {
 				.header(HttpHeaders.AUTHORIZATION, tokens.get(getAdmin().getId())))
 			.andExpect(status().is(404));
 		
-		verify(mailSender, never()).send(any());
+		verify(unproxySpy(mailSender), never()).send(any());
 	}
 }

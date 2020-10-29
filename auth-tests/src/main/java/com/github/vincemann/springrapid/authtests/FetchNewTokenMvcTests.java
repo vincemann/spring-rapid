@@ -68,8 +68,6 @@ public class FetchNewTokenMvcTests extends AbstractMvcTests {
 						JwtService.TOKEN_PREFIX + response.getToken()))
 				.andExpect(status().is(401));
 
-		//reset expire time
-		Mockito.reset(properties);
 	}
 
 	@Test
