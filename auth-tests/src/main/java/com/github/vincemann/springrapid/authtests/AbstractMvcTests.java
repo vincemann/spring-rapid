@@ -149,8 +149,12 @@ public abstract class AbstractMvcTests {
 
     protected void setupSpies(){
         jwt = Mockito.spy(properties.getJwt());
-//        https://stackoverflow.com/questions/9033874/mocking-a-property-of-a-cglib-proxied-service-not-working
-        Mockito.doReturn(jwt).when((AuthProperties)AopTestUtils.getUltimateTargetObject(properties)).getJwt();
+        Mockito.doReturn(jwt).when((AuthProperties)unproxySpy(properties)).getJwt();
+    }
+
+    protected <T> T unproxySpy(T spy){
+        //        https://stackoverflow.com/questions/9033874/mocking-a-property-of-a-cglib-proxied-service-not-working
+        return AopTestUtils.getUltimateTargetObject(spy);
     }
 
     protected void configureMvc() {
