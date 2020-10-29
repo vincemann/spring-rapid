@@ -24,11 +24,12 @@ import static org.hamcrest.Matchers.hasSize;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
-public class UpdateUserMvcTests extends AbstractMvcTests
+public abstract class UpdateUserMvcTests extends AbstractMvcTests
 		implements UrlParamIdCrudControllerTest<AbstractUserController<?,Long,?>,Long> {
 
-	static final String UPDATED_EMAIL = "updated@e.mail";
-	static final String FIELD_DUMMY_VALUE = "name";
+	private static final String FIELD_KEY_PLACEHOLDER = "name";
+	private static final String FIELD_INVALID_VALUE_PLACEHOLDER = "invalidFieldValue";
+	private static final String FIELD_NEW_VALID_VALUE_PLACEHOLDER = "newFieldValue";
 
     String patchEmailAndRole;
 	String patchRole;
@@ -42,6 +43,28 @@ public class UpdateUserMvcTests extends AbstractMvcTests
 	@Autowired
 	@Getter
 	private AbstractUserController<? extends AbstractUser<Long>,Long,?> controller;
+	
+	protected String updatedEmail(){
+		return "updated@e.mail";
+	}
+
+	protected String newValidFieldValue(){
+		return "newName";
+	}
+
+	protected String invalidFieldValue(){
+		return "A123456789A123456789A123456789A123456789A123456789A123456789A123456789";
+	}
+
+	/**
+	 * Constraints on field:
+	 * String
+	 * Not blank
+	 * Length 1 - 50
+	 * Not null
+	 * "newName" is valid new value
+	 */
+	protected abstract String getUpdatableUserField();
 
 	/**
 	 * A non-admin user should be able to update his own field,
@@ -74,13 +97,13 @@ public class UpdateUserMvcTests extends AbstractMvcTests
 				.andExpect(status().is(200))
 				.andExpect(jsonPath("$.roles").value(hasSize(1)))
 				.andExpect(jsonPath("$.roles[0]").value(Roles.ADMIN))
-				.andExpect(jsonPath("$.email").value(UPDATED_EMAIL));
+				.andExpect(jsonPath("$.email").value(updatedEmail()));
 
 		AbstractUser<Long> user = getUnsecuredUserService().findById(getUnverifiedUser().getId()).get();
 
 		// Ensure that data changed properly
 		//should get replaced because admin has full power
-		Assertions.assertEquals(UPDATED_EMAIL, user.getEmail());
+		Assertions.assertEquals(updatedEmail(), user.getEmail());
 		Assertions.assertEquals(1, user.getRoles().size());
 		Assertions.assertTrue(user.getRoles().contains(Roles.ADMIN));
     }
@@ -159,17 +182,22 @@ public class UpdateUserMvcTests extends AbstractMvcTests
 
 	@Value("classpath:/update-user/patch-field.json")
 	public void setPatchField(Resource patch) throws IOException {
-		this.patchField = ResourceUtils.toStr(patch).replace(FIELD_DUMMY_VALUE, testAdapter.getUpdatableUserField());
+		this.patchField = ResourceUtils.toStr(patch)
+				.replace(FIELD_KEY_PLACEHOLDER, getUpdatableUserField())
+				.replace(FIELD_NEW_VALID_VALUE_PLACEHOLDER, newValidFieldValue());
 	}
 
 	@Value("classpath:/update-user/patch-null-field.json")
 	public void setPatchNullField(Resource patch) throws IOException {
-		this.patchNullField = ResourceUtils.toStr(patch).replace(FIELD_DUMMY_VALUE, testAdapter.getUpdatableUserField());
+		this.patchNullField = ResourceUtils.toStr(patch)
+				.replace(FIELD_KEY_PLACEHOLDER, getUpdatableUserField());
 	}
 
-	@Value("classpath:/update-user/patch-long-field.json")
+	@Value("classpath:/update-user/patch-invalid-field.json")
 	public void setPatchLongField(Resource patch) throws IOException {
-		this.patchLongField = ResourceUtils.toStr(patch).replace(FIELD_DUMMY_VALUE, testAdapter.getUpdatableUserField());
+		this.patchLongField = ResourceUtils.toStr(patch)
+				.replace(FIELD_KEY_PLACEHOLDER, getUpdatableUserField())
+				.replace(FIELD_INVALID_VALUE_PLACEHOLDER,invalidFieldValue());
 	}
 
 //	/**
