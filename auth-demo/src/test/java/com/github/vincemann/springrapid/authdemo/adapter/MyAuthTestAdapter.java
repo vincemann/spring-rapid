@@ -18,19 +18,12 @@ public class MyAuthTestAdapter implements AuthTestAdapter {
         return new User(email,password,createUniqueName(),roles);
     }
 
-    @Override
-    public SignupForm createSignupForm(String email, String password) {
-        return new MySignupForm(email,password,createUniqueName());
-    }
 
-    private String createUniqueName(){
+    public String createUniqueName(){
         String name = NAME+nameCount;
         nameCount++;
         return name;
     }
 
-    @Override
-    public String getUpdatableUserField() {
-        return "name";
-    }
+
 }

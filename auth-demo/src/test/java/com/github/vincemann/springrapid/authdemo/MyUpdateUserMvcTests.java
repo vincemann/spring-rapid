@@ -5,4 +5,9 @@ import org.springframework.context.annotation.ComponentScan;
 
 @ComponentScan("com.github.vincemann.springrapid.authdemo")
 public class MyUpdateUserMvcTests extends UpdateUserMvcTests {
+
+    @Override
+    protected String getUpdatableUserField() {
+        return "name";
+    }
 }
