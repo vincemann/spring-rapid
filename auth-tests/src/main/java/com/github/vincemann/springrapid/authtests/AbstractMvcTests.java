@@ -27,6 +27,7 @@ import org.springframework.jdbc.datasource.DataSourceUtils;
 import org.springframework.jdbc.datasource.init.ScriptUtils;
 import org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers;
 import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.util.AopTestUtils;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.ResultActions;
@@ -148,7 +149,8 @@ public abstract class AbstractMvcTests {
 
     protected void setupSpies(){
         jwt = Mockito.spy(properties.getJwt());
-        Mockito.doReturn(jwt).when(properties).getJwt();
+//        https://stackoverflow.com/questions/9033874/mocking-a-property-of-a-cglib-proxied-service-not-working
+        Mockito.doReturn(jwt).when((AuthProperties)AopTestUtils.getUltimateTargetObject(properties)).getJwt();
     }
 
     protected void configureMvc() {
@@ -230,9 +232,12 @@ public abstract class AbstractMvcTests {
         tokens.clear();
         removeTestUsers();
         System.err.println("test data cleared");
-        Mockito.reset(properties);
-        Mockito.reset(coreProperties);
-        Mockito.reset(jwt);
+
+//        https://github.com/spring-projects/spring-boot/issues/7374  -> @SpyBean beans are automatically reset
+
+//        Mockito.reset(properties);
+//        Mockito.reset(coreProperties);
+//        Mockito.reset(jwt);
     }
 
     //    protected void initAcl() throws SQLException {
