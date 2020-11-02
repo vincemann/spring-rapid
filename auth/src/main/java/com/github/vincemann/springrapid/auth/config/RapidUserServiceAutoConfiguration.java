@@ -10,7 +10,7 @@ import com.github.vincemann.springrapid.auth.service.UserService;
 import com.github.vincemann.springrapid.auth.service.RapidUserDetailsService;
 import com.github.vincemann.springrapid.auth.validation.RetypePasswordValidator;
 import com.github.vincemann.springrapid.auth.validation.UniqueEmailValidator;
-import com.github.vincemann.springrapid.acl.proxy.Unsecured;
+
 import com.github.vincemann.springrapid.core.slicing.config.ServiceConfig;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
@@ -76,7 +76,7 @@ public class RapidUserServiceAutoConfiguration {
     @Bean
     @ConditionalOnMissingBean(IdConverter.class)
     public <ID extends Serializable>
-    IdConverter<ID> idConverter(@Unsecured UserService<?,ID> userService) {
+    IdConverter<ID> idConverter( UserService<?,ID> userService) {
         return id -> userService.toId(id);
     }
 

@@ -53,8 +53,7 @@ public abstract class AbstractControllerTest<C extends GenericCrudController<?,L
     }
 
     @BeforeEach
-    public void setup() throws Exception {
-        super.setup();
+    protected void setup() throws Exception {
         testPetType = petTypeService.save(PetType.builder()
                 .name("dog")
                 .build());

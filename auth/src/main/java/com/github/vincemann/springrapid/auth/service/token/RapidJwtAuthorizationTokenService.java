@@ -4,7 +4,7 @@ import com.github.vincemann.springrapid.auth.domain.AbstractUser;
 import com.github.vincemann.springrapid.auth.domain.RapidAuthAuthenticatedPrincipal;
 import com.github.vincemann.springrapid.auth.service.UserService;
 import com.github.vincemann.springrapid.auth.util.JwtUtils;
-import com.github.vincemann.springrapid.acl.proxy.Unsecured;
+
 import com.github.vincemann.springrapid.core.service.exception.EntityNotFoundException;
 import com.github.vincemann.springrapid.core.slicing.components.ServiceComponent;
 import com.github.vincemann.springrapid.core.util.VerifyEntity;
@@ -21,7 +21,7 @@ import java.util.Optional;
 @Service
 public class RapidJwtAuthorizationTokenService extends AbstractJwtAuthorizationTokenService<RapidAuthAuthenticatedPrincipal> {
 
-    private UserService unsecuredUserService;
+    private UserService userService;
 
 
     @Transactional
@@ -29,7 +29,7 @@ public class RapidJwtAuthorizationTokenService extends AbstractJwtAuthorizationT
     public void verifyToken(JWTClaimsSet claims, RapidAuthAuthenticatedPrincipal principal) {
         super.verifyToken(claims, principal);
         try {
-            Optional<AbstractUser<?>> byEmail = unsecuredUserService.findByEmail(principal.getEmail());
+            Optional<AbstractUser<?>> byEmail = userService.findByEmail(principal.getEmail());
             VerifyEntity.isPresent(byEmail,"User with email: "+principal.getEmail()+" not found");
             AbstractUser<?> user = byEmail.get();
             JwtUtils.ensureCredentialsUpToDate(claims,user);
@@ -39,9 +39,9 @@ public class RapidJwtAuthorizationTokenService extends AbstractJwtAuthorizationT
     }
 
     @Lazy
-    @Unsecured
+
     @Autowired
-    public void injectUnsecuredUserService(UserService userService) {
-        this.unsecuredUserService = userService;
+    public void injectUserService(UserService userService) {
+        this.userService = userService;
     }
 }

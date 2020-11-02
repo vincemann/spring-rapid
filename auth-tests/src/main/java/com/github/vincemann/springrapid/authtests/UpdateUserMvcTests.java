@@ -78,7 +78,7 @@ public abstract class UpdateUserMvcTests extends AbstractMvcTests
 				.header(HttpHeaders.AUTHORIZATION, tokens.get(getUser().getId())))
 				.andExpect(status().is(400));
 
-		AbstractUser<Long> updated = getUnsecuredUserService().findById(getUser().getId()).get();
+		AbstractUser<Long> updated = getUserService().findById(getUser().getId()).get();
 
 		// Ensure that data has not changed
 		Assertions.assertEquals(USER_EMAIL, updated.getEmail());
@@ -99,7 +99,7 @@ public abstract class UpdateUserMvcTests extends AbstractMvcTests
 				.andExpect(jsonPath("$.roles[0]").value(Roles.ADMIN))
 				.andExpect(jsonPath("$.email").value(updatedEmail()));
 
-		AbstractUser<Long> user = getUnsecuredUserService().findById(getUnverifiedUser().getId()).get();
+		AbstractUser<Long> user = getUserService().findById(getUnverifiedUser().getId()).get();
 
 		// Ensure that data changed properly
 		//should get replaced because admin has full power

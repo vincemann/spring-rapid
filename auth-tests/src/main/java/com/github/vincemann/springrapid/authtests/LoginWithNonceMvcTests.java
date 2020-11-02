@@ -40,7 +40,7 @@
 //		
 //		User user = userRepository.findById(getUnverifiedUser().getId()).get();
 //		user.setNonce(NONCE);
-//		getUnsecuredUserService().save(user);
+//		getUserService().save(user);
 //	}
 //	
 //	@Test

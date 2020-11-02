@@ -43,7 +43,7 @@ public class RequestEmailChangeMvcTests extends AbstractMvcTests {
 		
 		verify(unproxySpy(mailSender)).send(any());
 
-		AbstractUser<Long> updatedUser = getUnsecuredUserService().findById(getUnverifiedUser().getId()).get();
+		AbstractUser<Long> updatedUser = getUserService().findById(getUnverifiedUser().getId()).get();
 		Assertions.assertEquals(NEW_EMAIL, updatedUser.getNewEmail());
 		Assertions.assertEquals(UNVERIFIED_USER_EMAIL, updatedUser.getEmail());
 	}
@@ -61,7 +61,7 @@ public class RequestEmailChangeMvcTests extends AbstractMvcTests {
 				.content(JsonUtils.toJson(form())))
 				.andExpect(status().is(204));
 
-		AbstractUser<Long> updatedUser = getUnsecuredUserService().findById(getUnverifiedUser().getId()).get();
+		AbstractUser<Long> updatedUser = getUserService().findById(getUnverifiedUser().getId()).get();
 		Assertions.assertEquals(NEW_EMAIL, updatedUser.getNewEmail());
 	}	
 	
@@ -97,7 +97,7 @@ public class RequestEmailChangeMvcTests extends AbstractMvcTests {
 		
 		verify(unproxySpy(mailSender), never()).send(any());
 
-		AbstractUser<Long> updatedUser = getUnsecuredUserService().findById(getUnverifiedUser().getId()).get();
+		AbstractUser<Long> updatedUser = getUserService().findById(getUnverifiedUser().getId()).get();
 		Assertions.assertNull(updatedUser.getNewEmail());
 	}
 	

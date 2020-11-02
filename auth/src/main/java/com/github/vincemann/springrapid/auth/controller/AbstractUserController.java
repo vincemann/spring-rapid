@@ -16,7 +16,7 @@ import com.github.vincemann.springrapid.auth.service.token.BadTokenException;
 import com.github.vincemann.springrapid.auth.service.token.HttpTokenService;
 import com.github.vincemann.springrapid.auth.util.LemonMapUtils;
 import com.github.vincemann.springrapid.acl.proxy.Secured;
-import com.github.vincemann.springrapid.acl.proxy.Unsecured;
+
 import com.github.vincemann.springrapid.core.controller.GenericCrudController;
 import com.github.vincemann.springrapid.core.controller.dto.mapper.context.Direction;
 import com.github.vincemann.springrapid.core.controller.dto.mapper.context.DtoMappingContext;
@@ -67,7 +67,7 @@ public abstract class AbstractUserController<U extends AbstractUser<ID>, ID exte
 	public ResponseEntity<String> context(HttpServletRequest request,HttpServletResponse response) throws JsonProcessingException {
 
 		log.debug("Getting context ");
-		Map<String, Object> context = getService().getContext();
+		Map<String, Object> context = getUnsecuredService().getContext();
 		log.debug("Returning context: " + context);
 		return ok(getJsonMapper().writeValueAsString(context));
 	}
@@ -91,7 +91,7 @@ public abstract class AbstractUserController<U extends AbstractUser<ID>, ID exte
 		getDtoValidationStrategy().validate(signupDto);
 		log.debug("Signing up: " + signupDto);
 		U user = getDtoMapper().mapToEntity(signupDto, getEntityClass());
-		U saved = getService().signup(user);
+		U saved = getUnsecuredService().signup(user);
 		log.debug("Signed up: " + signupForm);
 
 		appendFreshTokenOf(saved,response);
@@ -109,7 +109,7 @@ public abstract class AbstractUserController<U extends AbstractUser<ID>, ID exte
 		ID id = fetchId(request);
 		log.debug("Resending verification mail for user with id " + id);
 		U user = fetchUser(id);
-		getService().resendVerificationMail(user);
+		getUnsecuredService().resendVerificationMail(user);
 		return okNoContent();
 	}
 
@@ -128,7 +128,7 @@ public abstract class AbstractUserController<U extends AbstractUser<ID>, ID exte
 
 		log.debug("Verifying user with id: " + id);
 		U user = fetchUser(id);
-		U saved = getService().verifyUser(user, code);
+		U saved = getUnsecuredService().verifyUser(user, code);
 
 		appendFreshToken(response);
 		Object dto = getDtoMapper().mapToDto(saved,
@@ -145,7 +145,7 @@ public abstract class AbstractUserController<U extends AbstractUser<ID>, ID exte
 	public ResponseEntity<?> forgotPassword(HttpServletRequest request,HttpServletResponse response/*@RequestParam String email*/) throws EntityNotFoundException, BadEntityException {
 		String email = readRequestParam(request, "email");
 		log.debug("Received forgot password request for: " + email);
-		getService().forgotPassword(email);
+		getUnsecuredService().forgotPassword(email);
 		return okNoContent();
 	}
 
@@ -163,7 +163,7 @@ public abstract class AbstractUserController<U extends AbstractUser<ID>, ID exte
 		getDtoValidationStrategy().validate(form);
 
 		log.debug("Resetting password ... ");
-		U saved = getService().resetPassword(form);
+		U saved = getUnsecuredService().resetPassword(form);
 		appendFreshToken(response);
 		Object dto = getDtoMapper().mapToDto(saved,
 				createDtoClass(getAuthProperties().getController().resetPasswordUrl, Direction.RESPONSE, saved));
@@ -179,7 +179,7 @@ public abstract class AbstractUserController<U extends AbstractUser<ID>, ID exte
 	public ResponseEntity<String> fetchByEmail(HttpServletRequest request,HttpServletResponse response/*,@RequestParam String email*/) throws JsonProcessingException, BadEntityException, EntityNotFoundException {
 		String email = readRequestParam(request, "email");
 		log.debug("Fetching user by email: " + email);
-		Optional<U> byEmail = getService().findByEmail(email);
+		Optional<U> byEmail = getUnsecuredService().findByEmail(email);
 		VerifyEntity.isPresent(byEmail,"User with email: "+email+" not found");
 		U user = byEmail.get();
 		Object responseDto = getDtoMapper().mapToDto(user,
@@ -203,7 +203,7 @@ public abstract class AbstractUserController<U extends AbstractUser<ID>, ID exte
 
 		log.debug("Changing password of user with id: " + id);
 		U user = fetchUser(id);
-		getService().changePassword(user, form);
+		getUnsecuredService().changePassword(user, form);
 		appendFreshToken(response);
 		return okNoContent();
 	}
@@ -222,7 +222,7 @@ public abstract class AbstractUserController<U extends AbstractUser<ID>, ID exte
 		getDtoValidationStrategy().validate(form);
 		log.debug("Requesting email change for user with " + id);
 		U user = fetchUser(id);
-		getService().requestEmailChange(user, form);
+		getUnsecuredService().requestEmailChange(user, form);
 		return okNoContent();
 	}
 
@@ -240,7 +240,7 @@ public abstract class AbstractUserController<U extends AbstractUser<ID>, ID exte
 		log.debug("Changing email of user with id: " + id);
 		String code = readRequestParam(request, "code");
 		U user = fetchUser(id);
-		U saved = getService().changeEmail(user, code);
+		U saved = getUnsecuredService().changeEmail(user, code);
 		appendFreshToken(response);
 		Object responseDto = getDtoMapper().mapToDto(saved,
 				createDtoClass(getAuthProperties().getController().changeEmailUrl, Direction.RESPONSE, saved));
@@ -263,10 +263,10 @@ public abstract class AbstractUserController<U extends AbstractUser<ID>, ID exte
 		String token;
 		if (email.isEmpty()){
 			// for logged in user
-			token = getService().createNewAuthToken();
+			token = getUnsecuredService().createNewAuthToken();
 		}else {
 			// for foreign user
-			token = getService().createNewAuthToken(email.get());
+			token = getUnsecuredService().createNewAuthToken(email.get());
 		}
 		// result = {token:asfsdfjsdjfnd}
 		return ok(
@@ -486,7 +486,7 @@ public abstract class AbstractUserController<U extends AbstractUser<ID>, ID exte
 	 * Adds an Authorization header to the response for certain user
 	 */
 	protected void appendFreshTokenOf(U user, HttpServletResponse response) {
-		String token = getService().createNewAuthToken(user.getEmail());
+		String token = getUnsecuredService().createNewAuthToken(user.getEmail());
 		httpTokenService.appendToken(token,response);
 //		response.addHeader(LecUtils.TOKEN_RESPONSE_HEADER_NAME, JwtService.TOKEN_PREFIX + token);
 	}
@@ -495,7 +495,7 @@ public abstract class AbstractUserController<U extends AbstractUser<ID>, ID exte
 	 * Adds an Authorization header to the response for logged in user
 	 */
 	protected void appendFreshToken(HttpServletResponse response){
-		String token = getService().createNewAuthToken();
+		String token = getUnsecuredService().createNewAuthToken();
 		httpTokenService.appendToken(token,response);
 	}
 
@@ -525,23 +525,18 @@ public abstract class AbstractUserController<U extends AbstractUser<ID>, ID exte
 	}
 
 	@Autowired
-	@Unsecured
-	public void injectUnsecuredService(S unsecuredService) {
-		this.unsecuredUserService = unsecuredService;
+	public void injectUnsecuredService(S Service) {
+		this.unsecuredUserService = Service;
 	}
 
 	@Autowired
-	public void injectLemonProperties(AuthProperties authProperties) {
+	public void injectAuthProperties(AuthProperties authProperties) {
 		this.authProperties = authProperties;
 	}
 
-	public S getUnsecuredUserService() {
-		return (S) unsecuredUserService;
-	}
 
-	@Override
-	public S getService() {
-		return (S) super.getService();
+	public S getUnsecuredService() {
+		return (S) unsecuredUserService;
 	}
 
 	@Autowired

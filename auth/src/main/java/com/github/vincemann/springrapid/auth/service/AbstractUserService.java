@@ -9,7 +9,7 @@ import com.github.vincemann.springrapid.auth.service.token.BadTokenException;
 import com.github.vincemann.springrapid.auth.service.token.EmailJwtService;
 
 import com.github.vincemann.springlemon.exceptions.util.Validate;
-import com.github.vincemann.springrapid.acl.proxy.Unsecured;
+
 import com.github.vincemann.springrapid.auth.util.JwtUtils;
 import com.github.vincemann.springrapid.auth.util.LemonMapUtils;
 import com.github.vincemann.springrapid.auth.util.TransactionalUtils;
@@ -69,7 +69,7 @@ public abstract class AbstractUserService
     private AuthProperties properties;
     private MailSender<MailData> mailSender;
     private EmailJwtService emailTokenService;
-    private UserService<U, ID> unsecuredUserService;
+    private UserService<U, ID> userService;
 
     /**
      * Creates a new user object. Must be overridden in the
@@ -113,7 +113,7 @@ public abstract class AbstractUserService
         //admins get created with createAdminMethod
         user.setPassword(passwordEncoder.encode(user.getPassword()));
         user.setRoles(Sets.newHashSet(AuthRoles.USER));
-        U saved = unsecuredUserService.save(user);
+        U saved = userService.save(user);
         makeUnverified(saved);
 
         log.debug("saved and send verification mail for unverified new user: " + saved);
@@ -199,7 +199,7 @@ public abstract class AbstractUserService
     protected U verifyUser(U user) throws BadEntityException, EntityNotFoundException {
         user.getRoles().remove(AuthRoles.UNVERIFIED);
         user.setCredentialsUpdatedMillis(System.currentTimeMillis());
-        U saved = unsecuredUserService.update(user);
+        U saved = userService.update(user);
         log.debug("Verified user: " + saved);
         return saved;
     }
@@ -211,7 +211,7 @@ public abstract class AbstractUserService
     @Transactional(propagation = Propagation.REQUIRED, readOnly = false)
     public void forgotPassword(String email) throws EntityNotFoundException {
         // fetch the user record from database
-        Optional<U> byEmail = unsecuredUserService.findByEmail(email);
+        Optional<U> byEmail = userService.findByEmail(email);
         VerifyEntity.isPresent(byEmail, "User with email: " + email + " not found");
         U user = byEmail.get();
         sendForgotPasswordMail(user);
@@ -231,7 +231,7 @@ public abstract class AbstractUserService
         String email = claims.getSubject();
 
         // fetch the user
-        Optional<U> byEmail = unsecuredUserService.findByEmail(email);
+        Optional<U> byEmail = userService.findByEmail(email);
         VerifyEntity.isPresent(byEmail, "User with email: " + email + " not found");
         U user = byEmail.get();
         JwtUtils.ensureCredentialsUpToDate(claims, user);
@@ -243,7 +243,7 @@ public abstract class AbstractUserService
 
         U saved = null;
         try {
-            saved = unsecuredUserService.update(user);
+            saved = userService.update(user);
         } catch (BadEntityException e) {
             throw new RuntimeException("Could not reset users password", e);
         }
@@ -254,7 +254,7 @@ public abstract class AbstractUserService
     @Transactional(propagation = Propagation.REQUIRED, readOnly = false)
     @Override
     public U update(U update, Boolean full) throws EntityNotFoundException, BadEntityException, BadEntityException {
-        Optional<U> old = unsecuredUserService.findById(update.getId());
+        Optional<U> old = userService.findById(update.getId());
         VerifyEntity.isPresent(old, "Entity to update with id: " + update.getId() + " not found");
         //update roles works in transaction -> changes are applied on the fly
         updateRoles(old.get(), update);
@@ -280,7 +280,7 @@ public abstract class AbstractUserService
         user.setPassword(passwordEncoder.encode(changePasswordForm.getPassword()));
         user.setCredentialsUpdatedMillis(System.currentTimeMillis());
         try {
-            unsecuredUserService.update(user);
+            userService.update(user);
         } catch (BadEntityException e) {
             throw new RuntimeException("Could not change users password", e);
         }
@@ -318,7 +318,7 @@ public abstract class AbstractUserService
     public void requestEmailChange(U user, /*@Valid*/ RequestEmailChangeForm emailChangeForm) throws EntityNotFoundException {
 //        log.debug("Requesting email change for user" + user);
         // checks
-//        Optional<U> byId = getUnsecuredUserService().findById(userId);
+//        Optional<U> byId = getUserService().findById(userId);
 //        LexUtils.ensureFound(byId);
 //        U user = byId.get();
         VerifyEntity.isPresent(user, "User not found");
@@ -332,7 +332,7 @@ public abstract class AbstractUserService
         user.setNewEmail(emailChangeForm.getNewEmail());
         //user.setChangeEmailCode(LemonValidationUtils.uid());
         try {
-            U saved = unsecuredUserService.update(user);
+            U saved = userService.update(user);
             // after successful commit, mails a link to the user
             TransactionalUtils.afterCommit(() -> mailChangeEmailLink(saved));
         } catch (BadEntityException e) {
@@ -413,7 +413,7 @@ public abstract class AbstractUserService
 
         // Ensure that the email would be unique
         Validate.condition(
-                !unsecuredUserService.findByEmail(user.getNewEmail()).isPresent(),
+                !userService.findByEmail(user.getNewEmail()).isPresent(),
                 "com.naturalprogrammer.spring.duplicate.email").go();
 
         // update the fields
@@ -427,7 +427,7 @@ public abstract class AbstractUserService
             user.getRoles().remove(AuthRoles.UNVERIFIED);
 
         try {
-            return unsecuredUserService.update(user);
+            return userService.update(user);
         } catch (BadEntityException e) {
             throw new RuntimeException("Could not update users email", e);
         }
@@ -459,7 +459,7 @@ public abstract class AbstractUserService
         user.setEmail(admin.getEmail());
         user.setPassword(admin.getPassword());
         user.getRoles().add(AuthRoles.ADMIN);
-        U saved = unsecuredUserService.save(user);
+        U saved = userService.save(user);
         log.debug("admin saved.");
         return saved;
     }
@@ -571,8 +571,8 @@ public abstract class AbstractUserService
         return emailTokenService;
     }
 
-    protected UserService<U, ID> getUnsecuredUserService() {
-        return unsecuredUserService;
+    protected UserService<U, ID> getUserService() {
+        return userService;
     }
 
     @Autowired
@@ -607,10 +607,10 @@ public abstract class AbstractUserService
     }
 
     @Autowired
-    @Unsecured
+
     @Lazy
-    public void injectUnsecuredUserService(UserService<U, ID> unsecuredUserService) {
-        this.unsecuredUserService = unsecuredUserService;
+    public void injectUserService(UserService<U, ID> userService) {
+        this.userService = userService;
     }
 
     @Autowired

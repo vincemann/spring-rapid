@@ -4,7 +4,7 @@ import com.github.vincemann.springrapid.auth.domain.AbstractUser;
 import com.github.vincemann.springrapid.auth.domain.RapidAuthAuthenticatedPrincipal;
 import com.github.vincemann.springrapid.auth.service.UserService;
 import com.github.vincemann.springrapid.auth.util.LemonMapUtils;
-import com.github.vincemann.springrapid.acl.proxy.Unsecured;
+
 import com.github.vincemann.springrapid.core.service.exception.EntityNotFoundException;
 import com.github.vincemann.springrapid.core.util.VerifyEntity;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,7 +22,7 @@ import java.util.Optional;
 public class RapidJwtClaimsPrincipalConverter
             implements JwtClaimsPrincipalConverter<RapidAuthAuthenticatedPrincipal> {
 
-    private UserService unsecuredUserService;
+    private UserService userService;
 
 
     @Override
@@ -37,7 +37,7 @@ public class RapidJwtClaimsPrincipalConverter
         if (email == null)
             throw new AuthenticationCredentialsNotFoundException("email claim of claims-set not found");
         try {
-            Optional<AbstractUser<?>> byEmail = unsecuredUserService.findByEmail(email);
+            Optional<AbstractUser<?>> byEmail = userService.findByEmail(email);
             VerifyEntity.isPresent(byEmail,"User with email: "+email+" not found");
             AbstractUser<?> user = byEmail.get();
             return new RapidAuthAuthenticatedPrincipal(user);
@@ -47,9 +47,9 @@ public class RapidJwtClaimsPrincipalConverter
     }
 
     @Lazy
-    @Unsecured
+
     @Autowired
-    public void injectUnsecuredUserService(UserService userService) {
-        this.unsecuredUserService = userService;
+    public void injectUserService(UserService userService) {
+        this.userService = userService;
     }
 }

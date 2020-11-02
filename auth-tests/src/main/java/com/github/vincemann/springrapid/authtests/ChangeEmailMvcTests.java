@@ -32,10 +32,10 @@ public class ChangeEmailMvcTests extends AbstractMvcTests {
 		createTestUsers();
 		System.err.println("test users created");
 
-		AbstractUser<Long> user = getUnsecuredUserService().findById(getUnverifiedUser().getId()).get();
+		AbstractUser<Long> user = getUserService().findById(getUnverifiedUser().getId()).get();
 		user.setNewEmail(NEW_EMAIL);
 
-		getUnsecuredUserService().update(user);
+		getUserService().update(user);
 
 		System.err.println("logging in test users");
 		loginTestUsers();
@@ -66,7 +66,7 @@ public class ChangeEmailMvcTests extends AbstractMvcTests {
 				.andExpect(header().string(HttpHeaders.AUTHORIZATION, containsString(".")))
 				.andExpect(jsonPath("$.id").value(getUnverifiedUser().getId()));
 		
-		AbstractUser<Long> updatedUser = getUnsecuredUserService().findById(getUnverifiedUser().getId()).get();
+		AbstractUser<Long> updatedUser = getUserService().findById(getUnverifiedUser().getId()).get();
 		Assertions.assertNull(updatedUser.getNewEmail());
 		Assertions.assertEquals(NEW_EMAIL, updatedUser.getEmail());
 		
@@ -141,9 +141,9 @@ public class ChangeEmailMvcTests extends AbstractMvcTests {
 
 		// credentials updated after the request for email change was made
 //		Thread.sleep(1L);
-		AbstractUser<Long> user = getUnsecuredUserService().findById(getUnverifiedUser().getId()).get();
+		AbstractUser<Long> user = getUserService().findById(getUnverifiedUser().getId()).get();
 		user.setCredentialsUpdatedMillis(System.currentTimeMillis());
-		getUnsecuredUserService().update(user);
+		getUserService().update(user);
 
 		Thread.sleep(1L);
 
@@ -182,9 +182,9 @@ public class ChangeEmailMvcTests extends AbstractMvcTests {
 	public void testChangeEmailNonUniqueEmail() throws Exception {
 		
 		// Some other user changed to the same email
-		AbstractUser<Long> user = getUnsecuredUserService().findById(getAdmin().getId()).get();
+		AbstractUser<Long> user = getUserService().findById(getAdmin().getId()).get();
 		user.setEmail(NEW_EMAIL);
-		getUnsecuredUserService().update(user);
+		getUserService().update(user);
 		
 		mvc.perform(post(authProperties.getController().getChangeEmailUrl(), getUnverifiedUser().getId())
                 .param("code", changeEmailCode)

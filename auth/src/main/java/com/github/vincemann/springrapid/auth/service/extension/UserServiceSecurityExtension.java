@@ -35,7 +35,7 @@ public class UserServiceSecurityExtension
             implements UserServiceExtension<UserService> {
 
 
-    private UserService unsecuredUserService;
+    private UserService userService;
     private RapidAuthSecurityContextChecker securityContextChecker;
 
     @Override
@@ -54,7 +54,7 @@ public class UserServiceSecurityExtension
     @Override
     public AbstractUser update(AbstractUser update, Boolean full) throws EntityNotFoundException, BadEntityException {
         getSecurityChecker().checkPermission(update.getId(), getLast().getEntityClass(), getWritePermission());
-        Optional<AbstractUser<Serializable>> oldUserOp = unsecuredUserService.findById(update.getId());
+        Optional<AbstractUser<Serializable>> oldUserOp = userService.findById(update.getId());
         VerifyEntity.isPresent(oldUserOp, update.getId(), update.getClass());
         AbstractUser oldUser = oldUserOp.get();
         RapidSecurityContextChecker.checkAuthenticated();
@@ -84,7 +84,7 @@ public class UserServiceSecurityExtension
     @Override
     public void forgotPassword(String email) throws EntityNotFoundException {
         //check if write permission over user
-        Optional<AbstractUser> byEmail = unsecuredUserService.findByEmail(email);
+        Optional<AbstractUser> byEmail = userService.findByEmail(email);
         VerifyEntity.isPresent(byEmail,"User with email: "+email+" not found");
         AbstractUser user = byEmail.get();
         getSecurityChecker().checkPermission(user.getId(), getLast().getEntityClass(), getWritePermission());
@@ -127,8 +127,8 @@ public class UserServiceSecurityExtension
 
 
     @Autowired
-    public void injectUnsecuredUserService(UserService unsecuredUserService) {
-        this.unsecuredUserService = unsecuredUserService;
+    public void injectUserService(UserService userService) {
+        this.userService = userService;
     }
 
     @Autowired

@@ -2,7 +2,7 @@ package com.github.vincemann.springrapid.auth.handler;
 
 import com.github.vincemann.springrapid.auth.service.UserService;
 import com.github.vincemann.springrapid.auth.service.token.HttpTokenService;
-import com.github.vincemann.springrapid.acl.proxy.Unsecured;
+
 import com.github.vincemann.springrapid.core.CoreProperties;
 import com.github.vincemann.springrapid.core.security.RapidSecurityContext;
 import lombok.extern.slf4j.Slf4j;
@@ -28,7 +28,7 @@ public class RapidAuthenticationSuccessHandler
 	extends SimpleUrlAuthenticationSuccessHandler {
 	
 
-    private UserService<?, ?> unsecuredUserService;
+    private UserService<?, ?> UserService;
     private HttpTokenService httpTokenService;
 	private CoreProperties properties;
 	
@@ -40,7 +40,7 @@ public class RapidAuthenticationSuccessHandler
 		// the statements below are introduced
     	response.setStatus(HttpServletResponse.SC_OK);
     	response.setContentType(properties.controller.mediaType);
-		String token = unsecuredUserService.createNewAuthToken();
+		String token = UserService.createNewAuthToken();
 		httpTokenService.appendToken(token,response);
 
 //    	// write current-user data to the response
@@ -59,9 +59,9 @@ public class RapidAuthenticationSuccessHandler
 	}
 
 	@Autowired
-	@Unsecured
-	public void injectUnsecuredUserService(UserService<?, ?> userService) {
-		this.unsecuredUserService = userService;
+
+	public void injectUserService(UserService<?, ?> userService) {
+		this.UserService = userService;
 	}
 	
 	@Autowired
