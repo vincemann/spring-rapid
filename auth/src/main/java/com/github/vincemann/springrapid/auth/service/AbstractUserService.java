@@ -113,8 +113,8 @@ public abstract class AbstractUserService
         //admins get created with createAdminMethod
         user.setPassword(passwordEncoder.encode(user.getPassword()));
         user.setRoles(Sets.newHashSet(AuthRoles.USER));
-        makeUnverified(user);
         U saved = unsecuredUserService.save(user);
+        makeUnverified(saved);
 
         log.debug("saved and send verification mail for unverified new user: " + saved);
         //logout anon and login user, it is expected that signed up user is logged in after this method is called
@@ -468,7 +468,7 @@ public abstract class AbstractUserService
      * Sends verification mail to a unverified user.
      */
     protected void sendVerificationMail(final U user) {
-        try {
+//        try {
 
             log.debug("Sending verification mail to: " + user);
 
@@ -487,11 +487,11 @@ public abstract class AbstractUserService
             sendVerificationMail(user, verifyLink);
 
             log.debug("Verification mail to " + user.getEmail() + " queued.");
-
-        } catch (Throwable e) {
-            // In case of exception, just log the error and keep silent
-            log.error(ExceptionUtils.getStackTrace(e));
-        }
+//
+//        } catch (Throwable e) {
+//            // In case of exception, just log the error and keep silent
+//            log.error(ExceptionUtils.getStackTrace(e));
+//        }
     }
 
     /**
