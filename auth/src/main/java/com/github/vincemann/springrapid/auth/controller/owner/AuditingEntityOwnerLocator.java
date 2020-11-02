@@ -4,7 +4,7 @@ import com.github.vincemann.springrapid.auth.domain.AbstractUser;
 import com.github.vincemann.springrapid.auth.domain.AuditingEntity;
 import com.github.vincemann.springrapid.auth.service.UserService;
 
-import com.github.vincemann.springrapid.acl.proxy.Unsecured;
+
 import com.github.vincemann.springrapid.core.controller.owner.OwnerLocator;
 import com.github.vincemann.springrapid.core.service.exception.BadEntityException;
 import lombok.extern.slf4j.Slf4j;
@@ -15,7 +15,7 @@ import java.util.Optional;
 @Slf4j
 public class AuditingEntityOwnerLocator implements OwnerLocator<AuditingEntity> {
 
-    private UserService unsecuredUserService;
+    private UserService userService;
 
     @Override
     public boolean supports(Class clazz) {
@@ -29,7 +29,7 @@ public class AuditingEntityOwnerLocator implements OwnerLocator<AuditingEntity> 
             if (entity.getCreatedById()==null){
                 return Optional.empty();
             }
-            Optional<AbstractUser> byId = unsecuredUserService.findById(entity.getCreatedById());
+            Optional<AbstractUser> byId = userService.findById(entity.getCreatedById());
             return byId.map(AbstractUser::getEmail);
         } catch (BadEntityException e) {
             log.warn("Could not find Owner by createdById",e);
@@ -38,8 +38,8 @@ public class AuditingEntityOwnerLocator implements OwnerLocator<AuditingEntity> 
     }
 
     @Autowired
-    @Unsecured
-    public void injectUnsecuredUserService(UserService userService) {
-        this.unsecuredUserService = userService;
+
+    public void injectUserService(UserService userService) {
+        this.userService = userService;
     }
 }

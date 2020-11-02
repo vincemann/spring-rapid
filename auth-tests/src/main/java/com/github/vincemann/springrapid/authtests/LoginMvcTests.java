@@ -62,9 +62,9 @@ public class LoginMvcTests extends AbstractMvcTests {
 		
 		// credentials updated
 		// Thread.sleep(1001L);		
-		AbstractUser<Long> user = getUnsecuredUserService().findById(getAdmin().getId()).get();
+		AbstractUser<Long> user = getUserService().findById(getAdmin().getId()).get();
 		user.setCredentialsUpdatedMillis(System.currentTimeMillis());
-		getUnsecuredUserService().save(user);
+		getUserService().save(user);
 		Thread.sleep(300);
 
 		mvc.perform(get(authProperties.getController().getPingUrl())

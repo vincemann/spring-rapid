@@ -301,7 +301,7 @@ public class AutoMockServiceBeansGenericAnnotationWebConfigContextLoader extends
      * @see DefaultListableBeanFactory#setAllowBeanDefinitionOverriding
      * @see DefaultListableBeanFactory#setAllowEagerClassLoading
      * @see DefaultListableBeanFactory#setAllowCircularReferences
-     * @see DefaultListableBeanFactory#setAllowRawInjectionDespiteWrapping
+     * @see DefaultListableBeanFactory#setAllowInjectionDespiteWrapping
      */
     protected void customizeBeanFactory(
             DefaultListableBeanFactory beanFactory, WebMergedContextConfiguration webMergedConfig) {

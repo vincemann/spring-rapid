@@ -80,7 +80,7 @@ public class SignupMvcTests extends AbstractMvcTests {
 		verify(unproxySpy(mailSender)).send(any());
 
 		// Ensure that password got encrypted
-		Assertions.assertNotEquals(signupForm.getPassword(), getUnsecuredUserService().findByEmail(signupForm.getEmail()).get().getPassword());
+		Assertions.assertNotEquals(signupForm.getPassword(), getUserService().findByEmail(signupForm.getEmail()).get().getPassword());
 	}
 	
 	@Test
@@ -89,7 +89,7 @@ public class SignupMvcTests extends AbstractMvcTests {
 //		MySignupForm signupForm = new MySignupForm("user@example.com", "user123", "User");
 		SignupForm signupForm = createValidSignupForm();
 		String duplicateEmail = signupForm.getEmail();
-		getUnsecuredUserService().save(testAdapter.createTestUser(duplicateEmail,"user1234", AuthRoles.USER));
+		getUserService().save(testAdapter.createTestUser(duplicateEmail,"user1234", AuthRoles.USER));
 
 		mvc.perform(post(authProperties.getController().getSignupUrl())
 				.contentType(MediaType.APPLICATION_JSON)

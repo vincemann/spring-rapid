@@ -56,8 +56,8 @@ class OwnerServiceIntegrationTest
     PetTypeService petTypeService;
 
     @BeforeEach
-    public void setUp() throws Exception {
-        super.setup();
+    public void setupTestData() throws Exception {
+//        super.setup();
         savedDogPetType = petTypeService.save(new PetType("Dog"));
 
         testPet = Pet.builder()

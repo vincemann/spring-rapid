@@ -54,7 +54,7 @@ public abstract class AutoMockMvcControllerTest extends InitializingTest {
     private CoreProperties coreProperties;
 
     @BeforeEach
-    public void setupMvc(WebApplicationContext wac) {
+    protected void setupMvc(WebApplicationContext wac) {
         this.contentType = MediaType.valueOf(coreProperties.getController().getMediaType());
         mockMvcBuilder = MockMvcBuilders.webAppContextSetup(wac)
                 //user has to check himself if he wants to

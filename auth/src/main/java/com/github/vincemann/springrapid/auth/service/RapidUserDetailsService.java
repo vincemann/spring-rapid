@@ -6,7 +6,7 @@ import com.github.vincemann.springrapid.auth.domain.AbstractUser;
 import com.github.vincemann.springrapid.auth.security.AuthenticatedPrincipalFactory;
 
 
-import com.github.vincemann.springrapid.acl.proxy.Unsecured;
+
 import com.github.vincemann.springrapid.core.security.RapidAuthenticatedPrincipal;
 import com.github.vincemann.springrapid.core.service.exception.EntityNotFoundException;
 import com.github.vincemann.springrapid.core.slicing.components.ServiceComponent;
@@ -29,7 +29,7 @@ import java.util.Optional;
 public class RapidUserDetailsService
 		implements UserDetailsService, AopLoggable {
 
-	private UserService unsecuredUserService;
+	private UserService userService;
 	//keep it typeless...
 	private AuthenticatedPrincipalFactory authenticatedPrincipalFactory;
 
@@ -39,7 +39,7 @@ public class RapidUserDetailsService
 	public RapidAuthenticatedPrincipal loadUserByUsername(String email) throws UsernameNotFoundException {
 		AbstractUser<?> user;
 		try {
-			Optional<AbstractUser<?>> byEmail = unsecuredUserService.findByEmail(email);
+			Optional<AbstractUser<?>> byEmail = userService.findByEmail(email);
 			VerifyEntity.isPresent(byEmail,"User with email: "+email+" not found");
 			user = byEmail.get();
 		} catch (EntityNotFoundException e) {
@@ -60,8 +60,8 @@ public class RapidUserDetailsService
 
 
 	@Autowired
-	@Unsecured
-	public void injectUnsecuredUserService(UserService unsecuredUserService) {
-		this.unsecuredUserService = unsecuredUserService;
+
+	public void injectUserService(UserService userService) {
+		this.userService = userService;
 	}
 }

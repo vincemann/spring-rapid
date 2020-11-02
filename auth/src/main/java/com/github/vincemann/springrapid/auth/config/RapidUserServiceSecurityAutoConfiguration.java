@@ -49,7 +49,7 @@ public class RapidUserServiceSecurityAutoConfiguration {
     @Bean
     @ConditionalOnMissingBean(AclUserServiceExtension.class)
     @Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
-    public AclUserServiceExtension lemonAclExtension() {
+    public AclUserServiceExtension aclUserServiceExtension() {
         return new AclUserServiceExtension();
     }
 
@@ -57,12 +57,12 @@ public class RapidUserServiceSecurityAutoConfiguration {
     @ConditionalOnMissingBean(name = "aclManagingUserService")
     @Bean
     @AclManaging
-    public UserService<?, ?> aclManagingUserService(@Unsecured UserService<?, ?> service,
+    public UserService<?, ?> aclManagingUserService( UserService<?, ?> service,
 //                                                                            AdminFullAccessAclExtension adminFullAccess,
 //                                                                            AuthenticatedFullAccessAclExtension authenticatedFullAccessAclExtension,
                                                         CleanUpAclServiceExtension cleanUpAclExtension) {
         return new ServiceExtensionProxyBuilder<>(service)
-                .addExtensions(lemonAclExtension(), cleanUpAclExtension)
+                .addExtensions(aclUserServiceExtension(), cleanUpAclExtension)
                 .build();
     }
 

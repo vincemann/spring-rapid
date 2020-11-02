@@ -90,8 +90,8 @@ class CrudControllerIntegrationTest
     Class writeDtoClass = ExampleWriteDto.class;
 
     @BeforeEach
-    void setUp() throws Exception {
-        super.setup();
+    protected void setupIds() throws Exception {
+//        super.setup();
         returnEntity.setId(entityId);
         returnDto.setId(entityId);
 

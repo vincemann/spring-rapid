@@ -7,7 +7,7 @@ import com.github.vincemann.springrapid.auth.domain.RapidAuthAuthenticatedPrinci
 public class RapidAuthenticatedPrincipalFactory<U extends AbstractUser<?>>
         implements AuthenticatedPrincipalFactory<RapidAuthAuthenticatedPrincipal, U> {
 
-//    private UserService<U,?> unsecuredUserService;
+//    private UserService<U,?> userService;
 
 
     @Override
@@ -17,13 +17,13 @@ public class RapidAuthenticatedPrincipalFactory<U extends AbstractUser<?>>
 
 //    @Override
 //    public U toUser(LemonAuthenticatedPrincipal principal) throws EntityNotFoundException {
-//        return unsecuredUserService.findByEmail(principal.getEmail());
+//        return userService.findByEmail(principal.getEmail());
 //    }
 //
 //    @Lazy
-//    @Unsecured
+//
 //    @Autowired
-//    public void injectUnsecuredUserService(UserService<U,?> userService) {
-//        this.unsecuredUserService = userService;
+//    public void injectUserService(UserService<U,?> userService) {
+//        this.userService = userService;
 //    }
 }
