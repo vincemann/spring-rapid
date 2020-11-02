@@ -20,7 +20,11 @@ public abstract class InitializingTest {
     private boolean init = false;
 
     @BeforeEach
-    public void setup() throws Exception {
+    protected void callInitializables() throws Exception {
+        runInitializables();
+    }
+
+    protected void runInitializables(){
         if (!init) {
             ReflectionUtils.doWithFields(this.getClass(), field -> {
                 ReflectionUtils.makeAccessible(field);

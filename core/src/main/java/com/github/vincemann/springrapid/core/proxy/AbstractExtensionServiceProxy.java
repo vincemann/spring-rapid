@@ -39,9 +39,13 @@ public abstract class AbstractExtensionServiceProxy
     private List<MethodIdentifier> learnedIgnoredMethods = new ArrayList<>();
     private S proxied;
     private List<AbstractServiceExtension<?, ? super P>> extensions = new ArrayList<>();
-    private ConcurrentHashMap<MethodIdentifier, List<ExtensionChainLink>> method_extensionChain_map = new ConcurrentHashMap<>();
-    private ConcurrentHashMap<StateExtension, Object> state_next_map = new ConcurrentHashMap<>();
     private ConcurrentHashMap<Thread, St> thead_state_map = new ConcurrentHashMap<>();
+    //caches
+    private ConcurrentHashMap<ExtensionState, Object> next_cache = new ConcurrentHashMap<>();
+    private ConcurrentHashMap<MethodIdentifier, List<ExtensionHandle>> extensionChainCache = new ConcurrentHashMap<>();
+
+
+
 
     public AbstractExtensionServiceProxy(S proxied, AbstractServiceExtension<?, ? super P>... extensions) {
         for (Method method : proxied.getClass().getMethods()) {
@@ -94,7 +98,7 @@ public abstract class AbstractExtensionServiceProxy
         if (isIgnored(method)) {
             return invokeProxied(method, args);
         } else {
-            //trying to figure out target class -> dont even ask extensions, go straight to proxied (one step closer to target)
+            //trying to figure out target class -> dont even ask extensions, go straight to final proxied
             if (isGetTargetClassMethod(method)){
                 return invokeProxied(method, args);
             }
@@ -103,9 +107,9 @@ public abstract class AbstractExtensionServiceProxy
                     args = new Object[]{};
                 }
 
-                List<ExtensionChainLink> extensionChain = createExtensionChain(method);
+                List<ExtensionHandle> extensionChain = createExtensionChain(method);
                 if (!extensionChain.isEmpty()) {
-                    thead_state_map.put(Thread.currentThread(), createState(o, method, args));
+                    setState(createState(o, method, args));
                     return extensionChain.get(0).invoke(args);
                 } else {
                     learnedIgnoredMethods.add(new MethodIdentifier(method));
@@ -142,14 +146,16 @@ public abstract class AbstractExtensionServiceProxy
 
     @Override
     public Object getNext(AbstractServiceExtension extension) {
-        State state = thead_state_map.get(Thread.currentThread());
-        StateExtension stateExtension = new StateExtension(state, extension);
-        Object cached = state_next_map.get(stateExtension);
+        State state = getState();
+        //is next object cached?
+        ExtensionState extensionState = new ExtensionState(state, extension);
+        Object cached = next_cache.get(extensionState);
         if (cached != null) {
             return cached;
         }
-        List<ExtensionChainLink> extensionChain = method_extensionChain_map.get(state.getMethodIdentifier());
-        Optional<ExtensionChainLink> link = extensionChain.stream()
+        //get extension chain by method
+        List<ExtensionHandle> extensionChain = extensionChainCache.get(state.getMethodIdentifier());
+        Optional<ExtensionHandle> link = extensionChain.stream()
                 .filter(e -> ProxyUtils.isEqual(e.getExtension(), (extension)))
                 .findFirst();
         if (link.isEmpty()) {
@@ -172,13 +178,14 @@ public abstract class AbstractExtensionServiceProxy
             //this cast is also safe
             result = createProxiedExtension(extensionChain.get(nextIndex).getExtension());
         }
-        state_next_map.put(stateExtension, result);
+        next_cache.put(extensionState, result);
 
         return result;
     }
 
-    //simply delegates all calls to extension -> used so casting to ServiceType in Extensions work
-    //it is made sure the extension always has the method in question, so the cast is safe as long as only the callee method is called
+    // wraps extension with proxy that has proxied class (i.E. UserService)
+    // the proxy simply delegates all calls to extension -> used so casting to ServiceType in Extensions work
+    // it is made sure the extension always has the method in question, so the cast is safe as long as only the callee method is called
     private Object createProxiedExtension(Object extension) {
         Class<?> proxiedClass = AopUtils.getTargetClass(proxied);
         return Proxy.newProxyInstance(
@@ -200,25 +207,30 @@ public abstract class AbstractExtensionServiceProxy
                 });
     }
 
-    protected List<ExtensionChainLink> createExtensionChain(Method method) {
+    /**
+     * Each method of Proxy has Extension Chain that consists of all Proxy's Extensions, that also define this method.
+     * @param method
+     * @return
+     */
+    protected List<ExtensionHandle> createExtensionChain(Method method) {
         MethodIdentifier methodIdentifier = new MethodIdentifier(method);
         //first look in cache
-        List<ExtensionChainLink> extensionChain = method_extensionChain_map.get(methodIdentifier);
+        List<ExtensionHandle> extensionChain = extensionChainCache.get(methodIdentifier);
         if (extensionChain == null) {
             //start from end of extensions for start and identify all extensions having the requested method
             //all matching methods together form a chain
             //each link of the chain also saves its declared method
-            Map.Entry<MethodIdentifier, List<ExtensionChainLink>> method_chain_entry = new HashMap.SimpleEntry<>(methodIdentifier, new ArrayList<>());
+            Map.Entry<MethodIdentifier, List<ExtensionHandle>> method_chain_entry = new HashMap.SimpleEntry<>(methodIdentifier, new ArrayList<>());
             for (int i = 0; i < extensions.size(); i++) {
                 AbstractServiceExtension<?, ? super P> extension = extensions.get(i);
                 try {
                     Method extensionsMethod = MethodUtils.findMethod(extension.getClass(), method.getName(), method.getParameterTypes());
-                    method_chain_entry.getValue().add(new ExtensionChainLink(extension, extensionsMethod));
+                    method_chain_entry.getValue().add(new ExtensionHandle(extension, extensionsMethod));
                 } catch (NoSuchMethodException e) {
                 }
             }
-            method_extensionChain_map.entrySet().add(method_chain_entry);
-            extensionChain = method_extensionChain_map.get(methodIdentifier);
+            extensionChainCache.entrySet().add(method_chain_entry);
+            extensionChain = extensionChainCache.get(methodIdentifier);
         }
         return extensionChain;
     }
@@ -228,6 +240,10 @@ public abstract class AbstractExtensionServiceProxy
                 || getLearnedIgnoredMethods().contains(new MethodIdentifier(method));
     }
 
+    /**
+     * Saved state persisting during method call of proxy.
+     * Is reset after method call on proxy ( = all Extensions and proxied) are called.
+     */
     @EqualsAndHashCode
     protected static class State {
         @Getter
@@ -247,25 +263,6 @@ public abstract class AbstractExtensionServiceProxy
 //        }
     }
 
-    @AllArgsConstructor
-    @EqualsAndHashCode
-    private static class StateExtension {
-        private State state;
-        private AbstractServiceExtension extension;
-    }
-
-
-//    private <T> T createNoopProxy(){
-//        return (T) Proxy.newProxyInstance(
-//                proxied.getClass().getClassLoader(),
-//                ClassUtils.getAllInterfaces(proxied.getClass()).toArray(new Class[0]),
-//                new InvocationHandler() {
-//                    @Override
-//                    public Object invoke(Object o, Method method, Object[] objects) throws Throwable {
-//                        return null;
-//                    }
-//                }))
-//    }
 
     @AllArgsConstructor
     @Getter
@@ -282,11 +279,11 @@ public abstract class AbstractExtensionServiceProxy
 
     }
 
-    //link of a chain
+    // contains extension + method
     @AllArgsConstructor
     @Getter
     @ToString
-    protected class ExtensionChainLink {
+    protected class ExtensionHandle {
         AbstractServiceExtension<?, ? super P> extension;
         Method method;
 
@@ -298,5 +295,13 @@ public abstract class AbstractExtensionServiceProxy
             }
 
         }
+    }
+
+    // only used for caching
+    @AllArgsConstructor
+    @EqualsAndHashCode
+    private static class ExtensionState {
+        private State state;
+        private AbstractServiceExtension extension;
     }
 }

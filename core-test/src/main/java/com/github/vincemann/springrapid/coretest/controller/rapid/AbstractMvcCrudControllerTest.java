@@ -47,8 +47,7 @@ public abstract class AbstractMvcCrudControllerTest<C extends GenericCrudControl
 
 
     @BeforeEach
-    public void setup() throws Exception{
-        super.setup();
+    protected void setupDtoMappingContext() throws Exception{
         //user might want to inject own beans that are diff from controllers beans -> null checks
         if(dtoMappingContext ==null) {
             dtoMappingContext = getController().getDtoMappingContext();
