@@ -13,7 +13,7 @@ import java.util.*;
  */
 @Slf4j
 @Getter
-@ToString
+//@ToString
 public class DtoMappingContext{
     private Map<DtoRequestInfo, Class<?>> mappingEntries = new HashMap<>();
 
