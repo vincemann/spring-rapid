@@ -36,7 +36,7 @@ public class AclUserServiceExtension
     @Override
     public AbstractUser signup(AbstractUser user) throws BadEntityException {
         AbstractUser saved = getNext().signup(user);
-        savePostSignupAclInfo(user);
+        savePostSignupAclInfo(saved);
         return saved;
     }
 

@@ -26,6 +26,7 @@ public class ChangeEmailMvcTests extends AbstractMvcTests {
 
 	@BeforeEach
 	public void setup() throws Exception {
+		runInitializables();
 		configureMvc();
 		System.err.println("creating test users");
 		createTestUsers();
@@ -155,7 +156,7 @@ public class ChangeEmailMvcTests extends AbstractMvcTests {
 				.param("id",getUnverifiedUser().getId().toString())
 				.header(HttpHeaders.AUTHORIZATION, authToken)
                 .header("contentType",  MediaType.APPLICATION_FORM_URLENCODED))
-		        .andExpect(status().is(403));
+		        .andExpect(status().is(401));
 	}
 	
 	/**

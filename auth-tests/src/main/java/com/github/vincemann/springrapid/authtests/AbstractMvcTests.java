@@ -12,6 +12,8 @@ import com.github.vincemann.springrapid.acl.proxy.AclManaging;
 import com.github.vincemann.springrapid.acl.proxy.Unsecured;
 import com.github.vincemann.springrapid.core.CoreProperties;
 import com.github.vincemann.springrapid.core.service.exception.BadEntityException;
+import com.github.vincemann.springrapid.core.service.exception.EntityNotFoundException;
+import com.github.vincemann.springrapid.coretest.InitializingTest;
 import lombok.Getter;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -64,7 +66,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @ActiveProfiles(value = {"web", "service", "test", "webTest", "serviceTest", "dev"}, inheritProfiles = false)
 @ImportAutoConfiguration(exclude = RapidAdminAutoConfiguration.class)
 @Getter
-public abstract class AbstractMvcTests {
+public abstract class AbstractMvcTests extends InitializingTest {
 
     protected static final String ADMIN_EMAIL = "admin@example.com";
     protected static final String ADMIN_PASSWORD = "admin!";
@@ -135,7 +137,7 @@ public abstract class AbstractMvcTests {
     protected AuthProperties authProperties;
 
     @BeforeEach
-    public void setup() throws Exception {
+    protected void setup() throws Exception {
         configureMvc();
         System.err.println("creating test users");
         createTestUsers();
@@ -167,14 +169,22 @@ public abstract class AbstractMvcTests {
 
     protected void removeTestUsers(){
         System.err.println("deleting users");
-        userRepository.deleteAll();
+//        userRepository.deleteAll();
+        aclUserService.findAll().forEach((user) -> {
+            try {
+                aclUserService.deleteById(user.getId());
+            } catch (Exception e) {
+               throw new RuntimeException(e);
+            }
+        });
         System.err.println("deleted users");
 
-        System.err.println("deleting acl info");
-        Connection connection = DataSourceUtils.getConnection(dataSource);
-        ScriptUtils.executeSqlScript(connection, new ClassPathResource("test-data/removeAclInfo.sql"));
-        DataSourceUtils.releaseConnection(connection,dataSource);
-        System.err.println("deleted acl info");
+        //acl info is already removed by aclUserService Cleanup plugin
+//        System.err.println("deleting acl info");
+//        Connection connection = DataSourceUtils.getConnection(dataSource);
+//        ScriptUtils.executeSqlScript(connection, new ClassPathResource("test-data/removeAclInfo.sql"));
+//        DataSourceUtils.releaseConnection(connection,dataSource);
+//        System.err.println("deleted acl info");
     }
 
 
@@ -230,7 +240,7 @@ public abstract class AbstractMvcTests {
     }
 
     @AfterEach
-    void tearDown() throws SQLException {
+    protected void tearDown() throws SQLException {
         System.err.println("TEST ENDS HERE -----------------------------------------------------------------------------------------------------------------");
         System.err.println("clearing test data");
         tokens.clear();
