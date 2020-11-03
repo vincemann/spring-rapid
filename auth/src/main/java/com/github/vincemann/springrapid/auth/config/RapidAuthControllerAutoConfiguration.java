@@ -2,6 +2,7 @@ package com.github.vincemann.springrapid.auth.config;
 
 import com.github.vincemann.springrapid.auth.controller.UserEndpointInfo;
 import com.github.vincemann.springrapid.auth.controller.owner.AuditingEntityOwnerLocator;
+import com.github.vincemann.springrapid.auth.controller.owner.UserOwnerLocator;
 import com.github.vincemann.springrapid.auth.service.token.AuthHeaderHttpTokenService;
 import com.github.vincemann.springrapid.auth.service.token.HttpTokenService;
 import com.github.vincemann.springrapid.core.config.RapidCrudControllerAutoConfiguration;
@@ -23,9 +24,15 @@ public class RapidAuthControllerAutoConfiguration {
     }
 
     @Bean
-    @ConditionalOnMissingBean(name = "lemonOwnerLocator")
-    public OwnerLocator lemonOwnerLocator(){
+    @ConditionalOnMissingBean(name = "createdByOwnerLocator")
+    public OwnerLocator createdByOwnerLocator(){
         return new AuditingEntityOwnerLocator();
+    }
+
+    @Bean
+    @ConditionalOnMissingBean(name = "userOwnerLocator")
+    public OwnerLocator userOwnerLocator(){
+        return new UserOwnerLocator();
     }
 
 

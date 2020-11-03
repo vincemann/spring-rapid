@@ -3,18 +3,14 @@ package com.github.vincemann.springrapid.authdemo.config;
 
 import com.github.vincemann.springrapid.auth.service.UserService;
 import com.github.vincemann.springrapid.authdemo.service.MyUserService;
-
+import com.github.vincemann.springrapid.core.slicing.config.ServiceConfig;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
-import org.springframework.context.annotation.Profile;
 
-@Configuration
+@ServiceConfig
 public class MyUserServiceConfig {
 
-    @Profile("service")
     @Bean
-//    @Root
     @Primary
     public UserService userService(){
         return new MyUserService();

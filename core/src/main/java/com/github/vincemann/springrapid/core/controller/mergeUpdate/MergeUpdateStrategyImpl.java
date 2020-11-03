@@ -31,7 +31,7 @@ public class MergeUpdateStrategyImpl implements MergeUpdateStrategy {
 
                     Field entityField = ReflectionUtils.findField(entityClass, propertyName);
                     if (entityField == null) {
-                        if (coreProperties.controller.strictUpdateMerge) {
+                        if (coreProperties.getController().isStrictUpdateMerge()) {
                             //gets translated to checked exception below
                             throw new IllegalArgumentException("Unknown Update Property: " + propertyName);
                         } else {
