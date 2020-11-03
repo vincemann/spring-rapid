@@ -1,5 +1,6 @@
 package com.github.vincemann.springrapid.authdemo.config;
 
+
 import com.github.vincemann.springrapid.auth.service.UserService;
 import com.github.vincemann.springrapid.authdemo.service.MyUserService;
 
@@ -13,8 +14,9 @@ public class MyUserServiceConfig {
 
     @Profile("service")
     @Bean
+//    @Root
     @Primary
-    public UserService<?, ?> userService(){
+    public UserService userService(){
         return new MyUserService();
     }
 
