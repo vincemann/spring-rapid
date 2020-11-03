@@ -4,6 +4,8 @@ import com.github.vincemann.springrapid.auth.domain.AbstractUser;
 import com.github.vincemann.springrapid.auth.service.AbstractUserService;
 import com.github.vincemann.springrapid.auth.service.token.EmailJwtService;
 import com.github.vincemann.springrapid.auth.util.LemonMapUtils;
+import com.github.vincemann.springrapid.core.service.exception.BadEntityException;
+import com.github.vincemann.springrapid.core.service.exception.EntityNotFoundException;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -24,31 +26,22 @@ public class ChangeEmailMvcTests extends AbstractMvcTests {
 	@Autowired
 	private EmailJwtService emailJwtService;
 
-	@BeforeEach
-	public void setup() throws Exception {
-		runInitializables();
-		configureMvc();
-		System.err.println("creating test users");
-		createTestUsers();
-		System.err.println("test users created");
-
+	@Override
+	protected void createTestUsers() throws Exception{
+		super.createTestUsers();
 		AbstractUser<Long> user = getUserService().findById(getUnverifiedUser().getId()).get();
 		user.setNewEmail(NEW_EMAIL);
-
 		getUserService().update(user);
+	}
 
-		System.err.println("logging in test users");
-		loginTestUsers();
-		System.err.println("test users logged in");
-
-
+	@BeforeEach
+	protected void setupEmailCode() throws Exception {
 		changeEmailCode = emailJwtService.createToken(
 				AbstractUserService.CHANGE_EMAIL_AUDIENCE,
 				Long.toString(getUnverifiedUser().getId()),
 				600000L,
 				LemonMapUtils.mapOf("newEmail", NEW_EMAIL));
 
-		setupSpies();
 	}
 
 	//works solo but token is obsolete when run in group
@@ -156,7 +149,7 @@ public class ChangeEmailMvcTests extends AbstractMvcTests {
 				.param("id",getUnverifiedUser().getId().toString())
 				.header(HttpHeaders.AUTHORIZATION, authToken)
                 .header("contentType",  MediaType.APPLICATION_FORM_URLENCODED))
-		        .andExpect(status().is(401));
+		        .andExpect(status().is(403));
 	}
 	
 	/**

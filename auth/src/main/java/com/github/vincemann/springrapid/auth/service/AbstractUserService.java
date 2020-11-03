@@ -1,6 +1,7 @@
 package com.github.vincemann.springrapid.auth.service;
 
 
+
 import com.github.vincemann.springrapid.auth.domain.RapidAuthAuthenticatedPrincipal;
 import com.github.vincemann.springrapid.auth.mail.MailSender;
 import com.github.vincemann.springrapid.auth.security.AuthenticatedPrincipalFactory;
@@ -69,7 +70,7 @@ public abstract class AbstractUserService
     private AuthProperties properties;
     private MailSender<MailData> mailSender;
     private EmailJwtService emailTokenService;
-    private UserService<U, ID> userService;
+//    private UserService<U, ID> rootUserService;
 
     /**
      * Creates a new user object. Must be overridden in the
@@ -113,7 +114,7 @@ public abstract class AbstractUserService
         //admins get created with createAdminMethod
         user.setPassword(passwordEncoder.encode(user.getPassword()));
         user.setRoles(Sets.newHashSet(AuthRoles.USER));
-        U saved = userService.save(user);
+        U saved = save(user);
         makeUnverified(saved);
 
         log.debug("saved and send verification mail for unverified new user: " + saved);
@@ -199,7 +200,7 @@ public abstract class AbstractUserService
     protected U verifyUser(U user) throws BadEntityException, EntityNotFoundException {
         user.getRoles().remove(AuthRoles.UNVERIFIED);
         user.setCredentialsUpdatedMillis(System.currentTimeMillis());
-        U saved = userService.update(user);
+        U saved = update(user);
         log.debug("Verified user: " + saved);
         return saved;
     }
@@ -211,7 +212,7 @@ public abstract class AbstractUserService
     @Transactional(propagation = Propagation.REQUIRED, readOnly = false)
     public void forgotPassword(String email) throws EntityNotFoundException {
         // fetch the user record from database
-        Optional<U> byEmail = userService.findByEmail(email);
+        Optional<U> byEmail = findByEmail(email);
         VerifyEntity.isPresent(byEmail, "User with email: " + email + " not found");
         U user = byEmail.get();
         sendForgotPasswordMail(user);
@@ -231,7 +232,7 @@ public abstract class AbstractUserService
         String email = claims.getSubject();
 
         // fetch the user
-        Optional<U> byEmail = userService.findByEmail(email);
+        Optional<U> byEmail = findByEmail(email);
         VerifyEntity.isPresent(byEmail, "User with email: " + email + " not found");
         U user = byEmail.get();
         JwtUtils.ensureCredentialsUpToDate(claims, user);
@@ -243,7 +244,7 @@ public abstract class AbstractUserService
 
         U saved = null;
         try {
-            saved = userService.update(user);
+            saved = update(user);
         } catch (BadEntityException e) {
             throw new RuntimeException("Could not reset users password", e);
         }
@@ -254,7 +255,7 @@ public abstract class AbstractUserService
     @Transactional(propagation = Propagation.REQUIRED, readOnly = false)
     @Override
     public U update(U update, Boolean full) throws EntityNotFoundException, BadEntityException, BadEntityException {
-        Optional<U> old = userService.findById(update.getId());
+        Optional<U> old = findById(update.getId());
         VerifyEntity.isPresent(old, "Entity to update with id: " + update.getId() + " not found");
         //update roles works in transaction -> changes are applied on the fly
         updateRoles(old.get(), update);
@@ -280,7 +281,7 @@ public abstract class AbstractUserService
         user.setPassword(passwordEncoder.encode(changePasswordForm.getPassword()));
         user.setCredentialsUpdatedMillis(System.currentTimeMillis());
         try {
-            userService.update(user);
+            update(user);
         } catch (BadEntityException e) {
             throw new RuntimeException("Could not change users password", e);
         }
@@ -332,7 +333,7 @@ public abstract class AbstractUserService
         user.setNewEmail(emailChangeForm.getNewEmail());
         //user.setChangeEmailCode(LemonValidationUtils.uid());
         try {
-            U saved = userService.update(user);
+            U saved = update(user);
             // after successful commit, mails a link to the user
             TransactionalUtils.afterCommit(() -> mailChangeEmailLink(saved));
         } catch (BadEntityException e) {
@@ -413,7 +414,7 @@ public abstract class AbstractUserService
 
         // Ensure that the email would be unique
         Validate.condition(
-                !userService.findByEmail(user.getNewEmail()).isPresent(),
+                !findByEmail(user.getNewEmail()).isPresent(),
                 "com.naturalprogrammer.spring.duplicate.email").go();
 
         // update the fields
@@ -427,7 +428,7 @@ public abstract class AbstractUserService
             user.getRoles().remove(AuthRoles.UNVERIFIED);
 
         try {
-            return userService.update(user);
+            return update(user);
         } catch (BadEntityException e) {
             throw new RuntimeException("Could not update users email", e);
         }
@@ -459,7 +460,7 @@ public abstract class AbstractUserService
         user.setEmail(admin.getEmail());
         user.setPassword(admin.getPassword());
         user.getRoles().add(AuthRoles.ADMIN);
-        U saved = userService.save(user);
+        U saved = save(user);
         log.debug("admin saved.");
         return saved;
     }
@@ -571,9 +572,9 @@ public abstract class AbstractUserService
         return emailTokenService;
     }
 
-    protected UserService<U, ID> getUserService() {
-        return userService;
-    }
+//    protected UserService<U, ID> getRootUserService() {
+//        return rootUserService;
+//    }
 
     @Autowired
     public void injectAuthorizationTokenService(AuthorizationTokenService<RapidAuthAuthenticatedPrincipal> authorizationTokenService) {
@@ -606,12 +607,12 @@ public abstract class AbstractUserService
         this.emailTokenService = emailJwtService;
     }
 
-    @Autowired
-
-    @Lazy
-    public void injectUserService(UserService<U, ID> userService) {
-        this.userService = userService;
-    }
+//    @Autowired
+//    @Root
+//    @Lazy
+//    public void injectUserService(UserService<U, ID> userService) {
+//        this.rootUserService = userService;
+//    }
 
     @Autowired
     public void injectPrincipalUserConverter(AuthenticatedPrincipalFactory authenticatedPrincipalFactory) {

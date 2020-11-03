@@ -12,6 +12,7 @@ import com.github.vincemann.springrapid.acl.proxy.AclManaging;
 
 import com.github.vincemann.springrapid.core.CoreProperties;
 import com.github.vincemann.springrapid.core.service.exception.BadEntityException;
+import com.github.vincemann.springrapid.core.service.exception.EntityNotFoundException;
 import com.github.vincemann.springrapid.coretest.InitializingTest;
 import lombok.Getter;
 import org.junit.jupiter.api.AfterEach;
@@ -182,7 +183,7 @@ public abstract class AbstractMvcTests extends InitializingTest {
     }
 
 
-    protected void createTestUsers() throws BadEntityException, InterruptedException {
+    protected void createTestUsers() throws Exception {
         admin = aclUserService.save(testAdapter.createTestUser(ADMIN_EMAIL,/*"Admin",*/ ADMIN_PASSWORD, AuthRoles.ADMIN));
         secondAdmin = aclUserService.save(testAdapter.createTestUser(SECOND_ADMIN_EMAIL,/*"Second Admin",*/ SECOND_ADMIN_PASSWORD, AuthRoles.ADMIN));
         blockedAdmin = aclUserService.save(testAdapter.createTestUser(BLOCKED_ADMIN_EMAIL,/*"Blocked Admin",*/ BLOCKED_ADMIN_PASSWORD, AuthRoles.ADMIN, AuthRoles.BLOCKED));
