@@ -1,6 +1,7 @@
 package com.github.vincemann.springrapid.authtests;
 
 import com.github.vincemann.springrapid.auth.domain.AbstractUser;
+import com.github.vincemann.springrapid.auth.domain.AbstractUserRepository;
 import com.github.vincemann.springrapid.auth.service.AbstractUserService;
 import com.github.vincemann.springrapid.auth.service.token.EmailJwtService;
 import com.github.vincemann.springrapid.auth.util.LemonMapUtils;
@@ -12,6 +13,9 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
+import org.springframework.test.context.transaction.TestTransaction;
+
+import javax.transaction.Transactional;
 
 import static org.hamcrest.Matchers.containsString;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -25,13 +29,15 @@ public class ChangeEmailMvcTests extends AbstractMvcTests {
 	
 	@Autowired
 	private EmailJwtService emailJwtService;
+	@Autowired
+	private AbstractUserRepository userRepository;
 
 	@Override
 	protected void createTestUsers() throws Exception{
 		super.createTestUsers();
 		AbstractUser<Long> user = getUserService().findById(getUnverifiedUser().getId()).get();
 		user.setNewEmail(NEW_EMAIL);
-		getUserService().update(user);
+		userRepository.save(user);
 	}
 
 	@BeforeEach
@@ -137,7 +143,7 @@ public class ChangeEmailMvcTests extends AbstractMvcTests {
 //		Thread.sleep(1L);
 		AbstractUser<Long> user = getUserService().findById(getUnverifiedUser().getId()).get();
 		user.setCredentialsUpdatedMillis(System.currentTimeMillis());
-		getUserService().update(user);
+		userRepository.save(user);
 
 		Thread.sleep(1L);
 
@@ -178,7 +184,7 @@ public class ChangeEmailMvcTests extends AbstractMvcTests {
 		// Some other user changed to the same email
 		AbstractUser<Long> user = getUserService().findById(getAdmin().getId()).get();
 		user.setEmail(NEW_EMAIL);
-		getUserService().update(user);
+		userRepository.save(user);
 		
 		mvc.perform(post(authProperties.getController().getChangeEmailUrl(), getUnverifiedUser().getId())
                 .param("code", changeEmailCode)
