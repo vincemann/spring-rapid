@@ -30,6 +30,7 @@ public abstract class UpdateUserMvcTests extends AbstractMvcTests
 	private static final String FIELD_KEY_PLACEHOLDER = "name";
 	private static final String FIELD_INVALID_VALUE_PLACEHOLDER = "invalidFieldValue";
 	private static final String FIELD_NEW_VALID_VALUE_PLACEHOLDER = "newFieldValue";
+	private static final String EMAIL_NEW_VALID_VALUE_PLACEHOLDER = "updated@e.mail";
 
     String patchEmailAndRole;
 	String patchRole;
@@ -165,7 +166,8 @@ public abstract class UpdateUserMvcTests extends AbstractMvcTests
 
 	@Value("classpath:/update-user/patch-email-and-role.json")
 	public void setPatchEmailAndRole(Resource patch) throws IOException {
-		this.patchEmailAndRole = ResourceUtils.toStr(patch);
+		this.patchEmailAndRole = ResourceUtils.toStr(patch)
+				.replace(EMAIL_NEW_VALID_VALUE_PLACEHOLDER,updatedEmail());
 	}
 
 	@Value("classpath:/update-user/patch-role.json")
@@ -175,7 +177,8 @@ public abstract class UpdateUserMvcTests extends AbstractMvcTests
 
 	@Value("classpath:/update-user/patch-email.json")
 	public void setPatchEmail(Resource patch) throws IOException {
-		this.patchEmail = ResourceUtils.toStr(patch);
+		this.patchEmail = ResourceUtils.toStr(patch)
+				.replace(EMAIL_NEW_VALID_VALUE_PLACEHOLDER,updatedEmail());
 	}
 
 
