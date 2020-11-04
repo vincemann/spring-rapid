@@ -50,7 +50,7 @@ public class SignupMvcTests extends AbstractMvcTests {
 //						"Email must be between 4 and 250 characters",
 //						"Password must be between 6 and 50 characters")));
 		
-		verify(unproxySpy(mailSender), never()).send(any());
+		verify(unproxy(mailSender), never()).send(any());
 	}
 
 	@Test
@@ -77,7 +77,7 @@ public class SignupMvcTests extends AbstractMvcTests {
 				.andExpect(jsonPath("$.goodUser").value(false));
 //				.andExpect(jsonPath("$.goodAdmin").value(false));
 				
-		verify(unproxySpy(mailSender)).send(any());
+		verify(unproxy(mailSender)).send(any());
 
 		// Ensure that password got encrypted
 		Assertions.assertNotEquals(signupForm.getPassword(), getUserService().findByEmail(signupForm.getEmail()).get().getPassword());
@@ -96,6 +96,6 @@ public class SignupMvcTests extends AbstractMvcTests {
 				.content(JsonUtils.toJson(signupForm)))
 				.andExpect(status().is(422));
 		
-		verify(unproxySpy(mailSender), never()).send(any());
+		verify(unproxy(mailSender), never()).send(any());
 	}
 }

@@ -20,7 +20,7 @@ public class ForgotPasswordMvcTests extends AbstractMvcTests {
                 .header("contentType",  MediaType.APPLICATION_FORM_URLENCODED))
                 .andExpect(status().is(403));
 		
-		verify(unproxySpy(mailSender),never()).send(any());
+		verify(unproxy(mailSender),never()).send(any());
 	}
 
 	@Test
@@ -32,7 +32,7 @@ public class ForgotPasswordMvcTests extends AbstractMvcTests {
 				.header("contentType",  MediaType.APPLICATION_FORM_URLENCODED))
 				.andExpect(status().is(204));
 
-		verify(unproxySpy(mailSender)).send(any());
+		verify(unproxy(mailSender)).send(any());
 	}
 	
 	@Test
@@ -61,6 +61,6 @@ public class ForgotPasswordMvcTests extends AbstractMvcTests {
                 .header("contentType",  MediaType.APPLICATION_FORM_URLENCODED))
                 .andExpect(status().is(422));
 		
-		verify(unproxySpy(mailSender), never()).send(any());
+		verify(unproxy(mailSender), never()).send(any());
 	}
 }

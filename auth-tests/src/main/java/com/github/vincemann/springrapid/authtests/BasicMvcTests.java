@@ -21,7 +21,7 @@ public class BasicMvcTests extends AbstractMvcTests {
 		Map<String,Object> testSharedProperties = new HashMap<>();
 		testSharedProperties.put("testKey","testValue");
 
-		Mockito.when(unproxySpy(properties).getShared())
+		Mockito.when(unproxy(properties).getShared())
 				.thenReturn(testSharedProperties);
 	}
 

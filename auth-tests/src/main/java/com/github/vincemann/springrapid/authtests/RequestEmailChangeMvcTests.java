@@ -41,7 +41,7 @@ public class RequestEmailChangeMvcTests extends AbstractMvcTests {
 				.content(JsonUtils.toJson(form())))
 				.andExpect(status().is(204));
 		
-		verify(unproxySpy(mailSender)).send(any());
+		verify(unproxy(mailSender)).send(any());
 
 		AbstractUser<Long> updatedUser = getUserService().findById(getUnverifiedUser().getId()).get();
 		Assertions.assertEquals(NEW_EMAIL, updatedUser.getNewEmail());
@@ -78,7 +78,7 @@ public class RequestEmailChangeMvcTests extends AbstractMvcTests {
 				.content(JsonUtils.toJson(form())))
 				.andExpect(status().is(404));
 		
-		verify(unproxySpy(mailSender), never()).send(any());
+		verify(unproxy(mailSender), never()).send(any());
 	}
 
 	/**
@@ -95,7 +95,7 @@ public class RequestEmailChangeMvcTests extends AbstractMvcTests {
 				.content(JsonUtils.toJson(form())))
 				.andExpect(status().is(403));
 		
-		verify(unproxySpy(mailSender), never()).send(any());
+		verify(unproxy(mailSender), never()).send(any());
 
 		AbstractUser<Long> updatedUser = getUserService().findById(getUnverifiedUser().getId()).get();
 		Assertions.assertNull(updatedUser.getNewEmail());
@@ -113,7 +113,7 @@ public class RequestEmailChangeMvcTests extends AbstractMvcTests {
 				.content(JsonUtils.toJson(form())))
 				.andExpect(status().is(403));
 		
-		verify(unproxySpy(mailSender), never()).send(any());
+		verify(unproxy(mailSender), never()).send(any());
 	}
 
 	/**
@@ -200,6 +200,6 @@ public class RequestEmailChangeMvcTests extends AbstractMvcTests {
 				.andExpect(jsonPath("$.errors[*].field").value(hasSize(1)))
 				.andExpect(jsonPath("$.errors[*].field").value(hasItems("emailChangeForm.newEmail")));
 		
-		verify(unproxySpy(mailSender), never()).send(any());
+		verify(unproxy(mailSender), never()).send(any());
 	}
 }
