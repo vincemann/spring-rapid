@@ -8,9 +8,9 @@ import com.github.vincemann.springrapid.auth.domain.dto.ChangePasswordForm;
 import com.github.vincemann.springrapid.auth.domain.dto.SignupForm;
 import com.github.vincemann.springrapid.auth.domain.dto.RequestEmailChangeForm;
 import com.github.vincemann.springrapid.auth.domain.dto.ResetPasswordForm;
-import com.github.vincemann.springrapid.auth.domain.dto.user.RapidAdminUpdateUserDto;
+import com.github.vincemann.springrapid.auth.domain.dto.user.AdminUpdateRapidUserDto;
 import com.github.vincemann.springrapid.auth.domain.dto.user.RapidFindForeignUserDto;
-import com.github.vincemann.springrapid.auth.domain.dto.user.RapidFindUserDto;
+import com.github.vincemann.springrapid.auth.domain.dto.user.FindRapidUserDto;
 import com.github.vincemann.springrapid.auth.domain.dto.user.RapidUserDto;
 import com.github.vincemann.springrapid.auth.service.UserService;
 import com.github.vincemann.springrapid.auth.service.token.BadTokenException;
@@ -306,17 +306,22 @@ public abstract class AbstractUserController<U extends AbstractUser<ID>, ID exte
 		builder
 
 				.withAllPrincipals()
-				.forAll(RapidUserDto.class)
-				.forResponse(RapidFindUserDto.class)
+//				.forAll(RapidUserDto.class)
+				.forResponse(FindRapidUserDto.class)
 				.forEndpoint(getAuthProperties().getController().getSignupUrl(), Direction.REQUEST, SignupForm.class)
 
 				.withPrincipal(DtoRequestInfo.Principal.FOREIGN)
-				.forFind(RapidFindForeignUserDto.class)
+				.forResponse(RapidFindForeignUserDto.class)
+				.forEndpoint(getAuthProperties().getController().getVerifyUserUrl(),Direction.RESPONSE,FindRapidUserDto.class)
+
+//				.withPrincipal(DtoRequestInfo.Principal.OWN)
+//				.forResponse(FindRapidUserDto.class)
 
 				.withAllPrincipals()
 				.withRoles(Roles.ADMIN)
-				.forEndpoint(getUpdateUrl(), RapidAdminUpdateUserDto.class)
-				.forFind(RapidFindUserDto.class)
+				.forAll(RapidUserDto.class)
+				.forEndpoint(getUpdateUrl(), AdminUpdateRapidUserDto.class)
+				.forResponse(FindRapidUserDto.class)
 
 				//if this is not set then it would be unexpected when builder.furtherConfigure(...) configures for admin role
 				.withAllRoles();

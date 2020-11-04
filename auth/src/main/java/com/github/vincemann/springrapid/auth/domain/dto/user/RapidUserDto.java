@@ -10,7 +10,7 @@ import java.util.Set;
  * mainly used for holding logged-in user data 
  */
 @Getter @NoArgsConstructor @Setter @ToString(callSuper = true)
-public class RapidUserDto extends RapidAbstractUserDto implements Serializable {
+public class RapidUserDto extends AbstractFindRapidUserDto implements Serializable {
 
 	private static final long serialVersionUID = -9134054705405149534L;
 	
