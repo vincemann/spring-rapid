@@ -11,18 +11,16 @@ import com.github.vincemann.springrapid.authtests.adapter.AuthTestAdapter;
 import com.github.vincemann.springrapid.acl.proxy.AclManaging;
 
 import com.github.vincemann.springrapid.core.CoreProperties;
-import com.github.vincemann.springrapid.core.service.exception.BadEntityException;
-import com.github.vincemann.springrapid.core.service.exception.EntityNotFoundException;
 import com.github.vincemann.springrapid.coretest.InitializingTest;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.mockito.Mockito;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.ImportAutoConfiguration;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.boot.test.mock.mockito.SpyBean;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
@@ -39,7 +37,6 @@ import javax.sql.DataSource;
 import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.logging.Logger;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -102,7 +99,7 @@ public abstract class AbstractMvcTests extends InitializingTest {
     @Autowired
     private AbstractUserRepository/*<AbstractUser<Long>, Long>*/ userRepository;
 
-    @SpyBean
+    @MockBean
     protected MailSender<?> mailSender;
 
     @Autowired
@@ -150,10 +147,10 @@ public abstract class AbstractMvcTests extends InitializingTest {
 
     protected void setupSpies(){
         jwt = Mockito.spy(properties.getJwt());
-        Mockito.doReturn(jwt).when((AuthProperties)unproxySpy(properties)).getJwt();
+        Mockito.doReturn(jwt).when((AuthProperties) unproxy(properties)).getJwt();
     }
 
-    protected <T> T unproxySpy(T spy){
+    protected <T> T unproxy(T spy){
         //        https://stackoverflow.com/questions/9033874/mocking-a-property-of-a-cglib-proxied-service-not-working
         return AopTestUtils.getUltimateTargetObject(spy);
     }
@@ -246,6 +243,7 @@ public abstract class AbstractMvcTests extends InitializingTest {
         removeTestUsers();
         System.err.println("test data cleared");
 
+        Mockito.reset(unproxy(mailSender));
 //        https://github.com/spring-projects/spring-boot/issues/7374  -> @SpyBean beans are automatically reset
 
 //        Mockito.reset(properties);
