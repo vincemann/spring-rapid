@@ -11,10 +11,10 @@ import java.util.Set;
 @ToString(callSuper = true)
 @NoArgsConstructor
 @Setter
-public class RapidAdminUpdateUserDto extends RapidAbstractUserDto {
+public class AdminUpdateRapidUserDto extends AbstractRapidUserDto {
     private String password;
 
-    public RapidAdminUpdateUserDto(String email, Set<String> roles, String id, String password) {
+    public AdminUpdateRapidUserDto(String email, Set<String> roles, String id, String password) {
         super(email, roles, id);
         this.password = password;
     }
