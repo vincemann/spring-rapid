@@ -178,9 +178,13 @@ public abstract class GenericCrudController
     //              HELPERS
 
 
-    public Class<?> createDtoClass(String endpoint, Direction direction, E entity) {
+    public Class<?> createDtoClass(String endpoint, Direction direction, E entity) throws BadEntityException {
         DtoRequestInfo dtoRequestInfo = createDtoRequestInfo(endpoint, direction, entity);
-        return dtoClassLocator.find(dtoRequestInfo);
+        Class<?> dtoClass = dtoClassLocator.find(dtoRequestInfo);
+        if (dtoClass==null){
+            throw new BadEntityException("No DtoClass mapped for info: " + dtoRequestInfo);
+        }
+        return dtoClass;
     }
 
     protected DtoRequestInfo createDtoRequestInfo(String endpoint, Direction direction, E entity) {

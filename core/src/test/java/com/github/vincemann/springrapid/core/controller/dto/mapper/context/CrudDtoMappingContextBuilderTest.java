@@ -135,7 +135,8 @@ class CrudDtoMappingContextBuilderTest {
     @Test
     void findOnlyAdminEntryWithoutRoles_shouldNotFind() throws InvocationTargetException, NoSuchMethodException, InstantiationException, IllegalAccessException {
         findAllInfo.setAuthorities(new ArrayList<>());
-        Assertions.assertThrows(IllegalArgumentException.class,()-> locator.find(findAllInfo,context));
+        Class<?> dtoClass = locator.find(findAllInfo, context);
+        Assertions.assertNull(dtoClass);
 //        Class<?> dtoClass = locator.find(findAllInfo, context);
 //        Assertions.assertEquals(LessPrivilegedFindDto.class,dtoClass);
     }
@@ -165,7 +166,9 @@ class CrudDtoMappingContextBuilderTest {
                 .direction(Direction.REQUEST)
                 .endpoint(FIND_URL)
                 .build();
-        Assertions.assertThrows(IllegalArgumentException.class,()-> locator.find(unknown,context));
+        Class<?> dtoClass = locator.find(unknown, context);
+        Assertions.assertNull(dtoClass);
+//        Assertions.assertThrows(IllegalArgumentException.class,()-> locator.find(unknown,context));
     }
 
     @Test

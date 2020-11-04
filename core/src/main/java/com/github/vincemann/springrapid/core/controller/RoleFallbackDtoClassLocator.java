@@ -39,7 +39,8 @@ public class RoleFallbackDtoClassLocator implements DtoClassLocator {
             return mappingEntries.get(match);
         } else {
             if (inDifferentPrincipalMatches.isEmpty()) {
-                throw new IllegalArgumentException("No DtoClass mapped for info: " + info);
+//                throw new IllegalArgumentException("No DtoClass mapped for info: " + info);
+                return null;
             }
             Assert.isTrue(inDifferentPrincipalMatches.size() == 1, "Ambigious Mapping, found multiple Dto Matches: " + inDifferentPrincipalMatches);
             DtoRequestInfo match = inDifferentPrincipalMatches.stream().findFirst().get();
