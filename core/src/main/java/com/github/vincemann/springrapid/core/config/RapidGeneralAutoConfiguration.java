@@ -33,7 +33,7 @@ public class RapidGeneralAutoConfiguration {
 
     @Bean
     @ConditionalOnMissingBean(CoreProperties.class)
-    @ConfigurationProperties(prefix = "rapid.core")
+    @ConfigurationProperties(prefix = "rapid-core")
     public CoreProperties coreProperties(){
         return new CoreProperties();
     }
