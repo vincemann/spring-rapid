@@ -33,7 +33,7 @@ spring:
 #    com.naturalprogrammer: DEBUG
 #    #file: /home/vince/lemon.log
 
-lemon:
+rapid-auth:
 
   # application-url: http://localhost:9000
   # oauth2-authentication-success-url: http://localhost:9000/social-login-success?token=
@@ -44,8 +44,9 @@ lemon:
     allowed-origins: http://localhost:9000
     
   recaptcha:
-    sitekey: 6LdwxRcUAAAAABkhOGWQXhl9FsR27D5YUJRuGzx0
-    secretkey: 6LdwxRcUAAAAADaG0Eo1qkYCco15cnngiBoBt2IO
+    # disabled 6LdwxRcUAAAAABkhOGWQXhl9FsR27D5YUJRuGzx0 6LdwxRcUAAAAADaG0Eo1qkYCco15cnngiBoBt2IO
+    sitekey: ""
+    secretkey: ""
   
   jwt:
     # An aes-128-cbc key generated at https://asecuritysite.com/encryption/keygen (take the "key" field)

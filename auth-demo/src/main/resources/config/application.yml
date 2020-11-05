@@ -31,8 +31,9 @@ server.servlet.session.persistent: false
 #  core:
 #    baseUrl: "/api/core"
 
-# Spring Lemon related properties
-lemon:
+
+
+rapid-auth:
 
   # ADMIN users
   admins:
@@ -40,8 +41,7 @@ lemon:
       password: admin!
     - email: secondAdmin@example.com
       password: admin2!
-#  userController.contextUrl: "/api/core/context"
-      
+
   # Properties to be passed to client
   shared:
     fooBar: 123...

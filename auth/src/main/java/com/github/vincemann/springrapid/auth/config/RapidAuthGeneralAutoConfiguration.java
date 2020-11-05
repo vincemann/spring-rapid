@@ -22,10 +22,10 @@ public class RapidAuthGeneralAutoConfiguration {
     /**
      * Spring Lemon related properties
      */
-    @ConfigurationProperties(prefix="lemon")
+    @ConfigurationProperties(prefix="rapid-auth")
     @ConditionalOnMissingBean(AuthProperties.class)
     @Bean
-    public AuthProperties lemonProperties(CoreProperties coreProperties) {
+    public AuthProperties rapidAuthProperties(CoreProperties coreProperties) {
         return new AuthProperties(coreProperties);
     }
 
