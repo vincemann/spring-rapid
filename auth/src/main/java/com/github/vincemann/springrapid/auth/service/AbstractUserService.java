@@ -16,6 +16,7 @@ import com.github.vincemann.springrapid.auth.util.LemonMapUtils;
 import com.github.vincemann.springrapid.auth.util.TransactionalUtils;
 import com.github.vincemann.springrapid.core.security.RapidSecurityContext;
 import com.github.vincemann.springrapid.core.service.JPACrudService;
+import com.github.vincemann.springrapid.core.service.password.RapidPasswordEncoder;
 import com.github.vincemann.springrapid.core.util.Message;
 import com.github.vincemann.springrapid.core.util.VerifyAccess;
 import com.google.common.collect.Sets;
@@ -66,7 +67,7 @@ public abstract class AbstractUserService
     private AuthorizationTokenService<RapidAuthAuthenticatedPrincipal> authorizationTokenService;
     private RapidSecurityContext<RapidAuthAuthenticatedPrincipal> securityContext;
     private AuthenticatedPrincipalFactory authenticatedPrincipalFactory;
-    private PasswordEncoder passwordEncoder;
+    private RapidPasswordEncoder passwordEncoder;
     private AuthProperties properties;
     private MailSender<MailData> mailSender;
     private EmailJwtService emailTokenService;
@@ -112,7 +113,6 @@ public abstract class AbstractUserService
     @Transactional(propagation = Propagation.REQUIRED, readOnly = false)
     public U signup(U user) throws BadEntityException {
         //admins get created with createAdminMethod
-        user.setPassword(passwordEncoder.encode(user.getPassword()));
         user.setRoles(Sets.newHashSet(AuthRoles.USER));
         U saved = save(user);
         makeUnverified(saved);
@@ -126,9 +126,10 @@ public abstract class AbstractUserService
 
     @Transactional(propagation = Propagation.SUPPORTS, readOnly = false)
     @Override
-    public U save(U entity) throws BadEntityException {
-        entity.setPassword(passwordEncoder.encode(entity.getPassword()));
-        return super.save(entity);
+    public U save(U user) throws BadEntityException {
+//        entity.setPassword(passwordEncoder.encode(entity.getPassword()));
+        encryptPassword(user);
+        return super.save(user);
     }
 
     @Transactional(propagation = Propagation.SUPPORTS, readOnly = false)
@@ -146,6 +147,18 @@ public abstract class AbstractUserService
         TransactionalUtils.afterCommit(() -> sendVerificationMail(user));
     }
 
+    /**
+     * Only encrypts password, if it is not already encrypted.
+     */
+    protected void encryptPassword(U user){
+        String password = user.getPassword();
+        if (password==null){
+            return;
+        }
+        if (!passwordEncoder.isEncrypted(password)){
+            user.setPassword(passwordEncoder.encode(password));
+        }
+    }
 
     /**
      * Resends verification mail to the user.
@@ -254,12 +267,14 @@ public abstract class AbstractUserService
 
     @Transactional(propagation = Propagation.REQUIRED, readOnly = false)
     @Override
-    public U update(U update, Boolean full) throws EntityNotFoundException, BadEntityException, BadEntityException {
+    public U update(U update, Boolean full) throws EntityNotFoundException,  BadEntityException {
         Optional<U> old = findById(update.getId());
         VerifyEntity.isPresent(old, "Entity to update with id: " + update.getId() + " not found");
         //update roles works in transaction -> changes are applied on the fly
         updateRoles(old.get(), update);
         update.setRoles(old.get().getRoles());
+        encryptPassword(update);
+
         return super.update(update, full);
     }
 
@@ -587,7 +602,7 @@ public abstract class AbstractUserService
     }
 
     @Autowired
-    public void injectPasswordEncoder(PasswordEncoder passwordEncoder) {
+    public void injectPasswordEncoder(RapidPasswordEncoder passwordEncoder) {
         this.passwordEncoder = passwordEncoder;
     }
 
