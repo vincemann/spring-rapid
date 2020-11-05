@@ -9,6 +9,8 @@ import com.github.vincemann.springrapid.core.service.exception.EntityNotFoundExc
 import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.config.ConfigurableBeanFactory;
+import org.springframework.context.annotation.Scope;
 import org.springframework.security.acls.domain.ObjectIdentityImpl;
 import org.springframework.security.acls.model.ObjectIdentity;
 import org.springframework.transaction.annotation.Transactional;
@@ -22,6 +24,7 @@ import java.io.Serializable;
  */
 @Transactional
 @LogInteraction(Severity.TRACE)
+@Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
 public class CleanUpAclServiceExtension
         extends AbstractAclServiceExtension<CrudService>
                 implements CrudServiceExtension<CrudService>

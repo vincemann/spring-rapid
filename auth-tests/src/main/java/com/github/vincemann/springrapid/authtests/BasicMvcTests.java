@@ -15,6 +15,8 @@ import java.util.Map;
 
 public class BasicMvcTests extends AbstractMvcTests {
 
+//	private static final String TEST_RECAPTCHA = "6LdwxRcUAAAAABkhOGWQXhl9FsR27D5YUJRuGzx0";
+
 	@BeforeEach
 	public void setup() throws Exception {
 		super.setup();
@@ -23,6 +25,9 @@ public class BasicMvcTests extends AbstractMvcTests {
 
 		Mockito.when(unproxy(properties).getShared())
 				.thenReturn(testSharedProperties);
+		// todo reenable captcha
+//		Mockito.when(unproxy(properties).getRecaptcha().getSitekey())
+//				.thenReturn(TEST_RECAPTCHA);
 	}
 
 	@Test
@@ -43,7 +48,8 @@ public class BasicMvcTests extends AbstractMvcTests {
 				.header(HttpHeaders.AUTHORIZATION, tokens.get(getAdmin().getId())))
 				.andExpect(status().is(200))
 //				.andExpect(header().string(HttpHeaders.AUTHORIZATION, containsString(".")))
-				.andExpect(jsonPath("$.reCaptchaSiteKey").isString())
+				// todo reenable captcha
+//				.andExpect(jsonPath("$.reCaptchaSiteKey").isString())
 				.andExpect(jsonPath("$.shared").value(hasEntry("testKey","testValue")))
 
 				.andExpect(jsonPath("$.user.id").value(getAdmin().getId()))
@@ -61,7 +67,9 @@ public class BasicMvcTests extends AbstractMvcTests {
 		mvc.perform(get(authProperties.getController().getContextUrl()))
 				.andExpect(status().is(200))
 				.andExpect(header().doesNotExist(HttpHeaders.AUTHORIZATION))
-				.andExpect(jsonPath("$.reCaptchaSiteKey").isString())
+				// todo reenable captcha
+
+//				.andExpect(jsonPath("$.reCaptchaSiteKey").isString())
 				.andExpect(jsonPath("$.shared").value(hasEntry("testKey","testValue")))
 				.andExpect(jsonPath("$.user").doesNotExist());
 	}

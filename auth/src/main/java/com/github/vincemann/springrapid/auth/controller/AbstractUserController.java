@@ -93,7 +93,7 @@ public abstract class AbstractUserController<U extends AbstractUser<ID>, ID exte
 		getDtoValidationStrategy().validate(signupDto);
 		log.debug("Signing up: " + signupDto);
 		U user = getDtoMapper().mapToEntity(signupDto, getEntityClass());
-		U saved = getSecuredUserService().signup(user);
+  		U saved = getSecuredUserService().signup(user);
 		log.debug("Signed up: " + signupForm);
 
 		appendFreshTokenOf(saved,response);
