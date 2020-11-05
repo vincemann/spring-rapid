@@ -8,6 +8,8 @@ import com.github.vincemann.springrapid.core.model.IdentifiableEntity;
 import com.github.vincemann.springrapid.core.proxy.GenericCrudServiceExtension;
 import com.github.vincemann.springrapid.core.service.CrudService;
 import com.github.vincemann.springrapid.core.service.exception.BadEntityException;
+import org.springframework.beans.factory.config.ConfigurableBeanFactory;
+import org.springframework.context.annotation.Scope;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.io.Serializable;
@@ -19,6 +21,7 @@ import java.io.Serializable;
  */
 @Transactional
 @LogInteraction(Severity.TRACE)
+@Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
 public class InheritParentAclServiceExtension<E extends IdentifiableEntity<Id> & AclParentAware,Id extends Serializable>
                         extends AbstractAclServiceExtension<CrudService<E,Id>>
                                  implements GenericCrudServiceExtension<CrudService<E,Id>,E,Id> {
