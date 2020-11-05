@@ -11,6 +11,8 @@ import com.github.vincemann.springrapid.auth.service.RapidUserDetailsService;
 import com.github.vincemann.springrapid.auth.validation.RetypePasswordValidator;
 import com.github.vincemann.springrapid.auth.validation.UniqueEmailValidator;
 
+import com.github.vincemann.springrapid.core.service.password.BcryptRapidPasswordEncoder;
+import com.github.vincemann.springrapid.core.service.password.RapidPasswordEncoder;
 import com.github.vincemann.springrapid.core.slicing.config.ServiceConfig;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
@@ -86,8 +88,9 @@ public class RapidUserServiceAutoConfiguration {
      */
     @Bean
     @ConditionalOnMissingBean(PasswordEncoder.class)
-    public PasswordEncoder passwordEncoder() {
-        return PasswordEncoderFactories.createDelegatingPasswordEncoder();
+    public RapidPasswordEncoder passwordEncoder() {
+//        return PasswordEncoderFactories.createDelegatingPasswordEncoder();
+        return new BcryptRapidPasswordEncoder();
     }
 
 

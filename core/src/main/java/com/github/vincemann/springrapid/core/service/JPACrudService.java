@@ -63,7 +63,7 @@ public abstract class JPACrudService
                 //copy non null values from update to entityToUpdate
                 BeanUtilsBean notNull = new NullAwareBeanUtilsBean();
                 notNull.copyProperties(entityToUpdate, update);
-                return save(entityToUpdate);
+                return getRepository().save(entityToUpdate);
             }
         } catch (NonTransientDataAccessException e) {
             throw new BadEntityException(e);
