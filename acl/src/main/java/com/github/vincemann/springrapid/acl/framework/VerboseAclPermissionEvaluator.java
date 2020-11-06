@@ -89,7 +89,7 @@ public class VerboseAclPermissionEvaluator extends AclPermissionEvaluator implem
             try {
                 resolvedOid = objectIdentityResolver.resolve(oid);
             } catch (UnresolvableOidException e) {
-                e.printStackTrace();
+                log.warn("Could not resolve Oid for trace logging: " + e.getMessage());
             }
         }
         String name = RapidSecurityContext.getName();

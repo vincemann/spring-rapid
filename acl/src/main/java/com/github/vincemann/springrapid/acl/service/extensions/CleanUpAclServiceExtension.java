@@ -24,7 +24,6 @@ import java.io.Serializable;
  */
 @Transactional
 @LogInteraction(Severity.TRACE)
-@Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
 public class CleanUpAclServiceExtension
         extends AbstractAclServiceExtension<CrudService>
                 implements CrudServiceExtension<CrudService>
