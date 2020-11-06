@@ -11,6 +11,7 @@ import java.io.Serializable;
 import java.util.Optional;
 import java.util.Set;
 
+//override config from CrudService -> explicitly enable Logging for methods that actually matter
 @LogInteraction(disabled = true)
 @LogConfig
 public interface GenericCrudServiceExtension<S extends CrudService<E,Id>,E extends IdentifiableEntity<Id>,Id extends Serializable>

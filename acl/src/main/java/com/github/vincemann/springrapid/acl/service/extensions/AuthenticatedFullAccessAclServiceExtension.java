@@ -12,12 +12,12 @@ import org.springframework.transaction.annotation.Transactional;
 
 @Slf4j
 @Transactional
-@LogInteraction(Severity.TRACE)
 public class AuthenticatedFullAccessAclServiceExtension
         extends AbstractAclServiceExtension<CrudService>
                 implements CrudServiceExtension<CrudService> {
 
 
+    @LogInteraction
     @Override
     public IdentifiableEntity save(IdentifiableEntity entity) throws BadEntityException {
         IdentifiableEntity saved = getNext().save(entity);
