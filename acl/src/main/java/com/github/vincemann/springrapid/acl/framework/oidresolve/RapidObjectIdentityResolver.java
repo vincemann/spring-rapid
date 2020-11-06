@@ -35,7 +35,8 @@ public class RapidObjectIdentityResolver {
             if (crudService == null) {
                 throw new UnresolvableOidException("Entity class: " + entityClass + " does not map to service.");
             }
-            Optional byId = crudService.findById(objectIdentity.getIdentifier());
+            //todo change this. its hardcoded to long id
+            Optional byId = crudService.findById(Long.valueOf(objectIdentity.getIdentifier().toString()));
             VerifyEntity.isPresent(byId, objectIdentity.getIdentifier(), entityClass);
             return (T) byId.get();
 

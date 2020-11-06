@@ -5,8 +5,10 @@ import com.github.vincemann.springrapid.acl.AclSecurityCheckerImpl;
 import com.github.vincemann.springrapid.acl.proxy.*;
 import com.github.vincemann.springrapid.core.slicing.config.ServiceConfig;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Scope;
 
 @ServiceConfig
 @Slf4j
@@ -19,7 +21,7 @@ public class RapidSecurityProxyAutoConfiguration {
 
     @ConditionalOnMissingBean(name = "defaultServiceSecurityRule")
     @DefaultSecurityServiceExtension
-//    @Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
+    @Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
     @Bean
     public SecurityServiceExtension<?> defaultServiceSecurityRule(){
         return new AclDefaultSecurityServiceExtension();

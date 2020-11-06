@@ -1,5 +1,7 @@
 package com.github.vincemann.springrapid.core.proxy;
 
+import com.github.vincemann.aoplog.api.LogConfig;
+import com.github.vincemann.aoplog.api.LogInteraction;
 import com.github.vincemann.springrapid.core.model.IdentifiableEntity;
 import com.github.vincemann.springrapid.core.service.CrudService;
 import com.github.vincemann.springrapid.core.service.exception.BadEntityException;
@@ -9,6 +11,8 @@ import java.io.Serializable;
 import java.util.Optional;
 import java.util.Set;
 
+@LogInteraction(disabled = true)
+@LogConfig
 public interface GenericCrudServiceExtension<S extends CrudService<E,Id>,E extends IdentifiableEntity<Id>,Id extends Serializable>
         extends CrudService<E,Id>, NextLinkAware<S>{
 

@@ -21,7 +21,6 @@ import java.io.Serializable;
  */
 @Transactional
 @LogInteraction(Severity.TRACE)
-@Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
 public class InheritParentAclServiceExtension<E extends IdentifiableEntity<Id> & AclParentAware,Id extends Serializable>
                         extends AbstractAclServiceExtension<CrudService<E,Id>>
                                  implements GenericCrudServiceExtension<CrudService<E,Id>,E,Id> {
