@@ -23,7 +23,6 @@ import java.io.Serializable;
  * Removes Acl's on delete, if existing.
  */
 @Transactional
-@LogInteraction(Severity.TRACE)
 public class CleanUpAclServiceExtension
         extends AbstractAclServiceExtension<CrudService>
                 implements CrudServiceExtension<CrudService>
@@ -32,6 +31,7 @@ public class CleanUpAclServiceExtension
     private boolean deleteCascade = true;
 
 
+    @LogInteraction
     @Override
     public void deleteById(Serializable id) throws EntityNotFoundException, BadEntityException {
         getNext().deleteById(id);

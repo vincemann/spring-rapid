@@ -1,7 +1,7 @@
 package com.github.vincemann.springrapid.auth.service.extension;
 
-import com.github.vincemann.aoplog.Severity;
 import com.github.vincemann.aoplog.api.LogInteraction;
+import com.github.vincemann.springrapid.acl.proxy.SecurityServiceExtension;
 import com.github.vincemann.springrapid.auth.domain.AbstractUser;
 import com.github.vincemann.springrapid.auth.domain.RapidAuthAuthenticatedPrincipal;
 import com.github.vincemann.springrapid.auth.domain.dto.ChangePasswordForm;
@@ -9,8 +9,6 @@ import com.github.vincemann.springrapid.auth.domain.dto.RequestEmailChangeForm;
 import com.github.vincemann.springrapid.auth.security.RapidAuthSecurityContextChecker;
 import com.github.vincemann.springrapid.auth.service.UserService;
 import com.github.vincemann.springrapid.auth.service.token.BadTokenException;
-import com.github.vincemann.springrapid.acl.proxy.SecurityServiceExtension;
-
 import com.github.vincemann.springrapid.core.model.IdentifiableEntity;
 import com.github.vincemann.springrapid.core.security.RapidSecurityContextChecker;
 import com.github.vincemann.springrapid.core.service.exception.BadEntityException;
@@ -29,7 +27,6 @@ import java.util.Optional;
 
 @Transactional
 @Slf4j
-@LogInteraction(Severity.TRACE)
 public class UserServiceSecurityExtension
         extends SecurityServiceExtension<UserService>
             implements UserServiceExtension<UserService> {
@@ -38,12 +35,14 @@ public class UserServiceSecurityExtension
     private UserService userService;
     private RapidAuthSecurityContextChecker securityContextChecker;
 
+    @LogInteraction
     @Override
     public IdentifiableEntity save(IdentifiableEntity entity) throws BadEntityException {
         securityContextChecker.checkAdmin();
         return getNext().save(entity);
     }
 
+    @LogInteraction
     @Override
     public void resendVerificationMail(AbstractUser user) throws EntityNotFoundException {
         getSecurityChecker().checkPermission(user.getId(), getLast().getEntityClass(), getWritePermission());
@@ -51,6 +50,7 @@ public class UserServiceSecurityExtension
     }
 
 
+    @LogInteraction
     @Override
     public AbstractUser update(AbstractUser update, Boolean full) throws EntityNotFoundException, BadEntityException {
         getSecurityChecker().checkPermission(update.getId(), getLast().getEntityClass(), getWritePermission());
@@ -81,6 +81,7 @@ public class UserServiceSecurityExtension
         }
     }
 
+    @LogInteraction
     @Override
     public void forgotPassword(String email) throws EntityNotFoundException {
         //check if write permission over user
@@ -91,7 +92,7 @@ public class UserServiceSecurityExtension
         getNext().forgotPassword(email);
     }
 
-
+    @LogInteraction
     @Override
     public void changePassword(AbstractUser user, ChangePasswordForm changePasswordForm) throws EntityNotFoundException {
 //        LexUtils.ensureFound(user);
@@ -99,7 +100,7 @@ public class UserServiceSecurityExtension
         getNext().changePassword(user, changePasswordForm);
     }
 
-
+    @LogInteraction
     @Override
     public void requestEmailChange(AbstractUser user, RequestEmailChangeForm emailChangeForm) throws EntityNotFoundException {
         VerifyEntity.isPresent(user,"User who's email should get changed does not exist");
@@ -107,7 +108,7 @@ public class UserServiceSecurityExtension
         getNext().requestEmailChange(user, emailChangeForm);
     }
 
-
+    @LogInteraction
     @Override
     public AbstractUser changeEmail(AbstractUser user, String changeEmailCode) throws EntityNotFoundException, BadTokenException {
         VerifyEntity.isPresent(user,"User who's email should get changed does not exist");
@@ -115,7 +116,7 @@ public class UserServiceSecurityExtension
         return getNext().changeEmail(user, changeEmailCode);
     }
 
-
+    @LogInteraction
     @Override
     public String createNewAuthToken(String email) {
         RapidAuthAuthenticatedPrincipal authenticated = securityContextChecker.getSecurityContext().currentPrincipal();

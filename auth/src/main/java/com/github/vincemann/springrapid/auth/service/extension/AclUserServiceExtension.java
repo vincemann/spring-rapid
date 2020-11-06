@@ -17,14 +17,13 @@ import org.springframework.transaction.annotation.Transactional;
 
 @Slf4j
 @Transactional
-@LogInteraction(Severity.TRACE)
 public class AclUserServiceExtension
         extends AbstractAclServiceExtension<UserService>
             implements UserServiceExtension<UserService>
 {
 
 
-
+    @LogInteraction
     @Override
     public IdentifiableEntity save(IdentifiableEntity entity) throws BadEntityException {
         AbstractUser saved = (AbstractUser) getNext().save(entity);
@@ -32,7 +31,7 @@ public class AclUserServiceExtension
         return saved;
     }
 
-
+    @LogInteraction
     @Override
     public AbstractUser signup(AbstractUser user) throws BadEntityException {
         AbstractUser saved = getNext().signup(user);
@@ -40,6 +39,7 @@ public class AclUserServiceExtension
         return saved;
     }
 
+    @LogInteraction
     @Override
     public AbstractUser createAdminUser(AuthProperties.Admin admin) throws BadEntityException {
         AbstractUser saved = getNext().createAdminUser(admin);

@@ -20,12 +20,11 @@ import java.io.Serializable;
 
  */
 @Transactional
-@LogInteraction(Severity.TRACE)
 public class InheritParentAclServiceExtension<E extends IdentifiableEntity<Id> & AclParentAware,Id extends Serializable>
                         extends AbstractAclServiceExtension<CrudService<E,Id>>
                                  implements GenericCrudServiceExtension<CrudService<E,Id>,E,Id> {
 
-
+    @LogInteraction
     @Override
     public E save(E entity) throws BadEntityException {
         E saved = getNext().save(entity);
