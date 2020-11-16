@@ -37,6 +37,6 @@ public class RapidSecurityProxyAutoConfiguration {
     @Bean
     @ConditionalOnMissingBean(CrudServiceProxyBeanComposer.class)
     public CrudServiceProxyBeanComposer crudServiceProxyBeanComposer(){
-        return new CrudServiceProxyBeanComposer(defaultServiceSecurityRule());
+        return new CrudServiceProxyBeanComposer();
     }
 }

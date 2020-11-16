@@ -16,30 +16,33 @@ import java.util.Set;
  * Does basic acl permission checks on crud Methods defined in {@link com.github.vincemann.springrapid.core.service.CrudService}.
  * @see com.github.vincemann.springrapid.acl.proxy.DefaultSecurityServiceExtension
  */
-@LogInteraction(Severity.TRACE)
 public class AclDefaultSecurityServiceExtension
         extends SecurityServiceExtension<CrudService>
                 implements CrudServiceExtension<CrudService> {
 
 
+    @LogInteraction(Severity.DEBUG)
     @Override
     public Optional findById(Serializable id) throws BadEntityException {
         getSecurityChecker().checkPermission(id,getLast().getEntityClass(),getReadPermission());
         return getNext().findById(id);
     }
 
+    @LogInteraction(Severity.DEBUG)
     @Override
     public IdentifiableEntity update(IdentifiableEntity entity, Boolean full) throws EntityNotFoundException, BadEntityException {
         getSecurityChecker().checkPermission(entity.getId(),getLast().getEntityClass(),getWritePermission());
         return getNext().update(entity,full);
     }
 
+    @LogInteraction(Severity.DEBUG)
     @Override
     public Set findAll() {
         Set<IdentifiableEntity> entities = getNext().findAll();
         return getSecurityChecker().filter(entities,getReadPermission());
     }
 
+    @LogInteraction(Severity.DEBUG)
     @Override
     public void deleteById(Serializable id) throws EntityNotFoundException, BadEntityException {
         getSecurityChecker().checkPermission(id,getLast().getEntityClass(),getDeletePermission());

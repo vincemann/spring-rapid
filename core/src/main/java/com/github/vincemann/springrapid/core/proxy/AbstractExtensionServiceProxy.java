@@ -72,7 +72,7 @@ public abstract class AbstractExtensionServiceProxy
 
 
     protected St getState() {
-        return thead_state_map.get(Thread.currentThread());
+        return getThead_state_map().get(Thread.currentThread());
     }
 
 //    @Override
@@ -81,7 +81,7 @@ public abstract class AbstractExtensionServiceProxy
 //    }
 
     protected void setState(St state) {
-        thead_state_map.put(Thread.currentThread(), state);
+        getThead_state_map().put(Thread.currentThread(), state);
     }
 
     protected P provideProxyController() {
