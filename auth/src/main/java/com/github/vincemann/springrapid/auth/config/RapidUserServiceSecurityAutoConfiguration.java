@@ -29,10 +29,6 @@ import org.springframework.security.acls.model.MutableAclService;
 @AutoConfigureAfter({RapidAclAutoConfiguration.class})
 public class RapidUserServiceSecurityAutoConfiguration {
 
-    
-    @Autowired
-    @DefaultSecurityServiceExtension
-    SecurityServiceExtension<?> defaultSecurityServiceExtension;
 
     @Autowired
     LocalPermissionService permissionService;
@@ -40,14 +36,15 @@ public class RapidUserServiceSecurityAutoConfiguration {
     MutableAclService mutableAclService;
 
 
-    @ConditionalOnMissingBean(UserServiceSecurityExtension.class)
+    @ConditionalOnMissingBean(name = "userServiceSecurityExtension")
+    @Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
     @Bean
-    public UserServiceSecurityExtension userServiceSecurityRule() {
+    public UserServiceSecurityExtension userServiceSecurityExtension() {
         return new UserServiceSecurityExtension();
     }
 
     @Bean
-    @ConditionalOnMissingBean(AclUserServiceExtension.class)
+    @ConditionalOnMissingBean(name = "aclUserServiceExtension")
     @Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
     public AclUserServiceExtension aclUserServiceExtension() {
         return new AclUserServiceExtension();
@@ -57,12 +54,14 @@ public class RapidUserServiceSecurityAutoConfiguration {
     @ConditionalOnMissingBean(name = "aclManagingUserService")
     @Bean
     @AclManaging
-    public UserService<?, ?> aclManagingUserService( UserService<?, ?> service,
+    public UserService<?, ?> aclManagingUserService(UserService<?, ?> service,
 //                                                                            AdminFullAccessAclExtension adminFullAccess,
 //                                                                            AuthenticatedFullAccessAclExtension authenticatedFullAccessAclExtension,
-                                                        CleanUpAclServiceExtension cleanUpAclExtension) {
+                                                    AclUserServiceExtension aclUserServiceExtension,
+                                                    CleanUpAclServiceExtension cleanUpAclExtension
+    ) {
         return new ServiceExtensionProxyBuilder<>(service)
-                .addExtensions(aclUserServiceExtension(), cleanUpAclExtension)
+                .addExtensions(aclUserServiceExtension, cleanUpAclExtension)
                 .build();
     }
 
@@ -71,8 +70,9 @@ public class RapidUserServiceSecurityAutoConfiguration {
     @Bean
     @Secured
     public UserService<?, ?> securedUserService(@AclManaging UserService<?, ?> service,
-                                                    UserServiceSecurityExtension securityRule) {
-        return new SecurityServiceExtensionProxyBuilder<>(service,defaultSecurityServiceExtension)
+                                                UserServiceSecurityExtension securityRule,
+                                                @DefaultSecurityServiceExtension SecurityServiceExtension<?> defaultSecurityServiceExtension) {
+        return new SecurityServiceExtensionProxyBuilder<>(service, defaultSecurityServiceExtension)
                 .addExtensions(securityRule)
                 .build();
     }
