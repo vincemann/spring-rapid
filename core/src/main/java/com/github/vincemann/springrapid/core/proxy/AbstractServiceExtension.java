@@ -56,7 +56,7 @@ public abstract class AbstractServiceExtension<T,P extends ProxyController>
      * @return
      */
     public T getNext() {
-        return chain.getNext(this);
+        return getChain().getNext(this);
     }
 
 
@@ -78,7 +78,7 @@ public abstract class AbstractServiceExtension<T,P extends ProxyController>
 
     //can be safely casted to crudservice
     protected T getLast(){
-        return chain.getLast();
+        return getChain().getLast();
     }
 
     protected P getProxyController() {

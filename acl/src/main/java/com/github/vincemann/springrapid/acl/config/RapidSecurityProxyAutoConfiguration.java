@@ -23,7 +23,7 @@ public class RapidSecurityProxyAutoConfiguration {
     @DefaultSecurityServiceExtension
     @Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
     @Bean
-    public SecurityServiceExtension<?> defaultServiceSecurityRule(){
+    public SecurityServiceExtension<?> defaultServiceSecurityExtension(){
         return new AclDefaultSecurityServiceExtension();
     }
 
