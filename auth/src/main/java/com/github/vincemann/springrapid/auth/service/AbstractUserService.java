@@ -571,7 +571,7 @@ public abstract class AbstractUserService
         return authenticatedPrincipalFactory;
     }
 
-    protected PasswordEncoder getPasswordEncoder() {
+    protected RapidPasswordEncoder getPasswordEncoder() {
         return passwordEncoder;
     }
 

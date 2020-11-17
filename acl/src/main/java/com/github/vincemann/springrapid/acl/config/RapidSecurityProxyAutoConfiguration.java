@@ -19,7 +19,7 @@ public class RapidSecurityProxyAutoConfiguration {
     }
 
 
-    @ConditionalOnMissingBean(name = "defaultServiceSecurityRule")
+    @ConditionalOnMissingBean(name = "defaultServiceSecurityExtension")
     @DefaultSecurityServiceExtension
     @Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
     @Bean
