@@ -103,7 +103,7 @@ public class CrudServiceProxyBeanComposer implements BeanPostProcessor, Applicat
                 GenericBeanDefinition beanDef
                         = createBeanDef(securityProxy.qualifiers(), securityProxy.primary(), ((Class<? extends CrudService>) serviceInterface));
                 String proxyBeanName = resolveProxyName(securityProxy.qualifiers(),securityProxy.primary(),securityProxy.name(),unwrappedBean.getClass());
-                SecurityServiceExtension<?> defaultSecurityServiceExtension = (SecurityServiceExtension<?>) beanFactory.getBean("defaultServiceSecurityRule");
+                SecurityServiceExtension<?> defaultSecurityServiceExtension = (SecurityServiceExtension<?>) beanFactory.getBean("defaultServiceSecurityExtension");
                 CrudService securityProxyBean = new SecurityServiceExtensionProxyBuilder<>(lastProxiedBean,defaultSecurityServiceExtension)
                         .addServiceExtensions(resolveRules(securityProxy).toArray(new SecurityServiceExtension[0]))
                         .build();

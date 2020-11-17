@@ -10,7 +10,7 @@ import java.lang.annotation.*;
  */
 @Target({ElementType.FIELD, ElementType.METHOD, ElementType.PARAMETER, ElementType.TYPE, ElementType.ANNOTATION_TYPE})
 @Retention(RetentionPolicy.RUNTIME)
-@Qualifier("defaultServiceSecurityRule")
+@Qualifier("defaultServiceSecurityExtension")
 @Inherited
 public @interface DefaultSecurityServiceExtension {
 }
