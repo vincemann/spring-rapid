@@ -20,7 +20,11 @@ public class AbstractRapidUserDto extends IdentifiableEntityImpl<String> {
 
     public AbstractRapidUserDto(String email, Set<String> roles, String id) {
         this.email = email;
-        this.roles = roles;
+        if (roles==null){
+            this.setRoles(new HashSet<>());
+        }else {
+            this.roles = roles;
+        }
         this.setId(id);
     }
 }

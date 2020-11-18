@@ -49,11 +49,5 @@ public class RapidTokenServiceAutoConfiguration {
 	}
 
 
-	@Bean
-	@ConditionalOnMissingBean(AuthorizationTokenService.class)
-	public AuthorizationTokenService<RapidAuthAuthenticatedPrincipal> authorizationTokenService(){
-		return new RapidJwtAuthorizationTokenService();
-	}
-
 
 }
