@@ -3,6 +3,8 @@ package com.github.vincemann.springrapid.auth.service.token;
 import com.github.vincemann.aoplog.api.LogException;
 import com.github.vincemann.aoplog.api.LogInteraction;
 import com.github.vincemann.springrapid.core.security.RapidAuthenticatedPrincipal;
+import com.github.vincemann.springrapid.core.slicing.components.ServiceComponent;
+import com.github.vincemann.springrapid.core.slicing.components.WebComponent;
 import org.springframework.security.authentication.BadCredentialsException;
 
 /**
@@ -10,6 +12,7 @@ import org.springframework.security.authentication.BadCredentialsException;
  */
 @LogInteraction
 @LogException
+@WebComponent
 public interface AuthorizationTokenService<P extends RapidAuthenticatedPrincipal> {
 
     public String createToken(P principal);

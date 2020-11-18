@@ -6,6 +6,7 @@ import com.github.vincemann.springrapid.core.controller.GenericCrudController;
 import com.github.vincemann.springrapid.core.model.IdentifiableEntity;
 import com.github.vincemann.springrapid.core.service.AbstractCrudService;
 import com.github.vincemann.springrapid.core.service.CrudService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 
 import java.io.Serializable;
@@ -18,6 +19,7 @@ public abstract class SecuredCrudController
          >
         extends CrudController<E,Id,S> {
 
+    @Autowired
     @Secured
     @Lazy
     @Override
