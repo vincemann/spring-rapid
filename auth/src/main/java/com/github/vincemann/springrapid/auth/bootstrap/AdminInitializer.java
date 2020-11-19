@@ -54,7 +54,7 @@ public class AdminInitializer extends DatabaseDataInitializer {
 
             // Check if the user already exists
             Optional<? extends AbstractUser<?>> byEmail = userService.findByEmail(admin.getEmail());
-            if (byEmail.isPresent()) {
+            if (byEmail.isEmpty()) {
                 // Doesn't exist. So, create it.
                 log.debug("admin does not exist yet, creating: " + admin);
                 userService.createAdminUser(admin);
