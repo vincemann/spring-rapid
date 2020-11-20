@@ -3,7 +3,7 @@ package com.github.vincemann.springrapid.auth.config;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.vincemann.springrapid.auth.AuthProperties;
 import com.github.vincemann.springrapid.core.config.RapidJsonAutoConfiguration;
-import com.github.vincemann.springrapid.core.slicing.config.WebConfig;
+import com.github.vincemann.springrapid.core.slicing.WebConfig;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.AutoConfigureBefore;

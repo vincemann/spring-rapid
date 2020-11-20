@@ -4,7 +4,7 @@ import com.github.vincemann.springrapid.core.security.Roles;
 import com.github.vincemann.springrapid.acl.framework.HierarchicPermissionGrantingStrategy;
 import com.github.vincemann.springrapid.acl.framework.NoModSecurityCheckAclAuthorizationStrategy;
 import com.github.vincemann.springrapid.acl.framework.VerboseAclPermissionEvaluator;
-import com.github.vincemann.springrapid.core.slicing.config.ServiceConfig;
+import com.github.vincemann.springrapid.core.slicing.ServiceConfig;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.AutoConfigureBefore;

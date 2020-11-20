@@ -2,7 +2,7 @@ package com.github.vincemann.springrapid.coredemo.service.plugin;
 
 import com.github.vincemann.springrapid.core.proxy.GenericCrudServiceExtension;
 import com.github.vincemann.springrapid.core.proxy.BasicServiceExtension;
-import com.github.vincemann.springrapid.core.slicing.components.ServiceComponent;
+import com.github.vincemann.springrapid.core.slicing.ServiceComponent;
 import com.github.vincemann.springrapid.coredemo.model.Owner;
 import com.github.vincemann.springrapid.coredemo.service.OwnerService;
 

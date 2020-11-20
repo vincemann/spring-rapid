@@ -1,6 +1,6 @@
 package com.github.vincemann.springrapid.auth.domain;
 
-import com.github.vincemann.springrapid.core.slicing.components.ServiceComponent;
+import com.github.vincemann.springrapid.core.slicing.ServiceComponent;
 
 import java.io.Serializable;
 

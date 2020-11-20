@@ -1,6 +1,6 @@
 package com.github.vincemann.springrapid.core.config;
 
-import com.github.vincemann.springrapid.core.slicing.config.ServiceConfig;
+import com.github.vincemann.springrapid.core.slicing.ServiceConfig;
 import com.github.vincemann.springrapid.core.service.locator.CrudServiceLocator;
 import com.github.vincemann.springrapid.core.service.locator.CrudServiceLocatorImpl;
 import lombok.extern.slf4j.Slf4j;

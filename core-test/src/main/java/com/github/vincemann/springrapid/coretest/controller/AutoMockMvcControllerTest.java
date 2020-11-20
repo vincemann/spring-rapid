@@ -1,7 +1,9 @@
 package com.github.vincemann.springrapid.coretest.controller;
 
 import com.github.vincemann.springrapid.core.CoreProperties;
-import com.github.vincemann.springrapid.core.RapidProfiles;
+import com.github.vincemann.springrapid.core.slicing.RapidProfiles;
+import com.github.vincemann.springrapid.core.slicing.ServiceComponent;
+import com.github.vincemann.springrapid.core.slicing.ServiceConfig;
 import com.github.vincemann.springrapid.coretest.InitializingTest;
 import com.github.vincemann.springrapid.coretest.slicing.RapidTestProfiles;
 import com.github.vincemann.springrapid.coretest.automock.AutoMockServiceBeansGenericAnnotationWebConfigContextLoader;
@@ -28,7 +30,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.
 
 /**
  * BaseClass for Controller Integration tests performing basic {@link MockMvc} auto-config.
- * Does not load {@link com.github.vincemann.springrapid.core.slicing.components.ServiceComponent}s and {@link com.github.vincemann.springrapid.core.slicing.config.ServiceConfig}s.
+ * Does not load {@link ServiceComponent}s and {@link ServiceConfig}s.
  * All service beans are automatically mocked by {@link AutoMockServiceBeansGenericAnnotationWebConfigContextLoader}.
  * You can get the mocks by using @{@link org.springframework.beans.factory.annotation.Autowired}.
  *

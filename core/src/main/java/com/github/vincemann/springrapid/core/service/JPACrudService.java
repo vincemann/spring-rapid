@@ -4,7 +4,7 @@ import com.github.vincemann.springrapid.core.util.NullAwareBeanUtilsBean;
 import com.github.vincemann.springrapid.core.model.IdentifiableEntity;
 import com.github.vincemann.springrapid.core.service.exception.BadEntityException;
 import com.github.vincemann.springrapid.core.service.exception.EntityNotFoundException;
-import com.github.vincemann.springrapid.core.slicing.components.ServiceComponent;
+import com.github.vincemann.springrapid.core.slicing.ServiceComponent;
 import com.github.vincemann.springrapid.core.util.VerifyEntity;
 import org.apache.commons.beanutils.BeanUtilsBean;
 import org.springframework.dao.NonTransientDataAccessException;

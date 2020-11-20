@@ -1,7 +1,7 @@
 package com.github.vincemann.springrapid.coredemo.controller;
 
 import com.github.vincemann.springrapid.core.controller.owner.OwnerLocator;
-import com.github.vincemann.springrapid.core.slicing.components.WebComponent;
+import com.github.vincemann.springrapid.core.slicing.WebComponent;
 import com.github.vincemann.springrapid.coredemo.model.Owner;
 
 import java.util.Optional;

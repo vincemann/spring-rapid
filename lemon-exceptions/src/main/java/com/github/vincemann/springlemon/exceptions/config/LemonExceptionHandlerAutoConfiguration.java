@@ -1,7 +1,7 @@
 package com.github.vincemann.springlemon.exceptions.config;
 
 import com.github.vincemann.springlemon.exceptions.handlers.*;
-import com.github.vincemann.springrapid.core.slicing.config.WebConfig;
+import com.github.vincemann.springrapid.core.slicing.WebConfig;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.context.annotation.Bean;

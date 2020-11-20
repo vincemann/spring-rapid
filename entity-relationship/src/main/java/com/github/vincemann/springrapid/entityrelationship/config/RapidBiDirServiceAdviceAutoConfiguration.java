@@ -1,7 +1,7 @@
 package com.github.vincemann.springrapid.entityrelationship.config;
 
 import com.github.vincemann.springrapid.core.service.locator.CrudServiceLocator;
-import com.github.vincemann.springrapid.core.slicing.config.ServiceConfig;
+import com.github.vincemann.springrapid.core.slicing.ServiceConfig;
 import com.github.vincemann.springrapid.entityrelationship.advice.BiDirEntityPersistAdvice;
 import com.github.vincemann.springrapid.entityrelationship.advice.BiDirEntityRemoveAdvice;
 import com.github.vincemann.springrapid.entityrelationship.advice.BiDirEntityUpdateAdvice;

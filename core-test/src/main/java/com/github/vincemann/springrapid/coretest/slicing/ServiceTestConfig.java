@@ -1,6 +1,6 @@
 package com.github.vincemann.springrapid.coretest.slicing;
 
-import com.github.vincemann.springrapid.core.slicing.components.ServiceComponent;
+import com.github.vincemann.springrapid.core.slicing.ServiceComponent;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
 

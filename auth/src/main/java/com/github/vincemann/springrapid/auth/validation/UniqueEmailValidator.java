@@ -3,7 +3,7 @@ package com.github.vincemann.springrapid.auth.validation;
 import com.github.vincemann.aoplog.api.AopLoggable;
 import com.github.vincemann.aoplog.api.LogInteraction;
 import com.github.vincemann.springrapid.auth.domain.AbstractUserRepository;
-import com.github.vincemann.springrapid.core.slicing.components.ServiceComponent;
+import com.github.vincemann.springrapid.core.slicing.ServiceComponent;
 import lombok.extern.slf4j.Slf4j;
 
 import javax.validation.ConstraintValidator;

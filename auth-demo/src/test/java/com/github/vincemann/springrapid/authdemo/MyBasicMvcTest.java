@@ -1,9 +1,9 @@
 package com.github.vincemann.springrapid.authdemo;
 
-import com.github.vincemann.springrapid.authtests.BasicMvcTests;
-import org.springframework.context.annotation.ComponentScan;
+import com.github.vincemann.springrapid.authdemo.adapter.EnableProjectComponentScan;
+import com.github.vincemann.springrapid.authtests.BasicAuthTest;
 
 //@Import(MyLemonTestAdapter.class)
-@ComponentScan("com.github.vincemann.springrapid.authdemo")
-public class MyBasicMvcTest extends BasicMvcTests {
+@EnableProjectComponentScan
+public class MyBasicMvcTest extends BasicAuthTest {
 }

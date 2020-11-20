@@ -5,7 +5,7 @@ import com.github.vincemann.springrapid.core.config.RapidDtoMapperAutoConfigurat
 import com.github.vincemann.springrapid.core.controller.dto.mapper.DtoPostProcessor;
 import com.github.vincemann.springrapid.core.controller.mergeUpdate.MergeUpdateStrategy;
 import com.github.vincemann.springrapid.core.service.locator.CrudServiceLocator;
-import com.github.vincemann.springrapid.core.slicing.config.WebConfig;
+import com.github.vincemann.springrapid.core.slicing.WebConfig;
 import com.github.vincemann.springrapid.entityrelationship.controller.IdAwareMergeUpdateStrategy;
 import com.github.vincemann.springrapid.entityrelationship.controller.dtomapper.EntityIdResolver;
 import com.github.vincemann.springrapid.entityrelationship.controller.dtomapper.IdResolvingDtoPostProcessor;

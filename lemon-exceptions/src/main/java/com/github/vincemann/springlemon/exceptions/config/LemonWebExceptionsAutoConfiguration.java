@@ -7,7 +7,7 @@ import com.github.vincemann.springlemon.exceptions.handlers.AbstractExceptionHan
 import com.github.vincemann.springlemon.exceptions.web.DefaultExceptionHandlerControllerAdvice;
 import com.github.vincemann.springlemon.exceptions.web.LemonErrorAttributes;
 import com.github.vincemann.springlemon.exceptions.web.LemonErrorController;
-import com.github.vincemann.springrapid.core.slicing.config.WebConfig;
+import com.github.vincemann.springrapid.core.slicing.WebConfig;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.web.ServerProperties;

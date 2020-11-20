@@ -1,24 +1,22 @@
 package com.github.vincemann.springrapid.coretest.service;
 
-import com.github.vincemann.springrapid.core.RapidProfiles;
+import com.github.vincemann.springrapid.core.slicing.RapidProfiles;
 import com.github.vincemann.springrapid.core.model.IdentifiableEntity;
 import com.github.vincemann.springrapid.core.service.CrudService;
 import com.github.vincemann.springrapid.core.service.locator.CrudServiceLocator;
-import com.github.vincemann.springrapid.core.slicing.test.ImportRapidCoreServiceConfig;
 import com.github.vincemann.springrapid.coretest.InitializingTest;
 import com.github.vincemann.springrapid.coretest.slicing.RapidTestProfiles;
 import com.github.vincemann.springrapid.coretest.service.request.ServiceRequestBuilder;
 import com.github.vincemann.springrapid.coretest.service.resolve.EntityPlaceholder;
 import com.github.vincemann.springrapid.coretest.service.resolve.EntityPlaceholderResolver;
 import com.github.vincemann.springrapid.coretest.service.result.ServiceResultActions;
-import com.github.vincemann.springrapid.coretest.slicing.ImportRapidCoreTestConfig;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.AfterEach;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
+import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.data.repository.CrudRepository;
@@ -38,10 +36,11 @@ import static com.github.vincemann.springrapid.coretest.util.RapidTestUtil.mustB
 @ActiveProfiles(value = {RapidTestProfiles.TEST, RapidTestProfiles.SERVICE_TEST,RapidProfiles.SERVICE})
 @Transactional
 @Rollback
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.NONE)
 //import spring config that is relevant for service tests
-@DataJpaTest
-@ImportRapidCoreServiceConfig
-@ImportRapidCoreTestConfig
+//@DataJpaTest
+//@ImportRapidCoreServiceConfig
+//@ImportRapidCoreTestConfig
 public abstract class AbstractCrudServiceIntegrationTest
                 <
                         S extends CrudService<E,Id>,

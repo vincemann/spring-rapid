@@ -8,7 +8,7 @@ import com.github.vincemann.springrapid.acl.proxy.*;
 import com.github.vincemann.springrapid.acl.service.LocalPermissionService;
 import com.github.vincemann.springrapid.acl.service.extensions.CleanUpAclServiceExtension;
 import com.github.vincemann.springrapid.core.proxy.ServiceExtensionProxyBuilder;
-import com.github.vincemann.springrapid.core.slicing.config.ServiceConfig;
+import com.github.vincemann.springrapid.core.slicing.ServiceConfig;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;

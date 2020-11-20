@@ -115,6 +115,7 @@ public abstract class AbstractUserService
         //admins get created with createAdminMethod
         user.setRoles(Sets.newHashSet(AuthRoles.USER));
         U saved = save(user);
+        // is done in same transaction -> so applied directly
         makeUnverified(saved);
 
         log.debug("saved and send verification mail for unverified new user: " + saved);
