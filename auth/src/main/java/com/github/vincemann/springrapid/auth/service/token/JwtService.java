@@ -4,7 +4,7 @@ import com.github.vincemann.aoplog.Severity;
 import com.github.vincemann.aoplog.api.AopLoggable;
 import com.github.vincemann.aoplog.api.LogInteraction;
 import com.nimbusds.jwt.JWTClaimsSet;
-import com.github.vincemann.springrapid.core.slicing.components.ServiceComponent;
+import com.github.vincemann.springrapid.core.slicing.ServiceComponent;
 
 @ServiceComponent
 @LogInteraction(Severity.TRACE)

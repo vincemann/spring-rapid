@@ -4,7 +4,7 @@ import com.github.vincemann.springrapid.core.controller.dto.mapper.BasicDtoMappe
 import com.github.vincemann.springrapid.core.controller.dto.mapper.DelegatingDtoMapper;
 import com.github.vincemann.springrapid.core.controller.dto.mapper.DtoMapper;
 import com.github.vincemann.springrapid.core.controller.dto.mapper.DtoPostProcessor;
-import com.github.vincemann.springrapid.core.slicing.config.WebConfig;
+import com.github.vincemann.springrapid.core.slicing.WebConfig;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;

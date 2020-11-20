@@ -9,7 +9,7 @@ import com.github.vincemann.springrapid.core.controller.parentAware.ParentAwareE
 import com.github.vincemann.springrapid.core.controller.validationStrategy.JavaXDtoValidationStrategy;
 import com.github.vincemann.springrapid.core.controller.validationStrategy.DtoValidationStrategy;
 import com.github.vincemann.springrapid.core.service.EndpointService;
-import com.github.vincemann.springrapid.core.slicing.config.WebConfig;
+import com.github.vincemann.springrapid.core.slicing.WebConfig;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;

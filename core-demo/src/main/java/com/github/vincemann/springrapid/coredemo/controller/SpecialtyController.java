@@ -4,7 +4,7 @@ import com.github.vincemann.springrapid.core.controller.CrudController;
 import com.github.vincemann.springrapid.core.controller.dto.mapper.context.DtoMappingContext;
 import com.github.vincemann.springrapid.coredemo.dtos.SpecialtyDto;
 import com.github.vincemann.springrapid.coredemo.model.Specialty;
-import com.github.vincemann.springrapid.core.slicing.components.WebController;
+import com.github.vincemann.springrapid.core.slicing.WebController;
 import com.github.vincemann.springrapid.core.controller.dto.mapper.context.CrudDtoMappingContextBuilder;
 import com.github.vincemann.springrapid.coredemo.service.SpecialtyService;
 

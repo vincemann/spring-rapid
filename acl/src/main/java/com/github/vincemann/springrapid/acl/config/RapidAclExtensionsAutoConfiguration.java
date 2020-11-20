@@ -5,7 +5,7 @@ import com.github.vincemann.springrapid.acl.service.extensions.AuthenticatedFull
 import com.github.vincemann.springrapid.acl.service.extensions.CleanUpAclServiceExtension;
 import com.github.vincemann.springrapid.acl.service.extensions.InheritParentAclServiceExtension;
 import com.github.vincemann.springrapid.core.config.RapidJsonAutoConfiguration;
-import com.github.vincemann.springrapid.core.slicing.config.ServiceConfig;
+import com.github.vincemann.springrapid.core.slicing.ServiceConfig;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;

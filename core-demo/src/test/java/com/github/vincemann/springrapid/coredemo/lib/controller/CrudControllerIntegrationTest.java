@@ -11,6 +11,8 @@ import com.github.vincemann.springrapid.core.controller.idFetchingStrategy.IdFet
 import com.github.vincemann.springrapid.core.controller.validationStrategy.DtoValidationStrategy;
 import com.github.vincemann.springrapid.core.util.Lists;
 import com.github.vincemann.springrapid.coretest.controller.rapid.AbstractMvcCrudControllerTest;
+import com.github.vincemann.springrapid.coretest.slicing.RapidTestProfiles;
+import com.github.vincemann.springrapid.coretest.slicing.TestConfig;
 import org.junit.jupiter.api.*;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mockito;
@@ -21,9 +23,7 @@ import org.springframework.boot.autoconfigure.web.servlet.WebMvcAutoConfiguratio
 import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.boot.test.mock.mockito.SpyBean;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Import;
-import org.springframework.context.annotation.Primary;
+import org.springframework.context.annotation.*;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit.jupiter.web.SpringJUnitWebConfig;
@@ -358,7 +358,7 @@ class CrudControllerIntegrationTest
         Mockito.clearInvocations(dtoMappingContext);
     }
 
-    @TestConfiguration
+    @com.github.vincemann.springrapid.coretest.slicing.TestConfig
     public static class TestConfig {
         @Bean
         @Primary

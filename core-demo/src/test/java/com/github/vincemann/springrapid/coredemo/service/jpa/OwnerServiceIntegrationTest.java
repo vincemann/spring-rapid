@@ -1,11 +1,8 @@
 package com.github.vincemann.springrapid.coredemo.service.jpa;
 
-import com.github.vincemann.springrapid.core.util.Lists;
 import com.github.vincemann.springrapid.core.service.exception.BadEntityException;
 import com.github.vincemann.springrapid.core.service.exception.EntityNotFoundException;
-import com.github.vincemann.springrapid.coredemo.EnableProjectComponentScan;
-import com.github.vincemann.springrapid.coretest.service.AbstractCrudServiceIntegrationTest;
-import com.github.vincemann.springrapid.coretest.service.result.ServiceResult;
+import com.github.vincemann.springrapid.core.util.Lists;
 import com.github.vincemann.springrapid.coredemo.model.Owner;
 import com.github.vincemann.springrapid.coredemo.model.Pet;
 import com.github.vincemann.springrapid.coredemo.model.PetType;
@@ -13,7 +10,8 @@ import com.github.vincemann.springrapid.coredemo.service.OwnerService;
 import com.github.vincemann.springrapid.coredemo.service.PetService;
 import com.github.vincemann.springrapid.coredemo.service.PetTypeService;
 import com.github.vincemann.springrapid.coredemo.service.plugin.OwnerOfTheYearExtension;
-import com.github.vincemann.springrapid.entityrelationship.slicing.test.ImportRapidEntityRelServiceConfig;
+import com.github.vincemann.springrapid.coretest.service.AbstractCrudServiceIntegrationTest;
+import com.github.vincemann.springrapid.coretest.service.result.ServiceResult;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -25,17 +23,16 @@ import java.time.LocalDate;
 import java.util.HashSet;
 import java.util.Optional;
 
-
 import static com.github.vincemann.ezcompare.Comparator.compare;
-import static com.github.vincemann.springrapid.coretest.service.request.CrudServiceRequestBuilders.*;
-import static com.github.vincemann.springrapid.coretest.service.resolve.EntityPlaceholder.*;
 import static com.github.vincemann.springrapid.coretest.service.ExceptionMatchers.noException;
 import static com.github.vincemann.springrapid.coretest.service.ExistenceMatchers.notPresentInDatabase;
 import static com.github.vincemann.springrapid.coretest.service.PropertyMatchers.propertyAssert;
+import static com.github.vincemann.springrapid.coretest.service.request.CrudServiceRequestBuilders.*;
+import static com.github.vincemann.springrapid.coretest.service.resolve.EntityPlaceholder.*;
 
 
-@EnableProjectComponentScan
-@ImportRapidEntityRelServiceConfig
+//@EnableProjectComponentScan
+//@ImportRapidEntityRelServiceConfig
 class OwnerServiceIntegrationTest
         extends AbstractCrudServiceIntegrationTest<OwnerService, Owner, Long> {
     //Types

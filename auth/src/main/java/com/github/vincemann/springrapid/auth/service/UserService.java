@@ -14,7 +14,7 @@ import com.github.vincemann.springrapid.auth.util.UserVerifyUtils;
 import com.github.vincemann.springrapid.core.service.CrudService;
 import com.github.vincemann.springrapid.core.service.exception.BadEntityException;
 import com.github.vincemann.springrapid.core.service.exception.EntityNotFoundException;
-import com.github.vincemann.springrapid.core.slicing.components.ServiceComponent;
+import com.github.vincemann.springrapid.core.slicing.ServiceComponent;
 import org.springframework.validation.annotation.Validated;
 
 import javax.validation.Valid;

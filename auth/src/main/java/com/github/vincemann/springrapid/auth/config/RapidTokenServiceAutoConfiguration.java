@@ -1,10 +1,9 @@
 package com.github.vincemann.springrapid.auth.config;
 
 import com.github.vincemann.springrapid.auth.AuthProperties;
-import com.github.vincemann.springrapid.auth.domain.RapidAuthAuthenticatedPrincipal;
 import com.github.vincemann.springlemon.exceptions.config.LemonWebExceptionsAutoConfiguration;
 import com.github.vincemann.springrapid.auth.service.token.*;
-import com.github.vincemann.springrapid.core.slicing.config.ServiceConfig;
+import com.github.vincemann.springrapid.core.slicing.ServiceConfig;
 import com.nimbusds.jose.JOSEException;
 import com.nimbusds.jose.KeyLengthException;
 import lombok.extern.slf4j.Slf4j;

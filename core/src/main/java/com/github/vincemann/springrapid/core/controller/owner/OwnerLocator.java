@@ -4,7 +4,7 @@ import com.github.vincemann.aoplog.api.AopLoggable;
 import com.github.vincemann.aoplog.api.LogException;
 import com.github.vincemann.aoplog.api.LogInteraction;
 import com.github.vincemann.springrapid.core.model.IdentifiableEntity;
-import com.github.vincemann.springrapid.core.slicing.components.WebComponent;
+import com.github.vincemann.springrapid.core.slicing.WebComponent;
 import org.springframework.security.core.Authentication;
 
 import java.util.Optional;

@@ -5,7 +5,7 @@ import com.github.vincemann.springrapid.core.controller.DtoClassLocator;
 import com.github.vincemann.springrapid.core.controller.RoleFallbackDtoClassLocator;
 import com.github.vincemann.springrapid.core.controller.owner.DelegatingOwnerLocator;
 import com.github.vincemann.springrapid.core.controller.owner.OwnerLocator;
-import com.github.vincemann.springrapid.core.slicing.config.WebConfig;
+import com.github.vincemann.springrapid.core.slicing.WebConfig;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.context.annotation.Bean;

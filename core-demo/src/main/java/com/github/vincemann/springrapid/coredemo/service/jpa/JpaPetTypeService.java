@@ -4,7 +4,7 @@ import com.github.vincemann.springrapid.coredemo.repo.PetTypeRepository;
 import com.github.vincemann.springrapid.coredemo.model.PetType;
 import com.github.vincemann.springrapid.coredemo.service.PetTypeService;
 
-import com.github.vincemann.springrapid.core.slicing.components.ServiceComponent;
+import com.github.vincemann.springrapid.core.slicing.ServiceComponent;
 import org.springframework.aop.TargetClassAware;
 import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Service;
