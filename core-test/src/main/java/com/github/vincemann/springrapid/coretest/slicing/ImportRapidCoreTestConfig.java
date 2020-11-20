@@ -1,4 +1,4 @@
-package com.github.vincemann.springrapid.coretest.slicing.test;
+package com.github.vincemann.springrapid.coretest.slicing;
 
 import com.github.vincemann.springrapid.coretest.config.RapidServiceTestAutoConfiguration;
 import org.springframework.boot.autoconfigure.ImportAutoConfiguration;

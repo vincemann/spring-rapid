@@ -1,7 +1,9 @@
 package com.github.vincemann.springrapid.coretest.controller;
 
 import com.github.vincemann.springrapid.core.CoreProperties;
+import com.github.vincemann.springrapid.core.RapidProfiles;
 import com.github.vincemann.springrapid.coretest.InitializingTest;
+import com.github.vincemann.springrapid.coretest.slicing.RapidTestProfiles;
 import com.github.vincemann.springrapid.coretest.automock.AutoMockServiceBeansGenericAnnotationWebConfigContextLoader;
 import lombok.Getter;
 import lombok.Setter;
@@ -35,7 +37,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.
 @Getter
 @Setter
 @Slf4j
-@ActiveProfiles(value = {"test","web","webTest"})
+@ActiveProfiles(value = {RapidTestProfiles.TEST, RapidProfiles.WEB, RapidTestProfiles.WEB_TEST})
 @SpringBootTest
 //complete service interaction is mocked -> no interaction with database -> no datasource config needed
 @ImportAutoConfiguration(exclude = DataSourceAutoConfiguration.class)
@@ -48,7 +50,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.
 public abstract class AutoMockMvcControllerTest extends InitializingTest {
     private MockMvc mockMvc;
     private DefaultMockMvcBuilder mockMvcBuilder;
-    private MediaType contentType = MediaType.APPLICATION_JSON_UTF8;
+    private MediaType contentType;
 
     @Autowired
     private CoreProperties coreProperties;

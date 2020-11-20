@@ -41,7 +41,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@ActiveProfiles(value = {"test"})
+@ActiveProfiles(value = {RapidTestProfiles.TEST})
 //manually add only the autoConfiguration rly needed
 @SpringJUnitWebConfig(
         {

@@ -1,16 +1,17 @@
 package com.github.vincemann.springrapid.coretest.service;
 
+import com.github.vincemann.springrapid.core.RapidProfiles;
 import com.github.vincemann.springrapid.core.model.IdentifiableEntity;
-import com.github.vincemann.springrapid.core.service.AbstractCrudService;
 import com.github.vincemann.springrapid.core.service.CrudService;
 import com.github.vincemann.springrapid.core.service.locator.CrudServiceLocator;
 import com.github.vincemann.springrapid.core.slicing.test.ImportRapidCoreServiceConfig;
 import com.github.vincemann.springrapid.coretest.InitializingTest;
+import com.github.vincemann.springrapid.coretest.slicing.RapidTestProfiles;
 import com.github.vincemann.springrapid.coretest.service.request.ServiceRequestBuilder;
 import com.github.vincemann.springrapid.coretest.service.resolve.EntityPlaceholder;
 import com.github.vincemann.springrapid.coretest.service.resolve.EntityPlaceholderResolver;
 import com.github.vincemann.springrapid.coretest.service.result.ServiceResultActions;
-import com.github.vincemann.springrapid.coretest.slicing.test.ImportRapidCoreTestConfig;
+import com.github.vincemann.springrapid.coretest.slicing.ImportRapidCoreTestConfig;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.AfterEach;
@@ -34,7 +35,7 @@ import static com.github.vincemann.springrapid.coretest.util.RapidTestUtil.mustB
 
 @Slf4j
 //only include project beans that are relevant for service tests
-@ActiveProfiles(value = {"test","service","serviceTest"})
+@ActiveProfiles(value = {RapidTestProfiles.TEST, RapidTestProfiles.SERVICE_TEST,RapidProfiles.SERVICE})
 @Transactional
 @Rollback
 //import spring config that is relevant for service tests
