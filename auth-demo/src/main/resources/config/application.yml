@@ -5,31 +5,60 @@ spring:
 
   # Active profile
   profiles.active: dev,service,web
-  
+
+  jpa:
+    hibernate:
+      ddl-auto: create
+      use-new-id-generator-mappings: false
+    properties:
+      hibernate.jdbc.lob.non_contextual_creation: true
+  datasource:
+    url: jdbc:mysql://${MYSQL_HOST:localhost}:6603/lemonDb?useSSL=false&allowPublicKeyRetrieval=true
+    username: root
+    password: mypassword
+
   # JSON serialization settings
   jackson:
     default-property-inclusion: NON_NULL
-    
+
     serialization:
-      write-null-map-values: false 
-      
+      write-null-map-values: false
+
     deserialization:
       accept-single-value-as-array: true
-  
+
   devtools:
     # Comment this if you want the app to restart
     # when source code changes
     restart.enabled: false
     livereload.enabled: false
-    
+
   # https://github.com/spring-projects/spring-boot/wiki/Spring-Boot-2.1-Release-Notes#bean-overriding
   main.allow-bean-definition-overriding: true
 
+  security:
+    oauth2:
+      client:
+        provider:
+          facebook:
+            user-info-uri: https://graph.facebook.com/me?fields=email,name
+        registration:
+          google:
+            client-id: 1011974249454-6gq0hr01gqh3cndoqnss5r69tkk2nd84.apps.googleusercontent.com
+            client-secret: saDA6Cj60wipncFM-hzBD-C6
+          facebook:
+            client-id: 548349525905412
+            client-secret: 15a20c560c4c780dabdc0e637c02087a
+
 server.servlet.session.persistent: false
 
-#rapid:
-#  core:
-#    baseUrl: "/api/core"
+
+
+
+
+  #rapid:
+  #  core:
+  #    baseUrl: "/api/core"
 
 
 
@@ -45,3 +74,22 @@ rapid-auth:
   # Properties to be passed to client
   shared:
     fooBar: 123...
+
+    # application-url: http://localhost:9000
+    # oauth2-authentication-success-url: http://localhost:9000/social-login-success?token=
+
+  cors:
+      # Comma separated values of CORS allowedOrigins
+      # If this property is not given, CORS is not configured
+    allowed-origins: http://localhost:9000
+
+      # todo reenable captcha
+    #  recaptcha:
+    #    sitekey: 6LdwxRcUAAAAABkhOGWQXhl9FsR27D5YUJRuGzx0
+    #    secretkey: 6LdwxRcUAAAAADaG0Eo1qkYCco15cnngiBoBt2IO
+
+  jwt:
+      # An aes-128-cbc key generated at https://asecuritysite.com/encryption/keygen (take the "key" field)
+    secret: 841D8A6C80CBA4FCAD32D5367C18C53B
+    expiration-millis: 864000000 # 10 days
+    short-lived-millis: 120000   # two minutes
