@@ -61,7 +61,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
         "lemon.recaptcha.sitekey="
 })
 //activate everything for full integration tests
-@ActiveProfiles(value = {RapidProfiles.WEB, RapidProfiles.SERVICE, RapidTestProfiles.TEST, RapidTestProfiles.WEB_TEST, RapidTestProfiles.SERVICE_TEST, "dev"}, inheritProfiles = false)
+@ActiveProfiles(value = {RapidProfiles.WEB, RapidProfiles.SERVICE, RapidTestProfiles.TEST, RapidTestProfiles.WEB_TEST, RapidTestProfiles.SERVICE_TEST})
 @ImportAutoConfiguration(exclude = RapidAdminAutoConfiguration.class)
 @Getter
 @Slf4j
