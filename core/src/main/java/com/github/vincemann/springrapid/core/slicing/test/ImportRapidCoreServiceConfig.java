@@ -14,7 +14,11 @@ import java.lang.annotation.*;
 @Inherited
 @ImportAutoConfiguration({
 //import rapid core config that is relevant for service tests
-        RapidDatabaseInitAutoConfiguration.class, RapidCrudServiceLocatorAutoConfiguration.class, RapidAopLogAutoConfiguration.class, RapidAopLogAutoConfiguration.class, RapidGeneralAutoConfiguration.class
+        RapidDatabaseInitAutoConfiguration.class,
+        RapidCrudServiceLocatorAutoConfiguration.class,
+        RapidAopLogAutoConfiguration.class,
+        RapidAopLogAutoConfiguration.class,
+        RapidGeneralAutoConfiguration.class
 })
 public @interface ImportRapidCoreServiceConfig {
 }

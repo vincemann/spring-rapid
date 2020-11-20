@@ -11,7 +11,9 @@ import com.github.vincemann.springrapid.authtests.adapter.AuthTestAdapter;
 import com.github.vincemann.springrapid.acl.proxy.AclManaging;
 
 import com.github.vincemann.springrapid.core.CoreProperties;
+import com.github.vincemann.springrapid.core.RapidProfiles;
 import com.github.vincemann.springrapid.coretest.InitializingTest;
+import com.github.vincemann.springrapid.coretest.slicing.RapidTestProfiles;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.AfterEach;
@@ -59,7 +61,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
         "lemon.recaptcha.sitekey="
 })
 //activate everything for full integration tests
-@ActiveProfiles(value = {"web", "service", "test", "webTest", "serviceTest", "dev"}, inheritProfiles = false)
+@ActiveProfiles(value = {RapidProfiles.WEB, RapidProfiles.SERVICE, RapidTestProfiles.TEST, RapidTestProfiles.WEB_TEST, RapidTestProfiles.SERVICE_TEST, "dev"}, inheritProfiles = false)
 @ImportAutoConfiguration(exclude = RapidAdminAutoConfiguration.class)
 @Getter
 @Slf4j

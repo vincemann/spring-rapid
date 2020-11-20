@@ -1,5 +1,6 @@
 package com.github.vincemann.springrapid.core.slicing.components;
 
+import com.github.vincemann.springrapid.core.RapidProfiles;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
 
@@ -13,7 +14,7 @@ import java.lang.annotation.*;
  * See spring-rapid-core-test package for more.
  */
 @Inherited
-@Profile("service")
+@Profile(RapidProfiles.SERVICE)
 @Component
 @Target({ElementType.TYPE, ElementType.METHOD})
 @Retention(RetentionPolicy.RUNTIME)
