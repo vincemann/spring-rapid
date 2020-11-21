@@ -1,20 +1,25 @@
-package com.github.vincemann.springrapid.coretest.automock;
+package com.github.vincemann.springrapid.coretest.controller.automock;
 
 import com.github.vincemann.springrapid.core.slicing.ServiceComponent;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
+import org.mockito.Mockito;
 import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 import org.springframework.beans.factory.UnsatisfiedDependencyException;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.config.DependencyDescriptor;
 import org.springframework.beans.factory.support.BeanDefinitionBuilder;
 import org.springframework.beans.factory.support.DefaultListableBeanFactory;
+import org.springframework.core.MethodParameter;
 import org.springframework.core.annotation.AnnotationUtils;
 import org.springframework.stereotype.Service;
 
 import java.beans.Introspector;
+import java.lang.reflect.Executable;
+import java.lang.reflect.Method;
 import java.util.HashMap;
 import java.util.Map;
 
-import static org.mockito.ArgumentMatchers.nullable;
 import static org.mockito.Mockito.mock;
 
 /**
@@ -31,7 +36,7 @@ public class AutoMockBeanFactory extends DefaultListableBeanFactory {
     @Override
     protected Map<String, Object> findAutowireCandidates(final String beanName, final Class<?> requiredType, final DependencyDescriptor descriptor) {
         //log.debug("Trying to find Autowire Candidates for type: " +requiredType.getSimpleName()+ " , requesting bean is: " + beanName);
-        String mockBeanName = Introspector.decapitalize(requiredType.getSimpleName()) + "Mock";
+        String mockBeanName = createMockedBeanName(requiredType,descriptor);
         Map<String, Object> autowireCandidates = new HashMap<>();
         try {
             autowireCandidates = super.findAutowireCandidates(beanName, requiredType, descriptor);
@@ -43,7 +48,6 @@ public class AutoMockBeanFactory extends DefaultListableBeanFactory {
         }
         if (autowireCandidates.isEmpty()) {
             //todo @Repository auch automocken?
-            //todo does this support @Qualifiers ? -> create diff mocks for @Autowired service and  @Secured @Autowired service ?
             if(requiredType.isAnnotationPresent(ServiceComponent.class)
                     || requiredType.isAnnotationPresent(Service.class)) {
                 // prevent double mock creation of same singleton bean requested multiple times
@@ -58,5 +62,29 @@ public class AutoMockBeanFactory extends DefaultListableBeanFactory {
             }
         }
         return autowireCandidates;
+    }
+
+    /**
+     * Takes @{@link org.springframework.beans.factory.annotation.Qualifier}s on method and constructor injection into consideration.
+     * -> separate mock creation for diff @Qualifiers
+     */
+    protected String createMockedBeanName(Class<?> type, DependencyDescriptor dependencyDescriptor){
+        String name = Introspector.decapitalize(type.getSimpleName()) + "Mock";
+        MethodParameter methodParameter = dependencyDescriptor.getMethodParameter();
+        if (methodParameter==null){
+            return name;
+        }
+        Executable executable = methodParameter.getExecutable();
+        Qualifier qualifier = AnnotationUtils.findAnnotation(executable, Qualifier.class);
+        if (qualifier!=null){
+            name=qualifier.value().concat(StringUtils.capitalize(name));
+        }
+        return name;
+    }
+
+    public void resetMocks(){
+        for (Object mock : mockedBeans.values()) {
+            Mockito.reset(mock);
+        }
     }
 }
