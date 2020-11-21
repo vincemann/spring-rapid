@@ -6,7 +6,7 @@ import com.github.vincemann.springrapid.coredemo.model.Pet;
 import com.github.vincemann.springrapid.coredemo.model.PetType;
 import com.github.vincemann.springrapid.coredemo.model.Specialty;
 import com.github.vincemann.springrapid.core.service.CrudService;
-import com.github.vincemann.springrapid.coretest.controller.rapid.AbstractUrlParamIdCrudControllerTest;
+import com.github.vincemann.springrapid.coretest.controller.AbstractUrlParamIdCrudControllerTest;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;

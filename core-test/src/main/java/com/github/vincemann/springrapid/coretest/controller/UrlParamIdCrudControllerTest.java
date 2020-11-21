@@ -1,4 +1,4 @@
-package com.github.vincemann.springrapid.coretest.controller.rapid;
+package com.github.vincemann.springrapid.coretest.controller;
 
 import com.github.vincemann.springrapid.core.controller.GenericCrudController;
 import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;

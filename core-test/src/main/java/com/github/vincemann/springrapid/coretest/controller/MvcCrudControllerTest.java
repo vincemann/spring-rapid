@@ -1,4 +1,4 @@
-package com.github.vincemann.springrapid.coretest.controller.rapid;
+package com.github.vincemann.springrapid.coretest.controller;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;

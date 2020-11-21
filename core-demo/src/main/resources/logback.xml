@@ -3,7 +3,7 @@
     <include resource="org/springframework/boot/logging/logback/defaults.xml"/>
     <include resource="org/springframework/boot/logging/logback/console-appender.xml"/>
 
-    <logger name="com.github.vincemann.springrapid.coretest.automock" level="error" additivity="false">
+    <logger name="com.github.vincemann.springrapid.coretest.controller.automock" level="error" additivity="false">
         <appender-ref ref="CONSOLE"/>
     </logger>
 

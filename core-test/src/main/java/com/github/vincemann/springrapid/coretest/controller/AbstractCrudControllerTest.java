@@ -1,4 +1,4 @@
-package com.github.vincemann.springrapid.coretest.controller.rapid;
+package com.github.vincemann.springrapid.coretest.controller;
 
 import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -12,7 +12,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.BeforeEach;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
-import com.github.vincemann.springrapid.coretest.controller.AutoMockMvcControllerTest;
+import com.github.vincemann.springrapid.coretest.controller.automock.AutoMockControllerTest;
 
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 
@@ -23,14 +23,14 @@ import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.
  * Offers basic crud methods to interact with controller and convenience methods to use Controllers {@link ObjectMapper} to
  * {@link this#serialize(Object)} and {@link this#deserialize(String, JavaType)} raw JSON Strings.
  *
- * @see AutoMockMvcControllerTest
+ * @see AutoMockControllerTest
  *
  */
 @Getter
 @Setter
 @Slf4j
-public abstract class AbstractMvcCrudControllerTest<C extends GenericCrudController>
-        extends AutoMockMvcControllerTest
+public abstract class AbstractCrudControllerTest<C extends GenericCrudController>
+        extends AutoMockControllerTest
             implements MvcCrudControllerTest<C>
 {
 //    private Class<E> entityClass = (Class<E>) ((ParameterizedType) this.getClass().getGenericSuperclass()).getActualTypeArguments()[1];

@@ -6,7 +6,7 @@ import com.github.vincemann.springrapid.auth.domain.AuthRoles;
 import com.github.vincemann.springrapid.core.security.Roles;
 
 import com.github.vincemann.springrapid.core.util.ResourceUtils;
-import com.github.vincemann.springrapid.coretest.controller.rapid.UrlParamIdCrudControllerTest;
+import com.github.vincemann.springrapid.coretest.controller.UrlParamIdCrudControllerTest;
 import lombok.Getter;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.Assertions;

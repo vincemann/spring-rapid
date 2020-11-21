@@ -10,9 +10,8 @@ import com.github.vincemann.springrapid.core.controller.DtoClassLocator;
 import com.github.vincemann.springrapid.core.controller.idFetchingStrategy.IdFetchingStrategy;
 import com.github.vincemann.springrapid.core.controller.validationStrategy.DtoValidationStrategy;
 import com.github.vincemann.springrapid.core.util.Lists;
-import com.github.vincemann.springrapid.coretest.controller.rapid.AbstractMvcCrudControllerTest;
+import com.github.vincemann.springrapid.coretest.controller.AbstractCrudControllerTest;
 import com.github.vincemann.springrapid.coretest.slicing.RapidTestProfiles;
-import com.github.vincemann.springrapid.coretest.slicing.TestConfig;
 import org.junit.jupiter.api.*;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mockito;
@@ -20,7 +19,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.context.PropertyPlaceholderAutoConfiguration;
 import org.springframework.boot.autoconfigure.validation.ValidationAutoConfiguration;
 import org.springframework.boot.autoconfigure.web.servlet.WebMvcAutoConfiguration;
-import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.boot.test.mock.mockito.SpyBean;
 import org.springframework.context.annotation.*;
@@ -58,7 +56,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 //override config to define mock rules before context initialization
 @Import(CrudControllerIntegrationTest.TestConfig.class)
 class CrudControllerIntegrationTest
-        extends AbstractMvcCrudControllerTest<ExampleController> {
+        extends AbstractCrudControllerTest<ExampleController> {
 
     static final ExampleEntity requestEntity = new ExampleEntity("request testEntity");
     static final ExampleEntity returnEntity = new ExampleEntity("return testEntity");

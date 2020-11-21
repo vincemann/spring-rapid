@@ -6,7 +6,7 @@ import com.github.vincemann.springrapid.core.security.RapidSecurityContext;
 import com.github.vincemann.springrapid.core.service.locator.CrudServiceLocator;
 import com.github.vincemann.springrapid.core.util.ResourceUtils;
 import com.github.vincemann.springrapid.coretest.TestPrincipal;
-import com.github.vincemann.springrapid.coretest.controller.rapid.AbstractUrlParamIdCrudControllerTest;
+import com.github.vincemann.springrapid.coretest.controller.AbstractUrlParamIdCrudControllerTest;
 import com.github.vincemann.springrapid.coredemo.dtos.owner.CreateOwnerDto;
 import com.github.vincemann.springrapid.coredemo.dtos.owner.ReadForeignOwnerDto;
 import com.github.vincemann.springrapid.coredemo.dtos.owner.ReadOwnOwnerDto;
