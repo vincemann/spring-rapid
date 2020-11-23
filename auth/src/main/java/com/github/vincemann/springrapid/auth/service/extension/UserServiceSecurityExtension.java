@@ -60,8 +60,8 @@ public class UserServiceSecurityExtension
         RapidSecurityContextChecker.checkAuthenticated();
         RapidAuthAuthenticatedPrincipal currPrincipal = securityContextChecker.getSecurityContext().currentPrincipal();
         checkRoleChangingPermissions(oldUser, update, currPrincipal);
-        getProxyController().overrideDefaultExtension();
-        return getNext().update(update, full);
+//        getProxyController().overrideDefaultExtension();
+        return getLast().update(update, full);
     }
 
     /**

@@ -6,7 +6,6 @@ import java.lang.annotation.*;
 
 @Target(ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)
-@Inherited
 @Repeatable(DefineProxies.class)
 public @interface DefineProxy {
 
