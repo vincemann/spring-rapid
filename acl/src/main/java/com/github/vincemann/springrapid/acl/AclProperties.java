@@ -6,5 +6,9 @@ import lombok.Setter;
 @Getter
 @Setter
 public class AclProperties {
-    public Boolean defaultAclChecks = Boolean.TRUE;
+
+    public AclProperties() {
+    }
+
+    public boolean defaultAclChecks = true;
 }

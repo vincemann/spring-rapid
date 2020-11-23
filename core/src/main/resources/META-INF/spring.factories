@@ -7,4 +7,5 @@ com.github.vincemann.springrapid.core.config.RapidDatabaseInitAutoConfiguration,
 com.github.vincemann.springrapid.core.config.RapidGeneralAutoConfiguration,\
 com.github.vincemann.springrapid.core.config.RapidJsonAutoConfiguration,\
 com.github.vincemann.springrapid.core.config.RapidSecurityAutoConfiguration,\
-  com.github.vincemann.springrapid.core.config.RapidDtoLocatorAutoConfiguration
+com.github.vincemann.springrapid.core.config.RapidDtoLocatorAutoConfiguration,\
+com.github.vincemann.springrapid.core.config.RapidProxyAutoConfiguration

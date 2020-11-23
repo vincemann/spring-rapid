@@ -114,7 +114,7 @@ public class RapidAclAutoConfiguration {
     @ConfigurationProperties(prefix="rapid-acl")
     @ConditionalOnMissingBean(AclProperties.class)
     @Bean
-    public AclProperties rapidAuthProperties() {
+    public AclProperties rapidAclProperties() {
         return new AclProperties();
     }
 
