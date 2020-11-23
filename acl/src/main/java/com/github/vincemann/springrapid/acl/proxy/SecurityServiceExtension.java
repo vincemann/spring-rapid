@@ -2,17 +2,18 @@ package com.github.vincemann.springrapid.acl.proxy;
 
 import com.github.vincemann.springrapid.acl.AclSecurityChecker;
 import com.github.vincemann.springrapid.core.proxy.AbstractServiceExtension;
+import com.github.vincemann.springrapid.core.proxy.BasicServiceExtension;
 import lombok.Getter;
 import org.springframework.beans.factory.annotation.Autowired;
 
 /**
  *
- * Write extensions for protected Services, managed by {@link SecurityExtensionServiceProxy}.
+ * Write extensions for secured Services
  * @see com.github.vincemann.springrapid.core.proxy.BasicServiceExtension
  */
 @Getter
 public class SecurityServiceExtension<T>
-        extends AbstractServiceExtension<T, SecurityProxyController> {
+        extends BasicServiceExtension<T> {
     private String readPermission = "READ";
     private String writePermission = "WRITE";
     private String createPermission = "CREATE";

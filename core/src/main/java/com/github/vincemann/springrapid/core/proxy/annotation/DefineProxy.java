@@ -7,8 +7,8 @@ import java.lang.annotation.*;
 @Target(ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)
 @Inherited
-@Repeatable(ProxyDefinitions.class)
-public @interface ProxyDefinition {
+@Repeatable(DefineProxies.class)
+public @interface DefineProxy {
 
     String name() default "";
     Class<? extends AbstractServiceExtension>[] extensions() default {};

@@ -24,12 +24,6 @@ public class RapidAclExtensionsAutoConfiguration {
     }
 
 
-    @ConditionalOnMissingBean(LocalPermissionService.class)
-    @Bean
-    public LocalPermissionService localPermissionService(MutableAclService aclService){
-        return new LocalPermissionService(aclService);
-    }
-
     @ConditionalOnMissingBean(AuthenticatedFullAccessAclServiceExtension.class)
     @Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
     @Bean
