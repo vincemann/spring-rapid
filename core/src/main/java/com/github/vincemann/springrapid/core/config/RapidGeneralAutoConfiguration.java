@@ -29,11 +29,6 @@ public class RapidGeneralAutoConfiguration {
     }
 
     @Bean
-    public AnnotationCrudServiceProxyFactory annotationCrudServiceProxyFactory(){
-        return new AnnotationCrudServiceProxyFactory();
-    }
-
-    @Bean
     public Message messageUtils(MessageSource messageSource){
         return new Message(messageSource);
     }

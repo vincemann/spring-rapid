@@ -27,15 +27,6 @@ public class RapidSecurityProxyAutoConfiguration {
     }
 
 
-    @ConditionalOnMissingBean(name = "defaultAclChecksExtension")
-    @Qualifier("defaultAclChecksExtension")
-    @Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
-    @Bean
-    public AbstractServiceExtension<?,?> defaultAclChecksExtension(){
-        return new DefaultAclChecksExtension();
-    }
-
-
     @Bean
     @ConditionalOnMissingBean(AclSecurityChecker.class)
     public AclSecurityChecker aclSecurityChecker(){

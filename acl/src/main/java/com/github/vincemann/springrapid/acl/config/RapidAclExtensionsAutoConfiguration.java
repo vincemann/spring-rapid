@@ -1,18 +1,19 @@
 package com.github.vincemann.springrapid.acl.config;
 
-import com.github.vincemann.springrapid.acl.service.LocalPermissionService;
+import com.github.vincemann.springrapid.acl.proxy.SimpleAclChecksExtension;
 import com.github.vincemann.springrapid.acl.service.extensions.AuthenticatedFullAccessAclServiceExtension;
 import com.github.vincemann.springrapid.acl.service.extensions.CleanUpAclServiceExtension;
 import com.github.vincemann.springrapid.acl.service.extensions.InheritParentAclServiceExtension;
 import com.github.vincemann.springrapid.core.config.RapidJsonAutoConfiguration;
+import com.github.vincemann.springrapid.core.proxy.AbstractServiceExtension;
 import com.github.vincemann.springrapid.core.slicing.ServiceConfig;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Scope;
-import org.springframework.security.acls.model.MutableAclService;
 
 @ServiceConfig
 @Slf4j
@@ -23,6 +24,13 @@ public class RapidAclExtensionsAutoConfiguration {
 
     }
 
+    @ConditionalOnMissingBean(name = "simpleAclChecksExtension")
+    @Qualifier("simpleAclChecksExtension")
+    @Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
+    @Bean
+    public AbstractServiceExtension<?,?> simpleAclChecksExtension(){
+        return new SimpleAclChecksExtension();
+    }
 
     @ConditionalOnMissingBean(AuthenticatedFullAccessAclServiceExtension.class)
     @Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
