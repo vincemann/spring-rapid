@@ -18,10 +18,7 @@ import org.springframework.test.util.AopTestUtils;
 import org.springframework.util.Assert;
 
 import java.lang.annotation.Annotation;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 @Slf4j
 public class AnnotationCrudServiceProxyFactory implements BeanPostProcessor, ApplicationContextAware {
@@ -43,6 +40,7 @@ public class AnnotationCrudServiceProxyFactory implements BeanPostProcessor, App
         if(unwrappedBean instanceof CrudService){
             List<DefineProxy> proxyDefinitions = ContainerAnnotationUtils.findAnnotations(unwrappedBean.getClass(), DefineProxy.class, DefineProxies.class);
             List<CreateProxy> toCreate = ContainerAnnotationUtils.findAnnotations(unwrappedBean.getClass(), CreateProxy.class, CreateProxies.class);
+            Map<String,CrudService> createdInternalProxies = new HashMap<>();
             if(toCreate.isEmpty()){
                 return bean;
             }
@@ -81,8 +79,12 @@ public class AnnotationCrudServiceProxyFactory implements BeanPostProcessor, App
                     }else {
                         // this is the normal case
                         // found local proxy definition, now create proxy
-                        internalProxy = new ServiceExtensionProxyBuilder<>(lastProxiedBean)
-                                .addServiceExtensions(resolveExtensions(proxyDefinition.get().extensions()).toArray(new AbstractServiceExtension[0])).build();
+                        internalProxy = createdInternalProxies.get(beanName);
+                        if (internalProxy==null) {
+                            internalProxy = new ServiceExtensionProxyBuilder<>(lastProxiedBean)
+                                    .addServiceExtensions(resolveExtensions(proxyDefinition.get().extensions()).toArray(new AbstractServiceExtension[0])).build();
+                            createdInternalProxies.put(proxyName, internalProxy);
+                        }
                     }
                     lastProxiedBean=internalProxy;
                 }
