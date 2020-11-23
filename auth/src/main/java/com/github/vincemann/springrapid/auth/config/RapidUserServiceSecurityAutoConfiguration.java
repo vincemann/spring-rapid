@@ -70,9 +70,9 @@ public class RapidUserServiceSecurityAutoConfiguration {
     @Bean
     @Secured
     public UserService<?, ?> securedUserService(@AclManaging UserService<?, ?> service,
-                                                UserServiceSecurityExtension securityRule,
-                                                @DefaultSecurityServiceExtension SecurityServiceExtension<?> defaultSecurityServiceExtension) {
-        return new SecurityServiceExtensionProxyBuilder<>(service, defaultSecurityServiceExtension)
+                                                UserServiceSecurityExtension securityRule
+    ) {
+        return new ServiceExtensionProxyBuilder<>(service)
                 .addExtensions(securityRule)
                 .build();
     }

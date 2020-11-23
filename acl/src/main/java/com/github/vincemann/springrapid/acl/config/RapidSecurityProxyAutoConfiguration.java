@@ -42,9 +42,4 @@ public class RapidSecurityProxyAutoConfiguration {
         return new AclSecurityCheckerImpl();
     }
 
-    @Bean
-    @ConditionalOnMissingBean(CrudServiceProxyBeanComposer.class)
-    public CrudServiceProxyBeanComposer crudServiceProxyBeanComposer(){
-        return new CrudServiceProxyBeanComposer();
-    }
 }
