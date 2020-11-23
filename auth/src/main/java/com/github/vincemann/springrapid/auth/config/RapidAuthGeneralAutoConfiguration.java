@@ -19,9 +19,7 @@ import org.springframework.context.annotation.Configuration;
 public class RapidAuthGeneralAutoConfiguration {
 
 
-    /**
-     * Spring Lemon related properties
-     */
+
     @ConfigurationProperties(prefix="rapid-auth")
     @ConditionalOnMissingBean(AuthProperties.class)
     @Bean

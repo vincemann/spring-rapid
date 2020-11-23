@@ -1,5 +1,8 @@
 package com.github.vincemann.springrapid.acl.config;
 
+import com.github.vincemann.springrapid.acl.AclProperties;
+import com.github.vincemann.springrapid.acl.service.LocalPermissionService;
+import com.github.vincemann.springrapid.core.CoreProperties;
 import com.github.vincemann.springrapid.core.security.Roles;
 import com.github.vincemann.springrapid.acl.framework.HierarchicPermissionGrantingStrategy;
 import com.github.vincemann.springrapid.acl.framework.NoModSecurityCheckAclAuthorizationStrategy;
@@ -9,6 +12,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.AutoConfigureBefore;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
+import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.cache.ehcache.EhCacheFactoryBean;
 import org.springframework.cache.ehcache.EhCacheManagerFactoryBean;
 import org.springframework.context.annotation.Bean;
@@ -23,6 +27,7 @@ import org.springframework.security.acls.domain.EhCacheBasedAclCache;
 import org.springframework.security.acls.jdbc.BasicLookupStrategy;
 import org.springframework.security.acls.jdbc.JdbcMutableAclService;
 import org.springframework.security.acls.jdbc.LookupStrategy;
+import org.springframework.security.acls.model.MutableAclService;
 import org.springframework.security.acls.model.PermissionGrantingStrategy;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 
@@ -104,6 +109,20 @@ public class RapidAclAutoConfiguration {
         expressionHandler.setPermissionEvaluator(permissionEvaluator);
         expressionHandler.setPermissionCacheOptimizer(new AclPermissionCacheOptimizer(aclService()));
         return expressionHandler;
+    }
+
+    @ConfigurationProperties(prefix="rapid-acl")
+    @ConditionalOnMissingBean(AclProperties.class)
+    @Bean
+    public AclProperties rapidAuthProperties() {
+        return new AclProperties();
+    }
+
+
+    @ConditionalOnMissingBean(LocalPermissionService.class)
+    @Bean
+    public LocalPermissionService localPermissionService(MutableAclService aclService){
+        return new LocalPermissionService(aclService);
     }
 
     @ConditionalOnMissingBean(LookupStrategy.class)

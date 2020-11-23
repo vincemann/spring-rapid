@@ -1,7 +1,6 @@
 package com.github.vincemann.springrapid.core.proxy.annotation;
 
 import com.github.vincemann.springrapid.core.proxy.AbstractServiceExtension;
-import com.github.vincemann.springrapid.core.proxy.BasicServiceExtension;
 import com.github.vincemann.springrapid.core.proxy.ServiceExtensionProxyBuilder;
 import com.github.vincemann.springrapid.core.service.CrudService;
 import com.github.vincemann.springrapid.core.util.ContainerAnnotationUtils;
@@ -42,7 +41,7 @@ public class AnnotationCrudServiceProxyFactory implements BeanPostProcessor, App
         //log.debug("postProcessing bean : " + beanName);
         Object unwrappedBean = AopTestUtils.getUltimateTargetObject(bean);
         if(unwrappedBean instanceof CrudService){
-            List<ProxyDefinition> proxyDefinitions = ContainerAnnotationUtils.findAnnotations(unwrappedBean.getClass(), ProxyDefinition.class, ProxyDefinitions.class);
+            List<DefineProxy> proxyDefinitions = ContainerAnnotationUtils.findAnnotations(unwrappedBean.getClass(), DefineProxy.class, DefineProxies.class);
             List<CreateProxy> toCreate = ContainerAnnotationUtils.findAnnotations(unwrappedBean.getClass(), CreateProxy.class, CreateProxies.class);
             if(toCreate.isEmpty()){
                 return bean;
@@ -71,7 +70,7 @@ public class AnnotationCrudServiceProxyFactory implements BeanPostProcessor, App
                 for (String proxyName : proxy.proxies()) {
                     // try to find locally
                     CrudService internalProxy;
-                    Optional<ProxyDefinition> proxyDefinition = proxyDefinitions.stream().filter(p -> p.name().equals(proxyName)).findFirst();
+                    Optional<DefineProxy> proxyDefinition = proxyDefinitions.stream().filter(p -> p.name().equals(proxyName)).findFirst();
                     if (proxyDefinition.isEmpty()){
                         // try to find globally, proxy definitions name is assumed to be the global bean name
                         if (beanFactory.containsBean(proxyName)){
@@ -102,7 +101,7 @@ public class AnnotationCrudServiceProxyFactory implements BeanPostProcessor, App
 
 
 
-    private Class resolveServiceInterface(Object bean, String beanName){
+    protected Class resolveServiceInterface(Object bean, String beanName){
         String entityName = ((CrudService) bean).getEntityClass().getSimpleName();
         String interfaceName = entityName + "Service";
         Optional<Class<?>> serviceInterfaceClass = Lists.newArrayList(bean.getClass().getInterfaces()).stream()
@@ -112,7 +111,7 @@ public class AnnotationCrudServiceProxyFactory implements BeanPostProcessor, App
         return serviceInterfaceClass.get();
     }
 
-    private GenericBeanDefinition createBeanDef(Class<? extends Annotation>[] qualifiers, boolean primary, Class<? extends CrudService> beanClass){
+    protected GenericBeanDefinition createBeanDef(Class<? extends Annotation>[] qualifiers, boolean primary, Class<? extends CrudService> beanClass){
         final GenericBeanDefinition serviceBeanDef = new GenericBeanDefinition();
         for (Class<? extends Annotation> qualifier : qualifiers) {
             Assert.isTrue(qualifier.isAnnotationPresent(Qualifier.class));
@@ -123,7 +122,7 @@ public class AnnotationCrudServiceProxyFactory implements BeanPostProcessor, App
         return serviceBeanDef;
     }
 
-    private String resolveProxyName(Class<? extends Annotation>[] qualifiers,boolean primary,String beanName, Class beanType){
+    protected String resolveProxyName(Class<? extends Annotation>[] qualifiers,boolean primary,String beanName, Class beanType){
         String name = beanName;
         if(name.isEmpty()){
             String prefix;
@@ -140,7 +139,7 @@ public class AnnotationCrudServiceProxyFactory implements BeanPostProcessor, App
         return name;
     }
 
-    private List<AbstractServiceExtension> resolveExtensions(Class<? extends AbstractServiceExtension>[] extensionTypeArr){
+    protected List<AbstractServiceExtension> resolveExtensions(Class<? extends AbstractServiceExtension>[] extensionTypeArr){
         List<AbstractServiceExtension> plugins = new ArrayList<>();
         ArrayList<Class<? extends AbstractServiceExtension>> extensionTypes = Lists.newArrayList(extensionTypeArr);
         for (Class<? extends AbstractServiceExtension> extensionType : extensionTypes) {
@@ -152,13 +151,13 @@ public class AnnotationCrudServiceProxyFactory implements BeanPostProcessor, App
         return plugins;
     }
 
-    private List<SecurityServiceExtension> resolveRules(SecurityProxy proxy){
-        List<SecurityServiceExtension> rules = new ArrayList<>();
-        ArrayList<Class<? extends SecurityServiceExtension>> pluginTypes = Lists.newArrayList(proxy.rules());
-        for (Class<? extends SecurityServiceExtension> ruleType : pluginTypes) {
-            SecurityServiceExtension rule = beanFactory.getBean(ruleType);
-            rules.add(rule);
-        }
-        return rules;
-    }
+//    private List<SecurityServiceExtension> resolveRules(SecurityProxy proxy){
+//        List<SecurityServiceExtension> rules = new ArrayList<>();
+//        ArrayList<Class<? extends SecurityServiceExtension>> pluginTypes = Lists.newArrayList(proxy.rules());
+//        for (Class<? extends SecurityServiceExtension> ruleType : pluginTypes) {
+//            SecurityServiceExtension rule = beanFactory.getBean(ruleType);
+//            rules.add(rule);
+//        }
+//        return rules;
+//    }
 }
