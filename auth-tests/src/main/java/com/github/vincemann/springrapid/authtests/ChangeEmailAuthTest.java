@@ -140,11 +140,12 @@ public class ChangeEmailAuthTest extends AbstractRapidAuthTest {
 		user.setCredentialsUpdatedMillis(System.currentTimeMillis());
 		userRepository.save(user);
 
-		Thread.sleep(1L);
+//		Thread.sleep(1L);
 
 		// A new auth token is needed, because old one would be obsolete!
 		String authToken = successful_login(UNVERIFIED_USER_EMAIL, UNVERIFIED_USER_PASSWORD);
-		
+
+
 		// now ready to test!
 		mvc.perform(post(authProperties.getController().getChangeEmailUrl())
                 .param("code", changeEmailCode)

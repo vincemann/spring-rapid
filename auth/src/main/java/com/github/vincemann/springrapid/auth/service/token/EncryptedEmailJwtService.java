@@ -1,5 +1,6 @@
 package com.github.vincemann.springrapid.auth.service.token;
 
+import com.github.vincemann.springrapid.auth.util.JwtUtils;
 import com.github.vincemann.springrapid.core.util.Message;
 import com.github.vincemann.springrapid.core.util.VerifyAccess;
 import com.nimbusds.jwt.JWTClaimsSet;
@@ -25,10 +26,12 @@ public class EncryptedEmailJwtService implements EmailJwtService {
 
         builder
                 //.issueTime(new Date())
-                .expirationTime(new Date(System.currentTimeMillis() + expirationMillis))
+//                .expirationTime(new Date()) -> rounds to millis bad for tests
+                .claim(JwtUtils.EXPIRATION_AUDIENCE,System.currentTimeMillis() + expirationMillis)
                 .audience(aud)
                 .subject(subject)
-                .issueTime(new Date());
+                .claim(JwtUtils.ISSUED_AT_AUDIENCE,System.currentTimeMillis());
+//                .issueTime(new Date()); -> rounds to millis bad for tests
 
         otherClaims.forEach(builder::claim);
         JWTClaimsSet claims = builder.build();
@@ -40,7 +43,7 @@ public class EncryptedEmailJwtService implements EmailJwtService {
         VerifyAccess.condition(expectedAud != null &&
                         claims.getAudience().contains(expectedAud),
                 "com.naturalprogrammer.spring.wrong.audience");
-        long expirationTime = claims.getExpirationTime().getTime();
+        long expirationTime = (long) claims.getClaim(JwtUtils.EXPIRATION_AUDIENCE);
         long currentTime = System.currentTimeMillis();
 
         log.debug("Parsing JWT. Expiration time = " + expirationTime
@@ -53,7 +56,7 @@ public class EncryptedEmailJwtService implements EmailJwtService {
 
     public JWTClaimsSet parseToken(String token, String expectedAud,long issuedAfter) throws BadTokenException {
         JWTClaimsSet claims = parseToken(token, expectedAud);
-        long issueTime = claims.getIssueTime().getTime();
+        long issueTime = (long) claims.getClaim(JwtUtils.ISSUED_AT_AUDIENCE);
 
 //        log.debug("token issued at: " + new Date(issueTime) + ", user creds updated at: " + new Date(issuedAfter));
         VerifyAccess.condition(issueTime >= issuedAfter,

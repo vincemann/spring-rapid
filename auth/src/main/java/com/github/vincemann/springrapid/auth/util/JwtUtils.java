@@ -6,6 +6,8 @@ import com.github.vincemann.springrapid.core.util.VerifyAccess;
 import com.nimbusds.jwt.JWTClaimsSet;
 import lombok.extern.slf4j.Slf4j;
 
+import java.util.Date;
+
 /**
  * Useful helper methods
  * 
@@ -14,14 +16,20 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class JwtUtils {
 
+	public static final String AUTH_AUDIENCE = "auth";
+	// do not change these to the standard exp and iat bc the jwt builder will convert to date obj again and round to seconds, which fucks up the tests
+	public static final String EXPIRATION_AUDIENCE = "expired";
+	public static final String ISSUED_AT_AUDIENCE = "issued-at";
+
 	/**
 	 * Throws BadCredentialsException if
 	 * user's credentials were updated after the JWT was issued
 	 */
 	public static void ensureCredentialsUpToDate(JWTClaimsSet claims, AbstractUser<?> user) {
 
-		long issueTime = claims.getIssueTime().getTime();
-
+		long issueTime = (long) claims.getClaim(ISSUED_AT_AUDIENCE);
+		log.debug("Token issued at: " + new Date(issueTime) +  ", user credentials updated at: " + new Date(user.getCredentialsUpdatedMillis()));
+		log.debug("Token issued at: " + issueTime +  ", user credentials updated at: " + user.getCredentialsUpdatedMillis());
 		VerifyAccess.condition(issueTime >= user.getCredentialsUpdatedMillis(),
 				Message.get("com.naturalprogrammer.spring.obsoleteToken"));
 	}

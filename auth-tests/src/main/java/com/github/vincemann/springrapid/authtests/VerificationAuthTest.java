@@ -34,7 +34,7 @@ public class VerificationAuthTest extends AbstractRapidAuthTest {
 	
 	@Test
 	public void testEmailVerification() throws Exception {
-		Thread.sleep(1L);
+//		Thread.sleep(1L);
 		mvc.perform(post(authProperties.getController().getVerifyUserUrl())
 				.param("id",getUnverifiedUser().getId().toString())
                 .param("code", verificationCode)
@@ -122,7 +122,7 @@ public class VerificationAuthTest extends AbstractRapidAuthTest {
 		user.setCredentialsUpdatedMillis(System.currentTimeMillis());
 		getUserService().save(user);
 
-		Thread.sleep(300);
+		Thread.sleep(50);
 		mvc.perform(post(authProperties.getController().getVerifyUserUrl())
 				.param("id",getUnverifiedUser().getId().toString())
                 .param("code", verificationCode)
