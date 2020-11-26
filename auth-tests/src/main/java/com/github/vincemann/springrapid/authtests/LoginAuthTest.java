@@ -46,9 +46,9 @@ public class LoginAuthTest extends AbstractRapidAuthTest {
 //				.andExpect(status().is(204));
 		
 		// Test that a 500ms token does not expire before 500ms
-		String token = successful_login(ADMIN_EMAIL, ADMIN_PASSWORD, 500L);
+		String token = successful_login(ADMIN_EMAIL, ADMIN_PASSWORD, 50L);
 		// but, does expire after 500ms
-		Thread.sleep(501L);
+		Thread.sleep(51L);
 		mvc.perform(get("/api/core/ping")
 				.header(HttpHeaders.AUTHORIZATION, token))
 				.andExpect(status().is(401));
@@ -65,7 +65,7 @@ public class LoginAuthTest extends AbstractRapidAuthTest {
 		AbstractUser<Long> user = getUserService().findById(getAdmin().getId()).get();
 		user.setCredentialsUpdatedMillis(System.currentTimeMillis());
 		getUserService().save(user);
-		Thread.sleep(300);
+		Thread.sleep(50);
 
 		mvc.perform(get(authProperties.getController().getPingUrl())
 				.header(HttpHeaders.AUTHORIZATION, tokens.get(getAdmin().getId())))

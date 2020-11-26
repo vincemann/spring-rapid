@@ -9,6 +9,7 @@ import com.github.vincemann.springrapid.core.service.exception.EntityNotFoundExc
 import com.github.vincemann.springrapid.core.slicing.WebComponent;
 import com.github.vincemann.springrapid.core.util.VerifyEntity;
 import com.nimbusds.jwt.JWTClaimsSet;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.security.authentication.BadCredentialsException;
@@ -17,6 +18,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.Optional;
 
 @WebComponent
+@Slf4j
 public class RapidJwtAuthorizationTokenService extends AbstractJwtAuthorizationTokenService<RapidAuthAuthenticatedPrincipal> {
 
     private UserService userService;
@@ -30,6 +32,7 @@ public class RapidJwtAuthorizationTokenService extends AbstractJwtAuthorizationT
             Optional<AbstractUser<?>> byEmail = userService.findByEmail(principal.getEmail());
             VerifyEntity.isPresent(byEmail,"User with email: "+principal.getEmail()+" not found");
             AbstractUser<?> user = byEmail.get();
+            log.debug("Check if token is obsolete...");
             JwtUtils.ensureCredentialsUpToDate(claims,user);
         } catch (EntityNotFoundException e) {
             throw new BadCredentialsException("User encoded in token not found",e);

@@ -149,7 +149,7 @@ public abstract class AbstractRapidAuthTest extends InitializingTest {
 
     protected void setupSpies(){
         jwt = Mockito.spy(properties.getJwt());
-        Mockito.doReturn(jwt).when((AuthProperties) unproxy(properties)).getJwt();
+        Mockito.doReturn(jwt).when(unproxy(properties)).getJwt();
     }
 
     protected <T> T unproxy(T spy){
@@ -195,7 +195,7 @@ public abstract class AbstractRapidAuthTest extends InitializingTest {
         unverifiedUser = aclUserService.save(testAdapter.createTestUser(UNVERIFIED_USER_EMAIL,/*"Unverified User",*/ UNVERIFIED_USER_PASSWORD, AuthRoles.USER, AuthRoles.UNVERIFIED));
         blockedUser = aclUserService.save(testAdapter.createTestUser(BLOCKED_USER_EMAIL,/*"Blocked User",*/ BLOCKED_USER_PASSWORD, AuthRoles.USER, AuthRoles.BLOCKED));
         // sleep so login shortly after wont result in obsolete token
-        Thread.sleep(400);
+//        Thread.sleep(400);
     }
 
 
