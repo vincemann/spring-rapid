@@ -7,11 +7,11 @@ import com.github.vincemann.springrapid.auth.mail.MailSender;
 import com.github.vincemann.springrapid.auth.security.AuthenticatedPrincipalFactory;
 import com.github.vincemann.springrapid.auth.service.token.AuthorizationTokenService;
 import com.github.vincemann.springrapid.auth.service.token.BadTokenException;
-import com.github.vincemann.springrapid.auth.service.token.EmailJwtService;
 
 import com.github.vincemann.springlemon.exceptions.util.Validate;
 
-import com.github.vincemann.springrapid.auth.util.JwtUtils;
+import com.github.vincemann.springrapid.auth.service.token.JweTokenService;
+import com.github.vincemann.springrapid.auth.util.RapidJwt;
 import com.github.vincemann.springrapid.auth.util.LemonMapUtils;
 import com.github.vincemann.springrapid.auth.util.TransactionalUtils;
 import com.github.vincemann.springrapid.core.security.RapidSecurityContext;
@@ -36,8 +36,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Lazy;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.annotation.Validated;
@@ -70,7 +68,7 @@ public abstract class AbstractUserService
     private RapidPasswordEncoder passwordEncoder;
     private AuthProperties properties;
     private MailSender<MailData> mailSender;
-    private EmailJwtService emailTokenService;
+    private JweTokenService jweTokenService;
 //    private UserService<U, ID> rootUserService;
 
     /**
@@ -198,8 +196,8 @@ public abstract class AbstractUserService
         Validate.condition(user.hasRole(AuthRoles.UNVERIFIED),
                 "com.naturalprogrammer.spring.alreadyVerified").go();
         //verificationCode is jwtToken
-        JWTClaimsSet claims = emailTokenService.parseToken(verificationCode,
-                VERIFY_AUDIENCE, user.getCredentialsUpdatedMillis());
+        JWTClaimsSet claims = jweTokenService.parseToken(verificationCode);
+        RapidJwt.validate(claims,VERIFY_AUDIENCE,user.getCredentialsUpdatedMillis());
 
         VerifyAccess.condition(claims.getSubject().equals(user.getId().toString()) &&
                         claims.getClaim("email").equals(user.getEmail()),
@@ -241,7 +239,8 @@ public abstract class AbstractUserService
     @Transactional(propagation = Propagation.REQUIRED, readOnly = false)
     public U resetPassword(ResetPasswordForm form) throws EntityNotFoundException, BadTokenException {
 
-        JWTClaimsSet claims = emailTokenService.parseToken(form.getCode(), FORGOT_PASSWORD_AUDIENCE);
+        JWTClaimsSet claims = jweTokenService.parseToken(form.getCode());
+        RapidJwt.validate(claims,FORGOT_PASSWORD_AUDIENCE);
 
         String email = claims.getSubject();
 
@@ -249,7 +248,7 @@ public abstract class AbstractUserService
         Optional<U> byEmail = findByEmail(email);
         VerifyEntity.isPresent(byEmail, "User with email: " + email + " not found");
         U user = byEmail.get();
-        JwtUtils.ensureCredentialsUpToDate(claims, user);
+        RapidJwt.validateIssuedAfter(claims, user.getCredentialsUpdatedMillis());
 
         // sets the password
         user.setPassword(passwordEncoder.encode(form.getNewPassword()));
@@ -364,12 +363,11 @@ public abstract class AbstractUserService
      * Mails the change-email verification link to the user.
      */
     protected void mailChangeEmailLink(U user) {
-
-        String changeEmailCode = emailTokenService.createToken(
-                CHANGE_EMAIL_AUDIENCE,
+        JWTClaimsSet claims = RapidJwt.create(CHANGE_EMAIL_AUDIENCE,
                 user.getId().toString(),
                 properties.getJwt().getExpirationMillis(),
                 LemonMapUtils.mapOf("newEmail", user.getNewEmail()));
+        String changeEmailCode = jweTokenService.createToken(claims);
 
         try {
 
@@ -419,9 +417,8 @@ public abstract class AbstractUserService
         Validate.condition(StringUtils.isNotBlank(user.getNewEmail()),
                 "com.naturalprogrammer.spring.blank.newEmail").go();
 
-        JWTClaimsSet claims = emailTokenService.parseToken(changeEmailCode,
-                CHANGE_EMAIL_AUDIENCE,
-                user.getCredentialsUpdatedMillis());
+        JWTClaimsSet claims = jweTokenService.parseToken(changeEmailCode);
+        RapidJwt.validate(claims,CHANGE_EMAIL_AUDIENCE, user.getCredentialsUpdatedMillis());
 
         VerifyAccess.condition(
                 claims.getSubject().equals(user.getId().toString()) &&
@@ -488,13 +485,12 @@ public abstract class AbstractUserService
 //        try {
 
             log.debug("Sending verification mail to: " + user);
-
-            String verificationCode = emailTokenService.createToken(
-                    VERIFY_AUDIENCE,
-                    user.getId().toString(),
-                    properties.getJwt().getExpirationMillis(),
-                    //payload
-                    LemonMapUtils.mapOf("email", user.getEmail()));
+        JWTClaimsSet claims = RapidJwt.create(VERIFY_AUDIENCE,
+                user.getId().toString(),
+                properties.getJwt().getExpirationMillis(),
+                //payload
+                LemonMapUtils.mapOf("email", user.getEmail()));
+        String verificationCode = jweTokenService.createToken(claims);
 
             // make the link
             String verifyLink = properties.getApplicationUrl()
@@ -531,11 +527,10 @@ public abstract class AbstractUserService
     public void sendForgotPasswordMail(U user) {
 
         log.debug("Mailing forgot password link to user: " + user);
-
-        String forgotPasswordCode = emailTokenService.createToken(FORGOT_PASSWORD_AUDIENCE,
+        JWTClaimsSet claims = RapidJwt.create(FORGOT_PASSWORD_AUDIENCE,
                 user.getEmail(),
-                properties.getJwt().getExpirationMillis()
-        );
+                properties.getJwt().getExpirationMillis());
+        String forgotPasswordCode = jweTokenService.createToken(claims);
 
         // make the link
         String forgotPasswordLink = properties.getApplicationUrl() + "/reset-password?code=" + forgotPasswordCode;
@@ -584,8 +579,8 @@ public abstract class AbstractUserService
         return mailSender;
     }
 
-    protected EmailJwtService getEmailTokenService() {
-        return emailTokenService;
+    protected JweTokenService getJweTokenService() {
+        return jweTokenService;
     }
 
 //    protected UserService<U, ID> getRootUserService() {
@@ -619,8 +614,8 @@ public abstract class AbstractUserService
     }
 
     @Autowired
-    public void injectEmailJwtService(EmailJwtService emailJwtService) {
-        this.emailTokenService = emailJwtService;
+    public void injectJweTokenService(JweTokenService jweTokenService) {
+        this.jweTokenService = jweTokenService;
     }
 
 //    @Autowired

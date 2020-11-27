@@ -3,7 +3,7 @@ package com.github.vincemann.springrapid.auth.service.token;
 import com.github.vincemann.springrapid.auth.domain.AbstractUser;
 import com.github.vincemann.springrapid.auth.domain.RapidAuthAuthenticatedPrincipal;
 import com.github.vincemann.springrapid.auth.service.UserService;
-import com.github.vincemann.springrapid.auth.util.JwtUtils;
+import com.github.vincemann.springrapid.auth.util.RapidJwt;
 
 import com.github.vincemann.springrapid.core.service.exception.EntityNotFoundException;
 import com.github.vincemann.springrapid.core.slicing.WebComponent;
@@ -32,15 +32,13 @@ public class RapidJwtAuthorizationTokenService extends AbstractJwtAuthorizationT
             Optional<AbstractUser<?>> byEmail = userService.findByEmail(principal.getEmail());
             VerifyEntity.isPresent(byEmail,"User with email: "+principal.getEmail()+" not found");
             AbstractUser<?> user = byEmail.get();
-            log.debug("Check if token is obsolete...");
-            JwtUtils.ensureCredentialsUpToDate(claims,user);
+            RapidJwt.validateIssuedAfter(claims,user.getCredentialsUpdatedMillis());
         } catch (EntityNotFoundException e) {
             throw new BadCredentialsException("User encoded in token not found",e);
         }
     }
 
     @Lazy
-
     @Autowired
     public void injectUserService(UserService userService) {
         this.userService = userService;
