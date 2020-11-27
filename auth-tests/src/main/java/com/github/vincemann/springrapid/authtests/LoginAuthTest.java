@@ -45,9 +45,9 @@ public class LoginAuthTest extends AbstractRapidAuthTest {
 //				.header(LemonSecurityConfig.TOKEN_REQUEST_HEADER_NAME, tokens.get(getAdmin().getId())))
 //				.andExpect(status().is(204));
 		
-		// Test that a 500ms token does not expire before 500ms
+		// Test that a 50ms token does not expire before 50ms
 		String token = successful_login(ADMIN_EMAIL, ADMIN_PASSWORD, 50L);
-		// but, does expire after 500ms
+		// but, does expire after 50ms
 		Thread.sleep(51L);
 		mvc.perform(get("/api/core/ping")
 				.header(HttpHeaders.AUTHORIZATION, token))

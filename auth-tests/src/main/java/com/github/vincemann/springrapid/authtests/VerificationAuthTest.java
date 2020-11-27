@@ -3,7 +3,8 @@ package com.github.vincemann.springrapid.authtests;
 import com.github.vincemann.springrapid.auth.domain.AbstractUser;
 import com.github.vincemann.springrapid.auth.domain.AuthRoles;
 import com.github.vincemann.springrapid.auth.service.AbstractUserService;
-import com.github.vincemann.springrapid.auth.service.token.EmailJwtService;
+import com.github.vincemann.springrapid.auth.service.token.JweTokenService;
+import com.github.vincemann.springrapid.auth.util.RapidJwt;
 import com.github.vincemann.springrapid.auth.util.LemonMapUtils;
 import org.hamcrest.Matchers;
 import org.junit.jupiter.api.BeforeEach;
@@ -22,14 +23,14 @@ public class VerificationAuthTest extends AbstractRapidAuthTest {
 	private String verificationCode;
 	
 	@Autowired
-	private EmailJwtService emailJwtService;
+	private JweTokenService jweTokenService;
 	
 	@BeforeEach
 	public void setup() throws Exception {
 		super.setup();
-		verificationCode = emailJwtService.createToken(AbstractUserService.VERIFY_AUDIENCE,
+		verificationCode = jweTokenService.createToken(RapidJwt.create(AbstractUserService.VERIFY_AUDIENCE,
 				Long.toString(getUnverifiedUser().getId()), 60000L,
-				LemonMapUtils.mapOf("email", UNVERIFIED_USER_EMAIL));
+				LemonMapUtils.mapOf("email", UNVERIFIED_USER_EMAIL)));
 	}
 	
 	@Test
@@ -82,9 +83,10 @@ public class VerificationAuthTest extends AbstractRapidAuthTest {
                 .andExpect(status().is(401));
 
 		// Wrong audience
-		String token = emailJwtService.createToken("wrong-audience",
+		String token = jweTokenService.createToken(
+				RapidJwt.create("wrong-audience",
 				Long.toString(getUnverifiedUser().getId()), 60000L,
-				LemonMapUtils.mapOf("email", UNVERIFIED_USER_EMAIL));
+				LemonMapUtils.mapOf("email", UNVERIFIED_USER_EMAIL)));
 		mvc.perform(post(authProperties.getController().getVerifyUserUrl())
 				.param("id",getUnverifiedUser().getId().toString())
                 .param("code", token)
@@ -92,9 +94,10 @@ public class VerificationAuthTest extends AbstractRapidAuthTest {
                 .andExpect(status().is(403));
 		
 		// Wrong email
-		token = emailJwtService.createToken(AbstractUserService.VERIFY_AUDIENCE,
+		token = jweTokenService.createToken(
+				RapidJwt.create(AbstractUserService.VERIFY_AUDIENCE,
 				Long.toString(getUnverifiedUser().getId()), 60000L,
-				LemonMapUtils.mapOf("email", "wrong.email@example.com"));
+				LemonMapUtils.mapOf("email", "wrong.email@example.com")));
 		mvc.perform(post(authProperties.getController().getVerifyUserUrl())
 				.param("id",getUnverifiedUser().getId().toString())
                 .param("code", token)
@@ -102,9 +105,10 @@ public class VerificationAuthTest extends AbstractRapidAuthTest {
                 .andExpect(status().is(403));
 
 		// expired token
-		token = emailJwtService.createToken(AbstractUserService.VERIFY_AUDIENCE,
+		token = jweTokenService.createToken(
+				RapidJwt.create(AbstractUserService.VERIFY_AUDIENCE,
 				Long.toString(getUnverifiedUser().getId()), 1L,
-				LemonMapUtils.mapOf("email", UNVERIFIED_USER_EMAIL));
+				LemonMapUtils.mapOf("email", UNVERIFIED_USER_EMAIL)));
 		// Thread.sleep(1001L);
 		mvc.perform(post(authProperties.getController().getVerifyUserUrl())
 				.param("id",getUnverifiedUser().getId().toString())

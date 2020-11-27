@@ -3,7 +3,8 @@ package com.github.vincemann.springrapid.authtests;
 import com.github.vincemann.springrapid.auth.domain.AbstractUser;
 import com.github.vincemann.springrapid.auth.domain.AbstractUserRepository;
 import com.github.vincemann.springrapid.auth.service.AbstractUserService;
-import com.github.vincemann.springrapid.auth.service.token.EmailJwtService;
+import com.github.vincemann.springrapid.auth.service.token.JweTokenService;
+import com.github.vincemann.springrapid.auth.util.RapidJwt;
 import com.github.vincemann.springrapid.auth.util.LemonMapUtils;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -23,7 +24,7 @@ public class ChangeEmailAuthTest extends AbstractRapidAuthTest {
 	private String changeEmailCode;
 	
 	@Autowired
-	private EmailJwtService emailJwtService;
+	private JweTokenService jweTokenService;
 	@Autowired
 	private AbstractUserRepository userRepository;
 
@@ -37,11 +38,12 @@ public class ChangeEmailAuthTest extends AbstractRapidAuthTest {
 
 	@BeforeEach
 	protected void setupEmailCode() throws Exception {
-		changeEmailCode = emailJwtService.createToken(
+		changeEmailCode = jweTokenService.createToken(
+				RapidJwt.create(
 				AbstractUserService.CHANGE_EMAIL_AUDIENCE,
 				Long.toString(getUnverifiedUser().getId()),
 				600000L,
-				LemonMapUtils.mapOf("newEmail", NEW_EMAIL));
+				LemonMapUtils.mapOf("newEmail", NEW_EMAIL)));
 
 	}
 
@@ -88,10 +90,11 @@ public class ChangeEmailAuthTest extends AbstractRapidAuthTest {
 		        .andExpect(status().is(422));
 
 		// Wrong audience
-		String code = emailJwtService.createToken(
+		String code = jweTokenService.createToken(
+				RapidJwt.create(
 				"", // blank audience
 				Long.toString(getUnverifiedUser().getId()), 60000L,
-				LemonMapUtils.mapOf("newEmail", NEW_EMAIL));
+				LemonMapUtils.mapOf("newEmail", NEW_EMAIL)));
 		
 		mvc.perform(post(authProperties.getController().getChangeEmailUrl())
                 .param("code", code)
@@ -101,10 +104,11 @@ public class ChangeEmailAuthTest extends AbstractRapidAuthTest {
 		        .andExpect(status().is(403));
 
 		// Wrong userId subject
-		code = emailJwtService.createToken(
+		code = jweTokenService.createToken(
+				RapidJwt.create(
 				AbstractUserService.CHANGE_EMAIL_AUDIENCE,
 				Long.toString(getAdmin().getId()), 60000L,
-				LemonMapUtils.mapOf("newEmail", NEW_EMAIL));
+				LemonMapUtils.mapOf("newEmail", NEW_EMAIL)));
 		
 		mvc.perform(post(authProperties.getController().getChangeEmailUrl())
                 .param("code", code)
@@ -114,10 +118,11 @@ public class ChangeEmailAuthTest extends AbstractRapidAuthTest {
 		        .andExpect(status().is(403));
 		
 		// Wrong new email
-		code = emailJwtService.createToken(
+		code = jweTokenService.createToken(
+				RapidJwt.create(
 				AbstractUserService.CHANGE_EMAIL_AUDIENCE,
 				Long.toString(getUnverifiedUser().getId()), 60000L,
-				LemonMapUtils.mapOf("newEmail", "wrong.new.email@example.com"));
+				LemonMapUtils.mapOf("newEmail", "wrong.new.email@example.com")));
 		
 		mvc.perform(post(authProperties.getController().getChangeEmailUrl())
                 .param("code", code)

@@ -4,18 +4,17 @@ import com.github.vincemann.aoplog.api.AopLoggable;
 import com.github.vincemann.aoplog.api.LogInteraction;
 import com.github.vincemann.springrapid.auth.AuthProperties;
 import com.github.vincemann.springrapid.auth.security.JwtClaimsPrincipalConverter;
-import com.github.vincemann.springrapid.auth.util.JwtUtils;
+import com.github.vincemann.springrapid.auth.util.RapidJwt;
+import com.github.vincemann.springrapid.auth.util.LemonMapUtils;
 import com.github.vincemann.springrapid.core.security.RapidAuthenticatedPrincipal;
-import com.github.vincemann.springrapid.core.util.Message;
-import com.github.vincemann.springrapid.core.util.VerifyAccess;
 import com.nimbusds.jwt.JWTClaimsSet;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import java.util.Date;
 import java.util.Map;
 
-import static com.github.vincemann.springrapid.auth.util.JwtUtils.*;
+import static com.github.vincemann.springrapid.auth.util.RapidJwt.AUTH_AUDIENCE;
+import static com.github.vincemann.springrapid.auth.util.RapidJwt.create;
 
 @Slf4j
 public abstract class AbstractJwtAuthorizationTokenService<P extends RapidAuthenticatedPrincipal>
@@ -33,17 +32,11 @@ public abstract class AbstractJwtAuthorizationTokenService<P extends RapidAuthen
     @Override
     public String createToken(P principal) {
         Map<String, Object> principalClaims = jwtPrincipalConverter.toClaims(principal);
-        JWTClaimsSet.Builder builder = new JWTClaimsSet.Builder();
-
-        JWTClaimsSet claims = builder
-                .claim(EXPIRATION_AUDIENCE, System.currentTimeMillis() + properties.getJwt().getExpirationMillis())
-//                .expirationTime(new Date()) -> rounds to millis bad for tests
-                .audience(AUTH_AUDIENCE)
-                .subject(principal.getName())
-                .claim(ISSUED_AT_AUDIENCE, System.currentTimeMillis())
-//                .issueTime(new Date()) -> rounds to millis bad for tests
-                .claim(PRINCIPAL_CLAIMS_KEY, principalClaims)
-                .build();
+        JWTClaimsSet claims = create(AUTH_AUDIENCE,
+                principal.getName(),
+                properties.getJwt().getExpirationMillis(),
+                LemonMapUtils.mapOf(PRINCIPAL_CLAIMS_KEY, principalClaims)
+        );
 
         return jwsTokenService.createToken(claims);
     }
@@ -59,26 +52,7 @@ public abstract class AbstractJwtAuthorizationTokenService<P extends RapidAuthen
     }
 
     public void verifyToken(JWTClaimsSet claims, P principal) {
-        //expired?
-//        long expirationTime = claims.getExpirationTime().getTime();
-        long expirationTime = (long) claims.getClaim(EXPIRATION_AUDIENCE);
-
-        long currentTime = System.currentTimeMillis();
-
-        log.debug("Check for token expiration...");
-        log.debug("Parsing JWT. Expiration time = " + new Date(expirationTime)
-                + ". Current time = " + new Date(currentTime));
-
-        VerifyAccess.condition(expirationTime >= currentTime,
-                Message.get("com.naturalprogrammer.spring.expiredToken"));
-
-        //todo put into EmailVerificationTokenService
-//        //not yet valid?
-//        //is token still valid?
-//        long issueTime = claims.getIssueTime().getTime();
-//        LecUtils.ensureCredentials(issueTime >= issuedAfter,
-//                "com.naturalprogrammer.spring.obsoleteToken");
-
+        RapidJwt.validateNotExpired(claims);
     }
 
     @Autowired

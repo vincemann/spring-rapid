@@ -48,7 +48,8 @@ public class FetchNewTokenAuthTest extends AbstractRapidAuthTest {
 	@Test
 	public void testFetchNewToken_waitForExpire_shouldNotBeUsableAfter() throws Exception {
 		//mock expire time
-		long mockedExpireTime = 100L;
+		// use 1 sec here to avoid token already beeing expired when calling ensure token works
+		long mockedExpireTime = 1000L;
 		Mockito.doReturn(mockedExpireTime).when(jwt).getExpirationMillis();
 
 		MvcResult result = mvc.perform(post(authProperties.getController().getNewAuthTokenUrl())

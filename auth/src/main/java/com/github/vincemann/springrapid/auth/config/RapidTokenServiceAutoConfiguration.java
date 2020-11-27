@@ -41,11 +41,6 @@ public class RapidTokenServiceAutoConfiguration {
 		return new RapidJweService(properties.getJwt().getSecret());
 	}
 
-	@Bean
-	@ConditionalOnMissingBean(EmailJwtService.class)
-	public EmailJwtService emailJwtService(){
-		return new EncryptedEmailJwtService();
-	}
 
 
 
