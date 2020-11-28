@@ -81,22 +81,22 @@ public class JsonUtils {
         }
     }
 
-    /**
-     * Serializes an object
-     */
-    public static String serialize(Serializable obj) {
-
-        return Base64.getUrlEncoder().encodeToString(
-                SerializationUtils.serialize(obj));
-    }
-
-    /**
-     * Deserializes an object
-     */
-    public static <T> T deserialize(String serializedObj) {
-
-        return SerializationUtils.deserialize(
-                Base64.getUrlDecoder().decode(serializedObj));
-    }
+//    /**
+//     * Serializes an object
+//     */
+//    public static String serialize(Serializable obj) {
+//
+//        return Base64.getUrlEncoder().encodeToString(
+//                SerializationUtils.serialize(obj));
+//    }
+//
+//    /**
+//     * Deserializes an object
+//     */
+//    public static <T> T deserialize(String serializedObj) {
+//
+//        return SerializationUtils.deserialize(
+//                Base64.getUrlDecoder().decode(serializedObj));
+//    }
 
 }
