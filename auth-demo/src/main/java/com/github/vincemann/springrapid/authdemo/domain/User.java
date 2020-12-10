@@ -40,8 +40,8 @@ public class User extends AbstractUser<Long> {
 	}
 
 	@JsonView(UserVerifyUtils.SignupInput.class)
-	@NotBlank(message = "{blank.name}", groups = {UserVerifyUtils.SignUpValidation.class, UserVerifyUtils.UpdateValidation.class})
-    @Size(min=NAME_MIN, max=NAME_MAX, groups = {UserVerifyUtils.SignUpValidation.class, UserVerifyUtils.UpdateValidation.class})
+	@NotBlank(message = "{blank.name}"/*, groups = {UserVerifyUtils.SignUpValidation.class, UserVerifyUtils.UpdateValidation.class}*/)
+    @Size(min=NAME_MIN, max=NAME_MAX/*, groups = {UserVerifyUtils.SignUpValidation.class, UserVerifyUtils.UpdateValidation.class}*/)
     @Column(nullable = false, length = NAME_MAX)
     private String name;
 

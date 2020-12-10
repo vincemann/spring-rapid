@@ -3,15 +3,13 @@ package com.github.vincemann.springrapid.auth.domain;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonView;
 import com.github.vincemann.springrapid.auth.util.UserVerifyUtils;
-import com.github.vincemann.springrapid.auth.validation.Captcha;
-import com.github.vincemann.springrapid.auth.validation.Password;
-import com.github.vincemann.springrapid.auth.validation.UniqueEmail;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
 
 import javax.persistence.*;
+import javax.validation.constraints.Email;
 import java.io.Serializable;
 import java.util.HashSet;
 import java.util.Set;
@@ -27,13 +25,14 @@ public class AbstractUser<ID extends Serializable>
 	
 	// email
 	@JsonView(UserVerifyUtils.SignupInput.class)
-	@UniqueEmail(groups = {UserVerifyUtils.SignUpValidation.class})
+//	@UniqueEmail(groups = {UserVerifyUtils.SignUpValidation.class})
+	@Email
 	@Column(nullable = false, unique=true, length = UserVerifyUtils.EMAIL_MAX)
 	protected String email;
 	
 	// password
 	@JsonView(UserVerifyUtils.SignupInput.class)
-	@Password(groups = {UserVerifyUtils.SignUpValidation.class, UserVerifyUtils.ChangeEmailValidation.class})
+//	@Password(/*groups = {UserVerifyUtils.SignUpValidation.class, UserVerifyUtils.ChangeEmailValidation.class}*/)
 	@Column(nullable = false) // no length because it will be encrypted
 	protected String password;
 	
@@ -45,7 +44,7 @@ public class AbstractUser<ID extends Serializable>
 	protected Set<String> roles = new HashSet<>();
 	
 	// in the email-change process, temporarily stores the new email
-	@UniqueEmail(groups = {UserVerifyUtils.ChangeEmailValidation.class})
+//	@UniqueEmail(groups = {UserVerifyUtils.ChangeEmailValidation.class})
 	@Column(length = UserVerifyUtils.EMAIL_MAX)
 	protected String newEmail;
 
@@ -55,9 +54,10 @@ public class AbstractUser<ID extends Serializable>
 	protected long credentialsUpdatedMillis = System.currentTimeMillis();
 
 	// holds reCAPTCHA response while signing up
+	// todo put captcha response in signupDto and validate there
 	@Transient
 	@JsonView(UserVerifyUtils.SignupInput.class)
-	@Captcha(groups = {UserVerifyUtils.SignUpValidation.class})
+//	@Captcha(groups = {UserVerifyUtils.SignUpValidation.class})
 	private String captchaResponse;
 	
 	public final boolean hasRole(String role) {

@@ -15,7 +15,7 @@ import javax.validation.constraints.NotBlank;
 public class MySignupForm extends SignupForm {
 
     @JsonView(UserVerifyUtils.SignupInput.class)
-    @NotBlank(message = "{blank.name}", groups = {UserVerifyUtils.SignUpValidation.class, UserVerifyUtils.UpdateValidation.class})
+    @NotBlank(message = "{blank.name}"/*, groups = {UserVerifyUtils.SignUpValidation.class, UserVerifyUtils.UpdateValidation.class}*/)
     private String name;
 
     public MySignupForm(String email, String password, @NotBlank(message = "{blank.name}", groups = {UserVerifyUtils.SignUpValidation.class, UserVerifyUtils.UpdateValidation.class}) String name) {

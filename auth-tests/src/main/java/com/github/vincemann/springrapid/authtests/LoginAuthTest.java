@@ -49,7 +49,7 @@ public class LoginAuthTest extends AbstractRapidAuthTest {
 		String token = successful_login(ADMIN_EMAIL, ADMIN_PASSWORD, 50L);
 		// but, does expire after 50ms
 		Thread.sleep(51L);
-		mvc.perform(get("/api/core/ping")
+		mvc.perform(get(authProperties.getController().getPingUrl())
 				.header(HttpHeaders.AUTHORIZATION, token))
 				.andExpect(status().is(401));
 	}

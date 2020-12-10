@@ -25,6 +25,7 @@ public class ChangeEmailAuthTest extends AbstractRapidAuthTest {
 	
 	@Autowired
 	private JweTokenService jweTokenService;
+
 	@Autowired
 	private AbstractUserRepository userRepository;
 

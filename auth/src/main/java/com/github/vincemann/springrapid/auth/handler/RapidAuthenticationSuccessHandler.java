@@ -39,7 +39,7 @@ public class RapidAuthenticationSuccessHandler
         // Instead of handle(request, response, authentication),
 		// the statements below are introduced
     	response.setStatus(HttpServletResponse.SC_OK);
-    	response.setContentType(properties.controller.mediaType);
+    	response.setContentType(properties.getController().getMediaType());
 		String token = UserService.createNewAuthToken();
 		httpTokenService.appendToken(token,response);
 

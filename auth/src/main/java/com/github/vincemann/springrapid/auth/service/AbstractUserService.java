@@ -14,6 +14,7 @@ import com.github.vincemann.springrapid.auth.service.token.JweTokenService;
 import com.github.vincemann.springrapid.auth.util.RapidJwt;
 import com.github.vincemann.springrapid.auth.util.LemonMapUtils;
 import com.github.vincemann.springrapid.auth.util.TransactionalUtils;
+import com.github.vincemann.springrapid.auth.util.UserVerifyUtils;
 import com.github.vincemann.springrapid.core.security.RapidSecurityContext;
 import com.github.vincemann.springrapid.core.service.JPACrudService;
 import com.github.vincemann.springrapid.core.service.password.RapidPasswordEncoder;
@@ -40,6 +41,9 @@ import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.annotation.Validated;
 
+import javax.validation.ConstraintViolationException;
+import javax.validation.Valid;
+import javax.validation.ValidationException;
 import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
@@ -103,15 +107,35 @@ public abstract class AbstractUserService
         return context;
     }
 
+    protected void checkValidPassword(String password){
+        //must be at least 8 chars long and contain a number
+        if(password==null){
+            throw new ValidationException("Must not be null");
+        }
+        if(password.length()<8){
+            throw new ValidationException("At least 8 chars expected");
+        }
+        if(!password.matches(".*\\d.*")){
+            throw new ValidationException("Must contain at least one number");
+        }
+    }
+
+    protected void checkUniqueEmail(String email){
+        Optional<U> byEmail = getRepository().findByEmail(email);
+        if (byEmail.isPresent()){
+            throw new ValidationException("Email: " + email + " is already taken");
+        }
+    }
+
     /**
      * Signs up a user.
      */
-    //todo welcher validator kommt hier zum einsatz?
-    //todo wo findet captcha statt, hier sollte captcha stattfinden, Aop Solution: https://medium.com/@cristi.rosu4/protecting-your-spring-boot-rest-endpoints-with-google-recaptcha-and-aop-31328a3f56b7
     @Transactional(propagation = Propagation.REQUIRED, readOnly = false)
     public U signup(U user) throws BadEntityException {
         //admins get created with createAdminMethod
         user.setRoles(Sets.newHashSet(AuthRoles.USER));
+        checkValidPassword(user.getPassword());
+        checkUniqueEmail(user.getEmail());
         U saved = save(user);
         // is done in same transaction -> so applied directly
         makeUnverified(saved);
@@ -126,8 +150,7 @@ public abstract class AbstractUserService
     @Transactional(propagation = Propagation.SUPPORTS, readOnly = false)
     @Override
     public U save(U user) throws BadEntityException {
-//        entity.setPassword(passwordEncoder.encode(entity.getPassword()));
-        encryptPassword(user);
+        encodePassword(user);
         return super.save(user);
     }
 
@@ -149,7 +172,7 @@ public abstract class AbstractUserService
     /**
      * Only encrypts password, if it is not already encrypted.
      */
-    protected void encryptPassword(U user){
+    protected void encodePassword(U user){
         String password = user.getPassword();
         if (password==null){
             return;
@@ -242,6 +265,8 @@ public abstract class AbstractUserService
         JWTClaimsSet claims = jweTokenService.parseToken(form.getCode());
         RapidJwt.validate(claims,FORGOT_PASSWORD_AUDIENCE);
 
+        checkValidPassword(form.getNewPassword());
+
         String email = claims.getSubject();
 
         // fetch the user
@@ -255,7 +280,7 @@ public abstract class AbstractUserService
         user.setCredentialsUpdatedMillis(System.currentTimeMillis());
         //user.setForgotPasswordCode(null);
 
-        U saved = null;
+        U saved;
         try {
             saved = update(user);
         } catch (BadEntityException e) {
@@ -273,8 +298,13 @@ public abstract class AbstractUserService
         //update roles works in transaction -> changes are applied on the fly
         updateRoles(old.get(), update);
         update.setRoles(old.get().getRoles());
-        encryptPassword(update);
-
+        String password = update.getPassword();
+        if (password!=null) {
+            if (!getPasswordEncoder().isEncrypted(password)) {
+                checkValidPassword(password);
+            }
+        }
+        encodePassword(update);
         return super.update(update, full);
     }
 
@@ -286,6 +316,10 @@ public abstract class AbstractUserService
         VerifyEntity.isPresent(user, "User not found");
         String oldPassword = user.getPassword();
 
+        if (!changePasswordForm.getPassword().equals(changePasswordForm.getRetypePassword())){
+            throw new ValidationException("Password does not match retype password");
+        }
+        checkValidPassword(changePasswordForm.getPassword());
         // checks
         Validate.field("changePasswordForm.oldPassword",
                 passwordEncoder.matches(changePasswordForm.getOldPassword(),
@@ -331,13 +365,14 @@ public abstract class AbstractUserService
      * Requests for email change.
      */
     @Transactional(propagation = Propagation.REQUIRED, readOnly = false)
-    public void requestEmailChange(U user, /*@Valid*/ RequestEmailChangeForm emailChangeForm) throws EntityNotFoundException {
+    public void requestEmailChange(U user,  RequestEmailChangeForm emailChangeForm) throws EntityNotFoundException {
 //        log.debug("Requesting email change for user" + user);
         // checks
 //        Optional<U> byId = getUserService().findById(userId);
 //        LexUtils.ensureFound(byId);
 //        U user = byId.get();
         VerifyEntity.isPresent(user, "User not found");
+        checkUniqueEmail(emailChangeForm.getNewEmail());
 
 //        LexUtils.validateField("updatedUser.password",
 //                passwordEncoder.matches(emailChangeForm.getPassword(),
@@ -411,7 +446,7 @@ public abstract class AbstractUserService
      * @return
      */
     @Transactional(propagation = Propagation.REQUIRED, readOnly = false)
-    public U changeEmail(U user, /*@Valid @NotBlank*/ String changeEmailCode) throws EntityNotFoundException, BadTokenException {
+    public U changeEmail(U user, String changeEmailCode) throws EntityNotFoundException, BadTokenException {
 
         VerifyEntity.isPresent(user, "User not found");
         Validate.condition(StringUtils.isNotBlank(user.getNewEmail()),
