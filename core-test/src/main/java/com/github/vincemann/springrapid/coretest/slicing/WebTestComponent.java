@@ -5,9 +5,7 @@ import org.springframework.stereotype.Component;
 
 import java.lang.annotation.*;
 
-/**
- * @see ServiceComponent
- */
+
 @Inherited
 @Profile(RapidTestProfiles.WEB_TEST)
 @Component

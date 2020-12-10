@@ -33,23 +33,24 @@ public interface UserService<U extends AbstractUser<ID>, ID extends Serializable
 
     public Map<String, Object> getContext();
 
-    @Validated(UserVerifyUtils.SignUpValidation.class)
-    public U signup(@Valid U user) throws BadEntityException;
+//    @Validated(UserVerifyUtils.SignUpValidation.class)
+    // todo do captcha validation programatically in service witch mockable captcha validator for tests
+    public U signup( U user) throws BadEntityException;
 
     public void resendVerificationMail(U user) throws EntityNotFoundException;
 
     @LogInteraction(Severity.TRACE)
-    public Optional<U> findByEmail(@Valid @Email @NotBlank String email);
+    public Optional<U> findByEmail( @NotBlank String email);
 
-    public U verifyUser(U user, String verificationCode) throws EntityNotFoundException, BadTokenException, BadEntityException;
-    public void forgotPassword(@Valid @Email @NotBlank String email) throws EntityNotFoundException;
-    public U resetPassword(@Valid ResetPasswordForm form) throws EntityNotFoundException, BadTokenException;
-    public void changePassword(U user, @Valid ChangePasswordForm changePasswordForm) throws EntityNotFoundException;
+    public U verifyUser(U user,@NotBlank String verificationCode) throws EntityNotFoundException, BadTokenException, BadEntityException;
+    public void forgotPassword( @NotBlank String email) throws EntityNotFoundException;
+    public U resetPassword(ResetPasswordForm form) throws EntityNotFoundException, BadTokenException;
+    public void changePassword(U user, ChangePasswordForm changePasswordForm) throws EntityNotFoundException;
 
-    @Validated(UserVerifyUtils.ChangeEmailValidation.class)
-    public void requestEmailChange(U user, @Valid RequestEmailChangeForm emailChangeForm) throws EntityNotFoundException;
+//    @Validated(UserVerifyUtils.ChangeEmailValidation.class)
+    public void requestEmailChange(U user, RequestEmailChangeForm emailChangeForm) throws EntityNotFoundException;
 
-    public U changeEmail(U user, @Valid @NotBlank String changeEmailCode) throws EntityNotFoundException, BadTokenException;
+    public U changeEmail(U user,  @NotBlank String changeEmailCode) throws EntityNotFoundException, BadTokenException;
 
 
 
@@ -66,7 +67,7 @@ public interface UserService<U extends AbstractUser<ID>, ID extends Serializable
     @LogInteraction(Severity.TRACE)
     public abstract ID toId(String id);
 
-    @Validated(UserVerifyUtils.UpdateValidation.class)
+//    @Validated(UserVerifyUtils.UpdateValidation.class)
     @Override
     U update(U entity, Boolean full) throws EntityNotFoundException,  BadEntityException;
 

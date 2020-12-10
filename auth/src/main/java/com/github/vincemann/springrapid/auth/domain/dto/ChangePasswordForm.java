@@ -1,26 +1,23 @@
 package com.github.vincemann.springrapid.auth.domain.dto;
 
-import com.github.vincemann.springrapid.auth.validation.Password;
-import com.github.vincemann.springrapid.auth.validation.RetypePassword;
-import com.github.vincemann.springrapid.auth.validation.RetypePasswordForm;
-
 import lombok.*;
+
+import javax.validation.constraints.NotBlank;
 
 /**
  * Change password form.
  * 
  * @author Sanjay Patel
  */
-@RetypePassword
 @Getter @Setter @NoArgsConstructor @AllArgsConstructor @ToString
-public class ChangePasswordForm implements RetypePasswordForm {
+public class ChangePasswordForm {
 	
-	@Password
+	@NotBlank
 	private String oldPassword;
 
-	@Password
+	@NotBlank
 	private String password;
-	
-	@Password
+
+	@NotBlank
 	private String retypePassword;
 }

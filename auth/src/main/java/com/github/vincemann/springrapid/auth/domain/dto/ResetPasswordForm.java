@@ -1,6 +1,5 @@
 package com.github.vincemann.springrapid.auth.domain.dto;
 
-import com.github.vincemann.springrapid.auth.validation.Password;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
@@ -16,6 +15,6 @@ public class ResetPasswordForm {
 	private String code;
 
 	@NotEmpty
-	@Password
+//	@Password
 	private String newPassword;
 }

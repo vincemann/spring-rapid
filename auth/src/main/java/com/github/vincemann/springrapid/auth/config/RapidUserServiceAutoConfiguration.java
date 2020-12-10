@@ -6,8 +6,8 @@ import com.github.vincemann.springrapid.auth.domain.RapidAuditorAware;
 import com.github.vincemann.springrapid.auth.mail.MailSender;
 import com.github.vincemann.springrapid.auth.mail.MockMailSender;
 import com.github.vincemann.springrapid.auth.mail.SmtpMailSender;
-import com.github.vincemann.springrapid.auth.service.UserService;
 import com.github.vincemann.springrapid.auth.service.RapidUserDetailsService;
+import com.github.vincemann.springrapid.auth.service.UserService;
 import com.github.vincemann.springrapid.auth.validation.RetypePasswordValidator;
 import com.github.vincemann.springrapid.auth.validation.UniqueEmailValidator;
 
