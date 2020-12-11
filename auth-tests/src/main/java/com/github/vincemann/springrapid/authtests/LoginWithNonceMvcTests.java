@@ -84,7 +84,7 @@
 //		mvc.perform(post("/api/core/login-with-nonce")
 //				.contentType(MediaType.APPLICATION_JSON)
 //				.content(LemonValidationUtils.toJson(new NonceForm<Long>())))
-//				.andExpect(status().is(422))
+//				.andExpect(status().is(400))
 //				.andExpect(jsonPath("$.errors[*].field").value(hasSize(2)))
 //				.andExpect(jsonPath("$.errors[*].field").value(hasItems(
 //						"nonce.userId",

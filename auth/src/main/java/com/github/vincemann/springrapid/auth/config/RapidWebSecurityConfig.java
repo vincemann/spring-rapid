@@ -10,6 +10,7 @@ import com.github.vincemann.springrapid.core.security.RapidSecurityContext;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.annotation.web.builders.WebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.authentication.Http403ForbiddenEntryPoint;
@@ -37,6 +38,12 @@ public class RapidWebSecurityConfig extends WebSecurityConfigurerAdapter {
 
 	}
 
+
+//	@Override
+//	public void configure(WebSecurity web) throws Exception {
+//		disableFilterForLogin(web);
+//	}
+
 	/**
 	 * Security configuration, calling protected methods
 	 */
@@ -55,6 +62,9 @@ public class RapidWebSecurityConfig extends WebSecurityConfigurerAdapter {
 		exceptionHandling(http); // exception handling
 	}
 
+//	protected void disableFilterForLogin(WebSecurity web){
+//		web.antMatchers(loginPage()).per
+//	}
 
 	/**
 	 * Configuring authentication.
@@ -131,7 +141,7 @@ public class RapidWebSecurityConfig extends WebSecurityConfigurerAdapter {
 	 */
 	protected void tokenAuthentication(HttpSecurity http) throws Exception {
 		//needs to be created with new, cant be autowired for some spring internal reasons
-		http.addFilterBefore(new JwtAuthenticationFilter(httpTokenService,authorizationTokenService,securityContext),
+		http.addFilterBefore(new JwtAuthenticationFilter(httpTokenService,authorizationTokenService,securityContext,properties),
 				UsernamePasswordAuthenticationFilter.class);
 	}
 

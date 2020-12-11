@@ -7,6 +7,7 @@ import com.github.vincemann.springrapid.auth.domain.RapidAuthAuthenticatedPrinci
 import com.github.vincemann.springrapid.auth.domain.dto.ChangePasswordForm;
 import com.github.vincemann.springrapid.auth.domain.dto.RequestEmailChangeForm;
 import com.github.vincemann.springrapid.auth.security.RapidAuthSecurityContextChecker;
+import com.github.vincemann.springrapid.auth.service.AlreadyRegisteredException;
 import com.github.vincemann.springrapid.auth.service.UserService;
 import com.github.vincemann.springrapid.auth.service.token.BadTokenException;
 import com.github.vincemann.springrapid.core.model.IdentifiableEntity;
@@ -44,7 +45,7 @@ public class UserServiceSecurityExtension
 
     @LogInteraction
     @Override
-    public void resendVerificationMail(AbstractUser user) throws EntityNotFoundException {
+    public void resendVerificationMail(AbstractUser user) throws EntityNotFoundException, BadEntityException {
         getSecurityChecker().checkPermission(user.getId(), getLast().getEntityClass(), getWritePermission());
         getNext().resendVerificationMail(user);
     }
@@ -94,7 +95,7 @@ public class UserServiceSecurityExtension
 
     @LogInteraction
     @Override
-    public void changePassword(AbstractUser user, ChangePasswordForm changePasswordForm) throws EntityNotFoundException {
+    public void changePassword(AbstractUser user, ChangePasswordForm changePasswordForm) throws EntityNotFoundException, BadEntityException {
 //        LexUtils.ensureFound(user);
         getSecurityChecker().checkPermission(user.getId(), getLast().getEntityClass(), getWritePermission());
         getNext().changePassword(user, changePasswordForm);
@@ -102,7 +103,7 @@ public class UserServiceSecurityExtension
 
     @LogInteraction
     @Override
-    public void requestEmailChange(AbstractUser user, RequestEmailChangeForm emailChangeForm) throws EntityNotFoundException {
+    public void requestEmailChange(AbstractUser user, RequestEmailChangeForm emailChangeForm) throws EntityNotFoundException, AlreadyRegisteredException {
         VerifyEntity.isPresent(user,"User who's email should get changed does not exist");
         getSecurityChecker().checkPermission(user.getId(), getLast().getEntityClass(), getWritePermission());
         getNext().requestEmailChange(user, emailChangeForm);
@@ -110,7 +111,7 @@ public class UserServiceSecurityExtension
 
     @LogInteraction
     @Override
-    public AbstractUser changeEmail(AbstractUser user, String changeEmailCode) throws EntityNotFoundException, BadTokenException {
+    public AbstractUser changeEmail(AbstractUser user, String changeEmailCode) throws EntityNotFoundException,  BadEntityException {
         VerifyEntity.isPresent(user,"User who's email should get changed does not exist");
         getSecurityChecker().checkPermission(user.getId(), getLast().getEntityClass(), getWritePermission());
         return getNext().changeEmail(user, changeEmailCode);

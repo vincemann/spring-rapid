@@ -15,6 +15,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.Resource;
 import org.springframework.http.HttpHeaders;
 
+import javax.validation.ConstraintViolationException;
 import java.io.IOException;
 import java.sql.DataTruncation;
 import java.sql.SQLIntegrityConstraintViolationException;
@@ -126,16 +127,16 @@ public abstract class UpdateUserAuthTest extends AbstractRapidAuthTest
 	@Test
 	public void testUpdateUserInvalidFieldConstraints_should400() throws Exception {
 		// Null name
-		assertThatThrownBy(() -> mvc.perform(update(patchNullField, getUser().getId())
+		/*assertThatThrownBy(() -> */mvc.perform(update(patchNullField, getUser().getId())
 				.header(HttpHeaders.AUTHORIZATION, tokens.get(getUser().getId())))
-				.andExpect(status().is(400)))
-				.hasRootCauseInstanceOf(SQLIntegrityConstraintViolationException.class);
+				.andExpect(status().is(400));
+				/*.hasRootCauseInstanceOf(ConstraintViolationException.class);*/
 
 		// Too long name
-		assertThatThrownBy(() -> mvc.perform(update(patchLongField, getUser().getId())
+		/*assertThatThrownBy(() -> */mvc.perform(update(patchLongField, getUser().getId())
 				.header(HttpHeaders.AUTHORIZATION, tokens.get(getUser().getId())))
-				.andExpect(status().is(400)))
-				.hasRootCauseInstanceOf(DataTruncation.class);
+				.andExpect(status().is(400));
+				/*.hasRootCauseInstanceOf(DataTruncation.class);*/
 	}
 
 	/**

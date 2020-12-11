@@ -1,4 +1,4 @@
-package com.github.vincemann.springrapid.auth.validation;
+package com.github.vincemann.springrapid.auth.service.captcha;
 
 import javax.validation.Constraint;
 import java.lang.annotation.Retention;

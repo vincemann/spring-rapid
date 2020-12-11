@@ -19,12 +19,12 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 public class SignupAuthTest extends AbstractRapidAuthTest {
 
 	protected SignupForm createValidSignupForm(){
-		return new SignupForm("user.foo@example.com", "user123");
+		return new SignupForm("user.foo@example.com", "userUser123");
 	}
 
 
 	protected SignupForm createInvalidSignupForm(){
-		return new SignupForm("abc","user1");
+		return new SignupForm("abc","userUser1");
 	}
 
 	@Test
@@ -35,7 +35,7 @@ public class SignupAuthTest extends AbstractRapidAuthTest {
 		mvc.perform(post(authProperties.getController().getSignupUrl())
 				.contentType(MediaType.APPLICATION_JSON)
 				.content(JsonUtils.toJson(signupForm)))
-				.andExpect(status().is(422));
+				.andExpect(status().is(400));
 //				.andExpect(jsonPath("$.errors[*].field").value(hasSize(3)))
 //				.andExpect(jsonPath("$.errors[*].field").value(hasItems(
 //					"user.email", "user.password"/*, "user.name"*/)))
@@ -89,12 +89,12 @@ public class SignupAuthTest extends AbstractRapidAuthTest {
 //		MySignupForm signupForm = new MySignupForm("user@example.com", "user123", "User");
 		SignupForm signupForm = createValidSignupForm();
 		String duplicateEmail = signupForm.getEmail();
-		getUserService().save(testAdapter.createTestUser(duplicateEmail,"user1234", AuthRoles.USER));
+		getUserService().save(testAdapter.createTestUser(duplicateEmail,"userUser1234", AuthRoles.USER));
 
 		mvc.perform(post(authProperties.getController().getSignupUrl())
 				.contentType(MediaType.APPLICATION_JSON)
 				.content(JsonUtils.toJson(signupForm)))
-				.andExpect(status().is(422));
+				.andExpect(status().is(400));
 		
 		verify(unproxy(mailSender), never()).send(any());
 	}

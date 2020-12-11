@@ -8,15 +8,12 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 
 import com.github.vincemann.springlemon.exceptions.handlers.AbstractExceptionHandler;
 
-//@Component
 @Order(Ordered.LOWEST_PRECEDENCE)
 @Slf4j
 public class UsernameNotFoundExceptionHandler extends AbstractExceptionHandler<UsernameNotFoundException> {
 	
 	public UsernameNotFoundExceptionHandler() {
-		
 		super(UsernameNotFoundException.class);
-
 	}
 	
 	@Override

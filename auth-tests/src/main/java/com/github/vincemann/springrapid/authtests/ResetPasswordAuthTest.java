@@ -18,6 +18,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 public class ResetPasswordAuthTest extends AbstractRapidAuthTest {
 
+    final String NEW_PASSWORD = "newPassword123!";
+
     private String forgotPasswordCode;
 
     @Autowired
@@ -33,8 +35,6 @@ public class ResetPasswordAuthTest extends AbstractRapidAuthTest {
 
     @Test
     public void testResetPassword() throws Exception {
-
-        final String NEW_PASSWORD = "newPassword!";
 
         //Thread.sleep(1001L);
 
@@ -61,20 +61,20 @@ public class ResetPasswordAuthTest extends AbstractRapidAuthTest {
         // Wrong code
         mvc.perform(post(authProperties.getController().getResetPasswordUrl())
                 .contentType(MediaType.APPLICATION_JSON)
-                .content(form("wrong-code", "abc99!")))
-                .andExpect(status().is(401));
+                .content(form("wrong-code", NEW_PASSWORD)))
+                .andExpect(status().is(400));
 
         // Blank password
         mvc.perform(post(authProperties.getController().getResetPasswordUrl())
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(form(forgotPasswordCode, "")))
-                .andExpect(status().is(422));
+                .andExpect(status().is(400));
 
         // Invalid password
         mvc.perform(post(authProperties.getController().getResetPasswordUrl())
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(form(forgotPasswordCode, "abc")))
-                .andExpect(status().is(422));
+                .andExpect(status().is(400));
     }
 
     private String form(String code, String newPassword) throws JsonProcessingException {

@@ -39,13 +39,13 @@ public class FetchUserAuthTest extends AbstractRapidAuthTest {
 		mvc.perform(post(authProperties.getController().getFetchByEmailUrl())
                 .param("email", "")
                 .header("contentType",  MediaType.APPLICATION_FORM_URLENCODED))
-                .andExpect(status().is(422));
+                .andExpect(status().is(400));
 
 		// Invalid email
 		mvc.perform(post(authProperties.getController().getFetchByEmailUrl())
-                .param("email", "invalid-email")
+                .param("email", "not-found-email")
                 .header("contentType",  MediaType.APPLICATION_FORM_URLENCODED))
-                .andExpect(status().is(422));
+                .andExpect(status().is(404));
 	}
 
 

@@ -1,9 +1,7 @@
 package com.github.vincemann.springrapid.auth.config;
 
-import com.github.vincemann.springrapid.auth.handler.AccessDeniedExceptionHandler;
-import com.github.vincemann.springrapid.auth.handler.BadCredentialsExceptionHandler;
-import com.github.vincemann.springrapid.auth.handler.BadTokenExceptionHandler;
-import com.github.vincemann.springrapid.auth.handler.UsernameNotFoundExceptionHandler;
+import com.github.vincemann.springrapid.auth.handler.*;
+import com.github.vincemann.springrapid.auth.service.AlreadyRegisteredException;
 import com.github.vincemann.springrapid.core.slicing.WebConfig;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
@@ -33,6 +31,12 @@ public class RapidAuthExceptionHandlerAutoConfiguration {
     @ConditionalOnMissingBean(BadCredentialsExceptionHandler.class)
     public BadCredentialsExceptionHandler badCredentialsExceptionHandler(){
         return new BadCredentialsExceptionHandler();
+    }
+
+    @Bean
+    @ConditionalOnMissingBean(AlreadyRegisteredException.class)
+    public AlreadyRegisteredExceptionHandler alreadyRegisteredExceptionHandler(){
+        return new AlreadyRegisteredExceptionHandler();
     }
 
     @Bean

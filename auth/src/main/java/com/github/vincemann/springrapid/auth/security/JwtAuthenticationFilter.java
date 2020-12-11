@@ -1,5 +1,6 @@
 package com.github.vincemann.springrapid.auth.security;
 
+import com.github.vincemann.springrapid.auth.AuthProperties;
 import com.github.vincemann.springrapid.auth.domain.RapidAuthAuthenticatedPrincipal;
 import com.github.vincemann.springrapid.auth.domain.AuthRoles;
 import com.github.vincemann.springrapid.auth.service.token.AuthorizationTokenService;
@@ -29,12 +30,20 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 	private HttpTokenService httpTokenService;
     private AuthorizationTokenService<RapidAuthAuthenticatedPrincipal> authorizationTokenService;
     private RapidSecurityContext<RapidAuthAuthenticatedPrincipal> securityContext;
+    private AuthProperties authProperties;
 
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
             throws ServletException, IOException {
 
+        //todo realize this via security config api
+        //https://www.baeldung.com/spring-exclude-filter
+        if (request.getRequestURI().equals(authProperties.getController().getLoginUrl())
+                || request.getRequestURI().equals(authProperties.getController().getSignupUrl())){
+            filterChain.doFilter(request, response);
+            return;
+        }
 
         log.debug("Inside LemonTokenAuthenticationFilter ...");
 

@@ -5,6 +5,7 @@ import com.github.vincemann.aoplog.api.LogInteraction;
 import com.github.vincemann.springrapid.auth.AuthProperties;
 import com.github.vincemann.springrapid.auth.domain.AbstractUser;
 import com.github.vincemann.springrapid.auth.domain.AuthRoles;
+import com.github.vincemann.springrapid.auth.service.AlreadyRegisteredException;
 import com.github.vincemann.springrapid.auth.service.UserService;
 
 import com.github.vincemann.springrapid.acl.service.extensions.AbstractAclServiceExtension;
@@ -33,7 +34,7 @@ public class AclUserServiceExtension
 
     @LogInteraction
     @Override
-    public AbstractUser signup(AbstractUser user) throws BadEntityException {
+    public AbstractUser signup(AbstractUser user) throws BadEntityException, AlreadyRegisteredException {
         AbstractUser saved = getNext().signup(user);
         savePostSignupAclInfo(saved);
         return saved;
@@ -41,7 +42,7 @@ public class AclUserServiceExtension
 
     @LogInteraction
     @Override
-    public AbstractUser createAdminUser(AuthProperties.Admin admin) throws BadEntityException {
+    public AbstractUser createAdminUser(AuthProperties.Admin admin) throws BadEntityException, AlreadyRegisteredException {
         AbstractUser saved = getNext().createAdminUser(admin);
         savePostSignupAclInfo(saved);
         return saved;
