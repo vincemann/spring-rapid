@@ -5,6 +5,7 @@ import com.github.vincemann.springrapid.auth.domain.AbstractUser;
 import com.github.vincemann.springrapid.auth.domain.dto.ChangePasswordForm;
 import com.github.vincemann.springrapid.auth.domain.dto.RequestEmailChangeForm;
 import com.github.vincemann.springrapid.auth.domain.dto.ResetPasswordForm;
+import com.github.vincemann.springrapid.auth.service.AlreadyRegisteredException;
 import com.github.vincemann.springrapid.auth.service.UserService;
 import com.github.vincemann.springrapid.auth.service.token.BadTokenException;
 import com.github.vincemann.springrapid.core.proxy.GenericCrudServiceExtension;
@@ -28,47 +29,47 @@ public interface GenericUserServiceExtension<S extends UserService<U,Id>,U exten
     }
 
     @Override
-    default U signup(U user) throws BadEntityException {
+    default U signup(U user) throws BadEntityException, AlreadyRegisteredException {
         return getNext().signup(user);
     }
 
     @Override
-    default void resendVerificationMail(U user) throws EntityNotFoundException {
+    default void resendVerificationMail(U user) throws EntityNotFoundException, BadEntityException {
         getNext().resendVerificationMail(user);
     }
 
     @Override
-    default Optional<U> findByEmail(/*@Valid @Email @NotBlank*/ String email){
+    default Optional<U> findByEmail( String email){
         return getNext().findByEmail(email);
     }
 
     @Override
-    default U verifyUser(U user, String verificationCode) throws EntityNotFoundException, BadTokenException, BadEntityException {
+    default U verifyUser(U user, String verificationCode) throws EntityNotFoundException,  BadEntityException {
         return getNext().verifyUser(user,verificationCode);
     }
 
     @Override
-    default void forgotPassword(/*@Valid @Email @NotBlank*/ String email) throws EntityNotFoundException {
+    default void forgotPassword( String email) throws EntityNotFoundException {
         getNext().forgotPassword(email);
     }
 
     @Override
-    default U resetPassword(/*@Valid*/ ResetPasswordForm form) throws EntityNotFoundException, BadTokenException {
+    default U resetPassword( ResetPasswordForm form) throws EntityNotFoundException, BadEntityException {
         return getNext().resetPassword(form);
     }
 
     @Override
-    default void changePassword(U user, /*@Valid*/ ChangePasswordForm changePasswordForm) throws EntityNotFoundException {
+    default void changePassword(U user,  ChangePasswordForm changePasswordForm) throws EntityNotFoundException, BadEntityException {
         getNext().changePassword(user,changePasswordForm);
     }
 
     @Override
-    default void requestEmailChange(U user, /*@Valid*/ RequestEmailChangeForm emailChangeForm) throws EntityNotFoundException {
+    default void requestEmailChange(U user,  RequestEmailChangeForm emailChangeForm) throws EntityNotFoundException, AlreadyRegisteredException {
         getNext().requestEmailChange(user,emailChangeForm);
     }
 
     @Override
-    default U changeEmail(U user, /*@Valid @NotBlank */String changeEmailCode) throws EntityNotFoundException, BadTokenException {
+    default U changeEmail(U user,String changeEmailCode) throws EntityNotFoundException, BadEntityException {
         return getNext().changeEmail(user,changeEmailCode);
     }
 
@@ -83,7 +84,7 @@ public interface GenericUserServiceExtension<S extends UserService<U,Id>,U exten
     }
 
     @Override
-    default U createAdminUser(AuthProperties.Admin admin) throws BadEntityException {
+    default U createAdminUser(AuthProperties.Admin admin) throws BadEntityException, AlreadyRegisteredException {
         return getNext().createAdminUser(admin);
     }
 

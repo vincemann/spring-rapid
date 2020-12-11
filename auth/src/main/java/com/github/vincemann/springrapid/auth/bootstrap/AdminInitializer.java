@@ -2,6 +2,7 @@ package com.github.vincemann.springrapid.auth.bootstrap;
 
 import com.github.vincemann.springrapid.auth.AuthProperties;
 import com.github.vincemann.springrapid.auth.domain.AbstractUser;
+import com.github.vincemann.springrapid.auth.service.AlreadyRegisteredException;
 import com.github.vincemann.springrapid.auth.service.UserService;
 import com.github.vincemann.springrapid.acl.proxy.AclManaging;
 import com.github.vincemann.springrapid.core.bootstrap.DatabaseDataInitializer;
@@ -21,11 +22,6 @@ import java.util.Optional;
  */
 public class AdminInitializer extends DatabaseDataInitializer {
 
-//    @Value("#{'${database.init.admin.emails}'.split(',')}")
-//    private List<String> adminEmails;
-//    @Value("#{'${database.init.admin.passwords}'.split(',')}")
-//    private List<String> adminPasswords;
-
     private UserService<?,?> userService;
     private AuthProperties authProperties;
     private RapidSecurityContext<?> securityContext;
@@ -34,21 +30,18 @@ public class AdminInitializer extends DatabaseDataInitializer {
     @Override
     @Transactional
     public void init() {
-//        Assert.isTrue(!adminEmails.isEmpty());
-//        Assert.isTrue(!adminPasswords.isEmpty());
         securityContext.runAsAdmin(
                 () -> {
                     try {
                         addAdmins();
-                    } catch (BadEntityException e) {
+                    } catch (BadEntityException | AlreadyRegisteredException e) {
                         throw new RuntimeException(e);
                     }
                 });
     }
 
-    protected void addAdmins() throws BadEntityException{
+    protected void addAdmins() throws BadEntityException, AlreadyRegisteredException {
         List<AuthProperties.Admin> admins = authProperties.getAdmins();
-//        int index = 0;
         for (AuthProperties.Admin admin : admins) {
             log.debug("registering admin:: " + admin.getEmail());
 
@@ -61,7 +54,6 @@ public class AdminInitializer extends DatabaseDataInitializer {
             }else {
                 log.debug("admin already exists. skipping.");
             }
-//            index++;
         }
     }
 

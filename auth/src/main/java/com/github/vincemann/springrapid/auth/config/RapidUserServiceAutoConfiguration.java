@@ -8,8 +8,6 @@ import com.github.vincemann.springrapid.auth.mail.MockMailSender;
 import com.github.vincemann.springrapid.auth.mail.SmtpMailSender;
 import com.github.vincemann.springrapid.auth.service.RapidUserDetailsService;
 import com.github.vincemann.springrapid.auth.service.UserService;
-import com.github.vincemann.springrapid.auth.validation.RetypePasswordValidator;
-import com.github.vincemann.springrapid.auth.validation.UniqueEmailValidator;
 
 import com.github.vincemann.springrapid.core.service.password.BcryptRapidPasswordEncoder;
 import com.github.vincemann.springrapid.core.service.password.RapidPasswordEncoder;
@@ -47,22 +45,6 @@ public class RapidUserServiceAutoConfiguration {
         return new RapidAuditorAware<ID>();
     }
 
-    /**
-     * Configures RetypePasswordValidator if missing
-     */
-    @Bean
-    @ConditionalOnMissingBean(RetypePasswordValidator.class)
-    public RetypePasswordValidator retypePasswordValidator() {
-        return new RetypePasswordValidator();
-    }
-
-    /**
-     * Configures UniqueEmailValidator if missing
-     */
-    @Bean
-    public UniqueEmailValidator uniqueEmailValidator(AbstractUserRepository<?, ?> userRepository) {
-        return new UniqueEmailValidator(userRepository);
-    }
 
     /**
      * Configures UserDetailsService if missing

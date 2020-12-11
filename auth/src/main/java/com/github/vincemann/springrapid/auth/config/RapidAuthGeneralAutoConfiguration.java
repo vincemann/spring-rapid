@@ -1,7 +1,7 @@
 package com.github.vincemann.springrapid.auth.config;
 
 import com.github.vincemann.springrapid.auth.AuthProperties;
-import com.github.vincemann.springrapid.auth.validation.CaptchaValidator;
+import com.github.vincemann.springrapid.auth.service.captcha.CaptchaValidator;
 import com.github.vincemann.springrapid.core.CoreProperties;
 import com.github.vincemann.springrapid.core.config.RapidCrudControllerAutoConfiguration;
 import lombok.extern.slf4j.Slf4j;

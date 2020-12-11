@@ -12,7 +12,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 public class ChangePasswordAuthTest extends AbstractRapidAuthTest {
 	
-	private static final String NEW_PASSWORD = "a-new-password";
+	private static final String NEW_PASSWORD = "a-new-password123";
 	
 	private ChangePasswordForm changePasswordForm(String oldPassword) {
 		
@@ -116,7 +116,7 @@ public class ChangePasswordAuthTest extends AbstractRapidAuthTest {
 				.header(HttpHeaders.AUTHORIZATION, tokens.get(getUnverifiedUser().getId()))
 				.contentType(MediaType.APPLICATION_JSON)
 				.content(JsonUtils.toJson(new ChangePasswordForm())))
-				.andExpect(status().is(422));
+				.andExpect(status().is(400));
 //				.andExpect(jsonPath("$.errors[*].field").value(hasSize(3)))
 //				.andExpect(jsonPath("$.errors[*].field").value(hasItems(
 //						"changePasswordForm.oldPassword",
@@ -134,7 +134,7 @@ public class ChangePasswordAuthTest extends AbstractRapidAuthTest {
 				.header(HttpHeaders.AUTHORIZATION, tokens.get(getUnverifiedUser().getId()))
 				.contentType(MediaType.APPLICATION_JSON)
 				.content(JsonUtils.toJson(form)))
-				.andExpect(status().is(422));
+				.andExpect(status().is(400));
 //				.andExpect(jsonPath("$.errors[*].field").value(hasSize(3)))
 //				.andExpect(jsonPath("$.errors[*].field").value(hasItems(
 //						"changePasswordForm.oldPassword",
@@ -150,7 +150,7 @@ public class ChangePasswordAuthTest extends AbstractRapidAuthTest {
 				.header(HttpHeaders.AUTHORIZATION, tokens.get(getUnverifiedUser().getId()))
 				.contentType(MediaType.APPLICATION_JSON)
 				.content(JsonUtils.toJson(form)))
-				.andExpect(status().is(422));
+				.andExpect(status().is(400));
 //				.andExpect(jsonPath("$.errors[*].field").value(hasSize(2)))
 //				.andExpect(jsonPath("$.errors[*].field").value(hasItems(
 //						 "changePasswordForm.retypePassword",

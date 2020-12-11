@@ -188,7 +188,7 @@ class OwnerControllerTest
 
 
     @Test
-    public void update_withBlankCity_shouldFail_with422() throws Exception {
+    public void update_withBlankCity_shouldFail_with400() throws Exception {
         Owner ownerPatch = (Owner) BeanUtilsBean.getInstance().cloneBean(owner);
         ownerPatch.setCity(null);
         when(ownerService.findById(owner.getId()))

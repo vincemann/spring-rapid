@@ -62,7 +62,7 @@ public class ResendVerificationMailAuthTest extends AbstractRapidAuthTest {
 		mvc.perform(post(authProperties.getController().getResendVerificationEmailUrl())
 				.param("id",getUser().getId().toString())
 				.header(HttpHeaders.AUTHORIZATION, tokens.get(getUser().getId())))
-			.andExpect(status().is(422));
+			.andExpect(status().is(400));
 		
 		verify(unproxy(mailSender), never()).send(any());
 	}

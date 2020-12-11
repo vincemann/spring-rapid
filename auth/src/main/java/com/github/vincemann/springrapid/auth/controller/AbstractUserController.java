@@ -12,6 +12,7 @@ import com.github.vincemann.springrapid.auth.domain.dto.user.AdminUpdateRapidUse
 import com.github.vincemann.springrapid.auth.domain.dto.user.RapidFindForeignUserDto;
 import com.github.vincemann.springrapid.auth.domain.dto.user.FindRapidUserDto;
 import com.github.vincemann.springrapid.auth.domain.dto.user.RapidUserDto;
+import com.github.vincemann.springrapid.auth.service.AlreadyRegisteredException;
 import com.github.vincemann.springrapid.auth.service.UserService;
 import com.github.vincemann.springrapid.auth.service.token.BadTokenException;
 import com.github.vincemann.springrapid.auth.service.token.HttpTokenService;
@@ -85,7 +86,7 @@ public abstract class AbstractUserController<U extends AbstractUser<ID>, ID exte
 //	@ResponseBody
 	public ResponseEntity<String> signup(/*@RequestBody @JsonView(UserUtils.SignupInput.class) S signupForm,*/
 			HttpServletRequest request,
-			HttpServletResponse response) throws BadEntityException, IOException, EntityNotFoundException {
+			HttpServletResponse response) throws BadEntityException, IOException, EntityNotFoundException, AlreadyRegisteredException {
 
 		String signupForm = readBody(request);
 		Object signupDto = getJsonMapper().readValue(signupForm,
@@ -217,7 +218,7 @@ public abstract class AbstractUserController<U extends AbstractUser<ID>, ID exte
 //	@PostMapping("${lemon.userController.requestEmailChangeUrl}")
 //	@ResponseStatus(HttpStatus.NO_CONTENT)
 	public ResponseEntity<?> requestEmailChange(HttpServletRequest request
-								   /*@RequestBody RequestEmailChangeForm emailChangeForm*/,HttpServletResponse response) throws BadEntityException, EntityNotFoundException, IdFetchingException, IOException {
+								   /*@RequestBody RequestEmailChangeForm emailChangeForm*/,HttpServletResponse response) throws BadEntityException, EntityNotFoundException, IdFetchingException, IOException, AlreadyRegisteredException {
 		ID id = fetchId(request);
 		String body = readBody(request);
 		RequestEmailChangeForm form = getJsonMapper().readValue(body, RequestEmailChangeForm.class);

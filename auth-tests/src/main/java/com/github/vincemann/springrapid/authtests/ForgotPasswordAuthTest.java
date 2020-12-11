@@ -53,13 +53,13 @@ public class ForgotPasswordAuthTest extends AbstractRapidAuthTest {
 		mvc.perform(post(authProperties.getController().getForgotPasswordUrl())
                 .param("email", "")
                 .header("contentType",  MediaType.APPLICATION_FORM_URLENCODED))
-                .andExpect(status().is(422));
+                .andExpect(status().is(400));
 		
 		// Wrong email format
 		mvc.perform(post(authProperties.getController().getForgotPasswordUrl())
                 .param("email", "wrong-email-format")
                 .header("contentType",  MediaType.APPLICATION_FORM_URLENCODED))
-                .andExpect(status().is(422));
+                .andExpect(status().is(404));
 		
 		verify(unproxy(mailSender), never()).send(any());
 	}

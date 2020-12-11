@@ -1,38 +1,33 @@
 package com.github.vincemann.springrapid.auth.service;
 
 
-
-import com.github.vincemann.springrapid.auth.domain.RapidAuthAuthenticatedPrincipal;
-import com.github.vincemann.springrapid.auth.mail.MailSender;
-import com.github.vincemann.springrapid.auth.security.AuthenticatedPrincipalFactory;
-import com.github.vincemann.springrapid.auth.service.token.AuthorizationTokenService;
-import com.github.vincemann.springrapid.auth.service.token.BadTokenException;
-
-import com.github.vincemann.springlemon.exceptions.util.Validate;
-
-import com.github.vincemann.springrapid.auth.service.token.JweTokenService;
-import com.github.vincemann.springrapid.auth.util.RapidJwt;
-import com.github.vincemann.springrapid.auth.util.LemonMapUtils;
-import com.github.vincemann.springrapid.auth.util.TransactionalUtils;
-import com.github.vincemann.springrapid.auth.util.UserVerifyUtils;
-import com.github.vincemann.springrapid.core.security.RapidSecurityContext;
-import com.github.vincemann.springrapid.core.service.JPACrudService;
-import com.github.vincemann.springrapid.core.service.password.RapidPasswordEncoder;
-import com.github.vincemann.springrapid.core.util.Message;
-import com.github.vincemann.springrapid.core.util.VerifyAccess;
-import com.google.common.collect.Sets;
-import com.nimbusds.jwt.JWTClaimsSet;
+import com.github.vincemann.springrapid.auth.AuthProperties;
 import com.github.vincemann.springrapid.auth.domain.AbstractUser;
 import com.github.vincemann.springrapid.auth.domain.AbstractUserRepository;
+import com.github.vincemann.springrapid.auth.domain.AuthRoles;
+import com.github.vincemann.springrapid.auth.domain.RapidAuthAuthenticatedPrincipal;
 import com.github.vincemann.springrapid.auth.domain.dto.ChangePasswordForm;
 import com.github.vincemann.springrapid.auth.domain.dto.RequestEmailChangeForm;
 import com.github.vincemann.springrapid.auth.domain.dto.ResetPasswordForm;
 import com.github.vincemann.springrapid.auth.mail.MailData;
-import com.github.vincemann.springrapid.auth.AuthProperties;
-import com.github.vincemann.springrapid.auth.domain.AuthRoles;
+import com.github.vincemann.springrapid.auth.mail.MailSender;
+import com.github.vincemann.springrapid.auth.security.AuthenticatedPrincipalFactory;
+import com.github.vincemann.springrapid.auth.service.token.AuthorizationTokenService;
+import com.github.vincemann.springrapid.auth.service.token.BadTokenException;
+import com.github.vincemann.springrapid.auth.service.token.JweTokenService;
+import com.github.vincemann.springrapid.auth.util.LemonMapUtils;
+import com.github.vincemann.springrapid.auth.util.RapidJwt;
+import com.github.vincemann.springrapid.auth.util.TransactionalUtils;
+import com.github.vincemann.springrapid.core.security.RapidSecurityContext;
+import com.github.vincemann.springrapid.core.service.JPACrudService;
 import com.github.vincemann.springrapid.core.service.exception.BadEntityException;
 import com.github.vincemann.springrapid.core.service.exception.EntityNotFoundException;
+import com.github.vincemann.springrapid.core.service.password.RapidPasswordEncoder;
+import com.github.vincemann.springrapid.core.util.Message;
+import com.github.vincemann.springrapid.core.util.VerifyAccess;
 import com.github.vincemann.springrapid.core.util.VerifyEntity;
+import com.google.common.collect.Sets;
+import com.nimbusds.jwt.JWTClaimsSet;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
@@ -41,8 +36,6 @@ import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.annotation.Validated;
 
-import javax.validation.ConstraintViolationException;
-import javax.validation.Valid;
 import javax.validation.ValidationException;
 import java.io.Serializable;
 import java.util.HashMap;
@@ -107,23 +100,23 @@ public abstract class AbstractUserService
         return context;
     }
 
-    protected void checkValidPassword(String password){
+    protected void checkValidPassword(String password) throws BadEntityException {
         //must be at least 8 chars long and contain a number
         if(password==null){
-            throw new ValidationException("Must not be null");
+            throw new BadEntityException("Must not be null");
         }
         if(password.length()<8){
-            throw new ValidationException("At least 8 chars expected");
+            throw new BadEntityException("At least 8 chars expected");
         }
         if(!password.matches(".*\\d.*")){
-            throw new ValidationException("Must contain at least one number");
+            throw new BadEntityException("Must contain at least one number");
         }
     }
 
-    protected void checkUniqueEmail(String email){
+    protected void checkUniqueEmail(String email) throws AlreadyRegisteredException {
         Optional<U> byEmail = getRepository().findByEmail(email);
         if (byEmail.isPresent()){
-            throw new ValidationException("Email: " + email + " is already taken");
+            throw new AlreadyRegisteredException("Email: " + email + " is already taken");
         }
     }
 
@@ -131,7 +124,7 @@ public abstract class AbstractUserService
      * Signs up a user.
      */
     @Transactional(propagation = Propagation.REQUIRED, readOnly = false)
-    public U signup(U user) throws BadEntityException {
+    public U signup(U user) throws BadEntityException, AlreadyRegisteredException {
         //admins get created with createAdminMethod
         user.setRoles(Sets.newHashSet(AuthRoles.USER));
         checkValidPassword(user.getPassword());
@@ -150,6 +143,7 @@ public abstract class AbstractUserService
     @Transactional(propagation = Propagation.SUPPORTS, readOnly = false)
     @Override
     public U save(U user) throws BadEntityException {
+        // no restrictions in save method, all restrictions and checks in more abstract methods such as signup and createAdmin
         encodePassword(user);
         return super.save(user);
     }
@@ -185,14 +179,13 @@ public abstract class AbstractUserService
     /**
      * Resends verification mail to the user.
      */
-    public void resendVerificationMail(U user) throws EntityNotFoundException {
+    public void resendVerificationMail(U user) throws EntityNotFoundException, BadEntityException {
 
 //        // The user must exist
 
         VerifyEntity.isPresent(user, "User not found");
         // must be unverified
-        Validate.condition(user.getRoles().contains(AuthRoles.UNVERIFIED),
-                "com.naturalprogrammer.spring.alreadyVerified").go();
+        VerifyEntity.is(user.getRoles().contains(AuthRoles.UNVERIFIED)," Already verified");
 
         sendVerificationMail(user);
     }
@@ -212,24 +205,28 @@ public abstract class AbstractUserService
      * @return
      */
     @Transactional(propagation = Propagation.REQUIRED, readOnly = false)
-    public U verifyUser(U user, String verificationCode) throws EntityNotFoundException, BadTokenException, BadEntityException {
-        VerifyEntity.isPresent(user, "User not found");
-        // ensure that he is unverified
-        // this makes sense to do here not in security plugin
-        Validate.condition(user.hasRole(AuthRoles.UNVERIFIED),
-                "com.naturalprogrammer.spring.alreadyVerified").go();
-        //verificationCode is jwtToken
-        JWTClaimsSet claims = jweTokenService.parseToken(verificationCode);
-        RapidJwt.validate(claims,VERIFY_AUDIENCE,user.getCredentialsUpdatedMillis());
+    public U verifyUser(U user, String verificationCode) throws EntityNotFoundException, BadEntityException {
+        try {
+            VerifyEntity.isPresent(user, "User not found");
+            // ensure that he is unverified
+            // this makes sense to do here not in security plugin
+            VerifyEntity.is(user.hasRole(AuthRoles.UNVERIFIED),"Already Verified");
+            //verificationCode is jwtToken
+            JWTClaimsSet claims = jweTokenService.parseToken(verificationCode);
+            RapidJwt.validate(claims,VERIFY_AUDIENCE,user.getCredentialsUpdatedMillis());
 
-        VerifyAccess.condition(claims.getSubject().equals(user.getId().toString()) &&
-                        claims.getClaim("email").equals(user.getEmail()),
-                Message.get("com.naturalprogrammer.spring.wrong.verificationCode"));
+            VerifyAccess.condition(claims.getSubject().equals(user.getId().toString()) &&
+                            claims.getClaim("email").equals(user.getEmail()),
+                    Message.get("com.naturalprogrammer.spring.wrong.verificationCode"));
 
 
-        //no login needed bc token of user is appended in controller -> we avoid dynamic logins in a stateless env
-        //also to be able to use read-only security test -> generic principal type does not need to be passed into this class
-        return verifyUser(user);
+            //no login needed bc token of user is appended in controller -> we avoid dynamic logins in a stateless env
+            //also to be able to use read-only security test -> generic principal type does not need to be passed into this class
+            return verifyUser(user);
+        }catch (BadTokenException e){
+            throw new BadEntityException(e);
+        }
+
     }
 
     protected U verifyUser(U user) throws BadEntityException, EntityNotFoundException {
@@ -260,33 +257,34 @@ public abstract class AbstractUserService
      * @return
      */
     @Transactional(propagation = Propagation.REQUIRED, readOnly = false)
-    public U resetPassword(ResetPasswordForm form) throws EntityNotFoundException, BadTokenException {
+    public U resetPassword(ResetPasswordForm form) throws EntityNotFoundException,  BadEntityException {
 
-        JWTClaimsSet claims = jweTokenService.parseToken(form.getCode());
-        RapidJwt.validate(claims,FORGOT_PASSWORD_AUDIENCE);
-
-        checkValidPassword(form.getNewPassword());
-
-        String email = claims.getSubject();
-
-        // fetch the user
-        Optional<U> byEmail = findByEmail(email);
-        VerifyEntity.isPresent(byEmail, "User with email: " + email + " not found");
-        U user = byEmail.get();
-        RapidJwt.validateIssuedAfter(claims, user.getCredentialsUpdatedMillis());
-
-        // sets the password
-        user.setPassword(passwordEncoder.encode(form.getNewPassword()));
-        user.setCredentialsUpdatedMillis(System.currentTimeMillis());
-        //user.setForgotPasswordCode(null);
-
-        U saved;
         try {
-            saved = update(user);
-        } catch (BadEntityException e) {
-            throw new RuntimeException("Could not reset users password", e);
+            JWTClaimsSet claims = jweTokenService.parseToken(form.getCode());
+            RapidJwt.validate(claims,FORGOT_PASSWORD_AUDIENCE);
+
+            checkValidPassword(form.getNewPassword());
+
+            String email = claims.getSubject();
+
+            // fetch the user
+            Optional<U> byEmail = findByEmail(email);
+            VerifyEntity.isPresent(byEmail, "User with email: " + email + " not found");
+            U user = byEmail.get();
+            RapidJwt.validateIssuedAfter(claims, user.getCredentialsUpdatedMillis());
+
+            // sets the password
+            user.setPassword(passwordEncoder.encode(form.getNewPassword()));
+            user.setCredentialsUpdatedMillis(System.currentTimeMillis());
+            //user.setForgotPasswordCode(null);
+            try {
+                return update(user);
+            }catch (BadEntityException e) {
+                throw new RuntimeException("Could not reset users password", e);
+            }
+        } catch (BadTokenException e){
+            throw new BadEntityException(e);
         }
-        return saved;
     }
 
 
@@ -312,19 +310,18 @@ public abstract class AbstractUserService
      * Changes the password.
      */
     @Transactional(propagation = Propagation.REQUIRED, readOnly = false)
-    public void changePassword(U user, ChangePasswordForm changePasswordForm) throws EntityNotFoundException {
+    public void changePassword(U user, ChangePasswordForm changePasswordForm) throws EntityNotFoundException, BadEntityException {
         VerifyEntity.isPresent(user, "User not found");
         String oldPassword = user.getPassword();
 
         if (!changePasswordForm.getPassword().equals(changePasswordForm.getRetypePassword())){
-            throw new ValidationException("Password does not match retype password");
+            throw new BadEntityException("Password does not match retype password");
         }
         checkValidPassword(changePasswordForm.getPassword());
         // checks
-        Validate.field("changePasswordForm.oldPassword",
+        VerifyEntity.is(
                 passwordEncoder.matches(changePasswordForm.getOldPassword(),
-                        oldPassword),
-                "com.naturalprogrammer.spring.wrong.password").go();
+                        oldPassword),"Wrong password");
 
         // sets the password
         user.setPassword(passwordEncoder.encode(changePasswordForm.getPassword()));
@@ -365,7 +362,7 @@ public abstract class AbstractUserService
      * Requests for email change.
      */
     @Transactional(propagation = Propagation.REQUIRED, readOnly = false)
-    public void requestEmailChange(U user,  RequestEmailChangeForm emailChangeForm) throws EntityNotFoundException {
+    public void requestEmailChange(U user,  RequestEmailChangeForm emailChangeForm) throws EntityNotFoundException, AlreadyRegisteredException {
 //        log.debug("Requesting email change for user" + user);
         // checks
 //        Optional<U> byId = getUserService().findById(userId);
@@ -446,13 +443,17 @@ public abstract class AbstractUserService
      * @return
      */
     @Transactional(propagation = Propagation.REQUIRED, readOnly = false)
-    public U changeEmail(U user, String changeEmailCode) throws EntityNotFoundException, BadTokenException {
+    public U changeEmail(U user, String changeEmailCode) throws EntityNotFoundException, BadEntityException {
 
         VerifyEntity.isPresent(user, "User not found");
-        Validate.condition(StringUtils.isNotBlank(user.getNewEmail()),
-                "com.naturalprogrammer.spring.blank.newEmail").go();
+        VerifyEntity.is(StringUtils.isNotBlank(user.getNewEmail()),"No new email found. Looks like you have already changed.");
 
-        JWTClaimsSet claims = jweTokenService.parseToken(changeEmailCode);
+        JWTClaimsSet claims;
+        try {
+            claims = jweTokenService.parseToken(changeEmailCode);
+        }catch (BadTokenException e){
+            throw new BadEntityException(e);
+        }
         RapidJwt.validate(claims,CHANGE_EMAIL_AUDIENCE, user.getCredentialsUpdatedMillis());
 
         VerifyAccess.condition(
@@ -461,9 +462,8 @@ public abstract class AbstractUserService
                 Message.get("com.naturalprogrammer.spring.wrong.changeEmailCode"));
 
         // Ensure that the email would be unique
-        Validate.condition(
-                !findByEmail(user.getNewEmail()).isPresent(),
-                "com.naturalprogrammer.spring.duplicate.email").go();
+        VerifyEntity.is(
+                !findByEmail(user.getNewEmail()).isPresent(),"Email Id already used");
 
         // update the fields
         user.setEmail(user.getNewEmail());
@@ -500,17 +500,15 @@ public abstract class AbstractUserService
 
     @Transactional(propagation = Propagation.REQUIRED, readOnly = false)
     //only called internally
-    public U createAdminUser(AuthProperties.Admin admin) throws BadEntityException {
-//        log.info("Creating admin user: " + admin.getEmail());
-
+    public U createAdminUser(AuthProperties.Admin admin) throws BadEntityException, AlreadyRegisteredException {
+        checkUniqueEmail(admin.getEmail());
+        checkValidPassword(admin.getPassword());
         // create the user
         U user = newUser();
         user.setEmail(admin.getEmail());
         user.setPassword(admin.getPassword());
         user.getRoles().add(AuthRoles.ADMIN);
-        U saved = save(user);
-        log.debug("admin saved.");
-        return saved;
+        return save(user);
     }
 
     /**

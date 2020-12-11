@@ -1,4 +1,4 @@
-package com.github.vincemann.springrapid.auth.validation;
+package com.github.vincemann.springrapid.auth.service.captcha;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.github.vincemann.aoplog.api.AopLoggable;

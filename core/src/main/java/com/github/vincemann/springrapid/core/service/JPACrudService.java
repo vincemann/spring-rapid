@@ -45,6 +45,7 @@ public abstract class JPACrudService
         try {
             return getRepository().findById(id);
         } catch (NonTransientDataAccessException e) {
+            // constraints not met, such as foreign key constraints or other db entity constraints
             throw new BadEntityException(e);
         }
     }
@@ -64,6 +65,7 @@ public abstract class JPACrudService
                 return getRepository().save(entityToUpdate);
             }
         } catch (NonTransientDataAccessException e) {
+            // constraints not met, such as foreign key constraints or other db entity constraints
             throw new BadEntityException(e);
         } catch (IllegalAccessException|InvocationTargetException e) {
            throw new RuntimeException(e);
@@ -84,6 +86,7 @@ public abstract class JPACrudService
         try {
             return getRepository().save(entity);
         } catch (NonTransientDataAccessException e) {
+            // constraints not met, such as foreign key constraints or other db entity constraints
             throw new BadEntityException(e);
         }
     }
@@ -104,6 +107,7 @@ public abstract class JPACrudService
             VerifyEntity.isPresent(entity, id, getEntityClass());
             getRepository().deleteById(id);
         } catch (NonTransientDataAccessException e) {
+            // constraints not met, such as foreign key constraints or other db entity constraints
             throw new BadEntityException(e);
         }
 

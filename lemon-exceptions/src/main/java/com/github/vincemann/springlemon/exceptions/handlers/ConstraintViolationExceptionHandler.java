@@ -8,18 +8,18 @@ import com.github.vincemann.springlemon.exceptions.LemonFieldError;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
+import org.springframework.http.HttpStatus;
 
 //@Component
 @Order(Ordered.LOWEST_PRECEDENCE)
 @Slf4j
-public class ConstraintViolationExceptionHandler extends AbstractValidationExceptionHandler<ConstraintViolationException> {
+public class ConstraintViolationExceptionHandler extends AbstractBadRequestExceptionHandler<ConstraintViolationException> {
 
 	public ConstraintViolationExceptionHandler() {
 		
 		super(ConstraintViolationException.class);
 
 	}
-	
 	@Override
 	public Collection<LemonFieldError> getErrors(ConstraintViolationException ex) {
 		return LemonFieldError.getErrors(ex.getConstraintViolations());

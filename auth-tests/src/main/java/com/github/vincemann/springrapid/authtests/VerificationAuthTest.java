@@ -53,7 +53,7 @@ public class VerificationAuthTest extends AbstractRapidAuthTest {
 				.param("id",getUnverifiedUser().getId().toString())
                 .param("code", verificationCode)
                 .header("contentType",  MediaType.APPLICATION_FORM_URLENCODED))
-                .andExpect(status().is(422));
+                .andExpect(status().is(400));
 	}
 	
 	@Test
@@ -80,7 +80,7 @@ public class VerificationAuthTest extends AbstractRapidAuthTest {
 				.param("id",getUnverifiedUser().getId().toString())
                 .param("code", "")
                 .header("contentType",  MediaType.APPLICATION_FORM_URLENCODED))
-                .andExpect(status().is(401));
+                .andExpect(status().is(400));
 
 		// Wrong audience
 		String token = jweTokenService.createToken(

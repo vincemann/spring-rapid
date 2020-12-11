@@ -88,7 +88,7 @@ public class ChangeEmailAuthTest extends AbstractRapidAuthTest {
 				.param("id",getUnverifiedUser().getId().toString())
 				.header(HttpHeaders.AUTHORIZATION, tokens.get(getUnverifiedUser().getId()))
                 .header("contentType",  MediaType.APPLICATION_FORM_URLENCODED))
-		        .andExpect(status().is(422));
+		        .andExpect(status().is(400));
 
 		// Wrong audience
 		String code = jweTokenService.createToken(
@@ -173,7 +173,7 @@ public class ChangeEmailAuthTest extends AbstractRapidAuthTest {
 				.param("id",getUser().getId().toString())
 				.header(HttpHeaders.AUTHORIZATION, tokens.get(getUser().getId()))
                 .header("contentType",  MediaType.APPLICATION_FORM_URLENCODED))
-		        .andExpect(status().is(422));
+		        .andExpect(status().is(400));
 	}
 	
     /**
@@ -193,6 +193,6 @@ public class ChangeEmailAuthTest extends AbstractRapidAuthTest {
 				.param("id",getUnverifiedUser().getId().toString())
 				.header(HttpHeaders.AUTHORIZATION, tokens.get(getUnverifiedUser().getId()))
                 .header("contentType",  MediaType.APPLICATION_FORM_URLENCODED))
-		        .andExpect(status().is(422));
+		        .andExpect(status().is(400));
 	}
 }
