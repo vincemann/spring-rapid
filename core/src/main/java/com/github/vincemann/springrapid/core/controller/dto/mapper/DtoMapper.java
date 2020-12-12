@@ -11,7 +11,7 @@ import com.github.vincemann.springrapid.core.service.exception.EntityNotFoundExc
  * Maps a Dto to an Entity, or vice versa
  */
 @LogInteraction
-@LogException
+//@LogException
 public interface DtoMapper<E extends IdentifiableEntity<?>,Dto> extends AopLoggable {
 
     @LogInteraction(disabled = true)

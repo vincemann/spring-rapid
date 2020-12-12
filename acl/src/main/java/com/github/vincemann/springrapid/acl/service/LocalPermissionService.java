@@ -22,7 +22,7 @@ import java.io.Serializable;
 @Transactional
 //todo test
 @Slf4j
-@LogException
+//@LogException
 public class LocalPermissionService implements AopLoggable {
 
     private MutableAclService aclService;
