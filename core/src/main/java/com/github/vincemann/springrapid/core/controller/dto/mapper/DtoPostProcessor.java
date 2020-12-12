@@ -8,7 +8,7 @@ import com.github.vincemann.springrapid.core.service.exception.BadEntityExceptio
 import com.github.vincemann.springrapid.core.service.exception.EntityNotFoundException;
 
 @LogInteraction
-@LogException
+//@LogException
 public interface DtoPostProcessor<Dto,E extends IdentifiableEntity<?>> extends AopLoggable {
 
     @LogInteraction(disabled = true)

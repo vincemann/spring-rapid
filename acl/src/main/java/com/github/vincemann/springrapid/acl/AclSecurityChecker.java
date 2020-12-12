@@ -15,7 +15,7 @@ import java.util.Collection;
  */
 @ServiceComponent
 @LogInteraction
-@LogException
+//@LogException
 public interface AclSecurityChecker extends AopLoggable {
 
     public boolean checkExpression(String securityExpression);

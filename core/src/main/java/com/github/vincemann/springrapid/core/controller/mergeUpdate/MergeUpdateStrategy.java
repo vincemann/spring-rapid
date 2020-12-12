@@ -8,7 +8,7 @@ import com.github.vincemann.springrapid.core.service.exception.BadEntityExceptio
 
 
 @LogInteraction
-@LogException
+//@LogException
 public interface MergeUpdateStrategy extends AopLoggable {
     /**
      * Merges saved entity with patch entity.

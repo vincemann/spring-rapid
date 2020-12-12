@@ -26,7 +26,7 @@ import java.util.Optional;
 
 @Validated
 @ServiceComponent
-@LogException
+//@LogException
 public interface UserService<U extends AbstractUser<ID>, ID extends Serializable>
         extends AopLoggable, CrudService<U,ID>
 {

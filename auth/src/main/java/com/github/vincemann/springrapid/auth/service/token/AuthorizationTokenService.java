@@ -10,7 +10,7 @@ import org.springframework.security.authentication.BadCredentialsException;
  * Convert token to {@link com.github.vincemann.springrapid.core.security.RapidAuthenticatedPrincipal} and vice versa.
  */
 @LogInteraction
-@LogException
+//@LogException
 @WebComponent
 public interface AuthorizationTokenService<P extends RapidAuthenticatedPrincipal> {
 

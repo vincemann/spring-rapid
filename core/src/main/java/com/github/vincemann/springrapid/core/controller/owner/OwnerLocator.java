@@ -19,6 +19,6 @@ public interface OwnerLocator<E extends IdentifiableEntity> extends AopLoggable 
     public boolean supports(Class clazz);
 
     @LogInteraction
-    @LogException
+    //@LogException
     public Optional<String> find(E entity);
 }
