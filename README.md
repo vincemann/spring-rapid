@@ -13,22 +13,22 @@ Some lemon modules were copied, modified and integrated in this project.
   
   
 # features  
-* full generic crud solution                                                                         (core)  
-* proxy-based extension system for services                                                          (core)
-** -> create different kind of service beans (i.E. @Secured, @AclManaging) that use reusable extensions  
+* full generic crud solution                                                                         (core)   
+* proxy-based extension system for services                                                          (core)  
+  -> create different kind of service beans (i.E. @Secured, @AclManaging) that use reusable extensions  
 * basic exception to api-error translation                                                           (lemon-exceptions)  
 * dto-Mapping (support for different dto's for each endpoint; see example below)                     (core)  
 * uni- and bidirectional relationship management for all crud operations                             (entity-relationship)  
 * resolving of ids <-> entities, while mapping dto's                                                 (entity-relationship)  
 * test-support for service- and controllertest                                                       (core-test)  
-* automatic acl-schema setup + simple API for writing acl-based service-extensions                   (acl) 
-* full solution for json-web-token based user authentication                                         (auth)
-** -> signup, login, reset-password, verify-email, ...
+* automatic acl-schema setup + simple API for writing acl-based service-extensions                   (acl)  
+* full solution for json-web-token based user authentication                                         (auth)  
+  -> signup, login, reset-password, verify-email, ...
     
  # include  
 * replace MODULE with the module you want to include (module-name = directory-name)  
 * replace VERSION with valid version from [releases](https://github.com/vincemann/spring-rapid/releases)  
- ### Maven  
+ ### maven  
  ```code  
 <repositories>    
     <repository>   
