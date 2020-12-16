@@ -1,18 +1,18 @@
-# overview  
-Spring-rapid consists of modules encapsulating solutions for **common issues** when developing Spring REST APIs.  
+# Overview  
+Spring-rapid consists of modules encapsulating solutions for **common issues** when developing spring REST APIs.  
 The goal is to **speed up** the developement process and stop rewriting the same code over and over again.  
 Instead there should be well implemented modules for each common task, that can be plugged in whenever needed.  
 One common task, that is very repetitive, is implementing **crud-operations** for all of your entities.  
 The core module gives you a **fully functional** and autoconfigured (yet hightly configurable/ extendable) solution for implementing crud,  
 that requires only **a few lines of code**.  
-The code needed for a working controller handling multiple different dto-types can be seen in the example section below.  
-Along with the core module come many other modules building upon the core module, that can be plugged in when needed.  
+The code needed for a working controller, handling multiple different dto-types, can be seen in the example below.  
+There are many other modules building upon the core module, that can be plugged in when needed.  
   
-This project is inspired by [**Spring-Lemon**](https://github.com/naturalprogrammer/spring-lemon) which offers many good modules as well.  
-Some lemon modules were copied, modified and integrated in this project.  
+This project is inspired by [**spring-lemon**](https://github.com/naturalprogrammer/spring-lemon) which offers many good modules as well.  
+Almost all lemon modules were copied, heavily modified and integrated into this project.  
   
   
-# features  
+# Features  
 * full generic crud solution                                                                         (core)   
 * proxy-based extension system for services                                                          (core)  
   -> create different kind of service beans (i.E. @Secured, @AclManaging) that use reusable extensions  
@@ -25,10 +25,10 @@ Some lemon modules were copied, modified and integrated in this project.
 * full solution for json-web-token based user authentication                                         (auth)  
   -> signup, login, reset-password, verify-email, ...
     
- # include  
+ # Include  
 * replace MODULE with the module you want to include (module-name = directory-name)  
 * replace VERSION with valid version from [releases](https://github.com/vincemann/spring-rapid/releases)  
- ### maven  
+ ### Maven  
  ```code  
 <repositories>    
     <repository>   
@@ -43,7 +43,7 @@ Some lemon modules were copied, modified and integrated in this project.
     <version>VERSION</version>  
 </dependency>  
 ```  
-### gradle  
+### Gradle  
 ```code
 repositories {  
     jcenter()  
@@ -54,10 +54,10 @@ dependencies {
 }  
 ```  
   
-# example  
-**this is the typical setup required to run a fully functional controller exposing crud enpoints for one entity:**  
-**check out the demo module for a more complete example + tests**  
-## controller    
+# Example  
+**This is the typical setup required to run a fully functional controller exposing crud enpoints for one entity.**  
+**Check out the demo module for a more complete example + tests.**  
+## Controller    
   
 ```java  
 @Controller
@@ -88,7 +88,7 @@ public class OwnerController extends CrudController<Owner, Long, OwnerService> {
 ```
   
   
-## service   
+## Service   
   
 ```java  
 @Service  
