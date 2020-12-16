@@ -1,5 +1,5 @@
 # Overview  
-Spring-rapid consists of modules encapsulating solutions for **common issues** when developing spring REST APIs.  
+Spring-rapid consists of modules encapsulating solutions for **common issues** when developing spring **REST APIs**.  
 The goal is to **speed up** the developement process and stop rewriting the same code over and over again.  
 Instead there should be well implemented modules for each common task, that can be plugged in whenever needed.  
 One common task, that is very repetitive, is implementing **crud-operations** for all of your entities.  
@@ -13,16 +13,16 @@ Almost all lemon modules were copied, heavily modified and integrated into this 
   
   
 # Features  
-* full generic crud solution                                                                         (core)   
-* proxy-based extension system for services                                                          (core)  
+* full generic **crud** solution                                                                     (core)   
+* proxy-based **extension system** for services                                                      (core)  
   -> create different kind of service beans (i.E. @Secured, @AclManaging) that use reusable extensions  
 * basic exception to api-error translation                                                           (lemon-exceptions)  
-* dto-Mapping (support for different dto's for each endpoint; see example below)                     (core)  
+* **dto-mapping** (support for different dto's for each endpoint; see example below)                 (core)  
 * uni- and bidirectional relationship management for all crud operations                             (entity-relationship)  
 * resolving of ids <-> entities, while mapping dto's                                                 (entity-relationship)  
-* test-support for service- and controllertest                                                       (core-test)  
-* automatic acl-schema setup + simple API for writing acl-based service-extensions                   (acl)  
-* full solution for json-web-token based user authentication                                         (auth)  
+* test-support for service- and controller-tests                                                     (core-test)  
+* automatic **acl**-schema setup + simple API for writing acl-based service-extensions               (acl)  
+* full solution for json-web-token based **user authentication**                                     (auth)  
   -> signup, login, reset-password, verify-email, ...
     
  # Include  
