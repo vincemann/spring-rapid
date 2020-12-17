@@ -4,6 +4,8 @@ import com.github.vincemann.springrapid.auth.AuthProperties;
 import com.github.vincemann.springrapid.auth.domain.RapidAuthAuthenticatedPrincipal;
 import com.github.vincemann.springrapid.auth.handler.RapidAuthenticationSuccessHandler;
 import com.github.vincemann.springrapid.auth.security.JwtAuthenticationFilter;
+import com.github.vincemann.springrapid.auth.security.bruteforce.LoginAttemptService;
+import com.github.vincemann.springrapid.auth.security.bruteforce.LoginBruteForceFilter;
 import com.github.vincemann.springrapid.auth.service.token.AuthorizationTokenService;
 import com.github.vincemann.springrapid.auth.service.token.HttpTokenService;
 import com.github.vincemann.springrapid.core.security.RapidSecurityContext;
@@ -33,6 +35,7 @@ public class RapidWebSecurityConfig extends WebSecurityConfigurerAdapter {
 	private AuthorizationTokenService<RapidAuthAuthenticatedPrincipal> authorizationTokenService;
 	private RapidSecurityContext<RapidAuthAuthenticatedPrincipal> securityContext;
 	private RapidAuthenticationSuccessHandler authenticationSuccessHandler;
+	private LoginAttemptService loginAttemptService;
 
 	public RapidWebSecurityConfig() {
 
@@ -54,6 +57,7 @@ public class RapidWebSecurityConfig extends WebSecurityConfigurerAdapter {
 		logout(http); // logout related configuration
 		exceptionHandling(http); // exception handling
 		tokenAuthentication(http); // configure token authentication filter
+		bruteForceFilter(http);
 		csrf(http); // CSRF configuration
 		cors(http); // CORS configuration
 		authorizeRequests(http); // authorize requests
@@ -145,6 +149,11 @@ public class RapidWebSecurityConfig extends WebSecurityConfigurerAdapter {
 				UsernamePasswordAuthenticationFilter.class);
 	}
 
+	protected void bruteForceFilter(HttpSecurity http){
+		http.addFilterBefore(new LoginBruteForceFilter(loginAttemptService,properties),
+				UsernamePasswordAuthenticationFilter.class);
+	}
+
 
 	/**
 	 * Disables CSRF. We are stateless.
@@ -212,4 +221,9 @@ public class RapidWebSecurityConfig extends WebSecurityConfigurerAdapter {
 	public void injectAuthenticationSuccessHandler(RapidAuthenticationSuccessHandler authenticationSuccessHandler) {
 		this.authenticationSuccessHandler = authenticationSuccessHandler;
 	}
+	@Autowired
+	public void injectLoginAttemptService(LoginAttemptService loginAttemptService) {
+		this.loginAttemptService = loginAttemptService;
+	}
+
 }

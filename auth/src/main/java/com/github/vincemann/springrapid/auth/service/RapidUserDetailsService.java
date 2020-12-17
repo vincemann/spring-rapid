@@ -18,6 +18,7 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.servlet.http.HttpServletRequest;
 import java.util.Optional;
 
 /**
@@ -32,6 +33,7 @@ public class RapidUserDetailsService
 	private UserService userService;
 	//keep it typeless...
 	private AuthenticatedPrincipalFactory authenticatedPrincipalFactory;
+
 
 	@Transactional
 	@LogInteraction
@@ -53,6 +55,7 @@ public class RapidUserDetailsService
 
 
 
+
 	@Autowired
 	public void injectPrincipalUserConverter(AuthenticatedPrincipalFactory authenticatedPrincipalFactory) {
 		this.authenticatedPrincipalFactory = authenticatedPrincipalFactory;
@@ -60,7 +63,6 @@ public class RapidUserDetailsService
 
 
 	@Autowired
-
 	public void injectUserService(UserService userService) {
 		this.userService = userService;
 	}
