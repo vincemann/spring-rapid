@@ -50,12 +50,6 @@ public class AuthProperties {
 
 	}
 
-
-	/**
-	 * Client web application's base URL.
-	 * Used in the verification link mailed to the users, etc.
-	 */
-    public String applicationUrl = "http://localhost:9000";
     
 //	/**
 //	 * The default URL to redirect to after
