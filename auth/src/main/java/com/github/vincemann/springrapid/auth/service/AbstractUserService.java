@@ -18,6 +18,7 @@ import com.github.vincemann.springrapid.auth.service.token.JweTokenService;
 import com.github.vincemann.springrapid.auth.util.LemonMapUtils;
 import com.github.vincemann.springrapid.auth.util.RapidJwt;
 import com.github.vincemann.springrapid.auth.util.TransactionalUtils;
+import com.github.vincemann.springrapid.core.CoreProperties;
 import com.github.vincemann.springrapid.core.security.RapidSecurityContext;
 import com.github.vincemann.springrapid.core.service.JPACrudService;
 import com.github.vincemann.springrapid.core.service.exception.BadEntityException;
@@ -32,6 +33,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.annotation.Validated;
@@ -64,6 +66,7 @@ public abstract class AbstractUserService
     private AuthenticatedPrincipalFactory authenticatedPrincipalFactory;
     private RapidPasswordEncoder passwordEncoder;
     private AuthProperties properties;
+    private CoreProperties coreProperties;
     private MailSender<MailData> mailSender;
     private JweTokenService jweTokenService;
 //    private UserService<U, ID> rootUserService;
@@ -406,7 +409,7 @@ public abstract class AbstractUserService
             log.debug("Mailing change email link to user: " + user);
 
             // make the link
-            String changeEmailLink = properties.getApplicationUrl()
+            String changeEmailLink = coreProperties.getApplicationUrl()
                     + "/users/" + user.getId()
                     + "/change-email?code=" + changeEmailCode;
 
@@ -526,7 +529,7 @@ public abstract class AbstractUserService
         String verificationCode = jweTokenService.createToken(claims);
 
             // make the link
-            String verifyLink = properties.getApplicationUrl()
+            String verifyLink = coreProperties.getApplicationUrl()
                     + "/users/" + user.getId() + "/verification?code=" + verificationCode;
 
             // send the mail
@@ -566,7 +569,7 @@ public abstract class AbstractUserService
         String forgotPasswordCode = jweTokenService.createToken(claims);
 
         // make the link
-        String forgotPasswordLink = properties.getApplicationUrl() + "/reset-password?code=" + forgotPasswordCode;
+        String forgotPasswordLink = coreProperties.getApplicationUrl() + "/reset-password?code=" + forgotPasswordCode;
 
         sendForgotPasswordMail(user, forgotPasswordLink);
 
@@ -638,6 +641,11 @@ public abstract class AbstractUserService
     @Autowired
     public void injectProperties(AuthProperties properties) {
         this.properties = properties;
+    }
+
+    @Autowired
+    public void injectCoreProperties(CoreProperties properties) {
+        this.coreProperties = properties;
     }
 
 
