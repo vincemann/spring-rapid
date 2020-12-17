@@ -19,6 +19,8 @@ public class OwnerController extends CrudController<Owner, Long, OwnerService> {
         return builder
                 .forEndpoint(getCreateUrl(), CreateOwnerDto.class)
                 .forUpdate(UpdateOwnerDto.class)
+
+
                 //response dto config
                 //authenticated
                 .withPrincipal(DtoRequestInfo.Principal.OWN)
