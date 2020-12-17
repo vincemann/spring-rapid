@@ -5,7 +5,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.github.vincemann.springrapid.core.CoreProperties;
-import com.github.vincemann.springrapid.core.controller.dto.mapper.LoggingObjectMapper;
+import com.github.vincemann.springrapid.core.controller.LoggingObjectMapper;
 import com.github.vincemann.springrapid.core.slicing.WebConfig;
 import com.github.vincemann.springrapid.core.util.JsonUtils;
 import lombok.extern.slf4j.Slf4j;

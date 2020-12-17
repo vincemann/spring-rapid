@@ -35,6 +35,8 @@ public abstract class JPACrudService
         extends AbstractCrudService<E, Id, R> {
 
 
+
+
     public JPACrudService() {
     }
 

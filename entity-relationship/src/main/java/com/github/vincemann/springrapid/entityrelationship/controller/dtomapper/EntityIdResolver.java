@@ -30,7 +30,7 @@ import java.util.Optional;
  *
  */
 @LogInteraction(/*value = Severity.TRACE*/)
-@LogConfig(ignoreSetters = true, ignoreGetters = true)
+//@LogConfig(ignoreSetters = true, ignoreGetters = true)
 public abstract class EntityIdResolver<E, Dto> implements AopLoggable {
 
     private CrudServiceLocator crudServiceLocator;

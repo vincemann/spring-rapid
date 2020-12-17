@@ -1,5 +1,6 @@
 package com.github.vincemann.springrapid.core.config;
 
+import com.github.vincemann.aoplog.GlobalRegExMethodFilter;
 import com.github.vincemann.aoplog.InvocationDescriptorFactoryImpl;
 import com.github.vincemann.aoplog.ProxyAwareAopLogger;
 import com.github.vincemann.aoplog.ThreadAwareIndentingLogAdapter;
@@ -26,7 +27,9 @@ public class RapidAopLogAutoConfiguration {
     @ConditionalOnMissingBean(ProxyAwareAopLogger.class)
     @Bean
     public ProxyAwareAopLogger aopLogger() {
-        ProxyAwareAopLogger aopLogger = new ProxyAwareAopLogger(new TypeHierarchyAnnotationParser(),new InvocationDescriptorFactoryImpl());
+        GlobalRegExMethodFilter globalRegExMethodFilter = new GlobalRegExMethodFilter(
+                GlobalRegExMethodFilter.GETTER_REGEX,GlobalRegExMethodFilter.SETTER_REGEX,"equals","hashCode","toString","^inject[A-Za-z0-9]*");
+        ProxyAwareAopLogger aopLogger = new ProxyAwareAopLogger(new TypeHierarchyAnnotationParser(),new InvocationDescriptorFactoryImpl(),globalRegExMethodFilter);
         aopLogger.setLogAdapter(new ThreadAwareIndentingLogAdapter(SKIP_NULL_FIELDS, CROP_THRESHOLD, EXCLUDE_SECURE_FIELD_NAMES,FORCE_REFLECTION));
         return aopLogger;
     }

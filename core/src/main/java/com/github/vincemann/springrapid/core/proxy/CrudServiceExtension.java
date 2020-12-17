@@ -14,9 +14,10 @@ import java.util.Set;
 
 //override config from CrudService -> explicitly enable Logging for methods that actually matter
 @LogInteraction(disabled = true)
-@LogConfig
+//@LogConfig
 public interface CrudServiceExtension<S extends CrudService>
             extends CrudService, NextLinkAware<S>{
+
 
 
     @Override

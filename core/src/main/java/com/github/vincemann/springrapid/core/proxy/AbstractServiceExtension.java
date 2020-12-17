@@ -2,6 +2,7 @@ package com.github.vincemann.springrapid.core.proxy;
 
 
 import com.github.vincemann.aoplog.api.AopLoggable;
+import com.github.vincemann.aoplog.api.BeanNameAware;
 import com.github.vincemann.aoplog.api.LogConfig;
 import com.github.vincemann.aoplog.api.LogInteraction;
 import com.google.common.base.Objects;
@@ -17,10 +18,12 @@ import org.springframework.test.util.AopTestUtils;
 //dependencys will be injected by aspectj, you should create the extensions with new
 //this is done, so the extensions are not in the container as duplicate beans for service interfaces
 public abstract class AbstractServiceExtension<T,P extends ProxyController>
-        implements NextLinkAware<T>,AopLoggable {
+        implements NextLinkAware<T>,AopLoggable, BeanNameAware {
 
+    private String beanName;
     private ChainController<T> chain;
     private P proxyController;
+
 
     public AbstractServiceExtension() {
     }
@@ -69,6 +72,18 @@ public abstract class AbstractServiceExtension<T,P extends ProxyController>
                 Objects.equal(getProxyController(), that.getProxyController());
     }
 
+    // todo change
+    // only implements this interface, bc services do in order to log beanNames instead of only class-method
+    // but logging bean name for extenions makes no sense aka leads to confusion
+    @Override
+    public String getBeanName() {
+        return beanName;
+    }
+
+    @Override
+    public void setBeanName(String beanName) {
+        this.beanName = beanName;
+    }
 
 
     @Override

@@ -19,6 +19,7 @@ public abstract class AbstractCrudService
         >
     implements CrudService<E,Id>, TargetClassAware
 {
+    private String beanName;
     private R repository;
 
     @SuppressWarnings("unchecked")
@@ -36,5 +37,15 @@ public abstract class AbstractCrudService
     @Override
     public Class<E> getEntityClass() {
         return entityClass;
+    }
+
+    @Override
+    public String getBeanName() {
+        return this.beanName;
+    }
+
+    @Override
+    public void setBeanName(String name) {
+        this.beanName=name;
     }
 }
