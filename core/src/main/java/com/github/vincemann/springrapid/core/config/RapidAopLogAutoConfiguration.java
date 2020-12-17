@@ -14,6 +14,9 @@ import org.springframework.context.annotation.EnableAspectJAutoProxy;
 
 import java.util.Set;
 
+import static com.github.vincemann.aoplog.Patterns.GETTER_REGEX;
+import static com.github.vincemann.aoplog.Patterns.SETTER_REGEX;
+
 @Configuration
 @EnableAspectJAutoProxy(proxyTargetClass = true)
 @Slf4j
@@ -28,7 +31,7 @@ public class RapidAopLogAutoConfiguration {
     @Bean
     public ProxyAwareAopLogger aopLogger() {
         GlobalRegExMethodFilter globalRegExMethodFilter = new GlobalRegExMethodFilter(
-                GlobalRegExMethodFilter.GETTER_REGEX,GlobalRegExMethodFilter.SETTER_REGEX,"equals","hashCode","toString","^inject[A-Za-z0-9]*");
+                GETTER_REGEX,SETTER_REGEX,"equals","hashCode","toString","^inject[A-Za-z0-9]*");
         ProxyAwareAopLogger aopLogger = new ProxyAwareAopLogger(new TypeHierarchyAnnotationParser(),new InvocationDescriptorFactoryImpl(),globalRegExMethodFilter);
         aopLogger.setLogAdapter(new ThreadAwareIndentingLogAdapter(SKIP_NULL_FIELDS, CROP_THRESHOLD, EXCLUDE_SECURE_FIELD_NAMES,FORCE_REFLECTION));
         return aopLogger;
