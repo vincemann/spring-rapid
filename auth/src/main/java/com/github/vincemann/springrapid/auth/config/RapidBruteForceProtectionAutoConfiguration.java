@@ -1,12 +1,5 @@
 package com.github.vincemann.springrapid.auth.config;
 
-import com.github.vincemann.springrapid.auth.AuthProperties;
-import com.github.vincemann.springrapid.auth.security.bruteforce.LoginAttemptService;
-import com.github.vincemann.springrapid.auth.security.bruteforce.LoginBruteForceFilter;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.web.servlet.FilterRegistrationBean;
-import org.springframework.context.annotation.Bean;
-
 public class RapidBruteForceProtectionAutoConfiguration {
 
 //    private LoginAttemptService loginAttemptService;

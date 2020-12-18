@@ -4,6 +4,7 @@ import com.github.vincemann.springrapid.auth.handler.RapidAuthenticationSuccessH
 import com.github.vincemann.springrapid.auth.security.bruteforce.BruteForceAuthenticationFailureListener;
 import com.github.vincemann.springrapid.auth.security.bruteforce.BruteForceAuthenticationSuccessEventListener;
 import com.github.vincemann.springrapid.auth.security.bruteforce.LoginAttemptService;
+import com.github.vincemann.springrapid.auth.security.bruteforce.RapidLoginAttemptService;
 import com.github.vincemann.springrapid.core.slicing.WebConfig;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
@@ -22,7 +23,7 @@ public class RapidAuthenticationAutoConfiguration {
     @Bean
     @ConditionalOnMissingBean(name = "loginAttemptService")
     public LoginAttemptService loginAttemptService(){
-        return new LoginAttemptService();
+        return new RapidLoginAttemptService();
     }
 
 
