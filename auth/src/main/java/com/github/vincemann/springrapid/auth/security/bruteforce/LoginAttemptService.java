@@ -55,4 +55,8 @@ public class LoginAttemptService {
     public void injectAuthProperties(AuthProperties authProperties) {
         this.authProperties = authProperties;
     }
+
+    public void reset() {
+        attemptsCache.invalidateAll();
+    }
 }

@@ -33,12 +33,10 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.annotation.Validated;
 
-import javax.validation.ValidationException;
 import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
@@ -659,87 +657,10 @@ public abstract class AbstractUserService
         this.jweTokenService = jweTokenService;
     }
 
-//    @Autowired
-//    @Root
-//    @Lazy
-//    public void injectUserService(UserService<U, ID> userService) {
-//        this.rootUserService = userService;
-//    }
 
     @Autowired
     public void injectPrincipalUserConverter(AuthenticatedPrincipalFactory authenticatedPrincipalFactory) {
         this.authenticatedPrincipalFactory = authenticatedPrincipalFactory;
     }
 
-    //	/**
-//	 * Hides the confidential fields before sending to client
-//	 */
-//	protected void hideConfidentialFields(U user) {
-//
-//		user.setPassword(null); // JsonIgnore didn't work
-//		try {
-//			securityChecker.checkPermission(user.getId(),user.getClass(),"WRITE");
-//		}catch (AccessDeniedException e){
-//			user.setEmail(null);
-//		}
-//
-////		if (!user.hasPermission(LecwUtils.currentUser(), BasePermission.WRITE.toString()))
-//
-//
-//		log.debug("Hid confidential fields for user: " + user);
-//	}
-
-
-    //    //todo I dont think that i need this. Every information needed by the client is in the UserDto he can get by sending GET user?id=myId
-//    public Map<String, String> fetchFullToken(String authHeader) {
-//
-//        LecUtils.ensureCredentials(authorizationTokenService.parseClaim(authHeader.substring(JwtService.TOKEN_PREFIX_LENGTH),
-//                AuthorizationTokenService.USER_CLAIM) == null, "com.naturalprogrammer.spring.fullTokenNotAllowed");
-//
-//        LemonUserDto currentUser = LecwUtils.currentUser();
-//
-//        Map<String, Object> claimMap = Collections.singletonMap(AuthorizationTokenService.USER_CLAIM,
-//                MapperUtils.serialize(currentUser)); // Not serializing converts it to a JsonNode
-//
-//        Map<String, String> tokenMap = Collections.singletonMap("token", JwtService.TOKEN_PREFIX +
-//                authorizationTokenService.createToken(AuthorizationTokenService.AUTH_AUDIENCE, currentUser.getEmail(),
-//                        Long.valueOf(properties.getJwt().getShortLivedMillis()),
-//                        claimMap));
-//
-//        return tokenMap;
-//    }
-
-
-//	@Override
-//	public U update(U updatedUser, Boolean full) throws EntityNotFoundException, BadEntityException, BadEntityException {
-////		// checks
-////		Optional<U> byId = getRepository().findById(updatedUser.getId());
-////		LexUtils.ensureFound(byId);
-////		U old = byId.get();
-////
-////		return super.update(updatedUser, full);
-//		throw new IllegalArgumentException("Call updateUser instead");
-//	}
-
-//	/**
-//	 * Updates a user with the given data.
-//	 */
-//	@Override
-//	@Transactional(propagation = Propagation.REQUIRED, readOnly = false)
-//	public U updateUser(U old, U newUser) {
-//
-//		log.debug("Updating user: " + old);
-//
-//		// checks
-////		LecjUtils.ensureCorrectVersion(user, updatedUser);
-//
-//		// delegates to updateUserFields
-//		updateRoles(old, newUser, LecwUtils.currentUser());
-//		U updated = getRepository().save(old);
-//		log.debug("Updated user: " + old);
-//
-////		LemonUserDto userDto = user.toUserDto();
-////		userDto.setPassword(null);
-//		return updated;
-//	}
 }
