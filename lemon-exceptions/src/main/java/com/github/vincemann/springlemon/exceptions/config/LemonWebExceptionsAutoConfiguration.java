@@ -2,9 +2,10 @@ package com.github.vincemann.springlemon.exceptions.config;
 
 import java.util.List;
 
-import com.github.vincemann.springlemon.exceptions.ErrorResponseComposer;
+import com.github.vincemann.springlemon.exceptions.ErrorResponseFactory;
+import com.github.vincemann.springlemon.exceptions.LemonErrorResponseFactory;
 import com.github.vincemann.springlemon.exceptions.handlers.AbstractExceptionHandler;
-import com.github.vincemann.springlemon.exceptions.web.DefaultExceptionHandlerControllerAdvice;
+import com.github.vincemann.springlemon.exceptions.web.LemonExceptionHandlerControllerAdvice;
 import com.github.vincemann.springlemon.exceptions.web.LemonErrorAttributes;
 import com.github.vincemann.springlemon.exceptions.web.LemonErrorController;
 import com.github.vincemann.springrapid.core.slicing.WebConfig;
@@ -33,11 +34,11 @@ public class LemonWebExceptionsAutoConfiguration {
 	 * Configures ErrorResponseComposer if missing
 	 */	
 	@Bean
-	@ConditionalOnMissingBean(ErrorResponseComposer.class)
+	@ConditionalOnMissingBean(LemonErrorResponseFactory.class)
 	public <T extends Throwable>
-	ErrorResponseComposer<T> errorResponseComposer(List<AbstractExceptionHandler<T>> handlers) {
+	ErrorResponseFactory<T> errorResponseComposer(List<AbstractExceptionHandler<T>> handlers) {
 		
-		return new ErrorResponseComposer<T>(handlers);
+		return new LemonErrorResponseFactory<T>(handlers);
 	}
 
 
@@ -45,12 +46,12 @@ public class LemonWebExceptionsAutoConfiguration {
 	 * Configures DefaultExceptionHandlerControllerAdvice if missing
 	 */
 	@Bean
-	@ConditionalOnMissingBean(DefaultExceptionHandlerControllerAdvice.class)
+	@ConditionalOnMissingBean(LemonExceptionHandlerControllerAdvice.class)
 	public <T extends Throwable>
-	DefaultExceptionHandlerControllerAdvice<T> defaultExceptionHandlerControllerAdvice(
-			ErrorResponseComposer<T> errorResponseComposer) {
+	LemonExceptionHandlerControllerAdvice<T> lemonExceptionHandlerControllerAdvice(
+			LemonErrorResponseFactory<T> errorResponseFactory) {
 
-		return new DefaultExceptionHandlerControllerAdvice<T>(errorResponseComposer);
+		return new LemonExceptionHandlerControllerAdvice<T>(errorResponseFactory);
 	}
 
 	/**
@@ -59,9 +60,8 @@ public class LemonWebExceptionsAutoConfiguration {
 	@Bean
 	@ConditionalOnMissingBean(ErrorAttributes.class)
 	public <T extends Throwable>
-	ErrorAttributes errorAttributes(ErrorResponseComposer<T> errorResponseComposer) {
-
-		return new LemonErrorAttributes<T>(errorResponseComposer);
+	ErrorAttributes errorAttributes(LemonErrorResponseFactory<T> errorResponseFactory) {
+		return new LemonErrorAttributes<T>(errorResponseFactory);
 	}
 
 	/**

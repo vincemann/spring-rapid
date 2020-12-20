@@ -6,23 +6,27 @@ import java.util.Optional;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+import com.github.vincemann.aoplog.api.AopLoggable;
+import com.github.vincemann.aoplog.api.LogInteraction;
 import com.github.vincemann.springlemon.exceptions.handlers.AbstractExceptionHandler;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.springframework.core.annotation.AnnotationAwareOrderComparator;
+import org.springframework.http.HttpStatus;
 
 /**
- * Given an exception, builds a response.
+ * Default implementation.
+ * Given an exception, builds an {@link ErrorResponse}.
+ *
  */
 @Slf4j
-public class ErrorResponseComposer<T extends Throwable> {
+public class LemonErrorResponseFactory<T extends Throwable>
+		implements ErrorResponseFactory<T> {
 	
 
 	private final Map<Class<?>, AbstractExceptionHandler<T>> handlers;
 	
-	public ErrorResponseComposer(List<AbstractExceptionHandler<T>> handlers) {
-		
+	public LemonErrorResponseFactory(List<AbstractExceptionHandler<T>> handlers) {
+		// save to map ordered by @Ordered interface + ExceptionClass as key
 		this.handlers = handlers.stream().collect(
 	            Collectors.toMap(AbstractExceptionHandler::getExceptionClass,
 	            		Function.identity(), (handler1, handler2) -> {
@@ -39,7 +43,8 @@ public class ErrorResponseComposer<T extends Throwable> {
 	 * Given an exception, finds a handler for 
 	 * building the response and uses that to build and return the response
 	 */
-	public Optional<ErrorResponse> compose(T ex) {
+	@Override
+	public Optional<ErrorResponse> create(T ex) {
 
 		AbstractExceptionHandler<T> handler = null;
 		
@@ -58,8 +63,24 @@ public class ErrorResponseComposer<T extends Throwable> {
 		}
         
         if (handler != null) // a handler is found    	
-        	return Optional.of(handler.getErrorResponse(ex));
+        	return Optional.of(create(handler,ex));
         
         return Optional.empty();
+	}
+
+	protected ErrorResponse create(AbstractExceptionHandler<T> handler, T ex){
+		ErrorResponse errorResponse = new ErrorResponse();
+
+		errorResponse.setExceptionId(handler.getExceptionId(ex));
+		errorResponse.setMessage(handler.getMessage(ex));
+
+		HttpStatus status = handler.getStatus(ex);
+		if (status != null) {
+			errorResponse.setStatus(status.value());
+			errorResponse.setError(status.getReasonPhrase());
+		}
+
+		errorResponse.setErrors(handler.getErrors(ex));
+		return errorResponse;
 	}
 }

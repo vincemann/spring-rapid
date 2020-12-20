@@ -26,7 +26,7 @@ public class MultiErrorException extends RuntimeException {
 	private static final long serialVersionUID = 6020532846519363456L;
 	
 	// list of errors
-	private List<LemonFieldError> errors = new ArrayList<>(10);
+	private List<FieldError> errors = new ArrayList<>(10);
 	
 	// HTTP Status code to be returned
 	private HttpStatus status = HttpStatus.UNPROCESSABLE_ENTITY;
@@ -73,7 +73,7 @@ public class MultiErrorException extends RuntimeException {
 			String messageKey, Object... args) {
 		
 		if (!valid)
-			errors.add(new LemonFieldError(fieldName, messageKey,
+			errors.add(new FieldError(fieldName, messageKey,
 				Message.get(messageKey, args)));
 			
 		return this;
@@ -117,7 +117,7 @@ public class MultiErrorException extends RuntimeException {
 		
 		errors.addAll(constraintViolations.stream()
 				.map(constraintViolation ->
-					new LemonFieldError(
+					new FieldError(
 							objectName + "." + constraintViolation.getPropertyPath().toString(),
 							constraintViolation.getMessageTemplate(),
 							constraintViolation.getMessage()))

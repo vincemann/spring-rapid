@@ -2,7 +2,7 @@ package com.github.vincemann.springlemon.exceptions.handlers;
 
 import java.util.Collection;
 
-import com.github.vincemann.springlemon.exceptions.LemonFieldError;
+import com.github.vincemann.springlemon.exceptions.FieldError;
 import com.github.vincemann.springlemon.exceptions.MultiErrorException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.Ordered;
@@ -40,7 +40,7 @@ public class MultiErrorExceptionHandler extends AbstractExceptionHandler<MultiEr
 	}
 	
 	@Override
-	public Collection<LemonFieldError> getErrors(MultiErrorException ex) {
+	public Collection<FieldError> getErrors(MultiErrorException ex) {
 		return ex.getErrors();
 	}
 }

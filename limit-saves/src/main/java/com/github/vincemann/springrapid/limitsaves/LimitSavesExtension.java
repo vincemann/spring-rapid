@@ -6,34 +6,28 @@ import com.github.vincemann.springrapid.core.proxy.CrudServiceExtension;
 import com.github.vincemann.springrapid.core.security.RapidSecurityContext;
 import com.github.vincemann.springrapid.core.service.CrudService;
 import com.github.vincemann.springrapid.core.service.exception.BadEntityException;
-import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.util.HashMap;
 import java.util.Map;
 
 @Slf4j
-public abstract class LimitAmountSavedEntitiesExtension
+public abstract class LimitSavesExtension
         extends BasicServiceExtension<CrudService>
         implements CrudServiceExtension<CrudService> {
 
-    @Getter
     private int maxAmountSavedEntities;
-    @Getter
     private Map<String, Integer> principal_amountCreatedEntities_history = new HashMap<>();
-    private Class<?> entityClass;
     private long timeInterval;
+
 
     /**
      *
      * @param maxAmountSavedEntities
-     * @param entityClass
      * @param timeInterval  in millis
      */
-    public LimitAmountSavedEntitiesExtension(int maxAmountSavedEntities, Class<?> entityClass, long timeInterval) {
+    public LimitSavesExtension(int maxAmountSavedEntities, long timeInterval) {
         this.maxAmountSavedEntities = maxAmountSavedEntities;
-        this.entityClass = entityClass;
         this.timeInterval = timeInterval;
     }
 
@@ -56,8 +50,8 @@ public abstract class LimitAmountSavedEntitiesExtension
         Integer amount = principal_amountCreatedEntities_history.get(principal);
         if (amount != null) {
             if (amount >= maxAmountSavedEntities) {
-                log.debug("principal: " + principal + " tried to create more entities of type: " + entityClass + " then allowed in time period");
-                throw new TooManyRequestsException("Max amount of created Entites of type : " + entityClass + " is exceeded");
+                log.debug("principal: " + principal + " tried to create more entities of type: " + getEntityClass() + " then allowed in time period");
+                throw new TooManyRequestsException("Max amount of created Entites of type : " + getEntityClass() + " is exceeded");
             } else {
                 principal_amountCreatedEntities_history.put(principal, amount + 1);
             }
@@ -68,12 +62,25 @@ public abstract class LimitAmountSavedEntitiesExtension
         return RapidSecurityContext.getName();
     }
 
-    public boolean supports(Class<?> clazz) {
-        return entityClass.equals(clazz);
+    @Override
+    public Class getEntityClass(){
+        return getLast().getEntityClass();
     }
 
-    public void reset() {
+    protected void reset() {
         this.principal_amountCreatedEntities_history.clear();
     }
 
+    protected int getMaxAmountSavedEntities() {
+        return maxAmountSavedEntities;
+    }
+
+    protected Map<String, Integer> getPrincipal_amountCreatedEntities_history() {
+        return principal_amountCreatedEntities_history;
+    }
+
+
+    protected long getTimeInterval() {
+        return timeInterval;
+    }
 }
