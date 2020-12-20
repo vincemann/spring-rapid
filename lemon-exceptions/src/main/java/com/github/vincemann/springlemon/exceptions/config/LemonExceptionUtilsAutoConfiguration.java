@@ -29,6 +29,7 @@ public class LemonExceptionUtilsAutoConfiguration {
 
     /**
      * Configures ExceptionCodeMaker if missing
+     *
      */
     @Bean
     @ConditionalOnMissingBean(ExceptionIdMaker.class)

@@ -1,6 +1,7 @@
 package com.github.vincemann.springlemon.exceptions.web;
 
-import com.github.vincemann.springlemon.exceptions.ErrorResponseComposer;
+import com.github.vincemann.springlemon.exceptions.ErrorResponseFactory;
+import com.github.vincemann.springlemon.exceptions.LemonErrorResponseFactory;
 import com.github.vincemann.springlemon.exceptions.util.LemonExceptionUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.web.servlet.error.DefaultErrorAttributes;
@@ -19,12 +20,10 @@ public class LemonErrorAttributes<T extends Throwable> extends DefaultErrorAttri
 
 	static final String HTTP_STATUS_KEY = "httpStatus";
 	
-	private ErrorResponseComposer<T> errorResponseComposer;
+	private ErrorResponseFactory<T> errorResponseFactory;
 	
-    public LemonErrorAttributes(ErrorResponseComposer<T> errorResponseComposer) {
-
-		this.errorResponseComposer = errorResponseComposer;
-
+    public LemonErrorAttributes(ErrorResponseFactory<T> errorResponseFactory) {
+		this.errorResponseFactory = errorResponseFactory;
 	}
 	
     /**
@@ -51,7 +50,7 @@ public class LemonErrorAttributes<T extends Throwable> extends DefaultErrorAttri
 		
 		Throwable ex = getError(request);
 		
-		errorResponseComposer.compose((T)ex).ifPresent(errorResponse -> {
+		errorResponseFactory.create((T)ex).ifPresent(errorResponse -> {
 			
 			// check for null - errorResponse may have left something for the DefaultErrorAttributes
 			

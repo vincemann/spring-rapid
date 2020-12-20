@@ -13,46 +13,46 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.isA;
 import static org.mockito.Mockito.*;
 
-class ResetAmountCreatedEntitiesTaskTest {
+class LimitSavesTaskTest {
 
 
-    private ResetAmountCreatedEntitiesTask resetAmountCreatedEntitiesTask;
+    private LimitSavesTask limitSavesTask;
     ApplicationEventPublisher mockedApplicationEventPublisher;
 
     @BeforeEach
     void setUp() {
          mockedApplicationEventPublisher = Mockito.mock(ApplicationEventPublisher.class);
-        this.resetAmountCreatedEntitiesTask = new ResetAmountCreatedEntitiesTask(mockedApplicationEventPublisher);
+        this.limitSavesTask = new LimitSavesTask(mockedApplicationEventPublisher);
     }
 
     @Test
     public void afterTimeLimitExceeded_shouldFireResetEvent(){
         Date startDate = new Date();
-        resetAmountCreatedEntitiesTask.setLastReset(startDate);
-        resetAmountCreatedEntitiesTask.checkTimeLimits();
+        limitSavesTask.setLastReset(startDate);
+        limitSavesTask.checkTimeLimits();
         verify(mockedApplicationEventPublisher, never()).publishEvent(any());
         //now we wait until time limit is exceeded by faking last reset time to be in the past just far enough
         int millisUntilTimeLimitExceeded = HOURS_UNTIL_AMOUNT_ENTITIES_CREATED_RESET * 60 * 60 * 1000+1;
         Date timeLimitExceededDate = new Date(startDate.getTime()-millisUntilTimeLimitExceeded);
-        resetAmountCreatedEntitiesTask.setLastReset(timeLimitExceededDate);
+        limitSavesTask.setLastReset(timeLimitExceededDate);
         //now the time limit should be exceeded -> when spring calls scheduled task again, it should fire event
-        resetAmountCreatedEntitiesTask.checkTimeLimits();
-        verify(mockedApplicationEventPublisher).publishEvent(isA(ResetAmountSavedEntitiesEvent.class));
+        limitSavesTask.checkTimeLimits();
+        verify(mockedApplicationEventPublisher).publishEvent(isA(ResetSaveLimitEvent.class));
         verify(mockedApplicationEventPublisher, atMostOnce()).publishEvent(any());
     }
 
     @Test
     public void beforeTimeLimitExceeded_shouldNotFireResetEvent(){
         Date startDate = new Date();
-        resetAmountCreatedEntitiesTask.setLastReset(startDate);
-        resetAmountCreatedEntitiesTask.checkTimeLimits();
+        limitSavesTask.setLastReset(startDate);
+        limitSavesTask.checkTimeLimits();
         verify(mockedApplicationEventPublisher, never()).publishEvent(any());
         //now we wait until time limit is almost exceeded by faking last reset time to be in the past
         int millisUntilTimeLimitExceeded = HOURS_UNTIL_AMOUNT_ENTITIES_CREATED_RESET * 60 * 60 * 1000;
         Date timeLimitAlmostExceededDate = new Date(startDate.getTime()-millisUntilTimeLimitExceeded+2000);
-        resetAmountCreatedEntitiesTask.setLastReset(timeLimitAlmostExceededDate);
+        limitSavesTask.setLastReset(timeLimitAlmostExceededDate);
         //now the time limit should be exceeded -> when spring calls scheduled task again, it should fire event
-        resetAmountCreatedEntitiesTask.checkTimeLimits();
+        limitSavesTask.checkTimeLimits();
         verify(mockedApplicationEventPublisher, never()).publishEvent(any());
     }
 }
