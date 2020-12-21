@@ -1,6 +1,7 @@
-package com.github.vincemann.springlemon.exceptions.handlers;
+package com.github.vincemann.springrapid.core.handler;
 
 import com.github.vincemann.springrapid.core.service.exception.EntityNotFoundException;
+import com.github.vincemann.springrapid.exceptionsapi.AbstractExceptionHandler;
 import org.springframework.http.HttpStatus;
 
 public class EntityNotFoundExceptionHandler extends AbstractExceptionHandler<EntityNotFoundException> {
@@ -9,7 +10,7 @@ public class EntityNotFoundExceptionHandler extends AbstractExceptionHandler<Ent
     }
 
     @Override
-    protected HttpStatus getStatus(EntityNotFoundException ex) {
+    public HttpStatus getStatus(EntityNotFoundException ex) {
         return HttpStatus.NOT_FOUND;
     }
 }

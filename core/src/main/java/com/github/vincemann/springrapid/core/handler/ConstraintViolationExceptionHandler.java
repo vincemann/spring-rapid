@@ -1,12 +1,14 @@
-package com.github.vincemann.springlemon.exceptions.handlers;
+package com.github.vincemann.springrapid.core.handler;
 
 import java.util.Collection;
 import java.util.stream.Collectors;
 
 import javax.validation.ConstraintViolationException;
 
-import com.github.vincemann.springlemon.exceptions.FieldError;
-import com.github.vincemann.springlemon.exceptions.util.LemonFieldErrorUtil;
+
+import com.github.vincemann.springrapid.core.util.FieldErrorUtil;
+import com.github.vincemann.springrapid.exceptionsapi.AbstractBadRequestExceptionHandler;
+import com.github.vincemann.springrapid.exceptionsapi.FieldError;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
@@ -23,7 +25,7 @@ public class ConstraintViolationExceptionHandler extends AbstractBadRequestExcep
 	@Override
 	public Collection<FieldError> getErrors(ConstraintViolationException ex) {
 		return ex.getConstraintViolations().stream()
-				.map(LemonFieldErrorUtil::of).collect(Collectors.toList());
+				.map(FieldErrorUtil::of).collect(Collectors.toList());
 	}
 
 

@@ -6,7 +6,7 @@ import org.springframework.core.annotation.Order;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 
-import com.github.vincemann.springlemon.exceptions.handlers.AbstractExceptionHandler;
+import com.github.vincemann.springrapid.exceptionsapi.AbstractExceptionHandler;
 
 @Order(Ordered.LOWEST_PRECEDENCE)
 @Slf4j

@@ -1,12 +1,12 @@
-package com.github.vincemann.springlemon.exceptions.util;
+package com.github.vincemann.springrapid.core.util;
 
-import com.github.vincemann.springlemon.exceptions.FieldError;
+import com.github.vincemann.springrapid.exceptionsapi.FieldError;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.validation.ObjectError;
 
 import javax.validation.ConstraintViolation;
 
-public class LemonFieldErrorUtil {
+public class FieldErrorUtil {
 
     // helper methods for method above
     public static FieldError of(org.springframework.validation.FieldError fieldError) {
