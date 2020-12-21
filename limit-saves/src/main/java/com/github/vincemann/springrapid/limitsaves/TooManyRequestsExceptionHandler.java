@@ -1,6 +1,6 @@
 package com.github.vincemann.springrapid.limitsaves;
 
-import com.github.vincemann.springlemon.exceptions.handlers.AbstractExceptionHandler;
+import com.github.vincemann.springrapid.exceptionsapi.AbstractExceptionHandler;
 import com.github.vincemann.springrapid.core.slicing.WebComponent;
 import io.gitlab.vinceconrad.votesnackbackend.rapid.service.TooManyRequestsException;
 import org.springframework.core.Ordered;
@@ -15,7 +15,7 @@ public class TooManyRequestsExceptionHandler extends AbstractExceptionHandler<To
     }
 
     @Override
-    protected HttpStatus getStatus(TooManyRequestsException ex) {
+    public HttpStatus getStatus(TooManyRequestsException ex) {
         return HttpStatus.TOO_MANY_REQUESTS;
     }
 }

@@ -1,4 +1,4 @@
-package com.github.vincemann.springlemon.exceptions.handlers;
+package com.github.vincemann.springrapid.exceptionsapi;
 
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;

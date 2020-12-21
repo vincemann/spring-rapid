@@ -2,6 +2,7 @@ package com.github.vincemann.springlemon.exceptions;
 
 import java.util.Collection;
 
+import com.github.vincemann.springrapid.exceptionsapi.FieldError;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;

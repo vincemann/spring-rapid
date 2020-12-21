@@ -1,11 +1,12 @@
-package com.github.vincemann.springlemon.exceptions.handlers;
+package com.github.vincemann.springrapid.core.handler;
 
 import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import com.github.vincemann.springlemon.exceptions.FieldError;
-import com.github.vincemann.springlemon.exceptions.util.LemonFieldErrorUtil;
+import com.github.vincemann.springrapid.core.util.FieldErrorUtil;
+import com.github.vincemann.springrapid.exceptionsapi.AbstractExceptionHandler;
+import com.github.vincemann.springrapid.exceptionsapi.FieldError;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
@@ -34,10 +35,10 @@ public class WebExchangeBindExceptionHandler extends AbstractExceptionHandler<We
 	@Override
 	public Collection<FieldError> getErrors(WebExchangeBindException ex) {
 		List<FieldError> errors = ex.getFieldErrors().stream()
-				.map(LemonFieldErrorUtil::of).collect(Collectors.toList());
+				.map(FieldErrorUtil::of).collect(Collectors.toList());
 
 		errors.addAll(ex.getGlobalErrors().stream()
-				.map(LemonFieldErrorUtil::of).collect(Collectors.toSet()));
+				.map(FieldErrorUtil::of).collect(Collectors.toSet()));
 
 		return errors;
 	}

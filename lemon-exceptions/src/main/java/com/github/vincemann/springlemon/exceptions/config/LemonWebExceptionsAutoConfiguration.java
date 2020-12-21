@@ -4,7 +4,7 @@ import java.util.List;
 
 import com.github.vincemann.springlemon.exceptions.ErrorResponseFactory;
 import com.github.vincemann.springlemon.exceptions.LemonErrorResponseFactory;
-import com.github.vincemann.springlemon.exceptions.handlers.AbstractExceptionHandler;
+import com.github.vincemann.springrapid.exceptionsapi.AbstractExceptionHandler;
 import com.github.vincemann.springlemon.exceptions.web.LemonExceptionHandlerControllerAdvice;
 import com.github.vincemann.springlemon.exceptions.web.LemonErrorAttributes;
 import com.github.vincemann.springlemon.exceptions.web.LemonErrorController;
@@ -27,7 +27,6 @@ public class LemonWebExceptionsAutoConfiguration {
 	public LemonWebExceptionsAutoConfiguration() {
 
 	}
-
 
 
 	/**

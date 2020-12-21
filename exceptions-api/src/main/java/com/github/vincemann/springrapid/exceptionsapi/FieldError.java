@@ -1,4 +1,4 @@
-package com.github.vincemann.springlemon.exceptions;
+package com.github.vincemann.springrapid.exceptionsapi;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;

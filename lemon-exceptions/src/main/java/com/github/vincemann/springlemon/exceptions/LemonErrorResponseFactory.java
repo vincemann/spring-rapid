@@ -6,9 +6,7 @@ import java.util.Optional;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
-import com.github.vincemann.aoplog.api.AopLoggable;
-import com.github.vincemann.aoplog.api.LogInteraction;
-import com.github.vincemann.springlemon.exceptions.handlers.AbstractExceptionHandler;
+import com.github.vincemann.springrapid.exceptionsapi.AbstractExceptionHandler;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.annotation.AnnotationAwareOrderComparator;
 import org.springframework.http.HttpStatus;
