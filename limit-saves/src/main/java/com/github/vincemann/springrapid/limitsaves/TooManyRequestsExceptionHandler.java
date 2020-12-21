@@ -1,8 +1,7 @@
 package com.github.vincemann.springrapid.limitsaves;
 
-import com.github.vincemann.springrapid.exceptionsapi.AbstractExceptionHandler;
 import com.github.vincemann.springrapid.core.slicing.WebComponent;
-import io.gitlab.vinceconrad.votesnackbackend.rapid.service.TooManyRequestsException;
+import com.github.vincemann.springrapid.exceptionsapi.AbstractExceptionHandler;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
 import org.springframework.http.HttpStatus;

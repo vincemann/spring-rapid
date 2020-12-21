@@ -194,7 +194,7 @@ class OwnerControllerTest
         when(ownerService.findById(owner.getId()))
                 .thenReturn(Optional.of(owner));
         getMockMvc().perform(update(blankCityPatch, owner.getId()))
-                .andExpect(status().isUnprocessableEntity());
+                .andExpect(status().isBadRequest());
 
 
         verify(ownerService, never()).update(any(), any());
