@@ -1,2 +1,2 @@
 org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
-com.github.vincemann.springrapid.limitsaves.config.LimitSavesAutoConfiguration
+com.github.vincemann.springrapid.limitsaves.config.LimitActionsAutoConfiguration

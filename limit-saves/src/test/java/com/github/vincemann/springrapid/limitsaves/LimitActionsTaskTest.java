@@ -1,39 +1,22 @@
 package com.github.vincemann.springrapid.limitsaves;
 
 
-import com.github.vincemann.springrapid.core.config.RapidSecurityAutoConfiguration;
-import com.github.vincemann.springrapid.core.model.IdentifiableEntityImpl;
-import com.github.vincemann.springrapid.core.security.RapidAuthenticatedPrincipal;
-import com.github.vincemann.springrapid.core.security.RapidSecurityContext;
-import com.github.vincemann.springrapid.core.service.exception.BadEntityException;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.Setter;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationEventPublisher;
-import org.springframework.test.context.junit.jupiter.SpringJUnitConfig;
-
-import java.util.Date;
 
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.isA;
-import static org.mockito.Mockito.*;
 
-class LimitSavesTaskTest {
+class LimitActionsTaskTest {
 
 
-    private LimitSavesTask limitSavesTask;
+    private LimitActionsTask limitActionsTask;
     ApplicationEventPublisher mockedApplicationEventPublisher;
 
     @BeforeEach
     void setUp() {
          mockedApplicationEventPublisher = Mockito.mock(ApplicationEventPublisher.class);
-        this.limitSavesTask = new LimitSavesTask();
+        this.limitActionsTask = new LimitActionsTask();
     }
 
     // todo refactor tests
