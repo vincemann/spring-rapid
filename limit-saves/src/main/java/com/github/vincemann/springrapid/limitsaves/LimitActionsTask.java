@@ -16,7 +16,7 @@ import java.util.Map;
 @Slf4j
 @Setter
 /**
- * Start this task, and thus the whole limit saves engine, by including this task in the application context by exposing it
+ * Start this task, and thus the whole limit actions engine, by including this task in the application context by exposing it
  * with @Bean in a @Configuration class.
  *
  *
@@ -27,17 +27,17 @@ import java.util.Map;
  * public class ScheduledConfig {
  *
  *     @Bean
- *     public LimitSavesTask limitSavesTask(){
- *         return new LimitSavesTask();
+ *     public LimitActionsTask limitActionsTask(){
+ *         return new LimitActionsTask();
  *     }
  * }
  *
  */
-public class LimitSavesTask {
+public class LimitActionsTask {
 
 
-    private List<LimitSavesExtension> extensions;
-    private Map<LimitSavesExtension, Date> extension_lastReset_map = new HashMap<>();
+    private List<LimitActionsExtension> extensions;
+    private Map<LimitActionsExtension, Date> extension_lastReset_map = new HashMap<>();
 
 
     @EventListener(classes = {ContextStartedEvent.class})
@@ -50,7 +50,7 @@ public class LimitSavesTask {
     @Scheduled(fixedDelayString = "${rapid-limit-saves.checkInterval:60000}")
     public void checkTimeLimits() {
         long now = new Date().getTime();
-        for (LimitSavesExtension extension : extensions) {
+        for (LimitActionsExtension extension : extensions) {
             Date lastReset = extension_lastReset_map.get(extension);
             if (now - lastReset.getTime() > extension.getTimeInterval()) {
                 log.debug("Resetting saves-limit for service managing entities of type: " + extension.getEntityClass());
@@ -61,16 +61,16 @@ public class LimitSavesTask {
     }
 
     public void resetAll() {
-        for (LimitSavesExtension extension : extensions) {
+        for (LimitActionsExtension extension : extensions) {
             extension.reset();
             extension_lastReset_map.put(extension, new Date());
         }
     }
 
     @Autowired
-    public void injectExtensions(List<LimitSavesExtension> extensions) {
+    public void injectExtensions(List<LimitActionsExtension> extensions) {
         this.extensions = extensions;
-        for (LimitSavesExtension extension : extensions) {
+        for (LimitActionsExtension extension : extensions) {
             extension_lastReset_map.put(extension, new Date());
         }
     }

@@ -7,7 +7,7 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.context.annotation.Bean;
 
 @WebConfig
-public class LimitSavesAutoConfiguration {
+public class LimitActionsAutoConfiguration {
 
     @ConditionalOnMissingBean(TooManyRequestsException.class)
     @Bean
