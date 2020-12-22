@@ -45,7 +45,7 @@ public abstract class AbstractServiceExtension<T,P extends ProxyController>
     /**
      * Only use this to call the proxied method.
      * Result may not actually have all methods of Type T, but always has the callee method.
-     * I.e.
+     * e.g.
      * you can do this:
      * public void save(Owner entity){
      *     getNext().save(entity);

@@ -23,6 +23,12 @@
 
         <dependency>
             <groupId>com.github.vincemann.spring-rapid</groupId>
+            <artifactId>limit-actions</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>com.github.vincemann.spring-rapid</groupId>
             <artifactId>acl</artifactId>
             <version>${project.version}</version>
         </dependency>

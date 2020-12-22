@@ -346,7 +346,7 @@ public abstract class GenericCrudController
 
     /**
      * Override this if your API for this controller changes.
-     * I.e. from /api/v1 to /api/v2
+     * e.g. from /api/v1 to /api/v2
      * @return
      */
     protected String createBaseUrl(){
