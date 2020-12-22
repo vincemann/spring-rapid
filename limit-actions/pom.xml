@@ -10,7 +10,7 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>com.github.vincemann.spring-rapid</groupId>
-    <artifactId>limit-saves</artifactId>
+    <artifactId>limit-actions</artifactId>
 
 
     <dependencies>

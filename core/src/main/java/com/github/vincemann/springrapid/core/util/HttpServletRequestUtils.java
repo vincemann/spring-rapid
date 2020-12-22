@@ -2,6 +2,8 @@ package com.github.vincemann.springrapid.core.util;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.ArrayUtils;
+import org.springframework.web.context.request.RequestContextHolder;
+import org.springframework.web.context.request.ServletRequestAttributes;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.HashMap;
@@ -28,4 +30,9 @@ public class HttpServletRequestUtils {
         return queryParameters;
     }
 
+
+    public static HttpServletRequest getRequest() {
+        return ((ServletRequestAttributes)
+                RequestContextHolder.currentRequestAttributes()).getRequest();
+    }
 }
