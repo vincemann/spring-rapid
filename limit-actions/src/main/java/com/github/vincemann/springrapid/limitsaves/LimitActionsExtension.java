@@ -6,16 +6,18 @@ import com.github.vincemann.springrapid.core.security.RapidSecurityContext;
 import com.github.vincemann.springrapid.core.service.CrudService;
 import lombok.extern.slf4j.Slf4j;
 
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
 @Slf4j
-public class LimitActionsExtension extends BasicServiceExtension<CrudService>
+public abstract class LimitActionsExtension extends BasicServiceExtension<CrudService>
         implements CrudServiceExtension<CrudService> {
 
     private int maxAmountActions;
     private Map<String, Integer> principal_amountActions_history = new HashMap<>();
     private long timeInterval;
+    private Date lastReset;
 
     /**
      *
@@ -25,6 +27,7 @@ public class LimitActionsExtension extends BasicServiceExtension<CrudService>
     public LimitActionsExtension(int maxAmountActions, long timeInterval) {
         this.maxAmountActions = maxAmountActions;
         this.timeInterval = timeInterval;
+        this.lastReset = new Date();
     }
 
     public void newEntityCreated() {
@@ -33,6 +36,7 @@ public class LimitActionsExtension extends BasicServiceExtension<CrudService>
     }
 
     public void checkAmountEntitiesCreated() {
+        checkTimeReset();
         String principal = getPrincipal();
         Integer amount = principal_amountActions_history.get(principal);
         if (amount != null) {
@@ -42,6 +46,13 @@ public class LimitActionsExtension extends BasicServiceExtension<CrudService>
             } else {
                 principal_amountActions_history.put(principal, amount + 1);
             }
+        }
+    }
+
+    protected void checkTimeReset(){
+        Date now = new Date();
+        if (now.getTime() - lastReset.getTime() > timeInterval) {
+            reset();
         }
     }
 
@@ -56,6 +67,7 @@ public class LimitActionsExtension extends BasicServiceExtension<CrudService>
 
     protected void reset() {
         this.principal_amountActions_history.clear();
+        this.lastReset = new Date();
     }
 
     protected int getMaxAmountActions() {
