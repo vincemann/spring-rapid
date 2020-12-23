@@ -1,12 +1,12 @@
 # Overview  
 Spring-rapid consists of modules encapsulating solutions for **common issues** when developing spring **REST APIs**.  
 The goal is to **speed up** the developement process and stop rewriting the same code over and over again.  
-Instead there should be well implemented modules for each common task, that can be plugged in whenever needed.  
-One common task, that is very repetitive, is implementing **crud-operations** for all of your entities.  
-The core module gives you a **fully functional** and autoconfigured (yet hightly configurable/ extendable) solution for implementing crud,  
+Instead there should be well implemented modules for each common task that can be plugged in whenever needed.  
+One common task that is very repetitive is implementing **crud-operations** for all of your entities.  
+The core module gives you a **fully functional** and autoconfigured (yet hightly configurable/ extendable) solution for implementing crud   
 that requires only **a few lines of code**.  
 The code needed for a working controller, handling multiple different dto-types, can be seen in the example below.  
-There are many other modules building upon the core module, that can be plugged in when needed.  
+There are many other modules building upon the core module that can be plugged in when needed.  
   
 This project is inspired by [**spring-lemon**](https://github.com/naturalprogrammer/spring-lemon) which offers many good modules as well.  
 Almost all lemon modules were copied, heavily modified and integrated into this project.  
@@ -21,7 +21,7 @@ Almost all lemon modules were copied, heavily modified and integrated into this 
 * uni- and bidirectional relationship management for all crud operations                             (entity-relationship)  
 * resolving of ids <-> entities, while mapping dto's                                                 (entity-relationship)  
 * test-support for service- and controller-tests                                                     (core-test)  
-* automatic **acl**-schema setup + simple API for writing acl-based service-extensions               (acl)  
+* automatic **acl**-scheme setup + simple API for writing acl-based service-extensions               (acl)  
 * full solution for json-web-token based **user authentication**                                     (auth)  
   -> signup, login, reset-password, verify-email, ...
     
