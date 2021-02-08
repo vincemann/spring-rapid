@@ -10,13 +10,13 @@ import static org.mockito.ArgumentMatchers.any;
 class LimitActionsTaskTest {
 
 
-    private LimitActionsTask limitActionsTask;
+//    private LimitActionsTask limitActionsTask;
     ApplicationEventPublisher mockedApplicationEventPublisher;
 
     @BeforeEach
     void setUp() {
          mockedApplicationEventPublisher = Mockito.mock(ApplicationEventPublisher.class);
-        this.limitActionsTask = new LimitActionsTask();
+//        this.limitActionsTask = new LimitActionsTask();
     }
 
     // todo refactor tests
