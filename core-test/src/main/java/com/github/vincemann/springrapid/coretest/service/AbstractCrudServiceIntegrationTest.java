@@ -33,7 +33,7 @@ import static com.github.vincemann.springrapid.coretest.util.RapidTestUtil.mustB
 
 @Slf4j
 //only include project beans that are relevant for service tests
-@ActiveProfiles(value = {RapidTestProfiles.TEST, RapidTestProfiles.SERVICE_TEST,RapidProfiles.SERVICE})
+@ActiveProfiles(value = {RapidTestProfiles.TEST, RapidTestProfiles.SERVICE_TEST, RapidProfiles.SERVICE})
 @Transactional
 @Rollback
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.NONE)
@@ -42,14 +42,13 @@ import static com.github.vincemann.springrapid.coretest.util.RapidTestUtil.mustB
 //@ImportRapidCoreServiceConfig
 //@ImportRapidCoreTestConfig
 public abstract class AbstractCrudServiceIntegrationTest
-                <
-                        S extends CrudService<E,Id>,
-                        E extends IdentifiableEntity<Id>,
-                        Id extends Serializable
+        <
+                S extends CrudService<E, Id>,
+                E extends IdentifiableEntity<Id>,
+                Id extends Serializable
                 >
-    extends InitializingTest
-    implements InitializingBean, ApplicationContextAware
-{
+        extends InitializingTest
+        implements InitializingBean, ApplicationContextAware {
 
     @Getter
     @PersistenceContext
@@ -61,12 +60,12 @@ public abstract class AbstractCrudServiceIntegrationTest
     private S serviceUnderTest;
     private EntityPlaceholderResolver entityPlaceholderResolver;
     private CrudServiceLocator crudServiceLocator;
-    private CrudRepository<E,Id> crudRepository;
+    private CrudRepository<E, Id> crudRepository;
 
 
     @Override
     public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
-        this.applicationContext=applicationContext;
+        this.applicationContext = applicationContext;
     }
 
     @Override
@@ -89,38 +88,39 @@ public abstract class AbstractCrudServiceIntegrationTest
         this.crudServiceLocator = crudServiceLocator;
     }
 
-    public ServiceResultActions test(ServiceRequestBuilder serviceRequestBuilder){
+    public ServiceResultActions test(ServiceRequestBuilder serviceRequestBuilder) {
         return testTemplate.perform(serviceRequestBuilder);
     }
 
     @AfterEach
-    public final void resetTestContext(){
+    public final void resetTestContext() {
         this.testTemplate.reset();
     }
 
 
-    public E byId(Id id){
-        return mustBePresentIn(crudRepository,id);
+    public E byId(Id id) {
+        return mustBePresentIn(crudRepository, id);
     }
 
     /**
      * Uses {@link CrudServiceLocator} to find entity of type @param entityClass by @param id.
      */
-    public <T extends IdentifiableEntity> T byId(Serializable id, Class<T> entityClass){
+    public <T extends IdentifiableEntity> T byId(Serializable id, Class<T> entityClass) {
         CrudService service = crudServiceLocator.find(entityClass);
-        return mustBePresentIn(service,id);
+        return mustBePresentIn(service, id);
     }
 
 
     /**
      * Only use in combination with {@link ServiceTestTemplate} and after calling {@link ServiceTestTemplate#perform(ServiceRequestBuilder)}.
+     *
      * @see ServiceTestTemplate
      */
-    public E resolve(EntityPlaceholder entityPlaceholder){
-        return entityPlaceholderResolver.resolve(entityPlaceholder,testTemplate.getTestContext());
+    public E resolve(EntityPlaceholder entityPlaceholder) {
+        return entityPlaceholderResolver.resolve(entityPlaceholder, testTemplate.getTestContext());
     }
 
-    public <R extends CrudRepository<E,Id>> R getRepository(){
+    public <R extends CrudRepository<E, Id>> R getRepository() {
         return (R) crudRepository;
     }
 
@@ -129,12 +129,12 @@ public abstract class AbstractCrudServiceIntegrationTest
         this.serviceUnderTest = serviceUnderTest;
     }
 
-    public void setServiceUnderTest(S serviceUnderTest) {
-        this.serviceUnderTest = serviceUnderTest;
-    }
-
     public S getServiceUnderTest() {
         return (S) serviceUnderTest;
+    }
+
+    public void setServiceUnderTest(S serviceUnderTest) {
+        this.serviceUnderTest = serviceUnderTest;
     }
 
     @Autowired

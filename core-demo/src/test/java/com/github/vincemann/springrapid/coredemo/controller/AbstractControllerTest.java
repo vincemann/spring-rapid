@@ -6,7 +6,8 @@ import com.github.vincemann.springrapid.coredemo.model.Pet;
 import com.github.vincemann.springrapid.coredemo.model.PetType;
 import com.github.vincemann.springrapid.coredemo.model.Specialty;
 import com.github.vincemann.springrapid.core.service.CrudService;
-import com.github.vincemann.springrapid.coretest.controller.AbstractUrlParamIdCrudControllerTest;
+import com.github.vincemann.springrapid.coretest.controller.urlparamid.AutoMockUrlParamIdControllerTest;
+import com.github.vincemann.springrapid.coretest.controller.urlparamid.IntegrationUrlParamIdControllerTest;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
@@ -18,8 +19,9 @@ import java.time.LocalDate;
 @Getter
 @Setter
 @Slf4j
+// currently unused, keep for future integration controller demo tests
 public abstract class AbstractControllerTest<C extends GenericCrudController<?,Long,?,?,?>>
-        extends AbstractUrlParamIdCrudControllerTest<C,Long>
+        extends IntegrationUrlParamIdControllerTest<C,Long>
 
 {
 
