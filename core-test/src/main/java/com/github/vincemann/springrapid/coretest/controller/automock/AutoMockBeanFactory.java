@@ -24,7 +24,8 @@ import static org.mockito.Mockito.mock;
 
 /**
  * Automatically mocks all beans annotated with {@link ServiceComponent} or {@link Service}.
- * Used for controller testing -> use of @{@link org.springframework.boot.test.mock.mockito.MockBean} for service beans becomes needless.
+ * Used for controller testing -> use of @{@link org.springframework.boot.test.mock.mockito.MockBean} for service beans becomes obsolete.
+ * Just @{@link org.springframework.beans.factory.annotation.Autowire} service beans, and you will get mocks.
  * Supports context caching because all service beans are mocked (otherwise for each diff subset of manually mocked beans with @{@link org.springframework.boot.test.mock.mockito.MockBean}
  * a new context gets created -> context cant be cached -> slow)
  */

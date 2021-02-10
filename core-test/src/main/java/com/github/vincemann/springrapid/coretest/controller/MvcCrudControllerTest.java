@@ -12,19 +12,25 @@ import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
 
 import java.io.IOException;
+import java.io.Serializable;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 
 public interface MvcCrudControllerTest
-        <C extends GenericCrudController>
-{
+        <C extends GenericCrudController<?, Id, ?, ?, ?>, Id extends Serializable> {
 
     public C getController();
 
+    public MockHttpServletRequestBuilder delete(Id id) throws Exception;
+
+    public MockHttpServletRequestBuilder find(Id id) throws Exception;
+
+    public MockHttpServletRequestBuilder update(String patchString, Id id) throws Exception;
+
 
     public default <E extends IdentifiableEntity<?>> E mapToEntity(Object dto) throws BadEntityException, EntityNotFoundException {
-        return (E) getController().getDtoMapper().mapToEntity(dto,getController().getEntityClass());
+        return (E) getController().getDtoMapper().mapToEntity(dto, getController().getEntityClass());
     }
 
     public default MockHttpServletRequestBuilder create(Object dto) throws Exception {
@@ -37,21 +43,23 @@ public interface MvcCrudControllerTest
         return get(getController().getFindAllUrl())/*.contentType(getContentType())*/;
     }
 
-    public default String getCreateUrl(){
+    public default String getCreateUrl() {
         return getController().getCreateUrl();
     }
 
-    public default String getFindUrl(){
+    public default String getFindUrl() {
         return getController().getFindUrl();
     }
-    public default String getDeleteUrl(){
+
+    public default String getDeleteUrl() {
         return getController().getDeleteUrl();
     }
-    public default String getUpdateUrl(){
+
+    public default String getUpdateUrl() {
         return getController().getUpdateUrl();
     }
 
-    public default String getFindAllUrl(){
+    public default String getFindAllUrl() {
         return getController().getFindAllUrl();
     }
 
@@ -59,20 +67,21 @@ public interface MvcCrudControllerTest
         return getController().getJsonMapper().writeValueAsString(o);
     }
 
-    public default <Dto> Dto deserialize(String s,Class<Dto> dtoClass) throws IOException {
-        return getController().getJsonMapper().readValue(s,dtoClass);
+    public default <Dto> Dto deserialize(String s, Class<Dto> dtoClass) throws IOException {
+        return getController().getJsonMapper().readValue(s, dtoClass);
     }
 
     public default <Dto> Dto deserialize(String s, TypeReference<?> dtoClass) throws IOException {
-        return (Dto) getController().getJsonMapper().readValue(s,dtoClass);
+        return (Dto) getController().getJsonMapper().readValue(s, dtoClass);
     }
 
     public default <Dto> Dto deserialize(String s, JavaType dtoClass) throws IOException {
-        return getController().getJsonMapper().readValue(s,dtoClass);
+        return getController().getJsonMapper().readValue(s, dtoClass);
     }
 
 
-    public default <Dto> Dto readDto(MvcResult mvcResult, Class<Dto> dtoClass) throws Exception{
-        return deserialize(mvcResult.getResponse().getContentAsString(),dtoClass);
+    public default <Dto> Dto readDto(MvcResult mvcResult, Class<Dto> dtoClass) throws Exception {
+        return deserialize(mvcResult.getResponse().getContentAsString(), dtoClass);
     }
 }
+

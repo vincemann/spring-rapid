@@ -10,7 +10,8 @@ import com.github.vincemann.springrapid.core.controller.DtoClassLocator;
 import com.github.vincemann.springrapid.core.controller.idFetchingStrategy.IdFetchingStrategy;
 import com.github.vincemann.springrapid.core.controller.validationStrategy.DtoValidationStrategy;
 import com.github.vincemann.springrapid.core.util.Lists;
-import com.github.vincemann.springrapid.coretest.controller.AbstractCrudControllerTest;
+import com.github.vincemann.springrapid.coretest.controller.AbstractMvcCrudControllerTest;
+import com.github.vincemann.springrapid.coretest.controller.UrlParamIdCrudControllerTest;
 import com.github.vincemann.springrapid.coretest.slicing.RapidTestProfiles;
 import org.junit.jupiter.api.*;
 import org.mockito.ArgumentCaptor;
@@ -56,7 +57,9 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 //override config to define mock rules before context initialization
 @Import(CrudControllerIntegrationTest.TestConfig.class)
 class CrudControllerIntegrationTest
-        extends AbstractCrudControllerTest<ExampleController> {
+        extends AbstractMvcCrudControllerTest<ExampleController,Long>
+            implements UrlParamIdCrudControllerTest<ExampleController,Long>
+{
 
     static final ExampleEntity requestEntity = new ExampleEntity("request testEntity");
     static final ExampleEntity returnEntity = new ExampleEntity("return testEntity");
@@ -338,7 +341,7 @@ class CrudControllerIntegrationTest
     void delete_shouldSucceed() throws Exception {
         when(idFetchingStrategy.fetchId(any())).thenReturn(entityId);
 
-        getMockMvc().perform(delete(getDeleteUrl())
+        getMockMvc().perform(delete(entityId)
                 .contentType(getContentType())
                 .accept(getContentType()))
                 .andExpect(status().is2xxSuccessful())

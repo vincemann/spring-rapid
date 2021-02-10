@@ -12,20 +12,23 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 public interface UrlParamIdCrudControllerTest
         <C extends GenericCrudController<?,Id,?,?,?>,
         Id extends Serializable>
-            extends MvcCrudControllerTest<C> {
+            extends MvcCrudControllerTest<C,Id> {
 
+    @Override
     public default MockHttpServletRequestBuilder delete(Id id) throws Exception {
         return MockMvcRequestBuilders.delete(getDeleteUrl())
                 /*.contentType(getContentType())*/
                 .param("id",id.toString());
     }
 
+    @Override
     public default MockHttpServletRequestBuilder find(Id id) throws Exception {
         return get(getFindUrl())
                 /*.contentType(getContentType())*/
                 .param("id",id.toString());
     }
 
+    @Override
     public default MockHttpServletRequestBuilder update(String patchString,Id id) throws Exception {
 //        String fullUpdateQueryParam = getController().getFullUpdateQueryParam();
 
