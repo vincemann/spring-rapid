@@ -3,10 +3,12 @@ package com.github.vincemann.springrapid.coretest.util;
 import com.github.vincemann.springrapid.core.model.IdentifiableEntity;
 import com.github.vincemann.springrapid.core.service.CrudService;
 import com.github.vincemann.springrapid.core.service.exception.BadEntityException;
+import com.github.vincemann.springrapid.core.service.exception.EntityNotFoundException;
 import org.springframework.data.repository.CrudRepository;
 
 import java.io.Serializable;
 import java.util.Optional;
+import java.util.Set;
 
 public class RapidTestUtil {
 
@@ -29,5 +31,15 @@ public class RapidTestUtil {
             throw new IllegalArgumentException("No Entity found with id: " + id);
         }
         return (E) byId.get();
+    }
+
+    public static void clear(CrudService crudService){
+        for (IdentifiableEntity entity : (Set<IdentifiableEntity>) crudService.findAll()) {
+            try {
+                crudService.deleteById(entity.getId());
+            } catch (EntityNotFoundException|BadEntityException e) {
+                throw new RuntimeException(e);
+            }
+        }
     }
 }

@@ -42,6 +42,13 @@
         </dependency>
 
         <dependency>
+            <groupId>com.github.vincemann.spring-rapid</groupId>
+            <artifactId>auth-test</artifactId>
+            <version>${project.version}</version>
+            <!--            <scope>test</scope>-->
+        </dependency>
+
+        <dependency>
             <groupId>org.springframework.security</groupId>
             <artifactId>spring-security-test</artifactId>
 <!--            <scope>test</scope>-->

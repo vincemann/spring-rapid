@@ -74,11 +74,6 @@ public abstract class AbstractRapidSecurityContext<P extends RapidAuthenticatedP
         }
     }
 
-    @Override
-    public void logout() {
-        SecurityContextHolder.clearContext();
-    }
-
     protected GrantedAuthority map(String role) {
         return new SimpleGrantedAuthority(role);
     }

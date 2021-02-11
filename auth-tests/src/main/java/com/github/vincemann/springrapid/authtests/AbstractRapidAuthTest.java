@@ -1,5 +1,6 @@
 package com.github.vincemann.springrapid.authtests;
 
+import com.github.vincemann.springrapid.acl.proxy.AclManaging;
 import com.github.vincemann.springrapid.auth.AuthProperties;
 import com.github.vincemann.springrapid.auth.config.RapidAdminAutoConfiguration;
 import com.github.vincemann.springrapid.auth.domain.AbstractUser;
@@ -7,13 +8,14 @@ import com.github.vincemann.springrapid.auth.domain.AbstractUserRepository;
 import com.github.vincemann.springrapid.auth.domain.AuthRoles;
 import com.github.vincemann.springrapid.auth.mail.MailSender;
 import com.github.vincemann.springrapid.auth.service.UserService;
+import com.github.vincemann.springrapid.authtest.AuthITLoginTemplate;
+import com.github.vincemann.springrapid.authtest.LoginForm;
 import com.github.vincemann.springrapid.authtests.adapter.AuthTestAdapter;
-import com.github.vincemann.springrapid.acl.proxy.AclManaging;
-
 import com.github.vincemann.springrapid.core.CoreProperties;
 import com.github.vincemann.springrapid.core.slicing.RapidProfiles;
 import com.github.vincemann.springrapid.coretest.InitializingTest;
 import com.github.vincemann.springrapid.coretest.slicing.RapidTestProfiles;
+import com.github.vincemann.springrapid.coretest.util.RapidTestUtil;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.AfterEach;
@@ -25,13 +27,11 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.boot.test.mock.mockito.SpyBean;
 import org.springframework.http.HttpHeaders;
-import org.springframework.http.MediaType;
 import org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.util.AopTestUtils;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
-import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 
@@ -41,7 +41,6 @@ import java.util.HashMap;
 import java.util.Map;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 
@@ -110,6 +109,10 @@ public abstract class AbstractRapidAuthTest extends InitializingTest {
     //use for stubbing i.E. Mockito.doReturn(mockedExpireTime).when(jwt).getExpirationMillis();
     @SpyBean
     protected AuthProperties properties;
+
+    @Autowired
+    protected AuthITLoginTemplate loginTemplate;
+
     @SpyBean
     protected CoreProperties coreProperties;
 
@@ -137,6 +140,7 @@ public abstract class AbstractRapidAuthTest extends InitializingTest {
     @BeforeEach
     protected void setup() throws Exception {
         configureMvc();
+        loginTemplate.setMvc(mvc);
         System.err.println("creating test users");
         createTestUsers();
         System.err.println("test users created");
@@ -146,6 +150,7 @@ public abstract class AbstractRapidAuthTest extends InitializingTest {
         setupSpies();
         System.err.println("TEST STARTS HERE -----------------------------------------------------------------------------------------------------------------");
     }
+
 
     protected void setupSpies(){
         jwt = Mockito.spy(properties.getJwt());
@@ -168,13 +173,7 @@ public abstract class AbstractRapidAuthTest extends InitializingTest {
     protected void removeTestUsers(){
         System.err.println("deleting users");
 //        userRepository.deleteAll();
-        aclUserService.findAll().forEach((user) -> {
-            try {
-                aclUserService.deleteById(user.getId());
-            } catch (Exception e) {
-               throw new RuntimeException(e);
-            }
-        });
+        RapidTestUtil.clear(aclUserService);
         System.err.println("deleted users");
 
         //acl info is already removed by aclUserService Cleanup plugin
@@ -210,15 +209,9 @@ public abstract class AbstractRapidAuthTest extends InitializingTest {
         tokens.put(getBlockedUser().getId(), successful_login(BLOCKED_USER_EMAIL, BLOCKED_USER_PASSWORD));
     }
 
-    protected ResultActions login(String userName, String password) throws Exception {
-        return mvc.perform(post(authProperties.getController().getLoginUrl())
-                .param("username", userName)
-                .param("password", password)
-                .header("contentType", MediaType.APPLICATION_FORM_URLENCODED));
-    }
 
-    protected String successful_login(String userName, String password) throws Exception {
-        MvcResult result = login(userName,password)
+    protected String successful_login(String email, String password) throws Exception {
+        MvcResult result = loginTemplate.login(new LoginForm(email,password))
                 .andExpect(status().is(200))
                 .andReturn();
 
