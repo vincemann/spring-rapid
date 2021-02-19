@@ -23,7 +23,7 @@ public interface RapidSecurityContext<P extends RapidAuthenticatedPrincipal>
     @LogInteraction(Severity.DEBUG)
     P currentPrincipal();
 
-    static void logout(){
+    public static void logout(){
         SecurityContextHolder.clearContext();
     }
 

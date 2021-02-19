@@ -4,6 +4,7 @@ package com.github.vincemann.springrapid.coredemo.controller;
 import com.github.vincemann.springrapid.core.security.RapidAuthenticatedPrincipal;
 import com.github.vincemann.springrapid.core.security.RapidSecurityContext;
 import com.github.vincemann.springrapid.core.service.locator.CrudServiceLocator;
+import com.github.vincemann.springrapid.core.slicing.RapidProfiles;
 import com.github.vincemann.springrapid.core.util.ResourceUtils;
 import com.github.vincemann.springrapid.coretest.TestPrincipal;
 import com.github.vincemann.springrapid.coretest.controller.urlparamid.AutoMockUrlParamIdControllerTest;
@@ -14,6 +15,7 @@ import com.github.vincemann.springrapid.coredemo.model.Owner;
 import com.github.vincemann.springrapid.coredemo.model.Pet;
 import com.github.vincemann.springrapid.coredemo.service.OwnerService;
 import com.github.vincemann.springrapid.coredemo.service.PetService;
+import com.github.vincemann.springrapid.coretest.slicing.RapidTestProfiles;
 import org.apache.commons.beanutils.BeanUtilsBean;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -21,9 +23,12 @@ import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.core.env.Environment;
 import org.springframework.core.io.Resource;
+import org.springframework.test.context.ActiveProfiles;
 
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Optional;
 
@@ -32,7 +37,7 @@ import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 
-class OwnerControllerTest
+public class OwnerControllerTest
         extends AutoMockUrlParamIdControllerTest<OwnerController,Long> {
 
     CreateOwnerDto createOwnerDto;
@@ -40,12 +45,13 @@ class OwnerControllerTest
     ReadOwnOwnerDto readOwnOwnerDto;
     Owner owner;
 
-    @MockBean
+    @Autowired
     OwnerService ownerService;
-    @MockBean
+
+    @Autowired
     PetService petService;
 
-    @MockBean
+    @Autowired
     CrudServiceLocator crudServiceLocator;
 
     @Autowired
@@ -54,6 +60,7 @@ class OwnerControllerTest
     String addressPatch;
     String blankCityPatch;
     String addPetPatch;
+
 
 
     @Value("classpath:/update-owner/patch-address.json")
@@ -120,6 +127,7 @@ class OwnerControllerTest
 
     @Test
     public void create() throws Exception {
+
         String readOwnerDtoJson = serialize(readForeignOwnerDto);
         when(ownerService.save(refEq(owner, "id"))).thenReturn(owner);
 
@@ -162,7 +170,7 @@ class OwnerControllerTest
                 .andExpect(content().json(readDtoJson));
         Mockito.verify(ownerService).findById(owner.getId());
 
-        rapidSecurityContext.logout();
+        RapidSecurityContext.logout();
     }
 
     @Test

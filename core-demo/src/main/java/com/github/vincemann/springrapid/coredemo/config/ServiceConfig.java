@@ -1,6 +1,7 @@
 package com.github.vincemann.springrapid.coredemo.config;
 
 import com.github.vincemann.springrapid.core.proxy.ServiceExtensionProxyBuilder;
+import com.github.vincemann.springrapid.core.slicing.RapidProfiles;
 import com.github.vincemann.springrapid.coredemo.service.OwnerService;
 import com.github.vincemann.springrapid.coredemo.service.PetService;
 import com.github.vincemann.springrapid.coredemo.service.plugin.AclServiceExtension;
@@ -9,6 +10,7 @@ import com.github.vincemann.springrapid.coredemo.service.plugin.SaveNameToWordPr
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Primary;
+import org.springframework.context.annotation.Profile;
 
 @com.github.vincemann.springrapid.core.slicing.ServiceConfig
 public class ServiceConfig {

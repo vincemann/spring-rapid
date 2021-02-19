@@ -32,6 +32,7 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.util.AopTestUtils;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
+import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 
@@ -209,9 +210,12 @@ public abstract class AbstractRapidAuthTest extends InitializingTest {
         tokens.put(getBlockedUser().getId(), successful_login(BLOCKED_USER_EMAIL, BLOCKED_USER_PASSWORD));
     }
 
+    protected ResultActions login(String email, String password){
+        return loginTemplate.login(new LoginForm(email,password));
+    }
 
     protected String successful_login(String email, String password) throws Exception {
-        MvcResult result = loginTemplate.login(new LoginForm(email,password))
+        MvcResult result = login(email,password)
                 .andExpect(status().is(200))
                 .andReturn();
 

@@ -33,6 +33,7 @@
         <module>auth</module>
         <module>lemon-exceptions</module>
         <module>auth-demo</module>
+        <module>auth-test</module>
         <module>auth-tests</module>
         <module>core</module>
         <module>entity-relationship</module>
@@ -41,7 +42,6 @@
         <module>core-demo</module>
         <module>limit-actions</module>
         <module>exceptions-api</module>
-        <module>auth-test</module>
     </modules>
 
     <dependencies>

@@ -30,6 +30,10 @@ import java.io.Serializable;
  * But method/constructor injection is required!
  *
  * Spring Context is configured for a minimal AutoConfigSetup for webTests.
+ *
+ * NOTE:
+ * Dont specify profiles in property files, otherwise they will be activated by this test.
+ * Instead always activate profiles via {@link ActiveProfiles}, cli-params or your IDE run config.
  */
 @ActiveProfiles(value = {RapidTestProfiles.TEST, RapidProfiles.WEB, RapidTestProfiles.WEB_TEST})
 @TestExecutionListeners(value = {
