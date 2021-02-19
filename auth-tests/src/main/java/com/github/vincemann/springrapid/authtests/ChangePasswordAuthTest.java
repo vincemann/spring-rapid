@@ -39,7 +39,7 @@ public class ChangePasswordAuthTest extends AbstractRapidAuthTest {
 				.andExpect(header().string(HttpHeaders.AUTHORIZATION, containsString(".")));
 		
 		// Ensure able to login with new password
-		login(UNVERIFIED_USER_EMAIL, NEW_PASSWORD);
+		successful_login(UNVERIFIED_USER_EMAIL, NEW_PASSWORD);
 	}
 	
 	/**
@@ -57,7 +57,7 @@ public class ChangePasswordAuthTest extends AbstractRapidAuthTest {
 				.andExpect(header().string(HttpHeaders.AUTHORIZATION, containsString(".")));
 		
 		// Ensure able to login with new password
-		login(UNVERIFIED_USER_EMAIL, NEW_PASSWORD);
+		successful_login(UNVERIFIED_USER_EMAIL, NEW_PASSWORD);
 	}
 	
 	/**
@@ -88,7 +88,7 @@ public class ChangePasswordAuthTest extends AbstractRapidAuthTest {
 				.andExpect(status().is(403));
 		
 		// Ensure password didn't change
-		login(UNVERIFIED_USER_EMAIL, UNVERIFIED_USER_PASSWORD);
+		successful_login(UNVERIFIED_USER_EMAIL, UNVERIFIED_USER_PASSWORD);
 	}
 
 //	/**
@@ -104,7 +104,7 @@ public class ChangePasswordAuthTest extends AbstractRapidAuthTest {
 //				.andExpect(status().is(403));
 //
 //		// Ensure password didn't change
-//		login(UNVERIFIED_USER_EMAIL, UNVERIFIED_USER_PASSWORD);
+//		successful_login(UNVERIFIED_USER_EMAIL, UNVERIFIED_USER_PASSWORD);
 //	}
 	
 	@Test

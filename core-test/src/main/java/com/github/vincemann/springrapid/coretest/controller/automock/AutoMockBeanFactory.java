@@ -37,17 +37,19 @@ public class AutoMockBeanFactory extends DefaultListableBeanFactory {
     @Override
     protected Map<String, Object> findAutowireCandidates(final String beanName, final Class<?> requiredType, final DependencyDescriptor descriptor) {
         //log.debug("Trying to find Autowire Candidates for type: " +requiredType.getSimpleName()+ " , requesting bean is: " + beanName);
-        String mockBeanName = createMockedBeanName(requiredType,descriptor);
+
+        String bn = beanName;
         Map<String, Object> autowireCandidates = new HashMap<>();
         try {
-            autowireCandidates = super.findAutowireCandidates(beanName, requiredType, descriptor);
+            autowireCandidates = super.findAutowireCandidates(bn, requiredType, descriptor);
         } catch (UnsatisfiedDependencyException e) {
             if (e.getCause() != null && e.getCause().getCause() instanceof NoSuchBeanDefinitionException) {
-                mockBeanName = ((NoSuchBeanDefinitionException) e.getCause().getCause()).getBeanName();
+                bn = ((NoSuchBeanDefinitionException) e.getCause().getCause()).getBeanName();
             }
-            this.registerBeanDefinition(mockBeanName, BeanDefinitionBuilder.genericBeanDefinition().getBeanDefinition());
+            this.registerBeanDefinition(bn, BeanDefinitionBuilder.genericBeanDefinition().getBeanDefinition());
         }
         if (autowireCandidates.isEmpty()) {
+            String mockBeanName = createMockedBeanName(requiredType,descriptor);
             //todo @Repository auch automocken?
             if(requiredType.isAnnotationPresent(ServiceComponent.class)
                     || requiredType.isAnnotationPresent(Service.class)) {

@@ -113,14 +113,14 @@ class LimitActionsTaskTest {
 //                rule.newEntityCreated();
 //            }
 //            Assertions.assertThrows(TooManyRequestsException.class,()->rule.checkAmountEntitiesCreated());
-//            securityContext.logout();
+//            RapidSecurityContext.logout();
 //            securityContext.login(testUser2);
 //            rule.checkAmountEntitiesCreated();
 //        }
 //
 //        @AfterEach
 //        void tearDown() {
-//            securityContext.logout();
+//            RapidSecurityContext.logout();
 //        }
 //    }
 }

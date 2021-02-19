@@ -9,6 +9,7 @@ import com.github.vincemann.springrapid.core.controller.dto.mapper.context.DtoRe
 import com.github.vincemann.springrapid.core.controller.DtoClassLocator;
 import com.github.vincemann.springrapid.core.controller.idFetchingStrategy.IdFetchingStrategy;
 import com.github.vincemann.springrapid.core.controller.validationStrategy.DtoValidationStrategy;
+import com.github.vincemann.springrapid.core.slicing.RapidProfiles;
 import com.github.vincemann.springrapid.core.util.Lists;
 import com.github.vincemann.springrapid.coretest.controller.AbstractMvcCrudControllerTest;
 import com.github.vincemann.springrapid.coretest.controller.UrlParamIdCrudControllerTest;
@@ -40,7 +41,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@ActiveProfiles(value = {RapidTestProfiles.TEST})
+@ActiveProfiles(value = {RapidTestProfiles.TEST, RapidProfiles.WEB,RapidTestProfiles.WEB_TEST})
 //manually add only the autoConfiguration rly needed
 @SpringJUnitWebConfig(
         {

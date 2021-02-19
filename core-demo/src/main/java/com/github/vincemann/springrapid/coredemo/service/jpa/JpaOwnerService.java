@@ -15,7 +15,6 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.Optional;
 
 @Qualifier("noProxy")
-@Service
 @ServiceComponent
 public class JpaOwnerService
         extends JPACrudService<Owner,Long, OwnerRepository>
