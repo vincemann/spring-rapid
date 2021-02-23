@@ -41,6 +41,8 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+// tests framework crud controller test with real context
+// only in demo package for bc of lack for a better place
 @ActiveProfiles(value = {RapidTestProfiles.TEST, RapidProfiles.WEB,RapidTestProfiles.WEB_TEST})
 //manually add only the autoConfiguration rly needed
 @SpringJUnitWebConfig(
@@ -56,8 +58,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
                 RapidJsonAutoConfiguration.class
         })
 //override config to define mock rules before context initialization
-@Import(CrudControllerIntegrationTest.TestConfig.class)
-class CrudControllerIntegrationTest
+@Import(CrudControllerTest.TestConfig.class)
+class CrudControllerTest
         extends AbstractMvcCrudControllerTest<ExampleController,Long>
             implements UrlParamIdCrudControllerTest<ExampleController,Long>
 {

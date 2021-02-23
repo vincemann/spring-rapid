@@ -48,11 +48,12 @@ ADD FOREIGN KEY (sid) REFERENCES acl_sid(id);
 --
 -- Constraints for table acl_object_identity
 --
+-- all those take + 10 seconds each in mysql only in auth-demo with an empty database  for whatever reason
 ALTER TABLE acl_object_identity
-ADD FOREIGN KEY (parent_object) REFERENCES acl_object_identity (id);
+ADD FOREIGN KEY (parent_object) REFERENCES acl_object_identity(id);
 
 ALTER TABLE acl_object_identity
-ADD FOREIGN KEY (object_id_class) REFERENCES acl_class (id);
+ADD FOREIGN KEY (object_id_class) REFERENCES acl_class(id);
 
 ALTER TABLE acl_object_identity
-ADD FOREIGN KEY (owner_sid) REFERENCES acl_sid (id);
+ADD FOREIGN KEY (owner_sid) REFERENCES acl_sid(id);
