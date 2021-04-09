@@ -7,7 +7,7 @@ There are many other modules building upon the core module that can be plugged i
 See 'Features' below for a full list.  
   
 This project is inspired by [**spring-lemon**](https://github.com/naturalprogrammer/spring-lemon) which offers many good modules as well.  
-Almost all lemon modules were copied, heavily modified and integrated into this project.  
+Most lemon modules were copied, modified and integrated into this project.  
   
   
 # Features  
