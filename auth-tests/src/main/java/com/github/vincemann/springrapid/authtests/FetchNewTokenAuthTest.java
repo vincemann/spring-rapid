@@ -32,7 +32,7 @@ public class FetchNewTokenAuthTest extends AbstractRapidAuthTest {
 
 
 	@Test
-	public void testFetchNewToken() throws Exception {
+	public void canFetchNewTokenForOwnUser() throws Exception {
 		
 		MvcResult result = mvc.perform(post(authProperties.getController().getNewAuthTokenUrl())
 				.header(HttpHeaders.AUTHORIZATION, tokens.get(getUnverifiedUser().getId()))
@@ -46,7 +46,7 @@ public class FetchNewTokenAuthTest extends AbstractRapidAuthTest {
 	}
 	
 	@Test
-	public void testFetchNewToken_waitForExpire_shouldNotBeUsableAfter() throws Exception {
+	public void fetchNewToken_waitForExpire_cantLoginWithIt() throws Exception {
 		//mock expire time
 		// use 1 sec here to avoid token already beeing expired when calling ensure token works
 		long mockedExpireTime = 1000L;
@@ -72,7 +72,7 @@ public class FetchNewTokenAuthTest extends AbstractRapidAuthTest {
 	}
 
 	@Test
-	public void testFetchNewTokenByAdminForAnotherUser() throws Exception {
+	public void adminCanFetchNewTokenForDiffUser() throws Exception {
 		
 		MvcResult result = mvc.perform(post(authProperties.getController().getNewAuthTokenUrl())
 				.header(HttpHeaders.AUTHORIZATION, tokens.get(getAdmin().getId()))
@@ -86,7 +86,7 @@ public class FetchNewTokenAuthTest extends AbstractRapidAuthTest {
 	}
 	
 	@Test
-	public void testFetchNewTokenByNonAdminForAnotherUser_shouldFail() throws Exception {
+	public void cantFetchTokenForDiffUser() throws Exception {
 		
 		mvc.perform(post(authProperties.getController().getNewAuthTokenUrl())
 				.header(HttpHeaders.AUTHORIZATION, tokens.get(getUnverifiedUser().getId()))

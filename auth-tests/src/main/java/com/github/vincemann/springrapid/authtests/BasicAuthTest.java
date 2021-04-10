@@ -31,7 +31,7 @@ public class BasicAuthTest extends AbstractRapidAuthTest {
 	}
 
 	@Test
-	public void testPing() throws Exception {
+	public void canPing() throws Exception {
 
 		mvc.perform(get(authProperties.getController().getPingUrl()))
 				.andExpect(status().is(204));
@@ -40,7 +40,7 @@ public class BasicAuthTest extends AbstractRapidAuthTest {
 
 
 	@Test
-	public void testGetContextLoggedIn() throws Exception {
+	public void loggedIn_canGetFullContextInformation() throws Exception {
 
 
 
@@ -62,7 +62,7 @@ public class BasicAuthTest extends AbstractRapidAuthTest {
 	}
 	
 	@Test
-	public void testGetContextWithoutLoggedIn_shouldOnlyReturnPublicContext() throws Exception {
+	public void notLoggedIn_canGetOnlySharedContextInformation() throws Exception {
 
 		mvc.perform(get(authProperties.getController().getContextUrl()))
 				.andExpect(status().is(200))

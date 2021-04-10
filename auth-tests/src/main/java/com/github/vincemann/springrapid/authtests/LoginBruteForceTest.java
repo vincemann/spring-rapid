@@ -22,7 +22,7 @@ public class LoginBruteForceTest extends AbstractRapidAuthTest{
     LoginAttemptService loginAttemptService;
 
     @Test
-    public void tooManyLoginTries() throws Exception {
+    public void tooManyLoginTries_tooManyRequestsResponse() throws Exception {
         String wrongPassword = "wrongPw";
         for (int i =0 ;i<MAX_LOGIN_TRIES;i++){
             login(ADMIN_EMAIL,wrongPassword+i)
@@ -34,7 +34,7 @@ public class LoginBruteForceTest extends AbstractRapidAuthTest{
     }
 
     @Test
-    public void almostTooManyLoginTries_thenRightLogin_shouldReset() throws Exception {
+    public void maxLoginTries_thenCorrectLogin_resetsEverything() throws Exception {
         String wrongPassword = "wrongPw";
         for (int i =0 ;i<MAX_LOGIN_TRIES-1;i++){
             login(ADMIN_EMAIL,wrongPassword+i)

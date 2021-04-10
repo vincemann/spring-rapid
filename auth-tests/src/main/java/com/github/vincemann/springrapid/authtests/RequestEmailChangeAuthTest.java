@@ -32,7 +32,7 @@ public class RequestEmailChangeAuthTest extends AbstractRapidAuthTest {
 	}
 
 	@Test
-	public void testRequestEmailChange() throws Exception {
+	public void canRequestEmailChange() throws Exception {
 		
 		mvc.perform(post(authProperties.getController().getRequestEmailChangeUrl())
 				.param("id",getUnverifiedUser().getId().toString())
@@ -52,7 +52,7 @@ public class RequestEmailChangeAuthTest extends AbstractRapidAuthTest {
      * A admin should be able to request changing email of another user.
      */
 	@Test
-	public void testGoodAdminRequestEmailChange() throws Exception {
+	public void adminCanRequestDiffUsersEmailChange() throws Exception {
 
 		mvc.perform(post(authProperties.getController().getRequestEmailChangeUrl())
 				.param("id",getUnverifiedUser().getId().toString())
@@ -69,7 +69,7 @@ public class RequestEmailChangeAuthTest extends AbstractRapidAuthTest {
      * A request changing email of unknown user.
      */
 	@Test
-	public void testRequestEmailChangeUnknownUser() throws Exception {
+	public void cantRequestEmailChangeOfUnknownUser() throws Exception {
 
 		mvc.perform(post(authProperties.getController().getRequestEmailChangeUrl())
 				.param("id",UNKNOWN_USER_ID)
@@ -86,7 +86,7 @@ public class RequestEmailChangeAuthTest extends AbstractRapidAuthTest {
 	 * the email id of another user
 	 */
 	@Test
-	public void testNonAdminRequestEmailChangeAnotherUser() throws Exception {
+	public void userCantRequestEmailChangeOfDiffUser() throws Exception {
 
 		mvc.perform(post(authProperties.getController().getRequestEmailChangeUrl())
 				.param("id",getAdmin().getId().toString())
@@ -103,7 +103,7 @@ public class RequestEmailChangeAuthTest extends AbstractRapidAuthTest {
 	
 
 	@Test
-	public void testAdmin_triesToRequestEmailChange_ofDifferentAdmin_shouldFail() throws Exception {
+	public void adminCantRequestEmailChangeOfDiffAdmin() throws Exception {
 
 		//unverified admins are not treated differently than verified admins
 		mvc.perform(post(authProperties.getController().getRequestEmailChangeUrl())
@@ -122,7 +122,7 @@ public class RequestEmailChangeAuthTest extends AbstractRapidAuthTest {
 	 * @throws JsonProcessingException 
      */
 	@Test
-	public void tryingWithInvalidData() throws JsonProcessingException, Exception {
+	public void cantRequestEmailChangeWithInvalidData() throws JsonProcessingException, Exception {
 		RequestEmailChangeForm form = form();
 		form.setNewEmail(null);
 //		form.setPassword(null);

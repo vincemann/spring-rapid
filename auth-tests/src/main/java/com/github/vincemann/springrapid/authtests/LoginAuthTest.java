@@ -13,7 +13,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 public class LoginAuthTest extends AbstractRapidAuthTest {
 	
 	@Test
-	public void testLogin() throws Exception {
+	public void canLogin() throws Exception {
 		
 		mvc.perform(post(authProperties.getController().getLoginUrl())
                 .param("username", ADMIN_EMAIL)
@@ -37,7 +37,7 @@ public class LoginAuthTest extends AbstractRapidAuthTest {
 	}
 
 	@Test
-	public void testLoginTokenExpiry() throws Exception {
+	public void cantUseExpiredToken() throws Exception {
 		
 //		// Test that default token does not expire before 10 days		
 //		Thread.sleep(1001L);
@@ -58,7 +58,7 @@ public class LoginAuthTest extends AbstractRapidAuthTest {
 	 * Token won't work if the credentials of the user gets updated afterwards
 	 */
 	@Test
-	public void testObsoleteToken() throws Exception {
+	public void cantUseObsoleteToken() throws Exception {
 		
 		// credentials updated
 		// Thread.sleep(1001L);		
@@ -73,19 +73,19 @@ public class LoginAuthTest extends AbstractRapidAuthTest {
 	}
 
 	@Test
-	public void testLoginWrongPassword() throws Exception {
+	public void cantLoginWithWrongPassword() throws Exception {
 		login(ADMIN_EMAIL,"wrong-password")
 				.andExpect(status().is(401));
 	}
 
 	@Test
-	public void testLoginBlankPassword() throws Exception {
+	public void cantLoginWithBlankPassword() throws Exception {
 		login(ADMIN_EMAIL,"")
 				.andExpect(status().is(401));
 	}
 
 	@Test
-	public void testGetUserIdByToken() throws Exception {
+	public void canGetUserIdWithToken() throws Exception {
 
 		mvc.perform(get(authProperties.getController().getContextUrl())
 				.header(HttpHeaders.AUTHORIZATION, tokens.get(getAdmin().getId())))
@@ -95,7 +95,7 @@ public class LoginAuthTest extends AbstractRapidAuthTest {
 	}
 
 	@Test
-	public void testTokenLoginWrongToken() throws Exception {
+	public void cantUseWrongToken() throws Exception {
 		
 		mvc.perform(get(authProperties.getController().getContextUrl())
 				.header(HttpHeaders.AUTHORIZATION, "Bearer a-wrong-token"))
@@ -103,7 +103,7 @@ public class LoginAuthTest extends AbstractRapidAuthTest {
 	}
 	
 	@Test
-	public void testLogout() throws Exception {
+	public void canLogout() throws Exception {
 		
 		mvc.perform(post("/logout"))
                 .andExpect(status().is(404));

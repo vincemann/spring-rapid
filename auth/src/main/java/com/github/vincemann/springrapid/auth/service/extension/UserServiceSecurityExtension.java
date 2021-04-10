@@ -88,8 +88,10 @@ public class UserServiceSecurityExtension
         //check if write permission over user
         Optional<AbstractUser> byEmail = userService.findByEmail(email);
         VerifyEntity.isPresent(byEmail,"User with email: "+email+" not found");
-        AbstractUser user = byEmail.get();
-        getSecurityChecker().checkPermission(user.getId(), getLast().getEntityClass(), getWritePermission());
+
+        // anon has to be able to reset password without being logged in
+//        AbstractUser user = byEmail.get();
+//        getSecurityChecker().checkPermission(user.getId(), getLast().getEntityClass(), getWritePermission());
         getNext().forgotPassword(email);
     }
 

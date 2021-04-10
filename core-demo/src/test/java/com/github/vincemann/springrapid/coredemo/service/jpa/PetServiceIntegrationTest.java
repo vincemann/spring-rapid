@@ -33,7 +33,7 @@ class PetServiceIntegrationTest
     }
 
     @Test
-    public void save_withPersistedPetType_shouldSucceed() throws BadEntityException {
+    public void canSavePet_withAlreadyPersistedPetType() throws BadEntityException {
         Pet dogWithDogType = Pet.builder()
                 .petType(dogPetType)
                 .birthDate(LocalDate.now())

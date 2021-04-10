@@ -13,7 +13,7 @@ public class FetchUserAuthTest extends AbstractRapidAuthTest {
 
 
 	@Test
-	public void testUnauthenticated_fetchUserByEmail() throws Exception {
+	public void anonKnowsEmail_canFindMatchingId() throws Exception {
 		//todo create lemonDtoMappingContext with lemon endpoints like parentAware and create dto that only has id that maps for find,response,foreign,noRoles
 		
 		mvc.perform(post(authProperties.getController().getFetchByEmailUrl())
@@ -27,7 +27,7 @@ public class FetchUserAuthTest extends AbstractRapidAuthTest {
 	}
 
 	@Test
-	public void testFetchUserByInvalidEmail() throws Exception {
+	public void anonKnowsInvalidEmail_cantFindMatchingId() throws Exception {
 		
 		// email does not exist
 		mvc.perform(post(authProperties.getController().getFetchByEmailUrl())

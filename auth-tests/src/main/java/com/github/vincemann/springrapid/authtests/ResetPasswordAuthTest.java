@@ -34,7 +34,7 @@ public class ResetPasswordAuthTest extends AbstractRapidAuthTest {
     }
 
     @Test
-    public void testResetPassword() throws Exception {
+    public void canResetPasswordWithCorrectCode() throws Exception {
 
         //Thread.sleep(1001L);
 
@@ -56,7 +56,7 @@ public class ResetPasswordAuthTest extends AbstractRapidAuthTest {
     }
 
     @Test
-    public void testResetPasswordInvalidData() throws Exception {
+    public void cantResetPasswordWithInvalidCode_orInvalidNewPassword() throws Exception {
 
         // Wrong code
         mvc.perform(post(authProperties.getController().getResetPasswordUrl())

@@ -11,20 +11,23 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 
 public class ForgotPasswordAuthTest extends AbstractRapidAuthTest {
-	
+
+
+	// todo bs anon should issue this request
 	@Test
-	public void testAnonForgotPassword_shouldNotWork() throws Exception {
+	public void anonCanIssueForgotPasswordForUser() throws Exception {
 		
 		mvc.perform(post(authProperties.getController().getForgotPasswordUrl())
                 .param("email", ADMIN_EMAIL)
                 .header("contentType",  MediaType.APPLICATION_FORM_URLENCODED))
-                .andExpect(status().is(403));
-		
-		verify(unproxy(mailSender),never()).send(any());
+                .andExpect(status().is(204));
+
+		verify(unproxy(mailSender)).send(any());
 	}
 
+
 	@Test
-	public void testForgotPassword() throws Exception {
+	public void loggedIn_canIssueForgotPasswordForOwnUser() throws Exception {
 
 		mvc.perform(post(authProperties.getController().getForgotPasswordUrl())
 				.param("email", ADMIN_EMAIL)
@@ -36,7 +39,7 @@ public class ForgotPasswordAuthTest extends AbstractRapidAuthTest {
 	}
 	
 	@Test
-	public void testForgotPasswordInvalidEmail() throws Exception {
+	public void cantIssueForgotPasswordForInvalidEmail() throws Exception {
 		
 		// Unknown email
 		mvc.perform(post(authProperties.getController().getForgotPasswordUrl())

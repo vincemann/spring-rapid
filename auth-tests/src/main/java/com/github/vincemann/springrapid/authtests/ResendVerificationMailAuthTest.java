@@ -12,7 +12,7 @@ import org.springframework.http.HttpHeaders;
 public class ResendVerificationMailAuthTest extends AbstractRapidAuthTest {
 
 	@Test
-	public void testResendVerificationMail() throws Exception {
+	public void canResendVerificationMailForOwnAccount() throws Exception {
 
 		mvc.perform(post(authProperties.getController().getResendVerificationEmailUrl())
 				.param("id",getUnverifiedUser().getId().toString())
@@ -23,7 +23,7 @@ public class ResendVerificationMailAuthTest extends AbstractRapidAuthTest {
 	}
 
 	@Test
-	public void testAdminResendVerificationMailOtherUser() throws Exception {
+	public void adminCanResendVerificationMailOfDiffUser() throws Exception {
 
 		mvc.perform(post(authProperties.getController().getResendVerificationEmailUrl())
 				.param("id",getUnverifiedUser().getId().toString())
@@ -32,7 +32,7 @@ public class ResendVerificationMailAuthTest extends AbstractRapidAuthTest {
 	}
 
 	@Test
-	public void testBlockedAdminResendVerificationMailOtherUser_shouldFail() throws Exception {
+	public void blockedAdminCantResendVerificationMailOfDiffUser() throws Exception {
 		
 //		mvc.perform(post("/api/core/users/{id}/resend-verification-mail", getUnverifiedUser().getId())
 //				.header(HttpHeaders.AUTHORIZATION, tokens.get(UNVERIFIED_ADMIN_ID)))
@@ -47,7 +47,7 @@ public class ResendVerificationMailAuthTest extends AbstractRapidAuthTest {
 	}
 
 	@Test
-	public void testResendVerificationMailUnauthenticated() throws Exception {
+	public void anonCantResendVerificationMail() throws Exception {
 
 		mvc.perform(post(authProperties.getController().getResendVerificationEmailUrl())
 				.param("id",getUnverifiedUser().getId().toString()))
@@ -57,7 +57,7 @@ public class ResendVerificationMailAuthTest extends AbstractRapidAuthTest {
 	}
 	
 	@Test
-	public void testResendVerificationMailAlreadyVerified() throws Exception {
+	public void alreadyVerified_cantResendVerificationMail() throws Exception {
 
 		mvc.perform(post(authProperties.getController().getResendVerificationEmailUrl())
 				.param("id",getUser().getId().toString())
@@ -68,7 +68,7 @@ public class ResendVerificationMailAuthTest extends AbstractRapidAuthTest {
 	}
 	
 	@Test
-	public void testResendVerificationMailOtherUser() throws Exception {
+	public void userCantResendVerificationMailOfDiffUser() throws Exception {
 
 		mvc.perform(post(authProperties.getController().getResendVerificationEmailUrl())
 				.param("id",getUnverifiedUser().getId().toString())
@@ -79,7 +79,7 @@ public class ResendVerificationMailAuthTest extends AbstractRapidAuthTest {
 	}
 	
 	@Test
-	public void testResendVerificationMailNonExistingUser() throws Exception {
+	public void cantResendVerificationMailOfNonExistingUser() throws Exception {
 
 		mvc.perform(post(authProperties.getController().getResendVerificationEmailUrl())
 				.param("id",UNKNOWN_USER_ID)

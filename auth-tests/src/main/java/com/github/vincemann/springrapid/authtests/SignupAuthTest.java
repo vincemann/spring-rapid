@@ -28,7 +28,7 @@ public class SignupAuthTest extends AbstractRapidAuthTest {
 	}
 
 	@Test
-	public void testSignupWithInvalidData() throws Exception {
+	public void cantSignupWithInvalidData() throws Exception {
 		
 		SignupForm signupForm = createInvalidSignupForm();
 
@@ -54,7 +54,7 @@ public class SignupAuthTest extends AbstractRapidAuthTest {
 	}
 
 	@Test
-	public void testSignup() throws Exception {
+	public void canSignup() throws Exception {
 		
 //		MySignupForm signupForm = new MySignupForm("user.foo@example.com", "user123", "User Foo");
 
@@ -84,7 +84,7 @@ public class SignupAuthTest extends AbstractRapidAuthTest {
 	}
 	
 	@Test
-	public void testSignupDuplicateEmail() throws Exception {
+	public void cantSignupWithDuplicateEmail() throws Exception {
 
 //		MySignupForm signupForm = new MySignupForm("user@example.com", "user123", "User");
 		SignupForm signupForm = createValidSignupForm();

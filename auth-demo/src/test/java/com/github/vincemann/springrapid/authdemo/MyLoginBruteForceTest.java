@@ -9,13 +9,13 @@ public class MyLoginBruteForceTest extends LoginBruteForceTest {
 
     @Test
     @Override
-    public void tooManyLoginTries() throws Exception {
-        super.tooManyLoginTries();
+    public void tooManyLoginTries_tooManyRequestsResponse() throws Exception {
+        super.tooManyLoginTries_tooManyRequestsResponse();
     }
 
     @Test
     @Override
-    public void almostTooManyLoginTries_thenRightLogin_shouldReset() throws Exception {
-        super.almostTooManyLoginTries_thenRightLogin_shouldReset();
+    public void maxLoginTries_thenCorrectLogin_resetsEverything() throws Exception {
+        super.maxLoginTries_thenCorrectLogin_resetsEverything();
     }
 }
