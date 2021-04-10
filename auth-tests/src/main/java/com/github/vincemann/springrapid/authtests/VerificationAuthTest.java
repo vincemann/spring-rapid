@@ -34,7 +34,7 @@ public class VerificationAuthTest extends AbstractRapidAuthTest {
 	}
 	
 	@Test
-	public void testEmailVerification() throws Exception {
+	public void canVerifyEmail() throws Exception {
 //		Thread.sleep(1L);
 		mvc.perform(post(authProperties.getController().getVerifyUserUrl())
 				.param("id",getUnverifiedUser().getId().toString())
@@ -47,17 +47,34 @@ public class VerificationAuthTest extends AbstractRapidAuthTest {
 				.andExpect(jsonPath("$.roles").value(Matchers.hasItem(AuthRoles.USER)))
 				.andExpect(jsonPath("$.unverified").value(false))
 				.andExpect(jsonPath("$.goodUser").value(true));
-		
+
+	}
+
+	@Test
+	public void alreadyVerified_cantVerifyEmailAgain() throws Exception {
+//		Thread.sleep(1L);
+		mvc.perform(post(authProperties.getController().getVerifyUserUrl())
+				.param("id",getUnverifiedUser().getId().toString())
+				.param("code", verificationCode)
+				.header("contentType",  MediaType.APPLICATION_FORM_URLENCODED))
+				.andExpect(status().is(200))
+				.andExpect(header().string(HttpHeaders.AUTHORIZATION, containsString(".")))
+				.andExpect(jsonPath("$.id").value(getUnverifiedUser().getId()))
+				.andExpect(jsonPath("$.roles").value(hasSize(1)))
+				.andExpect(jsonPath("$.roles").value(Matchers.hasItem(AuthRoles.USER)))
+				.andExpect(jsonPath("$.unverified").value(false))
+				.andExpect(jsonPath("$.goodUser").value(true));
+
 		// Already verified
 		mvc.perform(post(authProperties.getController().getVerifyUserUrl())
 				.param("id",getUnverifiedUser().getId().toString())
-                .param("code", verificationCode)
-                .header("contentType",  MediaType.APPLICATION_FORM_URLENCODED))
-                .andExpect(status().is(400));
+				.param("code", verificationCode)
+				.header("contentType",  MediaType.APPLICATION_FORM_URLENCODED))
+				.andExpect(status().is(400));
 	}
 	
 	@Test
-	public void testEmailVerificationNonExistingUser() throws Exception {
+	public void cantVerifyEmailOfUnknownUser() throws Exception {
 
 		mvc.perform(post(authProperties.getController().getVerifyUserUrl())
 				.param("id",UNKNOWN_USER_ID)
@@ -67,7 +84,7 @@ public class VerificationAuthTest extends AbstractRapidAuthTest {
 	}
 	
 	@Test
-	public void testEmailVerificationWrongToken() throws Exception {
+	public void cantVerifyEmailWithInvalidData() throws Exception {
 		
 		// null token
 		mvc.perform(post(authProperties.getController().getVerifyUserUrl())
@@ -118,7 +135,7 @@ public class VerificationAuthTest extends AbstractRapidAuthTest {
 	}
 	
 	@Test
-	public void testEmailVerificationAfterCredentialsUpdate() throws Exception {
+	public void usersCredentialsUpdated_cantUseNowObsoleteVerificationCode() throws Exception {
 		
 		// Credentials updated after the verification token is issued
 //		Thread.sleep(1L);

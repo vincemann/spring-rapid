@@ -28,7 +28,7 @@ public class ChangePasswordAuthTest extends AbstractRapidAuthTest {
 	 * A non-admin user should be able to change his password.
 	 */
 	@Test
-	public void testChangePassword() throws Exception {
+	public void canChangeOwnPassword() throws Exception {
 		
 		mvc.perform(post(authProperties.getController().getChangePasswordUrl())
 				.param("id",getUnverifiedUser().getId().toString())
@@ -46,7 +46,7 @@ public class ChangePasswordAuthTest extends AbstractRapidAuthTest {
 	 * An good admin user should be able to change the password of another user.
 	 */
 	@Test
-	public void testAdminChangePasswordOfAnotherUser() throws Exception {
+	public void adminCanChangePasswordOfDiffUser() throws Exception {
 		
 		mvc.perform(post(authProperties.getController().getChangePasswordUrl())
 				.param("id",getUnverifiedUser().getId().toString())
@@ -64,7 +64,7 @@ public class ChangePasswordAuthTest extends AbstractRapidAuthTest {
 	 * Providing an unknown id should return 404.
 	 */
 	@Test
-	public void testChangePasswordOfUnknownId_shouldFail() throws Exception {
+	public void cantChangePasswordForUnknownId() throws Exception {
 		
 		mvc.perform(post(authProperties.getController().getChangePasswordUrl())
 				.param("id",UNKNOWN_USER_ID)
@@ -78,7 +78,7 @@ public class ChangePasswordAuthTest extends AbstractRapidAuthTest {
 	 * A non-admin user should not be able to change others' password.
 	 */
 	@Test
-	public void testChangePasswordOfAnotherUser_shouldFail() throws Exception {
+	public void cantChangePasswordOfAnotherUser() throws Exception {
 		
 		mvc.perform(post(authProperties.getController().getChangePasswordUrl())
 				.param("id",getUnverifiedUser().getId().toString())
@@ -108,7 +108,7 @@ public class ChangePasswordAuthTest extends AbstractRapidAuthTest {
 //	}
 	
 	@Test
-	public void testChangePasswordInvalidData() throws Exception {
+	public void cantChangeOwnPasswordWithInvalidData() throws Exception {
 		
 		// All fields null
 		mvc.perform(post(authProperties.getController().getChangePasswordUrl())

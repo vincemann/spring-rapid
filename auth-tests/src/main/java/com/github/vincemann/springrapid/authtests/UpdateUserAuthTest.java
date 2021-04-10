@@ -74,7 +74,7 @@ public abstract class UpdateUserAuthTest extends AbstractRapidAuthTest
 	 * @throws Exception
 	 */
 	@Test
-    public void testUserUpdatesOwnRoles_should400() throws Exception {
+    public void userCantUpdateOwnRoles() throws Exception {
 
 			mvc.perform(update(patchRole,getUser().getId())
 				.header(HttpHeaders.AUTHORIZATION, tokens.get(getUser().getId())))
@@ -93,7 +93,7 @@ public abstract class UpdateUserAuthTest extends AbstractRapidAuthTest
 	 * An ADMIN should be able to update another user's email and roles.
 	 */
 	@Test
-    public void testAdminCanUpdateOther() throws Exception {
+    public void adminCanUpdateDiffUser() throws Exception {
 		mvc.perform(update(patchEmailAndRole,getUnverifiedUser().getId())
 				.header(HttpHeaders.AUTHORIZATION, tokens.get(getAdmin().getId())))
 				.andExpect(status().is(200))
@@ -110,11 +110,9 @@ public abstract class UpdateUserAuthTest extends AbstractRapidAuthTest
 		Assertions.assertTrue(user.getRoles().contains(Roles.ADMIN));
     }
 
-	/**
-	 * Providing an unknown id should return 404.
-	 */
+
 	@Test
-    public void testUpdateUnknownId_should403() throws Exception {
+    public void cantUpdateUnknownUser() throws Exception {
 		mvc.perform(update(patchEmailAndRole,99L)
 				.header(HttpHeaders.AUTHORIZATION, tokens.get(getAdmin().getId())))
 				.andExpect(status().is(403));
@@ -125,7 +123,7 @@ public abstract class UpdateUserAuthTest extends AbstractRapidAuthTest
 	 * @throws Exception
 	 */
 	@Test
-	public void testUpdateUserInvalidFieldConstraints_should400() throws Exception {
+	public void cantUpdateUserWithInvalidData() throws Exception {
 		// Null name
 		/*assertThatThrownBy(() -> */mvc.perform(update(patchNullField, getUser().getId())
 				.header(HttpHeaders.AUTHORIZATION, tokens.get(getUser().getId())))
@@ -144,21 +142,21 @@ public abstract class UpdateUserAuthTest extends AbstractRapidAuthTest
 	 * @throws Exception
 	 */
 	@Test
-	public void testUserUpdatesAnotherUser_should403() throws Exception {
+	public void userCantUpdateDiffUser() throws Exception {
 		mvc.perform(update(patchField,getUnverifiedUser().getId())
 				.header(HttpHeaders.AUTHORIZATION, tokens.get(getUser().getId())))
 				.andExpect(status().is(403));
 	}
 
 	@Test
-	public void testUserUpdatesAnotherAdmin_should403() throws Exception {
+	public void userCantUpdateAdmin() throws Exception {
 		mvc.perform(update(patchField,getAdmin().getId())
 				.header(HttpHeaders.AUTHORIZATION, tokens.get(getUser().getId())))
 				.andExpect(status().is(403));
 	}
 
 	@Test
-	public void testUserUpdatesOwnEmail_should400() throws Exception {
+	public void userCantUpdateOwnEmail() throws Exception {
 		mvc.perform(update(patchEmail,getUser().getId())
 				.header(HttpHeaders.AUTHORIZATION, tokens.get(getUser().getId())))
 				.andExpect(status().is(400));

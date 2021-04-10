@@ -51,7 +51,7 @@ public class ChangeEmailAuthTest extends AbstractRapidAuthTest {
 	//works solo but token is obsolete when run in group
 //	@Disabled
 	@Test
-	public void testChangeEmail() throws Exception {
+	public void canChangeOwnEmail() throws Exception {
 		
 		mvc.perform(post(authProperties.getController().getChangeEmailUrl())
                 .param("code", changeEmailCode)
@@ -80,7 +80,7 @@ public class ChangeEmailAuthTest extends AbstractRapidAuthTest {
      * Providing a wrong changeEmailCode shouldn't work.
      */
 	@Test
-	public void testChangeEmail_withWrongCode() throws Exception {
+	public void invalidCode_cantChangeOwnEmail() throws Exception {
 		
 		// Blank token
 		mvc.perform(post(authProperties.getController().getChangeEmailUrl())
@@ -138,7 +138,7 @@ public class ChangeEmailAuthTest extends AbstractRapidAuthTest {
      */
     //todo sometimes 401 sometimes 403
 	@Test
-	public void testChangeEmailObsoleteCode() throws Exception {
+	public void obsoleteCode_cantChangeOwnEmail() throws Exception {
 
 		// credentials updated after the request for email change was made
 //		Thread.sleep(1L);
@@ -166,7 +166,7 @@ public class ChangeEmailAuthTest extends AbstractRapidAuthTest {
 	 * @throws Exception 
      */
 	@Test
-	public void testChangeEmailWithoutAnyRequest() throws Exception {
+	public void didNotRequestEmailChange_cantChangeOwnEmail() throws Exception {
 
 		mvc.perform(post(authProperties.getController().getChangeEmailUrl(), getUser().getId())
                 .param("code", changeEmailCode)
@@ -181,7 +181,7 @@ public class ChangeEmailAuthTest extends AbstractRapidAuthTest {
      * @throws Exception 
      */
 	@Test
-	public void testChangeEmailNonUniqueEmail() throws Exception {
+	public void newEmailNotUnique_cantChangeOwnEmail() throws Exception {
 		
 		// Some other user changed to the same email
 		AbstractUser<Long> user = getUserService().findById(getAdmin().getId()).get();

@@ -82,7 +82,7 @@ class OwnerServiceIntegrationTest
     }
 
     @Test
-    public void saveOwnerWithoutPets_ShouldSucceed() {
+    public void canSaveOwnerWithoutPets() {
         ServiceResult serviceResult =
                 test(save(ownerWithoutPets))
                         .andExpect(() -> compare(ownerWithoutPets)
@@ -102,7 +102,7 @@ class OwnerServiceIntegrationTest
 
 
     @Test
-    public void saveOwnerWithPet_ShouldSucceed() throws BadEntityException {
+    public void canSaveOwnerWithPet() throws BadEntityException {
         test(save(ownerWithOnePet))
                 .andDo(() -> compare(resolve(SERVICE_INPUT_ENTITY))
                         .with(resolve(DB_ENTITY))
@@ -115,7 +115,7 @@ class OwnerServiceIntegrationTest
     }
 
     @Test
-    public void saveOwnerWithPersistedPet_shouldSucceed() throws BadEntityException {
+    public void givenAlreadyPersistedPet_canLinkOwner_viaSave() throws BadEntityException {
         Pet savedPet = petService.save(testPet);
 
         Owner owner = Owner.builder()
@@ -139,7 +139,7 @@ class OwnerServiceIntegrationTest
 
 
     @Test
-    public void updateOwner_changeTelephoneNumber_shouldSucceed() throws BadEntityException, EntityNotFoundException, BadEntityException {
+    public void canUpdateOwnersTelephoneNumber() throws BadEntityException, EntityNotFoundException, BadEntityException {
         String newNumber = ownerWithoutPets.getTelephone() + "123";
         Owner diffTelephoneNumberUpdate = Owner.builder()
                 .telephone(newNumber)
@@ -155,7 +155,7 @@ class OwnerServiceIntegrationTest
     }
 
     @Test
-    public void updateOwner_addAnotherPet_shouldSucceed() throws BadEntityException, EntityNotFoundException, BadEntityException {
+    public void canAddAnotherPetToOwner_viaUpdate() throws BadEntityException, EntityNotFoundException, BadEntityException {
         //given
         Pet savedPet = petService.save(testPet);
         String newPetName = "petToAdd";
@@ -191,7 +191,7 @@ class OwnerServiceIntegrationTest
     }
 
     @Test
-    public void findOwnerOfTheYear_shouldSucceed_andTriggerExtensionCallback() {
+    public void canFindOwnerOfTheYear_triggersExtension() {
         //owner of the years name is 42
         ownerWithOnePet.setFirstName("42");
         Owner savedOwner = getRepository().save(ownerWithOnePet);
@@ -201,7 +201,7 @@ class OwnerServiceIntegrationTest
     }
 
     @Test
-    public void findByLastName_shouldSucceed() {
+    public void canFindOwnerByLastName() {
         Owner savedOwner = getRepository().save(ownerWithOnePet);
         Optional<Owner> byLastName = getServiceUnderTest().findByLastName(ownerWithOnePet.getLastName());
         Assertions.assertTrue(byLastName.isPresent());
@@ -213,7 +213,7 @@ class OwnerServiceIntegrationTest
     }
 
     @Test
-    public void deleteOwner_shouldSucceed() {
+    public void canDeleteOwner() {
         Owner savedOwner = getRepository().save(ownerWithOnePet);
         test(deleteById(savedOwner.getId()))
                 .andExpect(noException())

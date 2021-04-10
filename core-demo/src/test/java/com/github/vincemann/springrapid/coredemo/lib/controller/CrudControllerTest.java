@@ -102,7 +102,7 @@ class CrudControllerTest
     }
 
     @Test
-    void findAll_shouldSucceed() throws Exception {
+    void canFindAll() throws Exception {
         DtoRequestInfo expectedResponseMappingInfo = DtoRequestInfo.builder()
                 .direction(Direction.RESPONSE)
                 .endpoint(getController().getFindAllUrl())
@@ -132,7 +132,7 @@ class CrudControllerTest
     //todo add test for invalid patch
     @Test
     @Disabled //ich werde sicherlich noch mal was an der aktuellen update methode machen
-    void update_shouldSucceed() throws Exception {
+    void canUpdate() throws Exception {
         DtoRequestInfo expectedRequestMappingInfo = DtoRequestInfo.builder()
                 .direction(Direction.REQUEST)
                 .endpoint(getController().getUpdateUrl())
@@ -247,7 +247,7 @@ class CrudControllerTest
 //    }
 
     @Test
-    void create_shouldSucceed() throws Exception {
+    void canCreate() throws Exception {
         //given
 
         DtoRequestInfo expectedRequestMappingInfo = DtoRequestInfo.builder()
@@ -303,7 +303,7 @@ class CrudControllerTest
     }
 
     @Test
-    void find_shouldSucceed() throws Exception {
+    void canFind() throws Exception {
         DtoRequestInfo expectedResponseMappingInfo = DtoRequestInfo.builder()
                 .authorities(new ArrayList<>())
                 .direction(Direction.RESPONSE)
@@ -341,7 +341,7 @@ class CrudControllerTest
     }
 
     @Test
-    void delete_shouldSucceed() throws Exception {
+    void canDelete() throws Exception {
         when(idFetchingStrategy.fetchId(any())).thenReturn(entityId);
 
         getMockMvc().perform(delete(entityId)

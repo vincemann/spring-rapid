@@ -126,7 +126,7 @@ public class OwnerControllerTest
     }
 
     @Test
-    public void create() throws Exception {
+    public void canCreateOwner() throws Exception {
 
         String readOwnerDtoJson = serialize(readForeignOwnerDto);
         when(ownerService.save(refEq(owner, "id"))).thenReturn(owner);
@@ -140,7 +140,7 @@ public class OwnerControllerTest
 
 
     @Test
-    public void delete() throws Exception {
+    public void canDeleteOwner() throws Exception {
         getMockMvc().perform(delete(owner.getId()))
                 .andExpect(status().is2xxSuccessful());
         Mockito.verify(ownerService).deleteById(owner.getId());
@@ -148,7 +148,7 @@ public class OwnerControllerTest
 
 
     @Test
-    public void findForeignById() throws Exception {
+    public void canFindForeignOwnerById() throws Exception {
         when(ownerService.findById(owner.getId())).thenReturn(Optional.of(owner));
         String readDtoJson = serialize(readForeignOwnerDto);
 
@@ -159,7 +159,7 @@ public class OwnerControllerTest
     }
 
     @Test
-    public void findOwnById() throws Exception {
+    public void canFindOwnOwnerById() throws Exception {
         rapidSecurityContext.login(TestPrincipal.withName(owner.getLastName()));
 
         when(ownerService.findById(owner.getId())).thenReturn(Optional.of(owner));
@@ -174,7 +174,7 @@ public class OwnerControllerTest
     }
 
     @Test
-    public void update_address() throws Exception {
+    public void canUpdateOwnersAddress() throws Exception {
         //given
         String updatedAddress = "other Street 12";
 
@@ -196,7 +196,7 @@ public class OwnerControllerTest
 
 
     @Test
-    public void update_withBlankCity_shouldFail_with400() throws Exception {
+    public void canUpdateWithBlankCity_BadRequest() throws Exception {
         Owner ownerPatch = (Owner) BeanUtilsBean.getInstance().cloneBean(owner);
         ownerPatch.setCity(null);
         when(ownerService.findById(owner.getId()))
@@ -209,7 +209,7 @@ public class OwnerControllerTest
     }
 
     @Test
-    public void update_linkPetToOwner() throws Exception {
+    public void canLinkPetToOwner_viaUpdate() throws Exception {
         Long petId = 43L;
         Pet pet = Pet.builder().name("myPet").build();
         pet.setId(petId);
