@@ -6,31 +6,38 @@ import com.github.vincemann.springrapid.entityrelationship.model.parent.BiDirPar
 import lombok.extern.slf4j.Slf4j;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Before;
+import org.springframework.core.annotation.Order;
 
 import java.util.Collection;
 import java.util.Set;
 
 @Aspect
 @Slf4j
+// order is important, save must be before update
+//@Order(1)
 /**
- * Advice that keeps BiDirRelationships intact for {@link com.github.vincemann.springrapid.core.service.CrudService#save(IdentifiableEntity)} - operations.
+ * Advice that keeps BiDirRelationships intact for Repo save operations (also update)
  */
-public class BiDirEntityPersistAdvice {
+public class BiDirEntitySaveAdvice {
 
     @Before("com.github.vincemann.springrapid.core.advice.SystemArchitecture.saveOperation() && " +
-            "com.github.vincemann.springrapid.core.advice.SystemArchitecture.serviceOperation() && " +
+            "com.github.vincemann.springrapid.core.advice.SystemArchitecture.repoOperation() && " +
             "args(biDirParent)")
     public void prePersistBiDirParent(BiDirParent biDirParent) {
-        log.debug("pre persist biDirParent hook reached for: " + biDirParent);
-        setChildrensParentRef(biDirParent);
+//        if(((IdentifiableEntity) biDirParent).getId()==null) {
+            log.debug("pre persist biDirParent hook reached for: " + biDirParent);
+            setChildrensParentRef(biDirParent);
+//        }
     }
 
     @Before("com.github.vincemann.springrapid.core.advice.SystemArchitecture.saveOperation() && " +
-            "com.github.vincemann.springrapid.core.advice.SystemArchitecture.serviceOperation() && " +
+            "com.github.vincemann.springrapid.core.advice.SystemArchitecture.repoOperation() && " +
             "args(biDirChild)")
     public void prePersistBiDiChild(BiDirChild biDirChild) {
-        log.debug("pre persist biDirChild hook reached for: " + biDirChild);
-        setParentsChildRef(biDirChild);
+//        if(((IdentifiableEntity) biDirChild).getId()==null) {
+            log.debug("pre persist biDirChild hook reached for: " + biDirChild);
+            setParentsChildRef(biDirChild);
+//        }
     }
 
     private void setChildrensParentRef(BiDirParent biDirParent){

@@ -14,6 +14,7 @@ import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Before;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.annotation.Order;
 
 import javax.transaction.Transactional;
 import java.io.Serializable;
@@ -21,8 +22,10 @@ import java.util.*;
 
 @Aspect
 @Slf4j
+// order is important, save must be before update
+//@Order(1)
 /**
- * Advice that keeps BiDirRelationships intact for {@link com.github.vincemann.springrapid.core.service.CrudService#update(IdentifiableEntity, Boolean)} - operations.
+ * Advice that keeps BiDirRelationships intact for repo save operations that are updates (id is set)
  */
 public class BiDirEntityUpdateAdvice {
 
@@ -35,28 +38,28 @@ public class BiDirEntityUpdateAdvice {
 
     // todo gets called twice for AclExtension -> make sure to skip joinPoint if target is Extension
     @Before(value = "com.github.vincemann.springrapid.core.advice.SystemArchitecture.updateOperation() && " +
-            "com.github.vincemann.springrapid.core.advice.SystemArchitecture.serviceOperation() && " +
-            "args(biDirChild,fullUpdate)")
-    public void preUpdateBiDirChild(JoinPoint joinPoint, BiDirChild biDirChild, Boolean fullUpdate) throws EntityNotFoundException, BadEntityException, BadEntityException {
+            "com.github.vincemann.springrapid.core.advice.SystemArchitecture.repoOperation() && " +
+            "args(biDirChild)")
+    public void preUpdateBiDirChild(BiDirChild biDirChild) throws EntityNotFoundException,  BadEntityException {
         try {
             if(((IdentifiableEntity) biDirChild).getId()!=null) {
                 log.debug("detected update operation for BiDirChild: " + biDirChild +", running preUpdateAdvice logic");
                 updateBiDirChildRelations(biDirChild);
-            }
+            }// else ignore, bc it is save operation not update
         }catch (IllegalAccessException e){
             throw new RuntimeException(e);
         }
     }
 
     @Before(value = "com.github.vincemann.springrapid.core.advice.SystemArchitecture.updateOperation() && " +
-            "com.github.vincemann.springrapid.core.advice.SystemArchitecture.serviceOperation() && " +
-            "args(biDirParent,fullUpdate)")
-    public void preUpdateBiDirParent(BiDirParent biDirParent, Boolean fullUpdate) throws EntityNotFoundException, BadEntityException {
+            "com.github.vincemann.springrapid.core.advice.SystemArchitecture.repoOperation() && " +
+            "args(biDirParent)")
+    public void preUpdateBiDirParent(BiDirParent biDirParent) throws EntityNotFoundException, BadEntityException {
         try {
             if(((IdentifiableEntity) biDirParent).getId()!=null) {
                 log.debug("detected update operation for BiDirParent: " + biDirParent + ", running preUpdateAdvice logic");
                 updateBiDirParentRelations(biDirParent);
-            }
+            } // else ignore, bc it is save operation not update
         } catch (IllegalAccessException e) {
             throw new RuntimeException(e);
         }

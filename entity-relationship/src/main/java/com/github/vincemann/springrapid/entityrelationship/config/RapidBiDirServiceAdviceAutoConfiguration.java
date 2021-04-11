@@ -2,7 +2,7 @@ package com.github.vincemann.springrapid.entityrelationship.config;
 
 import com.github.vincemann.springrapid.core.service.locator.CrudServiceLocator;
 import com.github.vincemann.springrapid.core.slicing.ServiceConfig;
-import com.github.vincemann.springrapid.entityrelationship.advice.BiDirEntityPersistAdvice;
+import com.github.vincemann.springrapid.entityrelationship.advice.BiDirEntitySaveAdvice;
 import com.github.vincemann.springrapid.entityrelationship.advice.BiDirEntityRemoveAdvice;
 import com.github.vincemann.springrapid.entityrelationship.advice.BiDirEntityUpdateAdvice;
 import lombok.extern.slf4j.Slf4j;
@@ -20,9 +20,9 @@ public class RapidBiDirServiceAdviceAutoConfiguration {
     }
 
     @Bean
-    @ConditionalOnMissingBean(BiDirEntityPersistAdvice.class)
-    public BiDirEntityPersistAdvice biDirEntityPersistAdvice(){
-        return new BiDirEntityPersistAdvice();
+    @ConditionalOnMissingBean(BiDirEntitySaveAdvice.class)
+    public BiDirEntitySaveAdvice biDirEntityPersistAdvice(){
+        return new BiDirEntitySaveAdvice();
     }
 
     @Bean

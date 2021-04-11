@@ -20,7 +20,7 @@ import java.time.LocalDate;
 @Setter
 @Slf4j
 // currently unused, keep for future integration controller demo tests
-public abstract class AbstractControllerTest<C extends GenericCrudController<?,Long,S,?,?>,S extends CrudService<?,Long>>
+public abstract class MyControllerTest<C extends GenericCrudController<?,Long,S,?,?>,S extends CrudService<?,Long>>
         extends IntegrationUrlParamIdControllerTest<C,Long,S>
 
 {

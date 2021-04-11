@@ -10,10 +10,14 @@ import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.jpa.repository.support.JpaEntityInformation;
+import org.springframework.data.jpa.repository.support.SimpleJpaRepository;
+import org.springframework.data.util.ReflectionUtils;
 import org.springframework.test.util.AopTestUtils;
 import org.springframework.util.Assert;
 
 import java.io.Serializable;
+import java.lang.reflect.Field;
 import java.util.Optional;
 
 @Aspect
@@ -35,7 +39,7 @@ public class BiDirEntityRemoveAdvice /*implements MethodInterceptor*/ {
 
 
     @Around("com.github.vincemann.springrapid.core.advice.SystemArchitecture.deleteOperation() && " +
-            "com.github.vincemann.springrapid.core.advice.SystemArchitecture.serviceOperation() && " +
+            "com.github.vincemann.springrapid.core.advice.SystemArchitecture.repoOperation() && " +
             "args(id)")
     public Object preRemoveBiDirEntity(ProceedingJoinPoint joinPoint, Serializable id) throws Throwable {
         Optional<Object> parent = resolveId(id, joinPoint);
@@ -72,12 +76,12 @@ public class BiDirEntityRemoveAdvice /*implements MethodInterceptor*/ {
     }
 
     private Class resolveEntityClass(ProceedingJoinPoint joinPoint) throws IllegalAccessException {
-        CrudService crudService = AopTestUtils.getUltimateTargetObject(joinPoint.getTarget());
-//        Field entityInformationField = ReflectionUtils.findField(SimpleJpaRepository.class, field -> field.getName().equals("entityInformation"));
-//        entityInformationField.setAccessible(true);
-//        JpaEntityInformation entityInformation = ((JpaEntityInformation) entityInformationField.get(crudService));
-//        return entityInformation.getJavaType();
-        return crudService.getEntityClass();
+        SimpleJpaRepository repo = AopTestUtils.getUltimateTargetObject(joinPoint.getTarget());
+        Field entityInformationField = ReflectionUtils.findField(SimpleJpaRepository.class, field -> field.getName().equals("entityInformation"));
+        entityInformationField.setAccessible(true);
+        JpaEntityInformation entityInformation = ((JpaEntityInformation) entityInformationField.get(repo));
+        return entityInformation.getJavaType();
+//        return repo.getEntityClass();
     }
 
 }
