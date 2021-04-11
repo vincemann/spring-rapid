@@ -61,7 +61,12 @@ public abstract class JPACrudService
                 return getRepository().save(update);
             } else {
                 E entityToUpdate = findOldEntity(update.getId());
+                // need to clone/detach here so advices can do their bidir rel management magic
+//                E detachedUpdate = (E) BeanUtilsBean.getInstance().cloneBean(entityToUpdate);
+
                 //copy non null values from update to entityToUpdate
+                // values get copied to target already bc this is transactional
+                // -> update is already happening here
                 BeanUtilsBean notNull = new NullAwareBeanUtilsBean();
                 notNull.copyProperties(entityToUpdate, update);
                 return getRepository().save(entityToUpdate);
@@ -69,7 +74,7 @@ public abstract class JPACrudService
         } catch (NonTransientDataAccessException e) {
             // constraints not met, such as foreign key constraints or other db entity constraints
             throw new BadEntityException(e);
-        } catch (IllegalAccessException|InvocationTargetException e) {
+        } catch (IllegalAccessException | InvocationTargetException /*| InstantiationException | NoSuchMethodException*/ e) {
            throw new RuntimeException(e);
         }
     }

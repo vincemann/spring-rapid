@@ -15,7 +15,11 @@ public class SystemArchitecture {
     @Pointcut("execution(* save(..))")
     public void saveOperation(){}
 
-    @Pointcut("execution(* update(..))")
+    /**
+     * Also save bc on repo level update = save with set id
+     * Impl should check if id is set
+     */
+    @Pointcut("execution(* save(..))")
     public void updateOperation(){}
 
     @Pointcut("execution(* deleteById(..))")
@@ -25,8 +29,8 @@ public class SystemArchitecture {
     @Pointcut("execution(public * com.github.vincemann.springrapid.core.service.CrudService+.*(..))")
     public void serviceOperation(){}
 
-//    @Pointcut("execution(public * org.springframework.data.repository.Repository+.*(..))")
-//    public void repoOperation(){}
+    @Pointcut("execution(public * org.springframework.data.repository.Repository+.*(..))")
+    public void repoOperation(){}
 
 
 }
