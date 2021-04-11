@@ -10,14 +10,10 @@ import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.jpa.repository.support.JpaEntityInformation;
-import org.springframework.data.jpa.repository.support.SimpleJpaRepository;
-import org.springframework.data.util.ReflectionUtils;
 import org.springframework.test.util.AopTestUtils;
 import org.springframework.util.Assert;
 
 import java.io.Serializable;
-import java.lang.reflect.Field;
 import java.util.Optional;
 
 @Aspect
@@ -39,14 +35,14 @@ public class BiDirEntityRemoveAdvice /*implements MethodInterceptor*/ {
 
 
     @Around("com.github.vincemann.springrapid.core.advice.SystemArchitecture.deleteOperation() && " +
-            "com.github.vincemann.springrapid.core.advice.SystemArchitecture.repoOperation() && " +
-            "args(serializable)")
-    public Object preRemoveBiDirEntity(ProceedingJoinPoint joinPoint, Serializable serializable) throws Throwable {
-        Optional<Object> parent = resolveId(serializable, joinPoint);
+            "com.github.vincemann.springrapid.core.advice.SystemArchitecture.serviceOperation() && " +
+            "args(id)")
+    public Object preRemoveBiDirEntity(ProceedingJoinPoint joinPoint, Serializable id) throws Throwable {
+        Optional<Object> parent = resolveId(id, joinPoint);
         if (parent.isPresent()){
             preRemoveEntity(parent.get());
         }else {
-            log.warn("preDelete BiDirEntity could not be done, because for id: " + serializable + " was not entity found");
+            log.warn("preDelete BiDirEntity could not be done, because for id: " + id + " was not entity found");
         }
         return joinPoint.proceed();
     }
@@ -76,11 +72,12 @@ public class BiDirEntityRemoveAdvice /*implements MethodInterceptor*/ {
     }
 
     private Class resolveEntityClass(ProceedingJoinPoint joinPoint) throws IllegalAccessException {
-        SimpleJpaRepository jpaRepository = AopTestUtils.getUltimateTargetObject(joinPoint.getTarget());
-        Field entityInformationField = ReflectionUtils.findField(SimpleJpaRepository.class, field -> field.getName().equals("entityInformation"));
-        entityInformationField.setAccessible(true);
-        JpaEntityInformation entityInformation = ((JpaEntityInformation) entityInformationField.get(jpaRepository));
-        return entityInformation.getJavaType();
+        CrudService crudService = AopTestUtils.getUltimateTargetObject(joinPoint.getTarget());
+//        Field entityInformationField = ReflectionUtils.findField(SimpleJpaRepository.class, field -> field.getName().equals("entityInformation"));
+//        entityInformationField.setAccessible(true);
+//        JpaEntityInformation entityInformation = ((JpaEntityInformation) entityInformationField.get(crudService));
+//        return entityInformation.getJavaType();
+        return crudService.getEntityClass();
     }
 
 }

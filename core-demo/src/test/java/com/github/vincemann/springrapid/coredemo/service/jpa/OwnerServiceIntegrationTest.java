@@ -6,6 +6,9 @@ import com.github.vincemann.springrapid.core.util.Lists;
 import com.github.vincemann.springrapid.coredemo.model.Owner;
 import com.github.vincemann.springrapid.coredemo.model.Pet;
 import com.github.vincemann.springrapid.coredemo.model.PetType;
+import com.github.vincemann.springrapid.coredemo.repo.OwnerRepository;
+import com.github.vincemann.springrapid.coredemo.repo.PetRepository;
+import com.github.vincemann.springrapid.coredemo.repo.PetTypeRepository;
 import com.github.vincemann.springrapid.coredemo.service.OwnerService;
 import com.github.vincemann.springrapid.coredemo.service.PetService;
 import com.github.vincemann.springrapid.coredemo.service.PetTypeService;
@@ -24,6 +27,7 @@ import java.util.HashSet;
 import java.util.Optional;
 
 import static com.github.vincemann.ezcompare.Comparator.compare;
+import static com.github.vincemann.springrapid.coredemo.service.jpa.JpaOwnerService.OWNER_OF_THE_YEARS_NAME;
 import static com.github.vincemann.springrapid.coretest.service.ExceptionMatchers.noException;
 import static com.github.vincemann.springrapid.coretest.service.ExistenceMatchers.notPresentInDatabase;
 import static com.github.vincemann.springrapid.coretest.service.PropertyMatchers.propertyAssert;
@@ -33,177 +37,187 @@ import static com.github.vincemann.springrapid.coretest.service.resolve.EntityPl
 
 //@EnableProjectComponentScan
 //@ImportRapidEntityRelServiceConfig
+
+/**
+ * Test to showcase that auto management of bidir-relationships work
+ */
 class OwnerServiceIntegrationTest
-        extends AbstractCrudServiceIntegrationTest<OwnerService, Owner, Long> {
-    //Types
-    Owner OwnerType = new Owner();
+        extends MyCrudServiceIntegrationTest<OwnerService, Owner, Long> {
 
-    Owner ownerWithoutPets;
-    Owner ownerWithOnePet;
-    Pet testPet;
-    PetType savedDogPetType;
-
-    @SpyBean
-    OwnerOfTheYearExtension ownerOfTheYearExtension;
-
-    @Autowired
-    PetService petService;
-
-    @Autowired
-    PetTypeService petTypeService;
-
-    @BeforeEach
-    public void setupTestData() throws Exception {
-//        super.setup();
-        savedDogPetType = petTypeService.save(new PetType("Dog"));
-
-        testPet = Pet.builder()
-                .petType(savedDogPetType)
-                .name("Bello")
-                .birthDate(LocalDate.now())
-                .build();
-
-        ownerWithoutPets = Owner.builder()
-                .firstName("owner without pets")
-                .lastName("owner without pets lastName")
-                .address("asljnflksamfslkmf")
-                .city("n1 city")
-                .telephone("12843723847324")
-                .build();
-
-        ownerWithOnePet = Owner.builder()
-                .firstName("owner with one pet")
-                .lastName("owner with one pet lastName")
-                .address("asljnflksamfslkmf")
-                .city("n1 city")
-                .telephone("12843723847324")
-                .pets(new HashSet<>(Lists.newArrayList(testPet)))
-                .build();
-    }
 
     @Test
     public void canSaveOwnerWithoutPets() {
         ServiceResult serviceResult =
-                test(save(ownerWithoutPets))
-                        .andExpect(() -> compare(ownerWithoutPets)
+                test(save(meier))
+                        .andExpect(() -> compare(meier)
+                                // resolve db entity makes sure entity is actually saved in repo
                                 .with(resolve(DB_ENTITY))
                                 .properties()
                                 //per instance or Type is both possible Owner::getAnything wont work
-                                .include(ownerWithoutPets::getTelephone)
+                                .include(meier::getTelephone)
                                 .include(OwnerType::getAddress)
                                 .assertEqual())
                         .andExpect(()-> propertyAssert(resolve(SERVICE_RETURNED_ENTITY))
-                                .shouldBeEmpty(OwnerType::getPets)
+                                .assertEmpty(OwnerType::getPets)
                         )
                         .andReturn();
-        Assertions.assertEquals(0, ((Owner) serviceResult.getResult()).getPets().size());
+
+        Assertions.assertTrue(ownerRepository.findByLastName(MEIER).isPresent());
+        Assertions.assertTrue(ownerRepository.findByLastName(MEIER).get().getPets().isEmpty());
+        Assertions.assertEquals(0, petRepository.count());
     }
 
 
 
     @Test
-    public void canSaveOwnerWithPet() throws BadEntityException {
-        test(save(ownerWithOnePet))
+    public void canSavePetAlongsideWithOwner() throws BadEntityException {
+        kahn.setPets(new HashSet<>(Lists.newArrayList(bello)));
+        test(save(kahn))
                 .andDo(() -> compare(resolve(SERVICE_INPUT_ENTITY))
+                        // resolve db entity makes sure entity is actually saved in repo
                         .with(resolve(DB_ENTITY))
                         .properties()
                         .all()
                         //ignoring/adding properties via their name as a string is also possible but not recommended
                         .ignore("id")
                         .assertEqual());
-        Assertions.assertTrue(getRepository().existsById(ownerWithOnePet.getId()));
+
+
+        Assertions.assertTrue(petRepository.findByName(BELLO).isPresent());
+        Assertions.assertEquals(1, petRepository.count());
+
+        // verify bidir rel management
+        Pet savedBello = petRepository.findByName(BELLO).get();
+        Owner savedKahn = ownerRepository.findByLastName(KAHN).get();
+        // check if bidir relation ships were managed
+        Assertions.assertEquals(savedKahn,savedBello.getOwner());
+        Assertions.assertEquals(savedBello,savedKahn.getPets().stream().findFirst().get());
     }
 
+
     @Test
-    public void givenAlreadyPersistedPet_canLinkOwner_viaSave() throws BadEntityException {
-        Pet savedPet = petService.save(testPet);
+    public void alreadySavedPet_canLinkOwner_viaSave() throws BadEntityException {
+        Pet savedBello = petService.save(bello);
 
-        Owner owner = Owner.builder()
-                .firstName("owner with one already persisted pet")
-                .lastName("owner with one already persisted pet lastName")
-                .address("asljnflksamfslkmf")
-                .city("n1 city")
-                .telephone("12843723847324")
-                .pets(new HashSet<>(Lists.newArrayList(savedPet)))
-                .build();
 
-        test(save(owner))
-                .andExpect(() -> compare(owner)
+        kahn.setPets(new HashSet<>(Lists.newArrayList(savedBello)));
+
+        test(save(kahn))
+                .andExpect(() -> compare(kahn)
+                        // comparing service returned entity does not make sure entity is saved in db
                         .with(resolve(SERVICE_RETURNED_ENTITY))
                         .properties()
                         .all()
                         .ignore(OwnerType::getId)
                         .assertEqual()
                 );
+
+        Assertions.assertTrue(petRepository.findByName(BELLO).isPresent());
+        Assertions.assertEquals(1, petRepository.count());
+
+        // verify bidir rel management
+        Pet dbBello = petRepository.findByName(BELLO).get();
+        Owner savedKahn = ownerRepository.findByLastName(KAHN).get();
+        // check if bidir relation ships were managed
+        Assertions.assertEquals(savedKahn,dbBello.getOwner());
+        Assertions.assertEquals(dbBello,savedKahn.getPets().stream().findFirst().get());
+    }
+
+    @Test
+    public void alreadySavedPets_canLinkOwner_viaSave() throws BadEntityException {
+        Pet savedBello = petService.save(bello);
+        Pet savedKitty = petService.save(kitty);
+
+        kahn.setPets(new HashSet<>(Lists.newArrayList(savedBello,savedKitty)));
+
+        test(save(kahn))
+                .andExpect(() -> compare(kahn)
+                        .with(resolve(SERVICE_RETURNED_ENTITY))
+                        .properties()
+                        .all()
+                        .ignore(OwnerType::getId)
+                        .assertEqual()
+                );
+
+        Assertions.assertEquals(2, petRepository.count());
+        Assertions.assertTrue(petRepository.findByName(BELLO).isPresent());
+        Assertions.assertTrue(petRepository.findByName(KITTY).isPresent());
+
+        // verify bidir rel management
+        Pet dbBello = petRepository.findByName(BELLO).get();
+        Pet dbKitty = petRepository.findByName(KITTY).get();
+        Owner savedKahn = ownerRepository.findByLastName(KAHN).get();
+        // check if bidir relation ships were managed
+        Assertions.assertEquals(savedKahn,dbBello.getOwner());
+        Assertions.assertEquals(savedKahn,dbKitty.getOwner());
+        Assertions.assertEquals(dbBello,savedKahn.getPets().stream().filter(p -> p.getName().equals(BELLO)).findFirst().get());
+        Assertions.assertEquals(dbKitty,savedKahn.getPets().stream().filter(p -> p.getName().equals(KITTY)).findFirst().get());
     }
 
 
     @Test
     public void canUpdateOwnersTelephoneNumber() throws BadEntityException, EntityNotFoundException, BadEntityException {
-        String newNumber = ownerWithoutPets.getTelephone() + "123";
+        String newNumber = meier.getTelephone() + "123";
         Owner diffTelephoneNumberUpdate = Owner.builder()
                 .telephone(newNumber)
                 .build();
-        Owner toUpdate = getRepository().save(ownerWithoutPets);
+        Owner toUpdate = getRepository().save(meier);
         diffTelephoneNumberUpdate.setId(toUpdate.getId());
 
         test(partialUpdate(diffTelephoneNumberUpdate))
                 .andExpect(() ->
                         propertyAssert(resolve(DB_ENTITY))
-                                .shouldMatch(OwnerType::getTelephone, newNumber)
+                                .assertMatch(OwnerType::getTelephone, newNumber)
                 );
     }
 
     @Test
-    public void canAddAnotherPetToOwner_viaUpdate() throws BadEntityException, EntityNotFoundException, BadEntityException {
+    public void canAddAnotherSavedPetToOwner_viaUpdate() throws BadEntityException, EntityNotFoundException, BadEntityException {
         //given
-        Pet savedPet = petService.save(testPet);
-        String newPetName = "petToAdd";
-        Pet newPet = Pet.builder()
-                .name(newPetName)
-                .petType(savedDogPetType)
-                .birthDate(LocalDate.now())
-                .build();
-        Pet savedPetToAdd = petService.save(newPet);
+        Pet savedBello = petService.save(bello);
+        Pet savedKitty = petService.save(kitty);
 
-        Owner owner = Owner.builder()
-                .firstName("owner with one already persisted pet")
-                .lastName("owner with one already persisted pet lastName")
-                .address("asljnflksamfslkmf")
-                .city("n1 city")
-                .telephone("12843723847324")
-                .pets(new HashSet<>(Lists.newArrayList(savedPet)))
-                .build();
+        kahn.setPets(new HashSet<>(Lists.newArrayList(savedBello)));
+
+        Owner savedKahn = getServiceUnderTest().save(kahn);
 
         Owner ownerUpdateRequest = new Owner();
-        ownerUpdateRequest.getPets().addAll(owner.getPets());
+        ownerUpdateRequest.getPets().addAll(savedKahn.getPets());
         //here comes the new pet
-        ownerUpdateRequest.getPets().add(savedPetToAdd);
+        ownerUpdateRequest.getPets().add(savedKitty);
 
         //when
-        Owner saved = getRepository().save(owner);
-        ownerUpdateRequest.setId(saved.getId());
+        ownerUpdateRequest.setId(savedKahn.getId());
 
         test(partialUpdate(ownerUpdateRequest))
                 .andExpect(() -> propertyAssert(resolve(DB_ENTITY))
-                        .shouldMatchSize(OwnerType::getPets, 2)
+                        .assertMatchSize(OwnerType::getPets, 2)
                 );
+
+        // verify bidir rel management
+        Pet dbBello = petRepository.findByName(BELLO).get();
+        Pet dbKitty = petRepository.findByName(KITTY).get();
+        Owner dbKahn = ownerRepository.findByLastName(KAHN).get();
+        // check if bidir relation ships were managed
+        Assertions.assertEquals(dbKahn,dbBello.getOwner());
+        Assertions.assertEquals(dbKahn,dbKitty.getOwner());
+        Assertions.assertEquals(dbBello,dbKahn.getPets().stream().filter(p -> p.getName().equals(BELLO)).findFirst().get());
+        Assertions.assertEquals(dbKitty,dbKahn.getPets().stream().filter(p -> p.getName().equals(KITTY)).findFirst().get());
     }
 
     @Test
-    public void canFindOwnerOfTheYear_triggersExtension() {
-        //owner of the years name is 42
-        ownerWithOnePet.setFirstName("42");
-        Owner savedOwner = getRepository().save(ownerWithOnePet);
+    public void canFindOwnerOfTheYear_triggersExtension() throws BadEntityException {
+        kahn.setFirstName(OWNER_OF_THE_YEARS_NAME);
+        Owner savedOwner = getServiceUnderTest().save(kahn);
         Optional<Owner> ownerOfTheYear = getServiceUnderTest().findOwnerOfTheYear();
         Assertions.assertTrue(ownerOfTheYear.isPresent());
         Mockito.verify(ownerOfTheYearExtension).findOwnerOfTheYear();
     }
 
     @Test
-    public void canFindOwnerByLastName() {
-        Owner savedOwner = getRepository().save(ownerWithOnePet);
-        Optional<Owner> byLastName = getServiceUnderTest().findByLastName(ownerWithOnePet.getLastName());
+    public void canFindOwnerByLastName() throws BadEntityException {
+        Owner savedOwner = getServiceUnderTest().save(kahn);
+        Optional<Owner> byLastName = getServiceUnderTest().findByLastName(kahn.getLastName());
         Assertions.assertTrue(byLastName.isPresent());
         compare(savedOwner)
                 .with(byLastName.get())
@@ -213,12 +227,29 @@ class OwnerServiceIntegrationTest
     }
 
     @Test
-    public void canDeleteOwner() {
-        Owner savedOwner = getRepository().save(ownerWithOnePet);
+    public void canDeleteOwner() throws BadEntityException {
+        Owner savedOwner = getServiceUnderTest().save(kahn);
         test(deleteById(savedOwner.getId()))
                 .andExpect(noException())
                 .andExpect(notPresentInDatabase(savedOwner.getId()));
     }
+
+    @Test
+    public void canDeleteOwner_withPet() throws BadEntityException {
+        kahn.setPets(new HashSet<>(Lists.newArrayList(bello)));
+        Owner savedOwner = getServiceUnderTest().save(kahn);
+
+        test(deleteById(savedOwner.getId()))
+                .andExpect(noException())
+                .andExpect(notPresentInDatabase(savedOwner.getId()));
+
+        // verify bidir rel management
+        Assertions.assertTrue(petRepository.findByName(BELLO).isPresent());
+        Pet dbBello = petRepository.findByName(BELLO).get();
+        Assertions.assertNull(dbBello.getOwner());
+    }
+
+
 
 
 }

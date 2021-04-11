@@ -3,7 +3,7 @@ package com.github.vincemann.springrapid.auth.service.token;
 import com.github.vincemann.aoplog.api.AopLoggable;
 import com.github.vincemann.aoplog.api.LogInteraction;
 import com.github.vincemann.springrapid.auth.AuthProperties;
-import com.github.vincemann.springrapid.auth.security.JwtClaimsPrincipalConverter;
+import com.github.vincemann.springrapid.auth.security.JwtClaimsToPrincipalConverter;
 import com.github.vincemann.springrapid.auth.util.RapidJwt;
 import com.github.vincemann.springrapid.auth.util.LemonMapUtils;
 import com.github.vincemann.springrapid.core.security.RapidAuthenticatedPrincipal;
@@ -24,7 +24,7 @@ public abstract class AbstractJwtAuthorizationTokenService<P extends RapidAuthen
 
 
     private JwsTokenService jwsTokenService;
-    private JwtClaimsPrincipalConverter<P> jwtPrincipalConverter;
+    private JwtClaimsToPrincipalConverter<P> jwtPrincipalConverter;
     private AuthProperties properties;
 
 
@@ -61,7 +61,7 @@ public abstract class AbstractJwtAuthorizationTokenService<P extends RapidAuthen
     }
 
     @Autowired
-    public void injectJwtPrincipalConverter(JwtClaimsPrincipalConverter<P> jwtPrincipalConverter) {
+    public void injectJwtPrincipalConverter(JwtClaimsToPrincipalConverter<P> jwtPrincipalConverter) {
         this.jwtPrincipalConverter = jwtPrincipalConverter;
     }
 

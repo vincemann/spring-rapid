@@ -4,18 +4,31 @@ import com.github.vincemann.springrapid.core.util.HttpServletRequestUtils;
 import com.github.vincemann.springrapid.limitsaves.LimitActionsExtension;
 
 /**
- * To activate add bean of this class to context.
  *
- * e.g.:
- * @Configuration
- * @Profile(Profiles.PROD)
- * public class LimitSignupConfiguration {
+ * ExampleConfig for activating this Extension:
  *
- *     @Bean
- *     public LimitSignupsExtension limitSignupsExtension(){
- *         return new LimitSignupsExtension();
- *     }
- * }
+     @ServiceConfig
+     @Profile(Profiles.PROD)
+     public class LimitSignupConfiguration extends UserServiceProxyConfigurer {
+
+         private LimitSignupsExtension limitSignupsExtension;
+
+         @Bean
+         public LimitSignupsExtension limitSignupsExtension(){
+             // 1 each hour max
+            return new LimitSignupsExtension(1, 1000*60*60);
+         }
+
+         @Autowired
+         public void injectLimitSignupsExtension(LimitSignupsExtension limitSignupsExtension) {
+            this.limitSignupsExtension = limitSignupsExtension;
+         }
+
+         @Override
+         public void configureSecured(ServiceExtensionProxy proxy) {
+            proxy.addExtension(limitSignupsExtension);
+         }
+     }
  *
  */
 public class LimitSignupsExtension extends LimitActionsExtension {

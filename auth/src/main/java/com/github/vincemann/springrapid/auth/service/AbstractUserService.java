@@ -233,7 +233,7 @@ public abstract class AbstractUserService
     protected U verifyUser(U user) throws BadEntityException, EntityNotFoundException {
         user.getRoles().remove(AuthRoles.UNVERIFIED);
         user.setCredentialsUpdatedMillis(System.currentTimeMillis());
-        U saved = update(user);
+        U saved = update(user,true);
         log.debug("Verified user: " + saved);
         return saved;
     }
@@ -279,7 +279,7 @@ public abstract class AbstractUserService
             user.setCredentialsUpdatedMillis(System.currentTimeMillis());
             //user.setForgotPasswordCode(null);
             try {
-                return update(user);
+                return update(user,true);
             }catch (BadEntityException e) {
                 throw new RuntimeException("Could not reset users password", e);
             }

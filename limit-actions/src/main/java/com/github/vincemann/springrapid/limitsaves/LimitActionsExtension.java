@@ -9,6 +9,9 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
+/**
+ * Only allows certain amount of service method invocations in specified time interval.
+ */
 @Slf4j
 public abstract class LimitActionsExtension extends BasicServiceExtension<CrudService>
 {

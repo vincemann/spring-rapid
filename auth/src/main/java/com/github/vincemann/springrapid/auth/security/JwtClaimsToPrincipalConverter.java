@@ -7,7 +7,7 @@ import org.springframework.security.authentication.AuthenticationCredentialsNotF
 import java.util.Map;
 
 
-public interface JwtClaimsPrincipalConverter<P extends RapidAuthenticatedPrincipal> {
+public interface JwtClaimsToPrincipalConverter<P extends RapidAuthenticatedPrincipal> {
 
     /**
      * Creates {@link AbstractUser} from Jwt claims.

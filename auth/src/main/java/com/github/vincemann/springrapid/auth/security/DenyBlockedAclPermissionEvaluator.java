@@ -11,7 +11,7 @@ import org.springframework.security.core.Authentication;
 import java.io.Serializable;
 
 /**
- * Denys any access if any user is blocked
+ * Denys any access if user is blocked
  */
 @Slf4j
 public class DenyBlockedAclPermissionEvaluator extends VerboseAclPermissionEvaluator {

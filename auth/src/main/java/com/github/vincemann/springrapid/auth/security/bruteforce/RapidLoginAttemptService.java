@@ -9,6 +9,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 
+/**
+ * Keeps track of how many invalid login attempts each ip has.
+ */
 public class RapidLoginAttemptService implements LoginAttemptService{
 
     private LoadingCache<String, Integer> attemptsCache;
