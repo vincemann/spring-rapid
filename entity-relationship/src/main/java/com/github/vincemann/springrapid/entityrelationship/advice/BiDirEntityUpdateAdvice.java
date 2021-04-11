@@ -9,10 +9,13 @@ import com.github.vincemann.springrapid.core.service.exception.BadEntityExceptio
 import com.github.vincemann.springrapid.core.service.exception.EntityNotFoundException;
 import com.github.vincemann.springrapid.core.service.locator.CrudServiceLocator;
 import lombok.extern.slf4j.Slf4j;
+import org.aspectj.lang.JoinPoint;
+import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Before;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import javax.transaction.Transactional;
 import java.io.Serializable;
 import java.util.*;
 
@@ -30,10 +33,11 @@ public class BiDirEntityUpdateAdvice {
         this.serviceLocator = serviceLocator;
     }
 
-    @Before("com.github.vincemann.springrapid.core.advice.SystemArchitecture.updateOperation() && " +
-            "com.github.vincemann.springrapid.core.advice.SystemArchitecture.repoOperation() && " +
-            "args(biDirChild)")
-    public void preUpdateBiDirChild(BiDirChild biDirChild) throws EntityNotFoundException, BadEntityException, BadEntityException {
+    // todo gets called twice for AclExtension -> make sure to skip joinPoint if target is Extension
+    @Before(value = "com.github.vincemann.springrapid.core.advice.SystemArchitecture.updateOperation() && " +
+            "com.github.vincemann.springrapid.core.advice.SystemArchitecture.serviceOperation() && " +
+            "args(biDirChild,fullUpdate)")
+    public void preUpdateBiDirChild(JoinPoint joinPoint, BiDirChild biDirChild, Boolean fullUpdate) throws EntityNotFoundException, BadEntityException, BadEntityException {
         try {
             if(((IdentifiableEntity) biDirChild).getId()!=null) {
                 log.debug("detected update operation for BiDirChild: " + biDirChild +", running preUpdateAdvice logic");
@@ -44,10 +48,10 @@ public class BiDirEntityUpdateAdvice {
         }
     }
 
-    @Before("com.github.vincemann.springrapid.core.advice.SystemArchitecture.updateOperation() && " +
-            "com.github.vincemann.springrapid.core.advice.SystemArchitecture.repoOperation() && " +
-            "args(biDirParent)")
-    public void preUpdateBiDirParent(BiDirParent biDirParent) throws EntityNotFoundException, BadEntityException {
+    @Before(value = "com.github.vincemann.springrapid.core.advice.SystemArchitecture.updateOperation() && " +
+            "com.github.vincemann.springrapid.core.advice.SystemArchitecture.serviceOperation() && " +
+            "args(biDirParent,fullUpdate)")
+    public void preUpdateBiDirParent(BiDirParent biDirParent, Boolean fullUpdate) throws EntityNotFoundException, BadEntityException {
         try {
             if(((IdentifiableEntity) biDirParent).getId()!=null) {
                 log.debug("detected update operation for BiDirParent: " + biDirParent + ", running preUpdateAdvice logic");

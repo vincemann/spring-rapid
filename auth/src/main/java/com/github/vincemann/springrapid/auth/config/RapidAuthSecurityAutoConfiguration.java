@@ -38,9 +38,9 @@ public class RapidAuthSecurityAutoConfiguration {
 
 
     @Bean
-    @ConditionalOnMissingBean(JwtClaimsPrincipalConverter.class)
-    public JwtClaimsPrincipalConverter<RapidAuthAuthenticatedPrincipal> jwtClaimsPrincipalConverter(){
-        return new RapidJwtClaimsPrincipalConverter();
+    @ConditionalOnMissingBean(JwtClaimsToPrincipalConverter.class)
+    public JwtClaimsToPrincipalConverter<RapidAuthAuthenticatedPrincipal> jwtClaimsPrincipalConverter(){
+        return new RapidJwtClaimsToPrincipalConverter();
     }
 
     @Bean

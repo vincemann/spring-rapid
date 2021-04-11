@@ -18,7 +18,7 @@ import java.util.Set;
 public class BiDirEntityPersistAdvice {
 
     @Before("com.github.vincemann.springrapid.core.advice.SystemArchitecture.saveOperation() && " +
-            "com.github.vincemann.springrapid.core.advice.SystemArchitecture.repoOperation() && " +
+            "com.github.vincemann.springrapid.core.advice.SystemArchitecture.serviceOperation() && " +
             "args(biDirParent)")
     public void prePersistBiDirParent(BiDirParent biDirParent) {
         log.debug("pre persist biDirParent hook reached for: " + biDirParent);
@@ -26,7 +26,7 @@ public class BiDirEntityPersistAdvice {
     }
 
     @Before("com.github.vincemann.springrapid.core.advice.SystemArchitecture.saveOperation() && " +
-            "com.github.vincemann.springrapid.core.advice.SystemArchitecture.repoOperation() && " +
+            "com.github.vincemann.springrapid.core.advice.SystemArchitecture.serviceOperation() && " +
             "args(biDirChild)")
     public void prePersistBiDiChild(BiDirChild biDirChild) {
         log.debug("pre persist biDirChild hook reached for: " + biDirChild);

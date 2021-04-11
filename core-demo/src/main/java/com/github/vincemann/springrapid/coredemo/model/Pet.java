@@ -7,6 +7,7 @@ import com.github.vincemann.springrapid.entityrelationship.model.parent.annotati
 import com.github.vincemann.springrapid.entityrelationship.model.child.annotation.UniDirChildEntity;
 import com.github.vincemann.springrapid.entityrelationship.model.parent.UniDirParent;
 import lombok.*;
+import org.checkerframework.common.aliasing.qual.Unique;
 import org.springframework.format.annotation.DateTimeFormat;
 
 import javax.persistence.*;
@@ -23,6 +24,7 @@ import java.time.LocalDate;
 public class Pet extends IdentifiableEntityImpl<Long> implements BiDirChild, UniDirParent {
 
     @Column(name = "name")
+    @Unique
     private String name;
 
 

@@ -19,8 +19,8 @@ import java.util.Optional;
  * Only stores email in token and fetches user args for principal lazily
  */
 @Transactional
-public class RapidJwtClaimsPrincipalConverter
-            implements JwtClaimsPrincipalConverter<RapidAuthAuthenticatedPrincipal> {
+public class RapidJwtClaimsToPrincipalConverter
+            implements JwtClaimsToPrincipalConverter<RapidAuthAuthenticatedPrincipal> {
 
     private UserService userService;
 
@@ -47,7 +47,6 @@ public class RapidJwtClaimsPrincipalConverter
     }
 
     @Lazy
-
     @Autowired
     public void injectUserService(UserService userService) {
         this.userService = userService;

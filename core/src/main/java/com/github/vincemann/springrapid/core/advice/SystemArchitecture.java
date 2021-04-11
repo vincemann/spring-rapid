@@ -22,10 +22,11 @@ public class SystemArchitecture {
     public void deleteOperation(){}
 
 
-    @Pointcut("execution(public * org.springframework.data.repository.Repository+.*(..))")
-    public void repoOperation(){}
+    @Pointcut("execution(public * com.github.vincemann.springrapid.core.service.CrudService+.*(..))")
+    public void serviceOperation(){}
 
-
+//    @Pointcut("execution(public * org.springframework.data.repository.Repository+.*(..))")
+//    public void repoOperation(){}
 
 
 }

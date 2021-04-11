@@ -196,7 +196,7 @@ public class OwnerControllerTest
 
 
     @Test
-    public void canUpdateWithBlankCity_BadRequest() throws Exception {
+    public void cantUpdateWithBlankCity() throws Exception {
         Owner ownerPatch = (Owner) BeanUtilsBean.getInstance().cloneBean(owner);
         ownerPatch.setCity(null);
         when(ownerService.findById(owner.getId()))

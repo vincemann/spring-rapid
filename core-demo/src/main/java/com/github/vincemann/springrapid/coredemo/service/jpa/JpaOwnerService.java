@@ -20,6 +20,7 @@ public class JpaOwnerService
         extends JPACrudService<Owner,Long, OwnerRepository>
                 implements OwnerService, AopLoggable, TargetClassAware {
 
+    public static final String OWNER_OF_THE_YEARS_NAME = "Chad";
 
     @LogInteraction
     @Transactional
@@ -41,7 +42,7 @@ public class JpaOwnerService
     @Override
     public Optional<Owner> findOwnerOfTheYear() {
         return getRepository().findAll().stream().filter(owner -> {
-            return owner.getFirstName().equals("42");
+            return owner.getFirstName().equals(OWNER_OF_THE_YEARS_NAME);
         }).findFirst();
     }
 }
