@@ -14,7 +14,7 @@ import java.util.Set;
 @Aspect
 @Slf4j
 // order is important, save must be before update
-//@Order(1)
+//@Order(2)
 /**
  * Advice that keeps BiDirRelationships intact for Repo save operations (also update)
  */
@@ -37,7 +37,8 @@ public class BiDirEntitySaveAdvice {
         if(((IdentifiableEntity) biDirChild).getId()==null) {
             log.debug("pre persist biDirChild hook reached for: " + biDirChild);
             setParentsChildRef(biDirChild);
-        }else {
+        }
+        else {
             // need to replace child here for update parent situation (replace detached child with session attached child (this))
             replaceParentsChildRef(biDirChild);
         }

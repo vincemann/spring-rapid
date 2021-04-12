@@ -7,10 +7,14 @@ import com.github.vincemann.springrapid.core.service.exception.EntityNotFoundExc
 import com.github.vincemann.springrapid.core.slicing.ServiceComponent;
 import com.github.vincemann.springrapid.core.util.VerifyEntity;
 import org.apache.commons.beanutils.BeanUtilsBean;
+import org.hibernate.LockMode;
+import org.hibernate.Session;
 import org.springframework.dao.NonTransientDataAccessException;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
 import java.io.Serializable;
 import java.lang.reflect.InvocationTargetException;
 import java.util.HashSet;
@@ -33,7 +37,6 @@ public abstract class JPACrudService
                 R extends JpaRepository<E, Id>
                 >
         extends AbstractCrudService<E, Id, R> {
-
 
 
 
@@ -61,9 +64,6 @@ public abstract class JPACrudService
                 return getRepository().save(update);
             } else {
                 E entityToUpdate = findOldEntity(update.getId());
-                // need to clone/detach here so advices can do their bidir rel management magic
-//                E detachedUpdate = (E) BeanUtilsBean.getInstance().cloneBean(entityToUpdate);
-
                 //copy non null values from update to entityToUpdate
                 // values get copied to target already bc this is transactional
                 // -> update is already happening here

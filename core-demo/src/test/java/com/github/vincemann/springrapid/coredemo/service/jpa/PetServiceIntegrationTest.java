@@ -9,11 +9,13 @@ import com.github.vincemann.springrapid.coredemo.service.PetService;
 import com.github.vincemann.springrapid.coredemo.service.PetTypeService;
 import com.github.vincemann.springrapid.coretest.service.AbstractCrudServiceIntegrationTest;
 import com.github.vincemann.springrapid.coretest.service.resolve.EntityPlaceholder;
+import org.apache.commons.beanutils.BeanUtilsBean;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import java.lang.reflect.InvocationTargetException;
 import java.time.LocalDate;
 
 import static com.github.vincemann.ezcompare.Comparator.compare;
@@ -102,11 +104,59 @@ class PetServiceIntegrationTest
                 );
 
 
+
         // check if bidir relation ships were managed
         Owner dbKahn = ownerRepository.findByLastName(KAHN).get();
         Assertions.assertTrue(dbKahn.getPets().isEmpty());
         Owner dbMeier = ownerRepository.findByLastName(MEIER).get();
         Assertions.assertEquals(savedBello,dbMeier.getPets().stream().findFirst().get());
+
+        Pet dbBello = petRepository.findByName(BELLO).get();
+        Assertions.assertEquals(dbMeier,dbBello.getOwner());
+    }
+
+    @Test
+    public void canUnlinkOwnerFromPet_viaFullUpdate() throws BadEntityException, InvocationTargetException, NoSuchMethodException, InstantiationException, IllegalAccessException {
+        Owner savedKahn = ownerService.save(kahn);
+
+        bello.setOwner(savedKahn);
+        Pet savedBello = getServiceUnderTest().save(bello);
+
+        Pet unlinkOwnerUpdate = (Pet) BeanUtilsBean.getInstance().cloneBean(savedBello);
+        unlinkOwnerUpdate.setOwner(null);
+
+        test(update(unlinkOwnerUpdate));
+
+
+        // check if bidir relation ships were managed
+        Owner dbKahn = ownerRepository.findByLastName(KAHN).get();
+        Assertions.assertTrue(dbKahn.getPets().isEmpty());
+
+        Pet dbBello = petRepository.findByName(BELLO).get();
+        Assertions.assertNull(dbBello.getOwner());
+
+    }
+
+    @Test
+    public void canLinkOwnerToPet_viaPartialUpdate() throws BadEntityException, InvocationTargetException, NoSuchMethodException, InstantiationException, IllegalAccessException {
+        Owner savedKahn = ownerService.save(kahn);
+        Pet savedBello = getServiceUnderTest().save(bello);
+
+        Pet linkOwnerUpdate = Pet.builder()
+                .owner(savedKahn)
+                .build();
+        linkOwnerUpdate.setId(savedBello.getId());
+
+        test(partialUpdate(linkOwnerUpdate));
+
+
+        // check if bidir relation ships were managed
+        Owner dbKahn = ownerRepository.findByLastName(KAHN).get();
+        Assertions.assertEquals(savedBello,dbKahn.getPets().stream().findFirst().get());
+
+        Pet dbBello = petRepository.findByName(BELLO).get();
+        Assertions.assertEquals(dbKahn,dbBello.getOwner());
+
     }
 
 }
