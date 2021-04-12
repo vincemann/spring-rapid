@@ -52,14 +52,7 @@ class PetServiceIntegrationTest
         Owner savedKahn = ownerService.save(kahn);
         bello.setOwner(savedKahn);
 
-        test(save(bello))
-                .andExpect(() -> compare(bello)
-                        .with(resolve(EntityPlaceholder.DB_ENTITY))
-                        .properties()
-                        .all()
-                        .ignore("id")
-                        .assertEqual());
-
+        test(save(bello));
 
         // check if bidir relation ships were managed
         Pet dbBello = petRepository.findByName(BELLO).get();

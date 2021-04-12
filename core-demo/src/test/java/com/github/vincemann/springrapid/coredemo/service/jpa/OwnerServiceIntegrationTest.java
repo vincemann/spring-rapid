@@ -15,6 +15,7 @@ import com.github.vincemann.springrapid.coredemo.service.PetTypeService;
 import com.github.vincemann.springrapid.coredemo.service.plugin.OwnerOfTheYearExtension;
 import com.github.vincemann.springrapid.coretest.service.AbstractCrudServiceIntegrationTest;
 import com.github.vincemann.springrapid.coretest.service.result.ServiceResult;
+import org.apache.commons.beanutils.BeanUtilsBean;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -22,6 +23,7 @@ import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.mock.mockito.SpyBean;
 
+import java.lang.reflect.InvocationTargetException;
 import java.time.LocalDate;
 import java.util.HashSet;
 import java.util.Optional;
@@ -191,6 +193,37 @@ class OwnerServiceIntegrationTest
     }
 
     @Test
+    public void canAddAnotherSavedPetToOwner_viaFullUpdate() throws BadEntityException, EntityNotFoundException, BadEntityException, InvocationTargetException, NoSuchMethodException, InstantiationException, IllegalAccessException {
+        //given
+        Pet savedBello = petService.save(bello);
+        Pet savedKitty = petService.save(kitty);
+
+        kahn.setPets(new HashSet<>(Lists.newArrayList(savedBello)));
+
+        Owner savedKahn = getServiceUnderTest().save(kahn);
+
+        Owner ownerUpdateRequest = (Owner) BeanUtilsBean.getInstance().cloneBean(savedKahn);
+        //here comes the new pet
+        ownerUpdateRequest.getPets().add(savedKitty);
+
+        //when
+        test(update(ownerUpdateRequest))
+                .andExpect(() -> propertyAssert(resolve(DB_ENTITY))
+                        .assertMatchSize(OwnerType::getPets, 2)
+                );
+
+        // verify bidir rel management
+        Pet dbBello = petRepository.findByName(BELLO).get();
+        Pet dbKitty = petRepository.findByName(KITTY).get();
+        Owner dbKahn = ownerRepository.findByLastName(KAHN).get();
+        // check if bidir relation ships were managed
+        Assertions.assertEquals(dbKahn,dbBello.getOwner());
+        Assertions.assertEquals(dbKahn,dbKitty.getOwner());
+        Assertions.assertEquals(dbBello,dbKahn.getPets().stream().filter(p -> p.getName().equals(BELLO)).findFirst().get());
+        Assertions.assertEquals(dbKitty,dbKahn.getPets().stream().filter(p -> p.getName().equals(KITTY)).findFirst().get());
+    }
+
+    @Test
     public void canAddMultipleSavedPetsToOwner_viaPartialUpdate() throws BadEntityException, EntityNotFoundException, BadEntityException {
         //given
         Pet savedBello = petService.save(bello);
@@ -221,12 +254,13 @@ class OwnerServiceIntegrationTest
     }
 
     @Test
-    public void canDeleteOnlyPetFromOwner_viaPartialUpdate() throws BadEntityException, EntityNotFoundException, BadEntityException {
+    public void canUnlinkOnlyPetFromOwner_viaPartialUpdate() throws BadEntityException, EntityNotFoundException, BadEntityException {
         //given
         Pet savedBello = petService.save(bello);
 
-        Owner savedKahn = getServiceUnderTest().save(kahn);
         kahn.setPets(new HashSet<>(Lists.newArrayList(savedBello)));
+        Owner savedKahn = getServiceUnderTest().save(kahn);
+
 
         Owner removePetUpdate = new Owner();
         // explicitly set empty list instead of null
@@ -249,13 +283,14 @@ class OwnerServiceIntegrationTest
     }
 
     @Test
-    public void canDeleteOneOfMultiplePetsFromOwner_viaPartialUpdate() throws BadEntityException, EntityNotFoundException, BadEntityException {
+    public void canUnlinkOneOfMultiplePetsFromOwner_viaPartialUpdate() throws BadEntityException, EntityNotFoundException, BadEntityException {
         //given
         Pet savedBello = petService.save(bello);
         Pet savedKitty = petService.save(kitty);
 
-        Owner savedKahn = getServiceUnderTest().save(kahn);
         kahn.setPets(new HashSet<>(Lists.newArrayList(savedBello,savedKitty)));
+        Owner savedKahn = getServiceUnderTest().save(kahn);
+
 
         Owner removePetUpdate = new Owner();
         // explicitly set empty list instead of null
@@ -280,14 +315,15 @@ class OwnerServiceIntegrationTest
     }
 
     @Test
-    public void canDeleteMultiplePetsFromOwner_viaPartialUpdate() throws BadEntityException, EntityNotFoundException, BadEntityException {
+    public void canUnlinkMultiplePetsFromOwner_viaPartialUpdate() throws BadEntityException, EntityNotFoundException, BadEntityException {
         //given
         Pet savedBello = petService.save(bello);
         Pet savedKitty = petService.save(kitty);
         Pet savedBella = petService.save(bella);
 
-        Owner savedKahn = getServiceUnderTest().save(kahn);
         kahn.setPets(new HashSet<>(Lists.newArrayList(savedBello,savedKitty,savedBella)));
+        Owner savedKahn = getServiceUnderTest().save(kahn);
+
 
         Owner removePetUpdate = new Owner();
         // explicitly set empty list instead of null
@@ -314,21 +350,51 @@ class OwnerServiceIntegrationTest
     }
 
     @Test
-    public void canDeleteAllPetsFromOwner_viaPartialUpdate() throws BadEntityException, EntityNotFoundException, BadEntityException {
+    public void canUnlinkAllPetsFromOwner_viaPartialUpdate() throws BadEntityException, EntityNotFoundException, BadEntityException {
         //given
         Pet savedBello = petService.save(bello);
         Pet savedKitty = petService.save(kitty);
 
-        Owner savedKahn = getServiceUnderTest().save(kahn);
         kahn.setPets(new HashSet<>(Lists.newArrayList(savedBello,savedKitty)));
+        Owner savedKahn = getServiceUnderTest().save(kahn);
 
-        Owner removePetUpdate = new Owner();
+
+        Owner removePetsUpdate = new Owner();
         // explicitly set empty list instead of null
-        removePetUpdate.setPets(new HashSet<>());
-        removePetUpdate.setId(savedKahn.getId());
+        removePetsUpdate.setPets(new HashSet<>());
+        removePetsUpdate.setId(savedKahn.getId());
 
         //when
-        test(partialUpdate(removePetUpdate))
+        test(partialUpdate(removePetsUpdate))
+                .andExpect(() -> propertyAssert(resolve(DB_ENTITY))
+                        .assertMatchSize(OwnerType::getPets, 0)
+                );
+
+        // verify bidir rel management
+        Pet dbBello = petRepository.findByName(BELLO).get();
+        Pet dbKitty = petRepository.findByName(KITTY).get();
+        Owner dbKahn = ownerRepository.findByLastName(KAHN).get();
+        // check if bidir relation ships were managed
+        Assertions.assertNull(dbKitty.getOwner());
+        Assertions.assertNull(dbBello.getOwner());
+    }
+
+    @Test
+    public void canUnlinkAllPetsFromOwner_viaFullUpdate() throws BadEntityException, EntityNotFoundException, BadEntityException, InvocationTargetException, NoSuchMethodException, InstantiationException, IllegalAccessException {
+        //given
+        Pet savedBello = petService.save(bello);
+        Pet savedKitty = petService.save(kitty);
+
+        kahn.setPets(new HashSet<>(Lists.newArrayList(savedBello,savedKitty)));
+        Owner savedKahn = getServiceUnderTest().save(kahn);
+
+
+        Owner removePetsUpdate = (Owner) BeanUtilsBean.getInstance().cloneBean(savedKahn);
+        // explicitly set empty list instead of null
+        removePetsUpdate.setPets(new HashSet<>());
+
+        //when
+        test(update(removePetsUpdate))
                 .andExpect(() -> propertyAssert(resolve(DB_ENTITY))
                         .assertMatchSize(OwnerType::getPets, 0)
                 );
