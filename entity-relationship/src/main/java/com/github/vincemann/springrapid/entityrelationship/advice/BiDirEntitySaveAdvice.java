@@ -34,10 +34,13 @@ public class BiDirEntitySaveAdvice {
             "com.github.vincemann.springrapid.core.advice.SystemArchitecture.repoOperation() && " +
             "args(biDirChild)")
     public void prePersistBiDiChild(BiDirChild biDirChild) {
-//        if(((IdentifiableEntity) biDirChild).getId()==null) {
+        if(((IdentifiableEntity) biDirChild).getId()==null) {
             log.debug("pre persist biDirChild hook reached for: " + biDirChild);
             setParentsChildRef(biDirChild);
-//        }
+        }else {
+            // need to replace child here for update parent situation (replace detached child with session attached child (this))
+            replaceParentsChildRef(biDirChild);
+        }
     }
 
     private void setChildrensParentRef(BiDirParent biDirParent){
@@ -53,6 +56,13 @@ public class BiDirEntitySaveAdvice {
         }
     }
 
+    private void replaceParentsChildRef(BiDirChild biDirChild) {
+        //set backreferences
+        for (BiDirParent parent : biDirChild.findBiDirParents()) {
+            parent.dismissBiDirChild(biDirChild);
+            parent.addBiDirChild(biDirChild);
+        }
+    }
 
     private void setParentsChildRef(BiDirChild biDirChild) {
         //set backreferences
