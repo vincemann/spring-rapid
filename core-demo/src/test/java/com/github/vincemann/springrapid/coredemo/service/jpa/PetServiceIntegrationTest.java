@@ -35,7 +35,7 @@ class PetServiceIntegrationTest
 
 
     @Test
-    public void canSavePet_withSavedPetType() throws BadEntityException {
+    public void canSavePet() throws BadEntityException {
         test(save(bello))
                 .andExpect(() -> compare(bello)
                         .with(resolve(EntityPlaceholder.DB_ENTITY))
@@ -46,7 +46,7 @@ class PetServiceIntegrationTest
     }
 
     @Test
-    public void canSavePet_toSavedOwner() throws BadEntityException {
+    public void canLinkPetToOwner_viaSave() throws BadEntityException {
         Owner savedKahn = ownerService.save(kahn);
         bello.setOwner(savedKahn);
 
@@ -67,7 +67,7 @@ class PetServiceIntegrationTest
     }
 
     @Test
-    public void canDeletePet_fromOwner() throws BadEntityException {
+    public void canDeletePet_thusGetUnlinkedFromOwner() throws BadEntityException {
         Owner savedKahn = ownerService.save(kahn);
         bello.setOwner(savedKahn);
         Pet savedBello = getServiceUnderTest().save(bello);

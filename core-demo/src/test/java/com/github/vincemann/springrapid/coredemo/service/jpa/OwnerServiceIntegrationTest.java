@@ -391,7 +391,7 @@ class OwnerServiceIntegrationTest
     }
 
     @Test
-    public void canDeleteOwner_withPet() throws BadEntityException {
+    public void canDeleteOwnerWithPet_thusUnlinkPet() throws BadEntityException {
         kahn.setPets(new HashSet<>(Lists.newArrayList(bello)));
         Owner savedOwner = getServiceUnderTest().save(kahn);
 
