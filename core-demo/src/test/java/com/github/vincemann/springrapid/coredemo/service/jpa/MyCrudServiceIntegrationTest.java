@@ -32,6 +32,7 @@ public class MyCrudServiceIntegrationTest <
     protected static final String KAHN = "Kahn";
 
     protected static final String BELLO = "Bello";
+    protected static final String BELLA = "Bella";
     protected static final String KITTY = "Kitty";
 
     Owner meier;
@@ -39,6 +40,7 @@ public class MyCrudServiceIntegrationTest <
 
     Pet bello;
     Pet kitty;
+    Pet bella;
 
     PetType savedDogPetType;
     PetType savedCatPetType;
@@ -67,6 +69,12 @@ public class MyCrudServiceIntegrationTest <
         bello = Pet.builder()
                 .petType(savedDogPetType)
                 .name(BELLO)
+                .birthDate(LocalDate.now())
+                .build();
+
+        bella = Pet.builder()
+                .petType(savedDogPetType)
+                .name(BELLA)
                 .birthDate(LocalDate.now())
                 .build();
 
