@@ -42,7 +42,6 @@ public class BiDirEntityUpdateAdvice {
         this.serviceLocator = serviceLocator;
     }
 
-    // todo gets called twice for AclExtension -> make sure to skip joinPoint if target is Extension
     @Before(value = "com.github.vincemann.springrapid.core.advice.SystemArchitecture.updateOperation() && " +
             "com.github.vincemann.springrapid.core.advice.SystemArchitecture.serviceOperation() && " +
             "args(biDirChild,full)")
@@ -52,6 +51,44 @@ public class BiDirEntityUpdateAdvice {
                 log.debug("ignoring update advice, bc root service not called yet");
                 return;
             }
+            if (((IdentifiableEntity) biDirChild).getId() != null && !full) {
+                log.debug("detected update operation for BiDirChild: " + biDirChild + ", running preUpdateAdvice logic");
+                updateBiDirChildRelations(biDirChild);
+            }// else ignore, bc it is save operation not update
+        } catch (IllegalAccessException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+//    @Before(value = "com.github.vincemann.springrapid.core.advice.SystemArchitecture.updateOperation() && " +
+//            "com.github.vincemann.springrapid.core.advice.SystemArchitecture.serviceOperation() && " +
+//            "args(biDirParent,full)")
+//    public void preUpdateBiDirParent(JoinPoint joinPoint, BiDirParent biDirParent, Boolean full) throws EntityNotFoundException, BadEntityException {
+//        try {
+//            if (!isRootService(joinPoint)) {
+//                log.debug("ignoring update advice, bc root service not called yet");
+//                return;
+//            }
+//            if (((IdentifiableEntity) biDirParent).getId() != null) {
+//                log.debug("detected update operation for BiDirParent: " + biDirParent + ", running preUpdateAdvice logic");
+//                updateBiDirParentRelations(biDirParent);
+//            } // else ignore, bc it is save operation not update
+//        } catch (IllegalAccessException e) {
+//            throw new RuntimeException(e);
+//        }
+//    }
+
+
+    // todo gets called twice for AclExtension -> make sure to skip joinPoint if target is Extension
+    @Before(value = "com.github.vincemann.springrapid.core.advice.SystemArchitecture.saveOperation() && " +
+            "com.github.vincemann.springrapid.core.advice.SystemArchitecture.repoOperation() && " +
+            "args(biDirChild)")
+    public void preUpdateBiDirChild(JoinPoint joinPoint, BiDirChild biDirChild) throws EntityNotFoundException, BadEntityException {
+        try {
+//            if (!isRootService(joinPoint)) {
+//                log.debug("ignoring update advice, bc root service not called yet");
+//                return;
+//            }
             if (((IdentifiableEntity) biDirChild).getId() != null) {
                 log.debug("detected update operation for BiDirChild: " + biDirChild + ", running preUpdateAdvice logic");
                 updateBiDirChildRelations(biDirChild);
@@ -61,15 +98,15 @@ public class BiDirEntityUpdateAdvice {
         }
     }
 
-    @Before(value = "com.github.vincemann.springrapid.core.advice.SystemArchitecture.updateOperation() && " +
-            "com.github.vincemann.springrapid.core.advice.SystemArchitecture.serviceOperation() && " +
-            "args(biDirParent,full)")
-    public void preUpdateBiDirParent(JoinPoint joinPoint, BiDirParent biDirParent, Boolean full) throws EntityNotFoundException, BadEntityException {
+    @Before(value = "com.github.vincemann.springrapid.core.advice.SystemArchitecture.saveOperation() && " +
+            "com.github.vincemann.springrapid.core.advice.SystemArchitecture.repoOperation() && " +
+            "args(biDirParent)")
+    public void preUpdateBiDirParent(JoinPoint joinPoint, BiDirParent biDirParent) throws EntityNotFoundException, BadEntityException {
         try {
-            if (!isRootService(joinPoint)) {
-                log.debug("ignoring update advice, bc root service not called yet");
-                return;
-            }
+//            if (!isRootService(joinPoint)) {
+//                log.debug("ignoring update advice, bc root service not called yet");
+//                return;
+//            }
             if (((IdentifiableEntity) biDirParent).getId() != null) {
                 log.debug("detected update operation for BiDirParent: " + biDirParent + ", running preUpdateAdvice logic");
                 updateBiDirParentRelations(biDirParent);
