@@ -29,7 +29,7 @@ import java.util.Optional;
 /**
  * Advice that keeps BiDirRelationships intact for {@link com.github.vincemann.springrapid.core.service.CrudService#deleteById(Serializable)} - operations.
  */
-public class BiDirEntityRemoveAdvice /*implements MethodInterceptor*/ {
+public class BiDirEntityRemoveAdvice {
 
     private CrudServiceLocator crudServiceLocator;
 
@@ -50,7 +50,6 @@ public class BiDirEntityRemoveAdvice /*implements MethodInterceptor*/ {
         }else {
             log.warn("preDelete BiDirEntity could not be done, because for id: " + id + " was no entity found");
         }
-//        return joinPoint.proceed();
     }
 
 
@@ -77,13 +76,13 @@ public class BiDirEntityRemoveAdvice /*implements MethodInterceptor*/ {
         return service.findById((id));
     }
 
+    // todo change, is curreently impl specific
     private Class resolveEntityClass(JoinPoint joinPoint) throws IllegalAccessException {
         SimpleJpaRepository repo = AopTestUtils.getUltimateTargetObject(joinPoint.getTarget());
         Field entityInformationField = ReflectionUtils.findField(SimpleJpaRepository.class, field -> field.getName().equals("entityInformation"));
         entityInformationField.setAccessible(true);
         JpaEntityInformation entityInformation = ((JpaEntityInformation) entityInformationField.get(repo));
         return entityInformation.getJavaType();
-//        return repo.getEntityClass();
     }
 
 }
