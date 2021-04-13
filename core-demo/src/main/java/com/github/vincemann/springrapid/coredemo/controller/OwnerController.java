@@ -17,10 +17,9 @@ public class OwnerController extends CrudController<Owner, Long, OwnerService> {
     @Override
     protected DtoMappingContext provideDtoMappingContext(CrudDtoMappingContextBuilder builder) {
         return builder
-                .forEndpoint(getCreateUrl(), CreateOwnerDto.class)
+
+                .forEndpoint(getCreateUrl(),CreateOwnerDto.class)
                 .forUpdate(UpdateOwnerDto.class)
-
-
                 //response dto config
                 //authenticated
                 .withPrincipal(DtoRequestInfo.Principal.OWN)
@@ -30,6 +29,11 @@ public class OwnerController extends CrudController<Owner, Long, OwnerService> {
                 //not authenticated
                 .withAllPrincipals()
                 .forResponse(ReadForeignOwnerDto.class)
+
+                // if you can update or create you can read all of the data
+                .forEndpoint(getCreateUrl(),Direction.RESPONSE,ReadOwnOwnerDto.class)
+                .forEndpoint(getUpdateUrl(),Direction.RESPONSE,ReadOwnOwnerDto.class)
+
                 .build();
     }
 

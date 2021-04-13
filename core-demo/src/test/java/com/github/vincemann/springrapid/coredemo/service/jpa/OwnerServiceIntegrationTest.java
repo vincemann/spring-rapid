@@ -159,7 +159,7 @@ class OwnerServiceIntegrationTest
 
 
     @Test
-    public void canAddAnotherSavedPetToOwner_viaPartialUpdate() throws BadEntityException, EntityNotFoundException, BadEntityException {
+    public void canLinkAnotherSavedPetToOwner_viaPartialUpdate() throws BadEntityException, EntityNotFoundException, BadEntityException {
         //given
         Pet savedBello = petService.save(bello);
         Pet savedKitty = petService.save(kitty);
@@ -193,7 +193,7 @@ class OwnerServiceIntegrationTest
     }
 
     @Test
-    public void canAddAnotherSavedPetToOwner_viaFullUpdate() throws BadEntityException, EntityNotFoundException, BadEntityException, InvocationTargetException, NoSuchMethodException, InstantiationException, IllegalAccessException {
+    public void canLinkAnotherSavedPetToOwner_viaFullUpdate() throws BadEntityException, EntityNotFoundException, BadEntityException, InvocationTargetException, NoSuchMethodException, InstantiationException, IllegalAccessException {
         //given
         Pet savedBello = petService.save(bello);
         Pet savedKitty = petService.save(kitty);
@@ -224,7 +224,7 @@ class OwnerServiceIntegrationTest
     }
 
     @Test
-    public void canAddMultipleSavedPetsToOwner_viaPartialUpdate() throws BadEntityException, EntityNotFoundException, BadEntityException {
+    public void canLinkMultipleSavedPetsToOwner_viaPartialUpdate() throws BadEntityException, EntityNotFoundException, BadEntityException {
         //given
         Pet savedBello = petService.save(bello);
         Pet savedKitty = petService.save(kitty);
@@ -254,7 +254,7 @@ class OwnerServiceIntegrationTest
     }
 
     @Test
-    public void canUnlinkOnlyPetFromOwner_viaPartialUpdate() throws BadEntityException, EntityNotFoundException, BadEntityException {
+    public void canUnlinkLastPetFromOwner_viaPartialUpdate() throws BadEntityException, EntityNotFoundException, BadEntityException {
         //given
         Pet savedBello = petService.save(bello);
 
