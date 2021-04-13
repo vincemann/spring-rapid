@@ -11,14 +11,10 @@ import com.github.vincemann.springrapid.core.service.exception.EntityNotFoundExc
 import com.github.vincemann.springrapid.core.service.locator.CrudServiceLocator;
 import lombok.extern.slf4j.Slf4j;
 import org.aspectj.lang.JoinPoint;
-import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Before;
 import org.springframework.aop.support.AopUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.annotation.Order;
-import org.springframework.data.util.ProxyUtils;
-import org.springframework.test.util.AopTestUtils;
 
 import javax.transaction.Transactional;
 import java.io.Serializable;
@@ -153,12 +149,12 @@ public class BiDirEntityUpdateAdvice {
 
         //dismiss removed Parents Children
         for (BiDirParent removedParent : removedParents) {
-            removedParent.dismissBiDirChild(newBiDirChild);
+            removedParent.unlinkBiDirChild(newBiDirChild);
         }
 
         //add added Parent to child
         for (BiDirParent addedParent : addedParents) {
-            addedParent.addBiDirChild(newBiDirChild);
+            addedParent.linkBiDirChild(newBiDirChild);
         }
     }
 
@@ -211,13 +207,13 @@ public class BiDirEntityUpdateAdvice {
         //dismiss removed Children from newParent
         for (BiDirChild removedChild : removedChildren) {
             log.debug("dismissing child: " + removedChild + " from parent: " + newBiDirParent);
-            removedChild.dismissBiDirParent(oldBiDirParent);
+            removedChild.unlinkBiDirParent(oldBiDirParent);
         }
 
         //add added Children to newParent
         for (BiDirChild addedChild : addedChildren) {
             log.debug("adding child: " + addedChild + " to parent: " + newBiDirParent);
-            addedChild.addBiDirParent(newBiDirParent);
+            addedChild.linkBiDirParent(newBiDirParent);
         }
     }
 }

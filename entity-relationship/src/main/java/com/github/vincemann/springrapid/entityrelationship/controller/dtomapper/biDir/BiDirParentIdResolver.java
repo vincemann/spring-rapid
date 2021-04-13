@@ -14,7 +14,6 @@ import com.github.vincemann.springrapid.core.service.locator.CrudServiceLocator;
 import com.github.vincemann.springrapid.entityrelationship.model.child.annotation.BiDirChildEntity;
 
 import java.io.Serializable;
-import java.util.AbstractMap;
 import java.util.Collection;
 import java.util.Map;
 
@@ -68,7 +67,7 @@ public class BiDirParentIdResolver extends EntityIdResolver<BiDirParent, BiDirPa
         try {
             BiDirChild biDirChild = ((BiDirChild) child);
             //set child of mapped parent
-            mappedBiDirParent.addBiDirChild(biDirChild);
+            mappedBiDirParent.linkBiDirChild(biDirChild);
             //backreference gets set in BiDirParentListener
         } catch (ClassCastException e) {
             throw new IllegalArgumentException("Found Child " + child + " is not of Type BiDirChild");

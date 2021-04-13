@@ -31,7 +31,7 @@ public class UniDirChildIdResolver extends EntityIdResolver<UniDirChild, UniDirC
             UniDirParent parent = findEntityFromService((Class<IdentifiableEntity>) entityClass, entry.getValue());
             try {
                 //set parent of mapped child
-                mappedUniDirChild.addUniDirParent(parent);
+                mappedUniDirChild.linkUniDirParent(parent);
                 //dont set backref, because Parent does not know about Child (uniDir)
             } catch (ClassCastException e) {
                 throw new IllegalArgumentException("Found Parent " + parent + " is not of Type UniDirParent");

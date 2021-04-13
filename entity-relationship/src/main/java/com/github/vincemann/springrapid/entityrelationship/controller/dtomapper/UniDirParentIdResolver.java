@@ -31,7 +31,7 @@ public class UniDirParentIdResolver extends EntityIdResolver<UniDirParent, UniDi
         for (Map.Entry<Class<UniDirChild>, Serializable> entry : childTypeIdMappings.entrySet()) {
             Class entityClass = entry.getKey();
             UniDirChild child = findEntityFromService((Class<IdentifiableEntity>) entityClass, entry.getValue());
-            mappedUniDirParent.addUniDirChild(child);
+            mappedUniDirParent.linkUniDirChild(child);
         }
         //find and handle children collections
         Map<Class<UniDirChild>, Collection<Serializable>> childTypeIdCollectionMappings = uniDirParentDto.findAllUniDirChildIdCollections();
@@ -40,7 +40,7 @@ public class UniDirParentIdResolver extends EntityIdResolver<UniDirParent, UniDi
             for (Serializable id : idCollection) {
                 Class entityClass = entry.getKey();
                 UniDirChild child = findEntityFromService((Class<IdentifiableEntity>)entityClass, id);
-                mappedUniDirParent.addUniDirChild(child);
+                mappedUniDirParent.linkUniDirChild(child);
             }
         }
     }

@@ -6,9 +6,11 @@ import com.github.vincemann.springrapid.core.service.CrudService;
 import com.github.vincemann.springrapid.core.service.exception.BadEntityException;
 import com.github.vincemann.springrapid.core.service.locator.CrudServiceLocator;
 import lombok.extern.slf4j.Slf4j;
+import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
+import org.aspectj.lang.annotation.Before;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.jpa.repository.support.JpaEntityInformation;
 import org.springframework.data.jpa.repository.support.SimpleJpaRepository;
@@ -38,36 +40,36 @@ public class BiDirEntityRemoveAdvice /*implements MethodInterceptor*/ {
     }
 
 
-    @Around("com.github.vincemann.springrapid.core.advice.SystemArchitecture.deleteOperation() && " +
+    @Before("com.github.vincemann.springrapid.core.advice.SystemArchitecture.deleteOperation() && " +
             "com.github.vincemann.springrapid.core.advice.SystemArchitecture.repoOperation() && " +
             "args(id)")
-    public Object preRemoveBiDirEntity(ProceedingJoinPoint joinPoint, Serializable id) throws Throwable {
-        Optional<Object> parent = resolveId(id, joinPoint);
+    public void preRemoveBiDirEntity(JoinPoint joinPoint, Serializable id) throws Throwable {
+        Optional<Object> parent = resolveById(id, joinPoint);
         if (parent.isPresent()){
             preRemoveEntity(parent.get());
         }else {
-            log.warn("preDelete BiDirEntity could not be done, because for id: " + id + " was not entity found");
+            log.warn("preDelete BiDirEntity could not be done, because for id: " + id + " was no entity found");
         }
-        return joinPoint.proceed();
+//        return joinPoint.proceed();
     }
 
 
     private void preRemoveEntity(Object entity)  {
         if (BiDirParent.class.isAssignableFrom(entity.getClass())) {
             log.debug("applying pre remove BiDirParent logic for: " + entity.getClass());
-            ((BiDirParent) entity).dismissChildrensParent();
+            ((BiDirParent) entity).unlinkChildrensParent();
         }
         if (BiDirChild.class.isAssignableFrom(entity.getClass())) {
             log.debug("applying pre remove BiDirChild logic for: " + entity);
             BiDirChild biDirChild = (BiDirChild) entity;
             for (BiDirParent parent : biDirChild.findBiDirParents()) {
-                parent.dismissBiDirChild(biDirChild);
+                parent.unlinkBiDirChild(biDirChild);
             }
-            biDirChild.dismissBiDirParents();
+            biDirChild.unlinkBiDirParents();
         }
     }
 
-    private Optional<Object> resolveId(Serializable id, ProceedingJoinPoint joinPoint) throws BadEntityException, IllegalAccessException {
+    private Optional<Object> resolveById(Serializable id, JoinPoint joinPoint) throws BadEntityException, IllegalAccessException {
         Class entityClass = resolveEntityClass(joinPoint);
         log.debug("pre remove hook reached for entity " + entityClass+":"+id);
         CrudService service = crudServiceLocator.find(entityClass);
@@ -75,7 +77,7 @@ public class BiDirEntityRemoveAdvice /*implements MethodInterceptor*/ {
         return service.findById((id));
     }
 
-    private Class resolveEntityClass(ProceedingJoinPoint joinPoint) throws IllegalAccessException {
+    private Class resolveEntityClass(JoinPoint joinPoint) throws IllegalAccessException {
         SimpleJpaRepository repo = AopTestUtils.getUltimateTargetObject(joinPoint.getTarget());
         Field entityInformationField = ReflectionUtils.findField(SimpleJpaRepository.class, field -> field.getName().equals("entityInformation"));
         entityInformationField.setAccessible(true);

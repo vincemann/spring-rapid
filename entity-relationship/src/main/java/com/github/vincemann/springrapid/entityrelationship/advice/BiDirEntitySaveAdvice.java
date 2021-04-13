@@ -6,7 +6,6 @@ import com.github.vincemann.springrapid.entityrelationship.model.parent.BiDirPar
 import lombok.extern.slf4j.Slf4j;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Before;
-import org.springframework.core.annotation.Order;
 
 import java.util.Collection;
 import java.util.Set;
@@ -47,12 +46,12 @@ public class BiDirEntitySaveAdvice {
     private void setChildrensParentRef(BiDirParent biDirParent){
         Set<? extends BiDirChild> children = biDirParent.findBiDirSingleChildren();
         for (BiDirChild child : children) {
-            child.addBiDirParent(biDirParent);
+            child.linkBiDirParent(biDirParent);
         }
         Set<Collection<BiDirChild>> childCollections = biDirParent.findAllBiDirChildCollections().keySet();
         for (Collection<BiDirChild> childCollection : childCollections) {
             for (BiDirChild biDirChild : childCollection) {
-                biDirChild.addBiDirParent(biDirParent);
+                biDirChild.linkBiDirParent(biDirParent);
             }
         }
     }
@@ -60,15 +59,15 @@ public class BiDirEntitySaveAdvice {
     private void replaceParentsChildRef(BiDirChild biDirChild) {
         //set backreferences
         for (BiDirParent parent : biDirChild.findBiDirParents()) {
-            parent.dismissBiDirChild(biDirChild);
-            parent.addBiDirChild(biDirChild);
+            parent.unlinkBiDirChild(biDirChild);
+            parent.linkBiDirChild(biDirChild);
         }
     }
 
     private void setParentsChildRef(BiDirChild biDirChild) {
         //set backreferences
         for (BiDirParent parent : biDirChild.findBiDirParents()) {
-            parent.addBiDirChild(biDirChild);
+            parent.linkBiDirChild(biDirChild);
         }
     }
 }
