@@ -17,7 +17,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 public interface DirChild {
     Logger log = LoggerFactory.getLogger(DirChild.class);
 
-    public default void addParent(DirParent parentToSet, Class<? extends Annotation> parentEntityAnnotationClass) throws UnknownParentTypeException {
+    public default void linkParent(DirParent parentToSet, Class<? extends Annotation> parentEntityAnnotationClass) throws UnknownParentTypeException {
         AtomicBoolean parentSet = new AtomicBoolean(false);
         EntityReflectionUtils.doWithAnnotatedFieldsOfType(parentToSet.getClass(),parentEntityAnnotationClass,getClass(),field -> {
             field.set(this, parentToSet);
@@ -28,7 +28,7 @@ public interface DirChild {
         }
     }
 
-    public default boolean addParentIfNull(DirParent parentToSet,Class<? extends Annotation> parentEntityAnnotationClass)  {
+    public default boolean linkParentNotSet(DirParent parentToSet, Class<? extends Annotation> parentEntityAnnotationClass)  {
         AtomicBoolean added = new AtomicBoolean(false);
         EntityReflectionUtils.doWithAnnotatedFieldsOfType(parentToSet.getClass(),parentEntityAnnotationClass,getClass(),field -> {
             if(field.get(this)==null) {
@@ -60,7 +60,7 @@ public interface DirChild {
      * @param parentToDelete
      * @throws UnknownParentTypeException thrown, if parentToDelete is of unknown type -> no field , annotated as {@link UniDirParentEntity}, with the most specific type of parentToDelete, exists in Child (this).
      */
-    public default void dismissParent(DirParent parentToDelete,Class<? extends Annotation> parentEntityAnnotationClass) throws UnknownParentTypeException {
+    public default void unlinkParent(DirParent parentToDelete, Class<? extends Annotation> parentEntityAnnotationClass) throws UnknownParentTypeException {
         AtomicBoolean parentRemoved = new AtomicBoolean(false);
         EntityReflectionUtils.doWithAnnotatedFields(parentEntityAnnotationClass,getClass(),field -> {
             DirParent parent = (DirParent) field.get(this);

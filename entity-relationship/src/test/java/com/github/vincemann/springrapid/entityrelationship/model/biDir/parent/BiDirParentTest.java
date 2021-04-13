@@ -73,7 +73,7 @@ class BiDirParentTest {
         testEntityParent.setEntityChild(testEntityChild);
         testEntityChild.setEntityParent(testEntityParent);
         //when
-        testEntityParent.dismissChildrensParent();
+        testEntityParent.unlinkChildrensParent();
         //then
         Assertions.assertNull(testEntityChild.getEntityParent());
         Assertions.assertNotNull(testEntityParent.getEntityChild());
@@ -84,7 +84,7 @@ class BiDirParentTest {
         testEntityParent.setSecondEntityChildSet(new HashSet<>(Lists.newArrayList(testSecondEntityChild)));
         testSecondEntityChild.setEntityParent(testEntityParent);
         //when
-        testEntityParent.dismissChildrensParent();
+        testEntityParent.unlinkChildrensParent();
         //then
         Assertions.assertFalse(testEntityParent.getSecondEntityChildSet().stream().findFirst().isPresent());
         Assertions.assertNull(testSecondEntityChild.getEntityParent());
@@ -97,7 +97,7 @@ class BiDirParentTest {
         testEntityParent.setEntityChild(testEntityChild);
         testEntityChild.setEntityParent(testEntityParent);
         //when
-        testEntityParent.dismissChildrensParent();
+        testEntityParent.unlinkChildrensParent();
         //then
         Assertions.assertFalse(testEntityParent.getSecondEntityChildSet().stream().findFirst().isPresent());
         Assertions.assertNull(testSecondEntityChild.getEntityParent());
@@ -108,7 +108,7 @@ class BiDirParentTest {
     @Test
     void addChild()  {
         //when
-        testEntityParent.addBiDirChild(testEntityChild);
+        testEntityParent.linkBiDirChild(testEntityChild);
         //then
         Assertions.assertSame(testEntityChild,testEntityParent.getEntityChild());
     }
@@ -118,7 +118,7 @@ class BiDirParentTest {
         //given
         Assertions.assertNotNull(testEntityParent.getSecondEntityChildSet());
         //when
-        testEntityParent.addBiDirChild(testSecondEntityChild);
+        testEntityParent.linkBiDirChild(testSecondEntityChild);
         //then
         Assertions.assertEquals(1,testEntityParent.getSecondEntityChildSet().size());
         Assertions.assertSame(testSecondEntityChild,testEntityParent.getSecondEntityChildSet().stream().findFirst().get());
@@ -128,7 +128,7 @@ class BiDirParentTest {
     void addChildToNullCollection_shouldAutoCreateCollectionAndWork()  {
         //given
         testEntityParent.setSecondEntityChildSet(null);
-        testEntityParent.addBiDirChild(testSecondEntityChild);
+        testEntityParent.linkBiDirChild(testSecondEntityChild);
         Assertions.assertEquals(testSecondEntityChild,testEntityParent.getSecondEntityChildSet().stream().findFirst().get());
     }
 
@@ -137,7 +137,7 @@ class BiDirParentTest {
         //given
         testEntityParent.setEntityChild(testEntityChild);
         //when
-        testEntityParent.dismissBiDirChild(testEntityChild);
+        testEntityParent.unlinkBiDirChild(testEntityChild);
         //then
         Assertions.assertNull(testEntityParent.getEntityChild());
     }
@@ -147,7 +147,7 @@ class BiDirParentTest {
         //given
         testEntityParent.setSecondEntityChildSet(new HashSet<>(Collections.singleton(testSecondEntityChild)));
         //when
-        testEntityParent.dismissBiDirChild(testSecondEntityChild);
+        testEntityParent.unlinkBiDirChild(testSecondEntityChild);
         //then
         Assertions.assertTrue(testEntityParent.getSecondEntityChildSet().isEmpty());
     }
@@ -162,7 +162,7 @@ class BiDirParentTest {
         secondEntityChildren.add(second);
         testEntityParent.setSecondEntityChildSet(secondEntityChildren);
         //when
-        testEntityParent.dismissBiDirChild(testSecondEntityChild);
+        testEntityParent.unlinkBiDirChild(testSecondEntityChild);
         //then
         Assertions.assertEquals(1,testEntityParent.getSecondEntityChildSet().size());
         Assertions.assertSame(second,testEntityParent.getSecondEntityChildSet().stream().findFirst().get());

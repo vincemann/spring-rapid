@@ -41,26 +41,9 @@ public interface DirParent {
             childCollection_childTypeMap.put(children, childType);
         });
         return childCollection_childTypeMap;
-
-//        Field[] collectionFields =findChildrenCollectionFields();
-//        for(Field field : collectionFields){
-//            field.setAccessible(true);
-//            Collection<? extends BiDirChild> biDirChildren = (Collection<? extends BiDirChild>) field.get(this);
-//            if(biDirChildren == null){
-//                //throw new IllegalArgumentException("Null idCollection found in BiDirParent "+ this + " for ChildCollectionField with name: " + field.getName());
-//                log.warn("Auto-generating Collection for nullIdCollection Field: " + field);
-//                Collection emptyCollection = CollectionUtils.createEmptyCollection(field);
-//                field.set(this,emptyCollection);
-//                biDirChildren=emptyCollection;
-//            }
-//            Class<? extends BiDirChild> collectionEntityType = field.getAnnotation(BiDirChildCollection.class).value();
-//            childCollection_childTypeMap.put(biDirChildren,collectionEntityType);
-//        }
-
-
     }
 
-    default void addChild(DirChild newChild, Class<? extends Annotation> childEntityAnnotationClass,Class<? extends Annotation> childEntityCollectionAnnotationClass) throws UnknownChildTypeException {
+    default void linkChild(DirChild newChild, Class<? extends Annotation> childEntityAnnotationClass, Class<? extends Annotation> childEntityCollectionAnnotationClass) throws UnknownChildTypeException {
         AtomicBoolean added = new AtomicBoolean(false);
         //add to matching child collections
         for (Map.Entry<Collection<DirChild>, Class<DirChild>> entry : this.<DirChild>findAllChildCollections(childEntityCollectionAnnotationClass).entrySet()) {
@@ -82,22 +65,9 @@ public interface DirParent {
         if (!added.get()) {
             throw new UnknownChildTypeException(getClass(), newChild.getClass());
         }
-
-//       Field[] entityFields = findChildrenEntityFields();
-//       for(Field childField: entityFields) {
-//           if (childField.getType().equals(newChild.getClass())) {
-//               childField.setAccessible(true);
-//               BiDirChild oldChild = (BiDirChild) childField.get(this);
-//               if (oldChild != null) {
-//                    log.warn("Overriding old child: "+oldChild+" with new Child "+newChild+" of parent "+this);
-//               }
-//               childField.set(this,newChild);
-//               addedChild.set(true);
-//           }
-//       }
     }
 
-    default void dismissChild(DirChild childToRemove,Class<? extends Annotation> childEntityAnnotationClass,Class<? extends Annotation> childEntityCollectionAnnotationClass) throws UnknownChildTypeException{
+    default void unlinkChild(DirChild childToRemove, Class<? extends Annotation> childEntityAnnotationClass, Class<? extends Annotation> childEntityCollectionAnnotationClass) throws UnknownChildTypeException{
         AtomicBoolean deleted = new AtomicBoolean(false);
         for (Map.Entry<Collection<DirChild>, Class<DirChild>> entry : this.<DirChild>findAllChildCollections(childEntityCollectionAnnotationClass).entrySet()) {
             Collection<DirChild> childrenCollection = entry.getKey();
@@ -140,7 +110,6 @@ public interface DirParent {
 
     default <C extends DirChild> Set<C> findSingleChildren(Class<? extends Annotation> childEntityAnnotationClass){
         Set<C> children = new HashSet<>();
-        //        Field[] collectionFields =findChildrenCollectionFields();
         EntityReflectionUtils.doWithAnnotatedFields(childEntityAnnotationClass,getClass(),field -> {
             C child = (C) field.get(this);
             if(child == null){
@@ -150,18 +119,5 @@ public interface DirParent {
             children.add(child);
         });
         return children;
-//        Set<C> children = new HashSet<>();
-//
-//        Field[] entityFields = _findChildrenEntityFields();
-//        for (Field field : entityFields) {
-//            field.setAccessible(true);
-//            Object child = field.get(this);
-//            if (child == null) {
-//                //skip
-//                continue;
-//            }
-//            children.add(child);
-//        }
-//        return children;
     }
 }

@@ -10,27 +10,13 @@ import java.util.Collection;
  * Same as {@link BiDirChild} but for a unidirectional relationship.
  */
 public interface UniDirChild extends DirChild {
-//    Logger log = LoggerFactory.getLogger(UniDirChild.class);
-//    Map<Class, Field[]> uniDirParentFieldsCache = new HashMap<>();
 
     /**
      * @param parentToSet
      * @throws UnknownParentTypeException when supplied Parent does not match any of the fields in child class anntoated with {@link UniDirParentEntity}
      */
-    public default void addUniDirParent(UniDirParent parentToSet) throws UnknownParentTypeException {
-        addParent(parentToSet, UniDirParentEntity.class);
-
-//        AtomicBoolean parentSet = new AtomicBoolean(false);
-//        for(Field parentField: _findParentFields()){
-//            if(parentToSet.getClass().equals(parentField.getType())){
-//                parentField.setAccessible(true);
-//                parentField.set(this,parentToSet);
-//                parentSet.set(true);
-//            }
-//        }
-//        if(!parentSet.get()){
-//            throw new UnknownParentTypeException(this.getClass(),parentToSet.getClass());
-//        }
+    public default void linkUniDirParent(UniDirParent parentToSet) throws UnknownParentTypeException {
+        linkParent(parentToSet, UniDirParentEntity.class);
     }
 
 
@@ -43,33 +29,9 @@ public interface UniDirChild extends DirChild {
      * @param parentToSet
      * @return true, if parent was null and is set to {@param parentToSet}, otherwise false
      */
-    public default boolean addUniDirParentIfNull(UniDirParent parentToSet) {
-        return addParentIfNull(parentToSet,UniDirParentEntity.class);
-//        for(Field parentField: _findParentFields()){
-//            if(parentToSet.getClass().equals(parentField.getType())){
-//                parentField.setAccessible(true);
-//                if(parentField.get(this)==null) {
-//                    parentField.set(this, parentToSet);
-//                }
-//            }
-//        }
-//        return parentSet.get();
+    public default boolean linkUniDirParentIfNonePresent(UniDirParent parentToSet) {
+        return linkParentNotSet(parentToSet,UniDirParentEntity.class);
     }
-
-//    /**
-//     * Find all fields of this child, annotated with {@link UniDirParentEntity}
-//     * @return
-//     */
-//    public default Field[] _findParentFields(){
-//        Field[] parentFieldsFromCache = uniDirParentFieldsCache.get(this.getClass());
-//        if(parentFieldsFromCache==null){
-//            Field[] parentFields = ReflectionUtilsBean.getInstance().getFieldsWithAnnotation(getClass(), UniDirParentEntity.class);
-//            uniDirParentFieldsCache.put(this.getClass(),parentFields);
-//            return parentFields;
-//        }else {
-//            return parentFieldsFromCache;
-//        }
-//    }
 
 
     /**
@@ -77,16 +39,6 @@ public interface UniDirChild extends DirChild {
      */
     public default Collection<UniDirParent> findUniDirParents() {
         return findParents(UniDirParentEntity.class);
-//        Collection result = new ArrayList<>();
-//        Field[] parentFields = _findParentFields();
-//        for (Field parentField : parentFields) {
-//            parentField.setAccessible(true);
-//            Object uniDirParent = parentField.get(this);
-//            if (uniDirParent != null) {
-//                result.add(uniDirParent);
-//            }
-//        }
-//        return result;
     }
 
     /**
@@ -96,21 +48,7 @@ public interface UniDirChild extends DirChild {
      * @param parentToDelete
      * @throws UnknownParentTypeException thrown, if parentToDelete is of unknown type -> no field , annotated as {@link UniDirParentEntity}, with the most specific type of parentToDelete, exists in Child (this).
      */
-    public default void dismissUniDirParent(UniDirParent parentToDelete) throws UnknownParentTypeException {
-        dismissParent(parentToDelete,UniDirParentEntity.class);
-//        Field[] parentFields = _findParentFields();
-//        for (Field parentField : parentFields) {
-//            parentField.setAccessible(true);
-//            UniDirParent parent = (UniDirParent) parentField.get(this);
-//            if (parent != null) {
-//                if (parentToDelete.getClass().equals(parent.getClass())) {
-//                    parentField.set(this, null);
-//                    parentRemoved.set(true);
-//                }
-//            }
-//        }
-//        if (!parentRemoved.get()) {
-//            throw new UnknownParentTypeException(this.getClass(), parentToDelete.getClass());
-//        }
+    public default void unlinkUniDirParent(UniDirParent parentToDelete) throws UnknownParentTypeException {
+        unlinkParent(parentToDelete,UniDirParentEntity.class);
     }
 }

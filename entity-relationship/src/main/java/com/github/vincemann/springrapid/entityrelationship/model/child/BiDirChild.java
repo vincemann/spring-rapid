@@ -25,29 +25,18 @@ public interface BiDirChild extends DirChild {
      * @param parentToSet
      * @throws UnknownParentTypeException   when supplied Parent does not match any of the fields in child class anntoated with {@link BiDirParentEntity}
      */
-    public default void addBiDirParent(BiDirParent parentToSet) throws UnknownParentTypeException {
-       addParent(parentToSet,BiDirParentEntity.class);
-//        AtomicBoolean parentSet = new AtomicBoolean(false);
-//        for(Field parentField: findParentFields()){
-//            if(parentToSet.getClass().equals(parentField.getType())){
-//                parentField.setAccessible(true);
-//                parentField.set(this,parentToSet);
-//                parentSet.set(true);
-//            }
-//        }
-//        if(!parentSet.get()){
-//            throw new UnknownParentTypeException(this.getClass(),parentToSet.getClass());
-//        }
+    public default void linkBiDirParent(BiDirParent parentToSet) throws UnknownParentTypeException {
+       linkParent(parentToSet,BiDirParentEntity.class);
     }
 
     /**
      * Adds this child to its parents
      */
-    public default void addToBiDirParents(){
+    public default void linkToBiDirParents(){
         Collection<BiDirParent> parents = findBiDirParents();
         for(BiDirParent parent: parents){
             if(parent!=null) {
-                parent.addBiDirChild(this);
+                parent.linkBiDirChild(this);
             }else {
                 log.warn("found null parent of biDirChild with type: "+ getClass().getSimpleName());
             }
@@ -60,33 +49,11 @@ public interface BiDirChild extends DirChild {
      * @param parentToSet
      * @return  true, if parent was null and set
      */
-    public default boolean addBiDirParentIfNull(BiDirParent parentToSet)  {
-       return addParentIfNull(parentToSet,BiDirParentEntity.class);
-//        for(Field parentField: findParentFields()){
-//            if(parentToSet.getClass().equals(parentField.getType())){
-//                parentField.setAccessible(true);
-//                if(parentField.get(this)==null) {
-//                    parentField.set(this, parentToSet);
-//                }
-//            }
-//        }
-//        return parentSet.get();
+    public default boolean linkBiDirParentIfNonePresent(BiDirParent parentToSet)  {
+       return linkParentNotSet(parentToSet,BiDirParentEntity.class);
     }
 
-//    /**
-//     * Find all fields of this child, annotated with {@link BiDirParentEntity}
-//     * @return
-//     */
-//    public default Field[] findParentFields(){
-//        Field[] parentFieldsFromCache = biDirParentFieldsCache.get(this.getClass());
-//        if(parentFieldsFromCache==null){
-//            Field[] parentFields = ReflectionUtilsBean.getInstance().getFieldsWithAnnotation(getClass(), BiDirParentEntity.class);
-//            biDirParentFieldsCache.put(this.getClass(),parentFields);
-//            return parentFields;
-//        }else {
-//            return parentFieldsFromCache;
-//        }
-//    }
+
 
 
     /**
@@ -95,23 +62,13 @@ public interface BiDirChild extends DirChild {
      */
     public default Collection<BiDirParent> findBiDirParents() {
         return findParents(BiDirParentEntity.class);
-//        Collection<BiDirParent> result = new ArrayList<>();
-//        Field[] parentFields = findParentFields();
-//        for(Field parentField: parentFields) {
-//            parentField.setAccessible(true);
-//            BiDirParent biDirParent = (BiDirParent) parentField.get(this);
-//            if(biDirParent!=null) {
-//                result.add(biDirParent);
-//            }
-//        }
-//        return result;
     }
 
 
-    public default void dismissBiDirParents() throws UnknownChildTypeException, UnknownParentTypeException{
+    public default void unlinkBiDirParents() throws UnknownChildTypeException, UnknownParentTypeException{
         for(BiDirParent parent: findBiDirParents()){
             if(parent!=null) {
-                this.dismissBiDirParent(parent);
+                this.unlinkBiDirParent(parent);
             }else {
                 log.warn("Parent Reference of BiDirChild with type: "+getClass().getSimpleName()+" was not set when deleting -> parent was deleted before child");
             }
@@ -124,22 +81,7 @@ public interface BiDirChild extends DirChild {
      * @param parentToDelete
      * @throws UnknownParentTypeException   thrown, if parentToDelete is of unknown type -> no field , annotated as {@link BiDirParentEntity}, with the most specific type of parentToDelete, exists in Child (this).
      */
-    public default void dismissBiDirParent(BiDirParent parentToDelete) throws UnknownParentTypeException {
-        dismissParent(parentToDelete,BiDirParentEntity.class);
-//        AtomicBoolean parentRemoved = new AtomicBoolean(false);
-//        Field[] parentFields = findParentFields();
-//        for(Field parentField: parentFields){
-//            parentField.setAccessible(true);
-//            BiDirParent  parent = (BiDirParent) parentField.get(this);
-//            if(parent!=null) {
-//                if (parentToDelete.getClass().equals(parent.getClass())) {
-//                    parentField.set(this,null);
-//                    parentRemoved.set(true);
-//                }
-//            }
-//        }
-//        if(!parentRemoved.get()){
-//            throw new UnknownParentTypeException(this.getClass(),parentToDelete.getClass());
-//        }
+    public default void unlinkBiDirParent(BiDirParent parentToDelete) throws UnknownParentTypeException {
+        unlinkParent(parentToDelete,BiDirParentEntity.class);
     }
 }

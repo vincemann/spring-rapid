@@ -37,7 +37,7 @@ public class BiDirChildIdResolver extends EntityIdResolver<BiDirChild, BiDirChil
             try {
                 BiDirParent biDirParent = ((BiDirParent) parent);
                 //set parent of mapped child
-                mappedBiDirChild.addBiDirParent(biDirParent);
+                mappedBiDirChild.linkBiDirParent(biDirParent);
                 //backreference gets set in BiDirChildListener
             } catch (ClassCastException e) {
                 throw new IllegalArgumentException("Found Parent " + parent + " is not of Type BiDirParent");
