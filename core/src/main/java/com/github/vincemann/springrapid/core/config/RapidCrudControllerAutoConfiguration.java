@@ -1,6 +1,8 @@
 package com.github.vincemann.springrapid.core.config;
 
 import com.github.vincemann.springrapid.core.controller.CrudEndpointInfo;
+import com.github.vincemann.springrapid.core.controller.ExtendedRemoveJsonPatchStrategy;
+import com.github.vincemann.springrapid.core.controller.JsonPatchStrategy;
 import com.github.vincemann.springrapid.core.controller.idFetchingStrategy.IdFetchingStrategy;
 import com.github.vincemann.springrapid.core.controller.idFetchingStrategy.LongUrlParamIdFetchingStrategy;
 import com.github.vincemann.springrapid.core.controller.mergeUpdate.MergeUpdateStrategy;
@@ -35,6 +37,12 @@ public class RapidCrudControllerAutoConfiguration {
     @ConditionalOnMissingBean(MergeUpdateStrategy.class)
     public MergeUpdateStrategy mergeUpdateStrategy(){
         return new MergeUpdateStrategyImpl();
+    }
+
+    @Bean
+    @ConditionalOnMissingBean(JsonPatchStrategy.class)
+    public JsonPatchStrategy jsonPatchStrategy(){
+        return new ExtendedRemoveJsonPatchStrategy();
     }
 
 
