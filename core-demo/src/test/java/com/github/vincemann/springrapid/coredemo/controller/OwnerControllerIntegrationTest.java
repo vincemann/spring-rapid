@@ -4,6 +4,7 @@ import com.github.vincemann.springrapid.core.security.RapidAuthenticatedPrincipa
 import com.github.vincemann.springrapid.core.security.RapidSecurityContext;
 import com.github.vincemann.springrapid.core.util.Lists;
 import com.github.vincemann.springrapid.coredemo.dtos.owner.CreateOwnerDto;
+import com.github.vincemann.springrapid.coredemo.dtos.owner.ReadForeignOwnerDto;
 import com.github.vincemann.springrapid.coredemo.dtos.owner.ReadOwnOwnerDto;
 import com.github.vincemann.springrapid.coredemo.model.Owner;
 import com.github.vincemann.springrapid.coredemo.model.Pet;
@@ -15,6 +16,7 @@ import com.github.vincemann.springrapid.coredemo.service.OwnerService;
 import com.github.vincemann.springrapid.coredemo.service.PetService;
 import com.github.vincemann.springrapid.coredemo.service.PetTypeService;
 import com.github.vincemann.springrapid.coredemo.service.plugin.OwnerOfTheYearExtension;
+import com.github.vincemann.springrapid.coretest.TestPrincipal;
 import com.github.vincemann.springrapid.coretest.controller.urlparamid.IntegrationUrlParamIdControllerTest;
 import com.github.vincemann.springrapid.coretest.util.RapidTestUtil;
 import org.junit.jupiter.api.AfterEach;
@@ -246,11 +248,11 @@ public class OwnerControllerIntegrationTest
 
 
     @Test
-    public void canRemoveOnlyPetFromOwnerExplicitly_viaUpdate() throws Exception {
+    public void canRemoveOnlyPetFromOwner_viaRemoveAllPetsUpdate() throws Exception {
         Pet savedBello = petRepository.save(bello);
         ReadOwnOwnerDto createdKahnDto = saveOwnerLinkedToPets(kahn,savedBello.getId());
 
-        String updateJson = createUpdateJsonLine("remove", "/petIds", savedBello.getId().toString());
+        String updateJson = createUpdateJsonLine("remove", "/petIds");
         String jsonResponse = getMockMvc().perform(update(createUpdateJsonRequest(updateJson), createdKahnDto.getId())).andReturn().getResponse().getContentAsString();
         ReadOwnOwnerDto responseDto = deserialize(jsonResponse, ReadOwnOwnerDto.class);
         Assertions.assertTrue(responseDto.getPetIds().isEmpty());
@@ -259,6 +261,27 @@ public class OwnerControllerIntegrationTest
         Pet dbBello = petRepository.findByName(BELLO).get();
         Assertions.assertTrue(dbKahn.getPets().isEmpty());
         Assertions.assertNull(dbBello.getOwner());
+    }
+
+    @Test
+    public void canRemoveOneOfManyPetsFromOwner_viaUpdate() throws Exception {
+        Pet savedBello = petRepository.save(bello);
+        Pet savedKitty = petRepository.save(kitty);
+        ReadOwnOwnerDto createdKahnDto = saveOwnerLinkedToPets(kahn,savedBello.getId(),savedKitty.getId());
+
+        String updateJson = createUpdateJsonLine("remove", "/petIds",savedBello.getId().toString());
+        String jsonResponse = getMockMvc().perform(update(createUpdateJsonRequest(updateJson), createdKahnDto.getId())).andReturn().getResponse().getContentAsString();
+        ReadOwnOwnerDto responseDto = deserialize(jsonResponse, ReadOwnOwnerDto.class);
+        Assertions.assertTrue(responseDto.getPetIds().contains(savedKitty.getId()));
+        Assertions.assertEquals(1,responseDto.getPetIds().size());
+
+        Owner dbKahn = ownerRepository.findByLastName(KAHN).get();
+        Pet dbBello = petRepository.findByName(BELLO).get();
+        Pet dbKitty = petRepository.findByName(KITTY).get();
+        Assertions.assertEquals(dbKitty,dbKahn.getPets().stream().filter(pet -> pet.getName().equals(KITTY)).findFirst().get());
+        Assertions.assertEquals(1,dbKahn.getPets().size());
+        Assertions.assertNull(dbBello.getOwner());
+        Assertions.assertEquals(dbKahn,dbKitty.getOwner());
     }
 
     @Test
@@ -277,6 +300,56 @@ public class OwnerControllerIntegrationTest
         Assertions.assertEquals(dbBello,dbKahn.getPets().stream().filter(pet -> pet.getName().equals(BELLO)).findFirst().get());
         Assertions.assertEquals(dbKahn,dbBello.getOwner());
 
+    }
+
+    // FIND TESTS
+    @Test
+    public void canFindOwnOwner() throws Exception {
+        securityContext.login(TestPrincipal.withName(KAHN));
+        ReadOwnOwnerDto savedKahnDto = saveOwnerLinkedToPets(kahn);
+        ReadOwnOwnerDto responseDto = deserialize(getMockMvc().perform(find(savedKahnDto.getId()))
+                .andExpect(jsonPath("$.lastName").value(KAHN))
+                .andReturn().getResponse().getContentAsString(), ReadOwnOwnerDto.class);
+
+        compare(savedKahnDto).with(responseDto)
+                .properties().all()
+                .assertEqual();
+        Assertions.assertEquals(ReadOwnOwnerDto.DIRTY_SECRET,responseDto.getDirtySecret());
+
+        RapidSecurityContext.logout();
+    }
+
+    @Test
+    public void canFindOwnOwnerWithPets() throws Exception {
+        Pet savedBello = petRepository.save(bello);
+        Pet savedKitty = petRepository.save(kitty);
+        ReadOwnOwnerDto savedKahnDto = saveOwnerLinkedToPets(kahn,savedBello.getId(),savedKitty.getId());
+        securityContext.login(TestPrincipal.withName(KAHN));
+        ReadOwnOwnerDto responseDto = deserialize(getMockMvc().perform(find(savedKahnDto.getId()))
+                .andReturn().getResponse().getContentAsString(), ReadOwnOwnerDto.class);
+        Assertions.assertEquals(2,responseDto.getPetIds().size());
+        Assertions.assertTrue(responseDto.getPetIds().contains(savedBello.getId()));
+        Assertions.assertTrue(responseDto.getPetIds().contains(savedKitty.getId()));
+        RapidSecurityContext.logout();
+    }
+
+    @Test
+    public void anonCanFindForeignOwnOwner() throws Exception {
+        ReadOwnOwnerDto savedKahnDto = saveOwnerLinkedToPets(kahn);
+        getMockMvc().perform(find(savedKahnDto.getId()))
+                .andExpect(jsonPath("$.lastName").doesNotExist())
+                .andExpect(jsonPath("$.city").value(kahn.getCity()));
+        RapidSecurityContext.logout();
+    }
+
+    @Test
+    public void userCanFindForeignOwnOwner() throws Exception {
+        ReadOwnOwnerDto savedKahnDto = saveOwnerLinkedToPets(kahn);
+        securityContext.login(TestPrincipal.withName(MEIER));
+        getMockMvc().perform(find(savedKahnDto.getId()))
+                .andExpect(jsonPath("$.lastName").doesNotExist())
+                .andExpect(jsonPath("$.city").value(kahn.getCity()));
+        RapidSecurityContext.logout();
     }
 
 
