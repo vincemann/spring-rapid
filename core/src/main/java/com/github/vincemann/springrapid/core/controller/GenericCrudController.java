@@ -80,6 +80,7 @@ public abstract class GenericCrudController
     private DTOMappingContextBuilder dtoMappingContextBuilder;
     private DtoValidationStrategy dtoValidationStrategy;
     private MergeUpdateStrategy mergeUpdateStrategy;
+    private JsonPatchStrategy jsonPatchStrategy;
     private Class<E> entityClass;
 
 
@@ -149,7 +150,7 @@ public abstract class GenericCrudController
         beforeUpdate(dtoClass, id, patchString, request, response);
 
         Object patchDto = dtoMapper.mapToDto(saved, dtoClass);
-        patchDto = JsonUtils.applyPatch(saved,patchDto, patchString);
+        patchDto = jsonPatchStrategy.applyPatch(saved,patchDto, patchString);
         log.debug("finished patchDto: " + patchDto);
         dtoValidationStrategy.validate(patchDto);
         E patchEntity = dtoMapper.mapToEntity(patchDto, getEntityClass());
@@ -523,6 +524,11 @@ public abstract class GenericCrudController
     @Autowired
     public void injectMergeUpdateStrategy(MergeUpdateStrategy mergeUpdateStrategy) {
         this.mergeUpdateStrategy = mergeUpdateStrategy;
+    }
+
+    @Autowired
+    public void injectJsonPatchStrategy(JsonPatchStrategy jsonPatchStrategy) {
+        this.jsonPatchStrategy = jsonPatchStrategy;
     }
 
     @Autowired
