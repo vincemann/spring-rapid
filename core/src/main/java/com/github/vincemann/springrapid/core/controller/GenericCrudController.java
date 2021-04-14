@@ -149,7 +149,7 @@ public abstract class GenericCrudController
         beforeUpdate(dtoClass, id, patchString, request, response);
 
         Object patchDto = dtoMapper.mapToDto(saved, dtoClass);
-        patchDto = JsonUtils.applyPatch(patchDto, patchString);
+        patchDto = JsonUtils.applyPatch(saved,patchDto, patchString);
         log.debug("finished patchDto: " + patchDto);
         dtoValidationStrategy.validate(patchDto);
         E patchEntity = dtoMapper.mapToEntity(patchDto, getEntityClass());

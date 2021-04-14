@@ -47,6 +47,10 @@ public class RapidTestUtil {
         return "  {\"op\": \""+operation+"\", \"path\": \""+path+"\", \"value\": \""+value+"\"}";
     }
 
+    public static String createUpdateJsonLine(String operation, String path){
+        return "  {\"op\": \""+operation+"\", \"path\": \""+path+"\"}";
+    }
+
     public static String createUpdateJsonRequest(String... lines){
         StringBuilder sb = new StringBuilder()
                 .append("[\n" );
