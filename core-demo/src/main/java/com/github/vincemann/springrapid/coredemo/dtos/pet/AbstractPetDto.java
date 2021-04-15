@@ -19,7 +19,8 @@ import java.time.LocalDate;
 @AllArgsConstructor
 @NoArgsConstructor
 @ToString(callSuper = true)
-public abstract class AbstractPetDto extends IdentifiableEntityImpl<Long> implements UniDirParentDto, BiDirChildDto {
+public abstract class AbstractPetDto extends IdentifiableEntityImpl<Long>
+        implements UniDirParentDto, BiDirChildDto {
 
     @Size(min = 2, max = 20)
     private String name;

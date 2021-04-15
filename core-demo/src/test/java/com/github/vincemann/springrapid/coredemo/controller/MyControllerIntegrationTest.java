@@ -11,6 +11,7 @@ import com.github.vincemann.springrapid.core.service.CrudService;
 import com.github.vincemann.springrapid.coredemo.repo.OwnerRepository;
 import com.github.vincemann.springrapid.coredemo.repo.PetRepository;
 import com.github.vincemann.springrapid.coredemo.repo.PetTypeRepository;
+import com.github.vincemann.springrapid.coredemo.service.OwnerService;
 import com.github.vincemann.springrapid.coredemo.service.PetService;
 import com.github.vincemann.springrapid.coredemo.service.PetTypeService;
 import com.github.vincemann.springrapid.coredemo.service.plugin.OwnerOfTheYearExtension;
@@ -75,6 +76,8 @@ public abstract class MyControllerIntegrationTest<C extends GenericCrudControlle
 
     @Autowired
     RapidSecurityContext<RapidAuthenticatedPrincipal> securityContext;
+    @Autowired
+    OwnerService ownerService;
 
     @BeforeEach
     public void setupTestData() throws Exception {
@@ -121,7 +124,7 @@ public abstract class MyControllerIntegrationTest<C extends GenericCrudControlle
     @AfterEach
     void tearDown() {
         RapidTestUtil.clear(petService);
-        RapidTestUtil.clear(getService());
+        RapidTestUtil.clear(ownerService);
         RapidTestUtil.clear(petTypeService);
     }
 

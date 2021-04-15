@@ -8,10 +8,13 @@ import com.github.vincemann.springrapid.coredemo.model.PetType;
 import com.github.vincemann.springrapid.coredemo.repo.OwnerRepository;
 import com.github.vincemann.springrapid.coredemo.repo.PetRepository;
 import com.github.vincemann.springrapid.coredemo.repo.PetTypeRepository;
+import com.github.vincemann.springrapid.coredemo.service.OwnerService;
 import com.github.vincemann.springrapid.coredemo.service.PetService;
 import com.github.vincemann.springrapid.coredemo.service.PetTypeService;
 import com.github.vincemann.springrapid.coredemo.service.plugin.OwnerOfTheYearExtension;
 import com.github.vincemann.springrapid.coretest.service.AbstractCrudServiceIntegrationTest;
+import com.github.vincemann.springrapid.coretest.util.RapidTestUtil;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.mock.mockito.SpyBean;
@@ -60,6 +63,8 @@ public class MyCrudServiceIntegrationTest <
 
     @Autowired
     OwnerRepository ownerRepository;
+    @Autowired
+    OwnerService ownerService;
 
     @BeforeEach
     public void setupTestData() throws Exception {
@@ -100,5 +105,12 @@ public class MyCrudServiceIntegrationTest <
                 .telephone("12843723847324")
 //                .pets(new HashSet<>(Lists.newArrayList(bello)))
                 .build();
+    }
+
+    @AfterEach
+    void tearDown() {
+        RapidTestUtil.clear(petService);
+        RapidTestUtil.clear(ownerService);
+        RapidTestUtil.clear(petTypeService);
     }
 }
