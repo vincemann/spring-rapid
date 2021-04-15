@@ -1,6 +1,7 @@
 package com.github.vincemann.springrapid.entityrelationship.advice;
 
 import com.github.vincemann.springrapid.core.model.IdentifiableEntity;
+import com.github.vincemann.springrapid.entityrelationship.exception.UnknownChildTypeException;
 import com.github.vincemann.springrapid.entityrelationship.model.child.BiDirChild;
 import com.github.vincemann.springrapid.entityrelationship.model.parent.BiDirParent;
 import lombok.extern.slf4j.Slf4j;
@@ -86,6 +87,7 @@ public class BiDirEntitySaveAdvice {
     private void replaceParentsChildRef(BiDirChild biDirChild) {
         //set backreferences
         for (BiDirParent parent : biDirChild.findBiDirParents()) {
+            // check if BiDirChild is present before
             parent.unlinkBiDirChild(biDirChild);
             parent.linkBiDirChild(biDirChild);
         }

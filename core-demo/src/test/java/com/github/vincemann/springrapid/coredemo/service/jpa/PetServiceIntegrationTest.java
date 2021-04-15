@@ -15,6 +15,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import javax.transaction.Transactional;
 import java.lang.reflect.InvocationTargetException;
 import java.time.LocalDate;
 
@@ -141,6 +142,26 @@ class PetServiceIntegrationTest
         linkOwnerUpdate.setId(savedBello.getId());
 
         test(partialUpdate(linkOwnerUpdate));
+
+
+        // check if bidir relation ships were managed
+        Owner dbKahn = ownerRepository.findByLastName(KAHN).get();
+        Assertions.assertEquals(savedBello,dbKahn.getPets().stream().findFirst().get());
+
+        Pet dbBello = petRepository.findByName(BELLO).get();
+        Assertions.assertEquals(dbKahn,dbBello.getOwner());
+
+    }
+
+    @Test
+    public void canLinkOwnerToPet_viaFullUpdate() throws BadEntityException, InvocationTargetException, NoSuchMethodException, InstantiationException, IllegalAccessException {
+        Owner savedKahn = ownerService.save(kahn);
+        Pet savedBello = getServiceUnderTest().save(bello);
+
+        Pet updateOwner = (Pet) BeanUtilsBean.getInstance().cloneBean(savedBello);
+        updateOwner.setOwner(savedKahn);
+
+        test(update(updateOwner));
 
 
         // check if bidir relation ships were managed
