@@ -19,6 +19,33 @@ import java.util.Set;
  */
 public class BiDirEntitySaveAdvice {
 
+
+//    @Before("com.github.vincemann.springrapid.core.advice.SystemArchitecture.saveOperation() && " +
+//            "com.github.vincemann.springrapid.core.advice.SystemArchitecture.serviceOperation() && " +
+//            "args(biDirParent)")
+//    public void preServicePersistBiDirParent(BiDirParent biDirParent) {
+////        if(((IdentifiableEntity) biDirParent).getId()==null) {
+//        log.debug("pre persist biDirParent hook reached for: " + biDirParent);
+//        setChildrensParentRef(biDirParent);
+////        }
+//    }
+//
+//    @Before("com.github.vincemann.springrapid.core.advice.SystemArchitecture.saveOperation() && " +
+//            "com.github.vincemann.springrapid.core.advice.SystemArchitecture.serviceOperation() && " +
+//            "args(biDirChild)")
+//    public void preServicePersistBiDiChild(BiDirChild biDirChild) {
+//        if(((IdentifiableEntity) biDirChild).getId()==null) {
+//            log.debug("pre persist biDirChild hook reached for: " + biDirChild);
+//            setParentsChildRef(biDirChild);
+//        }
+//        else {
+//            // need to replace child here for update parent situation (replace detached child with session attached child (this))
+//            replaceParentsChildRef(biDirChild);
+//        }
+//    }
+
+
+
     @Before("com.github.vincemann.springrapid.core.advice.SystemArchitecture.saveOperation() && " +
             "com.github.vincemann.springrapid.core.advice.SystemArchitecture.repoOperation() && " +
             "args(biDirParent)")
