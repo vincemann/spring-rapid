@@ -1,5 +1,6 @@
 package com.github.vincemann.springrapid.coredemo.dtos.pet;
 
+import com.github.vincemann.springrapid.coredemo.model.Pet;
 import lombok.Builder;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
@@ -13,7 +14,7 @@ import java.time.LocalDate;
 
 @NoArgsConstructor
 @ToString(callSuper = true)
-public class BasePetDto extends AbstractPetDto {
+public class PetDto extends AbstractPetDto {
 
 
 
@@ -30,7 +31,16 @@ public class BasePetDto extends AbstractPetDto {
     }
 
     @Builder
-    public BasePetDto(@NotBlank @Size(min = 2, max = 20) String name, Long petTypeId, Long ownerId, LocalDate birthDate) {
+    public PetDto(@NotBlank @Size(min = 2, max = 20) String name, Long petTypeId, Long ownerId, LocalDate birthDate) {
         super(name, petTypeId, ownerId, birthDate);
+    }
+
+    public PetDto(Pet pet){
+        super(
+                pet.getName(),
+                pet.getPetType()==null? null: pet.getPetType().getId(),
+                pet.getOwner()==null? null: pet.getOwner().getId(),
+                pet.getBirthDate()
+        );
     }
 }

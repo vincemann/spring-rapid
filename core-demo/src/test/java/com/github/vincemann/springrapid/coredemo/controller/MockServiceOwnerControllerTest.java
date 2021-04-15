@@ -37,7 +37,7 @@ import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 
-public class OwnerControllerTest
+public class MockServiceOwnerControllerTest
         extends AutoMockUrlParamIdControllerTest<OwnerController,Long> {
 
     CreateOwnerDto createOwnerDto;

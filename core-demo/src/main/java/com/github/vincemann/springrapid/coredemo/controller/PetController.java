@@ -5,7 +5,7 @@ import com.github.vincemann.springrapid.core.controller.dto.mapper.context.CrudD
 import com.github.vincemann.springrapid.core.controller.dto.mapper.context.Direction;
 import com.github.vincemann.springrapid.core.controller.dto.mapper.context.DtoMappingContext;
 import com.github.vincemann.springrapid.core.slicing.WebController;
-import com.github.vincemann.springrapid.coredemo.dtos.pet.BasePetDto;
+import com.github.vincemann.springrapid.coredemo.dtos.pet.PetDto;
 import com.github.vincemann.springrapid.coredemo.dtos.pet.UpdatePetDto;
 import com.github.vincemann.springrapid.coredemo.model.Pet;
 import com.github.vincemann.springrapid.coredemo.service.PetService;
@@ -17,7 +17,7 @@ public class PetController extends CrudController<Pet, Long, PetService> {
     @Override
     protected DtoMappingContext provideDtoMappingContext(CrudDtoMappingContextBuilder builder) {
         return builder
-                .forAll(BasePetDto.class)
+                .forAll(PetDto.class)
                 .forEndpoint(getUpdateUrl(), Direction.REQUEST, UpdatePetDto.class)
                 .build();
     }
