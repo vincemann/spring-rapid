@@ -341,10 +341,10 @@ public class OwnerControllerIntegrationTest
         Pet savedBello = petRepository.save(bello);
         Pet savedKitty = petRepository.save(kitty);
         Pet savedBella = petRepository.save(bella);
-        ReadOwnOwnerDto createdKahnDto = saveOwnerLinkedToPets(kahn,savedBello.getId(),savedKitty.getId());
+        ReadOwnOwnerDto createdKahnDto = saveOwnerLinkedToPets(kahn,savedBello.getId(),savedKitty.getId(),savedBella.getId());
 
         String removeBelloJson = createUpdateJsonLine("remove", "/petIds",savedBello.getId().toString());
-        String removeKittyJson = createUpdateJsonLine("remove", "/petIds",savedBello.getId().toString());
+        String removeKittyJson = createUpdateJsonLine("remove", "/petIds",savedKitty.getId().toString());
         String removePetsJson = createUpdateJsonRequest(removeBelloJson, removeKittyJson);
 
         String jsonResponse = getMockMvc().perform(update(removePetsJson, createdKahnDto.getId())).andReturn().getResponse().getContentAsString();

@@ -10,12 +10,12 @@ import com.github.vincemann.springrapid.core.model.IdentifiableEntity;
 import com.github.vincemann.springrapid.core.service.exception.BadEntityException;
 import com.github.vincemann.springrapid.core.util.EntityCollectionUtils;
 import com.github.vincemann.springrapid.core.util.JsonUtils;
+import com.github.vincemann.springrapid.core.util.Lists;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.util.ReflectionUtils;
 
 import java.lang.reflect.Field;
-import java.util.Collection;
-import java.util.Optional;
+import java.util.*;
 
 import static com.github.vincemann.springrapid.core.util.ReflectionUtils.setFinal;
 
@@ -51,55 +51,97 @@ public class ExtendedRemoveJsonPatchStrategy implements JsonPatchStrategy {
         }
     }
 
-    private static JsonPatch createPatch(IdentifiableEntity savedEntity, JsonNode patchNode) throws Exception {
-        JsonNode operationNode = patchNode.findValue("op");
-        if (operationNode==null){
-            return JsonPatch.fromJson(patchNode);
-        }
-        String operation = operationNode.asText();
-        if (operation.equals("remove")) {
-            JsonNode valueNode = patchNode.findValue("value");
-            if (valueNode != null) {
-                log.debug("found update-remove operation with value set");
-                String value = valueNode.asText();
-                String path = patchNode.findValue("path").asText();
-                Field collectionField = ReflectionUtils.findField(savedEntity.getClass(),
-                        // Utils wont transform if not "...Ids" fieldname
-                        EntityCollectionUtils.transformDtoEntityIdCollectionFieldName(path.replace("/", "")));
-                collectionField.setAccessible(true);
+    private JsonPatch createPatch(IdentifiableEntity savedEntity, JsonNode patchNode) throws Exception {
+        Map<Collection, List<Integer>> removedIndicesMap = new HashMap<>();
 
-                int[] position = {-1};
-                Optional elementToDelete = Optional.empty();
-                if (EntityCollectionUtils.isEntityCollectionIdField(path.replace("/", ""))) {
-                    log.debug("removing from entity collection, value will be interpreted as id");
-                    Collection<? extends IdentifiableEntity> collection = (Collection) collectionField.get(savedEntity);
-                    elementToDelete = collection.stream()
-                            .peek(x -> position[0]++)  // increment every element encounter
-                            .filter(o -> o.getId().toString().equals(value))
-                            .findFirst();
-                } else {
-                    log.debug("removing from normal collection (assuming comparable by String Type)");
-                    Collection collection = (Collection) collectionField.get(savedEntity);
-                    elementToDelete = collection.stream()
-                            .peek(x -> position[0]++)  // increment every element encounter
-                            .filter(o -> o.toString().equals(value))
-                            .findFirst();
+        Iterator<JsonNode> iterator = patchNode.elements();
+        while (iterator.hasNext()){
+            JsonNode instructionNode = iterator.next();
+            JsonNode operationNode = instructionNode.findValue("op");
+            if (operationNode==null){
+                continue;
+            }
+            String operation = operationNode.asText();
+            if (operation.equals("remove")) {
+                JsonNode valueNode = instructionNode.findValue("value");
+                if (valueNode != null) {
+                    patchRemoveInstruction(instructionNode,valueNode,savedEntity,removedIndicesMap);
                 }
-
-                if (elementToDelete.isEmpty()) {
-                    throw new IllegalArgumentException("Element to delete: "+value+" not found");
-                }
-                int index = position[0];
-
-                log.debug("found index: " + index);
-                // modify JsonNode
-                TextNode pathNode = (TextNode) patchNode.findValue("path");
-                Field pathValueField = ReflectionUtils.findField(TextNode.class, "_value");
-                setFinal(pathValueField, pathNode, path + "/" + Long.toString(index));
-                return JsonPatch.fromJson(patchNode);
             }
         }
         return JsonPatch.fromJson(patchNode);
     }
+
+    private void patchRemoveInstruction(JsonNode instructionNode, JsonNode valueNode,IdentifiableEntity savedEntity, Map<Collection, List<Integer>> removedIndicesMap) throws Exception {
+        log.debug("found update-remove operation with value set");
+        String value = valueNode.asText();
+        String path = instructionNode.findValue("path").asText();
+        Field collectionField = ReflectionUtils.findField(savedEntity.getClass(),
+                // Utils wont transform if not "...Ids" fieldname
+                EntityCollectionUtils.transformDtoEntityIdCollectionFieldName(path.replace("/", "")));
+        collectionField.setAccessible(true);
+
+        int[] position = {-1};
+        Optional elementToDelete = Optional.empty();
+        Collection collection;
+        if (EntityCollectionUtils.isEntityCollectionIdField(path.replace("/", ""))) {
+            log.debug("removing from entity collection, value will be interpreted as id");
+            collection = (Collection) collectionField.get(savedEntity);
+            elementToDelete = ((Collection<? extends IdentifiableEntity>)collection).stream()
+                    .peek(x -> position[0]++)  // increment every element encounter
+                    .filter(o -> o.getId().toString().equals(value))
+                    .findFirst();
+        } else {
+            log.debug("removing from normal collection (assuming comparable by String Type)");
+            collection = (Collection) collectionField.get(savedEntity);
+            elementToDelete = collection.stream()
+                    .peek(x -> position[0]++)  // increment every element encounter
+                    .filter(o -> o.toString().equals(value))
+                    .findFirst();
+        }
+
+        if (elementToDelete.isEmpty()) {
+            throw new IllegalArgumentException("Element to delete: "+value+" not found");
+        }
+        int index = position[0];
+        List<Integer> removedIndices = getRemovedIndices(removedIndicesMap, collection);
+        int adjustedIndex = adjustIndex(index,removedIndices);
+        removedIndices.add(index);
+
+        log.debug("found index: " + index);
+        log.debug("adjusted index: " + adjustedIndex);
+        // modify JsonNode
+        TextNode pathNode = (TextNode) instructionNode.findValue("path");
+        Field pathValueField = ReflectionUtils.findField(TextNode.class, "_value");
+        setFinal(pathValueField, pathNode, path + "/" + Long.toString(adjustedIndex));
+    }
+
+    private List<Integer> getRemovedIndices(Map<Collection, List<Integer>> removedIndicesMap, Collection collection){
+        List<Integer> removedIndices = removedIndicesMap.get(collection);
+        if (removedIndices==null){
+            removedIndices = Lists.newArrayList();
+            removedIndicesMap.put(collection,removedIndices);
+        }
+        return removedIndices;
+    }
+
+    /**
+     *  When Json Patch performs multiple remove operations on one collection,
+     *  it performs the first, then the second on the already updated collection, which has lower size now.
+     *  But it also removes via index, so indices might change.
+     *  This function adjusts the index
+     */
+    private int adjustIndex(int index, List<Integer> removedIndices){
+        // find amount deleted elements before my index
+        int removedBeforeMe = 0;
+        for (Integer removedIndex : removedIndices) {
+            if (removedIndex<index){
+                removedBeforeMe++;
+            }
+        }
+        return index-removedBeforeMe;
+    }
+
+
 
 }
