@@ -25,8 +25,8 @@ public class ReadOwnOwnerDto extends ReadForeignOwnerDto {
     private String lastName;
 
     @Builder(builderMethodName = "Builder")
-    public ReadOwnOwnerDto(Set<Long> petIds, @Size(min = 10, max = 255) @NotBlank String address, @NotBlank String city, @Size(min = 10, max = 10) String telephone, String dirtySecret, @NotBlank @Size(min = 2, max = 20) String firstName, @NotBlank @Size(min = 2, max = 20) String lastName) {
-        super(petIds, address, city, telephone);
+    public ReadOwnOwnerDto(Set<Long> petIds, @Size(min = 10, max = 255) @NotBlank String address, @NotBlank String city, @Size(min = 10, max = 10) String telephone, String dirtySecret, @NotBlank @Size(min = 2, max = 20) String firstName, @NotBlank @Size(min = 2, max = 20) String lastName,Set<String> hobbies) {
+        super(petIds, address, city, telephone,hobbies);
         this.dirtySecret = dirtySecret;
         this.firstName = firstName;
         this.lastName = lastName;

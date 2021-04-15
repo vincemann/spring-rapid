@@ -20,10 +20,11 @@ public class UpdateOwnerDto extends AbstractOwnerDto implements BiDirParentDto {
     private Set<Long> petIds = new HashSet<>();
 
     @Builder
-    public UpdateOwnerDto(@Size(min = 10, max = 255) @NotBlank String address, @NotBlank String city, @Size(min = 10, max = 10) String telephone, Set<Long> petIds) {
-        super(address, city, telephone);
+    public UpdateOwnerDto(@Size(min = 10, max = 255) @NotBlank String address, @NotBlank String city, @Size(min = 10, max = 10) String telephone, Set<Long> petIds,Set<String> hobbies) {
+        super(address, city, telephone,hobbies);
         if (petIds != null)
             this.petIds = petIds;
+
     }
 
     @NotNull
