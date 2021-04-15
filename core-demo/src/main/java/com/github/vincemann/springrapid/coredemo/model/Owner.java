@@ -6,6 +6,7 @@ import com.github.vincemann.springrapid.core.model.IdentifiableEntityImpl;
 import com.github.vincemann.springrapid.entityrelationship.model.child.annotation.BiDirChildCollection;
 import com.github.vincemann.springrapid.entityrelationship.model.parent.BiDirParent;
 import lombok.*;
+import org.hibernate.annotations.Fetch;
 
 import javax.persistence.*;
 import java.util.Arrays;
@@ -21,11 +22,15 @@ public class Owner extends Person implements BiDirParent {
 
 
     @Builder
-    public Owner(String firstName, String lastName, Set<Pet> pets, String address, String city, String telephone) {
+    public Owner(String firstName, String lastName, Set<Pet> pets, String address, String city, String telephone,Set<String> hobbies) {
         super(firstName, lastName);
         if(pets!=null) {
             this.pets = pets;
         }
+        if(hobbies!=null) {
+            this.hobbies = hobbies;
+        }
+
         this.address = address;
         this.city = city;
         this.telephone = telephone;
@@ -37,6 +42,9 @@ public class Owner extends Person implements BiDirParent {
     private Set<Pet> pets = new HashSet<>();
 
 
+    @ElementCollection(targetClass = String.class,fetch = FetchType.EAGER)
+    private Set<String> hobbies = new HashSet<>();
+
     @Column(name = "adress")
     private String address;
 
@@ -45,6 +53,8 @@ public class Owner extends Person implements BiDirParent {
 
     @Column(name = "telephone")
     private String telephone;
+
+
 
     @Override
     public String toString() {

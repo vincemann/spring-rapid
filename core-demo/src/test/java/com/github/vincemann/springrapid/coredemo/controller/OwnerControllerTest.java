@@ -105,6 +105,8 @@ public class OwnerControllerTest
         readForeignOwnerDto.setId(id);
 
         readOwnOwnerDto = ReadOwnOwnerDto.Builder()
+                .firstName(firstName)
+                .lastName(lastName)
                 .address(address)
                 .city(city)
                 .telephone(telephone)

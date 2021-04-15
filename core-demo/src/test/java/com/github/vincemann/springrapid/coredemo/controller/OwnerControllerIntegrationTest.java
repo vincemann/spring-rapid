@@ -28,6 +28,9 @@ import org.springframework.boot.test.mock.mockito.SpyBean;
 import org.springframework.test.web.servlet.MvcResult;
 
 import java.time.LocalDate;
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.Set;
 
 import static com.github.vincemann.ezcompare.Comparator.compare;
 import static com.github.vincemann.springrapid.coretest.util.RapidTestUtil.createUpdateJsonLine;
@@ -164,6 +167,20 @@ public class OwnerControllerIntegrationTest
     }
 
     @Test
+    public void canSaveOwnerWithManyHobbies() throws Exception {
+
+        String bodybuilding = "bodybuilding";
+        Set<String> hobbies = new HashSet<>(Arrays.asList("swimming","biking",bodybuilding,"jogging","eating"));
+        kahn.setHobbies(hobbies);
+
+        ReadOwnOwnerDto responseDto = saveOwnerLinkedToPets(kahn);
+        Assertions.assertEquals(hobbies,responseDto.getHobbies());
+
+        Owner dbKahn = ownerRepository.findByLastName(KAHN).get();
+        Assertions.assertEquals(hobbies,dbKahn.getHobbies());
+    }
+
+    @Test
     public void canSaveOwner_linkToPet() throws Exception {
         Pet savedBello = petRepository.save(bello);
 
@@ -264,6 +281,41 @@ public class OwnerControllerIntegrationTest
     }
 
     @Test
+    public void canRemoveOnlyPetFromOwner_viaRemoveSpecificUpdate() throws Exception {
+        Pet savedBello = petRepository.save(bello);
+        ReadOwnOwnerDto createdKahnDto = saveOwnerLinkedToPets(kahn,savedBello.getId());
+
+        String updateJson = createUpdateJsonLine("remove", "/petIds",savedBello.getId().toString());
+        String jsonResponse = getMockMvc().perform(update(createUpdateJsonRequest(updateJson), createdKahnDto.getId())).andReturn().getResponse().getContentAsString();
+        ReadOwnOwnerDto responseDto = deserialize(jsonResponse, ReadOwnOwnerDto.class);
+        Assertions.assertTrue(responseDto.getPetIds().isEmpty());
+
+        Owner dbKahn = ownerRepository.findByLastName(KAHN).get();
+        Pet dbBello = petRepository.findByName(BELLO).get();
+        Assertions.assertTrue(dbKahn.getPets().isEmpty());
+        Assertions.assertNull(dbBello.getOwner());
+    }
+
+    @Test
+    public void canRemoveMultiplePetsFromOwner_viaRemoveAllPetsUpdate() throws Exception {
+        Pet savedBello = petRepository.save(bello);
+        Pet savedKitty = petRepository.save(kitty);
+        ReadOwnOwnerDto createdKahnDto = saveOwnerLinkedToPets(kahn,savedBello.getId(),savedKitty.getId());
+
+        String updateJson = createUpdateJsonLine("remove", "/petIds");
+        String jsonResponse = getMockMvc().perform(update(createUpdateJsonRequest(updateJson), createdKahnDto.getId())).andReturn().getResponse().getContentAsString();
+        ReadOwnOwnerDto responseDto = deserialize(jsonResponse, ReadOwnOwnerDto.class);
+        Assertions.assertTrue(responseDto.getPetIds().isEmpty());
+
+        Owner dbKahn = ownerRepository.findByLastName(KAHN).get();
+        Pet dbBello = petRepository.findByName(BELLO).get();
+        Pet dbKitty = petRepository.findByName(KITTY).get();
+        Assertions.assertTrue(dbKahn.getPets().isEmpty());
+        Assertions.assertNull(dbBello.getOwner());
+        Assertions.assertNull(dbKitty.getOwner());
+    }
+
+    @Test
     public void canRemoveOneOfManyPetsFromOwner_viaUpdate() throws Exception {
         Pet savedBello = petRepository.save(bello);
         Pet savedKitty = petRepository.save(kitty);
@@ -282,6 +334,53 @@ public class OwnerControllerIntegrationTest
         Assertions.assertEquals(1,dbKahn.getPets().size());
         Assertions.assertNull(dbBello.getOwner());
         Assertions.assertEquals(dbKahn,dbKitty.getOwner());
+    }
+
+    @Test
+    public void canRemoveSomeOfManyPetsFromOwner_viaUpdate() throws Exception {
+        Pet savedBello = petRepository.save(bello);
+        Pet savedKitty = petRepository.save(kitty);
+        Pet savedBella = petRepository.save(bella);
+        ReadOwnOwnerDto createdKahnDto = saveOwnerLinkedToPets(kahn,savedBello.getId(),savedKitty.getId());
+
+        String removeBelloJson = createUpdateJsonLine("remove", "/petIds",savedBello.getId().toString());
+        String removeKittyJson = createUpdateJsonLine("remove", "/petIds",savedBello.getId().toString());
+        String removePetsJson = createUpdateJsonRequest(removeBelloJson, removeKittyJson);
+
+        String jsonResponse = getMockMvc().perform(update(removePetsJson, createdKahnDto.getId())).andReturn().getResponse().getContentAsString();
+        ReadOwnOwnerDto responseDto = deserialize(jsonResponse, ReadOwnOwnerDto.class);
+        Assertions.assertTrue(responseDto.getPetIds().contains(savedBella.getId()));
+        Assertions.assertEquals(1,responseDto.getPetIds().size());
+
+        Owner dbKahn = ownerRepository.findByLastName(KAHN).get();
+        Pet dbBello = petRepository.findByName(BELLO).get();
+        Pet dbKitty = petRepository.findByName(KITTY).get();
+        Pet dbBella = petRepository.findByName(BELLA).get();
+
+        Assertions.assertEquals(dbBella,dbKahn.getPets().stream().filter(pet -> pet.getName().equals(BELLA)).findFirst().get());
+        Assertions.assertEquals(1,dbKahn.getPets().size());
+        Assertions.assertNull(dbBello.getOwner());
+        Assertions.assertNull(dbKitty.getOwner());
+        Assertions.assertEquals(dbKahn,dbBella.getOwner());
+    }
+
+    @Test
+    public void canRemoveOneOfManyHobbiesFromOwner_viaUpdate() throws Exception {
+        String hobbyToRemove = "bodybuilding";
+        Set<String> hobbies = new HashSet<>(Arrays.asList("swimming","biking",hobbyToRemove,"jogging","eating"));
+        kahn.setHobbies(hobbies);
+        ReadOwnOwnerDto createdKahnDto = saveOwnerLinkedToPets(kahn);
+
+        String updateJson = createUpdateJsonLine("remove", "/hobbies",hobbyToRemove);
+        String jsonResponse = getMockMvc().perform(update(createUpdateJsonRequest(updateJson), createdKahnDto.getId())).andReturn().getResponse().getContentAsString();
+        ReadOwnOwnerDto responseDto = deserialize(jsonResponse, ReadOwnOwnerDto.class);
+        Assertions.assertFalse(responseDto.getHobbies().contains(hobbyToRemove));
+        Assertions.assertEquals(hobbies.size()-1,responseDto.getHobbies().size());
+
+
+        Owner dbKahn = ownerRepository.findByLastName(KAHN).get();
+        Assertions.assertFalse(dbKahn.getHobbies().contains(hobbyToRemove));
+        Assertions.assertEquals(hobbies.size()-1,dbKahn.getHobbies().size());
     }
 
     @Test
