@@ -159,7 +159,6 @@ public abstract class GenericCrudController
         log.debug("merged Entity as input for service: ");
         logSecurityContext();
         E updated = serviceUpdate(merged, true);
-        //no idea why casting is necessary here?
         Class<?> resultDtoClass = createDtoClass(getUpdateUrl(), Direction.RESPONSE, updated);
         Object resultDto = dtoMapper.mapToDto(updated, resultDtoClass);
         afterUpdate(resultDto, updated, request, response);

@@ -15,7 +15,11 @@ import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Before;
 import org.springframework.aop.support.AopUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.Ordered;
+import org.springframework.core.annotation.Order;
 
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
 import javax.transaction.Transactional;
 import java.io.Serializable;
 import java.lang.reflect.Proxy;
@@ -24,14 +28,14 @@ import java.util.*;
 @Aspect
 @Slf4j
 @Transactional
-// order is important, save must be before update
-//@Order(1)
 /**
  * Advice that keeps BiDirRelationships intact for repo save operations that are updates (id is set)
  */
 public class BiDirEntityUpdateAdvice {
 
     private CrudServiceLocator serviceLocator;
+    @PersistenceContext
+    private EntityManager entityManager;
 
     @Autowired
     public BiDirEntityUpdateAdvice(CrudServiceLocator serviceLocator) {
@@ -44,13 +48,17 @@ public class BiDirEntityUpdateAdvice {
     public void preUpdateBiDirChild(JoinPoint joinPoint, BiDirChild biDirChild, Boolean full) throws EntityNotFoundException, BadEntityException {
         try {
             if (!isRootService(joinPoint)) {
-                log.debug("ignoring update advice, bc root service not called yet");
+                log.debug("ignoring service update advice, bc root service not called yet");
                 return;
             }
+
             if (((IdentifiableEntity) biDirChild).getId() != null && !full) {
-                log.debug("detected update operation for BiDirChild: " + biDirChild + ", running preUpdateAdvice logic");
+                log.debug("detected service partial update operation for BiDirChild: " + biDirChild + ", running preUpdateAdvice logic");
                 updateBiDirChildRelations(biDirChild);
             }// else ignore, bc it is save operation not update
+//            else if (full){
+//                entityManager.merge(biDirChild);
+//            }
         } catch (IllegalAccessException e) {
             throw new RuntimeException(e);
         }
@@ -62,11 +70,11 @@ public class BiDirEntityUpdateAdvice {
     public void preUpdateBiDirParent(JoinPoint joinPoint, BiDirParent biDirParent, Boolean full) throws EntityNotFoundException, BadEntityException {
         try {
             if (!isRootService(joinPoint)) {
-                log.debug("ignoring update advice, bc root service not called yet");
+                log.debug("ignoring service update advice, bc root service not called yet");
                 return;
             }
             if (((IdentifiableEntity) biDirParent).getId() != null && !full) {
-                log.debug("detected update operation for BiDirParent: " + biDirParent + ", running preUpdateAdvice logic");
+                log.debug("detected service partial update operation for BiDirParent: " + biDirParent + ", running preUpdateAdvice logic");
                 updateBiDirParentRelations(biDirParent);
             } // else ignore, bc it is save operation not update
         } catch (IllegalAccessException e) {
@@ -75,42 +83,41 @@ public class BiDirEntityUpdateAdvice {
     }
 
 
-    // todo gets called twice for AclExtension -> make sure to skip joinPoint if target is Extension
-    @Before(value = "com.github.vincemann.springrapid.core.advice.SystemArchitecture.saveOperation() && " +
-            "com.github.vincemann.springrapid.core.advice.SystemArchitecture.repoOperation() && " +
-            "args(biDirChild)")
-    public void preUpdateBiDirChild(JoinPoint joinPoint, BiDirChild biDirChild) throws EntityNotFoundException, BadEntityException {
-        try {
-//            if (!isRootService(joinPoint)) {
-//                log.debug("ignoring update advice, bc root service not called yet");
-//                return;
-//            }
-            if (((IdentifiableEntity) biDirChild).getId() != null) {
-                log.debug("detected update operation for BiDirChild: " + biDirChild + ", running preUpdateAdvice logic");
-                updateBiDirChildRelations(biDirChild);
-            }// else ignore, bc it is save operation not update
-        } catch (IllegalAccessException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-    @Before(value = "com.github.vincemann.springrapid.core.advice.SystemArchitecture.saveOperation() && " +
-            "com.github.vincemann.springrapid.core.advice.SystemArchitecture.repoOperation() && " +
-            "args(biDirParent)")
-    public void preUpdateBiDirParent(JoinPoint joinPoint, BiDirParent biDirParent) throws EntityNotFoundException, BadEntityException {
-        try {
-//            if (!isRootService(joinPoint)) {
-//                log.debug("ignoring update advice, bc root service not called yet");
-//                return;
-//            }
-            if (((IdentifiableEntity) biDirParent).getId() != null) {
-                log.debug("detected update operation for BiDirParent: " + biDirParent + ", running preUpdateAdvice logic");
-                updateBiDirParentRelations(biDirParent);
-            } // else ignore, bc it is save operation not update
-        } catch (IllegalAccessException e) {
-            throw new RuntimeException(e);
-        }
-    }
+//    @Before(value = "com.github.vincemann.springrapid.core.advice.SystemArchitecture.saveOperation() && " +
+//            "com.github.vincemann.springrapid.core.advice.SystemArchitecture.repoOperation() && " +
+//            "args(biDirChild)")
+//    public void preUpdateBiDirChild(JoinPoint joinPoint, BiDirChild biDirChild) throws EntityNotFoundException, BadEntityException {
+//        try {
+////            if (!isRootService(joinPoint)) {
+////                log.debug("ignoring update advice, bc root service not called yet");
+////                return;
+////            }
+//            if (((IdentifiableEntity) biDirChild).getId() != null) {
+//                log.debug("detected update operation for BiDirChild: " + biDirChild + ", running preUpdateAdvice logic");
+//                updateBiDirChildRelations(biDirChild);
+//            }// else ignore, bc it is save operation not update
+//        } catch (IllegalAccessException e) {
+//            throw new RuntimeException(e);
+//        }
+//    }
+//
+//    @Before(value = "com.github.vincemann.springrapid.core.advice.SystemArchitecture.saveOperation() && " +
+//            "com.github.vincemann.springrapid.core.advice.SystemArchitecture.repoOperation() && " +
+//            "args(biDirParent)")
+//    public void preUpdateBiDirParent(JoinPoint joinPoint, BiDirParent biDirParent) throws EntityNotFoundException, BadEntityException {
+//        try {
+////            if (!isRootService(joinPoint)) {
+////                log.debug("ignoring update advice, bc root service not called yet");
+////                return;
+////            }
+//            if (((IdentifiableEntity) biDirParent).getId() != null) {
+//                log.debug("detected update operation for BiDirParent: " + biDirParent + ", running preUpdateAdvice logic");
+//                updateBiDirParentRelations(biDirParent);
+//            } // else ignore, bc it is save operation not update
+//        } catch (IllegalAccessException e) {
+//            throw new RuntimeException(e);
+//        }
+//    }
 
     private boolean isRootService(JoinPoint joinPoint) {
 //        Class<?> userClass = ProxyUtils.getUserClass(joinPoint.getTarget());
@@ -123,16 +130,12 @@ public class BiDirEntityUpdateAdvice {
 
 
     @SuppressWarnings("Duplicates")
-    private void updateBiDirChildRelations(BiDirChild newBiDirChild) throws BadEntityException, EntityNotFoundException, IllegalAccessException {
-        //find already persisted biDirChild (preUpdateState of child)
-        Class entityClazz = newBiDirChild.getClass();
-        CrudService service = serviceLocator.find((Class<IdentifiableEntity>) entityClazz);
-        Optional<BiDirChild> oldBiDirChildOptional = service.findById(((IdentifiableEntity<Serializable>) newBiDirChild).getId());
-        VerifyEntity.isPresent(oldBiDirChildOptional, ((IdentifiableEntity<Serializable>) newBiDirChild).getId(), entityClazz);
-        BiDirChild oldBiDirChild = oldBiDirChildOptional.get();
-        Collection<BiDirParent> oldParents = oldBiDirChild.findBiDirParents();
-        Collection<BiDirParent> newParents = newBiDirChild.findBiDirParents();
-        //find removed parents
+    private void updateBiDirChildRelations(BiDirChild newChild) throws BadEntityException, EntityNotFoundException, IllegalAccessException {
+        BiDirChild oldChild = findOldEntity(newChild);
+
+        Collection<BiDirParent> oldParents = oldChild.findBiDirParents();
+        Collection<BiDirParent> newParents = newChild.findBiDirParents();
+        //find parents to unlink
         List<BiDirParent> removedParents = new ArrayList<>();
         for (BiDirParent oldParent : oldParents) {
             if (!newParents.contains(oldParent)) {
@@ -147,42 +150,41 @@ public class BiDirEntityUpdateAdvice {
             }
         }
 
-        //dismiss removed Parents Children
+        adjustUpdatedEntities(addedParents,removedParents);
+
+        // todo link and unlink oldChild instead of new?
+        //unlink Child from certain Parents
         for (BiDirParent removedParent : removedParents) {
-            removedParent.unlinkBiDirChild(newBiDirChild);
+            removedParent.unlinkBiDirChild(oldChild);
         }
 
         //add added Parent to child
         for (BiDirParent addedParent : addedParents) {
-            addedParent.linkBiDirChild(newBiDirChild);
+            addedParent.linkBiDirChild(newChild);
         }
     }
 
 
     @SuppressWarnings("Duplicates")
-    private void updateBiDirParentRelations(BiDirParent newBiDirParent) throws BadEntityException, EntityNotFoundException, IllegalAccessException {
-        Class entityClass = newBiDirParent.getClass();
-        CrudService service = serviceLocator.find((Class<IdentifiableEntity>) entityClass);
-        Optional<BiDirParent> oldBiDirParentOptional = service.findById(((IdentifiableEntity<Serializable>) newBiDirParent).getId());
-        VerifyEntity.isPresent(oldBiDirParentOptional, ((IdentifiableEntity<Serializable>) newBiDirParent).getId(), newBiDirParent.getClass());
-        BiDirParent oldBiDirParent = oldBiDirParentOptional.get();
+    private void updateBiDirParentRelations(BiDirParent newParent) throws BadEntityException, EntityNotFoundException, IllegalAccessException {
+        BiDirParent oldParent = findOldEntity(newParent);
 
-        Set<BiDirChild> oldChildren = oldBiDirParent.findBiDirSingleChildren();
-        Set<BiDirChild> newChildren = newBiDirParent.findBiDirSingleChildren();
+        Set<BiDirChild> oldSingleChildren = oldParent.findBiDirSingleChildren();
+        Set<BiDirChild> newSingleChildren = newParent.findBiDirSingleChildren();
 
-        Set<Collection<BiDirChild>> oldChildrenCollections = oldBiDirParent.findAllBiDirChildCollections().keySet();
-        Set<Collection<BiDirChild>> newChildrenCollections = newBiDirParent.findAllBiDirChildCollections().keySet();
+        Set<Collection<BiDirChild>> oldChildCollections = oldParent.findBiDirChildCollections().keySet();
+        Set<Collection<BiDirChild>> newChildCollections = newParent.findBiDirChildCollections().keySet();
 
-        //find removed Children
+        //find Children to unlink
         List<BiDirChild> removedChildren = new ArrayList<>();
-        for (BiDirChild oldChild : oldChildren) {
-            if (!newChildren.contains(oldChild)) {
+        for (BiDirChild oldChild : oldSingleChildren) {
+            if (!newSingleChildren.contains(oldChild)) {
                 removedChildren.add(oldChild);
             }
         }
-        for (Collection<? extends BiDirChild> oldChildrenCollection : oldChildrenCollections) {
+        for (Collection<? extends BiDirChild> oldChildrenCollection : oldChildCollections) {
             for (BiDirChild oldChild : oldChildrenCollection) {
-                if (!newChildren.contains(oldChild)) {
+                if (!newSingleChildren.contains(oldChild)) {
                     removedChildren.add(oldChild);
                 }
             }
@@ -190,30 +192,44 @@ public class BiDirEntityUpdateAdvice {
 
         //find added Children
         List<BiDirChild> addedChildren = new ArrayList<>();
-        for (BiDirChild newChild : newChildren) {
-            if (!oldChildren.contains(newChild)) {
+        for (BiDirChild newChild : newSingleChildren) {
+            if (!oldSingleChildren.contains(newChild)) {
                 addedChildren.add(newChild);
             }
         }
-
-        for (Collection<? extends BiDirChild> newChildrenCollection : newChildrenCollections) {
+        for (Collection<? extends BiDirChild> newChildrenCollection : newChildCollections) {
             for (BiDirChild newChild : newChildrenCollection) {
-                if (!oldChildren.contains(newChild)) {
+                if (!oldSingleChildren.contains(newChild)) {
                     addedChildren.add(newChild);
                 }
             }
         }
 
-        //dismiss removed Children from newParent
+        adjustUpdatedEntities(addedChildren,removedChildren);
+
+        //unlink removed Children from newParent
         for (BiDirChild removedChild : removedChildren) {
-            log.debug("dismissing child: " + removedChild + " from parent: " + newBiDirParent);
-            removedChild.unlinkBiDirParent(oldBiDirParent);
+            log.debug("unlinking child: " + removedChild + " from parent: " + newParent);
+            removedChild.unlinkBiDirParent(oldParent);
         }
 
-        //add added Children to newParent
+        //link added Children to newParent
         for (BiDirChild addedChild : addedChildren) {
-            log.debug("adding child: " + addedChild + " to parent: " + newBiDirParent);
-            addedChild.linkBiDirParent(newBiDirParent);
+            log.debug("linking child: " + addedChild + " to parent: " + newParent);
+            addedChild.linkBiDirParent(newParent);
         }
+    }
+
+    private <E> void adjustUpdatedEntities(List<E> added, List<E> removed){
+        removed.removeAll(added);
+        added.removeAll(removed);
+    }
+
+    private <E> E findOldEntity(E entity) throws EntityNotFoundException, BadEntityException {
+        Class entityClass = entity.getClass();
+        CrudService service = serviceLocator.find((Class<IdentifiableEntity>) entityClass);
+        Optional<BiDirParent> oldEntityOptional = service.findById(((IdentifiableEntity<Serializable>) entity).getId());
+        VerifyEntity.isPresent(oldEntityOptional, ((IdentifiableEntity<Serializable>) entity).getId(), entity.getClass());
+        return (E) oldEntityOptional.get();
     }
 }

@@ -56,7 +56,7 @@ public class BiDirParentIdResolver extends EntityIdResolver<BiDirParent, BiDirPa
         for (BiDirChild biDirChild : serviceEntity.findBiDirSingleChildren()) {
             mappedDto.addBiDirChildsId(biDirChild);
         }
-        for (Collection<? extends BiDirChild> childrenCollection : serviceEntity.findAllBiDirChildCollections().keySet()) {
+        for (Collection<? extends BiDirChild> childrenCollection : serviceEntity.findBiDirChildCollections().keySet()) {
             for (BiDirChild biDirChild : childrenCollection) {
                 mappedDto.addBiDirChildsId(biDirChild);
             }
