@@ -24,11 +24,6 @@ public class PetDto extends AbstractPetDto {
         return super.getName();
     }
 
-    @NotNull
-    @Override
-    public Long getPetTypeId() {
-        return super.getPetTypeId();
-    }
 
     @Builder
     public PetDto(@NotBlank @Size(min = 2, max = 20) String name, Long petTypeId, Long ownerId, LocalDate birthDate) {
