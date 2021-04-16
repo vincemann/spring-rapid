@@ -79,6 +79,10 @@ public class ExtendedRemoveJsonPatchStrategy implements JsonPatchStrategy {
         Field collectionField = ReflectionUtils.findField(savedEntity.getClass(),
                 // Utils wont transform if not "...Ids" fieldname
                 EntityCollectionUtils.transformDtoEntityIdCollectionFieldName(path.replace("/", "")));
+        if (collectionField==null){
+            log.warn("Collection field for remove by value not found: "+ path);
+            return;
+        }
         collectionField.setAccessible(true);
 
         int[] position = {-1};
