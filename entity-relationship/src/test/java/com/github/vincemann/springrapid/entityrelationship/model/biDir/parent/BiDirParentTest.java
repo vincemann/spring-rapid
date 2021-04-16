@@ -193,7 +193,7 @@ class BiDirParentTest {
         HashSet<SecondEntityChild> secondEntityChildSet = new HashSet<>();
         testEntityParent.setSecondEntityChildSet(secondEntityChildSet);
         //when
-        Map<Collection<BiDirChild>, Class<BiDirChild>> childrenCollections = testEntityParent.findAllBiDirChildCollections();
+        Map<Collection<BiDirChild>, Class<BiDirChild>> childrenCollections = testEntityParent.findBiDirChildCollections();
         //then
         Assertions.assertEquals(1,childrenCollections.size());
         Map.Entry<Collection<BiDirChild>, Class<BiDirChild>> entry = childrenCollections.entrySet().stream().findFirst().get();
@@ -205,7 +205,7 @@ class BiDirParentTest {
     void getNullChildrenCollection_shouldCreateEmptyCollection()  {
         //given
         testEntityParent.setSecondEntityChildSet(null);
-        Map<Collection<BiDirChild>, Class<BiDirChild>> childrenCollections = testEntityParent.findAllBiDirChildCollections();
+        Map<Collection<BiDirChild>, Class<BiDirChild>> childrenCollections = testEntityParent.findBiDirChildCollections();
         for (Map.Entry<Collection<BiDirChild>, Class<BiDirChild>> collectionClassEntry : childrenCollections.entrySet()) {
             Assertions.assertNotNull(collectionClassEntry.getKey());
             Assertions.assertTrue(collectionClassEntry.getKey().isEmpty());

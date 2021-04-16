@@ -21,8 +21,8 @@ public class RapidBiDirServiceAdviceAutoConfiguration {
 
     @Bean
     @ConditionalOnMissingBean(BiDirEntitySaveAdvice.class)
-    public BiDirEntitySaveAdvice biDirEntityPersistAdvice(){
-        return new BiDirEntitySaveAdvice();
+    public BiDirEntitySaveAdvice biDirEntityPersistAdvice(CrudServiceLocator crudServiceLocator){
+        return new BiDirEntitySaveAdvice(crudServiceLocator);
     }
 
     @Bean

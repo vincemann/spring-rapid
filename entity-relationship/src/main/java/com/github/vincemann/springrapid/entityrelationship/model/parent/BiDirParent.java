@@ -25,7 +25,7 @@ public interface  BiDirParent extends  DirParent {
      * and the Type of the Entities in the Collection.
      * @return
      */
-    default Map<Collection<BiDirChild>,Class<BiDirChild>> findAllBiDirChildCollections(){
+    default Map<Collection<BiDirChild>,Class<BiDirChild>> findBiDirChildCollections(){
         return findAllChildCollections(BiDirChildCollection.class);
     }
 
@@ -79,7 +79,7 @@ public interface  BiDirParent extends  DirParent {
         for(BiDirChild child: findBiDirSingleChildren()){
             child.unlinkBiDirParent(this);
         }
-        for(Map.Entry<Collection<BiDirChild>,Class<BiDirChild>> entry: findAllBiDirChildCollections().entrySet()){
+        for(Map.Entry<Collection<BiDirChild>,Class<BiDirChild>> entry: findBiDirChildCollections().entrySet()){
             Collection<BiDirChild> childrenCollection = entry.getKey();
             for(BiDirChild biDirChild: childrenCollection){
                 biDirChild.unlinkBiDirParent(this);
