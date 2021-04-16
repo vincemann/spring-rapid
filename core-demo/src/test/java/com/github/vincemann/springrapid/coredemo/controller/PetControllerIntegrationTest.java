@@ -80,7 +80,6 @@ public class PetControllerIntegrationTest extends MyControllerIntegrationTest<Pe
     }
 
     // todo does not work yet bc i cant get full update to work with bidir relship mangement yet
-    @Disabled
     @Test
     public void canAddPetsOwner_viaUpdate() throws Exception {
         Owner savedKahn = ownerRepository.save(kahn);

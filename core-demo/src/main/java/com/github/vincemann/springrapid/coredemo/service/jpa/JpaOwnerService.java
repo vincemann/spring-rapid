@@ -39,6 +39,7 @@ public class JpaOwnerService
      * Owner named "42" is owner of the year
      * @return
      */
+    @Transactional
     @Override
     public Optional<Owner> findOwnerOfTheYear() {
         return getRepository().findAll().stream().filter(owner -> {

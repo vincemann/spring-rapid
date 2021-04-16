@@ -29,6 +29,15 @@ public class ProxyUtils {
         return (ServiceExtensionProxy<S>) Proxy.getInvocationHandler(AopTestUtils.getUltimateTargetObject(service));
     }
 
+    public static boolean isRootService(Object target) {
+//        Class<?> userClass = ProxyUtils.getUserClass(joinPoint.getTarget());
+        if (AopUtils.isAopProxy(target) || AopUtils.isCglibProxy(target) || Proxy.isProxyClass(target.getClass()) || target instanceof AbstractServiceExtension) {
+            return false;
+        } else {
+            return true;
+        }
+    }
+
 //    public static boolean isRootService(Object target) {
 ////        Class<?> userClass = ProxyUtils.getUserClass(target.getTarget());
 //        if (AopUtils.isAopProxy(target) || AopUtils.isCglibProxy(target) || Proxy.isProxyClass(target.getClass()) || target instanceof AbstractServiceExtension) {
