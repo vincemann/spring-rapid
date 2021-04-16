@@ -9,6 +9,8 @@ import org.springframework.aop.TargetClassAware;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 
+import javax.transaction.Transactional;
+
 @Qualifier("noProxy")
 @Service
 @ServiceComponent

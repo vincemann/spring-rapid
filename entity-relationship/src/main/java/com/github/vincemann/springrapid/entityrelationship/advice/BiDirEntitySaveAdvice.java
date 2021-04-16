@@ -23,20 +23,20 @@ import java.util.*;
 
 @Aspect
 @Slf4j
+
 /**
  * Advice that keeps BiDirRelationships intact for Repo save operations (also update)
  */
-public class BiDirEntitySaveAdvice {
-
-
-    private CrudServiceLocator serviceLocator;
+public class BiDirEntitySaveAdvice extends BiDirEntityAdvice{
 
 
     @Autowired
-    public BiDirEntitySaveAdvice(CrudServiceLocator serviceLocator) {
-        this.serviceLocator = serviceLocator;
+    public BiDirEntitySaveAdvice(CrudServiceLocator crudServiceLocator) {
+        super(crudServiceLocator);
     }
 
+    @PersistenceContext
+    private EntityManager entityManager;
 
 
     @Before("com.github.vincemann.springrapid.core.advice.SystemArchitecture.saveOperation() && " +
@@ -47,6 +47,7 @@ public class BiDirEntitySaveAdvice {
             log.debug("pre persist biDirParent hook reached for: " + biDirParent);
             setChildrensParentRef(biDirParent);
         }else {
+            log.debug("pre update biDirParent hook reached for: " + biDirParent);
             updateBiDirParentRelations(biDirParent);
         }
     }
@@ -56,15 +57,20 @@ public class BiDirEntitySaveAdvice {
             "args(biDirChild)")
     public void prePersistBiDiChild(BiDirChild biDirChild) throws BadEntityException, EntityNotFoundException, IllegalAccessException {
         if(((IdentifiableEntity) biDirChild).getId()==null) {
+            //create
             log.debug("pre persist biDirChild hook reached for: " + biDirChild);
             setParentsChildRef(biDirChild);
         }
         else {
-//            entityManager.merge(biDirChild);
+            // update
+            log.debug("pre update biDirChild hook reached for: " + biDirChild);
             updateBiDirChildRelations(biDirChild);
-            // need to replace child here for update parent situation (replace detached child with session attached child (this))
+            // need to replace child here for partial update parent situation (replace detached child with session attached child (this))
             replaceParentsChildRef(biDirChild);
-
+            // needs to be done to prevent detached error when adding parent to child via full update or save
+            for (BiDirParent biDirParent : biDirChild.findBiDirParents()) {
+                entityManager.merge(biDirParent);
+            }
         }
     }
 
@@ -97,106 +103,6 @@ public class BiDirEntitySaveAdvice {
         }
     }
 
-    @SuppressWarnings("Duplicates")
-    private void updateBiDirChildRelations(BiDirChild newChild) throws BadEntityException, EntityNotFoundException, IllegalAccessException {
-        BiDirChild oldChild = findOldEntity(newChild);
-
-        Collection<BiDirParent> oldParents = oldChild.findBiDirParents();
-        Collection<BiDirParent> newParents = newChild.findBiDirParents();
-        //find parents to unlink
-        List<BiDirParent> removedParents = new ArrayList<>();
-        for (BiDirParent oldParent : oldParents) {
-            if (!newParents.contains(oldParent)) {
-                removedParents.add(oldParent);
-            }
-        }
-        //find added parents
-        List<BiDirParent> addedParents = new ArrayList<>();
-        for (BiDirParent newParent : newParents) {
-            if (!oldParents.contains(newParent)) {
-                addedParents.add(newParent);
-            }
-        }
-
-        adjustUpdatedEntities(addedParents,removedParents);
-
-        //unlink Child from certain Parents
-        for (BiDirParent removedParent : removedParents) {
-            removedParent.unlinkBiDirChild(oldChild);
-        }
-
-        //add added Parent to child
-        for (BiDirParent addedParent : addedParents) {
-            addedParent.linkBiDirChild(newChild);
-        }
-    }
 
 
-    @SuppressWarnings("Duplicates")
-    private void updateBiDirParentRelations(BiDirParent newParent) throws BadEntityException, EntityNotFoundException, IllegalAccessException {
-        BiDirParent oldParent = findOldEntity(newParent);
-
-        Set<BiDirChild> oldSingleChildren = oldParent.findBiDirSingleChildren();
-        Set<BiDirChild> newSingleChildren = newParent.findBiDirSingleChildren();
-
-        Set<Collection<BiDirChild>> oldChildCollections = oldParent.findBiDirChildCollections().keySet();
-        Set<Collection<BiDirChild>> newChildCollections = newParent.findBiDirChildCollections().keySet();
-
-        //find Children to unlink
-        List<BiDirChild> removedChildren = new ArrayList<>();
-        for (BiDirChild oldChild : oldSingleChildren) {
-            if (!newSingleChildren.contains(oldChild)) {
-                removedChildren.add(oldChild);
-            }
-        }
-        for (Collection<? extends BiDirChild> oldChildrenCollection : oldChildCollections) {
-            for (BiDirChild oldChild : oldChildrenCollection) {
-                if (!newSingleChildren.contains(oldChild)) {
-                    removedChildren.add(oldChild);
-                }
-            }
-        }
-
-        //find added Children
-        List<BiDirChild> addedChildren = new ArrayList<>();
-        for (BiDirChild newChild : newSingleChildren) {
-            if (!oldSingleChildren.contains(newChild)) {
-                addedChildren.add(newChild);
-            }
-        }
-        for (Collection<? extends BiDirChild> newChildrenCollection : newChildCollections) {
-            for (BiDirChild newChild : newChildrenCollection) {
-                if (!oldSingleChildren.contains(newChild)) {
-                    addedChildren.add(newChild);
-                }
-            }
-        }
-
-        adjustUpdatedEntities(addedChildren,removedChildren);
-
-        //unlink removed Children from newParent
-        for (BiDirChild removedChild : removedChildren) {
-            log.debug("unlinking child: " + removedChild + " from parent: " + newParent);
-            removedChild.unlinkBiDirParent(oldParent);
-        }
-
-        //link added Children to newParent
-        for (BiDirChild addedChild : addedChildren) {
-            log.debug("linking child: " + addedChild + " to parent: " + newParent);
-            addedChild.linkBiDirParent(newParent);
-        }
-    }
-
-    private <E> void adjustUpdatedEntities(List<E> added, List<E> removed){
-        removed.removeAll(added);
-        added.removeAll(removed);
-    }
-
-    private <E> E findOldEntity(E entity) throws EntityNotFoundException, BadEntityException {
-        Class entityClass = entity.getClass();
-        CrudService service = serviceLocator.find((Class<IdentifiableEntity>) entityClass);
-        Optional<BiDirParent> oldEntityOptional = service.findById(((IdentifiableEntity<Serializable>) entity).getId());
-        VerifyEntity.isPresent(oldEntityOptional, ((IdentifiableEntity<Serializable>) entity).getId(), entity.getClass());
-        return (E) oldEntityOptional.get();
-    }
 }

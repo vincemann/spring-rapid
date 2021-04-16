@@ -154,7 +154,6 @@ class PetServiceIntegrationTest
     }
 
     // todo have to use partial update mode for this case bc i cant get full update to work with bidir relship mangement yet
-    @Disabled
     @Test
     public void canLinkOwnerToPet_viaFullUpdate() throws BadEntityException, InvocationTargetException, NoSuchMethodException, InstantiationException, IllegalAccessException {
         Owner savedKahn = ownerService.save(kahn);

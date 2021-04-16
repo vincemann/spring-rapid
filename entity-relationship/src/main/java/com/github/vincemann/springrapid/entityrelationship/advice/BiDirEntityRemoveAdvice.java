@@ -29,16 +29,13 @@ import java.util.Optional;
 /**
  * Advice that keeps BiDirRelationships intact for {@link com.github.vincemann.springrapid.core.service.CrudService#deleteById(Serializable)} - operations.
  */
-public class BiDirEntityRemoveAdvice {
-
-    private CrudServiceLocator crudServiceLocator;
+public class BiDirEntityRemoveAdvice extends BiDirEntityAdvice {
 
 
     @Autowired
     public BiDirEntityRemoveAdvice(CrudServiceLocator crudServiceLocator) {
-        this.crudServiceLocator = crudServiceLocator;
+        super(crudServiceLocator);
     }
-
 
     @Before("com.github.vincemann.springrapid.core.advice.SystemArchitecture.deleteOperation() && " +
             "com.github.vincemann.springrapid.core.advice.SystemArchitecture.repoOperation() && " +
@@ -71,7 +68,7 @@ public class BiDirEntityRemoveAdvice {
     private Optional<Object> resolveById(Serializable id, JoinPoint joinPoint) throws BadEntityException, IllegalAccessException {
         Class entityClass = resolveEntityClass(joinPoint);
         log.debug("pre remove hook reached for entity " + entityClass+":"+id);
-        CrudService service = crudServiceLocator.find(entityClass);
+        CrudService service = getCrudServiceLocator().find(entityClass);
         Assert.notNull(service,"Did not find service for entityClass: " + entityClass);
         return service.findById((id));
     }
