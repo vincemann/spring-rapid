@@ -26,8 +26,8 @@ public abstract class BiDirEntityAdvice {
     protected void updateBiDirParentRelations(BiDirParent newParent) throws BadEntityException, EntityNotFoundException, IllegalAccessException {
         BiDirParent oldParent = findOldEntity(newParent);
 
-        Set<BiDirChild> oldSingleChildren = oldParent.findBiDirSingleChildren();
-        Set<BiDirChild> newSingleChildren = newParent.findBiDirSingleChildren();
+        Set<BiDirChild> oldSingleChildren = oldParent.findSingleBiDirChildren();
+        Set<BiDirChild> newSingleChildren = newParent.findSingleBiDirChildren();
 
         Set<Collection<BiDirChild>> oldChildCollections = oldParent.findBiDirChildCollections().keySet();
         Set<Collection<BiDirChild>> newChildCollections = newParent.findBiDirChildCollections().keySet();
@@ -80,8 +80,8 @@ public abstract class BiDirEntityAdvice {
     protected void updateBiDirChildRelations(BiDirChild newChild) throws BadEntityException, EntityNotFoundException, IllegalAccessException {
         BiDirChild oldChild = findOldEntity(newChild);
 
-        Collection<BiDirParent> oldParents = oldChild.findBiDirParents();
-        Collection<BiDirParent> newParents = newChild.findBiDirParents();
+        Collection<BiDirParent> oldParents = oldChild.findSingleBiDirParents();
+        Collection<BiDirParent> newParents = newChild.findSingleBiDirParents();
         //find parents to unlink
         List<BiDirParent> removedParents = new ArrayList<>();
         for (BiDirParent oldParent : oldParents) {

@@ -1,6 +1,7 @@
 package com.github.vincemann.springrapid.entityrelationship.model.biDir.child;
 
 import com.github.vincemann.springrapid.core.model.IdentifiableEntityImpl;
+import com.github.vincemann.springrapid.entityrelationship.exception.UnknownEntityTypeException;
 import com.github.vincemann.springrapid.entityrelationship.model.parent.BiDirParent;
 import com.github.vincemann.springrapid.entityrelationship.model.parent.annotation.BiDirParentEntity;
 import com.github.vincemann.springrapid.entityrelationship.exception.UnknownParentTypeException;
@@ -73,50 +74,50 @@ class BiDirChildTest {
 
     }
 
-    @Test
-    void addChildToParents()  {
-        //given
-        testEntityChild.setEntityParent(testEntityParent);
-        testEntityChild.setSecondEntityParent(testSecondEntityParent);
-        Assertions.assertNull(testEntityParent.getEntityChild());
-        Assertions.assertNull(testSecondEntityParent.getEntityChild());
-        //when
-        testEntityChild.linkToBiDirParents();
-        //then
-        Assertions.assertSame(testEntityChild,testEntityParent.getEntityChild());
-        Assertions.assertSame(testEntityChild,testSecondEntityParent.getEntityChild());
-    }
+//    @Test
+//    void addChildToParents()  {
+//        //given
+//        testEntityChild.setEntityParent(testEntityParent);
+//        testEntityChild.setSecondEntityParent(testSecondEntityParent);
+//        Assertions.assertNull(testEntityParent.getEntityChild());
+//        Assertions.assertNull(testSecondEntityParent.getEntityChild());
+//        //when
+//        testEntityChild.linkToBiDirParents();
+//        //then
+//        Assertions.assertSame(testEntityChild,testEntityParent.getEntityChild());
+//        Assertions.assertSame(testEntityChild,testSecondEntityParent.getEntityChild());
+//    }
 
-    @Test
-    void findAndSetParentIfNull()  {
-        //given
-        Assertions.assertNull(testEntityChild.getEntityParent());
-        Assertions.assertNull(testEntityChild.getUnusedParent());
-        Assertions.assertNull(testEntityChild.getSecondEntityParent());
-        //when
-        testEntityChild.linkBiDirParentIfNonePresent(testEntityParent);
-        //then
-        Assertions.assertSame(testEntityParent,testEntityChild.getEntityParent());
-        Assertions.assertNull(testEntityChild.getUnusedParent());
-        Assertions.assertNull(testEntityChild.getSecondEntityParent());
-    }
+//    @Test
+//    void findAndSetParentIfNull()  {
+//        //given
+//        Assertions.assertNull(testEntityChild.getEntityParent());
+//        Assertions.assertNull(testEntityChild.getUnusedParent());
+//        Assertions.assertNull(testEntityChild.getSecondEntityParent());
+//        //when
+//        testEntityChild.linkBiDirParentIfNonePresent(testEntityParent);
+//        //then
+//        Assertions.assertSame(testEntityParent,testEntityChild.getEntityParent());
+//        Assertions.assertNull(testEntityChild.getUnusedParent());
+//        Assertions.assertNull(testEntityChild.getSecondEntityParent());
+//    }
 
-    @Test
-    void findAndSetParentIfNotNull()  {
-        //given
-        EntityParent newEntityParent = new EntityParent();
-        newEntityParent.setId(99L);
-        testEntityChild.setEntityParent(newEntityParent);
-        Assertions.assertNull(testEntityChild.getUnusedParent());
-        Assertions.assertNull(testEntityChild.getSecondEntityParent());
-        //when
-        testEntityChild.linkBiDirParentIfNonePresent(testEntityParent);
-        //then
-        //test entity parent is NOT set
-        Assertions.assertSame(newEntityParent,testEntityChild.getEntityParent());
-        Assertions.assertNull(testEntityChild.getUnusedParent());
-        Assertions.assertNull(testEntityChild.getSecondEntityParent());
-    }
+//    @Test
+//    void findAndSetParentIfNotNull()  {
+//        //given
+//        EntityParent newEntityParent = new EntityParent();
+//        newEntityParent.setId(99L);
+//        testEntityChild.setEntityParent(newEntityParent);
+//        Assertions.assertNull(testEntityChild.getUnusedParent());
+//        Assertions.assertNull(testEntityChild.getSecondEntityParent());
+//        //when
+//        testEntityChild.linkBiDirParentIfNonePresent(testEntityParent);
+//        //then
+//        //test entity parent is NOT set
+//        Assertions.assertSame(newEntityParent,testEntityChild.getEntityParent());
+//        Assertions.assertNull(testEntityChild.getUnusedParent());
+//        Assertions.assertNull(testEntityChild.getSecondEntityParent());
+//    }
 
 //    @Test
 //    void findParentFields()  {
@@ -158,7 +159,7 @@ class BiDirChildTest {
         testEntityChild.setEntityParent(testEntityParent);
         testEntityChild.setSecondEntityParent(testSecondEntityParent);
         //when
-        Collection<BiDirParent> parents = testEntityChild.findBiDirParents();
+        Collection<BiDirParent> parents = testEntityChild.findSingleBiDirParents();
         //then
         Assertions.assertEquals(2,parents.size());
     }
@@ -169,7 +170,7 @@ class BiDirChildTest {
         Assertions.assertNull(testEntityChild.getSecondEntityParent());
         Assertions.assertNull(testEntityChild.getUnusedParent());
         //when
-        Collection<BiDirParent> parents = testEntityChild.findBiDirParents();
+        Collection<BiDirParent> parents = testEntityChild.findSingleBiDirParents();
         //then
         Assertions.assertEquals(1,parents.size());
         Optional<BiDirParent> biDirParent = parents.stream().findFirst();
@@ -204,7 +205,7 @@ class BiDirChildTest {
         //given
         testEntityChild.setSecondEntityParent(testSecondEntityParent);
         //when
-        Assertions.assertThrows(UnknownParentTypeException.class, new Executable() {
+        Assertions.assertThrows(UnknownEntityTypeException.class, new Executable() {
             @Override
             public void execute() throws Throwable {
                 testEntityChild.unlinkBiDirParent(testEntityParent);

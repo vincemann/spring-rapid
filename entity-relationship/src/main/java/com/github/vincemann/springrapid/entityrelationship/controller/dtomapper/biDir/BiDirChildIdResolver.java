@@ -19,7 +19,7 @@ import java.util.Map;
 /**
  * Used by {@link IdResolvingDtoPostProcessor}.
  * Resolves {@link BiDirParentId} to corresponding {@link BiDirParentEntity}.
- * Adds mapped {@link BiDirChild} to {@link BiDirParent#findBiDirSingleChildren()}'s  -> sets Backreference
+ * Adds mapped {@link BiDirChild} to {@link BiDirParent#findSingleBiDirChildren()}'s  -> sets Backreference
  *
  * @see EntityIdResolver
  */
@@ -47,7 +47,7 @@ public class BiDirChildIdResolver extends EntityIdResolver<BiDirChild, BiDirChil
 
     @Override
     public void resolveDtoIds(BiDirChildDto mappedDto, BiDirChild serviceEntity) {
-        for (BiDirParent biDirParent : serviceEntity.findBiDirParents()) {
+        for (BiDirParent biDirParent : serviceEntity.findSingleBiDirParents()) {
             mappedDto.addBiDirParentsId(biDirParent);
         }
     }

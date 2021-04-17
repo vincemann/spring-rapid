@@ -50,7 +50,7 @@ public class UniDirParentIdResolver extends EntityIdResolver<UniDirParent, UniDi
         for (UniDirChild child : serviceEntity.findSingleUniDirChildren()) {
             mappedDto.addUniDirChildsId(child);
         }
-        for (Collection<UniDirChild> childrenCollection : serviceEntity.findAllUniDirChildCollections().keySet()) {
+        for (Collection<UniDirChild> childrenCollection : serviceEntity.findUniDirChildCollections().keySet()) {
             for (UniDirChild child : childrenCollection) {
                 mappedDto.addUniDirChildsId(child);
             }
