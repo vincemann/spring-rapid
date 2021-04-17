@@ -218,7 +218,7 @@ class BiDirParentTest {
         //given
         testEntityParent.setEntityChild(testEntityChild);
         //when
-        Set<? extends BiDirChild> children = testEntityParent.findBiDirSingleChildren();
+        Set<? extends BiDirChild> children = testEntityParent.findSingleBiDirChildren();
         //then
         Assertions.assertEquals(1,children.size());
         Assertions.assertSame(testEntityChild,children.stream().findFirst().get());
@@ -229,7 +229,7 @@ class BiDirParentTest {
         //given
         testEntityParent.setEntityChild(null);
         //when
-        Set<? extends BiDirChild> children = testEntityParent.findBiDirSingleChildren();
+        Set<? extends BiDirChild> children = testEntityParent.findSingleBiDirChildren();
         //then
         Assertions.assertTrue(children.isEmpty());
     }

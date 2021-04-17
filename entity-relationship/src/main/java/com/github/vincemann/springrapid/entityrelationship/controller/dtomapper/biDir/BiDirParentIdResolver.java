@@ -53,7 +53,7 @@ public class BiDirParentIdResolver extends EntityIdResolver<BiDirParent, BiDirPa
 
     @Override
     public void resolveDtoIds(BiDirParentDto mappedDto, BiDirParent serviceEntity) {
-        for (BiDirChild biDirChild : serviceEntity.findBiDirSingleChildren()) {
+        for (BiDirChild biDirChild : serviceEntity.findSingleBiDirChildren()) {
             mappedDto.addBiDirChildsId(biDirChild);
         }
         for (Collection<? extends BiDirChild> childrenCollection : serviceEntity.findBiDirChildCollections().keySet()) {

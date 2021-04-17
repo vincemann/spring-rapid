@@ -41,7 +41,7 @@ public class UniDirChildIdResolver extends EntityIdResolver<UniDirChild, UniDirC
 
     @Override
     public void resolveDtoIds(UniDirChildDto mappedDto, UniDirChild serviceEntity) {
-        for (UniDirParent uniDirParent : serviceEntity.findUniDirParents()) {
+        for (UniDirParent uniDirParent : serviceEntity.findSingleUniDirParents()) {
             mappedDto.addUniDirParentsId(uniDirParent);
         }
     }

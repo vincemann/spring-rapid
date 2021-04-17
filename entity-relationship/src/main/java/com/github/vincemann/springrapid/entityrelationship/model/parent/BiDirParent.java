@@ -20,14 +20,30 @@ import java.util.Set;
 public interface  BiDirParent extends  DirParent {
     Logger log = LoggerFactory.getLogger(BiDirParent.class);
 
+
+    // FIND
+
     /**
      * Find the BiDirChildren Collections (all fields of this parent annotated with {@link BiDirChildCollection} )
-     * and the Type of the Entities in the Collection.
+     * mapped to the Type of the Entities in the Collection.
      * @return
      */
     default Map<Collection<BiDirChild>,Class<BiDirChild>> findBiDirChildCollections(){
-        return findAllChildCollections(BiDirChildCollection.class);
+        return findEntityCollections(BiDirChildCollection.class);
     }
+
+    /**
+     * Find the single BiDirChildren (all fields of this parent annotated with {@link BiDirChildEntity} and not null.
+     * @return
+     */
+    default Set<BiDirChild> findSingleBiDirChildren(){
+        return findSingleEntities(BiDirChildEntity.class);
+    }
+
+
+
+
+    // LINK / UNLINK
 
     /**
      * Add a new Child to this parent.
@@ -38,14 +54,8 @@ public interface  BiDirParent extends  DirParent {
      * @throws UnknownChildTypeException
      */
    default void linkBiDirChild(BiDirChild newChild) throws UnknownChildTypeException{
-       linkChild(newChild, BiDirChildEntity.class, BiDirChildCollection.class);
+       linkEntity(newChild, BiDirChildEntity.class, BiDirChildCollection.class);
    }
-
-
-
-
-
-
 
     /**
      * This parent wont know about the given biDirChildToRemove after this operation.
@@ -56,17 +66,7 @@ public interface  BiDirParent extends  DirParent {
      * @throws UnknownChildTypeException
      */
     default void unlinkBiDirChild(BiDirChild biDirChildToRemove) throws UnknownChildTypeException{
-        unlinkChild(biDirChildToRemove,BiDirChildEntity.class,BiDirChildCollection.class);
-    }
-
-
-
-    /**
-     * Find the single BiDirChildren (all fields of this parent annotated with {@link BiDirChildEntity} and not null.
-     * @return
-     */
-    default Set<BiDirChild> findBiDirSingleChildren(){
-       return findSingleChildren(BiDirChildEntity.class);
+        unlinkEntity(biDirChildToRemove,BiDirChildEntity.class,BiDirChildCollection.class);
     }
 
     /**
@@ -76,7 +76,7 @@ public interface  BiDirParent extends  DirParent {
      * @throws UnknownParentTypeException
      */
     default void unlinkChildrensParent() throws UnknownParentTypeException{
-        for(BiDirChild child: findBiDirSingleChildren()){
+        for(BiDirChild child: findSingleBiDirChildren()){
             child.unlinkBiDirParent(this);
         }
         for(Map.Entry<Collection<BiDirChild>,Class<BiDirChild>> entry: findBiDirChildCollections().entrySet()){

@@ -7,8 +7,6 @@ import com.github.vincemann.springrapid.core.service.exception.BadEntityExceptio
 import com.github.vincemann.springrapid.core.service.locator.CrudServiceLocator;
 import lombok.extern.slf4j.Slf4j;
 import org.aspectj.lang.JoinPoint;
-import org.aspectj.lang.ProceedingJoinPoint;
-import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Before;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -58,7 +56,7 @@ public class BiDirEntityRemoveAdvice extends BiDirEntityAdvice {
         if (BiDirChild.class.isAssignableFrom(entity.getClass())) {
             log.debug("applying pre remove BiDirChild logic for: " + entity);
             BiDirChild biDirChild = (BiDirChild) entity;
-            for (BiDirParent parent : biDirChild.findBiDirParents()) {
+            for (BiDirParent parent : biDirChild.findSingleBiDirParents()) {
                 parent.unlinkBiDirChild(biDirChild);
             }
             biDirChild.unlinkBiDirParents();

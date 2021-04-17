@@ -1,7 +1,9 @@
 package com.github.vincemann.springrapid.coredemo.model;
 
 import com.github.vincemann.springrapid.coredemo.model.abs.Person;
+import com.github.vincemann.springrapid.entityrelationship.model.child.annotation.BiDirChildCollection;
 import com.github.vincemann.springrapid.entityrelationship.model.child.annotation.UniDirChildCollection;
+import com.github.vincemann.springrapid.entityrelationship.model.parent.BiDirParent;
 import com.github.vincemann.springrapid.entityrelationship.model.parent.UniDirParent;
 import lombok.*;
 
@@ -15,7 +17,7 @@ import java.util.Set;
 @Entity
 @Table(name = "vets")
 @ToString
-public class Vet extends Person implements UniDirParent {
+public class Vet extends Person implements BiDirParent {
 
     @Builder
     public Vet(String firstName, String lastName, Set<Specialty> specialties) {
@@ -31,6 +33,6 @@ public class Vet extends Person implements UniDirParent {
     @JoinTable(name = "vet_specialties",
             joinColumns = @JoinColumn(name = "vet_id"),
             inverseJoinColumns = @JoinColumn(name = "speciality_id"))
-    @UniDirChildCollection(Specialty.class)
+    @BiDirChildCollection(Specialty.class)
     private Set<Specialty> specialties = new HashSet<>();
 }

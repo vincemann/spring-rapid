@@ -17,15 +17,31 @@ import java.util.Set;
 public interface UniDirParent extends DirParent {
     Logger log = LoggerFactory.getLogger(UniDirParent.class);
 
+    // FIND
+
+
     /**
      * Find the UniDirChildren Collections (all fields of this parent annotated with {@link UniDirChildCollection} and not null )
      * and the Type of the Entities in the Collection.
      *
      * @return
      */
-    default Map<Collection<UniDirChild>, Class<UniDirChild>> findAllUniDirChildCollections()  {
-        return findAllChildCollections(UniDirChildCollection.class);
+    default Map<Collection<UniDirChild>, Class<UniDirChild>> findUniDirChildCollections()  {
+        return findEntityCollections(UniDirChildCollection.class);
     }
+    /**
+     * Find the single UniDirChildren (all fields of this parent annotated with {@link UniDirChildEntity} and not null.
+     * @return
+     */
+    default Set<UniDirChild> findSingleUniDirChildren() {
+        return findSingleEntities(UniDirChildEntity.class);
+    }
+
+
+
+
+    // LINK / UNLINK
+
 
     /**
      * Add a new Child to this parent.
@@ -37,7 +53,7 @@ public interface UniDirParent extends DirParent {
      * @throws UnknownChildTypeException
      */
     default void linkUniDirChild(UniDirChild newChild) throws UnknownChildTypeException{
-        linkChild(newChild,UniDirChildEntity.class,UniDirChildCollection.class);
+        linkEntity(newChild,UniDirChildEntity.class,UniDirChildCollection.class);
     }
 
     /**
@@ -50,15 +66,9 @@ public interface UniDirParent extends DirParent {
      * @throws UnknownChildTypeException
      */
     default void unlinkUniDirChild(UniDirChild toRemove) throws UnknownChildTypeException{
-        unlinkChild(toRemove,UniDirChildEntity.class,UniDirChildCollection.class);
+        unlinkEntity(toRemove,UniDirChildEntity.class,UniDirChildCollection.class);
     }
 
 
-    /**
-     * Find the single UniDirChildren (all fields of this parent annotated with {@link UniDirChildEntity} and not null.
-     * @return
-     */
-    default Set<UniDirChild> findSingleUniDirChildren() {
-        return findSingleChildren(UniDirChildEntity.class);
-    }
+
 }
