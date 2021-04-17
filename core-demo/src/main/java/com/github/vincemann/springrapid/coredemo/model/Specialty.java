@@ -8,6 +8,7 @@ import com.github.vincemann.springrapid.entityrelationship.model.parent.annotati
 import lombok.*;
 
 import javax.persistence.*;
+import java.util.HashSet;
 import java.util.Set;
 
 @Getter
@@ -24,7 +25,8 @@ public class Specialty extends IdentifiableEntityImpl<Long>
 
 
     @ManyToMany(mappedBy = "specialties")
-    private Set<Vet> vets;
+    @BiDirParentCollection(Vet.class)
+    private Set<Vet> vets = new HashSet<>();
 
 
 }
