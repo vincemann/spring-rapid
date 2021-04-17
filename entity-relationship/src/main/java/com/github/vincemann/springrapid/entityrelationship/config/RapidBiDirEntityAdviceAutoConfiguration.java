@@ -13,9 +13,9 @@ import org.springframework.context.annotation.EnableAspectJAutoProxy;
 @ServiceConfig
 @EnableAspectJAutoProxy(proxyTargetClass = true)
 @Slf4j
-public class RapidBiDirServiceAdviceAutoConfiguration {
+public class RapidBiDirEntityAdviceAutoConfiguration {
 
-    public RapidBiDirServiceAdviceAutoConfiguration() {
+    public RapidBiDirEntityAdviceAutoConfiguration() {
 
     }
 
