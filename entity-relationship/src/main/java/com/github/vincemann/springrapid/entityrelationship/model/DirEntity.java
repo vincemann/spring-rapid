@@ -78,25 +78,35 @@ public interface DirEntity {
     default void unlinkEntity(DirEntity entityToRemove, Class<? extends Annotation> entityEntityAnnotationClass, Class<? extends Annotation> entityEntityCollectionAnnotationClass) throws UnknownEntityTypeException{
         AtomicBoolean deleted = new AtomicBoolean(false);
         for (Map.Entry<Collection<DirEntity>, Class<DirEntity>> entry : this.<DirEntity>findEntityCollections(entityEntityCollectionAnnotationClass).entrySet()) {
-            Collection<DirEntity> entityrenCollection = entry.getKey();
-            if(entityrenCollection!=null){
-                if(!entityrenCollection.isEmpty()){
-                    Optional<DirEntity> optionalBiDirEntity = entityrenCollection.stream().findFirst();
+            Collection<DirEntity> entityCollection = entry.getKey();
+            if(entityCollection!=null){
+                if(!entityCollection.isEmpty()){
+                    Optional<DirEntity> optionalBiDirEntity = entityCollection.stream().findFirst();
                     if(optionalBiDirEntity.isPresent()){
                         DirEntity entity = optionalBiDirEntity.get();
                         if(entityToRemove.getClass().equals(entity.getClass())){
                             //this set needs to remove the entity
                             //here is a hibernate bug in persistent set remove function, see https://stackoverflow.com/a/47968974
-                            //therefor we user removeAll as workaround
-                            List<DirEntity> toRemove = new ArrayList<>();
-                            toRemove.add(entityToRemove);
-                            boolean successfulRemove = entityrenCollection.removeAll(toRemove);
-                            //entityrenCollection = PersistentSet
-                            if(!successfulRemove){
-                                throw new RuntimeException("Entity: "+toRemove+", which should be deleted from source entity-collection, was not present in it or delete operation was not successful. "+this);
-                            }else {
-                                deleted.set(true);
+                            //therefor we use an odd workaround
+                            Iterator<DirEntity> iterator = entityCollection.iterator();
+                            while (iterator.hasNext()){
+                                DirEntity e = iterator.next();
+                                if (e.equals(entityToRemove)){
+                                    iterator.remove();
+                                    deleted.set(true);
+                                    break;
+                                }
                             }
+                            // old workaround, which does not work for n-m remove
+//                            List<DirEntity> toRemove = new ArrayList<>();
+//                            toRemove.add(entityToRemove);
+//                            boolean successfulRemove = entityCollection.removeAll(toRemove);
+//                            //entityCollection = PersistentSet
+//                            if(!successfulRemove){
+//                                throw new RuntimeException("Entity: "+toRemove+", which should be deleted from source entity-collection, was not present in it or delete operation was not successful. "+this);
+//                            }else {
+//                                deleted.set(true);
+//                            }
                         }
                     }
                 }

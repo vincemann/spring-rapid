@@ -2,24 +2,14 @@ package com.github.vincemann.springrapid.coredemo.service.jpa;
 
 import com.github.vincemann.springrapid.core.service.exception.BadEntityException;
 import com.github.vincemann.springrapid.core.util.Lists;
-import com.github.vincemann.springrapid.coredemo.model.*;
-import com.github.vincemann.springrapid.coredemo.repo.SpecialtyRepository;
-import com.github.vincemann.springrapid.coredemo.repo.VetRepository;
-import com.github.vincemann.springrapid.coredemo.service.SpecialtyService;
+import com.github.vincemann.springrapid.coredemo.model.Specialty;
+import com.github.vincemann.springrapid.coredemo.model.Vet;
 import com.github.vincemann.springrapid.coredemo.service.VetService;
-import com.github.vincemann.springrapid.coretest.service.CrudServiceIntegrationTest;
-import com.github.vincemann.springrapid.coretest.util.RapidTestUtil;
 import org.apache.commons.beanutils.BeanUtilsBean;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
 
 import java.lang.reflect.InvocationTargetException;
 import java.util.HashSet;
-import java.util.Optional;
-import java.util.Set;
 
 import static com.github.vincemann.ezcompare.Comparator.compare;
 import static com.github.vincemann.springrapid.coretest.service.ExceptionMatchers.noException;
@@ -29,60 +19,9 @@ import static com.github.vincemann.springrapid.coretest.service.request.CrudServ
 import static com.github.vincemann.springrapid.coretest.service.resolve.EntityPlaceholder.DB_ENTITY;
 import static com.github.vincemann.springrapid.coretest.service.resolve.EntityPlaceholder.SERVICE_RETURNED_ENTITY;
 
-public class VerServiceIntegrationTest extends CrudServiceIntegrationTest<VetService, Vet, Long> {
-
-    protected static final String MEIER = "Meier";
-    protected static final String KAHN = "Kahn";
-    protected static final String DENTISM = "Dentism";
-    protected static final String GASTRO = "Gastro";
-    protected static final String HEART = "Heart";
-    //Types
-    Vet VetType = new Vet();
-    Vet meier;
-    Vet kahn;
-
-    Specialty dentism;
-    Specialty gastro;
-    Specialty heart;
-
-    @Autowired
-    SpecialtyService specialtyService;
-    @Autowired
-    SpecialtyRepository specialtyRepository;
+public class VerServiceIntegrationTest extends ManyToManyIntegrationTest<VetService, Vet, Long> {
 
 
-    @Autowired
-    VetRepository vetRepository;
-    @Autowired
-    VetService vetService;
-
-    @BeforeEach
-    public void setupTestData() throws Exception {
-
-        dentism = Specialty.builder()
-                .description(DENTISM)
-                .build();
-
-        heart = Specialty.builder()
-                .description(HEART)
-                .build();
-
-        gastro = Specialty.builder()
-                .description(GASTRO)
-                .build();
-
-        meier = Vet.builder()
-                .firstName("Max")
-                .lastName(MEIER)
-                .specialties(new HashSet<>())
-                .build();
-
-        kahn = Vet.builder()
-                .firstName("Olli")
-                .lastName(KAHN)
-                .specialties(new HashSet<>())
-                .build();
-    }
 
     @Test
     public void canSaveVetWithoutSpecialty() {
@@ -268,51 +207,5 @@ public class VerServiceIntegrationTest extends CrudServiceIntegrationTest<VetSer
         assertSpecialtyHasVets(DENTISM);
     }
 
-    private void assertVetHasSpecialties(String vetName, String... descriptions) {
-        Optional<Vet> vetOptional = vetRepository.findByLastName(vetName);
-        Assertions.assertTrue(vetOptional.isPresent());
-        Vet vet = vetOptional.get();
-
-        Set<Specialty> specialties = new HashSet<>();
-        for (String description : descriptions) {
-            Optional<Specialty> optionalSpecialty = specialtyRepository.findByDescription(description);
-            Assertions.assertTrue(optionalSpecialty.isPresent());
-            specialties.add(optionalSpecialty.get());
-        }
-        Assertions.assertEquals(specialties, vet.getSpecialties());
-    }
-
-    private void assertSpecialtyHasVets(String description, String... vetNames) {
-        Optional<Specialty> optionalSpecialty = specialtyRepository.findByDescription(description);
-        Assertions.assertTrue(optionalSpecialty.isPresent());
-        Specialty specialty = optionalSpecialty.get();
-
-        Set<Vet> vets = new HashSet<>();
-        for (String vetName : vetNames) {
-            Optional<Vet> optionalVet = vetRepository.findByLastName(vetName);
-            Assertions.assertTrue(optionalVet.isPresent());
-            vets.add(optionalVet.get());
-        }
-
-        Assertions.assertEquals(vets, specialty.getVets());
-    }
-
-//    private Vet findVet(Specialty specialty, String name){
-//        Optional<Vet> optionalVet = specialty.getVets().stream().filter(vet -> vet.getLastName().equals(name)).findFirst();
-//        Assertions.assertTrue(optionalVet.isPresent());
-//        return optionalVet.get();
-//    }
-//
-//    private Specialty findSpecialty(Vet vet, String description){
-//        Optional<Specialty> optionalSpecialty = vet.getSpecialties().stream().filter(specialty -> specialty.getDescription().equals(description)).findFirst();
-//        Assertions.assertTrue(optionalSpecialty.isPresent());
-//        return optionalSpecialty.get();
-//    }
-
-    @AfterEach
-    void tearDown() {
-        RapidTestUtil.clear(specialtyService);
-        RapidTestUtil.clear(vetService);
-    }
 
 }

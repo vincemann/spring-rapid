@@ -2,10 +2,7 @@ package com.github.vincemann.springrapid.coredemo.model;
 
 import com.github.vincemann.springrapid.entityrelationship.model.child.annotation.UniDirChildEntity;
 import com.github.vincemann.springrapid.entityrelationship.model.parent.UniDirParent;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 import org.springframework.format.annotation.DateTimeFormat;
 import com.github.vincemann.springrapid.core.model.IdentifiableEntityImpl;
 
@@ -20,6 +17,7 @@ import java.time.LocalDate;
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
+@ToString
 public class Visit extends IdentifiableEntityImpl<Long> implements UniDirParent {
 
     @ManyToOne
