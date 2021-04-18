@@ -43,6 +43,7 @@ public class RapidTestUtil {
         }
     }
 
+
     public static String createUpdateJsonLine(String operation, String path, String value){
         return "  {\"op\": \""+operation+"\", \"path\": \""+path+"\", \"value\": \""+value+"\"}";
     }

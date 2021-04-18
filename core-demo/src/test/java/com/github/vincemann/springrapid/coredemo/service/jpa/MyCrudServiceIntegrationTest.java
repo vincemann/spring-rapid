@@ -12,7 +12,7 @@ import com.github.vincemann.springrapid.coredemo.service.OwnerService;
 import com.github.vincemann.springrapid.coredemo.service.PetService;
 import com.github.vincemann.springrapid.coredemo.service.PetTypeService;
 import com.github.vincemann.springrapid.coredemo.service.plugin.OwnerOfTheYearExtension;
-import com.github.vincemann.springrapid.coretest.service.AbstractCrudServiceIntegrationTest;
+import com.github.vincemann.springrapid.coretest.service.CrudServiceIntegrationTest;
 import com.github.vincemann.springrapid.coretest.util.RapidTestUtil;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -21,12 +21,13 @@ import org.springframework.boot.test.mock.mockito.SpyBean;
 
 import java.io.Serializable;
 import java.time.LocalDate;
+import java.util.HashSet;
 
 public class MyCrudServiceIntegrationTest <
         S extends CrudService<E, Id>,
         E extends IdentifiableEntity<Id>,
         Id extends Serializable
-        > extends AbstractCrudServiceIntegrationTest<S,E,Id> {
+        > extends CrudServiceIntegrationTest<S,E,Id> {
 
     //Types
     Owner OwnerType = new Owner();
@@ -95,6 +96,7 @@ public class MyCrudServiceIntegrationTest <
                 .address("asljnflksamfslkmf")
                 .city("n1 city")
                 .telephone("12843723847324")
+                .pets(new HashSet<>())
                 .build();
 
         kahn = Owner.builder()
@@ -103,7 +105,7 @@ public class MyCrudServiceIntegrationTest <
                 .address("asljnflksamfslkmf")
                 .city("n1 city")
                 .telephone("12843723847324")
-//                .pets(new HashSet<>(Lists.newArrayList(bello)))
+                .pets(new HashSet<>())
                 .build();
     }
 

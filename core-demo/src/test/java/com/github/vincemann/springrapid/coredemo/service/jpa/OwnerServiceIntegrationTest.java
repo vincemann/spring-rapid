@@ -5,26 +5,13 @@ import com.github.vincemann.springrapid.core.service.exception.EntityNotFoundExc
 import com.github.vincemann.springrapid.core.util.Lists;
 import com.github.vincemann.springrapid.coredemo.model.Owner;
 import com.github.vincemann.springrapid.coredemo.model.Pet;
-import com.github.vincemann.springrapid.coredemo.model.PetType;
-import com.github.vincemann.springrapid.coredemo.repo.OwnerRepository;
-import com.github.vincemann.springrapid.coredemo.repo.PetRepository;
-import com.github.vincemann.springrapid.coredemo.repo.PetTypeRepository;
 import com.github.vincemann.springrapid.coredemo.service.OwnerService;
-import com.github.vincemann.springrapid.coredemo.service.PetService;
-import com.github.vincemann.springrapid.coredemo.service.PetTypeService;
-import com.github.vincemann.springrapid.coredemo.service.plugin.OwnerOfTheYearExtension;
-import com.github.vincemann.springrapid.coretest.service.AbstractCrudServiceIntegrationTest;
-import com.github.vincemann.springrapid.coretest.service.result.ServiceResult;
 import org.apache.commons.beanutils.BeanUtilsBean;
 import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.mock.mockito.SpyBean;
 
 import java.lang.reflect.InvocationTargetException;
-import java.time.LocalDate;
 import java.util.HashSet;
 import java.util.Optional;
 
@@ -49,26 +36,22 @@ class OwnerServiceIntegrationTest
 
     @Test
     public void canSaveOwnerWithoutPets() {
-        ServiceResult serviceResult =
-                test(save(meier))
-                        .andExpect(() -> compare(meier)
-                                // resolve db entity makes sure entity is actually saved in repo
-                                .with(resolve(DB_ENTITY))
-                                .properties()
-                                //per instance or Type is both possible Owner::getAnything wont work
-                                .include(meier::getTelephone)
-                                .include(OwnerType::getAddress)
-                                .assertEqual())
-                        .andExpect(()-> propertyAssert(resolve(SERVICE_RETURNED_ENTITY))
-                                .assertEmpty(OwnerType::getPets)
-                        )
-                        .andReturn();
-
-        Assertions.assertTrue(ownerRepository.findByLastName(MEIER).isPresent());
-        Assertions.assertTrue(ownerRepository.findByLastName(MEIER).get().getPets().isEmpty());
-        Assertions.assertEquals(0, petRepository.count());
+        test(save(meier))
+                .andExpect(() -> compare(meier)
+                        // resolve db entity makes sure entity is actually saved in repo
+                        .with(resolve(DB_ENTITY))
+                        .properties()
+                        .all()
+                        .ignore(OwnerType::getId)
+                        .assertEqual())
+                .andExpect(() -> propertyAssert(resolve(SERVICE_RETURNED_ENTITY))
+                        .assertEmpty(OwnerType::getPets))
+                .andExpect(() -> compare(meier).with(resolve(SERVICE_RETURNED_ENTITY))
+                        .properties()
+                        .all()
+                        .ignore(OwnerType::getId)
+                        .assertEqual());
     }
-
 
 
     @Test
@@ -92,8 +75,8 @@ class OwnerServiceIntegrationTest
         Pet savedBello = petRepository.findByName(BELLO).get();
         Owner savedKahn = ownerRepository.findByLastName(KAHN).get();
         // check if bidir relation ships were managed
-        Assertions.assertEquals(savedKahn,savedBello.getOwner());
-        Assertions.assertEquals(savedBello,savedKahn.getPets().stream().findFirst().get());
+        Assertions.assertEquals(savedKahn, savedBello.getOwner());
+        Assertions.assertEquals(savedBello, savedKahn.getPets().stream().findFirst().get());
     }
 
 
@@ -121,8 +104,8 @@ class OwnerServiceIntegrationTest
         Pet dbBello = petRepository.findByName(BELLO).get();
         Owner savedKahn = ownerRepository.findByLastName(KAHN).get();
         // check if bidir relation ships were managed
-        Assertions.assertEquals(savedKahn,dbBello.getOwner());
-        Assertions.assertEquals(dbBello,savedKahn.getPets().stream().findFirst().get());
+        Assertions.assertEquals(savedKahn, dbBello.getOwner());
+        Assertions.assertEquals(dbBello, savedKahn.getPets().stream().findFirst().get());
     }
 
     @Test
@@ -130,7 +113,7 @@ class OwnerServiceIntegrationTest
         Pet savedBello = petService.save(bello);
         Pet savedKitty = petService.save(kitty);
 
-        kahn.setPets(new HashSet<>(Lists.newArrayList(savedBello,savedKitty)));
+        kahn.setPets(new HashSet<>(Lists.newArrayList(savedBello, savedKitty)));
 
         test(save(kahn))
                 .andExpect(() -> compare(kahn)
@@ -150,12 +133,11 @@ class OwnerServiceIntegrationTest
         Pet dbKitty = petRepository.findByName(KITTY).get();
         Owner savedKahn = ownerRepository.findByLastName(KAHN).get();
         // check if bidir relation ships were managed
-        Assertions.assertEquals(savedKahn,dbBello.getOwner());
-        Assertions.assertEquals(savedKahn,dbKitty.getOwner());
-        Assertions.assertEquals(dbBello,savedKahn.getPets().stream().filter(p -> p.getName().equals(BELLO)).findFirst().get());
-        Assertions.assertEquals(dbKitty,savedKahn.getPets().stream().filter(p -> p.getName().equals(KITTY)).findFirst().get());
+        Assertions.assertEquals(savedKahn, dbBello.getOwner());
+        Assertions.assertEquals(savedKahn, dbKitty.getOwner());
+        Assertions.assertEquals(dbBello, savedKahn.getPets().stream().filter(p -> p.getName().equals(BELLO)).findFirst().get());
+        Assertions.assertEquals(dbKitty, savedKahn.getPets().stream().filter(p -> p.getName().equals(KITTY)).findFirst().get());
     }
-
 
 
     @Test
@@ -178,7 +160,7 @@ class OwnerServiceIntegrationTest
 
         test(partialUpdate(ownerUpdateRequest))
                 .andExpect(() -> propertyAssert(resolve(DB_ENTITY))
-                        .assertMatchSize(OwnerType::getPets, 2)
+                        .assertSize(OwnerType::getPets, 2)
                 );
 
         // verify bidir rel management
@@ -186,10 +168,10 @@ class OwnerServiceIntegrationTest
         Pet dbKitty = petRepository.findByName(KITTY).get();
         Owner dbKahn = ownerRepository.findByLastName(KAHN).get();
         // check if bidir relation ships were managed
-        Assertions.assertEquals(dbKahn,dbBello.getOwner());
-        Assertions.assertEquals(dbKahn,dbKitty.getOwner());
-        Assertions.assertEquals(dbBello,dbKahn.getPets().stream().filter(p -> p.getName().equals(BELLO)).findFirst().get());
-        Assertions.assertEquals(dbKitty,dbKahn.getPets().stream().filter(p -> p.getName().equals(KITTY)).findFirst().get());
+        Assertions.assertEquals(dbKahn, dbBello.getOwner());
+        Assertions.assertEquals(dbKahn, dbKitty.getOwner());
+        Assertions.assertEquals(dbBello, dbKahn.getPets().stream().filter(p -> p.getName().equals(BELLO)).findFirst().get());
+        Assertions.assertEquals(dbKitty, dbKahn.getPets().stream().filter(p -> p.getName().equals(KITTY)).findFirst().get());
     }
 
     @Test
@@ -209,7 +191,7 @@ class OwnerServiceIntegrationTest
         //when
         test(update(ownerUpdateRequest))
                 .andExpect(() -> propertyAssert(resolve(DB_ENTITY))
-                        .assertMatchSize(OwnerType::getPets, 2)
+                        .assertSize(OwnerType::getPets, 2)
                 );
 
         // verify bidir rel management
@@ -217,10 +199,10 @@ class OwnerServiceIntegrationTest
         Pet dbKitty = petRepository.findByName(KITTY).get();
         Owner dbKahn = ownerRepository.findByLastName(KAHN).get();
         // check if bidir relation ships were managed
-        Assertions.assertEquals(dbKahn,dbBello.getOwner());
-        Assertions.assertEquals(dbKahn,dbKitty.getOwner());
-        Assertions.assertEquals(dbBello,dbKahn.getPets().stream().filter(p -> p.getName().equals(BELLO)).findFirst().get());
-        Assertions.assertEquals(dbKitty,dbKahn.getPets().stream().filter(p -> p.getName().equals(KITTY)).findFirst().get());
+        Assertions.assertEquals(dbKahn, dbBello.getOwner());
+        Assertions.assertEquals(dbKahn, dbKitty.getOwner());
+        Assertions.assertEquals(dbBello, dbKahn.getPets().stream().filter(p -> p.getName().equals(BELLO)).findFirst().get());
+        Assertions.assertEquals(dbKitty, dbKahn.getPets().stream().filter(p -> p.getName().equals(KITTY)).findFirst().get());
     }
 
     @Test
@@ -239,7 +221,7 @@ class OwnerServiceIntegrationTest
         //when
         test(partialUpdate(addPetsUpdate))
                 .andExpect(() -> propertyAssert(resolve(DB_ENTITY))
-                        .assertMatchSize(OwnerType::getPets, 2)
+                        .assertSize(OwnerType::getPets, 2)
                 );
 
         // verify bidir rel management
@@ -247,10 +229,10 @@ class OwnerServiceIntegrationTest
         Pet dbKitty = petRepository.findByName(KITTY).get();
         Owner dbKahn = ownerRepository.findByLastName(KAHN).get();
         // check if bidir relation ships were managed
-        Assertions.assertEquals(dbKahn,dbBello.getOwner());
-        Assertions.assertEquals(dbKahn,dbKitty.getOwner());
-        Assertions.assertEquals(dbBello,dbKahn.getPets().stream().filter(p -> p.getName().equals(BELLO)).findFirst().get());
-        Assertions.assertEquals(dbKitty,dbKahn.getPets().stream().filter(p -> p.getName().equals(KITTY)).findFirst().get());
+        Assertions.assertEquals(dbKahn, dbBello.getOwner());
+        Assertions.assertEquals(dbKahn, dbKitty.getOwner());
+        Assertions.assertEquals(dbBello, dbKahn.getPets().stream().filter(p -> p.getName().equals(BELLO)).findFirst().get());
+        Assertions.assertEquals(dbKitty, dbKahn.getPets().stream().filter(p -> p.getName().equals(KITTY)).findFirst().get());
     }
 
     @Test
@@ -270,7 +252,7 @@ class OwnerServiceIntegrationTest
         //when
         test(partialUpdate(removePetUpdate))
                 .andExpect(() -> propertyAssert(resolve(DB_ENTITY))
-                        .assertMatchSize(OwnerType::getPets, 0)
+                        .assertSize(OwnerType::getPets, 0)
                 );
 
         // verify bidir rel management
@@ -288,7 +270,7 @@ class OwnerServiceIntegrationTest
         Pet savedBello = petService.save(bello);
         Pet savedKitty = petService.save(kitty);
 
-        kahn.setPets(new HashSet<>(Lists.newArrayList(savedBello,savedKitty)));
+        kahn.setPets(new HashSet<>(Lists.newArrayList(savedBello, savedKitty)));
         Owner savedKahn = getServiceUnderTest().save(kahn);
 
 
@@ -300,7 +282,7 @@ class OwnerServiceIntegrationTest
         //when
         test(partialUpdate(removePetUpdate))
                 .andExpect(() -> propertyAssert(resolve(DB_ENTITY))
-                        .assertMatchSize(OwnerType::getPets, 1)
+                        .assertSize(OwnerType::getPets, 1)
                 );
 
         // verify bidir rel management
@@ -309,8 +291,8 @@ class OwnerServiceIntegrationTest
         Owner dbKahn = ownerRepository.findByLastName(KAHN).get();
         // check if bidir relation ships were managed
         Assertions.assertNull(dbKitty.getOwner());
-        Assertions.assertEquals(dbKahn,dbBello.getOwner());
-        Assertions.assertEquals(dbBello,dbKahn.getPets().stream().filter(p -> p.getName().equals(BELLO)).findFirst().get());
+        Assertions.assertEquals(dbKahn, dbBello.getOwner());
+        Assertions.assertEquals(dbBello, dbKahn.getPets().stream().filter(p -> p.getName().equals(BELLO)).findFirst().get());
 
     }
 
@@ -321,7 +303,7 @@ class OwnerServiceIntegrationTest
         Pet savedKitty = petService.save(kitty);
         Pet savedBella = petService.save(bella);
 
-        kahn.setPets(new HashSet<>(Lists.newArrayList(savedBello,savedKitty,savedBella)));
+        kahn.setPets(new HashSet<>(Lists.newArrayList(savedBello, savedKitty, savedBella)));
         Owner savedKahn = getServiceUnderTest().save(kahn);
 
 
@@ -333,7 +315,7 @@ class OwnerServiceIntegrationTest
         //when
         test(partialUpdate(removePetUpdate))
                 .andExpect(() -> propertyAssert(resolve(DB_ENTITY))
-                        .assertMatchSize(OwnerType::getPets, 1)
+                        .assertSize(OwnerType::getPets, 1)
                 );
 
         // verify bidir rel management
@@ -344,8 +326,8 @@ class OwnerServiceIntegrationTest
         // check if bidir relation ships were managed
         Assertions.assertNull(dbKitty.getOwner());
         Assertions.assertNull(dbBella.getOwner());
-        Assertions.assertEquals(dbKahn,dbBello.getOwner());
-        Assertions.assertEquals(dbBello,dbKahn.getPets().stream().filter(p -> p.getName().equals(BELLO)).findFirst().get());
+        Assertions.assertEquals(dbKahn, dbBello.getOwner());
+        Assertions.assertEquals(dbBello, dbKahn.getPets().stream().filter(p -> p.getName().equals(BELLO)).findFirst().get());
 
     }
 
@@ -355,7 +337,7 @@ class OwnerServiceIntegrationTest
         Pet savedBello = petService.save(bello);
         Pet savedKitty = petService.save(kitty);
 
-        kahn.setPets(new HashSet<>(Lists.newArrayList(savedBello,savedKitty)));
+        kahn.setPets(new HashSet<>(Lists.newArrayList(savedBello, savedKitty)));
         Owner savedKahn = getServiceUnderTest().save(kahn);
 
 
@@ -367,7 +349,7 @@ class OwnerServiceIntegrationTest
         //when
         test(partialUpdate(removePetsUpdate))
                 .andExpect(() -> propertyAssert(resolve(DB_ENTITY))
-                        .assertMatchSize(OwnerType::getPets, 0)
+                        .assertSize(OwnerType::getPets, 0)
                 );
 
         // verify bidir rel management
@@ -385,7 +367,7 @@ class OwnerServiceIntegrationTest
         Pet savedBello = petService.save(bello);
         Pet savedKitty = petService.save(kitty);
 
-        kahn.setPets(new HashSet<>(Lists.newArrayList(savedBello,savedKitty)));
+        kahn.setPets(new HashSet<>(Lists.newArrayList(savedBello, savedKitty)));
         Owner savedKahn = getServiceUnderTest().save(kahn);
 
 
@@ -396,7 +378,7 @@ class OwnerServiceIntegrationTest
         //when
         test(update(removePetsUpdate))
                 .andExpect(() -> propertyAssert(resolve(DB_ENTITY))
-                        .assertMatchSize(OwnerType::getPets, 0)
+                        .assertSize(OwnerType::getPets, 0)
                 );
 
         // verify bidir rel management
@@ -407,7 +389,6 @@ class OwnerServiceIntegrationTest
         Assertions.assertNull(dbKitty.getOwner());
         Assertions.assertNull(dbBello.getOwner());
     }
-
 
 
     @Test
@@ -422,7 +403,7 @@ class OwnerServiceIntegrationTest
         test(partialUpdate(diffTelephoneNumberUpdate))
                 .andExpect(() ->
                         propertyAssert(resolve(DB_ENTITY))
-                                .assertMatch(OwnerType::getTelephone, newNumber)
+                                .assertEquals(OwnerType::getTelephone, newNumber)
                 );
     }
 
@@ -470,8 +451,6 @@ class OwnerServiceIntegrationTest
         Pet dbBello = petRepository.findByName(BELLO).get();
         Assertions.assertNull(dbBello.getOwner());
     }
-
-
 
 
 }

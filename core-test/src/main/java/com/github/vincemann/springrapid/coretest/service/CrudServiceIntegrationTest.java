@@ -41,7 +41,7 @@ import static com.github.vincemann.springrapid.coretest.util.RapidTestUtil.mustB
 //@DataJpaTest
 //@ImportRapidCoreServiceConfig
 //@ImportRapidCoreTestConfig
-public abstract class AbstractCrudServiceIntegrationTest
+public abstract class CrudServiceIntegrationTest
         <
                 S extends CrudService<E, Id>,
                 E extends IdentifiableEntity<Id>,

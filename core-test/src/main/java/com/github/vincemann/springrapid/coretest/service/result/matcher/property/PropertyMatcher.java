@@ -20,18 +20,18 @@ public class PropertyMatcher {
         this.compareRoot = compareRoot;
     }
 
-    public PropertyMatcher assertMatch(Types.Supplier<?> getter, Object expected) {
+    public PropertyMatcher assertEquals(Types.Supplier<?> getter, Object expected) {
         Assertions.assertEquals(expected, call(getter));
         return this;
     }
 
-    public PropertyMatcher assertNotMatch(Types.Supplier<?> getter, Object unexpected) {
+    public PropertyMatcher assertNotEquals(Types.Supplier<?> getter, Object unexpected) {
         Assertions.assertNotEquals(unexpected, call(getter));
         return this;
     }
 
 
-    public PropertyMatcher assertMatchSize(Types.Supplier<?> getter, int collectionSize) {
+    public PropertyMatcher assertSize(Types.Supplier<?> getter, int collectionSize) {
         Collection<?> collection = call(getter);
         Assertions.assertEquals(collectionSize,collection.size());
         return this;
@@ -39,7 +39,7 @@ public class PropertyMatcher {
 
 
     public PropertyMatcher assertEmpty(Types.Supplier<?> getter) {
-        return assertMatchSize(getter,0);
+        return assertSize(getter,0);
     }
 
     private <T> T call(Types.Supplier<?> getter) {
