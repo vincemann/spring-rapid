@@ -17,9 +17,11 @@ import java.util.Set;
 @NoArgsConstructor
 @Entity
 @Builder
+@ToString(onlyExplicitlyIncluded = true)
 public class Specialty extends IdentifiableEntityImpl<Long>
         implements BiDirChild {
 
+    @ToString.Include
     @Column(name = "description")
     private String description;
 

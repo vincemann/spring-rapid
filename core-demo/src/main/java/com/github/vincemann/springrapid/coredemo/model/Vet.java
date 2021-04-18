@@ -16,7 +16,7 @@ import java.util.Set;
 @NoArgsConstructor
 @Entity
 @Table(name = "vets")
-@ToString
+@ToString(callSuper = true)
 public class Vet extends Person implements BiDirParent {
 
     @Builder

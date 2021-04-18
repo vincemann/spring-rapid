@@ -23,7 +23,7 @@ import java.util.Set;
 @Table(name = "pets")
 @Entity
 @Builder
-@ToString
+@ToString(callSuper = true)
 public class Pet extends IdentifiableEntityImpl<Long> implements BiDirChild, UniDirParent {
 
     @Column(name = "name")

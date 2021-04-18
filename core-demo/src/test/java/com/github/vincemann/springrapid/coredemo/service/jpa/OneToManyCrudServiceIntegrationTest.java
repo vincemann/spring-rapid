@@ -23,7 +23,7 @@ import java.io.Serializable;
 import java.time.LocalDate;
 import java.util.HashSet;
 
-public class MyCrudServiceIntegrationTest <
+public class OneToManyCrudServiceIntegrationTest<
         S extends CrudService<E, Id>,
         E extends IdentifiableEntity<Id>,
         Id extends Serializable

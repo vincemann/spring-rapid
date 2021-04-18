@@ -21,7 +21,7 @@ import static com.github.vincemann.springrapid.coretest.service.resolve.EntityPl
 
 
 class PetServiceIntegrationTest
-        extends MyCrudServiceIntegrationTest<PetService, Pet, Long> {
+        extends OneToManyCrudServiceIntegrationTest<PetService, Pet, Long> {
 
 
     @Autowired
