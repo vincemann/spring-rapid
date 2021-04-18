@@ -80,20 +80,42 @@ public abstract class BiDirEntityAdvice {
     protected void updateBiDirChildRelations(BiDirChild newChild) throws BadEntityException, EntityNotFoundException, IllegalAccessException {
         BiDirChild oldChild = findOldEntity(newChild);
 
-        Collection<BiDirParent> oldParents = oldChild.findSingleBiDirParents();
-        Collection<BiDirParent> newParents = newChild.findSingleBiDirParents();
+        Collection<BiDirParent> oldSingleParents = oldChild.findSingleBiDirParents();
+        Collection<BiDirParent> newSinlgeParents = newChild.findSingleBiDirParents();
+
+        Set<Collection<BiDirParent>> oldParentCollections = newChild.findBiDirParentCollections().keySet();
+        Set<Collection<BiDirParent>> newParentCollections = newChild.findBiDirParentCollections().keySet();
+
         //find parents to unlink
         List<BiDirParent> removedParents = new ArrayList<>();
-        for (BiDirParent oldParent : oldParents) {
-            if (!newParents.contains(oldParent)) {
+        for (BiDirParent oldParent : oldSingleParents) {
+            if (!newSinlgeParents.contains(oldParent)) {
                 removedParents.add(oldParent);
             }
         }
+
+        for (Collection<? extends BiDirParent> oldParentCollection : oldParentCollections) {
+            for (BiDirParent oldParent : oldParentCollection) {
+                if (!newSinlgeParents.contains(oldParent)) {
+                    removedParents.add(oldParent);
+                }
+            }
+        }
+
+
         //find added parents
         List<BiDirParent> addedParents = new ArrayList<>();
-        for (BiDirParent newParent : newParents) {
-            if (!oldParents.contains(newParent)) {
+        for (BiDirParent newParent : newSinlgeParents) {
+            if (!oldSingleParents.contains(newParent)) {
                 addedParents.add(newParent);
+            }
+        }
+
+        for (Collection<? extends BiDirParent> newParentCollection : newParentCollections) {
+            for (BiDirParent newParent : newParentCollection) {
+                if (!oldSingleParents.contains(newParent)) {
+                    addedParents.add(newParent);
+                }
             }
         }
 
@@ -101,11 +123,13 @@ public abstract class BiDirEntityAdvice {
 
         //unlink Child from certain Parents
         for (BiDirParent removedParent : removedParents) {
+            log.debug("unlinking parent: " + removedParent + " from child: " + newChild);
             removedParent.unlinkBiDirChild(oldChild);
         }
 
         //add added Parent to child
         for (BiDirParent addedParent : addedParents) {
+            log.debug("linking parent: " + addedParent + " to child: " + newChild);
             addedParent.linkBiDirChild(newChild);
         }
     }

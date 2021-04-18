@@ -55,11 +55,12 @@ public class BiDirEntityRemoveAdvice extends BiDirEntityAdvice {
         }
         if (BiDirChild.class.isAssignableFrom(entity.getClass())) {
             log.debug("applying pre remove BiDirChild logic for: " + entity);
-            BiDirChild biDirChild = (BiDirChild) entity;
-            for (BiDirParent parent : biDirChild.findSingleBiDirParents()) {
-                parent.unlinkBiDirChild(biDirChild);
-            }
-            biDirChild.unlinkBiDirParents();
+//            BiDirChild biDirChild = (BiDirChild) entity;
+//            for (BiDirParent parent : biDirChild.findSingleBiDirParents()) {
+//                parent.unlinkBiDirChild(biDirChild);
+//            }
+//            biDirChild.unlinkBiDirParents();
+            ((BiDirChild) entity).unlinkParentsChildren();
         }
     }
 
