@@ -16,12 +16,12 @@ import javax.persistence.EntityManager;
 import java.lang.reflect.InvocationTargetException;
 
 /**
- * Use together with {@link AbstractCrudServiceIntegrationTest}.
+ * Use together with {@link CrudServiceIntegrationTest}.
  * Template similar to {@link org.springframework.test.web.servlet.MockMvc}, but build for testing of service layer ({@link CrudService}).
  * With this template you can build the test, that shall be executed against a {@link CrudService} in a fluent-API like manner.
  *
  * Creates a stateful {@link this#getTestContext()} that can be queried after test is {@link this#perform(ServiceRequestBuilder)}ed.
- * Other test-support framework-components make use of this context and can therefor only be used after a service test is performed.
+ * Other test-support framework-components make use of this context and can therefore only be used after a service test is performed.
  *
  */
 @Slf4j
@@ -104,7 +104,6 @@ public class ServiceTestTemplate
     private ServiceResult execute(ServiceRequest serviceRequest) {
         try {
             Object result = serviceRequest.getServiceMethod().invoke(
-                    //todo ist das hier nicht bs? warum sollte ich die aspekt proxys deactivieren?
 //                    AopTestUtils.getUltimateTargetObject(serviceUnderTest),
                     serviceUnderTest,
                     serviceRequest.getArgs().toArray()
