@@ -20,6 +20,9 @@ import static com.github.vincemann.springrapid.coretest.service.request.CrudServ
 import static com.github.vincemann.springrapid.coretest.service.resolve.EntityPlaceholder.DB_ENTITY;
 
 
+/**
+ * Test to showcase that auto management of one-many bidir-relationships work for child side
+ */
 class PetServiceIntegrationTest
         extends OneToManyCrudServiceIntegrationTest<PetService, Pet, Long> {
 

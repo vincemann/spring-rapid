@@ -28,6 +28,9 @@ public class ManyToManyIntegrationTest<
 
     protected static final String MEIER = "Meier";
     protected static final String KAHN = "Kahn";
+    protected static final String SCHUHMACHER = "Schuhmacher";
+
+
     protected static final String DENTISM = "Dentism";
     protected static final String GASTRO = "Gastro";
     protected static final String HEART = "Heart";
@@ -38,6 +41,7 @@ public class ManyToManyIntegrationTest<
 
     Vet meier;
     Vet kahn;
+    Vet schuhmacher;
 
     Specialty dentism;
     Specialty gastro;
@@ -72,6 +76,12 @@ public class ManyToManyIntegrationTest<
         meier = Vet.builder()
                 .firstName("Max")
                 .lastName(MEIER)
+                .specialties(new HashSet<>())
+                .build();
+
+        schuhmacher = Vet.builder()
+                .firstName("michael")
+                .lastName(SCHUHMACHER)
                 .specialties(new HashSet<>())
                 .build();
 

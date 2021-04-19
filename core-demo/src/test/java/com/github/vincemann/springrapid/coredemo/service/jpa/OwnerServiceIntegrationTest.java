@@ -24,11 +24,9 @@ import static com.github.vincemann.springrapid.coretest.service.request.CrudServ
 import static com.github.vincemann.springrapid.coretest.service.resolve.EntityPlaceholder.*;
 
 
-//@EnableProjectComponentScan
-//@ImportRapidEntityRelServiceConfig
 
 /**
- * Test to showcase that auto management of bidir-relationships work
+ * Test to showcase that auto management of one-many bidir-relationships work for parent side
  */
 class OwnerServiceIntegrationTest
         extends OneToManyCrudServiceIntegrationTest<OwnerService, Owner, Long> {
