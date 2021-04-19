@@ -21,7 +21,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 public class VetControllerIntegrationTest extends ManyToManyControllerIntegrationTest<VetController,VetService> {
 
-    // SAVE TESTS
 
     @Test
     public void canSaveVet_getLinkedToSpecialties() throws Exception {
@@ -90,6 +89,32 @@ public class VetControllerIntegrationTest extends ManyToManyControllerIntegratio
     }
 
     @Test
+    public void canAddSingleSpecialtyToVet_viaUpdate() throws Exception {
+        // kahn -> dentism
+        // meier -> dentism, heart
+        Specialty savedDentism = specialtyService.save(dentism);
+        Specialty savedGastro = specialtyService.save(gastro);
+        Specialty savedHeart = specialtyService.save(heart);
+        VetDto createdKahnDto = createVetLinkedToSpecialties(kahn,savedDentism);
+        VetDto createdMeierDto = createVetLinkedToSpecialties(meier,savedDentism,savedHeart);
+
+        // add gastro to kahn
+        String addDentismJson = createUpdateJsonLine("add", "/specialtyIds/-",savedGastro.getId().toString());
+        String updateJson = createUpdateJsonRequest(addDentismJson);
+        VetDto responseDto = deserialize(getMockMvc().perform(update(updateJson, createdKahnDto.getId())).andReturn().getResponse().getContentAsString(),VetDto.class);
+        Assertions.assertTrue(responseDto.getSpecialtyIds().contains(savedGastro.getId()));
+        Assertions.assertTrue(responseDto.getSpecialtyIds().contains(savedDentism.getId()));
+        Assertions.assertEquals(2,responseDto.getSpecialtyIds().size());
+
+        assertVetHasSpecialties(KAHN,DENTISM,GASTRO);
+        assertVetHasSpecialties(MEIER,DENTISM, HEART);
+
+        assertSpecialtyHasVets(DENTISM,MEIER,KAHN);
+        assertSpecialtyHasVets(GASTRO,KAHN);
+        assertSpecialtyHasVets(HEART,MEIER);
+    }
+
+    @Test
     public void canAddMultipleSpecialtiesToVet_viaUpdate() throws Exception {
         // kahn -> dentism
         // meier -> dentism, heart
@@ -100,8 +125,8 @@ public class VetControllerIntegrationTest extends ManyToManyControllerIntegratio
         VetDto createdMeierDto = createVetLinkedToSpecialties(meier,savedDentism,savedHeart);
 
         // add gastro and heart to kahn
-        String addDentismJson = createUpdateJsonLine("add", "/specialtyIds",savedGastro.getId().toString());
-        String addGastroJson = createUpdateJsonLine("add", "/specialtyIds",savedHeart.getId().toString());
+        String addDentismJson = createUpdateJsonLine("add", "/specialtyIds/-",savedGastro.getId().toString());
+        String addGastroJson = createUpdateJsonLine("add", "/specialtyIds/-",savedHeart.getId().toString());
         String updateJson = createUpdateJsonRequest(addDentismJson, addGastroJson);
         VetDto responseDto = deserialize(getMockMvc().perform(update(updateJson, createdKahnDto.getId())).andReturn().getResponse().getContentAsString(),VetDto.class);
         Assertions.assertTrue(responseDto.getSpecialtyIds().contains(savedHeart.getId()));
@@ -117,13 +142,40 @@ public class VetControllerIntegrationTest extends ManyToManyControllerIntegratio
         assertSpecialtyHasVets(HEART,KAHN,MEIER);
     }
 
+    @Test
+    public void canAddAndRemoveSpecialtiesToVet_viaUpdate() throws Exception {
+        // kahn -> dentism, heart
+        // meier -> dentism, heart
+        Specialty savedDentism = specialtyService.save(dentism);
+        Specialty savedGastro = specialtyService.save(gastro);
+        Specialty savedHeart = specialtyService.save(heart);
+        VetDto createdKahnDto = createVetLinkedToSpecialties(kahn,savedDentism,savedHeart);
+        VetDto createdMeierDto = createVetLinkedToSpecialties(meier,savedDentism,savedHeart);
+
+        // add gastro and remove heart from kahn
+        String addDentismJson = createUpdateJsonLine("add", "/specialtyIds/-",savedGastro.getId().toString());
+        String addGastroJson = createUpdateJsonLine("remove", "/specialtyIds",savedHeart.getId().toString());
+        String updateJson = createUpdateJsonRequest(addDentismJson, addGastroJson);
+        VetDto responseDto = deserialize(getMockMvc().perform(update(updateJson, createdKahnDto.getId())).andReturn().getResponse().getContentAsString(),VetDto.class);
+        Assertions.assertTrue(responseDto.getSpecialtyIds().contains(savedGastro.getId()));
+        Assertions.assertTrue(responseDto.getSpecialtyIds().contains(savedDentism.getId()));
+        Assertions.assertEquals(2,responseDto.getSpecialtyIds().size());
+
+        assertVetHasSpecialties(KAHN,DENTISM,GASTRO);
+        assertVetHasSpecialties(MEIER,DENTISM, HEART);
+
+        assertSpecialtyHasVets(DENTISM,MEIER,KAHN);
+        assertSpecialtyHasVets(GASTRO,KAHN);
+        assertSpecialtyHasVets(HEART,MEIER);
+    }
+
     private VetDto createVetLinkedToSpecialties(Vet vet, Specialty... specialties) throws Exception {
-        VetDto createKahnDto = new VetDto(vet);
-        createKahnDto.setSpecialtyIds(new HashSet<>(
+        VetDto createVetDto = new VetDto(vet);
+        createVetDto.setSpecialtyIds(new HashSet<>(
                 Arrays.stream(specialties)
                         .map(IdentifiableEntityImpl::getId)
                         .collect(Collectors.toList())));
-        String json = getMockMvc().perform(create(createKahnDto))
+        String json = getMockMvc().perform(create(createVetDto))
                 .andExpect(status().isOk())
                 .andReturn().getResponse().getContentAsString();
         return deserialize(json,VetDto.class);

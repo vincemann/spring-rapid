@@ -14,6 +14,7 @@ import com.github.vincemann.springrapid.core.service.locator.CrudServiceLocator;
 import com.github.vincemann.springrapid.entityrelationship.dto.parent.annotation.BiDirParentId;
 
 import java.io.Serializable;
+import java.util.Collection;
 import java.util.Map;
 
 /**
@@ -35,13 +36,36 @@ public class BiDirChildIdResolver extends EntityIdResolver<BiDirChild, BiDirChil
             Class entityClass = entry.getKey();
             Object parent = findEntityFromService((Class<IdentifiableEntity>)entityClass, entry.getValue());
             try {
-                BiDirParent biDirParent = ((BiDirParent) parent);
-                //set parent of mapped child
-                mappedBiDirChild.linkBiDirParent(biDirParent);
-                //backreference gets set in BiDirChildListener
+//                BiDirParent biDirParent = ((BiDirParent) parent);
+//                //set parent of mapped child
+//                mappedBiDirChild.linkBiDirParent(biDirParent);
+//                //backreference gets set in BiDirChildListener
+                resolveBiDirParentFromService(parent, mappedBiDirChild);
             } catch (ClassCastException e) {
                 throw new IllegalArgumentException("Found Parent " + parent + " is not of Type BiDirParent");
             }
+        }
+
+        //find and handle parent collections
+        Map<Class<BiDirParent>, Collection<Serializable>> parentTypeIdCollectionMappings = biDirChildDto.findAllBiDirParentIdCollections();
+        for (Map.Entry<Class<BiDirParent>, Collection<Serializable>> entry : parentTypeIdCollectionMappings.entrySet()) {
+            Collection<Serializable> idCollection = entry.getValue();
+            for (Serializable id : idCollection) {
+                Class entityClass = entry.getKey();
+                Object parent = findEntityFromService((Class<IdentifiableEntity>) entityClass, id);
+                resolveBiDirParentFromService(parent, mappedBiDirChild);
+            }
+        }
+    }
+
+    private void resolveBiDirParentFromService(Object parent, BiDirChild mappedBiDirChild) {
+        try {
+            BiDirParent biDirParent = ((BiDirParent) parent);
+            //set parent of mapped parent
+            mappedBiDirChild.linkBiDirParent(biDirParent);
+            //backreference gets set in BiDirParentListener
+        } catch (ClassCastException e) {
+            throw new IllegalArgumentException("Found Child " + parent + " is not of Type BiDirChild");
         }
     }
 
@@ -49,6 +73,11 @@ public class BiDirChildIdResolver extends EntityIdResolver<BiDirChild, BiDirChil
     public void resolveDtoIds(BiDirChildDto mappedDto, BiDirChild serviceEntity) {
         for (BiDirParent biDirParent : serviceEntity.findSingleBiDirParents()) {
             mappedDto.addBiDirParentsId(biDirParent);
+        }
+        for (Collection<? extends BiDirParent> parentCollection : serviceEntity.findBiDirParentCollections().keySet()) {
+            for (BiDirParent biDirParent : parentCollection) {
+                mappedDto.addBiDirParentsId(biDirParent);
+            }
         }
     }
 }
