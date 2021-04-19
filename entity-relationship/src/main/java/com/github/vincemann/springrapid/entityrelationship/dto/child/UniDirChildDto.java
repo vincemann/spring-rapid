@@ -1,6 +1,7 @@
 package com.github.vincemann.springrapid.entityrelationship.dto.child;
 
 import com.github.vincemann.springrapid.entityrelationship.dto.parent.annotation.UniDirParentId;
+import com.github.vincemann.springrapid.entityrelationship.dto.parent.annotation.UniDirParentIdCollection;
 import com.github.vincemann.springrapid.entityrelationship.exception.UnknownParentTypeException;
 import com.github.vincemann.springrapid.entityrelationship.model.parent.UniDirParent;
 import org.slf4j.Logger;
@@ -47,7 +48,7 @@ public interface UniDirChildDto extends DirChildDto {
     }
 
     default void addUniDirParentsId(UniDirParent uniDirParent) {
-        addParentsId(uniDirParent,UniDirParentId.class);
+        addParentsId(uniDirParent,UniDirParentId.class, UniDirParentIdCollection.class);
 //        for (Field parentIdField : findUniDirParentIdFields()) {
 //            if (parentIdField.getAnnotation(UniDirParentId.class).value().equals(uniDirParent.getClass())) {
 //                ReflectionUtils.makeAccessible(parentIdField);

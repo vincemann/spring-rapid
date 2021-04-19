@@ -1,13 +1,17 @@
 package com.github.vincemann.springrapid.entityrelationship.dto.child;
 
 import com.github.vincemann.springrapid.entityrelationship.controller.dtomapper.IdResolvingDtoPostProcessor;
+import com.github.vincemann.springrapid.entityrelationship.dto.child.annotation.BiDirChildIdCollection;
 import com.github.vincemann.springrapid.entityrelationship.dto.parent.annotation.BiDirParentId;
+import com.github.vincemann.springrapid.entityrelationship.dto.parent.annotation.BiDirParentIdCollection;
 import com.github.vincemann.springrapid.entityrelationship.exception.UnknownParentTypeException;
+import com.github.vincemann.springrapid.entityrelationship.model.child.BiDirChild;
 import com.github.vincemann.springrapid.entityrelationship.model.parent.BiDirParent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.Serializable;
+import java.util.Collection;
 import java.util.Map;
 
 /**
@@ -48,8 +52,12 @@ public interface BiDirChildDto extends DirChildDto {
 //        return parentIds;
     }
 
+    default Map<Class<BiDirParent>, Collection<Serializable>> findAllBiDirParentIdCollections() {
+        return findAllParentIdCollections(BiDirParentIdCollection.class);
+    }
+
     default void addBiDirParentsId(BiDirParent biDirParent) {
-        addParentsId(biDirParent,BiDirParentId.class);
+        addParentsId(biDirParent,BiDirParentId.class,BiDirParentIdCollection.class);
 
 //        Serializable parentId = ((IdentifiableEntity) biDirParent).getId();
 //        if (parentId == null) {
