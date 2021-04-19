@@ -22,7 +22,7 @@ import static com.github.vincemann.springrapid.coretest.util.RapidTestUtil.creat
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 public class OwnerControllerIntegrationTest
-        extends MyControllerIntegrationTest<OwnerController, OwnerService> {
+        extends OneToManyControllerIntegrationTest<OwnerController, OwnerService> {
 
 
 

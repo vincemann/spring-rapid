@@ -22,7 +22,7 @@ import static com.github.vincemann.springrapid.coretest.service.resolve.EntityPl
 /**
  * Test to showcase that auto management of many-many bidir-relationships work for parent side
  */
-public class VerServiceIntegrationTest extends ManyToManyIntegrationTest<VetService, Vet, Long> {
+public class VerServiceIntegrationTest extends ManyToManyServiceIntegrationTest<VetService, Vet, Long> {
 
 
 

@@ -21,7 +21,7 @@ import static com.github.vincemann.springrapid.coretest.service.request.CrudServ
  * Test to showcase that auto management of many-many bidir-relationships work for child side
  */
 public class SpecialtyServiceIntegrationTest
-        extends ManyToManyIntegrationTest<SpecialtyService, Specialty, Long> {
+        extends ManyToManyServiceIntegrationTest<SpecialtyService, Specialty, Long> {
 
 
     @Test

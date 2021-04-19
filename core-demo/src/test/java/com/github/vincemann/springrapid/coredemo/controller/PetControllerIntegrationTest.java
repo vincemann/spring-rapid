@@ -3,7 +3,6 @@ package com.github.vincemann.springrapid.coredemo.controller;
 import com.github.vincemann.springrapid.coredemo.dtos.pet.PetDto;
 import com.github.vincemann.springrapid.coredemo.model.Owner;
 import com.github.vincemann.springrapid.coredemo.model.Pet;
-import com.github.vincemann.springrapid.coredemo.model.PetType;
 import com.github.vincemann.springrapid.coredemo.service.PetService;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -13,7 +12,7 @@ import static com.github.vincemann.springrapid.coretest.util.RapidTestUtil.creat
 import static com.github.vincemann.springrapid.coretest.util.RapidTestUtil.createUpdateJsonRequest;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-public class PetControllerIntegrationTest extends MyControllerIntegrationTest<PetController, PetService>
+public class PetControllerIntegrationTest extends OneToManyControllerIntegrationTest<PetController, PetService>
 {
 
     @Test
