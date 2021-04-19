@@ -83,7 +83,7 @@ public abstract class BiDirEntityAdvice {
         Collection<BiDirParent> oldSingleParents = oldChild.findSingleBiDirParents();
         Collection<BiDirParent> newSinlgeParents = newChild.findSingleBiDirParents();
 
-        Set<Collection<BiDirParent>> oldParentCollections = newChild.findBiDirParentCollections().keySet();
+        Set<Collection<BiDirParent>> oldParentCollections = oldChild.findBiDirParentCollections().keySet();
         Set<Collection<BiDirParent>> newParentCollections = newChild.findBiDirParentCollections().keySet();
 
         //find parents to unlink

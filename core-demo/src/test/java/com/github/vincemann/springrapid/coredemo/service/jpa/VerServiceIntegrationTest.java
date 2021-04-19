@@ -19,6 +19,9 @@ import static com.github.vincemann.springrapid.coretest.service.request.CrudServ
 import static com.github.vincemann.springrapid.coretest.service.resolve.EntityPlaceholder.DB_ENTITY;
 import static com.github.vincemann.springrapid.coretest.service.resolve.EntityPlaceholder.SERVICE_RETURNED_ENTITY;
 
+/**
+ * Test to showcase that auto management of many-many bidir-relationships work for parent side
+ */
 public class VerServiceIntegrationTest extends ManyToManyIntegrationTest<VetService, Vet, Long> {
 
 
