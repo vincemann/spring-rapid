@@ -29,7 +29,7 @@ import static com.github.vincemann.springrapid.coretest.service.resolve.EntityPl
  * Test to showcase that auto management of one-many bidir-relationships work for parent side
  */
 class OwnerServiceIntegrationTest
-        extends OneToManyCrudServiceIntegrationTest<OwnerService, Owner, Long> {
+        extends OneToManyServiceIntegrationTest<OwnerService, Owner, Long> {
 
 
     @Test

@@ -1,13 +1,10 @@
-package com.github.vincemann.springrapid.coredemo.controller;
+package com.github.vincemann.springrapid.coredemo.service.jpa;
 
-import com.github.vincemann.springrapid.core.controller.GenericCrudController;
-import com.github.vincemann.springrapid.core.security.RapidAuthenticatedPrincipal;
-import com.github.vincemann.springrapid.core.security.RapidSecurityContext;
+import com.github.vincemann.springrapid.core.model.IdentifiableEntity;
+import com.github.vincemann.springrapid.core.service.CrudService;
 import com.github.vincemann.springrapid.coredemo.model.Owner;
 import com.github.vincemann.springrapid.coredemo.model.Pet;
 import com.github.vincemann.springrapid.coredemo.model.PetType;
-import com.github.vincemann.springrapid.coredemo.model.Specialty;
-import com.github.vincemann.springrapid.core.service.CrudService;
 import com.github.vincemann.springrapid.coredemo.repo.OwnerRepository;
 import com.github.vincemann.springrapid.coredemo.repo.PetRepository;
 import com.github.vincemann.springrapid.coredemo.repo.PetTypeRepository;
@@ -15,31 +12,25 @@ import com.github.vincemann.springrapid.coredemo.service.OwnerService;
 import com.github.vincemann.springrapid.coredemo.service.PetService;
 import com.github.vincemann.springrapid.coredemo.service.PetTypeService;
 import com.github.vincemann.springrapid.coredemo.service.plugin.OwnerOfTheYearExtension;
-import com.github.vincemann.springrapid.coretest.controller.urlparamid.AutoMockUrlParamIdControllerTest;
-import com.github.vincemann.springrapid.coretest.controller.urlparamid.IntegrationUrlParamIdControllerTest;
+import com.github.vincemann.springrapid.coretest.service.CrudServiceIntegrationTest;
 import com.github.vincemann.springrapid.coretest.util.RapidTestUtil;
-import lombok.Getter;
-import lombok.Setter;
-import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.mock.mockito.SpyBean;
 
+import java.io.Serializable;
 import java.time.LocalDate;
+import java.util.HashSet;
 
-@Getter
-@Setter
-@Slf4j
-// currently unused, keep for future integration controller demo tests
-public abstract class MyControllerIntegrationTest<C extends GenericCrudController<?,Long,S,?,?>,S extends CrudService<?,Long>>
-        extends IntegrationUrlParamIdControllerTest<C,Long,S>
-
-{
+public class OneToManyServiceIntegrationTest<
+        S extends CrudService<E, Id>,
+        E extends IdentifiableEntity<Id>,
+        Id extends Serializable
+        > extends CrudServiceIntegrationTest<S,E,Id> {
 
     //Types
-    final Owner OwnerType = new Owner();
-    final Pet PetType = new Pet();
+    Owner OwnerType = new Owner();
 
     protected static final String MEIER = "Meier";
     protected static final String KAHN = "Kahn";
@@ -73,15 +64,11 @@ public abstract class MyControllerIntegrationTest<C extends GenericCrudControlle
 
     @Autowired
     OwnerRepository ownerRepository;
-
-    @Autowired
-    RapidSecurityContext<RapidAuthenticatedPrincipal> securityContext;
     @Autowired
     OwnerService ownerService;
 
     @BeforeEach
     public void setupTestData() throws Exception {
-
         savedDogPetType = petTypeService.save(new PetType("Dog"));
         savedCatPetType = petTypeService.save(new PetType("Cat"));
 
@@ -108,7 +95,8 @@ public abstract class MyControllerIntegrationTest<C extends GenericCrudControlle
                 .lastName(MEIER)
                 .address("asljnflksamfslkmf")
                 .city("n1 city")
-                .telephone("0123456789")
+                .telephone("12843723847324")
+                .pets(new HashSet<>())
                 .build();
 
         kahn = Owner.builder()
@@ -116,8 +104,8 @@ public abstract class MyControllerIntegrationTest<C extends GenericCrudControlle
                 .lastName(KAHN)
                 .address("asljnflksamfslkmf")
                 .city("n1 city")
-                .telephone("1234567890")
-//                .pets(new HashSet<>(Lists.newArrayList(bello)))
+                .telephone("12843723847324")
+                .pets(new HashSet<>())
                 .build();
     }
 
@@ -127,6 +115,4 @@ public abstract class MyControllerIntegrationTest<C extends GenericCrudControlle
         RapidTestUtil.clear(ownerService);
         RapidTestUtil.clear(petTypeService);
     }
-
-
 }

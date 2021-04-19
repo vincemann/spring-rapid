@@ -1,7 +1,10 @@
 package com.github.vincemann.springrapid.coredemo.dtos;
 
 import com.github.vincemann.springrapid.coredemo.model.Specialty;
+import com.github.vincemann.springrapid.coredemo.model.Vet;
+import com.github.vincemann.springrapid.entityrelationship.dto.child.annotation.BiDirChildIdCollection;
 import com.github.vincemann.springrapid.entityrelationship.dto.child.annotation.UniDirChildIdCollection;
+import com.github.vincemann.springrapid.entityrelationship.dto.parent.BiDirParentDto;
 import com.github.vincemann.springrapid.entityrelationship.dto.parent.UniDirParentDto;
 import lombok.*;
 import org.springframework.lang.Nullable;
@@ -17,7 +20,7 @@ import java.util.Set;
 @Setter
 @Validated
 @ToString(callSuper = true)
-public class VetDto extends PersonDto implements UniDirParentDto {
+public class VetDto extends PersonDto implements BiDirParentDto {
 
 
     @Builder
@@ -30,9 +33,11 @@ public class VetDto extends PersonDto implements UniDirParentDto {
         }
     }
 
+    public VetDto(Vet vet){
+        super(vet.getFirstName(),vet.getLastName());
+    }
 
-    @Nullable
     @Size(max = 20)
-    @UniDirChildIdCollection(Specialty.class)
+    @BiDirChildIdCollection(Specialty.class)
     private Set<Long> specialtyIds = new HashSet<>();
 }

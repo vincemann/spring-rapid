@@ -1,6 +1,6 @@
-package com.github.vincemann.springrapid.coredemo.service.jpa;
+package com.github.vincemann.springrapid.coredemo.controller;
 
-import com.github.vincemann.springrapid.core.model.IdentifiableEntity;
+import com.github.vincemann.springrapid.core.controller.GenericCrudController;
 import com.github.vincemann.springrapid.core.service.CrudService;
 import com.github.vincemann.springrapid.coredemo.model.Specialty;
 import com.github.vincemann.springrapid.coredemo.model.Vet;
@@ -8,24 +8,20 @@ import com.github.vincemann.springrapid.coredemo.repo.SpecialtyRepository;
 import com.github.vincemann.springrapid.coredemo.repo.VetRepository;
 import com.github.vincemann.springrapid.coredemo.service.SpecialtyService;
 import com.github.vincemann.springrapid.coredemo.service.VetService;
-import com.github.vincemann.springrapid.coretest.service.CrudServiceIntegrationTest;
+import com.github.vincemann.springrapid.coretest.controller.urlparamid.IntegrationUrlParamIdControllerTest;
 import com.github.vincemann.springrapid.coretest.util.RapidTestUtil;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import java.io.Serializable;
 import java.util.HashSet;
 import java.util.Optional;
 import java.util.Set;
 
-public class ManyToManyIntegrationTest<
-        S extends CrudService<E, Id>,
-        E extends IdentifiableEntity<Id>,
-        Id extends Serializable
-        > extends CrudServiceIntegrationTest<S, E, Id> {
-
+public class ManyToManyControllerIntegrationTest <C extends GenericCrudController<?,Long,S,?,?>,S extends CrudService<?,Long>>
+        extends IntegrationUrlParamIdControllerTest<C,Long,S>
+{
     protected static final String MEIER = "Meier";
     protected static final String KAHN = "Kahn";
     protected static final String SCHUHMACHER = "Schuhmacher";
