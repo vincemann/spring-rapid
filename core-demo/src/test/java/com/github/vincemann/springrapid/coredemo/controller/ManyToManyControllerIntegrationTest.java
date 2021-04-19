@@ -14,6 +14,7 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.HashSet;
 import java.util.Optional;
@@ -113,7 +114,6 @@ public class ManyToManyControllerIntegrationTest <C extends GenericCrudControlle
             Assertions.assertTrue(optionalVet.isPresent());
             vets.add(optionalVet.get());
         }
-
         Assertions.assertEquals(vets, specialty.getVets());
     }
 

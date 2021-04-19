@@ -26,7 +26,7 @@ public class Specialty extends IdentifiableEntityImpl<Long>
     private String description;
 
 
-    @ManyToMany(mappedBy = "specialties")
+    @ManyToMany(mappedBy = "specialties", fetch = FetchType.EAGER)
     @BiDirParentCollection(Vet.class)
     private Set<Vet> vets = new HashSet<>();
 
