@@ -1,6 +1,7 @@
 package com.github.vincemann.springrapid.entityrelationship.model.parent;
 
 import com.github.vincemann.springrapid.entityrelationship.exception.UnknownChildTypeException;
+import com.github.vincemann.springrapid.entityrelationship.model.DirEntity;
 import com.github.vincemann.springrapid.entityrelationship.model.child.UniDirChild;
 import com.github.vincemann.springrapid.entityrelationship.model.child.annotation.UniDirChildCollection;
 import com.github.vincemann.springrapid.entityrelationship.model.child.annotation.UniDirChildEntity;
@@ -14,8 +15,7 @@ import java.util.Set;
 /**
  * Same as {@link BiDirParent} but for a unidirectional relationship.
  */
-public interface UniDirParent extends DirParent {
-    Logger log = LoggerFactory.getLogger(UniDirParent.class);
+public interface UniDirParent extends DirEntity {
 
     // FIND
 

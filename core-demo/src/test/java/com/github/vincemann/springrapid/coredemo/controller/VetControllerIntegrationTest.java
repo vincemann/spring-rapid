@@ -142,6 +142,7 @@ public class VetControllerIntegrationTest extends ManyToManyControllerIntegratio
         assertSpecialtyHasVets(HEART,KAHN,MEIER);
     }
 
+    // todo does not work when all tests are run, racecondition?
     @Test
     public void canAddAndRemoveSpecialtiesToVet_viaUpdate() throws Exception {
         // kahn -> dentism, heart

@@ -19,6 +19,17 @@ import java.util.*;
 
 import static com.github.vincemann.springrapid.core.util.ReflectionUtils.setFinal;
 
+/**
+ * Allows removing by value for string convertable type Collections and {@link IdentifiableEntity} Collections.
+ * Translates value to index.
+ *
+ * i.E:
+ * petIds= [4,10,2,5,7]
+ *
+ * op 'remove', path '/petIds', value '5'
+ * ->
+ * op 'remove', path '/petIds/3'
+ */
 @Slf4j
 public class ExtendedRemoveJsonPatchStrategy implements JsonPatchStrategy {
 
