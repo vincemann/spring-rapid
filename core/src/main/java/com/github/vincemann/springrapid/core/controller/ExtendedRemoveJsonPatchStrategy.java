@@ -8,7 +8,7 @@ import com.github.fge.jsonpatch.JsonPatch;
 import com.github.fge.jsonpatch.JsonPatchException;
 import com.github.vincemann.springrapid.core.model.IdentifiableEntity;
 import com.github.vincemann.springrapid.core.service.exception.BadEntityException;
-import com.github.vincemann.springrapid.core.util.EntityCollectionUtils;
+import com.github.vincemann.springrapid.core.util.EntityCollectionNameUtils;
 import com.github.vincemann.springrapid.core.util.JsonUtils;
 import com.github.vincemann.springrapid.core.util.Lists;
 import lombok.extern.slf4j.Slf4j;
@@ -89,7 +89,7 @@ public class ExtendedRemoveJsonPatchStrategy implements JsonPatchStrategy {
         String path = instructionNode.findValue("path").asText();
         Field collectionField = ReflectionUtils.findField(savedEntity.getClass(),
                 // Utils wont transform if not "...Ids" fieldname
-                EntityCollectionUtils.transformDtoEntityIdCollectionFieldName(path.replace("/", "")));
+                EntityCollectionNameUtils.transformDtoEntityIdCollectionFieldName(path.replace("/", "")));
         if (collectionField==null){
             log.warn("Collection field for remove by value not found: "+ path);
             return;
@@ -99,7 +99,7 @@ public class ExtendedRemoveJsonPatchStrategy implements JsonPatchStrategy {
         int[] position = {-1};
         Optional elementToDelete = Optional.empty();
         Collection collection;
-        if (EntityCollectionUtils.isEntityCollectionIdField(path.replace("/", ""))) {
+        if (EntityCollectionNameUtils.isEntityCollectionIdField(path.replace("/", ""))) {
             log.debug("removing from entity collection, value will be interpreted as id");
             collection = (Collection) collectionField.get(savedEntity);
             elementToDelete = ((Collection<? extends IdentifiableEntity>)collection).stream()

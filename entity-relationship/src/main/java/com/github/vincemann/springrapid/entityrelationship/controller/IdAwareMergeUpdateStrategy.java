@@ -1,7 +1,7 @@
 package com.github.vincemann.springrapid.entityrelationship.controller;
 
 import com.github.vincemann.springrapid.core.controller.mergeUpdate.MergeUpdateStrategyImpl;
-import com.github.vincemann.springrapid.core.util.EntityCollectionUtils;
+import com.github.vincemann.springrapid.core.util.EntityCollectionNameUtils;
 
 
 /**
@@ -11,7 +11,7 @@ public class IdAwareMergeUpdateStrategy extends MergeUpdateStrategyImpl {
 
     @Override
     protected String transform(String dtoPropertyName) {
-        return EntityCollectionUtils.transformDtoEntityIdFieldName(dtoPropertyName);
+        return EntityCollectionNameUtils.transformDtoEntityIdFieldName(dtoPropertyName);
     }
 
 }

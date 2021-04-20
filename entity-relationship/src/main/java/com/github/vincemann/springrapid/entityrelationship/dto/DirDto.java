@@ -9,9 +9,7 @@ import org.slf4j.LoggerFactory;
 
 import java.io.Serializable;
 import java.lang.annotation.Annotation;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 public interface DirDto {
     Logger log = LoggerFactory.getLogger(DirDto.class);
