@@ -1,6 +1,7 @@
 package com.github.vincemann.springrapid.entityrelationship.dto.parent;
 
 import com.github.vincemann.springrapid.entityrelationship.controller.dtomapper.IdResolvingDtoPostProcessor;
+import com.github.vincemann.springrapid.entityrelationship.dto.DirDto;
 import com.github.vincemann.springrapid.entityrelationship.dto.child.annotation.BiDirChildId;
 import com.github.vincemann.springrapid.entityrelationship.dto.child.annotation.BiDirChildIdCollection;
 import com.github.vincemann.springrapid.entityrelationship.exception.UnknownChildTypeException;
@@ -18,66 +19,25 @@ import java.util.Map;
  * <p>
  * This Dto can be mapped to its Entity by using {@link IdResolvingDtoPostProcessor}
  */
-public interface BiDirParentDto extends DirParentDto{
+public interface BiDirParentDto extends DirDto {
 
     Logger log = LoggerFactory.getLogger(BiDirParentDto.class);
 
 
-    default <ChildId extends Serializable> ChildId findBiDirChildId(Class<? extends BiDirChild> childClazz) throws UnknownChildTypeException {
-        return findChildId(childClazz,BiDirChildId.class);
-//
-//        Field[] childrenIdFields = findBiDirChildrenIdFields();
-//        for (Field field : childrenIdFields) {
-//            if (field.getAnnotation(BiDirChildId.class).value().equals(childClazz)) {
-//                field.setAccessible(true);
-//                return (ChildId) field.get(this);
-//            }
-//        }
-//        throw new UnknownChildTypeException(this.getClass(), childClazz);
+//    default <ChildId extends Serializable> ChildId findBiDirChildId(Class<? extends BiDirChild> childClazz) throws UnknownChildTypeException {
+//        return findChildId(childClazz,BiDirChildId.class);
+//    }
+
+    default Map<Class<BiDirChild>, Serializable> findBiDirChildIds() {
+        return findEntityIds(BiDirChildId.class);
     }
 
-    default Map<Class<BiDirChild>, Serializable> findAllBiDirChildIds() {
-        return findAllChildIds(BiDirChildId.class);
-//        Map<Class, Serializable> childrenIds = new HashMap<>();
-//        Field[] childIdFields = findBiDirChildrenIdFields();
-//        for (Field field : childIdFields) {
-//            field.setAccessible(true);
-//            Serializable id = (Serializable) field.get(this);
-//            if (id != null) {
-//                childrenIds.put(field.getAnnotation(BiDirChildId.class).value(), id);
-//            } else {
-//                log.warn("Warning: Null id found in BiDirDtoParent " + this + " for ChildIdField with name: " + field.getName());
-//            }
-//        }
-//        return childrenIds;
-    }
+//    default <ChildId extends Serializable> Collection<ChildId> findBiDirChildrenIdCollection(Class<? extends BiDirChild> childClazz)  {
+//        return findChildIdCollection(childClazz,BiDirChildIdCollection.class);
+//    }
 
-    default <ChildId extends Serializable> Collection<ChildId> findBiDirChildrenIdCollection(Class<? extends BiDirChild> childClazz)  {
-        return findChildIdCollection(childClazz,BiDirChildIdCollection.class);
-//        Field[] childrenIdCollectionFields = findBiDirChildrenIdCollectionFields();
-//        for (Field field : childrenIdCollectionFields) {
-//            if (field.getAnnotation(BiDirChildIdCollection.class).value().equals(childClazz)) {
-//                field.setAccessible(true);
-//                return (Collection<ChildId>) field.get(this);
-//            }
-//        }
-//        throw new UnknownChildTypeException(this.getClass(), childClazz);
-    }
-
-    default Map<Class<BiDirChild>, Collection<Serializable>> findAllBiDirChildIdCollections() {
-        return findAllChildIdCollections(BiDirChildIdCollection.class);
-//        Map<Class, Collection<Serializable>> childrenIdCollections = new HashMap<>();
-//        Field[] childIdCollectionFields = findBiDirChildrenIdCollectionFields();
-//        for (Field field : childIdCollectionFields) {
-//            field.setAccessible(true);
-//            Collection<Serializable> idCollection = (Collection<Serializable>) field.get(this);
-//            if (idCollection != null) {
-//                childrenIdCollections.put(field.getAnnotation(BiDirChildIdCollection.class).value(), idCollection);
-//            }/*else {
-//                throw new IllegalArgumentException("Null idCollection found in BiDirDtoParent "+ this + " for ChildIdCollectionField with name: " + field.getName());
-//            }*/
-//        }
-//        return childrenIdCollections;
+    default Map<Class<BiDirChild>, Collection<Serializable>> findBiDirChildIdCollections() {
+        return findEntityIdCollections(BiDirChildIdCollection.class);
     }
 
 
@@ -88,46 +48,7 @@ public interface BiDirParentDto extends DirParentDto{
      *
      * @param child
      */
-    default void addBiDirChildsId(BiDirChild child) {
-        addChildsId(child,BiDirChildId.class,BiDirChildIdCollection.class);
-//        Serializable biDirChildId = ((IdentifiableEntity) child).getId();
-//        if (biDirChildId == null) {
-//            throw new IllegalArgumentException("Id from Child must not be null");
-//        }
-//
-//
-//        Map<Class, Collection<Serializable>> allChildrenIdCollections = findTypeBiDirChildrenIdCollectionMap();
-//        //child collections
-//        for (Map.Entry<Class, Collection<Serializable>> childrenIdCollectionEntry : allChildrenIdCollections.entrySet()) {
-//            if (childrenIdCollectionEntry.getKey().equals(child.getClass())) {
-//                //need to add
-//                Collection<Serializable> idCollection = childrenIdCollectionEntry.getValue();
-//                //biDirChild is always an Identifiable Child
-//                idCollection.add(biDirChildId);
-//            }
-//        }
-//        //single children
-//        Field[] childrenIdFields = findBiDirChildrenIdFields();
-//        for (Field field : childrenIdFields) {
-//            field.setAccessible(true);
-//            Class<? extends BiDirChild> clazzBelongingToId = field.getAnnotation(BiDirChildId.class).value();
-//            if (clazzBelongingToId.equals(child.getClass())) {
-//                Object prevChild = field.get(this);
-//                if (prevChild != null) {
-//                    log.warn("Warning: prevChild was not null -> overriding child:  " + prevChild + " from this parent: " + this);
-//                }
-//                field.set(this, biDirChildId);
-//            }
-//        }
+    default void addBiDirChildId(BiDirChild child) {
+        addEntityId(child, BiDirChildId.class, BiDirChildIdCollection.class);
     }
-
-//    default Field[] findBiDirChildrenIdCollectionFields() {
-//        Field[] childrenIdCollectionFields = ReflectionUtilsBean.getInstance().getFieldsWithAnnotation(this.getClass(), BiDirChildIdCollection.class);
-//        return childrenIdCollectionFields;
-//    }
-//
-//    default Field[] findBiDirChildrenIdFields() {
-//        Field[] childrenIdFields = ReflectionUtilsBean.getInstance().getFieldsWithAnnotation(getClass(), BiDirChildId.class);
-//        return childrenIdFields;
-//    }
 }

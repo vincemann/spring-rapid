@@ -2,6 +2,7 @@ package com.github.vincemann.springrapid.entityrelationship.model.parent;
 
 import com.github.vincemann.springrapid.entityrelationship.exception.UnknownChildTypeException;
 import com.github.vincemann.springrapid.entityrelationship.exception.UnknownParentTypeException;
+import com.github.vincemann.springrapid.entityrelationship.model.DirEntity;
 import com.github.vincemann.springrapid.entityrelationship.model.child.BiDirChild;
 import com.github.vincemann.springrapid.entityrelationship.model.child.annotation.BiDirChildCollection;
 import com.github.vincemann.springrapid.entityrelationship.model.child.annotation.BiDirChildEntity;
@@ -17,8 +18,7 @@ import java.util.Set;
  * Represents a parent of a bidirectional relationship (i.e. Entity with @OneToMany typically would implement this interface).
  * The Child of the relationship should implement {@link BiDirChild} and annotate its parents with {@link BiDirParentEntity}.
  */
-public interface  BiDirParent extends  DirParent {
-    Logger log = LoggerFactory.getLogger(BiDirParent.class);
+public interface  BiDirParent extends DirEntity {
 
 
     // FIND

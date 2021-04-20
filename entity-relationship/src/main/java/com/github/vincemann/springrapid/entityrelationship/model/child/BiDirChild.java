@@ -3,6 +3,7 @@ package com.github.vincemann.springrapid.entityrelationship.model.child;
 import com.github.vincemann.springrapid.entityrelationship.exception.UnknownChildTypeException;
 import com.github.vincemann.springrapid.entityrelationship.exception.UnknownEntityTypeException;
 import com.github.vincemann.springrapid.entityrelationship.exception.UnknownParentTypeException;
+import com.github.vincemann.springrapid.entityrelationship.model.DirEntity;
 import com.github.vincemann.springrapid.entityrelationship.model.child.annotation.BiDirChildCollection;
 import com.github.vincemann.springrapid.entityrelationship.model.child.annotation.BiDirChildEntity;
 import com.github.vincemann.springrapid.entityrelationship.model.parent.BiDirParent;
@@ -19,9 +20,7 @@ import java.util.Map;
  * The Parent of the Relation ship should implement {@link BiDirParent} and annotate its ChildCollections (containing Entities of this Type) with {@link BiDirChildCollection}
  * or its single Children (bidirectional @OneToOne) with {@link BiDirChildEntity}.
  */
-public interface BiDirChild extends DirChild {
-    Logger log = LoggerFactory.getLogger(BiDirChild.class);
-
+public interface BiDirChild extends DirEntity {
     // FIND
 
     /**
@@ -36,7 +35,7 @@ public interface BiDirChild extends DirChild {
      *
      * @return  all parent of this, that are not null
      */
-    public default Collection<BiDirParent> findSingleBiDirParents() {
+    default Collection<BiDirParent> findSingleBiDirParents() {
         return findSingleEntities(BiDirParentEntity.class);
     }
 
@@ -50,11 +49,11 @@ public interface BiDirChild extends DirChild {
      * @param parentToSet
      * @throws UnknownParentTypeException   when supplied Parent does not match any of the fields in child class anntoated with {@link BiDirParentEntity}
      */
-    public default void linkBiDirParent(BiDirParent parentToSet) throws UnknownParentTypeException {
+    default void linkBiDirParent(BiDirParent parentToSet) throws UnknownParentTypeException {
        linkEntity(parentToSet,BiDirParentEntity.class,BiDirParentCollection.class);
     }
 
-    public default void unlinkBiDirParents() throws UnknownChildTypeException, UnknownParentTypeException{
+    default void unlinkBiDirParents() throws UnknownChildTypeException, UnknownParentTypeException{
         for(BiDirParent parent: findSingleBiDirParents()){
             if(parent!=null) {
                 this.unlinkBiDirParent(parent);
@@ -70,7 +69,7 @@ public interface BiDirChild extends DirChild {
      * @param parentToDelete
      * @throws UnknownParentTypeException   thrown, if parentToDelete is of unknown type -> no field , annotated as {@link BiDirParentEntity}, with the most specific type of parentToDelete, exists in Child (this).
      */
-    public default void unlinkBiDirParent(BiDirParent parentToDelete) throws UnknownParentTypeException {
+    default void unlinkBiDirParent(BiDirParent parentToDelete) throws UnknownParentTypeException {
         unlinkEntity(parentToDelete,BiDirParentEntity.class,BiDirParentCollection.class);
     }
 
@@ -92,35 +91,5 @@ public interface BiDirChild extends DirChild {
             parentCollection.clear();
         }
     }
-
-//    /**
-//     * Adds this child to its parents
-//     */
-//    public default void linkToBiDirParents(){
-//        Collection<BiDirParent> parents = findSingleBiDirParents();
-//        for(BiDirParent parent: parents){
-//            if(parent!=null) {
-//                parent.linkBiDirChild(this);
-//            }else {
-//                log.warn("found null parent of biDirChild with type: "+ getClass().getSimpleName());
-//            }
-//        }
-
-//    }
-//    /**
-//     * Find Parent of this child, annotated with {@link BiDirParentEntity} and has same type as parentToSet.
-//     * Dont override, only set parentToSet, if matching parentField value was null.
-//     * @param parentToSet
-//     * @return  true, if parent was null and set
-//     */
-//    public default boolean linkBiDirParentIfNonePresent(BiDirParent parentToSet)  {
-//       return linkParentNotSet(parentToSet,BiDirParentEntity.class);
-
-//    }
-
-
-
-
-
 
 }

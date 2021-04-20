@@ -33,14 +33,14 @@ public class BiDirParentIdResolver extends EntityIdResolver<BiDirParent, BiDirPa
     public void resolveEntityIds(BiDirParent mappedBiDirParent, BiDirParentDto biDirParentDto) throws BadEntityException, EntityNotFoundException {
         //find and handle single Children
 
-        Map<Class<BiDirChild>, Serializable> childTypeIdMappings = biDirParentDto.findAllBiDirChildIds();
+        Map<Class<BiDirChild>, Serializable> childTypeIdMappings = biDirParentDto.findBiDirChildIds();
         for (Map.Entry<Class<BiDirChild>, Serializable> entry : childTypeIdMappings.entrySet()) {
             Class entityClass = entry.getKey();
             Object child = findEntityFromService((Class<IdentifiableEntity>) entityClass, entry.getValue());
             resolveBiDirChildFromService(child, mappedBiDirParent);
         }
         //find and handle children collections
-        Map<Class<BiDirChild>, Collection<Serializable>> childTypeIdCollectionMappings = biDirParentDto.findAllBiDirChildIdCollections();
+        Map<Class<BiDirChild>, Collection<Serializable>> childTypeIdCollectionMappings = biDirParentDto.findBiDirChildIdCollections();
         for (Map.Entry<Class<BiDirChild>, Collection<Serializable>> entry : childTypeIdCollectionMappings.entrySet()) {
             Collection<Serializable> idCollection = entry.getValue();
             for (Serializable id : idCollection) {
@@ -54,11 +54,11 @@ public class BiDirParentIdResolver extends EntityIdResolver<BiDirParent, BiDirPa
     @Override
     public void resolveDtoIds(BiDirParentDto mappedDto, BiDirParent serviceEntity) {
         for (BiDirChild biDirChild : serviceEntity.findSingleBiDirChildren()) {
-            mappedDto.addBiDirChildsId(biDirChild);
+            mappedDto.addBiDirChildId(biDirChild);
         }
         for (Collection<? extends BiDirChild> childrenCollection : serviceEntity.findBiDirChildCollections().keySet()) {
             for (BiDirChild biDirChild : childrenCollection) {
-                mappedDto.addBiDirChildsId(biDirChild);
+                mappedDto.addBiDirChildId(biDirChild);
             }
         }
     }

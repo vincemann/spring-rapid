@@ -25,7 +25,7 @@ public class UniDirChildIdResolver extends EntityIdResolver<UniDirChild, UniDirC
     }
 
     public void resolveEntityIds(UniDirChild mappedUniDirChild, UniDirChildDto uniDirChildDto) throws BadEntityException, EntityNotFoundException {
-        Map<Class<UniDirParent>, Serializable> parentTypeIdMappings = uniDirChildDto.findAllUniDirParentIds();
+        Map<Class<UniDirParent>, Serializable> parentTypeIdMappings = uniDirChildDto.findUniDirParentIds();
         for (Map.Entry<Class<UniDirParent>, Serializable> entry : parentTypeIdMappings.entrySet()) {
             Class entityClass = entry.getKey();
             UniDirParent parent = findEntityFromService((Class<IdentifiableEntity>) entityClass, entry.getValue());
@@ -42,7 +42,7 @@ public class UniDirChildIdResolver extends EntityIdResolver<UniDirChild, UniDirC
     @Override
     public void resolveDtoIds(UniDirChildDto mappedDto, UniDirChild serviceEntity) {
         for (UniDirParent uniDirParent : serviceEntity.findSingleUniDirParents()) {
-            mappedDto.addUniDirParentsId(uniDirParent);
+            mappedDto.addUniDirParentId(uniDirParent);
         }
     }
 }
