@@ -4,6 +4,7 @@ import com.github.vincemann.springrapid.core.controller.dto.mapper.DtoPostProces
 import com.github.vincemann.springrapid.core.model.IdentifiableEntity;
 import com.github.vincemann.springrapid.core.service.exception.BadEntityException;
 import com.github.vincemann.springrapid.core.service.exception.EntityNotFoundException;
+import com.github.vincemann.springrapid.entityrelationship.dto.DirDto;
 import com.github.vincemann.springrapid.entityrelationship.dto.child.BiDirChildDto;
 import com.github.vincemann.springrapid.entityrelationship.dto.parent.BiDirParentDto;
 import com.github.vincemann.springrapid.entityrelationship.dto.child.UniDirChildDto;
@@ -39,10 +40,7 @@ public class IdResolvingDtoPostProcessor implements DtoPostProcessor<Object, Ide
 
     @Override
     public boolean supports(Class<?>entityClass, Class<?> dtoClass) {
-        return (BiDirChildDto.class.isAssignableFrom(dtoClass) ||
-                BiDirParentDto.class.isAssignableFrom(dtoClass) ||
-                UniDirParentDto.class.isAssignableFrom(dtoClass) ||
-                UniDirChildDto.class.isAssignableFrom(dtoClass));
+        return DirDto.class.isAssignableFrom(dtoClass);
     }
 
     @Override

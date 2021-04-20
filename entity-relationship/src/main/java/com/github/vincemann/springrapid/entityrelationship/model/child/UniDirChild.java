@@ -17,7 +17,7 @@ public interface UniDirChild extends DirEntity {
 
     // FIND
 
-    default Map<Collection<UniDirChild>,Class<UniDirChild>> findUniDirParentCollections(){
+    default Map<Collection<UniDirParent>,Class<UniDirParent>> findUniDirParentCollections(){
         return findEntityCollections(BiDirParentCollection.class);
     }
 

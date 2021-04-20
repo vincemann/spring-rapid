@@ -23,7 +23,7 @@ public interface UniDirParentDto extends DirDto {
 //        return findChildId(childClazz,UniDirChildId.class);
 //    }
 
-    default Map<Class<UniDirChild>, Serializable> findAllUniDirChildIds(){
+    default Map<Class<UniDirChild>, Serializable> findUniDirChildIds(){
         return findEntityIds(UniDirChildId.class);
     }
 
@@ -35,7 +35,7 @@ public interface UniDirParentDto extends DirDto {
 
 
 
-    default Map<Class<UniDirChild>, Collection<Serializable>> findAllUniDirChildIdCollections(){
+    default Map<Class<UniDirChild>, Collection<Serializable>> findUniDirChildIdCollections(){
         return findEntityIdCollections(UniDirChildIdCollection.class);
     }
 
@@ -44,7 +44,7 @@ public interface UniDirParentDto extends DirDto {
      *
      * @param child
      */
-    default void addUniDirChildsId(UniDirChild child) {
+    default void addUniDirChildId(UniDirChild child) {
         addEntityId(child, UniDirChildId.class, UniDirChildIdCollection.class);
     }
 

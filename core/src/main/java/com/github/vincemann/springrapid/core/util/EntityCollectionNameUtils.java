@@ -1,6 +1,6 @@
 package com.github.vincemann.springrapid.core.util;
 
-public class EntityCollectionUtils {
+public class EntityCollectionNameUtils {
 
     public static final String ID_SUFFIX = "Id";
     public static final String COLLECTION_IDS_SUFFIX = "Ids";
