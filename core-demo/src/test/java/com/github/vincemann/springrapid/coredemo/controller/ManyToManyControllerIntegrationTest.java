@@ -24,6 +24,7 @@ public class ManyToManyControllerIntegrationTest <C extends GenericCrudControlle
         extends IntegrationUrlParamIdControllerTest<C,Long,S>
 {
     protected static final String MEIER = "Meier";
+    protected static final String MUSCLE = "Muscle";
     protected static final String KAHN = "Kahn";
     protected static final String SCHUHMACHER = "Schuhmacher";
 
@@ -43,6 +44,7 @@ public class ManyToManyControllerIntegrationTest <C extends GenericCrudControlle
     Specialty dentism;
     Specialty gastro;
     Specialty heart;
+    Specialty muscle;
 
     @Autowired
     SpecialtyService specialtyService;
@@ -64,6 +66,10 @@ public class ManyToManyControllerIntegrationTest <C extends GenericCrudControlle
 
         heart = Specialty.builder()
                 .description(HEART)
+                .build();
+
+        muscle = Specialty.builder()
+                .description(MUSCLE)
                 .build();
 
         gastro = Specialty.builder()

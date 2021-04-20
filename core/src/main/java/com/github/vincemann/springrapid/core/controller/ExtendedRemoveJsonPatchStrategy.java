@@ -29,6 +29,11 @@ import static com.github.vincemann.springrapid.core.util.ReflectionUtils.setFina
  * op 'remove', path '/petIds', value '5'
  * ->
  * op 'remove', path '/petIds/3'
+ *
+ *
+ * NOTE::
+ * Dont use remove and add in one request, if you remove whole collection and not elements by value/index.
+ * This is a limitation by JsonPatch itself, not by this extension.
  */
 @Slf4j
 public class ExtendedRemoveJsonPatchStrategy implements JsonPatchStrategy {

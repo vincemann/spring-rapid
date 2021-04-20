@@ -123,9 +123,9 @@ public class ManyToManyServiceIntegrationTest<
 
     @AfterEach
     void tearDown() {
-//        specialtyRepository.deleteAll();
-//        vetRepository.deleteAll();
-        RapidTestUtil.clear(specialtyService);
-        RapidTestUtil.clear(vetService);
+        specialtyRepository.deleteAll();
+        vetRepository.deleteAll();
+//        RapidTestUtil.clear(specialtyService);
+//        RapidTestUtil.clear(vetService);
     }
 }
