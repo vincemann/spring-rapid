@@ -7,6 +7,7 @@ import com.github.vincemann.springrapid.coredemo.model.Specialty;
 import com.github.vincemann.springrapid.coredemo.model.Vet;
 import com.github.vincemann.springrapid.coredemo.service.VetService;
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.springframework.test.web.servlet.MvcResult;
 
@@ -142,9 +143,9 @@ public class VetControllerIntegrationTest extends ManyToManyControllerIntegratio
         assertSpecialtyHasVets(HEART,KAHN,MEIER);
     }
 
-    // todo does not work when all tests are run, racecondition?
+
     @Test
-    public void canAddAndRemoveSpecialtiesToVet_viaUpdate() throws Exception {
+    public void canRemoveAllSpecialtiesFromVet_viaUpdate() throws Exception {
         // kahn -> dentism, heart
         // meier -> dentism, heart
         Specialty savedDentism = specialtyService.save(dentism);
@@ -153,20 +154,106 @@ public class VetControllerIntegrationTest extends ManyToManyControllerIntegratio
         VetDto createdKahnDto = createVetLinkedToSpecialties(kahn,savedDentism,savedHeart);
         VetDto createdMeierDto = createVetLinkedToSpecialties(meier,savedDentism,savedHeart);
 
-        // add gastro and remove heart from kahn
-        String addDentismJson = createUpdateJsonLine("add", "/specialtyIds/-",savedGastro.getId().toString());
-        String addGastroJson = createUpdateJsonLine("remove", "/specialtyIds",savedHeart.getId().toString());
-        String updateJson = createUpdateJsonRequest(addDentismJson, addGastroJson);
+        // remove all from kahn
+        String removeAllJson = createUpdateJsonLine("remove", "/specialtyIds");
+        String updateJson = createUpdateJsonRequest(removeAllJson);
         VetDto responseDto = deserialize(getMockMvc().perform(update(updateJson, createdKahnDto.getId())).andReturn().getResponse().getContentAsString(),VetDto.class);
-        Assertions.assertTrue(responseDto.getSpecialtyIds().contains(savedGastro.getId()));
-        Assertions.assertTrue(responseDto.getSpecialtyIds().contains(savedDentism.getId()));
-        Assertions.assertEquals(2,responseDto.getSpecialtyIds().size());
+        Assertions.assertEquals(0,responseDto.getSpecialtyIds().size());
 
-        assertVetHasSpecialties(KAHN,DENTISM,GASTRO);
+        assertVetHasSpecialties(KAHN);
         assertVetHasSpecialties(MEIER,DENTISM, HEART);
 
-        assertSpecialtyHasVets(DENTISM,MEIER,KAHN);
+        assertSpecialtyHasVets(DENTISM,MEIER);
+        assertSpecialtyHasVets(GASTRO);
+        assertSpecialtyHasVets(HEART,MEIER);
+    }
+
+    @Test
+    public void canRemoveAllAndAddOneSpecialtyToVet_viaUpdate() throws Exception {
+        // kahn -> dentism, heart
+        // meier -> dentism, heart
+        Specialty savedDentism = specialtyService.save(dentism);
+        Specialty savedGastro = specialtyService.save(gastro);
+        Specialty savedHeart = specialtyService.save(heart);
+        VetDto createdKahnDto = createVetLinkedToSpecialties(kahn,savedDentism,savedHeart);
+        VetDto createdMeierDto = createVetLinkedToSpecialties(meier,savedDentism,savedHeart);
+
+        // remove all from kahn then add gastro
+        String removeAllJson = createUpdateJsonLine("remove", "/specialtyIds");
+        String addGastroJson = createUpdateJsonLine("add", "/specialtyIds",savedGastro.getId().toString());
+        String updateJson = createUpdateJsonRequest(removeAllJson,addGastroJson);
+        VetDto responseDto = deserialize(getMockMvc().perform(update(updateJson, createdKahnDto.getId())).andReturn().getResponse().getContentAsString(),VetDto.class);
+        Assertions.assertTrue(responseDto.getSpecialtyIds().contains(savedGastro.getId()));
+        Assertions.assertEquals(1,responseDto.getSpecialtyIds().size());
+
+        assertVetHasSpecialties(KAHN,GASTRO);
+        assertVetHasSpecialties(MEIER,DENTISM, HEART);
+
+        assertSpecialtyHasVets(DENTISM,MEIER);
         assertSpecialtyHasVets(GASTRO,KAHN);
+        assertSpecialtyHasVets(HEART,MEIER);
+    }
+
+    @Test
+    public void canRemoveSpecificSpeciality_andAddDiffSpecialtyToVet_viaUpdate() throws Exception {
+        // kahn -> dentism, heart
+        // meier -> dentism, heart
+        Specialty savedDentism = specialtyService.save(dentism);
+        Specialty savedGastro = specialtyService.save(gastro);
+        Specialty savedHeart = specialtyService.save(heart);
+        VetDto createdKahnDto = createVetLinkedToSpecialties(kahn,savedDentism,savedHeart);
+        VetDto createdMeierDto = createVetLinkedToSpecialties(meier,savedDentism,savedHeart);
+
+        // remove dentism from kahn then add gastro
+        String removeDentismJson = createUpdateJsonLine("remove", "/specialtyIds",savedDentism.getId().toString());
+        String addGastroJson = createUpdateJsonLine("add", "/specialtyIds/-",savedGastro.getId().toString());
+        String updateJson = createUpdateJsonRequest(removeDentismJson,addGastroJson);
+        VetDto responseDto = deserialize(getMockMvc().perform(update(updateJson, createdKahnDto.getId())).andReturn().getResponse().getContentAsString(),VetDto.class);
+        Assertions.assertTrue(responseDto.getSpecialtyIds().contains(savedGastro.getId()));
+        Assertions.assertTrue(responseDto.getSpecialtyIds().contains(savedHeart.getId()));
+        Assertions.assertEquals(2,responseDto.getSpecialtyIds().size());
+
+        assertVetHasSpecialties(KAHN,GASTRO,HEART);
+        assertVetHasSpecialties(MEIER,DENTISM, HEART);
+
+        assertSpecialtyHasVets(DENTISM,MEIER);
+        assertSpecialtyHasVets(GASTRO,KAHN);
+        assertSpecialtyHasVets(HEART,MEIER,KAHN);
+    }
+
+
+
+    @Test
+    public void canRemoveAllAndAddMultipleSpecialtiesInNextRequestToVet_viaUpdate() throws Exception {
+        // kahn -> dentism, heart
+        // meier -> dentism, heart
+        Specialty savedDentism = specialtyService.save(dentism);
+        Specialty savedGastro = specialtyService.save(gastro);
+        Specialty savedHeart = specialtyService.save(heart);
+        Specialty savedMuscle = specialtyService.save(muscle);
+        VetDto createdKahnDto = createVetLinkedToSpecialties(kahn,savedDentism,savedHeart);
+        VetDto createdMeierDto = createVetLinkedToSpecialties(meier,savedDentism,savedHeart);
+
+        // remove all from kahn then add gastro and muscle
+        String removeAllJson = createUpdateJsonLine("remove", "/specialtyIds");
+        String updateJson = createUpdateJsonRequest(removeAllJson);
+        VetDto responseDto = deserialize(getMockMvc().perform(update(updateJson, createdKahnDto.getId())).andReturn().getResponse().getContentAsString(),VetDto.class);
+        Assertions.assertEquals(0,responseDto.getSpecialtyIds().size());
+
+        String addGastroJson = createUpdateJsonLine("add", "/specialtyIds/-",savedGastro.getId().toString());
+        String addMuscleJson = createUpdateJsonLine("add", "/specialtyIds/-",savedMuscle.getId().toString());
+        updateJson = createUpdateJsonRequest(addGastroJson,addMuscleJson);
+        responseDto = deserialize(getMockMvc().perform(update(updateJson, createdKahnDto.getId())).andReturn().getResponse().getContentAsString(),VetDto.class);
+        Assertions.assertTrue(responseDto.getSpecialtyIds().contains(savedGastro.getId()));
+        Assertions.assertTrue(responseDto.getSpecialtyIds().contains(savedMuscle.getId()));
+        Assertions.assertEquals(2,responseDto.getSpecialtyIds().size());
+
+        assertVetHasSpecialties(KAHN,GASTRO, MUSCLE);
+        assertVetHasSpecialties(MEIER,DENTISM, HEART);
+
+        assertSpecialtyHasVets(DENTISM,MEIER);
+        assertSpecialtyHasVets(GASTRO,KAHN);
+        assertSpecialtyHasVets(MUSCLE,KAHN);
         assertSpecialtyHasVets(HEART,MEIER);
     }
 

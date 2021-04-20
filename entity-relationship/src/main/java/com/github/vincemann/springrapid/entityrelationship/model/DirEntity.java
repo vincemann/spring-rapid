@@ -122,6 +122,7 @@ public interface DirEntity {
             }
         });
         if(!deleted.get()){
+            System.err.println("it is also possible, that entity to unlink was not found in collection");
             throw new UnknownEntityTypeException(this.getClass(), entityToRemove.getClass());
         }
     }

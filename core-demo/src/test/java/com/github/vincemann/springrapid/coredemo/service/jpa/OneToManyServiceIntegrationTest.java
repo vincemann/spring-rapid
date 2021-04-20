@@ -111,8 +111,11 @@ public class OneToManyServiceIntegrationTest<
 
     @AfterEach
     void tearDown() {
-        RapidTestUtil.clear(petService);
-        RapidTestUtil.clear(ownerService);
-        RapidTestUtil.clear(petTypeService);
+        petRepository.deleteAll();
+        ownerRepository.deleteAll();
+        petTypeRepository.deleteAll();
+//        RapidTestUtil.clear(petService);
+//        RapidTestUtil.clear(ownerService);
+//        RapidTestUtil.clear(petTypeService);
     }
 }
