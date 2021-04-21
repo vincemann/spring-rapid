@@ -5,6 +5,7 @@ import com.github.vincemann.springrapid.core.model.IdentifiableEntityImpl;
 import com.github.vincemann.springrapid.entityrelationship.model.child.BiDirChild;
 import com.github.vincemann.springrapid.entityrelationship.model.parent.annotation.BiDirParentEntity;
 import lombok.*;
+import org.checkerframework.common.aliasing.qual.Unique;
 
 import javax.persistence.Entity;
 import javax.persistence.JoinColumn;
@@ -19,6 +20,7 @@ import javax.persistence.Table;
 @Entity
 @Builder
 public class Toy extends IdentifiableEntityImpl<Long> implements BiDirChild {
+    @Unique
     private String name;
 
     @ManyToOne

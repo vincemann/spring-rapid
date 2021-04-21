@@ -76,19 +76,19 @@ public class ManyToManyServiceIntegrationTest<
         meier = Vet.builder()
                 .firstName("Max")
                 .lastName(MEIER)
-                .specialties(new HashSet<>())
+                .specialtys(new HashSet<>())
                 .build();
 
         schuhmacher = Vet.builder()
                 .firstName("michael")
                 .lastName(SCHUHMACHER)
-                .specialties(new HashSet<>())
+                .specialtys(new HashSet<>())
                 .build();
 
         kahn = Vet.builder()
                 .firstName("Olli")
                 .lastName(KAHN)
-                .specialties(new HashSet<>())
+                .specialtys(new HashSet<>())
                 .build();
     }
 
@@ -97,13 +97,13 @@ public class ManyToManyServiceIntegrationTest<
         Assertions.assertTrue(vetOptional.isPresent());
         Vet vet = vetOptional.get();
 
-        Set<Specialty> specialties = new HashSet<>();
+        Set<Specialty> specialtys = new HashSet<>();
         for (String description : descriptions) {
             Optional<Specialty> optionalSpecialty = specialtyRepository.findByDescription(description);
             Assertions.assertTrue(optionalSpecialty.isPresent());
-            specialties.add(optionalSpecialty.get());
+            specialtys.add(optionalSpecialty.get());
         }
-        Assertions.assertEquals(specialties, vet.getSpecialties());
+        Assertions.assertEquals(specialtys, vet.getSpecialtys());
     }
 
     protected void assertSpecialtyHasVets(String description, String... vetNames) {

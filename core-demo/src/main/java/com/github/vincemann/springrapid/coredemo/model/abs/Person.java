@@ -18,6 +18,7 @@ public abstract class Person extends IdentifiableEntityImpl<Long> {
     @Column(name = "first_name")
     @NotBlank
     private String firstName;
+
     @ToString.Include
     @Unique
     @NotBlank

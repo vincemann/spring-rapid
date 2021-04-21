@@ -79,19 +79,19 @@ public class ManyToManyControllerIntegrationTest <C extends GenericCrudControlle
         meier = Vet.builder()
                 .firstName("Max")
                 .lastName(MEIER)
-                .specialties(new HashSet<>())
+                .specialtys(new HashSet<>())
                 .build();
 
         schuhmacher = Vet.builder()
                 .firstName("michael")
                 .lastName(SCHUHMACHER)
-                .specialties(new HashSet<>())
+                .specialtys(new HashSet<>())
                 .build();
 
         kahn = Vet.builder()
                 .firstName("Olli")
                 .lastName(KAHN)
-                .specialties(new HashSet<>())
+                .specialtys(new HashSet<>())
                 .build();
     }
 
@@ -100,14 +100,14 @@ public class ManyToManyControllerIntegrationTest <C extends GenericCrudControlle
         Assertions.assertTrue(vetOptional.isPresent());
         Vet vet = vetOptional.get();
 
-        Set<Specialty> specialties = new HashSet<>();
+        Set<Specialty> specialtys = new HashSet<>();
         for (String description : descriptions) {
             Optional<Specialty> optionalSpecialty = specialtyRepository.findByDescription(description);
             Assertions.assertTrue(optionalSpecialty.isPresent());
-            specialties.add(optionalSpecialty.get());
+            specialtys.add(optionalSpecialty.get());
         }
         System.err.println("Checking vet: " + vetName);
-        Assertions.assertEquals(specialties, vet.getSpecialties());
+        Assertions.assertEquals(specialtys, vet.getSpecialtys());
     }
 
     protected void assertSpecialtyHasVets(String description, String... vetNames) {

@@ -38,7 +38,7 @@ public class VerServiceIntegrationTest extends ManyToManyServiceIntegrationTest<
                         .assertEqual())
                 // is implicitly tested by next statement, just want to make it explicit
                 .andExpect(() -> propertyAssert(resolve(SERVICE_RETURNED_ENTITY))
-                        .assertEmpty(VetType::getSpecialties)
+                        .assertEmpty(VetType::getSpecialtys)
                 )
                 .andExpect(() -> compare(meier).with(resolve(SERVICE_RETURNED_ENTITY))
                         .properties()
@@ -52,7 +52,7 @@ public class VerServiceIntegrationTest extends ManyToManyServiceIntegrationTest<
         Specialty savedDentism = specialtyService.save(dentism);
         Specialty savedGastro = specialtyService.save(gastro);
 
-        meier.setSpecialties(new HashSet<>(Lists.newArrayList(savedDentism, savedGastro)));
+        meier.setSpecialtys(new HashSet<>(Lists.newArrayList(savedDentism, savedGastro)));
 
         test(save(meier));
 
@@ -66,7 +66,7 @@ public class VerServiceIntegrationTest extends ManyToManyServiceIntegrationTest<
         Specialty savedDentism = specialtyService.save(dentism);
         Specialty savedGastro = specialtyService.save(gastro);
 
-        meier.setSpecialties(new HashSet<>(Lists.newArrayList(savedDentism, savedGastro)));
+        meier.setSpecialtys(new HashSet<>(Lists.newArrayList(savedDentism, savedGastro)));
 
         Vet savedMeier = getServiceUnderTest().save(meier);
         test(findById(savedMeier.getId()))
@@ -86,10 +86,10 @@ public class VerServiceIntegrationTest extends ManyToManyServiceIntegrationTest<
         Specialty savedDentism = specialtyService.save(dentism);
         Specialty savedGastro = specialtyService.save(gastro);
 
-        meier.setSpecialties(new HashSet<>(Lists.newArrayList(savedDentism, savedGastro)));
+        meier.setSpecialtys(new HashSet<>(Lists.newArrayList(savedDentism, savedGastro)));
 
         Vet savedMeier = getServiceUnderTest().save(meier);
-        kahn.setSpecialties(new HashSet<>(Lists.newArrayList(savedGastro)));
+        kahn.setSpecialtys(new HashSet<>(Lists.newArrayList(savedGastro)));
         test(save(kahn));
 
         assertVetHasSpecialties(MEIER, DENTISM, GASTRO);
@@ -102,14 +102,14 @@ public class VerServiceIntegrationTest extends ManyToManyServiceIntegrationTest<
     public void canUnlinkSpecialtyFromVet_viaPartialUpdate() throws BadEntityException, InvocationTargetException, NoSuchMethodException, InstantiationException, IllegalAccessException {
         Specialty savedDentism = specialtyService.save(dentism);
         Specialty savedGastro = specialtyService.save(gastro);
-        meier.setSpecialties(new HashSet<>(Lists.newArrayList(savedDentism, savedGastro)));
+        meier.setSpecialtys(new HashSet<>(Lists.newArrayList(savedDentism, savedGastro)));
         Vet savedMeier = getServiceUnderTest().save(meier);
-        kahn.setSpecialties(new HashSet<>(Lists.newArrayList(savedGastro)));
+        kahn.setSpecialtys(new HashSet<>(Lists.newArrayList(savedGastro)));
         Vet savedKahn = getServiceUnderTest().save(kahn);
 
         // remove dentism from meier
         Vet meierUpdate = Vet.builder()
-                .specialties(new HashSet<>(Lists.newArrayList(savedGastro)))
+                .specialtys(new HashSet<>(Lists.newArrayList(savedGastro)))
                 .build();
         meierUpdate.setId(savedMeier.getId());
         test(partialUpdate(meierUpdate))
@@ -127,14 +127,14 @@ public class VerServiceIntegrationTest extends ManyToManyServiceIntegrationTest<
     public void canUnlinkSpecialtyFromVet_viaFullUpdate() throws BadEntityException, InvocationTargetException, NoSuchMethodException, InstantiationException, IllegalAccessException {
         Specialty savedDentism = specialtyService.save(dentism);
         Specialty savedGastro = specialtyService.save(gastro);
-        meier.setSpecialties(new HashSet<>(Lists.newArrayList(savedDentism, savedGastro)));
+        meier.setSpecialtys(new HashSet<>(Lists.newArrayList(savedDentism, savedGastro)));
         Vet savedMeier = getServiceUnderTest().save(meier);
-        kahn.setSpecialties(new HashSet<>(Lists.newArrayList(savedGastro)));
+        kahn.setSpecialtys(new HashSet<>(Lists.newArrayList(savedGastro)));
         Vet savedKahn = getServiceUnderTest().save(kahn);
 
         // remove dentism from meier
         Vet meierUpdate = (Vet) BeanUtilsBean.getInstance().cloneBean(savedMeier);
-        meierUpdate.setSpecialties(new HashSet<>(Lists.newArrayList(savedGastro)));
+        meierUpdate.setSpecialtys(new HashSet<>(Lists.newArrayList(savedGastro)));
         test(update(meierUpdate));
 
         assertVetHasSpecialties(MEIER, GASTRO);
@@ -150,14 +150,14 @@ public class VerServiceIntegrationTest extends ManyToManyServiceIntegrationTest<
         Specialty savedDentism = specialtyService.save(dentism);
         Specialty savedGastro = specialtyService.save(gastro);
         Specialty savedHeart = specialtyService.save(heart);
-        meier.setSpecialties(new HashSet<>(Lists.newArrayList(savedDentism, savedGastro)));
+        meier.setSpecialtys(new HashSet<>(Lists.newArrayList(savedDentism, savedGastro)));
         Vet savedMeier = getServiceUnderTest().save(meier);
-        kahn.setSpecialties(new HashSet<>(Lists.newArrayList(savedGastro)));
+        kahn.setSpecialtys(new HashSet<>(Lists.newArrayList(savedGastro)));
         Vet savedKahn = getServiceUnderTest().save(kahn);
 
         // add heart to kahn
         Vet kahnUpdate = Vet.builder()
-                .specialties(new HashSet<>(Lists.newArrayList(savedGastro, savedHeart)))
+                .specialtys(new HashSet<>(Lists.newArrayList(savedGastro, savedHeart)))
                 .build();
         kahnUpdate.setId(savedKahn.getId());
         test(partialUpdate(kahnUpdate));
@@ -176,14 +176,14 @@ public class VerServiceIntegrationTest extends ManyToManyServiceIntegrationTest<
         Specialty savedDentism = specialtyService.save(dentism);
         Specialty savedGastro = specialtyService.save(gastro);
         Specialty savedHeart = specialtyService.save(heart);
-        meier.setSpecialties(new HashSet<>(Lists.newArrayList(savedDentism, savedGastro)));
+        meier.setSpecialtys(new HashSet<>(Lists.newArrayList(savedDentism, savedGastro)));
         Vet savedMeier = getServiceUnderTest().save(meier);
-        kahn.setSpecialties(new HashSet<>(Lists.newArrayList(savedGastro)));
+        kahn.setSpecialtys(new HashSet<>(Lists.newArrayList(savedGastro)));
         Vet savedKahn = getServiceUnderTest().save(kahn);
 
         // add heart to kahn
         Vet kahnUpdate = (Vet) BeanUtilsBean.getInstance().cloneBean(savedKahn);
-        kahnUpdate.setSpecialties(new HashSet<>(Lists.newArrayList(savedGastro, savedHeart)));
+        kahnUpdate.setSpecialtys(new HashSet<>(Lists.newArrayList(savedGastro, savedHeart)));
         test(update(kahnUpdate));
 
         assertVetHasSpecialties(MEIER, GASTRO, DENTISM);
@@ -199,7 +199,7 @@ public class VerServiceIntegrationTest extends ManyToManyServiceIntegrationTest<
         Specialty savedDentism = specialtyService.save(dentism);
         Specialty savedGastro = specialtyService.save(gastro);
 
-        meier.setSpecialties(new HashSet<>(Lists.newArrayList(savedDentism, savedGastro)));
+        meier.setSpecialtys(new HashSet<>(Lists.newArrayList(savedDentism, savedGastro)));
 
         Vet savedMeier = getServiceUnderTest().save(meier);
         test(deleteById(savedMeier.getId()))

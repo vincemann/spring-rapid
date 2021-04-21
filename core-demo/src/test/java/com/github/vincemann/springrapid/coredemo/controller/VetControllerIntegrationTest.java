@@ -257,10 +257,10 @@ public class VetControllerIntegrationTest extends ManyToManyControllerIntegratio
         assertSpecialtyHasVets(HEART,MEIER);
     }
 
-    private VetDto createVetLinkedToSpecialties(Vet vet, Specialty... specialties) throws Exception {
+    private VetDto createVetLinkedToSpecialties(Vet vet, Specialty... specialtys) throws Exception {
         VetDto createVetDto = new VetDto(vet);
         createVetDto.setSpecialtyIds(new HashSet<>(
-                Arrays.stream(specialties)
+                Arrays.stream(specialtys)
                         .map(IdentifiableEntityImpl::getId)
                         .collect(Collectors.toList())));
         String json = getMockMvc().perform(create(createVetDto))

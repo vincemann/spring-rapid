@@ -35,10 +35,8 @@ public class PetControllerIntegrationTest extends OneToManyControllerIntegration
 
         compare(createPetDto).with(dbBella)
                 .properties()
-                .all()
-                .ignore(createPetDto::getId)
-                .ignore(createPetDto::getPetTypeId)
-                .ignore(createPetDto::getOwnerId)
+                .include(createPetDto::getName)
+                .include(createPetDto::getBirthDate)
                 .assertEqual();
 
         Assertions.assertEquals(responseDto.getId(),dbBella.getId());
@@ -46,6 +44,20 @@ public class PetControllerIntegrationTest extends OneToManyControllerIntegration
 
     @Test
     public void canSavePet_thusGetLinkedToOwner() throws Exception {
+        Owner savedKahn = ownerRepository.save(kahn);
+        PetDto responseDto = savePetLinkedToOwner(bella, savedKahn.getId());
+        Assertions.assertEquals(savedKahn.getId(),responseDto.getOwnerId());
+
+        Pet dbBella = petRepository.findByName(BELLA).get();
+        Owner dbKahn = ownerRepository.findByLastName(KAHN).get();
+
+        Assertions.assertEquals(dbKahn,dbBella.getOwner());
+        Assertions.assertEquals(dbBella,dbKahn.getPets().stream().filter(pet -> pet.getName().equals(BELLA)).findFirst().get());
+        Assertions.assertEquals(1,dbKahn.getPets().size());
+    }
+
+    @Test
+    public void canSavePet_thusGetLinkedToOwnerAndToys() throws Exception {
         Owner savedKahn = ownerRepository.save(kahn);
         PetDto responseDto = savePetLinkedToOwner(bella, savedKahn.getId());
         Assertions.assertEquals(savedKahn.getId(),responseDto.getOwnerId());

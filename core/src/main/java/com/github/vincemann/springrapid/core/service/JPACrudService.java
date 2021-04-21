@@ -80,13 +80,6 @@ public abstract class JPACrudService
     }
 
 
-    private E findOldEntity(Id id) throws BadEntityException, EntityNotFoundException {
-        VerifyEntity.notNull(id, "id");
-        Optional<E> entityToUpdate = findById(id);
-        VerifyEntity.isPresent(entityToUpdate, id, getEntityClass());
-        return entityToUpdate.get();
-    }
-
     @Transactional
     @Override
     public E save(E entity) throws BadEntityException {
@@ -118,5 +111,12 @@ public abstract class JPACrudService
             throw new BadEntityException(e);
         }
 
+    }
+
+    private E findOldEntity(Id id) throws BadEntityException, EntityNotFoundException {
+        VerifyEntity.notNull(id, "id");
+        Optional<E> entityToUpdate = findById(id);
+        VerifyEntity.isPresent(entityToUpdate, id, getEntityClass());
+        return entityToUpdate.get();
     }
 }

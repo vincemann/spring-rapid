@@ -1,15 +1,16 @@
 package com.github.vincemann.springrapid.coredemo.dtos.pet;
 
 import com.github.vincemann.springrapid.coredemo.model.Pet;
+import com.github.vincemann.springrapid.coredemo.model.Toy;
 import lombok.Builder;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
 
 import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import java.time.LocalDate;
-
+import java.util.Set;
+import java.util.stream.Collectors;
 
 
 @NoArgsConstructor
@@ -26,14 +27,15 @@ public class PetDto extends AbstractPetDto {
 
 
     @Builder
-    public PetDto(@NotBlank @Size(min = 2, max = 20) String name, Long petTypeId, Long ownerId, LocalDate birthDate) {
-        super(name, petTypeId, ownerId, birthDate);
+    public PetDto(@Size(min = 2, max = 20) String name, Long petTypeId, Set<Long> toyIds, Long ownerId, LocalDate birthDate) {
+        super(name, petTypeId, toyIds, ownerId, birthDate);
     }
 
     public PetDto(Pet pet){
         super(
                 pet.getName(),
                 pet.getPetType()==null? null: pet.getPetType().getId(),
+                pet.getToys().stream().map(Toy::getId).collect(Collectors.toSet()),
                 pet.getOwner()==null? null: pet.getOwner().getId(),
                 pet.getBirthDate()
         );
