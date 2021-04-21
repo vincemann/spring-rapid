@@ -8,18 +8,23 @@ import com.github.vincemann.springrapid.entityrelationship.model.parent.annotati
 import lombok.*;
 
 import javax.persistence.*;
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
 
 @Getter
 @Setter
-@AllArgsConstructor
 @NoArgsConstructor
 @Entity
-@Builder
-@ToString(onlyExplicitlyIncluded = true)
 public class Specialty extends IdentifiableEntityImpl<Long>
         implements BiDirChild {
+
+    @Builder
+    public Specialty(String description, Set<Vet> vets) {
+        this.description = description;
+        if (vets!=null)
+            this.vets = vets;
+    }
 
     @ToString.Include
     @Column(name = "description")
@@ -30,5 +35,11 @@ public class Specialty extends IdentifiableEntityImpl<Long>
     @BiDirParentCollection(Vet.class)
     private Set<Vet> vets = new HashSet<>();
 
-
+    @Override
+    public String toString() {
+        return "Specialty{" +
+                "description='" + description + '\'' +
+                ", vets=" + Arrays.toString(vets.stream().map(Vet::getLastName).toArray())  +
+                '}';
+    }
 }

@@ -59,7 +59,9 @@ public class Owner extends Person implements BiDirParent {
     @Override
     public String toString() {
         return "Owner{" +
-                "petIds=" + Arrays.toString(pets.stream().map(IdentifiableEntityImpl::getId).toArray()) +
+                super.toString() +
+                "pets=" + Arrays.toString(pets.stream().map(Pet::getName).toArray()) +
+                ", hobbies='"+hobbies+"'" +
                 ", address='" + address + '\'' +
                 ", city='" + city + '\'' +
                 ", telephone='" + telephone + '\'' +

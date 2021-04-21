@@ -8,6 +8,7 @@ import com.github.vincemann.springrapid.entityrelationship.model.parent.UniDirPa
 import lombok.*;
 
 import javax.persistence.*;
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -16,17 +17,13 @@ import java.util.Set;
 @NoArgsConstructor
 @Entity
 @Table(name = "vets")
-@ToString(callSuper = true)
 public class Vet extends Person implements BiDirParent {
 
     @Builder
     public Vet(String firstName, String lastName, Set<Specialty> specialties) {
         super(firstName, lastName);
-        if(specialties!=null) {
+        if(specialties!=null)
             this.specialties = specialties;
-        }else {
-            this.specialties= new HashSet<>();
-        }
     }
 
 
@@ -36,4 +33,12 @@ public class Vet extends Person implements BiDirParent {
             inverseJoinColumns = @JoinColumn(name = "speciality_id"))
     @BiDirChildCollection(Specialty.class)
     private Set<Specialty> specialties = new HashSet<>();
+
+    @Override
+    public String toString() {
+        return "Vet{" +
+                super.toString() +
+                "specialties=" + Arrays.toString(specialties.stream().map(Specialty::getDescription).toArray())  +
+                '}';
+    }
 }
