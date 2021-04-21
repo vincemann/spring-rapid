@@ -13,16 +13,15 @@ import org.springframework.context.annotation.Scope;
 
 import java.io.Serializable;
 
+/**
+ * Example Demo Extension that can be plugged in to all {@link CrudService}s.
+ */
 @Slf4j
 @ServiceComponent
 @Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
 public class AclServiceExtension
         extends BasicServiceExtension<CrudService>
             implements CrudServiceExtension<CrudService> {
-
-    public AclServiceExtension() {
-//        log.debug("creating acl service extension: " + this);
-    }
 
     @Override
     public IdentifiableEntity save(IdentifiableEntity entity) throws BadEntityException {

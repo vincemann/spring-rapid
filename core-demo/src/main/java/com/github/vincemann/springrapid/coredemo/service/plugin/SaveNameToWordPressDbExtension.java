@@ -12,7 +12,7 @@ import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.context.annotation.Scope;
 
 /**
- *Extension that can be plugged in to all {@link GenericCrudController} dealing with Person Objects
+ * Example Demo Extension that can be plugged in to all {@link CrudService}s dealing with Person Entities
  */
 @Slf4j
 @ServiceComponent

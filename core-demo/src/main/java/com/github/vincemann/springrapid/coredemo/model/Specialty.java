@@ -6,6 +6,7 @@ import com.github.vincemann.springrapid.entityrelationship.model.child.annotatio
 import com.github.vincemann.springrapid.entityrelationship.model.parent.BiDirParent;
 import com.github.vincemann.springrapid.entityrelationship.model.parent.annotation.BiDirParentCollection;
 import lombok.*;
+import org.checkerframework.common.aliasing.qual.Unique;
 
 import javax.persistence.*;
 import java.util.Arrays;
@@ -26,12 +27,13 @@ public class Specialty extends IdentifiableEntityImpl<Long>
             this.vets = vets;
     }
 
+    @Unique
     @ToString.Include
     @Column(name = "description")
     private String description;
 
 
-    @ManyToMany(mappedBy = "specialties", fetch = FetchType.EAGER)
+    @ManyToMany(mappedBy = "specialtys", fetch = FetchType.EAGER)
     @BiDirParentCollection(Vet.class)
     private Set<Vet> vets = new HashSet<>();
 

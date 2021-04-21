@@ -1,4 +1,4 @@
-package com.github.vincemann.springrapid.coredemo.dtos;
+package com.github.vincemann.springrapid.coredemo.dtos.abs;
 
 
 import lombok.*;
@@ -14,11 +14,9 @@ import javax.validation.constraints.Size;
 @ToString(callSuper = true)
 @AllArgsConstructor
 public class PersonDto extends IdentifiableEntityImpl<Long> {
-    @NotBlank
     @Size(min = 2, max = 20)
     private String firstName;
 
-    @NotBlank
     @Size(min = 2, max = 20)
     private String lastName;
 }

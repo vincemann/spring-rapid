@@ -3,17 +3,16 @@ package com.github.vincemann.springrapid.coredemo.controller;
 import com.github.vincemann.springrapid.core.controller.GenericCrudController;
 import com.github.vincemann.springrapid.core.security.RapidAuthenticatedPrincipal;
 import com.github.vincemann.springrapid.core.security.RapidSecurityContext;
-import com.github.vincemann.springrapid.coredemo.model.Owner;
-import com.github.vincemann.springrapid.coredemo.model.Pet;
-import com.github.vincemann.springrapid.coredemo.model.PetType;
-import com.github.vincemann.springrapid.coredemo.model.Specialty;
+import com.github.vincemann.springrapid.coredemo.model.*;
 import com.github.vincemann.springrapid.core.service.CrudService;
 import com.github.vincemann.springrapid.coredemo.repo.OwnerRepository;
 import com.github.vincemann.springrapid.coredemo.repo.PetRepository;
 import com.github.vincemann.springrapid.coredemo.repo.PetTypeRepository;
+import com.github.vincemann.springrapid.coredemo.repo.ToyRepository;
 import com.github.vincemann.springrapid.coredemo.service.OwnerService;
 import com.github.vincemann.springrapid.coredemo.service.PetService;
 import com.github.vincemann.springrapid.coredemo.service.PetTypeService;
+import com.github.vincemann.springrapid.coredemo.service.ToyService;
 import com.github.vincemann.springrapid.coredemo.service.plugin.OwnerOfTheYearExtension;
 import com.github.vincemann.springrapid.coretest.controller.urlparamid.AutoMockUrlParamIdControllerTest;
 import com.github.vincemann.springrapid.coretest.controller.urlparamid.IntegrationUrlParamIdControllerTest;
@@ -40,6 +39,7 @@ public abstract class OneToManyControllerIntegrationTest<C extends GenericCrudCo
     //Types
     final Owner OwnerType = new Owner();
     final Pet PetType = new Pet();
+    final Toy ToyType = new Toy();
 
     protected static final String MEIER = "Meier";
     protected static final String KAHN = "Kahn";
@@ -58,26 +58,40 @@ public abstract class OneToManyControllerIntegrationTest<C extends GenericCrudCo
     PetType savedDogPetType;
     PetType savedCatPetType;
 
-    @SpyBean
-    OwnerOfTheYearExtension ownerOfTheYearExtension;
+    Toy rubberDuck;
+    Toy bone;
+    Toy ball;
+
+
+    @Autowired
+    ToyService toyService;
+    @Autowired
+    ToyRepository toyRepository;
 
     @Autowired
     PetService petService;
     @Autowired
     PetRepository petRepository;
 
+
+
     @Autowired
     PetTypeService petTypeService;
     @Autowired
     PetTypeRepository petTypeRepository;
 
+
+
+    @SpyBean
+    OwnerOfTheYearExtension ownerOfTheYearExtension;
+
     @Autowired
     OwnerRepository ownerRepository;
+    @Autowired
+    OwnerService ownerService;
 
     @Autowired
     RapidSecurityContext<RapidAuthenticatedPrincipal> securityContext;
-    @Autowired
-    OwnerService ownerService;
 
     @BeforeEach
     public void setupTestData() throws Exception {
@@ -117,13 +131,13 @@ public abstract class OneToManyControllerIntegrationTest<C extends GenericCrudCo
                 .address("asljnflksamfslkmf")
                 .city("n1 city")
                 .telephone("1234567890")
-//                .pets(new HashSet<>(Lists.newArrayList(bello)))
                 .build();
     }
 
     @AfterEach
     void tearDown() {
         RapidTestUtil.clear(petService);
+        RapidTestUtil.clear(toyService);
         RapidTestUtil.clear(ownerService);
         RapidTestUtil.clear(petTypeService);
     }

@@ -21,14 +21,12 @@ import java.time.LocalDate;
 @ToString(callSuper = true)
 public class VisitDto extends IdentifiableEntityImpl<Long> implements UniDirChild {
 
-    @Nullable
     @UniDirParentId(Pet.class)
     private Long petId;
 
     @NotNull
     private LocalDate date;
 
-    @NotBlank
-    @Size(max = 255)
+    @Size(min = 2, max = 20)
     private String description;
 }

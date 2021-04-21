@@ -21,7 +21,7 @@ import java.util.Set;
 public class SpecialtyDto extends IdentifiableEntityImpl<Long> implements BiDirChildDto {
 
     @Builder
-    public SpecialtyDto(@NotBlank @Size(min = 2, max = 255) String description, @Size(max = 20) Set<Long> vetIds) {
+    public SpecialtyDto(@Size(min = 2, max = 255) String description, Set<Long> vetIds) {
         this.description = description;
         if (vetIds!=null)
             this.vetIds = vetIds;
@@ -31,11 +31,9 @@ public class SpecialtyDto extends IdentifiableEntityImpl<Long> implements BiDirC
         this.description=specialty.getDescription();
     }
 
-    @NotBlank
     @Size(min = 2, max = 255)
     private String description;
 
-    @Size(max = 20)
     @BiDirParentIdCollection(Vet.class)
     private Set<Long> vetIds = new HashSet<>();
 }

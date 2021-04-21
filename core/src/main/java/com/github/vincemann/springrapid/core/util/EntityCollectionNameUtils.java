@@ -16,15 +16,16 @@ public class EntityCollectionNameUtils {
     /**
      * i.E.:
      * petIds -> pets
-     * specialtyIds -> specialties
+     * specialtyIds -> specialtys
      */
     public static String transformDtoEntityIdCollectionFieldName(String dtoPropertyName) {
         if (isEntityCollectionIdField(dtoPropertyName)) {
             String result = dtoPropertyName.substring(0, dtoPropertyName.length() - COLLECTION_IDS_SUFFIX.length()) +"s";
-            // transform y to ie
-            if (result.charAt(result.length()-2) == 'y'){
-                result = result.substring(0,result.length()-2)+"ies";
-            }
+            // dont do this, i.E. toys plural is toys not toies, people have to just add an s for plural
+//            // transform y to ie
+//            if (result.charAt(result.length()-2) == 'y'){
+//                result = result.substring(0,result.length()-2)+"ies";
+//            }
             return result;
         }else {
             return dtoPropertyName;
