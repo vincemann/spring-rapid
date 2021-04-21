@@ -106,6 +106,7 @@ public class ManyToManyControllerIntegrationTest <C extends GenericCrudControlle
             Assertions.assertTrue(optionalSpecialty.isPresent());
             specialties.add(optionalSpecialty.get());
         }
+        System.err.println("Checking vet: " + vetName);
         Assertions.assertEquals(specialties, vet.getSpecialties());
     }
 
@@ -120,6 +121,7 @@ public class ManyToManyControllerIntegrationTest <C extends GenericCrudControlle
             Assertions.assertTrue(optionalVet.isPresent());
             vets.add(optionalVet.get());
         }
+        System.err.println("Checking Specialty: " + description);
         Assertions.assertEquals(vets, specialty.getVets());
     }
 
