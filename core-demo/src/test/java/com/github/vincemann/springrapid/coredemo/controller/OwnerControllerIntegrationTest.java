@@ -81,10 +81,9 @@ public class OwnerControllerIntegrationTest
         ReadOwnOwnerDto responseDto = saveOwnerLinkedToPets(kahn,savedBello.getId());
         Assertions.assertTrue(responseDto.getPetIds().contains(savedBello.getId()));
 
-        Owner dbKahn = ownerRepository.findByLastName(KAHN).get();
-        Pet dbBello = petRepository.findByName(BELLO).get();
-        Assertions.assertEquals(dbBello,dbKahn.getPets().stream().findFirst().get());
-        Assertions.assertEquals(dbKahn,dbBello.getOwner());
+
+        assertOwnerHasPets(KAHN,BELLO);
+        assertPetHasOwner(BELLO,KAHN);
     }
 
     @Test
@@ -98,13 +97,10 @@ public class OwnerControllerIntegrationTest
         Assertions.assertTrue(responseDto.getPetIds().contains(savedKitty.getId()));
         Assertions.assertEquals(2,responseDto.getPetIds().size());
 
-        Owner dbKahn = ownerRepository.findByLastName(KAHN).get();
-        Pet dbBello = petRepository.findByName(BELLO).get();
-        Pet dbKitty = petRepository.findByName(KITTY).get();
-        Assertions.assertEquals(dbBello,dbKahn.getPets().stream().filter(pet -> pet.getName().equals(BELLO)).findFirst().get());
-        Assertions.assertEquals(dbKitty,dbKahn.getPets().stream().filter(pet -> pet.getName().equals(KITTY)).findFirst().get());
-        Assertions.assertEquals(dbKahn,dbBello.getOwner());
-        Assertions.assertEquals(dbKahn,dbKitty.getOwner());
+
+        assertOwnerHasPets(KAHN,BELLO,KITTY);
+        assertPetHasOwner(BELLO,KAHN);
+        assertPetHasOwner(KITTY,KAHN);
     }
 
     private ReadOwnOwnerDto saveOwnerLinkedToPets(Owner owner,Long... petIds) throws Exception {
@@ -167,10 +163,8 @@ public class OwnerControllerIntegrationTest
         ReadOwnOwnerDto responseDto = deserialize(jsonResponse, ReadOwnOwnerDto.class);
         Assertions.assertTrue(responseDto.getPetIds().isEmpty());
 
-        Owner dbKahn = ownerRepository.findByLastName(KAHN).get();
-        Pet dbBello = petRepository.findByName(BELLO).get();
-        Assertions.assertTrue(dbKahn.getPets().isEmpty());
-        Assertions.assertNull(dbBello.getOwner());
+        assertOwnerHasPets(KAHN);
+        assertPetHasOwner(BELLO,null);
     }
 
     @Test
@@ -183,10 +177,8 @@ public class OwnerControllerIntegrationTest
         ReadOwnOwnerDto responseDto = deserialize(jsonResponse, ReadOwnOwnerDto.class);
         Assertions.assertTrue(responseDto.getPetIds().isEmpty());
 
-        Owner dbKahn = ownerRepository.findByLastName(KAHN).get();
-        Pet dbBello = petRepository.findByName(BELLO).get();
-        Assertions.assertTrue(dbKahn.getPets().isEmpty());
-        Assertions.assertNull(dbBello.getOwner());
+        assertOwnerHasPets(KAHN);
+        assertPetHasOwner(BELLO,null);
     }
 
     @Test
@@ -200,12 +192,9 @@ public class OwnerControllerIntegrationTest
         ReadOwnOwnerDto responseDto = deserialize(jsonResponse, ReadOwnOwnerDto.class);
         Assertions.assertTrue(responseDto.getPetIds().isEmpty());
 
-        Owner dbKahn = ownerRepository.findByLastName(KAHN).get();
-        Pet dbBello = petRepository.findByName(BELLO).get();
-        Pet dbKitty = petRepository.findByName(KITTY).get();
-        Assertions.assertTrue(dbKahn.getPets().isEmpty());
-        Assertions.assertNull(dbBello.getOwner());
-        Assertions.assertNull(dbKitty.getOwner());
+        assertOwnerHasPets(KAHN);
+        assertPetHasOwner(BELLO,null);
+        assertPetHasOwner(KITTY,null);
     }
 
     @Test
@@ -220,13 +209,9 @@ public class OwnerControllerIntegrationTest
         Assertions.assertTrue(responseDto.getPetIds().contains(savedKitty.getId()));
         Assertions.assertEquals(1,responseDto.getPetIds().size());
 
-        Owner dbKahn = ownerRepository.findByLastName(KAHN).get();
-        Pet dbBello = petRepository.findByName(BELLO).get();
-        Pet dbKitty = petRepository.findByName(KITTY).get();
-        Assertions.assertEquals(dbKitty,dbKahn.getPets().stream().filter(pet -> pet.getName().equals(KITTY)).findFirst().get());
-        Assertions.assertEquals(1,dbKahn.getPets().size());
-        Assertions.assertNull(dbBello.getOwner());
-        Assertions.assertEquals(dbKahn,dbKitty.getOwner());
+        assertOwnerHasPets(KAHN,KITTY);
+        assertPetHasOwner(BELLO,null);
+        assertPetHasOwner(KITTY,KAHN);
     }
 
     @Test
@@ -245,16 +230,10 @@ public class OwnerControllerIntegrationTest
         Assertions.assertTrue(responseDto.getPetIds().contains(savedBella.getId()));
         Assertions.assertEquals(1,responseDto.getPetIds().size());
 
-        Owner dbKahn = ownerRepository.findByLastName(KAHN).get();
-        Pet dbBello = petRepository.findByName(BELLO).get();
-        Pet dbKitty = petRepository.findByName(KITTY).get();
-        Pet dbBella = petRepository.findByName(BELLA).get();
-
-        Assertions.assertEquals(dbBella,dbKahn.getPets().stream().filter(pet -> pet.getName().equals(BELLA)).findFirst().get());
-        Assertions.assertEquals(1,dbKahn.getPets().size());
-        Assertions.assertNull(dbBello.getOwner());
-        Assertions.assertNull(dbKitty.getOwner());
-        Assertions.assertEquals(dbKahn,dbBella.getOwner());
+        assertOwnerHasPets(KAHN,BELLA);
+        assertPetHasOwner(BELLO,null);
+        assertPetHasOwner(KITTY,null);
+        assertPetHasOwner(BELLA,KAHN);
     }
 
     @Test
@@ -273,16 +252,10 @@ public class OwnerControllerIntegrationTest
         Assertions.assertTrue(responseDto.getPetIds().contains(savedKitty.getId()));
         Assertions.assertEquals(1,responseDto.getPetIds().size());
 
-        Owner dbKahn = ownerRepository.findByLastName(KAHN).get();
-        Pet dbBello = petRepository.findByName(BELLO).get();
-        Pet dbKitty = petRepository.findByName(KITTY).get();
-        Pet dbBella = petRepository.findByName(BELLA).get();
-
-        Assertions.assertEquals(dbKitty,dbKahn.getPets().stream().filter(pet -> pet.getName().equals(KITTY)).findFirst().get());
-        Assertions.assertEquals(1,dbKahn.getPets().size());
-        Assertions.assertNull(dbBello.getOwner());
-        Assertions.assertNull(dbBella.getOwner());
-        Assertions.assertEquals(dbKahn,dbKitty.getOwner());
+        assertOwnerHasPets(KAHN,KITTY);
+        assertPetHasOwner(BELLO,null);
+        assertPetHasOwner(KITTY,KAHN);
+        assertPetHasOwner(BELLA,null);
     }
 
     @Test
@@ -314,12 +287,8 @@ public class OwnerControllerIntegrationTest
         ReadOwnOwnerDto responseDto = deserialize(jsonResponse, ReadOwnOwnerDto.class);
         Assertions.assertTrue(responseDto.getPetIds().contains(savedBello.getId()));
 
-        Owner dbKahn = ownerRepository.findByLastName(KAHN).get();
-        Pet dbBello = petRepository.findByName(BELLO).get();
-        Assertions.assertEquals(1,dbKahn.getPets().size());
-        Assertions.assertEquals(dbBello,dbKahn.getPets().stream().filter(pet -> pet.getName().equals(BELLO)).findFirst().get());
-        Assertions.assertEquals(dbKahn,dbBello.getOwner());
-
+        assertOwnerHasPets(KAHN,BELLO);
+        assertPetHasOwner(BELLO,KAHN);
     }
 
     // FIND TESTS
@@ -387,8 +356,8 @@ public class OwnerControllerIntegrationTest
                 .andReturn();
 
         Assertions.assertFalse(ownerRepository.findByLastName(KAHN).isPresent());
-        Pet dbBello = petRepository.findByName(BELLO).get();
-        Assertions.assertNull(dbBello.getOwner());
+
+        assertPetHasOwner(BELLO,null);
     }
 
     @Test
@@ -403,10 +372,8 @@ public class OwnerControllerIntegrationTest
                 .andReturn();
 
         Assertions.assertFalse(ownerRepository.findByLastName(KAHN).isPresent());
-        Pet dbBello = petRepository.findByName(BELLO).get();
-        Pet dbKitty = petRepository.findByName(KITTY).get();
-        Assertions.assertNull(dbBello.getOwner());
-        Assertions.assertNull(dbKitty.getOwner());
+        assertPetHasOwner(BELLO,null);
+        assertPetHasOwner(KITTY,null);
     }
 
 }

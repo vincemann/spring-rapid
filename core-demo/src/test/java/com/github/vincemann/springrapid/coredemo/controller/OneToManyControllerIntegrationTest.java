@@ -21,11 +21,15 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.mock.mockito.SpyBean;
 
 import java.time.LocalDate;
+import java.util.HashSet;
+import java.util.Optional;
+import java.util.Set;
 
 @Getter
 @Setter
@@ -47,6 +51,10 @@ public abstract class OneToManyControllerIntegrationTest<C extends GenericCrudCo
     protected static final String BELLO = "Bello";
     protected static final String BELLA = "Bella";
     protected static final String KITTY = "Kitty";
+
+    protected static final String BALL = "ball";
+    protected static final String BONE = "bone";
+    protected static final String RUBBER_DUCK = "rubberDuck";
 
     Owner meier;
     Owner kahn;
@@ -99,6 +107,19 @@ public abstract class OneToManyControllerIntegrationTest<C extends GenericCrudCo
         savedDogPetType = petTypeService.save(new PetType("Dog"));
         savedCatPetType = petTypeService.save(new PetType("Cat"));
 
+
+        rubberDuck = Toy.builder()
+                .name(RUBBER_DUCK)
+                .build();
+
+        ball = Toy.builder()
+                .name(BALL)
+                .build();
+
+        bone = Toy.builder()
+                .name(BONE)
+                .build();
+
         bello = Pet.builder()
                 .petType(savedDogPetType)
                 .name(BELLO)
@@ -133,6 +154,65 @@ public abstract class OneToManyControllerIntegrationTest<C extends GenericCrudCo
                 .telephone("1234567890")
                 .build();
     }
+
+    protected void assertPetHasToys(String petName, String... toyNames) {
+        Optional<Pet> petOptional = petRepository.findByName(petName);
+        Assertions.assertTrue(petOptional.isPresent());
+        Pet pet = petOptional.get();
+
+        Set<Toy> toys = new HashSet<>();
+        for (String toyName : toyNames) {
+            Optional<Toy> optionalToy = toyRepository.findByName(toyName);
+            Assertions.assertTrue(optionalToy.isPresent());
+            toys.add(optionalToy.get());
+        }
+        System.err.println("Checking pet: " + petName);
+        Assertions.assertEquals(toys, pet.getToys());
+    }
+
+    protected void assertOwnerHasPets(String ownerName, String... petNames) {
+        Optional<Owner> ownerOptional = ownerRepository.findByLastName(ownerName);
+        Assertions.assertTrue(ownerOptional.isPresent());
+        Owner owner = ownerOptional.get();
+
+        Set<Pet> pets = new HashSet<>();
+        for (String petName : petNames) {
+            Optional<Pet> optionalPet = petRepository.findByName(petName);
+            Assertions.assertTrue(optionalPet.isPresent());
+            pets.add(optionalPet.get());
+        }
+        System.err.println("Checking owner: " + ownerName);
+        Assertions.assertEquals(pets, owner.getPets());
+    }
+
+    protected void assertToyHasPet(String toyName, String petName) {
+        Pet pet = null;
+        if (petName!=null){
+            Optional<Pet> petOptional = petRepository.findByName(petName);
+            Assertions.assertTrue(petOptional.isPresent());
+            pet = petOptional.get();
+        }
+        Optional<Toy> optionalToy = toyRepository.findByName(toyName);
+        Assertions.assertTrue(optionalToy.isPresent());
+        Toy toy = optionalToy.get();
+        System.err.println("Checking toy: " + toyName);
+        Assertions.assertEquals(pet, toy.getPet());
+    }
+
+    protected void assertPetHasOwner(String petName, String ownerName) {
+        Owner owner = null;
+        if (ownerName!=null){
+            Optional<Owner> ownerOptional = ownerRepository.findByLastName(ownerName);
+            Assertions.assertTrue(ownerOptional.isPresent());
+            owner = ownerOptional.get();
+        }
+        Optional<Pet> optionalPet = petRepository.findByName(petName);
+        Assertions.assertTrue(optionalPet.isPresent());
+        Pet pet = optionalPet.get();
+        System.err.println("Checking pet: " + petName);
+        Assertions.assertEquals(owner, pet.getOwner());
+    }
+
 
     @AfterEach
     void tearDown() {
