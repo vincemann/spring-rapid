@@ -6,8 +6,6 @@ import com.github.vincemann.springrapid.entityrelationship.dto.child.annotation.
 import com.github.vincemann.springrapid.entityrelationship.dto.child.annotation.UniDirChildIdCollection;
 import com.github.vincemann.springrapid.entityrelationship.dto.parent.annotation.BiDirParentId;
 import com.github.vincemann.springrapid.entityrelationship.dto.parent.annotation.BiDirParentIdCollection;
-import com.github.vincemann.springrapid.entityrelationship.dto.parent.annotation.UniDirParentId;
-import com.github.vincemann.springrapid.entityrelationship.dto.parent.annotation.UniDirParentIdCollection;
 
 import java.lang.annotation.Annotation;
 
@@ -32,13 +30,6 @@ public class EntityIdAnnotationUtils {
         }
         else if (annotation instanceof UniDirChildIdCollection){
             return ((UniDirChildIdCollection) annotation).value();
-        }
-
-        else if (annotation instanceof UniDirParentId){
-            return ((UniDirParentId) annotation).value();
-        }
-        else if (annotation instanceof UniDirParentIdCollection){
-            return ((UniDirParentIdCollection) annotation).value();
         }
         throw new IllegalArgumentException("Annotation: " + annotation + " is not of EntityId Type");
     }

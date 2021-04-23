@@ -9,7 +9,6 @@ import com.github.vincemann.springrapid.core.slicing.WebConfig;
 import com.github.vincemann.springrapid.entityrelationship.controller.IdAwareMergeUpdateStrategy;
 import com.github.vincemann.springrapid.entityrelationship.controller.dtomapper.EntityIdResolver;
 import com.github.vincemann.springrapid.entityrelationship.controller.dtomapper.IdResolvingDtoPostProcessor;
-import com.github.vincemann.springrapid.entityrelationship.controller.dtomapper.UniDirChildIdResolver;
 import com.github.vincemann.springrapid.entityrelationship.controller.dtomapper.UniDirParentIdResolver;
 import com.github.vincemann.springrapid.entityrelationship.controller.dtomapper.biDir.BiDirChildIdResolver;
 import com.github.vincemann.springrapid.entityrelationship.controller.dtomapper.biDir.BiDirParentIdResolver;
@@ -43,12 +42,6 @@ public class RapidIdResolvingDtoMapperAutoConfiguration {
     @Bean
     public EntityIdResolver biDiChildIdResolver(CrudServiceLocator crudServiceLocator){
         return new BiDirChildIdResolver(crudServiceLocator);
-    }
-
-    @ConditionalOnMissingBean(name = "uniDirChildIdResolver")
-    @Bean
-    public EntityIdResolver uniDirChildIdResolver(CrudServiceLocator crudServiceLocator){
-        return new UniDirChildIdResolver(crudServiceLocator);
     }
 
     @ConditionalOnMissingBean(name = "biDiParentIdResolver")
