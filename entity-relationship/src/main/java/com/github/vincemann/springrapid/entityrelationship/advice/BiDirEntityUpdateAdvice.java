@@ -68,22 +68,4 @@ public class BiDirEntityUpdateAdvice extends BiDirEntityAdvice {
         }
     }
 
-//    @Before(value = "com.github.vincemann.springrapid.core.advice.SystemArchitecture.updateOperation() && " +
-//            "com.github.vincemann.springrapid.core.advice.SystemArchitecture.serviceOperation() && " +
-//            "args(biDirParent,full)")
-//    public void preUpdateBiDirParent(JoinPoint joinPoint, BiDirParent biDirParent, Boolean full) throws EntityNotFoundException, BadEntityException {
-//        try {
-//            if (!isRootService(joinPoint.getTarget())) {
-//                log.debug("ignoring service update advice, bc root service not called yet");
-//                return;
-//            }
-//            if (((IdentifiableEntity) biDirParent).getId() != null && !full) {
-//                log.debug("detected service partial update operation for BiDirParent: " + biDirParent + ", running preUpdateAdvice logic");
-//                updateBiDirParentRelations(biDirParent);
-//            } // else ignore, bc it is save operation not update
-//        } catch (IllegalAccessException e) {
-//            throw new RuntimeException(e);
-//        }
-//    }
-
 }
