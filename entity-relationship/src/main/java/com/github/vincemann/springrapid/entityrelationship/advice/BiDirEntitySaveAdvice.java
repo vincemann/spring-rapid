@@ -4,6 +4,7 @@ import com.github.vincemann.springrapid.core.model.IdentifiableEntity;
 import com.github.vincemann.springrapid.core.service.exception.BadEntityException;
 import com.github.vincemann.springrapid.core.service.exception.EntityNotFoundException;
 import com.github.vincemann.springrapid.core.service.locator.CrudServiceLocator;
+import com.github.vincemann.springrapid.entityrelationship.model.BiDirEntity;
 import com.github.vincemann.springrapid.entityrelationship.model.child.BiDirChild;
 import com.github.vincemann.springrapid.entityrelationship.model.parent.BiDirParent;
 import lombok.extern.slf4j.Slf4j;
@@ -34,38 +35,52 @@ public class BiDirEntitySaveAdvice extends BiDirEntityAdvice {
 
     @Before("com.github.vincemann.springrapid.core.advice.SystemArchitecture.saveOperation() && " +
             "com.github.vincemann.springrapid.core.advice.SystemArchitecture.repoOperation() && " +
-            "args(biDirParent)")
-    public void prePersistBiDirParent(BiDirParent biDirParent) throws BadEntityException, EntityNotFoundException, IllegalAccessException {
-        if (((IdentifiableEntity) biDirParent).getId() == null) {
-            log.debug("pre persist biDirParent hook reached for: " + biDirParent);
-            setChildrensParentRef(biDirParent);
-        } else {
-            log.debug("pre update biDirParent hook reached for: " + biDirParent);
-            updateBiDirParentRelations(biDirParent);
-            replaceChildrensParentRef(biDirParent);
-            // needs to be done to prevent detached error when adding parent to child via full update or save
-            mergeParentsChildren(biDirParent);
+            "args(entity)")
+    public void prePersistBiDirEntity(BiDirEntity entity) throws BadEntityException, EntityNotFoundException, IllegalAccessException {
+
+        if (BiDirParent.class.isAssignableFrom(entity.getClass())) {
+            BiDirParent parent =(BiDirParent)entity;
+            if (((IdentifiableEntity) entity).getId() == null) {
+                //create
+                log.debug("pre persist biDirParent hook reached for: " + parent);
+                setChildrensParentRef(parent);
+            } else {
+                // update
+                log.debug("pre update biDirParent hook reached for: " + parent);
+                updateBiDirParentRelations(parent);
+                // need to replace child here for partial update parent situation (replace detached child with session attached child (this))
+                replaceChildrensParentRef(parent);
+                // needs to be done to prevent detached error when adding parent to child via full update or save
+                mergeParentsChildren(parent);
+            }
+        }
+
+
+
+        if (BiDirChild.class.isAssignableFrom(entity.getClass())) {
+            BiDirChild child =(BiDirChild)entity;
+            if (((IdentifiableEntity) child).getId() == null) {
+                //create
+                log.debug("pre persist biDirChild hook reached for: " + child);
+                setParentsChildRef(child);
+            } else {
+                // update
+                log.debug("pre update biDirChild hook reached for: " + child);
+                updateBiDirChildRelations(child);
+                // need to replace child here for partial update parent situation (replace detached child with session attached child (this))
+                replaceParentsChildRef(child);
+                // needs to be done to prevent detached error when adding parent to child via full update or save
+                mergeChildrensParents(child);
+            }
         }
     }
 
-    @Before("com.github.vincemann.springrapid.core.advice.SystemArchitecture.saveOperation() && " +
-            "com.github.vincemann.springrapid.core.advice.SystemArchitecture.repoOperation() && " +
-            "args(biDirChild)")
-    public void prePersistBiDiChild(BiDirChild biDirChild) throws BadEntityException, EntityNotFoundException, IllegalAccessException {
-        if (((IdentifiableEntity) biDirChild).getId() == null) {
-            //create
-            log.debug("pre persist biDirChild hook reached for: " + biDirChild);
-            setParentsChildRef(biDirChild);
-        } else {
-            // update
-            log.debug("pre update biDirChild hook reached for: " + biDirChild);
-            updateBiDirChildRelations(biDirChild);
-            // need to replace child here for partial update parent situation (replace detached child with session attached child (this))
-            replaceParentsChildRef(biDirChild);
-            // needs to be done to prevent detached error when adding parent to child via full update or save
-            mergeChildrensParents(biDirChild);
-        }
-    }
+//    @Before("com.github.vincemann.springrapid.core.advice.SystemArchitecture.saveOperation() && " +
+//            "com.github.vincemann.springrapid.core.advice.SystemArchitecture.repoOperation() && " +
+//            "args(biDirChild)")
+//    public void prePersistBiDiChild(BiDirChild biDirChild) throws BadEntityException, EntityNotFoundException, IllegalAccessException {
+//
+//    }
 
     private void mergeChildrensParents(BiDirChild biDirChild) {
         //--
