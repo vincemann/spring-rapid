@@ -5,7 +5,7 @@ import com.github.vincemann.springrapid.core.util.EntityCollectionNameUtils;
 
 
 /**
- * Translates i.E. ownerId to owner when merging.
+ * Translates i.E. 'ownerId' to 'owner', 'petIds' to 'pets' when merging.
  */
 public class IdAwareMergeUpdateStrategy extends MergeUpdateStrategyImpl {
 
