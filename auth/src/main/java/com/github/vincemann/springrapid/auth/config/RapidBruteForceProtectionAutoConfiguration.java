@@ -1,5 +1,7 @@
 package com.github.vincemann.springrapid.auth.config;
 
+
+// todo is configured in WebSecurityConfig and RapidAuthenticationAutoConf
 public class RapidBruteForceProtectionAutoConfiguration {
 
 //    private LoginAttemptService loginAttemptService;

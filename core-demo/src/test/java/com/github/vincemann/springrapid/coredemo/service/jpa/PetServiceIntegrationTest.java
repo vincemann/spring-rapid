@@ -1,8 +1,10 @@
 package com.github.vincemann.springrapid.coredemo.service.jpa;
 
 import com.github.vincemann.springrapid.core.service.exception.BadEntityException;
+import com.github.vincemann.springrapid.core.service.exception.EntityNotFoundException;
 import com.github.vincemann.springrapid.coredemo.model.Owner;
 import com.github.vincemann.springrapid.coredemo.model.Pet;
+import com.github.vincemann.springrapid.coredemo.model.PetType;
 import com.github.vincemann.springrapid.coredemo.service.OwnerService;
 import com.github.vincemann.springrapid.coredemo.service.PetService;
 import org.apache.commons.beanutils.BeanUtilsBean;
@@ -11,6 +13,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.lang.reflect.InvocationTargetException;
+import java.util.Optional;
 
 import static com.github.vincemann.ezcompare.Comparator.compare;
 import static com.github.vincemann.springrapid.coretest.service.ExceptionMatchers.noException;
@@ -55,6 +58,33 @@ class PetServiceIntegrationTest
         Owner dbKahn = ownerRepository.findByLastName(KAHN).get();
         Assertions.assertEquals(dbKahn,dbBello.getOwner());
         Assertions.assertEquals(dbBello,dbKahn.getPets().stream().filter(p -> p.getName().equals(BELLO)).findFirst().get());
+    }
+
+    @Test
+    public void canSavePet_unlinkPetType_viaUpdate() throws BadEntityException, InvocationTargetException, NoSuchMethodException, InstantiationException, IllegalAccessException, EntityNotFoundException {
+        Pet savedBello = getServiceUnderTest().save(bello);
+
+        Pet update = (Pet) BeanUtilsBean.getInstance().cloneBean(savedBello);
+        update.setPetType(null);
+
+        test(update(update))
+                .andExpect(() -> propertyAssert(resolve(DB_ENTITY))
+                .assertEquals(PetType::getPetType,null));
+    }
+
+    @Test
+    public void canSavePet_unlinkFromPetType_removePetTypes() throws BadEntityException, InvocationTargetException, NoSuchMethodException, InstantiationException, IllegalAccessException, EntityNotFoundException {
+        Pet savedBello = getServiceUnderTest().save(bello);
+
+        Pet update = (Pet) BeanUtilsBean.getInstance().cloneBean(savedBello);
+        update.setPetType(null);
+
+        getServiceUnderTest().update(update);
+
+        petTypeRepository.deleteAll();
+
+        Pet dbBello = petRepository.findByName(BELLO).get();
+        Assertions.assertNull(dbBello.getPetType());
     }
 
     @Test
