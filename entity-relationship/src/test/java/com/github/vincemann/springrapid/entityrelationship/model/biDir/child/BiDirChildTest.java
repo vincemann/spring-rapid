@@ -60,7 +60,7 @@ class BiDirChildTest {
     }
 
     @Test
-    void findAndSetParent()  {
+    void findAndLinkParent()  {
         //given
         Assertions.assertNull(testEntityChild.getEntityParent());
         Assertions.assertNull(testEntityChild.getUnusedParent());
@@ -179,7 +179,7 @@ class BiDirChildTest {
     }
 
     @Test
-    void dismissParents()  {
+    void unlinkParents()  {
         //given
         testEntityChild.setEntityParent(testEntityParent);
         testEntityChild.setSecondEntityParent(testSecondEntityParent);
@@ -191,7 +191,7 @@ class BiDirChildTest {
     }
 
     @Test
-    void dismissParent()  {
+    void unlinkParent()  {
         //given
         testEntityChild.setEntityParent(testEntityParent);
         //when
@@ -201,7 +201,7 @@ class BiDirChildTest {
     }
 
     @Test
-    void dismissUnknownParent() {
+    void unlinkUnknownParent() {
         //given
         testEntityChild.setSecondEntityParent(testSecondEntityParent);
         //when
@@ -214,7 +214,7 @@ class BiDirChildTest {
     }
 
     @Test
-    void dismissParentWhenMultiplePresent()  {
+    void unlinkParentWhenMultiplePresent()  {
         //given
         testEntityChild.setEntityParent(testEntityParent);
         testEntityChild.setSecondEntityParent(testSecondEntityParent);

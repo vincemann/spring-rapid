@@ -9,12 +9,10 @@ import com.github.vincemann.springrapid.entityrelationship.dto.child.annotation.
 import com.github.vincemann.springrapid.entityrelationship.dto.parent.BiDirParentDto;
 import com.github.vincemann.springrapid.entityrelationship.dto.parent.UniDirParentDto;
 import lombok.*;
-import org.springframework.lang.Nullable;
 import com.github.vincemann.springrapid.entityrelationship.dto.child.BiDirChildDto;
 import com.github.vincemann.springrapid.core.model.IdentifiableEntityImpl;
 import com.github.vincemann.springrapid.entityrelationship.dto.parent.annotation.BiDirParentId;
 
-import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Size;
 import java.time.LocalDate;
 import java.util.HashSet;

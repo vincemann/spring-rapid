@@ -3,7 +3,6 @@ package com.github.vincemann.springrapid.entityrelationship.dto.parent;
 import com.github.vincemann.springrapid.entityrelationship.dto.DirDto;
 import com.github.vincemann.springrapid.entityrelationship.dto.child.annotation.UniDirChildId;
 import com.github.vincemann.springrapid.entityrelationship.dto.child.annotation.UniDirChildIdCollection;
-import com.github.vincemann.springrapid.entityrelationship.exception.UnknownChildTypeException;
 import com.github.vincemann.springrapid.entityrelationship.model.child.UniDirChild;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

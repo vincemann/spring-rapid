@@ -68,7 +68,7 @@ class BiDirParentTest {
 
 
     @Test
-    void dismissChildrensParent()  {
+    void unlinkChildrensParent()  {
         //given
         testEntityParent.setEntityChild(testEntityChild);
         testEntityChild.setEntityParent(testEntityParent);
@@ -79,7 +79,7 @@ class BiDirParentTest {
         Assertions.assertNotNull(testEntityParent.getEntityChild());
     }
     @Test
-    void dismissChildrensCollectionParent()  {
+    void unlinkChildrensCollectionParent()  {
         //given
         testEntityParent.setSecondEntityChildSet(new HashSet<>(Lists.newArrayList(testSecondEntityChild)));
         testSecondEntityChild.setEntityParent(testEntityParent);
@@ -90,7 +90,7 @@ class BiDirParentTest {
         Assertions.assertNull(testSecondEntityChild.getEntityParent());
     }
     @Test
-    void dismissAllChildrensParent()  {
+    void unlinkAllChildrensParent()  {
         //given
         testEntityParent.setSecondEntityChildSet(new HashSet<>(Lists.newArrayList(testSecondEntityChild)));
         testSecondEntityChild.setEntityParent(testEntityParent);
@@ -133,7 +133,7 @@ class BiDirParentTest {
     }
 
     @Test
-    void dismissChild()  {
+    void unlinkChild()  {
         //given
         testEntityParent.setEntityChild(testEntityChild);
         //when
@@ -143,7 +143,7 @@ class BiDirParentTest {
     }
 
     @Test
-    void dismissChildFromCollection()  {
+    void unlinkChildFromCollection()  {
         //given
         testEntityParent.setSecondEntityChildSet(new HashSet<>(Collections.singleton(testSecondEntityChild)));
         //when
@@ -153,7 +153,7 @@ class BiDirParentTest {
     }
 
     @Test
-    void dismissChildFromFilledCollection()  {
+    void unlinkChildFromFilledCollection()  {
         //given
         SecondEntityChild second = new SecondEntityChild();
         second.setId(99L);
