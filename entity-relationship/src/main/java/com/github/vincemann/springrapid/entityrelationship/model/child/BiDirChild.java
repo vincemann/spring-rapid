@@ -3,6 +3,7 @@ package com.github.vincemann.springrapid.entityrelationship.model.child;
 import com.github.vincemann.springrapid.entityrelationship.exception.UnknownChildTypeException;
 import com.github.vincemann.springrapid.entityrelationship.exception.UnknownEntityTypeException;
 import com.github.vincemann.springrapid.entityrelationship.exception.UnknownParentTypeException;
+import com.github.vincemann.springrapid.entityrelationship.model.BiDirEntity;
 import com.github.vincemann.springrapid.entityrelationship.model.DirEntity;
 import com.github.vincemann.springrapid.entityrelationship.model.child.annotation.BiDirChildCollection;
 import com.github.vincemann.springrapid.entityrelationship.model.child.annotation.BiDirChildEntity;
@@ -20,7 +21,7 @@ import java.util.Map;
  * The Parent of the Relation ship should implement {@link BiDirParent} and annotate its ChildCollections (containing Entities of this Type) with {@link BiDirChildCollection}
  * or its single Children (bidirectional @OneToOne) with {@link BiDirChildEntity}.
  */
-public interface BiDirChild extends DirEntity {
+public interface BiDirChild extends BiDirEntity {
     // FIND
 
     /**
