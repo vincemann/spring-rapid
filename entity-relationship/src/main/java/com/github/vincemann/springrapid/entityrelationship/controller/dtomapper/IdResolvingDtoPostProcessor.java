@@ -5,21 +5,17 @@ import com.github.vincemann.springrapid.core.model.IdentifiableEntity;
 import com.github.vincemann.springrapid.core.service.exception.BadEntityException;
 import com.github.vincemann.springrapid.core.service.exception.EntityNotFoundException;
 import com.github.vincemann.springrapid.entityrelationship.dto.DirDto;
-import com.github.vincemann.springrapid.entityrelationship.dto.child.BiDirChildDto;
-import com.github.vincemann.springrapid.entityrelationship.dto.parent.BiDirParentDto;
-import com.github.vincemann.springrapid.entityrelationship.dto.child.UniDirChildDto;
-import com.github.vincemann.springrapid.entityrelationship.dto.parent.UniDirParentDto;
 import lombok.Getter;
 import lombok.Setter;
 import org.modelmapper.ModelMapper;
 import org.springframework.core.annotation.Order;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Maps an {@link IdentifiableEntity} to its Dto and vice versa using {@link org.modelmapper.ModelMapper} AND resolves
- * id fields, referencing parent/child entities.
+ * Resolves id fields, referencing parent/child entities.
  * The id resolving is done by the given {@link EntityIdResolver}s.
  *
  * @see EntityIdResolver
@@ -29,13 +25,9 @@ import java.util.List;
 public class IdResolvingDtoPostProcessor implements DtoPostProcessor<Object, IdentifiableEntity<?>> {
 
     private List<EntityIdResolver> entityIdResolvers;
-    @Getter
-    @Setter
-    private ModelMapper modelMapper;
 
     public IdResolvingDtoPostProcessor(List<EntityIdResolver> entityIdResolvers) {
         this.entityIdResolvers = entityIdResolvers;
-        this.modelMapper = new ModelMapper();
     }
 
     @Override
@@ -46,24 +38,31 @@ public class IdResolvingDtoPostProcessor implements DtoPostProcessor<Object, Ide
     @Override
     public void postProcessDto(Object dto, IdentifiableEntity<?> entity) {
         //yet unfinished
-        EntityIdResolver entityIdResolver = findResolver(dto.getClass());
-        entityIdResolver.resolveDtoIds(dto, entity);
+        List<EntityIdResolver> entityIdResolvers = findResolvers(dto.getClass());
+        for (EntityIdResolver entityIdResolver : entityIdResolvers) {
+            entityIdResolver.resolveDtoIds(dto, entity);
+        }
     }
 
     @Override
     public void postProcessEntity(IdentifiableEntity<?> entity, Object dto) throws BadEntityException, EntityNotFoundException {
         //yet unfinished
-        EntityIdResolver entityIdResolver = findResolver(dto.getClass());
-        entityIdResolver.resolveEntityIds(entity, dto);
+        List<EntityIdResolver> entityIdResolvers = findResolvers(dto.getClass());
+        for (EntityIdResolver resolver : entityIdResolvers) {
+            resolver.resolveEntityIds(entity, dto);
+        }
 
     }
 
-    private EntityIdResolver findResolver(Class<?> dstClass) {
+    private List<EntityIdResolver> findResolvers(Class<?> dstClass) {
+        List<EntityIdResolver> resolvers = new ArrayList<>();
         for (EntityIdResolver entityIdResolver : entityIdResolvers) {
             if (entityIdResolver.getDtoClass().isAssignableFrom(dstClass)) {
-                return entityIdResolver;
+                resolvers.add(entityIdResolver);
             }
         }
-        throw new IllegalArgumentException("No " + EntityIdResolver.class.getSimpleName() + " found for dstClass: " + dstClass.getSimpleName());
+        if (resolvers.isEmpty())
+            throw new IllegalArgumentException("No " + EntityIdResolver.class.getSimpleName() + " found for dstClass: " + dstClass.getSimpleName());
+        return resolvers;
     }
 }
