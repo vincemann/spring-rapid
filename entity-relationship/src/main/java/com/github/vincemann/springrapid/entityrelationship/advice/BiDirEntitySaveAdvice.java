@@ -75,23 +75,16 @@ public class BiDirEntitySaveAdvice extends BiDirEntityAdvice {
         }
     }
 
-//    @Before("com.github.vincemann.springrapid.core.advice.SystemArchitecture.saveOperation() && " +
-//            "com.github.vincemann.springrapid.core.advice.SystemArchitecture.repoOperation() && " +
-//            "args(biDirChild)")
-//    public void prePersistBiDiChild(BiDirChild biDirChild) throws BadEntityException, EntityNotFoundException, IllegalAccessException {
-//
-//    }
 
     private void mergeChildrensParents(BiDirChild biDirChild) {
-        //--
+        //set backreferences
         Set<Collection<BiDirParent>> parentCollections = biDirChild.findBiDirParentCollections().keySet();
         for (Collection<BiDirParent> parentCollection : parentCollections) {
             for (BiDirParent biDirParent : parentCollection) {
                 entityManager.merge(biDirParent);
             }
         }
-        //--
-        //set backreferences
+
         for (BiDirParent parent : biDirChild.findSingleBiDirParents()) {
             entityManager.merge(parent);
         }
@@ -126,7 +119,6 @@ public class BiDirEntitySaveAdvice extends BiDirEntityAdvice {
     private void replaceParentsChildRef(BiDirChild biDirChild) {
         //set backreferences
 
-        //--
         Set<Collection<BiDirParent>> parentCollections = biDirChild.findBiDirParentCollections().keySet();
         for (Collection<BiDirParent> parentCollection : parentCollections) {
             for (BiDirParent biDirParent : parentCollection) {
@@ -134,18 +126,16 @@ public class BiDirEntitySaveAdvice extends BiDirEntityAdvice {
                 biDirParent.linkBiDirChild(biDirChild);
             }
         }
-        //--
 
         for (BiDirParent parent : biDirChild.findSingleBiDirParents()) {
-            // check if BiDirChild is present before
             parent.unlinkBiDirChild(biDirChild);
             parent.linkBiDirChild(biDirChild);
         }
     }
 
     private void replaceChildrensParentRef(BiDirParent biDirParent) {
+        //set backreferences
 
-        //--
         Set<Collection<BiDirChild>> childCollections = biDirParent.findBiDirChildCollections().keySet();
         for (Collection<BiDirChild> childCollection : childCollections) {
             for (BiDirChild biDirChild : childCollection) {
@@ -153,25 +143,23 @@ public class BiDirEntitySaveAdvice extends BiDirEntityAdvice {
                 biDirChild.linkBiDirParent(biDirParent);
             }
         }
-        //--
-        //set backreferences
+
         for (BiDirChild child : biDirParent.findSingleBiDirChildren()) {
-            // check if BiDirChild is present before
             child.unlinkBiDirParent(biDirParent);
             child.linkBiDirParent(biDirParent);
         }
     }
 
     private void setParentsChildRef(BiDirChild biDirChild) {
-        //--
+        //set backreferences
+
         Set<Collection<BiDirParent>> parentCollections = biDirChild.findBiDirParentCollections().keySet();
         for (Collection<BiDirParent> parentCollection : parentCollections) {
             for (BiDirParent biDirParent : parentCollection) {
                 biDirParent.linkBiDirChild(biDirChild);
             }
         }
-        //--
-        //set backreferences
+
         for (BiDirParent parent : biDirChild.findSingleBiDirParents()) {
             parent.linkBiDirChild(biDirChild);
         }

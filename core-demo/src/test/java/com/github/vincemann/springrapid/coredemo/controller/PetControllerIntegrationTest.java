@@ -58,6 +58,27 @@ public class PetControllerIntegrationTest extends OneToManyControllerIntegration
     }
 
     @Test
+    public void canSavePet_thusGetLinkedToToys() throws Exception {
+        Owner savedKahn = ownerRepository.save(kahn);
+        Toy savedBall = toyRepository.save(ball);
+        Toy savedBone = toyRepository.save(bone);
+        Toy savedRubberDuck = toyRepository.save(rubberDuck);
+
+        PetDto responseDto = savePetLinkedToOwnerAndToys(bella, null,savedBall,savedRubberDuck);
+        Assertions.assertNull(responseDto.getOwnerId());
+        Assertions.assertTrue(responseDto.getToyIds().contains(savedBall.getId()));
+        Assertions.assertTrue(responseDto.getToyIds().contains(savedRubberDuck.getId()));
+        Assertions.assertEquals(2,responseDto.getToyIds().size());
+
+        assertOwnerHasPets(KAHN);
+        assertPetHasOwner(BELLA,null);
+        assertPetHasToys(BELLA,BALL,RUBBER_DUCK);
+        assertToyHasPet(BALL,BELLA);
+        assertToyHasPet(BONE,null);
+        assertToyHasPet(RUBBER_DUCK,BELLA);
+    }
+
+    @Test
     public void canSavePet_thusGetLinkedToOwnerAndToys() throws Exception {
         Owner savedKahn = ownerRepository.save(kahn);
         Toy savedBall = toyRepository.save(ball);
@@ -88,6 +109,64 @@ public class PetControllerIntegrationTest extends OneToManyControllerIntegration
 
         assertOwnerHasPets(KAHN);
         assertPetHasOwner(BELLA,null);
+    }
+
+    @Test
+    public void canUnlinkPetsOwnerAndSomeToys_viaUpdate() throws Exception {
+        Owner savedKahn = ownerRepository.save(kahn);
+        Toy savedBall = toyRepository.save(ball);
+        Toy savedBone = toyRepository.save(bone);
+        Toy savedRubberDuck = toyRepository.save(rubberDuck);
+
+        PetDto createdBellaDto = savePetLinkedToOwnerAndToys(bella, savedKahn.getId(),savedBall,savedBone,savedRubberDuck);
+        String removeOwnerJson = createUpdateJsonRequest(
+                createUpdateJsonLine("remove", "/ownerId"),
+                createUpdateJsonLine("remove", "/toyIds",savedBone.getId().toString()),
+                createUpdateJsonLine("remove", "/toyIds",savedRubberDuck.getId().toString())
+        );
+
+        PetDto responseDto = deserialize(getMockMvc().perform(update(removeOwnerJson, createdBellaDto.getId()))
+                .andReturn().getResponse().getContentAsString(), PetDto.class);
+        Assertions.assertNull(responseDto.getOwnerId());
+        Assertions.assertEquals(1,responseDto.getToyIds().size());
+        Assertions.assertTrue(responseDto.getToyIds().contains(savedBall.getId()));
+
+        assertOwnerHasPets(KAHN);
+        assertPetHasOwner(BELLA,null);
+        assertPetHasToys(BELLA,BALL);
+        assertToyHasPet(BALL,BELLA);
+        assertToyHasPet(BONE,null);
+        assertToyHasPet(RUBBER_DUCK,null);
+    }
+
+    @Test
+    public void canUnlinkPetsOwnerAndAddSomeToys_viaUpdate() throws Exception {
+        Owner savedKahn = ownerRepository.save(kahn);
+        Toy savedBall = toyRepository.save(ball);
+        Toy savedBone = toyRepository.save(bone);
+        Toy savedRubberDuck = toyRepository.save(rubberDuck);
+
+        PetDto createdBellaDto = savePetLinkedToOwnerAndToys(bella,savedKahn.getId(),savedRubberDuck);
+        String removeOwnerJson = createUpdateJsonRequest(
+                createUpdateJsonLine("remove", "/ownerId"),
+                createUpdateJsonLine("add", "/toyIds/-",savedBone.getId().toString()),
+                createUpdateJsonLine("add", "/toyIds/-",savedBall.getId().toString())
+        );
+
+        PetDto responseDto = deserialize(getMockMvc().perform(update(removeOwnerJson, createdBellaDto.getId()))
+                .andReturn().getResponse().getContentAsString(), PetDto.class);
+        Assertions.assertNull(responseDto.getOwnerId());
+        Assertions.assertEquals(3,responseDto.getToyIds().size());
+        Assertions.assertTrue(responseDto.getToyIds().contains(savedBall.getId()));
+        Assertions.assertTrue(responseDto.getToyIds().contains(savedBone.getId()));
+        Assertions.assertTrue(responseDto.getToyIds().contains(savedRubberDuck.getId()));
+
+        assertOwnerHasPets(KAHN);
+        assertPetHasOwner(BELLA,null);
+        assertPetHasToys(BELLA,BALL,BONE,RUBBER_DUCK);
+        assertToyHasPet(BALL,BELLA);
+        assertToyHasPet(BONE,BELLA);
+        assertToyHasPet(RUBBER_DUCK,BELLA);
     }
 
     @Test
@@ -244,6 +323,25 @@ public class PetControllerIntegrationTest extends OneToManyControllerIntegration
 
         Assertions.assertFalse(petRepository.findByName(BELLA).isPresent());
         assertOwnerHasPets(KAHN);
+    }
+
+    @Test
+    public void canDeletePet_getUnlinkedFromOwnerAndToys() throws Exception {
+        Toy savedBall = toyRepository.save(ball);
+        Toy savedBone = toyRepository.save(bone);
+        Toy savedRubberDuck = toyRepository.save(rubberDuck);
+
+        Owner savedKahn = ownerRepository.save(kahn);
+        PetDto createdBellaDto = savePetLinkedToOwnerAndToys(bella,savedKahn.getId(),savedBall,savedBone,savedRubberDuck);
+
+        getMockMvc().perform(delete(createdBellaDto.getId()))
+                .andExpect(status().is2xxSuccessful());
+
+        Assertions.assertFalse(petRepository.findByName(BELLA).isPresent());
+        assertOwnerHasPets(KAHN);
+        assertToyHasPet(RUBBER_DUCK,null);
+        assertToyHasPet(BALL,null);
+        assertToyHasPet(BONE,null);
     }
 
 
