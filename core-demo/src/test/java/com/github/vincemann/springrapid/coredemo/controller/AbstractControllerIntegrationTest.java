@@ -3,23 +3,13 @@ package com.github.vincemann.springrapid.coredemo.controller;
 import com.github.vincemann.springrapid.core.controller.GenericCrudController;
 import com.github.vincemann.springrapid.core.security.RapidAuthenticatedPrincipal;
 import com.github.vincemann.springrapid.core.security.RapidSecurityContext;
-import com.github.vincemann.springrapid.coredemo.model.*;
 import com.github.vincemann.springrapid.core.service.CrudService;
-import com.github.vincemann.springrapid.coredemo.repo.OwnerRepository;
-import com.github.vincemann.springrapid.coredemo.repo.PetRepository;
-import com.github.vincemann.springrapid.coredemo.repo.PetTypeRepository;
-import com.github.vincemann.springrapid.coredemo.repo.ToyRepository;
-import com.github.vincemann.springrapid.coredemo.service.OwnerService;
-import com.github.vincemann.springrapid.coredemo.service.PetService;
-import com.github.vincemann.springrapid.coredemo.service.PetTypeService;
-import com.github.vincemann.springrapid.coredemo.service.ToyService;
+import com.github.vincemann.springrapid.coredemo.model.*;
+import com.github.vincemann.springrapid.coredemo.repo.*;
+import com.github.vincemann.springrapid.coredemo.service.*;
 import com.github.vincemann.springrapid.coredemo.service.plugin.OwnerOfTheYearExtension;
-import com.github.vincemann.springrapid.coretest.controller.urlparamid.AutoMockUrlParamIdControllerTest;
 import com.github.vincemann.springrapid.coretest.controller.urlparamid.IntegrationUrlParamIdControllerTest;
 import com.github.vincemann.springrapid.coretest.util.RapidTestUtil;
-import lombok.Getter;
-import lombok.Setter;
-import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -31,19 +21,25 @@ import java.util.HashSet;
 import java.util.Optional;
 import java.util.Set;
 
-@Getter
-@Setter
-@Slf4j
-// currently unused, keep for future integration controller demo tests
-public abstract class OneToManyControllerIntegrationTest<C extends GenericCrudController<?,Long,S,?,?>,S extends CrudService<?,Long>>
+public class AbstractControllerIntegrationTest<C extends GenericCrudController<?,Long,S,?,?>,S extends CrudService<?,Long>>
         extends IntegrationUrlParamIdControllerTest<C,Long,S>
-
 {
 
     //Types
-    final Owner OwnerType = new Owner();
-    final Pet PetType = new Pet();
-    final Toy ToyType = new Toy();
+    protected final Vet VetType = new Vet();
+    protected final Specialty SpecialtyType = new Specialty();
+    protected final Owner OwnerType = new Owner();
+    protected final Pet PetType = new Pet();
+    protected final Toy ToyType = new Toy();
+
+    protected static final String VET_MAX = "Max";
+    protected static final String VET_POLDI = "Poldi";
+    protected static final String VET_DICAPRIO = "Dicaprio";
+
+    protected static final String MUSCLE = "Muscle";
+    protected static final String DENTISM = "Dentism";
+    protected static final String GASTRO = "Gastro";
+    protected static final String HEART = "Heart";
 
     protected static final String MEIER = "Meier";
     protected static final String KAHN = "Kahn";
@@ -56,50 +52,73 @@ public abstract class OneToManyControllerIntegrationTest<C extends GenericCrudCo
     protected static final String BONE = "bone";
     protected static final String RUBBER_DUCK = "rubberDuck";
 
-    Owner meier;
-    Owner kahn;
 
-    Pet bello;
-    Pet kitty;
-    Pet bella;
 
-    PetType savedDogPetType;
-    PetType savedCatPetType;
+    protected Vet vetMax;
+    protected Vet vetPoldi;
+    protected Vet vetDiCaprio;
 
-    Toy rubberDuck;
-    Toy bone;
-    Toy ball;
+    protected Specialty dentism;
+    protected Specialty gastro;
+    protected Specialty heart;
+    protected Specialty muscle;
+
+    protected Owner meier;
+    protected Owner kahn;
+
+    protected Pet bello;
+    protected Pet kitty;
+    protected Pet bella;
+
+    protected PetType savedDogPetType;
+    protected PetType savedCatPetType;
+
+    protected Toy rubberDuck;
+    protected Toy bone;
+    protected Toy ball;
 
 
     @Autowired
-    ToyService toyService;
+    protected SpecialtyService specialtyService;
     @Autowired
-    ToyRepository toyRepository;
-
-    @Autowired
-    PetService petService;
-    @Autowired
-    PetRepository petRepository;
-
+    protected SpecialtyRepository specialtyRepository;
 
 
     @Autowired
-    PetTypeService petTypeService;
+    protected VetRepository vetRepository;
     @Autowired
-    PetTypeRepository petTypeRepository;
+    protected VetService vetService;
+
+
+    @Autowired
+    protected ToyService toyService;
+    @Autowired
+    protected ToyRepository toyRepository;
+
+    @Autowired
+    protected PetService petService;
+    @Autowired
+    protected PetRepository petRepository;
+
+
+
+    @Autowired
+    protected PetTypeService petTypeService;
+    @Autowired
+    protected PetTypeRepository petTypeRepository;
 
 
 
     @SpyBean
-    OwnerOfTheYearExtension ownerOfTheYearExtension;
+    protected OwnerOfTheYearExtension ownerOfTheYearExtension;
 
     @Autowired
-    OwnerRepository ownerRepository;
+    protected OwnerRepository ownerRepository;
     @Autowired
-    OwnerService ownerService;
+    protected OwnerService ownerService;
 
     @Autowired
-    RapidSecurityContext<RapidAuthenticatedPrincipal> securityContext;
+    protected RapidSecurityContext<RapidAuthenticatedPrincipal> securityContext;
 
     @BeforeEach
     public void setupTestData() throws Exception {
@@ -153,6 +172,70 @@ public abstract class OneToManyControllerIntegrationTest<C extends GenericCrudCo
                 .city("n1 city")
                 .telephone("1234567890")
                 .build();
+
+        dentism = Specialty.builder()
+                .description(DENTISM)
+                .build();
+
+        heart = Specialty.builder()
+                .description(HEART)
+                .build();
+
+        muscle = Specialty.builder()
+                .description(MUSCLE)
+                .build();
+
+        gastro = Specialty.builder()
+                .description(GASTRO)
+                .build();
+
+        vetMax = Vet.builder()
+                .firstName("Max")
+                .lastName(VET_MAX)
+                .specialtys(new HashSet<>())
+                .build();
+
+        vetDiCaprio = Vet.builder()
+                .firstName("michael")
+                .lastName(VET_DICAPRIO)
+                .specialtys(new HashSet<>())
+                .build();
+
+        vetPoldi = Vet.builder()
+                .firstName("Olli")
+                .lastName(VET_POLDI)
+                .specialtys(new HashSet<>())
+                .build();
+    }
+
+    protected void assertVetHasSpecialties(String vetName, String... descriptions) {
+        Optional<Vet> vetOptional = vetRepository.findByLastName(vetName);
+        Assertions.assertTrue(vetOptional.isPresent());
+        Vet vet = vetOptional.get();
+
+        Set<Specialty> specialtys = new HashSet<>();
+        for (String description : descriptions) {
+            Optional<Specialty> optionalSpecialty = specialtyRepository.findByDescription(description);
+            Assertions.assertTrue(optionalSpecialty.isPresent());
+            specialtys.add(optionalSpecialty.get());
+        }
+        System.err.println("Checking vet: " + vetName);
+        Assertions.assertEquals(specialtys, vet.getSpecialtys());
+    }
+
+    protected void assertSpecialtyHasVets(String description, String... vetNames) {
+        Optional<Specialty> optionalSpecialty = specialtyRepository.findByDescription(description);
+        Assertions.assertTrue(optionalSpecialty.isPresent());
+        Specialty specialty = optionalSpecialty.get();
+
+        Set<Vet> vets = new HashSet<>();
+        for (String vetName : vetNames) {
+            Optional<Vet> optionalVet = vetRepository.findByLastName(vetName);
+            Assertions.assertTrue(optionalVet.isPresent());
+            vets.add(optionalVet.get());
+        }
+        System.err.println("Checking Specialty: " + description);
+        Assertions.assertEquals(vets, specialty.getVets());
     }
 
     protected void assertPetHasToys(String petName, String... toyNames) {
@@ -220,7 +303,7 @@ public abstract class OneToManyControllerIntegrationTest<C extends GenericCrudCo
         RapidTestUtil.clear(toyService);
         RapidTestUtil.clear(ownerService);
         RapidTestUtil.clear(petTypeService);
+        RapidTestUtil.clear(specialtyService);
+        RapidTestUtil.clear(vetService);
     }
-
-
 }

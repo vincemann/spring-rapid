@@ -16,7 +16,7 @@ import static com.github.vincemann.springrapid.coretest.util.RapidTestUtil.creat
 import static com.github.vincemann.springrapid.coretest.util.RapidTestUtil.createUpdateJsonRequest;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-public class PetControllerIntegrationTest extends OneToManyControllerIntegrationTest<PetController, PetService>
+public class PetControllerIntegrationTest extends AbstractControllerIntegrationTest<PetController, PetService>
 {
 
     @Test

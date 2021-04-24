@@ -6,14 +6,13 @@ import com.github.vincemann.springrapid.coredemo.model.Pet;
 import com.github.vincemann.springrapid.coredemo.model.Vet;
 import com.github.vincemann.springrapid.entityrelationship.dto.child.annotation.UniDirChildId;
 import com.github.vincemann.springrapid.entityrelationship.dto.child.annotation.UniDirChildIdCollection;
-import com.github.vincemann.springrapid.entityrelationship.model.child.UniDirChild;
+import com.github.vincemann.springrapid.entityrelationship.dto.parent.UniDirParentDto;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 
 import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Size;
 import java.time.LocalDate;
 import java.util.Set;
 
@@ -21,7 +20,7 @@ import java.util.Set;
 @Setter
 @NoArgsConstructor
 @ToString(callSuper = true)
-public class VisitDto extends IdentifiableEntityImpl<Long> implements UniDirChild {
+public class VisitDto extends IdentifiableEntityImpl<Long> implements UniDirParentDto {
 
     @UniDirChildIdCollection(Pet.class)
     private Set<Long> petIds;
@@ -35,6 +34,5 @@ public class VisitDto extends IdentifiableEntityImpl<Long> implements UniDirChil
     @NotNull
     private LocalDate date;
 
-    @Size(min = 2, max = 20)
-    private String description;
+    private String reason;
 }
