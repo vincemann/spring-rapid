@@ -2,7 +2,7 @@ package com.github.vincemann.springrapid.entityrelationship.exception;
 
 
 import com.github.vincemann.springrapid.entityrelationship.model.child.BiDirChild;
-import com.github.vincemann.springrapid.entityrelationship.model.child.UniDirChild;
+
 
 /**
  * Indicates that the searched {@link BiDirChild} / {@link UniDirChild} -

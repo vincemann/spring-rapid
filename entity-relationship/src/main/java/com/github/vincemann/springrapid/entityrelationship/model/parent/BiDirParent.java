@@ -1,5 +1,6 @@
 package com.github.vincemann.springrapid.entityrelationship.model.parent;
 
+import com.github.vincemann.springrapid.core.model.IdentifiableEntity;
 import com.github.vincemann.springrapid.entityrelationship.exception.UnknownChildTypeException;
 import com.github.vincemann.springrapid.entityrelationship.exception.UnknownParentTypeException;
 import com.github.vincemann.springrapid.entityrelationship.model.BiDirEntity;
@@ -55,7 +56,7 @@ public interface  BiDirParent extends BiDirEntity {
      * @throws UnknownChildTypeException
      */
    default void linkBiDirChild(BiDirChild newChild) throws UnknownChildTypeException{
-       linkEntity(newChild, BiDirChildEntity.class, BiDirChildCollection.class);
+       linkEntity((IdentifiableEntity) newChild, BiDirChildEntity.class, BiDirChildCollection.class);
    }
 
     /**
@@ -67,7 +68,7 @@ public interface  BiDirParent extends BiDirEntity {
      * @throws UnknownChildTypeException
      */
     default void unlinkBiDirChild(BiDirChild biDirChildToRemove) throws UnknownChildTypeException{
-        unlinkEntity(biDirChildToRemove,BiDirChildEntity.class,BiDirChildCollection.class);
+        unlinkEntity((IdentifiableEntity) biDirChildToRemove,BiDirChildEntity.class,BiDirChildCollection.class);
     }
 
     /**

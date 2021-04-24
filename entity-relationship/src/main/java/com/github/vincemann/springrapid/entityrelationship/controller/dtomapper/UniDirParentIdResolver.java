@@ -7,7 +7,6 @@ import com.github.vincemann.springrapid.core.service.exception.EntityNotFoundExc
 import com.github.vincemann.springrapid.core.service.locator.CrudServiceLocator;
 import com.github.vincemann.springrapid.entityrelationship.controller.dtomapper.biDir.BiDirParentIdResolver;
 import com.github.vincemann.springrapid.entityrelationship.dto.parent.UniDirParentDto;
-import com.github.vincemann.springrapid.entityrelationship.model.child.UniDirChild;
 import com.github.vincemann.springrapid.entityrelationship.model.parent.UniDirParent;
 
 import java.io.Serializable;
@@ -27,19 +26,19 @@ public class UniDirParentIdResolver extends EntityIdResolver<UniDirParent, UniDi
 
     public void resolveEntityIds(UniDirParent mappedUniDirParent, UniDirParentDto uniDirParentDto) throws BadEntityException, EntityNotFoundException {
         //find and handle single Children
-        Map<Class<UniDirChild>, Serializable> childTypeIdMappings = uniDirParentDto.findUniDirChildIds();
-        for (Map.Entry<Class<UniDirChild>, Serializable> entry : childTypeIdMappings.entrySet()) {
+        Map<Class<IdentifiableEntity>, Serializable> childTypeIdMappings = uniDirParentDto.findUniDirChildIds();
+        for (Map.Entry<Class<IdentifiableEntity>, Serializable> entry : childTypeIdMappings.entrySet()) {
             Class entityClass = entry.getKey();
-            UniDirChild child = findEntityFromService((Class<IdentifiableEntity>) entityClass, entry.getValue());
+            IdentifiableEntity child = findEntityFromService((Class<IdentifiableEntity>) entityClass, entry.getValue());
             mappedUniDirParent.linkUniDirChild(child);
         }
         //find and handle children collections
-        Map<Class<UniDirChild>, Collection<Serializable>> childTypeIdCollectionMappings = uniDirParentDto.findUniDirChildIdCollections();
-        for (Map.Entry<Class<UniDirChild>, Collection<Serializable>> entry : childTypeIdCollectionMappings.entrySet()) {
+        Map<Class<IdentifiableEntity>, Collection<Serializable>> childTypeIdCollectionMappings = uniDirParentDto.findUniDirChildIdCollections();
+        for (Map.Entry<Class<IdentifiableEntity>, Collection<Serializable>> entry : childTypeIdCollectionMappings.entrySet()) {
             Collection<Serializable> idCollection = entry.getValue();
             for (Serializable id : idCollection) {
                 Class entityClass = entry.getKey();
-                UniDirChild child = findEntityFromService((Class<IdentifiableEntity>)entityClass, id);
+                IdentifiableEntity child = findEntityFromService((Class<IdentifiableEntity>)entityClass, id);
                 mappedUniDirParent.linkUniDirChild(child);
             }
         }
@@ -47,11 +46,11 @@ public class UniDirParentIdResolver extends EntityIdResolver<UniDirParent, UniDi
 
     @Override
     public void resolveDtoIds(UniDirParentDto mappedDto, UniDirParent serviceEntity) {
-        for (UniDirChild child : serviceEntity.findSingleUniDirChildren()) {
+        for (IdentifiableEntity child : serviceEntity.findSingleUniDirChildren()) {
             mappedDto.addUniDirChildId(child);
         }
-        for (Collection<UniDirChild> childrenCollection : serviceEntity.findUniDirChildCollections().keySet()) {
-            for (UniDirChild child : childrenCollection) {
+        for (Collection<IdentifiableEntity> childrenCollection : serviceEntity.findUniDirChildCollections().keySet()) {
+            for (IdentifiableEntity child : childrenCollection) {
                 mappedDto.addUniDirChildId(child);
             }
         }

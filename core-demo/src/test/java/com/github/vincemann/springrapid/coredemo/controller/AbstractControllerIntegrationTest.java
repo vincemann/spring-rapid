@@ -77,6 +77,8 @@ public class AbstractControllerIntegrationTest<C extends GenericCrudController<?
     protected Toy bone;
     protected Toy ball;
 
+    protected Visit checkTeethVisit;
+    protected Visit checkHeartVisit;
 
     @Autowired
     protected SpecialtyService specialtyService;
@@ -107,7 +109,10 @@ public class AbstractControllerIntegrationTest<C extends GenericCrudController<?
     @Autowired
     protected PetTypeRepository petTypeRepository;
 
-
+    @Autowired
+    protected VisitRepository visitRepository;
+    @Autowired
+    protected VisitService visitService;
 
     @SpyBean
     protected OwnerOfTheYearExtension ownerOfTheYearExtension;
@@ -206,6 +211,18 @@ public class AbstractControllerIntegrationTest<C extends GenericCrudController<?
                 .lastName(VET_POLDI)
                 .specialtys(new HashSet<>())
                 .build();
+
+        checkHeartVisit = Visit.builder()
+                .date(LocalDate.now())
+                .pets(new HashSet<>())
+                .reason("heart problems")
+                .build();
+
+        checkTeethVisit = Visit.builder()
+                .date(LocalDate.now())
+                .pets(new HashSet<>())
+                .reason("teeth hurt")
+                .build();
     }
 
     protected void assertVetHasSpecialties(String vetName, String... descriptions) {
@@ -299,6 +316,7 @@ public class AbstractControllerIntegrationTest<C extends GenericCrudController<?
 
     @AfterEach
     void tearDown() {
+        RapidTestUtil.clear(visitService);
         RapidTestUtil.clear(petService);
         RapidTestUtil.clear(toyService);
         RapidTestUtil.clear(ownerService);

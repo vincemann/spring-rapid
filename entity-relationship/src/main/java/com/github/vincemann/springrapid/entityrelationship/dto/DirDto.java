@@ -15,7 +15,7 @@ public interface DirDto {
     Logger log = LoggerFactory.getLogger(DirDto.class);
 
 
-    default <C extends DirEntity> Map<Class<C>, Serializable> findEntityIds(Class<? extends Annotation> entityIdAnnotationType) {
+    default <C> Map<Class<C>, Serializable> findEntityIds(Class<? extends Annotation> entityIdAnnotationType) {
         final Map<Class<C>, Serializable> result = new HashMap<>();
         EntityReflectionUtils.doWithAnnotatedFields(entityIdAnnotationType, getClass(), field -> {
             Serializable id = (Serializable) field.get(this);
@@ -28,7 +28,7 @@ public interface DirDto {
         return result;
     }
 
-    default <C extends DirEntity> Map<Class<C>, Collection<Serializable>> findEntityIdCollections(Class<? extends Annotation> entityIdAnnotationType) {
+    default <C> Map<Class<C>, Collection<Serializable>> findEntityIdCollections(Class<? extends Annotation> entityIdAnnotationType) {
         final Map<Class<C>, Collection<Serializable>> result = new HashMap<>();
         EntityReflectionUtils.doWithAnnotatedFields(entityIdAnnotationType,getClass(),field -> {
             Collection<Serializable> idCollection = (Collection<Serializable>) field.get(this);
@@ -41,8 +41,8 @@ public interface DirDto {
         return result;
     }
 
-    default void addEntityId(DirEntity entity, Class<? extends Annotation> entityIdAnnotationClass, Class<? extends Annotation> entityIdCollectionAnnotationClass) {
-        Serializable entityId = ((IdentifiableEntity) entity).getId();
+    default void addEntityId(IdentifiableEntity entity, Class<? extends Annotation> entityIdAnnotationClass, Class<? extends Annotation> entityIdCollectionAnnotationClass) {
+        Serializable entityId = entity.getId();
         if (entityId == null) {
             throw new IllegalArgumentException("EntityId must not be null");
         }

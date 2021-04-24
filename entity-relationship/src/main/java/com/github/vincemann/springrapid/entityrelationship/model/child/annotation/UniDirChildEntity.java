@@ -1,6 +1,6 @@
 package com.github.vincemann.springrapid.entityrelationship.model.child.annotation;
 
-import com.github.vincemann.springrapid.entityrelationship.model.child.UniDirChild;
+
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
