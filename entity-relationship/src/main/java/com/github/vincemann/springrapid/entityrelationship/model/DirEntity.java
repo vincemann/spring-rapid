@@ -1,5 +1,6 @@
 package com.github.vincemann.springrapid.entityrelationship.model;
 
+import com.github.vincemann.springrapid.core.model.IdentifiableEntity;
 import com.github.vincemann.springrapid.entityrelationship.exception.UnknownEntityTypeException;
 import com.github.vincemann.springrapid.entityrelationship.util.CollectionUtils;
 import com.github.vincemann.springrapid.entityrelationship.util.EntityAnnotationUtils;
@@ -15,7 +16,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 public interface DirEntity {
     Logger log = LoggerFactory.getLogger(DirEntity.class);
 
-    default <C extends DirEntity> Set<C> findSingleEntities(Class<? extends Annotation> annotationClass){
+    default <C> Set<C> findSingleEntities(Class<? extends Annotation> annotationClass){
         Set<C> entities = new HashSet<>();
         EntityReflectionUtils.doWithAnnotatedFields(annotationClass,getClass(), field -> {
             C entity = (C) field.get(this);
@@ -34,7 +35,7 @@ public interface DirEntity {
      *
      * @return
      */
-    default <C extends DirEntity> Map<Collection<C>, Class<C>> findEntityCollections(Class<? extends Annotation> entityAnnotationClass) {
+    default <C> Map<Collection<C>, Class<C>> findEntityCollections(Class<? extends Annotation> entityAnnotationClass) {
         Map<Collection<C>, Class<C>> entityCollection_entityTypeMap = new HashMap<>();
         EntityReflectionUtils.doWithAnnotatedFields(entityAnnotationClass, getClass(), field -> {
             Collection<C> entityCollection = (Collection<C>) field.get(this);
@@ -51,11 +52,11 @@ public interface DirEntity {
         return entityCollection_entityTypeMap;
     }
 
-    default void linkEntity(DirEntity newEntity, Class<? extends Annotation> entityAnnotationClass, Class<? extends Annotation> entityCollectionAnnotationClass) throws UnknownEntityTypeException {
+    default void linkEntity(IdentifiableEntity newEntity, Class<? extends Annotation> entityAnnotationClass, Class<? extends Annotation> entityCollectionAnnotationClass) throws UnknownEntityTypeException {
         AtomicBoolean added = new AtomicBoolean(false);
         //add to matching entity collections
-        for (Map.Entry<Collection<DirEntity>, Class<DirEntity>> entry : this.<DirEntity>findEntityCollections(entityCollectionAnnotationClass).entrySet()) {
-            Class<? extends DirEntity> targetClass = entry.getValue();
+        for (Map.Entry<Collection<IdentifiableEntity>, Class<IdentifiableEntity>> entry : this.<IdentifiableEntity>findEntityCollections(entityCollectionAnnotationClass).entrySet()) {
+            Class<? extends IdentifiableEntity> targetClass = entry.getValue();
             if (newEntity.getClass().equals(targetClass)) {
                 (entry.getKey()).add(newEntity);
                 added.set(true);
@@ -63,7 +64,7 @@ public interface DirEntity {
         }
         //set matching entity
         EntityReflectionUtils.doWithAnnotatedFieldsOfType(newEntity.getClass(),entityAnnotationClass,getClass(),entityField -> {
-            DirEntity oldEntity = (DirEntity) entityField.get(this);
+            IdentifiableEntity oldEntity = (IdentifiableEntity) entityField.get(this);
             if (oldEntity != null) {
                 log.warn("Overriding old entity: " + oldEntity + " with new entity " + newEntity + " of source sntity " + this);
             }
@@ -75,22 +76,22 @@ public interface DirEntity {
         }
     }
 
-    default void unlinkEntity(DirEntity entityToRemove, Class<? extends Annotation> entityEntityAnnotationClass, Class<? extends Annotation> entityEntityCollectionAnnotationClass) throws UnknownEntityTypeException{
+    default void unlinkEntity(IdentifiableEntity entityToRemove, Class<? extends Annotation> entityEntityAnnotationClass, Class<? extends Annotation> entityEntityCollectionAnnotationClass) throws UnknownEntityTypeException{
         AtomicBoolean deleted = new AtomicBoolean(false);
-        for (Map.Entry<Collection<DirEntity>, Class<DirEntity>> entry : this.<DirEntity>findEntityCollections(entityEntityCollectionAnnotationClass).entrySet()) {
-            Collection<DirEntity> entityCollection = entry.getKey();
+        for (Map.Entry<Collection<IdentifiableEntity>, Class<IdentifiableEntity>> entry : this.<IdentifiableEntity>findEntityCollections(entityEntityCollectionAnnotationClass).entrySet()) {
+            Collection<IdentifiableEntity> entityCollection = entry.getKey();
             if(entityCollection!=null){
                 if(!entityCollection.isEmpty()){
-                    Optional<DirEntity> optionalBiDirEntity = entityCollection.stream().findFirst();
-                    if(optionalBiDirEntity.isPresent()){
-                        DirEntity entity = optionalBiDirEntity.get();
+                    Optional<IdentifiableEntity> optionalEntity = entityCollection.stream().findFirst();
+                    if(optionalEntity.isPresent()){
+                        IdentifiableEntity entity = optionalEntity.get();
                         if(entityToRemove.getClass().equals(entity.getClass())){
                             //this set needs to remove the entity
                             //here is a hibernate bug in persistent set remove function, see https://stackoverflow.com/a/47968974
                             //therefor we use an odd workaround
-                            Iterator<DirEntity> iterator = entityCollection.iterator();
+                            Iterator<IdentifiableEntity> iterator = entityCollection.iterator();
                             while (iterator.hasNext()){
-                                DirEntity e = iterator.next();
+                                IdentifiableEntity e = iterator.next();
                                 if (e.equals(entityToRemove)){
                                     iterator.remove();
                                     deleted.set(true);
@@ -113,7 +114,7 @@ public interface DirEntity {
             }
         }
         EntityReflectionUtils.doWithAnnotatedFields(entityEntityAnnotationClass,getClass(),entityField -> {
-            DirEntity entity = (DirEntity) entityField.get(this);
+            IdentifiableEntity entity = (IdentifiableEntity) entityField.get(this);
             if(entity!=null) {
                 if (entity.getClass().equals(entityToRemove.getClass())) {
                     entityField.set(this, null);

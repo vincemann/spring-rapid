@@ -15,23 +15,32 @@ import java.util.Set;
 
 @Getter
 @Setter
-@AllArgsConstructor
 @NoArgsConstructor
 @Entity
 public class Visit extends IdentifiableEntityImpl<Long> implements UniDirParent {
 
 
-    @OneToMany
+    @Builder
+    public Visit(Set<Pet> pets, Owner owner, Vet vet, LocalDate date, String reason) {
+        if(pets!=null)
+            this.pets = pets;
+        this.owner = owner;
+        this.vet = vet;
+        this.date = date;
+        this.reason = reason;
+    }
+
+    @OneToMany(fetch = FetchType.EAGER)
     @JoinColumn(name = "pet_id")
     @UniDirChildCollection(Pet.class)
     private Set<Pet> pets = new HashSet<>();
 
-    @OneToOne
+    @OneToOne(fetch = FetchType.EAGER)
     @UniDirChildEntity
     @JoinColumn(name = "owner_id")
     private Owner owner;
 
-    @OneToOne
+    @OneToOne(fetch = FetchType.EAGER)
     @UniDirChildEntity
     @JoinColumn(name = "vet_id")
     private Vet vet;

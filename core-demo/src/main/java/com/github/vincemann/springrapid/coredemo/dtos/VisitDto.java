@@ -1,9 +1,7 @@
 package com.github.vincemann.springrapid.coredemo.dtos;
 
 import com.github.vincemann.springrapid.core.model.IdentifiableEntityImpl;
-import com.github.vincemann.springrapid.coredemo.model.Owner;
-import com.github.vincemann.springrapid.coredemo.model.Pet;
-import com.github.vincemann.springrapid.coredemo.model.Vet;
+import com.github.vincemann.springrapid.coredemo.model.*;
 import com.github.vincemann.springrapid.entityrelationship.dto.child.annotation.UniDirChildId;
 import com.github.vincemann.springrapid.entityrelationship.dto.child.annotation.UniDirChildIdCollection;
 import com.github.vincemann.springrapid.entityrelationship.dto.parent.UniDirParentDto;
@@ -14,7 +12,9 @@ import lombok.ToString;
 
 import javax.validation.constraints.NotNull;
 import java.time.LocalDate;
+import java.util.HashSet;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 @Getter
 @Setter
@@ -23,7 +23,7 @@ import java.util.Set;
 public class VisitDto extends IdentifiableEntityImpl<Long> implements UniDirParentDto {
 
     @UniDirChildIdCollection(Pet.class)
-    private Set<Long> petIds;
+    private Set<Long> petIds = new HashSet<>();
 
     @UniDirChildId(Owner.class)
     private Long ownerId;
@@ -35,4 +35,12 @@ public class VisitDto extends IdentifiableEntityImpl<Long> implements UniDirPare
     private LocalDate date;
 
     private String reason;
+
+    public VisitDto(Visit visit) {
+        this.petIds = visit.getPets().stream().map(Pet::getId).collect(Collectors.toSet());
+        this.ownerId = visit.getOwner() ==  null ? null : visit.getOwner().getId();
+        this.vetId = visit.getVet() ==  null ? null : visit.getVet().getId();
+        this.reason=visit.getReason();
+        this.date=visit.getDate();
+    }
 }

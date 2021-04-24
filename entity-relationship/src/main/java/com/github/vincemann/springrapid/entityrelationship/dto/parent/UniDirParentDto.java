@@ -1,9 +1,10 @@
 package com.github.vincemann.springrapid.entityrelationship.dto.parent;
 
+import com.github.vincemann.springrapid.core.model.IdentifiableEntity;
 import com.github.vincemann.springrapid.entityrelationship.dto.DirDto;
 import com.github.vincemann.springrapid.entityrelationship.dto.child.annotation.UniDirChildId;
 import com.github.vincemann.springrapid.entityrelationship.dto.child.annotation.UniDirChildIdCollection;
-import com.github.vincemann.springrapid.entityrelationship.model.child.UniDirChild;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -22,7 +23,7 @@ public interface UniDirParentDto extends DirDto {
 //        return findChildId(childClazz,UniDirChildId.class);
 //    }
 
-    default Map<Class<UniDirChild>, Serializable> findUniDirChildIds(){
+    default Map<Class<IdentifiableEntity>, Serializable> findUniDirChildIds(){
         return findEntityIds(UniDirChildId.class);
     }
 
@@ -34,7 +35,7 @@ public interface UniDirParentDto extends DirDto {
 
 
 
-    default Map<Class<UniDirChild>, Collection<Serializable>> findUniDirChildIdCollections(){
+    default Map<Class<IdentifiableEntity>, Collection<Serializable>> findUniDirChildIdCollections(){
         return findEntityIdCollections(UniDirChildIdCollection.class);
     }
 
@@ -43,7 +44,7 @@ public interface UniDirParentDto extends DirDto {
      *
      * @param child
      */
-    default void addUniDirChildId(UniDirChild child) {
+    default void addUniDirChildId(IdentifiableEntity child) {
         addEntityId(child, UniDirChildId.class, UniDirChildIdCollection.class);
     }
 

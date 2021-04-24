@@ -1,5 +1,6 @@
 package com.github.vincemann.springrapid.entityrelationship.dto.parent;
 
+import com.github.vincemann.springrapid.core.model.IdentifiableEntity;
 import com.github.vincemann.springrapid.entityrelationship.controller.dtomapper.IdResolvingDtoPostProcessor;
 import com.github.vincemann.springrapid.entityrelationship.dto.DirDto;
 import com.github.vincemann.springrapid.entityrelationship.dto.child.annotation.BiDirChildId;
@@ -49,6 +50,6 @@ public interface BiDirParentDto extends DirDto {
      * @param child
      */
     default void addBiDirChildId(BiDirChild child) {
-        addEntityId(child, BiDirChildId.class, BiDirChildIdCollection.class);
+        addEntityId((IdentifiableEntity) child, BiDirChildId.class, BiDirChildIdCollection.class);
     }
 }

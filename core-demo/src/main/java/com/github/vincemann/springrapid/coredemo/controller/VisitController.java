@@ -3,10 +3,12 @@ package com.github.vincemann.springrapid.coredemo.controller;
 import com.github.vincemann.springrapid.core.controller.CrudController;
 import com.github.vincemann.springrapid.core.controller.dto.mapper.context.CrudDtoMappingContextBuilder;
 import com.github.vincemann.springrapid.core.controller.dto.mapper.context.DtoMappingContext;
+import com.github.vincemann.springrapid.core.slicing.WebController;
 import com.github.vincemann.springrapid.coredemo.dtos.VisitDto;
 import com.github.vincemann.springrapid.coredemo.model.Visit;
 import com.github.vincemann.springrapid.coredemo.service.VisitService;
 
+@WebController
 public class VisitController
         extends CrudController<Visit, Long, VisitService>
 {

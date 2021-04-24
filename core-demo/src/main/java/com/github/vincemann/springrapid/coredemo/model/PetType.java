@@ -1,7 +1,7 @@
 package com.github.vincemann.springrapid.coredemo.model;
 
 import com.github.vincemann.springrapid.core.model.IdentifiableEntityImpl;
-import com.github.vincemann.springrapid.entityrelationship.model.child.UniDirChild;
+
 import lombok.*;
 import org.checkerframework.common.aliasing.qual.Unique;
 
@@ -16,7 +16,7 @@ import javax.persistence.Table;
 @Table(name = "pet_types")
 @Builder
 @ToString
-public class PetType extends IdentifiableEntityImpl<Long> implements UniDirChild {
+public class PetType extends IdentifiableEntityImpl<Long>  {
     @Unique
     private String name;
 }

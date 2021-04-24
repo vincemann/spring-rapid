@@ -1,5 +1,6 @@
 package com.github.vincemann.springrapid.entityrelationship.model.child;
 
+import com.github.vincemann.springrapid.core.model.IdentifiableEntity;
 import com.github.vincemann.springrapid.entityrelationship.exception.UnknownChildTypeException;
 import com.github.vincemann.springrapid.entityrelationship.exception.UnknownEntityTypeException;
 import com.github.vincemann.springrapid.entityrelationship.exception.UnknownParentTypeException;
@@ -51,7 +52,7 @@ public interface BiDirChild extends BiDirEntity {
      * @throws UnknownParentTypeException   when supplied Parent does not match any of the fields in child class anntoated with {@link BiDirParentEntity}
      */
     default void linkBiDirParent(BiDirParent parentToSet) throws UnknownParentTypeException {
-       linkEntity(parentToSet,BiDirParentEntity.class,BiDirParentCollection.class);
+       linkEntity((IdentifiableEntity) parentToSet,BiDirParentEntity.class,BiDirParentCollection.class);
     }
 
     default void unlinkBiDirParents() throws UnknownChildTypeException, UnknownParentTypeException{
@@ -71,7 +72,7 @@ public interface BiDirChild extends BiDirEntity {
      * @throws UnknownParentTypeException   thrown, if parentToDelete is of unknown type -> no field , annotated as {@link BiDirParentEntity}, with the most specific type of parentToDelete, exists in Child (this).
      */
     default void unlinkBiDirParent(BiDirParent parentToDelete) throws UnknownParentTypeException {
-        unlinkEntity(parentToDelete,BiDirParentEntity.class,BiDirParentCollection.class);
+        unlinkEntity((IdentifiableEntity) parentToDelete,BiDirParentEntity.class,BiDirParentCollection.class);
     }
 
     /**
