@@ -8,7 +8,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Primary;
 
 @ServiceConfig
-public class MyUserServiceConfig {
+public class UserServiceConfig {
 
     @Bean
     @Primary

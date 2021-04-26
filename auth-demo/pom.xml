@@ -10,22 +10,11 @@
 	<parent>
 		<groupId>com.github.vincemann</groupId>
 		<artifactId>spring-rapid</artifactId>
-		<version>1.0.0-SNAPSHOT.5.2</version>
+		<version>1.0.0-SNAPSHOT.6</version>
 	</parent>
 
 	<dependencies>
 
-<!--		<dependency>-->
-<!--			<groupId>com.github.vincemann.spring-rapid</groupId>-->
-<!--			<artifactId>core</artifactId>-->
-<!--			<version>${project.version}</version>-->
-<!--		</dependency>-->
-
-<!--		<dependency>-->
-<!--			<groupId>com.github.vincemann.spring-rapid</groupId>-->
-<!--			<artifactId>acl</artifactId>-->
-<!--			<version>${project.version}</version>-->
-<!--		</dependency>-->
 
 		<dependency>
 			<groupId>com.github.vincemann.spring-rapid</groupId>
@@ -45,23 +34,17 @@
 		</dependency>
 
 		<dependency>
+			<groupId>com.h2database</groupId>
+			<artifactId>h2</artifactId>
+			<scope>runtime</scope>
+		</dependency>
+
+		<dependency>
 			<groupId>mysql</groupId>
 			<artifactId>mysql-connector-java</artifactId>
 			<scope>runtime</scope>
 		</dependency>
 
-<!--		<dependency>-->
-<!--			<groupId>com.github.vincemann.spring-rapid</groupId>-->
-<!--			<artifactId>core-test</artifactId>-->
-<!--			<version>${project.version}</version>-->
-<!--			<scope>test</scope>-->
-<!--		</dependency>-->
-
-<!--		<dependency>-->
-<!--			<groupId>org.springframework.security</groupId>-->
-<!--			<artifactId>spring-security-test</artifactId>-->
-<!--			<scope>test</scope>-->
-<!--		</dependency>-->
 
 		<dependency>
 			<groupId>com.github.vincemann.spring-rapid</groupId>

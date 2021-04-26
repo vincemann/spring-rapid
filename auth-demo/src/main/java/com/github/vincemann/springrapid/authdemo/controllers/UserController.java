@@ -13,7 +13,7 @@ import com.github.vincemann.springrapid.core.security.Roles;
 import org.springframework.stereotype.Controller;
 
 @Controller
-public class MyUserController extends AbstractUserController<User, Long, MyUserService>  {
+public class UserController extends AbstractUserController<User, Long, MyUserService>  {
 
 
     @Override
