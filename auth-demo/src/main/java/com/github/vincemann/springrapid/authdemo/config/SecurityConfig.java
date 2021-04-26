@@ -10,10 +10,10 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 
 @Configuration
 @Slf4j
-public class MySecurityConfig extends RapidWebSecurityConfig {
+public class SecurityConfig extends RapidWebSecurityConfig {
 	
 
-	public MySecurityConfig() {
+	public SecurityConfig() {
 
 	}
 

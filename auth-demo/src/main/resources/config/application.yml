@@ -12,10 +12,25 @@ spring:
       use-new-id-generator-mappings: false
     properties:
       hibernate.jdbc.lob.non_contextual_creation: true
+
+#   in order to use this demo project with mysql database:
+#   uncomment lines below, and comment out h2 related lines below
+#   run create-db.sh
+#   uncomment contents of MySqlConfig.java
+
+
+#  datasource:
+#    url: jdbc:mysql://${MYSQL_HOST:localhost}:6603/lemonDb?useSSL=false&allowPublicKeyRetrieval=true
+#    username: root
+#    password: mypassword
   datasource:
-    url: jdbc:mysql://${MYSQL_HOST:localhost}:6603/lemonDb?useSSL=false&allowPublicKeyRetrieval=true
-    username: root
-    password: mypassword
+    url: jdbc:h2:mem:testdb
+    driverClassName: org.h2.Driver
+    username: sa
+    password: password
+  jpa.database-platform: org.hibernate.dialect.H2Dialect
+  h2.console.enabled: true
+  h2.console.path: /h2-console
 
   # JSON serialization settings
   jackson:
