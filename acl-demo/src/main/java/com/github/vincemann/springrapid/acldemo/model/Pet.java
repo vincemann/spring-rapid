@@ -1,7 +1,6 @@
 package com.github.vincemann.springrapid.acldemo.model;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
-import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.github.vincemann.springrapid.core.model.IdentifiableEntityImpl;
 import com.github.vincemann.springrapid.entityrelationship.model.child.BiDirChild;
 import com.github.vincemann.springrapid.entityrelationship.model.child.annotation.BiDirChildCollection;
@@ -31,11 +30,11 @@ public class Pet extends IdentifiableEntityImpl<Long> implements BiDirChild, Uni
 
 
     @Builder
-    public Pet(@Unique String name, PetType petType, Set<Toy> toys, Owner owner, LocalDate birthDate) {
+    public Pet(@Unique String name, PetType petType, Set<Illness> illnesss, Owner owner, LocalDate birthDate) {
         this.name = name;
         this.petType = petType;
-        if (toys!=null)
-            this.toys = toys;
+        if (illnesss !=null)
+            this.illnesss = illnesss;
         this.owner = owner;
         this.birthDate = birthDate;
     }
@@ -51,10 +50,12 @@ public class Pet extends IdentifiableEntityImpl<Long> implements BiDirChild, Uni
     @UniDirChildEntity
     private PetType petType;
 
-    @JsonManagedReference
-    @OneToMany(fetch = FetchType.EAGER, mappedBy = "pet")
-    @BiDirChildCollection(Toy.class)
-    private Set<Toy> toys = new HashSet<>();
+    @ManyToMany(fetch = FetchType.EAGER)
+    @JoinTable(name = "pet_illnesss",
+            joinColumns = @JoinColumn(name = "pet_id"),
+            inverseJoinColumns = @JoinColumn(name = "illness_id"))
+    @BiDirChildCollection(Illness.class)
+    private Set<Illness> illnesss = new HashSet<>();
 
     @ManyToOne
     @JoinColumn(name = "owner_id")
@@ -72,7 +73,7 @@ public class Pet extends IdentifiableEntityImpl<Long> implements BiDirChild, Uni
         return "Pet{" +
                 "name='" + name + '\'' +
                 ", petType=" + petType +
-                ", toys=" +  Arrays.toString(toys.stream().map(Toy::getName).toArray()) +
+                ", illnesses=" +  Arrays.toString(illnesss.stream().map(Illness::getName).toArray()) +
                 ", owner=" + (owner==null? "null": owner.getLastName()) +
                 ", birthDate=" + birthDate +
                 '}';

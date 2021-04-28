@@ -16,15 +16,10 @@ import java.util.Set;
 @Getter @Setter
 public class UpdateOwnerDto extends AbstractOwnerDto implements BiDirParentDto {
 
-    @BiDirChildIdCollection(Pet.class)
-    private Set<Long> petIds = new HashSet<>();
 
     @Builder
-    public UpdateOwnerDto(@Size(min = 10, max = 255) @NotBlank String address, @NotBlank String city, @Size(min = 10, max = 10) String telephone, Set<Long> petIds,Set<String> hobbies) {
-        super(address, city, telephone,hobbies);
-        if (petIds != null)
-            this.petIds = petIds;
-
+    public UpdateOwnerDto(@Size(min = 2, max = 20) String firstName, @Size(min = 2, max = 20) String lastName, @Size(min = 10, max = 255) String address, @Size(min = 3, max = 255) String city, @Size(min = 10, max = 10) String telephone, Set<String> hobbies, Set<Long> petIds) {
+        super(firstName, lastName, address, city, telephone, hobbies, petIds);
     }
 
     @NotNull

@@ -1,13 +1,12 @@
 package com.github.vincemann.springrapid.acldemo.dto.owner;
 
-import com.github.vincemann.springrapid.core.model.IdentifiableEntityImpl;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
-import lombok.ToString;
+import com.github.vincemann.springrapid.acldemo.dto.PersonDto;
+import com.github.vincemann.springrapid.acldemo.model.Pet;
+import com.github.vincemann.springrapid.entityrelationship.dto.child.annotation.BiDirChildIdCollection;
+import com.github.vincemann.springrapid.entityrelationship.dto.parent.BiDirParentDto;
+import lombok.*;
 import org.springframework.lang.Nullable;
 
-import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Size;
 import java.util.HashSet;
 import java.util.Set;
@@ -16,15 +15,18 @@ import java.util.Set;
 @Setter
 @NoArgsConstructor
 @ToString(callSuper = true)
-public abstract class AbstractOwnerDto extends IdentifiableEntityImpl<Long> {
+public abstract class AbstractOwnerDto extends PersonDto implements BiDirParentDto {
 
-    public AbstractOwnerDto(@Size(min = 10, max = 255) @NotBlank String address, @NotBlank String city, @Nullable @Size(min = 10, max = 10) String telephone,Set<String> hobbies) {
+
+    public AbstractOwnerDto(@Size(min = 2, max = 20) String firstName, @Size(min = 2, max = 20) String lastName, @Size(min = 10, max = 255) String address, @Size(min = 3, max = 255) String city, @Size(min = 10, max = 10) String telephone, Set<String> hobbies, @Nullable Set<Long> petIds) {
+        super(firstName, lastName);
         this.address = address;
         this.city = city;
         this.telephone = telephone;
-        if (hobbies!=null)
-            this.hobbies=hobbies;
+        this.hobbies = hobbies;
+        this.petIds = petIds;
     }
+
 
     @Size(min=10,max=255)
     private String address;
@@ -36,4 +38,8 @@ public abstract class AbstractOwnerDto extends IdentifiableEntityImpl<Long> {
     private String telephone;
 
     private Set<String> hobbies = new HashSet<>();
+
+    @Nullable
+    @BiDirChildIdCollection(Pet.class)
+    private Set<Long> petIds = new HashSet<>();
 }

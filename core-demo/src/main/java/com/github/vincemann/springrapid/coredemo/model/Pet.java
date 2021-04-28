@@ -29,11 +29,11 @@ public class Pet extends IdentifiableEntityImpl<Long> implements BiDirChild, Uni
 
 
     @Builder
-    public Pet(@Unique String name, PetType petType, Set<Toy> toys, Owner owner, LocalDate birthDate) {
+    public Pet(@Unique String name, PetType petType, Set<Toy> illnesses, Owner owner, LocalDate birthDate) {
         this.name = name;
         this.petType = petType;
-        if (toys!=null)
-            this.toys = toys;
+        if (illnesses!=null)
+            this.illnesses = illnesses;
         this.owner = owner;
         this.birthDate = birthDate;
     }
@@ -52,7 +52,7 @@ public class Pet extends IdentifiableEntityImpl<Long> implements BiDirChild, Uni
     @JsonManagedReference
     @OneToMany(fetch = FetchType.EAGER, mappedBy = "pet")
     @BiDirChildCollection(Toy.class)
-    private Set<Toy> toys = new HashSet<>();
+    private Set<Toy> illnesses = new HashSet<>();
 
     @ManyToOne
     @JoinColumn(name = "owner_id")
@@ -70,7 +70,7 @@ public class Pet extends IdentifiableEntityImpl<Long> implements BiDirChild, Uni
         return "Pet{" +
                 "name='" + name + '\'' +
                 ", petType=" + petType +
-                ", toys=" +  Arrays.toString(toys.stream().map(Toy::getName).toArray()) +
+                ", illnesses=" +  Arrays.toString(illnesses.stream().map(Toy::getName).toArray()) +
                 ", owner=" + (owner==null? "null": owner.getLastName()) +
                 ", birthDate=" + birthDate +
                 '}';

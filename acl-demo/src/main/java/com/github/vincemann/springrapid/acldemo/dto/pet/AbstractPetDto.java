@@ -1,15 +1,9 @@
 package com.github.vincemann.springrapid.acldemo.dto.pet;
 
-import com.github.vincemann.springrapid.core.model.IdentifiableEntityImpl;
-import com.github.vincemann.springrapid.acldemo.model.Owner;
 import com.github.vincemann.springrapid.acldemo.model.PetType;
-import com.github.vincemann.springrapid.acldemo.model.Toy;
-import com.github.vincemann.springrapid.entityrelationship.dto.child.BiDirChildDto;
-import com.github.vincemann.springrapid.entityrelationship.dto.child.annotation.BiDirChildIdCollection;
+import com.github.vincemann.springrapid.core.model.IdentifiableEntityImpl;
 import com.github.vincemann.springrapid.entityrelationship.dto.child.annotation.UniDirChildId;
-import com.github.vincemann.springrapid.entityrelationship.dto.parent.BiDirParentDto;
 import com.github.vincemann.springrapid.entityrelationship.dto.parent.UniDirParentDto;
-import com.github.vincemann.springrapid.entityrelationship.dto.parent.annotation.BiDirParentId;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -17,22 +11,17 @@ import lombok.ToString;
 
 import javax.validation.constraints.Size;
 import java.time.LocalDate;
-import java.util.HashSet;
-import java.util.Set;
 
 @Getter
 @Setter
 @NoArgsConstructor
 @ToString(callSuper = true)
 public abstract class AbstractPetDto extends IdentifiableEntityImpl<Long>
-        implements UniDirParentDto, BiDirChildDto, BiDirParentDto {
+        implements UniDirParentDto {
 
-    public AbstractPetDto(@Size(min = 2, max = 20) String name, Long petTypeId, Set<Long> toyIds, Long ownerId, LocalDate birthDate) {
+    public AbstractPetDto(@Size(min = 2, max = 20) String name, Long petTypeId, LocalDate birthDate) {
         this.name = name;
         this.petTypeId = petTypeId;
-        if (toyIds!=null)
-            this.toyIds = toyIds;
-        this.ownerId = ownerId;
         this.birthDate = birthDate;
     }
 
@@ -41,12 +30,6 @@ public abstract class AbstractPetDto extends IdentifiableEntityImpl<Long>
 
     @UniDirChildId(PetType.class)
     private Long petTypeId;
-
-    @BiDirChildIdCollection(Toy.class)
-    private Set<Long> toyIds = new HashSet<>();
-
-    @BiDirParentId(Owner.class)
-    private Long ownerId;
 
     private LocalDate birthDate;
 }

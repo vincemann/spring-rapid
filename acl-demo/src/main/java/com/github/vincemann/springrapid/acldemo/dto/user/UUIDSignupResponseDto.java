@@ -7,6 +7,6 @@ import lombok.Setter;
 @AllArgsConstructor
 @Getter
 @Setter
-public class SignupResponseDto {
+public class UUIDSignupResponseDto {
     private String uuid;
 }

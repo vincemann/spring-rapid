@@ -1,6 +1,6 @@
 package com.github.vincemann.springrapid.acldemo.dto.vet;
 
-import com.github.vincemann.springrapid.acldemo.dto.abs.PersonDto;
+import com.github.vincemann.springrapid.acldemo.dto.PersonDto;
 import com.github.vincemann.springrapid.acldemo.model.Specialty;
 import com.github.vincemann.springrapid.acldemo.model.Vet;
 import com.github.vincemann.springrapid.entityrelationship.dto.child.annotation.BiDirChildIdCollection;
@@ -17,17 +17,17 @@ import java.util.Set;
 @Setter
 @Validated
 @ToString(callSuper = true)
-public class ReadVetDto extends PersonDto implements BiDirParentDto {
+public class FullVetDto extends PersonDto implements BiDirParentDto {
 
 
     @Builder
-    public ReadVetDto(@Size(min = 2, max = 20) String firstName, @Size(min = 2, max = 20) String lastName, Set<Long> specialtyIds) {
+    public FullVetDto(@Size(min = 2, max = 20) String firstName, @Size(min = 2, max = 20) String lastName, Set<Long> specialtyIds) {
         super(firstName, lastName);
         if(specialtyIds!=null)
             this.specialtyIds = specialtyIds;
     }
 
-    public ReadVetDto(Vet vet){
+    public FullVetDto(Vet vet){
         super(vet.getFirstName(),vet.getLastName());
     }
 

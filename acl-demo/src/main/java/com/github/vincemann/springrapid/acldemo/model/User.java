@@ -2,6 +2,7 @@ package com.github.vincemann.springrapid.acldemo.model;
 
 import com.github.vincemann.springrapid.auth.domain.AbstractUser;
 import com.google.common.collect.Sets;
+import com.sun.istack.Nullable;
 import lombok.*;
 
 import javax.persistence.Entity;
@@ -17,7 +18,7 @@ import java.util.Set;
 @ToString(callSuper = true)
 public class User extends AbstractUser<Long> {
 
-	@NotBlank
+	@Nullable
 	private String uuid;
 
 	public User(String email, String password, String uuid, String... roles) {
