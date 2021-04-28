@@ -42,6 +42,7 @@
         <module>core-demo</module>
         <module>limit-actions</module>
         <module>exceptions-api</module>
+        <module>acl-demo</module>
     </modules>
 
     <dependencies>

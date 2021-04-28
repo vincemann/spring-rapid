@@ -5,7 +5,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.github.vincemann.springrapid.auth.AuthProperties;
 import com.github.vincemann.springrapid.auth.domain.AbstractUser;
 import com.github.vincemann.springrapid.auth.domain.dto.ChangePasswordForm;
-import com.github.vincemann.springrapid.auth.domain.dto.SignupForm;
+import com.github.vincemann.springrapid.auth.domain.dto.SignupDto;
 import com.github.vincemann.springrapid.auth.domain.dto.RequestEmailChangeForm;
 import com.github.vincemann.springrapid.auth.domain.dto.ResetPasswordForm;
 import com.github.vincemann.springrapid.auth.domain.dto.user.AdminUpdateRapidUserDto;
@@ -309,7 +309,7 @@ public abstract class AbstractUserController<U extends AbstractUser<ID>, ID exte
 				.withAllPrincipals()
 //				.forAll(RapidUserDto.class)
 				.forResponse(FindRapidUserDto.class)
-				.forEndpoint(getAuthProperties().getController().getSignupUrl(), Direction.REQUEST, SignupForm.class)
+				.forEndpoint(getAuthProperties().getController().getSignupUrl(), Direction.REQUEST, SignupDto.class)
 
 				.withPrincipal(DtoRequestInfo.Principal.FOREIGN)
 				.forResponse(RapidFindForeignUserDto.class)

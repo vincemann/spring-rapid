@@ -2,8 +2,8 @@ package com.github.vincemann.springrapid.authdemo.controllers;
 
 import com.github.vincemann.springrapid.auth.controller.AbstractUserController;
 import com.github.vincemann.springrapid.auth.controller.UserDtoMappingContextBuilder;
-import com.github.vincemann.springrapid.authdemo.domain.MySignupForm;
-import com.github.vincemann.springrapid.authdemo.domain.User;
+import com.github.vincemann.springrapid.authdemo.model.MySignupDto;
+import com.github.vincemann.springrapid.authdemo.model.User;
 import com.github.vincemann.springrapid.authdemo.dto.AdminUpdatesUserDto;
 import com.github.vincemann.springrapid.authdemo.dto.UserUpdateDto;
 import com.github.vincemann.springrapid.authdemo.service.MyUserService;
@@ -20,7 +20,7 @@ public class UserController extends AbstractUserController<User, Long, MyUserSer
     protected DtoMappingContext provideDtoMappingContext(UserDtoMappingContextBuilder builder) {
         return builder
                 .forEndpoint(getUpdateUrl(), UserUpdateDto.class)
-                .forEndpoint(getAuthProperties().getController().getSignupUrl(), Direction.REQUEST, MySignupForm.class)
+                .forEndpoint(getAuthProperties().getController().getSignupUrl(), Direction.REQUEST, MySignupDto.class)
 
                 .withRoles(Roles.ADMIN)
                 .forEndpoint(getUpdateUrl(), AdminUpdatesUserDto.class)

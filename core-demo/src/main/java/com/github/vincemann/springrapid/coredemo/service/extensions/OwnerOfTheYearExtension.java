@@ -1,4 +1,4 @@
-package com.github.vincemann.springrapid.coredemo.service.plugin;
+package com.github.vincemann.springrapid.coredemo.service.extensions;
 
 import com.github.vincemann.springrapid.core.proxy.GenericCrudServiceExtension;
 import com.github.vincemann.springrapid.core.proxy.BasicServiceExtension;

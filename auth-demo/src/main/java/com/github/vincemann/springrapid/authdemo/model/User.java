@@ -1,4 +1,4 @@
-package com.github.vincemann.springrapid.authdemo.domain;
+package com.github.vincemann.springrapid.authdemo.model;
 
 import com.fasterxml.jackson.annotation.JsonView;
 import com.github.vincemann.springrapid.auth.domain.AbstractUser;

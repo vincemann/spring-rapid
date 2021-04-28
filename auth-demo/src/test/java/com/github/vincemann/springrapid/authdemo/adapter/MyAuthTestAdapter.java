@@ -1,10 +1,8 @@
 package com.github.vincemann.springrapid.authdemo.adapter;
 
 import com.github.vincemann.springrapid.auth.domain.AbstractUser;
-import com.github.vincemann.springrapid.auth.domain.dto.SignupForm;
 import com.github.vincemann.springrapid.authtests.adapter.AuthTestAdapter;
-import com.github.vincemann.springrapid.authdemo.domain.MySignupForm;
-import com.github.vincemann.springrapid.authdemo.domain.User;
+import com.github.vincemann.springrapid.authdemo.model.User;
 import org.springframework.boot.test.context.TestComponent;
 
 @TestComponent
