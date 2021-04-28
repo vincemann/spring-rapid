@@ -1,12 +1,12 @@
 package com.github.vincemann.springrapid.acldemo.controller;
 
-import com.github.vincemann.springrapid.acldemo.dto.user.AdminUpdatesUserDto;
-import com.github.vincemann.springrapid.acldemo.dto.user.MySignupDto;
-import com.github.vincemann.springrapid.acldemo.dto.user.SignupResponseDto;
+import com.github.vincemann.springrapid.acldemo.dto.user.FullUserDto;
+import com.github.vincemann.springrapid.acldemo.dto.user.UUIDSignupResponseDto;
 import com.github.vincemann.springrapid.acldemo.model.User;
 import com.github.vincemann.springrapid.acldemo.service.jpa.MyUserServiceImpl;
 import com.github.vincemann.springrapid.auth.controller.AbstractUserController;
 import com.github.vincemann.springrapid.auth.controller.UserDtoMappingContextBuilder;
+import com.github.vincemann.springrapid.auth.domain.dto.SignupDto;
 import com.github.vincemann.springrapid.core.controller.dto.mapper.context.Direction;
 import com.github.vincemann.springrapid.core.controller.dto.mapper.context.DtoMappingContext;
 import com.github.vincemann.springrapid.core.security.Roles;
@@ -19,11 +19,11 @@ public class UserController extends AbstractUserController<User, Long, MyUserSer
     @Override
     protected DtoMappingContext provideDtoMappingContext(UserDtoMappingContextBuilder builder) {
         return builder
-                .forEndpoint(getAuthProperties().getController().getSignupUrl(), Direction.REQUEST, MySignupDto.class)
-                .forEndpoint(getAuthProperties().getController().getSignupUrl(), Direction.RESPONSE, SignupResponseDto.class)
+                .forEndpoint(getAuthProperties().getController().getSignupUrl(), Direction.REQUEST, SignupDto.class)
+                .forEndpoint(getAuthProperties().getController().getSignupUrl(), Direction.RESPONSE, UUIDSignupResponseDto.class)
 
                 .withRoles(Roles.ADMIN)
-                .forEndpoint(getUpdateUrl(), AdminUpdatesUserDto.class)
+                .forEndpoint(getUpdateUrl(), FullUserDto.class)
                 .build();
     }
 

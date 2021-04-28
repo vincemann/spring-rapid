@@ -6,6 +6,10 @@ import com.github.vincemann.springrapid.entityrelationship.model.parent.annotati
 import lombok.*;
 import org.checkerframework.common.aliasing.qual.Unique;
 
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.ManyToMany;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;

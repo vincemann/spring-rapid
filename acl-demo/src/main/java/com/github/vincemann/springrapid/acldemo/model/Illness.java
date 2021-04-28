@@ -1,39 +1,39 @@
 package com.github.vincemann.springrapid.acldemo.model;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.github.vincemann.springrapid.core.model.IdentifiableEntityImpl;
 import com.github.vincemann.springrapid.entityrelationship.model.child.BiDirChild;
-import com.github.vincemann.springrapid.entityrelationship.model.parent.annotation.BiDirParentEntity;
+import com.github.vincemann.springrapid.entityrelationship.model.parent.annotation.BiDirParentCollection;
 import lombok.*;
 import org.checkerframework.common.aliasing.qual.Unique;
 
 import javax.persistence.Entity;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
+import javax.persistence.FetchType;
+import javax.persistence.ManyToMany;
 import javax.persistence.Table;
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.Set;
 
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter
 @Setter
-@Table(name = "toys")
+@Table(name = "illnesss")
 @Entity
 @Builder
-public class Toy extends IdentifiableEntityImpl<Long> implements BiDirChild {
+public class Illness extends IdentifiableEntityImpl<Long> implements BiDirChild {
     @Unique
     private String name;
 
-    @ManyToOne
-    @BiDirParentEntity
-    @JsonBackReference
-    @JoinColumn(name = "pet_id")
-    private Pet pet;
+    @ManyToMany(mappedBy = "illnesss", fetch = FetchType.EAGER)
+    @BiDirParentCollection(Vet.class)
+    private Set<Pet> pets = new HashSet<>();
 
     @Override
     public String toString() {
         return "Toy{" +
                 "name='" + name + '\'' +
-                ", pet=" + (pet==null? "null": pet.getName()) +
+                ", pets=" +  Arrays.toString(pets.stream().map(Pet::getName).toArray()) +
                 '}';
     }
 }

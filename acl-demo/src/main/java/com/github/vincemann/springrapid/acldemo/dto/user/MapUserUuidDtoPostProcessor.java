@@ -1,6 +1,5 @@
-package com.github.vincemann.springrapid.acldemo.controller;
+package com.github.vincemann.springrapid.acldemo.dto.user;
 
-import com.github.vincemann.springrapid.acldemo.dto.abs.CreateUserDto;
 import com.github.vincemann.springrapid.acldemo.model.User;
 import com.github.vincemann.springrapid.acldemo.model.abs.UserAware;
 import com.github.vincemann.springrapid.acldemo.service.MyUserService;
@@ -41,6 +40,8 @@ public class MapUserUuidDtoPostProcessor implements DtoPostProcessor<CreateUserD
         if (byUuid.isEmpty()){
             throw new BadEntityException("Wrong uuid");
         }
-        entity.setUser(byUuid.get());
+        User user = byUuid.get();
+        entity.setUser(user);
+        user.setUuid(null);
     }
 }

@@ -15,16 +15,11 @@ import java.util.Set;
 @Getter
 @Setter
 @ToString(callSuper = true)
-public class ReadForeignOwnerDto extends AbstractOwnerDto implements BiDirParentDto {
+public class VetReadsOwnerDto extends AbstractOwnerDto {
+
 
     @Builder
-    public ReadForeignOwnerDto(Set<Long> petIds, @Size(min = 10, max = 255) @NotBlank String address, @NotBlank String city, @Size(min = 10, max = 10) String telephone,Set<String> hobbies) {
-        super(address, city, telephone,hobbies);
-        this.petIds=petIds;
+    public VetReadsOwnerDto(@Size(min = 2, max = 20) String firstName, @Size(min = 2, max = 20) String lastName, @Size(min = 10, max = 255) String address, @Size(min = 3, max = 255) String city, @Size(min = 10, max = 10) String telephone, Set<String> hobbies, Set<Long> petIds) {
+        super(firstName, lastName, address, city, telephone, hobbies, petIds);
     }
-
-    @Nullable
-    @BiDirChildIdCollection(Pet.class)
-    private Set<Long> petIds = new HashSet<>();
-
 }
