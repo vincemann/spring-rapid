@@ -1,7 +1,7 @@
-package com.github.vincemann.springrapid.authdemo.domain;
+package com.github.vincemann.springrapid.authdemo.model;
 
 import com.fasterxml.jackson.annotation.JsonView;
-import com.github.vincemann.springrapid.auth.domain.dto.SignupForm;
+import com.github.vincemann.springrapid.auth.domain.dto.SignupDto;
 import com.github.vincemann.springrapid.auth.util.UserVerifyUtils;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -12,13 +12,13 @@ import javax.validation.constraints.NotBlank;
 @NoArgsConstructor
 @Getter
 @Setter
-public class MySignupForm extends SignupForm {
+public class MySignupDto extends SignupDto {
 
     @JsonView(UserVerifyUtils.SignupInput.class)
     @NotBlank(message = "{blank.name}"/*, groups = {UserVerifyUtils.SignUpValidation.class, UserVerifyUtils.UpdateValidation.class}*/)
     private String name;
 
-    public MySignupForm(String email, String password, @NotBlank(message = "{blank.name}", groups = {UserVerifyUtils.SignUpValidation.class, UserVerifyUtils.UpdateValidation.class}) String name) {
+    public MySignupDto(String email, String password, @NotBlank(message = "{blank.name}", groups = {UserVerifyUtils.SignUpValidation.class, UserVerifyUtils.UpdateValidation.class}) String name) {
         super(email, password);
         this.name = name;
     }

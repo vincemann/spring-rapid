@@ -1,12 +1,11 @@
-package com.github.vincemann.springrapid.coredemo.service.plugin;
+package com.github.vincemann.springrapid.acldemo.service.extensions;
 
-import com.github.vincemann.springrapid.core.controller.GenericCrudController;
-import com.github.vincemann.springrapid.core.proxy.GenericCrudServiceExtension;
 import com.github.vincemann.springrapid.core.proxy.BasicServiceExtension;
+import com.github.vincemann.springrapid.core.proxy.GenericCrudServiceExtension;
 import com.github.vincemann.springrapid.core.service.CrudService;
 import com.github.vincemann.springrapid.core.service.exception.BadEntityException;
 import com.github.vincemann.springrapid.core.slicing.ServiceComponent;
-import com.github.vincemann.springrapid.coredemo.model.abs.Person;
+import com.github.vincemann.springrapid.acldemo.model.abs.Person;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.context.annotation.Scope;

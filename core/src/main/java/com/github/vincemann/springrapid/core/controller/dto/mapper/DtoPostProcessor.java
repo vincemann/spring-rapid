@@ -9,7 +9,7 @@ import com.github.vincemann.springrapid.core.service.exception.EntityNotFoundExc
 
 @LogInteraction
 //@LogException
-public interface DtoPostProcessor<Dto,E extends IdentifiableEntity<?>> extends AopLoggable {
+public interface DtoPostProcessor<Dto,E/* extends IdentifiableEntity<?>*/> extends AopLoggable {
 
     @LogInteraction(disabled = true)
     public boolean supports(Class<?> entityClazz, Class<?> dtoClass);

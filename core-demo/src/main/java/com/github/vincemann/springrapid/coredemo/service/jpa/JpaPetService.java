@@ -5,13 +5,14 @@ import com.github.vincemann.springrapid.coredemo.repo.PetRepository;
 import com.github.vincemann.springrapid.coredemo.service.PetService;
 import com.github.vincemann.springrapid.core.slicing.ServiceComponent;
 import com.github.vincemann.springrapid.core.service.JPACrudService;
+import com.github.vincemann.springrapid.coredemo.service.Root;
 import org.springframework.aop.TargetClassAware;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
 
-@Qualifier("noProxy")
+@Root
 @Service
 @ServiceComponent
 public class JpaPetService extends JPACrudService<Pet, Long, PetRepository> implements PetService, TargetClassAware {

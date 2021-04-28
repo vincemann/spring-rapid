@@ -1,7 +1,7 @@
 package com.github.vincemann.springrapid.authtests;
 
 import com.github.vincemann.springrapid.auth.domain.AuthRoles;
-import com.github.vincemann.springrapid.auth.domain.dto.SignupForm;
+import com.github.vincemann.springrapid.auth.domain.dto.SignupDto;
 import com.github.vincemann.springrapid.core.util.JsonUtils;
 import org.hamcrest.Matchers;
 import org.junit.jupiter.api.Assertions;
@@ -18,23 +18,23 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 public class SignupAuthTest extends AbstractRapidAuthTest {
 
-	protected SignupForm createValidSignupForm(){
-		return new SignupForm("user.foo@example.com", "userUser123");
+	protected SignupDto createValidSignupForm(){
+		return new SignupDto("user.foo@example.com", "userUser123");
 	}
 
 
-	protected SignupForm createInvalidSignupForm(){
-		return new SignupForm("abc","userUser1");
+	protected SignupDto createInvalidSignupForm(){
+		return new SignupDto("abc","userUser1");
 	}
 
 	@Test
 	public void cantSignupWithInvalidData() throws Exception {
 		
-		SignupForm signupForm = createInvalidSignupForm();
+		SignupDto signupDto = createInvalidSignupForm();
 
 		mvc.perform(post(authProperties.getController().getSignupUrl())
 				.contentType(MediaType.APPLICATION_JSON)
-				.content(JsonUtils.toJson(signupForm)))
+				.content(JsonUtils.toJson(signupDto)))
 				.andExpect(status().is(400));
 //				.andExpect(jsonPath("$.errors[*].field").value(hasSize(3)))
 //				.andExpect(jsonPath("$.errors[*].field").value(hasItems(
@@ -58,16 +58,16 @@ public class SignupAuthTest extends AbstractRapidAuthTest {
 		
 //		MySignupForm signupForm = new MySignupForm("user.foo@example.com", "user123", "User Foo");
 
-		SignupForm signupForm = createValidSignupForm();
+		SignupDto signupDto = createValidSignupForm();
 
 		mvc.perform(post(authProperties.getController().getSignupUrl())
 				.contentType(MediaType.APPLICATION_JSON)
-				.content(JsonUtils.toJson(signupForm)))
+				.content(JsonUtils.toJson(signupDto)))
 				.andExpect(status().is(200))
 				.andExpect(header().string(HttpHeaders.AUTHORIZATION, containsString(".")))
 				.andExpect(jsonPath("$.id").exists())
 				.andExpect(jsonPath("$.password").doesNotExist())
-				.andExpect(jsonPath("$.email").value(signupForm.getEmail()))
+				.andExpect(jsonPath("$.email").value(signupDto.getEmail()))
 				.andExpect(jsonPath("$.roles").value(hasSize(2)))
 				.andExpect(jsonPath("$.roles").value(Matchers.hasItems(AuthRoles.UNVERIFIED, AuthRoles.USER)))
 //				.andExpect(jsonPath("$.tag.name").value("User Foo"))
@@ -80,20 +80,20 @@ public class SignupAuthTest extends AbstractRapidAuthTest {
 		verify(unproxy(mailSender)).send(any());
 
 		// Ensure that password got encrypted
-		Assertions.assertNotEquals(signupForm.getPassword(), getUserService().findByEmail(signupForm.getEmail()).get().getPassword());
+		Assertions.assertNotEquals(signupDto.getPassword(), getUserService().findByEmail(signupDto.getEmail()).get().getPassword());
 	}
 	
 	@Test
 	public void cantSignupWithDuplicateEmail() throws Exception {
 
 //		MySignupForm signupForm = new MySignupForm("user@example.com", "user123", "User");
-		SignupForm signupForm = createValidSignupForm();
-		String duplicateEmail = signupForm.getEmail();
+		SignupDto signupDto = createValidSignupForm();
+		String duplicateEmail = signupDto.getEmail();
 		getUserService().save(testAdapter.createTestUser(duplicateEmail,"userUser1234", AuthRoles.USER));
 
 		mvc.perform(post(authProperties.getController().getSignupUrl())
 				.contentType(MediaType.APPLICATION_JSON)
-				.content(JsonUtils.toJson(signupForm)))
+				.content(JsonUtils.toJson(signupDto)))
 				.andExpect(status().is(400));
 		
 		verify(unproxy(mailSender), never()).send(any());

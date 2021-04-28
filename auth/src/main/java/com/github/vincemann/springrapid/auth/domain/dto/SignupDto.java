@@ -12,7 +12,7 @@ import javax.validation.constraints.NotBlank;
 @Setter
 @AllArgsConstructor
 @ToString
-public class SignupForm {
+public class SignupDto {
     //    @UniqueEmail(/*groups = {UserVerifyUtils.SignUpValidation.class}*/)
     @JsonView(UserVerifyUtils.SignupInput.class)
     @NotBlank
