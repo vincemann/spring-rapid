@@ -26,7 +26,6 @@ public class RapidSecurityProxyAutoConfiguration {
 
     }
 
-
     @Bean
     @ConditionalOnMissingBean(AclSecurityChecker.class)
     public AclSecurityChecker aclSecurityChecker(){

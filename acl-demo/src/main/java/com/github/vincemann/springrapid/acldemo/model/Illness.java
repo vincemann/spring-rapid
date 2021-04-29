@@ -20,7 +20,6 @@ import java.util.Set;
 @Setter
 @Table(name = "illnesss")
 @Entity
-@Builder
 public class Illness extends IdentifiableEntityImpl<Long> implements BiDirChild {
     @Unique
     private String name;
@@ -28,6 +27,13 @@ public class Illness extends IdentifiableEntityImpl<Long> implements BiDirChild 
     @ManyToMany(mappedBy = "illnesss", fetch = FetchType.EAGER)
     @BiDirParentCollection(Vet.class)
     private Set<Pet> pets = new HashSet<>();
+
+    @Builder
+    public Illness(@Unique String name, Set<Pet> pets) {
+        this.name = name;
+        if (pets !=null)
+            this.pets = pets;
+    }
 
     @Override
     public String toString() {

@@ -4,7 +4,7 @@ import com.github.vincemann.springrapid.auth.AuthProperties;
 import com.github.vincemann.springrapid.auth.domain.AbstractUser;
 import com.github.vincemann.springrapid.auth.service.AlreadyRegisteredException;
 import com.github.vincemann.springrapid.auth.service.UserService;
-import com.github.vincemann.springrapid.acl.proxy.AclManaging;
+import com.github.vincemann.springrapid.acl.proxy.Acl;
 import com.github.vincemann.springrapid.core.bootstrap.DatabaseDataInitializer;
 import com.github.vincemann.springrapid.core.security.RapidSecurityContext;
 import com.github.vincemann.springrapid.core.service.exception.BadEntityException;
@@ -58,7 +58,7 @@ public class AdminInitializer extends DatabaseDataInitializer {
     }
 
     @Autowired
-    @AclManaging
+    @Acl
     public void injectUserService(UserService<?, ?> userService) {
         this.userService = userService;
     }

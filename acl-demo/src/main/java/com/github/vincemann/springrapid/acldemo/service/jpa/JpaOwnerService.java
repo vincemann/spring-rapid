@@ -12,11 +12,13 @@ import com.github.vincemann.springrapid.acldemo.repositories.OwnerRepository;
 import com.github.vincemann.springrapid.acldemo.service.OwnerService;
 import com.github.vincemann.springrapid.acldemo.service.Root;
 import org.springframework.aop.TargetClassAware;
+import org.springframework.context.annotation.Primary;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Optional;
 
 @Root
+@Primary
 @ServiceComponent
 public class JpaOwnerService
         extends JPACrudService<Owner,Long, OwnerRepository>

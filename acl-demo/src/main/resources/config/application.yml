@@ -20,7 +20,7 @@ spring:
 
 
 #  datasource:
-#    url: jdbc:mysql://${MYSQL_HOST:localhost}:6603/lemonDb?useSSL=false&allowPublicKeyRetrieval=true
+#    url: jdbc:mysql://${MYSQL_HOST:localhost}:6603/aclDemoDb?useSSL=false&allowPublicKeyRetrieval=true
 #    username: root
 #    password: mypassword
   datasource:

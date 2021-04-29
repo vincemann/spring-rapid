@@ -1,9 +1,10 @@
 package com.github.vincemann.springrapid.acl.config;
 
-import com.github.vincemann.springrapid.acl.proxy.SimpleAclChecksExtension;
-import com.github.vincemann.springrapid.acl.service.extensions.AuthenticatedFullAccessAclServiceExtension;
-import com.github.vincemann.springrapid.acl.service.extensions.CleanUpAclServiceExtension;
-import com.github.vincemann.springrapid.acl.service.extensions.InheritParentAclServiceExtension;
+import com.github.vincemann.springrapid.acl.proxy.SimpleSecurityExtension;
+import com.github.vincemann.springrapid.acl.service.extensions.AdminFullAccessAboutSavedAclExtension;
+import com.github.vincemann.springrapid.acl.service.extensions.AuthenticatedFullAccessAboutSavedAclExtension;
+import com.github.vincemann.springrapid.acl.service.extensions.CleanUpAclExtension;
+import com.github.vincemann.springrapid.acl.service.extensions.SavedInheritsFromParentAclExtension;
 import com.github.vincemann.springrapid.core.config.RapidJsonAutoConfiguration;
 import com.github.vincemann.springrapid.core.proxy.AbstractServiceExtension;
 import com.github.vincemann.springrapid.core.slicing.ServiceConfig;
@@ -24,32 +25,39 @@ public class RapidAclExtensionsAutoConfiguration {
 
     }
 
-    @ConditionalOnMissingBean(name = "simpleAclChecksExtension")
-    @Qualifier("simpleAclChecksExtension")
+    @ConditionalOnMissingBean(name = "simpleSecurityExtension")
+    @Qualifier("simpleSecurityExtension")
     @Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
     @Bean
-    public AbstractServiceExtension<?,?> simpleAclChecksExtension(){
-        return new SimpleAclChecksExtension();
+    public AbstractServiceExtension<?,?> simpleSecurityExtension(){
+        return new SimpleSecurityExtension();
     }
 
-    @ConditionalOnMissingBean(AuthenticatedFullAccessAclServiceExtension.class)
+    @ConditionalOnMissingBean(AuthenticatedFullAccessAboutSavedAclExtension.class)
     @Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
     @Bean
-    public AuthenticatedFullAccessAclServiceExtension authenticatedFullAccessAclExtension(){
-        return new AuthenticatedFullAccessAclServiceExtension();
+    public AuthenticatedFullAccessAboutSavedAclExtension authenticatedFullAccessAclExtension(){
+        return new AuthenticatedFullAccessAboutSavedAclExtension();
+    }
+
+    @ConditionalOnMissingBean(AdminFullAccessAboutSavedAclExtension.class)
+    @Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
+    @Bean
+    public AdminFullAccessAboutSavedAclExtension adminFullAccessAclExtension(){
+        return new AdminFullAccessAboutSavedAclExtension();
     }
 
     @Bean
-    @ConditionalOnMissingBean(InheritParentAclServiceExtension.class)
+    @ConditionalOnMissingBean(SavedInheritsFromParentAclExtension.class)
     @Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
-    public InheritParentAclServiceExtension inheritParentAclExtension(){
-        return new InheritParentAclServiceExtension();
+    public SavedInheritsFromParentAclExtension inheritParentAclExtension(){
+        return new SavedInheritsFromParentAclExtension();
     }
 
     @Bean
-    @ConditionalOnMissingBean(CleanUpAclServiceExtension.class)
+    @ConditionalOnMissingBean(CleanUpAclExtension.class)
     @Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
-    public CleanUpAclServiceExtension cleanUpAclExtension(){
-        return new CleanUpAclServiceExtension();
+    public CleanUpAclExtension cleanUpAclExtension(){
+        return new CleanUpAclExtension();
     }
 }

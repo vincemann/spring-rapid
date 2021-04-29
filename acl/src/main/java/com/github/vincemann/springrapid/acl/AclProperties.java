@@ -11,4 +11,6 @@ public class AclProperties {
     }
 
     public boolean defaultAclChecks = true;
+    public boolean adminFullAccess = true;
+    public boolean cleanupAcl = true;
 }

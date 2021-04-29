@@ -1,6 +1,6 @@
 package com.github.vincemann.springrapid.auth.service;
 
-import com.github.vincemann.springrapid.acl.proxy.AclManaging;
+import com.github.vincemann.springrapid.acl.proxy.Acl;
 import com.github.vincemann.springrapid.acl.proxy.Secured;
 import com.github.vincemann.springrapid.auth.config.RapidUserServiceAutoConfiguration;
 import com.github.vincemann.springrapid.core.proxy.ServiceExtensionProxy;
@@ -20,7 +20,7 @@ public abstract class UserServiceProxyConfigurer  implements InitializingBean {
     private UserService secured;
 
     @Autowired
-    @AclManaging
+    @Acl
     public void injectAcl(UserService acl) {
         this.acl=acl;
     }

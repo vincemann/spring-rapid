@@ -22,7 +22,7 @@ import java.io.Serializable;
  * @param <S>
  */
 @Getter
-public abstract class AbstractAclServiceExtension<S>
+public abstract class AbstractAclExtension<S>
         extends BasicServiceExtension<S> {
 
     private LocalPermissionService permissionService;
@@ -32,19 +32,21 @@ public abstract class AbstractAclServiceExtension<S>
 
 
     @LogInteraction(Severity.TRACE)
-    public void saveFullPermissionForAdminOver(IdentifiableEntity<Serializable> entity){
+    public void saveFullPermissionForAdminOverEntity(IdentifiableEntity<?> entity){
         //acl framework uses internally springs Authentication object
         securityContext.runAsAdmin(() -> getPermissionService().addPermissionForAuthorityOver(entity,
                 BasePermission.ADMINISTRATION, Roles.ADMIN));
     }
 
     @LogInteraction(Severity.TRACE)
-    public void savePermissionForAuthenticatedOver(IdentifiableEntity<Serializable> entity, Permission permission){
+    public void savePermissionForAuthenticatedOverEntity(IdentifiableEntity<?> entity, Permission permission){
         String own = findAuthenticatedName();
         getPermissionService().addPermissionForUserOver(entity, permission,own);
     }
 
-    public void savePermissionForUserOver(String user, IdentifiableEntity<Serializable> entity, Permission permission){
+
+    @LogInteraction(Severity.TRACE)
+    public void savePermissionForUserOverEntity(String user, IdentifiableEntity<?> entity, Permission permission){
         securityContext.runWithName(user,() -> getPermissionService().addPermissionForUserOver(entity, permission,user));
     }
 

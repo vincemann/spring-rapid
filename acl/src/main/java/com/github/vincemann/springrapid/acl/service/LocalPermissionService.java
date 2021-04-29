@@ -40,7 +40,7 @@ public class LocalPermissionService implements AopLoggable {
      * @param username      username of user, that gains permission over target object
      */
     @LogInteraction
-    public void addPermissionForUserOver(IdentifiableEntity<? extends Serializable> targetObj, Permission permission, String username) {
+    public void addPermissionForUserOver(IdentifiableEntity<?> targetObj, Permission permission, String username) {
         final Sid sid = new PrincipalSid(username);
         addPermissionForSid(targetObj, permission, sid);
     }
@@ -52,7 +52,7 @@ public class LocalPermissionService implements AopLoggable {
      * @param authority     the authority that gains the given permission over the target obj
      */
     @LogInteraction
-    public void addPermissionForAuthorityOver(IdentifiableEntity<? extends Serializable> targetObj, Permission permission, String authority) {
+    public void addPermissionForAuthorityOver(IdentifiableEntity<?> targetObj, Permission permission, String authority) {
         final Sid sid = new GrantedAuthoritySid(authority);
         addPermissionForSid(targetObj, permission, sid);
     }
@@ -64,7 +64,7 @@ public class LocalPermissionService implements AopLoggable {
      * @throws AclNotFoundException
      */
     @LogInteraction
-    public void inheritPermissions(IdentifiableEntity<? extends Serializable> targetObj,IdentifiableEntity<? extends Serializable> parent) throws AclNotFoundException {
+    public void inheritPermissions(IdentifiableEntity<?> targetObj,IdentifiableEntity<? extends Serializable> parent) throws AclNotFoundException {
         final ObjectIdentity childOi = new ObjectIdentityImpl(targetObj.getClass(), targetObj.getId());
         final ObjectIdentity parentOi = new ObjectIdentityImpl(parent.getClass(), parent.getId());
 //        log.debug("Entity: " + targetObj + " will inherit permissions from: " + parent);
@@ -92,7 +92,7 @@ public class LocalPermissionService implements AopLoggable {
     }
 
 
-    private void addPermissionForSid(IdentifiableEntity<? extends Serializable> targetObj, Permission permission, Sid sid) {
+    private void addPermissionForSid(IdentifiableEntity<?> targetObj, Permission permission, Sid sid) {
 //        log.debug("sid: "+ sid +" will gain permission: " + PermissionUtils.toString(permission) +" over entity: " + targetObj);
         final ObjectIdentity oi = new ObjectIdentityImpl(targetObj.getClass(), targetObj.getId());
 

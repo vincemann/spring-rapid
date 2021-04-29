@@ -1,6 +1,5 @@
 package com.github.vincemann.springrapid.acl.service.extensions;
 
-import com.github.vincemann.aoplog.Severity;
 import com.github.vincemann.aoplog.api.LogInteraction;
 import com.github.vincemann.springrapid.core.proxy.CrudServiceExtension;
 import com.github.vincemann.springrapid.core.service.CrudService;
@@ -9,8 +8,6 @@ import com.github.vincemann.springrapid.core.service.exception.EntityNotFoundExc
 import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.config.ConfigurableBeanFactory;
-import org.springframework.context.annotation.Scope;
 import org.springframework.security.acls.domain.ObjectIdentityImpl;
 import org.springframework.security.acls.model.ObjectIdentity;
 import org.springframework.transaction.annotation.Transactional;
@@ -23,8 +20,8 @@ import java.io.Serializable;
  * Removes Acl's on delete, if existing.
  */
 @Transactional
-public class CleanUpAclServiceExtension
-        extends AbstractAclServiceExtension<CrudService>
+public class CleanUpAclExtension
+        extends AbstractAclExtension<CrudService>
                 implements CrudServiceExtension<CrudService>
 {
     @Setter

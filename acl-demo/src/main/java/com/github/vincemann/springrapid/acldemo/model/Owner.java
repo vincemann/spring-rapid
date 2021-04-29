@@ -2,7 +2,7 @@ package com.github.vincemann.springrapid.acldemo.model;
 
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.github.vincemann.springrapid.acldemo.model.abs.Person;
-import com.github.vincemann.springrapid.acldemo.model.abs.UserAware;
+import com.github.vincemann.springrapid.acldemo.model.abs.UserAwareEntity;
 import com.github.vincemann.springrapid.entityrelationship.model.child.annotation.BiDirChildCollection;
 import com.github.vincemann.springrapid.entityrelationship.model.child.annotation.UniDirChildEntity;
 import com.github.vincemann.springrapid.entityrelationship.model.parent.BiDirParent;
@@ -22,7 +22,7 @@ import java.util.Set;
 @NoArgsConstructor
 @Entity
 @Table(name = "owners")
-public class Owner extends Person implements BiDirParent, UserAware, UniDirParent {
+public class Owner extends Person implements BiDirParent, UserAwareEntity, UniDirParent {
 
 
     @Builder
