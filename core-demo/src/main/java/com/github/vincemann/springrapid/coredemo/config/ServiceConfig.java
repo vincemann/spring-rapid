@@ -46,7 +46,7 @@ public class ServiceConfig {
                                      AclServiceExtension aclServiceExtension,
                                      SaveNameToWordPressDbExtension saveNameToWordPressDbExtension) {
         return new ServiceExtensionProxyBuilder<>(ownerService)
-                .addServiceExtensions(saveNameToWordPressDbExtension, ownerOfTheYearExtension)
+                .addGenericExtensions(saveNameToWordPressDbExtension, ownerOfTheYearExtension)
                 .addExtensions(aclServiceExtension)
                 .build();
     }

@@ -14,6 +14,7 @@ public class ServiceExtensionProxy<S extends CrudService<?,?>>
         extends AbstractExtensionServiceProxy<S, AbstractExtensionServiceProxy.State, ProxyController>
 {
 
+    private Boolean disableDefaultExtensions;
 
     protected ServiceExtensionProxy(S proxied, BasicServiceExtension<?>... extensions) {
         super(proxied, extensions);
@@ -22,5 +23,12 @@ public class ServiceExtensionProxy<S extends CrudService<?,?>>
     @Override
     protected State createState(Object o, Method method, Object[] args) {
         return new State(method);
+    }
+
+    @Override
+    public String toString() {
+        return "ServiceExtensionProxy{ " +
+                "for entity: " + getProxied().getEntityClass() +
+                " }";
     }
 }

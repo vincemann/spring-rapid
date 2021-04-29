@@ -15,5 +15,5 @@ import java.lang.annotation.*;
 @Qualifier("aclManaging")
 @Inherited
 @ServiceBeanType
-public @interface AclManaging {
+public @interface Acl {
 }

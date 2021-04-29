@@ -5,11 +5,13 @@ import com.github.vincemann.springrapid.acldemo.dto.PersonDto;
 import lombok.Builder;
 import lombok.Getter;
 
+import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Size;
 
 @Getter
 public class CreateVetDto extends PersonDto implements CreateUserDto {
 
+    @NotBlank
     private String uuid;
 
     @Builder

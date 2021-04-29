@@ -82,7 +82,9 @@ public class AnnotationCrudServiceProxyFactory implements BeanPostProcessor, App
                         internalProxy = createdInternalProxies.get(beanName);
                         if (internalProxy==null) {
                             internalProxy = new ServiceExtensionProxyBuilder<>(lastProxiedBean)
-                                    .addServiceExtensions(resolveExtensions(proxyDefinition.get().extensions()).toArray(new AbstractServiceExtension[0])).build();
+                                    .addGenericExtensions(resolveExtensions(proxyDefinition.get().extensions()).toArray(new AbstractServiceExtension[0]))
+                                    .disableDefaultExtensions(proxyDefinition.get().disableDefaultExtensions())
+                                    .build();
                             createdInternalProxies.put(proxyName, internalProxy);
                         }
                     }

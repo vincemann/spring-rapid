@@ -1,6 +1,6 @@
 package com.github.vincemann.springrapid.authtests;
 
-import com.github.vincemann.springrapid.acl.proxy.AclManaging;
+import com.github.vincemann.springrapid.acl.proxy.Acl;
 import com.github.vincemann.springrapid.auth.AuthProperties;
 import com.github.vincemann.springrapid.auth.config.RapidAdminAutoConfiguration;
 import com.github.vincemann.springrapid.auth.domain.AbstractUser;
@@ -91,7 +91,7 @@ public abstract class AbstractRapidAuthTest extends InitializingTest {
 //    private static boolean initialized = false;
 
     @Autowired
-    @AclManaging
+    @Acl
     private UserService<AbstractUser<Long>, Long> aclUserService;
 
     //cant autowire if used with types, even with ? extends AbstractUser

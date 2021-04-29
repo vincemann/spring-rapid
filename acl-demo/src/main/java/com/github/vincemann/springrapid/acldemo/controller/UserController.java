@@ -23,7 +23,7 @@ public class UserController extends AbstractUserController<User, Long, MyUserSer
                 .forEndpoint(getAuthProperties().getController().getSignupUrl(), Direction.RESPONSE, UUIDSignupResponseDto.class)
 
                 .withRoles(Roles.ADMIN)
-                .forEndpoint(getUpdateUrl(), FullUserDto.class)
+                .forAll(FullUserDto.class)
                 .build();
     }
 

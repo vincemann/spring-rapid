@@ -10,7 +10,7 @@ import java.io.Serializable;
 import java.lang.reflect.Proxy;
 
 public class ServiceExtensionProxyBuilder<S extends CrudService<E,Id>,E extends IdentifiableEntity<Id>, Id extends Serializable> {
-    private ServiceExtensionProxy<S> proxy;
+    private final ServiceExtensionProxy<S> proxy;
 
     public ServiceExtensionProxyBuilder(S proxied) {
         this.proxy = new ServiceExtensionProxy<>(proxied);
@@ -30,7 +30,12 @@ public class ServiceExtensionProxyBuilder<S extends CrudService<E,Id>,E extends 
     // this method is used to add SimpleService implementing extensions, to ensure down casting works
     // service extension can either be superclass, same class or child class of S, the only thing that matters, is that I can cast
     // from E to extension entity type. i.E. I can cast IdentEntity to Owner -> ? super E aka ? super Owner is correct
-    public ServiceExtensionProxyBuilder<S,E,Id> addServiceExtensions(AbstractServiceExtension<? extends CrudService<? super E,? super Id>,? super ProxyController>... extensions){
+
+
+    /**
+     * User this method if your {@link AbstractServiceExtension} implements {@link GenericCrudServiceExtension}.
+     */
+    public ServiceExtensionProxyBuilder<S,E,Id> addGenericExtensions(AbstractServiceExtension<? extends CrudService<? super E,? super Id>,? super ProxyController>... extensions){
         for (AbstractServiceExtension<? extends CrudService<? super E, ? super Id>,? super ProxyController> extension : extensions) {
             proxy.addExtension(extension);
         }
@@ -43,6 +48,14 @@ public class ServiceExtensionProxyBuilder<S extends CrudService<E,Id>,E extends 
         for (AbstractServiceExtension<? super S,? super ProxyController> extension : extensions) {
             proxy.addExtension(extension);
         }
+        return this;
+    }
+
+    public ServiceExtensionProxyBuilder<S,E,Id> disableDefaultExtensions(Boolean value){
+        if (value=null){
+            value=false;
+        }
+        proxy.setDisableDefaultExtensions(value);
         return this;
     }
 
