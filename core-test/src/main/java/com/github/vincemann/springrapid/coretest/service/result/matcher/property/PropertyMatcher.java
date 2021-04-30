@@ -49,6 +49,13 @@ public class PropertyMatcher {
         return this;
     }
 
+    public PropertyMatcher assertNotNull(Types.Supplier<?>... getter) {
+        for (Types.Supplier<?> supplier : getter) {
+            Assertions.assertNotNull(call(supplier));
+        }
+        return this;
+    }
+
 
     public PropertyMatcher assertNotEquals(Types.Supplier<?> getter, Object unexpected) {
         Assertions.assertNotEquals(unexpected, call(getter));

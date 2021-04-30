@@ -6,12 +6,17 @@ import com.github.vincemann.springrapid.acldemo.model.User;
 import com.github.vincemann.springrapid.acldemo.repositories.UserRepository;
 import com.github.vincemann.springrapid.auth.service.AlreadyRegisteredException;
 import com.github.vincemann.springrapid.core.service.exception.BadEntityException;
+import com.github.vincemann.springrapid.core.slicing.ServiceComponent;
+import org.springframework.context.annotation.Primary;
+import org.springframework.stereotype.Service;
 
 import java.util.Optional;
 import java.util.UUID;
 
-//@ServiceComponent
-//@Primary
+
+@ServiceComponent
+@Service
+@Primary
 public class MyUserServiceImpl extends AbstractUserService<User, Long, UserRepository> implements MyUserService {
 
 	@Override

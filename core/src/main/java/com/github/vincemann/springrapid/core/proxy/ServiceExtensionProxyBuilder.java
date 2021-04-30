@@ -52,7 +52,7 @@ public class ServiceExtensionProxyBuilder<S extends CrudService<E,Id>,E extends 
     }
 
     public ServiceExtensionProxyBuilder<S,E,Id> disableDefaultExtensions(Boolean value){
-        if (value=null){
+        if (value==null){
             value=false;
         }
         proxy.setDisableDefaultExtensions(value);

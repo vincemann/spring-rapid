@@ -1,4 +1,4 @@
-package com.github.vincemann.springrapid.authtest;
+package com.github.vincemann.springrapid.authtest.controller;
 
 import com.github.vincemann.springrapid.auth.domain.AbstractUser;
 import com.github.vincemann.springrapid.auth.security.AuthenticatedPrincipalFactory;

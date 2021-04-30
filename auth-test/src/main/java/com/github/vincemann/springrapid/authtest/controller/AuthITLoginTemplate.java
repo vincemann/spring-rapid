@@ -1,15 +1,13 @@
-package com.github.vincemann.springrapid.authtest;
+package com.github.vincemann.springrapid.authtest.controller;
 
 import com.github.vincemann.springrapid.auth.AuthProperties;
 import com.github.vincemann.springrapid.auth.domain.AbstractUser;
-import com.github.vincemann.springrapid.coretest.login.MockLoginTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 /**
  * Need to call {@link #setMvc(MockMvc)} before using.
