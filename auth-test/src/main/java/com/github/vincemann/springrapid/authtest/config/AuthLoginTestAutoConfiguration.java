@@ -1,8 +1,8 @@
 package com.github.vincemann.springrapid.authtest.config;
 
 import com.github.vincemann.springrapid.auth.domain.AbstractUser;
-import com.github.vincemann.springrapid.authtest.controller.AuthITLoginTemplate;
-import com.github.vincemann.springrapid.authtest.controller.AuthMockLoginTemplate;
+import com.github.vincemann.springrapid.authtest.controller.login.AuthITLoginTemplate;
+import com.github.vincemann.springrapid.authtest.controller.login.AuthMockLoginTemplate;
 import com.github.vincemann.springrapid.coretest.config.RapidLoginTestAutoconfiguration;
 import com.github.vincemann.springrapid.coretest.login.MockLoginTemplate;
 import com.github.vincemann.springrapid.coretest.slicing.WebTestConfig;
