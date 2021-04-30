@@ -54,6 +54,7 @@ public abstract class AbstractMvcCrudControllerTest
                 implements MvcCrudControllerTest<C,Id>
 {
 
+    
     private MockMvc mockMvc;
     private DefaultMockMvcBuilder mockMvcBuilder;
     private MediaType contentType;

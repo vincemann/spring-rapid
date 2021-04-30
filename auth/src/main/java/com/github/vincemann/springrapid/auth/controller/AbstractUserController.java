@@ -48,14 +48,14 @@ import java.util.Optional;
 @Slf4j
 @Getter
 public abstract class AbstractUserController<U extends AbstractUser<ID>, ID extends Serializable, S extends UserService<U,ID>>
-			extends GenericCrudController<U,ID, UserService<U,ID>,UserEndpointInfo,UserDtoMappingContextBuilder> {
+			extends GenericCrudController<U,ID, S,UserEndpointInfo,UserDtoMappingContextBuilder> {
 
 
 	//              DEPENDENCIES
 
 
 	// version of user service that is not proxied, thus also not @Secured
-	private UserService<U,ID> userService;
+	private S userService;
 	private HttpTokenService httpTokenService;
 	private AuthProperties authProperties;
 
@@ -380,7 +380,7 @@ public abstract class AbstractUserController<U extends AbstractUser<ID>, ID exte
 
 	protected RequestMappingInfo createContextRequestMappingInfo() {
 		return RequestMappingInfo
-				.paths(getAuthProperties().getController().contextUrl)
+				.paths(getAuthProperties().getController().getContextUrl())
 				.methods(RequestMethod.GET)
 				.produces(getMediaType())
 				.build();
@@ -528,7 +528,7 @@ public abstract class AbstractUserController<U extends AbstractUser<ID>, ID exte
 	@Autowired
 	@Secured
 	@Override
-	public void injectCrudService(UserService<U,ID> crudService) {
+	public void injectCrudService(S crudService) {
 		super.injectCrudService(crudService);
 	}
 

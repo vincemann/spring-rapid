@@ -3,7 +3,7 @@ package com.github.vincemann.springrapid.acldemo.controller;
 import com.github.vincemann.springrapid.acldemo.model.*;
 import com.github.vincemann.springrapid.acldemo.repositories.*;
 import com.github.vincemann.springrapid.acldemo.service.*;
-import com.github.vincemann.springrapid.authtest.AuthITLoginTemplate;
+import com.github.vincemann.springrapid.authtest.controller.AuthITLoginTemplate;
 import com.github.vincemann.springrapid.core.controller.GenericCrudController;
 import com.github.vincemann.springrapid.core.security.RapidAuthenticatedPrincipal;
 import com.github.vincemann.springrapid.core.security.RapidSecurityContext;
@@ -31,17 +31,34 @@ public class AbstractControllerIntegrationTest<C extends GenericCrudController<?
     protected final Pet PetType = new Pet();
     protected final Illness IllnessType = new Illness();
 
+    protected static final String EMAIL_SUFFIX = "@guerilla-mail.com";
+
     protected static final String VET_MAX = "Max";
+    protected static final String VET_MAX_PASSWORD = "Maxpassword123?";
+    protected static final String VET_MAX_EMAIL = VET_MAX+EMAIL_SUFFIX;
+
     protected static final String VET_POLDI = "Poldi";
+    protected static final String VET_POLDI_PASSWORD = "Poldipassword123?";
+    protected static final String VET_POLDI_EMAIL = VET_POLDI+EMAIL_SUFFIX;
+
     protected static final String VET_DICAPRIO = "Dicaprio";
+    protected static final String VET_DICAPRIO_PASSWORD = "Dicapriopassword123?";
+    protected static final String VET_DICAPRIO_EMAIL = VET_DICAPRIO+EMAIL_SUFFIX;
+
+    protected static final String OWNER_MEIER = "Meier";
+    protected static final String OWNER_MEIER_PASSWORD = "Meierpassword123?";
+    protected static final String OWNER_MEIER_EMAIL = OWNER_MEIER+EMAIL_SUFFIX;
+
+    protected static final String OWNER_KAHN = "Kahn";
+    protected static final String OWNER_KAHN_PASSWORD = "Kahnpassword123?";
+    protected static final String OWNER_KAHN_EMAIL = OWNER_KAHN+EMAIL_SUFFIX;
 
     protected static final String MUSCLE = "Muscle";
     protected static final String DENTISM = "Dentism";
     protected static final String GASTRO = "Gastro";
     protected static final String HEART = "Heart";
 
-    protected static final String MEIER = "Meier";
-    protected static final String KAHN = "Kahn";
+
 
     protected static final String BELLO = "Bello";
     protected static final String BELLA = "Bella";
@@ -50,6 +67,7 @@ public class AbstractControllerIntegrationTest<C extends GenericCrudController<?
     protected static final String GASTRITIS = "Gastritis";
     protected static final String TEETH_PAIN = "teeth pain";
     protected static final String WEAK_HEART = "wek heart";
+
 
 
 
@@ -170,7 +188,7 @@ public class AbstractControllerIntegrationTest<C extends GenericCrudController<?
 
         meier = Owner.builder()
                 .firstName("Max")
-                .lastName(MEIER)
+                .lastName(OWNER_MEIER)
                 .address("asljnflksamfslkmf")
                 .city("n1 city")
                 .telephone("0123456789")
@@ -178,7 +196,7 @@ public class AbstractControllerIntegrationTest<C extends GenericCrudController<?
 
         kahn = Owner.builder()
                 .firstName("Olli")
-                .lastName(KAHN)
+                .lastName(OWNER_KAHN)
                 .address("asljnflksamfslkmf")
                 .city("n1 city")
                 .telephone("1234567890")
