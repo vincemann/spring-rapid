@@ -54,14 +54,14 @@ public class RapidUserServiceSecurityAutoConfiguration {
     @ConditionalOnMissingBean(name = "aclManagingUserService")
     @Bean
     @Acl
-    public UserService<?, ?> aclManagingUserService(UserService<?, ?> service,
-//                                                                            AdminFullAccessAclExtension adminFullAccess,
-//                                                                            AuthenticatedFullAccessAclExtension authenticatedFullAccessAclExtension,
-                                                    AclUserExtension aclUserServiceExtension,
-                                                    CleanUpAclExtension cleanUpAclExtension
+    public UserService<?, ?> aclManagingUserService(UserService<?, ?> service
+                                                    // Extensions are added by AutoConfig
+////                                                                            AdminFullAccessAclExtension adminFullAccess,
+////                                                                            AuthenticatedFullAccessAclExtension authenticatedFullAccessAclExtension,
+//                                                    AclUserExtension aclUserServiceExtension,
+//                                                    CleanUpAclExtension cleanUpAclExtension
     ) {
         return new ServiceExtensionProxyBuilder<>(service)
-                .addExtensions(aclUserServiceExtension, cleanUpAclExtension)
                 .build();
     }
 

@@ -23,7 +23,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 public abstract class UpdateUserAuthTest extends AbstractRapidAuthTest
-		implements UrlParamIdCrudControllerTestTemplate<AbstractUserController<?,Long,?>,Long> {
+{
 
 	private static final String FIELD_KEY_PLACEHOLDER = "name";
 	private static final String FIELD_INVALID_VALUE_PLACEHOLDER = "invalidFieldValue";

@@ -3,13 +3,16 @@ package com.github.vincemann.springrapid.authtests;
 import com.github.vincemann.springrapid.acl.proxy.Acl;
 import com.github.vincemann.springrapid.auth.AuthProperties;
 import com.github.vincemann.springrapid.auth.config.RapidAdminAutoConfiguration;
+import com.github.vincemann.springrapid.auth.controller.AbstractUserController;
 import com.github.vincemann.springrapid.auth.domain.AbstractUser;
 import com.github.vincemann.springrapid.auth.domain.AbstractUserRepository;
 import com.github.vincemann.springrapid.auth.domain.AuthRoles;
 import com.github.vincemann.springrapid.auth.mail.MailSender;
+import com.github.vincemann.springrapid.auth.service.AbstractUserService;
 import com.github.vincemann.springrapid.auth.service.UserService;
-import com.github.vincemann.springrapid.authtest.controller.AuthITLoginTemplate;
-import com.github.vincemann.springrapid.authtest.controller.LoginForm;
+import com.github.vincemann.springrapid.authtest.controller.UserUrlParamIdControllerIntegrationTest;
+import com.github.vincemann.springrapid.authtest.controller.login.AuthITLoginTemplate;
+import com.github.vincemann.springrapid.authtest.controller.login.LoginForm;
 import com.github.vincemann.springrapid.authtests.adapter.AuthTestAdapter;
 import com.github.vincemann.springrapid.core.CoreProperties;
 import com.github.vincemann.springrapid.core.slicing.RapidProfiles;
@@ -33,6 +36,7 @@ import org.springframework.test.util.AopTestUtils;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.ResultActions;
+import org.springframework.test.web.servlet.setup.DefaultMockMvcBuilder;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 
@@ -62,11 +66,12 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
         "lemon.recaptcha.sitekey="
 })
 //activate everything for full integration tests
-@ActiveProfiles(value = {RapidProfiles.WEB, RapidProfiles.SERVICE, RapidTestProfiles.TEST, RapidTestProfiles.WEB_TEST, RapidTestProfiles.SERVICE_TEST})
+//@ActiveProfiles(value = {RapidProfiles.WEB, RapidProfiles.SERVICE, RapidTestProfiles.TEST, RapidTestProfiles.WEB_TEST, RapidTestProfiles.SERVICE_TEST})
 @ImportAutoConfiguration(exclude = RapidAdminAutoConfiguration.class)
 @Getter
 @Slf4j
-public abstract class AbstractRapidAuthTest extends InitializingTest {
+public abstract class AbstractRapidAuthTest
+        extends UserUrlParamIdControllerIntegrationTest<AbstractUserController<?,Long,?>,Long> {
 
     protected static final String ADMIN_EMAIL = "admin@example.com";
     protected static final String ADMIN_PASSWORD = "adminAdmin1!";
@@ -120,8 +125,8 @@ public abstract class AbstractRapidAuthTest extends InitializingTest {
 
     protected AuthProperties.Jwt jwt;
 
-    @Autowired
-    protected WebApplicationContext context;
+//    @Autowired
+//    protected WebApplicationContext context;
 
     protected MockMvc mvc;
     protected Map<Long, String> tokens = new HashMap<>(6);
@@ -141,8 +146,6 @@ public abstract class AbstractRapidAuthTest extends InitializingTest {
 
     @BeforeEach
     protected void setup() throws Exception {
-        configureMvc();
-        loginTemplate.setMvc(mvc);
         System.err.println("creating test users");
         createTestUsers();
         System.err.println("test users created");
@@ -152,6 +155,7 @@ public abstract class AbstractRapidAuthTest extends InitializingTest {
         setupSpies();
         System.err.println("TEST STARTS HERE -----------------------------------------------------------------------------------------------------------------");
     }
+
 
 
     protected void setupSpies(){
@@ -164,26 +168,19 @@ public abstract class AbstractRapidAuthTest extends InitializingTest {
         return AopTestUtils.getUltimateTargetObject(spy);
     }
 
-    protected void configureMvc() {
-        mvc = MockMvcBuilders
-                .webAppContextSetup(context)
-                .apply(SecurityMockMvcConfigurers.springSecurity())
-                .build();
+
+
+    @Override
+    protected DefaultMockMvcBuilder createMvcBuilder() {
+        DefaultMockMvcBuilder mvcBuilder = super.createMvcBuilder();
+        mvcBuilder.apply(SecurityMockMvcConfigurers.springSecurity());
+        return mvcBuilder;
     }
 
-
-    protected void removeTestUsers(){
-        System.err.println("deleting users");
-//        userRepository.deleteAll();
-        RapidTestUtil.clear(aclUserService);
-        System.err.println("deleted users");
-
-        //acl info is already removed by aclUserService Cleanup plugin
-//        System.err.println("deleting acl info");
-//        Connection connection = DataSourceUtils.getConnection(dataSource);
-//        ScriptUtils.executeSqlScript(connection, new ClassPathResource("test-data/removeAclInfo.sql"));
-//        DataSourceUtils.releaseConnection(connection,dataSource);
-//        System.err.println("deleted acl info");
+    @Override
+    public void afterPropertiesSet() throws Exception {
+        super.afterPropertiesSet();
+        loginTemplate.setMvc(mvc);
     }
 
 
@@ -240,7 +237,9 @@ public abstract class AbstractRapidAuthTest extends InitializingTest {
         System.err.println("TEST ENDS HERE -----------------------------------------------------------------------------------------------------------------");
         System.err.println("clearing test data");
         tokens.clear();
-        removeTestUsers();
+        System.err.println("deleting users");
+        RapidTestUtil.clear(aclUserService);
+        System.err.println("deleted users");
         System.err.println("test data cleared");
 
         Mockito.reset(unproxy(mailSender));
@@ -251,38 +250,6 @@ public abstract class AbstractRapidAuthTest extends InitializingTest {
 //        Mockito.reset(jwt);
     }
 
-    //    protected void initAcl() throws SQLException {
-//        if (!initialized) {
-//            //only do this expensive stuff once -> permissions stay the same
-//            ScriptUtils.executeSqlScript(dataSource.getConnection(), new ClassPathResource("test-data/removeAclInfo.sql"));
-////        User admin = userRepository.findById(getAdmin().getId()).get();
-////        Authentication adminAuth = new UsernamePasswordAuthenticationToken(admin.getName(), admin.getPassword()
-////                , Lists.newArrayList(new SimpleGrantedAuthority(Role.ADMIN)));
-//            securityContext.runAsAdmin(() -> {
-//                try {
-//                    giveAdminFullPermissionOver(getUser().getId(), getUnverifiedUser().getId(), BLOCKED_USER_ID /*getAdmin().getId(), secondAdmin.getId(), blockedAdmin.getId()*/);
-//                    giveFullPermissionAboutSelf(getAdmin().getId(), secondAdmin.getId(), blockedAdmin.getId(), getUser().getId(), getUnverifiedUser().getId(), BLOCKED_USER_ID);
-//                }catch (Exception e){
-//                    throw new RuntimeException(e);
-//                }
-//            });
-//            initialized = true;
-//        }
-//    }
-
-//    protected void giveFullPermissionAboutSelf(Long... ids) throws BadEntityException {
-//        for (Long id : ids) {
-//            AbstractUser user = userService.findById(id).get();
-//            permissionService.addPermissionForUserOver(user, BasePermission.ADMINISTRATION, user.getEmail());
-//        }
-//    }
-//
-//    protected void giveAdminFullPermissionOver(Long... ids) throws BadEntityException {
-//        for (Long id : ids) {
-//            AbstractUser user = userService.findById(id).get();
-//            permissionService.addPermissionForAuthorityOver(user, BasePermission.ADMINISTRATION, RapidRoles.ADMIN);
-//        }
-//    }
 
 
 }

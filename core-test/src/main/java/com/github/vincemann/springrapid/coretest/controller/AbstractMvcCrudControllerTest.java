@@ -4,7 +4,6 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JavaType;
 
-import com.github.vincemann.springrapid.core.CoreProperties;
 import com.github.vincemann.springrapid.core.controller.GenericCrudController;
 import com.github.vincemann.springrapid.core.model.IdentifiableEntity;
 import com.github.vincemann.springrapid.core.service.exception.BadEntityException;
@@ -14,6 +13,7 @@ import com.github.vincemann.springrapid.coretest.controller.integration.Integrat
 import com.github.vincemann.springrapid.coretest.controller.template.CrudControllerTestTemplate;
 import lombok.Getter;
 import org.junit.jupiter.api.BeforeEach;
+import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -50,17 +50,17 @@ import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.
 @SpringBootTest
 public abstract class AbstractMvcCrudControllerTest
         <C extends GenericCrudController<?, Id, ?, ?, ?>, Id extends Serializable,T extends CrudControllerTestTemplate<C,Id>>
-            extends InitializingTest
+            extends InitializingTest implements InitializingBean
 {
 
 
     private MockMvc mockMvc;
-    private DefaultMockMvcBuilder mockMvcBuilder;
     private MediaType contentType;
-    private CoreProperties coreProperties;
     private C controller;
     @Autowired
     private ApplicationContext applicationContext;
+    @Autowired
+    private WebApplicationContext wac;
 
     // use TestTemplate as member and not inherit so in one test multiple TestTemplates can be used and @Autowired in
     // with inheritence @AutoConfigureMockMvc ect. does not make this possible
@@ -68,14 +68,16 @@ public abstract class AbstractMvcCrudControllerTest
 
 
 
-    @BeforeEach
-    protected void setupMvc(WebApplicationContext wac) {
-        this.contentType = MediaType.valueOf(coreProperties.getController().getMediaType());
-        mockMvcBuilder = MockMvcBuilders.webAppContextSetup(wac)
-                //user has to check himself if he wants to
-//                .alwaysExpect(content().contentType(getContentType()))
+    protected DefaultMockMvcBuilder createMvcBuilder() {
+        return MockMvcBuilders.webAppContextSetup(wac)
                 .alwaysDo(print());
-        mockMvc = mockMvcBuilder.build();
+    }
+
+    @Override
+    public void afterPropertiesSet() throws Exception {
+        DefaultMockMvcBuilder mvcBuilder = createMvcBuilder();
+        this.contentType = MediaType.valueOf(controller.getCoreProperties().getController().getMediaType());
+        mockMvc = mvcBuilder.build();
     }
 
     @BeforeEach
@@ -157,10 +159,5 @@ public abstract class AbstractMvcCrudControllerTest
     @Autowired
     public void injectController(C controller) {
         this.controller = controller;
-    }
-
-    @Autowired
-    public void injectCoreProperties(CoreProperties coreProperties) {
-        this.coreProperties = coreProperties;
     }
 }

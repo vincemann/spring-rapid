@@ -10,7 +10,7 @@ import com.github.vincemann.springrapid.acldemo.service.MyUserService;
 import com.github.vincemann.springrapid.acldemo.service.OwnerService;
 import com.github.vincemann.springrapid.auth.domain.AuthRoles;
 import com.github.vincemann.springrapid.auth.domain.dto.SignupDto;
-import com.github.vincemann.springrapid.authtest.controller.UserControllerTestTemplate;
+import com.github.vincemann.springrapid.authtest.controller.template.UrlParamIdUserControllerTestTemplate;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -30,11 +30,11 @@ public class OwnerControllerTest extends AbstractControllerIntegrationTest<Owner
     MyUserService userService;
     @Autowired
     UserController userController;
-    UserControllerTestTemplate<UserController,Long> userTestTemplate;
+    UrlParamIdUserControllerTestTemplate<UserController,Long> userTestTemplate;
 
     @BeforeEach
     void setUpTestTemplates() {
-        userTestTemplate = new UserControllerTestTemplate<>(userController);
+        userTestTemplate = new UrlParamIdUserControllerTestTemplate<>(userController);
     }
 
 

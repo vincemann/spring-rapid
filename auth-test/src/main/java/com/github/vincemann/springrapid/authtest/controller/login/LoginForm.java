@@ -1,4 +1,4 @@
-package com.github.vincemann.springrapid.authtest.controller;
+package com.github.vincemann.springrapid.authtest.controller.login;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
