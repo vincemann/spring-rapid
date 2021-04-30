@@ -6,7 +6,7 @@ import com.github.vincemann.springrapid.auth.domain.AuthRoles;
 import com.github.vincemann.springrapid.core.security.Roles;
 
 import com.github.vincemann.springrapid.core.util.ResourceUtils;
-import com.github.vincemann.springrapid.coretest.controller.UrlParamIdCrudControllerTest;
+import com.github.vincemann.springrapid.coretest.controller.template.UrlParamIdCrudControllerTestTemplate;
 import lombok.Getter;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.Assertions;
@@ -15,10 +15,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.Resource;
 import org.springframework.http.HttpHeaders;
 
-import javax.validation.ConstraintViolationException;
 import java.io.IOException;
-import java.sql.DataTruncation;
-import java.sql.SQLIntegrityConstraintViolationException;
 
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.hamcrest.Matchers.hasSize;
@@ -26,7 +23,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 public abstract class UpdateUserAuthTest extends AbstractRapidAuthTest
-		implements UrlParamIdCrudControllerTest<AbstractUserController<?,Long,?>,Long> {
+		implements UrlParamIdCrudControllerTestTemplate<AbstractUserController<?,Long,?>,Long> {
 
 	private static final String FIELD_KEY_PLACEHOLDER = "name";
 	private static final String FIELD_INVALID_VALUE_PLACEHOLDER = "invalidFieldValue";

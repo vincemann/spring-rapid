@@ -1,11 +1,10 @@
-package com.github.vincemann.springrapid.coretest.controller.urlparamid;
+package com.github.vincemann.springrapid.coretest.controller.integration;
 
 import com.github.vincemann.springrapid.core.controller.GenericCrudController;
 import com.github.vincemann.springrapid.core.security.RapidAuthenticatedPrincipal;
 import com.github.vincemann.springrapid.core.security.RapidSecurityContext;
 import com.github.vincemann.springrapid.core.service.CrudService;
-import com.github.vincemann.springrapid.coretest.controller.IntegrationControllerTest;
-import com.github.vincemann.springrapid.coretest.controller.UrlParamIdCrudControllerTest;
+import com.github.vincemann.springrapid.coretest.controller.template.UrlParamIdCrudControllerTestTemplate;
 import com.github.vincemann.springrapid.coretest.util.RapidTestUtil;
 import lombok.Getter;
 import org.junit.jupiter.api.AfterEach;
@@ -17,8 +16,7 @@ import java.io.Serializable;
 public class IntegrationUrlParamIdControllerTest
         <C extends GenericCrudController<?,Id,S,?,?>,
         Id extends Serializable,S extends CrudService<?,Id>>
-            extends IntegrationControllerTest<C,Id>
-                implements UrlParamIdCrudControllerTest<C,Id>
+            extends IntegrationControllerTest<C,Id,UrlParamIdCrudControllerTestTemplate<C,Id>>
 {
     private S service;
     private RapidSecurityContext<RapidAuthenticatedPrincipal> securityContext;
@@ -26,6 +24,11 @@ public class IntegrationUrlParamIdControllerTest
     @Autowired
     public void injectSecurityContext(RapidSecurityContext<RapidAuthenticatedPrincipal> securityContext) {
         this.securityContext = securityContext;
+    }
+
+    @Override
+    public UrlParamIdCrudControllerTestTemplate<C, Id> createTestTemplate() {
+        return new UrlParamIdCrudControllerTestTemplate<>(getController());
     }
 
     @Autowired

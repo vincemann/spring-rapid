@@ -5,8 +5,8 @@ import com.github.vincemann.springrapid.core.slicing.RapidProfiles;
 import com.github.vincemann.springrapid.core.slicing.ServiceComponent;
 import com.github.vincemann.springrapid.core.slicing.ServiceConfig;
 import com.github.vincemann.springrapid.coretest.controller.AbstractMvcCrudControllerTest;
+import com.github.vincemann.springrapid.coretest.controller.template.CrudControllerTestTemplate;
 import com.github.vincemann.springrapid.coretest.slicing.RapidTestProfiles;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.autoconfigure.ImportAutoConfiguration;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
 import org.springframework.boot.test.context.ConfigFileApplicationContextInitializer;
@@ -48,6 +48,6 @@ import java.io.Serializable;
         initializers = ConfigFileApplicationContextInitializer.class
 )
 public abstract class AutoMockControllerTest
-        <C extends GenericCrudController<?, Id, ?, ?, ?>, Id extends Serializable>
-                extends AbstractMvcCrudControllerTest<C,Id> {
+        <C extends GenericCrudController<?, Id, ?, ?, ?>, Id extends Serializable,T extends CrudControllerTestTemplate<C,Id>>
+                extends AbstractMvcCrudControllerTest<C,Id,T> {
 }

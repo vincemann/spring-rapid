@@ -1,7 +1,7 @@
-package com.github.vincemann.springrapid.coretest.controller.urlparamid;
+package com.github.vincemann.springrapid.coretest.controller.automock;
 
 import com.github.vincemann.springrapid.core.controller.GenericCrudController;
-import com.github.vincemann.springrapid.coretest.controller.UrlParamIdCrudControllerTest;
+import com.github.vincemann.springrapid.coretest.controller.template.UrlParamIdCrudControllerTestTemplate;
 import com.github.vincemann.springrapid.coretest.controller.automock.AutoMockControllerTest;
 
 import java.io.Serializable;
@@ -12,7 +12,10 @@ import java.io.Serializable;
 public abstract class AutoMockUrlParamIdControllerTest
         <C extends GenericCrudController<?,Id,?,?,?>,
         Id extends Serializable>
-             extends AutoMockControllerTest<C,Id>
-                     implements UrlParamIdCrudControllerTest<C,Id> {
-
+             extends AutoMockControllerTest<C,Id,UrlParamIdCrudControllerTestTemplate<C,Id>>
+{
+    @Override
+    public UrlParamIdCrudControllerTestTemplate<C, Id> createTestTemplate() {
+        return new UrlParamIdCrudControllerTestTemplate<>(getController());
+    }
 }
