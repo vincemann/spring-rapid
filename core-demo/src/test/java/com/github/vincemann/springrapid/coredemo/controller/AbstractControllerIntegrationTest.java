@@ -8,7 +8,7 @@ import com.github.vincemann.springrapid.coredemo.model.*;
 import com.github.vincemann.springrapid.coredemo.repo.*;
 import com.github.vincemann.springrapid.coredemo.service.*;
 import com.github.vincemann.springrapid.coredemo.service.extensions.OwnerOfTheYearExtension;
-import com.github.vincemann.springrapid.coretest.controller.urlparamid.IntegrationUrlParamIdControllerTest;
+import com.github.vincemann.springrapid.coretest.controller.integration.IntegrationUrlParamIdControllerTest;
 import com.github.vincemann.springrapid.coretest.util.RapidTestUtil;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;

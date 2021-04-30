@@ -10,8 +10,9 @@ import com.github.vincemann.springrapid.acldemo.service.MyUserService;
 import com.github.vincemann.springrapid.acldemo.service.OwnerService;
 import com.github.vincemann.springrapid.auth.domain.AuthRoles;
 import com.github.vincemann.springrapid.auth.domain.dto.SignupDto;
-import com.github.vincemann.springrapid.authtest.controller.UserMvcControllerTest;
+import com.github.vincemann.springrapid.authtest.controller.UserControllerTestTemplate;
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -22,14 +23,21 @@ import static com.github.vincemann.springrapid.coretest.service.PropertyMatchers
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 
-public class OwnerControllerTest extends AbstractControllerIntegrationTest<OwnerController, OwnerService> implements UserMvcControllerTest<UserController,Long> {
+public class OwnerControllerTest extends AbstractControllerIntegrationTest<OwnerController, OwnerService> {
 
-
-    @Autowired
-    UserController userTest;
 
     @Autowired
     MyUserService userService;
+    @Autowired
+    UserController userController;
+    UserControllerTestTemplate<UserController,Long> userTestTemplate;
+
+    @BeforeEach
+    void setUpTestTemplates() {
+        userTestTemplate = new UserControllerTestTemplate<>(userController);
+    }
+
+
 
     @Test
     public void canRegisterOwner() throws Exception {
@@ -37,7 +45,7 @@ public class OwnerControllerTest extends AbstractControllerIntegrationTest<Owner
                 .email(OWNER_KAHN_EMAIL)
                 .password(OWNER_KAHN_PASSWORD)
                 .build();
-        UUIDSignupResponseDto signedUpDto = deserialize(getMockMvc().perform(userTest.signup(signupDto))
+        UUIDSignupResponseDto signedUpDto = deserialize(getMockMvc().perform(userTestTemplate.signup(signupDto))
                 .andExpect(status().is2xxSuccessful())
                 .andReturn().getResponse().getContentAsString(), UUIDSignupResponseDto.class);
         String uuid = signedUpDto.getUuid();
