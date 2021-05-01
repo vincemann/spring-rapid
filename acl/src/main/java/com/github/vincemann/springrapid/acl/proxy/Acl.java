@@ -12,7 +12,7 @@ import java.lang.annotation.*;
  */
 @Target({ElementType.FIELD, ElementType.METHOD, ElementType.PARAMETER, ElementType.TYPE, ElementType.ANNOTATION_TYPE})
 @Retention(RetentionPolicy.RUNTIME)
-@Qualifier("aclManaging")
+@Qualifier("acl")
 @Inherited
 @ServiceBeanType
 public @interface Acl {

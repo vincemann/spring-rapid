@@ -18,11 +18,5 @@ public class UserServiceConfig {
         return new MyUserService();
     }
 
-    @Bean
-    @Acl
-    public UserService aclUserService(UserService userService){
-        return (UserService) new ServiceExtensionProxyBuilder<>((UserService) userService).build();
-    }
-
 
 }

@@ -50,7 +50,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.
 @SpringBootTest
 public abstract class AbstractMvcCrudControllerTest
         <C extends GenericCrudController<?, Id, ?, ?, ?>, Id extends Serializable,T extends CrudControllerTestTemplate<C,Id>>
-            extends InitializingTest implements InitializingBean
+            extends InitializingTest
 {
 
 
@@ -73,15 +73,12 @@ public abstract class AbstractMvcCrudControllerTest
                 .alwaysDo(print());
     }
 
-    @Override
-    public void afterPropertiesSet() throws Exception {
-        DefaultMockMvcBuilder mvcBuilder = createMvcBuilder();
-        this.contentType = MediaType.valueOf(controller.getCoreProperties().getController().getMediaType());
-        mockMvc = mvcBuilder.build();
-    }
 
     @BeforeEach
     protected void setupTestTemplate(){
+        DefaultMockMvcBuilder mvcBuilder = createMvcBuilder();
+        this.contentType = MediaType.valueOf(controller.getCoreProperties().getController().getMediaType());
+        mockMvc = mvcBuilder.build();
         testTemplate= createTestTemplate();
     }
 

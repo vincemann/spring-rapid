@@ -1,5 +1,6 @@
 package com.github.vincemann.springrapid.auth.config;
 
+import com.github.vincemann.springrapid.acl.config.RapidAclExtensionsAutoConfiguration;
 import com.github.vincemann.springrapid.auth.service.UserService;
 import com.github.vincemann.springrapid.auth.service.extension.AclUserExtension;
 import com.github.vincemann.springrapid.auth.service.extension.UserServiceSecurityExtension;
@@ -26,7 +27,7 @@ import org.springframework.security.acls.model.MutableAclService;
 @ServiceConfig
 @Slf4j
 //we need the acl beans here
-@AutoConfigureAfter({RapidAclAutoConfiguration.class})
+@AutoConfigureAfter({RapidAclAutoConfiguration.class, RapidAclExtensionsAutoConfiguration.class})
 public class RapidUserServiceSecurityAutoConfiguration {
 
 
@@ -51,17 +52,19 @@ public class RapidUserServiceSecurityAutoConfiguration {
     }
 
 
-    @ConditionalOnMissingBean(name = "aclManagingUserService")
+    @ConditionalOnMissingBean(name = "aclUserService")
     @Bean
     @Acl
-    public UserService<?, ?> aclManagingUserService(UserService<?, ?> service
-                                                    // Extensions are added by AutoConfig
+    public UserService<?, ?> aclUserService(UserService<?, ?> service,
+                                            // Extensions are added by AutoConfig
 ////                                                                            AdminFullAccessAclExtension adminFullAccess,
 ////                                                                            AuthenticatedFullAccessAclExtension authenticatedFullAccessAclExtension,
-//                                                    AclUserExtension aclUserServiceExtension,
-//                                                    CleanUpAclExtension cleanUpAclExtension
+                                            CleanUpAclExtension cleanUpAclExtension,
+                                            AclUserExtension aclUserServiceExtension
     ) {
         return new ServiceExtensionProxyBuilder<>(service)
+                .toggleDefaultExtensions(false)
+                .addExtensions(aclUserServiceExtension,cleanUpAclExtension)
                 .build();
     }
 
@@ -70,10 +73,12 @@ public class RapidUserServiceSecurityAutoConfiguration {
     @Bean
     @Secured
     public UserService<?, ?> securedUserService(@Acl UserService<?, ?> service,
-                                                UserServiceSecurityExtension securityRule
+                                                UserServiceSecurityExtension securityRule,
+                                                CrudAclChecksSecurityExtension crudAclChecksSecurityExtension
     ) {
         return new ServiceExtensionProxyBuilder<>(service)
-                .addExtensions(securityRule)
+                .toggleDefaultExtensions(false)
+                .addExtensions(securityRule, crudAclChecksSecurityExtension)
                 .build();
     }
 
