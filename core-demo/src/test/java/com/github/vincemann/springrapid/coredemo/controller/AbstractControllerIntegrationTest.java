@@ -8,7 +8,7 @@ import com.github.vincemann.springrapid.coredemo.model.*;
 import com.github.vincemann.springrapid.coredemo.repo.*;
 import com.github.vincemann.springrapid.coredemo.service.*;
 import com.github.vincemann.springrapid.coredemo.service.extensions.OwnerOfTheYearExtension;
-import com.github.vincemann.springrapid.coretest.controller.integration.IntegrationUrlParamIdControllerTest;
+import com.github.vincemann.springrapid.coretest.controller.integration.IntegrationCrudControllerTest;
 import com.github.vincemann.springrapid.coretest.util.RapidTestUtil;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
@@ -22,7 +22,7 @@ import java.util.Optional;
 import java.util.Set;
 
 public class AbstractControllerIntegrationTest<C extends GenericCrudController<?,Long,S,?,?>,S extends CrudService<?,Long>>
-        extends IntegrationUrlParamIdControllerTest<C,Long,S>
+        extends IntegrationCrudControllerTest<C,Long,S>
 {
 
     //Types

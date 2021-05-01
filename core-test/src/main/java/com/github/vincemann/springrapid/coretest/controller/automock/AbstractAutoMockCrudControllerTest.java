@@ -4,8 +4,8 @@ import com.github.vincemann.springrapid.core.controller.GenericCrudController;
 import com.github.vincemann.springrapid.core.slicing.RapidProfiles;
 import com.github.vincemann.springrapid.core.slicing.ServiceComponent;
 import com.github.vincemann.springrapid.core.slicing.ServiceConfig;
-import com.github.vincemann.springrapid.coretest.controller.AbstractMvcCrudControllerTest;
-import com.github.vincemann.springrapid.coretest.controller.template.CrudControllerTestTemplate;
+import com.github.vincemann.springrapid.coretest.controller.AbstractCrudControllerTest;
+import com.github.vincemann.springrapid.coretest.controller.template.AbstractCrudControllerTestTemplate;
 import com.github.vincemann.springrapid.coretest.slicing.RapidTestProfiles;
 import org.springframework.boot.autoconfigure.ImportAutoConfiguration;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
@@ -47,7 +47,7 @@ import java.io.Serializable;
         classes = PropertyPlaceholderAutoConfiguration.class*/,
         initializers = ConfigFileApplicationContextInitializer.class
 )
-public abstract class AutoMockControllerTest
-        <C extends GenericCrudController<?, Id, ?, ?, ?>, Id extends Serializable,T extends CrudControllerTestTemplate<C,Id>>
-                extends AbstractMvcCrudControllerTest<C,Id,T> {
+public abstract class AbstractAutoMockCrudControllerTest
+        <C extends GenericCrudController<?, ?, ?, ?, ?>,T extends AbstractCrudControllerTestTemplate>
+                extends AbstractCrudControllerTest<C,T> {
 }

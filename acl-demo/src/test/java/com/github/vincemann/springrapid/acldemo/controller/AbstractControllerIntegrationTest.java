@@ -3,12 +3,11 @@ package com.github.vincemann.springrapid.acldemo.controller;
 import com.github.vincemann.springrapid.acldemo.model.*;
 import com.github.vincemann.springrapid.acldemo.repositories.*;
 import com.github.vincemann.springrapid.acldemo.service.*;
-import com.github.vincemann.springrapid.authtest.controller.login.AuthITLoginTemplate;
 import com.github.vincemann.springrapid.core.controller.GenericCrudController;
 import com.github.vincemann.springrapid.core.security.RapidAuthenticatedPrincipal;
 import com.github.vincemann.springrapid.core.security.RapidSecurityContext;
 import com.github.vincemann.springrapid.core.service.CrudService;
-import com.github.vincemann.springrapid.coretest.controller.integration.IntegrationUrlParamIdControllerTest;
+import com.github.vincemann.springrapid.coretest.controller.integration.IntegrationCrudControllerTest;
 import com.github.vincemann.springrapid.coretest.util.RapidTestUtil;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
@@ -21,7 +20,7 @@ import java.util.Optional;
 import java.util.Set;
 
 public class AbstractControllerIntegrationTest<C extends GenericCrudController<?,Long,S,?,?>,S extends CrudService<?,Long>>
-        extends IntegrationUrlParamIdControllerTest<C,Long,S>
+        extends IntegrationCrudControllerTest<C,S>
 {
 
     //Types
@@ -141,8 +140,6 @@ public class AbstractControllerIntegrationTest<C extends GenericCrudController<?
     @Autowired
     protected RapidSecurityContext<RapidAuthenticatedPrincipal> securityContext;
 
-    @Autowired
-    private AuthITLoginTemplate loginTemplate;
 
     @BeforeEach
     public void setupTestData() throws Exception {

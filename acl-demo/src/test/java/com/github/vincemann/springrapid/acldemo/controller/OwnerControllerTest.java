@@ -10,9 +10,8 @@ import com.github.vincemann.springrapid.acldemo.service.MyUserService;
 import com.github.vincemann.springrapid.acldemo.service.OwnerService;
 import com.github.vincemann.springrapid.auth.domain.AuthRoles;
 import com.github.vincemann.springrapid.auth.domain.dto.SignupDto;
-import com.github.vincemann.springrapid.authtest.controller.template.UrlParamIdUserControllerTestTemplate;
+import com.github.vincemann.springrapid.authtest.controller.template.UserControllerTestTemplate;
 import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -29,13 +28,8 @@ public class OwnerControllerTest extends AbstractControllerIntegrationTest<Owner
     @Autowired
     MyUserService userService;
     @Autowired
-    UserController userController;
-    UrlParamIdUserControllerTestTemplate<UserController,Long> userTestTemplate;
+    UserControllerTestTemplate userControllerTestTemplate;
 
-    @BeforeEach
-    void setUpTestTemplates() {
-        userTestTemplate = new UrlParamIdUserControllerTestTemplate<>(userController);
-    }
 
 
 
@@ -45,7 +39,7 @@ public class OwnerControllerTest extends AbstractControllerIntegrationTest<Owner
                 .email(OWNER_KAHN_EMAIL)
                 .password(OWNER_KAHN_PASSWORD)
                 .build();
-        UUIDSignupResponseDto signedUpDto = deserialize(getMockMvc().perform(userTestTemplate.signup(signupDto))
+        UUIDSignupResponseDto signedUpDto = deserialize(getMockMvc().perform(userControllerTestTemplate.signup(signupDto))
                 .andExpect(status().is2xxSuccessful())
                 .andReturn().getResponse().getContentAsString(), UUIDSignupResponseDto.class);
         String uuid = signedUpDto.getUuid();

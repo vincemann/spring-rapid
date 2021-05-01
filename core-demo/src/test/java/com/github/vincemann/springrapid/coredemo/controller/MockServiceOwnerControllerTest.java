@@ -6,7 +6,7 @@ import com.github.vincemann.springrapid.core.security.RapidSecurityContext;
 import com.github.vincemann.springrapid.core.service.locator.CrudServiceLocator;
 import com.github.vincemann.springrapid.core.util.ResourceUtils;
 import com.github.vincemann.springrapid.coretest.TestPrincipal;
-import com.github.vincemann.springrapid.coretest.controller.automock.AutoMockUrlParamIdControllerTest;
+import com.github.vincemann.springrapid.coretest.controller.automock.AbstractAutoMockCrudControllerTest;
 import com.github.vincemann.springrapid.coredemo.dtos.owner.CreateOwnerDto;
 import com.github.vincemann.springrapid.coredemo.dtos.owner.ReadForeignOwnerDto;
 import com.github.vincemann.springrapid.coredemo.dtos.owner.ReadOwnOwnerDto;
@@ -14,6 +14,7 @@ import com.github.vincemann.springrapid.coredemo.model.Owner;
 import com.github.vincemann.springrapid.coredemo.model.Pet;
 import com.github.vincemann.springrapid.coredemo.service.OwnerService;
 import com.github.vincemann.springrapid.coredemo.service.PetService;
+import com.github.vincemann.springrapid.coretest.controller.automock.AutoMockCrudControllerTest;
 import org.apache.commons.beanutils.BeanUtilsBean;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -32,7 +33,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 
 public class MockServiceOwnerControllerTest
-        extends AutoMockUrlParamIdControllerTest<OwnerController,Long> {
+        extends AutoMockCrudControllerTest<OwnerController> {
 
     CreateOwnerDto createOwnerDto;
     ReadForeignOwnerDto readForeignOwnerDto;
