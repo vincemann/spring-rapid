@@ -14,7 +14,7 @@ public class ServiceExtensionProxy<S extends CrudService<?,?>>
         extends AbstractExtensionServiceProxy<S, AbstractExtensionServiceProxy.State, ProxyController>
 {
 
-    private Boolean disableDefaultExtensions;
+    private Boolean defaultExtensionsEnabled = Boolean.TRUE;
 
     protected ServiceExtensionProxy(S proxied, BasicServiceExtension<?>... extensions) {
         super(proxied, extensions);

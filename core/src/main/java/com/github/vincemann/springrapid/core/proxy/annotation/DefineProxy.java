@@ -11,5 +11,5 @@ public @interface DefineProxy {
 
     String name() default "";
     Class<? extends AbstractServiceExtension>[] extensions() default {};
-    boolean disableDefaultExtensions() default false;
+    boolean defaultExtensionsEnabled() default true;
 }

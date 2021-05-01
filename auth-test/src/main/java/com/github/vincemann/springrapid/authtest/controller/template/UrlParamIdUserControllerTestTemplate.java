@@ -23,4 +23,6 @@ public class UrlParamIdUserControllerTestTemplate
                 .content(serialize(dto))
                 .contentType(getController().getCoreProperties().getController().getMediaType());
     }
+
+    // todo add more methods there for each endpoint
 }

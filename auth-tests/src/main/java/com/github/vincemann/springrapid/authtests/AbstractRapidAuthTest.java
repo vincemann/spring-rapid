@@ -146,6 +146,9 @@ public abstract class AbstractRapidAuthTest
 
     @BeforeEach
     protected void setup() throws Exception {
+        super.setupTestTemplate();
+        this.mvc=getMockMvc();
+        loginTemplate.setMvc(getMockMvc());
         System.err.println("creating test users");
         createTestUsers();
         System.err.println("test users created");
@@ -177,11 +180,6 @@ public abstract class AbstractRapidAuthTest
         return mvcBuilder;
     }
 
-    @Override
-    public void afterPropertiesSet() throws Exception {
-        super.afterPropertiesSet();
-        loginTemplate.setMvc(mvc);
-    }
 
 
     protected void createTestUsers() throws Exception {

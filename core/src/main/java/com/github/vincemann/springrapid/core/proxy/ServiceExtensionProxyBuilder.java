@@ -51,11 +51,11 @@ public class ServiceExtensionProxyBuilder<S extends CrudService<E,Id>,E extends 
         return this;
     }
 
-    public ServiceExtensionProxyBuilder<S,E,Id> disableDefaultExtensions(Boolean value){
-        if (value==null){
-            value=false;
+    public ServiceExtensionProxyBuilder<S,E,Id> toggleDefaultExtensions(Boolean enabled){
+        if (enabled==null){
+            enabled=true;
         }
-        proxy.setDisableDefaultExtensions(value);
+        proxy.setDefaultExtensionsEnabled(enabled);
         return this;
     }
 

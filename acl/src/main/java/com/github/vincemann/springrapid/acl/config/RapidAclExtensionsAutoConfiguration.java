@@ -1,6 +1,6 @@
 package com.github.vincemann.springrapid.acl.config;
 
-import com.github.vincemann.springrapid.acl.proxy.SimpleSecurityExtension;
+import com.github.vincemann.springrapid.acl.proxy.CrudAclChecksSecurityExtension;
 import com.github.vincemann.springrapid.acl.service.extensions.AdminFullAccessAboutSavedAclExtension;
 import com.github.vincemann.springrapid.acl.service.extensions.AuthenticatedFullAccessAboutSavedAclExtension;
 import com.github.vincemann.springrapid.acl.service.extensions.CleanUpAclExtension;
@@ -25,12 +25,12 @@ public class RapidAclExtensionsAutoConfiguration {
 
     }
 
-    @ConditionalOnMissingBean(name = "simpleSecurityExtension")
-    @Qualifier("simpleSecurityExtension")
+    @ConditionalOnMissingBean(name = "crudAclChecksSecurityExtension")
+    @Qualifier("crudAclChecksSecurityExtension")
     @Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
     @Bean
-    public AbstractServiceExtension<?,?> simpleSecurityExtension(){
-        return new SimpleSecurityExtension();
+    public CrudAclChecksSecurityExtension crudAclChecksSecurityExtension(){
+        return new CrudAclChecksSecurityExtension();
     }
 
     @ConditionalOnMissingBean(AuthenticatedFullAccessAboutSavedAclExtension.class)
