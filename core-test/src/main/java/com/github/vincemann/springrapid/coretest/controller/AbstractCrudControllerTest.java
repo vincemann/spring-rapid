@@ -9,8 +9,9 @@ import com.github.vincemann.springrapid.core.model.IdentifiableEntity;
 import com.github.vincemann.springrapid.core.service.exception.BadEntityException;
 import com.github.vincemann.springrapid.core.service.exception.EntityNotFoundException;
 import com.github.vincemann.springrapid.coretest.InitializingTest;
-import com.github.vincemann.springrapid.coretest.controller.integration.IntegrationControllerTest;
-import com.github.vincemann.springrapid.coretest.controller.template.CrudControllerTestTemplate;
+import com.github.vincemann.springrapid.coretest.controller.automock.AbstractAutoMockCrudControllerTest;
+import com.github.vincemann.springrapid.coretest.controller.integration.AbstractIntegrationControllerTest;
+import com.github.vincemann.springrapid.coretest.controller.template.AbstractCrudControllerTestTemplate;
 import lombok.Getter;
 import org.junit.jupiter.api.BeforeEach;
 import org.springframework.beans.factory.InitializingBean;
@@ -27,7 +28,6 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 
 import java.io.IOException;
-import java.io.Serializable;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -37,9 +37,9 @@ import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.
 /**
  * Base class for tests of {@link GenericCrudController}.
  * Use either implementations of
- *  {@link com.github.vincemann.springrapid.coretest.controller.automock.AutoMockControllerTest}
+ *  {@link AbstractAutoMockCrudControllerTest}
  * or
- *  {@link IntegrationControllerTest}
+ *  {@link AbstractIntegrationControllerTest}
  * to test your {@link GenericCrudController}s.
  *
  * Offers basic crud methods to interact with controller and convenience methods to use Controllers {@link com.fasterxml.jackson.databind.ObjectMapper} to
@@ -48,9 +48,9 @@ import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.
 @Getter
 @AutoConfigureMockMvc
 @SpringBootTest
-public abstract class AbstractMvcCrudControllerTest
-        <C extends GenericCrudController<?, Id, ?, ?, ?>, Id extends Serializable,T extends CrudControllerTestTemplate<C,Id>>
-            extends InitializingTest
+public abstract class AbstractCrudControllerTest
+        <C extends GenericCrudController , T extends AbstractCrudControllerTestTemplate>
+            extends InitializingTest implements InitializingBean
 {
 
 
@@ -67,6 +67,15 @@ public abstract class AbstractMvcCrudControllerTest
     private T testTemplate;
 
 
+    @Override
+    public void afterPropertiesSet() throws Exception {
+        this.getTestTemplate().setController(controller);
+    }
+
+    @Autowired
+    public void injectTestTemplate(T testTemplate){
+        this.testTemplate=testTemplate;
+    }
 
     protected DefaultMockMvcBuilder createMvcBuilder() {
         return MockMvcBuilders.webAppContextSetup(wac)
@@ -79,29 +88,27 @@ public abstract class AbstractMvcCrudControllerTest
         DefaultMockMvcBuilder mvcBuilder = createMvcBuilder();
         this.contentType = MediaType.valueOf(controller.getCoreProperties().getController().getMediaType());
         mockMvc = mvcBuilder.build();
-        testTemplate= createTestTemplate();
     }
 
-    public abstract T createTestTemplate();
 
 
     // CONVENIENCE METHODS SO USER DOES NOT HAVE TO CALL testTemplate.foo(...)
 
-    public MockHttpServletRequestBuilder delete(Id id) throws Exception{
-        return testTemplate.delete(id);
+    public MockHttpServletRequestBuilder delete(Object id) throws Exception{
+        return testTemplate.delete(id.toString());
     }
 
-    public MockHttpServletRequestBuilder find(Id id) throws Exception{
-        return testTemplate.find(id);
+    public MockHttpServletRequestBuilder find(Object id) throws Exception{
+        return testTemplate.find(id.toString());
     }
 
-    public MockHttpServletRequestBuilder update(String patchString, Id id) throws Exception{
-        return testTemplate.update(patchString,id);
+    public MockHttpServletRequestBuilder update(String patchString, Object id) throws Exception{
+        return testTemplate.update(patchString,id.toString());
     }
 
 
     public <E extends IdentifiableEntity<?>> E mapToEntity(Object dto) throws BadEntityException, EntityNotFoundException {
-        return testTemplate.mapToEntity(dto);
+        return (E) testTemplate.mapToEntity(dto);
     }
 
     public  MockHttpServletRequestBuilder create(Object dto) throws Exception {
@@ -137,19 +144,19 @@ public abstract class AbstractMvcCrudControllerTest
     }
 
     public  <Dto> Dto deserialize(String s, Class<Dto> dtoClass) throws IOException {
-        return testTemplate.deserialize(s,dtoClass);
+        return (Dto) testTemplate.deserialize(s,dtoClass);
     }
 
     public  <Dto> Dto deserialize(String s, TypeReference<?> dtoClass) throws IOException {
-        return testTemplate.deserialize(s,dtoClass);
+        return (Dto) testTemplate.deserialize(s,dtoClass);
     }
 
     public  <Dto> Dto deserialize(String s, JavaType dtoClass) throws IOException {
-        return testTemplate.deserialize(s,dtoClass);
+        return (Dto) testTemplate.deserialize(s,dtoClass);
     }
 
     public  <Dto> Dto readDto(MvcResult mvcResult, Class<Dto> dtoClass) throws Exception {
-        return testTemplate.readDto(mvcResult,dtoClass);
+        return (Dto) testTemplate.readDto(mvcResult,dtoClass);
     }
 
 

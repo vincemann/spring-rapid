@@ -8,16 +8,12 @@ import com.github.vincemann.springrapid.auth.domain.AbstractUser;
 import com.github.vincemann.springrapid.auth.domain.AbstractUserRepository;
 import com.github.vincemann.springrapid.auth.domain.AuthRoles;
 import com.github.vincemann.springrapid.auth.mail.MailSender;
-import com.github.vincemann.springrapid.auth.service.AbstractUserService;
 import com.github.vincemann.springrapid.auth.service.UserService;
 import com.github.vincemann.springrapid.authtest.controller.UserUrlParamIdControllerIntegrationTest;
 import com.github.vincemann.springrapid.authtest.controller.login.AuthITLoginTemplate;
-import com.github.vincemann.springrapid.authtest.controller.login.LoginForm;
+import com.github.vincemann.springrapid.authtest.controller.template.LoginDto;
 import com.github.vincemann.springrapid.authtests.adapter.AuthTestAdapter;
 import com.github.vincemann.springrapid.core.CoreProperties;
-import com.github.vincemann.springrapid.core.slicing.RapidProfiles;
-import com.github.vincemann.springrapid.coretest.InitializingTest;
-import com.github.vincemann.springrapid.coretest.slicing.RapidTestProfiles;
 import com.github.vincemann.springrapid.coretest.util.RapidTestUtil;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
@@ -31,14 +27,11 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.boot.test.mock.mockito.SpyBean;
 import org.springframework.http.HttpHeaders;
 import org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers;
-import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.util.AopTestUtils;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.setup.DefaultMockMvcBuilder;
-import org.springframework.test.web.servlet.setup.MockMvcBuilders;
-import org.springframework.web.context.WebApplicationContext;
 
 import javax.sql.DataSource;
 import java.sql.SQLException;
@@ -207,7 +200,7 @@ public abstract class AbstractRapidAuthTest
     }
 
     protected ResultActions login(String email, String password){
-        return loginTemplate.login(new LoginForm(email,password));
+        return loginTemplate.login(new LoginDto(email,password));
     }
 
     protected String successful_login(String email, String password) throws Exception {
