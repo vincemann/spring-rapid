@@ -16,13 +16,14 @@ import java.util.Optional;
 public class DelegatingDtoMapper{
 
     private List<DtoMapper<?, ?>> delegates = new ArrayList<>();
-    private List<DtoPostProcessor> postProcessors = new ArrayList<>();
+    private List<DtoEntityPostProcessor> dtoEntityPostProcessors = new ArrayList<>();
+    private List<EntityDtoPostProcessor> entityDtoPostProcessors = new ArrayList<>();
 
     //@LogInteraction
     public <T extends IdentifiableEntity<?>> T mapToEntity(Object dto, Class<T> destinationClass) throws EntityNotFoundException, BadEntityException {
         T mapped = (T) findMapper(dto.getClass())
                 .mapToEntity(dto, destinationClass);
-        for (DtoPostProcessor pp : postProcessors) {
+        for (DtoEntityPostProcessor pp : dtoEntityPostProcessors) {
             if (pp.supports(mapped.getClass(), dto.getClass())) {
                 pp.postProcessEntity(mapped, dto);
             }
@@ -34,15 +35,19 @@ public class DelegatingDtoMapper{
         this.delegates.add(delegate);
     }
 
-    public void registerPostProcessor(DtoPostProcessor postProcessor){
-        this.postProcessors.add(postProcessor);
+    public void registerDtoEntityPostProcessor(DtoEntityPostProcessor postProcessor){
+        this.dtoEntityPostProcessors.add(postProcessor);
+    }
+
+    public void registerEntityDtoPostProcessor(EntityDtoPostProcessor postProcessor){
+        this.entityDtoPostProcessors.add(postProcessor);
     }
 
     //@LogInteraction
     public <T> T mapToDto(IdentifiableEntity<?> source, Class<T> destinationClass) throws BadEntityException {
         T dto = (T) findMapper(destinationClass)
                 .mapToDto(source, destinationClass);
-        for (DtoPostProcessor pp : postProcessors) {
+        for (EntityDtoPostProcessor pp : entityDtoPostProcessors) {
             if (pp.supports(source.getClass(), dto.getClass())) {
                 pp.postProcessDto(dto, source);
             }

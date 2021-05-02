@@ -1,13 +1,12 @@
 package com.github.vincemann.springrapid.entityrelationship.controller.dtomapper;
 
 import com.github.vincemann.springrapid.core.controller.dto.mapper.DtoPostProcessor;
+import com.github.vincemann.springrapid.core.controller.dto.mapper.EntityDtoPostProcessor;
+import com.github.vincemann.springrapid.core.controller.dto.mapper.DtoEntityPostProcessor;
 import com.github.vincemann.springrapid.core.model.IdentifiableEntity;
 import com.github.vincemann.springrapid.core.service.exception.BadEntityException;
 import com.github.vincemann.springrapid.core.service.exception.EntityNotFoundException;
 import com.github.vincemann.springrapid.entityrelationship.dto.DirDto;
-import lombok.Getter;
-import lombok.Setter;
-import org.modelmapper.ModelMapper;
 import org.springframework.core.annotation.Order;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -22,7 +21,7 @@ import java.util.List;
  */
 @Order(1000)
 @Transactional
-public class IdResolvingDtoPostProcessor implements DtoPostProcessor<Object, IdentifiableEntity<?>> {
+public class IdResolvingDtoPostProcessor implements DtoPostProcessor<Object, IdentifiableEntity<?>>{
 
     private List<EntityIdResolver> entityIdResolvers;
 

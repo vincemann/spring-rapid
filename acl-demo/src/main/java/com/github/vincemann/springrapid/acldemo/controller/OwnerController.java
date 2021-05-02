@@ -25,7 +25,7 @@ public class OwnerController extends CrudController<Owner, Long, OwnerService> {
 
                 .withAllPrincipals()
                 .withAllRoles()
-                .forEndpoint(getCreateUrl(),CreateOwnerDto.class)
+                .forEndpoint(getCreateUrl(),Direction.REQUEST, CreateOwnerDto.class)
                 .forEndpoint(getCreateUrl(), Direction.RESPONSE, FullOwnerDto.class)
 
 

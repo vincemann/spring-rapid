@@ -2,6 +2,7 @@ package com.github.vincemann.springrapid.entityrelationship.config;
 
 import com.github.vincemann.springrapid.core.config.RapidCrudServiceLocatorAutoConfiguration;
 import com.github.vincemann.springrapid.core.config.RapidDtoMapperAutoConfiguration;
+import com.github.vincemann.springrapid.core.controller.dto.mapper.DtoEntityPostProcessor;
 import com.github.vincemann.springrapid.core.controller.dto.mapper.DtoPostProcessor;
 import com.github.vincemann.springrapid.core.controller.mergeUpdate.MergeUpdateStrategy;
 import com.github.vincemann.springrapid.core.service.locator.CrudServiceLocator;
@@ -58,7 +59,7 @@ public class RapidIdResolvingDtoMapperAutoConfiguration {
 
     @ConditionalOnMissingBean(name = "idResolvingDtoPostProcessor")
     @Bean
-    public DtoPostProcessor idResolvingDtoPostProcessor(List<EntityIdResolver> entityIdResolvers){
+    public IdResolvingDtoPostProcessor idResolvingDtoPostProcessor(List<EntityIdResolver> entityIdResolvers){
         return new IdResolvingDtoPostProcessor(entityIdResolvers);
     }
 

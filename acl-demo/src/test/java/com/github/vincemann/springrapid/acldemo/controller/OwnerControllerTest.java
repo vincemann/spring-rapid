@@ -26,8 +26,6 @@ public class OwnerControllerTest extends AbstractControllerIntegrationTest<Owner
 
 
     @Autowired
-    MyUserService userService;
-    @Autowired
     UserControllerTestTemplate userController;
 
 
