@@ -16,6 +16,7 @@ import org.checkerframework.common.aliasing.qual.Unique;
 import org.springframework.format.annotation.DateTimeFormat;
 
 import javax.persistence.*;
+import javax.validation.constraints.NotNull;
 import java.time.LocalDate;
 import java.util.Arrays;
 import java.util.HashSet;
@@ -57,6 +58,7 @@ public class Pet extends IdentifiableEntityImpl<Long> implements BiDirChild, Uni
     @BiDirChildCollection(Illness.class)
     private Set<Illness> illnesss = new HashSet<>();
 
+    @NotNull
     @ManyToOne
     @JoinColumn(name = "owner_id")
     @JsonBackReference

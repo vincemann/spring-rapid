@@ -10,6 +10,8 @@ import lombok.ToString;
 
 import javax.persistence.*;
 import javax.validation.constraints.Email;
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 import java.io.Serializable;
 import java.util.HashSet;
 import java.util.Set;
@@ -30,6 +32,8 @@ public class AbstractUser<ID extends Serializable>
 	protected String email;
 
 	// password
+	// @NotBlank gets checked by PasswordChecker
+	// todo change to use @Password Annotation
 	@JsonView(UserVerifyUtils.SignupInput.class)
 //	@Password(/*groups = {UserVerifyUtils.SignUpValidation.class, UserVerifyUtils.ChangeEmailValidation.class}*/)
 	@Column(nullable = false) // no length because it will be encrypted

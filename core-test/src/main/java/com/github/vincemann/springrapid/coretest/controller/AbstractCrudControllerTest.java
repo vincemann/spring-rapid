@@ -22,6 +22,7 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
+import org.springframework.test.web.servlet.RequestBuilder;
 import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
 import org.springframework.test.web.servlet.setup.DefaultMockMvcBuilder;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
@@ -32,6 +33,7 @@ import java.io.IOException;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 
 /**
@@ -83,6 +85,13 @@ public abstract class AbstractCrudControllerTest
     protected DefaultMockMvcBuilder createMvcBuilder() {
         return MockMvcBuilders.webAppContextSetup(wac)
                 .alwaysDo(print());
+    }
+
+
+    public <Dto> Dto perform2xx(RequestBuilder requestBuilder, Class<Dto> dtoClass) throws Exception {
+       return deserialize(getMvc().perform(requestBuilder)
+                .andExpect(status().is2xxSuccessful())
+                .andReturn().getResponse().getContentAsString(),dtoClass);
     }
 
 
