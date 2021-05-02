@@ -144,6 +144,9 @@ public class AbstractControllerIntegrationTest<C extends GenericCrudController<?
     protected OwnerService ownerService;
 
     @Autowired
+    protected MyUserService userService;
+
+    @Autowired
     protected RapidSecurityContext<RapidAuthenticatedPrincipal> securityContext;
 
 
@@ -337,5 +340,6 @@ public class AbstractControllerIntegrationTest<C extends GenericCrudController<?
         RapidTestUtil.clear(petTypeService);
         RapidTestUtil.clear(specialtyService);
         RapidTestUtil.clear(vetService);
+        RapidTestUtil.clear(userService);
     }
 }

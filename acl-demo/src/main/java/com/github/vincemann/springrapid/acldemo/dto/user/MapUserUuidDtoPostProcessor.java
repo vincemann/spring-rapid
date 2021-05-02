@@ -3,7 +3,7 @@ package com.github.vincemann.springrapid.acldemo.dto.user;
 import com.github.vincemann.springrapid.acldemo.model.User;
 import com.github.vincemann.springrapid.acldemo.model.abs.UserAwareEntity;
 import com.github.vincemann.springrapid.acldemo.service.MyUserService;
-import com.github.vincemann.springrapid.core.controller.dto.mapper.DtoPostProcessor;
+import com.github.vincemann.springrapid.core.controller.dto.mapper.DtoEntityPostProcessor;
 import com.github.vincemann.springrapid.core.service.exception.BadEntityException;
 import com.github.vincemann.springrapid.core.service.exception.EntityNotFoundException;
 import com.github.vincemann.springrapid.core.slicing.WebComponent;
@@ -13,7 +13,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.Optional;
 
 @WebComponent
-public class MapUserUuidDtoPostProcessor implements DtoPostProcessor<CreateUserDto, UserAwareEntity> {
+public class MapUserUuidDtoPostProcessor implements DtoEntityPostProcessor<CreateUserDto, UserAwareEntity> {
 
     private MyUserService userService;
 
@@ -24,12 +24,7 @@ public class MapUserUuidDtoPostProcessor implements DtoPostProcessor<CreateUserD
 
     @Override
     public boolean supports(Class<?> entityClazz, Class<?> dtoClass) {
-        return UserAwareEntity.class.isAssignableFrom(entityClazz) | CreateUserDto.class.isAssignableFrom(dtoClass);
-    }
-
-    @Override
-    public void postProcessDto(CreateUserDto createUserDto, UserAwareEntity entity) throws BadEntityException {
-
+        return UserAwareEntity.class.isAssignableFrom(entityClazz) || CreateUserDto.class.isAssignableFrom(dtoClass);
     }
 
     @Transactional
@@ -43,5 +38,6 @@ public class MapUserUuidDtoPostProcessor implements DtoPostProcessor<CreateUserD
         User user = byUuid.get();
         entity.setUser(user);
         user.setUuid(null);
+        userService.update(user,true);
     }
 }
