@@ -10,9 +10,9 @@ import java.io.Serializable;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 
-public class UserUrlParamIdControllerIntegrationTest
-        <C extends AbstractUserController<?,Id,?>, Id extends Serializable>
-                extends AbstractIntegrationControllerTest<C, Id, AbstractUserControllerTestTemplate<C,Id>> {
+public abstract class AbstractUserIntegrationControllerTest
+        <C extends AbstractUserController, T extends AbstractUserControllerTestTemplate>
+                extends AbstractIntegrationControllerTest<C,AbstractUserControllerTestTemplate> {
 
     public MockHttpServletRequestBuilder signup(Object dto) throws Exception{
         return getTestTemplate().signup(dto);
@@ -22,11 +22,6 @@ public class UserUrlParamIdControllerIntegrationTest
         return getTestTemplate().login(loginDto);
     }
 
-
-    @Override
-    public AbstractUserControllerTestTemplate<C, Id> createTestTemplate() {
-        return new AbstractUserControllerTestTemplate<>(getController());
-    }
 
 
 

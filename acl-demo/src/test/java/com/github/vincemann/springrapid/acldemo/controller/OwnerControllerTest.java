@@ -39,7 +39,7 @@ public class OwnerControllerTest extends AbstractControllerIntegrationTest<Owner
                 .email(OWNER_KAHN_EMAIL)
                 .password(OWNER_KAHN_PASSWORD)
                 .build();
-        UUIDSignupResponseDto signedUpDto = deserialize(getMockMvc().perform(userControllerTestTemplate.signup(signupDto))
+        UUIDSignupResponseDto signedUpDto = deserialize(getMvc().perform(userControllerTestTemplate.signup(signupDto))
                 .andExpect(status().is2xxSuccessful())
                 .andReturn().getResponse().getContentAsString(), UUIDSignupResponseDto.class);
         String uuid = signedUpDto.getUuid();
@@ -51,7 +51,7 @@ public class OwnerControllerTest extends AbstractControllerIntegrationTest<Owner
 
 
         CreateOwnerDto createOwnerDto = new CreateOwnerDto(kahn,uuid);
-        FullOwnerDto createdDto = deserialize(getMockMvc().perform(create(createOwnerDto))
+        FullOwnerDto createdDto = deserialize(getMvc().perform(create(createOwnerDto))
                 .andExpect(status().is2xxSuccessful())
                 .andReturn().getResponse().getContentAsString(), FullOwnerDto.class);
 
