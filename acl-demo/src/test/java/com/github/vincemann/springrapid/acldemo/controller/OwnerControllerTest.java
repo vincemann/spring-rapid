@@ -25,10 +25,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 public class OwnerControllerTest extends AbstractControllerIntegrationTest<OwnerController, OwnerService> {
 
 
-    @Autowired
-    UserControllerTestTemplate userController;
-
-
 
 
     @Test
@@ -37,9 +33,7 @@ public class OwnerControllerTest extends AbstractControllerIntegrationTest<Owner
                 .email(OWNER_KAHN_EMAIL)
                 .password(OWNER_KAHN_PASSWORD)
                 .build();
-        UUIDSignupResponseDto signedUpDto = deserialize(getMvc().perform(userController.signup(signupDto))
-                .andExpect(status().is2xxSuccessful())
-                .andReturn().getResponse().getContentAsString(), UUIDSignupResponseDto.class);
+        UUIDSignupResponseDto signedUpDto = perform2xx(userController.signup(signupDto),UUIDSignupResponseDto.class);
         String uuid = signedUpDto.getUuid();
         Assertions.assertNotNull(uuid);
 
@@ -49,9 +43,7 @@ public class OwnerControllerTest extends AbstractControllerIntegrationTest<Owner
 
 
         CreateOwnerDto createOwnerDto = new CreateOwnerDto(kahn,uuid);
-        FullOwnerDto createdDto = deserialize(getMvc().perform(create(createOwnerDto))
-                .andExpect(status().is2xxSuccessful())
-                .andReturn().getResponse().getContentAsString(), FullOwnerDto.class);
+        FullOwnerDto createdDto = perform2xx(create(createOwnerDto),FullOwnerDto.class);
 
         compare(createdDto).with(createdDto)
                 .properties()
@@ -70,7 +62,7 @@ public class OwnerControllerTest extends AbstractControllerIntegrationTest<Owner
         propertyAssert(dbUserKahn)
                 .assertContains(dbUserKahn::getRoles, MyRoles.OWNER, AuthRoles.UNVERIFIED, AuthRoles.USER)
                 .assertSize(dbUserKahn::getRoles,3)
-                .assertEquals(dbUserKahn::getEmail,OWNER_MEIER_EMAIL)
+                .assertEquals(dbUserKahn::getEmail,OWNER_KAHN_EMAIL)
                 .assertNotNull(dbUserKahn::getPassword)
                 .assertNull(dbUserKahn::getUuid);
 
@@ -81,7 +73,18 @@ public class OwnerControllerTest extends AbstractControllerIntegrationTest<Owner
 
         Assertions.assertEquals(dbUserKahn,dbKahn.getUser());
 
+    }
+
+    @Test
+    public void canSavePetsToOwnAccount() throws Exception {
+        Owner dbOwner = registerOwner(kahn, OWNER_KAHN_EMAIL, OWNER_KAHN_PASSWORD);
+        userController.login(kahn.getUser());
+
 
     }
+
+
+
+
 
 }

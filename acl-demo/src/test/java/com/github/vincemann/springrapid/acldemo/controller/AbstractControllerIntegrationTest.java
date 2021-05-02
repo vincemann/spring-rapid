@@ -1,8 +1,13 @@
 package com.github.vincemann.springrapid.acldemo.controller;
 
+import com.github.vincemann.springrapid.acldemo.dto.owner.CreateOwnerDto;
+import com.github.vincemann.springrapid.acldemo.dto.owner.FullOwnerDto;
+import com.github.vincemann.springrapid.acldemo.dto.user.UUIDSignupResponseDto;
 import com.github.vincemann.springrapid.acldemo.model.*;
 import com.github.vincemann.springrapid.acldemo.repositories.*;
 import com.github.vincemann.springrapid.acldemo.service.*;
+import com.github.vincemann.springrapid.auth.domain.dto.SignupDto;
+import com.github.vincemann.springrapid.authtest.controller.template.UserControllerTestTemplate;
 import com.github.vincemann.springrapid.core.controller.GenericCrudController;
 import com.github.vincemann.springrapid.core.security.RapidAuthenticatedPrincipal;
 import com.github.vincemann.springrapid.core.security.RapidSecurityContext;
@@ -145,6 +150,10 @@ public class AbstractControllerIntegrationTest<C extends GenericCrudController<?
 
     @Autowired
     protected MyUserService userService;
+
+    @Autowired
+    protected UserControllerTestTemplate userController;
+
 
     @Autowired
     protected RapidSecurityContext<RapidAuthenticatedPrincipal> securityContext;
@@ -330,6 +339,19 @@ public class AbstractControllerIntegrationTest<C extends GenericCrudController<?
         Assertions.assertEquals(owner, pet.getOwner());
     }
 
+
+    protected Owner registerOwner(Owner owner, String email, String password) throws Exception {
+        SignupDto signupDto = SignupDto.builder()
+                .email(OWNER_KAHN_EMAIL)
+                .password(OWNER_KAHN_PASSWORD)
+                .build();
+        UUIDSignupResponseDto signedUpDto = perform2xx(userController.signup(signupDto),UUIDSignupResponseDto.class);
+        String uuid = signedUpDto.getUuid();
+
+        CreateOwnerDto createOwnerDto = new CreateOwnerDto(kahn,uuid);
+        FullOwnerDto fullOwnerDto = perform2xx(create(createOwnerDto), FullOwnerDto.class);
+        return ownerService.findById(fullOwnerDto.getId()).get();
+    }
 
     @AfterEach
     void tearDown() {

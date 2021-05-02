@@ -32,7 +32,7 @@ public class OwnerServiceConfig {
     @Secured
     @Bean
     public OwnerService securedOwnerService(@Acl OwnerService ownerService){
-        // SimpleSecurityExtension will be added automatically by RapidSecuredProxyDefaultSecurityExtensionAutoConfiguration
+        // CrudAclChecksSecurityExtension will be added automatically by RapidSecuredProxyDefaultSecurityExtensionAutoConfiguration
         return new ServiceExtensionProxyBuilder<>(ownerService).build();
     }
 
