@@ -30,7 +30,7 @@ public class SpecialtyControllerIntegrationTest extends AbstractControllerIntegr
         SpecialtyDto createGastroDto = new SpecialtyDto(gastro);
         createGastroDto.setVetIds(new HashSet<>(Lists.newArrayList(savedVetMax.getId(),savedVetPoldi.getId())));
 
-        MvcResult result = getMockMvc().perform(create(createGastroDto))
+        MvcResult result = getMvc().perform(create(createGastroDto))
                 .andExpect(status().isOk())
                 .andReturn();
         String json = result.getResponse().getContentAsString();
@@ -80,7 +80,7 @@ public class SpecialtyControllerIntegrationTest extends AbstractControllerIntegr
         String removeVetDiCaprioJson = createUpdateJsonLine("remove", "/vetIds",savedVetDiCaprio.getId().toString());
         String updateJson = createUpdateJsonRequest(removeVetPoldiJson,removeVetDiCaprioJson);
 
-        SpecialtyDto responseDto = deserialize(getMockMvc().perform(update(updateJson, savedGastro.getId()))
+        SpecialtyDto responseDto = deserialize(getMvc().perform(update(updateJson, savedGastro.getId()))
                 .andReturn().getResponse().getContentAsString(), SpecialtyDto.class);
         Assertions.assertTrue(responseDto.getVetIds().contains(savedMaier.getId()));
         Assertions.assertEquals(1,responseDto.getVetIds().size());
@@ -116,7 +116,7 @@ public class SpecialtyControllerIntegrationTest extends AbstractControllerIntegr
         String addVetDiCaprioJson = createUpdateJsonLine("add", "/vetIds/-",savedVetDiCaprio.getId().toString());
         String updateJson = createUpdateJsonRequest(addVetPoldiJson,addVetDiCaprioJson);
 
-        SpecialtyDto responseDto = deserialize(getMockMvc().perform(update(updateJson, savedDentism.getId()))
+        SpecialtyDto responseDto = deserialize(getMvc().perform(update(updateJson, savedDentism.getId()))
                 .andReturn().getResponse().getContentAsString(), SpecialtyDto.class);
         Assertions.assertTrue(responseDto.getVetIds().contains(savedVetPoldi.getId()));
         Assertions.assertTrue(responseDto.getVetIds().contains(savedVetDiCaprio.getId()));
@@ -154,7 +154,7 @@ public class SpecialtyControllerIntegrationTest extends AbstractControllerIntegr
         String addVetMaxJson = createUpdateJsonLine("add", "/vetIds/-",savedMaier.getId().toString());
         String updateJson = createUpdateJsonRequest(removeVetDiCaprioJson,addVetPoldiJson,addVetMaxJson);
 
-        SpecialtyDto responseDto = deserialize(getMockMvc().perform(update(updateJson, savedDentism.getId()))
+        SpecialtyDto responseDto = deserialize(getMvc().perform(update(updateJson, savedDentism.getId()))
                 .andReturn().getResponse().getContentAsString(), SpecialtyDto.class);
         Assertions.assertTrue(responseDto.getVetIds().contains(savedVetPoldi.getId()));
         Assertions.assertTrue(responseDto.getVetIds().contains(savedMaier.getId()));
@@ -182,7 +182,7 @@ public class SpecialtyControllerIntegrationTest extends AbstractControllerIntegr
         SpecialtyDto savedGastro = createSpecialtyLinkedToVets(gastro, savedVetPoldi, savedMaier, savedVetDiCaprio);
         createSpecialtyLinkedToVets(heart, savedVetPoldi,savedMaier);
 
-        getMockMvc().perform(delete(savedGastro.getId()))
+        getMvc().perform(delete(savedGastro.getId()))
                 .andExpect(status().is2xxSuccessful());
 
         Assertions.assertFalse(specialtyRepository.findByDescription(GASTRO).isPresent());
@@ -200,7 +200,7 @@ public class SpecialtyControllerIntegrationTest extends AbstractControllerIntegr
                 Arrays.stream(vets)
                         .map(IdentifiableEntityImpl::getId)
                         .collect(Collectors.toList())));
-        String json = getMockMvc().perform(create(createSpecialtyDto))
+        String json = getMvc().perform(create(createSpecialtyDto))
                 .andExpect(status().isOk())
                 .andReturn().getResponse().getContentAsString();
         return deserialize(json,SpecialtyDto.class);

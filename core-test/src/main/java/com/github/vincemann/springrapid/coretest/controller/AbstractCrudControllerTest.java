@@ -54,7 +54,7 @@ public abstract class AbstractCrudControllerTest
 {
 
 
-    private MockMvc mockMvc;
+    protected MockMvc mvc;
     private MediaType contentType;
     private C controller;
     @Autowired
@@ -87,7 +87,7 @@ public abstract class AbstractCrudControllerTest
     protected void setupTestTemplate(){
         DefaultMockMvcBuilder mvcBuilder = createMvcBuilder();
         this.contentType = MediaType.valueOf(controller.getCoreProperties().getController().getMediaType());
-        mockMvc = mvcBuilder.build();
+        mvc = mvcBuilder.build();
     }
 
 

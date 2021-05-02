@@ -48,6 +48,6 @@ import java.io.Serializable;
         initializers = ConfigFileApplicationContextInitializer.class
 )
 public abstract class AbstractAutoMockCrudControllerTest
-        <C extends GenericCrudController<?, ?, ?, ?, ?>,T extends AbstractCrudControllerTestTemplate>
+        <C extends GenericCrudController,T extends AbstractCrudControllerTestTemplate>
                 extends AbstractCrudControllerTest<C,T> {
 }

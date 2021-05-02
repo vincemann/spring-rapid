@@ -9,8 +9,7 @@ import com.github.vincemann.springrapid.auth.domain.AbstractUserRepository;
 import com.github.vincemann.springrapid.auth.domain.AuthRoles;
 import com.github.vincemann.springrapid.auth.mail.MailSender;
 import com.github.vincemann.springrapid.auth.service.UserService;
-import com.github.vincemann.springrapid.authtest.controller.UserUrlParamIdControllerIntegrationTest;
-import com.github.vincemann.springrapid.authtest.controller.login.AuthITLoginTemplate;
+import com.github.vincemann.springrapid.authtest.controller.UserIntegrationControllerTest;
 import com.github.vincemann.springrapid.authtest.controller.template.LoginDto;
 import com.github.vincemann.springrapid.authtests.adapter.AuthTestAdapter;
 import com.github.vincemann.springrapid.core.CoreProperties;
@@ -43,8 +42,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 
 
-//@AutoConfigureMockMvc
-//@AutoConfigureTestDatabase(connection = EmbeddedDatabaseConnection.HSQL)
 //see application-dev.yml config for expected database config
 //@Sql({"/test-data/resetTestData.sql"})
 
@@ -58,13 +55,11 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 //        "logging.level.org.springframework=ERROR",
         "lemon.recaptcha.sitekey="
 })
-//activate everything for full integration tests
-//@ActiveProfiles(value = {RapidProfiles.WEB, RapidProfiles.SERVICE, RapidTestProfiles.TEST, RapidTestProfiles.WEB_TEST, RapidTestProfiles.SERVICE_TEST})
 @ImportAutoConfiguration(exclude = RapidAdminAutoConfiguration.class)
 @Getter
 @Slf4j
 public abstract class AbstractRapidAuthTest
-        extends UserUrlParamIdControllerIntegrationTest<AbstractUserController<?,Long,?>,Long> {
+        extends UserIntegrationControllerTest<AbstractUserController> {
 
     protected static final String ADMIN_EMAIL = "admin@example.com";
     protected static final String ADMIN_PASSWORD = "adminAdmin1!";
@@ -85,8 +80,6 @@ public abstract class AbstractRapidAuthTest
     protected static final String BLOCKED_USER_PASSWORD = "SanjaySanjay99!blocked";
 
     protected static String UNKNOWN_USER_ID = "99";
-
-//    private static boolean initialized = false;
 
     @Autowired
     @Acl
@@ -110,18 +103,11 @@ public abstract class AbstractRapidAuthTest
     @SpyBean
     protected AuthProperties properties;
 
-    @Autowired
-    protected AuthITLoginTemplate loginTemplate;
-
     @SpyBean
     protected CoreProperties coreProperties;
 
     protected AuthProperties.Jwt jwt;
 
-//    @Autowired
-//    protected WebApplicationContext context;
-
-    protected MockMvc mvc;
     protected Map<Long, String> tokens = new HashMap<>(6);
 
     private AbstractUser<Long> admin;
@@ -140,8 +126,6 @@ public abstract class AbstractRapidAuthTest
     @BeforeEach
     protected void setup() throws Exception {
         super.setupTestTemplate();
-        this.mvc=getMockMvc();
-        loginTemplate.setMvc(getMockMvc());
         System.err.println("creating test users");
         createTestUsers();
         System.err.println("test users created");
@@ -199,8 +183,8 @@ public abstract class AbstractRapidAuthTest
         tokens.put(getBlockedUser().getId(), successful_login(BLOCKED_USER_EMAIL, BLOCKED_USER_PASSWORD));
     }
 
-    protected ResultActions login(String email, String password){
-        return loginTemplate.login(new LoginDto(email,password));
+    protected ResultActions login(String email, String password) throws Exception {
+        return mvc.perform(login(new LoginDto(email,password)));
     }
 
     protected String successful_login(String email, String password) throws Exception {

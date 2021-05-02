@@ -6,7 +6,6 @@ import com.github.vincemann.springrapid.core.security.RapidSecurityContext;
 import com.github.vincemann.springrapid.core.service.locator.CrudServiceLocator;
 import com.github.vincemann.springrapid.core.util.ResourceUtils;
 import com.github.vincemann.springrapid.coretest.TestPrincipal;
-import com.github.vincemann.springrapid.coretest.controller.automock.AbstractAutoMockCrudControllerTest;
 import com.github.vincemann.springrapid.coredemo.dtos.owner.CreateOwnerDto;
 import com.github.vincemann.springrapid.coredemo.dtos.owner.ReadForeignOwnerDto;
 import com.github.vincemann.springrapid.coredemo.dtos.owner.ReadOwnOwnerDto;
@@ -128,7 +127,7 @@ public class MockServiceOwnerControllerTest
         String readOwnerDtoJson = serialize(readForeignOwnerDto);
         when(ownerService.save(refEq(owner, "id"))).thenReturn(owner);
 
-        getMockMvc().perform(create(createOwnerDto))
+        getMvc().perform(create(createOwnerDto))
                 .andExpect(status().isOk())
                 .andExpect(content().json(readOwnerDtoJson));
 
@@ -138,7 +137,7 @@ public class MockServiceOwnerControllerTest
 
     @Test
     public void canDeleteOwner() throws Exception {
-        getMockMvc().perform(delete(owner.getId()))
+        getMvc().perform(delete(owner.getId()))
                 .andExpect(status().is2xxSuccessful());
         Mockito.verify(ownerService).deleteById(owner.getId());
     }
@@ -149,7 +148,7 @@ public class MockServiceOwnerControllerTest
         when(ownerService.findById(owner.getId())).thenReturn(Optional.of(owner));
         String readDtoJson = serialize(readForeignOwnerDto);
 
-        getMockMvc().perform(find(owner.getId()))
+        getMvc().perform(find(owner.getId()))
                 .andExpect(status().isOk())
                 .andExpect(content().json(readDtoJson));
         Mockito.verify(ownerService).findById(owner.getId());
@@ -162,7 +161,7 @@ public class MockServiceOwnerControllerTest
         when(ownerService.findById(owner.getId())).thenReturn(Optional.of(owner));
         String readDtoJson = serialize(readOwnOwnerDto);
 
-        getMockMvc().perform(find(owner.getId()))
+        getMvc().perform(find(owner.getId()))
                 .andExpect(status().isOk())
                 .andExpect(content().json(readDtoJson));
         Mockito.verify(ownerService).findById(owner.getId());
@@ -183,7 +182,7 @@ public class MockServiceOwnerControllerTest
         when(ownerService.update(any(Owner.class), eq(true))).thenReturn(ownerPatch);
 
         //when
-        getMockMvc().perform(update(addressPatch, owner.getId()))
+        getMvc().perform(update(addressPatch, owner.getId()))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.address").value(updatedAddress));
 
@@ -198,7 +197,7 @@ public class MockServiceOwnerControllerTest
         ownerPatch.setCity(null);
         when(ownerService.findById(owner.getId()))
                 .thenReturn(Optional.of(owner));
-        getMockMvc().perform(update(blankCityPatch, owner.getId()))
+        getMvc().perform(update(blankCityPatch, owner.getId()))
                 .andExpect(status().isBadRequest());
 
 
@@ -224,7 +223,7 @@ public class MockServiceOwnerControllerTest
         when(ownerService.update(refEq(ownerPatch), eq(true)))
                 .thenReturn(ownerPatch);
 
-        getMockMvc().perform(update(addPetPatch, owner.getId()))
+        getMvc().perform(update(addPetPatch, owner.getId()))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.petIds[0]").value(petId));
 
