@@ -23,11 +23,6 @@ public class IntegrationCrudControllerTest
         this.securityContext = securityContext;
     }
 
-    @Override
-    public void injectController(C controller) {
-        super.injectController(controller);
-    }
-
     @Autowired
     public void injectService(S service) {
         this.service = service;

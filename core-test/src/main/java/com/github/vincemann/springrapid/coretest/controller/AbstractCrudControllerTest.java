@@ -70,6 +70,9 @@ public abstract class AbstractCrudControllerTest
     @Override
     public void afterPropertiesSet() throws Exception {
         this.getTestTemplate().setController(controller);
+        DefaultMockMvcBuilder mvcBuilder = createMvcBuilder();
+        this.contentType = MediaType.valueOf(controller.getCoreProperties().getController().getMediaType());
+        mvc = mvcBuilder.build();
     }
 
     @Autowired
@@ -82,13 +85,6 @@ public abstract class AbstractCrudControllerTest
                 .alwaysDo(print());
     }
 
-
-    @BeforeEach
-    protected void setupTestTemplate(){
-        DefaultMockMvcBuilder mvcBuilder = createMvcBuilder();
-        this.contentType = MediaType.valueOf(controller.getCoreProperties().getController().getMediaType());
-        mvc = mvcBuilder.build();
-    }
 
 
 

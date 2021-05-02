@@ -30,7 +30,13 @@ public class AbstractControllerIntegrationTest<C extends GenericCrudController<?
     protected final Pet PetType = new Pet();
     protected final Illness IllnessType = new Illness();
 
+
     protected static final String EMAIL_SUFFIX = "@guerilla-mail.com";
+
+    // admin created via AdminInitializer, see config
+    protected static final String ADMIN = "admin";
+    protected static final String ADMIN_PASSWORD = "admin12345!";
+    protected static final String ADMIN_EMAIL = "admin@example.com";
 
     protected static final String VET_MAX = "Max";
     protected static final String VET_MAX_PASSWORD = "Maxpassword123?";

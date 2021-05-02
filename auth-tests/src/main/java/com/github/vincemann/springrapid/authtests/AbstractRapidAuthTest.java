@@ -125,7 +125,6 @@ public abstract class AbstractRapidAuthTest
 
     @BeforeEach
     protected void setup() throws Exception {
-        super.setupTestTemplate();
         System.err.println("creating test users");
         createTestUsers();
         System.err.println("test users created");
