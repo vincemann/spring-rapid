@@ -13,6 +13,7 @@ import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.context.MessageSource;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.support.ReloadableResourceBundleMessageSource;
 
 import javax.persistence.EntityManager;
 
@@ -28,9 +29,20 @@ public class RapidGeneralAutoConfiguration {
 
     }
 
+    // https://www.baeldung.com/spring-custom-validation-message-source
     @Bean
-    public Message messageUtils(MessageSource messageSource){
-        return new Message(messageSource);
+    public MessageSource messageSource() {
+        ReloadableResourceBundleMessageSource messageSource
+                = new ReloadableResourceBundleMessageSource();
+
+        messageSource.setBasename("classpath:messages");
+        messageSource.setDefaultEncoding("UTF-8");
+        return messageSource;
+    }
+
+    @Bean
+    public Message messageUtils(){
+        return new Message(messageSource());
     }
 
     @Bean

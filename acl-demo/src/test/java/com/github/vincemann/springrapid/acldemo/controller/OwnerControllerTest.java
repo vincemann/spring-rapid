@@ -28,7 +28,7 @@ public class OwnerControllerTest extends AbstractControllerIntegrationTest<Owner
     @Autowired
     MyUserService userService;
     @Autowired
-    UserControllerTestTemplate userControllerTestTemplate;
+    UserControllerTestTemplate userController;
 
 
 
@@ -39,7 +39,7 @@ public class OwnerControllerTest extends AbstractControllerIntegrationTest<Owner
                 .email(OWNER_KAHN_EMAIL)
                 .password(OWNER_KAHN_PASSWORD)
                 .build();
-        UUIDSignupResponseDto signedUpDto = deserialize(getMvc().perform(userControllerTestTemplate.signup(signupDto))
+        UUIDSignupResponseDto signedUpDto = deserialize(getMvc().perform(userController.signup(signupDto))
                 .andExpect(status().is2xxSuccessful())
                 .andReturn().getResponse().getContentAsString(), UUIDSignupResponseDto.class);
         String uuid = signedUpDto.getUuid();
