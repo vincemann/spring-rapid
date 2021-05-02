@@ -22,7 +22,7 @@ import java.util.Optional;
 import java.util.Set;
 
 public class AbstractControllerIntegrationTest<C extends GenericCrudController<?,Long,S,?,?>,S extends CrudService<?,Long>>
-        extends IntegrationCrudControllerTest<C,Long,S>
+        extends IntegrationCrudControllerTest<C,S>
 {
 
     //Types

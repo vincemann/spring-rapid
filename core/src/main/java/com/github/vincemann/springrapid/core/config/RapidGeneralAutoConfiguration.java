@@ -29,20 +29,20 @@ public class RapidGeneralAutoConfiguration {
 
     }
 
-    // https://www.baeldung.com/spring-custom-validation-message-source
-    @Bean
-    public MessageSource messageSource() {
-        ReloadableResourceBundleMessageSource messageSource
-                = new ReloadableResourceBundleMessageSource();
+    // is already autodefined by spring, dont override by redefining
+//    @Bean
+//    public MessageSource messageSource() {
+//        ReloadableResourceBundleMessageSource messageSource
+//                = new ReloadableResourceBundleMessageSource();
+//
+//        messageSource.setBasename("classpath:messages");
+//        messageSource.setDefaultEncoding("UTF-8");
+//        return messageSource;
+//    }
 
-        messageSource.setBasename("classpath:messages");
-        messageSource.setDefaultEncoding("UTF-8");
-        return messageSource;
-    }
-
     @Bean
-    public Message messageUtils(){
-        return new Message(messageSource());
+    public Message messageUtils(MessageSource messageSource){
+        return new Message(messageSource);
     }
 
     @Bean
