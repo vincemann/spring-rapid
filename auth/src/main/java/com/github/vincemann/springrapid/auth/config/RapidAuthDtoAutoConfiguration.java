@@ -1,6 +1,6 @@
 package com.github.vincemann.springrapid.auth.config;
 
-import com.github.vincemann.springrapid.auth.controller.dtoMapper.AbstractUserDtoPostProcessor;
+import com.github.vincemann.springrapid.auth.controller.dtoMapper.UserDtoPostProcessor;
 import com.github.vincemann.springrapid.core.config.RapidDtoMapperAutoConfiguration;
 import com.github.vincemann.springrapid.core.controller.dto.mapper.DtoPostProcessor;
 import com.github.vincemann.springrapid.core.slicing.WebConfig;
@@ -13,9 +13,9 @@ import org.springframework.context.annotation.Bean;
 public class RapidAuthDtoAutoConfiguration {
 
     @Bean
-    @ConditionalOnMissingBean(AbstractUserDtoPostProcessor.class)
-    public DtoPostProcessor abstractUserDtoPostProcessor(){
-        return new AbstractUserDtoPostProcessor();
+    @ConditionalOnMissingBean(UserDtoPostProcessor.class)
+    public UserDtoPostProcessor userDtoPostProcessor(){
+        return new UserDtoPostProcessor();
     }
 
 

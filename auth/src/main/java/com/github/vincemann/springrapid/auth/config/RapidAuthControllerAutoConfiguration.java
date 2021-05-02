@@ -24,8 +24,8 @@ public class RapidAuthControllerAutoConfiguration {
     }
 
     @Bean
-    @ConditionalOnMissingBean(name = "createdByOwnerLocator")
-    public OwnerLocator createdByOwnerLocator(){
+    @ConditionalOnMissingBean(name = "ownerLocator")
+    public OwnerLocator ownerLocator(){
         return new AuditingEntityOwnerLocator();
     }
 

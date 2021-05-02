@@ -7,7 +7,7 @@ import com.github.vincemann.springrapid.core.service.exception.BadEntityExceptio
 import org.springframework.core.annotation.Order;
 
 @Order(value = 999)
-public class AbstractUserDtoPostProcessor implements DtoPostProcessor<AbstractFindRapidUserDto, AbstractUser<?>> {
+public class UserDtoPostProcessor implements DtoPostProcessor<AbstractFindRapidUserDto, AbstractUser<?>> {
 
     @Override
     public boolean supports(Class<?> entityClazz, Class<?> dtoClass) {

@@ -70,7 +70,7 @@ public class RapidCommonsWebAutoConfiguration {
 	@Bean
 	@ConditionalOnProperty(name="lemon.cors.allowed-origins")
 	@ConditionalOnMissingBean(CorsConfigurationSource.class)
-	public RapidCorsConfigurationSource corsConfigurationSource(AuthProperties properties) {
+	public CorsConfigurationSource corsConfigurationSource(AuthProperties properties) {
 		return new RapidCorsConfigurationSource(properties);
 	}
 	

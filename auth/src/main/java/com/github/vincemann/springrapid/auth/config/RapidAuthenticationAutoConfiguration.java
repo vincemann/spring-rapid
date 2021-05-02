@@ -61,7 +61,7 @@ public class RapidAuthenticationAutoConfiguration {
      */
     @Bean
     @ConditionalOnMissingBean(RapidWebSecurityConfig.class)
-    public RapidWebSecurityConfig lemonWebSecurityConfig() {
+    public RapidWebSecurityConfig rapidWebSecurityConfig() {
         return new RapidWebSecurityConfig();
     }
 

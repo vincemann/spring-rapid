@@ -23,7 +23,7 @@ public class RapidAuthGeneralAutoConfiguration {
     @ConfigurationProperties(prefix="rapid-auth")
     @ConditionalOnMissingBean(AuthProperties.class)
     @Bean
-    public AuthProperties rapidAuthProperties(CoreProperties coreProperties) {
+    public AuthProperties authProperties(CoreProperties coreProperties) {
         return new AuthProperties(coreProperties);
     }
 

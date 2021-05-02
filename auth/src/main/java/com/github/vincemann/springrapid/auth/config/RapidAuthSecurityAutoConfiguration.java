@@ -45,7 +45,7 @@ public class RapidAuthSecurityAutoConfiguration {
 
     @Bean
     @ConditionalOnMissingBean(RapidAuthSecurityContextChecker.class)
-    public RapidAuthSecurityContextChecker lemonSecurityContextChecker(){
+    public RapidAuthSecurityContextChecker rapidAuthSecurityContextChecker(){
         return new RapidAuthSecurityContextChecker();
     }
 }
