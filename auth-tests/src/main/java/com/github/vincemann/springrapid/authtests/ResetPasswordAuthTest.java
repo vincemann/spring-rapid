@@ -1,7 +1,7 @@
 package com.github.vincemann.springrapid.authtests;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.github.vincemann.springrapid.auth.domain.dto.ResetPasswordForm;
+import com.github.vincemann.springrapid.auth.domain.dto.ResetPasswordDto;
 import com.github.vincemann.springrapid.auth.service.AbstractUserService;
 import com.github.vincemann.springrapid.auth.service.token.JweTokenService;
 import com.github.vincemann.springrapid.auth.util.RapidJwt;
@@ -20,7 +20,7 @@ public class ResetPasswordAuthTest extends AbstractRapidAuthTest {
 
     final String NEW_PASSWORD = "newPassword123!";
 
-    private String forgotPasswordCode;
+    private String adminForgotPasswordCode;
 
     @Autowired
     private JweTokenService jweTokenService;
@@ -28,7 +28,7 @@ public class ResetPasswordAuthTest extends AbstractRapidAuthTest {
     @BeforeEach
     public void setup() throws Exception {
         super.setup();
-        forgotPasswordCode = jweTokenService.createToken(
+        adminForgotPasswordCode = jweTokenService.createToken(
                 RapidJwt.create(AbstractUserService.FORGOT_PASSWORD_AUDIENCE, ADMIN_EMAIL, 60000L)
         );
     }
@@ -40,7 +40,7 @@ public class ResetPasswordAuthTest extends AbstractRapidAuthTest {
 
         mvc.perform(post(authProperties.getController().getResetPasswordUrl())
                 .contentType(MediaType.APPLICATION_JSON)
-                .content(form(forgotPasswordCode, NEW_PASSWORD)))
+                .content(form(adminForgotPasswordCode, NEW_PASSWORD)))
                 .andExpect(status().is(200))
                 .andExpect(header().string(HttpHeaders.AUTHORIZATION, containsString(".")))
                 .andExpect(jsonPath("$.id").value(getAdmin().getId()));
@@ -51,7 +51,7 @@ public class ResetPasswordAuthTest extends AbstractRapidAuthTest {
         // Repeating shouldn't work
         mvc.perform(post(authProperties.getController().getResetPasswordUrl())
                 .contentType(MediaType.APPLICATION_JSON)
-                .content(form(forgotPasswordCode, NEW_PASSWORD)))
+                .content(form(adminForgotPasswordCode, NEW_PASSWORD)))
                 .andExpect(status().is(403));
     }
 
@@ -67,19 +67,19 @@ public class ResetPasswordAuthTest extends AbstractRapidAuthTest {
         // Blank password
         mvc.perform(post(authProperties.getController().getResetPasswordUrl())
                 .contentType(MediaType.APPLICATION_JSON)
-                .content(form(forgotPasswordCode, "")))
+                .content(form(adminForgotPasswordCode, "")))
                 .andExpect(status().is(400));
 
         // Invalid password
         mvc.perform(post(authProperties.getController().getResetPasswordUrl())
                 .contentType(MediaType.APPLICATION_JSON)
-                .content(form(forgotPasswordCode, "abc")))
+                .content(form(adminForgotPasswordCode, "abc")))
                 .andExpect(status().is(400));
     }
 
     private String form(String code, String newPassword) throws JsonProcessingException {
 
-        ResetPasswordForm form = new ResetPasswordForm();
+        ResetPasswordDto form = new ResetPasswordDto();
         form.setCode(code);
         form.setNewPassword(newPassword);
 

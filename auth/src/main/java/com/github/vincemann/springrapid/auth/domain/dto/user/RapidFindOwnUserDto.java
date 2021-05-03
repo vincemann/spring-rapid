@@ -11,10 +11,10 @@ import java.util.Set;
 /**
  * Does not contain password
  */
-public class FindRapidUserDto extends AbstractFindRapidUserDto {
+public class RapidFindOwnUserDto extends AbstractFindRapidUserDto {
 
     @Builder
-    public FindRapidUserDto(String email, Set<String> roles, String id) {
+    public RapidFindOwnUserDto(String email, Set<String> roles, String id) {
         super(email, roles,id);
     }
 }

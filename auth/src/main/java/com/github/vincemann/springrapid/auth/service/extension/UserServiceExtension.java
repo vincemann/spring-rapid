@@ -2,19 +2,15 @@ package com.github.vincemann.springrapid.auth.service.extension;
 
 import com.github.vincemann.springrapid.auth.AuthProperties;
 import com.github.vincemann.springrapid.auth.domain.AbstractUser;
-import com.github.vincemann.springrapid.auth.domain.dto.ChangePasswordForm;
+import com.github.vincemann.springrapid.auth.domain.dto.ChangePasswordDto;
 import com.github.vincemann.springrapid.auth.domain.dto.RequestEmailChangeForm;
-import com.github.vincemann.springrapid.auth.domain.dto.ResetPasswordForm;
+import com.github.vincemann.springrapid.auth.domain.dto.ResetPasswordDto;
 import com.github.vincemann.springrapid.auth.service.AlreadyRegisteredException;
 import com.github.vincemann.springrapid.auth.service.UserService;
-import com.github.vincemann.springrapid.auth.service.token.BadTokenException;
 import com.github.vincemann.springrapid.core.proxy.CrudServiceExtension;
 import com.github.vincemann.springrapid.core.service.exception.BadEntityException;
 import com.github.vincemann.springrapid.core.service.exception.EntityNotFoundException;
 
-import javax.validation.Valid;
-import javax.validation.constraints.Email;
-import javax.validation.constraints.NotBlank;
 import java.io.Serializable;
 import java.util.Map;
 import java.util.Optional;
@@ -54,12 +50,12 @@ public interface UserServiceExtension<S extends UserService>
     }
 
     @Override
-    default AbstractUser resetPassword(ResetPasswordForm form) throws EntityNotFoundException, BadEntityException {
+    default AbstractUser resetPassword(ResetPasswordDto form) throws EntityNotFoundException, BadEntityException {
         return getNext().resetPassword(form);
     }
 
     @Override
-    default void changePassword(AbstractUser user, ChangePasswordForm changePasswordForm) throws EntityNotFoundException, BadEntityException {
+    default void changePassword(AbstractUser user, ChangePasswordDto changePasswordForm) throws EntityNotFoundException, BadEntityException {
         getNext().changePassword(user,changePasswordForm);
     }
 
@@ -74,12 +70,12 @@ public interface UserServiceExtension<S extends UserService>
     }
 
     @Override
-    default String createNewAuthToken(String targetUserEmail){
+    default String createNewAuthToken(String targetUserEmail) throws EntityNotFoundException {
         return getNext().createNewAuthToken(targetUserEmail);
     }
 
     @Override
-    default String createNewAuthToken(){
+    default String createNewAuthToken() throws EntityNotFoundException {
         return getNext().createNewAuthToken();
     }
 

@@ -2,12 +2,11 @@ package com.github.vincemann.springrapid.auth.service.extension;
 
 import com.github.vincemann.springrapid.auth.AuthProperties;
 import com.github.vincemann.springrapid.auth.domain.AbstractUser;
-import com.github.vincemann.springrapid.auth.domain.dto.ChangePasswordForm;
+import com.github.vincemann.springrapid.auth.domain.dto.ChangePasswordDto;
 import com.github.vincemann.springrapid.auth.domain.dto.RequestEmailChangeForm;
-import com.github.vincemann.springrapid.auth.domain.dto.ResetPasswordForm;
+import com.github.vincemann.springrapid.auth.domain.dto.ResetPasswordDto;
 import com.github.vincemann.springrapid.auth.service.AlreadyRegisteredException;
 import com.github.vincemann.springrapid.auth.service.UserService;
-import com.github.vincemann.springrapid.auth.service.token.BadTokenException;
 import com.github.vincemann.springrapid.core.proxy.GenericCrudServiceExtension;
 import com.github.vincemann.springrapid.core.service.exception.BadEntityException;
 import com.github.vincemann.springrapid.core.service.exception.EntityNotFoundException;
@@ -54,12 +53,12 @@ public interface GenericUserServiceExtension<S extends UserService<U,Id>,U exten
     }
 
     @Override
-    default U resetPassword( ResetPasswordForm form) throws EntityNotFoundException, BadEntityException {
+    default U resetPassword( ResetPasswordDto form) throws EntityNotFoundException, BadEntityException {
         return getNext().resetPassword(form);
     }
 
     @Override
-    default void changePassword(U user,  ChangePasswordForm changePasswordForm) throws EntityNotFoundException, BadEntityException {
+    default void changePassword(U user,  ChangePasswordDto changePasswordForm) throws EntityNotFoundException, BadEntityException {
         getNext().changePassword(user,changePasswordForm);
     }
 
@@ -74,12 +73,12 @@ public interface GenericUserServiceExtension<S extends UserService<U,Id>,U exten
     }
 
     @Override
-    default String createNewAuthToken(String targetUserEmail){
+    default String createNewAuthToken(String targetUserEmail) throws EntityNotFoundException {
         return getNext().createNewAuthToken(targetUserEmail);
     }
 
     @Override
-    default String createNewAuthToken(){
+    default String createNewAuthToken() throws EntityNotFoundException {
         return getNext().createNewAuthToken();
     }
 

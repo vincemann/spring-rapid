@@ -8,9 +8,11 @@ import com.github.vincemann.springrapid.acldemo.service.PetService;
 import com.github.vincemann.springrapid.core.proxy.GenericCrudServiceExtension;
 import com.github.vincemann.springrapid.core.security.RapidSecurityContext;
 import com.github.vincemann.springrapid.core.service.exception.BadEntityException;
+import com.github.vincemann.springrapid.core.slicing.ServiceComponent;
 import com.github.vincemann.springrapid.core.util.VerifyEntity;
 import org.springframework.security.access.AccessDeniedException;
 
+@ServiceComponent
 public class OwnerCanOnlySaveOwnPetsSecurityExtension  extends SecurityServiceExtension<PetService>
         implements GenericCrudServiceExtension<PetService, Pet,Long>
 {

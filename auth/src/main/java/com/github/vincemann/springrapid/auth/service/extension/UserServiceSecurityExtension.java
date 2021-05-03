@@ -4,12 +4,11 @@ import com.github.vincemann.aoplog.api.LogInteraction;
 import com.github.vincemann.springrapid.acl.proxy.SecurityServiceExtension;
 import com.github.vincemann.springrapid.auth.domain.AbstractUser;
 import com.github.vincemann.springrapid.auth.domain.RapidAuthAuthenticatedPrincipal;
-import com.github.vincemann.springrapid.auth.domain.dto.ChangePasswordForm;
+import com.github.vincemann.springrapid.auth.domain.dto.ChangePasswordDto;
 import com.github.vincemann.springrapid.auth.domain.dto.RequestEmailChangeForm;
 import com.github.vincemann.springrapid.auth.security.RapidAuthSecurityContextChecker;
 import com.github.vincemann.springrapid.auth.service.AlreadyRegisteredException;
 import com.github.vincemann.springrapid.auth.service.UserService;
-import com.github.vincemann.springrapid.auth.service.token.BadTokenException;
 import com.github.vincemann.springrapid.core.model.IdentifiableEntity;
 import com.github.vincemann.springrapid.core.security.RapidSecurityContextChecker;
 import com.github.vincemann.springrapid.core.service.exception.BadEntityException;
@@ -97,7 +96,7 @@ public class UserServiceSecurityExtension
 
     @LogInteraction
     @Override
-    public void changePassword(AbstractUser user, ChangePasswordForm changePasswordForm) throws EntityNotFoundException, BadEntityException {
+    public void changePassword(AbstractUser user, ChangePasswordDto changePasswordForm) throws EntityNotFoundException, BadEntityException {
 //        LexUtils.ensureFound(user);
         getSecurityChecker().checkPermission(user.getId(), getLast().getEntityClass(), getWritePermission());
         getNext().changePassword(user, changePasswordForm);
@@ -121,7 +120,7 @@ public class UserServiceSecurityExtension
 
     @LogInteraction
     @Override
-    public String createNewAuthToken(String email) {
+    public String createNewAuthToken(String email) throws EntityNotFoundException {
         RapidAuthAuthenticatedPrincipal authenticated = securityContextChecker.getSecurityContext().currentPrincipal();
         VerifyAccess.condition(authenticated.getEmail().equals(email) ||
                 authenticated.isAdmin(), Message.get("com.naturalprogrammer.spring.notGoodAdminOrSameUser"));

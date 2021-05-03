@@ -3,23 +3,21 @@ package com.github.vincemann.springrapid.acldemo.controller;
 import com.github.vincemann.springrapid.acldemo.auth.MyRoles;
 import com.github.vincemann.springrapid.acldemo.dto.owner.CreateOwnerDto;
 import com.github.vincemann.springrapid.acldemo.dto.owner.FullOwnerDto;
+import com.github.vincemann.springrapid.acldemo.dto.pet.FullPetDto;
+import com.github.vincemann.springrapid.acldemo.dto.pet.OwnerCreatePetDto;
 import com.github.vincemann.springrapid.acldemo.dto.user.UUIDSignupResponseDto;
 import com.github.vincemann.springrapid.acldemo.model.Owner;
 import com.github.vincemann.springrapid.acldemo.model.User;
-import com.github.vincemann.springrapid.acldemo.service.MyUserService;
 import com.github.vincemann.springrapid.acldemo.service.OwnerService;
 import com.github.vincemann.springrapid.auth.domain.AuthRoles;
 import com.github.vincemann.springrapid.auth.domain.dto.SignupDto;
-import com.github.vincemann.springrapid.authtest.controller.template.UserControllerTestTemplate;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.Optional;
 
 import static com.github.vincemann.ezcompare.Comparator.compare;
 import static com.github.vincemann.springrapid.coretest.service.PropertyMatchers.propertyAssert;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 
 public class OwnerControllerTest extends AbstractControllerIntegrationTest<OwnerController, OwnerService> {
@@ -76,10 +74,14 @@ public class OwnerControllerTest extends AbstractControllerIntegrationTest<Owner
     }
 
     @Test
-    public void canSavePetsToOwnAccount() throws Exception {
-        Owner dbOwner = registerOwner(kahn, OWNER_KAHN_EMAIL, OWNER_KAHN_PASSWORD);
-        userController.login(kahn.getUser());
-
+    public void canSavePetToOwnAccount() throws Exception {
+        Owner dbKahn = registerOwner(kahn, OWNER_KAHN_EMAIL, OWNER_KAHN_PASSWORD);
+        getMvc().perform(userController.login(dbKahn.getUser()));
+        OwnerCreatePetDto createPetDto = new  OwnerCreatePetDto(bella,dbKahn.getId());
+        FullPetDto createdPet = perform2xx(petController.create(createPetDto), FullPetDto.class);
+        Assertions.assertEquals(dbKahn.getId(),createdPet.getOwnerId());
+        assertOwnerHasPets(OWNER_KAHN,BELLA);
+        assertPetHasOwner(BELLA,OWNER_KAHN);
 
     }
 

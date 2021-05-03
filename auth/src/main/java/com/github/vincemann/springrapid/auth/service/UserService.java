@@ -2,23 +2,18 @@ package com.github.vincemann.springrapid.auth.service;
 
 import com.github.vincemann.aoplog.Severity;
 import com.github.vincemann.aoplog.api.AopLoggable;
-import com.github.vincemann.aoplog.api.LogException;
 import com.github.vincemann.aoplog.api.LogInteraction;
 import com.github.vincemann.springrapid.auth.domain.AbstractUser;
-import com.github.vincemann.springrapid.auth.domain.dto.ChangePasswordForm;
+import com.github.vincemann.springrapid.auth.domain.dto.ChangePasswordDto;
 import com.github.vincemann.springrapid.auth.domain.dto.RequestEmailChangeForm;
-import com.github.vincemann.springrapid.auth.domain.dto.ResetPasswordForm;
+import com.github.vincemann.springrapid.auth.domain.dto.ResetPasswordDto;
 import com.github.vincemann.springrapid.auth.AuthProperties;
-import com.github.vincemann.springrapid.auth.service.token.BadTokenException;
-import com.github.vincemann.springrapid.auth.util.UserVerifyUtils;
 import com.github.vincemann.springrapid.core.service.CrudService;
 import com.github.vincemann.springrapid.core.service.exception.BadEntityException;
 import com.github.vincemann.springrapid.core.service.exception.EntityNotFoundException;
 import com.github.vincemann.springrapid.core.slicing.ServiceComponent;
 import org.springframework.validation.annotation.Validated;
 
-import javax.validation.Valid;
-import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
 import java.io.Serializable;
 import java.util.Map;
@@ -44,8 +39,8 @@ public interface UserService<U extends AbstractUser<ID>, ID extends Serializable
 
     public U verifyUser(U user,@NotBlank String verificationCode) throws EntityNotFoundException,  BadEntityException;
     public void forgotPassword( @NotBlank String email) throws EntityNotFoundException;
-    public U resetPassword(ResetPasswordForm form) throws EntityNotFoundException,  BadEntityException;
-    public void changePassword(U user, ChangePasswordForm changePasswordForm) throws EntityNotFoundException, BadEntityException;
+    public U resetPassword(ResetPasswordDto form) throws EntityNotFoundException,  BadEntityException;
+    public void changePassword(U user, ChangePasswordDto changePasswordForm) throws EntityNotFoundException, BadEntityException;
 
 //    @Validated(UserVerifyUtils.ChangeEmailValidation.class)
     public void requestEmailChange(U user, RequestEmailChangeForm emailChangeForm) throws EntityNotFoundException, AlreadyRegisteredException;
@@ -55,9 +50,9 @@ public interface UserService<U extends AbstractUser<ID>, ID extends Serializable
 
 
     @LogInteraction(Severity.TRACE)
-    public String createNewAuthToken(String targetUserEmail);
+    public String createNewAuthToken(String targetUserEmail) throws EntityNotFoundException;
 
-    public String createNewAuthToken();
+    public String createNewAuthToken() throws EntityNotFoundException;
 
 //    @LogInteraction(Severity.TRACE)
 //    public Map<String, String> fetchFullToken(String authHeader);
