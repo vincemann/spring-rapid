@@ -4,14 +4,13 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 
 import com.github.vincemann.springrapid.auth.AuthProperties;
 import com.github.vincemann.springrapid.auth.domain.AbstractUser;
-import com.github.vincemann.springrapid.auth.domain.dto.ChangePasswordForm;
+import com.github.vincemann.springrapid.auth.domain.dto.ChangePasswordDto;
 import com.github.vincemann.springrapid.auth.domain.dto.SignupDto;
 import com.github.vincemann.springrapid.auth.domain.dto.RequestEmailChangeForm;
-import com.github.vincemann.springrapid.auth.domain.dto.ResetPasswordForm;
-import com.github.vincemann.springrapid.auth.domain.dto.user.AdminUpdateRapidUserDto;
+import com.github.vincemann.springrapid.auth.domain.dto.ResetPasswordDto;
 import com.github.vincemann.springrapid.auth.domain.dto.user.RapidFindForeignUserDto;
-import com.github.vincemann.springrapid.auth.domain.dto.user.FindRapidUserDto;
-import com.github.vincemann.springrapid.auth.domain.dto.user.RapidUserDto;
+import com.github.vincemann.springrapid.auth.domain.dto.user.RapidFindOwnUserDto;
+import com.github.vincemann.springrapid.auth.domain.dto.user.RapidFullUserDto;
 import com.github.vincemann.springrapid.auth.service.AlreadyRegisteredException;
 import com.github.vincemann.springrapid.auth.service.UserService;
 import com.github.vincemann.springrapid.auth.service.token.BadTokenException;
@@ -88,14 +87,14 @@ public abstract class AbstractUserController<U extends AbstractUser<ID>, ID exte
 			HttpServletRequest request,
 			HttpServletResponse response) throws BadEntityException, IOException, EntityNotFoundException, AlreadyRegisteredException {
 
-		String signupForm = readBody(request);
-		Object signupDto = getJsonMapper().readValue(signupForm,
+		String jsonDto = readBody(request);
+		Object signupDto = getJsonMapper().readValue(jsonDto,
 				createDtoClass(getAuthProperties().getController().getSignupUrl(), Direction.REQUEST, null));
 		getDtoValidationStrategy().validate(signupDto);
 		log.debug("Signing up: " + signupDto);
 		U user = getDtoMapper().mapToEntity(signupDto, getEntityClass());
   		U saved = getSecuredUserService().signup(user);
-		log.debug("Signed up: " + signupForm);
+		log.debug("Signed up: " + signupDto);
 
 		appendFreshTokenOf(saved,response);
 		Object dto = getDtoMapper().mapToDto(saved,
@@ -133,7 +132,7 @@ public abstract class AbstractUserController<U extends AbstractUser<ID>, ID exte
 		U user = fetchUser(id);
 		U saved = getSecuredUserService().verifyUser(user, code);
 
-		appendFreshToken(response);
+		appendFreshTokenOf(saved,response);
 		Object dto = getDtoMapper().mapToDto(saved,
 				createDtoClass(getAuthProperties().getController().getVerifyUserUrl(), Direction.RESPONSE, saved));
 		return ok(getJsonMapper().writeValueAsString(dto));
@@ -162,12 +161,12 @@ public abstract class AbstractUserController<U extends AbstractUser<ID>, ID exte
 //			@RequestBody ResetPasswordForm form,
 			HttpServletRequest request,HttpServletResponse response) throws IOException, BadEntityException, EntityNotFoundException, BadTokenException {
 		String body = readBody(request);
-		ResetPasswordForm form = getJsonMapper().readValue(body, ResetPasswordForm.class);
+		ResetPasswordDto form = getJsonMapper().readValue(body, ResetPasswordDto.class);
 		getDtoValidationStrategy().validate(form);
 
 		log.debug("Resetting password ... ");
 		U saved = getSecuredUserService().resetPassword(form);
-		appendFreshToken(response);
+		appendFreshTokenOf(saved,response);
 		Object dto = getDtoMapper().mapToDto(saved,
 				createDtoClass(getAuthProperties().getController().resetPasswordUrl, Direction.RESPONSE, saved));
 		return ok(getJsonMapper().writeValueAsString(dto));
@@ -201,13 +200,13 @@ public abstract class AbstractUserController<U extends AbstractUser<ID>, ID exte
 			HttpServletResponse response) throws BadEntityException, EntityNotFoundException, IdFetchingException, IOException {
 		ID id = fetchId(request);
 		String body = readBody(request);
-		ChangePasswordForm form = getJsonMapper().readValue(body, ChangePasswordForm.class);
+		ChangePasswordDto form = getJsonMapper().readValue(body, ChangePasswordDto.class);
 		getDtoValidationStrategy().validate(form);
 
 		log.debug("Changing password of user with id: " + id);
 		U user = fetchUser(id);
 		getSecuredUserService().changePassword(user, form);
-		appendFreshToken(response);
+		appendFreshTokenOf(user,response);
 		return okNoContent();
 	}
 
@@ -244,7 +243,7 @@ public abstract class AbstractUserController<U extends AbstractUser<ID>, ID exte
 		String code = readRequestParam(request, "code");
 		U user = fetchUser(id);
 		U saved = getSecuredUserService().changeEmail(user, code);
-		appendFreshToken(response);
+		appendFreshTokenOf(saved,response);
 		Object responseDto = getDtoMapper().mapToDto(saved,
 				createDtoClass(getAuthProperties().getController().changeEmailUrl, Direction.RESPONSE, saved));
 		return ok(getJsonMapper().writeValueAsString(responseDto));
@@ -259,13 +258,13 @@ public abstract class AbstractUserController<U extends AbstractUser<ID>, ID exte
 //	@ResponseBody
 	public ResponseEntity<String> createNewAuthToken(
 			/*@RequestParam Optional<String> email,*/HttpServletRequest request,
-			HttpServletResponse response) throws BadEntityException, JsonProcessingException {
+			HttpServletResponse response) throws BadEntityException, JsonProcessingException, EntityNotFoundException {
 
 		log.debug("Fetching a new auth token ... ");
 		Optional<String> email = readOptionalRequestParam(request, "email");
 		String token;
 		if (email.isEmpty()){
-			// for logged in user
+			// for logged in user, if he is not logged in this will fail
 			token = getSecuredUserService().createNewAuthToken();
 		}else {
 			// for foreign user
@@ -307,25 +306,29 @@ public abstract class AbstractUserController<U extends AbstractUser<ID>, ID exte
 		builder
 
 				.withAllPrincipals()
-//				.forAll(RapidUserDto.class)
-				.forResponse(FindRapidUserDto.class)
-				.forEndpoint(getAuthProperties().getController().getSignupUrl(), Direction.REQUEST, SignupDto.class)
-
-				.withPrincipal(DtoRequestInfo.Principal.FOREIGN)
+				.withAllRoles()
 				.forResponse(RapidFindForeignUserDto.class)
-				.forEndpoint(getAuthProperties().getController().getVerifyUserUrl(),Direction.RESPONSE,FindRapidUserDto.class)
 
-//				.withPrincipal(DtoRequestInfo.Principal.OWN)
-//				.forResponse(FindRapidUserDto.class)
+				.withAllPrincipals()
+				.withAllRoles()
+				.forEndpoint(getAuthProperties().getController().getSignupUrl(), Direction.REQUEST, SignupDto.class)
+				.forEndpoint(getAuthProperties().getController().getSignupUrl(), Direction.RESPONSE, RapidFindOwnUserDto.class)
+
+
+				.withAllPrincipals()
+				.withAllRoles()
+				.forEndpoint(getAuthProperties().getController().getVerifyUserUrl(),Direction.RESPONSE, RapidFindOwnUserDto.class)
+
+				.withAllRoles()
+				.withPrincipal(DtoRequestInfo.Principal.OWN)
+				.forResponse(RapidFindOwnUserDto.class)
 
 				.withAllPrincipals()
 				.withRoles(Roles.ADMIN)
-				.forAll(RapidUserDto.class)
-				.forEndpoint(getUpdateUrl(), AdminUpdateRapidUserDto.class)
-				.forResponse(FindRapidUserDto.class)
+				.forAll(RapidFullUserDto.class)
 
-				//if this is not set then it would be unexpected when builder.furtherConfigure(...) configures for admin role
-				.withAllRoles();
+				.withAllRoles()
+				.withAllPrincipals();
 	}
 
 	@Override
@@ -493,19 +496,21 @@ public abstract class AbstractUserController<U extends AbstractUser<ID>, ID exte
 	/**
 	 * Adds an Authorization header to the response for certain user
 	 */
-	protected void appendFreshTokenOf(U user, HttpServletResponse response) {
+	protected void appendFreshTokenOf(U user, HttpServletResponse response) throws EntityNotFoundException {
 		String token = getUserService().createNewAuthToken(user.getEmail());
 		httpTokenService.appendToken(token,response);
 //		response.addHeader(LecUtils.TOKEN_RESPONSE_HEADER_NAME, JwtService.TOKEN_PREFIX + token);
 	}
 
-	/**
-	 * Adds an Authorization header to the response for logged in user
-	 */
-	protected void appendFreshToken(HttpServletResponse response){
-		String token = getUserService().createNewAuthToken();
-		httpTokenService.appendToken(token,response);
-	}
+
+	// nobody should be logged in anymore at controller level!
+//	/**
+//	 * Adds an Authorization header to the response for logged in user
+//	 */
+//	protected void appendFreshToken(HttpServletResponse response) throws EntityNotFoundException {
+//		String token = getUserService().createNewAuthToken();
+//		httpTokenService.appendToken(token,response);
+//	}
 
 	protected U fetchUser(ID userId) throws BadEntityException, EntityNotFoundException {
 		Optional<U> byId =  getUserService().findById(userId);

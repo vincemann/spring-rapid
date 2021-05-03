@@ -10,7 +10,7 @@ import javax.validation.constraints.NotBlank;
  * @author Sanjay Patel
  */
 @Getter @Setter @NoArgsConstructor @AllArgsConstructor @ToString
-public class ChangePasswordForm {
+public class ChangePasswordDto {
 	
 	@NotBlank
 	private String oldPassword;

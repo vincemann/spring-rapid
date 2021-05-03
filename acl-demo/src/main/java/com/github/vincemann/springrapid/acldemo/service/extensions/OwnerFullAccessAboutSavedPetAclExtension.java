@@ -7,9 +7,11 @@ import com.github.vincemann.springrapid.acldemo.service.PetService;
 import com.github.vincemann.springrapid.core.proxy.GenericCrudServiceExtension;
 import com.github.vincemann.springrapid.core.service.CrudService;
 import com.github.vincemann.springrapid.core.service.exception.BadEntityException;
+import com.github.vincemann.springrapid.core.slicing.ServiceComponent;
 import org.springframework.security.acls.domain.BasePermission;
 import org.springframework.transaction.annotation.Transactional;
 
+@ServiceComponent
 public class OwnerFullAccessAboutSavedPetAclExtension extends AbstractAclExtension<PetService>
         implements GenericCrudServiceExtension<PetService, Pet,Long> {
 

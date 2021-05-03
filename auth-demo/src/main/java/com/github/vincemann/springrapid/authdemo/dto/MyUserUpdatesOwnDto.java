@@ -10,6 +10,6 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class UserUpdateDto extends IdentifiableEntityImpl<Long> {
+public class MyUserUpdatesOwnDto extends IdentifiableEntityImpl<Long> {
     private String name;
 }

@@ -6,9 +6,9 @@ import com.github.vincemann.springrapid.auth.domain.AbstractUser;
 import com.github.vincemann.springrapid.auth.domain.AbstractUserRepository;
 import com.github.vincemann.springrapid.auth.domain.AuthRoles;
 import com.github.vincemann.springrapid.auth.domain.RapidAuthAuthenticatedPrincipal;
-import com.github.vincemann.springrapid.auth.domain.dto.ChangePasswordForm;
+import com.github.vincemann.springrapid.auth.domain.dto.ChangePasswordDto;
 import com.github.vincemann.springrapid.auth.domain.dto.RequestEmailChangeForm;
-import com.github.vincemann.springrapid.auth.domain.dto.ResetPasswordForm;
+import com.github.vincemann.springrapid.auth.domain.dto.ResetPasswordDto;
 import com.github.vincemann.springrapid.auth.mail.MailData;
 import com.github.vincemann.springrapid.auth.mail.MailSender;
 import com.github.vincemann.springrapid.auth.security.AuthenticatedPrincipalFactory;
@@ -135,8 +135,11 @@ public abstract class AbstractUserService
         makeUnverified(saved);
 
         log.debug("saved and send verification mail for unverified new user: " + saved);
+
+        // NO
         //logout anon and login user, it is expected that signed up user is logged in after this method is called
-        securityContext.login(authenticatedPrincipalFactory.create(saved));
+//        securityContext.login(authenticatedPrincipalFactory.create(saved));
+
         return saved;
     }
 
@@ -258,7 +261,7 @@ public abstract class AbstractUserService
      * @return
      */
     @Transactional(propagation = Propagation.REQUIRED, readOnly = false)
-    public U resetPassword(ResetPasswordForm form) throws EntityNotFoundException,  BadEntityException {
+    public U resetPassword(ResetPasswordDto form) throws EntityNotFoundException,  BadEntityException {
 
         try {
             JWTClaimsSet claims = jweTokenService.parseToken(form.getCode());
@@ -311,7 +314,7 @@ public abstract class AbstractUserService
      * Changes the password.
      */
     @Transactional(propagation = Propagation.REQUIRED, readOnly = false)
-    public void changePassword(U user, ChangePasswordForm changePasswordForm) throws EntityNotFoundException, BadEntityException {
+    public void changePassword(U user, ChangePasswordDto changePasswordForm) throws EntityNotFoundException, BadEntityException {
         VerifyEntity.isPresent(user, "User not found");
         String oldPassword = user.getPassword();
 
@@ -490,12 +493,14 @@ public abstract class AbstractUserService
      * @return
      */
     @Override
-    public String createNewAuthToken(String targetUserEmail) {
-        return authorizationTokenService.createToken(securityContext.currentPrincipal());
+    public String createNewAuthToken(String targetUserEmail) throws EntityNotFoundException {
+        Optional<U> byEmail = findByEmail(targetUserEmail);
+        VerifyEntity.isPresent(byEmail,"user with email: "+ targetUserEmail + " not found");
+        return authorizationTokenService.createToken(authenticatedPrincipalFactory.create(byEmail.get()));
     }
 
     @Override
-    public String createNewAuthToken() {
+    public String createNewAuthToken() throws EntityNotFoundException {
         return createNewAuthToken(securityContext.currentPrincipal().getEmail());
     }
 

@@ -1,6 +1,6 @@
 package com.github.vincemann.springrapid.authtests;
 
-import com.github.vincemann.springrapid.auth.domain.dto.ChangePasswordForm;
+import com.github.vincemann.springrapid.auth.domain.dto.ChangePasswordDto;
 import com.github.vincemann.springrapid.core.util.JsonUtils;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpHeaders;
@@ -14,9 +14,9 @@ public class ChangePasswordAuthTest extends AbstractRapidAuthTest {
 	
 	private static final String NEW_PASSWORD = "a-new-password123";
 	
-	private ChangePasswordForm changePasswordForm(String oldPassword) {
+	private ChangePasswordDto changePasswordForm(String oldPassword) {
 		
-		ChangePasswordForm form = new ChangePasswordForm();
+		ChangePasswordDto form = new ChangePasswordDto();
 		form.setOldPassword(oldPassword);
 		form.setPassword(NEW_PASSWORD);
 		form.setRetypePassword(NEW_PASSWORD);
@@ -115,7 +115,7 @@ public class ChangePasswordAuthTest extends AbstractRapidAuthTest {
 				.param("id",getUnverifiedUser().getId().toString())
 				.header(HttpHeaders.AUTHORIZATION, tokens.get(getUnverifiedUser().getId()))
 				.contentType(MediaType.APPLICATION_JSON)
-				.content(JsonUtils.toJson(new ChangePasswordForm())))
+				.content(JsonUtils.toJson(new ChangePasswordDto())))
 				.andExpect(status().is(400));
 //				.andExpect(jsonPath("$.errors[*].field").value(hasSize(3)))
 //				.andExpect(jsonPath("$.errors[*].field").value(hasItems(
@@ -124,7 +124,7 @@ public class ChangePasswordAuthTest extends AbstractRapidAuthTest {
 //						 "changePasswordForm.password")));
 		
 		// All fields too short
-		ChangePasswordForm form = new ChangePasswordForm();
+		ChangePasswordDto form = new ChangePasswordDto();
 		form.setOldPassword("short");
 		form.setPassword("short");
 		form.setRetypePassword("short");

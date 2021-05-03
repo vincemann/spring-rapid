@@ -7,6 +7,7 @@ import com.github.vincemann.springrapid.entityrelationship.dto.child.annotation.
 import com.github.vincemann.springrapid.entityrelationship.dto.parent.BiDirParentDto;
 import com.github.vincemann.springrapid.entityrelationship.dto.parent.annotation.BiDirParentId;
 import lombok.Builder;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
 
@@ -18,6 +19,7 @@ import java.util.Set;
 
 @NoArgsConstructor
 @ToString(callSuper = true)
+@Getter
 public class FullPetDto extends AbstractPetDto implements BiDirParentDto, BiDirChildDto {
 
     @BiDirChildIdCollection(Illness.class)

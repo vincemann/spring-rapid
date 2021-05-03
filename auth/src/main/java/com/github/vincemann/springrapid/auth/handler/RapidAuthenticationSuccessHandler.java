@@ -5,6 +5,7 @@ import com.github.vincemann.springrapid.auth.service.token.HttpTokenService;
 
 import com.github.vincemann.springrapid.core.CoreProperties;
 import com.github.vincemann.springrapid.core.security.RapidSecurityContext;
+import com.github.vincemann.springrapid.core.service.exception.EntityNotFoundException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
@@ -28,7 +29,7 @@ public class RapidAuthenticationSuccessHandler
 	extends SimpleUrlAuthenticationSuccessHandler {
 	
 
-    private UserService<?, ?> UserService;
+    private UserService<?, ?> userService;
     private HttpTokenService httpTokenService;
 	private CoreProperties properties;
 	
@@ -40,7 +41,12 @@ public class RapidAuthenticationSuccessHandler
 		// the statements below are introduced
     	response.setStatus(HttpServletResponse.SC_OK);
     	response.setContentType(properties.getController().getMediaType());
-		String token = UserService.createNewAuthToken();
+		String token = null;
+		try {
+			token = userService.createNewAuthToken();
+		} catch (EntityNotFoundException e) {
+			throw new RuntimeException("No authenticated Principal found",e);
+		}
 		httpTokenService.appendToken(token,response);
 
 //    	// write current-user data to the response
@@ -61,7 +67,7 @@ public class RapidAuthenticationSuccessHandler
 	@Autowired
 
 	public void injectUserService(UserService<?, ?> userService) {
-		this.UserService = userService;
+		this.userService = userService;
 	}
 	
 	@Autowired

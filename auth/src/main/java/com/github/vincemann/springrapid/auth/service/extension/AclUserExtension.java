@@ -53,6 +53,7 @@ public class AclUserExtension
         if (!saved.getRoles().contains(AuthRoles.ADMIN)) {
             saveFullPermissionForAdminOverEntity(saved);
         }else {
+            // admins can only read other admins
             savePermissionForUserOverEntity(AuthRoles.ADMIN,saved, BasePermission.READ);
         }
     }

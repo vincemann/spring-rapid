@@ -1,5 +1,6 @@
 package com.github.vincemann.springrapid.acldemo.controller;
 
+import com.github.vincemann.springrapid.acldemo.controller.templates.PetControllerTestTemplate;
 import com.github.vincemann.springrapid.acldemo.dto.owner.CreateOwnerDto;
 import com.github.vincemann.springrapid.acldemo.dto.owner.FullOwnerDto;
 import com.github.vincemann.springrapid.acldemo.dto.user.UUIDSignupResponseDto;
@@ -153,6 +154,9 @@ public class AbstractControllerIntegrationTest<C extends GenericCrudController<?
 
     @Autowired
     protected UserControllerTestTemplate userController;
+
+    @Autowired
+    protected PetControllerTestTemplate petController;
 
 
     @Autowired

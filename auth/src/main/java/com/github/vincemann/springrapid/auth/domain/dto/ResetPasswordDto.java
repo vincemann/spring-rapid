@@ -8,7 +8,7 @@ import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotEmpty;
 
 @Getter @Setter @ToString
-public class ResetPasswordForm {
+public class ResetPasswordDto {
 	
 	@NotBlank
 	@NotEmpty
