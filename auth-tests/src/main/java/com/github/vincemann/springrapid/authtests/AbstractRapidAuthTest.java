@@ -5,12 +5,10 @@ import com.github.vincemann.springrapid.auth.AuthProperties;
 import com.github.vincemann.springrapid.auth.config.RapidAdminAutoConfiguration;
 import com.github.vincemann.springrapid.auth.controller.AbstractUserController;
 import com.github.vincemann.springrapid.auth.domain.AbstractUser;
-import com.github.vincemann.springrapid.auth.domain.AbstractUserRepository;
 import com.github.vincemann.springrapid.auth.domain.AuthRoles;
 import com.github.vincemann.springrapid.auth.mail.MailSender;
 import com.github.vincemann.springrapid.auth.service.UserService;
 import com.github.vincemann.springrapid.authtest.controller.UserIntegrationControllerTest;
-import com.github.vincemann.springrapid.authtest.controller.template.LoginDto;
 import com.github.vincemann.springrapid.authtests.adapter.AuthTestAdapter;
 import com.github.vincemann.springrapid.core.CoreProperties;
 import com.github.vincemann.springrapid.coretest.util.RapidTestUtil;
@@ -27,9 +25,6 @@ import org.springframework.boot.test.mock.mockito.SpyBean;
 import org.springframework.http.HttpHeaders;
 import org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers;
 import org.springframework.test.util.AopTestUtils;
-import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.MvcResult;
-import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.setup.DefaultMockMvcBuilder;
 
 import javax.sql.DataSource;
@@ -85,13 +80,8 @@ public abstract class AbstractRapidAuthTest
     @Acl
     private UserService<AbstractUser<Long>, Long> aclUserService;
 
-    //cant autowire if used with types, even with ? extends AbstractUser
     @Autowired
     private UserService<AbstractUser<Long>, Long> userService;
-
-    //cant autowire if used with types, even with ? extends AbstractUser
-    @Autowired
-    private AbstractUserRepository/*<AbstractUser<Long>, Long>*/ userRepository;
 
     @MockBean
     protected MailSender<?> mailSender;
@@ -173,30 +163,32 @@ public abstract class AbstractRapidAuthTest
 
 
     protected void loginTestUsers() throws Exception {
-        tokens.put(getAdmin().getId(), successful_login(ADMIN_EMAIL, ADMIN_PASSWORD));
-        tokens.put(getSecondAdmin().getId(), successful_login(SECOND_ADMIN_EMAIL, SECOND_ADMIN_PASSWORD));
-        tokens.put(getBlockedAdmin().getId(), successful_login(BLOCKED_ADMIN_EMAIL, BLOCKED_ADMIN_PASSWORD));
+        tokens.put(getAdmin().getId(), login2xx(ADMIN_EMAIL, ADMIN_PASSWORD));
+        tokens.put(getSecondAdmin().getId(), login2xx(SECOND_ADMIN_EMAIL, SECOND_ADMIN_PASSWORD));
+        tokens.put(getBlockedAdmin().getId(), login2xx(BLOCKED_ADMIN_EMAIL, BLOCKED_ADMIN_PASSWORD));
 
-        tokens.put(getUser().getId(), successful_login(USER_EMAIL, USER_PASSWORD));
-        tokens.put(getUnverifiedUser().getId(), successful_login(UNVERIFIED_USER_EMAIL, UNVERIFIED_USER_PASSWORD));
-        tokens.put(getBlockedUser().getId(), successful_login(BLOCKED_USER_EMAIL, BLOCKED_USER_PASSWORD));
+        tokens.put(getUser().getId(), login2xx(USER_EMAIL, USER_PASSWORD));
+        tokens.put(getUnverifiedUser().getId(), login2xx(UNVERIFIED_USER_EMAIL, UNVERIFIED_USER_PASSWORD));
+        tokens.put(getBlockedUser().getId(), login2xx(BLOCKED_USER_EMAIL, BLOCKED_USER_PASSWORD));
     }
 
-    protected ResultActions login(String email, String password) throws Exception {
-        return mvc.perform(login(new LoginDto(email,password)));
-    }
+//    protected ResultActions login(String email, String password) throws Exception {
+//        return mvc.perform(login(new LoginDto(email,password)));
+//    }
 
-    protected String successful_login(String email, String password) throws Exception {
-        MvcResult result = login(email,password)
-                .andExpect(status().is(200))
-                .andReturn();
+//    protected String login2xx(String email, String password) throws Exception {
+//
+////        MvcResult result = login(email,password)
+////                .andExpect(status().is(200))
+////                .andReturn();
+////
+////        return result.getResponse().getHeader(HttpHeaders.AUTHORIZATION);
+//        return login2xx(email,password);
+//    }
 
-        return result.getResponse().getHeader(HttpHeaders.AUTHORIZATION);
-    }
-
-    protected String successful_login(String username, String password, long expirationMillis) throws Exception {
+    protected String login2xx(String username, String password, long expirationMillis) throws Exception {
         Mockito.doReturn(expirationMillis).when(jwt).getExpirationMillis();
-        return successful_login(username,password);
+        return login2xx(username,password);
     }
 
     protected void ensureTokenWorks(String token) throws Exception {

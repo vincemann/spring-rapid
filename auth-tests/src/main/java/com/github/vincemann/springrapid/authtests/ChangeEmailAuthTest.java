@@ -149,7 +149,7 @@ public class ChangeEmailAuthTest extends AbstractRapidAuthTest {
 //		Thread.sleep(1L);
 
 		// A new auth token is needed, because old one would be obsolete!
-		String authToken = successful_login(UNVERIFIED_USER_EMAIL, UNVERIFIED_USER_PASSWORD);
+		String authToken = login2xx(UNVERIFIED_USER_EMAIL, UNVERIFIED_USER_PASSWORD);
 
 
 		// now ready to test!

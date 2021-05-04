@@ -13,18 +13,18 @@ import java.time.LocalDate;
 @Setter
 @NoArgsConstructor
 @ToString(callSuper = true)
-public class OwnerCreatePetDto extends AbstractPetDto implements BiDirParentDto {
+public class OwnerCreatesPetDto extends AbstractPetDto implements BiDirParentDto {
 
     @BiDirParentId(Owner.class)
     private Long ownerId;
 
     @Builder
-    public OwnerCreatePetDto(@Size(min = 2, max = 20) String name, Long petTypeId, LocalDate birthDate, Long ownerId) {
+    public OwnerCreatesPetDto(@Size(min = 2, max = 20) String name, Long petTypeId, LocalDate birthDate, Long ownerId) {
         super(name, petTypeId, birthDate);
         this.ownerId = ownerId;
     }
 
-    public OwnerCreatePetDto(Pet pet, Long ownerId) {
+    public OwnerCreatesPetDto(Pet pet, Long ownerId) {
         super(pet);
         this.ownerId = ownerId;
     }
