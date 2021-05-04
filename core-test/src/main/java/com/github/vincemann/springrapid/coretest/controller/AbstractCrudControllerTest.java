@@ -11,9 +11,9 @@ import com.github.vincemann.springrapid.core.service.exception.EntityNotFoundExc
 import com.github.vincemann.springrapid.coretest.InitializingTest;
 import com.github.vincemann.springrapid.coretest.controller.automock.AbstractAutoMockCrudControllerTest;
 import com.github.vincemann.springrapid.coretest.controller.integration.AbstractIntegrationControllerTest;
+import com.github.vincemann.springrapid.coretest.controller.template.AbstractControllerTestTemplate;
 import com.github.vincemann.springrapid.coretest.controller.template.AbstractCrudControllerTestTemplate;
 import lombok.Getter;
-import org.junit.jupiter.api.BeforeEach;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -26,6 +26,7 @@ import org.springframework.test.web.servlet.RequestBuilder;
 import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
 import org.springframework.test.web.servlet.setup.DefaultMockMvcBuilder;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
+import org.springframework.util.ReflectionUtils;
 import org.springframework.web.context.WebApplicationContext;
 
 import java.io.IOException;
@@ -75,6 +76,19 @@ public abstract class AbstractCrudControllerTest
         DefaultMockMvcBuilder mvcBuilder = createMvcBuilder();
         this.contentType = MediaType.valueOf(controller.getCoreProperties().getController().getMediaType());
         mvc = mvcBuilder.build();
+        initTestTemplatesMvc();
+    }
+
+
+    protected void initTestTemplatesMvc(){
+        ReflectionUtils.doWithFields(this.getClass(),field -> {
+            Class<?> fieldType = field.getType();
+            if (AbstractControllerTestTemplate.class.isAssignableFrom(fieldType)){
+                field.setAccessible(true);
+                AbstractControllerTestTemplate testTemplate = (AbstractControllerTestTemplate) field.get(this);
+                testTemplate.setMvc(mvc);
+            }
+        });
     }
 
     @Autowired

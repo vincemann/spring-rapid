@@ -1,6 +1,7 @@
 package com.github.vincemann.springrapid.entityrelationship.controller.dtomapper;
 
 
+import com.github.vincemann.aoplog.Severity;
 import com.github.vincemann.aoplog.api.AopLoggable;
 import com.github.vincemann.aoplog.api.LogConfig;
 import com.github.vincemann.aoplog.api.LogInteraction;
@@ -29,7 +30,7 @@ import java.util.Optional;
  *  The needed CrudService is found with {@link CrudServiceLocator}.
  *
  */
-@LogInteraction(/*value = Severity.TRACE*/)
+@LogInteraction(value = Severity.TRACE)
 //@LogConfig(ignoreSetters = true, ignoreGetters = true)
 public abstract class EntityIdResolver<E, Dto> implements AopLoggable {
 

@@ -7,14 +7,16 @@ import com.github.vincemann.springrapid.core.security.RapidAuthenticatedPrincipa
 import com.github.vincemann.springrapid.core.security.RapidSecurityContext;
 import com.github.vincemann.springrapid.coretest.controller.template.AbstractCrudControllerTestTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
+import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 public abstract class AbstractUserControllerTestTemplate<C extends AbstractUserController>
         extends AbstractCrudControllerTestTemplate<C> {
-
 
 
     private AuthenticatedPrincipalFactory authenticatedPrincipalFactory;
@@ -27,26 +29,35 @@ public abstract class AbstractUserControllerTestTemplate<C extends AbstractUserC
                 .contentType(getController().getCoreProperties().getController().getMediaType());
     }
 
-    public MockHttpServletRequestBuilder login(LoginDto loginDto) {
+//    public MockHttpServletRequestBuilder login(String email, String password) {
+//        return login(new LoginDto(email,password));
+//    }
+
+    public ResultActions login(String email, String password) throws Exception {
+        return getMvc().perform(login_raw(email,password));
+    }
+
+    protected MockHttpServletRequestBuilder login_raw(String email, String password) {
         return post(getController().getAuthProperties().getController().getLoginUrl())
-                .param("username", loginDto.getEmail())
-                .param("password", loginDto.getPassword())
+                .param("username", email)
+                .param("password", password)
                 .header("contentType", MediaType.APPLICATION_FORM_URLENCODED);
 
     }
 
-    public MockHttpServletRequestBuilder login(AbstractUser user) {
-        return post(getController().getAuthProperties().getController().getLoginUrl())
-                .param("username", user.getEmail())
-                .param("password", user.getPassword())
-                .header("contentType", MediaType.APPLICATION_FORM_URLENCODED);
-
+    public String login2xx(String email, String password) throws Exception {
+        return getMvc().perform(login_raw(email,password))
+                .andExpect(status().is2xxSuccessful())
+                .andReturn().getResponse().getHeader(HttpHeaders.AUTHORIZATION);
     }
 
-    public void mockLogin(AbstractUser user){
+    public String login2xx(AbstractUser user) throws Exception {
+        return login2xx(user.getEmail(), user.getPassword());
+    }
+
+    public void mockLogin(AbstractUser user) {
         rapidSecurityContext.login(authenticatedPrincipalFactory.create(user));
     }
-
 
 
     @Autowired

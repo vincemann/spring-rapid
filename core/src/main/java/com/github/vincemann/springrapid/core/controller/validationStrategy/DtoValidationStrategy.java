@@ -1,5 +1,6 @@
 package com.github.vincemann.springrapid.core.controller.validationStrategy;
 
+import com.github.vincemann.aoplog.Severity;
 import com.github.vincemann.aoplog.api.AopLoggable;
 import com.github.vincemann.aoplog.api.LogInteraction;
 
@@ -15,7 +16,7 @@ public interface DtoValidationStrategy extends AopLoggable {
      * @param dto           Dto Entity read from the {@link HttpServletRequest}
      * @throws ConstraintViolationException     is thrown, when Dto Entity {@param dto} is not valid
      */
-    @LogInteraction
+    @LogInteraction(Severity.TRACE)
     public abstract void validate(Object dto) throws ConstraintViolationException;
 
 

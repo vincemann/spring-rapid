@@ -46,7 +46,7 @@ public class ResetPasswordAuthTest extends AbstractRapidAuthTest {
                 .andExpect(jsonPath("$.id").value(getAdmin().getId()));
 
         // New password should work
-        successful_login(ADMIN_EMAIL, NEW_PASSWORD);
+        login2xx(ADMIN_EMAIL, NEW_PASSWORD);
 
         // Repeating shouldn't work
         mvc.perform(post(authProperties.getController().getResetPasswordUrl())

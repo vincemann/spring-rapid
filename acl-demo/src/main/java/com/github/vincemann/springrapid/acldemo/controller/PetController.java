@@ -2,7 +2,7 @@ package com.github.vincemann.springrapid.acldemo.controller;
 
 import com.github.vincemann.springrapid.acldemo.auth.MyRoles;
 import com.github.vincemann.springrapid.acldemo.dto.pet.FullPetDto;
-import com.github.vincemann.springrapid.acldemo.dto.pet.OwnerCreatePetDto;
+import com.github.vincemann.springrapid.acldemo.dto.pet.OwnerCreatesPetDto;
 import com.github.vincemann.springrapid.acldemo.dto.pet.OwnerUpdatesOwnPetDto;
 import com.github.vincemann.springrapid.acldemo.model.Pet;
 import com.github.vincemann.springrapid.acldemo.service.PetService;
@@ -24,17 +24,20 @@ public class PetController extends CrudController<Pet, Long, PetService> {
 
                 .withRoles(MyRoles.OWNER)
                 .withAllPrincipals()
-                .forEndpoint(getCreateUrl(),Direction.REQUEST, OwnerCreatePetDto.class)
+                .forEndpoint(getCreateUrl(),Direction.REQUEST, OwnerCreatesPetDto.class)
+
+                .withRoles(MyRoles.OWNER)
+                .withPrincipal(DtoRequestInfo.Principal.OWN)
+                .forEndpoint(getUpdateUrl(), Direction.REQUEST, OwnerUpdatesOwnPetDto.class)
                 .forEndpoint(getCreateUrl(),Direction.RESPONSE, FullPetDto.class)
 
 
                 .withRoles(MyRoles.VET)
                 .withAllPrincipals()
                 .forEndpoint(getUpdateUrl(), Direction.REQUEST, FullPetDto.class)
+                .forResponse(FullPetDto.class)
 
-                .withRoles(MyRoles.OWNER)
-                .withPrincipal(DtoRequestInfo.Principal.OWN)
-                .forEndpoint(getUpdateUrl(), Direction.REQUEST, OwnerUpdatesOwnPetDto.class)
+
 
                 .withRoles(Roles.ADMIN)
                 .withAllPrincipals()

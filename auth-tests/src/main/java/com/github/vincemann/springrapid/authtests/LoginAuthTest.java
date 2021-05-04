@@ -46,7 +46,7 @@ public class LoginAuthTest extends AbstractRapidAuthTest {
 //				.andExpect(status().is(204));
 		
 		// Test that a 50ms token does not expire before 50ms
-		String token = successful_login(ADMIN_EMAIL, ADMIN_PASSWORD, 50L);
+		String token = login2xx(ADMIN_EMAIL, ADMIN_PASSWORD, 50L);
 		// but, does expire after 50ms
 		Thread.sleep(51L);
 		mvc.perform(get(authProperties.getController().getPingUrl())
