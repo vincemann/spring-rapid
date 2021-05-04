@@ -9,6 +9,7 @@ import com.github.vincemann.springrapid.core.service.locator.CrudServiceLocator;
 import com.github.vincemann.springrapid.core.util.VerifyEntity;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.acls.model.ObjectIdentity;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Optional;
 
@@ -24,6 +25,7 @@ public class RapidObjectIdentityResolver {
         this.crudServiceLocator = crudServiceLocator;
     }
 
+    @Transactional
     public <T extends IdentifiableEntity<?>> T resolve(ObjectIdentity objectIdentity) throws UnresolvableOidException {
         try {
             Class<?> clazz = Class.forName(objectIdentity.getType());

@@ -30,15 +30,20 @@ public class MergeUpdateStrategyImpl implements MergeUpdateStrategy {
                     String propertyName = transform(dtoField.getName());
 
                     Field entityField = ReflectionUtils.findField(entityClass, propertyName);
-                    if (entityField == null) {
-                        if (coreProperties.getController().isStrictUpdateMerge()) {
-                            //gets translated to checked exception below
-                            throw new IllegalArgumentException("Unknown Update Property: " + propertyName);
-                        } else {
-                            log.warn("Dto property: " + propertyName + " is not known in entity. skipping");
-                            return;
-                        }
+                    // managed by Controller, cant happen
+                    if (entityField == null){
+                        // cant happen
+                        throw new IllegalArgumentException("Unknown Update Property: " + propertyName);
                     }
+//                    if (entityField == null) {
+//                        if (coreProperties.getController().isStrictUpdateMerge()) {
+//                            //gets translated to checked exception below
+//                            throw new IllegalArgumentException("Unknown Update Property: " + propertyName);
+//                        } else {
+//                            log.warn("Dto property: " + propertyName + " is not known in entity. skipping");
+//                            return;
+//                        }
+//                    }
                     ReflectionUtils.makeAccessible(entityField);
                     Object patchedValue = entityField.get(patch);
                     entityField.set(saved, patchedValue);

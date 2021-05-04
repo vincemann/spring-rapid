@@ -6,10 +6,7 @@ import com.github.vincemann.springrapid.acldemo.dto.owner.FullOwnerDto;
 import com.github.vincemann.springrapid.acldemo.dto.pet.FullPetDto;
 import com.github.vincemann.springrapid.acldemo.dto.pet.OwnerCreatesPetDto;
 import com.github.vincemann.springrapid.acldemo.dto.user.UUIDSignupResponseDto;
-import com.github.vincemann.springrapid.acldemo.model.Owner;
-import com.github.vincemann.springrapid.acldemo.model.Pet;
-import com.github.vincemann.springrapid.acldemo.model.PetType;
-import com.github.vincemann.springrapid.acldemo.model.User;
+import com.github.vincemann.springrapid.acldemo.model.*;
 import com.github.vincemann.springrapid.acldemo.service.OwnerService;
 import com.github.vincemann.springrapid.auth.domain.AuthRoles;
 import com.github.vincemann.springrapid.auth.domain.dto.SignupDto;
@@ -129,6 +126,48 @@ public class OwnerControllerTest extends AbstractControllerIntegrationTest<Owner
 
         com.github.vincemann.springrapid.acldemo.model.PetType dbDgoType = petTypeRepository.findById(savedDogPetType.getId()).get();
         Assertions.assertEquals(dbDgoType, dbBella.getPetType());
+    }
+
+
+
+    @Test
+    public void ownerCantUpdateOwnPetsIllness() throws Exception {
+        String token = registerOwnerWithPets(kahn, OWNER_KAHN_EMAIL, OWNER_KAHN_PASSWORD, bella);
+        Pet dbBella = petRepository.findByName(BELLA).get();
+        Illness teethPain = illnessRepository.save(this.teethPain);
+
+        Owner dbOwner = ownerRepository.findByLastName(OWNER_KAHN).get();
+        String updateJson = createUpdateJsonRequest(
+                createUpdateJsonLine("add", "/illnessIds", savedDogPetType.getId().toString())
+        );
+        FullPetDto updatedPetDto = perform2xx(petController.update(updateJson, dbBella.getId().toString())
+                        .header(HttpHeaders.AUTHORIZATION, token),
+                FullPetDto.class);
+
+        com.github.vincemann.springrapid.acldemo.model.PetType dbDgoType = petTypeRepository.findById(savedDogPetType.getId()).get();
+        Assertions.assertEquals(dbDgoType, dbBella.getPetType());
+    }
+
+    @Test
+    public void ownerCantUpdateForeignPet() throws Exception {
+        // kahn -> bella
+        // meier -> kitty
+        String kahnToken = registerOwnerWithPets(kahn, OWNER_KAHN_EMAIL, OWNER_KAHN_PASSWORD, bella);
+        String meierToken = registerOwnerWithPets(meier, OWNER_MEIER_EMAIL, OWNER_MEIER_PASSWORD, kitty);
+
+        Pet dbKitty = petRepository.findByName(KITTY).get();
+        Owner dbOwner = ownerRepository.findByLastName(OWNER_KAHN).get();
+
+
+        String updateJson = createUpdateJsonRequest(
+                createUpdateJsonLine("replace", "/petTypeId", savedDogPetType.getId().toString())
+        );
+        mvc.perform(petController.update(updateJson, dbKitty.getId().toString())
+                        .header(HttpHeaders.AUTHORIZATION, kahnToken))
+                .andExpect(status().isForbidden());
+
+        com.github.vincemann.springrapid.acldemo.model.PetType dbCatType = petTypeRepository.findById(savedCatPetType.getId()).get();
+        Assertions.assertEquals(dbCatType, dbKitty.getPetType());
     }
 
 

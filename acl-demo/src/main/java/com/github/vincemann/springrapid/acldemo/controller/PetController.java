@@ -26,12 +26,13 @@ public class PetController extends SecuredCrudController<Pet, Long, PetService> 
                 .withRoles(MyRoles.OWNER)
                 .withAllPrincipals()
                 .forEndpoint(getCreateUrl(),Direction.REQUEST, OwnerCreatesPetDto.class)
+                .forEndpoint(getCreateUrl(),Direction.RESPONSE, FullPetDto.class)
+
 
                 .withRoles(MyRoles.OWNER)
                 .withPrincipal(DtoRequestInfo.Principal.OWN)
                 .forEndpoint(getUpdateUrl(), Direction.REQUEST, OwnerUpdatesOwnPetDto.class)
-                .forEndpoint(getCreateUrl(),Direction.RESPONSE, FullPetDto.class)
-
+                .forResponse(FullPetDto.class)
 
                 .withRoles(MyRoles.VET)
                 .withAllPrincipals()

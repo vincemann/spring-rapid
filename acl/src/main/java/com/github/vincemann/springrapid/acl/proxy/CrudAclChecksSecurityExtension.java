@@ -7,6 +7,7 @@ import com.github.vincemann.springrapid.core.proxy.CrudServiceExtension;
 import com.github.vincemann.springrapid.core.service.CrudService;
 import com.github.vincemann.springrapid.core.service.exception.BadEntityException;
 import com.github.vincemann.springrapid.core.service.exception.EntityNotFoundException;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.io.Serializable;
 import java.util.Optional;
@@ -15,6 +16,7 @@ import java.util.Set;
 /**
  * Does basic acl permission checks on crud Methods defined in {@link com.github.vincemann.springrapid.core.service.CrudService}.
  */
+@Transactional
 public class CrudAclChecksSecurityExtension
         extends SecurityServiceExtension<CrudService>
                 implements CrudServiceExtension<CrudService> {
