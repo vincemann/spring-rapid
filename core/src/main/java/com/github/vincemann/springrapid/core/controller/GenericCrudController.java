@@ -3,12 +3,13 @@ package com.github.vincemann.springrapid.core.controller;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.fge.jsonpatch.JsonPatchException;
-import com.github.vincemann.aoplog.ProxyAwareAopLogger;
 import com.github.vincemann.springrapid.core.CoreProperties;
 import com.github.vincemann.springrapid.core.controller.dto.mapper.DelegatingDtoMapper;
 import com.github.vincemann.springrapid.core.controller.dto.mapper.context.*;
 import com.github.vincemann.springrapid.core.controller.idFetchingStrategy.IdFetchingException;
 import com.github.vincemann.springrapid.core.controller.idFetchingStrategy.IdFetchingStrategy;
+import com.github.vincemann.springrapid.core.controller.json.JsonDtoPropertyValidator;
+import com.github.vincemann.springrapid.core.controller.json.JsonMapper;
 import com.github.vincemann.springrapid.core.controller.mergeUpdate.MergeUpdateStrategy;
 import com.github.vincemann.springrapid.core.controller.owner.DelegatingOwnerLocator;
 import com.github.vincemann.springrapid.core.controller.validationStrategy.DtoValidationStrategy;
@@ -19,14 +20,12 @@ import com.github.vincemann.springrapid.core.service.EndpointService;
 import com.github.vincemann.springrapid.core.service.exception.BadEntityException;
 import com.github.vincemann.springrapid.core.service.exception.EntityNotFoundException;
 import com.github.vincemann.springrapid.core.util.JpaUtils;
-import com.github.vincemann.springrapid.core.util.JsonUtils;
 import com.github.vincemann.springrapid.core.util.VerifyEntity;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.ApplicationListener;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.context.event.ContextRefreshedEvent;
@@ -69,7 +68,7 @@ public abstract class GenericCrudController
 
     private CoreProperties coreProperties;
     private EndpointService endpointService;
-    private ObjectMapper jsonMapper;
+    private JsonMapper jsonMapper;
     private IdFetchingStrategy<ID> idIdFetchingStrategy;
     private EndpointInfo endpointInfo;
     private S service;
@@ -81,6 +80,7 @@ public abstract class GenericCrudController
     private DtoValidationStrategy dtoValidationStrategy;
     private MergeUpdateStrategy mergeUpdateStrategy;
     private JsonPatchStrategy jsonPatchStrategy;
+    private JsonDtoPropertyValidator jsonDtoPropertyValidator;
     private Class<E> entityClass;
 
 
@@ -98,7 +98,7 @@ public abstract class GenericCrudController
                         createDtoClass(getFindAllUrl(), Direction.RESPONSE, e)));
             }
             afterFindAll(dtos, foundEntities, request, response);
-            String json = jsonMapper.writeValueAsString(dtos);
+            String json = jsonMapper.writeDto(dtos);
             return ok(json);
         } catch (BadEntityException e) {
             throw new RuntimeException(e);
@@ -118,14 +118,14 @@ public abstract class GenericCrudController
                 createDtoClass(getFindUrl(), Direction.RESPONSE, found)
         );
         afterFind(id, dto, optionalEntity, request, response);
-        return ok(jsonMapper.writeValueAsString(dto));
+        return ok(jsonMapper.writeDto(dto));
 
     }
 
     public ResponseEntity<String> create(HttpServletRequest request, HttpServletResponse response) throws BadEntityException, EntityNotFoundException, IOException {
         String json = readBody(request);
         Class<?> dtoClass = createDtoClass(getCreateUrl(), Direction.REQUEST, null);
-        Object dto = getJsonMapper().readValue(json, dtoClass);
+        Object dto = getJsonMapper().readDto(json, dtoClass,getEntityClass());
         beforeCreate(dto, request, response);
         dtoValidationStrategy.validate(dto);
         //i expect that dto has the right dto type -> callers responsibility
@@ -135,7 +135,7 @@ public abstract class GenericCrudController
         Object resultDto = dtoMapper.mapToDto(savedEntity,
                 createDtoClass(getCreateUrl(), Direction.RESPONSE, savedEntity));
         afterCreate(resultDto, entity, request, response);
-        return ok(jsonMapper.writeValueAsString(resultDto));
+        return ok(jsonMapper.writeDto(resultDto));
     }
 
     public ResponseEntity<String> update(HttpServletRequest request, HttpServletResponse response) throws EntityNotFoundException, BadEntityException, IdFetchingException, JsonPatchException, IOException {
@@ -148,7 +148,7 @@ public abstract class GenericCrudController
         E saved = savedOptional.get();
         Class<?> dtoClass = createDtoClass(getUpdateUrl(), Direction.REQUEST, saved);
         beforeUpdate(dtoClass, id, patchString, request, response);
-
+        jsonDtoPropertyValidator.validate(patchString,dtoClass,getEntityClass());
         Object patchDto = dtoMapper.mapToDto(saved, dtoClass);
         patchDto = jsonPatchStrategy.applyPatch(saved,patchDto, patchString);
         log.debug("finished patchDto: " + patchDto);
@@ -162,7 +162,7 @@ public abstract class GenericCrudController
         Class<?> resultDtoClass = createDtoClass(getUpdateUrl(), Direction.RESPONSE, updated);
         Object resultDto = dtoMapper.mapToDto(updated, resultDtoClass);
         afterUpdate(resultDto, updated, request, response);
-        return ok(jsonMapper.writeValueAsString(resultDto));
+        return ok(jsonMapper.writeDto(resultDto));
     }
 
     public ResponseEntity<?> delete(HttpServletRequest request, HttpServletResponse response) throws IdFetchingException, BadEntityException, EntityNotFoundException, ConstraintViolationException {
@@ -210,6 +210,8 @@ public abstract class GenericCrudController
         }
         return principal;
     }
+
+
 
     protected ID fetchId(HttpServletRequest request) throws IdFetchingException {
         return getIdIdFetchingStrategy().fetchId(request);
@@ -573,6 +575,11 @@ public abstract class GenericCrudController
     @Autowired
     public void injectCoreProperties(CoreProperties properties) {
         this.coreProperties = properties;
+    }
+
+    @Autowired
+    public void injectJsonDtoPropertyValidator(JsonDtoPropertyValidator jsonDtoPropertyValidator) {
+        this.jsonDtoPropertyValidator = jsonDtoPropertyValidator;
     }
 
     protected void setDtoMappingContext(DtoMappingContext dtoMappingContext) {
