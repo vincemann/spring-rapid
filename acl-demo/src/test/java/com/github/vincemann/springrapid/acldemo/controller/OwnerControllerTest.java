@@ -7,24 +7,37 @@ import com.github.vincemann.springrapid.acldemo.dto.pet.FullPetDto;
 import com.github.vincemann.springrapid.acldemo.dto.pet.OwnerCreatesPetDto;
 import com.github.vincemann.springrapid.acldemo.dto.user.UUIDSignupResponseDto;
 import com.github.vincemann.springrapid.acldemo.model.Owner;
+import com.github.vincemann.springrapid.acldemo.model.Pet;
+import com.github.vincemann.springrapid.acldemo.model.PetType;
 import com.github.vincemann.springrapid.acldemo.model.User;
 import com.github.vincemann.springrapid.acldemo.service.OwnerService;
 import com.github.vincemann.springrapid.auth.domain.AuthRoles;
 import com.github.vincemann.springrapid.auth.domain.dto.SignupDto;
+import com.github.vincemann.springrapid.coretest.util.RapidTestUtil;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpHeaders;
+import org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers;
+import org.springframework.test.web.servlet.setup.DefaultMockMvcBuilder;
 
 import java.util.Optional;
 
 import static com.github.vincemann.ezcompare.Comparator.compare;
 import static com.github.vincemann.springrapid.coretest.service.PropertyMatchers.propertyAssert;
+import static com.github.vincemann.springrapid.coretest.util.RapidTestUtil.createUpdateJsonLine;
+import static com.github.vincemann.springrapid.coretest.util.RapidTestUtil.createUpdateJsonRequest;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 
 public class OwnerControllerTest extends AbstractControllerIntegrationTest<OwnerController, OwnerService> {
 
 
-
+    @Override
+    protected DefaultMockMvcBuilder createMvcBuilder() {
+        DefaultMockMvcBuilder mvcBuilder = super.createMvcBuilder();
+        mvcBuilder.apply(SecurityMockMvcConfigurers.springSecurity());
+        return mvcBuilder;
+    }
 
     @Test
     public void canRegisterOwner() throws Exception {
@@ -32,7 +45,7 @@ public class OwnerControllerTest extends AbstractControllerIntegrationTest<Owner
                 .email(OWNER_KAHN_EMAIL)
                 .password(OWNER_KAHN_PASSWORD)
                 .build();
-        UUIDSignupResponseDto signedUpDto = perform2xx(userController.signup(signupDto),UUIDSignupResponseDto.class);
+        UUIDSignupResponseDto signedUpDto = perform2xx(userController.signup(signupDto), UUIDSignupResponseDto.class);
         String uuid = signedUpDto.getUuid();
         Assertions.assertNotNull(uuid);
 
@@ -40,16 +53,17 @@ public class OwnerControllerTest extends AbstractControllerIntegrationTest<Owner
         Assertions.assertTrue(byUuid.isPresent());
 
 
+        CreateOwnerDto createOwnerDto = new CreateOwnerDto(kahn, uuid);
+        FullOwnerDto createdDto = perform2xx(create(createOwnerDto), FullOwnerDto.class);
 
-        CreateOwnerDto createOwnerDto = new CreateOwnerDto(kahn,uuid);
-        FullOwnerDto createdDto = perform2xx(create(createOwnerDto),FullOwnerDto.class);
-
-        compare(createdDto).with(createdDto)
+        compare(createOwnerDto).with(createdDto)
                 .properties()
-                .all().ignore(OwnerType::getId)
+                .all()
+                .ignore(createOwnerDto::getId)
+                .ignore(createOwnerDto::getUuid)
                 .assertEqual();
 
-        Assertions.assertEquals(FullOwnerDto.DIRTY_SECRET,createdDto.getDirtySecret());
+        Assertions.assertEquals(FullOwnerDto.DIRTY_SECRET, createdDto.getDirtySecret());
 
         byUuid = userService.findByUuid(uuid);
         Assertions.assertFalse(byUuid.isPresent());
@@ -60,8 +74,8 @@ public class OwnerControllerTest extends AbstractControllerIntegrationTest<Owner
 
         propertyAssert(dbUserKahn)
                 .assertContains(dbUserKahn::getRoles, MyRoles.OWNER, AuthRoles.UNVERIFIED, AuthRoles.USER)
-                .assertSize(dbUserKahn::getRoles,3)
-                .assertEquals(dbUserKahn::getEmail,OWNER_KAHN_EMAIL)
+                .assertSize(dbUserKahn::getRoles, 3)
+                .assertEquals(dbUserKahn::getEmail, OWNER_KAHN_EMAIL)
                 .assertNotNull(dbUserKahn::getPassword)
                 .assertNull(dbUserKahn::getUuid);
 
@@ -70,25 +84,52 @@ public class OwnerControllerTest extends AbstractControllerIntegrationTest<Owner
         Assertions.assertTrue(kahnByLastName.isPresent());
         Owner dbKahn = kahnByLastName.get();
 
-        Assertions.assertEquals(dbUserKahn,dbKahn.getUser());
+        Assertions.assertEquals(dbUserKahn, dbKahn.getUser());
 
     }
 
     @Test
     public void canSavePetToOwnAccount() throws Exception {
         Owner dbKahn = registerOwner(kahn, OWNER_KAHN_EMAIL, OWNER_KAHN_PASSWORD);
-        String token = userController.login2xx(dbKahn.getUser());
-        OwnerCreatesPetDto createPetDto = new OwnerCreatesPetDto(bella,dbKahn.getId());
+        String token = userController.login2xx(dbKahn.getUser().getEmail(), OWNER_KAHN_PASSWORD);
+        OwnerCreatesPetDto createPetDto = new OwnerCreatesPetDto(bella, dbKahn.getId());
         FullPetDto createdPet = perform2xx(petController.create(createPetDto)
-                .header(HttpHeaders.AUTHORIZATION,token), FullPetDto.class);
-        Assertions.assertEquals(dbKahn.getId(),createdPet.getOwnerId());
-        assertOwnerHasPets(OWNER_KAHN,BELLA);
-        assertPetHasOwner(BELLA,OWNER_KAHN);
+                .header(HttpHeaders.AUTHORIZATION, token), FullPetDto.class);
+        Assertions.assertEquals(dbKahn.getId(), createdPet.getOwnerId());
+        assertOwnerHasPets(OWNER_KAHN, BELLA);
+        assertPetHasOwner(BELLA, OWNER_KAHN);
 
     }
 
+    @Test
+    public void cantSavePetToOtherOwner() throws Exception {
+        Owner dbKahn = registerOwner(kahn, OWNER_KAHN_EMAIL, OWNER_KAHN_PASSWORD);
+        Owner dbMeier = registerOwner(meier, OWNER_MEIER_EMAIL, OWNER_MEIER_PASSWORD);
 
+        String token = userController.login2xx(OWNER_KAHN_EMAIL, OWNER_KAHN_PASSWORD);
+        OwnerCreatesPetDto createPetDto = new OwnerCreatesPetDto(bella, dbMeier.getId());
+        mvc.perform(petController.create(createPetDto)
+                .header(HttpHeaders.AUTHORIZATION, token))
+                .andExpect(status().isForbidden());
 
+        Assertions.assertFalse(petRepository.findByName(BELLA).isPresent());
+    }
+
+    @Test
+    public void ownerCanUpdateOwnPet() throws Exception {
+        String token = registerOwnerWithPets(kahn, OWNER_KAHN_EMAIL, OWNER_KAHN_PASSWORD, bella);
+        Pet dbBella = petRepository.findByName(BELLA).get();
+        Owner dbOwner = ownerRepository.findByLastName(OWNER_KAHN).get();
+        String updateJson = createUpdateJsonRequest(
+                createUpdateJsonLine("replace", "/petTypeId", savedDogPetType.getId().toString())
+        );
+        FullPetDto updatedPetDto = perform2xx(petController.update(updateJson, dbBella.getId().toString())
+                        .header(HttpHeaders.AUTHORIZATION, token),
+                        FullPetDto.class);
+
+        com.github.vincemann.springrapid.acldemo.model.PetType dbDgoType = petTypeRepository.findById(savedDogPetType.getId()).get();
+        Assertions.assertEquals(dbDgoType, dbBella.getPetType());
+    }
 
 
 }

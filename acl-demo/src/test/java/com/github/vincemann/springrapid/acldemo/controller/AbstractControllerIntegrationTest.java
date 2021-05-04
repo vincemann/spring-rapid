@@ -3,6 +3,8 @@ package com.github.vincemann.springrapid.acldemo.controller;
 import com.github.vincemann.springrapid.acldemo.controller.templates.PetControllerTestTemplate;
 import com.github.vincemann.springrapid.acldemo.dto.owner.CreateOwnerDto;
 import com.github.vincemann.springrapid.acldemo.dto.owner.FullOwnerDto;
+import com.github.vincemann.springrapid.acldemo.dto.pet.FullPetDto;
+import com.github.vincemann.springrapid.acldemo.dto.pet.OwnerCreatesPetDto;
 import com.github.vincemann.springrapid.acldemo.dto.user.UUIDSignupResponseDto;
 import com.github.vincemann.springrapid.acldemo.model.*;
 import com.github.vincemann.springrapid.acldemo.repositories.*;
@@ -19,6 +21,7 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpHeaders;
 
 import java.time.LocalDate;
 import java.util.HashSet;
@@ -343,16 +346,27 @@ public class AbstractControllerIntegrationTest<C extends GenericCrudController<?
         Assertions.assertEquals(owner, pet.getOwner());
     }
 
+    protected String registerOwnerWithPets(Owner owner, String email, String password, Pet... pets) throws Exception {
+        Owner dbOwner = registerOwner(owner, email, password);
+        String token = userController.login2xx(email,password);
+        for (Pet pet : pets) {
+            OwnerCreatesPetDto createPetDto = new OwnerCreatesPetDto(pet,dbOwner.getId());
+            FullPetDto savedPetDto = perform2xx(petController.create(createPetDto)
+                    .header(HttpHeaders.AUTHORIZATION, token), FullPetDto.class);
+        }
+        return token;
+    }
+
 
     protected Owner registerOwner(Owner owner, String email, String password) throws Exception {
         SignupDto signupDto = SignupDto.builder()
-                .email(OWNER_KAHN_EMAIL)
-                .password(OWNER_KAHN_PASSWORD)
+                .email(email)
+                .password(password)
                 .build();
         UUIDSignupResponseDto signedUpDto = perform2xx(userController.signup(signupDto),UUIDSignupResponseDto.class);
         String uuid = signedUpDto.getUuid();
 
-        CreateOwnerDto createOwnerDto = new CreateOwnerDto(kahn,uuid);
+        CreateOwnerDto createOwnerDto = new CreateOwnerDto(owner,uuid);
         FullOwnerDto fullOwnerDto = perform2xx(create(createOwnerDto), FullOwnerDto.class);
         return ownerService.findById(fullOwnerDto.getId()).get();
     }

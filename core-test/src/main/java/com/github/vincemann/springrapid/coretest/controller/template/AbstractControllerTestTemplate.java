@@ -18,9 +18,8 @@ import java.io.IOException;
 @Getter
 public class AbstractControllerTestTemplate<C extends GenericCrudController> {
 
-    @Setter
+   
     private C controller;
-    @Setter
     private MockMvc mvc;
 
     @Autowired
@@ -51,5 +50,13 @@ public class AbstractControllerTestTemplate<C extends GenericCrudController> {
 
     public  <Dto> Dto readDto(MvcResult mvcResult, Class<Dto> dtoClass) throws Exception {
         return deserialize(mvcResult.getResponse().getContentAsString(), dtoClass);
+    }
+
+    public void setController(C controller) {
+        this.controller = controller;
+    }
+
+    public void setMvc(MockMvc mvc) {
+        this.mvc = mvc;
     }
 }

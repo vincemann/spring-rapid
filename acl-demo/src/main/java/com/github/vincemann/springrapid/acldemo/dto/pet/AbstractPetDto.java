@@ -20,14 +20,11 @@ import java.time.LocalDate;
 public abstract class AbstractPetDto extends IdentifiableEntityImpl<Long>
         implements UniDirParentDto {
 
-    public AbstractPetDto(@Size(min = 2, max = 20) String name, Long petTypeId, LocalDate birthDate) {
-        this.name = name;
+    public AbstractPetDto(Long petTypeId, LocalDate birthDate) {
         this.petTypeId = petTypeId;
         this.birthDate = birthDate;
     }
 
-    @Size(min = 2, max = 20)
-    private String name;
 
     @UniDirChildId(PetType.class)
     private Long petTypeId;
@@ -35,7 +32,6 @@ public abstract class AbstractPetDto extends IdentifiableEntityImpl<Long>
     private LocalDate birthDate;
 
     public AbstractPetDto(Pet pet){
-        this.name = pet.getName();
         this.petTypeId = pet.getPetType() == null ? null : pet.getPetType().getId();
         this.birthDate = pet.getBirthDate();
     }

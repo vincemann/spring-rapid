@@ -1,5 +1,6 @@
 package com.github.vincemann.springrapid.acldemo.controller;
 
+import com.github.vincemann.springrapid.acl.SecuredCrudController;
 import com.github.vincemann.springrapid.acldemo.auth.MyRoles;
 import com.github.vincemann.springrapid.core.controller.CrudController;
 import com.github.vincemann.springrapid.core.controller.dto.mapper.context.CrudDtoMappingContextBuilder;
@@ -16,7 +17,7 @@ import com.github.vincemann.springrapid.acldemo.model.Owner;
 import com.github.vincemann.springrapid.acldemo.service.OwnerService;
 
 @WebController
-public class OwnerController extends CrudController<Owner, Long, OwnerService> {
+public class OwnerController extends SecuredCrudController<Owner, Long, OwnerService> {
 
 
     @Override

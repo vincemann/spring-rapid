@@ -1,8 +1,8 @@
-package com.github.vincemann.springrapid.coredemo.controller;
+package com.github.vincemann.springrapid.acldemo.controller.ownerLocator;
 
+import com.github.vincemann.springrapid.acldemo.model.Owner;
 import com.github.vincemann.springrapid.core.controller.owner.OwnerLocator;
 import com.github.vincemann.springrapid.core.slicing.WebComponent;
-import com.github.vincemann.springrapid.coredemo.model.Owner;
 
 import java.util.Optional;
 
