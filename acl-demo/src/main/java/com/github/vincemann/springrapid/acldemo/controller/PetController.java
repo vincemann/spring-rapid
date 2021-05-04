@@ -1,5 +1,6 @@
 package com.github.vincemann.springrapid.acldemo.controller;
 
+import com.github.vincemann.springrapid.acl.SecuredCrudController;
 import com.github.vincemann.springrapid.acldemo.auth.MyRoles;
 import com.github.vincemann.springrapid.acldemo.dto.pet.FullPetDto;
 import com.github.vincemann.springrapid.acldemo.dto.pet.OwnerCreatesPetDto;
@@ -16,7 +17,7 @@ import com.github.vincemann.springrapid.core.slicing.WebController;
 
 
 @WebController
-public class PetController extends CrudController<Pet, Long, PetService> {
+public class PetController extends SecuredCrudController<Pet, Long, PetService> {
 
     @Override
     protected DtoMappingContext provideDtoMappingContext(CrudDtoMappingContextBuilder builder) {

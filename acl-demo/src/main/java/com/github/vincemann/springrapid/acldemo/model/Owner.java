@@ -7,6 +7,7 @@ import com.github.vincemann.springrapid.entityrelationship.model.child.annotatio
 import com.github.vincemann.springrapid.entityrelationship.model.child.annotation.UniDirChildEntity;
 import com.github.vincemann.springrapid.entityrelationship.model.parent.BiDirParent;
 import com.github.vincemann.springrapid.entityrelationship.model.parent.UniDirParent;
+import com.sun.istack.NotNull;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -45,8 +46,10 @@ public class Owner extends Person implements BiDirParent, UserAwareEntity, UniDi
     @BiDirChildCollection(Pet.class)
     private Set<Pet> pets = new HashSet<>();
 
+    @NotNull
     @UniDirChildEntity
-    @OneToOne(cascade = CascadeType.REMOVE)
+    @OneToOne(cascade = CascadeType.ALL,fetch = FetchType.EAGER)
+    @JoinColumn(name = "user_id",referencedColumnName = "id")
     private User user;
 
 
@@ -67,7 +70,8 @@ public class Owner extends Person implements BiDirParent, UserAwareEntity, UniDi
     @Override
     public String toString() {
         return "Owner{" +
-                super.toString() +
+                "super.toString()" +
+                "user = " + user +
                 "pets=" + Arrays.toString(pets.stream().map(Pet::getName).toArray()) +
                 ", hobbies='"+hobbies+"'" +
                 ", address='" + address + '\'' +

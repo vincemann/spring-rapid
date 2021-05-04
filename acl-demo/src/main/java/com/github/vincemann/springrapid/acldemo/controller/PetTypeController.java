@@ -1,5 +1,6 @@
 package com.github.vincemann.springrapid.acldemo.controller;
 
+import com.github.vincemann.springrapid.acl.SecuredCrudController;
 import com.github.vincemann.springrapid.core.controller.CrudController;
 import com.github.vincemann.springrapid.core.controller.dto.mapper.context.CrudDtoMappingContextBuilder;
 import com.github.vincemann.springrapid.core.controller.dto.mapper.context.DtoMappingContext;
@@ -8,7 +9,7 @@ import com.github.vincemann.springrapid.acldemo.model.PetType;
 import com.github.vincemann.springrapid.acldemo.service.PetTypeService;
 
 @WebController
-public class PetTypeController extends CrudController<PetType, Long, PetTypeService> {
+public class PetTypeController extends SecuredCrudController<PetType, Long, PetTypeService> {
 
 
     @Override

@@ -4,8 +4,10 @@ import com.github.vincemann.springrapid.auth.controller.AbstractUserController;
 import com.github.vincemann.springrapid.auth.domain.AbstractUser;
 import com.github.vincemann.springrapid.authtest.controller.template.AbstractUserControllerTestTemplate;
 import com.github.vincemann.springrapid.coretest.controller.integration.AbstractIntegrationControllerTest;
+import org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers;
 import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
+import org.springframework.test.web.servlet.setup.DefaultMockMvcBuilder;
 
 public abstract class AbstractUserIntegrationControllerTest
         <C extends AbstractUserController, T extends AbstractUserControllerTestTemplate>
@@ -15,6 +17,13 @@ public abstract class AbstractUserIntegrationControllerTest
         return getTestTemplate().signup(dto);
     }
 
+    @Override
+    protected DefaultMockMvcBuilder createMvcBuilder() {
+        // activate, so login endpoint and security config is active
+        DefaultMockMvcBuilder mvcBuilder = super.createMvcBuilder();
+        mvcBuilder.apply(SecurityMockMvcConfigurers.springSecurity());
+        return mvcBuilder;
+    }
 
     public ResultActions login(String email, String password) throws Exception {
         return getTestTemplate().login(email,password);

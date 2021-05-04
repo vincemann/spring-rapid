@@ -9,12 +9,27 @@ import com.github.vincemann.springrapid.coretest.controller.template.AbstractCru
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
+import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.MockMvcBuilder;
 import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
+import org.springframework.test.web.servlet.setup.DefaultMockMvcBuilder;
+import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+/**
+ * Activate spring Security, so login endpoint and auth web config is enabled, when using this template.
+ *
+ *  @Override
+ *     protected DefaultMockMvcBuilder createMvcBuilder() {
+ *         DefaultMockMvcBuilder mvcBuilder = super.createMvcBuilder();
+ *         mvcBuilder.apply(SecurityMockMvcConfigurers.springSecurity());
+ *         return mvcBuilder;
+ *     }
+ * @param <C>
+ */
 public abstract class AbstractUserControllerTestTemplate<C extends AbstractUserController>
         extends AbstractCrudControllerTestTemplate<C> {
 
@@ -22,6 +37,11 @@ public abstract class AbstractUserControllerTestTemplate<C extends AbstractUserC
     private AuthenticatedPrincipalFactory authenticatedPrincipalFactory;
     private RapidSecurityContext<RapidAuthenticatedPrincipal> rapidSecurityContext;
 
+
+    @Override
+    public void setMvc(MockMvc mvc) {
+        super.setMvc(mvc);
+    }
 
     public MockHttpServletRequestBuilder signup(Object dto) throws Exception {
         return post(getController().getAuthProperties().getController().getSignupUrl())

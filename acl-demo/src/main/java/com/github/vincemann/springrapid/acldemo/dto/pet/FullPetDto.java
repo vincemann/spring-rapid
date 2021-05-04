@@ -28,9 +28,13 @@ public class FullPetDto extends AbstractPetDto implements BiDirParentDto, BiDirC
     @BiDirParentId(Owner.class)
     private Long ownerId;
 
+    @Size(min = 2, max = 20)
+    private String name;
+
     @Builder
     public FullPetDto(@Size(min = 2, max = 20) String name, Long petTypeId, LocalDate birthDate, Set<Long> illnessIds, Long ownerId) {
-        super(name, petTypeId, birthDate);
+        super(petTypeId, birthDate);
+        this.name = name;
         this.illnessIds = illnessIds;
         this.ownerId = ownerId;
     }
