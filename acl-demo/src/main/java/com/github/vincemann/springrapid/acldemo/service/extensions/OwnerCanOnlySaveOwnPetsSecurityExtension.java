@@ -10,9 +10,12 @@ import com.github.vincemann.springrapid.core.security.RapidSecurityContext;
 import com.github.vincemann.springrapid.core.service.exception.BadEntityException;
 import com.github.vincemann.springrapid.core.slicing.ServiceComponent;
 import com.github.vincemann.springrapid.core.util.VerifyEntity;
+import org.springframework.beans.factory.config.ConfigurableBeanFactory;
+import org.springframework.context.annotation.Scope;
 import org.springframework.security.access.AccessDeniedException;
 
 @ServiceComponent
+@Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
 public class OwnerCanOnlySaveOwnPetsSecurityExtension  extends SecurityServiceExtension<PetService>
         implements GenericCrudServiceExtension<PetService, Pet,Long>
 {

@@ -6,10 +6,7 @@ import com.github.vincemann.springrapid.entityrelationship.dto.child.BiDirChildD
 import com.github.vincemann.springrapid.entityrelationship.dto.child.annotation.BiDirChildIdCollection;
 import com.github.vincemann.springrapid.entityrelationship.dto.parent.BiDirParentDto;
 import com.github.vincemann.springrapid.entityrelationship.dto.parent.annotation.BiDirParentId;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.ToString;
+import lombok.*;
 
 import javax.validation.constraints.Size;
 import java.time.LocalDate;
@@ -20,6 +17,7 @@ import java.util.Set;
 @NoArgsConstructor
 @ToString(callSuper = true)
 @Getter
+@Setter
 public class FullPetDto extends AbstractPetDto implements BiDirParentDto, BiDirChildDto {
 
     @BiDirChildIdCollection(Illness.class)
@@ -28,11 +26,10 @@ public class FullPetDto extends AbstractPetDto implements BiDirParentDto, BiDirC
     @BiDirParentId(Owner.class)
     private Long ownerId;
 
-    @Size(min = 2, max = 20)
     private String name;
 
     @Builder
-    public FullPetDto(@Size(min = 2, max = 20) String name, Long petTypeId, LocalDate birthDate, Set<Long> illnessIds, Long ownerId) {
+    public FullPetDto(String name, Long petTypeId, LocalDate birthDate, Set<Long> illnessIds, Long ownerId) {
         super(petTypeId, birthDate);
         this.name = name;
         this.illnessIds = illnessIds;

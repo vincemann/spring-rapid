@@ -22,6 +22,8 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
+import org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers;
+import org.springframework.test.web.servlet.setup.DefaultMockMvcBuilder;
 
 import java.time.LocalDate;
 import java.util.HashSet;
@@ -165,6 +167,13 @@ public class AbstractControllerIntegrationTest<C extends GenericCrudController<?
     @Autowired
     protected RapidSecurityContext<RapidAuthenticatedPrincipal> securityContext;
 
+
+    @Override
+    protected DefaultMockMvcBuilder createMvcBuilder() {
+        DefaultMockMvcBuilder mvcBuilder = super.createMvcBuilder();
+        mvcBuilder.apply(SecurityMockMvcConfigurers.springSecurity());
+        return mvcBuilder;
+    }
 
     @BeforeEach
     public void setupTestData() throws Exception {
