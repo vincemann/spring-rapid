@@ -96,7 +96,7 @@ public abstract class ParentAwareCrudController
                 Class<?> dtoClass = createDtoClass(getCoreProperties().controller.endpoints.findAllOfParent, Direction.RESPONSE, null);
                 dtos.add(getDtoMapper().mapToDto(e, dtoClass));
             }
-            String json = getJsonMapper().writeValueAsString(dtos);
+            String json = getJsonMapper().writeDto(dtos);
             return ok(json);
 
     }

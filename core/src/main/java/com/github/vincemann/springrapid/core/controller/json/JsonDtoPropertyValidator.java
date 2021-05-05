@@ -7,5 +7,6 @@ import java.nio.file.AccessDeniedException;
 
 public interface JsonDtoPropertyValidator {
 
-    void validate(String json, Class dtoClass, Class entityClass) throws BadEntityException, AccessDeniedException, JsonProcessingException;
+    void validateDto(String json, Class dtoClass, Class entityClass) throws BadEntityException, AccessDeniedException, JsonProcessingException;
+    void validatePatch(String json, Class dtoClass, Class entityClass) throws BadEntityException, AccessDeniedException, JsonProcessingException;
 }
