@@ -23,11 +23,10 @@ public class OwnerCreatesPetDto extends AbstractPetDto implements BiDirParentDto
     private Long ownerId;
 
     @NotBlank
-    @Size(min = 2, max = 20)
     private String name;
 
     @Builder
-    public OwnerCreatesPetDto(@Size(min = 2, max = 20) String name, Long petTypeId, LocalDate birthDate, Long ownerId) {
+    public OwnerCreatesPetDto(String name, Long petTypeId, LocalDate birthDate, Long ownerId) {
         super(petTypeId, birthDate);
         this.name = name;
         this.ownerId = ownerId;

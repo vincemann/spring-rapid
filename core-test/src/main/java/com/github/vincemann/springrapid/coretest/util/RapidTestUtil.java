@@ -4,9 +4,14 @@ import com.github.vincemann.springrapid.core.model.IdentifiableEntity;
 import com.github.vincemann.springrapid.core.service.CrudService;
 import com.github.vincemann.springrapid.core.service.exception.BadEntityException;
 import com.github.vincemann.springrapid.core.service.exception.EntityNotFoundException;
+import com.github.vincemann.springrapid.core.util.IdPropertyNameUtils;
+import com.google.common.collect.Sets;
 import org.springframework.data.repository.CrudRepository;
+import org.springframework.util.ReflectionUtils;
 
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
@@ -18,6 +23,17 @@ public class RapidTestUtil {
             throw new IllegalArgumentException("No Entity found with id: " + id);
         }
         return (E) byId.get();
+    }
+
+    public static String[] dtoIdProperties(Class<?> entityClass) {
+        List<String> idFields = new ArrayList<>();
+        ReflectionUtils.doWithFields(entityClass,field -> {
+            if (IdPropertyNameUtils.isIdField(field.getName()) ||
+            IdPropertyNameUtils.isCollectionIdField(field.getName())){
+                idFields.add(field.getName());
+            }
+        });
+        return Sets.newHashSet(idFields).toArray(new String[0]);
     }
 
     public static <E extends IdentifiableEntity> E mustBePresentIn(CrudService service, Serializable id){

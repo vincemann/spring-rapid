@@ -21,20 +21,13 @@ import java.util.Optional;
 
 import static com.github.vincemann.ezcompare.Comparator.compare;
 import static com.github.vincemann.springrapid.coretest.service.PropertyMatchers.propertyAssert;
-import static com.github.vincemann.springrapid.coretest.util.RapidTestUtil.createUpdateJsonLine;
-import static com.github.vincemann.springrapid.coretest.util.RapidTestUtil.createUpdateJsonRequest;
+import static com.github.vincemann.springrapid.coretest.util.RapidTestUtil.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 
 public class OwnerControllerTest extends AbstractControllerIntegrationTest<OwnerController, OwnerService> {
 
 
-    @Override
-    protected DefaultMockMvcBuilder createMvcBuilder() {
-        DefaultMockMvcBuilder mvcBuilder = super.createMvcBuilder();
-        mvcBuilder.apply(SecurityMockMvcConfigurers.springSecurity());
-        return mvcBuilder;
-    }
 
     @Test
     public void canRegisterOwner() throws Exception {
@@ -113,7 +106,7 @@ public class OwnerControllerTest extends AbstractControllerIntegrationTest<Owner
     }
 
     @Test
-    public void ownerCanUpdateOwnPet() throws Exception {
+    public void canUpdateOwnPetsPetType() throws Exception {
         String token = registerOwnerWithPets(kahn, OWNER_KAHN_EMAIL, OWNER_KAHN_PASSWORD, bella);
         Pet dbBella = petRepository.findByName(BELLA).get();
         Owner dbOwner = ownerRepository.findByLastName(OWNER_KAHN).get();
@@ -140,13 +133,15 @@ public class OwnerControllerTest extends AbstractControllerIntegrationTest<Owner
         String updateJson = createUpdateJsonRequest(
                 createUpdateJsonLine("add", "/illnessIds", savedDogPetType.getId().toString())
         );
-        FullPetDto updatedPetDto = perform2xx(petController.update(updateJson, dbBella.getId().toString())
-                        .header(HttpHeaders.AUTHORIZATION, token),
-                FullPetDto.class);
+        mvc.perform(petController.update(updateJson, dbBella.getId().toString())
+                        .header(HttpHeaders.AUTHORIZATION, token))
+                .andExpect(status().isForbidden());
 
         com.github.vincemann.springrapid.acldemo.model.PetType dbDgoType = petTypeRepository.findById(savedDogPetType.getId()).get();
         Assertions.assertEquals(dbDgoType, dbBella.getPetType());
     }
+
+
 
     @Test
     public void ownerCantUpdateForeignPet() throws Exception {
@@ -169,6 +164,37 @@ public class OwnerControllerTest extends AbstractControllerIntegrationTest<Owner
         com.github.vincemann.springrapid.acldemo.model.PetType dbCatType = petTypeRepository.findById(savedCatPetType.getId()).get();
         Assertions.assertEquals(dbCatType, dbKitty.getPetType());
     }
+
+    @Test
+    public void ownerCanReadOwnPet() throws Exception {
+        String ownerToken = registerOwnerWithPets(kahn, OWNER_KAHN_EMAIL, OWNER_KAHN_PASSWORD, bella);
+        Pet dbBella = petRepository.findByName(BELLA).get();
+        FullPetDto fullPetDto = perform2xx(petController.find(dbBella.getId().toString())
+                .header(HttpHeaders.AUTHORIZATION, ownerToken),
+                FullPetDto.class);
+
+        compare(fullPetDto).with(dbBella)
+                .properties()
+                .all()
+                .ignore(dtoIdProperties(FullPetDto.class))
+                .assertEqual();
+    }
+
+    @Test
+    public void ownerCantReadForeignPet() throws Exception {
+        String ownerToken = registerOwnerWithPets(kahn, OWNER_KAHN_EMAIL, OWNER_KAHN_PASSWORD, bella);
+        String meierToken = registerOwnerWithPets(meier, OWNER_MEIER_EMAIL, OWNER_MEIER_PASSWORD, kitty);
+
+        Pet dbBella = petRepository.findByName(BELLA).get();
+        Pet dbKitty = petRepository.findByName(KITTY).get();
+        mvc.perform(petController.find(dbKitty.getId().toString())
+                        .header(HttpHeaders.AUTHORIZATION, ownerToken))
+                .andExpect(status().isForbidden());
+    }
+
+
+
+
 
 
 }

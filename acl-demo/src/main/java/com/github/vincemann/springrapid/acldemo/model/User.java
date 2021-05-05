@@ -18,7 +18,7 @@ import java.util.Set;
 @ToString(callSuper = true)
 public class User extends AbstractUser<Long> {
 
-	// only for register purposes
+	// only used for register purposes, to prevent guessing attacks and will be null after registration process
 	@Nullable
 	private String uuid;
 

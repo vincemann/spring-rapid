@@ -71,7 +71,7 @@ public abstract class AbstractUserController<U extends AbstractUser<ID>, ID exte
 		log.debug("Getting context ");
 		Map<String, Object> context = getSecuredUserService().getContext();
 		log.debug("Returning context: " + context);
-		return ok(getJsonMapper().writeValueAsString(context));
+		return ok(getJsonMapper().writeDto(context));
 	}
 
 
@@ -88,7 +88,7 @@ public abstract class AbstractUserController<U extends AbstractUser<ID>, ID exte
 			HttpServletResponse response) throws BadEntityException, IOException, EntityNotFoundException, AlreadyRegisteredException {
 
 		String jsonDto = readBody(request);
-		Object signupDto = getJsonMapper().readValue(jsonDto,
+		Object signupDto = getJsonMapper().readDto(jsonDto,
 				createDtoClass(getAuthProperties().getController().getSignupUrl(), Direction.REQUEST, null));
 		getDtoValidationStrategy().validate(signupDto);
 		log.debug("Signing up: " + signupDto);
@@ -99,7 +99,7 @@ public abstract class AbstractUserController<U extends AbstractUser<ID>, ID exte
 		appendFreshTokenOf(saved,response);
 		Object dto = getDtoMapper().mapToDto(saved,
 				createDtoClass(getAuthProperties().getController().getSignupUrl(), Direction.RESPONSE, saved));
-		return ok(getJsonMapper().writeValueAsString(dto));
+		return ok(getJsonMapper().writeDto(dto));
 	}
 
 	/**
@@ -135,7 +135,7 @@ public abstract class AbstractUserController<U extends AbstractUser<ID>, ID exte
 		appendFreshTokenOf(saved,response);
 		Object dto = getDtoMapper().mapToDto(saved,
 				createDtoClass(getAuthProperties().getController().getVerifyUserUrl(), Direction.RESPONSE, saved));
-		return ok(getJsonMapper().writeValueAsString(dto));
+		return ok(getJsonMapper().writeDto(dto));
 	}
 
 
@@ -161,7 +161,7 @@ public abstract class AbstractUserController<U extends AbstractUser<ID>, ID exte
 //			@RequestBody ResetPasswordForm form,
 			HttpServletRequest request,HttpServletResponse response) throws IOException, BadEntityException, EntityNotFoundException, BadTokenException {
 		String body = readBody(request);
-		ResetPasswordDto form = getJsonMapper().readValue(body, ResetPasswordDto.class);
+		ResetPasswordDto form = getJsonMapper().readDto(body, ResetPasswordDto.class);
 		getDtoValidationStrategy().validate(form);
 
 		log.debug("Resetting password ... ");
@@ -169,7 +169,7 @@ public abstract class AbstractUserController<U extends AbstractUser<ID>, ID exte
 		appendFreshTokenOf(saved,response);
 		Object dto = getDtoMapper().mapToDto(saved,
 				createDtoClass(getAuthProperties().getController().resetPasswordUrl, Direction.RESPONSE, saved));
-		return ok(getJsonMapper().writeValueAsString(dto));
+		return ok(getJsonMapper().writeDto(dto));
 	}
 
 
@@ -186,7 +186,7 @@ public abstract class AbstractUserController<U extends AbstractUser<ID>, ID exte
 		U user = byEmail.get();
 		Object responseDto = getDtoMapper().mapToDto(user,
 				createDtoClass(getAuthProperties().getController().getFetchByEmailUrl(), Direction.RESPONSE, user));
-		return ok(getJsonMapper().writeValueAsString(responseDto));
+		return ok(getJsonMapper().writeDto(responseDto));
 	}
 
 	
@@ -200,7 +200,7 @@ public abstract class AbstractUserController<U extends AbstractUser<ID>, ID exte
 			HttpServletResponse response) throws BadEntityException, EntityNotFoundException, IdFetchingException, IOException {
 		ID id = fetchId(request);
 		String body = readBody(request);
-		ChangePasswordDto form = getJsonMapper().readValue(body, ChangePasswordDto.class);
+		ChangePasswordDto form = getJsonMapper().readDto(body, ChangePasswordDto.class);
 		getDtoValidationStrategy().validate(form);
 
 		log.debug("Changing password of user with id: " + id);
@@ -220,7 +220,7 @@ public abstract class AbstractUserController<U extends AbstractUser<ID>, ID exte
 								   /*@RequestBody RequestEmailChangeForm emailChangeForm*/,HttpServletResponse response) throws BadEntityException, EntityNotFoundException, IdFetchingException, IOException, AlreadyRegisteredException {
 		ID id = fetchId(request);
 		String body = readBody(request);
-		RequestEmailChangeForm form = getJsonMapper().readValue(body, RequestEmailChangeForm.class);
+		RequestEmailChangeForm form = getJsonMapper().readDto(body, RequestEmailChangeForm.class);
 		getDtoValidationStrategy().validate(form);
 		log.debug("Requesting email change for user with " + id);
 		U user = fetchUser(id);
@@ -246,7 +246,7 @@ public abstract class AbstractUserController<U extends AbstractUser<ID>, ID exte
 		appendFreshTokenOf(saved,response);
 		Object responseDto = getDtoMapper().mapToDto(saved,
 				createDtoClass(getAuthProperties().getController().changeEmailUrl, Direction.RESPONSE, saved));
-		return ok(getJsonMapper().writeValueAsString(responseDto));
+		return ok(getJsonMapper().writeDto(responseDto));
 	}
 
 
@@ -272,7 +272,7 @@ public abstract class AbstractUserController<U extends AbstractUser<ID>, ID exte
 		}
 		// result = {token:asfsdfjsdjfnd}
 		return ok(
-				getJsonMapper().writeValueAsString(
+				getJsonMapper().writeDto(
 						LemonMapUtils.mapOf("token", token)));
 	}
 

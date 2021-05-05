@@ -125,7 +125,7 @@ public abstract class GenericCrudController
     public ResponseEntity<String> create(HttpServletRequest request, HttpServletResponse response) throws BadEntityException, EntityNotFoundException, IOException {
         String json = readBody(request);
         Class<?> dtoClass = createDtoClass(getCreateUrl(), Direction.REQUEST, null);
-        jsonDtoPropertyValidator.validateDto(json,dtoClass,getEntityClass());
+        jsonDtoPropertyValidator.validateDto(json,dtoClass);
         Object dto = getJsonMapper().readDto(json, dtoClass);
         beforeCreate(dto, request, response);
         dtoValidationStrategy.validate(dto);
@@ -149,7 +149,7 @@ public abstract class GenericCrudController
         E saved = savedOptional.get();
         Class<?> dtoClass = createDtoClass(getUpdateUrl(), Direction.REQUEST, saved);
         beforeUpdate(dtoClass, id, patchString, request, response);
-        jsonDtoPropertyValidator.validatePatch(patchString,dtoClass,getEntityClass());
+        jsonDtoPropertyValidator.validatePatch(patchString,dtoClass);
         Object patchDto = dtoMapper.mapToDto(saved, dtoClass);
         patchDto = jsonPatchStrategy.applyPatch(saved,patchDto, patchString);
         log.debug("finished patchDto: " + patchDto);

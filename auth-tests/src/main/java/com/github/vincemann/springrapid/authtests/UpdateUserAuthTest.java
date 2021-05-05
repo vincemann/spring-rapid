@@ -72,7 +72,7 @@ public abstract class UpdateUserAuthTest extends AbstractRapidAuthTest
 
 			mvc.perform(update(patchRole,getUser().getId())
 				.header(HttpHeaders.AUTHORIZATION, tokens.get(getUser().getId())))
-				.andExpect(status().is(400));
+				.andExpect(status().is(403));
 
 		AbstractUser<Long> updated = getUserService().findById(getUser().getId()).get();
 
@@ -153,7 +153,7 @@ public abstract class UpdateUserAuthTest extends AbstractRapidAuthTest
 	public void userCantUpdateOwnEmail() throws Exception {
 		mvc.perform(update(patchEmail,getUser().getId())
 				.header(HttpHeaders.AUTHORIZATION, tokens.get(getUser().getId())))
-				.andExpect(status().is(400));
+				.andExpect(status().is(403));
 	}
 
 
