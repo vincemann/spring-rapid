@@ -9,6 +9,7 @@ import com.github.vincemann.springrapid.auth.service.UserService;
 
 import com.github.vincemann.springrapid.acl.service.extensions.AbstractAclExtension;
 import com.github.vincemann.springrapid.core.model.IdentifiableEntity;
+import com.github.vincemann.springrapid.core.security.Roles;
 import com.github.vincemann.springrapid.core.service.exception.BadEntityException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.acls.domain.BasePermission;
@@ -51,10 +52,10 @@ public class AclUserExtension
     public void savePostSignupAclInfo(AbstractUser saved){
         savePermissionForUserOverEntity(saved.getEmail(),saved, BasePermission.ADMINISTRATION);
         if (!saved.getRoles().contains(AuthRoles.ADMIN)) {
-            saveFullPermissionForAdminOverEntity(saved);
+            savePermissionForRoleOverEntity(saved, Roles.ADMIN, BasePermission.ADMINISTRATION);
         }else {
             // admins can only read other admins
-            savePermissionForUserOverEntity(AuthRoles.ADMIN,saved, BasePermission.READ);
+            savePermissionForRoleOverEntity(saved,AuthRoles.ADMIN, BasePermission.READ);
         }
     }
 

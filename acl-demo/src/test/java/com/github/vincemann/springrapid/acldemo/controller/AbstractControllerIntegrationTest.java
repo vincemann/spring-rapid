@@ -1,14 +1,21 @@
 package com.github.vincemann.springrapid.acldemo.controller;
 
+import com.github.vincemann.springrapid.acldemo.auth.MyRoles;
+import com.github.vincemann.springrapid.acldemo.controller.templates.OwnerControllerTestTemplate;
 import com.github.vincemann.springrapid.acldemo.controller.templates.PetControllerTestTemplate;
+import com.github.vincemann.springrapid.acldemo.controller.templates.VetControllerTestTemplate;
 import com.github.vincemann.springrapid.acldemo.dto.owner.CreateOwnerDto;
 import com.github.vincemann.springrapid.acldemo.dto.owner.FullOwnerDto;
 import com.github.vincemann.springrapid.acldemo.dto.pet.FullPetDto;
 import com.github.vincemann.springrapid.acldemo.dto.pet.OwnerCreatesPetDto;
+import com.github.vincemann.springrapid.acldemo.dto.user.FullUserDto;
 import com.github.vincemann.springrapid.acldemo.dto.user.UUIDSignupResponseDto;
+import com.github.vincemann.springrapid.acldemo.dto.vet.CreateVetDto;
+import com.github.vincemann.springrapid.acldemo.dto.vet.FullVetDto;
 import com.github.vincemann.springrapid.acldemo.model.*;
 import com.github.vincemann.springrapid.acldemo.repositories.*;
 import com.github.vincemann.springrapid.acldemo.service.*;
+import com.github.vincemann.springrapid.auth.domain.AuthRoles;
 import com.github.vincemann.springrapid.auth.domain.dto.SignupDto;
 import com.github.vincemann.springrapid.authtest.controller.template.UserControllerTestTemplate;
 import com.github.vincemann.springrapid.core.controller.GenericCrudController;
@@ -30,6 +37,11 @@ import java.util.HashSet;
 import java.util.Optional;
 import java.util.Set;
 
+import static com.github.vincemann.springrapid.coretest.service.PropertyMatchers.propertyAssert;
+import static com.github.vincemann.springrapid.coretest.util.RapidTestUtil.createUpdateJsonLine;
+import static com.github.vincemann.springrapid.coretest.util.RapidTestUtil.createUpdateJsonRequest;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+
 public class AbstractControllerIntegrationTest<C extends GenericCrudController<?,Long,S,?,?>,S extends CrudService<?,Long>>
         extends IntegrationCrudControllerTest<C,S>
 {
@@ -40,6 +52,7 @@ public class AbstractControllerIntegrationTest<C extends GenericCrudController<?
     protected final Owner OwnerType = new Owner();
     protected final Pet PetType = new Pet();
     protected final Illness IllnessType = new Illness();
+    protected final User UserType = new User();
 
 
     protected static final String EMAIL_SUFFIX = "@guerilla-mail.com";
@@ -161,8 +174,13 @@ public class AbstractControllerIntegrationTest<C extends GenericCrudController<?
     protected UserControllerTestTemplate userController;
 
     @Autowired
+    protected OwnerControllerTestTemplate ownerController;
+
+    @Autowired
     protected PetControllerTestTemplate petController;
 
+    @Autowired
+    protected VetControllerTestTemplate vetController;
 
     @Autowired
     protected RapidSecurityContext<RapidAuthenticatedPrincipal> securityContext;
@@ -366,6 +384,33 @@ public class AbstractControllerIntegrationTest<C extends GenericCrudController<?
         return token;
     }
 
+    protected Vet registerVet(Vet vet, String email, String password) throws Exception {
+        SignupDto signupDto = SignupDto.builder()
+                .email(email)
+                .password(password)
+                .build();
+        UUIDSignupResponseDto signedUpDto = perform2xx(userController.signup(signupDto),UUIDSignupResponseDto.class);
+        String uuid = signedUpDto.getUuid();
+
+        CreateVetDto createVetDto = new CreateVetDto(vet,uuid);
+        FullVetDto fullVetDto = perform2xx(vetController.create(createVetDto), FullVetDto.class);
+        return vetService.findById(fullVetDto.getId()).get();
+    }
+
+    protected Vet registerEnabledVet(Vet vet, String email, String password) throws Exception {
+        Vet registerVet = registerVet(vet, email, password);
+        String adminToken = userController.login2xx(ADMIN_EMAIL, ADMIN_PASSWORD);
+        String verifyVetJson = createUpdateJsonRequest(
+                createUpdateJsonLine("add", "/roles/-", MyRoles.VET),
+                createUpdateJsonLine("remove", "/roles", MyRoles.NEW_VET)
+        );
+
+        mvc.perform(userController.update(verifyVetJson, registerVet.getUser().getId().toString())
+                .header(HttpHeaders.AUTHORIZATION, adminToken))
+                .andExpect(status().is2xxSuccessful());
+
+        return vetRepository.findById(registerVet.getId()).get();
+    }
 
     protected Owner registerOwner(Owner owner, String email, String password) throws Exception {
         SignupDto signupDto = SignupDto.builder()
@@ -376,7 +421,7 @@ public class AbstractControllerIntegrationTest<C extends GenericCrudController<?
         String uuid = signedUpDto.getUuid();
 
         CreateOwnerDto createOwnerDto = new CreateOwnerDto(owner,uuid);
-        FullOwnerDto fullOwnerDto = perform2xx(create(createOwnerDto), FullOwnerDto.class);
+        FullOwnerDto fullOwnerDto = perform2xx(ownerController.create(createOwnerDto), FullOwnerDto.class);
         return ownerService.findById(fullOwnerDto.getId()).get();
     }
 

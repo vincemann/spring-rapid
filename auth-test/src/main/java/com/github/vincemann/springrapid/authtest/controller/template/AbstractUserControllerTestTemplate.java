@@ -57,6 +57,7 @@ public abstract class AbstractUserControllerTestTemplate<C extends AbstractUserC
         return getMvc().perform(login_raw(email,password));
     }
 
+
     protected MockHttpServletRequestBuilder login_raw(String email, String password) {
         return post(getController().getAuthProperties().getController().getLoginUrl())
                 .param("username", email)
