@@ -18,7 +18,6 @@ import java.io.Serializable;
 import java.util.HashSet;
 import java.util.Set;
 
-import static org.junit.jupiter.api.Assertions.*;
 
 class RapidJsonDtoPropertyValidatorTest {
 
@@ -43,8 +42,10 @@ class RapidJsonDtoPropertyValidatorTest {
         private String name;
         private Set<User> users;
         private String secret;
-
+        private User user;
     }
+
+
 
     @Builder
     @AllArgsConstructor
@@ -52,6 +53,7 @@ class RapidJsonDtoPropertyValidatorTest {
     static class TestDto implements Serializable {
         private String name;
         private Set<Long> userIds;
+        private Long userId;
     }
 
     @Builder
@@ -75,8 +77,9 @@ class RapidJsonDtoPropertyValidatorTest {
     @Test
     public void validPatch() throws BadEntityException, AccessDeniedException, JsonProcessingException {
         String jsonPatch = RapidTestUtil.createUpdateJsonRequest(
-                RapidTestUtil.createUpdateJsonLine("replace", "name", "newName"),
-                RapidTestUtil.createUpdateJsonLine("add", "userIds", "3")
+                RapidTestUtil.createUpdateJsonLine("replace", "/name", "newName"),
+                RapidTestUtil.createUpdateJsonLine("add", "/userIds/-", "3"),
+                RapidTestUtil.createUpdateJsonLine("replace", "/userId/", "42")
         );
         Assertions.assertDoesNotThrow(() -> jsonDtoPropertyValidator.validatePatch(jsonPatch,TestDto.class,TestEntity.class));
 
@@ -85,8 +88,8 @@ class RapidJsonDtoPropertyValidatorTest {
     @Test
     public void invalidPatch_unknownProperty() throws BadEntityException, AccessDeniedException, JsonProcessingException {
         String jsonPatch = RapidTestUtil.createUpdateJsonRequest(
-                RapidTestUtil.createUpdateJsonLine("replace", "names", "newName"),
-                RapidTestUtil.createUpdateJsonLine("add", "userIds", "3")
+                RapidTestUtil.createUpdateJsonLine("replace", "/unknown", "??"),
+                RapidTestUtil.createUpdateJsonLine("add", "/userIds/-", "3")
         );
         Assertions.assertThrows(BadEntityException.class, () -> jsonDtoPropertyValidator.validatePatch(jsonPatch,TestDto.class,TestEntity.class));
 
@@ -95,9 +98,9 @@ class RapidJsonDtoPropertyValidatorTest {
     @Test
     public void invalidPatch_forbiddenProperty() throws BadEntityException, AccessDeniedException, JsonProcessingException {
         String jsonPatch = RapidTestUtil.createUpdateJsonRequest(
-                RapidTestUtil.createUpdateJsonLine("replace", "name", "newName"),
-                RapidTestUtil.createUpdateJsonLine("replace", "secret", "newSecret"),
-                RapidTestUtil.createUpdateJsonLine("add", "userIds", "3")
+                RapidTestUtil.createUpdateJsonLine("replace", "/name", "newName"),
+                RapidTestUtil.createUpdateJsonLine("replace", "/secret", "newSecret"),
+                RapidTestUtil.createUpdateJsonLine("remove", "/userIds/-", "3")
         );
         Assertions.assertThrows(AccessDeniedException.class, () -> jsonDtoPropertyValidator.validatePatch(jsonPatch,TestDto.class,TestEntity.class));
 
@@ -108,6 +111,7 @@ class RapidJsonDtoPropertyValidatorTest {
     public void validDto() throws BadEntityException, AccessDeniedException, JsonProcessingException {
         TestDto testDto = TestDto.builder()
                 .name("newName")
+                .userId(6L)
                 .userIds(new HashSet<>())
                 .build();
         String jsonDto = objectMapper.writeValueAsString(testDto);

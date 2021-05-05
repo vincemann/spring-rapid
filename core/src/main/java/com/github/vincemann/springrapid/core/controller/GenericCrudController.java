@@ -125,7 +125,8 @@ public abstract class GenericCrudController
     public ResponseEntity<String> create(HttpServletRequest request, HttpServletResponse response) throws BadEntityException, EntityNotFoundException, IOException {
         String json = readBody(request);
         Class<?> dtoClass = createDtoClass(getCreateUrl(), Direction.REQUEST, null);
-        Object dto = getJsonMapper().readDto(json, dtoClass,getEntityClass());
+        jsonDtoPropertyValidator.validateDto(json,dtoClass,getEntityClass());
+        Object dto = getJsonMapper().readDto(json, dtoClass);
         beforeCreate(dto, request, response);
         dtoValidationStrategy.validate(dto);
         //i expect that dto has the right dto type -> callers responsibility

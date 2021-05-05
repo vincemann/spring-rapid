@@ -32,19 +32,19 @@ public class AbstractControllerTestTemplate<C extends GenericCrudController> {
     }
 
     public  <Dto> Dto deserialize(String s, Class<Dto> dtoClass) throws IOException {
-        return getController().getJsonMapper().readValue(s, dtoClass);
+        return getController().getJsonMapper().readDto(s, dtoClass);
     }
 
     public  <Dto> Dto deserialize(String s, TypeReference<?> dtoClass) throws IOException {
-        return (Dto) getController().getJsonMapper().readValue(s, dtoClass);
+        return getController().getJsonMapper().readDto(s, dtoClass);
     }
 
     public  <Dto> Dto deserialize(String s, JavaType dtoClass) throws IOException {
-        return getController().getJsonMapper().readValue(s, dtoClass);
+        return getController().getJsonMapper().readDto(s, dtoClass);
     }
 
     public  String serialize(Object o) throws JsonProcessingException {
-        return getController().getJsonMapper().writeValueAsString(o);
+        return getController().getJsonMapper().writeDto(o);
     }
 
 
