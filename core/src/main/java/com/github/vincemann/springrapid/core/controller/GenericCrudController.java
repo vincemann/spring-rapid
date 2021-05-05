@@ -148,7 +148,7 @@ public abstract class GenericCrudController
         E saved = savedOptional.get();
         Class<?> dtoClass = createDtoClass(getUpdateUrl(), Direction.REQUEST, saved);
         beforeUpdate(dtoClass, id, patchString, request, response);
-        jsonDtoPropertyValidator.validate(patchString,dtoClass,getEntityClass());
+        jsonDtoPropertyValidator.validatePatch(patchString,dtoClass,getEntityClass());
         Object patchDto = dtoMapper.mapToDto(saved, dtoClass);
         patchDto = jsonPatchStrategy.applyPatch(saved,patchDto, patchString);
         log.debug("finished patchDto: " + patchDto);
@@ -563,7 +563,7 @@ public abstract class GenericCrudController
     }
 
     @Autowired
-    public void injectJsonMapper(ObjectMapper mapper) {
+    public void injectJsonMapper(JsonMapper mapper) {
         this.jsonMapper = mapper;
     }
 

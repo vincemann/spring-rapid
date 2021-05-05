@@ -14,7 +14,7 @@ public class RapidJsonMapper implements JsonMapper {
 
     @Override
     public Object readDto(String json, Class dtoClass, Class entityClass) throws JsonProcessingException, BadEntityException, AccessDeniedException {
-        jsonDtoPropertyValidator.validate(json,dtoClass,entityClass);
+        jsonDtoPropertyValidator.validateDto(json,dtoClass,entityClass);
         return objectMapper.readValue(json,dtoClass);
     }
 
