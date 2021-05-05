@@ -29,9 +29,17 @@ public class RapidJsonDtoPropertyValidator implements JsonDtoPropertyValidator {
     public void validatePatch(String patch, Class dtoClass, Class entityClass) throws BadEntityException, AccessDeniedException, JsonProcessingException {
         JsonNode rootNode = objectMapper.readTree(patch);
         List<JsonNode> pathNodes = rootNode.findValues("path");
-        Set<String> propertyNames = pathNodes.stream().map(JsonNode::asText).collect(Collectors.toSet());
+        Set<String> propertyNames = pathNodes.stream()
+                .map(jsonNode -> sanitizePatchStringPathProperty(jsonNode.asText()))
+                .collect(Collectors.toSet());
         Iterator<String> propertyNameIterator = propertyNames.iterator();
         checkPropertyNames(propertyNameIterator,dtoClass,entityClass);
+    }
+
+    protected String sanitizePatchStringPathProperty(String path){
+        path = path.replace("/","");
+        path = path.replace("-","");
+        return path;
     }
 
     protected void checkPropertyNames(Iterator<String> propertyNameIterator, Class dtoClass, Class entityClass) throws BadEntityException {
