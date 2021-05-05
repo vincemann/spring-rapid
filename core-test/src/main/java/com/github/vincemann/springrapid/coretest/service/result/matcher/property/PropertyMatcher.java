@@ -17,7 +17,7 @@ public class PropertyMatcher {
 
     //todo add support for propertyname in string form instead of getter method ref
 
-    public PropertyMatcher(IdentifiableEntity compareRoot) {
+    public PropertyMatcher(Object compareRoot) {
         this.compareRoot = compareRoot;
     }
 

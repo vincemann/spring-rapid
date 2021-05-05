@@ -3,6 +3,8 @@ package com.github.vincemann.springrapid.acldemo.controller;
 import com.github.vincemann.springrapid.acldemo.auth.MyRoles;
 import com.github.vincemann.springrapid.acldemo.dto.owner.CreateOwnerDto;
 import com.github.vincemann.springrapid.acldemo.dto.owner.FullOwnerDto;
+import com.github.vincemann.springrapid.acldemo.dto.pet.FullPetDto;
+import com.github.vincemann.springrapid.acldemo.dto.user.FullUserDto;
 import com.github.vincemann.springrapid.acldemo.dto.user.UUIDSignupResponseDto;
 import com.github.vincemann.springrapid.acldemo.dto.vet.CreateVetDto;
 import com.github.vincemann.springrapid.acldemo.dto.vet.FullVetDto;
@@ -10,6 +12,8 @@ import com.github.vincemann.springrapid.acldemo.model.*;
 import com.github.vincemann.springrapid.acldemo.service.VetService;
 import com.github.vincemann.springrapid.auth.domain.AuthRoles;
 import com.github.vincemann.springrapid.auth.domain.dto.SignupDto;
+import com.github.vincemann.springrapid.coretest.util.RapidTestUtil;
+import org.hibernate.usertype.UserType;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpHeaders;
@@ -22,8 +26,7 @@ import static com.github.vincemann.springrapid.coretest.util.RapidTestUtil.creat
 import static com.github.vincemann.springrapid.coretest.util.RapidTestUtil.createUpdateJsonRequest;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-public class VetControllerTest extends AbstractControllerIntegrationTest<VetController, VetService>
-{
+public class VetControllerTest extends AbstractControllerIntegrationTest<VetController, VetService> {
 
 
     @Test
@@ -71,7 +74,60 @@ public class VetControllerTest extends AbstractControllerIntegrationTest<VetCont
         Vet dbDiCaprio = vetDiCaprioByLastName.get();
 
         Assertions.assertEquals(dbUserDiCaprio, dbDiCaprio.getUser());
+    }
 
+    @Test
+    public void newVetCantReadPets() throws Exception {
+        registerOwnerWithPets(kahn, OWNER_KAHN_EMAIL, OWNER_KAHN_PASSWORD, bella);
+        Pet dbBella = petRepository.findByName(BELLA).get();
+
+        Vet vet = registerVet(vetDiCaprio, VET_DICAPRIO_EMAIL, VET_DICAPRIO_PASSWORD);
+        String dicaprioToken = userController.login2xx(VET_DICAPRIO_EMAIL, VET_DICAPRIO_PASSWORD);
+
+        mvc.perform(petController.find(dbBella.getId().toString())
+                .header(HttpHeaders.AUTHORIZATION, dicaprioToken))
+                .andExpect(status().isForbidden());
+    }
+
+
+
+    @Test
+    public void canRegisterVet_andAdminEnables() throws Exception {
+        Vet vet = registerVet(vetDiCaprio, VET_DICAPRIO_EMAIL, VET_DICAPRIO_PASSWORD);
+        String adminToken = userController.login2xx(ADMIN_EMAIL, ADMIN_PASSWORD);
+        String verifyVetJson = createUpdateJsonRequest(
+                createUpdateJsonLine("add", "/roles/-", MyRoles.VET),
+                createUpdateJsonLine("remove", "/roles", MyRoles.NEW_VET)
+        );
+
+        FullUserDto responseVetUserDto = perform2xx(userController.update(verifyVetJson, vet.getUser().getId().toString())
+                .header(HttpHeaders.AUTHORIZATION, adminToken), FullUserDto.class);
+
+        Vet updatedDbVet = vetRepository.findById(vet.getId()).get();
+        propertyAssert(responseVetUserDto)
+                .assertContains(responseVetUserDto::getRoles, MyRoles.VET, AuthRoles.UNVERIFIED, AuthRoles.USER)
+                .assertSize(responseVetUserDto::getRoles, 3);
+
+        propertyAssert(updatedDbVet.getUser())
+                .assertContains(UserType::getRoles, MyRoles.VET, AuthRoles.UNVERIFIED, AuthRoles.USER)
+                .assertSize(UserType::getRoles, 3);
+    }
+
+    @Test
+    public void enabledVetCanReadPets() throws Exception {
+        registerOwnerWithPets(kahn, OWNER_KAHN_EMAIL, OWNER_KAHN_PASSWORD, bella);
+        Pet dbBella = petRepository.findByName(BELLA).get();
+
+        Vet vet = registerEnabledVet(vetDiCaprio, VET_DICAPRIO_EMAIL, VET_DICAPRIO_PASSWORD);
+        String dicaprioToken = userController.login2xx(VET_DICAPRIO_EMAIL, VET_DICAPRIO_PASSWORD);
+
+        FullPetDto responsePetDto = perform2xx(petController.find(dbBella.getId().toString())
+                .header(HttpHeaders.AUTHORIZATION, dicaprioToken), FullPetDto.class);
+
+        compare(responsePetDto).with(dbBella)
+                .properties().all()
+                .ignore(RapidTestUtil.dtoIdProperties(FullPetDto.class))
+                .assertEqual();
     }
 
 //    @Test

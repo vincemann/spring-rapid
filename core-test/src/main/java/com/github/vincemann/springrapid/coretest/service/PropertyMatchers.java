@@ -9,7 +9,7 @@ public class PropertyMatchers {
      * @param compareRoot supply own Entity
      * @return
      */
-    public static PropertyMatcher propertyAssert(IdentifiableEntity compareRoot) {
+    public static PropertyMatcher propertyAssert(Object compareRoot) {
         return new PropertyMatcher(compareRoot);
     }
 

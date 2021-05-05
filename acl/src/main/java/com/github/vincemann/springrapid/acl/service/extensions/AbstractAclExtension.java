@@ -31,11 +31,16 @@ public abstract class AbstractAclExtension<S>
 
 
 
+//    @LogInteraction(Severity.TRACE)
+//    public void saveFullPermissionForAdminOverEntity(IdentifiableEntity<?> entity){
+//        //acl framework uses internally springs Authentication object
+//        securityContext.runAsAdmin(() -> getPermissionService().addPermissionForAuthorityOver(entity,
+//                BasePermission.ADMINISTRATION, Roles.ADMIN));
+//    }
+
     @LogInteraction(Severity.TRACE)
-    public void saveFullPermissionForAdminOverEntity(IdentifiableEntity<?> entity){
-        //acl framework uses internally springs Authentication object
-        securityContext.runAsAdmin(() -> getPermissionService().addPermissionForAuthorityOver(entity,
-                BasePermission.ADMINISTRATION, Roles.ADMIN));
+    public void savePermissionForRoleOverEntity(IdentifiableEntity<?> entity, String role, Permission permission){
+        securityContext.runAsAdmin(() ->getPermissionService().addPermissionForAuthorityOver(entity,permission, role));
     }
 
     @LogInteraction(Severity.TRACE)
