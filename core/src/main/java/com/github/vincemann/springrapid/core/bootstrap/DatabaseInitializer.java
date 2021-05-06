@@ -10,6 +10,6 @@ import lombok.Setter;
  */
 @Getter
 @Setter
-public abstract class DatabaseDataInitializer {
+public abstract class DatabaseInitializer {
     public abstract void init();
 }

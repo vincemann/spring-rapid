@@ -9,17 +9,17 @@ import java.util.List;
 //test executes this via TestExecutionListener
 public class DatabaseDataInitManager implements CommandLineRunner {
 
-    private List<DatabaseDataInitializer> initializers = new ArrayList<>();
+    private List<DatabaseInitializer> initializers = new ArrayList<>();
 
     //todo not required?
     @Autowired(required = false)
-    public void injectInitializers(List<DatabaseDataInitializer> initializers) {
+    public void injectInitializers(List<DatabaseInitializer> initializers) {
         this.initializers = initializers;
     }
 
     @Override
     public void run(String... args) throws Exception {
-        for (DatabaseDataInitializer initializer : initializers) {
+        for (DatabaseInitializer initializer : initializers) {
             initializer.init();
         }
     }

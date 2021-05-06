@@ -1,7 +1,9 @@
 package com.github.vincemann.springrapid.coretest;
 
+import com.github.vincemann.springrapid.coretest.bootstrap.DatabaseInitializerTestExecutionListener;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.BeforeEach;
+import org.springframework.test.context.TestExecutionListeners;
 import org.springframework.util.ReflectionUtils;
 
 import java.lang.reflect.Field;
@@ -14,6 +16,7 @@ import java.util.Set;
  * {@link TestInitializable}.
  */
 @Slf4j
+@TestExecutionListeners(value = DatabaseInitializerTestExecutionListener.class, mergeMode = TestExecutionListeners.MergeMode.MERGE_WITH_DEFAULTS)
 public abstract class InitializingTest {
 
     private List<BeforeEachMethodInitializable> beforeEachMethodInitializables = new ArrayList<>();

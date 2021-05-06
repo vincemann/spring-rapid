@@ -40,7 +40,7 @@ public abstract class AbstractAclExtension<S>
 
     @LogInteraction(Severity.TRACE)
     public void savePermissionForRoleOverEntity(IdentifiableEntity<?> entity, String role, Permission permission){
-        securityContext.runAsAdmin(() ->getPermissionService().addPermissionForAuthorityOver(entity,permission, role));
+        securityContext.runAsAdmin(() -> getPermissionService().addPermissionForAuthorityOver(entity,permission, role));
     }
 
     @LogInteraction(Severity.TRACE)

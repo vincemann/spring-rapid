@@ -17,7 +17,7 @@ import java.io.Serializable;
 
  */
 @Transactional
-public class SavedInheritsFromParentAclExtension<E extends IdentifiableEntity<Id> & AclParentAware,Id extends Serializable>
+public class SavedInheritsParentsAclExtension<E extends IdentifiableEntity<Id> & AclParentAware,Id extends Serializable>
                         extends AbstractAclExtension<CrudService<E,Id>>
                                  implements GenericCrudServiceExtension<CrudService<E,Id>,E,Id> {
 

@@ -51,6 +51,7 @@ public class ServiceExtensionProxyBuilder<S extends CrudService<E,Id>,E extends 
         return this;
     }
 
+
     public ServiceExtensionProxyBuilder<S,E,Id> toggleDefaultExtensions(Boolean enabled){
         if (enabled==null){
             enabled=true;

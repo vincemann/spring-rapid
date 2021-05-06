@@ -32,16 +32,15 @@ public class AnnotationCrudServiceProxyFactory implements BeanPostProcessor, App
     }
 
 
-
     @Override
     public Object postProcessAfterInitialization(Object bean, String beanName) throws BeansException {
         //log.debug("postProcessing bean : " + beanName);
         Object unwrappedBean = AopTestUtils.getUltimateTargetObject(bean);
-        if(unwrappedBean instanceof CrudService){
+        if (unwrappedBean instanceof CrudService) {
             List<DefineProxy> proxyDefinitions = ContainerAnnotationUtils.findAnnotations(unwrappedBean.getClass(), DefineProxy.class, DefineProxies.class);
             List<CreateProxy> toCreate = ContainerAnnotationUtils.findAnnotations(unwrappedBean.getClass(), CreateProxy.class, CreateProxies.class);
-            Map<String,CrudService> createdInternalProxies = new HashMap<>();
-            if(toCreate.isEmpty()){
+            Map<String, CrudService> createdInternalProxies = new HashMap<>();
+            if (toCreate.isEmpty()) {
                 return bean;
             }
             boolean primaryBeanRegistered = beanFactory.getBeanDefinition(beanName).isPrimary();
@@ -51,16 +50,16 @@ public class AnnotationCrudServiceProxyFactory implements BeanPostProcessor, App
 
             for (CreateProxy proxy : toCreate) {
                 // make sure there is only one primary bean
-                if(proxy.primary()){
-                    if(primaryBeanRegistered){
+                if (proxy.primary()) {
+                    if (primaryBeanRegistered) {
                         throw new IllegalArgumentException("Multiple ProxyBeans marked as primary");
                     }
-                    primaryBeanRegistered=true;
+                    primaryBeanRegistered = true;
                 }
 
                 GenericBeanDefinition proxyBeanDef
                         = createBeanDef(proxy.qualifiers(), proxy.primary(), ((Class<? extends CrudService>) serviceInterface));
-                String proxyBeanName = resolveProxyName(proxy.qualifiers(),proxy.primary(),proxy.name(),unwrappedBean.getClass());
+                String proxyBeanName = resolveProxyName(proxy.qualifiers(), proxy.primary(), proxy.name(), unwrappedBean.getClass());
                 log.debug("creating proxyBean with name: " + proxyBeanName);
 
                 // compose proxy instance by creating all internal proxies needed and form a proxy chain
@@ -69,18 +68,19 @@ public class AnnotationCrudServiceProxyFactory implements BeanPostProcessor, App
                     // try to find locally
                     CrudService internalProxy;
                     Optional<DefineProxy> proxyDefinition = proxyDefinitions.stream().filter(p -> p.name().equals(proxyName)).findFirst();
-                    if (proxyDefinition.isEmpty()){
+                    if (proxyDefinition.isEmpty()) {
+                        // did not find matching local proxy definition, must be a proxy from elsewhere
                         // try to find globally, proxy definitions name is assumed to be the global bean name
-                        if (beanFactory.containsBean(proxyName)){
+                        if (beanFactory.containsBean(proxyName)) {
                             internalProxy = (CrudService) beanFactory.getBean(proxyName);
-                        }else {
+                        } else {
                             throw new IllegalArgumentException("Proxy with name: " + proxyName + " could not be found. Make sure to create a local ProxyDefinition with this name or define a bean globally with that name");
                         }
-                    }else {
+                    } else {
                         // this is the normal case
                         // found local proxy definition, now create proxy
                         internalProxy = createdInternalProxies.get(beanName);
-                        if (internalProxy==null) {
+                        if (internalProxy == null) {
                             internalProxy = new ServiceExtensionProxyBuilder<>(lastProxiedBean)
                                     .addGenericExtensions(resolveExtensions(proxyDefinition.get().extensions()).toArray(new AbstractServiceExtension[0]))
                                     .toggleDefaultExtensions(proxyDefinition.get().defaultExtensionsEnabled())
@@ -88,15 +88,15 @@ public class AnnotationCrudServiceProxyFactory implements BeanPostProcessor, App
                             createdInternalProxies.put(proxyName, internalProxy);
                         }
                     }
-                    lastProxiedBean=internalProxy;
+                    lastProxiedBean = internalProxy;
                 }
                 // the last created proxy from the chain is the most outer proxy -> entry point for proxy chain -> gets autowired
                 CrudService proxyBean = lastProxiedBean;
 
                 log.trace("creating proxyBean : " + proxyBean);
                 log.trace("Registering beanDef of proxyBean first: " + proxyBeanDef);
-                beanFactory.registerBeanDefinition(proxyBeanName,proxyBeanDef);
-                beanFactory.registerSingleton(proxyBeanName,proxyBean);
+                beanFactory.registerBeanDefinition(proxyBeanName, proxyBeanDef);
+                beanFactory.registerSingleton(proxyBeanName, proxyBean);
                 log.trace("registered proxyBean.");
             }
         }
@@ -104,18 +104,17 @@ public class AnnotationCrudServiceProxyFactory implements BeanPostProcessor, App
     }
 
 
-
-    protected Class resolveServiceInterface(Object bean, String beanName){
+    protected Class resolveServiceInterface(Object bean, String beanName) {
         String entityName = ((CrudService) bean).getEntityClass().getSimpleName();
         String interfaceName = entityName + "Service";
         Optional<Class<?>> serviceInterfaceClass = Lists.newArrayList(bean.getClass().getInterfaces()).stream()
                 .filter(i -> i.getSimpleName().equals(interfaceName))
                 .findFirst();
-        Assert.isTrue(serviceInterfaceClass.isPresent(),"Could not find interface named: " + interfaceName +" for Service bean: " + beanName +" please create interface following namingConvention : 'entityName+Service'");
+        Assert.isTrue(serviceInterfaceClass.isPresent(), "Could not find interface named: " + interfaceName + " for Service bean: " + beanName + " please create interface following namingConvention : 'entityName+Service'");
         return serviceInterfaceClass.get();
     }
 
-    protected GenericBeanDefinition createBeanDef(Class<? extends Annotation>[] qualifiers, boolean primary, Class<? extends CrudService> beanClass){
+    protected GenericBeanDefinition createBeanDef(Class<? extends Annotation>[] qualifiers, boolean primary, Class<? extends CrudService> beanClass) {
         final GenericBeanDefinition serviceBeanDef = new GenericBeanDefinition();
         for (Class<? extends Annotation> qualifier : qualifiers) {
             Assert.isTrue(qualifier.isAnnotationPresent(Qualifier.class));
@@ -126,34 +125,50 @@ public class AnnotationCrudServiceProxyFactory implements BeanPostProcessor, App
         return serviceBeanDef;
     }
 
-    protected String resolveProxyName(Class<? extends Annotation>[] qualifiers,boolean primary,String beanName, Class beanType){
+    protected String resolveProxyName(Class<? extends Annotation>[] qualifiers, boolean primary, String beanName, Class beanType) {
         String name = beanName;
-        if(name.isEmpty()){
+        if (name.isEmpty()) {
             String prefix;
-            if(primary){
+            if (primary) {
                 prefix = "primary";
-            }else {
+            } else {
                 StringBuilder sb = new StringBuilder();
                 Arrays.stream(qualifiers)
                         .forEach(type -> sb.append(type.getSimpleName()));
                 prefix = sb.toString();
             }
-            return prefix+beanType.getSimpleName();
+            return prefix + beanType.getSimpleName();
         }
         return name;
     }
 
-    protected List<AbstractServiceExtension> resolveExtensions(Class<? extends AbstractServiceExtension>[] extensionTypeArr){
-        List<AbstractServiceExtension> plugins = new ArrayList<>();
-        ArrayList<Class<? extends AbstractServiceExtension>> extensionTypes = Lists.newArrayList(extensionTypeArr);
-        for (Class<? extends AbstractServiceExtension> extensionType : extensionTypes) {
-            AbstractServiceExtension extension = beanFactory.getBean(extensionType);
-            beanFactory.autowireBean(extension);
-            //beanFactory.autowireBeanProperties();
-            plugins.add(extension);
+    protected List<AbstractServiceExtension> resolveExtensions(String[] extensionStringArr) {
+        List<AbstractServiceExtension> extensions = new ArrayList<>();
+        ArrayList<String> extensionStrings = Lists.newArrayList(extensionStringArr);
+        for (String extensionString : extensionStrings) {
+            Object extension = null;
+//            if (extensionString.endsWith(".class")) {
+//                try {
+//                    Class<?> extensionType = Class.forName(extensionString);
+//                    extension = beanFactory.getBean(extensionType);
+//                } catch (ClassNotFoundException e) {
+//                    throw new IllegalArgumentException("Could not find matching class for extension: " + extensionString, e);
+//                }
+//            } else {
+                extension = beanFactory.getBean(extensionString);
+//            }
+            try {
+                AbstractServiceExtension serviceExtension = (AbstractServiceExtension) extension;
+                beanFactory.autowireBean(extension);
+                //beanFactory.autowireBeanProperties();
+                extensions.add(serviceExtension);
+            } catch (ClassCastException e) {
+                throw new IllegalArgumentException("Given extension bean: " + extensionString + " is not of Type AbstractServiceExtension", e);
+            }
         }
-        return plugins;
+        return extensions;
     }
+
 
 //    private List<SecurityServiceExtension> resolveRules(SecurityProxy proxy){
 //        List<SecurityServiceExtension> rules = new ArrayList<>();

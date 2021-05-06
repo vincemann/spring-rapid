@@ -1,7 +1,7 @@
 package com.github.vincemann.springrapid.coretest.bootstrap;
 
 
-import com.github.vincemann.springrapid.core.bootstrap.DatabaseDataInitializer;
+import com.github.vincemann.springrapid.core.bootstrap.DatabaseInitializer;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.TestContext;
 import org.springframework.test.context.support.AbstractTestExecutionListener;
@@ -9,17 +9,17 @@ import org.springframework.test.context.support.AbstractTestExecutionListener;
 import java.util.List;
 
 /**
- * Calls {@link DatabaseDataInitializer} that need to run before each test.
+ * Calls {@link DatabaseInitializer} that need to run before each test.
  */
-public class InitializerTestExecutionListener extends AbstractTestExecutionListener {
+public class DatabaseInitializerTestExecutionListener extends AbstractTestExecutionListener {
 
     @Autowired
     @BeforeEachTestInitializable
-    private List<DatabaseDataInitializer> beforeEachTest;
+    private List<DatabaseInitializer> beforeEachTest;
 
     @Autowired
     @BeforeEachTestMethodInitializable
-    private List<DatabaseDataInitializer> beforeEachTestMethod;
+    private List<DatabaseInitializer> beforeEachTestMethod;
 
     @Override
     public void beforeTestClass(TestContext testContext) {
@@ -27,14 +27,14 @@ public class InitializerTestExecutionListener extends AbstractTestExecutionListe
                 .getAutowireCapableBeanFactory()
                 .autowireBean(this);
 
-        for (DatabaseDataInitializer initializer : beforeEachTest) {
+        for (DatabaseInitializer initializer : beforeEachTest) {
             initializer.init();
         }
     }
 
     @Override
     public void beforeTestMethod(TestContext testContext) throws Exception {
-        for (DatabaseDataInitializer initializer : beforeEachTestMethod) {
+        for (DatabaseInitializer initializer : beforeEachTestMethod) {
             initializer.init();
         }
     }

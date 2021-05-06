@@ -3,6 +3,7 @@ package com.github.vincemann.springrapid.core.proxy.annotation;
 import com.github.vincemann.springrapid.core.proxy.AbstractServiceExtension;
 
 import java.lang.annotation.*;
+import java.util.Map;
 
 @Target(ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)
@@ -10,6 +11,10 @@ import java.lang.annotation.*;
 public @interface DefineProxy {
 
     String name() default "";
-    Class<? extends AbstractServiceExtension>[] extensions() default {};
+
+    /**
+     * bean names
+     */
+    String[] extensions() default {};
     boolean defaultExtensionsEnabled() default true;
 }
