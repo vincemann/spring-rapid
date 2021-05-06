@@ -12,5 +12,4 @@ import java.util.Optional;
 public interface VetService extends CrudService<Vet,Long> {
 
     public Optional<Vet> findByLastName(String lastName);
-    public void giveOwnerReadPermissionForVisit(Owner owner, Visit visit);
 }

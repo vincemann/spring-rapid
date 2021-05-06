@@ -8,7 +8,7 @@ package com.github.vincemann.springrapid.acldemo.service.extensions;
 //    @Override
 //    public Pet save(Pet entity) throws BadEntityException {
 //        Pet savedPet = getNext().save(entity);
-//        savePermissionForUserOverEntity(savedPet.getOwner().getUser().getEmail(),
+//        aclPermissionService.savePermissionForUserOverEntity(savedPet.getOwner().getUser().getEmail(),
 //                savedPet,BasePermission.ADMINISTRATION);
 //        return savedPet;
 //    }

@@ -9,7 +9,7 @@ public class VerifyEntity {
 
     public static <T> T notNull(T entity, String property) throws BadEntityException {
         if(entity==null){
-            throw new BadEntityException("Property: "+property+" of entity: "+entity+ " must not be null");
+            throw new BadEntityException("Property: "+property+" must not be null");
         }
         return entity;
     }

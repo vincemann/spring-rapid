@@ -38,7 +38,7 @@ public class OwnerHasPermissionAboutSavedAclExtension
         if (optionalOwner.isEmpty()){
             throw new BadEntityException("Owner not found for entity: " + saved + " which is needed to give acl permission for");
         }
-        savePermissionForUserOverEntity(optionalOwner.get(),saved, permission);
+        aclPermissionService.savePermissionForUserOverEntity(optionalOwner.get(),saved, permission);
         return saved;
     }
 }

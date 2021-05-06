@@ -3,6 +3,7 @@ package com.github.vincemann.springrapid.acl.service.extensions.acl;
 
 import com.github.vincemann.aoplog.api.LogInteraction;
 import com.github.vincemann.springrapid.acl.model.AclParentAware;
+import com.github.vincemann.springrapid.acl.service.AclNotFoundException;
 import com.github.vincemann.springrapid.core.model.IdentifiableEntity;
 import com.github.vincemann.springrapid.core.proxy.GenericCrudServiceExtension;
 import com.github.vincemann.springrapid.core.service.CrudService;
@@ -25,7 +26,11 @@ public class SavedInheritsParentsAclExtension<E extends IdentifiableEntity<Id> &
     @Override
     public E save(E entity) throws BadEntityException {
         E saved = getNext().save(entity);
-        getAclPermissionService().inheritPermissions(saved,saved.getAclParent());
+        try {
+            getAclPermissionService().inheritPermissions(saved,saved.getAclParent());
+        } catch (AclNotFoundException e) {
+            throw new BadEntityException("Cant find acl info of parent to inherit from",e);
+        }
         return saved;
     }
 
