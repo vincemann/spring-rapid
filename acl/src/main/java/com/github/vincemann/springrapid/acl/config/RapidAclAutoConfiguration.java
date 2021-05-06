@@ -1,6 +1,7 @@
 package com.github.vincemann.springrapid.acl.config;
 
 import com.github.vincemann.springrapid.acl.AclProperties;
+import com.github.vincemann.springrapid.acl.service.AclPermissionService;
 import com.github.vincemann.springrapid.acl.service.RapidPermissionService;
 import com.github.vincemann.springrapid.core.security.Roles;
 import com.github.vincemann.springrapid.acl.framework.HierarchicPermissionGrantingStrategy;
@@ -118,9 +119,9 @@ public class RapidAclAutoConfiguration {
     }
 
 
-    @ConditionalOnMissingBean(RapidPermissionService.class)
+    @ConditionalOnMissingBean(AclPermissionService.class)
     @Bean
-    public RapidPermissionService localPermissionService(MutableAclService aclService){
+    public AclPermissionService rapidAclPermissionService(MutableAclService aclService){
         return new RapidPermissionService(aclService);
     }
 

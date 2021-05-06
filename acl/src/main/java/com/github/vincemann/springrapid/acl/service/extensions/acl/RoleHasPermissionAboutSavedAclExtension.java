@@ -24,7 +24,7 @@ public class RoleHasPermissionAboutSavedAclExtension extends AbstractAclExtensio
     @Override
     public IdentifiableEntity save(IdentifiableEntity entity) throws BadEntityException {
         IdentifiableEntity saved = getNext().save(entity);
-        savePermissionForRoleOverEntity(saved,role, permission);
+        aclPermissionService.savePermissionForRoleOverEntity(saved,role, permission);
         return saved;
     }
 
