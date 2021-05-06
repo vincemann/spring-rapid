@@ -3,10 +3,9 @@ package com.github.vincemann.springrapid.acldemo.service.jpa;
 import com.github.vincemann.aoplog.api.LogInteraction;
 import com.github.vincemann.springrapid.acl.proxy.Acl;
 import com.github.vincemann.springrapid.acl.proxy.Secured;
-import com.github.vincemann.springrapid.acl.service.extensions.AuthenticatedFullAccessAboutSavedAclExtension;
+
 import com.github.vincemann.springrapid.acldemo.auth.MyRoles;
 import com.github.vincemann.springrapid.acldemo.model.User;
-import com.github.vincemann.springrapid.acldemo.service.extensions.AuthenticatedFullAccessAboutSavedContainedUserAclExtension;
 import com.github.vincemann.springrapid.core.proxy.annotation.CreateProxy;
 import com.github.vincemann.springrapid.core.proxy.annotation.DefineProxy;
 import com.github.vincemann.springrapid.core.service.JPACrudService;
@@ -27,8 +26,8 @@ import java.util.Optional;
 
 
 @DefineProxy(name = "acl", extensions = {
-        AuthenticatedFullAccessAboutSavedAclExtension.class,
-        AuthenticatedFullAccessAboutSavedContainedUserAclExtension.class
+        "authenticatedHasFullPermissionAboutSavedAclExtension",
+        "authenticatedHasFullPermissionAboutSavedContainedUserAclExtension"
 })
 @DefineProxy(name = "secured")
 @CreateProxy(qualifiers = Acl.class,proxies = "acl")

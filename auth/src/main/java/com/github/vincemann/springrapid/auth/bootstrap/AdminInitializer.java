@@ -5,7 +5,7 @@ import com.github.vincemann.springrapid.auth.domain.AbstractUser;
 import com.github.vincemann.springrapid.auth.service.AlreadyRegisteredException;
 import com.github.vincemann.springrapid.auth.service.UserService;
 import com.github.vincemann.springrapid.acl.proxy.Acl;
-import com.github.vincemann.springrapid.core.bootstrap.DatabaseDataInitializer;
+import com.github.vincemann.springrapid.core.bootstrap.DatabaseInitializer;
 import com.github.vincemann.springrapid.core.security.RapidSecurityContext;
 import com.github.vincemann.springrapid.core.service.exception.BadEntityException;
 import lombok.extern.slf4j.Slf4j;
@@ -20,7 +20,7 @@ import java.util.Optional;
  * Adds admins from property file, if not already present in database.
  * @see AuthProperties#getAdmins()
  */
-public class AdminInitializer extends DatabaseDataInitializer {
+public class AdminInitializer extends DatabaseInitializer {
 
     private UserService<?,?> userService;
     private AuthProperties authProperties;

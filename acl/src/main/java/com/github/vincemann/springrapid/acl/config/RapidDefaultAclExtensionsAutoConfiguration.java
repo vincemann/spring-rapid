@@ -11,7 +11,6 @@ import com.github.vincemann.springrapid.core.slicing.ServiceConfig;
 import com.github.vincemann.springrapid.core.util.ProxyUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.autoconfigure.AutoConfigureBefore;
 import org.springframework.context.ApplicationContext;
 
 import java.util.List;
@@ -38,7 +37,7 @@ public class RapidDefaultAclExtensionsAutoConfiguration {
             if (aclProperties.isAdminFullAccess()) {
                 log.debug("Adding Default acl extensions for proxy: " + proxy);
                 proxy.addExtension(
-                        (AbstractServiceExtension<?, ? super ProxyController>) context.getBean("adminFullAccessAclExtension")
+                        (AbstractServiceExtension<?, ? super ProxyController>) context.getBean("adminHasFullPermissionAboutSavedAclExtension")
                 );
             }
             if (aclProperties.isCleanupAcl()) {

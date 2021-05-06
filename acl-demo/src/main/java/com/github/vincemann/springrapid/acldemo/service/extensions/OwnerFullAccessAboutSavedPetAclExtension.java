@@ -13,16 +13,16 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.security.acls.domain.BasePermission;
 import org.springframework.transaction.annotation.Transactional;
 
-@ServiceComponent
-@Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
-public class OwnerFullAccessAboutSavedPetAclExtension extends AbstractAclExtension<PetService>
-        implements GenericCrudServiceExtension<PetService, Pet,Long> {
-
-    @Override
-    public Pet save(Pet entity) throws BadEntityException {
-        Pet savedPet = getNext().save(entity);
-        savePermissionForUserOverEntity(savedPet.getOwner().getUser().getEmail(),
-                savedPet,BasePermission.ADMINISTRATION);
-        return savedPet;
-    }
-}
+//@ServiceComponent
+//@Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
+//public class OwnerFullAccessAboutSavedPetAclExtension extends AbstractAclExtension<PetService>
+//        implements GenericCrudServiceExtension<PetService, Pet,Long> {
+//
+//    @Override
+//    public Pet save(Pet entity) throws BadEntityException {
+//        Pet savedPet = getNext().save(entity);
+//        savePermissionForUserOverEntity(savedPet.getOwner().getUser().getEmail(),
+//                savedPet,BasePermission.ADMINISTRATION);
+//        return savedPet;
+//    }
+//}

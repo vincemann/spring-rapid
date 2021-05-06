@@ -22,6 +22,7 @@ import com.github.vincemann.springrapid.core.controller.GenericCrudController;
 import com.github.vincemann.springrapid.core.security.RapidAuthenticatedPrincipal;
 import com.github.vincemann.springrapid.core.security.RapidSecurityContext;
 import com.github.vincemann.springrapid.core.service.CrudService;
+import com.github.vincemann.springrapid.coretest.bootstrap.DatabaseInitializerTestExecutionListener;
 import com.github.vincemann.springrapid.coretest.controller.integration.IntegrationCrudControllerTest;
 import com.github.vincemann.springrapid.coretest.util.RapidTestUtil;
 import org.junit.jupiter.api.AfterEach;
@@ -30,6 +31,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers;
+import org.springframework.test.context.TestExecutionListeners;
 import org.springframework.test.web.servlet.setup.DefaultMockMvcBuilder;
 
 import java.time.LocalDate;
@@ -41,7 +43,7 @@ import static com.github.vincemann.springrapid.coretest.service.PropertyMatchers
 import static com.github.vincemann.springrapid.coretest.util.RapidTestUtil.createUpdateJsonLine;
 import static com.github.vincemann.springrapid.coretest.util.RapidTestUtil.createUpdateJsonRequest;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-
+// add admin before each test
 public class AbstractControllerIntegrationTest<C extends GenericCrudController<?,Long,S,?,?>,S extends CrudService<?,Long>>
         extends IntegrationCrudControllerTest<C,S>
 {
