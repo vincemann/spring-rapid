@@ -1,8 +1,7 @@
 package com.github.vincemann.springrapid.acldemo.service.extensions;
 
-import com.github.vincemann.springrapid.acl.service.extensions.AbstractAclExtension;
+import com.github.vincemann.springrapid.acl.service.extensions.acl.AbstractAclExtension;
 import com.github.vincemann.springrapid.acldemo.model.abs.UserAwareEntity;
-import com.github.vincemann.springrapid.core.model.IdentifiableEntity;
 import com.github.vincemann.springrapid.core.proxy.GenericCrudServiceExtension;
 import com.github.vincemann.springrapid.core.service.CrudService;
 import com.github.vincemann.springrapid.core.service.exception.BadEntityException;

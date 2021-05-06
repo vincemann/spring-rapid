@@ -23,8 +23,9 @@ public class Illness extends IdentifiableEntityImpl<Long> implements BiDirChild 
     @Unique
     private String name;
 
+
     @ManyToMany(mappedBy = "illnesss", fetch = FetchType.EAGER)
-    @BiDirParentCollection(Vet.class)
+    @BiDirParentCollection(Pet.class)
     private Set<Pet> pets = new HashSet<>();
 
     @Builder

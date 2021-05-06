@@ -5,7 +5,9 @@ import com.github.vincemann.springrapid.acl.proxy.Acl;
 import com.github.vincemann.springrapid.acl.proxy.Secured;
 
 import com.github.vincemann.springrapid.acldemo.auth.MyRoles;
+import com.github.vincemann.springrapid.acldemo.model.Owner;
 import com.github.vincemann.springrapid.acldemo.model.User;
+import com.github.vincemann.springrapid.acldemo.model.Visit;
 import com.github.vincemann.springrapid.core.proxy.annotation.CreateProxy;
 import com.github.vincemann.springrapid.core.proxy.annotation.DefineProxy;
 import com.github.vincemann.springrapid.core.service.JPACrudService;
@@ -39,6 +41,8 @@ public class JpaVetService
         extends JPACrudService<Vet,Long, VetRepository>
         implements VetService, TargetClassAware {
 
+
+
     @Override
     public Class<?> getTargetClass() {
         return JpaVetService.class;
@@ -60,5 +64,10 @@ public class JpaVetService
         }
         user.getRoles().add(MyRoles.NEW_VET);
         return super.save(entity);
+    }
+
+    @Override
+    public void giveOwnerReadPermissionForVisit(Owner owner, Visit visit) {
+
     }
 }

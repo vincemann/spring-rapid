@@ -130,6 +130,39 @@ public class VetControllerTest extends AbstractControllerIntegrationTest<VetCont
                 .assertEqual();
     }
 
+    @Test
+    public void enabledVetCanUpdatePetsIllnesses() throws Exception {
+        registerOwnerWithPets(kahn, OWNER_KAHN_EMAIL, OWNER_KAHN_PASSWORD, bella);
+        Pet dbBella = petRepository.findByName(BELLA).get();
+        Illness dbTeethPain = illnessRepository.save(teethPain);
+        Vet vet = registerEnabledVet(vetDiCaprio, VET_DICAPRIO_EMAIL, VET_DICAPRIO_PASSWORD);
+        String vetToken = userController.login2xx(VET_DICAPRIO_EMAIL, VET_DICAPRIO_PASSWORD);
+
+        String updateJson = createUpdateJsonRequest(
+                createUpdateJsonLine("add", "/illnessIds", dbTeethPain.getId().toString())
+        );
+
+        FullPetDto responsePetDto = perform2xx(petController.update(updateJson,dbBella.getId().toString())
+                .header(HttpHeaders.AUTHORIZATION, vetToken), FullPetDto.class);
+
+        compare(responsePetDto).with(dbBella)
+                .properties().all()
+                .ignore(RapidTestUtil.dtoIdProperties(FullPetDto.class))
+                .assertEqual();
+
+        propertyAssert(responsePetDto)
+                .assertContains(responsePetDto::getIllnessIds,dbTeethPain.getId());
+
+        Pet updatedDbBella = petRepository.findByName(BELLA).get();
+        Illness dbUpdatedTeethPain = illnessRepository.findById(teethPain.getId()).get();
+
+
+        propertyAssert(updatedDbBella)
+                .assertContains(updatedDbBella::getIllnesss,dbUpdatedTeethPain);
+
+
+    }
+
 //    @Test
 //    public void vetCanUpdatePetsIllness() throws Exception {
 //        String token = registerOwnerWithPets(kahn, OWNER_KAHN_EMAIL, OWNER_KAHN_PASSWORD, bella);
