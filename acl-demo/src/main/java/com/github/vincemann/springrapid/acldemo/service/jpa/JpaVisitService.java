@@ -25,7 +25,8 @@ import org.springframework.stereotype.Service;
 
 @DefineProxy(name = "acl", extensions = {
         "authenticatedHasFullPermissionAboutSavedAclExtension",
-        "vetsHaveReadPermission"
+        "vetsHaveReadPermissionAboutSavedAclExtension",
+        "ownerCanReadHisVisitsAclExtension"
 })
 @DefineProxy(name = "secured", extensions = {
         "onlyVetAndAdminCanCreateSecurityExtension",

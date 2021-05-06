@@ -21,7 +21,7 @@ public class ServiceExtensionsConfig {
     }
 
     @Bean
-    public RoleHasPermissionAboutSavedAclExtension vetsHaveReadPermission(){
+    public RoleHasPermissionAboutSavedAclExtension vetsHaveReadPermissionAboutSavedAclExtension(){
         return new RoleHasPermissionAboutSavedAclExtension(MyRoles.VET,BasePermission.READ);
     }
 }
