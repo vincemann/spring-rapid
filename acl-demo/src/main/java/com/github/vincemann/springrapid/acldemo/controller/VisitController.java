@@ -3,10 +3,8 @@ package com.github.vincemann.springrapid.acldemo.controller;
 import com.github.vincemann.springrapid.acl.SecuredCrudController;
 import com.github.vincemann.springrapid.acldemo.model.Owner;
 import com.github.vincemann.springrapid.acldemo.service.OwnerService;
-import com.github.vincemann.springrapid.core.controller.CrudController;
 import com.github.vincemann.springrapid.core.controller.dto.mapper.context.CrudDtoMappingContextBuilder;
 import com.github.vincemann.springrapid.core.controller.dto.mapper.context.DtoMappingContext;
-import com.github.vincemann.springrapid.core.security.RapidSecurityContext;
 import com.github.vincemann.springrapid.core.service.exception.BadEntityException;
 import com.github.vincemann.springrapid.core.service.exception.EntityNotFoundException;
 import com.github.vincemann.springrapid.core.slicing.WebController;
@@ -41,9 +39,9 @@ public class VisitController
         VerifyEntity.isPresent(owner,"Owner with id: " + ownerId + " not found");
         VerifyEntity.isPresent(visit,"Visit with id: " + visitId + " not found");
         if (canRead){
-            getService().giveOwnerReadPermissionForVisit(owner.get(),visit.get());
+            getService().subscribeOwner(owner.get(),visit.get());
         }else {
-            getService().removeOwnersReadPermissionForVisit(owner.get(),visit.get());
+            getService().unsubscribeOwner(owner.get(),visit.get());
         }
         return ResponseEntity.ok().build();
     }

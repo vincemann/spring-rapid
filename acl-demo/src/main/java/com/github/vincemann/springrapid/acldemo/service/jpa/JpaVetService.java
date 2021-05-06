@@ -66,8 +66,4 @@ public class JpaVetService
         return super.save(entity);
     }
 
-    @Override
-    public void giveOwnerReadPermissionForVisit(Owner owner, Visit visit) {
-
-    }
 }
