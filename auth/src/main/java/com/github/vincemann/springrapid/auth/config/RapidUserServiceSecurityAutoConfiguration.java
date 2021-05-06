@@ -1,13 +1,14 @@
 package com.github.vincemann.springrapid.auth.config;
 
 import com.github.vincemann.springrapid.acl.config.RapidAclExtensionsAutoConfiguration;
+import com.github.vincemann.springrapid.acl.service.extensions.security.CrudAclChecksSecurityExtension;
 import com.github.vincemann.springrapid.auth.service.UserService;
 import com.github.vincemann.springrapid.auth.service.extension.AclUserExtension;
 import com.github.vincemann.springrapid.auth.service.extension.UserServiceSecurityExtension;
 import com.github.vincemann.springrapid.acl.config.RapidAclAutoConfiguration;
 import com.github.vincemann.springrapid.acl.proxy.*;
-import com.github.vincemann.springrapid.acl.service.LocalPermissionService;
-import com.github.vincemann.springrapid.acl.service.extensions.CleanUpAclExtension;
+import com.github.vincemann.springrapid.acl.service.RapidPermissionService;
+import com.github.vincemann.springrapid.acl.service.extensions.acl.CleanUpAclExtension;
 import com.github.vincemann.springrapid.core.proxy.ServiceExtensionProxyBuilder;
 import com.github.vincemann.springrapid.core.slicing.ServiceConfig;
 import lombok.extern.slf4j.Slf4j;
@@ -32,7 +33,7 @@ public class RapidUserServiceSecurityAutoConfiguration {
 
 
     @Autowired
-    LocalPermissionService permissionService;
+    RapidPermissionService permissionService;
     @Autowired
     MutableAclService mutableAclService;
 

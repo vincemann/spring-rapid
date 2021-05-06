@@ -1,4 +1,4 @@
-package com.github.vincemann.springrapid.acl.proxy;
+package com.github.vincemann.springrapid.acl.service.extensions.security;
 
 import com.github.vincemann.aoplog.Severity;
 import com.github.vincemann.aoplog.api.LogInteraction;

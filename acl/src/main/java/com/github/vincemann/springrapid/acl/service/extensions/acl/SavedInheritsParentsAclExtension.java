@@ -1,4 +1,4 @@
-package com.github.vincemann.springrapid.acl.service.extensions;
+package com.github.vincemann.springrapid.acl.service.extensions.acl;
 
 
 import com.github.vincemann.aoplog.api.LogInteraction;
@@ -25,7 +25,7 @@ public class SavedInheritsParentsAclExtension<E extends IdentifiableEntity<Id> &
     @Override
     public E save(E entity) throws BadEntityException {
         E saved = getNext().save(entity);
-        getPermissionService().inheritPermissions(saved,saved.getAclParent());
+        getAclPermissionService().inheritPermissions(saved,saved.getAclParent());
         return saved;
     }
 

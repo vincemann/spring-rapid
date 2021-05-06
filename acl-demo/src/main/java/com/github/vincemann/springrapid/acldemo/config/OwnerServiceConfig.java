@@ -3,7 +3,7 @@ package com.github.vincemann.springrapid.acldemo.config;
 import com.github.vincemann.springrapid.acl.proxy.Acl;
 import com.github.vincemann.springrapid.acl.proxy.Secured;
 
-import com.github.vincemann.springrapid.acl.service.extensions.AuthenticatedHasFullPermissionAboutSavedAclExtension;
+import com.github.vincemann.springrapid.acl.service.extensions.acl.AuthenticatedHasFullPermissionAboutSavedAclExtension;
 import com.github.vincemann.springrapid.acldemo.service.OwnerService;
 import com.github.vincemann.springrapid.acldemo.service.Root;
 import com.github.vincemann.springrapid.acldemo.service.extensions.AuthenticatedHasFullPermissionAboutSavedContainedUserAclExtension;

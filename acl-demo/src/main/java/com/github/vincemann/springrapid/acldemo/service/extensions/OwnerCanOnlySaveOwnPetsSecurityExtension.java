@@ -1,6 +1,6 @@
 package com.github.vincemann.springrapid.acldemo.service.extensions;
 
-import com.github.vincemann.springrapid.acl.proxy.SecurityServiceExtension;
+import com.github.vincemann.springrapid.acl.service.extensions.security.SecurityServiceExtension;
 import com.github.vincemann.springrapid.acldemo.auth.MyRoles;
 import com.github.vincemann.springrapid.acldemo.model.Owner;
 import com.github.vincemann.springrapid.acldemo.model.Pet;

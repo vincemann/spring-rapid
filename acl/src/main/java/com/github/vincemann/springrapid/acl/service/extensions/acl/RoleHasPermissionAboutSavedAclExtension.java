@@ -1,4 +1,4 @@
-package com.github.vincemann.springrapid.acl.service.extensions;
+package com.github.vincemann.springrapid.acl.service.extensions.acl;
 
 import com.github.vincemann.aoplog.api.LogInteraction;
 import com.github.vincemann.springrapid.core.model.IdentifiableEntity;
