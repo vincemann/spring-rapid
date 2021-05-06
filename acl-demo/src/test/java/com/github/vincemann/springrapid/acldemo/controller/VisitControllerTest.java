@@ -1,11 +1,11 @@
 package com.github.vincemann.springrapid.acldemo.controller;
 
 import com.github.vincemann.springrapid.acldemo.dto.VisitDto;
+import com.github.vincemann.springrapid.acldemo.dto.vet.FullVetDto;
 import com.github.vincemann.springrapid.acldemo.model.Owner;
 import com.github.vincemann.springrapid.acldemo.model.Pet;
 import com.github.vincemann.springrapid.acldemo.model.Vet;
 import com.github.vincemann.springrapid.acldemo.model.Visit;
-import com.github.vincemann.springrapid.acldemo.service.VetService;
 import com.github.vincemann.springrapid.acldemo.service.VisitService;
 import com.github.vincemann.springrapid.core.util.Lists;
 import com.github.vincemann.springrapid.coretest.util.RapidTestUtil;
@@ -79,6 +79,41 @@ public class VisitControllerTest extends AbstractControllerIntegrationTest<Visit
                 .andExpect(status().isForbidden());
 
         Assertions.assertTrue(visitRepository.findAll().isEmpty());
+    }
+
+    @Test
+    public void ownerCanReadOwnVisit() throws Exception {
+        registerOwnerWithPets(kahn, OWNER_KAHN_EMAIL, OWNER_KAHN_PASSWORD, bella);
+
+        Pet savedBella = petRepository.findByName(BELLA).get();
+        Owner savedKahn = ownerRepository.findByLastName(OWNER_KAHN).get();
+        Vet savedDicaprio = registerEnabledVet(vetDiCaprio, VET_DICAPRIO_EMAIL, VET_DICAPRIO_PASSWORD);
+        String vetDiCaprioToken = userController.login2xx(VET_DICAPRIO_EMAIL, VET_DICAPRIO_PASSWORD);
+        String kahnToken = userController.login2xx(OWNER_KAHN_EMAIL, OWNER_KAHN_PASSWORD);
+
+        Visit visit = createVisit(vetDiCaprioToken, savedKahn, savedDicaprio, checkTeethVisit, savedBella);
+
+        perform2xx(find(visit.getId())
+                        .header(HttpHeaders.AUTHORIZATION, kahnToken),
+                VisitDto.class);
+    }
+
+    @Test
+    public void ownerCantReadForeignVisit() throws Exception {
+        registerOwnerWithPets(kahn, OWNER_KAHN_EMAIL, OWNER_KAHN_PASSWORD, bella);
+        registerOwnerWithPets(meier, OWNER_MEIER_EMAIL, OWNER_MEIER_PASSWORD, bello);
+
+        Pet savedBella = petRepository.findByName(BELLA).get();
+        Owner savedKahn = ownerRepository.findByLastName(OWNER_KAHN).get();
+        Vet savedDicaprio = registerEnabledVet(vetDiCaprio, VET_DICAPRIO_EMAIL, VET_DICAPRIO_PASSWORD);
+        String vetDiCaprioToken = userController.login2xx(VET_DICAPRIO_EMAIL, VET_DICAPRIO_PASSWORD);
+        String meierToken = userController.login2xx(OWNER_MEIER_EMAIL, OWNER_MEIER_PASSWORD);
+
+        Visit visit = createVisit(vetDiCaprioToken, savedKahn, savedDicaprio, checkTeethVisit, savedBella);
+
+        mvc.perform(find(visit.getId())
+                .header(HttpHeaders.AUTHORIZATION,meierToken))
+                .andExpect(status().isForbidden());
     }
 
 

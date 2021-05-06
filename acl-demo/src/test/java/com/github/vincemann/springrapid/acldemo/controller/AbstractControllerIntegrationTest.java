@@ -4,6 +4,7 @@ import com.github.vincemann.springrapid.acldemo.auth.MyRoles;
 import com.github.vincemann.springrapid.acldemo.controller.templates.OwnerControllerTestTemplate;
 import com.github.vincemann.springrapid.acldemo.controller.templates.PetControllerTestTemplate;
 import com.github.vincemann.springrapid.acldemo.controller.templates.VetControllerTestTemplate;
+import com.github.vincemann.springrapid.acldemo.dto.VisitDto;
 import com.github.vincemann.springrapid.acldemo.dto.owner.CreateOwnerDto;
 import com.github.vincemann.springrapid.acldemo.dto.owner.FullOwnerDto;
 import com.github.vincemann.springrapid.acldemo.dto.pet.FullPetDto;
@@ -22,6 +23,7 @@ import com.github.vincemann.springrapid.core.controller.GenericCrudController;
 import com.github.vincemann.springrapid.core.security.RapidAuthenticatedPrincipal;
 import com.github.vincemann.springrapid.core.security.RapidSecurityContext;
 import com.github.vincemann.springrapid.core.service.CrudService;
+import com.github.vincemann.springrapid.core.util.Lists;
 import com.github.vincemann.springrapid.coretest.bootstrap.DatabaseInitializerTestExecutionListener;
 import com.github.vincemann.springrapid.coretest.controller.integration.IntegrationCrudControllerTest;
 import com.github.vincemann.springrapid.coretest.util.RapidTestUtil;
@@ -35,9 +37,11 @@ import org.springframework.test.context.TestExecutionListeners;
 import org.springframework.test.web.servlet.setup.DefaultMockMvcBuilder;
 
 import java.time.LocalDate;
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Optional;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import static com.github.vincemann.springrapid.coretest.service.PropertyMatchers.propertyAssert;
 import static com.github.vincemann.springrapid.coretest.util.RapidTestUtil.createUpdateJsonLine;
@@ -412,6 +416,19 @@ public class AbstractControllerIntegrationTest<C extends GenericCrudController<?
                 .andExpect(status().is2xxSuccessful());
 
         return vetRepository.findById(registerVet.getId()).get();
+    }
+
+
+    protected Visit createVisit(String token, Owner owner, Vet vet,Visit visit, Pet... pets) throws Exception {
+        VisitDto createVisitDto = new VisitDto(visit);
+        createVisitDto.setOwnerId(owner.getId());
+        createVisitDto.setPetIds(Arrays.stream(pets).map(Pet::getId).collect(Collectors.toSet()));
+        createVisitDto.setVetId(vet.getId());
+
+        VisitDto responseDto = perform2xx(create(createVisitDto)
+                        .header(HttpHeaders.AUTHORIZATION,token)
+                , VisitDto.class);
+        return visitRepository.findById(responseDto.getId()).get();
     }
 
     protected Owner registerOwner(Owner owner, String email, String password) throws Exception {
