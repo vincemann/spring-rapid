@@ -32,22 +32,9 @@ public class CleanUpAclExtension
     @Override
     public void deleteById(Serializable id) throws EntityNotFoundException, BadEntityException {
         getNext().deleteById(id);
-        deleteAcl(id,getEntityClass());
+        aclPermissionService.deleteAclOfEntity(getEntityClass(),id,deleteCascade);
     }
 
-//    @CalledByProxy
-//    public void onAfterDeleteById(Serializable id,Class entityClass) throws EntityNotFoundException, BadEntityException {
-//
-//    }
 
-    private void deleteAcl(Serializable id, Class entityClass){
-        log.debug("deleting acl for entity with id: " + id + " and class: " + entityClass);
-        //delete acl as well
-        ObjectIdentity oi = new ObjectIdentityImpl(entityClass, id);
-        log.debug("ObjectIdentity getting deleted: " + oi);
-        //todo delete children ist nur richtig wenn ich wirklich one to n habe mit Delete Cascade!
-        getMutableAclService().deleteAcl(oi,deleteCascade);
-        log.debug("Acl successfully deleted");
-    }
 
 }

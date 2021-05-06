@@ -24,7 +24,7 @@ public class AuthenticatedHasFullPermissionAboutSavedContainedUserAclExtension
     @Override
     public UserAwareEntity save(UserAwareEntity entity) throws BadEntityException {
         UserAwareEntity saved = getNext().save(entity);
-        savePermissionForAuthenticatedOverEntity(saved.getUser(), BasePermission.ADMINISTRATION);
+        aclPermissionService.savePermissionForAuthenticatedOverEntity(saved.getUser(), BasePermission.ADMINISTRATION);
         return saved;
     }
 }

@@ -1,13 +1,18 @@
 package com.github.vincemann.springrapid.acl.service.extensions.security;
 
+import com.github.vincemann.aoplog.Severity;
+import com.github.vincemann.aoplog.api.LogInteraction;
 import com.github.vincemann.springrapid.core.model.IdentifiableEntity;
 import com.github.vincemann.springrapid.core.proxy.CrudServiceExtension;
 import com.github.vincemann.springrapid.core.security.RapidSecurityContext;
 import com.github.vincemann.springrapid.core.service.CrudService;
 import com.github.vincemann.springrapid.core.service.exception.BadEntityException;
 import org.springframework.security.access.AccessDeniedException;
+import org.springframework.transaction.annotation.Transactional;
 
 
+@Transactional
+@LogInteraction(Severity.DEBUG)
 public class OnlyRoleCanSaveSecurityExtension
         extends SecurityServiceExtension<CrudService>
         implements CrudServiceExtension<CrudService> {

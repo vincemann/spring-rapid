@@ -9,7 +9,7 @@ import com.github.vincemann.springrapid.core.slicing.ServiceComponent;
 import org.springframework.security.acls.model.Permission;
 
 @ServiceComponent
-public class AuthenticatedHasPermissionAboutSavedAclExtension  extends AbstractAclExtension<CrudService>
+public class AuthenticatedHasPermissionAboutSavedAclExtension extends AbstractAclExtension<CrudService>
         implements CrudServiceExtension<CrudService> {
 
     private Permission permission;
@@ -22,7 +22,7 @@ public class AuthenticatedHasPermissionAboutSavedAclExtension  extends AbstractA
     @Override
     public IdentifiableEntity save(IdentifiableEntity entity) throws BadEntityException {
         IdentifiableEntity saved = getNext().save(entity);
-        savePermissionForAuthenticatedOverEntity(saved, permission);
+        aclPermissionService.savePermissionForAuthenticatedOverEntity(saved, permission);
         return saved;
     }
 }
