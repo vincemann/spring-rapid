@@ -8,6 +8,6 @@ import com.github.vincemann.springrapid.acldemo.model.Visit;
 
 @ServiceComponent
 public interface VisitService extends CrudService<Visit,Long> {
-    public void giveOwnerReadPermissionForVisit(Owner owner, Visit visit);
-    public void removeOwnersReadPermissionForVisit(Owner owner, Visit visit) throws BadEntityException;
+    public void subscribeOwner(Owner owner, Visit visit);
+    public void unsubscribeOwner(Owner owner, Visit visit) throws BadEntityException;
 }

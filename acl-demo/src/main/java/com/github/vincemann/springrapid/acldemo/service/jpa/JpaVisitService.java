@@ -28,7 +28,8 @@ import org.springframework.stereotype.Service;
         "vetsHaveReadPermission"
 })
 @DefineProxy(name = "secured", extensions = {
-        "onlyVetCanCreateSecurityExtension"
+        "onlyVetAndAdminCanCreateSecurityExtension",
+        "vetCanOnlySaveOwnVisitsSecurityExtension"
 })
 @CreateProxy(qualifiers = Acl.class,proxies = "acl")
 @CreateProxy(qualifiers = Secured.class,proxies = {"acl","secured"})
@@ -42,12 +43,12 @@ public class JpaVisitService extends JPACrudService<Visit,Long, VisitRepository>
     private AclPermissionService aclPermissionService;
 
     @Override
-    public void giveOwnerReadPermissionForVisit(Owner owner, Visit visit) {
+    public void subscribeOwner(Owner owner, Visit visit) {
         aclPermissionService.savePermissionForUserOverEntity(owner.getUser().getEmail(),visit, BasePermission.READ);
     }
 
     @Override
-    public void removeOwnersReadPermissionForVisit(Owner owner, Visit visit) throws BadEntityException {
+    public void unsubscribeOwner(Owner owner, Visit visit) throws BadEntityException {
         try {
             aclPermissionService.deletePermissionForUserOverEntity(owner.getUser().getEmail(),visit, BasePermission.READ);
         } catch (AclNotFoundException | AceNotFoundException e) {
