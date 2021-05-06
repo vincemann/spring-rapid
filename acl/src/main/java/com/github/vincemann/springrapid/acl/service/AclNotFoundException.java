@@ -1,6 +1,6 @@
 package com.github.vincemann.springrapid.acl.service;
 
-public class AclNotFoundException extends RuntimeException {
+public class AclNotFoundException extends Exception {
 
     public AclNotFoundException() {
     }

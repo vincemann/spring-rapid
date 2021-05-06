@@ -50,12 +50,12 @@ public class AclUserExtension
 
 
     public void savePostSignupAclInfo(AbstractUser saved){
-        savePermissionForUserOverEntity(saved.getEmail(),saved, BasePermission.ADMINISTRATION);
+        aclPermissionService.savePermissionForUserOverEntity(saved.getEmail(),saved, BasePermission.ADMINISTRATION);
         if (!saved.getRoles().contains(AuthRoles.ADMIN)) {
-            savePermissionForRoleOverEntity(saved, Roles.ADMIN, BasePermission.ADMINISTRATION);
+            aclPermissionService.savePermissionForRoleOverEntity(saved, Roles.ADMIN, BasePermission.ADMINISTRATION);
         }else {
             // admins can only read other admins
-            savePermissionForRoleOverEntity(saved,AuthRoles.ADMIN, BasePermission.READ);
+            aclPermissionService.savePermissionForRoleOverEntity(saved,AuthRoles.ADMIN, BasePermission.READ);
         }
     }
 
