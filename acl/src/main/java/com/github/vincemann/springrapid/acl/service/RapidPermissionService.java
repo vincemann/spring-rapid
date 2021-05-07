@@ -5,7 +5,10 @@ import com.github.vincemann.aoplog.api.AopLoggable;
 import com.github.vincemann.aoplog.api.LogInteraction;
 import com.github.vincemann.springrapid.acl.util.PermissionUtils;
 import com.github.vincemann.springrapid.core.model.IdentifiableEntity;
+import com.github.vincemann.springrapid.core.security.RapidAuthenticatedPrincipal;
 import com.github.vincemann.springrapid.core.security.RapidSecurityContext;
+import com.github.vincemann.springrapid.core.security.Roles;
+import com.github.vincemann.springrapid.core.util.IdPropertyNameUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.AccessDeniedException;
@@ -17,9 +20,10 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.io.Serializable;
+import java.util.Collection;
+import java.util.Iterator;
 import java.util.List;
-import java.util.Set;
-import java.util.stream.Collectors;
+import java.util.Optional;
 
 /**
  * API for managing acl data.
@@ -30,6 +34,7 @@ import java.util.stream.Collectors;
 public class RapidPermissionService implements AclPermissionService , AopLoggable {
 
     private MutableAclService aclService;
+    private RapidSecurityContext<RapidAuthenticatedPrincipal> securityContext;
 
     @Autowired
     public RapidPermissionService(MutableAclService aclService) {
@@ -39,10 +44,10 @@ public class RapidPermissionService implements AclPermissionService , AopLoggabl
     @LogInteraction(Severity.TRACE)
     @Override
     public void savePermissionForRoleOverEntity(IdentifiableEntity<?> entity, String role, Permission permission) {
-//        securityContext.runAsAdmin(() ->
-        final Sid sid = new GrantedAuthoritySid(role);
-        addPermissionForSid(entity, permission, sid);
-
+        securityContext.runAsAdmin(() ->{
+            final Sid sid = new GrantedAuthoritySid(role);
+            addPermissionForSid(entity, permission, sid);
+        });
     }
 
     @LogInteraction(Severity.TRACE)
@@ -51,6 +56,7 @@ public class RapidPermissionService implements AclPermissionService , AopLoggabl
         final Sid sid = new GrantedAuthoritySid(role);
         deletePermissionForSid(entity,permission,sid);
     }
+
 
     @LogInteraction(Severity.TRACE)
     @Override
@@ -69,9 +75,10 @@ public class RapidPermissionService implements AclPermissionService , AopLoggabl
     @LogInteraction(Severity.TRACE)
     @Override
     public void savePermissionForUserOverEntity(String user, IdentifiableEntity<?> entity, Permission permission) {
-//        securityContext.runWithName(user,() ->
-        final Sid sid = new PrincipalSid(user);
-        addPermissionForSid(entity, permission, sid);
+        securityContext.runWithName(user,() ->{
+            final Sid sid = new PrincipalSid(user);
+            addPermissionForSid(entity, permission, sid);
+        });
     }
 
     @LogInteraction(Severity.TRACE)
@@ -97,6 +104,9 @@ public class RapidPermissionService implements AclPermissionService , AopLoggabl
     }
 
     protected String findAuthenticatedName(){
+        if (RapidSecurityContext.hasRole(Roles.ANON)){
+            throw new AccessDeniedException("Non anon Authentication required");
+        }
         String name = RapidSecurityContext.getName();
         //Nicht auslagern. MutableAclService macht das intern auch so -> use @MockUser(username="testUser") in tests
         if(name==null){
@@ -129,7 +139,7 @@ public class RapidPermissionService implements AclPermissionService , AopLoggabl
      */
     @LogInteraction(Severity.TRACE)
     @Override
-    public void inheritPermissions(IdentifiableEntity<?> targetObj,IdentifiableEntity<? extends Serializable> parent) throws AclNotFoundException {
+    public void inheritPermissions(IdentifiableEntity<?> targetObj,IdentifiableEntity<?> parent) throws AclNotFoundException {
         final ObjectIdentity childOi = new ObjectIdentityImpl(targetObj.getClass(), targetObj.getId());
         final ObjectIdentity parentOi = new ObjectIdentityImpl(parent.getClass(), parent.getId());
 //        log.debug("Entity: " + targetObj + " will inherit permissions from: " + parent);
@@ -144,6 +154,7 @@ public class RapidPermissionService implements AclPermissionService , AopLoggabl
         MutableAcl updated = aclService.updateAcl(childAcl);
         log.trace("Updated Child Acl: " + updated);
     }
+
 
 
     protected void addPermissionForSid(IdentifiableEntity<?> targetObj, Permission permission, Sid sid) {
@@ -163,24 +174,62 @@ public class RapidPermissionService implements AclPermissionService , AopLoggabl
         MutableAcl acl = findAcl(oi);
         log.trace("acl of entity before removal" + acl);
         List<AccessControlEntry> aces = acl.getEntries();
-        Set<AccessControlEntry> acesToRemove = aces.stream().filter(accessControlEntry -> {
-            return accessControlEntry.getSid().equals(sid) &&
-                    accessControlEntry.getPermission().equals(permission);
-        }).collect(Collectors.toSet());
+        int aceIndexToRemove = findMatchingAceIndex(aces, permission, sid);
 
-        if (acesToRemove.isEmpty()){
+        if (aceIndexToRemove == -1){
             throw new AceNotFoundException("Cant remove permission for sid: " + sid + " on target: " + oi + ", bc no matching ace found");
         }
-        if (acesToRemove.size() > 1){
-            throw new IllegalArgumentException("Found multiple ace's: " + acesToRemove);
+
+        // todo have to do weird remove workaround again bc of hibernate set, see DirEntity
+        // AccessControlEntry removed = aces.remove(aceIndexToRemove);
+        Iterator<AccessControlEntry> aceIterator = aces.iterator();
+        int index = 0;
+        while (aceIterator.hasNext()){
+            aceIterator.next();
+            if (index==aceIndexToRemove){
+                aceIterator.remove();
+                break;
+            }
+            index++;
         }
 
-        AccessControlEntry aceToRemove = acesToRemove.stream().findFirst().get();
-        log.debug("Ace to remove: " + acesToRemove);
-
-        acl.getEntries().remove(aceToRemove);
-        MutableAcl updated = aclService.updateAcl(acl);
+        // do weird stuff so update wont be ignored ...
+        deleteAclOfEntity(targetObj,false);
+        MutableAcl updatedAcl = aclService.createAcl(oi);
+        for (AccessControlEntry ace : aces) {
+            updatedAcl.getEntries().add(ace);
+        }
+        MutableAcl updated = aclService.updateAcl(updatedAcl);
         log.trace("updated acl: " + updated);
+    }
+
+    // todo reduce overhead when updating to newer spring version
+    protected int findMatchingAceIndex(List<AccessControlEntry> aces, Permission permission, Sid sid) throws AceNotFoundException {
+        int[] position = {-1};
+        // https://github.com/spring-projects/spring-security/issues/5401
+        Optional<AccessControlEntry> ace = aces.stream()
+                .peek(x -> position[0]++)
+                .filter(accessControlEntry -> {
+                    return findSidString(accessControlEntry.getSid()).equals(findSidString(sid)) &&
+                            accessControlEntry.getPermission().equals(permission);
+                }).findFirst();
+        if (ace.isEmpty()){
+            return -1;
+        }else{
+            log.debug("Ace to remove: " + ace.get());
+            return position[0];
+        }
+    }
+
+    // https://github.com/spring-projects/spring-security/issues/5401
+    protected String findSidString(Sid sid){
+        if (sid instanceof GrantedAuthoritySid){
+            return ((GrantedAuthoritySid) sid).getGrantedAuthority();
+        }else if (sid instanceof PrincipalSid){
+            return ((PrincipalSid) sid).getPrincipal();
+        }else {
+            throw new IllegalArgumentException("Unknown Sid type: " + sid);
+        }
     }
 
     @Autowired
@@ -188,4 +237,8 @@ public class RapidPermissionService implements AclPermissionService , AopLoggabl
         this.aclService = aclService;
     }
 
+    @Autowired
+    public void setSecurityContext(RapidSecurityContext<RapidAuthenticatedPrincipal> securityContext) {
+        this.securityContext = securityContext;
+    }
 }

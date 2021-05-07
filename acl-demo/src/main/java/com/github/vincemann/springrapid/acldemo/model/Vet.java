@@ -30,6 +30,10 @@ public class Vet extends Person implements BiDirParent, UserAwareEntity, UniDirP
             this.specialtys = specialtys;
     }
 
+    @Override
+    public String getAuthenticationString() {
+        return getUser().getAuthenticationString();
+    }
 
     @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(name = "vet_specialtys",

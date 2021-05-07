@@ -28,8 +28,8 @@ import java.util.Optional;
 
 
 @DefineProxy(name = "acl", extensions = {
-        "authenticatedHasFullPermissionAboutSavedAclExtension",
-        "authenticatedHasFullPermissionAboutSavedContainedUserAclExtension"
+        "userHasFullPermissionAboutSelfAclExtension",
+        "userHasFullPermissionAboutSavedContainedUserAclExtension"
 })
 @DefineProxy(name = "secured")
 @CreateProxy(qualifiers = Acl.class,proxies = "acl")

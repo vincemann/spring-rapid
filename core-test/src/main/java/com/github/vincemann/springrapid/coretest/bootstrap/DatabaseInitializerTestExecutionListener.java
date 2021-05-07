@@ -13,11 +13,11 @@ import java.util.List;
  */
 public class DatabaseInitializerTestExecutionListener extends AbstractTestExecutionListener {
 
-    @Autowired
+    @Autowired(required = false)
     @BeforeEachTestInitializable
     private List<DatabaseInitializer> beforeEachTest;
 
-    @Autowired
+    @Autowired(required = false)
     @BeforeEachTestMethodInitializable
     private List<DatabaseInitializer> beforeEachTestMethod;
 
@@ -27,15 +27,20 @@ public class DatabaseInitializerTestExecutionListener extends AbstractTestExecut
                 .getAutowireCapableBeanFactory()
                 .autowireBean(this);
 
-        for (DatabaseInitializer initializer : beforeEachTest) {
-            initializer.init();
+        if (beforeEachTest != null) {
+            for (DatabaseInitializer initializer : beforeEachTest) {
+                initializer.init();
+            }
         }
+
     }
 
     @Override
     public void beforeTestMethod(TestContext testContext) throws Exception {
-        for (DatabaseInitializer initializer : beforeEachTestMethod) {
-            initializer.init();
+        if (beforeEachTestMethod != null) {
+            for (DatabaseInitializer initializer : beforeEachTestMethod) {
+                initializer.init();
+            }
         }
     }
 }
