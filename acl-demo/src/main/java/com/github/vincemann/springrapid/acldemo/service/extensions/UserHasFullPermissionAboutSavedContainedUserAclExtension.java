@@ -1,6 +1,7 @@
 package com.github.vincemann.springrapid.acldemo.service.extensions;
 
 import com.github.vincemann.springrapid.acl.service.extensions.acl.AbstractAclExtension;
+import com.github.vincemann.springrapid.acldemo.model.User;
 import com.github.vincemann.springrapid.acldemo.model.abs.UserAwareEntity;
 import com.github.vincemann.springrapid.core.proxy.GenericCrudServiceExtension;
 import com.github.vincemann.springrapid.core.service.CrudService;
@@ -16,7 +17,7 @@ import org.springframework.transaction.annotation.Transactional;
  */
 @ServiceComponent
 @Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
-public class AuthenticatedHasFullPermissionAboutSavedContainedUserAclExtension
+public class UserHasFullPermissionAboutSavedContainedUserAclExtension
         extends AbstractAclExtension<CrudService<UserAwareEntity,Long>>
                 implements GenericCrudServiceExtension<CrudService<UserAwareEntity,Long>, UserAwareEntity,Long> {
 
@@ -24,7 +25,9 @@ public class AuthenticatedHasFullPermissionAboutSavedContainedUserAclExtension
     @Override
     public UserAwareEntity save(UserAwareEntity entity) throws BadEntityException {
         UserAwareEntity saved = getNext().save(entity);
-        aclPermissionService.savePermissionForAuthenticatedOverEntity(saved.getUser(), BasePermission.ADMINISTRATION);
+        String user = saved.getAuthenticationString();
+        User containedUser = saved.getUser();
+        aclPermissionService.savePermissionForUserOverEntity(user,containedUser, BasePermission.ADMINISTRATION);
         return saved;
     }
 }

@@ -30,7 +30,8 @@ import org.springframework.stereotype.Service;
 })
 @DefineProxy(name = "secured", extensions = {
         "onlyVetAndAdminCanCreateSecurityExtension",
-        "vetCanOnlySaveOwnVisitsSecurityExtension"
+        "vetCanOnlySaveOwnVisitsSecurityExtension",
+        "needCreatePermissionForOwnerSubscriptionsSecurityExtension"
 })
 @CreateProxy(qualifiers = Acl.class,proxies = "acl")
 @CreateProxy(qualifiers = Secured.class,proxies = {"acl","secured"})

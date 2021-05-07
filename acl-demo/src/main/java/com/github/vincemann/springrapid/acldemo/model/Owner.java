@@ -41,6 +41,11 @@ public class Owner extends Person implements BiDirParent, UserAwareEntity, UniDi
         this.telephone = telephone;
     }
 
+    @Override
+    public String getAuthenticationString() {
+        return getUser().getAuthenticationString();
+    }
+
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "owner",fetch = FetchType.EAGER)
     @JsonManagedReference
     @BiDirChildCollection(Pet.class)

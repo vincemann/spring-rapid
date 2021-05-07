@@ -4,9 +4,11 @@ import com.github.vincemann.springrapid.acl.proxy.Acl;
 import com.github.vincemann.springrapid.acl.proxy.Secured;
 
 import com.github.vincemann.springrapid.acl.service.extensions.acl.AuthenticatedHasFullPermissionAboutSavedAclExtension;
+import com.github.vincemann.springrapid.acldemo.model.Owner;
 import com.github.vincemann.springrapid.acldemo.service.OwnerService;
 import com.github.vincemann.springrapid.acldemo.service.Root;
-import com.github.vincemann.springrapid.acldemo.service.extensions.AuthenticatedHasFullPermissionAboutSavedContainedUserAclExtension;
+import com.github.vincemann.springrapid.acldemo.service.extensions.UserHasFullPermissionAboutSavedContainedUserAclExtension;
+import com.github.vincemann.springrapid.auth.service.extension.UserHasFullPermissionAboutSelfAclExtension;
 import com.github.vincemann.springrapid.core.proxy.ServiceExtensionProxyBuilder;
 import com.github.vincemann.springrapid.core.slicing.ServiceConfig;
 import org.springframework.context.annotation.Bean;
@@ -22,11 +24,10 @@ public class OwnerServiceConfig {
     @Acl
     @Bean
     public OwnerService aclOwnerService(@Root OwnerService ownerService,
-                                        AuthenticatedHasFullPermissionAboutSavedContainedUserAclExtension authenticatedFullAccessAboutSavedAclExtension,
-                                        AuthenticatedHasFullPermissionAboutSavedAclExtension authenticatedHasFullPermissionAboutSavedAclExtension) {
+                                        UserHasFullPermissionAboutSavedContainedUserAclExtension userHasFullPermissionAboutSavedContainedUserAclExtension,
+                                        UserHasFullPermissionAboutSelfAclExtension<Owner,Long> userHasFullPermissionAboutSelfAclExtension ) {
         return new ServiceExtensionProxyBuilder<>(ownerService)
-                .addGenericExtensions(authenticatedFullAccessAboutSavedAclExtension)
-                .addExtensions(authenticatedHasFullPermissionAboutSavedAclExtension)
+                .addGenericExtensions(userHasFullPermissionAboutSavedContainedUserAclExtension,userHasFullPermissionAboutSelfAclExtension)
                 .build();
     }
 

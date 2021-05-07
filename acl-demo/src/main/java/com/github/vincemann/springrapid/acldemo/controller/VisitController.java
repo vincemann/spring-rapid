@@ -12,6 +12,7 @@ import com.github.vincemann.springrapid.acldemo.dto.VisitDto;
 import com.github.vincemann.springrapid.acldemo.model.Visit;
 import com.github.vincemann.springrapid.acldemo.service.VisitService;
 import com.github.vincemann.springrapid.core.util.VerifyEntity;
+import lombok.Getter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -30,10 +31,18 @@ public class VisitController
     }
 
     private OwnerService ownerService;
+    @Getter
+    private String subscribeOwnerUrl;
 
+
+    @Override
+    protected void initUrls() {
+        super.initUrls();
+        this.subscribeOwnerUrl = getEntityBaseUrl() + "subscribe-owner";
+    }
 
     @RequestMapping(value = "/api/core/visit/subscribe-owner", method = RequestMethod.GET)
-    public ResponseEntity<?> subscribeOwner(@RequestParam(value = "read") boolean canRead, @RequestParam("ownerid") long ownerId, @RequestParam("visitId") long visitId) throws BadEntityException, EntityNotFoundException {
+    public ResponseEntity<?> subscribeOwner(@RequestParam(value = "read") boolean canRead, @RequestParam("ownerid") long ownerId, @RequestParam("visitid") long visitId) throws BadEntityException, EntityNotFoundException {
         Optional<Owner> owner = ownerService.findById(ownerId);
         Optional<Visit> visit = getService().findById(visitId);
         VerifyEntity.isPresent(owner,"Owner with id: " + ownerId + " not found");
