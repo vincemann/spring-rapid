@@ -3,12 +3,10 @@ package com.github.vincemann.springrapid.acl.service;
 import com.github.vincemann.aoplog.Severity;
 import com.github.vincemann.aoplog.api.AopLoggable;
 import com.github.vincemann.aoplog.api.LogInteraction;
-import com.github.vincemann.springrapid.acl.util.PermissionUtils;
 import com.github.vincemann.springrapid.core.model.IdentifiableEntity;
 import com.github.vincemann.springrapid.core.security.RapidAuthenticatedPrincipal;
 import com.github.vincemann.springrapid.core.security.RapidSecurityContext;
 import com.github.vincemann.springrapid.core.security.Roles;
-import com.github.vincemann.springrapid.core.util.IdPropertyNameUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.AccessDeniedException;
@@ -20,7 +18,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.io.Serializable;
-import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Optional;
@@ -35,6 +32,7 @@ public class RapidPermissionService implements AclPermissionService , AopLoggabl
 
     private MutableAclService aclService;
     private RapidSecurityContext<RapidAuthenticatedPrincipal> securityContext;
+    private PermissionStringConverter permissionStringConverter;
 
     @Autowired
     public RapidPermissionService(MutableAclService aclService) {
@@ -158,7 +156,7 @@ public class RapidPermissionService implements AclPermissionService , AopLoggabl
 
 
     protected void addPermissionForSid(IdentifiableEntity<?> targetObj, Permission permission, Sid sid) {
-        log.debug("sid: "+ sid +" will gain permission: " + PermissionUtils.toString(permission) +" over entity: " + targetObj);
+        log.debug("sid: "+ sid +" will gain permission: " + permissionStringConverter.convert(permission) +" over entity: " + targetObj);
         final ObjectIdentity oi = new ObjectIdentityImpl(targetObj.getClass(), targetObj.getId());
 
         MutableAcl acl = findOrCreateAcl(oi);
@@ -169,7 +167,7 @@ public class RapidPermissionService implements AclPermissionService , AopLoggabl
     }
 
     protected void deletePermissionForSid(IdentifiableEntity<?> targetObj, Permission permission, Sid sid) throws AclNotFoundException, AceNotFoundException {
-        log.debug("sid: "+ sid +" will loose permission: " + PermissionUtils.toString(permission) +" over entity: " + targetObj);
+        log.debug("sid: "+ sid +" will loose permission: " + permissionStringConverter.convert(permission) +" over entity: " + targetObj);
         final ObjectIdentity oi = new ObjectIdentityImpl(targetObj.getClass(), targetObj.getId());
         MutableAcl acl = findAcl(oi);
         log.trace("acl of entity before removal" + acl);
@@ -238,7 +236,12 @@ public class RapidPermissionService implements AclPermissionService , AopLoggabl
     }
 
     @Autowired
-    public void setSecurityContext(RapidSecurityContext<RapidAuthenticatedPrincipal> securityContext) {
+    public void injectSecurityContext(RapidSecurityContext<RapidAuthenticatedPrincipal> securityContext) {
         this.securityContext = securityContext;
+    }
+
+    @Autowired
+    public void injectPermissionStringConverter(PermissionStringConverter permissionStringConverter) {
+        this.permissionStringConverter = permissionStringConverter;
     }
 }

@@ -1,5 +1,6 @@
 package com.github.vincemann.springrapid.acl;
 
+import com.github.vincemann.springrapid.acl.service.PermissionStringConverter;
 import com.github.vincemann.springrapid.core.model.IdentifiableEntity;
 import com.github.vincemann.springrapid.core.security.RapidAuthenticatedPrincipal;
 import com.github.vincemann.springrapid.core.security.RapidSecurityContext;
@@ -14,6 +15,7 @@ import org.springframework.expression.spel.standard.SpelExpressionParser;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.access.expression.ExpressionUtils;
 import org.springframework.security.access.expression.method.MethodSecurityExpressionHandler;
+import org.springframework.security.acls.model.Permission;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.util.SimpleMethodInvocation;
 
@@ -30,7 +32,7 @@ import java.util.HashSet;
  * DefaultImpl of {@link AclSecurityChecker}.
  * Uses {@link MethodSecurityExpressionHandler} for expression evaluation
  */
-public class AclSecurityCheckerImpl
+public class RapidAclSecurityChecker
         implements AclSecurityChecker, ApplicationContextAware {
 
 
@@ -38,10 +40,11 @@ public class AclSecurityCheckerImpl
     private SpelExpressionParser parser;
     private ApplicationContext applicationContext;
     private RapidSecurityContext<?> rapidSecurityContext;
+    private PermissionStringConverter permissionStringConverter;
 
-    public AclSecurityCheckerImpl() {
+    public RapidAclSecurityChecker() {
         try {
-            this.triggerCheckMethod = AclSecurityCheckerImpl.SecurityObject.class.getMethod("triggerCheck");
+            this.triggerCheckMethod = RapidAclSecurityChecker.SecurityObject.class.getMethod("triggerCheck");
         } catch (NoSuchMethodException e) {
             log.error(e.getMessage(), e);
         }
@@ -49,30 +52,37 @@ public class AclSecurityCheckerImpl
     }
 
     @Override
-    public <E extends IdentifiableEntity<? extends Serializable>, C extends Collection<E>> C filter(C toFilter, String permission){
+    public <E extends IdentifiableEntity<? extends Serializable>, C extends Collection<E>> C filter(C toFilter, Permission permission){
         RapidSecurityContextChecker.checkAuthenticated();
         Collection<E> filtered =  new HashSet<>();
+        String permissionString = permissionStringConverter.convert(permission);
         for (E entity : toFilter) {
-            boolean permitted = checkExpression("hasPermission(" + entity.getId() + ",'" + entity.getClass().getName() + "','" + permission + "')");
+            boolean permitted = checkExpression("hasPermission(" + entity.getId() + ",'" + entity.getClass().getName() + "','" + permissionString + "')");
             if(permitted){
                 filtered.add(entity);
             }
         }
-        //todo legit?
         return (C) filtered;
     }
 
     @Override
-    public void checkPermission(Serializable id,Class<?> clazz,String permission){
+    public void checkPermission(Serializable id, Class<?> clazz, Permission permission){
         if(id==null){
             throw new IllegalArgumentException("Id must not be null");
         }
+        if(permission==null){
+            throw new IllegalArgumentException("Permission must not be null");
+        }
+        if(clazz==null){
+            throw new IllegalArgumentException("Clazz must not be null");
+        }
         RapidSecurityContextChecker.checkAuthenticated();
-        boolean permitted = checkExpression("hasPermission(" + id + ",'" + clazz.getName() + "','" + permission + "')");
+        String permissionString = permissionStringConverter.convert(permission);
+        boolean permitted = checkExpression("hasPermission(" + id + ",'" + clazz.getName() + "','" + permissionString + "')");
         if(!permitted){
             RapidAuthenticatedPrincipal principal = rapidSecurityContext.currentPrincipal();
             throw new AccessDeniedException("Permission not Granted! Principal: "+principal+
-                    " does not have Permission: " + permission + " for entity: {"+clazz.getSimpleName() + ", id: " + id+"}");
+                    " does not have Permission: " + permissionString + " for entity: {"+clazz.getSimpleName() + ", id: " + id+"}");
         }
     }
 
@@ -84,7 +94,7 @@ public class AclSecurityCheckerImpl
 //            log.debug("EVALUATING SECURITY EXPRESSION: [" + securityExpression + "]...");
 //        }
 
-        AclSecurityCheckerImpl.SecurityObject securityObject = new AclSecurityCheckerImpl.SecurityObject();
+        RapidAclSecurityChecker.SecurityObject securityObject = new RapidAclSecurityChecker.SecurityObject();
         MethodSecurityExpressionHandler expressionHandler = applicationContext.getBean(MethodSecurityExpressionHandler.class);
         //gibt dem einfach nen gemockten Methodenaufruf und nen gemocktes securityObject rein
         EvaluationContext evaluationContext = expressionHandler.createEvaluationContext(
@@ -110,6 +120,11 @@ public class AclSecurityCheckerImpl
     @Override
     public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
         this.applicationContext = applicationContext;
+    }
+
+    @Autowired
+    public void injectPermissionStringConverter(PermissionStringConverter permissionStringConverter) {
+        this.permissionStringConverter = permissionStringConverter;
     }
 
     //i dont want two ways of checking roles or authenticated

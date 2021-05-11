@@ -1,7 +1,7 @@
 package com.github.vincemann.springrapid.auth.service.extension;
 
 import com.github.vincemann.aoplog.api.LogInteraction;
-import com.github.vincemann.springrapid.acl.service.extensions.security.SecurityServiceExtension;
+import com.github.vincemann.springrapid.acl.service.extensions.security.AbstractSecurityExtension;
 import com.github.vincemann.springrapid.auth.domain.AbstractUser;
 import com.github.vincemann.springrapid.auth.domain.RapidAuthAuthenticatedPrincipal;
 import com.github.vincemann.springrapid.auth.domain.dto.ChangePasswordDto;
@@ -19,6 +19,7 @@ import com.github.vincemann.springrapid.core.util.VerifyEntity;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.AccessDeniedException;
+import org.springframework.security.acls.domain.BasePermission;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.io.Serializable;
@@ -28,7 +29,7 @@ import java.util.Optional;
 @Transactional
 @Slf4j
 public class UserServiceSecurityExtension
-        extends SecurityServiceExtension<UserService>
+        extends AbstractSecurityExtension<UserService>
             implements UserServiceExtension<UserService> {
 
 
@@ -45,7 +46,7 @@ public class UserServiceSecurityExtension
     @LogInteraction
     @Override
     public void resendVerificationMail(AbstractUser user) throws EntityNotFoundException, BadEntityException {
-        getSecurityChecker().checkPermission(user.getId(), getLast().getEntityClass(), getWritePermission());
+        getSecurityChecker().checkPermission(user, BasePermission.WRITE);
         getNext().resendVerificationMail(user);
     }
 
@@ -53,7 +54,7 @@ public class UserServiceSecurityExtension
     @LogInteraction
     @Override
     public AbstractUser update(AbstractUser update, Boolean full) throws EntityNotFoundException, BadEntityException {
-        getSecurityChecker().checkPermission(update.getId(), getLast().getEntityClass(), getWritePermission());
+        getSecurityChecker().checkPermission(update, BasePermission.WRITE);
         Optional<AbstractUser<Serializable>> oldUserOp = userService.findById(update.getId());
         VerifyEntity.isPresent(oldUserOp, update.getId(), update.getClass());
         AbstractUser oldUser = oldUserOp.get();
@@ -90,7 +91,7 @@ public class UserServiceSecurityExtension
 
         // anon has to be able to reset password without being logged in
 //        AbstractUser user = byEmail.get();
-//        getSecurityChecker().checkPermission(user.getId(), getLast().getEntityClass(), getWritePermission());
+//        getSecurityChecker().checkPermission(user.getId(), getLast().getEntityClass(), BasePermission.WRITE);
         getNext().forgotPassword(email);
     }
 
@@ -98,7 +99,7 @@ public class UserServiceSecurityExtension
     @Override
     public void changePassword(AbstractUser user, ChangePasswordDto changePasswordForm) throws EntityNotFoundException, BadEntityException {
 //        LexUtils.ensureFound(user);
-        getSecurityChecker().checkPermission(user.getId(), getLast().getEntityClass(), getWritePermission());
+        getSecurityChecker().checkPermission(user, BasePermission.WRITE);
         getNext().changePassword(user, changePasswordForm);
     }
 
@@ -106,7 +107,7 @@ public class UserServiceSecurityExtension
     @Override
     public void requestEmailChange(AbstractUser user, RequestEmailChangeForm emailChangeForm) throws EntityNotFoundException, AlreadyRegisteredException {
         VerifyEntity.isPresent(user,"User who's email should get changed does not exist");
-        getSecurityChecker().checkPermission(user.getId(), getLast().getEntityClass(), getWritePermission());
+        getSecurityChecker().checkPermission(user, BasePermission.WRITE);
         getNext().requestEmailChange(user, emailChangeForm);
     }
 
@@ -114,7 +115,7 @@ public class UserServiceSecurityExtension
     @Override
     public AbstractUser changeEmail(AbstractUser user, String changeEmailCode) throws EntityNotFoundException,  BadEntityException {
         VerifyEntity.isPresent(user,"User who's email should get changed does not exist");
-        getSecurityChecker().checkPermission(user.getId(), getLast().getEntityClass(), getWritePermission());
+        getSecurityChecker().checkPermission(user, BasePermission.WRITE);
         return getNext().changeEmail(user, changeEmailCode);
     }
 
@@ -158,7 +159,7 @@ public class UserServiceSecurityExtension
 
 //    private boolean hasWritePermission(AbstractUser user){
 //        try {
-//            getSecurityChecker().checkPermission(user.getId(),user.getClass(), getWritePermission());
+//            getSecurityChecker().checkPermission(user.getId(),user.getClass(), BasePermission.WRITE);
 //            return true;
 //        }catch (AccessDeniedException e){
 //            return false;
@@ -170,7 +171,7 @@ public class UserServiceSecurityExtension
 //        //only include email if user has write permission
 //        Optional<AbstractUser> byEmail = userRepository.findByEmail(email);
 //        EntityUtils.checkPresent(byEmail,"No User found with email: " +email);
-//        getSecurityChecker().checkPermission(byEmail.get().getId(),byEmail.get().getClass(), getWritePermission());
+//        getSecurityChecker().checkPermission(byEmail.get().getId(),byEmail.get().getClass(), BasePermission.WRITE);
 //    }
 
     //this is done by mapping to specific dto

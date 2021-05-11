@@ -2,7 +2,9 @@ package com.github.vincemann.springrapid.acl.config;
 
 import com.github.vincemann.springrapid.acl.AclProperties;
 import com.github.vincemann.springrapid.acl.service.AclPermissionService;
+import com.github.vincemann.springrapid.acl.service.PermissionStringConverter;
 import com.github.vincemann.springrapid.acl.service.RapidPermissionService;
+import com.github.vincemann.springrapid.acl.service.RapidPermissionStringConverter;
 import com.github.vincemann.springrapid.core.security.Roles;
 import com.github.vincemann.springrapid.acl.framework.HierarchicPermissionGrantingStrategy;
 import com.github.vincemann.springrapid.acl.framework.NoModSecurityCheckAclAuthorizationStrategy;
@@ -89,6 +91,12 @@ public class RapidAclAutoConfiguration {
     @ConditionalOnMissingBean(PermissionEvaluator.class)
     public PermissionEvaluator permissionEvaluator(){
         return new VerboseAclPermissionEvaluator(aclService());
+    }
+
+    @ConditionalOnMissingBean(PermissionStringConverter.class)
+    @Bean
+    public PermissionStringConverter permissionStringConverter(){
+        return new RapidPermissionStringConverter();
     }
 
     @ConditionalOnMissingBean(AclAuthorizationStrategy.class)

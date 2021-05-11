@@ -3,7 +3,7 @@ package com.github.vincemann.springrapid.acl.framework;
 import com.github.vincemann.aoplog.api.AopLoggable;
 import com.github.vincemann.springrapid.acl.framework.oidresolve.RapidObjectIdentityResolver;
 import com.github.vincemann.springrapid.acl.framework.oidresolve.UnresolvableOidException;
-import com.github.vincemann.springrapid.acl.util.PermissionUtils;
+import com.github.vincemann.springrapid.acl.service.PermissionStringConverter;
 import com.github.vincemann.springrapid.core.model.IdentifiableEntity;
 import com.github.vincemann.springrapid.core.security.RapidSecurityContext;
 import com.github.vincemann.springrapid.core.service.locator.CrudServiceLocator;
@@ -35,6 +35,7 @@ public class VerboseAclPermissionEvaluator extends AclPermissionEvaluator implem
     private SidRetrievalStrategy sidRetrievalStrategy = new SidRetrievalStrategyImpl();
     private PermissionFactory permissionFactory = new DefaultPermissionFactory();
     private RapidObjectIdentityResolver objectIdentityResolver;
+    private PermissionStringConverter permissionStringConverter;
 
     public VerboseAclPermissionEvaluator(AclService aclService) {
         super(aclService);
@@ -81,7 +82,7 @@ public class VerboseAclPermissionEvaluator extends AclPermissionEvaluator implem
         // Obtain the SIDs applicable to the principal
         List<Sid> sids = sidRetrievalStrategy.getSids(authentication);
         List<Permission> requiredPermissions = resolvePermission(permission);
-        List<String> stringPermissions = requiredPermissions.parallelStream().map(p -> PermissionUtils.toString(p)).collect(Collectors.toList());
+        List<String> stringPermissions = requiredPermissions.parallelStream().map(p -> permissionStringConverter.convert(p)).collect(Collectors.toList());
 
 
         IdentifiableEntity resolvedOid = null;
@@ -189,5 +190,10 @@ public class VerboseAclPermissionEvaluator extends AclPermissionEvaluator implem
     @Autowired
     public void createObjectIdentityResolver(CrudServiceLocator crudServiceLocator) {
         this.objectIdentityResolver = new RapidObjectIdentityResolver(crudServiceLocator);
+    }
+
+    @Autowired
+    public void injectPermissionStringConverter(PermissionStringConverter permissionStringConverter) {
+        this.permissionStringConverter = permissionStringConverter;
     }
 }
