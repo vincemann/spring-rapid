@@ -5,7 +5,7 @@ import com.github.vincemann.aoplog.api.AopLoggable;
 import com.github.vincemann.aoplog.api.LogInteraction;
 import com.github.vincemann.springrapid.auth.domain.AbstractUser;
 import com.github.vincemann.springrapid.auth.domain.dto.ChangePasswordDto;
-import com.github.vincemann.springrapid.auth.domain.dto.RequestEmailChangeForm;
+import com.github.vincemann.springrapid.auth.domain.dto.RequestEmailChangeDto;
 import com.github.vincemann.springrapid.auth.domain.dto.ResetPasswordDto;
 import com.github.vincemann.springrapid.auth.AuthProperties;
 import com.github.vincemann.springrapid.core.service.CrudService;
@@ -43,7 +43,7 @@ public interface UserService<U extends AbstractUser<ID>, ID extends Serializable
     public void changePassword(U user, ChangePasswordDto changePasswordForm) throws EntityNotFoundException, BadEntityException;
 
 //    @Validated(UserVerifyUtils.ChangeEmailValidation.class)
-    public void requestEmailChange(U user, RequestEmailChangeForm emailChangeForm) throws EntityNotFoundException, AlreadyRegisteredException;
+    public void requestEmailChange(U user, RequestEmailChangeDto emailChangeForm) throws EntityNotFoundException, AlreadyRegisteredException;
 
     public U changeEmail(U user,  @NotBlank String changeEmailCode) throws EntityNotFoundException, BadEntityException;
 

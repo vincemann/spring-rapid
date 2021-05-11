@@ -3,7 +3,7 @@ package com.github.vincemann.springrapid.auth.util;
 import java.util.HashMap;
 import java.util.Map;
 
-public class LemonMapUtils {
+public class MapUtils {
 
     /**
      * Constructs a map of the key-value pairs,

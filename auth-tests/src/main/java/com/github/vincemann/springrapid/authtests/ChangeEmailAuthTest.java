@@ -5,13 +5,16 @@ import com.github.vincemann.springrapid.auth.domain.AbstractUserRepository;
 import com.github.vincemann.springrapid.auth.service.AbstractUserService;
 import com.github.vincemann.springrapid.auth.service.token.JweTokenService;
 import com.github.vincemann.springrapid.auth.util.RapidJwt;
-import com.github.vincemann.springrapid.auth.util.LemonMapUtils;
+import com.github.vincemann.springrapid.auth.util.MapUtils;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
+import org.springframework.test.web.servlet.ResultActions;
+
+import java.io.Serializable;
 
 import static org.hamcrest.Matchers.containsString;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -32,27 +35,43 @@ public class ChangeEmailAuthTest extends AbstractRapidAuthTest {
 	@Override
 	protected void createTestUsers() throws Exception{
 		super.createTestUsers();
+		// todo create method for requesting email change in testTemplate
 		AbstractUser<Long> user = getUserService().findById(getUnverifiedUser().getId()).get();
 		user.setNewEmail(NEW_EMAIL);
 		userRepository.save(user);
 	}
 
-	@BeforeEach
-	protected void setupEmailCode() throws Exception {
-		changeEmailCode = jweTokenService.createToken(
-				RapidJwt.create(
-				AbstractUserService.CHANGE_EMAIL_AUDIENCE,
-				Long.toString(getUnverifiedUser().getId()),
-				600000L,
-				LemonMapUtils.mapOf("newEmail", NEW_EMAIL)));
+//	@BeforeEach
+//	protected void setupEmailCode() throws Exception {
+//		changeEmailCode = jweTokenService.createToken(
+//				RapidJwt.create(
+//				AbstractUserService.CHANGE_EMAIL_AUDIENCE,
+//				Long.toString(getUnverifiedUser().getId()),
+//				600000L,
+//				MapUtils.mapOf("newEmail", NEW_EMAIL)));
+//	}
 
+	protected String createChangeEmailToken(AbstractUser targetUser, String newEmail, Long expiration){
+		return jweTokenService.createToken(
+				RapidJwt.create(
+						AbstractUserService.CHANGE_EMAIL_AUDIENCE,
+						targetUser.getId().toString(),
+						expiration,
+						MapUtils.mapOf("newEmail", newEmail)));
+	}
+
+	protected ResultActions changeEmail(AbstractUser user, Serializable targetId, String code, String token) throws Exception {
+		return mvc.perform(post(authProperties.getController().getChangeEmailUrl())
+				.param("code", code)
+				.param("id",targetId.toString())
+				.header(HttpHeaders.AUTHORIZATION, token)
+				.header("contentType",  MediaType.APPLICATION_FORM_URLENCODED));
 	}
 
 	//works solo but token is obsolete when run in group
 //	@Disabled
 	@Test
 	public void canChangeOwnEmail() throws Exception {
-		
 		mvc.perform(post(authProperties.getController().getChangeEmailUrl())
                 .param("code", changeEmailCode)
 				.param("id",getUnverifiedUser().getId().toString())
@@ -67,13 +86,29 @@ public class ChangeEmailAuthTest extends AbstractRapidAuthTest {
 		Assertions.assertNull(updatedUser.getNewEmail());
 		Assertions.assertEquals(NEW_EMAIL, updatedUser.getEmail());
 		
-		// Shouldn't be able to login with old token
+
+	}
+
+	@Test
+	public void cantChangeOwnEmailWithSameTokenTwice() throws Exception {
 		mvc.perform(post(authProperties.getController().getChangeEmailUrl())
-                .param("code", changeEmailCode)
+				.param("code", changeEmailCode)
 				.param("id",getUnverifiedUser().getId().toString())
 				.header(HttpHeaders.AUTHORIZATION, tokens.get(getUnverifiedUser().getId()))
-                .header("contentType",  MediaType.APPLICATION_FORM_URLENCODED))
-		        .andExpect(status().is(401));
+				.header("contentType",  MediaType.APPLICATION_FORM_URLENCODED))
+				.andExpect(status().is(200))
+				//gets new token for new email to use
+				.andExpect(header().string(HttpHeaders.AUTHORIZATION, containsString(".")))
+				.andExpect(jsonPath("$.id").value(getUnverifiedUser().getId()));
+
+
+		// cant change with again with same token
+		mvc.perform(post(authProperties.getController().getChangeEmailUrl())
+				.param("code", changeEmailCode)
+				.param("id",getUnverifiedUser().getId().toString())
+				.header(HttpHeaders.AUTHORIZATION, tokens.get(getUnverifiedUser().getId()))
+				.header("contentType",  MediaType.APPLICATION_FORM_URLENCODED))
+				.andExpect(status().is(401));
 	}
 	
     /**
@@ -95,7 +130,7 @@ public class ChangeEmailAuthTest extends AbstractRapidAuthTest {
 				RapidJwt.create(
 				"", // blank audience
 				Long.toString(getUnverifiedUser().getId()), 60000L,
-				LemonMapUtils.mapOf("newEmail", NEW_EMAIL)));
+				MapUtils.mapOf("newEmail", NEW_EMAIL)));
 		
 		mvc.perform(post(authProperties.getController().getChangeEmailUrl())
                 .param("code", code)
@@ -109,7 +144,7 @@ public class ChangeEmailAuthTest extends AbstractRapidAuthTest {
 				RapidJwt.create(
 				AbstractUserService.CHANGE_EMAIL_AUDIENCE,
 				Long.toString(getAdmin().getId()), 60000L,
-				LemonMapUtils.mapOf("newEmail", NEW_EMAIL)));
+				MapUtils.mapOf("newEmail", NEW_EMAIL)));
 		
 		mvc.perform(post(authProperties.getController().getChangeEmailUrl())
                 .param("code", code)
@@ -123,7 +158,7 @@ public class ChangeEmailAuthTest extends AbstractRapidAuthTest {
 				RapidJwt.create(
 				AbstractUserService.CHANGE_EMAIL_AUDIENCE,
 				Long.toString(getUnverifiedUser().getId()), 60000L,
-				LemonMapUtils.mapOf("newEmail", "wrong.new.email@example.com")));
+				MapUtils.mapOf("newEmail", "wrong.new.email@example.com")));
 		
 		mvc.perform(post(authProperties.getController().getChangeEmailUrl())
                 .param("code", code)
@@ -195,4 +230,6 @@ public class ChangeEmailAuthTest extends AbstractRapidAuthTest {
                 .header("contentType",  MediaType.APPLICATION_FORM_URLENCODED))
 		        .andExpect(status().is(400));
 	}
+
+
 }

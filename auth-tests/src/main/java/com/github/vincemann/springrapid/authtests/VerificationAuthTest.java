@@ -5,7 +5,7 @@ import com.github.vincemann.springrapid.auth.domain.AuthRoles;
 import com.github.vincemann.springrapid.auth.service.AbstractUserService;
 import com.github.vincemann.springrapid.auth.service.token.JweTokenService;
 import com.github.vincemann.springrapid.auth.util.RapidJwt;
-import com.github.vincemann.springrapid.auth.util.LemonMapUtils;
+import com.github.vincemann.springrapid.auth.util.MapUtils;
 import org.hamcrest.Matchers;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -30,7 +30,7 @@ public class VerificationAuthTest extends AbstractRapidAuthTest {
 		super.setup();
 		verificationCode = jweTokenService.createToken(RapidJwt.create(AbstractUserService.VERIFY_AUDIENCE,
 				Long.toString(getUnverifiedUser().getId()), 60000L,
-				LemonMapUtils.mapOf("email", UNVERIFIED_USER_EMAIL)));
+				MapUtils.mapOf("email", UNVERIFIED_USER_EMAIL)));
 	}
 	
 	@Test
@@ -103,7 +103,7 @@ public class VerificationAuthTest extends AbstractRapidAuthTest {
 		String token = jweTokenService.createToken(
 				RapidJwt.create("wrong-audience",
 				Long.toString(getUnverifiedUser().getId()), 60000L,
-				LemonMapUtils.mapOf("email", UNVERIFIED_USER_EMAIL)));
+				MapUtils.mapOf("email", UNVERIFIED_USER_EMAIL)));
 		mvc.perform(post(authProperties.getController().getVerifyUserUrl())
 				.param("id",getUnverifiedUser().getId().toString())
                 .param("code", token)
@@ -114,7 +114,7 @@ public class VerificationAuthTest extends AbstractRapidAuthTest {
 		token = jweTokenService.createToken(
 				RapidJwt.create(AbstractUserService.VERIFY_AUDIENCE,
 				Long.toString(getUnverifiedUser().getId()), 60000L,
-				LemonMapUtils.mapOf("email", "wrong.email@example.com")));
+				MapUtils.mapOf("email", "wrong.email@example.com")));
 		mvc.perform(post(authProperties.getController().getVerifyUserUrl())
 				.param("id",getUnverifiedUser().getId().toString())
                 .param("code", token)
@@ -125,7 +125,7 @@ public class VerificationAuthTest extends AbstractRapidAuthTest {
 		token = jweTokenService.createToken(
 				RapidJwt.create(AbstractUserService.VERIFY_AUDIENCE,
 				Long.toString(getUnverifiedUser().getId()), 1L,
-				LemonMapUtils.mapOf("email", UNVERIFIED_USER_EMAIL)));
+				MapUtils.mapOf("email", UNVERIFIED_USER_EMAIL)));
 		// Thread.sleep(1001L);
 		mvc.perform(post(authProperties.getController().getVerifyUserUrl())
 				.param("id",getUnverifiedUser().getId().toString())

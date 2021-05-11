@@ -7,7 +7,7 @@ import com.github.vincemann.springrapid.auth.domain.AbstractUserRepository;
 import com.github.vincemann.springrapid.auth.domain.AuthRoles;
 import com.github.vincemann.springrapid.auth.domain.RapidAuthAuthenticatedPrincipal;
 import com.github.vincemann.springrapid.auth.domain.dto.ChangePasswordDto;
-import com.github.vincemann.springrapid.auth.domain.dto.RequestEmailChangeForm;
+import com.github.vincemann.springrapid.auth.domain.dto.RequestEmailChangeDto;
 import com.github.vincemann.springrapid.auth.domain.dto.ResetPasswordDto;
 import com.github.vincemann.springrapid.auth.mail.MailData;
 import com.github.vincemann.springrapid.auth.mail.MailSender;
@@ -15,7 +15,7 @@ import com.github.vincemann.springrapid.auth.security.AuthenticatedPrincipalFact
 import com.github.vincemann.springrapid.auth.service.token.AuthorizationTokenService;
 import com.github.vincemann.springrapid.auth.service.token.BadTokenException;
 import com.github.vincemann.springrapid.auth.service.token.JweTokenService;
-import com.github.vincemann.springrapid.auth.util.LemonMapUtils;
+import com.github.vincemann.springrapid.auth.util.MapUtils;
 import com.github.vincemann.springrapid.auth.util.RapidJwt;
 import com.github.vincemann.springrapid.auth.util.TransactionalUtils;
 import com.github.vincemann.springrapid.core.CoreProperties;
@@ -366,7 +366,7 @@ public abstract class AbstractUserService
      * Requests for email change.
      */
     @Transactional(propagation = Propagation.REQUIRED, readOnly = false)
-    public void requestEmailChange(U user,  RequestEmailChangeForm emailChangeForm) throws EntityNotFoundException, AlreadyRegisteredException {
+    public void requestEmailChange(U user,  RequestEmailChangeDto emailChangeForm) throws EntityNotFoundException, AlreadyRegisteredException {
 //        log.debug("Requesting email change for user" + user);
         // checks
 //        Optional<U> byId = getUserService().findById(userId);
@@ -402,7 +402,7 @@ public abstract class AbstractUserService
         JWTClaimsSet claims = RapidJwt.create(CHANGE_EMAIL_AUDIENCE,
                 user.getId().toString(),
                 properties.getJwt().getExpirationMillis(),
-                LemonMapUtils.mapOf("newEmail", user.getNewEmail()));
+                MapUtils.mapOf("newEmail", user.getNewEmail()));
         String changeEmailCode = jweTokenService.createToken(claims);
 
         try {
@@ -528,7 +528,7 @@ public abstract class AbstractUserService
                 user.getId().toString(),
                 properties.getJwt().getExpirationMillis(),
                 //payload
-                LemonMapUtils.mapOf("email", user.getEmail()));
+                MapUtils.mapOf("email", user.getEmail()));
         String verificationCode = jweTokenService.createToken(claims);
 
             // make the link

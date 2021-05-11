@@ -1,4 +1,4 @@
-package com.github.vincemann.springrapid.authdemo.model;
+package com.github.vincemann.springrapid.authdemo.dto;
 
 import com.fasterxml.jackson.annotation.JsonView;
 import com.github.vincemann.springrapid.auth.domain.dto.SignupDto;

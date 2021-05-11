@@ -2,7 +2,7 @@ package com.github.vincemann.springrapid.authtests;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.github.vincemann.springrapid.auth.domain.AbstractUser;
-import com.github.vincemann.springrapid.auth.domain.dto.RequestEmailChangeForm;
+import com.github.vincemann.springrapid.auth.domain.dto.RequestEmailChangeDto;
 import com.github.vincemann.springrapid.core.util.JsonUtils;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -22,9 +22,9 @@ public class RequestEmailChangeAuthTest extends AbstractRapidAuthTest {
 	
 	private static final String NEW_EMAIL = "new.email@example.com";
 	
-	private RequestEmailChangeForm form() {
+	private RequestEmailChangeDto form() {
 
-		RequestEmailChangeForm changeForm = new RequestEmailChangeForm();
+		RequestEmailChangeDto changeForm = new RequestEmailChangeDto();
 //		changeForm.setPassword(USER_PASSWORD);
 		changeForm.setNewEmail(NEW_EMAIL);
 		
@@ -123,7 +123,7 @@ public class RequestEmailChangeAuthTest extends AbstractRapidAuthTest {
      */
 	@Test
 	public void cantRequestEmailChangeWithInvalidData() throws JsonProcessingException, Exception {
-		RequestEmailChangeForm form = form();
+		RequestEmailChangeDto form = form();
 		form.setNewEmail(null);
 //		form.setPassword(null);
 		// try with null newEmail
@@ -138,7 +138,7 @@ public class RequestEmailChangeAuthTest extends AbstractRapidAuthTest {
 //						"emailChangeForm.newEmail"
 						/*"emailChangeForm.password"*/
     	
-		RequestEmailChangeForm emailChangeForm = new RequestEmailChangeForm();
+		RequestEmailChangeDto emailChangeForm = new RequestEmailChangeDto();
 //		emailChangeForm.setPassword("");
 		emailChangeForm.setNewEmail("");
 		
