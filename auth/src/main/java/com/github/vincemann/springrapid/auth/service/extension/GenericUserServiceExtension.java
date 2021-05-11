@@ -3,7 +3,7 @@ package com.github.vincemann.springrapid.auth.service.extension;
 import com.github.vincemann.springrapid.auth.AuthProperties;
 import com.github.vincemann.springrapid.auth.domain.AbstractUser;
 import com.github.vincemann.springrapid.auth.domain.dto.ChangePasswordDto;
-import com.github.vincemann.springrapid.auth.domain.dto.RequestEmailChangeForm;
+import com.github.vincemann.springrapid.auth.domain.dto.RequestEmailChangeDto;
 import com.github.vincemann.springrapid.auth.domain.dto.ResetPasswordDto;
 import com.github.vincemann.springrapid.auth.service.AlreadyRegisteredException;
 import com.github.vincemann.springrapid.auth.service.UserService;
@@ -63,7 +63,7 @@ public interface GenericUserServiceExtension<S extends UserService<U,Id>,U exten
     }
 
     @Override
-    default void requestEmailChange(U user,  RequestEmailChangeForm emailChangeForm) throws EntityNotFoundException, AlreadyRegisteredException {
+    default void requestEmailChange(U user,  RequestEmailChangeDto emailChangeForm) throws EntityNotFoundException, AlreadyRegisteredException {
         getNext().requestEmailChange(user,emailChangeForm);
     }
 

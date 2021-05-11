@@ -1,20 +1,22 @@
 package com.github.vincemann.springrapid.authtest.controller.template;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.github.vincemann.springrapid.auth.controller.AbstractUserController;
 import com.github.vincemann.springrapid.auth.domain.AbstractUser;
+import com.github.vincemann.springrapid.auth.domain.dto.RequestEmailChangeDto;
 import com.github.vincemann.springrapid.auth.security.AuthenticatedPrincipalFactory;
 import com.github.vincemann.springrapid.core.security.RapidAuthenticatedPrincipal;
 import com.github.vincemann.springrapid.core.security.RapidSecurityContext;
+import com.github.vincemann.springrapid.core.util.JsonUtils;
 import com.github.vincemann.springrapid.coretest.controller.template.AbstractCrudControllerTestTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.MockMvcBuilder;
 import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
-import org.springframework.test.web.servlet.setup.DefaultMockMvcBuilder;
-import org.springframework.test.web.servlet.setup.MockMvcBuilders;
+
+import java.io.Serializable;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -57,6 +59,15 @@ public abstract class AbstractUserControllerTestTemplate<C extends AbstractUserC
         return getMvc().perform(login_raw(email,password));
     }
 
+    public ResultActions requestEmailChange(Serializable targetId, String token, Object requestNewEmailDto) throws Exception {
+        return getMvc().perform(post(getController().getAuthProperties().getController().getRequestEmailChangeUrl())
+                .param("id",targetId.toString())
+                .contentType(MediaType.APPLICATION_JSON)
+                .header(HttpHeaders.AUTHORIZATION, token)
+                .content(serialize(requestNewEmailDto)));
+//                .andExpect(status().is(204));
+    }
+
 
     protected MockHttpServletRequestBuilder login_raw(String email, String password) {
         return post(getController().getAuthProperties().getController().getLoginUrl())
@@ -90,6 +101,7 @@ public abstract class AbstractUserControllerTestTemplate<C extends AbstractUserC
     public void setRapidSecurityContext(RapidSecurityContext<RapidAuthenticatedPrincipal> rapidSecurityContext) {
         this.rapidSecurityContext = rapidSecurityContext;
     }
+
 
     // todo add more methods there for each endpoint
 }

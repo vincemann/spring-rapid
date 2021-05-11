@@ -2,12 +2,11 @@ package com.github.vincemann.springrapid.authdemo.controllers;
 
 import com.github.vincemann.springrapid.auth.controller.AbstractUserController;
 import com.github.vincemann.springrapid.auth.controller.UserDtoMappingContextBuilder;
-import com.github.vincemann.springrapid.auth.domain.dto.user.RapidFindOwnUserDto;
 import com.github.vincemann.springrapid.authdemo.dto.MyFindOwnUserDto;
-import com.github.vincemann.springrapid.authdemo.model.MySignupDto;
+import com.github.vincemann.springrapid.authdemo.dto.MySignupDto;
 import com.github.vincemann.springrapid.authdemo.model.User;
 import com.github.vincemann.springrapid.authdemo.dto.MyFullUserDto;
-import com.github.vincemann.springrapid.authdemo.dto.MyUserUpdatesOwnDto;
+import com.github.vincemann.springrapid.authdemo.dto.UserUpdatesOwnDto;
 import com.github.vincemann.springrapid.authdemo.service.MyUserService;
 import com.github.vincemann.springrapid.core.controller.dto.mapper.context.Direction;
 import com.github.vincemann.springrapid.core.controller.dto.mapper.context.DtoMappingContext;
@@ -24,7 +23,7 @@ public class UserController extends AbstractUserController<User, Long, MyUserSer
         return builder
                 .withAllPrincipals()
                 .withAllRoles()
-                .forEndpoint(getUpdateUrl(), MyUserUpdatesOwnDto.class)
+                .forEndpoint(getUpdateUrl(), UserUpdatesOwnDto.class)
 
                 .withAllPrincipals()
                 .withAllRoles()

@@ -19,8 +19,8 @@ import java.io.IOException;
 public class AbstractControllerTestTemplate<C extends GenericCrudController> {
 
    
-    private C controller;
-    private MockMvc mvc;
+    protected C controller;
+    protected MockMvc mvc;
 
     @Autowired
     public void injectController(C controller) {

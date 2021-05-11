@@ -3,7 +3,7 @@ package com.github.vincemann.springrapid.auth.security;
 import com.github.vincemann.springrapid.auth.domain.AbstractUser;
 import com.github.vincemann.springrapid.auth.domain.RapidAuthAuthenticatedPrincipal;
 import com.github.vincemann.springrapid.auth.service.UserService;
-import com.github.vincemann.springrapid.auth.util.LemonMapUtils;
+import com.github.vincemann.springrapid.auth.util.MapUtils;
 
 import com.github.vincemann.springrapid.core.service.exception.EntityNotFoundException;
 import com.github.vincemann.springrapid.core.util.VerifyEntity;
@@ -27,7 +27,7 @@ public class RapidJwtClaimsToPrincipalConverter
 
     @Override
     public Map<String,Object> toClaims(RapidAuthAuthenticatedPrincipal user) {
-        return LemonMapUtils.mapOf("email",user.getEmail());
+        return MapUtils.mapOf("email",user.getEmail());
     }
 
 

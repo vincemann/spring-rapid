@@ -2,7 +2,7 @@ package com.github.vincemann.springrapid.auth.security.service;
 
 import com.github.vincemann.springrapid.auth.service.token.*;
 import com.github.vincemann.springrapid.auth.util.RapidJwt;
-import com.github.vincemann.springrapid.auth.util.LemonMapUtils;
+import com.github.vincemann.springrapid.auth.util.MapUtils;
 import com.nimbusds.jose.JOSEException;
 import com.nimbusds.jwt.JWTClaimsSet;
 import lombok.extern.slf4j.Slf4j;
@@ -43,7 +43,7 @@ public class RapidJweServiceTests {
 		
 		log.info("Creating token ..." + service.getClass().getSimpleName());
 		JWTClaimsSet claims = RapidJwt.create("auth", "subject", 5000L,
-				LemonMapUtils.mapOf("username", "abc@example.com"));
+				MapUtils.mapOf("username", "abc@example.com"));
 		String token = service.createToken(claims);
 		
 		log.info("Parsing token ...");

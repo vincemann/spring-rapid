@@ -5,7 +5,7 @@ import com.github.vincemann.aoplog.api.LogInteraction;
 import com.github.vincemann.springrapid.auth.AuthProperties;
 import com.github.vincemann.springrapid.auth.security.JwtClaimsToPrincipalConverter;
 import com.github.vincemann.springrapid.auth.util.RapidJwt;
-import com.github.vincemann.springrapid.auth.util.LemonMapUtils;
+import com.github.vincemann.springrapid.auth.util.MapUtils;
 import com.github.vincemann.springrapid.core.security.RapidAuthenticatedPrincipal;
 import com.nimbusds.jwt.JWTClaimsSet;
 import lombok.extern.slf4j.Slf4j;
@@ -35,7 +35,7 @@ public abstract class AbstractJwtAuthorizationTokenService<P extends RapidAuthen
         JWTClaimsSet claims = create(AUTH_AUDIENCE,
                 principal.getName(),
                 properties.getJwt().getExpirationMillis(),
-                LemonMapUtils.mapOf(PRINCIPAL_CLAIMS_KEY, principalClaims)
+                MapUtils.mapOf(PRINCIPAL_CLAIMS_KEY, principalClaims)
         );
 
         return jwsTokenService.createToken(claims);

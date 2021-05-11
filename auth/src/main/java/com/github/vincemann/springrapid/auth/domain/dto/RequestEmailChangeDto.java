@@ -1,9 +1,6 @@
 package com.github.vincemann.springrapid.auth.domain.dto;
 
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
-import lombok.ToString;
+import lombok.*;
 
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
@@ -12,7 +9,8 @@ import javax.validation.constraints.NotBlank;
 @Getter
 @Setter
 @ToString
-public class RequestEmailChangeForm {
+@AllArgsConstructor
+public class RequestEmailChangeDto {
     // no pw bc token is used for authentication
 //    @Password(groups = {UserVerifyUtils.ChangeEmailValidation.class})
 //    private String password;

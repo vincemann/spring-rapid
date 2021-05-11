@@ -172,19 +172,6 @@ public abstract class AbstractRapidAuthTest
         tokens.put(getBlockedUser().getId(), login2xx(BLOCKED_USER_EMAIL, BLOCKED_USER_PASSWORD));
     }
 
-//    protected ResultActions login(String email, String password) throws Exception {
-//        return mvc.perform(login(new LoginDto(email,password)));
-//    }
-
-//    protected String login2xx(String email, String password) throws Exception {
-//
-////        MvcResult result = login(email,password)
-////                .andExpect(status().is(200))
-////                .andReturn();
-////
-////        return result.getResponse().getHeader(HttpHeaders.AUTHORIZATION);
-//        return login2xx(email,password);
-//    }
 
     protected String login2xx(String username, String password, long expirationMillis) throws Exception {
         Mockito.doReturn(expirationMillis).when(jwt).getExpirationMillis();

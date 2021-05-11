@@ -5,8 +5,8 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.github.vincemann.springrapid.auth.AuthProperties;
 import com.github.vincemann.springrapid.auth.domain.AbstractUser;
 import com.github.vincemann.springrapid.auth.domain.dto.ChangePasswordDto;
+import com.github.vincemann.springrapid.auth.domain.dto.RequestEmailChangeDto;
 import com.github.vincemann.springrapid.auth.domain.dto.SignupDto;
-import com.github.vincemann.springrapid.auth.domain.dto.RequestEmailChangeForm;
 import com.github.vincemann.springrapid.auth.domain.dto.ResetPasswordDto;
 import com.github.vincemann.springrapid.auth.domain.dto.user.RapidFindForeignUserDto;
 import com.github.vincemann.springrapid.auth.domain.dto.user.RapidFindOwnUserDto;
@@ -15,7 +15,7 @@ import com.github.vincemann.springrapid.auth.service.AlreadyRegisteredException;
 import com.github.vincemann.springrapid.auth.service.UserService;
 import com.github.vincemann.springrapid.auth.service.token.BadTokenException;
 import com.github.vincemann.springrapid.auth.service.token.HttpTokenService;
-import com.github.vincemann.springrapid.auth.util.LemonMapUtils;
+import com.github.vincemann.springrapid.auth.util.MapUtils;
 import com.github.vincemann.springrapid.acl.proxy.Secured;
 
 import com.github.vincemann.springrapid.core.controller.GenericCrudController;
@@ -220,7 +220,7 @@ public abstract class AbstractUserController<U extends AbstractUser<ID>, ID exte
 								   /*@RequestBody RequestEmailChangeForm emailChangeForm*/,HttpServletResponse response) throws BadEntityException, EntityNotFoundException, IdFetchingException, IOException, AlreadyRegisteredException {
 		ID id = fetchId(request);
 		String body = readBody(request);
-		RequestEmailChangeForm form = getJsonMapper().readDto(body, RequestEmailChangeForm.class);
+		RequestEmailChangeDto form = getJsonMapper().readDto(body, RequestEmailChangeDto.class);
 		getDtoValidationStrategy().validate(form);
 		log.debug("Requesting email change for user with " + id);
 		U user = fetchUser(id);
@@ -273,7 +273,7 @@ public abstract class AbstractUserController<U extends AbstractUser<ID>, ID exte
 		// result = {token:asfsdfjsdjfnd}
 		return ok(
 				getJsonMapper().writeDto(
-						LemonMapUtils.mapOf("token", token)));
+						MapUtils.mapOf("token", token)));
 	}
 
 	/**
