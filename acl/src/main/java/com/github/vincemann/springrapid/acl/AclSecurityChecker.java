@@ -1,11 +1,11 @@
 package com.github.vincemann.springrapid.acl;
 
 import com.github.vincemann.aoplog.api.AopLoggable;
-import com.github.vincemann.aoplog.api.LogException;
 import com.github.vincemann.aoplog.api.LogInteraction;
 import com.github.vincemann.springrapid.core.model.IdentifiableEntity;
 import com.github.vincemann.springrapid.core.slicing.ServiceComponent;
 import org.springframework.security.access.AccessDeniedException;
+import org.springframework.security.acls.model.Permission;
 
 import java.io.Serializable;
 import java.util.Collection;
@@ -15,7 +15,6 @@ import java.util.Collection;
  */
 @ServiceComponent
 @LogInteraction
-//@LogException
 public interface AclSecurityChecker extends AopLoggable {
 
     public boolean checkExpression(String securityExpression);
@@ -30,7 +29,7 @@ public interface AclSecurityChecker extends AopLoggable {
      * @return
      */
     public <E extends IdentifiableEntity<? extends Serializable>, C extends Collection<E>>
-    C filter(C toFilter, String permission);
+    C filter(C toFilter, Permission permission);
 
 
 
@@ -40,7 +39,12 @@ public interface AclSecurityChecker extends AopLoggable {
      * @param clazz
      * @param permission
      */
-    public void checkPermission(Serializable id,Class<?> clazz,String permission) throws AccessDeniedException;
+    public void checkPermission(Serializable id, Class<?> clazz, Permission permission) throws AccessDeniedException;
+
+    public default void checkPermission(IdentifiableEntity<?> entity, Permission permission) throws AccessDeniedException{
+        checkPermission(entity.getId(),entity.getClass(),permission);
+    }
+
 
 
 }

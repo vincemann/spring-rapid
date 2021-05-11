@@ -1,6 +1,6 @@
 package com.github.vincemann.springrapid.acldemo.service.extensions;
 
-import com.github.vincemann.springrapid.acl.service.extensions.security.SecurityServiceExtension;
+import com.github.vincemann.springrapid.acl.service.extensions.security.AbstractSecurityExtension;
 import com.github.vincemann.springrapid.acldemo.auth.MyRoles;
 import com.github.vincemann.springrapid.acldemo.model.Owner;
 import com.github.vincemann.springrapid.acldemo.model.Pet;
@@ -16,7 +16,7 @@ import org.springframework.security.access.AccessDeniedException;
 
 @ServiceComponent
 @Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
-public class OwnerCanOnlySaveOwnPetsSecurityExtension  extends SecurityServiceExtension<PetService>
+public class OwnerCanOnlySaveOwnPetsSecurityExtension  extends AbstractSecurityExtension<PetService>
         implements GenericCrudServiceExtension<PetService, Pet,Long>
 {
 

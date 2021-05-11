@@ -1,10 +1,11 @@
-package com.github.vincemann.springrapid.acl.util;
+package com.github.vincemann.springrapid.acl.service;
 
 import org.springframework.security.acls.model.Permission;
 
-public class PermissionUtils {
+public class RapidPermissionStringConverter implements PermissionStringConverter {
 
-    public static String toString(Permission permission){
+    @Override
+    public String convert(Permission permission) {
         String pattern = permission.getPattern().toLowerCase();
         if (pattern.contains(".a")){
             return "ADMINISTRATION";
@@ -17,7 +18,7 @@ public class PermissionUtils {
         }else if(pattern.contains(".w")){
             return "WRITE";
         }else {
-            return "UNKNOWN";
+            throw new IllegalArgumentException("Unknown pattern: " + pattern);
         }
     }
 }

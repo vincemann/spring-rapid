@@ -15,7 +15,7 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional
 @LogInteraction(Severity.DEBUG)
 public class OnlyRoleAndAdminCanSaveSecurityExtension
-        extends SecurityServiceExtension<CrudService>
+        extends AbstractSecurityExtension<CrudService>
         implements CrudServiceExtension<CrudService> {
 
     private String role;

@@ -1,7 +1,8 @@
 package com.github.vincemann.springrapid.acl.framework;
 
-import com.github.vincemann.springrapid.acl.util.PermissionUtils;
+import com.github.vincemann.springrapid.acl.service.PermissionStringConverter;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.acls.domain.AuditLogger;
 import org.springframework.security.acls.domain.BasePermission;
 import org.springframework.security.acls.domain.DefaultPermissionGrantingStrategy;
@@ -20,6 +21,7 @@ import java.util.List;
 public class HierarchicPermissionGrantingStrategy extends DefaultPermissionGrantingStrategy {
 
     private final transient AuditLogger auditLogger;
+    private PermissionStringConverter permissionStringConverter;
 
     public HierarchicPermissionGrantingStrategy(AuditLogger auditLogger) {
         super(auditLogger);
@@ -44,7 +46,7 @@ public class HierarchicPermissionGrantingStrategy extends DefaultPermissionGrant
 
                     if (ace.getSid().equals(sid)) {
                         log.debug("Checking ace with id:" + ace.getId() /*", " + PermissionUtils.toString(ace.getPermission()) +*/);
-                        log.debug("Sid of ace: " + ace.getSid()+ " has permission: " + PermissionUtils.toString(ace.getPermission()) /*+", mask: " + givenPermissionMask*/);
+                        log.debug("Sid of ace: " + ace.getSid()+ " has permission: " + permissionStringConverter.convert(ace.getPermission()) /*+", mask: " + givenPermissionMask*/);
                         if (isGranted(ace, p)) {
 
                             // Found a matching ACE, so its authorization decision will
@@ -128,5 +130,10 @@ public class HierarchicPermissionGrantingStrategy extends DefaultPermissionGrant
             //return ace.getPermission().getMask() == p.getMask();
             return false;
         }
+    }
+
+    @Autowired
+    public void injectPermissionStringConverter(PermissionStringConverter permissionStringConverter) {
+        this.permissionStringConverter = permissionStringConverter;
     }
 }

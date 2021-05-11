@@ -1,12 +1,9 @@
 package com.github.vincemann.springrapid.acldemo.service.extensions;
 
-import com.github.vincemann.springrapid.acl.service.extensions.security.SecurityServiceExtension;
+import com.github.vincemann.springrapid.acl.service.extensions.security.AbstractSecurityExtension;
 import com.github.vincemann.springrapid.acldemo.auth.MyRoles;
-import com.github.vincemann.springrapid.acldemo.model.Owner;
-import com.github.vincemann.springrapid.acldemo.model.Pet;
 import com.github.vincemann.springrapid.acldemo.model.Vet;
 import com.github.vincemann.springrapid.acldemo.model.Visit;
-import com.github.vincemann.springrapid.acldemo.service.PetService;
 import com.github.vincemann.springrapid.acldemo.service.VisitService;
 import com.github.vincemann.springrapid.core.proxy.GenericCrudServiceExtension;
 import com.github.vincemann.springrapid.core.security.RapidSecurityContext;
@@ -19,7 +16,7 @@ import org.springframework.security.access.AccessDeniedException;
 
 @ServiceComponent
 @Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
-public class VetCanOnlySaveOwnVisitsSecurityExtension extends SecurityServiceExtension<VisitService>
+public class VetCanOnlySaveOwnVisitsSecurityExtension extends AbstractSecurityExtension<VisitService>
         implements GenericCrudServiceExtension<VisitService, Visit,Long>
 {
 

@@ -83,6 +83,42 @@ public class VisitControllerTest extends AbstractControllerIntegrationTest<Visit
     }
 
     @Test
+    public void ownerCantCreateVisit() throws Exception {
+        registerOwnerWithPets(kahn, OWNER_KAHN_EMAIL, OWNER_KAHN_PASSWORD, bella);
+        Pet savedBella = petRepository.findByName(BELLA).get();
+        Owner savedKahn = ownerRepository.findByLastName(OWNER_KAHN).get();
+        Vet savedVetMax = registerEnabledVet(vetMax, VET_MAX_EMAIL, VET_MAX_PASSWORD);
+        String ownerKahnToken = userController.login2xx(OWNER_KAHN_EMAIL, OWNER_KAHN_PASSWORD);
+
+        VisitDto createVisitDto = new VisitDto(checkTeethVisit);
+        createVisitDto.setOwnerId(savedKahn.getId());
+        createVisitDto.setPetIds(new HashSet<>(Lists.newArrayList(savedBella.getId())));
+        createVisitDto.setVetId(savedVetMax.getId());
+
+        mvc.perform(create(createVisitDto)
+                .header(HttpHeaders.AUTHORIZATION,ownerKahnToken))
+                .andExpect(status().isForbidden());
+
+        Assertions.assertTrue(visitRepository.findAll().isEmpty());
+    }
+
+    @Test
+    public void vetCanReadForeignVisit() throws Exception {
+        registerOwnerWithPets(kahn, OWNER_KAHN_EMAIL, OWNER_KAHN_PASSWORD, bella);
+        Pet savedBella = petRepository.findByName(BELLA).get();
+        Owner savedKahn = ownerRepository.findByLastName(OWNER_KAHN).get();
+        Vet savedDicaprio = registerEnabledVet(vetDiCaprio, VET_DICAPRIO_EMAIL, VET_DICAPRIO_PASSWORD);
+        Vet savedVetMax = registerEnabledVet(vetMax, VET_MAX_EMAIL, VET_MAX_PASSWORD);
+        String dicaprioToken = userController.login2xx(VET_DICAPRIO_EMAIL, VET_DICAPRIO_PASSWORD);
+        String maxToken = userController.login2xx(VET_MAX_EMAIL, VET_MAX_PASSWORD);
+
+        Visit visit = createVisit(dicaprioToken, savedKahn, savedDicaprio, checkTeethVisit, savedBella);
+        mvc.perform(find(visit.getId().toString())
+                .header(HttpHeaders.AUTHORIZATION,maxToken))
+                .andExpect(status().is2xxSuccessful());
+    }
+
+    @Test
     public void ownerCanReadOwnVisit() throws Exception {
         registerOwnerWithPets(kahn, OWNER_KAHN_EMAIL, OWNER_KAHN_PASSWORD, bella);
 
