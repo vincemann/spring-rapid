@@ -4,12 +4,17 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.github.vincemann.springrapid.auth.controller.AbstractUserController;
 import com.github.vincemann.springrapid.auth.domain.AbstractUser;
 import com.github.vincemann.springrapid.auth.domain.dto.RequestEmailChangeDto;
+import com.github.vincemann.springrapid.auth.mail.MailData;
+import com.github.vincemann.springrapid.auth.mail.MailSender;
 import com.github.vincemann.springrapid.auth.security.AuthenticatedPrincipalFactory;
 import com.github.vincemann.springrapid.core.security.RapidAuthenticatedPrincipal;
 import com.github.vincemann.springrapid.core.security.RapidSecurityContext;
 import com.github.vincemann.springrapid.core.util.JsonUtils;
 import com.github.vincemann.springrapid.coretest.controller.template.AbstractCrudControllerTestTemplate;
+import org.mockito.ArgumentCaptor;
+import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.mock.mockito.SpyBean;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
@@ -18,6 +23,8 @@ import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilde
 
 import java.io.Serializable;
 
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -39,6 +46,8 @@ public abstract class AbstractUserControllerTestTemplate<C extends AbstractUserC
     private AuthenticatedPrincipalFactory authenticatedPrincipalFactory;
     private RapidSecurityContext<RapidAuthenticatedPrincipal> rapidSecurityContext;
 
+    @SpyBean
+    private MailSender<MailData> mailSender;
 
     @Override
     public void setMvc(MockMvc mvc) {
@@ -75,6 +84,19 @@ public abstract class AbstractUserControllerTestTemplate<C extends AbstractUserC
                 .header(HttpHeaders.AUTHORIZATION, token)
                 .content(serialize(requestNewEmailDto)));
 //                .andExpect(status().is(204));
+    }
+
+    public MailData requestEmailChange2xx(Serializable targetId, String token, Object requestNewEmailDto) throws Exception {
+        getMvc().perform(post(getController().getAuthProperties().getController().getRequestEmailChangeUrl())
+                .param("id",targetId.toString())
+                .contentType(MediaType.APPLICATION_JSON)
+                .header(HttpHeaders.AUTHORIZATION, token)
+                .content(serialize(requestNewEmailDto)))
+                .andExpect(status().is2xxSuccessful());
+        ArgumentCaptor<MailData> captor = ArgumentCaptor.forClass(MailData.class);
+        verify(mailSender, times(1)).send(captor.capture());
+        MailData sentData = captor.getValue();
+        return sentData;
     }
 
 

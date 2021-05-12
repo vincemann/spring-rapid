@@ -2,6 +2,8 @@ package com.github.vincemann.springrapid.authtests;
 
 import com.github.vincemann.springrapid.auth.domain.AbstractUser;
 import com.github.vincemann.springrapid.auth.domain.AbstractUserRepository;
+import com.github.vincemann.springrapid.auth.domain.dto.RequestEmailChangeDto;
+import com.github.vincemann.springrapid.auth.mail.MailData;
 import com.github.vincemann.springrapid.auth.service.AbstractUserService;
 import com.github.vincemann.springrapid.auth.service.token.JweTokenService;
 import com.github.vincemann.springrapid.auth.util.RapidJwt;
@@ -20,22 +22,21 @@ public class ChangeEmailTest extends AbstractRapidAuthIntegrationTest {
 	
 	private static final String NEW_EMAIL = "new.email@example.com";
 
-	private String changeEmailCode;
-	
+
 	@Autowired
 	private JweTokenService jweTokenService;
 
 	@Autowired
 	private AbstractUserRepository userRepository;
 
-	@Override
-	protected void createTestUsers() throws Exception{
-		super.createTestUsers();
-		// todo create method for requesting email change in testTemplate
-		AbstractUser<Long> user = getUserService().findById(getUnverifiedUser().getId()).get();
-		user.setNewEmail(NEW_EMAIL);
-		userRepository.save(user);
-	}
+//	@Override
+//	protected void createTestUsers() throws Exception{
+//		super.createTestUsers();
+//		// todo create method for requesting email change in testTemplate
+//		AbstractUser<Long> user = getUserService().findById(getUnverifiedUser().getId()).get();
+//		user.setNewEmail(NEW_EMAIL);
+//		userRepository.save(user);
+//	}
 
 //	@BeforeEach
 //	protected void setupEmailCode() throws Exception {
@@ -61,8 +62,11 @@ public class ChangeEmailTest extends AbstractRapidAuthIntegrationTest {
 //	@Disabled
 	@Test
 	public void canChangeOwnEmail() throws Exception {
+		String token = login2xx(USER_EMAIL,USER_PASSWORD);
+		MailData mailData = testTemplate.requestEmailChange2xx(getUser().getId(), token, new RequestEmailChangeDto(NEW_EMAIL));
+
 		mvc.perform(post(authProperties.getController().getChangeEmailUrl())
-                .param("code", changeEmailCode)
+                .param("code", mailData.getLink())
 				.param("id",getUnverifiedUser().getId().toString())
 				.header(HttpHeaders.AUTHORIZATION, tokens.get(getUnverifiedUser().getId()))
                 .header("contentType",  MediaType.APPLICATION_FORM_URLENCODED))
