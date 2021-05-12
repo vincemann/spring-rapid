@@ -56,6 +56,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 public abstract class AbstractRapidAuthIntegrationTest
         extends UserIntegrationControllerTest<AbstractUserController> {
 
+    protected static final String NEW_EMAIL = "new.email@example.com";
     protected static final String INVALID_EMAIL = "an-invalid-email";
 
     protected static final String ADMIN_EMAIL = "admin@example.com";

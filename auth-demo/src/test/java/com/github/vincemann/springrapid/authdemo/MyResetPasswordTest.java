@@ -1,8 +1,8 @@
 package com.github.vincemann.springrapid.authdemo;
 
 import com.github.vincemann.springrapid.authdemo.adapter.EnableProjectComponentScan;
-import com.github.vincemann.springrapid.authtests.RequestEmailChangeAuthTest;
+import com.github.vincemann.springrapid.authtests.ResetPasswordTest;
 
 @EnableProjectComponentScan
-public class MyRequestEmailChangeAuthTest extends RequestEmailChangeAuthTest {
+public class MyResetPasswordTest extends ResetPasswordTest {
 }

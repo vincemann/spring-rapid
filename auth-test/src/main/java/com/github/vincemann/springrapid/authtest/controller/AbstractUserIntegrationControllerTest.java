@@ -30,9 +30,10 @@ public abstract class AbstractUserIntegrationControllerTest
         return getTestTemplate().login(email,password);
     }
 
-    public String login2xx(AbstractUser user) throws Exception {
-        return getTestTemplate().login2xx(user);
-    }
+    // dont use, bc when user is saved hash will be send
+//    public String login2xx(AbstractUser user) throws Exception {
+//        return getTestTemplate().login2xx(user);
+//    }
 
     public String login2xx(String email, String password) throws Exception {
         return getTestTemplate().login2xx(email,password);
