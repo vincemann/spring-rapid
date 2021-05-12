@@ -10,7 +10,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
-public class LoginAuthTest extends AbstractRapidAuthTest {
+public class LoginAuthTest extends AbstractRapidAuthIntegrationTest {
 	
 	@Test
 	public void canLogin() throws Exception {

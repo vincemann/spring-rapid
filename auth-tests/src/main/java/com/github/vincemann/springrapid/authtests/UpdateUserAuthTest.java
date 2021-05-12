@@ -19,7 +19,7 @@ import static org.hamcrest.Matchers.hasSize;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-public abstract class UpdateUserAuthTest extends AbstractRapidAuthTest
+public abstract class UpdateUserAuthTest extends AbstractRapidAuthIntegrationTest
 {
 
 	private static final String FIELD_KEY_PLACEHOLDER = "name";
