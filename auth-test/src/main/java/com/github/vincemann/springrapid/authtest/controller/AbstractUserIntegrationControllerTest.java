@@ -25,6 +25,7 @@ public abstract class AbstractUserIntegrationControllerTest
         return mvcBuilder;
     }
 
+
     public ResultActions login(String email, String password) throws Exception {
         return getTestTemplate().login(email,password);
     }

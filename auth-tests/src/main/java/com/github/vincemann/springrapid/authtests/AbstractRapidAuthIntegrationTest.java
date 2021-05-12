@@ -53,26 +53,31 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @ImportAutoConfiguration(exclude = RapidAdminAutoConfiguration.class)
 @Getter
 @Slf4j
-public abstract class AbstractRapidAuthTest
+public abstract class AbstractRapidAuthIntegrationTest
         extends UserIntegrationControllerTest<AbstractUserController> {
 
+    protected static final String INVALID_EMAIL = "an-invalid-email";
+
     protected static final String ADMIN_EMAIL = "admin@example.com";
-    protected static final String ADMIN_PASSWORD = "adminAdmin1!";
+    protected static final String ADMIN_PASSWORD = "adminSanjaySanjay99!";
 
     protected static final String SECOND_ADMIN_EMAIL = "secondAdmin@example.com";
-    protected static final String SECOND_ADMIN_PASSWORD = "adminAdmin1!second";
+    protected static final String SECOND_ADMIN_PASSWORD = "secondAdminSanjaySanjay99!";
 
     protected static final String BLOCKED_ADMIN_EMAIL = "blockedAdmin@example.com";
-    protected static final String BLOCKED_ADMIN_PASSWORD = "adminAdmin123!blocked";
+    protected static final String BLOCKED_ADMIN_PASSWORD = "blockedAdminSanjaySanjay99!";
 
     protected static final String USER_EMAIL = "user@example.com";
-    protected static final String USER_PASSWORD = "SanjaySanjay99!";
+    protected static final String USER_PASSWORD = "userSanjaySanjay99!";
+
+    protected static final String SECOND_USER_EMAIL = "secondUser@example.com";
+    protected static final String SECOND_USER_PASSWORD = "secondUserSanjaySanjay99!";
 
     protected static final String UNVERIFIED_USER_EMAIL = "unverifiedUser@example.com";
-    protected static final String UNVERIFIED_USER_PASSWORD = "SanjaySanjay99!unverified";
+    protected static final String UNVERIFIED_USER_PASSWORD = "unverifiedUserSanjaySanjay99!";
 
     protected static final String BLOCKED_USER_EMAIL = "blockedUser@example.com";
-    protected static final String BLOCKED_USER_PASSWORD = "SanjaySanjay99!blocked";
+    protected static final String BLOCKED_USER_PASSWORD = "blockedUserSanjaySanjay99!";
 
     protected static String UNKNOWN_USER_ID = "99";
 
@@ -100,12 +105,13 @@ public abstract class AbstractRapidAuthTest
 
     protected Map<Long, String> tokens = new HashMap<>(6);
 
-    private AbstractUser<Long> admin;
-    private AbstractUser<Long> secondAdmin;
-    private AbstractUser<Long> blockedAdmin;
-    private AbstractUser<Long> user;
-    private AbstractUser<Long> unverifiedUser;
-    private AbstractUser<Long> blockedUser;
+    protected AbstractUser<Long> admin;
+    protected AbstractUser<Long> secondAdmin;
+    protected AbstractUser<Long> blockedAdmin;
+    protected AbstractUser<Long> user;
+    protected AbstractUser<Long> secondUser;
+    protected AbstractUser<Long> unverifiedUser;
+    protected AbstractUser<Long> blockedUser;
 
     @Autowired
     protected AuthTestAdapter testAdapter;
@@ -119,7 +125,7 @@ public abstract class AbstractRapidAuthTest
         createTestUsers();
         System.err.println("test users created");
         System.err.println("logging in test users");
-        loginTestUsers();
+//        loginTestUsers();
         System.err.println("test users logged in");
         setupSpies();
         System.err.println("TEST STARTS HERE -----------------------------------------------------------------------------------------------------------------");
@@ -154,6 +160,7 @@ public abstract class AbstractRapidAuthTest
         blockedAdmin = aclUserService.save(testAdapter.createTestUser(BLOCKED_ADMIN_EMAIL,/*"Blocked Admin",*/ BLOCKED_ADMIN_PASSWORD, AuthRoles.ADMIN, AuthRoles.BLOCKED));
 
         user = aclUserService.save(testAdapter.createTestUser(USER_EMAIL,/*"User",*/ USER_PASSWORD, AuthRoles.USER));
+        secondUser = aclUserService.save(testAdapter.createTestUser(SECOND_USER_EMAIL,/*"User",*/ SECOND_USER_PASSWORD, AuthRoles.USER));
         unverifiedUser = aclUserService.save(testAdapter.createTestUser(UNVERIFIED_USER_EMAIL,/*"Unverified User",*/ UNVERIFIED_USER_PASSWORD, AuthRoles.USER, AuthRoles.UNVERIFIED));
         blockedUser = aclUserService.save(testAdapter.createTestUser(BLOCKED_USER_EMAIL,/*"Blocked User",*/ BLOCKED_USER_PASSWORD, AuthRoles.USER, AuthRoles.BLOCKED));
         // sleep so login shortly after wont result in obsolete token
@@ -162,15 +169,15 @@ public abstract class AbstractRapidAuthTest
 
 
 
-    protected void loginTestUsers() throws Exception {
-        tokens.put(getAdmin().getId(), login2xx(ADMIN_EMAIL, ADMIN_PASSWORD));
-        tokens.put(getSecondAdmin().getId(), login2xx(SECOND_ADMIN_EMAIL, SECOND_ADMIN_PASSWORD));
-        tokens.put(getBlockedAdmin().getId(), login2xx(BLOCKED_ADMIN_EMAIL, BLOCKED_ADMIN_PASSWORD));
-
-        tokens.put(getUser().getId(), login2xx(USER_EMAIL, USER_PASSWORD));
-        tokens.put(getUnverifiedUser().getId(), login2xx(UNVERIFIED_USER_EMAIL, UNVERIFIED_USER_PASSWORD));
-        tokens.put(getBlockedUser().getId(), login2xx(BLOCKED_USER_EMAIL, BLOCKED_USER_PASSWORD));
-    }
+//    protected void loginTestUsers() throws Exception {
+//        tokens.put(getAdmin().getId(), login2xx(ADMIN_EMAIL, ADMIN_PASSWORD));
+//        tokens.put(getSecondAdmin().getId(), login2xx(SECOND_ADMIN_EMAIL, SECOND_ADMIN_PASSWORD));
+//        tokens.put(getBlockedAdmin().getId(), login2xx(BLOCKED_ADMIN_EMAIL, BLOCKED_ADMIN_PASSWORD));
+//
+//        tokens.put(getUser().getId(), login2xx(USER_EMAIL, USER_PASSWORD));
+//        tokens.put(getUnverifiedUser().getId(), login2xx(UNVERIFIED_USER_EMAIL, UNVERIFIED_USER_PASSWORD));
+//        tokens.put(getBlockedUser().getId(), login2xx(BLOCKED_USER_EMAIL, BLOCKED_USER_PASSWORD));
+//    }
 
 
     protected String login2xx(String username, String password, long expirationMillis) throws Exception {

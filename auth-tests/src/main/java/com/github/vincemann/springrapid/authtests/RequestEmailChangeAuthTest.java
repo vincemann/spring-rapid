@@ -3,65 +3,63 @@ package com.github.vincemann.springrapid.authtests;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.github.vincemann.springrapid.auth.domain.AbstractUser;
 import com.github.vincemann.springrapid.auth.domain.dto.RequestEmailChangeDto;
-import com.github.vincemann.springrapid.core.util.JsonUtils;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.MediaType;
 
-import static org.hamcrest.Matchers.hasItems;
-import static org.hamcrest.Matchers.hasSize;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-public class RequestEmailChangeAuthTest extends AbstractRapidAuthTest {
-	
-	private static final String NEW_EMAIL = "new.email@example.com";
-	
-	private RequestEmailChangeDto form() {
+public class RequestEmailChangeAuthTest extends AbstractRapidAuthIntegrationTest {
+
+	protected static final String NEW_EMAIL = "new.email@example.com";
+
+	protected RequestEmailChangeDto emailChangeDto() {
 
 		RequestEmailChangeDto changeForm = new RequestEmailChangeDto();
 //		changeForm.setPassword(USER_PASSWORD);
 		changeForm.setNewEmail(NEW_EMAIL);
-		
+
 		return changeForm;
 	}
 
 	@Test
-	public void canRequestEmailChange() throws Exception {
-		
-		mvc.perform(post(authProperties.getController().getRequestEmailChangeUrl())
-				.param("id",getUnverifiedUser().getId().toString())
-				.contentType(MediaType.APPLICATION_JSON)
-				.header(HttpHeaders.AUTHORIZATION, tokens.get(getUnverifiedUser().getId()))
-				.content(JsonUtils.toJson(form())))
+	public void unverifiedUserCanRequestEmailChange() throws Exception {
+		String token = login2xx(getUnverifiedUser());
+		testTemplate.requestEmailChange(getUnverifiedUser().getId(),token,emailChangeDto())
 				.andExpect(status().is(204));
-		
+
 		verify(unproxy(mailSender)).send(any());
 
 		AbstractUser<Long> updatedUser = getUserService().findById(getUnverifiedUser().getId()).get();
 		Assertions.assertEquals(NEW_EMAIL, updatedUser.getNewEmail());
 		Assertions.assertEquals(UNVERIFIED_USER_EMAIL, updatedUser.getEmail());
 	}
-	
+
+	@Test
+	public void userCanRequestEmailChange() throws Exception {
+		String token = login2xx(getUser());
+		testTemplate.requestEmailChange(getUser().getId(),token,emailChangeDto())
+				.andExpect(status().is(204));
+
+		verify(unproxy(mailSender)).send(any());
+
+		AbstractUser<Long> updatedUser = getUserService().findById(getUser().getId()).get();
+		Assertions.assertEquals(NEW_EMAIL, updatedUser.getNewEmail());
+		Assertions.assertEquals(UNVERIFIED_USER_EMAIL, updatedUser.getEmail());
+	}
+
 	/**
      * A admin should be able to request changing email of another user.
      */
 	@Test
-	public void adminCanRequestDiffUsersEmailChange() throws Exception {
-
-		mvc.perform(post(authProperties.getController().getRequestEmailChangeUrl())
-				.param("id",getUnverifiedUser().getId().toString())
-				.contentType(MediaType.APPLICATION_JSON)
-				.header(HttpHeaders.AUTHORIZATION, tokens.get(getAdmin().getId()))
-				.content(JsonUtils.toJson(form())))
+	public void adminCanRequestEmailChangeOfDiffUser() throws Exception {
+		String token = login2xx(getAdmin());
+		testTemplate.requestEmailChange(getUser().getId(),token,emailChangeDto())
 				.andExpect(status().is(204));
 
-		AbstractUser<Long> updatedUser = getUserService().findById(getUnverifiedUser().getId()).get();
+		AbstractUser<Long> updatedUser = getUserService().findById(getUser().getId()).get();
 		Assertions.assertEquals(NEW_EMAIL, updatedUser.getNewEmail());
 	}	
 	
@@ -70,50 +68,37 @@ public class RequestEmailChangeAuthTest extends AbstractRapidAuthTest {
      */
 	@Test
 	public void cantRequestEmailChangeOfUnknownUser() throws Exception {
-
-		mvc.perform(post(authProperties.getController().getRequestEmailChangeUrl())
-				.param("id",UNKNOWN_USER_ID)
-				.contentType(MediaType.APPLICATION_JSON)
-				.header(HttpHeaders.AUTHORIZATION, tokens.get(getAdmin().getId()))
-				.content(JsonUtils.toJson(form())))
+		String token = login2xx(getUser());
+		testTemplate.requestEmailChange(UNKNOWN_USER_ID,token,emailChangeDto())
 				.andExpect(status().is(404));
 		
 		verify(unproxy(mailSender), never()).send(any());
 	}
 
-	/**
-	 * A non-admin should not be able to request changing
-	 * the email id of another user
-	 */
 	@Test
 	public void userCantRequestEmailChangeOfDiffUser() throws Exception {
-
-		mvc.perform(post(authProperties.getController().getRequestEmailChangeUrl())
-				.param("id",getAdmin().getId().toString())
-				.contentType(MediaType.APPLICATION_JSON)
-				.header(HttpHeaders.AUTHORIZATION, tokens.get(getUser().getId()))
-				.content(JsonUtils.toJson(form())))
+		String token = login2xx(getUser());
+		testTemplate.requestEmailChange(getSecondUser().getId(),token,emailChangeDto())
 				.andExpect(status().is(403));
 		
 		verify(unproxy(mailSender), never()).send(any());
 
-		AbstractUser<Long> updatedUser = getUserService().findById(getUnverifiedUser().getId()).get();
+		AbstractUser<Long> updatedUser = getUserService().findById(getSecondUser().getId()).get();
 		Assertions.assertNull(updatedUser.getNewEmail());
 	}
 	
 
 	@Test
 	public void adminCantRequestEmailChangeOfDiffAdmin() throws Exception {
-
 		//unverified admins are not treated differently than verified admins
-		mvc.perform(post(authProperties.getController().getRequestEmailChangeUrl())
-				.param("id",getAdmin().getId().toString())
-				.contentType(MediaType.APPLICATION_JSON)
-				.header(HttpHeaders.AUTHORIZATION, tokens.get(getSecondAdmin().getId()))
-				.content(JsonUtils.toJson(form())))
+		String token = login2xx(getAdmin());
+		testTemplate.requestEmailChange(getSecondAdmin().getId(),token,emailChangeDto())
 				.andExpect(status().is(403));
 		
 		verify(unproxy(mailSender), never()).send(any());
+
+		AbstractUser<Long> updatedUser = getUserService().findById(getSecondAdmin().getId()).get();
+		Assertions.assertNull(updatedUser.getNewEmail());
 	}
 
 	/**
@@ -123,82 +108,67 @@ public class RequestEmailChangeAuthTest extends AbstractRapidAuthTest {
      */
 	@Test
 	public void cantRequestEmailChangeWithInvalidData() throws JsonProcessingException, Exception {
-		RequestEmailChangeDto form = form();
-		form.setNewEmail(null);
-//		form.setPassword(null);
+		RequestEmailChangeDto dto = new RequestEmailChangeDto();
+		dto.setNewEmail(null);
+//		dto.setPassword(null);
 		// try with null newEmail
-		mvc.perform(post(authProperties.getController().getRequestEmailChangeUrl())
-				.param("id",getUnverifiedUser().getId().toString())
-				.contentType(MediaType.APPLICATION_JSON)
-				.header(HttpHeaders.AUTHORIZATION, tokens.get(getUnverifiedUser().getId()))
-				.content(JsonUtils.toJson(form)))
+		String token = login2xx(getUser());
+		testTemplate.requestEmailChange(getUser().getId(),token,dto)
 				.andExpect(status().is(400));
 //				.andExpect(jsonPath("$.errors[*].field").value(hasSize(1)))
 //				.andExpect(jsonPath("$.errors[*].field").value(hasItems(
-//						"emailChangeForm.newEmail"
-						/*"emailChangeForm.password"*/
+//						"dto.newEmail"
+						/*"dto.password"*/
     	
-		RequestEmailChangeDto emailChangeForm = new RequestEmailChangeDto();
-//		emailChangeForm.setPassword("");
-		emailChangeForm.setNewEmail("");
+		dto = new RequestEmailChangeDto();
+//		dto.setPassword("");
+		dto.setNewEmail("");
 		
     	// try with blank newEmail
-		mvc.perform(post(authProperties.getController().getRequestEmailChangeUrl())
-				.param("id",getUnverifiedUser().getId().toString())
-				.contentType(MediaType.APPLICATION_JSON)
-				.header(HttpHeaders.AUTHORIZATION, tokens.get(getUnverifiedUser().getId()))
-				.content(JsonUtils.toJson(emailChangeForm)))
+		testTemplate.requestEmailChange(getUser().getId(),token,dto)
 				.andExpect(status().is(400));
 //				.andExpect(jsonPath("$.errors[*].field").value(hasSize(2)))
 //				.andExpect(jsonPath("$.errors[*].field").value(hasItems(
-//						"emailChangeForm.newEmail"
-//						/*"emailChangeForm.password"*/)));
+//						"dto.newEmail"
+//						/*"dto.password"*/)));
 
 		// try with invalid newEmail
-		emailChangeForm = form();
-		emailChangeForm.setNewEmail("an-invalid-email");
-		mvc.perform(post(authProperties.getController().getRequestEmailChangeUrl())
-				.param("id",getUnverifiedUser().getId().toString())
-				.contentType(MediaType.APPLICATION_JSON)
-				.header(HttpHeaders.AUTHORIZATION, tokens.get(getUnverifiedUser().getId()))
-				.content(JsonUtils.toJson(emailChangeForm)))
+		dto = new RequestEmailChangeDto();
+		dto.setNewEmail(INVALID_EMAIL);
+		testTemplate.requestEmailChange(getUser().getId(),token,dto)
 				.andExpect(status().is(400));
 //				.andExpect(jsonPath("$.errors[*].field").value(hasSize(1)))
-//				.andExpect(jsonPath("$.errors[*].field").value(hasItems("emailChangeForm.newEmail")));
+//				.andExpect(jsonPath("$.errors[*].field").value(hasItems("dto.newEmail")));
 
 		// try with wrong password
-//		emailChangeForm = form();
-//		emailChangeForm.setPassword("wrong-password");
+//		dto = dto();
+//		dto.setPassword("wrong-password");
 //		mvc.perform(post("/api/core/users/{id}/email-change-request", getUnverifiedUser().getId())
 //				.contentType(MediaType.APPLICATION_JSON)
 //				.header(HttpHeaders.AUTHORIZATION, tokens.get(getUnverifiedUser().getId()))
-//				.content(MapperUtils.toJson(emailChangeForm)))
+//				.content(MapperUtils.toJson(dto)))
 //				.andExpect(status().is(400))
 //				.andExpect(jsonPath("$.errors[*].field").value(hasSize(1)))
 //				.andExpect(jsonPath("$.errors[*].field").value(hasItems("updatedUser.password")));
 
 		// try with null password
-//		emailChangeForm = form();
-//		emailChangeForm.setPassword(null);
+//		dto = dto();
+//		dto.setPassword(null);
 //		mvc.perform(post("/api/core/users/{id}/email-change-request", getUnverifiedUser().getId())
 //				.contentType(MediaType.APPLICATION_JSON)
 //				.header(HttpHeaders.AUTHORIZATION, tokens.get(getUnverifiedUser().getId()))
-//				.content(MapperUtils.toJson(emailChangeForm)))
+//				.content(MapperUtils.toJson(dto)))
 //				.andExpect(status().is(400))
 //				.andExpect(jsonPath("$.errors[*].field").value(hasSize(1)))
-//				.andExpect(jsonPath("$.errors[*].field").value(hasItems("emailChangeForm.password")));
+//				.andExpect(jsonPath("$.errors[*].field").value(hasItems("dto.password")));
 
 		// try with an existing email
-		emailChangeForm = form();
-		emailChangeForm.setNewEmail(ADMIN_EMAIL);;
-		mvc.perform(post(authProperties.getController().getRequestEmailChangeUrl())
-				.param("id",getUnverifiedUser().getId().toString())
-				.contentType(MediaType.APPLICATION_JSON)
-				.header(HttpHeaders.AUTHORIZATION, tokens.get(getUnverifiedUser().getId()))
-				.content(JsonUtils.toJson(emailChangeForm)))
+		dto = emailChangeDto();
+		dto.setNewEmail(SECOND_USER_EMAIL);;
+		testTemplate.requestEmailChange(getUser().getId(),token,dto)
 				.andExpect(status().is(400));
 //				.andExpect(jsonPath("$.errors[*].field").value(hasSize(1)))
-//				.andExpect(jsonPath("$.errors[*].field").value(hasItems("emailChangeForm.newEmail")));
+//				.andExpect(jsonPath("$.errors[*].field").value(hasItems("dto.newEmail")));
 		
 		verify(unproxy(mailSender), never()).send(any());
 	}

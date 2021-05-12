@@ -14,7 +14,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
         "rapid-auth.loginBruteforceProtection=true",
         "rapid-auth.maxLoginAttempts=5"
 })
-public class LoginBruteForceTest extends AbstractRapidAuthTest{
+public class LoginBruteForceTest extends AbstractRapidAuthIntegrationTest {
 
     static final int MAX_LOGIN_TRIES = 5;
 

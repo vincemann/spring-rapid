@@ -61,7 +61,7 @@ public abstract class AbstractCrudControllerTest
 
     protected MockMvc mvc;
     private MediaType contentType;
-    private C controller;
+    protected C controller;
     @Autowired
     private ApplicationContext applicationContext;
     @Autowired
@@ -69,7 +69,7 @@ public abstract class AbstractCrudControllerTest
 
     // use TestTemplate as member and not inherit so in one test multiple TestTemplates can be used and @Autowired in
     // with inheritence @AutoConfigureMockMvc ect. does not make this possible
-    private T testTemplate;
+    protected T testTemplate;
 
 
     @Override

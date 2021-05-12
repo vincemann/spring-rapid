@@ -59,6 +59,15 @@ public abstract class AbstractUserControllerTestTemplate<C extends AbstractUserC
         return getMvc().perform(login_raw(email,password));
     }
 
+
+    protected ResultActions changeEmail(AbstractUser user, Serializable targetId, String code, String token) throws Exception {
+        return mvc.perform(post(getController().getAuthProperties().getController().getChangeEmailUrl())
+                .param("code", code)
+                .param("id",targetId.toString())
+                .header(HttpHeaders.AUTHORIZATION, token)
+                .header("contentType",  MediaType.APPLICATION_FORM_URLENCODED));
+    }
+
     public ResultActions requestEmailChange(Serializable targetId, String token, Object requestNewEmailDto) throws Exception {
         return getMvc().perform(post(getController().getAuthProperties().getController().getRequestEmailChangeUrl())
                 .param("id",targetId.toString())

@@ -7,20 +7,16 @@ import com.github.vincemann.springrapid.auth.service.token.JweTokenService;
 import com.github.vincemann.springrapid.auth.util.RapidJwt;
 import com.github.vincemann.springrapid.auth.util.MapUtils;
 import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
-import org.springframework.test.web.servlet.ResultActions;
-
-import java.io.Serializable;
 
 import static org.hamcrest.Matchers.containsString;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
-public class ChangeEmailAuthTest extends AbstractRapidAuthTest {
+public class ChangeEmailAuthTest extends AbstractRapidAuthIntegrationTest {
 	
 	private static final String NEW_EMAIL = "new.email@example.com";
 
@@ -60,13 +56,6 @@ public class ChangeEmailAuthTest extends AbstractRapidAuthTest {
 						MapUtils.mapOf("newEmail", newEmail)));
 	}
 
-	protected ResultActions changeEmail(AbstractUser user, Serializable targetId, String code, String token) throws Exception {
-		return mvc.perform(post(authProperties.getController().getChangeEmailUrl())
-				.param("code", code)
-				.param("id",targetId.toString())
-				.header(HttpHeaders.AUTHORIZATION, token)
-				.header("contentType",  MediaType.APPLICATION_FORM_URLENCODED));
-	}
 
 	//works solo but token is obsolete when run in group
 //	@Disabled
