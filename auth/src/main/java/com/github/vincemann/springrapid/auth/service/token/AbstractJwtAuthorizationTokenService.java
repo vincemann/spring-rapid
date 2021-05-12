@@ -13,7 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.Map;
 
-import static com.github.vincemann.springrapid.auth.util.RapidJwt.AUTH_AUDIENCE;
+import static com.github.vincemann.springrapid.auth.util.RapidJwt.AUTH_CLAIM;
 import static com.github.vincemann.springrapid.auth.util.RapidJwt.create;
 
 @Slf4j
@@ -32,7 +32,7 @@ public abstract class AbstractJwtAuthorizationTokenService<P extends RapidAuthen
     @Override
     public String createToken(P principal) {
         Map<String, Object> principalClaims = jwtPrincipalConverter.toClaims(principal);
-        JWTClaimsSet claims = create(AUTH_AUDIENCE,
+        JWTClaimsSet claims = create(AUTH_CLAIM,
                 principal.getName(),
                 properties.getJwt().getExpirationMillis(),
                 MapUtils.mapOf(PRINCIPAL_CLAIMS_KEY, principalClaims)
