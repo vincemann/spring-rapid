@@ -18,7 +18,7 @@ import static org.hamcrest.Matchers.hasSize;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
-public class VerificationAuthTest extends AbstractRapidAuthIntegrationTest {
+public class VerificationTest extends AbstractRapidAuthIntegrationTest {
 	
 	private String verificationCode;
 	

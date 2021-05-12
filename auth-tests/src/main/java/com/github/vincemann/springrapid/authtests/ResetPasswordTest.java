@@ -16,7 +16,7 @@ import static org.hamcrest.Matchers.containsString;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
-public class ResetPasswordAuthTest extends AbstractRapidAuthIntegrationTest {
+public class ResetPasswordTest extends AbstractRapidAuthIntegrationTest {
 
     final String NEW_PASSWORD = "newPassword123!";
 

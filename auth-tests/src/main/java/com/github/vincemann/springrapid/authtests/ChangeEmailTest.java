@@ -16,7 +16,7 @@ import static org.hamcrest.Matchers.containsString;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
-public class ChangeEmailAuthTest extends AbstractRapidAuthIntegrationTest {
+public class ChangeEmailTest extends AbstractRapidAuthIntegrationTest {
 	
 	private static final String NEW_EMAIL = "new.email@example.com";
 

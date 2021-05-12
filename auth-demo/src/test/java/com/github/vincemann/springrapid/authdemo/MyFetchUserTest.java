@@ -1,8 +1,8 @@
 package com.github.vincemann.springrapid.authdemo;
 
 import com.github.vincemann.springrapid.authdemo.adapter.EnableProjectComponentScan;
-import com.github.vincemann.springrapid.authtests.ChangePasswordAuthTest;
+import com.github.vincemann.springrapid.authtests.FetchUserTest;
 
 @EnableProjectComponentScan
-public class MyChangePasswordAuthTest extends ChangePasswordAuthTest {
+public class MyFetchUserTest extends FetchUserTest {
 }

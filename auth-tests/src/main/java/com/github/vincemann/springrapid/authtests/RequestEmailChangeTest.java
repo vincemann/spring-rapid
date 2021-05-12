@@ -11,9 +11,8 @@ import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-public class RequestEmailChangeAuthTest extends AbstractRapidAuthIntegrationTest {
+public class RequestEmailChangeTest extends AbstractRapidAuthIntegrationTest {
 
-	protected static final String NEW_EMAIL = "new.email@example.com";
 
 	protected RequestEmailChangeDto emailChangeDto() {
 
@@ -26,7 +25,7 @@ public class RequestEmailChangeAuthTest extends AbstractRapidAuthIntegrationTest
 
 	@Test
 	public void unverifiedUserCanRequestEmailChange() throws Exception {
-		String token = login2xx(getUnverifiedUser());
+		String token = login2xx(UNVERIFIED_USER_EMAIL,UNVERIFIED_USER_PASSWORD);
 		testTemplate.requestEmailChange(getUnverifiedUser().getId(),token,emailChangeDto())
 				.andExpect(status().is(204));
 
@@ -39,7 +38,7 @@ public class RequestEmailChangeAuthTest extends AbstractRapidAuthIntegrationTest
 
 	@Test
 	public void userCanRequestEmailChange() throws Exception {
-		String token = login2xx(getUser());
+		String token = login2xx(USER_EMAIL,USER_PASSWORD);
 		testTemplate.requestEmailChange(getUser().getId(),token,emailChangeDto())
 				.andExpect(status().is(204));
 
@@ -47,7 +46,7 @@ public class RequestEmailChangeAuthTest extends AbstractRapidAuthIntegrationTest
 
 		AbstractUser<Long> updatedUser = getUserService().findById(getUser().getId()).get();
 		Assertions.assertEquals(NEW_EMAIL, updatedUser.getNewEmail());
-		Assertions.assertEquals(UNVERIFIED_USER_EMAIL, updatedUser.getEmail());
+		Assertions.assertEquals(USER_EMAIL, updatedUser.getEmail());
 	}
 
 	/**
@@ -55,7 +54,7 @@ public class RequestEmailChangeAuthTest extends AbstractRapidAuthIntegrationTest
      */
 	@Test
 	public void adminCanRequestEmailChangeOfDiffUser() throws Exception {
-		String token = login2xx(getAdmin());
+		String token = login2xx(ADMIN_EMAIL,ADMIN_PASSWORD);
 		testTemplate.requestEmailChange(getUser().getId(),token,emailChangeDto())
 				.andExpect(status().is(204));
 
@@ -68,7 +67,7 @@ public class RequestEmailChangeAuthTest extends AbstractRapidAuthIntegrationTest
      */
 	@Test
 	public void cantRequestEmailChangeOfUnknownUser() throws Exception {
-		String token = login2xx(getUser());
+		String token = login2xx(USER_EMAIL,USER_PASSWORD);
 		testTemplate.requestEmailChange(UNKNOWN_USER_ID,token,emailChangeDto())
 				.andExpect(status().is(404));
 		
@@ -77,7 +76,7 @@ public class RequestEmailChangeAuthTest extends AbstractRapidAuthIntegrationTest
 
 	@Test
 	public void userCantRequestEmailChangeOfDiffUser() throws Exception {
-		String token = login2xx(getUser());
+		String token = login2xx(USER_EMAIL,USER_PASSWORD);
 		testTemplate.requestEmailChange(getSecondUser().getId(),token,emailChangeDto())
 				.andExpect(status().is(403));
 		
@@ -91,7 +90,7 @@ public class RequestEmailChangeAuthTest extends AbstractRapidAuthIntegrationTest
 	@Test
 	public void adminCantRequestEmailChangeOfDiffAdmin() throws Exception {
 		//unverified admins are not treated differently than verified admins
-		String token = login2xx(getAdmin());
+		String token = login2xx(ADMIN_EMAIL,ADMIN_PASSWORD);
 		testTemplate.requestEmailChange(getSecondAdmin().getId(),token,emailChangeDto())
 				.andExpect(status().is(403));
 		
@@ -112,7 +111,7 @@ public class RequestEmailChangeAuthTest extends AbstractRapidAuthIntegrationTest
 		dto.setNewEmail(null);
 //		dto.setPassword(null);
 		// try with null newEmail
-		String token = login2xx(getUser());
+		String token = login2xx(USER_EMAIL,USER_PASSWORD);
 		testTemplate.requestEmailChange(getUser().getId(),token,dto)
 				.andExpect(status().is(400));
 //				.andExpect(jsonPath("$.errors[*].field").value(hasSize(1)))

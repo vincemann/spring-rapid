@@ -16,7 +16,7 @@ import static org.mockito.Mockito.verify;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
-public class SignupAuthTest extends AbstractRapidAuthIntegrationTest {
+public class SignupTest extends AbstractRapidAuthIntegrationTest {
 
 	protected SignupDto createValidSignupForm(){
 		return new SignupDto("user.foo@example.com", "userUser123");

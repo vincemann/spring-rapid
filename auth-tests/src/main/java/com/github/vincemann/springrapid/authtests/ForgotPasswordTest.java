@@ -10,7 +10,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 
-public class ForgotPasswordAuthTest extends AbstractRapidAuthIntegrationTest {
+public class ForgotPasswordTest extends AbstractRapidAuthIntegrationTest {
 
 
 	// todo bs anon should issue this request

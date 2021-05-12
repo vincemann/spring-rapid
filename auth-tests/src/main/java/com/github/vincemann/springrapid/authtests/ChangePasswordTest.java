@@ -10,7 +10,7 @@ import static org.hamcrest.Matchers.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
-public class ChangePasswordAuthTest extends AbstractRapidAuthIntegrationTest {
+public class ChangePasswordTest extends AbstractRapidAuthIntegrationTest {
 	
 	private static final String NEW_PASSWORD = "a-new-password123";
 	

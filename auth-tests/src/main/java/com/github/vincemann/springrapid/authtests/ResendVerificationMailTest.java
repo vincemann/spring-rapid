@@ -9,7 +9,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpHeaders;
 
-public class ResendVerificationMailAuthTest extends AbstractRapidAuthIntegrationTest {
+public class ResendVerificationMailTest extends AbstractRapidAuthIntegrationTest {
 
 	@Test
 	public void canResendVerificationMailForOwnAccount() throws Exception {
