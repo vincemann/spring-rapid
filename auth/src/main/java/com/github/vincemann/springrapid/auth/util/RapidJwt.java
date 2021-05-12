@@ -4,6 +4,8 @@ import com.nimbusds.jwt.JWTClaimsSet;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.access.AccessDeniedException;
 
+import java.text.ParseException;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
@@ -14,10 +16,12 @@ import java.util.Map;
 @Slf4j
 public class RapidJwt {
 
-	public static final String AUTH_AUDIENCE = "auth";
+	public static final String SUBJECT_CLAIM = "sub";
+	public static final String AUDIENCE_CLAIM = "aud";
+	public static final String AUTH_CLAIM = "auth";
 	// do not change these to the standard exp and iat bc the jwt builder will convert to date obj again and round to seconds, which fucks up the tests
-	public static final String EXPIRATION_AUDIENCE = "expired";
-	public static final String ISSUED_AT_AUDIENCE = "issued-at";
+	public static final String EXPIRATION_CLAIM = "expired";
+	public static final String ISSUED_AT_CLAIM = "issued-at";
 
 
 
@@ -27,13 +31,48 @@ public class RapidJwt {
 		builder
 				//.issueTime(new Date())
 //                .expirationTime(new Date()) -> rounds to millis bad for tests
-				.claim(RapidJwt.EXPIRATION_AUDIENCE,System.currentTimeMillis() + expirationMillis)
+				.claim(RapidJwt.EXPIRATION_CLAIM,System.currentTimeMillis() + expirationMillis)
 				.audience(aud)
 				.subject(subject)
-				.claim(RapidJwt.ISSUED_AT_AUDIENCE,System.currentTimeMillis());
+				.claim(RapidJwt.ISSUED_AT_CLAIM,System.currentTimeMillis());
 //                .issueTime(new Date()); -> rounds to millis bad for tests
 
 		otherClaims.forEach(builder::claim);
+		return builder.build();
+	}
+
+	public static JWTClaimsSet.Builder createRawBuilder(String aud, String subject, long expirationMillis, long issuedAt, Map<String,Object> otherClaims){
+		JWTClaimsSet.Builder builder = new JWTClaimsSet.Builder();
+
+		builder
+				//.issueTime(new Date())
+//                .expirationTime(new Date()) -> rounds to millis bad for tests
+				.claim(RapidJwt.EXPIRATION_CLAIM,expirationMillis)
+				.audience(aud)
+				.subject(subject)
+				.claim(RapidJwt.ISSUED_AT_CLAIM,issuedAt);
+//                .issueTime(new Date()); -> rounds to millis bad for tests
+		if (otherClaims!=null)
+			otherClaims.forEach(builder::claim);
+		return builder;
+
+	}
+
+	public static JWTClaimsSet mod(JWTClaimsSet claimsSet, String aud, String subject, Long expirationMillis,Long issuedAt, Map<String,Object> otherClaims) throws ParseException {
+		JWTClaimsSet.Builder builder = createRawBuilder(claimsSet.getAudience().get(0),claimsSet.getSubject(),claimsSet.getLongClaim(RapidJwt.EXPIRATION_CLAIM),claimsSet.getLongClaim(RapidJwt.ISSUED_AT_CLAIM),otherClaims);
+		if (expirationMillis!=null)
+			builder.claim(RapidJwt.EXPIRATION_CLAIM,expirationMillis);
+		if (issuedAt!=null)
+			builder.claim(RapidJwt.ISSUED_AT_CLAIM,issuedAt);
+		if (aud!=null)
+			builder.audience(aud);
+		if (subject != null)
+			builder.claim(RapidJwt.SUBJECT_CLAIM,subject);
+		if (otherClaims !=null){
+			for (Map.Entry<String, Object> claim : otherClaims.entrySet()) {
+				builder.claim(claim.getKey(),claim.getValue());
+			}
+		}
 		return builder.build();
 	}
 
@@ -42,9 +81,9 @@ public class RapidJwt {
 	}
 
 	public static void validateNotExpired(JWTClaimsSet claims) {
-		long expirationTime = (long) claims.getClaim(RapidJwt.EXPIRATION_AUDIENCE);
+		long expirationTime = (long) claims.getClaim(RapidJwt.EXPIRATION_CLAIM);
 		long currentTime = System.currentTimeMillis();
-		log.debug("Check if toke is expired...");
+		log.debug("Check if token is expired...");
 		log.debug("Expiration time = " + new Date(expirationTime)
 				+ ". Current time = " + new Date(currentTime));
 		log.debug("Expiration time = " + expirationTime
@@ -74,7 +113,7 @@ public class RapidJwt {
 
 	public static void validateIssuedAfter(JWTClaimsSet claims, long issuedAfter)  {
 		log.debug("Check if token is obsolete...");
-		long issueTime = (long) claims.getClaim(ISSUED_AT_AUDIENCE);
+		long issueTime = (long) claims.getClaim(ISSUED_AT_CLAIM);
 		log.debug("Token issued at: " + new Date(issueTime) +  ", must be issued after: " + new Date(issuedAfter));
 		log.debug("Token issued at: " + issueTime +  ", must be issued after: " + issuedAfter);
 		if (issueTime < issuedAfter){

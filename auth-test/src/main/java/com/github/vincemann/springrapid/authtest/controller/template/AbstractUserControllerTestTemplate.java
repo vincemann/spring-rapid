@@ -10,6 +10,7 @@ import com.github.vincemann.springrapid.auth.security.AuthenticatedPrincipalFact
 import com.github.vincemann.springrapid.core.security.RapidAuthenticatedPrincipal;
 import com.github.vincemann.springrapid.core.security.RapidSecurityContext;
 import com.github.vincemann.springrapid.core.util.JsonUtils;
+import com.github.vincemann.springrapid.coretest.BeforeEachMethodInitializable;
 import com.github.vincemann.springrapid.coretest.controller.template.AbstractCrudControllerTestTemplate;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mockito;
@@ -40,14 +41,19 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
  * @param <C>
  */
 public abstract class AbstractUserControllerTestTemplate<C extends AbstractUserController>
-        extends AbstractCrudControllerTestTemplate<C> {
+        extends AbstractCrudControllerTestTemplate<C>  {
 
 
     private AuthenticatedPrincipalFactory authenticatedPrincipalFactory;
     private RapidSecurityContext<RapidAuthenticatedPrincipal> rapidSecurityContext;
 
-    @SpyBean
-    private MailSender<MailData> mailSender;
+
+    private MailSender<MailData> mailSenderMock;
+
+    @Autowired
+    public void setMailSenderMock(MailSender<MailData> mailSenderMock) {
+        this.mailSenderMock = mailSenderMock;
+    }
 
     @Override
     public void setMvc(MockMvc mvc) {
@@ -69,13 +75,15 @@ public abstract class AbstractUserControllerTestTemplate<C extends AbstractUserC
     }
 
 
-    protected ResultActions changeEmail(AbstractUser user, Serializable targetId, String code, String token) throws Exception {
+    public ResultActions changeEmail(AbstractUser user, Serializable targetId, String code, String token) throws Exception {
         return mvc.perform(post(getController().getAuthProperties().getController().getChangeEmailUrl())
                 .param("code", code)
                 .param("id",targetId.toString())
                 .header(HttpHeaders.AUTHORIZATION, token)
                 .header("contentType",  MediaType.APPLICATION_FORM_URLENCODED));
     }
+
+
 
     public ResultActions requestEmailChange(Serializable targetId, String token, Object requestNewEmailDto) throws Exception {
         return getMvc().perform(post(getController().getAuthProperties().getController().getRequestEmailChangeUrl())
@@ -94,7 +102,7 @@ public abstract class AbstractUserControllerTestTemplate<C extends AbstractUserC
                 .content(serialize(requestNewEmailDto)))
                 .andExpect(status().is2xxSuccessful());
         ArgumentCaptor<MailData> captor = ArgumentCaptor.forClass(MailData.class);
-        verify(mailSender, times(1)).send(captor.capture());
+        verify(mailSenderMock, times(1)).send(captor.capture());
         MailData sentData = captor.getValue();
         return sentData;
     }
