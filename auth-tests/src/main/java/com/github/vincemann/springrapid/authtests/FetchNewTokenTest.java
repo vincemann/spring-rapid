@@ -8,41 +8,29 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import com.github.vincemann.springrapid.auth.service.token.JwtService;
 
+import com.github.vincemann.springrapid.authtest.controller.template.AbstractUserControllerTestTemplate;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MvcResult;
 
+import java.io.Serializable;
+
 public class FetchNewTokenTest extends AbstractRapidAuthIntegrationTest {
-
-	
-	public static class Response {
-		
-		private String token;
-
-		public String getToken() {
-			return token;
-		}
-
-		public void setToken(String token) {
-			this.token = token;
-		}		
-	}
 
 
 	@Test
 	public void canFetchNewTokenForOwnUser() throws Exception {
-		
-		MvcResult result = mvc.perform(post(authProperties.getController().getNewAuthTokenUrl())
-				.header(HttpHeaders.AUTHORIZATION, tokens.get(getUnverifiedUser().getId()))
-                .header("contentType",  MediaType.APPLICATION_FORM_URLENCODED))
-                .andExpect(status().is(200))
+		String token = login2xx(USER_EMAIL,USER_PASSWORD);
+		MvcResult result = testTemplate.fetchNewToken(token)
+				.andExpect(status().is2xxSuccessful())
 				.andExpect(jsonPath("$.token").value(containsString(".")))
 				.andReturn();
 
-		Response response =deserialize(result.getResponse().getContentAsString(), Response.class);
-		ensureTokenWorks(response.getToken());
+
+		AbstractUserControllerTestTemplate.ResponseToken response =deserialize(result.getResponse().getContentAsString(), AbstractUserControllerTestTemplate.ResponseToken.class);
+		ensureTokenWorks(response.getToken(),getUser().getId());
 	}
 	
 	@Test
@@ -52,46 +40,49 @@ public class FetchNewTokenTest extends AbstractRapidAuthIntegrationTest {
 		long mockedExpireTime = 1000L;
 		Mockito.doReturn(mockedExpireTime).when(jwt).getExpirationMillis();
 
-		MvcResult result = mvc.perform(post(authProperties.getController().getNewAuthTokenUrl())
-				.header(HttpHeaders.AUTHORIZATION, tokens.get(getUnverifiedUser().getId()))
-//		        .param("expirationMillis", "1000")
-                .header("contentType",  MediaType.APPLICATION_FORM_URLENCODED))
-                .andExpect(status().is(200))
-				.andReturn();
-
-		Response response =deserialize(result.getResponse().getContentAsString(), Response.class);
-		ensureTokenWorks(response.getToken());
+		String token = login2xx(USER_EMAIL,USER_PASSWORD);
+		testTemplate.fetchNewToken2xx(token);
 
 		Thread.sleep(mockedExpireTime+1L);
 		//token is now expired
-		mvc.perform(get(authProperties.getController().getContextUrl())
-				.header(HttpHeaders.AUTHORIZATION,
-						JwtService.TOKEN_PREFIX + response.getToken()))
-				.andExpect(status().is(401));
+//		mvc.perform(get(authProperties.getController().getContextUrl())
+//				.header(HttpHeaders.AUTHORIZATION,
+//						JwtService.TOKEN_PREFIX + response.getToken()))
+//				.andExpect(status().is(401));
+		ensureTokenDoesNotWork(token);
 
 	}
 
 	@Test
 	public void adminCanFetchNewTokenForDiffUser() throws Exception {
-		
-		MvcResult result = mvc.perform(post(authProperties.getController().getNewAuthTokenUrl())
-				.header(HttpHeaders.AUTHORIZATION, tokens.get(getAdmin().getId()))
-		        .param("email", UNVERIFIED_USER_EMAIL)
-                .header("contentType",  MediaType.APPLICATION_FORM_URLENCODED))
-                .andExpect(status().is(200))
+		String token = login2xx(ADMIN_EMAIL,ADMIN_PASSWORD);
+		MvcResult result = testTemplate.fetchNewToken(token, USER_EMAIL)
+				.andExpect(status().is2xxSuccessful())
 				.andReturn();
 
-		Response response =deserialize(result.getResponse().getContentAsString(), Response.class);
-		ensureTokenWorks(response.getToken());
+
+		AbstractUserControllerTestTemplate.ResponseToken response =deserialize(result.getResponse().getContentAsString(), AbstractUserControllerTestTemplate.ResponseToken.class);
+		ensureTokenWorks(response.getToken(),getUser().getId());
 	}
 	
 	@Test
 	public void cantFetchTokenForDiffUser() throws Exception {
-		
-		mvc.perform(post(authProperties.getController().getNewAuthTokenUrl())
-				.header(HttpHeaders.AUTHORIZATION, tokens.get(getUnverifiedUser().getId()))
-		        .param("email", ADMIN_EMAIL)
-                .header("contentType",  MediaType.APPLICATION_FORM_URLENCODED))
-                .andExpect(status().is(403));
+		String token = login2xx(USER_EMAIL,USER_PASSWORD);
+		testTemplate.fetchNewToken(token,SECOND_USER_EMAIL)
+				.andExpect(status().isForbidden());
+	}
+
+	protected void ensureTokenWorks(String token, Serializable id) throws Exception {
+		mvc.perform(get(authProperties.getController().getContextUrl())
+				.header(HttpHeaders.AUTHORIZATION, token))
+				.andExpect(status().is2xxSuccessful())
+                .andExpect(jsonPath("$.user.id").value(id.toString()));
+	}
+
+	protected void ensureTokenDoesNotWork(String token) throws Exception {
+		mvc.perform(get(authProperties.getController().getContextUrl())
+				.header(HttpHeaders.AUTHORIZATION, token))
+				.andExpect(status().isUnauthorized())
+				.andExpect(jsonPath("$.user.id").doesNotExist());
 	}
 }
