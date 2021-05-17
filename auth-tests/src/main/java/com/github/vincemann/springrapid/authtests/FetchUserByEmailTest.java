@@ -8,44 +8,29 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-public class FetchUserTest extends AbstractRapidAuthIntegrationTest {
+public class FetchUserByEmailTest extends AbstractRapidAuthIntegrationTest {
 	
 
 
 	@Test
 	public void anonKnowsEmail_canFindMatchingId() throws Exception {
-		//todo create lemonDtoMappingContext with lemon endpoints like parentAware and create dto that only has id that maps for find,response,foreign,noRoles
-		
-		mvc.perform(post(authProperties.getController().getFetchByEmailUrl())
-                .param("email", ADMIN_EMAIL)
-                .header("contentType",  MediaType.APPLICATION_FORM_URLENCODED))
-                .andExpect(status().is(200))
-				.andExpect(jsonPath("$.id").value(getAdmin().getId()))
+		testTemplate.fetchByEmail(USER_EMAIL)
+				.andExpect(status().is(200))
+				.andExpect(jsonPath("$.id").value(getUser().getId()))
 				.andExpect(jsonPath("$.password").doesNotExist())
 				.andExpect(jsonPath("$.credentialsUpdatedAt").doesNotExist());
-//				.andExpect(jsonPath("$.name").value("Admin 1"));
 	}
 
 	@Test
 	public void anonKnowsInvalidEmail_cantFindMatchingId() throws Exception {
 		
 		// email does not exist
-		mvc.perform(post(authProperties.getController().getFetchByEmailUrl())
-                .param("email", UNKNOWN_EMAIL)
-                .header("contentType",  MediaType.APPLICATION_FORM_URLENCODED))
-                .andExpect(status().is(404));
+		testTemplate.fetchByEmail(UNKNOWN_EMAIL)
+                .andExpect(status().isNotFound());
 
 		// Blank email
-		mvc.perform(post(authProperties.getController().getFetchByEmailUrl())
-                .param("email", "")
-                .header("contentType",  MediaType.APPLICATION_FORM_URLENCODED))
-                .andExpect(status().is(400));
-
-		// Invalid email
-		mvc.perform(post(authProperties.getController().getFetchByEmailUrl())
-                .param("email", INVALID_EMAIL)
-                .header("contentType",  MediaType.APPLICATION_FORM_URLENCODED))
-                .andExpect(status().is(404));
+		testTemplate.fetchByEmail("")
+				.andExpect(status().isBadRequest());
 	}
 
 
