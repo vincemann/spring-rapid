@@ -1,21 +1,17 @@
 package com.github.vincemann.springrapid.authtest.controller.template;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.github.vincemann.springrapid.auth.controller.AbstractUserController;
 import com.github.vincemann.springrapid.auth.domain.AbstractUser;
-import com.github.vincemann.springrapid.auth.domain.dto.RequestEmailChangeDto;
 import com.github.vincemann.springrapid.auth.mail.MailData;
 import com.github.vincemann.springrapid.auth.mail.MailSender;
 import com.github.vincemann.springrapid.auth.security.AuthenticatedPrincipalFactory;
 import com.github.vincemann.springrapid.core.security.RapidAuthenticatedPrincipal;
 import com.github.vincemann.springrapid.core.security.RapidSecurityContext;
 
-import com.github.vincemann.springrapid.coretest.BeforeEachMethodInitializable;
 import com.github.vincemann.springrapid.coretest.controller.template.AbstractCrudControllerTestTemplate;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.mock.mockito.SpyBean;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
@@ -24,7 +20,6 @@ import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilde
 
 import java.io.Serializable;
 
-import static org.hamcrest.Matchers.containsString;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -33,16 +28,15 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 /**
  * Activate spring Security, so login endpoint and auth web config is enabled, when using this template.
  *
- *  @Override
- *     protected DefaultMockMvcBuilder createMvcBuilder() {
- *         DefaultMockMvcBuilder mvcBuilder = super.createMvcBuilder();
- *         mvcBuilder.apply(SecurityMockMvcConfigurers.springSecurity());
- *         return mvcBuilder;
- *     }
  * @param <C>
+ * @Override protected DefaultMockMvcBuilder createMvcBuilder() {
+ * DefaultMockMvcBuilder mvcBuilder = super.createMvcBuilder();
+ * mvcBuilder.apply(SecurityMockMvcConfigurers.springSecurity());
+ * return mvcBuilder;
+ * }
  */
 public abstract class AbstractUserControllerTestTemplate<C extends AbstractUserController>
-        extends AbstractCrudControllerTestTemplate<C>  {
+        extends AbstractCrudControllerTestTemplate<C> {
 
 
     private AuthenticatedPrincipalFactory authenticatedPrincipalFactory;
@@ -72,23 +66,22 @@ public abstract class AbstractUserControllerTestTemplate<C extends AbstractUserC
 //    }
 
     public ResultActions login(String email, String password) throws Exception {
-        return getMvc().perform(login_raw(email,password));
+        return getMvc().perform(login_raw(email, password));
     }
 
 
-    public ResultActions changeEmail(AbstractUser user, Serializable targetId, String code, String token) throws Exception {
+    public ResultActions changeEmail(Serializable targetId, String code, String token) throws Exception {
         return mvc.perform(post(getController().getAuthProperties().getController().getChangeEmailUrl())
                 .param("code", code)
-                .param("id",targetId.toString())
+                .param("id", targetId.toString())
                 .header(HttpHeaders.AUTHORIZATION, token)
-                .header("contentType",  MediaType.APPLICATION_FORM_URLENCODED));
+                .header("contentType", MediaType.APPLICATION_FORM_URLENCODED));
     }
-
 
 
     public ResultActions requestEmailChange(Serializable targetId, String token, Object requestNewEmailDto) throws Exception {
         return getMvc().perform(post(getController().getAuthProperties().getController().getRequestEmailChangeUrl())
-                .param("id",targetId.toString())
+                .param("id", targetId.toString())
                 .contentType(MediaType.APPLICATION_JSON)
                 .header(HttpHeaders.AUTHORIZATION, token)
                 .content(serialize(requestNewEmailDto)));
@@ -97,7 +90,7 @@ public abstract class AbstractUserControllerTestTemplate<C extends AbstractUserC
 
     public MailData requestEmailChange2xx(Serializable targetId, String token, Object requestNewEmailDto) throws Exception {
         getMvc().perform(post(getController().getAuthProperties().getController().getRequestEmailChangeUrl())
-                .param("id",targetId.toString())
+                .param("id", targetId.toString())
                 .contentType(MediaType.APPLICATION_JSON)
                 .header(HttpHeaders.AUTHORIZATION, token)
                 .content(serialize(requestNewEmailDto)))
@@ -120,13 +113,13 @@ public abstract class AbstractUserControllerTestTemplate<C extends AbstractUserC
     public ResultActions forgotPassword(String email) throws Exception {
         return mvc.perform(post(getController().getAuthProperties().getController().getForgotPasswordUrl())
                 .param("email", email)
-                .header("contentType",  MediaType.APPLICATION_FORM_URLENCODED));
+                .header("contentType", MediaType.APPLICATION_FORM_URLENCODED));
     }
 
     public MailData forgotPassword2xx(String email) throws Exception {
         mvc.perform(post(getController().getAuthProperties().getController().getForgotPasswordUrl())
                 .param("email", email)
-                .header("contentType",  MediaType.APPLICATION_FORM_URLENCODED))
+                .header("contentType", MediaType.APPLICATION_FORM_URLENCODED))
                 .andExpect(status().is2xxSuccessful());
         ArgumentCaptor<MailData> captor = ArgumentCaptor.forClass(MailData.class);
         verify(mailSenderMock, times(1)).send(captor.capture());
@@ -141,6 +134,30 @@ public abstract class AbstractUserControllerTestTemplate<C extends AbstractUserC
                 .content(serialize(resetPasswordDto)));
     }
 
+    public ResultActions fetchNewToken(String token) throws Exception {
+        return mvc.perform(post(getController().getAuthProperties().getController().getNewAuthTokenUrl())
+                .header(HttpHeaders.AUTHORIZATION, token)
+                .header("contentType", MediaType.APPLICATION_FORM_URLENCODED));
+    }
+
+    public ResultActions fetchNewToken(String token, String email) throws Exception {
+        return mvc.perform(post(getController().getAuthProperties().getController().getNewAuthTokenUrl())
+                .header(HttpHeaders.AUTHORIZATION, token)
+                .param("email", email)
+                .header("contentType", MediaType.APPLICATION_FORM_URLENCODED));
+    }
+
+    public String fetchNewToken2xx(String token, String email) throws Exception {
+        return deserialize(fetchNewToken(token,email)
+                .andExpect(status().is2xxSuccessful())
+                .andReturn().getResponse().getContentAsString(), ResponseToken.class).getToken();
+    }
+
+    public String fetchNewToken2xx(String token) throws Exception {
+        return deserialize(fetchNewToken(token)
+                .andExpect(status().is2xxSuccessful())
+                .andReturn().getResponse().getContentAsString(), ResponseToken.class).getToken();
+    }
 
     protected MockHttpServletRequestBuilder login_raw(String email, String password) {
         return post(getController().getAuthProperties().getController().getLoginUrl())
@@ -151,7 +168,7 @@ public abstract class AbstractUserControllerTestTemplate<C extends AbstractUserC
     }
 
     public String login2xx(String email, String password) throws Exception {
-        return getMvc().perform(login_raw(email,password))
+        return getMvc().perform(login_raw(email, password))
                 .andExpect(status().is2xxSuccessful())
                 .andReturn().getResponse().getHeader(HttpHeaders.AUTHORIZATION);
     }
@@ -164,7 +181,6 @@ public abstract class AbstractUserControllerTestTemplate<C extends AbstractUserC
         rapidSecurityContext.login(authenticatedPrincipalFactory.create(user));
     }
 
-
     @Autowired
     public void setAuthenticatedPrincipalFactory(AuthenticatedPrincipalFactory authenticatedPrincipalFactory) {
         this.authenticatedPrincipalFactory = authenticatedPrincipalFactory;
@@ -173,6 +189,19 @@ public abstract class AbstractUserControllerTestTemplate<C extends AbstractUserC
     @Autowired
     public void setRapidSecurityContext(RapidSecurityContext<RapidAuthenticatedPrincipal> rapidSecurityContext) {
         this.rapidSecurityContext = rapidSecurityContext;
+    }
+
+    public static class ResponseToken {
+
+        private String token;
+
+        public String getToken() {
+            return token;
+        }
+
+        public void setToken(String token) {
+            this.token = token;
+        }
     }
 
 

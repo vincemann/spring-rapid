@@ -189,12 +189,7 @@ public abstract class AbstractRapidAuthIntegrationTest
         return login2xx(username,password);
     }
 
-    protected void ensureTokenWorks(String token) throws Exception {
-        mvc.perform(get(authProperties.getController().getContextUrl())
-                .header(HttpHeaders.AUTHORIZATION, token))
-                .andExpect(status().is(200));
-//                .andExpect(jsonPath("$.user.id").value(getUnverifiedUser().getId()));
-    }
+
 
     @AfterEach
     protected void tearDown() throws SQLException {
