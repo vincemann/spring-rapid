@@ -13,7 +13,6 @@ public class ResendVerificationMailTest extends AbstractRapidAuthIntegrationTest
 
 	@Test
 	public void canResendVerificationMailForOwnAccount() throws Exception {
-
 		mvc.perform(post(authProperties.getController().getResendVerificationEmailUrl())
 				.param("id",getUnverifiedUser().getId().toString())
 				.header(HttpHeaders.AUTHORIZATION, tokens.get(getUnverifiedUser().getId())))

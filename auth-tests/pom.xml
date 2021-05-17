@@ -35,6 +35,12 @@
         </dependency>
 
         <dependency>
+            <groupId>com.github.vincemann</groupId>
+            <artifactId>ez-compare</artifactId>
+            <version>${ez-compare.version}</version>
+        </dependency>
+
+        <dependency>
             <groupId>com.github.vincemann.spring-rapid</groupId>
             <artifactId>core-test</artifactId>
             <version>${project.version}</version>

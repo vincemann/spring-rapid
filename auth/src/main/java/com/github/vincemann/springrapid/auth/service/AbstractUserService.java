@@ -539,7 +539,7 @@ public abstract class AbstractUserService
         MailData mailData = MailData.builder()
                 .to(user.getEmail())
 //                .subject(Message.get("com.naturalprogrammer.spring.verifySubject"))
-                .subject(Message.get(VERIFY_SUBJECT))
+                .subject(VERIFY_SUBJECT)
                 .body(Message.get("com.naturalprogrammer.spring.verifyEmail", verifyLink))
                 .link(verifyLink)
                 .code(verificationCode)
