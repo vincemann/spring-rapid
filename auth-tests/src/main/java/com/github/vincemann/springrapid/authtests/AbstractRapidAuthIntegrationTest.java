@@ -28,11 +28,13 @@ import org.springframework.test.util.AopTestUtils;
 import org.springframework.test.web.servlet.setup.DefaultMockMvcBuilder;
 
 import javax.sql.DataSource;
+import java.io.Serializable;
 import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.Map;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 
@@ -189,6 +191,19 @@ public abstract class AbstractRapidAuthIntegrationTest
         return login2xx(username,password);
     }
 
+    protected void ensureTokenWorks(String token, Serializable id) throws Exception {
+        mvc.perform(get(authProperties.getController().getContextUrl())
+                .header(HttpHeaders.AUTHORIZATION, token))
+                .andExpect(status().is2xxSuccessful())
+                .andExpect(jsonPath("$.user.id").value(id.toString()));
+    }
+
+    protected void ensureTokenDoesNotWork(String token) throws Exception {
+        mvc.perform(get(authProperties.getController().getContextUrl())
+                .header(HttpHeaders.AUTHORIZATION, token))
+                .andExpect(status().isUnauthorized())
+                .andExpect(jsonPath("$.user.id").doesNotExist());
+    }
 
 
     @AfterEach

@@ -1,8 +1,8 @@
 package com.github.vincemann.springrapid.authdemo;
 
 import com.github.vincemann.springrapid.authdemo.adapter.EnableProjectComponentScan;
-import com.github.vincemann.springrapid.authtests.FetchUserTest;
+import com.github.vincemann.springrapid.authtests.FetchUserByEmailTest;
 
 @EnableProjectComponentScan
-public class MyFetchUserTest extends FetchUserTest {
+public class MyFetchUserByEmailTest extends FetchUserByEmailTest {
 }

@@ -164,7 +164,12 @@ public abstract class AbstractUserControllerTestTemplate<C extends AbstractUserC
                 .param("username", email)
                 .param("password", password)
                 .header("contentType", MediaType.APPLICATION_FORM_URLENCODED);
+    }
 
+    public ResultActions fetchByEmail(String email) throws Exception {
+        return mvc.perform(post(getController().getAuthProperties().getController().getFetchByEmailUrl())
+                .param("email", email)
+                .header("contentType",  MediaType.APPLICATION_FORM_URLENCODED));
     }
 
     public String login2xx(String email, String password) throws Exception {

@@ -44,11 +44,6 @@ public class FetchNewTokenTest extends AbstractRapidAuthIntegrationTest {
 		testTemplate.fetchNewToken2xx(token);
 
 		Thread.sleep(mockedExpireTime+1L);
-		//token is now expired
-//		mvc.perform(get(authProperties.getController().getContextUrl())
-//				.header(HttpHeaders.AUTHORIZATION,
-//						JwtService.TOKEN_PREFIX + response.getToken()))
-//				.andExpect(status().is(401));
 		ensureTokenDoesNotWork(token);
 
 	}
@@ -72,17 +67,4 @@ public class FetchNewTokenTest extends AbstractRapidAuthIntegrationTest {
 				.andExpect(status().isForbidden());
 	}
 
-	protected void ensureTokenWorks(String token, Serializable id) throws Exception {
-		mvc.perform(get(authProperties.getController().getContextUrl())
-				.header(HttpHeaders.AUTHORIZATION, token))
-				.andExpect(status().is2xxSuccessful())
-                .andExpect(jsonPath("$.user.id").value(id.toString()));
-	}
-
-	protected void ensureTokenDoesNotWork(String token) throws Exception {
-		mvc.perform(get(authProperties.getController().getContextUrl())
-				.header(HttpHeaders.AUTHORIZATION, token))
-				.andExpect(status().isUnauthorized())
-				.andExpect(jsonPath("$.user.id").doesNotExist());
-	}
 }
