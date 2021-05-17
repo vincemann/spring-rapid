@@ -55,10 +55,17 @@ public abstract class AbstractUserControllerTestTemplate<C extends AbstractUserC
         super.setMvc(mvc);
     }
 
-    public MockHttpServletRequestBuilder signup(Object dto) throws Exception {
-        return post(getController().getAuthProperties().getController().getSignupUrl())
+    public ResultActions signup(Object dto) throws Exception {
+        return mvc.perform(post(getController().getAuthProperties().getController().getSignupUrl())
                 .content(serialize(dto))
-                .contentType(getController().getCoreProperties().getController().getMediaType());
+                .contentType(getController().getCoreProperties().getController().getMediaType()));
+    }
+
+    public MailData signup2xx(Object dto) throws Exception {
+        mvc.perform(post(getController().getAuthProperties().getController().getSignupUrl())
+                .content(serialize(dto))
+                .contentType(getController().getCoreProperties().getController().getMediaType()));
+        return getMailData();
     }
 
 //    public MockHttpServletRequestBuilder login(String email, String password) {
@@ -85,7 +92,6 @@ public abstract class AbstractUserControllerTestTemplate<C extends AbstractUserC
                 .contentType(MediaType.APPLICATION_JSON)
                 .header(HttpHeaders.AUTHORIZATION, token)
                 .content(serialize(requestNewEmailDto)));
-//                .andExpect(status().is(204));
     }
 
     public MailData requestEmailChange2xx(Serializable targetId, String token, Object requestNewEmailDto) throws Exception {
@@ -95,11 +101,7 @@ public abstract class AbstractUserControllerTestTemplate<C extends AbstractUserC
                 .header(HttpHeaders.AUTHORIZATION, token)
                 .content(serialize(requestNewEmailDto)))
                 .andExpect(status().is2xxSuccessful());
-        ArgumentCaptor<MailData> captor = ArgumentCaptor.forClass(MailData.class);
-        verify(mailSenderMock, times(1)).send(captor.capture());
-        MailData sentData = captor.getValue();
-        Mockito.reset(mailSenderMock);
-        return sentData;
+        return getMailData();
     }
 
     public ResultActions changePassword(Serializable id, String token, Object changePasswordDto) throws Exception {
@@ -121,11 +123,7 @@ public abstract class AbstractUserControllerTestTemplate<C extends AbstractUserC
                 .param("email", email)
                 .header("contentType", MediaType.APPLICATION_FORM_URLENCODED))
                 .andExpect(status().is2xxSuccessful());
-        ArgumentCaptor<MailData> captor = ArgumentCaptor.forClass(MailData.class);
-        verify(mailSenderMock, times(1)).send(captor.capture());
-        MailData sentData = captor.getValue();
-        Mockito.reset(mailSenderMock);
-        return sentData;
+        return getMailData();
     }
 
     public ResultActions resetPassword(Object resetPasswordDto) throws Exception {
@@ -176,6 +174,21 @@ public abstract class AbstractUserControllerTestTemplate<C extends AbstractUserC
         return getMvc().perform(login_raw(email, password))
                 .andExpect(status().is2xxSuccessful())
                 .andReturn().getResponse().getHeader(HttpHeaders.AUTHORIZATION);
+    }
+
+    public MailData getMailData(){
+        ArgumentCaptor<MailData> captor = ArgumentCaptor.forClass(MailData.class);
+        verify(mailSenderMock, times(1)).send(captor.capture());
+        MailData sentData = captor.getValue();
+        Mockito.reset(mailSenderMock);
+        return sentData;
+    }
+
+
+    public ResultActions resendVerificationEmail(Serializable id, String token) throws Exception {
+        return mvc.perform(post(getController().getAuthProperties().getController().getResendVerificationEmailUrl())
+                .param("id",id.toString())
+                .header(HttpHeaders.AUTHORIZATION, token));
     }
 
     public String login2xx(AbstractUser user) throws Exception {

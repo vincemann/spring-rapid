@@ -13,7 +13,7 @@ public abstract class AbstractUserIntegrationControllerTest
         <C extends AbstractUserController, T extends AbstractUserControllerTestTemplate>
                 extends AbstractIntegrationControllerTest<C,AbstractUserControllerTestTemplate> {
 
-    public MockHttpServletRequestBuilder signup(Object dto) throws Exception{
+    public ResultActions signup(Object dto) throws Exception{
         return getTestTemplate().signup(dto);
     }
 
