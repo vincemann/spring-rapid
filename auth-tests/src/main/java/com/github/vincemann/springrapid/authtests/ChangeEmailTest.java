@@ -51,13 +51,31 @@ public class ChangeEmailTest extends AbstractRapidAuthIntegrationTest {
 	}
 
 	@Test
+	public void unverifiedUserCanChangeOwnEmail() throws Exception {
+		String token = login2xx(UNVERIFIED_USER_EMAIL,UNVERIFIED_USER_PASSWORD);
+		MailData mailData = testTemplate.requestEmailChange2xx(getUnverifiedUser().getId(), token,
+				new RequestEmailChangeDto(NEW_EMAIL));
+
+		testTemplate.changeEmail(getUnverifiedUser(),getUnverifiedUser().getId(),mailData.getCode(),token)
+				//gets new token for new email to use
+				.andExpect(status().is2xxSuccessful())
+				.andExpect(header().string(HttpHeaders.AUTHORIZATION, containsString(".")))
+				.andExpect(jsonPath("$.id").value(getUnverifiedUser().getId()));
+
+
+		AbstractUser<Long> updatedUser = getUserService().findById(getUnverifiedUser().getId()).get();
+		Assertions.assertNull(updatedUser.getNewEmail());
+		Assertions.assertEquals(NEW_EMAIL, updatedUser.getEmail());
+	}
+
+	@Test
 	public void cantChangeEmailOfDiffUser() throws Exception {
 		String token = login2xx(USER_EMAIL,USER_PASSWORD);
 		MailData mailData = testTemplate.requestEmailChange2xx(getUser().getId(), token,
 				new RequestEmailChangeDto(NEW_EMAIL));
 
 		token = login2xx(SECOND_USER_EMAIL,SECOND_USER_PASSWORD);
-		// has correct code, but wrong token
+		// other user has sniffed correct code, but wrong token
 		testTemplate.changeEmail(getUser(),getUser().getId(),mailData.getCode(),token)
 				//gets new token for new email to use
 				.andExpect(status().isForbidden());
@@ -76,7 +94,7 @@ public class ChangeEmailTest extends AbstractRapidAuthIntegrationTest {
 		testTemplate.changeEmail(getUser(),getUser().getId(),mailData.getCode(),token)
 				//gets new token for new email to use
 				.andExpect(status().is(401))
-				.andExpect(header().string(HttpHeaders.AUTHORIZATION, Matchers.nullValue()))
+				.andExpect(header().doesNotExist(HttpHeaders.AUTHORIZATION))
 				.andExpect(jsonPath("$.id").doesNotExist());
 	}
 

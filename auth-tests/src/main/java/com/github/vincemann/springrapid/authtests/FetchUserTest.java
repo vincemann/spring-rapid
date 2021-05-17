@@ -31,7 +31,7 @@ public class FetchUserTest extends AbstractRapidAuthIntegrationTest {
 		
 		// email does not exist
 		mvc.perform(post(authProperties.getController().getFetchByEmailUrl())
-                .param("email", "foo@example.com")
+                .param("email", UNKNOWN_EMAIL)
                 .header("contentType",  MediaType.APPLICATION_FORM_URLENCODED))
                 .andExpect(status().is(404));
 
@@ -43,7 +43,7 @@ public class FetchUserTest extends AbstractRapidAuthIntegrationTest {
 
 		// Invalid email
 		mvc.perform(post(authProperties.getController().getFetchByEmailUrl())
-                .param("email", "not-found-email")
+                .param("email", INVALID_EMAIL)
                 .header("contentType",  MediaType.APPLICATION_FORM_URLENCODED))
                 .andExpect(status().is(404));
 	}

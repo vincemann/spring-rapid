@@ -1,27 +1,25 @@
 package com.github.vincemann.springrapid.authtests;
 
 import com.github.vincemann.springrapid.auth.domain.dto.ChangePasswordDto;
-import com.github.vincemann.springrapid.core.util.JsonUtils;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 
-import static org.hamcrest.Matchers.*;
+import static org.hamcrest.Matchers.containsString;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 public class ChangePasswordTest extends AbstractRapidAuthIntegrationTest {
 	
 	private static final String NEW_PASSWORD = "a-new-password123";
-	
-	private ChangePasswordDto changePasswordForm(String oldPassword) {
-		
-		ChangePasswordDto form = new ChangePasswordDto();
-		form.setOldPassword(oldPassword);
-		form.setPassword(NEW_PASSWORD);
-		form.setRetypePassword(NEW_PASSWORD);
-		
-		return form;		
+
+	private ChangePasswordDto changePasswordDto(String oldPassword){
+		return ChangePasswordDto.builder()
+				.oldPassword(oldPassword)
+				.password(NEW_PASSWORD)
+				.retypePassword(NEW_PASSWORD)
+				.build();
 	}
 
 	/**
@@ -29,131 +27,98 @@ public class ChangePasswordTest extends AbstractRapidAuthIntegrationTest {
 	 */
 	@Test
 	public void canChangeOwnPassword() throws Exception {
-		
-		mvc.perform(post(authProperties.getController().getChangePasswordUrl())
-				.param("id",getUnverifiedUser().getId().toString())
-				.header(HttpHeaders.AUTHORIZATION, tokens.get(getUnverifiedUser().getId()))
-				.contentType(MediaType.APPLICATION_JSON)
-				.content(JsonUtils.toJson(changePasswordForm(UNVERIFIED_USER_PASSWORD))))
-				.andExpect(status().is(204))
+		ChangePasswordDto changePasswordDto = ChangePasswordDto.builder()
+				.oldPassword(USER_PASSWORD)
+				.password(NEW_PASSWORD)
+				.retypePassword(NEW_PASSWORD)
+				.build();
+
+		String token = login2xx(USER_EMAIL, USER_PASSWORD);
+		testTemplate.changePassword(getUser().getId(),token, changePasswordDto)
+				.andExpect(status().is2xxSuccessful())
 				.andExpect(header().string(HttpHeaders.AUTHORIZATION, containsString(".")));
-		
+
+		// old password does not work anymore
+		login(USER_EMAIL, USER_PASSWORD)
+				.andExpect(status().isUnauthorized());
 		// Ensure able to login with new password
-		login2xx(UNVERIFIED_USER_EMAIL, NEW_PASSWORD);
+		login2xx(USER_EMAIL, NEW_PASSWORD);
 	}
 	
-	/**
-	 * An good admin user should be able to change the password of another user.
-	 */
+
 	@Test
 	public void adminCanChangePasswordOfDiffUser() throws Exception {
-		
-		mvc.perform(post(authProperties.getController().getChangePasswordUrl())
-				.param("id",getUnverifiedUser().getId().toString())
-				.header(HttpHeaders.AUTHORIZATION, tokens.get(getAdmin().getId()))
-				.contentType(MediaType.APPLICATION_JSON)
-				.content(JsonUtils.toJson(changePasswordForm(UNVERIFIED_USER_PASSWORD))))
-				.andExpect(status().is(204))
+		ChangePasswordDto changePasswordDto = changePasswordDto(USER_PASSWORD);
+
+		String token = login2xx(ADMIN_EMAIL, ADMIN_PASSWORD);
+		testTemplate.changePassword(getUser().getId(),token, changePasswordDto)
+				.andExpect(status().is2xxSuccessful())
 				.andExpect(header().string(HttpHeaders.AUTHORIZATION, containsString(".")));
-		
+
 		// Ensure able to login with new password
-		login2xx(UNVERIFIED_USER_EMAIL, NEW_PASSWORD);
+		login2xx(USER_EMAIL, NEW_PASSWORD);
 	}
-	
-	/**
-	 * Providing an unknown id should return 404.
-	 */
+
+
 	@Test
 	public void cantChangePasswordForUnknownId() throws Exception {
-		
-		mvc.perform(post(authProperties.getController().getChangePasswordUrl())
-				.param("id",UNKNOWN_USER_ID)
-				.header(HttpHeaders.AUTHORIZATION, tokens.get(getAdmin().getId()))
-				.contentType(MediaType.APPLICATION_JSON)
-				.content(JsonUtils.toJson(changePasswordForm(ADMIN_PASSWORD))))
-				.andExpect(status().is(404));
-	}
-	
-	/**
-	 * A non-admin user should not be able to change others' password.
-	 */
-	@Test
-	public void cantChangePasswordOfAnotherUser() throws Exception {
-		
-		mvc.perform(post(authProperties.getController().getChangePasswordUrl())
-				.param("id",getUnverifiedUser().getId().toString())
-				.header(HttpHeaders.AUTHORIZATION, tokens.get(getUser().getId()))
-				.contentType(MediaType.APPLICATION_JSON)
-				.content(JsonUtils.toJson(changePasswordForm(UNVERIFIED_USER_PASSWORD))))
-				.andExpect(status().is(403));
-		
-		// Ensure password didn't change
-		login2xx(UNVERIFIED_USER_EMAIL, UNVERIFIED_USER_PASSWORD);
+		ChangePasswordDto changePasswordDto = changePasswordDto(USER_PASSWORD);
+
+		String token = login2xx(USER_EMAIL, USER_PASSWORD);
+
+		testTemplate.changePassword(UNKNOWN_USER_ID,token, changePasswordDto)
+				.andExpect(status().isNotFound());
 	}
 
-//	/**
-//	 * A  bad admin user should not be able to change others' password.
-//	 */
-//	@Test
-//	public void testBadAdminChangePasswordOfAnotherUser_shouldFail() throws Exception {
-//
-//		mvc.perform(post("/api/core/users/{id}/password", getUnverifiedUser().getId())
-//				.header(HttpHeaders.AUTHORIZATION, tokens.get(secondAdmin.getId()))
-//				.contentType(MediaType.APPLICATION_JSON)
-//				.content(MapperUtils.toJson(changePasswordForm(ADMIN_PASSWORD))))
-//				.andExpect(status().is(403));
-//
-//		// Ensure password didn't change
-//		login2xx(UNVERIFIED_USER_EMAIL, UNVERIFIED_USER_PASSWORD);
-//	}
-	
+
+	@Test
+	public void userCantChangePasswordOfAnotherUser() throws Exception {
+		ChangePasswordDto changePasswordDto = changePasswordDto(SECOND_USER_PASSWORD);
+
+		String token = login2xx(USER_EMAIL, USER_PASSWORD);
+
+		testTemplate.changePassword(getSecondUser().getId(),token, changePasswordDto)
+				.andExpect(status().isForbidden());
+
+		login2xx(SECOND_USER_EMAIL, SECOND_USER_PASSWORD);
+	}
+
+
 	@Test
 	public void cantChangeOwnPasswordWithInvalidData() throws Exception {
-		
+
 		// All fields null
-		mvc.perform(post(authProperties.getController().getChangePasswordUrl())
-				.param("id",getUnverifiedUser().getId().toString())
-				.header(HttpHeaders.AUTHORIZATION, tokens.get(getUnverifiedUser().getId()))
-				.contentType(MediaType.APPLICATION_JSON)
-				.content(JsonUtils.toJson(new ChangePasswordDto())))
-				.andExpect(status().is(400));
-//				.andExpect(jsonPath("$.errors[*].field").value(hasSize(3)))
-//				.andExpect(jsonPath("$.errors[*].field").value(hasItems(
-//						"changePasswordForm.oldPassword",
-//						 "changePasswordForm.retypePassword",
-//						 "changePasswordForm.password")));
-		
+		ChangePasswordDto changePasswordDto = ChangePasswordDto.builder()
+				.oldPassword(null)
+				.password(null)
+				.retypePassword(null)
+				.build();
+		String token = login2xx(USER_EMAIL, USER_PASSWORD);
+		testTemplate.changePassword(getUser().getId(),token, changePasswordDto)
+				.andExpect(status().isBadRequest());
+		login2xx(USER_EMAIL, USER_PASSWORD);
+
+
 		// All fields too short
-		ChangePasswordDto form = new ChangePasswordDto();
-		form.setOldPassword("short");
-		form.setPassword("short");
-		form.setRetypePassword("short");
+		changePasswordDto = ChangePasswordDto.builder()
+				.oldPassword("short")
+				.password("short")
+				.retypePassword("short")
+				.build();
+		token = login2xx(USER_EMAIL, USER_PASSWORD);
+		testTemplate.changePassword(getUser().getId(),token, changePasswordDto)
+				.andExpect(status().isBadRequest());
+		login2xx(USER_EMAIL, USER_PASSWORD);
 
-		mvc.perform(post(authProperties.getController().getChangePasswordUrl())
-				.param("id",getUnverifiedUser().getId().toString())
-				.header(HttpHeaders.AUTHORIZATION, tokens.get(getUnverifiedUser().getId()))
-				.contentType(MediaType.APPLICATION_JSON)
-				.content(JsonUtils.toJson(form)))
-				.andExpect(status().is(400));
-//				.andExpect(jsonPath("$.errors[*].field").value(hasSize(3)))
-//				.andExpect(jsonPath("$.errors[*].field").value(hasItems(
-//						"changePasswordForm.oldPassword",
-//						 "changePasswordForm.retypePassword",
-//						 "changePasswordForm.password")));
-		
 		// different retype-password
-		form = changePasswordForm(UNVERIFIED_USER_PASSWORD);
-		form.setRetypePassword("different-retype-password");
-
-		mvc.perform(post(authProperties.getController().getChangePasswordUrl())
-				.param("id",getUnverifiedUser().getId().toString())
-				.header(HttpHeaders.AUTHORIZATION, tokens.get(getUnverifiedUser().getId()))
-				.contentType(MediaType.APPLICATION_JSON)
-				.content(JsonUtils.toJson(form)))
-				.andExpect(status().is(400));
-//				.andExpect(jsonPath("$.errors[*].field").value(hasSize(2)))
-//				.andExpect(jsonPath("$.errors[*].field").value(hasItems(
-//						 "changePasswordForm.retypePassword",
-//						 "changePasswordForm.password")));
+		changePasswordDto = ChangePasswordDto.builder()
+				.oldPassword(USER_PASSWORD)
+				.password(NEW_PASSWORD)
+				.retypePassword(NEW_PASSWORD+"different")
+				.build();
+		token = login2xx(USER_EMAIL, USER_PASSWORD);
+		testTemplate.changePassword(getUser().getId(),token, changePasswordDto)
+				.andExpect(status().isBadRequest());
+		login2xx(USER_EMAIL, USER_PASSWORD);
 	}
 }

@@ -7,7 +7,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.github.vincemann.springrapid.auth.service.token.JwtService;
-import com.github.vincemann.springrapid.core.util.JsonUtils;
+
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.http.HttpHeaders;
@@ -41,7 +41,7 @@ public class FetchNewTokenTest extends AbstractRapidAuthIntegrationTest {
 				.andExpect(jsonPath("$.token").value(containsString(".")))
 				.andReturn();
 
-		Response response = JsonUtils.fromJson(result.getResponse().getContentAsString(), Response.class);
+		Response response =deserialize(result.getResponse().getContentAsString(), Response.class);
 		ensureTokenWorks(response.getToken());
 	}
 	
@@ -59,7 +59,7 @@ public class FetchNewTokenTest extends AbstractRapidAuthIntegrationTest {
                 .andExpect(status().is(200))
 				.andReturn();
 
-		Response response = JsonUtils.fromJson(result.getResponse().getContentAsString(), Response.class);
+		Response response =deserialize(result.getResponse().getContentAsString(), Response.class);
 		ensureTokenWorks(response.getToken());
 
 		Thread.sleep(mockedExpireTime+1L);
@@ -81,7 +81,7 @@ public class FetchNewTokenTest extends AbstractRapidAuthIntegrationTest {
                 .andExpect(status().is(200))
 				.andReturn();
 
-		Response response = JsonUtils.fromJson(result.getResponse().getContentAsString(), Response.class);
+		Response response =deserialize(result.getResponse().getContentAsString(), Response.class);
 		ensureTokenWorks(response.getToken());
 	}
 	

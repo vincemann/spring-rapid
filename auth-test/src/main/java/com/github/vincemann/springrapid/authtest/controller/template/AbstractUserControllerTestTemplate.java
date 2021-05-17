@@ -9,7 +9,7 @@ import com.github.vincemann.springrapid.auth.mail.MailSender;
 import com.github.vincemann.springrapid.auth.security.AuthenticatedPrincipalFactory;
 import com.github.vincemann.springrapid.core.security.RapidAuthenticatedPrincipal;
 import com.github.vincemann.springrapid.core.security.RapidSecurityContext;
-import com.github.vincemann.springrapid.core.util.JsonUtils;
+
 import com.github.vincemann.springrapid.coretest.BeforeEachMethodInitializable;
 import com.github.vincemann.springrapid.coretest.controller.template.AbstractCrudControllerTestTemplate;
 import org.mockito.ArgumentCaptor;
@@ -105,6 +105,14 @@ public abstract class AbstractUserControllerTestTemplate<C extends AbstractUserC
         verify(mailSenderMock, times(1)).send(captor.capture());
         MailData sentData = captor.getValue();
         return sentData;
+    }
+
+    public ResultActions changePassword(Serializable id, String token, Object changePasswordDto) throws Exception {
+        return mvc.perform(post(getController().getAuthProperties().getController().getChangePasswordUrl())
+                .param("id", id.toString())
+                .header(HttpHeaders.AUTHORIZATION, token)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(serialize(changePasswordDto)));
     }
 
 

@@ -2,14 +2,14 @@ package com.github.vincemann.springrapid.authtests;
 
 import com.github.vincemann.springrapid.auth.domain.AuthRoles;
 import com.github.vincemann.springrapid.auth.domain.dto.SignupDto;
-import com.github.vincemann.springrapid.core.util.JsonUtils;
 import org.hamcrest.Matchers;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 
-import static org.hamcrest.Matchers.*;
+import static org.hamcrest.Matchers.containsString;
+import static org.hamcrest.Matchers.hasSize;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
@@ -34,7 +34,7 @@ public class SignupTest extends AbstractRapidAuthIntegrationTest {
 
 		mvc.perform(post(authProperties.getController().getSignupUrl())
 				.contentType(MediaType.APPLICATION_JSON)
-				.content(JsonUtils.toJson(signupDto)))
+				.content(serialize(signupDto)))
 				.andExpect(status().is(400));
 //				.andExpect(jsonPath("$.errors[*].field").value(hasSize(3)))
 //				.andExpect(jsonPath("$.errors[*].field").value(hasItems(
@@ -62,7 +62,7 @@ public class SignupTest extends AbstractRapidAuthIntegrationTest {
 
 		mvc.perform(post(authProperties.getController().getSignupUrl())
 				.contentType(MediaType.APPLICATION_JSON)
-				.content(JsonUtils.toJson(signupDto)))
+				.content(serialize(signupDto)))
 				.andExpect(status().is(200))
 				.andExpect(header().string(HttpHeaders.AUTHORIZATION, containsString(".")))
 				.andExpect(jsonPath("$.id").exists())
@@ -93,7 +93,7 @@ public class SignupTest extends AbstractRapidAuthIntegrationTest {
 
 		mvc.perform(post(authProperties.getController().getSignupUrl())
 				.contentType(MediaType.APPLICATION_JSON)
-				.content(JsonUtils.toJson(signupDto)))
+				.content(serialize(signupDto)))
 				.andExpect(status().is(400));
 		
 		verify(unproxy(mailSender), never()).send(any());
