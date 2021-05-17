@@ -115,6 +115,23 @@ public abstract class AbstractUserControllerTestTemplate<C extends AbstractUserC
                 .content(serialize(changePasswordDto)));
     }
 
+    public ResultActions forgotPassword(String email) throws Exception {
+        return mvc.perform(post(getController().getAuthProperties().getController().getForgotPasswordUrl())
+                .param("email", email)
+                .header("contentType",  MediaType.APPLICATION_FORM_URLENCODED));
+    }
+
+    public MailData forgotPassword2xx(String email) throws Exception {
+        mvc.perform(post(getController().getAuthProperties().getController().getForgotPasswordUrl())
+                .param("email", email)
+                .header("contentType",  MediaType.APPLICATION_FORM_URLENCODED))
+                .andExpect(status().is2xxSuccessful());
+        ArgumentCaptor<MailData> captor = ArgumentCaptor.forClass(MailData.class);
+        verify(mailSenderMock, times(1)).send(captor.capture());
+        MailData sentData = captor.getValue();
+        return sentData;
+    }
+
 
     protected MockHttpServletRequestBuilder login_raw(String email, String password) {
         return post(getController().getAuthProperties().getController().getLoginUrl())

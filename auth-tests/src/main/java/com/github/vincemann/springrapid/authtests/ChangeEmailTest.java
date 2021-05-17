@@ -1,7 +1,6 @@
 package com.github.vincemann.springrapid.authtests;
 
 import com.github.vincemann.springrapid.auth.domain.AbstractUser;
-import com.github.vincemann.springrapid.auth.domain.AbstractUserRepository;
 import com.github.vincemann.springrapid.auth.domain.dto.RequestEmailChangeDto;
 import com.github.vincemann.springrapid.auth.mail.MailData;
 import com.github.vincemann.springrapid.auth.service.AbstractUserService;
@@ -10,12 +9,10 @@ import com.github.vincemann.springrapid.auth.service.token.JweTokenService;
 import com.github.vincemann.springrapid.auth.util.RapidJwt;
 import com.github.vincemann.springrapid.auth.util.MapUtils;
 import com.nimbusds.jwt.JWTClaimsSet;
-import org.hamcrest.Matchers;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
-import org.springframework.http.MediaType;
 
 import java.text.ParseException;
 import java.util.Map;
@@ -206,7 +203,7 @@ public class ChangeEmailTest extends AbstractRapidAuthIntegrationTest {
 	protected String createChangeEmailToken(AbstractUser targetUser, String newEmail, Long expiration){
 		return jweTokenService.createToken(
 				RapidJwt.create(
-						AbstractUserService.CHANGE_EMAIL_AUDIENCE,
+						AbstractUserService.CHANGE_EMAIL_SUBJECT,
 						targetUser.getId().toString(),
 						expiration,
 						MapUtils.mapOf("newEmail", newEmail)));

@@ -28,7 +28,7 @@ public class VerificationTest extends AbstractRapidAuthIntegrationTest {
 	@BeforeEach
 	public void setup() throws Exception {
 		super.setup();
-		verificationCode = jweTokenService.createToken(RapidJwt.create(AbstractUserService.VERIFY_AUDIENCE,
+		verificationCode = jweTokenService.createToken(RapidJwt.create(AbstractUserService.VERIFY_SUBJECT,
 				Long.toString(getUnverifiedUser().getId()), 60000L,
 				MapUtils.mapOf("email", UNVERIFIED_USER_EMAIL)));
 	}
@@ -112,7 +112,7 @@ public class VerificationTest extends AbstractRapidAuthIntegrationTest {
 		
 		// Wrong email
 		token = jweTokenService.createToken(
-				RapidJwt.create(AbstractUserService.VERIFY_AUDIENCE,
+				RapidJwt.create(AbstractUserService.VERIFY_SUBJECT,
 				Long.toString(getUnverifiedUser().getId()), 60000L,
 				MapUtils.mapOf("email", "wrong.email@example.com")));
 		mvc.perform(post(authProperties.getController().getVerifyUserUrl())
@@ -123,7 +123,7 @@ public class VerificationTest extends AbstractRapidAuthIntegrationTest {
 
 		// expired token
 		token = jweTokenService.createToken(
-				RapidJwt.create(AbstractUserService.VERIFY_AUDIENCE,
+				RapidJwt.create(AbstractUserService.VERIFY_SUBJECT,
 				Long.toString(getUnverifiedUser().getId()), 1L,
 				MapUtils.mapOf("email", UNVERIFIED_USER_EMAIL)));
 		// Thread.sleep(1001L);

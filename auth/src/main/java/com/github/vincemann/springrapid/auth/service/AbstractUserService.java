@@ -55,16 +55,15 @@ public abstract class AbstractUserService
         extends JPACrudService<U, ID, R>
         implements UserService<U, ID> {
 
-    public static final String CHANGE_EMAIL_AUDIENCE = "change-email";
-    public static final String VERIFY_AUDIENCE = "verify";
-    public static final String FORGOT_PASSWORD_AUDIENCE = "forgot-password";
+    public static final String CHANGE_EMAIL_SUBJECT = "change-email";
+    public static final String VERIFY_SUBJECT = "verify";
+    public static final String FORGOT_PASSWORD_SUBJECT = "forgot-password";
 
     private AuthorizationTokenService<RapidAuthAuthenticatedPrincipal> authorizationTokenService;
     private RapidSecurityContext<RapidAuthAuthenticatedPrincipal> securityContext;
     private AuthenticatedPrincipalFactory authenticatedPrincipalFactory;
     private RapidPasswordEncoder passwordEncoder;
     private AuthProperties properties;
-    private CoreProperties coreProperties;
     private MailSender<MailData> mailSender;
     private JweTokenService jweTokenService;
 //    private UserService<U, ID> rootUserService;
@@ -217,9 +216,10 @@ public abstract class AbstractUserService
             VerifyEntity.is(user.hasRole(AuthRoles.UNVERIFIED), "Already Verified");
             //verificationCode is jwtToken
             JWTClaimsSet claims = jweTokenService.parseToken(verificationCode);
-            RapidJwt.validate(claims, VERIFY_AUDIENCE, user.getCredentialsUpdatedMillis());
+            RapidJwt.validate(claims, VERIFY_SUBJECT, user.getCredentialsUpdatedMillis());
 
-            VerifyAccess.condition(claims.getSubject().equals(user.getId().toString()) &&
+            VerifyAccess.condition(
+                    claims.getSubject().equals(user.getId().toString()) &&
                             claims.getClaim("email").equals(user.getEmail()),
                     Message.get("com.naturalprogrammer.spring.wrong.verificationCode"));
 
@@ -265,7 +265,7 @@ public abstract class AbstractUserService
 
         try {
             JWTClaimsSet claims = jweTokenService.parseToken(form.getCode());
-            RapidJwt.validate(claims, FORGOT_PASSWORD_AUDIENCE);
+            RapidJwt.validate(claims, FORGOT_PASSWORD_SUBJECT);
 
             checkValidPassword(form.getNewPassword());
 
@@ -399,7 +399,7 @@ public abstract class AbstractUserService
      * Mails the change-email verification link to the user.
      */
     protected void mailChangeEmailLink(U user) {
-        JWTClaimsSet claims = RapidJwt.create(CHANGE_EMAIL_AUDIENCE,
+        JWTClaimsSet claims = RapidJwt.create(CHANGE_EMAIL_SUBJECT,
                 user.getId().toString(),
                 properties.getJwt().getExpirationMillis(),
                 MapUtils.mapOf("newEmail", user.getNewEmail()));
@@ -409,16 +409,21 @@ public abstract class AbstractUserService
 
             log.debug("Mailing change email link to user: " + user);
 
+            // todo change, get url from authProperties, use url builder
             // make the link
-            String changeEmailLink = coreProperties.getApplicationUrl()
-                    + "/users/" + user.getId()
-                    + "/change-email?code=" + changeEmailCode;
+//            String changeEmailLink = coreProperties.getApplicationUrl()
+//                    + "/users/" + user.getId()
+//                    + "/change-email?code=" + changeEmailCode;
+            String changeEmailLink = properties.getController().getChangeEmailUrl()
+                    + "?id=" + user.getId()
+                    + "&code=" + changeEmailCode;
 
             // mail it
             MailData mailData = MailData.builder()
                     .to(user.getEmail())
-                    .subject( Message.get("com.naturalprogrammer.spring.changeEmailSubject"))
-                    .body( Message.get("com.naturalprogrammer.spring.changeEmailEmail", changeEmailLink))
+//                    .subject( Message.get("com.naturalprogrammer.spring.changeEmailSubject"))
+                    .subject(CHANGE_EMAIL_SUBJECT)
+                    .body(Message.get("com.naturalprogrammer.spring.changeEmailEmail", changeEmailLink))
                     .link(changeEmailLink)
                     .code(changeEmailCode)
                     .build();
@@ -431,7 +436,6 @@ public abstract class AbstractUserService
             log.error(ExceptionUtils.getStackTrace(e));
         }
     }
-
 
 
     /**
@@ -451,7 +455,7 @@ public abstract class AbstractUserService
         } catch (BadTokenException e) {
             throw new BadEntityException(e);
         }
-        RapidJwt.validate(claims, CHANGE_EMAIL_AUDIENCE, user.getCredentialsUpdatedMillis());
+        RapidJwt.validate(claims, CHANGE_EMAIL_SUBJECT, user.getCredentialsUpdatedMillis());
 
         VerifyAccess.condition(
                 claims.getSubject().equals(user.getId().toString()) &&
@@ -514,10 +518,9 @@ public abstract class AbstractUserService
      * Sends verification mail to a unverified user.
      */
     protected void sendVerificationMail(final U user) {
-//        try {
 
         log.debug("Sending verification mail to: " + user);
-        JWTClaimsSet claims = RapidJwt.create(VERIFY_AUDIENCE,
+        JWTClaimsSet claims = RapidJwt.create(VERIFY_SUBJECT,
                 user.getId().toString(),
                 properties.getJwt().getExpirationMillis(),
                 //payload
@@ -525,13 +528,18 @@ public abstract class AbstractUserService
         String verificationCode = jweTokenService.createToken(claims);
 
         // make the link
-        String verifyLink = coreProperties.getApplicationUrl()
-                + "/users/" + user.getId() + "/verification?code=" + verificationCode;
+        // todo change, get url from authProperties, use url builder
+//        String verifyLink = coreProperties.getApplicationUrl()
+//                + "/users/" + user.getId() + "/verification?code=" + verificationCode;
+        String verifyLink = properties.getController().getVerifyUserUrl()
+                + "?id=" + user.getId()
+                + "&code=" + verificationCode;
 
         // send the mail
         MailData mailData = MailData.builder()
                 .to(user.getEmail())
-                .subject(Message.get("com.naturalprogrammer.spring.verifySubject"))
+//                .subject(Message.get("com.naturalprogrammer.spring.verifySubject"))
+                .subject(Message.get(VERIFY_SUBJECT))
                 .body(Message.get("com.naturalprogrammer.spring.verifyEmail", verifyLink))
                 .link(verifyLink)
                 .code(verificationCode)
@@ -539,11 +547,6 @@ public abstract class AbstractUserService
         mailSender.send(mailData);
 
         log.debug("Verification mail to " + user.getEmail() + " queued.");
-//
-//        } catch (Throwable e) {
-//            // In case of exception, just log the error and keep silent
-//            log.error(ExceptionUtils.getStackTrace(e));
-//        }
     }
 
 
@@ -555,18 +558,19 @@ public abstract class AbstractUserService
     public void sendForgotPasswordMail(U user) {
 
         log.debug("Mailing forgot password link to user: " + user);
-        JWTClaimsSet claims = RapidJwt.create(FORGOT_PASSWORD_AUDIENCE,
+        JWTClaimsSet claims = RapidJwt.create(FORGOT_PASSWORD_SUBJECT,
                 user.getEmail(),
                 properties.getJwt().getExpirationMillis());
         String forgotPasswordCode = jweTokenService.createToken(claims);
 
         // make the link
-        String forgotPasswordLink = coreProperties.getApplicationUrl() + "/reset-password?code=" + forgotPasswordCode;
+        String forgotPasswordLink = properties.getController().getForgotPasswordUrl() + "?code=" + forgotPasswordCode;
 
         MailData mailData = MailData.builder()
                 .to(user.getEmail())
-                .subject( Message.get("com.naturalprogrammer.spring.forgotPasswordSubject"))
-                .body( Message.get("com.naturalprogrammer.spring.forgotPasswordEmail", forgotPasswordLink))
+//                .subject( Message.get("com.naturalprogrammer.spring.forgotPasswordSubject"))
+                .subject(FORGOT_PASSWORD_SUBJECT)
+                .body(Message.get("com.naturalprogrammer.spring.forgotPasswordEmail", forgotPasswordLink))
                 .link(forgotPasswordLink)
                 .code(forgotPasswordCode)
                 .build();
@@ -628,12 +632,6 @@ public abstract class AbstractUserService
     public void injectProperties(AuthProperties properties) {
         this.properties = properties;
     }
-
-    @Autowired
-    public void injectCoreProperties(CoreProperties properties) {
-        this.coreProperties = properties;
-    }
-
 
     @Autowired
     public void injectMailSender(MailSender<MailData> mailSender) {
