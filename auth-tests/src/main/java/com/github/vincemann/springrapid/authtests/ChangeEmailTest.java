@@ -23,8 +23,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 public class ChangeEmailTest extends AbstractRapidAuthIntegrationTest {
 
-	@Autowired
-	private JweTokenService jweTokenService;
 
 
 	//works solo but token is obsolete when run in group
@@ -132,12 +130,6 @@ public class ChangeEmailTest extends AbstractRapidAuthIntegrationTest {
 				.andExpect(status().is(403));
 	}
 
-	protected String modCode(String code, String aud, String subject, Long expirationMillis,Long issuedAt, Map<String,Object> otherClaims) throws BadTokenException, ParseException {
-		JWTClaimsSet claims = jweTokenService.parseToken(code);
-		claims = RapidJwt.mod(claims,aud,subject,expirationMillis,issuedAt,otherClaims);
-		String moddedCode = jweTokenService.createToken(claims);
-		return moddedCode;
-	}
 //
 //    /**
 //     * Providing an obsolete changeEmailCode shouldn't work.

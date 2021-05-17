@@ -2,6 +2,7 @@ package com.github.vincemann.springrapid.authtest.controller.template;
 
 import com.github.vincemann.springrapid.auth.controller.AbstractUserController;
 import com.github.vincemann.springrapid.auth.domain.AbstractUser;
+import com.github.vincemann.springrapid.auth.domain.AuthRoles;
 import com.github.vincemann.springrapid.auth.mail.MailData;
 import com.github.vincemann.springrapid.auth.mail.MailSender;
 import com.github.vincemann.springrapid.auth.security.AuthenticatedPrincipalFactory;
@@ -9,6 +10,7 @@ import com.github.vincemann.springrapid.core.security.RapidAuthenticatedPrincipa
 import com.github.vincemann.springrapid.core.security.RapidSecurityContext;
 
 import com.github.vincemann.springrapid.coretest.controller.template.AbstractCrudControllerTestTemplate;
+import org.hamcrest.Matchers;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,6 +22,8 @@ import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilde
 
 import java.io.Serializable;
 
+import static org.hamcrest.Matchers.containsString;
+import static org.hamcrest.Matchers.hasSize;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -174,6 +178,13 @@ public abstract class AbstractUserControllerTestTemplate<C extends AbstractUserC
         return getMvc().perform(login_raw(email, password))
                 .andExpect(status().is2xxSuccessful())
                 .andReturn().getResponse().getHeader(HttpHeaders.AUTHORIZATION);
+    }
+
+    public ResultActions verifyEmail(Serializable id, String code) throws Exception {
+        return mvc.perform(post(getController().getAuthProperties().getController().getVerifyUserUrl())
+                .param("id",id.toString())
+                .param("code", code)
+                .header("contentType",  MediaType.APPLICATION_FORM_URLENCODED));
     }
 
     public MailData getMailData(){

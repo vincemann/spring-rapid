@@ -6,12 +6,17 @@ import com.github.vincemann.springrapid.auth.config.RapidAdminAutoConfiguration;
 import com.github.vincemann.springrapid.auth.controller.AbstractUserController;
 import com.github.vincemann.springrapid.auth.domain.AbstractUser;
 import com.github.vincemann.springrapid.auth.domain.AuthRoles;
+import com.github.vincemann.springrapid.auth.domain.dto.SignupDto;
 import com.github.vincemann.springrapid.auth.mail.MailSender;
 import com.github.vincemann.springrapid.auth.service.UserService;
+import com.github.vincemann.springrapid.auth.service.token.BadTokenException;
+import com.github.vincemann.springrapid.auth.service.token.JweTokenService;
+import com.github.vincemann.springrapid.auth.util.RapidJwt;
 import com.github.vincemann.springrapid.authtest.controller.UserIntegrationControllerTest;
 import com.github.vincemann.springrapid.authtests.adapter.AuthTestAdapter;
 import com.github.vincemann.springrapid.core.CoreProperties;
 import com.github.vincemann.springrapid.coretest.util.RapidTestUtil;
+import com.nimbusds.jwt.JWTClaimsSet;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.AfterEach;
@@ -30,6 +35,7 @@ import org.springframework.test.web.servlet.setup.DefaultMockMvcBuilder;
 import javax.sql.DataSource;
 import java.io.Serializable;
 import java.sql.SQLException;
+import java.text.ParseException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -76,6 +82,9 @@ public abstract class AbstractRapidAuthIntegrationTest
     protected static final String USER_EMAIL = "user@example.com";
     protected static final String USER_PASSWORD = "userSanjaySanjay99!";
 
+    protected static final String SIGNUP_USER_EMAIL = "signupUser@example.com";
+    protected static final String SIGNUP_USER_PASSWORD = "signupUserSanjaySanjay99!";
+
     protected static final String SECOND_USER_EMAIL = "secondUser@example.com";
     protected static final String SECOND_USER_PASSWORD = "secondUserSanjaySanjay99!";
 
@@ -108,6 +117,9 @@ public abstract class AbstractRapidAuthIntegrationTest
     protected CoreProperties coreProperties;
 
     protected AuthProperties.Jwt jwt;
+
+    @Autowired
+    private JweTokenService jweTokenService;
 
     protected Map<Long, String> tokens = new HashMap<>(6);
 
@@ -185,9 +197,12 @@ public abstract class AbstractRapidAuthIntegrationTest
 //        tokens.put(getBlockedUser().getId(), login2xx(BLOCKED_USER_EMAIL, BLOCKED_USER_PASSWORD));
 //    }
 
+    protected void mockJwtExpirationTime(long expirationMillis){
+        Mockito.doReturn(expirationMillis).when(jwt).getExpirationMillis();
+    }
 
     protected String login2xx(String username, String password, long expirationMillis) throws Exception {
-        Mockito.doReturn(expirationMillis).when(jwt).getExpirationMillis();
+        mockJwtExpirationTime(expirationMillis);
         return login2xx(username,password);
     }
 
@@ -205,6 +220,21 @@ public abstract class AbstractRapidAuthIntegrationTest
                 .andExpect(jsonPath("$.user.id").doesNotExist());
     }
 
+    protected SignupDto createValidSignupDto(){
+        return new SignupDto(SIGNUP_USER_EMAIL, SIGNUP_USER_PASSWORD);
+    }
+
+
+    protected SignupDto createInvalidSignupDto(){
+        return new SignupDto(INVALID_EMAIL,INVALID_PASSWORD);
+    }
+
+    protected String modCode(String code, String aud, String subject, Long expirationMillis,Long issuedAt, Map<String,Object> otherClaims) throws BadTokenException, ParseException {
+        JWTClaimsSet claims = jweTokenService.parseToken(code);
+        claims = RapidJwt.mod(claims,aud,subject,expirationMillis,issuedAt,otherClaims);
+        String moddedCode = jweTokenService.createToken(claims);
+        return moddedCode;
+    }
 
     @AfterEach
     protected void tearDown() throws SQLException {
