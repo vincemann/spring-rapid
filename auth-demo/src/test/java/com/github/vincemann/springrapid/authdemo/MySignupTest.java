@@ -17,14 +17,14 @@ public class MySignupTest extends SignupTest {
     private MyAuthTestAdapter testAdapter;
 
     @Override
-    protected SignupDto createValidSignupForm() {
-        SignupDto signupDto = super.createValidSignupForm();
+    protected SignupDto createValidSignupDto() {
+        SignupDto signupDto = super.createValidSignupDto();
         return new MySignupDto(signupDto.getEmail(), signupDto.getPassword(),testAdapter.createUniqueName());
     }
 
     @Override
-    protected SignupDto createInvalidSignupForm() {
-        SignupDto signupDto = super.createInvalidSignupForm();
+    protected SignupDto createInvalidSignupDto() {
+        SignupDto signupDto = super.createInvalidSignupDto();
         return new MySignupDto(signupDto.getEmail(), signupDto.getPassword(),testAdapter.createUniqueName());
     }
 }

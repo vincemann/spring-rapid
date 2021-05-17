@@ -2,6 +2,8 @@ package com.github.vincemann.springrapid.authtests;
 
 import com.github.vincemann.springrapid.auth.domain.AbstractUser;
 import com.github.vincemann.springrapid.auth.domain.AuthRoles;
+import com.github.vincemann.springrapid.auth.domain.dto.SignupDto;
+import com.github.vincemann.springrapid.auth.mail.MailData;
 import com.github.vincemann.springrapid.auth.service.AbstractUserService;
 import com.github.vincemann.springrapid.auth.service.token.JweTokenService;
 import com.github.vincemann.springrapid.auth.util.RapidJwt;
@@ -19,121 +21,96 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 public class VerificationTest extends AbstractRapidAuthIntegrationTest {
-	
-	private String verificationCode;
-	
-	@Autowired
-	private JweTokenService jweTokenService;
-	
-	@BeforeEach
-	public void setup() throws Exception {
-		super.setup();
-		verificationCode = jweTokenService.createToken(RapidJwt.create(AbstractUserService.VERIFY_SUBJECT,
-				Long.toString(getUnverifiedUser().getId()), 60000L,
-				MapUtils.mapOf("email", UNVERIFIED_USER_EMAIL)));
-	}
+
+
 	
 	@Test
 	public void canVerifyEmail() throws Exception {
-//		Thread.sleep(1L);
-		mvc.perform(post(authProperties.getController().getVerifyUserUrl())
-				.param("id",getUnverifiedUser().getId().toString())
-                .param("code", verificationCode)
-                .header("contentType",  MediaType.APPLICATION_FORM_URLENCODED))
-                .andExpect(status().is(200))
-				.andExpect(header().string(HttpHeaders.AUTHORIZATION, containsString(".")))
-				.andExpect(jsonPath("$.id").value(getUnverifiedUser().getId()))
-				.andExpect(jsonPath("$.roles").value(hasSize(1)))
-				.andExpect(jsonPath("$.roles").value(Matchers.hasItem(AuthRoles.USER)))
-				.andExpect(jsonPath("$.unverified").value(false))
-				.andExpect(jsonPath("$.goodUser").value(true));
-
-	}
-
-	@Test
-	public void alreadyVerified_cantVerifyEmailAgain() throws Exception {
-//		Thread.sleep(1L);
-		mvc.perform(post(authProperties.getController().getVerifyUserUrl())
-				.param("id",getUnverifiedUser().getId().toString())
-				.param("code", verificationCode)
-				.header("contentType",  MediaType.APPLICATION_FORM_URLENCODED))
+		SignupDto signupDto = createValidSignupDto();
+		MailData mailData = testTemplate.signup2xx(signupDto);
+		AbstractUser<Long> savedUser = getUserService().findByEmail(signupDto.getEmail()).get();
+		testTemplate.verifyEmail(savedUser.getId(),mailData.getCode())
 				.andExpect(status().is(200))
 				.andExpect(header().string(HttpHeaders.AUTHORIZATION, containsString(".")))
-				.andExpect(jsonPath("$.id").value(getUnverifiedUser().getId()))
+				.andExpect(jsonPath("$.id").value(savedUser.getId()))
 				.andExpect(jsonPath("$.roles").value(hasSize(1)))
 				.andExpect(jsonPath("$.roles").value(Matchers.hasItem(AuthRoles.USER)))
 				.andExpect(jsonPath("$.unverified").value(false))
 				.andExpect(jsonPath("$.goodUser").value(true));
+	}
 
-		// Already verified
-		mvc.perform(post(authProperties.getController().getVerifyUserUrl())
-				.param("id",getUnverifiedUser().getId().toString())
-				.param("code", verificationCode)
-				.header("contentType",  MediaType.APPLICATION_FORM_URLENCODED))
-				.andExpect(status().is(400));
+
+	@Test
+	public void cantVerifyEmailTwiceWithSameCode() throws Exception {
+		SignupDto signupDto = createValidSignupDto();
+		MailData mailData = testTemplate.signup2xx(signupDto);
+		AbstractUser<Long> savedUser = getUserService().findByEmail(signupDto.getEmail()).get();
+		testTemplate.verifyEmail(savedUser.getId(),mailData.getCode())
+				.andExpect(status().is2xxSuccessful());
+
+		testTemplate.verifyEmail(savedUser.getId(),mailData.getCode())
+				.andExpect(status().isBadRequest());
 	}
 	
 	@Test
 	public void cantVerifyEmailOfUnknownUser() throws Exception {
-
-		mvc.perform(post(authProperties.getController().getVerifyUserUrl())
-				.param("id",UNKNOWN_USER_ID)
-                .param("code", verificationCode)
-                .header("contentType",  MediaType.APPLICATION_FORM_URLENCODED))
-                .andExpect(status().is(404));
+		SignupDto signupDto = createValidSignupDto();
+		MailData mailData = testTemplate.signup2xx(signupDto);
+		testTemplate.verifyEmail(UNKNOWN_USER_ID,mailData.getCode())
+				.andExpect(status().isNotFound());
 	}
 	
 	@Test
 	public void cantVerifyEmailWithInvalidData() throws Exception {
+		SignupDto signupDto = createValidSignupDto();
+		MailData mailData = testTemplate.signup2xx(signupDto);
+		AbstractUser<Long> savedUser = getUserService().findByEmail(signupDto.getEmail()).get();
 		
-		// null token
-		mvc.perform(post(authProperties.getController().getVerifyUserUrl())
-				.param("id",getUnverifiedUser().getId().toString())
-                .header("contentType",  MediaType.APPLICATION_FORM_URLENCODED))
-                .andExpect(status().is(400));
+		// null code
+		testTemplate.verifyEmail(savedUser.getId(),null)
+				.andExpect(status().isBadRequest());
 
 		// blank token
-		mvc.perform(post(authProperties.getController().getVerifyUserUrl())
-				.param("id",getUnverifiedUser().getId().toString())
-                .param("code", "")
-                .header("contentType",  MediaType.APPLICATION_FORM_URLENCODED))
-                .andExpect(status().is(400));
+		testTemplate.verifyEmail(savedUser.getId(),"")
+				.andExpect(status().isBadRequest());
 
 		// Wrong audience
-		String token = jweTokenService.createToken(
-				RapidJwt.create("wrong-audience",
-				Long.toString(getUnverifiedUser().getId()), 60000L,
-				MapUtils.mapOf("email", UNVERIFIED_USER_EMAIL)));
-		mvc.perform(post(authProperties.getController().getVerifyUserUrl())
-				.param("id",getUnverifiedUser().getId().toString())
-                .param("code", token)
-                .header("contentType",  MediaType.APPLICATION_FORM_URLENCODED))
-                .andExpect(status().is(403));
+		String code = modCode(mailData.getCode(),"wrong-audience",null,null,null,null);
+		testTemplate.verifyEmail(savedUser.getId(),code)
+				.andExpect(status().isForbidden());
 		
 		// Wrong email
-		token = jweTokenService.createToken(
-				RapidJwt.create(AbstractUserService.VERIFY_SUBJECT,
-				Long.toString(getUnverifiedUser().getId()), 60000L,
-				MapUtils.mapOf("email", "wrong.email@example.com")));
-		mvc.perform(post(authProperties.getController().getVerifyUserUrl())
-				.param("id",getUnverifiedUser().getId().toString())
-                .param("code", token)
-                .header("contentType",  MediaType.APPLICATION_FORM_URLENCODED))
-                .andExpect(status().is(403));
-
-		// expired token
-		token = jweTokenService.createToken(
-				RapidJwt.create(AbstractUserService.VERIFY_SUBJECT,
-				Long.toString(getUnverifiedUser().getId()), 1L,
-				MapUtils.mapOf("email", UNVERIFIED_USER_EMAIL)));
-		// Thread.sleep(1001L);
-		mvc.perform(post(authProperties.getController().getVerifyUserUrl())
-				.param("id",getUnverifiedUser().getId().toString())
-                .param("code", token)
-                .header("contentType",  MediaType.APPLICATION_FORM_URLENCODED))
-                .andExpect(status().is(403));
+		code = modCode(mailData.getCode(),null,SECOND_USER_EMAIL,null,null,null);
+		testTemplate.verifyEmail(savedUser.getId(),code)
+				.andExpect(status().isForbidden());
 	}
-	
+
+	@Test
+	public void cantVerifyEmailWithExpiredToken() throws Exception {
+
+		SignupDto signupDto = createValidSignupDto();
+		mockJwtExpirationTime(50L);
+		MailData mailData = testTemplate.signup2xx(signupDto);
+		AbstractUser<Long> savedUser = getUserService().findByEmail(signupDto.getEmail()).get();
+		// expired token
+		Thread.sleep(51L);
+		testTemplate.verifyEmail(savedUser.getId(),mailData.getCode())
+				.andExpect(status().isForbidden());
+
+//
+//		token = jweTokenService.createToken(
+//				RapidJwt.create(AbstractUserService.VERIFY_SUBJECT,
+//						Long.toString(getUnverifiedUser().getId()), 1L,
+//						MapUtils.mapOf("email", UNVERIFIED_USER_EMAIL)));
+//		// Thread.sleep(1001L);
+//		mvc.perform(post(authProperties.getController().getVerifyUserUrl())
+//				.param("id",getUnverifiedUser().getId().toString())
+//				.param("code", token)
+//				.header("contentType",  MediaType.APPLICATION_FORM_URLENCODED))
+//				.andExpect(status().is(403));
+	}
+
+	//todo refactor
 	@Test
 	public void usersCredentialsUpdated_cantUseNowObsoleteVerificationCode() throws Exception {
 		
@@ -143,7 +120,7 @@ public class VerificationTest extends AbstractRapidAuthIntegrationTest {
 		user.setCredentialsUpdatedMillis(System.currentTimeMillis());
 		getUserService().save(user);
 
-		Thread.sleep(50);
+
 		mvc.perform(post(authProperties.getController().getVerifyUserUrl())
 				.param("id",getUnverifiedUser().getId().toString())
                 .param("code", verificationCode)

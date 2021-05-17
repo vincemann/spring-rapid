@@ -9,12 +9,10 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
-import org.springframework.http.MediaType;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.util.Optional;
 
-import static com.github.vincemann.ezcompare.Comparator.compare;
 import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.hasSize;
 import static org.mockito.ArgumentMatchers.any;
@@ -25,23 +23,12 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 public class SignupTest extends AbstractRapidAuthIntegrationTest {
 
-
-
 	@Autowired
 	private PasswordEncoder passwordEncoder;
 
-	protected SignupDto createValidSignupForm(){
-		return new SignupDto("user.foo@example.com", "userUser123");
-	}
-
-
-	protected SignupDto createInvalidSignupForm(){
-		return new SignupDto("abc","userUser1");
-	}
-
 	@Test
 	public void cantSignupWithInvalidData() throws Exception {
-		SignupDto signupDto = createInvalidSignupForm();
+		SignupDto signupDto = createInvalidSignupDto();
 		testTemplate.signup(signupDto)
 				.andExpect(status().isBadRequest());
 
@@ -50,7 +37,7 @@ public class SignupTest extends AbstractRapidAuthIntegrationTest {
 
 	@Test
 	public void canSignup() throws Exception {
-		SignupDto signupDto = createValidSignupForm();
+		SignupDto signupDto = createValidSignupDto();
 
 		testTemplate.signup(signupDto)
 				.andExpect(status().is(200))
@@ -81,15 +68,13 @@ public class SignupTest extends AbstractRapidAuthIntegrationTest {
 	
 	@Test
 	public void cantSignupWithDuplicateEmail() throws Exception {
-
-//		MySignupForm signupForm = new MySignupForm("user@example.com", "user123", "User");
-		SignupDto signupDto = createValidSignupForm();
-		String duplicateEmail = signupDto.getEmail();
-		getUserService().save(testAdapter.createTestUser(duplicateEmail,"userUser1234", AuthRoles.USER));
+		SignupDto signupDto = createValidSignupDto();
+		testTemplate.signup2xx(signupDto);
+		signupDto.setPassword(signupDto.getPassword()+"new");
 
 		testTemplate.signup(signupDto)
-				.andExpect(status().is(400));
-		
+				.andExpect(status().isBadRequest());
+		// mock is reset by signup2xx so never only applies to latest signup
 		verify(unproxy(mailSender), never()).send(any());
 	}
 }
