@@ -99,11 +99,11 @@ public class ChangePasswordTest extends AbstractRapidAuthIntegrationTest {
 		login2xx(USER_EMAIL, USER_PASSWORD);
 
 
-		// new pw too short
+		// invalid pw
 		changePasswordDto = ChangePasswordDto.builder()
 				.oldPassword(USER_PASSWORD)
-				.password("short")
-				.retypePassword("short")
+				.password(INVALID_PASSWORD)
+				.retypePassword(INVALID_PASSWORD)
 				.build();
 		token = login2xx(USER_EMAIL, USER_PASSWORD);
 		testTemplate.changePassword(getUser().getId(),token, changePasswordDto)

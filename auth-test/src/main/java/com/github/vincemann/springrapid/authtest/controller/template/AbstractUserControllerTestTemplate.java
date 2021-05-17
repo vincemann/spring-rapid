@@ -24,10 +24,11 @@ import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilde
 
 import java.io.Serializable;
 
+import static org.hamcrest.Matchers.containsString;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 /**
  * Activate spring Security, so login endpoint and auth web config is enabled, when using this template.
@@ -104,6 +105,7 @@ public abstract class AbstractUserControllerTestTemplate<C extends AbstractUserC
         ArgumentCaptor<MailData> captor = ArgumentCaptor.forClass(MailData.class);
         verify(mailSenderMock, times(1)).send(captor.capture());
         MailData sentData = captor.getValue();
+        Mockito.reset(mailSenderMock);
         return sentData;
     }
 
@@ -129,7 +131,14 @@ public abstract class AbstractUserControllerTestTemplate<C extends AbstractUserC
         ArgumentCaptor<MailData> captor = ArgumentCaptor.forClass(MailData.class);
         verify(mailSenderMock, times(1)).send(captor.capture());
         MailData sentData = captor.getValue();
+        Mockito.reset(mailSenderMock);
         return sentData;
+    }
+
+    public ResultActions resetPassword(Object resetPasswordDto) throws Exception {
+        return mvc.perform(post(getController().getAuthProperties().getController().getResetPasswordUrl())
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(serialize(resetPasswordDto)));
     }
 
 

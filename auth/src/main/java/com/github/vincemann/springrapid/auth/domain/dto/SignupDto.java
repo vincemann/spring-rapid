@@ -6,6 +6,7 @@ import lombok.*;
 
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
+import java.io.Serializable;
 
 @NoArgsConstructor
 @Getter
@@ -13,7 +14,7 @@ import javax.validation.constraints.NotBlank;
 @AllArgsConstructor
 @ToString
 @Builder
-public class SignupDto {
+public class SignupDto implements Serializable {
     //    @UniqueEmail(/*groups = {UserVerifyUtils.SignUpValidation.class}*/)
     @JsonView(UserVerifyUtils.SignupInput.class)
     @NotBlank

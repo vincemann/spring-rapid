@@ -2,6 +2,7 @@ package com.github.vincemann.springrapid.authtests;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.github.vincemann.springrapid.auth.domain.dto.ResetPasswordDto;
+import com.github.vincemann.springrapid.auth.mail.MailData;
 import com.github.vincemann.springrapid.auth.service.AbstractUserService;
 import com.github.vincemann.springrapid.auth.service.token.JweTokenService;
 import com.github.vincemann.springrapid.auth.util.RapidJwt;
@@ -17,71 +18,73 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 public class ResetPasswordTest extends AbstractRapidAuthIntegrationTest {
 
-    final String NEW_PASSWORD = "newPassword123!";
+    // todo maybe add mod token tests like in changeEmailTests
+//    @Autowired
+//    private JweTokenService jweTokenService;
 
-    private String adminForgotPasswordCode;
-
-    @Autowired
-    private JweTokenService jweTokenService;
-
-    private String resetPasswordDto(String code, String newPassword) throws JsonProcessingException {
+    private ResetPasswordDto resetPasswordDto(String code, String newPassword) throws JsonProcessingException {
         ResetPasswordDto dto = new ResetPasswordDto();
         dto.setCode(code);
         dto.setNewPassword(newPassword);
-        return serialize(dto);
-    }
-
-    @BeforeEach
-    public void setup() throws Exception {
-        super.setup();
-        adminForgotPasswordCode = jweTokenService.createToken(
-                RapidJwt.create(AbstractUserService.FORGOT_PASSWORD_SUBJECT, ADMIN_EMAIL, 60000L)
-        );
+        return dto;
     }
 
     @Test
     public void canResetPasswordWithCorrectCode() throws Exception {
-
-        //Thread.sleep(1001L);
-
-        mvc.perform(post(authProperties.getController().getResetPasswordUrl())
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(resetPasswordDto(adminForgotPasswordCode, NEW_PASSWORD)))
-                .andExpect(status().is(200))
+        MailData mailData = testTemplate.forgotPassword2xx(USER_EMAIL);
+        String code = mailData.getCode();
+        testTemplate.resetPassword(resetPasswordDto(code,NEW_PASSWORD))
+                .andExpect(status().is2xxSuccessful())
                 .andExpect(header().string(HttpHeaders.AUTHORIZATION, containsString(".")))
-                .andExpect(jsonPath("$.id").value(getAdmin().getId()));
+                .andExpect(jsonPath("$.id").value(getUser().getId()));
 
         // New password should work
-        login2xx(ADMIN_EMAIL, NEW_PASSWORD);
-
-        // Repeating shouldn't work
-        mvc.perform(post(authProperties.getController().getResetPasswordUrl())
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(resetPasswordDto(adminForgotPasswordCode, NEW_PASSWORD)))
-                .andExpect(status().is(403));
+        login2xx(USER_EMAIL, NEW_PASSWORD);
     }
 
     @Test
-    public void cantResetPasswordWithInvalidCode_orInvalidNewPassword() throws Exception {
+    public void cantResetPasswordWithSameCodeTwice() throws Exception {
+        MailData mailData = testTemplate.forgotPassword2xx(USER_EMAIL);
+        String code = mailData.getCode();
+        testTemplate.resetPassword(resetPasswordDto(code,NEW_PASSWORD))
+                .andExpect(status().is2xxSuccessful());
 
-        // Wrong code
-        mvc.perform(post(authProperties.getController().getResetPasswordUrl())
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(resetPasswordDto("wrong-code", NEW_PASSWORD)))
-                .andExpect(status().is(400));
+        // New password should work
+        login2xx(USER_EMAIL, NEW_PASSWORD);
 
+        // Repeating shouldn't work
+        testTemplate.resetPassword(resetPasswordDto(code,USER_PASSWORD))
+                .andExpect(status().isForbidden());
+
+        login2xx(USER_EMAIL, NEW_PASSWORD);
+    }
+
+    @Test
+    public void cantResetPasswordWithInvalidCode() throws Exception {
+        MailData mailData = testTemplate.forgotPassword2xx(USER_EMAIL);
+        String code = mailData.getCode();
+        String invalidCode = code +"invalid";
+        testTemplate.resetPassword(resetPasswordDto(invalidCode,NEW_PASSWORD))
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    public void cantResetPasswordWithInvalidPassword() throws Exception {
         // Blank password
-        mvc.perform(post(authProperties.getController().getResetPasswordUrl())
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(resetPasswordDto(adminForgotPasswordCode, "")))
-                .andExpect(status().is(400));
+        MailData mailData = testTemplate.forgotPassword2xx(USER_EMAIL);
+        String code = mailData.getCode();
+        testTemplate.resetPassword(resetPasswordDto(code,""))
+                .andExpect(status().isBadRequest());
+
 
         // Invalid password
-        mvc.perform(post(authProperties.getController().getResetPasswordUrl())
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(resetPasswordDto(adminForgotPasswordCode, "abc")))
-                .andExpect(status().is(400));
+        mailData = testTemplate.forgotPassword2xx(USER_EMAIL);
+        code = mailData.getCode();
+        testTemplate.resetPassword(resetPasswordDto(code,INVALID_PASSWORD))
+                .andExpect(status().isBadRequest());
     }
+
+
 
 
 }
