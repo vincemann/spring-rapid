@@ -19,7 +19,6 @@ public class RequestEmailChangeTest extends AbstractRapidAuthIntegrationTest {
 		RequestEmailChangeDto changeForm = new RequestEmailChangeDto();
 //		changeForm.setPassword(USER_PASSWORD);
 		changeForm.setNewEmail(NEW_EMAIL);
-
 		return changeForm;
 	}
 

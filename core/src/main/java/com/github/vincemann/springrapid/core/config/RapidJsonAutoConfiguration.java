@@ -11,7 +11,6 @@ import com.github.vincemann.springrapid.core.controller.json.JsonMapper;
 import com.github.vincemann.springrapid.core.controller.json.RapidJsonDtoPropertyValidator;
 import com.github.vincemann.springrapid.core.controller.json.RapidJsonMapper;
 import com.github.vincemann.springrapid.core.slicing.WebConfig;
-import com.github.vincemann.springrapid.core.util.JsonUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
@@ -64,12 +63,6 @@ public class RapidJsonAutoConfiguration implements WebMvcConfigurer {
     @Bean
     public JsonMapper jsonMapper(){
         return new RapidJsonMapper();
-    }
-
-    @Bean
-    @ConditionalOnMissingBean(JsonUtils.class)
-    public JsonUtils mapperUtils(ObjectMapper objectMapper){
-        return new JsonUtils(objectMapper);
     }
 
 }

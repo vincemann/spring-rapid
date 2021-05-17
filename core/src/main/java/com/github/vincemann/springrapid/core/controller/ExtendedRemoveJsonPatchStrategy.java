@@ -3,15 +3,17 @@ package com.github.vincemann.springrapid.core.controller;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.TreeNode;
 import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.TextNode;
 import com.github.fge.jsonpatch.JsonPatch;
 import com.github.fge.jsonpatch.JsonPatchException;
 import com.github.vincemann.springrapid.core.model.IdentifiableEntity;
 import com.github.vincemann.springrapid.core.service.exception.BadEntityException;
 import com.github.vincemann.springrapid.core.util.IdPropertyNameUtils;
-import com.github.vincemann.springrapid.core.util.JsonUtils;
+
 import com.github.vincemann.springrapid.core.util.Lists;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.ReflectionUtils;
 
 import java.lang.reflect.Field;
@@ -37,14 +39,16 @@ import static com.github.vincemann.springrapid.core.util.ReflectionUtils.setFina
  */
 @Slf4j
 public class ExtendedRemoveJsonPatchStrategy implements JsonPatchStrategy {
-
+    
+    private ObjectMapper objectMapper;
+    
 
     @Override
     public <T> T applyPatch(IdentifiableEntity savedEntity, T targetDto, String patchString) throws BadEntityException {
         try {
 
             // Parse the patch to JsonNode
-            JsonNode patchNode = JsonUtils.mapper().readTree(patchString);
+            JsonNode patchNode = objectMapper.readTree(patchString);
 
             // Create the patch
             JsonPatch patch = null;
@@ -55,13 +59,13 @@ public class ExtendedRemoveJsonPatchStrategy implements JsonPatchStrategy {
             }
 
             // Convert the original object to JsonNode
-            JsonNode originalObjNode = JsonUtils.mapper().valueToTree(targetDto);
+            JsonNode originalObjNode = objectMapper.valueToTree(targetDto);
 
             // Apply the patch
             TreeNode patchedObjNode = patch.apply(originalObjNode);
 
             // Convert the patched node to an updated obj
-            return JsonUtils.mapper().treeToValue(patchedObjNode, (Class<T>) targetDto.getClass());
+            return objectMapper.treeToValue(patchedObjNode, (Class<T>) targetDto.getClass());
         } catch (JsonProcessingException | JsonPatchException e) {
             throw new BadEntityException(e);
         }
@@ -162,6 +166,8 @@ public class ExtendedRemoveJsonPatchStrategy implements JsonPatchStrategy {
         return index-removedBeforeMe;
     }
 
-
-
+    @Autowired
+    public void setObjectMapper(ObjectMapper objectMapper) {
+        this.objectMapper = objectMapper;
+    }
 }

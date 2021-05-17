@@ -31,7 +31,7 @@ public class BasicAuthTest extends AbstractRapidAuthIntegrationTest {
 	}
 
 	@Test
-	public void canPing() throws Exception {
+	public void anonCanPing() throws Exception {
 		mvc.perform(get(authProperties.getController().getPingUrl()))
 				.andExpect(status().is(204));
 	}
@@ -39,11 +39,11 @@ public class BasicAuthTest extends AbstractRapidAuthIntegrationTest {
 
 
 	@Test
-	public void loggedIn_canGetFullContextInformation() throws Exception {
+	public void loggedInAdminCanGetFullContextInformation() throws Exception {
 
-
+		String token = login2xx(ADMIN_EMAIL, ADMIN_PASSWORD);
 		mvc.perform(get(authProperties.getController().getContextUrl())
-				.header(HttpHeaders.AUTHORIZATION, tokens.get(getAdmin().getId())))
+				.header(HttpHeaders.AUTHORIZATION, token))
 				.andExpect(status().is(200))
 //				.andExpect(header().string(HttpHeaders.AUTHORIZATION, containsString(".")))
 				// todo reenable captcha
@@ -60,7 +60,7 @@ public class BasicAuthTest extends AbstractRapidAuthIntegrationTest {
 	}
 	
 	@Test
-	public void notLoggedIn_canGetOnlySharedContextInformation() throws Exception {
+	public void anonCanGetOnlySharedContextInformation() throws Exception {
 
 		mvc.perform(get(authProperties.getController().getContextUrl()))
 				.andExpect(status().is(200))

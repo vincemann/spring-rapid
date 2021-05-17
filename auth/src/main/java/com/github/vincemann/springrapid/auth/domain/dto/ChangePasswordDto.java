@@ -9,7 +9,7 @@ import javax.validation.constraints.NotBlank;
  * 
  * @author Sanjay Patel
  */
-@Getter @Setter @NoArgsConstructor @AllArgsConstructor @ToString
+@Getter @Setter @NoArgsConstructor @AllArgsConstructor @ToString @Builder
 public class ChangePasswordDto {
 	
 	@NotBlank
