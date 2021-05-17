@@ -35,7 +35,7 @@ public class ResetPasswordTest extends AbstractRapidAuthIntegrationTest {
     public void setup() throws Exception {
         super.setup();
         adminForgotPasswordCode = jweTokenService.createToken(
-                RapidJwt.create(AbstractUserService.FORGOT_PASSWORD_AUDIENCE, ADMIN_EMAIL, 60000L)
+                RapidJwt.create(AbstractUserService.FORGOT_PASSWORD_SUBJECT, ADMIN_EMAIL, 60000L)
         );
     }
 

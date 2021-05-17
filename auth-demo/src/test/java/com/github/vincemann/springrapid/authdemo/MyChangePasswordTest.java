@@ -18,4 +18,10 @@ public class MyChangePasswordTest extends ChangePasswordTest {
     public void cantChangePasswordForUnknownId() throws Exception {
         super.cantChangePasswordForUnknownId();
     }
+
+    @Test
+    @Override
+    public void cantChangeOwnPasswordWithInvalidData() throws Exception {
+        super.cantChangeOwnPasswordWithInvalidData();
+    }
 }
