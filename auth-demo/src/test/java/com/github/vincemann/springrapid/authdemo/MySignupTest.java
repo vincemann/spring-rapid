@@ -13,18 +13,5 @@ import org.springframework.context.annotation.Import;
 @Import(UserServiceConfig.class)
 public class MySignupTest extends SignupTest {
 
-    @Autowired
-    private MyAuthTestAdapter testAdapter;
 
-    @Override
-    protected SignupDto createValidSignupDto() {
-        SignupDto signupDto = super.createValidSignupDto();
-        return new MySignupDto(signupDto.getEmail(), signupDto.getPassword(),testAdapter.createUniqueName());
-    }
-
-    @Override
-    protected SignupDto createInvalidSignupDto() {
-        SignupDto signupDto = super.createInvalidSignupDto();
-        return new MySignupDto(signupDto.getEmail(), signupDto.getPassword(),testAdapter.createUniqueName());
-    }
 }

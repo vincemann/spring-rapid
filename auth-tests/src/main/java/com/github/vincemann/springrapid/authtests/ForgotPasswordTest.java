@@ -10,6 +10,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import com.github.vincemann.springrapid.auth.mail.MailData;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
+import static com.github.vincemann.springrapid.authtests.adapter.AuthTestAdapter.*;
+
 import org.springframework.http.MediaType;
 
 public class ForgotPasswordTest extends AbstractRapidAuthIntegrationTest {

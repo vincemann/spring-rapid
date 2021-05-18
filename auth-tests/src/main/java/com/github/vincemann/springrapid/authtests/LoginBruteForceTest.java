@@ -8,6 +8,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.HttpStatus;
 
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static com.github.vincemann.springrapid.authtests.adapter.AuthTestAdapter.*;
 
 @SpringBootTest({
         "lemon.recaptcha.sitekey=",
@@ -23,7 +24,7 @@ public class LoginBruteForceTest extends AbstractRapidAuthIntegrationTest {
 
     @Test
     public void tooManyLoginTries_tooManyRequestsResponse() throws Exception {
-        String wrongPassword = "wrongPw";
+        String wrongPassword = "bruteWrongPw";
         for (int i =0 ;i<MAX_LOGIN_TRIES;i++){
             login(ADMIN_EMAIL,wrongPassword+i)
                     .andExpect(status().is(HttpStatus.UNAUTHORIZED.value()));
@@ -35,7 +36,7 @@ public class LoginBruteForceTest extends AbstractRapidAuthIntegrationTest {
 
     @Test
     public void maxLoginTries_thenCorrectLogin_resetsEverything() throws Exception {
-        String wrongPassword = "wrongPw";
+        String wrongPassword = "bruteWrongPw";
         for (int i =0 ;i<MAX_LOGIN_TRIES-1;i++){
             login(ADMIN_EMAIL,wrongPassword+i)
                     .andExpect(status().is(HttpStatus.UNAUTHORIZED.value()));
