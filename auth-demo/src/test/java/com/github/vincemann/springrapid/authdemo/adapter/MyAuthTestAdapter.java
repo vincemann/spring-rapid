@@ -32,6 +32,22 @@ public class MyAuthTestAdapter extends AuthTestAdapter {
     }
 
     @Override
+    public String getUpdatableFieldName() {
+        return "name";
+    }
+
+    @Override
+    public String getNewValidFieldValue() {
+        return "newSuperName";
+    }
+
+    @Override
+    public String getInvalidFieldValue() {
+        // too long
+        return "A123456789A123456789A123456789A123456789A123456789A123456789A123456789";
+    }
+
+    @Override
     public SignupDto createInvalidSignupDto() {
         SignupDto signupDto = super.createInvalidSignupDto();
         return new MySignupDto(signupDto.getEmail(), signupDto.getPassword(),createUniqueName());

@@ -10,7 +10,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Import;
 
 @EnableProjectComponentScan
-@Import(UserServiceConfig.class)
 public class MySignupTest extends SignupTest {
 
 
