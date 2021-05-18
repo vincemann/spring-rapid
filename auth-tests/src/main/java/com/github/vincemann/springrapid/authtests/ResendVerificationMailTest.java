@@ -8,6 +8,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpHeaders;
+import static com.github.vincemann.springrapid.authtests.adapter.AuthTestAdapter.*;
 
 public class ResendVerificationMailTest extends AbstractRapidAuthIntegrationTest {
 

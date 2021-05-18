@@ -9,6 +9,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.http.HttpHeaders;
+import static com.github.vincemann.springrapid.authtests.adapter.AuthTestAdapter.*;
 
 import java.util.HashMap;
 import java.util.Map;

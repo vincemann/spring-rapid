@@ -19,6 +19,7 @@ import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.hasSize;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+import static com.github.vincemann.springrapid.authtests.adapter.AuthTestAdapter.*;
 
 public class VerificationTest extends AbstractRapidAuthIntegrationTest {
 
@@ -70,7 +71,7 @@ public class VerificationTest extends AbstractRapidAuthIntegrationTest {
 		testTemplate.verifyEmail(savedUser.getId(),null)
 				.andExpect(status().isBadRequest());
 
-		// blank token
+		// blank code
 		testTemplate.verifyEmail(savedUser.getId(),"")
 				.andExpect(status().isBadRequest());
 
@@ -86,7 +87,7 @@ public class VerificationTest extends AbstractRapidAuthIntegrationTest {
 	}
 
 	@Test
-	public void cantVerifyEmailWithExpiredToken() throws Exception {
+	public void cantVerifyEmailWithExpiredCode() throws Exception {
 
 		SignupDto signupDto = createValidSignupDto();
 		mockJwtExpirationTime(50L);
@@ -110,21 +111,17 @@ public class VerificationTest extends AbstractRapidAuthIntegrationTest {
 //				.andExpect(status().is(403));
 	}
 
-	//todo refactor
 	@Test
-	public void usersCredentialsUpdated_cantUseNowObsoleteVerificationCode() throws Exception {
-		
+	public void usersCredentialsUpdatedAfterSignup_cantUseObsoleteVerificationCode() throws Exception {
+		SignupDto signupDto = createValidSignupDto();
+		MailData mailData = testTemplate.signup2xx(signupDto);
+		AbstractUser<Long> savedUser = getUserService().findByEmail(signupDto.getEmail()).get();
+
 		// Credentials updated after the verification token is issued
-//		Thread.sleep(1L);
-		AbstractUser<Long> user = getUserService().findById(getUnverifiedUser().getId()).get();
-		user.setCredentialsUpdatedMillis(System.currentTimeMillis());
-		getUserService().save(user);
+		savedUser.setCredentialsUpdatedMillis(System.currentTimeMillis());
+		getUserService().update(savedUser);
 
-
-		mvc.perform(post(authProperties.getController().getVerifyUserUrl())
-				.param("id",getUnverifiedUser().getId().toString())
-                .param("code", verificationCode)
-                .header("contentType",  MediaType.APPLICATION_FORM_URLENCODED))
-                .andExpect(status().is(403));
+		testTemplate.verifyEmail(savedUser.getId(),mailData.getCode())
+				.andExpect(status().isForbidden());
 	}
 }

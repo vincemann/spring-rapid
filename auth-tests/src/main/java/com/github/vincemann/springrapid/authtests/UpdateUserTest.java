@@ -12,6 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.Resource;
 import org.springframework.http.HttpHeaders;
+import static com.github.vincemann.springrapid.authtests.adapter.AuthTestAdapter.*;
 
 import java.io.IOException;
 

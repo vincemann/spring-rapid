@@ -39,6 +39,7 @@ import java.text.ParseException;
 import java.util.HashMap;
 import java.util.Map;
 
+import static com.github.vincemann.springrapid.authtests.adapter.AuthTestAdapter.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -64,37 +65,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 public abstract class AbstractRapidAuthIntegrationTest
         extends UserIntegrationControllerTest<AbstractUserController> {
 
-    protected static final String NEW_EMAIL = "new.email@example.com";
-    protected static final String NEW_PASSWORD = "newPasswordSanjaySanjay99!";
-    protected static final String INVALID_EMAIL = "an-invalid-email";
-    protected static final String INVALID_PASSWORD = "short";
-    protected static final String UNKNOWN_EMAIL = "unknown@example.com";
 
-    protected static final String ADMIN_EMAIL = "admin@example.com";
-    protected static final String ADMIN_PASSWORD = "adminSanjaySanjay99!";
-
-    protected static final String SECOND_ADMIN_EMAIL = "secondAdmin@example.com";
-    protected static final String SECOND_ADMIN_PASSWORD = "secondAdminSanjaySanjay99!";
-
-    protected static final String BLOCKED_ADMIN_EMAIL = "blockedAdmin@example.com";
-    protected static final String BLOCKED_ADMIN_PASSWORD = "blockedAdminSanjaySanjay99!";
-
-    protected static final String USER_EMAIL = "user@example.com";
-    protected static final String USER_PASSWORD = "userSanjaySanjay99!";
-
-    protected static final String SIGNUP_USER_EMAIL = "signupUser@example.com";
-    protected static final String SIGNUP_USER_PASSWORD = "signupUserSanjaySanjay99!";
-
-    protected static final String SECOND_USER_EMAIL = "secondUser@example.com";
-    protected static final String SECOND_USER_PASSWORD = "secondUserSanjaySanjay99!";
-
-    protected static final String UNVERIFIED_USER_EMAIL = "unverifiedUser@example.com";
-    protected static final String UNVERIFIED_USER_PASSWORD = "unverifiedUserSanjaySanjay99!";
-
-    protected static final String BLOCKED_USER_EMAIL = "blockedUser@example.com";
-    protected static final String BLOCKED_USER_PASSWORD = "blockedUserSanjaySanjay99!";
-
-    protected static String UNKNOWN_USER_ID = "99";
 
     @Autowired
     @Acl
@@ -119,7 +90,7 @@ public abstract class AbstractRapidAuthIntegrationTest
     protected AuthProperties.Jwt jwt;
 
     @Autowired
-    private JweTokenService jweTokenService;
+    protected JweTokenService jweTokenService;
 
     protected Map<Long, String> tokens = new HashMap<>(6);
 
@@ -149,8 +120,6 @@ public abstract class AbstractRapidAuthIntegrationTest
         System.err.println("TEST STARTS HERE -----------------------------------------------------------------------------------------------------------------");
     }
 
-
-
     protected void setupSpies(){
         jwt = Mockito.spy(properties.getJwt());
         Mockito.doReturn(jwt).when(unproxy(properties)).getJwt();
@@ -160,8 +129,6 @@ public abstract class AbstractRapidAuthIntegrationTest
         //        https://stackoverflow.com/questions/9033874/mocking-a-property-of-a-cglib-proxied-service-not-working
         return AopTestUtils.getUltimateTargetObject(spy);
     }
-
-
 
     @Override
     protected DefaultMockMvcBuilder createMvcBuilder() {
@@ -221,12 +188,12 @@ public abstract class AbstractRapidAuthIntegrationTest
     }
 
     protected SignupDto createValidSignupDto(){
-        return new SignupDto(SIGNUP_USER_EMAIL, SIGNUP_USER_PASSWORD);
+        return testAdapter.createValidSignupDto();
     }
 
 
     protected SignupDto createInvalidSignupDto(){
-        return new SignupDto(INVALID_EMAIL,INVALID_PASSWORD);
+        return testAdapter.createInvalidSignupDto();
     }
 
     protected String modCode(String code, String aud, String subject, Long expirationMillis,Long issuedAt, Map<String,Object> otherClaims) throws BadTokenException, ParseException {

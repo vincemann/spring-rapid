@@ -13,6 +13,7 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
+import static com.github.vincemann.springrapid.authtests.adapter.AuthTestAdapter.*;
 
 import java.text.ParseException;
 import java.util.Map;

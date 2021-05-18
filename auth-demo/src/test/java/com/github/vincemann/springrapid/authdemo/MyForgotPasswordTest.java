@@ -7,9 +7,4 @@ import org.junit.jupiter.api.Test;
 @EnableProjectComponentScan
 public class MyForgotPasswordTest extends ForgotPasswordTest {
 
-    @Test
-    @Override
-    public void anonCanIssueForgotPassword() throws Exception {
-        super.anonCanIssueForgotPassword();
-    }
 }

@@ -15,6 +15,8 @@ import org.springframework.http.MediaType;
 import static org.hamcrest.Matchers.containsString;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+import static com.github.vincemann.springrapid.authtests.adapter.AuthTestAdapter.*;
+
 
 public class ResetPasswordTest extends AbstractRapidAuthIntegrationTest {
 

@@ -66,9 +66,8 @@ public abstract class AbstractUserControllerTestTemplate<C extends AbstractUserC
     }
 
     public MailData signup2xx(Object dto) throws Exception {
-        mvc.perform(post(getController().getAuthProperties().getController().getSignupUrl())
-                .content(serialize(dto))
-                .contentType(getController().getCoreProperties().getController().getMediaType()));
+        signup(dto)
+                .andExpect(status().is2xxSuccessful());
         return getMailData();
     }
 
@@ -150,7 +149,7 @@ public abstract class AbstractUserControllerTestTemplate<C extends AbstractUserC
     }
 
     public String fetchNewToken2xx(String token, String email) throws Exception {
-        return deserialize(fetchNewToken(token,email)
+        return deserialize(fetchNewToken(token, email)
                 .andExpect(status().is2xxSuccessful())
                 .andReturn().getResponse().getContentAsString(), ResponseToken.class).getToken();
     }
@@ -171,7 +170,7 @@ public abstract class AbstractUserControllerTestTemplate<C extends AbstractUserC
     public ResultActions fetchByEmail(String email) throws Exception {
         return mvc.perform(post(getController().getAuthProperties().getController().getFetchByEmailUrl())
                 .param("email", email)
-                .header("contentType",  MediaType.APPLICATION_FORM_URLENCODED));
+                .header("contentType", MediaType.APPLICATION_FORM_URLENCODED));
     }
 
     public String login2xx(String email, String password) throws Exception {
@@ -182,12 +181,12 @@ public abstract class AbstractUserControllerTestTemplate<C extends AbstractUserC
 
     public ResultActions verifyEmail(Serializable id, String code) throws Exception {
         return mvc.perform(post(getController().getAuthProperties().getController().getVerifyUserUrl())
-                .param("id",id.toString())
+                .param("id", id.toString())
                 .param("code", code)
-                .header("contentType",  MediaType.APPLICATION_FORM_URLENCODED));
+                .header("contentType", MediaType.APPLICATION_FORM_URLENCODED));
     }
 
-    public MailData getMailData(){
+    public MailData getMailData() {
         ArgumentCaptor<MailData> captor = ArgumentCaptor.forClass(MailData.class);
         verify(mailSenderMock, times(1)).send(captor.capture());
         MailData sentData = captor.getValue();
@@ -198,7 +197,7 @@ public abstract class AbstractUserControllerTestTemplate<C extends AbstractUserC
 
     public ResultActions resendVerificationEmail(Serializable id, String token) throws Exception {
         return mvc.perform(post(getController().getAuthProperties().getController().getResendVerificationEmailUrl())
-                .param("id",id.toString())
+                .param("id", id.toString())
                 .header(HttpHeaders.AUTHORIZATION, token));
     }
 

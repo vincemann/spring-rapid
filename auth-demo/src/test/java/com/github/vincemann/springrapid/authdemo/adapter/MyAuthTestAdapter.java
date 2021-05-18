@@ -1,12 +1,14 @@
 package com.github.vincemann.springrapid.authdemo.adapter;
 
 import com.github.vincemann.springrapid.auth.domain.AbstractUser;
+import com.github.vincemann.springrapid.auth.domain.dto.SignupDto;
+import com.github.vincemann.springrapid.authdemo.dto.MySignupDto;
 import com.github.vincemann.springrapid.authtests.adapter.AuthTestAdapter;
 import com.github.vincemann.springrapid.authdemo.model.User;
 import org.springframework.boot.test.context.TestComponent;
 
 @TestComponent
-public class MyAuthTestAdapter implements AuthTestAdapter {
+public class MyAuthTestAdapter extends AuthTestAdapter {
 
     private int nameCount = 0;
     private static final String NAME = "testUserName";
@@ -23,5 +25,16 @@ public class MyAuthTestAdapter implements AuthTestAdapter {
         return name;
     }
 
+    @Override
+    public SignupDto createValidSignupDto() {
+        SignupDto signupDto = super.createValidSignupDto();
+        return new MySignupDto(signupDto.getEmail(), signupDto.getPassword(),createUniqueName());
+    }
+
+    @Override
+    public SignupDto createInvalidSignupDto() {
+        SignupDto signupDto = super.createInvalidSignupDto();
+        return new MySignupDto(signupDto.getEmail(), signupDto.getPassword(),createUniqueName());
+    }
 
 }
