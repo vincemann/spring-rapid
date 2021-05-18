@@ -6,6 +6,9 @@ import static org.mockito.Mockito.verify;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+import com.github.vincemann.springrapid.auth.mail.MailData;
+import com.github.vincemann.springrapid.auth.service.AbstractUserService;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpHeaders;
 import static com.github.vincemann.springrapid.authtests.adapter.AuthTestAdapter.*;
@@ -14,77 +17,63 @@ public class ResendVerificationMailTest extends AbstractRapidAuthIntegrationTest
 
 	@Test
 	public void canResendVerificationMailForOwnAccount() throws Exception {
-		mvc.perform(post(authProperties.getController().getResendVerificationEmailUrl())
-				.param("id",getUnverifiedUser().getId().toString())
-				.header(HttpHeaders.AUTHORIZATION, tokens.get(getUnverifiedUser().getId())))
-			.andExpect(status().is(204));
-		
-		verify(unproxy(mailSender)).send(any());
+		String token = login2xx(UNVERIFIED_USER_EMAIL, UNVERIFIED_USER_PASSWORD);
+		testTemplate.resendVerificationEmail(getUnverifiedUser().getId(),token)
+				.andExpect(status().is2xxSuccessful());
+
+		MailData mailData = testTemplate.verifyMailWasSend();
+		Assertions.assertEquals(UNVERIFIED_USER_EMAIL,mailData.getTo());
+		Assertions.assertEquals(AbstractUserService.VERIFY_EMAIL_SUBJECT,mailData.getSubject());
+	}
+
+	@Test
+	public void userCantResendVerificationMailOfDiffUser() throws Exception {
+		String token = login2xx(USER_EMAIL, USER_PASSWORD);
+		testTemplate.resendVerificationEmail(getUnverifiedUser().getId(),token)
+				.andExpect(status().isForbidden());
+
+		verify(unproxy(mailSender), never()).send(any());
 	}
 
 	@Test
 	public void adminCanResendVerificationMailOfDiffUser() throws Exception {
-
-		mvc.perform(post(authProperties.getController().getResendVerificationEmailUrl())
-				.param("id",getUnverifiedUser().getId().toString())
-				.header(HttpHeaders.AUTHORIZATION, tokens.get(getAdmin().getId())))
-			.andExpect(status().is(204));
+		String token = login2xx(ADMIN_EMAIL, ADMIN_PASSWORD);
+		testTemplate.resendVerificationEmail2xx(getUnverifiedUser().getId(),token);
 	}
 
 	@Test
 	public void blockedAdminCantResendVerificationMailOfDiffUser() throws Exception {
-		
-//		mvc.perform(post("/api/core/users/{id}/resend-verification-mail", getUnverifiedUser().getId())
-//				.header(HttpHeaders.AUTHORIZATION, tokens.get(UNVERIFIED_ADMIN_ID)))
-//			.andExpect(status().is(403));
+		String token = login2xx(BLOCKED_ADMIN_EMAIL, BLOCKED_ADMIN_PASSWORD);
+		testTemplate.resendVerificationEmail(getUnverifiedUser().getId(),token)
+				.andExpect(status().isForbidden());
 
-		mvc.perform(post(authProperties.getController().getResendVerificationEmailUrl())
-				.param("id",getUnverifiedUser().getId().toString())
-				.header(HttpHeaders.AUTHORIZATION, tokens.get(getBlockedAdmin().getId())))
-			.andExpect(status().is(403));
-		
 		verify(unproxy(mailSender), never()).send(any());
 	}
 
 	@Test
 	public void anonCantResendVerificationMail() throws Exception {
-
-		mvc.perform(post(authProperties.getController().getResendVerificationEmailUrl())
-				.param("id",getUnverifiedUser().getId().toString()))
-				.andExpect(status().is(403));
+		testTemplate.resendVerificationEmail(getUnverifiedUser().getId(),"")
+				.andExpect(status().isUnauthorized());
 		
 		verify(unproxy(mailSender), never()).send(any());
 	}
 	
 	@Test
 	public void alreadyVerified_cantResendVerificationMail() throws Exception {
+		String token = login2xx(USER_EMAIL, USER_PASSWORD);
+		testTemplate.resendVerificationEmail(getUser().getId(),token)
+				.andExpect(status().isBadRequest());
 
-		mvc.perform(post(authProperties.getController().getResendVerificationEmailUrl())
-				.param("id",getUser().getId().toString())
-				.header(HttpHeaders.AUTHORIZATION, tokens.get(getUser().getId())))
-			.andExpect(status().is(400));
-		
 		verify(unproxy(mailSender), never()).send(any());
 	}
 	
-	@Test
-	public void userCantResendVerificationMailOfDiffUser() throws Exception {
 
-		mvc.perform(post(authProperties.getController().getResendVerificationEmailUrl())
-				.param("id",getUnverifiedUser().getId().toString())
-				.header(HttpHeaders.AUTHORIZATION, tokens.get(getUser().getId())))
-			.andExpect(status().is(403));
-		
-		verify(unproxy(mailSender), never()).send(any());
-	}
 	
 	@Test
 	public void cantResendVerificationMailOfNonExistingUser() throws Exception {
-
-		mvc.perform(post(authProperties.getController().getResendVerificationEmailUrl())
-				.param("id",UNKNOWN_USER_ID)
-				.header(HttpHeaders.AUTHORIZATION, tokens.get(getAdmin().getId())))
-			.andExpect(status().is(404));
+		String token = login2xx(USER_EMAIL, USER_PASSWORD);
+		testTemplate.resendVerificationEmail(UNKNOWN_USER_ID,token)
+				.andExpect(status().isNotFound());
 		
 		verify(unproxy(mailSender), never()).send(any());
 	}

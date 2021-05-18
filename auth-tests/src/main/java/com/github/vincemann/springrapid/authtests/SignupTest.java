@@ -52,7 +52,7 @@ public class SignupTest extends AbstractRapidAuthIntegrationTest {
 				.andExpect(jsonPath("$.admin").value(false))
 				.andExpect(jsonPath("$.goodUser").value(false));
 
-		MailData mailData = testTemplate.getMailData();
+		MailData mailData = testTemplate.verifyMailWasSend();
 		Assertions.assertEquals(signupDto.getEmail(), mailData.getTo());
 		Assertions.assertNotNull(mailData.getCode());
 

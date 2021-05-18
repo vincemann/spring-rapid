@@ -18,7 +18,6 @@ import com.github.vincemann.springrapid.auth.service.token.JweTokenService;
 import com.github.vincemann.springrapid.auth.util.MapUtils;
 import com.github.vincemann.springrapid.auth.util.RapidJwt;
 import com.github.vincemann.springrapid.auth.util.TransactionalUtils;
-import com.github.vincemann.springrapid.core.CoreProperties;
 import com.github.vincemann.springrapid.core.security.RapidSecurityContext;
 import com.github.vincemann.springrapid.core.service.JPACrudService;
 import com.github.vincemann.springrapid.core.service.exception.BadEntityException;
@@ -56,7 +55,7 @@ public abstract class AbstractUserService
         implements UserService<U, ID> {
 
     public static final String CHANGE_EMAIL_SUBJECT = "change-email";
-    public static final String VERIFY_SUBJECT = "verify";
+    public static final String VERIFY_EMAIL_SUBJECT = "verify";
     public static final String FORGOT_PASSWORD_SUBJECT = "forgot-password";
 
     private AuthorizationTokenService<RapidAuthAuthenticatedPrincipal> authorizationTokenService;
@@ -216,7 +215,7 @@ public abstract class AbstractUserService
             VerifyEntity.is(user.hasRole(AuthRoles.UNVERIFIED), "Already Verified");
             //verificationCode is jwtToken
             JWTClaimsSet claims = jweTokenService.parseToken(verificationCode);
-            RapidJwt.validate(claims, VERIFY_SUBJECT, user.getCredentialsUpdatedMillis());
+            RapidJwt.validate(claims, VERIFY_EMAIL_SUBJECT, user.getCredentialsUpdatedMillis());
 
             VerifyAccess.condition(
                     claims.getSubject().equals(user.getId().toString()) &&
@@ -520,7 +519,7 @@ public abstract class AbstractUserService
     protected void sendVerificationMail(final U user) {
 
         log.debug("Sending verification mail to: " + user);
-        JWTClaimsSet claims = RapidJwt.create(VERIFY_SUBJECT,
+        JWTClaimsSet claims = RapidJwt.create(VERIFY_EMAIL_SUBJECT,
                 user.getId().toString(),
                 properties.getJwt().getExpirationMillis(),
                 //payload
@@ -539,7 +538,7 @@ public abstract class AbstractUserService
         MailData mailData = MailData.builder()
                 .to(user.getEmail())
 //                .subject(Message.get("com.naturalprogrammer.spring.verifySubject"))
-                .subject(VERIFY_SUBJECT)
+                .subject(VERIFY_EMAIL_SUBJECT)
                 .body(Message.get("com.naturalprogrammer.spring.verifyEmail", verifyLink))
                 .link(verifyLink)
                 .code(verificationCode)
