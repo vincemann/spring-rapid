@@ -2,7 +2,6 @@ package com.github.vincemann.springrapid.authtest.controller.template;
 
 import com.github.vincemann.springrapid.auth.controller.AbstractUserController;
 import com.github.vincemann.springrapid.auth.domain.AbstractUser;
-import com.github.vincemann.springrapid.auth.domain.AuthRoles;
 import com.github.vincemann.springrapid.auth.mail.MailData;
 import com.github.vincemann.springrapid.auth.mail.MailSender;
 import com.github.vincemann.springrapid.auth.security.AuthenticatedPrincipalFactory;
@@ -10,7 +9,6 @@ import com.github.vincemann.springrapid.core.security.RapidAuthenticatedPrincipa
 import com.github.vincemann.springrapid.core.security.RapidSecurityContext;
 
 import com.github.vincemann.springrapid.coretest.controller.template.AbstractCrudControllerTestTemplate;
-import org.hamcrest.Matchers;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,7 +20,6 @@ import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilde
 
 import java.io.Serializable;
 
-import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.hasSize;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -68,7 +65,13 @@ public abstract class AbstractUserControllerTestTemplate<C extends AbstractUserC
     public MailData signup2xx(Object dto) throws Exception {
         signup(dto)
                 .andExpect(status().is2xxSuccessful());
-        return getMailData();
+        return verifyMailWasSend();
+    }
+
+    public ResultActions resendVerificationMail(Serializable id, String token) throws Exception {
+        return mvc.perform(post(getController().getAuthProperties().getController().getResendVerificationEmailUrl())
+                .param("id",id.toString())
+                .header(HttpHeaders.AUTHORIZATION, token));
     }
 
 //    public MockHttpServletRequestBuilder login(String email, String password) {
@@ -104,7 +107,7 @@ public abstract class AbstractUserControllerTestTemplate<C extends AbstractUserC
                 .header(HttpHeaders.AUTHORIZATION, token)
                 .content(serialize(requestNewEmailDto)))
                 .andExpect(status().is2xxSuccessful());
-        return getMailData();
+        return verifyMailWasSend();
     }
 
     public ResultActions changePassword(Serializable id, String token, Object changePasswordDto) throws Exception {
@@ -126,7 +129,7 @@ public abstract class AbstractUserControllerTestTemplate<C extends AbstractUserC
                 .param("email", email)
                 .header("contentType", MediaType.APPLICATION_FORM_URLENCODED))
                 .andExpect(status().is2xxSuccessful());
-        return getMailData();
+        return verifyMailWasSend();
     }
 
     public ResultActions resetPassword(Object resetPasswordDto) throws Exception {
@@ -186,7 +189,7 @@ public abstract class AbstractUserControllerTestTemplate<C extends AbstractUserC
                 .header("contentType", MediaType.APPLICATION_FORM_URLENCODED));
     }
 
-    public MailData getMailData() {
+    public MailData verifyMailWasSend() {
         ArgumentCaptor<MailData> captor = ArgumentCaptor.forClass(MailData.class);
         verify(mailSenderMock, times(1)).send(captor.capture());
         MailData sentData = captor.getValue();
@@ -199,6 +202,14 @@ public abstract class AbstractUserControllerTestTemplate<C extends AbstractUserC
         return mvc.perform(post(getController().getAuthProperties().getController().getResendVerificationEmailUrl())
                 .param("id", id.toString())
                 .header(HttpHeaders.AUTHORIZATION, token));
+    }
+
+    public MailData resendVerificationEmail2xx(Serializable id, String token) throws Exception {
+        mvc.perform(post(getController().getAuthProperties().getController().getResendVerificationEmailUrl())
+                .param("id", id.toString())
+                .header(HttpHeaders.AUTHORIZATION, token))
+                .andExpect(status().is2xxSuccessful());
+        return verifyMailWasSend();
     }
 
     public String login2xx(AbstractUser user) throws Exception {
