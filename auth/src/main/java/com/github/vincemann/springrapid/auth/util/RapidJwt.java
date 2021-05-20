@@ -2,13 +2,12 @@ package com.github.vincemann.springrapid.auth.util;
 
 import com.nimbusds.jwt.JWTClaimsSet;
 import lombok.extern.slf4j.Slf4j;
+import org.assertj.core.util.Maps;
 import org.springframework.security.access.AccessDeniedException;
 
 import java.text.ParseException;
-import java.util.Collections;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * Helper-Methods for creating and validating Jwt's claims
@@ -59,7 +58,13 @@ public class RapidJwt {
 	}
 
 	public static JWTClaimsSet mod(JWTClaimsSet claimsSet, String aud, String subject, Long expirationMillis,Long issuedAt, Map<String,Object> otherClaims) throws ParseException {
-		JWTClaimsSet.Builder builder = createRawBuilder(claimsSet.getAudience().get(0),claimsSet.getSubject(),claimsSet.getLongClaim(RapidJwt.EXPIRATION_CLAIM),claimsSet.getLongClaim(RapidJwt.ISSUED_AT_CLAIM),otherClaims);
+		JWTClaimsSet.Builder builder = createRawBuilder(
+				claimsSet.getAudience().get(0),
+				claimsSet.getSubject(),
+				claimsSet.getLongClaim(RapidJwt.EXPIRATION_CLAIM),
+				claimsSet.getLongClaim(RapidJwt.ISSUED_AT_CLAIM),
+				getOtherClaims(claimsSet)
+		);
 		if (expirationMillis!=null)
 			builder.claim(RapidJwt.EXPIRATION_CLAIM,expirationMillis);
 		if (issuedAt!=null)
@@ -74,6 +79,21 @@ public class RapidJwt {
 			}
 		}
 		return builder.build();
+	}
+
+
+	private static Map<String,Object> getOtherClaims(JWTClaimsSet claimsSet){
+		Set<Map.Entry<String, Object>> otherClaimsSet = claimsSet.getClaims().entrySet().stream().filter(e -> {
+			return !e.getKey().equals(RapidJwt.EXPIRATION_CLAIM) &&
+					!e.getKey().equals(RapidJwt.ISSUED_AT_CLAIM) &&
+					!e.getKey().equals("sub") &&
+					!e.getKey().equals("aud");
+		}).collect(Collectors.toSet());
+		Map<String, Object> result = new HashMap<>();
+		for (Map.Entry<String, Object> entry : otherClaimsSet) {
+			result.put(entry.getKey(),entry.getValue());
+		}
+		return result;
 	}
 
 	public static JWTClaimsSet create(String aud, String subject, long expirationMillis){

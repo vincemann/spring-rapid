@@ -45,12 +45,11 @@ public class VerificationTest extends AbstractRapidAuthIntegrationTest {
 	public void cantVerifyEmailTwiceWithSameCode() throws Exception {
 		SignupDto signupDto = createValidSignupDto();
 		MailData mailData = testTemplate.signup2xx(signupDto);
-		AbstractUser<Long> savedUser = getUserService().findByEmail(signupDto.getEmail()).get();
 		testTemplate.verifyEmail(mailData.getCode())
 				.andExpect(status().is2xxSuccessful());
 
 		testTemplate.verifyEmail(mailData.getCode())
-				.andExpect(status().isBadRequest());
+				.andExpect(status().isForbidden());
 	}
 
 //	@Test
@@ -65,7 +64,6 @@ public class VerificationTest extends AbstractRapidAuthIntegrationTest {
 	public void cantVerifyEmailWithInvalidData() throws Exception {
 		SignupDto signupDto = createValidSignupDto();
 		MailData mailData = testTemplate.signup2xx(signupDto);
-		AbstractUser<Long> savedUser = getUserService().findByEmail(signupDto.getEmail()).get();
 
 		// null code
 		testTemplate.verifyEmail(null)
@@ -80,15 +78,16 @@ public class VerificationTest extends AbstractRapidAuthIntegrationTest {
 		testTemplate.verifyEmail(code)
 				.andExpect(status().isForbidden());
 
-		// Wrong email
-		code = modCode(mailData.getCode(),null,SECOND_USER_EMAIL,null,null,null);
-		testTemplate.verifyEmail(code)
-				.andExpect(status().isForbidden());
+		// test makes no sense
+//		// Wrong email/ userid
+//		code = modCode(mailData.getCode(),null,getUnverifiedUser().getId().toString(),null,null,null);
+//		testTemplate.verifyEmail(code)
+//				.andExpect(status().isForbidden());
 
-		// Wrong user id
-		code = modCode(mailData.getCode(),null,SECOND_USER_EMAIL,null,null,null);
-		testTemplate.verifyEmail(code)
-				.andExpect(status().isForbidden());
+//		// Wrong user id
+//		code = modCode(mailData.getCode(),null,getSecondUser().getId().toString(),null,null,null);
+//		testTemplate.verifyEmail(code)
+//				.andExpect(status().isForbidden());
 	}
 
 	@Test
