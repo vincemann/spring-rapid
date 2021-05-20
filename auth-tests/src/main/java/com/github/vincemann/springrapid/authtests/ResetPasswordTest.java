@@ -24,9 +24,8 @@ public class ResetPasswordTest extends AbstractRapidAuthIntegrationTest {
 //    @Autowired
 //    private JweTokenService jweTokenService;
 
-    private ResetPasswordDto resetPasswordDto(String code, String newPassword) throws JsonProcessingException {
+    private ResetPasswordDto resetPasswordDto(String newPassword) throws JsonProcessingException {
         ResetPasswordDto dto = new ResetPasswordDto();
-        dto.setCode(code);
         dto.setNewPassword(newPassword);
         return dto;
     }
@@ -35,7 +34,7 @@ public class ResetPasswordTest extends AbstractRapidAuthIntegrationTest {
     public void canResetPasswordWithCorrectCode() throws Exception {
         MailData mailData = testTemplate.forgotPassword2xx(USER_EMAIL);
         String code = mailData.getCode();
-        testTemplate.resetPassword(resetPasswordDto(code,NEW_PASSWORD))
+        testTemplate.resetPassword(resetPasswordDto(NEW_PASSWORD), code)
                 .andExpect(status().is2xxSuccessful())
                 .andExpect(header().string(HttpHeaders.AUTHORIZATION, containsString(".")))
                 .andExpect(jsonPath("$.id").value(getUser().getId()));
@@ -48,14 +47,14 @@ public class ResetPasswordTest extends AbstractRapidAuthIntegrationTest {
     public void cantResetPasswordWithSameCodeTwice() throws Exception {
         MailData mailData = testTemplate.forgotPassword2xx(USER_EMAIL);
         String code = mailData.getCode();
-        testTemplate.resetPassword(resetPasswordDto(code,NEW_PASSWORD))
+        testTemplate.resetPassword(resetPasswordDto(NEW_PASSWORD),code)
                 .andExpect(status().is2xxSuccessful());
 
         // New password should work
         login2xx(USER_EMAIL, NEW_PASSWORD);
 
         // Repeating shouldn't work
-        testTemplate.resetPassword(resetPasswordDto(code,USER_PASSWORD))
+        testTemplate.resetPassword(resetPasswordDto(USER_PASSWORD), code)
                 .andExpect(status().isForbidden());
 
         login2xx(USER_EMAIL, NEW_PASSWORD);
@@ -66,7 +65,7 @@ public class ResetPasswordTest extends AbstractRapidAuthIntegrationTest {
         MailData mailData = testTemplate.forgotPassword2xx(USER_EMAIL);
         String code = mailData.getCode();
         String invalidCode = code +"invalid";
-        testTemplate.resetPassword(resetPasswordDto(invalidCode,NEW_PASSWORD))
+        testTemplate.resetPassword(resetPasswordDto(NEW_PASSWORD),invalidCode)
                 .andExpect(status().isBadRequest());
     }
 
@@ -75,14 +74,14 @@ public class ResetPasswordTest extends AbstractRapidAuthIntegrationTest {
         // Blank password
         MailData mailData = testTemplate.forgotPassword2xx(USER_EMAIL);
         String code = mailData.getCode();
-        testTemplate.resetPassword(resetPasswordDto(code,""))
+        testTemplate.resetPassword(resetPasswordDto(""),code)
                 .andExpect(status().isBadRequest());
 
 
         // Invalid password
         mailData = testTemplate.forgotPassword2xx(USER_EMAIL);
         code = mailData.getCode();
-        testTemplate.resetPassword(resetPasswordDto(code,INVALID_PASSWORD))
+        testTemplate.resetPassword(resetPasswordDto(INVALID_PASSWORD),code)
                 .andExpect(status().isBadRequest());
     }
 

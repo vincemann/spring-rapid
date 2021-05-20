@@ -1,6 +1,6 @@
 package com.github.vincemann.springrapid.authtests;
 
-import static com.github.vincemann.springrapid.auth.service.AbstractUserService.FORGOT_PASSWORD_SUBJECT;
+import static com.github.vincemann.springrapid.auth.service.AbstractUserService.FORGOT_PASSWORD_AUDIENCE;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
@@ -12,15 +12,13 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import static com.github.vincemann.springrapid.authtests.adapter.AuthTestAdapter.*;
 
-import org.springframework.http.MediaType;
-
 public class ForgotPasswordTest extends AbstractRapidAuthIntegrationTest {
 
 
 	@Test
 	public void anonCanIssueForgotPassword() throws Exception {
 		MailData mailData = testTemplate.forgotPassword2xx(USER_EMAIL);
-		Assertions.assertEquals(FORGOT_PASSWORD_SUBJECT, mailData.getSubject());
+		Assertions.assertEquals(FORGOT_PASSWORD_AUDIENCE, mailData.getTopic());
 		Assertions.assertEquals(USER_EMAIL,mailData.getTo());
 	}
 

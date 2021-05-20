@@ -83,10 +83,10 @@ public abstract class AbstractUserControllerTestTemplate<C extends AbstractUserC
     }
 
 
-    public ResultActions changeEmail(Serializable targetId, String code, String token) throws Exception {
+    public ResultActions changeEmail(String code, String token) throws Exception {
         return mvc.perform(post(getController().getAuthProperties().getController().getChangeEmailUrl())
                 .param("code", code)
-                .param("id", targetId.toString())
+//                .param("id", targetId.toString())
                 .header(HttpHeaders.AUTHORIZATION, token)
                 .header("contentType", MediaType.APPLICATION_FORM_URLENCODED));
     }
@@ -132,15 +132,17 @@ public abstract class AbstractUserControllerTestTemplate<C extends AbstractUserC
         return verifyMailWasSend();
     }
 
-    public ResultActions resetPassword(Object resetPasswordDto) throws Exception {
+    public ResultActions resetPassword(Object resetPasswordDto, String code) throws Exception {
         return mvc.perform(post(getController().getAuthProperties().getController().getResetPasswordUrl())
                 .contentType(MediaType.APPLICATION_JSON)
+                .param("code", code)
                 .content(serialize(resetPasswordDto)));
     }
 
-    public ResultActions resetPassword(String url, Object resetPasswordDto) throws Exception {
+    public ResultActions resetPassword(String url, Object resetPasswordDto, String code) throws Exception {
         return mvc.perform(post(url)
                 .contentType(MediaType.APPLICATION_JSON)
+                .param("code", code)
                 .content(serialize(resetPasswordDto)));
     }
 
@@ -188,9 +190,9 @@ public abstract class AbstractUserControllerTestTemplate<C extends AbstractUserC
                 .andReturn().getResponse().getHeader(HttpHeaders.AUTHORIZATION);
     }
 
-    public ResultActions verifyEmail(Serializable id, String code) throws Exception {
+    public ResultActions verifyEmail(String code) throws Exception {
         return mvc.perform(post(getController().getAuthProperties().getController().getVerifyUserUrl())
-                .param("id", id.toString())
+//                .param("id", id.toString())
                 .param("code", code)
                 .header("contentType", MediaType.APPLICATION_FORM_URLENCODED));
     }

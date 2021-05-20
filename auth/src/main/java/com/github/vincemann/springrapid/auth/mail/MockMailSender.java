@@ -20,7 +20,7 @@ public class MockMailSender implements MailSender<MailData> {
 	public void send(MailData mail) {
 		
 		log.info("Sending mail to " + mail.getTo());
-		log.info("Subject: " + mail.getSubject());
+		log.info("Subject: " + mail.getTopic());
 		log.info("Body: " + mail.getBody());
 	}
 
