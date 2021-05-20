@@ -8,10 +8,6 @@ import java.io.Serializable;
 
 @Getter @Setter @ToString @AllArgsConstructor @NoArgsConstructor @Builder
 public class ResetPasswordDto implements Serializable {
-	
-	@NotBlank
-	@NotEmpty
-	private String code;
 
 	@NotEmpty
 //	@Password

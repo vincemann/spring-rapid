@@ -50,8 +50,8 @@ public interface UserServiceExtension<S extends UserService>
     }
 
     @Override
-    default AbstractUser resetPassword(ResetPasswordDto form) throws EntityNotFoundException, BadEntityException {
-        return getNext().resetPassword(form);
+    default AbstractUser resetPassword(ResetPasswordDto dto) throws EntityNotFoundException, BadEntityException {
+        return getNext().resetPassword(dto);
     }
 
     @Override
