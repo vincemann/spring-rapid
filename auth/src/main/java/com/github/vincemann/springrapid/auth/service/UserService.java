@@ -37,15 +37,20 @@ public interface UserService<U extends AbstractUser<ID>, ID extends Serializable
     @LogInteraction(Severity.TRACE)
     public Optional<U> findByEmail( @NotBlank String email);
 
-    public U verifyUser(U user,@NotBlank String verificationCode) throws EntityNotFoundException,  BadEntityException;
+    // get user from email from code
+    public U verifyUser(/*U user,*/@NotBlank String verificationCode) throws EntityNotFoundException,  BadEntityException;
     public void forgotPassword( @NotBlank String email) throws EntityNotFoundException;
-    public U resetPassword(ResetPasswordDto form) throws EntityNotFoundException,  BadEntityException;
+
+    // use dto here so https encrypts new password which is not possible via url param
+    // target email gets extracted from code
+    public U resetPassword(ResetPasswordDto dto, String code) throws EntityNotFoundException,  BadEntityException;
     public void changePassword(U user, ChangePasswordDto changePasswordForm) throws EntityNotFoundException, BadEntityException;
 
 //    @Validated(UserVerifyUtils.ChangeEmailValidation.class)
     public void requestEmailChange(U user, RequestEmailChangeDto emailChangeForm) throws EntityNotFoundException, AlreadyRegisteredException;
 
-    public U changeEmail(U user,  @NotBlank String changeEmailCode) throws EntityNotFoundException, BadEntityException;
+    // get user from email from code
+    public U changeEmail(/*U user,*/  @NotBlank String changeEmailCode) throws EntityNotFoundException, BadEntityException;
 
 
 

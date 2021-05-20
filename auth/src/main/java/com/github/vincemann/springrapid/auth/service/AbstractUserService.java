@@ -31,10 +31,15 @@ import com.nimbusds.jwt.JWTClaimsSet;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
+import org.apache.http.client.utils.URIBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.annotation.Validated;
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
+import org.springframework.web.util.UriBuilder;
+import org.springframework.web.util.UriComponents;
+import org.springframework.web.util.UriComponentsBuilder;
 
 import java.io.Serializable;
 import java.util.HashMap;
@@ -207,19 +212,26 @@ public abstract class AbstractUserService
      * @return
      */
     @Transactional(propagation = Propagation.REQUIRED, readOnly = false)
-    public U verifyUser(U user, String verificationCode) throws EntityNotFoundException, BadEntityException {
+    public U verifyUser(String verificationCode) throws EntityNotFoundException, BadEntityException {
         try {
-            VerifyEntity.isPresent(user, "User not found");
+            JWTClaimsSet claims = jweTokenService.parseToken(verificationCode);
+            String email = claims.getSubject();
+            // fetch the user
+            Optional<U> byEmail = findByEmail(email);
+            VerifyEntity.isPresent(byEmail, "User with email: " + email + " not found");
+            U user = byEmail.get();
+            RapidJwt.validate(claims, VERIFY_EMAIL_SUBJECT, user.getCredentialsUpdatedMillis());
+
+
             // ensure that he is unverified
             // this makes sense to do here not in security plugin
             VerifyEntity.is(user.hasRole(AuthRoles.UNVERIFIED), "Already Verified");
             //verificationCode is jwtToken
-            JWTClaimsSet claims = jweTokenService.parseToken(verificationCode);
-            RapidJwt.validate(claims, VERIFY_EMAIL_SUBJECT, user.getCredentialsUpdatedMillis());
+
+
 
             VerifyAccess.condition(
-                    claims.getSubject().equals(user.getId().toString()) &&
-                            claims.getClaim("email").equals(user.getEmail()),
+                    claims.getSubject().equals(user.getId().toString()),
                     Message.get("com.naturalprogrammer.spring.wrong.verificationCode"));
 
 
@@ -260,13 +272,13 @@ public abstract class AbstractUserService
      * @return
      */
     @Transactional(propagation = Propagation.REQUIRED, readOnly = false)
-    public U resetPassword(ResetPasswordDto form) throws EntityNotFoundException, BadEntityException {
+    public U resetPassword(ResetPasswordDto dto, String code) throws EntityNotFoundException, BadEntityException {
 
         try {
-            JWTClaimsSet claims = jweTokenService.parseToken(form.getCode());
+            JWTClaimsSet claims = jweTokenService.parseToken(code);
             RapidJwt.validate(claims, FORGOT_PASSWORD_SUBJECT);
 
-            checkValidPassword(form.getNewPassword());
+            checkValidPassword(dto.getNewPassword());
 
             String email = claims.getSubject();
 
@@ -276,8 +288,12 @@ public abstract class AbstractUserService
             U user = byEmail.get();
             RapidJwt.validateIssuedAfter(claims, user.getCredentialsUpdatedMillis());
 
+            VerifyAccess.condition(
+                    claims.getSubject().equals(user.getId().toString()),
+                    Message.get("com.naturalprogrammer.spring.wrong.verificationCode"));
+
             // sets the password
-            user.setPassword(passwordEncoder.encode(form.getNewPassword()));
+            user.setPassword(passwordEncoder.encode(dto.getNewPassword()));
             user.setCredentialsUpdatedMillis(System.currentTimeMillis());
             //user.setForgotPasswordCode(null);
             try {
@@ -398,7 +414,8 @@ public abstract class AbstractUserService
      * Mails the change-email verification link to the user.
      */
     protected void mailChangeEmailLink(U user) {
-        JWTClaimsSet claims = RapidJwt.create(CHANGE_EMAIL_SUBJECT,
+        JWTClaimsSet claims = RapidJwt.create(
+                CHANGE_EMAIL_SUBJECT,
                 user.getId().toString(),
                 properties.getJwt().getExpirationMillis(),
                 MapUtils.mapOf("newEmail", user.getNewEmail()));
@@ -408,14 +425,20 @@ public abstract class AbstractUserService
 
             log.debug("Mailing change email link to user: " + user);
 
-            // todo change, get url from authProperties, use url builder
-            // make the link
-//            String changeEmailLink = coreProperties.getApplicationUrl()
-//                    + "/users/" + user.getId()
-//                    + "/change-email?code=" + changeEmailCode;
-            String changeEmailLink = properties.getController().getChangeEmailUrl()
-                    + "?id=" + user.getId()
-                    + "&code=" + changeEmailCode;
+
+            String changeEmailLink = UriComponentsBuilder
+                    .fromHttpUrl(
+                            properties.getCoreProperties().getApplicationUrl()
+                            +properties.getController().getChangeEmailUrl())
+//                    .queryParam("id", user.getId())
+                    .queryParam("code",changeEmailCode)
+                    .toUriString();
+            log.info("change email link: " + changeEmailLink);
+
+
+//            String changeEmailLink = properties.getController().getChangeEmailUrl()
+//                    + "?id=" + user.getId()
+//                    + "&code=" + changeEmailCode;
 
             // mail it
             MailData mailData = MailData.builder()
@@ -437,27 +460,37 @@ public abstract class AbstractUserService
     }
 
 
+
+
     /**
      * Change the email.
      *
      * @return
      */
     @Transactional(propagation = Propagation.REQUIRED, readOnly = false)
-    public U changeEmail(U user, String changeEmailCode) throws EntityNotFoundException, BadEntityException {
-
-        VerifyEntity.isPresent(user, "User not found");
-        VerifyEntity.is(StringUtils.isNotBlank(user.getNewEmail()), "No new email found. Looks like you have already changed.");
-
+    public U changeEmail(String code) throws EntityNotFoundException, BadEntityException {
         JWTClaimsSet claims;
         try {
-            claims = jweTokenService.parseToken(changeEmailCode);
+            claims = jweTokenService.parseToken(code);
         } catch (BadTokenException e) {
             throw new BadEntityException(e);
         }
+        String email = claims.getSubject();
+        // fetch the user
+        Optional<U> byEmail = findByEmail(email);
+        VerifyEntity.isPresent(byEmail, "User with email: " + email + " not found");
+        U user = byEmail.get();
+
         RapidJwt.validate(claims, CHANGE_EMAIL_SUBJECT, user.getCredentialsUpdatedMillis());
 
         VerifyAccess.condition(
-                claims.getSubject().equals(user.getId().toString()) &&
+                claims.getSubject().equals(user.getId().toString()),
+                Message.get("com.naturalprogrammer.spring.wrong.verificationCode"));
+
+        VerifyEntity.is(StringUtils.isNotBlank(user.getNewEmail()), "No new email found. Looks like you have already changed.");
+
+
+        VerifyAccess.condition(
                         claims.getClaim("newEmail").equals(user.getNewEmail()),
                 Message.get("com.naturalprogrammer.spring.wrong.changeEmailCode"));
 
@@ -471,6 +504,7 @@ public abstract class AbstractUserService
         //user.setChangeEmailCode(null);
         user.setCredentialsUpdatedMillis(System.currentTimeMillis());
 
+        // todo create method for that
         // make the user verified if he is not
         if (user.hasRole(AuthRoles.UNVERIFIED))
             user.getRoles().remove(AuthRoles.UNVERIFIED);
@@ -489,9 +523,9 @@ public abstract class AbstractUserService
      * @return
      */
     @Override
-    public String createNewAuthToken(String targetUserEmail) throws EntityNotFoundException {
-        Optional<U> byEmail = findByEmail(targetUserEmail);
-        VerifyEntity.isPresent(byEmail, "user with email: " + targetUserEmail + " not found");
+    public String createNewAuthToken(String email) throws EntityNotFoundException {
+        Optional<U> byEmail = findByEmail(email);
+        VerifyEntity.isPresent(byEmail, "user with email: " + email + " not found");
         return authorizationTokenService.createToken(authenticatedPrincipalFactory.create(byEmail.get()));
     }
 
@@ -526,13 +560,16 @@ public abstract class AbstractUserService
                 MapUtils.mapOf("email", user.getEmail()));
         String verificationCode = jweTokenService.createToken(claims);
 
-        // make the link
-        // todo change, get url from authProperties, use url builder
-//        String verifyLink = coreProperties.getApplicationUrl()
-//                + "/users/" + user.getId() + "/verification?code=" + verificationCode;
-        String verifyLink = properties.getController().getVerifyUserUrl()
-                + "?id=" + user.getId()
-                + "&code=" + verificationCode;
+
+        String verifyLink = UriComponentsBuilder
+                .fromHttpUrl(
+                        properties.getCoreProperties().getApplicationUrl()
+                                +properties.getController().getVerifyUserUrl())
+//                .queryParam("id", user.getId())
+                .queryParam("code",verificationCode)
+                .toUriString();
+        log.info("change email link: " + verifyLink);
+
 
         // send the mail
         MailData mailData = MailData.builder()
@@ -563,7 +600,14 @@ public abstract class AbstractUserService
         String forgotPasswordCode = jweTokenService.createToken(claims);
 
         // make the link
-        String forgotPasswordLink = properties.getController().getForgotPasswordUrl() + "?code=" + forgotPasswordCode;
+        String forgotPasswordLink = UriComponentsBuilder
+                .fromHttpUrl(
+                        properties.getCoreProperties().getApplicationUrl()
+                                +properties.getController().getResetPasswordUrl())
+                .queryParam("code",forgotPasswordCode)
+                .toUriString();
+        log.info("forgotPasswordLink: " + forgotPasswordLink);
+
 
         MailData mailData = MailData.builder()
                 .to(user.getEmail())

@@ -138,6 +138,12 @@ public abstract class AbstractUserControllerTestTemplate<C extends AbstractUserC
                 .content(serialize(resetPasswordDto)));
     }
 
+    public ResultActions resetPassword(String url, Object resetPasswordDto) throws Exception {
+        return mvc.perform(post(url)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(serialize(resetPasswordDto)));
+    }
+
     public ResultActions fetchNewToken(String token) throws Exception {
         return mvc.perform(post(getController().getAuthProperties().getController().getNewAuthTokenUrl())
                 .header(HttpHeaders.AUTHORIZATION, token)

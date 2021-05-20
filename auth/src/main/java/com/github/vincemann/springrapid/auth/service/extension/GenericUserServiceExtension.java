@@ -53,8 +53,8 @@ public interface GenericUserServiceExtension<S extends UserService<U,Id>,U exten
     }
 
     @Override
-    default U resetPassword( ResetPasswordDto form) throws EntityNotFoundException, BadEntityException {
-        return getNext().resetPassword(form);
+    default U resetPassword( ResetPasswordDto dto) throws EntityNotFoundException, BadEntityException {
+        return getNext().resetPassword(dto);
     }
 
     @Override

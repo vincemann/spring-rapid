@@ -50,8 +50,11 @@ public class AuthProperties {
 
 	}
 
-    
-//	/**
+	public CoreProperties getCoreProperties() {
+		return coreProperties;
+	}
+
+	//	/**
 //	 * The default URL to redirect to after
 //	 * a user logs in using OAuth2/OpenIDConnect
 //	 */

@@ -128,9 +128,9 @@ public abstract class AbstractUserController<U extends AbstractUser<ID>, ID exte
 		ID id = fetchId(request);
 		String code = readRequestParam(request, "code");
 
-		log.debug("Verifying user with id: " + id);
-		U user = fetchUser(id);
-		U saved = getSecuredUserService().verifyUser(user, code);
+//		log.debug("Verifying user with id: " + id);
+//		U user = fetchUser(id);
+		U saved = getSecuredUserService().verifyUser(code);
 
 		appendFreshTokenOf(saved,response);
 		Object dto = getDtoMapper().mapToDto(saved,
@@ -161,11 +161,12 @@ public abstract class AbstractUserController<U extends AbstractUser<ID>, ID exte
 //			@RequestBody ResetPasswordForm form,
 			HttpServletRequest request,HttpServletResponse response) throws IOException, BadEntityException, EntityNotFoundException, BadTokenException {
 		String body = readBody(request);
-		ResetPasswordDto form = getJsonMapper().readDto(body, ResetPasswordDto.class);
-		getDtoValidationStrategy().validate(form);
+		String code = readRequestParam(request, "code");
+		ResetPasswordDto resetPasswordDto = getJsonMapper().readDto(body, ResetPasswordDto.class);
+		getDtoValidationStrategy().validate(resetPasswordDto);
 
 		log.debug("Resetting password ... ");
-		U saved = getSecuredUserService().resetPassword(form);
+		U saved = getSecuredUserService().resetPassword(resetPasswordDto, code);
 		appendFreshTokenOf(saved,response);
 		Object dto = getDtoMapper().mapToDto(saved,
 				createDtoClass(getAuthProperties().getController().resetPasswordUrl, Direction.RESPONSE, saved));
@@ -238,11 +239,11 @@ public abstract class AbstractUserController<U extends AbstractUser<ID>, ID exte
 			HttpServletRequest request,
 //			@RequestParam String code,
 			HttpServletResponse response) throws JsonProcessingException, BadEntityException, EntityNotFoundException, BadTokenException, IdFetchingException {
-		ID id = fetchId(request);
-		log.debug("Changing email of user with id: " + id);
+//		ID id = fetchId(request);
+//		log.debug("Changing email of user with id: " + id);
 		String code = readRequestParam(request, "code");
-		U user = fetchUser(id);
-		U saved = getSecuredUserService().changeEmail(user, code);
+//		U user = fetchUser(id);
+		U saved = getSecuredUserService().changeEmail(code);
 		appendFreshTokenOf(saved,response);
 		Object responseDto = getDtoMapper().mapToDto(saved,
 				createDtoClass(getAuthProperties().getController().changeEmailUrl, Direction.RESPONSE, saved));
