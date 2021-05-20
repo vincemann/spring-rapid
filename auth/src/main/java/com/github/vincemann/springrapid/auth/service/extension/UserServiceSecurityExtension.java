@@ -111,13 +111,14 @@ public class UserServiceSecurityExtension
         getNext().requestEmailChange(user, emailChangeForm);
     }
 
-    @LogInteraction
-    @Override
-    public AbstractUser changeEmail(AbstractUser user, String changeEmailCode) throws EntityNotFoundException,  BadEntityException {
-        VerifyEntity.isPresent(user,"User who's email should get changed does not exist");
-        getSecurityChecker().checkPermission(user, BasePermission.WRITE);
-        return getNext().changeEmail(user, changeEmailCode);
-    }
+
+    // admin can just change email via normal update
+//    @LogInteraction
+//    @Override
+//    public AbstractUser changeEmail(String changeEmailCode) throws EntityNotFoundException,  BadEntityException {
+//        getSecurityChecker().checkPermission(user, BasePermission.WRITE);
+//        return getNext().changeEmail(changeEmailCode);
+//    }
 
     @LogInteraction
     @Override

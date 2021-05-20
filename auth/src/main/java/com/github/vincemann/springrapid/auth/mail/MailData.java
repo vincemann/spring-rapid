@@ -9,15 +9,15 @@ import lombok.Setter;
 public class MailData {
 	
 	private String to;
-	private String subject;
+	private String topic;
 	private String body;
 	private String link;
 	private String code;
 
 	@Builder
-	public MailData(String to, String subject, String body, String link, String code) {
+	public MailData(String to, String topic, String body, String link, String code) {
 		this.to = to;
-		this.subject = subject;
+		this.topic = topic;
 		this.body = body;
 		this.link = link;
 		this.code = code;

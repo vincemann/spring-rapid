@@ -4,22 +4,14 @@ import com.github.vincemann.springrapid.auth.domain.AbstractUser;
 import com.github.vincemann.springrapid.auth.domain.dto.RequestEmailChangeDto;
 import com.github.vincemann.springrapid.auth.mail.MailData;
 import com.github.vincemann.springrapid.auth.service.AbstractUserService;
-import com.github.vincemann.springrapid.auth.service.token.BadTokenException;
-import com.github.vincemann.springrapid.auth.service.token.JweTokenService;
-import com.github.vincemann.springrapid.auth.util.RapidJwt;
 import com.github.vincemann.springrapid.auth.util.MapUtils;
-import com.nimbusds.jwt.JWTClaimsSet;
+import com.github.vincemann.springrapid.auth.util.RapidJwt;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
+
 import static com.github.vincemann.springrapid.authtests.adapter.AuthTestAdapter.*;
-
-import java.text.ParseException;
-import java.util.Map;
-
 import static org.hamcrest.Matchers.containsString;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 public class ChangeEmailTest extends AbstractRapidAuthIntegrationTest {
@@ -34,7 +26,7 @@ public class ChangeEmailTest extends AbstractRapidAuthIntegrationTest {
 		MailData mailData = testTemplate.requestEmailChange2xx(getUser().getId(), token,
 				new RequestEmailChangeDto(NEW_EMAIL));
 
-		testTemplate.changeEmail(getUser().getId(),mailData.getCode(),token)
+		testTemplate.changeEmail(mailData.getCode(),token)
 				//gets new token for new email to use
 				.andExpect(status().is2xxSuccessful())
 				.andExpect(header().string(HttpHeaders.AUTHORIZATION, containsString(".")))
@@ -52,7 +44,7 @@ public class ChangeEmailTest extends AbstractRapidAuthIntegrationTest {
 		MailData mailData = testTemplate.requestEmailChange2xx(getUnverifiedUser().getId(), token,
 				new RequestEmailChangeDto(NEW_EMAIL));
 
-		testTemplate.changeEmail(getUnverifiedUser().getId(),mailData.getCode(),token)
+		testTemplate.changeEmail(mailData.getCode(),token)
 				//gets new token for new email to use
 				.andExpect(status().is2xxSuccessful())
 				.andExpect(header().string(HttpHeaders.AUTHORIZATION, containsString(".")))
@@ -72,7 +64,7 @@ public class ChangeEmailTest extends AbstractRapidAuthIntegrationTest {
 
 		token = login2xx(SECOND_USER_EMAIL,SECOND_USER_PASSWORD);
 		// other user has sniffed correct code, but wrong token
-		testTemplate.changeEmail(getUser().getId(),mailData.getCode(),token)
+		testTemplate.changeEmail(mailData.getCode(),token)
 				//gets new token for new email to use
 				.andExpect(status().isForbidden());
 	}
@@ -83,11 +75,11 @@ public class ChangeEmailTest extends AbstractRapidAuthIntegrationTest {
 		MailData mailData = testTemplate.requestEmailChange2xx(getUser().getId(), token,
 				new RequestEmailChangeDto(NEW_EMAIL));
 
-		testTemplate.changeEmail(getUser().getId(),mailData.getCode(),token)
+		testTemplate.changeEmail(mailData.getCode(),token)
 				//gets new token for new email to use
 				.andExpect(status().is2xxSuccessful());
 
-		testTemplate.changeEmail(getUser().getId(),mailData.getCode(),token)
+		testTemplate.changeEmail(mailData.getCode(),token)
 				//gets new token for new email to use
 				.andExpect(status().is(401))
 				.andExpect(header().doesNotExist(HttpHeaders.AUTHORIZATION))
@@ -107,26 +99,26 @@ public class ChangeEmailTest extends AbstractRapidAuthIntegrationTest {
 
 
 		// Blank token
-		testTemplate.changeEmail(getUser().getId(),"",token)
+		testTemplate.changeEmail("",token)
 				//gets new token for new email to use
 				.andExpect(status().is(400));
 
 		// Wrong audience
 		String code = modCode(mailData.getCode(),"",null,null,null,null);
-		testTemplate.changeEmail(getUser().getId(),code,token)
+		testTemplate.changeEmail(code,token)
 				//gets new token for new email to use
 				.andExpect(status().is(403));
 
 
 		// Wrong userId subject
 		code = modCode(mailData.getCode(),null,getSecondUser().getId().toString(),null,null,null);
-		testTemplate.changeEmail(getUser().getId(),code,token)
+		testTemplate.changeEmail(code,token)
 				//gets new token for new email to use
 				.andExpect(status().is(403));
 
 		// Wrong new email
 		code = modCode(mailData.getCode(),null,null,null,null,MapUtils.mapOf("newEmail", "wrong.new.email@example.com"));
-		testTemplate.changeEmail(getUser().getId(),code,token)
+		testTemplate.changeEmail(code,token)
 				//gets new token for new email to use
 				.andExpect(status().is(403));
 	}
@@ -154,7 +146,7 @@ public class ChangeEmailTest extends AbstractRapidAuthIntegrationTest {
 
 
 		// now ready to test!
-		testTemplate.changeEmail(getUser().getId(),mailData.getCode(),token)
+		testTemplate.changeEmail(mailData.getCode(),token)
 				//gets new token for new email to use
 				.andExpect(status().is(403));
 	}
@@ -167,7 +159,7 @@ public class ChangeEmailTest extends AbstractRapidAuthIntegrationTest {
 	public void cantChangeOwnEmailWithoutRequestingEmailChangeFirst() throws Exception {
 		String code = createChangeEmailToken(getUser(), NEW_EMAIL, 600000L);
 		String token = login2xx(USER_EMAIL,USER_PASSWORD);
-		testTemplate.changeEmail(getUser().getId(),code,token)
+		testTemplate.changeEmail(code,token)
 				//gets new token for new email to use
 				.andExpect(status().is(400));
 	}
@@ -184,11 +176,11 @@ public class ChangeEmailTest extends AbstractRapidAuthIntegrationTest {
 				new RequestEmailChangeDto(NEW_EMAIL));
 
 		// Some other user changed to the same email, before i could issue my request
-		AbstractUser<Long> user = getUserService().findById(getAdmin().getId()).get();
+		AbstractUser<Long> user = getUserService().findById(getSecondUser().getId()).get();
 		user.setEmail(NEW_EMAIL);
 		getUserService().update(user);
 
-		testTemplate.changeEmail(getUser().getId(),mailData.getCode(),token)
+		testTemplate.changeEmail(mailData.getCode(),token)
 				//gets new token for new email to use
 				.andExpect(status().is(400));
 	}
@@ -196,10 +188,10 @@ public class ChangeEmailTest extends AbstractRapidAuthIntegrationTest {
 	protected String createChangeEmailToken(AbstractUser targetUser, String newEmail, Long expiration){
 		return jweTokenService.createToken(
 				RapidJwt.create(
-						AbstractUserService.CHANGE_EMAIL_SUBJECT,
+						AbstractUserService.CHANGE_EMAIL_AUDIENCE,
 						targetUser.getId().toString(),
 						expiration,
-						MapUtils.mapOf("newEmail", newEmail)));
+						MapUtils.mapOf("newEmail", newEmail,"id",targetUser.getId())));
 	}
 
 }

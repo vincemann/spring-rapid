@@ -10,7 +10,7 @@ import com.github.vincemann.springrapid.auth.mail.MailData;
 import com.github.vincemann.springrapid.auth.service.AbstractUserService;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
-import org.springframework.http.HttpHeaders;
+
 import static com.github.vincemann.springrapid.authtests.adapter.AuthTestAdapter.*;
 
 public class ResendVerificationMailTest extends AbstractRapidAuthIntegrationTest {
@@ -23,7 +23,7 @@ public class ResendVerificationMailTest extends AbstractRapidAuthIntegrationTest
 
 		MailData mailData = testTemplate.verifyMailWasSend();
 		Assertions.assertEquals(UNVERIFIED_USER_EMAIL,mailData.getTo());
-		Assertions.assertEquals(AbstractUserService.VERIFY_EMAIL_SUBJECT,mailData.getSubject());
+		Assertions.assertEquals(AbstractUserService.VERIFY_EMAIL_AUDIENCE,mailData.getTopic());
 	}
 
 	@Test

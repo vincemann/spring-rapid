@@ -30,7 +30,7 @@ public class VerificationTest extends AbstractRapidAuthIntegrationTest {
 		SignupDto signupDto = createValidSignupDto();
 		MailData mailData = testTemplate.signup2xx(signupDto);
 		AbstractUser<Long> savedUser = getUserService().findByEmail(signupDto.getEmail()).get();
-		testTemplate.verifyEmail(savedUser.getId(),mailData.getCode())
+		testTemplate.verifyEmail(mailData.getCode())
 				.andExpect(status().is(200))
 				.andExpect(header().string(HttpHeaders.AUTHORIZATION, containsString(".")))
 				.andExpect(jsonPath("$.id").value(savedUser.getId()))
@@ -46,43 +46,48 @@ public class VerificationTest extends AbstractRapidAuthIntegrationTest {
 		SignupDto signupDto = createValidSignupDto();
 		MailData mailData = testTemplate.signup2xx(signupDto);
 		AbstractUser<Long> savedUser = getUserService().findByEmail(signupDto.getEmail()).get();
-		testTemplate.verifyEmail(savedUser.getId(),mailData.getCode())
+		testTemplate.verifyEmail(mailData.getCode())
 				.andExpect(status().is2xxSuccessful());
 
-		testTemplate.verifyEmail(savedUser.getId(),mailData.getCode())
+		testTemplate.verifyEmail(mailData.getCode())
 				.andExpect(status().isBadRequest());
 	}
-	
-	@Test
-	public void cantVerifyEmailOfUnknownUser() throws Exception {
-		SignupDto signupDto = createValidSignupDto();
-		MailData mailData = testTemplate.signup2xx(signupDto);
-		testTemplate.verifyEmail(UNKNOWN_USER_ID,mailData.getCode())
-				.andExpect(status().isNotFound());
-	}
-	
+
+//	@Test
+//	public void cantVerifyEmailOfUnknownUser() throws Exception {
+//		SignupDto signupDto = createValidSignupDto();
+//		MailData mailData = testTemplate.signup2xx(signupDto);
+//		testTemplate.verifyEmail(UNKNOWN_USER_ID,mailData.getCode())
+//				.andExpect(status().isNotFound());
+//	}
+
 	@Test
 	public void cantVerifyEmailWithInvalidData() throws Exception {
 		SignupDto signupDto = createValidSignupDto();
 		MailData mailData = testTemplate.signup2xx(signupDto);
 		AbstractUser<Long> savedUser = getUserService().findByEmail(signupDto.getEmail()).get();
-		
+
 		// null code
-		testTemplate.verifyEmail(savedUser.getId(),null)
+		testTemplate.verifyEmail(null)
 				.andExpect(status().isBadRequest());
 
 		// blank code
-		testTemplate.verifyEmail(savedUser.getId(),"")
+		testTemplate.verifyEmail("")
 				.andExpect(status().isBadRequest());
 
 		// Wrong audience
 		String code = modCode(mailData.getCode(),"wrong-audience",null,null,null,null);
-		testTemplate.verifyEmail(savedUser.getId(),code)
+		testTemplate.verifyEmail(code)
 				.andExpect(status().isForbidden());
-		
+
 		// Wrong email
 		code = modCode(mailData.getCode(),null,SECOND_USER_EMAIL,null,null,null);
-		testTemplate.verifyEmail(savedUser.getId(),code)
+		testTemplate.verifyEmail(code)
+				.andExpect(status().isForbidden());
+
+		// Wrong user id
+		code = modCode(mailData.getCode(),null,SECOND_USER_EMAIL,null,null,null);
+		testTemplate.verifyEmail(code)
 				.andExpect(status().isForbidden());
 	}
 
@@ -95,7 +100,7 @@ public class VerificationTest extends AbstractRapidAuthIntegrationTest {
 		AbstractUser<Long> savedUser = getUserService().findByEmail(signupDto.getEmail()).get();
 		// expired token
 		Thread.sleep(51L);
-		testTemplate.verifyEmail(savedUser.getId(),mailData.getCode())
+		testTemplate.verifyEmail(mailData.getCode())
 				.andExpect(status().isForbidden());
 
 //
@@ -121,7 +126,7 @@ public class VerificationTest extends AbstractRapidAuthIntegrationTest {
 		savedUser.setCredentialsUpdatedMillis(System.currentTimeMillis());
 		getUserService().update(savedUser);
 
-		testTemplate.verifyEmail(savedUser.getId(),mailData.getCode())
+		testTemplate.verifyEmail(mailData.getCode())
 				.andExpect(status().isForbidden());
 	}
 }

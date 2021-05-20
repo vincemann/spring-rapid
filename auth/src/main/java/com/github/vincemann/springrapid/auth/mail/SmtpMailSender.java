@@ -47,7 +47,7 @@ public class SmtpMailSender implements MailSender<MailData> {
 			// create a helper
 			helper = new MimeMessageHelper(message, true);
 			// set the attributes
-			helper.setSubject(mail.getSubject());
+			helper.setSubject(mail.getTopic());
 			helper.setTo(mail.getTo());
 			helper.setText(mail.getBody(), true); // true indicates html
 			// continue using helper object for more functionalities like adding attachments, etc.  

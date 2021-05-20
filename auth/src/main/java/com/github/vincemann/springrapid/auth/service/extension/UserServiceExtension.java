@@ -40,8 +40,8 @@ public interface UserServiceExtension<S extends UserService>
     }
 
     @Override
-    default AbstractUser verifyUser(AbstractUser user, String verificationCode) throws EntityNotFoundException,  BadEntityException {
-        return getNext().verifyUser(user,verificationCode);
+    default AbstractUser verifyUser(String verificationCode) throws EntityNotFoundException,  BadEntityException {
+        return getNext().verifyUser(verificationCode);
     }
 
     @Override
@@ -50,8 +50,8 @@ public interface UserServiceExtension<S extends UserService>
     }
 
     @Override
-    default AbstractUser resetPassword(ResetPasswordDto dto) throws EntityNotFoundException, BadEntityException {
-        return getNext().resetPassword(dto);
+    default AbstractUser resetPassword(ResetPasswordDto dto, String code) throws EntityNotFoundException, BadEntityException {
+        return getNext().resetPassword(dto, code);
     }
 
     @Override
@@ -65,8 +65,8 @@ public interface UserServiceExtension<S extends UserService>
     }
 
     @Override
-    default AbstractUser changeEmail(AbstractUser user,  /*@NotBlank*/ String changeEmailCode) throws EntityNotFoundException, BadEntityException {
-        return getNext().changeEmail(user,changeEmailCode);
+    default AbstractUser changeEmail(/*@NotBlank*/ String changeEmailCode) throws EntityNotFoundException, BadEntityException {
+        return getNext().changeEmail(changeEmailCode);
     }
 
     @Override
