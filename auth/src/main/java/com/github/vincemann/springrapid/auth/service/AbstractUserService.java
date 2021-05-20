@@ -2,10 +2,7 @@ package com.github.vincemann.springrapid.auth.service;
 
 
 import com.github.vincemann.springrapid.auth.AuthProperties;
-import com.github.vincemann.springrapid.auth.domain.AbstractUser;
-import com.github.vincemann.springrapid.auth.domain.AbstractUserRepository;
-import com.github.vincemann.springrapid.auth.domain.AuthRoles;
-import com.github.vincemann.springrapid.auth.domain.RapidAuthAuthenticatedPrincipal;
+import com.github.vincemann.springrapid.auth.domain.*;
 import com.github.vincemann.springrapid.auth.domain.dto.ChangePasswordDto;
 import com.github.vincemann.springrapid.auth.domain.dto.RequestEmailChangeDto;
 import com.github.vincemann.springrapid.auth.domain.dto.ResetPasswordDto;
@@ -32,6 +29,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.annotation.Validated;
@@ -66,6 +64,7 @@ public abstract class AbstractUserService
     private AuthProperties properties;
     private MailSender<MailData> mailSender;
     private JweTokenService jweTokenService;
+    private IdConverter<ID> idIdConverter;
 //    private UserService<U, ID> rootUserService;
 
     /**
@@ -211,11 +210,7 @@ public abstract class AbstractUserService
     public U verifyUser(String verificationCode) throws EntityNotFoundException, BadEntityException {
         try {
             JWTClaimsSet claims = jweTokenService.parseToken(verificationCode);
-            String email = claims.getSubject();
-            // fetch the user
-            Optional<U> byEmail = findByEmail(email);
-            VerifyEntity.isPresent(byEmail, "User with email: " + email + " not found");
-            U user = byEmail.get();
+            U user = extractUserFromClaims(claims);
             RapidJwt.validate(claims, VERIFY_EMAIL_AUDIENCE, user.getCredentialsUpdatedMillis());
 
 
@@ -225,9 +220,9 @@ public abstract class AbstractUserService
             //verificationCode is jwtToken
 
 
-            VerifyAccess.condition(
-                    claims.getClaim("id").equals(user.getId().toString()),
-                    "Wrong user id in token");
+//            VerifyAccess.condition(
+//                    claims.getClaim("id").equals(user.getId().toString()),
+//                    "Wrong user id in token");
 
 
             //no login needed bc token of user is appended in controller -> we avoid dynamic logins in a stateless env
@@ -274,19 +269,13 @@ public abstract class AbstractUserService
             RapidJwt.validate(claims, FORGOT_PASSWORD_AUDIENCE);
 
             checkValidPassword(dto.getNewPassword());
-
-            String email = claims.getSubject();
-
-            // fetch the user
-            Optional<U> byEmail = findByEmail(email);
-            VerifyEntity.isPresent(byEmail, "User with email: " + email + " not found");
-            U user = byEmail.get();
+            U user = extractUserFromClaims(claims);
             RapidJwt.validateIssuedAfter(claims, user.getCredentialsUpdatedMillis());
 
 
-            VerifyAccess.condition(
-                    claims.getClaim("id").equals(user.getId().toString()),
-                    "Wrong user id in token");
+//            VerifyAccess.condition(
+//                    claims.getClaim("id").equals(user.getId().toString()),
+//                    "Wrong user id in token");
 
 
             // sets the password
@@ -379,11 +368,6 @@ public abstract class AbstractUserService
      */
     @Transactional(propagation = Propagation.REQUIRED, readOnly = false)
     public void requestEmailChange(U user, RequestEmailChangeDto emailChangeForm) throws EntityNotFoundException, AlreadyRegisteredException {
-//        log.debug("Requesting email change for user" + user);
-        // checks
-//        Optional<U> byId = getUserService().findById(userId);
-//        LexUtils.ensureFound(byId);
-//        U user = byId.get();
         VerifyEntity.isPresent(user, "User not found");
         checkUniqueEmail(emailChangeForm.getNewEmail());
 
@@ -413,10 +397,9 @@ public abstract class AbstractUserService
     protected void mailChangeEmailLink(U user) {
         JWTClaimsSet claims = RapidJwt.create(
                 CHANGE_EMAIL_AUDIENCE,
-                user.getEmail(),
+                user.getId().toString(),
                 properties.getJwt().getExpirationMillis(),
-                MapUtils.mapOf("newEmail", user.getNewEmail(),
-                        "id", user.getId().toString()));
+                MapUtils.mapOf("newEmail", user.getNewEmail()));
         String changeEmailCode = jweTokenService.createToken(claims);
 
         try {
@@ -463,18 +446,13 @@ public abstract class AbstractUserService
     public U changeEmail(String code) throws EntityNotFoundException, BadEntityException {
         try {
             JWTClaimsSet claims = jweTokenService.parseToken(code);
-
-            String email = claims.getSubject();
-            // fetch the user
-            Optional<U> byEmail = findByEmail(email);
-            VerifyEntity.isPresent(byEmail, "User with email: " + email + " not found");
-            U user = byEmail.get();
+            U user = extractUserFromClaims(claims);
 
             RapidJwt.validate(claims, CHANGE_EMAIL_AUDIENCE, user.getCredentialsUpdatedMillis());
 
-            VerifyAccess.condition(
-                    claims.getClaim("id").equals(user.getId().toString()),
-                    "Wrong user id in token");
+//            VerifyAccess.condition(
+//                    claims.getClaim("id").equals(user.getId().toString()),
+//                    "Wrong user id in token");
 
             VerifyEntity.is(StringUtils.isNotBlank(user.getNewEmail()), "No new email found. Looks like you have already changed.");
 
@@ -503,6 +481,14 @@ public abstract class AbstractUserService
         } catch (BadEntityException e) {
             throw new RuntimeException("Could not update users email", e);
         }
+    }
+
+    protected U extractUserFromClaims(JWTClaimsSet claims) throws BadEntityException, EntityNotFoundException {
+        ID id = idIdConverter.toId(claims.getSubject());
+        // fetch the user
+        Optional<U> byId = findById(id);
+        VerifyEntity.isPresent(byId, "User with id: " + id + " not found");
+        return byId.get();
     }
 
 
@@ -546,8 +532,7 @@ public abstract class AbstractUserService
                 user.getId().toString(),
                 properties.getJwt().getExpirationMillis(),
                 //payload
-                MapUtils.mapOf("email", user.getEmail(),
-                        "id",user.getId().toString()));
+                MapUtils.mapOf("email", user.getEmail()));
         String verificationCode = jweTokenService.createToken(claims);
 
 
@@ -585,9 +570,8 @@ public abstract class AbstractUserService
 
         log.debug("Mailing forgot password link to user: " + user);
         JWTClaimsSet claims = RapidJwt.create(FORGOT_PASSWORD_AUDIENCE,
-                user.getEmail(),
-                properties.getJwt().getExpirationMillis(),
-                MapUtils.mapOf("id",user.getId().toString()));
+                user.getId().toString(),
+                properties.getJwt().getExpirationMillis());
         String forgotPasswordCode = jweTokenService.createToken(claims);
 
         // make the link
@@ -677,6 +661,11 @@ public abstract class AbstractUserService
         this.jweTokenService = jweTokenService;
     }
 
+    @Lazy
+    @Autowired
+    public void injectIdIdConverter(IdConverter<ID> idIdConverter) {
+        this.idIdConverter = idIdConverter;
+    }
 
     @Autowired
     public void injectPrincipalUserConverter(AuthenticatedPrincipalFactory authenticatedPrincipalFactory) {

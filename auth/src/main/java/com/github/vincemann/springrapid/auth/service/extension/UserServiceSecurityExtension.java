@@ -9,6 +9,8 @@ import com.github.vincemann.springrapid.auth.domain.dto.RequestEmailChangeDto;
 import com.github.vincemann.springrapid.auth.security.RapidAuthSecurityContextChecker;
 import com.github.vincemann.springrapid.auth.service.AlreadyRegisteredException;
 import com.github.vincemann.springrapid.auth.service.UserService;
+import com.github.vincemann.springrapid.auth.service.token.BadTokenException;
+import com.github.vincemann.springrapid.auth.service.token.JweTokenService;
 import com.github.vincemann.springrapid.core.model.IdentifiableEntity;
 import com.github.vincemann.springrapid.core.security.RapidSecurityContextChecker;
 import com.github.vincemann.springrapid.core.service.exception.BadEntityException;
@@ -16,6 +18,7 @@ import com.github.vincemann.springrapid.core.service.exception.EntityNotFoundExc
 import com.github.vincemann.springrapid.core.util.Message;
 import com.github.vincemann.springrapid.core.util.VerifyAccess;
 import com.github.vincemann.springrapid.core.util.VerifyEntity;
+import com.nimbusds.jwt.JWTClaimsSet;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.AccessDeniedException;
@@ -35,6 +38,7 @@ public class UserServiceSecurityExtension
 
     private UserService userService;
     private RapidAuthSecurityContextChecker securityContextChecker;
+    private JweTokenService jweTokenService;
 
     @LogInteraction
     @Override
@@ -112,13 +116,23 @@ public class UserServiceSecurityExtension
     }
 
 
+    // if you have the code you can change the email
     // admin can just change email via normal update
-//    @LogInteraction
-//    @Override
-//    public AbstractUser changeEmail(String changeEmailCode) throws EntityNotFoundException,  BadEntityException {
-//        getSecurityChecker().checkPermission(user, BasePermission.WRITE);
-//        return getNext().changeEmail(changeEmailCode);
-//    }
+    @LogInteraction
+    @Override
+    public AbstractUser changeEmail(String changeEmailCode) throws EntityNotFoundException,  BadEntityException {
+        try {
+            JWTClaimsSet claims = jweTokenService.parseToken(changeEmailCode);
+            Serializable userId = claims.getSubject();
+            if (userId==null){
+                throw new BadEntityException("No user found with id: " + userId);
+            }
+            getSecurityChecker().checkPermission(userId,getLast().getEntityClass(), BasePermission.WRITE);
+        } catch (BadTokenException e) {
+            throw new BadEntityException(e);
+        }
+        return getNext().changeEmail(changeEmailCode);
+    }
 
     @LogInteraction
     @Override
@@ -139,6 +153,11 @@ public class UserServiceSecurityExtension
     @Autowired
     public void injectSecurityContextChecker(RapidAuthSecurityContextChecker securityContextChecker) {
         this.securityContextChecker = securityContextChecker;
+    }
+
+    @Autowired
+    public void injectJweTokenService(JweTokenService jweTokenService) {
+        this.jweTokenService = jweTokenService;
     }
 
     //todo did not find method... problems?

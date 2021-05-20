@@ -125,7 +125,6 @@ public abstract class AbstractUserController<U extends AbstractUser<ID>, ID exte
 			HttpServletRequest request,
 //			@RequestParam String code,
 			HttpServletResponse response) throws JsonProcessingException, BadEntityException, EntityNotFoundException, BadTokenException, IdFetchingException {
-		ID id = fetchId(request);
 		String code = readRequestParam(request, "code");
 
 //		log.debug("Verifying user with id: " + id);
