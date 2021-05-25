@@ -34,7 +34,7 @@ public class ResetPasswordTest extends AbstractRapidAuthIntegrationTest {
     public void canResetPasswordWithCorrectCode() throws Exception {
         MailData mailData = testTemplate.forgotPassword2xx(USER_EMAIL);
         String code = mailData.getCode();
-        testTemplate.resetPassword(resetPasswordDto(NEW_PASSWORD), code)
+        testTemplate.resetPasswordWithLink(resetPasswordDto(NEW_PASSWORD), mailData.getLink())
                 .andExpect(status().is2xxSuccessful())
                 .andExpect(header().string(HttpHeaders.AUTHORIZATION, containsString(".")))
                 .andExpect(jsonPath("$.id").value(getUser().getId()));
@@ -47,14 +47,14 @@ public class ResetPasswordTest extends AbstractRapidAuthIntegrationTest {
     public void cantResetPasswordWithSameCodeTwice() throws Exception {
         MailData mailData = testTemplate.forgotPassword2xx(USER_EMAIL);
         String code = mailData.getCode();
-        testTemplate.resetPassword(resetPasswordDto(NEW_PASSWORD),code)
+        testTemplate.resetPasswordWithLink(resetPasswordDto(NEW_PASSWORD),mailData.getLink())
                 .andExpect(status().is2xxSuccessful());
 
         // New password should work
         login2xx(USER_EMAIL, NEW_PASSWORD);
 
         // Repeating shouldn't work
-        testTemplate.resetPassword(resetPasswordDto(USER_PASSWORD), code)
+        testTemplate.resetPasswordWithLink(resetPasswordDto(USER_PASSWORD), mailData.getLink())
                 .andExpect(status().isForbidden());
 
         login2xx(USER_EMAIL, NEW_PASSWORD);
@@ -73,15 +73,13 @@ public class ResetPasswordTest extends AbstractRapidAuthIntegrationTest {
     public void cantResetPasswordWithInvalidPassword() throws Exception {
         // Blank password
         MailData mailData = testTemplate.forgotPassword2xx(USER_EMAIL);
-        String code = mailData.getCode();
-        testTemplate.resetPassword(resetPasswordDto(""),code)
+        testTemplate.resetPasswordWithLink(resetPasswordDto(""),mailData.getLink())
                 .andExpect(status().isBadRequest());
 
 
         // Invalid password
         mailData = testTemplate.forgotPassword2xx(USER_EMAIL);
-        code = mailData.getCode();
-        testTemplate.resetPassword(resetPasswordDto(INVALID_PASSWORD),code)
+        testTemplate.resetPassword(resetPasswordDto(INVALID_PASSWORD),mailData.getLink())
                 .andExpect(status().isBadRequest());
     }
 

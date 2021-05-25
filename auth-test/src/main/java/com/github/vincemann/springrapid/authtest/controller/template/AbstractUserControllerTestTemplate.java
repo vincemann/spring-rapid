@@ -91,6 +91,12 @@ public abstract class AbstractUserControllerTestTemplate<C extends AbstractUserC
                 .header("contentType", MediaType.APPLICATION_FORM_URLENCODED));
     }
 
+    public ResultActions changeEmailWithLink(String link, String token) throws Exception {
+        return mvc.perform(post(link)
+                .header(HttpHeaders.AUTHORIZATION, token)
+                .header("contentType", MediaType.APPLICATION_FORM_URLENCODED));
+    }
+
 
     public ResultActions requestEmailChange(Serializable targetId, String token, Object requestNewEmailDto) throws Exception {
         return getMvc().perform(post(getController().getAuthProperties().getController().getRequestEmailChangeUrl())
@@ -136,6 +142,13 @@ public abstract class AbstractUserControllerTestTemplate<C extends AbstractUserC
         return mvc.perform(post(getController().getAuthProperties().getController().getResetPasswordUrl())
                 .contentType(MediaType.APPLICATION_JSON)
                 .param("code", code)
+                .content(serialize(resetPasswordDto)));
+    }
+
+    public ResultActions resetPasswordWithLink(Object resetPasswordDto,String link) throws Exception {
+        return mvc.perform(post(link)
+                .contentType(MediaType.APPLICATION_JSON)
+//                .param("code", code)
                 .content(serialize(resetPasswordDto)));
     }
 
@@ -194,6 +207,13 @@ public abstract class AbstractUserControllerTestTemplate<C extends AbstractUserC
         return mvc.perform(post(getController().getAuthProperties().getController().getVerifyUserUrl())
 //                .param("id", id.toString())
                 .param("code", code)
+                .header("contentType", MediaType.APPLICATION_FORM_URLENCODED));
+    }
+
+    public ResultActions verifyEmailWithLink(String link) throws Exception {
+        return mvc.perform(post(link)
+//                .param("id", id.toString())
+//                .param("code", code)
                 .header("contentType", MediaType.APPLICATION_FORM_URLENCODED));
     }
 
