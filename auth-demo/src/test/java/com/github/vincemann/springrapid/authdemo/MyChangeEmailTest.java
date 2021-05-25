@@ -7,4 +7,9 @@ import org.junit.jupiter.api.Test;
 @EnableProjectComponentScan
 public class MyChangeEmailTest extends ChangeEmailTest {
 
+    @Test
+    @Override
+    public void canChangeOwnEmail() throws Exception {
+        super.canChangeOwnEmail();
+    }
 }

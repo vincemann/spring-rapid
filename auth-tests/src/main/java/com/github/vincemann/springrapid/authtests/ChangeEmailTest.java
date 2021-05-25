@@ -27,7 +27,7 @@ public class ChangeEmailTest extends AbstractRapidAuthIntegrationTest {
 		MailData mailData = testTemplate.requestEmailChange2xx(getUser().getId(), token,
 				new RequestEmailChangeDto(NEW_EMAIL));
 
-		testTemplate.changeEmail(mailData.getCode(),token)
+		testTemplate.changeEmailWithLink(mailData.getLink(),token)
 				//gets new token for new email to use
 				.andExpect(status().is2xxSuccessful())
 				.andExpect(header().string(HttpHeaders.AUTHORIZATION, containsString(".")))
@@ -45,7 +45,7 @@ public class ChangeEmailTest extends AbstractRapidAuthIntegrationTest {
 		MailData mailData = testTemplate.requestEmailChange2xx(getUnverifiedUser().getId(), token,
 				new RequestEmailChangeDto(NEW_EMAIL));
 
-		testTemplate.changeEmail(mailData.getCode(),token)
+		testTemplate.changeEmailWithLink(mailData.getLink(),token)
 				//gets new token for new email to use
 				.andExpect(status().is2xxSuccessful())
 				.andExpect(header().string(HttpHeaders.AUTHORIZATION, containsString(".")))
@@ -65,7 +65,7 @@ public class ChangeEmailTest extends AbstractRapidAuthIntegrationTest {
 
 		token = login2xx(SECOND_USER_EMAIL,SECOND_USER_PASSWORD);
 		// other user has sniffed correct code, but wrong token
-		testTemplate.changeEmail(mailData.getCode(),token)
+		testTemplate.changeEmailWithLink(mailData.getLink(),token)
 				//gets new token for new email to use
 				.andExpect(status().isForbidden());
 	}
@@ -76,11 +76,11 @@ public class ChangeEmailTest extends AbstractRapidAuthIntegrationTest {
 		MailData mailData = testTemplate.requestEmailChange2xx(getUser().getId(), token,
 				new RequestEmailChangeDto(NEW_EMAIL));
 
-		testTemplate.changeEmail(mailData.getCode(),token)
+		testTemplate.changeEmailWithLink(mailData.getLink(),token)
 				//gets new token for new email to use
 				.andExpect(status().is2xxSuccessful());
 
-		testTemplate.changeEmail(mailData.getCode(),token)
+		testTemplate.changeEmailWithLink(mailData.getLink(),token)
 				//gets new token for new email to use
 				.andExpect(status().is(401))
 				.andExpect(header().doesNotExist(HttpHeaders.AUTHORIZATION))
@@ -100,12 +100,13 @@ public class ChangeEmailTest extends AbstractRapidAuthIntegrationTest {
 
 
 		// Blank token
-		testTemplate.changeEmail("",token)
+		String code = "";
+		testTemplate.changeEmail(code,token)
 				//gets new token for new email to use
 				.andExpect(status().is(400));
 
 		// Wrong audience
-		String code = modCode(mailData.getCode(),"",null,null,null,null);
+		code = modCode(mailData.getCode(),"",null,null,null,null);
 		testTemplate.changeEmail(code,token)
 				//gets new token for new email to use
 				.andExpect(status().is(403));
@@ -147,7 +148,7 @@ public class ChangeEmailTest extends AbstractRapidAuthIntegrationTest {
 
 
 		// now ready to test!
-		testTemplate.changeEmail(mailData.getCode(),token)
+		testTemplate.changeEmailWithLink(mailData.getLink(),token)
 				//gets new token for new email to use
 				.andExpect(status().is(403));
 	}
@@ -182,7 +183,7 @@ public class ChangeEmailTest extends AbstractRapidAuthIntegrationTest {
 		user.setEmail(NEW_EMAIL);
 		getUserService().update(user);
 
-		testTemplate.changeEmail(mailData.getCode(),token)
+		testTemplate.changeEmailWithLink(mailData.getLink(),token)
 				//gets new token for new email to use
 				.andExpect(status().is(400));
 	}

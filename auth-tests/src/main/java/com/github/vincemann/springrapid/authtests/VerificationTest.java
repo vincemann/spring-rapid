@@ -30,7 +30,7 @@ public class VerificationTest extends AbstractRapidAuthIntegrationTest {
 		SignupDto signupDto = createValidSignupDto();
 		MailData mailData = testTemplate.signup2xx(signupDto);
 		AbstractUser<Long> savedUser = getUserService().findByEmail(signupDto.getEmail()).get();
-		testTemplate.verifyEmail(mailData.getCode())
+		testTemplate.verifyEmailWithLink(mailData.getLink())
 				.andExpect(status().is(200))
 				.andExpect(header().string(HttpHeaders.AUTHORIZATION, containsString(".")))
 				.andExpect(jsonPath("$.id").value(savedUser.getId()))
@@ -45,10 +45,10 @@ public class VerificationTest extends AbstractRapidAuthIntegrationTest {
 	public void cantVerifyEmailTwiceWithSameCode() throws Exception {
 		SignupDto signupDto = createValidSignupDto();
 		MailData mailData = testTemplate.signup2xx(signupDto);
-		testTemplate.verifyEmail(mailData.getCode())
+		testTemplate.verifyEmailWithLink(mailData.getLink())
 				.andExpect(status().is2xxSuccessful());
 
-		testTemplate.verifyEmail(mailData.getCode())
+		testTemplate.verifyEmailWithLink(mailData.getLink())
 				.andExpect(status().isForbidden());
 	}
 
@@ -60,6 +60,7 @@ public class VerificationTest extends AbstractRapidAuthIntegrationTest {
 //				.andExpect(status().isNotFound());
 //	}
 
+	// https://github.com/Gallopsled/pwntools/issues/1783
 	@Test
 	public void cantVerifyEmailWithInvalidData() throws Exception {
 		SignupDto signupDto = createValidSignupDto();
@@ -99,7 +100,7 @@ public class VerificationTest extends AbstractRapidAuthIntegrationTest {
 		AbstractUser<Long> savedUser = getUserService().findByEmail(signupDto.getEmail()).get();
 		// expired token
 		Thread.sleep(51L);
-		testTemplate.verifyEmail(mailData.getCode())
+		testTemplate.verifyEmailWithLink(mailData.getLink())
 				.andExpect(status().isForbidden());
 
 //
@@ -125,7 +126,7 @@ public class VerificationTest extends AbstractRapidAuthIntegrationTest {
 		savedUser.setCredentialsUpdatedMillis(System.currentTimeMillis());
 		getUserService().update(savedUser);
 
-		testTemplate.verifyEmail(mailData.getCode())
+		testTemplate.verifyEmailWithLink(mailData.getLink())
 				.andExpect(status().isForbidden());
 	}
 }
