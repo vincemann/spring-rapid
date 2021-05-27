@@ -23,9 +23,6 @@ import java.io.IOException;
 @Controller
 public class UserController extends AbstractUserController<User, Long, MyUserService>  {
 
-    @Autowired
-    private UserRepository userRepository;
-
     @Override
     protected DtoMappingContext provideDtoMappingContext(UserDtoMappingContextBuilder builder) {
         return builder
@@ -50,36 +47,6 @@ public class UserController extends AbstractUserController<User, Long, MyUserSer
                 .withRoles(Roles.ADMIN)
                 .forEndpoint(getUpdateUrl(), MyFullUserDto.class)
                 .build();
-    }
-
-
-    @GetMapping("/show-users")
-    public String showUsers(Model model) {
-        System.err.println("show users queried");
-        model.addAttribute("users", userRepository.findAll());
-        return "show-users";
-    }
-
-
-    @GetMapping("/reset-pass-view")
-    public String showResetPassword(Model model, HttpServletRequest request) throws BadEntityException {
-        System.err.println("reset passs queried");
-        String code = readRequestParam(request, "code");
-        model.addAttribute("code",code);
-        model.addAttribute("resetPasswordDto",new ResetPasswordDto());
-        return "reset-password";
-    }
-
-    @PostMapping("/reset-password")
-    public ResponseEntity<?> resetPassword(HttpServletRequest request/*, @RequestBody ResetPasswordDto resetPasswordDto*/) throws BadEntityException, IOException {
-        System.err.println("change passs queried");
-        String body = readBody(request);
-        System.err.println("body: " + body);
-        String code = readRequestParam(request, "code");
-        System.err.println("code: " + code);
-
-//        System.err.println("dto: " + resetPasswordDto);
-        return ResponseEntity.ok().build();
     }
 
 

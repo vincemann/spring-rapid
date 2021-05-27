@@ -1,4 +1,4 @@
-package com.github.vincemann.springrapid.authdemo.dto;
+package com.github.vincemann.springrapid.auth.domain.dto;
 
 import lombok.*;
 
@@ -7,7 +7,7 @@ import lombok.*;
 @Getter
 @Setter
 @ToString
-public class ResetPasswordDto {
+public class ResetPasswordView {
     private String password;
     private String matchPassword;
 }

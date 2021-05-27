@@ -13,6 +13,7 @@ public class UserEndpointInfo extends CrudEndpointInfo {
     private boolean exposeVerifyUser =true;
     private boolean exposeForgotPassword =true;
     private boolean exposeResetPassword =true;
+    private boolean exposeResetPasswordView =true;
     private boolean exposeFetchByEmail =true;
     private boolean exposeChangePassword=true;
     private boolean exposeRequestEmailChange=true;

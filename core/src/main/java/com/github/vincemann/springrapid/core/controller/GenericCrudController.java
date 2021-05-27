@@ -33,6 +33,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.servlet.mvc.method.RequestMappingInfo;
 
@@ -411,6 +412,12 @@ public abstract class GenericCrudController
         log.debug("Exposing " + methodName + " Endpoint for " + this.getClass().getSimpleName());
         getEndpointService().addMapping(requestMappingInfo,
                 this.getClass().getMethod(methodName, HttpServletRequest.class, HttpServletResponse.class), this);
+    }
+
+    protected void registerViewEndpoint(RequestMappingInfo requestMappingInfo, String methodName) throws NoSuchMethodException {
+        log.debug("Exposing " + methodName + " Endpoint for " + this.getClass().getSimpleName());
+        getEndpointService().addMapping(requestMappingInfo,
+                this.getClass().getMethod(methodName, HttpServletRequest.class, HttpServletResponse.class, Model.class), this);
     }
 
     protected RequestMappingInfo createFindRequestMappingInfo() {
