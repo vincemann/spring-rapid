@@ -4,10 +4,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 
 import com.github.vincemann.springrapid.auth.AuthProperties;
 import com.github.vincemann.springrapid.auth.domain.AbstractUser;
-import com.github.vincemann.springrapid.auth.domain.dto.ChangePasswordDto;
-import com.github.vincemann.springrapid.auth.domain.dto.RequestEmailChangeDto;
-import com.github.vincemann.springrapid.auth.domain.dto.SignupDto;
-import com.github.vincemann.springrapid.auth.domain.dto.ResetPasswordDto;
+import com.github.vincemann.springrapid.auth.domain.dto.*;
 import com.github.vincemann.springrapid.auth.domain.dto.user.RapidFindForeignUserDto;
 import com.github.vincemann.springrapid.auth.domain.dto.user.RapidFindOwnUserDto;
 import com.github.vincemann.springrapid.auth.domain.dto.user.RapidFullUserDto;
@@ -18,6 +15,7 @@ import com.github.vincemann.springrapid.auth.service.token.HttpTokenService;
 import com.github.vincemann.springrapid.auth.util.MapUtils;
 import com.github.vincemann.springrapid.acl.proxy.Secured;
 
+import com.github.vincemann.springrapid.auth.util.UrlParamUtil;
 import com.github.vincemann.springrapid.core.controller.GenericCrudController;
 import com.github.vincemann.springrapid.core.controller.dto.mapper.context.Direction;
 import com.github.vincemann.springrapid.core.controller.dto.mapper.context.DtoMappingContext;
@@ -32,7 +30,9 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Lazy;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.method.RequestMappingInfo;
 
@@ -160,8 +160,20 @@ public abstract class AbstractUserController<U extends AbstractUser<ID>, ID exte
 //			@RequestBody ResetPasswordForm form,
 			HttpServletRequest request,HttpServletResponse response) throws IOException, BadEntityException, EntityNotFoundException, BadTokenException {
 		String body = readBody(request);
+		// todo terrible, fix this, check for equality in inline js in html file
+		// and send propert json in body not url param encoded in body
+		Map<String, String> bodyParams = UrlParamUtil.splitQuery(body);
 		String code = readRequestParam(request, "code");
-		ResetPasswordDto resetPasswordDto = getJsonMapper().readDto(body, ResetPasswordDto.class);
+		String password = bodyParams.get("password");
+		String matchPassword = bodyParams.get("matchPassword");
+		if (password==null || matchPassword == null){
+			throw new BadEntityException("Insufficient Password data");
+		}
+		if (!password.equals(matchPassword)){
+			throw new BadEntityException("Passwords do not match");
+		}
+		ResetPasswordDto resetPasswordDto = new ResetPasswordDto(password);
+//		ResetPasswordDto resetPasswordDto = getJsonMapper().readDto(body, ResetPasswordDto.class);
 		getDtoValidationStrategy().validate(resetPasswordDto);
 
 		log.debug("Resetting password ... ");
@@ -170,6 +182,14 @@ public abstract class AbstractUserController<U extends AbstractUser<ID>, ID exte
 		Object dto = getDtoMapper().mapToDto(saved,
 				createDtoClass(getAuthProperties().getController().resetPasswordUrl, Direction.RESPONSE, saved));
 		return ok(getJsonMapper().writeDto(dto));
+	}
+
+	public String showResetPassword(HttpServletRequest request, HttpServletResponse response, Model model) throws IOException, BadEntityException, EntityNotFoundException, BadTokenException {
+		String code = readRequestParam(request, "code");
+		model.addAttribute("code",code);
+		model.addAttribute("resetPasswordUrl",getAuthProperties().getController().getResetPasswordUrl());
+		model.addAttribute("resetPasswordDto",new ResetPasswordView());
+		return "reset-password";
 	}
 
 
@@ -358,6 +378,9 @@ public abstract class AbstractUserController<U extends AbstractUser<ID>, ID exte
 		if (getEndpointInfo().isExposeForgotPassword()){
 			registerEndpoint(createForgotPasswordRequestMappingInfo(),"forgotPassword");
 		}
+		if (getEndpointInfo().isExposeResetPasswordView()){
+			registerViewEndpoint(createResetPasswordViewRequestMappingInfo(),"showResetPassword");
+		}
 		if (getEndpointInfo().isExposeResetPassword()){
 			registerEndpoint(createResetPasswordRequestMappingInfo(),"resetPassword");
 		}
@@ -423,12 +446,21 @@ public abstract class AbstractUserController<U extends AbstractUser<ID>, ID exte
 				.build();
 	}
 
+	protected RequestMappingInfo createResetPasswordViewRequestMappingInfo() {
+		return RequestMappingInfo
+				.paths(getAuthProperties().getController().getResetPasswordViewUrl())
+				.methods(RequestMethod.GET)
+//				.consumes(MediaType.APPLICATION_FORM_URLENCODED_VALUE)
+				.build();
+	}
+
 	protected RequestMappingInfo createResetPasswordRequestMappingInfo() {
 		return RequestMappingInfo
 				.paths(getAuthProperties().getController().getResetPasswordUrl())
 				.methods(RequestMethod.POST)
 				.produces(getMediaType())
-				.consumes(getMediaType())
+//				.consumes(getMediaType())
+				.consumes(MediaType.APPLICATION_FORM_URLENCODED_VALUE)
 				.build();
 	}
 
