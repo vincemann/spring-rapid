@@ -12,13 +12,13 @@ import com.github.vincemann.springrapid.core.controller.dto.mapper.context.DtoRe
 import com.github.vincemann.springrapid.core.security.Roles;
 import com.github.vincemann.springrapid.core.service.exception.BadEntityException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.servlet.ModelAndView;
 
 import javax.servlet.http.HttpServletRequest;
+import java.io.IOException;
 
 @Controller
 public class UserController extends AbstractUserController<User, Long, MyUserService>  {
@@ -52,12 +52,6 @@ public class UserController extends AbstractUserController<User, Long, MyUserSer
                 .build();
     }
 
-//    @GetMapping("/user/changePassword")
-//    public ModelAndView showChangePasswordPage(final ModelMap model, @RequestParam("code") final String code) {
-////        final String result = securityUserService.validatePasswordResetToken(code);
-////        model.addAttribute("messageKey", messageKey);
-//        return new ModelAndView("redirect:/updatePassword");
-//    }
 
     @GetMapping("/show-users")
     public String showUsers(Model model) {
@@ -66,24 +60,26 @@ public class UserController extends AbstractUserController<User, Long, MyUserSer
         return "show-users";
     }
 
-    @GetMapping("/reset-pass")
+
+    @GetMapping("/reset-pass-view")
     public String showResetPassword(Model model, HttpServletRequest request) throws BadEntityException {
         System.err.println("reset passs queried");
-        //        String code = readRequestParam(request, "code");
-        //        model.addAttribute("code",code);
-        model.addAttribute("changePasswordDto",new ChangePasswordDto());
-        return "my-reset-password";
+        String code = readRequestParam(request, "code");
+        model.addAttribute("code",code);
+        model.addAttribute("resetPasswordDto",new ResetPasswordDto());
+        return "reset-password";
     }
 
-    @PostMapping("/change-password")
-    public String changePassword(HttpServletRequest request, @ModelAttribute ChangePasswordDto changePasswordDto) throws BadEntityException {
+    @PostMapping("/reset-password")
+    public ResponseEntity<?> resetPassword(HttpServletRequest request/*, @RequestBody ResetPasswordDto resetPasswordDto*/) throws BadEntityException, IOException {
         System.err.println("change passs queried");
-//        String code = readRequestParam(request, "code");
-//        System.err.println("code: " + code);
+        String body = readBody(request);
+        System.err.println("body: " + body);
+        String code = readRequestParam(request, "code");
+        System.err.println("code: " + code);
 
-        System.err.println("dto: " + changePasswordDto);
-        System.err.println("showing users, bc why not");
-        return "redirect:/show-users";
+//        System.err.println("dto: " + resetPasswordDto);
+        return ResponseEntity.ok().build();
     }
 
 
