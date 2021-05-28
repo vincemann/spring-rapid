@@ -190,6 +190,9 @@ public abstract class AbstractUserController<U extends AbstractUser<ID>, ID exte
 		return ok(getJsonMapper().writeDto(dto));
 	}
 
+	// use gui here bc someone could issue many forgot password requests for foreign emails with his new password set in forntend
+	// and if the user just clicks the link, his pw would be reset to attackers pw
+	// -> better to show view at backend, to make sure user can enter his password
 	public String showResetPassword(HttpServletRequest request, HttpServletResponse response, Model model) throws IOException, BadEntityException, EntityNotFoundException, BadTokenException {
 		String code = readRequestParam(request, "code");
 		model.addAttribute("code",code);
