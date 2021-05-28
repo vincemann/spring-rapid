@@ -2,6 +2,7 @@ package com.github.vincemann.springrapid.authtest.controller.template;
 
 import com.github.vincemann.springrapid.auth.controller.AbstractUserController;
 import com.github.vincemann.springrapid.auth.domain.AbstractUser;
+import com.github.vincemann.springrapid.auth.domain.dto.ResetPasswordView;
 import com.github.vincemann.springrapid.auth.mail.MailData;
 import com.github.vincemann.springrapid.auth.mail.MailSender;
 import com.github.vincemann.springrapid.auth.security.AuthenticatedPrincipalFactory;
@@ -23,6 +24,7 @@ import java.io.Serializable;
 import static org.hamcrest.Matchers.hasSize;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
@@ -138,18 +140,17 @@ public abstract class AbstractUserControllerTestTemplate<C extends AbstractUserC
         return verifyMailWasSend();
     }
 
-    public ResultActions resetPassword(Object resetPasswordDto, String code) throws Exception {
+    public ResultActions resetPassword(ResetPasswordView resetPasswordView, String code) throws Exception {
         return mvc.perform(post(getController().getAuthProperties().getController().getResetPasswordUrl())
-                .contentType(MediaType.APPLICATION_JSON)
+                .contentType(MediaType.APPLICATION_FORM_URLENCODED)
                 .param("code", code)
-                .content(serialize(resetPasswordDto)));
+                .content("password="+resetPasswordView.getPassword()+"&matchPassword="+resetPasswordView.getMatchPassword()));
     }
 
-    public ResultActions resetPasswordWithLink(Object resetPasswordDto,String link) throws Exception {
-        return mvc.perform(post(link)
-                .contentType(MediaType.APPLICATION_JSON)
-//                .param("code", code)
-                .content(serialize(resetPasswordDto)));
+    public ResultActions getResetPasswordView(String link) throws Exception {
+        return mvc.perform(get(link));
+//                .contentType(MediaType.APPLICATION_JSON)
+//                .content(serialize(resetPasswordDto)));
     }
 
     public ResultActions resetPassword(String url, Object resetPasswordDto, String code) throws Exception {
