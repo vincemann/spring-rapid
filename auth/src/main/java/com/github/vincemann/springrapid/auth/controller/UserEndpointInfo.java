@@ -18,6 +18,7 @@ public class UserEndpointInfo extends CrudEndpointInfo {
     private boolean exposeChangePassword=true;
     private boolean exposeRequestEmailChange=true;
     private boolean exposeChangeEmail=true;
+//    private boolean exposeChangeEmailView=true;
     private boolean exposeNewAuthToken =true;
     private boolean exposePing=true;
 }

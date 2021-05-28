@@ -367,17 +367,17 @@ public abstract class AbstractUserService
      * Requests for email change.
      */
     @Transactional(propagation = Propagation.REQUIRED, readOnly = false)
-    public void requestEmailChange(U user, RequestEmailChangeDto emailChangeForm) throws EntityNotFoundException, AlreadyRegisteredException {
+    public void requestEmailChange(U user, RequestEmailChangeDto emailChangeDto) throws EntityNotFoundException, AlreadyRegisteredException {
         VerifyEntity.isPresent(user, "User not found");
-        checkUniqueEmail(emailChangeForm.getNewEmail());
+        checkUniqueEmail(emailChangeDto.getNewEmail());
 
 //        LexUtils.validateField("updatedUser.password",
-//                passwordEncoder.matches(emailChangeForm.getPassword(),
+//                passwordEncoder.matches(emailChangeDto.getPassword(),
 //                        user.getPassword()),
 //                "com.naturalprogrammer.spring.wrong.password").go();
 
         // preserves the new email id
-        user.setNewEmail(emailChangeForm.getNewEmail());
+        user.setNewEmail(emailChangeDto.getNewEmail());
         //user.setChangeEmailCode(LemonValidationUtils.uid());
         try {
             U saved = update(user);
@@ -405,8 +405,6 @@ public abstract class AbstractUserService
         try {
 
             log.debug("Mailing change email link to user: " + user);
-
-
             String changeEmailLink = UriComponentsBuilder
                     .fromHttpUrl(
                             properties.getCoreProperties().getApplicationUrl()
@@ -578,7 +576,7 @@ public abstract class AbstractUserService
         String forgotPasswordLink = UriComponentsBuilder
                 .fromHttpUrl(
                         properties.getCoreProperties().getApplicationUrl()
-                                + properties.getController().getResetPasswordUrl())
+                                + properties.getController().getResetPasswordViewUrl())
                 .queryParam("code", forgotPasswordCode)
                 .toUriString();
         log.info("forgotPasswordLink: " + forgotPasswordLink);
