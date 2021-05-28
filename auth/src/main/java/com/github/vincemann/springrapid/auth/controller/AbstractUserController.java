@@ -151,6 +151,11 @@ public abstract class AbstractUserController<U extends AbstractUser<ID>, ID exte
 	}
 
 
+	public static String makeUrl(HttpServletRequest request)
+	{
+		return request.getRequestURL().toString() + "?" + request.getQueryString();
+	}
+
 	/**
 	 * Resets password after it's forgotten
 	 */
@@ -160,6 +165,7 @@ public abstract class AbstractUserController<U extends AbstractUser<ID>, ID exte
 //			@RequestBody ResetPasswordForm form,
 			HttpServletRequest request,HttpServletResponse response) throws IOException, BadEntityException, EntityNotFoundException, BadTokenException {
 		String body = readBody(request);
+		String url = makeUrl(request);
 		// todo terrible, fix this, check for equality in inline js in html file
 		// and send propert json in body not url param encoded in body
 		Map<String, String> bodyParams = UrlParamUtil.splitQuery(body);
@@ -240,11 +246,11 @@ public abstract class AbstractUserController<U extends AbstractUser<ID>, ID exte
 								   /*@RequestBody RequestEmailChangeForm emailChangeForm*/,HttpServletResponse response) throws BadEntityException, EntityNotFoundException, IdFetchingException, IOException, AlreadyRegisteredException {
 		ID id = fetchId(request);
 		String body = readBody(request);
-		RequestEmailChangeDto form = getJsonMapper().readDto(body, RequestEmailChangeDto.class);
-		getDtoValidationStrategy().validate(form);
+		RequestEmailChangeDto dto = getJsonMapper().readDto(body, RequestEmailChangeDto.class);
+		getDtoValidationStrategy().validate(dto);
 		log.debug("Requesting email change for user with " + id);
 		U user = fetchUser(id);
-		getSecuredUserService().requestEmailChange(user, form);
+		getSecuredUserService().requestEmailChange(user, dto);
 		return okNoContent();
 	}
 
@@ -252,8 +258,6 @@ public abstract class AbstractUserController<U extends AbstractUser<ID>, ID exte
 	/**
 	 * Changes the email
 	 */
-//	@PostMapping("${lemon.userController.changeEmailUrl}")
-//	@ResponseBody
 	public ResponseEntity<String> changeEmail(
 			HttpServletRequest request,
 //			@RequestParam String code,
@@ -270,12 +274,24 @@ public abstract class AbstractUserController<U extends AbstractUser<ID>, ID exte
 	}
 
 
+	// does not need view page bc email is encapsulated in code and you can only
+	// request email change if logged in (as opposed to forgotpassword)
+
+//	public String showChangeEmail(
+//			HttpServletRequest request,
+//			HttpServletResponse response,
+//			Model model) throws BadEntityException {
+//		String code = readRequestParam(request, "code");
+//		model.addAttribute("code",code);
+//		model.addAttribute("changeEmailUrl",getAuthProperties().getController().getChangeEmailUrl());
+//		model.addAttribute("changeEmailDto",new ChangeEmailView());
+//		return "change-email";
+//	}
+
 	/**
 	 * Fetch a new token - for session sliding, switch user etc.
 	 *
 	 */
-//	@PostMapping("${lemon.userController.newAuthTokenUrl}")
-//	@ResponseBody
 	public ResponseEntity<String> createNewAuthToken(
 			/*@RequestParam Optional<String> email,*/HttpServletRequest request,
 			HttpServletResponse response) throws BadEntityException, JsonProcessingException, EntityNotFoundException {
@@ -396,6 +412,10 @@ public abstract class AbstractUserController<U extends AbstractUser<ID>, ID exte
 		if (getEndpointInfo().isExposeChangeEmail()){
 			registerEndpoint(createChangeEmailRequestMappingInfo(),"changeEmail");
 		}
+
+//		if (getEndpointInfo().isExposeChangeEmailView()){
+//			registerViewEndpoint(createChangeEmailRequestViewMappingInfo(),"showChangeEmail");
+//		}
 		if (getEndpointInfo().isExposeNewAuthToken()){
 			registerEndpoint(createNewAuthTokenRequestMappingInfo(),"createNewAuthToken");
 		}
@@ -499,10 +519,18 @@ public abstract class AbstractUserController<U extends AbstractUser<ID>, ID exte
 		return RequestMappingInfo
 				.paths(getAuthProperties().getController().getChangeEmailUrl())
 				.methods(RequestMethod.POST)
-				//.consumes(MediaType.APPLICATION_FORM_URLENCODED_VALUE)
+				.consumes(MediaType.APPLICATION_FORM_URLENCODED_VALUE)
 				.produces(getMediaType())
 				.build();
 	}
+
+//	protected RequestMappingInfo createChangeEmailRequestViewMappingInfo() {
+//		return RequestMappingInfo
+//				.paths(getAuthProperties().getController().getChangeEmailViewUrl())
+//				.methods(RequestMethod.GET)
+//				.produces(getMediaType())
+//				.build();
+//	}
 
 	protected RequestMappingInfo createNewAuthTokenRequestMappingInfo() {
 		return RequestMappingInfo

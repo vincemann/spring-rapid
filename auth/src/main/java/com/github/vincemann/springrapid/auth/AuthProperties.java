@@ -42,6 +42,7 @@ public class AuthProperties {
 		public String resetPasswordViewUrl = userBaseUrl +"/reset-password-view";
 		public String fetchByEmailUrl = userBaseUrl +"/fetch-by-email";
 		public String changeEmailUrl = userBaseUrl +"/change-email";
+		public String changeEmailViewUrl = userBaseUrl +"/change-email-view";
 		public String verifyUserUrl = userBaseUrl +"/verify";
 		public String resendVerificationEmailUrl = userBaseUrl +"/resend-verification-email";
 		public String forgotPasswordUrl = userBaseUrl +"/forgot-password";
