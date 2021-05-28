@@ -460,6 +460,7 @@ public abstract class AbstractUserController<U extends AbstractUser<ID>, ID exte
 				.methods(RequestMethod.POST)
 				.produces(getMediaType())
 //				.consumes(getMediaType())
+				// todo terrible, fix this, check for equality in inline js in html file
 				.consumes(MediaType.APPLICATION_FORM_URLENCODED_VALUE)
 				.build();
 	}
