@@ -1,4 +1,4 @@
-package com.github.vincemann.springrapid.auth.domain.dto;
+package com.github.vincemann.springrapid.auth.dto;
 
 import com.fasterxml.jackson.annotation.JsonView;
 import com.github.vincemann.springrapid.auth.util.UserVerifyUtils;

@@ -24,7 +24,7 @@ public class FetchNewTokenTest extends AbstractRapidAuthIntegrationTest {
 	@Test
 	public void canFetchNewTokenForOwnUser() throws Exception {
 		String token = login2xx(USER_EMAIL,USER_PASSWORD);
-		MvcResult result = testTemplate.fetchNewToken(token)
+		MvcResult result = mvc.perform(testTemplate.fetchNewToken(token))
 				.andExpect(status().is2xxSuccessful())
 				.andExpect(jsonPath("$.token").value(containsString(".")))
 				.andReturn();
@@ -52,7 +52,7 @@ public class FetchNewTokenTest extends AbstractRapidAuthIntegrationTest {
 	@Test
 	public void adminCanFetchNewTokenForDiffUser() throws Exception {
 		String token = login2xx(ADMIN_EMAIL,ADMIN_PASSWORD);
-		MvcResult result = testTemplate.fetchNewToken(token, USER_EMAIL)
+		MvcResult result = mvc.perform(testTemplate.fetchNewToken(token, USER_EMAIL))
 				.andExpect(status().is2xxSuccessful())
 				.andReturn();
 
@@ -64,7 +64,7 @@ public class FetchNewTokenTest extends AbstractRapidAuthIntegrationTest {
 	@Test
 	public void cantFetchTokenForDiffUser() throws Exception {
 		String token = login2xx(USER_EMAIL,USER_PASSWORD);
-		testTemplate.fetchNewToken(token,SECOND_USER_EMAIL)
+		mvc.perform(testTemplate.fetchNewToken(token,SECOND_USER_EMAIL))
 				.andExpect(status().isForbidden());
 	}
 

@@ -1,7 +1,7 @@
 package com.github.vincemann.springrapid.auth.controller.dtoMapper;
 
-import com.github.vincemann.springrapid.auth.domain.AbstractUser;
-import com.github.vincemann.springrapid.auth.domain.dto.user.AbstractFindRapidUserDto;
+import com.github.vincemann.springrapid.auth.model.AbstractUser;
+import com.github.vincemann.springrapid.auth.dto.user.AbstractFindRapidUserDto;
 import com.github.vincemann.springrapid.core.controller.dto.mapper.EntityDtoPostProcessor;
 import com.github.vincemann.springrapid.core.service.exception.BadEntityException;
 import org.springframework.core.annotation.Order;

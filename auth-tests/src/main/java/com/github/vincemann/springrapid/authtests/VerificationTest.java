@@ -1,25 +1,17 @@
 package com.github.vincemann.springrapid.authtests;
 
-import com.github.vincemann.springrapid.auth.domain.AbstractUser;
-import com.github.vincemann.springrapid.auth.domain.AuthRoles;
-import com.github.vincemann.springrapid.auth.domain.dto.SignupDto;
+import com.github.vincemann.springrapid.auth.model.AbstractUser;
+import com.github.vincemann.springrapid.auth.model.AuthRoles;
+import com.github.vincemann.springrapid.auth.dto.SignupDto;
 import com.github.vincemann.springrapid.auth.mail.MailData;
-import com.github.vincemann.springrapid.auth.service.AbstractUserService;
-import com.github.vincemann.springrapid.auth.service.token.JweTokenService;
-import com.github.vincemann.springrapid.auth.util.RapidJwt;
-import com.github.vincemann.springrapid.auth.util.MapUtils;
 import org.hamcrest.Matchers;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
-import org.springframework.http.MediaType;
 
 import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.hasSize;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
-import static com.github.vincemann.springrapid.authtests.adapter.AuthTestAdapter.*;
 
 public class VerificationTest extends AbstractRapidAuthIntegrationTest {
 
@@ -30,7 +22,7 @@ public class VerificationTest extends AbstractRapidAuthIntegrationTest {
 		SignupDto signupDto = createValidSignupDto();
 		MailData mailData = testTemplate.signup2xx(signupDto);
 		AbstractUser<Long> savedUser = getUserService().findByEmail(signupDto.getEmail()).get();
-		testTemplate.verifyEmailWithLink(mailData.getLink())
+		mvc.perform(testTemplate.verifyEmailWithLink(mailData.getLink()))
 				.andExpect(status().is(200))
 				.andExpect(header().string(HttpHeaders.AUTHORIZATION, containsString(".")))
 				.andExpect(jsonPath("$.id").value(savedUser.getId()))
@@ -45,10 +37,10 @@ public class VerificationTest extends AbstractRapidAuthIntegrationTest {
 	public void cantVerifyEmailTwiceWithSameCode() throws Exception {
 		SignupDto signupDto = createValidSignupDto();
 		MailData mailData = testTemplate.signup2xx(signupDto);
-		testTemplate.verifyEmailWithLink(mailData.getLink())
+		mvc.perform(testTemplate.verifyEmailWithLink(mailData.getLink()))
 				.andExpect(status().is2xxSuccessful());
 
-		testTemplate.verifyEmailWithLink(mailData.getLink())
+		mvc.perform(testTemplate.verifyEmailWithLink(mailData.getLink()))
 				.andExpect(status().isForbidden());
 	}
 
@@ -67,16 +59,16 @@ public class VerificationTest extends AbstractRapidAuthIntegrationTest {
 		MailData mailData = testTemplate.signup2xx(signupDto);
 
 		// null code
-		testTemplate.verifyEmail(null)
+		mvc.perform(testTemplate.verifyEmail(null))
 				.andExpect(status().isBadRequest());
 
 		// blank code
-		testTemplate.verifyEmail("")
+		mvc.perform(testTemplate.verifyEmail(""))
 				.andExpect(status().isBadRequest());
 
 		// Wrong audience
 		String code = modCode(mailData.getCode(),"wrong-audience",null,null,null,null);
-		testTemplate.verifyEmail(code)
+		mvc.perform(testTemplate.verifyEmail(code))
 				.andExpect(status().isForbidden());
 
 		// test makes no sense
@@ -100,7 +92,7 @@ public class VerificationTest extends AbstractRapidAuthIntegrationTest {
 		AbstractUser<Long> savedUser = getUserService().findByEmail(signupDto.getEmail()).get();
 		// expired token
 		Thread.sleep(51L);
-		testTemplate.verifyEmailWithLink(mailData.getLink())
+		mvc.perform(testTemplate.verifyEmailWithLink(mailData.getLink()))
 				.andExpect(status().isForbidden());
 
 //
@@ -126,7 +118,7 @@ public class VerificationTest extends AbstractRapidAuthIntegrationTest {
 		savedUser.setCredentialsUpdatedMillis(System.currentTimeMillis());
 		getUserService().update(savedUser);
 
-		testTemplate.verifyEmailWithLink(mailData.getLink())
+		mvc.perform(testTemplate.verifyEmailWithLink(mailData.getLink()))
 				.andExpect(status().isForbidden());
 	}
 }

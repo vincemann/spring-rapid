@@ -1,8 +1,7 @@
 package com.github.vincemann.springrapid.auth.config;
 
-import com.github.vincemann.springrapid.auth.domain.AbstractUserRepository;
-import com.github.vincemann.springrapid.auth.domain.IdConverter;
-import com.github.vincemann.springrapid.auth.domain.RapidAuditorAware;
+import com.github.vincemann.springrapid.core.IdConverter;
+import com.github.vincemann.springrapid.core.model.RapidAuditorAware;
 import com.github.vincemann.springrapid.auth.mail.MailSender;
 import com.github.vincemann.springrapid.auth.mail.MockMailSender;
 import com.github.vincemann.springrapid.auth.mail.SmtpMailSender;

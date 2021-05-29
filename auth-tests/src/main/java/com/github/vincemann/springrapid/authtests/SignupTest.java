@@ -1,8 +1,8 @@
 package com.github.vincemann.springrapid.authtests;
 
-import com.github.vincemann.springrapid.auth.domain.AbstractUser;
-import com.github.vincemann.springrapid.auth.domain.AuthRoles;
-import com.github.vincemann.springrapid.auth.domain.dto.SignupDto;
+import com.github.vincemann.springrapid.auth.model.AbstractUser;
+import com.github.vincemann.springrapid.auth.model.AuthRoles;
+import com.github.vincemann.springrapid.auth.dto.SignupDto;
 import com.github.vincemann.springrapid.auth.mail.MailData;
 import org.hamcrest.Matchers;
 import org.junit.jupiter.api.Assertions;
@@ -29,7 +29,7 @@ public class SignupTest extends AbstractRapidAuthIntegrationTest {
 	@Test
 	public void cantSignupWithInvalidData() throws Exception {
 		SignupDto signupDto = createInvalidSignupDto();
-		testTemplate.signup(signupDto)
+		mvc.perform(testTemplate.signup(signupDto))
 				.andExpect(status().isBadRequest());
 
 		verify(unproxy(mailSender), never()).send(any());
@@ -39,7 +39,7 @@ public class SignupTest extends AbstractRapidAuthIntegrationTest {
 	public void canSignup() throws Exception {
 		SignupDto signupDto = createValidSignupDto();
 
-		testTemplate.signup(signupDto)
+		mvc.perform(testTemplate.signup(signupDto))
 				.andExpect(status().is(200))
 				.andExpect(header().string(HttpHeaders.AUTHORIZATION, containsString(".")))
 				.andExpect(jsonPath("$.id").exists())
@@ -72,7 +72,7 @@ public class SignupTest extends AbstractRapidAuthIntegrationTest {
 		testTemplate.signup2xx(signupDto);
 		signupDto.setPassword(signupDto.getPassword()+"new");
 
-		testTemplate.signup(signupDto)
+		mvc.perform(testTemplate.signup(signupDto))
 				.andExpect(status().isBadRequest());
 		// mock is reset by signup2xx so never only applies to latest signup
 		verify(unproxy(mailSender), never()).send(any());

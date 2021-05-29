@@ -1,7 +1,7 @@
 package com.github.vincemann.springrapid.auth.config;
 
 import com.github.vincemann.springrapid.auth.AuthProperties;
-import com.github.vincemann.springrapid.auth.domain.RapidAuthAuthenticatedPrincipal;
+import com.github.vincemann.springrapid.auth.model.RapidAuthAuthenticatedPrincipal;
 import com.github.vincemann.springrapid.auth.handler.RapidAuthenticationSuccessHandler;
 import com.github.vincemann.springrapid.auth.security.JwtAuthenticationFilter;
 import com.github.vincemann.springrapid.auth.security.bruteforce.LoginAttemptService;

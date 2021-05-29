@@ -18,7 +18,7 @@ public class ResendVerificationMailTest extends AbstractRapidAuthIntegrationTest
 	@Test
 	public void canResendVerificationMailForOwnAccount() throws Exception {
 		String token = login2xx(UNVERIFIED_USER_EMAIL, UNVERIFIED_USER_PASSWORD);
-		testTemplate.resendVerificationEmail(getUnverifiedUser().getId(),token)
+		mvc.perform(testTemplate.resendVerificationEmail(getUnverifiedUser().getId(),token))
 				.andExpect(status().is2xxSuccessful());
 
 		MailData mailData = testTemplate.verifyMailWasSend();
@@ -29,7 +29,7 @@ public class ResendVerificationMailTest extends AbstractRapidAuthIntegrationTest
 	@Test
 	public void userCantResendVerificationMailOfDiffUser() throws Exception {
 		String token = login2xx(USER_EMAIL, USER_PASSWORD);
-		testTemplate.resendVerificationEmail(getUnverifiedUser().getId(),token)
+		mvc.perform(testTemplate.resendVerificationEmail(getUnverifiedUser().getId(),token))
 				.andExpect(status().isForbidden());
 
 		verify(unproxy(mailSender), never()).send(any());
@@ -44,7 +44,7 @@ public class ResendVerificationMailTest extends AbstractRapidAuthIntegrationTest
 	@Test
 	public void blockedAdminCantResendVerificationMailOfDiffUser() throws Exception {
 		String token = login2xx(BLOCKED_ADMIN_EMAIL, BLOCKED_ADMIN_PASSWORD);
-		testTemplate.resendVerificationEmail(getUnverifiedUser().getId(),token)
+		mvc.perform(testTemplate.resendVerificationEmail(getUnverifiedUser().getId(),token))
 				.andExpect(status().isForbidden());
 
 		verify(unproxy(mailSender), never()).send(any());
@@ -52,7 +52,7 @@ public class ResendVerificationMailTest extends AbstractRapidAuthIntegrationTest
 
 	@Test
 	public void anonCantResendVerificationMail() throws Exception {
-		testTemplate.resendVerificationEmail(getUnverifiedUser().getId(),"")
+		mvc.perform(testTemplate.resendVerificationEmail(getUnverifiedUser().getId(),""))
 				.andExpect(status().isUnauthorized());
 		
 		verify(unproxy(mailSender), never()).send(any());
@@ -61,7 +61,7 @@ public class ResendVerificationMailTest extends AbstractRapidAuthIntegrationTest
 	@Test
 	public void alreadyVerified_cantResendVerificationMail() throws Exception {
 		String token = login2xx(USER_EMAIL, USER_PASSWORD);
-		testTemplate.resendVerificationEmail(getUser().getId(),token)
+		mvc.perform(testTemplate.resendVerificationEmail(getUser().getId(),token))
 				.andExpect(status().isBadRequest());
 
 		verify(unproxy(mailSender), never()).send(any());
@@ -72,7 +72,7 @@ public class ResendVerificationMailTest extends AbstractRapidAuthIntegrationTest
 	@Test
 	public void cantResendVerificationMailOfNonExistingUser() throws Exception {
 		String token = login2xx(USER_EMAIL, USER_PASSWORD);
-		testTemplate.resendVerificationEmail(UNKNOWN_USER_ID,token)
+		mvc.perform(testTemplate.resendVerificationEmail(UNKNOWN_USER_ID,token))
 				.andExpect(status().isNotFound());
 		
 		verify(unproxy(mailSender), never()).send(any());

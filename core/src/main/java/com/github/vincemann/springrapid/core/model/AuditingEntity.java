@@ -1,4 +1,4 @@
-package com.github.vincemann.springrapid.auth.domain;
+package com.github.vincemann.springrapid.core.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.github.vincemann.springrapid.core.model.IdentifiableEntityImpl;

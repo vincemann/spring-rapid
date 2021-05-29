@@ -1,8 +1,7 @@
-package com.github.vincemann.springrapid.auth.domain.dto;
+package com.github.vincemann.springrapid.auth.dto;
 
 import lombok.*;
 
-import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotEmpty;
 import java.io.Serializable;
 

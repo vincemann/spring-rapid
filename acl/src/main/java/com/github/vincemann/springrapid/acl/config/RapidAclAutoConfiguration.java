@@ -1,6 +1,8 @@
 package com.github.vincemann.springrapid.acl.config;
 
 import com.github.vincemann.springrapid.acl.AclProperties;
+import com.github.vincemann.springrapid.acl.framework.oidresolve.ObjectIdentityResolver;
+import com.github.vincemann.springrapid.acl.framework.oidresolve.RapidObjectIdentityResolver;
 import com.github.vincemann.springrapid.acl.service.AclPermissionService;
 import com.github.vincemann.springrapid.acl.service.PermissionStringConverter;
 import com.github.vincemann.springrapid.acl.service.RapidPermissionService;
@@ -145,6 +147,11 @@ public class RapidAclAutoConfiguration {
         return new JdbcMutableAclService(dataSource, lookupStrategy(), aclCache());
     }
 
+    @ConditionalOnMissingBean(ObjectIdentityResolver.class)
+    @Bean
+    public ObjectIdentityResolver objectIdentityResolver(){
+        return new RapidObjectIdentityResolver();
+    }
 
 }
 

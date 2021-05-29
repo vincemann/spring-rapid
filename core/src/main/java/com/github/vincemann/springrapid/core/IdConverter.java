@@ -1,4 +1,4 @@
-package com.github.vincemann.springrapid.auth.domain;
+package com.github.vincemann.springrapid.core;
 
 import com.github.vincemann.springrapid.core.slicing.ServiceComponent;
 

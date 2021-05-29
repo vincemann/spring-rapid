@@ -1,8 +1,9 @@
-package com.github.vincemann.springrapid.auth.domain;
+package com.github.vincemann.springrapid.auth.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonView;
 import com.github.vincemann.springrapid.auth.util.UserVerifyUtils;
+import com.github.vincemann.springrapid.core.model.AuditingEntity;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;

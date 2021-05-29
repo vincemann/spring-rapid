@@ -3,11 +3,11 @@ package com.github.vincemann.springrapid.auth.controller;
 import com.fasterxml.jackson.core.JsonProcessingException;
 
 import com.github.vincemann.springrapid.auth.AuthProperties;
-import com.github.vincemann.springrapid.auth.domain.AbstractUser;
-import com.github.vincemann.springrapid.auth.domain.dto.*;
-import com.github.vincemann.springrapid.auth.domain.dto.user.RapidFindForeignUserDto;
-import com.github.vincemann.springrapid.auth.domain.dto.user.RapidFindOwnUserDto;
-import com.github.vincemann.springrapid.auth.domain.dto.user.RapidFullUserDto;
+import com.github.vincemann.springrapid.auth.model.AbstractUser;
+import com.github.vincemann.springrapid.auth.dto.*;
+import com.github.vincemann.springrapid.auth.dto.user.RapidFindForeignUserDto;
+import com.github.vincemann.springrapid.auth.dto.user.RapidFindOwnUserDto;
+import com.github.vincemann.springrapid.auth.dto.user.RapidFullUserDto;
 import com.github.vincemann.springrapid.auth.service.AlreadyRegisteredException;
 import com.github.vincemann.springrapid.auth.service.UserService;
 import com.github.vincemann.springrapid.auth.service.token.BadTokenException;
@@ -522,7 +522,7 @@ public abstract class AbstractUserController<U extends AbstractUser<ID>, ID exte
 		return RequestMappingInfo
 				.paths(getAuthProperties().getController().getChangeEmailUrl())
 				.methods(RequestMethod.POST)
-				.consumes(MediaType.APPLICATION_FORM_URLENCODED_VALUE)
+//				.consumes(MediaType.APPLICATION_FORM_URLENCODED_VALUE)
 				.produces(getMediaType())
 				.build();
 	}

@@ -1,8 +1,7 @@
 package com.github.vincemann.springrapid.auth.security;
 
-import com.github.vincemann.springrapid.auth.domain.AbstractUser;
-import com.github.vincemann.springrapid.auth.domain.IdConverter;
-import com.github.vincemann.springrapid.auth.domain.RapidAuthAuthenticatedPrincipal;
+import com.github.vincemann.springrapid.auth.model.AbstractUser;
+import com.github.vincemann.springrapid.auth.model.RapidAuthAuthenticatedPrincipal;
 
 public class RapidAuthenticatedPrincipalFactory<U extends AbstractUser<?>>
         implements AuthenticatedPrincipalFactory<RapidAuthAuthenticatedPrincipal, U> {

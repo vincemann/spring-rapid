@@ -16,7 +16,7 @@ public class FetchUserByEmailTest extends AbstractRapidAuthIntegrationTest {
 
 	@Test
 	public void anonKnowsEmail_canFindMatchingId() throws Exception {
-		testTemplate.fetchByEmail(USER_EMAIL)
+		mvc.perform(testTemplate.fetchByEmail(USER_EMAIL))
 				.andExpect(status().is(200))
 				.andExpect(jsonPath("$.id").value(getUser().getId()))
 				.andExpect(jsonPath("$.password").doesNotExist())
@@ -27,11 +27,11 @@ public class FetchUserByEmailTest extends AbstractRapidAuthIntegrationTest {
 	public void anonKnowsInvalidEmail_cantFindMatchingId() throws Exception {
 		
 		// email does not exist
-		testTemplate.fetchByEmail(UNKNOWN_EMAIL)
+		mvc.perform(testTemplate.fetchByEmail(UNKNOWN_EMAIL))
                 .andExpect(status().isNotFound());
 
 		// Blank email
-		testTemplate.fetchByEmail("")
+		mvc.perform(testTemplate.fetchByEmail(""))
 				.andExpect(status().isBadRequest());
 	}
 

@@ -1,6 +1,6 @@
 package com.github.vincemann.springrapid.auth.config;
 
-import com.github.vincemann.springrapid.auth.domain.RapidAuthAuthenticatedPrincipal;
+import com.github.vincemann.springrapid.auth.model.RapidAuthAuthenticatedPrincipal;
 import com.github.vincemann.springrapid.auth.security.*;
 import com.github.vincemann.springrapid.auth.service.token.AuthorizationTokenService;
 import com.github.vincemann.springrapid.auth.service.token.RapidJwtAuthorizationTokenService;

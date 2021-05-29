@@ -1,4 +1,4 @@
-package com.github.vincemann.springrapid.auth.domain.dto.user;
+package com.github.vincemann.springrapid.auth.dto.user;
 
 import com.github.vincemann.springrapid.core.model.IdentifiableEntityImpl;
 import lombok.Getter;

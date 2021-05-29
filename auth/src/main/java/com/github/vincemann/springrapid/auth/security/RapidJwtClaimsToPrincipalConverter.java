@@ -1,7 +1,7 @@
 package com.github.vincemann.springrapid.auth.security;
 
-import com.github.vincemann.springrapid.auth.domain.AbstractUser;
-import com.github.vincemann.springrapid.auth.domain.RapidAuthAuthenticatedPrincipal;
+import com.github.vincemann.springrapid.auth.model.AbstractUser;
+import com.github.vincemann.springrapid.auth.model.RapidAuthAuthenticatedPrincipal;
 import com.github.vincemann.springrapid.auth.service.UserService;
 import com.github.vincemann.springrapid.auth.util.MapUtils;
 

@@ -1,7 +1,6 @@
-package com.github.vincemann.springrapid.auth.domain;
+package com.github.vincemann.springrapid.auth.model;
 
 import com.github.vincemann.springrapid.core.model.IdentifiableEntity;
-import com.sun.xml.bind.v2.model.core.ID;
 
 import java.io.Serializable;
 

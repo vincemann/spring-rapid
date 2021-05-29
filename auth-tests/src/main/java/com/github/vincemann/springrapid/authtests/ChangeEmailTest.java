@@ -1,7 +1,7 @@
 package com.github.vincemann.springrapid.authtests;
 
-import com.github.vincemann.springrapid.auth.domain.AbstractUser;
-import com.github.vincemann.springrapid.auth.domain.dto.RequestEmailChangeDto;
+import com.github.vincemann.springrapid.auth.model.AbstractUser;
+import com.github.vincemann.springrapid.auth.dto.RequestEmailChangeDto;
 import com.github.vincemann.springrapid.auth.mail.MailData;
 import com.github.vincemann.springrapid.auth.service.AbstractUserService;
 import com.github.vincemann.springrapid.auth.util.MapUtils;
@@ -27,7 +27,7 @@ public class ChangeEmailTest extends AbstractRapidAuthIntegrationTest {
 		MailData mailData = testTemplate.requestEmailChange2xx(getUser().getId(), token,
 				new RequestEmailChangeDto(NEW_EMAIL));
 
-		testTemplate.changeEmailWithLink(mailData.getLink(),token)
+		mvc.perform(testTemplate.changeEmailWithLink(mailData.getLink(),token))
 				//gets new token for new email to use
 				.andExpect(status().is2xxSuccessful())
 				.andExpect(header().string(HttpHeaders.AUTHORIZATION, containsString(".")))
@@ -45,7 +45,7 @@ public class ChangeEmailTest extends AbstractRapidAuthIntegrationTest {
 		MailData mailData = testTemplate.requestEmailChange2xx(getUnverifiedUser().getId(), token,
 				new RequestEmailChangeDto(NEW_EMAIL));
 
-		testTemplate.changeEmailWithLink(mailData.getLink(),token)
+		mvc.perform(testTemplate.changeEmailWithLink(mailData.getLink(),token))
 				//gets new token for new email to use
 				.andExpect(status().is2xxSuccessful())
 				.andExpect(header().string(HttpHeaders.AUTHORIZATION, containsString(".")))
@@ -65,7 +65,7 @@ public class ChangeEmailTest extends AbstractRapidAuthIntegrationTest {
 
 		token = login2xx(SECOND_USER_EMAIL,SECOND_USER_PASSWORD);
 		// other user has sniffed correct code, but wrong token
-		testTemplate.changeEmailWithLink(mailData.getLink(),token)
+		mvc.perform(testTemplate.changeEmailWithLink(mailData.getLink(),token))
 				//gets new token for new email to use
 				.andExpect(status().isForbidden());
 	}
@@ -76,11 +76,11 @@ public class ChangeEmailTest extends AbstractRapidAuthIntegrationTest {
 		MailData mailData = testTemplate.requestEmailChange2xx(getUser().getId(), token,
 				new RequestEmailChangeDto(NEW_EMAIL));
 
-		testTemplate.changeEmailWithLink(mailData.getLink(),token)
+		mvc.perform(testTemplate.changeEmailWithLink(mailData.getLink(),token))
 				//gets new token for new email to use
 				.andExpect(status().is2xxSuccessful());
 
-		testTemplate.changeEmailWithLink(mailData.getLink(),token)
+		mvc.perform(testTemplate.changeEmailWithLink(mailData.getLink(),token))
 				//gets new token for new email to use
 				.andExpect(status().is(401))
 				.andExpect(header().doesNotExist(HttpHeaders.AUTHORIZATION))
@@ -101,26 +101,26 @@ public class ChangeEmailTest extends AbstractRapidAuthIntegrationTest {
 
 		// Blank token
 		String code = "";
-		testTemplate.changeEmail(code,token)
+		mvc.perform(testTemplate.changeEmail(code,token))
 				//gets new token for new email to use
 				.andExpect(status().is(400));
 
 		// Wrong audience
 		code = modCode(mailData.getCode(),"",null,null,null,null);
-		testTemplate.changeEmail(code,token)
+		mvc.perform(testTemplate.changeEmail(code,token))
 				//gets new token for new email to use
 				.andExpect(status().is(403));
 
 
 		// Wrong userId subject
 		code = modCode(mailData.getCode(),null,getSecondUser().getId().toString(),null,null,null);
-		testTemplate.changeEmail(code,token)
+		mvc.perform(testTemplate.changeEmail(code,token))
 				//gets new token for new email to use
 				.andExpect(status().is(403));
 
 		// Wrong new email
 		code = modCode(mailData.getCode(),null,null,null,null,MapUtils.mapOf("newEmail", "wrong.new.email@example.com"));
-		testTemplate.changeEmail(code,token)
+		mvc.perform(testTemplate.changeEmail(code,token))
 				//gets new token for new email to use
 				.andExpect(status().is(403));
 	}
@@ -148,7 +148,7 @@ public class ChangeEmailTest extends AbstractRapidAuthIntegrationTest {
 
 
 		// now ready to test!
-		testTemplate.changeEmailWithLink(mailData.getLink(),token)
+		mvc.perform(testTemplate.changeEmailWithLink(mailData.getLink(),token))
 				//gets new token for new email to use
 				.andExpect(status().is(403));
 	}
@@ -162,7 +162,7 @@ public class ChangeEmailTest extends AbstractRapidAuthIntegrationTest {
 	public void cantChangeOwnEmailWithoutRequestingEmailChangeFirst() throws Exception {
 		String code = createChangeEmailToken(getUser(), NEW_EMAIL, 600000L);
 		String token = login2xx(USER_EMAIL,USER_PASSWORD);
-		testTemplate.changeEmail(code,token)
+		mvc.perform(testTemplate.changeEmail(code,token))
 				//gets new token for new email to use
 				.andExpect(status().isForbidden());
 	}
@@ -183,7 +183,7 @@ public class ChangeEmailTest extends AbstractRapidAuthIntegrationTest {
 		user.setEmail(NEW_EMAIL);
 		getUserService().update(user);
 
-		testTemplate.changeEmailWithLink(mailData.getLink(),token)
+		mvc.perform(testTemplate.changeEmailWithLink(mailData.getLink(),token))
 				//gets new token for new email to use
 				.andExpect(status().is(400));
 	}
