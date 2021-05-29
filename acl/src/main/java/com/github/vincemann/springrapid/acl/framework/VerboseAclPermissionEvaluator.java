@@ -1,9 +1,11 @@
 package com.github.vincemann.springrapid.acl.framework;
 
 import com.github.vincemann.aoplog.api.AopLoggable;
+import com.github.vincemann.springrapid.acl.framework.oidresolve.ObjectIdentityResolver;
 import com.github.vincemann.springrapid.acl.framework.oidresolve.RapidObjectIdentityResolver;
 import com.github.vincemann.springrapid.acl.framework.oidresolve.UnresolvableOidException;
 import com.github.vincemann.springrapid.acl.service.PermissionStringConverter;
+import com.github.vincemann.springrapid.core.IdConverter;
 import com.github.vincemann.springrapid.core.model.IdentifiableEntity;
 import com.github.vincemann.springrapid.core.security.RapidSecurityContext;
 import com.github.vincemann.springrapid.core.service.locator.CrudServiceLocator;
@@ -34,13 +36,12 @@ public class VerboseAclPermissionEvaluator extends AclPermissionEvaluator implem
     private ObjectIdentityGenerator objectIdentityGenerator = new ObjectIdentityRetrievalStrategyImpl();
     private SidRetrievalStrategy sidRetrievalStrategy = new SidRetrievalStrategyImpl();
     private PermissionFactory permissionFactory = new DefaultPermissionFactory();
-    private RapidObjectIdentityResolver objectIdentityResolver;
+    private ObjectIdentityResolver objectIdentityResolver;
     private PermissionStringConverter permissionStringConverter;
 
     public VerboseAclPermissionEvaluator(AclService aclService) {
         super(aclService);
         this.aclService = aclService;
-        log.debug("created");
     }
 
     /**
@@ -188,8 +189,8 @@ public class VerboseAclPermissionEvaluator extends AclPermissionEvaluator implem
     }
 
     @Autowired
-    public void createObjectIdentityResolver(CrudServiceLocator crudServiceLocator) {
-        this.objectIdentityResolver = new RapidObjectIdentityResolver(crudServiceLocator);
+    public void injectObjectIdentityResolver(ObjectIdentityResolver objectIdentityResolver) {
+        this.objectIdentityResolver = objectIdentityResolver;
     }
 
     @Autowired

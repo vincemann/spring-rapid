@@ -1,13 +1,12 @@
 package com.github.vincemann.springrapid.acldemo.model;
 
-import com.github.vincemann.springrapid.auth.domain.AbstractUser;
+import com.github.vincemann.springrapid.auth.model.AbstractUser;
 import com.google.common.collect.Sets;
 import com.sun.istack.Nullable;
 import lombok.*;
 
 import javax.persistence.Entity;
 import javax.persistence.Table;
-import javax.validation.constraints.NotBlank;
 import java.util.Set;
 
 @Entity

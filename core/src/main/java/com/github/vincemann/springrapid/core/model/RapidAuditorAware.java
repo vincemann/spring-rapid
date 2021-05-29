@@ -1,5 +1,6 @@
-package com.github.vincemann.springrapid.auth.domain;
+package com.github.vincemann.springrapid.core.model;
 
+import com.github.vincemann.springrapid.core.IdConverter;
 import com.github.vincemann.springrapid.core.security.RapidAuthenticatedPrincipal;
 import com.github.vincemann.springrapid.core.security.RapidSecurityContext;
 import lombok.extern.slf4j.Slf4j;

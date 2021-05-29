@@ -1,21 +1,15 @@
 package com.github.vincemann.springrapid.authtest.controller;
 
 import com.github.vincemann.springrapid.auth.controller.AbstractUserController;
-import com.github.vincemann.springrapid.auth.domain.AbstractUser;
 import com.github.vincemann.springrapid.authtest.controller.template.AbstractUserControllerTestTemplate;
 import com.github.vincemann.springrapid.coretest.controller.integration.AbstractIntegrationControllerTest;
 import org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers;
 import org.springframework.test.web.servlet.ResultActions;
-import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
 import org.springframework.test.web.servlet.setup.DefaultMockMvcBuilder;
 
 public abstract class AbstractUserIntegrationControllerTest
         <C extends AbstractUserController, T extends AbstractUserControllerTestTemplate>
                 extends AbstractIntegrationControllerTest<C,AbstractUserControllerTestTemplate> {
-
-    public ResultActions signup(Object dto) throws Exception{
-        return getTestTemplate().signup(dto);
-    }
 
     @Override
     protected DefaultMockMvcBuilder createMvcBuilder() {
@@ -27,7 +21,7 @@ public abstract class AbstractUserIntegrationControllerTest
 
 
     public ResultActions login(String email, String password) throws Exception {
-        return getTestTemplate().login(email,password);
+        return getTestTemplate().getMvc().perform(getTestTemplate().login(email,password));
     }
 
     // dont use, bc when user is saved hash will be send

@@ -1,13 +1,11 @@
 package com.github.vincemann.springrapid.auth.service.extension;
 
-import com.github.vincemann.springrapid.acl.model.AclParentAware;
 import com.github.vincemann.springrapid.acl.service.extensions.acl.AbstractAclExtension;
-import com.github.vincemann.springrapid.auth.domain.AuthenticatingEntity;
+import com.github.vincemann.springrapid.auth.model.AuthenticatingEntity;
 import com.github.vincemann.springrapid.core.model.IdentifiableEntity;
 import com.github.vincemann.springrapid.core.proxy.GenericCrudServiceExtension;
 import com.github.vincemann.springrapid.core.service.CrudService;
 import com.github.vincemann.springrapid.core.service.exception.BadEntityException;
-import org.springframework.security.acls.domain.BasePermission;
 import org.springframework.security.acls.model.Permission;
 
 import java.io.Serializable;

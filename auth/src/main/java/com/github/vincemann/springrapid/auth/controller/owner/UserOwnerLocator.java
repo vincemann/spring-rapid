@@ -1,6 +1,6 @@
 package com.github.vincemann.springrapid.auth.controller.owner;
 
-import com.github.vincemann.springrapid.auth.domain.AbstractUser;
+import com.github.vincemann.springrapid.auth.model.AbstractUser;
 import com.github.vincemann.springrapid.core.controller.owner.OwnerLocator;
 import org.springframework.core.annotation.Order;
 

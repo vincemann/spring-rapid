@@ -1,4 +1,4 @@
-package com.github.vincemann.springrapid.auth.domain;
+package com.github.vincemann.springrapid.core.model;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.AuditorAware;

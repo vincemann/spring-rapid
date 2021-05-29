@@ -1,8 +1,8 @@
 package com.github.vincemann.springrapid.authtests;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.github.vincemann.springrapid.auth.domain.AbstractUser;
-import com.github.vincemann.springrapid.auth.domain.dto.RequestEmailChangeDto;
+import com.github.vincemann.springrapid.auth.model.AbstractUser;
+import com.github.vincemann.springrapid.auth.dto.RequestEmailChangeDto;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
@@ -26,7 +26,7 @@ public class RequestEmailChangeTest extends AbstractRapidAuthIntegrationTest {
 	@Test
 	public void unverifiedUserCanRequestEmailChange() throws Exception {
 		String token = login2xx(UNVERIFIED_USER_EMAIL,UNVERIFIED_USER_PASSWORD);
-		testTemplate.requestEmailChange(getUnverifiedUser().getId(),token,emailChangeDto())
+		mvc.perform(testTemplate.requestEmailChange(getUnverifiedUser().getId(),token,emailChangeDto()))
 				.andExpect(status().is(204));
 
 		verify(unproxy(mailSender)).send(any());
@@ -39,7 +39,7 @@ public class RequestEmailChangeTest extends AbstractRapidAuthIntegrationTest {
 	@Test
 	public void userCanRequestEmailChange() throws Exception {
 		String token = login2xx(USER_EMAIL,USER_PASSWORD);
-		testTemplate.requestEmailChange(getUser().getId(),token,emailChangeDto())
+		mvc.perform(testTemplate.requestEmailChange(getUser().getId(),token,emailChangeDto()))
 				.andExpect(status().is(204));
 
 		verify(unproxy(mailSender)).send(any());
@@ -55,7 +55,7 @@ public class RequestEmailChangeTest extends AbstractRapidAuthIntegrationTest {
 	@Test
 	public void adminCanRequestEmailChangeOfDiffUser() throws Exception {
 		String token = login2xx(ADMIN_EMAIL,ADMIN_PASSWORD);
-		testTemplate.requestEmailChange(getUser().getId(),token,emailChangeDto())
+		mvc.perform(testTemplate.requestEmailChange(getUser().getId(),token,emailChangeDto()))
 				.andExpect(status().is(204));
 
 		AbstractUser<Long> updatedUser = getUserService().findById(getUser().getId()).get();
@@ -68,7 +68,7 @@ public class RequestEmailChangeTest extends AbstractRapidAuthIntegrationTest {
 	@Test
 	public void cantRequestEmailChangeOfUnknownUser() throws Exception {
 		String token = login2xx(USER_EMAIL,USER_PASSWORD);
-		testTemplate.requestEmailChange(UNKNOWN_USER_ID,token,emailChangeDto())
+		mvc.perform(testTemplate.requestEmailChange(UNKNOWN_USER_ID,token,emailChangeDto()))
 				.andExpect(status().is(404));
 		
 		verify(unproxy(mailSender), never()).send(any());
@@ -77,7 +77,7 @@ public class RequestEmailChangeTest extends AbstractRapidAuthIntegrationTest {
 	@Test
 	public void userCantRequestEmailChangeOfDiffUser() throws Exception {
 		String token = login2xx(USER_EMAIL,USER_PASSWORD);
-		testTemplate.requestEmailChange(getSecondUser().getId(),token,emailChangeDto())
+		mvc.perform(testTemplate.requestEmailChange(getSecondUser().getId(),token,emailChangeDto()))
 				.andExpect(status().is(403));
 		
 		verify(unproxy(mailSender), never()).send(any());
@@ -91,7 +91,7 @@ public class RequestEmailChangeTest extends AbstractRapidAuthIntegrationTest {
 	public void adminCantRequestEmailChangeOfDiffAdmin() throws Exception {
 		//unverified admins are not treated differently than verified admins
 		String token = login2xx(ADMIN_EMAIL,ADMIN_PASSWORD);
-		testTemplate.requestEmailChange(getSecondAdmin().getId(),token,emailChangeDto())
+		mvc.perform(testTemplate.requestEmailChange(getSecondAdmin().getId(),token,emailChangeDto()))
 				.andExpect(status().is(403));
 		
 		verify(unproxy(mailSender), never()).send(any());
@@ -112,7 +112,7 @@ public class RequestEmailChangeTest extends AbstractRapidAuthIntegrationTest {
 //		dto.setPassword(null);
 		// try with null newEmail
 		String token = login2xx(USER_EMAIL,USER_PASSWORD);
-		testTemplate.requestEmailChange(getUser().getId(),token,dto)
+		mvc.perform(testTemplate.requestEmailChange(getUser().getId(),token,dto))
 				.andExpect(status().is(400));
 //				.andExpect(jsonPath("$.errors[*].field").value(hasSize(1)))
 //				.andExpect(jsonPath("$.errors[*].field").value(hasItems(
@@ -124,7 +124,7 @@ public class RequestEmailChangeTest extends AbstractRapidAuthIntegrationTest {
 		dto.setNewEmail("");
 		
     	// try with blank newEmail
-		testTemplate.requestEmailChange(getUser().getId(),token,dto)
+		mvc.perform(testTemplate.requestEmailChange(getUser().getId(),token,dto))
 				.andExpect(status().is(400));
 //				.andExpect(jsonPath("$.errors[*].field").value(hasSize(2)))
 //				.andExpect(jsonPath("$.errors[*].field").value(hasItems(
@@ -134,7 +134,7 @@ public class RequestEmailChangeTest extends AbstractRapidAuthIntegrationTest {
 		// try with invalid newEmail
 		dto = new RequestEmailChangeDto();
 		dto.setNewEmail(INVALID_EMAIL);
-		testTemplate.requestEmailChange(getUser().getId(),token,dto)
+		mvc.perform(testTemplate.requestEmailChange(getUser().getId(),token,dto))
 				.andExpect(status().is(400));
 //				.andExpect(jsonPath("$.errors[*].field").value(hasSize(1)))
 //				.andExpect(jsonPath("$.errors[*].field").value(hasItems("dto.newEmail")));
@@ -164,7 +164,7 @@ public class RequestEmailChangeTest extends AbstractRapidAuthIntegrationTest {
 		// try with an existing email
 		dto = emailChangeDto();
 		dto.setNewEmail(SECOND_USER_EMAIL);;
-		testTemplate.requestEmailChange(getUser().getId(),token,dto)
+		mvc.perform(testTemplate.requestEmailChange(getUser().getId(),token,dto))
 				.andExpect(status().is(400));
 //				.andExpect(jsonPath("$.errors[*].field").value(hasSize(1)))
 //				.andExpect(jsonPath("$.errors[*].field").value(hasItems("dto.newEmail")));

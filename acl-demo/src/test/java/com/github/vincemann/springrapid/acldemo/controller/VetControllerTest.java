@@ -1,8 +1,6 @@
 package com.github.vincemann.springrapid.acldemo.controller;
 
 import com.github.vincemann.springrapid.acldemo.auth.MyRoles;
-import com.github.vincemann.springrapid.acldemo.dto.owner.CreateOwnerDto;
-import com.github.vincemann.springrapid.acldemo.dto.owner.FullOwnerDto;
 import com.github.vincemann.springrapid.acldemo.dto.pet.FullPetDto;
 import com.github.vincemann.springrapid.acldemo.dto.user.FullUserDto;
 import com.github.vincemann.springrapid.acldemo.dto.user.UUIDSignupResponseDto;
@@ -10,10 +8,9 @@ import com.github.vincemann.springrapid.acldemo.dto.vet.CreateVetDto;
 import com.github.vincemann.springrapid.acldemo.dto.vet.FullVetDto;
 import com.github.vincemann.springrapid.acldemo.model.*;
 import com.github.vincemann.springrapid.acldemo.service.VetService;
-import com.github.vincemann.springrapid.auth.domain.AuthRoles;
-import com.github.vincemann.springrapid.auth.domain.dto.SignupDto;
+import com.github.vincemann.springrapid.auth.model.AuthRoles;
+import com.github.vincemann.springrapid.auth.dto.SignupDto;
 import com.github.vincemann.springrapid.coretest.util.RapidTestUtil;
-import org.hibernate.usertype.UserType;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpHeaders;

@@ -1,10 +1,8 @@
 package com.github.vincemann.springrapid.authtests;
 
-import com.github.vincemann.springrapid.auth.domain.AbstractUser;
-import com.github.vincemann.springrapid.auth.domain.dto.user.RapidFindOwnUserDto;
+import com.github.vincemann.springrapid.auth.model.AbstractUser;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpHeaders;
-import org.springframework.http.MediaType;
 
 import static org.hamcrest.Matchers.containsString;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -16,7 +14,7 @@ public class LoginTest extends AbstractRapidAuthIntegrationTest {
 	
 	@Test
 	public void canLogin() throws Exception {
-		String token = testTemplate.login(USER_EMAIL, USER_PASSWORD)
+		String token = mvc.perform(testTemplate.login(USER_EMAIL, USER_PASSWORD))
 				.andExpect(status().is(200))
 				.andExpect(header().string(HttpHeaders.AUTHORIZATION, containsString(".")))
 				.andExpect(jsonPath("$.id").doesNotExist())

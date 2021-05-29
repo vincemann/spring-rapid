@@ -1,9 +1,8 @@
 package com.github.vincemann.springrapid.authtests;
 
-import com.github.vincemann.springrapid.auth.domain.dto.ChangePasswordDto;
+import com.github.vincemann.springrapid.auth.dto.ChangePasswordDto;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpHeaders;
-import org.springframework.http.MediaType;
 
 import static org.hamcrest.Matchers.containsString;
 import static com.github.vincemann.springrapid.authtests.adapter.AuthTestAdapter.*;
@@ -36,7 +35,7 @@ public class ChangePasswordTest extends AbstractRapidAuthIntegrationTest {
 				.build();
 
 		String token = login2xx(USER_EMAIL, USER_PASSWORD);
-		testTemplate.changePassword(getUser().getId(),token, changePasswordDto)
+		mvc.perform(testTemplate.changePassword(getUser().getId(),token, changePasswordDto))
 				.andExpect(status().is2xxSuccessful())
 				.andExpect(header().string(HttpHeaders.AUTHORIZATION, containsString(".")));
 
@@ -53,7 +52,7 @@ public class ChangePasswordTest extends AbstractRapidAuthIntegrationTest {
 		ChangePasswordDto changePasswordDto = changePasswordDto(USER_PASSWORD);
 
 		String token = login2xx(ADMIN_EMAIL, ADMIN_PASSWORD);
-		testTemplate.changePassword(getUser().getId(),token, changePasswordDto)
+		mvc.perform(testTemplate.changePassword(getUser().getId(),token, changePasswordDto))
 				.andExpect(status().is2xxSuccessful())
 				.andExpect(header().string(HttpHeaders.AUTHORIZATION, containsString(".")));
 
@@ -68,7 +67,7 @@ public class ChangePasswordTest extends AbstractRapidAuthIntegrationTest {
 
 		String token = login2xx(USER_EMAIL, USER_PASSWORD);
 
-		testTemplate.changePassword(UNKNOWN_USER_ID,token, changePasswordDto)
+		mvc.perform(testTemplate.changePassword(UNKNOWN_USER_ID,token, changePasswordDto))
 				.andExpect(status().isNotFound());
 	}
 
@@ -79,7 +78,7 @@ public class ChangePasswordTest extends AbstractRapidAuthIntegrationTest {
 
 		String token = login2xx(USER_EMAIL, USER_PASSWORD);
 
-		testTemplate.changePassword(getSecondUser().getId(),token, changePasswordDto)
+		mvc.perform(testTemplate.changePassword(getSecondUser().getId(),token, changePasswordDto))
 				.andExpect(status().isForbidden());
 
 		login2xx(SECOND_USER_EMAIL, SECOND_USER_PASSWORD);
@@ -96,7 +95,7 @@ public class ChangePasswordTest extends AbstractRapidAuthIntegrationTest {
 				.retypePassword(null)
 				.build();
 		String token = login2xx(USER_EMAIL, USER_PASSWORD);
-		testTemplate.changePassword(getUser().getId(),token, changePasswordDto)
+		mvc.perform(testTemplate.changePassword(getUser().getId(),token, changePasswordDto))
 				.andExpect(status().isBadRequest());
 		login2xx(USER_EMAIL, USER_PASSWORD);
 
@@ -108,7 +107,7 @@ public class ChangePasswordTest extends AbstractRapidAuthIntegrationTest {
 				.retypePassword(INVALID_PASSWORD)
 				.build();
 		token = login2xx(USER_EMAIL, USER_PASSWORD);
-		testTemplate.changePassword(getUser().getId(),token, changePasswordDto)
+		mvc.perform(testTemplate.changePassword(getUser().getId(),token, changePasswordDto))
 				.andExpect(status().isBadRequest());
 		login2xx(USER_EMAIL, USER_PASSWORD);
 
@@ -119,7 +118,7 @@ public class ChangePasswordTest extends AbstractRapidAuthIntegrationTest {
 				.retypePassword(NEW_PASSWORD)
 				.build();
 		token = login2xx(USER_EMAIL, USER_PASSWORD);
-		testTemplate.changePassword(getUser().getId(),token, changePasswordDto)
+		mvc.perform(testTemplate.changePassword(getUser().getId(),token, changePasswordDto))
 				.andExpect(status().isBadRequest());
 		login2xx(USER_EMAIL, USER_PASSWORD);
 
@@ -130,7 +129,7 @@ public class ChangePasswordTest extends AbstractRapidAuthIntegrationTest {
 				.retypePassword(NEW_PASSWORD+"different")
 				.build();
 		token = login2xx(USER_EMAIL, USER_PASSWORD);
-		testTemplate.changePassword(getUser().getId(),token, changePasswordDto)
+		mvc.perform(testTemplate.changePassword(getUser().getId(),token, changePasswordDto))
 				.andExpect(status().isBadRequest());
 		login2xx(USER_EMAIL, USER_PASSWORD);
 	}

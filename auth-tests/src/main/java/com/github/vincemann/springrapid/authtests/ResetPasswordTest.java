@@ -1,8 +1,7 @@
 package com.github.vincemann.springrapid.authtests;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.github.vincemann.springrapid.auth.domain.dto.ResetPasswordDto;
-import com.github.vincemann.springrapid.auth.domain.dto.ResetPasswordView;
+import com.github.vincemann.springrapid.auth.dto.ResetPasswordView;
 import com.github.vincemann.springrapid.auth.mail.MailData;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -31,7 +30,7 @@ public class ResetPasswordTest extends AbstractRapidAuthIntegrationTest {
     public void getDirectedToForgotPasswordPage() throws Exception {
         MailData mailData = testTemplate.forgotPassword2xx(USER_EMAIL);
         String code = mailData.getCode();
-        String html = testTemplate.getResetPasswordView(mailData.getLink())
+        String html = mvc.perform(testTemplate.getResetPasswordView(mailData.getLink()))
                 .andExpect(status().is2xxSuccessful())
                 .andReturn().getResponse().getContentAsString();
         Assertions.assertTrue(html.contains("Reset Password"));
@@ -40,8 +39,7 @@ public class ResetPasswordTest extends AbstractRapidAuthIntegrationTest {
     @Test
     public void canResetPasswordWithCorrectCode() throws Exception {
         MailData mailData = testTemplate.forgotPassword2xx(USER_EMAIL);
-        String code = mailData.getCode();
-        testTemplate.resetPassword(resetPasswordDto(NEW_PASSWORD), mailData.getCode())
+        mvc.perform(testTemplate.resetPassword(resetPasswordDto(NEW_PASSWORD), mailData.getCode()))
                 .andExpect(status().is2xxSuccessful())
                 .andExpect(header().string(HttpHeaders.AUTHORIZATION, containsString(".")))
                 .andExpect(jsonPath("$.id").value(getUser().getId()));
@@ -53,15 +51,14 @@ public class ResetPasswordTest extends AbstractRapidAuthIntegrationTest {
     @Test
     public void cantResetPasswordWithSameCodeTwice() throws Exception {
         MailData mailData = testTemplate.forgotPassword2xx(USER_EMAIL);
-        String code = mailData.getCode();
-        testTemplate.resetPassword(resetPasswordDto(NEW_PASSWORD),mailData.getCode())
+        mvc.perform(testTemplate.resetPassword(resetPasswordDto(NEW_PASSWORD),mailData.getCode()))
                 .andExpect(status().is2xxSuccessful());
 
         // New password should work
         login2xx(USER_EMAIL, NEW_PASSWORD);
 
         // Repeating shouldn't work
-        testTemplate.resetPassword(resetPasswordDto(USER_PASSWORD), mailData.getCode())
+        mvc.perform(testTemplate.resetPassword(resetPasswordDto(USER_PASSWORD), mailData.getCode()))
                 .andExpect(status().isForbidden());
 
         login2xx(USER_EMAIL, NEW_PASSWORD);
@@ -72,7 +69,7 @@ public class ResetPasswordTest extends AbstractRapidAuthIntegrationTest {
         MailData mailData = testTemplate.forgotPassword2xx(USER_EMAIL);
         String code = mailData.getCode();
         String invalidCode = code +"invalid";
-        testTemplate.resetPassword(resetPasswordDto(NEW_PASSWORD),invalidCode)
+        mvc.perform(testTemplate.resetPassword(resetPasswordDto(NEW_PASSWORD),invalidCode))
                 .andExpect(status().isBadRequest());
     }
 
@@ -82,7 +79,7 @@ public class ResetPasswordTest extends AbstractRapidAuthIntegrationTest {
         String code = mailData.getCode();
         ResetPasswordView resetPasswordView = resetPasswordDto(NEW_PASSWORD);
         resetPasswordView.setMatchPassword(NEW_PASSWORD+"diff");
-        testTemplate.resetPassword(resetPasswordView,code)
+        mvc.perform(testTemplate.resetPassword(resetPasswordView,code))
                 .andExpect(status().isBadRequest());
     }
 
@@ -90,13 +87,13 @@ public class ResetPasswordTest extends AbstractRapidAuthIntegrationTest {
     public void cantResetPasswordWithInvalidPassword() throws Exception {
         // Blank password
         MailData mailData = testTemplate.forgotPassword2xx(USER_EMAIL);
-        testTemplate.resetPassword(resetPasswordDto(""),mailData.getCode())
+        mvc.perform(testTemplate.resetPassword(resetPasswordDto(""),mailData.getCode()))
                 .andExpect(status().isBadRequest());
 
 
         // Invalid password
         mailData = testTemplate.forgotPassword2xx(USER_EMAIL);
-        testTemplate.resetPassword(resetPasswordDto(INVALID_PASSWORD),mailData.getCode())
+        mvc.perform(testTemplate.resetPassword(resetPasswordDto(INVALID_PASSWORD),mailData.getCode()))
                 .andExpect(status().isBadRequest());
     }
 

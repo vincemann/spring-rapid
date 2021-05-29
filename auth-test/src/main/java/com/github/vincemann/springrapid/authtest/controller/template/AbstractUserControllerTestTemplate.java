@@ -1,8 +1,8 @@
 package com.github.vincemann.springrapid.authtest.controller.template;
 
 import com.github.vincemann.springrapid.auth.controller.AbstractUserController;
-import com.github.vincemann.springrapid.auth.domain.AbstractUser;
-import com.github.vincemann.springrapid.auth.domain.dto.ResetPasswordView;
+import com.github.vincemann.springrapid.auth.model.AbstractUser;
+import com.github.vincemann.springrapid.auth.dto.ResetPasswordView;
 import com.github.vincemann.springrapid.auth.mail.MailData;
 import com.github.vincemann.springrapid.auth.mail.MailSender;
 import com.github.vincemann.springrapid.auth.security.AuthenticatedPrincipalFactory;
@@ -16,6 +16,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.RequestBuilder;
 import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
 
@@ -58,58 +59,58 @@ public abstract class AbstractUserControllerTestTemplate<C extends AbstractUserC
         super.setMvc(mvc);
     }
 
-    public ResultActions signup(Object dto) throws Exception {
-        return mvc.perform(post(getController().getAuthProperties().getController().getSignupUrl())
+    public RequestBuilder signup(Object dto) throws Exception {
+        return post(getController().getAuthProperties().getController().getSignupUrl())
                 .content(serialize(dto))
-                .contentType(getController().getCoreProperties().getController().getMediaType()));
+                .contentType(getController().getCoreProperties().getController().getMediaType());
     }
 
     public MailData signup2xx(Object dto) throws Exception {
-        signup(dto)
+        mvc.perform(signup(dto))
                 .andExpect(status().is2xxSuccessful());
         return verifyMailWasSend();
     }
 
-    public ResultActions resendVerificationMail(Serializable id, String token) throws Exception {
-        return mvc.perform(post(getController().getAuthProperties().getController().getResendVerificationEmailUrl())
+    public RequestBuilder resendVerificationMail(Serializable id, String token) throws Exception {
+        return post(getController().getAuthProperties().getController().getResendVerificationEmailUrl())
                 .param("id",id.toString())
-                .header(HttpHeaders.AUTHORIZATION, token));
+                .header(HttpHeaders.AUTHORIZATION, token);
     }
 
 //    public MockHttpServletRequestBuilder login(String email, String password) {
 //        return login(new LoginDto(email,password));
 //    }
 
-    public ResultActions login(String email, String password) throws Exception {
-        return getMvc().perform(login_raw(email, password));
+    public RequestBuilder login(String email, String password) throws Exception {
+        return login_raw(email, password);
     }
 
 
-    public ResultActions changeEmail(String code, String token) throws Exception {
-        return mvc.perform(post(getController().getAuthProperties().getController().getChangeEmailUrl())
+    public RequestBuilder changeEmail(String code, String token) throws Exception {
+        return post(getController().getAuthProperties().getController().getChangeEmailUrl())
                 .param("code", code)
 //                .param("id", targetId.toString())
                 .header(HttpHeaders.AUTHORIZATION, token)
-                .header("contentType", MediaType.APPLICATION_FORM_URLENCODED));
+                .header("contentType", MediaType.APPLICATION_FORM_URLENCODED);
     }
 
-    public ResultActions changeEmailWithLink(String link, String token) throws Exception {
-        return mvc.perform(post(link)
+    public RequestBuilder changeEmailWithLink(String link, String token) throws Exception {
+        return post(link)
                 .header(HttpHeaders.AUTHORIZATION, token)
-                .header("contentType", MediaType.APPLICATION_FORM_URLENCODED));
+                .header("contentType", MediaType.APPLICATION_FORM_URLENCODED);
     }
 
 
-    public ResultActions requestEmailChange(Serializable targetId, String token, Object requestNewEmailDto) throws Exception {
-        return getMvc().perform(post(getController().getAuthProperties().getController().getRequestEmailChangeUrl())
+    public RequestBuilder requestEmailChange(Serializable targetId, String token, Object requestNewEmailDto) throws Exception {
+        return post(getController().getAuthProperties().getController().getRequestEmailChangeUrl())
                 .param("id", targetId.toString())
                 .contentType(MediaType.APPLICATION_JSON)
                 .header(HttpHeaders.AUTHORIZATION, token)
-                .content(serialize(requestNewEmailDto)));
+                .content(serialize(requestNewEmailDto));
     }
 
     public MailData requestEmailChange2xx(Serializable targetId, String token, Object requestNewEmailDto) throws Exception {
-        getMvc().perform(post(getController().getAuthProperties().getController().getRequestEmailChangeUrl())
+        mvc.perform(post(getController().getAuthProperties().getController().getRequestEmailChangeUrl())
                 .param("id", targetId.toString())
                 .contentType(MediaType.APPLICATION_JSON)
                 .header(HttpHeaders.AUTHORIZATION, token)
@@ -118,18 +119,18 @@ public abstract class AbstractUserControllerTestTemplate<C extends AbstractUserC
         return verifyMailWasSend();
     }
 
-    public ResultActions changePassword(Serializable id, String token, Object changePasswordDto) throws Exception {
-        return mvc.perform(post(getController().getAuthProperties().getController().getChangePasswordUrl())
+    public RequestBuilder changePassword(Serializable id, String token, Object changePasswordDto) throws Exception {
+        return post(getController().getAuthProperties().getController().getChangePasswordUrl())
                 .param("id", id.toString())
                 .header(HttpHeaders.AUTHORIZATION, token)
                 .contentType(MediaType.APPLICATION_JSON)
-                .content(serialize(changePasswordDto)));
+                .content(serialize(changePasswordDto));
     }
 
-    public ResultActions forgotPassword(String email) throws Exception {
-        return mvc.perform(post(getController().getAuthProperties().getController().getForgotPasswordUrl())
+    public RequestBuilder forgotPassword(String email) throws Exception {
+        return post(getController().getAuthProperties().getController().getForgotPasswordUrl())
                 .param("email", email)
-                .header("contentType", MediaType.APPLICATION_FORM_URLENCODED));
+                .header("contentType", MediaType.APPLICATION_FORM_URLENCODED);
     }
 
     public MailData forgotPassword2xx(String email) throws Exception {
@@ -140,47 +141,47 @@ public abstract class AbstractUserControllerTestTemplate<C extends AbstractUserC
         return verifyMailWasSend();
     }
 
-    public ResultActions resetPassword(ResetPasswordView resetPasswordView, String code) throws Exception {
-        return mvc.perform(post(getController().getAuthProperties().getController().getResetPasswordUrl())
+    public RequestBuilder resetPassword(ResetPasswordView resetPasswordView, String code) throws Exception {
+        return post(getController().getAuthProperties().getController().getResetPasswordUrl())
                 .contentType(MediaType.APPLICATION_FORM_URLENCODED)
                 .param("code", code)
-                .content("password="+resetPasswordView.getPassword()+"&matchPassword="+resetPasswordView.getMatchPassword()));
+                .content("password="+resetPasswordView.getPassword()+"&matchPassword="+resetPasswordView.getMatchPassword());
     }
 
-    public ResultActions getResetPasswordView(String link) throws Exception {
-        return mvc.perform(get(link));
+    public RequestBuilder getResetPasswordView(String link) throws Exception {
+        return get(link);
 //                .contentType(MediaType.APPLICATION_JSON)
 //                .content(serialize(resetPasswordDto)));
     }
 
-    public ResultActions resetPassword(String url, Object resetPasswordDto, String code) throws Exception {
-        return mvc.perform(post(url)
+    public RequestBuilder resetPassword(String url, Object resetPasswordDto, String code) throws Exception {
+        return post(url)
                 .contentType(MediaType.APPLICATION_JSON)
                 .param("code", code)
-                .content(serialize(resetPasswordDto)));
+                .content(serialize(resetPasswordDto));
     }
 
-    public ResultActions fetchNewToken(String token) throws Exception {
-        return mvc.perform(post(getController().getAuthProperties().getController().getNewAuthTokenUrl())
+    public RequestBuilder fetchNewToken(String token) throws Exception {
+        return post(getController().getAuthProperties().getController().getNewAuthTokenUrl())
                 .header(HttpHeaders.AUTHORIZATION, token)
-                .header("contentType", MediaType.APPLICATION_FORM_URLENCODED));
+                .header("contentType", MediaType.APPLICATION_FORM_URLENCODED);
     }
 
-    public ResultActions fetchNewToken(String token, String email) throws Exception {
-        return mvc.perform(post(getController().getAuthProperties().getController().getNewAuthTokenUrl())
+    public RequestBuilder fetchNewToken(String token, String email) throws Exception {
+        return post(getController().getAuthProperties().getController().getNewAuthTokenUrl())
                 .header(HttpHeaders.AUTHORIZATION, token)
                 .param("email", email)
-                .header("contentType", MediaType.APPLICATION_FORM_URLENCODED));
+                .header("contentType", MediaType.APPLICATION_FORM_URLENCODED);
     }
 
     public String fetchNewToken2xx(String token, String email) throws Exception {
-        return deserialize(fetchNewToken(token, email)
+        return deserialize(mvc.perform(fetchNewToken(token, email))
                 .andExpect(status().is2xxSuccessful())
                 .andReturn().getResponse().getContentAsString(), ResponseToken.class).getToken();
     }
 
     public String fetchNewToken2xx(String token) throws Exception {
-        return deserialize(fetchNewToken(token)
+        return deserialize(mvc.perform(fetchNewToken(token))
                 .andExpect(status().is2xxSuccessful())
                 .andReturn().getResponse().getContentAsString(), ResponseToken.class).getToken();
     }
@@ -192,10 +193,10 @@ public abstract class AbstractUserControllerTestTemplate<C extends AbstractUserC
                 .header("contentType", MediaType.APPLICATION_FORM_URLENCODED);
     }
 
-    public ResultActions fetchByEmail(String email) throws Exception {
-        return mvc.perform(post(getController().getAuthProperties().getController().getFetchByEmailUrl())
+    public RequestBuilder fetchByEmail(String email) throws Exception {
+        return post(getController().getAuthProperties().getController().getFetchByEmailUrl())
                 .param("email", email)
-                .header("contentType", MediaType.APPLICATION_FORM_URLENCODED));
+                .header("contentType", MediaType.APPLICATION_FORM_URLENCODED);
     }
 
     public String login2xx(String email, String password) throws Exception {
@@ -204,18 +205,18 @@ public abstract class AbstractUserControllerTestTemplate<C extends AbstractUserC
                 .andReturn().getResponse().getHeader(HttpHeaders.AUTHORIZATION);
     }
 
-    public ResultActions verifyEmail(String code) throws Exception {
-        return mvc.perform(post(getController().getAuthProperties().getController().getVerifyUserUrl())
+    public RequestBuilder verifyEmail(String code) throws Exception {
+        return post(getController().getAuthProperties().getController().getVerifyUserUrl())
 //                .param("id", id.toString())
                 .param("code", code)
-                .header("contentType", MediaType.APPLICATION_FORM_URLENCODED));
+                .header("contentType", MediaType.APPLICATION_FORM_URLENCODED);
     }
 
-    public ResultActions verifyEmailWithLink(String link) throws Exception {
-        return mvc.perform(post(link)
+    public RequestBuilder verifyEmailWithLink(String link) throws Exception {
+        return post(link)
 //                .param("id", id.toString())
 //                .param("code", code)
-                .header("contentType", MediaType.APPLICATION_FORM_URLENCODED));
+                .header("contentType", MediaType.APPLICATION_FORM_URLENCODED);
     }
 
     public MailData verifyMailWasSend() {
@@ -227,10 +228,10 @@ public abstract class AbstractUserControllerTestTemplate<C extends AbstractUserC
     }
 
 
-    public ResultActions resendVerificationEmail(Serializable id, String token) throws Exception {
-        return mvc.perform(post(getController().getAuthProperties().getController().getResendVerificationEmailUrl())
+    public RequestBuilder resendVerificationEmail(Serializable id, String token) throws Exception {
+        return post(getController().getAuthProperties().getController().getResendVerificationEmailUrl())
                 .param("id", id.toString())
-                .header(HttpHeaders.AUTHORIZATION, token));
+                .header(HttpHeaders.AUTHORIZATION, token);
     }
 
     public MailData resendVerificationEmail2xx(Serializable id, String token) throws Exception {

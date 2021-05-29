@@ -1,7 +1,7 @@
 package com.github.vincemann.springrapid.authdemo.dto;
 
 import com.fasterxml.jackson.annotation.JsonView;
-import com.github.vincemann.springrapid.auth.domain.dto.SignupDto;
+import com.github.vincemann.springrapid.auth.dto.SignupDto;
 import com.github.vincemann.springrapid.auth.util.UserVerifyUtils;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
