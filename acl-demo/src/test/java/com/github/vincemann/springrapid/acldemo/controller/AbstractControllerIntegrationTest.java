@@ -59,27 +59,27 @@ public class AbstractControllerIntegrationTest<C extends GenericCrudController<?
 
     // admin created via AdminInitializer, see config
     protected static final String ADMIN = "admin";
-    protected static final String ADMIN_PASSWORD = "admin12345!";
+    protected static final String ADMIN_PASSWORD = "AdminPassword123!";
     protected static final String ADMIN_EMAIL = "admin@example.com";
 
     protected static final String VET_MAX = "Max";
-    protected static final String VET_MAX_PASSWORD = "Maxpassword123?";
+    protected static final String VET_MAX_PASSWORD = "MaxPassword123?";
     protected static final String VET_MAX_EMAIL = VET_MAX+EMAIL_SUFFIX;
 
     protected static final String VET_POLDI = "Poldi";
-    protected static final String VET_POLDI_PASSWORD = "Poldipassword123?";
+    protected static final String VET_POLDI_PASSWORD = "PoldiPassword123?";
     protected static final String VET_POLDI_EMAIL = VET_POLDI+EMAIL_SUFFIX;
 
     protected static final String VET_DICAPRIO = "Dicaprio";
-    protected static final String VET_DICAPRIO_PASSWORD = "Dicapriopassword123?";
+    protected static final String VET_DICAPRIO_PASSWORD = "DicaprioPassword123?";
     protected static final String VET_DICAPRIO_EMAIL = VET_DICAPRIO+EMAIL_SUFFIX;
 
     protected static final String OWNER_MEIER = "Meier";
-    protected static final String OWNER_MEIER_PASSWORD = "Meierpassword123?";
+    protected static final String OWNER_MEIER_PASSWORD = "MeierPassword123?";
     protected static final String OWNER_MEIER_EMAIL = OWNER_MEIER+EMAIL_SUFFIX;
 
     protected static final String OWNER_KAHN = "Kahn";
-    protected static final String OWNER_KAHN_PASSWORD = "Kahnpassword123?";
+    protected static final String OWNER_KAHN_PASSWORD = "KahnPassword123?";
     protected static final String OWNER_KAHN_EMAIL = OWNER_KAHN+EMAIL_SUFFIX;
 
     protected static final String MUSCLE = "Muscle";

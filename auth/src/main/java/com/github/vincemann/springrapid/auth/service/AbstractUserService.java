@@ -12,6 +12,7 @@ import com.github.vincemann.springrapid.auth.security.AuthenticatedPrincipalFact
 import com.github.vincemann.springrapid.auth.service.token.AuthorizationTokenService;
 import com.github.vincemann.springrapid.auth.service.token.BadTokenException;
 import com.github.vincemann.springrapid.auth.service.token.JweTokenService;
+import com.github.vincemann.springrapid.auth.service.validation.PasswordValidator;
 import com.github.vincemann.springrapid.auth.util.MapUtils;
 import com.github.vincemann.springrapid.auth.util.RapidJwt;
 import com.github.vincemann.springrapid.auth.util.TransactionalUtils;
@@ -27,6 +28,7 @@ import com.github.vincemann.springrapid.core.util.VerifyEntity;
 import com.google.common.collect.Sets;
 import com.nimbusds.jwt.JWTClaimsSet;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.catalina.User;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -66,7 +68,7 @@ public abstract class AbstractUserService
     private MailSender<MailData> mailSender;
     private JweTokenService jweTokenService;
     private IdConverter<ID> idIdConverter;
-//    private UserService<U, ID> rootUserService;
+    private PasswordValidator passwordValidator;
 
     /**
      * Creates a new user object. Must be overridden in the
@@ -100,19 +102,6 @@ public abstract class AbstractUserService
         return context;
     }
 
-    protected void checkValidPassword(String password) throws BadEntityException {
-        //must be at least 8 chars long and contain a number
-        if (password == null) {
-            throw new BadEntityException("Must not be null");
-        }
-        if (password.length() < 8) {
-            throw new BadEntityException("At least 8 chars expected");
-        }
-        if (!password.matches(".*\\d.*")) {
-            throw new BadEntityException("Must contain at least one number");
-        }
-    }
-
     protected void checkUniqueEmail(String email) throws AlreadyRegisteredException {
         Optional<U> byEmail = getRepository().findByEmail(email);
         if (byEmail.isPresent()) {
@@ -127,7 +116,7 @@ public abstract class AbstractUserService
     public U signup(U user) throws BadEntityException, AlreadyRegisteredException {
         //admins get created with createAdminMethod
         user.setRoles(Sets.newHashSet(AuthRoles.USER));
-        checkValidPassword(user.getPassword());
+        passwordValidator.validate(user.getPassword());
         checkUniqueEmail(user.getEmail());
         U saved = save(user);
         // is done in same transaction -> so applied directly
@@ -269,7 +258,7 @@ public abstract class AbstractUserService
             JWTClaimsSet claims = jweTokenService.parseToken(code);
             RapidJwt.validate(claims, FORGOT_PASSWORD_AUDIENCE);
 
-            checkValidPassword(dto.getNewPassword());
+            passwordValidator.validate(dto.getNewPassword());
             U user = extractUserFromClaims(claims);
             RapidJwt.validateIssuedAfter(claims, user.getCredentialsUpdatedMillis());
 
@@ -305,7 +294,7 @@ public abstract class AbstractUserService
         String password = update.getPassword();
         if (password != null) {
             if (!getPasswordEncoder().isEncrypted(password)) {
-                checkValidPassword(password);
+                passwordValidator.validate(password);
             }
         }
         encodePassword(update);
@@ -316,21 +305,21 @@ public abstract class AbstractUserService
      * Changes the password.
      */
     @Transactional(propagation = Propagation.REQUIRED, readOnly = false)
-    public void changePassword(U user, ChangePasswordDto changePasswordForm) throws EntityNotFoundException, BadEntityException {
+    public void changePassword(U user, ChangePasswordDto changePasswordDto) throws EntityNotFoundException, BadEntityException {
         VerifyEntity.isPresent(user, "User not found");
         String oldPassword = user.getPassword();
 
-        if (!changePasswordForm.getPassword().equals(changePasswordForm.getRetypePassword())) {
+        if (!changePasswordDto.getPassword().equals(changePasswordDto.getRetypePassword())) {
             throw new BadEntityException("Password does not match retype password");
         }
-        checkValidPassword(changePasswordForm.getPassword());
+        passwordValidator.validate(changePasswordDto.getPassword());
         // checks
         VerifyEntity.is(
-                passwordEncoder.matches(changePasswordForm.getOldPassword(),
+                passwordEncoder.matches(changePasswordDto.getOldPassword(),
                         oldPassword), "Wrong password");
 
         // sets the password
-        user.setPassword(passwordEncoder.encode(changePasswordForm.getPassword()));
+        user.setPassword(passwordEncoder.encode(changePasswordDto.getPassword()));
         user.setCredentialsUpdatedMillis(System.currentTimeMillis());
         try {
             update(user);
@@ -510,15 +499,20 @@ public abstract class AbstractUserService
 
     @Transactional(propagation = Propagation.REQUIRED, readOnly = false)
     //only called internally
-    public U createAdminUser(AuthProperties.Admin admin) throws BadEntityException, AlreadyRegisteredException {
+    public U newAdmin(AuthProperties.Admin admin) {
+        // create the adminUser
+        U adminUser = newUser();
+        adminUser.setEmail(admin.getEmail());
+        adminUser.setPassword(admin.getPassword());
+        adminUser.getRoles().add(AuthRoles.ADMIN);
+        return adminUser;
+    }
+
+    @Transactional(propagation = Propagation.REQUIRED, readOnly = false)
+    public U signupAdmin(U admin) throws AlreadyRegisteredException, BadEntityException {
         checkUniqueEmail(admin.getEmail());
-        checkValidPassword(admin.getPassword());
-        // create the user
-        U user = newUser();
-        user.setEmail(admin.getEmail());
-        user.setPassword(admin.getPassword());
-        user.getRoles().add(AuthRoles.ADMIN);
-        return save(user);
+        passwordValidator.validate(admin.getPassword());
+        return save(admin);
     }
 
     /**
@@ -626,7 +620,11 @@ public abstract class AbstractUserService
         return jweTokenService;
     }
 
-//    protected UserService<U, ID> getRootUserService() {
+    protected PasswordValidator getPasswordValidator() {
+        return passwordValidator;
+    }
+
+    //    protected UserService<U, ID> getRootUserService() {
 //        return rootUserService;
 //    }
 
@@ -671,4 +669,8 @@ public abstract class AbstractUserService
         this.authenticatedPrincipalFactory = authenticatedPrincipalFactory;
     }
 
+    @Autowired
+    public void injectPasswordValidator(PasswordValidator passwordValidator) {
+        this.passwordValidator = passwordValidator;
+    }
 }

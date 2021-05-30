@@ -85,8 +85,13 @@ public interface UserServiceExtension<S extends UserService>
 //    }
 
     @Override
-    default AbstractUser createAdminUser(AuthProperties.Admin admin) throws BadEntityException, AlreadyRegisteredException {
-        return getNext().createAdminUser(admin);
+    default AbstractUser newAdmin(AuthProperties.Admin admin) {
+        return getNext().newAdmin(admin);
+    }
+
+    @Override
+    default AbstractUser signupAdmin(AbstractUser admin) throws AlreadyRegisteredException, BadEntityException {
+        return getNext().signupAdmin(admin);
     }
 
     @Override

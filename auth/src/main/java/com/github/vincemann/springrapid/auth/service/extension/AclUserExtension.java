@@ -1,7 +1,6 @@
 package com.github.vincemann.springrapid.auth.service.extension;
 
 import com.github.vincemann.aoplog.api.LogInteraction;
-import com.github.vincemann.springrapid.auth.AuthProperties;
 import com.github.vincemann.springrapid.auth.model.AbstractUser;
 import com.github.vincemann.springrapid.auth.model.AuthRoles;
 import com.github.vincemann.springrapid.auth.service.AlreadyRegisteredException;
@@ -42,12 +41,11 @@ public class AclUserExtension
 
     @LogInteraction
     @Override
-    public AbstractUser createAdminUser(AuthProperties.Admin admin) throws BadEntityException, AlreadyRegisteredException {
-        AbstractUser saved = getNext().createAdminUser(admin);
+    public AbstractUser signupAdmin(AbstractUser admin) throws AlreadyRegisteredException, BadEntityException {
+        AbstractUser saved = getNext().signupAdmin(admin);
         savePostSignupAclInfo(saved);
         return saved;
     }
-
 
     public void savePostSignupAclInfo(AbstractUser saved){
         aclPermissionService.savePermissionForUserOverEntity(saved.getEmail(),saved, BasePermission.ADMINISTRATION);

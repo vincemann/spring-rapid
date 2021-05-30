@@ -22,7 +22,7 @@ import java.util.Optional;
  */
 public class AdminInitializer extends DatabaseInitializer {
 
-    private UserService<?,?> userService;
+    private UserService<AbstractUser<?>,?> userService;
     private AuthProperties authProperties;
     private RapidSecurityContext<?> securityContext;
 
@@ -50,7 +50,7 @@ public class AdminInitializer extends DatabaseInitializer {
             if (byEmail.isEmpty()) {
                 // Doesn't exist. So, create it.
                 log.debug("admin does not exist yet, creating: " + admin);
-                userService.createAdminUser(admin);
+                userService.signupAdmin(userService.newAdmin(admin));
             }else {
                 log.debug("admin already exists. skipping.");
             }
@@ -59,7 +59,7 @@ public class AdminInitializer extends DatabaseInitializer {
 
     @Autowired
     @Acl
-    public void injectUserService(UserService<?, ?> userService) {
+    public void injectUserService(UserService<AbstractUser<?>, ?> userService) {
         this.userService = userService;
     }
 

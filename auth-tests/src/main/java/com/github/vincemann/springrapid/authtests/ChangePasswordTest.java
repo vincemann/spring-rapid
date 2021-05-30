@@ -12,8 +12,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 public class ChangePasswordTest extends AbstractRapidAuthIntegrationTest {
-	
-	private static final String NEW_PASSWORD = "a-new-password123";
 
 	private ChangePasswordDto changePasswordDto(String oldPassword){
 		return ChangePasswordDto.builder()

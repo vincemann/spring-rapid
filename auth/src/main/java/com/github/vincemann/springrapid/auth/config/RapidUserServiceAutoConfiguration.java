@@ -1,5 +1,7 @@
 package com.github.vincemann.springrapid.auth.config;
 
+import com.github.vincemann.springrapid.auth.service.validation.PasswordValidator;
+import com.github.vincemann.springrapid.auth.service.validation.RapidPasswordValidator;
 import com.github.vincemann.springrapid.core.IdConverter;
 import com.github.vincemann.springrapid.core.model.RapidAuditorAware;
 import com.github.vincemann.springrapid.auth.mail.MailSender;
@@ -71,6 +73,12 @@ public class RapidUserServiceAutoConfiguration {
     public RapidPasswordEncoder passwordEncoder() {
 //        return PasswordEncoderFactories.createDelegatingPasswordEncoder();
         return new BcryptRapidPasswordEncoder();
+    }
+
+    @Bean
+    @ConditionalOnMissingBean(PasswordValidator.class)
+    public PasswordValidator passwordValidator(){
+        return new RapidPasswordValidator();
     }
 
 

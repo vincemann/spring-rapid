@@ -17,7 +17,7 @@ import static com.github.vincemann.springrapid.authtests.adapter.AuthTestAdapter
 })
 public class LoginBruteForceTest extends AbstractRapidAuthIntegrationTest {
 
-    static final int MAX_LOGIN_TRIES = 5;
+    private static final int MAX_LOGIN_TRIES = 5;
 
     @Autowired
     LoginAttemptService loginAttemptService;

@@ -9,6 +9,5 @@ import java.io.Serializable;
 public class ResetPasswordDto implements Serializable {
 
 	@NotEmpty
-//	@Password
 	private String newPassword;
 }
