@@ -62,7 +62,9 @@ public interface UserService<U extends AbstractUser<ID>, ID extends Serializable
 //    @LogInteraction(Severity.TRACE)
 //    public Map<String, String> fetchFullToken(String authHeader);
 
-    public U createAdminUser(AuthProperties.Admin admin) throws BadEntityException, AlreadyRegisteredException;
+    public U newAdmin(AuthProperties.Admin admin);
+
+    public U signupAdmin(U admin) throws AlreadyRegisteredException, BadEntityException;
 
     @LogInteraction(Severity.TRACE)
     public abstract ID toId(String id);

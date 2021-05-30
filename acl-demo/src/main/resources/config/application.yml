@@ -82,9 +82,9 @@ rapid-auth:
   # ADMIN users
   admins:
     - email: admin@example.com
-      password: admin12345!
+      password: AdminPassword123!
     - email: secondAdmin@example.com
-      password: admin212345!
+      password: SecondAdminPassword123!
 
   # Properties to be passed to client
   shared:

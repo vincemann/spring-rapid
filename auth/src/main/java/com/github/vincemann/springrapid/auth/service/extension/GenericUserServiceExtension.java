@@ -83,8 +83,8 @@ public interface GenericUserServiceExtension<S extends UserService<U,Id>,U exten
     }
 
     @Override
-    default U createAdminUser(AuthProperties.Admin admin) throws BadEntityException, AlreadyRegisteredException {
-        return getNext().createAdminUser(admin);
+    default U newAdmin(AuthProperties.Admin admin) {
+        return getNext().newAdmin(admin);
     }
 
     @Override

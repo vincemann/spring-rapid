@@ -28,15 +28,9 @@ public class MyUserService extends AbstractUserService<User, Long, UserRepositor
 	}
 
 	@Override
-	public User createAdminUser(AuthProperties.Admin admin) throws BadEntityException, AlreadyRegisteredException {
-		checkUniqueEmail(admin.getEmail());
-		checkValidPassword(admin.getPassword());
-		// create the user
-		User user = newUser();
-		user.setEmail(admin.getEmail());
-		user.setPassword(admin.getPassword());
-		user.getRoles().add(AuthRoles.ADMIN);
-		user.setName(admin.getEmail()+"name");
-		return save(user);
+	public User newAdmin(AuthProperties.Admin admin) {
+		User createdAdmin = super.newAdmin(admin);
+		createdAdmin.setName(admin.getEmail()+"name");
+		return createdAdmin;
 	}
 }

@@ -47,6 +47,13 @@ public class UserServiceSecurityExtension
         return getNext().save(entity);
     }
 
+    @Override
+    public AbstractUser signupAdmin(AbstractUser admin) throws AlreadyRegisteredException, BadEntityException {
+        securityContextChecker.checkAdmin();
+        return getNext().signupAdmin(admin);
+    }
+
+
     @LogInteraction
     @Override
     public void resendVerificationMail(AbstractUser user) throws EntityNotFoundException, BadEntityException {
