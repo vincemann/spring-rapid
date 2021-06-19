@@ -17,6 +17,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.mock.mockito.SpyBean;
 
 import java.time.LocalDate;
+import java.util.Date;
 import java.util.HashSet;
 import java.util.Optional;
 import java.util.Set;
@@ -103,6 +104,10 @@ public class AbstractControllerIntegrationTest<C extends GenericCrudController<?
     protected PetRepository petRepository;
 
 
+    @Autowired
+    protected ClinicCardService clinicCardService;
+    @Autowired
+    protected ClinicCardRepository clinicCardRepository;
 
     @Autowired
     protected PetTypeService petTypeService;
@@ -121,6 +126,9 @@ public class AbstractControllerIntegrationTest<C extends GenericCrudController<?
     protected OwnerRepository ownerRepository;
     @Autowired
     protected OwnerService ownerService;
+
+
+    protected ClinicCard clinicCard;
 
     @Autowired
     protected RapidSecurityContext<RapidAuthenticatedPrincipal> securityContext;
@@ -223,6 +231,11 @@ public class AbstractControllerIntegrationTest<C extends GenericCrudController<?
                 .pets(new HashSet<>())
                 .reason("teeth hurt")
                 .build();
+
+        clinicCard = ClinicCard.builder()
+                .registrationDate(new Date())
+                .registrationReason("stationary pet treatment")
+                .build();
     }
 
     protected void assertVetHasSpecialties(String vetName, String... descriptions) {
@@ -283,6 +296,24 @@ public class AbstractControllerIntegrationTest<C extends GenericCrudController<?
         }
         System.err.println("Checking owner: " + ownerName);
         Assertions.assertEquals(pets, owner.getPets());
+    }
+
+    protected void assertOwnerHasClinicCard(String ownerName, Long clinicCardId) {
+        Optional<Owner> ownerOptional = ownerRepository.findByLastName(ownerName);
+        Assertions.assertTrue(ownerOptional.isPresent());
+        Owner owner = ownerOptional.get();
+        ClinicCard clinicCard = clinicCardRepository.findById(clinicCardId).get();
+        System.err.println("Checking owner: " + ownerName);
+        Assertions.assertEquals(clinicCard, owner.getClinicCard());
+    }
+
+    protected void assertClinicCardHasOwner(Long clinicCardId, String ownerName) {
+        Optional<Owner> ownerOptional = ownerRepository.findByLastName(ownerName);
+        Assertions.assertTrue(ownerOptional.isPresent());
+        Owner owner = ownerOptional.get();
+        ClinicCard clinicCard = clinicCardRepository.findById(clinicCardId).get();
+        System.err.println("Checking owner: " + ownerName);
+        Assertions.assertEquals(owner, clinicCard.getOwner());
     }
 
     protected void assertToyHasPet(String toyName, String petName) {

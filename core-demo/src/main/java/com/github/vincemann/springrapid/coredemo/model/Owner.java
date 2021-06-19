@@ -4,7 +4,10 @@ import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.github.vincemann.springrapid.coredemo.model.abs.Person;
 import com.github.vincemann.springrapid.core.model.IdentifiableEntityImpl;
 import com.github.vincemann.springrapid.entityrelationship.model.child.annotation.BiDirChildCollection;
+import com.github.vincemann.springrapid.entityrelationship.model.child.annotation.BiDirChildEntity;
+import com.github.vincemann.springrapid.entityrelationship.model.child.annotation.UniDirChildEntity;
 import com.github.vincemann.springrapid.entityrelationship.model.parent.BiDirParent;
+import com.sun.istack.NotNull;
 import lombok.*;
 import org.hibernate.annotations.Fetch;
 
@@ -40,6 +43,11 @@ public class Owner extends Person implements BiDirParent {
     @JsonManagedReference
     @BiDirChildCollection(Pet.class)
     private Set<Pet> pets = new HashSet<>();
+
+    @BiDirChildEntity
+    @OneToOne(cascade = CascadeType.ALL,fetch = FetchType.EAGER)
+    @JoinColumn(name = "clinic_card_id",referencedColumnName = "id")
+    private ClinicCard clinicCard;
 
 
     @ElementCollection(targetClass = String.class,fetch = FetchType.EAGER)

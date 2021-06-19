@@ -24,7 +24,7 @@ public class UserHasPermissionAboutSelfAclExtension
     @Override
     public E save(E entity) throws BadEntityException {
         E saved = getNext().save(entity);
-        getAclPermissionService().savePermissionForUserOverEntity(saved.getAuthenticationString(),saved, this.permission);
+        getAclPermissionService().savePermissionForUserOverEntity(saved.getAuthenticationName(),saved, this.permission);
         return saved;
     }
 }

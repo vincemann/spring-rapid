@@ -1,11 +1,12 @@
 package com.github.vincemann.springrapid.coredemo.dtos.owner;
 
 
+import com.github.vincemann.springrapid.coredemo.model.ClinicCard;
 import com.github.vincemann.springrapid.coredemo.model.Owner;
 import com.github.vincemann.springrapid.coredemo.model.Pet;
+import com.github.vincemann.springrapid.entityrelationship.dto.child.annotation.BiDirChildId;
 import com.github.vincemann.springrapid.entityrelationship.dto.child.annotation.BiDirChildIdCollection;
 import com.github.vincemann.springrapid.entityrelationship.dto.parent.BiDirParentDto;
-import com.github.vincemann.springrapid.entityrelationship.model.child.annotation.BiDirChildCollection;
 import lombok.*;
 import org.springframework.lang.Nullable;
 
@@ -39,10 +40,13 @@ public class CreateOwnerDto extends AbstractOwnerDto implements BiDirParentDto {
     }
 
 
+    @BiDirChildId(ClinicCard.class)
+    private Long clinicCardId;
 
     @Builder
-    public CreateOwnerDto(@Size(min = 10, max = 255) @NotBlank String address, @NotBlank String city, @Size(min = 10, max = 10) String telephone, @NotBlank @Size(min = 2, max = 20) String firstName, @NotBlank @Size(min = 2, max = 20) String lastName,Set<String> hobbies) {
+    public CreateOwnerDto(@Size(min = 10, max = 255) @NotBlank String address, @NotBlank String city, @Size(min = 10, max = 10) String telephone, @NotBlank @Size(min = 2, max = 20) String firstName, @NotBlank @Size(min = 2, max = 20) String lastName,Set<String> hobbies, Long clinicCardId) {
         super(address, city, telephone, hobbies);
+        this.clinicCardId =clinicCardId;
         this.firstName = firstName;
         this.lastName = lastName;
     }

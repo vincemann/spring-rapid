@@ -51,6 +51,7 @@ spring:
   # https://github.com/spring-projects/spring-boot/wiki/Spring-Boot-2.1-Release-Notes#bean-overriding
   main.allow-bean-definition-overriding: true
 
+  # implement oauth2
   security:
     oauth2:
       client:
