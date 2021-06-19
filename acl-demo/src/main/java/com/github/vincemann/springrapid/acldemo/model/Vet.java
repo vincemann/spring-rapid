@@ -31,8 +31,8 @@ public class Vet extends Person implements BiDirParent, UserAwareEntity, UniDirP
     }
 
     @Override
-    public String getAuthenticationString() {
-        return getUser().getAuthenticationString();
+    public String getAuthenticationName() {
+        return getUser().getAuthenticationName();
     }
 
     @ManyToMany(fetch = FetchType.EAGER)

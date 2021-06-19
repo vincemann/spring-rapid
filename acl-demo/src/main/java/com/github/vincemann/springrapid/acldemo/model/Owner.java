@@ -42,9 +42,10 @@ public class Owner extends Person implements BiDirParent, UserAwareEntity, UniDi
     }
 
     @Override
-    public String getAuthenticationString() {
-        return getUser().getAuthenticationString();
+    public String getAuthenticationName() {
+        return getUser().getAuthenticationName();
     }
+
 
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "owner",fetch = FetchType.EAGER)
     @JsonManagedReference

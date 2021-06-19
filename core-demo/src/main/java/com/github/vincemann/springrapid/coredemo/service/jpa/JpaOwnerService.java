@@ -37,7 +37,7 @@ public class JpaOwnerService
 
 
     /**
-     * Owner named "42" is owner of the year
+     * Owner named "chad" is owner of the year
      * @return
      */
     @Transactional

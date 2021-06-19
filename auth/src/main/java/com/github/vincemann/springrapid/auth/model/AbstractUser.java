@@ -71,7 +71,7 @@ public class AbstractUser<ID extends Serializable>
 	}
 
 	@Override
-	public String getAuthenticationString() {
+	public String getAuthenticationName() {
 		return this.email;
 	}
 }

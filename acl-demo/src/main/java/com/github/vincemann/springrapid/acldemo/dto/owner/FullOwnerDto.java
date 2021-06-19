@@ -1,5 +1,6 @@
 package com.github.vincemann.springrapid.acldemo.dto.owner;
 
+import com.github.vincemann.springrapid.entityrelationship.dto.child.annotation.BiDirChildId;
 import lombok.*;
 
 import javax.validation.constraints.NotBlank;

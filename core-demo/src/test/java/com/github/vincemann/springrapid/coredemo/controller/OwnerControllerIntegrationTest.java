@@ -4,6 +4,7 @@ import com.github.vincemann.springrapid.core.security.RapidSecurityContext;
 import com.github.vincemann.springrapid.core.util.Lists;
 import com.github.vincemann.springrapid.coredemo.dtos.owner.CreateOwnerDto;
 import com.github.vincemann.springrapid.coredemo.dtos.owner.ReadOwnOwnerDto;
+import com.github.vincemann.springrapid.coredemo.model.ClinicCard;
 import com.github.vincemann.springrapid.coredemo.model.Owner;
 import com.github.vincemann.springrapid.coredemo.model.Pet;
 import com.github.vincemann.springrapid.coredemo.service.OwnerService;
@@ -87,6 +88,17 @@ public class OwnerControllerIntegrationTest
     }
 
     @Test
+    public void canSaveOwner_linkToClinicCard() throws Exception {
+        ClinicCard savedClinicCard = clinicCardRepository.save(clinicCard);
+
+        ReadOwnOwnerDto responseDto = saveOwnerLinkedToClinicCard(kahn,savedClinicCard);
+        Assertions.assertEquals(responseDto.getClinicCardId(),savedClinicCard.getId());
+
+        assertOwnerHasClinicCard(KAHN,savedClinicCard.getId());
+        assertClinicCardHasOwner(savedClinicCard.getId(),KAHN);
+    }
+
+    @Test
     public void canSaveOwner_linkToPets() throws Exception {
         Pet savedBello = petRepository.save(bello);
         Pet savedKitty = petRepository.save(kitty);
@@ -113,6 +125,18 @@ public class OwnerControllerIntegrationTest
                 .andReturn()
                 .getResponse().getContentAsString(),ReadOwnOwnerDto.class);
     }
+
+    private ReadOwnOwnerDto saveOwnerLinkedToClinicCard(Owner owner,ClinicCard clinicCard) throws Exception {
+        CreateOwnerDto createOwnerDto = new CreateOwnerDto(owner);
+        createOwnerDto.setClinicCardId(clinicCard.getId());
+
+
+        return deserialize(getMvc().perform(create(createOwnerDto))
+                .andExpect(status().is2xxSuccessful())
+                .andReturn()
+                .getResponse().getContentAsString(),ReadOwnOwnerDto.class);
+    }
+
 
 
 
