@@ -120,21 +120,22 @@ public class OwnerControllerIntegrationTest
         createOwnerDto.getPetIds().addAll(Lists.newArrayList(petIds));
 
 
-       return deserialize(getMvc().perform(create(createOwnerDto))
-                .andExpect(status().is2xxSuccessful())
-                .andReturn()
-                .getResponse().getContentAsString(),ReadOwnOwnerDto.class);
+       return perform2xx(create(createOwnerDto),ReadOwnOwnerDto.class);
     }
+
 
     private ReadOwnOwnerDto saveOwnerLinkedToClinicCard(Owner owner,ClinicCard clinicCard) throws Exception {
         CreateOwnerDto createOwnerDto = new CreateOwnerDto(owner);
         createOwnerDto.setClinicCardId(clinicCard.getId());
 
 
-        return deserialize(getMvc().perform(create(createOwnerDto))
-                .andExpect(status().is2xxSuccessful())
-                .andReturn()
-                .getResponse().getContentAsString(),ReadOwnOwnerDto.class);
+        return perform2xx(create(createOwnerDto),ReadOwnOwnerDto.class);
+    }
+
+
+    private ReadOwnOwnerDto saveOwner(Owner owner) throws Exception {
+        CreateOwnerDto createOwnerDto = new CreateOwnerDto(owner);
+        return perform2xx(create(createOwnerDto),ReadOwnOwnerDto.class);
     }
 
 
@@ -189,6 +190,32 @@ public class OwnerControllerIntegrationTest
 
         assertOwnerHasPets(KAHN);
         assertPetHasOwner(BELLO,null);
+    }
+
+    @Test
+    public void canRemoveClinicCardFromOwner_viaUpdate() throws Exception {
+        ClinicCard savedClinicCard = clinicCardRepository.save(clinicCard);
+
+        ReadOwnOwnerDto createdKahnDto = saveOwnerLinkedToClinicCard(kahn,savedClinicCard);
+        String updateJson = createUpdateJsonLine("remove", "/clinicCardId");
+        ReadOwnOwnerDto responseDto = perform2xx(update(createUpdateJsonRequest(updateJson), createdKahnDto.getId()),ReadOwnOwnerDto.class);
+        Assertions.assertNull(responseDto.getClinicCardId());
+
+        assertOwnerHasClinicCard(KAHN,null);
+        assertClinicCardHasOwner(savedClinicCard.getId(),null);
+    }
+
+    @Test
+    public void canAddClinicCardToOwner_viaUpdate() throws Exception {
+        ClinicCard savedClinicCard = clinicCardRepository.save(clinicCard);
+
+        ReadOwnOwnerDto createdKahnDto = saveOwner(kahn);
+        String updateJson = createUpdateJsonLine("add", "/clinicCardId",savedClinicCard.getId().toString());
+        ReadOwnOwnerDto responseDto = perform2xx(update(createUpdateJsonRequest(updateJson), createdKahnDto.getId()),ReadOwnOwnerDto.class);
+        Assertions.assertEquals(savedClinicCard.getId(),responseDto.getClinicCardId());
+
+        assertOwnerHasClinicCard(KAHN,savedClinicCard.getId());
+        assertClinicCardHasOwner(savedClinicCard.getId(),KAHN);
     }
 
     @Test

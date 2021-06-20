@@ -302,18 +302,27 @@ public class AbstractControllerIntegrationTest<C extends GenericCrudController<?
         Optional<Owner> ownerOptional = ownerRepository.findByLastName(ownerName);
         Assertions.assertTrue(ownerOptional.isPresent());
         Owner owner = ownerOptional.get();
-        ClinicCard clinicCard = clinicCardRepository.findById(clinicCardId).get();
         System.err.println("Checking owner: " + ownerName);
-        Assertions.assertEquals(clinicCard, owner.getClinicCard());
+        if(clinicCardId == null ){
+            Assertions.assertNull(owner.getClinicCard());
+        }else {
+            ClinicCard clinicCard = clinicCardRepository.findById(clinicCardId).get();
+            Assertions.assertEquals(clinicCard, owner.getClinicCard());
+        }
     }
 
     protected void assertClinicCardHasOwner(Long clinicCardId, String ownerName) {
-        Optional<Owner> ownerOptional = ownerRepository.findByLastName(ownerName);
-        Assertions.assertTrue(ownerOptional.isPresent());
-        Owner owner = ownerOptional.get();
-        ClinicCard clinicCard = clinicCardRepository.findById(clinicCardId).get();
-        System.err.println("Checking owner: " + ownerName);
-        Assertions.assertEquals(owner, clinicCard.getOwner());
+        if (ownerName == null){
+            ClinicCard clinicCard = clinicCardRepository.findById(clinicCardId).get();
+            Assertions.assertNull(clinicCard.getOwner());
+        }else {
+            Optional<Owner> ownerOptional = ownerRepository.findByLastName(ownerName);
+            Assertions.assertTrue(ownerOptional.isPresent());
+            Owner owner = ownerOptional.get();
+            ClinicCard clinicCard = clinicCardRepository.findById(clinicCardId).get();
+            System.err.println("Checking owner: " + ownerName);
+            Assertions.assertEquals(owner, clinicCard.getOwner());
+        }
     }
 
     protected void assertToyHasPet(String toyName, String petName) {
