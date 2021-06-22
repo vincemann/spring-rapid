@@ -55,6 +55,7 @@ public class OwnerControllerIntegrationTest
                 .all()
                 .ignore(OwnerType::getId)
                 .ignore(createKahnDto::getPetIds)
+                .ignore(createKahnDto::getClinicCardId)
                 .assertEqual();
 
         Assertions.assertEquals(responseDto.getId(),dbKahn.getId());
@@ -216,6 +217,21 @@ public class OwnerControllerIntegrationTest
 
         assertOwnerHasClinicCard(KAHN,savedClinicCard.getId());
         assertClinicCardHasOwner(savedClinicCard.getId(),KAHN);
+    }
+
+    @Test
+    public void canRelinkDiffClinicCardToOwner_viaUpdate() throws Exception {
+        ClinicCard savedClinicCard = clinicCardRepository.save(clinicCard);
+        ClinicCard savedSecondClinicCard = clinicCardRepository.save(secondClinicCard);
+
+        ReadOwnOwnerDto createdKahnDto = saveOwnerLinkedToClinicCard(kahn,savedClinicCard);
+        String updateJson = createUpdateJsonLine("replace", "/clinicCardId",savedSecondClinicCard.getId().toString());
+        ReadOwnOwnerDto responseDto = perform2xx(update(createUpdateJsonRequest(updateJson), createdKahnDto.getId()),ReadOwnOwnerDto.class);
+        Assertions.assertEquals(savedSecondClinicCard.getId(),responseDto.getClinicCardId());
+
+        assertOwnerHasClinicCard(KAHN,savedSecondClinicCard.getId());
+        assertClinicCardHasOwner(savedClinicCard.getId(),null);
+        assertClinicCardHasOwner(savedSecondClinicCard.getId(),KAHN);
     }
 
     @Test
@@ -402,13 +418,26 @@ public class OwnerControllerIntegrationTest
 
         ReadOwnOwnerDto responseDto = saveOwnerLinkedToPets(kahn,savedBello.getId());
 
-        MvcResult result = getMvc().perform(delete(responseDto.getId()))
-                .andExpect(status().is2xxSuccessful())
-                .andReturn();
+        getMvc().perform(delete(responseDto.getId()))
+                .andExpect(status().is2xxSuccessful());
 
         Assertions.assertFalse(ownerRepository.findByLastName(KAHN).isPresent());
 
         assertPetHasOwner(BELLO,null);
+    }
+
+    @Test
+    public void canDeleteOwner_thusUnlinkFromClinicCard() throws Exception {
+        ClinicCard savedClinicCard = clinicCardRepository.save(clinicCard);
+
+        ReadOwnOwnerDto responseDto = saveOwnerLinkedToClinicCard(kahn,savedClinicCard);
+
+        getMvc().perform(delete(responseDto.getId()))
+                .andExpect(status().is2xxSuccessful());
+
+        Assertions.assertFalse(ownerRepository.findByLastName(KAHN).isPresent());
+
+        assertClinicCardHasOwner(savedClinicCard.getId(),null);
     }
 
     @Test
