@@ -32,6 +32,7 @@ public class AbstractControllerIntegrationTest<C extends GenericCrudController<?
     protected final Owner OwnerType = new Owner();
     protected final Pet PetType = new Pet();
     protected final Toy ToyType = new Toy();
+    protected final ClinicCard ClinicCardType = new ClinicCard();
 
     protected static final String VET_MAX = "Max";
     protected static final String VET_POLDI = "Poldi";
@@ -129,6 +130,7 @@ public class AbstractControllerIntegrationTest<C extends GenericCrudController<?
 
 
     protected ClinicCard clinicCard;
+    protected ClinicCard secondClinicCard;
 
     @Autowired
     protected RapidSecurityContext<RapidAuthenticatedPrincipal> securityContext;
@@ -235,6 +237,11 @@ public class AbstractControllerIntegrationTest<C extends GenericCrudController<?
         clinicCard = ClinicCard.builder()
                 .registrationDate(new Date())
                 .registrationReason("stationary pet treatment")
+                .build();
+
+        secondClinicCard = ClinicCard.builder()
+                .registrationDate(new Date())
+                .registrationReason("ambulant pet treatment")
                 .build();
     }
 

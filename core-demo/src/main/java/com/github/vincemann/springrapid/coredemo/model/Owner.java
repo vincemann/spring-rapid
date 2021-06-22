@@ -16,6 +16,8 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
 
+import static javax.persistence.CascadeType.*;
+
 @Setter
 @Getter
 @NoArgsConstructor
@@ -45,7 +47,8 @@ public class Owner extends Person implements BiDirParent {
     private Set<Pet> pets = new HashSet<>();
 
     @BiDirChildEntity
-    @OneToOne(cascade = CascadeType.ALL,fetch = FetchType.EAGER)
+    // dont use remove cascade to showcase unlink on remove owner
+    @OneToOne(cascade = {PERSIST, MERGE, REFRESH, DETACH},fetch = FetchType.EAGER)
     @JoinColumn(name = "clinic_card_id",referencedColumnName = "id")
     private ClinicCard clinicCard;
 
