@@ -2,13 +2,8 @@ package com.github.vincemann.springrapid.core.proxy;
 
 
 import com.github.vincemann.aoplog.api.AopLoggable;
-import com.github.vincemann.aoplog.api.BeanNameAware;
-import com.github.vincemann.aoplog.api.LogConfig;
-import com.github.vincemann.aoplog.api.LogInteraction;
+import com.github.vincemann.aoplog.api.IBeanNameAware;
 import com.google.common.base.Objects;
-import org.springframework.aop.TargetClassAware;
-import org.springframework.beans.factory.annotation.Configurable;
-import org.springframework.test.util.AopTestUtils;
 
 // dont log extensions methods -> otherwise you will have log for i.E. save 3 times for 2 extensions..
 // explicitly log methods you want to log
@@ -18,7 +13,7 @@ import org.springframework.test.util.AopTestUtils;
 //dependencys will be injected by aspectj, you should create the extensions with new
 //this is done, so the extensions are not in the container as duplicate beans for service interfaces
 public abstract class AbstractServiceExtension<T,P extends ProxyController>
-        implements NextLinkAware<T>,AopLoggable, BeanNameAware {
+        implements NextLinkAware<T>,AopLoggable, IBeanNameAware {
 
     private String beanName;
     private ChainController<T> chain;
