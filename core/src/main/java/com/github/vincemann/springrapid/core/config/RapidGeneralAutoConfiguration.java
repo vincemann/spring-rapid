@@ -1,6 +1,8 @@
 package com.github.vincemann.springrapid.core.config;
 
 import com.github.vincemann.springrapid.core.CoreProperties;
+import com.github.vincemann.springrapid.core.controller.owner.DelegatingOwnerLocator;
+import com.github.vincemann.springrapid.core.controller.owner.OwnerLocator;
 import com.github.vincemann.springrapid.core.proxy.annotation.AnnotationCrudServiceProxyFactory;
 import com.github.vincemann.springrapid.core.util.JpaUtils;
 import com.github.vincemann.springrapid.core.util.Message;
@@ -16,6 +18,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.support.ReloadableResourceBundleMessageSource;
 
 import javax.persistence.EntityManager;
+import java.util.List;
 
 @Configuration
 @EnableConfigurationProperties
@@ -39,6 +42,8 @@ public class RapidGeneralAutoConfiguration {
 //        messageSource.setDefaultEncoding("UTF-8");
 //        return messageSource;
 //    }
+
+
 
     @Bean
     public Message messageUtils(MessageSource messageSource){

@@ -5,10 +5,12 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.vincemann.springrapid.core.service.exception.BadEntityException;
+import lombok.Getter;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.nio.file.AccessDeniedException;
 
+@Getter
 public class RapidJsonMapper implements JsonMapper {
 
     private ObjectMapper objectMapper;

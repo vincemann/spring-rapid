@@ -33,6 +33,11 @@ public interface GenericUserServiceExtension<S extends UserService<U,Id>,U exten
     }
 
     @Override
+    default U signupAdmin(U admin) throws AlreadyRegisteredException, BadEntityException{
+        return getNext().signupAdmin(admin);
+    }
+
+    @Override
     default void resendVerificationMail(U user) throws EntityNotFoundException, BadEntityException {
         getNext().resendVerificationMail(user);
     }

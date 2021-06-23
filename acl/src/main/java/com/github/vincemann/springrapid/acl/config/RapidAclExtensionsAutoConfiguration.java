@@ -51,14 +51,14 @@ public class RapidAclExtensionsAutoConfiguration {
     }
 
     @Bean
-    @ConditionalOnMissingBean(SavedInheritsParentsAclExtension.class)
+    @ConditionalOnMissingBean(name = "savedInheritsParentsAclExtension")
     @Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
     public SavedInheritsParentsAclExtension savedInheritsParentsAclExtension(){
         return new SavedInheritsParentsAclExtension();
     }
 
     @Bean
-    @ConditionalOnMissingBean(CleanUpAclExtension.class)
+    @ConditionalOnMissingBean(name = "cleanUpAclExtension")
     @Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
     public CleanUpAclExtension cleanUpAclExtension(){
         return new CleanUpAclExtension();
