@@ -24,6 +24,7 @@ Most lemon modules were copied, modified and integrated into this project.
   -> signup, login, reset-password, verify-email, ...
     
  # Include  
+ Make sure to use **java11** and **maven** with version >= **3.6.0**  
 * replace MODULE with the module you want to include (module-name = directory-name)  
 * replace VERSION with valid version from [releases](https://github.com/vincemann/spring-rapid/releases)  
  ### Maven  
