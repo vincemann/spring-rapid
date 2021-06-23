@@ -18,6 +18,7 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.context.ApplicationListener;
 import org.springframework.context.event.ContextRefreshedEvent;
+import org.springframework.core.ResolvableType;
 import org.springframework.util.Assert;
 
 import java.util.*;
@@ -45,15 +46,20 @@ public class CrudServiceLocatorImpl implements CrudServiceLocator, ApplicationCo
     }
 
     private void loadPrimaryServices(ConfigurableListableBeanFactory beanFactory){
-        String[] beanNames = beanFactory.getBeanNamesForType(CrudService.class);
+        List<String> beanNames = Lists.newArrayList(beanFactory.getBeanNamesForType(CrudService.class));
+        List<String> extensionNames = Lists.newArrayList(beanFactory.getBeanNamesForType(AbstractServiceExtension.class));
+
+        //skip extensions
+        beanNames.removeAll(extensionNames);
+
         Map<Class<? extends CrudService>,List<CrudService>> nonPrimaryServiceClassBeanMap = new HashMap<>();
         for (String beanName : beanNames) {
             BeanDefinition bd = beanFactory.getBeanDefinition(beanName);
             CrudService bean = ((CrudService) beanFactory.getBean(beanName));
             //skip extensions
-            if (bean instanceof AbstractServiceExtension){
-                continue;
-            }
+//            if (bean instanceof AbstractServiceExtension){
+//                continue;
+//            }
             if (bd.isPrimary()) {
                 entityClassPrimaryServiceMap.put(bean.getEntityClass(),bean);
             }else {

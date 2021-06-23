@@ -35,7 +35,6 @@ public class Owner extends Person implements BiDirParent {
         if(hobbies!=null) {
             this.hobbies = hobbies;
         }
-
         this.address = address;
         this.city = city;
         this.telephone = telephone;

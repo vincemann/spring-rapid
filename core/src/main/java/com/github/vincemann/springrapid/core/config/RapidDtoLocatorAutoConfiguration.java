@@ -20,7 +20,6 @@ import static org.springframework.beans.factory.config.ConfigurableBeanFactory.S
 public class RapidDtoLocatorAutoConfiguration {
 
     // FIND RIGHT DTO CLASS
-
     @Bean
     @ConditionalOnMissingBean(name = "delegatingOwnerLocator")
     public DelegatingOwnerLocator delegatingOwnerLocator(List<OwnerLocator> locators){

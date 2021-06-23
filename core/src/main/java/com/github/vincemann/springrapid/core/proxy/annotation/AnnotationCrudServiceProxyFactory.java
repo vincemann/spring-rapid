@@ -36,7 +36,7 @@ public class AnnotationCrudServiceProxyFactory implements BeanPostProcessor, App
     public Object postProcessAfterInitialization(Object bean, String beanName) throws BeansException {
         //log.debug("postProcessing bean : " + beanName);
         Object unwrappedBean = AopTestUtils.getUltimateTargetObject(bean);
-        if (unwrappedBean instanceof CrudService) {
+        if (unwrappedBean instanceof CrudService && !(unwrappedBean instanceof AbstractServiceExtension)) {
             List<DefineProxy> proxyDefinitions = ContainerAnnotationUtils.findAnnotations(unwrappedBean.getClass(), DefineProxy.class, DefineProxies.class);
             List<CreateProxy> toCreate = ContainerAnnotationUtils.findAnnotations(unwrappedBean.getClass(), CreateProxy.class, CreateProxies.class);
             Map<String, CrudService> createdInternalProxies = new HashMap<>();
@@ -155,16 +155,16 @@ public class AnnotationCrudServiceProxyFactory implements BeanPostProcessor, App
 //                    throw new IllegalArgumentException("Could not find matching class for extension: " + extensionString, e);
 //                }
 //            } else {
-                extension = beanFactory.getBean(extensionString);
+            extension = beanFactory.getBean(extensionString);
 //            }
-            try {
-                AbstractServiceExtension serviceExtension = (AbstractServiceExtension) extension;
-                beanFactory.autowireBean(extension);
-                //beanFactory.autowireBeanProperties();
-                extensions.add(serviceExtension);
-            } catch (ClassCastException e) {
-                throw new IllegalArgumentException("Given extension bean: " + extensionString + " is not of Type AbstractServiceExtension", e);
+            if (!(extension instanceof AbstractServiceExtension)) {
+                throw new IllegalArgumentException("Given extension bean: " + extensionString + " is not of Type AbstractServiceExtension");
             }
+            AbstractServiceExtension serviceExtension = (AbstractServiceExtension) extension;
+            beanFactory.autowireBean(extension);
+            //beanFactory.autowireBeanProperties();
+            extensions.add(serviceExtension);
+
         }
         return extensions;
     }
