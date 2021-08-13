@@ -33,7 +33,4 @@ public class User extends AbstractUser<Long> {
 		super(email, password, roles, newEmail, credentialsUpdatedMillis, captchaResponse);
 		this.uuid = uuid;
 	}
-
-
-
 }

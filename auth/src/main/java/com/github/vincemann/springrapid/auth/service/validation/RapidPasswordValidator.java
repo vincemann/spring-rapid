@@ -10,7 +10,7 @@ public class RapidPasswordValidator implements PasswordValidator {
     @Override
     public void validate(String password) throws BadEntityException {
         final org.passay.PasswordValidator validator = new org.passay.PasswordValidator(Arrays.asList(
-                new LengthRule(8, 30),
+                new LengthRule(8, 50),
                 new UppercaseCharacterRule(1),
                 new DigitCharacterRule(1)
                 /*new SpecialCharacterRule(1),
