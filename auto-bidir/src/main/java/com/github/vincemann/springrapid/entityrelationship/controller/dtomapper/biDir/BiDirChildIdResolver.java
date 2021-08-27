@@ -20,7 +20,7 @@ import java.util.Map;
 /**
  * Used by {@link IdResolvingDtoPostProcessor}.
  * Resolves {@link BiDirParentId} to corresponding {@link BiDirParentEntity}.
- * Adds mapped {@link BiDirChild} to {@link BiDirParent#findSingleBiDirChildren()}'s  -> sets Backreference
+ * Adds mapped BiDirChild to {@link BiDirParent#findSingleBiDirChildren()}'s  -> sets Backreference
  *
  * @see EntityIdResolver
  */

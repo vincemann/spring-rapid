@@ -4,9 +4,8 @@ import com.github.vincemann.springrapid.core.model.IdentifiableEntity;
 import com.github.vincemann.springrapid.core.service.exception.BadEntityException;
 import com.github.vincemann.springrapid.core.service.exception.EntityNotFoundException;
 import com.github.vincemann.springrapid.core.service.locator.CrudServiceLocator;
-import com.github.vincemann.springrapid.entityrelationship.model.BiDirEntity;
-import com.github.vincemann.springrapid.entityrelationship.model.child.BiDirChild;
-import com.github.vincemann.springrapid.entityrelationship.model.parent.BiDirParent;
+import com.github.vincemann.springrapid.entityrelationship.RelationalEntityManager;
+import com.github.vincemann.springrapid.entityrelationship.model.RelationalEntityType;
 import lombok.extern.slf4j.Slf4j;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Before;
@@ -14,7 +13,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
-import java.util.*;
+import java.util.Collection;
+import java.util.Set;
 
 @Aspect
 @Slf4j
@@ -28,143 +28,140 @@ public class BiDirEntitySaveAdvice extends BiDirEntityAdvice {
     @PersistenceContext
     private EntityManager entityManager;
 
+
     @Autowired
-    public BiDirEntitySaveAdvice(CrudServiceLocator crudServiceLocator) {
-        super(crudServiceLocator);
+    public BiDirEntitySaveAdvice(CrudServiceLocator crudServiceLocator, RelationalEntityManager relationalEntityManager) {
+        super(crudServiceLocator, relationalEntityManager);
     }
 
     @Before("com.github.vincemann.springrapid.core.advice.SystemArchitecture.saveOperation() && " +
             "com.github.vincemann.springrapid.core.advice.SystemArchitecture.repoOperation() && " +
             "args(entity)")
-    public void prePersistBiDirEntity(BiDirEntity entity) throws BadEntityException, EntityNotFoundException, IllegalAccessException {
-
-        if (BiDirParent.class.isAssignableFrom(entity.getClass())) {
-            BiDirParent parent =(BiDirParent)entity;
-            if (((IdentifiableEntity) entity).getId() == null) {
+    public void prePersistBiDirEntity(IdentifiableEntity entity) throws BadEntityException, EntityNotFoundException, IllegalAccessException {
+        Set<RelationalEntityType> relationalEntityTypes = relationalEntityManager.inferTypes(entity.getClass());
+        if (relationalEntityTypes.contains(RelationalEntityType.BiDirParent)){
+            if (entity.getId() == null) {
                 //create
-                log.debug("pre persist biDirParent hook reached for: " + parent);
-                setChildrensParentRef(parent);
+                log.debug("pre persist biDirParent hook reached for: " + entity);
+                setChildrensParentRef(entity);
             } else {
                 // update
-                log.debug("pre update biDirParent hook reached for: " + parent);
-                updateBiDirParentRelations(parent);
-                // need to replace child here for partial update parent situation (replace detached child with session attached child (this))
-                replaceChildrensParentRef(parent);
-                // needs to be done to prevent detached error when adding parent to child via full update or save
-                mergeParentsChildren(parent);
+                log.debug("pre update biDirParent hook reached for: " + entity);
+                updateBiDirParentRelations(entity);
+                // need to replace child here for partial update entity situation (replace detached child with session attached child (this))
+                replaceChildrensParentRef(entity);
+                // needs to be done to prevent detached error when adding entity to child via full update or save
+                mergeParentsChildren(entity);
             }
         }
 
-
-
-        if (BiDirChild.class.isAssignableFrom(entity.getClass())) {
-            BiDirChild child =(BiDirChild)entity;
-            if (((IdentifiableEntity) child).getId() == null) {
+        if (relationalEntityTypes.contains(RelationalEntityType.BiDirChild)){
+            if ( entity.getId() == null) {
                 //create
-                log.debug("pre persist biDirChild hook reached for: " + child);
-                setParentsChildRef(child);
+                log.debug("pre persist biDirChild hook reached for: " + entity);
+                setParentsChildRef(entity);
             } else {
                 // update
-                log.debug("pre update biDirChild hook reached for: " + child);
-                updateBiDirChildRelations(child);
+                log.debug("pre update biDirChild hook reached for: " + entity);
+                updateBiDirChildRelations(entity);
                 // need to replace child here for partial update parent situation (replace detached child with session attached child (this))
-                replaceParentsChildRef(child);
+                replaceParentsChildRef(entity);
                 // needs to be done to prevent detached error when adding parent to child via full update or save
-                mergeChildrensParents(child);
+                mergeChildrensParents(entity);
             }
         }
+
     }
 
 
-    private void mergeChildrensParents(BiDirChild biDirChild) {
+    private void mergeChildrensParents(IdentifiableEntity biDirChild) {
         //set backreferences
-        Set<Collection<BiDirParent>> parentCollections = biDirChild.findBiDirParentCollections().keySet();
-        for (Collection<BiDirParent> parentCollection : parentCollections) {
-            for (BiDirParent biDirParent : parentCollection) {
+        Set<Collection<IdentifiableEntity>> parentCollections = relationalEntityManager.findBiDirParentCollections(biDirChild).keySet();
+        for (Collection<IdentifiableEntity> parentCollection : parentCollections) {
+            for (IdentifiableEntity biDirParent : parentCollection) {
                 entityManager.merge(biDirParent);
             }
         }
 
-        for (BiDirParent parent : biDirChild.findSingleBiDirParents()) {
+        for (IdentifiableEntity parent : relationalEntityManager.findSingleBiDirParents(biDirChild)) {
             entityManager.merge(parent);
         }
     }
 
-    private void mergeParentsChildren(BiDirParent biDirParent) {
-        Set<? extends BiDirChild> children = biDirParent.findSingleBiDirChildren();
-        for (BiDirChild child : children) {
+    private void mergeParentsChildren(IdentifiableEntity biDirParent) {
+        Set<? extends IdentifiableEntity> children = relationalEntityManager.findSingleBiDirChildren(biDirParent);
+        for (IdentifiableEntity child : children) {
             entityManager.merge(child);
         }
-        Set<Collection<BiDirChild>> childCollections = biDirParent.findBiDirChildCollections().keySet();
-        for (Collection<BiDirChild> childCollection : childCollections) {
-            for (BiDirChild biDirChild : childCollection) {
+        Set<Collection<IdentifiableEntity>> childCollections = relationalEntityManager.findBiDirChildCollections(biDirParent).keySet();
+        for (Collection<IdentifiableEntity> childCollection : childCollections) {
+            for (IdentifiableEntity biDirChild : childCollection) {
                 entityManager.merge(biDirChild);
             }
         }
     }
 
-    private void setChildrensParentRef(BiDirParent biDirParent) {
-        Set<? extends BiDirChild> children = biDirParent.findSingleBiDirChildren();
-        for (BiDirChild child : children) {
-            child.linkBiDirParent(biDirParent);
+    private void setChildrensParentRef(IdentifiableEntity biDirParent) {
+        Set<? extends IdentifiableEntity> children = relationalEntityManager.findSingleBiDirChildren(biDirParent);
+        for (IdentifiableEntity child : children) {
+            relationalEntityManager.linkBiDirParent(child, biDirParent);
         }
-        Set<Collection<BiDirChild>> childCollections = biDirParent.findBiDirChildCollections().keySet();
-        for (Collection<BiDirChild> childCollection : childCollections) {
-            for (BiDirChild biDirChild : childCollection) {
-                biDirChild.linkBiDirParent(biDirParent);
+        Set<Collection<IdentifiableEntity>> childCollections = relationalEntityManager.findBiDirChildCollections(biDirParent).keySet();
+        for (Collection<IdentifiableEntity> childCollection : childCollections) {
+            for (IdentifiableEntity child : childCollection) {
+                relationalEntityManager.linkBiDirParent(child, biDirParent);
             }
         }
     }
 
-    private void replaceParentsChildRef(BiDirChild biDirChild) {
+    private void replaceParentsChildRef(IdentifiableEntity biDirChild) {
         //set backreferences
 
-        Set<Collection<BiDirParent>> parentCollections = biDirChild.findBiDirParentCollections().keySet();
-        for (Collection<BiDirParent> parentCollection : parentCollections) {
-            for (BiDirParent biDirParent : parentCollection) {
-                biDirParent.unlinkBiDirChild(biDirChild);
-                biDirParent.linkBiDirChild(biDirChild);
+        Set<Collection<IdentifiableEntity>> parentCollections = relationalEntityManager.findBiDirParentCollections(biDirChild).keySet();
+        for (Collection<IdentifiableEntity> parentCollection : parentCollections) {
+            for (IdentifiableEntity biDirParent : parentCollection) {
+                relationalEntityManager.unlinkBiDirChild(biDirParent,biDirChild);
+                relationalEntityManager.linkBiDirChild(biDirParent,biDirChild);
             }
         }
 
-        for (BiDirParent parent : biDirChild.findSingleBiDirParents()) {
-            parent.unlinkBiDirChild(biDirChild);
-            parent.linkBiDirChild(biDirChild);
+        for (IdentifiableEntity parent : relationalEntityManager.findSingleBiDirParents(biDirChild)) {
+            relationalEntityManager.unlinkBiDirChild(parent,biDirChild);
+            relationalEntityManager.linkBiDirChild(parent,biDirChild);
         }
     }
 
-    private void replaceChildrensParentRef(BiDirParent biDirParent) {
+    private void replaceChildrensParentRef(IdentifiableEntity biDirParent) {
         //set backreferences
 
-        Set<Collection<BiDirChild>> childCollections = biDirParent.findBiDirChildCollections().keySet();
-        for (Collection<BiDirChild> childCollection : childCollections) {
-            for (BiDirChild biDirChild : childCollection) {
-                biDirChild.unlinkBiDirParent(biDirParent);
-                biDirChild.linkBiDirParent(biDirParent);
+        Set<Collection<IdentifiableEntity>> childCollections = relationalEntityManager.findBiDirChildCollections(biDirParent).keySet();
+        for (Collection<IdentifiableEntity> childCollection : childCollections) {
+            for (IdentifiableEntity biDirChild : childCollection) {
+                relationalEntityManager.unlinkBiDirParent(biDirChild,biDirParent);
+                relationalEntityManager.linkBiDirParent(biDirChild,biDirParent);
             }
         }
 
-        for (BiDirChild child : biDirParent.findSingleBiDirChildren()) {
-            child.unlinkBiDirParent(biDirParent);
-            child.linkBiDirParent(biDirParent);
+        for (IdentifiableEntity child : relationalEntityManager.findSingleBiDirChildren(biDirParent)) {
+            relationalEntityManager.unlinkBiDirParent(child,biDirParent);
+            relationalEntityManager.linkBiDirParent(child,biDirParent);
         }
     }
 
-    private void setParentsChildRef(BiDirChild biDirChild) {
+    private void setParentsChildRef(IdentifiableEntity biDirChild) {
         //set backreferences
 
-        Set<Collection<BiDirParent>> parentCollections = biDirChild.findBiDirParentCollections().keySet();
-        for (Collection<BiDirParent> parentCollection : parentCollections) {
-            for (BiDirParent biDirParent : parentCollection) {
-                biDirParent.linkBiDirChild(biDirChild);
+        Set<Collection<IdentifiableEntity>> parentCollections = relationalEntityManager.findBiDirParentCollections(biDirChild).keySet();
+        for (Collection<IdentifiableEntity> parentCollection : parentCollections) {
+            for (IdentifiableEntity biDirParent : parentCollection) {
+                relationalEntityManager.linkBiDirChild(biDirParent,biDirChild);
             }
         }
 
-        for (BiDirParent parent : biDirChild.findSingleBiDirParents()) {
-            parent.linkBiDirChild(biDirChild);
+        for (IdentifiableEntity parent : relationalEntityManager.findSingleBiDirParents(biDirChild)) {
+            relationalEntityManager.linkBiDirChild(parent,biDirChild);
         }
 
     }
-
 
 }
