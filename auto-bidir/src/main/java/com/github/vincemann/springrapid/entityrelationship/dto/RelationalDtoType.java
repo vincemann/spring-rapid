@@ -1,6 +1,6 @@
 package com.github.vincemann.springrapid.entityrelationship.dto;
 
-public enum RelationalDto {
+public enum RelationalDtoType {
     BiDirParentDto,
     BiDirChildDto,
     UniDirParentDto

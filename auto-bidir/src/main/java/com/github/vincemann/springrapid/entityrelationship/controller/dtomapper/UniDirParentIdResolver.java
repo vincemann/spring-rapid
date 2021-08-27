@@ -14,7 +14,7 @@ import java.util.Collection;
 import java.util.Map;
 
 /**
- * Same as {@link BiDirParentIdResolver} but without backref setting and for : {@link UniDirParent}
+ * Same as {@link BiDirParentIdResolver} but without backref setting and for : UniDirParent
  *
  * @see EntityIdResolver
  */

@@ -1,12 +1,12 @@
 package com.github.vincemann.springrapid.entityrelationship;
 
 import com.github.vincemann.springrapid.core.model.IdentifiableEntity;
-import com.github.vincemann.springrapid.entityrelationship.dto.RelationalDto;
+import com.github.vincemann.springrapid.entityrelationship.dto.RelationalDtoType;
 
 import java.util.Set;
 
 public interface RelationalDtoManager {
 
-    Set<RelationalDto> inferTypes(Class<IdentifiableEntity<?>> entityClass);
+    Set<RelationalDtoType> inferTypes(Class<IdentifiableEntity<?>> entityClass);
 
 }

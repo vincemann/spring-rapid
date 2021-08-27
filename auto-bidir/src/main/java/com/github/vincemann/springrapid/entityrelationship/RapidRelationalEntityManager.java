@@ -4,13 +4,11 @@ import com.github.vincemann.springrapid.core.model.IdentifiableEntity;
 import com.github.vincemann.springrapid.entityrelationship.exception.UnknownChildTypeException;
 import com.github.vincemann.springrapid.entityrelationship.exception.UnknownEntityTypeException;
 import com.github.vincemann.springrapid.entityrelationship.exception.UnknownParentTypeException;
-import com.github.vincemann.springrapid.entityrelationship.model.RelationalEntity;
-import com.github.vincemann.springrapid.entityrelationship.model.child.BiDirChild;
+import com.github.vincemann.springrapid.entityrelationship.model.RelationalEntityType;
 import com.github.vincemann.springrapid.entityrelationship.model.child.annotation.BiDirChildCollection;
 import com.github.vincemann.springrapid.entityrelationship.model.child.annotation.BiDirChildEntity;
 import com.github.vincemann.springrapid.entityrelationship.model.child.annotation.UniDirChildCollection;
 import com.github.vincemann.springrapid.entityrelationship.model.child.annotation.UniDirChildEntity;
-import com.github.vincemann.springrapid.entityrelationship.model.parent.BiDirParent;
 import com.github.vincemann.springrapid.entityrelationship.model.parent.annotation.BiDirParentCollection;
 import com.github.vincemann.springrapid.entityrelationship.model.parent.annotation.BiDirParentEntity;
 import com.github.vincemann.springrapid.entityrelationship.util.CollectionUtils;
@@ -23,9 +21,41 @@ import java.util.*;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 @Slf4j
-public abstract class RapidRelationalEntityManager implements RelationalEntityManager{
+public class RapidRelationalEntityManager implements RelationalEntityManager{
 
 
+    @Override
+    public Set<RelationalEntityType> inferTypes(Class<? extends IdentifiableEntity> entityClass) {
+        Set<RelationalEntityType> relationalEntityTypes = new HashSet<>();
+        org.springframework.util.ReflectionUtils.doWithFields(entityClass, field -> {
+            org.springframework.util.ReflectionUtils.makeAccessible(field);
+            Annotation[] annotations = field.getAnnotations();
+            for (Annotation annotation : annotations) {
+
+                if (annotation.annotationType().equals(BiDirChildEntity.class)){
+                    relationalEntityTypes.add(RelationalEntityType.BiDirParent);
+                }
+                if (annotation.annotationType().equals(BiDirChildCollection.class)){
+                    relationalEntityTypes.add(RelationalEntityType.BiDirParent);
+                }
+
+
+                if (annotation.annotationType().equals(UniDirChildEntity.class)){
+                    relationalEntityTypes.add(RelationalEntityType.UniDirParent);
+                }
+                if (annotation.annotationType().equals(UniDirChildCollection.class)){
+                    relationalEntityTypes.add(RelationalEntityType.UniDirParent);
+                }
+
+
+                if (annotation.annotationType().equals(BiDirParentEntity.class)){
+                    relationalEntityTypes.add(RelationalEntityType.BiDirChild);
+                }
+            }
+
+        }, field -> IdentifiableEntity.class.isAssignableFrom(field.getType()));
+        return relationalEntityTypes;
+    }
 
 
     // BiDirChild methods
@@ -38,7 +68,7 @@ public abstract class RapidRelationalEntityManager implements RelationalEntityMa
      * @return
      */
     public Map<Collection<IdentifiableEntity>,Class<IdentifiableEntity>> findBiDirParentCollections(IdentifiableEntity child){
-        assertEntityRelationType(child,RelationalEntity.BiDirChild);
+        assertEntityRelationType(child, RelationalEntityType.BiDirChild);
         return findEntityCollections(child,BiDirParentCollection.class);
     }
     /**
@@ -46,7 +76,7 @@ public abstract class RapidRelationalEntityManager implements RelationalEntityMa
      * @return  all parent of this, that are not null
      */
     public Collection<IdentifiableEntity> findSingleBiDirParents(IdentifiableEntity child) {
-        assertEntityRelationType(child,RelationalEntity.BiDirChild);
+        assertEntityRelationType(child, RelationalEntityType.BiDirChild);
         return findSingleEntities(child,BiDirParentEntity.class);
     }
 
@@ -56,8 +86,8 @@ public abstract class RapidRelationalEntityManager implements RelationalEntityMa
      * @throws UnknownParentTypeException   when supplied Parent does not match any of the fields in child class anntoated with {@link BiDirParentEntity}
      */
     public void linkBiDirParent(IdentifiableEntity child, IdentifiableEntity parentToSet) throws UnknownParentTypeException {
-        assertEntityRelationType(child,RelationalEntity.BiDirChild);
-        assertEntityRelationType(parentToSet,RelationalEntity.BiDirParent);
+        assertEntityRelationType(child, RelationalEntityType.BiDirChild);
+        assertEntityRelationType(parentToSet, RelationalEntityType.BiDirParent);
         linkEntity(child, parentToSet,BiDirParentEntity.class,BiDirParentCollection.class);
     }
 
@@ -73,18 +103,18 @@ public abstract class RapidRelationalEntityManager implements RelationalEntityMa
 
     /**
      * This Child wont know about parentToDelete after this operation.
-     * Set all {@link BiDirParentEntity}s of this {@link BiDirChild} to null.
+     * Set all {@link BiDirParentEntity}s of this BiDirChild to null.
      * @param parentToDelete
      * @throws UnknownParentTypeException   thrown, if parentToDelete is of unknown type -> no field , annotated as {@link BiDirParentEntity}, with the most specific type of parentToDelete, exists in Child (this).
      */
     public void unlinkBiDirParent(IdentifiableEntity child, IdentifiableEntity parentToDelete) throws UnknownParentTypeException {
-        assertEntityRelationType(child,RelationalEntity.BiDirChild);
-        assertEntityRelationType(parentToDelete,RelationalEntity.BiDirParent);
+        assertEntityRelationType(child, RelationalEntityType.BiDirChild);
+        assertEntityRelationType(parentToDelete, RelationalEntityType.BiDirParent);
         unlinkEntity(child, parentToDelete,BiDirParentEntity.class,BiDirParentCollection.class);
     }
 
     /**
-     * All children {@link BiDirChild} of this parent wont know about this parent, after this operation.
+     * All children BiDirChild of this parent wont know about this parent, after this operation.
      * Clear all {@link BiDirChildCollection}s of this parent.
      * Call this, before you want to delete this parent.
      * @throws UnknownParentTypeException
@@ -116,7 +146,7 @@ public abstract class RapidRelationalEntityManager implements RelationalEntityMa
      * @return
      */
     public Map<Collection<IdentifiableEntity>,Class<IdentifiableEntity>> findBiDirChildCollections(IdentifiableEntity parent){
-        assertEntityRelationType(parent,RelationalEntity.BiDirParent);
+        assertEntityRelationType(parent, RelationalEntityType.BiDirParent);
         return findEntityCollections(parent,BiDirChildCollection.class);
     }
 
@@ -125,40 +155,40 @@ public abstract class RapidRelationalEntityManager implements RelationalEntityMa
      * @return
      */
     public Set<IdentifiableEntity> findSingleBiDirChildren(IdentifiableEntity parent){
-        assertEntityRelationType(parent,RelationalEntity.BiDirParent);
+        assertEntityRelationType(parent, RelationalEntityType.BiDirParent);
         return findSingleEntities(parent, BiDirChildEntity.class);
     }
 
     /**
      * Add a new Child to this parent.
-     * Call this, when saving a {@link BiDirChild} of this parent.
+     * Call this, when saving a BiDirChild of this parent.
      * child will be added to fields with {@link BiDirChildCollection} and fields with {@link BiDirChildEntity} will be set with newChild, when most specific type matches of newChild matches the field.
      * Child wont be added and UnknownChildTypeException will be thrown when corresponding {@link BiDirChildCollection} is null.
      * @param newChild
      * @throws UnknownChildTypeException
      */
     public void linkBiDirChild(IdentifiableEntity parent, IdentifiableEntity newChild) throws UnknownChildTypeException{
-        assertEntityRelationType(parent,RelationalEntity.BiDirParent);
-        assertEntityRelationType(newChild,RelationalEntity.BiDirChild);
+        assertEntityRelationType(parent, RelationalEntityType.BiDirParent);
+        assertEntityRelationType(newChild, RelationalEntityType.BiDirChild);
         linkEntity(parent, newChild, BiDirChildEntity.class, BiDirChildCollection.class);
     }
 
     /**
      * This parent wont know about the given biDirChildToRemove after this operation.
      * Call this, before you delete the biDirChildToRemove.
-     * Case 1: Remove Child {@link BiDirChild} from all {@link BiDirChildCollection}s from this parent.
+     * Case 1: Remove Child BiDirChild from all {@link BiDirChildCollection}s from this parent.
      * Case 2: Set {@link BiDirChildEntity}Field to null if child is not saved in a collection in this parent.
      * @param biDirChildToRemove
      * @throws UnknownChildTypeException
      */
     public void unlinkBiDirChild(IdentifiableEntity parent, IdentifiableEntity biDirChildToRemove) throws UnknownChildTypeException{
-        assertEntityRelationType(parent,RelationalEntity.BiDirParent);
-        assertEntityRelationType(biDirChildToRemove,RelationalEntity.BiDirChild);
+        assertEntityRelationType(parent, RelationalEntityType.BiDirParent);
+        assertEntityRelationType(biDirChildToRemove, RelationalEntityType.BiDirChild);
         unlinkEntity(parent, biDirChildToRemove,BiDirChildEntity.class,BiDirChildCollection.class);
     }
 
     /**
-     * All children {@link BiDirChild} of this parent wont know about this parent, after this operation.
+     * All children BiDirChild of this parent wont know about this parent, after this operation.
      * Clear all {@link BiDirChildCollection}s of this parent.
      * Call this, before you want to delete this parent.
      * @throws UnknownParentTypeException
@@ -191,7 +221,7 @@ public abstract class RapidRelationalEntityManager implements RelationalEntityMa
      * @return
      */
     public Map<Collection<IdentifiableEntity>, Class<IdentifiableEntity>> findUniDirChildCollections(IdentifiableEntity parent)  {
-        assertEntityRelationType(parent,RelationalEntity.UniDirParent);
+        assertEntityRelationType(parent, RelationalEntityType.UniDirParent);
         return findEntityCollections(parent,UniDirChildCollection.class);
     }
     /**
@@ -199,7 +229,7 @@ public abstract class RapidRelationalEntityManager implements RelationalEntityMa
      * @return
      */
     public Set<IdentifiableEntity> findSingleUniDirChildren(IdentifiableEntity parent) {
-        assertEntityRelationType(parent,RelationalEntity.UniDirParent);
+        assertEntityRelationType(parent, RelationalEntityType.UniDirParent);
         return findSingleEntities(parent,UniDirChildEntity.class);
     }
 
@@ -213,7 +243,7 @@ public abstract class RapidRelationalEntityManager implements RelationalEntityMa
      * @throws UnknownChildTypeException
      */
     public void linkUniDirChild(IdentifiableEntity parent,IdentifiableEntity newChild) throws UnknownChildTypeException{
-        assertEntityRelationType(parent,RelationalEntity.UniDirParent);
+        assertEntityRelationType(parent, RelationalEntityType.UniDirParent);
         linkEntity(parent,newChild,UniDirChildEntity.class,UniDirChildCollection.class);
     }
 
@@ -227,7 +257,7 @@ public abstract class RapidRelationalEntityManager implements RelationalEntityMa
      * @throws UnknownChildTypeException
      */
     public void unlinkUniDirChild(IdentifiableEntity parent, IdentifiableEntity toRemove) throws UnknownChildTypeException{
-        assertEntityRelationType(parent,RelationalEntity.UniDirParent);
+        assertEntityRelationType(parent, RelationalEntityType.UniDirParent);
         unlinkEntity(parent,toRemove,UniDirChildEntity.class,UniDirChildCollection.class);
     }
 
@@ -364,7 +394,7 @@ public abstract class RapidRelationalEntityManager implements RelationalEntityMa
 
 
 
-    void assertEntityRelationType(IdentifiableEntity entity, RelationalEntity expectedType){
+    void assertEntityRelationType(IdentifiableEntity entity, RelationalEntityType expectedType){
         if (!inferTypes(entity.getClass()).contains(expectedType)){
             throw new IllegalArgumentException("Entity: " + entity + " is not of expected entity relation type: " + expectedType.name());
         }

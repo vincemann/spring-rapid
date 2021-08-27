@@ -6,8 +6,7 @@ import com.github.vincemann.springrapid.core.service.exception.BadEntityExceptio
 import com.github.vincemann.springrapid.core.service.exception.EntityNotFoundException;
 import com.github.vincemann.springrapid.core.service.locator.CrudServiceLocator;
 import com.github.vincemann.springrapid.core.util.VerifyEntity;
-import com.github.vincemann.springrapid.entityrelationship.model.child.BiDirChild;
-import com.github.vincemann.springrapid.entityrelationship.model.parent.BiDirParent;
+import com.github.vincemann.springrapid.entityrelationship.RelationalEntityManager;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 
@@ -18,29 +17,31 @@ import java.util.*;
 @Slf4j
 public abstract class BiDirEntityAdvice {
     private CrudServiceLocator crudServiceLocator;
+    protected RelationalEntityManager relationalEntityManager;
 
-    public BiDirEntityAdvice(CrudServiceLocator crudServiceLocator) {
+    public BiDirEntityAdvice(CrudServiceLocator crudServiceLocator, RelationalEntityManager relationalEntityManager) {
         this.crudServiceLocator = crudServiceLocator;
+        this.relationalEntityManager = relationalEntityManager;
     }
 
-    protected void updateBiDirParentRelations(BiDirParent newParent) throws BadEntityException, EntityNotFoundException, IllegalAccessException {
-        BiDirParent oldParent = findOldEntity(newParent);
+    protected void updateBiDirParentRelations(IdentifiableEntity newParent) throws BadEntityException, EntityNotFoundException, IllegalAccessException {
+        IdentifiableEntity oldParent = findOldEntity(newParent);
 
-        Set<BiDirChild> oldSingleChildren = oldParent.findSingleBiDirChildren();
-        Set<BiDirChild> newSingleChildren = newParent.findSingleBiDirChildren();
+        Set<IdentifiableEntity> oldSingleChildren = relationalEntityManager.findSingleBiDirChildren(oldParent);
+        Set<IdentifiableEntity> newSingleChildren = relationalEntityManager.findSingleBiDirChildren(newParent);
 
-        Set<Collection<BiDirChild>> oldChildCollections = oldParent.findBiDirChildCollections().keySet();
-        Set<Collection<BiDirChild>> newChildCollections = newParent.findBiDirChildCollections().keySet();
+        Set<Collection<IdentifiableEntity>> oldChildCollections = relationalEntityManager.findBiDirChildCollections(oldParent).keySet();
+        Set<Collection<IdentifiableEntity>> newChildCollections = relationalEntityManager.findBiDirChildCollections(newParent).keySet();
 
         //find Children to unlink
-        List<BiDirChild> removedChildren = new ArrayList<>();
-        for (BiDirChild oldChild : oldSingleChildren) {
+        List<IdentifiableEntity> removedChildren = new ArrayList<>();
+        for (IdentifiableEntity oldChild : oldSingleChildren) {
             if (!newSingleChildren.contains(oldChild)) {
                 removedChildren.add(oldChild);
             }
         }
-        for (Collection<? extends BiDirChild> oldChildrenCollection : oldChildCollections) {
-            for (BiDirChild oldChild : oldChildrenCollection) {
+        for (Collection<? extends IdentifiableEntity> oldChildrenCollection : oldChildCollections) {
+            for (IdentifiableEntity oldChild : oldChildrenCollection) {
                 if (!newSingleChildren.contains(oldChild)) {
                     removedChildren.add(oldChild);
                 }
@@ -48,14 +49,14 @@ public abstract class BiDirEntityAdvice {
         }
 
         //find added Children
-        List<BiDirChild> addedChildren = new ArrayList<>();
-        for (BiDirChild newChild : newSingleChildren) {
+        List<IdentifiableEntity> addedChildren = new ArrayList<>();
+        for (IdentifiableEntity newChild : newSingleChildren) {
             if (!oldSingleChildren.contains(newChild)) {
                 addedChildren.add(newChild);
             }
         }
-        for (Collection<? extends BiDirChild> newChildrenCollection : newChildCollections) {
-            for (BiDirChild newChild : newChildrenCollection) {
+        for (Collection<? extends IdentifiableEntity> newChildrenCollection : newChildCollections) {
+            for (IdentifiableEntity newChild : newChildrenCollection) {
                 if (!oldSingleChildren.contains(newChild)) {
                     addedChildren.add(newChild);
                 }
@@ -65,37 +66,37 @@ public abstract class BiDirEntityAdvice {
         adjustUpdatedEntities(addedChildren,removedChildren);
 
         //unlink removed Children from newParent
-        for (BiDirChild removedChild : removedChildren) {
+        for (IdentifiableEntity removedChild : removedChildren) {
             log.debug("unlinking child: " + removedChild + " from parent: " + newParent);
-            removedChild.unlinkBiDirParent(oldParent);
+            relationalEntityManager.unlinkBiDirParent(removedChild,oldParent);
         }
 
         //link added Children to newParent
-        for (BiDirChild addedChild : addedChildren) {
+        for (IdentifiableEntity addedChild : addedChildren) {
             log.debug("linking child: " + addedChild + " to parent: " + newParent);
-            addedChild.linkBiDirParent(newParent);
+            relationalEntityManager.linkBiDirParent(addedChild,newParent);
         }
     }
 
-    protected void updateBiDirChildRelations(BiDirChild newChild) throws BadEntityException, EntityNotFoundException, IllegalAccessException {
-        BiDirChild oldChild = findOldEntity(newChild);
+    protected void updateBiDirChildRelations(IdentifiableEntity newChild) throws BadEntityException, EntityNotFoundException, IllegalAccessException {
+        IdentifiableEntity oldChild = findOldEntity(newChild);
 
-        Collection<BiDirParent> oldSingleParents = oldChild.findSingleBiDirParents();
-        Collection<BiDirParent> newSinlgeParents = newChild.findSingleBiDirParents();
+        Collection<IdentifiableEntity> oldSingleParents = relationalEntityManager.findSingleBiDirParents(oldChild);
+        Collection<IdentifiableEntity> newSinlgeParents = relationalEntityManager.findSingleBiDirParents(newChild);
 
-        Set<Collection<BiDirParent>> oldParentCollections = oldChild.findBiDirParentCollections().keySet();
-        Set<Collection<BiDirParent>> newParentCollections = newChild.findBiDirParentCollections().keySet();
+        Set<Collection<IdentifiableEntity>> oldParentCollections = relationalEntityManager.findBiDirParentCollections(oldChild).keySet();
+        Set<Collection<IdentifiableEntity>> newParentCollections = relationalEntityManager.findBiDirParentCollections(newChild).keySet();
 
         //find parents to unlink
-        List<BiDirParent> removedParents = new ArrayList<>();
-        for (BiDirParent oldParent : oldSingleParents) {
+        List<IdentifiableEntity> removedParents = new ArrayList<>();
+        for (IdentifiableEntity oldParent : oldSingleParents) {
             if (!newSinlgeParents.contains(oldParent)) {
                 removedParents.add(oldParent);
             }
         }
 
-        for (Collection<? extends BiDirParent> oldParentCollection : oldParentCollections) {
-            for (BiDirParent oldParent : oldParentCollection) {
+        for (Collection<? extends IdentifiableEntity> oldParentCollection : oldParentCollections) {
+            for (IdentifiableEntity oldParent : oldParentCollection) {
                 if (!newSinlgeParents.contains(oldParent)) {
                     removedParents.add(oldParent);
                 }
@@ -104,15 +105,15 @@ public abstract class BiDirEntityAdvice {
 
 
         //find added parents
-        List<BiDirParent> addedParents = new ArrayList<>();
-        for (BiDirParent newParent : newSinlgeParents) {
+        List<IdentifiableEntity> addedParents = new ArrayList<>();
+        for (IdentifiableEntity newParent : newSinlgeParents) {
             if (!oldSingleParents.contains(newParent)) {
                 addedParents.add(newParent);
             }
         }
 
-        for (Collection<? extends BiDirParent> newParentCollection : newParentCollections) {
-            for (BiDirParent newParent : newParentCollection) {
+        for (Collection<? extends IdentifiableEntity> newParentCollection : newParentCollections) {
+            for (IdentifiableEntity newParent : newParentCollection) {
                 if (!oldSingleParents.contains(newParent)) {
                     addedParents.add(newParent);
                 }
@@ -122,15 +123,15 @@ public abstract class BiDirEntityAdvice {
         adjustUpdatedEntities(addedParents,removedParents);
 
         //unlink Child from certain Parents
-        for (BiDirParent removedParent : removedParents) {
+        for (IdentifiableEntity removedParent : removedParents) {
             log.debug("unlinking parent: " + removedParent + " from child: " + newChild);
-            removedParent.unlinkBiDirChild(oldChild);
+            relationalEntityManager.unlinkBiDirChild(removedParent,oldChild);
         }
 
         //add added Parent to child
-        for (BiDirParent addedParent : addedParents) {
+        for (IdentifiableEntity addedParent : addedParents) {
             log.debug("linking parent: " + addedParent + " to child: " + newChild);
-            addedParent.linkBiDirChild(newChild);
+            relationalEntityManager.linkBiDirChild(addedParent,newChild);
         }
     }
 
@@ -142,7 +143,7 @@ public abstract class BiDirEntityAdvice {
     protected  <E> E findOldEntity(E entity) throws EntityNotFoundException, BadEntityException {
         Class entityClass = entity.getClass();
         CrudService service = crudServiceLocator.find((Class<IdentifiableEntity>) entityClass);
-        Optional<BiDirParent> oldEntityOptional = service.findById(((IdentifiableEntity<Serializable>) entity).getId());
+        Optional<IdentifiableEntity> oldEntityOptional = service.findById(((IdentifiableEntity<Serializable>) entity).getId());
         VerifyEntity.isPresent(oldEntityOptional, ((IdentifiableEntity<Serializable>) entity).getId(), entity.getClass());
         return (E) oldEntityOptional.get();
     }

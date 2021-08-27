@@ -1,10 +1,11 @@
 package com.github.vincemann.springrapid.entityrelationship.advice;
 
-import com.github.vincemann.springrapid.entityrelationship.model.child.BiDirChild;
-import com.github.vincemann.springrapid.entityrelationship.model.parent.BiDirParent;
+import com.github.vincemann.springrapid.core.model.IdentifiableEntity;
 import com.github.vincemann.springrapid.core.service.CrudService;
 import com.github.vincemann.springrapid.core.service.exception.BadEntityException;
 import com.github.vincemann.springrapid.core.service.locator.CrudServiceLocator;
+import com.github.vincemann.springrapid.entityrelationship.RelationalEntityManager;
+import com.github.vincemann.springrapid.entityrelationship.model.RelationalEntityType;
 import lombok.extern.slf4j.Slf4j;
 import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.annotation.Aspect;
@@ -19,6 +20,7 @@ import org.springframework.util.Assert;
 import java.io.Serializable;
 import java.lang.reflect.Field;
 import java.util.Optional;
+import java.util.Set;
 
 @Aspect
 @Slf4j
@@ -31,44 +33,46 @@ public class BiDirEntityRemoveAdvice extends BiDirEntityAdvice {
 
 
     @Autowired
-    public BiDirEntityRemoveAdvice(CrudServiceLocator crudServiceLocator) {
-        super(crudServiceLocator);
+    public BiDirEntityRemoveAdvice(CrudServiceLocator crudServiceLocator, RelationalEntityManager relationalEntityManager) {
+        super(crudServiceLocator, relationalEntityManager);
     }
 
     @Before("com.github.vincemann.springrapid.core.advice.SystemArchitecture.deleteOperation() && " +
             "com.github.vincemann.springrapid.core.advice.SystemArchitecture.repoOperation() && " +
             "args(id)")
     public void preRemoveBiDirEntity(JoinPoint joinPoint, Serializable id) throws Throwable {
-        Optional<Object> parent = resolveById(id, joinPoint);
-        if (parent.isPresent()){
+        Optional<IdentifiableEntity> parent = resolveById(id, joinPoint);
+        if (parent.isPresent()) {
             preRemoveEntity(parent.get());
-        }else {
+        } else {
             log.warn("preDelete BiDirEntity could not be done, because for id: " + id + " was no entity found");
         }
     }
 
 
-    private void preRemoveEntity(Object entity)  {
-        if (BiDirParent.class.isAssignableFrom(entity.getClass())) {
+    private void preRemoveEntity(IdentifiableEntity entity) {
+        Set<RelationalEntityType> relationalEntityTypes = relationalEntityManager.inferTypes(entity.getClass());
+
+        if (relationalEntityTypes.contains(RelationalEntityType.BiDirParent)) {
             log.debug("applying pre remove BiDirParent logic for: " + entity.getClass());
-            ((BiDirParent) entity).unlinkChildrensParent();
+            relationalEntityManager.unlinkChildrensParent(entity);
         }
-        if (BiDirChild.class.isAssignableFrom(entity.getClass())) {
+        if (relationalEntityTypes.contains(RelationalEntityType.BiDirChild)) {
             log.debug("applying pre remove BiDirChild logic for: " + entity);
 //            BiDirChild biDirChild = (BiDirChild) entity;
 //            for (BiDirParent parent : biDirChild.findSingleBiDirParents()) {
 //                parent.unlinkBiDirChild(biDirChild);
 //            }
 //            biDirChild.unlinkBiDirParents();
-            ((BiDirChild) entity).unlinkParentsChildren();
+            relationalEntityManager.unlinkParentsChildren(entity);
         }
     }
 
-    private Optional<Object> resolveById(Serializable id, JoinPoint joinPoint) throws BadEntityException, IllegalAccessException {
+    private Optional<IdentifiableEntity> resolveById(Serializable id, JoinPoint joinPoint) throws BadEntityException, IllegalAccessException {
         Class entityClass = resolveEntityClass(joinPoint);
-        log.debug("pre remove hook reached for entity " + entityClass+":"+id);
+        log.debug("pre remove hook reached for entity " + entityClass + ":" + id);
         CrudService service = getCrudServiceLocator().find(entityClass);
-        Assert.notNull(service,"Did not find service for entityClass: " + entityClass);
+        Assert.notNull(service, "Did not find service for entityClass: " + entityClass);
         return service.findById((id));
     }
 
