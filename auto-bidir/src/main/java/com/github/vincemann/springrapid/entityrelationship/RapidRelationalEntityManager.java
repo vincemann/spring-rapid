@@ -15,6 +15,7 @@ import com.github.vincemann.springrapid.entityrelationship.util.CollectionUtils;
 import com.github.vincemann.springrapid.entityrelationship.util.EntityAnnotationUtils;
 import com.github.vincemann.springrapid.entityrelationship.util.EntityReflectionUtils;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.cache.annotation.Cacheable;
 
 import java.lang.annotation.Annotation;
 import java.util.*;
@@ -24,6 +25,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 public class RapidRelationalEntityManager implements RelationalEntityManager{
 
 
+    @Cacheable(value = "entityRelationTypes")
     @Override
     public Set<RelationalEntityType> inferTypes(Class<? extends IdentifiableEntity> entityClass) {
         Set<RelationalEntityType> relationalEntityTypes = new HashSet<>();
