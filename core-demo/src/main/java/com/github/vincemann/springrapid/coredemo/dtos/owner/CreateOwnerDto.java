@@ -60,7 +60,6 @@ public class CreateOwnerDto extends AbstractOwnerDto implements BiDirParentDto {
 
     @NotBlank
     @Override
-    @Cacheable()
     public @Size(min = 10, max = 255) String getAddress() {
         return super.getAddress();
     }
