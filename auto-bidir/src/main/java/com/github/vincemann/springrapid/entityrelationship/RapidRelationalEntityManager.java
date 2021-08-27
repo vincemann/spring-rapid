@@ -53,6 +53,9 @@ public class RapidRelationalEntityManager implements RelationalEntityManager{
                 if (annotation.annotationType().equals(BiDirParentEntity.class)){
                     relationalEntityTypes.add(RelationalEntityType.BiDirChild);
                 }
+                if (annotation.annotationType().equals(BiDirParentCollection.class)){
+                    relationalEntityTypes.add(RelationalEntityType.BiDirChild);
+                }
             }
 
         }, field -> IdentifiableEntity.class.isAssignableFrom(field.getType()));
