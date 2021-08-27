@@ -31,7 +31,7 @@ public class BiDirParentIdResolverTest extends BiDirEntityResolverTest {
         biDirEntityParentDto.setEntityChildId(getBiDirChild().getId());
         BiDirEntityParent unfinishedMappedBiDirEntityParent = new BiDirEntityParent();
         //when
-        biDirParentIdResolver.resolveEntityIds(unfinishedMappedBiDirEntityParent,biDirEntityParentDto);
+        biDirParentIdResolver.injectEntitiesFromDtoIds(unfinishedMappedBiDirEntityParent,biDirEntityParentDto);
         //then
         Assertions.assertEquals(getBiDirChild(),unfinishedMappedBiDirEntityParent.getBiDIrEntityChild());
     }
@@ -43,7 +43,7 @@ public class BiDirParentIdResolverTest extends BiDirEntityResolverTest {
         entityParent.setBiDIrEntityChild(getBiDirChild());
         BiDirEntityParentDto unfinishedMappedBiDirEntityParentDto = new BiDirEntityParentDto();
         //when
-        biDirParentIdResolver.resolveDtoIds(unfinishedMappedBiDirEntityParentDto,entityParent);
+        biDirParentIdResolver.injectDtoIdsFromEntity(unfinishedMappedBiDirEntityParentDto,entityParent);
         //then
         Assertions.assertEquals(getBiDirChild().getId(), unfinishedMappedBiDirEntityParentDto.getEntityChildId());
     }

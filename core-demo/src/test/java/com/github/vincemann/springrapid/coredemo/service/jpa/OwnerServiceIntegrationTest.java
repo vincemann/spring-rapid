@@ -146,7 +146,7 @@ class OwnerServiceIntegrationTest
 
         kahn.setPets(new HashSet<>(Lists.newArrayList(savedBello)));
 
-        Owner savedKahn = getServiceUnderTest().save(kahn);
+        Owner savedKahn = getTestedService().save(kahn);
 
         Owner ownerUpdateRequest = new Owner();
         ownerUpdateRequest.getPets().addAll(savedKahn.getPets());
@@ -180,7 +180,7 @@ class OwnerServiceIntegrationTest
 
         kahn.setPets(new HashSet<>(Lists.newArrayList(savedBello)));
 
-        Owner savedKahn = getServiceUnderTest().save(kahn);
+        Owner savedKahn = getTestedService().save(kahn);
 
         Owner ownerUpdateRequest = (Owner) BeanUtilsBean.getInstance().cloneBean(savedKahn);
         //here comes the new pet
@@ -209,7 +209,7 @@ class OwnerServiceIntegrationTest
         Pet savedBello = petService.save(bello);
         Pet savedKitty = petService.save(kitty);
 
-        Owner savedKahn = getServiceUnderTest().save(kahn);
+        Owner savedKahn = getTestedService().save(kahn);
 
         Owner addPetsUpdate = new Owner();
         addPetsUpdate.getPets().add(savedKitty);
@@ -239,7 +239,7 @@ class OwnerServiceIntegrationTest
         Pet savedBello = petService.save(bello);
 
         kahn.setPets(new HashSet<>(Lists.newArrayList(savedBello)));
-        Owner savedKahn = getServiceUnderTest().save(kahn);
+        Owner savedKahn = getTestedService().save(kahn);
 
 
         Owner removePetUpdate = new Owner();
@@ -269,7 +269,7 @@ class OwnerServiceIntegrationTest
         Pet savedKitty = petService.save(kitty);
 
         kahn.setPets(new HashSet<>(Lists.newArrayList(savedBello, savedKitty)));
-        Owner savedKahn = getServiceUnderTest().save(kahn);
+        Owner savedKahn = getTestedService().save(kahn);
 
 
         Owner removePetUpdate = new Owner();
@@ -302,7 +302,7 @@ class OwnerServiceIntegrationTest
         Pet savedBella = petService.save(bella);
 
         kahn.setPets(new HashSet<>(Lists.newArrayList(savedBello, savedKitty, savedBella)));
-        Owner savedKahn = getServiceUnderTest().save(kahn);
+        Owner savedKahn = getTestedService().save(kahn);
 
 
         Owner removePetUpdate = new Owner();
@@ -336,7 +336,7 @@ class OwnerServiceIntegrationTest
         Pet savedKitty = petService.save(kitty);
 
         kahn.setPets(new HashSet<>(Lists.newArrayList(savedBello, savedKitty)));
-        Owner savedKahn = getServiceUnderTest().save(kahn);
+        Owner savedKahn = getTestedService().save(kahn);
 
 
         Owner removePetsUpdate = new Owner();
@@ -366,7 +366,7 @@ class OwnerServiceIntegrationTest
         Pet savedKitty = petService.save(kitty);
 
         kahn.setPets(new HashSet<>(Lists.newArrayList(savedBello, savedKitty)));
-        Owner savedKahn = getServiceUnderTest().save(kahn);
+        Owner savedKahn = getTestedService().save(kahn);
 
 
         Owner removePetsUpdate = (Owner) BeanUtilsBean.getInstance().cloneBean(savedKahn);
@@ -409,16 +409,16 @@ class OwnerServiceIntegrationTest
     @Test
     public void canFindOwnerOfTheYear_triggersExtension() throws BadEntityException {
         kahn.setFirstName(OWNER_OF_THE_YEARS_NAME);
-        Owner savedOwner = getServiceUnderTest().save(kahn);
-        Optional<Owner> ownerOfTheYear = getServiceUnderTest().findOwnerOfTheYear();
+        Owner savedOwner = getTestedService().save(kahn);
+        Optional<Owner> ownerOfTheYear = getTestedService().findOwnerOfTheYear();
         Assertions.assertTrue(ownerOfTheYear.isPresent());
         Mockito.verify(ownerOfTheYearExtension).findOwnerOfTheYear();
     }
 
     @Test
     public void canFindOwnerByLastName() throws BadEntityException {
-        Owner savedOwner = getServiceUnderTest().save(kahn);
-        Optional<Owner> byLastName = getServiceUnderTest().findByLastName(kahn.getLastName());
+        Owner savedOwner = getTestedService().save(kahn);
+        Optional<Owner> byLastName = getTestedService().findByLastName(kahn.getLastName());
         Assertions.assertTrue(byLastName.isPresent());
         compare(savedOwner)
                 .with(byLastName.get())
@@ -429,7 +429,7 @@ class OwnerServiceIntegrationTest
 
     @Test
     public void canDeleteOwner() throws BadEntityException {
-        Owner savedOwner = getServiceUnderTest().save(kahn);
+        Owner savedOwner = getTestedService().save(kahn);
         test(deleteById(savedOwner.getId()))
                 .andExpect(noException())
                 .andExpect(notPresentInDatabase(savedOwner.getId()));
@@ -438,7 +438,7 @@ class OwnerServiceIntegrationTest
     @Test
     public void canDeleteOwnerWithPet_thusUnlinkPet() throws BadEntityException {
         kahn.setPets(new HashSet<>(Lists.newArrayList(bello)));
-        Owner savedOwner = getServiceUnderTest().save(kahn);
+        Owner savedOwner = getTestedService().save(kahn);
 
         test(deleteById(savedOwner.getId()))
                 .andExpect(noException())

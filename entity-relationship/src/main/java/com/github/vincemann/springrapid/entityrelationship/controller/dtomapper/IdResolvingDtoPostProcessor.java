@@ -1,8 +1,6 @@
 package com.github.vincemann.springrapid.entityrelationship.controller.dtomapper;
 
 import com.github.vincemann.springrapid.core.controller.dto.mapper.DtoPostProcessor;
-import com.github.vincemann.springrapid.core.controller.dto.mapper.EntityDtoPostProcessor;
-import com.github.vincemann.springrapid.core.controller.dto.mapper.DtoEntityPostProcessor;
 import com.github.vincemann.springrapid.core.model.IdentifiableEntity;
 import com.github.vincemann.springrapid.core.service.exception.BadEntityException;
 import com.github.vincemann.springrapid.core.service.exception.EntityNotFoundException;
@@ -39,7 +37,7 @@ public class IdResolvingDtoPostProcessor implements DtoPostProcessor<Object, Ide
         //yet unfinished
         List<EntityIdResolver> entityIdResolvers = findResolvers(dto.getClass());
         for (EntityIdResolver entityIdResolver : entityIdResolvers) {
-            entityIdResolver.resolveDtoIds(dto, entity);
+            entityIdResolver.injectDtoIdsFromEntity(dto, entity);
         }
     }
 
@@ -48,7 +46,7 @@ public class IdResolvingDtoPostProcessor implements DtoPostProcessor<Object, Ide
         //yet unfinished
         List<EntityIdResolver> entityIdResolvers = findResolvers(dto.getClass());
         for (EntityIdResolver resolver : entityIdResolvers) {
-            resolver.resolveEntityIds(entity, dto);
+            resolver.injectEntitiesFromDtoIds(entity, dto);
         }
 
     }

@@ -30,7 +30,7 @@ public class BiDirParentIdResolver extends EntityIdResolver<BiDirParent, BiDirPa
         super(crudServiceLocator, BiDirParentDto.class);
     }
 
-    public void resolveEntityIds(BiDirParent mappedBiDirParent, BiDirParentDto biDirParentDto) throws BadEntityException, EntityNotFoundException {
+    public void injectEntitiesFromDtoIds(BiDirParent mappedBiDirParent, BiDirParentDto biDirParentDto) throws BadEntityException, EntityNotFoundException {
         //find and handle single Children
 
         Map<Class<BiDirChild>, Serializable> childTypeIdMappings = biDirParentDto.findBiDirChildIds();
@@ -52,7 +52,7 @@ public class BiDirParentIdResolver extends EntityIdResolver<BiDirParent, BiDirPa
     }
 
     @Override
-    public void resolveDtoIds(BiDirParentDto mappedDto, BiDirParent serviceEntity) {
+    public void injectDtoIdsFromEntity(BiDirParentDto mappedDto, BiDirParent serviceEntity) {
         for (BiDirChild biDirChild : serviceEntity.findSingleBiDirChildren()) {
             mappedDto.addBiDirChildId(biDirChild);
         }

@@ -8,6 +8,7 @@ import com.github.vincemann.springrapid.entityrelationship.dto.child.annotation.
 import com.github.vincemann.springrapid.entityrelationship.dto.child.annotation.BiDirChildIdCollection;
 import com.github.vincemann.springrapid.entityrelationship.dto.parent.BiDirParentDto;
 import lombok.*;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.lang.Nullable;
 
 import javax.validation.constraints.NotBlank;
@@ -59,6 +60,7 @@ public class CreateOwnerDto extends AbstractOwnerDto implements BiDirParentDto {
 
     @NotBlank
     @Override
+    @Cacheable()
     public @Size(min = 10, max = 255) String getAddress() {
         return super.getAddress();
     }
