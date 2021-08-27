@@ -42,9 +42,16 @@ public abstract class EntityIdResolver<E, Dto> implements AopLoggable {
         this.crudServiceLocator = crudServiceLocator;
     }
 
-    public abstract void resolveEntityIds(E mappedEntity, Dto dto) throws BadEntityException, EntityNotFoundException;
+    /**
+     * Resolve entities by id from dto and inject (set) them into target Entity
+     * -> target entity now has all entities set
+     */
+    public abstract void injectEntitiesFromDtoIds(E mappedEntity, Dto dto) throws BadEntityException, EntityNotFoundException;
 
-    public abstract void resolveDtoIds(Dto mappedDto, E entity);
+    /**
+     * Resolve Id's from entities in entity and inject (set) ids into target Dto
+     */
+    public abstract void injectDtoIdsFromEntity(Dto mappedDto, E entity);
 
 
     protected <T> T findEntityFromService(Class<IdentifiableEntity> entityClass, Serializable id) throws EntityNotFoundException, BadEntityException {

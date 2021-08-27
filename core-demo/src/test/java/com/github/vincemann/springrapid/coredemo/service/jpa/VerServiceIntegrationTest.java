@@ -68,7 +68,7 @@ public class VerServiceIntegrationTest extends ManyToManyServiceIntegrationTest<
 
         meier.setSpecialtys(new HashSet<>(Lists.newArrayList(savedDentism, savedGastro)));
 
-        Vet savedMeier = getServiceUnderTest().save(meier);
+        Vet savedMeier = getTestedService().save(meier);
         test(findById(savedMeier.getId()))
                 .andExpect(() -> compare(savedMeier).with(resolve(DB_ENTITY))
                         .properties()
@@ -88,7 +88,7 @@ public class VerServiceIntegrationTest extends ManyToManyServiceIntegrationTest<
 
         meier.setSpecialtys(new HashSet<>(Lists.newArrayList(savedDentism, savedGastro)));
 
-        Vet savedMeier = getServiceUnderTest().save(meier);
+        Vet savedMeier = getTestedService().save(meier);
         kahn.setSpecialtys(new HashSet<>(Lists.newArrayList(savedGastro)));
         test(save(kahn));
 
@@ -103,9 +103,9 @@ public class VerServiceIntegrationTest extends ManyToManyServiceIntegrationTest<
         Specialty savedDentism = specialtyService.save(dentism);
         Specialty savedGastro = specialtyService.save(gastro);
         meier.setSpecialtys(new HashSet<>(Lists.newArrayList(savedDentism, savedGastro)));
-        Vet savedMeier = getServiceUnderTest().save(meier);
+        Vet savedMeier = getTestedService().save(meier);
         kahn.setSpecialtys(new HashSet<>(Lists.newArrayList(savedGastro)));
-        Vet savedKahn = getServiceUnderTest().save(kahn);
+        Vet savedKahn = getTestedService().save(kahn);
 
         // remove dentism from meier
         Vet meierUpdate = Vet.builder()
@@ -128,9 +128,9 @@ public class VerServiceIntegrationTest extends ManyToManyServiceIntegrationTest<
         Specialty savedDentism = specialtyService.save(dentism);
         Specialty savedGastro = specialtyService.save(gastro);
         meier.setSpecialtys(new HashSet<>(Lists.newArrayList(savedDentism, savedGastro)));
-        Vet savedMeier = getServiceUnderTest().save(meier);
+        Vet savedMeier = getTestedService().save(meier);
         kahn.setSpecialtys(new HashSet<>(Lists.newArrayList(savedGastro)));
-        Vet savedKahn = getServiceUnderTest().save(kahn);
+        Vet savedKahn = getTestedService().save(kahn);
 
         // remove dentism from meier
         Vet meierUpdate = (Vet) BeanUtilsBean.getInstance().cloneBean(savedMeier);
@@ -151,9 +151,9 @@ public class VerServiceIntegrationTest extends ManyToManyServiceIntegrationTest<
         Specialty savedGastro = specialtyService.save(gastro);
         Specialty savedHeart = specialtyService.save(heart);
         meier.setSpecialtys(new HashSet<>(Lists.newArrayList(savedDentism, savedGastro)));
-        Vet savedMeier = getServiceUnderTest().save(meier);
+        Vet savedMeier = getTestedService().save(meier);
         kahn.setSpecialtys(new HashSet<>(Lists.newArrayList(savedGastro)));
-        Vet savedKahn = getServiceUnderTest().save(kahn);
+        Vet savedKahn = getTestedService().save(kahn);
 
         // add heart to kahn
         Vet kahnUpdate = Vet.builder()
@@ -177,9 +177,9 @@ public class VerServiceIntegrationTest extends ManyToManyServiceIntegrationTest<
         Specialty savedGastro = specialtyService.save(gastro);
         Specialty savedHeart = specialtyService.save(heart);
         meier.setSpecialtys(new HashSet<>(Lists.newArrayList(savedDentism, savedGastro)));
-        Vet savedMeier = getServiceUnderTest().save(meier);
+        Vet savedMeier = getTestedService().save(meier);
         kahn.setSpecialtys(new HashSet<>(Lists.newArrayList(savedGastro)));
-        Vet savedKahn = getServiceUnderTest().save(kahn);
+        Vet savedKahn = getTestedService().save(kahn);
 
         // add heart to kahn
         Vet kahnUpdate = (Vet) BeanUtilsBean.getInstance().cloneBean(savedKahn);
@@ -201,7 +201,7 @@ public class VerServiceIntegrationTest extends ManyToManyServiceIntegrationTest<
 
         meier.setSpecialtys(new HashSet<>(Lists.newArrayList(savedDentism, savedGastro)));
 
-        Vet savedMeier = getServiceUnderTest().save(meier);
+        Vet savedMeier = getTestedService().save(meier);
         test(deleteById(savedMeier.getId()))
                 .andExpect(noException())
                 .andExpect(notPresentInDatabase(savedMeier.getId()));

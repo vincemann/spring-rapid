@@ -24,7 +24,7 @@ public class UniDirParentIdResolver extends EntityIdResolver<UniDirParent, UniDi
         super(crudServiceLocator, UniDirParentDto.class);
     }
 
-    public void resolveEntityIds(UniDirParent mappedUniDirParent, UniDirParentDto uniDirParentDto) throws BadEntityException, EntityNotFoundException {
+    public void injectEntitiesFromDtoIds(UniDirParent mappedUniDirParent, UniDirParentDto uniDirParentDto) throws BadEntityException, EntityNotFoundException {
         //find and handle single Children
         Map<Class<IdentifiableEntity>, Serializable> childTypeIdMappings = uniDirParentDto.findUniDirChildIds();
         for (Map.Entry<Class<IdentifiableEntity>, Serializable> entry : childTypeIdMappings.entrySet()) {
@@ -45,7 +45,7 @@ public class UniDirParentIdResolver extends EntityIdResolver<UniDirParent, UniDi
     }
 
     @Override
-    public void resolveDtoIds(UniDirParentDto mappedDto, UniDirParent serviceEntity) {
+    public void injectDtoIdsFromEntity(UniDirParentDto mappedDto, UniDirParent serviceEntity) {
         for (IdentifiableEntity child : serviceEntity.findSingleUniDirChildren()) {
             mappedDto.addUniDirChildId(child);
         }

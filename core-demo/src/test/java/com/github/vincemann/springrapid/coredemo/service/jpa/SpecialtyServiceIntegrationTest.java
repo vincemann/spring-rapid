@@ -45,7 +45,7 @@ public class SpecialtyServiceIntegrationTest
         Vet savedKahn = vetService.save(kahn);
 
         dentism.setVets(new HashSet<>(Lists.newArrayList(savedMeier,savedKahn)));
-        getServiceUnderTest().save(dentism);
+        getTestedService().save(dentism);
 
 
         gastro.setVets(new HashSet<>(Lists.newArrayList(savedKahn)));
@@ -66,9 +66,9 @@ public class SpecialtyServiceIntegrationTest
         Vet savedMeier = vetService.save(meier);
         Vet savedKahn = vetService.save(kahn);
         dentism.setVets(new HashSet<>(Lists.newArrayList(savedMeier,savedKahn)));
-        Specialty savedDentism = getServiceUnderTest().save(dentism);
+        Specialty savedDentism = getTestedService().save(dentism);
         gastro.setVets(new HashSet<>(Lists.newArrayList(savedKahn)));
-        getServiceUnderTest().save(gastro);
+        getTestedService().save(gastro);
 
         // remove dentism
         test(deleteById(savedDentism.getId()))
@@ -88,9 +88,9 @@ public class SpecialtyServiceIntegrationTest
         Vet savedMeier = vetService.save(meier);
         Vet savedKahn = vetService.save(kahn);
         dentism.setVets(new HashSet<>(Lists.newArrayList(savedMeier,savedKahn)));
-        Specialty savedDentism = getServiceUnderTest().save(dentism);
+        Specialty savedDentism = getTestedService().save(dentism);
         gastro.setVets(new HashSet<>(Lists.newArrayList(savedKahn)));
-        getServiceUnderTest().save(gastro);
+        getTestedService().save(gastro);
 
         // unlink dentism from kahn
         Specialty updateSpecialty = Specialty.builder()
@@ -114,9 +114,9 @@ public class SpecialtyServiceIntegrationTest
         Vet savedMeier = vetService.save(meier);
         Vet savedKahn = vetService.save(kahn);
         dentism.setVets(new HashSet<>(Lists.newArrayList(savedMeier,savedKahn)));
-        Specialty savedDentism = getServiceUnderTest().save(dentism);
+        Specialty savedDentism = getTestedService().save(dentism);
         gastro.setVets(new HashSet<>(Lists.newArrayList(savedKahn)));
-        getServiceUnderTest().save(gastro);
+        getTestedService().save(gastro);
 
         // unlink dentism from kahn
         Specialty updateSpecialty = (Specialty) BeanUtilsBean.getInstance().cloneBean(savedDentism);
@@ -141,11 +141,11 @@ public class SpecialtyServiceIntegrationTest
         Vet savedSchuhmacher = vetService.save(schuhmacher);
 
         dentism.setVets(new HashSet<>(Lists.newArrayList(savedMeier,savedKahn)));
-        getServiceUnderTest().save(dentism);
+        getTestedService().save(dentism);
         gastro.setVets(new HashSet<>(Lists.newArrayList(savedKahn,savedSchuhmacher)));
-        getServiceUnderTest().save(gastro);
+        getTestedService().save(gastro);
         heart.setVets(new HashSet<>(Lists.newArrayList(savedKahn,savedMeier,savedSchuhmacher)));
-        Specialty savedHeart = getServiceUnderTest().save(heart);
+        Specialty savedHeart = getTestedService().save(heart);
 
         // unlink heart from kahn and meier
         Specialty updateSpecialty = Specialty.builder()
@@ -175,11 +175,11 @@ public class SpecialtyServiceIntegrationTest
         Vet savedSchuhmacher = vetService.save(schuhmacher);
 
         dentism.setVets(new HashSet<>(Lists.newArrayList(savedMeier,savedKahn)));
-        getServiceUnderTest().save(dentism);
+        getTestedService().save(dentism);
         gastro.setVets(new HashSet<>(Lists.newArrayList(savedKahn,savedSchuhmacher)));
-        getServiceUnderTest().save(gastro);
+        getTestedService().save(gastro);
         heart.setVets(new HashSet<>(Lists.newArrayList(savedKahn,savedMeier,savedSchuhmacher)));
-        Specialty savedHeart = getServiceUnderTest().save(heart);
+        Specialty savedHeart = getTestedService().save(heart);
 
         // unlink heart from kahn and meier
         Specialty updateSpecialty = (Specialty) BeanUtilsBean.getInstance().cloneBean(savedHeart);
@@ -207,11 +207,11 @@ public class SpecialtyServiceIntegrationTest
         Vet savedSchuhmacher = vetService.save(schuhmacher);
 
         dentism.setVets(new HashSet<>(Lists.newArrayList(savedMeier,savedKahn)));
-        getServiceUnderTest().save(dentism);
+        getTestedService().save(dentism);
         gastro.setVets(new HashSet<>(Lists.newArrayList(savedKahn,savedSchuhmacher)));
-        getServiceUnderTest().save(gastro);
+        getTestedService().save(gastro);
         heart.setVets(new HashSet<>(Lists.newArrayList(savedKahn,savedMeier,savedSchuhmacher)));
-        Specialty savedHeart = getServiceUnderTest().save(heart);
+        Specialty savedHeart = getTestedService().save(heart);
 
         // unlink heart from all
         Specialty updateSpecialty = Specialty.builder()
@@ -241,11 +241,11 @@ public class SpecialtyServiceIntegrationTest
         Vet savedSchuhmacher = vetService.save(schuhmacher);
 
         dentism.setVets(new HashSet<>(Lists.newArrayList(savedMeier,savedKahn)));
-        getServiceUnderTest().save(dentism);
+        getTestedService().save(dentism);
         gastro.setVets(new HashSet<>(Lists.newArrayList(savedKahn,savedSchuhmacher)));
-        getServiceUnderTest().save(gastro);
+        getTestedService().save(gastro);
         heart.setVets(new HashSet<>(Lists.newArrayList(savedKahn,savedMeier,savedSchuhmacher)));
-        Specialty savedHeart = getServiceUnderTest().save(heart);
+        Specialty savedHeart = getTestedService().save(heart);
 
         // unlink heart from all
         Specialty updateSpecialty = (Specialty) BeanUtilsBean.getInstance().cloneBean(savedHeart);
@@ -273,11 +273,11 @@ public class SpecialtyServiceIntegrationTest
         Vet savedSchuhmacher = vetService.save(schuhmacher);
 
         dentism.setVets(new HashSet<>(Lists.newArrayList(savedMeier,savedKahn)));
-        getServiceUnderTest().save(dentism);
+        getTestedService().save(dentism);
         gastro.setVets(new HashSet<>(Lists.newArrayList(savedKahn,savedSchuhmacher)));
-        getServiceUnderTest().save(gastro);
+        getTestedService().save(gastro);
         heart.setVets(new HashSet<>());
-        Specialty savedHeart = getServiceUnderTest().save(heart);
+        Specialty savedHeart = getTestedService().save(heart);
 
         // link heart to meier and kahn
         Specialty updateSpecialty = Specialty.builder()
@@ -307,11 +307,11 @@ public class SpecialtyServiceIntegrationTest
         Vet savedSchuhmacher = vetService.save(schuhmacher);
 
         dentism.setVets(new HashSet<>(Lists.newArrayList(savedMeier,savedKahn)));
-        getServiceUnderTest().save(dentism);
+        getTestedService().save(dentism);
         gastro.setVets(new HashSet<>(Lists.newArrayList(savedKahn,savedSchuhmacher)));
-        getServiceUnderTest().save(gastro);
+        getTestedService().save(gastro);
         heart.setVets(new HashSet<>());
-        Specialty savedHeart = getServiceUnderTest().save(heart);
+        Specialty savedHeart = getTestedService().save(heart);
 
         // link heart to meier and kahn
         Specialty updateSpecialty = (Specialty) BeanUtilsBean.getInstance().cloneBean(savedHeart);
@@ -339,11 +339,11 @@ public class SpecialtyServiceIntegrationTest
         Vet savedSchuhmacher = vetService.save(schuhmacher);
 
         dentism.setVets(new HashSet<>(Lists.newArrayList(savedMeier,savedKahn)));
-        getServiceUnderTest().save(dentism);
+        getTestedService().save(dentism);
         gastro.setVets(new HashSet<>(Lists.newArrayList(savedKahn,savedSchuhmacher)));
-        getServiceUnderTest().save(gastro);
+        getTestedService().save(gastro);
         heart.setVets(new HashSet<>(Lists.newArrayList(savedKahn,savedSchuhmacher)));
-        Specialty savedHeart = getServiceUnderTest().save(heart);
+        Specialty savedHeart = getTestedService().save(heart);
 
         // relink heart from kahn and schuhmacher to meier
         Specialty updateSpecialty = Specialty.builder()
@@ -373,11 +373,11 @@ public class SpecialtyServiceIntegrationTest
         Vet savedSchuhmacher = vetService.save(schuhmacher);
 
         dentism.setVets(new HashSet<>(Lists.newArrayList(savedMeier,savedKahn)));
-        getServiceUnderTest().save(dentism);
+        getTestedService().save(dentism);
         gastro.setVets(new HashSet<>(Lists.newArrayList(savedKahn,savedSchuhmacher)));
-        getServiceUnderTest().save(gastro);
+        getTestedService().save(gastro);
         heart.setVets(new HashSet<>(Lists.newArrayList(savedKahn,savedSchuhmacher)));
-        Specialty savedHeart = getServiceUnderTest().save(heart);
+        Specialty savedHeart = getTestedService().save(heart);
 
         // relink heart from kahn and schuhmacher to meier
         Specialty updateSpecialty = (Specialty) BeanUtilsBean.getInstance().cloneBean(savedHeart);

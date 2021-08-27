@@ -57,7 +57,7 @@ public abstract class CrudServiceIntegrationTest
     @Getter
     private ApplicationContext applicationContext;
     @Getter
-    private S serviceUnderTest;
+    private S testedService;
     private EntityPlaceholderResolver entityPlaceholderResolver;
     private CrudServiceLocator crudServiceLocator;
     private CrudRepository<E, Id> crudRepository;
@@ -71,7 +71,7 @@ public abstract class CrudServiceIntegrationTest
     @Override
     public void afterPropertiesSet() throws Exception {
         testTemplate = ServiceTestTemplate.builder()
-                .serviceUnderTest(serviceUnderTest)
+                .serviceUnderTest(testedService)
                 .applicationContext(applicationContext)
                 .entityManager(entityManager)
                 .repository(crudRepository)
@@ -126,15 +126,15 @@ public abstract class CrudServiceIntegrationTest
 
     @Autowired
     public void injectServiceUnderTest(S serviceUnderTest) {
-        this.serviceUnderTest = serviceUnderTest;
+        this.testedService = serviceUnderTest;
     }
 
-    public S getServiceUnderTest() {
-        return (S) serviceUnderTest;
+    public S getTestedService() {
+        return (S) testedService;
     }
 
-    public void setServiceUnderTest(S serviceUnderTest) {
-        this.serviceUnderTest = serviceUnderTest;
+    public void setTestedService(S testedService) {
+        this.testedService = testedService;
     }
 
     @Autowired
