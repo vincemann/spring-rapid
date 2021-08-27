@@ -2,35 +2,23 @@ package com.github.vincemann.springrapid.entityrelationship.config;
 
 import com.github.vincemann.springrapid.core.service.locator.CrudServiceLocator;
 import com.github.vincemann.springrapid.core.slicing.ServiceConfig;
-import com.github.vincemann.springrapid.core.util.Lists;
-import com.github.vincemann.springrapid.entityrelationship.CacheClassKeyGenerator;
 import com.github.vincemann.springrapid.entityrelationship.RapidRelationalEntityManager;
 import com.github.vincemann.springrapid.entityrelationship.RelationalEntityManager;
-import com.github.vincemann.springrapid.entityrelationship.advice.BiDirEntitySaveAdvice;
 import com.github.vincemann.springrapid.entityrelationship.advice.BiDirEntityRemoveAdvice;
+import com.github.vincemann.springrapid.entityrelationship.advice.BiDirEntitySaveAdvice;
 import com.github.vincemann.springrapid.entityrelationship.advice.BiDirEntityUpdateAdvice;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.boot.autoconfigure.cache.CacheManagerCustomizer;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
-import org.springframework.cache.CacheManager;
-import org.springframework.cache.annotation.EnableCaching;
-import org.springframework.cache.concurrent.ConcurrentMapCacheManager;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.EnableAspectJAutoProxy;
 
 @ServiceConfig
 @EnableAspectJAutoProxy(proxyTargetClass = true)
 @Slf4j
-@EnableCaching
-public class RapidBiDirEntityAdviceAutoConfiguration implements CacheManagerCustomizer<ConcurrentMapCacheManager> {
+public class RapidBiDirEntityAdviceAutoConfiguration  {
 
     public RapidBiDirEntityAdviceAutoConfiguration() {
 
-    }
-
-    @Override
-    public void customize(ConcurrentMapCacheManager cacheManager) {
-        cacheManager.setCacheNames(Lists.newArrayList("entityRelationTypes", "dtoRelationTypes"));
     }
 
     @Bean
