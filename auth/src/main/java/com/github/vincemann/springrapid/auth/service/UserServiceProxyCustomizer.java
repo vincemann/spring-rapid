@@ -14,7 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired;
  *
  * @see RapidUserServiceAutoConfiguration
  */
-public abstract class UserServiceProxyConfigurer  implements InitializingBean {
+public abstract class UserServiceProxyCustomizer implements InitializingBean {
 
     private UserService acl;
     private UserService secured;
@@ -33,10 +33,10 @@ public abstract class UserServiceProxyConfigurer  implements InitializingBean {
 
     @Override
     public void afterPropertiesSet() throws Exception {
-        configureAclManaging(ProxyUtils.getExtensionProxy(acl));
-        configureSecured(ProxyUtils.getExtensionProxy(secured));
+        customizeAclManaging(ProxyUtils.getExtensionProxy(acl));
+        customizeSecured(ProxyUtils.getExtensionProxy(secured));
     }
 
-    public void configureAclManaging(ServiceExtensionProxy proxy){}
-    public void configureSecured(ServiceExtensionProxy proxy){}
+    public void customizeAclManaging(ServiceExtensionProxy proxy){}
+    public void customizeSecured(ServiceExtensionProxy proxy){}
 }
