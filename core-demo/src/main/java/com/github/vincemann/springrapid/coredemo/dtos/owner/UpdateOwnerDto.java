@@ -2,9 +2,9 @@ package com.github.vincemann.springrapid.coredemo.dtos.owner;
 
 import com.github.vincemann.springrapid.coredemo.model.ClinicCard;
 import com.github.vincemann.springrapid.coredemo.model.Pet;
-import com.github.vincemann.springrapid.entityrelationship.dto.child.annotation.BiDirChildId;
-import com.github.vincemann.springrapid.entityrelationship.dto.child.annotation.BiDirChildIdCollection;
-import com.github.vincemann.springrapid.entityrelationship.dto.parent.BiDirParentDto;
+import com.github.vincemann.springrapid.autobidir.dto.child.annotation.BiDirChildId;
+import com.github.vincemann.springrapid.autobidir.dto.child.annotation.BiDirChildIdCollection;
+
 import lombok.*;
 
 import javax.validation.constraints.NotBlank;
@@ -16,7 +16,7 @@ import java.util.Set;
 @NoArgsConstructor
 @ToString(callSuper = true)
 @Getter @Setter
-public class UpdateOwnerDto extends AbstractOwnerDto implements BiDirParentDto {
+public class UpdateOwnerDto extends AbstractOwnerDto  {
 
     @BiDirChildIdCollection(Pet.class)
     private Set<Long> petIds = new HashSet<>();

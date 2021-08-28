@@ -2,10 +2,10 @@ package com.github.vincemann.springrapid.acldemo.model;
 
 import com.github.vincemann.springrapid.acldemo.model.abs.Person;
 import com.github.vincemann.springrapid.acldemo.model.abs.UserAwareEntity;
-import com.github.vincemann.springrapid.entityrelationship.model.child.annotation.BiDirChildCollection;
-import com.github.vincemann.springrapid.entityrelationship.model.child.annotation.UniDirChildEntity;
-import com.github.vincemann.springrapid.entityrelationship.model.parent.BiDirParent;
-import com.github.vincemann.springrapid.entityrelationship.model.parent.UniDirParent;
+import com.github.vincemann.springrapid.autobidir.model.child.annotation.BiDirChildCollection;
+import com.github.vincemann.springrapid.autobidir.model.child.annotation.UniDirChildEntity;
+
+
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -21,7 +21,7 @@ import java.util.Set;
 @NoArgsConstructor
 @Entity
 @Table(name = "vets")
-public class Vet extends Person implements BiDirParent, UserAwareEntity, UniDirParent {
+public class Vet extends Person implements UserAwareEntity {
 
     @Builder
     public Vet(String firstName, String lastName, Set<Specialty> specialtys) {

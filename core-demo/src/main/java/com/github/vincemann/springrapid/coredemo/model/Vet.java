@@ -1,8 +1,8 @@
 package com.github.vincemann.springrapid.coredemo.model;
 
 import com.github.vincemann.springrapid.coredemo.model.abs.Person;
-import com.github.vincemann.springrapid.entityrelationship.model.child.annotation.BiDirChildCollection;
-import com.github.vincemann.springrapid.entityrelationship.model.parent.BiDirParent;
+import com.github.vincemann.springrapid.autobidir.model.child.annotation.BiDirChildCollection;
+
 import lombok.*;
 
 import javax.persistence.*;
@@ -15,7 +15,7 @@ import java.util.Set;
 @NoArgsConstructor
 @Entity
 @Table(name = "vets")
-public class Vet extends Person implements BiDirParent {
+public class Vet extends Person {
 
     @Builder
     public Vet(String firstName, String lastName, Set<Specialty> specialtys) {

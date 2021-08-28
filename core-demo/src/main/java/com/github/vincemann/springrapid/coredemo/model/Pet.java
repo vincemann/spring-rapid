@@ -3,12 +3,12 @@ package com.github.vincemann.springrapid.coredemo.model;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.github.vincemann.springrapid.core.model.IdentifiableEntityImpl;
-import com.github.vincemann.springrapid.entityrelationship.model.child.BiDirChild;
-import com.github.vincemann.springrapid.entityrelationship.model.child.annotation.BiDirChildCollection;
-import com.github.vincemann.springrapid.entityrelationship.model.parent.BiDirParent;
-import com.github.vincemann.springrapid.entityrelationship.model.parent.annotation.BiDirParentEntity;
-import com.github.vincemann.springrapid.entityrelationship.model.child.annotation.UniDirChildEntity;
-import com.github.vincemann.springrapid.entityrelationship.model.parent.UniDirParent;
+
+import com.github.vincemann.springrapid.autobidir.model.child.annotation.BiDirChildCollection;
+
+import com.github.vincemann.springrapid.autobidir.model.parent.annotation.BiDirParentEntity;
+import com.github.vincemann.springrapid.autobidir.model.child.annotation.UniDirChildEntity;
+
 import lombok.*;
 import org.checkerframework.common.aliasing.qual.Unique;
 import org.springframework.format.annotation.DateTimeFormat;
@@ -24,7 +24,7 @@ import java.util.Set;
 @Setter
 @Table(name = "pets")
 @Entity
-public class Pet extends IdentifiableEntityImpl<Long> implements BiDirChild, UniDirParent, BiDirParent {
+public class Pet extends IdentifiableEntityImpl<Long>{
 
 
     @Builder

@@ -3,14 +3,13 @@ package com.github.vincemann.springrapid.acldemo.dto.pet;
 import com.github.vincemann.springrapid.acldemo.model.Pet;
 import com.github.vincemann.springrapid.acldemo.model.PetType;
 import com.github.vincemann.springrapid.core.model.IdentifiableEntityImpl;
-import com.github.vincemann.springrapid.entityrelationship.dto.child.annotation.UniDirChildId;
-import com.github.vincemann.springrapid.entityrelationship.dto.parent.UniDirParentDto;
+import com.github.vincemann.springrapid.autobidir.dto.child.annotation.UniDirChildId;
+
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 
-import javax.validation.constraints.Size;
 import java.time.LocalDate;
 
 @Getter
@@ -18,7 +17,7 @@ import java.time.LocalDate;
 @NoArgsConstructor
 @ToString(callSuper = true)
 public abstract class AbstractPetDto extends IdentifiableEntityImpl<Long>
-        implements UniDirParentDto {
+         {
 
     public AbstractPetDto(Long petTypeId, LocalDate birthDate) {
         this.petTypeId = petTypeId;

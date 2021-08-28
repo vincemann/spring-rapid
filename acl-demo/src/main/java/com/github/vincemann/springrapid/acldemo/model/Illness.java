@@ -1,8 +1,8 @@
 package com.github.vincemann.springrapid.acldemo.model;
 
 import com.github.vincemann.springrapid.core.model.IdentifiableEntityImpl;
-import com.github.vincemann.springrapid.entityrelationship.model.child.BiDirChild;
-import com.github.vincemann.springrapid.entityrelationship.model.parent.annotation.BiDirParentCollection;
+
+import com.github.vincemann.springrapid.autobidir.model.parent.annotation.BiDirParentCollection;
 import lombok.*;
 import org.checkerframework.common.aliasing.qual.Unique;
 
@@ -19,7 +19,7 @@ import java.util.Set;
 @Setter
 @Table(name = "illnesss")
 @Entity
-public class Illness extends IdentifiableEntityImpl<Long> implements BiDirChild {
+public class Illness extends IdentifiableEntityImpl<Long>  {
     @Unique
     private String name;
 

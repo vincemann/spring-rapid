@@ -4,11 +4,10 @@ package com.github.vincemann.springrapid.coredemo.dtos.owner;
 import com.github.vincemann.springrapid.coredemo.model.ClinicCard;
 import com.github.vincemann.springrapid.coredemo.model.Owner;
 import com.github.vincemann.springrapid.coredemo.model.Pet;
-import com.github.vincemann.springrapid.entityrelationship.dto.child.annotation.BiDirChildId;
-import com.github.vincemann.springrapid.entityrelationship.dto.child.annotation.BiDirChildIdCollection;
-import com.github.vincemann.springrapid.entityrelationship.dto.parent.BiDirParentDto;
+import com.github.vincemann.springrapid.autobidir.dto.child.annotation.BiDirChildId;
+import com.github.vincemann.springrapid.autobidir.dto.child.annotation.BiDirChildIdCollection;
+
 import lombok.*;
-import org.springframework.cache.annotation.Cacheable;
 import org.springframework.lang.Nullable;
 
 import javax.validation.constraints.NotBlank;
@@ -21,7 +20,7 @@ import java.util.Set;
 @Setter
 @NoArgsConstructor
 @ToString(callSuper = true)
-public class CreateOwnerDto extends AbstractOwnerDto implements BiDirParentDto {
+public class CreateOwnerDto extends AbstractOwnerDto  {
 
     @NotBlank
     @Size(min = 2, max = 20)

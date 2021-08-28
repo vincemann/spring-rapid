@@ -1,4 +1,4 @@
 org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
-com.github.vincemann.springrapid.entityrelationship.config.RapidIdResolvingDtoMapperAutoConfiguration,\
-com.github.vincemann.springrapid.entityrelationship.config.RapidBiDirEntityAdviceAutoConfiguration,\
-com.github.vincemann.springrapid.entityrelationship.config.RapidAutoBiDirAutoConfiguration
+com.github.vincemann.springrapid.autobidir.config.RapidIdResolvingDtoMapperAutoConfiguration,\
+com.github.vincemann.springrapid.autobidir.config.RapidBiDirEntityAdviceAutoConfiguration,\
+com.github.vincemann.springrapid.autobidir.config.RapidAutoBiDirAutoConfiguration
