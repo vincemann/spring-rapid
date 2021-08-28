@@ -1,5 +1,8 @@
 package com.github.vincemann.springrapid.autobidir.model.biDir.child;
 
+import com.github.vincemann.springrapid.autobidir.RapidRelationalEntityManager;
+import com.github.vincemann.springrapid.autobidir.RelationalEntityManager;
+import com.github.vincemann.springrapid.core.model.IdentifiableEntity;
 import com.github.vincemann.springrapid.core.model.IdentifiableEntityImpl;
 import com.github.vincemann.springrapid.autobidir.exception.UnknownEntityTypeException;
 
@@ -18,7 +21,7 @@ import org.springframework.util.ReflectionUtils;
 import java.util.Collection;
 import java.util.Optional;
 
-class BiDirChildTest {
+class RapidRelationalEntityManagerChildTest {
 
 
     @Getter
@@ -48,8 +51,11 @@ class BiDirChildTest {
     private EntityParent testEntityParent;
     private SecondEntityParent testSecondEntityParent;
 
+    private RelationalEntityManager relationalEntityManager;
+
     @BeforeEach
     void setUp() {
+        this.relationalEntityManager = new RapidRelationalEntityManager();
         this.testEntityChild= new EntityChild();
         testEntityChild.setId(1L);
         this.testEntityParent = new EntityParent();
@@ -65,7 +71,7 @@ class BiDirChildTest {
         Assertions.assertNull(testEntityChild.getUnusedParent());
         Assertions.assertNull(testEntityChild.getSecondEntityParent());
         //when
-        testEntityChild.linkBiDirParent(testEntityParent);
+        relationalEntityManager.linkBiDirParent(testEntityChild,testEntityParent);
         //then
         Assertions.assertSame(testEntityChild.getEntityParent(),testEntityParent);
         Assertions.assertNull(testEntityChild.getUnusedParent());
@@ -158,7 +164,7 @@ class BiDirChildTest {
         testEntityChild.setEntityParent(testEntityParent);
         testEntityChild.setSecondEntityParent(testSecondEntityParent);
         //when
-        Collection<BiDirParent> parents = testEntityChild.findSingleBiDirParents();
+        Collection<IdentifiableEntity> parents = relationalEntityManager.findSingleBiDirParents(testEntityChild);
         //then
         Assertions.assertEquals(2,parents.size());
     }
@@ -169,10 +175,10 @@ class BiDirChildTest {
         Assertions.assertNull(testEntityChild.getSecondEntityParent());
         Assertions.assertNull(testEntityChild.getUnusedParent());
         //when
-        Collection<BiDirParent> parents = testEntityChild.findSingleBiDirParents();
+        Collection<IdentifiableEntity> parents = relationalEntityManager.findSingleBiDirParents(testEntityChild);
         //then
         Assertions.assertEquals(1,parents.size());
-        Optional<BiDirParent> biDirParent = parents.stream().findFirst();
+        Optional<IdentifiableEntity> biDirParent = parents.stream().findFirst();
         Assertions.assertTrue(biDirParent.isPresent());
         Assertions.assertSame(testEntityParent,biDirParent.get());
     }
@@ -183,7 +189,7 @@ class BiDirChildTest {
         testEntityChild.setEntityParent(testEntityParent);
         testEntityChild.setSecondEntityParent(testSecondEntityParent);
         //when
-        testEntityChild.unlinkBiDirParents();
+        relationalEntityManager.unlinkBiDirParents(testEntityChild);
         //then
         Assertions.assertNull(testEntityChild.getEntityParent());
         Assertions.assertNull(testEntityChild.getSecondEntityParent());
@@ -194,7 +200,7 @@ class BiDirChildTest {
         //given
         testEntityChild.setEntityParent(testEntityParent);
         //when
-        testEntityChild.unlinkBiDirParent(testEntityParent);
+        relationalEntityManager.unlinkBiDirParent(testEntityChild,testEntityParent);
         //then
         Assertions.assertNull(testEntityChild.getEntityParent());
     }
@@ -207,7 +213,7 @@ class BiDirChildTest {
         Assertions.assertThrows(UnknownEntityTypeException.class, new Executable() {
             @Override
             public void execute() throws Throwable {
-                testEntityChild.unlinkBiDirParent(testEntityParent);
+                relationalEntityManager.unlinkBiDirParent(testEntityChild,testEntityParent);
             }
         });
     }
@@ -218,7 +224,7 @@ class BiDirChildTest {
         testEntityChild.setEntityParent(testEntityParent);
         testEntityChild.setSecondEntityParent(testSecondEntityParent);
         //when
-        testEntityChild.unlinkBiDirParent(testEntityParent);
+        relationalEntityManager.unlinkBiDirParent(testEntityChild,testEntityParent);
         //then
         Assertions.assertNull(testEntityChild.getEntityParent());
         Assertions.assertSame(testSecondEntityParent,testEntityChild.getSecondEntityParent());

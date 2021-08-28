@@ -3,6 +3,7 @@ package com.github.vincemann.springrapid.autobidir.controller.dtomapper.biDir;
 
 import com.github.vincemann.springrapid.autobidir.RelationalDtoManager;
 import com.github.vincemann.springrapid.autobidir.RelationalEntityManager;
+import com.github.vincemann.springrapid.autobidir.dto.RelationalDtoType;
 import com.github.vincemann.springrapid.core.model.IdentifiableEntity;
 import com.github.vincemann.springrapid.core.service.exception.BadEntityException;
 import com.github.vincemann.springrapid.core.service.exception.EntityNotFoundException;
@@ -30,8 +31,8 @@ import static com.github.vincemann.springrapid.autobidir.dto.RelationalDtoType.B
  */
 public class BiDirChildIdResolver extends EntityIdResolver {
 
-    public BiDirChildIdResolver(CrudServiceLocator crudServiceLocator, RelationalDtoManager relationalDtoManager, RelationalEntityManager relationalEntityManager) {
-        super(crudServiceLocator, BiDirChildDto, relationalDtoManager, relationalEntityManager);
+    public BiDirChildIdResolver() {
+        super(BiDirChildDto);
     }
 
     public void injectEntitiesResolvedFromDtoIdsIntoEntity(IdentifiableEntity mappedBiDirChild, Object biDirChildDto) throws BadEntityException, EntityNotFoundException {

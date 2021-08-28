@@ -1,5 +1,8 @@
 package com.github.vincemann.springrapid.autobidir.model.biDir.parent;
 
+import com.github.vincemann.springrapid.autobidir.RapidRelationalEntityManager;
+import com.github.vincemann.springrapid.autobidir.RelationalEntityManager;
+import com.github.vincemann.springrapid.core.model.IdentifiableEntity;
 import com.github.vincemann.springrapid.core.util.Lists;
 import com.github.vincemann.springrapid.core.model.IdentifiableEntityImpl;
 
@@ -15,7 +18,7 @@ import org.junit.jupiter.api.Test;
 
 import java.util.*;
 
-class BiDirParentTest {
+class RapidRelationalEntityManagerParentTest {
 
     @Getter
     @Setter
@@ -36,7 +39,7 @@ class BiDirParentTest {
     }
     @Getter
     @Setter
-    private class SecondEntityParent extends IdentifiableEntityImpl<Long> implements {
+    private class SecondEntityParent extends IdentifiableEntityImpl<Long> {
         @BiDirChildEntity
         private EntityChild entityChild;
     }
@@ -54,8 +57,11 @@ class BiDirParentTest {
     private SecondEntityParent testSecondEntityParent;
     private SecondEntityChild testSecondEntityChild;
 
+    private RelationalEntityManager relationalEntityManager;
+
     @BeforeEach
     void setUp() {
+        this.relationalEntityManager = new RapidRelationalEntityManager();
         this.testEntityChild= new EntityChild();
         testEntityChild.setId(1L);
         this.testEntityParent = new EntityParent();
@@ -73,7 +79,8 @@ class BiDirParentTest {
         testEntityParent.setEntityChild(testEntityChild);
         testEntityChild.setEntityParent(testEntityParent);
         //when
-        testEntityParent.unlinkChildrensParent();
+
+        relationalEntityManager.unlinkChildrensParent(testEntityParent);
         //then
         Assertions.assertNull(testEntityChild.getEntityParent());
         Assertions.assertNotNull(testEntityParent.getEntityChild());
@@ -84,7 +91,7 @@ class BiDirParentTest {
         testEntityParent.setSecondEntityChildSet(new HashSet<>(Lists.newArrayList(testSecondEntityChild)));
         testSecondEntityChild.setEntityParent(testEntityParent);
         //when
-        testEntityParent.unlinkChildrensParent();
+        relationalEntityManager.unlinkChildrensParent(testEntityParent);
         //then
         Assertions.assertFalse(testEntityParent.getSecondEntityChildSet().stream().findFirst().isPresent());
         Assertions.assertNull(testSecondEntityChild.getEntityParent());
@@ -97,7 +104,7 @@ class BiDirParentTest {
         testEntityParent.setEntityChild(testEntityChild);
         testEntityChild.setEntityParent(testEntityParent);
         //when
-        testEntityParent.unlinkChildrensParent();
+        relationalEntityManager.unlinkChildrensParent(testEntityParent);
         //then
         Assertions.assertFalse(testEntityParent.getSecondEntityChildSet().stream().findFirst().isPresent());
         Assertions.assertNull(testSecondEntityChild.getEntityParent());
@@ -108,7 +115,7 @@ class BiDirParentTest {
     @Test
     void addChild()  {
         //when
-        testEntityParent.linkBiDirChild(testEntityChild);
+        relationalEntityManager.linkBiDirChild(testEntityParent, testEntityChild);
         //then
         Assertions.assertSame(testEntityChild,testEntityParent.getEntityChild());
     }
@@ -118,7 +125,7 @@ class BiDirParentTest {
         //given
         Assertions.assertNotNull(testEntityParent.getSecondEntityChildSet());
         //when
-        testEntityParent.linkBiDirChild(testSecondEntityChild);
+        relationalEntityManager.linkBiDirChild(testEntityParent,testSecondEntityChild);
         //then
         Assertions.assertEquals(1,testEntityParent.getSecondEntityChildSet().size());
         Assertions.assertSame(testSecondEntityChild,testEntityParent.getSecondEntityChildSet().stream().findFirst().get());
@@ -128,7 +135,7 @@ class BiDirParentTest {
     void addChildToNullCollection_shouldAutoCreateCollectionAndWork()  {
         //given
         testEntityParent.setSecondEntityChildSet(null);
-        testEntityParent.linkBiDirChild(testSecondEntityChild);
+        relationalEntityManager.linkBiDirChild(testEntityParent,testSecondEntityChild);
         Assertions.assertEquals(testSecondEntityChild,testEntityParent.getSecondEntityChildSet().stream().findFirst().get());
     }
 
@@ -137,7 +144,7 @@ class BiDirParentTest {
         //given
         testEntityParent.setEntityChild(testEntityChild);
         //when
-        testEntityParent.unlinkBiDirChild(testEntityChild);
+        relationalEntityManager.unlinkBiDirChild(testEntityParent,testEntityChild);
         //then
         Assertions.assertNull(testEntityParent.getEntityChild());
     }
@@ -147,7 +154,7 @@ class BiDirParentTest {
         //given
         testEntityParent.setSecondEntityChildSet(new HashSet<>(Collections.singleton(testSecondEntityChild)));
         //when
-        testEntityParent.unlinkBiDirChild(testSecondEntityChild);
+        relationalEntityManager.unlinkBiDirChild(testEntityParent,testSecondEntityChild);
         //then
         Assertions.assertTrue(testEntityParent.getSecondEntityChildSet().isEmpty());
     }
@@ -162,7 +169,7 @@ class BiDirParentTest {
         secondEntityChildren.add(second);
         testEntityParent.setSecondEntityChildSet(secondEntityChildren);
         //when
-        testEntityParent.unlinkBiDirChild(testSecondEntityChild);
+        relationalEntityManager.unlinkBiDirChild(testEntityParent,testSecondEntityChild);
         //then
         Assertions.assertEquals(1,testEntityParent.getSecondEntityChildSet().size());
         Assertions.assertSame(second,testEntityParent.getSecondEntityChildSet().stream().findFirst().get());
@@ -193,10 +200,10 @@ class BiDirParentTest {
         HashSet<SecondEntityChild> secondEntityChildSet = new HashSet<>();
         testEntityParent.setSecondEntityChildSet(secondEntityChildSet);
         //when
-        Map<Collection<BiDirChild>, Class<BiDirChild>> childrenCollections = testEntityParent.findBiDirChildCollections();
+        Map<Collection<IdentifiableEntity>, Class<IdentifiableEntity>> childrenCollections = relationalEntityManager.findBiDirChildCollections(testEntityParent);
         //then
         Assertions.assertEquals(1,childrenCollections.size());
-        Map.Entry<Collection<BiDirChild>, Class<BiDirChild>> entry = childrenCollections.entrySet().stream().findFirst().get();
+        Map.Entry<Collection<IdentifiableEntity>, Class<IdentifiableEntity>> entry = childrenCollections.entrySet().stream().findFirst().get();
         Assertions.assertEquals(SecondEntityChild.class,entry.getValue());
         Assertions.assertSame(secondEntityChildSet,entry.getKey());
     }
@@ -205,8 +212,8 @@ class BiDirParentTest {
     void getNullChildrenCollection_shouldCreateEmptyCollection()  {
         //given
         testEntityParent.setSecondEntityChildSet(null);
-        Map<Collection<BiDirChild>, Class<BiDirChild>> childrenCollections = testEntityParent.findBiDirChildCollections();
-        for (Map.Entry<Collection<BiDirChild>, Class<BiDirChild>> collectionClassEntry : childrenCollections.entrySet()) {
+        Map<Collection<IdentifiableEntity>, Class<IdentifiableEntity>> childrenCollections = relationalEntityManager.findBiDirChildCollections(testEntityParent);
+        for (Map.Entry<Collection<IdentifiableEntity>, Class<IdentifiableEntity>> collectionClassEntry : childrenCollections.entrySet()) {
             Assertions.assertNotNull(collectionClassEntry.getKey());
             Assertions.assertTrue(collectionClassEntry.getKey().isEmpty());
             Assertions.assertTrue(collectionClassEntry.getKey() instanceof Set);
@@ -218,7 +225,7 @@ class BiDirParentTest {
         //given
         testEntityParent.setEntityChild(testEntityChild);
         //when
-        Set<? extends BiDirChild> children = testEntityParent.findSingleBiDirChildren();
+        Set<? extends IdentifiableEntity> children = relationalEntityManager.findSingleBiDirChildren(testEntityParent);
         //then
         Assertions.assertEquals(1,children.size());
         Assertions.assertSame(testEntityChild,children.stream().findFirst().get());
@@ -229,7 +236,7 @@ class BiDirParentTest {
         //given
         testEntityParent.setEntityChild(null);
         //when
-        Set<? extends BiDirChild> children = testEntityParent.findSingleBiDirChildren();
+        Set<? extends IdentifiableEntity> children = relationalEntityManager.findSingleBiDirChildren(testEntityParent);
         //then
         Assertions.assertTrue(children.isEmpty());
     }

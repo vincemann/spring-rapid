@@ -6,7 +6,6 @@ import com.github.vincemann.springrapid.core.controller.dto.mapper.DtoPostProces
 import com.github.vincemann.springrapid.core.model.IdentifiableEntity;
 import com.github.vincemann.springrapid.core.service.exception.BadEntityException;
 import com.github.vincemann.springrapid.core.service.exception.EntityNotFoundException;
-import com.github.vincemann.springrapid.autobidir.dto.DirDto;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.core.annotation.Order;
 import org.springframework.transaction.annotation.Transactional;
