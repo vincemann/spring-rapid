@@ -15,7 +15,8 @@ import java.util.Set;
 @NoArgsConstructor
 @Entity
 @Table(name = "vets")
-public class Vet extends Person {
+public class Vet extends Person
+{
 
     @Builder
     public Vet(String firstName, String lastName, Set<Specialty> specialtys) {

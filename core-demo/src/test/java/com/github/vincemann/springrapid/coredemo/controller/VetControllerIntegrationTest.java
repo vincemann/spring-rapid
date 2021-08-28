@@ -6,6 +6,8 @@ import com.github.vincemann.springrapid.coredemo.dtos.VetDto;
 import com.github.vincemann.springrapid.coredemo.model.Specialty;
 import com.github.vincemann.springrapid.coredemo.model.Vet;
 import com.github.vincemann.springrapid.coredemo.service.VetService;
+import com.github.vincemann.springrapid.coretest.util.ExceptionAssert;
+import io.github.artsok.RepeatedIfExceptionsTest;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.test.web.servlet.MvcResult;
@@ -64,6 +66,7 @@ public class VetControllerIntegrationTest extends AbstractControllerIntegrationT
 
     // todo sometimes fails when run with all other tests
     @Test
+//    @RepeatedIfExceptionsTest(repeats = 3, exceptions = IllegalArgumentException.class, name = "Rerun failed test. Attempt {currentRepetition} of {totalRepetitions}")
     public void canRemoveMultipleSpecialtiesFromVet_viaUpdate() throws Exception {
         // poldi -> dentism, gastro, heart
         // max -> dentism, heart
@@ -78,6 +81,7 @@ public class VetControllerIntegrationTest extends AbstractControllerIntegrationT
         String removeGastroJson = createUpdateJsonLine("remove", "/specialtyIds",savedGastro.getId().toString());
         String updateJson = createUpdateJsonRequest(removeDentismJson, removeGastroJson);
         VetDto responseDto = deserialize(getMvc().perform(update(updateJson, createdPoldiDto.getId())).andReturn().getResponse().getContentAsString(),VetDto.class);
+//        ExceptionAssert.assertTrue(responseDto.getSpecialtyIds().contains(savedHeart.getId()));
         Assertions.assertTrue(responseDto.getSpecialtyIds().contains(savedHeart.getId()));
         Assertions.assertEquals(1,responseDto.getSpecialtyIds().size());
 
