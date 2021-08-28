@@ -31,7 +31,7 @@ public class BiDirChildIdResolverTest extends BiDirEntityResolverTest {
         biDirEntityChildDto.setEntityPId(getBiDirEntityParent().getId());
         biDirEntityChildDto.setSecondEntityPId(getBiDirSecondEntityParent().getId());
         //when
-        biDirChildIdResolver.injectEntitiesFromDtoIds(unfinishedMappedBiDirEntityChild, biDirEntityChildDto);
+        biDirChildIdResolver.injectEntitiesResolvedFromDtoIdsIntoEntity(unfinishedMappedBiDirEntityChild, biDirEntityChildDto);
         //then
         Assertions.assertEquals(getBiDirEntityParent(), unfinishedMappedBiDirEntityChild.getBiDirEntityParent());
         Assertions.assertEquals(getBiDirSecondEntityParent(), unfinishedMappedBiDirEntityChild.getBiDirSecondEntityParent());
@@ -45,7 +45,7 @@ public class BiDirChildIdResolverTest extends BiDirEntityResolverTest {
         entityChild.setBiDirSecondEntityParent(getBiDirSecondEntityParent());
         BiDirEntityChildDto unfinishedMappedBiDirEntityChildDto = new BiDirEntityChildDto();
         //when
-        biDirChildIdResolver.injectDtoIdsFromEntity(unfinishedMappedBiDirEntityChildDto,entityChild);
+        biDirChildIdResolver.injectEntityIdsResolvedFromEntityIntoDto(unfinishedMappedBiDirEntityChildDto,entityChild);
         //then
         Assertions.assertEquals(getBiDirEntityParent().getId(),unfinishedMappedBiDirEntityChildDto.getEntityPId());
         Assertions.assertEquals(getBiDirSecondEntityParent().getId(),unfinishedMappedBiDirEntityChildDto.getSecondEntityPId());

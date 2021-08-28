@@ -4,6 +4,9 @@ package com.github.vincemann.springrapid.autobidir.controller.dtomapper;
 import com.github.vincemann.aoplog.Severity;
 import com.github.vincemann.aoplog.api.AopLoggable;
 import com.github.vincemann.aoplog.api.LogInteraction;
+import com.github.vincemann.springrapid.autobidir.RelationalDtoManager;
+import com.github.vincemann.springrapid.autobidir.RelationalEntityManager;
+import com.github.vincemann.springrapid.autobidir.dto.RelationalDtoType;
 import com.github.vincemann.springrapid.core.model.IdentifiableEntity;
 import com.github.vincemann.springrapid.core.service.CrudService;
 import com.github.vincemann.springrapid.core.service.locator.CrudServiceLocator;
@@ -31,26 +34,31 @@ import java.util.Optional;
  */
 @LogInteraction(value = Severity.TRACE)
 //@LogConfig(ignoreSetters = true, ignoreGetters = true)
-public abstract class EntityIdResolver<E, Dto> implements AopLoggable {
+public abstract class EntityIdResolver implements AopLoggable {
 
     private CrudServiceLocator crudServiceLocator;
-    private Class<Dto> dtoClass;
+    private RelationalDtoType dtoType;
+    protected RelationalDtoManager relationalDtoManager;
+    protected RelationalEntityManager relationalEntityManager;
 
-    public EntityIdResolver(CrudServiceLocator crudServiceLocator, Class<Dto> dtoClass) {
-        this.dtoClass = dtoClass;
+
+    public EntityIdResolver(CrudServiceLocator crudServiceLocator, RelationalDtoType dtoType, RelationalDtoManager relationalDtoManager, RelationalEntityManager relationalEntityManager) {
+        this.dtoType = dtoType;
         this.crudServiceLocator = crudServiceLocator;
+        this.relationalDtoManager = relationalDtoManager;
+        this.relationalEntityManager = relationalEntityManager;
     }
 
     /**
      * Resolve entities by id from dto and inject (set) them into target Entity
      * -> target entity now has all entities set
      */
-    public abstract void injectEntitiesFromDtoIds(E mappedEntity, Dto dto) throws BadEntityException, EntityNotFoundException;
+    public abstract void injectEntitiesResolvedFromDtoIdsIntoEntity(IdentifiableEntity mappedEntity, Object dto) throws BadEntityException, EntityNotFoundException;
 
     /**
      * Resolve Id's from entities in entity and inject (set) ids into target Dto
      */
-    public abstract void injectDtoIdsFromEntity(Dto mappedDto, E entity);
+    public abstract void injectEntityIdsResolvedFromEntityIntoDto(Object mappedDto, IdentifiableEntity entity);
 
 
     protected <T> T findEntityFromService(Class<IdentifiableEntity> entityClass, Serializable id) throws EntityNotFoundException, BadEntityException {

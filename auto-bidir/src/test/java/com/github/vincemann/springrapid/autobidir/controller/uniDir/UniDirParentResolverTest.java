@@ -83,7 +83,7 @@ public class UniDirParentResolverTest  {
         UniDirEntityParentDto parentDto = new UniDirEntityParentDto();
         parentDto.setChildId(getUniDirEntityParentsChild().getId());
         //when
-        uniDirParentIdResolver.injectEntitiesFromDtoIds(unfinishedMappedUniDirParent,parentDto);
+        uniDirParentIdResolver.injectEntitiesResolvedFromDtoIdsIntoEntity(unfinishedMappedUniDirParent,parentDto);
         //then
         Assertions.assertEquals(getUniDirEntityParentsChild(),unfinishedMappedUniDirParent.getEntityChild());
     }
@@ -95,7 +95,7 @@ public class UniDirParentResolverTest  {
         UniDirEntityParent parent = new UniDirEntityParent();
         parent.setEntityChild(getUniDirEntityParentsChild());
         //when
-        uniDirParentIdResolver.injectDtoIdsFromEntity(unfinishedMappedUniDirParentDto,parent);
+        uniDirParentIdResolver.injectEntityIdsResolvedFromEntityIntoDto(unfinishedMappedUniDirParentDto,parent);
         //then
         Assertions.assertEquals(getUniDirEntityParentsChild().getId(),unfinishedMappedUniDirParentDto.getChildId());
     }

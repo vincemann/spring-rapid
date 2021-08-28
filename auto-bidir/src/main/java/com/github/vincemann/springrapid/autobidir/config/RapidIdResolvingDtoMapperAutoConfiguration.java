@@ -1,5 +1,6 @@
 package com.github.vincemann.springrapid.autobidir.config;
 
+import com.github.vincemann.springrapid.autobidir.RelationalDtoManager;
 import com.github.vincemann.springrapid.core.config.RapidCrudServiceLocatorAutoConfiguration;
 import com.github.vincemann.springrapid.core.config.RapidDtoMapperAutoConfiguration;
 import com.github.vincemann.springrapid.core.controller.mergeUpdate.MergeUpdateStrategy;
@@ -57,8 +58,8 @@ public class RapidIdResolvingDtoMapperAutoConfiguration {
 
     @ConditionalOnMissingBean(name = "idResolvingDtoPostProcessor")
     @Bean
-    public IdResolvingDtoPostProcessor idResolvingDtoPostProcessor(List<EntityIdResolver> entityIdResolvers){
-        return new IdResolvingDtoPostProcessor(entityIdResolvers);
+    public IdResolvingDtoPostProcessor idResolvingDtoPostProcessor(List<EntityIdResolver> entityIdResolvers, RelationalDtoManager relationalDtoManager){
+        return new IdResolvingDtoPostProcessor(entityIdResolvers, relationalDtoManager);
     }
 
 }

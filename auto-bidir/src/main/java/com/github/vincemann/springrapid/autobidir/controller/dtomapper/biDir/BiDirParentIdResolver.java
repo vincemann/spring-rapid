@@ -27,7 +27,7 @@ import java.util.Map;
 public class BiDirParentIdResolver extends EntityIdResolver<BiDirParent, BiDirParentDto> {
 
     public BiDirParentIdResolver(CrudServiceLocator crudServiceLocator) {
-        super(crudServiceLocator, BiDirParentDto.class);
+        super(crudServiceLocator, BiDirParentDto.class, relationalDtoManager, relationalEntityManager);
     }
 
     public void injectEntitiesFromDtoIds(BiDirParent mappedBiDirParent, BiDirParentDto biDirParentDto) throws BadEntityException, EntityNotFoundException {
