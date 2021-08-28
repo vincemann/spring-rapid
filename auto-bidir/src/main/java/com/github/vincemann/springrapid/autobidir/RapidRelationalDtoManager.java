@@ -72,7 +72,7 @@ public class RapidRelationalDtoManager implements RelationalDtoManager {
 //        return findChildId(childClazz,UniDirChildId.class);
 //    }
 
-    public Map<Class<IdentifiableEntity>, Serializable> findUniDirChildIds(IdentifiableEntity parent){
+    public Map<Class<IdentifiableEntity>, Serializable> findUniDirChildIds(Object parent){
         return findEntityIds(parent,UniDirChildId.class);
     }
 
@@ -84,7 +84,7 @@ public class RapidRelationalDtoManager implements RelationalDtoManager {
 
 
 
-    public Map<Class<IdentifiableEntity>, Collection<Serializable>> findUniDirChildIdCollections(IdentifiableEntity parent){
+    public Map<Class<IdentifiableEntity>, Collection<Serializable>> findUniDirChildIdCollections(Object parent){
         return findEntityIdCollections(parent,UniDirChildIdCollection.class);
     }
 
@@ -93,7 +93,7 @@ public class RapidRelationalDtoManager implements RelationalDtoManager {
      *
      * @param child
      */
-    public void addUniDirChildId(IdentifiableEntity child, IdentifiableEntity parent) {
+    public void addUniDirChildId(IdentifiableEntity child, Object parent) {
         addEntityId(child,parent, UniDirChildId.class, UniDirChildIdCollection.class);
     }
 
@@ -115,7 +115,7 @@ public class RapidRelationalDtoManager implements RelationalDtoManager {
 
 
 
-    public Map<Class<IdentifiableEntity>, Serializable> findBiDirChildIds(IdentifiableEntity parent) {
+    public Map<Class<IdentifiableEntity>, Serializable> findBiDirChildIds(Object parent) {
         return findEntityIds(parent,BiDirChildId.class);
     }
 
@@ -123,7 +123,7 @@ public class RapidRelationalDtoManager implements RelationalDtoManager {
 //        return findChildIdCollection(childClazz,BiDirChildIdCollection.class);
 //    }
 
-    public Map<Class<IdentifiableEntity>, Collection<Serializable>> findBiDirChildIdCollections(IdentifiableEntity parent) {
+    public Map<Class<IdentifiableEntity>, Collection<Serializable>> findBiDirChildIdCollections(Object parent) {
         return findEntityIdCollections(parent,BiDirChildIdCollection.class);
     }
 
@@ -136,23 +136,23 @@ public class RapidRelationalDtoManager implements RelationalDtoManager {
      * @param child
      */
     // adds childs id to parent
-    public void addBiDirChildId(IdentifiableEntity child, IdentifiableEntity parent) {
+    public void addBiDirChildId(IdentifiableEntity child, Object parent) {
         addEntityId(child,parent, BiDirChildId.class, BiDirChildIdCollection.class);
     }
     
     
     // BIDIR CHILD METHODS
 
-    public Map<Class<IdentifiableEntity>, Serializable> findBiDirParentIds(IdentifiableEntity child) {
+    public Map<Class<IdentifiableEntity>, Serializable> findBiDirParentIds(Object child) {
         return findEntityIds(child,BiDirParentId.class);
     }
 
-    public Map<Class<IdentifiableEntity>, Collection<Serializable>> findBiDirParentIdCollections(IdentifiableEntity child) {
+    public Map<Class<IdentifiableEntity>, Collection<Serializable>> findBiDirParentIdCollections(Object child) {
         return findEntityIdCollections(child,BiDirParentIdCollection.class);
     }
 
     // adds parents id to child
-    public void addBiDirParentId(IdentifiableEntity parent, IdentifiableEntity child) {
+    public void addBiDirParentId(IdentifiableEntity parent, Object child) {
         addEntityId(parent, child,BiDirParentId.class,BiDirParentIdCollection.class);
     }
 
@@ -164,7 +164,7 @@ public class RapidRelationalDtoManager implements RelationalDtoManager {
 
 
 
-    protected <C> Map<Class<C>, Serializable> findEntityIds(IdentifiableEntity entity, Class<? extends Annotation> entityIdAnnotationType) {
+    protected <C> Map<Class<C>, Serializable> findEntityIds(Object entity, Class<? extends Annotation> entityIdAnnotationType) {
         final Map<Class<C>, Serializable> result = new HashMap<>();
         EntityReflectionUtils.doWithAnnotatedFields(entityIdAnnotationType, entity.getClass(), field -> {
             Serializable id = (Serializable) field.get(entity);
@@ -177,7 +177,7 @@ public class RapidRelationalDtoManager implements RelationalDtoManager {
         return result;
     }
 
-    protected <C> Map<Class<C>, Collection<Serializable>> findEntityIdCollections(IdentifiableEntity entity,Class<? extends Annotation> entityIdAnnotationType) {
+    protected <C> Map<Class<C>, Collection<Serializable>> findEntityIdCollections(Object entity,Class<? extends Annotation> entityIdAnnotationType) {
         final Map<Class<C>, Collection<Serializable>> result = new HashMap<>();
         EntityReflectionUtils.doWithAnnotatedFields(entityIdAnnotationType,entity.getClass(),field -> {
             Collection<Serializable> idCollection = (Collection<Serializable>) field.get(entity);
@@ -190,7 +190,7 @@ public class RapidRelationalDtoManager implements RelationalDtoManager {
         return result;
     }
 
-    protected void addEntityId(IdentifiableEntity src, IdentifiableEntity target, Class<? extends Annotation> entityIdAnnotationClass, Class<? extends Annotation> entityIdCollectionAnnotationClass) {
+    protected void addEntityId(IdentifiableEntity src, Object target, Class<? extends Annotation> entityIdAnnotationClass, Class<? extends Annotation> entityIdCollectionAnnotationClass) {
         Serializable entityId = src.getId();
         if (entityId == null) {
             throw new IllegalArgumentException("EntityId must not be null");

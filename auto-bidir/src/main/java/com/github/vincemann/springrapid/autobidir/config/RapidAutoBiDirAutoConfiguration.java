@@ -12,7 +12,7 @@ public class RapidAutoBiDirAutoConfiguration implements CacheManagerCustomizer<C
 
     @Override
     public void customize(ConcurrentMapCacheManager cacheManager) {
-        cacheManager.setCacheNames(Lists.newArrayList("entityRelationTypes", "dtoRelationTypes"));
+        cacheManager.setCacheNames(Lists.newArrayList("entityRelationTypes", "dtoRelationTypes", "resolvers"));
     }
 
 }

@@ -21,7 +21,7 @@ import java.util.Map;
 public class UniDirParentIdResolver extends EntityIdResolver<UniDirParent, UniDirParentDto> {
 
     public UniDirParentIdResolver(CrudServiceLocator crudServiceLocator) {
-        super(crudServiceLocator, UniDirParentDto.class);
+        super(crudServiceLocator, UniDirParentDto.class, relationalDtoManager, relationalEntityManager);
     }
 
     public void injectEntitiesFromDtoIds(UniDirParent mappedUniDirParent, UniDirParentDto uniDirParentDto) throws BadEntityException, EntityNotFoundException {
