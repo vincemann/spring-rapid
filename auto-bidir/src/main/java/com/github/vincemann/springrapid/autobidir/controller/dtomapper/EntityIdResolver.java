@@ -14,6 +14,7 @@ import com.github.vincemann.springrapid.core.service.exception.EntityNotFoundExc
 import com.github.vincemann.springrapid.core.service.exception.BadEntityException;
 import com.github.vincemann.springrapid.core.util.VerifyEntity;
 import lombok.Getter;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import java.io.Serializable;
 import java.util.Optional;
@@ -42,11 +43,8 @@ public abstract class EntityIdResolver implements AopLoggable {
     protected RelationalEntityManager relationalEntityManager;
 
 
-    public EntityIdResolver(CrudServiceLocator crudServiceLocator, RelationalDtoType dtoType, RelationalDtoManager relationalDtoManager, RelationalEntityManager relationalEntityManager) {
+    public EntityIdResolver(RelationalDtoType dtoType) {
         this.dtoType = dtoType;
-        this.crudServiceLocator = crudServiceLocator;
-        this.relationalDtoManager = relationalDtoManager;
-        this.relationalEntityManager = relationalEntityManager;
     }
 
     /**
@@ -77,5 +75,18 @@ public abstract class EntityIdResolver implements AopLoggable {
 
     }
 
+    @Autowired
+    public void setCrudServiceLocator(CrudServiceLocator crudServiceLocator) {
+        this.crudServiceLocator = crudServiceLocator;
+    }
 
+    @Autowired
+    public void setRelationalDtoManager(RelationalDtoManager relationalDtoManager) {
+        this.relationalDtoManager = relationalDtoManager;
+    }
+
+    @Autowired
+    public void setRelationalEntityManager(RelationalEntityManager relationalEntityManager) {
+        this.relationalEntityManager = relationalEntityManager;
+    }
 }

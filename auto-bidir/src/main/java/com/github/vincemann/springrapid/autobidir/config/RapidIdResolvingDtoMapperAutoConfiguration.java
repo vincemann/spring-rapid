@@ -1,6 +1,8 @@
 package com.github.vincemann.springrapid.autobidir.config;
 
+import com.github.vincemann.springrapid.autobidir.RapidRelationalDtoManager;
 import com.github.vincemann.springrapid.autobidir.RelationalDtoManager;
+import com.github.vincemann.springrapid.autobidir.RelationalEntityManager;
 import com.github.vincemann.springrapid.core.config.RapidCrudServiceLocatorAutoConfiguration;
 import com.github.vincemann.springrapid.core.config.RapidDtoMapperAutoConfiguration;
 import com.github.vincemann.springrapid.core.controller.mergeUpdate.MergeUpdateStrategy;
@@ -38,22 +40,28 @@ public class RapidIdResolvingDtoMapperAutoConfiguration {
     }
 
 
+    @Bean
+    @ConditionalOnMissingBean(RelationalDtoManager.class)
+    public RelationalDtoManager relationalDtoManager(){
+        return new RapidRelationalDtoManager();
+    }
+
     @ConditionalOnMissingBean(name = "biDiChildIdResolver")
     @Bean
-    public EntityIdResolver biDiChildIdResolver(CrudServiceLocator crudServiceLocator){
-        return new BiDirChildIdResolver(crudServiceLocator);
+    public EntityIdResolver biDiChildIdResolver(){
+        return new BiDirChildIdResolver();
     }
 
     @ConditionalOnMissingBean(name = "biDiParentIdResolver")
     @Bean
-    public EntityIdResolver biDiParentIdResolver(CrudServiceLocator crudServiceLocator){
-        return new BiDirParentIdResolver(crudServiceLocator);
+    public EntityIdResolver biDiParentIdResolver(){
+        return new BiDirParentIdResolver();
     }
 
     @ConditionalOnMissingBean(name = "uniDirParentIdResolver")
     @Bean
-    public EntityIdResolver uniDirParentIdResolver(CrudServiceLocator crudServiceLocator){
-        return new UniDirParentIdResolver(crudServiceLocator);
+    public EntityIdResolver uniDirParentIdResolver(){
+        return new UniDirParentIdResolver();
     }
 
     @ConditionalOnMissingBean(name = "idResolvingDtoPostProcessor")

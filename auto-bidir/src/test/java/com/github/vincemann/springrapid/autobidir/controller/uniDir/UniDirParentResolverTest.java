@@ -1,6 +1,8 @@
 package com.github.vincemann.springrapid.autobidir.controller.uniDir;
 
 
+import com.github.vincemann.springrapid.autobidir.RapidRelationalDtoManager;
+import com.github.vincemann.springrapid.autobidir.RapidRelationalEntityManager;
 import com.github.vincemann.springrapid.core.service.CrudService;
 import com.github.vincemann.springrapid.core.service.exception.EntityNotFoundException;
 import com.github.vincemann.springrapid.core.service.locator.CrudServiceLocator;
@@ -72,7 +74,10 @@ public class UniDirParentResolverTest  {
                 .thenReturn(entityParentsChildCrudService);
         when(crudServiceLocator.find(UniDirEntityChildsParent.class))
                 .thenReturn(entityChildsParentCrudService);
-        this.uniDirParentIdResolver = new UniDirParentIdResolver(getCrudServiceLocator());
+        this.uniDirParentIdResolver = new UniDirParentIdResolver();
+        this.uniDirParentIdResolver.setCrudServiceLocator(getCrudServiceLocator());
+        this.uniDirParentIdResolver.setRelationalDtoManager(new RapidRelationalDtoManager());
+        this.uniDirParentIdResolver.setRelationalEntityManager(new RapidRelationalEntityManager());
     }
 
 
