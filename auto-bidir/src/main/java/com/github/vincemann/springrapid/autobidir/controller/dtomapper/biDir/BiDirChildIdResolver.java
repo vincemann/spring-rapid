@@ -1,0 +1,83 @@
+package com.github.vincemann.springrapid.autobidir.controller.dtomapper.biDir;
+
+
+import com.github.vincemann.springrapid.core.model.IdentifiableEntity;
+import com.github.vincemann.springrapid.core.service.exception.BadEntityException;
+import com.github.vincemann.springrapid.core.service.exception.EntityNotFoundException;
+import com.github.vincemann.springrapid.autobidir.controller.dtomapper.EntityIdResolver;
+import com.github.vincemann.springrapid.autobidir.controller.dtomapper.IdResolvingDtoPostProcessor;
+
+
+
+import com.github.vincemann.springrapid.autobidir.model.parent.annotation.BiDirParentEntity;
+import com.github.vincemann.springrapid.core.service.locator.CrudServiceLocator;
+import com.github.vincemann.springrapid.autobidir.dto.parent.annotation.BiDirParentId;
+
+import java.io.Serializable;
+import java.util.Collection;
+import java.util.Map;
+
+/**
+ * Used by {@link IdResolvingDtoPostProcessor}.
+ * Resolves {@link BiDirParentId} to corresponding {@link BiDirParentEntity}.
+ * Adds mapped BiDirChild to {@link BiDirParent#findSingleBiDirChildren()}'s  -> sets Backreference
+ *
+ * @see EntityIdResolver
+ */
+public class BiDirChildIdResolver extends EntityIdResolver<BiDirChild, BiDirChildDto> {
+
+    public BiDirChildIdResolver(CrudServiceLocator crudServiceLocator) {
+        super(crudServiceLocator, BiDirChildDto.class);
+    }
+
+    public void injectEntitiesFromDtoIds(BiDirChild mappedBiDirChild, BiDirChildDto biDirChildDto) throws BadEntityException, EntityNotFoundException {
+        Map<Class<BiDirParent>, Serializable> parentTypeIdMappings = biDirChildDto.findBiDirParentIds();
+        for (Map.Entry<Class<BiDirParent>, Serializable> entry : parentTypeIdMappings.entrySet()) {
+            Class entityClass = entry.getKey();
+            Object parent = findEntityFromService((Class<IdentifiableEntity>)entityClass, entry.getValue());
+            try {
+//                BiDirParent biDirParent = ((BiDirParent) parent);
+//                //set parent of mapped child
+//                mappedBiDirChild.linkBiDirParent(biDirParent);
+//                //backreference gets set in BiDirChildListener
+                resolveBiDirParentFromService(parent, mappedBiDirChild);
+            } catch (ClassCastException e) {
+                throw new IllegalArgumentException("Found Parent " + parent + " is not of Type BiDirParent");
+            }
+        }
+
+        //find and handle parent collections
+        Map<Class<BiDirParent>, Collection<Serializable>> parentTypeIdCollectionMappings = biDirChildDto.findBiDirParentIdCollections();
+        for (Map.Entry<Class<BiDirParent>, Collection<Serializable>> entry : parentTypeIdCollectionMappings.entrySet()) {
+            Collection<Serializable> idCollection = entry.getValue();
+            for (Serializable id : idCollection) {
+                Class entityClass = entry.getKey();
+                Object parent = findEntityFromService((Class<IdentifiableEntity>) entityClass, id);
+                resolveBiDirParentFromService(parent, mappedBiDirChild);
+            }
+        }
+    }
+
+    private void resolveBiDirParentFromService(Object parent, BiDirChild mappedBiDirChild) {
+        try {
+            BiDirParent biDirParent = ((BiDirParent) parent);
+            //set parent of mapped parent
+            mappedBiDirChild.linkBiDirParent(biDirParent);
+            //backreference gets set in BiDirParentListener
+        } catch (ClassCastException e) {
+            throw new IllegalArgumentException("Found Child " + parent + " is not of Type BiDirChild");
+        }
+    }
+
+    @Override
+    public void injectDtoIdsFromEntity(BiDirChildDto mappedDto, BiDirChild serviceEntity) {
+        for (BiDirParent biDirParent : serviceEntity.findSingleBiDirParents()) {
+            mappedDto.addBiDirParentId(biDirParent);
+        }
+        for (Collection<? extends BiDirParent> parentCollection : serviceEntity.findBiDirParentCollections().keySet()) {
+            for (BiDirParent biDirParent : parentCollection) {
+                mappedDto.addBiDirParentId(biDirParent);
+            }
+        }
+    }
+}

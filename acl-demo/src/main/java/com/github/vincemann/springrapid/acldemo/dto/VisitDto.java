@@ -5,9 +5,9 @@ import com.github.vincemann.springrapid.acldemo.model.Pet;
 import com.github.vincemann.springrapid.acldemo.model.Vet;
 import com.github.vincemann.springrapid.acldemo.model.Visit;
 import com.github.vincemann.springrapid.core.model.IdentifiableEntityImpl;
-import com.github.vincemann.springrapid.entityrelationship.dto.child.annotation.UniDirChildId;
-import com.github.vincemann.springrapid.entityrelationship.dto.child.annotation.UniDirChildIdCollection;
-import com.github.vincemann.springrapid.entityrelationship.dto.parent.UniDirParentDto;
+import com.github.vincemann.springrapid.autobidir.dto.child.annotation.UniDirChildId;
+import com.github.vincemann.springrapid.autobidir.dto.child.annotation.UniDirChildIdCollection;
+
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -23,7 +23,7 @@ import java.util.stream.Collectors;
 @Setter
 @NoArgsConstructor
 @ToString(callSuper = true)
-public class VisitDto extends IdentifiableEntityImpl<Long> implements UniDirParentDto {
+public class VisitDto extends IdentifiableEntityImpl<Long>  {
 
     @UniDirChildIdCollection(Pet.class)
     private Set<Long> petIds = new HashSet<>();

@@ -1,10 +1,9 @@
 package com.github.vincemann.springrapid.coredemo.dtos;
 
 import com.github.vincemann.springrapid.coredemo.model.Pet;
-import com.github.vincemann.springrapid.entityrelationship.dto.parent.annotation.BiDirParentId;
+import com.github.vincemann.springrapid.autobidir.dto.parent.annotation.BiDirParentId;
 import lombok.*;
 
-import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Size;
 
 @Getter

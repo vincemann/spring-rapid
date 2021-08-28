@@ -3,13 +3,11 @@ package com.github.vincemann.springrapid.coredemo.dtos;
 
 import com.github.vincemann.springrapid.coredemo.model.Specialty;
 import com.github.vincemann.springrapid.coredemo.model.Vet;
-import com.github.vincemann.springrapid.entityrelationship.dto.child.BiDirChildDto;
-import com.github.vincemann.springrapid.entityrelationship.dto.child.annotation.BiDirChildIdCollection;
-import com.github.vincemann.springrapid.entityrelationship.dto.parent.annotation.BiDirParentIdCollection;
+
+import com.github.vincemann.springrapid.autobidir.dto.parent.annotation.BiDirParentIdCollection;
 import lombok.*;
 import com.github.vincemann.springrapid.core.model.IdentifiableEntityImpl;
 
-import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Size;
 import java.util.HashSet;
 import java.util.Set;
@@ -18,7 +16,7 @@ import java.util.Set;
 @Setter
 @NoArgsConstructor
 @ToString(callSuper = true)
-public class SpecialtyDto extends IdentifiableEntityImpl<Long> implements BiDirChildDto {
+public class SpecialtyDto extends IdentifiableEntityImpl<Long>  {
 
     @Builder
     public SpecialtyDto(@Size(min = 2, max = 255) String description, Set<Long> vetIds) {

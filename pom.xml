@@ -36,7 +36,7 @@
         <module>auth-test</module>
         <module>auth-tests</module>
         <module>core</module>
-        <module>entity-relationship</module>
+        <module>auto-bidir</module>
         <module>acl</module>
         <module>core-test</module>
         <module>core-demo</module>

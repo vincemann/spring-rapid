@@ -1,7 +1,7 @@
 package com.github.vincemann.springrapid.coredemo.dtos.owner;
 
 import com.github.vincemann.springrapid.coredemo.model.ClinicCard;
-import com.github.vincemann.springrapid.entityrelationship.dto.child.annotation.BiDirChildId;
+import com.github.vincemann.springrapid.autobidir.dto.child.annotation.BiDirChildId;
 import lombok.*;
 
 import javax.validation.constraints.NotBlank;

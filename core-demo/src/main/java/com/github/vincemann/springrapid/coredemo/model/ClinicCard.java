@@ -1,9 +1,8 @@
 package com.github.vincemann.springrapid.coredemo.model;
 
 import com.github.vincemann.springrapid.core.model.IdentifiableEntityImpl;
-import com.github.vincemann.springrapid.entityrelationship.dto.parent.annotation.BiDirParentId;
-import com.github.vincemann.springrapid.entityrelationship.model.child.BiDirChild;
-import com.github.vincemann.springrapid.entityrelationship.model.parent.annotation.BiDirParentEntity;
+
+import com.github.vincemann.springrapid.autobidir.model.parent.annotation.BiDirParentEntity;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -19,7 +18,7 @@ import java.util.Date;
 @NoArgsConstructor
 @Entity
 @Table(name = "clinic_cards")
-public class ClinicCard extends IdentifiableEntityImpl<Long> implements BiDirChild {
+public class ClinicCard extends IdentifiableEntityImpl<Long> {
 
 
     @BiDirParentEntity

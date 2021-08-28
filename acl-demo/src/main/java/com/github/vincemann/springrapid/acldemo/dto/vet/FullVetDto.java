@@ -3,8 +3,8 @@ package com.github.vincemann.springrapid.acldemo.dto.vet;
 import com.github.vincemann.springrapid.acldemo.dto.PersonDto;
 import com.github.vincemann.springrapid.acldemo.model.Specialty;
 import com.github.vincemann.springrapid.acldemo.model.Vet;
-import com.github.vincemann.springrapid.entityrelationship.dto.child.annotation.BiDirChildIdCollection;
-import com.github.vincemann.springrapid.entityrelationship.dto.parent.BiDirParentDto;
+import com.github.vincemann.springrapid.autobidir.dto.child.annotation.BiDirChildIdCollection;
+
 import lombok.*;
 import org.springframework.validation.annotation.Validated;
 
@@ -17,7 +17,7 @@ import java.util.Set;
 @Setter
 @Validated
 @ToString(callSuper = true)
-public class FullVetDto extends PersonDto implements BiDirParentDto {
+public class FullVetDto extends PersonDto  {
 
 
     @Builder

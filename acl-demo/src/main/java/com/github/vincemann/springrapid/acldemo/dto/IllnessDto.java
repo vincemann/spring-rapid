@@ -1,9 +1,8 @@
 package com.github.vincemann.springrapid.acldemo.dto;
 
 import com.github.vincemann.springrapid.acldemo.model.Pet;
-import com.github.vincemann.springrapid.entityrelationship.dto.child.BiDirChildDto;
-import com.github.vincemann.springrapid.entityrelationship.dto.child.annotation.BiDirChildIdCollection;
-import com.github.vincemann.springrapid.entityrelationship.dto.parent.annotation.BiDirParentId;
+
+import com.github.vincemann.springrapid.autobidir.dto.child.annotation.BiDirChildIdCollection;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
@@ -16,7 +15,7 @@ import java.util.Set;
 @Setter
 @ToString(callSuper = true)
 @Builder
-public class IllnessDto implements BiDirChildDto {
+public class IllnessDto  {
 
     @Size(min = 2, max = 20)
     private String name;

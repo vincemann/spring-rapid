@@ -1,14 +1,9 @@
 package com.github.vincemann.springrapid.acldemo.dto.owner;
 
-import com.github.vincemann.springrapid.acldemo.model.Pet;
-import com.github.vincemann.springrapid.entityrelationship.dto.child.annotation.BiDirChildIdCollection;
-import com.github.vincemann.springrapid.entityrelationship.dto.parent.BiDirParentDto;
-import lombok.*;
-import org.springframework.lang.Nullable;
 
-import javax.validation.constraints.NotBlank;
+import lombok.*;
+
 import javax.validation.constraints.Size;
-import java.util.HashSet;
 import java.util.Set;
 
 @NoArgsConstructor

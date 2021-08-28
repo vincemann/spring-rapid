@@ -2,14 +2,10 @@ package com.github.vincemann.springrapid.coredemo.model;
 
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.github.vincemann.springrapid.coredemo.model.abs.Person;
-import com.github.vincemann.springrapid.core.model.IdentifiableEntityImpl;
-import com.github.vincemann.springrapid.entityrelationship.model.child.annotation.BiDirChildCollection;
-import com.github.vincemann.springrapid.entityrelationship.model.child.annotation.BiDirChildEntity;
-import com.github.vincemann.springrapid.entityrelationship.model.child.annotation.UniDirChildEntity;
-import com.github.vincemann.springrapid.entityrelationship.model.parent.BiDirParent;
-import com.sun.istack.NotNull;
+import com.github.vincemann.springrapid.autobidir.model.child.annotation.BiDirChildCollection;
+import com.github.vincemann.springrapid.autobidir.model.child.annotation.BiDirChildEntity;
+
 import lombok.*;
-import org.hibernate.annotations.Fetch;
 
 import javax.persistence.*;
 import java.util.Arrays;
@@ -23,7 +19,7 @@ import static javax.persistence.CascadeType.*;
 @NoArgsConstructor
 @Entity
 @Table(name = "owners")
-public class Owner extends Person implements BiDirParent {
+public class Owner extends Person {
 
 
     @Builder
