@@ -22,12 +22,6 @@ public class RapidBiDirEntityAdviceAutoConfiguration  {
     }
 
     @Bean
-    @ConditionalOnMissingBean(RelationalEntityManager.class)
-    public RelationalEntityManager relationalEntityManager(){
-        return new RapidRelationalEntityManager();
-    }
-
-    @Bean
     @ConditionalOnMissingBean(BiDirEntitySaveAdvice.class)
     public BiDirEntitySaveAdvice biDirEntityPersistAdvice(CrudServiceLocator crudServiceLocator,RelationalEntityManager relationalEntityManager){
         return new BiDirEntitySaveAdvice(crudServiceLocator,relationalEntityManager);

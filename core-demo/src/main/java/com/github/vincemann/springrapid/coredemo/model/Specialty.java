@@ -17,7 +17,7 @@ import java.util.Set;
 @NoArgsConstructor
 @Entity
 public class Specialty extends IdentifiableEntityImpl<Long>
-         {
+{
 
     @Builder
     public Specialty(String description, Set<Vet> vets) {

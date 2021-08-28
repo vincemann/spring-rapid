@@ -54,7 +54,7 @@ public class RapidRelationalDtoManager implements RelationalDtoManager {
                 }
             }
 
-        }, field -> IdentifiableEntity.class.isAssignableFrom(field.getType()));
+        }/*, field -> IdentifiableEntity.class.isAssignableFrom(field.getType())*/);
         return relationalEntityTypes;
     }
 

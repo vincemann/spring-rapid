@@ -58,7 +58,8 @@ public class RapidRelationalEntityManager implements RelationalEntityManager{
                 }
             }
 
-        }, field -> IdentifiableEntity.class.isAssignableFrom(field.getType()));
+            // dont apply filter bc we also need to check for sets of IdentifiableEntities
+        }/*, field -> IdentifiableEntity.class.isAssignableFrom(field.getType())*/);
         return relationalEntityTypes;
     }
 
@@ -304,7 +305,7 @@ public class RapidRelationalEntityManager implements RelationalEntityManager{
                 //throw new IllegalArgumentException("Null idCollection found in BiDirParent "+ this + " for EntityCollectionField with name: " + field.getName());
                 log.warn("Auto-generating Collection for null valued BiDirEntityCollection Field: " + field);
                 Collection emptyCollection = CollectionUtils.createEmptyCollection(field);
-                field.set(this, emptyCollection);
+                field.set(entity, emptyCollection);
                 entityCollection = emptyCollection;
             }
             Class<C> entityType = (Class<C>) EntityAnnotationUtils.getEntityType(field.getAnnotation(entityAnnotationClass));
