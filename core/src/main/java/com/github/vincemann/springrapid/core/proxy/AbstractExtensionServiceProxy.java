@@ -70,6 +70,15 @@ public abstract class AbstractExtensionServiceProxy
         resetLearnedIgnoredMethods();
     }
 
+    public void addExtension(AbstractServiceExtension<?, ? super P> extension, int index) {
+        this.extensions.add(index,extension);
+        //extension expects chainController<T>, gets ChainController<S>, T is always superclass of S -> so this is safe
+        extension.setChain(this);
+        //docs state that this must be castable to P
+        extension.setProxyController(provideProxyController());
+        resetLearnedIgnoredMethods();
+    }
+
 
     protected St getState() {
         return getThead_state_map().get(Thread.currentThread());

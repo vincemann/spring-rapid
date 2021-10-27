@@ -1,6 +1,7 @@
 package com.github.vincemann.springrapid.auth.config;
 
 import com.github.vincemann.springrapid.acl.config.RapidAclExtensionsAutoConfiguration;
+import com.github.vincemann.springrapid.acl.service.AclPermissionService;
 import com.github.vincemann.springrapid.acl.service.extensions.security.CrudAclChecksSecurityExtension;
 import com.github.vincemann.springrapid.auth.service.UserService;
 import com.github.vincemann.springrapid.auth.service.extension.AclUserExtension;
@@ -33,7 +34,8 @@ public class RapidUserServiceSecurityAutoConfiguration {
 
 
     @Autowired
-    RapidPermissionService permissionService;
+    AclPermissionService permissionService;
+
     @Autowired
     MutableAclService mutableAclService;
 

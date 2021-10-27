@@ -23,6 +23,7 @@ public class AclServiceExtension
         extends BasicServiceExtension<CrudService>
             implements CrudServiceExtension<CrudService> {
 
+
     @Override
     public IdentifiableEntity save(IdentifiableEntity entity) throws BadEntityException {
         log.debug("creating acl list for Entity with class: " + getEntityClass());

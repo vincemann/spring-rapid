@@ -23,9 +23,7 @@ public class SmtpMailSender implements MailSender<MailData> {
 	private final JavaMailSender javaMailSender;
 	
 	public SmtpMailSender(JavaMailSender javaMailSender) {
-		
 		this.javaMailSender = javaMailSender;
-
 	}
 
 

@@ -1,6 +1,7 @@
 package com.github.vincemann.springrapid.coredemo.config;
 
 import com.github.vincemann.springrapid.core.proxy.ServiceExtensionProxyBuilder;
+import com.github.vincemann.springrapid.core.slicing.ServiceConfig;
 import com.github.vincemann.springrapid.coredemo.service.OwnerService;
 import com.github.vincemann.springrapid.coredemo.service.PetService;
 import com.github.vincemann.springrapid.coredemo.service.Root;
@@ -28,12 +29,12 @@ import org.springframework.context.annotation.Primary;
  * @Root
  * private IService service;
  */
-@com.github.vincemann.springrapid.core.slicing.ServiceConfig
-public class ServiceConfig {
+@ServiceConfig
+public class MyServiceConfig {
 
     @Primary
     @Bean
-    public PetService extendedPetService(@Root PetService petService, AclServiceExtension aclServiceExtension) {
+    public PetService petService(@Root PetService petService, AclServiceExtension aclServiceExtension) {
         return new ServiceExtensionProxyBuilder<>(petService)
                 .addExtensions(aclServiceExtension)
                 .build();

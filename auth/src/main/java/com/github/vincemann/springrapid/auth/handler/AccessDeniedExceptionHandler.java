@@ -14,9 +14,7 @@ import com.github.vincemann.springrapid.exceptionsapi.AbstractExceptionHandler;
 public class AccessDeniedExceptionHandler extends AbstractExceptionHandler<AccessDeniedException> {
 	
 	public AccessDeniedExceptionHandler() {
-		
 		super(AccessDeniedException.class);
-
 	}
 	
 	@Override

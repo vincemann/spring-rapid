@@ -38,6 +38,8 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.util.UriComponentsBuilder;
 
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
 import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
@@ -70,6 +72,8 @@ public abstract class AbstractUserService
     private IdConverter<ID> idIdConverter;
     private PasswordValidator passwordValidator;
 
+    @PersistenceContext
+    private EntityManager entityManager;
     /**
      * Creates a new user object. Must be overridden in the
      * subclass, like this:
@@ -287,6 +291,7 @@ public abstract class AbstractUserService
     @Override
     public U update(U update, Boolean full) throws EntityNotFoundException, BadEntityException {
         Optional<U> old = findById(update.getId());
+        entityManager.merge(old.get());
         VerifyEntity.isPresent(old, "Entity to update with id: " + update.getId() + " not found");
         //update roles works in transaction -> changes are applied on the fly
         updateRoles(old.get(), update);

@@ -23,7 +23,7 @@ public class RapidDefaultAclExtensionsAutoConfiguration {
     ApplicationContext context;
 
     @Autowired
-    public void addDefaultSecurityExtension(AclProperties aclProperties,  @Acl List<CrudService> aclProxies) {
+    public void addDefaultAclExtension(AclProperties aclProperties, @Acl List<CrudService> aclProxies) {
 //        AutowireCapableBeanFactory beanFactory = context.getAutowireCapableBeanFactory();
 //        Qualifier qualifier = AnnotationUtils.findAnnotation(Acl.class, Qualifier.class);
 //        Collection<CrudService> aclProxies = BeanFactoryAnnotationUtils.qualifiedBeansOfType((ListableBeanFactory) beanFactory, CrudService.class, qualifier.value()).values();
