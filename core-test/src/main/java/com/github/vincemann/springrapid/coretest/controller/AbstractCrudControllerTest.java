@@ -25,7 +25,6 @@ import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.RequestBuilder;
 import org.springframework.test.web.servlet.ResultMatcher;
 import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
-import org.springframework.test.web.servlet.result.StatusResultMatchers;
 import org.springframework.test.web.servlet.setup.DefaultMockMvcBuilder;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.util.ReflectionUtils;
@@ -71,6 +70,12 @@ public abstract class AbstractCrudControllerTest
     // with inheritence @AutoConfigureMockMvc ect. does not make this possible
     protected T testTemplate;
 
+//    @Override
+//    protected DefaultMockMvcBuilder createMvcBuilder() {
+//        DefaultMockMvcBuilder mvcBuilder = super.createMvcBuilder();
+//        mvcBuilder.apply(SecurityMockMvcConfigurers.springSecurity());
+//        return mvcBuilder;
+//    }
 
     @Override
     public void afterPropertiesSet() throws Exception {
@@ -78,11 +83,11 @@ public abstract class AbstractCrudControllerTest
         DefaultMockMvcBuilder mvcBuilder = createMvcBuilder();
         this.contentType = MediaType.valueOf(controller.getCoreProperties().getController().getMediaType());
         mvc = mvcBuilder.build();
-        initTestTemplatesMvc();
+        setTestTemplatesMvc();
     }
 
 
-    protected void initTestTemplatesMvc(){
+    protected void setTestTemplatesMvc(){
         ReflectionUtils.doWithFields(this.getClass(),field -> {
             Class<?> fieldType = field.getType();
             if (AbstractControllerTestTemplate.class.isAssignableFrom(fieldType)){

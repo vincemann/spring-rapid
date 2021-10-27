@@ -14,7 +14,7 @@ public class LoginTest extends AbstractRapidAuthIntegrationTest {
 	
 	@Test
 	public void canLogin() throws Exception {
-		String token = mvc.perform(testTemplate.login(USER_EMAIL, USER_PASSWORD))
+		String token = mvc.perform(testTemplate.login_builder(USER_EMAIL, USER_PASSWORD))
 				.andExpect(status().is(200))
 				.andExpect(header().string(HttpHeaders.AUTHORIZATION, containsString(".")))
 				.andExpect(jsonPath("$.id").doesNotExist())

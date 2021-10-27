@@ -17,7 +17,6 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.RequestBuilder;
-import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
 
 import java.io.Serializable;
@@ -81,7 +80,14 @@ public abstract class AbstractUserControllerTestTemplate<C extends AbstractUserC
 //        return login(new LoginDto(email,password));
 //    }
 
-    public RequestBuilder login(String email, String password) throws Exception {
+    public String login(AbstractUser user) throws Exception {
+        return mvc.perform(login_builder(user.getEmail(),user.getPassword()))
+                .andReturn()
+                .getResponse()
+                .getHeader(HttpHeaders.AUTHORIZATION);
+    }
+
+    public RequestBuilder login_builder(String email, String password) throws Exception {
         return login_raw(email, password);
     }
 

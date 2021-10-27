@@ -11,7 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
  * Used primarily to add more plugins.
  *
  */
-public class ServiceProxyConfigurer<S extends CrudService> implements InitializingBean {
+public abstract class ServiceProxyConfigurer<S extends CrudService> implements InitializingBean {
 
     S service;
 
@@ -20,9 +20,7 @@ public class ServiceProxyConfigurer<S extends CrudService> implements Initializi
         configureProxy((ProxyUtils.getExtensionProxy(service)));
     }
 
-    public void configureProxy(ServiceExtensionProxy proxy){
-
-    }
+    public abstract void configureProxy(ServiceExtensionProxy proxy);
 
     /** you can overwrite this method to autowire diff version of service
        with i.E.:

@@ -51,7 +51,6 @@ public class SmtpMailSender implements MailSender<MailData> {
 			// continue using helper object for more functionalities like adding attachments, etc.  
 			
 		} catch (MessagingException e) {
-
 			throw new RuntimeException(e);
 		}
 		

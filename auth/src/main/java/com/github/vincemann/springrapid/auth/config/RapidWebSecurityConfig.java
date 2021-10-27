@@ -77,6 +77,16 @@ public class RapidWebSecurityConfig extends WebSecurityConfigurerAdapter {
 		http
 				.formLogin() // form login
 				.loginPage(loginPage())
+				// make sure to enable Spring Security when testing with mvc
+				/*
+
+				@Override
+				protected DefaultMockMvcBuilder createMvcBuilder() {
+					DefaultMockMvcBuilder mvcBuilder = super.createMvcBuilder();
+					mvcBuilder.apply(SecurityMockMvcConfigurers.springSecurity());
+					return mvcBuilder;
+				}
+				 */
 
 				/******************************************
 				 * Setting a successUrl would redirect the user there. Instead,

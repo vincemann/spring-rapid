@@ -21,7 +21,7 @@ public abstract class AbstractUserIntegrationControllerTest
 
 
     public ResultActions login(String email, String password) throws Exception {
-        return getTestTemplate().getMvc().perform(getTestTemplate().login(email,password));
+        return getTestTemplate().getMvc().perform(getTestTemplate().login_builder(email,password));
     }
 
     // dont use, bc when user is saved hash will be send
