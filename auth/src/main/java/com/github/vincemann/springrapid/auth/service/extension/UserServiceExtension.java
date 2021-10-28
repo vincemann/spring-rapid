@@ -10,6 +10,8 @@ import com.github.vincemann.springrapid.auth.service.UserService;
 import com.github.vincemann.springrapid.core.proxy.CrudServiceExtension;
 import com.github.vincemann.springrapid.core.service.exception.BadEntityException;
 import com.github.vincemann.springrapid.core.service.exception.EntityNotFoundException;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.io.Serializable;
 import java.util.Map;

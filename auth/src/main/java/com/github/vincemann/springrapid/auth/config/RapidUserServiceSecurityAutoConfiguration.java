@@ -47,7 +47,7 @@ public class RapidUserServiceSecurityAutoConfiguration {
         return new UserServiceSecurityExtension();
     }
 
-    @Bean
+    @Bean("aclUserServiceExtension")
     @ConditionalOnMissingBean(name = "aclUserServiceExtension")
     @Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
     public AclUserExtension aclUserServiceExtension() {

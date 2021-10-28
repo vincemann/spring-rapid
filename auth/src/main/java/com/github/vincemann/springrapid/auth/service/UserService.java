@@ -12,6 +12,8 @@ import com.github.vincemann.springrapid.core.service.CrudService;
 import com.github.vincemann.springrapid.core.service.exception.BadEntityException;
 import com.github.vincemann.springrapid.core.service.exception.EntityNotFoundException;
 import com.github.vincemann.springrapid.core.slicing.ServiceComponent;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.annotation.Validated;
 
 import javax.validation.constraints.NotBlank;
@@ -21,7 +23,6 @@ import java.util.Optional;
 
 @Validated
 @ServiceComponent
-//@LogException
 public interface UserService<U extends AbstractUser<ID>, ID extends Serializable>
         extends AopLoggable, CrudService<U,ID>
 {

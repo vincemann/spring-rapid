@@ -16,7 +16,6 @@ import java.io.Serializable;
 import java.util.Map;
 import java.util.Optional;
 
-@Transactional
 public interface GenericUserServiceExtension<S extends UserService<U,Id>,U extends AbstractUser<Id>, Id extends Serializable>
         extends UserService<U,Id>, GenericCrudServiceExtension<S,U,Id>
 {

@@ -2,6 +2,7 @@ package com.github.vincemann.springrapid.acldemo.service;
 
 import com.github.vincemann.springrapid.acldemo.model.User;
 import com.github.vincemann.springrapid.auth.service.UserService;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Optional;
 

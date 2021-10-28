@@ -7,9 +7,11 @@ import com.github.vincemann.springrapid.authdemo.model.User;
 import com.github.vincemann.springrapid.authdemo.repositories.UserRepository;
 import com.github.vincemann.springrapid.auth.service.AbstractUserService;
 import com.github.vincemann.springrapid.core.service.exception.BadEntityException;
+import org.springframework.transaction.annotation.Transactional;
 
 //@ServiceComponent
 //@Primary
+@Transactional
 public class MyUserService extends AbstractUserService<User, Long, UserRepository> {
 
 	@Override

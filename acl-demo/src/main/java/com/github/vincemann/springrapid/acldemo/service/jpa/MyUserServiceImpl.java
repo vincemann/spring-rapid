@@ -9,6 +9,7 @@ import com.github.vincemann.springrapid.core.service.exception.BadEntityExceptio
 import com.github.vincemann.springrapid.core.slicing.ServiceComponent;
 import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Optional;
 import java.util.UUID;
@@ -17,6 +18,7 @@ import java.util.UUID;
 @ServiceComponent
 @Service
 @Primary
+@Transactional
 public class MyUserServiceImpl extends AbstractUserService<User, Long, UserRepository> implements MyUserService {
 
 	@Override
