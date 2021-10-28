@@ -110,6 +110,7 @@ public abstract class AbstractRapidAuthIntegrationTest
 
     @BeforeEach
     protected void setup() throws Exception {
+        testAdapter.beforeEach();
         System.err.println("creating test users");
         createTestUsers();
         System.err.println("test users created");
@@ -204,7 +205,7 @@ public abstract class AbstractRapidAuthIntegrationTest
     }
 
     @AfterEach
-    protected void tearDown() throws SQLException {
+    protected void tearDown() throws Exception {
         System.err.println("TEST ENDS HERE -----------------------------------------------------------------------------------------------------------------");
         System.err.println("clearing test data");
         tokens.clear();
@@ -214,6 +215,7 @@ public abstract class AbstractRapidAuthIntegrationTest
         System.err.println("test data cleared");
 
         Mockito.reset(unproxy(mailSender));
+        testAdapter.afterEach();
 //        https://github.com/spring-projects/spring-boot/issues/7374  -> @SpyBean beans are automatically reset
 
 //        Mockito.reset(properties);
