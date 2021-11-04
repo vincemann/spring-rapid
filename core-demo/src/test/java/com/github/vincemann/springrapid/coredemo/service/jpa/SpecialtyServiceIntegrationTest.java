@@ -12,7 +12,7 @@ import org.junit.jupiter.api.Test;
 import java.lang.reflect.InvocationTargetException;
 import java.util.HashSet;
 
-import static com.github.vincemann.springrapid.coretest.service.ExceptionMatchers.noException;
+
 import static com.github.vincemann.springrapid.coretest.service.ExistenceMatchers.notPresentInDatabase;
 import static com.github.vincemann.springrapid.coretest.service.PropertyMatchers.propertyAssert;
 import static com.github.vincemann.springrapid.coretest.service.request.CrudServiceRequestBuilders.*;
@@ -72,7 +72,7 @@ public class SpecialtyServiceIntegrationTest
 
         // remove dentism
         test(deleteById(savedDentism.getId()))
-                .andExpect(noException())
+                
                 .andExpect(notPresentInDatabase(savedDentism.getId()));
 
 

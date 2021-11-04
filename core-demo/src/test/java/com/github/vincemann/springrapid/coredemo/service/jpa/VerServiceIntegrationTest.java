@@ -12,7 +12,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.util.HashSet;
 
 import static com.github.vincemann.ezcompare.Comparator.compare;
-import static com.github.vincemann.springrapid.coretest.service.ExceptionMatchers.noException;
+
 import static com.github.vincemann.springrapid.coretest.service.ExistenceMatchers.notPresentInDatabase;
 import static com.github.vincemann.springrapid.coretest.service.PropertyMatchers.propertyAssert;
 import static com.github.vincemann.springrapid.coretest.service.request.CrudServiceRequestBuilders.*;
@@ -203,7 +203,7 @@ public class VerServiceIntegrationTest extends ManyToManyServiceIntegrationTest<
 
         Vet savedMeier = getTestedService().save(meier);
         test(deleteById(savedMeier.getId()))
-                .andExpect(noException())
+                
                 .andExpect(notPresentInDatabase(savedMeier.getId()));
 
         assertSpecialtyHasVets(GASTRO);

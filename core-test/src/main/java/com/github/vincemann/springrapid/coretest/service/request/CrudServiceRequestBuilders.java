@@ -14,35 +14,58 @@ import java.util.List;
  */
 public class CrudServiceRequestBuilders {
 
+    public static ServiceRequestBuilder save(IdentifiableEntity entityToSave,Boolean exceptionWanted) {
+        return createBuilder("save", Lists.newArrayList(entityToSave),exceptionWanted, IdentifiableEntity.class);
+    }
+
     public static ServiceRequestBuilder save(IdentifiableEntity entityToSave) {
-        return createBuilder("save", Lists.newArrayList(entityToSave), IdentifiableEntity.class);
+        return save(entityToSave,false);
+    }
+
+    public static ServiceRequestBuilder update(IdentifiableEntity updateEntity,Boolean exceptionWanted) {
+        return createBuilder("update", Lists.newArrayList(updateEntity, true),exceptionWanted, IdentifiableEntity.class, Boolean.class);
     }
 
     public static ServiceRequestBuilder update(IdentifiableEntity updateEntity) {
-        return createBuilder("update", Lists.newArrayList(updateEntity, true), IdentifiableEntity.class, Boolean.class);
+        return update(updateEntity,false);
+    }
+
+    public static ServiceRequestBuilder partialUpdate(IdentifiableEntity updateEntity,Boolean exceptionWanted) {
+        return createBuilder("update", Lists.newArrayList(updateEntity, false),exceptionWanted, IdentifiableEntity.class, Boolean.class);
     }
 
     public static ServiceRequestBuilder partialUpdate(IdentifiableEntity updateEntity) {
-        return createBuilder("update", Lists.newArrayList(updateEntity, false), IdentifiableEntity.class, Boolean.class);
+        return partialUpdate(updateEntity,false);
+    }
+
+
+    public static ServiceRequestBuilder deleteById(Serializable id,Boolean exceptionWanted) {
+        return createBuilder("deleteById", Lists.newArrayList(id),exceptionWanted, Serializable.class);
     }
 
     public static ServiceRequestBuilder deleteById(Serializable id) {
-        return createBuilder("deleteById", Lists.newArrayList(id), Serializable.class);
+        return deleteById(id,false);
+    }
+
+    public static ServiceRequestBuilder findById(Serializable id,Boolean exceptionWanted) {
+        return createBuilder("findById", Lists.newArrayList(id),exceptionWanted, Serializable.class);
     }
 
     public static ServiceRequestBuilder findById(Serializable id) {
-        return createBuilder("findById", Lists.newArrayList(id), Serializable.class);
+        return findById(id,false);
     }
 
-    protected static ServiceRequestBuilder createBuilder(String methodName, List<Object> args, Class... types) {
+    protected static ServiceRequestBuilder createBuilder(String methodName, List<Object> args,Boolean exceptionWanted,  Class... types) {
         return serviceUnderTest -> {
             Method method = MethodUtils.getMatchingMethod(serviceUnderTest.getClass(), methodName, types);
             if (method == null) {
                 throw new IllegalArgumentException("Cant find method: " + methodName + " in service: " + serviceUnderTest);
             }
+//            method.get
             return ServiceRequest.builder()
                     .args(args)
                     .serviceMethod(method)
+                    .exceptionWanted(exceptionWanted)
                     .build();
         };
     }

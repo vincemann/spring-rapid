@@ -16,10 +16,12 @@ public class ServiceRequest {
     private CrudService service;
     private Method serviceMethod;
     private List<Object> args;
+    private Boolean exceptionWanted;
 
     @Builder
-    public ServiceRequest(Method serviceMethod, List<Object> args) {
+    public ServiceRequest(Method serviceMethod, List<Object> args,Boolean exceptionWanted) {
         this.serviceMethod = serviceMethod;
         this.args = args;
+        this.exceptionWanted = exceptionWanted;
     }
 }

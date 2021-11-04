@@ -60,7 +60,7 @@ public class ServiceTestTemplate
                 .build();
         entityManager.flush();
         if (serviceResult.getRaisedException() != null) {
-            log.warn("Service threw exception, this might have been wanted. Stacktrace: ");
+            log.warn("Service threw exception, this is wanted. Stacktrace: ");
             serviceResult.getRaisedException().printStackTrace();
         }
 
@@ -124,9 +124,13 @@ public class ServiceTestTemplate
                     .build();
         }
         catch (Exception e){
-            return ServiceResult.builder()
-                    .raisedException(e)
-                    .build();
+            if (serviceRequest.getExceptionWanted()){
+                return ServiceResult.builder()
+                        .raisedException(e)
+                        .build();
+            }else {
+                throw e;
+            }
         }
     }
 

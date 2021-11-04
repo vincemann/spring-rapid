@@ -28,13 +28,13 @@ public class ExceptionMatchers {
         };
     }
 
-    public static ContextAwareServiceResultMatcher noException(){
-        return (testContext) -> {
-            Exception raisedException = testContext.getServiceResult().getRaisedException();
-            if(raisedException!=null){
-                throw new AssertionError("Exception was thrown: ",raisedException);
-            }
-        };
-    }
+//    public static ContextAwareServiceResultMatcher noException(){
+//        return (testContext) -> {
+//            Exception raisedException = testContext.getServiceResult().getRaisedException();
+//            if(raisedException!=null){
+//                throw new AssertionError("Exception was thrown: ",raisedException);
+//            }
+//        };
+//    }
 
 }

@@ -17,7 +17,6 @@ import java.util.Optional;
 
 import static com.github.vincemann.ezcompare.Comparator.compare;
 import static com.github.vincemann.springrapid.coredemo.service.jpa.JpaOwnerService.OWNER_OF_THE_YEARS_NAME;
-import static com.github.vincemann.springrapid.coretest.service.ExceptionMatchers.noException;
 import static com.github.vincemann.springrapid.coretest.service.ExistenceMatchers.notPresentInDatabase;
 import static com.github.vincemann.springrapid.coretest.service.PropertyMatchers.propertyAssert;
 import static com.github.vincemann.springrapid.coretest.service.request.CrudServiceRequestBuilders.*;
@@ -431,7 +430,6 @@ class OwnerServiceIntegrationTest
     public void canDeleteOwner() throws BadEntityException {
         Owner savedOwner = getTestedService().save(kahn);
         test(deleteById(savedOwner.getId()))
-                .andExpect(noException())
                 .andExpect(notPresentInDatabase(savedOwner.getId()));
     }
 
@@ -441,7 +439,6 @@ class OwnerServiceIntegrationTest
         Owner savedOwner = getTestedService().save(kahn);
 
         test(deleteById(savedOwner.getId()))
-                .andExpect(noException())
                 .andExpect(notPresentInDatabase(savedOwner.getId()));
 
         // verify bidir rel management
