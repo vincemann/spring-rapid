@@ -35,7 +35,7 @@ public abstract class AbstractExtensionServiceProxy
         implements ChainController, InvocationHandler, ProxyController {
 
     private final Map<MethodIdentifier, Method> methods = new HashMap<>();
-    private List<String> ignoredMethodNames = Lists.newArrayList("getEntityClass", "getRepository", "toString", "equals", "hashCode", "getClass", "clone", "notify", "notifyAll", "wait", "finalize");
+    private List<String> ignoredMethodNames = Lists.newArrayList("getEntityClass", "getRepository", "toString", "equals", "hashCode", "getClass", "clone", "notify", "notifyAll", "wait", "finalize","setBeanName","getBeanName","getTargetClass");
     private List<MethodIdentifier> learnedIgnoredMethods = new ArrayList<>();
     private S proxied;
     private List<AbstractServiceExtension<?, ? super P>> extensions = new ArrayList<>();
@@ -108,9 +108,9 @@ public abstract class AbstractExtensionServiceProxy
             return invokeProxied(method, args);
         } else {
             //trying to figure out target class -> dont even ask extensions, go straight to final proxied
-            if (isGetTargetClassMethod(method)){
-                return invokeProxied(method, args);
-            }
+//            if (isGetTargetClassMethod(method)){
+//                return invokeProxied(method, args);
+//            }
             try {
                 if (args == null) {
                     args = new Object[]{};
@@ -119,7 +119,8 @@ public abstract class AbstractExtensionServiceProxy
                 List<ExtensionHandle> extensionChain = createExtensionChain(method);
                 if (!extensionChain.isEmpty()) {
                     setState(createState(o, method, args));
-                    return extensionChain.get(0).invoke(args);
+                    ExtensionHandle chainHandle = extensionChain.get(0);
+                    return chainHandle.invoke(args);
                 } else {
                     learnedIgnoredMethods.add(new MethodIdentifier(method));
                     return invokeProxied(method, args);
@@ -130,13 +131,13 @@ public abstract class AbstractExtensionServiceProxy
         }
     }
 
-    protected boolean isGetTargetClassMethod(Method method){
-        if (method.getName().equals("getTargetClass") && method.getParameterTypes().length==0){
-            return true;
-        }else {
-            return false;
-        }
-    }
+//    protected boolean isGetTargetClassMethod(Method method){
+//        if (method.getName().equals("getTargetClass") && method.getParameterTypes().length==0){
+//            return true;
+//        }else {
+//            return false;
+//        }
+//    }
 
     protected void resetState(Object o, Method method, Object[] args) {
         setState(createState(o, method, args));

@@ -19,14 +19,12 @@ import java.lang.reflect.InvocationTargetException;
  * Use together with {@link CrudServiceIntegrationTest}.
  * Template similar to {@link org.springframework.test.web.servlet.MockMvc}, but build for testing of service layer ({@link CrudService}).
  * With this template you can build the test, that shall be executed against a {@link CrudService} in a fluent-API like manner.
- *
+ * <p>
  * Creates a stateful {@link this#getTestContext()} that can be queried after test is {@link this#perform(ServiceRequestBuilder)}ed.
  * Other test-support framework-components make use of this context and can therefore only be used after a service test is performed.
- *
  */
 @Slf4j
-public class ServiceTestTemplate
-{
+public class ServiceTestTemplate {
     private EntityManager entityManager;
     private CrudService serviceUnderTest;
     private CrudRepository repository;
@@ -48,7 +46,7 @@ public class ServiceTestTemplate
     }
 
 
-    public ServiceResultActions perform(ServiceRequestBuilder serviceRequestBuilder){
+    public ServiceResultActions perform(ServiceRequestBuilder serviceRequestBuilder) throws Exception {
         ServiceRequest serviceRequest = serviceRequestBuilder.create(serviceUnderTest);
         serviceRequest.setService(serviceUnderTest);
         ServiceResult serviceResult = execute(serviceRequest);
@@ -97,11 +95,11 @@ public class ServiceTestTemplate
         };
     }
 
-    protected void reset(){
-        this.testContext=null;
+    protected void reset() {
+        this.testContext = null;
     }
 
-    private ServiceResult execute(ServiceRequest serviceRequest) {
+    private ServiceResult execute(ServiceRequest serviceRequest) throws Exception {
         try {
             Object result = serviceRequest.getServiceMethod().invoke(
 //                    AopTestUtils.getUltimateTargetObject(serviceUnderTest),
@@ -113,24 +111,40 @@ public class ServiceTestTemplate
                     .build();
         } catch (IllegalAccessException e) {
             throw new RuntimeException(e);
-        }
-        catch (InvocationTargetException e){
+        } catch (InvocationTargetException e) {
             Throwable cause = e;
             do {
                 cause = cause.getCause();
-            }while (cause instanceof InvocationTargetException);
-            return ServiceResult.builder()
-                    .raisedException(((Exception) cause))
-                    .build();
+            } while (cause instanceof InvocationTargetException);
+//            return ServiceResult.builder()
+//                    .raisedException(((Exception) cause))
+//                    .build();
+            return retOrThrow(serviceRequest,e);
+        } catch (Exception e) {
+//            if (serviceRequest.getExceptionWanted() == null) {
+//                throw new IllegalArgumentException("exception wanted must not be null");
+//            }
+//            if (serviceRequest.getExceptionWanted()) {
+//                return ServiceResult.builder()
+//                        .raisedException(e)
+//                        .build();
+//            } else {
+//                throw e;
+//            }
+            return retOrThrow(serviceRequest,e);
         }
-        catch (Exception e){
-            if (serviceRequest.getExceptionWanted()){
-                return ServiceResult.builder()
-                        .raisedException(e)
-                        .build();
-            }else {
-                throw e;
-            }
+    }
+
+    private ServiceResult retOrThrow(ServiceRequest serviceRequest, Exception e) throws Exception {
+        if (serviceRequest.getExceptionWanted() == null) {
+            throw new IllegalArgumentException("exception wanted must not be null");
+        }
+        if (serviceRequest.getExceptionWanted()) {
+            return ServiceResult.builder()
+                    .raisedException(e)
+                    .build();
+        } else {
+            throw e;
         }
     }
 

@@ -88,7 +88,7 @@ public abstract class CrudServiceIntegrationTest
         this.crudServiceLocator = crudServiceLocator;
     }
 
-    public ServiceResultActions test(ServiceRequestBuilder serviceRequestBuilder) {
+    public ServiceResultActions test(ServiceRequestBuilder serviceRequestBuilder) throws Exception {
         return testTemplate.perform(serviceRequestBuilder);
     }
 

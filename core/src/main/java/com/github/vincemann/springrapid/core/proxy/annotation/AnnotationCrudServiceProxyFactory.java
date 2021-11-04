@@ -93,11 +93,11 @@ public class AnnotationCrudServiceProxyFactory implements BeanPostProcessor, App
                 // the last created proxy from the chain is the most outer proxy -> entry point for proxy chain -> gets autowired
                 CrudService proxyBean = lastProxiedBean;
 
-                log.trace("creating proxyBean : " + proxyBean);
-                log.trace("Registering beanDef of proxyBean first: " + proxyBeanDef);
+                log.debug("creating proxyBean : " + proxyBean);
+                log.debug("Registering beanDef of proxyBean first: " + proxyBeanDef);
                 beanFactory.registerBeanDefinition(proxyBeanName, proxyBeanDef);
                 beanFactory.registerSingleton(proxyBeanName, proxyBean);
-                log.trace("registered proxyBean.");
+                log.debug("registered proxyBean: " + proxyBeanName);
             }
         }
         return bean;
@@ -134,7 +134,10 @@ public class AnnotationCrudServiceProxyFactory implements BeanPostProcessor, App
             } else {
                 StringBuilder sb = new StringBuilder();
                 Arrays.stream(qualifiers)
-                        .forEach(type -> sb.append(type.getSimpleName()));
+                        .forEach(type -> {
+                            sb.append(type.getSimpleName());
+                            sb.setCharAt(0, Character.toLowerCase(sb.charAt(0)));
+                        });
                 prefix = sb.toString();
             }
             return prefix + beanType.getSimpleName();
