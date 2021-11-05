@@ -112,14 +112,14 @@ public class ServiceTestTemplate {
         } catch (IllegalAccessException e) {
             throw new RuntimeException(e);
         } catch (InvocationTargetException e) {
-            Throwable cause = e;
+            Exception cause = e;
             do {
-                cause = cause.getCause();
+                cause = (Exception) cause.getCause();
             } while (cause instanceof InvocationTargetException);
 //            return ServiceResult.builder()
 //                    .raisedException(((Exception) cause))
 //                    .build();
-            return retOrThrow(serviceRequest,e);
+            return returnOrThrow(serviceRequest,cause);
         } catch (Exception e) {
 //            if (serviceRequest.getExceptionWanted() == null) {
 //                throw new IllegalArgumentException("exception wanted must not be null");
@@ -131,11 +131,11 @@ public class ServiceTestTemplate {
 //            } else {
 //                throw e;
 //            }
-            return retOrThrow(serviceRequest,e);
+            return returnOrThrow(serviceRequest,e);
         }
     }
 
-    private ServiceResult retOrThrow(ServiceRequest serviceRequest, Exception e) throws Exception {
+    private ServiceResult returnOrThrow(ServiceRequest serviceRequest, Exception e) throws Exception {
         if (serviceRequest.getExceptionWanted() == null) {
             throw new IllegalArgumentException("exception wanted must not be null");
         }
