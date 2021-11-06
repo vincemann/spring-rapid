@@ -12,6 +12,8 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.EnableAspectJAutoProxy;
 
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
 import java.util.Set;
 
 import static com.github.vincemann.aoplog.Patterns.GETTER_REGEX;
@@ -24,8 +26,10 @@ public class RapidAopLogAutoConfiguration {
 
     private static final boolean SKIP_NULL_FIELDS = true;
     private static final boolean FORCE_REFLECTION = false;
+
     private static final int CROP_THRESHOLD = 7;
     private static final Set<String> EXCLUDE_SECURE_FIELD_NAMES = Sets.newHashSet("password");
+
 
     @ConditionalOnMissingBean(ProxyAwareAopLogger.class)
     @Bean

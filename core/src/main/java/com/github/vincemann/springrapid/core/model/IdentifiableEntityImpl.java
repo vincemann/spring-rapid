@@ -1,5 +1,6 @@
 package com.github.vincemann.springrapid.core.model;
 
+import com.github.vincemann.springrapid.core.util.LazyInitLogUtils;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
 
@@ -11,7 +12,6 @@ import java.util.Objects;
 
 @MappedSuperclass
 @NoArgsConstructor
-@ToString
 public class IdentifiableEntityImpl<Id extends Serializable>
         implements IdentifiableEntity<Id> {
 
@@ -44,5 +44,10 @@ public class IdentifiableEntityImpl<Id extends Serializable>
     @Override
     public int hashCode() {
         return Objects.hash(id);
+    }
+
+    @Override
+    public String toString() {
+        return LazyInitLogUtils.toString(this);
     }
 }

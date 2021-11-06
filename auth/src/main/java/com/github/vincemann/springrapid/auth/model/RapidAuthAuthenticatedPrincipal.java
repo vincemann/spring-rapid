@@ -9,7 +9,7 @@ import lombok.ToString;
 import java.util.Set;
 
 
-@Getter @ToString(callSuper = true) @NoArgsConstructor
+@Getter @NoArgsConstructor
 public class RapidAuthAuthenticatedPrincipal extends RapidAuthenticatedPrincipal {
 
 	private static final long serialVersionUID = -7849730155307434535L;

@@ -25,7 +25,7 @@ public class SpecialtyServiceIntegrationTest
 
 
     @Test
-    public void canSaveSpecialty_getLinkedToVets() throws BadEntityException {
+    public void canSaveSpecialty_getLinkedToVets() throws Exception {
         Vet savedMeier = vetService.save(meier);
         Vet savedKahn = vetService.save(kahn);
 
@@ -40,7 +40,7 @@ public class SpecialtyServiceIntegrationTest
     }
 
     @Test
-    public void canSaveSpecialty_getLinkedToVets_whoAlreadyHaveSpecialties() throws BadEntityException {
+    public void canSaveSpecialty_getLinkedToVets_whoAlreadyHaveSpecialties() throws Exception {
         Vet savedMeier = vetService.save(meier);
         Vet savedKahn = vetService.save(kahn);
 
@@ -60,7 +60,7 @@ public class SpecialtyServiceIntegrationTest
     }
 
     @Test
-    public void canRemoveSpecialty_getUnlinkedFromVets() throws BadEntityException {
+    public void canRemoveSpecialty_getUnlinkedFromVets() throws Exception {
         // meier -> dentism
         // kahn -> dentism, gastro
         Vet savedMeier = vetService.save(meier);
@@ -82,7 +82,7 @@ public class SpecialtyServiceIntegrationTest
     }
 
     @Test
-    public void canUnlinkSpecialtyFromVet_viaPartialUpdate() throws BadEntityException {
+    public void canUnlinkSpecialtyFromVet_viaPartialUpdate() throws Exception {
         // meier -> dentism
         // kahn -> dentism, gastro
         Vet savedMeier = vetService.save(meier);
@@ -108,7 +108,7 @@ public class SpecialtyServiceIntegrationTest
     }
 
     @Test
-    public void canUnlinkSpecialtyFromVet_viaFullUpdate() throws BadEntityException, InvocationTargetException, NoSuchMethodException, InstantiationException, IllegalAccessException {
+    public void canUnlinkSpecialtyFromVet_viaFullUpdate() throws Exception, InvocationTargetException, NoSuchMethodException, InstantiationException, IllegalAccessException {
         // meier -> dentism
         // kahn -> dentism, gastro
         Vet savedMeier = vetService.save(meier);
@@ -132,7 +132,7 @@ public class SpecialtyServiceIntegrationTest
     }
 
     @Test
-    public void canUnlinkSpecialtyFromMultipleVets_viaPartialUpdate() throws BadEntityException {
+    public void canUnlinkSpecialtyFromMultipleVets_viaPartialUpdate() throws Exception {
         // meier -> dentism, heart
         // kahn -> dentism, gastro, heart
         // schuhmacher -> gastro, heart
@@ -166,7 +166,7 @@ public class SpecialtyServiceIntegrationTest
     }
 
     @Test
-    public void canUnlinkSpecialtyFromMultipleVets_viaFullUpdate() throws BadEntityException, InvocationTargetException, NoSuchMethodException, InstantiationException, IllegalAccessException {
+    public void canUnlinkSpecialtyFromMultipleVets_viaFullUpdate() throws Exception, InvocationTargetException, NoSuchMethodException, InstantiationException, IllegalAccessException {
         // meier -> dentism, heart
         // kahn -> dentism, gastro, heart
         // schuhmacher -> gastro, heart
@@ -198,7 +198,7 @@ public class SpecialtyServiceIntegrationTest
     }
 
     @Test
-    public void canUnlinkSpecialtyFromAllVets_viaPartialUpdate() throws BadEntityException {
+    public void canUnlinkSpecialtyFromAllVets_viaPartialUpdate() throws Exception {
         // meier -> dentism, heart
         // kahn -> dentism, gastro, heart
         // schuhmacher -> gastro, heart
@@ -232,7 +232,7 @@ public class SpecialtyServiceIntegrationTest
     }
 
     @Test
-    public void canUnlinkSpecialtyFromAllVets_viaFullUpdate() throws BadEntityException, InvocationTargetException, NoSuchMethodException, InstantiationException, IllegalAccessException {
+    public void canUnlinkSpecialtyFromAllVets_viaFullUpdate() throws Exception, InvocationTargetException, NoSuchMethodException, InstantiationException, IllegalAccessException {
         // meier -> dentism, heart
         // kahn -> dentism, gastro, heart
         // schuhmacher -> gastro, heart
@@ -264,7 +264,7 @@ public class SpecialtyServiceIntegrationTest
     }
 
     @Test
-    public void canLinkSpecialtyToSomeVets_viaPartialUpdate() throws BadEntityException {
+    public void canLinkSpecialtyToSomeVets_viaPartialUpdate() throws Exception {
         // meier -> dentism
         // kahn -> dentism, gastro
         // schuhmacher -> gastro
@@ -298,7 +298,7 @@ public class SpecialtyServiceIntegrationTest
     }
 
     @Test
-    public void canLinkSpecialtyToSomeVets_viaFullUpdate() throws BadEntityException, InvocationTargetException, NoSuchMethodException, InstantiationException, IllegalAccessException {
+    public void canLinkSpecialtyToSomeVets_viaFullUpdate() throws Exception, InvocationTargetException, NoSuchMethodException, InstantiationException, IllegalAccessException {
         // meier -> dentism
         // kahn -> dentism, gastro
         // schuhmacher -> gastro
@@ -330,7 +330,7 @@ public class SpecialtyServiceIntegrationTest
     }
 
     @Test
-    public void canReLinkSpecialty_viaPartialUpdate() throws BadEntityException {
+    public void canReLinkSpecialty_viaPartialUpdate() throws Exception {
         // meier -> dentism
         // kahn -> dentism, gastro, heart
         // schuhmacher -> gastro, heart
@@ -364,7 +364,7 @@ public class SpecialtyServiceIntegrationTest
     }
 
     @Test
-    public void canReLinkSpecialty_viaFullUpdate() throws BadEntityException, InvocationTargetException, NoSuchMethodException, InstantiationException, IllegalAccessException {
+    public void canReLinkSpecialty_viaFullUpdate() throws Exception, InvocationTargetException, NoSuchMethodException, InstantiationException, IllegalAccessException {
         // meier -> dentism
         // kahn -> dentism, gastro, heart
         // schuhmacher -> gastro, heart

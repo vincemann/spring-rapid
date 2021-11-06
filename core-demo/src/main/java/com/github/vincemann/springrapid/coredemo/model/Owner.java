@@ -23,13 +23,16 @@ public class Owner extends Person {
 
 
     @Builder
-    public Owner(String firstName, String lastName, Set<Pet> pets, String address, String city, String telephone,Set<String> hobbies) {
+    public Owner(String firstName, String lastName, Set<Pet> pets, String address, String city, String telephone,Set<String> hobbies,Set<LazyItem> lazyItems) {
         super(firstName, lastName);
         if(pets!=null) {
             this.pets = pets;
         }
         if(hobbies!=null) {
             this.hobbies = hobbies;
+        }
+        if(lazyItems!=null) {
+            this.lazyItems = lazyItems;
         }
         this.address = address;
         this.city = city;
@@ -50,6 +53,11 @@ public class Owner extends Person {
 
     @ElementCollection(targetClass = String.class,fetch = FetchType.EAGER)
     private Set<String> hobbies = new HashSet<>();
+
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "owner",fetch = FetchType.LAZY)
+    @BiDirChildCollection(LazyItem.class)
+    @JsonManagedReference
+    private Set<LazyItem> lazyItems;
 
     @Column(name = "adress")
     private String address;

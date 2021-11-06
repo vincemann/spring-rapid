@@ -27,7 +27,7 @@ public class VerServiceIntegrationTest extends ManyToManyServiceIntegrationTest<
 
 
     @Test
-    public void canSaveVetWithoutSpecialty() {
+    public void canSaveVetWithoutSpecialty() throws Exception {
         test(save(meier))
                 .andExpect(() -> compare(meier)
                         // resolve db entity makes sure entity is actually saved in repo
@@ -48,7 +48,7 @@ public class VerServiceIntegrationTest extends ManyToManyServiceIntegrationTest<
     }
 
     @Test
-    public void canSaveVet_getLinkedToSpecialties() throws BadEntityException {
+    public void canSaveVet_getLinkedToSpecialties() throws Exception {
         Specialty savedDentism = specialtyService.save(dentism);
         Specialty savedGastro = specialtyService.save(gastro);
 
@@ -62,7 +62,7 @@ public class VerServiceIntegrationTest extends ManyToManyServiceIntegrationTest<
     }
 
     @Test
-    public void canFindVetWithMultipleSpecialties() throws BadEntityException {
+    public void canFindVetWithMultipleSpecialties() throws Exception {
         Specialty savedDentism = specialtyService.save(dentism);
         Specialty savedGastro = specialtyService.save(gastro);
 
@@ -82,7 +82,7 @@ public class VerServiceIntegrationTest extends ManyToManyServiceIntegrationTest<
 
     // specialty that is already linked to meier, will be also linked to kahn after save(kahn)
     @Test
-    public void canAddAnotherVetToSpecialty_viaSave() throws BadEntityException {
+    public void canAddAnotherVetToSpecialty_viaSave() throws Exception {
         Specialty savedDentism = specialtyService.save(dentism);
         Specialty savedGastro = specialtyService.save(gastro);
 
@@ -99,7 +99,7 @@ public class VerServiceIntegrationTest extends ManyToManyServiceIntegrationTest<
     }
 
     @Test
-    public void canUnlinkSpecialtyFromVet_viaPartialUpdate() throws BadEntityException, InvocationTargetException, NoSuchMethodException, InstantiationException, IllegalAccessException {
+    public void canUnlinkSpecialtyFromVet_viaPartialUpdate() throws Exception, InvocationTargetException, NoSuchMethodException, InstantiationException, IllegalAccessException {
         Specialty savedDentism = specialtyService.save(dentism);
         Specialty savedGastro = specialtyService.save(gastro);
         meier.setSpecialtys(new HashSet<>(Lists.newArrayList(savedDentism, savedGastro)));
@@ -124,7 +124,7 @@ public class VerServiceIntegrationTest extends ManyToManyServiceIntegrationTest<
     }
 
     @Test
-    public void canUnlinkSpecialtyFromVet_viaFullUpdate() throws BadEntityException, InvocationTargetException, NoSuchMethodException, InstantiationException, IllegalAccessException {
+    public void canUnlinkSpecialtyFromVet_viaFullUpdate() throws Exception, InvocationTargetException, NoSuchMethodException, InstantiationException, IllegalAccessException {
         Specialty savedDentism = specialtyService.save(dentism);
         Specialty savedGastro = specialtyService.save(gastro);
         meier.setSpecialtys(new HashSet<>(Lists.newArrayList(savedDentism, savedGastro)));
@@ -144,7 +144,7 @@ public class VerServiceIntegrationTest extends ManyToManyServiceIntegrationTest<
     }
 
     @Test
-    public void canLinkAnotherSpecialtyToVet_viaPartialUpdate() throws BadEntityException, InvocationTargetException, NoSuchMethodException, InstantiationException, IllegalAccessException {
+    public void canLinkAnotherSpecialtyToVet_viaPartialUpdate() throws Exception, InvocationTargetException, NoSuchMethodException, InstantiationException, IllegalAccessException {
         // kahn -> gastro
         // meier -> gastro, dentism
         Specialty savedDentism = specialtyService.save(dentism);
@@ -170,7 +170,7 @@ public class VerServiceIntegrationTest extends ManyToManyServiceIntegrationTest<
     }
 
     @Test
-    public void canLinkAnotherSpecialtyToVet_viaFullUpdate() throws BadEntityException, InvocationTargetException, NoSuchMethodException, InstantiationException, IllegalAccessException {
+    public void canLinkAnotherSpecialtyToVet_viaFullUpdate() throws Exception, InvocationTargetException, NoSuchMethodException, InstantiationException, IllegalAccessException {
         // kahn -> gastro
         // meier -> gastro, dentism
         Specialty savedDentism = specialtyService.save(dentism);
@@ -195,7 +195,7 @@ public class VerServiceIntegrationTest extends ManyToManyServiceIntegrationTest<
 
 
     @Test
-    public void canDeleteVet_getUnlinkedFromSpecialties() throws BadEntityException {
+    public void canDeleteVet_getUnlinkedFromSpecialties() throws Exception {
         Specialty savedDentism = specialtyService.save(dentism);
         Specialty savedGastro = specialtyService.save(gastro);
 

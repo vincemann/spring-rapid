@@ -19,7 +19,6 @@ import java.util.Set;
 @Getter @Setter
 @MappedSuperclass
 @AllArgsConstructor
-@ToString(callSuper = true)
 public class AbstractUser<ID extends Serializable>
 	extends AuditingEntity<ID>
 	implements AuthenticatingEntity<ID>

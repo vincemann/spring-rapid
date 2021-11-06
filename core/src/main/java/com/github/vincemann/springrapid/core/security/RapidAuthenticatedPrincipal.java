@@ -1,8 +1,10 @@
 package com.github.vincemann.springrapid.core.security;
 
+import com.github.vincemann.springrapid.core.util.LazyInitLogUtils;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
+import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
 import org.springframework.security.core.AuthenticatedPrincipal;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.CredentialsContainer;
@@ -18,7 +20,6 @@ import java.util.stream.Collectors;
  * Represents logged in user.
  * Also contains {@link Authentication#getDetails()} information.
  */
-@ToString
 @Getter
 public class RapidAuthenticatedPrincipal implements AuthenticatedPrincipal, CredentialsContainer, UserDetails {
     private String name;
@@ -93,5 +94,10 @@ public class RapidAuthenticatedPrincipal implements AuthenticatedPrincipal, Cred
 
     public void setRoles(Set<String> roles) {
         this.roles = roles;
+    }
+
+    @Override
+    public String toString() {
+        return new ReflectionToStringBuilder(this).toString();
     }
 }

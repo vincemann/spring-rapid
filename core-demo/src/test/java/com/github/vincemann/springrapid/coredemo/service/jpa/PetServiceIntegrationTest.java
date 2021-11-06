@@ -34,7 +34,7 @@ class PetServiceIntegrationTest
 
 
     @Test
-    public void canSavePet() throws BadEntityException {
+    public void canSavePet() throws Exception {
         test(save(bello))
                 .andExpect(() -> compare(bello)
                         .with(resolve(DB_ENTITY))
@@ -45,7 +45,7 @@ class PetServiceIntegrationTest
     }
 
     @Test
-    public void canLinkPetToOwner_viaSave() throws BadEntityException {
+    public void canLinkPetToOwner_viaSave() throws Exception {
         Owner savedKahn = ownerService.save(kahn);
         bello.setOwner(savedKahn);
 
@@ -59,7 +59,7 @@ class PetServiceIntegrationTest
     }
 
     @Test
-    public void canSavePet_unlinkPetType_viaUpdate() throws BadEntityException, InvocationTargetException, NoSuchMethodException, InstantiationException, IllegalAccessException, EntityNotFoundException {
+    public void canSavePet_unlinkPetType_viaUpdate() throws Exception, InvocationTargetException, NoSuchMethodException, InstantiationException, IllegalAccessException, EntityNotFoundException {
         Pet savedBello = getTestedService().save(bello);
 
         Pet update = (Pet) BeanUtilsBean.getInstance().cloneBean(savedBello);
@@ -71,7 +71,7 @@ class PetServiceIntegrationTest
     }
 
     @Test
-    public void canSavePet_unlinkFromPetType_removePetTypes() throws BadEntityException, InvocationTargetException, NoSuchMethodException, InstantiationException, IllegalAccessException, EntityNotFoundException {
+    public void canSavePet_unlinkFromPetType_removePetTypes() throws Exception, InvocationTargetException, NoSuchMethodException, InstantiationException, IllegalAccessException, EntityNotFoundException {
         Pet savedBello = getTestedService().save(bello);
 
         Pet update = (Pet) BeanUtilsBean.getInstance().cloneBean(savedBello);
@@ -86,7 +86,7 @@ class PetServiceIntegrationTest
     }
 
     @Test
-    public void canDeletePet_thusGetUnlinkedFromOwner() throws BadEntityException {
+    public void canDeletePet_thusGetUnlinkedFromOwner() throws Exception {
         Owner savedKahn = ownerService.save(kahn);
         bello.setOwner(savedKahn);
         Pet savedBello = getTestedService().save(bello);
@@ -102,7 +102,7 @@ class PetServiceIntegrationTest
     }
 
     @Test
-    public void canUpdatePetsOwner() throws BadEntityException {
+    public void canUpdatePetsOwner() throws Exception {
         Owner savedKahn = ownerService.save(kahn);
         Owner savedMeier = ownerService.save(meier);
 
@@ -133,7 +133,7 @@ class PetServiceIntegrationTest
     }
 
     @Test
-    public void canUnlinkOwnerFromPet_viaFullUpdate() throws BadEntityException, InvocationTargetException, NoSuchMethodException, InstantiationException, IllegalAccessException {
+    public void canUnlinkOwnerFromPet_viaFullUpdate() throws Exception, InvocationTargetException, NoSuchMethodException, InstantiationException, IllegalAccessException {
         Owner savedKahn = ownerService.save(kahn);
 
         bello.setOwner(savedKahn);
@@ -155,7 +155,7 @@ class PetServiceIntegrationTest
     }
 
     @Test
-    public void canLinkOwnerToPet_viaPartialUpdate() throws BadEntityException, InvocationTargetException, NoSuchMethodException, InstantiationException, IllegalAccessException {
+    public void canLinkOwnerToPet_viaPartialUpdate() throws Exception, InvocationTargetException, NoSuchMethodException, InstantiationException, IllegalAccessException {
         Owner savedKahn = ownerService.save(kahn);
         Pet savedBello = getTestedService().save(bello);
 
@@ -178,7 +178,7 @@ class PetServiceIntegrationTest
 
     // todo have to use partial update mode for this case bc i cant get full update to work with bidir relship mangement yet
     @Test
-    public void canLinkOwnerToPet_viaFullUpdate() throws BadEntityException, InvocationTargetException, NoSuchMethodException, InstantiationException, IllegalAccessException {
+    public void canLinkOwnerToPet_viaFullUpdate() throws Exception, InvocationTargetException, NoSuchMethodException, InstantiationException, IllegalAccessException {
         Owner savedKahn = ownerService.save(kahn);
         Pet savedBello = getTestedService().save(bello);
 
