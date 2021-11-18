@@ -11,6 +11,9 @@ import java.util.Collection;
 public class LazyInitLogUtils {
 
     public static String toString(Object object, Boolean... ignoreLazys){
+        if (object == null){
+            return "null";
+        }
         Boolean ignoreLazy = Boolean.TRUE;
         if (ignoreLazys.length >= 1){
             ignoreLazy = ignoreLazys[0];
@@ -24,8 +27,10 @@ public class LazyInitLogUtils {
                     try {
                         // need to query element to trigger Exception
                         Collection<?> collection = (Collection<?>) f.get(object);
-                        if (collection.size() > 0){
-                            collection.stream().findFirst().get();
+                        if(collection != null){
+                            if (collection.size() > 0){
+                                collection.stream().findFirst().get();
+                            }
                         }
                     } catch (IllegalAccessException e) {
                         throw new RuntimeException(e);
