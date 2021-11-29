@@ -14,7 +14,7 @@ import java.util.Set;
 @Getter
 @Setter
 @Validated
-@ToString(callSuper = true)
+
 public class VetDto extends PersonDto  {
 
 

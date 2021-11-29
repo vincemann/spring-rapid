@@ -12,7 +12,7 @@ import java.util.Date;
 @Getter
 @Setter
 @NoArgsConstructor
-@ToString(callSuper = true)
+
 public class ClinicCardDto extends IdentifiableEntityImpl<Long>  {
 
     @BiDirParentId(Owner.class)

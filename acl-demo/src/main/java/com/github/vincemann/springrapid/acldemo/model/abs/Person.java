@@ -13,13 +13,11 @@ import javax.validation.constraints.NotBlank;
 @Setter
 @MappedSuperclass
 @AllArgsConstructor
-@ToString(onlyExplicitlyIncluded = true)
 public abstract class Person extends IdentifiableEntityImpl<Long> {
     @Column(name = "first_name")
     @NotBlank
     private String firstName;
 
-    @ToString.Include
     @Unique
     @NotBlank
     @Column(name = "last_name")

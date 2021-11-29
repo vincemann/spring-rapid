@@ -14,7 +14,7 @@ import java.util.Set;
 @Getter
 @Setter
 @NoArgsConstructor
-@ToString(callSuper = true)
+
 public abstract class AbstractOwnerDto extends PersonDto  {
 
 

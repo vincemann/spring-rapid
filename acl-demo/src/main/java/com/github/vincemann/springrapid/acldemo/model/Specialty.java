@@ -29,7 +29,6 @@ public class Specialty extends IdentifiableEntityImpl<Long>
     }
 
     @Unique
-    @ToString.Include
     @Column(name = "description")
     private String description;
 

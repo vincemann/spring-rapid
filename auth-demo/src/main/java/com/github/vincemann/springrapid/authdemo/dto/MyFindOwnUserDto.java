@@ -7,7 +7,7 @@ import java.util.Set;
 
 @Getter
 @Setter
-@ToString(callSuper = true)
+
 @NoArgsConstructor
 public class MyFindOwnUserDto extends RapidFindOwnUserDto {
     private String name;

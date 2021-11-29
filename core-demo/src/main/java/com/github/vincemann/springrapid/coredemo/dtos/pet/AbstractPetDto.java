@@ -21,7 +21,7 @@ import java.util.Set;
 @Getter
 @Setter
 @NoArgsConstructor
-@ToString(callSuper = true)
+
 public abstract class AbstractPetDto extends IdentifiableEntityImpl<Long>
 {
 

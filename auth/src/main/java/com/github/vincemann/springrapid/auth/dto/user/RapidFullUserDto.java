@@ -6,7 +6,7 @@ import java.io.Serializable;
 import java.util.Set;
 
 
-@Getter @NoArgsConstructor @Setter @ToString(callSuper = true)
+@Getter @NoArgsConstructor @Setter
 public class RapidFullUserDto extends AbstractFindRapidUserDto implements Serializable {
 
 	private static final long serialVersionUID = -9134054705405149534L;

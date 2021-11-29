@@ -14,7 +14,7 @@ import java.util.Set;
 
 
 @NoArgsConstructor
-@ToString(callSuper = true)
+
 @Getter
 @Setter
 public class FullPetDto extends AbstractPetDto  {

@@ -14,7 +14,7 @@ import java.util.stream.Collectors;
 
 
 @NoArgsConstructor
-@ToString(callSuper = true)
+
 public class PetDto extends AbstractPetDto {
 
 

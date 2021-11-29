@@ -7,7 +7,6 @@ import lombok.*;
 import java.util.Set;
 
 @Getter
-@ToString(callSuper = true)
 @NoArgsConstructor
 @Setter
 public abstract class AbstractFindRapidUserDto extends AbstractRapidUserDto {

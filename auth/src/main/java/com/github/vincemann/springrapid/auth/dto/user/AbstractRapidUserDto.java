@@ -11,7 +11,6 @@ import java.util.Set;
 
 @Getter
 @NoArgsConstructor
-@ToString(callSuper = true)
 @Setter
 public class AbstractRapidUserDto extends IdentifiableEntityImpl<String> {
 

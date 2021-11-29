@@ -455,7 +455,7 @@ public abstract class AbstractUserController<U extends AbstractUser<ID>, ID exte
 	protected RequestMappingInfo createVerifyUserRequestMappingInfo() {
 		return RequestMappingInfo
 				.paths(getAuthProperties().getController().getVerifyUserUrl())
-				.methods(RequestMethod.POST)
+				.methods(RequestMethod.GET)
 				//.consumes(MediaType.APPLICATION_FORM_URLENCODED_VALUE)
 				.produces(getMediaType())
 				.build();

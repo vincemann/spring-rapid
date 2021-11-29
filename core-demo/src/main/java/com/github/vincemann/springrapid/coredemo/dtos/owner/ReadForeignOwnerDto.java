@@ -14,7 +14,7 @@ import java.util.Set;
 @NoArgsConstructor
 @Getter
 @Setter
-@ToString(callSuper = true)
+
 public class ReadForeignOwnerDto extends AbstractOwnerDto  {
 
     @Builder

@@ -9,7 +9,7 @@ import javax.validation.constraints.Size;
 import java.time.LocalDate;
 
 @NoArgsConstructor
-@ToString(callSuper = true)
+
 @Setter
 public class OwnerUpdatesOwnPetDto extends AbstractPetDto{
 

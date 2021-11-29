@@ -9,7 +9,7 @@ import java.util.Set;
 @NoArgsConstructor
 @Getter
 @Setter
-@ToString(callSuper = true)
+
 public class VetReadsOwnerDto extends AbstractOwnerDto {
 
 

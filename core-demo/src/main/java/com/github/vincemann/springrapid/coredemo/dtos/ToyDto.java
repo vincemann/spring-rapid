@@ -8,7 +8,7 @@ import javax.validation.constraints.Size;
 
 @Getter
 @Setter
-@ToString(callSuper = true)
+@ToString
 @Builder
 public class ToyDto {
 

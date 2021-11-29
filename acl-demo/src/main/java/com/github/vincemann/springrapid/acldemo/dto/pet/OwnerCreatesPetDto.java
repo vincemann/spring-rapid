@@ -14,7 +14,7 @@ import java.time.LocalDate;
 @Getter
 @Setter
 @NoArgsConstructor
-@ToString(callSuper = true)
+
 public class OwnerCreatesPetDto extends AbstractPetDto {
 
     @NotNull

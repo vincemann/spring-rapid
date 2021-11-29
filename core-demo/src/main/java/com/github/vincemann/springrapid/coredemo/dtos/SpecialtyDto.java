@@ -15,7 +15,7 @@ import java.util.Set;
 @Getter
 @Setter
 @NoArgsConstructor
-@ToString(callSuper = true)
+
 public class SpecialtyDto extends IdentifiableEntityImpl<Long>  {
 
     @Builder

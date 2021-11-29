@@ -14,7 +14,7 @@ import java.util.Set;
 @Getter
 @Setter
 @NoArgsConstructor
-@ToString(callSuper = true)
+
 public class User extends AbstractUser<Long> {
 
 	// only used for register purposes, to prevent guessing attacks and will be null after registration process

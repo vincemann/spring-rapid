@@ -15,7 +15,6 @@ import javax.persistence.Table;
 @Entity
 @Table(name = "pet_types")
 @Builder
-@ToString
 public class PetType extends IdentifiableEntityImpl<Long>  {
     @Unique
     private String name;

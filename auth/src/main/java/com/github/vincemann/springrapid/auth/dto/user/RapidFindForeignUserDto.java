@@ -8,7 +8,7 @@ import lombok.ToString;
 
 @Getter
 @Setter
-@ToString(callSuper = true)
+
 @NoArgsConstructor
 //can only see id
 public class RapidFindForeignUserDto extends IdentifiableEntityImpl<String> {

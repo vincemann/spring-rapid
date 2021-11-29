@@ -212,14 +212,14 @@ public abstract class AbstractUserControllerTestTemplate<C extends AbstractUserC
     }
 
     public RequestBuilder verifyEmail(String code) throws Exception {
-        return post(getController().getAuthProperties().getController().getVerifyUserUrl())
+        return get(getController().getAuthProperties().getController().getVerifyUserUrl())
 //                .param("id", id.toString())
                 .param("code", code)
                 .header("contentType", MediaType.APPLICATION_FORM_URLENCODED);
     }
 
     public RequestBuilder verifyEmailWithLink(String link) throws Exception {
-        return post(link)
+        return get(link)
 //                .param("id", id.toString())
 //                .param("code", code)
                 .header("contentType", MediaType.APPLICATION_FORM_URLENCODED);

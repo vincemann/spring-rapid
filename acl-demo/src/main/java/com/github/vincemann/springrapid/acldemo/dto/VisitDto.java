@@ -22,7 +22,7 @@ import java.util.stream.Collectors;
 @Getter
 @Setter
 @NoArgsConstructor
-@ToString(callSuper = true)
+
 public class VisitDto extends IdentifiableEntityImpl<Long>  {
 
     @UniDirChildIdCollection(Pet.class)

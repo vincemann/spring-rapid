@@ -16,7 +16,7 @@ import java.util.Set;
 @Getter
 @Setter
 @Validated
-@ToString(callSuper = true)
+
 public class FullVetDto extends PersonDto  {
 
 

@@ -8,7 +8,7 @@ import java.util.Set;
 @NoArgsConstructor
 @Getter
 @Setter
-@ToString(callSuper = true)
+
 public class FullOwnerDto extends AbstractOwnerDto {
     public static final String DIRTY_SECRET = "can you see this?";
 

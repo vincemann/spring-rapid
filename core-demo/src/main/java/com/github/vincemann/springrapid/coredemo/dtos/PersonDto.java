@@ -11,7 +11,7 @@ import javax.validation.constraints.Size;
 @Getter
 @Setter
 @NoArgsConstructor
-@ToString(callSuper = true)
+
 @AllArgsConstructor
 public class PersonDto extends IdentifiableEntityImpl<Long> {
     @Size(min = 2, max = 20)

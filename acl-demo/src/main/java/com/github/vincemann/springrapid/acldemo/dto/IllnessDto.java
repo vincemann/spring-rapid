@@ -13,7 +13,7 @@ import java.util.Set;
 
 @Getter
 @Setter
-@ToString(callSuper = true)
+
 @Builder
 public class IllnessDto  {
 

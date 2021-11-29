@@ -11,7 +11,7 @@ import java.util.Set;
 
 
 @NoArgsConstructor
-@ToString(callSuper = true)
+
 public class UpdatePetDto extends AbstractPetDto {
 
     @Builder
