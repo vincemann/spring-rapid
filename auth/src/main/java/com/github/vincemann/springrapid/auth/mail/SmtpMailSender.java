@@ -1,5 +1,6 @@
 package com.github.vincemann.springrapid.auth.mail;
 
+import com.github.vincemann.springrapid.core.util.Message;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
@@ -47,6 +48,7 @@ public class SmtpMailSender implements MailSender<MailData> {
 			// set the attributes
 			helper.setSubject(mail.getTopic());
 			helper.setTo(mail.getTo());
+			message.setFrom(Message.get("com.github.vincemann.emailSender"));
 			helper.setText(mail.getBody(), true); // true indicates html
 			// continue using helper object for more functionalities like adding attachments, etc.  
 			

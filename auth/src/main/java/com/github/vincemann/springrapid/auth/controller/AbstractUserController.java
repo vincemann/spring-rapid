@@ -107,6 +107,7 @@ public abstract class AbstractUserController<U extends AbstractUser<ID>, ID exte
 	 */
 //	@PostMapping("${lemon.userController.resendVerificationEmailUrl}")
 //	@ResponseStatus(HttpStatus.NO_CONTENT)
+	// todo add limit actions extension ect so nobody can spam emails
 	public ResponseEntity<?> resendVerificationMail(HttpServletRequest request,HttpServletResponse response) throws BadEntityException, EntityNotFoundException, IdFetchingException {
 		String email = readRequestParam(request, "email");
 		log.debug("Resending verification mail for user with email " + email);
