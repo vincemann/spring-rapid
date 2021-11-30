@@ -1,4 +1,4 @@
-//package com.naturalprogrammer.spring.lemondemo;
+//package com.github.vincemann.lemondemo;
 //
 //import static org.hamcrest.Matchers.containsString;
 //import static org.hamcrest.Matchers.hasItems;

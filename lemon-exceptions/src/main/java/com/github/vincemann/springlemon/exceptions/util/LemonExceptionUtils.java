@@ -59,7 +59,7 @@ public class LemonExceptionUtils {
 //
 //		NOT_FOUND_EXCEPTION
 //			.httpStatus(HttpStatus.NOT_FOUND)
-//			.validate(false, "com.naturalprogrammer.spring.notFound");
+//			.validate(false, "com.github.vincemann.notFound");
 //
 //		log.info("NOT_FOUND_EXCEPTION built");
 //	}
@@ -80,7 +80,7 @@ public class LemonExceptionUtils {
 //	public static <T> void ensureFound(T entity) {
 //
 //		LexUtils.validate(entity != null,
-//			"com.naturalprogrammer.spring.notFound")
+//			"com.github.vincemann.notFound")
 //			.httpStatus(HttpStatus.NOT_FOUND).go();
 //	}
 
@@ -90,7 +90,7 @@ public class LemonExceptionUtils {
 //	public static <T> void ensureFound(Optional<T> entity) {
 //
 //		LexUtils.validate(entity.isPresent(),
-//				"com.naturalprogrammer.spring.notFound")
+//				"com.github.vincemann.notFound")
 //				.httpStatus(HttpStatus.NOT_FOUND).go();
 //	}
 

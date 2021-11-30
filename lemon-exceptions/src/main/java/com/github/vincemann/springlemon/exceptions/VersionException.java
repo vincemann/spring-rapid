@@ -14,6 +14,6 @@ package com.github.vincemann.springlemon.exceptions;
 //	public VersionException(String entityName, String entityId) {
 //
 //		super(LexUtils.getMessage(
-//			"com.naturalprogrammer.spring.versionException", entityName, entityId));
+//			"com.github.vincemann.versionException", entityName, entityId));
 //	}
 //}

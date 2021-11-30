@@ -45,7 +45,7 @@ public class RapidUserDetailsService
 			user = byEmail.get();
 		} catch (EntityNotFoundException e) {
 			throw new UsernameNotFoundException(
-					Message.get("com.naturalprogrammer.spring.userNotFound", email)
+					Message.get("com.github.vincemann.userNotFound", email)
 					,e);
 		}
 

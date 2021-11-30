@@ -13,9 +13,6 @@
     <logger name="com.github.vincemann.aoplog" level="INFO" additivity="false">
         <appender-ref ref="CONSOLE"/>
     </logger>
-    <logger name="com.naturalprogrammer.spring" level="DEBUG" additivity="false">
-        <appender-ref ref="CONSOLE"/>
-    </logger>
     <logger name="org.springframework.security.acls" level="DEBUG" additivity="false">
         <appender-ref ref="CONSOLE"/>
     </logger>

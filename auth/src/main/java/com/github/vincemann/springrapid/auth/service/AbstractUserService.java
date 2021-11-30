@@ -223,7 +223,7 @@ public abstract class AbstractUserService
             //also to be able to use read-only security test -> generic principal type does not need to be passed into this class
             return verifyUser(user);
         } catch (BadTokenException e) {
-            throw new BadEntityException(Message.get("com.naturalprogrammer.spring.wrong.verificationCode"), e);
+            throw new BadEntityException(Message.get("com.github.vincemann.wrong.verificationCode"), e);
         }
 
     }
@@ -282,7 +282,7 @@ public abstract class AbstractUserService
                 throw new RuntimeException("Could not reset users password", e);
             }
         } catch (BadTokenException e) {
-            throw new BadEntityException(Message.get("com.naturalprogrammer.spring.wrong.verificationCode"), e);
+            throw new BadEntityException(Message.get("com.github.vincemann.wrong.verificationCode"), e);
         }
     }
 
@@ -369,7 +369,7 @@ public abstract class AbstractUserService
 //        LexUtils.validateField("updatedUser.password",
 //                passwordEncoder.matches(emailChangeDto.getPassword(),
 //                        user.getPassword()),
-//                "com.naturalprogrammer.spring.wrong.password").go();
+//                "com.github.vincemann.wrong.password").go();
 
         // preserves the new email id
         user.setNewEmail(emailChangeDto.getNewEmail());
@@ -413,9 +413,9 @@ public abstract class AbstractUserService
             // mail it
             MailData mailData = MailData.builder()
                     .to(user.getEmail())
-//                    .topic( Message.get("com.naturalprogrammer.spring.changeEmailSubject"))
+//                    .topic( Message.get("com.github.vincemann.changeEmailSubject"))
                     .topic(CHANGE_EMAIL_AUDIENCE)
-                    .body(Message.get("com.naturalprogrammer.spring.changeEmailEmail", changeEmailLink))
+                    .body(Message.get("com.github.vincemann.changeEmailEmail", changeEmailLink))
                     .link(changeEmailLink)
                     .code(changeEmailCode)
                     .build();
@@ -452,7 +452,7 @@ public abstract class AbstractUserService
 
             VerifyAccess.condition(
                     claims.getClaim("newEmail").equals(user.getNewEmail()),
-                    Message.get("com.naturalprogrammer.spring.wrong.changeEmailCode"));
+                    Message.get("com.github.vincemann.wrong.changeEmailCode"));
 
             // Ensure that the email would be unique
             VerifyEntity.is(
@@ -470,7 +470,7 @@ public abstract class AbstractUserService
                 user.getRoles().remove(AuthRoles.UNVERIFIED);
             return update(user);
         } catch (BadTokenException e) {
-            throw new BadEntityException(Message.get("com.naturalprogrammer.spring.wrong.verificationCode"), e);
+            throw new BadEntityException(Message.get("com.github.vincemann.wrong.verificationCode"), e);
         } catch (BadEntityException e) {
             throw new RuntimeException("Could not update users email", e);
         }
@@ -547,9 +547,9 @@ public abstract class AbstractUserService
         // send the mail
         MailData mailData = MailData.builder()
                 .to(user.getEmail())
-//                .topic(Message.get("com.naturalprogrammer.spring.verifySubject"))
+//                .topic(Message.get("com.github.vincemann.verifySubject"))
                 .topic(VERIFY_EMAIL_AUDIENCE)
-                .body(Message.get("com.naturalprogrammer.spring.verifyEmail", verifyLink))
+                .body(Message.get("com.github.vincemann.verifyEmail", verifyLink))
                 .link(verifyLink)
                 .code(verificationCode)
                 .build();
@@ -584,9 +584,9 @@ public abstract class AbstractUserService
 
         MailData mailData = MailData.builder()
                 .to(user.getEmail())
-//                .topic( Message.get("com.naturalprogrammer.spring.forgotPasswordSubject"))
+//                .topic( Message.get("com.github.vincemann.forgotPasswordSubject"))
                 .topic(FORGOT_PASSWORD_AUDIENCE)
-                .body(Message.get("com.naturalprogrammer.spring.forgotPasswordEmail", forgotPasswordLink))
+                .body(Message.get("com.github.vincemann.forgotPasswordEmail", forgotPasswordLink))
                 .link(forgotPasswordLink)
                 .code(forgotPasswordCode)
                 .build();

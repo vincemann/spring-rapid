@@ -18,7 +18,7 @@ import java.lang.annotation.RetentionPolicy;
 @Constraint(validatedBy=CaptchaValidator.class)
 public @interface Captcha {
  
-    String message() default "{com.naturalprogrammer.spring.wrong.captcha}";
+    String message() default "{com.github.vincemann.wrong.captcha}";
 
     Class[] groups() default {};
     

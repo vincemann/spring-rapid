@@ -21,7 +21,7 @@ import java.util.Set;
 @AllArgsConstructor
 public class AbstractUser<ID extends Serializable>
 	extends AuditingEntity<ID>
-	implements AuthenticatingEntity<ID>
+		implements AuthenticatingEntity<ID>
 {
 
 	// email

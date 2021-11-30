@@ -106,6 +106,6 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 //	 */
 //	protected LemonUserDto fetchUserDto(JWTClaimsSet claims) {
 //		throw new AuthenticationCredentialsNotFoundException(
-//				LexUtils.getMessage("com.naturalprogrammer.spring.userClaimAbsent"));
+//				LexUtils.getMessage("com.github.vincemann.userClaimAbsent"));
 //	}
 }

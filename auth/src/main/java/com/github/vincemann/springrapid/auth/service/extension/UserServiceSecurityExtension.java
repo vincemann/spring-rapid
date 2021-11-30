@@ -146,7 +146,7 @@ public class UserServiceSecurityExtension
     public String createNewAuthToken(String email) throws EntityNotFoundException {
         RapidAuthAuthenticatedPrincipal authenticated = securityContextChecker.getSecurityContext().currentPrincipal();
         VerifyAccess.condition(authenticated.getEmail().equals(email) ||
-                authenticated.isAdmin(), Message.get("com.naturalprogrammer.spring.notGoodAdminOrSameUser"));
+                authenticated.isAdmin(), Message.get("com.github.vincemann.notGoodAdminOrSameUser"));
         return getNext().createNewAuthToken(email);
     }
 
