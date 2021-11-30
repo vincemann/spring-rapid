@@ -234,15 +234,15 @@ public abstract class AbstractUserControllerTestTemplate<C extends AbstractUserC
     }
 
 
-    public RequestBuilder resendVerificationEmail(Serializable id, String token) throws Exception {
+    public RequestBuilder resendVerificationEmail(String email, String token) throws Exception {
         return post(getController().getAuthProperties().getController().getResendVerificationEmailUrl())
-                .param("id", id.toString())
+                .param("email", email)
                 .header(HttpHeaders.AUTHORIZATION, token);
     }
 
-    public MailData resendVerificationEmail2xx(Serializable id, String token) throws Exception {
+    public MailData resendVerificationEmail2xx(String email, String token) throws Exception {
         mvc.perform(post(getController().getAuthProperties().getController().getResendVerificationEmailUrl())
-                .param("id", id.toString())
+                .param("email", email)
                 .header(HttpHeaders.AUTHORIZATION, token))
                 .andExpect(status().is2xxSuccessful());
         return verifyMailWasSend();

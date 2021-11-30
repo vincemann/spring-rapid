@@ -108,10 +108,11 @@ public abstract class AbstractUserController<U extends AbstractUser<ID>, ID exte
 //	@PostMapping("${lemon.userController.resendVerificationEmailUrl}")
 //	@ResponseStatus(HttpStatus.NO_CONTENT)
 	public ResponseEntity<?> resendVerificationMail(HttpServletRequest request,HttpServletResponse response) throws BadEntityException, EntityNotFoundException, IdFetchingException {
-		ID id = fetchId(request);
-		log.debug("Resending verification mail for user with id " + id);
-		U user = fetchUser(id);
-		getSecuredUserService().resendVerificationMail(user);
+		String email = readRequestParam(request, "email");
+		log.debug("Resending verification mail for user with email " + email);
+		Optional<U> byEmail = getUserService().findByEmail(email);
+		VerifyEntity.isPresent(byEmail,"no user found with email: "+ email);
+		getSecuredUserService().resendVerificationMail(byEmail.get());
 		return okNoContent();
 	}
 
