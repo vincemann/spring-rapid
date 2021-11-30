@@ -54,12 +54,13 @@ public class UserServiceSecurityExtension
     }
 
 
-    @LogInteraction
-    @Override
-    public void resendVerificationMail(AbstractUser user) throws EntityNotFoundException, BadEntityException {
-        getSecurityChecker().checkPermission(user, BasePermission.WRITE);
-        getNext().resendVerificationMail(user);
-    }
+    // everybody must be able to do this
+//    @LogInteraction
+//    @Override
+//    public void resendVerificationMail(AbstractUser user) throws EntityNotFoundException, BadEntityException {
+//        getSecurityChecker().checkPermission(user, BasePermission.WRITE);
+//        getNext().resendVerificationMail(user);
+//    }
 
 
     @LogInteraction
