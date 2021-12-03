@@ -378,7 +378,7 @@ public class AbstractControllerIntegrationTest<C extends GenericCrudController<?
         String token = userController.login2xx(email,password);
         for (Pet pet : pets) {
             OwnerCreatesPetDto createPetDto = new OwnerCreatesPetDto(pet,dbOwner.getId());
-            FullPetDto savedPetDto = perform2xx(petController.create(createPetDto)
+            FullPetDto savedPetDto = performDs2xx(petController.create(createPetDto)
                     .header(HttpHeaders.AUTHORIZATION, token), FullPetDto.class);
         }
         return token;
@@ -389,11 +389,11 @@ public class AbstractControllerIntegrationTest<C extends GenericCrudController<?
                 .email(email)
                 .password(password)
                 .build();
-        UUIDSignupResponseDto signedUpDto = perform2xx(userController.signup(signupDto),UUIDSignupResponseDto.class);
+        UUIDSignupResponseDto signedUpDto = performDs2xx(userController.signup(signupDto),UUIDSignupResponseDto.class);
         String uuid = signedUpDto.getUuid();
 
         CreateVetDto createVetDto = new CreateVetDto(vet,uuid);
-        FullVetDto fullVetDto = perform2xx(vetController.create(createVetDto), FullVetDto.class);
+        FullVetDto fullVetDto = performDs2xx(vetController.create(createVetDto), FullVetDto.class);
         return vetService.findById(fullVetDto.getId()).get();
     }
 
@@ -419,7 +419,7 @@ public class AbstractControllerIntegrationTest<C extends GenericCrudController<?
         createVisitDto.setPetIds(Arrays.stream(pets).map(Pet::getId).collect(Collectors.toSet()));
         createVisitDto.setVetId(vet.getId());
 
-        VisitDto responseDto = perform2xx(create(createVisitDto)
+        VisitDto responseDto = performDs2xx(create(createVisitDto)
                         .header(HttpHeaders.AUTHORIZATION,token)
                 , VisitDto.class);
         return visitRepository.findById(responseDto.getId()).get();
@@ -430,11 +430,11 @@ public class AbstractControllerIntegrationTest<C extends GenericCrudController<?
                 .email(email)
                 .password(password)
                 .build();
-        UUIDSignupResponseDto signedUpDto = perform2xx(userController.signup(signupDto),UUIDSignupResponseDto.class);
+        UUIDSignupResponseDto signedUpDto = performDs2xx(userController.signup(signupDto),UUIDSignupResponseDto.class);
         String uuid = signedUpDto.getUuid();
 
         CreateOwnerDto createOwnerDto = new CreateOwnerDto(owner,uuid);
-        FullOwnerDto fullOwnerDto = perform2xx(ownerController.create(createOwnerDto), FullOwnerDto.class);
+        FullOwnerDto fullOwnerDto = performDs2xx(ownerController.create(createOwnerDto), FullOwnerDto.class);
         return ownerService.findById(fullOwnerDto.getId()).get();
     }
 

@@ -17,7 +17,7 @@ public class ClinicCardControllerTest extends AbstractControllerIntegrationTest<
     @Test
     public void canSaveCardWithoutOwner() throws Exception {
         ClinicCardDto createCardDto = new ClinicCardDto(clinicCard);
-        ClinicCardDto responseDto = perform2xx(create(createCardDto), ClinicCardDto.class);
+        ClinicCardDto responseDto = performDs2xx(create(createCardDto), ClinicCardDto.class);
 
 
         compare(clinicCard).with(responseDto)
@@ -45,7 +45,7 @@ public class ClinicCardControllerTest extends AbstractControllerIntegrationTest<
         String jsonRequest = RapidTestUtil.createUpdateJsonRequest(
                 RapidTestUtil.createUpdateJsonLine("remove", "/ownerId")
         );
-        ClinicCardDto responseDto = perform2xx(update(jsonRequest, savedDto.getId()), ClinicCardDto.class);
+        ClinicCardDto responseDto = performDs2xx(update(jsonRequest, savedDto.getId()), ClinicCardDto.class);
         Assertions.assertNull(responseDto.getOwnerId());
 
         assertClinicCardHasOwner(responseDto.getId(),null);
@@ -59,7 +59,7 @@ public class ClinicCardControllerTest extends AbstractControllerIntegrationTest<
         String jsonRequest = RapidTestUtil.createUpdateJsonRequest(
                 RapidTestUtil.createUpdateJsonLine("add", "/ownerId",savedKahn.getId().toString())
         );
-        ClinicCardDto responseDto = perform2xx(update(jsonRequest, savedDto.getId()), ClinicCardDto.class);
+        ClinicCardDto responseDto = performDs2xx(update(jsonRequest, savedDto.getId()), ClinicCardDto.class);
         Assertions.assertEquals(savedKahn.getId(),responseDto.getOwnerId());
 
         assertClinicCardHasOwner(responseDto.getId(),KAHN);
@@ -74,7 +74,7 @@ public class ClinicCardControllerTest extends AbstractControllerIntegrationTest<
         String jsonRequest = RapidTestUtil.createUpdateJsonRequest(
                 RapidTestUtil.createUpdateJsonLine("replace", "/ownerId",savedMeier.getId().toString())
         );
-        ClinicCardDto responseDto = perform2xx(update(jsonRequest, savedDto.getId()), ClinicCardDto.class);
+        ClinicCardDto responseDto = performDs2xx(update(jsonRequest, savedDto.getId()), ClinicCardDto.class);
         Assertions.assertEquals(savedMeier.getId(),responseDto.getOwnerId());
 
         assertClinicCardHasOwner(responseDto.getId(),MEIER);
@@ -100,7 +100,7 @@ public class ClinicCardControllerTest extends AbstractControllerIntegrationTest<
             Owner owner = ownerRepository.findByLastName(ownerName).get();
             clinicCardDto.setOwnerId(owner.getId());
         }
-        return perform2xx(create(clinicCardDto),ClinicCardDto.class);
+        return performDs2xx(create(clinicCardDto),ClinicCardDto.class);
     }
 
 }

@@ -20,10 +20,7 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.ApplicationContext;
 import org.springframework.http.MediaType;
-import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.MvcResult;
-import org.springframework.test.web.servlet.RequestBuilder;
-import org.springframework.test.web.servlet.ResultMatcher;
+import org.springframework.test.web.servlet.*;
 import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
 import org.springframework.test.web.servlet.setup.DefaultMockMvcBuilder;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
@@ -108,12 +105,20 @@ public abstract class AbstractCrudControllerTest
                 .alwaysDo(print());
     }
 
-
-    public <Dto> Dto perform2xx(RequestBuilder requestBuilder, Class<Dto> dtoClass) throws Exception {
-       return performWithStatus(requestBuilder,status().is2xxSuccessful(),dtoClass);
+    public ResultActions perform2xx(RequestBuilder requestBuilder) throws Exception {
+        return getMvc().perform(requestBuilder).andExpect(status().is2xxSuccessful());
     }
 
-    public <Dto> Dto performWithStatus(RequestBuilder requestBuilder, ResultMatcher status, Class<Dto> dtoClass) throws Exception {
+    public ResultActions perform(RequestBuilder requestBuilder) throws Exception {
+        return getMvc().perform(requestBuilder);
+    }
+
+
+    public <Dto> Dto performDs2xx(RequestBuilder requestBuilder, Class<Dto> dtoClass) throws Exception {
+       return performDsWithStatus(requestBuilder,status().is2xxSuccessful(),dtoClass);
+    }
+
+    public <Dto> Dto performDsWithStatus(RequestBuilder requestBuilder, ResultMatcher status, Class<Dto> dtoClass) throws Exception {
         return deserialize(getMvc().perform(requestBuilder)
                 .andExpect(status)
                 .andReturn().getResponse().getContentAsString(),dtoClass);

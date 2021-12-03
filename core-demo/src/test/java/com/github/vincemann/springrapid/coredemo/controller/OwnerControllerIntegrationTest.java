@@ -121,7 +121,7 @@ public class OwnerControllerIntegrationTest
         createOwnerDto.getPetIds().addAll(Lists.newArrayList(petIds));
 
 
-       return perform2xx(create(createOwnerDto),ReadOwnOwnerDto.class);
+       return performDs2xx(create(createOwnerDto),ReadOwnOwnerDto.class);
     }
 
 
@@ -130,13 +130,13 @@ public class OwnerControllerIntegrationTest
         createOwnerDto.setClinicCardId(clinicCard.getId());
 
 
-        return perform2xx(create(createOwnerDto),ReadOwnOwnerDto.class);
+        return performDs2xx(create(createOwnerDto),ReadOwnOwnerDto.class);
     }
 
 
     private ReadOwnOwnerDto saveOwner(Owner owner) throws Exception {
         CreateOwnerDto createOwnerDto = new CreateOwnerDto(owner);
-        return perform2xx(create(createOwnerDto),ReadOwnOwnerDto.class);
+        return performDs2xx(create(createOwnerDto),ReadOwnOwnerDto.class);
     }
 
 
@@ -199,7 +199,7 @@ public class OwnerControllerIntegrationTest
 
         ReadOwnOwnerDto createdKahnDto = saveOwnerLinkedToClinicCard(kahn,savedClinicCard);
         String updateJson = createUpdateJsonLine("remove", "/clinicCardId");
-        ReadOwnOwnerDto responseDto = perform2xx(update(createUpdateJsonRequest(updateJson), createdKahnDto.getId()),ReadOwnOwnerDto.class);
+        ReadOwnOwnerDto responseDto = performDs2xx(update(createUpdateJsonRequest(updateJson), createdKahnDto.getId()),ReadOwnOwnerDto.class);
         Assertions.assertNull(responseDto.getClinicCardId());
 
         assertOwnerHasClinicCard(KAHN,null);
@@ -212,7 +212,7 @@ public class OwnerControllerIntegrationTest
 
         ReadOwnOwnerDto createdKahnDto = saveOwner(kahn);
         String updateJson = createUpdateJsonLine("add", "/clinicCardId",savedClinicCard.getId().toString());
-        ReadOwnOwnerDto responseDto = perform2xx(update(createUpdateJsonRequest(updateJson), createdKahnDto.getId()),ReadOwnOwnerDto.class);
+        ReadOwnOwnerDto responseDto = performDs2xx(update(createUpdateJsonRequest(updateJson), createdKahnDto.getId()),ReadOwnOwnerDto.class);
         Assertions.assertEquals(savedClinicCard.getId(),responseDto.getClinicCardId());
 
         assertOwnerHasClinicCard(KAHN,savedClinicCard.getId());
@@ -226,7 +226,7 @@ public class OwnerControllerIntegrationTest
 
         ReadOwnOwnerDto createdKahnDto = saveOwnerLinkedToClinicCard(kahn,savedClinicCard);
         String updateJson = createUpdateJsonLine("replace", "/clinicCardId",savedSecondClinicCard.getId().toString());
-        ReadOwnOwnerDto responseDto = perform2xx(update(createUpdateJsonRequest(updateJson), createdKahnDto.getId()),ReadOwnOwnerDto.class);
+        ReadOwnOwnerDto responseDto = performDs2xx(update(createUpdateJsonRequest(updateJson), createdKahnDto.getId()),ReadOwnOwnerDto.class);
         Assertions.assertEquals(savedSecondClinicCard.getId(),responseDto.getClinicCardId());
 
         assertOwnerHasClinicCard(KAHN,savedSecondClinicCard.getId());

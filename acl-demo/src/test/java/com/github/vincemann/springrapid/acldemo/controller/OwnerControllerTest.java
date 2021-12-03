@@ -32,7 +32,7 @@ public class OwnerControllerTest extends AbstractControllerIntegrationTest<Owner
                 .email(OWNER_KAHN_EMAIL)
                 .password(OWNER_KAHN_PASSWORD)
                 .build();
-        UUIDSignupResponseDto signedUpDto = perform2xx(userController.signup(signupDto), UUIDSignupResponseDto.class);
+        UUIDSignupResponseDto signedUpDto = performDs2xx(userController.signup(signupDto), UUIDSignupResponseDto.class);
         String uuid = signedUpDto.getUuid();
         Assertions.assertNotNull(uuid);
 
@@ -41,7 +41,7 @@ public class OwnerControllerTest extends AbstractControllerIntegrationTest<Owner
 
 
         CreateOwnerDto createOwnerDto = new CreateOwnerDto(kahn, uuid);
-        FullOwnerDto createdDto = perform2xx(create(createOwnerDto), FullOwnerDto.class);
+        FullOwnerDto createdDto = performDs2xx(create(createOwnerDto), FullOwnerDto.class);
 
         compare(createOwnerDto).with(createdDto)
                 .properties()
@@ -80,7 +80,7 @@ public class OwnerControllerTest extends AbstractControllerIntegrationTest<Owner
         Owner dbKahn = registerOwner(kahn, OWNER_KAHN_EMAIL, OWNER_KAHN_PASSWORD);
         String token = userController.login2xx(dbKahn.getUser().getEmail(), OWNER_KAHN_PASSWORD);
         OwnerCreatesPetDto createPetDto = new OwnerCreatesPetDto(bella, dbKahn.getId());
-        FullPetDto createdPet = perform2xx(petController.create(createPetDto)
+        FullPetDto createdPet = performDs2xx(petController.create(createPetDto)
                 .header(HttpHeaders.AUTHORIZATION, token), FullPetDto.class);
         Assertions.assertEquals(dbKahn.getId(), createdPet.getOwnerId());
         assertOwnerHasPets(OWNER_KAHN, BELLA);
@@ -110,7 +110,7 @@ public class OwnerControllerTest extends AbstractControllerIntegrationTest<Owner
         String updateJson = createUpdateJsonRequest(
                 createUpdateJsonLine("replace", "/petTypeId", savedDogPetType.getId().toString())
         );
-        FullPetDto updatedPetDto = perform2xx(petController.update(updateJson, dbBella.getId().toString())
+        FullPetDto updatedPetDto = performDs2xx(petController.update(updateJson, dbBella.getId().toString())
                         .header(HttpHeaders.AUTHORIZATION, token),
                         FullPetDto.class);
 
@@ -166,7 +166,7 @@ public class OwnerControllerTest extends AbstractControllerIntegrationTest<Owner
     public void ownerCanReadOwnPet() throws Exception {
         String ownerToken = registerOwnerWithPets(kahn, OWNER_KAHN_EMAIL, OWNER_KAHN_PASSWORD, bella);
         Pet dbBella = petRepository.findByName(BELLA).get();
-        FullPetDto fullPetDto = perform2xx(petController.find(dbBella.getId().toString())
+        FullPetDto fullPetDto = performDs2xx(petController.find(dbBella.getId().toString())
                 .header(HttpHeaders.AUTHORIZATION, ownerToken),
                 FullPetDto.class);
 

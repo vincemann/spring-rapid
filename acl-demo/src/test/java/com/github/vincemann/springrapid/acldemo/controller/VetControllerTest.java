@@ -32,7 +32,7 @@ public class VetControllerTest extends AbstractControllerIntegrationTest<VetCont
                 .email(VET_DICAPRIO_EMAIL)
                 .password(VET_DICAPRIO_PASSWORD)
                 .build();
-        UUIDSignupResponseDto signedUpDto = perform2xx(userController.signup(signupDto), UUIDSignupResponseDto.class);
+        UUIDSignupResponseDto signedUpDto = performDs2xx(userController.signup(signupDto), UUIDSignupResponseDto.class);
         String uuid = signedUpDto.getUuid();
         Assertions.assertNotNull(uuid);
 
@@ -41,7 +41,7 @@ public class VetControllerTest extends AbstractControllerIntegrationTest<VetCont
 
 
         CreateVetDto createVetDto = new CreateVetDto(vetDiCaprio, uuid);
-        FullVetDto createdDto = perform2xx(create(createVetDto), FullVetDto.class);
+        FullVetDto createdDto = performDs2xx(create(createVetDto), FullVetDto.class);
 
         compare(createVetDto).with(createdDto)
                 .properties()
@@ -97,7 +97,7 @@ public class VetControllerTest extends AbstractControllerIntegrationTest<VetCont
                 createUpdateJsonLine("remove", "/roles", MyRoles.NEW_VET)
         );
 
-        FullUserDto responseVetUserDto = perform2xx(userController.update(verifyVetJson, vet.getUser().getId().toString())
+        FullUserDto responseVetUserDto = performDs2xx(userController.update(verifyVetJson, vet.getUser().getId().toString())
                 .header(HttpHeaders.AUTHORIZATION, adminToken), FullUserDto.class);
 
         Vet updatedDbVet = vetRepository.findById(vet.getId()).get();
@@ -118,7 +118,7 @@ public class VetControllerTest extends AbstractControllerIntegrationTest<VetCont
         Vet vet = registerEnabledVet(vetDiCaprio, VET_DICAPRIO_EMAIL, VET_DICAPRIO_PASSWORD);
         String dicaprioToken = userController.login2xx(VET_DICAPRIO_EMAIL, VET_DICAPRIO_PASSWORD);
 
-        FullPetDto responsePetDto = perform2xx(petController.find(dbBella.getId().toString())
+        FullPetDto responsePetDto = performDs2xx(petController.find(dbBella.getId().toString())
                 .header(HttpHeaders.AUTHORIZATION, dicaprioToken), FullPetDto.class);
 
         compare(responsePetDto).with(dbBella)
@@ -139,7 +139,7 @@ public class VetControllerTest extends AbstractControllerIntegrationTest<VetCont
                 createUpdateJsonLine("add", "/illnessIds", dbTeethPain.getId().toString())
         );
 
-        FullPetDto responsePetDto = perform2xx(petController.update(updateJson,dbBella.getId().toString())
+        FullPetDto responsePetDto = performDs2xx(petController.update(updateJson,dbBella.getId().toString())
                 .header(HttpHeaders.AUTHORIZATION, vetToken), FullPetDto.class);
 
         compare(responsePetDto).with(dbBella)

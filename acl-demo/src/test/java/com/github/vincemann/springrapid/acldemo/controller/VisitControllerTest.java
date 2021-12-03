@@ -1,7 +1,6 @@
 package com.github.vincemann.springrapid.acldemo.controller;
 
 import com.github.vincemann.springrapid.acldemo.dto.VisitDto;
-import com.github.vincemann.springrapid.acldemo.dto.vet.FullVetDto;
 import com.github.vincemann.springrapid.acldemo.model.Owner;
 import com.github.vincemann.springrapid.acldemo.model.Pet;
 import com.github.vincemann.springrapid.acldemo.model.Vet;
@@ -36,7 +35,7 @@ public class VisitControllerTest extends AbstractControllerIntegrationTest<Visit
         createVisitDto.setPetIds(new HashSet<>(Lists.newArrayList(savedBella.getId())));
         createVisitDto.setVetId(savedVet.getId());
 
-        VisitDto responseDto = perform2xx(create(createVisitDto)
+        VisitDto responseDto = performDs2xx(create(createVisitDto)
                 .header(HttpHeaders.AUTHORIZATION,dicaprioToken),
                 VisitDto.class);
         compare(createVisitDto).with(responseDto)
@@ -130,7 +129,7 @@ public class VisitControllerTest extends AbstractControllerIntegrationTest<Visit
 
         Visit visit = createVisit(vetDiCaprioToken, savedKahn, savedDicaprio, checkTeethVisit, savedBella);
 
-        perform2xx(find(visit.getId())
+        performDs2xx(find(visit.getId())
                         .header(HttpHeaders.AUTHORIZATION, kahnToken),
                 VisitDto.class);
     }

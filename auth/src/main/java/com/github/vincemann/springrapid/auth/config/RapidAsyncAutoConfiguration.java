@@ -9,6 +9,6 @@ import org.springframework.scheduling.annotation.EnableAsync;
 @Slf4j
 public class RapidAsyncAutoConfiguration {
     public RapidAsyncAutoConfiguration() {
-
+        log.info("asny enabled");
     }
 }

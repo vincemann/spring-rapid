@@ -1,13 +1,10 @@
 package com.github.vincemann.springrapid.core.config;
 
 import com.github.vincemann.springrapid.core.CoreProperties;
-import com.github.vincemann.springrapid.core.controller.owner.DelegatingOwnerLocator;
-import com.github.vincemann.springrapid.core.controller.owner.OwnerLocator;
-import com.github.vincemann.springrapid.core.proxy.annotation.AnnotationCrudServiceProxyFactory;
+import com.github.vincemann.springrapid.core.model.RapidSecurityAuditorAware;
 import com.github.vincemann.springrapid.core.util.JpaUtils;
 import com.github.vincemann.springrapid.core.util.Message;
 import lombok.extern.slf4j.Slf4j;
-import org.checkerframework.checker.units.qual.A;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.context.properties.ConfigurationProperties;
@@ -15,10 +12,9 @@ import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.context.MessageSource;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.support.ReloadableResourceBundleMessageSource;
+import org.springframework.data.domain.AuditorAware;
 
 import javax.persistence.EntityManager;
-import java.util.List;
 
 @Configuration
 @EnableConfigurationProperties
@@ -44,6 +40,12 @@ public class RapidGeneralAutoConfiguration {
 //    }
 
 
+    // overwrite existing autoraware
+    @ConditionalOnMissingBean(name = "rapidSecurityAuditorAware")
+    @Bean
+    public AuditorAware auditorAware(){
+        return new RapidSecurityAuditorAware();
+    }
 
     @Bean
     public Message messageUtils(MessageSource messageSource){

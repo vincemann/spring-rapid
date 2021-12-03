@@ -77,6 +77,7 @@ public class RapidAclSecurityChecker
             throw new IllegalArgumentException("Clazz must not be null");
         }
         RapidSecurityContextChecker.checkAuthenticated();
+        RapidAuthenticatedPrincipal p = rapidSecurityContext.currentPrincipal();
         String permissionString = permissionStringConverter.convert(permission);
         boolean permitted = checkExpression("hasPermission(" + id + ",'" + clazz.getName() + "','" + permissionString + "')");
         if(!permitted){
