@@ -48,7 +48,7 @@ public class IdResolvingDtoPostProcessor implements DtoPostProcessor<Object, Ide
         //yet unfinished
         List<EntityIdResolver> entityIdResolvers = findResolvers(dto.getClass());
         for (EntityIdResolver entityIdResolver : entityIdResolvers) {
-            entityIdResolver.injectEntityIdsResolvedFromEntityIntoDto(dto, entity);
+            entityIdResolver.setResolvedIds(dto, entity);
         }
     }
 
@@ -57,11 +57,11 @@ public class IdResolvingDtoPostProcessor implements DtoPostProcessor<Object, Ide
         //yet unfinished
         List<EntityIdResolver> entityIdResolvers = findResolvers(dto.getClass());
         for (EntityIdResolver resolver : entityIdResolvers) {
-            resolver.injectEntitiesResolvedFromDtoIdsIntoEntity(entity, dto);
+            resolver.setResolvedEntities(entity, dto);
         }
     }
 
-    // i assume there will be ne additional resolvers added to system at runtime
+    // i assume there will be no additional resolvers added to system at runtime
     @Cacheable("resolvers")
     public List<EntityIdResolver> findResolvers(Class<?> dstClass) {
         List<EntityIdResolver> resolvers = new ArrayList<>();

@@ -37,7 +37,7 @@ public class BiDirParentIdResolver extends EntityIdResolver {
     }
 
     @Override
-    public void injectEntitiesResolvedFromDtoIdsIntoEntity(IdentifiableEntity mappedBiDirParent, Object biDirParentDto) throws BadEntityException, EntityNotFoundException {
+    public void setResolvedEntities(IdentifiableEntity mappedBiDirParent, Object biDirParentDto) throws BadEntityException, EntityNotFoundException {
         //find and handle single Children
 
         Map<Class<IdentifiableEntity>, Serializable> childTypeIdMappings = relationalDtoManager.findBiDirChildIds(biDirParentDto);
@@ -59,7 +59,7 @@ public class BiDirParentIdResolver extends EntityIdResolver {
     }
 
     @Override
-    public void injectEntityIdsResolvedFromEntityIntoDto(Object mappedDto, IdentifiableEntity serviceEntity) {
+    public void setResolvedIds(Object mappedDto, IdentifiableEntity serviceEntity) {
         for (IdentifiableEntity biDirChild : relationalEntityManager.findSingleBiDirChildren(serviceEntity)) {
             relationalDtoManager.addBiDirChildId(biDirChild,mappedDto);
         }

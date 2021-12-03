@@ -44,7 +44,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             return;
         }
 
-        log.debug("Inside LemonTokenAuthenticationFilter ...");
+        log.debug("Inside TokenAuthenticationFilter ...");
 
         String rawToken = httpTokenService.extractToken(request);
 //		String header = request.getHeader(HttpHeaders.AUTHORIZATION);

@@ -51,12 +51,12 @@ public abstract class EntityIdResolver implements AopLoggable {
      * Resolve entities by id from dto and inject (set) them into target Entity
      * -> target entity now has all entities set
      */
-    public abstract void injectEntitiesResolvedFromDtoIdsIntoEntity(IdentifiableEntity mappedEntity, Object dto) throws BadEntityException, EntityNotFoundException;
+    public abstract void setResolvedEntities(IdentifiableEntity mappedEntity, Object dto) throws BadEntityException, EntityNotFoundException;
 
     /**
      * Resolve Id's from entities in entity and inject (set) ids into target Dto
      */
-    public abstract void injectEntityIdsResolvedFromEntityIntoDto(Object mappedDto, IdentifiableEntity entity);
+    public abstract void setResolvedIds(Object mappedDto, IdentifiableEntity entity);
 
 
     protected <T> T findEntityFromService(Class<IdentifiableEntity> entityClass, Serializable id) throws EntityNotFoundException, BadEntityException {

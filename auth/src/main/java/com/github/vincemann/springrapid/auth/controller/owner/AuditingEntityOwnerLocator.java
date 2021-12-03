@@ -11,6 +11,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Optional;
 
@@ -27,6 +28,7 @@ public class AuditingEntityOwnerLocator implements OwnerLocator<AuditingEntity<?
 
     //@LogInteraction
     @Override
+    @Transactional
     public Optional<String> find(AuditingEntity<?> entity) {
         try {
             if (entity.getCreatedById()==null){

@@ -3,6 +3,7 @@ package com.github.vincemann.springrapid.auth.controller.owner;
 import com.github.vincemann.springrapid.auth.model.AbstractUser;
 import com.github.vincemann.springrapid.core.controller.owner.OwnerLocator;
 import org.springframework.core.annotation.Order;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Optional;
 
@@ -15,6 +16,7 @@ public class UserOwnerLocator implements OwnerLocator<AbstractUser<?>> {
     }
 
     @Override
+    @Transactional
     public Optional<String> find(AbstractUser<?> entity) {
         return Optional.ofNullable(entity.getEmail());
     }

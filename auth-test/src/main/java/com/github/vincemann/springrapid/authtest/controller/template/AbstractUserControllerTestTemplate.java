@@ -44,9 +44,10 @@ public abstract class AbstractUserControllerTestTemplate<C extends AbstractUserC
 
     private AuthenticatedPrincipalFactory authenticatedPrincipalFactory;
     private RapidSecurityContext<RapidAuthenticatedPrincipal> rapidSecurityContext;
-
-
     private MailSender<MailData> mailSenderMock;
+
+
+
 
     @Autowired
     public void setMailSenderMock(MailSender<MailData> mailSenderMock) {
