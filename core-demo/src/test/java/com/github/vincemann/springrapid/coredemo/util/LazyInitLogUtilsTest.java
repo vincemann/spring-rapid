@@ -58,7 +58,7 @@ class LazyInitLogUtilsTest extends AbstractControllerIntegrationTest<LazyItemCon
 
         Owner found = ownerService.findById(savedKahn.getId()).get();
 
-        String s = LazyInitLogUtils.toString(found);
+        String s = LazyInitLogUtils.toString(found,false);
         System.err.println(s);
 
         Assertions.assertTrue(s.contains("LazyInitializationException"));

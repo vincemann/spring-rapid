@@ -48,6 +48,6 @@ public class IdentifiableEntityImpl<Id extends Serializable>
 
     @Override
     public String toString() {
-        return LazyInitLogUtils.toString(this);
+        return LazyInitLogUtils.toString(this,true);
     }
 }

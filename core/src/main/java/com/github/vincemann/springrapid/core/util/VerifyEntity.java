@@ -7,6 +7,12 @@ import java.util.Optional;
 
 public class VerifyEntity {
 
+    public static void notNull(String property, String propertyName) throws BadEntityException {
+        if(property==null){
+            throw new BadEntityException("Property: "+propertyName+" must not be null");
+        }
+    }
+
     public static <T> T notNull(T entity, String property) throws BadEntityException {
         if(entity==null){
             throw new BadEntityException("Property: "+property+" must not be null");

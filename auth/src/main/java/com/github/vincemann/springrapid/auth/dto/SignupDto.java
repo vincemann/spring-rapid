@@ -27,6 +27,6 @@ public class SignupDto implements Serializable {
 
     @Override
     public String toString() {
-        return LazyInitLogUtils.toString(this);
+        return LazyInitLogUtils.toString(this,true);
     }
 }
