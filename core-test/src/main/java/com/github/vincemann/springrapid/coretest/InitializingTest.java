@@ -5,6 +5,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.springframework.test.context.TestExecutionListeners;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.ReflectionUtils;
 
 import java.util.ArrayList;
@@ -23,8 +24,9 @@ public abstract class InitializingTest {
     private boolean init = false;
     private boolean afterInit = false;
 
+    @Transactional
     @BeforeEach
-    protected void callBeforeInitializables() throws Exception {
+    public void callBeforeInitializables() throws Exception {
         if (!init) {
             ReflectionUtils.doWithFields(this.getClass(), field -> {
                 ReflectionUtils.makeAccessible(field);
@@ -46,8 +48,9 @@ public abstract class InitializingTest {
         init = true;
     }
 
+    @Transactional
     @AfterEach
-    protected void callAfterInitializables(){
+    public void callAfterInitializables(){
         if (!afterInit) {
             ReflectionUtils.doWithFields(this.getClass(), field -> {
                 ReflectionUtils.makeAccessible(field);

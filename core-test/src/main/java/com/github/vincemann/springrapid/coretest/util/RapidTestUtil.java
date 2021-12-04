@@ -51,6 +51,7 @@ public class RapidTestUtil {
 
     public static void clear(CrudService crudService){
         for (IdentifiableEntity entity : (Set<IdentifiableEntity>) crudService.findAll()) {
+            System.err.println("removing entity: " + entity);
             try {
                 crudService.deleteById(entity.getId());
             } catch (Exception e) {
