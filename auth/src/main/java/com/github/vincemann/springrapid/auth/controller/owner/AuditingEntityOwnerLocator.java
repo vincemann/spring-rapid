@@ -28,7 +28,6 @@ public class AuditingEntityOwnerLocator implements OwnerLocator<AuditingEntity<?
 
     //@LogInteraction
     @Override
-    @Transactional
     public Optional<String> find(AuditingEntity<?> entity) {
         try {
             if (entity.getCreatedById()==null){

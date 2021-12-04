@@ -4,7 +4,10 @@ package com.github.vincemann.springrapid.core.controller.owner;
 import com.github.vincemann.aoplog.api.AopLoggable;
 import com.github.vincemann.aoplog.api.LogInteraction;
 import com.github.vincemann.springrapid.core.model.IdentifiableEntity;
+import org.springframework.transaction.annotation.Transactional;
 
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -14,7 +17,6 @@ import java.util.Optional;
  */
 public class DelegatingOwnerLocator implements AopLoggable {
     private List<OwnerLocator> ownerLocators = new ArrayList<>();
-
 
     public void register(OwnerLocator ownerLocator){
         ownerLocators.add(ownerLocator);

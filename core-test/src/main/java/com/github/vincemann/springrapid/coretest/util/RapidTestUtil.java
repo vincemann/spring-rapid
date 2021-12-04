@@ -50,13 +50,13 @@ public class RapidTestUtil {
     }
 
     public static void clear(CrudService crudService){
-        for (IdentifiableEntity entity : (Set<IdentifiableEntity>) crudService.findAll()) {
-            try {
-                crudService.deleteById(entity.getId());
-            } catch (EntityNotFoundException|BadEntityException e) {
-                throw new RuntimeException(e);
-            }
-        }
+//        for (IdentifiableEntity entity : (Set<IdentifiableEntity>) crudService.findAll()) {
+//            try {
+//                crudService.deleteById(entity.getId());
+//            } catch (EntityNotFoundException|BadEntityException e) {
+//                throw new RuntimeException(e);
+//            }
+//        }
     }
 
 

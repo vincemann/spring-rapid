@@ -52,6 +52,7 @@ public class IdResolvingDtoPostProcessor implements DtoPostProcessor<Object, Ide
         }
     }
 
+    // todo this is probably the only method that needs to be transactional and also might need entityManger.merge
     @Override
     public void postProcessEntity(IdentifiableEntity<?> entity, Object dto) throws BadEntityException, EntityNotFoundException {
         //yet unfinished

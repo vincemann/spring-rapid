@@ -16,7 +16,6 @@ public class UserOwnerLocator implements OwnerLocator<AbstractUser<?>> {
     }
 
     @Override
-    @Transactional
     public Optional<String> find(AbstractUser<?> entity) {
         return Optional.ofNullable(entity.getEmail());
     }

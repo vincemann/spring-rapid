@@ -7,17 +7,20 @@ import com.github.vincemann.springrapid.core.service.exception.EntityNotFoundExc
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
 @Slf4j
-@Transactional
 public class DelegatingDtoMapper{
 
     private List<DtoMapper<?, ?>> delegates = new ArrayList<>();
     private List<DtoEntityPostProcessor> dtoEntityPostProcessors = new ArrayList<>();
     private List<EntityDtoPostProcessor> entityDtoPostProcessors = new ArrayList<>();
+    @PersistenceContext
+    private EntityManager entityManager;
 
     //@LogInteraction
     public <T extends IdentifiableEntity<?>> T mapToEntity(Object dto, Class<T> destinationClass) throws EntityNotFoundException, BadEntityException {
@@ -44,7 +47,10 @@ public class DelegatingDtoMapper{
     }
 
     //@LogInteraction
+    @Transactional
     public <T> T mapToDto(IdentifiableEntity<?> source, Class<T> destinationClass) throws BadEntityException {
+        // source entity is detached and might not have all collections lazy loaded for this dto mapping -> merge
+        entityManager.merge(source);
         T dto = (T) findMapper(destinationClass)
                 .mapToDto(source, destinationClass);
         for (EntityDtoPostProcessor pp : entityDtoPostProcessors) {
