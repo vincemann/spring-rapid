@@ -10,25 +10,28 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>com.github.vincemann.spring-rapid</groupId>
-    <artifactId>auth-test</artifactId>
+    <artifactId>acl-test</artifactId>
+
+    <properties>
+        <maven.compiler.source>11</maven.compiler.source>
+        <maven.compiler.target>11</maven.compiler.target>
+    </properties>
 
     <dependencies>
 
         <dependency>
             <groupId>com.github.vincemann.spring-rapid</groupId>
-            <artifactId>acl-test</artifactId>
+            <artifactId>core-test</artifactId>
             <version>${project.version}</version>
         </dependency>
 
         <dependency>
             <groupId>com.github.vincemann.spring-rapid</groupId>
-            <artifactId>auth</artifactId>
+            <artifactId>acl</artifactId>
             <version>${project.version}</version>
         </dependency>
-        <dependency>
-            <groupId>org.springframework.security</groupId>
-            <artifactId>spring-security-test</artifactId>
-        </dependency>
+
+
 
     </dependencies>
 

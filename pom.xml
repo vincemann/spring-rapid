@@ -43,6 +43,7 @@
         <module>limit-actions</module>
         <module>exceptions-api</module>
         <module>acl-demo</module>
+        <module>acl-test</module>
     </modules>
 
     <dependencies>

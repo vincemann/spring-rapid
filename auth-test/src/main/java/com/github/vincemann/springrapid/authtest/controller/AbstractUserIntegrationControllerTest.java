@@ -1,15 +1,15 @@
 package com.github.vincemann.springrapid.authtest.controller;
 
+import com.github.vincemann.acltest.controller.AbstractAclIntegrationCrudControllerTest;
 import com.github.vincemann.springrapid.auth.controller.AbstractUserController;
 import com.github.vincemann.springrapid.authtest.controller.template.AbstractUserControllerTestTemplate;
-import com.github.vincemann.springrapid.coretest.controller.integration.AbstractIntegrationControllerTest;
 import org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers;
 import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.setup.DefaultMockMvcBuilder;
 
 public abstract class AbstractUserIntegrationControllerTest
         <C extends AbstractUserController, T extends AbstractUserControllerTestTemplate>
-                extends AbstractIntegrationControllerTest<C,AbstractUserControllerTestTemplate> {
+                extends AbstractAclIntegrationCrudControllerTest<C,AbstractUserControllerTestTemplate> {
 
     @Override
     protected DefaultMockMvcBuilder createMvcBuilder() {
