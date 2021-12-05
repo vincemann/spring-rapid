@@ -1,5 +1,6 @@
 package com.github.vincemann.springrapid.acldemo.controller;
 
+import com.github.vincemann.acltest.controller.AclIntegrationCrudControllerTest;
 import com.github.vincemann.springrapid.acldemo.auth.MyRoles;
 import com.github.vincemann.springrapid.acldemo.controller.templates.OwnerControllerTestTemplate;
 import com.github.vincemann.springrapid.acldemo.controller.templates.PetControllerTestTemplate;
@@ -43,7 +44,7 @@ import static com.github.vincemann.springrapid.coretest.util.RapidTestUtil.creat
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 // add admin before each test
 public class AbstractControllerIntegrationTest<C extends GenericCrudController<?,Long,S,?,?>,S extends CrudService<?,Long>>
-        extends IntegrationCrudControllerTest<C,S>
+        extends AclIntegrationCrudControllerTest<C,S>
 {
 
     //Types

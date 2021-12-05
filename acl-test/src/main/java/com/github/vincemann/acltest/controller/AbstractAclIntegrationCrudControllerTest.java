@@ -14,10 +14,9 @@ import org.springframework.test.context.jdbc.Sql;
 @TestExecutionListeners(
         value = {
                 ClearAclCacheTestExecutionListener.class,
-//                InitTestDataTestExecutionListener.class
         },
         mergeMode = TestExecutionListeners.MergeMode.MERGE_WITH_DEFAULTS
 )
 public class AbstractAclIntegrationCrudControllerTest<C extends GenericCrudController,T extends AbstractCrudControllerTestTemplate>
-        extends AbstractCrudControllerTest<C,T> {
+        extends AbstractIntegrationControllerTest<C,T> {
 }

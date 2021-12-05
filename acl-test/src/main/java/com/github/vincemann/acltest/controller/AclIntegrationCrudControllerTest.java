@@ -1,9 +1,10 @@
-package com.github.vincemann.springrapid.coretest.controller.integration;
+package com.github.vincemann.acltest.controller;
 
 import com.github.vincemann.springrapid.core.controller.GenericCrudController;
 import com.github.vincemann.springrapid.core.security.RapidAuthenticatedPrincipal;
 import com.github.vincemann.springrapid.core.security.RapidSecurityContext;
 import com.github.vincemann.springrapid.core.service.CrudService;
+import com.github.vincemann.springrapid.coretest.controller.integration.AbstractIntegrationControllerTest;
 import com.github.vincemann.springrapid.coretest.controller.template.CrudControllerTestTemplate;
 import com.github.vincemann.springrapid.coretest.util.RapidTestUtil;
 import lombok.Getter;
@@ -11,9 +12,9 @@ import org.junit.jupiter.api.AfterEach;
 import org.springframework.beans.factory.annotation.Autowired;
 
 @Getter
-public class IntegrationCrudControllerTest
+public class AclIntegrationCrudControllerTest
         <C extends GenericCrudController<?,?,S,?,?>, S extends CrudService<?,?>>
-            extends AbstractIntegrationControllerTest<C,CrudControllerTestTemplate>
+        extends AbstractAclIntegrationCrudControllerTest<C, CrudControllerTestTemplate>
 {
     private S service;
     private RapidSecurityContext<RapidAuthenticatedPrincipal> securityContext;
