@@ -28,7 +28,12 @@ public class LazyInitLogUtils {
             protected Object getValue(Field f) throws IllegalAccessException {
                 if (IdentifiableEntity.class.isAssignableFrom(f.getType())){
                     if (idOnly){
-                        return ((IdentifiableEntity)f.get(object)).getId().toString();
+                        IdentifiableEntity entity = ((IdentifiableEntity)f.get(object));
+                        if (entity == null){
+                            return "null";
+                        }else{
+                            return entity.getId() == null ? "null" : entity.getId().toString();
+                        }
                     }
                 }
                 else if (Collection.class.isAssignableFrom(f.getType())) {
@@ -44,9 +49,9 @@ public class LazyInitLogUtils {
                                 if (idOnly){
                                     if (IdentifiableEntity.class.isAssignableFrom(entity.getClass())){
                                         if (Set.class.isAssignableFrom(collection.getClass())){
-                                            return collection.stream().map(e -> ((IdentifiableEntity) e).getId().toString()).collect(Collectors.toSet());
+                                            return collection.stream().map(e -> ((IdentifiableEntity) e).getId() == null ? "null" : ((IdentifiableEntity) e).getId().toString()).collect(Collectors.toSet());
                                         }else if (List.class.isAssignableFrom(collection.getClass())){
-                                            return collection.stream().map(e -> ((IdentifiableEntity) e).getId().toString()).collect(Collectors.toList());
+                                            return collection.stream().map(e -> ((IdentifiableEntity) e).getId() == null ? "null" : ((IdentifiableEntity) e).getId().toString()).collect(Collectors.toList());
                                         }else {
                                             log.warn("unsupported collection type");
                                         }
