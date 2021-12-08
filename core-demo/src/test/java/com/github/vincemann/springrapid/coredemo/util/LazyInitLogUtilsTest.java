@@ -1,14 +1,13 @@
 package com.github.vincemann.springrapid.coredemo.util;
 
 import com.github.vincemann.springrapid.core.service.exception.BadEntityException;
-import com.github.vincemann.springrapid.core.util.LazyInitLogUtils;
+import com.github.vincemann.springrapid.core.util.LazyLogUtils;
 import com.github.vincemann.springrapid.coredemo.controller.AbstractControllerIntegrationTest;
 import com.github.vincemann.springrapid.coredemo.controller.LazyItemController;
 import com.github.vincemann.springrapid.coredemo.model.LazyItem;
 import com.github.vincemann.springrapid.coredemo.model.Owner;
 import com.github.vincemann.springrapid.coredemo.service.LazyItemService;
 import com.github.vincemann.springrapid.coredemo.service.OwnerService;
-import com.github.vincemann.springrapid.coretest.service.CrudServiceIntegrationTest;
 import org.hibernate.LazyInitializationException;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -17,8 +16,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.HashSet;
 import java.util.Set;
-
-import static org.junit.jupiter.api.Assertions.*;
 
 class LazyInitLogUtilsTest extends AbstractControllerIntegrationTest<LazyItemController,LazyItemService> {
 
@@ -58,7 +55,7 @@ class LazyInitLogUtilsTest extends AbstractControllerIntegrationTest<LazyItemCon
 
         Owner found = ownerService.findById(savedKahn.getId()).get();
 
-        String s = LazyInitLogUtils.toString(found,Boolean.FALSE);
+        String s = LazyLogUtils.toString(found,Boolean.FALSE);
         System.err.println(s);
 
         Assertions.assertTrue(s.contains("LazyInitializationException"));
@@ -80,6 +77,6 @@ class LazyInitLogUtilsTest extends AbstractControllerIntegrationTest<LazyItemCon
         Owner found = ownerService.findById(savedKahn.getId()).get();
 
         Assertions.assertThrows(LazyInitializationException.class,
-                () -> LazyInitLogUtils.toString(found,Boolean.FALSE, Boolean.FALSE));
+                () -> LazyLogUtils.toString(found,Boolean.FALSE, Boolean.FALSE));
     }
 }

@@ -2,7 +2,7 @@ package com.github.vincemann.springrapid.auth.dto;
 
 import com.fasterxml.jackson.annotation.JsonView;
 import com.github.vincemann.springrapid.auth.util.UserVerifyUtils;
-import com.github.vincemann.springrapid.core.util.LazyInitLogUtils;
+import com.github.vincemann.springrapid.core.util.LazyLogUtils;
 import lombok.*;
 
 import javax.validation.constraints.Email;
@@ -27,6 +27,6 @@ public class SignupDto implements Serializable {
 
     @Override
     public String toString() {
-        return LazyInitLogUtils.toString(this,true);
+        return LazyLogUtils.toString(this,true);
     }
 }

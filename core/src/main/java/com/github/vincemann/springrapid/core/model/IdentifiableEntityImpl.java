@@ -1,8 +1,7 @@
 package com.github.vincemann.springrapid.core.model;
 
-import com.github.vincemann.springrapid.core.util.LazyInitLogUtils;
+import com.github.vincemann.springrapid.core.util.LazyLogUtils;
 import lombok.NoArgsConstructor;
-import lombok.ToString;
 
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -48,6 +47,6 @@ public class IdentifiableEntityImpl<Id extends Serializable>
 
     @Override
     public String toString() {
-        return LazyInitLogUtils.toString(this,true);
+        return LazyLogUtils.toString(this,true);
     }
 }

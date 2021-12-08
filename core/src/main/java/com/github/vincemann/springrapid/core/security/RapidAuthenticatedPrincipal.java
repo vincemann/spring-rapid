@@ -1,9 +1,6 @@
 package com.github.vincemann.springrapid.core.security;
 
-import com.github.vincemann.springrapid.core.util.LazyInitLogUtils;
 import lombok.Getter;
-import lombok.Setter;
-import lombok.ToString;
 import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
 import org.springframework.security.core.AuthenticatedPrincipal;
 import org.springframework.security.core.Authentication;

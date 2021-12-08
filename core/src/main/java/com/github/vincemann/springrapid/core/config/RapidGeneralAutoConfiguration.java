@@ -3,10 +3,9 @@ package com.github.vincemann.springrapid.core.config;
 import com.github.vincemann.springrapid.core.CoreProperties;
 import com.github.vincemann.springrapid.core.model.RapidSecurityAuditorAware;
 import com.github.vincemann.springrapid.core.util.JpaUtils;
-import com.github.vincemann.springrapid.core.util.LazyInitLogUtils;
+import com.github.vincemann.springrapid.core.util.LazyLogUtils;
 import com.github.vincemann.springrapid.core.util.Message;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
@@ -68,9 +67,9 @@ public class RapidGeneralAutoConfiguration {
     }
 
     @Bean
-    @ConditionalOnMissingBean(LazyInitLogUtils.class)
-    public LazyInitLogUtils lazyInitLogUtils(){
-        return LazyInitLogUtils.create(entityManager);
+    @ConditionalOnMissingBean(LazyLogUtils.class)
+    public LazyLogUtils lazyInitLogUtils(){
+        return LazyLogUtils.create(entityManager);
     }
 
 }
