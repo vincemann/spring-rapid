@@ -3,6 +3,7 @@ package com.github.vincemann.springrapid.core.config;
 import com.github.vincemann.springrapid.core.CoreProperties;
 import com.github.vincemann.springrapid.core.model.RapidSecurityAuditorAware;
 import com.github.vincemann.springrapid.core.util.JpaUtils;
+import com.github.vincemann.springrapid.core.util.LazyInitLogUtils;
 import com.github.vincemann.springrapid.core.util.Message;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,13 +16,14 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.data.domain.AuditorAware;
 
 import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
 
 @Configuration
 @EnableConfigurationProperties
 @Slf4j
 public class RapidGeneralAutoConfiguration {
 
-    @Autowired(required = false)
+    @PersistenceContext
     EntityManager entityManager;
 
     public RapidGeneralAutoConfiguration() {
@@ -63,6 +65,12 @@ public class RapidGeneralAutoConfiguration {
     @ConditionalOnMissingBean(JpaUtils.class)
     public JpaUtils jpaUtils(){
         return new JpaUtils(entityManager);
+    }
+
+    @Bean
+    @ConditionalOnMissingBean(LazyInitLogUtils.class)
+    public LazyInitLogUtils lazyInitLogUtils(){
+        return LazyInitLogUtils.create(entityManager);
     }
 
 }
