@@ -73,7 +73,7 @@ public class RapidRelationalEntityManager implements RelationalEntityManager{
      * mapped to the Type of the Entities in the Collection.
      * @return
      */
-    public Map<Collection<IdentifiableEntity>,Class<IdentifiableEntity>> findBiDirParentCollections(IdentifiableEntity child){
+    public Map<Class<IdentifiableEntity>,Collection<IdentifiableEntity>> findBiDirParentCollections(IdentifiableEntity child){
         assertEntityRelationType(child, RelationalEntityType.BiDirChild);
         return findEntityCollections(child,BiDirParentCollection.class);
     }
@@ -129,8 +129,8 @@ public class RapidRelationalEntityManager implements RelationalEntityManager{
         for(IdentifiableEntity parent: findSingleBiDirParents(child)){
             unlinkBiDirChild(parent,child);
         }
-        for(Map.Entry<Collection<IdentifiableEntity>,Class<IdentifiableEntity>> entry: findBiDirParentCollections(child).entrySet()){
-            Collection<IdentifiableEntity> parentCollection = entry.getKey();
+        for(Map.Entry<Class<IdentifiableEntity>,Collection<IdentifiableEntity>> entry: findBiDirParentCollections(child).entrySet()){
+            Collection<IdentifiableEntity> parentCollection = entry.getValue();
             for(IdentifiableEntity parent: parentCollection){
                 unlinkBiDirChild(parent,child);
             }
@@ -151,7 +151,7 @@ public class RapidRelationalEntityManager implements RelationalEntityManager{
      * mapped to the Type of the Entities in the Collection.
      * @return
      */
-    public Map<Collection<IdentifiableEntity>,Class<IdentifiableEntity>> findBiDirChildCollections(IdentifiableEntity parent){
+    public Map<Class<IdentifiableEntity>,Collection<IdentifiableEntity>> findBiDirChildCollections(IdentifiableEntity parent){
         assertEntityRelationType(parent, RelationalEntityType.BiDirParent);
         return findEntityCollections(parent,BiDirChildCollection.class);
     }
@@ -203,8 +203,8 @@ public class RapidRelationalEntityManager implements RelationalEntityManager{
         for(IdentifiableEntity child: findSingleBiDirChildren(parent)){
             unlinkBiDirParent(child,parent);
         }
-        for(Map.Entry<Collection<IdentifiableEntity>,Class<IdentifiableEntity>> entry: findBiDirChildCollections(parent).entrySet()){
-            Collection<IdentifiableEntity> childrenCollection = entry.getKey();
+        for(Map.Entry<Class<IdentifiableEntity>,Collection<IdentifiableEntity>> entry: findBiDirChildCollections(parent).entrySet()){
+            Collection<IdentifiableEntity> childrenCollection = entry.getValue();
             for(IdentifiableEntity child: childrenCollection){
                 unlinkBiDirParent(child,parent);
             }
@@ -226,7 +226,7 @@ public class RapidRelationalEntityManager implements RelationalEntityManager{
      *
      * @return
      */
-    public Map<Collection<IdentifiableEntity>, Class<IdentifiableEntity>> findUniDirChildCollections(IdentifiableEntity parent)  {
+    public Map<Class<IdentifiableEntity>,Collection<IdentifiableEntity>> findUniDirChildCollections(IdentifiableEntity parent)  {
         assertEntityRelationType(parent, RelationalEntityType.UniDirParent);
         return findEntityCollections(parent,UniDirChildCollection.class);
     }
@@ -297,8 +297,8 @@ public class RapidRelationalEntityManager implements RelationalEntityManager{
      *
      * @return
      */
-    protected<C> Map<Collection<C>, Class<C>> findEntityCollections(IdentifiableEntity entity, Class<? extends Annotation> entityAnnotationClass) {
-        Map<Collection<C>, Class<C>> entityCollection_entityTypeMap = new HashMap<>();
+    protected<C> Map<Class<C>,Collection<C>>  findEntityCollections(IdentifiableEntity entity, Class<? extends Annotation> entityAnnotationClass) {
+        Map<Class<C>,Collection<C>> entityType_collectionMap = new HashMap<>();
         EntityReflectionUtils.doWithAnnotatedFields(entityAnnotationClass, entity.getClass(), field -> {
             Collection<C> entityCollection = (Collection<C>) field.get(entity);
             if (entityCollection == null) {
@@ -309,19 +309,19 @@ public class RapidRelationalEntityManager implements RelationalEntityManager{
                 entityCollection = emptyCollection;
             }
             Class<C> entityType = (Class<C>) EntityAnnotationUtils.getEntityType(field.getAnnotation(entityAnnotationClass));
-            entityCollection_entityTypeMap.put(entityCollection, entityType);
+            entityType_collectionMap.put(entityType,entityCollection);
         });
-        return entityCollection_entityTypeMap;
+        return entityType_collectionMap;
     }
 
     protected void linkEntity(IdentifiableEntity<?> entity, IdentifiableEntity newEntity, Class<? extends Annotation> entityAnnotationClass, Class<? extends Annotation> entityCollectionAnnotationClass) throws UnknownEntityTypeException {
         AtomicBoolean added = new AtomicBoolean(false);
         //add to matching entity collections
         // todo THIS CORRECT
-        for (Map.Entry<Collection<IdentifiableEntity>, Class<IdentifiableEntity>> entry : this.<IdentifiableEntity>findEntityCollections(entity,entityCollectionAnnotationClass).entrySet()) {
-            Class<? extends IdentifiableEntity> targetClass = entry.getValue();
+        for (Map.Entry<Class<IdentifiableEntity>,Collection<IdentifiableEntity>> entry : this.<IdentifiableEntity>findEntityCollections(entity,entityCollectionAnnotationClass).entrySet()) {
+            Class<? extends IdentifiableEntity> targetClass = entry.getKey();
             if (newEntity.getClass().equals(targetClass)) {
-                (entry.getKey()).add(newEntity);
+                (entry.getValue()).add(newEntity);
                 added.set(true);
             }
         }
@@ -341,8 +341,9 @@ public class RapidRelationalEntityManager implements RelationalEntityManager{
 
     protected void unlinkEntity(IdentifiableEntity entity, IdentifiableEntity entityToRemove, Class<? extends Annotation> entityEntityAnnotationClass, Class<? extends Annotation> entityEntityCollectionAnnotationClass) throws UnknownEntityTypeException{
         AtomicBoolean deleted = new AtomicBoolean(false);
-        for (Map.Entry<Collection<IdentifiableEntity>, Class<IdentifiableEntity>> entry : this.<IdentifiableEntity>findEntityCollections(entity,entityEntityCollectionAnnotationClass).entrySet()) {
-            Collection<IdentifiableEntity> entityCollection = entry.getKey();
+        for (Map.Entry<Class<IdentifiableEntity>,Collection<IdentifiableEntity>> entry : this.<IdentifiableEntity>findEntityCollections(entity,entityEntityCollectionAnnotationClass).entrySet()) {
+            //todo only swapped getKey -> getValue, is value not used?
+            Collection<IdentifiableEntity> entityCollection = entry.getValue();
             if(entityCollection!=null){
                 if(!entityCollection.isEmpty()){
                     Optional<IdentifiableEntity> optionalEntity = entityCollection.stream().findFirst();

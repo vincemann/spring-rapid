@@ -200,23 +200,23 @@ class RapidRelationalEntityManagerParentTest {
         HashSet<SecondEntityChild> secondEntityChildSet = new HashSet<>();
         testEntityParent.setSecondEntityChildSet(secondEntityChildSet);
         //when
-        Map<Collection<IdentifiableEntity>, Class<IdentifiableEntity>> childrenCollections = relationalEntityManager.findBiDirChildCollections(testEntityParent);
+        Map<Class<IdentifiableEntity>,Collection<IdentifiableEntity>> childrenCollections = relationalEntityManager.findBiDirChildCollections(testEntityParent);
         //then
         Assertions.assertEquals(1,childrenCollections.size());
-        Map.Entry<Collection<IdentifiableEntity>, Class<IdentifiableEntity>> entry = childrenCollections.entrySet().stream().findFirst().get();
-        Assertions.assertEquals(SecondEntityChild.class,entry.getValue());
-        Assertions.assertSame(secondEntityChildSet,entry.getKey());
+        Map.Entry<Class<IdentifiableEntity>,Collection<IdentifiableEntity>> entry = childrenCollections.entrySet().stream().findFirst().get();
+        Assertions.assertEquals(SecondEntityChild.class,entry.getKey());
+        Assertions.assertSame(secondEntityChildSet,entry.getValue());
     }
 
     @Test
     void getNullChildrenCollection_shouldCreateEmptyCollection()  {
         //given
         testEntityParent.setSecondEntityChildSet(null);
-        Map<Collection<IdentifiableEntity>, Class<IdentifiableEntity>> childrenCollections = relationalEntityManager.findBiDirChildCollections(testEntityParent);
-        for (Map.Entry<Collection<IdentifiableEntity>, Class<IdentifiableEntity>> collectionClassEntry : childrenCollections.entrySet()) {
-            Assertions.assertNotNull(collectionClassEntry.getKey());
-            Assertions.assertTrue(collectionClassEntry.getKey().isEmpty());
-            Assertions.assertTrue(collectionClassEntry.getKey() instanceof Set);
+        Map<Class<IdentifiableEntity>,Collection<IdentifiableEntity>> childrenCollections = relationalEntityManager.findBiDirChildCollections(testEntityParent);
+        for (Map.Entry<Class<IdentifiableEntity>,Collection<IdentifiableEntity>> collectionClassEntry : childrenCollections.entrySet()) {
+            Assertions.assertNotNull(collectionClassEntry.getValue());
+            Assertions.assertTrue(collectionClassEntry.getValue().isEmpty());
+            Assertions.assertTrue(collectionClassEntry.getValue() instanceof Set);
         }
     }
 

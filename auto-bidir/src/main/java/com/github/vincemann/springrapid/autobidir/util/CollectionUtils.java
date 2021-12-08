@@ -18,4 +18,5 @@ public class CollectionUtils {
             throw new IllegalArgumentException("unknown collection type");
         }
     }
+
 }

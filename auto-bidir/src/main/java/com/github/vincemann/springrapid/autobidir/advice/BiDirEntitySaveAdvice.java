@@ -76,7 +76,7 @@ public class BiDirEntitySaveAdvice extends BiDirEntityAdvice {
 
     private void mergeChildrensParents(IdentifiableEntity biDirChild) {
         //set backreferences
-        Set<Collection<IdentifiableEntity>> parentCollections = relationalEntityManager.findBiDirParentCollections(biDirChild).keySet();
+        Collection<Collection<IdentifiableEntity>> parentCollections = relationalEntityManager.findBiDirParentCollections(biDirChild).values();
         for (Collection<IdentifiableEntity> parentCollection : parentCollections) {
             for (IdentifiableEntity biDirParent : parentCollection) {
                 entityManager.merge(biDirParent);
@@ -93,7 +93,7 @@ public class BiDirEntitySaveAdvice extends BiDirEntityAdvice {
         for (IdentifiableEntity child : children) {
             entityManager.merge(child);
         }
-        Set<Collection<IdentifiableEntity>> childCollections = relationalEntityManager.findBiDirChildCollections(biDirParent).keySet();
+        Collection<Collection<IdentifiableEntity>> childCollections = relationalEntityManager.findBiDirChildCollections(biDirParent).values();
         for (Collection<IdentifiableEntity> childCollection : childCollections) {
             for (IdentifiableEntity biDirChild : childCollection) {
                 entityManager.merge(biDirChild);
@@ -106,7 +106,7 @@ public class BiDirEntitySaveAdvice extends BiDirEntityAdvice {
         for (IdentifiableEntity child : children) {
             relationalEntityManager.linkBiDirParent(child, biDirParent);
         }
-        Set<Collection<IdentifiableEntity>> childCollections = relationalEntityManager.findBiDirChildCollections(biDirParent).keySet();
+        Collection<Collection<IdentifiableEntity>> childCollections = relationalEntityManager.findBiDirChildCollections(biDirParent).values();
         for (Collection<IdentifiableEntity> childCollection : childCollections) {
             for (IdentifiableEntity child : childCollection) {
                 relationalEntityManager.linkBiDirParent(child, biDirParent);
@@ -117,7 +117,7 @@ public class BiDirEntitySaveAdvice extends BiDirEntityAdvice {
     private void replaceParentsChildRef(IdentifiableEntity biDirChild) {
         //set backreferences
 
-        Set<Collection<IdentifiableEntity>> parentCollections = relationalEntityManager.findBiDirParentCollections(biDirChild).keySet();
+        Collection<Collection<IdentifiableEntity>> parentCollections = relationalEntityManager.findBiDirParentCollections(biDirChild).values();
         for (Collection<IdentifiableEntity> parentCollection : parentCollections) {
             for (IdentifiableEntity biDirParent : parentCollection) {
                 relationalEntityManager.unlinkBiDirChild(biDirParent,biDirChild);
@@ -134,7 +134,7 @@ public class BiDirEntitySaveAdvice extends BiDirEntityAdvice {
     private void replaceChildrensParentRef(IdentifiableEntity biDirParent) {
         //set backreferences
 
-        Set<Collection<IdentifiableEntity>> childCollections = relationalEntityManager.findBiDirChildCollections(biDirParent).keySet();
+        Collection<Collection<IdentifiableEntity>> childCollections = relationalEntityManager.findBiDirChildCollections(biDirParent).values();
         for (Collection<IdentifiableEntity> childCollection : childCollections) {
             for (IdentifiableEntity biDirChild : childCollection) {
                 relationalEntityManager.unlinkBiDirParent(biDirChild,biDirParent);
@@ -151,7 +151,7 @@ public class BiDirEntitySaveAdvice extends BiDirEntityAdvice {
     private void setParentsChildRef(IdentifiableEntity biDirChild) {
         //set backreferences
 
-        Set<Collection<IdentifiableEntity>> parentCollections = relationalEntityManager.findBiDirParentCollections(biDirChild).keySet();
+        Collection<Collection<IdentifiableEntity>> parentCollections = relationalEntityManager.findBiDirParentCollections(biDirChild).values();
         for (Collection<IdentifiableEntity> parentCollection : parentCollections) {
             for (IdentifiableEntity biDirParent : parentCollection) {
                 relationalEntityManager.linkBiDirChild(biDirParent,biDirChild);

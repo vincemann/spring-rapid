@@ -30,8 +30,8 @@ public abstract class BiDirEntityAdvice {
         Set<IdentifiableEntity> oldSingleChildren = relationalEntityManager.findSingleBiDirChildren(oldParent);
         Set<IdentifiableEntity> newSingleChildren = relationalEntityManager.findSingleBiDirChildren(newParent);
 
-        Set<Collection<IdentifiableEntity>> oldChildCollections = relationalEntityManager.findBiDirChildCollections(oldParent).keySet();
-        Set<Collection<IdentifiableEntity>> newChildCollections = relationalEntityManager.findBiDirChildCollections(newParent).keySet();
+        Collection<Collection<IdentifiableEntity>> oldChildCollections = relationalEntityManager.findBiDirChildCollections(oldParent).values();
+        Collection<Collection<IdentifiableEntity>> newChildCollections = relationalEntityManager.findBiDirChildCollections(newParent).values();
 
         //find Children to unlink
         List<IdentifiableEntity> removedChildren = new ArrayList<>();
@@ -84,8 +84,8 @@ public abstract class BiDirEntityAdvice {
         Collection<IdentifiableEntity> oldSingleParents = relationalEntityManager.findSingleBiDirParents(oldChild);
         Collection<IdentifiableEntity> newSinlgeParents = relationalEntityManager.findSingleBiDirParents(newChild);
 
-        Set<Collection<IdentifiableEntity>> oldParentCollections = relationalEntityManager.findBiDirParentCollections(oldChild).keySet();
-        Set<Collection<IdentifiableEntity>> newParentCollections = relationalEntityManager.findBiDirParentCollections(newChild).keySet();
+        Collection<Collection<IdentifiableEntity>> oldParentCollections = relationalEntityManager.findBiDirParentCollections(oldChild).values();
+        Collection<Collection<IdentifiableEntity>> newParentCollections = relationalEntityManager.findBiDirParentCollections(newChild).values();
 
         //find parents to unlink
         List<IdentifiableEntity> removedParents = new ArrayList<>();

@@ -63,7 +63,7 @@ public class BiDirParentIdResolver extends EntityIdResolver {
         for (IdentifiableEntity biDirChild : relationalEntityManager.findSingleBiDirChildren(serviceEntity)) {
             relationalDtoManager.addBiDirChildId(biDirChild,mappedDto);
         }
-        for (Collection<? extends IdentifiableEntity> childrenCollection : relationalEntityManager.findBiDirChildCollections(serviceEntity).keySet()) {
+        for (Collection<? extends IdentifiableEntity> childrenCollection : relationalEntityManager.findBiDirChildCollections(serviceEntity).values()) {
             for (IdentifiableEntity biDirChild : childrenCollection) {
                 relationalDtoManager.addBiDirChildId(biDirChild,mappedDto);
             }

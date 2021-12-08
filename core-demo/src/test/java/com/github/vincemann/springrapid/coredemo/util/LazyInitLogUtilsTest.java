@@ -58,7 +58,7 @@ class LazyInitLogUtilsTest extends AbstractControllerIntegrationTest<LazyItemCon
 
         Owner found = ownerService.findById(savedKahn.getId()).get();
 
-        String s = LazyInitLogUtils.toString(found,false);
+        String s = LazyInitLogUtils.toString(found,Boolean.FALSE);
         System.err.println(s);
 
         Assertions.assertTrue(s.contains("LazyInitializationException"));
@@ -80,6 +80,6 @@ class LazyInitLogUtilsTest extends AbstractControllerIntegrationTest<LazyItemCon
         Owner found = ownerService.findById(savedKahn.getId()).get();
 
         Assertions.assertThrows(LazyInitializationException.class,
-                () -> LazyInitLogUtils.toString(found,Boolean.FALSE));
+                () -> LazyInitLogUtils.toString(found,Boolean.FALSE, Boolean.FALSE));
     }
 }
