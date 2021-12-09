@@ -37,5 +37,8 @@ public class OwnerOfTheYearExtension
         return getNext().findByLastName(lastName);
     }
 
-
+    @Override
+    public Owner lazyLoadFind(Long id) {
+        return getNext().lazyLoadFind(id);
+    }
 }

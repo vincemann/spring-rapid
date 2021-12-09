@@ -18,11 +18,16 @@ import javax.persistence.Table;
 @NoArgsConstructor
 @Entity
 @Table(name = "lazy_items")
-public class LazyItem extends IdentifiableEntityImpl<Long> {
+public class LazyExceptionItem extends IdentifiableEntityImpl<Long> {
 
     @ManyToOne
     @JoinColumn(name = "lazy_item_id")
     @JsonBackReference
     @BiDirParentEntity
     private Owner owner;
+
+    @Override
+    public String toString() {
+        return "LazyExceptionItem{}";
+    }
 }

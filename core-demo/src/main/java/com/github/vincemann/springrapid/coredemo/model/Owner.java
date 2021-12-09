@@ -23,7 +23,7 @@ public class Owner extends Person {
 
 
     @Builder
-    public Owner(String firstName, String lastName, Set<Pet> pets, String address, String city, String telephone,Set<String> hobbies,Set<LazyItem> lazyItems) {
+    public Owner(String firstName, String lastName, Set<Pet> pets, String address, String city, String telephone,Set<String> hobbies,Set<LazyExceptionItem> lazyExceptionItems, Set<LazyLoadedItem> lazyLoadedItems) {
         super(firstName, lastName);
         if(pets!=null) {
             this.pets = pets;
@@ -31,8 +31,11 @@ public class Owner extends Person {
         if(hobbies!=null) {
             this.hobbies = hobbies;
         }
-        if(lazyItems!=null) {
-            this.lazyItems = lazyItems;
+        if(lazyExceptionItems !=null) {
+            this.lazyExceptionItems = lazyExceptionItems;
+        }
+        if (lazyLoadedItems != null){
+            this.lazyLoadedItems = lazyLoadedItems;
         }
         this.address = address;
         this.city = city;
@@ -55,9 +58,14 @@ public class Owner extends Person {
     private Set<String> hobbies = new HashSet<>();
 
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "owner",fetch = FetchType.LAZY)
-    @BiDirChildCollection(LazyItem.class)
+    @BiDirChildCollection(LazyExceptionItem.class)
     @JsonManagedReference
-    private Set<LazyItem> lazyItems;
+    private Set<LazyExceptionItem> lazyExceptionItems = new HashSet<>();
+
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "owner",fetch = FetchType.LAZY)
+    @BiDirChildCollection(LazyExceptionItem.class)
+    @JsonManagedReference
+    private Set<LazyLoadedItem> lazyLoadedItems = new HashSet<>();
 
     @Column(name = "adress")
     private String address;
@@ -73,7 +81,7 @@ public class Owner extends Person {
     @Override
     public String toString() {
         return "Owner{" +
-                super.toString() +
+//                super.toString() +
                 "pets=" + Arrays.toString(pets.stream().map(Pet::getName).toArray()) +
                 ", hobbies='"+hobbies+"'" +
                 ", address='" + address + '\'' +

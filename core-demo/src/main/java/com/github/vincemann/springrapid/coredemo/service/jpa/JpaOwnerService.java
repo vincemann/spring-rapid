@@ -9,8 +9,6 @@ import com.github.vincemann.springrapid.coredemo.repo.OwnerRepository;
 import com.github.vincemann.springrapid.coredemo.service.OwnerService;
 import com.github.vincemann.springrapid.coredemo.service.Root;
 import org.springframework.aop.TargetClassAware;
-import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Optional;
@@ -31,6 +29,7 @@ public class JpaOwnerService
     }
 
 
+
     public Class<?> getTargetClass(){
         return JpaOwnerService.class;
     }
@@ -46,5 +45,13 @@ public class JpaOwnerService
         return getRepository().findAll().stream().filter(owner -> {
             return owner.getFirstName().equals(OWNER_OF_THE_YEARS_NAME);
         }).findFirst();
+    }
+
+    @Override
+    @Transactional
+    public Owner lazyLoadFind(Long id) {
+        Owner owner = getRepository().findById(id).get();
+        owner.getLazyLoadedItems().size();
+        return owner;
     }
 }

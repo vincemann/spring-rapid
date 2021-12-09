@@ -33,4 +33,12 @@ public class ClinicCard extends IdentifiableEntityImpl<Long> {
         this.registrationDate = registrationDate;
         this.registrationReason = registrationReason;
     }
+
+    @Override
+    public String toString() {
+        return "ClinicCard{" +
+                "registrationDate=" + registrationDate +
+                ", registrationReason='" + registrationReason + '\'' +
+                '}';
+    }
 }

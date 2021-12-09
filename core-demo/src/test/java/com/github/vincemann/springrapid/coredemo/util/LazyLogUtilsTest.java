@@ -1,32 +1,48 @@
 package com.github.vincemann.springrapid.coredemo.util;
 
 import com.github.vincemann.springrapid.core.service.exception.BadEntityException;
+import com.github.vincemann.springrapid.core.slicing.RapidProfiles;
 import com.github.vincemann.springrapid.core.util.LazyLogUtils;
-import com.github.vincemann.springrapid.coredemo.controller.AbstractControllerIntegrationTest;
-import com.github.vincemann.springrapid.coredemo.controller.LazyItemController;
-import com.github.vincemann.springrapid.coredemo.model.LazyItem;
+import com.github.vincemann.springrapid.coredemo.model.LazyExceptionItem;
+import com.github.vincemann.springrapid.coredemo.model.LazyLoadedItem;
 import com.github.vincemann.springrapid.coredemo.model.Owner;
+import com.github.vincemann.springrapid.coredemo.model.Pet;
 import com.github.vincemann.springrapid.coredemo.repo.OwnerRepository;
-import com.github.vincemann.springrapid.coredemo.service.LazyItemService;
+import com.github.vincemann.springrapid.coredemo.repo.PetTypeRepository;
+import com.github.vincemann.springrapid.coredemo.service.OwnerService;
+import com.github.vincemann.springrapid.coredemo.service.Root;
+import com.github.vincemann.springrapid.coretest.slicing.RapidTestProfiles;
 import org.hibernate.LazyInitializationException;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.ActiveProfiles;
 
+import java.time.LocalDate;
 import java.util.HashSet;
 import java.util.Set;
 
-class LazyLogUtilsTest extends AbstractControllerIntegrationTest<LazyItemController,LazyItemService> {
+@ActiveProfiles(value = {RapidTestProfiles.TEST, RapidTestProfiles.SERVICE_TEST, RapidProfiles.SERVICE})
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.NONE)
+class LazyLogUtilsTest {
 
 //    @Autowired
 //    LazyItemService lazyItemService;
 
 
+//    @Autowired
+//    OwnerRepository ownerRepository;
+
     @Autowired
-    OwnerRepository ownerRepository;
+    @Root
+    OwnerService ownerService;
+
 
     Owner kahn;
+
+    Pet bello;
 
     @BeforeEach
     void setUp() {
@@ -36,25 +52,27 @@ class LazyLogUtilsTest extends AbstractControllerIntegrationTest<LazyItemControl
                 .address("asljnflksamfslkmf")
                 .city("n1 city")
                 .telephone("1234567890")
-                .lazyItems(new HashSet<>())
+                .build();
+
+        bello = Pet.builder()
+                .name("bello")
+                .birthDate(LocalDate.now())
                 .build();
     }
 
     @Test
-    void testToString_ignoreLazy() throws BadEntityException {
-        LazyItem lazyItem = new LazyItem();
+    void canIgnoreLazy() throws BadEntityException {
+        LazyExceptionItem lazyItem = new LazyExceptionItem();
 //        LazyItem savedLazyItem = getService().save(lazyItem);
 
-        kahn.getLazyItems().add(lazyItem);
+        kahn.getLazyExceptionItems().add(lazyItem);
 
-        Owner savedKahn = ownerRepository.save(kahn);
-
-        Set<LazyItem> lazyItems = savedKahn.getLazyItems();
-        lazyItems.size();
+        Owner savedKahn = ownerService.save(kahn);
 
 
-        Owner found = ownerRepository.findById(savedKahn.getId()).get();
-        found.getLazyItems().size();
+        Owner found = ownerService.findById(savedKahn.getId()).get();
+        // would result in lazyinit exception
+//        found.getLazyItems().size();
 
         String s = LazyLogUtils.toString(found,Boolean.FALSE);
         System.err.println(s);
@@ -63,19 +81,64 @@ class LazyLogUtilsTest extends AbstractControllerIntegrationTest<LazyItemControl
     }
 
     @Test
-    void testToString_dontIgnoreLazy() throws BadEntityException {
-        LazyItem lazyItem = new LazyItem();
+    void canLoadEagerCollection_andIgnoreLazyCollection() throws BadEntityException {
+        LazyExceptionItem lazyItem = new LazyExceptionItem();
 //        LazyItem savedLazyItem = getService().save(lazyItem);
 
-        kahn.getLazyItems().add(lazyItem);
+        kahn.getLazyExceptionItems().add(lazyItem);
+        kahn.getPets().add(bello);
 
-        Owner savedKahn = ownerRepository.save(kahn);
-
-        Set<LazyItem> lazyItems = savedKahn.getLazyItems();
-        LazyItem i1 = lazyItems.stream().findFirst().get();
+        Owner savedKahn = ownerService.save(kahn);
 
 
-        Owner found = ownerRepository.findById(savedKahn.getId()).get();
+        Owner found = ownerService.findById(savedKahn.getId()).get();
+        // would result in lazyinit exception
+//        found.getLazyItems().size();
+
+        String s = LazyLogUtils.toString(found,Boolean.FALSE);
+        System.err.println(s);
+
+        Assertions.assertTrue(s.contains("LazyInitializationException"));
+        Assertions.assertTrue(s.contains("bello"));
+    }
+
+    @Test
+    void canShowLoadedLazyCollection_andIgnoreNotLoadedLazyCollection() throws BadEntityException {
+        LazyExceptionItem lazyItem = new LazyExceptionItem();
+        LazyLoadedItem lazyLoadedItem = new LazyLoadedItem();
+//        LazyItem savedLazyItem = getService().save(lazyItem);
+
+        kahn.getLazyExceptionItems().add(lazyItem);
+        kahn.getLazyLoadedItems().add(lazyLoadedItem);
+
+        Owner savedKahn = ownerService.save(kahn);
+
+
+        Owner found = ownerService.lazyLoadFind(savedKahn.getId());
+        // would result in lazyinit exception
+//        found.getLazyItems().size();
+
+        String s = LazyLogUtils.toString(found,Boolean.FALSE);
+        System.err.println(s);
+
+        Assertions.assertTrue(s.contains("LazyInitializationException"));
+        Assertions.assertTrue(s.contains("LazyLoadedItem"));
+    }
+
+    @Test
+    void canThrowLazy() throws BadEntityException {
+        LazyExceptionItem lazyItem = new LazyExceptionItem();
+//        LazyItem savedLazyItem = getService().save(lazyItem);
+
+        kahn.getLazyExceptionItems().add(lazyItem);
+
+        Owner savedKahn = ownerService.save(kahn);
+
+        Set<LazyExceptionItem> lazyItems = savedKahn.getLazyExceptionItems();
+        lazyItems.size();
+
+
+        Owner found = ownerService.findById(savedKahn.getId()).get();
 
         Assertions.assertThrows(LazyInitializationException.class,
                 () -> LazyLogUtils.toString(found,Boolean.FALSE, Boolean.FALSE));
