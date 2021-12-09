@@ -26,6 +26,7 @@ public class LazyLogUtils {
     public static LazyLogUtils create(EntityManager entityManager){
         if (instance == null){
             instance = new LazyLogUtils(entityManager);
+            return instance;
         }else {
             throw new IllegalArgumentException("already created");
         }
@@ -51,13 +52,14 @@ public class LazyLogUtils {
         if (object == null){
             return "null";
         }
-
-
         Boolean finalIgnoreLazy = ignoreLazy;
         return (new ReflectionToStringBuilder(object) {
             protected Object getValue(Field f) throws IllegalAccessException {
+                boolean singleEntity = false;
                 try {
+
                         if (IdentifiableEntity.class.isAssignableFrom(f.getType())){
+                            singleEntity = true;
                             IdentifiableEntity entity = ((IdentifiableEntity)f.get(object));
                             if (idOnly){
                                 return convertToId(entity);
@@ -70,33 +72,38 @@ public class LazyLogUtils {
                         }
                         else if (Collection.class.isAssignableFrom(f.getType())) {
                             // it is a collection
-
+                            singleEntity = false;
                             // need to query element to trigger Exception
                             Collection<?> collection = (Collection<?>) f.get(object);
                             if (collection != null) {
                                 if (collection.size() > 0) {
 
-                                    if (isTransaction()){
-                                        if (isAttachedToTransaction(collection)){
-
-                                        }
-                                    }else {
-                                        // test for lazy init exception
-                                        Object entity = collection.stream().findFirst().get();
-                                        // only log id of entity
-                                        if (idOnly) {
-                                            if (IdentifiableEntity.class.isAssignableFrom(entity.getClass())) {
-                                                if (Set.class.isAssignableFrom(collection.getClass())) {
-                                                    return collection.stream().map(e -> ((IdentifiableEntity) e).getId() == null ? "null" : ((IdentifiableEntity) e).getId().toString()).collect(Collectors.toSet());
-                                                } else if (List.class.isAssignableFrom(collection.getClass())) {
-                                                    return collection.stream().map(e -> ((IdentifiableEntity) e).getId() == null ? "null" : ((IdentifiableEntity) e).getId().toString()).collect(Collectors.toList());
+                                    // test for lazy init exception
+                                    Object entity = collection.stream().findFirst().get();
+                                    if (IdentifiableEntity.class.isAssignableFrom(entity.getClass())) {
+                                        if (isTransaction()) {
+                                            if (isAttachedToTransaction(entity)) {
+                                                // collection is loaded
+                                                if (idOnly) {
+                                                    collectionToIdString(collection);
                                                 } else {
-                                                    log.warn("unsupported collection type");
+                                                    // if super toString also uses this method, no additional entities will be loaded
+                                                    return super.getValue(f);
                                                 }
+                                            } else {
+                                                // detached collection, dont load
+                                                return "[detached...]";
+                                            }
+                                        } else {
+                                            // no transaction -> just load, lazy init exception will limit results
+                                            if (idOnly) {
+                                                collectionToIdString(collection);
+                                            } else {
+                                                return super.getValue(f);
                                             }
                                         }
-                                    }
 
+                                    }
                                 }
                             }
                         }
@@ -104,12 +111,21 @@ public class LazyLogUtils {
                         throw new RuntimeException(e);
                     } catch (LazyInitializationException e) {
                         log.trace(e.getMessage());
-                        log.warn("Could not log hibernate lazy collection field: " + f.getName() + ", skipping.");
+                        if (singleEntity) {
+                            log.warn("Could not log hibernate lazy entity field: " + f.getName() + ", skipping.");
+                            if (finalIgnoreLazy){
+                                return " LazyInitializationException ";
+                            }else {
+                                throw e;
+                            }
+                        }else{
+                            log.warn("Could not log hibernate lazy collection field: " + f.getName() + ", skipping.");
 //                        log.warn("Use @LogInteractions transactional flag to load all lazy collections for logging");
-                        if (finalIgnoreLazy){
-                            return "[ LazyInitializationException ]";
-                        }else {
-                            throw e;
+                            if (finalIgnoreLazy){
+                                return "[ LazyInitializationException ]";
+                            }else {
+                                throw e;
+                            }
                         }
                     }
                 return super.getValue(f);
@@ -117,8 +133,15 @@ public class LazyLogUtils {
         }).toString();
     }
 
-    private Collection createEntityCollection(){
-
+    private String collectionToIdString(Collection collection){
+            if (Set.class.isAssignableFrom(collection.getClass())) {
+                return collection.stream().map(e -> ((IdentifiableEntity) e).getId() == null ? "null" : ((IdentifiableEntity) e).getId().toString()).collect(Collectors.toSet()).toString();
+            } else if (List.class.isAssignableFrom(collection.getClass())) {
+                return collection.stream().map(e -> ((IdentifiableEntity) e).getId() == null ? "null" : ((IdentifiableEntity) e).getId().toString()).collect(Collectors.toList()).toString();
+            } else {
+                log.warn("unsupported collection type");
+                return "super";
+            }
     }
 
     private String convertToString(IdentifiableEntity entity) {

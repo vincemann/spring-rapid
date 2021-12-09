@@ -6,8 +6,8 @@ import com.github.vincemann.springrapid.coredemo.controller.AbstractControllerIn
 import com.github.vincemann.springrapid.coredemo.controller.LazyItemController;
 import com.github.vincemann.springrapid.coredemo.model.LazyItem;
 import com.github.vincemann.springrapid.coredemo.model.Owner;
+import com.github.vincemann.springrapid.coredemo.repo.OwnerRepository;
 import com.github.vincemann.springrapid.coredemo.service.LazyItemService;
-import com.github.vincemann.springrapid.coredemo.service.OwnerService;
 import org.hibernate.LazyInitializationException;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -17,14 +17,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import java.util.HashSet;
 import java.util.Set;
 
-class LazyInitLogUtilsTest extends AbstractControllerIntegrationTest<LazyItemController,LazyItemService> {
+class LazyLogUtilsTest extends AbstractControllerIntegrationTest<LazyItemController,LazyItemService> {
 
 //    @Autowired
 //    LazyItemService lazyItemService;
 
 
     @Autowired
-    OwnerService ownerService;
+    OwnerRepository ownerRepository;
 
     Owner kahn;
 
@@ -47,13 +47,14 @@ class LazyInitLogUtilsTest extends AbstractControllerIntegrationTest<LazyItemCon
 
         kahn.getLazyItems().add(lazyItem);
 
-        Owner savedKahn = ownerService.save(kahn);
+        Owner savedKahn = ownerRepository.save(kahn);
 
         Set<LazyItem> lazyItems = savedKahn.getLazyItems();
-        LazyItem i1 = lazyItems.stream().findFirst().get();
+        lazyItems.size();
 
 
-        Owner found = ownerService.findById(savedKahn.getId()).get();
+        Owner found = ownerRepository.findById(savedKahn.getId()).get();
+        found.getLazyItems().size();
 
         String s = LazyLogUtils.toString(found,Boolean.FALSE);
         System.err.println(s);
@@ -68,13 +69,13 @@ class LazyInitLogUtilsTest extends AbstractControllerIntegrationTest<LazyItemCon
 
         kahn.getLazyItems().add(lazyItem);
 
-        Owner savedKahn = ownerService.save(kahn);
+        Owner savedKahn = ownerRepository.save(kahn);
 
         Set<LazyItem> lazyItems = savedKahn.getLazyItems();
         LazyItem i1 = lazyItems.stream().findFirst().get();
 
 
-        Owner found = ownerService.findById(savedKahn.getId()).get();
+        Owner found = ownerRepository.findById(savedKahn.getId()).get();
 
         Assertions.assertThrows(LazyInitializationException.class,
                 () -> LazyLogUtils.toString(found,Boolean.FALSE, Boolean.FALSE));
