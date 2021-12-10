@@ -1,5 +1,6 @@
 package com.github.vincemann.springrapid.auth.dto.user;
 
+import com.github.vincemann.springrapid.core.model.AbstractDto;
 import com.github.vincemann.springrapid.core.model.IdentifiableEntityImpl;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -12,7 +13,7 @@ import java.util.Set;
 @Getter
 @NoArgsConstructor
 @Setter
-public class AbstractRapidUserDto extends IdentifiableEntityImpl<String> {
+public class AbstractRapidUserDto extends AbstractDto<String> {
 
     private String email;
     private Set<String> roles = new HashSet<String>();

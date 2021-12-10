@@ -4,6 +4,7 @@ import com.github.vincemann.aoplog.api.AopLoggable;
 import com.github.vincemann.aoplog.api.LogInteraction;
 import com.github.vincemann.springrapid.core.service.JPACrudService;
 import com.github.vincemann.springrapid.core.slicing.ServiceComponent;
+import com.github.vincemann.springrapid.coredemo.model.LazyLoadedItem;
 import com.github.vincemann.springrapid.coredemo.model.Owner;
 import com.github.vincemann.springrapid.coredemo.repo.OwnerRepository;
 import com.github.vincemann.springrapid.coredemo.service.OwnerService;
@@ -49,9 +50,10 @@ public class JpaOwnerService
 
     @Override
     @Transactional
-    public Owner lazyLoadFind(Long id) {
+    public Owner lazyLoadFindById(Long id) {
         Owner owner = getRepository().findById(id).get();
         owner.getLazyLoadedItems().size();
         return owner;
     }
+
 }

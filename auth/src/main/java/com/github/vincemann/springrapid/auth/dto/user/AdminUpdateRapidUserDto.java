@@ -8,7 +8,6 @@ import lombok.ToString;
 import java.util.Set;
 
 @Getter
-
 @NoArgsConstructor
 @Setter
 public class AdminUpdateRapidUserDto extends AbstractRapidUserDto {

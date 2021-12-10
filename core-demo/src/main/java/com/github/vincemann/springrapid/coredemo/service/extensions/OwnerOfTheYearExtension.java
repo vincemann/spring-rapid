@@ -3,7 +3,6 @@ package com.github.vincemann.springrapid.coredemo.service.extensions;
 import com.github.vincemann.springrapid.core.proxy.GenericCrudServiceExtension;
 import com.github.vincemann.springrapid.core.proxy.BasicServiceExtension;
 import com.github.vincemann.springrapid.core.service.CrudService;
-import com.github.vincemann.springrapid.core.service.exception.BadEntityException;
 import com.github.vincemann.springrapid.core.slicing.ServiceComponent;
 import com.github.vincemann.springrapid.coredemo.model.Owner;
 import com.github.vincemann.springrapid.coredemo.service.OwnerService;
@@ -38,7 +37,7 @@ public class OwnerOfTheYearExtension
     }
 
     @Override
-    public Owner lazyLoadFind(Long id) {
-        return getNext().lazyLoadFind(id);
+    public Owner lazyLoadFindById(Long id) {
+        return getNext().lazyLoadFindById(id);
     }
 }

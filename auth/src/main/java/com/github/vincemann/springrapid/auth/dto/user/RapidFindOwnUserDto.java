@@ -6,7 +6,6 @@ import java.util.Set;
 
 @Getter
 @Setter
-
 @NoArgsConstructor
 /**
  * Does not contain password

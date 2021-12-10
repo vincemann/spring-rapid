@@ -3,6 +3,7 @@ package com.github.vincemann.springrapid.coredemo.model;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.github.vincemann.springrapid.autobidir.model.parent.annotation.BiDirParentEntity;
 import com.github.vincemann.springrapid.core.model.IdentifiableEntityImpl;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -24,10 +25,18 @@ public class LazyLoadedItem extends IdentifiableEntityImpl<Long> {
     @JsonBackReference
     @BiDirParentEntity
     private Owner owner;
+    private String name;
+
+    public LazyLoadedItem(String name) {
+        this.name = name;
+    }
 
     @Override
     public String toString() {
-        return "LazyLoadedItem{}";
+        return "LazyLoadedItem{ " +
+                getName()+ " , " +
+                getId().toString() +
+                " }";
     }
 
 }

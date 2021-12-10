@@ -6,7 +6,6 @@ import org.springframework.transaction.annotation.Transactional;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 
-@TestComponent
 public class TransactionalTestTemplate {
 
     @Transactional

@@ -1,5 +1,6 @@
 package com.github.vincemann.springrapid.coredemo.dtos;
 
+import com.github.vincemann.springrapid.core.model.AbstractDto;
 import com.github.vincemann.springrapid.core.model.IdentifiableEntityImpl;
 import com.github.vincemann.springrapid.coredemo.model.*;
 import com.github.vincemann.springrapid.autobidir.dto.child.annotation.UniDirChildId;
@@ -18,8 +19,7 @@ import java.util.stream.Collectors;
 @Getter
 @Setter
 @NoArgsConstructor
-
-public class VisitDto extends IdentifiableEntityImpl<Long>  {
+public class VisitDto extends AbstractDto<Long> {
 
     @UniDirChildIdCollection(Pet.class)
     private Set<Long> petIds = new HashSet<>();

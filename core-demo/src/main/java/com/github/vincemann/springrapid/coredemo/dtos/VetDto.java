@@ -14,7 +14,6 @@ import java.util.Set;
 @Getter
 @Setter
 @Validated
-
 public class VetDto extends PersonDto  {
 
 

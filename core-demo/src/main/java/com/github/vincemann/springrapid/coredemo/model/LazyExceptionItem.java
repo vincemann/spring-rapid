@@ -26,8 +26,16 @@ public class LazyExceptionItem extends IdentifiableEntityImpl<Long> {
     @BiDirParentEntity
     private Owner owner;
 
+    private String name;
+
+    public LazyExceptionItem(String name) {
+        this.name = name;
+    }
+
     @Override
     public String toString() {
-        return "LazyExceptionItem{}";
+        return "LazyExceptionItem{" +
+                "" + getName() +
+                "}";
     }
 }

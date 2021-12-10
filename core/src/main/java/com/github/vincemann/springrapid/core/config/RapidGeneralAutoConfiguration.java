@@ -6,6 +6,7 @@ import com.github.vincemann.springrapid.core.util.JpaUtils;
 import com.github.vincemann.springrapid.core.util.LazyLogUtils;
 import com.github.vincemann.springrapid.core.util.Message;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
@@ -15,6 +16,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.data.domain.AuditorAware;
 
 import javax.persistence.EntityManager;
+import javax.persistence.EntityManagerFactory;
 import javax.persistence.PersistenceContext;
 
 @Configuration
@@ -24,6 +26,7 @@ public class RapidGeneralAutoConfiguration {
 
     @PersistenceContext
     EntityManager entityManager;
+
 
     public RapidGeneralAutoConfiguration() {
 
@@ -66,10 +69,10 @@ public class RapidGeneralAutoConfiguration {
         return new JpaUtils(entityManager);
     }
 
-    @Bean
-    @ConditionalOnMissingBean(LazyLogUtils.class)
-    public LazyLogUtils lazyInitLogUtils(){
-        return LazyLogUtils.create(entityManager);
-    }
+//    @Bean
+//    @ConditionalOnMissingBean(LazyLogUtils.class)
+//    public LazyLogUtils lazyInitLogUtils(){
+//        return LazyLogUtils.create(entityManager);
+//    }
 
 }

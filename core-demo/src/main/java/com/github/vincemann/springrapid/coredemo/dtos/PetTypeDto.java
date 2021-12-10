@@ -1,5 +1,6 @@
 package com.github.vincemann.springrapid.coredemo.dtos;
 
+import com.github.vincemann.springrapid.core.model.AbstractDto;
 import com.github.vincemann.springrapid.core.model.IdentifiableEntityImpl;
 import lombok.*;
 
@@ -11,8 +12,7 @@ import javax.validation.constraints.Size;
 @NoArgsConstructor
 @Builder
 @AllArgsConstructor
-
-public class PetTypeDto extends IdentifiableEntityImpl<Long> {
+public class PetTypeDto extends AbstractDto<Long> {
     @Size(min = 2, max = 20)
     private String name;
 }

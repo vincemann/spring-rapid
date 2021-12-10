@@ -14,6 +14,7 @@ import java.io.Serializable;
 @Setter
 @AllArgsConstructor
 @Builder
+@ToString
 public class SignupDto implements Serializable {
     //    @UniqueEmail(/*groups = {UserVerifyUtils.SignUpValidation.class}*/)
     @JsonView(UserVerifyUtils.SignupInput.class)
@@ -25,8 +26,4 @@ public class SignupDto implements Serializable {
     @NotBlank
     private String password;
 
-    @Override
-    public String toString() {
-        return LazyLogUtils.toString(this,true);
-    }
 }

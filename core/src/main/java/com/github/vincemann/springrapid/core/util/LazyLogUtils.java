@@ -3,10 +3,18 @@ package com.github.vincemann.springrapid.core.util;
 import com.github.vincemann.springrapid.core.model.IdentifiableEntity;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
+import org.apache.commons.lang3.builder.ToStringStyle;
+import org.hibernate.Hibernate;
 import org.hibernate.LazyInitializationException;
+import org.hibernate.collection.spi.PersistentCollection;
+import org.hibernate.proxy.HibernateProxy;
+import org.hibernate.proxy.LazyInitializer;
 import org.springframework.transaction.support.TransactionSynchronizationManager;
 
 import javax.persistence.EntityManager;
+import javax.persistence.EntityManagerFactory;
+import javax.persistence.PersistenceUnitUtil;
+import java.io.Serializable;
 import java.lang.reflect.Field;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -14,109 +22,70 @@ import java.util.stream.Collectors;
 @Slf4j
 public class LazyLogUtils {
 
-
-    private static LazyLogUtils instance;
-    private EntityManager entityManager;
-
-    private LazyLogUtils(EntityManager entityManager) {
-        this.entityManager = entityManager;
+    public static String toString(Object object){
+        return toString(object,true,false,true);
     }
 
-    public static LazyLogUtils create(EntityManager entityManager) {
-        if (instance == null) {
-            instance = new LazyLogUtils(entityManager);
-            return instance;
-        } else {
-            throw new IllegalArgumentException("already created");
-        }
+    public static String toString(Object object, Boolean ignoreEntitiesAndCollection){
+        return toString(object,ignoreEntitiesAndCollection,false,true);
     }
 
-    public static LazyLogUtils get() {
-        if (LazyLogUtils.instance == null) {
-            throw new IllegalArgumentException("no instance created");
-        } else {
-            return instance;
-        }
+    public static String toString(Object object, Boolean ignoreEntitiesAndCollection,Boolean idOnly){
+        return toString(object,ignoreEntitiesAndCollection,idOnly,true);
     }
 
-    public static String toString(Object object, Boolean idOnly, Boolean... ignoreLazys) {
-        Boolean ignoreLazy = Boolean.TRUE;
-        if (ignoreLazys.length >= 1) {
-            ignoreLazy = ignoreLazys[0];
-        }
-        return get()._toString(object, idOnly, ignoreLazy);
-    }
-
-    public String _toString(Object object, Boolean idOnly, Boolean ignoreLazy) {
+    /**
+     * reflection based toString method
+     * @param object
+     * @params ignore Entities and Collections (default = true), idOnly (default = false) -> only makes sense when first settings option is false,
+     *                 only log LazyInitException (default=true)
+     */
+    public static String toString(Object object, Boolean ignoreEntitiesAndCollection, Boolean idOnly, Boolean ignoreLazy) {
         if (object == null) {
             return "null";
         }
-//        Set<Object> alreadyVisited = new HashSet<>();
+        Boolean finalIgnoreEntitiesAndCollection = ignoreEntitiesAndCollection;
+        Boolean finalIdOnly = idOnly;
         Boolean finalIgnoreLazy = ignoreLazy;
-        return (new ReflectionToStringBuilder(object) {
+
+        return (new ReflectionToStringBuilder(object, ToStringStyle.SHORT_PREFIX_STYLE) {
             protected Object getValue(Field f) throws IllegalAccessException {
                 boolean singleEntity = false;
                 try {
-                    Object o = f.get(object);
-                    if (o == null) {
-                        return "null";
-                    }
-//                    if (alreadyVisited.contains(o)){
-//                        return "-";
-//                    }
-
                     if (IdentifiableEntity.class.isAssignableFrom(f.getType())) {
+                        if (finalIgnoreEntitiesAndCollection) {
+                            return "";
+                        }
+
                         singleEntity = true;
-                        IdentifiableEntity entity = ((IdentifiableEntity)o);
-//                        alreadyVisited.add(entity);
-                        if (idOnly) {
-                            return convertToId(entity);
-                        } else {
-                            String s = convertToString(entity);
-                            if (!s.equals("super")) {
-                                return s;
-                            }
+                        IdentifiableEntity entity = ((IdentifiableEntity) f.get(object));
+                        if (entity == null){
+                            return "null";
+                        }
+                        if (finalIdOnly) {
+                            return toId(entity);
                         }
                     } else if (Collection.class.isAssignableFrom(f.getType())) {
                         // it is a collection
+                        if (finalIgnoreEntitiesAndCollection) {
+                            return "";
+                        }
                         singleEntity = false;
                         // need to query element to trigger Exception
-                        Collection<?> collection = (Collection<?>) o;
-//                        alreadyVisited.add(collection);
+                        Collection<?> collection = (Collection<?>) f.get(object);
+                        if (collection == null){
+                            return "null";
+                        }
+                        // test for lazy init exception already with size call
                         if (collection.size() > 0) {
-
-                            // test for lazy init exception
-                            Object entity = collection.stream().findFirst().get();
-                            if (IdentifiableEntity.class.isAssignableFrom(entity.getClass())) {
-                                if (isTransaction()) {
-                                    if (isAttachedToTransaction(entity)) {
-                                        // collection is loaded
-                                        if (idOnly) {
-                                            String s = collectionToIdString(collection);
-                                            if (!s.equals("super")) {
-                                                return s;
-                                            }
-                                        } else {
-                                            // if super toString also uses this method, no additional entities will be loaded
-//                                                    return super.getValue(f);
-                                        }
-                                    } else {
-                                        // detached collection, dont load
-                                        return "[detached...]";
-                                    }
-                                } else {
-                                    // no transaction -> just load, lazy init exception will limit results
-                                    if (idOnly) {
-                                        String s = collectionToIdString(collection);
-                                        if (!s.equals("super")) {
-                                            return s;
-                                        }
-                                    } else {
-//                                                return super.getValue(f);
-                                    }
+                            if (finalIdOnly) {
+                                String s = collectionToIdString(collection);
+                                if (!s.equals("super")) {
+                                    return s;
                                 }
-                                        
                             }
+                        } else {
+                            return "[]";
                         }
                     }
                 } catch (IllegalAccessException e) {
@@ -124,14 +93,14 @@ public class LazyLogUtils {
                 } catch (LazyInitializationException e) {
                     log.trace(e.getMessage());
                     if (singleEntity) {
-                        log.warn("Could not log hibernate lazy entity field: " + f.getName() + ", skipping.");
+                        log.warn("Could not log jpa lazy entity field: " + f.getName() + ", skipping.");
                         if (finalIgnoreLazy) {
-                            return " LazyInitializationException ";
+                            return " < LazyInitializationException > ";
                         } else {
                             throw e;
                         }
                     } else {
-                        log.warn("Could not log hibernate lazy collection field: " + f.getName() + ", skipping.");
+                        log.warn("Could not log jpa lazy collection field: " + f.getName() + ", skipping.");
 //                        log.warn("Use @LogInteractions transactional flag to load all lazy collections for logging");
                         if (finalIgnoreLazy) {
                             return "[ LazyInitializationException ]";
@@ -143,9 +112,18 @@ public class LazyLogUtils {
                 return super.getValue(f);
             }
         }).toString();
+
     }
 
-    private String collectionToIdString(Collection collection) {
+    private static String toId(IdentifiableEntity entity) {
+        if (entity == null) {
+            return "null";
+        } else {
+            return entity.getId() == null ? "null-id" : entity.getId().toString();
+        }
+    }
+
+    private static String collectionToIdString(Collection collection) {
         if (Set.class.isAssignableFrom(collection.getClass())) {
             return collection.stream().map(e -> ((IdentifiableEntity) e).getId() == null ? "null" : ((IdentifiableEntity) e).getId().toString()).collect(Collectors.toSet()).toString();
         } else if (List.class.isAssignableFrom(collection.getClass())) {
@@ -156,49 +134,65 @@ public class LazyLogUtils {
         }
     }
 
-    private String convertToString(IdentifiableEntity entity) {
-        if (isTransaction()) {
-            if (isAttachedToTransaction(entity)) {
-                return "super";
-            } else {
-                return "detached";
-            }
-        } else {
-            return "super";
-        }
-    }
+    //    private static LazyLogUtils instance;
+////    private static EntityManager entityManager;
+//
+//    private LazyLogUtils(EntityManager entityManager) {
+//        LazyLogUtils.entityManager = entityManager;
+//    }
+//
+//    public static LazyLogUtils create(EntityManager entityManager) {
+//        if (instance == null) {
+//            instance = new LazyLogUtils(entityManager);
+//            return instance;
+//        } else {
+//            throw new IllegalArgumentException("already created");
+//        }
+//    }
+//
+//    public static LazyLogUtils get() {
+//        if (LazyLogUtils.instance == null) {
+//            throw new IllegalArgumentException("no instance created");
+//        } else {
+//            return instance;
+//        }
+//    }
 
-    private String convertToId(IdentifiableEntity entity) {
-        if (isTransaction()) {
-            if (isAttachedToTransaction(entity)) {
-                return toId(entity);
-            } else {
-                return "detached-id";
-            }
-        } else {
-            return toId(entity);
-        }
-    }
+//    public static String getObjectDescription(Object o) {
+//        if (o instanceof HibernateProxy) {
+//            LazyInitializer initializer = ((HibernateProxy) o)
+//                    .getHibernateLazyInitializer();
+//            return initializer.getEntityName()
+//                    + "#" + initializer.getIdentifier();
+//        }
+//        return o.toString();
+//    }
+//
+//    public static boolean canBeUsed(Object o) {
+//        if (o instanceof HibernateProxy) {
+//            LazyInitializer initializer = ((HibernateProxy) o)
+//                    .getHibernateLazyInitializer();
+//            // if already initialized - use it!
+//            if (!initializer.isUninitialized())
+//                return true;
+//            // if the session still works - use it!
+//            return initializer.getSession() != null
+//                    && initializer.getSession().isOpen();
+//        }
+//        return true;
+//    }
 
-    private String toId(IdentifiableEntity entity) {
-        if (entity == null) {
-            return "null-entity";
-        } else {
-            return entity.getId() == null ? "null-id" : entity.getId().toString();
-        }
-    }
-
-    private boolean isAttachedToTransaction(Object entity) {
-        if (!isTransaction()) {
-            return false;
-        }
-        // transactional
-        return entityManager.contains(entity);
-    }
-
-    private boolean isTransaction() {
-        return TransactionSynchronizationManager.isActualTransactionActive();
-    }
+//    private boolean isAttachedToTransaction(Object entity) {
+//        if (!isTransaction()) {
+//            return false;
+//        }
+//        // transactional
+//        return entityManager.contains(entity);
+//    }
+//
+//    private boolean isTransaction() {
+//        return TransactionSynchronizationManager.isActualTransactionActive();
+//    }
 
 //    public static String toString(Object object, Boolean... ignoreLazys){
 //        Boolean ignoreLazy = Boolean.TRUE;

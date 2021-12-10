@@ -1,6 +1,7 @@
 package com.github.vincemann.springrapid.coredemo.dtos;
 
 
+import com.github.vincemann.springrapid.core.model.AbstractDto;
 import com.github.vincemann.springrapid.coredemo.model.Specialty;
 import com.github.vincemann.springrapid.coredemo.model.Vet;
 
@@ -15,8 +16,7 @@ import java.util.Set;
 @Getter
 @Setter
 @NoArgsConstructor
-
-public class SpecialtyDto extends IdentifiableEntityImpl<Long>  {
+public class SpecialtyDto extends AbstractDto<Long> {
 
     @Builder
     public SpecialtyDto(@Size(min = 2, max = 255) String description, Set<Long> vetIds) {

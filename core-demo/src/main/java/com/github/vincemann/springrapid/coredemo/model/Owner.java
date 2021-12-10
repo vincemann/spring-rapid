@@ -8,9 +8,7 @@ import com.github.vincemann.springrapid.autobidir.model.child.annotation.BiDirCh
 import lombok.*;
 
 import javax.persistence.*;
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.*;
 
 import static javax.persistence.CascadeType.*;
 
