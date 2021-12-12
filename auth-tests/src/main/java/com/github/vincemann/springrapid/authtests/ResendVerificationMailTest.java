@@ -27,10 +27,10 @@ public class ResendVerificationMailTest extends AbstractRapidAuthIntegrationTest
 	}
 
 	@Test
-	public void userCantResendVerificationMailOfDiffUser() throws Exception {
+	public void userCanResendVerificationMailOfDiffUser() throws Exception {
 		String token = login2xx(USER_EMAIL, USER_PASSWORD);
 		mvc.perform(testTemplate.resendVerificationEmail(getUnverifiedUser().getEmail(),token))
-				.andExpect(status().isForbidden());
+				.andExpect(status().is2xxSuccessful());
 
 		verify(unproxy(mailSender), never()).send(any());
 	}
@@ -41,14 +41,14 @@ public class ResendVerificationMailTest extends AbstractRapidAuthIntegrationTest
 		testTemplate.resendVerificationEmail2xx(getUnverifiedUser().getEmail(),token);
 	}
 
-	@Test
-	public void blockedAdminCantResendVerificationMailOfDiffUser() throws Exception {
-		String token = login2xx(BLOCKED_ADMIN_EMAIL, BLOCKED_ADMIN_PASSWORD);
-		mvc.perform(testTemplate.resendVerificationEmail(getUnverifiedUser().getEmail(),token))
-				.andExpect(status().isForbidden());
-
-		verify(unproxy(mailSender), never()).send(any());
-	}
+//	@Test
+//	public void blockedAdminCantResendVerificationMailOfDiffUser() throws Exception {
+//		String token = login2xx(BLOCKED_ADMIN_EMAIL, BLOCKED_ADMIN_PASSWORD);
+//		mvc.perform(testTemplate.resendVerificationEmail(getUnverifiedUser().getEmail(),token))
+//				.andExpect(status().isForbidden());
+//
+//		verify(unproxy(mailSender), never()).send(any());
+//	}
 
 	@Test
 	public void anonCantResendVerificationMail() throws Exception {

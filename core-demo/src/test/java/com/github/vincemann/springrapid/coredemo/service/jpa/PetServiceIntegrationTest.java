@@ -182,10 +182,10 @@ class PetServiceIntegrationTest
         Owner savedKahn = ownerService.save(kahn);
         Pet savedBello = getTestedService().save(bello);
 
-        Pet updateOwner = (Pet) BeanUtilsBean.getInstance().cloneBean(savedBello);
-        updateOwner.setOwner(savedKahn);
+        Pet updatePetsOwner = (Pet) BeanUtilsBean.getInstance().cloneBean(savedBello);
+        updatePetsOwner.setOwner(savedKahn);
 
-        test(update(updateOwner));
+        test(update(updatePetsOwner));
 
 
         // check if bidir relation ships were managed

@@ -5,6 +5,7 @@ import com.github.vincemann.springrapid.core.model.IdentifiableEntity;
 import com.github.vincemann.springrapid.core.service.exception.BadEntityException;
 import com.github.vincemann.springrapid.core.service.exception.EntityNotFoundException;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.EntityManager;
@@ -19,7 +20,6 @@ public class DelegatingDtoMapper{
     private List<DtoMapper<?, ?>> delegates = new ArrayList<>();
     private List<DtoEntityPostProcessor> dtoEntityPostProcessors = new ArrayList<>();
     private List<EntityDtoPostProcessor> entityDtoPostProcessors = new ArrayList<>();
-    @PersistenceContext
     private EntityManager entityManager;
 
     //@LogInteraction
@@ -50,7 +50,8 @@ public class DelegatingDtoMapper{
     @Transactional
     public <T> T mapToDto(IdentifiableEntity<?> source, Class<T> destinationClass) throws BadEntityException {
         // source entity is detached and might not have all collections lazy loaded for this dto mapping -> merge
-        entityManager.merge(source);
+        if (entityManager!=null)
+            entityManager.merge(source);
         T dto = (T) findMapper(destinationClass)
                 .mapToDto(source, destinationClass);
         for (EntityDtoPostProcessor pp : entityDtoPostProcessors) {
@@ -71,5 +72,11 @@ public class DelegatingDtoMapper{
         } else {
             return matchingMapper.get();
         }
+    }
+
+    // webtests dont have entity manager available
+    @Autowired(required = false)
+    public void setEntityManager(EntityManager entityManager) {
+        this.entityManager = entityManager;
     }
 }

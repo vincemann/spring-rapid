@@ -24,7 +24,7 @@ import javax.persistence.PersistenceContext;
 @Slf4j
 public class RapidGeneralAutoConfiguration {
 
-    @PersistenceContext
+    @Autowired(required = false)
     EntityManager entityManager;
 
 

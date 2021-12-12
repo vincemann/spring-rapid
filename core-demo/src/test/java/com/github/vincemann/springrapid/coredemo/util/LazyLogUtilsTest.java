@@ -9,12 +9,15 @@ import com.github.vincemann.springrapid.coredemo.model.Owner;
 import com.github.vincemann.springrapid.coredemo.model.Pet;
 import com.github.vincemann.springrapid.coredemo.repo.LazyExceptionItemRepository;
 import com.github.vincemann.springrapid.coredemo.repo.LazyLoadedItemRepository;
+import com.github.vincemann.springrapid.coredemo.repo.PetRepository;
 import com.github.vincemann.springrapid.coredemo.service.OwnerService;
 import com.github.vincemann.springrapid.coredemo.service.Root;
 import com.github.vincemann.springrapid.coretest.controller.TransactionalTestTemplate;
 import com.github.vincemann.springrapid.coretest.slicing.RapidTestProfiles;
+import com.github.vincemann.springrapid.coretest.util.RapidTestUtil;
 import lombok.SneakyThrows;
 import org.hibernate.LazyInitializationException;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -43,6 +46,9 @@ class LazyLogUtilsTest {
     @Autowired
     @Root
     OwnerService ownerService;
+
+    @Autowired
+    PetRepository petRepository;
 
     @Autowired
     LazyLoadedItemRepository loadedItemRepository;
@@ -177,7 +183,15 @@ class LazyLogUtilsTest {
                 () -> LazyLogUtils.toString(found, Boolean.FALSE,Boolean.FALSE,Boolean.FALSE));
     }
 
-//    @Test
+    @AfterEach
+    void tearDown() {
+        RapidTestUtil.clear(ownerService);
+        petRepository.deleteAll();
+        loadedItemRepository.deleteAll();
+        loadedExceptionItemRepository.deleteAll();
+    }
+
+    //    @Test
 //    void doesNotLoadAdditionalEntitiesInTransaction() throws BadEntityException {
 //        final Long[] id = {null};
 //        transactionalTestTemplate.doInTransaction(new Runnable() {
