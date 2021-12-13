@@ -83,14 +83,9 @@ spring:
 
 server.servlet.session.persistent: false
 
-
-
-
-
   #rapid:
   #  core:
   #    baseUrl: "/api/core"
-
 
 
 rapid-auth:
