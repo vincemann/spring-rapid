@@ -15,7 +15,7 @@ public class IdentifiableEntityImpl<Id extends Serializable>
         implements IdentifiableEntity<Id> {
 
 
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.AUTO)
     @javax.persistence.Id
     private Id id;
 

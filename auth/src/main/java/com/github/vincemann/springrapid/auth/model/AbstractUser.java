@@ -41,7 +41,7 @@ public class AbstractUser<ID extends Serializable>
 
 	// roles collection
 	@ElementCollection(fetch = FetchType.EAGER)
-	@CollectionTable(name = "usr_role", joinColumns = @JoinColumn(name = "user_id"))
+	@CollectionTable(name = "user_role", joinColumns = @JoinColumn(name = "user_id"))
 	@Column(name = "role")
 	protected Set<String> roles = new HashSet<>();
 

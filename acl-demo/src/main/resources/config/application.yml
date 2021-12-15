@@ -16,7 +16,7 @@ spring:
 #   in order to use this demo project with mysql database:
 #   uncomment lines below, and comment out h2 related lines below
 #   run create-db.sh
-#   uncomment contents of MySqlConfig.java
+#   uncomment contents of DbIdentityFixConfig.java
 
 
 #  datasource:
