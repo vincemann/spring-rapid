@@ -29,10 +29,7 @@ public class ResendVerificationMailTest extends AbstractRapidAuthIntegrationTest
 	@Test
 	public void userCanResendVerificationMailOfDiffUser() throws Exception {
 		String token = login2xx(USER_EMAIL, USER_PASSWORD);
-		mvc.perform(testTemplate.resendVerificationEmail(getUnverifiedUser().getEmail(),token))
-				.andExpect(status().is2xxSuccessful());
-
-		verify(unproxy(mailSender), never()).send(any());
+		testTemplate.resendVerificationEmail2xx(getUnverifiedUser().getEmail(),token);
 	}
 
 	@Test
