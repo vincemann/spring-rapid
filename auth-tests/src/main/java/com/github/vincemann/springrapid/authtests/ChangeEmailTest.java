@@ -6,9 +6,12 @@ import com.github.vincemann.springrapid.auth.mail.MailData;
 import com.github.vincemann.springrapid.auth.service.AbstractUserService;
 import com.github.vincemann.springrapid.auth.util.MapUtils;
 import com.github.vincemann.springrapid.auth.util.RapidJwt;
+import com.github.vincemann.springrapid.coretest.controller.TransactionalTestTemplate;
+import lombok.SneakyThrows;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 
 import static com.github.vincemann.springrapid.authtests.adapter.AuthTestAdapter.*;
@@ -18,6 +21,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 public class ChangeEmailTest extends AbstractRapidAuthIntegrationTest {
 
 
+	@Autowired
+	TransactionalTestTemplate transactionalTestTemplate;
 
 	//works solo but token is obsolete when run in group
 //	@Disabled
@@ -136,12 +141,15 @@ public class ChangeEmailTest extends AbstractRapidAuthIntegrationTest {
 		MailData mailData = testTemplate.requestEmailChange2xx(getUser().getId(), token,
 				new RequestEmailChangeDto(NEW_EMAIL));
 		// credentials updated after the request for email change was made
-//		Thread.sleep(1L);
-		AbstractUser<Long> user = getUserService().findById(getUser().getId()).get();
-		user.setCredentialsUpdatedMillis(System.currentTimeMillis());
-		getUserService().update(user);
-
-//		Thread.sleep(1L);
+		transactionalTestTemplate.doInTransaction(new Runnable() {
+			@SneakyThrows
+			@Override
+			public void run() {
+				AbstractUser<Long> user = getUserService().findById(getUser().getId()).get();
+				user.setCredentialsUpdatedMillis(System.currentTimeMillis());
+				getUserService().update(user);
+			}
+		});
 
 		// A new auth token is needed, because old one would be obsolete!
 		token = login2xx(USER_EMAIL,USER_PASSWORD);
@@ -179,9 +187,16 @@ public class ChangeEmailTest extends AbstractRapidAuthIntegrationTest {
 				new RequestEmailChangeDto(NEW_EMAIL));
 
 		// Some other user changed to the same email, before i could issue my request
-		AbstractUser<Long> user = getUserService().findById(getSecondUser().getId()).get();
-		user.setEmail(NEW_EMAIL);
-		getUserService().update(user);
+		transactionalTestTemplate.doInTransaction(new Runnable() {
+			@SneakyThrows
+			@Override
+			public void run() {
+				AbstractUser<Long> user = getUserService().findById(getSecondUser().getId()).get();
+				user.setEmail(NEW_EMAIL);
+				getUserService().update(user);
+			}
+		});
+
 
 		mvc.perform(testTemplate.changeEmailWithLink(mailData.getLink(),token))
 				//gets new token for new email to use

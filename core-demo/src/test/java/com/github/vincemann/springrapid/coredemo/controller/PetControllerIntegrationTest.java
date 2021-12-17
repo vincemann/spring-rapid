@@ -12,8 +12,8 @@ import java.util.Arrays;
 import java.util.stream.Collectors;
 
 import static com.github.vincemann.ezcompare.Comparator.compare;
-import static com.github.vincemann.springrapid.coretest.util.RapidTestUtil.createUpdateJsonLine;
-import static com.github.vincemann.springrapid.coretest.util.RapidTestUtil.createUpdateJsonRequest;
+import static com.github.vincemann.springrapid.coretest.util.TransactionalRapidTestUtil.createUpdateJsonLine;
+import static com.github.vincemann.springrapid.coretest.util.TransactionalRapidTestUtil.createUpdateJsonRequest;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 public class PetControllerIntegrationTest extends AbstractControllerIntegrationTest<PetController, PetService>

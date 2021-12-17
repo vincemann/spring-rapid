@@ -156,7 +156,8 @@ public abstract class AbstractUserService
     protected void makeUnverified(U user) {
         user.getRoles().add(AuthRoles.UNVERIFIED);
         user.setCredentialsUpdatedMillis(System.currentTimeMillis());
-        TransactionalUtils.afterCommit(() -> sendVerificationMail(user));
+//        TransactionalUtils.afterCommit(() -> sendVerificationMail(user));
+        sendVerificationMail(user);
     }
 
     /**
@@ -374,15 +375,17 @@ public abstract class AbstractUserService
         // preserves the new email id
         user.setNewEmail(emailChangeDto.getNewEmail());
         //user.setChangeEmailCode(LemonValidationUtils.uid());
+        U saved;
         try {
-            U saved = update(user);
+            saved = update(user);
             // after successful commit, mails a link to the user
-            TransactionalUtils.afterCommit(() -> mailChangeEmailLink(saved));
+//            TransactionalUtils.afterCommit(() -> mailChangeEmailLink(saved));
         } catch (BadEntityException e) {
             throw new RuntimeException("Email was malformed, although validation check was successful");
         }
 
         log.debug("Requested email change: " + user);
+        mailChangeEmailLink(saved);
     }
 
 
@@ -424,7 +427,7 @@ public abstract class AbstractUserService
             log.debug("Change email link mail queued.");
 
         } catch (Throwable e) {
-            // In case of exception, just log the error and keep silent
+            // In case of exception, just log the error and keep silent, people can use resendVerification link endpoint
             log.error(ExceptionUtils.getStackTrace(e));
         }
     }

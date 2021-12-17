@@ -7,16 +7,10 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static com.github.vincemann.springrapid.authtests.adapter.AuthTestAdapter.*;
 
-import com.github.vincemann.springrapid.auth.service.token.JwtService;
-
 import com.github.vincemann.springrapid.authtest.controller.template.AbstractUserControllerTestTemplate;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MvcResult;
-
-import java.io.Serializable;
 
 public class FetchNewTokenTest extends AbstractRapidAuthIntegrationTest {
 
@@ -45,7 +39,7 @@ public class FetchNewTokenTest extends AbstractRapidAuthIntegrationTest {
 		testTemplate.fetchNewToken2xx(token);
 
 		Thread.sleep(mockedExpireTime+1L);
-		ensureTokenDoesNotWork(token);
+		assertTokenDoesNotWork(token);
 
 	}
 

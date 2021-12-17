@@ -22,8 +22,7 @@ import com.github.vincemann.springrapid.core.controller.GenericCrudController;
 import com.github.vincemann.springrapid.core.security.RapidAuthenticatedPrincipal;
 import com.github.vincemann.springrapid.core.security.RapidSecurityContext;
 import com.github.vincemann.springrapid.core.service.CrudService;
-import com.github.vincemann.springrapid.coretest.controller.integration.IntegrationCrudControllerTest;
-import com.github.vincemann.springrapid.coretest.util.RapidTestUtil;
+import com.github.vincemann.springrapid.coretest.util.TransactionalRapidTestUtil;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -39,8 +38,8 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import static com.github.vincemann.springrapid.coretest.util.RapidTestUtil.createUpdateJsonLine;
-import static com.github.vincemann.springrapid.coretest.util.RapidTestUtil.createUpdateJsonRequest;
+import static com.github.vincemann.springrapid.coretest.util.TransactionalRapidTestUtil.createUpdateJsonLine;
+import static com.github.vincemann.springrapid.coretest.util.TransactionalRapidTestUtil.createUpdateJsonRequest;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 // add admin before each test
 public class AbstractControllerIntegrationTest<C extends GenericCrudController<?,Long,S,?,?>,S extends CrudService<?,Long>>
@@ -441,13 +440,13 @@ public class AbstractControllerIntegrationTest<C extends GenericCrudController<?
 
     @AfterEach
     void tearDown() {
-        RapidTestUtil.clear(visitService);
-        RapidTestUtil.clear(petService);
-        RapidTestUtil.clear(illnessService);
-        RapidTestUtil.clear(ownerService);
-        RapidTestUtil.clear(petTypeService);
-        RapidTestUtil.clear(specialtyService);
-        RapidTestUtil.clear(vetService);
-        RapidTestUtil.clear(userService);
+        TransactionalRapidTestUtil.clear(visitService);
+        TransactionalRapidTestUtil.clear(petService);
+        TransactionalRapidTestUtil.clear(illnessService);
+        TransactionalRapidTestUtil.clear(ownerService);
+        TransactionalRapidTestUtil.clear(petTypeService);
+        TransactionalRapidTestUtil.clear(specialtyService);
+        TransactionalRapidTestUtil.clear(vetService);
+        TransactionalRapidTestUtil.clear(userService);
     }
 }

@@ -4,8 +4,11 @@ import com.github.vincemann.springrapid.auth.model.AbstractUser;
 import com.github.vincemann.springrapid.auth.model.AuthRoles;
 import com.github.vincemann.springrapid.auth.dto.SignupDto;
 import com.github.vincemann.springrapid.auth.mail.MailData;
+import com.github.vincemann.springrapid.coretest.controller.TransactionalTestTemplate;
+import lombok.SneakyThrows;
 import org.hamcrest.Matchers;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 
 import static org.hamcrest.Matchers.containsString;
@@ -15,7 +18,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 public class VerificationTest extends AbstractRapidAuthIntegrationTest {
 
-
+	@Autowired
+	TransactionalTestTemplate transactionalTestTemplate;
 	
 	@Test
 	public void canVerifyEmail() throws Exception {
@@ -112,11 +116,18 @@ public class VerificationTest extends AbstractRapidAuthIntegrationTest {
 	public void usersCredentialsUpdatedAfterSignup_cantUseObsoleteVerificationCode() throws Exception {
 		SignupDto signupDto = createValidSignupDto();
 		MailData mailData = testTemplate.signup2xx(signupDto);
-		AbstractUser<Long> savedUser = getUserService().findByEmail(signupDto.getEmail()).get();
+		transactionalTestTemplate.doInTransaction(new Runnable() {
+			@SneakyThrows
+			@Override
+			public void run() {
+				AbstractUser<Long> savedUser = getUserService().findByEmail(signupDto.getEmail()).get();
 
-		// Credentials updated after the verification token is issued
-		savedUser.setCredentialsUpdatedMillis(System.currentTimeMillis());
-		getUserService().update(savedUser);
+				// Credentials updated after the verification token is issued
+				savedUser.setCredentialsUpdatedMillis(System.currentTimeMillis());
+				getUserService().update(savedUser);
+			}
+		});
+
 
 		mvc.perform(testTemplate.verifyEmailWithLink(mailData.getLink()))
 				.andExpect(status().isForbidden());

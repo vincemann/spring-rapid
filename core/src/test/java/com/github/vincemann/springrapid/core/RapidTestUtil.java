@@ -33,16 +33,6 @@ public class RapidTestUtil {
         return (E) byId.get();
     }
 
-    public static void clear(CrudService crudService){
-        for (IdentifiableEntity entity : (Set<IdentifiableEntity>) crudService.findAll()) {
-            try {
-                crudService.deleteById(entity.getId());
-            } catch (EntityNotFoundException|BadEntityException e) {
-                throw new RuntimeException(e);
-            }
-        }
-    }
-
 
     public static String createUpdateJsonLine(String operation, String path, String value){
         return "  {\"op\": \""+operation+"\", \"path\": \""+path+"\", \"value\": \""+value+"\"}";

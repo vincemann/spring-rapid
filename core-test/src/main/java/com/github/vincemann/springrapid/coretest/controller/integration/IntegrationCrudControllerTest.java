@@ -5,7 +5,7 @@ import com.github.vincemann.springrapid.core.security.RapidAuthenticatedPrincipa
 import com.github.vincemann.springrapid.core.security.RapidSecurityContext;
 import com.github.vincemann.springrapid.core.service.CrudService;
 import com.github.vincemann.springrapid.coretest.controller.template.CrudControllerTestTemplate;
-import com.github.vincemann.springrapid.coretest.util.RapidTestUtil;
+import com.github.vincemann.springrapid.coretest.util.TransactionalRapidTestUtil;
 import lombok.Getter;
 import org.junit.jupiter.api.AfterEach;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,6 +30,6 @@ public class IntegrationCrudControllerTest
 
     @AfterEach
     void cleanup(){
-        RapidTestUtil.clear(service);
+        TransactionalRapidTestUtil.clear(service);
     }
 }

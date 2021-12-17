@@ -1,7 +1,10 @@
 package com.github.vincemann.springrapid.authtests;
 
 import com.github.vincemann.springrapid.auth.model.AbstractUser;
+import com.github.vincemann.springrapid.coretest.controller.TransactionalTestTemplate;
+import lombok.SneakyThrows;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 
 import static org.hamcrest.Matchers.containsString;
@@ -11,7 +14,10 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static com.github.vincemann.springrapid.authtests.adapter.AuthTestAdapter.*;
 
 public class LoginTest extends AbstractRapidAuthIntegrationTest {
-	
+
+	@Autowired
+	TransactionalTestTemplate transactionalTestTemplate;
+
 	@Test
 	public void canLogin() throws Exception {
 		String token = mvc.perform(testTemplate.login_builder(USER_EMAIL, USER_PASSWORD))
@@ -37,7 +43,7 @@ public class LoginTest extends AbstractRapidAuthIntegrationTest {
 		String token = login2xx(USER_EMAIL, USER_PASSWORD, 50L);
 		// but, does expire after 50ms
 		Thread.sleep(51L);
-		ensureTokenDoesNotWork(token);
+		assertTokenDoesNotWork(token);
 //		mvc.perform(get(authProperties.getController().getPingUrl())
 //				.header(HttpHeaders.AUTHORIZATION, token))
 //				.andExpect(status().is(401));
@@ -53,11 +59,18 @@ public class LoginTest extends AbstractRapidAuthIntegrationTest {
 		// Thread.sleep(1001L);
 		String token = login2xx(USER_EMAIL, USER_PASSWORD);
 
-		AbstractUser<Long> user = getUserService().findById(getUser().getId()).get();
-		user.setCredentialsUpdatedMillis(System.currentTimeMillis());
-		getUserService().save(user);
+		transactionalTestTemplate.doInTransaction(new Runnable() {
+			@SneakyThrows
+			@Override
+			public void run() {
+				AbstractUser<Long> user = getUserService().findById(getUser().getId()).get();
+				user.setCredentialsUpdatedMillis(System.currentTimeMillis());
+				getUserService().save(user);
+			}
+		});
 
-		ensureTokenDoesNotWork(token);
+
+		assertTokenDoesNotWork(token);
 //		mvc.perform(get(authProperties.getController().getPingUrl())
 //				.header(HttpHeaders.AUTHORIZATION, tokens.get(getAdmin().getId())))
 //				.andExpect(status().is(401));

@@ -12,10 +12,8 @@ import com.github.vincemann.springrapid.coredemo.repo.LazyLoadedItemRepository;
 import com.github.vincemann.springrapid.coredemo.repo.PetRepository;
 import com.github.vincemann.springrapid.coredemo.service.OwnerService;
 import com.github.vincemann.springrapid.coredemo.service.Root;
-import com.github.vincemann.springrapid.coretest.controller.TransactionalTestTemplate;
 import com.github.vincemann.springrapid.coretest.slicing.RapidTestProfiles;
-import com.github.vincemann.springrapid.coretest.util.RapidTestUtil;
-import lombok.SneakyThrows;
+import com.github.vincemann.springrapid.coretest.util.TransactionalRapidTestUtil;
 import org.hibernate.LazyInitializationException;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
@@ -24,8 +22,6 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
-import org.springframework.test.context.transaction.TestTransaction;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 
@@ -185,7 +181,7 @@ class LazyLogUtilsTest {
 
     @AfterEach
     void tearDown() {
-        RapidTestUtil.clear(ownerService);
+        TransactionalRapidTestUtil.clear(ownerService);
         petRepository.deleteAll();
         loadedItemRepository.deleteAll();
         loadedExceptionItemRepository.deleteAll();

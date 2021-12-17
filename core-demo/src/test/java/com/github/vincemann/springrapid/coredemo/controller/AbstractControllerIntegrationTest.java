@@ -9,7 +9,7 @@ import com.github.vincemann.springrapid.coredemo.repo.*;
 import com.github.vincemann.springrapid.coredemo.service.*;
 import com.github.vincemann.springrapid.coredemo.service.extensions.OwnerOfTheYearExtension;
 import com.github.vincemann.springrapid.coretest.controller.integration.IntegrationCrudControllerTest;
-import com.github.vincemann.springrapid.coretest.util.RapidTestUtil;
+import com.github.vincemann.springrapid.coretest.util.TransactionalRapidTestUtil;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -363,12 +363,12 @@ public class AbstractControllerIntegrationTest<C extends GenericCrudController<?
 
     @AfterEach
     void tearDown() {
-        RapidTestUtil.clear(visitService);
-        RapidTestUtil.clear(petService);
-        RapidTestUtil.clear(toyService);
-        RapidTestUtil.clear(ownerService);
-        RapidTestUtil.clear(petTypeService);
-        RapidTestUtil.clear(specialtyService);
-        RapidTestUtil.clear(vetService);
+        TransactionalRapidTestUtil.clear(visitService);
+        TransactionalRapidTestUtil.clear(petService);
+        TransactionalRapidTestUtil.clear(toyService);
+        TransactionalRapidTestUtil.clear(ownerService);
+        TransactionalRapidTestUtil.clear(petTypeService);
+        TransactionalRapidTestUtil.clear(specialtyService);
+        TransactionalRapidTestUtil.clear(vetService);
     }
 }

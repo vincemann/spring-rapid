@@ -9,7 +9,6 @@ import com.github.vincemann.springrapid.coredemo.repo.VetRepository;
 import com.github.vincemann.springrapid.coredemo.service.SpecialtyService;
 import com.github.vincemann.springrapid.coredemo.service.VetService;
 import com.github.vincemann.springrapid.coretest.service.CrudServiceIntegrationTest;
-import com.github.vincemann.springrapid.coretest.util.RapidTestUtil;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;

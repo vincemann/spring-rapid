@@ -28,7 +28,7 @@ import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import java.io.Serializable;
 
-import static com.github.vincemann.springrapid.coretest.util.RapidTestUtil.mustBePresentIn;
+import static com.github.vincemann.springrapid.coretest.util.TransactionalRapidTestUtil.mustBePresentIn;
 
 
 @Slf4j

@@ -15,7 +15,7 @@ import com.github.vincemann.springrapid.auth.util.RapidJwt;
 import com.github.vincemann.springrapid.authtest.controller.UserIntegrationControllerTest;
 import com.github.vincemann.springrapid.authtests.adapter.AuthTestAdapter;
 import com.github.vincemann.springrapid.core.CoreProperties;
-import com.github.vincemann.springrapid.coretest.util.RapidTestUtil;
+import com.github.vincemann.springrapid.coretest.util.TransactionalRapidTestUtil;
 import com.nimbusds.jwt.JWTClaimsSet;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
@@ -34,7 +34,6 @@ import org.springframework.test.web.servlet.setup.DefaultMockMvcBuilder;
 
 import javax.sql.DataSource;
 import java.io.Serializable;
-import java.sql.SQLException;
 import java.text.ParseException;
 import java.util.HashMap;
 import java.util.Map;
@@ -181,7 +180,7 @@ public abstract class AbstractRapidAuthIntegrationTest
                 .andExpect(jsonPath("$.user.id").value(id.toString()));
     }
 
-    protected void ensureTokenDoesNotWork(String token) throws Exception {
+    protected void assertTokenDoesNotWork(String token) throws Exception {
         mvc.perform(get(authProperties.getController().getContextUrl())
                 .header(HttpHeaders.AUTHORIZATION, token))
                 .andExpect(status().isUnauthorized())
@@ -210,7 +209,7 @@ public abstract class AbstractRapidAuthIntegrationTest
         System.err.println("clearing test data");
         tokens.clear();
         System.err.println("deleting users");
-        RapidTestUtil.clear(aclUserService);
+        TransactionalRapidTestUtil.clear(aclUserService);
         System.err.println("deleted users");
         System.err.println("test data cleared");
 

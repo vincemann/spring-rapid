@@ -6,8 +6,6 @@ import com.github.vincemann.springrapid.coredemo.dtos.VetDto;
 import com.github.vincemann.springrapid.coredemo.model.Specialty;
 import com.github.vincemann.springrapid.coredemo.model.Vet;
 import com.github.vincemann.springrapid.coredemo.service.VetService;
-import com.github.vincemann.springrapid.coretest.util.ExceptionAssert;
-import io.github.artsok.RepeatedIfExceptionsTest;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.test.web.servlet.MvcResult;
@@ -17,8 +15,8 @@ import java.util.HashSet;
 import java.util.stream.Collectors;
 
 import static com.github.vincemann.ezcompare.Comparator.compare;
-import static com.github.vincemann.springrapid.coretest.util.RapidTestUtil.createUpdateJsonLine;
-import static com.github.vincemann.springrapid.coretest.util.RapidTestUtil.createUpdateJsonRequest;
+import static com.github.vincemann.springrapid.coretest.util.TransactionalRapidTestUtil.createUpdateJsonLine;
+import static com.github.vincemann.springrapid.coretest.util.TransactionalRapidTestUtil.createUpdateJsonRequest;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 public class VetControllerIntegrationTest extends AbstractControllerIntegrationTest<VetController,VetService> {
