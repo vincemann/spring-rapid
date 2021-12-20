@@ -53,7 +53,7 @@ public class ExtendedRemoveJsonPatchStrategy implements JsonPatchStrategy {
             // Create the patch
             JsonPatch patch = null;
             try {
-                patch = createPatch(savedEntity, patchNode);
+                patch = createPatch(targetDto, patchNode);
             } catch (Exception e) {
                 throw new BadEntityException(e);
             }
@@ -71,7 +71,7 @@ public class ExtendedRemoveJsonPatchStrategy implements JsonPatchStrategy {
         }
     }
 
-    private JsonPatch createPatch(IdentifiableEntity savedEntity, JsonNode patchNode) throws Exception {
+    private JsonPatch createPatch(Object dto, JsonNode patchNode) throws Exception {
         Map<Collection, List<Integer>> removedIndicesMap = new HashMap<>();
 
         Iterator<JsonNode> iterator = patchNode.elements();
@@ -85,20 +85,20 @@ public class ExtendedRemoveJsonPatchStrategy implements JsonPatchStrategy {
             if (operation.equals("remove")) {
                 JsonNode valueNode = instructionNode.findValue("value");
                 if (valueNode != null) {
-                    patchRemoveInstruction(instructionNode,valueNode,savedEntity,removedIndicesMap);
+                    patchRemoveInstruction(instructionNode,valueNode,dto,removedIndicesMap);
                 }
             }
         }
         return JsonPatch.fromJson(patchNode);
     }
 
-    private void patchRemoveInstruction(JsonNode instructionNode, JsonNode valueNode,IdentifiableEntity savedEntity, Map<Collection, List<Integer>> removedIndicesMap) throws Exception {
+    private void patchRemoveInstruction(JsonNode instructionNode, JsonNode valueNode,Object dto, Map<Collection, List<Integer>> removedIndicesMap) throws Exception {
         log.debug("found update-remove operation with value set");
         String value = valueNode.asText();
         String path = instructionNode.findValue("path").asText();
-        Field collectionField = ReflectionUtils.findField(savedEntity.getClass(),
+        Field collectionField = ReflectionUtils.findField(dto.getClass(),
                 // Utils wont transform if not "...Ids" fieldname
-                IdPropertyNameUtils.transformIdCollectionFieldName(path.replace("/", "")));
+                path.replace("/", ""));
         if (collectionField==null){
             log.warn("Collection field for remove by value not found: "+ path);
             return;
@@ -108,21 +108,22 @@ public class ExtendedRemoveJsonPatchStrategy implements JsonPatchStrategy {
         int[] position = {-1};
         Optional elementToDelete = Optional.empty();
         Collection collection;
-        if (IdPropertyNameUtils.isCollectionIdField(path.replace("/", ""))) {
-            log.debug("removing from entity collection, value will be interpreted as id");
-            collection = (Collection) collectionField.get(savedEntity);
-            elementToDelete = ((Collection<? extends IdentifiableEntity>)collection).stream()
-                    .peek(x -> position[0]++)  // increment every element encounter
-                    .filter(o -> o.getId().toString().equals(value))
-                    .findFirst();
-        } else {
-            log.debug("removing from normal collection (assuming comparable by String Type)");
-            collection = (Collection) collectionField.get(savedEntity);
-            elementToDelete = collection.stream()
-                    .peek(x -> position[0]++)  // increment every element encounter
-                    .filter(o -> o.toString().equals(value))
-                    .findFirst();
-        }
+//        if (IdPropertyNameUtils.isCollectionIdField(path.replace("/", ""))) {
+        log.debug("removing from entity collection, value will be interpreted as id");
+        collection = (Collection) collectionField.get(dto);
+        elementToDelete = ((Collection<?>)collection).stream()
+                .peek(x -> position[0]++)  // increment every element encounter
+                .filter(o -> o.toString().equals(value))
+                .findFirst();
+//        }
+//        else {
+//            log.debug("removing from normal collection (assuming comparable by String Type)");
+//            collection = (Collection) collectionField.get(savedEntity);
+//            elementToDelete = collection.stream()
+//                    .peek(x -> position[0]++)  // increment every element encounter
+//                    .filter(o -> o.toString().equals(value))
+//                    .findFirst();
+//        }
 
         if (elementToDelete.isEmpty()) {
             throw new IllegalArgumentException("Element to delete: "+value+" not found");

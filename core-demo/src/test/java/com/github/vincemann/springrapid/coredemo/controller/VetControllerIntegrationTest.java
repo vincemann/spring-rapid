@@ -7,6 +7,7 @@ import com.github.vincemann.springrapid.coredemo.model.Specialty;
 import com.github.vincemann.springrapid.coredemo.model.Vet;
 import com.github.vincemann.springrapid.coredemo.service.VetService;
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.RepeatedTest;
 import org.junit.jupiter.api.Test;
 import org.springframework.test.web.servlet.MvcResult;
 
@@ -66,6 +67,7 @@ public class VetControllerIntegrationTest extends AbstractControllerIntegrationT
     @Test
 //    @RepeatedIfExceptionsTest(repeats = 3, exceptions = IllegalArgumentException.class, name = "Rerun failed test. Attempt {currentRepetition} of {totalRepetitions}")
     public void canRemoveMultipleSpecialtiesFromVet_viaUpdate() throws Exception {
+        // todo run class tests and stop here with debugger, check db state to find why fails run launched with other tests
         // poldi -> dentism, gastro, heart
         // max -> dentism, heart
         Specialty savedDentism = specialtyService.save(dentism);

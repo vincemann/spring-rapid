@@ -370,5 +370,6 @@ public class AbstractControllerIntegrationTest<C extends GenericCrudController<?
         TransactionalRapidTestUtil.clear(petTypeService);
         TransactionalRapidTestUtil.clear(specialtyService);
         TransactionalRapidTestUtil.clear(vetService);
+        TransactionalRapidTestUtil.clear(clinicCardService);
     }
 }
