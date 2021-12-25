@@ -14,7 +14,7 @@ import com.github.vincemann.springrapid.coredemo.model.Pet;
 import com.github.vincemann.springrapid.coredemo.service.OwnerService;
 import com.github.vincemann.springrapid.coredemo.service.PetService;
 import com.github.vincemann.springrapid.coretest.controller.automock.AutoMockCrudControllerTest;
-import org.apache.commons.beanutils.BeanUtilsBean;
+import com.github.vincemann.springrapid.core.util.BeanUtils;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
@@ -174,7 +174,7 @@ public class MockServiceOwnerControllerTest
         //given
         String updatedAddress = "other Street 12";
 
-        Owner ownerPatch = (Owner) BeanUtilsBean.getInstance().cloneBean(owner);
+        Owner ownerPatch = BeanUtils.clone(owner);
         ownerPatch.setAddress(updatedAddress);
 
         when(ownerService.findById(owner.getId()))
@@ -193,7 +193,7 @@ public class MockServiceOwnerControllerTest
 
     @Test
     public void cantUpdateWithBlankCity() throws Exception {
-        Owner ownerPatch = (Owner) BeanUtilsBean.getInstance().cloneBean(owner);
+        Owner ownerPatch = BeanUtils.clone(owner);
         ownerPatch.setCity(null);
         when(ownerService.findById(owner.getId()))
                 .thenReturn(Optional.of(owner));
@@ -210,7 +210,7 @@ public class MockServiceOwnerControllerTest
         Pet pet = Pet.builder().name("myPet").build();
         pet.setId(petId);
 
-        Owner ownerPatch = (Owner) BeanUtilsBean.getInstance().cloneBean(owner);
+        Owner ownerPatch = BeanUtils.clone(owner);
         ownerPatch.getPets().add(pet);
 
 

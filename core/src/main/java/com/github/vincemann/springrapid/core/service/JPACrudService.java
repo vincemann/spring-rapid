@@ -1,11 +1,13 @@
 package com.github.vincemann.springrapid.core.service;
 
+import com.github.vincemann.springrapid.core.util.NullAwareBeanUtils;
 import com.github.vincemann.springrapid.core.util.NullAwareBeanUtilsBean;
 import com.github.vincemann.springrapid.core.model.IdentifiableEntity;
 import com.github.vincemann.springrapid.core.service.exception.BadEntityException;
 import com.github.vincemann.springrapid.core.service.exception.EntityNotFoundException;
 import com.github.vincemann.springrapid.core.slicing.ServiceComponent;
 import com.github.vincemann.springrapid.core.util.VerifyEntity;
+import com.github.vincemann.springrapid.core.util.BeanUtils;
 import org.apache.commons.beanutils.BeanUtilsBean;
 import org.hibernate.LockMode;
 import org.hibernate.Session;
@@ -67,15 +69,12 @@ public abstract class JPACrudService
                 //copy non null values from update to entityToUpdate
                 // values get copied to target already bc this is transactional
                 // -> update is already happening here
-                BeanUtilsBean notNull = new NullAwareBeanUtilsBean();
-                notNull.copyProperties(entityToUpdate, update);
+                NullAwareBeanUtils.copyProperties(entityToUpdate, update);
                 return getRepository().save(entityToUpdate);
             }
         } catch (NonTransientDataAccessException e) {
             // constraints not met, such as foreign key constraints or other db entity constraints
             throw new BadEntityException(e);
-        } catch (IllegalAccessException | InvocationTargetException /*| InstantiationException | NoSuchMethodException*/ e) {
-           throw new RuntimeException(e);
         }
     }
 

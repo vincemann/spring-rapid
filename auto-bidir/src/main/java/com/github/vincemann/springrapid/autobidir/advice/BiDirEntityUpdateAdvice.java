@@ -19,7 +19,7 @@ import static com.github.vincemann.springrapid.core.util.ProxyUtils.isRootServic
 
 @Aspect
 @Slf4j
-@Transactional
+@Transactional // is it needed?
 /**
  * Advice that keeps BiDirRelationships intact for repo save operations that are updates (id is set)
  */
@@ -29,6 +29,13 @@ public class BiDirEntityUpdateAdvice extends BiDirEntityAdvice {
     @Autowired
     public BiDirEntityUpdateAdvice(CrudServiceLocator crudServiceLocator, RelationalEntityManager relationalEntityManager) {
         super(crudServiceLocator, relationalEntityManager);
+    }
+
+    @Before(value = "com.github.vincemann.springrapid.core.advice.SystemArchitecture.updateOperation() && " +
+            "com.github.vincemann.springrapid.core.advice.SystemArchitecture.serviceOperation() && " +
+            "args(entity)")
+    public void preUpdateBiDirEntity(JoinPoint joinPoint, IdentifiableEntity entity) throws EntityNotFoundException, BadEntityException {
+        preUpdateBiDirEntity(joinPoint,entity,true);
     }
 
 

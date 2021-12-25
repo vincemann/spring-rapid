@@ -5,7 +5,7 @@ import com.github.vincemann.springrapid.core.util.Lists;
 import com.github.vincemann.springrapid.coredemo.model.Specialty;
 import com.github.vincemann.springrapid.coredemo.model.Vet;
 import com.github.vincemann.springrapid.coredemo.service.VetService;
-import org.apache.commons.beanutils.BeanUtilsBean;
+import com.github.vincemann.springrapid.core.util.BeanUtils;
 import org.junit.jupiter.api.Test;
 
 import java.lang.reflect.InvocationTargetException;
@@ -133,7 +133,7 @@ public class VerServiceIntegrationTest extends ManyToManyServiceIntegrationTest<
         Vet savedKahn = getTestedService().save(kahn);
 
         // remove dentism from meier
-        Vet meierUpdate = (Vet) BeanUtilsBean.getInstance().cloneBean(savedMeier);
+        Vet meierUpdate = BeanUtils.clone(savedMeier);
         meierUpdate.setSpecialtys(new HashSet<>(Lists.newArrayList(savedGastro)));
         test(update(meierUpdate));
 
@@ -182,7 +182,7 @@ public class VerServiceIntegrationTest extends ManyToManyServiceIntegrationTest<
         Vet savedKahn = getTestedService().save(kahn);
 
         // add heart to kahn
-        Vet kahnUpdate = (Vet) BeanUtilsBean.getInstance().cloneBean(savedKahn);
+        Vet kahnUpdate = BeanUtils.clone(savedKahn);
         kahnUpdate.setSpecialtys(new HashSet<>(Lists.newArrayList(savedGastro, savedHeart)));
         test(update(kahnUpdate));
 

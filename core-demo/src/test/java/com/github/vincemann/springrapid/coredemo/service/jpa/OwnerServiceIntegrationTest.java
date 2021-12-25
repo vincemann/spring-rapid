@@ -6,7 +6,7 @@ import com.github.vincemann.springrapid.core.util.Lists;
 import com.github.vincemann.springrapid.coredemo.model.Owner;
 import com.github.vincemann.springrapid.coredemo.model.Pet;
 import com.github.vincemann.springrapid.coredemo.service.OwnerService;
-import org.apache.commons.beanutils.BeanUtilsBean;
+import com.github.vincemann.springrapid.core.util.BeanUtils;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
@@ -181,7 +181,7 @@ class OwnerServiceIntegrationTest
 
         Owner savedKahn = getTestedService().save(kahn);
 
-        Owner ownerUpdateRequest = (Owner) BeanUtilsBean.getInstance().cloneBean(savedKahn);
+        Owner ownerUpdateRequest = BeanUtils.clone(savedKahn);
         //here comes the new pet
         ownerUpdateRequest.getPets().add(savedKitty);
 
@@ -368,7 +368,7 @@ class OwnerServiceIntegrationTest
         Owner savedKahn = getTestedService().save(kahn);
 
 
-        Owner removePetsUpdate = (Owner) BeanUtilsBean.getInstance().cloneBean(savedKahn);
+        Owner removePetsUpdate = BeanUtils.clone(savedKahn);
         // explicitly set empty list instead of null
         removePetsUpdate.setPets(new HashSet<>());
 

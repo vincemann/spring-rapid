@@ -6,7 +6,7 @@ import com.github.vincemann.springrapid.coredemo.model.Owner;
 import com.github.vincemann.springrapid.coredemo.model.Pet;
 import com.github.vincemann.springrapid.coredemo.service.OwnerService;
 import com.github.vincemann.springrapid.coredemo.service.PetService;
-import org.apache.commons.beanutils.BeanUtilsBean;
+import com.github.vincemann.springrapid.core.util.BeanUtils;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -62,7 +62,7 @@ class PetServiceIntegrationTest
     public void canSavePet_unlinkPetType_viaUpdate() throws Exception, InvocationTargetException, NoSuchMethodException, InstantiationException, IllegalAccessException, EntityNotFoundException {
         Pet savedBello = getTestedService().save(bello);
 
-        Pet update = (Pet) BeanUtilsBean.getInstance().cloneBean(savedBello);
+        Pet update = BeanUtils.clone(savedBello);
         update.setPetType(null);
 
         test(update(update))
@@ -74,10 +74,10 @@ class PetServiceIntegrationTest
     public void canSavePet_unlinkFromPetType_removePetTypes() throws Exception, InvocationTargetException, NoSuchMethodException, InstantiationException, IllegalAccessException, EntityNotFoundException {
         Pet savedBello = getTestedService().save(bello);
 
-        Pet update = (Pet) BeanUtilsBean.getInstance().cloneBean(savedBello);
+        Pet update = BeanUtils.clone(savedBello);
         update.setPetType(null);
 
-        getTestedService().update(update);
+        getTestedService().update(update,true);
 
         petTypeRepository.deleteAll();
 
@@ -139,7 +139,7 @@ class PetServiceIntegrationTest
         bello.setOwner(savedKahn);
         Pet savedBello = getTestedService().save(bello);
 
-        Pet unlinkOwnerUpdate = (Pet) BeanUtilsBean.getInstance().cloneBean(savedBello);
+        Pet unlinkOwnerUpdate = BeanUtils.clone(savedBello);
         unlinkOwnerUpdate.setOwner(null);
 
         test(update(unlinkOwnerUpdate));
@@ -182,7 +182,7 @@ class PetServiceIntegrationTest
         Owner savedKahn = ownerService.save(kahn);
         Pet savedBello = getTestedService().save(bello);
 
-        Pet updatePetsOwner = (Pet) BeanUtilsBean.getInstance().cloneBean(savedBello);
+        Pet updatePetsOwner = BeanUtils.clone(savedBello);
         updatePetsOwner.setOwner(savedKahn);
 
         test(update(updatePetsOwner));

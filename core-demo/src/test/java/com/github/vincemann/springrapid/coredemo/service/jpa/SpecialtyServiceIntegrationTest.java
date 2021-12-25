@@ -6,7 +6,7 @@ import com.github.vincemann.springrapid.coredemo.model.Specialty;
 import com.github.vincemann.springrapid.coredemo.model.Vet;
 import com.github.vincemann.springrapid.coredemo.service.SpecialtyService;
 import com.github.vincemann.springrapid.coretest.service.resolve.EntityPlaceholder;
-import org.apache.commons.beanutils.BeanUtilsBean;
+import com.github.vincemann.springrapid.core.util.BeanUtils;
 import org.junit.jupiter.api.Test;
 
 import java.lang.reflect.InvocationTargetException;
@@ -119,7 +119,7 @@ public class SpecialtyServiceIntegrationTest
         getTestedService().save(gastro);
 
         // unlink dentism from kahn
-        Specialty updateSpecialty = (Specialty) BeanUtilsBean.getInstance().cloneBean(savedDentism);
+        Specialty updateSpecialty = BeanUtils.clone(savedDentism);
         updateSpecialty.setVets(new HashSet<>(Lists.newArrayList(savedMeier)));
         test(update(updateSpecialty))
                 .andExpect(() -> propertyAssert(resolve(EntityPlaceholder.SERVICE_RETURNED_ENTITY))
@@ -182,7 +182,7 @@ public class SpecialtyServiceIntegrationTest
         Specialty savedHeart = getTestedService().save(heart);
 
         // unlink heart from kahn and meier
-        Specialty updateSpecialty = (Specialty) BeanUtilsBean.getInstance().cloneBean(savedHeart);
+        Specialty updateSpecialty = BeanUtils.clone(savedHeart);
         updateSpecialty.setVets(new HashSet<>(Lists.newArrayList(savedSchuhmacher)));
         test(update(updateSpecialty))
                 .andExpect(() -> propertyAssert(resolve(EntityPlaceholder.SERVICE_RETURNED_ENTITY))
@@ -248,7 +248,7 @@ public class SpecialtyServiceIntegrationTest
         Specialty savedHeart = getTestedService().save(heart);
 
         // unlink heart from all
-        Specialty updateSpecialty = (Specialty) BeanUtilsBean.getInstance().cloneBean(savedHeart);
+        Specialty updateSpecialty = BeanUtils.clone(savedHeart);
         updateSpecialty.setVets(new HashSet<>());
         test(update(updateSpecialty))
                 .andExpect(() -> propertyAssert(resolve(EntityPlaceholder.SERVICE_RETURNED_ENTITY))
@@ -314,7 +314,7 @@ public class SpecialtyServiceIntegrationTest
         Specialty savedHeart = getTestedService().save(heart);
 
         // link heart to meier and kahn
-        Specialty updateSpecialty = (Specialty) BeanUtilsBean.getInstance().cloneBean(savedHeart);
+        Specialty updateSpecialty = (Specialty) BeanUtils.clone(savedHeart);
         updateSpecialty.setVets(new HashSet<>(Lists.newArrayList(savedMeier,savedKahn)));
         test(update(updateSpecialty))
                 .andExpect(() -> propertyAssert(resolve(EntityPlaceholder.SERVICE_RETURNED_ENTITY))
@@ -380,7 +380,7 @@ public class SpecialtyServiceIntegrationTest
         Specialty savedHeart = getTestedService().save(heart);
 
         // relink heart from kahn and schuhmacher to meier
-        Specialty updateSpecialty = (Specialty) BeanUtilsBean.getInstance().cloneBean(savedHeart);
+        Specialty updateSpecialty = BeanUtils.clone(savedHeart);
         updateSpecialty.setVets(new HashSet<>(Lists.newArrayList(savedMeier)));
         test(update(updateSpecialty))
                 .andExpect(() -> propertyAssert(resolve(EntityPlaceholder.SERVICE_RETURNED_ENTITY))
