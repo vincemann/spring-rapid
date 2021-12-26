@@ -1,5 +1,10 @@
 package com.github.vincemann.springrapid.autobidir.advice;
 
+import com.github.vincemann.springrapid.autobidir.model.child.annotation.BiDirChildCollection;
+import com.github.vincemann.springrapid.autobidir.model.child.annotation.BiDirChildEntity;
+import com.github.vincemann.springrapid.autobidir.model.parent.annotation.BiDirParentCollection;
+import com.github.vincemann.springrapid.autobidir.model.parent.annotation.BiDirParentEntity;
+import com.github.vincemann.springrapid.autobidir.util.BiDirJpaUtils;
 import com.github.vincemann.springrapid.core.model.IdentifiableEntity;
 import com.github.vincemann.springrapid.core.service.exception.BadEntityException;
 import com.github.vincemann.springrapid.core.service.exception.EntityNotFoundException;
@@ -37,6 +42,8 @@ public class BiDirEntitySaveAdvice extends BiDirEntityAdvice {
     public void prePersistBiDirEntity(IdentifiableEntity entity) throws BadEntityException, EntityNotFoundException, IllegalAccessException {
         Set<RelationalEntityType> relationalEntityTypes = relationalEntityManager.inferTypes(entity.getClass());
         if (relationalEntityTypes.contains(RelationalEntityType.BiDirParent)){
+            entity = BiDirJpaUtils.initializeSubEntities(entity, BiDirChildEntity.class);
+            entity = BiDirJpaUtils.initializeSubEntities(entity, BiDirChildCollection.class);
             if (entity.getId() == null) {
                 //create
                 log.debug("pre persist biDirParent hook reached for: " + entity);
@@ -53,6 +60,8 @@ public class BiDirEntitySaveAdvice extends BiDirEntityAdvice {
         }
 
         if (relationalEntityTypes.contains(RelationalEntityType.BiDirChild)){
+            entity = BiDirJpaUtils.initializeSubEntities(entity, BiDirParentEntity.class);
+            entity = BiDirJpaUtils.initializeSubEntities(entity, BiDirParentCollection.class);
             if ( entity.getId() == null) {
                 //create
                 log.debug("pre persist biDirChild hook reached for: " + entity);

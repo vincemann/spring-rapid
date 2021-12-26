@@ -22,43 +22,25 @@ public class BiDirJpaUtils {
      *
      * @return
      */
-    public static <T> T initializeSubEntities(T entity, Object toInitialize, Class<? extends Annotation> annotationClass) {
+    public static <T> T initializeSubEntities(T entity, Class<? extends Annotation> annotationClass) {
         EntityManager entityManager = JpaUtils.getEntityManager();
         PersistenceUtil pu = entityManager.getEntityManagerFactory().getPersistenceUnitUtil();
         System.err.println("entity is loaded: " + pu.isLoaded(entity));
         // find field Name of toInitialize
         final Set<String> fieldNames = new HashSet<>();
-        AtomicReference<Boolean> collectionFound = new AtomicReference<>(Boolean.FALSE);
-        AtomicReference<Boolean> collection = new AtomicReference<>(Collection.class.isAssignableFrom(toInitialize.getClass()));
+        boolean collection = EntityAnnotationUtils.isCollectionType(annotationClass);
 
         ReflectionUtils.doWithFields(entity.getClass(), field -> {
             fieldNames.add(field.getName());
-        }, field -> {
-            if (field.getType().equals(toInitialize.getClass())) {
-                return true;
-            } else if (collection.get() && Collection.class.isAssignableFrom(field.getType())) {
-                // found collection field
-                if (field.isAnnotationPresent(annotationClass)) {
-                    collectionFound.set(true);
-                    return true;
-                }
-//                Class<?> entityType = EntityAnnotationUtils.getEntityType(field);
-//                if (entityType != null){
-//                    if (entityType.equals(toInitialize.getClass())){
-//                        // found it
-//                        collectionFound.set(true);
-//                        return true;
-//                    }
-//                }
-            }
-            return false;
-        });
+        },new org.springframework.data.util.ReflectionUtils.AnnotationFieldFilter(annotationClass));
+
         if (fieldNames.isEmpty()) {
-            throw new IllegalArgumentException("Did not find matching property");
+//            throw new IllegalArgumentException("Did not find matching property");
+            return entity;
         }
 
         for (String fieldName : fieldNames) {
-            System.err.println("entity." + fieldName + " is loaded: " + pu.isLoaded(toInitialize, fieldName));
+            System.err.println("entity." + fieldName + " is loaded: " + pu.isLoaded(entity, fieldName));
             if (!pu.isLoaded(entity) //entity might've been retrieved via getReference
                     || !pu.isLoaded(entity, fieldName)//phones is a lazy relation
             ) {
@@ -75,7 +57,7 @@ public class BiDirJpaUtils {
                 System.err.println("initializing entity's field: " + fieldName + " by calling getter");
                 try {
                     Object returnedObj = PropertyUtils.getProperty(entity, fieldName);
-                    if (collectionFound.get()) {
+                    if (collection) {
                         System.err.println("initializing entity's collection field by calling size() on it");
                         Method sizeMethod = returnedObj.getClass().getDeclaredMethod("size");
                         sizeMethod.invoke(returnedObj);

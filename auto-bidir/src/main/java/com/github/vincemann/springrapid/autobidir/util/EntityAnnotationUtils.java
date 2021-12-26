@@ -21,6 +21,21 @@ public class EntityAnnotationUtils {
         throw new IllegalArgumentException("Annotation: " + annotation + " is not of EntityCollection Type");
     }
 
+    public static boolean isCollectionType(Class<? extends Annotation> clazz){
+        if (clazz.equals(BiDirChildCollection.class)){
+            return true;
+        }else if (clazz.equals(BiDirParentCollection.class)){
+            return true;
+        }
+        else if (clazz.equals(UniDirChildCollection.class)){
+            return true;
+        }
+        else {
+            return false;
+        }
+//        throw new IllegalArgumentException("Annotation: " + annotation + " is not of EntityCollection Type");
+    }
+
     public static Class<?> getEntityType(Field field){
         if (field.isAnnotationPresent(BiDirChildCollection.class)){
             return field.getAnnotation(BiDirChildCollection.class).value();

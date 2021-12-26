@@ -22,8 +22,8 @@ import java.util.*;
 @Getter
 @Slf4j
 public abstract class BiDirEntityAdvice {
-    private CrudServiceLocator crudServiceLocator;
     protected RelationalEntityManager relationalEntityManager;
+    private CrudServiceLocator crudServiceLocator;
     @PersistenceContext
     private EntityManager entityManager;
 
@@ -34,6 +34,7 @@ public abstract class BiDirEntityAdvice {
 
     public void updateBiDirParentRelations(IdentifiableEntity newParent) throws BadEntityException, EntityNotFoundException, IllegalAccessException {
         IdentifiableEntity oldParent = findOldEntity(newParent);
+        newParent = BiDirJpaUtils.initializeSubEntities(newParent, BiDirChildCollection.class);
 
         Set<IdentifiableEntity> oldSingleChildren = relationalEntityManager.findSingleBiDirChildren(oldParent);
         Set<IdentifiableEntity> newSingleChildren = relationalEntityManager.findSingleBiDirChildren(newParent);
@@ -64,17 +65,8 @@ public abstract class BiDirEntityAdvice {
             }
         }
 
-        TransactionSynchronizationManager.isActualTransactionActive();
-        TransactionAspectSupport.currentTransactionStatus();
 
-        Collection<Collection<IdentifiableEntity>> tempNewChildCollections;
         for (Collection<? extends IdentifiableEntity> newChildrenCollection : newChildCollections) {
-            newParent = BiDirJpaUtils.initializeSubEntities(newParent,newChildrenCollection, BiDirChildCollection.class);
-
-        }
-
-
-            for (Collection<? extends IdentifiableEntity> newChildrenCollection : newChildCollections) {
             // add util here to lazy load collection !
 
             for (IdentifiableEntity newChild : newChildrenCollection) {
@@ -84,18 +76,18 @@ public abstract class BiDirEntityAdvice {
             }
         }
 
-        adjustUpdatedEntities(addedChildren,removedChildren);
+        adjustUpdatedEntities(addedChildren, removedChildren);
 
         //unlink removed Children from newParent
         for (IdentifiableEntity removedChild : removedChildren) {
             log.debug("unlinking child: " + removedChild + " from parent: " + newParent);
-            relationalEntityManager.unlinkBiDirParent(removedChild,oldParent);
+            relationalEntityManager.unlinkBiDirParent(removedChild, oldParent);
         }
 
         //link added Children to newParent
         for (IdentifiableEntity addedChild : addedChildren) {
             log.debug("linking child: " + addedChild + " to parent: " + newParent);
-            relationalEntityManager.linkBiDirParent(addedChild,newParent);
+            relationalEntityManager.linkBiDirParent(addedChild, newParent);
         }
     }
 
@@ -141,27 +133,27 @@ public abstract class BiDirEntityAdvice {
             }
         }
 
-        adjustUpdatedEntities(addedParents,removedParents);
+        adjustUpdatedEntities(addedParents, removedParents);
 
         //unlink Child from certain Parents
         for (IdentifiableEntity removedParent : removedParents) {
             log.debug("unlinking parent: " + removedParent + " from child: " + newChild);
-            relationalEntityManager.unlinkBiDirChild(removedParent,oldChild);
+            relationalEntityManager.unlinkBiDirChild(removedParent, oldChild);
         }
 
         //add added Parent to child
         for (IdentifiableEntity addedParent : addedParents) {
             log.debug("linking parent: " + addedParent + " to child: " + newChild);
-            relationalEntityManager.linkBiDirChild(addedParent,newChild);
+            relationalEntityManager.linkBiDirChild(addedParent, newChild);
         }
     }
 
-    protected  <E> void adjustUpdatedEntities(List<E> added, List<E> removed){
+    protected <E> void adjustUpdatedEntities(List<E> added, List<E> removed) {
         removed.removeAll(added);
         added.removeAll(removed);
     }
 
-    protected  <E> E findOldEntity(E entity) throws EntityNotFoundException, BadEntityException {
+    protected <E> E findOldEntity(E entity) throws EntityNotFoundException, BadEntityException {
         Class entityClass = entity.getClass();
         CrudService service = crudServiceLocator.find((Class<IdentifiableEntity>) entityClass);
         Optional<IdentifiableEntity> oldEntityOptional = service.findById(((IdentifiableEntity<Serializable>) entity).getId());
