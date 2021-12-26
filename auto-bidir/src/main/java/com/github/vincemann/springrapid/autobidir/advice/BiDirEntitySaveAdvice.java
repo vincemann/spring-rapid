@@ -25,14 +25,11 @@ import java.util.Set;
 public class BiDirEntitySaveAdvice extends BiDirEntityAdvice {
 
 
-    @PersistenceContext
-    private EntityManager entityManager;
-
-
     @Autowired
     public BiDirEntitySaveAdvice(CrudServiceLocator crudServiceLocator, RelationalEntityManager relationalEntityManager) {
         super(crudServiceLocator, relationalEntityManager);
     }
+
 
     @Before("com.github.vincemann.springrapid.core.advice.SystemArchitecture.saveOperation() && " +
             "com.github.vincemann.springrapid.core.advice.SystemArchitecture.repoOperation() && " +
@@ -79,24 +76,24 @@ public class BiDirEntitySaveAdvice extends BiDirEntityAdvice {
         Collection<Collection<IdentifiableEntity>> parentCollections = relationalEntityManager.findBiDirParentCollections(biDirChild).values();
         for (Collection<IdentifiableEntity> parentCollection : parentCollections) {
             for (IdentifiableEntity biDirParent : parentCollection) {
-                entityManager.merge(biDirParent);
+                getEntityManager().merge(biDirParent);
             }
         }
 
         for (IdentifiableEntity parent : relationalEntityManager.findSingleBiDirParents(biDirChild)) {
-            entityManager.merge(parent);
+            getEntityManager().merge(parent);
         }
     }
 
     private void mergeParentsChildren(IdentifiableEntity biDirParent) {
         Set<? extends IdentifiableEntity> children = relationalEntityManager.findSingleBiDirChildren(biDirParent);
         for (IdentifiableEntity child : children) {
-            entityManager.merge(child);
+            getEntityManager().merge(child);
         }
         Collection<Collection<IdentifiableEntity>> childCollections = relationalEntityManager.findBiDirChildCollections(biDirParent).values();
         for (Collection<IdentifiableEntity> childCollection : childCollections) {
             for (IdentifiableEntity biDirChild : childCollection) {
-                entityManager.merge(biDirChild);
+                getEntityManager().merge(biDirChild);
             }
         }
     }

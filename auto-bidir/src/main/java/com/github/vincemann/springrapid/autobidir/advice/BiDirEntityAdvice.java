@@ -9,7 +9,13 @@ import com.github.vincemann.springrapid.core.util.VerifyEntity;
 import com.github.vincemann.springrapid.autobidir.RelationalEntityManager;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
+import org.hibernate.Hibernate;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.interceptor.TransactionAspectSupport;
+import org.springframework.transaction.support.TransactionSynchronizationManager;
 
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
 import java.io.Serializable;
 import java.util.*;
 
@@ -18,13 +24,15 @@ import java.util.*;
 public abstract class BiDirEntityAdvice {
     private CrudServiceLocator crudServiceLocator;
     protected RelationalEntityManager relationalEntityManager;
+    @PersistenceContext
+    private EntityManager entityManager;
 
     public BiDirEntityAdvice(CrudServiceLocator crudServiceLocator, RelationalEntityManager relationalEntityManager) {
         this.crudServiceLocator = crudServiceLocator;
         this.relationalEntityManager = relationalEntityManager;
     }
 
-    protected void updateBiDirParentRelations(IdentifiableEntity newParent) throws BadEntityException, EntityNotFoundException, IllegalAccessException {
+    public void updateBiDirParentRelations(IdentifiableEntity newParent) throws BadEntityException, EntityNotFoundException, IllegalAccessException {
         IdentifiableEntity oldParent = findOldEntity(newParent);
 
         Set<IdentifiableEntity> oldSingleChildren = relationalEntityManager.findSingleBiDirChildren(oldParent);
@@ -55,7 +63,12 @@ public abstract class BiDirEntityAdvice {
                 addedChildren.add(newChild);
             }
         }
+
+        TransactionSynchronizationManager.isActualTransactionActive();
+        TransactionAspectSupport.currentTransactionStatus();
+
         for (Collection<? extends IdentifiableEntity> newChildrenCollection : newChildCollections) {
+            // add util here to lazy load collection !
             for (IdentifiableEntity newChild : newChildrenCollection) {
                 if (!oldSingleChildren.contains(newChild)) {
                     addedChildren.add(newChild);
