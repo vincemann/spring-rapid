@@ -1,5 +1,6 @@
 package com.github.vincemann.springrapid.autobidir.advice;
 
+import com.github.vincemann.springrapid.autobidir.util.BiDirJpaUtils;
 import com.github.vincemann.springrapid.core.model.IdentifiableEntity;
 import com.github.vincemann.springrapid.core.service.CrudService;
 import com.github.vincemann.springrapid.core.service.exception.BadEntityException;
@@ -69,6 +70,8 @@ public abstract class BiDirEntityAdvice {
 
         for (Collection<? extends IdentifiableEntity> newChildrenCollection : newChildCollections) {
             // add util here to lazy load collection !
+            newParent = BiDirJpaUtils.initializeSubEntity(newParent,newChildrenCollection);
+
             for (IdentifiableEntity newChild : newChildrenCollection) {
                 if (!oldSingleChildren.contains(newChild)) {
                     addedChildren.add(newChild);
