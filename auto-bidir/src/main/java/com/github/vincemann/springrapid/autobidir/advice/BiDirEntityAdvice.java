@@ -1,5 +1,6 @@
 package com.github.vincemann.springrapid.autobidir.advice;
 
+import com.github.vincemann.springrapid.autobidir.model.child.annotation.BiDirChildCollection;
 import com.github.vincemann.springrapid.autobidir.util.BiDirJpaUtils;
 import com.github.vincemann.springrapid.core.model.IdentifiableEntity;
 import com.github.vincemann.springrapid.core.service.CrudService;
@@ -10,8 +11,6 @@ import com.github.vincemann.springrapid.core.util.VerifyEntity;
 import com.github.vincemann.springrapid.autobidir.RelationalEntityManager;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
-import org.hibernate.Hibernate;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.interceptor.TransactionAspectSupport;
 import org.springframework.transaction.support.TransactionSynchronizationManager;
 
@@ -68,9 +67,15 @@ public abstract class BiDirEntityAdvice {
         TransactionSynchronizationManager.isActualTransactionActive();
         TransactionAspectSupport.currentTransactionStatus();
 
+        Collection<Collection<IdentifiableEntity>> tempNewChildCollections;
         for (Collection<? extends IdentifiableEntity> newChildrenCollection : newChildCollections) {
+            newParent = BiDirJpaUtils.initializeSubEntities(newParent,newChildrenCollection, BiDirChildCollection.class);
+
+        }
+
+
+            for (Collection<? extends IdentifiableEntity> newChildrenCollection : newChildCollections) {
             // add util here to lazy load collection !
-            newParent = BiDirJpaUtils.initializeSubEntity(newParent,newChildrenCollection);
 
             for (IdentifiableEntity newChild : newChildrenCollection) {
                 if (!oldSingleChildren.contains(newChild)) {
