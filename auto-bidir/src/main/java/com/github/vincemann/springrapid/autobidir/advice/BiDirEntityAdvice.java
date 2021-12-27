@@ -1,6 +1,9 @@
 package com.github.vincemann.springrapid.autobidir.advice;
 
 import com.github.vincemann.springrapid.autobidir.model.child.annotation.BiDirChildCollection;
+import com.github.vincemann.springrapid.autobidir.model.child.annotation.BiDirChildEntity;
+import com.github.vincemann.springrapid.autobidir.model.parent.annotation.BiDirParentCollection;
+import com.github.vincemann.springrapid.autobidir.model.parent.annotation.BiDirParentEntity;
 import com.github.vincemann.springrapid.autobidir.util.BiDirJpaUtils;
 import com.github.vincemann.springrapid.core.model.IdentifiableEntity;
 import com.github.vincemann.springrapid.core.service.CrudService;
@@ -34,7 +37,6 @@ public abstract class BiDirEntityAdvice {
 
     public void updateBiDirParentRelations(IdentifiableEntity newParent) throws BadEntityException, EntityNotFoundException, IllegalAccessException {
         IdentifiableEntity oldParent = findOldEntity(newParent);
-        newParent = BiDirJpaUtils.initializeSubEntities(newParent, BiDirChildCollection.class);
 
         Set<IdentifiableEntity> oldSingleChildren = relationalEntityManager.findSingleBiDirChildren(oldParent);
         Set<IdentifiableEntity> newSingleChildren = relationalEntityManager.findSingleBiDirChildren(newParent);
@@ -91,7 +93,7 @@ public abstract class BiDirEntityAdvice {
         }
     }
 
-    protected void updateBiDirChildRelations(IdentifiableEntity newChild) throws BadEntityException, EntityNotFoundException, IllegalAccessException {
+    public void updateBiDirChildRelations(IdentifiableEntity newChild) throws BadEntityException, EntityNotFoundException, IllegalAccessException {
         IdentifiableEntity oldChild = findOldEntity(newChild);
 
         Collection<IdentifiableEntity> oldSingleParents = relationalEntityManager.findSingleBiDirParents(oldChild);

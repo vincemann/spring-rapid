@@ -32,7 +32,7 @@ public class BiDirJpaUtils {
 
         ReflectionUtils.doWithFields(entity.getClass(), field -> {
             fieldNames.add(field.getName());
-        },new org.springframework.data.util.ReflectionUtils.AnnotationFieldFilter(annotationClass));
+        }, new org.springframework.data.util.ReflectionUtils.AnnotationFieldFilter(annotationClass));
 
         if (fieldNames.isEmpty()) {
 //            throw new IllegalArgumentException("Did not find matching property");
@@ -44,18 +44,21 @@ public class BiDirJpaUtils {
             if (!pu.isLoaded(entity) //entity might've been retrieved via getReference
                     || !pu.isLoaded(entity, fieldName)//phones is a lazy relation
             ) {
+//                T merged = entity;
                 System.err.println("initializing entity");
                 boolean detached = !entityManager.contains(entity);
                 System.err.println("is entity detached: " + detached);
                 if (detached) {
                     System.err.println("merging entity");
-                    entity = entityManager.merge(entity);
+//                     merged = entityManager.merge(entity);
+                     entity = entityManager.merge(entity);
                 }
 
                 // hier jetzt den getter callen von der property toInitialize
                 // und falls es eine Collection ist, noch size callen
                 System.err.println("initializing entity's field: " + fieldName + " by calling getter");
                 try {
+//                    Object returnedObj = PropertyUtils.getProperty(merged, fieldName);
                     Object returnedObj = PropertyUtils.getProperty(entity, fieldName);
                     if (collection) {
                         System.err.println("initializing entity's collection field by calling size() on it");
@@ -71,7 +74,9 @@ public class BiDirJpaUtils {
 //            employee.getDepartment();
 //            //this will load lazy phones field
 //            employee.getPhones().size();
-//            entityManager.detach(employee);
+                if (detached) {
+                    entityManager.detach(entity);
+                }
 //            //now employee is fully initialized
                 System.err.println("entity initialized");
             }

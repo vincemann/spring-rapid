@@ -41,9 +41,11 @@ public class BiDirEntitySaveAdvice extends BiDirEntityAdvice {
             "args(entity)")
     public void prePersistBiDirEntity(IdentifiableEntity entity) throws BadEntityException, EntityNotFoundException, IllegalAccessException {
         Set<RelationalEntityType> relationalEntityTypes = relationalEntityManager.inferTypes(entity.getClass());
+        // subscribedUsers is 1 instead of 0
         if (relationalEntityTypes.contains(RelationalEntityType.BiDirParent)){
-            entity = BiDirJpaUtils.initializeSubEntities(entity, BiDirChildEntity.class);
             entity = BiDirJpaUtils.initializeSubEntities(entity, BiDirChildCollection.class);
+            entity = BiDirJpaUtils.initializeSubEntities(entity, BiDirChildEntity.class);
+            // subscribedUsers is 1 instead of 0
             if (entity.getId() == null) {
                 //create
                 log.debug("pre persist biDirParent hook reached for: " + entity);
