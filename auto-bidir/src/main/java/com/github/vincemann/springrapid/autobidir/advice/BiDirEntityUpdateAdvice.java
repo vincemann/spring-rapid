@@ -48,6 +48,7 @@ public class BiDirEntityUpdateAdvice extends BiDirEntityAdvice {
                 log.debug("ignoring service update advice, bc root service not called yet");
                 return;
             }
+            // only for partial update
             if ( entity.getId() != null && !full) {
                 Set<RelationalEntityType> relationalEntityTypes = relationalEntityManager.inferTypes(entity.getClass());
 

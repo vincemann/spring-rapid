@@ -43,6 +43,8 @@ public class BiDirEntitySaveAdvice extends BiDirEntityAdvice {
         Set<RelationalEntityType> relationalEntityTypes = relationalEntityManager.inferTypes(entity.getClass());
         // subscribedUsers is 1 instead of 0
         if (relationalEntityTypes.contains(RelationalEntityType.BiDirParent)){
+            // also filter for class obj stored in annotation, so if I update only one BiDirChildCollection, only init this one
+            // with the right class
             entity = BiDirJpaUtils.initializeSubEntities(entity, BiDirChildCollection.class);
             entity = BiDirJpaUtils.initializeSubEntities(entity, BiDirChildEntity.class);
             // subscribedUsers is 1 instead of 0
@@ -62,8 +64,8 @@ public class BiDirEntitySaveAdvice extends BiDirEntityAdvice {
         }
 
         if (relationalEntityTypes.contains(RelationalEntityType.BiDirChild)){
-            entity = BiDirJpaUtils.initializeSubEntities(entity, BiDirParentEntity.class);
-            entity = BiDirJpaUtils.initializeSubEntities(entity, BiDirParentCollection.class);
+//            entity = BiDirJpaUtils.initializeSubEntities(entity, BiDirParentEntity.class);
+//            entity = BiDirJpaUtils.initializeSubEntities(entity, BiDirParentCollection.class);
             if ( entity.getId() == null) {
                 //create
                 log.debug("pre persist biDirChild hook reached for: " + entity);
