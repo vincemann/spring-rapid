@@ -1,7 +1,8 @@
 package com.github.vincemann.springrapid.auth.model;
 
+import com.github.vincemann.springrapid.core.service.RapidJpaRepository;
 import com.github.vincemann.springrapid.core.slicing.ServiceComponent;
-import org.springframework.data.jpa.repository.JpaRepository;
+import com.github.vincemann.springrapid.core.service.RapidJpaRepository;
 import org.springframework.data.repository.NoRepositoryBean;
 
 import java.io.Serializable;
@@ -17,7 +18,7 @@ import java.util.Optional;
 @ServiceComponent
 public interface AbstractUserRepository
 	<U extends AbstractUser<ID>, ID extends Serializable>
-extends JpaRepository<U, ID> {
+extends RapidJpaRepository<U, ID> {
 	
 	Optional<U> findByEmail(String email);
 }

@@ -1,9 +1,7 @@
 package com.github.vincemann.springrapid.autobidir.controller.dtomapper.biDir;
 
 
-import com.github.vincemann.springrapid.autobidir.RelationalDtoManager;
-import com.github.vincemann.springrapid.autobidir.RelationalEntityManager;
-import com.github.vincemann.springrapid.autobidir.dto.RelationalDtoType;
+import com.github.vincemann.springrapid.autobidir.RelationalEntityManagerUtil;
 import com.github.vincemann.springrapid.core.model.IdentifiableEntity;
 import com.github.vincemann.springrapid.core.service.exception.BadEntityException;
 import com.github.vincemann.springrapid.core.service.exception.EntityNotFoundException;
@@ -13,7 +11,6 @@ import com.github.vincemann.springrapid.autobidir.controller.dtomapper.IdResolvi
 
 
 import com.github.vincemann.springrapid.autobidir.model.parent.annotation.BiDirParentEntity;
-import com.github.vincemann.springrapid.core.service.locator.CrudServiceLocator;
 import com.github.vincemann.springrapid.autobidir.dto.parent.annotation.BiDirParentId;
 
 import java.io.Serializable;
@@ -25,7 +22,7 @@ import static com.github.vincemann.springrapid.autobidir.dto.RelationalDtoType.B
 /**
  * Used by {@link IdResolvingDtoPostProcessor}.
  * Resolves {@link BiDirParentId} to corresponding {@link BiDirParentEntity}.
- * Adds mapped BiDirChild to {@link RelationalEntityManager#findSingleBiDirChildren(IdentifiableEntity)}}'s  -> sets Backreference
+ * Adds mapped BiDirChild to {@link RelationalEntityManagerUtil#findSingleBiDirChildren(IdentifiableEntity)}}'s  -> sets Backreference
  *
  * @see EntityIdResolver
  */
@@ -67,7 +64,7 @@ public class BiDirChildIdResolver extends EntityIdResolver {
     private void resolveBiDirParentFromService(IdentifiableEntity parent, IdentifiableEntity mappedBiDirChild) {
         try {
             //set parent of mapped parent
-            relationalEntityManager.linkBiDirParent(mappedBiDirChild,parent);
+            relationalEntityManagerUtil.linkBiDirParent(mappedBiDirChild,parent);
             //backreference gets set in BiDirParentListener
         } catch (ClassCastException e) {
             throw new IllegalArgumentException("Found Child " + parent + " is not of Type BiDirChild");
@@ -76,10 +73,10 @@ public class BiDirChildIdResolver extends EntityIdResolver {
 
     @Override
     public void setResolvedIds(Object mappedDto, IdentifiableEntity serviceEntity) {
-        for (IdentifiableEntity biDirParent : relationalEntityManager.findSingleBiDirParents(serviceEntity)) {
+        for (IdentifiableEntity biDirParent : relationalEntityManagerUtil.findSingleBiDirParents(serviceEntity)) {
             relationalDtoManager.addBiDirParentId(biDirParent,mappedDto);
         }
-        for (Collection<? extends IdentifiableEntity> parentCollection : relationalEntityManager.findBiDirParentCollections(serviceEntity).values()) {
+        for (Collection<? extends IdentifiableEntity> parentCollection : relationalEntityManagerUtil.findBiDirParentCollections(serviceEntity).values()) {
             for (IdentifiableEntity biDirParent : parentCollection) {
                 relationalDtoManager.addBiDirParentId(biDirParent,mappedDto);
             }

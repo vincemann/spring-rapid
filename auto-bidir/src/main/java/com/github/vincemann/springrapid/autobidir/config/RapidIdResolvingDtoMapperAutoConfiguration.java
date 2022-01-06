@@ -2,11 +2,9 @@ package com.github.vincemann.springrapid.autobidir.config;
 
 import com.github.vincemann.springrapid.autobidir.RapidRelationalDtoManager;
 import com.github.vincemann.springrapid.autobidir.RelationalDtoManager;
-import com.github.vincemann.springrapid.autobidir.RelationalEntityManager;
 import com.github.vincemann.springrapid.core.config.RapidCrudServiceLocatorAutoConfiguration;
 import com.github.vincemann.springrapid.core.config.RapidDtoMapperAutoConfiguration;
 import com.github.vincemann.springrapid.core.controller.mergeUpdate.MergeUpdateStrategy;
-import com.github.vincemann.springrapid.core.service.locator.CrudServiceLocator;
 import com.github.vincemann.springrapid.core.slicing.WebConfig;
 import com.github.vincemann.springrapid.autobidir.controller.IdAwareMergeUpdateStrategy;
 import com.github.vincemann.springrapid.autobidir.controller.dtomapper.EntityIdResolver;

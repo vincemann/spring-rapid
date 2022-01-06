@@ -29,7 +29,7 @@ public class SystemArchitecture {
     @Pointcut("execution(public * com.github.vincemann.springrapid.core.service.CrudService+.*(..))")
     public void serviceOperation(){}
 
-    @Pointcut("execution(public * org.springframework.data.repository.Repository+.*(..))")
+    @Pointcut("execution(public * com.github.vincemann.springrapid.core.service.RapidJpaRepository+.*(..))")
     public void repoOperation(){}
 
 

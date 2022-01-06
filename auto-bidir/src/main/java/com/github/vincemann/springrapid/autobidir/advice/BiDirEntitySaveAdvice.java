@@ -2,23 +2,18 @@ package com.github.vincemann.springrapid.autobidir.advice;
 
 import com.github.vincemann.springrapid.autobidir.model.child.annotation.BiDirChildCollection;
 import com.github.vincemann.springrapid.autobidir.model.child.annotation.BiDirChildEntity;
-import com.github.vincemann.springrapid.autobidir.model.parent.annotation.BiDirParentCollection;
-import com.github.vincemann.springrapid.autobidir.model.parent.annotation.BiDirParentEntity;
 import com.github.vincemann.springrapid.autobidir.util.BiDirJpaUtils;
 import com.github.vincemann.springrapid.core.model.IdentifiableEntity;
 import com.github.vincemann.springrapid.core.service.exception.BadEntityException;
 import com.github.vincemann.springrapid.core.service.exception.EntityNotFoundException;
 import com.github.vincemann.springrapid.core.service.locator.CrudServiceLocator;
-import com.github.vincemann.springrapid.autobidir.RelationalEntityManager;
+import com.github.vincemann.springrapid.autobidir.RelationalEntityManagerUtil;
 import com.github.vincemann.springrapid.autobidir.model.RelationalEntityType;
 import lombok.extern.slf4j.Slf4j;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Before;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.transaction.annotation.Transactional;
 
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
 import java.util.Collection;
 import java.util.Set;
 
@@ -31,16 +26,16 @@ public class BiDirEntitySaveAdvice extends BiDirEntityAdvice {
 
 
     @Autowired
-    public BiDirEntitySaveAdvice(CrudServiceLocator crudServiceLocator, RelationalEntityManager relationalEntityManager) {
-        super(crudServiceLocator, relationalEntityManager);
+    public BiDirEntitySaveAdvice(CrudServiceLocator crudServiceLocator, RelationalEntityManagerUtil relationalEntityManagerUtil) {
+        super(crudServiceLocator, relationalEntityManagerUtil);
     }
 
 
     @Before("com.github.vincemann.springrapid.core.advice.SystemArchitecture.saveOperation() && " +
             "com.github.vincemann.springrapid.core.advice.SystemArchitecture.repoOperation() && " +
             "args(entity)")
-    public void prePersistBiDirEntity(IdentifiableEntity entity) throws BadEntityException, EntityNotFoundException, IllegalAccessException {
-        Set<RelationalEntityType> relationalEntityTypes = relationalEntityManager.inferTypes(entity.getClass());
+    public void prePersistEntity(IdentifiableEntity entity) throws BadEntityException, EntityNotFoundException, IllegalAccessException {
+        Set<RelationalEntityType> relationalEntityTypes = relationalEntityManagerUtil.inferTypes(entity.getClass());
         // subscribedUsers is 1 instead of 0
         if (relationalEntityTypes.contains(RelationalEntityType.BiDirParent)){
             // also filter for class obj stored in annotation, so if I update only one BiDirChildCollection, only init this one
@@ -86,24 +81,24 @@ public class BiDirEntitySaveAdvice extends BiDirEntityAdvice {
 
     private void mergeChildrensParents(IdentifiableEntity biDirChild) {
         //set backreferences
-        Collection<Collection<IdentifiableEntity>> parentCollections = relationalEntityManager.findBiDirParentCollections(biDirChild).values();
+        Collection<Collection<IdentifiableEntity>> parentCollections = relationalEntityManagerUtil.findBiDirParentCollections(biDirChild).values();
         for (Collection<IdentifiableEntity> parentCollection : parentCollections) {
             for (IdentifiableEntity biDirParent : parentCollection) {
                 getEntityManager().merge(biDirParent);
             }
         }
 
-        for (IdentifiableEntity parent : relationalEntityManager.findSingleBiDirParents(biDirChild)) {
+        for (IdentifiableEntity parent : relationalEntityManagerUtil.findSingleBiDirParents(biDirChild)) {
             getEntityManager().merge(parent);
         }
     }
 
     private void mergeParentsChildren(IdentifiableEntity biDirParent) {
-        Set<? extends IdentifiableEntity> children = relationalEntityManager.findSingleBiDirChildren(biDirParent);
+        Set<? extends IdentifiableEntity> children = relationalEntityManagerUtil.findSingleBiDirChildren(biDirParent);
         for (IdentifiableEntity child : children) {
             getEntityManager().merge(child);
         }
-        Collection<Collection<IdentifiableEntity>> childCollections = relationalEntityManager.findBiDirChildCollections(biDirParent).values();
+        Collection<Collection<IdentifiableEntity>> childCollections = relationalEntityManagerUtil.findBiDirChildCollections(biDirParent).values();
         for (Collection<IdentifiableEntity> childCollection : childCollections) {
             for (IdentifiableEntity biDirChild : childCollection) {
                 getEntityManager().merge(biDirChild);
@@ -112,14 +107,14 @@ public class BiDirEntitySaveAdvice extends BiDirEntityAdvice {
     }
 
     private void setChildrensParentRef(IdentifiableEntity biDirParent) {
-        Set<? extends IdentifiableEntity> children = relationalEntityManager.findSingleBiDirChildren(biDirParent);
+        Set<? extends IdentifiableEntity> children = relationalEntityManagerUtil.findSingleBiDirChildren(biDirParent);
         for (IdentifiableEntity child : children) {
-            relationalEntityManager.linkBiDirParent(child, biDirParent);
+            relationalEntityManagerUtil.linkBiDirParent(child, biDirParent);
         }
-        Collection<Collection<IdentifiableEntity>> childCollections = relationalEntityManager.findBiDirChildCollections(biDirParent).values();
+        Collection<Collection<IdentifiableEntity>> childCollections = relationalEntityManagerUtil.findBiDirChildCollections(biDirParent).values();
         for (Collection<IdentifiableEntity> childCollection : childCollections) {
             for (IdentifiableEntity child : childCollection) {
-                relationalEntityManager.linkBiDirParent(child, biDirParent);
+                relationalEntityManagerUtil.linkBiDirParent(child, biDirParent);
             }
         }
     }
@@ -127,49 +122,49 @@ public class BiDirEntitySaveAdvice extends BiDirEntityAdvice {
     private void replaceParentsChildRef(IdentifiableEntity biDirChild) {
         //set backreferences
 
-        Collection<Collection<IdentifiableEntity>> parentCollections = relationalEntityManager.findBiDirParentCollections(biDirChild).values();
+        Collection<Collection<IdentifiableEntity>> parentCollections = relationalEntityManagerUtil.findBiDirParentCollections(biDirChild).values();
         for (Collection<IdentifiableEntity> parentCollection : parentCollections) {
             for (IdentifiableEntity biDirParent : parentCollection) {
-                relationalEntityManager.unlinkBiDirChild(biDirParent,biDirChild);
-                relationalEntityManager.linkBiDirChild(biDirParent,biDirChild);
+                relationalEntityManagerUtil.unlinkBiDirChild(biDirParent,biDirChild);
+                relationalEntityManagerUtil.linkBiDirChild(biDirParent,biDirChild);
             }
         }
 
-        for (IdentifiableEntity parent : relationalEntityManager.findSingleBiDirParents(biDirChild)) {
-            relationalEntityManager.unlinkBiDirChild(parent,biDirChild);
-            relationalEntityManager.linkBiDirChild(parent,biDirChild);
+        for (IdentifiableEntity parent : relationalEntityManagerUtil.findSingleBiDirParents(biDirChild)) {
+            relationalEntityManagerUtil.unlinkBiDirChild(parent,biDirChild);
+            relationalEntityManagerUtil.linkBiDirChild(parent,biDirChild);
         }
     }
 
     private void replaceChildrensParentRef(IdentifiableEntity biDirParent) {
         //set backreferences
 
-        Collection<Collection<IdentifiableEntity>> childCollections = relationalEntityManager.findBiDirChildCollections(biDirParent).values();
+        Collection<Collection<IdentifiableEntity>> childCollections = relationalEntityManagerUtil.findBiDirChildCollections(biDirParent).values();
         for (Collection<IdentifiableEntity> childCollection : childCollections) {
             for (IdentifiableEntity biDirChild : childCollection) {
-                relationalEntityManager.unlinkBiDirParent(biDirChild,biDirParent);
-                relationalEntityManager.linkBiDirParent(biDirChild,biDirParent);
+                relationalEntityManagerUtil.unlinkBiDirParent(biDirChild,biDirParent);
+                relationalEntityManagerUtil.linkBiDirParent(biDirChild,biDirParent);
             }
         }
 
-        for (IdentifiableEntity child : relationalEntityManager.findSingleBiDirChildren(biDirParent)) {
-            relationalEntityManager.unlinkBiDirParent(child,biDirParent);
-            relationalEntityManager.linkBiDirParent(child,biDirParent);
+        for (IdentifiableEntity child : relationalEntityManagerUtil.findSingleBiDirChildren(biDirParent)) {
+            relationalEntityManagerUtil.unlinkBiDirParent(child,biDirParent);
+            relationalEntityManagerUtil.linkBiDirParent(child,biDirParent);
         }
     }
 
     private void setParentsChildRef(IdentifiableEntity biDirChild) {
         //set backreferences
 
-        Collection<Collection<IdentifiableEntity>> parentCollections = relationalEntityManager.findBiDirParentCollections(biDirChild).values();
+        Collection<Collection<IdentifiableEntity>> parentCollections = relationalEntityManagerUtil.findBiDirParentCollections(biDirChild).values();
         for (Collection<IdentifiableEntity> parentCollection : parentCollections) {
             for (IdentifiableEntity biDirParent : parentCollection) {
-                relationalEntityManager.linkBiDirChild(biDirParent,biDirChild);
+                relationalEntityManagerUtil.linkBiDirChild(biDirParent,biDirChild);
             }
         }
 
-        for (IdentifiableEntity parent : relationalEntityManager.findSingleBiDirParents(biDirChild)) {
-            relationalEntityManager.linkBiDirChild(parent,biDirChild);
+        for (IdentifiableEntity parent : relationalEntityManagerUtil.findSingleBiDirParents(biDirChild)) {
+            relationalEntityManagerUtil.linkBiDirChild(parent,biDirChild);
         }
 
     }

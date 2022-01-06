@@ -4,7 +4,7 @@ import com.github.vincemann.springrapid.core.model.IdentifiableEntity;
 import com.github.vincemann.springrapid.core.service.exception.BadEntityException;
 import com.github.vincemann.springrapid.core.service.exception.EntityNotFoundException;
 import com.github.vincemann.springrapid.core.service.locator.CrudServiceLocator;
-import com.github.vincemann.springrapid.autobidir.RelationalEntityManager;
+import com.github.vincemann.springrapid.autobidir.RelationalEntityManagerUtil;
 import com.github.vincemann.springrapid.autobidir.model.RelationalEntityType;
 import lombok.extern.slf4j.Slf4j;
 import org.aspectj.lang.JoinPoint;
@@ -27,8 +27,8 @@ public class BiDirEntityUpdateAdvice extends BiDirEntityAdvice {
 
 
     @Autowired
-    public BiDirEntityUpdateAdvice(CrudServiceLocator crudServiceLocator, RelationalEntityManager relationalEntityManager) {
-        super(crudServiceLocator, relationalEntityManager);
+    public BiDirEntityUpdateAdvice(CrudServiceLocator crudServiceLocator, RelationalEntityManagerUtil relationalEntityManagerUtil) {
+        super(crudServiceLocator, relationalEntityManagerUtil);
     }
 
     @Before(value = "com.github.vincemann.springrapid.core.advice.SystemArchitecture.updateOperation() && " +
@@ -50,7 +50,7 @@ public class BiDirEntityUpdateAdvice extends BiDirEntityAdvice {
             }
             // only for partial update
             if ( entity.getId() != null && !full) {
-                Set<RelationalEntityType> relationalEntityTypes = relationalEntityManager.inferTypes(entity.getClass());
+                Set<RelationalEntityType> relationalEntityTypes = relationalEntityManagerUtil.inferTypes(entity.getClass());
 
                 if (relationalEntityTypes.contains(RelationalEntityType.BiDirParent)) {
                     log.debug("detected service partial update operation for BiDirParent: " + entity + ", running preUpdateAdvice logic");

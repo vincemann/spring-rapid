@@ -5,7 +5,7 @@ import com.github.vincemann.aoplog.Severity;
 import com.github.vincemann.aoplog.api.AopLoggable;
 import com.github.vincemann.aoplog.api.LogInteraction;
 import com.github.vincemann.springrapid.autobidir.RelationalDtoManager;
-import com.github.vincemann.springrapid.autobidir.RelationalEntityManager;
+import com.github.vincemann.springrapid.autobidir.RelationalEntityManagerUtil;
 import com.github.vincemann.springrapid.autobidir.dto.RelationalDtoType;
 import com.github.vincemann.springrapid.core.model.IdentifiableEntity;
 import com.github.vincemann.springrapid.core.service.CrudService;
@@ -40,7 +40,7 @@ public abstract class EntityIdResolver implements AopLoggable {
     private CrudServiceLocator crudServiceLocator;
     private RelationalDtoType dtoType;
     protected RelationalDtoManager relationalDtoManager;
-    protected RelationalEntityManager relationalEntityManager;
+    protected RelationalEntityManagerUtil relationalEntityManagerUtil;
 
 
     public EntityIdResolver(RelationalDtoType dtoType) {
@@ -86,7 +86,7 @@ public abstract class EntityIdResolver implements AopLoggable {
     }
 
     @Autowired
-    public void setRelationalEntityManager(RelationalEntityManager relationalEntityManager) {
-        this.relationalEntityManager = relationalEntityManager;
+    public void setRelationalEntityManagerUtil(RelationalEntityManagerUtil relationalEntityManagerUtil) {
+        this.relationalEntityManagerUtil = relationalEntityManagerUtil;
     }
 }

@@ -4,7 +4,7 @@ import com.github.vincemann.springrapid.core.model.IdentifiableEntity;
 import com.github.vincemann.springrapid.core.service.CrudService;
 import com.github.vincemann.springrapid.core.service.exception.BadEntityException;
 import com.github.vincemann.springrapid.core.service.locator.CrudServiceLocator;
-import com.github.vincemann.springrapid.autobidir.RelationalEntityManager;
+import com.github.vincemann.springrapid.autobidir.RelationalEntityManagerUtil;
 import com.github.vincemann.springrapid.autobidir.model.RelationalEntityType;
 import lombok.extern.slf4j.Slf4j;
 import org.aspectj.lang.JoinPoint;
@@ -15,7 +15,6 @@ import org.springframework.data.jpa.repository.support.JpaEntityInformation;
 import org.springframework.data.jpa.repository.support.SimpleJpaRepository;
 import org.springframework.data.util.ReflectionUtils;
 import org.springframework.test.util.AopTestUtils;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.Assert;
 
 import java.io.Serializable;
@@ -34,8 +33,8 @@ public class BiDirEntityRemoveAdvice extends BiDirEntityAdvice {
 
 
     @Autowired
-    public BiDirEntityRemoveAdvice(CrudServiceLocator crudServiceLocator, RelationalEntityManager relationalEntityManager) {
-        super(crudServiceLocator, relationalEntityManager);
+    public BiDirEntityRemoveAdvice(CrudServiceLocator crudServiceLocator, RelationalEntityManagerUtil relationalEntityManagerUtil) {
+        super(crudServiceLocator, relationalEntityManagerUtil);
     }
 
     @Before("com.github.vincemann.springrapid.core.advice.SystemArchitecture.deleteOperation() && " +
@@ -52,11 +51,11 @@ public class BiDirEntityRemoveAdvice extends BiDirEntityAdvice {
 
 
     private void preRemoveEntity(IdentifiableEntity entity) {
-        Set<RelationalEntityType> relationalEntityTypes = relationalEntityManager.inferTypes(entity.getClass());
+        Set<RelationalEntityType> relationalEntityTypes = relationalEntityManagerUtil.inferTypes(entity.getClass());
 
         if (relationalEntityTypes.contains(RelationalEntityType.BiDirParent)) {
             log.debug("applying pre remove BiDirParent logic for: " + entity.getClass());
-            relationalEntityManager.unlinkChildrensParent(entity);
+            relationalEntityManagerUtil.unlinkChildrensParent(entity);
         }
         if (relationalEntityTypes.contains(RelationalEntityType.BiDirChild)) {
             log.debug("applying pre remove BiDirChild logic for: " + entity);
@@ -65,7 +64,7 @@ public class BiDirEntityRemoveAdvice extends BiDirEntityAdvice {
 //                parent.unlinkBiDirChild(biDirChild);
 //            }
 //            biDirChild.unlinkBiDirParents();
-            relationalEntityManager.unlinkParentsChildren(entity);
+            relationalEntityManagerUtil.unlinkParentsChildren(entity);
         }
     }
 

@@ -1,21 +1,14 @@
 package com.github.vincemann.springrapid.autobidir.advice;
 
-import com.github.vincemann.springrapid.autobidir.model.child.annotation.BiDirChildCollection;
-import com.github.vincemann.springrapid.autobidir.model.child.annotation.BiDirChildEntity;
-import com.github.vincemann.springrapid.autobidir.model.parent.annotation.BiDirParentCollection;
-import com.github.vincemann.springrapid.autobidir.model.parent.annotation.BiDirParentEntity;
-import com.github.vincemann.springrapid.autobidir.util.BiDirJpaUtils;
 import com.github.vincemann.springrapid.core.model.IdentifiableEntity;
 import com.github.vincemann.springrapid.core.service.CrudService;
 import com.github.vincemann.springrapid.core.service.exception.BadEntityException;
 import com.github.vincemann.springrapid.core.service.exception.EntityNotFoundException;
 import com.github.vincemann.springrapid.core.service.locator.CrudServiceLocator;
 import com.github.vincemann.springrapid.core.util.VerifyEntity;
-import com.github.vincemann.springrapid.autobidir.RelationalEntityManager;
+import com.github.vincemann.springrapid.autobidir.RelationalEntityManagerUtil;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.transaction.interceptor.TransactionAspectSupport;
-import org.springframework.transaction.support.TransactionSynchronizationManager;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
@@ -25,24 +18,24 @@ import java.util.*;
 @Getter
 @Slf4j
 public abstract class BiDirEntityAdvice {
-    protected RelationalEntityManager relationalEntityManager;
+    protected RelationalEntityManagerUtil relationalEntityManagerUtil;
     private CrudServiceLocator crudServiceLocator;
     @PersistenceContext
     private EntityManager entityManager;
 
-    public BiDirEntityAdvice(CrudServiceLocator crudServiceLocator, RelationalEntityManager relationalEntityManager) {
+    public BiDirEntityAdvice(CrudServiceLocator crudServiceLocator, RelationalEntityManagerUtil relationalEntityManagerUtil) {
         this.crudServiceLocator = crudServiceLocator;
-        this.relationalEntityManager = relationalEntityManager;
+        this.relationalEntityManagerUtil = relationalEntityManagerUtil;
     }
 
     public void updateBiDirParentRelations(IdentifiableEntity newParent) throws BadEntityException, EntityNotFoundException, IllegalAccessException {
         IdentifiableEntity oldParent = findOldEntity(newParent);
 
-        Set<IdentifiableEntity> oldSingleChildren = relationalEntityManager.findSingleBiDirChildren(oldParent);
-        Set<IdentifiableEntity> newSingleChildren = relationalEntityManager.findSingleBiDirChildren(newParent);
+        Set<IdentifiableEntity> oldSingleChildren = relationalEntityManagerUtil.findSingleBiDirChildren(oldParent);
+        Set<IdentifiableEntity> newSingleChildren = relationalEntityManagerUtil.findSingleBiDirChildren(newParent);
 
-        Collection<Collection<IdentifiableEntity>> oldChildCollections = relationalEntityManager.findBiDirChildCollections(oldParent).values();
-        Collection<Collection<IdentifiableEntity>> newChildCollections = relationalEntityManager.findBiDirChildCollections(newParent).values();
+        Collection<Collection<IdentifiableEntity>> oldChildCollections = relationalEntityManagerUtil.findBiDirChildCollections(oldParent).values();
+        Collection<Collection<IdentifiableEntity>> newChildCollections = relationalEntityManagerUtil.findBiDirChildCollections(newParent).values();
 
         //find Children to unlink
         List<IdentifiableEntity> removedChildren = new ArrayList<>();
@@ -83,24 +76,24 @@ public abstract class BiDirEntityAdvice {
         //unlink removed Children from newParent
         for (IdentifiableEntity removedChild : removedChildren) {
             log.debug("unlinking child: " + removedChild + " from parent: " + newParent);
-            relationalEntityManager.unlinkBiDirParent(removedChild, oldParent);
+            relationalEntityManagerUtil.unlinkBiDirParent(removedChild, oldParent);
         }
 
         //link added Children to newParent
         for (IdentifiableEntity addedChild : addedChildren) {
             log.debug("linking child: " + addedChild + " to parent: " + newParent);
-            relationalEntityManager.linkBiDirParent(addedChild, newParent);
+            relationalEntityManagerUtil.linkBiDirParent(addedChild, newParent);
         }
     }
 
     public void updateBiDirChildRelations(IdentifiableEntity newChild) throws BadEntityException, EntityNotFoundException, IllegalAccessException {
         IdentifiableEntity oldChild = findOldEntity(newChild);
 
-        Collection<IdentifiableEntity> oldSingleParents = relationalEntityManager.findSingleBiDirParents(oldChild);
-        Collection<IdentifiableEntity> newSinlgeParents = relationalEntityManager.findSingleBiDirParents(newChild);
+        Collection<IdentifiableEntity> oldSingleParents = relationalEntityManagerUtil.findSingleBiDirParents(oldChild);
+        Collection<IdentifiableEntity> newSinlgeParents = relationalEntityManagerUtil.findSingleBiDirParents(newChild);
 
-        Collection<Collection<IdentifiableEntity>> oldParentCollections = relationalEntityManager.findBiDirParentCollections(oldChild).values();
-        Collection<Collection<IdentifiableEntity>> newParentCollections = relationalEntityManager.findBiDirParentCollections(newChild).values();
+        Collection<Collection<IdentifiableEntity>> oldParentCollections = relationalEntityManagerUtil.findBiDirParentCollections(oldChild).values();
+        Collection<Collection<IdentifiableEntity>> newParentCollections = relationalEntityManagerUtil.findBiDirParentCollections(newChild).values();
 
         //find parents to unlink
         List<IdentifiableEntity> removedParents = new ArrayList<>();
@@ -140,13 +133,13 @@ public abstract class BiDirEntityAdvice {
         //unlink Child from certain Parents
         for (IdentifiableEntity removedParent : removedParents) {
             log.debug("unlinking parent: " + removedParent + " from child: " + newChild);
-            relationalEntityManager.unlinkBiDirChild(removedParent, oldChild);
+            relationalEntityManagerUtil.unlinkBiDirChild(removedParent, oldChild);
         }
 
         //add added Parent to child
         for (IdentifiableEntity addedParent : addedParents) {
             log.debug("linking parent: " + addedParent + " to child: " + newChild);
-            relationalEntityManager.linkBiDirChild(addedParent, newChild);
+            relationalEntityManagerUtil.linkBiDirChild(addedParent, newChild);
         }
     }
 

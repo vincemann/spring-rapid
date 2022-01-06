@@ -2,8 +2,7 @@ package com.github.vincemann.springrapid.autobidir.config;
 
 import com.github.vincemann.springrapid.core.service.locator.CrudServiceLocator;
 import com.github.vincemann.springrapid.core.slicing.ServiceConfig;
-import com.github.vincemann.springrapid.autobidir.RapidRelationalEntityManager;
-import com.github.vincemann.springrapid.autobidir.RelationalEntityManager;
+import com.github.vincemann.springrapid.autobidir.RelationalEntityManagerUtil;
 import com.github.vincemann.springrapid.autobidir.advice.BiDirEntityRemoveAdvice;
 import com.github.vincemann.springrapid.autobidir.advice.BiDirEntitySaveAdvice;
 import com.github.vincemann.springrapid.autobidir.advice.BiDirEntityUpdateAdvice;
@@ -23,20 +22,20 @@ public class RapidBiDirEntityAdviceAutoConfiguration  {
 
     @Bean
     @ConditionalOnMissingBean(BiDirEntitySaveAdvice.class)
-    public BiDirEntitySaveAdvice biDirEntityPersistAdvice(CrudServiceLocator crudServiceLocator,RelationalEntityManager relationalEntityManager){
-        return new BiDirEntitySaveAdvice(crudServiceLocator,relationalEntityManager);
+    public BiDirEntitySaveAdvice biDirEntityPersistAdvice(CrudServiceLocator crudServiceLocator, RelationalEntityManagerUtil relationalEntityManagerUtil){
+        return new BiDirEntitySaveAdvice(crudServiceLocator, relationalEntityManagerUtil);
     }
 
     @Bean
     @ConditionalOnMissingBean(BiDirEntityRemoveAdvice.class)
-    public BiDirEntityRemoveAdvice biDirEntityRemoveAdvice(CrudServiceLocator crudServiceLocator,RelationalEntityManager relationalEntityManager){
-        return new BiDirEntityRemoveAdvice(crudServiceLocator,relationalEntityManager);
+    public BiDirEntityRemoveAdvice biDirEntityRemoveAdvice(CrudServiceLocator crudServiceLocator, RelationalEntityManagerUtil relationalEntityManagerUtil){
+        return new BiDirEntityRemoveAdvice(crudServiceLocator, relationalEntityManagerUtil);
     }
 
     @Bean
     @ConditionalOnMissingBean(BiDirEntityUpdateAdvice.class)
-    public BiDirEntityUpdateAdvice biDirEntityUpdateAdvice(CrudServiceLocator crudServiceLocator,RelationalEntityManager relationalEntityManager){
-        return new BiDirEntityUpdateAdvice(crudServiceLocator,relationalEntityManager);
+    public BiDirEntityUpdateAdvice biDirEntityUpdateAdvice(CrudServiceLocator crudServiceLocator, RelationalEntityManagerUtil relationalEntityManagerUtil){
+        return new BiDirEntityUpdateAdvice(crudServiceLocator, relationalEntityManagerUtil);
     }
 
 }
