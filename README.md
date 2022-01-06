@@ -13,14 +13,14 @@ Most lemon modules were copied, modified and integrated into this project.
 # Features  
 * full generic **crud** solution                                                                     (core)   
 * proxy-based **extension system** for services                                                      (core)  
-  -> create different kind of service beans (i.E. @Secured, @AclManaging) that use reusable extensions  
+  -> create different kind of service beans (i.E. @Secured, @Acl) that use reusable extensions  
 * basic exception to api-error translation                                                           (lemon-exceptions)  
 * **dto-mapping** (support for different dto's for each endpoint; see example below)                 (core)  
-* uni- and bidirectional relationship management for all crud operations                             (entity-relationship)  
-* resolving of ids <-> entities, while mapping dto's                                                 (entity-relationship)  
+* uni- and bidirectional relationship management for all crud operations                             (auto-bidir)  
+* resolving of ids <-> entities, while mapping dto's                                                 (auto-bidir)  
 * test-support for service- and controller-tests                                                     (core-test)  
 * automatic **acl**-scheme setup + simple API for writing acl-based service-extensions               (acl)  
-* full solution for json-web-token based **user authentication**                                     (auth)  
+* full solution for jwt based **user authentication**                                                (auth)  
   -> signup, login, reset-password, verify-email, ...
     
  # Include  
