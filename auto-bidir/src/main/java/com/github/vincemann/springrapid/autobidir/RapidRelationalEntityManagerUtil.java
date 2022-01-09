@@ -67,6 +67,20 @@ public class RapidRelationalEntityManagerUtil implements RelationalEntityManager
     // BiDirChild methods
 
 
+    public void linkParentsChild(IdentifiableEntity biDirChild) {
+        //set backreferences
+
+        Collection<Collection<IdentifiableEntity>> parentCollections = findBiDirParentCollections(biDirChild).values();
+        for (Collection<IdentifiableEntity> parentCollection : parentCollections) {
+            for (IdentifiableEntity biDirParent : parentCollection) {
+                linkBiDirChild(biDirParent,biDirChild);
+            }
+        }
+        for (IdentifiableEntity parent : findSingleBiDirParents(biDirChild)) {
+            linkBiDirChild(parent,biDirChild);
+        }
+    }
+
 
     /**
      * Find the BiDirParent Collections (all fields of this parent annotated with {@link BiDirParentCollection} )
@@ -125,7 +139,7 @@ public class RapidRelationalEntityManagerUtil implements RelationalEntityManager
      * Call this, before you want to delete this parent.
      * @throws UnknownParentTypeException
      */
-    public void unlinkParentsChildren(IdentifiableEntity child) throws UnknownEntityTypeException {
+    public void unlinkParentsChild(IdentifiableEntity child) throws UnknownEntityTypeException {
         for(IdentifiableEntity parent: findSingleBiDirParents(child)){
             unlinkBiDirChild(parent,child);
         }
@@ -145,6 +159,18 @@ public class RapidRelationalEntityManagerUtil implements RelationalEntityManager
 
 
 
+    public void linkChildrensParent(IdentifiableEntity biDirParent) {
+        Set<? extends IdentifiableEntity> children = findSingleBiDirChildren(biDirParent);
+        for (IdentifiableEntity child : children) {
+            linkBiDirParent(child, biDirParent);
+        }
+        Collection<Collection<IdentifiableEntity>> childCollections = findBiDirChildCollections(biDirParent).values();
+        for (Collection<IdentifiableEntity> childCollection : childCollections) {
+            for (IdentifiableEntity child : childCollection) {
+                linkBiDirParent(child, biDirParent);
+            }
+        }
+    }
 
     /**
      * Find the BiDirChildren Collections (all fields of this parent annotated with {@link BiDirChildCollection} )

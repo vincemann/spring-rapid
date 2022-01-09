@@ -15,7 +15,8 @@ public interface RelationalEntityManagerUtil {
     public void linkBiDirParent(IdentifiableEntity child, IdentifiableEntity parentToSet);
     public void unlinkBiDirParents(IdentifiableEntity child);
     public void unlinkBiDirParent(IdentifiableEntity child, IdentifiableEntity parentToDelete);
-    public void unlinkParentsChildren(IdentifiableEntity child);
+    public void unlinkParentsChild(IdentifiableEntity child);
+    public void linkChildrensParent(IdentifiableEntity biDirParent);
 
 
     public Map<Class<IdentifiableEntity>,Collection<IdentifiableEntity>> findBiDirChildCollections(IdentifiableEntity parent);
@@ -23,6 +24,7 @@ public interface RelationalEntityManagerUtil {
     public void linkBiDirChild(IdentifiableEntity parent, IdentifiableEntity newChild);
     public void unlinkBiDirChild(IdentifiableEntity parent, IdentifiableEntity biDirChildToRemove);
     public void unlinkChildrensParent(IdentifiableEntity parent);
+    public void linkParentsChild(IdentifiableEntity biDirChild);
 
 
     public Map<Class<IdentifiableEntity>,Collection<IdentifiableEntity>> findUniDirChildCollections(IdentifiableEntity parent);
