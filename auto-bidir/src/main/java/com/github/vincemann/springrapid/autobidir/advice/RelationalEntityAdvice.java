@@ -1,12 +1,12 @@
 package com.github.vincemann.springrapid.autobidir.advice;
 
+import com.github.vincemann.springrapid.autobidir.RelationalAdviceContextHolder;
 import com.github.vincemann.springrapid.autobidir.RelationalEntityManager;
 import com.github.vincemann.springrapid.core.model.IdentifiableEntity;
 import com.github.vincemann.springrapid.core.service.CrudService;
 import com.github.vincemann.springrapid.core.service.exception.BadEntityException;
 import com.github.vincemann.springrapid.core.service.exception.EntityNotFoundException;
 import com.github.vincemann.springrapid.core.service.locator.CrudServiceLocator;
-import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.annotation.Aspect;
@@ -47,26 +47,25 @@ public class RelationalEntityAdvice {
             "com.github.vincemann.springrapid.core.advice.SystemArchitecture.repoOperation() && " +
             "args(entity)")
     public void prePersistEntity(IdentifiableEntity entity) throws BadEntityException, EntityNotFoundException, IllegalAccessException {
-        relationalEntityManager.save(entity);
+        if (entity.getId() == null){
+            relationalEntityManager.save(entity);
+        }else {
+            relationalEntityManager.update(entity, RelationalAdviceContextHolder.getContext().getFullUpdate());
+            RelationalAdviceContextHolder.clear();
+        }
     }
 
-    @Before(value = "com.github.vincemann.springrapid.core.advice.SystemArchitecture.updateOperation() && " +
-            "com.github.vincemann.springrapid.core.advice.SystemArchitecture.repoOperation() && " +
-            "args(entity,full)")
-    public void preUpdateEntity(JoinPoint joinPoint, IdentifiableEntity entity, Boolean full) throws EntityNotFoundException, BadEntityException {
-        relationalEntityManager.update(entity,full);
-    }
-
-    @Before(value = "com.github.vincemann.springrapid.core.advice.SystemArchitecture.updateOperation() && " +
-            "com.github.vincemann.springrapid.core.advice.SystemArchitecture.repoOperation() && " +
-            "args(entity)")
-    public void preUpdateEntity(JoinPoint joinPoint, IdentifiableEntity entity) throws EntityNotFoundException, BadEntityException {
-        relationalEntityManager.update(entity,Boolean.TRUE);
-    }
+//    @Before(value = "com.github.vincemann.springrapid.core.advice.SystemArchitecture.updateOperation() && " +
+//            "com.github.vincemann.springrapid.core.advice.SystemArchitecture.repoOperation() && " +
+//            "args(entity)")
+//    public void preUpdateEntity(JoinPoint joinPoint, IdentifiableEntity entity) throws EntityNotFoundException, BadEntityException {
+//        relationalEntityManager.update(entity,RelationalAdviceContext.isFullUpdate());
+//        RelationalAdviceContext.clear();
+//    }
 
     private Optional<IdentifiableEntity> resolveById(Serializable id, JoinPoint joinPoint) throws BadEntityException, IllegalAccessException {
         Class entityClass = resolveEntityClass(joinPoint);
-        log.debug("pre remove hook reached for entity " + entityClass + ":" + id);
+//        log.debug("pre remove hook reached for entity " + entityClass + ":" + id);
         CrudService service = crudServiceLocator.find(entityClass);
         Assert.notNull(service, "Did not find service for entityClass: " + entityClass);
         return service.findById((id));
