@@ -1,5 +1,6 @@
 package com.github.vincemann.springrapid.autobidir.advice;
 
+import com.github.vincemann.springrapid.autobidir.RelationalAdviceContext;
 import com.github.vincemann.springrapid.autobidir.RelationalAdviceContextHolder;
 import com.github.vincemann.springrapid.autobidir.RelationalEntityManager;
 import com.github.vincemann.springrapid.core.model.IdentifiableEntity;
@@ -18,6 +19,8 @@ import org.springframework.data.util.ReflectionUtils;
 import org.springframework.test.util.AopTestUtils;
 import org.springframework.util.Assert;
 
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
 import java.io.Serializable;
 import java.lang.reflect.Field;
 import java.util.*;
@@ -29,6 +32,8 @@ public class RelationalEntityAdvice {
 
     private CrudServiceLocator crudServiceLocator;
     private RelationalEntityManager relationalEntityManager;
+    @PersistenceContext
+    private EntityManager entityManager;
 
 
     @Before("com.github.vincemann.springrapid.core.advice.SystemArchitecture.deleteOperation() && " +
@@ -45,12 +50,18 @@ public class RelationalEntityAdvice {
 
     @Before("com.github.vincemann.springrapid.core.advice.SystemArchitecture.saveOperation() && " +
             "com.github.vincemann.springrapid.core.advice.SystemArchitecture.repoOperation() && " +
-            "args(entity)")
-    public void prePersistEntity(IdentifiableEntity entity) throws BadEntityException, EntityNotFoundException, IllegalAccessException {
-        if (entity.getId() == null){
-            relationalEntityManager.save(entity);
+            "args(updateEntity)")
+    public void prePersistEntity(IdentifiableEntity updateEntity) throws BadEntityException, EntityNotFoundException, IllegalAccessException {
+        if (updateEntity.getId() == null){
+            relationalEntityManager.save(updateEntity);
         }else {
-            relationalEntityManager.update(entity, RelationalAdviceContextHolder.getContext().getFullUpdate());
+            RelationalAdviceContext updateContext = RelationalAdviceContextHolder.getContext();
+            if (updateContext.getFullUpdate()){
+                relationalEntityManager.update(updateContext.getOldEntity(), updateEntity);
+            }else {
+                relationalEntityManager.partialUpdate(updateContext.getOldEntity(), updateEntity, updateContext.getPartialUpdateEntity());
+            }
+//            entityManager.refresh(updateEntity);
             RelationalAdviceContextHolder.clear();
         }
     }

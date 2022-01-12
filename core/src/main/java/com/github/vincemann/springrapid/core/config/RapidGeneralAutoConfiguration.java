@@ -2,6 +2,8 @@ package com.github.vincemann.springrapid.core.config;
 
 import com.github.vincemann.springrapid.core.CoreProperties;
 import com.github.vincemann.springrapid.core.model.RapidSecurityAuditorAware;
+import com.github.vincemann.springrapid.core.service.locator.CrudServiceLocator;
+import com.github.vincemann.springrapid.core.util.EntityUtils;
 import com.github.vincemann.springrapid.core.util.JpaUtils;
 import com.github.vincemann.springrapid.core.util.LazyLogUtils;
 import com.github.vincemann.springrapid.core.util.Message;
@@ -67,6 +69,12 @@ public class RapidGeneralAutoConfiguration {
     @ConditionalOnMissingBean(JpaUtils.class)
     public JpaUtils jpaUtils(){
         return new JpaUtils(entityManager);
+    }
+
+    @Bean
+    @ConditionalOnMissingBean(EntityUtils.class)
+    public EntityUtils entityUtils(CrudServiceLocator crudServiceLocator){
+        return new EntityUtils(crudServiceLocator);
     }
 
 //    @Bean

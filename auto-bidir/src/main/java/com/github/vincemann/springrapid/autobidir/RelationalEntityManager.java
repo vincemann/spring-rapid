@@ -8,5 +8,9 @@ public interface RelationalEntityManager {
 
     public <E extends IdentifiableEntity> E save(E entity);
     public void remove(IdentifiableEntity entity) throws EntityNotFoundException, BadEntityException;
-    public <E extends IdentifiableEntity> E update(E entity, Boolean full) throws EntityNotFoundException, BadEntityException;
+
+    <E extends IdentifiableEntity> E partialUpdate(E oldEntity, E updateEntity, E partialUpdateEntity) throws EntityNotFoundException, BadEntityException;
+
+    public <E extends IdentifiableEntity> E update(E oldEntity, E updateEntity) throws EntityNotFoundException, BadEntityException;
+
 }

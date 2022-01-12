@@ -40,7 +40,8 @@ public class Owner extends Person {
         this.telephone = telephone;
     }
 
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "owner",fetch = FetchType.EAGER)
+    // dont use remove cascade to showcase unlink on remove owner
+    @OneToMany(cascade = {PERSIST, MERGE, REFRESH, DETACH}, mappedBy = "owner",fetch = FetchType.EAGER)
     @JsonManagedReference
     @BiDirChildCollection(Pet.class)
     private Set<Pet> pets = new HashSet<>();

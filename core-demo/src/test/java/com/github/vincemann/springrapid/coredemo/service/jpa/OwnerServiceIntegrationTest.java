@@ -149,10 +149,7 @@ class OwnerServiceIntegrationTest
 
         Owner ownerUpdateRequest = new Owner();
         ownerUpdateRequest.getPets().addAll(savedKahn.getPets());
-        //here comes the new pet
-        ownerUpdateRequest.getPets().add(savedKitty);
-
-        //when
+        ownerUpdateRequest.getPets().add(savedKitty);   //here comes the new pet
         ownerUpdateRequest.setId(savedKahn.getId());
 
         test(partialUpdate(ownerUpdateRequest))
@@ -437,6 +434,8 @@ class OwnerServiceIntegrationTest
     public void canDeleteOwnerWithPet_thusUnlinkPet() throws Exception {
         kahn.setPets(new HashSet<>(Lists.newArrayList(bello)));
         Owner savedOwner = getTestedService().save(kahn);
+
+        Assertions.assertTrue(petRepository.findByName(BELLO).isPresent());
 
         test(deleteById(savedOwner.getId()))
                 .andExpect(notPresentInDatabase(savedOwner.getId()));

@@ -5,10 +5,16 @@ import com.github.vincemann.springrapid.autobidir.RelationalAdviceContextHolder;
 import com.github.vincemann.springrapid.core.model.IdentifiableEntity;
 import com.github.vincemann.springrapid.core.service.exception.BadEntityException;
 import com.github.vincemann.springrapid.core.service.exception.EntityNotFoundException;
+import com.github.vincemann.springrapid.core.util.BeanUtils;
+import com.github.vincemann.springrapid.core.util.EntityUtils;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.beanutils.BeanUtilsBean;
 import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Before;
+
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
 
 import static com.github.vincemann.springrapid.core.util.ProxyUtils.isRootService;
 
@@ -16,22 +22,34 @@ import static com.github.vincemann.springrapid.core.util.ProxyUtils.isRootServic
 @Aspect
 public class RelationalServiceUpdateAdvice {
 
+    @PersistenceContext
+    private EntityManager entityManager;
+
     @Before(value = "com.github.vincemann.springrapid.core.advice.SystemArchitecture.updateOperation() && " +
             "com.github.vincemann.springrapid.core.advice.SystemArchitecture.serviceOperation() && " +
-            "args(entity)")
-    public void preUpdateBiDirEntity(JoinPoint joinPoint, IdentifiableEntity entity) throws EntityNotFoundException, BadEntityException {
-        preUpdateBiDirEntity(joinPoint, entity, true);
+            "args(updateEntity)")
+    public void preUpdateBiDirEntity(JoinPoint joinPoint, IdentifiableEntity updateEntity) throws EntityNotFoundException, BadEntityException {
+        preUpdateBiDirEntity(joinPoint, updateEntity, true);
     }
 
 
     @Before(value = "com.github.vincemann.springrapid.core.advice.SystemArchitecture.updateOperation() && " +
             "com.github.vincemann.springrapid.core.advice.SystemArchitecture.serviceOperation() && " +
-            "args(entity,full)")
-    public void preUpdateBiDirEntity(JoinPoint joinPoint, IdentifiableEntity entity, Boolean full) throws EntityNotFoundException, BadEntityException {
+            "args(updateEntity,full)")
+    public void preUpdateBiDirEntity(JoinPoint joinPoint, IdentifiableEntity updateEntity, Boolean full) throws EntityNotFoundException, BadEntityException {
         if (!isRootService(joinPoint.getTarget())) {
             log.debug("ignoring service update advice, bc root service not called yet");
             return;
         }
-        RelationalAdviceContextHolder.setContext(new RelationalAdviceContext(entity,full));
+        IdentifiableEntity partialUpdateEntity = BeanUtils.clone(updateEntity);
+        entityManager.detach(partialUpdateEntity);
+        IdentifiableEntity oldEntity = BeanUtils.clone(EntityUtils.findOldEntity(updateEntity));
+        entityManager.detach(oldEntity);
+        RelationalAdviceContext updateContext = RelationalAdviceContext.builder()
+                .partialUpdateEntity(partialUpdateEntity)
+                .oldEntity(oldEntity)
+                .fullUpdate(full)
+                .build();
+        RelationalAdviceContextHolder.setContext(updateContext);
     }
 }

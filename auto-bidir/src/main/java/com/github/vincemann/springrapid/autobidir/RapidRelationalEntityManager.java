@@ -2,16 +2,12 @@ package com.github.vincemann.springrapid.autobidir;
 
 import com.github.vincemann.springrapid.autobidir.model.RelationalEntityType;
 import com.github.vincemann.springrapid.core.model.IdentifiableEntity;
-import com.github.vincemann.springrapid.core.service.CrudService;
 import com.github.vincemann.springrapid.core.service.exception.BadEntityException;
 import com.github.vincemann.springrapid.core.service.exception.EntityNotFoundException;
-import com.github.vincemann.springrapid.core.service.locator.CrudServiceLocator;
-import com.github.vincemann.springrapid.core.util.VerifyEntity;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.io.Serializable;
 import java.util.*;
 
 @Slf4j
@@ -19,22 +15,21 @@ import java.util.*;
 public class RapidRelationalEntityManager implements RelationalEntityManager {
 
     private RelationalEntityManagerUtil relationalEntityManagerUtil;
-    private CrudServiceLocator crudServiceLocator;
 
     @Override
     public <E extends IdentifiableEntity> E save(E entity) {
-        if (entity.getId() != null){
+        if (entity.getId() != null) {
             throw new IllegalArgumentException("save needs null id");
         }
         Set<RelationalEntityType> relationalEntityTypes = relationalEntityManagerUtil.inferTypes(entity.getClass());
-        if (relationalEntityTypes.contains(RelationalEntityType.BiDirParent)){
+        if (relationalEntityTypes.contains(RelationalEntityType.BiDirParent)) {
             log.debug("applying pre persist BiDirParent logic for: " + entity);
             // also filter for class obj stored in annotation, so if I update only one BiDirChildCollection, only init this one
             // with the right class
 //            entity = BiDirJpaUtils.initializeSubEntities(entity, BiDirChildCollection.class);
 //            entity = BiDirJpaUtils.initializeSubEntities(entity, BiDirChildEntity.class);
 //            if (entity.getId() == null) {
-                //create
+            //create
             relationalEntityManagerUtil.linkChildrensParent(entity);
 //            } else {
 //                // update
@@ -47,7 +42,7 @@ public class RapidRelationalEntityManager implements RelationalEntityManager {
 //            }
         }
 
-        if (relationalEntityTypes.contains(RelationalEntityType.BiDirChild)){
+        if (relationalEntityTypes.contains(RelationalEntityType.BiDirChild)) {
             log.debug("applying pre persist BiDirChild logic for: " + entity);
 //            entity = BiDirJpaUtils.initializeSubEntities(entity, BiDirParentEntity.class);
 //            entity = BiDirJpaUtils.initializeSubEntities(entity, BiDirParentCollection.class);
@@ -86,31 +81,35 @@ public class RapidRelationalEntityManager implements RelationalEntityManager {
         }
     }
 
+
     @Override
-    public <E extends IdentifiableEntity> E update(E updateEntity, Boolean full) throws EntityNotFoundException, BadEntityException {
-        E oldEntity = findOldEntity(updateEntity);
+    public <E extends IdentifiableEntity> E partialUpdate(E oldEntity, E updateEntity, E partialUpdateEntity) throws EntityNotFoundException, BadEntityException {
         Set<RelationalEntityType> relationalEntityTypes = relationalEntityManagerUtil.inferTypes(updateEntity.getClass());
-        if (!full) {
-            if (relationalEntityTypes.contains(RelationalEntityType.BiDirParent)) {
-                log.debug("applying pre partial-update BiDirParent logic for: " + updateEntity.getClass());
-                updateBiDirParentRelations(oldEntity,updateEntity);
-            }
-            if (relationalEntityTypes.contains(RelationalEntityType.BiDirChild)) {
-                log.debug("applying pre partial-update BiDirChild logic for: " + updateEntity.getClass());
-                updateBiDirChildRelations(oldEntity,updateEntity);
-            }
-
-        }else {
-            if (relationalEntityTypes.contains(RelationalEntityType.BiDirParent)) {
-                log.debug("applying pre full-update BiDirParent logic for: " + updateEntity.getClass());
-                updateBiDirParentRelations(oldEntity, updateEntity);
-            }
-            if (relationalEntityTypes.contains(RelationalEntityType.BiDirChild)) {
-                log.debug("applying pre full-update BiDirChild logic for: " + updateEntity.getClass());
-                updateBiDirChildRelations(oldEntity, updateEntity);
-            }
-
+        if (relationalEntityTypes.contains(RelationalEntityType.BiDirParent)) {
+            log.debug("applying pre partial-update BiDirParent logic for: " + updateEntity.getClass());
+            updateBiDirParentRelations(oldEntity, updateEntity);
         }
+        if (relationalEntityTypes.contains(RelationalEntityType.BiDirChild)) {
+            log.debug("applying pre partial-update BiDirChild logic for: " + updateEntity.getClass());
+            updateBiDirChildRelations(oldEntity, updateEntity);
+        }
+        return updateEntity;
+    }
+
+    @Override
+    public <E extends IdentifiableEntity> E update(E oldEntity, E updateEntity) throws EntityNotFoundException, BadEntityException {
+//        E oldEntity = findOldEntity(updateEntity);
+        Set<RelationalEntityType> relationalEntityTypes = relationalEntityManagerUtil.inferTypes(updateEntity.getClass());
+
+        if (relationalEntityTypes.contains(RelationalEntityType.BiDirParent)) {
+            log.debug("applying pre full-update BiDirParent logic for: " + updateEntity.getClass());
+            updateBiDirParentRelations(oldEntity, updateEntity);
+        }
+        if (relationalEntityTypes.contains(RelationalEntityType.BiDirChild)) {
+            log.debug("applying pre full-update BiDirChild logic for: " + updateEntity.getClass());
+            updateBiDirChildRelations(oldEntity, updateEntity);
+        }
+
         return updateEntity;
     }
 
@@ -232,14 +231,6 @@ public class RapidRelationalEntityManager implements RelationalEntityManager {
         added.removeAll(removed);
     }
 
-    protected <E> E findOldEntity(E entity) throws EntityNotFoundException, BadEntityException {
-        Class entityClass = entity.getClass();
-        CrudService service = crudServiceLocator.find((Class<IdentifiableEntity>) entityClass);
-        Optional<IdentifiableEntity> oldEntityOptional = service.findById(((IdentifiableEntity<Serializable>) entity).getId());
-        VerifyEntity.isPresent(oldEntityOptional, ((IdentifiableEntity<Serializable>) entity).getId(), entity.getClass());
-        return (E) oldEntityOptional.get();
-    }
-
 
 //    private void mergeChildrensParents(IdentifiableEntity biDirChild) {
 //        //set backreferences
@@ -337,8 +328,4 @@ public class RapidRelationalEntityManager implements RelationalEntityManager {
         this.relationalEntityManagerUtil = relationalEntityManagerUtil;
     }
 
-    @Autowired
-    public void setCrudServiceLocator(CrudServiceLocator crudServiceLocator) {
-        this.crudServiceLocator = crudServiceLocator;
-    }
 }
