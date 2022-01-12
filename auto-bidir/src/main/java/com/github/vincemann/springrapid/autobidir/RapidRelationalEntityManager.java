@@ -9,11 +9,13 @@ import com.github.vincemann.springrapid.core.service.locator.CrudServiceLocator;
 import com.github.vincemann.springrapid.core.util.VerifyEntity;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.io.Serializable;
 import java.util.*;
 
 @Slf4j
+@Transactional
 public class RapidRelationalEntityManager implements RelationalEntityManager {
 
     private RelationalEntityManagerUtil relationalEntityManagerUtil;
@@ -114,101 +116,101 @@ public class RapidRelationalEntityManager implements RelationalEntityManager {
 
     public void updateBiDirChildRelations(IdentifiableEntity oldChild, IdentifiableEntity newChild) throws BadEntityException, EntityNotFoundException {
 
-        Collection<IdentifiableEntity> oldSingleParents = relationalEntityManagerUtil.findSingleBiDirParents(oldChild);
-        Collection<IdentifiableEntity> newSingleParents = relationalEntityManagerUtil.findSingleBiDirParents(newChild);
+        Collection<IdentifiableEntity> oldParents = relationalEntityManagerUtil.findAllBiDirParents(oldChild);
+        Collection<IdentifiableEntity> newParents = relationalEntityManagerUtil.findAllBiDirParents(newChild);
 
-        Collection<Collection<IdentifiableEntity>> oldParentCollections = relationalEntityManagerUtil.findBiDirParentCollections(oldChild).values();
-        Collection<Collection<IdentifiableEntity>> newParentCollections = relationalEntityManagerUtil.findBiDirParentCollections(newChild).values();
+//        Collection<Collection<IdentifiableEntity>> oldParentCollections = relationalEntityManagerUtil.findBiDirParentCollections(oldChild).values();
+//        Collection<Collection<IdentifiableEntity>> newParentCollections = relationalEntityManagerUtil.findBiDirParentCollections(newChild).values();
 
         //find parents to unlink
         List<IdentifiableEntity> removedParents = new ArrayList<>();
-        for (IdentifiableEntity oldParent : oldSingleParents) {
-            if (!newSingleParents.contains(oldParent)) {
+        for (IdentifiableEntity oldParent : oldParents) {
+            if (!newParents.contains(oldParent)) {
                 removedParents.add(oldParent);
             }
         }
 
-        for (Collection<? extends IdentifiableEntity> oldParentCollection : oldParentCollections) {
-            for (IdentifiableEntity oldParent : oldParentCollection) {
-                if (!newSingleParents.contains(oldParent)) {
-                    removedParents.add(oldParent);
-                }
-            }
-        }
+//        for (Collection<? extends IdentifiableEntity> oldParentCollection : oldParentCollections) {
+//            for (IdentifiableEntity oldParent : oldParentCollection) {
+//                if (!newParents.contains(oldParent)) {
+//                    removedParents.add(oldParent);
+//                }
+//            }
+//        }
 
 
         //find added parents
         List<IdentifiableEntity> addedParents = new ArrayList<>();
-        for (IdentifiableEntity newParent : newSingleParents) {
-            if (!oldSingleParents.contains(newParent)) {
+        for (IdentifiableEntity newParent : newParents) {
+            if (!oldParents.contains(newParent)) {
                 addedParents.add(newParent);
             }
         }
 
-        for (Collection<? extends IdentifiableEntity> newParentCollection : newParentCollections) {
-            for (IdentifiableEntity newParent : newParentCollection) {
-                if (!oldSingleParents.contains(newParent)) {
-                    addedParents.add(newParent);
-                }
-            }
-        }
+//        for (Collection<? extends IdentifiableEntity> newParentCollection : newParentCollections) {
+//            for (IdentifiableEntity newParent : newParentCollection) {
+//                if (!oldParents.contains(newParent)) {
+//                    addedParents.add(newParent);
+//                }
+//            }
+//        }
 
         adjustUpdatedEntities(addedParents, removedParents);
 
-        //unlink Child from certain Parents
+        // unlink Child from certain Parents
         for (IdentifiableEntity removedParent : removedParents) {
-            log.debug("update unlinking parent: " + removedParent + " from child: " + newChild);
+            log.debug("update: unlinking parent: " + removedParent + " from child: " + newChild);
             relationalEntityManagerUtil.unlinkBiDirChild(removedParent, oldChild);
         }
 
-        //add added Parent to child
+        // link added Parent to child
         for (IdentifiableEntity addedParent : addedParents) {
-            log.debug("update linking parent: " + addedParent + " to child: " + newChild);
+            log.debug("update: linking parent: " + addedParent + " to child: " + newChild);
             relationalEntityManagerUtil.linkBiDirChild(addedParent, newChild);
         }
     }
 
     public void updateBiDirParentRelations(IdentifiableEntity oldParent, IdentifiableEntity newParent) throws BadEntityException, EntityNotFoundException {
 
-        Set<IdentifiableEntity> oldSingleChildren = relationalEntityManagerUtil.findSingleBiDirChildren(oldParent);
-        Set<IdentifiableEntity> newSingleChildren = relationalEntityManagerUtil.findSingleBiDirChildren(newParent);
+        Collection<IdentifiableEntity> oldChildren = relationalEntityManagerUtil.findAllBiDirChildren(oldParent);
+        Collection<IdentifiableEntity> newChildren = relationalEntityManagerUtil.findAllBiDirChildren(newParent);
 
-        Collection<Collection<IdentifiableEntity>> oldChildCollections = relationalEntityManagerUtil.findBiDirChildCollections(oldParent).values();
-        Collection<Collection<IdentifiableEntity>> newChildCollections = relationalEntityManagerUtil.findBiDirChildCollections(newParent).values();
+//        Collection<Collection<IdentifiableEntity>> oldChildCollections = relationalEntityManagerUtil.findBiDirChildCollections(oldParent).values();
+//        Collection<Collection<IdentifiableEntity>> newChildCollections = relationalEntityManagerUtil.findBiDirChildCollections(newParent).values();
 
         //find Children to unlink
         List<IdentifiableEntity> removedChildren = new ArrayList<>();
-        for (IdentifiableEntity oldChild : oldSingleChildren) {
-            if (!newSingleChildren.contains(oldChild)) {
+        for (IdentifiableEntity oldChild : oldChildren) {
+            if (!newChildren.contains(oldChild)) {
                 removedChildren.add(oldChild);
             }
         }
-        for (Collection<? extends IdentifiableEntity> oldChildrenCollection : oldChildCollections) {
-            for (IdentifiableEntity oldChild : oldChildrenCollection) {
-                if (!newSingleChildren.contains(oldChild)) {
-                    removedChildren.add(oldChild);
-                }
-            }
-        }
+//        for (Collection<? extends IdentifiableEntity> oldChildrenCollection : oldChildCollections) {
+//            for (IdentifiableEntity oldChild : oldChildrenCollection) {
+//                if (!newChildren.contains(oldChild)) {
+//                    removedChildren.add(oldChild);
+//                }
+//            }
+//        }
 
         //find added Children
         List<IdentifiableEntity> addedChildren = new ArrayList<>();
-        for (IdentifiableEntity newChild : newSingleChildren) {
-            if (!oldSingleChildren.contains(newChild)) {
+        for (IdentifiableEntity newChild : newChildren) {
+            if (!oldChildren.contains(newChild)) {
                 addedChildren.add(newChild);
             }
         }
 
 
-        for (Collection<? extends IdentifiableEntity> newChildrenCollection : newChildCollections) {
-            // add util here to lazy load collection !
-
-            for (IdentifiableEntity newChild : newChildrenCollection) {
-                if (!oldSingleChildren.contains(newChild)) {
-                    addedChildren.add(newChild);
-                }
-            }
-        }
+//        for (Collection<? extends IdentifiableEntity> newChildrenCollection : newChildCollections) {
+//            // add util here to lazy load collection !
+//
+//            for (IdentifiableEntity newChild : newChildrenCollection) {
+//                if (!oldChildren.contains(newChild)) {
+//                    addedChildren.add(newChild);
+//                }
+//            }
+//        }
 
         adjustUpdatedEntities(addedChildren, removedChildren);
 

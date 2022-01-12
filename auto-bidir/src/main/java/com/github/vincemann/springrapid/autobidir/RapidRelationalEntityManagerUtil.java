@@ -67,18 +67,25 @@ public class RapidRelationalEntityManagerUtil implements RelationalEntityManager
     // BiDirChild methods
 
 
+    /**
+     * finds all parents of @poram biDirChild and links child to parent
+     * -> set backreference of child
+     * @param biDirChild
+     */
     public void linkParentsChild(IdentifiableEntity biDirChild) {
         //set backreferences
-
-        Collection<Collection<IdentifiableEntity>> parentCollections = findBiDirParentCollections(biDirChild).values();
-        for (Collection<IdentifiableEntity> parentCollection : parentCollections) {
-            for (IdentifiableEntity biDirParent : parentCollection) {
-                linkBiDirChild(biDirParent,biDirChild);
-            }
-        }
-        for (IdentifiableEntity parent : findSingleBiDirParents(biDirChild)) {
+        for (IdentifiableEntity parent : findAllBiDirParents(biDirChild)) {
             linkBiDirChild(parent,biDirChild);
         }
+//        Collection<Collection<IdentifiableEntity>> parentCollections = findBiDirParentCollections(biDirChild).values();
+//        for (Collection<IdentifiableEntity> parentCollection : parentCollections) {
+//            for (IdentifiableEntity biDirParent : parentCollection) {
+//                linkBiDirChild(biDirParent,biDirChild);
+//            }
+//        }
+//        for (IdentifiableEntity parent : findSingleBiDirParents(biDirChild)) {
+//            linkBiDirChild(parent,biDirChild);
+//        }
     }
 
 
@@ -106,18 +113,23 @@ public class RapidRelationalEntityManagerUtil implements RelationalEntityManager
     }
 
 
-
     /**
-     *
-     * @param parentToSet
-     * @throws UnknownParentTypeException   when supplied Parent does not match any of the fields in child class anntoated with {@link BiDirParentEntity}
+     * link
+     * @param parent
+     * to
+     * @param child
      */
-    public void linkBiDirParent(IdentifiableEntity child, IdentifiableEntity parentToSet) throws UnknownParentTypeException {
+    public void linkBiDirParent(IdentifiableEntity child, IdentifiableEntity parent) throws UnknownParentTypeException {
         assertEntityRelationType(child, RelationalEntityType.BiDirChild);
-        assertEntityRelationType(parentToSet, RelationalEntityType.BiDirParent);
-        linkEntity(child, parentToSet,BiDirParentEntity.class,BiDirParentCollection.class);
+        assertEntityRelationType(parent, RelationalEntityType.BiDirParent);
+        linkEntity(child, parent,BiDirParentEntity.class,BiDirParentCollection.class);
     }
 
+    /**
+     * find all parents of
+     * @param child and unlink it from them
+     * -> remove parents backreference
+     */
     public void unlinkBiDirParents(IdentifiableEntity child) throws UnknownChildTypeException, UnknownParentTypeException{
         for(IdentifiableEntity parent: findSingleBiDirParents(child)){
             if(parent!=null) {
@@ -129,34 +141,37 @@ public class RapidRelationalEntityManagerUtil implements RelationalEntityManager
     }
 
     /**
-     * This Child wont know about parentToDelete after this operation.
-     * Set all {@link BiDirParentEntity}s of this BiDirChild to null.
-     * @param parentToDelete
-     * @throws UnknownParentTypeException   thrown, if parentToDelete is of unknown type -> no field , annotated as {@link BiDirParentEntity}, with the most specific type of parentToDelete, exists in Child (this).
+     * unlink
+     * @param parent
+     * from
+     * @param child
+     *
+     *
      */
-    public void unlinkBiDirParent(IdentifiableEntity child, IdentifiableEntity parentToDelete) throws UnknownParentTypeException {
+    public void unlinkBiDirParent(IdentifiableEntity child, IdentifiableEntity parent) throws UnknownParentTypeException {
         assertEntityRelationType(child, RelationalEntityType.BiDirChild);
-        assertEntityRelationType(parentToDelete, RelationalEntityType.BiDirParent);
-        unlinkEntity(child, parentToDelete,BiDirParentEntity.class,BiDirParentCollection.class);
+        assertEntityRelationType(parent, RelationalEntityType.BiDirParent);
+        unlinkEntity(child, parent,BiDirParentEntity.class,BiDirParentCollection.class);
     }
 
     /**
-     * All children BiDirChild of this parent wont know about this parent, after this operation.
-     * Clear all {@link BiDirChildCollection}s of this parent.
-     * Call this, before you want to delete this parent.
-     * @throws UnknownParentTypeException
+     * Find all Parents of @param child and unlink it from them.
+     * -> remove parents backreference
      */
     public void unlinkParentsChild(IdentifiableEntity child) throws UnknownEntityTypeException {
-        for(IdentifiableEntity parent: findSingleBiDirParents(child)){
+        for (IdentifiableEntity parent : findAllBiDirParents(child)) {
             unlinkBiDirChild(parent,child);
         }
-        for(Map.Entry<Class<IdentifiableEntity>,Collection<IdentifiableEntity>> entry: findBiDirParentCollections(child).entrySet()){
-            Collection<IdentifiableEntity> parentCollection = entry.getValue();
-            for(IdentifiableEntity parent: parentCollection){
-                unlinkBiDirChild(parent,child);
-            }
-            parentCollection.clear();
-        }
+//        for(IdentifiableEntity parent: findSingleBiDirParents(child)){
+//            unlinkBiDirChild(parent,child);
+//        }
+//        for(Map.Entry<Class<IdentifiableEntity>,Collection<IdentifiableEntity>> entry: findBiDirParentCollections(child).entrySet()){
+//            Collection<IdentifiableEntity> parentCollection = entry.getValue();
+//            for(IdentifiableEntity parent: parentCollection){
+//                unlinkBiDirChild(parent,child);
+//            }
+//            parentCollection.clear();
+//        }
     }
 
 
@@ -165,18 +180,26 @@ public class RapidRelationalEntityManagerUtil implements RelationalEntityManager
     // BiDirParent Methods
 
 
+    /**
+     * find all children of
+     * @param parent and link it to them
+     * -> set backreference of children
+     */
+    public void linkChildrensParent(IdentifiableEntity parent) {
+        for (IdentifiableEntity child : findAllBiDirChildren(parent)) {
+            linkBiDirParent(child, parent);
+        }
 
-    public void linkChildrensParent(IdentifiableEntity biDirParent) {
-        Set<? extends IdentifiableEntity> children = findSingleBiDirChildren(biDirParent);
-        for (IdentifiableEntity child : children) {
-            linkBiDirParent(child, biDirParent);
-        }
-        Collection<Collection<IdentifiableEntity>> childCollections = findBiDirChildCollections(biDirParent).values();
-        for (Collection<IdentifiableEntity> childCollection : childCollections) {
-            for (IdentifiableEntity child : childCollection) {
-                linkBiDirParent(child, biDirParent);
-            }
-        }
+//        Set<? extends IdentifiableEntity> children = findSingleBiDirChildren(parent);
+//        for (IdentifiableEntity child : children) {
+//            linkBiDirParent(child, parent);
+//        }
+//        Collection<Collection<IdentifiableEntity>> childCollections = findBiDirChildCollections(parent).values();
+//        for (Collection<IdentifiableEntity> childCollection : childCollections) {
+//            for (IdentifiableEntity child : childCollection) {
+//                linkBiDirParent(child, parent);
+//            }
+//        }
     }
 
     /**
@@ -232,22 +255,25 @@ public class RapidRelationalEntityManagerUtil implements RelationalEntityManager
     }
 
     /**
-     * All children BiDirChild of this parent wont know about this parent, after this operation.
-     * Clear all {@link BiDirChildCollection}s of this parent.
-     * Call this, before you want to delete this parent.
-     * @throws UnknownParentTypeException
+     * find all children of
+     * @param parent and unlink it from them
+     * -> remove childrens backreference
      */
     public void unlinkChildrensParent(IdentifiableEntity parent) throws UnknownParentTypeException{
-        for(IdentifiableEntity child: findSingleBiDirChildren(parent)){
+        for (IdentifiableEntity child : findAllBiDirChildren(parent)) {
             unlinkBiDirParent(child,parent);
         }
-        for(Map.Entry<Class<IdentifiableEntity>,Collection<IdentifiableEntity>> entry: findBiDirChildCollections(parent).entrySet()){
-            Collection<IdentifiableEntity> childrenCollection = entry.getValue();
-            for(IdentifiableEntity child: childrenCollection){
-                unlinkBiDirParent(child,parent);
-            }
-            childrenCollection.clear();
-        }
+
+//        for(IdentifiableEntity child: findSingleBiDirChildren(parent)){
+//            unlinkBiDirParent(child,parent);
+//        }
+//        for(Map.Entry<Class<IdentifiableEntity>,Collection<IdentifiableEntity>> entry: findBiDirChildCollections(parent).entrySet()){
+//            Collection<IdentifiableEntity> childrenCollection = entry.getValue();
+//            for(IdentifiableEntity child: childrenCollection){
+//                unlinkBiDirParent(child,parent);
+//            }
+//            childrenCollection.clear();
+//        }
     }
 
 
