@@ -85,31 +85,31 @@ public class RapidRelationalEntityManager implements RelationalEntityManager {
     }
 
     @Override
-    public <E extends IdentifiableEntity> E update(E entity, Boolean full) throws EntityNotFoundException, BadEntityException {
-        E oldEntity = findOldEntity(entity);
-        Set<RelationalEntityType> relationalEntityTypes = relationalEntityManagerUtil.inferTypes(entity.getClass());
+    public <E extends IdentifiableEntity> E update(E updateEntity, Boolean full) throws EntityNotFoundException, BadEntityException {
+        E oldEntity = findOldEntity(updateEntity);
+        Set<RelationalEntityType> relationalEntityTypes = relationalEntityManagerUtil.inferTypes(updateEntity.getClass());
         if (!full) {
             if (relationalEntityTypes.contains(RelationalEntityType.BiDirParent)) {
-                log.debug("applying pre partial-update BiDirParent logic for: " + entity.getClass());
-                updateBiDirParentRelations(oldEntity,entity);
+                log.debug("applying pre partial-update BiDirParent logic for: " + updateEntity.getClass());
+                updateBiDirParentRelations(oldEntity,updateEntity);
             }
             if (relationalEntityTypes.contains(RelationalEntityType.BiDirChild)) {
-                log.debug("applying pre partial-update BiDirChild logic for: " + entity.getClass());
-                updateBiDirChildRelations(oldEntity,entity);
+                log.debug("applying pre partial-update BiDirChild logic for: " + updateEntity.getClass());
+                updateBiDirChildRelations(oldEntity,updateEntity);
             }
 
         }else {
             if (relationalEntityTypes.contains(RelationalEntityType.BiDirParent)) {
-                log.debug("applying pre full-update BiDirParent logic for: " + entity.getClass());
-                updateBiDirParentRelations(oldEntity, entity);
+                log.debug("applying pre full-update BiDirParent logic for: " + updateEntity.getClass());
+                updateBiDirParentRelations(oldEntity, updateEntity);
             }
             if (relationalEntityTypes.contains(RelationalEntityType.BiDirChild)) {
-                log.debug("applying pre full-update BiDirChild logic for: " + entity.getClass());
-                updateBiDirChildRelations(oldEntity, entity);
+                log.debug("applying pre full-update BiDirChild logic for: " + updateEntity.getClass());
+                updateBiDirChildRelations(oldEntity, updateEntity);
             }
 
         }
-        return entity;
+        return updateEntity;
     }
 
     public void updateBiDirChildRelations(IdentifiableEntity oldChild, IdentifiableEntity newChild) throws BadEntityException, EntityNotFoundException {

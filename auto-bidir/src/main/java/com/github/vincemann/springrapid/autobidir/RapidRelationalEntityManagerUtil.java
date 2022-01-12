@@ -100,6 +100,13 @@ public class RapidRelationalEntityManagerUtil implements RelationalEntityManager
         return findSingleEntities(child,BiDirParentEntity.class);
     }
 
+    public Collection<IdentifiableEntity> findAllBiDirParents(IdentifiableEntity child) {
+        assertEntityRelationType(child, RelationalEntityType.BiDirChild);
+        return findAllEntities(child,BiDirParentEntity.class,BiDirParentCollection.class);
+    }
+
+
+
     /**
      *
      * @param parentToSet
@@ -191,6 +198,11 @@ public class RapidRelationalEntityManagerUtil implements RelationalEntityManager
         return findSingleEntities(parent, BiDirChildEntity.class);
     }
 
+    public Collection<IdentifiableEntity> findAllBiDirChildren(IdentifiableEntity parent) {
+        assertEntityRelationType(parent, RelationalEntityType.BiDirParent);
+        return findAllEntities(parent,BiDirChildEntity.class,BiDirChildCollection.class);
+    }
+
     /**
      * Add a new Child to this parent.
      * Call this, when saving a BiDirChild of this parent.
@@ -263,6 +275,11 @@ public class RapidRelationalEntityManagerUtil implements RelationalEntityManager
     public Set<IdentifiableEntity> findSingleUniDirChildren(IdentifiableEntity parent) {
         assertEntityRelationType(parent, RelationalEntityType.UniDirParent);
         return findSingleEntities(parent,UniDirChildEntity.class);
+    }
+
+    public Collection<IdentifiableEntity> findAllUniDirChildren(IdentifiableEntity child) {
+        assertEntityRelationType(child, RelationalEntityType.UniDirParent);
+        return findAllEntities(child,UniDirChildEntity.class,UniDirChildCollection.class);
     }
 
     /**
@@ -339,6 +356,17 @@ public class RapidRelationalEntityManagerUtil implements RelationalEntityManager
         });
         return entityType_collectionMap;
     }
+
+    public Collection<IdentifiableEntity> findAllEntities(IdentifiableEntity entity, Class<? extends Annotation> singleEntityAnnotation, Class<? extends Annotation> collectionEntityAnnotation) {
+        Set<IdentifiableEntity> relatedEntities = new HashSet<>();
+        relatedEntities.addAll(findSingleEntities(entity, singleEntityAnnotation));
+        Map<Class<IdentifiableEntity>, Collection<IdentifiableEntity>> biDirParentCollections = findEntityCollections(entity,collectionEntityAnnotation);
+        for (Collection<IdentifiableEntity> relatedEntityCollections : biDirParentCollections.values()) {
+            relatedEntities.addAll(relatedEntityCollections);
+        }
+        return relatedEntities;
+    }
+
 
     protected void linkEntity(IdentifiableEntity<?> entity, IdentifiableEntity newEntity, Class<? extends Annotation> entityAnnotationClass, Class<? extends Annotation> entityCollectionAnnotationClass) throws UnknownEntityTypeException {
         AtomicBoolean added = new AtomicBoolean(false);

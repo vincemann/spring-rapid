@@ -72,8 +72,9 @@ public abstract class EntityIdResolver implements AopLoggable {
         }
         VerifyEntity.isPresent(optionalParent, "No Parent of Type: " +entityClass.getSimpleName() + " found with id: " + id);
         return (T) optionalParent.get();
-
     }
+
+
 
     @Autowired
     public void setCrudServiceLocator(CrudServiceLocator crudServiceLocator) {

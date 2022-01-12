@@ -12,7 +12,8 @@ import org.apache.commons.beanutils.BeanUtilsBean;
 import org.hibernate.LockMode;
 import org.hibernate.Session;
 import org.springframework.dao.NonTransientDataAccessException;
-import com.github.vincemann.springrapid.core.service.RapidJpaRepository;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.EntityManager;
@@ -36,7 +37,7 @@ public abstract class JPACrudService
         <
                 E extends IdentifiableEntity<Id>,
                 Id extends Serializable,
-                R extends RapidJpaRepository<E, Id>
+                R extends JpaRepository<E, Id>
                 >
         extends AbstractCrudService<E, Id, R> {
 
