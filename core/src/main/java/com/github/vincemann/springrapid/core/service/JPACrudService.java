@@ -1,25 +1,16 @@
 package com.github.vincemann.springrapid.core.service;
 
-import com.github.vincemann.springrapid.core.util.NullAwareBeanUtils;
-import com.github.vincemann.springrapid.core.util.NullAwareBeanUtilsBean;
 import com.github.vincemann.springrapid.core.model.IdentifiableEntity;
 import com.github.vincemann.springrapid.core.service.exception.BadEntityException;
 import com.github.vincemann.springrapid.core.service.exception.EntityNotFoundException;
 import com.github.vincemann.springrapid.core.slicing.ServiceComponent;
+import com.github.vincemann.springrapid.core.util.NullAwareBeanUtils;
 import com.github.vincemann.springrapid.core.util.VerifyEntity;
-import com.github.vincemann.springrapid.core.util.BeanUtils;
-import org.apache.commons.beanutils.BeanUtilsBean;
-import org.hibernate.LockMode;
-import org.hibernate.Session;
 import org.springframework.dao.NonTransientDataAccessException;
-import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.transaction.annotation.Transactional;
 
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
 import java.io.Serializable;
-import java.lang.reflect.InvocationTargetException;
 import java.util.HashSet;
 import java.util.Optional;
 import java.util.Set;

@@ -291,6 +291,7 @@ public abstract class AbstractUserService
     @Transactional(propagation = Propagation.REQUIRED, readOnly = false)
     @Override
     public U update(U update, Boolean full) throws EntityNotFoundException, BadEntityException {
+        // todo does this work well with auto bidir update? Whats the way to do it
         Optional<U> old = findById(update.getId());
         entityManager.merge(old.get());
         VerifyEntity.isPresent(old, "Entity to update with id: " + update.getId() + " not found");

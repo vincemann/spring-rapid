@@ -3,6 +3,7 @@ package com.github.vincemann.springrapid.autobidir.advice;
 import com.github.vincemann.springrapid.autobidir.RelationalAdviceContext;
 import com.github.vincemann.springrapid.autobidir.RelationalAdviceContextHolder;
 import com.github.vincemann.springrapid.autobidir.RelationalEntityManager;
+import com.github.vincemann.springrapid.autobidir.util.AutoRelationalJpaUtils;
 import com.github.vincemann.springrapid.core.model.IdentifiableEntity;
 import com.github.vincemann.springrapid.core.service.CrudService;
 import com.github.vincemann.springrapid.core.service.exception.BadEntityException;
@@ -10,6 +11,8 @@ import com.github.vincemann.springrapid.core.service.exception.EntityNotFoundExc
 import com.github.vincemann.springrapid.core.service.locator.CrudServiceLocator;
 import lombok.extern.slf4j.Slf4j;
 import org.aspectj.lang.JoinPoint;
+import org.aspectj.lang.ProceedingJoinPoint;
+import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Before;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -48,21 +51,36 @@ public class RelationalEntityAdvice {
         }
     }
 
-    @Before("com.github.vincemann.springrapid.core.advice.SystemArchitecture.saveOperation() && " +
+
+    @Around("com.github.vincemann.springrapid.core.advice.SystemArchitecture.saveOperation() && " +
             "com.github.vincemann.springrapid.core.advice.SystemArchitecture.repoOperation() && " +
             "args(updateEntity)")
-    public void prePersistEntity(IdentifiableEntity updateEntity) throws BadEntityException, EntityNotFoundException, IllegalAccessException {
+    public IdentifiableEntity prePersistEntity(ProceedingJoinPoint joinPoint, IdentifiableEntity updateEntity) throws Throwable {
         if (updateEntity.getId() == null){
             relationalEntityManager.save(updateEntity);
+            RelationalAdviceContextHolder.clear();
+            return (IdentifiableEntity) joinPoint.proceed(new IdentifiableEntity[]{updateEntity});
         }else {
             RelationalAdviceContext updateContext = RelationalAdviceContextHolder.getContext();
             if (updateContext.getFullUpdate()){
                 relationalEntityManager.update(updateContext.getOldEntity(), updateEntity);
             }else {
-                relationalEntityManager.partialUpdate(updateContext.getOldEntity(), updateEntity, updateContext.getPartialUpdateEntity());
+                relationalEntityManager.partialUpdate(updateContext.getOldEntity(), updateEntity, updateContext.getDetachedUpdateEntity());
             }
-//            entityManager.refresh(updateEntity);
             RelationalAdviceContextHolder.clear();
+//            entityManager.refresh(updateEntity);
+//            updateEntity = entityManager.merge(updateEntity);
+            boolean managed = entityManager.contains(updateEntity);
+            if (!managed){
+                // todo around advice, um das hier schlauer umzusetzen
+                IdentifiableEntity merged = entityManager.merge(updateEntity);
+                boolean managed2 = entityManager.contains(merged);
+//                entityManager.persist(merged);
+//                return merged;
+                return (IdentifiableEntity) joinPoint.proceed(new IdentifiableEntity[]{merged});
+            }
+            return (IdentifiableEntity) joinPoint.proceed(new IdentifiableEntity[]{updateEntity});
+
         }
     }
 

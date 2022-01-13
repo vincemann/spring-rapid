@@ -9,12 +9,25 @@ import javax.persistence.PersistenceUtil;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
-import java.util.concurrent.atomic.AtomicReference;
 
-public class BiDirJpaUtils {
+public class AutoRelationalJpaUtils {
+
+
+    public static boolean isManaged(Object entity){
+        EntityManager entityManager = JpaUtils.getEntityManager();
+        PersistenceUtil pu = entityManager.getEntityManagerFactory().getPersistenceUnitUtil();
+        return pu.isLoaded(entity);
+    }
+    public static boolean isManaged(Object entity, String member){
+        EntityManager entityManager = JpaUtils.getEntityManager();
+        PersistenceUtil pu = entityManager.getEntityManagerFactory().getPersistenceUnitUtil();
+        boolean entityManaged = pu.isLoaded(entity);
+        boolean memberManaged = pu.isLoaded(entity, member);
+        return entityManaged && memberManaged;
+    }
+
 
     /**
      * Used to initialize Lazy loaded (potentially not yet loaded) Entities, EntityCollection @toInitialize from @param entity.
@@ -51,7 +64,7 @@ public class BiDirJpaUtils {
                 if (detached) {
                     System.err.println("merging entity");
 //                     merged = entityManager.merge(entity);
-                     entity = entityManager.merge(entity);
+                    entity = entityManager.merge(entity);
                 }
 
                 // hier jetzt den getter callen von der property toInitialize

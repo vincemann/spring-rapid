@@ -8,7 +8,6 @@ import com.github.vincemann.springrapid.core.service.exception.EntityNotFoundExc
 import com.github.vincemann.springrapid.core.util.BeanUtils;
 import com.github.vincemann.springrapid.core.util.EntityUtils;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.beanutils.BeanUtilsBean;
 import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Before;
@@ -41,12 +40,14 @@ public class RelationalServiceUpdateAdvice {
             log.debug("ignoring service update advice, bc root service not called yet");
             return;
         }
-        IdentifiableEntity partialUpdateEntity = BeanUtils.clone(updateEntity);
-        entityManager.detach(partialUpdateEntity);
         IdentifiableEntity oldEntity = BeanUtils.clone(EntityUtils.findOldEntity(updateEntity));
         entityManager.detach(oldEntity);
+
+        IdentifiableEntity detachedUpdateEntity = BeanUtils.clone(updateEntity);
+        entityManager.detach(detachedUpdateEntity);
+
         RelationalAdviceContext updateContext = RelationalAdviceContext.builder()
-                .partialUpdateEntity(partialUpdateEntity)
+                .detachedUpdateEntity(detachedUpdateEntity)
                 .oldEntity(oldEntity)
                 .fullUpdate(full)
                 .build();

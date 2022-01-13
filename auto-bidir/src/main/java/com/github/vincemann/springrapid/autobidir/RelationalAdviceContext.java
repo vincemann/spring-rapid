@@ -1,7 +1,6 @@
 package com.github.vincemann.springrapid.autobidir;
 
 import com.github.vincemann.springrapid.core.model.IdentifiableEntity;
-import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
@@ -12,7 +11,7 @@ import lombok.Setter;
 @Builder
 public class RelationalAdviceContext {
     public IdentifiableEntity oldEntity;
-    private IdentifiableEntity partialUpdateEntity;
+    private IdentifiableEntity detachedUpdateEntity;
     private Boolean fullUpdate;
 
 }

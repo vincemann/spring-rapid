@@ -180,7 +180,9 @@ class OwnerServiceIntegrationTest
 
         Owner ownerUpdateRequest = BeanUtils.clone(savedKahn);
         //here comes the new pet
-        ownerUpdateRequest.getPets().add(savedKitty);
+        ownerUpdateRequest.setPets(new HashSet<>(Lists.newArrayList(savedBello,savedKitty)));
+//        ownerUpdateRequest.getPets().add(savedKitty);
+//        getEntityManager().refresh(savedKahn);
 
         //when
         test(update(ownerUpdateRequest))

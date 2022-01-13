@@ -281,7 +281,9 @@ public class PetControllerIntegrationTest extends AbstractControllerIntegrationT
         Owner savedMeier = ownerRepository.save(meier);
 
         PetDto createdBellaDto = savePetLinkedToOwnerAndToys(bella,savedKahn.getId());
-        String updateOwnerJson = createUpdateJsonRequest(createUpdateJsonLine("replace", "/ownerId",savedMeier.getId().toString()));
+        String updateOwnerJson = createUpdateJsonRequest(
+                createUpdateJsonLine("replace", "/ownerId",savedMeier.getId().toString())
+        );
 
         PetDto responseDto = deserialize(getMvc().perform(update(updateOwnerJson, createdBellaDto.getId()))
                 .andReturn().getResponse().getContentAsString(), PetDto.class);
