@@ -70,15 +70,16 @@ public class RelationalEntityAdvice {
             RelationalAdviceContextHolder.clear();
 //            entityManager.refresh(updateEntity);
 //            updateEntity = entityManager.merge(updateEntity);
-            boolean managed = entityManager.contains(updateEntity);
-            if (!managed){
-                // todo around advice, um das hier schlauer umzusetzen
-                IdentifiableEntity merged = entityManager.merge(updateEntity);
-                boolean managed2 = entityManager.contains(merged);
-//                entityManager.persist(merged);
-//                return merged;
-                return (IdentifiableEntity) joinPoint.proceed(new IdentifiableEntity[]{merged});
-            }
+
+//            boolean managed = entityManager.contains(updateEntity);
+//            if (!managed){
+//                // todo around advice, um das hier schlauer umzusetzen
+//                IdentifiableEntity merged = entityManager.merge(updateEntity);
+//                boolean managed2 = entityManager.contains(merged);
+////                entityManager.persist(merged);
+////                return merged;
+//                return (IdentifiableEntity) joinPoint.proceed(new IdentifiableEntity[]{merged});
+//            }
             return (IdentifiableEntity) joinPoint.proceed(new IdentifiableEntity[]{updateEntity});
 
         }

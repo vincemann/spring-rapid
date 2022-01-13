@@ -40,7 +40,8 @@ public class Owner extends Person {
         this.telephone = telephone;
     }
 
-    // dont use remove cascade to showcase unlink on remove owner
+    // dont use remove cascade to showcase unlink on remove owner,
+    // persist cascade results in detached entity passed to persist errors, when saving pet?
     @OneToMany(cascade = {PERSIST, MERGE, REFRESH, DETACH}, mappedBy = "owner",fetch = FetchType.EAGER)
     @JsonManagedReference
     @BiDirChildCollection(Pet.class)

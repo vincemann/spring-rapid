@@ -40,7 +40,7 @@ public class RelationalServiceUpdateAdvice {
             log.debug("ignoring service update advice, bc root service not called yet");
             return;
         }
-        IdentifiableEntity oldEntity = BeanUtils.clone(EntityUtils.findOldEntity(updateEntity));
+        IdentifiableEntity oldEntity = BeanUtils.clone(EntityUtils.findEntity(updateEntity));
         entityManager.detach(oldEntity);
 
         IdentifiableEntity detachedUpdateEntity = BeanUtils.clone(updateEntity);

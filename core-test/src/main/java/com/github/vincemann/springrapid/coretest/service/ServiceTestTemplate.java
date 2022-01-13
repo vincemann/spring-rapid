@@ -56,6 +56,7 @@ public class ServiceTestTemplate {
                 .serviceRequest(serviceRequest)
                 .serviceResult(serviceResult)
                 .build();
+        // test if changes made in test actually withstand a commit to database (even if its rolled back after)
         entityManager.flush();
         if (serviceResult.getRaisedException() != null) {
             log.warn("Service threw exception, this is wanted. Stacktrace: ");

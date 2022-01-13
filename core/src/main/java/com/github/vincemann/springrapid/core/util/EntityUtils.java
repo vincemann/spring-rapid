@@ -17,19 +17,21 @@ public class EntityUtils {
         EntityUtils.crudServiceLocator = crudServiceLocator;
     }
 
-    public static <E extends IdentifiableEntity> E findOldEntity(E entity) throws EntityNotFoundException, BadEntityException {
-        Class entityClass = entity.getClass();
-        CrudService service = crudServiceLocator.find((Class<IdentifiableEntity>) entityClass);
+    public static <E extends IdentifiableEntity> E findEntity(E entity) throws EntityNotFoundException, BadEntityException {
+        return findEntity(entity.getClass(),entity.getId());
+    }
+
+    public static <E extends IdentifiableEntity> E findEntity(Class clazz, Serializable id) throws EntityNotFoundException, BadEntityException {
+        CrudService service = crudServiceLocator.find((Class<IdentifiableEntity>) clazz);
         if (service == null){
-            throw new IllegalArgumentException("no service found for entity: " + entity);
+            throw new IllegalArgumentException("no service found for entity with id " + id);
         }
-        Serializable id = entity.getId();
         if (id == null){
-            throw new RuntimeException("id is null of entity: " + entity);
+            throw new RuntimeException("id is null ");
         }
         Optional<IdentifiableEntity> byId = service.findById(id);
         if (byId.isEmpty()){
-            throw new RuntimeException("no entity found for entity: " + entity);
+            throw new IllegalArgumentException("no entity found with id " + id + " of type: " + clazz.getSimpleName());
         }
         return (E) byId.get();
     }
