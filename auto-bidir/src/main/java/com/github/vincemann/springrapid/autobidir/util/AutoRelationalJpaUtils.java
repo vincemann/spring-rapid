@@ -15,25 +15,13 @@ import java.util.Set;
 public class AutoRelationalJpaUtils {
 
 
-    public static boolean isManaged(Object entity){
-        EntityManager entityManager = JpaUtils.getEntityManager();
-        PersistenceUtil pu = entityManager.getEntityManagerFactory().getPersistenceUnitUtil();
-        return pu.isLoaded(entity);
-    }
-    public static boolean isManaged(Object entity, String member){
-        EntityManager entityManager = JpaUtils.getEntityManager();
-        PersistenceUtil pu = entityManager.getEntityManagerFactory().getPersistenceUnitUtil();
-        boolean entityManaged = pu.isLoaded(entity);
-        boolean memberManaged = pu.isLoaded(entity, member);
-        return entityManaged && memberManaged;
-    }
-
 
     /**
-     * Used to initialize Lazy loaded (potentially not yet loaded) Entities, EntityCollection @toInitialize from @param entity.
-     * Also merges @param entity if it is detached
+     * Used to initialize Lazy loaded (potentially not yet loaded) Entities, EntityCollection @toInitialize from
+     * @param entity
+     * Also merges
+     * @param entity if it is detached
      *
-     * @return
      */
     public static <T> T initializeSubEntities(T entity, Class<? extends Annotation> annotationClass) {
         EntityManager entityManager = JpaUtils.getEntityManager();

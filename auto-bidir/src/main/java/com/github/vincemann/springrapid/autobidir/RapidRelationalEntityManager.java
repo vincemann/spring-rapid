@@ -4,10 +4,13 @@ import com.github.vincemann.springrapid.autobidir.model.RelationalEntityType;
 import com.github.vincemann.springrapid.core.model.IdentifiableEntity;
 import com.github.vincemann.springrapid.core.service.exception.BadEntityException;
 import com.github.vincemann.springrapid.core.service.exception.EntityNotFoundException;
+import com.github.vincemann.springrapid.core.util.JpaUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
 import java.util.*;
 
 @Slf4j
@@ -15,6 +18,8 @@ import java.util.*;
 public class RapidRelationalEntityManager implements RelationalEntityManager {
 
     private RelationalEntityManagerUtil relationalEntityManagerUtil;
+    @PersistenceContext
+    private EntityManager entityManager;
 
     @Override
     public <E extends IdentifiableEntity> E save(E entity) {
@@ -104,10 +109,14 @@ public class RapidRelationalEntityManager implements RelationalEntityManager {
         if (relationalEntityTypes.contains(RelationalEntityType.BiDirParent)) {
             log.debug("applying pre full-update BiDirParent logic for: " + updateEntity.getClass());
             updateBiDirParentRelations(oldEntity, updateEntity);
+            // new children may be detached, so merge them
+            mergeParentsChildren(updateEntity);
         }
         if (relationalEntityTypes.contains(RelationalEntityType.BiDirChild)) {
             log.debug("applying pre full-update BiDirChild logic for: " + updateEntity.getClass());
             updateBiDirChildRelations(oldEntity, updateEntity);
+            // new parents may be detached, so merge them
+            mergeChildrensParents(updateEntity);
         }
 
         return updateEntity;
@@ -159,7 +168,8 @@ public class RapidRelationalEntityManager implements RelationalEntityManager {
         // unlink Child from certain Parents
         for (IdentifiableEntity removedParent : removedParents) {
             log.debug("update: unlinking parent: " + removedParent + " from child: " + newChild);
-            relationalEntityManagerUtil.unlinkBiDirChild(removedParent, oldChild);
+//            relationalEntityManagerUtil.unlinkBiDirChild(removedParent, oldChild);
+            relationalEntityManagerUtil.unlinkBiDirChild(removedParent, newChild);
         }
 
         // link added Parent to child
@@ -216,7 +226,8 @@ public class RapidRelationalEntityManager implements RelationalEntityManager {
         //unlink removed Children from newParent
         for (IdentifiableEntity removedChild : removedChildren) {
             log.debug("unlinking child: " + removedChild + " from parent: " + newParent);
-            relationalEntityManagerUtil.unlinkBiDirParent(removedChild, oldParent);
+//            relationalEntityManagerUtil.unlinkBiDirParent(removedChild, oldParent);
+            relationalEntityManagerUtil.unlinkBiDirParent(removedChild, newParent);
         }
 
         //link added Children to newParent
@@ -232,32 +243,39 @@ public class RapidRelationalEntityManager implements RelationalEntityManager {
     }
 
 
-//    private void mergeChildrensParents(IdentifiableEntity biDirChild) {
+    protected void mergeChildrensParents(IdentifiableEntity biDirChild) {
+        for (IdentifiableEntity parent : relationalEntityManagerUtil.findAllBiDirParents(biDirChild)) {
+            entityManager.merge(parent);
+        }
 //        //set backreferences
 //        Collection<Collection<IdentifiableEntity>> parentCollections = relationalEntityManagerUtil.findBiDirParentCollections(biDirChild).values();
 //        for (Collection<IdentifiableEntity> parentCollection : parentCollections) {
 //            for (IdentifiableEntity biDirParent : parentCollection) {
-//                getEntityManager().merge(biDirParent);
+//                entityManager.merge(biDirParent);
 //            }
 //        }
 //
 //        for (IdentifiableEntity parent : relationalEntityManagerUtil.findSingleBiDirParents(biDirChild)) {
-//            getEntityManager().merge(parent);
+//            entityManager.merge(parent);
 //        }
-//    }
+    }
 
-//    private void mergeParentsChildren(IdentifiableEntity biDirParent) {
+    protected void mergeParentsChildren(IdentifiableEntity biDirParent) {
+        for (IdentifiableEntity child : relationalEntityManagerUtil.findAllBiDirChildren(biDirParent)) {
+            entityManager.merge(child);
+        }
+
 //        Set<? extends IdentifiableEntity> children = relationalEntityManagerUtil.findSingleBiDirChildren(biDirParent);
 //        for (IdentifiableEntity child : children) {
-//            getEntityManager().merge(child);
+//            entityManager.merge(child);
 //        }
 //        Collection<Collection<IdentifiableEntity>> childCollections = relationalEntityManagerUtil.findBiDirChildCollections(biDirParent).values();
 //        for (Collection<IdentifiableEntity> childCollection : childCollections) {
 //            for (IdentifiableEntity biDirChild : childCollection) {
-//                getEntityManager().merge(biDirChild);
+//                entityManager.merge(biDirChild);
 //            }
 //        }
-//    }
+    }
 
 //    private void linkChildrensParent(IdentifiableEntity biDirParent) {
 //        Set<? extends IdentifiableEntity> children = relationalEntityManagerUtil.findSingleBiDirChildren(biDirParent);

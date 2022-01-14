@@ -23,6 +23,20 @@ public class JpaUtils {
         return entityManager;
     }
 
+
+    public static boolean isManaged(Object entity){
+        EntityManager entityManager = JpaUtils.getEntityManager();
+        PersistenceUtil pu = entityManager.getEntityManagerFactory().getPersistenceUnitUtil();
+        return pu.isLoaded(entity);
+    }
+    public static boolean isManaged(Object entity, String member){
+        EntityManager entityManager = JpaUtils.getEntityManager();
+        PersistenceUtil pu = entityManager.getEntityManagerFactory().getPersistenceUnitUtil();
+        boolean entityManaged = pu.isLoaded(entity);
+        boolean memberManaged = pu.isLoaded(entity, member);
+        return entityManaged && memberManaged;
+    }
+
     public static <T> T detach(T entity) {
         if (entityManager == null) {
             log.warn("Entity Manager is null. Cloning entity instead of detaching.");

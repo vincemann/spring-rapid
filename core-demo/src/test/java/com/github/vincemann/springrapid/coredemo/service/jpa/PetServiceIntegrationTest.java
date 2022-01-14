@@ -182,8 +182,14 @@ class PetServiceIntegrationTest
         Owner savedKahn = ownerService.save(kahn);
         Pet savedBello = getTestedService().save(bello);
 
-        Pet updatePetsOwner = BeanUtils.clone(savedBello);
-        updatePetsOwner.setOwner(savedKahn);
+        Pet updatePetsOwner = Pet.builder()
+                .name(BELLO)
+                .petType(savedBello.getPetType())
+                .owner(savedKahn)
+                .build();
+        updatePetsOwner.setId(savedBello.getId());
+//        Pet updatePetsOwner = BeanUtils.clone(savedBello);
+//        updatePetsOwner.setOwner(savedKahn);
 
         test(update(updatePetsOwner));
 

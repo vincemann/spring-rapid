@@ -2,10 +2,8 @@ package com.github.vincemann.springrapid.core.config;
 
 import com.github.vincemann.springrapid.core.CoreProperties;
 import com.github.vincemann.springrapid.core.model.RapidSecurityAuditorAware;
-import com.github.vincemann.springrapid.core.service.locator.CrudServiceLocator;
-import com.github.vincemann.springrapid.core.util.EntityUtils;
+import com.github.vincemann.springrapid.core.util.EntityLocator;
 import com.github.vincemann.springrapid.core.util.JpaUtils;
-import com.github.vincemann.springrapid.core.util.LazyLogUtils;
 import com.github.vincemann.springrapid.core.util.Message;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,8 +16,6 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.data.domain.AuditorAware;
 
 import javax.persistence.EntityManager;
-import javax.persistence.EntityManagerFactory;
-import javax.persistence.PersistenceContext;
 
 @Configuration
 @EnableConfigurationProperties
@@ -72,9 +68,9 @@ public class RapidGeneralAutoConfiguration {
     }
 
     @Bean
-    @ConditionalOnMissingBean(EntityUtils.class)
-    public EntityUtils entityUtils(CrudServiceLocator crudServiceLocator){
-        return new EntityUtils(crudServiceLocator);
+    @ConditionalOnMissingBean(EntityLocator.class)
+    public EntityLocator entityLocator(){
+        return new EntityLocator();
     }
 
 //    @Bean

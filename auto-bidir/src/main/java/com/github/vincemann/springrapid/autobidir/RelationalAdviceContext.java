@@ -10,7 +10,7 @@ import lombok.Setter;
 //@AllArgsConstructor
 @Builder
 public class RelationalAdviceContext {
-    public IdentifiableEntity oldEntity;
+    public IdentifiableEntity detachedOldEntity;
     private IdentifiableEntity detachedUpdateEntity;
     private Boolean fullUpdate;
 

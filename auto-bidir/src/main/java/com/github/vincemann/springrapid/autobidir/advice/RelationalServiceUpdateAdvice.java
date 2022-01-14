@@ -6,11 +6,12 @@ import com.github.vincemann.springrapid.core.model.IdentifiableEntity;
 import com.github.vincemann.springrapid.core.service.exception.BadEntityException;
 import com.github.vincemann.springrapid.core.service.exception.EntityNotFoundException;
 import com.github.vincemann.springrapid.core.util.BeanUtils;
-import com.github.vincemann.springrapid.core.util.EntityUtils;
+import com.github.vincemann.springrapid.core.util.EntityLocator;
 import lombok.extern.slf4j.Slf4j;
 import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Before;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
@@ -23,6 +24,7 @@ public class RelationalServiceUpdateAdvice {
 
     @PersistenceContext
     private EntityManager entityManager;
+    private EntityLocator entityLocator;
 
     @Before(value = "com.github.vincemann.springrapid.core.advice.SystemArchitecture.updateOperation() && " +
             "com.github.vincemann.springrapid.core.advice.SystemArchitecture.serviceOperation() && " +
@@ -40,17 +42,22 @@ public class RelationalServiceUpdateAdvice {
             log.debug("ignoring service update advice, bc root service not called yet");
             return;
         }
-        IdentifiableEntity oldEntity = BeanUtils.clone(EntityUtils.findEntity(updateEntity));
-        entityManager.detach(oldEntity);
+        IdentifiableEntity detachedOldEntity = BeanUtils.clone(entityLocator.findEntity(updateEntity));
+        entityManager.detach(detachedOldEntity);
 
         IdentifiableEntity detachedUpdateEntity = BeanUtils.clone(updateEntity);
         entityManager.detach(detachedUpdateEntity);
 
         RelationalAdviceContext updateContext = RelationalAdviceContext.builder()
                 .detachedUpdateEntity(detachedUpdateEntity)
-                .oldEntity(oldEntity)
+                .detachedOldEntity(detachedOldEntity)
                 .fullUpdate(full)
                 .build();
         RelationalAdviceContextHolder.setContext(updateContext);
+    }
+
+    @Autowired
+    public void setEntityLocator(EntityLocator entityLocator) {
+        this.entityLocator = entityLocator;
     }
 }

@@ -3,11 +3,9 @@ package com.github.vincemann.springrapid.autobidir.advice;
 import com.github.vincemann.springrapid.autobidir.RelationalAdviceContext;
 import com.github.vincemann.springrapid.autobidir.RelationalAdviceContextHolder;
 import com.github.vincemann.springrapid.autobidir.RelationalEntityManager;
-import com.github.vincemann.springrapid.autobidir.util.AutoRelationalJpaUtils;
 import com.github.vincemann.springrapid.core.model.IdentifiableEntity;
 import com.github.vincemann.springrapid.core.service.CrudService;
 import com.github.vincemann.springrapid.core.service.exception.BadEntityException;
-import com.github.vincemann.springrapid.core.service.exception.EntityNotFoundException;
 import com.github.vincemann.springrapid.core.service.locator.CrudServiceLocator;
 import lombok.extern.slf4j.Slf4j;
 import org.aspectj.lang.JoinPoint;
@@ -63,9 +61,9 @@ public class RelationalEntityAdvice {
         }else {
             RelationalAdviceContext updateContext = RelationalAdviceContextHolder.getContext();
             if (updateContext.getFullUpdate()){
-                relationalEntityManager.update(updateContext.getOldEntity(), updateEntity);
+                relationalEntityManager.update(updateContext.getDetachedOldEntity(), updateEntity);
             }else {
-                relationalEntityManager.partialUpdate(updateContext.getOldEntity(), updateEntity, updateContext.getDetachedUpdateEntity());
+                relationalEntityManager.partialUpdate(updateContext.getDetachedOldEntity(), updateEntity, updateContext.getDetachedUpdateEntity());
             }
             RelationalAdviceContextHolder.clear();
 //            entityManager.refresh(updateEntity);
