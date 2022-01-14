@@ -103,20 +103,15 @@ public class RapidRelationalEntityManager implements RelationalEntityManager {
 
     @Override
     public <E extends IdentifiableEntity> E update(E oldEntity, E updateEntity) throws EntityNotFoundException, BadEntityException {
-//        E oldEntity = findOldEntity(updateEntity);
         Set<RelationalEntityType> relationalEntityTypes = relationalEntityManagerUtil.inferTypes(updateEntity.getClass());
 
         if (relationalEntityTypes.contains(RelationalEntityType.BiDirParent)) {
             log.debug("applying pre full-update BiDirParent logic for: " + updateEntity.getClass());
             updateBiDirParentRelations(oldEntity, updateEntity);
-            // new children may be detached, so merge them
-            mergeParentsChildren(updateEntity);
         }
         if (relationalEntityTypes.contains(RelationalEntityType.BiDirChild)) {
             log.debug("applying pre full-update BiDirChild logic for: " + updateEntity.getClass());
             updateBiDirChildRelations(oldEntity, updateEntity);
-            // new parents may be detached, so merge them
-            mergeChildrensParents(updateEntity);
         }
 
         return updateEntity;
@@ -176,6 +171,8 @@ public class RapidRelationalEntityManager implements RelationalEntityManager {
         for (IdentifiableEntity addedParent : addedParents) {
             log.debug("update: linking parent: " + addedParent + " to child: " + newChild);
             relationalEntityManagerUtil.linkBiDirChild(addedParent, newChild);
+            // new parents may be detached, so merge them
+            entityManager.merge(addedParent);
         }
     }
 
@@ -234,6 +231,8 @@ public class RapidRelationalEntityManager implements RelationalEntityManager {
         for (IdentifiableEntity addedChild : addedChildren) {
             log.debug("linking child: " + addedChild + " to parent: " + newParent);
             relationalEntityManagerUtil.linkBiDirParent(addedChild, newParent);
+            // new children may be detached, so merge them
+            entityManager.merge(addedChild);
         }
     }
 
