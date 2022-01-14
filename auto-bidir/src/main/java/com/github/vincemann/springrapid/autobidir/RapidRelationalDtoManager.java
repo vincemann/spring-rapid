@@ -95,7 +95,7 @@ public class RapidRelationalDtoManager implements RelationalDtoManager {
 
 
     public Map<Class<IdentifiableEntity>, Collection<Serializable>> findAllUniDirChildIds(Object parent){
-        return findAllEntityIds(parent, UniDirChildEntity.class, UniDirChildCollection.class);
+        return findAllEntityIds(parent, UniDirChildId.class, UniDirChildIdCollection.class);
     }
 
     /**

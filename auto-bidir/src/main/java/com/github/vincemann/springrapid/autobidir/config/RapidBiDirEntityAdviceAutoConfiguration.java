@@ -1,5 +1,8 @@
 package com.github.vincemann.springrapid.autobidir.config;
 
+import com.github.vincemann.springrapid.autobidir.RapidRelationalEntityManager;
+import com.github.vincemann.springrapid.autobidir.RapidRelationalEntityManagerUtil;
+import com.github.vincemann.springrapid.autobidir.RelationalEntityManager;
 import com.github.vincemann.springrapid.autobidir.RelationalEntityManagerUtil;
 import com.github.vincemann.springrapid.autobidir.advice.RelationalEntityAdvice;
 import com.github.vincemann.springrapid.autobidir.advice.RelationalServiceUpdateAdvice;
@@ -41,6 +44,13 @@ public class RapidBiDirEntityAdviceAutoConfiguration  {
     @ConditionalOnMissingBean(RelationalEntityAdvice.class)
     public RelationalEntityAdvice biDirEntityPersistAdvice(){
         return new RelationalEntityAdvice();
+    }
+
+
+    @Bean
+    @ConditionalOnMissingBean(RelationalEntityManager.class)
+    public RelationalEntityManager relationalEntityManager(){
+        return new RapidRelationalEntityManager();
     }
 
 }

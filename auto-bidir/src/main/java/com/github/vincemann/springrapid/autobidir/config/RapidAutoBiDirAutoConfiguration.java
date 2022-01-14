@@ -21,6 +21,7 @@ public class RapidAutoBiDirAutoConfiguration implements CacheManagerCustomizer<C
         cacheManager.setCacheNames(Lists.newArrayList("entityRelationTypes", "dtoRelationTypes", "resolvers"));
     }
 
+    
     // is needed for web and service profiles
     @Bean
     @ConditionalOnMissingBean(RelationalEntityManagerUtil.class)
@@ -28,11 +29,5 @@ public class RapidAutoBiDirAutoConfiguration implements CacheManagerCustomizer<C
         return new RapidRelationalEntityManagerUtil();
     }
 
-
-    @Bean
-    @ConditionalOnMissingBean(RelationalEntityManager.class)
-    public RelationalEntityManager relationalEntityManager(){
-        return new RapidRelationalEntityManager();
-    }
 
 }

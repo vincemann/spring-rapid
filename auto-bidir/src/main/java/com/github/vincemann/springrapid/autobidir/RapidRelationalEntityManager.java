@@ -172,6 +172,7 @@ public class RapidRelationalEntityManager implements RelationalEntityManager {
             log.debug("update: linking parent: " + addedParent + " to child: " + newChild);
             relationalEntityManagerUtil.linkBiDirChild(addedParent, newChild);
             // new parents may be detached, so merge them
+            // todo might only be needed for full update
             entityManager.merge(addedParent);
         }
     }
@@ -232,6 +233,7 @@ public class RapidRelationalEntityManager implements RelationalEntityManager {
             log.debug("linking child: " + addedChild + " to parent: " + newParent);
             relationalEntityManagerUtil.linkBiDirParent(addedChild, newParent);
             // new children may be detached, so merge them
+            // todo might only be needed for full update
             entityManager.merge(addedChild);
         }
     }
