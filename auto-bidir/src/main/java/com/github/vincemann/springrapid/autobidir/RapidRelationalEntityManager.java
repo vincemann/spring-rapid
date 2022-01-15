@@ -89,6 +89,7 @@ public class RapidRelationalEntityManager implements RelationalEntityManager {
 
     @Override
     public <E extends IdentifiableEntity> E partialUpdate(E oldEntity, E updateEntity, E partialUpdateEntity) throws EntityNotFoundException, BadEntityException {
+        // only operate on non null fields of partialUpdateEntity
         Set<RelationalEntityType> relationalEntityTypes = relationalEntityManagerUtil.inferTypes(updateEntity.getClass());
         if (relationalEntityTypes.contains(RelationalEntityType.BiDirParent)) {
             log.debug("applying pre partial-update BiDirParent logic for: " + updateEntity.getClass());
@@ -164,17 +165,17 @@ public class RapidRelationalEntityManager implements RelationalEntityManager {
         for (IdentifiableEntity removedParent : removedParents) {
             log.debug("update: unlinking parent: " + removedParent + " from child: " + newChild);
 //            relationalEntityManagerUtil.unlinkBiDirChild(removedParent, oldChild);
-            relationalEntityManagerUtil.unlinkBiDirChild(removedParent, newChild);
+            relationalEntityManagerUtil.unlinkBiDirChild(removedParent, newChild);  // somehow does not make a difference but makes more sense like that imo
         }
 
         // link added Parent to child
         for (IdentifiableEntity addedParent : addedParents) {
             log.debug("update: linking parent: " + addedParent + " to child: " + newChild);
             relationalEntityManagerUtil.linkBiDirChild(addedParent, newChild);
-            // new parents may be detached, so merge them
-            // todo might only be needed for full update
+            // new parents may be detached, so merge them, must happen after linking!
             entityManager.merge(addedParent);
         }
+//        entityManager.merge(newChild); wont do no harm, maybe needed if newChild is detached?
     }
 
     public void updateBiDirParentRelations(IdentifiableEntity oldParent, IdentifiableEntity newParent) throws BadEntityException, EntityNotFoundException {
@@ -225,17 +226,17 @@ public class RapidRelationalEntityManager implements RelationalEntityManager {
         for (IdentifiableEntity removedChild : removedChildren) {
             log.debug("unlinking child: " + removedChild + " from parent: " + newParent);
 //            relationalEntityManagerUtil.unlinkBiDirParent(removedChild, oldParent);
-            relationalEntityManagerUtil.unlinkBiDirParent(removedChild, newParent);
+            relationalEntityManagerUtil.unlinkBiDirParent(removedChild, newParent); // somehow does not make a difference but makes more sense like that imo
         }
 
         //link added Children to newParent
         for (IdentifiableEntity addedChild : addedChildren) {
             log.debug("linking child: " + addedChild + " to parent: " + newParent);
             relationalEntityManagerUtil.linkBiDirParent(addedChild, newParent);
-            // new children may be detached, so merge them
-            // todo might only be needed for full update
             entityManager.merge(addedChild);
+            // new children may be detached, so merge them , must happen after linking!
         }
+//        entityManager.merge(newParent); wont do no harm, maybe needed if newChild is detached?
     }
 
     protected <E> void adjustUpdatedEntities(List<E> added, List<E> removed) {
@@ -307,7 +308,7 @@ public class RapidRelationalEntityManager implements RelationalEntityManager {
 //            relationalEntityManagerUtil.linkBiDirChild(parent,biDirChild);
 //        }
 //    }
-
+//
 //    private void replaceChildrensParentRef(IdentifiableEntity biDirParent) {
 //        //set backreferences
 //

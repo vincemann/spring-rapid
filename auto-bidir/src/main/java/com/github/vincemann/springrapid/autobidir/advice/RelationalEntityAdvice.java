@@ -54,15 +54,15 @@ public class RelationalEntityAdvice {
             "com.github.vincemann.springrapid.core.advice.SystemArchitecture.repoOperation() && " +
             "args(updateEntity)")
     public IdentifiableEntity prePersistEntity(ProceedingJoinPoint joinPoint, IdentifiableEntity updateEntity) throws Throwable {
-        if (updateEntity.getId() == null){
+        if (updateEntity.getId() == null) {
             relationalEntityManager.save(updateEntity);
             RelationalAdviceContextHolder.clear();
             return (IdentifiableEntity) joinPoint.proceed(new IdentifiableEntity[]{updateEntity});
-        }else {
+        } else {
             RelationalAdviceContext updateContext = RelationalAdviceContextHolder.getContext();
-            if (updateContext.getFullUpdate()){
+            if (updateContext.getFullUpdate()) {
                 relationalEntityManager.update(updateContext.getDetachedOldEntity(), updateEntity);
-            }else {
+            } else {
                 relationalEntityManager.partialUpdate(updateContext.getDetachedOldEntity(), updateEntity, updateContext.getDetachedUpdateEntity());
             }
             RelationalAdviceContextHolder.clear();
@@ -71,7 +71,6 @@ public class RelationalEntityAdvice {
 
 //            boolean managed = entityManager.contains(updateEntity);
 //            if (!managed){
-//                // todo around advice, um das hier schlauer umzusetzen
 //                IdentifiableEntity merged = entityManager.merge(updateEntity);
 //                boolean managed2 = entityManager.contains(merged);
 ////                entityManager.persist(merged);
