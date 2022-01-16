@@ -145,6 +145,7 @@ public abstract class GenericCrudController
         log.debug("patchString: " + patchString);
         ID id = fetchId(request);
         //user does also need read permission if he wants to update user, so i can check read permission here instead of using raw service
+        // i indirectly check if by using secured service.findById
         Optional<E> savedOptional = getService().findById(id);
         VerifyEntity.isPresent(savedOptional, id, getEntityClass());
         E saved = savedOptional.get();
