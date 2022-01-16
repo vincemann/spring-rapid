@@ -66,17 +66,11 @@ public class RapidRelationalEntityManager implements RelationalEntityManager {
         Set<RelationalEntityType> relationalEntityTypes = relationalEntityManagerUtil.inferTypes(updateEntity.getClass());
         if (relationalEntityTypes.contains(RelationalEntityType.BiDirParent)) {
             log.debug("applying pre partial-update BiDirParent logic for: " + updateEntity.getClass());
-            List<IdentifiableEntity> addedChildren = updateBiDirParentRelations(oldEntity, updateEntity);
-            replaceChildrensParentRefAndMerge(updateEntity);
-//            updateAddedChildren(updateEntity,addedChildren);
-//            mergeParentsChildren(updateEntity);
+            updateBiDirParentRelations(oldEntity, updateEntity);
         }
         if (relationalEntityTypes.contains(RelationalEntityType.BiDirChild)) {
             log.debug("applying pre partial-update BiDirChild logic for: " + updateEntity.getClass());
-            List<IdentifiableEntity> addedParents = updateBiDirChildRelations(oldEntity, updateEntity);
-            replaceParentsChildRefAndMerge(updateEntity);
-//            updateAddedParents(updateEntity,addedParents);
-//            mergeChildrensParents(updateEntity);
+            updateBiDirChildRelations(oldEntity, updateEntity);
         }
         return updateEntity;
     }
@@ -88,23 +82,16 @@ public class RapidRelationalEntityManager implements RelationalEntityManager {
         if (relationalEntityTypes.contains(RelationalEntityType.BiDirParent)) {
             log.debug("applying pre full-update BiDirParent logic for: " + updateEntity.getClass());
             updateBiDirParentRelations(oldEntity, updateEntity);
-            // todo er will die added children resp. added parents noch mal von der bereits gelinketen entity frisch haben
-            // versuch an ein set der added parents/children zu kommen und nur über die zu iterieren
-            replaceChildrensParentRefAndMerge(updateEntity);
-//            mergeParentsChildren(updateEntity);
-
         }
         if (relationalEntityTypes.contains(RelationalEntityType.BiDirChild)) {
             log.debug("applying pre full-update BiDirChild logic for: " + updateEntity.getClass());
             updateBiDirChildRelations(oldEntity, updateEntity);
-            replaceParentsChildRefAndMerge(updateEntity);
-//            mergeChildrensParents(updateEntity);
         }
 
         return updateEntity;
     }
 
-    public List<IdentifiableEntity> updateBiDirChildRelations(IdentifiableEntity oldChild, IdentifiableEntity child) throws BadEntityException, EntityNotFoundException {
+    public Collection<IdentifiableEntity> updateBiDirChildRelations(IdentifiableEntity oldChild, IdentifiableEntity child) throws BadEntityException, EntityNotFoundException {
 
         Collection<IdentifiableEntity> oldParents = relationalEntityManagerUtil.findAllBiDirParents(oldChild);
         Collection<IdentifiableEntity> newParents = relationalEntityManagerUtil.findAllBiDirParents(child);
@@ -122,6 +109,9 @@ public class RapidRelationalEntityManager implements RelationalEntityManager {
         for (IdentifiableEntity newParent : newParents) {
             if (!oldParents.contains(newParent)) {
                 addedParents.add(newParent);
+            }else {
+                // all parents need to be merged, non added children can be merged here already
+                entityManager.merge(newParent);
             }
         }
 
@@ -139,17 +129,17 @@ public class RapidRelationalEntityManager implements RelationalEntityManager {
             log.debug("update: linking parent: " + addedParent + " to child: " + child);
             relationalEntityManagerUtil.linkBiDirChild(addedParent, child);
             // new parents may be detached, so merge them, must happen after linking!
-//            entityManager.merge(addedParent);
+            entityManager.merge(addedParent);
         }
 //        entityManager.merge(child); wont do no harm, maybe needed if child is detached?
-        return addedParents;
+        return newParents;
     }
 
-    public List<IdentifiableEntity> updateBiDirParentRelations(IdentifiableEntity oldParent, IdentifiableEntity parent) throws BadEntityException, EntityNotFoundException {
+    public Collection<IdentifiableEntity> updateBiDirParentRelations(IdentifiableEntity oldParent, IdentifiableEntity parent) throws BadEntityException, EntityNotFoundException {
 
         Collection<IdentifiableEntity> oldChildren = relationalEntityManagerUtil.findAllBiDirChildren(oldParent);
         Collection<IdentifiableEntity> newChildren = relationalEntityManagerUtil.findAllBiDirChildren(parent);
-
+        
         //find Children to unlink
         List<IdentifiableEntity> removedChildren = new ArrayList<>();
         for (IdentifiableEntity oldChild : oldChildren) {
@@ -163,6 +153,9 @@ public class RapidRelationalEntityManager implements RelationalEntityManager {
         for (IdentifiableEntity newChild : newChildren) {
             if (!oldChildren.contains(newChild)) {
                 addedChildren.add(newChild);
+            }else {
+                // all children need to be merged, non added children can be merged here already
+                entityManager.merge(newChild);
             }
         }
 
@@ -178,11 +171,12 @@ public class RapidRelationalEntityManager implements RelationalEntityManager {
         //link added Children to parent
         for (IdentifiableEntity addedChild : addedChildren) {
             log.debug("linking child: " + addedChild + " to parent: " + parent);
+            // illness gets set of pets updated, illness = child
             relationalEntityManagerUtil.linkBiDirParent(addedChild, parent);
             // new children may be detached, so merge them , must happen after linking!
-//            entityManager.merge(addedChild);
+            entityManager.merge(addedChild);
         }
-        return addedChildren;
+        return newChildren;
 //        entityManager.merge(parent); wont do no harm, maybe needed if newChild is detached?
     }
 
@@ -203,39 +197,45 @@ public class RapidRelationalEntityManager implements RelationalEntityManager {
 //            entityManager.merge(child);
 //        }
 //    }
+//
+//    private void replaceParentsChildRefAndMerge(IdentifiableEntity child) {
+//        //set backreferences
+//
+//        for (IdentifiableEntity parent : relationalEntityManagerUtil.findAllBiDirParents(child)) {
+//            relationalEntityManagerUtil.linkBiDirChild(parent,child);
+//            entityManager.merge(parent);
+//        }
+//    }
+//
+//    private void replaceChildrensParentRefAndMerge(IdentifiableEntity parent) {
+//        //set backreferences
+//        for (IdentifiableEntity child : relationalEntityManagerUtil.findAllBiDirChildren(parent)) {
+//            relationalEntityManagerUtil.linkBiDirParent(child,parent);
+//            entityManager.merge(child);
+//        }
+//    }
 
-    private void replaceParentsChildRefAndMerge(IdentifiableEntity biDirChild) {
-        //set backreferences
-
-        for (IdentifiableEntity parent : relationalEntityManagerUtil.findAllBiDirParents(biDirChild)) {
-            relationalEntityManagerUtil.linkBiDirChild(parent,biDirChild);
-            entityManager.merge(parent);
-        }
-    }
-
-    private void replaceChildrensParentRefAndMerge(IdentifiableEntity biDirParent) {
-        //set backreferences
-        for (IdentifiableEntity child : relationalEntityManagerUtil.findAllBiDirChildren(biDirParent)) {
-            relationalEntityManagerUtil.linkBiDirParent(child,biDirParent);
-            entityManager.merge(child);
-        }
-    }
-
-    private void updateAddedChildren(IdentifiableEntity parent, List<IdentifiableEntity> addedChildren) {
-        //set backreferences
-        for (IdentifiableEntity child : addedChildren) {
-            relationalEntityManagerUtil.linkBiDirParent(child,parent);
-            entityManager.merge(child);
-        }
-    }
-
-    private void updateAddedParents(IdentifiableEntity child, List<IdentifiableEntity> addedParents) {
-        //set backreferences
-        for (IdentifiableEntity parent : addedParents) {
-            relationalEntityManagerUtil.linkBiDirChild(parent,child);
-            entityManager.merge(parent);
-        }
-    }
+//    private void updateAddedChildren(IdentifiableEntity parent, List<IdentifiableEntity> addedChildren) {
+////        for (IdentifiableEntity child : relationalEntityManagerUtil.findAllBiDirChildren(parent)) {
+////            System.err.println(child);
+////        }
+//
+//        //set backreferences
+//        for (IdentifiableEntity child : addedChildren) {
+//            System.err.println(child);
+//            relationalEntityManagerUtil.linkBiDirParent(child,parent);
+//            entityManager.merge(child);
+//        }
+//    }
+//
+//    private void updateAddedParents(IdentifiableEntity child, List<IdentifiableEntity> addedParents) {
+//        //set backreferences
+//        for (IdentifiableEntity parent : addedParents) {
+//            System.err.println(parent);
+//            relationalEntityManagerUtil.linkBiDirChild(parent,child);
+//            entityManager.merge(parent);
+//        }
+//    }
 
 
 //    private void linkChildrensParent(IdentifiableEntity biDirParent) {
