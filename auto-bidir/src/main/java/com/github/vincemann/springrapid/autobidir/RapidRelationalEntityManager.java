@@ -21,7 +21,7 @@ public class RapidRelationalEntityManager implements RelationalEntityManager {
     private EntityManager entityManager;
 
     @Override
-    public <E extends IdentifiableEntity> E save(E entity) {
+    public <E extends IdentifiableEntity> E save(E entity, String... membersToCheck) {
         if (entity.getId() != null) {
             throw new IllegalArgumentException("save needs null id");
         }
@@ -46,7 +46,7 @@ public class RapidRelationalEntityManager implements RelationalEntityManager {
     }
 
     @Override
-    public void remove(IdentifiableEntity entity) throws EntityNotFoundException, BadEntityException {
+    public void remove(IdentifiableEntity entity, String... membersToCheck) throws EntityNotFoundException, BadEntityException {
         Set<RelationalEntityType> relationalEntityTypes = relationalEntityManagerUtil.inferTypes(entity.getClass());
 
         if (relationalEntityTypes.contains(RelationalEntityType.BiDirParent)) {
@@ -61,7 +61,7 @@ public class RapidRelationalEntityManager implements RelationalEntityManager {
 
 
     @Override
-    public <E extends IdentifiableEntity> E partialUpdate(E oldEntity, E updateEntity, E partialUpdateEntity) throws EntityNotFoundException, BadEntityException {
+    public <E extends IdentifiableEntity> E partialUpdate(E oldEntity, E updateEntity, E partialUpdateEntity, String... membersToCheck) throws EntityNotFoundException, BadEntityException {
         // only operate on non null fields of partialUpdateEntity
         Set<RelationalEntityType> relationalEntityTypes = relationalEntityManagerUtil.inferTypes(updateEntity.getClass());
         if (relationalEntityTypes.contains(RelationalEntityType.BiDirParent)) {
@@ -76,7 +76,7 @@ public class RapidRelationalEntityManager implements RelationalEntityManager {
     }
 
     @Override
-    public <E extends IdentifiableEntity> E update(E oldEntity, E updateEntity) throws EntityNotFoundException, BadEntityException {
+    public <E extends IdentifiableEntity> E update(E oldEntity, E updateEntity, String... membersToCheck) throws EntityNotFoundException, BadEntityException {
         Set<RelationalEntityType> relationalEntityTypes = relationalEntityManagerUtil.inferTypes(updateEntity.getClass());
 
         if (relationalEntityTypes.contains(RelationalEntityType.BiDirParent)) {
@@ -91,7 +91,7 @@ public class RapidRelationalEntityManager implements RelationalEntityManager {
         return updateEntity;
     }
 
-    public Collection<IdentifiableEntity> updateBiDirChildRelations(IdentifiableEntity oldChild, IdentifiableEntity child) throws BadEntityException, EntityNotFoundException {
+    public Collection<IdentifiableEntity> updateBiDirChildRelations(IdentifiableEntity oldChild, IdentifiableEntity child, String... membersToCheck) throws BadEntityException, EntityNotFoundException {
 
         Collection<IdentifiableEntity> oldParents = relationalEntityManagerUtil.findAllBiDirParents(oldChild);
         Collection<IdentifiableEntity> newParents = relationalEntityManagerUtil.findAllBiDirParents(child);
@@ -135,11 +135,11 @@ public class RapidRelationalEntityManager implements RelationalEntityManager {
         return newParents;
     }
 
-    public Collection<IdentifiableEntity> updateBiDirParentRelations(IdentifiableEntity oldParent, IdentifiableEntity parent) throws BadEntityException, EntityNotFoundException {
+    public Collection<IdentifiableEntity> updateBiDirParentRelations(IdentifiableEntity oldParent, IdentifiableEntity parent, String... membersToCheck) throws BadEntityException, EntityNotFoundException {
 
         Collection<IdentifiableEntity> oldChildren = relationalEntityManagerUtil.findAllBiDirChildren(oldParent);
         Collection<IdentifiableEntity> newChildren = relationalEntityManagerUtil.findAllBiDirChildren(parent);
-        
+
         //find Children to unlink
         List<IdentifiableEntity> removedChildren = new ArrayList<>();
         for (IdentifiableEntity oldChild : oldChildren) {

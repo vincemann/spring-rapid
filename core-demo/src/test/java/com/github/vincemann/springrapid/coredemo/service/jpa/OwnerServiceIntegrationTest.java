@@ -448,5 +448,10 @@ class OwnerServiceIntegrationTest
         Assertions.assertNull(dbBello.getOwner());
     }
 
+    @Test
+    public void canPartialUpdateOwnersPetsAndLazyExceptionItems_wontLoadOtherLazyCollections(){
+
+    }
+
 
 }

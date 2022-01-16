@@ -15,6 +15,7 @@ import com.github.vincemann.springrapid.autobidir.util.CollectionUtils;
 import com.github.vincemann.springrapid.autobidir.util.EntityAnnotationUtils;
 import com.github.vincemann.springrapid.autobidir.util.EntityReflectionUtils;
 import com.github.vincemann.springrapid.core.service.locator.CrudServiceLocator;
+import com.google.common.collect.Sets;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.cache.annotation.Cacheable;
 
@@ -79,15 +80,6 @@ public class RapidRelationalEntityManagerUtil implements RelationalEntityManager
         for (IdentifiableEntity parent : findAllBiDirParents(biDirChild)) {
             linkBiDirChild(parent,biDirChild);
         }
-//        Collection<Collection<IdentifiableEntity>> parentCollections = findBiDirParentCollections(biDirChild).values();
-//        for (Collection<IdentifiableEntity> parentCollection : parentCollections) {
-//            for (IdentifiableEntity biDirParent : parentCollection) {
-//                linkBiDirChild(biDirParent,biDirChild);
-//            }
-//        }
-//        for (IdentifiableEntity parent : findSingleBiDirParents(biDirChild)) {
-//            linkBiDirChild(parent,biDirChild);
-//        }
     }
 
 
@@ -96,22 +88,22 @@ public class RapidRelationalEntityManagerUtil implements RelationalEntityManager
      * mapped to the Type of the Entities in the Collection.
      * @return
      */
-    public Map<Class<IdentifiableEntity>,Collection<IdentifiableEntity>> findBiDirParentCollections(IdentifiableEntity child){
+    public Map<Class<IdentifiableEntity>,Collection<IdentifiableEntity>> findBiDirParentCollections(IdentifiableEntity child, String... membersToCheck){
         assertEntityRelationType(child, RelationalEntityType.BiDirChild);
-        return findEntityCollections(child,BiDirParentCollection.class);
+        return findEntityCollections(child,BiDirParentCollection.class,membersToCheck);
     }
     /**
      *
      * @return  all parent of this, that are not null
      */
-    public Collection<IdentifiableEntity> findSingleBiDirParents(IdentifiableEntity child) {
+    public Collection<IdentifiableEntity> findSingleBiDirParents(IdentifiableEntity child, String... membersToCheck) {
         assertEntityRelationType(child, RelationalEntityType.BiDirChild);
-        return findSingleEntities(child,BiDirParentEntity.class);
+        return findSingleEntities(child,BiDirParentEntity.class,membersToCheck);
     }
 
-    public Collection<IdentifiableEntity> findAllBiDirParents(IdentifiableEntity child) {
+    public Collection<IdentifiableEntity> findAllBiDirParents(IdentifiableEntity child, String... membersToCheck) {
         assertEntityRelationType(child, RelationalEntityType.BiDirChild);
-        return findAllEntities(child,BiDirParentEntity.class,BiDirParentCollection.class);
+        return findAllEntities(child,BiDirParentEntity.class,BiDirParentCollection.class,membersToCheck);
     }
 
 
@@ -164,16 +156,6 @@ public class RapidRelationalEntityManagerUtil implements RelationalEntityManager
         for (IdentifiableEntity parent : findAllBiDirParents(child)) {
             unlinkBiDirChild(parent,child);
         }
-//        for(IdentifiableEntity parent: findSingleBiDirParents(child)){
-//            unlinkBiDirChild(parent,child);
-//        }
-//        for(Map.Entry<Class<IdentifiableEntity>,Collection<IdentifiableEntity>> entry: findBiDirParentCollections(child).entrySet()){
-//            Collection<IdentifiableEntity> parentCollection = entry.getValue();
-//            for(IdentifiableEntity parent: parentCollection){
-//                unlinkBiDirChild(parent,child);
-//            }
-//            parentCollection.clear();
-//        }
     }
 
 
@@ -191,17 +173,6 @@ public class RapidRelationalEntityManagerUtil implements RelationalEntityManager
         for (IdentifiableEntity child : findAllBiDirChildren(parent)) {
             linkBiDirParent(child, parent);
         }
-
-//        Set<? extends IdentifiableEntity> children = findSingleBiDirChildren(parent);
-//        for (IdentifiableEntity child : children) {
-//            linkBiDirParent(child, parent);
-//        }
-//        Collection<Collection<IdentifiableEntity>> childCollections = findBiDirChildCollections(parent).values();
-//        for (Collection<IdentifiableEntity> childCollection : childCollections) {
-//            for (IdentifiableEntity child : childCollection) {
-//                linkBiDirParent(child, parent);
-//            }
-//        }
     }
 
     /**
@@ -209,23 +180,23 @@ public class RapidRelationalEntityManagerUtil implements RelationalEntityManager
      * mapped to the Type of the Entities in the Collection.
      * @return
      */
-    public Map<Class<IdentifiableEntity>,Collection<IdentifiableEntity>> findBiDirChildCollections(IdentifiableEntity parent){
+    public Map<Class<IdentifiableEntity>,Collection<IdentifiableEntity>> findBiDirChildCollections(IdentifiableEntity parent, String... membersToCheck){
         assertEntityRelationType(parent, RelationalEntityType.BiDirParent);
-        return findEntityCollections(parent,BiDirChildCollection.class);
+        return findEntityCollections(parent,BiDirChildCollection.class,membersToCheck);
     }
 
     /**
      * Find the single BiDirChildren (all fields of this parent annotated with {@link BiDirChildEntity} and not null.
      * @return
      */
-    public Set<IdentifiableEntity> findSingleBiDirChildren(IdentifiableEntity parent){
+    public Set<IdentifiableEntity> findSingleBiDirChildren(IdentifiableEntity parent, String... membersToCheck){
         assertEntityRelationType(parent, RelationalEntityType.BiDirParent);
-        return findSingleEntities(parent, BiDirChildEntity.class);
+        return findSingleEntities(parent, BiDirChildEntity.class,membersToCheck);
     }
 
-    public Collection<IdentifiableEntity> findAllBiDirChildren(IdentifiableEntity parent) {
+    public Collection<IdentifiableEntity> findAllBiDirChildren(IdentifiableEntity parent, String... membersToCheck) {
         assertEntityRelationType(parent, RelationalEntityType.BiDirParent);
-        return findAllEntities(parent,BiDirChildEntity.class,BiDirChildCollection.class);
+        return findAllEntities(parent,BiDirChildEntity.class,BiDirChildCollection.class,membersToCheck);
     }
 
     /**
@@ -266,16 +237,6 @@ public class RapidRelationalEntityManagerUtil implements RelationalEntityManager
             unlinkBiDirParent(child,parent);
         }
 
-//        for(IdentifiableEntity child: findSingleBiDirChildren(parent)){
-//            unlinkBiDirParent(child,parent);
-//        }
-//        for(Map.Entry<Class<IdentifiableEntity>,Collection<IdentifiableEntity>> entry: findBiDirChildCollections(parent).entrySet()){
-//            Collection<IdentifiableEntity> childrenCollection = entry.getValue();
-//            for(IdentifiableEntity child: childrenCollection){
-//                unlinkBiDirParent(child,parent);
-//            }
-//            childrenCollection.clear();
-//        }
     }
 
 
@@ -292,22 +253,22 @@ public class RapidRelationalEntityManagerUtil implements RelationalEntityManager
      *
      * @return
      */
-    public Map<Class<IdentifiableEntity>,Collection<IdentifiableEntity>> findUniDirChildCollections(IdentifiableEntity parent)  {
+    public Map<Class<IdentifiableEntity>,Collection<IdentifiableEntity>> findUniDirChildCollections(IdentifiableEntity parent, String... membersToCheck)  {
         assertEntityRelationType(parent, RelationalEntityType.UniDirParent);
-        return findEntityCollections(parent,UniDirChildCollection.class);
+        return findEntityCollections(parent,UniDirChildCollection.class,membersToCheck);
     }
     /**
      * Find the single UniDirChildren (all fields of this parent annotated with {@link UniDirChildEntity} and not null.
      * @return
      */
-    public Set<IdentifiableEntity> findSingleUniDirChildren(IdentifiableEntity parent) {
+    public Set<IdentifiableEntity> findSingleUniDirChildren(IdentifiableEntity parent, String... membersToCheck) {
         assertEntityRelationType(parent, RelationalEntityType.UniDirParent);
-        return findSingleEntities(parent,UniDirChildEntity.class);
+        return findSingleEntities(parent,UniDirChildEntity.class,membersToCheck);
     }
 
-    public Collection<IdentifiableEntity> findAllUniDirChildren(IdentifiableEntity child) {
+    public Collection<IdentifiableEntity> findAllUniDirChildren(IdentifiableEntity child, String... membersToCheck) {
         assertEntityRelationType(child, RelationalEntityType.UniDirParent);
-        return findAllEntities(child,UniDirChildEntity.class,UniDirChildCollection.class);
+        return findAllEntities(child,UniDirChildEntity.class,UniDirChildCollection.class,membersToCheck);
     }
 
     /**
@@ -349,9 +310,9 @@ public class RapidRelationalEntityManagerUtil implements RelationalEntityManager
 
 
 
-    protected<C> Set<C> findSingleEntities(IdentifiableEntity<?> entity, Class<? extends Annotation> annotationClass){
+    protected<C> Set<C> findSingleEntities(IdentifiableEntity<?> entity, Class<? extends Annotation> annotationClass, String... membersToCheck){
         Set<C> entities = new HashSet<>();
-        EntityReflectionUtils.doWithAnnotatedFields(annotationClass,entity.getClass(), field -> {
+        EntityReflectionUtils.doWithAnnotatedNamedFields(annotationClass,entity.getClass(),Sets.newHashSet(membersToCheck), field -> {
             C foundEntity = (C) field.get(entity);
             if(foundEntity == null){
                 //skip
@@ -368,9 +329,9 @@ public class RapidRelationalEntityManagerUtil implements RelationalEntityManager
      *
      * @return
      */
-    protected<C> Map<Class<C>,Collection<C>>  findEntityCollections(IdentifiableEntity entity, Class<? extends Annotation> entityAnnotationClass) {
+    protected<C> Map<Class<C>,Collection<C>>  findEntityCollections(IdentifiableEntity entity, Class<? extends Annotation> entityAnnotationClass, String... membersToCheck) {
         Map<Class<C>,Collection<C>> entityType_collectionMap = new HashMap<>();
-        EntityReflectionUtils.doWithAnnotatedFields(entityAnnotationClass, entity.getClass(), field -> {
+        EntityReflectionUtils.doWithAnnotatedNamedFields(entityAnnotationClass, entity.getClass(), Sets.newHashSet(membersToCheck), field -> {
             Collection<C> entityCollection = (Collection<C>) field.get(entity);
             if (entityCollection == null) {
                 //throw new IllegalArgumentException("Null idCollection found in BiDirParent "+ this + " for EntityCollectionField with name: " + field.getName());
@@ -385,15 +346,17 @@ public class RapidRelationalEntityManagerUtil implements RelationalEntityManager
         return entityType_collectionMap;
     }
 
-    public Collection<IdentifiableEntity> findAllEntities(IdentifiableEntity entity, Class<? extends Annotation> singleEntityAnnotation, Class<? extends Annotation> collectionEntityAnnotation) {
+
+    public Collection<IdentifiableEntity> findAllEntities(IdentifiableEntity entity, Class<? extends Annotation> singleEntityAnnotation, Class<? extends Annotation> collectionEntityAnnotation, String... membersToCheck) {
         Set<IdentifiableEntity> relatedEntities = new HashSet<>();
-        relatedEntities.addAll(findSingleEntities(entity, singleEntityAnnotation));
-        Map<Class<IdentifiableEntity>, Collection<IdentifiableEntity>> biDirParentCollections = findEntityCollections(entity,collectionEntityAnnotation);
+        relatedEntities.addAll(findSingleEntities(entity, singleEntityAnnotation,membersToCheck));
+        Map<Class<IdentifiableEntity>, Collection<IdentifiableEntity>> biDirParentCollections = findEntityCollections(entity,collectionEntityAnnotation,membersToCheck);
         for (Collection<IdentifiableEntity> relatedEntityCollections : biDirParentCollections.values()) {
             relatedEntities.addAll(relatedEntityCollections);
         }
         return relatedEntities;
     }
+
 
 
     protected void linkEntity(IdentifiableEntity<?> entity, IdentifiableEntity newEntity, Class<? extends Annotation> entityAnnotationClass, Class<? extends Annotation> entityCollectionAnnotationClass) throws UnknownEntityTypeException {

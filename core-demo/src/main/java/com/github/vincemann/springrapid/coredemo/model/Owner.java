@@ -41,7 +41,6 @@ public class Owner extends Person {
     }
 
     // dont use remove cascade to showcase unlink on remove owner,
-    // persist cascade results in detached entity passed to persist errors, when saving pet?
     @OneToMany(cascade = {PERSIST, MERGE, REFRESH, DETACH}, mappedBy = "owner",fetch = FetchType.EAGER)
     @JsonManagedReference
     @BiDirChildCollection(Pet.class)
@@ -77,17 +76,17 @@ public class Owner extends Person {
     private String telephone;
 
 
-
     @Override
     public String toString() {
         return "Owner{" +
-//                super.toString() +
                 "pets=" + Arrays.toString(pets.stream().map(Pet::getName).toArray()) +
-                ", hobbies='"+hobbies+"'" +
+                ", clinicCard=" + clinicCard +
+                ", hobbies=" + hobbies +
+                ", lazyExceptionItems=" + lazyExceptionItems +
+                ", lazyLoadedItems=" + lazyLoadedItems +
                 ", address='" + address + '\'' +
                 ", city='" + city + '\'' +
                 ", telephone='" + telephone + '\'' +
                 '}';
     }
-
 }

@@ -5,6 +5,7 @@ import org.springframework.data.util.ReflectionUtils;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
+import java.util.Set;
 
 import static com.github.vincemann.springrapid.autobidir.util.EntityIdAnnotationUtils.getEntityType;
 
@@ -46,6 +47,14 @@ public class EntityReflectionUtils {
             fieldCallback.doWith(field);
         },new ReflectionUtils.AnnotationFieldFilter(annotationType));
     }
+
+    public static void doWithAnnotatedNamedFields(Class<? extends Annotation> annotationType, Class clazz, Set<String> names, org.springframework.util.ReflectionUtils.FieldCallback fieldCallback){
+        org.springframework.util.ReflectionUtils.doWithFields(clazz,field -> {
+            org.springframework.util.ReflectionUtils.makeAccessible(field);
+            fieldCallback.doWith(field);
+        },new AnnotationNamedFieldFilter(annotationType,names));
+    }
+
 
     public static void doWithAnnotatedFieldsOfType(Class<?> fieldType, Class<? extends Annotation> annotationType, Class clazz, org.springframework.util.ReflectionUtils.FieldCallback fieldCallback){
         org.springframework.util.ReflectionUtils.doWithFields(clazz,field -> {

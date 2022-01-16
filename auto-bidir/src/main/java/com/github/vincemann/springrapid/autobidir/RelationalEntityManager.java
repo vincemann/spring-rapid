@@ -6,11 +6,12 @@ import com.github.vincemann.springrapid.core.service.exception.EntityNotFoundExc
 
 public interface RelationalEntityManager {
 
-    public <E extends IdentifiableEntity> E save(E entity);
-    public void remove(IdentifiableEntity entity) throws EntityNotFoundException, BadEntityException;
+    public <E extends IdentifiableEntity> E save(E entity, String... membersToCheck);
 
-    <E extends IdentifiableEntity> E partialUpdate(E oldEntity, E updateEntity, E partialUpdateEntity) throws EntityNotFoundException, BadEntityException;
+    public void remove(IdentifiableEntity entity, String... membersToCheck) throws EntityNotFoundException, BadEntityException;
 
-    public <E extends IdentifiableEntity> E update(E oldEntity, E updateEntity) throws EntityNotFoundException, BadEntityException;
+    <E extends IdentifiableEntity> E partialUpdate(E oldEntity, E updateEntity, E partialUpdateEntity, String... membersToCheck) throws EntityNotFoundException, BadEntityException;
+
+    public <E extends IdentifiableEntity> E update(E oldEntity, E updateEntity, String... membersToCheck) throws EntityNotFoundException, BadEntityException;
 
 }

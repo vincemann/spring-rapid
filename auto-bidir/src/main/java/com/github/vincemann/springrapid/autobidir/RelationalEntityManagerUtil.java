@@ -14,6 +14,7 @@ public interface RelationalEntityManagerUtil {
     public Map<Class<IdentifiableEntity>,Collection<IdentifiableEntity>> findBiDirParentCollections(IdentifiableEntity child);
     public Collection<IdentifiableEntity> findSingleBiDirParents(IdentifiableEntity child);
     public Collection<IdentifiableEntity> findAllBiDirParents(IdentifiableEntity child);
+    public Collection<IdentifiableEntity> findAllBiDirParents(IdentifiableEntity child, String... membersToCheck);
 
     public void linkBiDirParent(IdentifiableEntity child, IdentifiableEntity parentToSet);
     public void unlinkBiDirParent(IdentifiableEntity child, IdentifiableEntity parentToDelete);
@@ -25,6 +26,7 @@ public interface RelationalEntityManagerUtil {
     public Map<Class<IdentifiableEntity>,Collection<IdentifiableEntity>> findBiDirChildCollections(IdentifiableEntity parent);
     public Set<IdentifiableEntity> findSingleBiDirChildren(IdentifiableEntity parent);
     public Collection<IdentifiableEntity> findAllBiDirChildren(IdentifiableEntity parent);
+    public Collection<IdentifiableEntity> findAllBiDirChildren(IdentifiableEntity parent, String... membersToCheck);
 
     public void linkBiDirChild(IdentifiableEntity parent, IdentifiableEntity newChild);
     public void unlinkBiDirChild(IdentifiableEntity parent, IdentifiableEntity biDirChildToRemove);
@@ -35,6 +37,8 @@ public interface RelationalEntityManagerUtil {
     public Map<Class<IdentifiableEntity>,Collection<IdentifiableEntity>> findUniDirChildCollections(IdentifiableEntity parent);
     public Set<IdentifiableEntity> findSingleUniDirChildren(IdentifiableEntity parent);
     public Collection<IdentifiableEntity> findAllUniDirChildren(IdentifiableEntity child);
+    public Collection<IdentifiableEntity> findAllUniDirChildren(IdentifiableEntity child, String... membersToCheck);
+
     public void linkUniDirChild(IdentifiableEntity parent,IdentifiableEntity newChild);
     public void unlinkUniDirChild(IdentifiableEntity parent, IdentifiableEntity toRemove);
 }
