@@ -32,15 +32,14 @@ public class RapidRelationalEntityManager implements RelationalEntityManager {
             // with the right class
 //            entity = BiDirJpaUtils.initializeSubEntities(entity, BiDirChildCollection.class);
 //            entity = BiDirJpaUtils.initializeSubEntities(entity, BiDirChildEntity.class);
-            relationalEntityManagerUtil.linkChildrensParent(entity);
-
+            relationalEntityManagerUtil.linkBiDirChildrensParent(entity);
         }
 
         if (relationalEntityTypes.contains(RelationalEntityType.BiDirChild)) {
             log.debug("applying pre persist BiDirChild logic for: " + entity);
 //            entity = BiDirJpaUtils.initializeSubEntities(entity, BiDirParentEntity.class);
 //            entity = BiDirJpaUtils.initializeSubEntities(entity, BiDirParentCollection.class);
-            relationalEntityManagerUtil.linkParentsChild(entity);
+            relationalEntityManagerUtil.linkBiDirParentsChild(entity);
         }
         return entity;
     }
@@ -51,11 +50,11 @@ public class RapidRelationalEntityManager implements RelationalEntityManager {
 
         if (relationalEntityTypes.contains(RelationalEntityType.BiDirParent)) {
             log.debug("applying pre remove BiDirParent logic for: " + entity.getClass());
-            relationalEntityManagerUtil.unlinkChildrensParent(entity);
+            relationalEntityManagerUtil.unlinkBiDirChildrensParent(entity);
         }
         if (relationalEntityTypes.contains(RelationalEntityType.BiDirChild)) {
             log.debug("applying pre remove BiDirChild logic for: " + entity);
-            relationalEntityManagerUtil.unlinkParentsChild(entity);
+            relationalEntityManagerUtil.unlinkBiDirParentsChild(entity);
         }
     }
 

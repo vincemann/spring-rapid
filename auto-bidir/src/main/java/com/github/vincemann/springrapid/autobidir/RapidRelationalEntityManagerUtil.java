@@ -73,12 +73,12 @@ public class RapidRelationalEntityManagerUtil implements RelationalEntityManager
     /**
      * finds all parents of @poram biDirChild and links child to parent
      * -> set backreference of child
-     * @param biDirChild
+     * @param child
      */
-    public void linkParentsChild(IdentifiableEntity biDirChild) {
+    public void linkBiDirParentsChild(IdentifiableEntity child) {
         //set backreferences
-        for (IdentifiableEntity parent : findAllBiDirParents(biDirChild)) {
-            linkBiDirChild(parent,biDirChild);
+        for (IdentifiableEntity parent : findAllBiDirParents(child)) {
+            linkBiDirChild(parent, child);
         }
     }
 
@@ -107,24 +107,16 @@ public class RapidRelationalEntityManagerUtil implements RelationalEntityManager
     }
 
 
-    /**
-     * link
-     * @param parent
-     * to
-     * @param child
-     */
+
     public void linkBiDirParent(IdentifiableEntity child, IdentifiableEntity parent) throws UnknownParentTypeException {
         assertEntityRelationType(child, RelationalEntityType.BiDirChild);
         assertEntityRelationType(parent, RelationalEntityType.BiDirParent);
         linkEntity(child, parent,BiDirParentEntity.class,BiDirParentCollection.class);
     }
 
-    /**
-     * find all parents of
-     * @param child and unlink it from them
-     * -> remove parents backreference
-     */
-    public void unlinkBiDirParents(IdentifiableEntity child) throws UnknownChildTypeException, UnknownParentTypeException{
+
+    @Override
+    public void unlinkBiDirParentsFrom(IdentifiableEntity child) throws UnknownChildTypeException, UnknownParentTypeException{
         for(IdentifiableEntity parent: findSingleBiDirParents(child)){
             if(parent!=null) {
                 unlinkBiDirParent(child, parent);
@@ -134,25 +126,15 @@ public class RapidRelationalEntityManagerUtil implements RelationalEntityManager
         }
     }
 
-    /**
-     * unlink
-     * @param parent
-     * from
-     * @param child
-     *
-     *
-     */
+
     public void unlinkBiDirParent(IdentifiableEntity child, IdentifiableEntity parent) throws UnknownParentTypeException {
         assertEntityRelationType(child, RelationalEntityType.BiDirChild);
         assertEntityRelationType(parent, RelationalEntityType.BiDirParent);
         unlinkEntity(child, parent,BiDirParentEntity.class,BiDirParentCollection.class);
     }
 
-    /**
-     * Find all Parents of @param child and unlink it from them.
-     * -> remove parents backreference
-     */
-    public void unlinkParentsChild(IdentifiableEntity child) throws UnknownEntityTypeException {
+
+    public void unlinkBiDirParentsChild(IdentifiableEntity child) throws UnknownEntityTypeException {
         for (IdentifiableEntity parent : findAllBiDirParents(child)) {
             unlinkBiDirChild(parent,child);
         }
@@ -164,12 +146,7 @@ public class RapidRelationalEntityManagerUtil implements RelationalEntityManager
     // BiDirParent Methods
 
 
-    /**
-     * find all children of
-     * @param parent and link it to them
-     * -> set backreference of children
-     */
-    public void linkChildrensParent(IdentifiableEntity parent) {
+    public void linkBiDirChildrensParent(IdentifiableEntity parent) {
         for (IdentifiableEntity child : findAllBiDirChildren(parent)) {
             linkBiDirParent(child, parent);
         }
@@ -199,32 +176,18 @@ public class RapidRelationalEntityManagerUtil implements RelationalEntityManager
         return findAllEntities(parent,BiDirChildEntity.class,BiDirChildCollection.class,membersToCheck);
     }
 
-    /**
-     * Add a new Child to this parent.
-     * Call this, when saving a BiDirChild of this parent.
-     * child will be added to fields with {@link BiDirChildCollection} and fields with {@link BiDirChildEntity} will be set with newChild, when most specific type matches of newChild matches the field.
-     * Child wont be added and UnknownChildTypeException will be thrown when corresponding {@link BiDirChildCollection} is null.
-     * @param newChild
-     * @throws UnknownChildTypeException
-     */
-    public void linkBiDirChild(IdentifiableEntity parent, IdentifiableEntity newChild) throws UnknownChildTypeException{
+
+    public void linkBiDirChild(IdentifiableEntity parent, IdentifiableEntity childToSet) throws UnknownChildTypeException{
         assertEntityRelationType(parent, RelationalEntityType.BiDirParent);
-        assertEntityRelationType(newChild, RelationalEntityType.BiDirChild);
-        linkEntity(parent, newChild, BiDirChildEntity.class, BiDirChildCollection.class);
+        assertEntityRelationType(childToSet, RelationalEntityType.BiDirChild);
+        linkEntity(parent, childToSet, BiDirChildEntity.class, BiDirChildCollection.class);
     }
 
-    /**
-     * This parent wont know about the given biDirChildToRemove after this operation.
-     * Call this, before you delete the biDirChildToRemove.
-     * Case 1: Remove Child BiDirChild from all {@link BiDirChildCollection}s from this parent.
-     * Case 2: Set {@link BiDirChildEntity}Field to null if child is not saved in a collection in this parent.
-     * @param biDirChildToRemove
-     * @throws UnknownChildTypeException
-     */
-    public void unlinkBiDirChild(IdentifiableEntity parent, IdentifiableEntity biDirChildToRemove) throws UnknownChildTypeException{
+
+    public void unlinkBiDirChild(IdentifiableEntity parent, IdentifiableEntity childToDelete) throws UnknownChildTypeException{
         assertEntityRelationType(parent, RelationalEntityType.BiDirParent);
-        assertEntityRelationType(biDirChildToRemove, RelationalEntityType.BiDirChild);
-        unlinkEntity(parent, biDirChildToRemove,BiDirChildEntity.class,BiDirChildCollection.class);
+        assertEntityRelationType(childToDelete, RelationalEntityType.BiDirChild);
+        unlinkEntity(parent, childToDelete,BiDirChildEntity.class,BiDirChildCollection.class);
     }
 
     /**
@@ -232,7 +195,7 @@ public class RapidRelationalEntityManagerUtil implements RelationalEntityManager
      * @param parent and unlink it from them
      * -> remove childrens backreference
      */
-    public void unlinkChildrensParent(IdentifiableEntity parent) throws UnknownParentTypeException{
+    public void unlinkBiDirChildrensParent(IdentifiableEntity parent) throws UnknownParentTypeException{
         for (IdentifiableEntity child : findAllBiDirChildren(parent)) {
             unlinkBiDirParent(child,parent);
         }

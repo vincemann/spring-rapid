@@ -80,7 +80,7 @@ class RapidRelationalEntityManagerUtilParentTest {
         testEntityChild.setEntityParent(testEntityParent);
         //when
 
-        relationalEntityManagerUtil.unlinkChildrensParent(testEntityParent);
+        relationalEntityManagerUtil.unlinkBiDirChildrensParent(testEntityParent);
         //then
         Assertions.assertNull(testEntityChild.getEntityParent());
         Assertions.assertNotNull(testEntityParent.getEntityChild());
@@ -91,7 +91,7 @@ class RapidRelationalEntityManagerUtilParentTest {
         testEntityParent.setSecondEntityChildSet(new HashSet<>(Lists.newArrayList(testSecondEntityChild)));
         testSecondEntityChild.setEntityParent(testEntityParent);
         //when
-        relationalEntityManagerUtil.unlinkChildrensParent(testEntityParent);
+        relationalEntityManagerUtil.unlinkBiDirChildrensParent(testEntityParent);
         //then
         Assertions.assertFalse(testEntityParent.getSecondEntityChildSet().stream().findFirst().isPresent());
         Assertions.assertNull(testSecondEntityChild.getEntityParent());
@@ -104,7 +104,7 @@ class RapidRelationalEntityManagerUtilParentTest {
         testEntityParent.setEntityChild(testEntityChild);
         testEntityChild.setEntityParent(testEntityParent);
         //when
-        relationalEntityManagerUtil.unlinkChildrensParent(testEntityParent);
+        relationalEntityManagerUtil.unlinkBiDirChildrensParent(testEntityParent);
         //then
         Assertions.assertFalse(testEntityParent.getSecondEntityChildSet().stream().findFirst().isPresent());
         Assertions.assertNull(testSecondEntityChild.getEntityParent());

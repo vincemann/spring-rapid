@@ -189,7 +189,7 @@ class RapidRelationalEntityManagerUtilChildTest {
         testEntityChild.setEntityParent(testEntityParent);
         testEntityChild.setSecondEntityParent(testSecondEntityParent);
         //when
-        relationalEntityManagerUtil.unlinkBiDirParents(testEntityChild);
+        relationalEntityManagerUtil.unlinkBiDirParentsFrom(testEntityChild);
         //then
         Assertions.assertNull(testEntityChild.getEntityParent());
         Assertions.assertNull(testEntityChild.getSecondEntityParent());
