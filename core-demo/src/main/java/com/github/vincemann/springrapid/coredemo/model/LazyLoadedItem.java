@@ -31,12 +31,12 @@ public class LazyLoadedItem extends IdentifiableEntityImpl<Long> {
         this.name = name;
     }
 
-    @Override
-    public String toString() {
-        return "LazyLoadedItem{ " +
-                getName()+ " , " +
-                getId().toString() +
-                " }";
-    }
+//    @Override
+//    public String toString() {
+//        return "LazyLoadedItem{ " +
+//                getName()+ " , " +
+//                getId().toString() +
+//                " }";
+//    }
 
 }

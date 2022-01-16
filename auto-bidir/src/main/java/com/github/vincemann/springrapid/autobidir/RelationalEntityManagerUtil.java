@@ -17,7 +17,7 @@ public interface RelationalEntityManagerUtil {
      * to explicit bidir
      * @param child
      */
-    public void linkBiDirParent(IdentifiableEntity child, IdentifiableEntity parentToSet);
+    public void linkBiDirParent(IdentifiableEntity child, IdentifiableEntity parentToSet, String... membersToCheck);
 
     /**
      * link bidir
@@ -25,7 +25,7 @@ public interface RelationalEntityManagerUtil {
      * to explicit bidir
      * @param parent
      */
-    public void linkBiDirChild(IdentifiableEntity parent, IdentifiableEntity childToSet);
+    public void linkBiDirChild(IdentifiableEntity parent, IdentifiableEntity childToSet, String... membersToCheck);
 
     /**
      * unlink bidir
@@ -33,7 +33,7 @@ public interface RelationalEntityManagerUtil {
      * from explicit bidir
      * @param child
      */
-    public void unlinkBiDirParent(IdentifiableEntity child, IdentifiableEntity parentToDelete);
+    public void unlinkBiDirParent(IdentifiableEntity child, IdentifiableEntity parentToDelete, String... membersToCheck);
 
 
     /**
@@ -42,48 +42,48 @@ public interface RelationalEntityManagerUtil {
      * from explicit bidir
      * @param parent
      */
-    public void unlinkBiDirChild(IdentifiableEntity parent, IdentifiableEntity childToDelete);
+    public void unlinkBiDirChild(IdentifiableEntity parent, IdentifiableEntity childToDelete, String... membersToCheck);
 
 
 
 
-    public void linkUniDirChild(IdentifiableEntity parent,IdentifiableEntity newChild);
+    public void linkUniDirChild(IdentifiableEntity parent,IdentifiableEntity newChild, String... membersToCheck);
 
-    public void unlinkUniDirChild(IdentifiableEntity parent, IdentifiableEntity toRemove);
+    public void unlinkUniDirChild(IdentifiableEntity parent, IdentifiableEntity toRemove, String... membersToCheck);
 
     /**
      * find all bidir parents of bidir
      * @param child and unlink *child from them*
      * -> remove references from child to parent, not backref
      */
-    public void unlinkBiDirParentsFrom(IdentifiableEntity child);
+    public void unlinkBiDirParentsFrom(IdentifiableEntity child, String... membersToCheck);
 
     /**
      * Find all bidir children of bidir
      * @param parent and unlink it from them.
      * -> remove childrens backreference
      */
-    public void unlinkBiDirChildrensParent(IdentifiableEntity parent);
+    public void unlinkBiDirChildrensParent(IdentifiableEntity parent, String... membersToCheck);
 
     /**
      * Find all bidir parents of bidir
      * @param child and unlink it from them.
      * -> remove parents backreference
      */
-    public void unlinkBiDirParentsChild(IdentifiableEntity child);
+    public void unlinkBiDirParentsChild(IdentifiableEntity child, String... membersToCheck);
     /**
      * find all bidir children of bidir
      * @param parent and link it to them
      * -> set backreference of children
      */
-    public void linkBiDirChildrensParent(IdentifiableEntity parent);
+    public void linkBiDirChildrensParent(IdentifiableEntity parent, String... membersToCheck);
 
     /**
      * find all bidir parents of bidir
      * @param child and link it to them
      * -> set backreference of children
      */
-    public void linkBiDirParentsChild(IdentifiableEntity child);
+    public void linkBiDirParentsChild(IdentifiableEntity child, String... membersToCheck);
 
 
 

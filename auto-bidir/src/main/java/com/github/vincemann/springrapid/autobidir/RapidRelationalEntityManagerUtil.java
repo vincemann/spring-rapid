@@ -27,7 +27,6 @@ import java.util.concurrent.atomic.AtomicBoolean;
 public class RapidRelationalEntityManagerUtil implements RelationalEntityManagerUtil {
 
 
-
     @Cacheable(value = "entityRelationTypes")
     @Override
     public Set<RelationalEntityType> inferTypes(Class<? extends IdentifiableEntity> entityClass) {
@@ -71,13 +70,14 @@ public class RapidRelationalEntityManagerUtil implements RelationalEntityManager
 
 
     /**
-     * finds all parents of @poram biDirChild and links child to parent
+     * finds all parents of
+     * @poram child and links child to parent
      * -> set backreference of child
-     * @param child
      */
-    public void linkBiDirParentsChild(IdentifiableEntity child) {
+    @Override
+    public void linkBiDirParentsChild(IdentifiableEntity child, String... membersToCheck) {
         //set backreferences
-        for (IdentifiableEntity parent : findAllBiDirParents(child)) {
+        for (IdentifiableEntity parent : findAllBiDirParents(child,membersToCheck)) {
             linkBiDirChild(parent, child);
         }
     }
@@ -108,16 +108,17 @@ public class RapidRelationalEntityManagerUtil implements RelationalEntityManager
 
 
 
-    public void linkBiDirParent(IdentifiableEntity child, IdentifiableEntity parent) throws UnknownParentTypeException {
+    public void linkBiDirParent(IdentifiableEntity child, IdentifiableEntity parent, String... membersToCheck) throws UnknownParentTypeException {
         assertEntityRelationType(child, RelationalEntityType.BiDirChild);
         assertEntityRelationType(parent, RelationalEntityType.BiDirParent);
-        linkEntity(child, parent,BiDirParentEntity.class,BiDirParentCollection.class);
+        linkEntity(child, parent,BiDirParentEntity.class,BiDirParentCollection.class,membersToCheck);
     }
 
 
     @Override
-    public void unlinkBiDirParentsFrom(IdentifiableEntity child) throws UnknownChildTypeException, UnknownParentTypeException{
-        for(IdentifiableEntity parent: findSingleBiDirParents(child)){
+    public void unlinkBiDirParentsFrom(IdentifiableEntity child, String... membersToCheck) throws UnknownChildTypeException, UnknownParentTypeException{
+//        for(IdentifiableEntity parent: findSingleBiDirParents(child,membersToCheck)){
+        for(IdentifiableEntity parent: findAllBiDirParents(child,membersToCheck)){
             if(parent!=null) {
                 unlinkBiDirParent(child, parent);
             }else {
@@ -127,15 +128,15 @@ public class RapidRelationalEntityManagerUtil implements RelationalEntityManager
     }
 
 
-    public void unlinkBiDirParent(IdentifiableEntity child, IdentifiableEntity parent) throws UnknownParentTypeException {
+    public void unlinkBiDirParent(IdentifiableEntity child, IdentifiableEntity parent, String... membersToCheck) throws UnknownParentTypeException {
         assertEntityRelationType(child, RelationalEntityType.BiDirChild);
         assertEntityRelationType(parent, RelationalEntityType.BiDirParent);
-        unlinkEntity(child, parent,BiDirParentEntity.class,BiDirParentCollection.class);
+        unlinkEntity(child, parent,BiDirParentEntity.class,BiDirParentCollection.class,membersToCheck);
     }
 
 
-    public void unlinkBiDirParentsChild(IdentifiableEntity child) throws UnknownEntityTypeException {
-        for (IdentifiableEntity parent : findAllBiDirParents(child)) {
+    public void unlinkBiDirParentsChild(IdentifiableEntity child, String... membersToCheck) throws UnknownEntityTypeException {
+        for (IdentifiableEntity parent : findAllBiDirParents(child,membersToCheck)) {
             unlinkBiDirChild(parent,child);
         }
     }
@@ -146,8 +147,8 @@ public class RapidRelationalEntityManagerUtil implements RelationalEntityManager
     // BiDirParent Methods
 
 
-    public void linkBiDirChildrensParent(IdentifiableEntity parent) {
-        for (IdentifiableEntity child : findAllBiDirChildren(parent)) {
+    public void linkBiDirChildrensParent(IdentifiableEntity parent, String... membersToCheck) {
+        for (IdentifiableEntity child : findAllBiDirChildren(parent,membersToCheck)) {
             linkBiDirParent(child, parent);
         }
     }
@@ -177,17 +178,18 @@ public class RapidRelationalEntityManagerUtil implements RelationalEntityManager
     }
 
 
-    public void linkBiDirChild(IdentifiableEntity parent, IdentifiableEntity childToSet) throws UnknownChildTypeException{
+    @Override
+    public void linkBiDirChild(IdentifiableEntity parent, IdentifiableEntity childToSet, String... membersToCheck) throws UnknownChildTypeException{
         assertEntityRelationType(parent, RelationalEntityType.BiDirParent);
         assertEntityRelationType(childToSet, RelationalEntityType.BiDirChild);
-        linkEntity(parent, childToSet, BiDirChildEntity.class, BiDirChildCollection.class);
+        linkEntity(parent, childToSet, BiDirChildEntity.class, BiDirChildCollection.class,membersToCheck);
     }
 
 
-    public void unlinkBiDirChild(IdentifiableEntity parent, IdentifiableEntity childToDelete) throws UnknownChildTypeException{
+    public void unlinkBiDirChild(IdentifiableEntity parent, IdentifiableEntity childToDelete, String... membersToCheck) throws UnknownChildTypeException{
         assertEntityRelationType(parent, RelationalEntityType.BiDirParent);
         assertEntityRelationType(childToDelete, RelationalEntityType.BiDirChild);
-        unlinkEntity(parent, childToDelete,BiDirChildEntity.class,BiDirChildCollection.class);
+        unlinkEntity(parent, childToDelete,BiDirChildEntity.class,BiDirChildCollection.class,membersToCheck);
     }
 
     /**
@@ -195,8 +197,8 @@ public class RapidRelationalEntityManagerUtil implements RelationalEntityManager
      * @param parent and unlink it from them
      * -> remove childrens backreference
      */
-    public void unlinkBiDirChildrensParent(IdentifiableEntity parent) throws UnknownParentTypeException{
-        for (IdentifiableEntity child : findAllBiDirChildren(parent)) {
+    public void unlinkBiDirChildrensParent(IdentifiableEntity parent, String... membersToCheck) throws UnknownParentTypeException{
+        for (IdentifiableEntity child : findAllBiDirChildren(parent,membersToCheck)) {
             unlinkBiDirParent(child,parent);
         }
 
@@ -243,9 +245,9 @@ public class RapidRelationalEntityManagerUtil implements RelationalEntityManager
      * @param newChild
      * @throws UnknownChildTypeException
      */
-    public void linkUniDirChild(IdentifiableEntity parent,IdentifiableEntity newChild) throws UnknownChildTypeException{
+    public void linkUniDirChild(IdentifiableEntity parent,IdentifiableEntity newChild, String... membersToCheck) throws UnknownChildTypeException{
         assertEntityRelationType(parent, RelationalEntityType.UniDirParent);
-        linkEntity(parent,newChild,UniDirChildEntity.class,UniDirChildCollection.class);
+        linkEntity(parent,newChild,UniDirChildEntity.class,UniDirChildCollection.class,membersToCheck);
     }
 
     /**
@@ -257,9 +259,9 @@ public class RapidRelationalEntityManagerUtil implements RelationalEntityManager
      * @param toRemove
      * @throws UnknownChildTypeException
      */
-    public void unlinkUniDirChild(IdentifiableEntity parent, IdentifiableEntity toRemove) throws UnknownChildTypeException{
+    public void unlinkUniDirChild(IdentifiableEntity parent, IdentifiableEntity toRemove, String... membersToCheck) throws UnknownChildTypeException{
         assertEntityRelationType(parent, RelationalEntityType.UniDirParent);
-        unlinkEntity(parent,toRemove,UniDirChildEntity.class,UniDirChildCollection.class);
+        unlinkEntity(parent,toRemove,UniDirChildEntity.class,UniDirChildCollection.class,membersToCheck);
     }
 
 
@@ -322,11 +324,11 @@ public class RapidRelationalEntityManagerUtil implements RelationalEntityManager
 
 
 
-    protected void linkEntity(IdentifiableEntity<?> entity, IdentifiableEntity newEntity, Class<? extends Annotation> entityAnnotationClass, Class<? extends Annotation> entityCollectionAnnotationClass) throws UnknownEntityTypeException {
+    protected void linkEntity(IdentifiableEntity<?> entity, IdentifiableEntity newEntity, Class<? extends Annotation> entityAnnotationClass, Class<? extends Annotation> entityCollectionAnnotationClass, String... membersToCheck) throws UnknownEntityTypeException {
         AtomicBoolean added = new AtomicBoolean(false);
         //add to matching entity collections
         // todo THIS CORRECT
-        for (Map.Entry<Class<IdentifiableEntity>,Collection<IdentifiableEntity>> entry : this.<IdentifiableEntity>findEntityCollections(entity,entityCollectionAnnotationClass).entrySet()) {
+        for (Map.Entry<Class<IdentifiableEntity>,Collection<IdentifiableEntity>> entry : this.<IdentifiableEntity>findEntityCollections(entity,entityCollectionAnnotationClass,membersToCheck).entrySet()) {
             Class<? extends IdentifiableEntity> targetClass = entry.getKey();
             if (newEntity.getClass().equals(targetClass)) {
                 (entry.getValue()).add(newEntity);
@@ -334,7 +336,7 @@ public class RapidRelationalEntityManagerUtil implements RelationalEntityManager
             }
         }
         //set matching entity
-        EntityReflectionUtils.doWithAnnotatedFieldsOfType(newEntity.getClass(),entityAnnotationClass,entity.getClass(),entityField -> {
+        EntityReflectionUtils.doWithNamedAnnotatedFieldsOfType(newEntity.getClass(),entityAnnotationClass,entity.getClass(),Sets.newHashSet(membersToCheck),entityField -> {
             IdentifiableEntity oldEntity = (IdentifiableEntity) entityField.get(entity);
             if (oldEntity != null) {
                 log.warn("Overriding old entity: " + oldEntity + " with new entity " + newEntity + " of source sntity " + entity);
@@ -347,9 +349,9 @@ public class RapidRelationalEntityManagerUtil implements RelationalEntityManager
         }
     }
 
-    protected void unlinkEntity(IdentifiableEntity entity, IdentifiableEntity entityToRemove, Class<? extends Annotation> entityEntityAnnotationClass, Class<? extends Annotation> entityEntityCollectionAnnotationClass) throws UnknownEntityTypeException{
+    protected void unlinkEntity(IdentifiableEntity entity, IdentifiableEntity entityToRemove, Class<? extends Annotation> entityEntityAnnotationClass, Class<? extends Annotation> entityEntityCollectionAnnotationClass, String... membersToCheck) throws UnknownEntityTypeException{
         AtomicBoolean deleted = new AtomicBoolean(false);
-        for (Map.Entry<Class<IdentifiableEntity>,Collection<IdentifiableEntity>> entry : this.<IdentifiableEntity>findEntityCollections(entity,entityEntityCollectionAnnotationClass).entrySet()) {
+        for (Map.Entry<Class<IdentifiableEntity>,Collection<IdentifiableEntity>> entry : this.<IdentifiableEntity>findEntityCollections(entity,entityEntityCollectionAnnotationClass,membersToCheck).entrySet()) {
             //todo only swapped getKey -> getValue, is value not used?
             Collection<IdentifiableEntity> entityCollection = entry.getValue();
             if(entityCollection!=null){
@@ -385,7 +387,7 @@ public class RapidRelationalEntityManagerUtil implements RelationalEntityManager
                 }
             }
         }
-        EntityReflectionUtils.doWithAnnotatedFields(entityEntityAnnotationClass,entity.getClass(), entityField -> {
+        EntityReflectionUtils.doWithAnnotatedNamedFields(entityEntityAnnotationClass,entity.getClass(),Sets.newHashSet(membersToCheck), entityField -> {
             IdentifiableEntity removeCandidate = (IdentifiableEntity) entityField.get(entity);
             if(removeCandidate!=null) {
                 if (removeCandidate.getClass().equals(entityToRemove.getClass())) {

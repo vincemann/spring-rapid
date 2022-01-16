@@ -76,17 +76,17 @@ public class Owner extends Person {
     private String telephone;
 
 
-    @Override
-    public String toString() {
-        return "Owner{" +
-                "pets=" + Arrays.toString(pets.stream().map(Pet::getName).toArray()) +
-                ", clinicCard=" + clinicCard +
-                ", hobbies=" + hobbies +
-                ", lazyExceptionItems=" + lazyExceptionItems +
-                ", lazyLoadedItems=" + lazyLoadedItems +
-                ", address='" + address + '\'' +
-                ", city='" + city + '\'' +
-                ", telephone='" + telephone + '\'' +
-                '}';
-    }
+//    @Override
+//    public String toString() {
+//        return "Owner{" +
+//                "pets=" + Arrays.toString(pets.stream().map(Pet::getName).toArray()) +
+//                ", clinicCard=" + clinicCard +
+//                ", hobbies=" + hobbies +
+//                ", lazyExceptionItems=" + lazyExceptionItems +
+//                ", lazyLoadedItems=" + lazyLoadedItems +
+//                ", address='" + address + '\'' +
+//                ", city='" + city + '\'' +
+//                ", telephone='" + telephone + '\'' +
+//                '}';
+//    }
 }
