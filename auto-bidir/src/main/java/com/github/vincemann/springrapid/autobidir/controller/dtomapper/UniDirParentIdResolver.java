@@ -57,8 +57,8 @@ public class UniDirParentIdResolver extends EntityIdResolver {
     }
 
     @Override
-    public void setResolvedIds(Object mappedDto, IdentifiableEntity serviceEntity) {
-        for (IdentifiableEntity child : relationalEntityManagerUtil.findAllUniDirChildren(serviceEntity)) {
+    public void setResolvedIds(Object mappedDto, IdentifiableEntity serviceEntity, String... fieldsToCheck) {
+        for (IdentifiableEntity child : relationalEntityManagerUtil.findAllUniDirChildren(serviceEntity,fieldsToCheck)) {
             relationalDtoManager.addUniDirChildId(child, mappedDto);
         }
 //        for (IdentifiableEntity child : relationalEntityManagerUtil.findSingleUniDirChildren(serviceEntity)) {

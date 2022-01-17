@@ -20,7 +20,7 @@ public interface DtoMapper<E extends IdentifiableEntity<?>,Dto> extends AopLogga
     public boolean supports(Class<?> dtoClass);
 
     public <T extends E> T mapToEntity(Dto source,Class<T> destinationClass) throws EntityNotFoundException, BadEntityException;
-    public <T extends Dto> T mapToDto(E source, Class<T> destinationClass);
+    public <T extends Dto> T mapToDto(E source, Class<T> destinationClass,String... fieldsToMap);
 
-    <T> T mapToDto(IdentifiableEntity<?> source, Class<T> destinationClass, Set<String> propertiesToMap);
+//    <T> T mapToDto(IdentifiableEntity<?> source, Class<T> destinationClass, Set<String> propertiesToMap);
 }

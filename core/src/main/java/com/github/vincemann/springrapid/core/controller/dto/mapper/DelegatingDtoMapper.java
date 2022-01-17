@@ -50,15 +50,15 @@ public class DelegatingDtoMapper{
 
     //@LogInteraction
     @Transactional
-    public <T> T mapToDto(IdentifiableEntity<?> source, Class<T> destinationClass) throws BadEntityException {
+    public <T> T mapToDto(IdentifiableEntity<?> source, Class<T> destinationClass,String... fieldsToMap) throws BadEntityException {
         // source entity is detached and might not have all collections lazy loaded for this dto mapping -> merge
         if (entityManager!=null)
             entityManager.merge(source);
         T dto = (T) findMapper(destinationClass)
-                .mapToDto(source, destinationClass);
+                .mapToDto(source, destinationClass,fieldsToMap);
         for (EntityDtoPostProcessor pp : entityDtoPostProcessors) {
             if (pp.supports(source.getClass(), dto.getClass())) {
-                pp.postProcessDto(dto, source);
+                pp.postProcessDto(dto, source, fieldsToMap);
             }
         }
         return dto;
@@ -82,8 +82,8 @@ public class DelegatingDtoMapper{
         this.entityManager = entityManager;
     }
 
-    public <E extends IdentifiableEntity<ID>> Object mapToDto(E saved, Class<?> dtoClass, Set<String> updatedFields) {
-
-
-    }
+//    public <E extends IdentifiableEntity<ID>> Object mapToDto(E saved, Class<?> dtoClass, Set<String> updatedFields) {
+//
+//
+//    }
 }

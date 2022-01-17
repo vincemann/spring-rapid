@@ -57,7 +57,7 @@ public abstract class EntityIdResolver implements AopLoggable {
     /**
      * Resolve Id's from entities in entity and inject (set) ids into target Dto
      */
-    public abstract void setResolvedIds(Object mappedDto, IdentifiableEntity entity);
+    public abstract void setResolvedIds(Object mappedDto, IdentifiableEntity entity, String... fieldsToCheck);
 
 
     // could be replaced by EntityLocator, but tests would need refactoring as well...

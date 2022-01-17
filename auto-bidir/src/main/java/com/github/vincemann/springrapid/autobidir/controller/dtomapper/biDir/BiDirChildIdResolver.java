@@ -87,8 +87,8 @@ public class BiDirChildIdResolver extends EntityIdResolver {
 //    }
 
     @Override
-    public void setResolvedIds(Object mappedDto, IdentifiableEntity serviceEntity) {
-        for (IdentifiableEntity parent : relationalEntityManagerUtil.findAllBiDirParents(serviceEntity)) {
+    public void setResolvedIds(Object mappedDto, IdentifiableEntity serviceEntity,String... fieldsToCheck) {
+        for (IdentifiableEntity parent : relationalEntityManagerUtil.findAllBiDirParents(serviceEntity,fieldsToCheck)) {
             relationalDtoManager.addBiDirParentId(parent,mappedDto);
         }
 
