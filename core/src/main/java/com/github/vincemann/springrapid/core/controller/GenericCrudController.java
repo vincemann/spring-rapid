@@ -152,12 +152,31 @@ public abstract class GenericCrudController
         Class<?> dtoClass = createDtoClass(getUpdateUrl(), Direction.REQUEST, saved);
         beforeUpdate(dtoClass, id, patchString, request, response);
         jsonDtoPropertyValidator.validatePatch(patchString,dtoClass);
-        Object patchDto = dtoMapper.mapToDto(saved, dtoClass);
-        patchDto = jsonPatchStrategy.applyPatch(saved,patchDto, patchString);
+
+        // create PatchDto from scatch here
+        /*
+            Patch patch = jsonPatchStrategy.createPatchDto(dtoClass, patchString);
+            Object patchDto = patch.getDto();
+            Set<String> fieldsToRemove = patch.getFieldsToRemove();
+
+            // beim mappen werden eh nur die relevanten felder geladen
+            E patchEntity = dtoMapper.mapToEntity(patchDto, getEntityClass());
+
+         */
+//        Object patchDto = dtoMapper.mapToDto(saved, dtoClass);
+        PatchInfo patchInfo = jsonPatchStrategy.findPatchInfo(patchString);
+        Object patchDto = dtoMapper.mapToDto(saved, dtoClass,patchInfo.getUpdatedFields());
+        jsonPatchStrategy.applyPatch(patchDto, patchString);
+        E patchEntity = dtoMapper.mapToEntity(patchDto, getEntityClass());
+        E merged = mergeUpdateStrategy.merge(patchEntity, JpaUtils.detach(saved), dtoClass);
+
+
+        patchDto = jsonPatchStrategy.applyPatch(patchDto, patchString);
         log.debug("finished patchDto: " + patchDto);
         dtoValidationStrategy.validate(patchDto);
         E patchEntity = dtoMapper.mapToEntity(patchDto, getEntityClass());
         log.debug("finished patchEntity: " + patchEntity);
+        // merge dto fields. patch merged with saved Entity.
         E merged = mergeUpdateStrategy.merge(patchEntity, JpaUtils.detach(saved), dtoClass);
         log.debug("merged Entity as input for service: ");
         logSecurityContext();

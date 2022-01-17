@@ -2,7 +2,6 @@ package com.github.vincemann.springrapid.core.controller.dto.mapper;
 
 import com.github.vincemann.springrapid.core.model.IdentifiableEntity;
 import com.github.vincemann.springrapid.core.service.exception.BadEntityException;
-import com.github.vincemann.springrapid.core.service.exception.EntityNotFoundException;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -12,6 +11,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.Set;
 
 
 /**
@@ -42,6 +43,12 @@ public class BasicDtoMapper implements DtoMapper<IdentifiableEntity<?>,Object> {
 
     @Override
     public <T> T mapToDto(IdentifiableEntity<?> source, Class<T> destinationClass) {
+        return modelMapper.map(source, destinationClass);
+    }
+
+    @Override
+    public <T> T mapToDto(IdentifiableEntity<?> source, Class<T> destinationClass, Set<String> propertiesToMap) {
+        // todo find out about mapping only certain properties of source class
         return modelMapper.map(source, destinationClass);
     }
 

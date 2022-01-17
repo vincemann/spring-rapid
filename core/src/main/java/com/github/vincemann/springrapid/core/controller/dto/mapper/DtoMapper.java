@@ -7,6 +7,8 @@ import com.github.vincemann.springrapid.core.model.IdentifiableEntity;
 import com.github.vincemann.springrapid.core.service.exception.BadEntityException;
 import com.github.vincemann.springrapid.core.service.exception.EntityNotFoundException;
 
+import java.util.Set;
+
 /**
  * Maps a Dto to an Entity, or vice versa
  */
@@ -19,4 +21,6 @@ public interface DtoMapper<E extends IdentifiableEntity<?>,Dto> extends AopLogga
 
     public <T extends E> T mapToEntity(Dto source,Class<T> destinationClass) throws EntityNotFoundException, BadEntityException;
     public <T extends Dto> T mapToDto(E source, Class<T> destinationClass);
+
+    <T> T mapToDto(IdentifiableEntity<?> source, Class<T> destinationClass, Set<String> propertiesToMap);
 }

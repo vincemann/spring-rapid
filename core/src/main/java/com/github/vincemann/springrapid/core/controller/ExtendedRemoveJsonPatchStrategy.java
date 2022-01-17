@@ -34,24 +34,63 @@ import static com.github.vincemann.springrapid.core.util.ReflectionUtils.setFina
  *
  *
  * NOTE::
- * Dont use remove and add in one request, if you remove whole collection and not elements by value/index.
+ * Don't use remove and add in one request, if you remove whole collection and not elements by value/index.
  * This is a limitation by JsonPatch itself, not by this extension.
  */
 @Slf4j
 public class ExtendedRemoveJsonPatchStrategy implements JsonPatchStrategy {
     
     private ObjectMapper objectMapper;
-    
 
     @Override
-    public <T> T applyPatch(IdentifiableEntity savedEntity, T targetDto, String patchString) throws BadEntityException {
+    public PatchInfo findPatchInfo(String patchString) throws BadEntityException {
+        try {
+            PatchInfo patchInfo = new PatchInfo();
+            JsonNode patchNode = objectMapper.readTree(patchString);
+            Iterator<JsonNode> iterator = patchNode.elements();
+            while (iterator.hasNext()){
+                JsonNode instructionNode = iterator.next();
+                JsonNode operationNode = instructionNode.findValue("op");
+                JsonNode pathNode = instructionNode.findValue("path");
+                String path = pathNode.asText();
+                if (operationNode!=null){
+                    String operation = operationNode.asText();
+                    if (operation.equals("remove")) {
+                        JsonNode valueNode = instructionNode.findValue("value");
+                        if (valueNode == null) {
+                            // remove single member, not collection
+                            if (path == null) {
+                                throw new BadEntityException("No Path specified to remove operation");
+                            }
+                            patchInfo.getRemoveSingleMembersFields().add(sanitizePath(path));
+                        }
+                    }
+                }
+
+                if (path == null) {
+                    continue;
+                }
+                patchInfo.getUpdatedFields().add(sanitizePath(path));
+            }
+            return patchInfo;
+        } catch (JsonProcessingException e) {
+            throw new BadEntityException(e);
+        }
+    }
+
+    private static String sanitizePath(String path){
+        return path.replace("-","").replace("/","");
+    }
+
+    @Override
+    public <T> T applyPatch(T targetDto, String patchString) throws BadEntityException {
         try {
 
             // Parse the patch to JsonNode
             JsonNode patchNode = objectMapper.readTree(patchString);
 
             // Create the patch
-            JsonPatch patch = null;
+            JsonPatch patch;
             try {
                 patch = createPatch(targetDto, patchNode);
             } catch (Exception e) {

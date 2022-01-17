@@ -5,6 +5,9 @@ import com.github.fge.jsonpatch.JsonPatchException;
 import com.github.vincemann.springrapid.core.model.IdentifiableEntity;
 import com.github.vincemann.springrapid.core.service.exception.BadEntityException;
 
+import java.util.Set;
+
 public interface JsonPatchStrategy {
-    public <T> T applyPatch(IdentifiableEntity savedEntity, T targetDto, String patchString) throws BadEntityException;
+    public <T> T applyPatch(T targetDto, String patchString) throws BadEntityException;
+    PatchInfo findPatchInfo(String patchString)throws BadEntityException;
 }
