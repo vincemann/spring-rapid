@@ -157,6 +157,7 @@ public abstract class GenericCrudController
         PatchInfo patchInfo = jsonPatchStrategy.findPatchInfo(patchString);
         Object patchDto = dtoMapper.mapToDto(saved, dtoClass,
                 patchInfo.getUpdatedFields().toArray(new String[patchInfo.getUpdatedFields().size()]));
+        // todo apply patch fails
         jsonPatchStrategy.applyPatch(patchDto, patchString);
         E patchEntity = dtoMapper.mapToEntity(patchDto, getEntityClass());
         E merged = mergeUpdateStrategy.merge(patchEntity, JpaUtils.detach(saved), dtoClass);

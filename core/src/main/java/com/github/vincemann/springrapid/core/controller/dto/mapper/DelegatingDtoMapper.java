@@ -4,6 +4,7 @@ package com.github.vincemann.springrapid.core.controller.dto.mapper;
 import com.github.vincemann.springrapid.core.model.IdentifiableEntity;
 import com.github.vincemann.springrapid.core.service.exception.BadEntityException;
 import com.github.vincemann.springrapid.core.service.exception.EntityNotFoundException;
+import com.github.vincemann.springrapid.core.util.IdPropertyNameUtils;
 import com.sun.xml.bind.v2.model.core.ID;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -58,7 +59,7 @@ public class DelegatingDtoMapper{
                 .mapToDto(source, destinationClass,fieldsToMap);
         for (EntityDtoPostProcessor pp : entityDtoPostProcessors) {
             if (pp.supports(source.getClass(), dto.getClass())) {
-                pp.postProcessDto(dto, source, fieldsToMap);
+                pp.postProcessDto(dto, source, IdPropertyNameUtils.transformIdFieldNames(fieldsToMap));
             }
         }
         return dto;

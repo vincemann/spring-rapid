@@ -1,14 +1,12 @@
 package com.github.vincemann.springrapid.coredemo.mapper;
 
+import com.github.vincemann.springrapid.coredemo.model.abs.Person;
 import com.google.common.collect.Sets;
 import lombok.*;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.modelmapper.Converter;
-import org.modelmapper.ModelMapper;
-import org.modelmapper.PropertyMap;
-import org.modelmapper.TypeMap;
+import org.modelmapper.*;
 import org.modelmapper.spi.*;
 import org.springframework.util.ReflectionUtils;
 
@@ -194,9 +192,10 @@ public class ModelMapperExerciseTests {
         Gil gil = Gil.builder()
                 .age(25L)
                 .name("dessengil")
+                .birthtown("huston")
                 .build();
 
-        Set<String> propertiesToMap = Sets.newHashSet( "age","name");
+        Set<String> propertiesToMap = Sets.newHashSet( "age","birthtown");
         NamingConvention yourConvention = new NamingConvention() {
             public boolean applies(String propertyName, PropertyType propertyType) {
                 String property = propertyName.toLowerCase().substring(3);
@@ -208,9 +207,36 @@ public class ModelMapperExerciseTests {
 //        modelMapper.getConfiguration().setDestinationNamingConvention(yourConvention);
         modelMapper.getConfiguration().setSourceNamingConvention(yourConvention);
         GilDto mapped = modelMapper.map(gil, GilDto.class);
-        Assertions.assertEquals(gil.name, mapped.name);
+        Assertions.assertEquals(gil.age.toString(), mapped.age);
+        Assertions.assertEquals(gil.birthtown, mapped.birthtown);
+        Assertions.assertNull(mapped.name);
+        Assertions.assertNull(mapped.born);
+
+    }
+
+    @Test
+    public void testOnlyMapPropertiesFromPropertyNameList_byUsingCondition() {
+
+        Gil gil = Gil.builder()
+                .age(25L)
+                .name("dessengil")
+                .build();
+
+        Set<String> propertiesToMap = Sets.newHashSet( "age");
+
+        Condition onlyMapCertainProperties = ctx -> {
+            String typeName = ctx.getGenericDestinationType().getTypeName();
+            return propertiesToMap.contains(typeName);
+        };
+
+        TypeMap<Gil, GilDto> typeMap = modelMapper.createTypeMap(Gil.class, GilDto.class);
+        typeMap.addMappings(mapper -> mapper.when(onlyMapCertainProperties));
+
+
+        GilDto mapped = modelMapper.map(gil, GilDto.class);
         Assertions.assertEquals(gil.age.toString(), mapped.age);
         Assertions.assertNull(mapped.birthtown);
+        Assertions.assertNull(mapped.name);
         Assertions.assertNull(mapped.born);
 
     }

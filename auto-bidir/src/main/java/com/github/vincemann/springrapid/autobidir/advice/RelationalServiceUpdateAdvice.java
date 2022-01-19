@@ -30,7 +30,7 @@ public class RelationalServiceUpdateAdvice {
             "com.github.vincemann.springrapid.core.advice.SystemArchitecture.serviceOperation() && " +
             "args(updateEntity)")
     public void preUpdateBiDirEntity(JoinPoint joinPoint, IdentifiableEntity updateEntity) throws EntityNotFoundException, BadEntityException {
-        preUpdateBiDirEntity(joinPoint, updateEntity, true);
+        preUpdateBiDirEntityWithFieldsToRemove(joinPoint, updateEntity, true);
     }
 
 
@@ -38,6 +38,13 @@ public class RelationalServiceUpdateAdvice {
             "com.github.vincemann.springrapid.core.advice.SystemArchitecture.serviceOperation() && " +
             "args(updateEntity,full)")
     public void preUpdateBiDirEntity(JoinPoint joinPoint, IdentifiableEntity updateEntity, Boolean full) throws EntityNotFoundException, BadEntityException {
+        preUpdateBiDirEntityWithFieldsToRemove(joinPoint,updateEntity,full);
+    }
+
+    @Before(value = "com.github.vincemann.springrapid.core.advice.SystemArchitecture.updateOperation() && " +
+            "com.github.vincemann.springrapid.core.advice.SystemArchitecture.serviceOperation() && " +
+            "args(updateEntity,full,fieldsToRemove)")
+    public void preUpdateBiDirEntityWithFieldsToRemove(JoinPoint joinPoint, IdentifiableEntity updateEntity, Boolean full,String... fieldsToRemove) throws EntityNotFoundException, BadEntityException {
         if (!isRootService(joinPoint.getTarget())) {
             log.debug("ignoring service update advice, bc root service not called yet");
             return;

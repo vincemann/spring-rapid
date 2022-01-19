@@ -1,5 +1,9 @@
 package com.github.vincemann.springrapid.core.util;
 
+import java.util.Arrays;
+import java.util.Set;
+import java.util.stream.Collectors;
+
 public class IdPropertyNameUtils {
 
     public static final String ID_SUFFIX = "Id";
@@ -31,6 +35,13 @@ public class IdPropertyNameUtils {
             return propertyName;
         }
     }
+
+    public static String[] transformIdFieldNames(String... propertyNames) {
+        return Arrays.stream(propertyNames).map(IdPropertyNameUtils::transformIdFieldName).toArray(String[]::new);
+    }
+
+    //            Set<String> propertiesToMap =
+
 
     public static String transformIdFieldName(String propertyName) {
         if (isIdField(propertyName)) {

@@ -66,15 +66,17 @@ public class BasicDtoMapper implements DtoMapper<IdentifiableEntity<?>,Object> {
     @Override
     public <T> T mapToDto(IdentifiableEntity<?> sourceEntity, Class<T> destinationClass, String... fieldsToMap) {
 
-//        ModelMapper modelMapper = new ModelMapper();
+        ModelMapper modelMapper = new ModelMapper();
         if (fieldsToMap.length > 0 ){
-            Set<String> propertiesToMap = Arrays.stream(fieldsToMap).map(IdPropertyNameUtils::transformIdFieldName).collect(Collectors.toSet());
+//            Set<String> propertiesToMap = Arrays.stream(fieldsToMap).map(IdPropertyNameUtils::transformIdFieldName).collect(Collectors.toSet());
+            Set<String> propertiesToMap = Sets.newHashSet(fieldsToMap);
             propertiesToMap.add("id");
             List<String> alreadySeen = new ArrayList<>();
             NamingConvention namingConvention = new NamingConvention() {
                 public boolean applies(String propertyName, PropertyType propertyType) {
                     if (propertyName.startsWith("set") || propertyName.startsWith("get")) {
-                        String property = IdPropertyNameUtils.transformIdFieldName(StringUtils.uncapitalize(propertyName.substring(3)));
+//                        String property = IdPropertyNameUtils.transformIdFieldName(StringUtils.uncapitalize(propertyName.substring(3)));
+                        String property = StringUtils.uncapitalize(propertyName.substring(3));
                         if (alreadySeen.contains(property)){
                             return false;
                         }
@@ -86,7 +88,8 @@ public class BasicDtoMapper implements DtoMapper<IdentifiableEntity<?>,Object> {
                 }
             };
             NamingConvention oldNamingConvention = modelMapper.getConfiguration().getSourceNamingConvention();
-            modelMapper.getConfiguration().setSourceNamingConvention(namingConvention);
+//            modelMapper.getConfiguration().setSourceNamingConvention(namingConvention);
+            modelMapper.getConfiguration().setDestinationNamingConvention(namingConvention);
             T mapped = modelMapper.map(sourceEntity, destinationClass);
             modelMapper.getConfiguration().setSourceNamingConvention(oldNamingConvention);
             return mapped;
