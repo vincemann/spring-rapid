@@ -23,7 +23,7 @@ public class JpaLazyItemService
 
     @Transactional
     @Override
-    public LazyExceptionItem update(LazyExceptionItem update, Boolean full) throws EntityNotFoundException, BadEntityException {
-        return super.update(update, full);
+    public LazyExceptionItem update(LazyExceptionItem update, Boolean full,String... fieldsToRemove) throws EntityNotFoundException, BadEntityException {
+        return super.update(update, full,fieldsToRemove);
     }
 }

@@ -40,7 +40,7 @@ public interface CrudService<E extends IdentifiableEntity<Id>,Id extends Seriali
          * @return updated (database) entity
          */
         @Transactional
-        E update(E entity, Boolean full) throws EntityNotFoundException, BadEntityException;
+        E update(E entity, Boolean full, String... fieldsToRemove) throws EntityNotFoundException, BadEntityException;
 
         // the @Transactional's ara actually needed!
         @Transactional

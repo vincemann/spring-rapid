@@ -52,32 +52,32 @@ public class RelationalEntityAdvice {
 
     @Around("com.github.vincemann.springrapid.core.advice.SystemArchitecture.saveOperation() && " +
             "com.github.vincemann.springrapid.core.advice.SystemArchitecture.repoOperation() && " +
-            "args(updateEntity)")
-    public IdentifiableEntity prePersistEntity(ProceedingJoinPoint joinPoint, IdentifiableEntity updateEntity) throws Throwable {
-        if (updateEntity.getId() == null) {
-            relationalEntityManager.save(updateEntity);
+            "args(entity)")
+    public IdentifiableEntity prePersistEntity(ProceedingJoinPoint joinPoint, IdentifiableEntity entity) throws Throwable {
+        if (entity.getId() == null) {
+            relationalEntityManager.save(entity);
             RelationalAdviceContextHolder.clear();
-            return (IdentifiableEntity) joinPoint.proceed(new IdentifiableEntity[]{updateEntity});
+            return (IdentifiableEntity) joinPoint.proceed(new IdentifiableEntity[]{entity});
         } else {
             RelationalAdviceContext updateContext = RelationalAdviceContextHolder.getContext();
             if (updateContext.getFullUpdate()) {
-                relationalEntityManager.update(updateContext.getDetachedOldEntity(), updateEntity);
+                relationalEntityManager.update(updateContext.getDetachedOldEntity(), entity);
             } else {
-                relationalEntityManager.partialUpdate(updateContext.getDetachedOldEntity(), updateEntity, updateContext.getDetachedUpdateEntity());
+                relationalEntityManager.partialUpdate(updateContext.getDetachedOldEntity(), entity, updateContext.getDetachedUpdateEntity());
             }
             RelationalAdviceContextHolder.clear();
-//            entityManager.refresh(updateEntity);
-//            updateEntity = entityManager.merge(updateEntity);
+//            entityManager.refresh(entity);
+//            entity = entityManager.merge(entity);
 
-//            boolean managed = entityManager.contains(updateEntity);
+//            boolean managed = entityManager.contains(entity);
 //            if (!managed){
-//                IdentifiableEntity merged = entityManager.merge(updateEntity);
+//                IdentifiableEntity merged = entityManager.merge(entity);
 //                boolean managed2 = entityManager.contains(merged);
 ////                entityManager.persist(merged);
 ////                return merged;
 //                return (IdentifiableEntity) joinPoint.proceed(new IdentifiableEntity[]{merged});
 //            }
-            return (IdentifiableEntity) joinPoint.proceed(new IdentifiableEntity[]{updateEntity});
+            return (IdentifiableEntity) joinPoint.proceed(new IdentifiableEntity[]{entity});
 
         }
     }

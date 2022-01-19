@@ -49,9 +49,15 @@ public class Pet extends IdentifiableEntityImpl<Long>{
     private PetType petType;
 
     @JsonManagedReference
-    @OneToMany(fetch = FetchType.EAGER, mappedBy = "pet")
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "pet")
     @BiDirChildCollection(Toy.class)
     private Set<Toy> toys = new HashSet<>();
+
+    @JsonManagedReference
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "pet")
+    @BiDirChildCollection(Illness.class)
+    private Set<Illness> illnesss = new HashSet<>();
+
 
     @ManyToOne
     @JoinColumn(name = "owner_id")
@@ -69,7 +75,7 @@ public class Pet extends IdentifiableEntityImpl<Long>{
         return "Pet{" +
                 "name='" + name + '\'' +
                 ", petType=" + petType +
-                ", illnesses=" +  Arrays.toString(toys.stream().map(Toy::getName).toArray()) +
+                ", toys=" +  Arrays.toString(toys.stream().map(Toy::getName).toArray()) +
                 ", owner=" + (owner==null? "null": owner.getLastName()) +
                 ", birthDate=" + birthDate +
                 '}';

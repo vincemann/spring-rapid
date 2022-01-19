@@ -48,7 +48,7 @@ public class IdResolvingDtoPostProcessor implements DtoPostProcessor<Object, Ide
         //yet unfinished
         List<EntityIdResolver> entityIdResolvers = findResolvers(dto.getClass());
         for (EntityIdResolver entityIdResolver : entityIdResolvers) {
-            entityIdResolver.setResolvedIds(dto, entity,fieldsToCheck);
+            entityIdResolver.setResolvedIds(dto, entity, fieldsToCheck);
         }
     }
 

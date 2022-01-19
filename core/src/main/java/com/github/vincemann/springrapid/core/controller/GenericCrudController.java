@@ -171,7 +171,8 @@ public abstract class GenericCrudController
 //        E merged = mergeUpdateStrategy.merge(patchEntity, JpaUtils.detach(saved), dtoClass);
         log.debug("merged Entity as input for service: ");
         logSecurityContext();
-        E updated = serviceUpdate(merged, Boolean.FALSE);
+        E updated = serviceUpdate(merged, Boolean.FALSE,
+                patchInfo.getRemoveSingleMembersFields().toArray(new String[patchInfo.getRemoveSingleMembersFields().size()]));
         Class<?> resultDtoClass = createDtoClass(getUpdateUrl(), Direction.RESPONSE, updated);
         Object resultDto = dtoMapper.mapToDto(updated, resultDtoClass);
         afterUpdate(resultDto, updated, request, response);
@@ -477,8 +478,8 @@ public abstract class GenericCrudController
     //              SERVICE CALLBACKS
 
 
-    protected E serviceUpdate(E update, boolean full) throws BadEntityException, EntityNotFoundException {
-        return service.update(update, full);
+    protected E serviceUpdate(E update, boolean full, String... propertiesToDelete) throws BadEntityException, EntityNotFoundException {
+        return service.update(update, full,propertiesToDelete);
     }
 
     protected E serviceCreate(E entity) throws BadEntityException {

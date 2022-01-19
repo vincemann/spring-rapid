@@ -26,7 +26,7 @@ public interface CrudServiceExtension<S extends CrudService>
     }
 
     @Override
-    default IdentifiableEntity update(IdentifiableEntity entity, Boolean full) throws EntityNotFoundException, BadEntityException {
+    default IdentifiableEntity update(IdentifiableEntity entity, Boolean full,String... fieldsToRemove) throws EntityNotFoundException, BadEntityException {
         return getNext().update(entity,full);
     }
 

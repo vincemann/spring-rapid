@@ -6,6 +6,7 @@ import com.github.vincemann.springrapid.core.service.exception.EntityNotFoundExc
 import com.github.vincemann.springrapid.core.slicing.ServiceComponent;
 import com.github.vincemann.springrapid.core.util.NullAwareBeanUtils;
 import com.github.vincemann.springrapid.core.util.VerifyEntity;
+import com.google.common.collect.Sets;
 import org.springframework.dao.NonTransientDataAccessException;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.transaction.annotation.Transactional;
@@ -51,7 +52,7 @@ public abstract class JPACrudService
 
     @Transactional
     @Override
-    public E update(E update, Boolean full) throws EntityNotFoundException, BadEntityException {
+    public E update(E update, Boolean full, String... fieldsToRemove) throws EntityNotFoundException, BadEntityException {
         try {
             VerifyEntity.isPresent(update.getId(), "No Id set for update");
             if (full) {
@@ -59,9 +60,10 @@ public abstract class JPACrudService
             } else {
                 E entityToUpdate = findOldEntity(update.getId());
                 //copy non null values from update to entityToUpdate
+                // also copy null values from explicitly given fieldsToRemove
                 // values get copied to target already bc this is transactional
-                // -> update is already happening here
-                NullAwareBeanUtils.copyProperties(entityToUpdate, update);
+                // -> update on managed entity is already happening here
+                NullAwareBeanUtils.copyProperties(entityToUpdate, update, Sets.newHashSet(fieldsToRemove));
                 return getRepository().save(entityToUpdate);
             }
         } catch (NonTransientDataAccessException e) {
