@@ -41,7 +41,7 @@ public class RelationalEntityAdvice {
             "com.github.vincemann.springrapid.core.advice.SystemArchitecture.repoOperation() && " +
             "args(id)")
     public void preRemoveEntity(JoinPoint joinPoint, Serializable id) throws Throwable {
-        Optional<IdentifiableEntity> entity = resolveById(id, joinPoint);
+        Optional<IdentifiableEntity> entity = resolveById(joinPoint,id);
         if (entity.isPresent()) {
             relationalEntityManager.remove(entity.get());
         } else {
@@ -50,14 +50,15 @@ public class RelationalEntityAdvice {
     }
 
 
-    @Around("com.github.vincemann.springrapid.core.advice.SystemArchitecture.saveOperation() && " +
+    @Before("com.github.vincemann.springrapid.core.advice.SystemArchitecture.saveOperation() && " +
             "com.github.vincemann.springrapid.core.advice.SystemArchitecture.repoOperation() && " +
             "args(entity)")
-    public IdentifiableEntity prePersistEntity(ProceedingJoinPoint joinPoint, IdentifiableEntity entity) throws Throwable {
+    public IdentifiableEntity prePersistEntity(JoinPoint joinPoint, IdentifiableEntity entity) throws Throwable {
         if (entity.getId() == null) {
             relationalEntityManager.save(entity);
             RelationalAdviceContextHolder.clear();
-            return (IdentifiableEntity) joinPoint.proceed(new IdentifiableEntity[]{entity});
+//            return (IdentifiableEntity) joinPoint.proceed(new IdentifiableEntity[]{entity});
+            return entity;
         } else {
             RelationalAdviceContext updateContext = RelationalAdviceContextHolder.getContext();
             if (updateContext.getFullUpdate()) {
@@ -77,8 +78,8 @@ public class RelationalEntityAdvice {
 ////                return merged;
 //                return (IdentifiableEntity) joinPoint.proceed(new IdentifiableEntity[]{merged});
 //            }
-            return (IdentifiableEntity) joinPoint.proceed(new IdentifiableEntity[]{entity});
-
+//            return (IdentifiableEntity) joinPoint.proceed(new IdentifiableEntity[]{entity});
+            return entity;
         }
     }
 
@@ -90,7 +91,7 @@ public class RelationalEntityAdvice {
 //        RelationalAdviceContext.clear();
 //    }
 
-    private Optional<IdentifiableEntity> resolveById(Serializable id, JoinPoint joinPoint) throws BadEntityException, IllegalAccessException {
+    private Optional<IdentifiableEntity> resolveById(JoinPoint joinPoint, Serializable id) throws BadEntityException, IllegalAccessException {
         Class entityClass = resolveEntityClass(joinPoint);
 //        log.debug("pre remove hook reached for entity " + entityClass + ":" + id);
         CrudService service = crudServiceLocator.find(entityClass);

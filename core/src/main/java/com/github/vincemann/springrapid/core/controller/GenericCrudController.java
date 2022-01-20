@@ -19,6 +19,7 @@ import com.github.vincemann.springrapid.core.service.CrudService;
 import com.github.vincemann.springrapid.core.service.EndpointService;
 import com.github.vincemann.springrapid.core.service.exception.BadEntityException;
 import com.github.vincemann.springrapid.core.service.exception.EntityNotFoundException;
+import com.github.vincemann.springrapid.core.util.IdPropertyNameUtils;
 import com.github.vincemann.springrapid.core.util.JpaUtils;
 import com.github.vincemann.springrapid.core.util.VerifyEntity;
 import lombok.Getter;
@@ -157,10 +158,9 @@ public abstract class GenericCrudController
         PatchInfo patchInfo = jsonPatchStrategy.findPatchInfo(patchString);
         Object patchDto = dtoMapper.mapToDto(saved, dtoClass,
                 patchInfo.getUpdatedFields().toArray(new String[patchInfo.getUpdatedFields().size()]));
-        // todo apply patch fails
-        jsonPatchStrategy.applyPatch(patchDto, patchString);
+        patchDto = jsonPatchStrategy.applyPatch(patchDto, patchString);
         E patchEntity = dtoMapper.mapToEntity(patchDto, getEntityClass());
-        E merged = mergeUpdateStrategy.merge(patchEntity, JpaUtils.detach(saved), dtoClass);
+//        E merged = mergeUpdateStrategy.merge(patchEntity, JpaUtils.detach(saved), dtoClass);
 
 
 //        patchDto = jsonPatchStrategy.applyPatch(patchDto, patchString);
@@ -172,8 +172,8 @@ public abstract class GenericCrudController
 //        E merged = mergeUpdateStrategy.merge(patchEntity, JpaUtils.detach(saved), dtoClass);
         log.debug("merged Entity as input for service: ");
         logSecurityContext();
-        E updated = serviceUpdate(merged, Boolean.FALSE,
-                patchInfo.getRemoveSingleMembersFields().toArray(new String[patchInfo.getRemoveSingleMembersFields().size()]));
+        E updated = serviceUpdate(patchEntity, Boolean.FALSE, IdPropertyNameUtils.transformIdFieldNames(patchInfo.getRemoveSingleMembersFields()));
+//                patchInfo.getRemoveSingleMembersFields().toArray(new String[.size()]));
         Class<?> resultDtoClass = createDtoClass(getUpdateUrl(), Direction.RESPONSE, updated);
         Object resultDto = dtoMapper.mapToDto(updated, resultDtoClass);
         afterUpdate(resultDto, updated, request, response);

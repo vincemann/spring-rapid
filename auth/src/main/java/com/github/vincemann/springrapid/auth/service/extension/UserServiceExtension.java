@@ -107,8 +107,8 @@ public interface UserServiceExtension<S extends UserService>
 //    }
 
     @Override
-    default AbstractUser update(AbstractUser entity, Boolean full) throws EntityNotFoundException, BadEntityException {
-        return getNext().update(entity,full);
+    default AbstractUser update(AbstractUser entity, Boolean full,String... fieldsToRemove) throws EntityNotFoundException, BadEntityException {
+        return getNext().update(entity,full,fieldsToRemove);
     }
     
 }

@@ -65,7 +65,7 @@ public class UserServiceSecurityExtension
 
     @LogInteraction
     @Override
-    public AbstractUser update(AbstractUser update, Boolean full) throws EntityNotFoundException, BadEntityException {
+    public AbstractUser update(AbstractUser update, Boolean full,String... fieldsToRemove) throws EntityNotFoundException, BadEntityException {
         getSecurityChecker().checkPermission(update, BasePermission.WRITE);
         Optional<AbstractUser<Serializable>> oldUserOp = userService.findById(update.getId());
         VerifyEntity.isPresent(oldUserOp, update.getId(), update.getClass());
@@ -74,7 +74,7 @@ public class UserServiceSecurityExtension
         RapidAuthAuthenticatedPrincipal currPrincipal = securityContextChecker.getSecurityContext().currentPrincipal();
         checkRoleChangingPermissions(oldUser, update, currPrincipal);
 //        getProxyController().overrideDefaultExtension();
-        return getLast().update(update, full);
+        return getLast().update(update, full,fieldsToRemove);
     }
 
     /**

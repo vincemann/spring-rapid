@@ -287,6 +287,7 @@ public class AbstractControllerIntegrationTest<C extends GenericCrudController<?
             toys.add(optionalToy.get());
         }
         System.err.println("Checking pet: " + petName);
+        // todo lazy init exception, merge into transactional context before asserting, os he can load everything he needs
         Assertions.assertEquals(toys, pet.getToys());
     }
 

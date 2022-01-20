@@ -72,6 +72,6 @@ public interface UserService<U extends AbstractUser<ID>, ID extends Serializable
 
 //    @Validated(UserVerifyUtils.UpdateValidation.class)
     @Override
-    U update(U entity, Boolean full) throws EntityNotFoundException,  BadEntityException;
+    U update(U entity, Boolean full, String... fieldsToRemove) throws EntityNotFoundException,  BadEntityException;
 
 }

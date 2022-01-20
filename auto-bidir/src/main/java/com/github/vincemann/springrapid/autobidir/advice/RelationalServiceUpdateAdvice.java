@@ -44,7 +44,7 @@ public class RelationalServiceUpdateAdvice {
     @Before(value = "com.github.vincemann.springrapid.core.advice.SystemArchitecture.updateOperation() && " +
             "com.github.vincemann.springrapid.core.advice.SystemArchitecture.serviceOperation() && " +
             "args(updateEntity,full,fieldsToRemove)")
-    public void preUpdateBiDirEntityWithFieldsToRemove(JoinPoint joinPoint, IdentifiableEntity updateEntity, Boolean full,String... fieldsToRemove) throws EntityNotFoundException, BadEntityException {
+    public void preUpdateBiDirEntityWithFieldsToRemove(JoinPoint joinPoint, IdentifiableEntity updateEntity, Boolean full, String... fieldsToRemove) throws EntityNotFoundException, BadEntityException {
         if (!isRootService(joinPoint.getTarget())) {
             log.debug("ignoring service update advice, bc root service not called yet");
             return;
