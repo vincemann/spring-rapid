@@ -70,14 +70,14 @@ public class Pet extends IdentifiableEntityImpl<Long>{
     @DateTimeFormat(pattern = "yyyy-MM-dd")
     private LocalDate birthDate;
 
-    @Override
-    public String toString() {
-        return "Pet{" +
-                "name='" + name + '\'' +
-                ", petType=" + petType +
-                ", toys=" +  Arrays.toString(toys.stream().map(Toy::getName).toArray()) +
-                ", owner=" + (owner==null? "null": owner.getLastName()) +
-                ", birthDate=" + birthDate +
-                '}';
-    }
+//    @Override
+//    public String toString() {
+//        return "Pet{" +
+//                "name='" + name + '\'' +
+//                ", petType=" + petType +
+//                ", toys=" +  Arrays.toString(toys.stream().map(Toy::getName).toArray()) +
+//                ", owner=" + (owner==null? "null": owner.getLastName()) +
+//                ", birthDate=" + birthDate +
+//                '}';
+//    }
 }

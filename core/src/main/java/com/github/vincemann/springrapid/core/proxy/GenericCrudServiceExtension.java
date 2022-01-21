@@ -24,7 +24,7 @@ public interface GenericCrudServiceExtension<S extends CrudService<E,Id>,E exten
 
     @Override
     default E update(E entity, Boolean full,String... fieldsToRemove) throws EntityNotFoundException, BadEntityException {
-        return getNext().update(entity,full);
+        return getNext().update(entity,full,fieldsToRemove);
     }
 
     @Override
