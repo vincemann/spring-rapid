@@ -34,7 +34,6 @@ public abstract class JPACrudService
         extends AbstractCrudService<E, Id, R> {
 
 
-
     public JPACrudService() {
     }
 
@@ -50,14 +49,26 @@ public abstract class JPACrudService
         }
     }
 
+    @Override
+    public E softUpdate(E update) throws EntityNotFoundException, BadEntityException {
+        VerifyEntity.isPresent(update.getId(), "No Id set for update");
+        try {
+            return getRepository().save(update);
+        } catch (NonTransientDataAccessException e) {
+            // constraints not met, such as foreign key constraints or other db update constraints
+            throw new BadEntityException(e);
+        }
+    }
+
+    @Override
+    public Class<?> getTargetClass() {
+        return null;
+    }
+
     @Transactional
     @Override
-    public E update(E update, Boolean full, String... fieldsToRemove) throws EntityNotFoundException, BadEntityException {
+    public E partialUpdate(E update, String... fieldsToRemove) throws EntityNotFoundException, BadEntityException {
         try {
-            VerifyEntity.isPresent(update.getId(), "No Id set for update");
-            if (full) {
-                return getRepository().save(update);
-            } else {
                 E entityToUpdate = findOldEntity(update.getId());
                 //copy non null values from update to entityToUpdate
                 // also copy null values from explicitly given fieldsToRemove
@@ -65,12 +76,27 @@ public abstract class JPACrudService
                 // -> update on managed entity is already happening here
                 NullAwareBeanUtils.copyProperties(entityToUpdate, update, Sets.newHashSet(fieldsToRemove));
                 return getRepository().save(entityToUpdate);
-            }
+        } catch (NonTransientDataAccessException e) {
+            // constraints not met, such as foreign key constraints or other db entity constraints
+            throw new BadEntityException(e);
+        }
+
+
+
+    }
+
+    @Transactional
+    @Override
+    public E update(E update) throws BadEntityException, EntityNotFoundException {
+        VerifyEntity.isPresent(update.getId(), "No Id set for update");
+        try {
+            return getRepository().save(update);
         } catch (NonTransientDataAccessException e) {
             // constraints not met, such as foreign key constraints or other db entity constraints
             throw new BadEntityException(e);
         }
     }
+
 
 
     @Transactional

@@ -96,9 +96,13 @@ public interface GenericUserServiceExtension<S extends UserService<U,Id>,U exten
         return getNext().toId(id);
     }
 
+    @Override
+    default U partialUpdate(U entity, String... fieldsToRemove) throws EntityNotFoundException, BadEntityException {
+        return getNext().partialUpdate(entity,fieldsToRemove);
+    }
 
     @Override
-    default U update(U entity, Boolean full) throws EntityNotFoundException, BadEntityException {
-        return getNext().update(entity,full);
+    default U update(U entity) throws BadEntityException, EntityNotFoundException {
+        return getNext().update(entity);
     }
 }

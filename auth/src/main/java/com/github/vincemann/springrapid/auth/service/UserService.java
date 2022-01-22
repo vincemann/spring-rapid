@@ -71,7 +71,12 @@ public interface UserService<U extends AbstractUser<ID>, ID extends Serializable
     public abstract ID toId(String id);
 
 //    @Validated(UserVerifyUtils.UpdateValidation.class)
-    @Override
-    U update(U entity, Boolean full, String... fieldsToRemove) throws EntityNotFoundException,  BadEntityException;
 
+
+    // keep it like that, otherwise the AbstractUser type wont be in impl methods
+    @Override
+    U partialUpdate(U entity, String... fieldsToRemove) throws EntityNotFoundException, BadEntityException;
+
+    @Override
+    U update(U entity) throws BadEntityException, EntityNotFoundException;
 }

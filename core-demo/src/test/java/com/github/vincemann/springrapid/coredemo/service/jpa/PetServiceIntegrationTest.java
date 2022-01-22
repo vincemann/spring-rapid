@@ -77,7 +77,7 @@ class PetServiceIntegrationTest
         Pet update = BeanUtils.clone(savedBello);
         update.setPetType(null);
 
-        getTestedService().update(update,true);
+        getTestedService().update(update);
 
         petTypeRepository.deleteAll();
 

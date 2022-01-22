@@ -19,15 +19,19 @@ public interface CrudServiceExtension<S extends CrudService>
             extends CrudService, NextLinkAware<S>{
 
 
-
     @Override
     default Optional findById(Serializable id) throws BadEntityException {
         return getNext().findById(id);
     }
 
     @Override
-    default IdentifiableEntity update(IdentifiableEntity entity, Boolean full,String... fieldsToRemove) throws EntityNotFoundException, BadEntityException {
-        return getNext().update(entity,full,fieldsToRemove);
+    default IdentifiableEntity partialUpdate(IdentifiableEntity entity, String... fieldsToRemove) throws EntityNotFoundException, BadEntityException {
+        return getNext().partialUpdate(entity,fieldsToRemove);
+    }
+
+    @Override
+    default IdentifiableEntity update(IdentifiableEntity entity) throws BadEntityException, EntityNotFoundException {
+        return getNext().update(entity);
     }
 
     @Override

@@ -1,7 +1,6 @@
 package com.github.vincemann.springrapid.core.controller;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.fge.jsonpatch.JsonPatchException;
 import com.github.vincemann.springrapid.core.CoreProperties;
 import com.github.vincemann.springrapid.core.controller.dto.mapper.DelegatingDtoMapper;
@@ -20,7 +19,6 @@ import com.github.vincemann.springrapid.core.service.EndpointService;
 import com.github.vincemann.springrapid.core.service.exception.BadEntityException;
 import com.github.vincemann.springrapid.core.service.exception.EntityNotFoundException;
 import com.github.vincemann.springrapid.core.util.IdPropertyNameUtils;
-import com.github.vincemann.springrapid.core.util.JpaUtils;
 import com.github.vincemann.springrapid.core.util.VerifyEntity;
 import lombok.Getter;
 import lombok.Setter;
@@ -172,7 +170,8 @@ public abstract class GenericCrudController
 //        E merged = mergeUpdateStrategy.merge(patchEntity, JpaUtils.detach(saved), dtoClass);
         log.debug("merged Entity as input for service: ");
         logSecurityContext();
-        E updated = serviceUpdate(patchEntity, Boolean.FALSE, IdPropertyNameUtils.transformIdFieldNames(patchInfo.getRemoveSingleMembersFields()));
+        E updated = servicePartialUpdate(patchEntity,
+                IdPropertyNameUtils.transformIdFieldNames(patchInfo.getRemoveSingleMembersFields()));
 //                patchInfo.getRemoveSingleMembersFields().toArray(new String[.size()]));
         Class<?> resultDtoClass = createDtoClass(getUpdateUrl(), Direction.RESPONSE, updated);
         Object resultDto = dtoMapper.mapToDto(updated, resultDtoClass);
@@ -479,8 +478,8 @@ public abstract class GenericCrudController
     //              SERVICE CALLBACKS
 
 
-    protected E serviceUpdate(E update, boolean full, String... propertiesToDelete) throws BadEntityException, EntityNotFoundException {
-        return service.update(update, full,propertiesToDelete);
+    protected E servicePartialUpdate(E update, String... propertiesToDelete) throws BadEntityException, EntityNotFoundException {
+        return service.partialUpdate(update,propertiesToDelete);
     }
 
     protected E serviceCreate(E entity) throws BadEntityException {

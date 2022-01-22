@@ -179,14 +179,14 @@ public class MockServiceOwnerControllerTest
 
         when(ownerService.findById(owner.getId()))
                 .thenReturn(Optional.of(owner));
-        when(ownerService.update(any(Owner.class), eq(true))).thenReturn(ownerPatch);
+        when(ownerService.update(any(Owner.class))).thenReturn(ownerPatch);
 
         //when
         getMvc().perform(update(addressPatch, owner.getId()))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.address").value(updatedAddress));
 
-        Mockito.verify(ownerService).update(refEq(ownerPatch), anyBoolean());
+        Mockito.verify(ownerService).update(refEq(ownerPatch));
 
     }
 
@@ -201,7 +201,7 @@ public class MockServiceOwnerControllerTest
                 .andExpect(status().isBadRequest());
 
 
-        verify(ownerService, never()).update(any(), any());
+        verify(ownerService, never()).update(any());
     }
 
     @Test
@@ -220,13 +220,13 @@ public class MockServiceOwnerControllerTest
                 .thenReturn(Optional.of(pet));
         when(crudServiceLocator.find(Pet.class))
                 .thenReturn(petService);
-        when(ownerService.update(refEq(ownerPatch), eq(true)))
+        when(ownerService.update(refEq(ownerPatch)))
                 .thenReturn(ownerPatch);
 
         getMvc().perform(update(addPetPatch, owner.getId()))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.petIds[0]").value(petId));
 
-        verify(ownerService).update(refEq(ownerPatch), eq(true));
+        verify(ownerService).update(refEq(ownerPatch));
     }
 }

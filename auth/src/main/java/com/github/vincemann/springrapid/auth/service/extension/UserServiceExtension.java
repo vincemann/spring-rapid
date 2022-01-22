@@ -7,6 +7,7 @@ import com.github.vincemann.springrapid.auth.dto.RequestEmailChangeDto;
 import com.github.vincemann.springrapid.auth.dto.ResetPasswordDto;
 import com.github.vincemann.springrapid.auth.service.AlreadyRegisteredException;
 import com.github.vincemann.springrapid.auth.service.UserService;
+import com.github.vincemann.springrapid.core.model.IdentifiableEntity;
 import com.github.vincemann.springrapid.core.proxy.CrudServiceExtension;
 import com.github.vincemann.springrapid.core.service.exception.BadEntityException;
 import com.github.vincemann.springrapid.core.service.exception.EntityNotFoundException;
@@ -106,9 +107,14 @@ public interface UserServiceExtension<S extends UserService>
 //        getNext().addAuthHeader(response,username,expirationMillis);
 //    }
 
+
     @Override
-    default AbstractUser update(AbstractUser entity, Boolean full,String... fieldsToRemove) throws EntityNotFoundException, BadEntityException {
-        return getNext().update(entity,full,fieldsToRemove);
+    default AbstractUser partialUpdate(AbstractUser entity, String... fieldsToRemove) throws EntityNotFoundException, BadEntityException {
+        return getNext().partialUpdate(entity,fieldsToRemove);
     }
-    
+
+    @Override
+    default AbstractUser update(AbstractUser entity) throws BadEntityException, EntityNotFoundException {
+        return getNext().update(entity);
+    }
 }
