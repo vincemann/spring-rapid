@@ -75,7 +75,7 @@ public class UserServiceSecurityExtension
     public AbstractUser update(AbstractUser entity) throws BadEntityException, EntityNotFoundException {
         checkUpdatePermissions(entity);
         // todo why getLast
-        return getLast().update(entity);
+        return getLast().fullUpdate(entity);
     }
 
     protected void checkUpdatePermissions(AbstractUser update) throws EntityNotFoundException, BadEntityException {

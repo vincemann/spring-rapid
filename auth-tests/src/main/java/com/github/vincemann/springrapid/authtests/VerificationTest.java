@@ -124,7 +124,7 @@ public class VerificationTest extends AbstractRapidAuthIntegrationTest {
 
 				// Credentials updated after the verification token is issued
 				savedUser.setCredentialsUpdatedMillis(System.currentTimeMillis());
-				getUserService().update(savedUser);
+				getUserService().fullUpdate(savedUser);
 			}
 		});
 

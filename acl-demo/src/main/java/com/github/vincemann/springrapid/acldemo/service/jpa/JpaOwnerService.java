@@ -53,7 +53,7 @@ public class JpaOwnerService
         }
         user.getRoles().add(MyRoles.OWNER);
         try {
-            userService.update(user);
+            userService.fullUpdate(user);
         } catch (EntityNotFoundException e) {
             throw new RuntimeException(e);
         }

@@ -289,9 +289,9 @@ public abstract class AbstractUserService
 
     @Transactional(propagation = Propagation.REQUIRED, readOnly = false)
     @Override
-    public U update(U update) throws BadEntityException, EntityNotFoundException {
+    public U fullUpdate(U update) throws BadEntityException, EntityNotFoundException {
         updateSpecialUserFields(update);
-        return super.update(update);
+        return super.fullUpdate(update);
     }
 
     protected void updateSpecialUserFields(U update) throws BadEntityException, EntityNotFoundException {
@@ -384,7 +384,6 @@ public abstract class AbstractUserService
         U saved;
         try {
             // todo changed to repo
-
             saved = softUpdate(user);
             // after successful commit, mails a link to the user
 //            TransactionalUtils.afterCommit(() -> mailChangeEmailLink(saved));

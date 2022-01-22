@@ -10,7 +10,6 @@ import com.github.vincemann.springrapid.auth.service.UserService;
 import com.github.vincemann.springrapid.core.proxy.GenericCrudServiceExtension;
 import com.github.vincemann.springrapid.core.service.exception.BadEntityException;
 import com.github.vincemann.springrapid.core.service.exception.EntityNotFoundException;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.io.Serializable;
 import java.util.Map;
@@ -102,7 +101,12 @@ public interface GenericUserServiceExtension<S extends UserService<U,Id>,U exten
     }
 
     @Override
-    default U update(U entity) throws BadEntityException, EntityNotFoundException {
-        return getNext().update(entity);
+    default U fullUpdate(U entity) throws BadEntityException, EntityNotFoundException {
+        return getNext().fullUpdate(entity);
+    }
+
+    @Override
+    default U softUpdate(U entity) throws EntityNotFoundException, BadEntityException {
+        return getNext().softUpdate(entity);
     }
 }

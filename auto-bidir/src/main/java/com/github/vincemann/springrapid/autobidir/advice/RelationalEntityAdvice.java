@@ -9,8 +9,6 @@ import com.github.vincemann.springrapid.core.service.exception.BadEntityExceptio
 import com.github.vincemann.springrapid.core.service.locator.CrudServiceLocator;
 import lombok.extern.slf4j.Slf4j;
 import org.aspectj.lang.JoinPoint;
-import org.aspectj.lang.ProceedingJoinPoint;
-import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Before;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,8 +31,9 @@ public class RelationalEntityAdvice {
 
     private CrudServiceLocator crudServiceLocator;
     private RelationalEntityManager relationalEntityManager;
-    @PersistenceContext
-    private EntityManager entityManager;
+
+//    @PersistenceContext
+//    private EntityManager entityManager;
 
 
     @Before("com.github.vincemann.springrapid.core.advice.SystemArchitecture.deleteOperation() && " +
@@ -61,12 +60,21 @@ public class RelationalEntityAdvice {
             return entity;
         } else {
             RelationalAdviceContext updateContext = RelationalAdviceContextHolder.getContext();
-            if (updateContext.getFullUpdate()) {
-                relationalEntityManager.update(updateContext.getDetachedOldEntity(), entity);
-            } else {
-                relationalEntityManager.partialUpdate(updateContext.getDetachedOldEntity(), entity, updateContext.getDetachedUpdateEntity());
+            switch (updateContext.getUpdateKind()){
+                case FULL:
+                    relationalEntityManager.update(updateContext.getDetachedOldEntity(), entity);
+                    RelationalAdviceContextHolder.clear();
+                    break;
+                case PARTIAL:
+                    relationalEntityManager.partialUpdate(updateContext.getDetachedOldEntity(), entity, updateContext.getDetachedUpdateEntity());
+                    RelationalAdviceContextHolder.clear();
+                    break;
+                case SOFT:
+                    RelationalAdviceContextHolder.clear();
+                    break;
             }
-            RelationalAdviceContextHolder.clear();
+            return entity;
+
 //            entityManager.refresh(entity);
 //            entity = entityManager.merge(entity);
 
@@ -79,7 +87,6 @@ public class RelationalEntityAdvice {
 //                return (IdentifiableEntity) joinPoint.proceed(new IdentifiableEntity[]{merged});
 //            }
 //            return (IdentifiableEntity) joinPoint.proceed(new IdentifiableEntity[]{entity});
-            return entity;
         }
     }
 

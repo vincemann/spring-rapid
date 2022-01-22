@@ -147,7 +147,7 @@ public class ChangeEmailTest extends AbstractRapidAuthIntegrationTest {
 			public void run() {
 				AbstractUser<Long> user = getUserService().findById(getUser().getId()).get();
 				user.setCredentialsUpdatedMillis(System.currentTimeMillis());
-				getUserService().update(user);
+				getUserService().fullUpdate(user);
 			}
 		});
 
@@ -193,7 +193,7 @@ public class ChangeEmailTest extends AbstractRapidAuthIntegrationTest {
 			public void run() {
 				AbstractUser<Long> user = getUserService().findById(getSecondUser().getId()).get();
 				user.setEmail(NEW_EMAIL);
-				getUserService().update(user);
+				getUserService().fullUpdate(user);
 			}
 		});
 

@@ -87,7 +87,7 @@ public abstract class JPACrudService
 
     @Transactional
     @Override
-    public E update(E update) throws BadEntityException, EntityNotFoundException {
+    public E fullUpdate(E update) throws BadEntityException, EntityNotFoundException {
         VerifyEntity.isPresent(update.getId(), "No Id set for update");
         try {
             return getRepository().save(update);

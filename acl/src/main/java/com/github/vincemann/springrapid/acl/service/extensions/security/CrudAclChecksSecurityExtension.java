@@ -38,9 +38,9 @@ public class CrudAclChecksSecurityExtension
     }
 
     @Override
-    public IdentifiableEntity update(IdentifiableEntity entity) throws BadEntityException, EntityNotFoundException {
+    public IdentifiableEntity fullUpdate(IdentifiableEntity entity) throws BadEntityException, EntityNotFoundException {
         getSecurityChecker().checkPermission(entity,BasePermission.WRITE);
-        return getNext().update(entity);
+        return getNext().fullUpdate(entity);
     }
 
     @Override

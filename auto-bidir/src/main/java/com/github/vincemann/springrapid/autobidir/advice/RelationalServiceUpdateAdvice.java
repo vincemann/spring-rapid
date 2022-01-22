@@ -26,40 +26,53 @@ public class RelationalServiceUpdateAdvice {
     private EntityManager entityManager;
     private EntityLocator entityLocator;
 
-    @Before(value = "com.github.vincemann.springrapid.core.advice.SystemArchitecture.updateOperation() && " +
+    @Before(value = "com.github.vincemann.springrapid.core.advice.SystemArchitecture.fullUpdateOperation() && " +
             "com.github.vincemann.springrapid.core.advice.SystemArchitecture.serviceOperation() && " +
             "args(updateEntity)")
-    public void preUpdateBiDirEntity(JoinPoint joinPoint, IdentifiableEntity updateEntity) throws EntityNotFoundException, BadEntityException {
-        preUpdateBiDirEntityWithFieldsToRemove(joinPoint, updateEntity, true);
+    public void preFullUpdateBiDirEntity(JoinPoint joinPoint, IdentifiableEntity updateEntity) throws EntityNotFoundException, BadEntityException {
+        preUpdateBiDirEntity(joinPoint, updateEntity, RelationalAdviceContext.UpdateKind.FULL);
+    }
+
+    @Before(value = "com.github.vincemann.springrapid.core.advice.SystemArchitecture.partialUpdateOperation() && " +
+            "com.github.vincemann.springrapid.core.advice.SystemArchitecture.serviceOperation() && " +
+            "args(updateEntity,fieldsToRemove)")
+    public void prePartialUpdateBiDirEntity(JoinPoint joinPoint, IdentifiableEntity updateEntity,String... fieldsToRemove) throws EntityNotFoundException, BadEntityException {
+        preUpdateBiDirEntity(joinPoint,updateEntity,RelationalAdviceContext.UpdateKind.PARTIAL);
+    }
+
+    @Before(value = "com.github.vincemann.springrapid.core.advice.SystemArchitecture.softUpdateOperation() && " +
+            "com.github.vincemann.springrapid.core.advice.SystemArchitecture.serviceOperation() && " +
+            "args(updateEntity)")
+    public void preSoftUpdateBiDirEntity(JoinPoint joinPoint, IdentifiableEntity updateEntity) throws EntityNotFoundException, BadEntityException {
+        preUpdateBiDirEntity(joinPoint, updateEntity, RelationalAdviceContext.UpdateKind.SOFT);
     }
 
 
-    @Before(value = "com.github.vincemann.springrapid.core.advice.SystemArchitecture.updateOperation() && " +
-            "com.github.vincemann.springrapid.core.advice.SystemArchitecture.serviceOperation() && " +
-            "args(updateEntity,full)")
-    public void preUpdateBiDirEntity(JoinPoint joinPoint, IdentifiableEntity updateEntity, Boolean full) throws EntityNotFoundException, BadEntityException {
-        preUpdateBiDirEntityWithFieldsToRemove(joinPoint,updateEntity,full);
-    }
 
-    @Before(value = "com.github.vincemann.springrapid.core.advice.SystemArchitecture.updateOperation() && " +
-            "com.github.vincemann.springrapid.core.advice.SystemArchitecture.serviceOperation() && " +
-            "args(updateEntity,full,fieldsToRemove)")
-    public void preUpdateBiDirEntityWithFieldsToRemove(JoinPoint joinPoint, IdentifiableEntity updateEntity, Boolean full, String... fieldsToRemove) throws EntityNotFoundException, BadEntityException {
+    protected void preUpdateBiDirEntity(JoinPoint joinPoint, IdentifiableEntity updateEntity, RelationalAdviceContext.UpdateKind updateKind, String... fieldsToRemove) throws EntityNotFoundException, BadEntityException {
         if (!isRootService(joinPoint.getTarget())) {
             log.debug("ignoring service update advice, bc root service not called yet");
             return;
         }
-        IdentifiableEntity detachedOldEntity = BeanUtils.clone(entityLocator.findEntity(updateEntity));
-        entityManager.detach(detachedOldEntity);
 
-        IdentifiableEntity detachedUpdateEntity = BeanUtils.clone(updateEntity);
-        entityManager.detach(detachedUpdateEntity);
+        RelationalAdviceContext updateContext;
+        if (updateKind.equals(RelationalAdviceContext.UpdateKind.SOFT)){
+             updateContext = RelationalAdviceContext.builder()
+                    .updateKind(updateKind)
+                    .build();
+        }else {
+            IdentifiableEntity detachedOldEntity = BeanUtils.clone(entityLocator.findEntity(updateEntity));
+            entityManager.detach(detachedOldEntity);
 
-        RelationalAdviceContext updateContext = RelationalAdviceContext.builder()
-                .detachedUpdateEntity(detachedUpdateEntity)
-                .detachedOldEntity(detachedOldEntity)
-                .fullUpdate(full)
-                .build();
+            IdentifiableEntity detachedUpdateEntity = BeanUtils.clone(updateEntity);
+            entityManager.detach(detachedUpdateEntity);
+
+            updateContext = RelationalAdviceContext.builder()
+                    .detachedUpdateEntity(detachedUpdateEntity)
+                    .detachedOldEntity(detachedOldEntity)
+                    .updateKind(updateKind)
+                    .build();
+        }
         RelationalAdviceContextHolder.setContext(updateContext);
     }
 

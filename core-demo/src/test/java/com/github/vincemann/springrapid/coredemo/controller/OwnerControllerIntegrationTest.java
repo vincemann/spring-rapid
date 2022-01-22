@@ -325,6 +325,8 @@ public class OwnerControllerIntegrationTest
         assertPetHasOwner(BELLA,null);
     }
 
+
+    // todo fails when run with all other tests bc of some state probably in RelationalAdviceContextHolder
     @Test
     public void canRemoveOneOfManyHobbiesFromOwner_viaUpdate() throws Exception {
         String hobbyToRemove = "bodybuilding";

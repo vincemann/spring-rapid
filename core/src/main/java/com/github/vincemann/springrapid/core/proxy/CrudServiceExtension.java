@@ -1,12 +1,10 @@
 package com.github.vincemann.springrapid.core.proxy;
 
-import com.github.vincemann.aoplog.api.LogConfig;
 import com.github.vincemann.aoplog.api.LogInteraction;
 import com.github.vincemann.springrapid.core.model.IdentifiableEntity;
 import com.github.vincemann.springrapid.core.service.CrudService;
 import com.github.vincemann.springrapid.core.service.exception.BadEntityException;
 import com.github.vincemann.springrapid.core.service.exception.EntityNotFoundException;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.io.Serializable;
 import java.util.Optional;
@@ -30,8 +28,8 @@ public interface CrudServiceExtension<S extends CrudService>
     }
 
     @Override
-    default IdentifiableEntity update(IdentifiableEntity entity) throws BadEntityException, EntityNotFoundException {
-        return getNext().update(entity);
+    default IdentifiableEntity fullUpdate(IdentifiableEntity entity) throws BadEntityException, EntityNotFoundException {
+        return getNext().fullUpdate(entity);
     }
 
     @Override
@@ -42,6 +40,11 @@ public interface CrudServiceExtension<S extends CrudService>
     @Override
     default void deleteById(Serializable id) throws EntityNotFoundException, BadEntityException {
         getNext().deleteById(id);
+    }
+
+    @Override
+    default IdentifiableEntity softUpdate(IdentifiableEntity entity) throws EntityNotFoundException, BadEntityException {
+        return getNext().softUpdate(entity);
     }
 
     @Override

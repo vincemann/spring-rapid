@@ -10,8 +10,15 @@ import lombok.Setter;
 //@AllArgsConstructor
 @Builder
 public class RelationalAdviceContext {
+
+    public enum UpdateKind{
+        FULL,
+        PARTIAL,
+        SOFT
+    }
+
     public IdentifiableEntity detachedOldEntity;
     private IdentifiableEntity detachedUpdateEntity;
-    private Boolean fullUpdate;
+    private UpdateKind updateKind;
 
 }
