@@ -8,6 +8,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.modelmapper.*;
+import org.modelmapper.convention.MatchingStrategies;
 import org.modelmapper.internal.InheritingConfiguration;
 import org.modelmapper.spi.NamingConvention;
 import org.modelmapper.spi.PropertyType;
@@ -55,7 +56,8 @@ public class BasicDtoMapper implements DtoMapper<IdentifiableEntity<?>,Object> {
 //            });
 //            this.modelMapper.getConfiguration().setSkipNullEnabled(true);
             // todo will always create emtpy owner object as member of pet with id 0, instead of leaving owner field null....
-            return this.modelMapper.map(source, destinationClass);
+//            ModelMapper modelMapper = new ModelMapper();
+            return modelMapper.map(source, destinationClass);
         }catch (MappingException e){
             throw new BadEntityException(e);
         }
@@ -103,6 +105,8 @@ public class BasicDtoMapper implements DtoMapper<IdentifiableEntity<?>,Object> {
     @Autowired
     public void injectModelMapper(ModelMapper modelMapper) {
         this.modelMapper = modelMapper;
+        this.modelMapper.getConfiguration()
+                .setMatchingStrategy(MatchingStrategies.STRICT);
     }
 
 }

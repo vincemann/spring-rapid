@@ -114,6 +114,7 @@ public class OwnerControllerTest extends AbstractControllerIntegrationTest<Owner
                         .header(HttpHeaders.AUTHORIZATION, token),
                         FullPetDto.class);
 
+        dbBella = petRepository.findByName(BELLA).get();
         com.github.vincemann.springrapid.acldemo.model.PetType dbCatType = petTypeRepository.findById(savedCatPetType.getId()).get();
         Assertions.assertEquals(dbCatType, dbBella.getPetType());
     }

@@ -334,7 +334,7 @@ public class OwnerControllerIntegrationTest
         kahn.setHobbies(hobbies);
         ReadOwnOwnerDto createdKahnDto = saveOwnerLinkedToPets(kahn);
 
-        String updateJson = createUpdateJsonLine("remove", "/hobbies",hobbyToRemove);
+        String updateJson = createUpdateJsonLine("remove", "/hobbies", hobbyToRemove);
         String jsonResponse = getMvc().perform(update(createUpdateJsonRequest(updateJson), createdKahnDto.getId())).andReturn().getResponse().getContentAsString();
         ReadOwnOwnerDto responseDto = deserialize(jsonResponse, ReadOwnOwnerDto.class);
         Assertions.assertFalse(responseDto.getHobbies().contains(hobbyToRemove));

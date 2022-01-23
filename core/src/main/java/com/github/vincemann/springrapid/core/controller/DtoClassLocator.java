@@ -2,6 +2,7 @@ package com.github.vincemann.springrapid.core.controller;
 
 import com.github.vincemann.aoplog.api.AopLoggable;
 import com.github.vincemann.aoplog.api.LogInteraction;
+import com.github.vincemann.aoplog.api.LogParam;
 import com.github.vincemann.springrapid.core.controller.dto.mapper.context.DtoMappingContext;
 import com.github.vincemann.springrapid.core.controller.dto.mapper.context.DtoRequestInfo;
 
@@ -10,5 +11,5 @@ import com.github.vincemann.springrapid.core.controller.dto.mapper.context.DtoRe
  */
 @LogInteraction
 public interface DtoClassLocator extends AopLoggable {
-    Class<?> find(DtoRequestInfo mappingInfo, DtoMappingContext context);
+    Class<?> find(@LogParam DtoRequestInfo mappingInfo, DtoMappingContext context);
 }
