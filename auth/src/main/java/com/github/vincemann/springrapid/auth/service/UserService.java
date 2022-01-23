@@ -79,4 +79,7 @@ public interface UserService<U extends AbstractUser<ID>, ID extends Serializable
 
     @Override
     U fullUpdate(U entity) throws BadEntityException, EntityNotFoundException;
+
+    @Override
+    U softUpdate(U entity) throws EntityNotFoundException, BadEntityException;
 }

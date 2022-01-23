@@ -157,6 +157,7 @@ public abstract class GenericCrudController
         Object patchDto = dtoMapper.mapToDto(saved, dtoClass,
                 patchInfo.getUpdatedFields().toArray(new String[patchInfo.getUpdatedFields().size()]));
         patchDto = jsonPatchStrategy.applyPatch(patchDto, patchString);
+        // map to dto mapped schon nur die updated properties, also muss es bei mapToEntity nicht erneut limited werden auf mapped properties
         E patchEntity = dtoMapper.mapToEntity(patchDto, getEntityClass());
 //        E merged = mergeUpdateStrategy.merge(patchEntity, JpaUtils.detach(saved), dtoClass);
 

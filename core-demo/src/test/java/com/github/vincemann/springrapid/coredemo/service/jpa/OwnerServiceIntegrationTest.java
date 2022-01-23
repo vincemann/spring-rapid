@@ -319,7 +319,7 @@ class OwnerServiceIntegrationTest
         Pet dbKitty = petRepository.findByName(KITTY).get();
         Pet dbBella = petRepository.findByName(BELLA).get();
         Owner dbKahn = ownerRepository.findByLastName(KAHN).get();
-        // check if bidir relation ships were managed
+        // check if bidir relation ships were managed properly
         Assertions.assertNull(dbKitty.getOwner());
         Assertions.assertNull(dbBella.getOwner());
         Assertions.assertEquals(dbKahn, dbBello.getOwner());

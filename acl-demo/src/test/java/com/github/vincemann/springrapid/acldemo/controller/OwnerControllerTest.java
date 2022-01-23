@@ -108,14 +108,14 @@ public class OwnerControllerTest extends AbstractControllerIntegrationTest<Owner
         Pet dbBella = petRepository.findByName(BELLA).get();
         Owner dbOwner = ownerRepository.findByLastName(OWNER_KAHN).get();
         String updateJson = createUpdateJsonRequest(
-                createUpdateJsonLine("replace", "/petTypeId", savedDogPetType.getId().toString())
+                createUpdateJsonLine("replace", "/petTypeId", savedCatPetType.getId().toString())
         );
         FullPetDto updatedPetDto = performDs2xx(petController.update(updateJson, dbBella.getId().toString())
                         .header(HttpHeaders.AUTHORIZATION, token),
                         FullPetDto.class);
 
-        com.github.vincemann.springrapid.acldemo.model.PetType dbDgoType = petTypeRepository.findById(savedDogPetType.getId()).get();
-        Assertions.assertEquals(dbDgoType, dbBella.getPetType());
+        com.github.vincemann.springrapid.acldemo.model.PetType dbCatType = petTypeRepository.findById(savedCatPetType.getId()).get();
+        Assertions.assertEquals(dbCatType, dbBella.getPetType());
     }
 
 

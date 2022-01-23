@@ -1,12 +1,13 @@
 package com.github.vincemann.springrapid.acldemo.dto.user;
 
+import com.github.vincemann.springrapid.core.model.IdentifiableEntityImpl;
 import lombok.*;
 
 import java.util.HashSet;
 import java.util.Set;
 
 @Getter @Setter @ToString @NoArgsConstructor
-public class FullUserDto {
+public class FullUserDto extends IdentifiableEntityImpl<Long> {
     private String uuid;
     private String email;
     private String password;

@@ -80,9 +80,6 @@ public abstract class JPACrudService
             // constraints not met, such as foreign key constraints or other db entity constraints
             throw new BadEntityException(e);
         }
-
-
-
     }
 
     @Transactional

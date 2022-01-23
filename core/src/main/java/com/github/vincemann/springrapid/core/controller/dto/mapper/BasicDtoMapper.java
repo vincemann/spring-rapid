@@ -7,10 +7,7 @@ import com.google.common.collect.Sets;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.modelmapper.MappingException;
-import org.modelmapper.ModelMapper;
-import org.modelmapper.PropertyMap;
-import org.modelmapper.TypeMap;
+import org.modelmapper.*;
 import org.modelmapper.internal.InheritingConfiguration;
 import org.modelmapper.spi.NamingConvention;
 import org.modelmapper.spi.PropertyType;
@@ -52,7 +49,13 @@ public class BasicDtoMapper implements DtoMapper<IdentifiableEntity<?>,Object> {
     @Override
     public <T extends IdentifiableEntity<?>> T mapToEntity(Object source, Class<T> destinationClass) throws BadEntityException {
         try {
-            return modelMapper.map(source, destinationClass);
+//            this.modelMapper.getConfiguration().setPropertyCondition(Conditions.isNotNull());
+//            this.modelMapper.getConfiguration().setPropertyCondition( ctx -> {
+//                return !ctx.getDestinationType().getSimpleName().equals("Owner");
+//            });
+//            this.modelMapper.getConfiguration().setSkipNullEnabled(true);
+            // todo will always create emtpy owner object as member of pet with id 0, instead of leaving owner field null....
+            return this.modelMapper.map(source, destinationClass);
         }catch (MappingException e){
             throw new BadEntityException(e);
         }
@@ -87,11 +90,11 @@ public class BasicDtoMapper implements DtoMapper<IdentifiableEntity<?>,Object> {
                     }
                 }
             };
-            NamingConvention oldNamingConvention = modelMapper.getConfiguration().getSourceNamingConvention();
+            NamingConvention oldNamingConvention = modelMapper.getConfiguration().getDestinationNamingConvention();
 //            modelMapper.getConfiguration().setSourceNamingConvention(namingConvention);
             modelMapper.getConfiguration().setDestinationNamingConvention(namingConvention);
             T mapped = modelMapper.map(sourceEntity, destinationClass);
-            modelMapper.getConfiguration().setSourceNamingConvention(oldNamingConvention);
+            modelMapper.getConfiguration().setDestinationNamingConvention(oldNamingConvention);
             return mapped;
         }
         return modelMapper.map(sourceEntity, destinationClass);

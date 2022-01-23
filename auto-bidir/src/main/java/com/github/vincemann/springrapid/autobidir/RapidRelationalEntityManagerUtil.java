@@ -59,7 +59,6 @@ public class RapidRelationalEntityManagerUtil implements RelationalEntityManager
                     relationalEntityTypes.add(RelationalEntityType.BiDirChild);
                 }
             }
-
             // dont apply filter bc we also need to check for sets of IdentifiableEntities
         }/*, field -> IdentifiableEntity.class.isAssignableFrom(field.getType())*/);
         return relationalEntityTypes;
@@ -77,8 +76,8 @@ public class RapidRelationalEntityManagerUtil implements RelationalEntityManager
     @Override
     public void linkBiDirParentsChild(IdentifiableEntity child, String... membersToCheck) {
         //set backreferences
-        for (IdentifiableEntity parent : findAllBiDirParents(child,membersToCheck)) {
-            linkBiDirChild(parent, child);
+        for (IdentifiableEntity parent : findAllBiDirParents(child, membersToCheck)) {
+            linkBiDirChild(parent, child, membersToCheck);
         }
     }
 
@@ -90,7 +89,7 @@ public class RapidRelationalEntityManagerUtil implements RelationalEntityManager
      */
     public Map<Class<IdentifiableEntity>,Collection<IdentifiableEntity>> findBiDirParentCollections(IdentifiableEntity child, String... membersToCheck){
         assertEntityRelationType(child, RelationalEntityType.BiDirChild);
-        return findEntityCollections(child,BiDirParentCollection.class,membersToCheck);
+        return findEntityCollections(child, BiDirParentCollection.class, membersToCheck);
     }
     /**
      *
@@ -98,12 +97,12 @@ public class RapidRelationalEntityManagerUtil implements RelationalEntityManager
      */
     public Collection<IdentifiableEntity> findSingleBiDirParents(IdentifiableEntity child, String... membersToCheck) {
         assertEntityRelationType(child, RelationalEntityType.BiDirChild);
-        return findSingleEntities(child,BiDirParentEntity.class,membersToCheck);
+        return findSingleEntities(child, BiDirParentEntity.class, membersToCheck);
     }
 
     public Collection<IdentifiableEntity> findAllBiDirParents(IdentifiableEntity child, String... membersToCheck) {
         assertEntityRelationType(child, RelationalEntityType.BiDirChild);
-        return findAllEntities(child,BiDirParentEntity.class,BiDirParentCollection.class,membersToCheck);
+        return findAllEntities(child, BiDirParentEntity.class, BiDirParentCollection.class, membersToCheck);
     }
 
 
@@ -111,16 +110,15 @@ public class RapidRelationalEntityManagerUtil implements RelationalEntityManager
     public void linkBiDirParent(IdentifiableEntity child, IdentifiableEntity parent, String... membersToCheck) throws UnknownParentTypeException {
         assertEntityRelationType(child, RelationalEntityType.BiDirChild);
         assertEntityRelationType(parent, RelationalEntityType.BiDirParent);
-        linkEntity(child, parent,BiDirParentEntity.class,BiDirParentCollection.class,membersToCheck);
+        linkEntity(child, parent, BiDirParentEntity.class, BiDirParentCollection.class, membersToCheck);
     }
 
 
     @Override
     public void unlinkBiDirParentsFrom(IdentifiableEntity child, String... membersToCheck) throws UnknownChildTypeException, UnknownParentTypeException{
-//        for(IdentifiableEntity parent: findSingleBiDirParents(child,membersToCheck)){
-        for(IdentifiableEntity parent: findAllBiDirParents(child,membersToCheck)){
+        for(IdentifiableEntity parent: findAllBiDirParents(child, membersToCheck)){
             if(parent!=null) {
-                unlinkBiDirParent(child, parent);
+                unlinkBiDirParent(child, parent, membersToCheck);
             }else {
                 log.warn("Parent Reference of BiDirChild with type: "+child.getClass().getSimpleName()+" was not set when deleting -> parent was deleted before child");
             }
@@ -137,7 +135,7 @@ public class RapidRelationalEntityManagerUtil implements RelationalEntityManager
 
     public void unlinkBiDirParentsChild(IdentifiableEntity child, String... membersToCheck) throws UnknownEntityTypeException {
         for (IdentifiableEntity parent : findAllBiDirParents(child,membersToCheck)) {
-            unlinkBiDirChild(parent,child);
+            unlinkBiDirChild(parent,child, membersToCheck);
         }
     }
 
@@ -149,7 +147,7 @@ public class RapidRelationalEntityManagerUtil implements RelationalEntityManager
 
     public void linkBiDirChildrensParent(IdentifiableEntity parent, String... membersToCheck) {
         for (IdentifiableEntity child : findAllBiDirChildren(parent,membersToCheck)) {
-            linkBiDirParent(child, parent);
+            linkBiDirParent(child, parent, membersToCheck);
         }
     }
 
@@ -199,7 +197,7 @@ public class RapidRelationalEntityManagerUtil implements RelationalEntityManager
      */
     public void unlinkBiDirChildrensParent(IdentifiableEntity parent, String... membersToCheck) throws UnknownParentTypeException{
         for (IdentifiableEntity child : findAllBiDirChildren(parent,membersToCheck)) {
-            unlinkBiDirParent(child,parent);
+            unlinkBiDirParent(child,parent, membersToCheck);
         }
 
     }

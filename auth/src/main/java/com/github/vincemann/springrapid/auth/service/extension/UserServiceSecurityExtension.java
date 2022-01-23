@@ -53,6 +53,19 @@ public class UserServiceSecurityExtension
         return getNext().signupAdmin(admin);
     }
 
+    @LogInteraction
+    @Override
+    public AbstractUser fullUpdate(AbstractUser entity) throws BadEntityException, EntityNotFoundException {
+        checkUpdatePermissions(entity);
+        return getLast().fullUpdate(entity);
+    }
+
+    @Override
+    public AbstractUser softUpdate(AbstractUser entity) throws EntityNotFoundException, BadEntityException {
+        checkUpdatePermissions(entity);
+        // todo why getLast
+        return getLast().softUpdate(entity);
+    }
 
     // everybody must be able to do this
 //    @LogInteraction
@@ -70,13 +83,6 @@ public class UserServiceSecurityExtension
         return getLast().partialUpdate(entity,fieldsToRemove);
     }
 
-    @LogInteraction
-    @Override
-    public AbstractUser update(AbstractUser entity) throws BadEntityException, EntityNotFoundException {
-        checkUpdatePermissions(entity);
-        // todo why getLast
-        return getLast().fullUpdate(entity);
-    }
 
     protected void checkUpdatePermissions(AbstractUser update) throws EntityNotFoundException, BadEntityException {
         getSecurityChecker().checkPermission(update, BasePermission.WRITE);

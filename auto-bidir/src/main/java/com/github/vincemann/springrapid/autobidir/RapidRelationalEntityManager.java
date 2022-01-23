@@ -80,11 +80,11 @@ public class RapidRelationalEntityManager implements RelationalEntityManager {
 
         if (relationalEntityTypes.contains(RelationalEntityType.BiDirParent)) {
             log.debug("applying pre full-update BiDirParent logic for: " + updateEntity.getClass());
-            updateBiDirParentRelations(oldEntity, updateEntity);
+            updateBiDirParentRelations(oldEntity, updateEntity,membersToCheck);
         }
         if (relationalEntityTypes.contains(RelationalEntityType.BiDirChild)) {
             log.debug("applying pre full-update BiDirChild logic for: " + updateEntity.getClass());
-            updateBiDirChildRelations(oldEntity, updateEntity);
+            updateBiDirChildRelations(oldEntity, updateEntity, membersToCheck);
         }
 
         return updateEntity;
@@ -92,8 +92,8 @@ public class RapidRelationalEntityManager implements RelationalEntityManager {
 
     public Collection<IdentifiableEntity> updateBiDirChildRelations(IdentifiableEntity oldChild, IdentifiableEntity child, String... membersToCheck) throws BadEntityException, EntityNotFoundException {
 
-        Collection<IdentifiableEntity> oldParents = relationalEntityManagerUtil.findAllBiDirParents(oldChild);
-        Collection<IdentifiableEntity> newParents = relationalEntityManagerUtil.findAllBiDirParents(child);
+        Collection<IdentifiableEntity> oldParents = relationalEntityManagerUtil.findAllBiDirParents(oldChild,membersToCheck);
+        Collection<IdentifiableEntity> newParents = relationalEntityManagerUtil.findAllBiDirParents(child, membersToCheck);
 
         //find parents to unlink
         List<IdentifiableEntity> removedParents = new ArrayList<>();
@@ -120,13 +120,13 @@ public class RapidRelationalEntityManager implements RelationalEntityManager {
         for (IdentifiableEntity removedParent : removedParents) {
             log.debug("update: unlinking parent: " + removedParent + " from child: " + child);
 //            relationalEntityManagerUtil.unlinkBiDirChild(removedParent, oldChild);
-            relationalEntityManagerUtil.unlinkBiDirChild(removedParent, child);  // somehow does not make a difference but makes more sense like that imo
+            relationalEntityManagerUtil.unlinkBiDirChild(removedParent, child, membersToCheck);  // somehow does not make a difference but makes more sense like that imo
         }
 
         // link added Parent to child
         for (IdentifiableEntity addedParent : addedParents) {
             log.debug("update: linking parent: " + addedParent + " to child: " + child);
-            relationalEntityManagerUtil.linkBiDirChild(addedParent, child);
+            relationalEntityManagerUtil.linkBiDirChild(addedParent, child, membersToCheck);
             // new parents may be detached, so merge them, must happen after linking!
             entityManager.merge(addedParent);
         }
@@ -136,8 +136,8 @@ public class RapidRelationalEntityManager implements RelationalEntityManager {
 
     public Collection<IdentifiableEntity> updateBiDirParentRelations(IdentifiableEntity oldParent, IdentifiableEntity parent, String... membersToCheck) throws BadEntityException, EntityNotFoundException {
 
-        Collection<IdentifiableEntity> oldChildren = relationalEntityManagerUtil.findAllBiDirChildren(oldParent);
-        Collection<IdentifiableEntity> newChildren = relationalEntityManagerUtil.findAllBiDirChildren(parent);
+        Collection<IdentifiableEntity> oldChildren = relationalEntityManagerUtil.findAllBiDirChildren(oldParent,membersToCheck);
+        Collection<IdentifiableEntity> newChildren = relationalEntityManagerUtil.findAllBiDirChildren(parent,membersToCheck);
 
         //find Children to unlink
         List<IdentifiableEntity> removedChildren = new ArrayList<>();
@@ -164,14 +164,14 @@ public class RapidRelationalEntityManager implements RelationalEntityManager {
         for (IdentifiableEntity removedChild : removedChildren) {
             log.debug("unlinking child: " + removedChild + " from parent: " + parent);
 //            relationalEntityManagerUtil.unlinkBiDirParent(removedChild, oldParent);
-            relationalEntityManagerUtil.unlinkBiDirParent(removedChild, parent); // somehow does not make a difference but makes more sense like that imo
+            relationalEntityManagerUtil.unlinkBiDirParent(removedChild, parent,membersToCheck); // somehow does not make a difference but makes more sense like that imo
         }
 
         //link added Children to parent
         for (IdentifiableEntity addedChild : addedChildren) {
             log.debug("linking child: " + addedChild + " to parent: " + parent);
             // illness gets set of pets updated, illness = child
-            relationalEntityManagerUtil.linkBiDirParent(addedChild, parent);
+            relationalEntityManagerUtil.linkBiDirParent(addedChild, parent,membersToCheck);
             // new children may be detached, so merge them , must happen after linking!
             entityManager.merge(addedChild);
         }
