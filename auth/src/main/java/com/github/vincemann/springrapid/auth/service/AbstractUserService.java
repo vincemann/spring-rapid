@@ -118,7 +118,7 @@ public abstract class AbstractUserService
         user.setRoles(Sets.newHashSet(AuthRoles.USER));
         passwordValidator.validate(user.getPassword());
         checkUniqueEmail(user.getEmail());
-        U saved = save(user);
+        U saved = service.save(user);
         // is done in same transaction -> so applied directly
         makeUnverified(saved);
 
@@ -548,7 +548,7 @@ public abstract class AbstractUserService
     public U signupAdmin(U admin) throws AlreadyRegisteredException, BadEntityException {
         checkUniqueEmail(admin.getEmail());
         passwordValidator.validate(admin.getPassword());
-        return save(admin);
+        return service.save(admin);
     }
 
     /**
