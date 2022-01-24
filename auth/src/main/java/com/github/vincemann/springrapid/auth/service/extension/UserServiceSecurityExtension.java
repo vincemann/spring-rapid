@@ -57,6 +57,7 @@ public class UserServiceSecurityExtension
     @Override
     public AbstractUser fullUpdate(AbstractUser entity) throws BadEntityException, EntityNotFoundException {
         checkUpdatePermissions(entity);
+        // todo why getLast
         return getLast().fullUpdate(entity);
     }
 
@@ -105,9 +106,11 @@ public class UserServiceSecurityExtension
                 !currentUser.getId().equals(old.getId().toString())) {
             return;
         } else {
-            //no update of roles possible
-            if (!old.getRoles().equals(newUser.getRoles())) {
-                throw new AccessDeniedException("Only Admin can update Roles");
+            if (newUser.getRoles() != null){
+                if (!old.getRoles().equals(newUser.getRoles())) {
+                    //no update of roles possible for non admin users
+                    throw new AccessDeniedException("Only Admin can update Roles");
+                }
             }
 //            newUser.setRoles(old.getRoles());
         }

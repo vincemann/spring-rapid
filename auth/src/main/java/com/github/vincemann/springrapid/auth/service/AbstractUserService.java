@@ -221,7 +221,7 @@ public abstract class AbstractUserService
     protected U verifyUser(U user) throws BadEntityException, EntityNotFoundException {
         user.getRoles().remove(AuthRoles.UNVERIFIED);
         user.setCredentialsUpdatedMillis(System.currentTimeMillis());
-        // todo changed to repo
+        // todo changed to softupdate
 //        U saved = update(user);
         U saved = softUpdate(user);
         log.debug("Verified user: " + user.getEmail());
@@ -269,7 +269,7 @@ public abstract class AbstractUserService
             user.setCredentialsUpdatedMillis(System.currentTimeMillis());
             //user.setForgotPasswordCode(null);
             try {
-                // todo changed to repo
+                // todo changed to softupdate
                 return softUpdate(user);
 //                return update(user);
             } catch (NonTransientDataAccessException e) {
@@ -294,8 +294,16 @@ public abstract class AbstractUserService
         return super.fullUpdate(update);
     }
 
+    @Transactional(propagation = Propagation.REQUIRED, readOnly = false)
+    @Override
+    public U softUpdate(U update) throws EntityNotFoundException, BadEntityException {
+        updateSpecialUserFields(update);
+        return super.softUpdate(update);
+    }
+
     protected void updateSpecialUserFields(U update) throws BadEntityException, EntityNotFoundException {
         Optional<U> old = findById(update.getId());
+        // todo is that ever needed? this is always run in transactional context ?
         entityManager.merge(old.get());
         VerifyEntity.isPresent(old, "Entity to update with id: " + update.getId() + " not found");
         //update roles works in transaction -> changes are applied on the fly
@@ -330,7 +338,7 @@ public abstract class AbstractUserService
         // sets the password
         user.setPassword(passwordEncoder.encode(changePasswordDto.getPassword()));
         user.setCredentialsUpdatedMillis(System.currentTimeMillis());
-        // todo changed to repo
+        // todo changed to softupdate
         log.debug("changed pw of user: " + user.getEmail());
         try {
 //            update(user);
@@ -344,10 +352,17 @@ public abstract class AbstractUserService
 
     protected void updateRoles(U old, U newUser) {
         log.debug("Updating user fields for user: " + old);
-        // update the roles
 
+        // no role updates has been made, keep old roles
+        if (newUser.getRoles() == null) {
+            return;
+        }
+
+        // after this if statement passed it is obvious that roles have changed / will change
+        // just a matter of how
         if (old.getRoles().equals(newUser.getRoles())) // roles are same
             return;
+
 
         if (newUser.hasRole(AuthRoles.UNVERIFIED)) {
 
@@ -356,12 +371,15 @@ public abstract class AbstractUserService
             }
         } else {
 
-            if (old.hasRole(AuthRoles.UNVERIFIED))
+            if (old.hasRole(AuthRoles.UNVERIFIED)) {
                 old.getRoles().remove(AuthRoles.UNVERIFIED); // make user verified
+            }
         }
+
 
         old.setRoles(newUser.getRoles());
         old.setCredentialsUpdatedMillis(System.currentTimeMillis());
+
     }
 
 
@@ -383,7 +401,7 @@ public abstract class AbstractUserService
         //user.setChangeEmailCode(LemonValidationUtils.uid());
         U saved;
         try {
-            // todo changed to repo
+            // todo changed to softupdate
             saved = softUpdate(user);
             // after successful commit, mails a link to the user
 //            TransactionalUtils.afterCommit(() -> mailChangeEmailLink(saved));

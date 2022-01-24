@@ -13,8 +13,7 @@ import com.github.vincemann.springrapid.autobidir.model.parent.annotation.BiDirP
 import com.github.vincemann.springrapid.autobidir.model.parent.annotation.BiDirParentEntity;
 import com.github.vincemann.springrapid.autobidir.util.CollectionUtils;
 import com.github.vincemann.springrapid.autobidir.util.EntityAnnotationUtils;
-import com.github.vincemann.springrapid.autobidir.util.EntityReflectionUtils;
-import com.github.vincemann.springrapid.core.service.locator.CrudServiceLocator;
+import com.github.vincemann.springrapid.core.util.EntityReflectionUtils;
 import com.google.common.collect.Sets;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.cache.annotation.Cacheable;

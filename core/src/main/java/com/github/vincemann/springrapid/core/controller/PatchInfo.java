@@ -1,5 +1,6 @@
 package com.github.vincemann.springrapid.core.controller;
 
+import com.google.common.collect.Sets;
 import lombok.*;
 
 import java.util.HashSet;
@@ -17,5 +18,11 @@ public class PatchInfo {
     public PatchInfo(Set<String> updatedFields, Set<String> removeSingleMembersFields) {
         this.updatedFields = updatedFields;
         this.removeSingleMembersFields = removeSingleMembersFields;
+    }
+
+    public Set<String> getAllUpdatedFields() {
+        Set<String> allUpdatedFields = Sets.newHashSet(updatedFields);
+        allUpdatedFields.addAll(removeSingleMembersFields);
+        return allUpdatedFields;
     }
 }

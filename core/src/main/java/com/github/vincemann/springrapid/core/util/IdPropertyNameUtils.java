@@ -40,9 +40,14 @@ public class IdPropertyNameUtils {
         return Arrays.stream(propertyNames).map(IdPropertyNameUtils::transformIdFieldName).toArray(String[]::new);
     }
 
+    public static Set<String> transformIdFieldNamesToSet(Set<String> fields) {
+        return fields.stream().map(IdPropertyNameUtils::transformIdFieldName).collect(Collectors.toSet());
+    }
+
     public static String[] transformIdFieldNames(Set<String> propertyNames) {
         return propertyNames.stream().map(IdPropertyNameUtils::transformIdFieldName).toArray(String[]::new);
     }
+
 
     //            Set<String> propertiesToMap =
 

@@ -1,9 +1,6 @@
 package com.github.vincemann.springrapid.autobidir;
 
-import com.github.vincemann.springrapid.autobidir.model.child.annotation.BiDirChildCollection;
-import com.github.vincemann.springrapid.autobidir.model.child.annotation.BiDirChildEntity;
-import com.github.vincemann.springrapid.autobidir.model.child.annotation.UniDirChildCollection;
-import com.github.vincemann.springrapid.autobidir.model.child.annotation.UniDirChildEntity;
+import com.github.vincemann.springrapid.autobidir.util.AutoBiDirEntityReflectionUtils;
 import com.github.vincemann.springrapid.core.model.IdentifiableEntity;
 import com.github.vincemann.springrapid.autobidir.dto.RelationalDtoType;
 import com.github.vincemann.springrapid.autobidir.dto.child.annotation.BiDirChildId;
@@ -13,7 +10,7 @@ import com.github.vincemann.springrapid.autobidir.dto.child.annotation.UniDirChi
 import com.github.vincemann.springrapid.autobidir.dto.parent.annotation.BiDirParentId;
 import com.github.vincemann.springrapid.autobidir.dto.parent.annotation.BiDirParentIdCollection;
 import com.github.vincemann.springrapid.autobidir.util.EntityIdAnnotationUtils;
-import com.github.vincemann.springrapid.autobidir.util.EntityReflectionUtils;
+import com.github.vincemann.springrapid.core.util.EntityReflectionUtils;
 import com.github.vincemann.springrapid.core.util.Lists;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.cache.annotation.Cacheable;
@@ -234,7 +231,7 @@ public class RapidRelationalDtoManager implements RelationalDtoManager {
             }
         }
 
-        EntityReflectionUtils.doWithIdFieldsWithEntityType(src.getClass(), entityIdAnnotationClass, target.getClass(), field -> {
+        AutoBiDirEntityReflectionUtils.doWithIdFieldsWithEntityType(src.getClass(), entityIdAnnotationClass, target.getClass(), field -> {
             Object prevEntityId = field.get(target);
             if (prevEntityId != null) {
                 log.warn("Warning, prev EntityId: " + prevEntityId + " was not null -> overriding with new value: " + entityId);

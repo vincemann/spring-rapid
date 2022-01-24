@@ -1,14 +1,14 @@
-package com.github.vincemann.springrapid.autobidir.util;
+package com.github.vincemann.springrapid.core.util;
 
 import lombok.NonNull;
 import org.springframework.data.util.ReflectionUtils;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
+import java.lang.reflect.Modifier;
 import java.util.HashSet;
 import java.util.Set;
 
-import static com.github.vincemann.springrapid.autobidir.util.EntityIdAnnotationUtils.getEntityType;
 
 public class EntityReflectionUtils {
 
@@ -44,6 +44,23 @@ public class EntityReflectionUtils {
         }
     }
 
+    private static class ReverseNameFilter implements org.springframework.util.ReflectionUtils.FieldFilter {
+        private Set<String> fieldNames = new HashSet<>();
+
+        public ReverseNameFilter(Set<String> fieldNames) {
+            this.fieldNames = fieldNames;
+        }
+
+        @Override
+        public boolean matches(Field field) {
+            if (fieldNames.isEmpty()){
+                return false;
+            }else {
+                return !fieldNames.contains(field.getName());
+            }
+        }
+    }
+
     private static class AnnotationNamedFieldFilter extends ReflectionUtils.AnnotationFieldFilter {
         private Set<String> fieldNames = new HashSet<>();
 
@@ -62,21 +79,7 @@ public class EntityReflectionUtils {
         }
     }
 
-    private static class AnnotationAndEntityTypeFilter extends org.springframework.data.util.ReflectionUtils.AnnotationFieldFilter {
-        private Class<? extends Annotation> annotationType;
-        private final Class<?> entityType;
 
-        public AnnotationAndEntityTypeFilter(@NonNull Class<? extends Annotation> annotationType, Class<?> entityType) {
-            super(annotationType);
-            this.annotationType = annotationType;
-            this.entityType = entityType;
-        }
-
-        @Override
-        public boolean matches(Field field) {
-            return super.matches(field) && getEntityType(field.getAnnotation(annotationType)).equals(entityType);
-        }
-    }
 
     public static void doWithAnnotatedFields(Class<? extends Annotation> annotationType, Class clazz, org.springframework.util.ReflectionUtils.FieldCallback fieldCallback){
         org.springframework.util.ReflectionUtils.doWithFields(clazz,field -> {
@@ -107,22 +110,26 @@ public class EntityReflectionUtils {
         },new NameAndAnnotationAndFieldTypeFilter(annotationType,fieldType, membersToCheck));
     }
 
-    /**
-     * Offers callback for fields in @param class that have annotation of type @param annotationType.
-     * Annotation Type must be of EntityIdType, see: {@link EntityIdAnnotationUtils#getEntityType(Annotation)}.
-     * The Value of this Annotation, which is always the entityType must match @param entityType
-     * @param clazz
-     * @param fieldCallback
-     * @param annotationType
-     * @param entityType
-     */
-    public static void doWithIdFieldsWithEntityType(Class<?> entityType, Class<? extends Annotation> annotationType, Class clazz, org.springframework.util.ReflectionUtils.FieldCallback fieldCallback){
-        org.springframework.util.ReflectionUtils.doWithFields(clazz,field -> {
-            org.springframework.util.ReflectionUtils.makeAccessible(field);
-            fieldCallback.doWith(field);
-        },new AnnotationAndEntityTypeFilter(annotationType,entityType));
-    }
 
+//    public static Set<Field> getReverseFields(Class clazz, Set<String> fields){
+//        org.springframework.util.ReflectionUtils.doWithFields(o.getClass(),field -> {
+//            field.setAccessible(true);
+//            field.set(o,null);
+//        });
+//    }
+
+    public static void setNonMatchingFieldsNull(Object o, Set<String> propertiesNotNull){
+        org.springframework.util.ReflectionUtils.doWithFields(o.getClass(),field -> {
+            int m = field.getModifiers();
+            if(Modifier.isStatic(m))
+                return;
+            if (field.getType().isPrimitive()){
+                throw new IllegalArgumentException("entity must not contain primitive members, use Wrapper Types instead");
+            }
+            field.setAccessible(true);
+            field.set(o,null);
+        },new ReverseNameFilter(propertiesNotNull));
+    }
 
 
 }
