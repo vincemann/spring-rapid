@@ -65,7 +65,7 @@ public class LoginTest extends AbstractRapidAuthIntegrationTest {
 			public void run() {
 				AbstractUser<Long> user = getUserService().findById(getUser().getId()).get();
 				user.setCredentialsUpdatedMillis(System.currentTimeMillis());
-				getUserService().save(user);
+				getUserService().softUpdate(user);
 			}
 		});
 

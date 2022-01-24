@@ -70,9 +70,10 @@ public abstract class AbstractUserService
     private JweTokenService jweTokenService;
     private IdConverter<ID> idIdConverter;
     private PasswordValidator passwordValidator;
+    private AbstractUserService<U,ID,R> service;
 
-    @PersistenceContext
-    private EntityManager entityManager;
+//    @PersistenceContext
+//    private EntityManager entityManager;
 
     /**
      * Creates a new user object. Must be overridden in the
@@ -223,7 +224,7 @@ public abstract class AbstractUserService
         user.setCredentialsUpdatedMillis(System.currentTimeMillis());
         // todo changed to softupdate
 //        U saved = update(user);
-        U saved = softUpdate(user);
+        U saved = service.softUpdate(user);
         log.debug("Verified user: " + user.getEmail());
         return saved;
     }
@@ -270,7 +271,7 @@ public abstract class AbstractUserService
             //user.setForgotPasswordCode(null);
             try {
                 // todo changed to softupdate
-                return softUpdate(user);
+                return service.softUpdate(user);
 //                return update(user);
             } catch (NonTransientDataAccessException e) {
                 throw new RuntimeException("Could not reset users password", e);
@@ -304,7 +305,7 @@ public abstract class AbstractUserService
     protected void updateSpecialUserFields(U update) throws BadEntityException, EntityNotFoundException {
         Optional<U> old = findById(update.getId());
         // todo is that ever needed? this is always run in transactional context ?
-        entityManager.merge(old.get());
+//        entityManager.merge(old.get());
         VerifyEntity.isPresent(old, "Entity to update with id: " + update.getId() + " not found");
         //update roles works in transaction -> changes are applied on the fly
         updateRoles(old.get(), update);
@@ -342,7 +343,7 @@ public abstract class AbstractUserService
         log.debug("changed pw of user: " + user.getEmail());
         try {
 //            update(user);
-            softUpdate(user);
+            service.softUpdate(user);
         } catch (NonTransientDataAccessException e) {
             throw new RuntimeException("Could not change users password", e);
         }
@@ -402,7 +403,7 @@ public abstract class AbstractUserService
         U saved;
         try {
             // todo changed to softupdate
-            saved = softUpdate(user);
+            saved = service.softUpdate(user);
             // after successful commit, mails a link to the user
 //            TransactionalUtils.afterCommit(() -> mailChangeEmailLink(saved));
         } catch (NonTransientDataAccessException | BadEntityException e) {
@@ -498,7 +499,7 @@ public abstract class AbstractUserService
                 user.getRoles().remove(AuthRoles.UNVERIFIED);
             // todo changed to repo
 //          return update(user);
-            return softUpdate(user);
+            return service.softUpdate(user);
         } catch (BadTokenException e) {
             throw new BadEntityException(Message.get("com.github.vincemann.wrong.verificationCode"), e);
         } catch (NonTransientDataAccessException e) {
@@ -708,4 +709,11 @@ public abstract class AbstractUserService
     public void injectPasswordValidator(PasswordValidator passwordValidator) {
         this.passwordValidator = passwordValidator;
     }
+
+    @Lazy
+    @Autowired
+    public void injectService(AbstractUserService<U, ID, R> service) {
+        this.service = service;
+    }
 }
+

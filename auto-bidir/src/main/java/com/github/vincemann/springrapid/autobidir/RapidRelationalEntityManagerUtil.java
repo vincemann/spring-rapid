@@ -198,7 +198,6 @@ public class RapidRelationalEntityManagerUtil implements RelationalEntityManager
         for (IdentifiableEntity child : findAllBiDirChildren(parent,membersToCheck)) {
             unlinkBiDirParent(child,parent, membersToCheck);
         }
-
     }
 
 
