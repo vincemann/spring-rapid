@@ -9,6 +9,8 @@ See 'Features' below for a full list.
 This project is inspired by [**spring-lemon**](https://github.com/naturalprogrammer/spring-lemon) which offers many good modules as well.  
 Most lemon modules were copied, modified and integrated into this project.  
   
+# Requirements  
+jdk 11.0.13 
   
 # Features  
 * full generic **crud** solution                                                                     (core)   
