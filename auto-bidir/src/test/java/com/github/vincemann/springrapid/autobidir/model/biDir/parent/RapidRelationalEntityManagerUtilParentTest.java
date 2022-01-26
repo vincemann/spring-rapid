@@ -93,7 +93,7 @@ class RapidRelationalEntityManagerUtilParentTest {
         //when
         relationalEntityManagerUtil.unlinkBiDirChildrensParent(testEntityParent);
         //then
-        Assertions.assertFalse(testEntityParent.getSecondEntityChildSet().stream().findFirst().isPresent());
+        Assertions.assertTrue(testEntityParent.getSecondEntityChildSet().stream().findFirst().isPresent());
         Assertions.assertNull(testSecondEntityChild.getEntityParent());
     }
     @Test
@@ -106,7 +106,7 @@ class RapidRelationalEntityManagerUtilParentTest {
         //when
         relationalEntityManagerUtil.unlinkBiDirChildrensParent(testEntityParent);
         //then
-        Assertions.assertFalse(testEntityParent.getSecondEntityChildSet().stream().findFirst().isPresent());
+        Assertions.assertTrue(testEntityParent.getSecondEntityChildSet().stream().findFirst().isPresent());
         Assertions.assertNull(testSecondEntityChild.getEntityParent());
         Assertions.assertNull(testEntityChild.getEntityParent());
         Assertions.assertNotNull(testEntityParent.getEntityChild());

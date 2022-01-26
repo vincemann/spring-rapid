@@ -55,7 +55,7 @@ public abstract class AbstractUserService
                 R extends AbstractUserRepository<U, ID>
                 >
         extends JPACrudService<U, ID, R>
-        implements UserService<U, ID> {
+            implements UserService<U, ID> {
 
     public static final String CHANGE_EMAIL_AUDIENCE = "change-email";
     public static final String VERIFY_EMAIL_AUDIENCE = "verify";
