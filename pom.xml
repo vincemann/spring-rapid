@@ -22,7 +22,7 @@
         <maven.compiler.target>11</maven.compiler.target>
 
         <lemon.version>1.0.0.RC3</lemon.version>
-        <ez-compare.version>1.0.0-SNAPSHOT.2.1</ez-compare.version>
+        <ez-compare.version>1.0.0-SNAPSHOT.2.2</ez-compare.version>
         <lombok.version>1.18.8</lombok.version>
         <javax.validation.version>2.0.1.Final</javax.validation.version>
         <guava.version>30.0-jre</guava.version>
