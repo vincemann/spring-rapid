@@ -46,19 +46,19 @@ public class RapidIdResolvingDtoMapperAutoConfiguration {
 
     @ConditionalOnMissingBean(name = "biDiChildIdResolver")
     @Bean
-    public EntityIdResolver biDiChildIdResolver(){
+    public BiDirChildIdResolver biDiChildIdResolver(){
         return new BiDirChildIdResolver();
     }
 
     @ConditionalOnMissingBean(name = "biDiParentIdResolver")
     @Bean
-    public EntityIdResolver biDiParentIdResolver(){
+    public BiDirParentIdResolver biDiParentIdResolver(){
         return new BiDirParentIdResolver();
     }
 
     @ConditionalOnMissingBean(name = "uniDirParentIdResolver")
     @Bean
-    public EntityIdResolver uniDirParentIdResolver(){
+    public UniDirParentIdResolver uniDirParentIdResolver(){
         return new UniDirParentIdResolver();
     }
 
