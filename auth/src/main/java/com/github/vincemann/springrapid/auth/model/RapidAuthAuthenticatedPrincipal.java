@@ -26,7 +26,7 @@ public class RapidAuthAuthenticatedPrincipal extends RapidAuthenticatedPrincipal
 	}
 
 	public RapidAuthAuthenticatedPrincipal(AbstractUser<?> user) {
-		this(user.getEmail(), user.getPassword(),user.getRoles(), user.getId()==null? null : user.getId().toString());
+		this(user.getEmail(), user.getPassword(),user.getRoles(), user.getId() == null? null : user.getId().toString());
 	}
 	public RapidAuthAuthenticatedPrincipal(RapidAuthAuthenticatedPrincipal user) {
 		this(user.getEmail(), user.getPassword(),user.getRoles(), user.getId());

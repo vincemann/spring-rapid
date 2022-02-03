@@ -6,7 +6,7 @@ import com.github.vincemann.springrapid.auth.mail.MailData;
 import com.github.vincemann.springrapid.auth.service.AbstractUserService;
 import com.github.vincemann.springrapid.auth.util.MapUtils;
 import com.github.vincemann.springrapid.auth.util.RapidJwt;
-import com.github.vincemann.springrapid.coretest.controller.TransactionalTestTemplate;
+import com.github.vincemann.springrapid.core.util.TransactionalTemplate;
 import lombok.SneakyThrows;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Disabled;
@@ -22,7 +22,7 @@ public class ChangeEmailTest extends AbstractRapidAuthIntegrationTest {
 
 
 	@Autowired
-	TransactionalTestTemplate transactionalTestTemplate;
+    TransactionalTemplate transactionalTemplate;
 
 	//works solo but token is obsolete when run in group
 //	@Disabled
@@ -141,7 +141,7 @@ public class ChangeEmailTest extends AbstractRapidAuthIntegrationTest {
 		MailData mailData = testTemplate.requestEmailChange2xx(getUser().getId(), token,
 				new RequestEmailChangeDto(NEW_EMAIL));
 		// credentials updated after the request for email change was made
-		transactionalTestTemplate.doInTransaction(new Runnable() {
+		transactionalTemplate.doInTransaction(new Runnable() {
 			@SneakyThrows
 			@Override
 			public void run() {
@@ -187,7 +187,7 @@ public class ChangeEmailTest extends AbstractRapidAuthIntegrationTest {
 				new RequestEmailChangeDto(NEW_EMAIL));
 
 		// Some other user changed to the same email, before i could issue my request
-		transactionalTestTemplate.doInTransaction(new Runnable() {
+		transactionalTemplate.doInTransaction(new Runnable() {
 			@SneakyThrows
 			@Override
 			public void run() {

@@ -8,7 +8,7 @@ import com.github.vincemann.springrapid.coredemo.model.*;
 import com.github.vincemann.springrapid.coredemo.repo.*;
 import com.github.vincemann.springrapid.coredemo.service.*;
 import com.github.vincemann.springrapid.coredemo.service.extensions.OwnerOfTheYearExtension;
-import com.github.vincemann.springrapid.coretest.controller.TransactionalTestTemplate;
+import com.github.vincemann.springrapid.core.util.TransactionalTemplate;
 import com.github.vincemann.springrapid.coretest.controller.integration.IntegrationCrudControllerTest;
 import com.github.vincemann.springrapid.coretest.util.TransactionalRapidTestUtil;
 import org.junit.jupiter.api.AfterEach;
@@ -16,8 +16,6 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.mock.mockito.SpyBean;
-import org.springframework.test.context.transaction.TestTransaction;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.util.Date;
@@ -139,7 +137,7 @@ public class AbstractControllerIntegrationTest<C extends GenericCrudController<?
     protected RapidSecurityContext<RapidAuthenticatedPrincipal> securityContext;
 
     @Autowired
-    TransactionalTestTemplate transactionalTestTemplate;
+    TransactionalTemplate transactionalTemplate;
 
     @BeforeEach
     public void setupTestData() throws Exception {
@@ -252,7 +250,7 @@ public class AbstractControllerIntegrationTest<C extends GenericCrudController<?
     }
 
     protected void assertVetHasSpecialties(String vetName, String... descriptions) {
-        transactionalTestTemplate.doInTransaction(() -> {
+        transactionalTemplate.doInTransaction(() -> {
 
             Optional<Vet> vetOptional = vetRepository.findByLastName(vetName);
             Assertions.assertTrue(vetOptional.isPresent());
@@ -270,7 +268,7 @@ public class AbstractControllerIntegrationTest<C extends GenericCrudController<?
     }
 
     protected void assertSpecialtyHasVets(String description, String... vetNames) {
-        transactionalTestTemplate.doInTransaction(() -> {
+        transactionalTemplate.doInTransaction(() -> {
 
             Optional<Specialty> optionalSpecialty = specialtyRepository.findByDescription(description);
             Assertions.assertTrue(optionalSpecialty.isPresent());
@@ -289,7 +287,7 @@ public class AbstractControllerIntegrationTest<C extends GenericCrudController<?
 
 //    @Transactional
     public void assertPetHasToys(String petName, String... toyNames) {
-        transactionalTestTemplate.doInTransaction(() -> {
+        transactionalTemplate.doInTransaction(() -> {
             Optional<Pet> petOptional = petRepository.findByName(petName);
             Assertions.assertTrue(petOptional.isPresent());
             Pet pet = petOptional.get();
@@ -307,7 +305,7 @@ public class AbstractControllerIntegrationTest<C extends GenericCrudController<?
     }
 
     protected void assertOwnerHasPets(String ownerName, String... petNames) {
-        transactionalTestTemplate.doInTransaction(() -> {
+        transactionalTemplate.doInTransaction(() -> {
             Optional<Owner> ownerOptional = ownerRepository.findByLastName(ownerName);
             Assertions.assertTrue(ownerOptional.isPresent());
             Owner owner = ownerOptional.get();
@@ -324,7 +322,7 @@ public class AbstractControllerIntegrationTest<C extends GenericCrudController<?
     }
 
     protected void assertOwnerHasClinicCard(String ownerName, Long clinicCardId) {
-        transactionalTestTemplate.doInTransaction(() -> {
+        transactionalTemplate.doInTransaction(() -> {
             Optional<Owner> ownerOptional = ownerRepository.findByLastName(ownerName);
             Assertions.assertTrue(ownerOptional.isPresent());
             Owner owner = ownerOptional.get();
@@ -339,7 +337,7 @@ public class AbstractControllerIntegrationTest<C extends GenericCrudController<?
     }
 
     protected void assertClinicCardHasOwner(Long clinicCardId, String ownerName) {
-        transactionalTestTemplate.doInTransaction(() -> {
+        transactionalTemplate.doInTransaction(() -> {
 
             if (ownerName == null) {
                 ClinicCard clinicCard = clinicCardRepository.findById(clinicCardId).get();
@@ -356,7 +354,7 @@ public class AbstractControllerIntegrationTest<C extends GenericCrudController<?
     }
 
     protected void assertToyHasPet(String toyName, String petName) {
-        transactionalTestTemplate.doInTransaction(() -> {
+        transactionalTemplate.doInTransaction(() -> {
             Pet pet = null;
             if (petName != null) {
                 Optional<Pet> petOptional = petRepository.findByName(petName);
@@ -372,7 +370,7 @@ public class AbstractControllerIntegrationTest<C extends GenericCrudController<?
     }
 
     protected void assertPetHasOwner(String petName, String ownerName) {
-        transactionalTestTemplate.doInTransaction(() -> {
+        transactionalTemplate.doInTransaction(() -> {
             Owner owner = null;
             if (ownerName != null) {
                 Optional<Owner> ownerOptional = ownerRepository.findByLastName(ownerName);

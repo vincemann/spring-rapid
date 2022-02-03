@@ -52,7 +52,7 @@ public interface CrudService<E extends IdentifiableEntity<Id>,Id extends Seriali
         E fullUpdate(E entity) throws BadEntityException, EntityNotFoundException;
 
         @Transactional
-        E save(E entity) throws  BadEntityException;
+        E save(E entity) throws BadEntityException;
 
         @Transactional
         Set<E> findAll();
