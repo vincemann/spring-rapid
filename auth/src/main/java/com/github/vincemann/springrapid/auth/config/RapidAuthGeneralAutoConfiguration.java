@@ -1,16 +1,23 @@
 package com.github.vincemann.springrapid.auth.config;
 
 import com.github.vincemann.springrapid.auth.AuthProperties;
+import com.github.vincemann.springrapid.auth.model.AbstractUser;
+import com.github.vincemann.springrapid.auth.service.UserService;
 import com.github.vincemann.springrapid.auth.service.captcha.CaptchaValidator;
+import com.github.vincemann.springrapid.auth.util.AuthUtils;
 import com.github.vincemann.springrapid.core.CoreProperties;
 import com.github.vincemann.springrapid.core.config.RapidCrudControllerAutoConfiguration;
 import lombok.extern.slf4j.Slf4j;
+import org.checkerframework.checker.units.qual.A;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.AutoConfigureBefore;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+
+import java.io.Serializable;
 
 @Configuration
 @Slf4j
@@ -36,4 +43,9 @@ public class RapidAuthGeneralAutoConfiguration {
         return new CaptchaValidator(properties);
     }
 
+
+    @Autowired
+    public void configureAuthUtils(UserService<AbstractUser<Serializable>,Serializable> userService){
+        AuthUtils.setUserService(userService);
+    }
 }
