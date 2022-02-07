@@ -43,9 +43,4 @@ public class RapidAuthGeneralAutoConfiguration {
         return new CaptchaValidator(properties);
     }
 
-
-    @Autowired
-    public void configureAuthUtils(UserService<AbstractUser<Serializable>,Serializable> userService){
-        AuthUtils.setUserService(userService);
-    }
 }
