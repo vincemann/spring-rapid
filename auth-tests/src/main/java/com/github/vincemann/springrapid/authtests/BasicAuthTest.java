@@ -14,6 +14,7 @@ import static com.github.vincemann.springrapid.authtests.adapter.AuthTestAdapter
 import java.util.HashMap;
 import java.util.Map;
 
+import static com.github.vincemann.springrapid.coretest.util.SpyBeanUtils.unproxy;
 public class BasicAuthTest extends AbstractRapidAuthIntegrationTest {
 
 //	private static final String TEST_RECAPTCHA = "6LdwxRcUAAAAABkhOGWQXhl9FsR27D5YUJRuGzx0";

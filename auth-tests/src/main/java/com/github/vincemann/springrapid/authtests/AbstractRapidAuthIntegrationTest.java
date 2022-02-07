@@ -39,6 +39,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import static com.github.vincemann.springrapid.authtests.adapter.AuthTestAdapter.*;
+import static com.github.vincemann.springrapid.coretest.util.SpyBeanUtils.unproxy;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -125,10 +126,6 @@ public abstract class AbstractRapidAuthIntegrationTest
         Mockito.doReturn(jwt).when(unproxy(properties)).getJwt();
     }
 
-    protected <T> T unproxy(T spy){
-        //        https://stackoverflow.com/questions/9033874/mocking-a-property-of-a-cglib-proxied-service-not-working
-        return AopTestUtils.getUltimateTargetObject(spy);
-    }
 
     @Override
     protected DefaultMockMvcBuilder createMvcBuilder() {

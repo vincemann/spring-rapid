@@ -20,7 +20,7 @@ import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
-
+import static com.github.vincemann.springrapid.coretest.util.SpyBeanUtils.unproxy;
 public class SignupTest extends AbstractRapidAuthIntegrationTest {
 
 	@Autowired

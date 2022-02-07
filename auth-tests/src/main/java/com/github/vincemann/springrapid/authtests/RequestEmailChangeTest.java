@@ -11,7 +11,7 @@ import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static com.github.vincemann.springrapid.authtests.adapter.AuthTestAdapter.*;
-
+import static com.github.vincemann.springrapid.coretest.util.SpyBeanUtils.unproxy;
 public class RequestEmailChangeTest extends AbstractRapidAuthIntegrationTest {
 
 
