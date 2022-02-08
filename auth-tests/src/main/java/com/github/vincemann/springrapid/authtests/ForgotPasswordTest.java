@@ -11,7 +11,7 @@ import com.github.vincemann.springrapid.auth.mail.MailData;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import static com.github.vincemann.springrapid.authtests.adapter.AuthTestAdapter.*;
-import static com.github.vincemann.springrapid.coretest.util.SpyBeanUtils.unproxy;
+import static com.github.vincemann.springrapid.core.util.ProxyUtils.aopUnproxy;
 public class ForgotPasswordTest extends AbstractRapidAuthIntegrationTest {
 
 
@@ -39,6 +39,6 @@ public class ForgotPasswordTest extends AbstractRapidAuthIntegrationTest {
 		mvc.perform(testTemplate.forgotPassword(""))
 				.andExpect(status().isBadRequest());
 
-		verify(unproxy(mailSender), never()).send(any());
+		verify(aopUnproxy(mailSender), never()).send(any());
 	}
 }

@@ -14,7 +14,7 @@ import static com.github.vincemann.springrapid.authtests.adapter.AuthTestAdapter
 import java.util.HashMap;
 import java.util.Map;
 
-import static com.github.vincemann.springrapid.coretest.util.SpyBeanUtils.unproxy;
+import static com.github.vincemann.springrapid.core.util.ProxyUtils.aopUnproxy;
 public class BasicAuthTest extends AbstractRapidAuthIntegrationTest {
 
 //	private static final String TEST_RECAPTCHA = "6LdwxRcUAAAAABkhOGWQXhl9FsR27D5YUJRuGzx0";
@@ -25,7 +25,7 @@ public class BasicAuthTest extends AbstractRapidAuthIntegrationTest {
 		Map<String,Object> testSharedProperties = new HashMap<>();
 		testSharedProperties.put("testKey","testValue");
 
-		Mockito.when(unproxy(properties).getShared())
+		Mockito.when(aopUnproxy(properties).getShared())
 				.thenReturn(testSharedProperties);
 		// todo reenable captcha
 //		Mockito.when(unproxy(properties).getRecaptcha().getSitekey())

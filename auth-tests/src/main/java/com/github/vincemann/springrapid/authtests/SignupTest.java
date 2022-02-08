@@ -20,7 +20,7 @@ import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
-import static com.github.vincemann.springrapid.coretest.util.SpyBeanUtils.unproxy;
+import static com.github.vincemann.springrapid.core.util.ProxyUtils.aopUnproxy;
 public class SignupTest extends AbstractRapidAuthIntegrationTest {
 
 	@Autowired
@@ -32,7 +32,7 @@ public class SignupTest extends AbstractRapidAuthIntegrationTest {
 		mvc.perform(testTemplate.signup(signupDto))
 				.andExpect(status().isBadRequest());
 
-		verify(unproxy(mailSender), never()).send(any());
+		verify(aopUnproxy(mailSender), never()).send(any());
 	}
 
 	@Test
@@ -75,6 +75,6 @@ public class SignupTest extends AbstractRapidAuthIntegrationTest {
 		mvc.perform(testTemplate.signup(signupDto))
 				.andExpect(status().isBadRequest());
 		// mock is reset by signup2xx so never only applies to latest signup
-		verify(unproxy(mailSender), never()).send(any());
+		verify(aopUnproxy(mailSender), never()).send(any());
 	}
 }

@@ -3,12 +3,9 @@ package com.github.vincemann.springrapid.auth.config;
 import com.github.vincemann.springrapid.auth.model.AbstractUser;
 import com.github.vincemann.springrapid.auth.service.validation.PasswordValidator;
 import com.github.vincemann.springrapid.auth.service.validation.RapidPasswordValidator;
-import com.github.vincemann.springrapid.auth.util.AuthUtils;
+import com.github.vincemann.springrapid.auth.util.UserUtils;
 import com.github.vincemann.springrapid.core.IdConverter;
 import com.github.vincemann.springrapid.core.model.RapidAuditorAware;
-import com.github.vincemann.springrapid.auth.mail.MailSender;
-import com.github.vincemann.springrapid.auth.mail.MockMailSender;
-import com.github.vincemann.springrapid.auth.mail.SmtpMailSender;
 import com.github.vincemann.springrapid.auth.service.RapidUserDetailsService;
 import com.github.vincemann.springrapid.auth.service.UserService;
 
@@ -18,12 +15,10 @@ import com.github.vincemann.springrapid.core.slicing.ServiceConfig;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Primary;
 import org.springframework.data.domain.AuditorAware;
 import org.springframework.data.jpa.repository.config.EnableJpaAuditing;
-import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
@@ -86,7 +81,7 @@ public class RapidUserServiceAutoConfiguration {
 
     @Autowired
     public void configureAuthUtils(UserService<AbstractUser<Serializable>,Serializable> userService){
-        AuthUtils.setUserService(userService);
+        UserUtils.setUserService(userService);
     }
 
 

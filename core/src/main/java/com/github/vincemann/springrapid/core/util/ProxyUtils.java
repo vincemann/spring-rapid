@@ -3,12 +3,11 @@ package com.github.vincemann.springrapid.core.util;
 import com.github.vincemann.springrapid.core.proxy.AbstractServiceExtension;
 import com.github.vincemann.springrapid.core.proxy.ServiceExtensionProxy;
 import com.github.vincemann.springrapid.core.service.CrudService;
-import org.aspectj.lang.JoinPoint;
+import org.hibernate.Hibernate;
+import org.hibernate.proxy.HibernateProxy;
 import org.springframework.aop.support.AopUtils;
-import org.springframework.core.NestedExceptionUtils;
 import org.springframework.test.util.AopTestUtils;
 
-import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Proxy;
 
 public class ProxyUtils {
@@ -36,6 +35,38 @@ public class ProxyUtils {
         } else {
             return true;
         }
+    }
+
+
+    /**
+     * Use in combination with @{@link org.springframework.boot.test.mock.mockito.SpyBean}.
+     * If you get something like : rg.mockito.exceptions.misusing.NotAMockException: Argument should be a mock, but is: class com.blah.MyServiceImpl$$EnhancerBySpringCGLIB$$9712a2a5
+     * example:
+     *
+     *
+     * @SpyBean
+     * Extension extension;
+     *
+     * ...
+     *
+     * doReturn(Boolean.TRUE)
+     *                 .when(unproxy(extension)).isInTimeFrame(any(Rating.class));
+     */
+    public static  <T> T aopUnproxy(T spy){
+        //        https://stackoverflow.com/questions/9033874/mocking-a-property-of-a-cglib-proxied-service-not-working
+        return AopTestUtils.getUltimateTargetObject(spy);
+    }
+
+    public static <T> T hibernateUnproxy(T proxied)
+    {
+        T entity = proxied;
+        if (entity instanceof HibernateProxy) {
+            Hibernate.initialize(entity);
+            entity = (T) ((HibernateProxy) entity)
+                    .getHibernateLazyInitializer()
+                    .getImplementation();
+        }
+        return entity;
     }
 
 //    public static boolean isRootService(Object target) {
