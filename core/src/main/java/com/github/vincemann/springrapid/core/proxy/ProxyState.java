@@ -16,13 +16,17 @@ import java.util.Map;
  *
  */
 public class ProxyState {
-    public static Map<Thread,Map<String, Object>> STATE = new HashMap<>();
+    private final static Map<Thread,Map<String, Object>> STATE = new HashMap<>();
+
+    
 
     public static void clear(){
+        System.err.println("clearing ");
         STATE.remove(Thread.currentThread());
     }
 
     public static void clear(String key){
+        System.err.println("clearing key: " + key);
         Map<String, Object> state = STATE.get(Thread.currentThread());
         if (state==null){
             throw new IllegalArgumentException("nothing to clear");
@@ -51,12 +55,17 @@ public class ProxyState {
     }
 
     public static <T> T get(String key){
-        return (T) STATE.get(Thread.currentThread()).get(key);
+        Map<String, Object> threadState = STATE.get(Thread.currentThread());
+        if (threadState==null){
+            return null;
+        }else {
+           return  (T) threadState.get(key);
+        }
     }
 
     public static <T> T getAndClear(String key){
-        T value = (T) STATE.get(Thread.currentThread()).get(key);
-        clear(key);
-        return value;
+       T value = get(key);
+       clear(key);
+       return value;
     }
 }
