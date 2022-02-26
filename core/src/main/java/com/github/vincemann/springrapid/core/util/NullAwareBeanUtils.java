@@ -36,8 +36,12 @@ public class NullAwareBeanUtils {
         @Override
         public void copyProperty(Object dest, String name, Object value)
                 throws IllegalAccessException, InvocationTargetException {
-            if(value==null){
+            if (!whiteListed.isEmpty()){
                 if (!whiteListed.contains(name)){
+                    return;
+                }
+            }else {
+                if(value==null){
                     return;
                 }
             }

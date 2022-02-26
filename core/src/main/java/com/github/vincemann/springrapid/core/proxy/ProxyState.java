@@ -21,15 +21,18 @@ public class ProxyState {
     
 
     public static void clear(){
-        System.err.println("clearing ");
+        System.err.println("clearing " + Thread.currentThread().toString());
         STATE.remove(Thread.currentThread());
+        // this comment made idea realize that it should not call this method many times randomly...
+//        throw new IllegalArgumentException("clearing");
     }
 
     public static void clear(String key){
-        System.err.println("clearing key: " + key);
+        System.err.println("clearing key: " + key + " " + Thread.currentThread().toString());
         Map<String, Object> state = STATE.get(Thread.currentThread());
         if (state==null){
-            throw new IllegalArgumentException("nothing to clear");
+//            throw new IllegalArgumentException("nothing to clear");
+            log.debug("state is null");
         }else {
             Object value = state.get(key);
             if (value==null){
@@ -41,6 +44,8 @@ public class ProxyState {
                 }
             }
         }
+        // this comment made idea realize that it should not call this method many times randomly...
+//        throw new IllegalArgumentException("clearing key?");
     }
 
     public static void setValue(String key, Object value){

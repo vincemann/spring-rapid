@@ -43,6 +43,9 @@ public interface CrudService<E extends IdentifiableEntity<Id>,Id extends Seriali
          * @param entity will be taken into consideration for updating the database entity, except you want to remove
          *               certain solo fields (no collections), then use
          * @param fieldsToRemove for it.
+         *
+         *  Note: make sure to not accidentally have emtpy collections, that you dont want to update.
+         *        Set the ignored collections to null or name fields to update explicitly
          */
         @Transactional
         E partialUpdate(E entity, String... fieldsToRemove) throws EntityNotFoundException, BadEntityException;

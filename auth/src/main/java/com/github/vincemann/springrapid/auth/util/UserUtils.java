@@ -21,7 +21,7 @@ public class UserUtils {
     }
 
 
-    public static <T extends AbstractUser> T findLoggedInUser(){
+    public static <T extends AbstractUser> T findAuthenticatedUser(){
         if (!RapidSecurityContext.isAuthenticated()){
             throw new AccessDeniedException("No user logged in");
         }

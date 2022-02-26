@@ -52,9 +52,9 @@ public class ProxyUtils {
      * doReturn(Boolean.TRUE)
      *                 .when(unproxy(extension)).isInTimeFrame(any(Rating.class));
      */
-    public static  <T> T aopUnproxy(T spy){
+    public static  <T> T aopUnproxy(T proxy){
         //        https://stackoverflow.com/questions/9033874/mocking-a-property-of-a-cglib-proxied-service-not-working
-        return AopTestUtils.getUltimateTargetObject(spy);
+        return AopTestUtils.getUltimateTargetObject(proxy);
     }
 
     public static <T> T hibernateUnproxy(T proxied)

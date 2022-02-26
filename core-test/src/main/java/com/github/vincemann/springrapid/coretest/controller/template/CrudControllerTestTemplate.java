@@ -6,6 +6,7 @@ import org.checkerframework.checker.units.qual.C;
 
 import java.io.Serializable;
 
+// only for internal use, use AbstractCrudControllerTestTemplate<MyController>
 public class CrudControllerTestTemplate extends AbstractCrudControllerTestTemplate<CrudController> {
 
     // dont autowire, must be set
