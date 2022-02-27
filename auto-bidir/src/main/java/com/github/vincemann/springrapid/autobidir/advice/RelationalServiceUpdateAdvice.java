@@ -64,10 +64,13 @@ public class RelationalServiceUpdateAdvice {
         }else {
             // java.lang.ClassCastException: class io.gitlab.vinceconrad.votesnackbackend.model.Exercise$HibernateProxy$ipV9X1Mb cannot be cast to class org.hibernate.proxy.LazyInitializer
 //            IdentifiableEntity detachedOldEntity = BeanUtils.clone(entityLocator.findEntity(updateEntity));
-            IdentifiableEntity detachedOldEntity = BeanUtils.clone(ProxyUtils.hibernateUnproxyRaw(entityLocator.findEntity(updateEntity)));
+            IdentifiableEntity detachedOldEntity =
+                    BeanUtils.clone(ProxyUtils.hibernateUnproxyRaw(
+                            entityLocator.findEntity(ProxyUtils.hibernateUnproxyRaw(updateEntity))
+                    ));
             entityManager.detach(detachedOldEntity);
 
-            IdentifiableEntity detachedUpdateEntity = BeanUtils.clone(updateEntity);
+            IdentifiableEntity detachedUpdateEntity = BeanUtils.clone(ProxyUtils.hibernateUnproxyRaw(updateEntity));
             entityManager.detach(detachedUpdateEntity);
 
             updateContext = RelationalAdviceContext.builder()
