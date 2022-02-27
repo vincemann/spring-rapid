@@ -4,6 +4,7 @@ import com.github.vincemann.springrapid.core.proxy.AbstractServiceExtension;
 import com.github.vincemann.springrapid.core.proxy.ServiceExtensionProxy;
 import com.github.vincemann.springrapid.core.service.CrudService;
 import org.hibernate.Hibernate;
+import org.hibernate.engine.spi.SessionImplementor;
 import org.hibernate.proxy.HibernateProxy;
 import org.springframework.aop.support.AopUtils;
 import org.springframework.test.util.AopTestUtils;
@@ -67,6 +68,10 @@ public class ProxyUtils {
                     .getImplementation();
         }
         return entity;
+    }
+
+    public static <T> T hibernateUnproxyRaw(T proxied){
+        return (T) Hibernate.unproxy(proxied);
     }
 
 //    public static boolean isRootService(Object target) {

@@ -7,6 +7,7 @@ import com.github.vincemann.springrapid.core.service.exception.BadEntityExceptio
 import com.github.vincemann.springrapid.core.service.exception.EntityNotFoundException;
 import com.github.vincemann.springrapid.core.util.BeanUtils;
 import com.github.vincemann.springrapid.core.util.EntityLocator;
+import com.github.vincemann.springrapid.core.util.ProxyUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.annotation.Aspect;
@@ -49,7 +50,7 @@ public class RelationalServiceUpdateAdvice {
 
 
 
-    protected void preUpdateBiDirEntity(JoinPoint joinPoint, IdentifiableEntity updateEntity, RelationalAdviceContext.UpdateKind updateKind, String... fieldsToRemove) throws EntityNotFoundException, BadEntityException {
+    public void preUpdateBiDirEntity(JoinPoint joinPoint, IdentifiableEntity updateEntity, RelationalAdviceContext.UpdateKind updateKind, String... fieldsToRemove) throws EntityNotFoundException, BadEntityException {
         if (!isRootService(joinPoint.getTarget())) {
             log.debug("ignoring service update advice, bc root service not called yet");
             return;
@@ -61,7 +62,9 @@ public class RelationalServiceUpdateAdvice {
                     .updateKind(updateKind)
                     .build();
         }else {
-            IdentifiableEntity detachedOldEntity = BeanUtils.clone(entityLocator.findEntity(updateEntity));
+            // java.lang.ClassCastException: class io.gitlab.vinceconrad.votesnackbackend.model.Exercise$HibernateProxy$ipV9X1Mb cannot be cast to class org.hibernate.proxy.LazyInitializer
+//            IdentifiableEntity detachedOldEntity = BeanUtils.clone(entityLocator.findEntity(updateEntity));
+            IdentifiableEntity detachedOldEntity = BeanUtils.clone(ProxyUtils.hibernateUnproxyRaw(entityLocator.findEntity(updateEntity)));
             entityManager.detach(detachedOldEntity);
 
             IdentifiableEntity detachedUpdateEntity = BeanUtils.clone(updateEntity);
