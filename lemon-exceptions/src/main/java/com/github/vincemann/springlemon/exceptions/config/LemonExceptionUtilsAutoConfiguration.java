@@ -21,12 +21,6 @@ public class LemonExceptionUtilsAutoConfiguration {
 
     }
 
-    @Bean
-    @ConditionalOnMissingBean(Validator.class)
-    public javax.validation.Validator localValidatorFactoryBean() {
-        return new LocalValidatorFactoryBean();
-    }
-
     /**
      * Configures ExceptionCodeMaker if missing
      *

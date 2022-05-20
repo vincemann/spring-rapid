@@ -31,7 +31,7 @@ public class ClearAclCacheTestExecutionListener extends AbstractTestExecutionLis
         try{
             aclCache.clearCache();
         }catch (IllegalStateException e){
-            log.warn("Could not clear cache: ",e);
+            log.warn("Could not clear cache: ", e);
         }
 
     }
