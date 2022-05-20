@@ -325,6 +325,8 @@ public class OwnerControllerIntegrationTest
         assertPetHasOwner(BELLA,null);
     }
 
+
+    // todo fails when run with all other tests bc of some state probably in RelationalAdviceContextHolder
     @Test
     public void canRemoveOneOfManyHobbiesFromOwner_viaUpdate() throws Exception {
         String hobbyToRemove = "bodybuilding";
@@ -332,7 +334,7 @@ public class OwnerControllerIntegrationTest
         kahn.setHobbies(hobbies);
         ReadOwnOwnerDto createdKahnDto = saveOwnerLinkedToPets(kahn);
 
-        String updateJson = createUpdateJsonLine("remove", "/hobbies",hobbyToRemove);
+        String updateJson = createUpdateJsonLine("remove", "/hobbies", hobbyToRemove);
         String jsonResponse = getMvc().perform(update(createUpdateJsonRequest(updateJson), createdKahnDto.getId())).andReturn().getResponse().getContentAsString();
         ReadOwnOwnerDto responseDto = deserialize(jsonResponse, ReadOwnOwnerDto.class);
         Assertions.assertFalse(responseDto.getHobbies().contains(hobbyToRemove));

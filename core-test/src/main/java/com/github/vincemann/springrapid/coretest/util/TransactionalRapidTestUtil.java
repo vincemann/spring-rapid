@@ -4,7 +4,7 @@ import com.github.vincemann.springrapid.core.model.IdentifiableEntity;
 import com.github.vincemann.springrapid.core.service.CrudService;
 import com.github.vincemann.springrapid.core.service.exception.BadEntityException;
 import com.github.vincemann.springrapid.core.util.IdPropertyNameUtils;
-import com.github.vincemann.springrapid.coretest.controller.TransactionalTestTemplate;
+import com.github.vincemann.springrapid.core.util.TransactionalTemplate;
 import com.google.common.collect.Sets;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.util.ReflectionUtils;
@@ -17,10 +17,10 @@ import java.util.Set;
 
 public class TransactionalRapidTestUtil {
 
-    private static TransactionalTestTemplate transactionalTestTemplate;
+    private static TransactionalTemplate transactionalTemplate;
 
-    public static void setTransactionalTestTemplate(TransactionalTestTemplate transactionalTestTemplate) {
-        TransactionalRapidTestUtil.transactionalTestTemplate = transactionalTestTemplate;
+    public static void setTransactionalTestTemplate(TransactionalTemplate transactionalTemplate) {
+        TransactionalRapidTestUtil.transactionalTemplate = transactionalTemplate;
     }
 
 
@@ -57,7 +57,7 @@ public class TransactionalRapidTestUtil {
     }
 
     public static void clear(CrudService crudService){
-        transactionalTestTemplate.doInTransaction(() -> {
+        transactionalTemplate.doInTransaction(() -> {
             for (IdentifiableEntity entity : (Set<IdentifiableEntity>) crudService.findAll()) {
                 System.err.println("removing entity: " + entity);
                 try {

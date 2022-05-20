@@ -1,9 +1,6 @@
 package com.github.vincemann.springrapid.autobidir.controller.dtomapper.biDir;
 
 
-import com.github.vincemann.springrapid.autobidir.RelationalDtoManager;
-import com.github.vincemann.springrapid.autobidir.RelationalEntityManager;
-import com.github.vincemann.springrapid.autobidir.dto.RelationalDtoType;
 import com.github.vincemann.springrapid.core.model.IdentifiableEntity;
 import com.github.vincemann.springrapid.core.service.exception.BadEntityException;
 import com.github.vincemann.springrapid.core.service.exception.EntityNotFoundException;
@@ -13,14 +10,12 @@ import com.github.vincemann.springrapid.autobidir.controller.dtomapper.IdResolvi
 import com.github.vincemann.springrapid.autobidir.dto.child.annotation.BiDirChildId;
 
 
-import com.github.vincemann.springrapid.core.service.locator.CrudServiceLocator;
 import com.github.vincemann.springrapid.autobidir.model.child.annotation.BiDirChildEntity;
 
 import java.io.Serializable;
 import java.util.Collection;
 import java.util.Map;
 
-import static com.github.vincemann.springrapid.autobidir.dto.RelationalDtoType.BiDirChildDto;
 import static com.github.vincemann.springrapid.autobidir.dto.RelationalDtoType.BiDirParentDto;
 
 /**
@@ -38,46 +33,64 @@ public class BiDirParentIdResolver extends EntityIdResolver {
 
     @Override
     public void setResolvedEntities(IdentifiableEntity mappedBiDirParent, Object biDirParentDto) throws BadEntityException, EntityNotFoundException {
-        //find and handle single Children
 
-        Map<Class<IdentifiableEntity>, Serializable> childTypeIdMappings = relationalDtoManager.findBiDirChildIds(biDirParentDto);
-        for (Map.Entry<Class<IdentifiableEntity>, Serializable> entry : childTypeIdMappings.entrySet()) {
-            Class entityClass = entry.getKey();
-            IdentifiableEntity child = findEntityFromService((Class<IdentifiableEntity>) entityClass, entry.getValue());
-            resolveBiDirChildFromService(child, mappedBiDirParent);
-        }
-        //find and handle children collections
-        Map<Class<IdentifiableEntity>, Collection<Serializable>> childTypeIdCollectionMappings = relationalDtoManager.findBiDirChildIdCollections(biDirParentDto);
+        //find all children by id and map them to parent
+        // create method for finding all child - Id mappings, then use findEntityFromService method to resolve entity then call relationalEntityManagerUtil.link...Entity(mappedEntity,relatedEntity);
+        Map<Class<IdentifiableEntity>, Collection<Serializable>> childTypeIdCollectionMappings = relationalDtoManager.findAllBiDirChildIds(biDirParentDto);
         for (Map.Entry<Class<IdentifiableEntity>, Collection<Serializable>> entry : childTypeIdCollectionMappings.entrySet()) {
             Collection<Serializable> idCollection = entry.getValue();
             for (Serializable id : idCollection) {
                 Class entityClass = entry.getKey();
                 IdentifiableEntity child = findEntityFromService((Class<IdentifiableEntity>) entityClass, id);
-                resolveBiDirChildFromService(child, mappedBiDirParent);
+//                resolveBiDirChildFromService(child, mappedBiDirParent);
+                relationalEntityManagerUtil.linkBiDirChild(mappedBiDirParent, child);
             }
         }
+
+
+//        //find and handle single Children
+//
+//        Map<Class<IdentifiableEntity>, Serializable> childTypeIdMappings = relationalDtoManager.findBiDirChildIds(biDirParentDto);
+//        for (Map.Entry<Class<IdentifiableEntity>, Serializable> entry : childTypeIdMappings.entrySet()) {
+//            Class entityClass = entry.getKey();
+//            IdentifiableEntity child = findEntityFromService((Class<IdentifiableEntity>) entityClass, entry.getValue());
+//            resolveBiDirChildFromService(child, mappedBiDirParent);
+//        }
+//        //find and handle children collections
+//        Map<Class<IdentifiableEntity>, Collection<Serializable>> childTypeIdCollectionMappings = relationalDtoManager.findBiDirChildIdCollections(biDirParentDto);
+//        for (Map.Entry<Class<IdentifiableEntity>, Collection<Serializable>> entry : childTypeIdCollectionMappings.entrySet()) {
+//            Collection<Serializable> idCollection = entry.getValue();
+//            for (Serializable id : idCollection) {
+//                Class entityClass = entry.getKey();
+//                IdentifiableEntity child = findEntityFromService((Class<IdentifiableEntity>) entityClass, id);
+//                resolveBiDirChildFromService(child, mappedBiDirParent);
+//            }
+//        }
     }
 
     @Override
-    public void setResolvedIds(Object mappedDto, IdentifiableEntity serviceEntity) {
-        for (IdentifiableEntity biDirChild : relationalEntityManager.findSingleBiDirChildren(serviceEntity)) {
-            relationalDtoManager.addBiDirChildId(biDirChild,mappedDto);
+    public void setResolvedIds(Object mappedDto, IdentifiableEntity serviceEntity, String... fieldsToCheck) {
+        for (IdentifiableEntity child : relationalEntityManagerUtil.findAllBiDirChildren(serviceEntity,fieldsToCheck)) {
+            relationalDtoManager.addBiDirChildId(child,mappedDto);
         }
-        for (Collection<? extends IdentifiableEntity> childrenCollection : relationalEntityManager.findBiDirChildCollections(serviceEntity).values()) {
-            for (IdentifiableEntity biDirChild : childrenCollection) {
-                relationalDtoManager.addBiDirChildId(biDirChild,mappedDto);
-            }
-        }
+//        for (IdentifiableEntity biDirChild : relationalEntityManagerUtil.findSingleBiDirChildren(serviceEntity)) {
+//            relationalDtoManager.addBiDirChildId(biDirChild,mappedDto);
+//        }
+//        for (Collection<? extends IdentifiableEntity> childrenCollection : relationalEntityManagerUtil.findBiDirChildCollections(serviceEntity).values()) {
+//            for (IdentifiableEntity biDirChild : childrenCollection) {
+//                relationalDtoManager.addBiDirChildId(biDirChild,mappedDto);
+//            }
+//        }
     }
 
-    private void resolveBiDirChildFromService(IdentifiableEntity child, IdentifiableEntity mappedBiDirParent) {
-        try {
-            //set child of mapped parent
-            relationalEntityManager.linkBiDirChild(mappedBiDirParent, child);
-            //backreference gets set in BiDirParentListener
-        } catch (ClassCastException e) {
-            throw new IllegalArgumentException("Found Child " + child + " is not of Type BiDirChild");
-        }
-    }
+//    private void resolveBiDirChildFromService(IdentifiableEntity child, IdentifiableEntity mappedBiDirParent) {
+//        try {
+//            //set child of mapped parent
+//            relationalEntityManagerUtil.linkBiDirChild(mappedBiDirParent, child);
+//            //backreference gets set in BiDirParentListener
+//        } catch (ClassCastException e) {
+//            throw new IllegalArgumentException("Found Child " + child + " is not of Type BiDirChild");
+//        }
+//    }
 
 }

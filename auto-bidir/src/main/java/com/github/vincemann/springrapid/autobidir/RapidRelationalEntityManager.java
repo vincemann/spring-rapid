@@ -1,409 +1,276 @@
 package com.github.vincemann.springrapid.autobidir;
 
-import com.github.vincemann.springrapid.core.model.IdentifiableEntity;
-import com.github.vincemann.springrapid.autobidir.exception.UnknownChildTypeException;
-import com.github.vincemann.springrapid.autobidir.exception.UnknownEntityTypeException;
-import com.github.vincemann.springrapid.autobidir.exception.UnknownParentTypeException;
 import com.github.vincemann.springrapid.autobidir.model.RelationalEntityType;
-import com.github.vincemann.springrapid.autobidir.model.child.annotation.BiDirChildCollection;
-import com.github.vincemann.springrapid.autobidir.model.child.annotation.BiDirChildEntity;
-import com.github.vincemann.springrapid.autobidir.model.child.annotation.UniDirChildCollection;
-import com.github.vincemann.springrapid.autobidir.model.child.annotation.UniDirChildEntity;
-import com.github.vincemann.springrapid.autobidir.model.parent.annotation.BiDirParentCollection;
-import com.github.vincemann.springrapid.autobidir.model.parent.annotation.BiDirParentEntity;
-import com.github.vincemann.springrapid.autobidir.util.CollectionUtils;
-import com.github.vincemann.springrapid.autobidir.util.EntityAnnotationUtils;
-import com.github.vincemann.springrapid.autobidir.util.EntityReflectionUtils;
+import com.github.vincemann.springrapid.core.model.IdentifiableEntity;
+import com.github.vincemann.springrapid.core.service.exception.BadEntityException;
+import com.github.vincemann.springrapid.core.service.exception.EntityNotFoundException;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.cache.annotation.Cacheable;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.transaction.annotation.Transactional;
 
-import java.lang.annotation.Annotation;
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
 import java.util.*;
-import java.util.concurrent.atomic.AtomicBoolean;
 
 @Slf4j
-public class RapidRelationalEntityManager implements RelationalEntityManager{
+@Transactional
+public class RapidRelationalEntityManager implements RelationalEntityManager {
 
+    private RelationalEntityManagerUtil relationalEntityManagerUtil;
+    @PersistenceContext
+    private EntityManager entityManager;
 
-    @Cacheable(value = "entityRelationTypes")
     @Override
-    public Set<RelationalEntityType> inferTypes(Class<? extends IdentifiableEntity> entityClass) {
-        Set<RelationalEntityType> relationalEntityTypes = new HashSet<>();
-        org.springframework.util.ReflectionUtils.doWithFields(entityClass, field -> {
-            org.springframework.util.ReflectionUtils.makeAccessible(field);
-            Annotation[] annotations = field.getAnnotations();
-            for (Annotation annotation : annotations) {
+    public <E extends IdentifiableEntity> E save(E entity, String... membersToCheck) {
+        if (entity.getId() != null) {
+            throw new IllegalArgumentException("save needs null id");
+        }
+        Set<RelationalEntityType> relationalEntityTypes = relationalEntityManagerUtil.inferTypes(entity.getClass());
+        if (relationalEntityTypes.contains(RelationalEntityType.BiDirParent)) {
+            log.debug("applying pre persist BiDirParent logic for: " + entity);
+            // also filter for class obj stored in annotation, so if I update only one BiDirChildCollection, only init this one
+            // with the right class
+//            entity = BiDirJpaUtils.initializeSubEntities(entity, BiDirChildCollection.class);
+//            entity = BiDirJpaUtils.initializeSubEntities(entity, BiDirChildEntity.class);
+            relationalEntityManagerUtil.linkBiDirChildrensParent(entity);
+        }
 
-                if (annotation.annotationType().equals(BiDirChildEntity.class)){
-                    relationalEntityTypes.add(RelationalEntityType.BiDirParent);
-                }
-                if (annotation.annotationType().equals(BiDirChildCollection.class)){
-                    relationalEntityTypes.add(RelationalEntityType.BiDirParent);
-                }
+        if (relationalEntityTypes.contains(RelationalEntityType.BiDirChild)) {
+            log.debug("applying pre persist BiDirChild logic for: " + entity);
+//            entity = BiDirJpaUtils.initializeSubEntities(entity, BiDirParentEntity.class);
+//            entity = BiDirJpaUtils.initializeSubEntities(entity, BiDirParentCollection.class);
+            relationalEntityManagerUtil.linkBiDirParentsChild(entity);
+        }
+        return entity;
+    }
+
+    @Override
+    public void remove(IdentifiableEntity entity, String... membersToCheck) throws EntityNotFoundException, BadEntityException {
+        Set<RelationalEntityType> relationalEntityTypes = relationalEntityManagerUtil.inferTypes(entity.getClass());
+
+        if (relationalEntityTypes.contains(RelationalEntityType.BiDirParent)) {
+            log.debug("applying pre remove BiDirParent logic for: " + entity.getClass());
+            relationalEntityManagerUtil.unlinkBiDirChildrensParent(entity);
+        }
+        if (relationalEntityTypes.contains(RelationalEntityType.BiDirChild)) {
+            log.debug("applying pre remove BiDirChild logic for: " + entity);
+            relationalEntityManagerUtil.unlinkBiDirParentsChild(entity);
+        }
+    }
 
 
-                if (annotation.annotationType().equals(UniDirChildEntity.class)){
-                    relationalEntityTypes.add(RelationalEntityType.UniDirParent);
-                }
-                if (annotation.annotationType().equals(UniDirChildCollection.class)){
-                    relationalEntityTypes.add(RelationalEntityType.UniDirParent);
-                }
+    @Override
+    public <E extends IdentifiableEntity> E partialUpdate(E oldEntity, E updateEntity, E partialUpdateEntity, String... membersToCheck) throws EntityNotFoundException, BadEntityException {
+        // only operate on non null fields of partialUpdateEntity
+        Set<RelationalEntityType> relationalEntityTypes = relationalEntityManagerUtil.inferTypes(updateEntity.getClass());
+        if (relationalEntityTypes.contains(RelationalEntityType.BiDirParent)) {
+            log.debug("applying pre partial-update BiDirParent logic for: " + updateEntity.getClass());
+            updateBiDirParentRelations(oldEntity, updateEntity);
+        }
+        if (relationalEntityTypes.contains(RelationalEntityType.BiDirChild)) {
+            log.debug("applying pre partial-update BiDirChild logic for: " + updateEntity.getClass());
+            updateBiDirChildRelations(oldEntity, updateEntity);
+        }
+        return updateEntity;
+    }
 
+    @Override
+    public <E extends IdentifiableEntity> E update(E oldEntity, E updateEntity, String... membersToCheck) throws EntityNotFoundException, BadEntityException {
+        Set<RelationalEntityType> relationalEntityTypes = relationalEntityManagerUtil.inferTypes(updateEntity.getClass());
 
-                if (annotation.annotationType().equals(BiDirParentEntity.class)){
-                    relationalEntityTypes.add(RelationalEntityType.BiDirChild);
-                }
-                if (annotation.annotationType().equals(BiDirParentCollection.class)){
-                    relationalEntityTypes.add(RelationalEntityType.BiDirChild);
-                }
+        if (relationalEntityTypes.contains(RelationalEntityType.BiDirParent)) {
+            log.debug("applying pre full-update BiDirParent logic for: " + updateEntity.getClass());
+            updateBiDirParentRelations(oldEntity, updateEntity,membersToCheck);
+        }
+        if (relationalEntityTypes.contains(RelationalEntityType.BiDirChild)) {
+            log.debug("applying pre full-update BiDirChild logic for: " + updateEntity.getClass());
+            updateBiDirChildRelations(oldEntity, updateEntity, membersToCheck);
+        }
+
+        return updateEntity;
+    }
+
+    public Collection<IdentifiableEntity> updateBiDirChildRelations(IdentifiableEntity oldChild, IdentifiableEntity child, String... membersToCheck) throws BadEntityException, EntityNotFoundException {
+
+        Collection<IdentifiableEntity> oldParents = relationalEntityManagerUtil.findAllBiDirParents(oldChild,membersToCheck);
+        Collection<IdentifiableEntity> newParents = relationalEntityManagerUtil.findAllBiDirParents(child, membersToCheck);
+
+        //find parents to unlink
+        List<IdentifiableEntity> removedParents = new ArrayList<>();
+        for (IdentifiableEntity oldParent : oldParents) {
+            if (!newParents.contains(oldParent)) {
+                removedParents.add(oldParent);
             }
+        }
 
-            // dont apply filter bc we also need to check for sets of IdentifiableEntities
-        }/*, field -> IdentifiableEntity.class.isAssignableFrom(field.getType())*/);
-        return relationalEntityTypes;
-    }
-
-
-    // BiDirChild methods
-
-
-
-    /**
-     * Find the BiDirParent Collections (all fields of this parent annotated with {@link BiDirParentCollection} )
-     * mapped to the Type of the Entities in the Collection.
-     * @return
-     */
-    public Map<Class<IdentifiableEntity>,Collection<IdentifiableEntity>> findBiDirParentCollections(IdentifiableEntity child){
-        assertEntityRelationType(child, RelationalEntityType.BiDirChild);
-        return findEntityCollections(child,BiDirParentCollection.class);
-    }
-    /**
-     *
-     * @return  all parent of this, that are not null
-     */
-    public Collection<IdentifiableEntity> findSingleBiDirParents(IdentifiableEntity child) {
-        assertEntityRelationType(child, RelationalEntityType.BiDirChild);
-        return findSingleEntities(child,BiDirParentEntity.class);
-    }
-
-    /**
-     *
-     * @param parentToSet
-     * @throws UnknownParentTypeException   when supplied Parent does not match any of the fields in child class anntoated with {@link BiDirParentEntity}
-     */
-    public void linkBiDirParent(IdentifiableEntity child, IdentifiableEntity parentToSet) throws UnknownParentTypeException {
-        assertEntityRelationType(child, RelationalEntityType.BiDirChild);
-        assertEntityRelationType(parentToSet, RelationalEntityType.BiDirParent);
-        linkEntity(child, parentToSet,BiDirParentEntity.class,BiDirParentCollection.class);
-    }
-
-    public void unlinkBiDirParents(IdentifiableEntity child) throws UnknownChildTypeException, UnknownParentTypeException{
-        for(IdentifiableEntity parent: findSingleBiDirParents(child)){
-            if(parent!=null) {
-                unlinkBiDirParent(child, parent);
+        //find added parents
+        List<IdentifiableEntity> addedParents = new ArrayList<>();
+        for (IdentifiableEntity newParent : newParents) {
+            if (!oldParents.contains(newParent)) {
+                addedParents.add(newParent);
             }else {
-                log.warn("Parent Reference of BiDirChild with type: "+child.getClass().getSimpleName()+" was not set when deleting -> parent was deleted before child");
+                // all parents need to be merged, non added children can be merged here already
+                entityManager.merge(newParent);
             }
         }
-    }
 
-    /**
-     * This Child wont know about parentToDelete after this operation.
-     * Set all {@link BiDirParentEntity}s of this BiDirChild to null.
-     * @param parentToDelete
-     * @throws UnknownParentTypeException   thrown, if parentToDelete is of unknown type -> no field , annotated as {@link BiDirParentEntity}, with the most specific type of parentToDelete, exists in Child (this).
-     */
-    public void unlinkBiDirParent(IdentifiableEntity child, IdentifiableEntity parentToDelete) throws UnknownParentTypeException {
-        assertEntityRelationType(child, RelationalEntityType.BiDirChild);
-        assertEntityRelationType(parentToDelete, RelationalEntityType.BiDirParent);
-        unlinkEntity(child, parentToDelete,BiDirParentEntity.class,BiDirParentCollection.class);
-    }
+        adjustUpdatedEntities(addedParents, removedParents);
 
-    /**
-     * All children BiDirChild of this parent wont know about this parent, after this operation.
-     * Clear all {@link BiDirChildCollection}s of this parent.
-     * Call this, before you want to delete this parent.
-     * @throws UnknownParentTypeException
-     */
-    public void unlinkParentsChildren(IdentifiableEntity child) throws UnknownEntityTypeException {
-        for(IdentifiableEntity parent: findSingleBiDirParents(child)){
-            unlinkBiDirChild(parent,child);
+        // unlink Child from certain Parents
+        for (IdentifiableEntity removedParent : removedParents) {
+            log.debug("update: unlinking parent: " + removedParent + " from child: " + child);
+//            relationalEntityManagerUtil.unlinkBiDirChild(removedParent, oldChild);
+            relationalEntityManagerUtil.unlinkBiDirChild(removedParent, child, membersToCheck);  // somehow does not make a difference but makes more sense like that imo
         }
-        for(Map.Entry<Class<IdentifiableEntity>,Collection<IdentifiableEntity>> entry: findBiDirParentCollections(child).entrySet()){
-            Collection<IdentifiableEntity> parentCollection = entry.getValue();
-            for(IdentifiableEntity parent: parentCollection){
-                unlinkBiDirChild(parent,child);
-            }
-            parentCollection.clear();
+
+        // link added Parent to child
+        for (IdentifiableEntity addedParent : addedParents) {
+            log.debug("update: linking parent: " + addedParent + " to child: " + child);
+            relationalEntityManagerUtil.linkBiDirChild(addedParent, child, membersToCheck);
+            // new parents may be detached, so merge them, must happen after linking!
+            entityManager.merge(addedParent);
         }
+//        entityManager.merge(child); wont do no harm, maybe needed if child is detached?
+        return newParents;
     }
 
+    public Collection<IdentifiableEntity> updateBiDirParentRelations(IdentifiableEntity oldParent, IdentifiableEntity parent, String... membersToCheck) throws BadEntityException, EntityNotFoundException {
 
+        Collection<IdentifiableEntity> oldChildren = relationalEntityManagerUtil.findAllBiDirChildren(oldParent,membersToCheck);
+        Collection<IdentifiableEntity> newChildren = relationalEntityManagerUtil.findAllBiDirChildren(parent,membersToCheck);
 
-
-    // BiDirParent Methods
-
-
-
-
-    /**
-     * Find the BiDirChildren Collections (all fields of this parent annotated with {@link BiDirChildCollection} )
-     * mapped to the Type of the Entities in the Collection.
-     * @return
-     */
-    public Map<Class<IdentifiableEntity>,Collection<IdentifiableEntity>> findBiDirChildCollections(IdentifiableEntity parent){
-        assertEntityRelationType(parent, RelationalEntityType.BiDirParent);
-        return findEntityCollections(parent,BiDirChildCollection.class);
-    }
-
-    /**
-     * Find the single BiDirChildren (all fields of this parent annotated with {@link BiDirChildEntity} and not null.
-     * @return
-     */
-    public Set<IdentifiableEntity> findSingleBiDirChildren(IdentifiableEntity parent){
-        assertEntityRelationType(parent, RelationalEntityType.BiDirParent);
-        return findSingleEntities(parent, BiDirChildEntity.class);
-    }
-
-    /**
-     * Add a new Child to this parent.
-     * Call this, when saving a BiDirChild of this parent.
-     * child will be added to fields with {@link BiDirChildCollection} and fields with {@link BiDirChildEntity} will be set with newChild, when most specific type matches of newChild matches the field.
-     * Child wont be added and UnknownChildTypeException will be thrown when corresponding {@link BiDirChildCollection} is null.
-     * @param newChild
-     * @throws UnknownChildTypeException
-     */
-    public void linkBiDirChild(IdentifiableEntity parent, IdentifiableEntity newChild) throws UnknownChildTypeException{
-        assertEntityRelationType(parent, RelationalEntityType.BiDirParent);
-        assertEntityRelationType(newChild, RelationalEntityType.BiDirChild);
-        linkEntity(parent, newChild, BiDirChildEntity.class, BiDirChildCollection.class);
-    }
-
-    /**
-     * This parent wont know about the given biDirChildToRemove after this operation.
-     * Call this, before you delete the biDirChildToRemove.
-     * Case 1: Remove Child BiDirChild from all {@link BiDirChildCollection}s from this parent.
-     * Case 2: Set {@link BiDirChildEntity}Field to null if child is not saved in a collection in this parent.
-     * @param biDirChildToRemove
-     * @throws UnknownChildTypeException
-     */
-    public void unlinkBiDirChild(IdentifiableEntity parent, IdentifiableEntity biDirChildToRemove) throws UnknownChildTypeException{
-        assertEntityRelationType(parent, RelationalEntityType.BiDirParent);
-        assertEntityRelationType(biDirChildToRemove, RelationalEntityType.BiDirChild);
-        unlinkEntity(parent, biDirChildToRemove,BiDirChildEntity.class,BiDirChildCollection.class);
-    }
-
-    /**
-     * All children BiDirChild of this parent wont know about this parent, after this operation.
-     * Clear all {@link BiDirChildCollection}s of this parent.
-     * Call this, before you want to delete this parent.
-     * @throws UnknownParentTypeException
-     */
-    public void unlinkChildrensParent(IdentifiableEntity parent) throws UnknownParentTypeException{
-        for(IdentifiableEntity child: findSingleBiDirChildren(parent)){
-            unlinkBiDirParent(child,parent);
-        }
-        for(Map.Entry<Class<IdentifiableEntity>,Collection<IdentifiableEntity>> entry: findBiDirChildCollections(parent).entrySet()){
-            Collection<IdentifiableEntity> childrenCollection = entry.getValue();
-            for(IdentifiableEntity child: childrenCollection){
-                unlinkBiDirParent(child,parent);
-            }
-            childrenCollection.clear();
-        }
-    }
-
-
-
-
-    // UniDirParent Methods
-
-
-
-
-    /**
-     * Find the UniDirChildren Collections (all fields of this parent annotated with {@link UniDirChildCollection} and not null )
-     * and the Type of the Entities in the Collection.
-     *
-     * @return
-     */
-    public Map<Class<IdentifiableEntity>,Collection<IdentifiableEntity>> findUniDirChildCollections(IdentifiableEntity parent)  {
-        assertEntityRelationType(parent, RelationalEntityType.UniDirParent);
-        return findEntityCollections(parent,UniDirChildCollection.class);
-    }
-    /**
-     * Find the single UniDirChildren (all fields of this parent annotated with {@link UniDirChildEntity} and not null.
-     * @return
-     */
-    public Set<IdentifiableEntity> findSingleUniDirChildren(IdentifiableEntity parent) {
-        assertEntityRelationType(parent, RelationalEntityType.UniDirParent);
-        return findSingleEntities(parent,UniDirChildEntity.class);
-    }
-
-    /**
-     * Add a new Child to this parent.
-     * Call this, when saving a UniDirChild of this parent.
-     * child will be added to fields with {@link UniDirChildCollection} and fields with {@link UniDirChildEntity} will be set with newChild, when most specific type matches of newChild matches the field.
-     * Child wont be added and UnknownChildTypeException will be thrown when corresponding {@link UniDirChildCollection} is null.
-     *
-     * @param newChild
-     * @throws UnknownChildTypeException
-     */
-    public void linkUniDirChild(IdentifiableEntity parent,IdentifiableEntity newChild) throws UnknownChildTypeException{
-        assertEntityRelationType(parent, RelationalEntityType.UniDirParent);
-        linkEntity(parent,newChild,UniDirChildEntity.class,UniDirChildCollection.class);
-    }
-
-    /**
-     * This parent wont know about the given uniDirChildToRemove after this operation.
-     * Call this, before you delete the uniDirChildToRemove.
-     * Case 1: Remove Child UniDirChild from all {@link UniDirChildCollection}s from this parent.
-     * Case 2: Set {@link UniDirChildEntity}Field to null if child is not saved in a collection in this parent.
-     *
-     * @param toRemove
-     * @throws UnknownChildTypeException
-     */
-    public void unlinkUniDirChild(IdentifiableEntity parent, IdentifiableEntity toRemove) throws UnknownChildTypeException{
-        assertEntityRelationType(parent, RelationalEntityType.UniDirParent);
-        unlinkEntity(parent,toRemove,UniDirChildEntity.class,UniDirChildCollection.class);
-    }
-
-
-
-
-
-
-    // CORE GENERIC METHODS 
-
-
-
-
-
-    protected<C> Set<C> findSingleEntities(IdentifiableEntity<?> entity, Class<? extends Annotation> annotationClass){
-        Set<C> entities = new HashSet<>();
-        EntityReflectionUtils.doWithAnnotatedFields(annotationClass,entity.getClass(), field -> {
-            C foundEntity = (C) field.get(entity);
-            if(foundEntity == null){
-                //skip
-                return;
-            }
-            entities.add(foundEntity);
-        });
-        return entities;
-    }
-
-    /**
-     * Find the Entity Collections (all fields of this annotated with @param entityAnnotationClass)
-     * mapped to the Type of the Entities in the Collection.
-     *
-     * @return
-     */
-    protected<C> Map<Class<C>,Collection<C>>  findEntityCollections(IdentifiableEntity entity, Class<? extends Annotation> entityAnnotationClass) {
-        Map<Class<C>,Collection<C>> entityType_collectionMap = new HashMap<>();
-        EntityReflectionUtils.doWithAnnotatedFields(entityAnnotationClass, entity.getClass(), field -> {
-            Collection<C> entityCollection = (Collection<C>) field.get(entity);
-            if (entityCollection == null) {
-                //throw new IllegalArgumentException("Null idCollection found in BiDirParent "+ this + " for EntityCollectionField with name: " + field.getName());
-                log.warn("Auto-generating Collection for null valued BiDirEntityCollection Field: " + field);
-                Collection emptyCollection = CollectionUtils.createEmptyCollection(field);
-                field.set(entity, emptyCollection);
-                entityCollection = emptyCollection;
-            }
-            Class<C> entityType = (Class<C>) EntityAnnotationUtils.getEntityType(field.getAnnotation(entityAnnotationClass));
-            entityType_collectionMap.put(entityType,entityCollection);
-        });
-        return entityType_collectionMap;
-    }
-
-    protected void linkEntity(IdentifiableEntity<?> entity, IdentifiableEntity newEntity, Class<? extends Annotation> entityAnnotationClass, Class<? extends Annotation> entityCollectionAnnotationClass) throws UnknownEntityTypeException {
-        AtomicBoolean added = new AtomicBoolean(false);
-        //add to matching entity collections
-        // todo THIS CORRECT
-        for (Map.Entry<Class<IdentifiableEntity>,Collection<IdentifiableEntity>> entry : this.<IdentifiableEntity>findEntityCollections(entity,entityCollectionAnnotationClass).entrySet()) {
-            Class<? extends IdentifiableEntity> targetClass = entry.getKey();
-            if (newEntity.getClass().equals(targetClass)) {
-                (entry.getValue()).add(newEntity);
-                added.set(true);
+        //find Children to unlink
+        List<IdentifiableEntity> removedChildren = new ArrayList<>();
+        for (IdentifiableEntity oldChild : oldChildren) {
+            if (!newChildren.contains(oldChild)) {
+                removedChildren.add(oldChild);
             }
         }
-        //set matching entity
-        EntityReflectionUtils.doWithAnnotatedFieldsOfType(newEntity.getClass(),entityAnnotationClass,entity.getClass(),entityField -> {
-            IdentifiableEntity oldEntity = (IdentifiableEntity) entityField.get(entity);
-            if (oldEntity != null) {
-                log.warn("Overriding old entity: " + oldEntity + " with new entity " + newEntity + " of source sntity " + entity);
+
+        //find added Children
+        List<IdentifiableEntity> addedChildren = new ArrayList<>();
+        for (IdentifiableEntity newChild : newChildren) {
+            if (!oldChildren.contains(newChild)) {
+                addedChildren.add(newChild);
+            }else {
+                // all children need to be merged, non added children can be merged here already
+                entityManager.merge(newChild);
             }
-            entityField.set(entity, newEntity);
-            added.set(true);
-        });
-        if (!added.get()) {
-            throw new UnknownEntityTypeException(entity.getClass(), newEntity.getClass());
         }
+
+        adjustUpdatedEntities(addedChildren, removedChildren);
+
+        //unlink removed Children from parent
+        for (IdentifiableEntity removedChild : removedChildren) {
+            log.debug("unlinking child: " + removedChild + " from parent: " + parent);
+//            relationalEntityManagerUtil.unlinkBiDirParent(removedChild, oldParent);
+            relationalEntityManagerUtil.unlinkBiDirParent(removedChild, parent,membersToCheck); // somehow does not make a difference but makes more sense like that imo
+        }
+
+        //link added Children to parent
+        for (IdentifiableEntity addedChild : addedChildren) {
+            log.debug("linking child: " + addedChild + " to parent: " + parent);
+            // illness gets set of pets updated, illness = child
+            relationalEntityManagerUtil.linkBiDirParent(addedChild, parent,membersToCheck);
+            // new children may be detached, so merge them , must happen after linking!
+            entityManager.merge(addedChild);
+        }
+        return newChildren;
+//        entityManager.merge(parent); wont do no harm, maybe needed if newChild is detached?
     }
 
-    protected void unlinkEntity(IdentifiableEntity entity, IdentifiableEntity entityToRemove, Class<? extends Annotation> entityEntityAnnotationClass, Class<? extends Annotation> entityEntityCollectionAnnotationClass) throws UnknownEntityTypeException{
-        AtomicBoolean deleted = new AtomicBoolean(false);
-        for (Map.Entry<Class<IdentifiableEntity>,Collection<IdentifiableEntity>> entry : this.<IdentifiableEntity>findEntityCollections(entity,entityEntityCollectionAnnotationClass).entrySet()) {
-            //todo only swapped getKey -> getValue, is value not used?
-            Collection<IdentifiableEntity> entityCollection = entry.getValue();
-            if(entityCollection!=null){
-                if(!entityCollection.isEmpty()){
-                    Optional<IdentifiableEntity> optionalEntity = entityCollection.stream().findFirst();
-                    if(optionalEntity.isPresent()){
-                        IdentifiableEntity removeCandidate = optionalEntity.get();
-                        if(entityToRemove.getClass().equals(removeCandidate.getClass())){
-                            //this set needs to remove the entity
-                            //here is a hibernate bug in persistent set remove function, see https://stackoverflow.com/a/47968974
-                            //therefor we use an odd workaround
-                            Iterator<IdentifiableEntity> iterator = entityCollection.iterator();
-                            while (iterator.hasNext()){
-                                IdentifiableEntity e = iterator.next();
-                                if (e.equals(entityToRemove)){
-                                    iterator.remove();
-                                    deleted.set(true);
-                                    break;
-                                }
-                            }
-                            // old workaround, which does not work for n-m remove
-//                            List<DirEntity> toRemove = new ArrayList<>();
-//                            toRemove.add(entityToRemove);
-//                            boolean successfulRemove = entityCollection.removeAll(toRemove);
-//                            //entityCollection = PersistentSet
-//                            if(!successfulRemove){
-//                                throw new RuntimeException("Entity: "+toRemove+", which should be deleted from source entity-collection, was not present in it or delete operation was not successful. "+this);
-//                            }else {
-//                                deleted.set(true);
-//                            }
-                        }
-                    }
-                }
-            }
-        }
-        EntityReflectionUtils.doWithAnnotatedFields(entityEntityAnnotationClass,entity.getClass(), entityField -> {
-            IdentifiableEntity removeCandidate = (IdentifiableEntity) entityField.get(entity);
-            if(removeCandidate!=null) {
-                if (removeCandidate.getClass().equals(entityToRemove.getClass())) {
-                    entityField.set(entity, null);
-                    deleted.set(true);
-                }
-            }
-        });
-        if(!deleted.get()){
-            System.err.println("it is also possible, that entity to unlink was not found in collection");
-            throw new UnknownEntityTypeException(entity.getClass(), entityToRemove.getClass());
-        }
+    protected <E> void adjustUpdatedEntities(List<E> added, List<E> removed) {
+        removed.removeAll(added);
+        added.removeAll(removed);
     }
 
 
+//    protected void mergeChildrensParents(IdentifiableEntity biDirChild) {
+//        for (IdentifiableEntity parent : relationalEntityManagerUtil.findAllBiDirParents(biDirChild)) {
+//            entityManager.merge(parent);
+//        }
+//    }
+//
+//    protected void mergeParentsChildren(IdentifiableEntity biDirParent) {
+//        for (IdentifiableEntity child : relationalEntityManagerUtil.findAllBiDirChildren(biDirParent)) {
+//            entityManager.merge(child);
+//        }
+//    }
+//
+//    private void replaceParentsChildRefAndMerge(IdentifiableEntity child) {
+//        //set backreferences
+//
+//        for (IdentifiableEntity parent : relationalEntityManagerUtil.findAllBiDirParents(child)) {
+//            relationalEntityManagerUtil.linkBiDirChild(parent,child);
+//            entityManager.merge(parent);
+//        }
+//    }
+//
+//    private void replaceChildrensParentRefAndMerge(IdentifiableEntity parent) {
+//        //set backreferences
+//        for (IdentifiableEntity child : relationalEntityManagerUtil.findAllBiDirChildren(parent)) {
+//            relationalEntityManagerUtil.linkBiDirParent(child,parent);
+//            entityManager.merge(child);
+//        }
+//    }
+
+//    private void updateAddedChildren(IdentifiableEntity parent, List<IdentifiableEntity> addedChildren) {
+////        for (IdentifiableEntity child : relationalEntityManagerUtil.findAllBiDirChildren(parent)) {
+////            System.err.println(child);
+////        }
+//
+//        //set backreferences
+//        for (IdentifiableEntity child : addedChildren) {
+//            System.err.println(child);
+//            relationalEntityManagerUtil.linkBiDirParent(child,parent);
+//            entityManager.merge(child);
+//        }
+//    }
+//
+//    private void updateAddedParents(IdentifiableEntity child, List<IdentifiableEntity> addedParents) {
+//        //set backreferences
+//        for (IdentifiableEntity parent : addedParents) {
+//            System.err.println(parent);
+//            relationalEntityManagerUtil.linkBiDirChild(parent,child);
+//            entityManager.merge(parent);
+//        }
+//    }
 
 
-    // HELPER METHODS
+//    private void linkChildrensParent(IdentifiableEntity biDirParent) {
+//        Set<? extends IdentifiableEntity> children = relationalEntityManagerUtil.findSingleBiDirChildren(biDirParent);
+//        for (IdentifiableEntity child : children) {
+//            relationalEntityManagerUtil.linkBiDirParent(child, biDirParent);
+//        }
+//        Collection<Collection<IdentifiableEntity>> childCollections = relationalEntityManagerUtil.findBiDirChildCollections(biDirParent).values();
+//        for (Collection<IdentifiableEntity> childCollection : childCollections) {
+//            for (IdentifiableEntity child : childCollection) {
+//                relationalEntityManagerUtil.linkBiDirParent(child, biDirParent);
+//            }
+//        }
+
+//    }
+
+//    private void linkParentsChild(IdentifiableEntity biDirChild) {
+//        //set backreferences
+//
+//        Collection<Collection<IdentifiableEntity>> parentCollections = relationalEntityManagerUtil.findBiDirParentCollections(biDirChild).values();
+//        for (Collection<IdentifiableEntity> parentCollection : parentCollections) {
+//            for (IdentifiableEntity biDirParent : parentCollection) {
+//                relationalEntityManagerUtil.linkBiDirChild(biDirParent,biDirChild);
+//            }
+//        }
+//
+//        for (IdentifiableEntity parent : relationalEntityManagerUtil.findSingleBiDirParents(biDirChild)) {
+//            relationalEntityManagerUtil.linkBiDirChild(parent,biDirChild);
+//        }
+//
+//    }
 
 
-
-
-
-    void assertEntityRelationType(IdentifiableEntity entity, RelationalEntityType expectedType){
-        if (!inferTypes(entity.getClass()).contains(expectedType)){
-            throw new IllegalArgumentException("Entity: " + entity + " is not of expected entity relation type: " + expectedType.name());
-        }
+    @Autowired
+    public void setRelationalEntityManagerUtil(RelationalEntityManagerUtil relationalEntityManagerUtil) {
+        this.relationalEntityManagerUtil = relationalEntityManagerUtil;
     }
+
 }

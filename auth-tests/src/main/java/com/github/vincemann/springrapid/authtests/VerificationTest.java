@@ -4,7 +4,7 @@ import com.github.vincemann.springrapid.auth.model.AbstractUser;
 import com.github.vincemann.springrapid.auth.model.AuthRoles;
 import com.github.vincemann.springrapid.auth.dto.SignupDto;
 import com.github.vincemann.springrapid.auth.mail.MailData;
-import com.github.vincemann.springrapid.coretest.controller.TransactionalTestTemplate;
+import com.github.vincemann.springrapid.core.util.TransactionalTemplate;
 import lombok.SneakyThrows;
 import org.hamcrest.Matchers;
 import org.junit.jupiter.api.Test;
@@ -19,7 +19,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 public class VerificationTest extends AbstractRapidAuthIntegrationTest {
 
 	@Autowired
-	TransactionalTestTemplate transactionalTestTemplate;
+    TransactionalTemplate transactionalTemplate;
 	
 	@Test
 	public void canVerifyEmail() throws Exception {
@@ -116,7 +116,7 @@ public class VerificationTest extends AbstractRapidAuthIntegrationTest {
 	public void usersCredentialsUpdatedAfterSignup_cantUseObsoleteVerificationCode() throws Exception {
 		SignupDto signupDto = createValidSignupDto();
 		MailData mailData = testTemplate.signup2xx(signupDto);
-		transactionalTestTemplate.doInTransaction(new Runnable() {
+		transactionalTemplate.doInTransaction(new Runnable() {
 			@SneakyThrows
 			@Override
 			public void run() {
@@ -124,7 +124,7 @@ public class VerificationTest extends AbstractRapidAuthIntegrationTest {
 
 				// Credentials updated after the verification token is issued
 				savedUser.setCredentialsUpdatedMillis(System.currentTimeMillis());
-				getUserService().update(savedUser);
+				getUserService().fullUpdate(savedUser);
 			}
 		});
 

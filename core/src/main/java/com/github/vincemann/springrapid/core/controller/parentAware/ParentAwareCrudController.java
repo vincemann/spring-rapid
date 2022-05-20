@@ -93,7 +93,7 @@ public abstract class ParentAwareCrudController
             Set<E> children = getService().findAllOfParent(id);
             Collection<Object> dtos = new HashSet<>();
             for (E e : children) {
-                Class<?> dtoClass = createDtoClass(getCoreProperties().controller.endpoints.findAllOfParent, Direction.RESPONSE, null);
+                Class<?> dtoClass = createDtoClass(getFindAllOfParentUrl(), Direction.RESPONSE, null);
                 dtos.add(getDtoMapper().mapToDto(e, dtoClass));
             }
             String json = getJsonMapper().writeDto(dtos);

@@ -37,7 +37,7 @@ public class Illness extends IdentifiableEntityImpl<Long>  {
 
     @Override
     public String toString() {
-        return "Toy{" +
+        return "Illness{" +
                 "name='" + name + '\'' +
                 ", pets=" +  Arrays.toString(pets.stream().map(Pet::getName).toArray()) +
                 '}';

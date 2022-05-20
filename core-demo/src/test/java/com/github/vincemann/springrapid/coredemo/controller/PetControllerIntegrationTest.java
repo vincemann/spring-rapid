@@ -139,6 +139,11 @@ public class PetControllerIntegrationTest extends AbstractControllerIntegrationT
         assertToyHasPet(RUBBER_DUCK,null);
     }
 
+
+//    public void canUnlinkOwnerAndAddLazyIllness_viaUpdate(){
+//
+//    }
+
     @Test
     public void canUnlinkPetsOwnerAndAddSomeToys_viaUpdate() throws Exception {
         Owner savedKahn = ownerRepository.save(kahn);
@@ -281,7 +286,9 @@ public class PetControllerIntegrationTest extends AbstractControllerIntegrationT
         Owner savedMeier = ownerRepository.save(meier);
 
         PetDto createdBellaDto = savePetLinkedToOwnerAndToys(bella,savedKahn.getId());
-        String updateOwnerJson = createUpdateJsonRequest(createUpdateJsonLine("replace", "/ownerId",savedMeier.getId().toString()));
+        String updateOwnerJson = createUpdateJsonRequest(
+                createUpdateJsonLine("replace", "/ownerId",savedMeier.getId().toString())
+        );
 
         PetDto responseDto = deserialize(getMvc().perform(update(updateOwnerJson, createdBellaDto.getId()))
                 .andReturn().getResponse().getContentAsString(), PetDto.class);

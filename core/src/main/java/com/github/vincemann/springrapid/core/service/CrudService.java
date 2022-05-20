@@ -31,25 +31,31 @@ public interface CrudService<E extends IdentifiableEntity<Id>,Id extends Seriali
         @Transactional
         Optional<E> findById(Id id) throws BadEntityException;
 
+
+        @Transactional
         /**
-         * If full is false:
-         * only non null members of @param entity will be taken into consideration for updating the database entity.
-         * If full is true:
-         * all members of @param entity will be taken into consideration for updating the database entity.
-         * @param entity
-         * @return updated (database) entity
+         * Expects that no entity relationships need to be updated by other framework logic.
+         * Use this i.E. if you just uddate a long field and String field of entity, to reduce overhead.
+         */
+        E softUpdate(E entity) throws EntityNotFoundException, BadEntityException;
+        /**
+         * only non null members of
+         * @param entity will be taken into consideration for updating the database entity, except you want to remove
+         *               certain solo fields (no collections), then use
+         * @param fieldsToRemove for it.
+         *
+         *  Note: make sure to not accidentally have emtpy collections, that you dont want to update.
+         *        Set the ignored collections to null or name fields to update explicitly
          */
         @Transactional
-        E update(E entity, Boolean full) throws EntityNotFoundException, BadEntityException;
+        E partialUpdate(E entity, String... fieldsToRemove) throws EntityNotFoundException, BadEntityException;
 
         // the @Transactional's ara actually needed!
         @Transactional
-        default E update(E entity) throws BadEntityException, EntityNotFoundException {
-                return update(entity,true);
-        }
+        E fullUpdate(E entity) throws BadEntityException, EntityNotFoundException;
 
         @Transactional
-        E save(E entity) throws  BadEntityException;
+        E save(E entity) throws BadEntityException;
 
         @Transactional
         Set<E> findAll();

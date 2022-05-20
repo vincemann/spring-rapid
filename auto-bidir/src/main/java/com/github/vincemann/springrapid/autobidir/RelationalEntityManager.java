@@ -1,32 +1,14 @@
 package com.github.vincemann.springrapid.autobidir;
 
 import com.github.vincemann.springrapid.core.model.IdentifiableEntity;
-import com.github.vincemann.springrapid.autobidir.model.RelationalEntityType;
-
-import java.util.Collection;
-import java.util.Map;
-import java.util.Set;
+import com.github.vincemann.springrapid.core.service.exception.BadEntityException;
+import com.github.vincemann.springrapid.core.service.exception.EntityNotFoundException;
 
 public interface RelationalEntityManager {
 
-    Set<RelationalEntityType> inferTypes(Class<? extends IdentifiableEntity> entityClass);
-    public Map<Class<IdentifiableEntity>,Collection<IdentifiableEntity>> findBiDirParentCollections(IdentifiableEntity child);
-    public Collection<IdentifiableEntity> findSingleBiDirParents(IdentifiableEntity child);
-    public void linkBiDirParent(IdentifiableEntity child, IdentifiableEntity parentToSet);
-    public void unlinkBiDirParents(IdentifiableEntity child);
-    public void unlinkBiDirParent(IdentifiableEntity child, IdentifiableEntity parentToDelete);
-    public void unlinkParentsChildren(IdentifiableEntity child);
+    public <E extends IdentifiableEntity> E save(E entity, String... membersToCheck);
+    public void remove(IdentifiableEntity entity, String... membersToCheck) throws EntityNotFoundException, BadEntityException;
+    <E extends IdentifiableEntity> E partialUpdate(E oldEntity, E updateEntity, E partialUpdateEntity, String... membersToCheck) throws EntityNotFoundException, BadEntityException;
+    public <E extends IdentifiableEntity> E update(E oldEntity, E updateEntity, String... membersToCheck) throws EntityNotFoundException, BadEntityException;
 
-
-    public Map<Class<IdentifiableEntity>,Collection<IdentifiableEntity>> findBiDirChildCollections(IdentifiableEntity parent);
-    public Set<IdentifiableEntity> findSingleBiDirChildren(IdentifiableEntity parent);
-    public void linkBiDirChild(IdentifiableEntity parent, IdentifiableEntity newChild);
-    public void unlinkBiDirChild(IdentifiableEntity parent, IdentifiableEntity biDirChildToRemove);
-    public void unlinkChildrensParent(IdentifiableEntity parent);
-
-
-    public Map<Class<IdentifiableEntity>,Collection<IdentifiableEntity>> findUniDirChildCollections(IdentifiableEntity parent);
-    public Set<IdentifiableEntity> findSingleUniDirChildren(IdentifiableEntity parent);
-    public void linkUniDirChild(IdentifiableEntity parent,IdentifiableEntity newChild);
-    public void unlinkUniDirChild(IdentifiableEntity parent, IdentifiableEntity toRemove);
 }

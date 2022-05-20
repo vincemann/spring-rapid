@@ -19,8 +19,14 @@ public class SystemArchitecture {
      * Also save bc on repo level update = save with set id
      * Impl should check if id is set
      */
-    @Pointcut("execution(* update(..))")
-    public void updateOperation(){}
+    @Pointcut("execution(* fullUpdate(..))")
+    public void fullUpdateOperation(){}
+
+    @Pointcut("execution(* partialUpdate(..))")
+    public void partialUpdateOperation(){}
+
+    @Pointcut("execution(* softUpdate(..))")
+    public void softUpdateOperation(){}
 
     @Pointcut("execution(* deleteById(..))")
     public void deleteOperation(){}

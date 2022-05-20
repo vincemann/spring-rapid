@@ -1,6 +1,6 @@
 package com.github.vincemann.springrapid.coretest.config;
 
-import com.github.vincemann.springrapid.coretest.controller.TransactionalTestTemplate;
+import com.github.vincemann.springrapid.core.util.TransactionalTemplate;
 import com.github.vincemann.springrapid.coretest.slicing.TestConfig;
 import com.github.vincemann.springrapid.coretest.util.TransactionalRapidTestUtil;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,13 +11,13 @@ import org.springframework.context.annotation.Bean;
 public class RapidCoreTestAutoconfiguration {
 
     @Bean
-    @ConditionalOnMissingBean(TransactionalTestTemplate.class)
-    public TransactionalTestTemplate transactionalTestTemplate(){
-        return new TransactionalTestTemplate();
+    @ConditionalOnMissingBean(TransactionalTemplate.class)
+    public TransactionalTemplate transactionalTemplate(){
+        return new TransactionalTemplate();
     }
 
     @Autowired
-    public void configureRapidTestUtil(TransactionalTestTemplate transactionalTestTemplate){
-        TransactionalRapidTestUtil.setTransactionalTestTemplate(transactionalTestTemplate);
+    public void configureRapidTestUtil(TransactionalTemplate transactionalTemplate){
+        TransactionalRapidTestUtil.setTransactionalTestTemplate(transactionalTemplate);
     }
 }

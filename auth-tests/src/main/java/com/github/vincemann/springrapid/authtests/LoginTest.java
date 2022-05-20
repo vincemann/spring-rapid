@@ -1,7 +1,7 @@
 package com.github.vincemann.springrapid.authtests;
 
 import com.github.vincemann.springrapid.auth.model.AbstractUser;
-import com.github.vincemann.springrapid.coretest.controller.TransactionalTestTemplate;
+import com.github.vincemann.springrapid.core.util.TransactionalTemplate;
 import lombok.SneakyThrows;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,7 +16,7 @@ import static com.github.vincemann.springrapid.authtests.adapter.AuthTestAdapter
 public class LoginTest extends AbstractRapidAuthIntegrationTest {
 
 	@Autowired
-	TransactionalTestTemplate transactionalTestTemplate;
+    TransactionalTemplate transactionalTemplate;
 
 	@Test
 	public void canLogin() throws Exception {
@@ -59,13 +59,13 @@ public class LoginTest extends AbstractRapidAuthIntegrationTest {
 		// Thread.sleep(1001L);
 		String token = login2xx(USER_EMAIL, USER_PASSWORD);
 
-		transactionalTestTemplate.doInTransaction(new Runnable() {
+		transactionalTemplate.doInTransaction(new Runnable() {
 			@SneakyThrows
 			@Override
 			public void run() {
 				AbstractUser<Long> user = getUserService().findById(getUser().getId()).get();
 				user.setCredentialsUpdatedMillis(System.currentTimeMillis());
-				getUserService().save(user);
+				getUserService().softUpdate(user);
 			}
 		});
 

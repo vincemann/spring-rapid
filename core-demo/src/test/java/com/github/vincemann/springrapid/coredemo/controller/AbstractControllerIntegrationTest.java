@@ -8,6 +8,7 @@ import com.github.vincemann.springrapid.coredemo.model.*;
 import com.github.vincemann.springrapid.coredemo.repo.*;
 import com.github.vincemann.springrapid.coredemo.service.*;
 import com.github.vincemann.springrapid.coredemo.service.extensions.OwnerOfTheYearExtension;
+import com.github.vincemann.springrapid.core.util.TransactionalTemplate;
 import com.github.vincemann.springrapid.coretest.controller.integration.IntegrationCrudControllerTest;
 import com.github.vincemann.springrapid.coretest.util.TransactionalRapidTestUtil;
 import org.junit.jupiter.api.AfterEach;
@@ -135,6 +136,9 @@ public class AbstractControllerIntegrationTest<C extends GenericCrudController<?
     @Autowired
     protected RapidSecurityContext<RapidAuthenticatedPrincipal> securityContext;
 
+    @Autowired
+    TransactionalTemplate transactionalTemplate;
+
     @BeforeEach
     public void setupTestData() throws Exception {
 
@@ -246,118 +250,139 @@ public class AbstractControllerIntegrationTest<C extends GenericCrudController<?
     }
 
     protected void assertVetHasSpecialties(String vetName, String... descriptions) {
-        Optional<Vet> vetOptional = vetRepository.findByLastName(vetName);
-        Assertions.assertTrue(vetOptional.isPresent());
-        Vet vet = vetOptional.get();
+        transactionalTemplate.doInTransaction(() -> {
 
-        Set<Specialty> specialtys = new HashSet<>();
-        for (String description : descriptions) {
-            Optional<Specialty> optionalSpecialty = specialtyRepository.findByDescription(description);
-            Assertions.assertTrue(optionalSpecialty.isPresent());
-            specialtys.add(optionalSpecialty.get());
-        }
-        System.err.println("Checking vet: " + vetName);
-        Assertions.assertEquals(specialtys, vet.getSpecialtys());
+            Optional<Vet> vetOptional = vetRepository.findByLastName(vetName);
+            Assertions.assertTrue(vetOptional.isPresent());
+            Vet vet = vetOptional.get();
+
+            Set<Specialty> specialtys = new HashSet<>();
+            for (String description : descriptions) {
+                Optional<Specialty> optionalSpecialty = specialtyRepository.findByDescription(description);
+                Assertions.assertTrue(optionalSpecialty.isPresent());
+                specialtys.add(optionalSpecialty.get());
+            }
+            System.err.println("Checking vet: " + vetName);
+            Assertions.assertEquals(specialtys, vet.getSpecialtys());
+        });
     }
 
     protected void assertSpecialtyHasVets(String description, String... vetNames) {
-        Optional<Specialty> optionalSpecialty = specialtyRepository.findByDescription(description);
-        Assertions.assertTrue(optionalSpecialty.isPresent());
-        Specialty specialty = optionalSpecialty.get();
+        transactionalTemplate.doInTransaction(() -> {
 
-        Set<Vet> vets = new HashSet<>();
-        for (String vetName : vetNames) {
-            Optional<Vet> optionalVet = vetRepository.findByLastName(vetName);
-            Assertions.assertTrue(optionalVet.isPresent());
-            vets.add(optionalVet.get());
-        }
-        System.err.println("Checking Specialty: " + description);
-        Assertions.assertEquals(vets, specialty.getVets());
+            Optional<Specialty> optionalSpecialty = specialtyRepository.findByDescription(description);
+            Assertions.assertTrue(optionalSpecialty.isPresent());
+            Specialty specialty = optionalSpecialty.get();
+
+            Set<Vet> vets = new HashSet<>();
+            for (String vetName : vetNames) {
+                Optional<Vet> optionalVet = vetRepository.findByLastName(vetName);
+                Assertions.assertTrue(optionalVet.isPresent());
+                vets.add(optionalVet.get());
+            }
+            System.err.println("Checking Specialty: " + description);
+            Assertions.assertEquals(vets, specialty.getVets());
+        });
     }
 
-    protected void assertPetHasToys(String petName, String... toyNames) {
-        Optional<Pet> petOptional = petRepository.findByName(petName);
-        Assertions.assertTrue(petOptional.isPresent());
-        Pet pet = petOptional.get();
+//    @Transactional
+    public void assertPetHasToys(String petName, String... toyNames) {
+        transactionalTemplate.doInTransaction(() -> {
+            Optional<Pet> petOptional = petRepository.findByName(petName);
+            Assertions.assertTrue(petOptional.isPresent());
+            Pet pet = petOptional.get();
 
-        Set<Toy> toys = new HashSet<>();
-        for (String toyName : toyNames) {
-            Optional<Toy> optionalToy = toyRepository.findByName(toyName);
-            Assertions.assertTrue(optionalToy.isPresent());
-            toys.add(optionalToy.get());
-        }
-        System.err.println("Checking pet: " + petName);
-        Assertions.assertEquals(toys, pet.getToys());
+            Set<Toy> toys = new HashSet<>();
+            for (String toyName : toyNames) {
+                Optional<Toy> optionalToy = toyRepository.findByName(toyName);
+                Assertions.assertTrue(optionalToy.isPresent());
+                toys.add(optionalToy.get());
+            }
+            System.err.println("Checking pet: " + petName);
+            // todo lazy init exception, merge into transactional context before asserting, os he can load everything he needs
+            Assertions.assertEquals(toys, pet.getToys());
+        });
     }
 
     protected void assertOwnerHasPets(String ownerName, String... petNames) {
-        Optional<Owner> ownerOptional = ownerRepository.findByLastName(ownerName);
-        Assertions.assertTrue(ownerOptional.isPresent());
-        Owner owner = ownerOptional.get();
-
-        Set<Pet> pets = new HashSet<>();
-        for (String petName : petNames) {
-            Optional<Pet> optionalPet = petRepository.findByName(petName);
-            Assertions.assertTrue(optionalPet.isPresent());
-            pets.add(optionalPet.get());
-        }
-        System.err.println("Checking owner: " + ownerName);
-        Assertions.assertEquals(pets, owner.getPets());
-    }
-
-    protected void assertOwnerHasClinicCard(String ownerName, Long clinicCardId) {
-        Optional<Owner> ownerOptional = ownerRepository.findByLastName(ownerName);
-        Assertions.assertTrue(ownerOptional.isPresent());
-        Owner owner = ownerOptional.get();
-        System.err.println("Checking owner: " + ownerName);
-        if(clinicCardId == null ){
-            Assertions.assertNull(owner.getClinicCard());
-        }else {
-            ClinicCard clinicCard = clinicCardRepository.findById(clinicCardId).get();
-            Assertions.assertEquals(clinicCard, owner.getClinicCard());
-        }
-    }
-
-    protected void assertClinicCardHasOwner(Long clinicCardId, String ownerName) {
-        if (ownerName == null){
-            ClinicCard clinicCard = clinicCardRepository.findById(clinicCardId).get();
-            Assertions.assertNull(clinicCard.getOwner());
-        }else {
+        transactionalTemplate.doInTransaction(() -> {
             Optional<Owner> ownerOptional = ownerRepository.findByLastName(ownerName);
             Assertions.assertTrue(ownerOptional.isPresent());
             Owner owner = ownerOptional.get();
-            ClinicCard clinicCard = clinicCardRepository.findById(clinicCardId).get();
+
+            Set<Pet> pets = new HashSet<>();
+            for (String petName : petNames) {
+                Optional<Pet> optionalPet = petRepository.findByName(petName);
+                Assertions.assertTrue(optionalPet.isPresent());
+                pets.add(optionalPet.get());
+            }
             System.err.println("Checking owner: " + ownerName);
-            Assertions.assertEquals(owner, clinicCard.getOwner());
-        }
+            Assertions.assertEquals(pets, owner.getPets());
+        });
+    }
+
+    protected void assertOwnerHasClinicCard(String ownerName, Long clinicCardId) {
+        transactionalTemplate.doInTransaction(() -> {
+            Optional<Owner> ownerOptional = ownerRepository.findByLastName(ownerName);
+            Assertions.assertTrue(ownerOptional.isPresent());
+            Owner owner = ownerOptional.get();
+            System.err.println("Checking owner: " + ownerName);
+            if (clinicCardId == null) {
+                Assertions.assertNull(owner.getClinicCard());
+            } else {
+                ClinicCard clinicCard = clinicCardRepository.findById(clinicCardId).get();
+                Assertions.assertEquals(clinicCard, owner.getClinicCard());
+            }
+        });
+    }
+
+    protected void assertClinicCardHasOwner(Long clinicCardId, String ownerName) {
+        transactionalTemplate.doInTransaction(() -> {
+
+            if (ownerName == null) {
+                ClinicCard clinicCard = clinicCardRepository.findById(clinicCardId).get();
+                Assertions.assertNull(clinicCard.getOwner());
+            } else {
+                Optional<Owner> ownerOptional = ownerRepository.findByLastName(ownerName);
+                Assertions.assertTrue(ownerOptional.isPresent());
+                Owner owner = ownerOptional.get();
+                ClinicCard clinicCard = clinicCardRepository.findById(clinicCardId).get();
+                System.err.println("Checking owner: " + ownerName);
+                Assertions.assertEquals(owner, clinicCard.getOwner());
+            }
+        });
     }
 
     protected void assertToyHasPet(String toyName, String petName) {
-        Pet pet = null;
-        if (petName!=null){
-            Optional<Pet> petOptional = petRepository.findByName(petName);
-            Assertions.assertTrue(petOptional.isPresent());
-            pet = petOptional.get();
-        }
-        Optional<Toy> optionalToy = toyRepository.findByName(toyName);
-        Assertions.assertTrue(optionalToy.isPresent());
-        Toy toy = optionalToy.get();
-        System.err.println("Checking toy: " + toyName);
-        Assertions.assertEquals(pet, toy.getPet());
+        transactionalTemplate.doInTransaction(() -> {
+            Pet pet = null;
+            if (petName != null) {
+                Optional<Pet> petOptional = petRepository.findByName(petName);
+                Assertions.assertTrue(petOptional.isPresent());
+                pet = petOptional.get();
+            }
+            Optional<Toy> optionalToy = toyRepository.findByName(toyName);
+            Assertions.assertTrue(optionalToy.isPresent());
+            Toy toy = optionalToy.get();
+            System.err.println("Checking toy: " + toyName);
+            Assertions.assertEquals(pet, toy.getPet());
+        });
     }
 
     protected void assertPetHasOwner(String petName, String ownerName) {
-        Owner owner = null;
-        if (ownerName!=null){
-            Optional<Owner> ownerOptional = ownerRepository.findByLastName(ownerName);
-            Assertions.assertTrue(ownerOptional.isPresent());
-            owner = ownerOptional.get();
-        }
-        Optional<Pet> optionalPet = petRepository.findByName(petName);
-        Assertions.assertTrue(optionalPet.isPresent());
-        Pet pet = optionalPet.get();
-        System.err.println("Checking pet: " + petName);
-        Assertions.assertEquals(owner, pet.getOwner());
+        transactionalTemplate.doInTransaction(() -> {
+            Owner owner = null;
+            if (ownerName != null) {
+                Optional<Owner> ownerOptional = ownerRepository.findByLastName(ownerName);
+                Assertions.assertTrue(ownerOptional.isPresent());
+                owner = ownerOptional.get();
+            }
+            Optional<Pet> optionalPet = petRepository.findByName(petName);
+            Assertions.assertTrue(optionalPet.isPresent());
+            Pet pet = optionalPet.get();
+            System.err.println("Checking pet: " + petName);
+            Assertions.assertEquals(owner, pet.getOwner());
+        });
     }
 
 

@@ -3,10 +3,10 @@ package com.github.vincemann.springrapid.core.service.locator;
 
 import com.github.vincemann.springrapid.core.model.IdentifiableEntity;
 import com.github.vincemann.springrapid.core.proxy.AbstractServiceExtension;
-import com.github.vincemann.springrapid.core.proxy.CrudServiceExtension;
-import com.github.vincemann.springrapid.core.service.CrudService;
 import com.github.vincemann.springrapid.core.service.CrudService;
 import com.github.vincemann.springrapid.core.service.ServiceBeanType;
+import com.github.vincemann.springrapid.core.util.EntityLocator;
+import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import com.github.vincemann.springrapid.core.util.Lists;
 import org.springframework.beans.BeansException;
@@ -18,7 +18,6 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.context.ApplicationListener;
 import org.springframework.context.event.ContextRefreshedEvent;
-import org.springframework.core.ResolvableType;
 import org.springframework.util.Assert;
 
 import java.util.*;
@@ -30,6 +29,7 @@ import java.util.stream.Collectors;
  */
 @Slf4j
 public class CrudServiceLocatorImpl implements CrudServiceLocator, ApplicationContextAware, ApplicationListener<ContextRefreshedEvent>, BeanDefinitionRegistryPostProcessor {
+    @Getter
     private Map<Class<? extends IdentifiableEntity>, CrudService> entityClassPrimaryServiceMap = new HashMap<>();
     private ApplicationContext applicationContext;
 
@@ -108,6 +108,8 @@ public class CrudServiceLocatorImpl implements CrudServiceLocator, ApplicationCo
     public void onApplicationEvent(ContextRefreshedEvent event) {
         //all beans are initialized -> now is the right time to scan for beans
         loadPrimaryServices(beanFactory);
+//         todo change this, maybe make whole crudservice Locator static
+//        EntityLocator.setCrudServiceLocator(this);
     }
 
     @Override

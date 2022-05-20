@@ -5,13 +5,14 @@ import com.github.vincemann.aoplog.Severity;
 import com.github.vincemann.aoplog.api.AopLoggable;
 import com.github.vincemann.aoplog.api.LogInteraction;
 import com.github.vincemann.springrapid.autobidir.RelationalDtoManager;
-import com.github.vincemann.springrapid.autobidir.RelationalEntityManager;
+import com.github.vincemann.springrapid.autobidir.RelationalEntityManagerUtil;
 import com.github.vincemann.springrapid.autobidir.dto.RelationalDtoType;
 import com.github.vincemann.springrapid.core.model.IdentifiableEntity;
 import com.github.vincemann.springrapid.core.service.CrudService;
 import com.github.vincemann.springrapid.core.service.locator.CrudServiceLocator;
 import com.github.vincemann.springrapid.core.service.exception.EntityNotFoundException;
 import com.github.vincemann.springrapid.core.service.exception.BadEntityException;
+import com.github.vincemann.springrapid.core.util.EntityLocator;
 import com.github.vincemann.springrapid.core.util.VerifyEntity;
 import lombok.Getter;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -37,10 +38,10 @@ import java.util.Optional;
 //@LogConfig(ignoreSetters = true, ignoreGetters = true)
 public abstract class EntityIdResolver implements AopLoggable {
 
-    private CrudServiceLocator crudServiceLocator;
     private RelationalDtoType dtoType;
     protected RelationalDtoManager relationalDtoManager;
-    protected RelationalEntityManager relationalEntityManager;
+    protected RelationalEntityManagerUtil relationalEntityManagerUtil;
+    protected CrudServiceLocator crudServiceLocator;
 
 
     public EntityIdResolver(RelationalDtoType dtoType) {
@@ -56,9 +57,10 @@ public abstract class EntityIdResolver implements AopLoggable {
     /**
      * Resolve Id's from entities in entity and inject (set) ids into target Dto
      */
-    public abstract void setResolvedIds(Object mappedDto, IdentifiableEntity entity);
+    public abstract void setResolvedIds(Object mappedDto, IdentifiableEntity entity, String... fieldsToCheck);
 
 
+    // could be replaced by EntityLocator, but tests would need refactoring as well...
     protected <T> T findEntityFromService(Class<IdentifiableEntity> entityClass, Serializable id) throws EntityNotFoundException, BadEntityException {
         CrudService entityService = crudServiceLocator.find(entityClass);
         if (entityService == null) {
@@ -72,8 +74,8 @@ public abstract class EntityIdResolver implements AopLoggable {
         }
         VerifyEntity.isPresent(optionalParent, "No Parent of Type: " +entityClass.getSimpleName() + " found with id: " + id);
         return (T) optionalParent.get();
-
     }
+
 
     @Autowired
     public void setCrudServiceLocator(CrudServiceLocator crudServiceLocator) {
@@ -86,7 +88,7 @@ public abstract class EntityIdResolver implements AopLoggable {
     }
 
     @Autowired
-    public void setRelationalEntityManager(RelationalEntityManager relationalEntityManager) {
-        this.relationalEntityManager = relationalEntityManager;
+    public void setRelationalEntityManagerUtil(RelationalEntityManagerUtil relationalEntityManagerUtil) {
+        this.relationalEntityManagerUtil = relationalEntityManagerUtil;
     }
 }

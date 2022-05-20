@@ -5,6 +5,7 @@ import com.github.vincemann.acltest.ClearAclCacheTestExecutionListener;
 import com.github.vincemann.springrapid.core.model.IdentifiableEntity;
 import com.github.vincemann.springrapid.core.service.CrudService;
 import com.github.vincemann.springrapid.coretest.service.CrudServiceIntegrationTest;
+import org.springframework.boot.autoconfigure.ImportAutoConfiguration;
 import org.springframework.test.context.TestExecutionListeners;
 import org.springframework.test.context.jdbc.Sql;
 

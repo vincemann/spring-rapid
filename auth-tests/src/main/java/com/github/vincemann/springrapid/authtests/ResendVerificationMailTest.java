@@ -12,7 +12,7 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 import static com.github.vincemann.springrapid.authtests.adapter.AuthTestAdapter.*;
-
+import static com.github.vincemann.springrapid.core.util.ProxyUtils.aopUnproxy;
 public class ResendVerificationMailTest extends AbstractRapidAuthIntegrationTest {
 
 	@Test
@@ -52,7 +52,7 @@ public class ResendVerificationMailTest extends AbstractRapidAuthIntegrationTest
 		mvc.perform(testTemplate.resendVerificationEmail(getUnverifiedUser().getEmail(),""))
 				.andExpect(status().isUnauthorized());
 		
-		verify(unproxy(mailSender), never()).send(any());
+		verify(aopUnproxy(mailSender), never()).send(any());
 	}
 	
 	@Test
@@ -61,7 +61,7 @@ public class ResendVerificationMailTest extends AbstractRapidAuthIntegrationTest
 		mvc.perform(testTemplate.resendVerificationEmail(getUser().getEmail(),token))
 				.andExpect(status().isBadRequest());
 
-		verify(unproxy(mailSender), never()).send(any());
+		verify(aopUnproxy(mailSender), never()).send(any());
 	}
 	
 
@@ -72,6 +72,6 @@ public class ResendVerificationMailTest extends AbstractRapidAuthIntegrationTest
 		mvc.perform(testTemplate.resendVerificationEmail(UNKNOWN_USER_ID,token))
 				.andExpect(status().isNotFound());
 		
-		verify(unproxy(mailSender), never()).send(any());
+		verify(aopUnproxy(mailSender), never()).send(any());
 	}
 }

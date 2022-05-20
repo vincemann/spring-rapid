@@ -1,7 +1,7 @@
 package com.github.vincemann.springrapid.autobidir.model.biDir.child;
 
-import com.github.vincemann.springrapid.autobidir.RapidRelationalEntityManager;
-import com.github.vincemann.springrapid.autobidir.RelationalEntityManager;
+import com.github.vincemann.springrapid.autobidir.RapidRelationalEntityManagerUtil;
+import com.github.vincemann.springrapid.autobidir.RelationalEntityManagerUtil;
 import com.github.vincemann.springrapid.core.model.IdentifiableEntity;
 import com.github.vincemann.springrapid.core.model.IdentifiableEntityImpl;
 import com.github.vincemann.springrapid.autobidir.exception.UnknownEntityTypeException;
@@ -21,7 +21,7 @@ import org.springframework.util.ReflectionUtils;
 import java.util.Collection;
 import java.util.Optional;
 
-class RapidRelationalEntityManagerChildTest {
+class RapidRelationalEntityManagerUtilChildTest {
 
 
     @Getter
@@ -51,11 +51,11 @@ class RapidRelationalEntityManagerChildTest {
     private EntityParent testEntityParent;
     private SecondEntityParent testSecondEntityParent;
 
-    private RelationalEntityManager relationalEntityManager;
+    private RelationalEntityManagerUtil relationalEntityManagerUtil;
 
     @BeforeEach
     void setUp() {
-        this.relationalEntityManager = new RapidRelationalEntityManager();
+        this.relationalEntityManagerUtil = new RapidRelationalEntityManagerUtil();
         this.testEntityChild= new EntityChild();
         testEntityChild.setId(1L);
         this.testEntityParent = new EntityParent();
@@ -71,7 +71,7 @@ class RapidRelationalEntityManagerChildTest {
         Assertions.assertNull(testEntityChild.getUnusedParent());
         Assertions.assertNull(testEntityChild.getSecondEntityParent());
         //when
-        relationalEntityManager.linkBiDirParent(testEntityChild,testEntityParent);
+        relationalEntityManagerUtil.linkBiDirParent(testEntityChild,testEntityParent);
         //then
         Assertions.assertSame(testEntityChild.getEntityParent(),testEntityParent);
         Assertions.assertNull(testEntityChild.getUnusedParent());
@@ -164,7 +164,7 @@ class RapidRelationalEntityManagerChildTest {
         testEntityChild.setEntityParent(testEntityParent);
         testEntityChild.setSecondEntityParent(testSecondEntityParent);
         //when
-        Collection<IdentifiableEntity> parents = relationalEntityManager.findSingleBiDirParents(testEntityChild);
+        Collection<IdentifiableEntity> parents = relationalEntityManagerUtil.findSingleBiDirParents(testEntityChild);
         //then
         Assertions.assertEquals(2,parents.size());
     }
@@ -175,7 +175,7 @@ class RapidRelationalEntityManagerChildTest {
         Assertions.assertNull(testEntityChild.getSecondEntityParent());
         Assertions.assertNull(testEntityChild.getUnusedParent());
         //when
-        Collection<IdentifiableEntity> parents = relationalEntityManager.findSingleBiDirParents(testEntityChild);
+        Collection<IdentifiableEntity> parents = relationalEntityManagerUtil.findSingleBiDirParents(testEntityChild);
         //then
         Assertions.assertEquals(1,parents.size());
         Optional<IdentifiableEntity> biDirParent = parents.stream().findFirst();
@@ -189,7 +189,7 @@ class RapidRelationalEntityManagerChildTest {
         testEntityChild.setEntityParent(testEntityParent);
         testEntityChild.setSecondEntityParent(testSecondEntityParent);
         //when
-        relationalEntityManager.unlinkBiDirParents(testEntityChild);
+        relationalEntityManagerUtil.unlinkBiDirParentsFrom(testEntityChild);
         //then
         Assertions.assertNull(testEntityChild.getEntityParent());
         Assertions.assertNull(testEntityChild.getSecondEntityParent());
@@ -200,7 +200,7 @@ class RapidRelationalEntityManagerChildTest {
         //given
         testEntityChild.setEntityParent(testEntityParent);
         //when
-        relationalEntityManager.unlinkBiDirParent(testEntityChild,testEntityParent);
+        relationalEntityManagerUtil.unlinkBiDirParent(testEntityChild,testEntityParent);
         //then
         Assertions.assertNull(testEntityChild.getEntityParent());
     }
@@ -213,7 +213,7 @@ class RapidRelationalEntityManagerChildTest {
         Assertions.assertThrows(UnknownEntityTypeException.class, new Executable() {
             @Override
             public void execute() throws Throwable {
-                relationalEntityManager.unlinkBiDirParent(testEntityChild,testEntityParent);
+                relationalEntityManagerUtil.unlinkBiDirParent(testEntityChild,testEntityParent);
             }
         });
     }
@@ -224,7 +224,7 @@ class RapidRelationalEntityManagerChildTest {
         testEntityChild.setEntityParent(testEntityParent);
         testEntityChild.setSecondEntityParent(testSecondEntityParent);
         //when
-        relationalEntityManager.unlinkBiDirParent(testEntityChild,testEntityParent);
+        relationalEntityManagerUtil.unlinkBiDirParent(testEntityChild,testEntityParent);
         //then
         Assertions.assertNull(testEntityChild.getEntityParent());
         Assertions.assertSame(testSecondEntityParent,testEntityChild.getSecondEntityParent());

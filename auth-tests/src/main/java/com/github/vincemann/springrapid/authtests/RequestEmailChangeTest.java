@@ -11,7 +11,7 @@ import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static com.github.vincemann.springrapid.authtests.adapter.AuthTestAdapter.*;
-
+import static com.github.vincemann.springrapid.core.util.ProxyUtils.aopUnproxy;
 public class RequestEmailChangeTest extends AbstractRapidAuthIntegrationTest {
 
 
@@ -29,7 +29,7 @@ public class RequestEmailChangeTest extends AbstractRapidAuthIntegrationTest {
 		mvc.perform(testTemplate.requestEmailChange(getUnverifiedUser().getId(),token,emailChangeDto()))
 				.andExpect(status().is(204));
 
-		verify(unproxy(mailSender)).send(any());
+		verify(aopUnproxy(mailSender)).send(any());
 
 		AbstractUser<Long> updatedUser = getUserService().findById(getUnverifiedUser().getId()).get();
 		Assertions.assertEquals(NEW_EMAIL, updatedUser.getNewEmail());
@@ -42,7 +42,7 @@ public class RequestEmailChangeTest extends AbstractRapidAuthIntegrationTest {
 		mvc.perform(testTemplate.requestEmailChange(getUser().getId(),token,emailChangeDto()))
 				.andExpect(status().is(204));
 
-		verify(unproxy(mailSender)).send(any());
+		verify(aopUnproxy(mailSender)).send(any());
 
 		AbstractUser<Long> updatedUser = getUserService().findById(getUser().getId()).get();
 		Assertions.assertEquals(NEW_EMAIL, updatedUser.getNewEmail());
@@ -71,7 +71,7 @@ public class RequestEmailChangeTest extends AbstractRapidAuthIntegrationTest {
 		mvc.perform(testTemplate.requestEmailChange(UNKNOWN_USER_ID,token,emailChangeDto()))
 				.andExpect(status().is(404));
 		
-		verify(unproxy(mailSender), never()).send(any());
+		verify(aopUnproxy(mailSender), never()).send(any());
 	}
 
 	@Test
@@ -80,7 +80,7 @@ public class RequestEmailChangeTest extends AbstractRapidAuthIntegrationTest {
 		mvc.perform(testTemplate.requestEmailChange(getSecondUser().getId(),token,emailChangeDto()))
 				.andExpect(status().is(403));
 		
-		verify(unproxy(mailSender), never()).send(any());
+		verify(aopUnproxy(mailSender), never()).send(any());
 
 		AbstractUser<Long> updatedUser = getUserService().findById(getSecondUser().getId()).get();
 		Assertions.assertNull(updatedUser.getNewEmail());
@@ -94,7 +94,7 @@ public class RequestEmailChangeTest extends AbstractRapidAuthIntegrationTest {
 		mvc.perform(testTemplate.requestEmailChange(getSecondAdmin().getId(),token,emailChangeDto()))
 				.andExpect(status().is(403));
 		
-		verify(unproxy(mailSender), never()).send(any());
+		verify(aopUnproxy(mailSender), never()).send(any());
 
 		AbstractUser<Long> updatedUser = getUserService().findById(getSecondAdmin().getId()).get();
 		Assertions.assertNull(updatedUser.getNewEmail());
@@ -169,6 +169,6 @@ public class RequestEmailChangeTest extends AbstractRapidAuthIntegrationTest {
 //				.andExpect(jsonPath("$.errors[*].field").value(hasSize(1)))
 //				.andExpect(jsonPath("$.errors[*].field").value(hasItems("dto.newEmail")));
 		
-		verify(unproxy(mailSender), never()).send(any());
+		verify(aopUnproxy(mailSender), never()).send(any());
 	}
 }

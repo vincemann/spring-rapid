@@ -9,18 +9,19 @@ import javax.persistence.PersistenceUtil;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
-import java.util.concurrent.atomic.AtomicReference;
 
-public class BiDirJpaUtils {
+public class AutoRelJpaUtils {
+
+
 
     /**
-     * Used to initialize Lazy loaded (potentially not yet loaded) Entities, EntityCollection @toInitialize from @param entity.
-     * Also merges @param entity if it is detached
+     * Used to initialize Lazy loaded (potentially not yet loaded) Entities, EntityCollection @toInitialize from
+     * @param entity
+     * Also merges
+     * @param entity if it is detached
      *
-     * @return
      */
     public static <T> T initializeSubEntities(T entity, Class<? extends Annotation> annotationClass) {
         EntityManager entityManager = JpaUtils.getEntityManager();
@@ -51,7 +52,7 @@ public class BiDirJpaUtils {
                 if (detached) {
                     System.err.println("merging entity");
 //                     merged = entityManager.merge(entity);
-                     entity = entityManager.merge(entity);
+                    entity = entityManager.merge(entity);
                 }
 
                 // hier jetzt den getter callen von der property toInitialize

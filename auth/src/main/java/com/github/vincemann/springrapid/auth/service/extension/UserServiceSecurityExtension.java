@@ -53,6 +53,20 @@ public class UserServiceSecurityExtension
         return getNext().signupAdmin(admin);
     }
 
+    @LogInteraction
+    @Override
+    public AbstractUser fullUpdate(AbstractUser entity) throws BadEntityException, EntityNotFoundException {
+        checkUpdatePermissions(entity);
+        // todo why getLast
+        return getLast().fullUpdate(entity);
+    }
+
+    @Override
+    public AbstractUser softUpdate(AbstractUser entity) throws EntityNotFoundException, BadEntityException {
+        checkUpdatePermissions(entity);
+        // todo why getLast
+        return getLast().softUpdate(entity);
+    }
 
     // everybody must be able to do this
 //    @LogInteraction
@@ -62,10 +76,16 @@ public class UserServiceSecurityExtension
 //        getNext().resendVerificationMail(user);
 //    }
 
-
     @LogInteraction
     @Override
-    public AbstractUser update(AbstractUser update, Boolean full) throws EntityNotFoundException, BadEntityException {
+    public AbstractUser partialUpdate(AbstractUser entity, String... fieldsToRemove) throws EntityNotFoundException, BadEntityException {
+        checkUpdatePermissions(entity);
+        // todo why getLast
+        return getLast().partialUpdate(entity,fieldsToRemove);
+    }
+
+
+    protected void checkUpdatePermissions(AbstractUser update) throws EntityNotFoundException, BadEntityException {
         getSecurityChecker().checkPermission(update, BasePermission.WRITE);
         Optional<AbstractUser<Serializable>> oldUserOp = userService.findById(update.getId());
         VerifyEntity.isPresent(oldUserOp, update.getId(), update.getClass());
@@ -74,7 +94,7 @@ public class UserServiceSecurityExtension
         RapidAuthAuthenticatedPrincipal currPrincipal = securityContextChecker.getSecurityContext().currentPrincipal();
         checkRoleChangingPermissions(oldUser, update, currPrincipal);
 //        getProxyController().overrideDefaultExtension();
-        return getLast().update(update, full);
+//        return getLast().update(update, full,fieldsToRemove);
     }
 
     /**
@@ -86,9 +106,11 @@ public class UserServiceSecurityExtension
                 !currentUser.getId().equals(old.getId().toString())) {
             return;
         } else {
-            //no update of roles possible
-            if (!old.getRoles().equals(newUser.getRoles())) {
-                throw new AccessDeniedException("Only Admin can update Roles");
+            if (newUser.getRoles() != null){
+                if (!old.getRoles().equals(newUser.getRoles())) {
+                    //no update of roles possible for non admin users
+                    throw new AccessDeniedException("Only Admin can update Roles");
+                }
             }
 //            newUser.setRoles(old.getRoles());
         }

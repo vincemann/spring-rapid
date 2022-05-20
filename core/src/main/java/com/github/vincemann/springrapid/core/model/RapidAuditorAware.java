@@ -10,9 +10,8 @@ import java.io.Serializable;
 
 /**
  * Needed for auto-filling of the
- * AbstractAuditable columns of AbstractUser
+ * {@link AuditingEntity} fields/columns
  *  
- * @author Sanjay Patel
  */
 @Slf4j
 public class RapidAuditorAware<ID extends Serializable>

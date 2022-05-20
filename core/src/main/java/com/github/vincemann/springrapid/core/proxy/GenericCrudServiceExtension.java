@@ -1,6 +1,5 @@
 package com.github.vincemann.springrapid.core.proxy;
 
-import com.github.vincemann.aoplog.api.LogConfig;
 import com.github.vincemann.aoplog.api.LogInteraction;
 import com.github.vincemann.springrapid.core.model.IdentifiableEntity;
 import com.github.vincemann.springrapid.core.service.CrudService;
@@ -23,8 +22,19 @@ public interface GenericCrudServiceExtension<S extends CrudService<E,Id>,E exten
     }
 
     @Override
-    default E update(E entity, Boolean full) throws EntityNotFoundException, BadEntityException {
-        return getNext().update(entity,full);
+    default E softUpdate(E entity) throws EntityNotFoundException, BadEntityException {
+        return getNext().softUpdate(entity);
+    }
+
+    @Override
+    default E partialUpdate(E entity, String... fieldsToRemove) throws EntityNotFoundException, BadEntityException {
+        return getNext().partialUpdate(entity,fieldsToRemove);
+    }
+
+
+    @Override
+    default E fullUpdate(E entity) throws BadEntityException, EntityNotFoundException {
+        return getNext().fullUpdate(entity);
     }
 
     @Override

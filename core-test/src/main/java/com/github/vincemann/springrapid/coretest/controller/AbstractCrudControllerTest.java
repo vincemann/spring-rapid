@@ -105,6 +105,8 @@ public abstract class AbstractCrudControllerTest
                 .alwaysDo(print());
     }
 
+
+    // todo duplicated in TestTemplate
     public ResultActions perform2xx(RequestBuilder requestBuilder) throws Exception {
         return getMvc().perform(requestBuilder).andExpect(status().is2xxSuccessful());
     }

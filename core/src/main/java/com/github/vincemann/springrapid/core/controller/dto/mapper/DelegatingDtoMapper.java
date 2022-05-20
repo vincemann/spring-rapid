@@ -4,6 +4,8 @@ package com.github.vincemann.springrapid.core.controller.dto.mapper;
 import com.github.vincemann.springrapid.core.model.IdentifiableEntity;
 import com.github.vincemann.springrapid.core.service.exception.BadEntityException;
 import com.github.vincemann.springrapid.core.service.exception.EntityNotFoundException;
+import com.github.vincemann.springrapid.core.util.IdPropertyNameUtils;
+import com.sun.xml.bind.v2.model.core.ID;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
@@ -13,6 +15,7 @@ import javax.persistence.PersistenceContext;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 @Slf4j
 public class DelegatingDtoMapper{
@@ -48,15 +51,15 @@ public class DelegatingDtoMapper{
 
     //@LogInteraction
     @Transactional
-    public <T> T mapToDto(IdentifiableEntity<?> source, Class<T> destinationClass) throws BadEntityException {
+    public <T> T mapToDto(IdentifiableEntity<?> source, Class<T> destinationClass,String... fieldsToMap) throws BadEntityException {
         // source entity is detached and might not have all collections lazy loaded for this dto mapping -> merge
         if (entityManager!=null)
             entityManager.merge(source);
         T dto = (T) findMapper(destinationClass)
-                .mapToDto(source, destinationClass);
+                .mapToDto(source, destinationClass,fieldsToMap);
         for (EntityDtoPostProcessor pp : entityDtoPostProcessors) {
             if (pp.supports(source.getClass(), dto.getClass())) {
-                pp.postProcessDto(dto, source);
+                pp.postProcessDto(dto, source, IdPropertyNameUtils.transformIdFieldNames(fieldsToMap));
             }
         }
         return dto;
@@ -79,4 +82,9 @@ public class DelegatingDtoMapper{
     public void setEntityManager(EntityManager entityManager) {
         this.entityManager = entityManager;
     }
+
+//    public <E extends IdentifiableEntity<ID>> Object mapToDto(E saved, Class<?> dtoClass, Set<String> updatedFields) {
+//
+//
+//    }
 }

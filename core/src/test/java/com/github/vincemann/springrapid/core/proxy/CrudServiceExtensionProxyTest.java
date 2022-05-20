@@ -1,5 +1,6 @@
 package com.github.vincemann.springrapid.core.proxy;
 
+import org.springframework.data.jpa.repository.JpaRepository;
 import com.github.vincemann.springrapid.core.util.Lists;
 import com.github.vincemann.springrapid.core.model.IdentifiableEntityImpl;
 import com.github.vincemann.springrapid.core.service.CrudService;
@@ -15,6 +16,7 @@ import org.mockito.internal.InOrderImpl;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.aop.TargetClassAware;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.repository.CrudRepository;
 
 import static org.mockito.ArgumentMatchers.any;
 

@@ -29,7 +29,6 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.boot.test.mock.mockito.SpyBean;
 import org.springframework.http.HttpHeaders;
 import org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers;
-import org.springframework.test.util.AopTestUtils;
 import org.springframework.test.web.servlet.setup.DefaultMockMvcBuilder;
 
 import javax.sql.DataSource;
@@ -39,6 +38,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import static com.github.vincemann.springrapid.authtests.adapter.AuthTestAdapter.*;
+import static com.github.vincemann.springrapid.core.util.ProxyUtils.aopUnproxy;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -122,13 +122,9 @@ public abstract class AbstractRapidAuthIntegrationTest
 
     protected void setupSpies(){
         jwt = Mockito.spy(properties.getJwt());
-        Mockito.doReturn(jwt).when(unproxy(properties)).getJwt();
+        Mockito.doReturn(jwt).when(aopUnproxy(properties)).getJwt();
     }
 
-    protected <T> T unproxy(T spy){
-        //        https://stackoverflow.com/questions/9033874/mocking-a-property-of-a-cglib-proxied-service-not-working
-        return AopTestUtils.getUltimateTargetObject(spy);
-    }
 
     @Override
     protected DefaultMockMvcBuilder createMvcBuilder() {
@@ -213,7 +209,7 @@ public abstract class AbstractRapidAuthIntegrationTest
         System.err.println("deleted users");
         System.err.println("test data cleared");
 
-        Mockito.reset(unproxy(mailSender));
+        Mockito.reset(aopUnproxy(mailSender));
         testAdapter.afterEach();
 //        https://github.com/spring-projects/spring-boot/issues/7374  -> @SpyBean beans are automatically reset
 

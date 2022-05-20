@@ -7,6 +7,7 @@ import com.github.vincemann.springrapid.core.util.ContainerAnnotationUtils;
 import com.github.vincemann.springrapid.core.util.Lists;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeansException;
+import org.springframework.beans.factory.BeanNameAware;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.config.BeanPostProcessor;
 import org.springframework.beans.factory.support.AutowireCandidateQualifier;
@@ -98,6 +99,7 @@ public class AnnotationCrudServiceProxyFactory implements BeanPostProcessor, App
                 log.debug("Registering beanDef of proxyBean first: " + proxyBeanDef);
                 beanFactory.registerBeanDefinition(proxyBeanName, proxyBeanDef);
                 beanFactory.registerSingleton(proxyBeanName, proxyBean);
+                proxyBean.setBeanName(beanName);
                 log.debug("registered proxyBean: " + proxyBeanName);
             }
         }

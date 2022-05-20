@@ -15,7 +15,7 @@ public class UserDtoPostProcessor implements EntityDtoPostProcessor<AbstractFind
     }
 
     @Override
-    public void postProcessDto(AbstractFindRapidUserDto abstractUserDto, AbstractUser<?> entity) throws BadEntityException {
+    public void postProcessDto(AbstractFindRapidUserDto abstractUserDto, AbstractUser<?> entity,String... fieldsToMap) throws BadEntityException {
         abstractUserDto.initFlags();
     }
 

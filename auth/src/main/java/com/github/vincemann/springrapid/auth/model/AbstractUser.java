@@ -53,7 +53,7 @@ public class AbstractUser<ID extends Serializable>
 	// A JWT issued before this won't be valid
 	@Column(nullable = false)
 	@JsonIgnore
-	protected long credentialsUpdatedMillis = System.currentTimeMillis();
+	protected Long credentialsUpdatedMillis = System.currentTimeMillis();
 
 	// holds reCAPTCHA response while signing up
 	// todo put captcha response in signupDto and validate there

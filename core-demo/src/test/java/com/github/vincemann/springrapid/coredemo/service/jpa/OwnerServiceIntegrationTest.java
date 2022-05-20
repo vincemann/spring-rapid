@@ -149,10 +149,7 @@ class OwnerServiceIntegrationTest
 
         Owner ownerUpdateRequest = new Owner();
         ownerUpdateRequest.getPets().addAll(savedKahn.getPets());
-        //here comes the new pet
-        ownerUpdateRequest.getPets().add(savedKitty);
-
-        //when
+        ownerUpdateRequest.getPets().add(savedKitty);   //here comes the new pet
         ownerUpdateRequest.setId(savedKahn.getId());
 
         test(partialUpdate(ownerUpdateRequest))
@@ -183,7 +180,9 @@ class OwnerServiceIntegrationTest
 
         Owner ownerUpdateRequest = BeanUtils.clone(savedKahn);
         //here comes the new pet
-        ownerUpdateRequest.getPets().add(savedKitty);
+        ownerUpdateRequest.setPets(new HashSet<>(Lists.newArrayList(savedBello,savedKitty)));
+//        ownerUpdateRequest.getPets().add(savedKitty);
+//        getEntityManager().refresh(savedKahn);
 
         //when
         test(update(ownerUpdateRequest))
@@ -320,7 +319,7 @@ class OwnerServiceIntegrationTest
         Pet dbKitty = petRepository.findByName(KITTY).get();
         Pet dbBella = petRepository.findByName(BELLA).get();
         Owner dbKahn = ownerRepository.findByLastName(KAHN).get();
-        // check if bidir relation ships were managed
+        // check if bidir relation ships were managed properly
         Assertions.assertNull(dbKitty.getOwner());
         Assertions.assertNull(dbBella.getOwner());
         Assertions.assertEquals(dbKahn, dbBello.getOwner());
@@ -438,6 +437,8 @@ class OwnerServiceIntegrationTest
         kahn.setPets(new HashSet<>(Lists.newArrayList(bello)));
         Owner savedOwner = getTestedService().save(kahn);
 
+        Assertions.assertTrue(petRepository.findByName(BELLO).isPresent());
+
         test(deleteById(savedOwner.getId()))
                 .andExpect(notPresentInDatabase(savedOwner.getId()));
 
@@ -445,6 +446,11 @@ class OwnerServiceIntegrationTest
         Assertions.assertTrue(petRepository.findByName(BELLO).isPresent());
         Pet dbBello = petRepository.findByName(BELLO).get();
         Assertions.assertNull(dbBello.getOwner());
+    }
+
+    @Test
+    public void canPartialUpdateOwnersPetsAndLazyExceptionItems_wontLoadOtherLazyCollections(){
+
     }
 
 

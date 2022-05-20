@@ -40,7 +40,8 @@ public class Owner extends Person {
         this.telephone = telephone;
     }
 
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "owner",fetch = FetchType.EAGER)
+    // dont use remove cascade to showcase unlink on remove owner,
+    @OneToMany(cascade = {PERSIST, MERGE, REFRESH, DETACH}, mappedBy = "owner",fetch = FetchType.EAGER)
     @JsonManagedReference
     @BiDirChildCollection(Pet.class)
     private Set<Pet> pets = new HashSet<>();
@@ -75,17 +76,17 @@ public class Owner extends Person {
     private String telephone;
 
 
-
-    @Override
-    public String toString() {
-        return "Owner{" +
-//                super.toString() +
-                "pets=" + Arrays.toString(pets.stream().map(Pet::getName).toArray()) +
-                ", hobbies='"+hobbies+"'" +
-                ", address='" + address + '\'' +
-                ", city='" + city + '\'' +
-                ", telephone='" + telephone + '\'' +
-                '}';
-    }
-
+//    @Override
+//    public String toString() {
+//        return "Owner{" +
+//                "pets=" + Arrays.toString(pets.stream().map(Pet::getName).toArray()) +
+//                ", clinicCard=" + clinicCard +
+//                ", hobbies=" + hobbies +
+//                ", lazyExceptionItems=" + lazyExceptionItems +
+//                ", lazyLoadedItems=" + lazyLoadedItems +
+//                ", address='" + address + '\'' +
+//                ", city='" + city + '\'' +
+//                ", telephone='" + telephone + '\'' +
+//                '}';
+//    }
 }

@@ -15,7 +15,6 @@ import com.github.vincemann.springrapid.auth.service.token.JweTokenService;
 import com.github.vincemann.springrapid.auth.service.validation.PasswordValidator;
 import com.github.vincemann.springrapid.auth.util.MapUtils;
 import com.github.vincemann.springrapid.auth.util.RapidJwt;
-import com.github.vincemann.springrapid.auth.util.TransactionalUtils;
 import com.github.vincemann.springrapid.core.IdConverter;
 import com.github.vincemann.springrapid.core.security.RapidSecurityContext;
 import com.github.vincemann.springrapid.core.service.JPACrudService;
@@ -28,11 +27,11 @@ import com.github.vincemann.springrapid.core.util.VerifyEntity;
 import com.google.common.collect.Sets;
 import com.nimbusds.jwt.JWTClaimsSet;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.catalina.User;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
+import org.springframework.dao.NonTransientDataAccessException;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.annotation.Validated;
@@ -56,7 +55,7 @@ public abstract class AbstractUserService
                 R extends AbstractUserRepository<U, ID>
                 >
         extends JPACrudService<U, ID, R>
-        implements UserService<U, ID> {
+            implements UserService<U, ID> {
 
     public static final String CHANGE_EMAIL_AUDIENCE = "change-email";
     public static final String VERIFY_EMAIL_AUDIENCE = "verify";
@@ -71,18 +70,18 @@ public abstract class AbstractUserService
     private JweTokenService jweTokenService;
     private IdConverter<ID> idIdConverter;
     private PasswordValidator passwordValidator;
+    private AbstractUserService<U,ID,R> service;
 
-    @PersistenceContext
-    private EntityManager entityManager;
+//    @PersistenceContext
+//    private EntityManager entityManager;
+
     /**
      * Creates a new user object. Must be overridden in the
      * subclass, like this:
-     *
-     * <pre>
+     * <p>
      * public User newUser() {
-     *    return new User();
+     * return new User();
      * }
-     * </pre>
      */
     public abstract U newUser();
 
@@ -113,16 +112,13 @@ public abstract class AbstractUserService
         }
     }
 
-    /**
-     * Signs up a user.
-     */
     @Transactional(propagation = Propagation.REQUIRED, readOnly = false)
     public U signup(U user) throws BadEntityException, AlreadyRegisteredException {
         //admins get created with createAdminMethod
         user.setRoles(Sets.newHashSet(AuthRoles.USER));
         passwordValidator.validate(user.getPassword());
         checkUniqueEmail(user.getEmail());
-        U saved = save(user);
+        U saved = service.save(user);
         // is done in same transaction -> so applied directly
         makeUnverified(saved);
 
@@ -140,7 +136,7 @@ public abstract class AbstractUserService
     @Override
     public U save(U user) throws BadEntityException {
         // no restrictions in save method, all restrictions and checks in more abstract methods such as signup and createAdmin
-        encodePassword(user);
+        encodePasswordIfNecessary(user);
         return super.save(user);
     }
 
@@ -150,9 +146,6 @@ public abstract class AbstractUserService
         super.deleteById(id);
     }
 
-    /**
-     * Makes a user unverified
-     */
     protected void makeUnverified(U user) {
         user.getRoles().add(AuthRoles.UNVERIFIED);
         user.setCredentialsUpdatedMillis(System.currentTimeMillis());
@@ -163,7 +156,7 @@ public abstract class AbstractUserService
     /**
      * Only encrypts password, if it is not already encrypted.
      */
-    protected void encodePassword(U user) {
+    protected void encodePasswordIfNecessary(U user) {
         String password = user.getPassword();
         if (password == null) {
             return;
@@ -188,9 +181,6 @@ public abstract class AbstractUserService
     }
 
 
-    /**
-     * Fetches a user by email
-     */
     public Optional<U> findByEmail(String email) {
         return getRepository().findByEmail(email);
     }
@@ -232,8 +222,10 @@ public abstract class AbstractUserService
     protected U verifyUser(U user) throws BadEntityException, EntityNotFoundException {
         user.getRoles().remove(AuthRoles.UNVERIFIED);
         user.setCredentialsUpdatedMillis(System.currentTimeMillis());
-        U saved = update(user, true);
-        log.debug("Verified user: " + saved);
+        // todo changed to softupdate
+//        U saved = update(user);
+        U saved = service.softUpdate(user);
+        log.debug("Verified user: " + user.getEmail());
         return saved;
     }
 
@@ -278,8 +270,10 @@ public abstract class AbstractUserService
             user.setCredentialsUpdatedMillis(System.currentTimeMillis());
             //user.setForgotPasswordCode(null);
             try {
-                return update(user, true);
-            } catch (BadEntityException e) {
+                // todo changed to softupdate
+                return service.softUpdate(user);
+//                return update(user);
+            } catch (NonTransientDataAccessException e) {
                 throw new RuntimeException("Could not reset users password", e);
             }
         } catch (BadTokenException e) {
@@ -287,12 +281,31 @@ public abstract class AbstractUserService
         }
     }
 
+    @Transactional(propagation = Propagation.REQUIRED, readOnly = false)
+    @Override
+    public U partialUpdate(U update, String... fieldsToRemove) throws EntityNotFoundException, BadEntityException {
+        updateSpecialUserFields(update);
+        return super.partialUpdate(update, fieldsToRemove);
+    }
 
     @Transactional(propagation = Propagation.REQUIRED, readOnly = false)
     @Override
-    public U update(U update, Boolean full) throws EntityNotFoundException, BadEntityException {
+    public U fullUpdate(U update) throws BadEntityException, EntityNotFoundException {
+        updateSpecialUserFields(update);
+        return super.fullUpdate(update);
+    }
+
+    @Transactional(propagation = Propagation.REQUIRED, readOnly = false)
+    @Override
+    public U softUpdate(U update) throws EntityNotFoundException, BadEntityException {
+        updateSpecialUserFields(update);
+        return super.softUpdate(update);
+    }
+
+    protected void updateSpecialUserFields(U update) throws BadEntityException, EntityNotFoundException {
         Optional<U> old = findById(update.getId());
-        entityManager.merge(old.get());
+        // todo is that ever needed? this is always run in transactional context ?
+//        entityManager.merge(old.get());
         VerifyEntity.isPresent(old, "Entity to update with id: " + update.getId() + " not found");
         //update roles works in transaction -> changes are applied on the fly
         updateRoles(old.get(), update);
@@ -303,8 +316,7 @@ public abstract class AbstractUserService
                 passwordValidator.validate(password);
             }
         }
-        encodePassword(update);
-        return super.update(update, full);
+        encodePasswordIfNecessary(update);
     }
 
     /**
@@ -327,9 +339,12 @@ public abstract class AbstractUserService
         // sets the password
         user.setPassword(passwordEncoder.encode(changePasswordDto.getPassword()));
         user.setCredentialsUpdatedMillis(System.currentTimeMillis());
+        // todo changed to softupdate
+        log.debug("changed pw of user: " + user.getEmail());
         try {
-            update(user);
-        } catch (BadEntityException e) {
+//            update(user);
+            service.softUpdate(user);
+        } catch (NonTransientDataAccessException e) {
             throw new RuntimeException("Could not change users password", e);
         }
 
@@ -338,10 +353,17 @@ public abstract class AbstractUserService
 
     protected void updateRoles(U old, U newUser) {
         log.debug("Updating user fields for user: " + old);
-        // update the roles
 
+        // no role updates has been made, keep old roles
+        if (newUser.getRoles() == null) {
+            return;
+        }
+
+        // after this if statement passed it is obvious that roles have changed / will change
+        // just a matter of how
         if (old.getRoles().equals(newUser.getRoles())) // roles are same
             return;
+
 
         if (newUser.hasRole(AuthRoles.UNVERIFIED)) {
 
@@ -350,12 +372,15 @@ public abstract class AbstractUserService
             }
         } else {
 
-            if (old.hasRole(AuthRoles.UNVERIFIED))
+            if (old.hasRole(AuthRoles.UNVERIFIED)) {
                 old.getRoles().remove(AuthRoles.UNVERIFIED); // make user verified
+            }
         }
+
 
         old.setRoles(newUser.getRoles());
         old.setCredentialsUpdatedMillis(System.currentTimeMillis());
+
     }
 
 
@@ -377,10 +402,11 @@ public abstract class AbstractUserService
         //user.setChangeEmailCode(LemonValidationUtils.uid());
         U saved;
         try {
-            saved = update(user);
+            // todo changed to softupdate
+            saved = service.softUpdate(user);
             // after successful commit, mails a link to the user
 //            TransactionalUtils.afterCommit(() -> mailChangeEmailLink(saved));
-        } catch (BadEntityException e) {
+        } catch (NonTransientDataAccessException | BadEntityException e) {
             throw new RuntimeException("Email was malformed, although validation check was successful");
         }
 
@@ -471,10 +497,12 @@ public abstract class AbstractUserService
             // make the user verified if he is not
             if (user.hasRole(AuthRoles.UNVERIFIED))
                 user.getRoles().remove(AuthRoles.UNVERIFIED);
-            return update(user);
+            // todo changed to repo
+//          return update(user);
+            return service.softUpdate(user);
         } catch (BadTokenException e) {
             throw new BadEntityException(Message.get("com.github.vincemann.wrong.verificationCode"), e);
-        } catch (BadEntityException e) {
+        } catch (NonTransientDataAccessException e) {
             throw new RuntimeException("Could not update users email", e);
         }
     }
@@ -520,7 +548,7 @@ public abstract class AbstractUserService
     public U signupAdmin(U admin) throws AlreadyRegisteredException, BadEntityException {
         checkUniqueEmail(admin.getEmail());
         passwordValidator.validate(admin.getPassword());
-        return save(admin);
+        return service.save(admin);
     }
 
     /**
@@ -681,4 +709,11 @@ public abstract class AbstractUserService
     public void injectPasswordValidator(PasswordValidator passwordValidator) {
         this.passwordValidator = passwordValidator;
     }
+
+    @Lazy
+    @Autowired
+    public void injectService(AbstractUserService<U, ID, R> service) {
+        this.service = service;
+    }
 }
+

@@ -1,7 +1,7 @@
 package com.github.vincemann.springrapid.autobidir.controller.dtomapper.biDir;
 
 import com.github.vincemann.springrapid.autobidir.RapidRelationalDtoManager;
-import com.github.vincemann.springrapid.autobidir.RapidRelationalEntityManager;
+import com.github.vincemann.springrapid.autobidir.RapidRelationalEntityManagerUtil;
 import com.github.vincemann.springrapid.core.service.exception.EntityNotFoundException;
 import com.github.vincemann.springrapid.autobidir.controller.dtomapper.biDir.abs.BiDirEntityResolverTest;
 import com.github.vincemann.springrapid.autobidir.controller.dtomapper.biDir.testEntities.BiDirEntityParent;
@@ -26,7 +26,7 @@ public class BiDirParentIdResolverTest extends BiDirEntityResolverTest {
         this.biDirParentIdResolver = new BiDirParentIdResolver();
         this.biDirParentIdResolver.setCrudServiceLocator(getCrudServiceLocator());
         this.biDirParentIdResolver.setRelationalDtoManager(new RapidRelationalDtoManager());
-        this.biDirParentIdResolver.setRelationalEntityManager(new RapidRelationalEntityManager());
+        this.biDirParentIdResolver.setRelationalEntityManagerUtil(new RapidRelationalEntityManagerUtil());
     }
 
     @Test

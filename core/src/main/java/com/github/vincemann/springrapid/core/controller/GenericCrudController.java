@@ -1,7 +1,6 @@
 package com.github.vincemann.springrapid.core.controller;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.fge.jsonpatch.JsonPatchException;
 import com.github.vincemann.springrapid.core.CoreProperties;
 import com.github.vincemann.springrapid.core.controller.dto.mapper.DelegatingDtoMapper;
@@ -19,7 +18,9 @@ import com.github.vincemann.springrapid.core.service.CrudService;
 import com.github.vincemann.springrapid.core.service.EndpointService;
 import com.github.vincemann.springrapid.core.service.exception.BadEntityException;
 import com.github.vincemann.springrapid.core.service.exception.EntityNotFoundException;
-import com.github.vincemann.springrapid.core.util.JpaUtils;
+import com.github.vincemann.springrapid.core.util.EntityReflectionUtils;
+import com.github.vincemann.springrapid.core.util.IdPropertyNameUtils;
+import com.github.vincemann.springrapid.core.util.ReflectionUtils;
 import com.github.vincemann.springrapid.core.util.VerifyEntity;
 import lombok.Getter;
 import lombok.Setter;
@@ -145,26 +146,46 @@ public abstract class GenericCrudController
         log.debug("patchString: " + patchString);
         ID id = fetchId(request);
         //user does also need read permission if he wants to update user, so i can check read permission here instead of using raw service
+        // i indirectly check if by using secured service.findById
+        // todo replace with unsecured service, too much overhead
         Optional<E> savedOptional = getService().findById(id);
         VerifyEntity.isPresent(savedOptional, id, getEntityClass());
         E saved = savedOptional.get();
         Class<?> dtoClass = createDtoClass(getUpdateUrl(), Direction.REQUEST, saved);
         beforeUpdate(dtoClass, id, patchString, request, response);
         jsonDtoPropertyValidator.validatePatch(patchString,dtoClass);
-        Object patchDto = dtoMapper.mapToDto(saved, dtoClass);
-        patchDto = jsonPatchStrategy.applyPatch(saved,patchDto, patchString);
-        log.debug("finished patchDto: " + patchDto);
-        dtoValidationStrategy.validate(patchDto);
+
+        PatchInfo patchInfo = jsonPatchStrategy.findPatchInfo(patchString);
+        Object patchDto = dtoMapper.mapToDto(saved, dtoClass,
+                patchInfo.getUpdatedFields().toArray(new String[patchInfo.getUpdatedFields().size()]));
+        patchDto = jsonPatchStrategy.applyPatch(patchDto, patchString);
+        // map to dto mapped schon nur die updated properties, also muss es bei mapToEntity nicht erneut limited werden auf mapped properties
         E patchEntity = dtoMapper.mapToEntity(patchDto, getEntityClass());
-        log.debug("finished patchEntity: " + patchEntity);
-        E merged = mergeUpdateStrategy.merge(patchEntity, JpaUtils.detach(saved), dtoClass);
-        log.debug("merged Entity as input for service: ");
+        // some dtos might not have id set, so we add it here
+        patchEntity.setId(id);
+        // set all non updated fields to null, to avoid i.E. roles = new HashSet() in class initializer beeing interpreted as an update to remove all roles!
+        // todo transformIdFieldNamesToSet cacheable?
+        Set<String> allUpdatedFields = IdPropertyNameUtils.transformIdFieldNamesToSet(patchInfo.getAllUpdatedFields());
+        allUpdatedFields.add("id");
+        EntityReflectionUtils.setNonMatchingFieldsNull(patchEntity,allUpdatedFields);
+
         logSecurityContext();
-        E updated = serviceUpdate(merged, true);
+        E updated = servicePartialUpdate(patchEntity,
+                IdPropertyNameUtils.transformIdFieldNames(patchInfo.getRemoveSingleMembersFields()));
         Class<?> resultDtoClass = createDtoClass(getUpdateUrl(), Direction.RESPONSE, updated);
         Object resultDto = dtoMapper.mapToDto(updated, resultDtoClass);
         afterUpdate(resultDto, updated, request, response);
         return ok(jsonMapper.writeDto(resultDto));
+
+
+        //        E merged = mergeUpdateStrategy.merge(patchEntity, JpaUtils.detach(saved), dtoClass);
+//        patchDto = jsonPatchStrategy.applyPatch(patchDto, patchString);
+//        log.debug("finished patchDto: " + patchDto);
+//        dtoValidationStrategy.validate(patchDto);
+//        E patchEntity = dtoMapper.mapToEntity(patchDto, getEntityClass());
+//        log.debug("finished patchEntity: " + patchEntity);
+//        // merge dto fields. patch merged with saved Entity.
+//        E merged = mergeUpdateStrategy.merge(patchEntity, JpaUtils.detach(saved), dtoClass);
     }
 
     public ResponseEntity<?> delete(HttpServletRequest request, HttpServletResponse response) throws IdFetchingException, BadEntityException, EntityNotFoundException, ConstraintViolationException {
@@ -466,8 +487,8 @@ public abstract class GenericCrudController
     //              SERVICE CALLBACKS
 
 
-    protected E serviceUpdate(E update, boolean full) throws BadEntityException, EntityNotFoundException {
-        return service.update(update, full);
+    protected E servicePartialUpdate(E update, String... propertiesToDelete) throws BadEntityException, EntityNotFoundException {
+        return service.partialUpdate(update,propertiesToDelete);
     }
 
     protected E serviceCreate(E entity) throws BadEntityException {

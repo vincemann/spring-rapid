@@ -44,11 +44,11 @@ public class IdResolvingDtoPostProcessor implements DtoPostProcessor<Object, Ide
     }
 
     @Override
-    public void postProcessDto(Object dto, IdentifiableEntity<?> entity) {
+    public void postProcessDto(Object dto, IdentifiableEntity<?> entity, String... fieldsToCheck) {
         //yet unfinished
         List<EntityIdResolver> entityIdResolvers = findResolvers(dto.getClass());
         for (EntityIdResolver entityIdResolver : entityIdResolvers) {
-            entityIdResolver.setResolvedIds(dto, entity);
+            entityIdResolver.setResolvedIds(dto, entity, fieldsToCheck);
         }
     }
 

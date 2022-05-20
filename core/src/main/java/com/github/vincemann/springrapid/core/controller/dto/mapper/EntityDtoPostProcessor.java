@@ -6,5 +6,5 @@ import com.github.vincemann.springrapid.core.service.exception.BadEntityExceptio
 public interface EntityDtoPostProcessor<Dto,E/* extends IdentifiableEntity<?>*/> {
     @LogInteraction(disabled = true)
     public boolean supports(Class<?> entityClazz, Class<?> dtoClass);
-    public void postProcessDto(Dto dto, E entity) throws BadEntityException;
+    public void postProcessDto(Dto dto, E entity, String... fieldsToMap) throws BadEntityException;
 }

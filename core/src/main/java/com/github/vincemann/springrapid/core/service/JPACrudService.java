@@ -1,24 +1,17 @@
 package com.github.vincemann.springrapid.core.service;
 
-import com.github.vincemann.springrapid.core.util.NullAwareBeanUtils;
-import com.github.vincemann.springrapid.core.util.NullAwareBeanUtilsBean;
 import com.github.vincemann.springrapid.core.model.IdentifiableEntity;
 import com.github.vincemann.springrapid.core.service.exception.BadEntityException;
 import com.github.vincemann.springrapid.core.service.exception.EntityNotFoundException;
 import com.github.vincemann.springrapid.core.slicing.ServiceComponent;
+import com.github.vincemann.springrapid.core.util.NullAwareBeanUtils;
 import com.github.vincemann.springrapid.core.util.VerifyEntity;
-import com.github.vincemann.springrapid.core.util.BeanUtils;
-import org.apache.commons.beanutils.BeanUtilsBean;
-import org.hibernate.LockMode;
-import org.hibernate.Session;
+import com.google.common.collect.Sets;
 import org.springframework.dao.NonTransientDataAccessException;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.transaction.annotation.Transactional;
 
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
 import java.io.Serializable;
-import java.lang.reflect.InvocationTargetException;
 import java.util.HashSet;
 import java.util.Optional;
 import java.util.Set;
@@ -41,7 +34,6 @@ public abstract class JPACrudService
         extends AbstractCrudService<E, Id, R> {
 
 
-
     public JPACrudService() {
     }
 
@@ -57,26 +49,51 @@ public abstract class JPACrudService
         }
     }
 
+    @Override
+    public E softUpdate(E update) throws EntityNotFoundException, BadEntityException {
+        VerifyEntity.isPresent(update.getId(), "No Id set for update");
+        try {
+            return getRepository().save(update);
+        } catch (NonTransientDataAccessException e) {
+            // constraints not met, such as foreign key constraints or other db update constraints
+            throw new BadEntityException(e);
+        }
+    }
+
+    @Override
+    public Class<?> getTargetClass() {
+        return null;
+    }
+
     @Transactional
     @Override
-    public E update(E update, Boolean full) throws EntityNotFoundException, BadEntityException {
+    public E partialUpdate(E update, String... fieldsToRemove) throws EntityNotFoundException, BadEntityException {
         try {
-            VerifyEntity.isPresent(update.getId(), "No Id set for update");
-            if (full) {
-                return getRepository().save(update);
-            } else {
                 E entityToUpdate = findOldEntity(update.getId());
                 //copy non null values from update to entityToUpdate
+                // also copy null values from explicitly given fieldsToRemove
                 // values get copied to target already bc this is transactional
-                // -> update is already happening here
-                NullAwareBeanUtils.copyProperties(entityToUpdate, update);
+                // -> update on managed entity is already happening here
+                NullAwareBeanUtils.copyProperties(entityToUpdate, update, Sets.newHashSet(fieldsToRemove));
                 return getRepository().save(entityToUpdate);
-            }
         } catch (NonTransientDataAccessException e) {
             // constraints not met, such as foreign key constraints or other db entity constraints
             throw new BadEntityException(e);
         }
     }
+
+    @Transactional
+    @Override
+    public E fullUpdate(E update) throws BadEntityException, EntityNotFoundException {
+        VerifyEntity.isPresent(update.getId(), "No Id set for update");
+        try {
+            return getRepository().save(update);
+        } catch (NonTransientDataAccessException e) {
+            // constraints not met, such as foreign key constraints or other db entity constraints
+            throw new BadEntityException(e);
+        }
+    }
+
 
 
     @Transactional

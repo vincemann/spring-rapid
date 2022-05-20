@@ -1,6 +1,5 @@
 package com.github.vincemann.springrapid.coredemo.service.jpa;
 
-import com.github.vincemann.springrapid.core.service.exception.BadEntityException;
 import com.github.vincemann.springrapid.core.service.exception.EntityNotFoundException;
 import com.github.vincemann.springrapid.coredemo.model.Owner;
 import com.github.vincemann.springrapid.coredemo.model.Pet;
@@ -77,7 +76,7 @@ class PetServiceIntegrationTest
         Pet update = BeanUtils.clone(savedBello);
         update.setPetType(null);
 
-        getTestedService().update(update,true);
+        getTestedService().fullUpdate(update);
 
         petTypeRepository.deleteAll();
 
@@ -182,8 +181,14 @@ class PetServiceIntegrationTest
         Owner savedKahn = ownerService.save(kahn);
         Pet savedBello = getTestedService().save(bello);
 
-        Pet updatePetsOwner = BeanUtils.clone(savedBello);
-        updatePetsOwner.setOwner(savedKahn);
+        Pet updatePetsOwner = Pet.builder()
+                .name(BELLO)
+                .petType(savedBello.getPetType())
+                .owner(savedKahn)
+                .build();
+        updatePetsOwner.setId(savedBello.getId());
+//        Pet updatePetsOwner = BeanUtils.clone(savedBello);
+//        updatePetsOwner.setOwner(savedKahn);
 
         test(update(updatePetsOwner));
 

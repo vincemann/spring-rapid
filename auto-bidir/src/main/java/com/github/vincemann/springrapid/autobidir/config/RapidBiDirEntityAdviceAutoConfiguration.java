@@ -1,12 +1,13 @@
 package com.github.vincemann.springrapid.autobidir.config;
 
+import com.github.vincemann.springrapid.autobidir.RapidRelationalEntityManager;
+import com.github.vincemann.springrapid.autobidir.RapidRelationalEntityManagerUtil;
+import com.github.vincemann.springrapid.autobidir.RelationalEntityManager;
+import com.github.vincemann.springrapid.autobidir.RelationalEntityManagerUtil;
+import com.github.vincemann.springrapid.autobidir.advice.RelationalEntityAdvice;
+import com.github.vincemann.springrapid.autobidir.advice.RelationalServiceUpdateAdvice;
 import com.github.vincemann.springrapid.core.service.locator.CrudServiceLocator;
 import com.github.vincemann.springrapid.core.slicing.ServiceConfig;
-import com.github.vincemann.springrapid.autobidir.RapidRelationalEntityManager;
-import com.github.vincemann.springrapid.autobidir.RelationalEntityManager;
-import com.github.vincemann.springrapid.autobidir.advice.BiDirEntityRemoveAdvice;
-import com.github.vincemann.springrapid.autobidir.advice.BiDirEntitySaveAdvice;
-import com.github.vincemann.springrapid.autobidir.advice.BiDirEntityUpdateAdvice;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.context.annotation.Bean;
@@ -21,22 +22,35 @@ public class RapidBiDirEntityAdviceAutoConfiguration  {
 
     }
 
+//    @Bean
+//    @ConditionalOnMissingBean(BiDirEntitySaveAdvice.class)
+//    public BiDirEntitySaveAdvice biDirEntityPersistAdvice(CrudServiceLocator crudServiceLocator, RelationalEntityManagerUtil relationalEntityManagerUtil){
+//        return new BiDirEntitySaveAdvice(crudServiceLocator, relationalEntityManagerUtil);
+//    }
+//
+//    @Bean
+//    @ConditionalOnMissingBean(BiDirEntityRemoveAdvice.class)
+//    public BiDirEntityRemoveAdvice biDirEntityRemoveAdvice(CrudServiceLocator crudServiceLocator, RelationalEntityManagerUtil relationalEntityManagerUtil){
+//        return new BiDirEntityRemoveAdvice(crudServiceLocator, relationalEntityManagerUtil);
+//    }
+//
     @Bean
-    @ConditionalOnMissingBean(BiDirEntitySaveAdvice.class)
-    public BiDirEntitySaveAdvice biDirEntityPersistAdvice(CrudServiceLocator crudServiceLocator,RelationalEntityManager relationalEntityManager){
-        return new BiDirEntitySaveAdvice(crudServiceLocator,relationalEntityManager);
+    @ConditionalOnMissingBean(RelationalServiceUpdateAdvice.class)
+    public RelationalServiceUpdateAdvice biDirEntityUpdateAdvice(){
+        return new RelationalServiceUpdateAdvice();
     }
 
     @Bean
-    @ConditionalOnMissingBean(BiDirEntityRemoveAdvice.class)
-    public BiDirEntityRemoveAdvice biDirEntityRemoveAdvice(CrudServiceLocator crudServiceLocator,RelationalEntityManager relationalEntityManager){
-        return new BiDirEntityRemoveAdvice(crudServiceLocator,relationalEntityManager);
+    @ConditionalOnMissingBean(RelationalEntityAdvice.class)
+    public RelationalEntityAdvice biDirEntityPersistAdvice(){
+        return new RelationalEntityAdvice();
     }
 
+
     @Bean
-    @ConditionalOnMissingBean(BiDirEntityUpdateAdvice.class)
-    public BiDirEntityUpdateAdvice biDirEntityUpdateAdvice(CrudServiceLocator crudServiceLocator,RelationalEntityManager relationalEntityManager){
-        return new BiDirEntityUpdateAdvice(crudServiceLocator,relationalEntityManager);
+    @ConditionalOnMissingBean(RelationalEntityManager.class)
+    public RelationalEntityManager relationalEntityManager(){
+        return new RapidRelationalEntityManager();
     }
 
 }

@@ -38,6 +38,6 @@ public class MapUserUuidDtoPostProcessor implements DtoEntityPostProcessor<Creat
         User user = byUuid.get();
         entity.setUser(user);
         user.setUuid(null);
-        userService.update(user);
+        userService.fullUpdate(user);
     }
 }
