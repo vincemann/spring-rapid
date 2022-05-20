@@ -75,9 +75,9 @@ public class RapidCrudControllerAutoConfiguration {
 
     @ConditionalOnMissingBean(DtoValidationStrategy.class)
     @Bean
-    public DtoValidationStrategy validationStrategy(LocalValidatorFactoryBean localValidatorFactoryBean){
+    public DtoValidationStrategy validationStrategy(javax.validation.Validator validator){
         //use spring validator, so dependency injection is supported
-        return new JavaXDtoValidationStrategy(localValidatorFactoryBean.getValidator());
+        return new JavaXDtoValidationStrategy(validator);
     }
 
 
