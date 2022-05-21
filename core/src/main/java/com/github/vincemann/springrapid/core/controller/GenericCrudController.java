@@ -166,7 +166,9 @@ public abstract class GenericCrudController
         // set all non updated fields to null, to avoid i.E. roles = new HashSet() in class initializer beeing interpreted as an update to remove all roles!
         // todo transformIdFieldNamesToSet cacheable?
         Set<String> allUpdatedFields = IdPropertyNameUtils.transformIdFieldNamesToSet(patchInfo.getAllUpdatedFields());
-        allUpdatedFields.add("id");
+        // id field can be any name!
+//        allUpdatedFields.add("id");
+        allUpdatedFields.add(IdPropertyNameUtils.findIdFieldName(patchEntity.getClass()));
         EntityReflectionUtils.setNonMatchingFieldsNull(patchEntity,allUpdatedFields);
 
         logSecurityContext();

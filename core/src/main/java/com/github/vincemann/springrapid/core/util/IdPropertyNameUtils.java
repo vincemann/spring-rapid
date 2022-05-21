@@ -1,5 +1,10 @@
 package com.github.vincemann.springrapid.core.util;
 
+import com.github.vincemann.springrapid.core.model.IdentifiableEntity;
+import org.springframework.util.ReflectionUtils;
+
+import javax.persistence.Id;
+import java.lang.reflect.Field;
 import java.util.Arrays;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -34,6 +39,18 @@ public class IdPropertyNameUtils {
         }else {
             return propertyName;
         }
+    }
+
+    public static String findIdFieldName(Class<?> entityClass){
+        final String[] fieldName = {""};
+        ReflectionUtils.doWithFields(entityClass,
+                field -> fieldName[0] =field.getName()
+                , new org.springframework.data.util.ReflectionUtils.AnnotationFieldFilter(Id.class));
+        String fn = fieldName[0];
+        if (fn.equals("")){
+            throw new IllegalArgumentException("Cant find id field of entityClass: " + entityClass);
+        }
+        return fn;
     }
 
     public static String[] transformIdFieldNames(String... propertyNames) {

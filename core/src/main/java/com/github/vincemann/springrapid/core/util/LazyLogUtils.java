@@ -23,15 +23,15 @@ import java.util.stream.Collectors;
 public class LazyLogUtils {
 
     public static String toString(Object object){
-        return toString(object,true,false,true);
+        return toString(object,new HashSet<>(),true,false,true);
     }
 
     public static String toString(Object object, Boolean ignoreEntitiesAndCollection){
-        return toString(object,ignoreEntitiesAndCollection,false,true);
+        return toString(object,new HashSet<>(), ignoreEntitiesAndCollection,false,true);
     }
 
     public static String toString(Object object, Boolean ignoreEntitiesAndCollection,Boolean idOnly){
-        return toString(object,ignoreEntitiesAndCollection,idOnly,true);
+        return toString(object,new HashSet<>(), ignoreEntitiesAndCollection,idOnly,true);
     }
 
     /**
@@ -40,20 +40,20 @@ public class LazyLogUtils {
      * @params ignore Entities and Collections (default = true), idOnly (default = false) -> only makes sense when first settings option is false,
      *                 only log LazyInitException (default=true)
      */
-    public static String toString(Object object, Boolean ignoreEntitiesAndCollection, Boolean idOnly, Boolean ignoreLazy) {
+    public static String toString(Object object,Set<String> blacklist, Boolean ignoreEntitiesAndCollections, Boolean idOnly, Boolean ignoreLazy) {
         if (object == null) {
             return "null";
         }
-        Boolean finalIgnoreEntitiesAndCollection = ignoreEntitiesAndCollection;
-        Boolean finalIdOnly = idOnly;
-        Boolean finalIgnoreLazy = ignoreLazy;
+        Boolean _ignoreEntitiesAndCollections = ignoreEntitiesAndCollections;
+        Boolean _idOnly = idOnly;
+        Boolean _ignoreLazy = ignoreLazy;
 
         return (new ReflectionToStringBuilder(object, ToStringStyle.SHORT_PREFIX_STYLE) {
             protected Object getValue(Field f) throws IllegalAccessException {
                 boolean singleEntity = false;
                 try {
                     if (IdentifiableEntity.class.isAssignableFrom(f.getType())) {
-                        if (finalIgnoreEntitiesAndCollection) {
+                        if (_ignoreEntitiesAndCollections) {
                             return "";
                         }
 
@@ -62,12 +62,12 @@ public class LazyLogUtils {
                         if (entity == null){
                             return "null";
                         }
-                        if (finalIdOnly) {
+                        if (_idOnly) {
                             return toId(entity);
                         }
                     } else if (Collection.class.isAssignableFrom(f.getType())) {
                         // it is a collection
-                        if (finalIgnoreEntitiesAndCollection) {
+                        if (_ignoreEntitiesAndCollections) {
                             return "";
                         }
                         singleEntity = false;
@@ -78,7 +78,7 @@ public class LazyLogUtils {
                         }
                         // test for lazy init exception already with size call
                         if (collection.size() > 0) {
-                            if (finalIdOnly) {
+                            if (_idOnly) {
                                 String s = collectionToIdString(collection);
                                 if (!s.equals("super")) {
                                     return s;
@@ -94,7 +94,7 @@ public class LazyLogUtils {
                     log.trace(e.getMessage());
                     if (singleEntity) {
                         log.warn("Could not log jpa lazy entity field: " + f.getName() + ", skipping.");
-                        if (finalIgnoreLazy) {
+                        if (_ignoreLazy) {
                             return " < LazyInitializationException > ";
                         } else {
                             throw e;
@@ -102,7 +102,7 @@ public class LazyLogUtils {
                     } else {
                         log.warn("Could not log jpa lazy collection field: " + f.getName() + ", skipping.");
 //                        log.warn("Use @LogInteractions transactional flag to load all lazy collections for logging");
-                        if (finalIgnoreLazy) {
+                        if (_ignoreLazy) {
                             return "[ LazyInitializationException ]";
                         } else {
                             throw e;
@@ -114,6 +114,8 @@ public class LazyLogUtils {
         }).toString();
 
     }
+
+
 
     private static String toId(IdentifiableEntity entity) {
         if (entity == null) {
