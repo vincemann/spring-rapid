@@ -7,13 +7,13 @@ import javax.servlet.http.HttpServletRequest;
  *
  * @param <Id>
  */
-public abstract class UrlParamIdFetchingStrategy<Id> implements IdFetchingStrategy<Id> {
+public abstract class UrlParamIdFetchingStrategy implements IdFetchingStrategy {
 
     public UrlParamIdFetchingStrategy() {
     }
 
     @Override
-    public Id fetchId(HttpServletRequest request) throws IdFetchingException {
+    public <Id> Id fetchId(HttpServletRequest request) throws IdFetchingException {
         String id = request.getParameter("id");
         if (id == null) {
             throw new IdFetchingException("No id found in request");
@@ -27,6 +27,6 @@ public abstract class UrlParamIdFetchingStrategy<Id> implements IdFetchingStrate
         }
     }
 
-    protected abstract Id convert(String id);
+    protected abstract <Id> Id convert(String id);
 
 }

@@ -4,7 +4,7 @@ import com.github.vincemann.springrapid.core.controller.CrudEndpointInfo;
 import com.github.vincemann.springrapid.core.controller.ExtendedRemoveJsonPatchStrategy;
 import com.github.vincemann.springrapid.core.controller.JsonPatchStrategy;
 import com.github.vincemann.springrapid.core.controller.idFetchingStrategy.IdFetchingStrategy;
-import com.github.vincemann.springrapid.core.controller.idFetchingStrategy.LongUrlParamIdFetchingStrategy;
+import com.github.vincemann.springrapid.core.controller.idFetchingStrategy.UrlParamIdFetchingStrategyImpl;
 import com.github.vincemann.springrapid.core.controller.mergeUpdate.MergeUpdateStrategy;
 import com.github.vincemann.springrapid.core.controller.mergeUpdate.MergeUpdateStrategyImpl;
 import com.github.vincemann.springrapid.core.controller.parentAware.ParentAwareEndpointInfo;
@@ -18,7 +18,6 @@ import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Scope;
-import org.springframework.validation.beanvalidation.LocalValidatorFactoryBean;
 import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping;
 
 import static org.springframework.beans.factory.config.ConfigurableBeanFactory.SCOPE_PROTOTYPE;
@@ -52,10 +51,16 @@ public class RapidCrudControllerAutoConfiguration {
         return new EndpointService(requestMappingHandlerMapping);
     }
 
+//    @ConditionalOnMissingBean(IdFetchingStrategy.class)
+//    @Bean
+//    public IdFetchingStrategy<Long> longIdFetchingStrategy(){
+//        return new LongUrlParamIdFetchingStrategy();
+//    }
+
     @ConditionalOnMissingBean(IdFetchingStrategy.class)
     @Bean
-    public IdFetchingStrategy<Long> longIdFetchingStrategy(){
-        return new LongUrlParamIdFetchingStrategy();
+    public IdFetchingStrategy idFetchingStrategy(){
+        return new UrlParamIdFetchingStrategyImpl();
     }
 
 //    @ConditionalOnMissingBean(EndpointsExposureContext.class)

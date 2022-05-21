@@ -27,7 +27,7 @@ class LongUrlParamIdFetchingStrategyTest {
     void fetchId() throws IdFetchingException {
         //given
         Long testId = 42L;
-        LongUrlParamIdFetchingStrategy longUrlParamIdFetchingStrategy = new LongUrlParamIdFetchingStrategy();
+        UrlParamIdFetchingStrategyImpl longUrlParamIdFetchingStrategy = new UrlParamIdFetchingStrategyImpl();
         when(httpServletRequest.getParameter("id"))
                 .thenReturn(String.valueOf(testId));
 

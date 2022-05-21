@@ -71,7 +71,7 @@ public abstract class GenericCrudController
     private CoreProperties coreProperties;
     private EndpointService endpointService;
     private JsonMapper jsonMapper;
-    private IdFetchingStrategy<ID> idIdFetchingStrategy;
+    private IdFetchingStrategy idIdFetchingStrategy;
     private EndpointInfo endpointInfo;
     private S service;
     private DelegatingDtoMapper dtoMapper;
@@ -597,7 +597,7 @@ public abstract class GenericCrudController
     }
 
     @Autowired
-    public void injectIdIdFetchingStrategy(IdFetchingStrategy<ID> idIdFetchingStrategy) {
+    public void injectIdIdFetchingStrategy(IdFetchingStrategy idIdFetchingStrategy) {
         this.idIdFetchingStrategy = idIdFetchingStrategy;
     }
 
