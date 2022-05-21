@@ -1,22 +1,18 @@
 package com.github.vincemann.springrapid.auth.config;
 
-import com.github.vincemann.springrapid.auth.model.AbstractUser;
 import com.github.vincemann.springrapid.auth.service.validation.PasswordValidator;
 import com.github.vincemann.springrapid.auth.service.validation.RapidPasswordValidator;
 import com.github.vincemann.springrapid.auth.util.UserUtils;
 import com.github.vincemann.springrapid.core.IdConverter;
-import com.github.vincemann.springrapid.core.model.RapidAuditorAware;
+import com.github.vincemann.springrapid.core.model.RapidAuthAuditorAware;
 import com.github.vincemann.springrapid.auth.service.RapidUserDetailsService;
 import com.github.vincemann.springrapid.auth.service.UserService;
 
-import com.github.vincemann.springrapid.core.service.locator.CrudServiceLocator;
 import com.github.vincemann.springrapid.core.service.password.BcryptRapidPasswordEncoder;
 import com.github.vincemann.springrapid.core.service.password.RapidPasswordEncoder;
 import com.github.vincemann.springrapid.core.slicing.ServiceConfig;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
-import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Primary;
 import org.springframework.data.domain.AuditorAware;
@@ -39,11 +35,9 @@ public class RapidUserServiceAutoConfiguration {
      * Configures an Auditor Aware if missing
      */
     @Bean
-    @ConditionalOnMissingBean(AuditorAware.class)
-    public <ID extends Serializable>
-    AuditorAware<ID> auditorAware() {
-
-        return new RapidAuditorAware<ID>();
+    @ConditionalOnMissingBean(name = "rapidAuthSecurityAuditorAware")
+    public <ID extends Serializable> AuditorAware<ID> rapidSecurityAuditorAware() {
+        return new RapidAuthAuditorAware<ID>();
     }
 
 

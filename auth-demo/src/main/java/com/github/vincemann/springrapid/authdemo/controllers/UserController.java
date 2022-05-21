@@ -50,6 +50,4 @@ public class UserController extends AbstractUserController<User, Long, MyUserSer
     }
 
 
-
-
 }

@@ -14,13 +14,13 @@ import java.io.Serializable;
  *  
  */
 @Slf4j
-public class RapidAuditorAware<ID extends Serializable>
+public class RapidAuthAuditorAware<ID extends Serializable>
 			extends AbstractAuditorAware<ID> {
 
 	private RapidSecurityContext<?> securityContext;
 	private IdConverter<ID> idIdConverter;
 
-	public RapidAuditorAware() {
+	public RapidAuthAuditorAware() {
 
 	}
 
