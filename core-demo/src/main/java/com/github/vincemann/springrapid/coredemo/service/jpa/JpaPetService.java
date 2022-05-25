@@ -16,6 +16,7 @@ import javax.transaction.Transactional;
 @Service
 @ServiceComponent
 public class JpaPetService extends JPACrudService<Pet, Long, PetRepository> implements PetService, TargetClassAware {
+
     @Override
     public Class<?> getTargetClass() {
         return JpaPetService.class;

@@ -3,10 +3,8 @@ package com.github.vincemann.springrapid.coredemo.util;
 import com.github.vincemann.springrapid.core.service.exception.BadEntityException;
 import com.github.vincemann.springrapid.core.slicing.RapidProfiles;
 import com.github.vincemann.springrapid.core.util.LazyLogUtils;
-import com.github.vincemann.springrapid.coredemo.model.LazyExceptionItem;
-import com.github.vincemann.springrapid.coredemo.model.LazyLoadedItem;
-import com.github.vincemann.springrapid.coredemo.model.Owner;
-import com.github.vincemann.springrapid.coredemo.model.Pet;
+import com.github.vincemann.springrapid.coredemo.model.*;
+import com.github.vincemann.springrapid.coredemo.repo.ClinicCardRepository;
 import com.github.vincemann.springrapid.coredemo.repo.LazyExceptionItemRepository;
 import com.github.vincemann.springrapid.coredemo.repo.LazyLoadedItemRepository;
 import com.github.vincemann.springrapid.coredemo.repo.PetRepository;
@@ -14,6 +12,7 @@ import com.github.vincemann.springrapid.coredemo.service.OwnerService;
 import com.github.vincemann.springrapid.coredemo.service.Root;
 import com.github.vincemann.springrapid.coretest.slicing.RapidTestProfiles;
 import com.github.vincemann.springrapid.coretest.util.TransactionalRapidTestUtil;
+import com.google.common.collect.Sets;
 import org.hibernate.LazyInitializationException;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
@@ -22,8 +21,11 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
+import java.util.Date;
+import java.util.HashSet;
 
 @ActiveProfiles(value = {RapidTestProfiles.TEST, RapidTestProfiles.SERVICE_TEST, RapidProfiles.SERVICE})
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.NONE)
@@ -51,6 +53,12 @@ class LazyLogUtilsTest {
     @Autowired
     LazyExceptionItemRepository loadedExceptionItemRepository;
 
+    @Autowired
+    ClinicCardRepository clinicCardRepository;
+
+
+    ClinicCard clinicCard;
+
 
     Owner kahn;
 
@@ -69,6 +77,11 @@ class LazyLogUtilsTest {
         bello = Pet.builder()
                 .name("bello")
                 .birthDate(LocalDate.now())
+                .build();
+
+        clinicCard = ClinicCard.builder()
+                .registrationDate(new Date())
+                .registrationReason("gilligkeit")
                 .build();
     }
 
@@ -162,6 +175,25 @@ class LazyLogUtilsTest {
         Assertions.assertTrue(s.contains(kahn.getCity()));
     }
 
+    @Transactional
+    @Test
+    void canIgnoreSomeEntitiesAndCollections() throws BadEntityException {
+        kahn.setClinicCard(clinicCardRepository.save(clinicCard));
+        kahn.getPets().add(bello);
+
+        Owner savedKahn = ownerService.save(kahn);
+
+        String s = LazyLogUtils.toString(savedKahn,Boolean.TRUE, Sets.newHashSet("clinicCard"));
+        System.err.println(s);
+
+        Assertions.assertFalse(s.contains("bello"));
+        Assertions.assertTrue(s.contains(clinicCard.getRegistrationReason()));
+
+        Assertions.assertTrue(s.contains(kahn.getFirstName()));
+        Assertions.assertTrue(s.contains(kahn.getLastName()));
+        Assertions.assertTrue(s.contains(kahn.getCity()));
+    }
+
 
     @Test
     void canThrowLazy() throws BadEntityException {
@@ -176,15 +208,17 @@ class LazyLogUtilsTest {
         Owner found = ownerService.findById(savedKahn.getId()).get();
 
         Assertions.assertThrows(LazyInitializationException.class,
-                () -> LazyLogUtils.toString(found, Boolean.FALSE,Boolean.FALSE,Boolean.FALSE));
+                () -> LazyLogUtils.toString(found,new HashSet<>(), Boolean.FALSE,Boolean.FALSE,Boolean.FALSE));
     }
 
     @AfterEach
     void tearDown() {
         TransactionalRapidTestUtil.clear(ownerService);
+        clinicCardRepository.deleteAll();
         petRepository.deleteAll();
         loadedItemRepository.deleteAll();
         loadedExceptionItemRepository.deleteAll();
+
     }
 
     //    @Test

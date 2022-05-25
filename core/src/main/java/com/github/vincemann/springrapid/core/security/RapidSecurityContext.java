@@ -5,6 +5,7 @@ import com.github.vincemann.aoplog.api.AopLoggable;
 import com.github.vincemann.aoplog.api.LogInteraction;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.AuthorityUtils;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 
@@ -74,6 +75,9 @@ public interface RapidSecurityContext<P extends RapidAuthenticatedPrincipal>
         if (authentication==null){
             return false;
         }else {
+            if (AuthorityUtils.authorityListToSet(authentication.getAuthorities()).contains(Roles.ANON)){
+                return false;
+            }
             return true;
         }
     }

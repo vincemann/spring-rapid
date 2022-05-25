@@ -75,7 +75,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             }
 
         } else {
-            //no token found -> let downstream filters log user in or block this request
+            // no token found -> let downstream filters log user in or block this request
             log.debug("No token found in request -> anon user");
             loginAnon();
         }

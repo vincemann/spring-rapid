@@ -27,11 +27,15 @@ public class LazyLogUtils {
     }
 
     public static String toString(Object object, Boolean ignoreEntitiesAndCollection){
-        return toString(object,new HashSet<>(), ignoreEntitiesAndCollection,false,true);
+        return toString(object,null, ignoreEntitiesAndCollection,false,true);
+    }
+
+    public static String toString(Object object, Boolean ignoreEntitiesAndCollection, HashSet<String> whiteList){
+        return toString(object,whiteList, ignoreEntitiesAndCollection,false,true);
     }
 
     public static String toString(Object object, Boolean ignoreEntitiesAndCollection,Boolean idOnly){
-        return toString(object,new HashSet<>(), ignoreEntitiesAndCollection,idOnly,true);
+        return toString(object,null, ignoreEntitiesAndCollection,idOnly,true);
     }
 
     /**
@@ -40,7 +44,7 @@ public class LazyLogUtils {
      * @params ignore Entities and Collections (default = true), idOnly (default = false) -> only makes sense when first settings option is false,
      *                 only log LazyInitException (default=true)
      */
-    public static String toString(Object object,Set<String> blacklist, Boolean ignoreEntitiesAndCollections, Boolean idOnly, Boolean ignoreLazy) {
+    public static String toString(Object object,Set<String> whiteList, Boolean ignoreEntitiesAndCollections, Boolean idOnly, Boolean ignoreLazy) {
         if (object == null) {
             return "null";
         }
@@ -48,12 +52,17 @@ public class LazyLogUtils {
         Boolean _idOnly = idOnly;
         Boolean _ignoreLazy = ignoreLazy;
 
+
         return (new ReflectionToStringBuilder(object, ToStringStyle.SHORT_PREFIX_STYLE) {
             protected Object getValue(Field f) throws IllegalAccessException {
                 boolean singleEntity = false;
+                boolean whiteListed = false;
+                if (whiteList != null){
+                    whiteListed = whiteList.contains(f.getName());
+                }
                 try {
                     if (IdentifiableEntity.class.isAssignableFrom(f.getType())) {
-                        if (_ignoreEntitiesAndCollections) {
+                        if (_ignoreEntitiesAndCollections && !whiteListed) {
                             return "";
                         }
 
@@ -67,7 +76,7 @@ public class LazyLogUtils {
                         }
                     } else if (Collection.class.isAssignableFrom(f.getType())) {
                         // it is a collection
-                        if (_ignoreEntitiesAndCollections) {
+                        if (_ignoreEntitiesAndCollections && !whiteListed) {
                             return "";
                         }
                         singleEntity = false;
