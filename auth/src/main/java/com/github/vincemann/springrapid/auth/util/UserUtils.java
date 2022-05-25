@@ -16,10 +16,10 @@ import java.util.Optional;
 public class UserUtils {
 
 //    @Autowired
-    private UserService<AbstractUser<Serializable>,Serializable> userService;
+    private UserService userService;
 
     @Autowired
-    public void setUserService(UserService<AbstractUser<Serializable>, Serializable> userService) {
+    public void setUserService(UserService userService) {
         this.userService = userService;
     }
 

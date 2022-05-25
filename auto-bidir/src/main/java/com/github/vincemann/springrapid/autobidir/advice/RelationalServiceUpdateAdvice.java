@@ -30,47 +30,59 @@ public class RelationalServiceUpdateAdvice {
     @Before(value = "com.github.vincemann.springrapid.core.advice.SystemArchitecture.fullUpdateOperation() && " +
             "com.github.vincemann.springrapid.core.advice.SystemArchitecture.serviceOperation() && " +
             "args(updateEntity)")
-    public void preFullUpdateBiDirEntity(JoinPoint joinPoint, IdentifiableEntity updateEntity) throws EntityNotFoundException, BadEntityException {
-        preUpdateBiDirEntity(joinPoint, updateEntity, RelationalAdviceContext.UpdateKind.FULL);
+    public void preFullUpdateRelEntity(JoinPoint joinPoint, IdentifiableEntity updateEntity) throws EntityNotFoundException, BadEntityException {
+        preBiDirEntity(joinPoint, updateEntity, RelationalAdviceContext.UpdateKind.FULL);
     }
 
     @Before(value = "com.github.vincemann.springrapid.core.advice.SystemArchitecture.partialUpdateOperation() && " +
             "com.github.vincemann.springrapid.core.advice.SystemArchitecture.serviceOperation() && " +
             "args(updateEntity,fieldsToRemove)")
-    public void prePartialUpdateBiDirEntity(JoinPoint joinPoint, IdentifiableEntity updateEntity,String... fieldsToRemove) throws EntityNotFoundException, BadEntityException {
-        preUpdateBiDirEntity(joinPoint,updateEntity,RelationalAdviceContext.UpdateKind.PARTIAL);
+    public void prePartialUpdateRelEntity(JoinPoint joinPoint, IdentifiableEntity updateEntity, String... fieldsToRemove) throws EntityNotFoundException, BadEntityException {
+        preBiDirEntity(joinPoint,updateEntity,RelationalAdviceContext.UpdateKind.PARTIAL);
     }
 
     @Before(value = "com.github.vincemann.springrapid.core.advice.SystemArchitecture.softUpdateOperation() && " +
             "com.github.vincemann.springrapid.core.advice.SystemArchitecture.serviceOperation() && " +
             "args(updateEntity)")
-    public void preSoftUpdateBiDirEntity(JoinPoint joinPoint, IdentifiableEntity updateEntity) throws EntityNotFoundException, BadEntityException {
-        preUpdateBiDirEntity(joinPoint, updateEntity, RelationalAdviceContext.UpdateKind.SOFT);
+    public void preSoftUpdateRelEntity(JoinPoint joinPoint, IdentifiableEntity updateEntity) throws EntityNotFoundException, BadEntityException {
+        preBiDirEntity(joinPoint, updateEntity, RelationalAdviceContext.UpdateKind.SOFT);
+    }
+
+    @Before(value = "com.github.vincemann.springrapid.core.advice.SystemArchitecture.saveOperation() && " +
+            "com.github.vincemann.springrapid.core.advice.SystemArchitecture.serviceOperation() && " +
+            "args(createdEntity)")
+    public void preCreateRelEntity(JoinPoint joinPoint, IdentifiableEntity createdEntity) throws EntityNotFoundException, BadEntityException {
+        preBiDirEntity(joinPoint, createdEntity, null);
     }
 
 
 
-    public void preUpdateBiDirEntity(JoinPoint joinPoint, IdentifiableEntity updateEntity, RelationalAdviceContext.UpdateKind updateKind, String... fieldsToRemove) throws EntityNotFoundException, BadEntityException {
+    public void preBiDirEntity(JoinPoint joinPoint,  IdentifiableEntity entity, RelationalAdviceContext.UpdateKind updateKind, String... fieldsToRemove) throws EntityNotFoundException, BadEntityException {
         if (!isRootService(joinPoint.getTarget())) {
             log.debug("ignoring service update advice, bc root service not called yet");
             return;
         }
 
         RelationalAdviceContext updateContext;
-        if (updateKind.equals(RelationalAdviceContext.UpdateKind.SOFT)){
+        if (updateKind == null){
+            updateContext = RelationalAdviceContext.builder()
+                    .updateKind(null)
+                    .build();
+        }
+        else if (updateKind.equals(RelationalAdviceContext.UpdateKind.SOFT)){
              updateContext = RelationalAdviceContext.builder()
                     .updateKind(updateKind)
                     .build();
         }else {
             // java.lang.ClassCastException: class io.gitlab.vinceconrad.votesnackbackend.model.Exercise$HibernateProxy$ipV9X1Mb cannot be cast to class org.hibernate.proxy.LazyInitializer
-//            IdentifiableEntity detachedOldEntity = BeanUtils.clone(entityLocator.findEntity(updateEntity));
+//            IdentifiableEntity detachedOldEntity = BeanUtils.clone(entityLocator.findEntity(entity));
             IdentifiableEntity detachedOldEntity =
                     BeanUtils.clone(ProxyUtils.hibernateUnproxyRaw(
-                            entityLocator.findEntity(ProxyUtils.hibernateUnproxyRaw(updateEntity))
+                            entityLocator.findEntity(ProxyUtils.hibernateUnproxyRaw(entity))
                     ));
             entityManager.detach(detachedOldEntity);
 
-            IdentifiableEntity detachedUpdateEntity = BeanUtils.clone(ProxyUtils.hibernateUnproxyRaw(updateEntity));
+            IdentifiableEntity detachedUpdateEntity = BeanUtils.clone(ProxyUtils.hibernateUnproxyRaw(entity));
             entityManager.detach(detachedUpdateEntity);
 
             updateContext = RelationalAdviceContext.builder()

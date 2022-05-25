@@ -22,9 +22,9 @@ public class RapidRelationalEntityManager implements RelationalEntityManager {
 
     @Override
     public <E extends IdentifiableEntity> E save(E entity, String... membersToCheck) {
-        if (entity.getId() != null) {
-            throw new IllegalArgumentException("save needs null id");
-        }
+//        if (entity.getId() != null) {
+//            throw new IllegalArgumentException("save needs null id");
+//        }
         Set<RelationalEntityType> relationalEntityTypes = relationalEntityManagerUtil.inferTypes(entity.getClass());
         if (relationalEntityTypes.contains(RelationalEntityType.BiDirParent)) {
             log.debug("applying pre persist BiDirParent logic for: " + entity);

@@ -54,13 +54,15 @@ public class RelationalEntityAdvice {
             "com.github.vincemann.springrapid.core.advice.SystemArchitecture.repoOperation() && " +
             "args(entity)")
     public IdentifiableEntity prePersistEntity(JoinPoint joinPoint, IdentifiableEntity entity) throws Throwable {
-        if (entity.getId() == null) {
+        RelationalAdviceContext updateContext = RelationalAdviceContextHolder.getContext();
+        if (entity.getId() == null || updateContext.getUpdateKind()==null) {
+            // save
             relationalEntityManager.save(entity);
             RelationalAdviceContextHolder.clear();
 //            return (IdentifiableEntity) joinPoint.proceed(new IdentifiableEntity[]{entity});
             return entity;
         } else {
-            RelationalAdviceContext updateContext = RelationalAdviceContextHolder.getContext();
+            // update
             switch (updateContext.getUpdateKind()){
                 case FULL:
                     relationalEntityManager.update(updateContext.getDetachedOldEntity(), entity);

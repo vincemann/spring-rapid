@@ -20,5 +20,4 @@ public class RelationalAdviceContext {
     public IdentifiableEntity detachedOldEntity;
     private IdentifiableEntity detachedUpdateEntity;
     private UpdateKind updateKind;
-
 }
