@@ -55,7 +55,7 @@ public abstract class AbstractCrudService
 //        } catch (IllegalArgumentException e) {
 //            return this.getBeanName();
 //        }
-        return getBeanName();
+        return this.beanName;
     }
 
     @Override
