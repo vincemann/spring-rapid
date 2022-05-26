@@ -14,7 +14,7 @@ public class UserServiceConfig {
 
     @Bean
     @Primary
-    public UserService userService(){
+    public UserService myUserService(){
         return new MyUserService();
     }
 

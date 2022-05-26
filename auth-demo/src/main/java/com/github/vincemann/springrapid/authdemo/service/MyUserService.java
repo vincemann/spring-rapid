@@ -30,6 +30,16 @@ public class MyUserService extends AbstractUserService<User, Long, UserRepositor
 	}
 
 	@Override
+	public void setBeanName(String name) {
+		super.setBeanName(name);
+	}
+
+	@Override
+	public String getBeanName() {
+		return super.getBeanName();
+	}
+
+	@Override
 	public User newAdmin(AuthProperties.Admin admin) {
 		User createdAdmin = super.newAdmin(admin);
 		createdAdmin.setName(admin.getEmail()+"name");

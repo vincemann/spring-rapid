@@ -76,7 +76,7 @@ public class Pet extends IdentifiableEntityImpl<Long> {
                 "name='" + name + '\'' +
                 ", petType=" + petType +
                 // todo illness is null or element in illnesss is null -> np ex
-                ", illnesses=" +  Arrays.toString(illnesss.stream().map(Illness::getName).toArray()) +
+                ", illnesses=" +  (illnesss == null ? "null" : Arrays.toString(illnesss.stream().map(Illness::getName).toArray())) +
                 ", owner=" + (owner==null? "null": owner.getLastName()) +
                 ", birthDate=" + birthDate +
                 '}';

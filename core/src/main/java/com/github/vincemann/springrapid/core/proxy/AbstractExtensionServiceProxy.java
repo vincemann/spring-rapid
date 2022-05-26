@@ -8,6 +8,7 @@ import lombok.*;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.ClassUtils;
 import org.springframework.aop.support.AopUtils;
+import org.springframework.beans.factory.BeanNameAware;
 
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.InvocationTargetException;
@@ -32,7 +33,7 @@ public abstract class AbstractExtensionServiceProxy
                 P extends ProxyController
                 >
 
-        implements ChainController, InvocationHandler, ProxyController {
+        implements ChainController, InvocationHandler, ProxyController, BeanNameAware {
 
     private final Map<MethodIdentifier, Method> methods = new HashMap<>();
     private List<String> ignoredMethodNames = Lists.newArrayList("getEntityClass", "getRepository", "toString", "equals", "hashCode", "getClass", "clone", "notify", "notifyAll", "wait", "finalize","setBeanName","getBeanName","getTargetClass");
@@ -43,6 +44,8 @@ public abstract class AbstractExtensionServiceProxy
     //caches
     private ConcurrentHashMap<ExtensionState, Object> next_cache = new ConcurrentHashMap<>();
     private ConcurrentHashMap<MethodIdentifier, List<ExtensionHandle>> extensionChainCache = new ConcurrentHashMap<>();
+    private String beanName;
+
 
 
 
