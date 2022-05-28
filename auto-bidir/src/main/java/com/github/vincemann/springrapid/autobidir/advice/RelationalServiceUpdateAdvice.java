@@ -1,5 +1,6 @@
 package com.github.vincemann.springrapid.autobidir.advice;
 
+import com.github.vincemann.springrapid.autobidir.AutoBiDirUtils;
 import com.github.vincemann.springrapid.autobidir.RelationalAdviceContext;
 import com.github.vincemann.springrapid.autobidir.RelationalAdviceContextHolder;
 import com.github.vincemann.springrapid.core.model.IdentifiableEntity;
@@ -58,6 +59,9 @@ public class RelationalServiceUpdateAdvice {
 
 
     public void preBiDirEntity(JoinPoint joinPoint,  IdentifiableEntity entity, RelationalAdviceContext.UpdateKind updateKind, String... fieldsToRemove) throws EntityNotFoundException, BadEntityException {
+        if (AutoBiDirUtils.isDisabled(joinPoint)){
+            return;
+        }
         if (!isRootService(joinPoint.getTarget())) {
             log.debug("ignoring service update advice, bc root service not called yet");
             return;

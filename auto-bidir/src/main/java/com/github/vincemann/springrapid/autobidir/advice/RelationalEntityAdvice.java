@@ -1,5 +1,6 @@
 package com.github.vincemann.springrapid.autobidir.advice;
 
+import com.github.vincemann.springrapid.autobidir.AutoBiDirUtils;
 import com.github.vincemann.springrapid.autobidir.RelationalAdviceContext;
 import com.github.vincemann.springrapid.autobidir.RelationalAdviceContextHolder;
 import com.github.vincemann.springrapid.autobidir.RelationalEntityManager;
@@ -8,6 +9,7 @@ import com.github.vincemann.springrapid.core.service.CrudService;
 import com.github.vincemann.springrapid.core.service.exception.BadEntityException;
 import com.github.vincemann.springrapid.core.service.locator.CrudServiceLocator;
 import com.github.vincemann.springrapid.core.util.ProxyUtils;
+import com.github.vincemann.springrapid.core.util.RepositoryUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.annotation.Aspect;
@@ -41,6 +43,9 @@ public class RelationalEntityAdvice {
             "com.github.vincemann.springrapid.core.advice.SystemArchitecture.repoOperation() && " +
             "args(id)")
     public void preRemoveEntity(JoinPoint joinPoint, Serializable id) throws Throwable {
+        if (AutoBiDirUtils.isDisabled(joinPoint)){
+            return;
+        }
         Optional<IdentifiableEntity> entity = resolveById(joinPoint,id);
         if (entity.isPresent()) {
             relationalEntityManager.remove(entity.get());
@@ -54,6 +59,10 @@ public class RelationalEntityAdvice {
             "com.github.vincemann.springrapid.core.advice.SystemArchitecture.repoOperation() && " +
             "args(entity)")
     public IdentifiableEntity prePersistEntity(JoinPoint joinPoint, IdentifiableEntity entity) throws Throwable {
+        if (AutoBiDirUtils.isDisabled(joinPoint)){
+            return entity;
+        }
+
         RelationalAdviceContext updateContext = RelationalAdviceContextHolder.getContext();
         if (entity.getId() == null || updateContext.getUpdateKind()==null) {
             // save
@@ -103,20 +112,12 @@ public class RelationalEntityAdvice {
 //    }
 
     private Optional<IdentifiableEntity> resolveById(JoinPoint joinPoint, Serializable id) throws BadEntityException, IllegalAccessException {
-        Class entityClass = resolveEntityClass(joinPoint);
+        SimpleJpaRepository repo = AopTestUtils.getUltimateTargetObject(joinPoint.getTarget());
+        Class entityClass = RepositoryUtil.getRepoType(repo);
 //        log.debug("pre remove hook reached for entity " + entityClass + ":" + id);
         CrudService service = crudServiceLocator.find(entityClass);
         Assert.notNull(service, "Did not find service for entityClass: " + entityClass);
         return service.findById((id));
-    }
-
-    // todo change, is curreently impl specific
-    private Class resolveEntityClass(JoinPoint joinPoint) throws IllegalAccessException {
-        SimpleJpaRepository repo = AopTestUtils.getUltimateTargetObject(joinPoint.getTarget());
-        Field entityInformationField = ReflectionUtils.findField(SimpleJpaRepository.class, field -> field.getName().equals("entityInformation"));
-        entityInformationField.setAccessible(true);
-        JpaEntityInformation entityInformation = ((JpaEntityInformation) entityInformationField.get(repo));
-        return entityInformation.getJavaType();
     }
 
     @Autowired
