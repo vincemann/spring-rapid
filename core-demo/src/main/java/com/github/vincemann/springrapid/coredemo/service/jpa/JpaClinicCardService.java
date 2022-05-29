@@ -10,7 +10,10 @@ import org.springframework.stereotype.Service;
 
 @ServiceComponent
 //@DisableAutoBiDir
-public class JpaClinicCardService extends JPACrudService<ClinicCard,Long, ClinicCardRepository> implements ClinicCardService {
+public class JpaClinicCardService
+        extends JPACrudService<ClinicCard,Long, ClinicCardRepository>
+            implements ClinicCardService
+{
 
     @Override
     public Class<?> getTargetClass() {
