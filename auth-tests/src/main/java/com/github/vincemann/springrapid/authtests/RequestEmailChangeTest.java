@@ -2,7 +2,7 @@ package com.github.vincemann.springrapid.authtests;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.github.vincemann.springrapid.auth.model.AbstractUser;
-import com.github.vincemann.springrapid.auth.dto.RequestEmailChangeDto;
+import com.github.vincemann.springrapid.auth.dto.RequestMediumChangeDto;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
@@ -15,9 +15,9 @@ import static com.github.vincemann.springrapid.core.util.ProxyUtils.aopUnproxy;
 public class RequestEmailChangeTest extends AbstractRapidAuthIntegrationTest {
 
 
-	protected RequestEmailChangeDto emailChangeDto() {
+	protected RequestMediumChangeDto emailChangeDto() {
 
-		RequestEmailChangeDto changeForm = new RequestEmailChangeDto();
+		RequestMediumChangeDto changeForm = new RequestMediumChangeDto();
 //		changeForm.setPassword(USER_PASSWORD);
 		changeForm.setNewEmail(NEW_EMAIL);
 		return changeForm;
@@ -107,7 +107,7 @@ public class RequestEmailChangeTest extends AbstractRapidAuthIntegrationTest {
      */
 	@Test
 	public void cantRequestEmailChangeWithInvalidData() throws JsonProcessingException, Exception {
-		RequestEmailChangeDto dto = new RequestEmailChangeDto();
+		RequestMediumChangeDto dto = new RequestMediumChangeDto();
 		dto.setNewEmail(null);
 //		dto.setPassword(null);
 		// try with null newEmail
@@ -119,7 +119,7 @@ public class RequestEmailChangeTest extends AbstractRapidAuthIntegrationTest {
 //						"dto.newEmail"
 						/*"dto.password"*/
     	
-		dto = new RequestEmailChangeDto();
+		dto = new RequestMediumChangeDto();
 //		dto.setPassword("");
 		dto.setNewEmail("");
 		
@@ -132,7 +132,7 @@ public class RequestEmailChangeTest extends AbstractRapidAuthIntegrationTest {
 //						/*"dto.password"*/)));
 
 		// try with invalid newEmail
-		dto = new RequestEmailChangeDto();
+		dto = new RequestMediumChangeDto();
 		dto.setNewEmail(INVALID_EMAIL);
 		mvc.perform(testTemplate.requestEmailChange(getUser().getId(),token,dto))
 				.andExpect(status().is(400));

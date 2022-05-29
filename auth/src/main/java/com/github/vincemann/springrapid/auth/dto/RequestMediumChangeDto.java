@@ -10,7 +10,7 @@ import javax.validation.constraints.NotBlank;
 @Setter
 @ToString
 @AllArgsConstructor
-public class RequestEmailChangeDto {
+public class RequestMediumChangeDto {
     // no pw bc token is used for authentication
 //    @Password(groups = {UserVerifyUtils.ChangeEmailValidation.class})
 //    private String password;

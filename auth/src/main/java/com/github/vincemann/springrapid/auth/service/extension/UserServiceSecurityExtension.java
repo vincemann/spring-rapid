@@ -5,7 +5,7 @@ import com.github.vincemann.springrapid.acl.service.extensions.security.Abstract
 import com.github.vincemann.springrapid.auth.model.AbstractUser;
 import com.github.vincemann.springrapid.auth.model.RapidAuthAuthenticatedPrincipal;
 import com.github.vincemann.springrapid.auth.dto.ChangePasswordDto;
-import com.github.vincemann.springrapid.auth.dto.RequestEmailChangeDto;
+import com.github.vincemann.springrapid.auth.dto.RequestMediumChangeDto;
 import com.github.vincemann.springrapid.auth.security.RapidAuthSecurityContextChecker;
 import com.github.vincemann.springrapid.auth.service.AlreadyRegisteredException;
 import com.github.vincemann.springrapid.auth.service.UserService;
@@ -139,7 +139,7 @@ public class UserServiceSecurityExtension
 
     @LogInteraction
     @Override
-    public void requestEmailChange(AbstractUser user, RequestEmailChangeDto emailChangeForm) throws EntityNotFoundException, AlreadyRegisteredException {
+    public void requestEmailChange(AbstractUser user, RequestMediumChangeDto emailChangeForm) throws EntityNotFoundException, AlreadyRegisteredException {
         VerifyEntity.isPresent(user,"User who's email should get changed does not exist");
         getSecurityChecker().checkPermission(user, BasePermission.WRITE);
         getNext().requestEmailChange(user, emailChangeForm);

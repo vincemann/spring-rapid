@@ -251,7 +251,7 @@ public abstract class AbstractUserController<U extends AbstractUser<ID>, ID exte
 								   /*@RequestBody RequestEmailChangeForm emailChangeForm*/,HttpServletResponse response) throws BadEntityException, EntityNotFoundException, IdFetchingException, IOException, AlreadyRegisteredException {
 		ID id = fetchId(request);
 		String body = readBody(request);
-		RequestEmailChangeDto dto = getJsonMapper().readDto(body, RequestEmailChangeDto.class);
+		RequestMediumChangeDto dto = getJsonMapper().readDto(body, RequestMediumChangeDto.class);
 		getDtoValidationStrategy().validate(dto);
 		log.debug("Requesting email change for user with " + id);
 		U user = fetchUser(id);

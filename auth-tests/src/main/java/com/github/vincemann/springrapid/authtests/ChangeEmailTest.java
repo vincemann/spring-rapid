@@ -1,7 +1,7 @@
 package com.github.vincemann.springrapid.authtests;
 
 import com.github.vincemann.springrapid.auth.model.AbstractUser;
-import com.github.vincemann.springrapid.auth.dto.RequestEmailChangeDto;
+import com.github.vincemann.springrapid.auth.dto.RequestMediumChangeDto;
 import com.github.vincemann.springrapid.auth.mail.MailData;
 import com.github.vincemann.springrapid.auth.service.AbstractUserService;
 import com.github.vincemann.springrapid.auth.util.MapUtils;
@@ -30,7 +30,7 @@ public class ChangeEmailTest extends AbstractRapidAuthIntegrationTest {
 	public void canChangeOwnEmail() throws Exception {
 		String token = login2xx(USER_EMAIL,USER_PASSWORD);
 		MailData mailData = testTemplate.requestEmailChange2xx(getUser().getId(), token,
-				new RequestEmailChangeDto(NEW_EMAIL));
+				new RequestMediumChangeDto(NEW_EMAIL));
 
 		mvc.perform(testTemplate.changeEmailWithLink(mailData.getLink(),token))
 				//gets new token for new email to use
@@ -48,7 +48,7 @@ public class ChangeEmailTest extends AbstractRapidAuthIntegrationTest {
 	public void unverifiedUserCanChangeOwnEmail() throws Exception {
 		String token = login2xx(UNVERIFIED_USER_EMAIL,UNVERIFIED_USER_PASSWORD);
 		MailData mailData = testTemplate.requestEmailChange2xx(getUnverifiedUser().getId(), token,
-				new RequestEmailChangeDto(NEW_EMAIL));
+				new RequestMediumChangeDto(NEW_EMAIL));
 
 		mvc.perform(testTemplate.changeEmailWithLink(mailData.getLink(),token))
 				//gets new token for new email to use
@@ -66,7 +66,7 @@ public class ChangeEmailTest extends AbstractRapidAuthIntegrationTest {
 	public void cantChangeEmailOfDiffUser() throws Exception {
 		String token = login2xx(USER_EMAIL,USER_PASSWORD);
 		MailData mailData = testTemplate.requestEmailChange2xx(getUser().getId(), token,
-				new RequestEmailChangeDto(NEW_EMAIL));
+				new RequestMediumChangeDto(NEW_EMAIL));
 
 		token = login2xx(SECOND_USER_EMAIL,SECOND_USER_PASSWORD);
 		// other user has sniffed correct code, but wrong token
@@ -79,7 +79,7 @@ public class ChangeEmailTest extends AbstractRapidAuthIntegrationTest {
 	public void cantChangeOwnEmailWithSameCodeTwice() throws Exception {
 		String token = login2xx(USER_EMAIL,USER_PASSWORD);
 		MailData mailData = testTemplate.requestEmailChange2xx(getUser().getId(), token,
-				new RequestEmailChangeDto(NEW_EMAIL));
+				new RequestMediumChangeDto(NEW_EMAIL));
 
 		mvc.perform(testTemplate.changeEmailWithLink(mailData.getLink(),token))
 				//gets new token for new email to use
@@ -100,7 +100,7 @@ public class ChangeEmailTest extends AbstractRapidAuthIntegrationTest {
 	public void cantChangeOwnEmailWithInvalidCode() throws Exception {
 		String token = login2xx(USER_EMAIL,USER_PASSWORD);
 		MailData mailData = testTemplate.requestEmailChange2xx(getUser().getId(), token,
-				new RequestEmailChangeDto(NEW_EMAIL));
+				new RequestMediumChangeDto(NEW_EMAIL));
 
 
 
@@ -139,7 +139,7 @@ public class ChangeEmailTest extends AbstractRapidAuthIntegrationTest {
 	public void cantChangeOwnEmailWithObsoleteCode() throws Exception {
 		String token = login2xx(USER_EMAIL,USER_PASSWORD);
 		MailData mailData = testTemplate.requestEmailChange2xx(getUser().getId(), token,
-				new RequestEmailChangeDto(NEW_EMAIL));
+				new RequestMediumChangeDto(NEW_EMAIL));
 		// credentials updated after the request for email change was made
 		transactionalTemplate.doInTransaction(new Runnable() {
 			@SneakyThrows
@@ -184,7 +184,7 @@ public class ChangeEmailTest extends AbstractRapidAuthIntegrationTest {
 
 		String token = login2xx(USER_EMAIL,USER_PASSWORD);
 		MailData mailData = testTemplate.requestEmailChange2xx(getUser().getId(), token,
-				new RequestEmailChangeDto(NEW_EMAIL));
+				new RequestMediumChangeDto(NEW_EMAIL));
 
 		// Some other user changed to the same email, before i could issue my request
 		transactionalTemplate.doInTransaction(new Runnable() {
