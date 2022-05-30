@@ -31,7 +31,7 @@ public interface UserService<U extends AbstractUser<ID>, ID extends Serializable
     // todo do captcha validation programatically in service witch mockable captcha validator for tests
     public U signup( U user) throws BadEntityException, AlreadyRegisteredException;
 
-    public void resendVerificationMail(U user) throws EntityNotFoundException, BadEntityException;
+    public void resendVerificationMessage(U user) throws EntityNotFoundException, BadEntityException;
 
     @LogInteraction(Severity.TRACE)
     public Optional<U> findByEmail( @NotBlank String email);
@@ -46,7 +46,7 @@ public interface UserService<U extends AbstractUser<ID>, ID extends Serializable
     public void changePassword(U user, ChangePasswordDto changePasswordForm) throws EntityNotFoundException, BadEntityException;
 
 //    @Validated(UserVerifyUtils.ChangeEmailValidation.class)
-    public void requestEmailChange(U user, RequestMediumChangeDto emailChangeForm) throws EntityNotFoundException, AlreadyRegisteredException;
+    public void requestPrincipalChange(U user, RequestMediumChangeDto emailChangeForm) throws EntityNotFoundException, AlreadyRegisteredException;
 
     // get user from email from code
     public U changeEmail(/*U user,*/  @NotBlank String changeEmailCode) throws EntityNotFoundException, BadEntityException;

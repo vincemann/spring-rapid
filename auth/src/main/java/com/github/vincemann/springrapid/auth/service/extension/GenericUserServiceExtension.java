@@ -36,8 +36,8 @@ public interface GenericUserServiceExtension<S extends UserService<U,Id>,U exten
     }
 
     @Override
-    default void resendVerificationMail(U user) throws EntityNotFoundException, BadEntityException {
-        getNext().resendVerificationMail(user);
+    default void resendVerificationMessage(U user) throws EntityNotFoundException, BadEntityException {
+        getNext().resendVerificationMessage(user);
     }
 
     @Override
@@ -66,8 +66,8 @@ public interface GenericUserServiceExtension<S extends UserService<U,Id>,U exten
     }
 
     @Override
-    default void requestEmailChange(U user,  RequestMediumChangeDto emailChangeForm) throws EntityNotFoundException, AlreadyRegisteredException {
-        getNext().requestEmailChange(user,emailChangeForm);
+    default void requestPrincipalChange(U user, RequestMediumChangeDto emailChangeForm) throws EntityNotFoundException, AlreadyRegisteredException {
+        getNext().requestPrincipalChange(user,emailChangeForm);
     }
 
     @Override

@@ -65,7 +65,7 @@ public abstract class AbstractUserService
     private AuthenticatedPrincipalFactory authenticatedPrincipalFactory;
     private RapidPasswordEncoder passwordEncoder;
     private AuthProperties properties;
-    private MailSender<MailData> mailSender;
+//    private MailSender<MailData> mailSender;
     private JweTokenService jweTokenService;
     private IdConverter<ID> idIdConverter;
     private PasswordValidator passwordValidator;
@@ -73,8 +73,6 @@ public abstract class AbstractUserService
 
     private MessageSender messageSender;
 
-//    @PersistenceContext
-//    private EntityManager entityManager;
 
     /**
      * Creates a new user object. Must be overridden in the
@@ -151,7 +149,7 @@ public abstract class AbstractUserService
         user.getRoles().add(AuthRoles.UNVERIFIED);
         user.setCredentialsUpdatedMillis(System.currentTimeMillis());
 //        TransactionalUtils.afterCommit(() -> sendVerificationMail(user));
-        sendVerificationMail(user);
+        sendVerificationMessage(user);
     }
 
     /**
@@ -170,7 +168,7 @@ public abstract class AbstractUserService
     /**
      * Resends verification mail to the user.
      */
-    public void resendVerificationMail(U user) throws EntityNotFoundException, BadEntityException {
+    public void resendVerificationMessage(U user) throws EntityNotFoundException, BadEntityException {
 
 //        // The user must exist
 
@@ -178,7 +176,7 @@ public abstract class AbstractUserService
         // must be unverified
         VerifyEntity.is(user.getRoles().contains(AuthRoles.UNVERIFIED), " Already verified");
 
-        sendVerificationMail(user);
+        sendVerificationMessage(user);
     }
 
 
@@ -240,9 +238,49 @@ public abstract class AbstractUserService
         Optional<U> byEmail = findByEmail(email);
         VerifyEntity.isPresent(byEmail, "User with email: " + email + " not found");
         U user = byEmail.get();
-        sendForgotPasswordMail(user);
+        sendForgotPasswordMessage(user);
     }
 
+
+
+
+        /**
+     * Sends the forgot password link.
+     *
+     * @param user
+     */
+    public void sendForgotPasswordMessage(U user) {
+
+        log.debug("Sending forgot password link to user: " + user);
+        JWTClaimsSet claims = RapidJwt.create(FORGOT_PASSWORD_AUDIENCE,
+                user.getId().toString(),
+                properties.getJwt().getExpirationMillis());
+        String forgotPasswordCode = jweTokenService.createToken(claims);
+
+        // make the link
+        String forgotPasswordLink = UriComponentsBuilder
+                .fromHttpUrl(
+                        properties.getCoreProperties().getApplicationUrl()
+                                + properties.getController().getResetPasswordViewUrl())
+                .queryParam("code", forgotPasswordCode)
+                .toUriString();
+        log.info("forgotPasswordLink: " + forgotPasswordLink);
+
+
+//        MailData mailData = MailData.builder()
+//                .to(user.getEmail())
+////                .topic( Message.get("com.github.vincemann.forgotPasswordSubject"))
+//                .topic(FORGOT_PASSWORD_AUDIENCE)
+//                .body(Message.get("com.github.vincemann.forgotPasswordEmail", forgotPasswordLink))
+//                .link(forgotPasswordLink)
+//                .code(forgotPasswordCode)
+//                .build();
+//        mailSender.send(mailData);
+        messageSender.sendMessage(forgotPasswordLink,FORGOT_PASSWORD_AUDIENCE,forgotPasswordCode,user.getEmail());
+
+
+        log.debug("Forgot password link mail queued.");
+    }
 
     /**
      * Resets the password.
@@ -389,7 +427,7 @@ public abstract class AbstractUserService
      * Requests for email change.
      */
     @Transactional(propagation = Propagation.REQUIRED, readOnly = false)
-    public void requestEmailChange(U user, RequestMediumChangeDto emailChangeDto) throws EntityNotFoundException, AlreadyRegisteredException {
+    public void requestPrincipalChange(U user, RequestMediumChangeDto emailChangeDto) throws EntityNotFoundException, AlreadyRegisteredException {
         VerifyEntity.isPresent(user, "User not found");
         checkUniqueEmail(emailChangeDto.getNewEmail());
 
@@ -412,14 +450,14 @@ public abstract class AbstractUserService
         }
 
         log.debug("Requested email change: " + user);
-        mailChangeEmailLink(saved);
+        sendChangePrincipalMessage(saved);
     }
 
 
     /**
      * Mails the change-email verification link to the user.
      */
-    protected void mailChangeEmailLink(U user) {
+    protected void sendChangePrincipalMessage(U user) {
         JWTClaimsSet claims = RapidJwt.create(
                 CHANGE_EMAIL_AUDIENCE,
                 user.getId().toString(),
@@ -441,15 +479,16 @@ public abstract class AbstractUserService
 
 
             // mail it
-            MailData mailData = MailData.builder()
-                    .to(user.getEmail())
-//                    .topic( Message.get("com.github.vincemann.changeEmailSubject"))
-                    .topic(CHANGE_EMAIL_AUDIENCE)
-                    .body(Message.get("com.github.vincemann.changeEmailEmail", changeEmailLink))
-                    .link(changeEmailLink)
-                    .code(changeEmailCode)
-                    .build();
-            mailSender.send(mailData);
+//            MailData mailData = MailData.builder()
+//                    .to(user.getEmail())
+////                    .topic( Message.get("com.github.vincemann.changeEmailSubject"))
+//                    .topic(CHANGE_EMAIL_AUDIENCE)
+//                    .body(Message.get("com.github.vincemann.changeEmailEmail", changeEmailLink))
+//                    .link(changeEmailLink)
+//                    .code(changeEmailCode)
+//                    .build();
+//            mailSender.send(mailData);
+            messageSender.sendMessage(changeEmailLink,CHANGE_EMAIL_AUDIENCE,changeEmailCode,user.getEmail());
 
             log.debug("Change email link mail queued.");
 
@@ -555,7 +594,7 @@ public abstract class AbstractUserService
     /**
      * Sends verification mail to a unverified user.
      */
-    protected void sendVerificationMail(final U user) {
+    protected void sendVerificationMessage(final U user) {
 
         log.debug("Sending verification mail to: " + user);
         JWTClaimsSet claims = RapidJwt.create(VERIFY_EMAIL_AUDIENCE,
@@ -573,19 +612,21 @@ public abstract class AbstractUserService
 //                .queryParam("id", user.getId())
                 .queryParam("code", verificationCode)
                 .toUriString();
-        log.info("change email link: " + verifyLink);
+        log.info("verify link: " + verifyLink);
 
 
-        // send the mail
-        MailData mailData = MailData.builder()
-                .to(user.getEmail())
-//                .topic(Message.get("com.github.vincemann.verifySubject"))
-                .topic(VERIFY_EMAIL_AUDIENCE)
-                .body(Message.get("com.github.vincemann.verifyEmail", verifyLink))
-                .link(verifyLink)
-                .code(verificationCode)
-                .build();
-        mailSender.send(mailData);
+//        // send the mail
+//        MailData mailData = MailData.builder()
+//                .to(user.getEmail())
+////                .topic(Message.get("com.github.vincemann.verifySubject"))
+//                .topic(VERIFY_EMAIL_AUDIENCE)
+//                .body(Message.get("com.github.vincemann.verifyEmail", verifyLink))
+//                .link(verifyLink)
+//                .code(verificationCode)
+//                .build();
+//        mailSender.send(mailData);
+        messageSender.sendMessage(verifyLink,VERIFY_EMAIL_AUDIENCE,verificationCode, user.getEmail());
+
 
         log.debug("Verification mail to " + user.getEmail() + " queued.");
     }
@@ -651,8 +692,8 @@ public abstract class AbstractUserService
     }
 
     @Autowired
-    public void injectMailSender(MailSender<MailData> mailSender) {
-        this.mailSender = mailSender;
+    public void setMessageSender(MessageSender messageSender) {
+        this.messageSender = messageSender;
     }
 
     @Autowired

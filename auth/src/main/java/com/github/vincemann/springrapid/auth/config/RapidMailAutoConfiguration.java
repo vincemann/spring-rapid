@@ -1,5 +1,7 @@
 package com.github.vincemann.springrapid.auth.config;
 
+import com.github.vincemann.springrapid.auth.EmailMessageSender;
+import com.github.vincemann.springrapid.auth.MessageSender;
 import com.github.vincemann.springrapid.auth.mail.MailSender;
 import com.github.vincemann.springrapid.auth.mail.MockMailSender;
 import com.github.vincemann.springrapid.auth.mail.SmtpMailSender;
@@ -11,6 +13,14 @@ import org.springframework.mail.javamail.JavaMailSender;
 
 @ServiceConfig
 public class RapidMailAutoConfiguration {
+
+
+
+    @Bean
+    @ConditionalOnMissingBean(MessageSender.class)
+    public MessageSender messageSender(){
+        return new EmailMessageSender();
+    }
 
     /**
      * Configures a MockMailSender when the property

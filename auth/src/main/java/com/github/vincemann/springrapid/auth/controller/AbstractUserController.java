@@ -113,7 +113,7 @@ public abstract class AbstractUserController<U extends AbstractUser<ID>, ID exte
 		log.debug("Resending verification mail for user with email " + email);
 		Optional<U> byEmail = getUserService().findByEmail(email);
 		VerifyEntity.isPresent(byEmail,"no user found with email: "+ email);
-		getSecuredUserService().resendVerificationMail(byEmail.get());
+		getSecuredUserService().resendVerificationMessage(byEmail.get());
 		return okNoContent();
 	}
 
@@ -255,7 +255,7 @@ public abstract class AbstractUserController<U extends AbstractUser<ID>, ID exte
 		getDtoValidationStrategy().validate(dto);
 		log.debug("Requesting email change for user with " + id);
 		U user = fetchUser(id);
-		getSecuredUserService().requestEmailChange(user, dto);
+		getSecuredUserService().requestPrincipalChange(user, dto);
 		return okNoContent();
 	}
 

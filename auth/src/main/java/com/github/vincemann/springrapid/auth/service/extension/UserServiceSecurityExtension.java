@@ -139,10 +139,10 @@ public class UserServiceSecurityExtension
 
     @LogInteraction
     @Override
-    public void requestEmailChange(AbstractUser user, RequestMediumChangeDto emailChangeForm) throws EntityNotFoundException, AlreadyRegisteredException {
+    public void requestPrincipalChange(AbstractUser user, RequestMediumChangeDto emailChangeForm) throws EntityNotFoundException, AlreadyRegisteredException {
         VerifyEntity.isPresent(user,"User who's email should get changed does not exist");
         getSecurityChecker().checkPermission(user, BasePermission.WRITE);
-        getNext().requestEmailChange(user, emailChangeForm);
+        getNext().requestPrincipalChange(user, emailChangeForm);
     }
 
 
