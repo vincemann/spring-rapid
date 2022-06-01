@@ -13,7 +13,7 @@ import java.util.Set;
 public class RapidFindOwnUserDto extends AbstractFindRapidUserDto {
 
     @Builder
-    public RapidFindOwnUserDto(String email, Set<String> roles, String id) {
-        super(email, roles,id);
+    public RapidFindOwnUserDto(String contactInformation, Set<String> roles, String id) {
+        super(contactInformation, roles,id);
     }
 }

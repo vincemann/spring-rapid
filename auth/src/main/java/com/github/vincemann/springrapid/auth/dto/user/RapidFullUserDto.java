@@ -14,8 +14,8 @@ public class RapidFullUserDto extends AbstractFindRapidUserDto implements Serial
 	private String password;
 
 	@Builder
-	public RapidFullUserDto(String email, Set<String> roles, String id, String password) {
-		super(email, roles,id);
+	public RapidFullUserDto(String contactInformation, Set<String> roles, String id, String password) {
+		super(contactInformation, roles,id);
 		this.password = password;
 	}
 

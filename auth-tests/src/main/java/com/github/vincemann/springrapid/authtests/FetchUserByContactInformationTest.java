@@ -1,7 +1,6 @@
 package com.github.vincemann.springrapid.authtests;
 
 import org.junit.jupiter.api.Test;
-import org.springframework.http.MediaType;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -10,13 +9,13 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static com.github.vincemann.springrapid.authtests.adapter.AuthTestAdapter.*;
 
 
-public class FetchUserByEmailTest extends AbstractRapidAuthIntegrationTest {
+public class FetchUserByContactInformationTest extends AbstractRapidAuthIntegrationTest {
 	
 
 
 	@Test
-	public void anonKnowsEmail_canFindMatchingId() throws Exception {
-		mvc.perform(testTemplate.fetchByEmail(USER_EMAIL))
+	public void anonKnowsContactInformation_canFindMatchingId() throws Exception {
+		mvc.perform(testTemplate.fetchByContactInformation(USER_EMAIL))
 				.andExpect(status().is(200))
 				.andExpect(jsonPath("$.id").value(getUser().getId()))
 				.andExpect(jsonPath("$.password").doesNotExist())
@@ -24,14 +23,14 @@ public class FetchUserByEmailTest extends AbstractRapidAuthIntegrationTest {
 	}
 
 	@Test
-	public void anonKnowsInvalidEmail_cantFindMatchingId() throws Exception {
+	public void anonKnowsInvalidContactInformation_cantFindMatchingId() throws Exception {
 		
-		// email does not exist
-		mvc.perform(testTemplate.fetchByEmail(UNKNOWN_EMAIL))
+		// contactInformation does not exist
+		mvc.perform(testTemplate.fetchByContactInformation(UNKNOWN_EMAIL))
                 .andExpect(status().isNotFound());
 
-		// Blank email
-		mvc.perform(testTemplate.fetchByEmail(""))
+		// Blank contactInformation
+		mvc.perform(testTemplate.fetchByContactInformation(""))
 				.andExpect(status().isBadRequest());
 	}
 
@@ -43,7 +42,7 @@ public class FetchUserByEmailTest extends AbstractRapidAuthIntegrationTest {
 //		mvc.perform(get("/api/core/users/{id}", getAdmin().getId()))
 //                .andExpect(status().is(200))
 //				.andExpect(jsonPath("$.id").value(getAdmin().getId()))
-//				.andExpect(jsonPath("$.email").doesNotExist())
+//				.andExpect(jsonPath("$.contactInformation").doesNotExist())
 //				.andExpect(jsonPath("$.password").doesNotExist())
 //				.andExpect(jsonPath("$.credentialsUpdatedAt").doesNotExist());
 ////				.andExpect(jsonPath("$.name").value("Admin 1"));
@@ -51,13 +50,13 @@ public class FetchUserByEmailTest extends AbstractRapidAuthIntegrationTest {
 //
 //	@Disabled //replaced by rapid controller find by Id
 //	public void testFetchUserByIdLoggedIn() throws Exception {
-//		//can see email = can see everything relevant
-//		// Same user logged in -> can also see its email but that's it
+//		//can see contactInformation = can see everything relevant
+//		// Same user logged in -> can also see its contactInformation but that's it
 //		mvc.perform(get("/api/core/users/{id}", getAdmin().getId())
 //				.header(HttpHeaders.AUTHORIZATION, tokens.get(getAdmin().getId())))
 //                .andExpect(status().is(200))
 //				.andExpect(jsonPath("$.id").value(getAdmin().getId()))
-//				.andExpect(jsonPath("$.email").value(ADMIN_EMAIL))
+//				.andExpect(jsonPath("$.contactInformation").value(ADMIN_EMAIL))
 //				.andExpect(jsonPath("$.password").doesNotExist())
 //				.andExpect(jsonPath("$.credentialsUpdatedAt").doesNotExist());
 ////				.andExpect(jsonPath("$.name").value("Admin 1"));
@@ -67,14 +66,14 @@ public class FetchUserByEmailTest extends AbstractRapidAuthIntegrationTest {
 //				.header(HttpHeaders.AUTHORIZATION, tokens.get(getUnverifiedUser().getId())))
 //                .andExpect(status().is(200))
 //				.andExpect(jsonPath("$.id").value(getAdmin().getId()))
-//				.andExpect(jsonPath("$.email").doesNotExist());
+//				.andExpect(jsonPath("$.contactInformation").doesNotExist());
 //
-//		// Admin user logged in - fetching another user can see email
+//		// Admin user logged in - fetching another user can see contactInformation
 //		MvcResult mvcResult = mvc.perform(get("/api/core/users/{id}", getUnverifiedUser().getId())
 //				.header(HttpHeaders.AUTHORIZATION, tokens.get(getAdmin().getId())))
 //				.andExpect(status().is(200))
 //				.andExpect(jsonPath("$.id").value(getUnverifiedUser().getId()))
-//				.andExpect(jsonPath("$.email").value(UNVERIFIED_USER_EMAIL))
+//				.andExpect(jsonPath("$.contactInformation").value(UNVERIFIED_USER_EMAIL))
 //				.andReturn();
 //
 //	}

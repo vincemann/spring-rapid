@@ -16,33 +16,35 @@ import java.util.Map;
 import java.util.Optional;
 
 /**
- * Only stores email in token and fetches user args for principal lazily
+ * Only stores contactInformation in token and fetches user args for principal lazily
  */
 @Transactional
 public class RapidJwtClaimsToPrincipalConverter
             implements JwtClaimsToPrincipalConverter<RapidAuthAuthenticatedPrincipal> {
 
     private UserService userService;
+    private AuthenticatedPrincipalFactory<RapidAuthAuthenticatedPrincipal,AbstractUser<?>> authenticatedPrincipalFactory;
 
 
     @Override
     public Map<String,Object> toClaims(RapidAuthAuthenticatedPrincipal user) {
-        return MapUtils.mapOf("email",user.getEmail());
+        return MapUtils.mapOf("contactInformation",user.getContactInformation());
     }
 
 
     @Override
     public RapidAuthAuthenticatedPrincipal toPrincipal(Map<String,Object> claims) throws AuthenticationCredentialsNotFoundException {
-        String email = (String) claims.get("email");
-        if (email == null)
-            throw new AuthenticationCredentialsNotFoundException("email claim of claims-set not found");
+        String contactInformation = (String) claims.get("contactInformation");
+        if (contactInformation == null)
+            throw new AuthenticationCredentialsNotFoundException("contactInformation claim of claims-set not found");
         try {
-            Optional<AbstractUser<?>> byEmail = userService.findByEmail(email);
-            VerifyEntity.isPresent(byEmail,"User with email: "+email+" not found");
-            AbstractUser<?> user = byEmail.get();
-            return new RapidAuthAuthenticatedPrincipal(user);
+            Optional<AbstractUser<?>> byContactInformation = userService.findByContactInformation(contactInformation);
+            VerifyEntity.isPresent(byContactInformation,"User with contactInformation: "+contactInformation+" not found");
+            AbstractUser<?> user = byContactInformation.get();
+//            return new RapidAuthAuthenticatedPrincipal(user);
+            return authenticatedPrincipalFactory.create(user);
         } catch (EntityNotFoundException e) {
-            throw new AuthenticationCredentialsNotFoundException("User with in token encoded email: " + email + " does not exist.", e);
+            throw new AuthenticationCredentialsNotFoundException("User with in token encoded contactInformation: " + contactInformation + " does not exist.", e);
         }
     }
 

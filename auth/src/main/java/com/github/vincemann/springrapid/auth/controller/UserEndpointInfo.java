@@ -14,11 +14,11 @@ public class UserEndpointInfo extends CrudEndpointInfo {
     private boolean exposeForgotPassword =true;
     private boolean exposeResetPassword =true;
     private boolean exposeResetPasswordView =true;
-    private boolean exposeFetchByEmail =true;
+    private boolean exposeFetchByContactInformation =true;
     private boolean exposeChangePassword=true;
-    private boolean exposeRequestEmailChange=true;
-    private boolean exposeChangeEmail=true;
-//    private boolean exposeChangeEmailView=true;
+    private boolean exposeRequestContactInformationChange=true;
+    private boolean exposeChangeContactInformation=true;
+//    private boolean exposeChangeContactInformationView=true;
     private boolean exposeNewAuthToken =true;
     private boolean exposePing=true;
 }

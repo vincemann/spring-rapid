@@ -13,8 +13,8 @@ import java.util.Set;
 public class AdminUpdateRapidUserDto extends AbstractRapidUserDto {
     private String password;
 
-    public AdminUpdateRapidUserDto(String email, Set<String> roles, String id, String password) {
-        super(email, roles, id);
+    public AdminUpdateRapidUserDto(String contactInformation, Set<String> roles, String id, String password) {
+        super(contactInformation, roles, id);
         this.password = password;
     }
 }

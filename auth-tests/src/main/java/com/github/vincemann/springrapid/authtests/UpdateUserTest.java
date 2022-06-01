@@ -37,28 +37,28 @@ public abstract class UpdateUserTest extends AbstractRapidAuthIntegrationTest
     }
 
 	/**
-	 * An ADMIN should be able to update another user's email and roles.
+	 * An ADMIN should be able to update another user's contactInformation and roles.
 	 */
 	@Test
     public void adminCanUpdateDiffUser() throws Exception {
-		String patchRoleAndEmailJson = createUpdateJsonRequest(
-				createUpdateJsonLine("replace", "/email", NEW_EMAIL),
+		String patchRoleAndContactInformationJson = createUpdateJsonRequest(
+				createUpdateJsonLine("replace", "/contactInformation", NEW_EMAIL),
 				createUpdateJsonLine("replace", "/roles", Roles.ADMIN)
 		);
 
 		String token = login2xx(ADMIN_EMAIL, ADMIN_PASSWORD);
-		mvc.perform(update(patchRoleAndEmailJson,getUser().getId())
+		mvc.perform(update(patchRoleAndContactInformationJson,getUser().getId())
 				.header(HttpHeaders.AUTHORIZATION, token))
 				.andExpect(status().is2xxSuccessful())
 				.andExpect(jsonPath("$.roles").value(hasSize(1)))
 				.andExpect(jsonPath("$.roles[0]").value(Roles.ADMIN))
-				.andExpect(jsonPath("$.email").value(NEW_EMAIL));
+				.andExpect(jsonPath("$.contactInformation").value(NEW_EMAIL));
 
 		AbstractUser<Long> user = getUserService().findById(getUser().getId()).get();
 
 		// Ensure that data changed properly
 		//should get replaced because admin has full power
-		Assertions.assertEquals(NEW_EMAIL, user.getEmail());
+		Assertions.assertEquals(NEW_EMAIL, user.getContactInformation());
 		Assertions.assertEquals(1, user.getRoles().size());
 		Assertions.assertTrue(user.getRoles().contains(Roles.ADMIN));
     }
@@ -132,19 +132,19 @@ public abstract class UpdateUserTest extends AbstractRapidAuthIntegrationTest
 	}
 
 	@Test
-	public void userCantUpdateOwnEmail() throws Exception {
-		String patchEmailJson = createUpdateJsonRequest(
-				createUpdateJsonLine("replace", "/email", NEW_EMAIL)
+	public void userCantUpdateOwnContactInformation() throws Exception {
+		String patchContactInformationJson = createUpdateJsonRequest(
+				createUpdateJsonLine("replace", "/contactInformation", NEW_EMAIL)
 		);
 		String token = login2xx(USER_EMAIL, USER_PASSWORD);
-		mvc.perform(update(patchEmailJson,getUser().getId())
+		mvc.perform(update(patchContactInformationJson,getUser().getId())
 				.header(HttpHeaders.AUTHORIZATION, token))
 				.andExpect(status().isForbidden());
 
 		AbstractUser<Long> updated = getUserService().findById(getUser().getId()).get();
 
 		// Ensure that data has not changed
-		Assertions.assertEquals(USER_EMAIL, updated.getEmail());
+		Assertions.assertEquals(USER_EMAIL, updated.getContactInformation());
 	}
 
 

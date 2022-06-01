@@ -48,7 +48,7 @@ public class SmtpMailSender implements MailSender<MailData> {
 			// set the attributes
 			helper.setSubject(mail.getTopic());
 			helper.setTo(mail.getTo());
-			message.setFrom(Message.get("com.github.vincemann.emailSender"));
+			message.setFrom(Message.get("com.github.vincemann.contactInformationSender"));
 			helper.setText(mail.getBody(), true); // true indicates html
 			// continue using helper object for more functionalities like adding attachments, etc.  
 			

@@ -15,11 +15,11 @@ import java.util.Set;
 @Setter
 public class AbstractRapidUserDto extends AbstractDto<String> {
 
-    private String email;
+    private String contactInformation;
     private Set<String> roles = new HashSet<String>();
 
-    public AbstractRapidUserDto(String email, Set<String> roles, String id) {
-        this.email = email;
+    public AbstractRapidUserDto(String contactInformation, Set<String> roles, String id) {
+        this.contactInformation = contactInformation;
         if (roles==null){
             this.setRoles(new HashSet<>());
         }else {

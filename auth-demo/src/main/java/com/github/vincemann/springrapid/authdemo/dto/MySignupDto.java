@@ -19,8 +19,8 @@ public class MySignupDto extends SignupDto {
     @NotBlank(message = "{blank.name}"/*, groups = {UserVerifyUtils.SignUpValidation.class, UserVerifyUtils.UpdateValidation.class}*/)
     private String name;
 
-    public MySignupDto(String email, String password, @NotBlank(message = "{blank.name}", groups = {UserVerifyUtils.SignUpValidation.class, UserVerifyUtils.UpdateValidation.class}) String name) {
-        super(email, password);
+    public MySignupDto(String contactInformation, String password, @NotBlank(message = "{blank.name}", groups = {UserVerifyUtils.SignUpValidation.class, UserVerifyUtils.UpdateValidation.class}) String name) {
+        super(contactInformation, password);
         this.name = name;
     }
 }

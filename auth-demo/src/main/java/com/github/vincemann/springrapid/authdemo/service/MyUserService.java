@@ -42,7 +42,7 @@ public class MyUserService extends AbstractUserService<User, Long, UserRepositor
 	@Override
 	public User newAdmin(AuthProperties.Admin admin) {
 		User createdAdmin = super.newAdmin(admin);
-		createdAdmin.setName(admin.getEmail()+"name");
+		createdAdmin.setName(admin.getContactInformation()+"name");
 		return createdAdmin;
 	}
 }

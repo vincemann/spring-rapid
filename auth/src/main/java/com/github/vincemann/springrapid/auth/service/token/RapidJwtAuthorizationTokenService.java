@@ -29,9 +29,9 @@ public class RapidJwtAuthorizationTokenService extends AbstractJwtAuthorizationT
     public void verifyToken(JWTClaimsSet claims, RapidAuthAuthenticatedPrincipal principal) {
         super.verifyToken(claims, principal);
         try {
-            Optional<AbstractUser<?>> byEmail = userService.findByEmail(principal.getEmail());
-            VerifyEntity.isPresent(byEmail,"User with email: "+principal.getEmail()+" not found");
-            AbstractUser<?> user = byEmail.get();
+            Optional<AbstractUser<?>> byContactInformation = userService.findByContactInformation(principal.getContactInformation());
+            VerifyEntity.isPresent(byContactInformation,"User with contactInformation: "+principal.getContactInformation()+" not found");
+            AbstractUser<?> user = byContactInformation.get();
             RapidJwt.validateIssuedAfter(claims,user.getCredentialsUpdatedMillis());
         } catch (EntityNotFoundException e) {
             throw new BadCredentialsException("User encoded in token not found",e);

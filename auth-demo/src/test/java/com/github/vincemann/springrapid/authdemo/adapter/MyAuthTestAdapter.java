@@ -14,8 +14,8 @@ public class MyAuthTestAdapter extends AuthTestAdapter {
     private static final String NAME = "testUserName";
 
     @Override
-    public AbstractUser<Long> createTestUser(String email, String password, String... roles) {
-        return new User(email,password,createUniqueName(),roles);
+    public AbstractUser<Long> createTestUser(String contactInformation, String password, String... roles) {
+        return new User(contactInformation,password,createUniqueName(),roles);
     }
 
 
@@ -28,7 +28,7 @@ public class MyAuthTestAdapter extends AuthTestAdapter {
     @Override
     public SignupDto createValidSignupDto() {
         SignupDto signupDto = super.createValidSignupDto();
-        return new MySignupDto(signupDto.getEmail(), signupDto.getPassword(),createUniqueName());
+        return new MySignupDto(signupDto.getContactInformation(), signupDto.getPassword(),createUniqueName());
     }
 
     @Override
@@ -50,7 +50,7 @@ public class MyAuthTestAdapter extends AuthTestAdapter {
     @Override
     public SignupDto createInvalidSignupDto() {
         SignupDto signupDto = super.createInvalidSignupDto();
-        return new MySignupDto(signupDto.getEmail(), signupDto.getPassword(),createUniqueName());
+        return new MySignupDto(signupDto.getContactInformation(), signupDto.getPassword(),createUniqueName());
     }
 
 }

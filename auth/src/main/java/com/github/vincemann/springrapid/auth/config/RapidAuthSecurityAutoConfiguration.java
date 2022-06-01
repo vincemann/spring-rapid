@@ -33,7 +33,7 @@ public class RapidAuthSecurityAutoConfiguration {
     @Bean
     @ConditionalOnMissingBean(AuthenticatedPrincipalFactory.class)
     public AuthenticatedPrincipalFactory authenticatedPrincipalFactory(){
-        return new RapidAuthenticatedPrincipalFactory<>();
+        return new RapidAuthAuthenticatedPrincipalFactory<>();
     }
 
 

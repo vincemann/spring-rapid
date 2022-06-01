@@ -34,7 +34,7 @@ public class AuditingEntityOwnerLocator implements OwnerLocator<AuditingEntity<?
                 return Optional.empty();
             }
             Optional<AbstractUser<?>> byId = userService.findById(entity.getCreatedById());
-            return byId.map(AbstractUser::getEmail);
+            return byId.map(AbstractUser::getContactInformation);
         } catch (BadEntityException e) {
             log.warn("Could not find Owner by createdById",e);
             return Optional.empty();

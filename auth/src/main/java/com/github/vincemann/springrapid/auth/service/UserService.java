@@ -5,7 +5,7 @@ import com.github.vincemann.aoplog.api.AopLoggable;
 import com.github.vincemann.aoplog.api.LogInteraction;
 import com.github.vincemann.springrapid.auth.model.AbstractUser;
 import com.github.vincemann.springrapid.auth.dto.ChangePasswordDto;
-import com.github.vincemann.springrapid.auth.dto.RequestMediumChangeDto;
+import com.github.vincemann.springrapid.auth.dto.RequestContactInformationChangeDto;
 import com.github.vincemann.springrapid.auth.dto.ResetPasswordDto;
 import com.github.vincemann.springrapid.auth.AuthProperties;
 import com.github.vincemann.springrapid.core.service.CrudService;
@@ -34,27 +34,27 @@ public interface UserService<U extends AbstractUser<ID>, ID extends Serializable
     public void resendVerificationMessage(U user) throws EntityNotFoundException, BadEntityException;
 
     @LogInteraction(Severity.TRACE)
-    public Optional<U> findByEmail( @NotBlank String email);
+    public Optional<U> findByContactInformation( @NotBlank String contactInformation);
 
-    // get user from email from code
+    // get user from contactInformation from code
     public U verifyUser(/*U user,*/@NotBlank String verificationCode) throws EntityNotFoundException,  BadEntityException;
-    public void forgotPassword( @NotBlank String email) throws EntityNotFoundException;
+    public void forgotPassword( @NotBlank String contactInformation) throws EntityNotFoundException;
 
     // use dto here so https encrypts new password which is not possible via url param
-    // target email gets extracted from code
+    // target contactInformation gets extracted from code
     public U resetPassword(ResetPasswordDto dto, String code) throws EntityNotFoundException,  BadEntityException;
     public void changePassword(U user, ChangePasswordDto changePasswordForm) throws EntityNotFoundException, BadEntityException;
 
-//    @Validated(UserVerifyUtils.ChangeEmailValidation.class)
-    public void requestPrincipalChange(U user, RequestMediumChangeDto emailChangeForm) throws EntityNotFoundException, AlreadyRegisteredException;
+//    @Validated(UserVerifyUtils.ChangeContactInformationValidation.class)
+    public void requestPrincipalChange(U user, RequestContactInformationChangeDto contactInformationChangeForm) throws EntityNotFoundException, AlreadyRegisteredException;
 
-    // get user from email from code
-    public U changeEmail(/*U user,*/  @NotBlank String changeEmailCode) throws EntityNotFoundException, BadEntityException;
+    // get user from contactInformation from code
+    public U changeContactInformation(/*U user,*/  @NotBlank String changeContactInformationCode) throws EntityNotFoundException, BadEntityException;
 
 
 
     @LogInteraction(Severity.TRACE)
-    public String createNewAuthToken(String targetUserEmail) throws EntityNotFoundException;
+    public String createNewAuthToken(String targetUserContactInformation) throws EntityNotFoundException;
 
     public String createNewAuthToken() throws EntityNotFoundException;
 

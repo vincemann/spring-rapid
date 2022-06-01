@@ -17,7 +17,7 @@ public class UserVerifyUtils {
 	public interface UpdateValidation {
 	}
 
-	public interface ChangeEmailValidation {
+	public interface ChangeContactInformationValidation {
 	}
 
 	// JsonView for Sign up

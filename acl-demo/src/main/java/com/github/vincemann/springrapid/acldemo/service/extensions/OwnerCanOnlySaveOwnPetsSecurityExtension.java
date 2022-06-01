@@ -25,7 +25,7 @@ public class OwnerCanOnlySaveOwnPetsSecurityExtension  extends AbstractSecurityE
         Owner owner = pet.getOwner();
         VerifyEntity.notNull(owner,"Owner for saved Pet must not be null");
         if (RapidSecurityContext.getRoles().contains(MyRoles.OWNER)){
-            String targetOwner = owner.getUser().getEmail();
+            String targetOwner = owner.getUser().getContactInformation();
             String loggedInOwner = RapidSecurityContext.getName();
             if (!targetOwner.equals(loggedInOwner)){
                 throw new AccessDeniedException("Owner mapped to pet, that is about to get saved, does not match authenticated owner");

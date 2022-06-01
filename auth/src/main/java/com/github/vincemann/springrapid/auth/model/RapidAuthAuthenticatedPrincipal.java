@@ -20,16 +20,16 @@ public class RapidAuthAuthenticatedPrincipal extends RapidAuthenticatedPrincipal
 	private boolean unverified = false;
 	private boolean anon = false;
 
-	public RapidAuthAuthenticatedPrincipal(String email, String password, Set<String> roles, String id) {
-		super(email, password,roles, id);
+	public RapidAuthAuthenticatedPrincipal(String contactInformation, String password, Set<String> roles, String id) {
+		super(contactInformation, password,roles, id);
 		initFlags();
 	}
 
 	public RapidAuthAuthenticatedPrincipal(AbstractUser<?> user) {
-		this(user.getEmail(), user.getPassword(),user.getRoles(), user.getId() == null? null : user.getId().toString());
+		this(user.getContactInformation(), user.getPassword(),user.getRoles(), user.getId() == null? null : user.getId().toString());
 	}
 	public RapidAuthAuthenticatedPrincipal(RapidAuthAuthenticatedPrincipal user) {
-		this(user.getEmail(), user.getPassword(),user.getRoles(), user.getId());
+		this(user.getContactInformation(), user.getPassword(),user.getRoles(), user.getId());
 	}
 
 	public void initFlags() {
@@ -42,9 +42,11 @@ public class RapidAuthAuthenticatedPrincipal extends RapidAuthenticatedPrincipal
 //		goodAdmin = goodUser && admin;
 	}
 
-	public String getEmail(){
+	public String getContactInformation(){
 		return getName();
 	}
+
+
 
 	//removed because i dont want to support runtime roles to keep it simple, see LemonSecurityCheckerHelper
 

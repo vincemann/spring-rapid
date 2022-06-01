@@ -17,8 +17,8 @@ public abstract class AbstractFindRapidUserDto extends AbstractRapidUserDto {
     private boolean goodUser = false;
 //    private boolean goodAdmin = false;
 
-    public AbstractFindRapidUserDto(String email, Set<String> roles, String id) {
-        super(email,roles,id);
+    public AbstractFindRapidUserDto(String contactInformation, Set<String> roles, String id) {
+        super(contactInformation,roles,id);
         initFlags();
     }
 

@@ -24,18 +24,18 @@ public class ForgotPasswordTest extends AbstractRapidAuthIntegrationTest {
 
 
 	@Test
-	public void cantIssueForgotPasswordForInvalidEmail() throws Exception {
+	public void cantIssueForgotPasswordForInvalidContactInformation() throws Exception {
 
-		// Unknown email
+		// Unknown contactInformation
 		mvc.perform(testTemplate.forgotPassword(UNKNOWN_EMAIL))
 				.andExpect(status().isNotFound());
 
 
-		// Null email
+		// Null contactInformation
 		mvc.perform(testTemplate.forgotPassword(null))
 				.andExpect(status().isBadRequest());
 
-		// Blank email
+		// Blank contactInformation
 		mvc.perform(testTemplate.forgotPassword(""))
 				.andExpect(status().isBadRequest());
 

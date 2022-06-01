@@ -22,11 +22,11 @@ public class VerificationTest extends AbstractRapidAuthIntegrationTest {
     TransactionalTemplate transactionalTemplate;
 	
 	@Test
-	public void canVerifyEmail() throws Exception {
+	public void canVerifyContactInformation() throws Exception {
 		SignupDto signupDto = createValidSignupDto();
 		MailData mailData = testTemplate.signup2xx(signupDto);
-		AbstractUser<Long> savedUser = getUserService().findByEmail(signupDto.getEmail()).get();
-		mvc.perform(testTemplate.verifyEmailWithLink(mailData.getLink()))
+		AbstractUser<Long> savedUser = getUserService().findByContactInformation(signupDto.getContactInformation()).get();
+		mvc.perform(testTemplate.verifyContactInformationWithLink(mailData.getLink()))
 				.andExpect(status().is(200))
 				.andExpect(header().string(HttpHeaders.AUTHORIZATION, containsString(".")))
 				.andExpect(jsonPath("$.id").value(savedUser.getId()))
@@ -38,72 +38,72 @@ public class VerificationTest extends AbstractRapidAuthIntegrationTest {
 
 
 	@Test
-	public void cantVerifyEmailTwiceWithSameCode() throws Exception {
+	public void cantVerifyContactInformationTwiceWithSameCode() throws Exception {
 		SignupDto signupDto = createValidSignupDto();
 		MailData mailData = testTemplate.signup2xx(signupDto);
-		mvc.perform(testTemplate.verifyEmailWithLink(mailData.getLink()))
+		mvc.perform(testTemplate.verifyContactInformationWithLink(mailData.getLink()))
 				.andExpect(status().is2xxSuccessful());
 
-		mvc.perform(testTemplate.verifyEmailWithLink(mailData.getLink()))
+		mvc.perform(testTemplate.verifyContactInformationWithLink(mailData.getLink()))
 				.andExpect(status().isForbidden());
 	}
 
 //	@Test
-//	public void cantVerifyEmailOfUnknownUser() throws Exception {
+//	public void cantVerifyContactInformationOfUnknownUser() throws Exception {
 //		SignupDto signupDto = createValidSignupDto();
 //		MailData mailData = testTemplate.signup2xx(signupDto);
-//		testTemplate.verifyEmail(UNKNOWN_USER_ID,mailData.getCode())
+//		testTemplate.verifyContactInformation(UNKNOWN_USER_ID,mailData.getCode())
 //				.andExpect(status().isNotFound());
 //	}
 
 	// https://github.com/Gallopsled/pwntools/issues/1783
 	@Test
-	public void cantVerifyEmailWithInvalidData() throws Exception {
+	public void cantVerifyContactInformationWithInvalidData() throws Exception {
 		SignupDto signupDto = createValidSignupDto();
 		MailData mailData = testTemplate.signup2xx(signupDto);
 
 		// null code
-		mvc.perform(testTemplate.verifyEmail(null))
+		mvc.perform(testTemplate.verifyContactInformation(null))
 				.andExpect(status().isBadRequest());
 
 		// blank code
-		mvc.perform(testTemplate.verifyEmail(""))
+		mvc.perform(testTemplate.verifyContactInformation(""))
 				.andExpect(status().isBadRequest());
 
 		// Wrong audience
 		String code = modCode(mailData.getCode(),"wrong-audience",null,null,null,null);
-		mvc.perform(testTemplate.verifyEmail(code))
+		mvc.perform(testTemplate.verifyContactInformation(code))
 				.andExpect(status().isForbidden());
 
 		// test makes no sense
-//		// Wrong email/ userid
+//		// Wrong contactInformation/ userid
 //		code = modCode(mailData.getCode(),null,getUnverifiedUser().getId().toString(),null,null,null);
-//		testTemplate.verifyEmail(code)
+//		testTemplate.verifyContactInformation(code)
 //				.andExpect(status().isForbidden());
 
 //		// Wrong user id
 //		code = modCode(mailData.getCode(),null,getSecondUser().getId().toString(),null,null,null);
-//		testTemplate.verifyEmail(code)
+//		testTemplate.verifyContactInformation(code)
 //				.andExpect(status().isForbidden());
 	}
 
 	@Test
-	public void cantVerifyEmailWithExpiredCode() throws Exception {
+	public void cantVerifyContactInformationWithExpiredCode() throws Exception {
 
 		SignupDto signupDto = createValidSignupDto();
 		mockJwtExpirationTime(50L);
 		MailData mailData = testTemplate.signup2xx(signupDto);
-		AbstractUser<Long> savedUser = getUserService().findByEmail(signupDto.getEmail()).get();
+		AbstractUser<Long> savedUser = getUserService().findByContactInformation(signupDto.getContactInformation()).get();
 		// expired token
 		Thread.sleep(51L);
-		mvc.perform(testTemplate.verifyEmailWithLink(mailData.getLink()))
+		mvc.perform(testTemplate.verifyContactInformationWithLink(mailData.getLink()))
 				.andExpect(status().isForbidden());
 
 //
 //		token = jweTokenService.createToken(
 //				RapidJwt.create(AbstractUserService.VERIFY_SUBJECT,
 //						Long.toString(getUnverifiedUser().getId()), 1L,
-//						MapUtils.mapOf("email", UNVERIFIED_USER_EMAIL)));
+//						MapUtils.mapOf("contactInformation", UNVERIFIED_USER_EMAIL)));
 //		// Thread.sleep(1001L);
 //		mvc.perform(post(authProperties.getController().getVerifyUserUrl())
 //				.param("id",getUnverifiedUser().getId().toString())
@@ -120,7 +120,7 @@ public class VerificationTest extends AbstractRapidAuthIntegrationTest {
 			@SneakyThrows
 			@Override
 			public void run() {
-				AbstractUser<Long> savedUser = getUserService().findByEmail(signupDto.getEmail()).get();
+				AbstractUser<Long> savedUser = getUserService().findByContactInformation(signupDto.getContactInformation()).get();
 
 				// Credentials updated after the verification token is issued
 				savedUser.setCredentialsUpdatedMillis(System.currentTimeMillis());
@@ -129,7 +129,7 @@ public class VerificationTest extends AbstractRapidAuthIntegrationTest {
 		});
 
 
-		mvc.perform(testTemplate.verifyEmailWithLink(mailData.getLink()))
+		mvc.perform(testTemplate.verifyContactInformationWithLink(mailData.getLink()))
 				.andExpect(status().isForbidden());
 	}
 }

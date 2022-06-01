@@ -9,14 +9,14 @@ import java.util.Set;
 @Getter @Setter @ToString @NoArgsConstructor
 public class FullUserDto extends IdentifiableEntityImpl<Long> {
     private String uuid;
-    private String email;
+    private String contactInformation;
     private String password;
     private Set<String> roles = new HashSet<String>();
 
     @Builder
-    public FullUserDto(String uuid, String email, String password, Set<String> roles) {
+    public FullUserDto(String uuid, String contactInformation, String password, Set<String> roles) {
         this.uuid = uuid;
-        this.email = email;
+        this.contactInformation = contactInformation;
         this.password = password;
         this.roles = roles;
     }

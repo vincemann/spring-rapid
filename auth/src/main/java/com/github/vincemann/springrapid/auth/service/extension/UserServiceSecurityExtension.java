@@ -5,7 +5,7 @@ import com.github.vincemann.springrapid.acl.service.extensions.security.Abstract
 import com.github.vincemann.springrapid.auth.model.AbstractUser;
 import com.github.vincemann.springrapid.auth.model.RapidAuthAuthenticatedPrincipal;
 import com.github.vincemann.springrapid.auth.dto.ChangePasswordDto;
-import com.github.vincemann.springrapid.auth.dto.RequestMediumChangeDto;
+import com.github.vincemann.springrapid.auth.dto.RequestContactInformationChangeDto;
 import com.github.vincemann.springrapid.auth.security.RapidAuthSecurityContextChecker;
 import com.github.vincemann.springrapid.auth.service.AlreadyRegisteredException;
 import com.github.vincemann.springrapid.auth.service.UserService;
@@ -118,15 +118,15 @@ public class UserServiceSecurityExtension
 
     @LogInteraction
     @Override
-    public void forgotPassword(String email) throws EntityNotFoundException {
+    public void forgotPassword(String contactInformation) throws EntityNotFoundException {
         //check if write permission over user
-        Optional<AbstractUser> byEmail = userService.findByEmail(email);
-        VerifyEntity.isPresent(byEmail,"User with email: "+email+" not found");
+        Optional<AbstractUser> byContactInformation = userService.findByContactInformation(contactInformation);
+        VerifyEntity.isPresent(byContactInformation,"User with contactInformation: "+contactInformation+" not found");
 
         // anon has to be able to reset password without being logged in
-//        AbstractUser user = byEmail.get();
+//        AbstractUser user = byContactInformation.get();
 //        getSecurityChecker().checkPermission(user.getId(), getLast().getEntityClass(), BasePermission.WRITE);
-        getNext().forgotPassword(email);
+        getNext().forgotPassword(contactInformation);
     }
 
     @LogInteraction
@@ -139,20 +139,20 @@ public class UserServiceSecurityExtension
 
     @LogInteraction
     @Override
-    public void requestPrincipalChange(AbstractUser user, RequestMediumChangeDto emailChangeForm) throws EntityNotFoundException, AlreadyRegisteredException {
-        VerifyEntity.isPresent(user,"User who's email should get changed does not exist");
+    public void requestPrincipalChange(AbstractUser user, RequestContactInformationChangeDto contactInformationChangeForm) throws EntityNotFoundException, AlreadyRegisteredException {
+        VerifyEntity.isPresent(user,"User who's contactInformation should get changed does not exist");
         getSecurityChecker().checkPermission(user, BasePermission.WRITE);
-        getNext().requestPrincipalChange(user, emailChangeForm);
+        getNext().requestPrincipalChange(user, contactInformationChangeForm);
     }
 
 
-    // if you have the code you can change the email
-    // admin can just change email via normal update
+    // if you have the code you can change the contactInformation
+    // admin can just change contactInformation via normal update
     @LogInteraction
     @Override
-    public AbstractUser changeEmail(String changeEmailCode) throws EntityNotFoundException,  BadEntityException {
+    public AbstractUser changeContactInformation(String changeContactInformationCode) throws EntityNotFoundException,  BadEntityException {
         try {
-            JWTClaimsSet claims = jweTokenService.parseToken(changeEmailCode);
+            JWTClaimsSet claims = jweTokenService.parseToken(changeContactInformationCode);
             Serializable userId = claims.getSubject();
             if (userId==null){
                 throw new BadEntityException("No user found with id: " + userId);
@@ -161,16 +161,16 @@ public class UserServiceSecurityExtension
         } catch (BadTokenException e) {
             throw new BadEntityException(e);
         }
-        return getNext().changeEmail(changeEmailCode);
+        return getNext().changeContactInformation(changeContactInformationCode);
     }
 
     @LogInteraction
     @Override
-    public String createNewAuthToken(String email) throws EntityNotFoundException {
+    public String createNewAuthToken(String contactInformation) throws EntityNotFoundException {
         RapidAuthAuthenticatedPrincipal authenticated = securityContextChecker.getSecurityContext().currentPrincipal();
-        VerifyAccess.condition(authenticated.getEmail().equals(email) ||
+        VerifyAccess.condition(authenticated.getContactInformation().equals(contactInformation) ||
                 authenticated.isAdmin(), Message.get("com.github.vincemann.notGoodAdminOrSameUser"));
-        return getNext().createNewAuthToken(email);
+        return getNext().createNewAuthToken(contactInformation);
     }
 
 
@@ -194,9 +194,9 @@ public class UserServiceSecurityExtension
     ////@LogInteraction(level = LogInteraction.Level.TRACE)
 //    @CalledByProxy
 //    public void postAuthorizeProcessUser(AbstractUser user, AbstractUser result){
-//        //only include email if user has write permission
+//        //only include contactInformation if user has write permission
 //        if(!hasWritePermission(user)){
-//            result.setEmail(null);
+//            result.setContactInformation(null);
 //        }
 //    }
 
@@ -217,24 +217,24 @@ public class UserServiceSecurityExtension
 //    }
 
     //    @CalledByProxy
-//    public void preAuthorizeFindByEmail(String email) throws EntityNotFoundException {
-//        //only include email if user has write permission
-//        Optional<AbstractUser> byEmail = userRepository.findByEmail(email);
-//        EntityUtils.checkPresent(byEmail,"No User found with email: " +email);
-//        getSecurityChecker().checkPermission(byEmail.get().getId(),byEmail.get().getClass(), BasePermission.WRITE);
+//    public void preAuthorizeFindByContactInformation(String contactInformation) throws EntityNotFoundException {
+//        //only include contactInformation if user has write permission
+//        Optional<AbstractUser> byContactInformation = userRepository.findByContactInformation(contactInformation);
+//        EntityUtils.checkPresent(byContactInformation,"No User found with contactInformation: " +contactInformation);
+//        getSecurityChecker().checkPermission(byContactInformation.get().getId(),byContactInformation.get().getClass(), BasePermission.WRITE);
 //    }
 
     //this is done by mapping to specific dto
 //    @CalledByProxy
-//    public void postAuthorizeFindByEmail(String email, AbstractUser result){
-//        //only include email if user has write permission
-//        Optional<AbstractUser> byEmail = userRepository.findByEmail(email);
-//        byEmail.ifPresent(new Consumer<>() {
+//    public void postAuthorizeFindByContactInformation(String contactInformation, AbstractUser result){
+//        //only include contactInformation if user has write permission
+//        Optional<AbstractUser> byContactInformation = userRepository.findByContactInformation(contactInformation);
+//        byContactInformation.ifPresent(new Consumer<>() {
 //            @Override
 //            public void accept(AbstractUser o) {
 //                AbstractUser detached = JpaUtils.detach(o);
 //                if(!hasWritePermission(detached)){
-//                    result.setEmail(null);
+//                    result.setContactInformation(null);
 //                }
 //            }
 //        });

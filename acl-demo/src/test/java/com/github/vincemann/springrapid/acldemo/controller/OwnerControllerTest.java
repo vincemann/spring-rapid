@@ -29,7 +29,7 @@ public class OwnerControllerTest extends AbstractControllerIntegrationTest<Owner
     @Test
     public void canRegisterOwner() throws Exception {
         SignupDto signupDto = SignupDto.builder()
-                .email(OWNER_KAHN_EMAIL)
+                .contactInformation(OWNER_KAHN_EMAIL)
                 .password(OWNER_KAHN_PASSWORD)
                 .build();
         UUIDSignupResponseDto signedUpDto = performDs2xx(userController.signup(signupDto), UUIDSignupResponseDto.class);
@@ -55,14 +55,14 @@ public class OwnerControllerTest extends AbstractControllerIntegrationTest<Owner
         byUuid = userService.findByUuid(uuid);
         Assertions.assertFalse(byUuid.isPresent());
 
-        Optional<User> kahnUserByEmail = userService.findByEmail(OWNER_KAHN_EMAIL);
-        Assertions.assertTrue(kahnUserByEmail.isPresent());
-        User dbUserKahn = kahnUserByEmail.get();
+        Optional<User> kahnUserByContactInformation = userService.findByContactInformation(OWNER_KAHN_EMAIL);
+        Assertions.assertTrue(kahnUserByContactInformation.isPresent());
+        User dbUserKahn = kahnUserByContactInformation.get();
 
         propertyAssert(dbUserKahn)
                 .assertContains(dbUserKahn::getRoles, MyRoles.OWNER, AuthRoles.UNVERIFIED, AuthRoles.USER)
                 .assertSize(dbUserKahn::getRoles, 3)
-                .assertEquals(dbUserKahn::getEmail, OWNER_KAHN_EMAIL)
+                .assertEquals(dbUserKahn::getContactInformation, OWNER_KAHN_EMAIL)
                 .assertNotNull(dbUserKahn::getPassword)
                 .assertNull(dbUserKahn::getUuid);
 
@@ -78,7 +78,7 @@ public class OwnerControllerTest extends AbstractControllerIntegrationTest<Owner
     @Test
     public void canSavePetToOwnAccount() throws Exception {
         Owner dbKahn = registerOwner(kahn, OWNER_KAHN_EMAIL, OWNER_KAHN_PASSWORD);
-        String token = userController.login2xx(dbKahn.getUser().getEmail(), OWNER_KAHN_PASSWORD);
+        String token = userController.login2xx(dbKahn.getUser().getContactInformation(), OWNER_KAHN_PASSWORD);
         OwnerCreatesPetDto createPetDto = new OwnerCreatesPetDto(bella, dbKahn.getId());
         FullPetDto createdPet = performDs2xx(petController.create(createPetDto)
                 .header(HttpHeaders.AUTHORIZATION, token), FullPetDto.class);

@@ -105,21 +105,21 @@ public abstract class AbstractUserController<U extends AbstractUser<ID>, ID exte
 	/**
 	 * Resends verification mail
 	 */
-//	@PostMapping("${lemon.userController.resendVerificationEmailUrl}")
+//	@PostMapping("${lemon.userController.resendVerificationContactInformationUrl}")
 //	@ResponseStatus(HttpStatus.NO_CONTENT)
-	// todo add limit actions extension ect so nobody can spam emails
+	// todo add limit actions extension ect so nobody can spam contactInformations
 	public ResponseEntity<?> resendVerificationMail(HttpServletRequest request,HttpServletResponse response) throws BadEntityException, EntityNotFoundException, IdFetchingException {
-		String email = readRequestParam(request, "email");
-		log.debug("Resending verification mail for user with email " + email);
-		Optional<U> byEmail = getUserService().findByEmail(email);
-		VerifyEntity.isPresent(byEmail,"no user found with email: "+ email);
-		getSecuredUserService().resendVerificationMessage(byEmail.get());
+		String contactInformation = readRequestParam(request, "contactInformation");
+		log.debug("Resending verification mail for user with contactInformation " + contactInformation);
+		Optional<U> byContactInformation = getUserService().findByContactInformation(contactInformation);
+		VerifyEntity.isPresent(byContactInformation,"no user found with contactInformation: "+ contactInformation);
+		getSecuredUserService().resendVerificationMessage(byContactInformation.get());
 		return okNoContent();
 	}
 
 
 	/**
-	 * Verifies current-user -> send code per email
+	 * Verifies current-user -> send code per contactInformation
 	 */
 //	@PostMapping("${lemon.userController.verifyUserUrl}")
 //	@ResponseBody
@@ -141,14 +141,14 @@ public abstract class AbstractUserController<U extends AbstractUser<ID>, ID exte
 
 
 	/**
-	 * The forgot Password feature -> mail new password to email
+	 * The forgot Password feature -> mail new password to contactInformation
 	 */
 //	@PostMapping("${lemon.userController.forgotPasswordUrl}")
 //	@ResponseStatus(HttpStatus.NO_CONTENT)
-	public ResponseEntity<?> forgotPassword(HttpServletRequest request,HttpServletResponse response/*@RequestParam String email*/) throws EntityNotFoundException, BadEntityException {
-		String email = readRequestParam(request, "email");
-		log.debug("Received forgot password request for: " + email);
-		getSecuredUserService().forgotPassword(email);
+	public ResponseEntity<?> forgotPassword(HttpServletRequest request,HttpServletResponse response/*@RequestParam String contactInformation*/) throws EntityNotFoundException, BadEntityException {
+		String contactInformation = readRequestParam(request, "contactInformation");
+		log.debug("Received forgot password request for: " + contactInformation);
+		getSecuredUserService().forgotPassword(contactInformation);
 		return okNoContent();
 	}
 
@@ -192,7 +192,7 @@ public abstract class AbstractUserController<U extends AbstractUser<ID>, ID exte
 		return ok(getJsonMapper().writeDto(dto));
 	}
 
-	// use gui here bc someone could issue many forgot password requests for foreign emails with his new password set in forntend
+	// use gui here bc someone could issue many forgot password requests for foreign contactInformations with his new password set in forntend
 	// and if the user just clicks the link, his pw would be reset to attackers pw
 	// -> better to show view at backend, to make sure user can enter his password
 	public String showResetPassword(HttpServletRequest request, HttpServletResponse response, Model model) throws IOException, BadEntityException, EntityNotFoundException, BadTokenException {
@@ -205,18 +205,18 @@ public abstract class AbstractUserController<U extends AbstractUser<ID>, ID exte
 
 
 	/**
-	 * Fetches a user by email
+	 * Fetches a user by contactInformation
 	 */
-//	@PostMapping("${lemon.userController.fetchByEmailUrl}")
+//	@PostMapping("${lemon.userController.fetchByContactInformationUrl}")
 //	@ResponseBody
-	public ResponseEntity<String> fetchByEmail(HttpServletRequest request,HttpServletResponse response/*,@RequestParam String email*/) throws JsonProcessingException, BadEntityException, EntityNotFoundException {
-		String email = readRequestParam(request, "email");
-		log.debug("Fetching user by email: " + email);
-		Optional<U> byEmail = getSecuredUserService().findByEmail(email);
-		VerifyEntity.isPresent(byEmail,"User with email: "+email+" not found");
-		U user = byEmail.get();
+	public ResponseEntity<String> fetchByContactInformation(HttpServletRequest request,HttpServletResponse response/*,@RequestParam String contactInformation*/) throws JsonProcessingException, BadEntityException, EntityNotFoundException {
+		String contactInformation = readRequestParam(request, "contactInformation");
+		log.debug("Fetching user by contactInformation: " + contactInformation);
+		Optional<U> byContactInformation = getSecuredUserService().findByContactInformation(contactInformation);
+		VerifyEntity.isPresent(byContactInformation,"User with contactInformation: "+contactInformation+" not found");
+		U user = byContactInformation.get();
 		Object responseDto = getDtoMapper().mapToDto(user,
-				createDtoClass(getAuthProperties().getController().getFetchByEmailUrl(), Direction.RESPONSE, user));
+				createDtoClass(getAuthProperties().getController().getFetchByContactInformationUrl(), Direction.RESPONSE, user));
 		return ok(getJsonMapper().writeDto(responseDto));
 	}
 
@@ -243,17 +243,17 @@ public abstract class AbstractUserController<U extends AbstractUser<ID>, ID exte
 
 
 	/**
-	 * Requests for changing email
+	 * Requests for changing contactInformation
 	 */
-//	@PostMapping("${lemon.userController.requestEmailChangeUrl}")
+//	@PostMapping("${lemon.userController.requestContactInformationChangeUrl}")
 //	@ResponseStatus(HttpStatus.NO_CONTENT)
-	public ResponseEntity<?> requestEmailChange(HttpServletRequest request
-								   /*@RequestBody RequestEmailChangeForm emailChangeForm*/,HttpServletResponse response) throws BadEntityException, EntityNotFoundException, IdFetchingException, IOException, AlreadyRegisteredException {
+	public ResponseEntity<?> requestContactInformationChange(HttpServletRequest request
+								   /*@RequestBody RequestContactInformationChangeForm contactInformationChangeForm*/,HttpServletResponse response) throws BadEntityException, EntityNotFoundException, IdFetchingException, IOException, AlreadyRegisteredException {
 		ID id = fetchId(request);
 		String body = readBody(request);
-		RequestMediumChangeDto dto = getJsonMapper().readDto(body, RequestMediumChangeDto.class);
+		RequestContactInformationChangeDto dto = getJsonMapper().readDto(body, RequestContactInformationChangeDto.class);
 		getDtoValidationStrategy().validate(dto);
-		log.debug("Requesting email change for user with " + id);
+		log.debug("Requesting contactInformation change for user with " + id);
 		U user = fetchUser(id);
 		getSecuredUserService().requestPrincipalChange(user, dto);
 		return okNoContent();
@@ -261,36 +261,36 @@ public abstract class AbstractUserController<U extends AbstractUser<ID>, ID exte
 
 
 	/**
-	 * Changes the email
+	 * Changes the contactInformation
 	 */
-	public ResponseEntity<String> changeEmail(
+	public ResponseEntity<String> changeContactInformation(
 			HttpServletRequest request,
 //			@RequestParam String code,
 			HttpServletResponse response) throws JsonProcessingException, BadEntityException, EntityNotFoundException, BadTokenException, IdFetchingException {
 //		ID id = fetchId(request);
-//		log.debug("Changing email of user with id: " + id);
+//		log.debug("Changing contactInformation of user with id: " + id);
 		String code = readRequestParam(request, "code");
 //		U user = fetchUser(id);
-		U saved = getSecuredUserService().changeEmail(code);
+		U saved = getSecuredUserService().changeContactInformation(code);
 		appendFreshTokenOf(saved,response);
 		Object responseDto = getDtoMapper().mapToDto(saved,
-				createDtoClass(getAuthProperties().getController().changeEmailUrl, Direction.RESPONSE, saved));
+				createDtoClass(getAuthProperties().getController().changeContactInformationUrl, Direction.RESPONSE, saved));
 		return ok(getJsonMapper().writeDto(responseDto));
 	}
 
 
-	// does not need view page bc email is encapsulated in code and you can only
-	// request email change if logged in (as opposed to forgotpassword)
+	// does not need view page bc contactInformation is encapsulated in code and you can only
+	// request contactInformation change if logged in (as opposed to forgotpassword)
 
-//	public String showChangeEmail(
+//	public String showChangeContactInformation(
 //			HttpServletRequest request,
 //			HttpServletResponse response,
 //			Model model) throws BadEntityException {
 //		String code = readRequestParam(request, "code");
 //		model.addAttribute("code",code);
-//		model.addAttribute("changeEmailUrl",getAuthProperties().getController().getChangeEmailUrl());
-//		model.addAttribute("changeEmailDto",new ChangeEmailView());
-//		return "change-email";
+//		model.addAttribute("changeContactInformationUrl",getAuthProperties().getController().getChangeContactInformationUrl());
+//		model.addAttribute("changeContactInformationDto",new ChangeContactInformationView());
+//		return "change-contactInformation";
 //	}
 
 	/**
@@ -298,18 +298,18 @@ public abstract class AbstractUserController<U extends AbstractUser<ID>, ID exte
 	 *
 	 */
 	public ResponseEntity<String> createNewAuthToken(
-			/*@RequestParam Optional<String> email,*/HttpServletRequest request,
+			/*@RequestParam Optional<String> contactInformation,*/HttpServletRequest request,
 			HttpServletResponse response) throws BadEntityException, JsonProcessingException, EntityNotFoundException {
 
 		log.debug("Fetching a new auth token ... ");
-		Optional<String> email = readOptionalRequestParam(request, "email");
+		Optional<String> contactInformation = readOptionalRequestParam(request, "contactInformation");
 		String token;
-		if (email.isEmpty()){
+		if (contactInformation.isEmpty()){
 			// for logged in user, if he is not logged in this will fail
 			token = getSecuredUserService().createNewAuthToken();
 		}else {
 			// for foreign user
-			token = getSecuredUserService().createNewAuthToken(email.get());
+			token = getSecuredUserService().createNewAuthToken(contactInformation.get());
 		}
 		// result = {token:asfsdfjsdjfnd}
 		return ok(
@@ -391,7 +391,7 @@ public abstract class AbstractUserController<U extends AbstractUser<ID>, ID exte
 			registerEndpoint(createSignupRequestMappingInfo(),"signup");
 		}
 		if (getEndpointInfo().isExposeResendVerificationMail()){
-			registerEndpoint(createResendVerificationEmailRequestMappingInfo(),"resendVerificationMail");
+			registerEndpoint(createResendVerificationContactInformationRequestMappingInfo(),"resendVerificationMail");
 		}
 		if (getEndpointInfo().isExposeVerifyUser()){
 			registerEndpoint(createVerifyUserRequestMappingInfo(),"verifyUser");
@@ -405,21 +405,21 @@ public abstract class AbstractUserController<U extends AbstractUser<ID>, ID exte
 		if (getEndpointInfo().isExposeResetPassword()){
 			registerEndpoint(createResetPasswordRequestMappingInfo(),"resetPassword");
 		}
-		if (getEndpointInfo().isExposeFetchByEmail()){
-			registerEndpoint(createFetchByEmailRequestMappingInfo(),"fetchByEmail");
+		if (getEndpointInfo().isExposeFetchByContactInformation()){
+			registerEndpoint(createFetchByContactInformationRequestMappingInfo(),"fetchByContactInformation");
 		}
 		if (getEndpointInfo().isExposeChangePassword()){
 			registerEndpoint(createChangePasswordRequestMappingInfo(),"changePassword");
 		}
-		if (getEndpointInfo().isExposeRequestEmailChange()){
-			registerEndpoint(createRequestEmailChangeRequestMappingInfo(),"requestEmailChange");
+		if (getEndpointInfo().isExposeRequestContactInformationChange()){
+			registerEndpoint(createRequestContactInformationChangeRequestMappingInfo(),"requestContactInformationChange");
 		}
-		if (getEndpointInfo().isExposeChangeEmail()){
-			registerEndpoint(createChangeEmailRequestMappingInfo(),"changeEmail");
+		if (getEndpointInfo().isExposeChangeContactInformation()){
+			registerEndpoint(createChangeContactInformationRequestMappingInfo(),"changeContactInformation");
 		}
 
-//		if (getEndpointInfo().isExposeChangeEmailView()){
-//			registerViewEndpoint(createChangeEmailRequestViewMappingInfo(),"showChangeEmail");
+//		if (getEndpointInfo().isExposeChangeContactInformationView()){
+//			registerViewEndpoint(createChangeContactInformationRequestViewMappingInfo(),"showChangeContactInformation");
 //		}
 		if (getEndpointInfo().isExposeNewAuthToken()){
 			registerEndpoint(createNewAuthTokenRequestMappingInfo(),"createNewAuthToken");
@@ -446,9 +446,9 @@ public abstract class AbstractUserController<U extends AbstractUser<ID>, ID exte
 				.build();
 	}
 
-	protected RequestMappingInfo createResendVerificationEmailRequestMappingInfo() {
+	protected RequestMappingInfo createResendVerificationContactInformationRequestMappingInfo() {
 		return RequestMappingInfo
-				.paths(getAuthProperties().getController().getResendVerificationEmailUrl())
+				.paths(getAuthProperties().getController().getResendVerificationContactInformationUrl())
 				.methods(RequestMethod.POST)
 				//.consumes(MediaType.APPLICATION_FORM_URLENCODED_VALUE)
 				.build();
@@ -491,9 +491,9 @@ public abstract class AbstractUserController<U extends AbstractUser<ID>, ID exte
 	}
 
 
-	protected RequestMappingInfo createFetchByEmailRequestMappingInfo() {
+	protected RequestMappingInfo createFetchByContactInformationRequestMappingInfo() {
 		return RequestMappingInfo
-				.paths(getAuthProperties().getController().getFetchByEmailUrl())
+				.paths(getAuthProperties().getController().getFetchByContactInformationUrl())
 				.methods(RequestMethod.POST)
 				//.consumes(MediaType.APPLICATION_FORM_URLENCODED_VALUE)
 				.produces(getMediaType())
@@ -512,26 +512,26 @@ public abstract class AbstractUserController<U extends AbstractUser<ID>, ID exte
 
 
 
-	protected RequestMappingInfo createRequestEmailChangeRequestMappingInfo() {
+	protected RequestMappingInfo createRequestContactInformationChangeRequestMappingInfo() {
 		return RequestMappingInfo
-				.paths(getAuthProperties().getController().getRequestEmailChangeUrl())
+				.paths(getAuthProperties().getController().getRequestContactInformationChangeUrl())
 				.methods(RequestMethod.POST)
 				.consumes(getMediaType())
 				.build();
 	}
 
-	protected RequestMappingInfo createChangeEmailRequestMappingInfo() {
+	protected RequestMappingInfo createChangeContactInformationRequestMappingInfo() {
 		return RequestMappingInfo
-				.paths(getAuthProperties().getController().getChangeEmailUrl())
+				.paths(getAuthProperties().getController().getChangeContactInformationUrl())
 				.methods(RequestMethod.POST)
 //				.consumes(MediaType.APPLICATION_FORM_URLENCODED_VALUE)
 				.produces(getMediaType())
 				.build();
 	}
 
-//	protected RequestMappingInfo createChangeEmailRequestViewMappingInfo() {
+//	protected RequestMappingInfo createChangeContactInformationRequestViewMappingInfo() {
 //		return RequestMappingInfo
-//				.paths(getAuthProperties().getController().getChangeEmailViewUrl())
+//				.paths(getAuthProperties().getController().getChangeContactInformationViewUrl())
 //				.methods(RequestMethod.GET)
 //				.produces(getMediaType())
 //				.build();
@@ -563,7 +563,7 @@ public abstract class AbstractUserController<U extends AbstractUser<ID>, ID exte
 	 * Adds an Authorization header to the response for certain user
 	 */
 	protected void appendFreshTokenOf(U user, HttpServletResponse response) throws EntityNotFoundException {
-		String token = getUserService().createNewAuthToken(user.getEmail());
+		String token = getUserService().createNewAuthToken(user.getContactInformation());
 		httpTokenService.appendToken(token,response);
 //		response.addHeader(LecUtils.TOKEN_RESPONSE_HEADER_NAME, JwtService.TOKEN_PREFIX + token);
 	}

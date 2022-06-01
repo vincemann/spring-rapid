@@ -37,15 +37,15 @@ public class RapidUserDetailsService
 	@Transactional
 	@LogInteraction
 	@Override
-	public RapidAuthenticatedPrincipal loadUserByUsername(String email) throws UsernameNotFoundException {
+	public RapidAuthenticatedPrincipal loadUserByUsername(String contactInformation) throws UsernameNotFoundException {
 		AbstractUser<?> user;
 		try {
-			Optional<AbstractUser<?>> byEmail = userService.findByEmail(email);
-			VerifyEntity.isPresent(byEmail,"User with email: "+email+" not found");
-			user = byEmail.get();
+			Optional<AbstractUser<?>> byContactInformation = userService.findByContactInformation(contactInformation);
+			VerifyEntity.isPresent(byContactInformation,"User with contactInformation: "+contactInformation+" not found");
+			user = byContactInformation.get();
 		} catch (EntityNotFoundException e) {
 			throw new UsernameNotFoundException(
-					Message.get("com.github.vincemann.userNotFound", email)
+					Message.get("com.github.vincemann.userNotFound", contactInformation)
 					,e);
 		}
 

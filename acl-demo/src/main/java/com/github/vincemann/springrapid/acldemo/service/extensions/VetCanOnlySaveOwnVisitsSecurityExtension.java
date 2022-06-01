@@ -25,7 +25,7 @@ public class VetCanOnlySaveOwnVisitsSecurityExtension extends AbstractSecurityEx
         Vet vet = visit.getVet();
         VerifyEntity.notNull(vet,"Vet for saved Visit must not be null");
         if (RapidSecurityContext.getRoles().contains(MyRoles.VET)){
-            String targetVet = vet.getUser().getEmail();
+            String targetVet = vet.getUser().getContactInformation();
             String loggedInVet = RapidSecurityContext.getName();
             if (!targetVet.equals(loggedInVet)){
                 throw new AccessDeniedException("Vet mapped to visit, that is about to get saved, does not match authenticated vet");

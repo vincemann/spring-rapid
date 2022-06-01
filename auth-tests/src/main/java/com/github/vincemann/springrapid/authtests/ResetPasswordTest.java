@@ -15,7 +15,7 @@ import static com.github.vincemann.springrapid.authtests.adapter.AuthTestAdapter
 
 public class ResetPasswordTest extends AbstractRapidAuthIntegrationTest {
 
-    // todo maybe add mod token tests like in changeEmailTests
+    // todo maybe add mod token tests like in changeContactInformationTests
 //    @Autowired
 //    private JweTokenService jweTokenService;
 

@@ -46,13 +46,13 @@ public class JpaVisitService extends JPACrudService<Visit,Long, VisitRepository>
 
     @Override
     public void subscribeOwner(Owner owner, Visit visit) {
-        aclPermissionService.savePermissionForUserOverEntity(owner.getUser().getEmail(),visit, BasePermission.READ);
+        aclPermissionService.savePermissionForUserOverEntity(owner.getUser().getContactInformation(),visit, BasePermission.READ);
     }
 
     @Override
     public void unsubscribeOwner(Owner owner, Visit visit) throws BadEntityException {
         try {
-            aclPermissionService.deletePermissionForUserOverEntity(owner.getUser().getEmail(),visit, BasePermission.READ);
+            aclPermissionService.deletePermissionForUserOverEntity(owner.getUser().getContactInformation(),visit, BasePermission.READ);
         } catch (AclNotFoundException | AceNotFoundException e) {
             throw new BadEntityException(e);
         }

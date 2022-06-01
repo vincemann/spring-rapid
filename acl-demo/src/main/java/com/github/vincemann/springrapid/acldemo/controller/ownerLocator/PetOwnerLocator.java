@@ -24,6 +24,6 @@ public class PetOwnerLocator implements OwnerLocator<Pet> {
     @Override
     public Optional<String> find(Pet pet) {
         entityManager.merge(pet);
-        return Optional.of(pet.getOwner().getUser().getEmail());
+        return Optional.of(pet.getOwner().getUser().getContactInformation());
     }
 }

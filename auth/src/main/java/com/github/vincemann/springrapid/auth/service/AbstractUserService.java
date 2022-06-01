@@ -5,10 +5,8 @@ import com.github.vincemann.springrapid.auth.AuthProperties;
 import com.github.vincemann.springrapid.auth.MessageSender;
 import com.github.vincemann.springrapid.auth.model.*;
 import com.github.vincemann.springrapid.auth.dto.ChangePasswordDto;
-import com.github.vincemann.springrapid.auth.dto.RequestMediumChangeDto;
+import com.github.vincemann.springrapid.auth.dto.RequestContactInformationChangeDto;
 import com.github.vincemann.springrapid.auth.dto.ResetPasswordDto;
-import com.github.vincemann.springrapid.auth.mail.MailData;
-import com.github.vincemann.springrapid.auth.mail.MailSender;
 import com.github.vincemann.springrapid.auth.security.AuthenticatedPrincipalFactory;
 import com.github.vincemann.springrapid.auth.service.token.AuthorizationTokenService;
 import com.github.vincemann.springrapid.auth.service.token.BadTokenException;
@@ -56,7 +54,7 @@ public abstract class AbstractUserService
         extends JPACrudService<U, ID, R>
             implements UserService<U, ID> {
 
-    public static final String CHANGE_EMAIL_AUDIENCE = "change-email";
+    public static final String CHANGE_EMAIL_AUDIENCE = "change-contactInformation";
     public static final String VERIFY_EMAIL_AUDIENCE = "verify";
     public static final String FORGOT_PASSWORD_AUDIENCE = "forgot-password";
 
@@ -104,10 +102,10 @@ public abstract class AbstractUserService
         return context;
     }
 
-    protected void checkUniqueEmail(String email) throws AlreadyRegisteredException {
-        Optional<U> byEmail = getRepository().findByEmail(email);
-        if (byEmail.isPresent()) {
-            throw new AlreadyRegisteredException("Email: " + email + " is already taken");
+    protected void checkUniqueContactInformation(String contactInformation) throws AlreadyRegisteredException {
+        Optional<U> byContactInformation = getRepository().findByContactInformation(contactInformation);
+        if (byContactInformation.isPresent()) {
+            throw new AlreadyRegisteredException("ContactInformation: " + contactInformation + " is already taken");
         }
     }
 
@@ -116,7 +114,7 @@ public abstract class AbstractUserService
         //admins get created with createAdminMethod
         user.setRoles(Sets.newHashSet(AuthRoles.USER));
         passwordValidator.validate(user.getPassword());
-        checkUniqueEmail(user.getEmail());
+        checkUniqueContactInformation(user.getContactInformation());
         U saved = service.save(user);
         // is done in same transaction -> so applied directly
         makeUnverified(saved);
@@ -180,13 +178,13 @@ public abstract class AbstractUserService
     }
 
 
-    public Optional<U> findByEmail(String email) {
-        return getRepository().findByEmail(email);
+    public Optional<U> findByContactInformation(String contactInformation) {
+        return getRepository().findByContactInformation(contactInformation);
     }
 
 
     /**
-     * Verifies the email id of current-user
+     * Verifies the contactInformation id of current-user
      *
      * @return
      */
@@ -224,7 +222,7 @@ public abstract class AbstractUserService
         // todo changed to softupdate
 //        U saved = update(user);
         U saved = service.softUpdate(user);
-        log.debug("Verified user: " + user.getEmail());
+        log.debug("Verified user: " + user.getContactInformation());
         return saved;
     }
 
@@ -233,11 +231,11 @@ public abstract class AbstractUserService
      * Forgot password.
      */
     @Transactional(propagation = Propagation.REQUIRED, readOnly = false)
-    public void forgotPassword(String email) throws EntityNotFoundException {
+    public void forgotPassword(String contactInformation) throws EntityNotFoundException {
         // fetch the user record from database
-        Optional<U> byEmail = findByEmail(email);
-        VerifyEntity.isPresent(byEmail, "User with email: " + email + " not found");
-        U user = byEmail.get();
+        Optional<U> byContactInformation = findByContactInformation(contactInformation);
+        VerifyEntity.isPresent(byContactInformation, "User with contactInformation: " + contactInformation + " not found");
+        U user = byContactInformation.get();
         sendForgotPasswordMessage(user);
     }
 
@@ -268,15 +266,15 @@ public abstract class AbstractUserService
 
 
 //        MailData mailData = MailData.builder()
-//                .to(user.getEmail())
+//                .to(user.getContactInformation())
 ////                .topic( Message.get("com.github.vincemann.forgotPasswordSubject"))
 //                .topic(FORGOT_PASSWORD_AUDIENCE)
-//                .body(Message.get("com.github.vincemann.forgotPasswordEmail", forgotPasswordLink))
+//                .body(Message.get("com.github.vincemann.forgotPasswordContactInformation", forgotPasswordLink))
 //                .link(forgotPasswordLink)
 //                .code(forgotPasswordCode)
 //                .build();
 //        mailSender.send(mailData);
-        messageSender.sendMessage(forgotPasswordLink,FORGOT_PASSWORD_AUDIENCE,forgotPasswordCode,user.getEmail());
+        messageSender.sendMessage(forgotPasswordLink,FORGOT_PASSWORD_AUDIENCE,forgotPasswordCode,user.getContactInformation());
 
 
         log.debug("Forgot password link mail queued.");
@@ -379,7 +377,7 @@ public abstract class AbstractUserService
         user.setPassword(passwordEncoder.encode(changePasswordDto.getPassword()));
         user.setCredentialsUpdatedMillis(System.currentTimeMillis());
         // todo changed to softupdate
-        log.debug("changed pw of user: " + user.getEmail());
+        log.debug("changed pw of user: " + user.getContactInformation());
         try {
 //            update(user);
             service.softUpdate(user);
@@ -424,73 +422,73 @@ public abstract class AbstractUserService
 
 
     /**
-     * Requests for email change.
+     * Requests for contactInformation change.
      */
     @Transactional(propagation = Propagation.REQUIRED, readOnly = false)
-    public void requestPrincipalChange(U user, RequestMediumChangeDto emailChangeDto) throws EntityNotFoundException, AlreadyRegisteredException {
+    public void requestPrincipalChange(U user, RequestContactInformationChangeDto contactInformationChangeDto) throws EntityNotFoundException, AlreadyRegisteredException {
         VerifyEntity.isPresent(user, "User not found");
-        checkUniqueEmail(emailChangeDto.getNewEmail());
+        checkUniqueContactInformation(contactInformationChangeDto.getNewContactInformation());
 
 //        LexUtils.validateField("updatedUser.password",
-//                passwordEncoder.matches(emailChangeDto.getPassword(),
+//                passwordEncoder.matches(contactInformationChangeDto.getPassword(),
 //                        user.getPassword()),
 //                "com.github.vincemann.wrong.password").go();
 
-        // preserves the new email id
-        user.setNewEmail(emailChangeDto.getNewEmail());
-        //user.setChangeEmailCode(LemonValidationUtils.uid());
+        // preserves the new contactInformation id
+        user.setNewContactInformation(contactInformationChangeDto.getNewContactInformation());
+        //user.setChangeContactInformationCode(LemonValidationUtils.uid());
         U saved;
         try {
             // todo changed to softupdate
             saved = service.softUpdate(user);
             // after successful commit, mails a link to the user
-//            TransactionalUtils.afterCommit(() -> mailChangeEmailLink(saved));
+//            TransactionalUtils.afterCommit(() -> mailChangeContactInformationLink(saved));
         } catch (NonTransientDataAccessException | BadEntityException e) {
-            throw new RuntimeException("Email was malformed, although validation check was successful");
+            throw new RuntimeException("ContactInformation was malformed, although validation check was successful");
         }
 
-        log.debug("Requested email change: " + user);
+        log.debug("Requested contactInformation change: " + user);
         sendChangePrincipalMessage(saved);
     }
 
 
     /**
-     * Mails the change-email verification link to the user.
+     * Mails the change-contactInformation verification link to the user.
      */
     protected void sendChangePrincipalMessage(U user) {
         JWTClaimsSet claims = RapidJwt.create(
                 CHANGE_EMAIL_AUDIENCE,
                 user.getId().toString(),
                 properties.getJwt().getExpirationMillis(),
-                MapUtils.mapOf("newEmail", user.getNewEmail()));
-        String changeEmailCode = jweTokenService.createToken(claims);
+                MapUtils.mapOf("newContactInformation", user.getNewContactInformation()));
+        String changeContactInformationCode = jweTokenService.createToken(claims);
 
         try {
 
-            log.debug("Mailing change email link to user: " + user);
-            String changeEmailLink = UriComponentsBuilder
+            log.debug("Mailing change contactInformation link to user: " + user);
+            String changeContactInformationLink = UriComponentsBuilder
                     .fromHttpUrl(
                             properties.getCoreProperties().getApplicationUrl()
-                                    + properties.getController().getChangeEmailUrl())
+                                    + properties.getController().getChangeContactInformationUrl())
 //                    .queryParam("id", user.getId())
-                    .queryParam("code", changeEmailCode)
+                    .queryParam("code", changeContactInformationCode)
                     .toUriString();
-            log.info("change email link: " + changeEmailLink);
+            log.info("change contactInformation link: " + changeContactInformationLink);
 
 
             // mail it
 //            MailData mailData = MailData.builder()
-//                    .to(user.getEmail())
-////                    .topic( Message.get("com.github.vincemann.changeEmailSubject"))
+//                    .to(user.getContactInformation())
+////                    .topic( Message.get("com.github.vincemann.changeContactInformationSubject"))
 //                    .topic(CHANGE_EMAIL_AUDIENCE)
-//                    .body(Message.get("com.github.vincemann.changeEmailEmail", changeEmailLink))
-//                    .link(changeEmailLink)
-//                    .code(changeEmailCode)
+//                    .body(Message.get("com.github.vincemann.changeContactInformationContactInformation", changeContactInformationLink))
+//                    .link(changeContactInformationLink)
+//                    .code(changeContactInformationCode)
 //                    .build();
 //            mailSender.send(mailData);
-            messageSender.sendMessage(changeEmailLink,CHANGE_EMAIL_AUDIENCE,changeEmailCode,user.getEmail());
+            messageSender.sendMessage(changeContactInformationLink,CHANGE_EMAIL_AUDIENCE,changeContactInformationCode,user.getContactInformation());
 
-            log.debug("Change email link mail queued.");
+            log.debug("Change contactInformation link mail queued.");
 
         } catch (Throwable e) {
             // In case of exception, just log the error and keep silent, people can use resendVerification link endpoint
@@ -500,12 +498,12 @@ public abstract class AbstractUserService
 
 
     /**
-     * Change the email.
+     * Change the contactInformation.
      *
      * @return
      */
     @Transactional(propagation = Propagation.REQUIRED, readOnly = false)
-    public U changeEmail(String code) throws EntityNotFoundException, BadEntityException {
+    public U changeContactInformation(String code) throws EntityNotFoundException, BadEntityException {
         try {
             JWTClaimsSet claims = jweTokenService.parseToken(code);
             U user = extractUserFromClaims(claims);
@@ -516,21 +514,21 @@ public abstract class AbstractUserService
 //                    claims.getClaim("id").equals(user.getId().toString()),
 //                    "Wrong user id in token");
 
-            VerifyEntity.is(StringUtils.isNotBlank(user.getNewEmail()), "No new email found. Looks like you have already changed.");
+            VerifyEntity.is(StringUtils.isNotBlank(user.getNewContactInformation()), "No new contactInformation found. Looks like you have already changed.");
 
 
             VerifyAccess.condition(
-                    claims.getClaim("newEmail").equals(user.getNewEmail()),
-                    Message.get("com.github.vincemann.wrong.changeEmailCode"));
+                    claims.getClaim("newContactInformation").equals(user.getNewContactInformation()),
+                    Message.get("com.github.vincemann.wrong.changeContactInformationCode"));
 
-            // Ensure that the email would be unique
+            // Ensure that the contactInformation would be unique
             VerifyEntity.is(
-                    !findByEmail(user.getNewEmail()).isPresent(), "Email Id already used");
+                    !findByContactInformation(user.getNewContactInformation()).isPresent(), "ContactInformation Id already used");
 
             // update the fields
-            user.setEmail(user.getNewEmail());
-            user.setNewEmail(null);
-            //user.setChangeEmailCode(null);
+            user.setContactInformation(user.getNewContactInformation());
+            user.setNewContactInformation(null);
+            //user.setChangeContactInformationCode(null);
             user.setCredentialsUpdatedMillis(System.currentTimeMillis());
 
             // todo create method for that
@@ -543,7 +541,7 @@ public abstract class AbstractUserService
         } catch (BadTokenException e) {
             throw new BadEntityException(Message.get("com.github.vincemann.wrong.verificationCode"), e);
         } catch (NonTransientDataAccessException e) {
-            throw new RuntimeException("Could not update users email", e);
+            throw new RuntimeException("Could not update users contactInformation", e);
         }
     }
 
@@ -562,15 +560,15 @@ public abstract class AbstractUserService
      * @return
      */
     @Override
-    public String createNewAuthToken(String email) throws EntityNotFoundException {
-        Optional<U> byEmail = findByEmail(email);
-        VerifyEntity.isPresent(byEmail, "user with email: " + email + " not found");
-        return authorizationTokenService.createToken(authenticatedPrincipalFactory.create(byEmail.get()));
+    public String createNewAuthToken(String contactInformation) throws EntityNotFoundException {
+        Optional<U> byContactInformation = findByContactInformation(contactInformation);
+        VerifyEntity.isPresent(byContactInformation, "user with contactInformation: " + contactInformation + " not found");
+        return authorizationTokenService.createToken(authenticatedPrincipalFactory.create(byContactInformation.get()));
     }
 
     @Override
     public String createNewAuthToken() throws EntityNotFoundException {
-        return createNewAuthToken(securityContext.currentPrincipal().getEmail());
+        return createNewAuthToken(securityContext.currentPrincipal().getContactInformation());
     }
 
     @Transactional(propagation = Propagation.REQUIRED, readOnly = false)
@@ -578,7 +576,7 @@ public abstract class AbstractUserService
     public U newAdmin(AuthProperties.Admin admin) {
         // create the adminUser
         U adminUser = newUser();
-        adminUser.setEmail(admin.getEmail());
+        adminUser.setContactInformation(admin.getContactInformation());
         adminUser.setPassword(admin.getPassword());
         adminUser.getRoles().add(AuthRoles.ADMIN);
         return adminUser;
@@ -586,7 +584,7 @@ public abstract class AbstractUserService
 
     @Transactional(propagation = Propagation.REQUIRED, readOnly = false)
     public U signupAdmin(U admin) throws AlreadyRegisteredException, BadEntityException {
-        checkUniqueEmail(admin.getEmail());
+        checkUniqueContactInformation(admin.getContactInformation());
         passwordValidator.validate(admin.getPassword());
         return service.save(admin);
     }
@@ -601,7 +599,7 @@ public abstract class AbstractUserService
                 user.getId().toString(),
                 properties.getJwt().getExpirationMillis(),
                 //payload
-                MapUtils.mapOf("email", user.getEmail()));
+                MapUtils.mapOf("contactInformation", user.getContactInformation()));
         String verificationCode = jweTokenService.createToken(claims);
 
 
@@ -617,18 +615,18 @@ public abstract class AbstractUserService
 
 //        // send the mail
 //        MailData mailData = MailData.builder()
-//                .to(user.getEmail())
+//                .to(user.getContactInformation())
 ////                .topic(Message.get("com.github.vincemann.verifySubject"))
 //                .topic(VERIFY_EMAIL_AUDIENCE)
-//                .body(Message.get("com.github.vincemann.verifyEmail", verifyLink))
+//                .body(Message.get("com.github.vincemann.verifyContactInformation", verifyLink))
 //                .link(verifyLink)
 //                .code(verificationCode)
 //                .build();
 //        mailSender.send(mailData);
-        messageSender.sendMessage(verifyLink,VERIFY_EMAIL_AUDIENCE,verificationCode, user.getEmail());
+        messageSender.sendMessage(verifyLink,VERIFY_EMAIL_AUDIENCE,verificationCode, user.getContactInformation());
 
 
-        log.debug("Verification mail to " + user.getEmail() + " queued.");
+        log.debug("Verification mail to " + user.getContactInformation() + " queued.");
     }
 
 
@@ -653,10 +651,6 @@ public abstract class AbstractUserService
 
     protected AuthProperties getProperties() {
         return properties;
-    }
-
-    protected MailSender<MailData> getMailSender() {
-        return mailSender;
     }
 
     protected JweTokenService getJweTokenService() {

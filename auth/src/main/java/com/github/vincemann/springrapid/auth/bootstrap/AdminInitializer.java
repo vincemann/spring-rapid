@@ -43,11 +43,11 @@ public class AdminInitializer extends DatabaseInitializer {
     protected void addAdmins() throws BadEntityException, AlreadyRegisteredException {
         List<AuthProperties.Admin> admins = authProperties.getAdmins();
         for (AuthProperties.Admin admin : admins) {
-            log.debug("registering admin:: " + admin.getEmail());
+            log.debug("registering admin:: " + admin.getContactInformation());
 
             // Check if the user already exists
-            Optional<? extends AbstractUser<?>> byEmail = userService.findByEmail(admin.getEmail());
-            if (byEmail.isEmpty()) {
+            Optional<? extends AbstractUser<?>> byContactInformation = userService.findByContactInformation(admin.getContactInformation());
+            if (byContactInformation.isEmpty()) {
                 // Doesn't exist. So, create it.
                 log.debug("admin does not exist yet, creating: " + admin);
                 userService.signupAdmin(userService.newAdmin(admin));

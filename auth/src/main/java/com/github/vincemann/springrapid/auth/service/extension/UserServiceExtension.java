@@ -3,7 +3,7 @@ package com.github.vincemann.springrapid.auth.service.extension;
 import com.github.vincemann.springrapid.auth.AuthProperties;
 import com.github.vincemann.springrapid.auth.model.AbstractUser;
 import com.github.vincemann.springrapid.auth.dto.ChangePasswordDto;
-import com.github.vincemann.springrapid.auth.dto.RequestMediumChangeDto;
+import com.github.vincemann.springrapid.auth.dto.RequestContactInformationChangeDto;
 import com.github.vincemann.springrapid.auth.dto.ResetPasswordDto;
 import com.github.vincemann.springrapid.auth.service.AlreadyRegisteredException;
 import com.github.vincemann.springrapid.auth.service.UserService;
@@ -35,8 +35,8 @@ public interface UserServiceExtension<S extends UserService>
     }
 
     @Override
-    default Optional<AbstractUser> findByEmail( String email)  {
-        return getNext().findByEmail(email);
+    default Optional<AbstractUser> findByContactInformation( String contactInformation)  {
+        return getNext().findByContactInformation(contactInformation);
     }
 
     @Override
@@ -45,8 +45,8 @@ public interface UserServiceExtension<S extends UserService>
     }
 
     @Override
-    default void forgotPassword( String email) throws EntityNotFoundException {
-        getNext().forgotPassword(email);
+    default void forgotPassword( String contactInformation) throws EntityNotFoundException {
+        getNext().forgotPassword(contactInformation);
     }
 
     @Override
@@ -60,18 +60,18 @@ public interface UserServiceExtension<S extends UserService>
     }
 
     @Override
-    default void requestPrincipalChange(AbstractUser user, RequestMediumChangeDto emailChangeForm) throws EntityNotFoundException, AlreadyRegisteredException {
-        getNext().requestPrincipalChange(user,emailChangeForm);
+    default void requestPrincipalChange(AbstractUser user, RequestContactInformationChangeDto contactInformationChangeForm) throws EntityNotFoundException, AlreadyRegisteredException {
+        getNext().requestPrincipalChange(user,contactInformationChangeForm);
     }
 
     @Override
-    default AbstractUser changeEmail(/*@NotBlank*/ String changeEmailCode) throws EntityNotFoundException, BadEntityException {
-        return getNext().changeEmail(changeEmailCode);
+    default AbstractUser changeContactInformation(/*@NotBlank*/ String changeContactInformationCode) throws EntityNotFoundException, BadEntityException {
+        return getNext().changeContactInformation(changeContactInformationCode);
     }
 
     @Override
-    default String createNewAuthToken(String targetUserEmail) throws EntityNotFoundException {
-        return getNext().createNewAuthToken(targetUserEmail);
+    default String createNewAuthToken(String targetUserContactInformation) throws EntityNotFoundException {
+        return getNext().createNewAuthToken(targetUserContactInformation);
     }
 
     @Override

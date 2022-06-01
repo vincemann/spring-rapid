@@ -373,9 +373,9 @@ public class AbstractControllerIntegrationTest<C extends GenericCrudController<?
         Assertions.assertEquals(owner, pet.getOwner());
     }
 
-    protected String registerOwnerWithPets(Owner owner, String email, String password, Pet... pets) throws Exception {
-        Owner dbOwner = registerOwner(owner, email, password);
-        String token = userController.login2xx(email,password);
+    protected String registerOwnerWithPets(Owner owner, String contactInformation, String password, Pet... pets) throws Exception {
+        Owner dbOwner = registerOwner(owner, contactInformation, password);
+        String token = userController.login2xx(contactInformation,password);
         for (Pet pet : pets) {
             OwnerCreatesPetDto createPetDto = new OwnerCreatesPetDto(pet,dbOwner.getId());
             FullPetDto savedPetDto = performDs2xx(petController.create(createPetDto)
@@ -384,9 +384,9 @@ public class AbstractControllerIntegrationTest<C extends GenericCrudController<?
         return token;
     }
 
-    protected Vet registerVet(Vet vet, String email, String password) throws Exception {
+    protected Vet registerVet(Vet vet, String contactInformation, String password) throws Exception {
         SignupDto signupDto = SignupDto.builder()
-                .email(email)
+                .contactInformation(contactInformation)
                 .password(password)
                 .build();
         UUIDSignupResponseDto signedUpDto = performDs2xx(userController.signup(signupDto),UUIDSignupResponseDto.class);
@@ -397,8 +397,8 @@ public class AbstractControllerIntegrationTest<C extends GenericCrudController<?
         return vetService.findById(fullVetDto.getId()).get();
     }
 
-    protected Vet registerEnabledVet(Vet vet, String email, String password) throws Exception {
-        Vet registerVet = registerVet(vet, email, password);
+    protected Vet registerEnabledVet(Vet vet, String contactInformation, String password) throws Exception {
+        Vet registerVet = registerVet(vet, contactInformation, password);
         String adminToken = userController.login2xx(ADMIN_EMAIL, ADMIN_PASSWORD);
         String verifyVetJson = createUpdateJsonRequest(
                 createUpdateJsonLine("add", "/roles/-", MyRoles.VET),
@@ -425,9 +425,9 @@ public class AbstractControllerIntegrationTest<C extends GenericCrudController<?
         return visitRepository.findById(responseDto.getId()).get();
     }
 
-    protected Owner registerOwner(Owner owner, String email, String password) throws Exception {
+    protected Owner registerOwner(Owner owner, String contactInformation, String password) throws Exception {
         SignupDto signupDto = SignupDto.builder()
-                .email(email)
+                .contactInformation(contactInformation)
                 .password(password)
                 .build();
         UUIDSignupResponseDto signedUpDto = performDs2xx(userController.signup(signupDto),UUIDSignupResponseDto.class);

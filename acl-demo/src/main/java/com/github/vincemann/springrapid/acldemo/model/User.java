@@ -21,16 +21,16 @@ public class User extends AbstractUser<Long> {
 	@Nullable
 	private String uuid;
 
-	public User(String email, String password, String uuid, String... roles) {
-		this.email = email;
+	public User(String contactInformation, String password, String uuid, String... roles) {
+		this.contactInformation = contactInformation;
 		this.password = password;
 		this.roles= Sets.newHashSet(roles);
 		this.uuid = uuid;
 	}
 
 	@Builder
-	public User(String email, String password, String uuid, Set<String> roles, String newEmail, long credentialsUpdatedMillis, String captchaResponse) {
-		super(email, password, roles, newEmail, credentialsUpdatedMillis, captchaResponse);
+	public User(String contactInformation, String password, String uuid, Set<String> roles, String newContactInformation, long credentialsUpdatedMillis, String captchaResponse) {
+		super(contactInformation, password, roles, newContactInformation, credentialsUpdatedMillis, captchaResponse);
 		this.uuid = uuid;
 	}
 }

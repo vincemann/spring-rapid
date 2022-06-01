@@ -12,8 +12,8 @@ import java.util.Set;
 public class MyFindOwnUserDto extends RapidFindOwnUserDto {
     private String name;
 
-    public MyFindOwnUserDto(String email, Set<String> roles, String id, String name) {
-        super(email, roles, id);
+    public MyFindOwnUserDto(String contactInformation, Set<String> roles, String id, String name) {
+        super(contactInformation, roles, id);
         this.name = name;
     }
 }

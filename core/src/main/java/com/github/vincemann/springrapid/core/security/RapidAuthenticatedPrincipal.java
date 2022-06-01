@@ -93,6 +93,10 @@ public class RapidAuthenticatedPrincipal implements AuthenticatedPrincipal, Cred
         this.roles = roles;
     }
 
+    public void setId(String id) {
+        this.id = id;
+    }
+
     @Override
     public String toString() {
         return new ReflectionToStringBuilder(this).toString();

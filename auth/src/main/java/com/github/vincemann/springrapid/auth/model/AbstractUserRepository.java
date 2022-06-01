@@ -20,5 +20,5 @@ public interface AbstractUserRepository
 	<U extends AbstractUser<ID>, ID extends Serializable>
 extends JpaRepository<U, ID> {
 	
-	Optional<U> findByEmail(String email);
+	Optional<U> findByContactInformation(String contactInformation);
 }

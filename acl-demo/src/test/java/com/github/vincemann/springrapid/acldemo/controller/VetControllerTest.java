@@ -29,7 +29,7 @@ public class VetControllerTest extends AbstractControllerIntegrationTest<VetCont
     @Test
     public void canRegisterVet() throws Exception {
         SignupDto signupDto = SignupDto.builder()
-                .email(VET_DICAPRIO_EMAIL)
+                .contactInformation(VET_DICAPRIO_EMAIL)
                 .password(VET_DICAPRIO_PASSWORD)
                 .build();
         UUIDSignupResponseDto signedUpDto = performDs2xx(userController.signup(signupDto), UUIDSignupResponseDto.class);
@@ -54,14 +54,14 @@ public class VetControllerTest extends AbstractControllerIntegrationTest<VetCont
         byUuid = userService.findByUuid(uuid);
         Assertions.assertFalse(byUuid.isPresent());
 
-        Optional<User> vetDiCaprioUserByEmail = userService.findByEmail(VET_DICAPRIO_EMAIL);
-        Assertions.assertTrue(vetDiCaprioUserByEmail.isPresent());
-        User dbUserDiCaprio = vetDiCaprioUserByEmail.get();
+        Optional<User> vetDiCaprioUserByContactInformation = userService.findByContactInformation(VET_DICAPRIO_EMAIL);
+        Assertions.assertTrue(vetDiCaprioUserByContactInformation.isPresent());
+        User dbUserDiCaprio = vetDiCaprioUserByContactInformation.get();
 
         propertyAssert(dbUserDiCaprio)
                 .assertContains(dbUserDiCaprio::getRoles, MyRoles.NEW_VET, AuthRoles.UNVERIFIED, AuthRoles.USER)
                 .assertSize(dbUserDiCaprio::getRoles, 3)
-                .assertEquals(dbUserDiCaprio::getEmail, VET_DICAPRIO_EMAIL)
+                .assertEquals(dbUserDiCaprio::getContactInformation, VET_DICAPRIO_EMAIL)
                 .assertNotNull(dbUserDiCaprio::getPassword)
                 .assertNull(dbUserDiCaprio::getUuid);
 

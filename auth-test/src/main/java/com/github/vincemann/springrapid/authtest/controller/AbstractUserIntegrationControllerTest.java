@@ -20,8 +20,8 @@ public abstract class AbstractUserIntegrationControllerTest
     }
 
 
-    public ResultActions login(String email, String password) throws Exception {
-        return getTestTemplate().getMvc().perform(getTestTemplate().login_builder(email,password));
+    public ResultActions login(String contactInformation, String password) throws Exception {
+        return getTestTemplate().getMvc().perform(getTestTemplate().login_builder(contactInformation,password));
     }
 
     // dont use, bc when user is saved hash will be send
@@ -29,8 +29,8 @@ public abstract class AbstractUserIntegrationControllerTest
 //        return getTestTemplate().login2xx(user);
 //    }
 
-    public String login2xx(String email, String password) throws Exception {
-        return getTestTemplate().login2xx(email,password);
+    public String login2xx(String contactInformation, String password) throws Exception {
+        return getTestTemplate().login2xx(contactInformation,password);
     }
 
 

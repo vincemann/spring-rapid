@@ -7,9 +7,9 @@ public abstract class AuthTestAdapter {
 
     public static  String SIGNUP_USER_EMAIL = "signupUser@example.com";
     public static  String SIGNUP_USER_PASSWORD = "signupUserSanjaySanjay99!";
-    public static  String NEW_EMAIL = "new.email@example.com";
+    public static  String NEW_EMAIL = "new.contactInformation@example.com";
     public static  String NEW_PASSWORD = "newPasswordSanjaySanjay99!";
-    public static  String INVALID_EMAIL = "an-invalid-email";
+    public static  String INVALID_EMAIL = "an-invalid-contactInformation";
     public static  String INVALID_PASSWORD = "short";
     public static  String UNKNOWN_EMAIL = "unknown@example.com";
 
@@ -53,7 +53,7 @@ public abstract class AuthTestAdapter {
 
     public void afterEach()throws Exception {}
 
-    public abstract AbstractUser<Long> createTestUser(String email, String password, String... roles);
+    public abstract AbstractUser<Long> createTestUser(String contactInformation, String password, String... roles);
 
     public SignupDto createValidSignupDto(){
         return new SignupDto(SIGNUP_USER_EMAIL, SIGNUP_USER_PASSWORD);

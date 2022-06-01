@@ -2,10 +2,8 @@ package com.github.vincemann.springrapid.auth.dto;
 
 import com.fasterxml.jackson.annotation.JsonView;
 import com.github.vincemann.springrapid.auth.util.UserVerifyUtils;
-import com.github.vincemann.springrapid.core.util.LazyLogUtils;
 import lombok.*;
 
-import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
 import java.io.Serializable;
 
@@ -16,12 +14,12 @@ import java.io.Serializable;
 @Builder
 @ToString
 public class SignupDto implements Serializable {
-    //    @UniqueEmail(/*groups = {UserVerifyUtils.SignUpValidation.class}*/)
+    //    @UniqueContactInformation(/*groups = {UserVerifyUtils.SignUpValidation.class}*/)
     @JsonView(UserVerifyUtils.SignupInput.class)
     @NotBlank
-    @Email
-    private String email;
-    //    @Password(/*groups = {UserVerifyUtils.SignUpValidation.class, UserVerifyUtils.ChangeEmailValidation.class}*/)
+//    @ContactInformation
+    private String contactInformation;
+    //    @Password(/*groups = {UserVerifyUtils.SignUpValidation.class, UserVerifyUtils.ChangeContactInformationValidation.class}*/)
     @JsonView(UserVerifyUtils.SignupInput.class)
     @NotBlank
     private String password;

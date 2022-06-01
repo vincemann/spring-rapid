@@ -2,7 +2,7 @@ package com.github.vincemann.springrapid.authtests;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.github.vincemann.springrapid.auth.model.AbstractUser;
-import com.github.vincemann.springrapid.auth.dto.RequestMediumChangeDto;
+import com.github.vincemann.springrapid.auth.dto.RequestContactInformationChangeDto;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
@@ -12,92 +12,92 @@ import static org.mockito.Mockito.verify;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static com.github.vincemann.springrapid.authtests.adapter.AuthTestAdapter.*;
 import static com.github.vincemann.springrapid.core.util.ProxyUtils.aopUnproxy;
-public class RequestEmailChangeTest extends AbstractRapidAuthIntegrationTest {
+public class RequestContactInformationChangeTest extends AbstractRapidAuthIntegrationTest {
 
 
-	protected RequestMediumChangeDto emailChangeDto() {
+	protected RequestContactInformationChangeDto contactInformationChangeDto() {
 
-		RequestMediumChangeDto changeForm = new RequestMediumChangeDto();
+		RequestContactInformationChangeDto changeForm = new RequestContactInformationChangeDto();
 //		changeForm.setPassword(USER_PASSWORD);
-		changeForm.setNewEmail(NEW_EMAIL);
+		changeForm.setNewContactInformation(NEW_EMAIL);
 		return changeForm;
 	}
 
 	@Test
-	public void unverifiedUserCanRequestEmailChange() throws Exception {
+	public void unverifiedUserCanRequestContactInformationChange() throws Exception {
 		String token = login2xx(UNVERIFIED_USER_EMAIL,UNVERIFIED_USER_PASSWORD);
-		mvc.perform(testTemplate.requestEmailChange(getUnverifiedUser().getId(),token,emailChangeDto()))
+		mvc.perform(testTemplate.requestContactInformationChange(getUnverifiedUser().getId(),token,contactInformationChangeDto()))
 				.andExpect(status().is(204));
 
 		verify(aopUnproxy(mailSender)).send(any());
 
 		AbstractUser<Long> updatedUser = getUserService().findById(getUnverifiedUser().getId()).get();
-		Assertions.assertEquals(NEW_EMAIL, updatedUser.getNewEmail());
-		Assertions.assertEquals(UNVERIFIED_USER_EMAIL, updatedUser.getEmail());
+		Assertions.assertEquals(NEW_EMAIL, updatedUser.getNewContactInformation());
+		Assertions.assertEquals(UNVERIFIED_USER_EMAIL, updatedUser.getContactInformation());
 	}
 
 	@Test
-	public void userCanRequestEmailChange() throws Exception {
+	public void userCanRequestContactInformationChange() throws Exception {
 		String token = login2xx(USER_EMAIL,USER_PASSWORD);
-		mvc.perform(testTemplate.requestEmailChange(getUser().getId(),token,emailChangeDto()))
+		mvc.perform(testTemplate.requestContactInformationChange(getUser().getId(),token,contactInformationChangeDto()))
 				.andExpect(status().is(204));
 
 		verify(aopUnproxy(mailSender)).send(any());
 
 		AbstractUser<Long> updatedUser = getUserService().findById(getUser().getId()).get();
-		Assertions.assertEquals(NEW_EMAIL, updatedUser.getNewEmail());
-		Assertions.assertEquals(USER_EMAIL, updatedUser.getEmail());
+		Assertions.assertEquals(NEW_EMAIL, updatedUser.getNewContactInformation());
+		Assertions.assertEquals(USER_EMAIL, updatedUser.getContactInformation());
 	}
 
 	/**
-     * A admin should be able to request changing email of another user.
+     * A admin should be able to request changing contactInformation of another user.
      */
 	@Test
-	public void adminCanRequestEmailChangeOfDiffUser() throws Exception {
+	public void adminCanRequestContactInformationChangeOfDiffUser() throws Exception {
 		String token = login2xx(ADMIN_EMAIL,ADMIN_PASSWORD);
-		mvc.perform(testTemplate.requestEmailChange(getUser().getId(),token,emailChangeDto()))
+		mvc.perform(testTemplate.requestContactInformationChange(getUser().getId(),token,contactInformationChangeDto()))
 				.andExpect(status().is(204));
 
 		AbstractUser<Long> updatedUser = getUserService().findById(getUser().getId()).get();
-		Assertions.assertEquals(NEW_EMAIL, updatedUser.getNewEmail());
+		Assertions.assertEquals(NEW_EMAIL, updatedUser.getNewContactInformation());
 	}	
 	
 	/**
-     * A request changing email of unknown user.
+     * A request changing contactInformation of unknown user.
      */
 	@Test
-	public void cantRequestEmailChangeOfUnknownUser() throws Exception {
+	public void cantRequestContactInformationChangeOfUnknownUser() throws Exception {
 		String token = login2xx(USER_EMAIL,USER_PASSWORD);
-		mvc.perform(testTemplate.requestEmailChange(UNKNOWN_USER_ID,token,emailChangeDto()))
+		mvc.perform(testTemplate.requestContactInformationChange(UNKNOWN_USER_ID,token,contactInformationChangeDto()))
 				.andExpect(status().is(404));
 		
 		verify(aopUnproxy(mailSender), never()).send(any());
 	}
 
 	@Test
-	public void userCantRequestEmailChangeOfDiffUser() throws Exception {
+	public void userCantRequestContactInformationChangeOfDiffUser() throws Exception {
 		String token = login2xx(USER_EMAIL,USER_PASSWORD);
-		mvc.perform(testTemplate.requestEmailChange(getSecondUser().getId(),token,emailChangeDto()))
+		mvc.perform(testTemplate.requestContactInformationChange(getSecondUser().getId(),token,contactInformationChangeDto()))
 				.andExpect(status().is(403));
 		
 		verify(aopUnproxy(mailSender), never()).send(any());
 
 		AbstractUser<Long> updatedUser = getUserService().findById(getSecondUser().getId()).get();
-		Assertions.assertNull(updatedUser.getNewEmail());
+		Assertions.assertNull(updatedUser.getNewContactInformation());
 	}
 	
 
 	@Test
-	public void adminCantRequestEmailChangeOfDiffAdmin() throws Exception {
+	public void adminCantRequestContactInformationChangeOfDiffAdmin() throws Exception {
 		//unverified admins are not treated differently than verified admins
 		String token = login2xx(ADMIN_EMAIL,ADMIN_PASSWORD);
-		mvc.perform(testTemplate.requestEmailChange(getSecondAdmin().getId(),token,emailChangeDto()))
+		mvc.perform(testTemplate.requestContactInformationChange(getSecondAdmin().getId(),token,contactInformationChangeDto()))
 				.andExpect(status().is(403));
 		
 		verify(aopUnproxy(mailSender), never()).send(any());
 
 		AbstractUser<Long> updatedUser = getUserService().findById(getSecondAdmin().getId()).get();
-		Assertions.assertNull(updatedUser.getNewEmail());
+		Assertions.assertNull(updatedUser.getNewContactInformation());
 	}
 
 	/**
@@ -106,43 +106,43 @@ public class RequestEmailChangeTest extends AbstractRapidAuthIntegrationTest {
 	 * @throws JsonProcessingException 
      */
 	@Test
-	public void cantRequestEmailChangeWithInvalidData() throws JsonProcessingException, Exception {
-		RequestMediumChangeDto dto = new RequestMediumChangeDto();
-		dto.setNewEmail(null);
+	public void cantRequestContactInformationChangeWithInvalidData() throws JsonProcessingException, Exception {
+		RequestContactInformationChangeDto dto = new RequestContactInformationChangeDto();
+		dto.setNewContactInformation(null);
 //		dto.setPassword(null);
-		// try with null newEmail
+		// try with null newContactInformation
 		String token = login2xx(USER_EMAIL,USER_PASSWORD);
-		mvc.perform(testTemplate.requestEmailChange(getUser().getId(),token,dto))
+		mvc.perform(testTemplate.requestContactInformationChange(getUser().getId(),token,dto))
 				.andExpect(status().is(400));
 //				.andExpect(jsonPath("$.errors[*].field").value(hasSize(1)))
 //				.andExpect(jsonPath("$.errors[*].field").value(hasItems(
-//						"dto.newEmail"
+//						"dto.newContactInformation"
 						/*"dto.password"*/
     	
-		dto = new RequestMediumChangeDto();
+		dto = new RequestContactInformationChangeDto();
 //		dto.setPassword("");
-		dto.setNewEmail("");
+		dto.setNewContactInformation("");
 		
-    	// try with blank newEmail
-		mvc.perform(testTemplate.requestEmailChange(getUser().getId(),token,dto))
+    	// try with blank newContactInformation
+		mvc.perform(testTemplate.requestContactInformationChange(getUser().getId(),token,dto))
 				.andExpect(status().is(400));
 //				.andExpect(jsonPath("$.errors[*].field").value(hasSize(2)))
 //				.andExpect(jsonPath("$.errors[*].field").value(hasItems(
-//						"dto.newEmail"
+//						"dto.newContactInformation"
 //						/*"dto.password"*/)));
 
-		// try with invalid newEmail
-		dto = new RequestMediumChangeDto();
-		dto.setNewEmail(INVALID_EMAIL);
-		mvc.perform(testTemplate.requestEmailChange(getUser().getId(),token,dto))
+		// try with invalid newContactInformation
+		dto = new RequestContactInformationChangeDto();
+		dto.setNewContactInformation(INVALID_EMAIL);
+		mvc.perform(testTemplate.requestContactInformationChange(getUser().getId(),token,dto))
 				.andExpect(status().is(400));
 //				.andExpect(jsonPath("$.errors[*].field").value(hasSize(1)))
-//				.andExpect(jsonPath("$.errors[*].field").value(hasItems("dto.newEmail")));
+//				.andExpect(jsonPath("$.errors[*].field").value(hasItems("dto.newContactInformation")));
 
 		// try with wrong password
 //		dto = dto();
 //		dto.setPassword("wrong-password");
-//		mvc.perform(post("/api/core/users/{id}/email-change-request", getUnverifiedUser().getId())
+//		mvc.perform(post("/api/core/users/{id}/contactInformation-change-request", getUnverifiedUser().getId())
 //				.contentType(MediaType.APPLICATION_JSON)
 //				.header(HttpHeaders.AUTHORIZATION, tokens.get(getUnverifiedUser().getId()))
 //				.content(MapperUtils.toJson(dto)))
@@ -153,7 +153,7 @@ public class RequestEmailChangeTest extends AbstractRapidAuthIntegrationTest {
 		// try with null password
 //		dto = dto();
 //		dto.setPassword(null);
-//		mvc.perform(post("/api/core/users/{id}/email-change-request", getUnverifiedUser().getId())
+//		mvc.perform(post("/api/core/users/{id}/contactInformation-change-request", getUnverifiedUser().getId())
 //				.contentType(MediaType.APPLICATION_JSON)
 //				.header(HttpHeaders.AUTHORIZATION, tokens.get(getUnverifiedUser().getId()))
 //				.content(MapperUtils.toJson(dto)))
@@ -161,13 +161,13 @@ public class RequestEmailChangeTest extends AbstractRapidAuthIntegrationTest {
 //				.andExpect(jsonPath("$.errors[*].field").value(hasSize(1)))
 //				.andExpect(jsonPath("$.errors[*].field").value(hasItems("dto.password")));
 
-		// try with an existing email
-		dto = emailChangeDto();
-		dto.setNewEmail(SECOND_USER_EMAIL);;
-		mvc.perform(testTemplate.requestEmailChange(getUser().getId(),token,dto))
+		// try with an existing contactInformation
+		dto = contactInformationChangeDto();
+		dto.setNewContactInformation(SECOND_USER_EMAIL);;
+		mvc.perform(testTemplate.requestContactInformationChange(getUser().getId(),token,dto))
 				.andExpect(status().is(400));
 //				.andExpect(jsonPath("$.errors[*].field").value(hasSize(1)))
-//				.andExpect(jsonPath("$.errors[*].field").value(hasItems("dto.newEmail")));
+//				.andExpect(jsonPath("$.errors[*].field").value(hasItems("dto.newContactInformation")));
 		
 		verify(aopUnproxy(mailSender), never()).send(any());
 	}

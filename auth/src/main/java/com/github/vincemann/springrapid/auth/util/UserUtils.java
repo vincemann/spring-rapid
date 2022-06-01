@@ -32,18 +32,18 @@ public class UserUtils {
         if (!RapidSecurityContext.isAuthenticated()){
             throw new AccessDeniedException("No user logged in");
         }
-        Optional<T> userByEmail = (Optional<T>) userService.findByEmail(RapidSecurityContext.getName());
+        Optional<T> userByContactInformation = (Optional<T>) userService.findByContactInformation(RapidSecurityContext.getName());
         try {
-            VerifyEntity.isPresent(userByEmail,"user with email: " + RapidSecurityContext.getName()+ " could not be found");
+            VerifyEntity.isPresent(userByContactInformation,"user with contactInformation: " + RapidSecurityContext.getName()+ " could not be found");
         } catch (EntityNotFoundException e) {
-            throw new AccessDeniedException("user with email: " + RapidSecurityContext.getName()+ " could not be found",e);
+            throw new AccessDeniedException("user with contactInformation: " + RapidSecurityContext.getName()+ " could not be found",e);
         }
-        return userByEmail.get();
+        return userByContactInformation.get();
     }
 
     public <T extends AbstractUser> T findUserById(Serializable id) throws EntityNotFoundException, BadEntityException {
-        Optional<T> userByEmail = (Optional<T>) userService.findById(id);
-        VerifyEntity.isPresent(userByEmail,"user with email: " + RapidSecurityContext.getName()+ " could not be found");
-        return userByEmail.get();
+        Optional<T> userByContactInformation = (Optional<T>) userService.findById(id);
+        VerifyEntity.isPresent(userByContactInformation,"user with contactInformation: " + RapidSecurityContext.getName()+ " could not be found");
+        return userByContactInformation.get();
     }
 }

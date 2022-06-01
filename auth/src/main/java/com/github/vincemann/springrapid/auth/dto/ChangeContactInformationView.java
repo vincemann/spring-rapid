@@ -7,6 +7,6 @@ import lombok.*;
 @Getter
 @Setter
 @ToString
-public class ChangeEmailView {
-    private String newEmail;
+public class ChangeContactInformationView {
+    private String newContactInformation;
 }

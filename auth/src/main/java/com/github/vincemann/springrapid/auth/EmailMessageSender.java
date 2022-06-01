@@ -10,13 +10,13 @@ public class EmailMessageSender implements MessageSender {
     private MailSender<MailData> mailSender;
 
     @Override
-    public void sendMessage(String link, String topic, String code, String email) {
+    public void sendMessage(String link, String topic, String code, String contactInformation) {
         // send the mail
         MailData mailData = MailData.builder()
-                .to(email)
+                .to(contactInformation)
 //                .topic(Message.get("com.github.vincemann.verifySubject"))
                 .topic(topic)
-                .body(Message.get("com.github.vincemann.verifyEmail", link))
+                .body(Message.get("com.github.vincemann.verifyContactInformation", link))
                 .link(link)
                 .code(code)
                 .build();

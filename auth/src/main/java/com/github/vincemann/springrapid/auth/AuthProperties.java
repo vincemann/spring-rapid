@@ -40,14 +40,14 @@ public class AuthProperties {
 		public String signupUrl = userBaseUrl +"/signup";
 		public String resetPasswordUrl = userBaseUrl +"/reset-password";
 		public String resetPasswordViewUrl = userBaseUrl +"/reset-password-view";
-		public String fetchByEmailUrl = userBaseUrl +"/fetch-by-email";
-		public String changeEmailUrl = userBaseUrl +"/change-email";
-		public String changeEmailViewUrl = userBaseUrl +"/change-email-view";
+		public String fetchByContactInformationUrl = userBaseUrl +"/fetch-by-contactInformation";
+		public String changeContactInformationUrl = userBaseUrl +"/change-contactInformation";
+		public String changeContactInformationViewUrl = userBaseUrl +"/change-contactInformation-view";
 		public String verifyUserUrl = userBaseUrl +"/verify";
-		public String resendVerificationEmailUrl = userBaseUrl +"/resend-verification-email";
+		public String resendVerificationContactInformationUrl = userBaseUrl +"/resend-verification-contactInformation";
 		public String forgotPasswordUrl = userBaseUrl +"/forgot-password";
 		public String changePasswordUrl = userBaseUrl +"/change-password";
-		public String requestEmailChangeUrl = userBaseUrl +"/request-email-change";
+		public String requestContactInformationChangeUrl = userBaseUrl +"/request-contactInformation-change";
 		public String newAuthTokenUrl = userBaseUrl +"/new-auth-token";
 
 	}
@@ -201,7 +201,7 @@ public class AuthProperties {
 		/**
 		 * Login ID of the initial Admin user to be created 
 		 */
-		public String email;
+		public String contactInformation;
 		
 		/**
 		 * Password of the initial Admin user to be created 

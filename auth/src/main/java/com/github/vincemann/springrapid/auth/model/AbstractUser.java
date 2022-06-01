@@ -7,10 +7,8 @@ import com.github.vincemann.springrapid.core.model.AuditingEntity;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
-import lombok.ToString;
 
 import javax.persistence.*;
-import javax.validation.constraints.Email;
 import java.io.Serializable;
 import java.util.HashSet;
 import java.util.Set;
@@ -24,18 +22,18 @@ public class AbstractUser<ID extends Serializable>
 		implements AuthenticatingEntity<ID>
 {
 
-	// email
+	// contactInformation
 	@JsonView(UserVerifyUtils.SignupInput.class)
-//	@UniqueEmail(groups = {UserVerifyUtils.SignUpValidation.class})
-	@Email
+//	@UniqueContactInformation(groups = {UserVerifyUtils.SignUpValidation.class})
+//	@ContactInformation
 	@Column(nullable = false, unique = true, length = UserVerifyUtils.EMAIL_MAX)
-	protected String email;
+	protected String contactInformation;
 
 	// password
 	// @NotBlank gets checked by PasswordChecker
 	// todo change to use @Password Annotation
 	@JsonView(UserVerifyUtils.SignupInput.class)
-//	@Password(/*groups = {UserVerifyUtils.SignUpValidation.class, UserVerifyUtils.ChangeEmailValidation.class}*/)
+//	@Password(/*groups = {UserVerifyUtils.SignUpValidation.class, UserVerifyUtils.ChangeContactInformationValidation.class}*/)
 	@Column(nullable = false) // no length because it will be encrypted
 	protected String password;
 
@@ -45,10 +43,10 @@ public class AbstractUser<ID extends Serializable>
 	@Column(name = "role")
 	protected Set<String> roles = new HashSet<>();
 
-	// in the email-change process, temporarily stores the new email
-//	@UniqueEmail(groups = {UserVerifyUtils.ChangeEmailValidation.class})
+	// in the contactInformation-change process, temporarily stores the new contactInformation
+//	@UniqueContactInformation(groups = {UserVerifyUtils.ChangeContactInformationValidation.class})
 	@Column(length = UserVerifyUtils.EMAIL_MAX)
-	protected String newEmail;
+	protected String newContactInformation;
 
 	// A JWT issued before this won't be valid
 	@Column(nullable = false)
@@ -71,7 +69,7 @@ public class AbstractUser<ID extends Serializable>
 
 	@Override
 	public String getAuthenticationName() {
-		return this.email;
+		return this.contactInformation;
 	}
 }
 

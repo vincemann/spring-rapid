@@ -48,7 +48,7 @@ public class AclUserExtension
     }
 
     public void savePostSignupAclInfo(AbstractUser saved){
-        aclPermissionService.savePermissionForUserOverEntity(saved.getEmail(),saved, BasePermission.ADMINISTRATION);
+        aclPermissionService.savePermissionForUserOverEntity(saved.getContactInformation(),saved, BasePermission.ADMINISTRATION);
         if (!saved.getRoles().contains(AuthRoles.ADMIN)) {
             aclPermissionService.savePermissionForRoleOverEntity(saved, Roles.ADMIN, BasePermission.ADMINISTRATION);
         }else {

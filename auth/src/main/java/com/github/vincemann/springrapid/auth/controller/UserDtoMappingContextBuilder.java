@@ -19,8 +19,8 @@ public class UserDtoMappingContextBuilder extends AbstractDtoMappingContextBuild
         allEndpoints.addAll(Sets.newHashSet(
                 getController().getAuthProperties().getController().getSignupUrl(),
                 getController().getAuthProperties().getController().getResetPasswordUrl(),
-                getController().getAuthProperties().getController().getFetchByEmailUrl(),
-                getController().getAuthProperties().getController().getChangeEmailUrl(),
+                getController().getAuthProperties().getController().getFetchByContactInformationUrl(),
+                getController().getAuthProperties().getController().getChangeContactInformationUrl(),
                 getController().getAuthProperties().getController().getVerifyUserUrl()));
         return allEndpoints;
     }
@@ -28,7 +28,7 @@ public class UserDtoMappingContextBuilder extends AbstractDtoMappingContextBuild
     @Override
     protected List<String> getFindEndpoints() {
         List<String> findEndpoints = super.getFindEndpoints();
-        findEndpoints.add(getController().getAuthProperties().getController().getFetchByEmailUrl());
+        findEndpoints.add(getController().getAuthProperties().getController().getFetchByContactInformationUrl());
         return findEndpoints;
     }
     

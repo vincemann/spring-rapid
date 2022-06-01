@@ -25,16 +25,16 @@ public class User extends AbstractUser<Long> {
     public static final int NAME_MIN = 1;
     public static final int NAME_MAX = 50;
 
-	public User(String email, String password, String name, String... roles) {
-		this.email = email;
+	public User(String contactInformation, String password, String name, String... roles) {
+		this.contactInformation = contactInformation;
 		this.password = password;
 		this.roles= Sets.newHashSet(roles);
 		this.name = name;
 	}
 
 	@Builder
-	public User(String email, String password, String name, Set<String> roles, String newEmail, long credentialsUpdatedMillis, String captchaResponse) {
-		super(email, password, roles, newEmail, credentialsUpdatedMillis, captchaResponse);
+	public User(String contactInformation, String password, String name, Set<String> roles, String newContactInformation, long credentialsUpdatedMillis, String captchaResponse) {
+		super(contactInformation, password, roles, newContactInformation, credentialsUpdatedMillis, captchaResponse);
 		this.name = name;
 	}
 
