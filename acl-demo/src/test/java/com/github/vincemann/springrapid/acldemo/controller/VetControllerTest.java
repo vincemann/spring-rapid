@@ -29,7 +29,7 @@ public class VetControllerTest extends AbstractControllerIntegrationTest<VetCont
     @Test
     public void canRegisterVet() throws Exception {
         SignupDto signupDto = SignupDto.builder()
-                .contactInformation(VET_DICAPRIO_EMAIL)
+                .contactInformation(VET_DICAPRIO_CONTACT_INFORMATION)
                 .password(VET_DICAPRIO_PASSWORD)
                 .build();
         UUIDSignupResponseDto signedUpDto = performDs2xx(userController.signup(signupDto), UUIDSignupResponseDto.class);
@@ -54,14 +54,14 @@ public class VetControllerTest extends AbstractControllerIntegrationTest<VetCont
         byUuid = userService.findByUuid(uuid);
         Assertions.assertFalse(byUuid.isPresent());
 
-        Optional<User> vetDiCaprioUserByContactInformation = userService.findByContactInformation(VET_DICAPRIO_EMAIL);
+        Optional<User> vetDiCaprioUserByContactInformation = userService.findByContactInformation(VET_DICAPRIO_CONTACT_INFORMATION);
         Assertions.assertTrue(vetDiCaprioUserByContactInformation.isPresent());
         User dbUserDiCaprio = vetDiCaprioUserByContactInformation.get();
 
         propertyAssert(dbUserDiCaprio)
                 .assertContains(dbUserDiCaprio::getRoles, MyRoles.NEW_VET, AuthRoles.UNVERIFIED, AuthRoles.USER)
                 .assertSize(dbUserDiCaprio::getRoles, 3)
-                .assertEquals(dbUserDiCaprio::getContactInformation, VET_DICAPRIO_EMAIL)
+                .assertEquals(dbUserDiCaprio::getContactInformation, VET_DICAPRIO_CONTACT_INFORMATION)
                 .assertNotNull(dbUserDiCaprio::getPassword)
                 .assertNull(dbUserDiCaprio::getUuid);
 
@@ -75,11 +75,11 @@ public class VetControllerTest extends AbstractControllerIntegrationTest<VetCont
 
     @Test
     public void newVetCantReadPets() throws Exception {
-        registerOwnerWithPets(kahn, OWNER_KAHN_EMAIL, OWNER_KAHN_PASSWORD, bella);
+        registerOwnerWithPets(kahn, OWNER_KAHN_CONTACT_INFORMATION, OWNER_KAHN_PASSWORD, bella);
         Pet dbBella = petRepository.findByName(BELLA).get();
 
-        Vet vet = registerVet(vetDiCaprio, VET_DICAPRIO_EMAIL, VET_DICAPRIO_PASSWORD);
-        String dicaprioToken = userController.login2xx(VET_DICAPRIO_EMAIL, VET_DICAPRIO_PASSWORD);
+        Vet vet = registerVet(vetDiCaprio, VET_DICAPRIO_CONTACT_INFORMATION, VET_DICAPRIO_PASSWORD);
+        String dicaprioToken = userController.login2xx(VET_DICAPRIO_CONTACT_INFORMATION, VET_DICAPRIO_PASSWORD);
 
         mvc.perform(petController.find(dbBella.getId().toString())
                 .header(HttpHeaders.AUTHORIZATION, dicaprioToken))
@@ -90,8 +90,8 @@ public class VetControllerTest extends AbstractControllerIntegrationTest<VetCont
 
     @Test
     public void canRegisterVet_andAdminEnables() throws Exception {
-        Vet vet = registerVet(vetDiCaprio, VET_DICAPRIO_EMAIL, VET_DICAPRIO_PASSWORD);
-        String adminToken = userController.login2xx(ADMIN_EMAIL, ADMIN_PASSWORD);
+        Vet vet = registerVet(vetDiCaprio, VET_DICAPRIO_CONTACT_INFORMATION, VET_DICAPRIO_PASSWORD);
+        String adminToken = userController.login2xx(ADMIN_CONTACT_INFORMATION, ADMIN_PASSWORD);
         String verifyVetJson = createUpdateJsonRequest(
                 createUpdateJsonLine("add", "/roles/-", MyRoles.VET),
                 createUpdateJsonLine("remove", "/roles", MyRoles.NEW_VET)
@@ -112,11 +112,11 @@ public class VetControllerTest extends AbstractControllerIntegrationTest<VetCont
 
     @Test
     public void enabledVetCanReadPets() throws Exception {
-        registerOwnerWithPets(kahn, OWNER_KAHN_EMAIL, OWNER_KAHN_PASSWORD, bella);
+        registerOwnerWithPets(kahn, OWNER_KAHN_CONTACT_INFORMATION, OWNER_KAHN_PASSWORD, bella);
         Pet dbBella = petRepository.findByName(BELLA).get();
 
-        Vet vet = registerEnabledVet(vetDiCaprio, VET_DICAPRIO_EMAIL, VET_DICAPRIO_PASSWORD);
-        String dicaprioToken = userController.login2xx(VET_DICAPRIO_EMAIL, VET_DICAPRIO_PASSWORD);
+        Vet vet = registerEnabledVet(vetDiCaprio, VET_DICAPRIO_CONTACT_INFORMATION, VET_DICAPRIO_PASSWORD);
+        String dicaprioToken = userController.login2xx(VET_DICAPRIO_CONTACT_INFORMATION, VET_DICAPRIO_PASSWORD);
 
         FullPetDto responsePetDto = performDs2xx(petController.find(dbBella.getId().toString())
                 .header(HttpHeaders.AUTHORIZATION, dicaprioToken), FullPetDto.class);
@@ -129,11 +129,11 @@ public class VetControllerTest extends AbstractControllerIntegrationTest<VetCont
 
     @Test
     public void enabledVetCanUpdatePetsIllnesses() throws Exception {
-        registerOwnerWithPets(kahn, OWNER_KAHN_EMAIL, OWNER_KAHN_PASSWORD, bella);
+        registerOwnerWithPets(kahn, OWNER_KAHN_CONTACT_INFORMATION, OWNER_KAHN_PASSWORD, bella);
         Pet dbBella = petRepository.findByName(BELLA).get();
         Illness dbTeethPain = illnessRepository.save(teethPain);
-        Vet vet = registerEnabledVet(vetDiCaprio, VET_DICAPRIO_EMAIL, VET_DICAPRIO_PASSWORD);
-        String vetToken = userController.login2xx(VET_DICAPRIO_EMAIL, VET_DICAPRIO_PASSWORD);
+        Vet vet = registerEnabledVet(vetDiCaprio, VET_DICAPRIO_CONTACT_INFORMATION, VET_DICAPRIO_PASSWORD);
+        String vetToken = userController.login2xx(VET_DICAPRIO_CONTACT_INFORMATION, VET_DICAPRIO_PASSWORD);
 
         String updateJson = createUpdateJsonRequest(
                 createUpdateJsonLine("add", "/illnessIds", dbTeethPain.getId().toString())
@@ -162,7 +162,7 @@ public class VetControllerTest extends AbstractControllerIntegrationTest<VetCont
 
 //    @Test
 //    public void vetCanUpdatePetsIllness() throws Exception {
-//        String token = registerOwnerWithPets(kahn, OWNER_KAHN_EMAIL, OWNER_KAHN_PASSWORD, bella);
+//        String token = registerOwnerWithPets(kahn, OWNER_KAHN_CONTACT_INFORMATION, OWNER_KAHN_PASSWORD, bella);
 //        Pet dbBella = petRepository.findByName(BELLA).get();
 //        Illness teethPain = illnessRepository.save(this.teethPain);
 //

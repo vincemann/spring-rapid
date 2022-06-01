@@ -15,7 +15,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 /**
- * Type-safe Wrapper for Springs {@link SecurityContext#getAuthentication()}, with focus of putting all info into the {@link Authentication#getPrincipal()}.
+ * Type-safe Wrapper for Springs {@link SecurityContext#getAuthentication()}, with focus of putting all info into the {@link Authentication#getContactInformation()}.
  *
  *
  *

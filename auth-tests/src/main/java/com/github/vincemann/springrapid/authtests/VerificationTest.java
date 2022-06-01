@@ -103,7 +103,7 @@ public class VerificationTest extends AbstractRapidAuthIntegrationTest {
 //		token = jweTokenService.createToken(
 //				RapidJwt.create(AbstractUserService.VERIFY_SUBJECT,
 //						Long.toString(getUnverifiedUser().getId()), 1L,
-//						MapUtils.mapOf("contactInformation", UNVERIFIED_USER_EMAIL)));
+//						MapUtils.mapOf("contactInformation", UNVERIFIED_USER_CONTACT_INFORMATION)));
 //		// Thread.sleep(1001L);
 //		mvc.perform(post(authProperties.getController().getVerifyUserUrl())
 //				.param("id",getUnverifiedUser().getId().toString())

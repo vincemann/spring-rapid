@@ -29,7 +29,7 @@ public class OwnerControllerTest extends AbstractControllerIntegrationTest<Owner
     @Test
     public void canRegisterOwner() throws Exception {
         SignupDto signupDto = SignupDto.builder()
-                .contactInformation(OWNER_KAHN_EMAIL)
+                .contactInformation(OWNER_KAHN_CONTACT_INFORMATION)
                 .password(OWNER_KAHN_PASSWORD)
                 .build();
         UUIDSignupResponseDto signedUpDto = performDs2xx(userController.signup(signupDto), UUIDSignupResponseDto.class);
@@ -55,14 +55,14 @@ public class OwnerControllerTest extends AbstractControllerIntegrationTest<Owner
         byUuid = userService.findByUuid(uuid);
         Assertions.assertFalse(byUuid.isPresent());
 
-        Optional<User> kahnUserByContactInformation = userService.findByContactInformation(OWNER_KAHN_EMAIL);
+        Optional<User> kahnUserByContactInformation = userService.findByContactInformation(OWNER_KAHN_CONTACT_INFORMATION);
         Assertions.assertTrue(kahnUserByContactInformation.isPresent());
         User dbUserKahn = kahnUserByContactInformation.get();
 
         propertyAssert(dbUserKahn)
                 .assertContains(dbUserKahn::getRoles, MyRoles.OWNER, AuthRoles.UNVERIFIED, AuthRoles.USER)
                 .assertSize(dbUserKahn::getRoles, 3)
-                .assertEquals(dbUserKahn::getContactInformation, OWNER_KAHN_EMAIL)
+                .assertEquals(dbUserKahn::getContactInformation, OWNER_KAHN_CONTACT_INFORMATION)
                 .assertNotNull(dbUserKahn::getPassword)
                 .assertNull(dbUserKahn::getUuid);
 
@@ -77,7 +77,7 @@ public class OwnerControllerTest extends AbstractControllerIntegrationTest<Owner
 
     @Test
     public void canSavePetToOwnAccount() throws Exception {
-        Owner dbKahn = registerOwner(kahn, OWNER_KAHN_EMAIL, OWNER_KAHN_PASSWORD);
+        Owner dbKahn = registerOwner(kahn, OWNER_KAHN_CONTACT_INFORMATION, OWNER_KAHN_PASSWORD);
         String token = userController.login2xx(dbKahn.getUser().getContactInformation(), OWNER_KAHN_PASSWORD);
         OwnerCreatesPetDto createPetDto = new OwnerCreatesPetDto(bella, dbKahn.getId());
         FullPetDto createdPet = performDs2xx(petController.create(createPetDto)
@@ -90,10 +90,10 @@ public class OwnerControllerTest extends AbstractControllerIntegrationTest<Owner
 
     @Test
     public void cantSavePetToOtherOwner() throws Exception {
-        Owner dbKahn = registerOwner(kahn, OWNER_KAHN_EMAIL, OWNER_KAHN_PASSWORD);
-        Owner dbMeier = registerOwner(meier, OWNER_MEIER_EMAIL, OWNER_MEIER_PASSWORD);
+        Owner dbKahn = registerOwner(kahn, OWNER_KAHN_CONTACT_INFORMATION, OWNER_KAHN_PASSWORD);
+        Owner dbMeier = registerOwner(meier, OWNER_MEIER_CONTACT_INFORMATION, OWNER_MEIER_PASSWORD);
 
-        String token = userController.login2xx(OWNER_KAHN_EMAIL, OWNER_KAHN_PASSWORD);
+        String token = userController.login2xx(OWNER_KAHN_CONTACT_INFORMATION, OWNER_KAHN_PASSWORD);
         OwnerCreatesPetDto createPetDto = new OwnerCreatesPetDto(bella, dbMeier.getId());
         mvc.perform(petController.create(createPetDto)
                 .header(HttpHeaders.AUTHORIZATION, token))
@@ -104,7 +104,7 @@ public class OwnerControllerTest extends AbstractControllerIntegrationTest<Owner
 
     @Test
     public void canUpdateOwnPetsPetType() throws Exception {
-        String token = registerOwnerWithPets(kahn, OWNER_KAHN_EMAIL, OWNER_KAHN_PASSWORD, bella);
+        String token = registerOwnerWithPets(kahn, OWNER_KAHN_CONTACT_INFORMATION, OWNER_KAHN_PASSWORD, bella);
         Pet dbBella = petRepository.findByName(BELLA).get();
         Owner dbOwner = ownerRepository.findByLastName(OWNER_KAHN).get();
         String updateJson = createUpdateJsonRequest(
@@ -123,7 +123,7 @@ public class OwnerControllerTest extends AbstractControllerIntegrationTest<Owner
 
     @Test
     public void ownerCantUpdateOwnPetsIllness() throws Exception {
-        String token = registerOwnerWithPets(kahn, OWNER_KAHN_EMAIL, OWNER_KAHN_PASSWORD, bella);
+        String token = registerOwnerWithPets(kahn, OWNER_KAHN_CONTACT_INFORMATION, OWNER_KAHN_PASSWORD, bella);
         Pet dbBella = petRepository.findByName(BELLA).get();
         Illness teethPain = illnessRepository.save(this.teethPain);
 
@@ -145,8 +145,8 @@ public class OwnerControllerTest extends AbstractControllerIntegrationTest<Owner
     public void ownerCantUpdateForeignPet() throws Exception {
         // kahn -> bella
         // meier -> kitty
-        String kahnToken = registerOwnerWithPets(kahn, OWNER_KAHN_EMAIL, OWNER_KAHN_PASSWORD, bella);
-        String meierToken = registerOwnerWithPets(meier, OWNER_MEIER_EMAIL, OWNER_MEIER_PASSWORD, kitty);
+        String kahnToken = registerOwnerWithPets(kahn, OWNER_KAHN_CONTACT_INFORMATION, OWNER_KAHN_PASSWORD, bella);
+        String meierToken = registerOwnerWithPets(meier, OWNER_MEIER_CONTACT_INFORMATION, OWNER_MEIER_PASSWORD, kitty);
 
         Pet dbKitty = petRepository.findByName(KITTY).get();
         Owner dbOwner = ownerRepository.findByLastName(OWNER_KAHN).get();
@@ -165,7 +165,7 @@ public class OwnerControllerTest extends AbstractControllerIntegrationTest<Owner
 
     @Test
     public void ownerCanReadOwnPet() throws Exception {
-        String ownerToken = registerOwnerWithPets(kahn, OWNER_KAHN_EMAIL, OWNER_KAHN_PASSWORD, bella);
+        String ownerToken = registerOwnerWithPets(kahn, OWNER_KAHN_CONTACT_INFORMATION, OWNER_KAHN_PASSWORD, bella);
         Pet dbBella = petRepository.findByName(BELLA).get();
         FullPetDto fullPetDto = performDs2xx(petController.find(dbBella.getId().toString())
                 .header(HttpHeaders.AUTHORIZATION, ownerToken),
@@ -180,8 +180,8 @@ public class OwnerControllerTest extends AbstractControllerIntegrationTest<Owner
 
     @Test
     public void ownerCantReadForeignPet() throws Exception {
-        String ownerToken = registerOwnerWithPets(kahn, OWNER_KAHN_EMAIL, OWNER_KAHN_PASSWORD, bella);
-        String meierToken = registerOwnerWithPets(meier, OWNER_MEIER_EMAIL, OWNER_MEIER_PASSWORD, kitty);
+        String ownerToken = registerOwnerWithPets(kahn, OWNER_KAHN_CONTACT_INFORMATION, OWNER_KAHN_PASSWORD, bella);
+        String meierToken = registerOwnerWithPets(meier, OWNER_MEIER_CONTACT_INFORMATION, OWNER_MEIER_PASSWORD, kitty);
 
         Pet dbBella = petRepository.findByName(BELLA).get();
         Pet dbKitty = petRepository.findByName(KITTY).get();

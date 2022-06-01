@@ -28,9 +28,9 @@ public class ChangeContactInformationTest extends AbstractRapidAuthIntegrationTe
 //	@Disabled
 	@Test
 	public void canChangeOwnContactInformation() throws Exception {
-		String token = login2xx(USER_EMAIL,USER_PASSWORD);
+		String token = login2xx(USER_CONTACT_INFORMATION,USER_PASSWORD);
 		MailData mailData = testTemplate.requestContactInformationChange2xx(getUser().getId(), token,
-				new RequestContactInformationChangeDto(NEW_EMAIL));
+				new RequestContactInformationChangeDto(NEW_CONTACT_INFORMATION));
 
 		mvc.perform(testTemplate.changeContactInformationWithLink(mailData.getLink(),token))
 				//gets new token for new contactInformation to use
@@ -41,14 +41,14 @@ public class ChangeContactInformationTest extends AbstractRapidAuthIntegrationTe
 		
 		AbstractUser<Long> updatedUser = getUserService().findById(getUser().getId()).get();
 		Assertions.assertNull(updatedUser.getNewContactInformation());
-		Assertions.assertEquals(NEW_EMAIL, updatedUser.getContactInformation());
+		Assertions.assertEquals(NEW_CONTACT_INFORMATION, updatedUser.getContactInformation());
 	}
 
 	@Test
 	public void unverifiedUserCanChangeOwnContactInformation() throws Exception {
-		String token = login2xx(UNVERIFIED_USER_EMAIL,UNVERIFIED_USER_PASSWORD);
+		String token = login2xx(UNVERIFIED_USER_CONTACT_INFORMATION,UNVERIFIED_USER_PASSWORD);
 		MailData mailData = testTemplate.requestContactInformationChange2xx(getUnverifiedUser().getId(), token,
-				new RequestContactInformationChangeDto(NEW_EMAIL));
+				new RequestContactInformationChangeDto(NEW_CONTACT_INFORMATION));
 
 		mvc.perform(testTemplate.changeContactInformationWithLink(mailData.getLink(),token))
 				//gets new token for new contactInformation to use
@@ -59,16 +59,16 @@ public class ChangeContactInformationTest extends AbstractRapidAuthIntegrationTe
 
 		AbstractUser<Long> updatedUser = getUserService().findById(getUnverifiedUser().getId()).get();
 		Assertions.assertNull(updatedUser.getNewContactInformation());
-		Assertions.assertEquals(NEW_EMAIL, updatedUser.getContactInformation());
+		Assertions.assertEquals(NEW_CONTACT_INFORMATION, updatedUser.getContactInformation());
 	}
 
 	@Test
 	public void cantChangeContactInformationOfDiffUser() throws Exception {
-		String token = login2xx(USER_EMAIL,USER_PASSWORD);
+		String token = login2xx(USER_CONTACT_INFORMATION,USER_PASSWORD);
 		MailData mailData = testTemplate.requestContactInformationChange2xx(getUser().getId(), token,
-				new RequestContactInformationChangeDto(NEW_EMAIL));
+				new RequestContactInformationChangeDto(NEW_CONTACT_INFORMATION));
 
-		token = login2xx(SECOND_USER_EMAIL,SECOND_USER_PASSWORD);
+		token = login2xx(SECOND_USER_CONTACT_INFORMATION,SECOND_USER_PASSWORD);
 		// other user has sniffed correct code, but wrong token
 		mvc.perform(testTemplate.changeContactInformationWithLink(mailData.getLink(),token))
 				//gets new token for new contactInformation to use
@@ -77,9 +77,9 @@ public class ChangeContactInformationTest extends AbstractRapidAuthIntegrationTe
 
 	@Test
 	public void cantChangeOwnContactInformationWithSameCodeTwice() throws Exception {
-		String token = login2xx(USER_EMAIL,USER_PASSWORD);
+		String token = login2xx(USER_CONTACT_INFORMATION,USER_PASSWORD);
 		MailData mailData = testTemplate.requestContactInformationChange2xx(getUser().getId(), token,
-				new RequestContactInformationChangeDto(NEW_EMAIL));
+				new RequestContactInformationChangeDto(NEW_CONTACT_INFORMATION));
 
 		mvc.perform(testTemplate.changeContactInformationWithLink(mailData.getLink(),token))
 				//gets new token for new contactInformation to use
@@ -98,9 +98,9 @@ public class ChangeContactInformationTest extends AbstractRapidAuthIntegrationTe
      */
 	@Test
 	public void cantChangeOwnContactInformationWithInvalidCode() throws Exception {
-		String token = login2xx(USER_EMAIL,USER_PASSWORD);
+		String token = login2xx(USER_CONTACT_INFORMATION,USER_PASSWORD);
 		MailData mailData = testTemplate.requestContactInformationChange2xx(getUser().getId(), token,
-				new RequestContactInformationChangeDto(NEW_EMAIL));
+				new RequestContactInformationChangeDto(NEW_CONTACT_INFORMATION));
 
 
 
@@ -137,9 +137,9 @@ public class ChangeContactInformationTest extends AbstractRapidAuthIntegrationTe
 //    //todo sometimes 401 sometimes 403
 	@Test
 	public void cantChangeOwnContactInformationWithObsoleteCode() throws Exception {
-		String token = login2xx(USER_EMAIL,USER_PASSWORD);
+		String token = login2xx(USER_CONTACT_INFORMATION,USER_PASSWORD);
 		MailData mailData = testTemplate.requestContactInformationChange2xx(getUser().getId(), token,
-				new RequestContactInformationChangeDto(NEW_EMAIL));
+				new RequestContactInformationChangeDto(NEW_CONTACT_INFORMATION));
 		// credentials updated after the request for contactInformation change was made
 		transactionalTemplate.doInTransaction(new Runnable() {
 			@SneakyThrows
@@ -152,7 +152,7 @@ public class ChangeContactInformationTest extends AbstractRapidAuthIntegrationTe
 		});
 
 		// A new auth token is needed, because old one would be obsolete!
-		token = login2xx(USER_EMAIL,USER_PASSWORD);
+		token = login2xx(USER_CONTACT_INFORMATION,USER_PASSWORD);
 
 
 		// now ready to test!
@@ -168,8 +168,8 @@ public class ChangeContactInformationTest extends AbstractRapidAuthIntegrationTe
 	@Test
 	@Disabled // you can never get the real code without requesting contactInformation change first
 	public void cantChangeOwnContactInformationWithoutRequestingContactInformationChangeFirst() throws Exception {
-		String code = createChangeContactInformationToken(getUser(), NEW_EMAIL, 600000L);
-		String token = login2xx(USER_EMAIL,USER_PASSWORD);
+		String code = createChangeContactInformationToken(getUser(), NEW_CONTACT_INFORMATION, 600000L);
+		String token = login2xx(USER_CONTACT_INFORMATION,USER_PASSWORD);
 		mvc.perform(testTemplate.changeContactInformation(code,token))
 				//gets new token for new contactInformation to use
 				.andExpect(status().isForbidden());
@@ -182,9 +182,9 @@ public class ChangeContactInformationTest extends AbstractRapidAuthIntegrationTe
 	@Test
 	public void cantChangeOwnContactInformationWhenNewContactInformationNotUnique() throws Exception {
 
-		String token = login2xx(USER_EMAIL,USER_PASSWORD);
+		String token = login2xx(USER_CONTACT_INFORMATION,USER_PASSWORD);
 		MailData mailData = testTemplate.requestContactInformationChange2xx(getUser().getId(), token,
-				new RequestContactInformationChangeDto(NEW_EMAIL));
+				new RequestContactInformationChangeDto(NEW_CONTACT_INFORMATION));
 
 		// Some other user changed to the same contactInformation, before i could issue my request
 		transactionalTemplate.doInTransaction(new Runnable() {
@@ -192,7 +192,7 @@ public class ChangeContactInformationTest extends AbstractRapidAuthIntegrationTe
 			@Override
 			public void run() {
 				AbstractUser<Long> user = getUserService().findById(getSecondUser().getId()).get();
-				user.setContactInformation(NEW_EMAIL);
+				user.setContactInformation(NEW_CONTACT_INFORMATION);
 				getUserService().fullUpdate(user);
 			}
 		});
@@ -206,7 +206,7 @@ public class ChangeContactInformationTest extends AbstractRapidAuthIntegrationTe
 	protected String createChangeContactInformationToken(AbstractUser targetUser, String newContactInformation, Long expiration){
 		return jweTokenService.createToken(
 				RapidJwt.create(
-						AbstractUserService.CHANGE_EMAIL_AUDIENCE,
+						AbstractUserService.CHANGE_CONTACT_INFORMATION_AUDIENCE,
 						targetUser.getId().toString(),
 						expiration,
 						MapUtils.mapOf("newContactInformation", newContactInformation)));

@@ -19,34 +19,34 @@ public class RequestContactInformationChangeTest extends AbstractRapidAuthIntegr
 
 		RequestContactInformationChangeDto changeForm = new RequestContactInformationChangeDto();
 //		changeForm.setPassword(USER_PASSWORD);
-		changeForm.setNewContactInformation(NEW_EMAIL);
+		changeForm.setNewContactInformation(NEW_CONTACT_INFORMATION);
 		return changeForm;
 	}
 
 	@Test
 	public void unverifiedUserCanRequestContactInformationChange() throws Exception {
-		String token = login2xx(UNVERIFIED_USER_EMAIL,UNVERIFIED_USER_PASSWORD);
+		String token = login2xx(UNVERIFIED_USER_CONTACT_INFORMATION,UNVERIFIED_USER_PASSWORD);
 		mvc.perform(testTemplate.requestContactInformationChange(getUnverifiedUser().getId(),token,contactInformationChangeDto()))
 				.andExpect(status().is(204));
 
 		verify(aopUnproxy(mailSender)).send(any());
 
 		AbstractUser<Long> updatedUser = getUserService().findById(getUnverifiedUser().getId()).get();
-		Assertions.assertEquals(NEW_EMAIL, updatedUser.getNewContactInformation());
-		Assertions.assertEquals(UNVERIFIED_USER_EMAIL, updatedUser.getContactInformation());
+		Assertions.assertEquals(NEW_CONTACT_INFORMATION, updatedUser.getNewContactInformation());
+		Assertions.assertEquals(UNVERIFIED_USER_CONTACT_INFORMATION, updatedUser.getContactInformation());
 	}
 
 	@Test
 	public void userCanRequestContactInformationChange() throws Exception {
-		String token = login2xx(USER_EMAIL,USER_PASSWORD);
+		String token = login2xx(USER_CONTACT_INFORMATION,USER_PASSWORD);
 		mvc.perform(testTemplate.requestContactInformationChange(getUser().getId(),token,contactInformationChangeDto()))
 				.andExpect(status().is(204));
 
 		verify(aopUnproxy(mailSender)).send(any());
 
 		AbstractUser<Long> updatedUser = getUserService().findById(getUser().getId()).get();
-		Assertions.assertEquals(NEW_EMAIL, updatedUser.getNewContactInformation());
-		Assertions.assertEquals(USER_EMAIL, updatedUser.getContactInformation());
+		Assertions.assertEquals(NEW_CONTACT_INFORMATION, updatedUser.getNewContactInformation());
+		Assertions.assertEquals(USER_CONTACT_INFORMATION, updatedUser.getContactInformation());
 	}
 
 	/**
@@ -54,12 +54,12 @@ public class RequestContactInformationChangeTest extends AbstractRapidAuthIntegr
      */
 	@Test
 	public void adminCanRequestContactInformationChangeOfDiffUser() throws Exception {
-		String token = login2xx(ADMIN_EMAIL,ADMIN_PASSWORD);
+		String token = login2xx(ADMIN_CONTACT_INFORMATION,ADMIN_PASSWORD);
 		mvc.perform(testTemplate.requestContactInformationChange(getUser().getId(),token,contactInformationChangeDto()))
 				.andExpect(status().is(204));
 
 		AbstractUser<Long> updatedUser = getUserService().findById(getUser().getId()).get();
-		Assertions.assertEquals(NEW_EMAIL, updatedUser.getNewContactInformation());
+		Assertions.assertEquals(NEW_CONTACT_INFORMATION, updatedUser.getNewContactInformation());
 	}	
 	
 	/**
@@ -67,7 +67,7 @@ public class RequestContactInformationChangeTest extends AbstractRapidAuthIntegr
      */
 	@Test
 	public void cantRequestContactInformationChangeOfUnknownUser() throws Exception {
-		String token = login2xx(USER_EMAIL,USER_PASSWORD);
+		String token = login2xx(USER_CONTACT_INFORMATION,USER_PASSWORD);
 		mvc.perform(testTemplate.requestContactInformationChange(UNKNOWN_USER_ID,token,contactInformationChangeDto()))
 				.andExpect(status().is(404));
 		
@@ -76,7 +76,7 @@ public class RequestContactInformationChangeTest extends AbstractRapidAuthIntegr
 
 	@Test
 	public void userCantRequestContactInformationChangeOfDiffUser() throws Exception {
-		String token = login2xx(USER_EMAIL,USER_PASSWORD);
+		String token = login2xx(USER_CONTACT_INFORMATION,USER_PASSWORD);
 		mvc.perform(testTemplate.requestContactInformationChange(getSecondUser().getId(),token,contactInformationChangeDto()))
 				.andExpect(status().is(403));
 		
@@ -90,7 +90,7 @@ public class RequestContactInformationChangeTest extends AbstractRapidAuthIntegr
 	@Test
 	public void adminCantRequestContactInformationChangeOfDiffAdmin() throws Exception {
 		//unverified admins are not treated differently than verified admins
-		String token = login2xx(ADMIN_EMAIL,ADMIN_PASSWORD);
+		String token = login2xx(ADMIN_CONTACT_INFORMATION,ADMIN_PASSWORD);
 		mvc.perform(testTemplate.requestContactInformationChange(getSecondAdmin().getId(),token,contactInformationChangeDto()))
 				.andExpect(status().is(403));
 		
@@ -111,7 +111,7 @@ public class RequestContactInformationChangeTest extends AbstractRapidAuthIntegr
 		dto.setNewContactInformation(null);
 //		dto.setPassword(null);
 		// try with null newContactInformation
-		String token = login2xx(USER_EMAIL,USER_PASSWORD);
+		String token = login2xx(USER_CONTACT_INFORMATION,USER_PASSWORD);
 		mvc.perform(testTemplate.requestContactInformationChange(getUser().getId(),token,dto))
 				.andExpect(status().is(400));
 //				.andExpect(jsonPath("$.errors[*].field").value(hasSize(1)))
@@ -133,7 +133,10 @@ public class RequestContactInformationChangeTest extends AbstractRapidAuthIntegr
 
 		// try with invalid newContactInformation
 		dto = new RequestContactInformationChangeDto();
-		dto.setNewContactInformation(INVALID_EMAIL);
+		dto.setNewContactInformation(INVALID_CONTACT_INFORMATION);
+
+
+		// todo kann das nicht über die @Email annotation am getter klären, muss also programmatisch geschehen
 		mvc.perform(testTemplate.requestContactInformationChange(getUser().getId(),token,dto))
 				.andExpect(status().is(400));
 //				.andExpect(jsonPath("$.errors[*].field").value(hasSize(1)))
@@ -163,7 +166,7 @@ public class RequestContactInformationChangeTest extends AbstractRapidAuthIntegr
 
 		// try with an existing contactInformation
 		dto = contactInformationChangeDto();
-		dto.setNewContactInformation(SECOND_USER_EMAIL);;
+		dto.setNewContactInformation(SECOND_USER_CONTACT_INFORMATION);;
 		mvc.perform(testTemplate.requestContactInformationChange(getUser().getId(),token,dto))
 				.andExpect(status().is(400));
 //				.andExpect(jsonPath("$.errors[*].field").value(hasSize(1)))

@@ -24,7 +24,7 @@ public abstract class UpdateUserTest extends AbstractRapidAuthIntegrationTest
 		String patchRoleJson = createUpdateJsonRequest(
 				createUpdateJsonLine("replace", "/roles", Roles.ADMIN)
 		);
-		String token = login2xx(USER_EMAIL, USER_PASSWORD);
+		String token = login2xx(USER_CONTACT_INFORMATION, USER_PASSWORD);
 		mvc.perform(update(patchRoleJson,getUser().getId())
 				.header(HttpHeaders.AUTHORIZATION, token))
 				.andExpect(status().isForbidden());
@@ -42,23 +42,23 @@ public abstract class UpdateUserTest extends AbstractRapidAuthIntegrationTest
 	@Test
     public void adminCanUpdateDiffUser() throws Exception {
 		String patchRoleAndContactInformationJson = createUpdateJsonRequest(
-				createUpdateJsonLine("replace", "/contactInformation", NEW_EMAIL),
+				createUpdateJsonLine("replace", "/contactInformation", NEW_CONTACT_INFORMATION),
 				createUpdateJsonLine("replace", "/roles", Roles.ADMIN)
 		);
 
-		String token = login2xx(ADMIN_EMAIL, ADMIN_PASSWORD);
+		String token = login2xx(ADMIN_CONTACT_INFORMATION, ADMIN_PASSWORD);
 		mvc.perform(update(patchRoleAndContactInformationJson,getUser().getId())
 				.header(HttpHeaders.AUTHORIZATION, token))
 				.andExpect(status().is2xxSuccessful())
 				.andExpect(jsonPath("$.roles").value(hasSize(1)))
 				.andExpect(jsonPath("$.roles[0]").value(Roles.ADMIN))
-				.andExpect(jsonPath("$.contactInformation").value(NEW_EMAIL));
+				.andExpect(jsonPath("$.contactInformation").value(NEW_CONTACT_INFORMATION));
 
 		AbstractUser<Long> user = getUserService().findById(getUser().getId()).get();
 
 		// Ensure that data changed properly
 		//should get replaced because admin has full power
-		Assertions.assertEquals(NEW_EMAIL, user.getContactInformation());
+		Assertions.assertEquals(NEW_CONTACT_INFORMATION, user.getContactInformation());
 		Assertions.assertEquals(1, user.getRoles().size());
 		Assertions.assertTrue(user.getRoles().contains(Roles.ADMIN));
     }
@@ -69,7 +69,7 @@ public abstract class UpdateUserTest extends AbstractRapidAuthIntegrationTest
 		String patchFieldJson = createUpdateJsonRequest(
 				createUpdateJsonLine("replace", "/"+testAdapter.getUpdatableFieldName(), testAdapter.getNewValidFieldValue())
 		);
-		String token = login2xx(USER_EMAIL, USER_PASSWORD);
+		String token = login2xx(USER_CONTACT_INFORMATION, USER_PASSWORD);
 		mvc.perform(update(patchFieldJson,UNKNOWN_USER_ID)
 				.header(HttpHeaders.AUTHORIZATION, token))
 				.andExpect(status().isForbidden());
@@ -81,7 +81,7 @@ public abstract class UpdateUserTest extends AbstractRapidAuthIntegrationTest
 		String patchFieldJson = createUpdateJsonRequest(
 				createUpdateJsonLine("replace", "/"+testAdapter.getUpdatableFieldName(), testAdapter.getNewValidFieldValue())
 		);
-		String token = login2xx(USER_EMAIL, USER_PASSWORD);
+		String token = login2xx(USER_CONTACT_INFORMATION, USER_PASSWORD);
 		mvc.perform(update(patchFieldJson,getUser().getId())
 				.header(HttpHeaders.AUTHORIZATION, token))
 				.andExpect(status().is2xxSuccessful());
@@ -97,7 +97,7 @@ public abstract class UpdateUserTest extends AbstractRapidAuthIntegrationTest
 		String invalidFieldPatchJson = createUpdateJsonRequest(
 				createUpdateJsonLine("replace", "/"+testAdapter.getUpdatableFieldName(), testAdapter.getInvalidFieldValue())
 		);
-		String token = login2xx(USER_EMAIL, USER_PASSWORD);
+		String token = login2xx(USER_CONTACT_INFORMATION, USER_PASSWORD);
 		mvc.perform(update(invalidFieldPatchJson,getUser().getId())
 				.header(HttpHeaders.AUTHORIZATION, token))
 				.andExpect(status().isBadRequest());
@@ -113,7 +113,7 @@ public abstract class UpdateUserTest extends AbstractRapidAuthIntegrationTest
 		String invalidFieldPatchJson = createUpdateJsonRequest(
 				createUpdateJsonLine("replace", "/"+testAdapter.getUpdatableFieldName(), testAdapter.getNewValidFieldValue())
 		);
-		String token = login2xx(USER_EMAIL, USER_PASSWORD);
+		String token = login2xx(USER_CONTACT_INFORMATION, USER_PASSWORD);
 		mvc.perform(update(invalidFieldPatchJson,getSecondUser().getId())
 				.header(HttpHeaders.AUTHORIZATION, token))
 				.andExpect(status().isForbidden());
@@ -125,7 +125,7 @@ public abstract class UpdateUserTest extends AbstractRapidAuthIntegrationTest
 		String invalidFieldPatchJson = createUpdateJsonRequest(
 				createUpdateJsonLine("replace", "/"+testAdapter.getUpdatableFieldName(), testAdapter.getNewValidFieldValue())
 		);
-		String token = login2xx(USER_EMAIL, USER_PASSWORD);
+		String token = login2xx(USER_CONTACT_INFORMATION, USER_PASSWORD);
 		mvc.perform(update(invalidFieldPatchJson,getAdmin().getId())
 				.header(HttpHeaders.AUTHORIZATION, token))
 				.andExpect(status().isForbidden());
@@ -134,9 +134,9 @@ public abstract class UpdateUserTest extends AbstractRapidAuthIntegrationTest
 	@Test
 	public void userCantUpdateOwnContactInformation() throws Exception {
 		String patchContactInformationJson = createUpdateJsonRequest(
-				createUpdateJsonLine("replace", "/contactInformation", NEW_EMAIL)
+				createUpdateJsonLine("replace", "/contactInformation", NEW_CONTACT_INFORMATION)
 		);
-		String token = login2xx(USER_EMAIL, USER_PASSWORD);
+		String token = login2xx(USER_CONTACT_INFORMATION, USER_PASSWORD);
 		mvc.perform(update(patchContactInformationJson,getUser().getId())
 				.header(HttpHeaders.AUTHORIZATION, token))
 				.andExpect(status().isForbidden());
@@ -144,7 +144,7 @@ public abstract class UpdateUserTest extends AbstractRapidAuthIntegrationTest
 		AbstractUser<Long> updated = getUserService().findById(getUser().getId()).get();
 
 		// Ensure that data has not changed
-		Assertions.assertEquals(USER_EMAIL, updated.getContactInformation());
+		Assertions.assertEquals(USER_CONTACT_INFORMATION, updated.getContactInformation());
 	}
 
 

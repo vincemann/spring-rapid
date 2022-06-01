@@ -136,14 +136,14 @@ public abstract class AbstractRapidAuthIntegrationTest
 
 
     protected void createTestUsers() throws Exception {
-        admin = aclUserService.save(testAdapter.createTestUser(ADMIN_EMAIL,/*"Admin",*/ ADMIN_PASSWORD, AuthRoles.ADMIN));
-        secondAdmin = aclUserService.save(testAdapter.createTestUser(SECOND_ADMIN_EMAIL,/*"Second Admin",*/ SECOND_ADMIN_PASSWORD, AuthRoles.ADMIN));
-        blockedAdmin = aclUserService.save(testAdapter.createTestUser(BLOCKED_ADMIN_EMAIL,/*"Blocked Admin",*/ BLOCKED_ADMIN_PASSWORD, AuthRoles.ADMIN, AuthRoles.BLOCKED));
+        admin = aclUserService.save(testAdapter.createTestUser(ADMIN_CONTACT_INFORMATION,/*"Admin",*/ ADMIN_PASSWORD, AuthRoles.ADMIN));
+        secondAdmin = aclUserService.save(testAdapter.createTestUser(SECOND_ADMIN_CONTACT_INFORMATION,/*"Second Admin",*/ SECOND_ADMIN_PASSWORD, AuthRoles.ADMIN));
+        blockedAdmin = aclUserService.save(testAdapter.createTestUser(BLOCKED_ADMIN_CONTACT_INFORMATION,/*"Blocked Admin",*/ BLOCKED_ADMIN_PASSWORD, AuthRoles.ADMIN, AuthRoles.BLOCKED));
 
-        user = aclUserService.save(testAdapter.createTestUser(USER_EMAIL,/*"User",*/ USER_PASSWORD, AuthRoles.USER));
-        secondUser = aclUserService.save(testAdapter.createTestUser(SECOND_USER_EMAIL,/*"User",*/ SECOND_USER_PASSWORD, AuthRoles.USER));
-        unverifiedUser = aclUserService.save(testAdapter.createTestUser(UNVERIFIED_USER_EMAIL,/*"Unverified User",*/ UNVERIFIED_USER_PASSWORD, AuthRoles.USER, AuthRoles.UNVERIFIED));
-        blockedUser = aclUserService.save(testAdapter.createTestUser(BLOCKED_USER_EMAIL,/*"Blocked User",*/ BLOCKED_USER_PASSWORD, AuthRoles.USER, AuthRoles.BLOCKED));
+        user = aclUserService.save(testAdapter.createTestUser(USER_CONTACT_INFORMATION,/*"User",*/ USER_PASSWORD, AuthRoles.USER));
+        secondUser = aclUserService.save(testAdapter.createTestUser(SECOND_USER_CONTACT_INFORMATION,/*"User",*/ SECOND_USER_PASSWORD, AuthRoles.USER));
+        unverifiedUser = aclUserService.save(testAdapter.createTestUser(UNVERIFIED_USER_CONTACT_INFORMATION,/*"Unverified User",*/ UNVERIFIED_USER_PASSWORD, AuthRoles.USER, AuthRoles.UNVERIFIED));
+        blockedUser = aclUserService.save(testAdapter.createTestUser(BLOCKED_USER_CONTACT_INFORMATION,/*"Blocked User",*/ BLOCKED_USER_PASSWORD, AuthRoles.USER, AuthRoles.BLOCKED));
         // sleep so login shortly after wont result in obsolete token
 //        Thread.sleep(400);
     }
@@ -151,13 +151,13 @@ public abstract class AbstractRapidAuthIntegrationTest
 
 
 //    protected void loginTestUsers() throws Exception {
-//        tokens.put(getAdmin().getId(), login2xx(ADMIN_EMAIL, ADMIN_PASSWORD));
-//        tokens.put(getSecondAdmin().getId(), login2xx(SECOND_ADMIN_EMAIL, SECOND_ADMIN_PASSWORD));
-//        tokens.put(getBlockedAdmin().getId(), login2xx(BLOCKED_ADMIN_EMAIL, BLOCKED_ADMIN_PASSWORD));
+//        tokens.put(getAdmin().getId(), login2xx(ADMIN_CONTACT_INFORMATION, ADMIN_PASSWORD));
+//        tokens.put(getSecondAdmin().getId(), login2xx(SECOND_ADMIN_CONTACT_INFORMATION, SECOND_ADMIN_PASSWORD));
+//        tokens.put(getBlockedAdmin().getId(), login2xx(BLOCKED_ADMIN_CONTACT_INFORMATION, BLOCKED_ADMIN_PASSWORD));
 //
-//        tokens.put(getUser().getId(), login2xx(USER_EMAIL, USER_PASSWORD));
-//        tokens.put(getUnverifiedUser().getId(), login2xx(UNVERIFIED_USER_EMAIL, UNVERIFIED_USER_PASSWORD));
-//        tokens.put(getBlockedUser().getId(), login2xx(BLOCKED_USER_EMAIL, BLOCKED_USER_PASSWORD));
+//        tokens.put(getUser().getId(), login2xx(USER_CONTACT_INFORMATION, USER_PASSWORD));
+//        tokens.put(getUnverifiedUser().getId(), login2xx(UNVERIFIED_USER_CONTACT_INFORMATION, UNVERIFIED_USER_PASSWORD));
+//        tokens.put(getBlockedUser().getId(), login2xx(BLOCKED_USER_CONTACT_INFORMATION, BLOCKED_USER_PASSWORD));
 //    }
 
     protected void mockJwtExpirationTime(long expirationMillis){

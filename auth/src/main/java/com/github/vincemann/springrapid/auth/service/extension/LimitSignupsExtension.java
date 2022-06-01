@@ -38,7 +38,7 @@ public class LimitSignupsExtension extends LimitActionsExtension {
     }
 
     @Override
-    protected String getPrincipal() {
+    protected String getContactInformation() {
         return HttpServletRequestUtils.getRequest().getRemoteAddr();
     }
 }

@@ -17,9 +17,9 @@ public class ForgotPasswordTest extends AbstractRapidAuthIntegrationTest {
 
 	@Test
 	public void anonCanIssueForgotPassword() throws Exception {
-		MailData mailData = testTemplate.forgotPassword2xx(USER_EMAIL);
+		MailData mailData = testTemplate.forgotPassword2xx(USER_CONTACT_INFORMATION);
 		Assertions.assertEquals(FORGOT_PASSWORD_AUDIENCE, mailData.getTopic());
-		Assertions.assertEquals(USER_EMAIL,mailData.getTo());
+		Assertions.assertEquals(USER_CONTACT_INFORMATION,mailData.getTo());
 	}
 
 
@@ -27,7 +27,7 @@ public class ForgotPasswordTest extends AbstractRapidAuthIntegrationTest {
 	public void cantIssueForgotPasswordForInvalidContactInformation() throws Exception {
 
 		// Unknown contactInformation
-		mvc.perform(testTemplate.forgotPassword(UNKNOWN_EMAIL))
+		mvc.perform(testTemplate.forgotPassword(UNKNOWN_CONTACT_INFORMATION))
 				.andExpect(status().isNotFound());
 
 

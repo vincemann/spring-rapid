@@ -26,7 +26,7 @@ public class AbstractUser<ID extends Serializable>
 	@JsonView(UserVerifyUtils.SignupInput.class)
 //	@UniqueContactInformation(groups = {UserVerifyUtils.SignUpValidation.class})
 //	@ContactInformation
-	@Column(nullable = false, unique = true, length = UserVerifyUtils.EMAIL_MAX)
+	@Column(nullable = false, unique = true, length = UserVerifyUtils.CONTACT_INFORMATION_MAX)
 	protected String contactInformation;
 
 	// password
@@ -45,7 +45,7 @@ public class AbstractUser<ID extends Serializable>
 
 	// in the contactInformation-change process, temporarily stores the new contactInformation
 //	@UniqueContactInformation(groups = {UserVerifyUtils.ChangeContactInformationValidation.class})
-	@Column(length = UserVerifyUtils.EMAIL_MAX)
+	@Column(length = UserVerifyUtils.CONTACT_INFORMATION_MAX)
 	protected String newContactInformation;
 
 	// A JWT issued before this won't be valid

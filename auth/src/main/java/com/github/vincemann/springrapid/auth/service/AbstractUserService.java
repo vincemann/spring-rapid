@@ -54,8 +54,8 @@ public abstract class AbstractUserService
         extends JPACrudService<U, ID, R>
             implements UserService<U, ID> {
 
-    public static final String CHANGE_EMAIL_AUDIENCE = "change-contactInformation";
-    public static final String VERIFY_EMAIL_AUDIENCE = "verify";
+    public static final String CHANGE_CONTACT_INFORMATION_AUDIENCE = "change-contactInformation";
+    public static final String VERIFY_CONTACT_INFORMATION_AUDIENCE = "verify";
     public static final String FORGOT_PASSWORD_AUDIENCE = "forgot-password";
 
     private AuthorizationTokenService<RapidAuthAuthenticatedPrincipal> authorizationTokenService;
@@ -193,7 +193,7 @@ public abstract class AbstractUserService
         try {
             JWTClaimsSet claims = jweTokenService.parseToken(verificationCode);
             U user = extractUserFromClaims(claims);
-            RapidJwt.validate(claims, VERIFY_EMAIL_AUDIENCE, user.getCredentialsUpdatedMillis());
+            RapidJwt.validate(claims, VERIFY_CONTACT_INFORMATION_AUDIENCE, user.getCredentialsUpdatedMillis());
 
 
             // ensure that he is unverified
@@ -457,7 +457,7 @@ public abstract class AbstractUserService
      */
     protected void sendChangePrincipalMessage(U user) {
         JWTClaimsSet claims = RapidJwt.create(
-                CHANGE_EMAIL_AUDIENCE,
+                CHANGE_CONTACT_INFORMATION_AUDIENCE,
                 user.getId().toString(),
                 properties.getJwt().getExpirationMillis(),
                 MapUtils.mapOf("newContactInformation", user.getNewContactInformation()));
@@ -480,13 +480,13 @@ public abstract class AbstractUserService
 //            MailData mailData = MailData.builder()
 //                    .to(user.getContactInformation())
 ////                    .topic( Message.get("com.github.vincemann.changeContactInformationSubject"))
-//                    .topic(CHANGE_EMAIL_AUDIENCE)
+//                    .topic(CHANGE_CONTACT_INFORMATION_AUDIENCE)
 //                    .body(Message.get("com.github.vincemann.changeContactInformationContactInformation", changeContactInformationLink))
 //                    .link(changeContactInformationLink)
 //                    .code(changeContactInformationCode)
 //                    .build();
 //            mailSender.send(mailData);
-            messageSender.sendMessage(changeContactInformationLink,CHANGE_EMAIL_AUDIENCE,changeContactInformationCode,user.getContactInformation());
+            messageSender.sendMessage(changeContactInformationLink,CHANGE_CONTACT_INFORMATION_AUDIENCE,changeContactInformationCode,user.getContactInformation());
 
             log.debug("Change contactInformation link mail queued.");
 
@@ -508,7 +508,7 @@ public abstract class AbstractUserService
             JWTClaimsSet claims = jweTokenService.parseToken(code);
             U user = extractUserFromClaims(claims);
 
-            RapidJwt.validate(claims, CHANGE_EMAIL_AUDIENCE, user.getCredentialsUpdatedMillis());
+            RapidJwt.validate(claims, CHANGE_CONTACT_INFORMATION_AUDIENCE, user.getCredentialsUpdatedMillis());
 
 //            VerifyAccess.condition(
 //                    claims.getClaim("id").equals(user.getId().toString()),
@@ -595,7 +595,7 @@ public abstract class AbstractUserService
     protected void sendVerificationMessage(final U user) {
 
         log.debug("Sending verification mail to: " + user);
-        JWTClaimsSet claims = RapidJwt.create(VERIFY_EMAIL_AUDIENCE,
+        JWTClaimsSet claims = RapidJwt.create(VERIFY_CONTACT_INFORMATION_AUDIENCE,
                 user.getId().toString(),
                 properties.getJwt().getExpirationMillis(),
                 //payload
@@ -617,13 +617,13 @@ public abstract class AbstractUserService
 //        MailData mailData = MailData.builder()
 //                .to(user.getContactInformation())
 ////                .topic(Message.get("com.github.vincemann.verifySubject"))
-//                .topic(VERIFY_EMAIL_AUDIENCE)
+//                .topic(VERIFY_CONTACT_INFORMATION_AUDIENCE)
 //                .body(Message.get("com.github.vincemann.verifyContactInformation", verifyLink))
 //                .link(verifyLink)
 //                .code(verificationCode)
 //                .build();
 //        mailSender.send(mailData);
-        messageSender.sendMessage(verifyLink,VERIFY_EMAIL_AUDIENCE,verificationCode, user.getContactInformation());
+        messageSender.sendMessage(verifyLink,VERIFY_CONTACT_INFORMATION_AUDIENCE,verificationCode, user.getContactInformation());
 
 
         log.debug("Verification mail to " + user.getContactInformation() + " queued.");

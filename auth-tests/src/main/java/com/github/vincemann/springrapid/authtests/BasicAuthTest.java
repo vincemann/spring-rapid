@@ -43,7 +43,7 @@ public class BasicAuthTest extends AbstractRapidAuthIntegrationTest {
 	@Test
 	public void loggedInAdminCanGetFullContextInformation() throws Exception {
 
-		String token = login2xx(ADMIN_EMAIL, ADMIN_PASSWORD);
+		String token = login2xx(ADMIN_CONTACT_INFORMATION, ADMIN_PASSWORD);
 		mvc.perform(get(authProperties.getController().getContextUrl())
 				.header(HttpHeaders.AUTHORIZATION, token))
 				.andExpect(status().is(200))

@@ -17,7 +17,7 @@ public class FetchNewTokenTest extends AbstractRapidAuthIntegrationTest {
 
 	@Test
 	public void canFetchNewTokenForOwnUser() throws Exception {
-		String token = login2xx(USER_EMAIL,USER_PASSWORD);
+		String token = login2xx(USER_CONTACT_INFORMATION,USER_PASSWORD);
 		MvcResult result = mvc.perform(testTemplate.fetchNewToken(token))
 				.andExpect(status().is2xxSuccessful())
 				.andExpect(jsonPath("$.token").value(containsString(".")))
@@ -35,7 +35,7 @@ public class FetchNewTokenTest extends AbstractRapidAuthIntegrationTest {
 		long mockedExpireTime = 1000L;
 		Mockito.doReturn(mockedExpireTime).when(jwt).getExpirationMillis();
 
-		String token = login2xx(USER_EMAIL,USER_PASSWORD);
+		String token = login2xx(USER_CONTACT_INFORMATION,USER_PASSWORD);
 		testTemplate.fetchNewToken2xx(token);
 
 		Thread.sleep(mockedExpireTime+1L);
@@ -45,8 +45,8 @@ public class FetchNewTokenTest extends AbstractRapidAuthIntegrationTest {
 
 	@Test
 	public void adminCanFetchNewTokenForDiffUser() throws Exception {
-		String token = login2xx(ADMIN_EMAIL,ADMIN_PASSWORD);
-		MvcResult result = mvc.perform(testTemplate.fetchNewToken(token, USER_EMAIL))
+		String token = login2xx(ADMIN_CONTACT_INFORMATION,ADMIN_PASSWORD);
+		MvcResult result = mvc.perform(testTemplate.fetchNewToken(token, USER_CONTACT_INFORMATION))
 				.andExpect(status().is2xxSuccessful())
 				.andReturn();
 
@@ -57,8 +57,8 @@ public class FetchNewTokenTest extends AbstractRapidAuthIntegrationTest {
 	
 	@Test
 	public void cantFetchTokenForDiffUser() throws Exception {
-		String token = login2xx(USER_EMAIL,USER_PASSWORD);
-		mvc.perform(testTemplate.fetchNewToken(token,SECOND_USER_EMAIL))
+		String token = login2xx(USER_CONTACT_INFORMATION,USER_PASSWORD);
+		mvc.perform(testTemplate.fetchNewToken(token,SECOND_USER_CONTACT_INFORMATION))
 				.andExpect(status().isForbidden());
 	}
 

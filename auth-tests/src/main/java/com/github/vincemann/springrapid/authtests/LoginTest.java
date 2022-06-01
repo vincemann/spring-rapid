@@ -20,7 +20,7 @@ public class LoginTest extends AbstractRapidAuthIntegrationTest {
 
 	@Test
 	public void canLogin() throws Exception {
-		String token = mvc.perform(testTemplate.login_builder(USER_EMAIL, USER_PASSWORD))
+		String token = mvc.perform(testTemplate.login_builder(USER_CONTACT_INFORMATION, USER_PASSWORD))
 				.andExpect(status().is(200))
 				.andExpect(header().string(HttpHeaders.AUTHORIZATION, containsString(".")))
 				.andExpect(jsonPath("$.id").doesNotExist())
@@ -40,7 +40,7 @@ public class LoginTest extends AbstractRapidAuthIntegrationTest {
 //				.andExpect(status().is(204));
 		
 		// Test that a 50ms token does not expire before 50ms
-		String token = login2xx(USER_EMAIL, USER_PASSWORD, 50L);
+		String token = login2xx(USER_CONTACT_INFORMATION, USER_PASSWORD, 50L);
 		// but, does expire after 50ms
 		Thread.sleep(51L);
 		assertTokenDoesNotWork(token);
@@ -57,7 +57,7 @@ public class LoginTest extends AbstractRapidAuthIntegrationTest {
 		
 		// credentials updated
 		// Thread.sleep(1001L);
-		String token = login2xx(USER_EMAIL, USER_PASSWORD);
+		String token = login2xx(USER_CONTACT_INFORMATION, USER_PASSWORD);
 
 		transactionalTemplate.doInTransaction(new Runnable() {
 			@SneakyThrows
@@ -78,13 +78,13 @@ public class LoginTest extends AbstractRapidAuthIntegrationTest {
 
 	@Test
 	public void cantLoginWithWrongPassword() throws Exception {
-		login(ADMIN_EMAIL,"wrong-password")
+		login(ADMIN_CONTACT_INFORMATION,"wrong-password")
 				.andExpect(status().isUnauthorized());
 	}
 
 	@Test
 	public void cantLoginWithBlankPassword() throws Exception {
-		login(ADMIN_EMAIL,"")
+		login(ADMIN_CONTACT_INFORMATION,"")
 				.andExpect(status().isUnauthorized());
 	}
 

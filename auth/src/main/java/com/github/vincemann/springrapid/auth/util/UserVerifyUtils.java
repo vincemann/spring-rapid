@@ -2,8 +2,8 @@ package com.github.vincemann.springrapid.auth.util;
 
 public class UserVerifyUtils {
 
-	public static final int EMAIL_MIN = 4;
-	public static final int EMAIL_MAX = 250;
+	public static final int CONTACT_INFORMATION_MIN = 4;
+	public static final int CONTACT_INFORMATION_MAX = 250;
 	public static final int UUID_LENGTH = 36;
 	public static final int PASSWORD_MAX = 50;
 	public static final int PASSWORD_MIN = 6;

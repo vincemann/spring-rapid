@@ -11,12 +11,8 @@ public class RapidAuthAuthenticatedPrincipalFactory<U extends AbstractUser<?>>
 
     @Override
     public RapidAuthAuthenticatedPrincipal create(U user) {
-        RapidAuthAuthenticatedPrincipal principal = new RapidAuthAuthenticatedPrincipal();
-        principal.setRoles(user.getRoles());
-        principal.setPassword(user.getPassword());
-        principal.setName(user.getAuthenticationName());
-        principal.setId(user.getId().toString());
-        return principal;
+       return new RapidAuthAuthenticatedPrincipal(user.getContactInformation(),user.getPassword(),user
+                .getRoles(),user.getId().toString());
     }
 
 //    @Override

@@ -5,33 +5,33 @@ import com.github.vincemann.springrapid.auth.dto.SignupDto;
 
 public abstract class AuthTestAdapter {
 
-    public static  String SIGNUP_USER_EMAIL = "signupUser@example.com";
+    public static  String SIGNUP_USER_CONTACT_INFORMATION = "signupUser@example.com";
     public static  String SIGNUP_USER_PASSWORD = "signupUserSanjaySanjay99!";
-    public static  String NEW_EMAIL = "new.contactInformation@example.com";
+    public static  String NEW_CONTACT_INFORMATION = "new.contactInformation@example.com";
     public static  String NEW_PASSWORD = "newPasswordSanjaySanjay99!";
-    public static  String INVALID_EMAIL = "an-invalid-contactInformation";
+    public static  String INVALID_CONTACT_INFORMATION = "an-invalid-contactInformation";
     public static  String INVALID_PASSWORD = "short";
-    public static  String UNKNOWN_EMAIL = "unknown@example.com";
+    public static  String UNKNOWN_CONTACT_INFORMATION = "unknown@example.com";
 
-    public static  String ADMIN_EMAIL = "admin@example.com";
+    public static  String ADMIN_CONTACT_INFORMATION = "admin@example.com";
     public static  String ADMIN_PASSWORD = "adminSanjaySanjay99!";
 
-    public static  String SECOND_ADMIN_EMAIL = "secondAdmin@example.com";
+    public static  String SECOND_ADMIN_CONTACT_INFORMATION = "secondAdmin@example.com";
     public static  String SECOND_ADMIN_PASSWORD = "secondAdminSanjaySanjay99!";
 
-    public static  String BLOCKED_ADMIN_EMAIL = "blockedAdmin@example.com";
+    public static  String BLOCKED_ADMIN_CONTACT_INFORMATION = "blockedAdmin@example.com";
     public static  String BLOCKED_ADMIN_PASSWORD = "blockedAdminSanjaySanjay99!";
 
-    public static  String USER_EMAIL = "user@example.com";
+    public static  String USER_CONTACT_INFORMATION = "user@example.com";
     public static  String USER_PASSWORD = "userSanjaySanjay99!";
 
-    public static  String SECOND_USER_EMAIL = "secondUser@example.com";
+    public static  String SECOND_USER_CONTACT_INFORMATION = "secondUser@example.com";
     public static  String SECOND_USER_PASSWORD = "secondUserSanjaySanjay99!";
 
-    public static  String UNVERIFIED_USER_EMAIL = "unverifiedUser@example.com";
+    public static  String UNVERIFIED_USER_CONTACT_INFORMATION = "unverifiedUser@example.com";
     public static  String UNVERIFIED_USER_PASSWORD = "unverifiedUserSanjaySanjay99!";
 
-    public static  String BLOCKED_USER_EMAIL = "blockedUser@example.com";
+    public static  String BLOCKED_USER_CONTACT_INFORMATION = "blockedUser@example.com";
     public static  String BLOCKED_USER_PASSWORD = "blockedUserSanjaySanjay99!";
 
     public static String UNKNOWN_USER_ID = "99";
@@ -56,11 +56,11 @@ public abstract class AuthTestAdapter {
     public abstract AbstractUser<Long> createTestUser(String contactInformation, String password, String... roles);
 
     public SignupDto createValidSignupDto(){
-        return new SignupDto(SIGNUP_USER_EMAIL, SIGNUP_USER_PASSWORD);
+        return new SignupDto(SIGNUP_USER_CONTACT_INFORMATION, SIGNUP_USER_PASSWORD);
     }
 
     public SignupDto createInvalidSignupDto(){
-        return new SignupDto(INVALID_EMAIL,INVALID_PASSWORD);
+        return new SignupDto(INVALID_CONTACT_INFORMATION,INVALID_PASSWORD);
     }
 
 

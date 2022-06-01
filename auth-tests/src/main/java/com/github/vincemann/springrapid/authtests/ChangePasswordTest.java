@@ -32,16 +32,16 @@ public class ChangePasswordTest extends AbstractRapidAuthIntegrationTest {
 				.retypePassword(NEW_PASSWORD)
 				.build();
 
-		String token = login2xx(USER_EMAIL, USER_PASSWORD);
+		String token = login2xx(USER_CONTACT_INFORMATION, USER_PASSWORD);
 		mvc.perform(testTemplate.changePassword(getUser().getId(),token, changePasswordDto))
 				.andExpect(status().is2xxSuccessful())
 				.andExpect(header().string(HttpHeaders.AUTHORIZATION, containsString(".")));
 
 		// old password does not work anymore
-		login(USER_EMAIL, USER_PASSWORD)
+		login(USER_CONTACT_INFORMATION, USER_PASSWORD)
 				.andExpect(status().isUnauthorized());
 		// Ensure able to login with new password
-		login2xx(USER_EMAIL, NEW_PASSWORD);
+		login2xx(USER_CONTACT_INFORMATION, NEW_PASSWORD);
 	}
 	
 
@@ -49,13 +49,13 @@ public class ChangePasswordTest extends AbstractRapidAuthIntegrationTest {
 	public void adminCanChangePasswordOfDiffUser() throws Exception {
 		ChangePasswordDto changePasswordDto = changePasswordDto(USER_PASSWORD);
 
-		String token = login2xx(ADMIN_EMAIL, ADMIN_PASSWORD);
+		String token = login2xx(ADMIN_CONTACT_INFORMATION, ADMIN_PASSWORD);
 		mvc.perform(testTemplate.changePassword(getUser().getId(),token, changePasswordDto))
 				.andExpect(status().is2xxSuccessful())
 				.andExpect(header().string(HttpHeaders.AUTHORIZATION, containsString(".")));
 
 		// Ensure able to login with new password
-		login2xx(USER_EMAIL, NEW_PASSWORD);
+		login2xx(USER_CONTACT_INFORMATION, NEW_PASSWORD);
 	}
 
 
@@ -63,7 +63,7 @@ public class ChangePasswordTest extends AbstractRapidAuthIntegrationTest {
 	public void cantChangePasswordForUnknownId() throws Exception {
 		ChangePasswordDto changePasswordDto = changePasswordDto(USER_PASSWORD);
 
-		String token = login2xx(USER_EMAIL, USER_PASSWORD);
+		String token = login2xx(USER_CONTACT_INFORMATION, USER_PASSWORD);
 
 		mvc.perform(testTemplate.changePassword(UNKNOWN_USER_ID,token, changePasswordDto))
 				.andExpect(status().isNotFound());
@@ -74,12 +74,12 @@ public class ChangePasswordTest extends AbstractRapidAuthIntegrationTest {
 	public void userCantChangePasswordOfAnotherUser() throws Exception {
 		ChangePasswordDto changePasswordDto = changePasswordDto(SECOND_USER_PASSWORD);
 
-		String token = login2xx(USER_EMAIL, USER_PASSWORD);
+		String token = login2xx(USER_CONTACT_INFORMATION, USER_PASSWORD);
 
 		mvc.perform(testTemplate.changePassword(getSecondUser().getId(),token, changePasswordDto))
 				.andExpect(status().isForbidden());
 
-		login2xx(SECOND_USER_EMAIL, SECOND_USER_PASSWORD);
+		login2xx(SECOND_USER_CONTACT_INFORMATION, SECOND_USER_PASSWORD);
 	}
 
 
@@ -92,10 +92,10 @@ public class ChangePasswordTest extends AbstractRapidAuthIntegrationTest {
 				.password(null)
 				.retypePassword(null)
 				.build();
-		String token = login2xx(USER_EMAIL, USER_PASSWORD);
+		String token = login2xx(USER_CONTACT_INFORMATION, USER_PASSWORD);
 		mvc.perform(testTemplate.changePassword(getUser().getId(),token, changePasswordDto))
 				.andExpect(status().isBadRequest());
-		login2xx(USER_EMAIL, USER_PASSWORD);
+		login2xx(USER_CONTACT_INFORMATION, USER_PASSWORD);
 
 
 		// invalid pw
@@ -104,10 +104,10 @@ public class ChangePasswordTest extends AbstractRapidAuthIntegrationTest {
 				.password(INVALID_PASSWORD)
 				.retypePassword(INVALID_PASSWORD)
 				.build();
-		token = login2xx(USER_EMAIL, USER_PASSWORD);
+		token = login2xx(USER_CONTACT_INFORMATION, USER_PASSWORD);
 		mvc.perform(testTemplate.changePassword(getUser().getId(),token, changePasswordDto))
 				.andExpect(status().isBadRequest());
-		login2xx(USER_EMAIL, USER_PASSWORD);
+		login2xx(USER_CONTACT_INFORMATION, USER_PASSWORD);
 
 		// wrong old password
 		changePasswordDto = ChangePasswordDto.builder()
@@ -115,10 +115,10 @@ public class ChangePasswordTest extends AbstractRapidAuthIntegrationTest {
 				.password(NEW_PASSWORD)
 				.retypePassword(NEW_PASSWORD)
 				.build();
-		token = login2xx(USER_EMAIL, USER_PASSWORD);
+		token = login2xx(USER_CONTACT_INFORMATION, USER_PASSWORD);
 		mvc.perform(testTemplate.changePassword(getUser().getId(),token, changePasswordDto))
 				.andExpect(status().isBadRequest());
-		login2xx(USER_EMAIL, USER_PASSWORD);
+		login2xx(USER_CONTACT_INFORMATION, USER_PASSWORD);
 
 		// different retype-password
 		changePasswordDto = ChangePasswordDto.builder()
@@ -126,9 +126,9 @@ public class ChangePasswordTest extends AbstractRapidAuthIntegrationTest {
 				.password(NEW_PASSWORD)
 				.retypePassword(NEW_PASSWORD+"different")
 				.build();
-		token = login2xx(USER_EMAIL, USER_PASSWORD);
+		token = login2xx(USER_CONTACT_INFORMATION, USER_PASSWORD);
 		mvc.perform(testTemplate.changePassword(getUser().getId(),token, changePasswordDto))
 				.andExpect(status().isBadRequest());
-		login2xx(USER_EMAIL, USER_PASSWORD);
+		login2xx(USER_CONTACT_INFORMATION, USER_PASSWORD);
 	}
 }

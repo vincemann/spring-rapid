@@ -9,6 +9,7 @@ import lombok.*;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Table;
+import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Size;
 import java.util.Set;
@@ -45,5 +46,9 @@ public class User extends AbstractUser<Long> {
     private String name;
 
 
-
+	@Email
+	@Override
+	public String getContactInformation() {
+		return super.getContactInformation();
+	}
 }

@@ -25,6 +25,10 @@ public class RapidJwtClaimsToPrincipalConverter
     private UserService userService;
     private AuthenticatedPrincipalFactory<RapidAuthAuthenticatedPrincipal,AbstractUser<?>> authenticatedPrincipalFactory;
 
+    @Autowired
+    public void setAuthenticatedPrincipalFactory(AuthenticatedPrincipalFactory<RapidAuthAuthenticatedPrincipal, AbstractUser<?>> authenticatedPrincipalFactory) {
+        this.authenticatedPrincipalFactory = authenticatedPrincipalFactory;
+    }
 
     @Override
     public Map<String,Object> toClaims(RapidAuthAuthenticatedPrincipal user) {

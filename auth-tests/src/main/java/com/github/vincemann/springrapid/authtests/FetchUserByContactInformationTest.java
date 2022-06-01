@@ -15,7 +15,7 @@ public class FetchUserByContactInformationTest extends AbstractRapidAuthIntegrat
 
 	@Test
 	public void anonKnowsContactInformation_canFindMatchingId() throws Exception {
-		mvc.perform(testTemplate.fetchByContactInformation(USER_EMAIL))
+		mvc.perform(testTemplate.fetchByContactInformation(USER_CONTACT_INFORMATION))
 				.andExpect(status().is(200))
 				.andExpect(jsonPath("$.id").value(getUser().getId()))
 				.andExpect(jsonPath("$.password").doesNotExist())
@@ -26,7 +26,7 @@ public class FetchUserByContactInformationTest extends AbstractRapidAuthIntegrat
 	public void anonKnowsInvalidContactInformation_cantFindMatchingId() throws Exception {
 		
 		// contactInformation does not exist
-		mvc.perform(testTemplate.fetchByContactInformation(UNKNOWN_EMAIL))
+		mvc.perform(testTemplate.fetchByContactInformation(UNKNOWN_CONTACT_INFORMATION))
                 .andExpect(status().isNotFound());
 
 		// Blank contactInformation
@@ -56,7 +56,7 @@ public class FetchUserByContactInformationTest extends AbstractRapidAuthIntegrat
 //				.header(HttpHeaders.AUTHORIZATION, tokens.get(getAdmin().getId())))
 //                .andExpect(status().is(200))
 //				.andExpect(jsonPath("$.id").value(getAdmin().getId()))
-//				.andExpect(jsonPath("$.contactInformation").value(ADMIN_EMAIL))
+//				.andExpect(jsonPath("$.contactInformation").value(ADMIN_CONTACT_INFORMATION))
 //				.andExpect(jsonPath("$.password").doesNotExist())
 //				.andExpect(jsonPath("$.credentialsUpdatedAt").doesNotExist());
 ////				.andExpect(jsonPath("$.name").value("Admin 1"));
@@ -73,7 +73,7 @@ public class FetchUserByContactInformationTest extends AbstractRapidAuthIntegrat
 //				.header(HttpHeaders.AUTHORIZATION, tokens.get(getAdmin().getId())))
 //				.andExpect(status().is(200))
 //				.andExpect(jsonPath("$.id").value(getUnverifiedUser().getId()))
-//				.andExpect(jsonPath("$.contactInformation").value(UNVERIFIED_USER_EMAIL))
+//				.andExpect(jsonPath("$.contactInformation").value(UNVERIFIED_USER_CONTACT_INFORMATION))
 //				.andReturn();
 //
 //	}

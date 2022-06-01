@@ -12,7 +12,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import java.util.*;
 
 /**
- * Wrapper for Springs {@link SecurityContext#getAuthentication()} in a type safe manner for {@link Authentication#getPrincipal()}.
+ * Wrapper for Springs {@link SecurityContext#getAuthentication()} in a type safe manner for {@link Authentication#getContactInformation()}.
  * @param <P> Principal Type
  */
 @LogInteraction(Severity.TRACE)

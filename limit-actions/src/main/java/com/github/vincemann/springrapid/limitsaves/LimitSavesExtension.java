@@ -29,7 +29,7 @@ public abstract class LimitSavesExtension
         try{
             super.checkLimit();
         }catch (TooManyRequestsException e){
-            throw new TooManyRequestsException("principal: " + getPrincipal() + " tried to create more entities of type: " + getEntityClass() + " then allowed in time period",e);
+            throw new TooManyRequestsException("principal: " + getContactInformation() + " tried to create more entities of type: " + getEntityClass() + " then allowed in time period",e);
         }
     }
 

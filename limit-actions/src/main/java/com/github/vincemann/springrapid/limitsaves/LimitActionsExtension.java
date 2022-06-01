@@ -33,13 +33,13 @@ public abstract class LimitActionsExtension extends BasicServiceExtension<CrudSe
     }
 
     public void actionPerformed() {
-        String principal = getPrincipal();
+        String principal = getContactInformation();
         principal_amountActions_history.merge(principal, 1, Integer::sum);
     }
 
     public void checkLimit() {
         checkTimeReset();
-        String principal = getPrincipal();
+        String principal = getContactInformation();
         Integer amount = principal_amountActions_history.get(principal);
         if (amount != null) {
             if (amount >= maxAmountActions) {
@@ -55,7 +55,7 @@ public abstract class LimitActionsExtension extends BasicServiceExtension<CrudSe
         }
     }
 
-    protected String getPrincipal() {
+    protected String getContactInformation() {
         return RapidSecurityContext.getName();
     }
 
@@ -69,7 +69,7 @@ public abstract class LimitActionsExtension extends BasicServiceExtension<CrudSe
         return maxAmountActions;
     }
 
-    protected Map<String, Integer> getPrincipal_amountActions_history() {
+    protected Map<String, Integer> getContactInformation_amountActions_history() {
         return principal_amountActions_history;
     }
 
