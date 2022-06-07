@@ -79,6 +79,8 @@ public abstract class AbstractUserController<U extends AbstractUser<ID>, ID exte
 	@Override
 	protected void initUrls() {
 		super.initUrls();
+
+		pingUrl = getAuthProperties().getController().getPingUrl();
 		loginUrl = getAuthProperties().getController().getLoginUrl();
 		contextUrl = getAuthProperties().getController().getContextUrl();
 		signupUrl = getAuthProperties().getController().getSignupUrl();
