@@ -12,7 +12,7 @@ public class RapidAuthAuthenticatedPrincipalFactory<U extends AbstractUser<?>>
     @Override
     public RapidAuthAuthenticatedPrincipal create(U user) {
        return new RapidAuthAuthenticatedPrincipal(user.getContactInformation(),user.getPassword(),user
-                .getRoles(),user.getId().toString());
+                .getRoles(),user.getId() == null ? null : user.getId().toString());
     }
 
 //    @Override
