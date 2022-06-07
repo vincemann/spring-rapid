@@ -58,6 +58,36 @@ public abstract class AbstractUserController<U extends AbstractUser<ID>, ID exte
 	private HttpTokenService httpTokenService;
 	private AuthProperties authProperties;
 
+	public String signupUrl;
+	public String resetPasswordUrl;
+	public String resetPasswordViewUrl;
+	public String fetchByContactInformationUrl;
+	public String changeContactInformationUrl;
+	public String changeContactInformationViewUrl;
+	public String verifyUserUrl;
+	public String resendVerificationContactInformationUrl;
+	public String forgotPasswordUrl;
+	public String changePasswordUrl;
+	public String requestContactInformationChangeUrl;
+	public String fetchNewAuthTokenUrl;
+
+	@Override
+	protected void initUrls() {
+		super.initUrls();
+		signupUrl = getAuthProperties().getController().getSignupUrl();
+		resetPasswordUrl = getAuthProperties().getController().getResetPasswordUrl();
+		resetPasswordViewUrl = getAuthProperties().getController().getResetPasswordViewUrl();
+		fetchByContactInformationUrl = getAuthProperties().getController().getFetchByContactInformationUrl();
+		changeContactInformationUrl = getAuthProperties().getController().getChangeContactInformationUrl();
+		changeContactInformationViewUrl = getAuthProperties().getController().getChangeContactInformationViewUrl();
+		verifyUserUrl = getAuthProperties().getController().getVerifyUserUrl();
+		resendVerificationContactInformationUrl = getAuthProperties().getController().getResendVerificationContactInformationUrl();
+		forgotPasswordUrl = getAuthProperties().getController().getForgotPasswordUrl();
+		changePasswordUrl = getAuthProperties().getController().getChangePasswordUrl();
+		requestContactInformationChangeUrl = getAuthProperties().getController().getRequestContactInformationChangeUrl();
+		fetchNewAuthTokenUrl = getAuthProperties().getController().getFetchNewAuthTokenUrl();
+	}
+
 
 	//              CONTROLLER METHODS
 
@@ -88,8 +118,8 @@ public abstract class AbstractUserController<U extends AbstractUser<ID>, ID exte
 			HttpServletResponse response) throws BadEntityException, IOException, EntityNotFoundException, AlreadyRegisteredException {
 
 		String jsonDto = readBody(request);
-		Object signupDto = getJsonMapper().readDto(jsonDto,
-				createDtoClass(getAuthProperties().getController().getSignupUrl(), Direction.REQUEST, null));
+		Class<?> dtoClass = createDtoClass(getSignupUrl(),Direction.REQUEST,null);
+		Object signupDto = getJsonMapper().readDto(jsonDto, dtoClass);
 		getDtoValidationStrategy().validate(signupDto);
 		log.debug("Signing up: " + signupDto);
 		U user = getDtoMapper().mapToEntity(signupDto, getEntityClass());
@@ -168,12 +198,13 @@ public abstract class AbstractUserController<U extends AbstractUser<ID>, ID exte
 			HttpServletRequest request,HttpServletResponse response) throws IOException, BadEntityException, EntityNotFoundException, BadTokenException {
 		String body = readBody(request);
 		String url = makeUrl(request);
+
 		// todo terrible, fix this, check for equality in inline js in html file
 		// and send propert json in body not url param encoded in body
-		Map<String, String> bodyParams = UrlParamUtil.splitQuery(body);
+		Map<String, String> queryParams = UrlParamUtil.splitQuery(body);
 		String code = readRequestParam(request, "code");
-		String password = bodyParams.get("password");
-		String matchPassword = bodyParams.get("matchPassword");
+		String password = queryParams.get("password");
+		String matchPassword = queryParams.get("matchPassword");
 		if (password==null || matchPassword == null){
 			throw new BadEntityException("Insufficient Password data");
 		}
@@ -185,7 +216,7 @@ public abstract class AbstractUserController<U extends AbstractUser<ID>, ID exte
 		getDtoValidationStrategy().validate(resetPasswordDto);
 
 		log.debug("Resetting password ... ");
-		U saved = getSecuredUserService().resetPassword(resetPasswordDto, code);
+		U saved = getSecuredUserService().resetPassword(password, code);
 		appendFreshTokenOf(saved,response);
 		Object dto = getDtoMapper().mapToDto(saved,
 				createDtoClass(getAuthProperties().getController().resetPasswordUrl, Direction.RESPONSE, saved));
@@ -231,12 +262,13 @@ public abstract class AbstractUserController<U extends AbstractUser<ID>, ID exte
 			HttpServletResponse response) throws BadEntityException, EntityNotFoundException, IdFetchingException, IOException {
 		ID id = fetchId(request);
 		String body = readBody(request);
-		ChangePasswordDto form = getJsonMapper().readDto(body, ChangePasswordDto.class);
-		getDtoValidationStrategy().validate(form);
+		U user = fetchUser(id);
+		Class<? extends ChangePasswordDto> dtoClass = (Class<? extends ChangePasswordDto>) createDtoClass(getChangePasswordUrl(),Direction.REQUEST,user);
+		ChangePasswordDto changePasswordDto = getJsonMapper().readDto(body, dtoClass);
+		getDtoValidationStrategy().validate(changePasswordDto);
 
 		log.debug("Changing password of user with id: " + id);
-		U user = fetchUser(id);
-		getSecuredUserService().changePassword(user, form);
+		getSecuredUserService().changePassword(user, changePasswordDto.getOldPassword(),changePasswordDto.getNewPassword(),changePasswordDto.getRetypeNewPassword());
 		appendFreshTokenOf(user,response);
 		return okNoContent();
 	}
@@ -251,11 +283,12 @@ public abstract class AbstractUserController<U extends AbstractUser<ID>, ID exte
 								   /*@RequestBody RequestContactInformationChangeForm contactInformationChangeForm*/,HttpServletResponse response) throws BadEntityException, EntityNotFoundException, IdFetchingException, IOException, AlreadyRegisteredException {
 		ID id = fetchId(request);
 		String body = readBody(request);
+		U user = fetchUser(id);
+		Class<? extends RequestContactInformationChangeDto> dtoClass = (Class<? extends RequestContactInformationChangeDto>) createDtoClass(getChangePasswordUrl(),Direction.REQUEST,user);
 		RequestContactInformationChangeDto dto = getJsonMapper().readDto(body, RequestContactInformationChangeDto.class);
 		getDtoValidationStrategy().validate(dto);
-		log.debug("Requesting contactInformation change for user with " + id);
-		U user = fetchUser(id);
-		getSecuredUserService().requestPrincipalChange(user, dto);
+		log.debug("Requesting contactInformation change for user: " + user);
+		getSecuredUserService().requestContactInformationChange(user, dto.getNewContactInformation());
 		return okNoContent();
 	}
 
@@ -352,8 +385,16 @@ public abstract class AbstractUserController<U extends AbstractUser<ID>, ID exte
 
 				.withAllPrincipals()
 				.withAllRoles()
-				.forEndpoint(getAuthProperties().getController().getSignupUrl(), Direction.REQUEST, SignupDto.class)
-				.forEndpoint(getAuthProperties().getController().getSignupUrl(), Direction.RESPONSE, RapidFindOwnUserDto.class)
+				.forEndpoint(getSignupUrl(), Direction.REQUEST, SignupDto.class)
+				.forEndpoint(getSignupUrl(), Direction.RESPONSE, RapidFindOwnUserDto.class)
+
+				.withAllPrincipals()
+				.withAllRoles()
+				.forEndpoint(getRequestContactInformationChangeUrl(), Direction.REQUEST, RequestContactInformationChangeDto.class)
+
+				.withAllPrincipals()
+				.withAllRoles()
+				.forEndpoint(getChangePasswordUrl(), Direction.REQUEST, ChangePasswordDto.class)
 
 
 				.withAllPrincipals()
@@ -539,7 +580,7 @@ public abstract class AbstractUserController<U extends AbstractUser<ID>, ID exte
 
 	protected RequestMappingInfo createNewAuthTokenRequestMappingInfo() {
 		return RequestMappingInfo
-				.paths(getAuthProperties().getController().getNewAuthTokenUrl())
+				.paths(getAuthProperties().getController().getFetchNewAuthTokenUrl())
 				.methods(RequestMethod.POST)
 				//.consumes(MediaType.APPLICATION_FORM_URLENCODED_VALUE)
 				.produces(getMediaType())

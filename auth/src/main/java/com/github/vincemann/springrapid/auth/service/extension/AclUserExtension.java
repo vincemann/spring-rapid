@@ -10,6 +10,7 @@ import com.github.vincemann.springrapid.acl.service.extensions.acl.AbstractAclEx
 import com.github.vincemann.springrapid.core.model.IdentifiableEntity;
 import com.github.vincemann.springrapid.core.security.Roles;
 import com.github.vincemann.springrapid.core.service.exception.BadEntityException;
+import com.github.vincemann.springrapid.core.service.exception.EntityNotFoundException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.acls.domain.BasePermission;
 import org.springframework.transaction.annotation.Transactional;
@@ -21,7 +22,6 @@ public class AclUserExtension
         extends AbstractAclExtension<UserService>
             implements UserServiceExtension<UserService>
 {
-
 
     @LogInteraction
     @Override

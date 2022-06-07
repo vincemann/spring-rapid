@@ -56,18 +56,18 @@ public interface GenericUserServiceExtension<S extends UserService<U,Id>,U exten
     }
 
     @Override
-    default U resetPassword( ResetPasswordDto dto,String code) throws EntityNotFoundException, BadEntityException {
-        return getNext().resetPassword(dto, code);
+    default U resetPassword(String newPassword, String code) throws EntityNotFoundException, BadEntityException {
+        return getNext().resetPassword(newPassword,code);
     }
 
     @Override
-    default void changePassword(U user,  ChangePasswordDto changePasswordForm) throws EntityNotFoundException, BadEntityException {
-        getNext().changePassword(user,changePasswordForm);
+    default void changePassword(U user, String oldPassword, String newPassword, String retypeNewPassword) throws EntityNotFoundException, BadEntityException {
+        getNext().changePassword(user,oldPassword,newPassword,retypeNewPassword);
     }
 
     @Override
-    default void requestPrincipalChange(U user, RequestContactInformationChangeDto contactInformationChangeForm) throws EntityNotFoundException, AlreadyRegisteredException {
-        getNext().requestPrincipalChange(user,contactInformationChangeForm);
+    default void requestContactInformationChange(U user, String newContactInformation) throws EntityNotFoundException, AlreadyRegisteredException{
+        getNext().requestContactInformationChange(user,newContactInformation);
     }
 
     @Override

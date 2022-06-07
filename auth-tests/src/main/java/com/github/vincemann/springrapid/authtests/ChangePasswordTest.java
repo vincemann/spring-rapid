@@ -16,8 +16,8 @@ public class ChangePasswordTest extends AbstractRapidAuthIntegrationTest {
 	private ChangePasswordDto changePasswordDto(String oldPassword){
 		return ChangePasswordDto.builder()
 				.oldPassword(oldPassword)
-				.password(NEW_PASSWORD)
-				.retypePassword(NEW_PASSWORD)
+				.newPassword(NEW_PASSWORD)
+				.retypeNewPassword(NEW_PASSWORD)
 				.build();
 	}
 
@@ -28,8 +28,8 @@ public class ChangePasswordTest extends AbstractRapidAuthIntegrationTest {
 	public void canChangeOwnPassword() throws Exception {
 		ChangePasswordDto changePasswordDto = ChangePasswordDto.builder()
 				.oldPassword(USER_PASSWORD)
-				.password(NEW_PASSWORD)
-				.retypePassword(NEW_PASSWORD)
+				.newPassword(NEW_PASSWORD)
+				.retypeNewPassword(NEW_PASSWORD)
 				.build();
 
 		String token = login2xx(USER_CONTACT_INFORMATION, USER_PASSWORD);
@@ -89,8 +89,8 @@ public class ChangePasswordTest extends AbstractRapidAuthIntegrationTest {
 		// All fields null
 		ChangePasswordDto changePasswordDto = ChangePasswordDto.builder()
 				.oldPassword(null)
-				.password(null)
-				.retypePassword(null)
+				.newPassword(null)
+				.retypeNewPassword(null)
 				.build();
 		String token = login2xx(USER_CONTACT_INFORMATION, USER_PASSWORD);
 		mvc.perform(testTemplate.changePassword(getUser().getId(),token, changePasswordDto))
@@ -101,8 +101,8 @@ public class ChangePasswordTest extends AbstractRapidAuthIntegrationTest {
 		// invalid pw
 		changePasswordDto = ChangePasswordDto.builder()
 				.oldPassword(USER_PASSWORD)
-				.password(INVALID_PASSWORD)
-				.retypePassword(INVALID_PASSWORD)
+				.newPassword(INVALID_PASSWORD)
+				.retypeNewPassword(INVALID_PASSWORD)
 				.build();
 		token = login2xx(USER_CONTACT_INFORMATION, USER_PASSWORD);
 		mvc.perform(testTemplate.changePassword(getUser().getId(),token, changePasswordDto))
@@ -112,8 +112,8 @@ public class ChangePasswordTest extends AbstractRapidAuthIntegrationTest {
 		// wrong old password
 		changePasswordDto = ChangePasswordDto.builder()
 				.oldPassword(USER_PASSWORD+"wrong")
-				.password(NEW_PASSWORD)
-				.retypePassword(NEW_PASSWORD)
+				.newPassword(NEW_PASSWORD)
+				.retypeNewPassword(NEW_PASSWORD)
 				.build();
 		token = login2xx(USER_CONTACT_INFORMATION, USER_PASSWORD);
 		mvc.perform(testTemplate.changePassword(getUser().getId(),token, changePasswordDto))
@@ -123,8 +123,8 @@ public class ChangePasswordTest extends AbstractRapidAuthIntegrationTest {
 		// different retype-password
 		changePasswordDto = ChangePasswordDto.builder()
 				.oldPassword(USER_PASSWORD)
-				.password(NEW_PASSWORD)
-				.retypePassword(NEW_PASSWORD+"different")
+				.newPassword(NEW_PASSWORD)
+				.retypeNewPassword(NEW_PASSWORD+"different")
 				.build();
 		token = login2xx(USER_CONTACT_INFORMATION, USER_PASSWORD);
 		mvc.perform(testTemplate.changePassword(getUser().getId(),token, changePasswordDto))

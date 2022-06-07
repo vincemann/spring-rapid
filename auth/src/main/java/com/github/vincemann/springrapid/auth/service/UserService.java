@@ -40,17 +40,15 @@ public interface UserService<U extends AbstractUser<ID>, ID extends Serializable
     public U verifyUser(/*U user,*/@NotBlank String verificationCode) throws EntityNotFoundException,  BadEntityException;
     public void forgotPassword( @NotBlank String contactInformation) throws EntityNotFoundException;
 
-    // use dto here so https encrypts new password which is not possible via url param
+    // use newPassword here so https encrypts new password which is not possible via url param
     // target contactInformation gets extracted from code
-    public U resetPassword(ResetPasswordDto dto, String code) throws EntityNotFoundException,  BadEntityException;
-    public void changePassword(U user, ChangePasswordDto changePasswordForm) throws EntityNotFoundException, BadEntityException;
-
-//    @Validated(UserVerifyUtils.ChangeContactInformationValidation.class)
-    public void requestPrincipalChange(U user, RequestContactInformationChangeDto contactInformationChangeForm) throws EntityNotFoundException, AlreadyRegisteredException;
+    public U resetPassword(String newPassword, String code) throws EntityNotFoundException,  BadEntityException;
+    public void changePassword(U user, String oldPassword, String newPassword, String retypeNewPassword) throws EntityNotFoundException, BadEntityException;
 
     // get user from contactInformation from code
     public U changeContactInformation(/*U user,*/  @NotBlank String changeContactInformationCode) throws EntityNotFoundException, BadEntityException;
 
+    public void requestContactInformationChange(U user, String newContactInformation) throws EntityNotFoundException, AlreadyRegisteredException;
 
 
     @LogInteraction(Severity.TRACE)

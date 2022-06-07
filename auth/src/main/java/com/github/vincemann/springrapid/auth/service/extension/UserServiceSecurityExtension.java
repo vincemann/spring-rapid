@@ -131,22 +131,20 @@ public class UserServiceSecurityExtension
 
     @LogInteraction
     @Override
-    public void changePassword(AbstractUser user, ChangePasswordDto changePasswordForm) throws EntityNotFoundException, BadEntityException {
-//        LexUtils.ensureFound(user);
+    public void changePassword(AbstractUser user, String oldPassword, String newPassword, String retypeNewPassword) throws EntityNotFoundException, BadEntityException {
         getSecurityChecker().checkPermission(user, BasePermission.WRITE);
-        getNext().changePassword(user, changePasswordForm);
+        getNext().changePassword(user, oldPassword, newPassword, retypeNewPassword);
     }
 
     @LogInteraction
     @Override
-    public void requestPrincipalChange(AbstractUser user, RequestContactInformationChangeDto contactInformationChangeForm) throws EntityNotFoundException, AlreadyRegisteredException {
+    public void requestContactInformationChange(AbstractUser user, String newContactInformation) throws EntityNotFoundException, AlreadyRegisteredException {
         VerifyEntity.isPresent(user,"User who's contactInformation should get changed does not exist");
         getSecurityChecker().checkPermission(user, BasePermission.WRITE);
-        getNext().requestPrincipalChange(user, contactInformationChangeForm);
+        getNext().requestContactInformationChange(user, newContactInformation);
     }
 
 
-    // if you have the code you can change the contactInformation
     // admin can just change contactInformation via normal update
     @LogInteraction
     @Override

@@ -50,19 +50,15 @@ public interface UserServiceExtension<S extends UserService>
     }
 
     @Override
-    default AbstractUser resetPassword(ResetPasswordDto dto, String code) throws EntityNotFoundException, BadEntityException {
-        return getNext().resetPassword(dto, code);
+    default AbstractUser resetPassword(String newPassword, String code) throws EntityNotFoundException, BadEntityException {
+        return getNext().resetPassword(newPassword,code);
     }
 
     @Override
-    default void changePassword(AbstractUser user, ChangePasswordDto changePasswordForm) throws EntityNotFoundException, BadEntityException {
-        getNext().changePassword(user,changePasswordForm);
+    default void changePassword(AbstractUser user, String oldPassword, String newPassword, String retypeNewPassword) throws EntityNotFoundException, BadEntityException {
+        getNext().changePassword(user,oldPassword,newPassword,retypeNewPassword);
     }
 
-    @Override
-    default void requestPrincipalChange(AbstractUser user, RequestContactInformationChangeDto contactInformationChangeForm) throws EntityNotFoundException, AlreadyRegisteredException {
-        getNext().requestPrincipalChange(user,contactInformationChangeForm);
-    }
 
     @Override
     default AbstractUser changeContactInformation(/*@NotBlank*/ String changeContactInformationCode) throws EntityNotFoundException, BadEntityException {
@@ -79,7 +75,12 @@ public interface UserServiceExtension<S extends UserService>
         return getNext().createNewAuthToken();
     }
 
-//    @Override
+    @Override
+    default void requestContactInformationChange(AbstractUser user, String newContactInformation) throws EntityNotFoundException, AlreadyRegisteredException {
+        getNext().requestContactInformationChange(user,newContactInformation);
+    }
+
+    //    @Override
 //    default Map<String, String> fetchFullToken(String authHeader) {
 //        return getNext().fetchFullToken(authHeader);
 //    }

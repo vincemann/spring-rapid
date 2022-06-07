@@ -4,9 +4,6 @@ package com.github.vincemann.springrapid.auth.service;
 import com.github.vincemann.springrapid.auth.AuthProperties;
 import com.github.vincemann.springrapid.auth.MessageSender;
 import com.github.vincemann.springrapid.auth.model.*;
-import com.github.vincemann.springrapid.auth.dto.ChangePasswordDto;
-import com.github.vincemann.springrapid.auth.dto.RequestContactInformationChangeDto;
-import com.github.vincemann.springrapid.auth.dto.ResetPasswordDto;
 import com.github.vincemann.springrapid.auth.security.AuthenticatedPrincipalFactory;
 import com.github.vincemann.springrapid.auth.service.token.AuthorizationTokenService;
 import com.github.vincemann.springrapid.auth.service.token.BadTokenException;
@@ -286,13 +283,13 @@ public abstract class AbstractUserService
      * @return
      */
     @Transactional(propagation = Propagation.REQUIRED, readOnly = false)
-    public U resetPassword(ResetPasswordDto dto, String code) throws EntityNotFoundException, BadEntityException {
+    public U resetPassword(String newPassword, String code) throws EntityNotFoundException, BadEntityException {
 
         try {
             JWTClaimsSet claims = jweTokenService.parseToken(code);
             RapidJwt.validate(claims, FORGOT_PASSWORD_AUDIENCE);
 
-            passwordValidator.validate(dto.getNewPassword());
+            passwordValidator.validate(newPassword);
             U user = extractUserFromClaims(claims);
             RapidJwt.validateIssuedAfter(claims, user.getCredentialsUpdatedMillis());
 
@@ -303,7 +300,7 @@ public abstract class AbstractUserService
 
 
             // sets the password
-            user.setPassword(passwordEncoder.encode(dto.getNewPassword()));
+            user.setPassword(passwordEncoder.encode(newPassword));
             user.setCredentialsUpdatedMillis(System.currentTimeMillis());
             //user.setForgotPasswordCode(null);
             try {
@@ -360,21 +357,21 @@ public abstract class AbstractUserService
      * Changes the password.
      */
     @Transactional(propagation = Propagation.REQUIRED, readOnly = false)
-    public void changePassword(U user, ChangePasswordDto changePasswordDto) throws EntityNotFoundException, BadEntityException {
+    public void changePassword(U user, String givenOldPassword, String newPassword, String retypeNewPassword) throws EntityNotFoundException, BadEntityException {
         VerifyEntity.isPresent(user, "User not found");
         String oldPassword = user.getPassword();
 
-        if (!changePasswordDto.getPassword().equals(changePasswordDto.getRetypePassword())) {
+        if (!newPassword.equals(retypeNewPassword)) {
             throw new BadEntityException("Password does not match retype password");
         }
-        passwordValidator.validate(changePasswordDto.getPassword());
+        passwordValidator.validate(newPassword);
         // checks
         VerifyEntity.is(
-                passwordEncoder.matches(changePasswordDto.getOldPassword(),
+                passwordEncoder.matches(givenOldPassword,
                         oldPassword), "Wrong password");
 
         // sets the password
-        user.setPassword(passwordEncoder.encode(changePasswordDto.getPassword()));
+        user.setPassword(passwordEncoder.encode(newPassword));
         user.setCredentialsUpdatedMillis(System.currentTimeMillis());
         // todo changed to softupdate
         log.debug("changed pw of user: " + user.getContactInformation());
@@ -425,17 +422,17 @@ public abstract class AbstractUserService
      * Requests for contactInformation change.
      */
     @Transactional(propagation = Propagation.REQUIRED, readOnly = false)
-    public void requestPrincipalChange(U user, RequestContactInformationChangeDto contactInformationChangeDto) throws EntityNotFoundException, AlreadyRegisteredException {
+    public void requestContactInformationChange(U user, String newContactInformation) throws EntityNotFoundException, AlreadyRegisteredException {
         VerifyEntity.isPresent(user, "User not found");
-        checkUniqueContactInformation(contactInformationChangeDto.getNewContactInformation());
+        checkUniqueContactInformation(newContactInformation);
 
 //        LexUtils.validateField("updatedUser.password",
-//                passwordEncoder.matches(contactInformationChangeDto.getPassword(),
+//                passwordEncoder.matches(newContactInformation.getPassword(),
 //                        user.getPassword()),
 //                "com.github.vincemann.wrong.password").go();
 
         // preserves the new contactInformation id
-        user.setNewContactInformation(contactInformationChangeDto.getNewContactInformation());
+        user.setNewContactInformation(newContactInformation);
         //user.setChangeContactInformationCode(LemonValidationUtils.uid());
         U saved;
         try {

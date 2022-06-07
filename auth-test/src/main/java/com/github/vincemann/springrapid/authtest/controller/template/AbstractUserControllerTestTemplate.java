@@ -169,13 +169,13 @@ public abstract class AbstractUserControllerTestTemplate<C extends AbstractUserC
     }
 
     public RequestBuilder fetchNewToken(String token) throws Exception {
-        return post(getController().getAuthProperties().getController().getNewAuthTokenUrl())
+        return post(getController().getAuthProperties().getController().getFetchNewAuthTokenUrl())
                 .header(HttpHeaders.AUTHORIZATION, token)
                 .header("contentType", MediaType.APPLICATION_FORM_URLENCODED);
     }
 
     public RequestBuilder fetchNewToken(String token, String contactInformation) throws Exception {
-        return post(getController().getAuthProperties().getController().getNewAuthTokenUrl())
+        return post(getController().getAuthProperties().getController().getFetchNewAuthTokenUrl())
                 .header(HttpHeaders.AUTHORIZATION, token)
                 .param("contactInformation", contactInformation)
                 .header("contentType", MediaType.APPLICATION_FORM_URLENCODED);

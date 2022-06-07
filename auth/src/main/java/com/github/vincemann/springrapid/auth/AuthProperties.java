@@ -48,7 +48,7 @@ public class AuthProperties {
 		public String forgotPasswordUrl = userBaseUrl +"/forgot-password";
 		public String changePasswordUrl = userBaseUrl +"/change-password";
 		public String requestContactInformationChangeUrl = userBaseUrl +"/request-contactInformation-change";
-		public String newAuthTokenUrl = userBaseUrl +"/new-auth-token";
+		public String fetchNewAuthTokenUrl = userBaseUrl +"/fetch-new-auth-token";
 
 	}
 

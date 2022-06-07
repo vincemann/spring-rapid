@@ -17,8 +17,8 @@ public class ChangePasswordDto implements Serializable {
 	private String oldPassword;
 
 	@NotBlank
-	private String password;
+	private String newPassword;
 
 	@NotBlank
-	private String retypePassword;
+	private String retypeNewPassword;
 }

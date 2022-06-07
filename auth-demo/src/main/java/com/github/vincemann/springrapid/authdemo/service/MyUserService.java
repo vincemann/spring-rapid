@@ -1,12 +1,12 @@
 package com.github.vincemann.springrapid.authdemo.service;
 
 import com.github.vincemann.springrapid.auth.AuthProperties;
-import com.github.vincemann.springrapid.auth.model.AuthRoles;
+import com.github.vincemann.springrapid.auth.dto.RequestContactInformationChangeDto;
 import com.github.vincemann.springrapid.auth.service.AlreadyRegisteredException;
 import com.github.vincemann.springrapid.authdemo.model.User;
-import com.github.vincemann.springrapid.authdemo.repositories.UserRepository;
+import com.github.vincemann.springrapid.authdemo.repository.UserRepository;
 import com.github.vincemann.springrapid.auth.service.AbstractUserService;
-import com.github.vincemann.springrapid.core.service.exception.BadEntityException;
+import com.github.vincemann.springrapid.core.service.exception.EntityNotFoundException;
 import org.springframework.transaction.annotation.Transactional;
 
 //@ServiceComponent

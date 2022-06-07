@@ -1,24 +1,15 @@
-package com.github.vincemann.springrapid.authdemo.controllers;
+package com.github.vincemann.springrapid.authdemo.controller;
 
 import com.github.vincemann.springrapid.auth.controller.AbstractUserController;
 import com.github.vincemann.springrapid.auth.controller.UserDtoMappingContextBuilder;
 import com.github.vincemann.springrapid.authdemo.dto.*;
 import com.github.vincemann.springrapid.authdemo.model.User;
-import com.github.vincemann.springrapid.authdemo.repositories.UserRepository;
 import com.github.vincemann.springrapid.authdemo.service.MyUserService;
 import com.github.vincemann.springrapid.core.controller.dto.mapper.context.Direction;
 import com.github.vincemann.springrapid.core.controller.dto.mapper.context.DtoMappingContext;
 import com.github.vincemann.springrapid.core.controller.dto.mapper.context.DtoRequestInfo;
 import com.github.vincemann.springrapid.core.security.Roles;
-import com.github.vincemann.springrapid.core.service.exception.BadEntityException;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.*;
-
-import javax.servlet.http.HttpServletRequest;
-import java.io.IOException;
 
 @Controller
 public class UserController extends AbstractUserController<User, Long, MyUserService>  {
@@ -29,6 +20,10 @@ public class UserController extends AbstractUserController<User, Long, MyUserSer
                 .withAllPrincipals()
                 .withAllRoles()
                 .forEndpoint(getUpdateUrl(), UserUpdatesOwnDto.class)
+
+                .withAllPrincipals()
+                .withAllRoles()
+                .forEndpoint(getAuthProperties().getController().getRequestContactInformationChangeUrl(),Direction.REQUEST, RequestEmailChangeDto.class)
 
                 .withAllPrincipals()
                 .withAllRoles()
