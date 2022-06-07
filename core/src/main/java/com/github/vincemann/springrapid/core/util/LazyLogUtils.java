@@ -1,6 +1,7 @@
 package com.github.vincemann.springrapid.core.util;
 
 import com.github.vincemann.springrapid.core.model.IdentifiableEntity;
+import lombok.Builder;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
@@ -22,107 +23,143 @@ import java.util.stream.Collectors;
 @Slf4j
 public class LazyLogUtils {
 
-    public static String toString(Object object){
-        return toString(object,new HashSet<>(),true,false,true);
-    }
 
-    public static String toString(Object object, Boolean ignoreEntitiesAndCollection){
-        return toString(object,null, ignoreEntitiesAndCollection,false,true);
-    }
+    static class LazyLogger {
+        private Object object;
+        private Boolean ignoreEntitiesAndCollections = Boolean.TRUE;
+        private Boolean idOnly = Boolean.FALSE;
+        private Boolean ignoreLazy = Boolean.TRUE;
+        private HashSet<String> propertyWhiteList = new HashSet<>();
+        private Integer maxCollectionEntries = 3;
+        // todo add flag for not loading new lazy entities in transaction
 
-    public static String toString(Object object, Boolean ignoreEntitiesAndCollection, HashSet<String> whiteList){
-        return toString(object,whiteList, ignoreEntitiesAndCollection,false,true);
-    }
 
-    public static String toString(Object object, Boolean ignoreEntitiesAndCollection,Boolean idOnly){
-        return toString(object,null, ignoreEntitiesAndCollection,idOnly,true);
-    }
-
-    /**
-     * reflection based toString method
-     * @param object
-     * @params ignore Entities and Collections (default = true), idOnly (default = false) -> only makes sense when first settings option is false,
-     *                 only log LazyInitException (default=true)
-     */
-    public static String toString(Object object,Set<String> whiteList, Boolean ignoreEntitiesAndCollections, Boolean idOnly, Boolean ignoreLazy) {
-        if (object == null) {
-            return "null";
+        @Builder
+        public LazyLogger(Object object, Boolean ignoreEntitiesAndCollections, Boolean idOnly, Boolean ignoreLazy, HashSet<String> propertyWhiteList, Integer maxCollectionEntries) {
+            this.object = object;
+            if (ignoreEntitiesAndCollections != null)
+                this.ignoreEntitiesAndCollections = ignoreEntitiesAndCollections;
+            if (idOnly != null)
+                this.idOnly = idOnly;
+            if (ignoreLazy != null)
+                this.ignoreLazy = ignoreLazy;
+            if (propertyWhiteList != null)
+                this.propertyWhiteList = propertyWhiteList;
+            if (maxCollectionEntries!=null)
+                this.maxCollectionEntries=maxCollectionEntries;
         }
-        Boolean _ignoreEntitiesAndCollections = ignoreEntitiesAndCollections;
-        Boolean _idOnly = idOnly;
-        Boolean _ignoreLazy = ignoreLazy;
+
+        /**
+         * reflection based toString method
+         * @params ignore Entities and Collections (default = true), idOnly (default = false) -> only makes sense when first settings option is false,
+         *                 only log LazyInitException (default=true)
+         */
+        public String toString(){
+            if (object == null) {
+                return "null";
+            }
+            Boolean _ignoreEntitiesAndCollections = ignoreEntitiesAndCollections;
+            Boolean _idOnly = idOnly;
+            Boolean _ignoreLazy = ignoreLazy;
 
 
-        return (new ReflectionToStringBuilder(object, ToStringStyle.SHORT_PREFIX_STYLE) {
-            protected Object getValue(Field f) throws IllegalAccessException {
-                boolean singleEntity = false;
-                boolean whiteListed = false;
-                if (whiteList != null){
-                    whiteListed = whiteList.contains(f.getName());
-                }
-                try {
-                    if (IdentifiableEntity.class.isAssignableFrom(f.getType())) {
-                        if (_ignoreEntitiesAndCollections && !whiteListed) {
-                            return "";
-                        }
+            return (new ReflectionToStringBuilder(object, ToStringStyle.SHORT_PREFIX_STYLE) {
+                protected Object getValue(Field f) throws IllegalAccessException {
+                    boolean singleEntity = false;
+                    boolean whiteListed = false;
+                    if (propertyWhiteList != null){
+                        whiteListed = propertyWhiteList.contains(f.getName());
+                    }
+                    try {
+                        if (IdentifiableEntity.class.isAssignableFrom(f.getType())) {
+                            if (_ignoreEntitiesAndCollections && !whiteListed) {
+                                return "";
+                            }
 
-                        singleEntity = true;
-                        IdentifiableEntity entity = ((IdentifiableEntity) f.get(object));
-                        if (entity == null){
-                            return "null";
-                        }
-                        if (_idOnly) {
-                            return toId(entity);
-                        }
-                    } else if (Collection.class.isAssignableFrom(f.getType())) {
-                        // it is a collection
-                        if (_ignoreEntitiesAndCollections && !whiteListed) {
-                            return "";
-                        }
-                        singleEntity = false;
-                        // need to query element to trigger Exception
-                        Collection<?> collection = (Collection<?>) f.get(object);
-                        if (collection == null){
-                            return "null";
-                        }
-                        // test for lazy init exception already with size call
-                        if (collection.size() > 0) {
+                            singleEntity = true;
+                            IdentifiableEntity entity = ((IdentifiableEntity) f.get(object));
+                            if (entity == null){
+                                return "null";
+                            }
                             if (_idOnly) {
-                                String s = collectionToIdString(collection);
-                                if (!s.equals("super")) {
-                                    return s;
+                                return toId(entity);
+                            }
+                        } else if (Collection.class.isAssignableFrom(f.getType())) {
+                            // it is a collection
+                            if (_ignoreEntitiesAndCollections && !whiteListed) {
+                                return "";
+                            }
+                            singleEntity = false;
+                            // need to query element to trigger Exception
+                            Collection<?> collection = (Collection<?>) f.get(object);
+                            if (collection == null){
+                                return "null";
+                            }
+                            // test for lazy init exception already with size call
+                            if (collection.size() > 0) {
+                                if (_idOnly) {
+                                    String s = collectionToIdString(collection);
+                                    if (!s.equals("super")) {
+                                        return s;
+                                    }
                                 }
+                            } else {
+                                return "[]";
+                            }
+                        }
+                    } catch (IllegalAccessException e) {
+                        throw new RuntimeException(e);
+                    } catch (LazyInitializationException e) {
+                        log.trace(e.getMessage());
+                        if (singleEntity) {
+                            log.warn("Could not log jpa lazy entity field: " + f.getName() + ", skipping.");
+                            if (_ignoreLazy) {
+                                return " < LazyInitializationException > ";
+                            } else {
+                                throw e;
                             }
                         } else {
-                            return "[]";
-                        }
-                    }
-                } catch (IllegalAccessException e) {
-                    throw new RuntimeException(e);
-                } catch (LazyInitializationException e) {
-                    log.trace(e.getMessage());
-                    if (singleEntity) {
-                        log.warn("Could not log jpa lazy entity field: " + f.getName() + ", skipping.");
-                        if (_ignoreLazy) {
-                            return " < LazyInitializationException > ";
-                        } else {
-                            throw e;
-                        }
-                    } else {
-                        log.warn("Could not log jpa lazy collection field: " + f.getName() + ", skipping.");
+                            log.warn("Could not log jpa lazy collection field: " + f.getName() + ", skipping.");
 //                        log.warn("Use @LogInteractions transactional flag to load all lazy collections for logging");
-                        if (_ignoreLazy) {
-                            return "[ LazyInitializationException ]";
-                        } else {
-                            throw e;
+                            if (_ignoreLazy) {
+                                return "[ LazyInitializationException ]";
+                            } else {
+                                throw e;
+                            }
                         }
                     }
+                    return super.getValue(f);
                 }
-                return super.getValue(f);
-            }
-        }).toString();
+            }).toString();
+        }
 
     }
+
+//    public static String toString(Object object){
+//
+//    }
+//
+//    public static String toString(Object object){
+//        return toString(object,new HashSet<>(),true,false,true);
+//    }
+//
+//    public static String toString(Object object, Boolean ignoreEntitiesAndCollection){
+//        return toString(object,null, ignoreEntitiesAndCollection,false,true);
+//    }
+//
+//    public static String toString(Object object, Boolean ignoreEntitiesAndCollection, HashSet<String> whiteList){
+//        return toString(object,whiteList, ignoreEntitiesAndCollection,false,true);
+//    }
+//
+//    public static String toString(Object object, Boolean ignoreEntitiesAndCollection,Boolean idOnly){
+//        return toString(object,null, ignoreEntitiesAndCollection,idOnly,true);
+//    }
+
+
+//    public static String toString(Object object,Set<String> whiteList, Boolean ignoreEntitiesAndCollections, Boolean idOnly, Boolean ignoreLazy) {
+//
+//
+//    }
 
 
 
