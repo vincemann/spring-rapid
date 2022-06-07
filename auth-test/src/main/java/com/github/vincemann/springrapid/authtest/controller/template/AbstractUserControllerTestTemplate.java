@@ -60,7 +60,7 @@ public abstract class AbstractUserControllerTestTemplate<C extends AbstractUserC
     }
 
     public RequestBuilder signup(Object dto) throws Exception {
-        return post(getController().getAuthProperties().getController().getSignupUrl())
+        return post(getController().getSignupUrl())
                 .content(serialize(dto))
                 .contentType(getController().getCoreProperties().getController().getMediaType());
     }
@@ -72,7 +72,7 @@ public abstract class AbstractUserControllerTestTemplate<C extends AbstractUserC
     }
 
     public RequestBuilder resendVerificationMail(Serializable id, String token) throws Exception {
-        return post(getController().getAuthProperties().getController().getResendVerificationContactInformationUrl())
+        return post(getController().getResendVerificationContactInformationUrl())
                 .param("id",id.toString())
                 .header(HttpHeaders.AUTHORIZATION, token);
     }
@@ -94,7 +94,7 @@ public abstract class AbstractUserControllerTestTemplate<C extends AbstractUserC
 
 
     public RequestBuilder changeContactInformation(String code, String token) throws Exception {
-        return post(getController().getAuthProperties().getController().getChangeContactInformationUrl())
+        return post(getController().getChangeContactInformationUrl())
                 .param("code", code)
 //                .param("id", targetId.toString())
                 .header(HttpHeaders.AUTHORIZATION, token)
@@ -109,7 +109,7 @@ public abstract class AbstractUserControllerTestTemplate<C extends AbstractUserC
 
 
     public RequestBuilder requestContactInformationChange(Serializable targetId, String token, Object requestNewContactInformationDto) throws Exception {
-        return post(getController().getAuthProperties().getController().getRequestContactInformationChangeUrl())
+        return post(getController().getRequestContactInformationChangeUrl())
                 .param("id", targetId.toString())
                 .contentType(MediaType.APPLICATION_JSON)
                 .header(HttpHeaders.AUTHORIZATION, token)
@@ -117,7 +117,7 @@ public abstract class AbstractUserControllerTestTemplate<C extends AbstractUserC
     }
 
     public MailData requestContactInformationChange2xx(Serializable targetId, String token, Object requestNewContactInformationDto) throws Exception {
-        mvc.perform(post(getController().getAuthProperties().getController().getRequestContactInformationChangeUrl())
+        mvc.perform(post(getController().getRequestContactInformationChangeUrl())
                 .param("id", targetId.toString())
                 .contentType(MediaType.APPLICATION_JSON)
                 .header(HttpHeaders.AUTHORIZATION, token)
@@ -127,7 +127,7 @@ public abstract class AbstractUserControllerTestTemplate<C extends AbstractUserC
     }
 
     public RequestBuilder changePassword(Serializable id, String token, Object changePasswordDto) throws Exception {
-        return post(getController().getAuthProperties().getController().getChangePasswordUrl())
+        return post(getController().getChangePasswordUrl())
                 .param("id", id.toString())
                 .header(HttpHeaders.AUTHORIZATION, token)
                 .contentType(MediaType.APPLICATION_JSON)
@@ -135,13 +135,13 @@ public abstract class AbstractUserControllerTestTemplate<C extends AbstractUserC
     }
 
     public RequestBuilder forgotPassword(String contactInformation) throws Exception {
-        return post(getController().getAuthProperties().getController().getForgotPasswordUrl())
+        return post(getController().getForgotPasswordUrl())
                 .param("contactInformation", contactInformation)
                 .header("contentType", MediaType.APPLICATION_FORM_URLENCODED);
     }
 
     public MailData forgotPassword2xx(String contactInformation) throws Exception {
-        mvc.perform(post(getController().getAuthProperties().getController().getForgotPasswordUrl())
+        mvc.perform(post(getController().getForgotPasswordUrl())
                 .param("contactInformation", contactInformation)
                 .header("contentType", MediaType.APPLICATION_FORM_URLENCODED))
                 .andExpect(status().is2xxSuccessful());
@@ -149,7 +149,7 @@ public abstract class AbstractUserControllerTestTemplate<C extends AbstractUserC
     }
 
     public RequestBuilder resetPassword(ResetPasswordView resetPasswordView, String code) throws Exception {
-        return post(getController().getAuthProperties().getController().getResetPasswordUrl())
+        return post(getController().getResetPasswordUrl())
                 .contentType(MediaType.APPLICATION_FORM_URLENCODED)
                 .param("code", code)
                 .content("password="+resetPasswordView.getPassword()+"&matchPassword="+resetPasswordView.getMatchPassword());
@@ -169,13 +169,13 @@ public abstract class AbstractUserControllerTestTemplate<C extends AbstractUserC
     }
 
     public RequestBuilder fetchNewToken(String token) throws Exception {
-        return post(getController().getAuthProperties().getController().getFetchNewAuthTokenUrl())
+        return post(getController().getFetchNewAuthTokenUrl())
                 .header(HttpHeaders.AUTHORIZATION, token)
                 .header("contentType", MediaType.APPLICATION_FORM_URLENCODED);
     }
 
     public RequestBuilder fetchNewToken(String token, String contactInformation) throws Exception {
-        return post(getController().getAuthProperties().getController().getFetchNewAuthTokenUrl())
+        return post(getController().getFetchNewAuthTokenUrl())
                 .header(HttpHeaders.AUTHORIZATION, token)
                 .param("contactInformation", contactInformation)
                 .header("contentType", MediaType.APPLICATION_FORM_URLENCODED);
@@ -194,14 +194,14 @@ public abstract class AbstractUserControllerTestTemplate<C extends AbstractUserC
     }
 
     protected MockHttpServletRequestBuilder login_raw(String contactInformation, String password) {
-        return post(getController().getAuthProperties().getController().getLoginUrl())
+        return post(getController().getLoginUrl())
                 .param("username", contactInformation)
                 .param("password", password)
                 .header("contentType", MediaType.APPLICATION_FORM_URLENCODED);
     }
 
     public RequestBuilder fetchByContactInformation(String contactInformation) throws Exception {
-        return post(getController().getAuthProperties().getController().getFetchByContactInformationUrl())
+        return post(getController().getFetchByContactInformationUrl())
                 .param("contactInformation", contactInformation)
                 .header("contentType", MediaType.APPLICATION_FORM_URLENCODED);
     }
@@ -213,7 +213,7 @@ public abstract class AbstractUserControllerTestTemplate<C extends AbstractUserC
     }
 
     public RequestBuilder verifyContactInformation(String code) throws Exception {
-        return get(getController().getAuthProperties().getController().getVerifyUserUrl())
+        return get(getController().getVerifyUserUrl())
 //                .param("id", id.toString())
                 .param("code", code)
                 .header("contentType", MediaType.APPLICATION_FORM_URLENCODED);
@@ -236,13 +236,13 @@ public abstract class AbstractUserControllerTestTemplate<C extends AbstractUserC
 
 
     public RequestBuilder resendVerificationContactInformation(String contactInformation, String token) throws Exception {
-        return post(getController().getAuthProperties().getController().getResendVerificationContactInformationUrl())
+        return post(getController().getResendVerificationContactInformationUrl())
                 .param("contactInformation", contactInformation)
                 .header(HttpHeaders.AUTHORIZATION, token);
     }
 
     public MailData resendVerificationContactInformation2xx(String contactInformation, String token) throws Exception {
-        mvc.perform(post(getController().getAuthProperties().getController().getResendVerificationContactInformationUrl())
+        mvc.perform(post(getController().getResendVerificationContactInformationUrl())
                 .param("contactInformation", contactInformation)
                 .header(HttpHeaders.AUTHORIZATION, token))
                 .andExpect(status().is2xxSuccessful());

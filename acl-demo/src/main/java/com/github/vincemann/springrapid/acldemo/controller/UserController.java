@@ -19,8 +19,8 @@ public class UserController extends AbstractUserController<User, Long, MyUserSer
     @Override
     protected DtoMappingContext provideDtoMappingContext(UserDtoMappingContextBuilder builder) {
         return builder
-                .forEndpoint(getAuthProperties().getController().getSignupUrl(), Direction.REQUEST, SignupDto.class)
-                .forEndpoint(getAuthProperties().getController().getSignupUrl(), Direction.RESPONSE, UUIDSignupResponseDto.class)
+                .forEndpoint(getSignupUrl(), Direction.REQUEST, SignupDto.class)
+                .forEndpoint(getSignupUrl(), Direction.RESPONSE, UUIDSignupResponseDto.class)
 
                 .withRoles(Roles.ADMIN)
                 .forAll(FullUserDto.class)

@@ -58,7 +58,12 @@ public abstract class AbstractUserController<U extends AbstractUser<ID>, ID exte
 	private HttpTokenService httpTokenService;
 	private AuthProperties authProperties;
 
+
+	public String loginUrl;
+	public String pingUrl;
+	public String contextUrl;
 	public String signupUrl;
+
 	public String resetPasswordUrl;
 	public String resetPasswordViewUrl;
 	public String fetchByContactInformationUrl;
@@ -74,7 +79,10 @@ public abstract class AbstractUserController<U extends AbstractUser<ID>, ID exte
 	@Override
 	protected void initUrls() {
 		super.initUrls();
+		loginUrl = getAuthProperties().getController().getLoginUrl();
+		contextUrl = getAuthProperties().getController().getContextUrl();
 		signupUrl = getAuthProperties().getController().getSignupUrl();
+
 		resetPasswordUrl = getAuthProperties().getController().getResetPasswordUrl();
 		resetPasswordViewUrl = getAuthProperties().getController().getResetPasswordViewUrl();
 		fetchByContactInformationUrl = getAuthProperties().getController().getFetchByContactInformationUrl();
@@ -128,7 +136,7 @@ public abstract class AbstractUserController<U extends AbstractUser<ID>, ID exte
 
 		appendFreshTokenOf(saved,response);
 		Object dto = getDtoMapper().mapToDto(saved,
-				createDtoClass(getAuthProperties().getController().getSignupUrl(), Direction.RESPONSE, saved));
+				createDtoClass(getSignupUrl(), Direction.RESPONSE, saved));
 		return ok(getJsonMapper().writeDto(dto));
 	}
 
@@ -165,7 +173,7 @@ public abstract class AbstractUserController<U extends AbstractUser<ID>, ID exte
 
 		appendFreshTokenOf(saved,response);
 		Object dto = getDtoMapper().mapToDto(saved,
-				createDtoClass(getAuthProperties().getController().getVerifyUserUrl(), Direction.RESPONSE, saved));
+				createDtoClass(getVerifyUserUrl(), Direction.RESPONSE, saved));
 		return ok(getJsonMapper().writeDto(dto));
 	}
 
@@ -219,7 +227,7 @@ public abstract class AbstractUserController<U extends AbstractUser<ID>, ID exte
 		U saved = getSecuredUserService().resetPassword(password, code);
 		appendFreshTokenOf(saved,response);
 		Object dto = getDtoMapper().mapToDto(saved,
-				createDtoClass(getAuthProperties().getController().resetPasswordUrl, Direction.RESPONSE, saved));
+				createDtoClass(resetPasswordUrl, Direction.RESPONSE, saved));
 		return ok(getJsonMapper().writeDto(dto));
 	}
 
@@ -229,7 +237,7 @@ public abstract class AbstractUserController<U extends AbstractUser<ID>, ID exte
 	public String showResetPassword(HttpServletRequest request, HttpServletResponse response, Model model) throws IOException, BadEntityException, EntityNotFoundException, BadTokenException {
 		String code = readRequestParam(request, "code");
 		model.addAttribute("code",code);
-		model.addAttribute("resetPasswordUrl",getAuthProperties().getController().getResetPasswordUrl());
+		model.addAttribute("resetPasswordUrl",getResetPasswordUrl());
 		model.addAttribute("resetPasswordDto",new ResetPasswordView());
 		return "reset-password";
 	}
@@ -247,7 +255,7 @@ public abstract class AbstractUserController<U extends AbstractUser<ID>, ID exte
 		VerifyEntity.isPresent(byContactInformation,"User with contactInformation: "+contactInformation+" not found");
 		U user = byContactInformation.get();
 		Object responseDto = getDtoMapper().mapToDto(user,
-				createDtoClass(getAuthProperties().getController().getFetchByContactInformationUrl(), Direction.RESPONSE, user));
+				createDtoClass(getFetchByContactInformationUrl(), Direction.RESPONSE, user));
 		return ok(getJsonMapper().writeDto(responseDto));
 	}
 
@@ -285,7 +293,7 @@ public abstract class AbstractUserController<U extends AbstractUser<ID>, ID exte
 		String body = readBody(request);
 		U user = fetchUser(id);
 		Class<? extends RequestContactInformationChangeDto> dtoClass = (Class<? extends RequestContactInformationChangeDto>) createDtoClass(getChangePasswordUrl(),Direction.REQUEST,user);
-		RequestContactInformationChangeDto dto = getJsonMapper().readDto(body, RequestContactInformationChangeDto.class);
+		RequestContactInformationChangeDto dto = getJsonMapper().readDto(body, dtoClass);
 		getDtoValidationStrategy().validate(dto);
 		log.debug("Requesting contactInformation change for user: " + user);
 		getSecuredUserService().requestContactInformationChange(user, dto.getNewContactInformation());
@@ -307,7 +315,7 @@ public abstract class AbstractUserController<U extends AbstractUser<ID>, ID exte
 		U saved = getSecuredUserService().changeContactInformation(code);
 		appendFreshTokenOf(saved,response);
 		Object responseDto = getDtoMapper().mapToDto(saved,
-				createDtoClass(getAuthProperties().getController().changeContactInformationUrl, Direction.RESPONSE, saved));
+				createDtoClass(changeContactInformationUrl, Direction.RESPONSE, saved));
 		return ok(getJsonMapper().writeDto(responseDto));
 	}
 
@@ -321,7 +329,7 @@ public abstract class AbstractUserController<U extends AbstractUser<ID>, ID exte
 //			Model model) throws BadEntityException {
 //		String code = readRequestParam(request, "code");
 //		model.addAttribute("code",code);
-//		model.addAttribute("changeContactInformationUrl",getAuthProperties().getController().getChangeContactInformationUrl());
+//		model.addAttribute("changeContactInformationUrl",getChangeContactInformationUrl());
 //		model.addAttribute("changeContactInformationDto",new ChangeContactInformationView());
 //		return "change-contactInformation";
 //	}
@@ -399,7 +407,7 @@ public abstract class AbstractUserController<U extends AbstractUser<ID>, ID exte
 
 				.withAllPrincipals()
 				.withAllRoles()
-				.forEndpoint(getAuthProperties().getController().getVerifyUserUrl(),Direction.RESPONSE, RapidFindOwnUserDto.class)
+				.forEndpoint(getVerifyUserUrl(),Direction.RESPONSE, RapidFindOwnUserDto.class)
 
 				.withAllRoles()
 				.withPrincipal(DtoRequestInfo.Principal.OWN)
@@ -472,7 +480,7 @@ public abstract class AbstractUserController<U extends AbstractUser<ID>, ID exte
 
 	protected RequestMappingInfo createContextRequestMappingInfo() {
 		return RequestMappingInfo
-				.paths(getAuthProperties().getController().getContextUrl())
+				.paths(getContextUrl())
 				.methods(RequestMethod.GET)
 				.produces(getMediaType())
 				.build();
@@ -480,7 +488,7 @@ public abstract class AbstractUserController<U extends AbstractUser<ID>, ID exte
 
 	protected RequestMappingInfo createSignupRequestMappingInfo() {
 		return RequestMappingInfo
-				.paths(getAuthProperties().getController().getSignupUrl())
+				.paths(getSignupUrl())
 				.methods(RequestMethod.POST)
 				.consumes(getMediaType())
 				.produces(getMediaType())
@@ -489,7 +497,7 @@ public abstract class AbstractUserController<U extends AbstractUser<ID>, ID exte
 
 	protected RequestMappingInfo createResendVerificationContactInformationRequestMappingInfo() {
 		return RequestMappingInfo
-				.paths(getAuthProperties().getController().getResendVerificationContactInformationUrl())
+				.paths(getResendVerificationContactInformationUrl())
 				.methods(RequestMethod.POST)
 				//.consumes(MediaType.APPLICATION_FORM_URLENCODED_VALUE)
 				.build();
@@ -497,7 +505,7 @@ public abstract class AbstractUserController<U extends AbstractUser<ID>, ID exte
 
 	protected RequestMappingInfo createVerifyUserRequestMappingInfo() {
 		return RequestMappingInfo
-				.paths(getAuthProperties().getController().getVerifyUserUrl())
+				.paths(getVerifyUserUrl())
 				.methods(RequestMethod.GET)
 				//.consumes(MediaType.APPLICATION_FORM_URLENCODED_VALUE)
 				.produces(getMediaType())
@@ -506,7 +514,7 @@ public abstract class AbstractUserController<U extends AbstractUser<ID>, ID exte
 
 	protected RequestMappingInfo createForgotPasswordRequestMappingInfo() {
 		return RequestMappingInfo
-				.paths(getAuthProperties().getController().getForgotPasswordUrl())
+				.paths(getForgotPasswordUrl())
 				.methods(RequestMethod.POST)
 				//.consumes(MediaType.APPLICATION_FORM_URLENCODED_VALUE)
 				.build();
@@ -514,7 +522,7 @@ public abstract class AbstractUserController<U extends AbstractUser<ID>, ID exte
 
 	protected RequestMappingInfo createResetPasswordViewRequestMappingInfo() {
 		return RequestMappingInfo
-				.paths(getAuthProperties().getController().getResetPasswordViewUrl())
+				.paths(getResetPasswordViewUrl())
 				.methods(RequestMethod.GET)
 //				.consumes(MediaType.APPLICATION_FORM_URLENCODED_VALUE)
 				.build();
@@ -522,7 +530,7 @@ public abstract class AbstractUserController<U extends AbstractUser<ID>, ID exte
 
 	protected RequestMappingInfo createResetPasswordRequestMappingInfo() {
 		return RequestMappingInfo
-				.paths(getAuthProperties().getController().getResetPasswordUrl())
+				.paths(getResetPasswordUrl())
 				.methods(RequestMethod.POST)
 				.produces(getMediaType())
 //				.consumes(getMediaType())
@@ -534,7 +542,7 @@ public abstract class AbstractUserController<U extends AbstractUser<ID>, ID exte
 
 	protected RequestMappingInfo createFetchByContactInformationRequestMappingInfo() {
 		return RequestMappingInfo
-				.paths(getAuthProperties().getController().getFetchByContactInformationUrl())
+				.paths(getFetchByContactInformationUrl())
 				.methods(RequestMethod.POST)
 				//.consumes(MediaType.APPLICATION_FORM_URLENCODED_VALUE)
 				.produces(getMediaType())
@@ -545,7 +553,7 @@ public abstract class AbstractUserController<U extends AbstractUser<ID>, ID exte
 
 	protected RequestMappingInfo createChangePasswordRequestMappingInfo() {
 		return RequestMappingInfo
-				.paths(getAuthProperties().getController().getChangePasswordUrl())
+				.paths(getChangePasswordUrl())
 				.methods(RequestMethod.POST)
 				//.consumes(MediaType.APPLICATION_FORM_URLENCODED_VALUE)
 				.build();
@@ -555,7 +563,7 @@ public abstract class AbstractUserController<U extends AbstractUser<ID>, ID exte
 
 	protected RequestMappingInfo createRequestContactInformationChangeRequestMappingInfo() {
 		return RequestMappingInfo
-				.paths(getAuthProperties().getController().getRequestContactInformationChangeUrl())
+				.paths(getRequestContactInformationChangeUrl())
 				.methods(RequestMethod.POST)
 				.consumes(getMediaType())
 				.build();
@@ -563,7 +571,7 @@ public abstract class AbstractUserController<U extends AbstractUser<ID>, ID exte
 
 	protected RequestMappingInfo createChangeContactInformationRequestMappingInfo() {
 		return RequestMappingInfo
-				.paths(getAuthProperties().getController().getChangeContactInformationUrl())
+				.paths(getChangeContactInformationUrl())
 				.methods(RequestMethod.POST)
 //				.consumes(MediaType.APPLICATION_FORM_URLENCODED_VALUE)
 				.produces(getMediaType())
@@ -572,7 +580,7 @@ public abstract class AbstractUserController<U extends AbstractUser<ID>, ID exte
 
 //	protected RequestMappingInfo createChangeContactInformationRequestViewMappingInfo() {
 //		return RequestMappingInfo
-//				.paths(getAuthProperties().getController().getChangeContactInformationViewUrl())
+//				.paths(getChangeContactInformationViewUrl())
 //				.methods(RequestMethod.GET)
 //				.produces(getMediaType())
 //				.build();
@@ -580,7 +588,7 @@ public abstract class AbstractUserController<U extends AbstractUser<ID>, ID exte
 
 	protected RequestMappingInfo createNewAuthTokenRequestMappingInfo() {
 		return RequestMappingInfo
-				.paths(getAuthProperties().getController().getFetchNewAuthTokenUrl())
+				.paths(getFetchNewAuthTokenUrl())
 				.methods(RequestMethod.POST)
 				//.consumes(MediaType.APPLICATION_FORM_URLENCODED_VALUE)
 				.produces(getMediaType())
@@ -589,7 +597,7 @@ public abstract class AbstractUserController<U extends AbstractUser<ID>, ID exte
 
 	protected RequestMappingInfo createPingRequestMappingInfo() {
 		return RequestMappingInfo
-				.paths(getAuthProperties().getController().getPingUrl())
+				.paths(getPingUrl())
 				.methods(RequestMethod.GET)
 				.build();
 	}

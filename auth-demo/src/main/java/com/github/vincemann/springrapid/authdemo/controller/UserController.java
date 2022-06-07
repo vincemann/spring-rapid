@@ -23,16 +23,16 @@ public class UserController extends AbstractUserController<User, Long, MyUserSer
 
                 .withAllPrincipals()
                 .withAllRoles()
-                .forEndpoint(getAuthProperties().getController().getRequestContactInformationChangeUrl(),Direction.REQUEST, RequestEmailChangeDto.class)
+                .forEndpoint(getRequestContactInformationChangeUrl(),Direction.REQUEST, RequestEmailChangeDto.class)
 
                 .withAllPrincipals()
                 .withAllRoles()
-                .forEndpoint(getAuthProperties().getController().getSignupUrl(), Direction.REQUEST, MySignupDto.class)
-                .forEndpoint(getAuthProperties().getController().getSignupUrl(), Direction.RESPONSE, MyFindOwnUserDto.class)
+                .forEndpoint(getSignupUrl(), Direction.REQUEST, MySignupDto.class)
+                .forEndpoint(getSignupUrl(), Direction.RESPONSE, MyFindOwnUserDto.class)
 
                 .withAllPrincipals()
                 .withAllRoles()
-                .forEndpoint(getAuthProperties().getController().getVerifyUserUrl(),Direction.RESPONSE, MyFindOwnUserDto.class)
+                .forEndpoint(getVerifyUserUrl(),Direction.RESPONSE, MyFindOwnUserDto.class)
 
                 .withAllRoles()
                 .withPrincipal(DtoRequestInfo.Principal.OWN)
