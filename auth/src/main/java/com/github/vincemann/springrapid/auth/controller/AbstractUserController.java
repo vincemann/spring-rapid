@@ -292,7 +292,7 @@ public abstract class AbstractUserController<U extends AbstractUser<ID>, ID exte
 		ID id = fetchId(request);
 		String body = readBody(request);
 		U user = fetchUser(id);
-		Class<? extends RequestContactInformationChangeDto> dtoClass = (Class<? extends RequestContactInformationChangeDto>) createDtoClass(getChangePasswordUrl(),Direction.REQUEST,user);
+		Class<? extends RequestContactInformationChangeDto> dtoClass = (Class<? extends RequestContactInformationChangeDto>) createDtoClass(getRequestContactInformationChangeUrl(),Direction.REQUEST,user);
 		RequestContactInformationChangeDto dto = getJsonMapper().readDto(body, dtoClass);
 		getDtoValidationStrategy().validate(dto);
 		log.debug("Requesting contactInformation change for user: " + user);
