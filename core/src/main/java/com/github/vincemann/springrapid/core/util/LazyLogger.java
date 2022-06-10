@@ -18,7 +18,7 @@ import java.util.stream.Collectors;
 public class LazyLogger {
     private static EntityManager entityManager;
 
-    private Object object;
+    private Object parent;
     private Boolean ignoreEntitiesAndCollections = Boolean.TRUE;
     private Boolean idOnly = Boolean.FALSE;
     private Boolean ignoreLazyException = Boolean.TRUE;
@@ -27,12 +27,12 @@ public class LazyLogger {
     private Boolean loadLazyEntities = Boolean.TRUE;
 
     private Property property;
-    private Map<Class,Object> clazzParentMap = new HashMap<>();
+    private Map<Class, List<Object>> clazzParentsMap = new HashMap<>();
 
 
     @Builder
-    public LazyLogger(Object object, Boolean ignoreEntitiesAndCollections, Boolean idOnly, Boolean ignoreLazyException, HashSet<String> propertyWhiteList, Integer maxCollectionEntries, Boolean loadLazyEntities) {
-        this.object = object;
+    public LazyLogger(Object rootObject, Boolean ignoreEntitiesAndCollections, Boolean idOnly, Boolean ignoreLazyException, HashSet<String> propertyWhiteList, Integer maxCollectionEntries, Boolean loadLazyEntities) {
+        this.parent = rootObject;
         if (ignoreEntitiesAndCollections != null)
             this.ignoreEntitiesAndCollections = ignoreEntitiesAndCollections;
         if (idOnly != null)
@@ -46,7 +46,7 @@ public class LazyLogger {
         if (loadLazyEntities != null)
             this.loadLazyEntities = loadLazyEntities;
 
-        clazzParentMap.put(object.getClass(),object);
+        clazzParentsMap.put(rootObject.getClass(), Lists.newArrayList(rootObject));
     }
 
 
@@ -57,12 +57,12 @@ public class LazyLogger {
      * only log LazyInitException (default=true)
      */
     public String toString() {
-        if (object == null) {
+        if (parent == null) {
             return "null";
         }
 
 
-        return (new ReflectionToStringBuilder(object, ToStringStyle.SHORT_PREFIX_STYLE) {
+        return (new ReflectionToStringBuilder(parent, ToStringStyle.SHORT_PREFIX_STYLE) {
             protected Object getValue(Field f) throws IllegalAccessException {
 
                 // init propertyState
@@ -71,8 +71,10 @@ public class LazyLogger {
                 property.collection = isCollection();
                 property.ignored = ignoreEntitiesAndCollections;
                 if (isWhiteListActive() && propertyWhiteList.contains(f.getName())) {
-                    property.setWhiteListed();
+                    property.ignored = Boolean.FALSE;
+                    property.whiteListed = Boolean.TRUE;
                 }
+                property.value = property.field.get(parent);
 
                 String propertyString = "super";
                 try {
@@ -80,10 +82,10 @@ public class LazyLogger {
                         return "";
                     }
                     if (property.isEntity()) {
-                        updateClazzParentMap(Boolean.FALSE);
+                        updateClazzParentsMap(property.value);
                         propertyString = entityToString();
                     } else if (property.isCollection()) {
-                        updateClazzParentMap(Boolean.TRUE);
+                        updateClazzParentMapForCollection(property.value);
                         propertyString = collectionToString();
                     }
                 } catch (IllegalAccessException e) {
@@ -100,19 +102,25 @@ public class LazyLogger {
         }).toString();
     }
 
-    protected void updateClazzParentMap(Boolean collection){
-        if (!collection){
-            clazzParentMap.put(object.getClass(),object);
-        }else {
-            // check if collection empty, if so pick type of first entity found
-            if (!((Collection) object).isEmpty()) {
-                Object collectionEntity = ((Collection<?>) object).stream().findFirst().get();
-                clazzParentMap.put(collectionEntity.getClass(),collectionEntity);
-                // geht nicht weil es gibt mehrere parents vom selben typen dann
-                // todo type -> stack<Parent> damits klappt
-            } else {
-                return "[]";
+    protected void updateClazzParentMapForCollection(Object collection) throws IllegalAccessException {
+        // check if collection empty, if so pick type of first entity found
+        if (!((Collection) collection).isEmpty()) {
+            for (Object entity : ((Collection<?>) collection)) {
+                updateClazzParentsMap(entity);
             }
+//            Object collectionEntity = ((Collection<?>) collection).stream().findFirst().get();
+        }
+    }
+
+    protected void updateClazzParentsMap(Object child) throws IllegalAccessException {
+        // dont use property.value here bc that would be the collection, we want the entity
+//        Object child = property.field.get(entity);
+        Class<?> parentClazz = property.field.getType();
+        List<Object> objects = clazzParentsMap.get(parentClazz);
+        if (objects == null) {
+            clazzParentsMap.put(parentClazz, Lists.newArrayList(child));
+        } else {
+            objects.add(child);
         }
     }
 
@@ -152,7 +160,7 @@ public class LazyLogger {
     }
 
     protected String entityToString() throws IllegalAccessException {
-        IdentifiableEntity entity = ((IdentifiableEntity) property.field.get(object));
+        IdentifiableEntity entity = ((IdentifiableEntity) property.field.get(parent));
         if (entity == null) {
             return "null";
         }
@@ -165,7 +173,7 @@ public class LazyLogger {
     protected String collectionToString() throws IllegalAccessException {
         // it is a collection
         // need to query element to trigger Exception
-        Collection<?> collection = (Collection<?>) property.field.get(object);
+        Collection<?> collection = (Collection<?>) property.field.get(parent);
         if (collection == null) {
             return "null";
         }
@@ -209,14 +217,14 @@ public class LazyLogger {
         private Boolean collection = Boolean.FALSE;
         private Boolean ignored = Boolean.FALSE;
         private Boolean loaded = Boolean.FALSE;
+        private Object value;
 
         public Property(Field field) {
             this.field = field;
         }
 
-        public void setWhiteListed() {
+        public void addToWhiteList() {
             this.whiteListed = Boolean.TRUE;
-            this.ignored = Boolean.FALSE;
         }
 
         public Boolean isWhiteListed() {
