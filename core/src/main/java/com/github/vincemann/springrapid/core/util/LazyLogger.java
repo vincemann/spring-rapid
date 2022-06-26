@@ -6,6 +6,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
 import org.hibernate.LazyInitializationException;
+import org.springframework.transaction.support.TransactionSynchronizationManager;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceUnitUtil;
@@ -19,36 +20,88 @@ public class LazyLogger {
     private static EntityManager entityManager;
 
     private Object parent;
-    private Boolean ignoreEntitiesAndCollections = Boolean.TRUE;
-    private Boolean idOnly = Boolean.FALSE;
     private Boolean ignoreLazyException = Boolean.TRUE;
-    private HashSet<String> propertyWhiteList = new HashSet<>();
-    private Integer maxCollectionEntries = 3;
-    private Boolean loadLazyEntities = Boolean.TRUE;
+    private Boolean ignoreEntities = Boolean.TRUE;
+    private Boolean idOnly = Boolean.FALSE;
+    private Integer maxEntitiesLoggedInCollection = 3;
+    private HashSet<String> propertyBlackList = new HashSet<>();
+    private Boolean onlyLogLoaded = Boolean.TRUE;
+    private Set<String> onlyLogLoadedBlackList = new HashSet<>();
 
     private Property property;
     private Map<Class, List<Object>> clazzParentsMap = new HashMap<>();
 
 
     @Builder
-    public LazyLogger(Object rootObject, Boolean ignoreEntitiesAndCollections, Boolean idOnly, Boolean ignoreLazyException, HashSet<String> propertyWhiteList, Integer maxCollectionEntries, Boolean loadLazyEntities) {
+    public LazyLogger(Object rootObject, Boolean ignoreEntities, Boolean idOnly, Boolean ignoreLazyException, HashSet<String> propertyBlackList, Integer maxEntitiesLoggedInCollection, Boolean onlyLogLoaded, Set<String> onlyLogLoadedBlackList) {
         this.parent = rootObject;
-        if (ignoreEntitiesAndCollections != null)
-            this.ignoreEntitiesAndCollections = ignoreEntitiesAndCollections;
+        if (ignoreEntities != null)
+            this.ignoreEntities = ignoreEntities;
         if (idOnly != null)
             this.idOnly = idOnly;
         if (ignoreLazyException != null)
             this.ignoreLazyException = ignoreLazyException;
-        if (propertyWhiteList != null)
-            this.propertyWhiteList = propertyWhiteList;
-        if (maxCollectionEntries != null)
-            this.maxCollectionEntries = maxCollectionEntries;
-        if (loadLazyEntities != null)
-            this.loadLazyEntities = loadLazyEntities;
+        if (propertyBlackList != null)
+            this.propertyBlackList = propertyBlackList;
+        if (maxEntitiesLoggedInCollection != null)
+            this.maxEntitiesLoggedInCollection = maxEntitiesLoggedInCollection;
+        if (onlyLogLoaded != null)
+            this.onlyLogLoaded = onlyLogLoaded;
+        if (onlyLogLoadedBlackList != null)
+            this.onlyLogLoadedBlackList = onlyLogLoadedBlackList;
 
         clazzParentsMap.put(rootObject.getClass(), Lists.newArrayList(rootObject));
     }
 
+    protected class Property {
+        private Field field;
+        private Boolean whiteListed = Boolean.FALSE;
+        private Boolean entity = Boolean.FALSE;
+        private Boolean collection = Boolean.FALSE;
+        private Boolean ignored = Boolean.FALSE;
+        private Boolean loaded = Boolean.FALSE;
+        private Object value;
+
+        public Property(Field field) {
+            this.field = field;
+        }
+
+        public Boolean isEntity() {
+            return entity;
+        }
+
+        public Boolean isCollection() {
+            return collection;
+        }
+
+        public Boolean isLoaded() {
+            return loaded;
+        }
+
+        public void setLoaded() {
+            PersistenceUnitUtil unitUtil =
+                    entityManager.getEntityManagerFactory().getPersistenceUnitUtil();
+
+//                Assert.assertTrue(unitUtil.isLoaded(org));
+//                // users is a field (Set of User) defined in Organization entity
+//                Assert.assertFalse(unitUtil.isLoaded(org, "users"));
+//
+//                initializeCollection(org.getUsers());
+//                Assert.assertTrue(unitUtil.isLoaded(org, "users"));
+//                for(User user : org.getUsers()) {
+//                    Assert.assertTrue(unitUtil.isLoaded(user));
+//                    Assert.assertTrue(unitUtil.isLoaded(user.getOrganization()));
+//                }
+        }
+
+
+        /**
+         * user wants to ignore entitiesAndCollections and this property is not whitelisted
+         */
+        public Boolean isIgnored() {
+            return ignored;
+        }
+    }
 
     /**
      * reflection based toString method
@@ -69,8 +122,8 @@ public class LazyLogger {
                 property = new Property(f);
                 property.entity = isEntity();
                 property.collection = isCollection();
-                property.ignored = ignoreEntitiesAndCollections;
-                if (isWhiteListActive() && propertyWhiteList.contains(f.getName())) {
+                property.ignored = ignoreEntities;
+                if (isWhiteListActive() && propertyBlackList.contains(f.getName())) {
                     property.ignored = Boolean.FALSE;
                     property.whiteListed = Boolean.TRUE;
                 }
@@ -83,10 +136,10 @@ public class LazyLogger {
                     }
                     if (property.isEntity()) {
                         updateClazzParentsMap(property.value);
-                        propertyString = entityToString();
+                        propertyString = loadIfWanted(parent,property.field.getName(),Boolean.FALSE);
                     } else if (property.isCollection()) {
                         updateClazzParentMapForCollection(property.value);
-                        propertyString = collectionToString();
+                        propertyString = loadIfWanted(parent,property.field.getName(),Boolean.TRUE);
                     }
                 } catch (IllegalAccessException e) {
                     throw new RuntimeException(e);
@@ -100,6 +153,47 @@ public class LazyLogger {
                 }
             }
         }).toString();
+    }
+
+    protected String loadIfWanted(Object parent, String propertyName, Boolean collection) throws IllegalAccessException {
+        String propertyString = "super";
+        if (checkIfLoaded(parent,propertyName)){
+            propertyString = entitiesToString(collection);
+        }else {
+            if (onlyLogLoaded && onlyLogLoadedBlackList.contains(propertyName)){
+                propertyString = entitiesToString(collection);
+            }
+        }
+        return propertyString;
+    }
+
+    protected String entitiesToString(Boolean collection) throws IllegalAccessException {
+        if (collection){
+            return collectionToString();
+        }else {
+             return entityToString();
+        }
+    }
+
+    protected boolean checkIfLoaded(Object parent, String childPropertyName){
+        if (!TransactionSynchronizationManager.isActualTransactionActive()){
+            // either loaded or not and will crash with lazyInitException
+            return true;
+        }
+        PersistenceUnitUtil persistenceUtil =
+                entityManager.getEntityManagerFactory().getPersistenceUnitUtil();
+        return persistenceUtil.isLoaded(parent,childPropertyName);
+
+//                Assert.assertTrue(unitUtil.isLoaded(org));
+//                // users is a field (Set of User) defined in Organization entity
+//                Assert.assertFalse(unitUtil.isLoaded(org, "users"));
+//
+//                initializeCollection(org.getUsers());
+//                Assert.assertTrue(unitUtil.isLoaded(org, "users"));
+//                for(User user : org.getUsers()) {
+//                    Assert.assertTrue(unitUtil.isLoaded(user));
+//                    Assert.assertTrue(unitUtil.isLoaded(user.getOrganization()));
+//                }
     }
 
     protected void updateClazzParentMapForCollection(Object collection) throws IllegalAccessException {
@@ -123,6 +217,8 @@ public class LazyLogger {
             objects.add(child);
         }
     }
+
+
 
     protected String lazyInitExceptionToString(LazyInitializationException e) {
         log.trace(e.getMessage());
@@ -148,7 +244,7 @@ public class LazyLogger {
     }
 
     protected Boolean isWhiteListActive() {
-        return !propertyWhiteList.isEmpty();
+        return !propertyBlackList.isEmpty();
     }
 
     protected Boolean isEntity() {
@@ -210,63 +306,7 @@ public class LazyLogger {
         }
     }
 
-    protected class Property {
-        private Field field;
-        private Boolean whiteListed = Boolean.FALSE;
-        private Boolean entity = Boolean.FALSE;
-        private Boolean collection = Boolean.FALSE;
-        private Boolean ignored = Boolean.FALSE;
-        private Boolean loaded = Boolean.FALSE;
-        private Object value;
 
-        public Property(Field field) {
-            this.field = field;
-        }
-
-        public void addToWhiteList() {
-            this.whiteListed = Boolean.TRUE;
-        }
-
-        public Boolean isWhiteListed() {
-            return whiteListed;
-        }
-
-        public Boolean isEntity() {
-            return entity;
-        }
-
-        public Boolean isCollection() {
-            return collection;
-        }
-
-        public Boolean isLoaded() {
-            return loaded;
-        }
-
-        public void setLoaded() {
-            PersistenceUnitUtil unitUtil =
-                    entityManager.getEntityManagerFactory().getPersistenceUnitUtil();
-
-//                Assert.assertTrue(unitUtil.isLoaded(org));
-//                // users is a field (Set of User) defined in Organization entity
-//                Assert.assertFalse(unitUtil.isLoaded(org, "users"));
-//
-//                initializeCollection(org.getUsers());
-//                Assert.assertTrue(unitUtil.isLoaded(org, "users"));
-//                for(User user : org.getUsers()) {
-//                    Assert.assertTrue(unitUtil.isLoaded(user));
-//                    Assert.assertTrue(unitUtil.isLoaded(user.getOrganization()));
-//                }
-        }
-
-
-        /**
-         * user wants to ignore entitiesAndCollections and this property is not whitelisted
-         */
-        public Boolean isIgnored() {
-            return ignored;
-        }
-    }
 }
 
 //    private static LazyLogUtils instance;

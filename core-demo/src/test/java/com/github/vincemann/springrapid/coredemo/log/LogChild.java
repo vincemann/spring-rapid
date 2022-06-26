@@ -1,5 +1,4 @@
-package com.github.vincemann.springrapid.coredemo.model;
-
+package com.github.vincemann.springrapid.coredemo.log;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.github.vincemann.springrapid.autobidir.model.parent.annotation.BiDirParentEntity;
@@ -17,25 +16,26 @@ import javax.persistence.Table;
 @Getter
 @NoArgsConstructor
 @Entity
-@Table(name = "lazy_items")
-public class LazyExceptionItem extends IdentifiableEntityImpl<Long> {
+@Table(name = "log_children")
+public class LogChild extends IdentifiableEntityImpl<Long> {
 
     @ManyToOne
-    @JoinColumn(name = "lazy_item_id")
+    @JoinColumn(name = "log_entity_id")
     @JsonBackReference
     @BiDirParentEntity
-    private Owner owner;
-
+    private LogEntity logEntity;
     private String name;
 
-    public LazyExceptionItem(String name) {
+    public LogChild(String name) {
         this.name = name;
     }
 
-    @Override
-    public String toString() {
-        return "LazyExceptionItem{" +
-                "" + getName() +
-                "}";
-    }
+//    @Override
+//    public String toString() {
+//        return "LazyLoadedItem{ " +
+//                getName()+ " , " +
+//                getId().toString() +
+//                " }";
+//    }
+
 }

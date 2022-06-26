@@ -1,6 +1,8 @@
 package com.github.vincemann.springrapid.coredemo.model;
 
 import com.fasterxml.jackson.annotation.JsonManagedReference;
+import com.github.vincemann.springrapid.coredemo.log.LazyExceptionItem;
+import com.github.vincemann.springrapid.coredemo.log.LazyLoadedItem;
 import com.github.vincemann.springrapid.coredemo.model.abs.Person;
 import com.github.vincemann.springrapid.autobidir.model.child.annotation.BiDirChildCollection;
 import com.github.vincemann.springrapid.autobidir.model.child.annotation.BiDirChildEntity;
@@ -21,7 +23,7 @@ public class Owner extends Person {
 
 
     @Builder
-    public Owner(String firstName, String lastName, Set<Pet> pets, String address, String city, String telephone,Set<String> hobbies,Set<LazyExceptionItem> lazyExceptionItems, Set<LazyLoadedItem> lazyLoadedItems) {
+    public Owner(String firstName, String lastName, Set<Pet> pets, String address, String city, String telephone, Set<String> hobbies, Set<LazyExceptionItem> lazyExceptionItems, Set<LazyLoadedItem> lazyLoadedItems) {
         super(firstName, lastName);
         if(pets!=null) {
             this.pets = pets;
@@ -56,15 +58,6 @@ public class Owner extends Person {
     @ElementCollection(targetClass = String.class,fetch = FetchType.EAGER)
     private Set<String> hobbies = new HashSet<>();
 
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "owner",fetch = FetchType.LAZY)
-    @BiDirChildCollection(LazyExceptionItem.class)
-    @JsonManagedReference
-    private Set<LazyExceptionItem> lazyExceptionItems = new HashSet<>();
-
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "owner",fetch = FetchType.LAZY)
-    @BiDirChildCollection(LazyExceptionItem.class)
-    @JsonManagedReference
-    private Set<LazyLoadedItem> lazyLoadedItems = new HashSet<>();
 
     @Column(name = "adress")
     private String address;

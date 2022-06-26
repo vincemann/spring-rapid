@@ -1,15 +1,9 @@
-package com.github.vincemann.springrapid.coredemo.util;
+package com.github.vincemann.springrapid.coredemo.log;
 
 import com.github.vincemann.springrapid.core.service.exception.BadEntityException;
 import com.github.vincemann.springrapid.core.slicing.RapidProfiles;
 import com.github.vincemann.springrapid.core.util.LazyLogUtils;
 import com.github.vincemann.springrapid.coredemo.model.*;
-import com.github.vincemann.springrapid.coredemo.repo.ClinicCardRepository;
-import com.github.vincemann.springrapid.coredemo.repo.LazyExceptionItemRepository;
-import com.github.vincemann.springrapid.coredemo.repo.LazyLoadedItemRepository;
-import com.github.vincemann.springrapid.coredemo.repo.PetRepository;
-import com.github.vincemann.springrapid.coredemo.service.OwnerService;
-import com.github.vincemann.springrapid.coredemo.service.Root;
 import com.github.vincemann.springrapid.coretest.slicing.RapidTestProfiles;
 import com.github.vincemann.springrapid.coretest.util.TransactionalRapidTestUtil;
 import com.google.common.collect.Sets;
@@ -41,32 +35,22 @@ class LazyLogUtilsTest {
 //    @Autowired
 //    TransactionalTestTemplate transactionalTestTemplate;
 
-    @Autowired
-    @Root
-    OwnerService ownerService;
-
-    @Autowired
-    PetRepository petRepository;
 
     @Autowired
     LazyLoadedItemRepository loadedItemRepository;
+
     @Autowired
     LazyExceptionItemRepository loadedExceptionItemRepository;
 
-    @Autowired
-    ClinicCardRepository clinicCardRepository;
 
 
-    ClinicCard clinicCard;
+    LogEntity logEntity;
 
 
-    Owner kahn;
-
-    Pet bello;
 
     @BeforeEach
     void setUp() {
-        kahn = Owner.builder()
+        logEntity = LogEntity.builder()
                 .firstName("Olli")
                 .lastName("Kahn")
                 .address("asljnflksamfslkmf")
@@ -87,12 +71,12 @@ class LazyLogUtilsTest {
 
     @Test
     void canIgnoreLazy() throws BadEntityException {
-        LazyExceptionItem lazyItem = new LazyExceptionItem();
+        LogParent lazyItem = new LogParent();
 //        LazyItem savedLazyItem = getService().save(lazyItem);
 
-        kahn.getLazyExceptionItems().add(lazyItem);
+        logEntity.getLogChildren1().add(lazyItem);
 
-        Owner savedKahn = ownerService.save(kahn);
+        Owner savedKahn = ownerService.save(logEntity);
 
 
         Owner found = ownerService.findById(savedKahn.getId()).get();
@@ -107,12 +91,12 @@ class LazyLogUtilsTest {
 
     @Test
     void canLoadEagerCollection_andIgnoreLazyCollection() throws BadEntityException {
-        LazyExceptionItem lazyItem = new LazyExceptionItem();
+        LogParent lazyItem = new LogParent();
 
-        kahn.getLazyExceptionItems().add(lazyItem);
-        kahn.getPets().add(bello);
+        logEntity.getLogChildren1().add(lazyItem);
+        logEntity.getPets().add(bello);
 
-        Owner savedKahn = ownerService.save(kahn);
+        Owner savedKahn = ownerService.save(logEntity);
 
 
         Owner found = ownerService.findById(savedKahn.getId()).get();
@@ -128,13 +112,13 @@ class LazyLogUtilsTest {
 
     @Test
     void canShowLoadedLazyCollection_andIgnoreNotLoadedLazyCollectionsException() throws BadEntityException {
-        LazyExceptionItem lazyItem = new LazyExceptionItem();
-        LazyLoadedItem lazyLoadedItem = new LazyLoadedItem("loaded");
+        LogParent lazyItem = new LogParent();
+        LogChild logChild = new LogChild("loaded");
 
-        kahn.getLazyExceptionItems().add(lazyItem);
-        kahn.getLazyLoadedItems().add(lazyLoadedItem);
+        logEntity.getLogChildren1().add(lazyItem);
+        logEntity.getLogChildren2().add(logChild);
 
-        Owner savedKahn = ownerService.save(kahn);
+        Owner savedKahn = ownerService.save(logEntity);
 
 
         Owner found = ownerService.lazyLoadFindById(savedKahn.getId());
@@ -150,14 +134,14 @@ class LazyLogUtilsTest {
 
     @Test
     void canIgnoreCollections() throws BadEntityException {
-        LazyExceptionItem lazyItem = new LazyExceptionItem();
-        LazyLoadedItem lazyLoadedItem = new LazyLoadedItem("loaded");
+        LogParent lazyItem = new LogParent();
+        LogChild logChild = new LogChild("loaded");
 
-        kahn.getLazyExceptionItems().add(lazyItem);
-        kahn.getLazyLoadedItems().add(lazyLoadedItem);
-        kahn.getPets().add(bello);
+        logEntity.getLogChildren1().add(lazyItem);
+        logEntity.getLogChildren2().add(logChild);
+        logEntity.getPets().add(bello);
 
-        Owner savedKahn = ownerService.save(kahn);
+        Owner savedKahn = ownerService.save(logEntity);
 
 
         Owner found = ownerService.lazyLoadFindById(savedKahn.getId());
@@ -170,18 +154,18 @@ class LazyLogUtilsTest {
         Assertions.assertFalse(s.contains("LazyInitializationException"));
         Assertions.assertFalse(s.contains("loaded"));
         Assertions.assertFalse(s.contains("bello"));
-        Assertions.assertTrue(s.contains(kahn.getFirstName()));
-        Assertions.assertTrue(s.contains(kahn.getLastName()));
-        Assertions.assertTrue(s.contains(kahn.getCity()));
+        Assertions.assertTrue(s.contains(logEntity.getFirstName()));
+        Assertions.assertTrue(s.contains(logEntity.getLastName()));
+        Assertions.assertTrue(s.contains(logEntity.getCity()));
     }
 
     @Transactional
     @Test
     void canIgnoreSomeEntitiesAndCollections() throws BadEntityException {
-        kahn.setClinicCard(clinicCardRepository.save(clinicCard));
-        kahn.getPets().add(bello);
+        logEntity.setClinicCard(clinicCardRepository.save(clinicCard));
+        logEntity.getPets().add(bello);
 
-        Owner savedKahn = ownerService.save(kahn);
+        Owner savedKahn = ownerService.save(logEntity);
 
         String s = LazyLogUtils.toString(savedKahn,Boolean.TRUE, Sets.newHashSet("clinicCard"));
         System.err.println(s);
@@ -189,20 +173,20 @@ class LazyLogUtilsTest {
         Assertions.assertFalse(s.contains("bello"));
         Assertions.assertTrue(s.contains(clinicCard.getRegistrationReason()));
 
-        Assertions.assertTrue(s.contains(kahn.getFirstName()));
-        Assertions.assertTrue(s.contains(kahn.getLastName()));
-        Assertions.assertTrue(s.contains(kahn.getCity()));
+        Assertions.assertTrue(s.contains(logEntity.getFirstName()));
+        Assertions.assertTrue(s.contains(logEntity.getLastName()));
+        Assertions.assertTrue(s.contains(logEntity.getCity()));
     }
 
 
     @Test
     void canThrowLazy() throws BadEntityException {
-        LazyExceptionItem lazyItem = new LazyExceptionItem();
+        LogParent lazyItem = new LogParent();
 //        LazyItem savedLazyItem = getService().save(lazyItem);
 
-        kahn.getLazyExceptionItems().add(lazyItem);
+        logEntity.getLogChildren1().add(lazyItem);
 
-        Owner savedKahn = ownerService.save(kahn);
+        Owner savedKahn = ownerService.save(logEntity);
 
 
         Owner found = ownerService.findById(savedKahn.getId()).get();
