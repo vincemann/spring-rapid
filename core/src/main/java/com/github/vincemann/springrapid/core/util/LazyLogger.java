@@ -26,15 +26,14 @@ public class LazyLogger {
     private Integer maxEntitiesLoggedInCollection = 3;
     private HashSet<String> propertyBlackList = new HashSet<>();
     private Boolean onlyLogLoaded = Boolean.TRUE;
-    private Set<String> onlyLogLoadedBlackList = new HashSet<>();
+    private Set<String> logLoadedBlacklist = new HashSet<>();
 
     private Property property;
     private Map<Class, List<Object>> clazzParentsMap = new HashMap<>();
 
 
     @Builder
-    public LazyLogger(Object rootObject, Boolean ignoreEntities, Boolean idOnly, Boolean ignoreLazyException, HashSet<String> propertyBlackList, Integer maxEntitiesLoggedInCollection, Boolean onlyLogLoaded, Set<String> onlyLogLoadedBlackList) {
-        this.parent = rootObject;
+    public LazyLogger(Boolean ignoreEntities, Boolean idOnly, Boolean ignoreLazyException, HashSet<String> propertyBlackList, Integer maxEntitiesLoggedInCollection, Boolean onlyLogLoaded, Set<String> logLoadedBlacklist) {
         if (ignoreEntities != null)
             this.ignoreEntities = ignoreEntities;
         if (idOnly != null)
@@ -47,15 +46,17 @@ public class LazyLogger {
             this.maxEntitiesLoggedInCollection = maxEntitiesLoggedInCollection;
         if (onlyLogLoaded != null)
             this.onlyLogLoaded = onlyLogLoaded;
-        if (onlyLogLoadedBlackList != null)
-            this.onlyLogLoadedBlackList = onlyLogLoadedBlackList;
+        if (logLoadedBlacklist != null)
+            this.logLoadedBlacklist = logLoadedBlacklist;
+    }
 
-        clazzParentsMap.put(rootObject.getClass(), Lists.newArrayList(rootObject));
+    protected void initParent(Object parent){
+        clazzParentsMap.put(parent.getClass(), Lists.newArrayList(parent));
     }
 
     protected class Property {
         private Field field;
-        private Boolean whiteListed = Boolean.FALSE;
+        private Boolean blackListed = Boolean.FALSE;
         private Boolean entity = Boolean.FALSE;
         private Boolean collection = Boolean.FALSE;
         private Boolean ignored = Boolean.FALSE;
@@ -109,10 +110,11 @@ public class LazyLogger {
      * @params ignore Entities and Collections (default = true), idOnly (default = false) -> only makes sense when first settings option is false,
      * only log LazyInitException (default=true)
      */
-    public String toString() {
+    public String toString(Object parent) {
         if (parent == null) {
             return "null";
         }
+        initParent(parent);
 
 
         return (new ReflectionToStringBuilder(parent, ToStringStyle.SHORT_PREFIX_STYLE) {
@@ -123,9 +125,9 @@ public class LazyLogger {
                 property.entity = isEntity();
                 property.collection = isCollection();
                 property.ignored = ignoreEntities;
-                if (isWhiteListActive() && propertyBlackList.contains(f.getName())) {
-                    property.ignored = Boolean.FALSE;
-                    property.whiteListed = Boolean.TRUE;
+                if (isBlackListActive() && propertyBlackList.contains(f.getName())) {
+                    property.ignored = Boolean.TRUE;
+                    property.blackListed = Boolean.TRUE;
                 }
                 property.value = property.field.get(parent);
 
@@ -160,7 +162,7 @@ public class LazyLogger {
         if (checkIfLoaded(parent,propertyName)){
             propertyString = entitiesToString(collection);
         }else {
-            if (onlyLogLoaded && onlyLogLoadedBlackList.contains(propertyName)){
+            if (onlyLogLoaded && logLoadedBlacklist.contains(propertyName)){
                 propertyString = entitiesToString(collection);
             }
         }
@@ -243,7 +245,7 @@ public class LazyLogger {
         }
     }
 
-    protected Boolean isWhiteListActive() {
+    protected Boolean isBlackListActive() {
         return !propertyBlackList.isEmpty();
     }
 

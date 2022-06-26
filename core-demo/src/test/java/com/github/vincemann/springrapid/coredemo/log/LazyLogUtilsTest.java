@@ -2,8 +2,8 @@ package com.github.vincemann.springrapid.coredemo.log;
 
 import com.github.vincemann.springrapid.core.service.exception.BadEntityException;
 import com.github.vincemann.springrapid.core.slicing.RapidProfiles;
-import com.github.vincemann.springrapid.core.util.LazyLogUtils;
-import com.github.vincemann.springrapid.coredemo.model.*;
+import com.github.vincemann.springrapid.core.util.LazyLogger;
+import com.github.vincemann.springrapid.coredemo.model.Owner;
 import com.github.vincemann.springrapid.coretest.slicing.RapidTestProfiles;
 import com.github.vincemann.springrapid.coretest.util.TransactionalRapidTestUtil;
 import com.google.common.collect.Sets;
@@ -33,23 +33,29 @@ class LazyLogUtilsTest {
 //    @Autowired
 //    TransactionalTestTemplate transactionalTestTemplate;
 
+    static final String LOG_ENTITY_NAME = "log entity";
+
     static final String LAZY_COL1_ENTITY1_NAME = "lazy Col1 Entity1";
     static final String LAZY_COL1_ENTITY2_NAME = "lazy Col1 Entity2";
     static final String EAGER_ENTITY1_NAME = "eager col Entity1";
     static final String EAGER_ENTITY2_NAME = "eager col Entity2";
 
     static final String LAZY_PARENT_NAME = "lazy parent col Entity2";
-    static final String LOG_ENTITY_NAME = "log entity";
+    static final String LAZY_CHILD_NAME = "lazy child";
+    static final String EAGER_CHILD_NAME = "eager child";
 
     static final String LAZY_COL2_ENTITY1_NAME = "lazy Col2 Entity1";
     static final String LAZY_COL2_ENTITY2_NAME = "lazy Col2 Entity2";
 
 
     @Autowired
-    LazyLoadedItemRepository loadedItemRepository;
+    LogChildRepository logChildRepository;
 
     @Autowired
-    LazyExceptionItemRepository loadedExceptionItemRepository;
+    LogParentRepository logParentRepository;
+
+    @Autowired
+    SingleLogChildRepository singleLogChildRepository;
 
 
     LogEntity logEntity;
@@ -58,8 +64,10 @@ class LazyLogUtilsTest {
     LogChild lazyCol2_child1;
     LogChild lazyCol2_child2;
     LogParent lazyParent;
+    SingleLogChild lazySingleChild;
+    SingleLogChild eagerSingleChild;
 
-
+    LazyLogger lazyLogger;
 
 
 
@@ -87,24 +95,24 @@ class LazyLogUtilsTest {
         lazyCol2_child2  = LogChild.builder()
                 .name(LAZY_COL2_ENTITY2_NAME)
                 .build();
+
+        lazySingleChild = new SingleLogChild(LAZY_CHILD_NAME);
+        eagerSingleChild = new SingleLogChild(EAGER_CHILD_NAME);
     }
 
     @Test
     void canIgnoreLazyInitException() throws BadEntityException {
+        lazyLogger = LazyLogger.builder()
+                .ignoreLazyException(Boolean.TRUE)
+                .build();
 
+        logEntity.setLazyChildren1(Sets.newHashSet(lazyCol1_child1));
+        lazyCol1_child1.setLogEntity(logEntity);
 
+        logEntity.setEagerChild(eagerSingleChild);
+        eagerSingleChild.setLogEntity(logEntity);
 
-        LogParent lazyItem = new LogParent();
-//        LazyItem savedLazyItem = getService().save(lazyItem);
-
-        logEntity.getLazyChildren1().add(lazyItem);
-
-        Owner savedKahn = ownerService.save(logEntity);
-
-
-        Owner found = ownerService.findById(savedKahn.getId()).get();
-        // would result in lazyinit exception
-//        found.getLazyItems().size();
+        lazyLogger.toString(logEntity);
 
         String s = LazyLogUtils.toString(found,Boolean.FALSE);
         System.err.println(s);
@@ -223,8 +231,8 @@ class LazyLogUtilsTest {
         TransactionalRapidTestUtil.clear(ownerService);
         clinicCardRepository.deleteAll();
         petRepository.deleteAll();
-        loadedItemRepository.deleteAll();
-        loadedExceptionItemRepository.deleteAll();
+        logChildRepository.deleteAll();
+        logParentRepository.deleteAll();
 
     }
 

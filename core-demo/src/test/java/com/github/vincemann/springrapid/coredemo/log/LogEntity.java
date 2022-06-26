@@ -47,7 +47,7 @@ public class LogEntity extends IdentifiableEntityImpl<Long> {
     @JsonManagedReference
     private Set<LogChild> lazyChildren2 = new HashSet<>();
 
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "logEntity",fetch = FetchType.LAZY)
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "logEntity",fetch = FetchType.EAGER)
     @BiDirChildCollection(LogParent.class)
     @JsonManagedReference
     private Set<LogChild> eagerChildren = new HashSet<>();
