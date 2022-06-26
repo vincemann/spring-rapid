@@ -8,41 +8,29 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import javax.persistence.Entity;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
-import javax.persistence.Table;
+import javax.persistence.*;
 
 @Setter
 @Getter
 @NoArgsConstructor
 @Entity
-@Table(name = "log_children")
-public class LogChild extends IdentifiableEntityImpl<Long> {
+@Table(name = "single_log_children")
+public class SingleLogChild extends IdentifiableEntityImpl<Long> {
 
-    @ManyToOne
+    @OneToOne
     @JoinColumn(name = "log_entity_id")
     @JsonBackReference
     @BiDirParentEntity
     private LogEntity logEntity;
     private String name;
 
-    public LogChild(String name) {
+    public SingleLogChild(String name) {
         this.name = name;
     }
 
     @Builder
-    public LogChild(LogEntity logEntity, String name) {
+    public SingleLogChild(LogEntity logEntity, String name) {
         this.logEntity = logEntity;
         this.name = name;
     }
-
-    //    @Override
-//    public String toString() {
-//        return "LazyLoadedItem{ " +
-//                getName()+ " , " +
-//                getId().toString() +
-//                " }";
-//    }
-
 }

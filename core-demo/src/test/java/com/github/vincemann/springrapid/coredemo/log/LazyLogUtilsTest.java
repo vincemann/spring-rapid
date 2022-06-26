@@ -17,8 +17,6 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.LocalDate;
-import java.util.Date;
 import java.util.HashSet;
 
 @ActiveProfiles(value = {RapidTestProfiles.TEST, RapidTestProfiles.SERVICE_TEST, RapidProfiles.SERVICE})
@@ -35,6 +33,17 @@ class LazyLogUtilsTest {
 //    @Autowired
 //    TransactionalTestTemplate transactionalTestTemplate;
 
+    static final String LAZY_COL1_ENTITY1_NAME = "lazy Col1 Entity1";
+    static final String LAZY_COL1_ENTITY2_NAME = "lazy Col1 Entity2";
+    static final String EAGER_ENTITY1_NAME = "eager col Entity1";
+    static final String EAGER_ENTITY2_NAME = "eager col Entity2";
+
+    static final String LAZY_PARENT_NAME = "lazy parent col Entity2";
+    static final String LOG_ENTITY_NAME = "log entity";
+
+    static final String LAZY_COL2_ENTITY1_NAME = "lazy Col2 Entity1";
+    static final String LAZY_COL2_ENTITY2_NAME = "lazy Col2 Entity2";
+
 
     @Autowired
     LazyLoadedItemRepository loadedItemRepository;
@@ -43,38 +52,52 @@ class LazyLogUtilsTest {
     LazyExceptionItemRepository loadedExceptionItemRepository;
 
 
-
     LogEntity logEntity;
+    LogChild lazyCol1_child1;
+    LogChild lazyCol1_child2;
+    LogChild lazyCol2_child1;
+    LogChild lazyCol2_child2;
+    LogParent lazyParent;
+
+
 
 
 
     @BeforeEach
     void setUp() {
         logEntity = LogEntity.builder()
-                .firstName("Olli")
-                .lastName("Kahn")
-                .address("asljnflksamfslkmf")
-                .city("n1 city")
-                .telephone("1234567890")
+                .name(LOG_ENTITY_NAME)
                 .build();
 
-        bello = Pet.builder()
-                .name("bello")
-                .birthDate(LocalDate.now())
+        lazyParent = LogParent.builder()
+                .name(LAZY_PARENT_NAME)
                 .build();
 
-        clinicCard = ClinicCard.builder()
-                .registrationDate(new Date())
-                .registrationReason("gilligkeit")
+        lazyCol1_child1 = LogChild.builder()
+                .name(LAZY_COL1_ENTITY1_NAME)
+                .build();
+        lazyCol1_child2  = LogChild.builder()
+                .name(LAZY_COL1_ENTITY2_NAME)
+                .build();
+
+
+        lazyCol2_child1 = LogChild.builder()
+                .name(LAZY_COL2_ENTITY1_NAME)
+                .build();
+        lazyCol2_child2  = LogChild.builder()
+                .name(LAZY_COL2_ENTITY2_NAME)
                 .build();
     }
 
     @Test
-    void canIgnoreLazy() throws BadEntityException {
+    void canIgnoreLazyInitException() throws BadEntityException {
+
+
+
         LogParent lazyItem = new LogParent();
 //        LazyItem savedLazyItem = getService().save(lazyItem);
 
-        logEntity.getLogChildren1().add(lazyItem);
+        logEntity.getLazyChildren1().add(lazyItem);
 
         Owner savedKahn = ownerService.save(logEntity);
 
@@ -93,7 +116,7 @@ class LazyLogUtilsTest {
     void canLoadEagerCollection_andIgnoreLazyCollection() throws BadEntityException {
         LogParent lazyItem = new LogParent();
 
-        logEntity.getLogChildren1().add(lazyItem);
+        logEntity.getLazyChildren1().add(lazyItem);
         logEntity.getPets().add(bello);
 
         Owner savedKahn = ownerService.save(logEntity);
@@ -115,8 +138,8 @@ class LazyLogUtilsTest {
         LogParent lazyItem = new LogParent();
         LogChild logChild = new LogChild("loaded");
 
-        logEntity.getLogChildren1().add(lazyItem);
-        logEntity.getLogChildren2().add(logChild);
+        logEntity.getLazyChildren1().add(lazyItem);
+        logEntity.getLazyChildren2().add(logChild);
 
         Owner savedKahn = ownerService.save(logEntity);
 
@@ -137,8 +160,8 @@ class LazyLogUtilsTest {
         LogParent lazyItem = new LogParent();
         LogChild logChild = new LogChild("loaded");
 
-        logEntity.getLogChildren1().add(lazyItem);
-        logEntity.getLogChildren2().add(logChild);
+        logEntity.getLazyChildren1().add(lazyItem);
+        logEntity.getLazyChildren2().add(logChild);
         logEntity.getPets().add(bello);
 
         Owner savedKahn = ownerService.save(logEntity);
@@ -184,7 +207,7 @@ class LazyLogUtilsTest {
         LogParent lazyItem = new LogParent();
 //        LazyItem savedLazyItem = getService().save(lazyItem);
 
-        logEntity.getLogChildren1().add(lazyItem);
+        logEntity.getLazyChildren1().add(lazyItem);
 
         Owner savedKahn = ownerService.save(logEntity);
 

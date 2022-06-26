@@ -6,6 +6,7 @@ import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.github.vincemann.springrapid.autobidir.model.child.annotation.BiDirChildCollection;
 import com.github.vincemann.springrapid.autobidir.model.parent.annotation.BiDirParentEntity;
 import com.github.vincemann.springrapid.core.model.IdentifiableEntityImpl;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -33,10 +34,17 @@ public class LogParent extends IdentifiableEntityImpl<Long> {
         this.name = name;
     }
 
-    @Override
-    public String toString() {
-        return "LazyExceptionItem{" +
-                "" + getName() +
-                "}";
+    @Builder
+    public LogParent(Set<LogEntity> logEntities, String name) {
+        if (logEntities!= null)
+            this.logEntities = logEntities;
+        this.name = name;
     }
+
+//    @Override
+//    public String toString() {
+//        return "LazyExceptionItem{" +
+//                "" + getName() +
+//                "}";
+//    }
 }

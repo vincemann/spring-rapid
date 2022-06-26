@@ -4,6 +4,7 @@ package com.github.vincemann.springrapid.coredemo.log;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.github.vincemann.springrapid.autobidir.model.child.annotation.BiDirChildCollection;
+import com.github.vincemann.springrapid.autobidir.model.child.annotation.BiDirChildEntity;
 import com.github.vincemann.springrapid.autobidir.model.parent.annotation.BiDirParentEntity;
 import com.github.vincemann.springrapid.core.model.IdentifiableEntityImpl;
 import lombok.Builder;
@@ -24,29 +25,47 @@ public class LogEntity extends IdentifiableEntityImpl<Long> {
 
     private String name;
 
-    private Integer age;
-
     @Builder
-    public LogEntity(String name, Integer age, Set<LogChild> logChildren1, Set<LogChild> logChildren2) {
+    public LogEntity(String name, Set<LogChild> lazyChildren1, Set<LogChild> lazyChildren2, Set<LogChild> eagerChildren, LogParent lazyParent) {
         this.name = name;
-        this.age = age;
-        this.logChildren1 = logChildren1;
-        this.logChildren2 = logChildren2;
+        if (lazyChildren1!=null)
+            this.lazyChildren1 = lazyChildren1;
+        if (lazyChildren2!=null)
+            this.lazyChildren2 = lazyChildren2;
+        if (eagerChildren != null)
+            this.eagerChildren = eagerChildren;
+        this.lazyParent = lazyParent;
     }
 
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "logEntity",fetch = FetchType.LAZY)
     @BiDirChildCollection(LogParent.class)
     @JsonManagedReference
-    private Set<LogChild> logChildren1 = new HashSet<>();
+    private Set<LogChild> lazyChildren1 = new HashSet<>();
 
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "logEntity",fetch = FetchType.LAZY)
     @BiDirChildCollection(LogParent.class)
     @JsonManagedReference
-    private Set<LogChild> logChildren2 = new HashSet<>();
+    private Set<LogChild> lazyChildren2 = new HashSet<>();
+
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "logEntity",fetch = FetchType.LAZY)
+    @BiDirChildCollection(LogParent.class)
+    @JsonManagedReference
+    private Set<LogChild> eagerChildren = new HashSet<>();
+
+    @OneToOne(fetch = FetchType.EAGER)
+    @BiDirChildEntity
+    @JsonManagedReference
+    private SingleLogChild eagerChild;
+
+    @OneToOne(fetch = FetchType.LAZY)
+    @BiDirChildEntity
+    @JsonManagedReference
+    private SingleLogChild lazyChild;
+
 
     @ManyToOne
     @JoinColumn(name = "log_parent_id")
     @JsonBackReference
     @BiDirParentEntity
-    private LogParent logParent;
+    private LogParent lazyParent;
 }
