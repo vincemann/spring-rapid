@@ -18,6 +18,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
 
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
+import java.security.acl.Owner;
+
 @ActiveProfiles(value = {RapidTestProfiles.TEST, RapidTestProfiles.SERVICE_TEST, RapidProfiles.SERVICE})
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.NONE)
 class LazyLoggerTest {
@@ -40,6 +44,8 @@ class LazyLoggerTest {
     static final String LAZY_COL2_ENTITY1_NAME = "lazy Col2 Entity1";
     static final String LAZY_COL2_ENTITY2_NAME = "lazy Col2 Entity2";
 
+    @PersistenceContext
+    EntityManager entityManager;
 
     @Autowired
     TransactionalTemplate transactionalTemplate;
@@ -64,6 +70,9 @@ class LazyLoggerTest {
     LogChild lazyCol1_child2;
     LogChild lazyCol2_child1;
     LogChild lazyCol2_child2;
+
+    LogChild eager_child1;
+    LogChild eager_child2;
     LogParent lazyParent;
     LazySingleLogChild lazySingleChild;
     EagerSingleLogChild eagerSingleChild;
@@ -88,6 +97,13 @@ class LazyLoggerTest {
                 .name(LAZY_COL1_ENTITY2_NAME)
                 .build();
 
+        eager_child1 = LogChild.builder()
+                .name(EAGER_ENTITY1_NAME)
+                .build();
+
+        eager_child2 = LogChild.builder()
+                .name(EAGER_ENTITY2_NAME)
+                .build();
 
         lazyCol2_child1 = LogChild.builder()
                 .name(LAZY_COL2_ENTITY1_NAME)
@@ -111,12 +127,10 @@ class LazyLoggerTest {
 
 
         EagerSingleLogChild savedEagerSingleChild = eagerSingleLogChildRepository.save(eagerSingleChild);
-//        savedEagerSingleChild.setLogEntity(logEntity);
         logEntity.setEagerChild(savedEagerSingleChild);
 
 
         logEntity.getLazyChildren1().add(lazyCol1_child1);
-//        lazyCol1_child1.setLogEntity(logEntity);
 
         LogEntity e = logEntityRepository.save(logEntity);
         LogEntity savedLogEntity = logEntityRepository.findById(e.getId()).get();
@@ -126,33 +140,70 @@ class LazyLoggerTest {
 
         System.err.println(s);
 
-        Assertions.assertTrue(s.contains("LazyInitializationException"));
+        Assertions.assertTrue(s.contains(LazyLogger.LAZY_INIT_EXCEPTION_LIST_STRING));
+        Assertions.assertFalse(s.contains(LAZY_COL1_ENTITY1_NAME));
+
         Assertions.assertTrue(s.contains(EAGER_CHILD_NAME));
         Assertions.assertTrue(s.contains(LOG_ENTITY_NAME));
 
-        Assertions.assertFalse(s.contains(LAZY_COL1_ENTITY1_NAME));
     }
 
-//    @Test
-//    void canLoadEagerCollection_andIgnoreLazyCollection() throws BadEntityException {
-//        LogParent lazyItem = new LogParent();
-//
-//        logEntity.getLazyChildren1().add(lazyItem);
-//        logEntity.getPets().add(bello);
-//
-//        Owner savedKahn = ownerService.save(logEntity);
-//
-//
-//        Owner found = ownerService.findById(savedKahn.getId()).get();
-//        // would result in lazyinit exception
-////        found.getLazyItems().size();
-//
-//        String s = LazyLogUtils.toString(found,Boolean.FALSE);
-//        System.err.println(s);
-//
-//        Assertions.assertTrue(s.contains("LazyInitializationException"));
-//        Assertions.assertTrue(s.contains("bello"));
-//    }
+    @Test
+    void canBlacklistFields() throws BadEntityException {
+        lazyLogger = LazyLogger.builder()
+                .ignoreLazyException(Boolean.TRUE)
+                .ignoreEntities(Boolean.FALSE)
+                .onlyLogLoaded(Boolean.FALSE)
+                .propertyBlackList(Sets.newHashSet("eagerChild","lazyChildren1"))
+                .build();
+        lazyLogger.setEntityManager(entityManager);
+
+
+//        LogChild savedEagerChild1 = logChildRepository.save(eager_child1);
+//        LogChild savedEagerChild2 = logChildRepository.save(eager_child2);
+
+//        logEntity.getEagerChildren().add(savedEagerChild1);
+//        logEntity.getEagerChildren().add(savedEagerChild2);
+
+        final String[] s = new String[1];
+        transactionalTemplate.doInTransaction(new Runnable() {
+            @SneakyThrows
+            @Override
+            public void run() {
+                EagerSingleLogChild savedEagerSingleChild = eagerSingleLogChildRepository.save(eagerSingleChild);
+                logEntity.setEagerChild(savedEagerSingleChild);
+
+                logEntity.getLazyChildren1().add(lazyCol1_child1);
+
+                logEntity.getLazyChildren2().add(lazyCol2_child1);
+                logEntity.getLazyChildren2().add(lazyCol2_child2);
+
+
+                // only eagerCollection persists
+
+                LogEntity e = logEntityRepository.save(logEntity);
+                LogEntity savedLogEntity = logEntityRepository.findById(e.getId()).get();
+
+
+                s[0] = lazyLogger.toString(savedLogEntity);
+            }
+        });
+
+        String logResult = s[0];
+
+
+
+
+        System.err.println(logResult);
+
+        Assertions.assertFalse(logResult.contains(LAZY_COL1_ENTITY1_NAME));
+        Assertions.assertFalse(logResult.contains(EAGER_CHILD_NAME));
+
+        Assertions.assertTrue(logResult.contains(LazyLogger.IGNORED_STRING));
+        Assertions.assertTrue(logResult.contains(LOG_ENTITY_NAME));
+        Assertions.assertTrue(logResult.contains(LAZY_COL2_ENTITY1_NAME));
+        Assertions.assertTrue(logResult.contains(LAZY_COL2_ENTITY2_NAME));
+    }
 //
 //    @Test
 //    void canShowLoadedLazyCollection_andIgnoreNotLoadedLazyCollectionsException() throws BadEntityException {

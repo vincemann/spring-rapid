@@ -34,7 +34,7 @@ public class LogIdentifiableEntity implements IdentifiableEntity<Long> {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        IdentifiableEntityImpl<?> other = (IdentifiableEntityImpl<?>) o;
+        LogIdentifiableEntity other = (LogIdentifiableEntity) o;
         //added null check here, otherwise entities with null ids are considered equal
         //and cut down to one entity in a set for example
         return id != null &&

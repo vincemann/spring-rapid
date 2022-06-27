@@ -2,6 +2,7 @@ package com.github.vincemann.springrapid.core.util;
 
 import com.github.vincemann.springrapid.core.model.IdentifiableEntity;
 import lombok.Builder;
+import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
@@ -17,9 +18,25 @@ import java.util.stream.Collectors;
 
 @Slf4j
 public class LazyLogger {
-    private static EntityManager entityManager;
 
-    private Object parent;
+
+    public static final String IGNORED_STRING = "<< ignored >>";
+    public static final String IGNORED_UNLOADED_STRING = "<< unloaded ignored >>";
+    public static final String LAZY_INIT_EXCEPTION_STRING = "<< LazyInitializationException >>";
+    public static final String LAZY_INIT_EXCEPTION_LIST_STRING = "<< [LazyInitializationException] >>";
+
+
+//    private static EntityManager entityManager;
+//
+//
+//    public static void setEntityManager(EntityManager entityManager) {
+//        LazyLogger.entityManager = entityManager;
+//    }
+
+    // todo set in app context config
+    @Setter
+    private EntityManager entityManager;
+//    private Object parent;
     private Boolean ignoreLazyException = Boolean.TRUE;
     private Boolean ignoreEntities = Boolean.TRUE;
     private Boolean idOnly = Boolean.FALSE;
@@ -27,6 +44,7 @@ public class LazyLogger {
     private HashSet<String> propertyBlackList = new HashSet<>();
     private Boolean onlyLogLoaded = Boolean.TRUE;
     private Set<String> logLoadedBlacklist = new HashSet<>();
+    private Set<String> logLoadedWhitelist = new HashSet<>();
 
     private Property property;
     private Map<Class, List<Object>> clazzParentsMap = new HashMap<>();
@@ -119,7 +137,7 @@ public class LazyLogger {
 
         return (new ReflectionToStringBuilder(parent, ToStringStyle.SHORT_PREFIX_STYLE) {
             protected Object getValue(Field f) throws IllegalAccessException {
-                System.err.println("checking field: " + f.getName());
+                System.err.println(" checking field: " + f.getName().toUpperCase());
                 // init propertyState
                 property = new Property(f);
                 property.entity = isEntity();
@@ -134,7 +152,8 @@ public class LazyLogger {
                 String propertyString = "super";
                 try {
                     if (property.isIgnored()) {
-                        return "";
+                        System.err.println("result of field: " + f.getName().toUpperCase() + " : found property string super value: " + " ignored");
+                        return IGNORED_STRING;
                     }
                     if (property.isEntity()) {
                         updateClazzParentsMap(property.value);
@@ -151,10 +170,10 @@ public class LazyLogger {
                 }
                 if (propertyString.equals("super")) {
                     Object superValue = super.getValue(f);
-                    System.err.println("found property string super value: " + superValue);
+                    System.err.println("result of field: " + f.getName().toUpperCase() + " : found property string super value: " + superValue);
                     return superValue;
                 } else {
-                    System.err.println("found property string own value: " + propertyString);
+                    System.err.println("result of field: " + f.getName().toUpperCase() + " : found property string own value: " + propertyString);
                     return propertyString;
 //                    throw new RuntimeException("Unhandled Property" + property);
                 }
@@ -165,10 +184,23 @@ public class LazyLogger {
     protected String loadIfWanted(Object parent, String propertyName, Boolean collection) throws IllegalAccessException {
         String propertyString = "super";
         if (checkIfLoaded(parent,propertyName)){
-            propertyString = entitiesToString(collection);
-        }else {
-            if (onlyLogLoaded && logLoadedBlacklist.contains(propertyName)){
+            // not blacklisted
+            if (onlyLogLoaded){
+                if (logLoadedBlacklist.contains(propertyName)){
+                    // dont load bc blacklisted
+                    return propertyString;
+                }
                 propertyString = entitiesToString(collection);
+            }
+        }else {
+            // not loaded
+            if (onlyLogLoaded){
+                if (logLoadedWhitelist.contains(propertyName)){
+                    // still load it bc its whiteListed
+                    propertyString = entitiesToString(collection);
+                }else {
+                    return IGNORED_UNLOADED_STRING;
+                }
             }
         }
         return propertyString;
@@ -232,7 +264,7 @@ public class LazyLogger {
         if (property.isEntity()) {
             log.warn("Could not log jpa lazy entity field: " + property.field.getName() + ", skipping.");
             if (ignoreLazyException) {
-                return " < LazyInitializationException > ";
+                return LAZY_INIT_EXCEPTION_STRING;
             } else {
                 throw e;
             }
@@ -240,7 +272,7 @@ public class LazyLogger {
             log.warn("Could not log jpa lazy collection field: " + property.field.getName() + ", skipping.");
 //                        log.warn("Use @LogInteractions transactional flag to load all lazy collections for logging");
             if (ignoreLazyException) {
-                return "[ LazyInitializationException ]";
+                return LAZY_INIT_EXCEPTION_LIST_STRING;
             } else {
                 throw e;
             }
@@ -290,9 +322,10 @@ public class LazyLogger {
                     return s;
                 }
             }
-        } else {
-            return "[]";
         }
+//         else {
+//            return "[]";
+//        }
         return "super";
     }
 
