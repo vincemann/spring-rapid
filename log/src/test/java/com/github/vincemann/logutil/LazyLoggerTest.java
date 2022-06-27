@@ -149,6 +149,42 @@ class LazyLoggerTest {
     }
 
     @Test
+    void canIgnoreAllEntities() throws BadEntityException {
+        lazyLogger = LazyLogger.builder()
+                .ignoreLazyException(Boolean.TRUE)
+                .ignoreEntities(Boolean.TRUE)
+                .onlyLogLoaded(Boolean.FALSE)
+                .build();
+
+        // lazy Child 1
+        // eager child set
+        // -> nothing gets logged
+
+
+        EagerSingleLogChild savedEagerSingleChild = eagerSingleLogChildRepository.save(eagerSingleChild);
+        logEntity.setEagerChild(savedEagerSingleChild);
+
+
+        logEntity.getLazyChildren1().add(lazyCol1_child1);
+
+        LogEntity e = logEntityRepository.save(logEntity);
+        LogEntity savedLogEntity = logEntityRepository.findById(e.getId()).get();
+
+
+        String s = lazyLogger.toString(savedLogEntity);
+
+        System.err.println(s);
+
+        Assertions.assertFalse(s.contains(LazyLogger.LAZY_INIT_EXCEPTION_LIST_STRING));
+        Assertions.assertFalse(s.contains(LazyLogger.LAZY_INIT_EXCEPTION_STRING));
+        Assertions.assertFalse(s.contains(LAZY_COL1_ENTITY1_NAME));
+        Assertions.assertFalse(s.contains(EAGER_CHILD_NAME));
+
+        Assertions.assertTrue(s.contains(LOG_ENTITY_NAME));
+
+    }
+
+    @Test
     void canBlacklistFields() throws BadEntityException {
         lazyLogger = LazyLogger.builder()
                 .ignoreLazyException(Boolean.TRUE)
@@ -190,9 +226,6 @@ class LazyLoggerTest {
         });
 
         String logResult = s[0];
-
-
-
 
         System.err.println(logResult);
 
