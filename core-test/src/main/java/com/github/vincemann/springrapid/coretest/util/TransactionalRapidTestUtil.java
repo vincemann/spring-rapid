@@ -6,6 +6,7 @@ import com.github.vincemann.springrapid.core.service.exception.BadEntityExceptio
 import com.github.vincemann.springrapid.core.util.IdPropertyNameUtils;
 import com.github.vincemann.springrapid.core.util.TransactionalTemplate;
 import com.google.common.collect.Sets;
+import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.util.ReflectionUtils;
 
@@ -66,6 +67,12 @@ public class TransactionalRapidTestUtil {
                     throw new RuntimeException(e);
                 }
             }
+        });
+    }
+
+    public static void clear(JpaRepository jpaRepository){
+        transactionalTemplate.doInTransaction(() -> {
+            jpaRepository.deleteAll();
         });
     }
 

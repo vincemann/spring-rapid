@@ -1,18 +1,13 @@
 package com.github.vincemann.logutil;
 
-import com.github.vincemann.logutil.model.LogChild;
-import com.github.vincemann.logutil.model.LogEntity;
-import com.github.vincemann.logutil.model.LogParent;
-import com.github.vincemann.logutil.model.LazySingleLogChild;
-import com.github.vincemann.logutil.repo.LogChildRepository;
-import com.github.vincemann.logutil.repo.LogEntityRepository;
-import com.github.vincemann.logutil.repo.LogParentRepository;
-import com.github.vincemann.logutil.repo.LazySingleLogChildRepository;
+import com.github.vincemann.logutil.model.*;
+import com.github.vincemann.logutil.repo.*;
 import com.github.vincemann.springrapid.core.service.exception.BadEntityException;
 import com.github.vincemann.springrapid.core.slicing.RapidProfiles;
 import com.github.vincemann.springrapid.core.util.LazyLogger;
 import com.github.vincemann.springrapid.core.util.TransactionalTemplate;
 import com.github.vincemann.springrapid.coretest.slicing.RapidTestProfiles;
+import com.github.vincemann.springrapid.coretest.util.TransactionalRapidTestUtil;
 import com.google.common.collect.Sets;
 import lombok.SneakyThrows;
 import org.junit.jupiter.api.AfterEach;
@@ -44,6 +39,8 @@ class LazyLoggerTest {
     static final String EAGER_CHILD_NAME = "eager child";
     static final String LAZY_COL2_ENTITY1_NAME = "lazy Col2 Entity1";
     static final String LAZY_COL2_ENTITY2_NAME = "lazy Col2 Entity2";
+
+
     @Autowired
     TransactionalTemplate transactionalTemplate;
     @Autowired
@@ -58,6 +55,9 @@ class LazyLoggerTest {
     @Autowired
     LogEntityRepository logEntityRepository;
 
+    @Autowired
+    EagerSingleLogChildRepository eagerSingleLogChildRepository;
+
 
     LogEntity logEntity;
     LogChild lazyCol1_child1;
@@ -66,7 +66,7 @@ class LazyLoggerTest {
     LogChild lazyCol2_child2;
     LogParent lazyParent;
     LazySingleLogChild lazySingleChild;
-    LazySingleLogChild eagerSingleChild;
+    EagerSingleLogChild eagerSingleChild;
 
     LazyLogger lazyLogger;
 
@@ -97,7 +97,7 @@ class LazyLoggerTest {
                 .build();
 
         lazySingleChild = new LazySingleLogChild(LAZY_CHILD_NAME);
-        eagerSingleChild = new LazySingleLogChild(EAGER_CHILD_NAME);
+        eagerSingleChild = new EagerSingleLogChild(EAGER_CHILD_NAME);
     }
 
     @Test
@@ -117,7 +117,7 @@ class LazyLoggerTest {
                 logEntity.setLazyChildren1(Sets.newHashSet(savedLazyCol1_child1));
                 savedLazyCol1_child1.setLogEntity(logEntity);
 
-                LazySingleLogChild savedEagerSingleChild = lazySingleLogChildRepository.save(eagerSingleChild);
+                EagerSingleLogChild savedEagerSingleChild = eagerSingleLogChildRepository.save(eagerSingleChild);
                 logEntity.setEagerChild(savedEagerSingleChild);
                 savedEagerSingleChild.setLogEntity(logEntity);
 
@@ -246,13 +246,20 @@ class LazyLoggerTest {
 
     @AfterEach
     void tearDown() {
-//        TransactionalRapidTestUtil.clear(ownerService);
+        TransactionalRapidTestUtil.clear(logChildRepository);
+        TransactionalRapidTestUtil.clear(logParentRepository);
+        TransactionalRapidTestUtil.clear(lazySingleLogChildRepository);
+        TransactionalRapidTestUtil.clear(eagerSingleLogChildRepository);
+        TransactionalRapidTestUtil.clear(logEntityRepository);
+
 //        clinicCardRepository.deleteAll();
 //        petRepository.deleteAll();
-        logChildRepository.deleteAll();
-        logParentRepository.deleteAll();
-        lazySingleLogChildRepository.deleteAll();
 
+//
+//        logChildRepository.deleteAll();
+//        logParentRepository.deleteAll();
+//        lazySingleLogChildRepository.deleteAll();
+//        eagerSingleLogChildRepository.deleteAll();
     }
 
     //    @Test

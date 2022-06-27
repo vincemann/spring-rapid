@@ -21,7 +21,7 @@ import java.util.Set;
 @NoArgsConstructor
 @Entity
 @Table(name = "log_entity")
-public class LogEntity extends IdentifiableEntityImpl<Long> {
+public class LogEntity extends LogIdentifiableEntity {
 
     private String name;
 
@@ -55,7 +55,7 @@ public class LogEntity extends IdentifiableEntityImpl<Long> {
     @OneToOne(fetch = FetchType.EAGER)
     @BiDirChildEntity
     @JoinColumn(name = "eager_child_id",referencedColumnName = "id")
-    private LazySingleLogChild eagerChild;
+    private EagerSingleLogChild eagerChild;
 
     @OneToOne(fetch = FetchType.LAZY)
     @BiDirChildEntity

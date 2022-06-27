@@ -18,7 +18,7 @@ import javax.persistence.Table;
 @NoArgsConstructor
 @Entity
 @Table(name = "log_children")
-public class LogChild extends IdentifiableEntityImpl<Long> {
+public class LogChild extends LogIdentifiableEntity {
 
     @ManyToOne
     @JoinColumn(name = "log_entity_id")

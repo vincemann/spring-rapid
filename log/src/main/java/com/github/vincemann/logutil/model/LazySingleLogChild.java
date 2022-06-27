@@ -15,7 +15,7 @@ import javax.persistence.*;
 @NoArgsConstructor
 @Entity
 @Table(name = "single_log_children")
-public class LazySingleLogChild extends IdentifiableEntityImpl<Long> {
+public class LazySingleLogChild extends LogIdentifiableEntity {
 
     @OneToOne(mappedBy = "lazyChild")
     @BiDirParentEntity

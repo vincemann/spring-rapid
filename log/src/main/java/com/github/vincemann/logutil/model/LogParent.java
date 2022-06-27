@@ -20,7 +20,7 @@ import java.util.Set;
 @NoArgsConstructor
 @Entity
 @Table(name = "log_parents")
-public class LogParent extends IdentifiableEntityImpl<Long> {
+public class LogParent extends LogIdentifiableEntity {
 
 
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "lazyParent",fetch = FetchType.LAZY)

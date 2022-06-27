@@ -143,15 +143,20 @@ public class LazyLogger {
                         updateClazzParentMapForCollection(property.value);
                         propertyString = loadIfWanted(parent,property.field.getName(),Boolean.TRUE);
                     }
+
                 } catch (IllegalAccessException e) {
                     throw new RuntimeException(e);
                 } catch (LazyInitializationException e) {
-                    return lazyInitExceptionToString(e);
+                    propertyString =  lazyInitExceptionToString(e);
                 }
                 if (propertyString.equals("super")) {
-                    return super.getValue(f);
+                    Object superValue = super.getValue(f);
+                    System.err.println("found property string super value: " + superValue);
+                    return superValue;
                 } else {
-                    throw new RuntimeException("Unhandled Property" + property);
+                    System.err.println("found property string own value: " + propertyString);
+                    return propertyString;
+//                    throw new RuntimeException("Unhandled Property" + property);
                 }
             }
         }).toString();
@@ -258,7 +263,8 @@ public class LazyLogger {
     }
 
     protected String entityToString() throws IllegalAccessException {
-        IdentifiableEntity entity = ((IdentifiableEntity) property.field.get(parent));
+//        IdentifiableEntity entity = ((IdentifiableEntity) property.field.get(parent));
+        IdentifiableEntity entity = (IdentifiableEntity) property.value;
         if (entity == null) {
             return "null";
         }
@@ -271,7 +277,8 @@ public class LazyLogger {
     protected String collectionToString() throws IllegalAccessException {
         // it is a collection
         // need to query element to trigger Exception
-        Collection<?> collection = (Collection<?>) property.field.get(parent);
+//        Collection<?> collection = (Collection<?>) property.field.get(parent);
+        Collection<?> collection = (Collection<?>) property.value;
         if (collection == null) {
             return "null";
         }
