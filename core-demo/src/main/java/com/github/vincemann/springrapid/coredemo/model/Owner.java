@@ -1,8 +1,6 @@
 package com.github.vincemann.springrapid.coredemo.model;
 
 import com.fasterxml.jackson.annotation.JsonManagedReference;
-import com.github.vincemann.springrapid.coredemo.log.LazyExceptionItem;
-import com.github.vincemann.springrapid.coredemo.log.LazyLoadedItem;
 import com.github.vincemann.springrapid.coredemo.model.abs.Person;
 import com.github.vincemann.springrapid.autobidir.model.child.annotation.BiDirChildCollection;
 import com.github.vincemann.springrapid.autobidir.model.child.annotation.BiDirChildEntity;
@@ -23,19 +21,13 @@ public class Owner extends Person {
 
 
     @Builder
-    public Owner(String firstName, String lastName, Set<Pet> pets, String address, String city, String telephone, Set<String> hobbies, Set<LazyExceptionItem> lazyExceptionItems, Set<LazyLoadedItem> lazyLoadedItems) {
+    public Owner(String firstName, String lastName, Set<Pet> pets, String address, String city, String telephone, Set<String> hobbies) {
         super(firstName, lastName);
         if(pets!=null) {
             this.pets = pets;
         }
         if(hobbies!=null) {
             this.hobbies = hobbies;
-        }
-        if(lazyExceptionItems !=null) {
-            this.lazyExceptionItems = lazyExceptionItems;
-        }
-        if (lazyLoadedItems != null){
-            this.lazyLoadedItems = lazyLoadedItems;
         }
         this.address = address;
         this.city = city;

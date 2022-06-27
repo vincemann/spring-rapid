@@ -1,4 +1,4 @@
-package com.github.vincemann.springrapid.coredemo.log;
+package com.github.vincemann.logutil.model;
 
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
@@ -23,7 +23,7 @@ import java.util.Set;
 public class LogParent extends IdentifiableEntityImpl<Long> {
 
 
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "logEntity",fetch = FetchType.LAZY)
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "lazyParent",fetch = FetchType.LAZY)
     @BiDirChildCollection(LogParent.class)
     @JsonManagedReference
     private Set<LogEntity> logEntities = new HashSet<>();

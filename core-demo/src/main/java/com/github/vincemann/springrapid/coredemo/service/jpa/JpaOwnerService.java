@@ -47,12 +47,12 @@ public class JpaOwnerService
         }).findFirst();
     }
 
-    @Override
-    @Transactional
-    public Owner lazyLoadFindById(Long id) {
-        Owner owner = getRepository().findById(id).get();
-        owner.getLazyLoadedItems().size();
-        return owner;
-    }
+//    @Override
+//    @Transactional
+//    public Owner lazyLoadFindById(Long id) {
+//        Owner owner = getRepository().findById(id).get();
+//        owner.getLazyLoadedItems().size();
+//        return owner;
+//    }
 
 }

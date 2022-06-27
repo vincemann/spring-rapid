@@ -1,4 +1,4 @@
-package com.github.vincemann.springrapid.coredemo.log;
+package com.github.vincemann.logutil.model;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.github.vincemann.springrapid.autobidir.model.parent.annotation.BiDirParentEntity;

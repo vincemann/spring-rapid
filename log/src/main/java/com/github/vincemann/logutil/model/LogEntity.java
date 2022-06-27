@@ -1,4 +1,4 @@
-package com.github.vincemann.springrapid.coredemo.log;
+package com.github.vincemann.logutil.model;
 
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
@@ -38,34 +38,33 @@ public class LogEntity extends IdentifiableEntityImpl<Long> {
     }
 
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "logEntity",fetch = FetchType.LAZY)
-    @BiDirChildCollection(LogParent.class)
+    @BiDirChildCollection(LogChild.class)
     @JsonManagedReference
     private Set<LogChild> lazyChildren1 = new HashSet<>();
 
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "logEntity",fetch = FetchType.LAZY)
-    @BiDirChildCollection(LogParent.class)
+    @BiDirChildCollection(LogChild.class)
     @JsonManagedReference
     private Set<LogChild> lazyChildren2 = new HashSet<>();
 
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "logEntity",fetch = FetchType.EAGER)
-    @BiDirChildCollection(LogParent.class)
+    @BiDirChildCollection(LogChild.class)
     @JsonManagedReference
     private Set<LogChild> eagerChildren = new HashSet<>();
 
     @OneToOne(fetch = FetchType.EAGER)
     @BiDirChildEntity
-    @JsonManagedReference
-    private SingleLogChild eagerChild;
+    @JoinColumn(name = "eager_child_id",referencedColumnName = "id")
+    private LazySingleLogChild eagerChild;
 
     @OneToOne(fetch = FetchType.LAZY)
     @BiDirChildEntity
-    @JsonManagedReference
-    private SingleLogChild lazyChild;
+    @JoinColumn(name = "lazy_child_id",referencedColumnName = "id")
+    private LazySingleLogChild lazyChild;
 
 
     @ManyToOne
     @JoinColumn(name = "log_parent_id")
-    @JsonBackReference
     @BiDirParentEntity
     private LogParent lazyParent;
 }

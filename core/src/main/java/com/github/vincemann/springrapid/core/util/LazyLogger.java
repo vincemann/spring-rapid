@@ -119,7 +119,7 @@ public class LazyLogger {
 
         return (new ReflectionToStringBuilder(parent, ToStringStyle.SHORT_PREFIX_STYLE) {
             protected Object getValue(Field f) throws IllegalAccessException {
-
+                System.err.println("checking field: " + f.getName());
                 // init propertyState
                 property = new Property(f);
                 property.entity = isEntity();

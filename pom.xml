@@ -44,6 +44,7 @@
         <module>exceptions-api</module>
         <module>acl-demo</module>
         <module>acl-test</module>
+        <module>log</module>
     </modules>
 
     <dependencies>

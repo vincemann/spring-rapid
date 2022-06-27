@@ -1,6 +1,6 @@
 package com.github.vincemann.springrapid.core.model;
 
-import com.github.vincemann.springrapid.core.util.LazyLogUtils;
+import com.github.vincemann.springrapid.core.util.LazyLogger;
 
 import java.io.Serializable;
 
@@ -8,6 +8,8 @@ public class AbstractDto<Id extends Serializable> extends IdentifiableEntityImpl
 
     @Override
     public String toString() {
-        return LazyLogUtils.toString(this,false);
+        return LazyLogger.builder()
+                .build()
+                .toString(this);
     }
 }

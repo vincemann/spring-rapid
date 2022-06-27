@@ -12,5 +12,5 @@ import java.util.Optional;
 public interface OwnerService extends CrudService<Owner,Long> {
     Optional<Owner> findByLastName(String lastName);
     public Optional<Owner> findOwnerOfTheYear();
-    Owner lazyLoadFindById(Long id);
+//    Owner lazyLoadFindById(Long id);
 }

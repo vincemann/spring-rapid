@@ -1,4 +1,4 @@
-package com.github.vincemann.springrapid.coredemo.log;
+package com.github.vincemann.logutil.model;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.github.vincemann.springrapid.autobidir.model.parent.annotation.BiDirParentEntity;
@@ -8,28 +8,28 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import javax.persistence.*;
+import javax.persistence.Entity;
+import javax.persistence.OneToOne;
+import javax.persistence.Table;
 
 @Setter
 @Getter
 @NoArgsConstructor
 @Entity
-@Table(name = "single_log_children")
-public class SingleLogChild extends IdentifiableEntityImpl<Long> {
+@Table(name = "eager_single_children")
+public class EagerSingleLogChild extends IdentifiableEntityImpl<Long> {
 
-    @OneToOne
-    @JoinColumn(name = "log_entity_id")
-    @JsonBackReference
+    @OneToOne(mappedBy = "eagerChild")
     @BiDirParentEntity
     private LogEntity logEntity;
     private String name;
 
-    public SingleLogChild(String name) {
+    public EagerSingleLogChild(String name) {
         this.name = name;
     }
 
     @Builder
-    public SingleLogChild(LogEntity logEntity, String name) {
+    public EagerSingleLogChild(LogEntity logEntity, String name) {
         this.logEntity = logEntity;
         this.name = name;
     }
