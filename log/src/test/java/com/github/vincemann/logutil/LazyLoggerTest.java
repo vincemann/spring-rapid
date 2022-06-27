@@ -108,26 +108,21 @@ class LazyLoggerTest {
                 .onlyLogLoaded(Boolean.FALSE)
                 .build();
 
-        final LogEntity[] saved = {null};
-        transactionalTemplate.doInTransaction(new Runnable() {
-            @SneakyThrows
-            @Override
-            public void run() {
-                LogChild savedLazyCol1_child1 = logChildRepository.save(lazyCol1_child1);
-                logEntity.setLazyChildren1(Sets.newHashSet(savedLazyCol1_child1));
-                savedLazyCol1_child1.setLogEntity(logEntity);
-
-                EagerSingleLogChild savedEagerSingleChild = eagerSingleLogChildRepository.save(eagerSingleChild);
-                logEntity.setEagerChild(savedEagerSingleChild);
-                savedEagerSingleChild.setLogEntity(logEntity);
 
 
-                saved[0] = logEntityRepository.save(logEntity);
-            }
-        });
+        EagerSingleLogChild savedEagerSingleChild = eagerSingleLogChildRepository.save(eagerSingleChild);
+//        savedEagerSingleChild.setLogEntity(logEntity);
+        logEntity.setEagerChild(savedEagerSingleChild);
 
 
-        String s = lazyLogger.toString(saved[0]);
+        logEntity.getLazyChildren1().add(lazyCol1_child1);
+//        lazyCol1_child1.setLogEntity(logEntity);
+
+        LogEntity e = logEntityRepository.save(logEntity);
+        LogEntity savedLogEntity = logEntityRepository.findById(e.getId()).get();
+
+
+        String s = lazyLogger.toString(savedLogEntity);
 
         System.err.println(s);
 

@@ -11,10 +11,7 @@ import org.springframework.data.repository.CrudRepository;
 import org.springframework.util.ReflectionUtils;
 
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 
 public class TransactionalRapidTestUtil {
 
@@ -59,7 +56,7 @@ public class TransactionalRapidTestUtil {
 
     public static void clear(CrudService crudService){
         transactionalTemplate.doInTransaction(() -> {
-            for (IdentifiableEntity entity : (Set<IdentifiableEntity>) crudService.findAll()) {
+            for (IdentifiableEntity entity : (Collection<IdentifiableEntity>) crudService.findAll()) {
                 System.err.println("removing entity: " + entity);
                 try {
                     crudService.deleteById(entity.getId());
@@ -72,7 +69,14 @@ public class TransactionalRapidTestUtil {
 
     public static void clear(JpaRepository jpaRepository){
         transactionalTemplate.doInTransaction(() -> {
-            jpaRepository.deleteAll();
+            for (IdentifiableEntity entity : (Collection<IdentifiableEntity>) jpaRepository.findAll()) {
+                System.err.println("removing entity: " + entity);
+                try {
+                    jpaRepository.deleteById(entity.getId());
+                } catch (Exception e) {
+                    throw new RuntimeException(e);
+                }
+            }
         });
     }
 

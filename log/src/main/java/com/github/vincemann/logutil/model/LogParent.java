@@ -6,10 +6,7 @@ import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.github.vincemann.springrapid.autobidir.model.child.annotation.BiDirChildCollection;
 import com.github.vincemann.springrapid.autobidir.model.parent.annotation.BiDirParentEntity;
 import com.github.vincemann.springrapid.core.model.IdentifiableEntityImpl;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 import javax.persistence.*;
 import java.util.HashSet;
@@ -20,6 +17,7 @@ import java.util.Set;
 @NoArgsConstructor
 @Entity
 @Table(name = "log_parents")
+@ToString
 public class LogParent extends LogIdentifiableEntity {
 
 

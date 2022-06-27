@@ -3,10 +3,7 @@ package com.github.vincemann.logutil.model;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.github.vincemann.springrapid.autobidir.model.parent.annotation.BiDirParentEntity;
 import com.github.vincemann.springrapid.core.model.IdentifiableEntityImpl;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 import javax.persistence.Entity;
 import javax.persistence.OneToOne;
@@ -17,6 +14,7 @@ import javax.persistence.Table;
 @NoArgsConstructor
 @Entity
 @Table(name = "eager_single_children")
+@ToString
 public class EagerSingleLogChild extends LogIdentifiableEntity {
 
     @OneToOne(mappedBy = "eagerChild")
@@ -33,4 +31,6 @@ public class EagerSingleLogChild extends LogIdentifiableEntity {
         this.logEntity = logEntity;
         this.name = name;
     }
+
+
 }

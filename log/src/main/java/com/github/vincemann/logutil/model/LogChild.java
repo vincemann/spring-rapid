@@ -3,10 +3,7 @@ package com.github.vincemann.logutil.model;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.github.vincemann.springrapid.autobidir.model.parent.annotation.BiDirParentEntity;
 import com.github.vincemann.springrapid.core.model.IdentifiableEntityImpl;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 import javax.persistence.Entity;
 import javax.persistence.JoinColumn;
@@ -18,6 +15,7 @@ import javax.persistence.Table;
 @NoArgsConstructor
 @Entity
 @Table(name = "log_children")
+@ToString
 public class LogChild extends LogIdentifiableEntity {
 
     @ManyToOne
