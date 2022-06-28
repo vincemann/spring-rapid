@@ -42,7 +42,7 @@ class LazyLoggerTest {
     static final String LAZY_COL1_ENTITY2_NAME = "lazy Col1 Entity2";
     static final String EAGER_ENTITY1_NAME = "eager col Entity1";
     static final String EAGER_ENTITY2_NAME = "eager col Entity2";
-    static final String LAZY_PARENT_NAME = "lazy parent col Entity2";
+    static final String LAZY_PARENT_NAME = "lazy parent";
     static final String LAZY_CHILD_NAME = "lazy child";
     static final String EAGER_CHILD_NAME = "eager child";
     static final String LAZY_COL2_ENTITY1_NAME = "lazy Col2 Entity1";
@@ -279,93 +279,64 @@ class LazyLoggerTest {
         // lazyCol2 not loaded -> <ignored unloaded>
         // eager child -> gets logged
 
-
-//        LogChild savedEagerChild1 = logChildService.save(eager_child1);
-//        LogChild savedEagerChild2 = logChildService.save(eager_child2);
-
-//        logEntity.getEagerChildren().add(savedEagerChild1);
-//        logEntity.getEagerChildren().add(savedEagerChild2);
-
-
-        // TRANSACTIONAL CONTEXT
-//        final String[] s = new String[1];
-//        transactionalTemplate.doInTransaction(new Runnable() {
-//            @SneakyThrows
-//            @Override
-//            public void run() {
-//                EagerSingleLogChild savedEagerSingleChild = eagerSingleLogChildService.save(eagerSingleChild);
-//                logEntity.setEagerChild(savedEagerSingleChild);
-//
-//                logEntity.getLazyChildren1().add(lazyCol1_child1);
-//                logEntity.getLazyChildren1().add(lazyCol1_child2);
-//
-//
-//                // only eagerCollection persists
-//
-//                LogEntity e = logEntityService.save(logEntity);
-//                LogEntity savedLogEntity = logEntityService.findById(e.getId()).get();
-//
-//                // load entities of col 1 in transactional context but not col2
-//                logEntity.getLazyChildren1().size();
-//
-//            }
-//        });
-
-        // children1 are loaded and logged
-        // children2 are not loaded and not logged
-
         EagerSingleLogChild savedEagerSingleChild = eagerSingleLogChildService.save(eagerSingleChild);
         logEntity.setEagerChild(savedEagerSingleChild);
 
 
-        final LogEntity[] e = new LogEntity[1];
+        final LogEntity[] saved = new LogEntity[1];
         transactionalTemplate.doInTransaction(new Runnable() {
             @SneakyThrows
             @Override
             public void run() {
 
-                logEntity.getLazyChildren1().add(logChildService.save(lazyCol1_child1));
-                logEntity.getLazyChildren1().add(logChildService.save(lazyCol1_child2));
+                // todo why do i have to set the backrefs??
+                // todo why is eagerChildren filled after find call, why is collections filled with 4 entities?
 
-                logEntity.getLazyChildren2().add(logChildService.save(lazyCol2_child1));
-                logEntity.getLazyChildren2().add(logChildService.save(lazyCol2_child2));
+                saved[0] = logEntityService.save(logEntity);
 
-                e[0] = logEntityService.save(logEntity);
+                LogEntity parent = saved[0];
+
+                LogChild child11 = logChildService.save(lazyCol1_child1);
+                child11.setLogEntity(parent);
+                LogChild child12 = logChildService.save(lazyCol1_child2);
+                child12.setLogEntity(parent);
+//                logEntity.setLazyChildren1(Sets.newHashSet());
+//                logEntity.setLazyChildren2(Sets.newHashSet(logChildService.save(lazyCol2_child1),logChildService.save(lazyCol2_child2)));
+                LogChild child21 = logChildService.save(lazyCol2_child1);
+                child21.setLogEntity(parent);
+                LogChild child22 = logChildService.save(lazyCol2_child2);
+                child22.setLogEntity(parent);
+
+
+                parent.getLazyChildren1().add(child11);
+                parent.getLazyChildren1().add(child12);
+
+
+                parent.getLazyChildren2().add(child21);
+                parent.getLazyChildren2().add(child22);
+
+//                saved[0] = logEntityService.save(logEntity);
+                saved[0] = logEntityService.fullUpdate(parent);
             }
         });
+        LogEntity foundLogEntity = logEntityService.findByIdAndLoadCol1(saved[0].getId()).get();
 
-        e[0] = logEntityService.findByIdAndLoadCol1(e[0].getId()).get();
-
-
-
-        LogEntity savedLogEntity = e[0];
-        String logResult = lazyLogger.toString(savedLogEntity);
-        Assertions.assertTrue(isLoaded(savedLogEntity, "lazyChildren1"));
-        Assertions.assertFalse(isLoaded(savedLogEntity, "lazyChildren2"));
+//        LogEntity foundLogEntity = logEntityService.findByIdAndLoadCol1(saved[0].getId()).get();
+//        LogEntity foundLogEntity = saved[0];
+        String logResult = lazyLogger.toString(foundLogEntity);
+        Assertions.assertTrue(isLoaded(foundLogEntity, "lazyChildren1"));
+        Assertions.assertFalse(isLoaded(foundLogEntity, "lazyChildren2"));
 
         System.err.println(logResult);
 
 
-//        transactionalTemplate.doInTransaction(new Runnable() {
-//            @SneakyThrows
-//            @Override
-//            public void run() {
-//                Assertions.assertFalse(isLoaded(logEntity, "lazyChildren2"));
-//                s[0] = lazyLogger.toString(savedLogEntity);
-//            }
-//        });
-//
-//
-//        String logResult = s[0];
-//
-//        System.err.println(logResult);
 
         Assertions.assertTrue(logResult.contains(LAZY_COL1_ENTITY1_NAME));
         Assertions.assertTrue(logResult.contains(LAZY_COL1_ENTITY2_NAME));
         Assertions.assertTrue(logResult.contains(EAGER_CHILD_NAME));
         Assertions.assertTrue(logResult.contains(LOG_ENTITY_NAME));
 
-//        Assertions.assertTrue(logResult.contains(LazyLogger.IGNORED_UNLOADED_STRING));
+        Assertions.assertTrue(logResult.contains(LazyLogger.IGNORED_UNLOADED_STRING));
         Assertions.assertFalse(logResult.contains(LAZY_COL2_ENTITY1_NAME));
         Assertions.assertFalse(logResult.contains(LAZY_COL2_ENTITY2_NAME));
     }

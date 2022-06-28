@@ -7,7 +7,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
 import org.hibernate.LazyInitializationException;
-import org.springframework.transaction.support.TransactionSynchronizationManager;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceUnitUtil;
@@ -92,6 +91,7 @@ public class LazyLogger {
                 property = new Property(f);
                 property.entity = isEntity();
                 property.collection = isCollection();
+                property.parent = parent;
                 // dont do this bc this will load lazy property
 //                property.value = property.field.get(parent);
                 property.ignored = isIgnored();
@@ -172,6 +172,7 @@ public class LazyLogger {
     }
 
     protected String entitiesToString(Boolean collection) throws IllegalAccessException {
+        loadPropertyValue();
         if (collection) {
             return collectionToString();
         } else {
@@ -179,11 +180,16 @@ public class LazyLogger {
         }
     }
 
+    private void loadPropertyValue() throws IllegalAccessException {
+        // now its safe to load the value aka load ist
+        property.value = property.field.get(property.parent);
+    }
+
     protected boolean checkIfLoaded(Object parent, String childPropertyName) {
-        if (!TransactionSynchronizationManager.isActualTransactionActive()) {
-            // either loaded or not and will crash with lazyInitException
-            return true;
-        }
+//        if (!TransactionSynchronizationManager.isActualTransactionActive()) {
+//            // either loaded or not and will crash with lazyInitException
+//            return true;
+//        }
         PersistenceUnitUtil persistenceUtil =
                 entityManager.getEntityManagerFactory().getPersistenceUnitUtil();
         Boolean loaded = persistenceUtil.isLoaded(parent, childPropertyName);
@@ -260,7 +266,6 @@ public class LazyLogger {
     }
 
     protected String entityToString() throws IllegalAccessException {
-//        IdentifiableEntity entity = ((IdentifiableEntity) property.field.get(parent));
         IdentifiableEntity entity = (IdentifiableEntity) property.value;
         if (entity == null) {
             return "null";
@@ -272,9 +277,6 @@ public class LazyLogger {
     }
 
     protected String collectionToString() throws IllegalAccessException {
-        // it is a collection
-        // need to query element to trigger Exception
-//        Collection<?> collection = (Collection<?>) property.field.get(parent);
         Collection<?> collection = (Collection<?>) property.value;
         if (collection == null) {
             return "null";
@@ -314,6 +316,7 @@ public class LazyLogger {
     }
 
     protected class Property {
+        private Object parent;
         private Field field;
         private Boolean blackListed = Boolean.FALSE;
         private Boolean entity = Boolean.FALSE;

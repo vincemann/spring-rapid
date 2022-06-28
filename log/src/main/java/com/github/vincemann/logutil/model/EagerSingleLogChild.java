@@ -14,7 +14,6 @@ import javax.persistence.Table;
 @NoArgsConstructor
 @Entity
 @Table(name = "eager_single_children")
-@ToString
 public class EagerSingleLogChild extends LogIdentifiableEntity {
 
     @OneToOne(mappedBy = "eagerChild")
@@ -32,5 +31,10 @@ public class EagerSingleLogChild extends LogIdentifiableEntity {
         this.name = name;
     }
 
-
+    @Override
+    public String toString() {
+        return "EagerSingleLogChild{" +
+                "name='" + name + '\'' +
+                '}';
+    }
 }

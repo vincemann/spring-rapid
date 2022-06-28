@@ -35,12 +35,10 @@ public class LogChild extends LogIdentifiableEntity {
         this.name = name;
     }
 
-    //    @Override
-//    public String toString() {
-//        return "LazyLoadedItem{ " +
-//                getName()+ " , " +
-//                getId().toString() +
-//                " }";
-//    }
-
+    @Override
+    public String toString() {
+        return "LogChild{" +
+                "name='" + name + '\'' +
+                '}';
+    }
 }
