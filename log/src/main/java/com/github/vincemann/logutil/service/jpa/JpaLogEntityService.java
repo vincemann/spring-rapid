@@ -10,6 +10,7 @@ import com.github.vincemann.springrapid.core.service.exception.BadEntityExceptio
 import com.github.vincemann.springrapid.core.service.exception.EntityNotFoundException;
 import com.github.vincemann.springrapid.core.slicing.ServiceComponent;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Optional;
 import java.util.Set;
@@ -19,4 +20,13 @@ import java.util.Set;
 @ServiceComponent
 public class JpaLogEntityService extends JPACrudService<LogEntity,Long, LogEntityRepository> implements LogEntityService {
 
+
+    @Transactional
+    @Override
+    public Optional<LogEntity> findByIdAndLoadCol1(Long id) throws BadEntityException {
+        Optional<LogEntity> byId = findById(id);
+        LogEntity logEntity = byId.get();
+        logEntity.getLazyChildren1().size();
+        return Optional.of(logEntity);
+    }
 }
