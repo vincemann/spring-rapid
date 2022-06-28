@@ -2,6 +2,7 @@ package com.github.vincemann.logutil;
 
 import com.github.vincemann.logutil.model.*;
 import com.github.vincemann.logutil.repo.*;
+import com.github.vincemann.logutil.service.*;
 import com.github.vincemann.springrapid.core.service.exception.BadEntityException;
 import com.github.vincemann.springrapid.core.slicing.RapidProfiles;
 import com.github.vincemann.springrapid.core.util.LazyLogger;
@@ -21,6 +22,7 @@ import org.springframework.test.context.ActiveProfiles;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
+import javax.persistence.PersistenceUnitUtil;
 import java.security.acl.Owner;
 
 @ActiveProfiles(value = {RapidTestProfiles.TEST, RapidTestProfiles.SERVICE_TEST, RapidProfiles.SERVICE})
@@ -51,19 +53,19 @@ class LazyLoggerTest {
     @Autowired
     TransactionalTemplate transactionalTemplate;
     @Autowired
-    LogChildRepository logChildRepository;
+    LogChildService logChildService;
 
     @Autowired
-    LogParentRepository logParentRepository;
+    LogParentService logParentService;
 
     @Autowired
-    LazySingleLogChildRepository lazySingleLogChildRepository;
+    LazySingleLogChildService lazySingleLogChildService;
 
     @Autowired
-    LogEntityRepository logEntityRepository;
+    LogEntityService logEntityService;
 
     @Autowired
-    EagerSingleLogChildRepository eagerSingleLogChildRepository;
+    EagerSingleLogChildService eagerSingleLogChildService;
 
 
     LogEntity logEntity;
@@ -126,15 +128,14 @@ class LazyLoggerTest {
                 .build();
 
 
-
-        EagerSingleLogChild savedEagerSingleChild = eagerSingleLogChildRepository.save(eagerSingleChild);
+        EagerSingleLogChild savedEagerSingleChild = eagerSingleLogChildService.save(eagerSingleChild);
         logEntity.setEagerChild(savedEagerSingleChild);
 
 
         logEntity.getLazyChildren1().add(lazyCol1_child1);
 
-        LogEntity e = logEntityRepository.save(logEntity);
-        LogEntity savedLogEntity = logEntityRepository.findById(e.getId()).get();
+        LogEntity e = logEntityService.save(logEntity);
+        LogEntity savedLogEntity = logEntityService.findById(e.getId()).get();
 
 
         String s = lazyLogger.toString(savedLogEntity);
@@ -157,18 +158,17 @@ class LazyLoggerTest {
                 .build();
 
 
-
-        EagerSingleLogChild savedEagerSingleChild = eagerSingleLogChildRepository.save(eagerSingleChild);
+        EagerSingleLogChild savedEagerSingleChild = eagerSingleLogChildService.save(eagerSingleChild);
         logEntity.setEagerChild(savedEagerSingleChild);
 
 
         logEntity.getLazyChildren1().add(lazyCol1_child1);
 
-        LogEntity e = logEntityRepository.save(logEntity);
-        LogEntity savedLogEntity = logEntityRepository.findById(e.getId()).get();
+        LogEntity e = logEntityService.save(logEntity);
+        LogEntity savedLogEntity = logEntityService.findById(e.getId()).get();
 
 
-        Assertions.assertThrows(LazyInitializationException.class,() -> lazyLogger.toString(savedLogEntity));
+        Assertions.assertThrows(LazyInitializationException.class, () -> lazyLogger.toString(savedLogEntity));
     }
 
     @Test
@@ -184,14 +184,14 @@ class LazyLoggerTest {
         // -> nothing gets logged
 
 
-        EagerSingleLogChild savedEagerSingleChild = eagerSingleLogChildRepository.save(eagerSingleChild);
+        EagerSingleLogChild savedEagerSingleChild = eagerSingleLogChildService.save(eagerSingleChild);
         logEntity.setEagerChild(savedEagerSingleChild);
 
 
         logEntity.getLazyChildren1().add(lazyCol1_child1);
 
-        LogEntity e = logEntityRepository.save(logEntity);
-        LogEntity savedLogEntity = logEntityRepository.findById(e.getId()).get();
+        LogEntity e = logEntityService.save(logEntity);
+        LogEntity savedLogEntity = logEntityService.findById(e.getId()).get();
 
 
         String s = lazyLogger.toString(savedLogEntity);
@@ -213,13 +213,13 @@ class LazyLoggerTest {
                 .ignoreLazyException(Boolean.TRUE)
                 .ignoreEntities(Boolean.FALSE)
                 .onlyLogLoaded(Boolean.FALSE)
-                .propertyBlackList(Sets.newHashSet("eagerChild","lazyChildren1"))
+                .propertyBlackList(Sets.newHashSet("eagerChild", "lazyChildren1"))
                 .build();
         lazyLogger.setEntityManager(entityManager);
 
 
-//        LogChild savedEagerChild1 = logChildRepository.save(eager_child1);
-//        LogChild savedEagerChild2 = logChildRepository.save(eager_child2);
+//        LogChild savedEagerChild1 = logChildService.save(eager_child1);
+//        LogChild savedEagerChild2 = logChildService.save(eager_child2);
 
 //        logEntity.getEagerChildren().add(savedEagerChild1);
 //        logEntity.getEagerChildren().add(savedEagerChild2);
@@ -231,7 +231,7 @@ class LazyLoggerTest {
             @SneakyThrows
             @Override
             public void run() {
-                EagerSingleLogChild savedEagerSingleChild = eagerSingleLogChildRepository.save(eagerSingleChild);
+                EagerSingleLogChild savedEagerSingleChild = eagerSingleLogChildService.save(eagerSingleChild);
                 logEntity.setEagerChild(savedEagerSingleChild);
 
                 logEntity.getLazyChildren1().add(lazyCol1_child1);
@@ -242,8 +242,8 @@ class LazyLoggerTest {
 
                 // only eagerCollection persists
 
-                LogEntity e = logEntityRepository.save(logEntity);
-                LogEntity savedLogEntity = logEntityRepository.findById(e.getId()).get();
+                LogEntity e = logEntityService.save(logEntity);
+                LogEntity savedLogEntity = logEntityService.findById(e.getId()).get();
 
 
                 s[0] = lazyLogger.toString(savedLogEntity);
@@ -279,9 +279,8 @@ class LazyLoggerTest {
         // eager child -> gets logged
 
 
-
-//        LogChild savedEagerChild1 = logChildRepository.save(eager_child1);
-//        LogChild savedEagerChild2 = logChildRepository.save(eager_child2);
+//        LogChild savedEagerChild1 = logChildService.save(eager_child1);
+//        LogChild savedEagerChild2 = logChildService.save(eager_child2);
 
 //        logEntity.getEagerChildren().add(savedEagerChild1);
 //        logEntity.getEagerChildren().add(savedEagerChild2);
@@ -293,29 +292,42 @@ class LazyLoggerTest {
             @SneakyThrows
             @Override
             public void run() {
-                EagerSingleLogChild savedEagerSingleChild = eagerSingleLogChildRepository.save(eagerSingleChild);
+                EagerSingleLogChild savedEagerSingleChild = eagerSingleLogChildService.save(eagerSingleChild);
                 logEntity.setEagerChild(savedEagerSingleChild);
 
                 logEntity.getLazyChildren1().add(lazyCol1_child1);
                 logEntity.getLazyChildren1().add(lazyCol1_child2);
 
 
-                logEntity.getLazyChildren2().add(lazyCol2_child1);
-                logEntity.getLazyChildren2().add(lazyCol2_child2);
-
-
-
                 // only eagerCollection persists
 
-                LogEntity e = logEntityRepository.save(logEntity);
-                LogEntity savedLogEntity = logEntityRepository.findById(e.getId()).get();
+                LogEntity e = logEntityService.save(logEntity);
+                LogEntity savedLogEntity = logEntityService.findById(e.getId()).get();
 
                 // load entities of col 1 in transactional context but not col2
                 logEntity.getLazyChildren1().size();
 
+            }
+        });
+
+
+        logEntity.getLazyChildren2().add(lazyCol2_child1);
+        logEntity.getLazyChildren2().add(lazyCol2_child2);
+
+
+        LogEntity e = logEntityService.save(logEntity);
+        LogEntity savedLogEntity = logEntityService.findById(e.getId()).get();
+        Assertions.assertFalse(isLoaded(logEntity, "lazyChildren2"));
+
+        transactionalTemplate.doInTransaction(new Runnable() {
+            @SneakyThrows
+            @Override
+            public void run() {
+                Assertions.assertFalse(isLoaded(logEntity, "lazyChildren2"));
                 s[0] = lazyLogger.toString(savedLogEntity);
             }
         });
+
 
         String logResult = s[0];
 
@@ -329,6 +341,14 @@ class LazyLoggerTest {
         Assertions.assertTrue(logResult.contains(LazyLogger.IGNORED_UNLOADED_STRING));
         Assertions.assertFalse(logResult.contains(LAZY_COL2_ENTITY1_NAME));
         Assertions.assertFalse(logResult.contains(LAZY_COL2_ENTITY2_NAME));
+    }
+
+
+    private boolean isLoaded(Object parent, String childPropertyName) {
+        PersistenceUnitUtil persistenceUtil =
+                entityManager.getEntityManagerFactory().getPersistenceUnitUtil();
+        Boolean loaded = persistenceUtil.isLoaded(parent, childPropertyName);
+        return loaded;
     }
 //
 //    @Test
@@ -383,7 +403,7 @@ class LazyLoggerTest {
 //    @Transactional
 //    @Test
 //    void canIgnoreSomeEntitiesAndCollections() throws BadEntityException {
-//        logEntity.setClinicCard(clinicCardRepository.save(clinicCard));
+//        logEntity.setClinicCard(clinicCardService.save(clinicCard));
 //        logEntity.getPets().add(bello);
 //
 //        Owner savedKahn = ownerService.save(logEntity);
@@ -418,20 +438,20 @@ class LazyLoggerTest {
 
     @AfterEach
     void tearDown() {
-        TransactionalRapidTestUtil.clear(logChildRepository);
-        TransactionalRapidTestUtil.clear(logParentRepository);
-        TransactionalRapidTestUtil.clear(lazySingleLogChildRepository);
-        TransactionalRapidTestUtil.clear(eagerSingleLogChildRepository);
-        TransactionalRapidTestUtil.clear(logEntityRepository);
+        TransactionalRapidTestUtil.clear(logChildService);
+        TransactionalRapidTestUtil.clear(logParentService);
+        TransactionalRapidTestUtil.clear(lazySingleLogChildService);
+        TransactionalRapidTestUtil.clear(eagerSingleLogChildService);
+        TransactionalRapidTestUtil.clear(logEntityService);
 
-//        clinicCardRepository.deleteAll();
-//        petRepository.deleteAll();
+//        clinicCardService.deleteAll();
+//        petService.deleteAll();
 
 //
-//        logChildRepository.deleteAll();
-//        logParentRepository.deleteAll();
-//        lazySingleLogChildRepository.deleteAll();
-//        eagerSingleLogChildRepository.deleteAll();
+//        logChildService.deleteAll();
+//        logParentService.deleteAll();
+//        lazySingleLogChildService.deleteAll();
+//        eagerSingleLogChildService.deleteAll();
     }
 
     //    @Test

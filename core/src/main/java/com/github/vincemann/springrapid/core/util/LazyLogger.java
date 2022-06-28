@@ -92,7 +92,8 @@ public class LazyLogger {
                 property = new Property(f);
                 property.entity = isEntity();
                 property.collection = isCollection();
-                property.value = property.field.get(parent);
+                // dont do this bc this will load lazy property
+//                property.value = property.field.get(parent);
                 property.ignored = isIgnored();
 
                 String propertyString = "super";
@@ -102,26 +103,31 @@ public class LazyLogger {
                         return IGNORED_STRING;
                     }
                     if (property.isEntity()) {
-                        updateClazzParentsMap(property.value);
+//                        updateClazzParentsMap(property.value);
                         propertyString = loadIfWanted(parent, property.field.getName(), Boolean.FALSE);
                     } else if (property.isCollection()) {
-                        updateClazzParentMapForCollection(property.value);
+//                        updateClazzParentMapForCollection(property.value);
                         propertyString = loadIfWanted(parent, property.field.getName(), Boolean.TRUE);
                     }
 
+
+
+
+                    if (propertyString.equals("super")) {
+                        Object superValue = super.getValue(f);
+                        System.err.println("result of field: " + f.getName().toUpperCase() + " : found property string super value: " + superValue);
+                        return superValue;
+                    } else {
+                        System.err.println("result of field: " + f.getName().toUpperCase() + " : found property string own value: " + propertyString);
+                        return propertyString;
+//                    throw new RuntimeException("Unhandled Property" + property);
+                    }
                 } catch (IllegalAccessException e) {
                     throw new RuntimeException(e);
                 } catch (LazyInitializationException e) {
                     propertyString = lazyInitExceptionToString(e);
-                }
-                if (propertyString.equals("super")) {
-                    Object superValue = super.getValue(f);
-                    System.err.println("result of field: " + f.getName().toUpperCase() + " : found property string super value: " + superValue);
-                    return superValue;
-                } else {
                     System.err.println("result of field: " + f.getName().toUpperCase() + " : found property string own value: " + propertyString);
                     return propertyString;
-//                    throw new RuntimeException("Unhandled Property" + property);
                 }
             }
         }).toString();
@@ -180,7 +186,9 @@ public class LazyLogger {
         }
         PersistenceUnitUtil persistenceUtil =
                 entityManager.getEntityManagerFactory().getPersistenceUnitUtil();
-        return persistenceUtil.isLoaded(parent, childPropertyName);
+        Boolean loaded = persistenceUtil.isLoaded(parent, childPropertyName);
+        System.err.println("property "+childPropertyName+" loaded? : " + loaded);
+        return loaded;
 
 //                Assert.assertTrue(unitUtil.isLoaded(org));
 //                // users is a field (Set of User) defined in Organization entity
