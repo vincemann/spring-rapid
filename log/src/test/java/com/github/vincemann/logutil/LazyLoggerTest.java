@@ -302,21 +302,23 @@ class LazyLoggerTest {
                 child12.setLogEntity(parent);
 //                logEntity.setLazyChildren1(Sets.newHashSet());
 //                logEntity.setLazyChildren2(Sets.newHashSet(logChildService.save(lazyCol2_child1),logChildService.save(lazyCol2_child2)));
-                LogChild child21 = logChildService.save(lazyCol2_child1);
-                child21.setLogEntity(parent);
-                LogChild child22 = logChildService.save(lazyCol2_child2);
-                child22.setLogEntity(parent);
+
+
+//                LogChild child21 = logChildService.save(lazyCol2_child1);
+//                child21.setLogEntity(parent);
+//                LogChild child22 = logChildService.save(lazyCol2_child2);
+//                child22.setLogEntity(parent);
 
 
                 parent.getLazyChildren1().add(child11);
                 parent.getLazyChildren1().add(child12);
 
 
-                parent.getLazyChildren2().add(child21);
-                parent.getLazyChildren2().add(child22);
+//                parent.getLazyChildren2().add(child21);
+//                parent.getLazyChildren2().add(child22);
 
 //                saved[0] = logEntityService.save(logEntity);
-                saved[0] = logEntityService.fullUpdate(parent);
+//                saved[0] = logEntityService.fullUpdate(parent);
             }
         });
         LogEntity foundLogEntity = logEntityService.findByIdAndLoadCol1(saved[0].getId()).get();
