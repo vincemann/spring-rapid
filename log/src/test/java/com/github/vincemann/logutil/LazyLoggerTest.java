@@ -1,7 +1,6 @@
 package com.github.vincemann.logutil;
 
 import com.github.vincemann.logutil.model.*;
-import com.github.vincemann.logutil.repo.*;
 import com.github.vincemann.logutil.service.*;
 import com.github.vincemann.springrapid.core.service.exception.BadEntityException;
 import com.github.vincemann.springrapid.core.slicing.RapidProfiles;
@@ -11,6 +10,7 @@ import com.github.vincemann.springrapid.coretest.slicing.RapidTestProfiles;
 import com.github.vincemann.springrapid.coretest.util.TransactionalRapidTestUtil;
 import com.google.common.collect.Sets;
 import lombok.SneakyThrows;
+import org.apache.commons.logging.Log;
 import org.hibernate.LazyInitializationException;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
@@ -19,11 +19,14 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.context.transaction.TestTransaction;
+import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.PersistenceUnitUtil;
-import java.security.acl.Owner;
+import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 
 @ActiveProfiles(value = {RapidTestProfiles.TEST, RapidTestProfiles.SERVICE_TEST, RapidProfiles.SERVICE})
@@ -265,6 +268,7 @@ class LazyLoggerTest {
     }
 
 
+    @Transactional
     @Test
     void canIgnoreUnloadedEntities_andLogLoaded() throws BadEntityException {
         lazyLogger = LazyLogger.builder()
@@ -279,58 +283,94 @@ class LazyLoggerTest {
         // lazyCol2 not loaded -> <ignored unloaded>
         // eager child -> gets logged
 
+
+
         EagerSingleLogChild savedEagerSingleChild = eagerSingleLogChildService.save(eagerSingleChild);
         logEntity.setEagerChild(savedEagerSingleChild);
 
 
-        final LogEntity[] saved = new LogEntity[1];
-        transactionalTemplate.doInTransaction(new Runnable() {
-            @SneakyThrows
-            @Override
-            public void run() {
-
-                // todo why do i have to set the backrefs??
-                // todo why is eagerChildren filled after find call, why is collections filled with 4 entities?
-
-                saved[0] = logEntityService.save(logEntity);
-
-                LogEntity parent = saved[0];
-
-                LogChild child11 = logChildService.save(lazyCol1_child1);
-                child11.setLogEntity(parent);
-                LogChild child12 = logChildService.save(lazyCol1_child2);
-                child12.setLogEntity(parent);
-//                logEntity.setLazyChildren1(Sets.newHashSet());
-//                logEntity.setLazyChildren2(Sets.newHashSet(logChildService.save(lazyCol2_child1),logChildService.save(lazyCol2_child2)));
-
-
-//                LogChild child21 = logChildService.save(lazyCol2_child1);
-//                child21.setLogEntity(parent);
-//                LogChild child22 = logChildService.save(lazyCol2_child2);
-//                child22.setLogEntity(parent);
-
-
-                parent.getLazyChildren1().add(child11);
-                parent.getLazyChildren1().add(child12);
-
-
-//                parent.getLazyChildren2().add(child21);
-//                parent.getLazyChildren2().add(child22);
-
+//        final LogEntity[] saved = new LogEntity[1];
+//        transactionalTemplate.doInTransaction(new Runnable() {
+//            @SneakyThrows
+//            @Override
+//            public void run() {
+//
+//                // todo why do i have to set the backrefs??
+//                // todo why is eagerChildren filled after find call, why is collections filled with 4 entities?
+//
 //                saved[0] = logEntityService.save(logEntity);
+//
+//                LogEntity parent = saved[0];
+//
+//                LogChild child11 = logChildService.save(lazyCol1_child1);
+////                child11.setLogEntity(parent);
+//                LogChild child12 = logChildService.save(lazyCol1_child2);
+////                child12.setLogEntity(parent);
+//
+//
+////                logEntity.setLazyChildren1(Sets.newHashSet());
+////                logEntity.setLazyChildren2(Sets.newHashSet(logChildService.save(lazyCol2_child1),logChildService.save(lazyCol2_child2)));
+//
+//
+////                LogChild child21 = logChildService.save(lazyCol2_child1);
+////                child21.setLogEntity(parent);
+////                LogChild child22 = logChildService.save(lazyCol2_child2);
+////                child22.setLogEntity(parent);
+//
+//
+//                parent.getLazyChildren1().add(child11);
+//                parent.getLazyChildren1().add(child12);
+//
+//
+////                parent.getLazyChildren2().add(child21);
+////                parent.getLazyChildren2().add(child22);
+//
+////                saved[0] = logEntityService.save(logEntity);
 //                saved[0] = logEntityService.fullUpdate(parent);
-            }
-        });
-        LogEntity foundLogEntity = logEntityService.findByIdAndLoadCol1(saved[0].getId()).get();
+//            }
+//        });
+
+        LogEntity parent = logEntityService.save(logEntity);
+
+        LogChild child11 = logChildService.save(lazyCol1_child1);
+        child11.setLogEntity(parent);
+        LogChild child12 = logChildService.save(lazyCol1_child2);
+        child12.setLogEntity(parent);
+
+        parent.getLazyChildren1().add(child11);
+        parent.getLazyChildren1().add(child12);
+
+        LogChild child21 = logChildService.save(lazyCol2_child1);
+        child21.setLogEntity(parent);
+        LogChild child22 = logChildService.save(lazyCol2_child2);
+        child22.setLogEntity(parent);
+
+        parent.getLazyChildren2().add(child21);
+        parent.getLazyChildren2().add(child22);
+
+//        List<LogChild> resultList = entityManager.createQuery("SELECT NEW com.github.vincemann.logutil.model.LogChild(g.id, g.name,g.logEntity) FROM LogChild g").getResultList();
+//        parent.setLazyChildren1(Sets.newHashSet(resultList));
+
+//        Long child11Id = child11.getId();
+//        Long child12Id = child12.getId();
+        Long id = logEntity.getId();
+
+        TestTransaction.flagForCommit();
+        TestTransaction.end();
+
+        parent = logEntityService.findByIdAndLoadCol1(id).get();
+//        entityManager.detach(parent.getLazyChildren2());
+        Assertions.assertTrue(isLoaded(parent, "lazyChildren1"));
+        Assertions.assertFalse(isLoaded(parent, "lazyChildren2"));
+
+//        LogEntity foundLogEntity = logEntityService.findByIdAndLoadCol1(saved[0].getId()).get();
+
 
 //        LogEntity foundLogEntity = logEntityService.findByIdAndLoadCol1(saved[0].getId()).get();
 //        LogEntity foundLogEntity = saved[0];
-        String logResult = lazyLogger.toString(foundLogEntity);
-        Assertions.assertTrue(isLoaded(foundLogEntity, "lazyChildren1"));
-        Assertions.assertFalse(isLoaded(foundLogEntity, "lazyChildren2"));
+        String logResult = lazyLogger.toString(parent);
 
         System.err.println(logResult);
-
 
 
         Assertions.assertTrue(logResult.contains(LAZY_COL1_ENTITY1_NAME));

@@ -15,7 +15,6 @@ import javax.persistence.Table;
 @NoArgsConstructor
 @Entity
 @Table(name = "log_children")
-@ToString
 public class LogChild extends LogIdentifiableEntity {
 
     @ManyToOne
@@ -25,12 +24,15 @@ public class LogChild extends LogIdentifiableEntity {
     private LogEntity logEntity;
     private String name;
 
+
+
     public LogChild(String name) {
         this.name = name;
     }
 
     @Builder
-    public LogChild(LogEntity logEntity, String name) {
+    public LogChild(Long id, String name, LogEntity logEntity) {
+        setId(id);
         this.logEntity = logEntity;
         this.name = name;
     }
