@@ -2,6 +2,7 @@ package com.github.vincemann.springrapid.autobidir.config;
 
 import com.github.vincemann.springrapid.autobidir.AutoBiDirUtils;
 import com.github.vincemann.springrapid.autobidir.DisableAutoBiDir;
+import com.github.vincemann.springrapid.core.service.CrudService;
 import com.github.vincemann.springrapid.core.slicing.ServiceConfig;
 import com.github.vincemann.springrapid.core.util.RepositoryUtil;
 import org.springframework.beans.BeansException;
@@ -24,9 +25,11 @@ public class RapidDisabledServicesAutoConfiguration implements ApplicationListen
         Map<String,Object> beans = applicationContext.getBeansWithAnnotation(DisableAutoBiDir.class);
         for (Map.Entry<String, Object> nameBeanEntry : beans.entrySet()) {
             Object bean = AopTestUtils.getUltimateTargetObject(nameBeanEntry.getValue());
-            AutoBiDirUtils.bannedBeans.add(bean);
+//            AutoBiDirUtils.bannedBeans.add(bean);
             if (bean instanceof SimpleJpaRepository){
                 AutoBiDirUtils.bannedRepoEntityTypes.add(RepositoryUtil.getRepoType(((SimpleJpaRepository<?, ?>) bean)));
+            }else if (bean instanceof CrudService){
+                AutoBiDirUtils.bannedRepoEntityTypes.add(((CrudService<?, ?>) bean).getEntityClass());
             }
         }
     }

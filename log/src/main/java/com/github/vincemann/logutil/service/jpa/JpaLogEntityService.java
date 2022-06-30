@@ -5,6 +5,7 @@ import com.github.vincemann.logutil.repo.EagerSingleLogChildRepository;
 import com.github.vincemann.logutil.repo.LogEntityRepository;
 import com.github.vincemann.logutil.service.EagerSingleLogChildService;
 import com.github.vincemann.logutil.service.LogEntityService;
+import com.github.vincemann.springrapid.autobidir.DisableAutoBiDir;
 import com.github.vincemann.springrapid.core.service.JPACrudService;
 import com.github.vincemann.springrapid.core.service.exception.BadEntityException;
 import com.github.vincemann.springrapid.core.service.exception.EntityNotFoundException;
@@ -18,6 +19,7 @@ import java.util.Set;
 
 @Service
 @ServiceComponent
+@DisableAutoBiDir
 public class JpaLogEntityService extends JPACrudService<LogEntity,Long, LogEntityRepository> implements LogEntityService {
 
 
