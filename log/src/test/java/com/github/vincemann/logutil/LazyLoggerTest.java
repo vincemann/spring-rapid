@@ -285,8 +285,8 @@ class LazyLoggerTest {
 
 
 
-        EagerSingleLogChild savedEagerSingleChild = eagerSingleLogChildService.save(eagerSingleChild);
-        logEntity.setEagerChild(savedEagerSingleChild);
+//        EagerSingleLogChild savedEagerSingleChild = eagerSingleLogChildService.save(eagerSingleChild);
+//        logEntity.setEagerChild(savedEagerSingleChild);
 
 
 //        final LogEntity[] saved = new LogEntity[1];
@@ -337,16 +337,18 @@ class LazyLoggerTest {
         LogChild child12 = logChildService.save(lazyCol1_child2);
         child12.setLogEntity(parent);
 
-        parent.getLazyChildren1().add(child11);
-        parent.getLazyChildren1().add(child12);
+        parent.setLazyChildren1(Sets.newHashSet(child11,child12));
+//        parent.getLazyChildren1().add(child11);
+//        parent.getLazyChildren1().add(child12);
 
         LogChild child21 = logChildService.save(lazyCol2_child1);
         child21.setLogEntity(parent);
         LogChild child22 = logChildService.save(lazyCol2_child2);
         child22.setLogEntity(parent);
 
-        parent.getLazyChildren2().add(child21);
-        parent.getLazyChildren2().add(child22);
+        parent.setLazyChildren2(Sets.newHashSet(child21,child22));
+//        parent.getLazyChildren2().add(child21);
+//        parent.getLazyChildren2().add(child22);
 
 //        List<LogChild> resultList = entityManager.createQuery("SELECT NEW com.github.vincemann.logutil.model.LogChild(g.id, g.name,g.logEntity) FROM LogChild g").getResultList();
 //        parent.setLazyChildren1(Sets.newHashSet(resultList));
@@ -358,6 +360,7 @@ class LazyLoggerTest {
         TestTransaction.flagForCommit();
         TestTransaction.end();
 
+        parent = logEntityService.findById(id).get();
         parent = logEntityService.findByIdAndLoadCol1(id).get();
 //        entityManager.detach(parent.getLazyChildren2());
         Assertions.assertTrue(isLoaded(parent, "lazyChildren1"));
