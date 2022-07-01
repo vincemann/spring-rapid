@@ -27,17 +27,18 @@ public class LazyLogger {
     public static final String LAZY_INIT_EXCEPTION_LIST_STRING = "<[LazyInitializationException]>";
 
 
-//    private static EntityManager entityManager;
-//
-//
-//    public static void setEntityManager(EntityManager entityManager) {
-//        LazyLogger.entityManager = entityManager;
-//    }
+    // set in app config
+    private static EntityManager entityManager;
 
-    // todo set in app context config
-    @Setter
-    private EntityManager entityManager;
-    //    private Object parent;
+    public static EntityManager getEntityManager() {
+        return entityManager;
+    }
+
+    public static void setEntityManager(EntityManager entityManager) {
+        LazyLogger.entityManager = entityManager;
+    }
+
+
     private Boolean ignoreLazyException = Boolean.TRUE;
     private Boolean ignoreEntities = Boolean.TRUE;
     private Boolean idOnly = Boolean.FALSE;
@@ -99,12 +100,11 @@ public class LazyLogger {
                 property.parent = parent;
                 // dont do this bc this will load lazy property
 //                property.value = property.field.get(parent);
-                property.ignored = isIgnored();
 
                 String propertyString = "super";
                 try {
-                    if (property.isIgnored()) {
-                        System.err.println("result of field: " + f.getName().toUpperCase() + " : found property string super value: " + " ignored");
+                    if (isIgnored()) {
+                        log.debug("result of field: " + f.getName().toUpperCase() + " : found property string super value: " + " ignored");
                         return IGNORED_STRING;
                     }
                     if (property.isEntity()) {
@@ -118,18 +118,17 @@ public class LazyLogger {
 
                     if (propertyString.equals("super")) {
                         Object superValue = super.getValue(f);
-                        System.err.println("result of field: " + f.getName().toUpperCase() + " : found property string super value: " + superValue);
+                        log.debug("result of field: " + f.getName().toUpperCase() + " : found property string super value: " + superValue);
                         return superValue;
                     } else {
-                        System.err.println("result of field: " + f.getName().toUpperCase() + " : found property string own value: " + propertyString);
+                        log.debug("result of field: " + f.getName().toUpperCase() + " : found property string own value: " + propertyString);
                         return propertyString;
-//                    throw new RuntimeException("Unhandled Property" + property);
                     }
                 } catch (IllegalAccessException e) {
                     throw new RuntimeException(e);
                 } catch (LazyInitializationException e) {
                     propertyString = lazyInitExceptionToString(e);
-                    System.err.println("result of field: " + f.getName().toUpperCase() + " : found property string own value: " + propertyString);
+                    log.debug("result of field: " + f.getName().toUpperCase() + " : found property string own value: " + propertyString);
                     return propertyString;
                 }
             }
@@ -142,7 +141,7 @@ public class LazyLogger {
             ignored = Boolean.TRUE;
             property.blackListed = Boolean.TRUE;
         }
-        //todo work on isCollection -> non Entity Collections should get logged
+        // todo work on isCollection -> non Entity Collections should get logged
         if (!isEntity() && !isCollection()) {
             ignored = Boolean.FALSE;
         }
@@ -164,6 +163,7 @@ public class LazyLogger {
         } else {
             // not loaded
             if (onlyLogLoaded) {
+                // whiteList does not really make sense in this context
 //                if (logLoadedWhitelist.contains(propertyName)) {
 //                    // still load it bc its whiteListed, load collection if necessary
 //                    loadUnloadedValue();
@@ -176,12 +176,7 @@ public class LazyLogger {
         return propertyString;
     }
 
-    private void loadUnloadedValue() {
-
-        // todo call entity manager or repo or service findById and if it is collection call size on it
-    }
-
-    public String entitiesToString(Boolean collection) throws IllegalAccessException {
+    protected String entitiesToString(Boolean collection) throws IllegalAccessException {
         if (collection) {
             return collectionToString();
         } else {
@@ -189,57 +184,46 @@ public class LazyLogger {
         }
     }
 
-    public void loadPropertyValue() throws IllegalAccessException {
-        // now its safe to load the value aka load ist
+    protected void loadPropertyValue() throws IllegalAccessException {
+        // now its safe to load the value aka is already loaded
         property.value = property.field.get(property.parent);
     }
 
-    public boolean checkIfLoaded(Object parent, String childPropertyName) {
+    protected boolean checkIfLoaded(Object parent, String childPropertyName) {
 //        if (!TransactionSynchronizationManager.isActualTransactionActive()) {
 //            // either loaded or not and will crash with lazyInitException
 //            return true;
 //        }
         PersistenceUnitUtil persistenceUtil =
                 entityManager.getEntityManagerFactory().getPersistenceUnitUtil();
-        Boolean loaded = persistenceUtil.isLoaded(parent, childPropertyName);
-        System.err.println("property " + childPropertyName + " loaded? : " + loaded);
+        boolean loaded = persistenceUtil.isLoaded(parent, childPropertyName);
+        log.debug("property " + childPropertyName + " loaded? : " + loaded);
         return loaded;
+    }
 
-//                Assert.assertTrue(unitUtil.isLoaded(org));
-//                // users is a field (Set of User) defined in Organization entity
-//                Assert.assertFalse(unitUtil.isLoaded(org, "users"));
+//    protected void updateClazzParentMapForCollection(Object collection) throws IllegalAccessException {
+//        // check if collection empty, if so pick type of first entity found
+//        if (!((Collection) collection).isEmpty()) {
+//            for (Object entity : ((Collection<?>) collection)) {
+//                updateClazzParentsMap(entity);
+//            }
+////            Object collectionEntity = ((Collection<?>) collection).stream().findFirst().get();
+//        }
+//    }
 //
-//                initializeCollection(org.getUsers());
-//                Assert.assertTrue(unitUtil.isLoaded(org, "users"));
-//                for(User user : org.getUsers()) {
-//                    Assert.assertTrue(unitUtil.isLoaded(user));
-//                    Assert.assertTrue(unitUtil.isLoaded(user.getOrganization()));
-//                }
-    }
+//    protected void updateClazzParentsMap(Object child) throws IllegalAccessException {
+//        // dont use property.value here bc that would be the collection, we want the entity
+////        Object child = property.field.get(entity);
+//        Class<?> parentClazz = property.field.getType();
+//        List<Object> objects = clazzParentsMap.get(parentClazz);
+//        if (objects == null) {
+//            clazzParentsMap.put(parentClazz, Lists.newArrayList(child));
+//        } else {
+//            objects.add(child);
+//        }
+//    }
 
-    public void updateClazzParentMapForCollection(Object collection) throws IllegalAccessException {
-        // check if collection empty, if so pick type of first entity found
-        if (!((Collection) collection).isEmpty()) {
-            for (Object entity : ((Collection<?>) collection)) {
-                updateClazzParentsMap(entity);
-            }
-//            Object collectionEntity = ((Collection<?>) collection).stream().findFirst().get();
-        }
-    }
-
-    public void updateClazzParentsMap(Object child) throws IllegalAccessException {
-        // dont use property.value here bc that would be the collection, we want the entity
-//        Object child = property.field.get(entity);
-        Class<?> parentClazz = property.field.getType();
-        List<Object> objects = clazzParentsMap.get(parentClazz);
-        if (objects == null) {
-            clazzParentsMap.put(parentClazz, Lists.newArrayList(child));
-        } else {
-            objects.add(child);
-        }
-    }
-
-    public String lazyInitExceptionToString(LazyInitializationException e) {
+    protected String lazyInitExceptionToString(LazyInitializationException e) {
         log.trace(e.getMessage());
         if (property.isEntity()) {
             log.warn("Could not log jpa lazy entity field: " + property.field.getName() + ", skipping.");
@@ -274,7 +258,7 @@ public class LazyLogger {
         return Collection.class.isAssignableFrom(property.field.getType());
     }
 
-    public String entityToString() throws IllegalAccessException {
+    protected String entityToString() throws IllegalAccessException {
         IdentifiableEntity entity = (IdentifiableEntity) property.value;
         if (entity == null) {
             return "null";
@@ -292,30 +276,32 @@ public class LazyLogger {
         }
         // test for lazy init exception already with size call
         if (collection.size() > 0) {
+            if (hasTooManyEntries(collection)){
+                return TOO_MANY_ENTRIES_STRING;
+            }
             if (idOnly) {
-                // todo impl maxEntitiesLogic for id only as well
                 String s = collectionToIdString(collection);
                 if (!s.equals("super")) {
                     return s;
                 }
-            } else {
-                Integer maxEntities = maxEntitiesLoggedPropertyMap.get(property.field.getName());
-                if (maxEntities != null) {
-                    if (collection.size() > maxEntities) {
-                        return TOO_MANY_ENTRIES_STRING;
-                    }
-                }
-
-                if (maxEntitiesLoggedInCollections != null && collection.size() > maxEntitiesLoggedInCollections) {
-                    // todo implement api for logging only maxEntitiesLoggedInCollection entities and not just stop
-                    return TOO_MANY_ENTRIES_STRING;
-                }
             }
         }
-//         else {
-//            return "[]";
-//        }
         return "super";
+    }
+
+    private Boolean hasTooManyEntries(Collection collection){
+        Integer maxEntities = maxEntitiesLoggedPropertyMap.get(property.field.getName());
+        if (maxEntities != null) {
+            if (collection.size() > maxEntities) {
+                return Boolean.TRUE;
+            }
+        }
+
+        if (maxEntitiesLoggedInCollections != null && collection.size() > maxEntitiesLoggedInCollections) {
+            // todo implement api for logging only maxEntitiesLoggedInCollection entities and not just stop
+            return Boolean.TRUE;
+        }
+        return Boolean.FALSE;
     }
 
     private String toId(IdentifiableEntity entity) {
@@ -337,7 +323,8 @@ public class LazyLogger {
         }
     }
 
-    protected class Property {
+    // todo change design, put everything in here or dont use such a class
+    protected static class Property {
         private Object parent;
         private Field field;
         private Boolean blackListed = Boolean.FALSE;
@@ -359,25 +346,25 @@ public class LazyLogger {
             return collection;
         }
 
-        public Boolean isLoaded() {
-            return loaded;
-        }
+//        public Boolean isLoaded() {
+//            return loaded;
+//        }
 
-        public void setLoaded() {
-            PersistenceUnitUtil unitUtil =
-                    entityManager.getEntityManagerFactory().getPersistenceUnitUtil();
-
-//                Assert.assertTrue(unitUtil.isLoaded(org));
-//                // users is a field (Set of User) defined in Organization entity
-//                Assert.assertFalse(unitUtil.isLoaded(org, "users"));
+//        public void setLoaded() {
+//            PersistenceUnitUtil unitUtil =
+//                    entityManager.getEntityManagerFactory().getPersistenceUnitUtil();
 //
-//                initializeCollection(org.getUsers());
-//                Assert.assertTrue(unitUtil.isLoaded(org, "users"));
-//                for(User user : org.getUsers()) {
-//                    Assert.assertTrue(unitUtil.isLoaded(user));
-//                    Assert.assertTrue(unitUtil.isLoaded(user.getOrganization()));
-//                }
-        }
+////                Assert.assertTrue(unitUtil.isLoaded(org));
+////                // users is a field (Set of User) defined in Organization entity
+////                Assert.assertFalse(unitUtil.isLoaded(org, "users"));
+////
+////                initializeCollection(org.getUsers());
+////                Assert.assertTrue(unitUtil.isLoaded(org, "users"));
+////                for(User user : org.getUsers()) {
+////                    Assert.assertTrue(unitUtil.isLoaded(user));
+////                    Assert.assertTrue(unitUtil.isLoaded(user.getOrganization()));
+////                }
+//        }
 
 
         /**
