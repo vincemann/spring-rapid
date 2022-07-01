@@ -6,6 +6,7 @@ import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
+import org.hibernate.Hibernate;
 import org.hibernate.LazyInitializationException;
 
 import javax.persistence.EntityManager;
@@ -21,6 +22,7 @@ public class LazyLogger {
 
     public static final String IGNORED_STRING = "<ignored>";
     public static final String IGNORED_UNLOADED_STRING = "<unloaded ignored>";
+    public static final String IGNORED_LOAD_BLACKLISTED_STRING = "<load blacklisted>";
     public static final String LAZY_INIT_EXCEPTION_STRING = "<LazyInitializationException>";
     public static final String LAZY_INIT_EXCEPTION_LIST_STRING = "<[LazyInitializationException]>";
 
@@ -41,6 +43,7 @@ public class LazyLogger {
     private Boolean idOnly = Boolean.FALSE;
     private Integer maxEntitiesLoggedInCollection = 3;
     private HashSet<String> propertyBlackList = new HashSet<>();
+
     private Boolean onlyLogLoaded = Boolean.TRUE;
     private Set<String> logLoadedBlacklist = new HashSet<>();
     private Set<String> logLoadedWhitelist = new HashSet<>();
@@ -50,7 +53,7 @@ public class LazyLogger {
 
 
     @Builder
-    public LazyLogger(Boolean ignoreEntities, Boolean idOnly, Boolean ignoreLazyException, HashSet<String> propertyBlackList, Integer maxEntitiesLoggedInCollection, Boolean onlyLogLoaded, Set<String> logLoadedBlacklist) {
+    public LazyLogger(Boolean ignoreEntities, Boolean idOnly, Boolean ignoreLazyException, HashSet<String> propertyBlackList, Integer maxEntitiesLoggedInCollection, Boolean onlyLogLoaded, Set<String> logLoadedBlacklist, Set<String> logLoadedWhitelist) {
         if (ignoreEntities != null)
             this.ignoreEntities = ignoreEntities;
         if (idOnly != null)
@@ -65,6 +68,8 @@ public class LazyLogger {
             this.onlyLogLoaded = onlyLogLoaded;
         if (logLoadedBlacklist != null)
             this.logLoadedBlacklist = logLoadedBlacklist;
+        if (logLoadedWhitelist != null)
+            this.logLoadedWhitelist = logLoadedWhitelist;
     }
 
     protected void initParent(Object parent) {
@@ -153,15 +158,17 @@ public class LazyLogger {
             if (onlyLogLoaded) {
                 if (logLoadedBlacklist.contains(propertyName)) {
                     // dont load bc blacklisted
-                    return propertyString;
+                    return IGNORED_LOAD_BLACKLISTED_STRING;
                 }
+                loadPropertyValue();
                 propertyString = entitiesToString(collection);
             }
         } else {
             // not loaded
             if (onlyLogLoaded) {
                 if (logLoadedWhitelist.contains(propertyName)) {
-                    // still load it bc its whiteListed
+                    // still load it bc its whiteListed, load collection if necessary
+                    loadUnloadedValue();
                     propertyString = entitiesToString(collection);
                 } else {
                     return IGNORED_UNLOADED_STRING;
@@ -171,8 +178,12 @@ public class LazyLogger {
         return propertyString;
     }
 
-    protected String entitiesToString(Boolean collection) throws IllegalAccessException {
-        loadPropertyValue();
+    private void loadUnloadedValue() {
+        // todo call entity manager or repo or service findById and if it is collection call size on it
+    }
+
+    public String entitiesToString(Boolean collection) throws IllegalAccessException {
+        // todo rausziehen in calls vor dem call hier
         if (collection) {
             return collectionToString();
         } else {
@@ -180,12 +191,12 @@ public class LazyLogger {
         }
     }
 
-    private void loadPropertyValue() throws IllegalAccessException {
+    public void loadPropertyValue() throws IllegalAccessException {
         // now its safe to load the value aka load ist
         property.value = property.field.get(property.parent);
     }
 
-    protected boolean checkIfLoaded(Object parent, String childPropertyName) {
+    public boolean checkIfLoaded(Object parent, String childPropertyName) {
 //        if (!TransactionSynchronizationManager.isActualTransactionActive()) {
 //            // either loaded or not and will crash with lazyInitException
 //            return true;
@@ -208,7 +219,7 @@ public class LazyLogger {
 //                }
     }
 
-    protected void updateClazzParentMapForCollection(Object collection) throws IllegalAccessException {
+    public void updateClazzParentMapForCollection(Object collection) throws IllegalAccessException {
         // check if collection empty, if so pick type of first entity found
         if (!((Collection) collection).isEmpty()) {
             for (Object entity : ((Collection<?>) collection)) {
@@ -218,7 +229,7 @@ public class LazyLogger {
         }
     }
 
-    protected void updateClazzParentsMap(Object child) throws IllegalAccessException {
+    public void updateClazzParentsMap(Object child) throws IllegalAccessException {
         // dont use property.value here bc that would be the collection, we want the entity
 //        Object child = property.field.get(entity);
         Class<?> parentClazz = property.field.getType();
@@ -230,7 +241,7 @@ public class LazyLogger {
         }
     }
 
-    protected String lazyInitExceptionToString(LazyInitializationException e) {
+    public String lazyInitExceptionToString(LazyInitializationException e) {
         log.trace(e.getMessage());
         if (property.isEntity()) {
             log.warn("Could not log jpa lazy entity field: " + property.field.getName() + ", skipping.");
@@ -265,7 +276,7 @@ public class LazyLogger {
         return Collection.class.isAssignableFrom(property.field.getType());
     }
 
-    protected String entityToString() throws IllegalAccessException {
+    public String entityToString() throws IllegalAccessException {
         IdentifiableEntity entity = (IdentifiableEntity) property.value;
         if (entity == null) {
             return "null";

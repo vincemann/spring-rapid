@@ -25,4 +25,15 @@ public class JpaLogEntityService extends JPACrudService<LogEntity,Long, LogEntit
         logEntity.getLazyChildren1().size();
         return Optional.of(logEntity);
     }
+
+
+    @Transactional
+    @Override
+    public Optional<LogEntity> findByIdAndLoadCol1AndCol2(Long id) throws BadEntityException {
+        Optional<LogEntity> byId = getRepository().findById(id);
+        LogEntity logEntity = byId.get();
+        logEntity.getLazyChildren1().size();
+        logEntity.getLazyChildren2().size();
+        return Optional.of(logEntity);
+    }
 }

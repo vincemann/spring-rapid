@@ -11,5 +11,8 @@ import java.util.Optional;
 public interface LogEntityService extends CrudService<LogEntity,Long> {
 
     public Optional<LogEntity> findByIdAndLoadCol1(Long id) throws BadEntityException;
+
+    public Optional<LogEntity> findByIdAndLoadCol1AndCol2(Long id) throws BadEntityException;
+
 }
 
