@@ -6,7 +6,6 @@ import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
-import org.hibernate.Hibernate;
 import org.hibernate.LazyInitializationException;
 
 import javax.persistence.EntityManager;
@@ -22,7 +21,8 @@ public class LazyLogger {
 
     public static final String IGNORED_STRING = "<ignored>";
     public static final String IGNORED_UNLOADED_STRING = "<unloaded ignored>";
-    public static final String IGNORED_LOAD_BLACKLISTED_STRING = "<load blacklisted>";
+    public static final String TOO_MANY_ENTRIES_STRING = "<too many entries>";
+    public static final String IGNORED_LOAD_BLACKLISTED_STRING = "<load blacklisted ignored>";
     public static final String LAZY_INIT_EXCEPTION_STRING = "<LazyInitializationException>";
     public static final String LAZY_INIT_EXCEPTION_LIST_STRING = "<[LazyInitializationException]>";
 
@@ -41,19 +41,19 @@ public class LazyLogger {
     private Boolean ignoreLazyException = Boolean.TRUE;
     private Boolean ignoreEntities = Boolean.TRUE;
     private Boolean idOnly = Boolean.FALSE;
-    private Integer maxEntitiesLoggedInCollection = 3;
+    private Integer maxEntitiesLoggedInCollections = null;
     private HashSet<String> propertyBlackList = new HashSet<>();
+    private Map<String, Integer> maxEntitiesLoggedPropertyMap = new HashMap<>();
 
     private Boolean onlyLogLoaded = Boolean.TRUE;
     private Set<String> logLoadedBlacklist = new HashSet<>();
-    private Set<String> logLoadedWhitelist = new HashSet<>();
 
     private Property property;
     private Map<Class, List<Object>> clazzParentsMap = new HashMap<>();
 
 
     @Builder
-    public LazyLogger(Boolean ignoreEntities, Boolean idOnly, Boolean ignoreLazyException, HashSet<String> propertyBlackList, Integer maxEntitiesLoggedInCollection, Boolean onlyLogLoaded, Set<String> logLoadedBlacklist, Set<String> logLoadedWhitelist) {
+    public LazyLogger(Boolean ignoreEntities, Boolean idOnly, Boolean ignoreLazyException, HashSet<String> propertyBlackList, Integer maxEntitiesLoggedInCollections, Boolean onlyLogLoaded, Set<String> logLoadedBlacklist, Map<String, Integer> maxEntitiesLoggedPropertyMap) {
         if (ignoreEntities != null)
             this.ignoreEntities = ignoreEntities;
         if (idOnly != null)
@@ -62,14 +62,14 @@ public class LazyLogger {
             this.ignoreLazyException = ignoreLazyException;
         if (propertyBlackList != null)
             this.propertyBlackList = propertyBlackList;
-        if (maxEntitiesLoggedInCollection != null)
-            this.maxEntitiesLoggedInCollection = maxEntitiesLoggedInCollection;
+        if (maxEntitiesLoggedInCollections != null)
+            this.maxEntitiesLoggedInCollections = maxEntitiesLoggedInCollections;
         if (onlyLogLoaded != null)
             this.onlyLogLoaded = onlyLogLoaded;
         if (logLoadedBlacklist != null)
             this.logLoadedBlacklist = logLoadedBlacklist;
-        if (logLoadedWhitelist != null)
-            this.logLoadedWhitelist = logLoadedWhitelist;
+        if (maxEntitiesLoggedPropertyMap != null)
+            this.maxEntitiesLoggedPropertyMap = maxEntitiesLoggedPropertyMap;
     }
 
     protected void initParent(Object parent) {
@@ -116,8 +116,6 @@ public class LazyLogger {
                     }
 
 
-
-
                     if (propertyString.equals("super")) {
                         Object superValue = super.getValue(f);
                         System.err.println("result of field: " + f.getName().toUpperCase() + " : found property string super value: " + superValue);
@@ -145,7 +143,7 @@ public class LazyLogger {
             property.blackListed = Boolean.TRUE;
         }
         //todo work on isCollection -> non Entity Collections should get logged
-        if (!isEntity() && !isCollection()){
+        if (!isEntity() && !isCollection()) {
             ignored = Boolean.FALSE;
         }
         return ignored;
@@ -160,30 +158,30 @@ public class LazyLogger {
                     // dont load bc blacklisted
                     return IGNORED_LOAD_BLACKLISTED_STRING;
                 }
-                loadPropertyValue();
-                propertyString = entitiesToString(collection);
             }
+            loadPropertyValue();
+            propertyString = entitiesToString(collection);
         } else {
             // not loaded
             if (onlyLogLoaded) {
-                if (logLoadedWhitelist.contains(propertyName)) {
-                    // still load it bc its whiteListed, load collection if necessary
-                    loadUnloadedValue();
-                    propertyString = entitiesToString(collection);
-                } else {
-                    return IGNORED_UNLOADED_STRING;
-                }
+//                if (logLoadedWhitelist.contains(propertyName)) {
+//                    // still load it bc its whiteListed, load collection if necessary
+//                    loadUnloadedValue();
+//                    propertyString = entitiesToString(collection);
+//                } else {
+                return IGNORED_UNLOADED_STRING;
+//                }
             }
         }
         return propertyString;
     }
 
     private void loadUnloadedValue() {
+
         // todo call entity manager or repo or service findById and if it is collection call size on it
     }
 
     public String entitiesToString(Boolean collection) throws IllegalAccessException {
-        // todo rausziehen in calls vor dem call hier
         if (collection) {
             return collectionToString();
         } else {
@@ -204,7 +202,7 @@ public class LazyLogger {
         PersistenceUnitUtil persistenceUtil =
                 entityManager.getEntityManagerFactory().getPersistenceUnitUtil();
         Boolean loaded = persistenceUtil.isLoaded(parent, childPropertyName);
-        System.err.println("property "+childPropertyName+" loaded? : " + loaded);
+        System.err.println("property " + childPropertyName + " loaded? : " + loaded);
         return loaded;
 
 //                Assert.assertTrue(unitUtil.isLoaded(org));
@@ -295,9 +293,22 @@ public class LazyLogger {
         // test for lazy init exception already with size call
         if (collection.size() > 0) {
             if (idOnly) {
+                // todo impl maxEntitiesLogic for id only as well
                 String s = collectionToIdString(collection);
                 if (!s.equals("super")) {
                     return s;
+                }
+            } else {
+                Integer maxEntities = maxEntitiesLoggedPropertyMap.get(property.field.getName());
+                if (maxEntities != null) {
+                    if (collection.size() > maxEntities) {
+                        return TOO_MANY_ENTRIES_STRING;
+                    }
+                }
+
+                if (maxEntitiesLoggedInCollections != null && collection.size() > maxEntitiesLoggedInCollections) {
+                    // todo implement api for logging only maxEntitiesLoggedInCollection entities and not just stop
+                    return TOO_MANY_ENTRIES_STRING;
                 }
             }
         }

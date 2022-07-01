@@ -27,6 +27,9 @@ import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.PersistenceUnitUtil;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import static com.github.vincemann.springrapid.core.util.LazyLogger.*;
 
 @ActiveProfiles(value = {RapidTestProfiles.TEST, RapidTestProfiles.SERVICE_TEST, RapidProfiles.SERVICE})
@@ -78,6 +81,7 @@ class LazyLoggerTest {
 
     @Autowired
     EagerSingleLogChildService eagerSingleLogChildService;
+
 
 
     LogEntity logEntity;
@@ -511,12 +515,14 @@ class LazyLoggerTest {
 
     @Transactional
     @Test
-    void canIgnoreUnloadedEntities_andLogLoaded_andLogWhiteListedUnloaded_inNotTransactionalContext() throws BadEntityException {
+    void canLimitAllCollectionsLogSize() throws BadEntityException {
+        int maxEntitiesInCollections = 1;
+
         lazyLogger = LazyLogger.builder()
                 .ignoreLazyException(Boolean.TRUE)
                 .ignoreEntities(Boolean.FALSE)
-                .onlyLogLoaded(Boolean.TRUE)
-                .logLoadedWhitelist(Sets.newHashSet("lazyChildren2"))
+                .onlyLogLoaded(Boolean.FALSE)
+                .maxEntitiesLoggedInCollections(maxEntitiesInCollections)
                 .build();
         lazyLogger.setEntityManager(entityManager);
 
@@ -542,12 +548,9 @@ class LazyLoggerTest {
 
         LogChild2 child21 = logChild2Service.save(lazyCol2_child1);
         child21.setLogEntity(logEntity);
-        LogChild2 child22 = logChild2Service.save(lazyCol2_child2);
-        child22.setLogEntity(logEntity);
 
 //        logEntity.setLazyChildren2(Sets.newHashSet(child21,child22));
         logEntity.getLazyChildren2().add(child21);
-        logEntity.getLazyChildren2().add(child22);
 
 //        List<LogChild> resultList = entityManager.createQuery("SELECT NEW com.github.vincemann.logutil.model.LogChild(g.id, g.name,g.logEntity) FROM LogChild g").getResultList();
 //        logEntity.setLazyChildren1(Sets.newHashSet(resultList));
@@ -558,36 +561,39 @@ class LazyLoggerTest {
         TestTransaction.flagForCommit();
         TestTransaction.end();
 
-        logEntity = logEntityService.findByIdAndLoadCol1(id).get();
+        logEntity = logEntityService.findByIdAndLoadCol1AndCol2(id).get();
 //        entityManager.detach(logEntity.getLazyChildren2());
         Assertions.assertTrue(isLoaded(logEntity, "lazyChildren1"));
-        Assertions.assertFalse(isLoaded(logEntity, "lazyChildren2"));
+        Assertions.assertTrue(isLoaded(logEntity, "lazyChildren2"));
 
 
-        // lazyCol2 is tried to get logged, but is not loaded in eager non transactional context, thus lazyInitExceptionIsThrown
         String logResult = lazyLogger.toString(logEntity);
 
         System.err.println(logResult);
 
 
-        assertContainsStringOnce(logResult,LAZY_COL1_ENTITY1_NAME);
-        assertContainsStringOnce(logResult,LAZY_COL1_ENTITY2_NAME);
+        assertContainsStringOnce(logResult,LAZY_COL2_ENTITY1_NAME);
         assertContainsStringOnce(logResult,EAGER_CHILD_NAME);
         assertContainsStringOnce(logResult,LOG_ENTITY_NAME);
+        assertContainsStringOnce(logResult,TOO_MANY_ENTRIES_STRING);
 
-        assertContainsStringOnce(logResult,LAZY_INIT_EXCEPTION_LIST_STRING);
-        Assertions.assertFalse(logResult.contains(LAZY_COL2_ENTITY1_NAME));
-        Assertions.assertFalse(logResult.contains(LAZY_COL2_ENTITY2_NAME));
+        Assertions.assertFalse(logResult.contains(LAZY_COL1_ENTITY1_NAME));
+        Assertions.assertFalse(logResult.contains(LAZY_COL1_ENTITY2_NAME));
     }
 
     @Transactional
     @Test
-    void canIgnoreUnloadedEntities_andLogLoaded_andLogWhiteListedUnloaded_inTransactionalContext() throws BadEntityException {
+    void canLimitSpecificCollectionsLogSize() throws BadEntityException {
+        Map<String,Integer> maxEntityLimitations = new HashMap<>();
+        maxEntityLimitations.put("lazyChildren1",1);
+        maxEntityLimitations.put("lazyChildren2",1);
+        maxEntityLimitations.put("eagerChildren",3);
+
         lazyLogger = LazyLogger.builder()
                 .ignoreLazyException(Boolean.TRUE)
                 .ignoreEntities(Boolean.FALSE)
-                .onlyLogLoaded(Boolean.TRUE)
-                .logLoadedWhitelist(Sets.newHashSet("lazyChildren2"))
+                .onlyLogLoaded(Boolean.FALSE)
+                .maxEntitiesLoggedPropertyMap(maxEntityLimitations)
                 .build();
         lazyLogger.setEntityManager(entityManager);
 
@@ -601,6 +607,7 @@ class LazyLoggerTest {
         logEntity.setEagerChild(savedEagerSingleChild);
 
         LogEntity logEntity = logEntityService.save(this.logEntity);
+
 
         LogChild child11 = logChildService.save(lazyCol1_child1);
         child11.setLogEntity(logEntity);
@@ -616,9 +623,18 @@ class LazyLoggerTest {
         LogChild2 child22 = logChild2Service.save(lazyCol2_child2);
         child22.setLogEntity(logEntity);
 
-//        logEntity.setLazyChildren2(Sets.newHashSet(child21,child22));
+
         logEntity.getLazyChildren2().add(child21);
         logEntity.getLazyChildren2().add(child22);
+
+        LogChild3 child31 = logChild3Service.save(eager_child1);
+        child31.setLogEntity(logEntity);
+        LogChild3 child32 = logChild3Service.save(eager_child2);
+        child32.setLogEntity(logEntity);
+
+
+        logEntity.getEagerChildren().add(child31);
+        logEntity.getEagerChildren().add(child32);
 
 //        List<LogChild> resultList = entityManager.createQuery("SELECT NEW com.github.vincemann.logutil.model.LogChild(g.id, g.name,g.logEntity) FROM LogChild g").getResultList();
 //        logEntity.setLazyChildren1(Sets.newHashSet(resultList));
@@ -629,28 +645,30 @@ class LazyLoggerTest {
         TestTransaction.flagForCommit();
         TestTransaction.end();
 
-        logEntity = logEntityService.findByIdAndLoadCol1(id).get();
+        logEntity = logEntityService.findByIdAndLoadCol1AndCol2(id).get();
 //        entityManager.detach(logEntity.getLazyChildren2());
         Assertions.assertTrue(isLoaded(logEntity, "lazyChildren1"));
-        Assertions.assertFalse(isLoaded(logEntity, "lazyChildren2"));
+        Assertions.assertTrue(isLoaded(logEntity, "lazyChildren2"));
+        Assertions.assertTrue(isLoaded(logEntity, "eagerChildren"));
 
 
-        // lazyCol2 is tried to get logged, but is not loaded in eager non transactional context, thus lazyInitExceptionIsThrown
-        TestTransaction.start();
         String logResult = lazyLogger.toString(logEntity);
 
-        TestTransaction.flagForCommit();
-        TestTransaction.end();
         System.err.println(logResult);
 
 
-        assertContainsStringOnce(logResult,LAZY_COL1_ENTITY1_NAME);
-        assertContainsStringOnce(logResult,LAZY_COL1_ENTITY2_NAME);
-        assertContainsStringOnce(logResult,LAZY_COL2_ENTITY1_NAME);
-        assertContainsStringOnce(logResult,LAZY_COL2_ENTITY2_NAME);
+        assertContainsStringOnce(logResult,EAGER_ENTITY1_NAME);
+        assertContainsStringOnce(logResult,EAGER_ENTITY2_NAME);
         assertContainsStringOnce(logResult,EAGER_CHILD_NAME);
         assertContainsStringOnce(logResult,LOG_ENTITY_NAME);
+        assertContainsString(logResult,TOO_MANY_ENTRIES_STRING,2);
+
+        Assertions.assertFalse(logResult.contains(LAZY_COL1_ENTITY1_NAME));
+        Assertions.assertFalse(logResult.contains(LAZY_COL1_ENTITY2_NAME));
+        Assertions.assertFalse(logResult.contains(LAZY_COL2_ENTITY2_NAME));
+        Assertions.assertFalse(logResult.contains(LAZY_COL2_ENTITY2_NAME));
     }
+
 
     private void assertContainsStringOnce(String s, String subString){
         Assertions.assertEquals(1,StringUtils.countMatches(s,subString));
