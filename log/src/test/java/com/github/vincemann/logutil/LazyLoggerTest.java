@@ -310,49 +310,6 @@ class LazyLoggerTest {
         // eager child -> gets logged
 
 
-
-
-//        final LogEntity[] saved = new LogEntity[1];
-//        transactionalTemplate.doInTransaction(new Runnable() {
-//            @SneakyThrows
-//            @Override
-//            public void run() {
-//
-//                // todo why do i have to set the backrefs??
-//                // todo why is eagerChildren filled after find call, why is collections filled with 4 entities?
-//
-//                saved[0] = logEntityService.save(logEntity);
-//
-//                LogEntity logEntity = saved[0];
-//
-//                LogChild child11 = logChildService.save(lazyCol1_child1);
-////                child11.setLogEntity(logEntity);
-//                LogChild child12 = logChildService.save(lazyCol1_child2);
-////                child12.setLogEntity(logEntity);
-//
-//
-////                logEntity.setLazyChildren1(Sets.newHashSet());
-////                logEntity.setLazyChildren2(Sets.newHashSet(logChildService.save(lazyCol2_child1),logChildService.save(lazyCol2_child2)));
-//
-//
-////                LogChild child21 = logChildService.save(lazyCol2_child1);
-////                child21.setLogEntity(logEntity);
-////                LogChild child22 = logChildService.save(lazyCol2_child2);
-////                child22.setLogEntity(logEntity);
-//
-//
-//                logEntity.getLazyChildren1().add(child11);
-//                logEntity.getLazyChildren1().add(child12);
-//
-//
-////                logEntity.getLazyChildren2().add(child21);
-////                logEntity.getLazyChildren2().add(child22);
-//
-////                saved[0] = logEntityService.save(logEntity);
-//                saved[0] = logEntityService.fullUpdate(logEntity);
-//            }
-//        });
-
         EagerSingleLogChild savedEagerSingleChild = eagerSingleLogChildService.save(eagerSingleChild);
         logEntity.setEagerChild(savedEagerSingleChild);
 
@@ -379,8 +336,7 @@ class LazyLoggerTest {
 //        List<LogChild> resultList = entityManager.createQuery("SELECT NEW com.github.vincemann.logutil.model.LogChild(g.id, g.name,g.logEntity) FROM LogChild g").getResultList();
 //        logEntity.setLazyChildren1(Sets.newHashSet(resultList));
 
-//        Long child11Id = child11.getId();
-//        Long child12Id = child12.getId();
+
         Long id = this.logEntity.getId();
 
         TestTransaction.flagForCommit();
@@ -392,11 +348,6 @@ class LazyLoggerTest {
         Assertions.assertTrue(isLoaded(logEntity, "lazyChildren1"));
         Assertions.assertFalse(isLoaded(logEntity, "lazyChildren2"));
 
-//        LogEntity foundLogEntity = logEntityService.findByIdAndLoadCol1(saved[0].getId()).get();
-
-
-//        LogEntity foundLogEntity = logEntityService.findByIdAndLoadCol1(saved[0].getId()).get();
-//        LogEntity foundLogEntity = saved[0];
         String logResult = lazyLogger.toString(logEntity);
 
         System.err.println(logResult);
