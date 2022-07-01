@@ -1,12 +1,10 @@
 package com.github.vincemann.logutil.model;
 
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.github.vincemann.springrapid.autobidir.model.child.annotation.BiDirChildCollection;
 import com.github.vincemann.springrapid.autobidir.model.child.annotation.BiDirChildEntity;
 import com.github.vincemann.springrapid.autobidir.model.parent.annotation.BiDirParentEntity;
-import com.github.vincemann.springrapid.core.model.IdentifiableEntityImpl;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -26,7 +24,7 @@ public class LogEntity extends LogIdentifiableEntity {
     private String name;
 
     @Builder
-    public LogEntity(String name, Set<LogChild> lazyChildren1, Set<LogChild> lazyChildren2, Set<LogChild> eagerChildren, LogParent lazyParent) {
+    public LogEntity(String name, Set<LogChild> lazyChildren1, Set<LogChild2> lazyChildren2, Set<LogChild3> eagerChildren, LogParent lazyParent) {
         this.name = name;
         if (lazyChildren1!=null)
             this.lazyChildren1 = lazyChildren1;
@@ -43,27 +41,27 @@ public class LogEntity extends LogIdentifiableEntity {
     private Set<LogChild> lazyChildren1 = new HashSet<>();
 
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "logEntity",fetch = FetchType.LAZY)
-    @BiDirChildCollection(LogChild.class)
+    @BiDirChildCollection(LogChild2.class)
     @JsonManagedReference
-    private Set<LogChild> lazyChildren2 = new HashSet<>();
+    private Set<LogChild2> lazyChildren2 = new HashSet<>();
 
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "logEntity",fetch = FetchType.EAGER)
-    @BiDirChildCollection(LogChild.class)
+    @BiDirChildCollection(LogChild3.class)
     @JsonManagedReference
-    private Set<LogChild> eagerChildren = new HashSet<>();
+    private Set<LogChild3> eagerChildren = new HashSet<>();
 
-    @OneToOne(fetch = FetchType.EAGER)
+    @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     @BiDirChildEntity
     @JoinColumn(name = "eager_child_id",referencedColumnName = "id")
     private EagerSingleLogChild eagerChild;
 
-    @OneToOne(fetch = FetchType.LAZY)
+    @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @BiDirChildEntity
     @JoinColumn(name = "lazy_child_id",referencedColumnName = "id")
     private LazySingleLogChild lazyChild;
 
 
-    @ManyToOne
+    @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "log_parent_id")
     @BiDirParentEntity
     private LogParent lazyParent;
