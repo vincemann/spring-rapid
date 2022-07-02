@@ -2,7 +2,6 @@ package com.github.vincemann.springrapid.core.util;
 
 import com.github.vincemann.springrapid.core.model.IdentifiableEntity;
 import lombok.Builder;
-import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
@@ -50,7 +49,8 @@ public class LazyLogger {
     private Set<String> logLoadedBlacklist = new HashSet<>();
 
     private Property property;
-    private Map<Class, List<Object>> clazzParentsMap = new HashMap<>();
+    private Map<Thread,Map<Object,String>> alreadySeenThreadMap = new HashMap<>();
+//    private Map<Class, List<Object>> clazzParentsMap = new HashMap<>();
 
 
     @Builder
@@ -73,9 +73,9 @@ public class LazyLogger {
             this.maxEntitiesLoggedPropertyMap = maxEntitiesLoggedPropertyMap;
     }
 
-    protected void initParent(Object parent) {
-        clazzParentsMap.put(parent.getClass(), Lists.newArrayList(parent));
-    }
+//    protected void initParent(Object parent) {
+//        clazzParentsMap.put(parent.getClass(), Lists.newArrayList(parent));
+//    }
 
     /**
      * reflection based toString method
@@ -87,12 +87,16 @@ public class LazyLogger {
         if (parent == null) {
             return "null";
         }
-        initParent(parent);
+
+        // prohibit endless backref loops
+        Map<Object,String> alreadySeenMap = new HashMap<>();
+        this.alreadySeenThreadMap.put(Thread.currentThread(),alreadySeenMap);
 
 
-        return (new ReflectionToStringBuilder(parent, ToStringStyle.SHORT_PREFIX_STYLE) {
+        String result = (new ReflectionToStringBuilder(parent, ToStringStyle.SHORT_PREFIX_STYLE) {
             protected Object getValue(Field f) throws IllegalAccessException {
                 System.err.println(" checking field: " + f.getName().toUpperCase());
+
                 // init propertyState
                 property = new Property(f);
                 property.entity = isEntity();
@@ -105,7 +109,7 @@ public class LazyLogger {
                 try {
                     if (isIgnored()) {
                         log.debug("result of field: " + f.getName().toUpperCase() + " : found property string super value: " + " ignored");
-                        return IGNORED_STRING;
+                        return remember(IGNORED_STRING);
                     }
                     if (property.isEntity()) {
 //                        updateClazzParentsMap(property.value);
@@ -122,17 +126,19 @@ public class LazyLogger {
                         return superValue;
                     } else {
                         log.debug("result of field: " + f.getName().toUpperCase() + " : found property string own value: " + propertyString);
-                        return propertyString;
+                        return remember(propertyString);
                     }
                 } catch (IllegalAccessException e) {
                     throw new RuntimeException(e);
                 } catch (LazyInitializationException e) {
                     propertyString = lazyInitExceptionToString(e);
                     log.debug("result of field: " + f.getName().toUpperCase() + " : found property string own value: " + propertyString);
-                    return propertyString;
+                    return remember(propertyString);
                 }
             }
         }).toString();
+        alreadySeenThreadMap.remove(Thread.currentThread());
+        return result;
     }
 
     protected Boolean isIgnored() {
@@ -321,6 +327,15 @@ public class LazyLogger {
             log.warn("unsupported collection type");
             return "super";
         }
+    }
+
+    protected String remember(String s){
+        Map<Object, String> alreadySeenMap = alreadySeenThreadMap.get(Thread.currentThread());
+        String put = alreadySeenMap.put(property.value, s);
+        if (put != null){
+            throw new IllegalArgumentException("returned already seen value");
+        }
+        return s;
     }
 
     // todo change design, put everything in here or dont use such a class

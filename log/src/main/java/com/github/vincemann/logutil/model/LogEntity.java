@@ -5,10 +5,8 @@ import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.github.vincemann.springrapid.autobidir.model.child.annotation.BiDirChildCollection;
 import com.github.vincemann.springrapid.autobidir.model.child.annotation.BiDirChildEntity;
 import com.github.vincemann.springrapid.autobidir.model.parent.annotation.BiDirParentEntity;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import com.github.vincemann.springrapid.core.util.LazyLogger;
+import lombok.*;
 
 import javax.persistence.*;
 import java.util.HashSet;
@@ -19,6 +17,7 @@ import java.util.Set;
 @NoArgsConstructor
 @Entity
 @Table(name = "log_entity")
+@ToString
 public class LogEntity extends LogIdentifiableEntity {
 
     private String name;
@@ -65,4 +64,15 @@ public class LogEntity extends LogIdentifiableEntity {
     @JoinColumn(name = "log_parent_id")
     @BiDirParentEntity
     private LogParent lazyParent;
+
+    @Override
+    public String toString() {
+        LazyLogger logger =  LazyLogger.builder()
+                .ignoreLazyException(Boolean.TRUE)
+                .ignoreEntities(Boolean.FALSE)
+                .onlyLogLoaded(Boolean.FALSE)
+                .build();
+
+        return logger.toString(this);
+    }
 }

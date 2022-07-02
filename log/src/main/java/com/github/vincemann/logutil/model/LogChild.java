@@ -2,10 +2,8 @@ package com.github.vincemann.logutil.model;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.github.vincemann.springrapid.autobidir.model.parent.annotation.BiDirParentEntity;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import com.github.vincemann.springrapid.core.util.LazyLogger;
+import lombok.*;
 
 import javax.persistence.Entity;
 import javax.persistence.JoinColumn;
@@ -27,7 +25,6 @@ public class LogChild extends LogIdentifiableEntity {
     private String name;
 
 
-
     public LogChild(String name) {
         this.name = name;
     }
@@ -39,10 +36,15 @@ public class LogChild extends LogIdentifiableEntity {
         this.name = name;
     }
 
+
     @Override
     public String toString() {
-        return "LogChild{" +
-                "name='" + name + '\'' +
-                '}';
+        LazyLogger logger = LazyLogger.builder()
+                .ignoreLazyException(Boolean.TRUE)
+                .ignoreEntities(Boolean.FALSE)
+                .onlyLogLoaded(Boolean.FALSE)
+                .build();
+
+        return logger.toString(this);
     }
 }

@@ -7,7 +7,6 @@ import com.github.vincemann.springrapid.core.service.exception.BadEntityExceptio
 import com.github.vincemann.springrapid.core.slicing.RapidProfiles;
 import com.github.vincemann.springrapid.core.util.LazyLogger;
 import com.github.vincemann.springrapid.coretest.slicing.RapidTestProfiles;
-import com.github.vincemann.springrapid.coretest.slicing.TestConfig;
 import com.github.vincemann.springrapid.coretest.util.TransactionalRapidTestUtil;
 import com.google.common.collect.Sets;
 import org.apache.commons.lang3.StringUtils;
@@ -18,13 +17,10 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.context.annotation.Configuration;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.transaction.TestTransaction;
 import org.springframework.transaction.annotation.Transactional;
 
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
 import javax.persistence.PersistenceUnitUtil;
 import java.util.HashMap;
 import java.util.Map;
@@ -121,6 +117,31 @@ class LazyLoggerTest {
 
         lazySingleChild = new LazySingleLogChild(LAZY_CHILD_NAME);
         eagerSingleChild = new EagerSingleLogChild(EAGER_CHILD_NAME);
+    }
+
+
+    @Transactional
+    @Test
+    void prohibitsBackrefEndlessLoop() throws BadEntityException {
+        lazyLogger = LazyLogger.builder()
+                .ignoreLazyException(Boolean.TRUE)
+                .ignoreEntities(Boolean.FALSE)
+                .onlyLogLoaded(Boolean.FALSE)
+                .build();
+
+
+        LogEntity savedLogEntity = logEntityService.save(logEntity);
+
+        LogChild child11 = logChildService.save(lazyCol1_child1);
+        child11.setLogEntity(logEntity);
+        savedLogEntity.getLazyChildren1().add(lazyCol1_child1);
+
+        TestTransaction.flagForCommit();
+        TestTransaction.end();
+
+        String s = lazyLogger.toString(savedLogEntity);
+
+        System.err.println(s);
     }
 
     @Transactional
