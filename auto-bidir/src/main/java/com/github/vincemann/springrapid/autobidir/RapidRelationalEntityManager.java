@@ -27,7 +27,8 @@ public class RapidRelationalEntityManager implements RelationalEntityManager {
 //        }
         Set<RelationalEntityType> relationalEntityTypes = relationalEntityManagerUtil.inferTypes(entity.getClass());
         if (relationalEntityTypes.contains(RelationalEntityType.BiDirParent)) {
-            log.debug("applying pre persist BiDirParent logic for: " + entity);
+            if (log.isDebugEnabled())
+                log.debug("applying pre persist BiDirParent logic for: " + entity);
             // also filter for class obj stored in annotation, so if I update only one BiDirChildCollection, only init this one
             // with the right class
 //            entity = BiDirJpaUtils.initializeSubEntities(entity, BiDirChildCollection.class);
@@ -36,7 +37,8 @@ public class RapidRelationalEntityManager implements RelationalEntityManager {
         }
 
         if (relationalEntityTypes.contains(RelationalEntityType.BiDirChild)) {
-            log.debug("applying pre persist BiDirChild logic for: " + entity);
+            if (log.isDebugEnabled())
+                log.debug("applying pre persist BiDirChild logic for: " + entity);
 //            entity = BiDirJpaUtils.initializeSubEntities(entity, BiDirParentEntity.class);
 //            entity = BiDirJpaUtils.initializeSubEntities(entity, BiDirParentCollection.class);
             relationalEntityManagerUtil.linkBiDirParentsChild(entity);
@@ -49,11 +51,13 @@ public class RapidRelationalEntityManager implements RelationalEntityManager {
         Set<RelationalEntityType> relationalEntityTypes = relationalEntityManagerUtil.inferTypes(entity.getClass());
 
         if (relationalEntityTypes.contains(RelationalEntityType.BiDirParent)) {
-            log.debug("applying pre remove BiDirParent logic for: " + entity.getClass());
+            if (log.isDebugEnabled())
+                log.debug("applying pre remove BiDirParent logic for: " + entity.getClass());
             relationalEntityManagerUtil.unlinkBiDirChildrensParent(entity);
         }
         if (relationalEntityTypes.contains(RelationalEntityType.BiDirChild)) {
-            log.debug("applying pre remove BiDirChild logic for: " + entity);
+            if (log.isDebugEnabled())
+                log.debug("applying pre remove BiDirChild logic for: " + entity);
             relationalEntityManagerUtil.unlinkBiDirParentsChild(entity);
         }
     }
@@ -64,11 +68,13 @@ public class RapidRelationalEntityManager implements RelationalEntityManager {
         // only operate on non null fields of partialUpdateEntity
         Set<RelationalEntityType> relationalEntityTypes = relationalEntityManagerUtil.inferTypes(updateEntity.getClass());
         if (relationalEntityTypes.contains(RelationalEntityType.BiDirParent)) {
-            log.debug("applying pre partial-update BiDirParent logic for: " + updateEntity.getClass());
+            if (log.isDebugEnabled())
+                log.debug("applying pre partial-update BiDirParent logic for: " + updateEntity.getClass());
             updateBiDirParentRelations(oldEntity, updateEntity);
         }
         if (relationalEntityTypes.contains(RelationalEntityType.BiDirChild)) {
-            log.debug("applying pre partial-update BiDirChild logic for: " + updateEntity.getClass());
+            if (log.isDebugEnabled())
+                log.debug("applying pre partial-update BiDirChild logic for: " + updateEntity.getClass());
             updateBiDirChildRelations(oldEntity, updateEntity);
         }
         return updateEntity;
@@ -79,11 +85,13 @@ public class RapidRelationalEntityManager implements RelationalEntityManager {
         Set<RelationalEntityType> relationalEntityTypes = relationalEntityManagerUtil.inferTypes(updateEntity.getClass());
 
         if (relationalEntityTypes.contains(RelationalEntityType.BiDirParent)) {
-            log.debug("applying pre full-update BiDirParent logic for: " + updateEntity.getClass());
+            if (log.isDebugEnabled())
+                log.debug("applying pre full-update BiDirParent logic for: " + updateEntity.getClass());
             updateBiDirParentRelations(oldEntity, updateEntity,membersToCheck);
         }
         if (relationalEntityTypes.contains(RelationalEntityType.BiDirChild)) {
-            log.debug("applying pre full-update BiDirChild logic for: " + updateEntity.getClass());
+            if (log.isDebugEnabled())
+                log.debug("applying pre full-update BiDirChild logic for: " + updateEntity.getClass());
             updateBiDirChildRelations(oldEntity, updateEntity, membersToCheck);
         }
 
@@ -118,14 +126,16 @@ public class RapidRelationalEntityManager implements RelationalEntityManager {
 
         // unlink Child from certain Parents
         for (IdentifiableEntity removedParent : removedParents) {
-            log.debug("update: unlinking parent: " + removedParent + " from child: " + child);
+            if (log.isDebugEnabled())
+                log.debug("update: unlinking parent: " + removedParent + " from child: " + child);
 //            relationalEntityManagerUtil.unlinkBiDirChild(removedParent, oldChild);
             relationalEntityManagerUtil.unlinkBiDirChild(removedParent, child, membersToCheck);  // somehow does not make a difference but makes more sense like that imo
         }
 
         // link added Parent to child
         for (IdentifiableEntity addedParent : addedParents) {
-            log.debug("update: linking parent: " + addedParent + " to child: " + child);
+            if (log.isDebugEnabled())
+                log.debug("update: linking parent: " + addedParent + " to child: " + child);
             relationalEntityManagerUtil.linkBiDirChild(addedParent, child, membersToCheck);
             // new parents may be detached, so merge them, must happen after linking!
             entityManager.merge(addedParent);
@@ -162,14 +172,16 @@ public class RapidRelationalEntityManager implements RelationalEntityManager {
 
         //unlink removed Children from parent
         for (IdentifiableEntity removedChild : removedChildren) {
-            log.debug("unlinking child: " + removedChild + " from parent: " + parent);
+            if (log.isDebugEnabled())
+                log.debug("unlinking child: " + removedChild + " from parent: " + parent);
 //            relationalEntityManagerUtil.unlinkBiDirParent(removedChild, oldParent);
             relationalEntityManagerUtil.unlinkBiDirParent(removedChild, parent,membersToCheck); // somehow does not make a difference but makes more sense like that imo
         }
 
         //link added Children to parent
         for (IdentifiableEntity addedChild : addedChildren) {
-            log.debug("linking child: " + addedChild + " to parent: " + parent);
+            if (log.isDebugEnabled())
+                log.debug("linking child: " + addedChild + " to parent: " + parent);
             // illness gets set of pets updated, illness = child
             relationalEntityManagerUtil.linkBiDirParent(addedChild, parent,membersToCheck);
             // new children may be detached, so merge them , must happen after linking!

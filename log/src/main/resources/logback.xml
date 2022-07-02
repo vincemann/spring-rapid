@@ -15,6 +15,10 @@
         <appender-ref ref="CONSOLE"/>
     </logger>
 
+    <logger name="com.github.vincemann.springrapid.autobidir" level="info" additivity="false">
+        <appender-ref ref="CONSOLE"/>
+    </logger>
+
     <logger name="com.github.vincemann.aoplog" level="info" additivity="false">
         <appender-ref ref="CONSOLE"/>
     </logger>

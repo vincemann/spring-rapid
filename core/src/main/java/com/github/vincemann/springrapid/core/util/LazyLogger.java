@@ -21,6 +21,7 @@ public class LazyLogger {
     public static final String IGNORED_STRING = "<ignored>";
     public static final String IGNORED_UNLOADED_STRING = "<unloaded ignored>";
     public static final String TOO_MANY_ENTRIES_STRING = "<too many entries>";
+    public static final String CIRCULAR_REFERENCE = "<circular reference>";
     public static final String IGNORED_LOAD_BLACKLISTED_STRING = "<load blacklisted ignored>";
     public static final String LAZY_INIT_EXCEPTION_STRING = "<LazyInitializationException>";
     public static final String LAZY_INIT_EXCEPTION_LIST_STRING = "<[LazyInitializationException]>";
@@ -28,30 +29,16 @@ public class LazyLogger {
 
     // set in app config
     private static EntityManager entityManager;
-
-    public static EntityManager getEntityManager() {
-        return entityManager;
-    }
-
-    public static void setEntityManager(EntityManager entityManager) {
-        LazyLogger.entityManager = entityManager;
-    }
-
-
+    private static Map<Thread, Set<Object>> ALREADY_SEEN_MAP = new HashMap<>();
     private Boolean ignoreLazyException = Boolean.TRUE;
     private Boolean ignoreEntities = Boolean.TRUE;
     private Boolean idOnly = Boolean.FALSE;
     private Integer maxEntitiesLoggedInCollections = null;
     private HashSet<String> propertyBlackList = new HashSet<>();
     private Map<String, Integer> maxEntitiesLoggedPropertyMap = new HashMap<>();
-
     private Boolean onlyLogLoaded = Boolean.TRUE;
     private Set<String> logLoadedBlacklist = new HashSet<>();
-
     private Property property;
-    private Map<Thread,Map<Object,String>> alreadySeenThreadMap = new HashMap<>();
-//    private Map<Class, List<Object>> clazzParentsMap = new HashMap<>();
-
 
     @Builder
     public LazyLogger(Boolean ignoreEntities, Boolean idOnly, Boolean ignoreLazyException, HashSet<String> propertyBlackList, Integer maxEntitiesLoggedInCollections, Boolean onlyLogLoaded, Set<String> logLoadedBlacklist, Map<String, Integer> maxEntitiesLoggedPropertyMap) {
@@ -73,6 +60,15 @@ public class LazyLogger {
             this.maxEntitiesLoggedPropertyMap = maxEntitiesLoggedPropertyMap;
     }
 
+    public static EntityManager getEntityManager() {
+        return entityManager;
+    }
+//    private Map<Class, List<Object>> clazzParentsMap = new HashMap<>();
+
+    public static void setEntityManager(EntityManager entityManager) {
+        LazyLogger.entityManager = entityManager;
+    }
+
 //    protected void initParent(Object parent) {
 //        clazzParentsMap.put(parent.getClass(), Lists.newArrayList(parent));
 //    }
@@ -89,13 +85,14 @@ public class LazyLogger {
         }
 
         // prohibit endless backref loops
-        Map<Object,String> alreadySeenMap = new HashMap<>();
-        this.alreadySeenThreadMap.put(Thread.currentThread(),alreadySeenMap);
+        Set<Object> alreadySeen = new HashSet<>();
+        LazyLogger.ALREADY_SEEN_MAP.put(Thread.currentThread(), alreadySeen);
 
 
         String result = (new ReflectionToStringBuilder(parent, ToStringStyle.SHORT_PREFIX_STYLE) {
             protected Object getValue(Field f) throws IllegalAccessException {
                 System.err.println(" checking field: " + f.getName().toUpperCase());
+
 
                 // init propertyState
                 property = new Property(f);
@@ -104,9 +101,9 @@ public class LazyLogger {
                 property.parent = parent;
                 // dont do this bc this will load lazy property
 //                property.value = property.field.get(parent);
-
                 String propertyString = "super";
                 try {
+
                     if (isIgnored()) {
                         log.debug("result of field: " + f.getName().toUpperCase() + " : found property string super value: " + " ignored");
                         return remember(IGNORED_STRING);
@@ -121,9 +118,15 @@ public class LazyLogger {
 
 
                     if (propertyString.equals("super")) {
+//                        loadPropertyValue();
+//                        if (alreadySeen(property.value)){
+//                            return CIRCULAR_REFERENCE;
+//                        }else {
                         Object superValue = super.getValue(f);
+//                            addToAlreadySeen(property.value);
                         log.debug("result of field: " + f.getName().toUpperCase() + " : found property string super value: " + superValue);
                         return superValue;
+//                        }
                     } else {
                         log.debug("result of field: " + f.getName().toUpperCase() + " : found property string own value: " + propertyString);
                         return remember(propertyString);
@@ -137,7 +140,7 @@ public class LazyLogger {
                 }
             }
         }).toString();
-        alreadySeenThreadMap.remove(Thread.currentThread());
+        ALREADY_SEEN_MAP.remove(Thread.currentThread());
         return result;
     }
 
@@ -154,6 +157,16 @@ public class LazyLogger {
         return ignored;
     }
 
+    protected Boolean alreadySeen(Object o) {
+        Set<Object> alreadySeen = ALREADY_SEEN_MAP.get(Thread.currentThread());
+        return alreadySeen.contains(o);
+    }
+
+    protected void addToAlreadySeen(Object o) {
+        Set<Object> alreadySeen = ALREADY_SEEN_MAP.get(Thread.currentThread());
+        alreadySeen.add(o);
+    }
+
     protected String loadIfWanted(Object parent, String propertyName, Boolean collection) throws IllegalAccessException {
         String propertyString = "super";
         if (checkIfLoaded(parent, propertyName)) {
@@ -165,6 +178,11 @@ public class LazyLogger {
                 }
             }
             loadPropertyValue();
+            if (alreadySeen(property.value)) {
+                return CIRCULAR_REFERENCE;
+            } else {
+                addToAlreadySeen(property.value);
+            }
             propertyString = entitiesToString(collection);
         } else {
             // not loaded
@@ -192,7 +210,8 @@ public class LazyLogger {
 
     protected void loadPropertyValue() throws IllegalAccessException {
         // now its safe to load the value aka is already loaded
-        property.value = property.field.get(property.parent);
+        if (property.value == null)
+            property.value = property.field.get(property.parent);
     }
 
     protected boolean checkIfLoaded(Object parent, String childPropertyName) {
@@ -282,7 +301,7 @@ public class LazyLogger {
         }
         // test for lazy init exception already with size call
         if (collection.size() > 0) {
-            if (hasTooManyEntries(collection)){
+            if (hasTooManyEntries(collection)) {
                 return TOO_MANY_ENTRIES_STRING;
             }
             if (idOnly) {
@@ -295,7 +314,7 @@ public class LazyLogger {
         return "super";
     }
 
-    private Boolean hasTooManyEntries(Collection collection){
+    private Boolean hasTooManyEntries(Collection collection) {
         Integer maxEntities = maxEntitiesLoggedPropertyMap.get(property.field.getName());
         if (maxEntities != null) {
             if (collection.size() > maxEntities) {
@@ -329,12 +348,12 @@ public class LazyLogger {
         }
     }
 
-    protected String remember(String s){
-        Map<Object, String> alreadySeenMap = alreadySeenThreadMap.get(Thread.currentThread());
-        String put = alreadySeenMap.put(property.value, s);
-        if (put != null){
-            throw new IllegalArgumentException("returned already seen value");
-        }
+    protected String remember(String s) {
+//        Map<Object, String> alreadySeenMap = alreadySeenThreadMap.get(Thread.currentThread());
+//        String put = alreadySeenMap.put(property.value, s);
+//        if (put != null){
+//            throw new IllegalArgumentException("returned already seen value");
+//        }
         return s;
     }
 

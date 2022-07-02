@@ -133,13 +133,15 @@ class LazyLoggerTest {
         LogEntity savedLogEntity = logEntityService.save(logEntity);
 
         LogChild child11 = logChildService.save(lazyCol1_child1);
-        child11.setLogEntity(logEntity);
-        savedLogEntity.getLazyChildren1().add(lazyCol1_child1);
+        child11.setLogEntity(savedLogEntity);
+
+        savedLogEntity.getLazyChildren1().add(child11);
 
         TestTransaction.flagForCommit();
         TestTransaction.end();
 
         String s = lazyLogger.toString(savedLogEntity);
+//        String s = savedLogEntity.toString();
 
         System.err.println(s);
     }
