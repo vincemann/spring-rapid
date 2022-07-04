@@ -25,11 +25,9 @@ public class LazyLogger {
     public static final String IGNORED_LOAD_BLACKLISTED_STRING = "<load blacklisted ignored>";
     public static final String LAZY_INIT_EXCEPTION_STRING = "<LazyInitializationException>";
     public static final String LAZY_INIT_EXCEPTION_LIST_STRING = "<[LazyInitializationException]>";
-
-
+    private static final Map<Long, Set<Object>> ALREADY_SEEN_MAP = new HashMap<>();
     // set in app config
     private static EntityManager entityManager;
-    private static Map<Thread, Set<Object>> ALREADY_SEEN_MAP = new HashMap<>();
     private Boolean ignoreLazyException = Boolean.TRUE;
     private Boolean ignoreEntities = Boolean.TRUE;
     private Boolean idOnly = Boolean.FALSE;
@@ -86,7 +84,7 @@ public class LazyLogger {
 
         // prohibit endless backref loops
         Set<Object> alreadySeen = new HashSet<>();
-        LazyLogger.ALREADY_SEEN_MAP.put(Thread.currentThread(), alreadySeen);
+        LazyLogger.ALREADY_SEEN_MAP.put(Thread.currentThread().getId(), alreadySeen);
 
 
         String result = (new ReflectionToStringBuilder(parent, ToStringStyle.SHORT_PREFIX_STYLE) {
@@ -119,11 +117,11 @@ public class LazyLogger {
 
                     if (propertyString.equals("super")) {
 //                        loadPropertyValue();
-//                        if (alreadySeen(property.value)){
+//                        if (alreadySeen(property.value)) {
 //                            return CIRCULAR_REFERENCE;
-//                        }else {
+//                        }
                         Object superValue = super.getValue(f);
-//                            addToAlreadySeen(property.value);
+//                        addToAlreadySeen(superValue);
                         log.debug("result of field: " + f.getName().toUpperCase() + " : found property string super value: " + superValue);
                         return superValue;
 //                        }
@@ -140,7 +138,7 @@ public class LazyLogger {
                 }
             }
         }).toString();
-        ALREADY_SEEN_MAP.remove(Thread.currentThread());
+        ALREADY_SEEN_MAP.remove(Thread.currentThread().getId());
         return result;
     }
 
@@ -158,12 +156,12 @@ public class LazyLogger {
     }
 
     protected Boolean alreadySeen(Object o) {
-        Set<Object> alreadySeen = ALREADY_SEEN_MAP.get(Thread.currentThread());
+        Set<Object> alreadySeen = ALREADY_SEEN_MAP.get(Thread.currentThread().getId());
         return alreadySeen.contains(o);
     }
 
     protected void addToAlreadySeen(Object o) {
-        Set<Object> alreadySeen = ALREADY_SEEN_MAP.get(Thread.currentThread());
+        Set<Object> alreadySeen = ALREADY_SEEN_MAP.get(Thread.currentThread().getId());
         alreadySeen.add(o);
     }
 
@@ -178,11 +176,11 @@ public class LazyLogger {
                 }
             }
             loadPropertyValue();
-            if (alreadySeen(property.value)) {
-                return CIRCULAR_REFERENCE;
-            } else {
-                addToAlreadySeen(property.value);
-            }
+//            if (alreadySeen(property.value)) {
+//                return CIRCULAR_REFERENCE;
+//            } else {
+//                addToAlreadySeen(property.value);
+//            }
             propertyString = entitiesToString(collection);
         } else {
             // not loaded
@@ -288,6 +286,15 @@ public class LazyLogger {
         if (entity == null) {
             return "null";
         }
+
+
+        if (alreadySeen(property.value)) {
+            return CIRCULAR_REFERENCE;
+        } else {
+            addToAlreadySeen(property.value);
+        }
+
+
         if (idOnly) {
             return toId(entity);
         }
