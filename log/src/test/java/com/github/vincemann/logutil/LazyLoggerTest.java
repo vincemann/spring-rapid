@@ -1,5 +1,6 @@
 package com.github.vincemann.logutil;
 
+import com.github.vincemann.logutil.config.TestConfig;
 import com.github.vincemann.logutil.model.*;
 import com.github.vincemann.logutil.service.*;
 import com.github.vincemann.logutil.service.jpa.JpaLogChild2Service;
@@ -85,6 +86,10 @@ class LazyLoggerTest {
 
     @BeforeEach
     void setUp() {
+
+        TestConfig.USE_LAZY_LOGGER = Boolean.FALSE;
+
+
         logEntity = LogEntity.builder()
                 .name(LOG_ENTITY_NAME)
                 .build();
@@ -123,6 +128,10 @@ class LazyLoggerTest {
     @Transactional
     @Test
     void prohibitsBackrefEndlessLoop() throws BadEntityException {
+
+        TestConfig.USE_LAZY_LOGGER = Boolean.TRUE;
+
+
         lazyLogger = LazyLogger.builder()
                 .ignoreLazyException(Boolean.TRUE)
                 .ignoreEntities(Boolean.FALSE)
@@ -135,15 +144,28 @@ class LazyLoggerTest {
         LogChild child11 = logChildService.save(lazyCol1_child1);
         child11.setLogEntity(savedLogEntity);
 
+        LogChild child12 = logChildService.save(lazyCol1_child2);
+        child12.setLogEntity(savedLogEntity);
+
+        // todo erkennt circular ref eine ebene zu spät und es failt wenn man noch ein child hinzunimmt
         savedLogEntity.getLazyChildren1().add(child11);
+        savedLogEntity.getLazyChildren1().add(child12);
 
         TestTransaction.flagForCommit();
         TestTransaction.end();
 
-        String s = lazyLogger.toString(savedLogEntity);
+        String logResult = lazyLogger.toString(savedLogEntity);
+        System.err.println(logResult);
 //        String s = savedLogEntity.toString();
 
-        System.err.println(s);
+
+        assertContainsStringOnce(logResult,LOG_ENTITY_NAME);
+        assertContainsStringOnce(logResult,LAZY_COL1_ENTITY1_NAME);
+        assertContainsStringOnce(logResult,LAZY_COL1_ENTITY2_NAME);
+        assertContainsString(logResult,CIRCULAR_REFERENCE,2);
+        assertContainsIdOnce(logResult,savedLogEntity.getId());
+        assertContainsIdOnce(logResult,savedLogEntity.getId());
+        assertContainsIdOnce(logResult,savedLogEntity.getId());
     }
 
     @Transactional

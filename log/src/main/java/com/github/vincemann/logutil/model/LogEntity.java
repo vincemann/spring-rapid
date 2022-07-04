@@ -12,6 +12,8 @@ import javax.persistence.*;
 import java.util.HashSet;
 import java.util.Set;
 
+import static com.github.vincemann.logutil.config.TestConfig.USE_LAZY_LOGGER;
+
 @Setter
 @Getter
 @NoArgsConstructor
@@ -66,12 +68,20 @@ public class LogEntity extends LogIdentifiableEntity {
 
     @Override
     public String toString() {
-        LazyLogger logger =  LazyLogger.builder()
-                .ignoreLazyException(Boolean.TRUE)
-                .ignoreEntities(Boolean.FALSE)
-                .onlyLogLoaded(Boolean.FALSE)
-                .build();
+        if (USE_LAZY_LOGGER){
+            LazyLogger logger =  LazyLogger.builder()
+                    .ignoreLazyException(Boolean.TRUE)
+                    .ignoreEntities(Boolean.FALSE)
+                    .onlyLogLoaded(Boolean.FALSE)
+                    .build();
 
-        return logger.toString(this);
+            return logger.toString(this);
+        }else {
+            return "LogEntity{" +
+                    "name='" + name + '\'' +
+                    '}';
+        }
     }
+
+
 }

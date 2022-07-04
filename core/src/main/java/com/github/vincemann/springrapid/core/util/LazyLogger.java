@@ -25,7 +25,9 @@ public class LazyLogger {
     public static final String IGNORED_LOAD_BLACKLISTED_STRING = "<load blacklisted ignored>";
     public static final String LAZY_INIT_EXCEPTION_STRING = "<LazyInitializationException>";
     public static final String LAZY_INIT_EXCEPTION_LIST_STRING = "<[LazyInitializationException]>";
+
     private static final Map<Long, Set<Object>> ALREADY_SEEN_MAP = new HashMap<>();
+
     // set in app config
     private static EntityManager entityManager;
     private Boolean ignoreLazyException = Boolean.TRUE;
@@ -83,9 +85,12 @@ public class LazyLogger {
         }
 
         // prohibit endless backref loops
-        Set<Object> alreadySeen = new HashSet<>();
-        LazyLogger.ALREADY_SEEN_MAP.putIfAbsent(Thread.currentThread().getId(), alreadySeen);
-
+        Set<Object> alreadySeen = LazyLogger.ALREADY_SEEN_MAP.get(Thread.currentThread().getId());
+        if (alreadySeen == null){
+            // init
+            LazyLogger.ALREADY_SEEN_MAP.put(Thread.currentThread().getId(), new HashSet<>());
+        }
+        addParentToAlreadySeen(parent);
 
         String result = (new ReflectionToStringBuilder(parent, ToStringStyle.SHORT_PREFIX_STYLE) {
             protected Object getValue(Field f) throws IllegalAccessException {
@@ -138,7 +143,7 @@ public class LazyLogger {
                 }
             }
         }).toString();
-        ALREADY_SEEN_MAP.remove(Thread.currentThread().getId());
+        ALREADY_SEEN_MAP.get(Thread.currentThread().getId()).remove(result);
         return result;
     }
 
@@ -163,6 +168,13 @@ public class LazyLogger {
     protected void addToAlreadySeen(Object o) {
         Set<Object> alreadySeen = ALREADY_SEEN_MAP.get(Thread.currentThread().getId());
         alreadySeen.add(o);
+    }
+
+    protected void addParentToAlreadySeen(Object parent){
+        if (IdentifiableEntity.class.isAssignableFrom(parent.getClass())){
+            // parent is entity
+            addToAlreadySeen(parent);
+        }
     }
 
     protected String loadIfWanted(Object parent, String propertyName, Boolean collection) throws IllegalAccessException {

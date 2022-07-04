@@ -10,6 +10,7 @@ import javax.persistence.EntityManager;
 @Configuration
 public class DemoConfig {
 
+    public static Boolean USE_LAZY_LOGGER = Boolean.FALSE;
 
     @Autowired
     public void setLoggingEntityManager(EntityManager entityManager){
