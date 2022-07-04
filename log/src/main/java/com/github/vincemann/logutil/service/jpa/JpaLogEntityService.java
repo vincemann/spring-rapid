@@ -1,5 +1,6 @@
 package com.github.vincemann.logutil.service.jpa;
 
+import com.github.vincemann.aoplog.api.LogInteraction;
 import com.github.vincemann.logutil.model.LogEntity;
 import com.github.vincemann.logutil.repo.LogEntityRepository;
 import com.github.vincemann.logutil.service.LogEntityService;
@@ -14,6 +15,7 @@ import java.util.Optional;
 
 @Service
 @ServiceComponent
+@LogInteraction(disabled = true)
 public class JpaLogEntityService extends JPACrudService<LogEntity,Long, LogEntityRepository> implements LogEntityService {
 
 

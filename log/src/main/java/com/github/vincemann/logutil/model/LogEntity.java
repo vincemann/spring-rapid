@@ -17,7 +17,6 @@ import java.util.Set;
 @NoArgsConstructor
 @Entity
 @Table(name = "log_entity")
-@ToString
 public class LogEntity extends LogIdentifiableEntity {
 
     private String name;
@@ -65,14 +64,14 @@ public class LogEntity extends LogIdentifiableEntity {
     @BiDirParentEntity
     private LogParent lazyParent;
 
-//    @Override
-//    public String toString() {
-//        LazyLogger logger =  LazyLogger.builder()
-//                .ignoreLazyException(Boolean.TRUE)
-//                .ignoreEntities(Boolean.FALSE)
-//                .onlyLogLoaded(Boolean.FALSE)
-//                .build();
-//
-//        return logger.toString(this);
-//    }
+    @Override
+    public String toString() {
+        LazyLogger logger =  LazyLogger.builder()
+                .ignoreLazyException(Boolean.TRUE)
+                .ignoreEntities(Boolean.FALSE)
+                .onlyLogLoaded(Boolean.FALSE)
+                .build();
+
+        return logger.toString(this);
+    }
 }

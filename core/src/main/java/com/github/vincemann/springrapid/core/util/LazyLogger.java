@@ -84,7 +84,7 @@ public class LazyLogger {
 
         // prohibit endless backref loops
         Set<Object> alreadySeen = new HashSet<>();
-        LazyLogger.ALREADY_SEEN_MAP.put(Thread.currentThread().getId(), alreadySeen);
+        LazyLogger.ALREADY_SEEN_MAP.putIfAbsent(Thread.currentThread().getId(), alreadySeen);
 
 
         String result = (new ReflectionToStringBuilder(parent, ToStringStyle.SHORT_PREFIX_STYLE) {
@@ -103,7 +103,7 @@ public class LazyLogger {
                 try {
 
                     if (isIgnored()) {
-                        log.debug("result of field: " + f.getName().toUpperCase() + " : found property string super value: " + " ignored");
+//                        log.debug("result of field: " + f.getName().toUpperCase() + " : found property string super value: " + " ignored");
                         return remember(IGNORED_STRING);
                     }
                     if (property.isEntity()) {
@@ -120,20 +120,20 @@ public class LazyLogger {
 //                        if (alreadySeen(property.value)) {
 //                            return CIRCULAR_REFERENCE;
 //                        }
-                        Object superValue = super.getValue(f);
+                        Object superValue = super.getValue(f).toString();
 //                        addToAlreadySeen(superValue);
-                        log.debug("result of field: " + f.getName().toUpperCase() + " : found property string super value: " + superValue);
+//                        log.debug("result of field: " + f.getName().toUpperCase() + " : found property string super value: " + superValue);
                         return superValue;
 //                        }
                     } else {
-                        log.debug("result of field: " + f.getName().toUpperCase() + " : found property string own value: " + propertyString);
+//                        log.debug("result of field: " + f.getName().toUpperCase() + " : found property string own value: " + propertyString);
                         return remember(propertyString);
                     }
                 } catch (IllegalAccessException e) {
                     throw new RuntimeException(e);
                 } catch (LazyInitializationException e) {
                     propertyString = lazyInitExceptionToString(e);
-                    log.debug("result of field: " + f.getName().toUpperCase() + " : found property string own value: " + propertyString);
+//                    log.debug("result of field: " + f.getName().toUpperCase() + " : found property string own value: " + propertyString);
                     return remember(propertyString);
                 }
             }
@@ -220,7 +220,7 @@ public class LazyLogger {
         PersistenceUnitUtil persistenceUtil =
                 entityManager.getEntityManagerFactory().getPersistenceUnitUtil();
         boolean loaded = persistenceUtil.isLoaded(parent, childPropertyName);
-        log.debug("property " + childPropertyName + " loaded? : " + loaded);
+//        log.debug("property " + childPropertyName + " loaded? : " + loaded);
         return loaded;
     }
 
