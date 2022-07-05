@@ -80,6 +80,9 @@ public class LazyLogger {
      * only log LazyInitException (default=true)
      */
     public String toString(Object parent) {
+        if (log.isTraceEnabled())
+            log.trace("checking new parent ");
+
         if (parent == null) {
             return "null";
         }
@@ -94,7 +97,8 @@ public class LazyLogger {
 
         String result = (new ReflectionToStringBuilder(parent, ToStringStyle.SHORT_PREFIX_STYLE) {
             protected Object getValue(Field f) throws IllegalAccessException {
-                System.err.println(" checking field: " + f.getName().toUpperCase());
+                if (log.isTraceEnabled())
+                    log.trace(" checking field: " + f.getName().toUpperCase());
 
 
                 // init propertyState

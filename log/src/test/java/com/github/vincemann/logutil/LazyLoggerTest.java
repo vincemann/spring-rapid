@@ -45,7 +45,6 @@ class LazyLoggerTest {
     static final String LAZY_COL2_ENTITY2_NAME = "lazy Col2 Entity2";
 
 
-
     @Autowired
     LogChildService logChildService;
 
@@ -66,7 +65,6 @@ class LazyLoggerTest {
 
     @Autowired
     EagerSingleLogChildService eagerSingleLogChildService;
-
 
 
     LogEntity logEntity;
@@ -132,11 +130,11 @@ class LazyLoggerTest {
         TestConfig.USE_LAZY_LOGGER = Boolean.TRUE;
 
 
-        lazyLogger = LazyLogger.builder()
-                .ignoreLazyException(Boolean.TRUE)
-                .ignoreEntities(Boolean.FALSE)
-                .onlyLogLoaded(Boolean.FALSE)
-                .build();
+//        lazyLogger = LazyLogger.builder()
+//                .ignoreLazyException(Boolean.TRUE)
+//                .ignoreEntities(Boolean.FALSE)
+//                .onlyLogLoaded(Boolean.FALSE)
+//                .build();
 
 
         LogEntity savedLogEntity = logEntityService.save(logEntity);
@@ -147,25 +145,24 @@ class LazyLoggerTest {
         LogChild child12 = logChildService.save(lazyCol1_child2);
         child12.setLogEntity(savedLogEntity);
 
-        // todo erkennt circular ref eine ebene zu spät und es failt wenn man noch ein child hinzunimmt
         savedLogEntity.getLazyChildren1().add(child11);
         savedLogEntity.getLazyChildren1().add(child12);
 
         TestTransaction.flagForCommit();
         TestTransaction.end();
 
-        String logResult = lazyLogger.toString(savedLogEntity);
+        String logResult = savedLogEntity.toString();
         System.err.println(logResult);
 //        String s = savedLogEntity.toString();
 
 
-        assertContainsStringOnce(logResult,LOG_ENTITY_NAME);
-        assertContainsStringOnce(logResult,LAZY_COL1_ENTITY1_NAME);
-        assertContainsStringOnce(logResult,LAZY_COL1_ENTITY2_NAME);
-        assertContainsString(logResult,CIRCULAR_REFERENCE,2);
-        assertContainsIdOnce(logResult,savedLogEntity.getId());
-        assertContainsIdOnce(logResult,savedLogEntity.getId());
-        assertContainsIdOnce(logResult,savedLogEntity.getId());
+        assertContainsStringOnce(logResult, LOG_ENTITY_NAME);
+        assertContainsStringOnce(logResult, LAZY_COL1_ENTITY1_NAME);
+        assertContainsStringOnce(logResult, LAZY_COL1_ENTITY2_NAME);
+        assertContainsString(logResult, CIRCULAR_REFERENCE, 2);
+        assertContainsIdOnce(logResult, savedLogEntity.getId());
+        assertContainsIdOnce(logResult, child11.getId());
+        assertContainsIdOnce(logResult, child12.getId());
     }
 
     @Transactional
@@ -198,11 +195,11 @@ class LazyLoggerTest {
 
         System.err.println(s);
 
-        Assertions.assertTrue(s.contains(LazyLogger.LAZY_INIT_EXCEPTION_LIST_STRING));
+        assertContainsString(s, LazyLogger.LAZY_INIT_EXCEPTION_LIST_STRING, 2);
         Assertions.assertFalse(s.contains(LAZY_COL1_ENTITY1_NAME));
 
-        Assertions.assertTrue(s.contains(EAGER_CHILD_NAME));
-        Assertions.assertTrue(s.contains(LOG_ENTITY_NAME));
+        assertContainsStringOnce(s, EAGER_CHILD_NAME);
+        assertContainsStringOnce(s, LOG_ENTITY_NAME);
     }
 
     @Transactional
@@ -253,7 +250,6 @@ class LazyLoggerTest {
         logEntity.setEagerChild(savedEagerSingleChild);
 
 
-
         LogEntity e = logEntityService.save(logEntity);
         e.getLazyChildren1().add(lazyCol1_child1);
 
@@ -272,7 +268,7 @@ class LazyLoggerTest {
         Assertions.assertFalse(s.contains(LAZY_COL1_ENTITY1_NAME));
         Assertions.assertFalse(s.contains(EAGER_CHILD_NAME));
 
-        Assertions.assertTrue(s.contains(LOG_ENTITY_NAME));
+        assertContainsStringOnce(s, LOG_ENTITY_NAME);
 
     }
 
@@ -322,10 +318,10 @@ class LazyLoggerTest {
         Assertions.assertFalse(logResult.contains(LAZY_COL1_ENTITY2_NAME));
         Assertions.assertFalse(logResult.contains(EAGER_CHILD_NAME));
 
-        Assertions.assertTrue(logResult.contains(LazyLogger.IGNORED_STRING));
-        Assertions.assertTrue(logResult.contains(LOG_ENTITY_NAME));
-        Assertions.assertTrue(logResult.contains(LAZY_COL2_ENTITY1_NAME));
-        Assertions.assertTrue(logResult.contains(LAZY_COL2_ENTITY2_NAME));
+        assertContainsString(logResult, LazyLogger.IGNORED_STRING, 2);
+        assertContainsStringOnce(logResult, LOG_ENTITY_NAME);
+        assertContainsStringOnce(logResult, LAZY_COL2_ENTITY1_NAME);
+        assertContainsStringOnce(logResult, LAZY_COL2_ENTITY2_NAME);
     }
 
 
@@ -396,11 +392,11 @@ class LazyLoggerTest {
         System.err.println(logResult);
 
 
-        assertContainsStringOnce(logResult,LAZY_COL1_ENTITY1_NAME);
-        assertContainsStringOnce(logResult,LAZY_COL1_ENTITY2_NAME);
-        assertContainsStringOnce(logResult,EAGER_CHILD_NAME);
-        assertContainsStringOnce(logResult,LOG_ENTITY_NAME);
-        assertContainsStringOnce(logResult,IGNORED_UNLOADED_STRING);
+        assertContainsStringOnce(logResult, LAZY_COL1_ENTITY1_NAME);
+        assertContainsStringOnce(logResult, LAZY_COL1_ENTITY2_NAME);
+        assertContainsStringOnce(logResult, EAGER_CHILD_NAME);
+        assertContainsStringOnce(logResult, LOG_ENTITY_NAME);
+        assertContainsStringOnce(logResult, IGNORED_UNLOADED_STRING);
 
         Assertions.assertFalse(logResult.contains(LAZY_COL2_ENTITY1_NAME));
         Assertions.assertFalse(logResult.contains(LAZY_COL2_ENTITY2_NAME));
@@ -466,11 +462,11 @@ class LazyLoggerTest {
         System.err.println(logResult);
 
 
-        assertContainsStringOnce(logResult,LAZY_COL1_ENTITY1_NAME);
-        assertContainsStringOnce(logResult,LAZY_COL1_ENTITY2_NAME);
-        assertContainsStringOnce(logResult,EAGER_CHILD_NAME);
-        assertContainsStringOnce(logResult,LOG_ENTITY_NAME);
-        assertContainsStringOnce(logResult,IGNORED_UNLOADED_STRING);
+        assertContainsStringOnce(logResult, LAZY_COL1_ENTITY1_NAME);
+        assertContainsStringOnce(logResult, LAZY_COL1_ENTITY2_NAME);
+        assertContainsStringOnce(logResult, EAGER_CHILD_NAME);
+        assertContainsStringOnce(logResult, LOG_ENTITY_NAME);
+        assertContainsStringOnce(logResult, IGNORED_UNLOADED_STRING);
 
         Assertions.assertFalse(logResult.contains(LAZY_COL2_ENTITY1_NAME));
         Assertions.assertFalse(logResult.contains(LAZY_COL2_ENTITY2_NAME));
@@ -536,11 +532,11 @@ class LazyLoggerTest {
         System.err.println(logResult);
 
 
-        assertContainsStringOnce(logResult,LAZY_COL1_ENTITY1_NAME);
-        assertContainsStringOnce(logResult,LAZY_COL1_ENTITY2_NAME);
-        assertContainsStringOnce(logResult,EAGER_CHILD_NAME);
-        assertContainsStringOnce(logResult,LOG_ENTITY_NAME);
-        assertContainsStringOnce(logResult,IGNORED_LOAD_BLACKLISTED_STRING);
+        assertContainsStringOnce(logResult, LAZY_COL1_ENTITY1_NAME);
+        assertContainsStringOnce(logResult, LAZY_COL1_ENTITY2_NAME);
+        assertContainsStringOnce(logResult, EAGER_CHILD_NAME);
+        assertContainsStringOnce(logResult, LOG_ENTITY_NAME);
+        assertContainsStringOnce(logResult, IGNORED_LOAD_BLACKLISTED_STRING);
 
         Assertions.assertFalse(logResult.contains(LAZY_COL2_ENTITY1_NAME));
         Assertions.assertFalse(logResult.contains(LAZY_COL2_ENTITY2_NAME));
@@ -605,10 +601,10 @@ class LazyLoggerTest {
         System.err.println(logResult);
 
 
-        assertContainsStringOnce(logResult,LAZY_COL2_ENTITY1_NAME);
-        assertContainsStringOnce(logResult,EAGER_CHILD_NAME);
-        assertContainsStringOnce(logResult,LOG_ENTITY_NAME);
-        assertContainsStringOnce(logResult,TOO_MANY_ENTRIES_STRING);
+        assertContainsStringOnce(logResult, LAZY_COL2_ENTITY1_NAME);
+        assertContainsStringOnce(logResult, EAGER_CHILD_NAME);
+        assertContainsStringOnce(logResult, LOG_ENTITY_NAME);
+        assertContainsStringOnce(logResult, TOO_MANY_ENTRIES_STRING);
 
         Assertions.assertFalse(logResult.contains(LAZY_COL1_ENTITY1_NAME));
         Assertions.assertFalse(logResult.contains(LAZY_COL1_ENTITY2_NAME));
@@ -617,10 +613,10 @@ class LazyLoggerTest {
     @Transactional
     @Test
     void canLimitSpecificCollectionsLogSize() throws BadEntityException {
-        Map<String,Integer> maxEntityLimitations = new HashMap<>();
-        maxEntityLimitations.put("lazyChildren1",1);
-        maxEntityLimitations.put("lazyChildren2",1);
-        maxEntityLimitations.put("eagerChildren",3);
+        Map<String, Integer> maxEntityLimitations = new HashMap<>();
+        maxEntityLimitations.put("lazyChildren1", 1);
+        maxEntityLimitations.put("lazyChildren2", 1);
+        maxEntityLimitations.put("eagerChildren", 3);
 
         lazyLogger = LazyLogger.builder()
                 .ignoreLazyException(Boolean.TRUE)
@@ -690,11 +686,11 @@ class LazyLoggerTest {
         System.err.println(logResult);
 
 
-        assertContainsStringOnce(logResult,EAGER_ENTITY1_NAME);
-        assertContainsStringOnce(logResult,EAGER_ENTITY2_NAME);
-        assertContainsStringOnce(logResult,EAGER_CHILD_NAME);
-        assertContainsStringOnce(logResult,LOG_ENTITY_NAME);
-        assertContainsString(logResult,TOO_MANY_ENTRIES_STRING,2);
+        assertContainsStringOnce(logResult, EAGER_ENTITY1_NAME);
+        assertContainsStringOnce(logResult, EAGER_ENTITY2_NAME);
+        assertContainsStringOnce(logResult, EAGER_CHILD_NAME);
+        assertContainsStringOnce(logResult, LOG_ENTITY_NAME);
+        assertContainsString(logResult, TOO_MANY_ENTRIES_STRING, 2);
 
         Assertions.assertFalse(logResult.contains(LAZY_COL1_ENTITY1_NAME));
         Assertions.assertFalse(logResult.contains(LAZY_COL1_ENTITY2_NAME));
@@ -759,12 +755,12 @@ class LazyLoggerTest {
         System.err.println(logResult);
 
 
-        assertContainsIdOnce(logResult,child11.getId());
-        assertContainsIdOnce(logResult,child12.getId());
-        assertContainsIdOnce(logResult,child21.getId());
-        assertContainsIdOnce(logResult,child22.getId());
-        assertContainsIdOnce(logResult,savedEagerSingleChild.getId());
-        assertContainsStringOnce(logResult,LOG_ENTITY_NAME);
+        assertContainsIdOnce(logResult, child11.getId());
+        assertContainsIdOnce(logResult, child12.getId());
+        assertContainsIdOnce(logResult, child21.getId());
+        assertContainsIdOnce(logResult, child22.getId());
+        assertContainsIdOnce(logResult, savedEagerSingleChild.getId());
+        assertContainsStringOnce(logResult, LOG_ENTITY_NAME);
 
         Assertions.assertFalse(logResult.contains(LAZY_COL1_ENTITY1_NAME));
         Assertions.assertFalse(logResult.contains(LAZY_COL1_ENTITY2_NAME));
@@ -778,10 +774,10 @@ class LazyLoggerTest {
     @Test
     void canMapToId_andLimitResults() throws BadEntityException {
 
-        Map<String,Integer> maxEntityLimitations = new HashMap<>();
-        maxEntityLimitations.put("lazyChildren1",1);
-        maxEntityLimitations.put("lazyChildren2",1);
-        maxEntityLimitations.put("eagerChildren",3);
+        Map<String, Integer> maxEntityLimitations = new HashMap<>();
+        maxEntityLimitations.put("lazyChildren1", 1);
+        maxEntityLimitations.put("lazyChildren2", 1);
+        maxEntityLimitations.put("eagerChildren", 3);
 
 
         lazyLogger = LazyLogger.builder()
@@ -847,31 +843,42 @@ class LazyLoggerTest {
         System.err.println(logResult);
 
 
-        assertContainsIdOnce(logResult,child31.getId());
-        assertContainsIdOnce(logResult,child32.getId());
-        assertContainsString(logResult,TOO_MANY_ENTRIES_STRING,2);
-        assertContainsIdOnce(logResult,savedEagerSingleChild.getId());
-        assertContainsStringOnce(logResult,LOG_ENTITY_NAME);
+        assertContainsIdOnce(logResult, child31.getId());
+        assertContainsIdOnce(logResult, child32.getId());
+        assertContainsString(logResult, TOO_MANY_ENTRIES_STRING, 2);
+        assertContainsIdOnce(logResult, savedEagerSingleChild.getId());
+        assertContainsStringOnce(logResult, LOG_ENTITY_NAME);
     }
 
 
-    private void assertContainsStringOnce(String s, String subString){
-        Assertions.assertEquals(1,StringUtils.countMatches(s,subString));
+    private void assertContainsStringOnce(String s, String subString) {
+        Assertions.assertEquals(1, StringUtils.countMatches(s, subString));
     }
 
-    private void assertContainsIdOnce(String s, Long id){
-        if (id.equals(1L)){
-            assertContainsString(s,id.toString(),2);
-        }else if (id.equals(2L)){
-            assertContainsString(s,id.toString(),2);
-        }else {
-            assertContainsStringOnce(s,id.toString());
+    private void assertContainsIdOnce(String s, Long id) {
+        String refined = s
+                .replace(LAZY_CHILD_NAME, "")
+                .replace(EAGER_CHILD_NAME, "")
+                .replace(EAGER_ENTITY1_NAME, "")
+                .replace(EAGER_ENTITY2_NAME, "")
+                .replace(LAZY_CHILD_NAME, "")
+                .replace(LAZY_COL1_ENTITY1_NAME, "")
+                .replace(LAZY_COL1_ENTITY2_NAME, "")
+                .replace(LAZY_COL2_ENTITY1_NAME, "")
+                .replace(LAZY_COL2_ENTITY2_NAME, "");
+
+        if (id.equals(1L)) {
+            assertContainsString(refined, id.toString(), 2);
+        } else if (id.equals(2L)) {
+            assertContainsString(refined, id.toString(), 2);
+        } else {
+            assertContainsStringOnce(refined, id.toString());
         }
     }
 
 
-    private void assertContainsString(String s, String subString, Integer times){
-        Assertions.assertEquals(times,StringUtils.countMatches(s,subString));
+    private void assertContainsString(String s, String subString, Integer times) {
+        Assertions.assertEquals(times, StringUtils.countMatches(s, subString));
     }
 
     private boolean isLoaded(Object parent, String childPropertyName) {
