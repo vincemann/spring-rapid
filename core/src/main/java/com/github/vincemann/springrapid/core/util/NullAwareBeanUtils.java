@@ -9,6 +9,24 @@ import java.util.Set;
 public class NullAwareBeanUtils {
 
 
+    public static void copyProperties(Object toUpdate, Object update) {
+        BeanUtilsBean dontCopyNull = new NullAwareBeanUtilsBean();
+        try {
+            dontCopyNull.copyProperties(toUpdate, update);
+        } catch (IllegalAccessException | InvocationTargetException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public static void copyProperties(Object toUpdate, Object update, Set<String> whiteList) {
+        BeanUtilsBean dontCopyNullButWhitelisted = new WhitelistNullAwareBeanUtilsBean(whiteList);
+        try {
+            dontCopyNullButWhitelisted.copyProperties(toUpdate, update);
+        } catch (IllegalAccessException | InvocationTargetException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
     private static class NullAwareBeanUtilsBean extends BeanUtilsBean {
 
         /**
@@ -17,12 +35,12 @@ public class NullAwareBeanUtils {
         @Override
         public void copyProperty(Object dest, String name, Object value)
                 throws IllegalAccessException, InvocationTargetException {
-            if(value==null)return;
+            if (value == null) return;
             super.copyProperty(dest, name, value);
         }
     }
 
-    private static class WhitelistNullAwareBeanUtilsBean extends BeanUtilsBean{
+    private static class WhitelistNullAwareBeanUtilsBean extends BeanUtilsBean {
 
         private Set<String> whiteListed = new HashSet<>();
 
@@ -36,34 +54,18 @@ public class NullAwareBeanUtils {
         @Override
         public void copyProperty(Object dest, String name, Object value)
                 throws IllegalAccessException, InvocationTargetException {
-            if (!whiteListed.isEmpty()){
-                if (!whiteListed.contains(name)){
-                    return;
-                }
-            }else {
-                if(value==null){
+            if (!whiteListed.isEmpty()) {
+                if (whiteListed.contains(name)) {
+                    // value can be null, that's the purpose of the whitelist
+                    super.copyProperty(dest, name, value);
                     return;
                 }
             }
+            if (value == null) {
+                // ignore null value
+                return;
+            }
             super.copyProperty(dest, name, value);
-        }
-    }
-
-    public static void copyProperties(Object toUpdate, Object update){
-        BeanUtilsBean dontCopyNull = new NullAwareBeanUtilsBean();
-        try {
-            dontCopyNull.copyProperties(toUpdate, update);
-        } catch (IllegalAccessException | InvocationTargetException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-    public static void copyProperties(Object toUpdate, Object update, Set<String> whiteList){
-        BeanUtilsBean dontCopyNullButWhitelisted = new WhitelistNullAwareBeanUtilsBean(whiteList);
-        try {
-            dontCopyNullButWhitelisted.copyProperties(toUpdate, update);
-        } catch (IllegalAccessException | InvocationTargetException e) {
-            throw new RuntimeException(e);
         }
     }
 }

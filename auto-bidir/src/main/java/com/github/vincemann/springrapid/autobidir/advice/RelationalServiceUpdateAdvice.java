@@ -57,7 +57,7 @@ public class RelationalServiceUpdateAdvice {
     }
 
 
-
+    // todo fields to remove is ignored?? whats the purpose
     public void preBiDirEntity(JoinPoint joinPoint,  IdentifiableEntity entity, RelationalAdviceContext.UpdateKind updateKind, String... fieldsToRemove) throws EntityNotFoundException, BadEntityException {
         if (AutoBiDirUtils.isDisabled(joinPoint)){
             return;

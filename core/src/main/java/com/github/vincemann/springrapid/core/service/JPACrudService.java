@@ -70,7 +70,7 @@ public abstract class JPACrudService
     public E partialUpdate(E update, String... fieldsToRemove) throws EntityNotFoundException, BadEntityException {
         try {
                 E entityToUpdate = findOldEntity(update.getId());
-                //copy non null values from update to entityToUpdate
+                // copy non null values from update to entityToUpdate
                 // also copy null values from explicitly given fieldsToRemove
                 // values get copied to target already bc this is transactional
                 // -> update on managed entity is already happening here
