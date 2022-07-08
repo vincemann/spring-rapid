@@ -22,7 +22,6 @@ import static org.springframework.util.StringUtils.capitalize;
 /**
  * somehow there is state between tests, which makes some fail, but they run green if run solo
  */
-// todo fix this
 public class ModelMapperExerciseTests {
 
     @NoArgsConstructor
@@ -145,9 +144,9 @@ public class ModelMapperExerciseTests {
                 .build();
 
 
-        TypeMap<Gil, GilDto> typeMap = modelMapper.createTypeMap(Gil.class, GilDto.class);
-
-       String propertyToSkip = "age";
+//        TypeMap<Gil, GilDto> typeMap = modelMapper.createTypeMap(Gil.class, GilDto.class);
+//
+//       String propertyToSkip = "age";
 
         PropertyMap<Gil, GilDto> skippingPropertyMap = new PropertyMap<>() {
             @Override
@@ -175,7 +174,6 @@ public class ModelMapperExerciseTests {
         // https://groups.google.com/g/modelmapper/c/5sJdaMtEydg
         String propertyToMap = "name";
 
-// Naming convention that matches fields and properties whose names begin with "with"
         NamingConvention yourConvention = new NamingConvention() {
             public boolean applies(String propertyName, PropertyType propertyType) {
                 String property = propertyName.toLowerCase().substring(3);
@@ -188,7 +186,7 @@ public class ModelMapperExerciseTests {
         modelMapper.getConfiguration().setSourceNamingConvention(yourConvention);
         GilDto mapped = modelMapper.map(gil, GilDto.class);
         Assertions.assertEquals(gil.name, mapped.name);
-        Assertions.assertEquals(null, mapped.age);
+        Assertions.assertNull(mapped.getAge());
     }
 
     @Test
