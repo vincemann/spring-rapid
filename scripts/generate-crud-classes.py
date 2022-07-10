@@ -195,11 +195,3 @@ gen_service_class(service_dir_name)
 gen_dir_if_not_present(jpaservice_dir_name)
 gen_jpaservice_class(jpaservice_dir_name)
 
-
-
-
-
-
-
-
-
