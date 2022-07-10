@@ -2,6 +2,7 @@ package com.github.vincemann.springrapid.core.model;
 
 
 // import com.github.vincemann.smartlogger.SmartLogger;
+import com.github.vincemann.smartlogger.SmartLogger;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
 
@@ -36,8 +37,8 @@ public class IdentifiableEntityImpl<Id extends Serializable>
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         IdentifiableEntityImpl<?> other = (IdentifiableEntityImpl<?>) o;
-        //added null check here, otherwise entities with null ids are considered equal
-        //and cut down to one entity in a set for example
+        // added null check here, otherwise entities with null ids are considered equal
+        // and cut down to one entity in a set for example
         return id != null &&
                 id.equals(other.getId());
     }
@@ -47,10 +48,10 @@ public class IdentifiableEntityImpl<Id extends Serializable>
         return Objects.hash(id);
     }
 
-//    @Override
-//    public String toString() {
-//        return SmartLogger.builder()
-//                .build()
-//                .toString(this);
-//    }
+    @Override
+    public String toString() {
+        return SmartLogger.builder()
+                .build()
+                .toString(this);
+    }
 }

@@ -20,11 +20,11 @@
             <version>${aop-log.version}</version>
         </dependency>
 
-<!--        <dependency>-->
-<!--            <groupId>com.github.vincemann</groupId>-->
-<!--            <artifactId>smart-logger</artifactId>-->
-<!--            <version>${smart-logger.version}</version>-->
-<!--        </dependency>-->
+        <dependency>
+            <groupId>com.github.vincemann</groupId>
+            <artifactId>smart-logger</artifactId>
+            <version>${smart-logger.version}</version>
+        </dependency>
 
         <dependency>
             <groupId>com.github.vincemann.spring-rapid</groupId>

@@ -116,6 +116,9 @@ public abstract class AbstractCrudControllerTest
     }
 
 
+    /**
+     * perform and deserialize result to dtoClass
+     */
     public <Dto> Dto performDs2xx(RequestBuilder requestBuilder, Class<Dto> dtoClass) throws Exception {
        return performDsWithStatus(requestBuilder,status().is2xxSuccessful(),dtoClass);
     }
