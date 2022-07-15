@@ -14,6 +14,7 @@ import com.github.vincemann.springrapid.core.service.exception.EntityNotFoundExc
 import java.io.Serializable;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 
 public interface GenericUserServiceExtension<S extends UserService<U,Id>,U extends AbstractUser<Id>, Id extends Serializable>
         extends UserService<U,Id>, GenericCrudServiceExtension<S,U,Id>
@@ -98,6 +99,11 @@ public interface GenericUserServiceExtension<S extends UserService<U,Id>,U exten
     @Override
     default U partialUpdate(U entity, String... fieldsToRemove) throws EntityNotFoundException, BadEntityException {
         return getNext().partialUpdate(entity,fieldsToRemove);
+    }
+
+    @Override
+    default U partialUpdate(U update, Set<String> collectionsToUpdate, String... fieldsToRemove) throws EntityNotFoundException, BadEntityException {
+        return getNext().partialUpdate(update,collectionsToUpdate,fieldsToRemove);
     }
 
     @Override

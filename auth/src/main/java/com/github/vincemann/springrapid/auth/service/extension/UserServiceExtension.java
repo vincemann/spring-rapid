@@ -2,11 +2,9 @@ package com.github.vincemann.springrapid.auth.service.extension;
 
 import com.github.vincemann.springrapid.auth.AuthProperties;
 import com.github.vincemann.springrapid.auth.model.AbstractUser;
-import com.github.vincemann.springrapid.auth.dto.ChangePasswordDto;
-import com.github.vincemann.springrapid.auth.dto.RequestContactInformationChangeDto;
-import com.github.vincemann.springrapid.auth.dto.ResetPasswordDto;
 import com.github.vincemann.springrapid.auth.service.AlreadyRegisteredException;
 import com.github.vincemann.springrapid.auth.service.UserService;
+import com.github.vincemann.springrapid.core.model.IdentifiableEntity;
 import com.github.vincemann.springrapid.core.proxy.CrudServiceExtension;
 import com.github.vincemann.springrapid.core.service.exception.BadEntityException;
 import com.github.vincemann.springrapid.core.service.exception.EntityNotFoundException;
@@ -14,6 +12,7 @@ import com.github.vincemann.springrapid.core.service.exception.EntityNotFoundExc
 import java.io.Serializable;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 
 public interface UserServiceExtension<S extends UserService>
         extends CrudServiceExtension<S>, UserService
@@ -110,6 +109,12 @@ public interface UserServiceExtension<S extends UserService>
     default AbstractUser partialUpdate(AbstractUser entity, String... fieldsToRemove) throws EntityNotFoundException, BadEntityException {
         return getNext().partialUpdate(entity,fieldsToRemove);
     }
+
+    @Override
+    default AbstractUser partialUpdate(AbstractUser update, Set collectionsToUpdate, String... fieldsToRemove) throws EntityNotFoundException, BadEntityException {
+        return getNext().partialUpdate(update,collectionsToUpdate,fieldsToRemove);
+    }
+
 
     @Override
     default AbstractUser fullUpdate(AbstractUser entity) throws BadEntityException, EntityNotFoundException {

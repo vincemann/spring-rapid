@@ -67,15 +67,32 @@ public abstract class JPACrudService
 
     @Transactional
     @Override
+    public E partialUpdate(E update, Set<String> collectionsToUpdate, String... fieldsToRemove) throws EntityNotFoundException, BadEntityException {
+        try {
+            E entityToUpdate = findOldEntity(update.getId());
+            // copy non null values from update to entityToUpdate
+            // also copy null values from explicitly given fieldsToRemove
+            // values get copied to target already bc this is transactional
+            // -> update on managed entity is already happening here
+            NullAwareBeanUtils.copyProperties(entityToUpdate, update, collectionsToUpdate, Sets.newHashSet(fieldsToRemove));
+            return getRepository().save(entityToUpdate);
+        } catch (NonTransientDataAccessException e) {
+            // constraints not met, such as foreign key constraints or other db entity constraints
+            throw new BadEntityException(e);
+        }
+    }
+
+    @Transactional
+    @Override
     public E partialUpdate(E update, String... fieldsToRemove) throws EntityNotFoundException, BadEntityException {
         try {
-                E entityToUpdate = findOldEntity(update.getId());
-                // copy non null values from update to entityToUpdate
-                // also copy null values from explicitly given fieldsToRemove
-                // values get copied to target already bc this is transactional
-                // -> update on managed entity is already happening here
-                NullAwareBeanUtils.copyProperties(entityToUpdate, update, Sets.newHashSet(fieldsToRemove));
-                return getRepository().save(entityToUpdate);
+            E entityToUpdate = findOldEntity(update.getId());
+            // copy non null values from update to entityToUpdate
+            // also copy null values from explicitly given fieldsToRemove
+            // values get copied to target already bc this is transactional
+            // -> update on managed entity is already happening here
+            NullAwareBeanUtils.copyProperties(entityToUpdate, update, new HashSet<>(), Sets.newHashSet(fieldsToRemove));
+            return getRepository().save(entityToUpdate);
         } catch (NonTransientDataAccessException e) {
             // constraints not met, such as foreign key constraints or other db entity constraints
             throw new BadEntityException(e);
@@ -93,7 +110,6 @@ public abstract class JPACrudService
             throw new BadEntityException(e);
         }
     }
-
 
 
     @Transactional

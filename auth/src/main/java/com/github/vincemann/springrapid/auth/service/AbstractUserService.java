@@ -37,6 +37,7 @@ import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 
 
 @Validated
@@ -320,6 +321,12 @@ public abstract class AbstractUserService
     public U partialUpdate(U update, String... fieldsToRemove) throws EntityNotFoundException, BadEntityException {
         updateSpecialUserFields(update);
         return super.partialUpdate(update, fieldsToRemove);
+    }
+
+    @Override
+    public U partialUpdate(U entity, Set<String> collectionsToUpdate, String... fieldsToRemove) throws EntityNotFoundException, BadEntityException{
+        updateSpecialUserFields(entity);
+        return super.partialUpdate(entity,collectionsToUpdate, fieldsToRemove);
     }
 
     @Transactional(propagation = Propagation.REQUIRED, readOnly = false)

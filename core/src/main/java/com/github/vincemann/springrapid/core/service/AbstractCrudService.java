@@ -2,17 +2,21 @@ package com.github.vincemann.springrapid.core.service;
 
 import com.github.vincemann.springrapid.core.model.IdentifiableEntity;
 import com.github.vincemann.springrapid.core.proxy.ServiceExtensionProxy;
+import com.github.vincemann.springrapid.core.service.exception.BadEntityException;
+import com.github.vincemann.springrapid.core.service.exception.EntityNotFoundException;
 import com.github.vincemann.springrapid.core.slicing.ServiceComponent;
 import com.github.vincemann.springrapid.core.util.ProxyUtils;
 import org.springframework.aop.TargetClassAware;
 import org.springframework.aop.support.AopUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.repository.CrudRepository;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.io.Serializable;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Proxy;
+import java.util.Set;
 
 
 @ServiceComponent
@@ -71,4 +75,5 @@ public abstract class AbstractCrudService
 //        }
         this.beanName = name;
     }
+
 }

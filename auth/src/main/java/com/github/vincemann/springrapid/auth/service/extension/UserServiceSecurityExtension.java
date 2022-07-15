@@ -27,6 +27,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.io.Serializable;
 import java.util.Optional;
+import java.util.Set;
 
 
 @Transactional
@@ -84,6 +85,11 @@ public class UserServiceSecurityExtension
         return getLast().partialUpdate(entity,fieldsToRemove);
     }
 
+    @Override
+    public AbstractUser partialUpdate(AbstractUser entity, Set collectionsToUpdate, String... fieldsToRemove) throws EntityNotFoundException, BadEntityException {
+        checkUpdatePermissions(entity);
+        return getLast().partialUpdate(entity,collectionsToUpdate,fieldsToRemove);
+    }
 
     protected void checkUpdatePermissions(AbstractUser update) throws EntityNotFoundException, BadEntityException {
         getSecurityChecker().checkPermission(update, BasePermission.WRITE);

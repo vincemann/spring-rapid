@@ -33,6 +33,11 @@ public interface GenericCrudServiceExtension<S extends CrudService<E,Id>,E exten
 
 
     @Override
+    default E partialUpdate(E update, Set<String> collectionsToUpdate, String... fieldsToRemove) throws EntityNotFoundException, BadEntityException {
+        return getNext().partialUpdate(update,collectionsToUpdate,fieldsToRemove);
+    }
+
+    @Override
     default E fullUpdate(E entity) throws BadEntityException, EntityNotFoundException {
         return getNext().fullUpdate(entity);
     }

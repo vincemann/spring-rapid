@@ -3,6 +3,7 @@ package com.github.vincemann.springrapid.core.util;
 import org.apache.commons.beanutils.BeanUtilsBean;
 
 import java.lang.reflect.InvocationTargetException;
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -18,8 +19,8 @@ public class NullAwareBeanUtils {
         }
     }
 
-    public static void copyProperties(Object toUpdate, Object update, Set<String> whiteList) {
-        BeanUtilsBean dontCopyNullButWhitelisted = new WhitelistNullAwareBeanUtilsBean(whiteList);
+    public static void copyProperties(Object toUpdate, Object update, Set<String> collectionsWhitelist, Set<String> whiteList) {
+        BeanUtilsBean dontCopyNullButWhitelisted = new WhitelistNullAwareBeanUtilsBean(whiteList, collectionsWhitelist);
         try {
             dontCopyNullButWhitelisted.copyProperties(toUpdate, update);
         } catch (IllegalAccessException | InvocationTargetException e) {
@@ -43,9 +44,11 @@ public class NullAwareBeanUtils {
     private static class WhitelistNullAwareBeanUtilsBean extends BeanUtilsBean {
 
         private Set<String> whiteListed = new HashSet<>();
+        private Set<String> collectionsWhitelist = new HashSet<>();
 
-        public WhitelistNullAwareBeanUtilsBean(Set<String> whiteListed) {
+        public WhitelistNullAwareBeanUtilsBean(Set<String> whiteListed, Set<String> collectionsWhitelist) {
             this.whiteListed = whiteListed;
+            this.collectionsWhitelist = collectionsWhitelist;
         }
 
         /**
@@ -61,10 +64,22 @@ public class NullAwareBeanUtils {
                     return;
                 }
             }
+
             if (value == null) {
                 // ignore null value
                 return;
             }
+            if (Collection.class.isAssignableFrom(value.getClass())){
+                if (!collectionsWhitelist.isEmpty()){
+                    if (collectionsWhitelist.contains(name)){
+                        super.copyProperty(dest, name, value);
+                        return;
+                    }
+                }
+                // ignore non whitelisted property
+                return;
+            }
+
             super.copyProperty(dest, name, value);
         }
     }

@@ -18,6 +18,7 @@ import javax.validation.constraints.NotBlank;
 import java.io.Serializable;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 
 @Validated
 @ServiceComponent
@@ -72,6 +73,8 @@ public interface UserService<U extends AbstractUser<ID>, ID extends Serializable
     // keep it like that, otherwise the AbstractUser type wont be in impl methods
     @Override
     U partialUpdate(U entity, String... fieldsToRemove) throws EntityNotFoundException, BadEntityException;
+
+    U partialUpdate(U entity, Set<String> collectionsToUpdate, String... fieldsToRemove) throws EntityNotFoundException, BadEntityException;
 
     @Override
     U fullUpdate(U entity) throws BadEntityException, EntityNotFoundException;

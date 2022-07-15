@@ -18,6 +18,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 
+import java.util.Set;
+
 import static com.github.vincemann.springrapid.core.util.ProxyUtils.isRootService;
 
 @Slf4j
@@ -39,6 +41,13 @@ public class RelationalServiceUpdateAdvice {
             "com.github.vincemann.springrapid.core.advice.SystemArchitecture.serviceOperation() && " +
             "args(updateEntity,fieldsToRemove)")
     public void prePartialUpdateRelEntity(JoinPoint joinPoint, IdentifiableEntity updateEntity, String... fieldsToRemove) throws EntityNotFoundException, BadEntityException {
+        preBiDirEntity(joinPoint,updateEntity,RelationalAdviceContext.UpdateKind.PARTIAL);
+    }
+
+    @Before(value = "com.github.vincemann.springrapid.core.advice.SystemArchitecture.partialUpdateOperation() && " +
+            "com.github.vincemann.springrapid.core.advice.SystemArchitecture.serviceOperation() && " +
+            "args(updateEntity,collectionsToUpdate, fieldsToRemove)")
+    public void prePartialUpdateRelEntity(JoinPoint joinPoint, IdentifiableEntity updateEntity,Set<String> collectionsToUpdate, String... fieldsToRemove) throws EntityNotFoundException, BadEntityException {
         preBiDirEntity(joinPoint,updateEntity,RelationalAdviceContext.UpdateKind.PARTIAL);
     }
 
