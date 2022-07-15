@@ -26,7 +26,7 @@
         <lombok.version>1.18.8</lombok.version>
         <javax.validation.version>2.0.1.Final</javax.validation.version>
         <guava.version>30.0-jre</guava.version>
-        <aop-log.version>1.0.0-SNAPSHOT.5</aop-log.version>
+        <aop-log.version>1.0.0-SNAPSHOT.6</aop-log.version>
         <smart-logger.version>1.0.0-SNAPSHOT.1</smart-logger.version>
     </properties>
 
