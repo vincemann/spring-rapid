@@ -3,10 +3,7 @@ package com.github.vincemann.springrapid.coredemo.mapper;
 import com.github.vincemann.springrapid.coredemo.model.abs.Person;
 import com.google.common.collect.Sets;
 import lombok.*;
-import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Disabled;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.*;
 import org.modelmapper.*;
 import org.modelmapper.spi.*;
 import org.springframework.util.ReflectionUtils;
@@ -55,6 +52,15 @@ public class ModelMapperExerciseTests {
     void setUp() {
         this.modelMapper = new ModelMapper();
     }
+
+//    @AfterEach
+//    void tearDown() {
+//        try {
+//            this.modelMapper.getTypeMaps().clear();
+//        }catch (UnsupportedOperationException e){
+//            System.err.println(e);
+//        }
+//    }
 
     @Test
     public void testSimpleMapping() {
