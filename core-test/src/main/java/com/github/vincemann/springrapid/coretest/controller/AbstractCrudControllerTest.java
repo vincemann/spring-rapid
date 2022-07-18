@@ -24,6 +24,7 @@ import org.springframework.test.web.servlet.*;
 import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
 import org.springframework.test.web.servlet.setup.DefaultMockMvcBuilder;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
+import org.springframework.util.Assert;
 import org.springframework.util.ReflectionUtils;
 import org.springframework.web.context.WebApplicationContext;
 
@@ -135,23 +136,29 @@ public abstract class AbstractCrudControllerTest
     // CONVENIENCE METHODS SO USER DOES NOT HAVE TO CALL testTemplate.foo(...)
 
     public MockHttpServletRequestBuilder delete(Object id) throws Exception{
+        Assert.notNull(id);
         return testTemplate.delete(id.toString());
     }
 
     public MockHttpServletRequestBuilder find(Object id) throws Exception{
+        Assert.notNull(id);
         return testTemplate.find(id.toString());
     }
 
     public MockHttpServletRequestBuilder update(String patchString, Object id) throws Exception{
+        Assert.notNull(id);
+        Assert.notNull(patchString);
         return testTemplate.update(patchString,id.toString());
     }
 
 
     public <E extends IdentifiableEntity<?>> E mapToEntity(Object dto) throws BadEntityException, EntityNotFoundException {
+        Assert.notNull(dto)
         return (E) testTemplate.mapToEntity(dto);
     }
 
     public  MockHttpServletRequestBuilder create(Object dto) throws Exception {
+        Assert.notNull(dto);
         return testTemplate.create(dto);
     }
 
