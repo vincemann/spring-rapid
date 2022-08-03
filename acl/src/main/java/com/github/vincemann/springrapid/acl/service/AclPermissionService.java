@@ -1,7 +1,7 @@
 package com.github.vincemann.springrapid.acl.service;
 
 import com.github.vincemann.aoplog.Severity;
-import com.github.vincemann.aoplog.api.LogInteraction;
+import com.github.vincemann.aoplog.api.annotation.LogInteraction;
 import com.github.vincemann.springrapid.core.model.IdentifiableEntity;
 import org.springframework.security.acls.model.Permission;
 

@@ -2,9 +2,9 @@ package com.github.vincemann.springrapid.core.model;
 
 
 
-// import com.github.vincemann.smartlogger.SmartLogger;
+// import com.github.vincemann.shortsmartlogger.SmartLogger;
 
-import com.github.vincemann.smartlogger.SmartLogger;
+import com.github.vincemann.shortsmartlogger.SmartLogger;
 
 import java.io.Serializable;
 

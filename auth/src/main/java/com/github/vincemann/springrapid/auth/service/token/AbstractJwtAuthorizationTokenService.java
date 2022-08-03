@@ -1,7 +1,7 @@
 package com.github.vincemann.springrapid.auth.service.token;
 
 import com.github.vincemann.aoplog.api.AopLoggable;
-import com.github.vincemann.aoplog.api.LogInteraction;
+import com.github.vincemann.aoplog.api.annotation.LogInteraction;
 import com.github.vincemann.springrapid.auth.AuthProperties;
 import com.github.vincemann.springrapid.auth.security.JwtClaimsToPrincipalConverter;
 import com.github.vincemann.springrapid.auth.util.RapidJwt;

@@ -1,7 +1,7 @@
 package com.github.vincemann.springrapid.acl;
 
 import com.github.vincemann.aoplog.api.AopLoggable;
-import com.github.vincemann.aoplog.api.LogInteraction;
+import com.github.vincemann.aoplog.api.annotation.LogInteraction;
 import com.github.vincemann.springrapid.core.model.IdentifiableEntity;
 import com.github.vincemann.springrapid.core.slicing.ServiceComponent;
 import org.springframework.security.access.AccessDeniedException;

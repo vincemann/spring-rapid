@@ -2,11 +2,10 @@ package com.github.vincemann.springrapid.core.controller.validationStrategy;
 
 import com.github.vincemann.aoplog.Severity;
 import com.github.vincemann.aoplog.api.AopLoggable;
-import com.github.vincemann.aoplog.api.LogInteraction;
+import com.github.vincemann.aoplog.api.annotation.LogInteraction;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.ConstraintViolationException;
-import java.io.Serializable;
 
 
 public interface DtoValidationStrategy extends AopLoggable {

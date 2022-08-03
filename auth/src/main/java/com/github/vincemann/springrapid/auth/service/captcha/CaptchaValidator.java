@@ -2,7 +2,7 @@ package com.github.vincemann.springrapid.auth.service.captcha;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.github.vincemann.aoplog.api.AopLoggable;
-import com.github.vincemann.aoplog.api.LogInteraction;
+import com.github.vincemann.aoplog.api.annotation.LogInteraction;
 import com.github.vincemann.springrapid.auth.AuthProperties;
 import com.github.vincemann.springrapid.core.slicing.ServiceComponent;
 import lombok.extern.slf4j.Slf4j;

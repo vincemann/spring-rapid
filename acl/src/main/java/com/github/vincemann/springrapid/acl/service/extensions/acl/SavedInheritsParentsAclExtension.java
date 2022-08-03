@@ -1,7 +1,7 @@
 package com.github.vincemann.springrapid.acl.service.extensions.acl;
 
 
-import com.github.vincemann.aoplog.api.LogInteraction;
+import com.github.vincemann.aoplog.api.annotation.LogInteraction;
 import com.github.vincemann.springrapid.acl.model.AclParentAware;
 import com.github.vincemann.springrapid.acl.service.AclNotFoundException;
 import com.github.vincemann.springrapid.core.model.IdentifiableEntity;

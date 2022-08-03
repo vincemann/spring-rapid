@@ -1,6 +1,6 @@
 package com.github.vincemann.springrapid.core.controller.dto.mapper;
 
-import com.github.vincemann.aoplog.api.LogInteraction;
+import com.github.vincemann.aoplog.api.annotation.LogInteraction;
 import com.github.vincemann.springrapid.core.service.exception.BadEntityException;
 
 public interface EntityDtoPostProcessor<Dto,E/* extends IdentifiableEntity<?>*/> {

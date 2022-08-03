@@ -1,7 +1,7 @@
 package com.github.vincemann.springlemon.exceptions;
 
 import com.github.vincemann.aoplog.api.AopLoggable;
-import com.github.vincemann.aoplog.api.LogInteraction;
+import com.github.vincemann.aoplog.api.annotation.LogInteraction;
 
 import java.util.Optional;
 

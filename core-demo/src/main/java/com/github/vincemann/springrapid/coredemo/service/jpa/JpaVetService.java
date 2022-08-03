@@ -1,7 +1,6 @@
 package com.github.vincemann.springrapid.coredemo.service.jpa;
 
-import com.github.vincemann.aoplog.api.LogInteraction;
-import com.github.vincemann.springrapid.coredemo.model.Owner;
+import com.github.vincemann.aoplog.api.annotation.LogInteraction;
 import com.github.vincemann.springrapid.coredemo.model.Vet;
 import com.github.vincemann.springrapid.coredemo.repo.VetRepository;
 import com.github.vincemann.springrapid.coredemo.service.VetService;

@@ -1,9 +1,6 @@
 package com.github.vincemann.springrapid.core.config;
 
-import com.github.vincemann.aoplog.GlobalRegExMethodFilter;
-import com.github.vincemann.aoplog.InvocationDescriptorFactoryImpl;
-import com.github.vincemann.aoplog.ProxyAwareAopLogger;
-import com.github.vincemann.aoplog.ThreadAwareIndentingLogAdapter;
+import com.github.vincemann.aoplog.*;
 import com.github.vincemann.aoplog.parseAnnotation.TypeHierarchyAnnotationParser;
 import com.google.common.collect.Sets;
 import lombok.extern.slf4j.Slf4j;
@@ -12,8 +9,6 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.EnableAspectJAutoProxy;
 
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
 import java.util.Set;
 
 import static com.github.vincemann.aoplog.Patterns.GETTER_REGEX;
@@ -33,10 +28,10 @@ public class RapidAopLogAutoConfiguration {
 
     @ConditionalOnMissingBean(ProxyAwareAopLogger.class)
     @Bean
-    public ProxyAwareAopLogger aopLogger() {
+    public ProxyAwareAopLogger aopLogger(CustomLoggerInfoFactory customLoggerInfoFactory) {
         GlobalRegExMethodFilter globalRegExMethodFilter = new GlobalRegExMethodFilter(
                 GETTER_REGEX,SETTER_REGEX,"equals","hashCode","toString","^inject[A-Za-z0-9]*");
-        ProxyAwareAopLogger aopLogger = new ProxyAwareAopLogger(new TypeHierarchyAnnotationParser(),new InvocationDescriptorFactoryImpl(),globalRegExMethodFilter);
+        ProxyAwareAopLogger aopLogger = new ProxyAwareAopLogger(new TypeHierarchyAnnotationParser(),new InvocationDescriptorFactoryImpl(), customLoggerInfoFactory, globalRegExMethodFilter);
         aopLogger.setLogAdapter(new ThreadAwareIndentingLogAdapter(SKIP_NULL_FIELDS, CROP_THRESHOLD, EXCLUDE_SECURE_FIELD_NAMES,FORCE_REFLECTION));
         return aopLogger;
     }

@@ -153,7 +153,7 @@ public abstract class AbstractCrudControllerTest
 
 
     public <E extends IdentifiableEntity<?>> E mapToEntity(Object dto) throws BadEntityException, EntityNotFoundException {
-        Assert.notNull(dto)
+        Assert.notNull(dto);
         return (E) testTemplate.mapToEntity(dto);
     }
 
