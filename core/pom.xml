@@ -9,7 +9,7 @@
     <parent>
         <groupId>com.github.vincemann</groupId>
         <artifactId>spring-rapid</artifactId>
-        <version>1.0.0-SNAPSHOT.12</version>
+        <version>1.0.0-SNAPSHOT.13</version>
     </parent>
 
     <dependencies>
@@ -22,7 +22,7 @@
 
         <dependency>
             <groupId>com.github.vincemann</groupId>
-            <artifactId>short-smart-logger</artifactId>
+            <artifactId>smart-logger</artifactId>
             <version>${smart-logger.version}</version>
         </dependency>
 

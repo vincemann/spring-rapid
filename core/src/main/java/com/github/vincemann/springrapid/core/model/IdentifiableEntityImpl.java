@@ -1,9 +1,8 @@
 package com.github.vincemann.springrapid.core.model;
 
 
-import com.github.vincemann.shortsmartlogger.SmartLogger;
+import com.github.vincemann.smartlogger.SmartLogger;
 import lombok.NoArgsConstructor;
-import lombok.ToString;
 
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
