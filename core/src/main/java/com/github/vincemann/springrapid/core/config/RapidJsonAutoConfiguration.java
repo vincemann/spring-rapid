@@ -5,7 +5,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.github.vincemann.springrapid.core.CoreProperties;
-import com.github.vincemann.springrapid.core.controller.LoggingObjectMapper;
 import com.github.vincemann.springrapid.core.controller.json.JsonDtoPropertyValidator;
 import com.github.vincemann.springrapid.core.controller.json.JsonMapper;
 import com.github.vincemann.springrapid.core.controller.json.RapidJsonDtoPropertyValidator;
@@ -44,7 +43,7 @@ public class RapidJsonAutoConfiguration implements WebMvcConfigurer {
     @Bean
     public ObjectMapper objectMapper(){
         log.debug("Created Rapid Logging JsonMapper.");
-        ObjectMapper mapper= new LoggingObjectMapper();
+        ObjectMapper mapper= new ObjectMapper();
         mapper.registerModule(new JavaTimeModule());
         mapper.configure(ACCEPT_SINGLE_VALUE_AS_ARRAY,true);
         mapper.configure(MapperFeature.USE_STATIC_TYPING,true);
