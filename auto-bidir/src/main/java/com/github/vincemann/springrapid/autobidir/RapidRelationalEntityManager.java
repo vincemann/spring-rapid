@@ -64,19 +64,20 @@ public class RapidRelationalEntityManager implements RelationalEntityManager {
     }
 
 
+    // todo infer membersToCheck cached again in RelationalServiceUpdateAdvice from single source and pass down this method
     @Override
-    public <E extends IdentifiableEntity> E partialUpdate(E oldEntity, E partialUpdateEntity, String... membersToCheck) throws EntityNotFoundException, BadEntityException {
+    public <E extends IdentifiableEntity> E partialUpdate(E oldEntity, E updateEntity, String... membersToCheck) throws EntityNotFoundException, BadEntityException {
         // only operate on non null fields of partialUpdateEntity
         Set<RelationalEntityType> relationalEntityTypes = relationalEntityManagerUtil.inferTypes(oldEntity.getClass());
         if (relationalEntityTypes.contains(RelationalEntityType.BiDirParent)) {
             if (log.isDebugEnabled())
                 log.debug("applying pre partial-update BiDirParent logic for: " + oldEntity.getClass());
-            partialUpdateBiDirParentRelations(oldEntity, partialUpdateEntity, membersToCheck);
+            updateBiDirParentRelations(oldEntity, updateEntity,membersToCheck);
         }
         if (relationalEntityTypes.contains(RelationalEntityType.BiDirChild)) {
             if (log.isDebugEnabled())
                 log.debug("applying pre partial-update BiDirChild logic for: " + oldEntity.getClass());
-            partialUpdateBiDirChildRelations(oldEntity, partialUpdateEntity,membersToCheck);
+            updateBiDirChildRelations(oldEntity, updateEntity,membersToCheck);
         }
         // should be updated now, otherwise we need parameter updateEntity instead
         return oldEntity;
@@ -194,109 +195,109 @@ public class RapidRelationalEntityManager implements RelationalEntityManager {
 //        entityManager.merge(parent); wont do no harm, maybe needed if newChild is detached?
     }
 
-    public Collection<IdentifiableEntity> partialUpdateBiDirParentRelations(IdentifiableEntity oldParent, IdentifiableEntity partialUpdateParent, String... membersToCheck) throws BadEntityException, EntityNotFoundException {
-
-        Collection<IdentifiableEntity> oldChildren = relationalEntityManagerUtil.findAllBiDirChildren(oldParent,membersToCheck);
-        Collection<IdentifiableEntity> newChildren = relationalEntityManagerUtil.findAllBiDirChildren(partialUpdateParent,membersToCheck);
-
-        //find Children to unlink
-        List<IdentifiableEntity> removedChildren = new ArrayList<>();
-        for (IdentifiableEntity oldChild : oldChildren) {
-            if (!newChildren.contains(oldChild)) {
-                removedChildren.add(oldChild);
-            }
-        }
-
-        //find added Children
-        List<IdentifiableEntity> addedChildren = new ArrayList<>();
-        for (IdentifiableEntity newChild : newChildren) {
-            if (!oldChildren.contains(newChild)) {
-                addedChildren.add(newChild);
-            }else {
-                // all children need to be merged, non added children can be merged here already
-                entityManager.merge(newChild);
-            }
-        }
-
-        adjustUpdatedEntities(addedChildren, removedChildren);
-
-        //unlink removed Children from updateParent
-        for (IdentifiableEntity removedChild : removedChildren) {
-            if (log.isDebugEnabled()){
-                log.debug("update: unlinking child: " + removedChild+ " from parent: " + oldParent);
-                log.debug("update: unlinking parent: " + oldParent + " from child: " + removedChild);
-            }
-//            relationalEntityManagerUtil.unlinkBiDirParent(removedChild, oldParent);
-            relationalEntityManagerUtil.unlinkBiDirChild(oldParent,removedChild,membersToCheck);
-            relationalEntityManagerUtil.unlinkBiDirParent(removedChild, oldParent); // somehow does not make a difference but makes more sense like that imo
-        }
-
-        //link added Children to updateParent
-        for (IdentifiableEntity addedChild : addedChildren) {
-            if (log.isDebugEnabled())
-                log.debug("update: linking child: " + addedChild + " to parent: " + oldParent);
-            // illness gets set of pets updated, illness = child
-            relationalEntityManagerUtil.linkBiDirChild(oldParent,addedChild,membersToCheck);
-            if (log.isDebugEnabled())
-                log.debug("update: linking parent: " + oldParent + " to child: " + addedChild);
-            relationalEntityManagerUtil.linkBiDirParent(addedChild, oldParent);
-            // new children may be detached, so merge them , must happen after linking!
-            entityManager.merge(addedChild);
-        }
-        return newChildren;
-//        entityManager.merge(updateParent); wont do no harm, maybe needed if newChild is detached?
-    }
-
-    private Collection<IdentifiableEntity> partialUpdateBiDirChildRelations(IdentifiableEntity oldChild, IdentifiableEntity partialUpdateChild, String[] membersToCheck) {
-        Collection<IdentifiableEntity> oldParents = relationalEntityManagerUtil.findAllBiDirParents(oldChild,membersToCheck);
-        Collection<IdentifiableEntity> newParents = relationalEntityManagerUtil.findAllBiDirParents(partialUpdateChild, membersToCheck);
-
-        //find parents to unlink
-        List<IdentifiableEntity> removedParents = new ArrayList<>();
-        for (IdentifiableEntity oldParent : oldParents) {
-            if (!newParents.contains(oldParent)) {
-                removedParents.add(oldParent);
-            }
-        }
-
-        //find added parents
-        List<IdentifiableEntity> addedParents = new ArrayList<>();
-        for (IdentifiableEntity newParent : newParents) {
-            if (!oldParents.contains(newParent)) {
-                addedParents.add(newParent);
-            }else {
-                // all parents need to be merged, non added children can be merged here already
-                entityManager.merge(newParent);
-            }
-        }
-
-        adjustUpdatedEntities(addedParents, removedParents);
-
-        // unlink Child from certain Parents
-        for (IdentifiableEntity removedParent : removedParents) {
-            if (log.isDebugEnabled())
-                log.debug("update: unlinking parent: " + removedParent + " from child: " + oldChild);
-//            relationalEntityManagerUtil.unlinkBiDirChild(removedParent, oldChild);
-            relationalEntityManagerUtil.unlinkBiDirParent(partialUpdateChild,removedParent);
-            if (log.isDebugEnabled())
-                log.debug("update: unlinking child: " + oldChild+ " from parent: " + removedParent);
-            relationalEntityManagerUtil.unlinkBiDirChild(removedParent, partialUpdateChild);  // somehow does not make a difference but makes more sense like that imo
-        }
-
-        // link added Parent to child
-        for (IdentifiableEntity addedParent : addedParents) {
-            if (log.isDebugEnabled())
-                log.debug("update: linking parent: " + addedParent + " to child: " + oldChild);
-            relationalEntityManagerUtil.linkBiDirParent(partialUpdateChild,addedParent);
-            if (log.isDebugEnabled())
-                log.debug("update: linking child: " + oldChild + " to parent: " + addedParent);
-            relationalEntityManagerUtil.linkBiDirChild(addedParent, partialUpdateChild);
-            // new parents may be detached, so merge them, must happen after linking!
-            entityManager.merge(addedParent);
-        }
-//        entityManager.merge(child); wont do no harm, maybe needed if child is detached?
-        return newParents;
-    }
+//    public Collection<IdentifiableEntity> partialUpdateBiDirParentRelations(IdentifiableEntity oldParent, IdentifiableEntity partialUpdateParent, String... membersToCheck) throws BadEntityException, EntityNotFoundException {
+//
+//        Collection<IdentifiableEntity> oldChildren = relationalEntityManagerUtil.findAllBiDirChildren(oldParent,membersToCheck);
+//        Collection<IdentifiableEntity> newChildren = relationalEntityManagerUtil.findAllBiDirChildren(partialUpdateParent,membersToCheck);
+//
+//        //find Children to unlink
+//        List<IdentifiableEntity> removedChildren = new ArrayList<>();
+//        for (IdentifiableEntity oldChild : oldChildren) {
+//            if (!newChildren.contains(oldChild)) {
+//                removedChildren.add(oldChild);
+//            }
+//        }
+//
+//        //find added Children
+//        List<IdentifiableEntity> addedChildren = new ArrayList<>();
+//        for (IdentifiableEntity newChild : newChildren) {
+//            if (!oldChildren.contains(newChild)) {
+//                addedChildren.add(newChild);
+//            }else {
+//                // all children need to be merged, non added children can be merged here already
+//                entityManager.merge(newChild);
+//            }
+//        }
+//
+//        adjustUpdatedEntities(addedChildren, removedChildren);
+//
+//        //unlink removed Children from updateParent
+//        for (IdentifiableEntity removedChild : removedChildren) {
+//            if (log.isDebugEnabled()){
+//                log.debug("update: unlinking child: " + removedChild+ " from parent: " + oldParent);
+//                log.debug("update: unlinking parent: " + oldParent + " from child: " + removedChild);
+//            }
+////            relationalEntityManagerUtil.unlinkBiDirParent(removedChild, oldParent);
+//            relationalEntityManagerUtil.unlinkBiDirChild(oldParent,removedChild,membersToCheck);
+//            relationalEntityManagerUtil.unlinkBiDirParent(removedChild, oldParent); // somehow does not make a difference but makes more sense like that imo
+//        }
+//
+//        //link added Children to updateParent
+//        for (IdentifiableEntity addedChild : addedChildren) {
+//            if (log.isDebugEnabled())
+//                log.debug("update: linking child: " + addedChild + " to parent: " + oldParent);
+//            // illness gets set of pets updated, illness = child
+//            relationalEntityManagerUtil.linkBiDirChild(oldParent,addedChild,membersToCheck);
+//            if (log.isDebugEnabled())
+//                log.debug("update: linking parent: " + oldParent + " to child: " + addedChild);
+//            relationalEntityManagerUtil.linkBiDirParent(addedChild, oldParent);
+//            // new children may be detached, so merge them , must happen after linking!
+//            entityManager.merge(addedChild);
+//        }
+//        return newChildren;
+////        entityManager.merge(updateParent); wont do no harm, maybe needed if newChild is detached?
+//    }
+//
+//    private Collection<IdentifiableEntity> partialUpdateBiDirChildRelations(IdentifiableEntity oldChild, IdentifiableEntity partialUpdateChild, String[] membersToCheck) {
+//        Collection<IdentifiableEntity> oldParents = relationalEntityManagerUtil.findAllBiDirParents(oldChild,membersToCheck);
+//        Collection<IdentifiableEntity> newParents = relationalEntityManagerUtil.findAllBiDirParents(partialUpdateChild, membersToCheck);
+//
+//        //find parents to unlink
+//        List<IdentifiableEntity> removedParents = new ArrayList<>();
+//        for (IdentifiableEntity oldParent : oldParents) {
+//            if (!newParents.contains(oldParent)) {
+//                removedParents.add(oldParent);
+//            }
+//        }
+//
+//        //find added parents
+//        List<IdentifiableEntity> addedParents = new ArrayList<>();
+//        for (IdentifiableEntity newParent : newParents) {
+//            if (!oldParents.contains(newParent)) {
+//                addedParents.add(newParent);
+//            }else {
+//                // all parents need to be merged, non added children can be merged here already
+//                entityManager.merge(newParent);
+//            }
+//        }
+//
+//        adjustUpdatedEntities(addedParents, removedParents);
+//
+//        // unlink Child from certain Parents
+//        for (IdentifiableEntity removedParent : removedParents) {
+//            if (log.isDebugEnabled())
+//                log.debug("update: unlinking parent: " + removedParent + " from child: " + oldChild);
+////            relationalEntityManagerUtil.unlinkBiDirChild(removedParent, oldChild);
+//            relationalEntityManagerUtil.unlinkBiDirParent(partialUpdateChild,removedParent);
+//            if (log.isDebugEnabled())
+//                log.debug("update: unlinking child: " + oldChild+ " from parent: " + removedParent);
+//            relationalEntityManagerUtil.unlinkBiDirChild(removedParent, partialUpdateChild);  // somehow does not make a difference but makes more sense like that imo
+//        }
+//
+//        // link added Parent to child
+//        for (IdentifiableEntity addedParent : addedParents) {
+//            if (log.isDebugEnabled())
+//                log.debug("update: linking parent: " + addedParent + " to child: " + oldChild);
+//            relationalEntityManagerUtil.linkBiDirParent(partialUpdateChild,addedParent);
+//            if (log.isDebugEnabled())
+//                log.debug("update: linking child: " + oldChild + " to parent: " + addedParent);
+//            relationalEntityManagerUtil.linkBiDirChild(addedParent, partialUpdateChild);
+//            // new parents may be detached, so merge them, must happen after linking!
+//            entityManager.merge(addedParent);
+//        }
+////        entityManager.merge(child); wont do no harm, maybe needed if child is detached?
+//        return newParents;
+//    }
 
 
     protected <E> void adjustUpdatedEntities(List<E> added, List<E> removed) {

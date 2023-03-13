@@ -29,4 +29,17 @@ public class ReflectionUtils {
         });
         return result;
     }
+
+    public static Set<String> findAllNonNullFieldNames(Object entity){
+        Set<String> result = new HashSet<>();
+        org.springframework.util.ReflectionUtils.doWithFields(entity.getClass(), f -> {
+            result.add(f.getName());
+        }, new org.springframework.util.ReflectionUtils.FieldFilter() {
+            @Override
+            public boolean matches(Field field) {
+                    return org.springframework.util.ReflectionUtils.getField(field,entity) != null;
+            }
+        });
+        return result;
+    }
 }

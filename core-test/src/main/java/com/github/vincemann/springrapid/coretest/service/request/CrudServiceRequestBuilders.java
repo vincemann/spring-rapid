@@ -7,7 +7,9 @@ import org.apache.commons.lang3.reflect.MethodUtils;
 
 import java.io.Serializable;
 import java.lang.reflect.Method;
+import java.util.Collection;
 import java.util.List;
+import java.util.Set;
 
 /**
  * Use these preconfigured {@link ServiceRequestBuilder}s to build {@link ServiceRequest}s for typical Tests of a {@link CrudService} method.
@@ -38,8 +40,16 @@ public class CrudServiceRequestBuilders {
         return createBuilder("partialUpdate", Lists.newArrayList(updateEntity,fieldsToRemove),exceptionWanted, IdentifiableEntity.class, String[].class);
     }
 
+    public static ServiceRequestBuilder partialUpdate(IdentifiableEntity updateEntity,Set<String> collectionsToUpdate, Boolean exceptionWanted,String... fieldsToRemove) {
+        return createBuilder("partialUpdate", Lists.newArrayList(updateEntity,collectionsToUpdate,fieldsToRemove),exceptionWanted, IdentifiableEntity.class, Set.class, String[].class);
+    }
+
     public static ServiceRequestBuilder partialUpdate(IdentifiableEntity updateEntity,String... fieldsToRemove) {
         return partialUpdate(updateEntity,false,fieldsToRemove);
+    }
+
+    public static ServiceRequestBuilder partialUpdate(IdentifiableEntity updateEntity, Set<String> collectionsToUpdate, String... fieldsToRemove) {
+        return partialUpdate(updateEntity,collectionsToUpdate,false,fieldsToRemove);
     }
 
 

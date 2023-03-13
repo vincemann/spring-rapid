@@ -46,8 +46,8 @@ public class RelationalServiceUpdateAdvice {
 
     @Before(value = "com.github.vincemann.springrapid.core.advice.SystemArchitecture.partialUpdateOperation() && " +
             "com.github.vincemann.springrapid.core.advice.SystemArchitecture.serviceOperation() && " +
-            "args(updateEntity,collectionsToUpdate, fieldsToRemove)")
-    public void prePartialUpdateRelEntity(JoinPoint joinPoint, IdentifiableEntity updateEntity,Set<String> collectionsToUpdate, String... fieldsToRemove) throws EntityNotFoundException, BadEntityException {
+            "args(updateEntity,propertiesToUpdate, fieldsToRemove)")
+    public void prePartialUpdateRelEntity(JoinPoint joinPoint, IdentifiableEntity updateEntity, Set<String> propertiesToUpdate, String... fieldsToRemove) throws EntityNotFoundException, BadEntityException {
         preBiDirEntity(joinPoint,updateEntity,RelationalAdviceContext.UpdateKind.PARTIAL);
     }
 
@@ -66,8 +66,8 @@ public class RelationalServiceUpdateAdvice {
     }
 
 
-    // todo fields to remove is ignored?? whats the purpose
-    public void preBiDirEntity(JoinPoint joinPoint,  IdentifiableEntity entity, RelationalAdviceContext.UpdateKind updateKind, String... fieldsToRemove) throws EntityNotFoundException, BadEntityException {
+    // fields to remove not needed, already done via jpaCrudService.updates copyProperties call (removes those values)
+    public void preBiDirEntity(JoinPoint joinPoint,  IdentifiableEntity entity, RelationalAdviceContext.UpdateKind updateKind) throws EntityNotFoundException, BadEntityException {
         if (AutoBiDirUtils.isDisabled(joinPoint)){
             return;
         }

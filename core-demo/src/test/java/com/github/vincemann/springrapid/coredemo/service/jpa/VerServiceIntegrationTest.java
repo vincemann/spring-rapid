@@ -6,6 +6,7 @@ import com.github.vincemann.springrapid.coredemo.model.Specialty;
 import com.github.vincemann.springrapid.coredemo.model.Vet;
 import com.github.vincemann.springrapid.coredemo.service.VetService;
 import com.github.vincemann.springrapid.core.util.BeanUtils;
+import com.google.common.collect.Sets;
 import org.junit.jupiter.api.Test;
 
 import java.lang.reflect.InvocationTargetException;
@@ -160,7 +161,7 @@ public class VerServiceIntegrationTest extends ManyToManyServiceIntegrationTest<
                 .specialtys(new HashSet<>(Lists.newArrayList(savedGastro, savedHeart)))
                 .build();
         kahnUpdate.setId(savedKahn.getId());
-        test(partialUpdate(kahnUpdate));
+        test(partialUpdate(kahnUpdate, Sets.newHashSet("specialtys")));
 
         assertVetHasSpecialties(MEIER, GASTRO, DENTISM);
         assertVetHasSpecialties(KAHN, GASTRO, HEART);
