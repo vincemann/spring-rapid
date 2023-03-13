@@ -1,6 +1,5 @@
 package com.github.vincemann.springrapid.coredemo.service.jpa;
 
-import com.github.vincemann.springrapid.core.service.exception.BadEntityException;
 import com.github.vincemann.springrapid.core.util.Lists;
 import com.github.vincemann.springrapid.coredemo.model.Specialty;
 import com.github.vincemann.springrapid.coredemo.model.Vet;
@@ -23,7 +22,7 @@ import static com.github.vincemann.springrapid.coretest.service.resolve.EntityPl
 /**
  * Test to showcase that auto management of many-many bidir-relationships work for parent side
  */
-public class VerServiceIntegrationTest extends ManyToManyServiceIntegrationTest<VetService, Vet, Long> {
+public class VetServiceIntegrationTest extends ManyToManyServiceIntegrationTest<VetService, Vet, Long> {
 
 
 

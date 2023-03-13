@@ -25,7 +25,7 @@ public class MergeUpdateStrategyImpl implements MergeUpdateStrategy {
     public <E extends IdentifiableEntity<?>> E merge(E patch, E saved, Class<?> dtoClass) throws BadEntityException {
         try{
             ReflectionUtils.doWithFields(dtoClass,dtoField -> {
-                if (!Modifier.isStatic(dtoField.getModifiers())) {
+                if (!com.github.vincemann.springrapid.core.util.ReflectionUtils.isStaticOrInnerField(dtoField)) {
                     Class<? extends IdentifiableEntity> entityClass = patch.getClass();
                     String propertyName = transform(dtoField.getName());
 

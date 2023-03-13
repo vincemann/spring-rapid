@@ -30,6 +30,10 @@ public class ReflectionUtils {
         return result;
     }
 
+    public static boolean isStaticOrInnerField(Field field){
+        return field.getName().indexOf('$') != -1 || Modifier.isStatic(field.getModifiers());
+    }
+
     public static Set<String> findAllNonNullFieldNames(Object entity){
         Set<String> result = new HashSet<>();
         org.springframework.util.ReflectionUtils.doWithFields(entity.getClass(), f -> {
@@ -37,7 +41,11 @@ public class ReflectionUtils {
         }, new org.springframework.util.ReflectionUtils.FieldFilter() {
             @Override
             public boolean matches(Field field) {
-                    return org.springframework.util.ReflectionUtils.getField(field,entity) != null;
+                if (isStaticOrInnerField(field)){
+                    return false;
+                }
+                field.setAccessible(true);
+                return org.springframework.util.ReflectionUtils.getField(field,entity) != null;
             }
         });
         return result;

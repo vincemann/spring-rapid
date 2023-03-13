@@ -120,8 +120,7 @@ public class EntityReflectionUtils {
 
     public static void setNonMatchingFieldsNull(Object o, Set<String> propertiesNotNull){
         org.springframework.util.ReflectionUtils.doWithFields(o.getClass(),field -> {
-            int m = field.getModifiers();
-            if(Modifier.isStatic(m))
+            if(com.github.vincemann.springrapid.core.util.ReflectionUtils.isStaticOrInnerField(field))
                 return;
             if (field.getType().isPrimitive()){
                 throw new IllegalArgumentException("entity must not contain primitive members, use Wrapper Types instead");
