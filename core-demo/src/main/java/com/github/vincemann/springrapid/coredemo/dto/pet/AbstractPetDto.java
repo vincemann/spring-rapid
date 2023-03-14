@@ -1,5 +1,6 @@
-package com.github.vincemann.springrapid.coredemo.dtos.pet;
+package com.github.vincemann.springrapid.coredemo.dto.pet;
 
+import com.github.vincemann.springrapid.coredemo.dto.abs.MyIdDto;
 import com.github.vincemann.springrapid.coredemo.model.Owner;
 
 import com.github.vincemann.springrapid.coredemo.model.PetType;
@@ -8,6 +9,7 @@ import com.github.vincemann.springrapid.autobidir.dto.child.annotation.BiDirChil
 import com.github.vincemann.springrapid.autobidir.dto.child.annotation.UniDirChildId;
 
 
+import com.github.vincemann.springrapid.coredemo.model.abs.MyIdentifiableEntity;
 import lombok.*;
 
 import com.github.vincemann.springrapid.core.model.IdentifiableEntityImpl;
@@ -22,7 +24,7 @@ import java.util.Set;
 @Setter
 @NoArgsConstructor
 
-public abstract class AbstractPetDto extends IdentifiableEntityImpl<Long>
+public abstract class AbstractPetDto extends MyIdDto<Long>
 {
 
     public AbstractPetDto(@Size(min = 2, max = 20) String name, Long petTypeId, Set<Long> toyIds, Long ownerId, LocalDate birthDate) {

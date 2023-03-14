@@ -1,6 +1,7 @@
 package com.github.vincemann.springrapid.acldemo.model;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.github.vincemann.springrapid.acldemo.model.abs.MyIdentifiableEntity;
 import com.github.vincemann.springrapid.core.model.IdentifiableEntityImpl;
 
 import com.github.vincemann.springrapid.autobidir.model.child.annotation.BiDirChildCollection;
@@ -27,7 +28,7 @@ import java.util.Set;
 @Setter
 @Table(name = "pets")
 @Entity
-public class Pet extends IdentifiableEntityImpl<Long> {
+public class Pet extends MyIdentifiableEntity<Long> {
 
 
     @Builder

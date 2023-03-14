@@ -12,6 +12,10 @@
         <version>1.0.0-SNAPSHOT.14</version>
     </parent>
 
+    <properties>
+        <smart-logger.version>1.1.0</smart-logger.version>
+    </properties>
+
     <dependencies>
 
         <dependency>
@@ -24,6 +28,12 @@
             <groupId>com.github.vincemann.spring-rapid</groupId>
             <artifactId>auto-bidir</artifactId>
             <version>${project.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>com.github.vincemann</groupId>
+            <artifactId>smart-logger</artifactId>
+            <version>${smart-logger.version}</version>
         </dependency>
 
         <dependency>

@@ -1,6 +1,7 @@
 package com.github.vincemann.springrapid.authdemo.model;
 
 import com.fasterxml.jackson.annotation.JsonView;
+import com.github.vincemann.smartlogger.SmartLogger;
 import com.github.vincemann.springrapid.auth.model.AbstractUser;
 import com.github.vincemann.springrapid.auth.util.UserVerifyUtils;
 import com.google.common.collect.Sets;
@@ -50,5 +51,12 @@ public class User extends AbstractUser<Long> {
 	@Override
 	public String getContactInformation() {
 		return super.getContactInformation();
+	}
+
+	@Override
+	public String toString() {
+		return SmartLogger.builder()
+				.build()
+				.toString(this);
 	}
 }

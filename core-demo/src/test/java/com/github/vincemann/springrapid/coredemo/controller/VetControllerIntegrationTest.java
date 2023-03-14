@@ -2,12 +2,11 @@ package com.github.vincemann.springrapid.coredemo.controller;
 
 import com.github.vincemann.springrapid.core.model.IdentifiableEntityImpl;
 import com.github.vincemann.springrapid.core.util.Lists;
-import com.github.vincemann.springrapid.coredemo.dtos.VetDto;
+import com.github.vincemann.springrapid.coredemo.dto.VetDto;
 import com.github.vincemann.springrapid.coredemo.model.Specialty;
 import com.github.vincemann.springrapid.coredemo.model.Vet;
 import com.github.vincemann.springrapid.coredemo.service.VetService;
 import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.RepeatedTest;
 import org.junit.jupiter.api.Test;
 import org.springframework.test.web.servlet.MvcResult;
 

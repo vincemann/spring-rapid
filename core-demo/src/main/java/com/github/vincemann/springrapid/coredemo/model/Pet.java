@@ -9,6 +9,7 @@ import com.github.vincemann.springrapid.autobidir.model.child.annotation.BiDirCh
 import com.github.vincemann.springrapid.autobidir.model.parent.annotation.BiDirParentEntity;
 import com.github.vincemann.springrapid.autobidir.model.child.annotation.UniDirChildEntity;
 
+import com.github.vincemann.springrapid.coredemo.model.abs.MyIdentifiableEntity;
 import lombok.*;
 import org.checkerframework.common.aliasing.qual.Unique;
 import org.springframework.format.annotation.DateTimeFormat;
@@ -24,7 +25,7 @@ import java.util.Set;
 @Setter
 @Table(name = "pets")
 @Entity
-public class Pet extends IdentifiableEntityImpl<Long>{
+public class Pet extends MyIdentifiableEntity<Long> {
 
 
     @Builder

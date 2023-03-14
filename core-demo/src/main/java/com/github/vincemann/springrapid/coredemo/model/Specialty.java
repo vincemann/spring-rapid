@@ -4,6 +4,7 @@ import com.github.vincemann.springrapid.core.model.IdentifiableEntityImpl;
 
 
 import com.github.vincemann.springrapid.autobidir.model.parent.annotation.BiDirParentCollection;
+import com.github.vincemann.springrapid.coredemo.model.abs.MyIdentifiableEntity;
 import lombok.*;
 import org.checkerframework.common.aliasing.qual.Unique;
 
@@ -16,7 +17,7 @@ import java.util.Set;
 @Setter
 @NoArgsConstructor
 @Entity
-public class Specialty extends IdentifiableEntityImpl<Long>
+public class Specialty extends MyIdentifiableEntity<Long>
 {
 
     @Builder

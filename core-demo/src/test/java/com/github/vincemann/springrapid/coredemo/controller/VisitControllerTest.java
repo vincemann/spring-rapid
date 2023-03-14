@@ -1,6 +1,6 @@
 package com.github.vincemann.springrapid.coredemo.controller;
 
-import com.github.vincemann.springrapid.coredemo.dtos.VisitDto;
+import com.github.vincemann.springrapid.coredemo.dto.VisitDto;
 import com.github.vincemann.springrapid.coredemo.model.*;
 import com.github.vincemann.springrapid.coredemo.service.VisitService;
 import org.junit.jupiter.api.Assertions;

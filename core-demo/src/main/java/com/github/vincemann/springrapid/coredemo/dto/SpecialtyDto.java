@@ -1,13 +1,12 @@
-package com.github.vincemann.springrapid.coredemo.dtos;
+package com.github.vincemann.springrapid.coredemo.dto;
 
 
-import com.github.vincemann.springrapid.core.model.AbstractDto;
+import com.github.vincemann.springrapid.coredemo.dto.abs.MyIdDto;
 import com.github.vincemann.springrapid.coredemo.model.Specialty;
 import com.github.vincemann.springrapid.coredemo.model.Vet;
 
 import com.github.vincemann.springrapid.autobidir.dto.parent.annotation.BiDirParentIdCollection;
 import lombok.*;
-import com.github.vincemann.springrapid.core.model.IdentifiableEntityImpl;
 
 import javax.validation.constraints.Size;
 import java.util.HashSet;
@@ -16,7 +15,7 @@ import java.util.Set;
 @Getter
 @Setter
 @NoArgsConstructor
-public class SpecialtyDto extends AbstractDto<Long> {
+public class SpecialtyDto extends MyIdDto<Long> {
 
     @Builder
     public SpecialtyDto(@Size(min = 2, max = 255) String description, Set<Long> vetIds) {

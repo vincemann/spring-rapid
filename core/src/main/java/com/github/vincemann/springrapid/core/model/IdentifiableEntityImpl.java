@@ -1,7 +1,7 @@
 package com.github.vincemann.springrapid.core.model;
 
 
-import com.github.vincemann.smartlogger.SmartLogger;
+//import com.github.vincemann.smartlogger.SmartLogger;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.GeneratedValue;
@@ -46,10 +46,10 @@ public class IdentifiableEntityImpl<Id extends Serializable>
         return Objects.hash(id);
     }
 
-    @Override
-    public String toString() {
-        return SmartLogger.builder()
-                .build()
-                .toString(this);
-    }
+//    @Override
+//    public String toString() {
+//        return SmartLogger.builder()
+//                .build()
+//                .toString(this);
+//    }
 }

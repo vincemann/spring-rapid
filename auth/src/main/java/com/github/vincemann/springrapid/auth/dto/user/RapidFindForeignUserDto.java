@@ -1,16 +1,14 @@
 package com.github.vincemann.springrapid.auth.dto.user;
 
-import com.github.vincemann.springrapid.core.model.AbstractDto;
-import com.github.vincemann.springrapid.core.model.IdentifiableEntityImpl;
+import com.github.vincemann.springrapid.core.dto.AbstractIdDto;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import lombok.ToString;
 
 @Getter
 @Setter
 @NoArgsConstructor
 //can only see id
-public class RapidFindForeignUserDto extends AbstractDto<String> {
+public class RapidFindForeignUserDto extends AbstractIdDto<String> {
 
 }

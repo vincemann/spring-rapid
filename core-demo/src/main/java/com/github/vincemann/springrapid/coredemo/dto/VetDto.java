@@ -1,4 +1,4 @@
-package com.github.vincemann.springrapid.coredemo.dtos;
+package com.github.vincemann.springrapid.coredemo.dto;
 
 import com.github.vincemann.springrapid.coredemo.model.Specialty;
 import com.github.vincemann.springrapid.coredemo.model.Vet;

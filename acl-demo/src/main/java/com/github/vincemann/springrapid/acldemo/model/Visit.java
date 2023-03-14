@@ -1,5 +1,6 @@
 package com.github.vincemann.springrapid.acldemo.model;
 
+import com.github.vincemann.springrapid.acldemo.model.abs.MyIdentifiableEntity;
 import com.github.vincemann.springrapid.core.model.IdentifiableEntityImpl;
 import com.github.vincemann.springrapid.autobidir.model.child.annotation.UniDirChildCollection;
 import com.github.vincemann.springrapid.autobidir.model.child.annotation.UniDirChildEntity;
@@ -20,7 +21,7 @@ import java.util.Set;
 @Setter
 @NoArgsConstructor
 @Entity
-public class Visit extends IdentifiableEntityImpl<Long>  {
+public class Visit extends MyIdentifiableEntity<Long> {
 
 
     @Builder

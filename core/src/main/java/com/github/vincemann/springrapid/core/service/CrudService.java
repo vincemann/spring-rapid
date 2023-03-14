@@ -51,7 +51,7 @@ public interface CrudService<E extends IdentifiableEntity<Id>,Id extends Seriali
         E partialUpdate(E entity, String... fieldsToRemove) throws EntityNotFoundException, BadEntityException;
 
         @Transactional
-        E partialUpdate(E update, Set<String> collectionsToUpdate, String... fieldsToRemove) throws EntityNotFoundException, BadEntityException;
+        E partialUpdate(E update, Set<String> propertiesToUpdate, String... fieldsToRemove) throws EntityNotFoundException, BadEntityException;
 
         // the @Transactional's ara actually needed!
         @Transactional

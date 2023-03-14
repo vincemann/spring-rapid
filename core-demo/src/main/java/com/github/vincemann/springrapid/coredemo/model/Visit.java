@@ -2,6 +2,7 @@ package com.github.vincemann.springrapid.coredemo.model;
 
 import com.github.vincemann.springrapid.autobidir.model.child.annotation.UniDirChildCollection;
 import com.github.vincemann.springrapid.autobidir.model.child.annotation.UniDirChildEntity;
+import com.github.vincemann.springrapid.coredemo.model.abs.MyIdentifiableEntity;
 import lombok.*;
 import org.springframework.format.annotation.DateTimeFormat;
 import com.github.vincemann.springrapid.core.model.IdentifiableEntityImpl;
@@ -16,7 +17,7 @@ import java.util.Set;
 @Setter
 @NoArgsConstructor
 @Entity
-public class Visit extends IdentifiableEntityImpl<Long> {
+public class Visit extends MyIdentifiableEntity<Long> {
 
 
     @Builder

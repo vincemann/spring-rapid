@@ -1,5 +1,6 @@
 package com.github.vincemann.springrapid.acldemo.model;
 
+import com.github.vincemann.smartlogger.SmartLogger;
 import com.github.vincemann.springrapid.auth.model.AbstractUser;
 import com.google.common.collect.Sets;
 import com.sun.istack.Nullable;
@@ -32,5 +33,12 @@ public class User extends AbstractUser<Long> {
 	public User(String contactInformation, String password, String uuid, Set<String> roles, String newContactInformation, long credentialsUpdatedMillis, String captchaResponse) {
 		super(contactInformation, password, roles, newContactInformation, credentialsUpdatedMillis, captchaResponse);
 		this.uuid = uuid;
+	}
+
+	@Override
+	public String toString() {
+		return SmartLogger.builder()
+				.build()
+				.toString(this);
 	}
 }

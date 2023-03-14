@@ -1,7 +1,6 @@
-package com.github.vincemann.springrapid.coredemo.dtos;
+package com.github.vincemann.springrapid.coredemo.dto;
 
-import com.github.vincemann.springrapid.core.model.AbstractDto;
-import com.github.vincemann.springrapid.core.model.IdentifiableEntityImpl;
+import com.github.vincemann.springrapid.coredemo.dto.abs.MyIdDto;
 import com.github.vincemann.springrapid.coredemo.model.ClinicCard;
 import com.github.vincemann.springrapid.coredemo.model.Owner;
 
@@ -14,7 +13,7 @@ import java.util.Date;
 @Setter
 @NoArgsConstructor
 
-public class ClinicCardDto extends AbstractDto<Long> {
+public class ClinicCardDto extends MyIdDto<Long> {
 
     @BiDirParentId(Owner.class)
     private Long ownerId;

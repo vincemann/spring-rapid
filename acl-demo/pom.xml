@@ -11,6 +11,10 @@
 
     <artifactId>acl-demo</artifactId>
 
+    <properties>
+        <smart-logger.version>1.1.0</smart-logger.version>
+    </properties>
+
     <dependencies>
 
         <dependency>
@@ -34,6 +38,12 @@
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-devtools</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>com.github.vincemann</groupId>
+            <artifactId>smart-logger</artifactId>
+            <version>${smart-logger.version}</version>
         </dependency>
 
         <dependency>

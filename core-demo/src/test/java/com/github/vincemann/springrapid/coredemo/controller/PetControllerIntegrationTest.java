@@ -1,6 +1,6 @@
 package com.github.vincemann.springrapid.coredemo.controller;
 
-import com.github.vincemann.springrapid.coredemo.dtos.pet.PetDto;
+import com.github.vincemann.springrapid.coredemo.dto.pet.PetDto;
 import com.github.vincemann.springrapid.coredemo.model.Owner;
 import com.github.vincemann.springrapid.coredemo.model.Pet;
 import com.github.vincemann.springrapid.coredemo.model.Toy;

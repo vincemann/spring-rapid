@@ -1,14 +1,11 @@
-package com.github.vincemann.springrapid.core.model;
-
-
-
-// import com.github.vincemann.shortsmartlogger.SmartLogger;
+package com.github.vincemann.springrapid.authdemo.dto.abs;
 
 import com.github.vincemann.smartlogger.SmartLogger;
+import com.github.vincemann.springrapid.core.dto.AbstractIdDto;
 
 import java.io.Serializable;
 
-public class AbstractDto<Id extends Serializable> extends IdentifiableEntityImpl<Id>{
+public class MyIdDto<Id extends Serializable> extends AbstractIdDto<Id> {
 
     @Override
     public String toString() {

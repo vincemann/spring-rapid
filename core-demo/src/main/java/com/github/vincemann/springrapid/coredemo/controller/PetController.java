@@ -5,8 +5,8 @@ import com.github.vincemann.springrapid.core.controller.dto.mapper.context.CrudD
 import com.github.vincemann.springrapid.core.controller.dto.mapper.context.Direction;
 import com.github.vincemann.springrapid.core.controller.dto.mapper.context.DtoMappingContext;
 import com.github.vincemann.springrapid.core.slicing.WebController;
-import com.github.vincemann.springrapid.coredemo.dtos.pet.PetDto;
-import com.github.vincemann.springrapid.coredemo.dtos.pet.UpdatePetDto;
+import com.github.vincemann.springrapid.coredemo.dto.pet.PetDto;
+import com.github.vincemann.springrapid.coredemo.dto.pet.UpdatePetDto;
 import com.github.vincemann.springrapid.coredemo.model.Pet;
 import com.github.vincemann.springrapid.coredemo.service.PetService;
 

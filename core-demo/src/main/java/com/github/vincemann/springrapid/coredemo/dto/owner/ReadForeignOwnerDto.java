@@ -1,4 +1,4 @@
-package com.github.vincemann.springrapid.coredemo.dtos.owner;
+package com.github.vincemann.springrapid.coredemo.dto.owner;
 
 import com.github.vincemann.springrapid.coredemo.model.Pet;
 import com.github.vincemann.springrapid.autobidir.dto.child.annotation.BiDirChildIdCollection;

@@ -13,7 +13,7 @@ import javax.validation.constraints.NotBlank;
 @Setter
 @MappedSuperclass
 @AllArgsConstructor
-public abstract class Person extends IdentifiableEntityImpl<Long> {
+public abstract class Person extends MyIdentifiableEntity<Long> {
     @Column(name = "first_name")
     @NotBlank
     private String firstName;

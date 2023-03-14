@@ -6,6 +6,7 @@ import lombok.*;
 import org.junit.jupiter.api.*;
 import org.modelmapper.*;
 import org.modelmapper.spi.*;
+import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.util.ReflectionUtils;
 
 import java.lang.reflect.Method;
@@ -17,6 +18,7 @@ import static org.springframework.util.StringUtils.capitalize;
 
 
 /**
+ * // todo fix
  * somehow there is state between tests, which makes some fail, but they run green if run solo
  */
 public class ModelMapperExerciseTests {
@@ -138,7 +140,7 @@ public class ModelMapperExerciseTests {
 
         GilDto mapped = modelMapper.map(gil, GilDto.class);
         Assertions.assertEquals(gil.name, mapped.name);
-        Assertions.assertEquals(null, mapped.age);
+        Assertions.assertNull(mapped.age);
     }
 
     @Test
@@ -169,7 +171,7 @@ public class ModelMapperExerciseTests {
 
 
     @Test
-    public void testLimitPropertiesToMapByName(){
+    public void testLimitPropertiesToMapByName() throws InterruptedException {
 
         Gil gil = Gil.builder()
                 .age(25L)

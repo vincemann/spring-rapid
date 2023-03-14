@@ -2,8 +2,8 @@ package com.github.vincemann.springrapid.coredemo.controller;
 
 import com.github.vincemann.springrapid.core.security.RapidSecurityContext;
 import com.github.vincemann.springrapid.core.util.Lists;
-import com.github.vincemann.springrapid.coredemo.dtos.owner.CreateOwnerDto;
-import com.github.vincemann.springrapid.coredemo.dtos.owner.ReadOwnOwnerDto;
+import com.github.vincemann.springrapid.coredemo.dto.owner.CreateOwnerDto;
+import com.github.vincemann.springrapid.coredemo.dto.owner.ReadOwnOwnerDto;
 import com.github.vincemann.springrapid.coredemo.model.ClinicCard;
 import com.github.vincemann.springrapid.coredemo.model.Owner;
 import com.github.vincemann.springrapid.coredemo.model.Pet;

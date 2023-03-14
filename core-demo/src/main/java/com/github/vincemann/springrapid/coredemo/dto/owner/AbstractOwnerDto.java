@@ -1,11 +1,9 @@
-package com.github.vincemann.springrapid.coredemo.dtos.owner;
+package com.github.vincemann.springrapid.coredemo.dto.owner;
 
-import com.github.vincemann.springrapid.core.model.AbstractDto;
-import com.github.vincemann.springrapid.core.model.IdentifiableEntityImpl;
+import com.github.vincemann.springrapid.coredemo.dto.abs.MyIdDto;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import lombok.ToString;
 import org.springframework.lang.Nullable;
 
 import javax.validation.constraints.NotBlank;
@@ -17,7 +15,7 @@ import java.util.Set;
 @Setter
 @NoArgsConstructor
 
-public abstract class AbstractOwnerDto extends AbstractDto<Long> {
+public abstract class AbstractOwnerDto extends MyIdDto<Long> {
 
     public AbstractOwnerDto(@Size(min = 10, max = 255) @NotBlank String address, @NotBlank String city, @Nullable @Size(min = 10, max = 10) String telephone,Set<String> hobbies) {
         this.address = address;

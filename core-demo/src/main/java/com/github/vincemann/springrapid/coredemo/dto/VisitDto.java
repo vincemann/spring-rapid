@@ -1,14 +1,12 @@
-package com.github.vincemann.springrapid.coredemo.dtos;
+package com.github.vincemann.springrapid.coredemo.dto;
 
-import com.github.vincemann.springrapid.core.model.AbstractDto;
-import com.github.vincemann.springrapid.core.model.IdentifiableEntityImpl;
+import com.github.vincemann.springrapid.coredemo.dto.abs.MyIdDto;
 import com.github.vincemann.springrapid.coredemo.model.*;
 import com.github.vincemann.springrapid.autobidir.dto.child.annotation.UniDirChildId;
 import com.github.vincemann.springrapid.autobidir.dto.child.annotation.UniDirChildIdCollection;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import lombok.ToString;
 
 import javax.validation.constraints.NotNull;
 import java.time.LocalDate;
@@ -19,7 +17,7 @@ import java.util.stream.Collectors;
 @Getter
 @Setter
 @NoArgsConstructor
-public class VisitDto extends AbstractDto<Long> {
+public class VisitDto extends MyIdDto<Long> {
 
     @UniDirChildIdCollection(Pet.class)
     private Set<Long> petIds = new HashSet<>();

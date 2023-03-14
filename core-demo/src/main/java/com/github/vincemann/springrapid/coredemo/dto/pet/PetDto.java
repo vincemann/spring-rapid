@@ -1,10 +1,9 @@
-package com.github.vincemann.springrapid.coredemo.dtos.pet;
+package com.github.vincemann.springrapid.coredemo.dto.pet;
 
 import com.github.vincemann.springrapid.coredemo.model.Pet;
 import com.github.vincemann.springrapid.coredemo.model.Toy;
 import lombok.Builder;
 import lombok.NoArgsConstructor;
-import lombok.ToString;
 
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Size;

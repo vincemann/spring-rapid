@@ -71,7 +71,7 @@ public interface UserService<U extends AbstractUser<ID>, ID extends Serializable
     @Override
     U partialUpdate(U entity, String... fieldsToRemove) throws EntityNotFoundException, BadEntityException;
 
-    U partialUpdate(U entity, Set<String> collectionsToUpdate, String... fieldsToRemove) throws EntityNotFoundException, BadEntityException;
+    U partialUpdate(U entity, Set<String> propertiesToUpdate, String... fieldsToRemove) throws EntityNotFoundException, BadEntityException;
 
     @Override
     U fullUpdate(U entity) throws BadEntityException, EntityNotFoundException;
