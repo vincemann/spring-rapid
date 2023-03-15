@@ -12,7 +12,7 @@ import com.github.vincemann.springrapid.core.service.JPACrudService;
 import com.github.vincemann.springrapid.core.service.exception.BadEntityException;
 import com.github.vincemann.springrapid.core.slicing.ServiceComponent;
 import com.github.vincemann.springrapid.acldemo.model.Vet;
-import com.github.vincemann.springrapid.acldemo.repositories.VetRepository;
+import com.github.vincemann.springrapid.acldemo.repository.VetRepository;
 import com.github.vincemann.springrapid.acldemo.service.VetService;
 import org.springframework.aop.TargetClassAware;
 import org.springframework.context.annotation.Primary;

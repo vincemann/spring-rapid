@@ -63,7 +63,7 @@ public abstract class AbstractUserService
     private AuthProperties properties;
 //    private MailSender<MailData> mailSender;
     private JweTokenService jweTokenService;
-    private IdConverter<ID> idIdConverter;
+    private IdConverter<ID> idConverter;
     private PasswordValidator passwordValidator;
     private AbstractUserService<U,ID,R> service;
 
@@ -550,7 +550,7 @@ public abstract class AbstractUserService
     }
 
     protected U extractUserFromClaims(JWTClaimsSet claims) throws BadEntityException, EntityNotFoundException {
-        ID id = idIdConverter.toId(claims.getSubject());
+        ID id = idConverter.toId(claims.getSubject());
         // fetch the user
         Optional<U> byId = findById(id);
         VerifyEntity.isPresent(byId, "User with id: " + id + " not found");
@@ -702,7 +702,7 @@ public abstract class AbstractUserService
     @Lazy
     @Autowired
     public void injectIdIdConverter(IdConverter<ID> idIdConverter) {
-        this.idIdConverter = idIdConverter;
+        this.idConverter = idIdConverter;
     }
 
     @Autowired

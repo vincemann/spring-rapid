@@ -52,12 +52,12 @@ public class RapidUserServiceAutoConfiguration {
         return new RapidUserDetailsService();
     }
 
-    @Bean
-    @ConditionalOnMissingBean(IdConverter.class)
-    public IdConverter<Long> idConverter() {
-//        return id -> userService.toId(id);
-        return new LongIdConverter();
-    }
+//    @Bean
+//    @ConditionalOnMissingBean(IdConverter.class)
+//    public IdConverter<Long> idConverter() {
+////        return id -> userService.toId(id);
+//        return new LongIdConverter();
+//    }
 
 
     /**

@@ -1,6 +1,8 @@
 package com.github.vincemann.springrapid.core.config;
 
 import com.github.vincemann.springrapid.core.CoreProperties;
+import com.github.vincemann.springrapid.core.IdConverter;
+import com.github.vincemann.springrapid.core.LongIdConverter;
 import com.github.vincemann.springrapid.core.model.LongIdRapidSecurityAuditorAware;
 import com.github.vincemann.springrapid.core.model.RapidSecurityAuditorAware;
 import com.github.vincemann.springrapid.core.util.EntityLocator;
@@ -50,6 +52,11 @@ public class RapidGeneralAutoConfiguration {
 //        return messageSource;
 //    }
 
+    @ConditionalOnMissingBean(name = "idConverter")
+    @Bean
+    public IdConverter<Long> longIdConverter(){
+        return new LongIdConverter();
+    }
 
     // you can overwrite existing autorAware, is done in auth modules autoconfig
     // if you need an other type than long, define a bean with name rapidSecurityAuditorAware with other generic parameter

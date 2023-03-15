@@ -3,7 +3,7 @@ package com.github.vincemann.springrapid.acldemo.service.jpa;
 import com.github.vincemann.springrapid.core.service.JPACrudService;
 import com.github.vincemann.springrapid.core.slicing.ServiceComponent;
 import com.github.vincemann.springrapid.acldemo.model.Specialty;
-import com.github.vincemann.springrapid.acldemo.repositories.SpecialtyRepository;
+import com.github.vincemann.springrapid.acldemo.repository.SpecialtyRepository;
 import com.github.vincemann.springrapid.acldemo.service.SpecialtyService;
 import org.springframework.aop.TargetClassAware;
 import org.springframework.context.annotation.Primary;

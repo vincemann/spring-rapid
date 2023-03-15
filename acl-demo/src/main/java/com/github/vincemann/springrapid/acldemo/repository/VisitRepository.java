@@ -1,4 +1,4 @@
-package com.github.vincemann.springrapid.acldemo.repositories;
+package com.github.vincemann.springrapid.acldemo.repository;
 
 import com.github.vincemann.springrapid.core.slicing.ServiceComponent;
 import com.github.vincemann.springrapid.acldemo.model.Visit;

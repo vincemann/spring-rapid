@@ -12,7 +12,7 @@ import com.github.vincemann.springrapid.core.service.JPACrudService;
 import com.github.vincemann.springrapid.core.service.exception.BadEntityException;
 import com.github.vincemann.springrapid.core.slicing.ServiceComponent;
 import com.github.vincemann.springrapid.acldemo.model.Visit;
-import com.github.vincemann.springrapid.acldemo.repositories.VisitRepository;
+import com.github.vincemann.springrapid.acldemo.repository.VisitRepository;
 import com.github.vincemann.springrapid.acldemo.service.VisitService;
 import org.springframework.aop.TargetClassAware;
 import org.springframework.beans.factory.annotation.Autowired;
