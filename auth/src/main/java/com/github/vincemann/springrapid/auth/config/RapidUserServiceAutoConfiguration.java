@@ -4,9 +4,10 @@ import com.github.vincemann.springrapid.auth.service.validation.PasswordValidato
 import com.github.vincemann.springrapid.auth.service.validation.RapidPasswordValidator;
 import com.github.vincemann.springrapid.auth.util.UserUtils;
 import com.github.vincemann.springrapid.core.IdConverter;
+import com.github.vincemann.springrapid.core.LongIdConverter;
+import com.github.vincemann.springrapid.core.model.LongIdRapidAuthAuditorAware;
 import com.github.vincemann.springrapid.core.model.RapidAuthAuditorAware;
 import com.github.vincemann.springrapid.auth.service.RapidUserDetailsService;
-import com.github.vincemann.springrapid.auth.service.UserService;
 
 import com.github.vincemann.springrapid.core.service.password.BcryptRapidPasswordEncoder;
 import com.github.vincemann.springrapid.core.service.password.RapidPasswordEncoder;
@@ -36,8 +37,8 @@ public class RapidUserServiceAutoConfiguration {
      */
     @Bean
     @ConditionalOnMissingBean(name = "rapidAuthSecurityAuditorAware")
-    public <ID extends Serializable> AuditorAware<ID> rapidSecurityAuditorAware() {
-        return new RapidAuthAuditorAware<ID>();
+    public AuditorAware<Long> rapidSecurityAuditorAware() {
+        return new LongIdRapidAuthAuditorAware();
     }
 
 
@@ -53,9 +54,9 @@ public class RapidUserServiceAutoConfiguration {
 
     @Bean
     @ConditionalOnMissingBean(IdConverter.class)
-    public <ID extends Serializable>
-    IdConverter<ID> idConverter( UserService<?,ID> userService) {
-        return id -> userService.toId(id);
+    public IdConverter<Long> idConverter() {
+//        return id -> userService.toId(id);
+        return new LongIdConverter();
     }
 
 

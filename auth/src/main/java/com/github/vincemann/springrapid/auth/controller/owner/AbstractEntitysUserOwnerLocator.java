@@ -11,15 +11,18 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
-import org.springframework.transaction.annotation.Transactional;
 
+import java.io.Serializable;
 import java.util.Optional;
 
+/**
+ * Find owner (is always a user) of and entity.
+ */
 @Slf4j
 @Order(Ordered.LOWEST_PRECEDENCE)
-public class AuditingEntityOwnerLocator implements OwnerLocator<AuditingEntity<?>> {
+public abstract class AbstractEntitysUserOwnerLocator<Id extends Serializable> implements OwnerLocator<AuditingEntity<Id>> {
 
-    private UserService userService;
+    private UserService<AbstractUser<Id>,Id> userService;
 
     @Override
     public boolean supports(Class clazz) {
@@ -28,12 +31,12 @@ public class AuditingEntityOwnerLocator implements OwnerLocator<AuditingEntity<?
 
     //@LogInteraction
     @Override
-    public Optional<String> find(AuditingEntity<?> entity) {
+    public Optional<String> find(AuditingEntity<Id> entity) {
         try {
             if (entity.getCreatedById()==null){
                 return Optional.empty();
             }
-            Optional<AbstractUser<?>> byId = userService.findById(entity.getCreatedById());
+            Optional<AbstractUser<Id>> byId = userService.findById(entity.getCreatedById());
             return byId.map(AbstractUser::getContactInformation);
         } catch (BadEntityException e) {
             log.warn("Could not find Owner by createdById",e);
@@ -42,7 +45,7 @@ public class AuditingEntityOwnerLocator implements OwnerLocator<AuditingEntity<?
     }
 
     @Autowired
-    public void injectUserService(UserService userService) {
+    public void injectUserService(UserService<AbstractUser<Id>,Id> userService) {
         this.userService = userService;
     }
 }

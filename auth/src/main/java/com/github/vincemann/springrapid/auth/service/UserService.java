@@ -61,8 +61,8 @@ public interface UserService<U extends AbstractUser<ID>, ID extends Serializable
 
     public U signupAdmin(U admin) throws AlreadyRegisteredException, BadEntityException;
 
-    @LogInteraction(Severity.TRACE)
-    public abstract ID toId(String id);
+//    @LogInteraction(Severity.TRACE)
+//    public abstract ID toId(String id);
 
 //    @Validated(UserVerifyUtils.UpdateValidation.class)
 

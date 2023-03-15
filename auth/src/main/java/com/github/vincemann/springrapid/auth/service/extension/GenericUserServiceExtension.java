@@ -91,10 +91,10 @@ public interface GenericUserServiceExtension<S extends UserService<U,Id>,U exten
         return getNext().newAdmin(admin);
     }
 
-    @Override
-    default Id toId(String id) {
-        return getNext().toId(id);
-    }
+//    @Override
+//    default Id toId(String id) {
+//        return getNext().toId(id);
+//    }
 
     @Override
     default U partialUpdate(U entity, String... fieldsToRemove) throws EntityNotFoundException, BadEntityException {

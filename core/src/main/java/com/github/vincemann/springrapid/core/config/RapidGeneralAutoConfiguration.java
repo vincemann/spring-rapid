@@ -1,6 +1,7 @@
 package com.github.vincemann.springrapid.core.config;
 
 import com.github.vincemann.springrapid.core.CoreProperties;
+import com.github.vincemann.springrapid.core.model.LongIdRapidSecurityAuditorAware;
 import com.github.vincemann.springrapid.core.model.RapidSecurityAuditorAware;
 import com.github.vincemann.springrapid.core.util.EntityLocator;
 import com.github.vincemann.springrapid.core.util.JpaUtils;
@@ -50,11 +51,12 @@ public class RapidGeneralAutoConfiguration {
 //    }
 
 
-    // overwrite existing autoraware
+    // you can overwrite existing autorAware, is done in auth modules autoconfig
+    // if you need an other type than long, define a bean with name rapidSecurityAuditorAware with other generic parameter
     @ConditionalOnMissingBean(name = "rapidSecurityAuditorAware")
     @Bean
-    public AuditorAware auditorAware(){
-        return new RapidSecurityAuditorAware();
+    public AuditorAware<Long> auditorAware(){
+        return new LongIdRapidSecurityAuditorAware();
     }
 
     @Bean

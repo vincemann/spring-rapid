@@ -19,10 +19,10 @@ public class MyUserService extends AbstractUserService<User, Long, UserRepositor
         return new User();
     }
 
-	@Override
-	public Long toId(String id) {
-		return Long.valueOf(id);
-	}
+//	@Override
+//	public Long toId(String id) {
+//		return Long.valueOf(id);
+//	}
 
 	@Override
 	public Class<?> getTargetClass() {

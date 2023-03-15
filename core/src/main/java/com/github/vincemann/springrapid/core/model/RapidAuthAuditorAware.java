@@ -14,11 +14,11 @@ import java.io.Serializable;
  *  
  */
 @Slf4j
-public class RapidAuthAuditorAware<ID extends Serializable>
+public abstract class RapidAuthAuditorAware<ID extends Serializable>
 			extends AbstractAuditorAware<ID> {
 
 	private RapidSecurityContext<?> securityContext;
-	private IdConverter<ID> idIdConverter;
+	private IdConverter<ID> idConverter;
 
 	public RapidAuthAuditorAware() {
 
@@ -34,7 +34,7 @@ public class RapidAuthAuditorAware<ID extends Serializable>
 		if (id==null){
 			return null;
 		}
-		return idIdConverter.toId(id);
+		return idConverter.toId(id);
 	}
 
 	@Autowired
@@ -44,6 +44,6 @@ public class RapidAuthAuditorAware<ID extends Serializable>
 
 	@Autowired
 	public void injectIdIdConverter(IdConverter<ID> idIdConverter) {
-		this.idIdConverter = idIdConverter;
+		this.idConverter = idIdConverter;
 	}
 }

@@ -94,10 +94,10 @@ public interface UserServiceExtension<S extends UserService>
         return getNext().signupAdmin(admin);
     }
 
-    @Override
-    default Serializable toId(String id) {
-        return getNext().toId(id);
-    }
+//    @Override
+//    default Serializable toId(String id) {
+//        return getNext().toId(id);
+//    }
 
 //    @Override
 //    default void addAuthHeader(HttpServletResponse response, String username, Long expirationMillis) {

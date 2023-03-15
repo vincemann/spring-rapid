@@ -7,6 +7,9 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Optional;
 
+/**
+ * The owner of a user is always the user itself. So return its {@link AbstractUser#getContactInformation()};
+ */
 @Order(100)
 public class UserOwnerLocator implements OwnerLocator<AbstractUser<?>> {
 
