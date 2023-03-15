@@ -5,7 +5,7 @@ import lombok.extern.slf4j.Slf4j;
 import java.util.HashMap;
 import java.util.Map;
 
-@Slf4j
+
 /**
  *
  * Used to store state of any kind between {@link AbstractServiceExtension}'s and Services, linked by {@link AbstractExtensionServiceProxy}.
@@ -15,20 +15,23 @@ import java.util.Map;
  * needs to manually be cleaned!
  *
  */
+@Slf4j
 public class ProxyState {
     private final static Map<Thread,Map<String, Object>> STATE = new HashMap<>();
 
     
 
     public static void clear(){
-        System.err.println("clearing " + Thread.currentThread().toString());
+        if (log.isTraceEnabled())
+            log.trace("clearing " + Thread.currentThread());
         STATE.remove(Thread.currentThread());
         // this comment made idea realize that it should not call this method many times randomly...
 //        throw new IllegalArgumentException("clearing");
     }
 
     public static void clear(String key){
-        System.err.println("clearing key: " + key + " " + Thread.currentThread().toString());
+        if (log.isTraceEnabled())
+            log.trace("clearing key: " + key + " " + Thread.currentThread());
         Map<String, Object> state = STATE.get(Thread.currentThread());
         if (state==null){
 //            throw new IllegalArgumentException("nothing to clear");

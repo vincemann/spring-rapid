@@ -13,8 +13,6 @@ import com.github.fge.jsonpatch.JsonPatchException;
 public class JsonPatchExceptionHandler extends AbstractBadRequestExceptionHandler<JsonPatchException> {
 
 	public JsonPatchExceptionHandler() {
-		
 		super(JsonPatchException.class);
-
 	}
 }

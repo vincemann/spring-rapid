@@ -240,6 +240,8 @@ public abstract class AbstractExtensionServiceProxy
                     Method extensionsMethod = MethodUtils.findMethod(extension.getClass(), method.getName(), method.getParameterTypes());
                     method_chain_entry.getValue().add(new ExtensionHandle(extension, extensionsMethod));
                 } catch (NoSuchMethodException e) {
+                    if (log.isDebugEnabled())
+                        log.debug("No such method found: ", e);
                 }
             }
             extensionChainCache.entrySet().add(method_chain_entry);

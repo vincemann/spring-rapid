@@ -188,7 +188,8 @@ public abstract class AbstractDtoMappingContextBuilder<C extends GenericCrudCont
         mc.getMappingEntries().put(info, dtoClass);
         if (old!=null) {
             if (!old.equals(dtoClass)) {
-                log.debug("Overriding dto mapping info: " + info + ", old DtoClass: " + old.getSimpleName() + ", new DtoClass: " + dtoClass.getSimpleName());
+                if (log.isDebugEnabled())
+                    log.debug("Overriding dto mapping info: " + info + ", old DtoClass: " + old.getSimpleName() + ", new DtoClass: " + dtoClass.getSimpleName());
             }
         }
     }

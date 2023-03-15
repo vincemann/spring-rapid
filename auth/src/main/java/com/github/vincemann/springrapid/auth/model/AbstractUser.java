@@ -22,7 +22,7 @@ public class AbstractUser<ID extends Serializable>
 		implements AuthenticatingEntity<ID>
 {
 
-	// contactInformation
+	// contactInformation can be email or phone number ... dont hardcode to email!
 	@JsonView(UserVerifyUtils.SignupInput.class)
 //	@UniqueContactInformation(groups = {UserVerifyUtils.SignUpValidation.class})
 //	@ContactInformation

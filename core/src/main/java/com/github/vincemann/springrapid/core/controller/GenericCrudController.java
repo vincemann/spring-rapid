@@ -20,7 +20,6 @@ import com.github.vincemann.springrapid.core.service.exception.BadEntityExceptio
 import com.github.vincemann.springrapid.core.service.exception.EntityNotFoundException;
 import com.github.vincemann.springrapid.core.util.EntityReflectionUtils;
 import com.github.vincemann.springrapid.core.util.IdPropertyNameUtils;
-import com.github.vincemann.springrapid.core.util.ReflectionUtils;
 import com.github.vincemann.springrapid.core.util.VerifyEntity;
 import lombok.Getter;
 import lombok.Setter;
@@ -71,7 +70,7 @@ public abstract class GenericCrudController
     private CoreProperties coreProperties;
     private EndpointService endpointService;
     private JsonMapper jsonMapper;
-    private IdFetchingStrategy idIdFetchingStrategy;
+    private IdFetchingStrategy<ID> idFetchingStrategy;
     private EndpointInfo endpointInfo;
     private S service;
     private DelegatingDtoMapper dtoMapper;
@@ -239,7 +238,7 @@ public abstract class GenericCrudController
 
 
     protected ID fetchId(HttpServletRequest request) throws IdFetchingException {
-        return getIdIdFetchingStrategy().fetchId(request);
+        return this.getIdFetchingStrategy().fetchId(request);
     }
 
     private E mapToEntity(Object dto) throws BadEntityException, EntityNotFoundException {
@@ -599,8 +598,8 @@ public abstract class GenericCrudController
     }
 
     @Autowired
-    public void injectIdIdFetchingStrategy(IdFetchingStrategy idIdFetchingStrategy) {
-        this.idIdFetchingStrategy = idIdFetchingStrategy;
+    public void injectIdIdFetchingStrategy(IdFetchingStrategy<ID> idFetchingStrategy) {
+        this.idFetchingStrategy = idFetchingStrategy;
     }
 
     @Autowired

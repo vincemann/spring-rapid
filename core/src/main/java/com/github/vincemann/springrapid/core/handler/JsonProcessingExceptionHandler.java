@@ -13,8 +13,6 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 public class JsonProcessingExceptionHandler extends AbstractBadRequestExceptionHandler<JsonProcessingException> {
 
 	public JsonProcessingExceptionHandler() {
-		
 		super(JsonProcessingException.class);
-
 	}
 }

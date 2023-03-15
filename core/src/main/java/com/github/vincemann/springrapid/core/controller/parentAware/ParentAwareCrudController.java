@@ -46,7 +46,7 @@ public abstract class ParentAwareCrudController
                 >
         extends GenericCrudController<E, Id, S,ParentAwareEndpointInfo,ParentAwareDtoMappingContextBuilder> {
 
-    private IdFetchingStrategy parentIdFetchingStrategy;
+    private IdFetchingStrategy<PId> parentIdFetchingStrategy;
     private DtoValidationStrategy parentDtoValidationStrategy;
     @Setter
     private String findAllOfParentUrl;
@@ -110,7 +110,7 @@ public abstract class ParentAwareCrudController
     //dependencies
 
     @Autowired
-    public void injectParentIdFetchingStrategy(IdFetchingStrategy parentIdFetchingStrategy) {
+    public void injectParentIdFetchingStrategy(IdFetchingStrategy<PId> parentIdFetchingStrategy) {
         this.parentIdFetchingStrategy = parentIdFetchingStrategy;
     }
 

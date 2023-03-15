@@ -25,7 +25,8 @@ public class RapidDtoLocatorAutoConfiguration {
     public DelegatingOwnerLocator delegatingOwnerLocator(List<OwnerLocator> locators){
         DelegatingOwnerLocator delegatingLocator = new DelegatingOwnerLocator();
         if (locators.isEmpty()){
-            log.warn("No OwnerLocatorBean found -> dtoMapping principal feature will be ignored.");
+            if (log.isWarnEnabled())
+                log.warn("No OwnerLocatorBean found -> dtoMapping principal feature will be ignored.");
         }
         locators.forEach(delegatingLocator::register);
         return delegatingLocator;

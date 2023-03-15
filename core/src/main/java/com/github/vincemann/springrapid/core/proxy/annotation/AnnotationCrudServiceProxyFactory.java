@@ -47,7 +47,8 @@ public class AnnotationCrudServiceProxyFactory implements BeanPostProcessor, App
             boolean primaryBeanRegistered = beanFactory.getBeanDefinition(beanName).isPrimary();
             Class serviceInterface = resolveServiceInterface(unwrappedBean, beanName);
             // todo fancyly log this annotation to show proxy chain with arrows
-            log.debug("Identified Proxies of bean: " + beanName + " : " + toCreate);
+            if (log.isDebugEnabled())
+                log.debug("Identified Proxies of bean: " + beanName + " : " + toCreate);
 
             for (CreateProxy proxy : toCreate) {
                 // make sure there is only one primary bean
@@ -61,7 +62,8 @@ public class AnnotationCrudServiceProxyFactory implements BeanPostProcessor, App
                 GenericBeanDefinition proxyBeanDef
                         = createBeanDef(proxy.qualifiers(), proxy.primary(), ((Class<? extends CrudService>) serviceInterface));
                 String proxyBeanName = resolveProxyName(proxy.qualifiers(), proxy.primary(), proxy.name(), unwrappedBean.getClass());
-                log.debug("creating proxyBean with name: " + proxyBeanName);
+                if (log.isDebugEnabled())
+                    log.debug("creating proxyBean with name: " + proxyBeanName);
 
                 // compose proxy instance by creating all internal proxies needed and form a proxy chain
                 CrudService lastProxiedBean = (CrudService) bean;
@@ -95,12 +97,15 @@ public class AnnotationCrudServiceProxyFactory implements BeanPostProcessor, App
                 // the last created proxy from the chain is the most outer proxy -> entry point for proxy chain -> gets autowired
                 CrudService proxyBean = lastProxiedBean;
 
-                log.debug("creating proxyBean : " + proxyBean);
-                log.debug("Registering beanDef of proxyBean first: " + proxyBeanDef);
+                if (log.isDebugEnabled()){
+                    log.debug("creating proxyBean : " + proxyBean);
+                    log.debug("Registering beanDef of proxyBean first: " + proxyBeanDef);
+                }
                 beanFactory.registerBeanDefinition(proxyBeanName, proxyBeanDef);
                 beanFactory.registerSingleton(proxyBeanName, proxyBean);
                 proxyBean.setBeanName(beanName);
-                log.debug("registered proxyBean: " + proxyBeanName);
+                if (log.isDebugEnabled())
+                    log.debug("registered proxyBean: " + proxyBeanName);
             }
         }
         return bean;

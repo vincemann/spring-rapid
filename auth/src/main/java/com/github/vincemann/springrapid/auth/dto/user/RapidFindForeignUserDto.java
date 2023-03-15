@@ -1,6 +1,6 @@
 package com.github.vincemann.springrapid.auth.dto.user;
 
-import com.github.vincemann.springrapid.core.dto.AbstractIdDto;
+import com.github.vincemann.springrapid.core.dto.IdAwareDto;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -9,6 +9,6 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 //can only see id
-public class RapidFindForeignUserDto extends AbstractIdDto<String> {
+public class RapidFindForeignUserDto extends IdAwareDto<String> {
 
 }

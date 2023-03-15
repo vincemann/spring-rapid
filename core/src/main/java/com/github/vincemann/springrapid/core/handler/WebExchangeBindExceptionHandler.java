@@ -21,9 +21,7 @@ import static org.springframework.http.HttpStatus.UNPROCESSABLE_ENTITY;
 public class WebExchangeBindExceptionHandler extends AbstractExceptionHandler<WebExchangeBindException> {
 
 	public WebExchangeBindExceptionHandler() {
-		
 		super(WebExchangeBindException.class);
-
 	}
 
 	@Override

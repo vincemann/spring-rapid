@@ -1,11 +1,11 @@
 package com.github.vincemann.springrapid.acldemo.dto.abs;
 
 import com.github.vincemann.smartlogger.SmartLogger;
-import com.github.vincemann.springrapid.core.dto.AbstractIdDto;
+import com.github.vincemann.springrapid.core.dto.IdAwareDto;
 
 import java.io.Serializable;
 
-public class MyIdDto<Id extends Serializable> extends AbstractIdDto<Id> {
+public class MyIdDto<Id extends Serializable> extends IdAwareDto<Id> {
 
     @Override
     public String toString() {

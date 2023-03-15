@@ -9,7 +9,7 @@ import com.github.vincemann.springrapid.core.model.IdentifiableEntityImpl;
 
 import java.io.Serializable;
 
-public class AbstractIdDto<Id extends Serializable> extends IdentifiableEntityImpl<Id> {
+public class IdAwareDto<Id extends Serializable> extends IdentifiableEntityImpl<Id> {
 
 //    @Override
 //    public String toString() {

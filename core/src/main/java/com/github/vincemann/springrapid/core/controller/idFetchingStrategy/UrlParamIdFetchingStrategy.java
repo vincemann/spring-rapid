@@ -1,19 +1,20 @@
 package com.github.vincemann.springrapid.core.controller.idFetchingStrategy;
 
 import javax.servlet.http.HttpServletRequest;
+import java.io.Serializable;
 
 /**
  * Fetches the Id from a {@link HttpServletRequest} by a url param with the key "id"
  *
  * @param <Id>
  */
-public abstract class UrlParamIdFetchingStrategy implements IdFetchingStrategy {
+public abstract class UrlParamIdFetchingStrategy<Id extends Serializable> implements IdFetchingStrategy<Id> {
 
     public UrlParamIdFetchingStrategy() {
     }
 
     @Override
-    public <Id> Id fetchId(HttpServletRequest request) throws IdFetchingException {
+    public Id fetchId(HttpServletRequest request) throws IdFetchingException {
         String id = request.getParameter("id");
         if (id == null) {
             throw new IdFetchingException("No id found in request");
@@ -27,6 +28,6 @@ public abstract class UrlParamIdFetchingStrategy implements IdFetchingStrategy {
         }
     }
 
-    protected abstract <Id> Id convert(String id);
+    protected abstract Id convert(String id) throws IdFetchingException;
 
 }

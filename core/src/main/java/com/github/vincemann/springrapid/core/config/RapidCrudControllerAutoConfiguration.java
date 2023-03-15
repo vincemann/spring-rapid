@@ -4,7 +4,8 @@ import com.github.vincemann.springrapid.core.controller.CrudEndpointInfo;
 import com.github.vincemann.springrapid.core.controller.ExtendedRemoveJsonPatchStrategy;
 import com.github.vincemann.springrapid.core.controller.JsonPatchStrategy;
 import com.github.vincemann.springrapid.core.controller.idFetchingStrategy.IdFetchingStrategy;
-import com.github.vincemann.springrapid.core.controller.idFetchingStrategy.UrlParamIdFetchingStrategyImpl;
+import com.github.vincemann.springrapid.core.controller.idFetchingStrategy.LongUrlParamIdFetchingStrategy;
+//import com.github.vincemann.springrapid.core.controller.idFetchingStrategy.UrlParamIdFetchingStrategyImpl;
 import com.github.vincemann.springrapid.core.controller.mergeUpdate.MergeUpdateStrategy;
 import com.github.vincemann.springrapid.core.controller.mergeUpdate.MergeUpdateStrategyImpl;
 import com.github.vincemann.springrapid.core.controller.parentAware.ParentAwareEndpointInfo;
@@ -60,7 +61,8 @@ public class RapidCrudControllerAutoConfiguration {
     @ConditionalOnMissingBean(IdFetchingStrategy.class)
     @Bean
     public IdFetchingStrategy idFetchingStrategy(){
-        return new UrlParamIdFetchingStrategyImpl();
+//        return new UrlParamIdFetchingStrategyImpl();
+        return new LongUrlParamIdFetchingStrategy();
     }
 
 //    @ConditionalOnMissingBean(EndpointsExposureContext.class)
