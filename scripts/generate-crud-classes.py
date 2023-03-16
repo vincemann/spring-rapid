@@ -19,7 +19,8 @@ insert_package_template = "<insert package>"
 # in this example run in /path/to/project/src/main/java
 
 
-# usage: python3 generate-crud-classes com.example MyEntity Long
+# usage: python3 generate-crud-classes.py root-package entity-type id-type
+# example: python3 generate-crud-classes.py com.example.myproject MyEntity Long
 
 cwd = os.path.realpath('.')
 
