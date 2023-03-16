@@ -44,9 +44,9 @@ public interface UserService<U extends AbstractUser<ID>, ID extends Serializable
     public void changePassword(U user, String oldPassword, String newPassword, String retypeNewPassword) throws EntityNotFoundException, BadEntityException;
 
     // get user from contactInformation from code
-    public U changeContactInformation(/*U user,*/  @NotBlank String changeContactInformationCode) throws EntityNotFoundException, BadEntityException;
+    public U changeContactInformation(/*U user,*/  @NotBlank String changeContactInformationCode) throws EntityNotFoundException, BadEntityException, AlreadyRegisteredException;
 
-    public void requestContactInformationChange(U user, String newContactInformation) throws EntityNotFoundException, AlreadyRegisteredException;
+    public void requestContactInformationChange(U user, String newContactInformation) throws EntityNotFoundException, AlreadyRegisteredException, BadEntityException;
 
 
     @LogInteraction(Severity.TRACE)

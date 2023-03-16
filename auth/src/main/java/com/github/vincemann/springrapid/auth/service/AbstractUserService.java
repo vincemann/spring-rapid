@@ -11,6 +11,7 @@ import com.github.vincemann.springrapid.auth.service.token.JweTokenService;
 import com.github.vincemann.springrapid.auth.service.validation.PasswordValidator;
 import com.github.vincemann.springrapid.auth.util.MapUtils;
 import com.github.vincemann.springrapid.auth.util.RapidJwt;
+import com.github.vincemann.springrapid.auth.util.TransactionalUtils;
 import com.github.vincemann.springrapid.core.IdConverter;
 import com.github.vincemann.springrapid.core.security.RapidSecurityContext;
 import com.github.vincemann.springrapid.core.service.JPACrudService;
@@ -33,6 +34,8 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.util.UriComponentsBuilder;
 
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
 import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
@@ -66,7 +69,8 @@ public abstract class AbstractUserService
     private IdConverter<ID> idConverter;
     private PasswordValidator passwordValidator;
     private AbstractUserService<U,ID,R> service;
-
+    @PersistenceContext
+    private EntityManager entityManager;
     private MessageSender messageSender;
 
 
@@ -114,7 +118,8 @@ public abstract class AbstractUserService
         passwordValidator.validate(user.getPassword());
         checkUniqueContactInformation(user.getContactInformation());
         U saved = service.save(user);
-        // is done in same transaction -> so applied directly
+        // is done in same transaction -> so applied directly, but message sent after transaction to make sure it
+        // is not sent when transaction fails
         makeUnverified(saved);
 
         log.debug("saved and send verification mail for unverified new user: " + saved);
@@ -145,7 +150,7 @@ public abstract class AbstractUserService
         user.getRoles().add(AuthRoles.UNVERIFIED);
         user.setCredentialsUpdatedMillis(System.currentTimeMillis());
 //        TransactionalUtils.afterCommit(() -> sendVerificationMail(user));
-        sendVerificationMessage(user);
+        TransactionalUtils.afterCommit(() -> sendVerificationMessage(user));
     }
 
     /**
@@ -172,7 +177,7 @@ public abstract class AbstractUserService
         // must be unverified
         VerifyEntity.is(user.getRoles().contains(AuthRoles.UNVERIFIED), " Already verified");
 
-        sendVerificationMessage(user);
+        TransactionalUtils.afterCommit(() -> sendVerificationMessage(user));
     }
 
 
@@ -234,7 +239,7 @@ public abstract class AbstractUserService
         Optional<U> byContactInformation = findByContactInformation(contactInformation);
         VerifyEntity.isPresent(byContactInformation, "User with contactInformation: " + contactInformation + " not found");
         U user = byContactInformation.get();
-        sendForgotPasswordMessage(user);
+        TransactionalUtils.afterCommit(() -> sendForgotPasswordMessage(user));
     }
 
 
@@ -427,20 +432,23 @@ public abstract class AbstractUserService
 
     /**
      * Requests for contactInformation change.
+     *
      */
     @Transactional(propagation = Propagation.REQUIRED, readOnly = false)
-    public void requestContactInformationChange(U user, String newContactInformation) throws EntityNotFoundException, AlreadyRegisteredException {
+    public void requestContactInformationChange(U user, String newContactInformation) throws EntityNotFoundException, AlreadyRegisteredException, BadEntityException {
         VerifyEntity.isPresent(user, "User not found");
         checkUniqueContactInformation(newContactInformation);
+        // todo dont detach and see if setter triggers javax validation annotations
+        entityManager.detach(user);
 
 //        LexUtils.validateField("updatedUser.password",
 //                passwordEncoder.matches(newContactInformation.getPassword(),
 //                        user.getPassword()),
 //                "com.github.vincemann.wrong.password").go();
 
-        // preserves the new contactInformation id
+//        // preserves the new contactInformation id
         user.setNewContactInformation(newContactInformation);
-        //user.setChangeContactInformationCode(LemonValidationUtils.uid());
+//        //user.setChangeContactInformationCode(LemonValidationUtils.uid());
         U saved;
         try {
             // todo changed to softupdate
@@ -452,14 +460,17 @@ public abstract class AbstractUserService
         }
 
         log.debug("Requested contactInformation change: " + user);
-        sendChangePrincipalMessage(saved);
+        // needs to be done bc validation exceptions are thrown after transaction ends, otherwise validation fails but
+        // message is still sent
+        TransactionalUtils.afterCommit( () -> sendChangeContactInformationMessage(saved));
     }
+
 
 
     /**
      * Mails the change-contactInformation verification link to the user.
      */
-    protected void sendChangePrincipalMessage(U user) {
+    protected void sendChangeContactInformationMessage(U user) {
         JWTClaimsSet claims = RapidJwt.create(
                 CHANGE_CONTACT_INFORMATION_AUDIENCE,
                 user.getId().toString(),
@@ -507,10 +518,11 @@ public abstract class AbstractUserService
      * @return
      */
     @Transactional(propagation = Propagation.REQUIRED, readOnly = false)
-    public U changeContactInformation(String code) throws EntityNotFoundException, BadEntityException {
+    public U changeContactInformation(String code) throws EntityNotFoundException, BadEntityException, AlreadyRegisteredException {
         try {
             JWTClaimsSet claims = jweTokenService.parseToken(code);
             U user = extractUserFromClaims(claims);
+            entityManager.detach(user);
 
             RapidJwt.validate(claims, CHANGE_CONTACT_INFORMATION_AUDIENCE, user.getCredentialsUpdatedMillis());
 
@@ -526,8 +538,9 @@ public abstract class AbstractUserService
                     Message.get("com.github.vincemann.wrong.changeContactInformationCode"));
 
             // Ensure that the contactInformation would be unique
-            VerifyEntity.is(
-                    !findByContactInformation(user.getNewContactInformation()).isPresent(), "ContactInformation Id already used");
+            checkUniqueContactInformation(user.getNewContactInformation());
+//            VerifyEntity.is(
+//                    !findByContactInformation(user.getNewContactInformation()).isPresent(), "ContactInformation Id already used");
 
             // update the fields
             user.setContactInformation(user.getNewContactInformation());

@@ -142,7 +142,7 @@ public class UserServiceSecurityExtension
 
     @LogInteraction
     @Override
-    public void requestContactInformationChange(AbstractUser user, String newContactInformation) throws EntityNotFoundException, AlreadyRegisteredException {
+    public void requestContactInformationChange(AbstractUser user, String newContactInformation) throws EntityNotFoundException, AlreadyRegisteredException, BadEntityException {
         VerifyEntity.isPresent(user,"User who's contactInformation should get changed does not exist");
         getSecurityChecker().checkPermission(user, BasePermission.WRITE);
         getNext().requestContactInformationChange(user, newContactInformation);
@@ -152,7 +152,7 @@ public class UserServiceSecurityExtension
     // admin can just change contactInformation via normal update
     @LogInteraction
     @Override
-    public AbstractUser changeContactInformation(String changeContactInformationCode) throws EntityNotFoundException,  BadEntityException {
+    public AbstractUser changeContactInformation(String changeContactInformationCode) throws EntityNotFoundException, BadEntityException, AlreadyRegisteredException {
         try {
             JWTClaimsSet claims = jweTokenService.parseToken(changeContactInformationCode);
             Serializable userId = claims.getSubject();

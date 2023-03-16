@@ -60,7 +60,7 @@ public interface UserServiceExtension<S extends UserService>
 
 
     @Override
-    default AbstractUser changeContactInformation(/*@NotBlank*/ String changeContactInformationCode) throws EntityNotFoundException, BadEntityException {
+    default AbstractUser changeContactInformation(/*@NotBlank*/ String changeContactInformationCode) throws EntityNotFoundException, BadEntityException, AlreadyRegisteredException {
         return getNext().changeContactInformation(changeContactInformationCode);
     }
 
@@ -75,7 +75,7 @@ public interface UserServiceExtension<S extends UserService>
     }
 
     @Override
-    default void requestContactInformationChange(AbstractUser user, String newContactInformation) throws EntityNotFoundException, AlreadyRegisteredException {
+    default void requestContactInformationChange(AbstractUser user, String newContactInformation) throws EntityNotFoundException, AlreadyRegisteredException, BadEntityException {
         getNext().requestContactInformationChange(user,newContactInformation);
     }
 

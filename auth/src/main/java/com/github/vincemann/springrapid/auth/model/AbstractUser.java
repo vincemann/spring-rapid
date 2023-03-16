@@ -29,6 +29,11 @@ public class AbstractUser<ID extends Serializable>
 	@Column(nullable = false, unique = true, length = UserVerifyUtils.CONTACT_INFORMATION_MAX)
 	protected String contactInformation;
 
+	// in the contactInformation-change process, temporarily stores the new contactInformation
+//	@UniqueContactInformation(groups = {UserVerifyUtils.ChangeContactInformationValidation.class})
+	@Column(length = UserVerifyUtils.CONTACT_INFORMATION_MAX)
+	protected String newContactInformation;
+
 	// password
 	// @NotBlank gets checked by PasswordChecker
 	// todo change to use @Password Annotation
@@ -43,10 +48,7 @@ public class AbstractUser<ID extends Serializable>
 	@Column(name = "role")
 	protected Set<String> roles = new HashSet<>();
 
-	// in the contactInformation-change process, temporarily stores the new contactInformation
-//	@UniqueContactInformation(groups = {UserVerifyUtils.ChangeContactInformationValidation.class})
-	@Column(length = UserVerifyUtils.CONTACT_INFORMATION_MAX)
-	protected String newContactInformation;
+
 
 	// A JWT issued before this won't be valid
 	@Column(nullable = false)

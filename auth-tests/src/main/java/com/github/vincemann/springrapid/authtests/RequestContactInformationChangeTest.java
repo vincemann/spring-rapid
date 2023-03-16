@@ -114,6 +114,7 @@ public class RequestContactInformationChangeTest extends AbstractRapidAuthIntegr
 		String token = login2xx(USER_CONTACT_INFORMATION,USER_PASSWORD);
 		mvc.perform(testTemplate.requestContactInformationChange(getUser().getId(),token,dto))
 				.andExpect(status().is(400));
+		verify(aopUnproxy(mailSender), never()).send(any());
 //				.andExpect(jsonPath("$.errors[*].field").value(hasSize(1)))
 //				.andExpect(jsonPath("$.errors[*].field").value(hasItems(
 //						"dto.newContactInformation"
@@ -126,6 +127,7 @@ public class RequestContactInformationChangeTest extends AbstractRapidAuthIntegr
     	// try with blank newContactInformation
 		mvc.perform(testTemplate.requestContactInformationChange(getUser().getId(),token,dto))
 				.andExpect(status().is(400));
+		verify(aopUnproxy(mailSender), never()).send(any());
 //				.andExpect(jsonPath("$.errors[*].field").value(hasSize(2)))
 //				.andExpect(jsonPath("$.errors[*].field").value(hasItems(
 //						"dto.newContactInformation"
@@ -139,6 +141,7 @@ public class RequestContactInformationChangeTest extends AbstractRapidAuthIntegr
 		// todo kann das nicht über die @Email annotation am getter klären, muss also programmatisch geschehen
 		mvc.perform(testTemplate.requestContactInformationChange(getUser().getId(),token,dto))
 				.andExpect(status().is(400));
+		verify(aopUnproxy(mailSender), never()).send(any());
 //				.andExpect(jsonPath("$.errors[*].field").value(hasSize(1)))
 //				.andExpect(jsonPath("$.errors[*].field").value(hasItems("dto.newContactInformation")));
 

@@ -67,12 +67,12 @@ public interface GenericUserServiceExtension<S extends UserService<U,Id>,U exten
     }
 
     @Override
-    default void requestContactInformationChange(U user, String newContactInformation) throws EntityNotFoundException, AlreadyRegisteredException{
+    default void requestContactInformationChange(U user, String newContactInformation) throws EntityNotFoundException, AlreadyRegisteredException, BadEntityException {
         getNext().requestContactInformationChange(user,newContactInformation);
     }
 
     @Override
-    default U changeContactInformation(String changeContactInformationCode) throws EntityNotFoundException, BadEntityException {
+    default U changeContactInformation(String changeContactInformationCode) throws EntityNotFoundException, BadEntityException, AlreadyRegisteredException {
         return getNext().changeContactInformation(changeContactInformationCode);
     }
 

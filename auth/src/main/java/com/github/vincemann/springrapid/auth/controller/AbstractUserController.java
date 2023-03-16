@@ -309,7 +309,7 @@ public abstract class AbstractUserController<U extends AbstractUser<ID>, ID exte
 	public ResponseEntity<String> changeContactInformation(
 			HttpServletRequest request,
 //			@RequestParam String code,
-			HttpServletResponse response) throws JsonProcessingException, BadEntityException, EntityNotFoundException, BadTokenException, IdFetchingException {
+			HttpServletResponse response) throws JsonProcessingException, BadEntityException, EntityNotFoundException, BadTokenException, IdFetchingException, AlreadyRegisteredException {
 //		ID id = fetchId(request);
 //		log.debug("Changing contactInformation of user with id: " + id);
 		String code = readRequestParam(request, "code");
