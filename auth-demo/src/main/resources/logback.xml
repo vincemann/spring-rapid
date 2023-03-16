@@ -10,6 +10,10 @@
     <logger name="com.github.vincemann" level="DEBUG" additivity="false">
         <appender-ref ref="CONSOLE"/>
     </logger>
+
+    <logger name="com.github.vincemann.smartlogger" level="info" additivity="false">
+        <appender-ref ref="CONSOLE"/>
+    </logger>
     <logger name="com.github.vincemann.aoplog" level="INFO" additivity="false">
         <appender-ref ref="CONSOLE"/>
     </logger>

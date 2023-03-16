@@ -32,7 +32,7 @@ public class RapidAuthSecurityAutoConfiguration {
     // if user wishes to create AuthPrincipal differently or with diff subtypes he can define own bean
     @Bean
     @ConditionalOnMissingBean(AuthenticatedPrincipalFactory.class)
-    public AuthenticatedPrincipalFactory authenticatedPrincipalFactory(){
+    public AuthenticatedPrincipalFactory<?,?> authenticatedPrincipalFactory(){
         return new RapidAuthAuthenticatedPrincipalFactory<>();
     }
 

@@ -4,7 +4,6 @@ import com.github.vincemann.springrapid.core.CoreProperties;
 import com.github.vincemann.springrapid.core.IdConverter;
 import com.github.vincemann.springrapid.core.LongIdConverter;
 import com.github.vincemann.springrapid.core.model.LongIdRapidSecurityAuditorAware;
-import com.github.vincemann.springrapid.core.model.RapidSecurityAuditorAware;
 import com.github.vincemann.springrapid.core.util.EntityLocator;
 import com.github.vincemann.springrapid.core.util.JpaUtils;
 import com.github.vincemann.springrapid.core.util.Message;
@@ -54,7 +53,7 @@ public class RapidGeneralAutoConfiguration {
 
     @ConditionalOnMissingBean(name = "idConverter")
     @Bean
-    public IdConverter<Long> longIdConverter(){
+    public IdConverter<Long> idConverter(){
         return new LongIdConverter();
     }
 
