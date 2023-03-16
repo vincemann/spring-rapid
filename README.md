@@ -10,7 +10,10 @@ This project is inspired by [**spring-lemon**](https://github.com/naturalprogram
 Most lemon modules were copied, modified and integrated into this project.  
   
 # Requirements  
-jdk 11.0.13 
+jdk >= 11.0.13  
+maven >= 3.6.0  
+tested on jdk 11.0.13 and maven 3.6.0  
+spring-boot-starter-parent = 2.2.3.RELEASE   
   
 # Features  
 * full generic **crud** solution                                                                     (core)   
@@ -25,8 +28,7 @@ jdk 11.0.13
 * full solution for jwt based **user authentication**                                                (auth)  
   -> signup, login, reset-password, verify-email, ...
     
- # Include  
- Make sure to use **java11** and **maven** with version >= **3.6.0**  
+ # Include   
 * replace MODULE with the module you want to include (module-name = directory-name)  
 * replace VERSION with valid version from [releases](https://github.com/vincemann/spring-rapid/releases)  
  ### Maven  
