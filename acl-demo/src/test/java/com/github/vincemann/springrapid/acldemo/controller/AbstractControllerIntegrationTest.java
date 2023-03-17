@@ -38,8 +38,8 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import static com.github.vincemann.springrapid.coretest.util.TransactionalRapidTestUtil.createUpdateJsonLine;
-import static com.github.vincemann.springrapid.coretest.util.TransactionalRapidTestUtil.createUpdateJsonRequest;
+import static com.github.vincemann.springrapid.coretest.util.RapidTestUtil.createUpdateJsonLine;
+import static com.github.vincemann.springrapid.coretest.util.RapidTestUtil.createUpdateJsonRequest;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 // add admin before each test
 public class AbstractControllerIntegrationTest<C extends GenericCrudController<?,Long,S,?,?>,S extends CrudService<?,Long>>

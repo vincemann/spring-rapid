@@ -11,6 +11,7 @@ import com.github.vincemann.springrapid.coredemo.service.OwnerService;
 import com.github.vincemann.springrapid.coretest.TestPrincipal;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
+import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.web.servlet.MvcResult;
 
 import java.util.Arrays;
@@ -18,8 +19,8 @@ import java.util.HashSet;
 import java.util.Set;
 
 import static com.github.vincemann.ezcompare.Comparator.compare;
-import static com.github.vincemann.springrapid.coretest.util.TransactionalRapidTestUtil.createUpdateJsonLine;
-import static com.github.vincemann.springrapid.coretest.util.TransactionalRapidTestUtil.createUpdateJsonRequest;
+import static com.github.vincemann.springrapid.coretest.util.RapidTestUtil.createUpdateJsonLine;
+import static com.github.vincemann.springrapid.coretest.util.RapidTestUtil.createUpdateJsonRequest;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 public class OwnerControllerIntegrationTest
@@ -328,6 +329,7 @@ public class OwnerControllerIntegrationTest
 
     // todo fails when run with all other tests bc of some state probably in RelationalAdviceContextHolder
     @Test
+    @DirtiesContext
     public void canRemoveOneOfManyHobbiesFromOwner_viaUpdate() throws Exception {
         String hobbyToRemove = "bodybuilding";
         Set<String> hobbies = new HashSet<>(Arrays.asList("swimming","biking",hobbyToRemove,"jogging","eating"));

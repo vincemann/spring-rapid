@@ -4,6 +4,7 @@ import com.github.vincemann.springrapid.coredemo.dto.ClinicCardDto;
 import com.github.vincemann.springrapid.coredemo.model.ClinicCard;
 import com.github.vincemann.springrapid.coredemo.model.Owner;
 import com.github.vincemann.springrapid.coredemo.service.ClinicCardService;
+import com.github.vincemann.springrapid.coretest.util.RapidTestUtil;
 import com.github.vincemann.springrapid.coretest.util.TransactionalRapidTestUtil;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -42,8 +43,8 @@ public class ClinicCardControllerTest extends AbstractControllerIntegrationTest<
     public void canUnlinkOwnerFromCard_viaUpdate() throws Exception {
         ownerRepository.save(kahn);
         ClinicCardDto savedDto = saveClinicCardLinkedToOwner(clinicCard, KAHN);
-        String jsonRequest = TransactionalRapidTestUtil.createUpdateJsonRequest(
-                TransactionalRapidTestUtil.createUpdateJsonLine("remove", "/ownerId")
+        String jsonRequest = RapidTestUtil.createUpdateJsonRequest(
+                RapidTestUtil.createUpdateJsonLine("remove", "/ownerId")
         );
         ClinicCardDto responseDto = performDs2xx(update(jsonRequest, savedDto.getId()), ClinicCardDto.class);
         Assertions.assertNull(responseDto.getOwnerId());
@@ -56,8 +57,8 @@ public class ClinicCardControllerTest extends AbstractControllerIntegrationTest<
     public void canLinkOwnerToCard_viaUpdate() throws Exception {
         Owner savedKahn = ownerRepository.save(kahn);
         ClinicCardDto savedDto = saveClinicCardLinkedToOwner(clinicCard,null);
-        String jsonRequest = TransactionalRapidTestUtil.createUpdateJsonRequest(
-                TransactionalRapidTestUtil.createUpdateJsonLine("add", "/ownerId",savedKahn.getId().toString())
+        String jsonRequest = RapidTestUtil.createUpdateJsonRequest(
+                RapidTestUtil.createUpdateJsonLine("add", "/ownerId",savedKahn.getId().toString())
         );
         ClinicCardDto responseDto = performDs2xx(update(jsonRequest, savedDto.getId()), ClinicCardDto.class);
         Assertions.assertEquals(savedKahn.getId(),responseDto.getOwnerId());
@@ -71,8 +72,8 @@ public class ClinicCardControllerTest extends AbstractControllerIntegrationTest<
         Owner savedKahn = ownerRepository.save(kahn);
         Owner savedMeier = ownerRepository.save(meier);
         ClinicCardDto savedDto = saveClinicCardLinkedToOwner(clinicCard,KAHN);
-        String jsonRequest = TransactionalRapidTestUtil.createUpdateJsonRequest(
-                TransactionalRapidTestUtil.createUpdateJsonLine("replace", "/ownerId",savedMeier.getId().toString())
+        String jsonRequest = RapidTestUtil.createUpdateJsonRequest(
+                RapidTestUtil.createUpdateJsonLine("replace", "/ownerId",savedMeier.getId().toString())
         );
         ClinicCardDto responseDto = performDs2xx(update(jsonRequest, savedDto.getId()), ClinicCardDto.class);
         Assertions.assertEquals(savedMeier.getId(),responseDto.getOwnerId());

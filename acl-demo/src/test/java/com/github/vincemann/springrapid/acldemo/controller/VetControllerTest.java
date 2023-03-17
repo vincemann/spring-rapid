@@ -10,6 +10,7 @@ import com.github.vincemann.springrapid.acldemo.model.*;
 import com.github.vincemann.springrapid.acldemo.service.VetService;
 import com.github.vincemann.springrapid.auth.model.AuthRoles;
 import com.github.vincemann.springrapid.auth.dto.SignupDto;
+import com.github.vincemann.springrapid.coretest.util.RapidTestUtil;
 import com.github.vincemann.springrapid.coretest.util.TransactionalRapidTestUtil;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -19,8 +20,8 @@ import java.util.Optional;
 
 import static com.github.vincemann.ezcompare.Comparator.compare;
 import static com.github.vincemann.springrapid.coretest.service.PropertyMatchers.propertyAssert;
-import static com.github.vincemann.springrapid.coretest.util.TransactionalRapidTestUtil.createUpdateJsonLine;
-import static com.github.vincemann.springrapid.coretest.util.TransactionalRapidTestUtil.createUpdateJsonRequest;
+import static com.github.vincemann.springrapid.coretest.util.RapidTestUtil.createUpdateJsonLine;
+import static com.github.vincemann.springrapid.coretest.util.RapidTestUtil.createUpdateJsonRequest;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 public class VetControllerTest extends AbstractControllerIntegrationTest<VetController, VetService> {
@@ -123,7 +124,7 @@ public class VetControllerTest extends AbstractControllerIntegrationTest<VetCont
 
         compare(responsePetDto).with(dbBella)
                 .properties().all()
-                .ignore(TransactionalRapidTestUtil.dtoIdProperties(FullPetDto.class))
+                .ignore(RapidTestUtil.dtoIdProperties(FullPetDto.class))
                 .assertEqual();
     }
 
@@ -144,7 +145,7 @@ public class VetControllerTest extends AbstractControllerIntegrationTest<VetCont
 
         compare(responsePetDto).with(dbBella)
                 .properties().all()
-                .ignore(TransactionalRapidTestUtil.dtoIdProperties(FullPetDto.class))
+                .ignore(RapidTestUtil.dtoIdProperties(FullPetDto.class))
                 .assertEqual();
 
         propertyAssert(responsePetDto)

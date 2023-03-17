@@ -5,7 +5,6 @@ import com.github.vincemann.springrapid.core.security.RapidAuthenticatedPrincipa
 import com.github.vincemann.springrapid.core.security.RapidSecurityContext;
 import com.github.vincemann.springrapid.core.service.locator.CrudServiceLocator;
 import com.github.vincemann.springrapid.core.util.ResourceUtils;
-import com.github.vincemann.springrapid.coretest.TestPrincipal;
 import com.github.vincemann.springrapid.coredemo.dto.owner.CreateOwnerDto;
 import com.github.vincemann.springrapid.coredemo.dto.owner.ReadForeignOwnerDto;
 import com.github.vincemann.springrapid.coredemo.dto.owner.ReadOwnOwnerDto;
@@ -13,8 +12,8 @@ import com.github.vincemann.springrapid.coredemo.model.Owner;
 import com.github.vincemann.springrapid.coredemo.model.Pet;
 import com.github.vincemann.springrapid.coredemo.service.OwnerService;
 import com.github.vincemann.springrapid.coredemo.service.PetService;
+import com.github.vincemann.springrapid.coretest.TestPrincipal;
 import com.github.vincemann.springrapid.coretest.controller.automock.AutoMockCrudControllerTest;
-import com.github.vincemann.springrapid.core.util.BeanUtils;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
@@ -26,12 +25,13 @@ import java.io.IOException;
 import java.util.HashSet;
 import java.util.Optional;
 
-import static org.mockito.ArgumentMatchers.*;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.refEq;
 import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 
-// todo fix
+
 public class MockServiceOwnerControllerTest
         extends AutoMockCrudControllerTest<OwnerController> {
 
@@ -140,6 +140,7 @@ public class MockServiceOwnerControllerTest
     public void canDeleteOwner() throws Exception {
         getMvc().perform(delete(owner.getId()))
                 .andExpect(status().is2xxSuccessful());
+
         Mockito.verify(ownerService).deleteById(owner.getId());
     }
 
@@ -152,6 +153,7 @@ public class MockServiceOwnerControllerTest
         getMvc().perform(find(owner.getId()))
                 .andExpect(status().isOk())
                 .andExpect(content().json(readDtoJson));
+
         Mockito.verify(ownerService).findById(owner.getId());
     }
 
@@ -165,8 +167,8 @@ public class MockServiceOwnerControllerTest
         getMvc().perform(find(owner.getId()))
                 .andExpect(status().isOk())
                 .andExpect(content().json(readDtoJson));
-        Mockito.verify(ownerService).findById(owner.getId());
 
+        Mockito.verify(ownerService).findById(owner.getId());
         RapidSecurityContext.logout();
     }
 
@@ -175,34 +177,46 @@ public class MockServiceOwnerControllerTest
         //given
         String updatedAddress = "other Street 12";
 
-        Owner ownerPatch = BeanUtils.clone(owner);
+        // exclude hobbies bc emtpy collections that should not get updated, will be set to null by EntityReflectionUtils.setNonMatchingFieldsNull(patchEntity,allUpdatedFields);
+        Owner ownerPatch = new Owner();
+        ownerPatch.setId(owner.getId());
+        ownerPatch.setHobbies(null);
+        ownerPatch.setPets(null);
         ownerPatch.setAddress(updatedAddress);
 
         when(ownerService.findById(owner.getId()))
                 .thenReturn(Optional.of(owner));
-        when(ownerService.fullUpdate(any(Owner.class))).thenReturn(ownerPatch);
+        when(ownerService.partialUpdate(refEq(ownerPatch),any())).thenReturn(ownerPatch);
 
         //when
         getMvc().perform(update(addressPatch, owner.getId()))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.address").value(updatedAddress));
 
-        Mockito.verify(ownerService).fullUpdate(refEq(ownerPatch));
+        ownerPatch.setPets(null);
+        ownerPatch.setHobbies(null);
+        Mockito.verify(ownerService).partialUpdate(refEq(ownerPatch),any());
 
     }
 
 
     @Test
     public void cantUpdateWithBlankCity() throws Exception {
-        Owner ownerPatch = BeanUtils.clone(owner);
-        ownerPatch.setCity(null);
+        // exclude hobbies bc emtpy collections that should not get updated, will be set to null by EntityReflectionUtils.setNonMatchingFieldsNull(patchEntity,allUpdatedFields);
+        Owner ownerPatch = new Owner();
+        ownerPatch.setId(owner.getId());
+        ownerPatch.setHobbies(null);
+        ownerPatch.setPets(null);
+        ownerPatch.setCity("");
+
         when(ownerService.findById(owner.getId()))
                 .thenReturn(Optional.of(owner));
+
         getMvc().perform(update(blankCityPatch, owner.getId()))
                 .andExpect(status().isBadRequest());
 
 
-        verify(ownerService, never()).fullUpdate(any());
+        verify(ownerService, never()).partialUpdate(any(),any());
     }
 
     @Test
@@ -211,7 +225,10 @@ public class MockServiceOwnerControllerTest
         Pet pet = Pet.builder().name("myPet").build();
         pet.setId(petId);
 
-        Owner ownerPatch = BeanUtils.clone(owner);
+        // exclude hobbies bc emtpy collections that should not get updated, will be set to null by EntityReflectionUtils.setNonMatchingFieldsNull(patchEntity,allUpdatedFields);
+        Owner ownerPatch = new Owner();
+        ownerPatch.setId(owner.getId());
+        ownerPatch.setHobbies(null);
         ownerPatch.getPets().add(pet);
 
 
@@ -221,13 +238,14 @@ public class MockServiceOwnerControllerTest
                 .thenReturn(Optional.of(pet));
         when(crudServiceLocator.find(Pet.class))
                 .thenReturn(petService);
-        when(ownerService.fullUpdate(refEq(ownerPatch)))
+        when(ownerService.partialUpdate(refEq(ownerPatch),any()))
                 .thenReturn(ownerPatch);
 
         getMvc().perform(update(addPetPatch, owner.getId()))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.petIds[0]").value(petId));
 
-        verify(ownerService).fullUpdate(refEq(ownerPatch));
+        ownerPatch.setHobbies(null);
+        verify(ownerService).partialUpdate(refEq(ownerPatch),any());
     }
 }

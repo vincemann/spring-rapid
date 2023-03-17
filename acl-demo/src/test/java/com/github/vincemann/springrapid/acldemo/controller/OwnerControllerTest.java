@@ -18,7 +18,7 @@ import java.util.Optional;
 
 import static com.github.vincemann.ezcompare.Comparator.compare;
 import static com.github.vincemann.springrapid.coretest.service.PropertyMatchers.propertyAssert;
-import static com.github.vincemann.springrapid.coretest.util.TransactionalRapidTestUtil.*;
+import static com.github.vincemann.springrapid.coretest.util.RapidTestUtil.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 

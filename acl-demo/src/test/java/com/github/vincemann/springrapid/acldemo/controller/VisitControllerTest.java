@@ -8,6 +8,7 @@ import com.github.vincemann.springrapid.acldemo.model.Visit;
 import com.github.vincemann.springrapid.acldemo.service.VisitService;
 import com.github.vincemann.springrapid.core.util.Lists;
 import com.github.vincemann.springrapid.coretest.util.TransactionalRapidTestUtil;
+import com.github.vincemann.springrapid.coretest.util.RapidTestUtil;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpHeaders;
@@ -56,7 +57,7 @@ public class VisitControllerTest extends AbstractControllerIntegrationTest<Visit
         compare(responseDto).with(dbVisit)
                 .properties()
                 .all()
-                .ignore(TransactionalRapidTestUtil.dtoIdProperties(VisitDto.class))
+                .ignore(RapidTestUtil.dtoIdProperties(VisitDto.class))
                 .assertEqual();
     }
 

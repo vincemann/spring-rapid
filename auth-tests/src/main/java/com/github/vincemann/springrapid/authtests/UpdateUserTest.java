@@ -9,8 +9,8 @@ import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpHeaders;
 
 import static com.github.vincemann.springrapid.authtests.adapter.AuthTestAdapter.*;
-import static com.github.vincemann.springrapid.coretest.util.TransactionalRapidTestUtil.createUpdateJsonLine;
-import static com.github.vincemann.springrapid.coretest.util.TransactionalRapidTestUtil.createUpdateJsonRequest;
+import static com.github.vincemann.springrapid.coretest.util.RapidTestUtil.createUpdateJsonLine;
+import static com.github.vincemann.springrapid.coretest.util.RapidTestUtil.createUpdateJsonRequest;
 import static org.hamcrest.Matchers.hasSize;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;

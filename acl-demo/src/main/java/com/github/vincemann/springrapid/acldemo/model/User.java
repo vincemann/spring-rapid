@@ -31,7 +31,7 @@ public class User extends AbstractUser<Long> {
 
 	@Builder
 	public User(String contactInformation, String password, String uuid, Set<String> roles, String newContactInformation, long credentialsUpdatedMillis, String captchaResponse) {
-		super(contactInformation, password, roles, newContactInformation, credentialsUpdatedMillis, captchaResponse);
+		super(contactInformation,newContactInformation, password, roles, credentialsUpdatedMillis, captchaResponse);
 		this.uuid = uuid;
 	}
 

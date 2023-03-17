@@ -13,7 +13,7 @@
     </parent>
 
     <properties>
-        <smart-logger.version>1.1.0</smart-logger.version>
+        <smart-logger.version>1.1.1</smart-logger.version>
     </properties>
 
     <dependencies>
