@@ -8,6 +8,7 @@ import com.github.vincemann.springrapid.autobidir.model.child.annotation.BiDirCh
 import lombok.*;
 
 import javax.persistence.*;
+import javax.validation.constraints.NotEmpty;
 import java.util.*;
 
 import static javax.persistence.CascadeType.*;

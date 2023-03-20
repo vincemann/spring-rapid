@@ -32,9 +32,17 @@ public class UpdateOwnerDto extends AbstractOwnerDto  {
 
     }
 
+    @Size(min=3,max=255)
+    @NotBlank
+    public String getCity(){
+        return city;
+    }
+
     @NotNull
     @Override
     public Long getId() {
         return super.getId();
     }
+
+
 }

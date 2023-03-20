@@ -172,7 +172,8 @@ public abstract class GenericCrudController
 
         logSecurityContext();
         E updated = servicePartialUpdate(patchEntity,
-                IdPropertyNameUtils.transformIdFieldNames(patchInfo.getRemoveSingleMembersFields()));
+                IdPropertyNameUtils.transformIdFieldNames(patchInfo.getRemoveSingleMembersFields())
+        );
         Class<?> resultDtoClass = createDtoClass(getUpdateUrl(), Direction.RESPONSE, updated);
         Object resultDto = dtoMapper.mapToDto(updated, resultDtoClass);
         afterUpdate(resultDto, updated, request, response);

@@ -29,10 +29,12 @@ public abstract class AbstractOwnerDto extends MyIdDto<Long> {
     private String address;
 
     @Size(min=3,max=255)
-    private String city;
+    protected String city;
 
     @Size(min=10,max=10)
     private String telephone;
 
     private Set<String> hobbies = new HashSet<>();
+
+
 }

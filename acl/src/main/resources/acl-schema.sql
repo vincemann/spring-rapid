@@ -70,6 +70,14 @@
 -- drop table acl_class;
 -- drop table acl_sid;
 
+-- drop bc weird cache might be active, so we dont have acl-class."class_id_type" which results in annoying logs
+-- we can disable logs for org.springframework.security.acls.jdbc.AclClassIdUtils, but this might be a big deal if someone uses string index
+
+-- drop table if exists acl_entry;
+-- drop table if exists acl_object_identity;
+-- drop table if exists acl_class;
+-- drop table if exists acl_sid;
+
 CREATE TABLE IF NOT EXISTS acl_sid(
                         id bigserial not null primary key,
                         principal boolean not null,
