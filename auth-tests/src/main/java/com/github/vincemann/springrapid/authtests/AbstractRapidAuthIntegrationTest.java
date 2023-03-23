@@ -205,6 +205,7 @@ public abstract class AbstractRapidAuthIntegrationTest
         System.err.println("clearing test data");
         tokens.clear();
         System.err.println("deleting users");
+        clearAclCache();
         TransactionalRapidTestUtil.clear(aclUserService);
         System.err.println("deleted users");
         System.err.println("test data cleared");

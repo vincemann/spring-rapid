@@ -22,6 +22,7 @@ public class RapidAclSchemaAutoConfiguration {
 
     @Bean
     public DataSourceInitializer dataSourceInitializer(DataSource dataSource) {
+        log.debug("creating acl-schema via sql script");
         ResourceDatabasePopulator resourceDatabasePopulator = new ResourceDatabasePopulator();
         resourceDatabasePopulator.addScript(new ClassPathResource("/acl-schema.sql"));
         DataSourceInitializer dataSourceInitializer = new DataSourceInitializer();
