@@ -26,6 +26,12 @@
     <logger name="org.springframework.security.acls" level="DEBUG" additivity="false">
         <appender-ref ref="CONSOLE"/>
     </logger>
+
+<!--     avoid unlogical error Feld "class_id_type" nicht gefunden-->
+    <logger name="org.springframework.security.acls.jdbc.AclClassIdUtils" level="INFO" additivity="false">
+        <appender-ref ref="CONSOLE"/>
+    </logger>
+
     <logger name="com.zaxxer.hikari" level="debug" additivity="false">
         <appender-ref ref="CONSOLE"/>
     </logger>
