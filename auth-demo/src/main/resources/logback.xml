@@ -11,6 +11,12 @@
         <appender-ref ref="CONSOLE"/>
     </logger>
 
+    <logger name="org.springframework.jdbc.datasource.init.ScriptUtils" level="DEBUG" additivity="false">
+        <appender-ref ref="CONSOLE"/>
+    </logger>
+
+
+
     <logger name="com.github.vincemann.smartlogger" level="info" additivity="false">
         <appender-ref ref="CONSOLE"/>
     </logger>

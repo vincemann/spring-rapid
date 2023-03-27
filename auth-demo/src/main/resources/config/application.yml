@@ -1,4 +1,8 @@
-## Common lemon demo properties
+## Common auth demo properties
+
+server:
+  address: localhost
+  port: 8080
 
 spring:
 
@@ -87,6 +91,8 @@ server.servlet.session.persistent: false
   #  core:
   #    baseUrl: "/api/core"
 
+rapid-core:
+  applicationUrl: http://127.0.0.1:8080
 
 rapid-auth:
 

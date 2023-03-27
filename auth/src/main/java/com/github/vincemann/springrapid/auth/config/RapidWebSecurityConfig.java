@@ -29,12 +29,12 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 public class RapidWebSecurityConfig extends WebSecurityConfigurerAdapter {
 
 
-	private AuthProperties properties;
-	private HttpTokenService httpTokenService;
-	private AuthorizationTokenService<RapidAuthAuthenticatedPrincipal> authorizationTokenService;
-	private RapidSecurityContext<RapidAuthAuthenticatedPrincipal> securityContext;
-	private RapidAuthenticationSuccessHandler authenticationSuccessHandler;
-	private LoginAttemptService loginAttemptService;
+	protected AuthProperties properties;
+	protected HttpTokenService httpTokenService;
+	protected AuthorizationTokenService<RapidAuthAuthenticatedPrincipal> authorizationTokenService;
+	protected RapidSecurityContext<RapidAuthAuthenticatedPrincipal> securityContext;
+	protected RapidAuthenticationSuccessHandler authenticationSuccessHandler;
+	protected LoginAttemptService loginAttemptService;
 
 	public RapidWebSecurityConfig() {
 
@@ -203,7 +203,6 @@ public class RapidWebSecurityConfig extends WebSecurityConfigurerAdapter {
 	protected void otherConfigurations(HttpSecurity http)  throws Exception {
 
 	}
-
 
 
 	@Autowired
