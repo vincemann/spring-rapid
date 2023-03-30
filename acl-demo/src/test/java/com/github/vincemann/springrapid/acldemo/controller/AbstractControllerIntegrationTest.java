@@ -440,8 +440,11 @@ public class AbstractControllerIntegrationTest<C extends GenericCrudController<?
     }
 
     @AfterEach
-    void tearDown() {
-        super.clearAclCache();
+    public void tearDown() {
+        // todo cannot find method symbol in console...
+        clearAclCache();
+//        aclCache.clearCache();
+
         TransactionalRapidTestUtil.clear(visitService);
         TransactionalRapidTestUtil.clear(petService);
         TransactionalRapidTestUtil.clear(illnessService);

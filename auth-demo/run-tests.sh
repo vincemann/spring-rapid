@@ -1,0 +1,1 @@
+../mvnw clean test -pl . -Dtest=com.github.vincemann.springrapid.authdemo.*Test#*

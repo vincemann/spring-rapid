@@ -1,1 +1,1 @@
-mvn -pl \!core-demo,\!auth-demo,\!acl-demo $@
+./mvnw -pl \!core-demo,\!auth-demo,\!acl-demo $@

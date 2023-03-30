@@ -12,6 +12,7 @@ import org.springframework.test.context.jdbc.Sql;
 
 
 
+// todo this annotation can be removed: test
 @TestExecutionListeners(
         value = {
                 ClearAclCacheTestExecutionListener.class,

@@ -15,6 +15,8 @@ import java.util.HashMap;
 import java.util.Map;
 
 import static com.github.vincemann.springrapid.core.util.ProxyUtils.aopUnproxy;
+
+
 public class BasicAuthTest extends AbstractRapidAuthIntegrationTest {
 
 //	private static final String TEST_RECAPTCHA = "6LdwxRcUAAAAABkhOGWQXhl9FsR27D5YUJRuGzx0";
