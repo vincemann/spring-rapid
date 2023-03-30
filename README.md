@@ -11,10 +11,14 @@ Most lemon modules were copied, modified and integrated into this project.
   
 # Requirements  
 jdk >= 11.0.13  
-maven >= 3.6.0  
-tested on jdk 11.0.13 and maven 3.6.0  
+maven >= 3.6.3  
+tested on jdk 11.0.13 wuth mvnw (version 3.6.3)     
 spring-boot-starter-parent = 2.2.3.RELEASE   
   
+# Build   
+./build.sh  
+# Test  
+./test.sh 
 # Features  
 * full generic **crud** solution                                                                     (core)   
 * proxy-based **extension system** for services                                                      (core)  
