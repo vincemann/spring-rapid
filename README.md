@@ -15,10 +15,14 @@ maven >= 3.6.3
 tested on jdk 11.0.13 wuth mvnw (version 3.6.3)     
 spring-boot-starter-parent = 2.2.3.RELEASE   
   
-# Build   
-./build.sh  
-# Test  
-./test.sh 
+# Build & Test  
+activate jdk 11.0.13    
+use ./build.sh and test.sh scripts.    
+they use mvnw and make sure auth-demo test's wont fail for no reason    
+you can also run auth-demo's tests seperate via:    
+```code
+./mvnw clean test -pl auth-demo/ -Dtest=com.github.vincemann.springrapid.authdemo.*Test#*
+```
 # Features  
 * full generic **crud** solution                                                                     (core)   
 * proxy-based **extension system** for services                                                      (core)  
