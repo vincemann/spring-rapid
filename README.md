@@ -17,12 +17,10 @@ spring-boot-starter-parent = 2.2.3.RELEASE
   
 # Build & Test  
 activate jdk 11.0.13    
-use ./build.sh and test.sh scripts.    
+use ```code ./build.sh``` and ```code test.sh``` scripts.    
 they use mvnw and make sure auth-demo test's wont fail for no reason    
 you can also run auth-demo's tests seperate via:    
-```code
-./mvnw clean test -pl auth-demo/ -Dtest=com.github.vincemann.springrapid.authdemo.*Test#*
-```
+```code./mvnw clean test -pl auth-demo/ -Dtest=com.github.vincemann.springrapid.authdemo.*Test#*```
 # Features  
 * full generic **crud** solution                                                                     (core)   
 * proxy-based **extension system** for services                                                      (core)  
