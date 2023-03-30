@@ -1,0 +1,1 @@
+./mvnw -pl \!auth-demo clean install -DSkipTests
