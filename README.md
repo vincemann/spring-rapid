@@ -10,17 +10,16 @@ This project is inspired by [**spring-lemon**](https://github.com/naturalprogram
 Most lemon modules were copied, modified and integrated into this project.  
   
 # Requirements  
-jdk >= 11.0.13  
-maven >= 3.6.3  
-tested on jdk 11.0.13 wuth mvnw (version 3.6.3)     
+jdk: version 11.0.18 (default version for java 11)   
+maven: use maven-wrapper ./mvnw  
 spring-boot-starter-parent = 2.2.3.RELEASE   
   
-# Build & Test  
-activate jdk 11.0.13    
-use ``` ./build.sh ``` and ``` test.sh ``` scripts.    
-they use mvnw and make sure auth-demo test's wont fail for no reason    
-you can also run auth-demo's tests seperate via:    
-``` ./mvnw clean test -pl auth-demo/ -Dtest=com.github.vincemann.springrapid.authdemo.*Test#* ```
+# Build & Test    
+activate jdk 11.0.18 (tested on amazon corretto)      
+use ``` ./build.sh ``` and ``` test*.sh ``` scripts.    
+they use mvnw and make sure auth-demo test's wont fail for no reason      
+you can also run auth-demo's tests seperate via:      
+``` ./auth-demo/test.sh ```   
 # Features  
 * full generic **crud** solution                                                                     (core)   
 * proxy-based **extension system** for services                                                      (core)  
