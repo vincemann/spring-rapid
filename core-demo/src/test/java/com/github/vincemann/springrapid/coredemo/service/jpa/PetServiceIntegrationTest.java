@@ -15,7 +15,7 @@ import java.lang.reflect.InvocationTargetException;
 import static com.github.vincemann.ezcompare.Comparator.compare;
 
 import static com.github.vincemann.springrapid.coretest.service.ExistenceMatchers.notPresentInDatabase;
-import static com.github.vincemann.springrapid.coretest.service.PropertyMatchers.propertyAssert;
+import static com.github.vincemann.ezcompare.PropertyMatchers.propertyAssert;
 import static com.github.vincemann.springrapid.coretest.service.request.CrudServiceRequestBuilders.*;
 import static com.github.vincemann.springrapid.coretest.service.resolve.EntityPlaceholder.DB_ENTITY;
 

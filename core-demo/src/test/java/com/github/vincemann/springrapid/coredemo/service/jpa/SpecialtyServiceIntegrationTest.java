@@ -14,7 +14,7 @@ import java.util.HashSet;
 
 
 import static com.github.vincemann.springrapid.coretest.service.ExistenceMatchers.notPresentInDatabase;
-import static com.github.vincemann.springrapid.coretest.service.PropertyMatchers.propertyAssert;
+import static com.github.vincemann.ezcompare.PropertyMatchers.propertyAssert;
 import static com.github.vincemann.springrapid.coretest.service.request.CrudServiceRequestBuilders.*;
 
 /**
