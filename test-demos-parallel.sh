@@ -1,5 +1,6 @@
 #!/bin/bash
 
+
 sudo apt-get install -y gnome-terminal
 
 
@@ -17,7 +18,9 @@ commands=(
 
 # start each command in a new gnome terminal
 for cmd in "${commands[@]}"; do
-  gnome-terminal --tab -e "bash -c '$cmd; exec bash'" &
+  # cant make it work any better... --dump-po-strings -- is only there in order to kill the right process if it finishes
+  # gnome-terminal --tab --title="testing-terminal" -e "bash -c '$cmd; exec bash'" &
+  gnome-terminal -e "bash -e -c 'export FOO=bar; $cmd; exec bash --dump-po-strings --'" &
   # store PID of child process
   # pids+=($!)
 done
@@ -28,6 +31,8 @@ wait
 # close terminals on user input
 read -n 1 -s -r -p "Press any key to close terminals..."
 
+# pkill -f "gnome-terminal --title=testing-terminal"
+
 #send SIGTERM signal to child processes
 # for pid in "${pids[@]}"; do
 #   kill -9 "$pid"
@@ -36,7 +41,9 @@ read -n 1 -s -r -p "Press any key to close terminals..."
 # kill gnome-terminal processes
 # killall gnome-terminal
 
-# pkill -f "gnome-terminal"
+# pkill -f "*--my-flag*"
+pkill -f "export FOO=bar;"
+pkill -f "bash --dump-po-strings --"
 
 # remove PIDs from array
-# pids=()
+pids=()
