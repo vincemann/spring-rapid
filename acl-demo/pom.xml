@@ -11,10 +11,6 @@
 
     <artifactId>acl-demo</artifactId>
 
-    <properties>
-        <smart-logger.version>1.1.2</smart-logger.version>
-    </properties>
-
     <dependencies>
 
         <dependency>
@@ -70,6 +66,13 @@
             <groupId>com.github.vincemann.spring-rapid</groupId>
             <artifactId>core-test</artifactId>
             <version>${project.version}</version>
+            <scope>test</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>com.github.vincemann</groupId>
+            <artifactId>ez-compare</artifactId>
+            <version>${ez-compare.version}</version>
             <scope>test</scope>
         </dependency>
 
