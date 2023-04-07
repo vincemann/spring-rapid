@@ -19,7 +19,7 @@ activate jdk 11.0.18 (tested on [amazon corretto](https://docs.aws.amazon.com/de
 use ``` ./build.sh ``` and ``` test*.sh ``` scripts.    
 they use mvnw and make sure auth-demo test's wont fail for no reason      
 you can also run auth-demo's tests seperate via:      
-``` ./auth-demo/test.sh ```   
+``` cd ./auth-demo/; ./test.sh ```   
 # Features  
 * full generic **crud** solution                                                                     (core)   
 * proxy-based **extension system** for services                                                      (core)  
