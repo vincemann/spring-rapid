@@ -1,7 +1,11 @@
 #!/bin/bash
 
 
-sudo apt-get install -y gnome-terminal
+if ! which gnome-terminal >/dev/null; then
+  echo "gnome-terminal is not installed"
+  sudo apt-get install -y gnome-terminal
+fi
+
 
 
 # list of commands to run
