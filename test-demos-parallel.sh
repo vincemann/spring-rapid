@@ -1,5 +1,8 @@
 #!/bin/bash
 
+sudo apt-get install -y gnome-terminal
+
+
 # list of commands to run
 commands=(
   "./mvnw -pl core-demo clean test"
