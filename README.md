@@ -15,7 +15,7 @@ maven: use maven-wrapper ./mvnw
 spring-boot-starter-parent = 2.2.3.RELEASE   
   
 # Build & Test    
-activate jdk 11.0.18 (tested on amazon corretto)      
+activate jdk 11.0.18 (tested on [amazon corretto](https://docs.aws.amazon.com/de_de/corretto/latest/corretto-11-ug/downloads-list.html))      
 use ``` ./build.sh ``` and ``` test*.sh ``` scripts.    
 they use mvnw and make sure auth-demo test's wont fail for no reason      
 you can also run auth-demo's tests seperate via:      
