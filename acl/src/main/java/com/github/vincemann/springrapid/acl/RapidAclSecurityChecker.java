@@ -33,8 +33,8 @@ import java.util.HashSet;
  * Uses {@link MethodSecurityExpressionHandler} for expression evaluation
  */
 public class RapidAclSecurityChecker
-        implements AclSecurityChecker, ApplicationContextAware {
-
+        implements AclSecurityChecker, ApplicationContextAware
+{
 
     private Method triggerCheckMethod;
     private SpelExpressionParser parser;

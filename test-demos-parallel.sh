@@ -50,4 +50,4 @@ pkill -f "export FOO=bar;"
 pkill -f "bash --dump-po-strings --"
 
 # remove PIDs from array
-pids=()
+# pids=()

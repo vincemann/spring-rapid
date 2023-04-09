@@ -1,20 +1,14 @@
 package com.github.vincemann.springrapid.coredemo.mapper;
 
-import com.github.vincemann.springrapid.coredemo.model.abs.Person;
 import com.google.common.collect.Sets;
 import lombok.*;
 import org.junit.jupiter.api.*;
 import org.modelmapper.*;
 import org.modelmapper.spi.*;
-import org.springframework.test.annotation.DirtiesContext;
-import org.springframework.util.ReflectionUtils;
 
-import java.lang.reflect.Method;
 import java.time.Instant;
 import java.util.Date;
 import java.util.Set;
-
-import static org.springframework.util.StringUtils.capitalize;
 
 
 /**
@@ -50,10 +44,21 @@ public class ModelMapperExerciseTests {
     }
 
     ModelMapper modelMapper;
+//    Configuration config;
+    boolean init = true;
+
+
 
     @BeforeEach
     void setUp() {
         this.modelMapper = new ModelMapper();
+//        if (init){
+//            ModelMapperHelper.copyInitialConfig(modelMapper);
+//            init = false;
+//        }else {
+//            ModelMapperHelper.resetModelMapper(modelMapper);
+//        }
+
     }
 
 //    @AfterEach
@@ -226,7 +231,7 @@ public class ModelMapperExerciseTests {
 
     }
 
-    @Disabled
+//    @Disabled
     @Test
     public void testOnlyMapPropertiesFromPropertyNameList_byUsingCondition() {
 

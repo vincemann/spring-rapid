@@ -57,14 +57,16 @@ public class UserServiceSecurityExtension
     public AbstractUser fullUpdate(AbstractUser entity) throws BadEntityException, EntityNotFoundException {
         checkUpdatePermissions(entity);
         // todo why getLast
-        return getLast().fullUpdate(entity);
+//        return getLast().fullUpdate(entity);
+        return getNext().fullUpdate(entity);
     }
 
     @Override
     public AbstractUser softUpdate(AbstractUser entity) throws EntityNotFoundException, BadEntityException {
         checkUpdatePermissions(entity);
         // todo why getLast
-        return getLast().softUpdate(entity);
+//        return getLast().softUpdate(entity);
+        return getNext().softUpdate(entity);
     }
 
     // everybody must be able to do this
@@ -80,13 +82,15 @@ public class UserServiceSecurityExtension
     public AbstractUser partialUpdate(AbstractUser entity, String... fieldsToRemove) throws EntityNotFoundException, BadEntityException {
         checkUpdatePermissions(entity);
         // todo why getLast
-        return getLast().partialUpdate(entity,fieldsToRemove);
+//        return getLast().partialUpdate(entity,fieldsToRemove);
+        return getNext().partialUpdate(entity,fieldsToRemove);
     }
 
     @Override
     public AbstractUser partialUpdate(AbstractUser entity, Set collectionsToUpdate, String... fieldsToRemove) throws EntityNotFoundException, BadEntityException {
         checkUpdatePermissions(entity);
-        return getLast().partialUpdate(entity,collectionsToUpdate,fieldsToRemove);
+//        return getLast().partialUpdate(entity,collectionsToUpdate,fieldsToRemove);
+        return getNext().partialUpdate(entity,collectionsToUpdate,fieldsToRemove);
     }
 
     protected void checkUpdatePermissions(AbstractUser update) throws EntityNotFoundException, BadEntityException {
