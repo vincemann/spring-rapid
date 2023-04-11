@@ -51,16 +51,6 @@ you can also run auth-demo's tests seperate via:
     <version>VERSION</version>  
 </dependency>  
 ```  
-### Gradle  
-```code
-repositories {  
-    jcenter()  
-    maven { url "https://jitpack.io" }  
-}  
-dependencies {  
-     implementation 'com.github.vincemann.spring-rapid:MODULE:VERSION'  
-}  
-```  
   
 # Example  
 **This is the typical setup required to run a fully functional controller exposing crud enpoints for one entity.**  
