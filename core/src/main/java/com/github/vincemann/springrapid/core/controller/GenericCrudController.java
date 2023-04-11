@@ -175,6 +175,7 @@ public abstract class GenericCrudController
                 IdPropertyNameUtils.transformIdFieldNames(patchInfo.getRemoveSingleMembersFields())
         );
         Class<?> resultDtoClass = createDtoClass(getUpdateUrl(), Direction.RESPONSE, updated);
+        // no third arg, bc mapping all possible fields
         Object resultDto = dtoMapper.mapToDto(updated, resultDtoClass);
         afterUpdate(resultDto, updated, request, response);
         return ok(jsonMapper.writeDto(resultDto));

@@ -28,8 +28,11 @@ public class RapidDtoMapperAutoConfiguration {
 
     @ConditionalOnMissingBean(name = "defaultDtoMapper")
     @Bean
-    public DtoMapper defaultDtoMapper(){
+    public DtoMapper defaultDtoMapper(/*ModelMapper modelMapper*/){
         return new BasicDtoMapper();
+        // todo could set systemwide modelmapper here or use @Autowired(required=false) and dont provide modelmapper-bean in this config
+//        BasicDtoMapper mapper = new BasicDtoMapper();
+//        mapper.createPermanentModelMapper(modelMapper);
     }
 
     @Bean

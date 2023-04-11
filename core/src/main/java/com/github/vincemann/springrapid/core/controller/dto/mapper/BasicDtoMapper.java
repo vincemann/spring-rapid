@@ -10,6 +10,7 @@ import lombok.Setter;
 import org.modelmapper.*;
 import org.modelmapper.convention.MatchingStrategies;
 import org.modelmapper.internal.InheritingConfiguration;
+import org.modelmapper.spi.MatchingStrategy;
 import org.modelmapper.spi.NamingConvention;
 import org.modelmapper.spi.PropertyType;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,12 +34,10 @@ import static org.springframework.util.StringUtils.capitalize;
 /**
  * Maps a Dto to its ServiceEntity and vice versa, by using {@link ModelMapper}
  */
-@Setter
-@Getter
 @Transactional
 @NoArgsConstructor
 @Order(Ordered.LOWEST_PRECEDENCE)
-public class BasicDtoMapper implements DtoMapper<IdentifiableEntity<?>,Object> {
+public class BasicDtoMapper implements DtoMapper<IdentifiableEntity<?>, Object> {
 
     private ModelMapper modelMapper;
 
@@ -56,9 +55,17 @@ public class BasicDtoMapper implements DtoMapper<IdentifiableEntity<?>,Object> {
 //            });
 //            this.modelMapper.getConfiguration().setSkipNullEnabled(true);
             // todo will always create emtpy owner object as member of pet with id 0, instead of leaving owner field null....
+
 //            ModelMapper modelMapper = new ModelMapper();
-            return modelMapper.map(source, destinationClass);
-        }catch (MappingException e){
+
+            //todo use systemwide and strict matching strategy
+            // , watch out for .setMatchingStrategy(MatchingStrategies.STRICT); maybe the InheritingConfigurations#equals method needs to check for that?
+            ModelMapper modelMapper = createModelMapper(false);
+            T mapped = modelMapper.map(source, destinationClass);
+            cleanupModelMapper(modelMapper,false);
+            return mapped;
+//            return new ModelMapper().map(source, destinationClass);
+        } catch (MappingException e) {
             throw new BadEntityException(e);
         }
     }
@@ -71,42 +78,99 @@ public class BasicDtoMapper implements DtoMapper<IdentifiableEntity<?>,Object> {
     @Override
     public <T> T mapToDto(IdentifiableEntity<?> sourceEntity, Class<T> destinationClass, String... fieldsToMap) {
 
-        ModelMapper modelMapper = new ModelMapper();
-        if (fieldsToMap.length > 0 ){
+//        ModelMapper modelMapper = new ModelMapper();
+        ModelMapper modelMapper = createModelMapper(true);
+
+
+//        MatchingStrategy matchingStrategy = modelMapper.getConfiguration().getMatchingStrategy();
+        if (fieldsToMap.length == 0) {
+//            System.err.println("mapping without properties defined -> map all");
+//            NamingConvention destinationNamingConvention = modelMapper.getConfiguration().getDestinationNamingConvention();
+//            System.err.println("dst Naming Convetion Hashcode: " + destinationNamingConvention.hashCode());
+//            System.err.println("Matching strategy: " + matchingStrategy);
+            return modelMapper.map(sourceEntity, destinationClass);
+        }
+        // properties to map defined:
 //            Set<String> propertiesToMap = Arrays.stream(fieldsToMap).map(IdPropertyNameUtils::transformIdFieldName).collect(Collectors.toSet());
-            Set<String> propertiesToMap = Sets.newHashSet(fieldsToMap);
-            propertiesToMap.add("id");
-            List<String> alreadySeen = new ArrayList<>();
-            NamingConvention namingConvention = new NamingConvention() {
-                public boolean applies(String propertyName, PropertyType propertyType) {
-                    if (propertyName.startsWith("set") || propertyName.startsWith("get")) {
+        Set<String> propertiesToMap = Sets.newHashSet(fieldsToMap);
+        propertiesToMap.add("id");
+
+//        System.err.println("Matching strategy: " + matchingStrategy);
+
+//        System.err.println("properties to map: (except id) " + propertiesToMap);
+
+        List<String> alreadySeen = new ArrayList<>();
+        NamingConvention namingConvention = new NamingConvention() {
+            public boolean applies(String propertyName, PropertyType propertyType) {
+                if (propertyName.startsWith("set") || propertyName.startsWith("get")) {
+//                    System.err.println("mapping property: " + propertyName);
 //                        String property = IdPropertyNameUtils.transformIdFieldName(StringUtils.uncapitalize(propertyName.substring(3)));
-                        String property = StringUtils.uncapitalize(propertyName.substring(3));
-                        if (alreadySeen.contains(property)){
-                            return false;
-                        }
-                        alreadySeen.add(property);
-                        return propertiesToMap.contains(property);
-                    }else {
+                    String property = StringUtils.uncapitalize(propertyName.substring(3));
+                    if (alreadySeen.contains(property)) {
+//                        System.err.println("already seen, skip");
                         return false;
                     }
+                    alreadySeen.add(property);
+                    boolean contains = propertiesToMap.contains(property);
+//                    System.err.println("mapping property: " + contains);
+                    return contains;
+                } else {
+                    return false;
                 }
-            };
-            NamingConvention oldNamingConvention = modelMapper.getConfiguration().getDestinationNamingConvention();
+            }
+        };
+//        NamingConvention oldNamingConvention = modelMapper.getConfiguration().getDestinationNamingConvention();
+//        System.err.println("Old naming convention: " + oldNamingConvention);
+//        System.err.println("Using naming convention: " + namingConvention.hashCode());
 //            modelMapper.getConfiguration().setSourceNamingConvention(namingConvention);
-            modelMapper.getConfiguration().setDestinationNamingConvention(namingConvention);
-            T mapped = modelMapper.map(sourceEntity, destinationClass);
-            modelMapper.getConfiguration().setDestinationNamingConvention(oldNamingConvention);
-            return mapped;
-        }
-        return modelMapper.map(sourceEntity, destinationClass);
+        modelMapper.getConfiguration().setDestinationNamingConvention(namingConvention);
+        T mapped = modelMapper.map(sourceEntity, destinationClass);
+        cleanupModelMapper(modelMapper,true);
+//        modelMapper.getConfiguration().setDestinationNamingConvention(oldNamingConvention);
+        return mapped;
     }
 
-    @Autowired
-    public void injectModelMapper(ModelMapper modelMapper) {
-        this.modelMapper = modelMapper;
-        this.modelMapper.getConfiguration()
-                .setMatchingStrategy(MatchingStrategies.STRICT);
+    /**
+     * Can be overwritten in order to configure modelmapper
+     * @return
+     */
+    protected ModelMapper createModelMapper(boolean toDto){
+        if (this.modelMapper == null)
+            return new ModelMapper();
+        else
+            return this.modelMapper;
     }
+
+    protected ModelMapper getModelMapper() {
+        return modelMapper;
+    }
+
+    /**
+     * Can be used to define one class wide mapper, otherwise a new modelmapper will get created on
+     * every mapping call.
+     * Watch out for configuration in {@link this#mapToDto(IdentifiableEntity, Class, String...)}
+     * @see this#getModelMapper()
+     * @param modelMapper
+     */
+    public void createPermanentModelMapper(ModelMapper modelMapper){
+        this.modelMapper=modelMapper;
+    }
+
+    /**
+     * Makes sense in conjunction with {@link this#createPermanentModelMapper(ModelMapper)}
+     */
+    protected void cleanupModelMapper(ModelMapper modelMapper, boolean toDto){
+
+    }
+
+
+
+
+//    @Autowired
+//    public void injectModelMapper(ModelMapper modelMapper) {
+//        this.modelMapper = modelMapper;
+//        this.modelMapper.getConfiguration()
+//                .setMatchingStrategy(MatchingStrategies.STRICT);
+//    }
 
 }

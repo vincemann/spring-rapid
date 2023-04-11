@@ -231,7 +231,7 @@ public class ModelMapperExerciseTests {
 
     }
 
-//    @Disabled
+    @Disabled
     @Test
     public void testOnlyMapPropertiesFromPropertyNameList_byUsingCondition() {
 

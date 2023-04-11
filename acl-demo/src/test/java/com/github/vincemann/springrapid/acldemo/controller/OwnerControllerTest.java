@@ -11,6 +11,7 @@ import com.github.vincemann.springrapid.acldemo.service.OwnerService;
 import com.github.vincemann.springrapid.auth.model.AuthRoles;
 import com.github.vincemann.springrapid.auth.dto.SignupDto;
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpHeaders;
 
@@ -21,6 +22,8 @@ import static com.github.vincemann.ezcompare.PropertyMatchers.propertyAssert;
 import static com.github.vincemann.springrapid.coretest.util.RapidTestUtil.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+
+@Tag(value = "demo-projects")
 
 public class OwnerControllerTest extends AbstractControllerIntegrationTest<OwnerController, OwnerService> {
 

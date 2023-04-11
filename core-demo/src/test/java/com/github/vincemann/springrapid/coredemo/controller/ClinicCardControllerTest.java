@@ -7,10 +7,13 @@ import com.github.vincemann.springrapid.coredemo.service.ClinicCardService;
 import com.github.vincemann.springrapid.coretest.util.RapidTestUtil;
 import com.github.vincemann.springrapid.coretest.util.TransactionalRapidTestUtil;
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 
 import static com.github.vincemann.ezcompare.Comparator.compare;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+
+@Tag(value = "demo-projects")
 
 public class ClinicCardControllerTest extends AbstractControllerIntegrationTest<ClinicCardController, ClinicCardService>{
 
