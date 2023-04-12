@@ -35,7 +35,7 @@ you can also run auth-demo's tests seperate via:
     
  # Include   
 * replace MODULE with the module you want to include (module-name = directory-name)  
-* replace VERSION with valid version from [releases](https://github.com/vincemann/spring-rapid/releases)  
+* versions can be seen here: [releases](https://github.com/vincemann/spring-rapid/releases)  
  ### Maven  
  ```code  
 <repositories>    
@@ -48,7 +48,7 @@ you can also run auth-demo's tests seperate via:
 <dependency>  
     <groupId>com.github.vincemann.spring-rapid</groupId>  
     <artifactId>MODULE</artifactId>  
-    <version>VERSION</version>  
+    <version>1.0.0-SNAPSHOT.14</version>  
 </dependency>  
 ```  
   
