@@ -7,6 +7,9 @@ import org.springframework.scheduling.annotation.EnableAsync;
 @ServiceConfig
 @EnableAsync
 @Slf4j
+/**
+ * needed for async mail sending methods
+ */
 public class RapidAsyncAutoConfiguration {
     public RapidAsyncAutoConfiguration() {
         log.info("asny enabled");
