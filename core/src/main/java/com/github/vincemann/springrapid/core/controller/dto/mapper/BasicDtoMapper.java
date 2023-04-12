@@ -39,7 +39,7 @@ import static org.springframework.util.StringUtils.capitalize;
 @Order(Ordered.LOWEST_PRECEDENCE)
 public class BasicDtoMapper implements DtoMapper<IdentifiableEntity<?>, Object> {
 
-    private ModelMapper modelMapper;
+//    private ModelMapper modelMapper;
 
     @Override
     public boolean supports(Class<?> dtoClass) {
@@ -58,12 +58,12 @@ public class BasicDtoMapper implements DtoMapper<IdentifiableEntity<?>, Object> 
 
 //            ModelMapper modelMapper = new ModelMapper();
 
-            //todo use systemwide and strict matching strategy
+            // dont make systemwide, see RapidDtoMapperAutoConfiguration for more details
             // , watch out for .setMatchingStrategy(MatchingStrategies.STRICT); maybe the InheritingConfigurations#equals method needs to check for that?
             ModelMapper modelMapper = createModelMapper(false);
-            T mapped = modelMapper.map(source, destinationClass);
-            cleanupModelMapper(modelMapper,false);
-            return mapped;
+            return modelMapper.map(source, destinationClass);
+//            cleanupModelMapper(modelMapper, false);
+//            return mapped;
 //            return new ModelMapper().map(source, destinationClass);
         } catch (MappingException e) {
             throw new BadEntityException(e);
@@ -111,9 +111,9 @@ public class BasicDtoMapper implements DtoMapper<IdentifiableEntity<?>, Object> 
                         return false;
                     }
                     alreadySeen.add(property);
-                    boolean contains = propertiesToMap.contains(property);
+                    return propertiesToMap.contains(property);
 //                    System.err.println("mapping property: " + contains);
-                    return contains;
+//                    return contains;
                 } else {
                     return false;
                 }
@@ -124,46 +124,40 @@ public class BasicDtoMapper implements DtoMapper<IdentifiableEntity<?>, Object> 
 //        System.err.println("Using naming convention: " + namingConvention.hashCode());
 //            modelMapper.getConfiguration().setSourceNamingConvention(namingConvention);
         modelMapper.getConfiguration().setDestinationNamingConvention(namingConvention);
-        T mapped = modelMapper.map(sourceEntity, destinationClass);
-        cleanupModelMapper(modelMapper,true);
+        return modelMapper.map(sourceEntity, destinationClass);
+//        cleanupModelMapper(modelMapper, true);
 //        modelMapper.getConfiguration().setDestinationNamingConvention(oldNamingConvention);
-        return mapped;
+//        return mapped;
     }
 
     /**
      * Can be overwritten in order to configure modelmapper
+     *
      * @return
      */
-    protected ModelMapper createModelMapper(boolean toDto){
-        if (this.modelMapper == null)
-            return new ModelMapper();
-        else
-            return this.modelMapper;
+    protected ModelMapper createModelMapper(boolean toDto) {
+//        if (this.modelMapper == null) {
+        ModelMapper mapper = new ModelMapper();
+        mapper.getConfiguration().setMatchingStrategy(MatchingStrategies.STRICT);
+        return mapper;
+//        } else
+//            return this.modelMapper;
     }
 
-    protected ModelMapper getModelMapper() {
-        return modelMapper;
-    }
+//    protected ModelMapper getModelMapper() {
+//        return modelMapper;
+//    }
 
-    /**
-     * Can be used to define one class wide mapper, otherwise a new modelmapper will get created on
-     * every mapping call.
-     * Watch out for configuration in {@link this#mapToDto(IdentifiableEntity, Class, String...)}
-     * @see this#getModelMapper()
-     * @param modelMapper
-     */
-    public void createPermanentModelMapper(ModelMapper modelMapper){
-        this.modelMapper=modelMapper;
-    }
-
-    /**
-     * Makes sense in conjunction with {@link this#createPermanentModelMapper(ModelMapper)}
-     */
-    protected void cleanupModelMapper(ModelMapper modelMapper, boolean toDto){
-
-    }
-
-
+//    /**
+//     * Can be used to define one class wide mapper, otherwise a new modelmapper will get created on
+//     * every mapping call.
+//     * Watch out for configuration in {@link this#mapToDto(IdentifiableEntity, Class, String...)}
+//     * @see this#getModelMapper()
+//     * @param modelMapper
+//     */
+//    public void createPermanentModelMapper(ModelMapper modelMapper){
+//        this.modelMapper=modelMapper;
+//    }
 
 
 //    @Autowired

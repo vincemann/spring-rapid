@@ -4,6 +4,7 @@ import com.github.vincemann.springrapid.core.controller.dto.mapper.*;
 import com.github.vincemann.springrapid.core.slicing.WebConfig;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
+import org.modelmapper.convention.MatchingStrategies;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.context.annotation.Bean;
 
@@ -28,18 +29,21 @@ public class RapidDtoMapperAutoConfiguration {
 
     @ConditionalOnMissingBean(name = "defaultDtoMapper")
     @Bean
-    public DtoMapper defaultDtoMapper(/*ModelMapper modelMapper*/){
+    public DtoMapper defaultDtoMapper(){
         return new BasicDtoMapper();
-        // todo could set systemwide modelmapper here or use @Autowired(required=false) and dont provide modelmapper-bean in this config
+        // not using system wide modelmapper bc id need to synchronize the object to maintain the same config -> not performant enough
 //        BasicDtoMapper mapper = new BasicDtoMapper();
 //        mapper.createPermanentModelMapper(modelMapper);
+//        return mapper;
     }
 
-    @Bean
-    @ConditionalOnMissingBean(ModelMapper.class)
-    public ModelMapper basicModelMapper(){
-        return new ModelMapper();
-    }
+//    @Bean
+//    @ConditionalOnMissingBean(ModelMapper.class)
+//    public ModelMapper basicModelMapper(){
+//        ModelMapper mapper = new ModelMapper();
+//        mapper.getConfiguration().setMatchingStrategy(MatchingStrategies.STRICT);
+//        return mapper;
+//    }
 
     @ConditionalOnMissingBean(name = "delegatingDtoMapper")
     @Bean

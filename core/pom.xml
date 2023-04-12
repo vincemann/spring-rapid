@@ -67,7 +67,13 @@
         <dependency>
             <groupId>com.github.vincemann</groupId>
             <artifactId>modelmapper</artifactId>
-            <version>3.1.2-SNAPSHOT</version>
+            <version>3.1.2-SNAPSHOT.712-FIX</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.testng</groupId>
+                    <artifactId>testng</artifactId>
+                </exclusion>
+            </exclusions>
 <!--            <version>2.3.4</version>-->
         </dependency>
 
