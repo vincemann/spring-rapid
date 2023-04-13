@@ -11,11 +11,7 @@ import java.util.Date;
 import java.util.Set;
 
 
-/**
- * // todo fix
- * somehow there is state between tests, which makes some fail, but they run green if run solo
- */
-@Disabled
+//@Disabled
 public class ModelMapperExerciseTests {
 
     @NoArgsConstructor
