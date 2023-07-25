@@ -208,6 +208,12 @@ public class AuthProperties {
 		 */		
 		public String password;
 
+		public Admin(String contactInformation, String password) {
+			this.contactInformation = contactInformation;
+			this.password = password;
+			this.replace = true;
+		}
+
 		public Boolean replace;
 
 	}
