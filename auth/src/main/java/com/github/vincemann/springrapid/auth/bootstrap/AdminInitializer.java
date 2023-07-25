@@ -8,10 +8,12 @@ import com.github.vincemann.springrapid.acl.proxy.Acl;
 import com.github.vincemann.springrapid.core.bootstrap.DatabaseInitializer;
 import com.github.vincemann.springrapid.core.security.RapidSecurityContext;
 import com.github.vincemann.springrapid.core.service.exception.BadEntityException;
+import com.github.vincemann.springrapid.core.service.exception.EntityNotFoundException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.io.Serializable;
 import java.util.List;
 import java.util.Optional;
 
@@ -22,7 +24,7 @@ import java.util.Optional;
  */
 public class AdminInitializer extends DatabaseInitializer {
 
-    private UserService<AbstractUser<?>,?> userService;
+    private UserService<AbstractUser<Serializable>, Serializable> userService;
     private AuthProperties authProperties;
     private RapidSecurityContext<?> securityContext;
 
@@ -34,32 +36,43 @@ public class AdminInitializer extends DatabaseInitializer {
                 () -> {
                     try {
                         addAdmins();
-                    } catch (BadEntityException | AlreadyRegisteredException e) {
+                    } catch (BadEntityException | AlreadyRegisteredException | EntityNotFoundException e) {
                         throw new RuntimeException(e);
                     }
                 });
     }
 
-    protected void addAdmins() throws BadEntityException, AlreadyRegisteredException {
+    protected void addAdmins() throws BadEntityException, AlreadyRegisteredException, EntityNotFoundException {
         List<AuthProperties.Admin> admins = authProperties.getAdmins();
         for (AuthProperties.Admin admin : admins) {
             log.debug("registering admin:: " + admin.getContactInformation());
 
             // Check if the user already exists
-            Optional<? extends AbstractUser<?>> byContactInformation = userService.findByContactInformation(admin.getContactInformation());
-            if (byContactInformation.isEmpty()) {
-                // Doesn't exist. So, create it.
-                log.debug("admin does not exist yet, creating: " + admin);
-                userService.signupAdmin(userService.newAdmin(admin));
-            }else {
-                log.debug("admin already exists. skipping.");
+            Optional<AbstractUser<Serializable>> byContactInformation = userService.findByContactInformation(admin.getContactInformation());
+            if (byContactInformation.isPresent()) {
+                log.debug("admin already exists.");
+                Boolean replace = admin.getReplace();
+                if (replace == null){
+                    log.debug("replace value for admin not set, default to replacing");
+                    replace = Boolean.TRUE;
+                }
+                if (replace){
+                    log.debug("replacing...");
+                    userService.deleteById(byContactInformation.get().getId());
+                }else {
+                    log.debug("keep old admin");
+                    continue;
+                }
             }
+            // Doesn't exist. So, create it.
+            log.debug("creating: " + admin);
+            userService.signupAdmin(userService.newAdmin(admin));
         }
     }
 
     @Autowired
     @Acl
-    public void injectUserService(UserService<AbstractUser<?>, ?> userService) {
+    public void injectUserService(UserService<AbstractUser<Serializable>, Serializable> userService) {
         this.userService = userService;
     }
 

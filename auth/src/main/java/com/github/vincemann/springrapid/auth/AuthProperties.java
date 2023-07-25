@@ -208,6 +208,8 @@ public class AuthProperties {
 		 */		
 		public String password;
 
+		public Boolean replace;
+
 	}
 	
 	/**
