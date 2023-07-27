@@ -545,7 +545,7 @@ public abstract class AbstractUserController<U extends AbstractUser<ID>, ID exte
 	protected RequestMappingInfo createFetchByContactInformationRequestMappingInfo() {
 		return RequestMappingInfo
 				.paths(getFetchByContactInformationUrl())
-				.methods(RequestMethod.POST)
+				.methods(RequestMethod.GET)
 				//.consumes(MediaType.APPLICATION_FORM_URLENCODED_VALUE)
 				.produces(getMediaType())
 				.build();

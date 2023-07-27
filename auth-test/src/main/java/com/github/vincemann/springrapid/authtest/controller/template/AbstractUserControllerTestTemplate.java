@@ -201,7 +201,7 @@ public abstract class AbstractUserControllerTestTemplate<C extends AbstractUserC
     }
 
     public RequestBuilder fetchByContactInformation(String contactInformation) throws Exception {
-        return post(getController().getFetchByContactInformationUrl())
+        return get(getController().getFetchByContactInformationUrl())
                 .param("contactInformation", contactInformation)
                 .header("contentType", MediaType.APPLICATION_FORM_URLENCODED);
     }

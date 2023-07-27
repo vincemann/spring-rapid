@@ -11,7 +11,7 @@ import java.util.Set;
 @Setter
 public abstract class AbstractFindRapidUserDto extends AbstractRapidUserDto {
 
-    private boolean unverified = false;
+    private boolean verified = false;
     private boolean blocked = false;
     private boolean admin = false;
     private boolean goodUser = false;
@@ -23,10 +23,10 @@ public abstract class AbstractFindRapidUserDto extends AbstractRapidUserDto {
     }
 
     public void initFlags() {
-        unverified = getRoles().contains(AuthRoles.UNVERIFIED);
+        verified = !getRoles().contains(AuthRoles.UNVERIFIED);
         blocked = getRoles().contains(AuthRoles.BLOCKED);
         admin = getRoles().contains(Roles.ADMIN);
-        goodUser = !(unverified || blocked);
+        goodUser = !(!verified || blocked);
 //        goodAdmin = goodUser && admin;
     }
 }

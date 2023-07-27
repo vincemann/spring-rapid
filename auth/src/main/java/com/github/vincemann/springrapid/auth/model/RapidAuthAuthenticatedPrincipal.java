@@ -4,7 +4,6 @@ import com.github.vincemann.springrapid.core.security.Roles;
 import com.github.vincemann.springrapid.core.security.RapidAuthenticatedPrincipal;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.ToString;
 
 import java.util.Set;
 
@@ -17,7 +16,7 @@ public class RapidAuthAuthenticatedPrincipal extends RapidAuthenticatedPrincipal
 	private boolean blocked = false;
 	private boolean admin = false;
 	private boolean goodUser = false;
-	private boolean unverified = false;
+	private boolean verified = false;
 	private boolean anon = false;
 
 	public RapidAuthAuthenticatedPrincipal(String contactInformation, String password, Set<String> roles, String id) {
@@ -34,10 +33,10 @@ public class RapidAuthAuthenticatedPrincipal extends RapidAuthenticatedPrincipal
 
 	public void initFlags() {
 		//init role flags
-		unverified = getRoles().contains(AuthRoles.UNVERIFIED);
+		verified = !getRoles().contains(AuthRoles.UNVERIFIED);
 		blocked = getRoles().contains(AuthRoles.BLOCKED);
 		admin = getRoles().contains(Roles.ADMIN);
-		goodUser = (getRoles().contains(AuthRoles.USER) | admin) && !unverified && !blocked;
+		goodUser = (getRoles().contains(AuthRoles.USER) | admin) && verified && !blocked;
 		anon = getRoles().contains(AuthRoles.ANON);
 //		goodAdmin = goodUser && admin;
 	}
