@@ -37,10 +37,7 @@ import org.springframework.web.util.UriComponentsBuilder;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import java.io.Serializable;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 
 
 @Validated
@@ -114,7 +111,9 @@ public abstract class AbstractUserService
     @Transactional(propagation = Propagation.REQUIRED, readOnly = false)
     public U signup(U user) throws BadEntityException, AlreadyRegisteredException {
         //admins get created with createAdminMethod
-        user.setRoles(Sets.newHashSet(AuthRoles.USER));
+        if (user.getRoles() == null){
+            user.setRoles(new HashSet<>());
+        }else user.getRoles().add(AuthRoles.USER);
         passwordValidator.validate(user.getPassword());
         checkUniqueContactInformation(user.getContactInformation());
         U saved = service.save(user);

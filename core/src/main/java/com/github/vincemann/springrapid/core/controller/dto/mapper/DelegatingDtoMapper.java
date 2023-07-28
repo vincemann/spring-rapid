@@ -5,31 +5,28 @@ import com.github.vincemann.springrapid.core.model.IdentifiableEntity;
 import com.github.vincemann.springrapid.core.service.exception.BadEntityException;
 import com.github.vincemann.springrapid.core.service.exception.EntityNotFoundException;
 import com.github.vincemann.springrapid.core.util.IdPropertyNameUtils;
-import com.sun.xml.bind.v2.model.core.ID;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import java.util.Set;
 
 @Slf4j
 public class DelegatingDtoMapper{
 
     private List<DtoMapper<?, ?>> delegates = new ArrayList<>();
-    private List<DtoEntityPostProcessor> dtoEntityPostProcessors = new ArrayList<>();
-    private List<EntityDtoPostProcessor> entityDtoPostProcessors = new ArrayList<>();
+    private List<EntityPostProcessor> entityPostProcessors = new ArrayList<>();
+    private List<DtoPostProcessor> dtoPostProcessors = new ArrayList<>();
     private EntityManager entityManager;
 
     //@LogInteraction
     public <T extends IdentifiableEntity<?>> T mapToEntity(Object dto, Class<T> destinationClass) throws EntityNotFoundException, BadEntityException {
         T mapped = (T) findMapper(dto.getClass())
                 .mapToEntity(dto, destinationClass);
-        for (DtoEntityPostProcessor pp : dtoEntityPostProcessors) {
+        for (EntityPostProcessor pp : entityPostProcessors) {
             if (pp.supports(mapped.getClass(), dto.getClass())) {
                 pp.postProcessEntity(mapped, dto);
             }
@@ -41,12 +38,12 @@ public class DelegatingDtoMapper{
         this.delegates.add(delegate);
     }
 
-    public void registerDtoEntityPostProcessor(DtoEntityPostProcessor postProcessor){
-        this.dtoEntityPostProcessors.add(postProcessor);
+    public void registerEntityPostProcessor(EntityPostProcessor postProcessor){
+        this.entityPostProcessors.add(postProcessor);
     }
 
-    public void registerEntityDtoPostProcessor(EntityDtoPostProcessor postProcessor){
-        this.entityDtoPostProcessors.add(postProcessor);
+    public void registerEntityDtoPostProcessor(DtoPostProcessor postProcessor){
+        this.dtoPostProcessors.add(postProcessor);
     }
 
     //@LogInteraction
@@ -57,7 +54,7 @@ public class DelegatingDtoMapper{
             entityManager.merge(source);
         T dto = (T) findMapper(destinationClass)
                 .mapToDto(source, destinationClass,fieldsToMap);
-        for (EntityDtoPostProcessor pp : entityDtoPostProcessors) {
+        for (DtoPostProcessor pp : dtoPostProcessors) {
             if (pp.supports(source.getClass(), dto.getClass())) {
                 pp.postProcessDto(dto, source, IdPropertyNameUtils.transformIdFieldNames(fieldsToMap));
             }

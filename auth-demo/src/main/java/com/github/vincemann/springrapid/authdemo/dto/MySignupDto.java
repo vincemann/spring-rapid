@@ -9,6 +9,8 @@ import lombok.Setter;
 import lombok.ToString;
 
 import javax.validation.constraints.NotBlank;
+import java.util.ArrayList;
+import java.util.List;
 
 @NoArgsConstructor
 @Getter
@@ -19,8 +21,11 @@ public class MySignupDto extends SignupDto {
     @NotBlank(message = "{blank.name}"/*, groups = {UserVerifyUtils.SignUpValidation.class, UserVerifyUtils.UpdateValidation.class}*/)
     private String name;
 
-    public MySignupDto(String contactInformation, String password, @NotBlank(message = "{blank.name}", groups = {UserVerifyUtils.SignUpValidation.class, UserVerifyUtils.UpdateValidation.class}) String name) {
+    private List<String> roles = new ArrayList<>();
+    public MySignupDto(String contactInformation, String password, @NotBlank(message = "{blank.name}", groups = {UserVerifyUtils.SignUpValidation.class, UserVerifyUtils.UpdateValidation.class}) String name, List<String> roles) {
         super(contactInformation, password);
         this.name = name;
+        if (roles != null)
+            this.roles = roles;
     }
 }

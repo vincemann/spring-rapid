@@ -2,7 +2,7 @@ package com.github.vincemann.springrapid.autobidir.controller.dtomapper;
 
 import com.github.vincemann.springrapid.autobidir.RelationalDtoManager;
 import com.github.vincemann.springrapid.autobidir.dto.RelationalDtoType;
-import com.github.vincemann.springrapid.core.controller.dto.mapper.DtoPostProcessor;
+import com.github.vincemann.springrapid.core.controller.dto.mapper.EntityDtoPostProcessor;
 import com.github.vincemann.springrapid.core.model.IdentifiableEntity;
 import com.github.vincemann.springrapid.core.service.exception.BadEntityException;
 import com.github.vincemann.springrapid.core.service.exception.EntityNotFoundException;
@@ -22,7 +22,7 @@ import java.util.Set;
  */
 @Order(1000)
 @Transactional
-public class IdResolvingDtoPostProcessor implements DtoPostProcessor<Object, IdentifiableEntity<?>>{
+public class IdResolvingDtoPostProcessor implements EntityDtoPostProcessor<Object, IdentifiableEntity<?>> {
 
     private List<EntityIdResolver> entityIdResolvers;
     private RelationalDtoManager relationalDtoManager;
