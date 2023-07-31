@@ -6,11 +6,14 @@ import lombok.*;
 
 import javax.validation.constraints.NotBlank;
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 @NoArgsConstructor
 @Getter
 @Setter
-@AllArgsConstructor
 @Builder
 @ToString
 public class SignupDto implements Serializable {
@@ -24,4 +27,12 @@ public class SignupDto implements Serializable {
     @NotBlank
     private String password;
 
+    private Set<String> roles = new HashSet<>();
+
+    public SignupDto(String contactInformation, String password, Set<String> roles) {
+        this.contactInformation = contactInformation;
+        this.password = password;
+        if (roles != null)
+            this.roles = roles;
+    }
 }

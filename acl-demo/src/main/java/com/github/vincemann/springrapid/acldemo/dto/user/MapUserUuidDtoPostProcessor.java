@@ -3,7 +3,7 @@ package com.github.vincemann.springrapid.acldemo.dto.user;
 import com.github.vincemann.springrapid.acldemo.model.User;
 import com.github.vincemann.springrapid.acldemo.model.abs.UserAwareEntity;
 import com.github.vincemann.springrapid.acldemo.service.MyUserService;
-import com.github.vincemann.springrapid.core.controller.dto.mapper.DtoEntityPostProcessor;
+import com.github.vincemann.springrapid.core.controller.dto.mapper.EntityPostProcessor;
 import com.github.vincemann.springrapid.core.service.exception.BadEntityException;
 import com.github.vincemann.springrapid.core.service.exception.EntityNotFoundException;
 import com.github.vincemann.springrapid.core.slicing.WebComponent;
@@ -13,7 +13,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.Optional;
 
 @WebComponent
-public class MapUserUuidDtoPostProcessor implements DtoEntityPostProcessor<CreateUserDto, UserAwareEntity> {
+public class MapUserUuidDtoPostProcessor implements EntityPostProcessor<CreateUserDto, UserAwareEntity> {
 
     private MyUserService userService;
 

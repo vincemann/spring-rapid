@@ -2,6 +2,9 @@ package com.github.vincemann.springrapid.authtests.adapter;
 
 import com.github.vincemann.springrapid.auth.model.AbstractUser;
 import com.github.vincemann.springrapid.auth.dto.SignupDto;
+import com.github.vincemann.springrapid.core.security.Roles;
+import com.github.vincemann.springrapid.core.util.Lists;
+import com.google.common.collect.Sets;
 
 public abstract class AuthTestAdapter {
 
@@ -56,11 +59,11 @@ public abstract class AuthTestAdapter {
     public abstract AbstractUser<Long> createTestUser(String contactInformation, String password, String... roles);
 
     public SignupDto createValidSignupDto(){
-        return new SignupDto(SIGNUP_USER_CONTACT_INFORMATION, SIGNUP_USER_PASSWORD);
+        return new SignupDto(SIGNUP_USER_CONTACT_INFORMATION, SIGNUP_USER_PASSWORD, Sets.newHashSet(Roles.USER));
     }
 
     public SignupDto createInvalidSignupDto(){
-        return new SignupDto(INVALID_CONTACT_INFORMATION,INVALID_PASSWORD);
+        return new SignupDto(INVALID_CONTACT_INFORMATION,INVALID_PASSWORD,Sets.newHashSet(Roles.USER));
     }
 
 

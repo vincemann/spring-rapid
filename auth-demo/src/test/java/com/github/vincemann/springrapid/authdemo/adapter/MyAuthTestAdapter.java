@@ -5,6 +5,9 @@ import com.github.vincemann.springrapid.auth.dto.SignupDto;
 import com.github.vincemann.springrapid.authdemo.dto.MySignupDto;
 import com.github.vincemann.springrapid.authtests.adapter.AuthTestAdapter;
 import com.github.vincemann.springrapid.authdemo.model.User;
+import com.github.vincemann.springrapid.core.security.Roles;
+import com.github.vincemann.springrapid.core.util.Lists;
+import com.google.common.collect.Sets;
 import org.springframework.boot.test.context.TestComponent;
 
 @TestComponent
@@ -28,7 +31,7 @@ public class MyAuthTestAdapter extends AuthTestAdapter {
     @Override
     public SignupDto createValidSignupDto() {
         SignupDto signupDto = super.createValidSignupDto();
-        return new MySignupDto(signupDto.getContactInformation(), signupDto.getPassword(),createUniqueName());
+        return new MySignupDto(signupDto.getContactInformation(), signupDto.getPassword(),createUniqueName(), Sets.newHashSet(Roles.USER));
     }
 
     @Override
@@ -50,7 +53,7 @@ public class MyAuthTestAdapter extends AuthTestAdapter {
     @Override
     public SignupDto createInvalidSignupDto() {
         SignupDto signupDto = super.createInvalidSignupDto();
-        return new MySignupDto(signupDto.getContactInformation(), signupDto.getPassword(),createUniqueName());
+        return new MySignupDto(signupDto.getContactInformation(), signupDto.getPassword(),createUniqueName(),signupDto.getRoles());
     }
 
 }
