@@ -24,7 +24,7 @@
         <lemon.version>1.0.0.RC3</lemon.version>
         <lombok.version>1.18.8</lombok.version>
         <javax.validation.version>2.0.1.Final</javax.validation.version>
-        <guava.version>30.0-jre</guava.version>
+        <guava.version>32.0.0-jre</guava.version>
         <aop-log.version>1.0.0-SNAPSHOT.7</aop-log.version>
 
 <!--        demo projects only-->
