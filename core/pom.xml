@@ -10,7 +10,6 @@
         <groupId>com.github.vincemann</groupId>
         <artifactId>spring-rapid</artifactId>
         <version>1.0.0-SNAPSHOT.15.1</version>
-
     </parent>
 
 

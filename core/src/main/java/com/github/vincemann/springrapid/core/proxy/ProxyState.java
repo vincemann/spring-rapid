@@ -11,10 +11,12 @@ import java.util.Map;
  * Used to store state of any kind between {@link AbstractServiceExtension}'s and Services, linked by {@link AbstractExtensionServiceProxy}.
  *
  * Use wisely, dont forget to clear values after using them
- * use getAndClear when possible
+ * use {@link this#getAndClear(String)} when possible
  * needs to manually be cleaned!
  *
  */
+
+// todo there has to be a better way to do this or avoid completely
 @Slf4j
 public class ProxyState {
     private final static Map<Thread,Map<String, Object>> STATE = new HashMap<>();
