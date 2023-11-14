@@ -44,7 +44,7 @@ public class AuthProperties {
 		public String changeContactInformationUrl = userBaseUrl +"/change-contactInformation";
 		public String changeContactInformationViewUrl = userBaseUrl +"/change-contactInformation-view";
 		public String verifyUserUrl = userBaseUrl +"/verify";
-		public String resendVerificationContactInformationUrl = userBaseUrl +"/resend-verification-contactInformation";
+		public String resendVerifyContactInformationMsgUrl = userBaseUrl +"/resend-verify-contactInformation-msg";
 		public String forgotPasswordUrl = userBaseUrl +"/forgot-password";
 		public String changePasswordUrl = userBaseUrl +"/change-password";
 		public String requestContactInformationChangeUrl = userBaseUrl +"/request-contactInformation-change";

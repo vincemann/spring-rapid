@@ -35,7 +35,7 @@ public interface CrudService<E extends IdentifiableEntity<Id>,Id extends Seriali
         @Transactional
         /**
          * Expects that no entity relationships need to be updated by other framework logic.
-         * Use this i.E. if you just uddate a long field and String field of entity, to reduce overhead.
+         * Use this i.E. if you just update a long field and String field of entity, to reduce overhead.
          */
         E softUpdate(E entity) throws EntityNotFoundException, BadEntityException;
         /**

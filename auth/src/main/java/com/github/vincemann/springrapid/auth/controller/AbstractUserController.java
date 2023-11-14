@@ -91,7 +91,7 @@ public abstract class AbstractUserController<U extends AbstractUser<ID>, ID exte
 		changeContactInformationUrl = getAuthProperties().getController().getChangeContactInformationUrl();
 		changeContactInformationViewUrl = getAuthProperties().getController().getChangeContactInformationViewUrl();
 		verifyUserUrl = getAuthProperties().getController().getVerifyUserUrl();
-		resendVerificationContactInformationUrl = getAuthProperties().getController().getResendVerificationContactInformationUrl();
+		resendVerificationContactInformationUrl = getAuthProperties().getController().getResendVerifyContactInformationMsgUrl();
 		forgotPasswordUrl = getAuthProperties().getController().getForgotPasswordUrl();
 		changePasswordUrl = getAuthProperties().getController().getChangePasswordUrl();
 		requestContactInformationChangeUrl = getAuthProperties().getController().getRequestContactInformationChangeUrl();
