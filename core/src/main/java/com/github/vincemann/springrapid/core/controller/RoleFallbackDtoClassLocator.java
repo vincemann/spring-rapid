@@ -1,5 +1,7 @@
 package com.github.vincemann.springrapid.core.controller;
 
+import com.github.vincemann.aoplog.api.annotation.LogInteraction;
+import com.github.vincemann.aoplog.api.annotation.LogParam;
 import com.github.vincemann.springrapid.core.controller.dto.mapper.context.DtoMappingContext;
 import com.github.vincemann.springrapid.core.controller.dto.mapper.context.DtoRequestInfo;
 import lombok.*;
@@ -23,8 +25,8 @@ public class RoleFallbackDtoClassLocator implements DtoClassLocator {
      * @return
      */
     @Override
-    //@LogInteraction
-    public Class<?> find(DtoRequestInfo info, DtoMappingContext context) {
+    @LogInteraction
+    public Class<?> find(@LogParam DtoRequestInfo info, DtoMappingContext context) {
         Map<DtoRequestInfo, Class<?>> mappingEntries = context.getMappingEntries();
         Set<DtoRequestInfo> endpointMatches = findEndpointMatches(info,context);
         MatchSet roleMatchSet = findRoleMatchSet(info, endpointMatches);

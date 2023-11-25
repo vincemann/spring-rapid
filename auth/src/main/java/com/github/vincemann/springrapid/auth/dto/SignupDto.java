@@ -3,6 +3,8 @@ package com.github.vincemann.springrapid.auth.dto;
 import com.fasterxml.jackson.annotation.JsonView;
 import com.github.vincemann.springrapid.auth.util.UserVerifyUtils;
 import lombok.*;
+import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
+import org.apache.commons.lang3.builder.ToStringStyle;
 
 import javax.validation.constraints.NotBlank;
 import java.io.Serializable;
@@ -15,7 +17,6 @@ import java.util.Set;
 @Getter
 @Setter
 @Builder
-@ToString
 public class SignupDto implements Serializable {
     //    @UniqueContactInformation(/*groups = {UserVerifyUtils.SignUpValidation.class}*/)
     @JsonView(UserVerifyUtils.SignupInput.class)
@@ -34,5 +35,10 @@ public class SignupDto implements Serializable {
         this.password = password;
         if (roles != null)
             this.roles = roles;
+    }
+
+    @Override
+    public String toString() {
+        return new ReflectionToStringBuilder(this, ToStringStyle.SHORT_PREFIX_STYLE).toString();
     }
 }

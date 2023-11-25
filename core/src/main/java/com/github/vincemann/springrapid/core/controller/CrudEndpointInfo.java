@@ -2,6 +2,9 @@ package com.github.vincemann.springrapid.core.controller;
 
 import lombok.Getter;
 import lombok.Setter;
+import lombok.ToString;
+import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
+import org.apache.commons.lang3.builder.ToStringStyle;
 
 @Getter
 @Setter
@@ -60,5 +63,10 @@ public class CrudEndpointInfo {
 //    }
 
     public CrudEndpointInfo() {
+    }
+
+    @Override
+    public String toString() {
+        return new ReflectionToStringBuilder(this, ToStringStyle.SHORT_PREFIX_STYLE).toString();
     }
 }

@@ -2,6 +2,7 @@ package com.github.vincemann.springrapid.core.security;
 
 import lombok.Getter;
 import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
+import org.apache.commons.lang3.builder.ToStringStyle;
 import org.springframework.security.core.AuthenticatedPrincipal;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.CredentialsContainer;
@@ -99,6 +100,6 @@ public class RapidAuthenticatedPrincipal implements AuthenticatedPrincipal, Cred
 
     @Override
     public String toString() {
-        return new ReflectionToStringBuilder(this).toString();
+        return new ReflectionToStringBuilder(this, ToStringStyle.SHORT_PREFIX_STYLE).toString();
     }
 }

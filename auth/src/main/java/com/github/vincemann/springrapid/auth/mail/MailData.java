@@ -3,6 +3,8 @@ package com.github.vincemann.springrapid.auth.mail;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
+import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
+import org.apache.commons.lang3.builder.ToStringStyle;
 
 
 @Getter @Setter
@@ -23,4 +25,14 @@ public class MailData {
 		this.code = code;
 	}
 
+	@Override
+	public String toString() {
+		return "MailData{" +
+				"to='" + to + '\'' +
+				", topic='" + topic + '\'' +
+				", body='" + body + '\'' +
+				", link='" + link + '\'' +
+				", code='" + code + '\'' +
+				'}';
+	}
 }

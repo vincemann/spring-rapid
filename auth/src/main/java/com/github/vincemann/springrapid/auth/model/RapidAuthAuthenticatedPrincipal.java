@@ -45,7 +45,6 @@ public class RapidAuthAuthenticatedPrincipal extends RapidAuthenticatedPrincipal
 		return getName();
 	}
 
-
 	//removed because i dont want to support runtime roles to keep it simple, see LemonSecurityCheckerHelper
 
 //	@Override

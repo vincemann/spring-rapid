@@ -1,6 +1,8 @@
 package com.github.vincemann.springrapid.auth.dto;
 
 import lombok.*;
+import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
+import org.apache.commons.lang3.builder.ToStringStyle;
 
 import javax.validation.constraints.NotBlank;
 import java.io.Serializable;
@@ -21,4 +23,5 @@ public class ChangePasswordDto implements Serializable {
 
 	@NotBlank
 	private String retypeNewPassword;
+
 }
