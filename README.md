@@ -65,17 +65,21 @@ public class OwnerController extends CrudController<Owner, Long, OwnerService> {
     @Override
     protected DtoMappingContext provideDtoMappingContext(CrudDtoMappingContextBuilder builder) {
         return builder
-                .forEndpoint(getCreateUrl(), CreateOwnerDto.class)
+  
+                .withAllPrincipals()  
+                .forEndpoint(getCreateUrl(), CreateOwnerDto.class)  
+  
+                .withAllPrincipals()  
                 .forUpdate(UpdateOwnerDto.class)
                 
                 
-                //response dto config
-                //authenticated
+                //response dto config for retrieving own Owner dto  
                 .withPrincipal(DtoRequestInfo.Principal.OWN)
                 .forResponse(ReadOwnOwnerDto.class)
+  
                 .withPrincipal(DtoRequestInfo.Principal.FOREIGN)
                 .forResponse(ReadForeignOwnerDto.class)
-                //not authenticated
+  
                 .withAllPrincipals()
                 .forResponse(ReadForeignOwnerDto.class)
                 .build();
