@@ -1,6 +1,6 @@
 package com.github.vincemann.springrapid.acldemo.dto.abs;
 
-import com.github.vincemann.smartlogger.SmartLogger;
+import com.github.vincemann.smartlogger.api.SmartLogger;
 import com.github.vincemann.springrapid.core.dto.IdAwareDto;
 
 import java.io.Serializable;

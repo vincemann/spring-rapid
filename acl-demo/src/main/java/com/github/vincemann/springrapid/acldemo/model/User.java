@@ -1,6 +1,6 @@
 package com.github.vincemann.springrapid.acldemo.model;
 
-import com.github.vincemann.smartlogger.SmartLogger;
+import com.github.vincemann.smartlogger.api.SmartLogger;
 import com.github.vincemann.springrapid.auth.model.AbstractUser;
 import com.google.common.collect.Sets;
 import com.sun.istack.Nullable;

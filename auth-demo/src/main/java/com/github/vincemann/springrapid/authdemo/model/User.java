@@ -1,7 +1,7 @@
 package com.github.vincemann.springrapid.authdemo.model;
 
 import com.fasterxml.jackson.annotation.JsonView;
-import com.github.vincemann.smartlogger.SmartLogger;
+import com.github.vincemann.smartlogger.api.SmartLogger;
 import com.github.vincemann.springrapid.auth.model.AbstractUser;
 import com.github.vincemann.springrapid.auth.util.UserVerifyUtils;
 import com.google.common.collect.Sets;

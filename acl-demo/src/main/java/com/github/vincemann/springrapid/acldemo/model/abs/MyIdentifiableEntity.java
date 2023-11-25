@@ -1,6 +1,6 @@
 package com.github.vincemann.springrapid.acldemo.model.abs;
 
-import com.github.vincemann.smartlogger.SmartLogger;
+import com.github.vincemann.smartlogger.api.SmartLogger;
 import com.github.vincemann.springrapid.core.model.IdentifiableEntityImpl;
 
 import java.io.Serializable;

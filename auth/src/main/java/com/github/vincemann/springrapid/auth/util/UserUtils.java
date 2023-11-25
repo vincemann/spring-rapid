@@ -5,10 +5,12 @@ import com.github.vincemann.springrapid.auth.service.UserService;
 import com.github.vincemann.springrapid.core.security.RapidSecurityContext;
 import com.github.vincemann.springrapid.core.service.exception.BadEntityException;
 import com.github.vincemann.springrapid.core.service.exception.EntityNotFoundException;
+import com.github.vincemann.springrapid.core.util.TransactionalTemplate;
 import com.github.vincemann.springrapid.core.util.VerifyEntity;
 import org.checkerframework.checker.units.qual.A;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.AccessDeniedException;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.io.Serializable;
 import java.util.Optional;
@@ -28,6 +30,7 @@ public class UserUtils {
 //    }
 
 
+
     public <T extends AbstractUser> T findAuthenticatedUser(){
         if (!RapidSecurityContext.isAuthenticated()){
             throw new AccessDeniedException("No user logged in");
@@ -40,6 +43,7 @@ public class UserUtils {
         }
         return userByContactInformation.get();
     }
+
 
     public <T extends AbstractUser> T findUserById(Serializable id) throws EntityNotFoundException, BadEntityException {
         Optional<T> userByContactInformation = (Optional<T>) userService.findById(id);

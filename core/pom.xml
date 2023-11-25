@@ -21,24 +21,11 @@
             <version>${aop-log.version}</version>
         </dependency>
 
-<!--        <dependency>-->
-<!--            <groupId>com.github.vincemann</groupId>-->
-<!--            <artifactId>smart-logger</artifactId>-->
-<!--            <version>${smart-logger.version}</version>-->
-<!--        </dependency>-->
-
         <dependency>
             <groupId>com.github.vincemann.spring-rapid</groupId>
             <artifactId>exceptions-api</artifactId>
             <version>${project.version}</version>
         </dependency>
-
-
-        <!--&lt;!&ndash;        https://www.baeldung.com/spring-inject-bean-into-unmanaged-objects&ndash;&gt;-->
-        <!--        <dependency>-->
-        <!--            <groupId>org.springframework</groupId>-->
-        <!--            <artifactId>spring-aspects</artifactId>-->
-        <!--        </dependency>-->
 
 
         <dependency>
@@ -63,17 +50,12 @@
             <version>1.9</version>
         </dependency>
 
+
+        <!-- https://mvnrepository.com/artifact/org.modelmapper/modelmapper -->
         <dependency>
-            <groupId>com.github.vincemann</groupId>
+            <groupId>org.modelmapper</groupId>
             <artifactId>modelmapper</artifactId>
-            <version>3.1.2-SNAPSHOT.712-FIX</version>
-            <exclusions>
-                <exclusion>
-                    <groupId>org.testng</groupId>
-                    <artifactId>testng</artifactId>
-                </exclusion>
-            </exclusions>
-<!--            <version>2.3.4</version>-->
+            <version>3.2.0</version>
         </dependency>
 
 <!--        <dependency>-->

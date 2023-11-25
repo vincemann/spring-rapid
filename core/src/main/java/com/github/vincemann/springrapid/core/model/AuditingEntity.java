@@ -45,5 +45,7 @@ public class AuditingEntity<ID extends Serializable>
 	@Temporal(TemporalType.TIMESTAMP)
 	private Date lastModifiedDate;
 
+
+
 	
 }
