@@ -47,7 +47,7 @@ public class SignupTest extends AbstractRapidAuthIntegrationTest {
 				.andExpect(jsonPath("$.contactInformation").value(signupDto.getContactInformation()))
 				.andExpect(jsonPath("$.roles").value(hasSize(2)))
 				.andExpect(jsonPath("$.roles").value(Matchers.hasItems(AuthRoles.UNVERIFIED, AuthRoles.USER)))
-				.andExpect(jsonPath("$.unverified").value(true))
+				.andExpect(jsonPath("$.verified").value(false))
 				.andExpect(jsonPath("$.blocked").value(false))
 				.andExpect(jsonPath("$.admin").value(false))
 				.andExpect(jsonPath("$.goodUser").value(false));

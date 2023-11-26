@@ -32,7 +32,7 @@ public class VerificationTest extends AbstractRapidAuthIntegrationTest {
 				.andExpect(jsonPath("$.id").value(savedUser.getId()))
 				.andExpect(jsonPath("$.roles").value(hasSize(1)))
 				.andExpect(jsonPath("$.roles").value(Matchers.hasItem(AuthRoles.USER)))
-				.andExpect(jsonPath("$.unverified").value(false))
+				.andExpect(jsonPath("$.verified").value(false))
 				.andExpect(jsonPath("$.goodUser").value(true));
 	}
 
