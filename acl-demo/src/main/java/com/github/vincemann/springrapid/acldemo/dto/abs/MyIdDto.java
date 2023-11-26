@@ -1,7 +1,8 @@
 package com.github.vincemann.springrapid.acldemo.dto.abs;
 
-import com.github.vincemann.smartlogger.api.SmartLogger;
 import com.github.vincemann.springrapid.core.dto.IdAwareDto;
+import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
+import org.apache.commons.lang3.builder.ToStringStyle;
 
 import java.io.Serializable;
 
@@ -9,8 +10,6 @@ public class MyIdDto<Id extends Serializable> extends IdAwareDto<Id> {
 
     @Override
     public String toString() {
-        return SmartLogger.builder()
-                .build()
-                .toString(this);
+        return new ReflectionToStringBuilder(this, ToStringStyle.SHORT_PREFIX_STYLE).toString();
     }
 }

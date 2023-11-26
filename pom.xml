@@ -29,7 +29,6 @@
 
 <!--        demo projects only-->
         <ez-compare.version>1.0.0-SNAPSHOT.3</ez-compare.version>
-        <smart-logger.version>2.0.0</smart-logger.version>
     </properties>
 
     <modules>

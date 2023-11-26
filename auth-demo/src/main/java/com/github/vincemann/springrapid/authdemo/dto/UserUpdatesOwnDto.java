@@ -1,6 +1,6 @@
 package com.github.vincemann.springrapid.authdemo.dto;
 
-import com.github.vincemann.springrapid.authdemo.dto.abs.MyIdDto;
+import com.github.vincemann.springrapid.core.dto.IdAwareDto;
 import lombok.*;
 
 @Getter
@@ -8,6 +8,6 @@ import lombok.*;
 @NoArgsConstructor
 @AllArgsConstructor
 @ToString
-public class UserUpdatesOwnDto extends MyIdDto<Long> {
+public class UserUpdatesOwnDto extends IdAwareDto<Long> {
     private String name;
 }
