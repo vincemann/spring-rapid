@@ -4,6 +4,8 @@ import com.github.vincemann.springrapid.auth.model.AbstractUser;
 import com.google.common.collect.Sets;
 import com.sun.istack.Nullable;
 import lombok.*;
+import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
+import org.apache.commons.lang3.builder.ToStringStyle;
 
 import javax.persistence.Entity;
 import javax.persistence.Table;
@@ -36,8 +38,6 @@ public class User extends AbstractUser<Long> {
 
 	@Override
 	public String toString() {
-		return SmartLogger.builder()
-				.build()
-				.toString(this);
+		return new ReflectionToStringBuilder(this, ToStringStyle.SHORT_PREFIX_STYLE).toString();
 	}
 }
