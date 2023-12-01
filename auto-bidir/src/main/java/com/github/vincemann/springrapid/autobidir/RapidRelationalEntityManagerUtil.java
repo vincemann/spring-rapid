@@ -14,6 +14,7 @@ import com.github.vincemann.springrapid.autobidir.model.parent.annotation.BiDirP
 import com.github.vincemann.springrapid.autobidir.util.CollectionUtils;
 import com.github.vincemann.springrapid.autobidir.util.EntityAnnotationUtils;
 import com.github.vincemann.springrapid.core.util.EntityReflectionUtils;
+import com.github.vincemann.springrapid.core.util.ProxyUtils;
 import com.google.common.collect.Sets;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.cache.annotation.Cacheable;
@@ -88,7 +89,7 @@ public class RapidRelationalEntityManagerUtil implements RelationalEntityManager
      */
     public Map<Class<IdentifiableEntity>,Collection<IdentifiableEntity>> findBiDirParentCollections(IdentifiableEntity child, String... membersToCheck){
         assertEntityRelationType(child, RelationalEntityType.BiDirChild);
-        return findEntityCollections(child, BiDirParentCollection.class, membersToCheck);
+        return findEntityCollections(ProxyUtils.hibernateUnproxy(child), BiDirParentCollection.class, membersToCheck);
     }
     /**
      *
@@ -96,12 +97,12 @@ public class RapidRelationalEntityManagerUtil implements RelationalEntityManager
      */
     public Collection<IdentifiableEntity> findSingleBiDirParents(IdentifiableEntity child, String... membersToCheck) {
         assertEntityRelationType(child, RelationalEntityType.BiDirChild);
-        return findSingleEntities(child, BiDirParentEntity.class, membersToCheck);
+        return findSingleEntities(ProxyUtils.hibernateUnproxy(child), BiDirParentEntity.class, membersToCheck);
     }
 
     public Collection<IdentifiableEntity> findAllBiDirParents(IdentifiableEntity child, String... membersToCheck) {
         assertEntityRelationType(child, RelationalEntityType.BiDirChild);
-        return findAllEntities(child, BiDirParentEntity.class, BiDirParentCollection.class, membersToCheck);
+        return findAllEntities(ProxyUtils.hibernateUnproxy(child), BiDirParentEntity.class, BiDirParentCollection.class, membersToCheck);
     }
 
 
@@ -157,7 +158,7 @@ public class RapidRelationalEntityManagerUtil implements RelationalEntityManager
      */
     public Map<Class<IdentifiableEntity>,Collection<IdentifiableEntity>> findBiDirChildCollections(IdentifiableEntity parent, String... membersToCheck){
         assertEntityRelationType(parent, RelationalEntityType.BiDirParent);
-        return findEntityCollections(parent,BiDirChildCollection.class,membersToCheck);
+        return findEntityCollections(ProxyUtils.hibernateUnproxy(parent),BiDirChildCollection.class,membersToCheck);
     }
 
     /**
@@ -166,11 +167,11 @@ public class RapidRelationalEntityManagerUtil implements RelationalEntityManager
      */
     public Set<IdentifiableEntity> findSingleBiDirChildren(IdentifiableEntity parent, String... membersToCheck){
         assertEntityRelationType(parent, RelationalEntityType.BiDirParent);
-        return findSingleEntities(parent, BiDirChildEntity.class,membersToCheck);
+        return findSingleEntities(ProxyUtils.hibernateUnproxy(parent), BiDirChildEntity.class,membersToCheck);
     }
 
     public Collection<IdentifiableEntity> findAllBiDirChildren(IdentifiableEntity parent, String... membersToCheck) {
-        assertEntityRelationType(parent, RelationalEntityType.BiDirParent);
+        assertEntityRelationType(ProxyUtils.hibernateUnproxy(parent), RelationalEntityType.BiDirParent);
         return findAllEntities(parent,BiDirChildEntity.class,BiDirChildCollection.class,membersToCheck);
     }
 
@@ -324,7 +325,7 @@ public class RapidRelationalEntityManagerUtil implements RelationalEntityManager
         AtomicBoolean added = new AtomicBoolean(false);
         //add to matching entity collections
         // todo THIS CORRECT
-        for (Map.Entry<Class<IdentifiableEntity>,Collection<IdentifiableEntity>> entry : this.<IdentifiableEntity>findEntityCollections(entity,entityCollectionAnnotationClass,membersToCheck).entrySet()) {
+        for (Map.Entry<Class<IdentifiableEntity>,Collection<IdentifiableEntity>> entry : this.<IdentifiableEntity>findEntityCollections(ProxyUtils.hibernateUnproxy(entity),entityCollectionAnnotationClass,membersToCheck).entrySet()) {
             Class<? extends IdentifiableEntity> targetClass = entry.getKey();
             if (newEntity.getClass().equals(targetClass)) {
                 (entry.getValue()).add(newEntity);
@@ -347,7 +348,7 @@ public class RapidRelationalEntityManagerUtil implements RelationalEntityManager
 
     protected void unlinkEntity(IdentifiableEntity entity, IdentifiableEntity entityToRemove, Class<? extends Annotation> entityEntityAnnotationClass, Class<? extends Annotation> entityEntityCollectionAnnotationClass, String... membersToCheck) throws UnknownEntityTypeException{
         AtomicBoolean deleted = new AtomicBoolean(false);
-        for (Map.Entry<Class<IdentifiableEntity>,Collection<IdentifiableEntity>> entry : this.<IdentifiableEntity>findEntityCollections(entity,entityEntityCollectionAnnotationClass,membersToCheck).entrySet()) {
+        for (Map.Entry<Class<IdentifiableEntity>,Collection<IdentifiableEntity>> entry : this.<IdentifiableEntity>findEntityCollections(ProxyUtils.hibernateUnproxy(entity),entityEntityCollectionAnnotationClass,membersToCheck).entrySet()) {
             //todo only swapped getKey -> getValue, is value not used?
             Collection<IdentifiableEntity> entityCollection = entry.getValue();
             if(entityCollection!=null){
