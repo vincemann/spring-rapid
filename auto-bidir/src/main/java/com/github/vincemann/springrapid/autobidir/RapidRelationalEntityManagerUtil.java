@@ -323,11 +323,13 @@ public class RapidRelationalEntityManagerUtil implements RelationalEntityManager
 
     protected void linkEntity(IdentifiableEntity<?> entity, IdentifiableEntity newEntity, Class<? extends Annotation> entityAnnotationClass, Class<? extends Annotation> entityCollectionAnnotationClass, String... membersToCheck) throws UnknownEntityTypeException {
         AtomicBoolean added = new AtomicBoolean(false);
+        IdentifiableEntity<?> _entity = ProxyUtils.hibernateUnproxy(entity);
+        IdentifiableEntity<?> _newEntity = ProxyUtils.hibernateUnproxy(newEntity);
         //add to matching entity collections
         // todo THIS CORRECT
-        for (Map.Entry<Class<IdentifiableEntity>,Collection<IdentifiableEntity>> entry : this.<IdentifiableEntity>findEntityCollections(ProxyUtils.hibernateUnproxy(entity),entityCollectionAnnotationClass,membersToCheck).entrySet()) {
+        for (Map.Entry<Class<IdentifiableEntity>,Collection<IdentifiableEntity>> entry : this.<IdentifiableEntity>findEntityCollections(_entity,entityCollectionAnnotationClass,membersToCheck).entrySet()) {
             Class<? extends IdentifiableEntity> targetClass = entry.getKey();
-            if (newEntity.getClass().equals(targetClass)) {
+            if (_newEntity.getClass().equals(targetClass)) {
                 (entry.getValue()).add(newEntity);
                 added.set(true);
             }
@@ -348,15 +350,17 @@ public class RapidRelationalEntityManagerUtil implements RelationalEntityManager
 
     protected void unlinkEntity(IdentifiableEntity entity, IdentifiableEntity entityToRemove, Class<? extends Annotation> entityEntityAnnotationClass, Class<? extends Annotation> entityEntityCollectionAnnotationClass, String... membersToCheck) throws UnknownEntityTypeException{
         AtomicBoolean deleted = new AtomicBoolean(false);
-        for (Map.Entry<Class<IdentifiableEntity>,Collection<IdentifiableEntity>> entry : this.<IdentifiableEntity>findEntityCollections(ProxyUtils.hibernateUnproxy(entity),entityEntityCollectionAnnotationClass,membersToCheck).entrySet()) {
+        IdentifiableEntity<?> _entity = ProxyUtils.hibernateUnproxy(entity);
+        IdentifiableEntity<?> _entityToRemove = ProxyUtils.hibernateUnproxy(entityToRemove);
+        for (Map.Entry<Class<IdentifiableEntity>,Collection<IdentifiableEntity>> entry : this.<IdentifiableEntity>findEntityCollections(_entity,entityEntityCollectionAnnotationClass,membersToCheck).entrySet()) {
             //todo only swapped getKey -> getValue, is value not used?
             Collection<IdentifiableEntity> entityCollection = entry.getValue();
             if(entityCollection!=null){
                 if(!entityCollection.isEmpty()){
                     Optional<IdentifiableEntity> optionalEntity = entityCollection.stream().findFirst();
                     if(optionalEntity.isPresent()){
-                        IdentifiableEntity removeCandidate = optionalEntity.get();
-                        if(entityToRemove.getClass().equals(removeCandidate.getClass())){
+                        IdentifiableEntity removeCandidate = ProxyUtils.hibernateUnproxy(optionalEntity.get());
+                        if(_entityToRemove.getClass().equals(removeCandidate.getClass())){
                             //this set needs to remove the entity
                             //here is a hibernate bug in persistent set remove function, see https://stackoverflow.com/a/47968974
                             //therefor we use an odd workaround
@@ -385,9 +389,9 @@ public class RapidRelationalEntityManagerUtil implements RelationalEntityManager
             }
         }
         EntityReflectionUtils.doWithAnnotatedNamedFields(entityEntityAnnotationClass,entity.getClass(),Sets.newHashSet(membersToCheck), entityField -> {
-            IdentifiableEntity removeCandidate = (IdentifiableEntity) entityField.get(entity);
+            IdentifiableEntity removeCandidate = ProxyUtils.hibernateUnproxy((IdentifiableEntity) entityField.get(entity));
             if(removeCandidate!=null) {
-                if (removeCandidate.getClass().equals(entityToRemove.getClass())) {
+                if (removeCandidate.getClass().equals(_entityToRemove.getClass())) {
                     entityField.set(entity, null);
                     deleted.set(true);
                 }
