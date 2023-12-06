@@ -18,13 +18,15 @@ import java.util.Set;
 @Setter
 @Builder
 public class SignupDto implements Serializable {
+
     //    @UniqueContactInformation(/*groups = {UserVerifyUtils.SignUpValidation.class}*/)
-    @JsonView(UserVerifyUtils.SignupInput.class)
+//    @JsonView(UserVerifyUtils.SignupInput.class)
     @NotBlank
 //    @ContactInformation
     private String contactInformation;
+
     //    @Password(/*groups = {UserVerifyUtils.SignUpValidation.class, UserVerifyUtils.ChangeContactInformationValidation.class}*/)
-    @JsonView(UserVerifyUtils.SignupInput.class)
+//    @JsonView(UserVerifyUtils.SignupInput.class)
     @NotBlank
     private String password;
 
@@ -39,6 +41,10 @@ public class SignupDto implements Serializable {
 
     @Override
     public String toString() {
-        return new ReflectionToStringBuilder(this, ToStringStyle.SHORT_PREFIX_STYLE).toString();
+        return "SignupDto{" +
+                "contactInformation='" + contactInformation + '\'' +
+                ", password='" + password + '\'' +
+                ", roles=" + roles +
+                '}';
     }
 }

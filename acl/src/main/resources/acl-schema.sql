@@ -1,8 +1,3 @@
-drop table if exists acl_entry;
-drop table if exists acl_object_identity;
-drop table if exists acl_class;
-drop table if exists acl_sid;
-
 CREATE TABLE IF NOT EXISTS acl_sid(
                         id bigserial not null primary key,
                         principal boolean not null,

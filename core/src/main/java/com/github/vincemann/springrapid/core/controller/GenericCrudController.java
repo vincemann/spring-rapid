@@ -395,6 +395,10 @@ public abstract class GenericCrudController
     private String deleteUrl;
     @Setter
     private String createUrl;
+    /**
+     * overwrite {@link this#createBaseUrl()} and {@link this#createUrlEntityName()} instead of setting these values
+     * if you want to change them
+     */
     private String baseUrl;
     private String entityBaseUrl;
     private String urlEntityName;
