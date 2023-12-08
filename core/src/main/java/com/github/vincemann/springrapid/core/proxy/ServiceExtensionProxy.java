@@ -6,6 +6,8 @@ import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 
 import java.lang.reflect.Method;
+import java.util.HashSet;
+import java.util.Set;
 
 @Getter
 @Setter
@@ -15,9 +17,18 @@ public class ServiceExtensionProxy<S extends CrudService<?,?>>
 {
 
     private Boolean defaultExtensionsEnabled = Boolean.TRUE;
+    private Set<Class<? extends AbstractServiceExtension>> defaultExtensionsIgnored = new HashSet<>();
 
     protected ServiceExtensionProxy(S proxied, BasicServiceExtension<?>... extensions) {
         super(proxied, extensions);
+    }
+
+    public void ignoreExtension(Class<? extends AbstractServiceExtension> clazz){
+        defaultExtensionsIgnored.add(clazz);
+    }
+
+    public boolean isIgnored(Class<? extends AbstractServiceExtension> clazz) {
+        return !defaultExtensionsIgnored.contains(clazz);
     }
 
     @Override

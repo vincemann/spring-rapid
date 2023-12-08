@@ -257,6 +257,7 @@ public abstract class AbstractExtensionServiceProxy
                 || getLearnedIgnoredMethods().contains(new MethodIdentifier(method));
     }
 
+
     /**
      * Saved state persisting during method call of proxy.
      * Is reset after method call on proxy ( = all Extensions and proxied) are called.

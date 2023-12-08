@@ -70,7 +70,10 @@ public class AnnotationCrudServiceProxyFactory implements BeanPostProcessor, App
                 for (String proxyName : proxy.proxies()) {
                     // try to find locally
                     CrudService internalProxy;
-                    Optional<DefineProxy> proxyDefinition = proxyDefinitions.stream().filter(p -> p.name().equals(proxyName)).findFirst();
+                    Optional<DefineProxy> proxyDefinition = proxyDefinitions
+                            .stream()
+                            .filter(p -> p.name().equals(proxyName))
+                            .findFirst();
                     if (proxyDefinition.isEmpty()) {
                         // did not find matching local proxy definition, must be a proxy from elsewhere
                         // try to find globally, proxy definitions name is assumed to be the global bean name
@@ -86,8 +89,12 @@ public class AnnotationCrudServiceProxyFactory implements BeanPostProcessor, App
                         internalProxy = createdInternalProxies.get(proxyName);
                         if (internalProxy == null) {
                             internalProxy = new ServiceExtensionProxyBuilder<>(lastProxiedBean)
-                                    .addGenericExtensions(resolveExtensions(proxyDefinition.get().extensions()).toArray(new AbstractServiceExtension[0]))
+                                    .addGenericExtensions(
+                                            resolveExtensions(proxyDefinition.get().extensions())
+                                                    .toArray(new AbstractServiceExtension[0])
+                                    )
                                     .toggleDefaultExtensions(proxyDefinition.get().defaultExtensionsEnabled())
+                                    .ignoreDefaultExtensions(proxyDefinition.get().ignoredExtensions())
                                     .build();
                             createdInternalProxies.put(proxyName, internalProxy);
                         }

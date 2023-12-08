@@ -5,6 +5,10 @@ import com.github.vincemann.aoplog.api.AopLoggable;
 import com.github.vincemann.aoplog.api.IBeanNameAware;
 import com.google.common.base.Objects;
 
+import java.util.HashMap;
+import java.util.Map;
+import java.util.concurrent.Callable;
+
 // dont log extensions methods -> otherwise you will have log for i.E. save 3 times for 2 extensions..
 // explicitly log methods you want to log
 //// todo this is not applied bc crudservice is closer in hierarchy so its config is used instead of this one
@@ -14,6 +18,33 @@ import com.google.common.base.Objects;
 //this is done, so the extensions are not in the container as duplicate beans for service interfaces
 public abstract class AbstractServiceExtension<T,P extends ProxyController>
         implements NextLinkAware<T>,AopLoggable, IBeanNameAware {
+
+    private static ThreadLocal<Map<String, Object>> threadLocalCache = ThreadLocal.withInitial(HashMap::new);
+
+    protected static void putInThreadLocalCache(String key, Object value) {
+        Map<String, Object> cache = threadLocalCache.get();
+        cache.put(key, value);
+    }
+
+    protected static Object getFromThreadLocalCache(String key) {
+        Map<String, Object> cache = threadLocalCache.get();
+        return cache.get(key);
+    }
+
+    protected static void removeFromThreadLocalCache(String key) {
+        Map<String, Object> cache = threadLocalCache.get();
+        cache.remove(key);
+    }
+
+    public <O> O cache(Callable<O> callable, String key) throws Exception {
+        Object cached = getFromThreadLocalCache(key);
+        if (cached != null)
+            return (O) cached;
+        O result = callable.call();
+        putInThreadLocalCache(key,result);
+        return result;
+    }
+
 
     private String beanName;
     private ChainController<T> chain;

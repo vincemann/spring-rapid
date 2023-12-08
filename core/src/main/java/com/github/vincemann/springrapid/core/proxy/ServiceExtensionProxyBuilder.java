@@ -51,6 +51,13 @@ public class ServiceExtensionProxyBuilder<S extends CrudService<E,Id>,E extends 
         return this;
     }
 
+    public ServiceExtensionProxyBuilder<S,E,Id> ignoreDefaultExtensions(Class<? extends AbstractServiceExtension>... extensions){
+        for (Class<? extends AbstractServiceExtension> extension : extensions) {
+            proxy.ignoreExtension(extension);
+        }
+        return this;
+    }
+
 
     public ServiceExtensionProxyBuilder<S,E,Id> toggleDefaultExtensions(Boolean enabled){
         if (enabled==null){
