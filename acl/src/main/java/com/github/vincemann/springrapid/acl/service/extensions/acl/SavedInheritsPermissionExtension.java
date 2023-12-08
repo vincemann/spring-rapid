@@ -28,7 +28,7 @@ public class SavedInheritsPermissionExtension <E extends IdentifiableEntity<Id> 
     public E save(E entity) throws BadEntityException {
         E saved = getNext().save(entity);
         try {
-            getAclPermissionService().inheritPermissions(saved,saved.getAclParent(),permissionsToInherit);
+            getAclPermissionService().inheritPermissionEntriesOfParent(saved,saved.getAclParent(),permissionsToInherit);
         } catch (AclNotFoundException e) {
             throw new BadEntityException("Cant find acl info of parent to inherit from",e);
         }

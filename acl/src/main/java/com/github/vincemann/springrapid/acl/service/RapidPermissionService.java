@@ -53,7 +53,7 @@ public class RapidPermissionService implements AclPermissionService , AopLoggabl
     @Override
     public void deletePermissionForRoleOverEntity(IdentifiableEntity<?> entity, String role, Permission permission) throws AclNotFoundException, AceNotFoundException {
         final Sid sid = new GrantedAuthoritySid(role);
-        deletePermissionForSid(entity,permission,sid);
+        deletePermissionForSid(entity,permission,sid,false);
     }
 
 
@@ -80,11 +80,16 @@ public class RapidPermissionService implements AclPermissionService , AopLoggabl
         });
     }
 
+    @Override
+    public void deletePermissionForUserOverEntity(String user, IdentifiableEntity<?> entity, Permission permission) throws AclNotFoundException, AceNotFoundException{
+        deletePermissionForUserOverEntity(user,entity,permission,false);
+    }
+
     @LogInteraction(Severity.TRACE)
     @Override
-    public void deletePermissionForUserOverEntity(String user, IdentifiableEntity<?> entity, Permission permission) throws AclNotFoundException, AceNotFoundException {
+    public void deletePermissionForUserOverEntity(String user, IdentifiableEntity<?> entity, Permission permission, Boolean deleteCascade) throws AclNotFoundException, AceNotFoundException {
         final Sid sid = new PrincipalSid(user);
-        deletePermissionForSid(entity,permission,sid);
+        deletePermissionForSid(entity,permission,sid,deleteCascade);
     }
 
     @LogInteraction(Severity.TRACE)
@@ -130,6 +135,7 @@ public class RapidPermissionService implements AclPermissionService , AopLoggabl
             return aclService.createAcl(oi);
         }
     }
+
 //    /**
 //     *
 //     * @param targetObj   inherits all permissions from parent
@@ -246,14 +252,14 @@ public class RapidPermissionService implements AclPermissionService , AopLoggabl
 //    }
 
     @Override
-    public void inheritPermissions(IdentifiableEntity<?> targetObj, IdentifiableEntity<?> parent) throws AclNotFoundException {
+    public void inheritPermissionEntriesOfParent(IdentifiableEntity<?> targetObj, IdentifiableEntity<?> parent) throws AclNotFoundException {
         ObjectIdentity childOi = new ObjectIdentityImpl(targetObj.getClass(), targetObj.getId());
         ObjectIdentity parentOi = new ObjectIdentityImpl(parent.getClass(), parent.getId());
 
         MutableAcl childAcl = findOrCreateAcl(childOi);
         MutableAcl parentAcl = findAcl(parentOi);
 
-        childAcl.setEntriesInheriting(true);
+//        childAcl.setEntriesInheriting(true);
         childAcl.setParent(parentAcl);
 
         logAclInformation(parentAcl, childAcl);
@@ -263,7 +269,7 @@ public class RapidPermissionService implements AclPermissionService , AopLoggabl
 
     @LogInteraction(Severity.TRACE)
     @Override
-    public void inheritPermissions(IdentifiableEntity<?> targetObj, IdentifiableEntity<?> parent, Permission... permissions) throws AclNotFoundException {
+    public void inheritPermissionEntriesOfParent(IdentifiableEntity<?> targetObj, IdentifiableEntity<?> parent, Permission... permissions) throws AclNotFoundException {
         ObjectIdentity childOi = new ObjectIdentityImpl(targetObj.getClass(), targetObj.getId());
         ObjectIdentity parentOi = new ObjectIdentityImpl(parent.getClass(), parent.getId());
 
@@ -274,7 +280,8 @@ public class RapidPermissionService implements AclPermissionService , AopLoggabl
 
         copyMatchingPermissions(parentAcl, childAcl, permissionsToInherit);
 
-        childAcl.setEntriesInheriting(true);
+        // inheritence is done manually, can only be set on a per acl basis and there is always exactly one acl for domain obj
+//        childAcl.setEntriesInheriting(true);
         childAcl.setParent(parentAcl);
 
         logAclInformation(parentAcl, childAcl);
@@ -283,7 +290,7 @@ public class RapidPermissionService implements AclPermissionService , AopLoggabl
     }
 
     @Override
-    public void inheritPermissionsForUser(IdentifiableEntity<?> targetObj, IdentifiableEntity<?> parent, String user) throws AclNotFoundException {
+    public void inheritUserEntriesOfParent(IdentifiableEntity<?> targetObj, IdentifiableEntity<?> parent, String user) throws AclNotFoundException {
         ObjectIdentity childOi = new ObjectIdentityImpl(targetObj.getClass(), targetObj.getId());
         ObjectIdentity parentOi = new ObjectIdentityImpl(parent.getClass(), parent.getId());
 
@@ -292,7 +299,8 @@ public class RapidPermissionService implements AclPermissionService , AopLoggabl
 
         copyPermissionsForUser(parentAcl, childAcl, user);
 
-        childAcl.setEntriesInheriting(true);
+        // inheritence is done manually, can only be set on a per acl basis and there is always exactly one acl for domain obj
+//        childAcl.setEntriesInheriting(true);
         childAcl.setParent(parentAcl);
 
         logAclInformation(parentAcl, childAcl);
@@ -300,8 +308,12 @@ public class RapidPermissionService implements AclPermissionService , AopLoggabl
         aclService.updateAcl(childAcl);
     }
 
+//    public void updateEntriesInheriting(IdentifiableEntity<?> targetObj){
+//
+//    }
+
     @Override
-    public void inheritPermissionsForUser(IdentifiableEntity<?> targetObj, IdentifiableEntity<?> parent, String user, Permission... permissions) throws AclNotFoundException {
+    public void inheritUserPermissionEntriesOfParent(IdentifiableEntity<?> targetObj, IdentifiableEntity<?> parent, String user, Permission... permissions) throws AclNotFoundException {
         ObjectIdentity childOi = new ObjectIdentityImpl(targetObj.getClass(), targetObj.getId());
         ObjectIdentity parentOi = new ObjectIdentityImpl(parent.getClass(), parent.getId());
 
@@ -312,7 +324,8 @@ public class RapidPermissionService implements AclPermissionService , AopLoggabl
 
         copyMatchingPermissionsForUser(parentAcl, childAcl, user, permissionsToInherit);
 
-        childAcl.setEntriesInheriting(true);
+        // inheritence is done manually, can only be set on a per acl basis and there is always exactly one acl for domain obj
+//        childAcl.setEntriesInheriting(true);
         childAcl.setParent(parentAcl);
 
         logAclInformation(parentAcl, childAcl);
@@ -371,7 +384,7 @@ public class RapidPermissionService implements AclPermissionService , AopLoggabl
         log.trace("updated acl: " + updated);
     }
 
-    protected void deletePermissionForSid(IdentifiableEntity<?> targetObj, Permission permission, Sid sid) throws AclNotFoundException, AceNotFoundException {
+    protected void deletePermissionForSid(IdentifiableEntity<?> targetObj, Permission permission, Sid sid, boolean deleteCascade) throws AclNotFoundException, AceNotFoundException {
         log.debug("sid: "+ sid +" will loose permission: " + permissionStringConverter.convert(permission) +" over entity: " + targetObj);
         final ObjectIdentity oi = new ObjectIdentityImpl(targetObj.getClass(), targetObj.getId());
         MutableAcl acl = findAcl(oi);
@@ -397,7 +410,7 @@ public class RapidPermissionService implements AclPermissionService , AopLoggabl
         }
 
         // do weird stuff so update wont be ignored ...
-        deleteAclOfEntity(targetObj,false);
+        deleteAclOfEntity(targetObj,deleteCascade);
         MutableAcl updatedAcl = aclService.createAcl(oi);
         for (AccessControlEntry ace : aces) {
             updatedAcl.getEntries().add(ace);
