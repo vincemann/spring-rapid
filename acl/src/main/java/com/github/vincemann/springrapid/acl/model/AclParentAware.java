@@ -7,7 +7,6 @@ import com.github.vincemann.springrapid.core.model.IdentifiableEntity;
 
 import java.io.Serializable;
 
-@LogInteraction(Severity.TRACE)
 public interface AclParentAware extends AopLoggable {
     public IdentifiableEntity<? extends Serializable> getAclParent();
 }

@@ -7,7 +7,6 @@ import com.github.vincemann.springrapid.core.model.IdentifiableEntity;
 import com.github.vincemann.springrapid.core.security.RapidAuthenticatedPrincipal;
 import com.github.vincemann.springrapid.core.security.RapidSecurityContext;
 import com.github.vincemann.springrapid.core.security.Roles;
-import com.google.common.collect.Lists;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.AccessDeniedException;
@@ -19,9 +18,13 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.io.Serializable;
+import java.lang.reflect.InvocationTargetException;
+import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Optional;
+
+import static com.github.vincemann.springrapid.acl.util.AclUtils.getSidString;
 
 /**
  * API for managing acl data.
@@ -136,259 +139,123 @@ public class RapidPermissionService implements AclPermissionService , AopLoggabl
         }
     }
 
-//    /**
-//     *
-//     * @param targetObj   inherits all permissions from parent
-//     * @param parent
-//     * @throws AclNotFoundException
-//     */
-//    @LogInteraction(Severity.TRACE)
 //    @Override
-//    public void inheritPermissions(IdentifiableEntity<?> targetObj,IdentifiableEntity<?> parent) throws AclNotFoundException {
-//        final ObjectIdentity childOi = new ObjectIdentityImpl(targetObj.getClass(), targetObj.getId());
-//        final ObjectIdentity parentOi = new ObjectIdentityImpl(parent.getClass(), parent.getId());
-////        log.debug("Entity: " + targetObj + " will inherit permissions from: " + parent);
-//        MutableAcl childAcl = findOrCreateAcl(childOi);
-//        MutableAcl parentAcl  = findAcl(parentOi);
-//
-//        childAcl.setEntriesInheriting(true);
-//        childAcl.setParent(parentAcl);
-//
-//        log.trace("Parent Acl: " + parentAcl);
-//        log.trace("Child Acl before Update: " + childAcl);
-//        MutableAcl updated = aclService.updateAcl(childAcl);
-//        log.trace("Updated Child Acl: " + updated);
-//    }
-//
-//    @LogInteraction(Severity.TRACE)
-//    @Override
-//    public void inheritPermissions(IdentifiableEntity<?> targetObj, IdentifiableEntity<?> parent, Permission... permissions) throws AclNotFoundException {
-//        final ObjectIdentity childOi = new ObjectIdentityImpl(targetObj.getClass(), targetObj.getId());
-//        final ObjectIdentity parentOi = new ObjectIdentityImpl(parent.getClass(), parent.getId());
+//    public void inheritPermissionEntriesOfParent(IdentifiableEntity<?> targetObj, IdentifiableEntity<?> parent) throws AclNotFoundException {
+//        ObjectIdentity childOi = new ObjectIdentityImpl(targetObj.getClass(), targetObj.getId());
+//        ObjectIdentity parentOi = new ObjectIdentityImpl(parent.getClass(), parent.getId());
 //
 //        MutableAcl childAcl = findOrCreateAcl(childOi);
 //        MutableAcl parentAcl = findAcl(parentOi);
 //
-//        // Specify the permissions you want to inherit (e.g., READ)
-//        List<Permission> permissionsToInherit = Lists.newArrayList(permissions);
-//
-//        // Iterate through the parent ACL's entries and copy the desired permissions to the child ACL
-//        for (AccessControlEntry ace : parentAcl.getEntries()) {
-//            if (permissionsToInherit.contains(ace.getPermission())) {
-//                childAcl.insertAce(childAcl.getEntries().size(), ace.getPermission(), ace.getSid(), ace.isGranting());
-//            }
-//        }
-//
-//        childAcl.setEntriesInheriting(true);
+////        childAcl.setEntriesInheriting(true);
 //        childAcl.setParent(parentAcl);
 //
-//        log.trace("Parent Acl: " + parentAcl);
-//        log.trace("Child Acl before Update: " + childAcl);
+//        logAclInformation(parentAcl, childAcl);
 //
-//        MutableAcl updated = aclService.updateAcl(childAcl);
-//        log.trace("Updated Child Acl: " + updated);
-//    }
-//
-//    @Override
-//    public void inheritPermissionsForUser(IdentifiableEntity<?> targetObj, IdentifiableEntity<?> parent, String user) throws AclNotFoundException {
-//        final ObjectIdentity childOi = new ObjectIdentityImpl(targetObj.getClass(), targetObj.getId());
-//        final ObjectIdentity parentOi = new ObjectIdentityImpl(parent.getClass(), parent.getId());
-//
-//        MutableAcl childAcl = findOrCreateAcl(childOi);
-//        MutableAcl parentAcl = findAcl(parentOi);
-//
-//        // Iterate through the parent ACL's entries and copy entries that match the user's SID
-//        for (AccessControlEntry ace : parentAcl.getEntries()) {
-//            Sid sid = ace.getSid();
-//            if (sid instanceof PrincipalSid) {
-//                PrincipalSid principalSid = (PrincipalSid) sid;
-//                if (principalSid.getPrincipal().equals(user)) {
-//                    childAcl.insertAce(childAcl.getEntries().size(), ace.getPermission(), ace.getSid(), ace.isGranting());
-//                }
-//            }
-//        }
-//
-//        childAcl.setEntriesInheriting(true);
-//        childAcl.setParent(parentAcl);
-//
-//        log.trace("Parent Acl: " + parentAcl);
-//        log.trace("Child Acl before Update: " + childAcl);
-//
-//        MutableAcl updated = aclService.updateAcl(childAcl);
-//        log.trace("Updated Child Acl: " + updated);
-//    }
-//
-//    @Override
-//    public void inheritPermissionsForUser(IdentifiableEntity<?> targetObj, IdentifiableEntity<?> parent, String userId, Permission... permissions) throws AclNotFoundException {
-//        final ObjectIdentity childOi = new ObjectIdentityImpl(targetObj.getClass(), targetObj.getId());
-//        final ObjectIdentity parentOi = new ObjectIdentityImpl(parent.getClass(), parent.getId());
-//
-//        MutableAcl childAcl = findOrCreateAcl(childOi);
-//        MutableAcl parentAcl = findAcl(parentOi);
-//
-//        List<Permission> permissionsToInherit = Lists.newArrayList(permissions);
-//
-//        // Iterate through the parent ACL's entries and copy entries that match the user's SID
-//        for (AccessControlEntry ace : parentAcl.getEntries()) {
-//            Sid sid = ace.getSid();
-//            if (sid instanceof PrincipalSid) {
-//                PrincipalSid principalSid = (PrincipalSid) sid;
-//                if (principalSid.getPrincipal().equals(userId)) {
-//                    if (permissionsToInherit.contains(ace.getPermission())) {
-//                        childAcl.insertAce(childAcl.getEntries().size(), ace.getPermission(), ace.getSid(), ace.isGranting());
-//                    }
-//                }
-//            }
-//        }
-//
-//        childAcl.setEntriesInheriting(true);
-//        childAcl.setParent(parentAcl);
-//
-//        log.trace("Parent Acl: " + parentAcl);
-//        log.trace("Child Acl before Update: " + childAcl);
-//
-//        MutableAcl updated = aclService.updateAcl(childAcl);
-//        log.trace("Updated Child Acl: " + updated);
+//        aclService.updateAcl(childAcl);
 //    }
 
     @Override
-    public void inheritPermissionEntriesOfParent(IdentifiableEntity<?> targetObj, IdentifiableEntity<?> parent) throws AclNotFoundException {
-        ObjectIdentity childOi = new ObjectIdentityImpl(targetObj.getClass(), targetObj.getId());
-        ObjectIdentity parentOi = new ObjectIdentityImpl(parent.getClass(), parent.getId());
-
-        MutableAcl childAcl = findOrCreateAcl(childOi);
-        MutableAcl parentAcl = findAcl(parentOi);
-
-//        childAcl.setEntriesInheriting(true);
-        childAcl.setParent(parentAcl);
-
-        logAclInformation(parentAcl, childAcl);
-
-        aclService.updateAcl(childAcl);
-    }
-
-    @LogInteraction(Severity.TRACE)
-    @Override
-    public void inheritPermissionEntriesOfParent(IdentifiableEntity<?> targetObj, IdentifiableEntity<?> parent, Permission... permissions) throws AclNotFoundException {
-        ObjectIdentity childOi = new ObjectIdentityImpl(targetObj.getClass(), targetObj.getId());
-        ObjectIdentity parentOi = new ObjectIdentityImpl(parent.getClass(), parent.getId());
-
-        MutableAcl childAcl = findOrCreateAcl(childOi);
-        MutableAcl parentAcl = findAcl(parentOi);
-
-        List<Permission> permissionsToInherit = Lists.newArrayList(permissions);
-
-        copyMatchingPermissions(parentAcl, childAcl, permissionsToInherit);
-
-        // inheritence is done manually, can only be set on a per acl basis and there is always exactly one acl for domain obj
-//        childAcl.setEntriesInheriting(true);
-        childAcl.setParent(parentAcl);
-
-        logAclInformation(parentAcl, childAcl);
-
-        aclService.updateAcl(childAcl);
-    }
-
-    @Override
-    public void inheritUserEntriesOfParent(IdentifiableEntity<?> targetObj, IdentifiableEntity<?> parent, String user) throws AclNotFoundException {
-        ObjectIdentity childOi = new ObjectIdentityImpl(targetObj.getClass(), targetObj.getId());
-        ObjectIdentity parentOi = new ObjectIdentityImpl(parent.getClass(), parent.getId());
-
-        MutableAcl childAcl = findOrCreateAcl(childOi);
-        MutableAcl parentAcl = findAcl(parentOi);
-
-        copyPermissionsForUser(parentAcl, childAcl, user);
-
-        // inheritence is done manually, can only be set on a per acl basis and there is always exactly one acl for domain obj
-//        childAcl.setEntriesInheriting(true);
-        childAcl.setParent(parentAcl);
-
-        logAclInformation(parentAcl, childAcl);
-
-        aclService.updateAcl(childAcl);
-    }
-
-//    public void updateEntriesInheriting(IdentifiableEntity<?> targetObj){
-//
-//    }
-
-    @Override
-    public void inheritUserPermissionEntriesOfParent(IdentifiableEntity<?> targetObj, IdentifiableEntity<?> parent, String user, Permission... permissions) throws AclNotFoundException {
-        ObjectIdentity childOi = new ObjectIdentityImpl(targetObj.getClass(), targetObj.getId());
-        ObjectIdentity parentOi = new ObjectIdentityImpl(parent.getClass(), parent.getId());
-
-        MutableAcl childAcl = findOrCreateAcl(childOi);
-        MutableAcl parentAcl = findAcl(parentOi);
-
-        List<Permission> permissionsToInherit = Lists.newArrayList(permissions);
-
-        copyMatchingPermissionsForUser(parentAcl, childAcl, user, permissionsToInherit);
-
-        // inheritence is done manually, can only be set on a per acl basis and there is always exactly one acl for domain obj
-//        childAcl.setEntriesInheriting(true);
-        childAcl.setParent(parentAcl);
-
-        logAclInformation(parentAcl, childAcl);
-
-        aclService.updateAcl(childAcl);
-    }
-
-    protected void copyMatchingPermissions(MutableAcl sourceAcl, MutableAcl targetAcl, List<Permission> permissionsToCopy) {
-        for (AccessControlEntry ace : sourceAcl.getEntries()) {
-            if (permissionsToCopy.contains(ace.getPermission())) {
-                targetAcl.insertAce(targetAcl.getEntries().size(), ace.getPermission(), ace.getSid(), ace.isGranting());
-            }
+    public void inheritAces(IdentifiableEntity<?> parent, List<AclInheritanceInfo> infos) throws AclNotFoundException {
+        AclInheritanceInfo info = getParentInfo(parent,infos);
+        if (!info.getSourceFilter().matches(parent)){
+            return;
+        }
+        Collection<IdentifiableEntity<?>> children = getAclChildren(parent, info);
+        for (IdentifiableEntity<?> child : children) {
+            inheritAces(child,parent,info.getAceFilter());
+            // recursion
+            inheritAces(parent,infos);
         }
     }
 
-    protected void copyPermissionsForUser(MutableAcl sourceAcl, MutableAcl targetAcl, String user) {
-        for (AccessControlEntry ace : sourceAcl.getEntries()) {
-            Sid sid = ace.getSid();
-            if (sid instanceof PrincipalSid) {
-                PrincipalSid principalSid = (PrincipalSid) sid;
-                if (principalSid.getPrincipal().equals(user)) {
-                    targetAcl.insertAce(targetAcl.getEntries().size(), ace.getPermission(), ace.getSid(), ace.isGranting());
-                }
-            }
+    protected Collection<IdentifiableEntity<?>> getAclChildren(IdentifiableEntity<?> parent, AclInheritanceInfo info) {
+        try {
+            Collection<IdentifiableEntity<?>> children = (Collection<IdentifiableEntity<?>>) info.getTarget().invoke(parent);
+            return info.getTargetFilter().filter(children);
+        } catch (IllegalAccessException | InvocationTargetException e) {
+            throw new RuntimeException(e);
         }
     }
 
-    protected void copyMatchingPermissionsForUser(MutableAcl sourceAcl, MutableAcl targetAcl, String userId, List<Permission> permissionsToCopy) {
-        for (AccessControlEntry ace : sourceAcl.getEntries()) {
-            Sid sid = ace.getSid();
-            if (sid instanceof PrincipalSid) {
-                PrincipalSid principalSid = (PrincipalSid) sid;
-                if (principalSid.getPrincipal().equals(userId) && permissionsToCopy.contains(ace.getPermission())) {
-                    targetAcl.insertAce(targetAcl.getEntries().size(), ace.getPermission(), ace.getSid(), ace.isGranting());
-                }
-            }
+    @Override
+    public void updateEntriesInheriting(boolean value, IdentifiableEntity<?> child, IdentifiableEntity<?> parent) throws AclNotFoundException {
+        ObjectIdentity childOi = new ObjectIdentityImpl(child.getClass(), child.getId());
+        ObjectIdentity parentOi = new ObjectIdentityImpl(parent.getClass(), parent.getId());
+
+        MutableAcl childAcl = findOrCreateAcl(childOi);
+        MutableAcl parentAcl = findAcl(parentOi);
+
+        childAcl.setParent(parentAcl);
+        childAcl.setEntriesInheriting(value);
+        aclService.updateAcl(childAcl);
+    }
+
+    protected AclInheritanceInfo getParentInfo(IdentifiableEntity<?> parent, List<AclInheritanceInfo> infos){
+        // first info is always parent
+        Optional<AclInheritanceInfo> info = infos.stream()
+                .filter(i -> i.matches(parent.getClass()))
+                .findFirst();
+        if (info.isEmpty())
+            throw new IllegalArgumentException("Cannot find matching info from supplied info list");
+        return info.get();
+    }
+
+    @Override
+    public void inheritAces(IdentifiableEntity<?> child, IdentifiableEntity<?> parent, AceFilter aceFilter) throws AclNotFoundException {
+        ObjectIdentity childOi = new ObjectIdentityImpl(child.getClass(), child.getId());
+        ObjectIdentity parentOi = new ObjectIdentityImpl(parent.getClass(), parent.getId());
+
+        MutableAcl childAcl = findOrCreateAcl(childOi);
+        MutableAcl parentAcl = findAcl(parentOi);
+
+        copyMatchingAces(parentAcl, childAcl, aceFilter);
+
+        childAcl.setParent(parentAcl);
+        logAclInformation(parentAcl, childAcl);
+        aclService.updateAcl(childAcl);
+    }
+
+    /**
+     * Copy all aces from parentAcl to childAcl that match aceFilter: {@link AceFilter#matches(AccessControlEntry)}.
+     */
+    protected void copyMatchingAces(MutableAcl parentAcl, MutableAcl childAcl, AceFilter aceFilter) {
+        for (AccessControlEntry ace : parentAcl.getEntries()) {
+           if (aceFilter.matches(ace))
+               childAcl.insertAce(childAcl.getEntries().size(), ace.getPermission(), ace.getSid(), ace.isGranting());
         }
     }
 
     protected void logAclInformation(MutableAcl parentAcl, MutableAcl childAcl) {
-        if (log.isTraceEnabled()){
-            log.trace("Parent Acl: " + parentAcl);
-            log.trace("Child Acl before Update: " + childAcl);
+        if (log.isDebugEnabled()){
+            log.debug("Parent Acl: " + parentAcl);
+            log.debug("Child Acl: " + childAcl);
         }
     }
 
-
     protected void addPermissionForSid(IdentifiableEntity<?> targetObj, Permission permission, Sid sid) {
-        log.debug("sid: "+ sid +" will gain permission: " + permissionStringConverter.convert(permission) +" over entity: " + targetObj);
+        if (log.isDebugEnabled())
+            log.debug("sid: "+ sid +" will gain permission: " + permissionStringConverter.convert(permission) +" over entity: " + targetObj);
         final ObjectIdentity oi = new ObjectIdentityImpl(targetObj.getClass(), targetObj.getId());
 
         MutableAcl acl = findOrCreateAcl(oi);
-        log.trace("acl of entity before adding" + acl);
+        if (log.isDebugEnabled())
+            log.debug("acl of entity before adding: " + acl);
+
         acl.insertAce(acl.getEntries().size(), permission, sid, true);
         MutableAcl updated = aclService.updateAcl(acl);
-        log.trace("updated acl: " + updated);
+
+        if (log.isDebugEnabled())
+            log.debug("updated acl: " + updated);
     }
 
     protected void deletePermissionForSid(IdentifiableEntity<?> targetObj, Permission permission, Sid sid, boolean deleteCascade) throws AclNotFoundException, AceNotFoundException {
-        log.debug("sid: "+ sid +" will loose permission: " + permissionStringConverter.convert(permission) +" over entity: " + targetObj);
+        if (log.isDebugEnabled())
+            log.debug("sid: "+ sid +" will loose permission: " + permissionStringConverter.convert(permission) +" over entity: " + targetObj);
         final ObjectIdentity oi = new ObjectIdentityImpl(targetObj.getClass(), targetObj.getId());
         MutableAcl acl = findAcl(oi);
-        log.trace("acl of entity before removal" + acl);
+        if (log.isDebugEnabled())
+            log.debug("acl of entity before removal" + acl);
         List<AccessControlEntry> aces = acl.getEntries();
         int aceIndexToRemove = findMatchingAceIndex(aces, permission, sid);
 
@@ -416,7 +283,8 @@ public class RapidPermissionService implements AclPermissionService , AopLoggabl
             updatedAcl.getEntries().add(ace);
         }
         MutableAcl updated = aclService.updateAcl(updatedAcl);
-        log.trace("updated acl: " + updated);
+        if (log.isDebugEnabled())
+            log.debug("updated acl: " + updated);
     }
 
     // todo reduce overhead when updating to newer spring version
@@ -426,27 +294,18 @@ public class RapidPermissionService implements AclPermissionService , AopLoggabl
         Optional<AccessControlEntry> ace = aces.stream()
                 .peek(x -> position[0]++)
                 .filter(accessControlEntry -> {
-                    return findSidString(accessControlEntry.getSid()).equals(findSidString(sid)) &&
+                    return getSidString(accessControlEntry.getSid()).equals(getSidString(sid)) &&
                             accessControlEntry.getPermission().equals(permission);
                 }).findFirst();
         if (ace.isEmpty()){
             return -1;
         }else{
-            log.debug("Ace to remove: " + ace.get());
+            if (log.isDebugEnabled())
+                log.debug("Ace to remove: " + ace.get());
             return position[0];
         }
     }
 
-    // https://github.com/spring-projects/spring-security/issues/5401
-    protected String findSidString(Sid sid){
-        if (sid instanceof GrantedAuthoritySid){
-            return ((GrantedAuthoritySid) sid).getGrantedAuthority();
-        }else if (sid instanceof PrincipalSid){
-            return ((PrincipalSid) sid).getPrincipal();
-        }else {
-            throw new IllegalArgumentException("Unknown Sid type: " + sid);
-        }
-    }
 
     @Autowired
     public void injectAclService(MutableAclService aclService) {
