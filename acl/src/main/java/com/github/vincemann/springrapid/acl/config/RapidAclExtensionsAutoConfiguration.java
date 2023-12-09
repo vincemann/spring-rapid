@@ -2,6 +2,7 @@ package com.github.vincemann.springrapid.acl.config;
 
 import com.github.vincemann.springrapid.acl.service.extensions.security.CrudAclChecksSecurityExtension;
 import com.github.vincemann.springrapid.acl.service.extensions.acl.*;
+import com.github.vincemann.springrapid.acl.service.extensions.security.NeedCreatePermissionOnParentForSaveExtension;
 import com.github.vincemann.springrapid.core.config.RapidJsonAutoConfiguration;
 import com.github.vincemann.springrapid.core.slicing.ServiceConfig;
 import lombok.extern.slf4j.Slf4j;
@@ -34,6 +35,14 @@ public class RapidAclExtensionsAutoConfiguration {
     @Bean
     public CrudAclChecksSecurityExtension crudAclChecksSecurityExtension(){
         return new CrudAclChecksSecurityExtension();
+    }
+
+    @ConditionalOnMissingBean(name = "needCreatePermissionOnParentForSaveExtension")
+    @Qualifier("needCreatePermissionOnParentForSaveExtension")
+    @Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
+    @Bean
+    public NeedCreatePermissionOnParentForSaveExtension needCreatePermissionOnParentForSaveExtension(){
+        return new NeedCreatePermissionOnParentForSaveExtension();
     }
 
     @ConditionalOnMissingBean(name = "authenticatedHasFullPermissionAboutSavedAclExtension")

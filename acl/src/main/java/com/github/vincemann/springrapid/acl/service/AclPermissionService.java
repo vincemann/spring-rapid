@@ -8,7 +8,6 @@ import org.springframework.security.acls.model.Permission;
 import java.io.Serializable;
 import java.util.List;
 
-@LogInteraction(Severity.TRACE)
 public interface AclPermissionService {
 
     public void savePermissionForRoleOverEntity(IdentifiableEntity<?> entity, String role, Permission permission);
