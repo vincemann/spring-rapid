@@ -13,18 +13,20 @@ public class RoleHasPermissionAboutSavedAclExtension extends AbstractAclExtensio
 
 
     private String role;
-    private Permission permission;
+    private Permission[] permissions;
 
-    public RoleHasPermissionAboutSavedAclExtension(String role, Permission permission) {
+    public RoleHasPermissionAboutSavedAclExtension(String role, Permission... permissions) {
         this.role = role;
-        this.permission = permission;
+        this.permissions = permissions;
     }
 
     @LogInteraction
     @Override
     public IdentifiableEntity save(IdentifiableEntity entity) throws BadEntityException {
         IdentifiableEntity saved = getNext().save(entity);
-        aclPermissionService.savePermissionForRoleOverEntity(saved,role, permission);
+        for (Permission permission : permissions) {
+            aclPermissionService.savePermissionForRoleOverEntity(saved,role, permission);
+        }
         return saved;
     }
 

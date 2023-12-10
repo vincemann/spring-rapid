@@ -1,6 +1,7 @@
 package com.github.vincemann.springrapid.acl.service;
 
 import com.google.common.collect.Sets;
+import lombok.Builder;
 import lombok.Getter;
 import org.springframework.security.acls.domain.GrantedAuthoritySid;
 import org.springframework.security.acls.domain.PrincipalSid;
@@ -18,9 +19,16 @@ public class AceFilter {
     private Set<Permission> permissions;
     private String sid;
 
+    @Builder
     public AceFilter(String sid, Permission... permissions) {
         this.permissions = Sets.newHashSet(permissions);
         this.sid = sid;
+    }
+
+    private AceFilter(){}
+
+    public static AceFilter noFilter(){
+        return new AceFilter();
     }
 
     // https://github.com/spring-projects/spring-security/issues/5401

@@ -166,6 +166,10 @@ public abstract class AbstractExtensionServiceProxy
         if (cached != null) {
             return cached;
         }
+        if (state == null){
+            // make sure extensions method is not intercepted by aop proxy maybe that triggers method call directly
+            throw new IllegalArgumentException("method of extension: " + extension + " is called directly. Make sure to only call methods of proxies.");
+        }
         //get extension chain by method
         List<ExtensionHandle> extensionChain = extensionChainCache.get(state.getMethodIdentifier());
         Optional<ExtensionHandle> link = extensionChain.stream()

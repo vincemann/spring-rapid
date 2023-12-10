@@ -18,7 +18,6 @@ import java.util.Set;
  * Does basic acl permission checks on crud Methods defined in {@link com.github.vincemann.springrapid.core.service.CrudService}.
  */
 @Transactional
-@LogInteraction(Severity.DEBUG)
 public class CrudAclChecksSecurityExtension
         extends AbstractSecurityExtension<CrudService>
                 implements CrudServiceExtension<CrudService> {

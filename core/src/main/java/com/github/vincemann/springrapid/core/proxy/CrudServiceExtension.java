@@ -67,6 +67,7 @@ public interface CrudServiceExtension<S extends CrudService>
     // todo change to getLast()
     @Override
     public default Class<IdentifiableEntity> getEntityClass() {
+//        return getNext().getEntityClass();
         return getNext().getEntityClass();
     }
 

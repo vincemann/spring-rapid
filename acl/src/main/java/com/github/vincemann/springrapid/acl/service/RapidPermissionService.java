@@ -1,8 +1,5 @@
 package com.github.vincemann.springrapid.acl.service;
 
-import com.github.vincemann.aoplog.Severity;
-import com.github.vincemann.aoplog.api.AopLoggable;
-import com.github.vincemann.aoplog.api.annotation.LogInteraction;
 import com.github.vincemann.springrapid.core.model.IdentifiableEntity;
 import com.github.vincemann.springrapid.core.security.RapidAuthenticatedPrincipal;
 import com.github.vincemann.springrapid.core.security.RapidSecurityContext;
@@ -19,10 +16,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.io.Serializable;
 import java.lang.reflect.InvocationTargetException;
-import java.util.Collection;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
+import java.util.stream.Collectors;
 
 import static com.github.vincemann.springrapid.acl.util.AclUtils.getSidString;
 
@@ -32,7 +27,7 @@ import static com.github.vincemann.springrapid.acl.util.AclUtils.getSidString;
 @Service
 @Transactional
 @Slf4j
-public class RapidPermissionService implements AclPermissionService , AopLoggable {
+public class RapidPermissionService implements AclPermissionService {
 
     private MutableAclService aclService;
     private RapidSecurityContext<RapidAuthenticatedPrincipal> securityContext;
@@ -43,66 +38,58 @@ public class RapidPermissionService implements AclPermissionService , AopLoggabl
         this.aclService = aclService;
     }
 
-    @LogInteraction(Severity.TRACE)
     @Override
-    public void savePermissionForRoleOverEntity(IdentifiableEntity<?> entity, String role, Permission permission) {
+    public void savePermissionForRoleOverEntity(IdentifiableEntity<?> entity, String role, Permission... permissions) {
         securityContext.runAsAdmin(() ->{
             final Sid sid = new GrantedAuthoritySid(role);
-            addPermissionForSid(entity, permission, sid);
+            addPermissionsForSid(entity, sid, permissions);
         });
     }
 
-    @LogInteraction(Severity.TRACE)
     @Override
-    public void deletePermissionForRoleOverEntity(IdentifiableEntity<?> entity, String role, Permission permission) throws AclNotFoundException, AceNotFoundException {
+    public void deletePermissionForRoleOverEntity(IdentifiableEntity<?> entity, String role, Permission... permissions) throws AclNotFoundException, AceNotFoundException {
         final Sid sid = new GrantedAuthoritySid(role);
-        deletePermissionForSid(entity,permission,sid,false);
+        deletePermissionForSid(entity,sid,false, permissions);
     }
 
 
-    @LogInteraction(Severity.TRACE)
     @Override
-    public void savePermissionForAuthenticatedOverEntity(IdentifiableEntity<?> entity, Permission permission) {
+    public void savePermissionForAuthenticatedOverEntity(IdentifiableEntity<?> entity, Permission... permissions) {
         String authenticatedName = findAuthenticatedName();
-        savePermissionForUserOverEntity(authenticatedName,entity,permission);
+        savePermissionForUserOverEntity(authenticatedName,entity,permissions);
     }
 
-    @LogInteraction(Severity.TRACE)
     @Override
-    public void deletePermissionForAuthenticatedOverEntity(IdentifiableEntity<?> entity, Permission permission) throws AclNotFoundException, AceNotFoundException {
+    public void deletePermissionForAuthenticatedOverEntity(IdentifiableEntity<?> entity, Permission... permissions) throws AclNotFoundException, AceNotFoundException {
         String authenticatedName = findAuthenticatedName();
-        deletePermissionForUserOverEntity(authenticatedName,entity,permission);
+        deletePermissionForUserOverEntity(authenticatedName,entity,permissions);
     }
 
-    @LogInteraction(Severity.TRACE)
     @Override
-    public void savePermissionForUserOverEntity(String user, IdentifiableEntity<?> entity, Permission permission) {
+    public void savePermissionForUserOverEntity(String user, IdentifiableEntity<?> entity, Permission... permissions) {
         securityContext.runWithName(user,() ->{
             final Sid sid = new PrincipalSid(user);
-            addPermissionForSid(entity, permission, sid);
+            addPermissionsForSid(entity, sid,permissions);
         });
     }
 
     @Override
-    public void deletePermissionForUserOverEntity(String user, IdentifiableEntity<?> entity, Permission permission) throws AclNotFoundException, AceNotFoundException{
-        deletePermissionForUserOverEntity(user,entity,permission,false);
+    public void deletePermissionForUserOverEntity(String user, IdentifiableEntity<?> entity, Permission... permissions) throws AclNotFoundException, AceNotFoundException{
+        deletePermissionForUserOverEntity(user,entity,false,permissions);
     }
 
-    @LogInteraction(Severity.TRACE)
     @Override
-    public void deletePermissionForUserOverEntity(String user, IdentifiableEntity<?> entity, Permission permission, Boolean deleteCascade) throws AclNotFoundException, AceNotFoundException {
+    public void deletePermissionForUserOverEntity(String user, IdentifiableEntity<?> entity, Boolean deleteCascade, Permission... permissions) throws AclNotFoundException, AceNotFoundException {
         final Sid sid = new PrincipalSid(user);
-        deletePermissionForSid(entity,permission,sid,deleteCascade);
+        deletePermissionForSid(entity,sid,deleteCascade,permissions);
     }
 
-    @LogInteraction(Severity.TRACE)
     @Override
     public void deleteAclOfEntity(Class<? extends IdentifiableEntity> clazz, Serializable id, boolean deleteCascade) {
         ObjectIdentity oi = new ObjectIdentityImpl(clazz, id);
         aclService.deleteAcl(oi,deleteCascade);
     }
 
-    @LogInteraction(Severity.TRACE)
     @Override
     public void deleteAclOfEntity(IdentifiableEntity<?> entity, boolean deleteCascade) {
         ObjectIdentity oi = new ObjectIdentityImpl(entity.getClass(), entity.getId());
@@ -233,43 +220,44 @@ public class RapidPermissionService implements AclPermissionService , AopLoggabl
         }
     }
 
-    protected void addPermissionForSid(IdentifiableEntity<?> targetObj, Permission permission, Sid sid) {
+    protected void addPermissionsForSid(IdentifiableEntity<?> targetObj, Sid sid, Permission... permissions) {
         if (log.isDebugEnabled())
-            log.debug("sid: "+ sid +" will gain permission: " + permissionStringConverter.convert(permission) +" over entity: " + targetObj);
+            log.debug("sid: "+ sid +" will gain permissions: " + Arrays.stream(permissions).map(p -> permissionStringConverter.convert(p)).collect(Collectors.toSet()) +" over entity: " + targetObj);
         final ObjectIdentity oi = new ObjectIdentityImpl(targetObj.getClass(), targetObj.getId());
 
         MutableAcl acl = findOrCreateAcl(oi);
         if (log.isDebugEnabled())
             log.debug("acl of entity before adding: " + acl);
 
-        acl.insertAce(acl.getEntries().size(), permission, sid, true);
+        for (Permission permission : permissions) {
+            acl.insertAce(acl.getEntries().size(), permission, sid, true);
+        }
         MutableAcl updated = aclService.updateAcl(acl);
 
         if (log.isDebugEnabled())
             log.debug("updated acl: " + updated);
     }
 
-    protected void deletePermissionForSid(IdentifiableEntity<?> targetObj, Permission permission, Sid sid, boolean deleteCascade) throws AclNotFoundException, AceNotFoundException {
+    protected void deletePermissionForSid(IdentifiableEntity<?> targetObj, Sid sid, boolean deleteCascade, Permission... permissions) throws AclNotFoundException, AceNotFoundException {
         if (log.isDebugEnabled())
-            log.debug("sid: "+ sid +" will loose permission: " + permissionStringConverter.convert(permission) +" over entity: " + targetObj);
+            log.debug("sid: "+ sid +" will loose permission: " + Arrays.stream(permissions).map(p -> permissionStringConverter.convert(p)).collect(Collectors.toSet()) +" over entity: " + targetObj);
         final ObjectIdentity oi = new ObjectIdentityImpl(targetObj.getClass(), targetObj.getId());
         MutableAcl acl = findAcl(oi);
         if (log.isDebugEnabled())
             log.debug("acl of entity before removal" + acl);
         List<AccessControlEntry> aces = acl.getEntries();
-        int aceIndexToRemove = findMatchingAceIndex(aces, permission, sid);
+        Set<Integer> aceIndicesToRemove = findMatchingAceIndices(aces, sid, permissions);
 
-        if (aceIndexToRemove == -1){
+        if (aceIndicesToRemove.isEmpty()){
             throw new AceNotFoundException("Cant remove permission for sid: " + sid + " on target: " + oi + ", bc no matching ace found");
         }
-
-        // todo have to do weird remove workaround again bc of hibernate set, see DirEntity
+                // todo have to do weird remove workaround again bc of hibernate set, see DirEntity
         // AccessControlEntry removed = aces.remove(aceIndexToRemove);
         Iterator<AccessControlEntry> aceIterator = aces.iterator();
         int index = 0;
         while (aceIterator.hasNext()){
             aceIterator.next();
-            if (index==aceIndexToRemove){
+            if (aceIndicesToRemove.contains(index)){
                 aceIterator.remove();
                 break;
             }
@@ -287,23 +275,37 @@ public class RapidPermissionService implements AclPermissionService , AopLoggabl
             log.debug("updated acl: " + updated);
     }
 
+    protected void deletePermissionForSid(){
+
+    }
+
     // todo reduce overhead when updating to newer spring version
-    protected int findMatchingAceIndex(List<AccessControlEntry> aces, Permission permission, Sid sid) throws AceNotFoundException {
-        int[] position = {-1};
+    protected Set<Integer> findMatchingAceIndices(List<AccessControlEntry> aces,Sid sid, Permission... permissions) throws AceNotFoundException {
+        Set<Integer> positions = new HashSet<>();
         // https://github.com/spring-projects/spring-security/issues/5401
-        Optional<AccessControlEntry> ace = aces.stream()
-                .peek(x -> position[0]++)
+//        Set<AccessControlEntry> result = aces.stream()
+//                .peek(x -> position[0]++)
+//                .filter(accessControlEntry -> {
+//                    return getSidString(accessControlEntry.getSid()).equals(getSidString(sid)) &&
+//                            accessControlEntry.getPermission().equals(permission);
+//                }).collect(Collectors.toSet());
+        Set<AccessControlEntry> result = aces.stream()
                 .filter(accessControlEntry -> {
-                    return getSidString(accessControlEntry.getSid()).equals(getSidString(sid)) &&
-                            accessControlEntry.getPermission().equals(permission);
-                }).findFirst();
-        if (ace.isEmpty()){
-            return -1;
-        }else{
+                    boolean isMatching = getSidString(accessControlEntry.getSid()).equals(getSidString(sid)) &&
+                            Arrays.stream(permissions).anyMatch(p -> p.equals(accessControlEntry.getPermission()));
+                    if (isMatching) {
+                        positions.add(positions.size() + 1); // Add the position to the Set
+                    }
+                    return isMatching;
+                })
+                .collect(Collectors.toSet());
+//        if (result.isEmpty()){
+//            return -1;
+//        }else{
             if (log.isDebugEnabled())
-                log.debug("Ace to remove: " + ace.get());
-            return position[0];
-        }
+                log.debug("Aces to remove: " + result);
+//            return position[0];
+        return positions;
     }
 
 

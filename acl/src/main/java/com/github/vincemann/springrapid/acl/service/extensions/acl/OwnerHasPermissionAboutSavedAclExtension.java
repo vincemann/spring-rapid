@@ -18,10 +18,10 @@ public class OwnerHasPermissionAboutSavedAclExtension
 {
 
     private DelegatingOwnerLocator delegatingOwnerLocator;
-    private Permission permission;
+    private Permission[] permissions;
 
-    public OwnerHasPermissionAboutSavedAclExtension(Permission permission) {
-        this.permission = permission;
+    public OwnerHasPermissionAboutSavedAclExtension(Permission... permissions) {
+        this.permissions = permissions;
     }
 
     @Autowired
@@ -38,7 +38,9 @@ public class OwnerHasPermissionAboutSavedAclExtension
         if (optionalOwner.isEmpty()){
             throw new BadEntityException("Owner not found for entity: " + saved + " which is needed to give acl permission for");
         }
-        aclPermissionService.savePermissionForUserOverEntity(optionalOwner.get(),saved, permission);
+        for (Permission permission : permissions) {
+            aclPermissionService.savePermissionForUserOverEntity(optionalOwner.get(),saved, permission);
+        }
         return saved;
     }
 }

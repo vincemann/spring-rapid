@@ -1,5 +1,7 @@
 package com.github.vincemann.springrapid.acl.config;
 
+import com.github.vincemann.springrapid.acl.DefaultAclExtension;
+import com.github.vincemann.springrapid.acl.DefaultSecurityExtension;
 import com.github.vincemann.springrapid.acl.service.extensions.security.CrudAclChecksSecurityExtension;
 import com.github.vincemann.springrapid.acl.service.extensions.acl.*;
 import com.github.vincemann.springrapid.acl.service.extensions.security.NeedCreatePermissionOnParentForSaveExtension;
@@ -31,6 +33,7 @@ public class RapidAclExtensionsAutoConfiguration {
 
     @ConditionalOnMissingBean(name = "crudAclChecksSecurityExtension")
     @Qualifier("crudAclChecksSecurityExtension")
+//    @DefaultSecurityExtension
     @Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
     @Bean
     public CrudAclChecksSecurityExtension crudAclChecksSecurityExtension(){
@@ -40,6 +43,7 @@ public class RapidAclExtensionsAutoConfiguration {
     @ConditionalOnMissingBean(name = "needCreatePermissionOnParentForSaveExtension")
     @Qualifier("needCreatePermissionOnParentForSaveExtension")
     @Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
+//    @DefaultSecurityExtension
     @Bean
     public NeedCreatePermissionOnParentForSaveExtension needCreatePermissionOnParentForSaveExtension(){
         return new NeedCreatePermissionOnParentForSaveExtension();
@@ -54,6 +58,7 @@ public class RapidAclExtensionsAutoConfiguration {
 
     @ConditionalOnMissingBean(name = "adminHasFullPermissionAboutSavedAclExtension")
     @Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
+//    @DefaultAclExtension
     @Bean
     public AdminHasFullPermissionAboutSavedAclExtension adminHasFullPermissionAboutSavedAclExtension(){
         return new AdminHasFullPermissionAboutSavedAclExtension();
@@ -69,6 +74,7 @@ public class RapidAclExtensionsAutoConfiguration {
     @Bean
     @ConditionalOnMissingBean(name = "cleanUpAclExtension")
     @Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
+//    @DefaultAclExtension
     public CleanUpAclExtension cleanUpAclExtension(){
         return new CleanUpAclExtension();
     }

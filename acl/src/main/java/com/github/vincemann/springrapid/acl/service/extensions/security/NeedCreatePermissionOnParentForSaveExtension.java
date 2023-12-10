@@ -30,10 +30,4 @@ public class NeedCreatePermissionOnParentForSaveExtension
         }
         return getNext().save(entity);
     }
-
-    @Override
-    public Optional findById(Serializable id) throws BadEntityException {
-        getSecurityChecker().checkPermission(id,getLast().getEntityClass(), BasePermission.READ);
-        return getNext().findById(id);
-    }
 }

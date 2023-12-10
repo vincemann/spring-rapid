@@ -14,16 +14,16 @@ import java.io.Serializable;
 
 @Getter
 @Slf4j
+@Transactional
 /**
  * Removes Acl's on delete, if existing.
  */
-@Transactional
 public class CleanUpAclExtension
         extends AbstractAclExtension<CrudService>
                 implements CrudServiceExtension<CrudService>
 {
     @Setter
-    private boolean deleteCascade = true;
+    private boolean deleteCascade = false;
 
 
     @LogInteraction

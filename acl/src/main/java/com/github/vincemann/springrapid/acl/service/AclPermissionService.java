@@ -10,18 +10,21 @@ import java.util.List;
 
 public interface AclPermissionService {
 
-    public void savePermissionForRoleOverEntity(IdentifiableEntity<?> entity, String role, Permission permission);
-    public void deletePermissionForRoleOverEntity(IdentifiableEntity<?> entity, String role, Permission permission) throws AclNotFoundException, AceNotFoundException;
+    void savePermissionForRoleOverEntity(IdentifiableEntity<?> entity, String role, Permission... permissions);
 
-    public void savePermissionForAuthenticatedOverEntity(IdentifiableEntity<?> entity, Permission permission);
-    public void deletePermissionForAuthenticatedOverEntity(IdentifiableEntity<?> entity, Permission permission) throws AclNotFoundException, AceNotFoundException;
+    void deletePermissionForRoleOverEntity(IdentifiableEntity<?> entity, String role, Permission... permissions) throws AclNotFoundException, AceNotFoundException;
 
-    public void savePermissionForUserOverEntity(String user, IdentifiableEntity<?> entity, Permission permission);
-    public void deletePermissionForUserOverEntity(String user, IdentifiableEntity<?> entity, Permission permission) throws AclNotFoundException, AceNotFoundException;
+    void savePermissionForAuthenticatedOverEntity(IdentifiableEntity<?> entity, Permission... permissions);
+
+    void deletePermissionForAuthenticatedOverEntity(IdentifiableEntity<?> entity, Permission... permissions) throws AclNotFoundException, AceNotFoundException;
+
+    void savePermissionForUserOverEntity(String user, IdentifiableEntity<?> entity, Permission... permissions);
 
     public void deleteAclOfEntity(IdentifiableEntity<?> entity, boolean deleteCascade);
 
-    void deletePermissionForUserOverEntity(String user, IdentifiableEntity<?> entity, Permission permission, Boolean deleteCascade) throws AclNotFoundException, AceNotFoundException;
+    void deletePermissionForUserOverEntity(String user, IdentifiableEntity<?> entity, Permission... permissions) throws AclNotFoundException, AceNotFoundException;
+
+    void deletePermissionForUserOverEntity(String user, IdentifiableEntity<?> entity, Boolean deleteCascade, Permission... permissions) throws AclNotFoundException, AceNotFoundException;
 
     public void deleteAclOfEntity(Class<? extends IdentifiableEntity> clazz, Serializable id, boolean deleteCascade);
 
