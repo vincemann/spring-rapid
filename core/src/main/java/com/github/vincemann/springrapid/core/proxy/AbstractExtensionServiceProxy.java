@@ -167,8 +167,9 @@ public abstract class AbstractExtensionServiceProxy
             return cached;
         }
         if (state == null){
+            // MOST LIKELY: make sure your extensions have the Prototype scope, and for each proxy a new instance of extension is added!
             // make sure extensions method is not intercepted by aop proxy maybe that triggers method call directly
-            throw new IllegalArgumentException("method of extension: " + extension + " is called directly. Make sure to only call methods of proxies.");
+            throw new IllegalArgumentException("method of extension: " + extension + " is called directly. Make sure to only call methods of proxies. \n Also make sure your extensions have the Prototype scope!");
         }
         //get extension chain by method
         List<ExtensionHandle> extensionChain = extensionChainCache.get(state.getMethodIdentifier());
@@ -234,9 +235,9 @@ public abstract class AbstractExtensionServiceProxy
         //first look in cache
         List<ExtensionHandle> extensionChain = extensionChainCache.get(methodIdentifier);
         if (extensionChain == null) {
-            //start from end of extensions for start and identify all extensions having the requested method
-            //all matching methods together form a chain
-            //each link of the chain also saves its declared method
+            // start from end of extensions for start and identify all extensions having the requested method
+            // all matching methods together form a chain
+            // each link of the chain also saves its declared method
             Map.Entry<MethodIdentifier, List<ExtensionHandle>> method_chain_entry = new HashMap.SimpleEntry<>(methodIdentifier, new ArrayList<>());
             for (int i = 0; i < extensions.size(); i++) {
                 AbstractServiceExtension<?, ? super P> extension = extensions.get(i);

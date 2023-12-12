@@ -1,6 +1,7 @@
 package com.github.vincemann.springrapid.acl.service;
 
 import com.github.vincemann.aoplog.Severity;
+import com.github.vincemann.aoplog.api.AopLoggable;
 import com.github.vincemann.aoplog.api.annotation.LogInteraction;
 import com.github.vincemann.springrapid.core.model.IdentifiableEntity;
 import org.springframework.security.acls.model.Permission;
@@ -8,7 +9,8 @@ import org.springframework.security.acls.model.Permission;
 import java.io.Serializable;
 import java.util.List;
 
-public interface AclPermissionService {
+@LogInteraction(Severity.TRACE)
+public interface AclPermissionService extends AopLoggable {
 
     void savePermissionForRoleOverEntity(IdentifiableEntity<?> entity, String role, Permission... permissions);
 

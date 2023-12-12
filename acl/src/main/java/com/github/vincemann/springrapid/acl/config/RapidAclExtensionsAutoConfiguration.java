@@ -7,11 +7,13 @@ import com.github.vincemann.springrapid.acl.service.extensions.acl.*;
 import com.github.vincemann.springrapid.acl.service.extensions.security.NeedCreatePermissionOnParentForSaveExtension;
 import com.github.vincemann.springrapid.core.config.RapidJsonAutoConfiguration;
 import com.github.vincemann.springrapid.core.slicing.ServiceConfig;
+import com.github.vincemann.springrapid.core.util.ConditionalOnCustomProperties;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Scope;
 
@@ -32,16 +34,15 @@ public class RapidAclExtensionsAutoConfiguration {
     }
 
     @ConditionalOnMissingBean(name = "crudAclChecksSecurityExtension")
-    @Qualifier("crudAclChecksSecurityExtension")
-//    @DefaultSecurityExtension
+    @DefaultSecurityExtension
     @Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
     @Bean
+    @ConditionalOnProperty(name = "rapid-acl.defaultAclChecks", havingValue = "true", matchIfMissing = true)
     public CrudAclChecksSecurityExtension crudAclChecksSecurityExtension(){
         return new CrudAclChecksSecurityExtension();
     }
 
     @ConditionalOnMissingBean(name = "needCreatePermissionOnParentForSaveExtension")
-    @Qualifier("needCreatePermissionOnParentForSaveExtension")
     @Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
 //    @DefaultSecurityExtension
     @Bean
@@ -58,8 +59,9 @@ public class RapidAclExtensionsAutoConfiguration {
 
     @ConditionalOnMissingBean(name = "adminHasFullPermissionAboutSavedAclExtension")
     @Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
-//    @DefaultAclExtension
+    @DefaultAclExtension
     @Bean
+    @ConditionalOnProperty(name = "rapid-acl.adminFullAccess", havingValue = "true", matchIfMissing = true)
     public AdminHasFullPermissionAboutSavedAclExtension adminHasFullPermissionAboutSavedAclExtension(){
         return new AdminHasFullPermissionAboutSavedAclExtension();
     }
@@ -74,7 +76,8 @@ public class RapidAclExtensionsAutoConfiguration {
     @Bean
     @ConditionalOnMissingBean(name = "cleanUpAclExtension")
     @Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
-//    @DefaultAclExtension
+    @DefaultAclExtension
+    @ConditionalOnProperty(name = "rapid-acl.cleanupAcl", havingValue = "true", matchIfMissing = true)
     public CleanUpAclExtension cleanUpAclExtension(){
         return new CleanUpAclExtension();
     }

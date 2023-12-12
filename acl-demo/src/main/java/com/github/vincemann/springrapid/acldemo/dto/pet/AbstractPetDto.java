@@ -17,7 +17,6 @@ import java.time.LocalDate;
 @Getter
 @Setter
 @NoArgsConstructor
-
 public abstract class AbstractPetDto extends MyIdDto<Long>
          {
 
@@ -29,7 +28,6 @@ public abstract class AbstractPetDto extends MyIdDto<Long>
 
     @UniDirChildId(PetType.class)
     private Long petTypeId;
-
     private LocalDate birthDate;
 
     public AbstractPetDto(Pet pet){

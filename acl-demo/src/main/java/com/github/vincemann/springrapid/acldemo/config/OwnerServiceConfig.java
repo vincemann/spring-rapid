@@ -2,8 +2,6 @@ package com.github.vincemann.springrapid.acldemo.config;
 
 import com.github.vincemann.springrapid.acl.proxy.Acl;
 import com.github.vincemann.springrapid.acl.proxy.Secured;
-
-import com.github.vincemann.springrapid.acl.service.extensions.acl.AuthenticatedHasFullPermissionAboutSavedAclExtension;
 import com.github.vincemann.springrapid.acldemo.model.Owner;
 import com.github.vincemann.springrapid.acldemo.service.OwnerService;
 import com.github.vincemann.springrapid.acldemo.service.Root;
@@ -25,7 +23,8 @@ public class OwnerServiceConfig {
     @Bean
     public OwnerService aclOwnerService(@Root OwnerService ownerService,
                                         UserHasFullPermissionAboutSavedContainedUserAclExtension userHasFullPermissionAboutSavedContainedUserAclExtension,
-                                        UserHasFullPermissionAboutSelfAclExtension<Owner,Long> userHasFullPermissionAboutSelfAclExtension ) {
+                                        UserHasFullPermissionAboutSelfAclExtension<Owner,Long> userHasFullPermissionAboutSelfAclExtension
+    ) {
         return new ServiceExtensionProxyBuilder<>(ownerService)
                 .addGenericExtensions(userHasFullPermissionAboutSavedContainedUserAclExtension,userHasFullPermissionAboutSelfAclExtension)
                 .build();

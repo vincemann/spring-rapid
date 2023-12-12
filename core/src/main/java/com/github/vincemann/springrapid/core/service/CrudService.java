@@ -17,7 +17,7 @@ import java.util.Set;
 
 /**
  * Interface for a Service offering Crud Operations.
- * @param <E>       Type of Entity which's crud operations are exposed by this Service
+ * @param <E>       Type of Entity whos crud operations are exposed by this Service
  * @param <Id>      Id Type of E
  */
 @ServiceComponent

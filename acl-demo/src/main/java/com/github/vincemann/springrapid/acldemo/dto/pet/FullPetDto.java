@@ -34,4 +34,16 @@ public class FullPetDto extends AbstractPetDto  {
         this.illnessIds = illnessIds;
         this.ownerId = ownerId;
     }
+
+    @Override
+    public String toString() {
+        return "FullPetDto{" +
+                "illnessIds=" + illnessIds +
+                ", ownerId=" + ownerId +
+                ", name='" + name + '\'' +
+                ", petTypeId=" + getPetTypeId() +
+                ", birthDate=" + getBirthDate() +
+                ", id=" + getId() +
+                '}';
+    }
 }

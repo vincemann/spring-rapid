@@ -4,10 +4,9 @@ import com.github.vincemann.springrapid.acl.SecuredCrudController;
 import com.github.vincemann.springrapid.acldemo.auth.MyRoles;
 import com.github.vincemann.springrapid.acldemo.dto.pet.FullPetDto;
 import com.github.vincemann.springrapid.acldemo.dto.pet.OwnerCreatesPetDto;
-import com.github.vincemann.springrapid.acldemo.dto.pet.OwnerUpdatesOwnPetDto;
+import com.github.vincemann.springrapid.acldemo.dto.pet.OwnerUpdatesPetDto;
 import com.github.vincemann.springrapid.acldemo.model.Pet;
 import com.github.vincemann.springrapid.acldemo.service.PetService;
-import com.github.vincemann.springrapid.core.controller.CrudController;
 import com.github.vincemann.springrapid.core.controller.dto.mapper.context.CrudDtoMappingContextBuilder;
 import com.github.vincemann.springrapid.core.controller.dto.mapper.context.Direction;
 import com.github.vincemann.springrapid.core.controller.dto.mapper.context.DtoMappingContext;
@@ -30,8 +29,13 @@ public class PetController extends SecuredCrudController<Pet, Long, PetService> 
 
 
                 .withRoles(MyRoles.OWNER)
-                .withPrincipal(DtoRequestInfo.Principal.OWN)
-                .forEndpoint(getUpdateUrl(), Direction.REQUEST, OwnerUpdatesOwnPetDto.class)
+//                .withPrincipal(DtoRequestInfo.Principal.OWN)
+                .withAllPrincipals()
+                .forEndpoint(getUpdateUrl(), Direction.REQUEST, OwnerUpdatesPetDto.class)
+
+                .withRoles(MyRoles.OWNER)
+//                .withPrincipal(DtoRequestInfo.Principal.OWN)
+                .withAllPrincipals()
                 .forResponse(FullPetDto.class)
 
                 .withRoles(MyRoles.VET)

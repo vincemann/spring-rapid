@@ -14,7 +14,6 @@ import java.time.LocalDate;
 @Getter
 @Setter
 @NoArgsConstructor
-
 public class OwnerCreatesPetDto extends AbstractPetDto {
 
     @NotNull
@@ -35,5 +34,16 @@ public class OwnerCreatesPetDto extends AbstractPetDto {
         super(pet);
         this.name=pet.getName();
         this.ownerId = ownerId;
+    }
+
+    @Override
+    public String toString() {
+        return "OwnerCreatesPetDto{" +
+                "ownerId=" + ownerId +
+                ", name='" + name + '\'' +
+                ", petTypeId=" + getPetTypeId() +
+                ", birthDate=" + getBirthDate() +
+                ", id=" + getId() +
+                '}';
     }
 }
