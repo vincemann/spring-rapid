@@ -36,7 +36,7 @@ public class MyServiceConfig {
     @Bean
     public PetService petService(@Root PetService petService, AclServiceExtension aclServiceExtension) {
         return new ServiceExtensionProxyBuilder<>(petService)
-                .addExtensions(aclServiceExtension)
+                .addExtension(aclServiceExtension)
                 .build();
     }
 
@@ -47,8 +47,9 @@ public class MyServiceConfig {
                                      AclServiceExtension aclServiceExtension,
                                      SaveNameToWordPressDbExtension saveNameToWordPressDbExtension) {
         return new ServiceExtensionProxyBuilder<>(ownerService)
-                .addGenericExtensions(saveNameToWordPressDbExtension, ownerOfTheYearExtension)
-                .addExtensions(aclServiceExtension)
+                .addGenericExtension(saveNameToWordPressDbExtension)
+                .addGenericExtension(ownerOfTheYearExtension)
+                .addExtension(aclServiceExtension)
                 .build();
     }
 }

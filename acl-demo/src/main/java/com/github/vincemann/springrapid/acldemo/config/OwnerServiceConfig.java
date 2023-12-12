@@ -26,7 +26,8 @@ public class OwnerServiceConfig {
                                         UserHasFullPermissionAboutSelfAclExtension<Owner,Long> userHasFullPermissionAboutSelfAclExtension
     ) {
         return new ServiceExtensionProxyBuilder<>(ownerService)
-                .addGenericExtensions(userHasFullPermissionAboutSavedContainedUserAclExtension,userHasFullPermissionAboutSelfAclExtension)
+                .addGenericExtension(userHasFullPermissionAboutSavedContainedUserAclExtension)
+                .addGenericExtension(userHasFullPermissionAboutSelfAclExtension)
                 .build();
     }
 

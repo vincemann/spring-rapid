@@ -37,8 +37,13 @@ public class ServiceExtensionProxyBuilder<S extends CrudService<E,Id>,E extends 
      */
     public ServiceExtensionProxyBuilder<S,E,Id> addGenericExtensions(AbstractServiceExtension<? extends CrudService<? super E,? super Id>,? super ProxyController>... extensions){
         for (AbstractServiceExtension<? extends CrudService<? super E, ? super Id>,? super ProxyController> extension : extensions) {
-            proxy.addExtension(extension);
+            addGenericExtension(extension);
         }
+        return this;
+    }
+
+    public ServiceExtensionProxyBuilder<S,E,Id> addGenericExtension(AbstractServiceExtension<? extends CrudService<? super E,? super Id>,? super ProxyController> extension){
+        proxy.addExtension(extension);
         return this;
     }
 
@@ -51,6 +56,10 @@ public class ServiceExtensionProxyBuilder<S extends CrudService<E,Id>,E extends 
         return this;
     }
 
+    public ServiceExtensionProxyBuilder<S,E,Id> addExtension(AbstractServiceExtension<? super S,? super ProxyController> extension){{
+        proxy.addExtension(extension);
+    }}
+
     public ServiceExtensionProxyBuilder<S,E,Id> ignoreDefaultExtensions(Class<? extends AbstractServiceExtension>... extensions){
         for (Class<? extends AbstractServiceExtension> extension : extensions) {
             proxy.ignoreExtension(extension);
@@ -60,9 +69,9 @@ public class ServiceExtensionProxyBuilder<S extends CrudService<E,Id>,E extends 
 
 
     public ServiceExtensionProxyBuilder<S,E,Id> toggleDefaultExtensions(Boolean enabled){
-        if (enabled==null){
-            enabled=true;
-        }
+//        if (enabled==null){
+//            enabled=true;
+//        }
         proxy.setDefaultExtensionsEnabled(enabled);
         return this;
     }

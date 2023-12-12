@@ -67,7 +67,8 @@ public class RapidUserServiceSecurityAutoConfiguration {
     ) {
         return new ServiceExtensionProxyBuilder<>(service)
                 .toggleDefaultExtensions(false)
-                .addExtensions(aclUserServiceExtension,cleanUpAclExtension)
+                .addExtension(aclUserServiceExtension)
+                .addExtension(cleanUpAclExtension)
                 .build();
     }
 
@@ -81,7 +82,8 @@ public class RapidUserServiceSecurityAutoConfiguration {
     ) {
         return new ServiceExtensionProxyBuilder<>(service)
                 .toggleDefaultExtensions(false)
-                .addExtensions(securityRule, crudAclChecksSecurityExtension)
+                .addExtension(securityRule)
+                .addExtension(crudAclChecksSecurityExtension)
                 .build();
     }
 

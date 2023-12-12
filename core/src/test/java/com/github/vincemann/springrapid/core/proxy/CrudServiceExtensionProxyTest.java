@@ -112,7 +112,9 @@ class CrudServiceExtensionProxyTest {
     void setUp() {
         MockitoAnnotations.initMocks(this);
         proxy = new ServiceExtensionProxyBuilder<>(service)
-                .addExtensions(subExtension,serviceExtension,overlappingExtension)
+                .addExtension(subExtension)
+                .addExtension(serviceExtension)
+                .addExtension(overlappingExtension)
                 .build();
     }
 
