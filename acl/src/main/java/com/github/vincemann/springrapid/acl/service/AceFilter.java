@@ -19,11 +19,18 @@ public class AceFilter {
     private Set<Permission> permissions;
     private String sid;
 
-    @Builder
     public AceFilter(String sid, Permission... permissions) {
         this.permissions = Sets.newHashSet(permissions);
         this.sid = sid;
     }
+
+    @Builder
+    public AceFilter(String sid, Set<Permission> permissions) {
+        this.permissions = permissions;
+        this.sid = sid;
+    }
+
+
 
     private AceFilter(){}
 

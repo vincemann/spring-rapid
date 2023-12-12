@@ -7,6 +7,7 @@ import com.github.vincemann.springrapid.core.model.IdentifiableEntity;
 import org.springframework.security.acls.model.Permission;
 
 import java.io.Serializable;
+import java.util.Collection;
 import java.util.List;
 
 @LogInteraction(Severity.TRACE)
@@ -29,6 +30,8 @@ public interface AclPermissionService extends AopLoggable {
     public void deleteAclOfEntity(Class<? extends IdentifiableEntity> clazz, Serializable id, boolean deleteCascade);
 
     void inheritAces(IdentifiableEntity<?> parent, List<AclInheritanceInfo> infos) throws AclNotFoundException;
+
+    void inheritAces(Collection<? extends IdentifiableEntity<?>> parents, List<AclInheritanceInfo> infos) throws AclNotFoundException;
 
     void updateEntriesInheriting(boolean value, IdentifiableEntity<?> child, IdentifiableEntity<?> parent) throws AclNotFoundException;
 

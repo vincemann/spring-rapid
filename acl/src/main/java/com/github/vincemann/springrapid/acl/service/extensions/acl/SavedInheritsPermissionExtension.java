@@ -8,6 +8,7 @@ import com.github.vincemann.springrapid.core.model.IdentifiableEntity;
 import com.github.vincemann.springrapid.core.proxy.GenericCrudServiceExtension;
 import com.github.vincemann.springrapid.core.service.CrudService;
 import com.github.vincemann.springrapid.core.service.exception.BadEntityException;
+import com.google.common.collect.Sets;
 import org.springframework.security.acls.model.Permission;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -31,7 +32,7 @@ public class SavedInheritsPermissionExtension<E extends IdentifiableEntity<Id> &
         try {
             getAclPermissionService().copyParentAces(saved, saved.getAclParent(),
                     AceFilter.builder()
-                            .permissions(permissionsToInherit)
+                            .permissions(Sets.newHashSet(permissionsToInherit))
                             .build());
         } catch (AclNotFoundException e) {
             throw new BadEntityException("Cant find acl info of parent to inherit from", e);

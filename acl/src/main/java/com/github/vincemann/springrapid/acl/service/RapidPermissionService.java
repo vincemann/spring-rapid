@@ -151,6 +151,13 @@ public class RapidPermissionService implements AclPermissionService {
         }
     }
 
+    @Override
+    public void inheritAces(Collection<? extends IdentifiableEntity<?>>parents, List<AclInheritanceInfo> infos) throws AclNotFoundException {
+        for (IdentifiableEntity<?> parent : parents) {
+            inheritAces(parent,infos);
+        }
+    }
+
     protected Collection<IdentifiableEntity<?>> getAclChildren(IdentifiableEntity<?> parent, AclInheritanceInfo info) {
         try {
             Collection<IdentifiableEntity<?>> children = (Collection<IdentifiableEntity<?>>) info.getTarget().invoke(parent);
