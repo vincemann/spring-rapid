@@ -49,7 +49,7 @@ public class RapidPermissionService implements AclPermissionService {
     @Override
     public void deletePermissionForRoleOverEntity(IdentifiableEntity<?> entity, String role, Permission... permissions) throws AclNotFoundException, AceNotFoundException {
         final Sid sid = new GrantedAuthoritySid(role);
-        deletePermissionForSid(entity,sid,false, permissions);
+        deletePermissionForSid(entity,sid, permissions);
     }
 
 
@@ -74,14 +74,9 @@ public class RapidPermissionService implements AclPermissionService {
     }
 
     @Override
-    public void deletePermissionForUserOverEntity(String user, IdentifiableEntity<?> entity, Permission... permissions) throws AclNotFoundException, AceNotFoundException{
-        deletePermissionForUserOverEntity(user,entity,false,permissions);
-    }
-
-    @Override
-    public void deletePermissionForUserOverEntity(String user, IdentifiableEntity<?> entity, Boolean deleteCascade, Permission... permissions) throws AclNotFoundException, AceNotFoundException {
+    public void deletePermissionForUserOverEntity(String user, IdentifiableEntity<?> entity, Permission... permissions) throws AclNotFoundException, AceNotFoundException {
         final Sid sid = new PrincipalSid(user);
-        deletePermissionForSid(entity,sid,deleteCascade,permissions);
+        deletePermissionForSid(entity,sid,permissions);
     }
 
     @Override
@@ -238,7 +233,7 @@ public class RapidPermissionService implements AclPermissionService {
             log.debug("updated acl: " + updated);
     }
 
-    protected void deletePermissionForSid(IdentifiableEntity<?> targetObj, Sid sid, boolean deleteCascade, Permission... permissions) throws AclNotFoundException, AceNotFoundException {
+    protected void deletePermissionForSid(IdentifiableEntity<?> targetObj, Sid sid, Permission... permissions) throws AclNotFoundException, AceNotFoundException {
         if (log.isDebugEnabled())
             log.debug("sid: "+ sid +" will loose permission: " + Arrays.stream(permissions).map(p -> permissionStringConverter.convert(p)).collect(Collectors.toSet()) +" over entity: " + targetObj);
         final ObjectIdentity oi = new ObjectIdentityImpl(targetObj.getClass(), targetObj.getId());
@@ -299,45 +294,45 @@ public class RapidPermissionService implements AclPermissionService {
     }
 
 
-    protected Set<Integer> findMatchingAceIndices(List<AccessControlEntry> aces,Sid sid, Permission... permissions) throws AceNotFoundException {
-        Set<Integer> indices = new HashSet<>();
-//        int[] index = {-1};
-        int index = 0;
-        // https://github.com/spring-projects/spring-security/issues/5401
-//        Set<AccessControlEntry> result = aces.stream()
-//                .peek(x -> index[0]++)
-//                .filter(accessControlEntry -> {
-//                    return getSidString(accessControlEntry.getSid()).equals(getSidString(sid)) &&
-//                            accessControlEntry.getPermission().equals(permissions[0]);
-//                }).collect(Collectors.toSet());
-        Iterator<AccessControlEntry> iterator = aces.iterator();
-        while (iterator.hasNext()){
-            AccessControlEntry ace = iterator.next();
-            if(getSidString(ace.getSid()).equals(getSidString(sid)) &&
-                    Arrays.stream(permissions).anyMatch(p -> p.equals(ace.getPermission()))){
-                        indices.add(index);
-            }
-            index += 1;
-        }
-//        long matches = aces.stream()
-//                .peek(x -> index[0]++)
-//                .filter(accessControlEntry -> {
-//                    boolean isMatching = getSidString(accessControlEntry.getSid()).equals(getSidString(sid)) &&
-//                            Arrays.stream(permissions).anyMatch(p -> p.equals(accessControlEntry.getPermission()));
-//                    if (isMatching) {
-//                        indices.add(index[0]); // Add the position to the Set
-//                    }
-//                    return isMatching;
-//                }).count();
-//                .collect(Collectors.toSet());
-//        if (result.isEmpty()){
-//            return -1;
-//        }else{
-//            if (log.isDebugEnabled())
-//                log.debug("Aces indices to remove: " + matches);
-//            return position[0];
-        return indices;
-    }
+//    protected Set<Integer> findMatchingAceIndices(List<AccessControlEntry> aces,Sid sid, Permission... permissions) throws AceNotFoundException {
+//        Set<Integer> indices = new HashSet<>();
+////        int[] index = {-1};
+//        int index = 0;
+//        // https://github.com/spring-projects/spring-security/issues/5401
+////        Set<AccessControlEntry> result = aces.stream()
+////                .peek(x -> index[0]++)
+////                .filter(accessControlEntry -> {
+////                    return getSidString(accessControlEntry.getSid()).equals(getSidString(sid)) &&
+////                            accessControlEntry.getPermission().equals(permissions[0]);
+////                }).collect(Collectors.toSet());
+//        Iterator<AccessControlEntry> iterator = aces.iterator();
+//        while (iterator.hasNext()){
+//            AccessControlEntry ace = iterator.next();
+//            if(getSidString(ace.getSid()).equals(getSidString(sid)) &&
+//                    Arrays.stream(permissions).anyMatch(p -> p.equals(ace.getPermission()))){
+//                        indices.add(index);
+//            }
+//            index += 1;
+//        }
+////        long matches = aces.stream()
+////                .peek(x -> index[0]++)
+////                .filter(accessControlEntry -> {
+////                    boolean isMatching = getSidString(accessControlEntry.getSid()).equals(getSidString(sid)) &&
+////                            Arrays.stream(permissions).anyMatch(p -> p.equals(accessControlEntry.getPermission()));
+////                    if (isMatching) {
+////                        indices.add(index[0]); // Add the position to the Set
+////                    }
+////                    return isMatching;
+////                }).count();
+////                .collect(Collectors.toSet());
+////        if (result.isEmpty()){
+////            return -1;
+////        }else{
+////            if (log.isDebugEnabled())
+////                log.debug("Aces indices to remove: " + matches);
+////            return position[0];
+//        return indices;
+//    }
 
 
     @Autowired
