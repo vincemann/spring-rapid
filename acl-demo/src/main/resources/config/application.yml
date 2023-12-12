@@ -6,9 +6,6 @@ spring:
   jpa:
     hibernate:
       ddl-auto: create
-      use-new-id-generator-mappings: false
-    properties:
-      hibernate.jdbc.lob.non_contextual_creation: true
 
 #   in order to use this demo project with mysql database:
 #   uncomment lines below, and comment out h2 related lines below
@@ -29,22 +26,13 @@ spring:
   h2.console.enabled: true
   h2.console.path: /h2-console
 
-  # JSON serialization settings
-  jackson:
-    default-property-inclusion: NON_NULL
-
-    serialization:
-      write-null-map-values: false
-
-    deserialization:
-      accept-single-value-as-array: true
-
-  # https://github.com/spring-projects/spring-boot/wiki/Spring-Boot-2.1-Release-Notes#bean-overriding
-  main.allow-bean-definition-overriding: true
-
-server.servlet.session.persistent: false
-
 rapid-auth:
+
+  # ADMIN users
+  admins:
+    - contactInformation: admin@example.com
+      password: AdminPassword123!
+
   jwt:
       # An aes-128-cbc key generated at https://asecuritysite.com/encryption/keygen (take the "key" field)
     secret: 841D8A6C80CBA4FCAD32D5367C18C53B

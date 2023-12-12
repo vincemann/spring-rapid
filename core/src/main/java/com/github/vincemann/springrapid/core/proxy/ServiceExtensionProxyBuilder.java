@@ -56,9 +56,10 @@ public class ServiceExtensionProxyBuilder<S extends CrudService<E,Id>,E extends 
         return this;
     }
 
-    public ServiceExtensionProxyBuilder<S,E,Id> addExtension(AbstractServiceExtension<? super S,? super ProxyController> extension){{
+    public ServiceExtensionProxyBuilder<S,E,Id> addExtension(AbstractServiceExtension<? super S,? super ProxyController> extension){
         proxy.addExtension(extension);
-    }}
+        return this;
+    }
 
     public ServiceExtensionProxyBuilder<S,E,Id> ignoreDefaultExtensions(Class<? extends AbstractServiceExtension>... extensions){
         for (Class<? extends AbstractServiceExtension> extension : extensions) {

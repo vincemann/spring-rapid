@@ -29,7 +29,7 @@ public class SavedInheritsPermissionExtension<E extends IdentifiableEntity<Id> &
     public E save(E entity) throws BadEntityException {
         E saved = getNext().save(entity);
         try {
-            getAclPermissionService().inheritAces(saved, saved.getAclParent(),
+            getAclPermissionService().copyParentAces(saved, saved.getAclParent(),
                     AceFilter.builder()
                             .permissions(permissionsToInherit)
                             .build());
