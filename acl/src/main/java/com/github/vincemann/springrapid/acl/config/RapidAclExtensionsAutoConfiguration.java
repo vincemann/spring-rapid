@@ -37,7 +37,8 @@ public class RapidAclExtensionsAutoConfiguration {
     @DefaultSecurityExtension
     @Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
     @Bean
-    @ConditionalOnProperty(name = "rapid-acl.defaultAclChecks", havingValue = "true", matchIfMissing = true)
+//    @ConditionalOnProperty(name = "rapid-acl.defaultAclChecks", havingValue = "true", matchIfMissing = true)
+    @ConditionalOnCustomProperties(properties = {"rapid-acl.defaultSecurityExtensions", "rapid-acl.defaultAclChecks"})
     public CrudAclChecksSecurityExtension crudAclChecksSecurityExtension(){
         return new CrudAclChecksSecurityExtension();
     }
@@ -61,7 +62,8 @@ public class RapidAclExtensionsAutoConfiguration {
     @Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
     @DefaultAclExtension
     @Bean
-    @ConditionalOnProperty(name = "rapid-acl.adminFullAccess", havingValue = "true", matchIfMissing = true)
+//    @ConditionalOnProperty(name = "rapid-acl.adminFullAccess", havingValue = "true", matchIfMissing = true)
+    @ConditionalOnCustomProperties(properties = {"rapid-acl.defaultAclExtensions", "rapid-acl.adminFullAccess"})
     public AdminHasFullPermissionAboutSavedAclExtension adminHasFullPermissionAboutSavedAclExtension(){
         return new AdminHasFullPermissionAboutSavedAclExtension();
     }
@@ -77,7 +79,8 @@ public class RapidAclExtensionsAutoConfiguration {
     @ConditionalOnMissingBean(name = "cleanUpAclExtension")
     @Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
     @DefaultAclExtension
-    @ConditionalOnProperty(name = "rapid-acl.cleanupAcl", havingValue = "true", matchIfMissing = true)
+//    @ConditionalOnProperty(name = "rapid-acl.cleanupAcl", havingValue = "true", matchIfMissing = true)
+    @ConditionalOnCustomProperties(properties = {"rapid-acl.defaultAclExtensions", "rapid-acl.cleanupAcl"})
     public CleanUpAclExtension cleanUpAclExtension(){
         return new CleanUpAclExtension();
     }

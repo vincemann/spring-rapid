@@ -10,23 +10,19 @@ public class CustomPropertyCondition implements Condition {
     @Override
     public boolean matches(ConditionContext context, AnnotatedTypeMetadata metadata) {
         MultiValueMap<String, Object> attributes = metadata.getAllAnnotationAttributes(ConditionalOnCustomProperties.class.getName());
-
         if (attributes != null) {
             String[] propertyNames = (String[]) attributes.getFirst("properties");
-            boolean allMatch = true;
 
             for (String propertyName : propertyNames) {
                 String propertyValue = context.getEnvironment().getProperty(propertyName);
 
-                if (propertyValue == null || !propertyValue.equals("true")) {
-                    allMatch = false;
-                    break;
+                // Return true if the property is missing or its value is "true"
+                if (propertyValue != null && propertyValue.equals("false")) {
+                    return false;
                 }
             }
-
-            return allMatch;
         }
 
-        return false;
+        return true;
     }
 }
