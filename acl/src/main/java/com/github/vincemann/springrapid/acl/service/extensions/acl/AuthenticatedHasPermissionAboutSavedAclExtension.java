@@ -12,17 +12,17 @@ import org.springframework.security.acls.model.Permission;
 public class AuthenticatedHasPermissionAboutSavedAclExtension extends AbstractAclExtension<CrudService>
         implements CrudServiceExtension<CrudService> {
 
-    private Permission permission;
+    private Permission[] permissions;
 
-    public AuthenticatedHasPermissionAboutSavedAclExtension(Permission permission) {
-        this.permission = permission;
+    public AuthenticatedHasPermissionAboutSavedAclExtension(Permission... permissions) {
+        this.permissions= permissions;
     }
 
     @LogInteraction
     @Override
     public IdentifiableEntity save(IdentifiableEntity entity) throws BadEntityException {
         IdentifiableEntity saved = getNext().save(entity);
-        aclPermissionService.savePermissionForAuthenticatedOverEntity(saved, permission);
+        aclPermissionService.savePermissionForAuthenticatedOverEntity(saved, permissions);
         return saved;
     }
 }
