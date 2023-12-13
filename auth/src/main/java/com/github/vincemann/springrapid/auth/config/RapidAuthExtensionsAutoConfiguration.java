@@ -11,10 +11,10 @@ import org.springframework.context.annotation.Scope;
 public class RapidAuthExtensionsAutoConfiguration {
 
 
-    @ConditionalOnMissingBean(UserGainsAdminPermissionAboutSelfAclExtension.class)
+    @ConditionalOnMissingBean(name = "userGainsAdminPermissionAboutSelfAclExtension")
     @Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
     @Bean
-    public UserGainsAdminPermissionAboutSelfAclExtension userHasFullPermissionAboutSelfAclExtension(){
+    public UserGainsAdminPermissionAboutSelfAclExtension userGainsAdminPermissionAboutSelfAclExtension(){
         return new UserGainsAdminPermissionAboutSelfAclExtension();
     }
 }

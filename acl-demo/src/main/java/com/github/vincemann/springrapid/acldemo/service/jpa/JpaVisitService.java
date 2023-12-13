@@ -6,15 +6,13 @@ import com.github.vincemann.springrapid.acl.service.AceNotFoundException;
 import com.github.vincemann.springrapid.acl.service.AclNotFoundException;
 import com.github.vincemann.springrapid.acl.service.AclPermissionService;
 import com.github.vincemann.springrapid.acldemo.model.Owner;
-import com.github.vincemann.springrapid.acldemo.service.extensions.NeedCreatePermissionForSubscribingSecurityExtension;
-import com.github.vincemann.springrapid.acldemo.service.extensions.VetCanOnlySaveOwnVisitsSecurityExtension;
+import com.github.vincemann.springrapid.acldemo.repository.VisitRepository;
 import com.github.vincemann.springrapid.core.proxy.annotation.CreateProxy;
 import com.github.vincemann.springrapid.core.proxy.annotation.DefineProxy;
 import com.github.vincemann.springrapid.core.service.JPACrudService;
 import com.github.vincemann.springrapid.core.service.exception.BadEntityException;
 import com.github.vincemann.springrapid.core.slicing.ServiceComponent;
 import com.github.vincemann.springrapid.acldemo.model.Visit;
-import com.github.vincemann.springrapid.acldemo.repository.VisitRepository;
 import com.github.vincemann.springrapid.acldemo.service.VisitService;
 import org.springframework.aop.TargetClassAware;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,7 +24,7 @@ import org.springframework.stereotype.Service;
 
 
 @DefineProxy(name = "acl", extensions = {
-        "authenticatedGainsPermissionAboutSavedAclExtension",
+        "authenticatedGainsAdminPermissionAboutSavedAclExtension",
         "vetsGainReadPermissionAboutSavedAclExtension",
         "ownerGainsReadPermissionForSavedVisitsAclExtension"
 })

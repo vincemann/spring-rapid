@@ -26,8 +26,8 @@ public class RapidAclExtensionsAutoConfiguration {
 
     @Bean
     @Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
-    @ConditionalOnMissingBean(name = "ownerHasFullPermissionAboutSavedAclExtension")
-    public OwnerGainsAdminPermissionAboutSavedAclExtension ownerHasFullPermissionAboutSavedAclExtension(){
+    @ConditionalOnMissingBean(name = "ownerGainsAdminPermissionAboutSavedAclExtension")
+    public OwnerGainsAdminPermissionAboutSavedAclExtension ownerGainsAdminPermissionAboutSavedAclExtension(){
         return new OwnerGainsAdminPermissionAboutSavedAclExtension();
     }
 
@@ -49,27 +49,27 @@ public class RapidAclExtensionsAutoConfiguration {
         return new NeedCreatePermissionOnParentForSaveExtension();
     }
 
-    @ConditionalOnMissingBean(name = "authenticatedHasFullPermissionAboutSavedAclExtension")
+    @ConditionalOnMissingBean(name = "authenticatedGainsAdminPermissionAboutSavedAclExtension")
     @Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
     @Bean
-    public AuthenticatedGainsAdminPermissionAboutSavedAclExtension authenticatedHasFullPermissionAboutSavedAclExtension(){
+    public AuthenticatedGainsAdminPermissionAboutSavedAclExtension authenticatedGainsAdminPermissionAboutSavedAclExtension(){
         return new AuthenticatedGainsAdminPermissionAboutSavedAclExtension();
     }
 
-    @ConditionalOnMissingBean(name = "adminHasFullPermissionAboutSavedAclExtension")
+    @ConditionalOnMissingBean(name = "adminGainsAdminPermissionAboutSavedAclExtension")
     @Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
     @DefaultAclExtension
     @Bean
 //    @ConditionalOnProperty(name = "rapid-acl.adminFullAccess", havingValue = "true", matchIfMissing = true)
     @ConditionalOnCustomProperties(properties = {"rapid-acl.defaultAclExtensions", "rapid-acl.adminFullAccess"})
-    public AdminGainsAdminPermissionAboutSavedAclExtension adminHasFullPermissionAboutSavedAclExtension(){
+    public AdminGainsAdminPermissionAboutSavedAclExtension adminGainsAdminPermissionAboutSavedAclExtension(){
         return new AdminGainsAdminPermissionAboutSavedAclExtension();
     }
 
     @Bean
-    @ConditionalOnMissingBean(name = "savedInheritsParentsAclExtension")
+    @ConditionalOnMissingBean(name = "savedInheritsParentsPermissionsAclExtension")
     @Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
-    public SavedInheritsParentsPermissionsAclExtension savedInheritsParentsAclExtension(){
+    public SavedInheritsParentsPermissionsAclExtension savedInheritsParentsPermissionsAclExtension(){
         return new SavedInheritsParentsPermissionsAclExtension();
     }
 

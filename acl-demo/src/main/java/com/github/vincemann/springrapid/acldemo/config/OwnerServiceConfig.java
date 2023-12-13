@@ -12,7 +12,7 @@ import com.github.vincemann.springrapid.core.slicing.ServiceConfig;
 import org.springframework.context.annotation.Bean;
 
 /**
- * Demonstrates First style for adding extensions and creation multiple service versions/proxies.
+ * Demonstrates First style for adding extensions and creating multiple service versions/proxies.
  * For Annotation-based approach see i.E. {@link com.github.vincemann.springrapid.acldemo.service.jpa.JpaVetService}.
  */
 @ServiceConfig

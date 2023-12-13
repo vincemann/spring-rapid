@@ -29,7 +29,6 @@ import org.junit.jupiter.api.BeforeEach;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers;
-import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.web.servlet.setup.DefaultMockMvcBuilder;
 
 import java.time.LocalDate;
