@@ -6,10 +6,10 @@ import org.springframework.security.acls.domain.BasePermission;
 
 import java.io.Serializable;
 
-public class UserHasFullPermissionAboutSelfAclExtension
+public class UserGainsAdminPermissionAboutSelfAclExtension
         <E extends IdentifiableEntity<Id> & AuthenticatingEntity<Id>,Id extends Serializable>
-        extends UserHasPermissionAboutSelfAclExtension<E,Id> {
-    public UserHasFullPermissionAboutSelfAclExtension() {
+        extends UserGainsPermissionAboutSelfAclExtension<E,Id> {
+    public UserGainsAdminPermissionAboutSelfAclExtension() {
         super(BasePermission.ADMINISTRATION);
     }
 

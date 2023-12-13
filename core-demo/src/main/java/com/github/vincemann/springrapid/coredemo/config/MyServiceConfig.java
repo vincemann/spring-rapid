@@ -5,7 +5,7 @@ import com.github.vincemann.springrapid.core.slicing.ServiceConfig;
 import com.github.vincemann.springrapid.coredemo.service.OwnerService;
 import com.github.vincemann.springrapid.coredemo.service.PetService;
 import com.github.vincemann.springrapid.coredemo.service.Root;
-import com.github.vincemann.springrapid.coredemo.service.extensions.AclServiceExtension;
+import com.github.vincemann.springrapid.coredemo.service.extensions.ExampleAclExtension;
 import com.github.vincemann.springrapid.coredemo.service.extensions.OwnerOfTheYearExtension;
 import com.github.vincemann.springrapid.coredemo.service.extensions.SaveNameToWordPressDbExtension;
 import org.springframework.context.annotation.Bean;
@@ -34,7 +34,7 @@ public class MyServiceConfig {
 
     @Primary
     @Bean
-    public PetService petService(@Root PetService petService, AclServiceExtension aclServiceExtension) {
+    public PetService petService(@Root PetService petService, ExampleAclExtension aclServiceExtension) {
         return new ServiceExtensionProxyBuilder<>(petService)
                 .addExtension(aclServiceExtension)
                 .build();
@@ -44,7 +44,7 @@ public class MyServiceConfig {
     @Bean
     public OwnerService ownerService(@Root OwnerService ownerService,
                                      OwnerOfTheYearExtension ownerOfTheYearExtension,
-                                     AclServiceExtension aclServiceExtension,
+                                     ExampleAclExtension aclServiceExtension,
                                      SaveNameToWordPressDbExtension saveNameToWordPressDbExtension) {
         return new ServiceExtensionProxyBuilder<>(ownerService)
                 .addGenericExtension(saveNameToWordPressDbExtension)

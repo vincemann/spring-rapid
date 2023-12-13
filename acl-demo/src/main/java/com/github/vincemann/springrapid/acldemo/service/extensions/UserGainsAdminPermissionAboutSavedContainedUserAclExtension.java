@@ -17,7 +17,7 @@ import org.springframework.transaction.annotation.Transactional;
  */
 @ServiceComponent
 @Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
-public class UserHasFullPermissionAboutSavedContainedUserAclExtension
+public class UserGainsAdminPermissionAboutSavedContainedUserAclExtension
         extends AbstractAclExtension<CrudService<UserAwareEntity,Long>>
                 implements GenericCrudServiceExtension<CrudService<UserAwareEntity,Long>, UserAwareEntity,Long> {
 

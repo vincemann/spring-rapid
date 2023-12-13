@@ -13,7 +13,7 @@ import org.springframework.security.acls.domain.BasePermission;
 
 @ServiceComponent
 @Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
-public class NeedCreatePermissionForOwnerSubscriptionsSecurityExtension extends AbstractSecurityExtension<VisitService>
+public class NeedCreatePermissionForSubscribingSecurityExtension extends AbstractSecurityExtension<VisitService>
         implements GenericCrudServiceExtension<VisitService, Visit,Long>, VisitService
 {
     @Override

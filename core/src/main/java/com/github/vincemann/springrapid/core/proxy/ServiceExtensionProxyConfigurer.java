@@ -1,6 +1,5 @@
-package com.github.vincemann.springrapid.auth.service;
+package com.github.vincemann.springrapid.core.proxy;
 
-import com.github.vincemann.springrapid.core.proxy.ServiceExtensionProxy;
 import com.github.vincemann.springrapid.core.service.CrudService;
 import com.github.vincemann.springrapid.core.util.ProxyUtils;
 import org.springframework.beans.factory.InitializingBean;
@@ -11,7 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
  * Used primarily to add more plugins.
  *
  */
-public abstract class ServiceProxyConfigurer<S extends CrudService> implements InitializingBean {
+public abstract class ServiceExtensionProxyConfigurer<S extends CrudService> implements InitializingBean {
 
     S service;
 

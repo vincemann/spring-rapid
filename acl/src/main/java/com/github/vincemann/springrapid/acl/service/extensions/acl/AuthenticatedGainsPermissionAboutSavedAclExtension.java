@@ -5,29 +5,24 @@ import com.github.vincemann.springrapid.core.model.IdentifiableEntity;
 import com.github.vincemann.springrapid.core.proxy.CrudServiceExtension;
 import com.github.vincemann.springrapid.core.service.CrudService;
 import com.github.vincemann.springrapid.core.service.exception.BadEntityException;
+import com.github.vincemann.springrapid.core.slicing.ServiceComponent;
 import org.springframework.security.acls.model.Permission;
 
-
-public class RoleHasPermissionAboutSavedAclExtension extends AbstractAclExtension<CrudService>
+@ServiceComponent
+public class AuthenticatedGainsPermissionAboutSavedAclExtension extends AbstractAclExtension<CrudService>
         implements CrudServiceExtension<CrudService> {
 
-
-    private String role;
     private Permission[] permissions;
 
-    public RoleHasPermissionAboutSavedAclExtension(String role, Permission... permissions) {
-        this.role = role;
-        this.permissions = permissions;
+    public AuthenticatedGainsPermissionAboutSavedAclExtension(Permission... permissions) {
+        this.permissions= permissions;
     }
 
     @LogInteraction
     @Override
     public IdentifiableEntity save(IdentifiableEntity entity) throws BadEntityException {
         IdentifiableEntity saved = getNext().save(entity);
-        for (Permission permission : permissions) {
-            aclPermissionService.savePermissionForRoleOverEntity(saved,role, permission);
-        }
+        aclPermissionService.savePermissionForAuthenticatedOverEntity(saved, permissions);
         return saved;
     }
-
 }

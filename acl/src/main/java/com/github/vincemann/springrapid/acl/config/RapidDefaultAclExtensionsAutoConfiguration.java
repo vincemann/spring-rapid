@@ -3,12 +3,8 @@ package com.github.vincemann.springrapid.acl.config;
 
 import com.github.vincemann.springrapid.acl.AclProperties;
 import com.github.vincemann.springrapid.acl.DefaultAclExtension;
-import com.github.vincemann.springrapid.acl.DefaultSecurityExtension;
 import com.github.vincemann.springrapid.acl.proxy.Acl;
-import com.github.vincemann.springrapid.acl.service.extensions.acl.AdminHasFullPermissionAboutSavedAclExtension;
-import com.github.vincemann.springrapid.acl.service.extensions.acl.CleanUpAclExtension;
 import com.github.vincemann.springrapid.core.proxy.AbstractServiceExtension;
-import com.github.vincemann.springrapid.core.proxy.ProxyController;
 import com.github.vincemann.springrapid.core.proxy.ServiceExtensionProxy;
 import com.github.vincemann.springrapid.core.service.CrudService;
 import com.github.vincemann.springrapid.core.slicing.ServiceConfig;

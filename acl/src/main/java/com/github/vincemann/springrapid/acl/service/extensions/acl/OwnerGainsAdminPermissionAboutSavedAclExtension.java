@@ -4,9 +4,10 @@ import com.github.vincemann.springrapid.core.slicing.ServiceComponent;
 import org.springframework.security.acls.domain.BasePermission;
 
 @ServiceComponent
-public class AuthenticatedHasFullPermissionAboutSavedAclExtension extends AuthenticatedHasPermissionAboutSavedAclExtension {
-
-    public AuthenticatedHasFullPermissionAboutSavedAclExtension() {
+public class OwnerGainsAdminPermissionAboutSavedAclExtension extends OwnerGainsPermissionAboutSavedAclExtension {
+    public OwnerGainsAdminPermissionAboutSavedAclExtension() {
         super(BasePermission.ADMINISTRATION);
     }
+
+
 }

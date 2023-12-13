@@ -14,8 +14,10 @@ public @interface DefineProxy {
 
     /**
      * bean names
+     * use either this or {@link this#extensionClasses()}, not both
      */
     String[] extensions() default {};
+    Class[] extensionClasses() default {};
     boolean defaultExtensionsEnabled() default true;
 
     /**

@@ -6,6 +6,8 @@ import com.github.vincemann.springrapid.acl.service.AceNotFoundException;
 import com.github.vincemann.springrapid.acl.service.AclNotFoundException;
 import com.github.vincemann.springrapid.acl.service.AclPermissionService;
 import com.github.vincemann.springrapid.acldemo.model.Owner;
+import com.github.vincemann.springrapid.acldemo.service.extensions.NeedCreatePermissionForSubscribingSecurityExtension;
+import com.github.vincemann.springrapid.acldemo.service.extensions.VetCanOnlySaveOwnVisitsSecurityExtension;
 import com.github.vincemann.springrapid.core.proxy.annotation.CreateProxy;
 import com.github.vincemann.springrapid.core.proxy.annotation.DefineProxy;
 import com.github.vincemann.springrapid.core.service.JPACrudService;
@@ -24,14 +26,14 @@ import org.springframework.stereotype.Service;
 
 
 @DefineProxy(name = "acl", extensions = {
-        "authenticatedHasFullPermissionAboutSavedAclExtension",
-        "vetsHaveReadPermissionAboutSavedAclExtension",
-        "ownerCanReadHisVisitsAclExtension"
+        "authenticatedGainsPermissionAboutSavedAclExtension",
+        "vetsGainReadPermissionAboutSavedAclExtension",
+        "ownerGainsReadPermissionForSavedVisitsAclExtension"
 })
 @DefineProxy(name = "secured", extensions = {
         "onlyVetAndAdminCanCreateSecurityExtension",
         "vetCanOnlySaveOwnVisitsSecurityExtension",
-        "needCreatePermissionForOwnerSubscriptionsSecurityExtension"
+        "needCreatePermissionForSubscribingSecurityExtension"
 })
 @CreateProxy(qualifiers = Acl.class,proxies = "acl")
 @CreateProxy(qualifiers = Secured.class,proxies = {"acl","secured"})

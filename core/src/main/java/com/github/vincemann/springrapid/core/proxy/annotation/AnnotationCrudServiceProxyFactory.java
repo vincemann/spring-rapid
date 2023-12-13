@@ -88,12 +88,11 @@ public class AnnotationCrudServiceProxyFactory implements BeanPostProcessor, App
 //                        internalProxy = createdInternalProxies.get(beanName);
                         internalProxy = createdInternalProxies.get(proxyName);
                         boolean defaultEnabled = proxyDefinition.get().defaultExtensionsEnabled();
+                        AbstractServiceExtension[] extensions = resolveExtensions(proxyDefinition.get())
+                                .toArray(new AbstractServiceExtension[0]);
                         if (internalProxy == null) {
                             internalProxy = new ServiceExtensionProxyBuilder<>(lastProxiedBean)
-                                    .addGenericExtensions(
-                                            resolveExtensions(proxyDefinition.get().extensions())
-                                                    .toArray(new AbstractServiceExtension[0])
-                                    )
+                                    .addGenericExtensions(extensions)
                                     .toggleDefaultExtensions(defaultEnabled)
                                     .ignoreDefaultExtensions(proxyDefinition.get().ignoredExtensions())
                                     .build();
@@ -159,6 +158,47 @@ public class AnnotationCrudServiceProxyFactory implements BeanPostProcessor, App
             return prefix + beanType.getSimpleName();
         }
         return name;
+    }
+
+    protected List<AbstractServiceExtension> resolveExtensions(DefineProxy proxyDefinition){
+        String[] beanNameExtensions = proxyDefinition.extensions();
+        Class[] classExtensions = proxyDefinition.extensionClasses();
+        if (beanNameExtensions.length > 0 && classExtensions.length > 0)
+            throw new IllegalArgumentException("Only use either 'extensions' or 'extensionClasses' in Annotation Proxy");
+        if (classExtensions.length > 0){
+            return resolveExtensions(classExtensions);
+        }else if (beanNameExtensions.length > 0){
+            return resolveExtensions(beanNameExtensions);
+        }else {
+            return new ArrayList<>();
+        }
+    }
+
+    protected List<AbstractServiceExtension> resolveExtensions(Class[] classExtensions) {
+        List<AbstractServiceExtension> extensions = new ArrayList<>();
+        ArrayList<Class> extensionStrings = Lists.newArrayList(classExtensions);
+        for (Class extensionClass : extensionStrings) {
+            Object extension = null;
+//            if (extensionString.endsWith(".class")) {
+//                try {
+//                    Class<?> extensionType = Class.forName(extensionString);
+//                    extension = beanFactory.getBean(extensionType);
+//                } catch (ClassNotFoundException e) {
+//                    throw new IllegalArgumentException("Could not find matching class for extension: " + extensionString, e);
+//                }
+//            } else {
+            extension = beanFactory.getBean(extensionClass);
+//            }
+            if (!(extension instanceof AbstractServiceExtension)) {
+                throw new IllegalArgumentException("Given extension bean: " + extensionClass.getSimpleName() + " is not of Type AbstractServiceExtension");
+            }
+            AbstractServiceExtension serviceExtension = (AbstractServiceExtension) extension;
+            beanFactory.autowireBean(extension);
+            //beanFactory.autowireBeanProperties();
+            extensions.add(serviceExtension);
+
+        }
+        return extensions;
     }
 
     protected List<AbstractServiceExtension> resolveExtensions(String[] extensionStringArr) {

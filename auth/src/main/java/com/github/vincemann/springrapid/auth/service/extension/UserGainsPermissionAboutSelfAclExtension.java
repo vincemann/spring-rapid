@@ -10,14 +10,14 @@ import org.springframework.security.acls.model.Permission;
 
 import java.io.Serializable;
 
-public class UserHasPermissionAboutSelfAclExtension
+public class UserGainsPermissionAboutSelfAclExtension
         <E extends IdentifiableEntity<Id> & AuthenticatingEntity<Id>,Id extends Serializable>
         extends AbstractAclExtension<CrudService<E,Id>>
         implements GenericCrudServiceExtension<CrudService<E,Id>,E,Id>
 {
     private Permission permission;
 
-    public UserHasPermissionAboutSelfAclExtension(Permission permission) {
+    public UserGainsPermissionAboutSelfAclExtension(Permission permission) {
         this.permission = permission;
     }
 

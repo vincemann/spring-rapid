@@ -19,7 +19,7 @@ import java.io.Serializable;
 @Slf4j
 @ServiceComponent
 @Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
-public class AclServiceExtension
+public class ExampleAclExtension
         extends BasicServiceExtension<CrudService>
             implements CrudServiceExtension<CrudService> {
 

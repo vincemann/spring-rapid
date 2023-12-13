@@ -15,7 +15,7 @@ import org.springframework.security.acls.domain.BasePermission;
 
 @ServiceComponent
 @Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
-public class OwnerCanReadHisVisitsAclExtension extends AbstractAclExtension<VisitService>
+public class OwnerGainsReadPermissionForSavedVisitsAclExtension extends AbstractAclExtension<VisitService>
         implements GenericCrudServiceExtension<VisitService, Visit,Long>
 {
     @Override

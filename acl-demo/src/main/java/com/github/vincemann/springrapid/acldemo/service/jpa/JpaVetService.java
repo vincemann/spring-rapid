@@ -6,6 +6,8 @@ import com.github.vincemann.springrapid.acl.proxy.Secured;
 
 import com.github.vincemann.springrapid.acldemo.auth.MyRoles;
 import com.github.vincemann.springrapid.acldemo.model.User;
+import com.github.vincemann.springrapid.acldemo.service.extensions.UserGainsAdminPermissionAboutSavedContainedUserAclExtension;
+import com.github.vincemann.springrapid.auth.service.extension.UserGainsAdminPermissionAboutSelfAclExtension;
 import com.github.vincemann.springrapid.core.proxy.annotation.CreateProxy;
 import com.github.vincemann.springrapid.core.proxy.annotation.DefineProxy;
 import com.github.vincemann.springrapid.core.service.JPACrudService;
@@ -25,9 +27,9 @@ import java.util.Optional;
 
 
 
-@DefineProxy(name = "acl", extensions = {
-        "userHasFullPermissionAboutSelfAclExtension",
-        "userHasFullPermissionAboutSavedContainedUserAclExtension"
+@DefineProxy(name = "acl", extensionClasses = {
+        UserGainsAdminPermissionAboutSelfAclExtension.class,
+        UserGainsAdminPermissionAboutSavedContainedUserAclExtension.class
 })
 @DefineProxy(name = "secured")
 @CreateProxy(qualifiers = Acl.class,proxies = "acl")
