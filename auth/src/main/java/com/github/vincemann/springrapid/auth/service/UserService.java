@@ -5,6 +5,7 @@ import com.github.vincemann.aoplog.api.AopLoggable;
 import com.github.vincemann.aoplog.api.annotation.LogInteraction;
 import com.github.vincemann.springrapid.auth.model.AbstractUser;
 import com.github.vincemann.springrapid.auth.AuthProperties;
+import com.github.vincemann.springrapid.auth.service.token.BadTokenException;
 import com.github.vincemann.springrapid.core.service.CrudService;
 import com.github.vincemann.springrapid.core.service.exception.BadEntityException;
 import com.github.vincemann.springrapid.core.service.exception.EntityNotFoundException;
@@ -36,7 +37,8 @@ public interface UserService<U extends AbstractUser<ID>, ID extends Serializable
 
     // get user from contactInformation from code
     public U verifyUser(/*U user,*/@NotBlank String verificationCode) throws EntityNotFoundException,  BadEntityException;
-    public void forgotPassword( @NotBlank String contactInformation) throws EntityNotFoundException;
+
+    public void forgotPassword(@NotBlank String contactInformation) throws EntityNotFoundException;
 
     // use newPassword here so https encrypts new password which is not possible via url param
     // target contactInformation gets extracted from code

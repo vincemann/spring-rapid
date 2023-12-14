@@ -21,7 +21,6 @@ import com.github.vincemann.springrapid.core.service.password.RapidPasswordEncod
 import com.github.vincemann.springrapid.core.util.Message;
 import com.github.vincemann.springrapid.core.util.VerifyAccess;
 import com.github.vincemann.springrapid.core.util.VerifyEntity;
-import com.google.common.collect.Sets;
 import com.nimbusds.jwt.JWTClaimsSet;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;

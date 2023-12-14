@@ -69,6 +69,10 @@ public class RapidDefaultSecurityExtensionAutoConfiguration {
             List<AbstractServiceExtension> defaultSecurityExtensions = createDefaultSecurityExtensions(defaultSecurityExtensionsOptional);
             log.debug("Adding Default security extensions for proxy: " + proxy);
             for (AbstractServiceExtension extension : defaultSecurityExtensions) {
+                if (proxy.isIgnored(extension.getClass())){
+                    log.info("ignoring default extension: " + extension.getClass().getSimpleName());
+                    continue;
+                }
                 proxy.addExtension(extension);
             }
         }

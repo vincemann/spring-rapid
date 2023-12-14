@@ -71,16 +71,16 @@ public class AceFilter {
             if (aceSid instanceof GrantedAuthoritySid)
                 return false;
         }
-        if (!this.sids.isEmpty()){
-            String aceSidString = getSidString(aceSid);
+        String aceSidString = getSidString(aceSid);
+        if (!this.ignoredSids.isEmpty()){
             boolean ignored = this.ignoredSids.contains(aceSidString);
+            if (ignored)
+                return false;
+        }
+        if (!this.sids.isEmpty()){
             boolean sidMatches = this.sids.contains(aceSidString);
             if (!sidMatches)
                 return false;
-            else{
-                if (ignored)
-                    return false;
-            }
         }
         if (!this.permissions.isEmpty())
             return this.permissions.contains(ace.getPermission());

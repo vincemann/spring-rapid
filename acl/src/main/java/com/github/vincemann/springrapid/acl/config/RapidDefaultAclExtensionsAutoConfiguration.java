@@ -49,6 +49,10 @@ public class RapidDefaultAclExtensionsAutoConfiguration {
             List<AbstractServiceExtension> defaultAclExtensions = createDefaultAclExtensions(defaultAclExtensionsOptional);
             log.debug("Adding Default acl extensions for proxy: " + proxy);
             for (AbstractServiceExtension defaultAclExtension : defaultAclExtensions) {
+                if (proxy.isIgnored(defaultAclExtension.getClass())){
+                    log.info("ignoring default extension: " + defaultAclExtension.getClass().getSimpleName());
+                    continue;
+                }
                 proxy.addExtension(defaultAclExtension);
             }
         }

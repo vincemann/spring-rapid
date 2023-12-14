@@ -267,7 +267,10 @@ public class RapidPermissionService implements AclPermissionService {
             log.debug("acl of entity before adding: " + acl);
 
         for (Permission permission : permissions) {
-            acl.insertAce(acl.getEntries().size(), permission, sid, true);
+            if (AclUtils.isAcePresent(permission,sid,acl))
+                log.warn("ace is already present in acl: " + sid + " - " + permission + ". Skipping");
+            else
+                acl.insertAce(acl.getEntries().size(), permission, sid, true);
         }
         MutableAcl updated = aclService.updateAcl(acl);
 
@@ -295,20 +298,20 @@ public class RapidPermissionService implements AclPermissionService {
 
         // todo reduce overhead when updating to newer spring version
         Iterator<AccessControlEntry> aceIterator = aces.iterator();
-        boolean removed = false;
+        int removed = 0;
         int index = 0;
         while (aceIterator.hasNext()){
             AccessControlEntry ace = aceIterator.next();
-            if(getSidString(ace.getSid()).equals(getSidString(sid)) &&
+            if(ace.getSid().equals(sid) &&
                     Arrays.stream(permissions).anyMatch(p -> p.equals(ace.getPermission()))){
 //                aceIterator.remove();
                 acl.deleteAce(index);
-                removed = true;
+                removed++;
             }
             index++;
         }
-        if (!removed && !ignoreNotFound)
-            throw new AceNotFoundException("Cant remove permission for sid: " + sid + " on target: " + oi + ", bc no matching ace found");
+        if (removed != permissions.length && !ignoreNotFound)
+            throw new AceNotFoundException("Cant remove permissions " + Arrays.toString(permissions) + " for sid: " + sid + " on target: " + oi + ", bc not all matching aces found");
 
 //        Iterator<AccessControlEntry> aceIterator = aces.iterator();
 //        int index = 0;
