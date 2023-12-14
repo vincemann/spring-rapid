@@ -17,7 +17,7 @@ public @interface DefineProxy {
      * use either this or {@link this#extensionClasses()}, not both
      */
     String[] extensions() default {};
-    Class[] extensionClasses() default {};
+    Class<? extends AbstractServiceExtension>[] extensionClasses() default {};
     boolean defaultExtensionsEnabled() default true;
 
     /**

@@ -17,15 +17,21 @@ public interface AclPermissionService extends AopLoggable {
 
     void deletePermissionForRoleOverEntity(IdentifiableEntity<?> entity, String role, Permission... permissions) throws AclNotFoundException, AceNotFoundException;
 
+    void deletePermissionForRoleOverEntityIfPresent(IdentifiableEntity<?> entity, String role, Permission... permissions) throws AclNotFoundException, AceNotFoundException;
+
     void savePermissionForAuthenticatedOverEntity(IdentifiableEntity<?> entity, Permission... permissions);
 
     void deletePermissionForAuthenticatedOverEntity(IdentifiableEntity<?> entity, Permission... permissions) throws AclNotFoundException, AceNotFoundException;
+
+    void deletePermissionForAuthenticatedOverEntityIfPresent(IdentifiableEntity<?> entity, Permission... permissions) throws AclNotFoundException, AceNotFoundException;
 
     void savePermissionForUserOverEntity(String user, IdentifiableEntity<?> entity, Permission... permissions);
 
     public void deleteAclOfEntity(IdentifiableEntity<?> entity, boolean deleteCascade);
 
     void deletePermissionForUserOverEntity(String user, IdentifiableEntity<?> entity, Permission... permissions) throws AclNotFoundException, AceNotFoundException;
+
+    void deletePermissionForUserOverEntityIfPresent(String user, IdentifiableEntity<?> entity, Permission... permissions) throws AclNotFoundException, AceNotFoundException;
 
     public void deleteAclOfEntity(Class<? extends IdentifiableEntity> clazz, Serializable id, boolean deleteCascade);
 

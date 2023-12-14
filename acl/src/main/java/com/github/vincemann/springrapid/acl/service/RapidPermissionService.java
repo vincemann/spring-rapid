@@ -49,7 +49,13 @@ public class RapidPermissionService implements AclPermissionService {
     @Override
     public void deletePermissionForRoleOverEntity(IdentifiableEntity<?> entity, String role, Permission... permissions) throws AclNotFoundException, AceNotFoundException {
         final Sid sid = new GrantedAuthoritySid(role);
-        deletePermissionForSid(entity,sid, permissions);
+        deletePermissionForSid(entity,sid,false, permissions);
+    }
+
+    @Override
+    public void deletePermissionForRoleOverEntityIfPresent(IdentifiableEntity<?> entity, String role, Permission... permissions) throws AclNotFoundException, AceNotFoundException {
+        final Sid sid = new GrantedAuthoritySid(role);
+        deletePermissionForSid(entity,sid, true, permissions);
     }
 
 
@@ -66,6 +72,12 @@ public class RapidPermissionService implements AclPermissionService {
     }
 
     @Override
+    public void deletePermissionForAuthenticatedOverEntityIfPresent(IdentifiableEntity<?> entity, Permission... permissions) throws AclNotFoundException, AceNotFoundException {
+        String authenticatedName = findAuthenticatedName();
+        deletePermissionForUserOverEntityIfPresent(authenticatedName,entity,permissions);
+    }
+
+    @Override
     public void savePermissionForUserOverEntity(String user, IdentifiableEntity<?> entity, Permission... permissions) {
         securityContext.runWithName(user,() ->{
             final Sid sid = new PrincipalSid(user);
@@ -76,8 +88,15 @@ public class RapidPermissionService implements AclPermissionService {
     @Override
     public void deletePermissionForUserOverEntity(String user, IdentifiableEntity<?> entity, Permission... permissions) throws AclNotFoundException, AceNotFoundException {
         final Sid sid = new PrincipalSid(user);
-        deletePermissionForSid(entity,sid,permissions);
+        deletePermissionForSid(entity,sid,false, permissions);
     }
+
+    @Override
+    public void deletePermissionForUserOverEntityIfPresent(String user, IdentifiableEntity<?> entity, Permission... permissions) throws AclNotFoundException, AceNotFoundException {
+        final Sid sid = new PrincipalSid(user);
+        deletePermissionForSid(entity,sid,true,permissions);
+    }
+
 
     @Override
     public void deleteAclOfEntity(Class<? extends IdentifiableEntity> clazz, Serializable id, boolean deleteCascade) {
@@ -140,8 +159,13 @@ public class RapidPermissionService implements AclPermissionService {
     @Override
     public void inheritAces(IdentifiableEntity<?> parent, List<AclInheritanceInfo> infos) throws AclNotFoundException {
         AclInheritanceInfo info = getParentInfo(parent,infos);
-        if (!info.getSourceFilter().matches(parent)){
+        if (info == null)
             return;
+        EntityFilter filter = info.getSourceFilter();
+        if (filter != null){
+            if (!filter.matches(parent)){
+                return;
+            }
         }
         Collection<IdentifiableEntity<?>> children = getAclChildren(parent, info);
         for (IdentifiableEntity<?> child : children) {
@@ -161,7 +185,11 @@ public class RapidPermissionService implements AclPermissionService {
     protected Collection<IdentifiableEntity<?>> getAclChildren(IdentifiableEntity<?> parent, AclInheritanceInfo info) {
         try {
             Collection<IdentifiableEntity<?>> children = (Collection<IdentifiableEntity<?>>) info.getTarget().invoke(parent);
-            return info.getTargetFilter().filter(children);
+            EntityFilter filter = info.getTargetFilter();
+            if (filter != null)
+                return filter.apply(children);
+            else
+                return children;
         } catch (IllegalAccessException | InvocationTargetException e) {
             throw new RuntimeException(e);
         }
@@ -185,9 +213,8 @@ public class RapidPermissionService implements AclPermissionService {
         Optional<AclInheritanceInfo> info = infos.stream()
                 .filter(i -> i.matches(parent.getClass()))
                 .findFirst();
-        if (info.isEmpty())
-            throw new IllegalArgumentException("Cannot find matching info from supplied info list");
-        return info.get();
+        return info.orElse(null);
+//            throw new IllegalArgumentException("Cannot find matching info from supplied info list");
     }
 
     @Override
@@ -240,7 +267,7 @@ public class RapidPermissionService implements AclPermissionService {
             log.debug("updated acl: " + updated);
     }
 
-    protected void deletePermissionForSid(IdentifiableEntity<?> targetObj, Sid sid, Permission... permissions) throws AclNotFoundException, AceNotFoundException {
+    protected void deletePermissionForSid(IdentifiableEntity<?> targetObj, Sid sid, boolean ignoreNotFound, Permission... permissions) throws AclNotFoundException, AceNotFoundException {
         if (log.isDebugEnabled())
             log.debug("sid: "+ sid +" will loose permission: " + Arrays.stream(permissions).map(p -> permissionStringConverter.convert(p)).collect(Collectors.toSet()) +" over entity: " + targetObj);
         final ObjectIdentity oi = new ObjectIdentityImpl(targetObj.getClass(), targetObj.getId());
@@ -272,7 +299,7 @@ public class RapidPermissionService implements AclPermissionService {
             }
             index++;
         }
-        if (!removed)
+        if (!removed && !ignoreNotFound)
             throw new AceNotFoundException("Cant remove permission for sid: " + sid + " on target: " + oi + ", bc no matching ace found");
 
 //        Iterator<AccessControlEntry> aceIterator = aces.iterator();
