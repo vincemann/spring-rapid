@@ -1,5 +1,6 @@
 package com.github.vincemann.springrapid.acl.service;
 
+import com.github.vincemann.springrapid.acl.util.AclUtils;
 import com.github.vincemann.springrapid.core.model.IdentifiableEntity;
 import com.github.vincemann.springrapid.core.security.RapidAuthenticatedPrincipal;
 import com.github.vincemann.springrapid.core.security.RapidSecurityContext;
@@ -171,7 +172,7 @@ public class RapidPermissionService implements AclPermissionService {
         for (IdentifiableEntity<?> child : children) {
             copyParentAces(child,parent,info.getAceFilter());
             // recursion
-            inheritAces(parent,infos);
+            inheritAces(child,infos);
         }
     }
 
@@ -237,12 +238,15 @@ public class RapidPermissionService implements AclPermissionService {
     }
 
     /**
-     * Copy all aces from parentAcl to childAcl that match aceFilter: {@link AceFilter#matches(AccessControlEntry)}.
+     * Copy all aces from parentAcl to childAcl that match aceFilter: {@link AceFilter#matches(AccessControlEntry)}
+     * and are not already present in childAcl.
      */
     protected void copyMatchingAces(MutableAcl parentAcl, MutableAcl childAcl, AceFilter aceFilter) {
         for (AccessControlEntry ace : parentAcl.getEntries()) {
-           if (aceFilter.matches(ace))
-               childAcl.insertAce(childAcl.getEntries().size(), ace.getPermission(), ace.getSid(), ace.isGranting());
+           if (aceFilter.matches(ace)){
+               if (!AclUtils.isAcePresent(ace,childAcl))
+                    childAcl.insertAce(childAcl.getEntries().size(), ace.getPermission(), ace.getSid(), ace.isGranting());
+           }
         }
     }
 
