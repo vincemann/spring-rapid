@@ -9,6 +9,7 @@ import org.springframework.security.acls.model.AccessControlEntry;
 import org.springframework.security.acls.model.Permission;
 import org.springframework.security.acls.model.Sid;
 
+import java.util.HashSet;
 import java.util.Set;
 
 import static com.github.vincemann.springrapid.acl.util.AclUtils.getSidString;
@@ -17,29 +18,50 @@ import static com.github.vincemann.springrapid.acl.util.AclUtils.getSidString;
 public class AceFilter {
 
     private Set<Permission> permissions;
-    private String sid;
+    private Set<String> sids = new HashSet<>();
     private Boolean principalsOnly = Boolean.TRUE;
-
-    public AceFilter(String sid, Boolean principalsOnly, Permission... permissions) {
-        this.principalsOnly = principalsOnly;
-        this.permissions = Sets.newHashSet(permissions);
-        this.sid = sid;
-    }
-
-    @Builder
-    public AceFilter(String sid, Boolean principalsOnly, Set<Permission> permissions) {
-        if (principalsOnly != null)
-            this.principalsOnly = principalsOnly;
-        this.permissions = permissions;
-        this.sid = sid;
-    }
-
-
+    private Set<String> ignoredSids = new HashSet<>();
 
     private AceFilter(){}
 
     public static AceFilter noFilter(){
         return new AceFilter();
+    }
+
+    public static AceFilterBuilder builder(){
+        return new AceFilterBuilder();
+    }
+
+    public static class AceFilterBuilder {
+        private AceFilter aceFilter;
+
+        AceFilterBuilder() {
+            this.aceFilter = new AceFilter();
+        }
+
+        public AceFilterBuilder permissions(Permission... permission) {
+            aceFilter.permissions = Sets.newHashSet(permission);
+            return this;
+        }
+
+        public AceFilterBuilder sid(String sid) {
+            aceFilter.sids.add(sid);
+            return this;
+        }
+
+        public AceFilterBuilder ignoredSid(String ignoredSid) {
+            aceFilter.ignoredSids.add(ignoredSid);
+            return this;
+        }
+
+        public AceFilterBuilder principalsOnly(Boolean principalsOnly) {
+            aceFilter.principalsOnly = principalsOnly;
+            return this;
+        }
+
+        public AceFilter build() {
+            return aceFilter;
+        }
     }
 
     // https://github.com/spring-projects/spring-security/issues/5401
@@ -49,14 +71,35 @@ public class AceFilter {
             if (aceSid instanceof GrantedAuthoritySid)
                 return false;
         }
-        if (this.sid != null){
-            boolean sidMatches = getSidString(aceSid).equals(this.sid);
+        if (!this.sids.isEmpty()){
+            String aceSidString = getSidString(aceSid);
+            boolean ignored = this.ignoredSids.contains(aceSidString);
+            boolean sidMatches = this.sids.contains(aceSidString);
             if (!sidMatches)
                 return false;
+            else{
+                if (ignored)
+                    return false;
+            }
         }
         if (!this.permissions.isEmpty())
             return this.permissions.contains(ace.getPermission());
         return true;
     }
 
+    void setPermissions(Set<Permission> permissions) {
+        this.permissions = permissions;
+    }
+
+    void setSids(Set<String> sids) {
+        this.sids = sids;
+    }
+
+    void setPrincipalsOnly(Boolean principalsOnly) {
+        this.principalsOnly = principalsOnly;
+    }
+
+    void setIgnoredSids(Set<String> ignoredSids) {
+        this.ignoredSids = ignoredSids;
+    }
 }
