@@ -203,7 +203,11 @@ public class RapidPermissionService implements AclPermissionService {
         MutableAcl childAcl = findOrCreateAcl(childOi);
         MutableAcl parentAcl = findAcl(parentOi);
 
-        childAcl.setParent(parentAcl);
+        if (value){
+            childAcl.setParent(parentAcl);
+        }else {
+            childAcl.setParent(null);
+        }
         childAcl.setEntriesInheriting(value);
         aclService.updateAcl(childAcl);
     }
@@ -227,7 +231,7 @@ public class RapidPermissionService implements AclPermissionService {
 
         copyMatchingAces(parentAcl, childAcl, aceFilter);
 
-        childAcl.setParent(parentAcl);
+//        childAcl.setParent(parentAcl);
         logAclInformation(parentAcl, childAcl);
         aclService.updateAcl(childAcl);
     }

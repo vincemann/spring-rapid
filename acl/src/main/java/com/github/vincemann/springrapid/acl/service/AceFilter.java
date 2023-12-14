@@ -18,14 +18,18 @@ public class AceFilter {
 
     private Set<Permission> permissions;
     private String sid;
+    private Boolean principalsOnly = Boolean.TRUE;
 
-    public AceFilter(String sid, Permission... permissions) {
+    public AceFilter(String sid, Boolean principalsOnly, Permission... permissions) {
+        this.principalsOnly = principalsOnly;
         this.permissions = Sets.newHashSet(permissions);
         this.sid = sid;
     }
 
     @Builder
-    public AceFilter(String sid, Set<Permission> permissions) {
+    public AceFilter(String sid, Boolean principalsOnly, Set<Permission> permissions) {
+        if (principalsOnly != null)
+            this.principalsOnly = principalsOnly;
         this.permissions = permissions;
         this.sid = sid;
     }
@@ -40,8 +44,13 @@ public class AceFilter {
 
     // https://github.com/spring-projects/spring-security/issues/5401
     public boolean matches(AccessControlEntry ace){
+        Sid aceSid = ace.getSid();
+        if (principalsOnly){
+            if (aceSid instanceof GrantedAuthoritySid)
+                return false;
+        }
         if (this.sid != null){
-            boolean sidMatches = getSidString(ace.getSid()).equals(this.sid);
+            boolean sidMatches = getSidString(aceSid).equals(this.sid);
             if (!sidMatches)
                 return false;
         }
