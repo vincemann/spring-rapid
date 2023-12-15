@@ -23,7 +23,8 @@ import java.lang.annotation.Annotation;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-import static com.github.vincemann.springrapid.core.util.ProxyUtils.getTargetClass;
+import static com.github.vincemann.springrapid.core.util.ProxyUtils.*;
+import static com.github.vincemann.springrapid.core.util.ProxyUtils.hibernateUnproxy;
 
 @Slf4j
 public class RapidRelationalEntityManagerUtil implements RelationalEntityManagerUtil {
@@ -75,6 +76,7 @@ public class RapidRelationalEntityManagerUtil implements RelationalEntityManager
      * @poram child and links child to parent
      * -> set backreference of child
      */
+    // accepts proxies
     @Override
     public void linkBiDirParentsChild(IdentifiableEntity child, String... membersToCheck) {
         //set backreferences
@@ -89,33 +91,41 @@ public class RapidRelationalEntityManagerUtil implements RelationalEntityManager
      * mapped to the Type of the Entities in the Collection.
      * @return
      */
+    // accepts proxies
+    // returns collection of potential proxies
     public Map<Class<IdentifiableEntity>,Collection<IdentifiableEntity>> findBiDirParentCollections(IdentifiableEntity child, String... membersToCheck){
         assertEntityRelationType(child, RelationalEntityType.BiDirChild);
-        return findEntityCollections(child, BiDirParentCollection.class, membersToCheck);
+        return findEntityCollections(hibernateUnproxy(child), BiDirParentCollection.class, membersToCheck);
     }
     /**
      *
      * @return  all parent of this, that are not null
      */
+    // accepts proxies
+    // returns collection of potential proxies
     public Collection<IdentifiableEntity> findSingleBiDirParents(IdentifiableEntity child, String... membersToCheck) {
         assertEntityRelationType(child, RelationalEntityType.BiDirChild);
-        return findSingleEntities(child, BiDirParentEntity.class, membersToCheck);
+        return findSingleEntities(hibernateUnproxy(child), BiDirParentEntity.class, membersToCheck);
     }
 
+    // accepts proxies
+    // returns collection of potential proxies
     public Collection<IdentifiableEntity> findAllBiDirParents(IdentifiableEntity child, String... membersToCheck) {
         assertEntityRelationType(child, RelationalEntityType.BiDirChild);
-        return findAllEntities(child, BiDirParentEntity.class, BiDirParentCollection.class, membersToCheck);
+        return findAllEntities(hibernateUnproxy(child), BiDirParentEntity.class, BiDirParentCollection.class, membersToCheck);
     }
 
 
 
+    // accepts proxies
     public void linkBiDirParent(IdentifiableEntity child, IdentifiableEntity parent, String... membersToCheck) throws UnknownParentTypeException {
         assertEntityRelationType(child, RelationalEntityType.BiDirChild);
         assertEntityRelationType(parent, RelationalEntityType.BiDirParent);
-        linkEntity(child, parent, BiDirParentEntity.class, BiDirParentCollection.class, membersToCheck);
+        linkEntity(hibernateUnproxy(child), hibernateUnproxy(parent), BiDirParentEntity.class, BiDirParentCollection.class, membersToCheck);
     }
 
 
+    // accepts proxies
     @Override
     public void unlinkBiDirParentsFrom(IdentifiableEntity child, String... membersToCheck) throws UnknownChildTypeException, UnknownParentTypeException{
         for(IdentifiableEntity parent: findAllBiDirParents(child, membersToCheck)){
@@ -128,13 +138,15 @@ public class RapidRelationalEntityManagerUtil implements RelationalEntityManager
     }
 
 
+    // accepts proxies
     public void unlinkBiDirParent(IdentifiableEntity child, IdentifiableEntity parent, String... membersToCheck) throws UnknownParentTypeException {
         assertEntityRelationType(child, RelationalEntityType.BiDirChild);
         assertEntityRelationType(parent, RelationalEntityType.BiDirParent);
-        unlinkEntity(child, parent,BiDirParentEntity.class,BiDirParentCollection.class,membersToCheck);
+        unlinkEntity(hibernateUnproxy(child), hibernateUnproxy(parent),BiDirParentEntity.class,BiDirParentCollection.class,membersToCheck);
     }
 
 
+    // accepts proxies
     public void unlinkBiDirParentsChild(IdentifiableEntity child, String... membersToCheck) throws UnknownEntityTypeException {
         for (IdentifiableEntity parent : findAllBiDirParents(child,membersToCheck)) {
             unlinkBiDirChild(parent,child, membersToCheck);
@@ -147,6 +159,7 @@ public class RapidRelationalEntityManagerUtil implements RelationalEntityManager
     // BiDirParent Methods
 
 
+    // accepts proxies
     public void linkBiDirChildrensParent(IdentifiableEntity parent, String... membersToCheck) {
         for (IdentifiableEntity child : findAllBiDirChildren(parent,membersToCheck)) {
             linkBiDirParent(child, parent, membersToCheck);
@@ -158,38 +171,46 @@ public class RapidRelationalEntityManagerUtil implements RelationalEntityManager
      * mapped to the Type of the Entities in the Collection.
      * @return
      */
+    // accepts proxies
+    // returns collection of potential proxies
     public Map<Class<IdentifiableEntity>,Collection<IdentifiableEntity>> findBiDirChildCollections(IdentifiableEntity parent, String... membersToCheck){
         assertEntityRelationType(parent, RelationalEntityType.BiDirParent);
-        return findEntityCollections(parent,BiDirChildCollection.class,membersToCheck);
+        return findEntityCollections(hibernateUnproxy(parent),BiDirChildCollection.class,membersToCheck);
     }
 
     /**
      * Find the single BiDirChildren (all fields of this parent annotated with {@link BiDirChildEntity} and not null.
      * @return
      */
+    // accepts proxies
+    // returns collection of potential proxies
     public Set<IdentifiableEntity> findSingleBiDirChildren(IdentifiableEntity parent, String... membersToCheck){
         assertEntityRelationType(parent, RelationalEntityType.BiDirParent);
-        return findSingleEntities(parent, BiDirChildEntity.class,membersToCheck);
+        return findSingleEntities(hibernateUnproxy(parent), BiDirChildEntity.class,membersToCheck);
     }
 
+    // accepts proxies
+    // returns collection of potential proxies
     public Collection<IdentifiableEntity> findAllBiDirChildren(IdentifiableEntity parent, String... membersToCheck) {
         assertEntityRelationType(parent, RelationalEntityType.BiDirParent);
-        return findAllEntities(parent,BiDirChildEntity.class,BiDirChildCollection.class,membersToCheck);
+        return findAllEntities(hibernateUnproxy(parent),BiDirChildEntity.class,BiDirChildCollection.class,membersToCheck);
     }
 
 
+    // accepts proxies
     @Override
     public void linkBiDirChild(IdentifiableEntity parent, IdentifiableEntity childToSet, String... membersToCheck) throws UnknownChildTypeException{
         assertEntityRelationType(parent, RelationalEntityType.BiDirParent);
         assertEntityRelationType(childToSet, RelationalEntityType.BiDirChild);
-        linkEntity(parent, childToSet, BiDirChildEntity.class, BiDirChildCollection.class,membersToCheck);
+        linkEntity(hibernateUnproxy(parent), hibernateUnproxy(childToSet), BiDirChildEntity.class, BiDirChildCollection.class,membersToCheck);
     }
 
 
+    // accepts proxies
     public void unlinkBiDirChild(IdentifiableEntity parent, IdentifiableEntity childToDelete, String... membersToCheck) throws UnknownChildTypeException{
         assertEntityRelationType(parent, RelationalEntityType.BiDirParent);
         assertEntityRelationType(childToDelete, RelationalEntityType.BiDirChild);
-        unlinkEntity(parent, childToDelete,BiDirChildEntity.class,BiDirChildCollection.class,membersToCheck);
+        unlinkEntity(hibernateUnproxy(parent), hibernateUnproxy(childToDelete),BiDirChildEntity.class,BiDirChildCollection.class,membersToCheck);
     }
 
     /**
@@ -197,9 +218,10 @@ public class RapidRelationalEntityManagerUtil implements RelationalEntityManager
      * @param parent and unlink it from them
      * -> remove childrens backreference
      */
+    // accepts proxies
     public void unlinkBiDirChildrensParent(IdentifiableEntity parent, String... membersToCheck) throws UnknownParentTypeException{
         for (IdentifiableEntity child : findAllBiDirChildren(parent,membersToCheck)) {
-            unlinkBiDirParent(child,parent, membersToCheck);
+            unlinkBiDirParent(hibernateUnproxy(child),hibernateUnproxy(parent), membersToCheck);
         }
     }
 
@@ -217,22 +239,28 @@ public class RapidRelationalEntityManagerUtil implements RelationalEntityManager
      *
      * @return
      */
+    // accepts proxies
+    // returns collection of potential proxies
     public Map<Class<IdentifiableEntity>,Collection<IdentifiableEntity>> findUniDirChildCollections(IdentifiableEntity parent, String... membersToCheck)  {
         assertEntityRelationType(parent, RelationalEntityType.UniDirParent);
-        return findEntityCollections(parent,UniDirChildCollection.class,membersToCheck);
+        return findEntityCollections(hibernateUnproxy(parent),UniDirChildCollection.class,membersToCheck);
     }
     /**
      * Find the single UniDirChildren (all fields of this parent annotated with {@link UniDirChildEntity} and not null.
      * @return
      */
+    // accepts proxies
+    // returns collection of potential proxies
     public Set<IdentifiableEntity> findSingleUniDirChildren(IdentifiableEntity parent, String... membersToCheck) {
         assertEntityRelationType(parent, RelationalEntityType.UniDirParent);
-        return findSingleEntities(parent,UniDirChildEntity.class,membersToCheck);
+        return findSingleEntities(hibernateUnproxy(parent),UniDirChildEntity.class,membersToCheck);
     }
 
+    // accepts proxies
+    // returns collection of potential proxies
     public Collection<IdentifiableEntity> findAllUniDirChildren(IdentifiableEntity child, String... membersToCheck) {
         assertEntityRelationType(child, RelationalEntityType.UniDirParent);
-        return findAllEntities(child,UniDirChildEntity.class,UniDirChildCollection.class,membersToCheck);
+        return findAllEntities(hibernateUnproxy(child),UniDirChildEntity.class,UniDirChildCollection.class,membersToCheck);
     }
 
     /**
@@ -244,9 +272,10 @@ public class RapidRelationalEntityManagerUtil implements RelationalEntityManager
      * @param newChild
      * @throws UnknownChildTypeException
      */
+    // accepts proxies
     public void linkUniDirChild(IdentifiableEntity parent,IdentifiableEntity newChild, String... membersToCheck) throws UnknownChildTypeException{
         assertEntityRelationType(parent, RelationalEntityType.UniDirParent);
-        linkEntity(parent,newChild,UniDirChildEntity.class,UniDirChildCollection.class,membersToCheck);
+        linkEntity(hibernateUnproxy(parent),hibernateUnproxy(newChild),UniDirChildEntity.class,UniDirChildCollection.class,membersToCheck);
     }
 
     /**
@@ -258,9 +287,10 @@ public class RapidRelationalEntityManagerUtil implements RelationalEntityManager
      * @param toRemove
      * @throws UnknownChildTypeException
      */
+    // accepts proxies
     public void unlinkUniDirChild(IdentifiableEntity parent, IdentifiableEntity toRemove, String... membersToCheck) throws UnknownChildTypeException{
         assertEntityRelationType(parent, RelationalEntityType.UniDirParent);
-        unlinkEntity(parent,toRemove,UniDirChildEntity.class,UniDirChildCollection.class,membersToCheck);
+        unlinkEntity(hibernateUnproxy(parent),hibernateUnproxy(toRemove),UniDirChildEntity.class,UniDirChildCollection.class,membersToCheck);
     }
 
 
@@ -274,10 +304,12 @@ public class RapidRelationalEntityManagerUtil implements RelationalEntityManager
 
 
 
+    // expects all args to be unproxied
+    // returns set of unproxied
     protected<C> Set<C> findSingleEntities(IdentifiableEntity<?> entity, Class<? extends Annotation> annotationClass, String... membersToCheck){
         Set<C> entities = new HashSet<>();
-        EntityReflectionUtils.doWithAnnotatedNamedFields(annotationClass,getTargetClass(entity),Sets.newHashSet(membersToCheck), field -> {
-            C foundEntity = (C) field.get(entity);
+        EntityReflectionUtils.doWithAnnotatedNamedFields(annotationClass,entity.getClass(),Sets.newHashSet(membersToCheck), field -> {
+            C foundEntity = (C) hibernateUnproxy(field.get(entity));
             if(foundEntity == null){
                 //skip
                 return;
@@ -293,10 +325,13 @@ public class RapidRelationalEntityManagerUtil implements RelationalEntityManager
      *
      * @return
      */
+    // expects all args to be unproxied
+    // returns collection of potential proxies
     protected<C> Map<Class<C>,Collection<C>>  findEntityCollections(IdentifiableEntity entity, Class<? extends Annotation> entityAnnotationClass, String... membersToCheck) {
         Map<Class<C>,Collection<C>> entityType_collectionMap = new HashMap<>();
-        EntityReflectionUtils.doWithAnnotatedNamedFields(entityAnnotationClass, getTargetClass(entity), Sets.newHashSet(membersToCheck), field -> {
+        EntityReflectionUtils.doWithAnnotatedNamedFields(entityAnnotationClass, entity.getClass(), Sets.newHashSet(membersToCheck), field -> {
             Collection<C> entityCollection = (Collection<C>) field.get(entity);
+            // todo maybe unproxy collection entities here
             if (entityCollection == null) {
                 //throw new IllegalArgumentException("Null idCollection found in BiDirParent "+ this + " for EntityCollectionField with name: " + field.getName());
                 log.warn("Auto-generating Collection for null valued BiDirEntityCollection Field: " + field);
@@ -311,6 +346,8 @@ public class RapidRelationalEntityManagerUtil implements RelationalEntityManager
     }
 
 
+    // expects all args to be unproxied
+    // returns collection of potential proxies
     public Collection<IdentifiableEntity> findAllEntities(IdentifiableEntity entity, Class<? extends Annotation> singleEntityAnnotation, Class<? extends Annotation> collectionEntityAnnotation, String... membersToCheck) {
         Set<IdentifiableEntity> relatedEntities = new HashSet<>();
         relatedEntities.addAll(findSingleEntities(entity, singleEntityAnnotation,membersToCheck));
@@ -322,21 +359,21 @@ public class RapidRelationalEntityManagerUtil implements RelationalEntityManager
     }
 
 
-
+    // expects all args to be unproxied
     protected void linkEntity(IdentifiableEntity<?> entity, IdentifiableEntity newEntity, Class<? extends Annotation> entityAnnotationClass, Class<? extends Annotation> entityCollectionAnnotationClass, String... membersToCheck) throws UnknownEntityTypeException {
         AtomicBoolean added = new AtomicBoolean(false);
         //add to matching entity collections
         // todo THIS CORRECT
         for (Map.Entry<Class<IdentifiableEntity>,Collection<IdentifiableEntity>> entry : this.<IdentifiableEntity>findEntityCollections(entity,entityCollectionAnnotationClass,membersToCheck).entrySet()) {
             Class<? extends IdentifiableEntity> targetClass = entry.getKey();
-            if (getTargetClass(newEntity).equals(targetClass)) {
+            if (newEntity.equals(targetClass)) {
                 (entry.getValue()).add(newEntity);
                 added.set(true);
             }
         }
         //set matching entity
-        EntityReflectionUtils.doWithNamedAnnotatedFieldsOfType(getTargetClass(newEntity),entityAnnotationClass,getTargetClass(entity),Sets.newHashSet(membersToCheck),entityField -> {
-            IdentifiableEntity oldEntity = (IdentifiableEntity) entityField.get(entity);
+        EntityReflectionUtils.doWithNamedAnnotatedFieldsOfType(newEntity.getClass(),entityAnnotationClass,entity.getClass(),Sets.newHashSet(membersToCheck),entityField -> {
+            IdentifiableEntity oldEntity = (IdentifiableEntity) hibernateUnproxy(entityField.get(entity));
             if (oldEntity != null) {
                 log.warn("Overriding old entity: " + oldEntity + " with new entity " + newEntity + " of source sntity " + entity);
             }
@@ -348,8 +385,11 @@ public class RapidRelationalEntityManagerUtil implements RelationalEntityManager
         }
     }
 
+    // expects all args to be unproxied
     protected void unlinkEntity(IdentifiableEntity entity, IdentifiableEntity entityToRemove, Class<? extends Annotation> entityEntityAnnotationClass, Class<? extends Annotation> entityEntityCollectionAnnotationClass, String... membersToCheck) throws UnknownEntityTypeException{
         AtomicBoolean deleted = new AtomicBoolean(false);
+//        IdentifiableEntity _entityToRemove = hibernateUnproxy(entityToRemove);
+//        IdentifiableEntity _entity = hibernateUnproxy(entity);
         for (Map.Entry<Class<IdentifiableEntity>,Collection<IdentifiableEntity>> entry : this.<IdentifiableEntity>findEntityCollections(entity,entityEntityCollectionAnnotationClass,membersToCheck).entrySet()) {
             //todo only swapped getKey -> getValue, is value not used?
             Collection<IdentifiableEntity> entityCollection = entry.getValue();
@@ -357,14 +397,14 @@ public class RapidRelationalEntityManagerUtil implements RelationalEntityManager
                 if(!entityCollection.isEmpty()){
                     Optional<IdentifiableEntity> optionalEntity = entityCollection.stream().findFirst();
                     if(optionalEntity.isPresent()){
-                        IdentifiableEntity removeCandidate = optionalEntity.get();
-                        if(getTargetClass(entityToRemove).equals(getTargetClass(removeCandidate))){
+                        IdentifiableEntity removeCandidate = hibernateUnproxy(optionalEntity.get());
+                        if(entityToRemove.getClass().equals(removeCandidate.getClass())){
                             //this set needs to remove the entity
                             //here is a hibernate bug in persistent set remove function, see https://stackoverflow.com/a/47968974
                             //therefor we use an odd workaround
                             Iterator<IdentifiableEntity> iterator = entityCollection.iterator();
                             while (iterator.hasNext()){
-                                IdentifiableEntity e = iterator.next();
+                                IdentifiableEntity e = hibernateUnproxy(iterator.next());
                                 if (e.equals(entityToRemove)){
                                     iterator.remove();
                                     deleted.set(true);
@@ -386,10 +426,10 @@ public class RapidRelationalEntityManagerUtil implements RelationalEntityManager
                 }
             }
         }
-        EntityReflectionUtils.doWithAnnotatedNamedFields(entityEntityAnnotationClass,getTargetClass(entity),Sets.newHashSet(membersToCheck), entityField -> {
-            IdentifiableEntity removeCandidate = (IdentifiableEntity) entityField.get(entity);
+        EntityReflectionUtils.doWithAnnotatedNamedFields(entityEntityAnnotationClass,entity.getClass(),Sets.newHashSet(membersToCheck), entityField -> {
+            IdentifiableEntity removeCandidate = hibernateUnproxy((IdentifiableEntity) entityField.get(entity));
             if(removeCandidate!=null) {
-                if (getTargetClass(removeCandidate).equals(getTargetClass(entityToRemove))) {
+                if (removeCandidate.equals(entityToRemove)) {
                     entityField.set(entity, null);
                     deleted.set(true);
                 }
@@ -410,6 +450,7 @@ public class RapidRelationalEntityManagerUtil implements RelationalEntityManager
 
 
 
+    // accepts proxies
     void assertEntityRelationType(IdentifiableEntity entity, RelationalEntityType expectedType){
         if (!inferTypes(getTargetClass(entity)).contains(expectedType)){
             throw new IllegalArgumentException("Entity: " + entity + " is not of expected entity relation type: " + expectedType.name());

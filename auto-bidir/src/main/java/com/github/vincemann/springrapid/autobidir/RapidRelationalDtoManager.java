@@ -21,6 +21,7 @@ import java.lang.annotation.Annotation;
 import java.util.*;
 
 import static com.github.vincemann.springrapid.core.util.ProxyUtils.getTargetClass;
+import static com.github.vincemann.springrapid.core.util.ProxyUtils.hibernateUnproxy;
 
 @Slf4j
 public class RapidRelationalDtoManager implements RelationalDtoManager {
@@ -77,8 +78,9 @@ public class RapidRelationalDtoManager implements RelationalDtoManager {
 //        return findChildId(childClazz,UniDirChildId.class);
 //    }
 
+    // accepts proxies
     public Map<Class<IdentifiableEntity>, Serializable> findUniDirChildIds(Object parent){
-        return findEntityIds(parent,UniDirChildId.class);
+        return findEntityIds(ProxyUtils.hibernateUnproxy(parent),UniDirChildId.class);
     }
 
 
@@ -89,13 +91,15 @@ public class RapidRelationalDtoManager implements RelationalDtoManager {
 
 
 
+    // accepts proxies
     public Map<Class<IdentifiableEntity>, Collection<Serializable>> findUniDirChildIdCollections(Object parent){
-        return findEntityIdCollections(parent,UniDirChildIdCollection.class);
+        return findEntityIdCollections(ProxyUtils.hibernateUnproxy(parent),UniDirChildIdCollection.class);
     }
 
 
+    // accepts proxies
     public Map<Class<IdentifiableEntity>, Collection<Serializable>> findAllUniDirChildIds(Object parent){
-        return findAllEntityIds((parent), UniDirChildId.class, UniDirChildIdCollection.class);
+        return findAllEntityIds(ProxyUtils.hibernateUnproxy(parent), UniDirChildId.class, UniDirChildIdCollection.class);
     }
 
     /**
@@ -103,8 +107,9 @@ public class RapidRelationalDtoManager implements RelationalDtoManager {
      *
      * @param child
      */
+    // accepts proxies
     public void addUniDirChildId(IdentifiableEntity child, Object parent) {
-        addEntityId(child,parent, UniDirChildId.class, UniDirChildIdCollection.class);
+        addEntityId(hibernateUnproxy(child),hibernateUnproxy(parent), UniDirChildId.class, UniDirChildIdCollection.class);
     }
 
 //    public Field[] findUniDirChildrenIdCollectionFields() {
@@ -125,20 +130,23 @@ public class RapidRelationalDtoManager implements RelationalDtoManager {
 
 
 
+    // accepts proxies
     public Map<Class<IdentifiableEntity>, Serializable> findBiDirChildIds(Object parent) {
-        return findEntityIds(parent,BiDirChildId.class);
+        return findEntityIds(ProxyUtils.hibernateUnproxy(parent),BiDirChildId.class);
     }
 
 //    public <ChildId extends Serializable> Collection<ChildId> findBiDirChildrenIdCollection(Class<? extends IdentifiableEntity> childClazz)  {
 //        return findChildIdCollection(childClazz,BiDirChildIdCollection.class);
 //    }
 
+    // accepts proxies
     public Map<Class<IdentifiableEntity>, Collection<Serializable>> findBiDirChildIdCollections(Object parent) {
-        return findEntityIdCollections(parent,BiDirChildIdCollection.class);
+        return findEntityIdCollections(ProxyUtils.hibernateUnproxy(parent),BiDirChildIdCollection.class);
     }
 
+    // accepts proxies
     public Map<Class<IdentifiableEntity>, Collection<Serializable>> findAllBiDirChildIds(Object parent){
-        return findAllEntityIds(parent, BiDirChildId.class, BiDirChildIdCollection.class);
+        return findAllEntityIds(ProxyUtils.hibernateUnproxy(parent), BiDirChildId.class, BiDirChildIdCollection.class);
     }
 
 
@@ -150,28 +158,33 @@ public class RapidRelationalDtoManager implements RelationalDtoManager {
      * @param child
      */
     // adds childs id to parent
+    // accepts proxies
     public void addBiDirChildId(IdentifiableEntity child, Object parent) {
-        addEntityId(child,parent, BiDirChildId.class, BiDirChildIdCollection.class);
+        addEntityId(hibernateUnproxy(child),hibernateUnproxy(parent), BiDirChildId.class, BiDirChildIdCollection.class);
     }
     
     
     // BIDIR CHILD METHODS
 
+    // accepts proxies
     public Map<Class<IdentifiableEntity>, Serializable> findBiDirParentIds(Object child) {
-        return findEntityIds(child,BiDirParentId.class);
+        return findEntityIds(ProxyUtils.hibernateUnproxy(child),BiDirParentId.class);
     }
 
+    // accepts proxies
     public Map<Class<IdentifiableEntity>, Collection<Serializable>> findBiDirParentIdCollections(Object child) {
-        return findEntityIdCollections(child,BiDirParentIdCollection.class);
+        return findEntityIdCollections(ProxyUtils.hibernateUnproxy(child),BiDirParentIdCollection.class);
     }
 
     // adds parents id to child
+    // accepts proxies
     public void addBiDirParentId(IdentifiableEntity parent, Object child) {
-        addEntityId(parent, child,BiDirParentId.class,BiDirParentIdCollection.class);
+        addEntityId(hibernateUnproxy(parent), hibernateUnproxy(child),BiDirParentId.class,BiDirParentIdCollection.class);
     }
 
+    // accepts proxies
     public Map<Class<IdentifiableEntity>, Collection<Serializable>> findAllBiDirParentIds(Object parent){
-        return findAllEntityIds(parent, BiDirParentId.class, BiDirParentIdCollection.class);
+        return findAllEntityIds(ProxyUtils.hibernateUnproxy(parent), BiDirParentId.class, BiDirParentIdCollection.class);
     }
 
 
@@ -182,9 +195,10 @@ public class RapidRelationalDtoManager implements RelationalDtoManager {
 
 
 
+    // expects all args to be unproxied
     protected <C> Map<Class<C>, Serializable> findEntityIds(Object entity, Class<? extends Annotation> entityIdAnnotationType) {
         final Map<Class<C>, Serializable> result = new HashMap<>();
-        EntityReflectionUtils.doWithAnnotatedFields(entityIdAnnotationType, getTargetClass(entity), field -> {
+        EntityReflectionUtils.doWithAnnotatedFields(entityIdAnnotationType, entity.getClass(), field -> {
             Serializable id = (Serializable) field.get(entity);
             if (id != null) {
                 result.put((Class<C>) EntityIdAnnotationUtils.getEntityType(field.getAnnotation(entityIdAnnotationType)), id);
@@ -195,9 +209,10 @@ public class RapidRelationalDtoManager implements RelationalDtoManager {
         return result;
     }
 
+    // expects all args to be unproxied
     protected <C> Map<Class<C>, Collection<Serializable>> findEntityIdCollections(Object entity,Class<? extends Annotation> entityCollectionIdAnnotationType) {
         final Map<Class<C>, Collection<Serializable>> result = new HashMap<>();
-        EntityReflectionUtils.doWithAnnotatedFields(entityCollectionIdAnnotationType,getTargetClass(entity),field -> {
+        EntityReflectionUtils.doWithAnnotatedFields(entityCollectionIdAnnotationType,entity.getClass(),field -> {
             Collection<Serializable> idCollection = (Collection<Serializable>) field.get(entity);
             if (idCollection != null) {
                 result.put((Class<C>) EntityIdAnnotationUtils.getEntityType(field.getAnnotation(entityCollectionIdAnnotationType)), idCollection);
@@ -209,6 +224,7 @@ public class RapidRelationalDtoManager implements RelationalDtoManager {
     }
 
 
+    // expects all args to be unproxied
     protected Map<Class<IdentifiableEntity>, Collection<Serializable>> findAllEntityIds(Object entity,Class<? extends Annotation> entityIdAnnotationType, Class<? extends Annotation> entityCollectionIdAnnotationType){
         Map<Class<IdentifiableEntity>, Collection<Serializable>> entityIdCollections = findEntityIdCollections(entity,entityCollectionIdAnnotationType);
         Map<Class<IdentifiableEntity>, Serializable> uniDirChildIds = findEntityIds(entity,entityIdAnnotationType);
@@ -218,6 +234,7 @@ public class RapidRelationalDtoManager implements RelationalDtoManager {
 
 
 
+    // expects all args to be unproxied
     protected void addEntityId(IdentifiableEntity src, Object target, Class<? extends Annotation> entityIdAnnotationClass, Class<? extends Annotation> entityIdCollectionAnnotationClass) {
         Serializable entityId = src.getId();
         if (entityId == null) {
@@ -226,7 +243,7 @@ public class RapidRelationalDtoManager implements RelationalDtoManager {
         Map<Class<IdentifiableEntity>, Collection<Serializable>> entityIdCollections = findEntityIdCollections(target,entityIdCollectionAnnotationClass);
         //child collections
         for (Map.Entry<Class<IdentifiableEntity>, Collection<Serializable>> entityIdCollectionEntry : entityIdCollections.entrySet()) {
-            if (entityIdCollectionEntry.getKey().equals(getTargetClass(src))) {
+            if (entityIdCollectionEntry.getKey().equals(src.getClass())) {
                 //need to add
                 Collection<Serializable> idCollection = entityIdCollectionEntry.getValue();
                 //dirChild is always an Identifiable Child
@@ -234,7 +251,7 @@ public class RapidRelationalDtoManager implements RelationalDtoManager {
             }
         }
 
-        AutoBiDirEntityReflectionUtils.doWithIdFieldsWithEntityType(getTargetClass(src), entityIdAnnotationClass, getTargetClass(target), field -> {
+        AutoBiDirEntityReflectionUtils.doWithIdFieldsWithEntityType(src.getClass(), entityIdAnnotationClass, target.getClass(), field -> {
             Object prevEntityId = field.get(target);
             if (prevEntityId != null) {
                 log.warn("Warning, prev EntityId: " + prevEntityId + " was not null -> overriding with new value: " + entityId);
