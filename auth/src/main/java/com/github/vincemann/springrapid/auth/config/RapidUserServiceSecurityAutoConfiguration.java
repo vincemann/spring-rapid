@@ -2,6 +2,7 @@ package com.github.vincemann.springrapid.auth.config;
 
 import com.github.vincemann.springrapid.acl.config.RapidAclExtensionsAutoConfiguration;
 import com.github.vincemann.springrapid.acl.service.AclPermissionService;
+import com.github.vincemann.springrapid.acl.service.extensions.acl.AdminGainsAdminPermissionAboutSavedAclExtension;
 import com.github.vincemann.springrapid.acl.service.extensions.security.CrudAclChecksSecurityExtension;
 import com.github.vincemann.springrapid.auth.service.UserService;
 import com.github.vincemann.springrapid.auth.service.extension.AclUserExtension;
@@ -59,16 +60,15 @@ public class RapidUserServiceSecurityAutoConfiguration {
     @Bean
     @Acl
     public UserService<?, ?> aclUserService(UserService<?, ?> service,
-                                            // Extensions are added by AutoConfig
-////                                                                            AdminFullAccessAclExtension adminFullAccess,
-////                                                                            AuthenticatedFullAccessAclExtension authenticatedFullAccessAclExtension,
-//                                            CleanUpAclExtension cleanUpAclExtension,
+                                            CleanUpAclExtension cleanUpAclExtension,
+                                            // all other relevant acl stuff in here:
                                             AclUserExtension aclUserServiceExtension
     ) {
         return new ServiceExtensionProxyBuilder<>(service)
-//                .toggleDefaultExtensions(false)
+                // dont work with default extensions to keep things simple and concrete for user
+                .toggleDefaultExtensions(false)
                 .addExtension(aclUserServiceExtension)
-//                .addExtension(cleanUpAclExtension)
+                .addExtension(cleanUpAclExtension)
                 .build();
     }
 
@@ -77,14 +77,14 @@ public class RapidUserServiceSecurityAutoConfiguration {
     @Bean
     @Secured
     public UserService<?, ?> securedUserService(@Acl UserService<?, ?> service,
-                                                UserServiceSecurityExtension securityRule
-                                                // added by AutoConfig
-//                                                CrudAclChecksSecurityExtension crudAclChecksSecurityExtension
+                                                UserServiceSecurityExtension securityRule,
+                                                CrudAclChecksSecurityExtension crudAclChecksSecurityExtension
     ) {
         return new ServiceExtensionProxyBuilder<>(service)
-//                .toggleDefaultExtensions(false)
+                // dont work with default extensions to keep things safer for user related stuff
+                .toggleDefaultExtensions(false)
                 .addExtension(securityRule)
-//                .addExtension(crudAclChecksSecurityExtension)
+                .addExtension(crudAclChecksSecurityExtension)
                 .build();
     }
 

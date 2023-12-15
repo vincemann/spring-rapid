@@ -66,7 +66,6 @@ public class ServiceExtensionProxyBuilder<S extends CrudService<E,Id>,E extends 
         for (Class<? extends AbstractServiceExtension> extension : extensions) {
             proxy.ignoreExtension(extension);
         }
-
         return this;
     }
 
