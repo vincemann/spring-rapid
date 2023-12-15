@@ -1,6 +1,7 @@
 package com.github.vincemann.springrapid.acl.config;
 
 import com.github.vincemann.springrapid.acl.AclProperties;
+import com.github.vincemann.springrapid.acl.framework.AdminDefaultPermissionGrantingStrategy;
 import com.github.vincemann.springrapid.acl.framework.oidresolve.ObjectIdentityResolver;
 import com.github.vincemann.springrapid.acl.framework.oidresolve.RapidObjectIdentityResolver;
 import com.github.vincemann.springrapid.acl.service.AclPermissionService;
@@ -9,7 +10,6 @@ import com.github.vincemann.springrapid.acl.service.RapidPermissionService;
 import com.github.vincemann.springrapid.acl.service.RapidPermissionStringConverter;
 import com.github.vincemann.springrapid.acl.util.AclUtils;
 import com.github.vincemann.springrapid.core.security.Roles;
-import com.github.vincemann.springrapid.acl.framework.HierarchicPermissionGrantingStrategy;
 import com.github.vincemann.springrapid.acl.framework.NoModSecurityCheckAclAuthorizationStrategy;
 import com.github.vincemann.springrapid.acl.framework.VerboseAclPermissionEvaluator;
 import com.github.vincemann.springrapid.core.slicing.ServiceConfig;
@@ -20,9 +20,7 @@ import org.springframework.boot.autoconfigure.AutoConfigureBefore;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.cache.ehcache.EhCacheFactoryBean;
-import org.springframework.cache.ehcache.EhCacheManagerFactoryBean;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Primary;
 import org.springframework.security.access.PermissionEvaluator;
 import org.springframework.security.access.expression.method.DefaultMethodSecurityExpressionHandler;
 import org.springframework.security.access.expression.method.MethodSecurityExpressionHandler;
@@ -98,7 +96,7 @@ public class RapidAclAutoConfiguration {
     @ConditionalOnMissingBean(PermissionGrantingStrategy.class)
     @Bean
     public PermissionGrantingStrategy permissionGrantingStrategy() {
-        return new DefaultPermissionGrantingStrategy(new ConsoleAuditLogger());
+        return new AdminDefaultPermissionGrantingStrategy(new ConsoleAuditLogger());
     }
 
     @Autowired

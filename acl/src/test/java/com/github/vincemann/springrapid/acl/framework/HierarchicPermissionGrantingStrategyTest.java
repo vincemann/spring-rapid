@@ -25,7 +25,7 @@ class HierarchicPermissionGrantingStrategyTest {
     @Mock
     AuditLogger auditLogger;
     @InjectMocks
-    HierarchicPermissionGrantingStrategy permissionGrantingStrategy;
+    AdminDefaultPermissionGrantingStrategy permissionGrantingStrategy;
     @Mock
     AccessControlEntry entry;
     Permission readPermission;

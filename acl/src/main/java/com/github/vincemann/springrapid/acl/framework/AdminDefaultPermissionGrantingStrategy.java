@@ -1,8 +1,7 @@
 package com.github.vincemann.springrapid.acl.framework;
 
-import com.github.vincemann.springrapid.acl.service.PermissionStringConverter;
+import com.github.vincemann.springrapid.acl.util.AclUtils;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.acls.domain.AuditLogger;
 import org.springframework.security.acls.domain.BasePermission;
 import org.springframework.security.acls.domain.DefaultPermissionGrantingStrategy;
@@ -11,19 +10,16 @@ import org.springframework.security.acls.model.*;
 import java.util.List;
 
 /**
- * No exact Permission match is needed.
- * e.g.:
- * If Entity has create Permission for example (mask = 4), then it implicitly also has read (mask = 1) permission,
- * bc this permission is below create in the Hierarchy.
- * @see BasePermission
+ * No exact Permission match is needed, if ADMIN permission is given.
+ * Otherwise exactly like {@link DefaultPermissionGrantingStrategy}.
  */
 @Slf4j
-public class HierarchicPermissionGrantingStrategy extends DefaultPermissionGrantingStrategy {
+public class AdminDefaultPermissionGrantingStrategy extends DefaultPermissionGrantingStrategy {
 
     private final transient AuditLogger auditLogger;
-    private PermissionStringConverter permissionStringConverter;
+//    private PermissionStringConverter permissionStringConverter;
 
-    public HierarchicPermissionGrantingStrategy(AuditLogger auditLogger) {
+    public AdminDefaultPermissionGrantingStrategy(AuditLogger auditLogger) {
         super(auditLogger);
         this.auditLogger = auditLogger;
     }
@@ -45,8 +41,9 @@ public class HierarchicPermissionGrantingStrategy extends DefaultPermissionGrant
                 for (AccessControlEntry ace : aces) {
 
                     if (ace.getSid().equals(sid)) {
-                        log.debug("Checking ace with id:" + ace.getId() /*", " + PermissionUtils.toString(ace.getPermission()) +*/);
-                        log.debug("Sid of ace: " + ace.getSid()+ " has permission: " + permissionStringConverter.convert(ace.getPermission()) /*+", mask: " + givenPermissionMask*/);
+                        if (log.isDebugEnabled()){
+                           log.debug("checking ace: " + AclUtils.aceToString(ace));
+                        }
                         if (isGranted(ace, p)) {
 
                             // Found a matching ACE, so its authorization decision will
@@ -115,6 +112,12 @@ public class HierarchicPermissionGrantingStrategy extends DefaultPermissionGrant
             //jetzt gilt es zu checken, ob die permission p auch von ace getragen wird
             int givenPermissionMask = ace.getPermission().getMask();
             int requestedPermissionMask = p.getMask();
+
+            // for admin treat in hierarchy mode -> request READ and only one ace with ADMIN will be sufficient
+            if (givenPermissionMask == BasePermission.ADMINISTRATION.getMask() && givenPermissionMask >= requestedPermissionMask){
+                return true;
+            }
+            return super.isGranted(ace,p);
 //            //Admin does not need to have r & w & c &d&a permission, but only a
 //            if(givenPermissionMask== BasePermission.ADMINISTRATION.getMask()){
 //                return true;
@@ -124,16 +127,18 @@ public class HierarchicPermissionGrantingStrategy extends DefaultPermissionGrant
 //            log.trace("Content of that ace: " + ace);
 //            log.debug("Sid of ace: " + ace.getSid()+ " has permission: " + PermissionUtils.toString(ace.getPermission()) /*+", mask: " + givenPermissionMask*/);
 
-            return givenPermissionMask >= requestedPermissionMask;
-            //return (ace.getPermission().getMask() & p.getMask()) == 0;
-        } else {
-            //return ace.getPermission().getMask() == p.getMask();
+//            return givenPermissionMask >= requestedPermissionMask;
+//            //return (ace.getPermission().getMask() & p.getMask()) == 0;
+//        } else {
+//            //return ace.getPermission().getMask() == p.getMask();
+//            return false;
+        }else {
             return false;
         }
     }
 
-    @Autowired
-    public void injectPermissionStringConverter(PermissionStringConverter permissionStringConverter) {
-        this.permissionStringConverter = permissionStringConverter;
-    }
+//    @Autowired
+//    public void injectPermissionStringConverter(PermissionStringConverter permissionStringConverter) {
+//        this.permissionStringConverter = permissionStringConverter;
+//    }
 }
