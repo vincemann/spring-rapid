@@ -10,9 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.EntityManager;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 @Slf4j
 public class DelegatingDtoMapper{
@@ -46,8 +44,26 @@ public class DelegatingDtoMapper{
         this.dtoPostProcessors.add(postProcessor);
     }
 
+    @Transactional(readOnly = true)
+    public <T> Set<T> mapToDto(Set<? extends IdentifiableEntity<?>> source, Class<T> destinationClass, String... fieldsToMap) throws BadEntityException {
+        Set<T> result = new HashSet<>();
+        for (IdentifiableEntity<?> entity : source) {
+            result.add(mapToDto(entity,destinationClass,fieldsToMap));
+        }
+        return result;
+    }
+
+    @Transactional(readOnly = true)
+    public <T> List<T> mapToDto(List<? extends IdentifiableEntity<?>> source, Class<T> destinationClass, String... fieldsToMap) throws BadEntityException {
+        List<T> result = new ArrayList<>();
+        for (IdentifiableEntity<?> entity : source) {
+            result.add(mapToDto(entity,destinationClass,fieldsToMap));
+        }
+        return result;
+    }
+
     //@LogInteraction
-    @Transactional
+    @Transactional(readOnly = true)
     public <T> T mapToDto(IdentifiableEntity<?> source, Class<T> destinationClass,String... fieldsToMap) throws BadEntityException {
         // source entity is detached and might not have all collections lazy loaded for this dto mapping -> merge
         if (entityManager!=null)
@@ -64,8 +80,8 @@ public class DelegatingDtoMapper{
 
     private DtoMapper findMapper(Class<?> dtoClass) {
         Optional<DtoMapper<?, ?>> matchingMapper =
-                delegates.stream().
-                        filter(mapper -> mapper.supports(dtoClass))
+                delegates.stream()
+                        .filter(mapper -> mapper.supports(dtoClass))
                         .findFirst();
         if (matchingMapper.isEmpty()) {
             throw new IllegalArgumentException("No Mapper found for dtoClass: " + dtoClass);

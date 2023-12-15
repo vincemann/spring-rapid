@@ -23,6 +23,8 @@ import java.lang.annotation.Annotation;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicBoolean;
 
+import static com.github.vincemann.springrapid.core.util.ProxyUtils.getTargetClass;
+
 @Slf4j
 public class RapidRelationalEntityManagerUtil implements RelationalEntityManagerUtil {
 
@@ -89,7 +91,7 @@ public class RapidRelationalEntityManagerUtil implements RelationalEntityManager
      */
     public Map<Class<IdentifiableEntity>,Collection<IdentifiableEntity>> findBiDirParentCollections(IdentifiableEntity child, String... membersToCheck){
         assertEntityRelationType(child, RelationalEntityType.BiDirChild);
-        return findEntityCollections(ProxyUtils.hibernateUnproxy(child), BiDirParentCollection.class, membersToCheck);
+        return findEntityCollections(child, BiDirParentCollection.class, membersToCheck);
     }
     /**
      *
@@ -97,12 +99,12 @@ public class RapidRelationalEntityManagerUtil implements RelationalEntityManager
      */
     public Collection<IdentifiableEntity> findSingleBiDirParents(IdentifiableEntity child, String... membersToCheck) {
         assertEntityRelationType(child, RelationalEntityType.BiDirChild);
-        return findSingleEntities(ProxyUtils.hibernateUnproxy(child), BiDirParentEntity.class, membersToCheck);
+        return findSingleEntities(child, BiDirParentEntity.class, membersToCheck);
     }
 
     public Collection<IdentifiableEntity> findAllBiDirParents(IdentifiableEntity child, String... membersToCheck) {
         assertEntityRelationType(child, RelationalEntityType.BiDirChild);
-        return findAllEntities(ProxyUtils.hibernateUnproxy(child), BiDirParentEntity.class, BiDirParentCollection.class, membersToCheck);
+        return findAllEntities(child, BiDirParentEntity.class, BiDirParentCollection.class, membersToCheck);
     }
 
 
@@ -158,7 +160,7 @@ public class RapidRelationalEntityManagerUtil implements RelationalEntityManager
      */
     public Map<Class<IdentifiableEntity>,Collection<IdentifiableEntity>> findBiDirChildCollections(IdentifiableEntity parent, String... membersToCheck){
         assertEntityRelationType(parent, RelationalEntityType.BiDirParent);
-        return findEntityCollections(ProxyUtils.hibernateUnproxy(parent),BiDirChildCollection.class,membersToCheck);
+        return findEntityCollections(parent,BiDirChildCollection.class,membersToCheck);
     }
 
     /**
@@ -167,11 +169,11 @@ public class RapidRelationalEntityManagerUtil implements RelationalEntityManager
      */
     public Set<IdentifiableEntity> findSingleBiDirChildren(IdentifiableEntity parent, String... membersToCheck){
         assertEntityRelationType(parent, RelationalEntityType.BiDirParent);
-        return findSingleEntities(ProxyUtils.hibernateUnproxy(parent), BiDirChildEntity.class,membersToCheck);
+        return findSingleEntities(parent, BiDirChildEntity.class,membersToCheck);
     }
 
     public Collection<IdentifiableEntity> findAllBiDirChildren(IdentifiableEntity parent, String... membersToCheck) {
-        assertEntityRelationType(ProxyUtils.hibernateUnproxy(parent), RelationalEntityType.BiDirParent);
+        assertEntityRelationType(parent, RelationalEntityType.BiDirParent);
         return findAllEntities(parent,BiDirChildEntity.class,BiDirChildCollection.class,membersToCheck);
     }
 
@@ -274,7 +276,7 @@ public class RapidRelationalEntityManagerUtil implements RelationalEntityManager
 
     protected<C> Set<C> findSingleEntities(IdentifiableEntity<?> entity, Class<? extends Annotation> annotationClass, String... membersToCheck){
         Set<C> entities = new HashSet<>();
-        EntityReflectionUtils.doWithAnnotatedNamedFields(annotationClass,entity.getClass(),Sets.newHashSet(membersToCheck), field -> {
+        EntityReflectionUtils.doWithAnnotatedNamedFields(annotationClass,getTargetClass(entity),Sets.newHashSet(membersToCheck), field -> {
             C foundEntity = (C) field.get(entity);
             if(foundEntity == null){
                 //skip
@@ -293,7 +295,7 @@ public class RapidRelationalEntityManagerUtil implements RelationalEntityManager
      */
     protected<C> Map<Class<C>,Collection<C>>  findEntityCollections(IdentifiableEntity entity, Class<? extends Annotation> entityAnnotationClass, String... membersToCheck) {
         Map<Class<C>,Collection<C>> entityType_collectionMap = new HashMap<>();
-        EntityReflectionUtils.doWithAnnotatedNamedFields(entityAnnotationClass, entity.getClass(), Sets.newHashSet(membersToCheck), field -> {
+        EntityReflectionUtils.doWithAnnotatedNamedFields(entityAnnotationClass, getTargetClass(entity), Sets.newHashSet(membersToCheck), field -> {
             Collection<C> entityCollection = (Collection<C>) field.get(entity);
             if (entityCollection == null) {
                 //throw new IllegalArgumentException("Null idCollection found in BiDirParent "+ this + " for EntityCollectionField with name: " + field.getName());
@@ -323,19 +325,17 @@ public class RapidRelationalEntityManagerUtil implements RelationalEntityManager
 
     protected void linkEntity(IdentifiableEntity<?> entity, IdentifiableEntity newEntity, Class<? extends Annotation> entityAnnotationClass, Class<? extends Annotation> entityCollectionAnnotationClass, String... membersToCheck) throws UnknownEntityTypeException {
         AtomicBoolean added = new AtomicBoolean(false);
-        IdentifiableEntity<?> _entity = ProxyUtils.hibernateUnproxy(entity);
-        IdentifiableEntity<?> _newEntity = ProxyUtils.hibernateUnproxy(newEntity);
         //add to matching entity collections
         // todo THIS CORRECT
-        for (Map.Entry<Class<IdentifiableEntity>,Collection<IdentifiableEntity>> entry : this.<IdentifiableEntity>findEntityCollections(_entity,entityCollectionAnnotationClass,membersToCheck).entrySet()) {
+        for (Map.Entry<Class<IdentifiableEntity>,Collection<IdentifiableEntity>> entry : this.<IdentifiableEntity>findEntityCollections(entity,entityCollectionAnnotationClass,membersToCheck).entrySet()) {
             Class<? extends IdentifiableEntity> targetClass = entry.getKey();
-            if (_newEntity.getClass().equals(targetClass)) {
+            if (getTargetClass(newEntity).equals(targetClass)) {
                 (entry.getValue()).add(newEntity);
                 added.set(true);
             }
         }
         //set matching entity
-        EntityReflectionUtils.doWithNamedAnnotatedFieldsOfType(newEntity.getClass(),entityAnnotationClass,entity.getClass(),Sets.newHashSet(membersToCheck),entityField -> {
+        EntityReflectionUtils.doWithNamedAnnotatedFieldsOfType(getTargetClass(newEntity),entityAnnotationClass,getTargetClass(entity),Sets.newHashSet(membersToCheck),entityField -> {
             IdentifiableEntity oldEntity = (IdentifiableEntity) entityField.get(entity);
             if (oldEntity != null) {
                 log.warn("Overriding old entity: " + oldEntity + " with new entity " + newEntity + " of source sntity " + entity);
@@ -350,17 +350,15 @@ public class RapidRelationalEntityManagerUtil implements RelationalEntityManager
 
     protected void unlinkEntity(IdentifiableEntity entity, IdentifiableEntity entityToRemove, Class<? extends Annotation> entityEntityAnnotationClass, Class<? extends Annotation> entityEntityCollectionAnnotationClass, String... membersToCheck) throws UnknownEntityTypeException{
         AtomicBoolean deleted = new AtomicBoolean(false);
-        IdentifiableEntity<?> _entity = ProxyUtils.hibernateUnproxy(entity);
-        IdentifiableEntity<?> _entityToRemove = ProxyUtils.hibernateUnproxy(entityToRemove);
-        for (Map.Entry<Class<IdentifiableEntity>,Collection<IdentifiableEntity>> entry : this.<IdentifiableEntity>findEntityCollections(_entity,entityEntityCollectionAnnotationClass,membersToCheck).entrySet()) {
+        for (Map.Entry<Class<IdentifiableEntity>,Collection<IdentifiableEntity>> entry : this.<IdentifiableEntity>findEntityCollections(entity,entityEntityCollectionAnnotationClass,membersToCheck).entrySet()) {
             //todo only swapped getKey -> getValue, is value not used?
             Collection<IdentifiableEntity> entityCollection = entry.getValue();
             if(entityCollection!=null){
                 if(!entityCollection.isEmpty()){
                     Optional<IdentifiableEntity> optionalEntity = entityCollection.stream().findFirst();
                     if(optionalEntity.isPresent()){
-                        IdentifiableEntity removeCandidate = ProxyUtils.hibernateUnproxy(optionalEntity.get());
-                        if(_entityToRemove.getClass().equals(removeCandidate.getClass())){
+                        IdentifiableEntity removeCandidate = optionalEntity.get();
+                        if(getTargetClass(entityToRemove).equals(getTargetClass(removeCandidate))){
                             //this set needs to remove the entity
                             //here is a hibernate bug in persistent set remove function, see https://stackoverflow.com/a/47968974
                             //therefor we use an odd workaround
@@ -388,10 +386,10 @@ public class RapidRelationalEntityManagerUtil implements RelationalEntityManager
                 }
             }
         }
-        EntityReflectionUtils.doWithAnnotatedNamedFields(entityEntityAnnotationClass,entity.getClass(),Sets.newHashSet(membersToCheck), entityField -> {
-            IdentifiableEntity removeCandidate = ProxyUtils.hibernateUnproxy((IdentifiableEntity) entityField.get(entity));
+        EntityReflectionUtils.doWithAnnotatedNamedFields(entityEntityAnnotationClass,getTargetClass(entity),Sets.newHashSet(membersToCheck), entityField -> {
+            IdentifiableEntity removeCandidate = (IdentifiableEntity) entityField.get(entity);
             if(removeCandidate!=null) {
-                if (removeCandidate.getClass().equals(_entityToRemove.getClass())) {
+                if (getTargetClass(removeCandidate).equals(getTargetClass(entityToRemove))) {
                     entityField.set(entity, null);
                     deleted.set(true);
                 }
@@ -413,7 +411,7 @@ public class RapidRelationalEntityManagerUtil implements RelationalEntityManager
 
 
     void assertEntityRelationType(IdentifiableEntity entity, RelationalEntityType expectedType){
-        if (!inferTypes(entity.getClass()).contains(expectedType)){
+        if (!inferTypes(getTargetClass(entity)).contains(expectedType)){
             throw new IllegalArgumentException("Entity: " + entity + " is not of expected entity relation type: " + expectedType.name());
         }
     }

@@ -13,6 +13,8 @@ import javax.persistence.Id;
 import javax.persistence.PersistenceContext;
 import java.util.*;
 
+import static com.github.vincemann.springrapid.core.util.ProxyUtils.getTargetClass;
+
 @Slf4j
 @Transactional
 public class RapidRelationalEntityManager implements RelationalEntityManager {
@@ -26,7 +28,7 @@ public class RapidRelationalEntityManager implements RelationalEntityManager {
 //        if (entity.getId() != null) {
 //            throw new IllegalArgumentException("save needs null id");
 //        }
-        Set<RelationalEntityType> relationalEntityTypes = relationalEntityManagerUtil.inferTypes(entity.getClass());
+        Set<RelationalEntityType> relationalEntityTypes = relationalEntityManagerUtil.inferTypes(getTargetClass(entity));
         if (relationalEntityTypes.contains(RelationalEntityType.BiDirParent)) {
             if (log.isDebugEnabled())
                 log.debug("applying pre persist BiDirParent logic for: " + entity);
@@ -49,7 +51,7 @@ public class RapidRelationalEntityManager implements RelationalEntityManager {
 
     @Override
     public void remove(IdentifiableEntity entity, String... membersToCheck) throws EntityNotFoundException, BadEntityException {
-        Set<RelationalEntityType> relationalEntityTypes = relationalEntityManagerUtil.inferTypes(entity.getClass());
+        Set<RelationalEntityType> relationalEntityTypes = relationalEntityManagerUtil.inferTypes(getTargetClass(entity));
 
         if (relationalEntityTypes.contains(RelationalEntityType.BiDirParent)) {
             if (log.isDebugEnabled())
@@ -68,7 +70,7 @@ public class RapidRelationalEntityManager implements RelationalEntityManager {
     @Override
     public <E extends IdentifiableEntity> E partialUpdate(E oldEntity, E updateEntity, String... membersToCheck) throws EntityNotFoundException, BadEntityException {
         // only operate on non null fields of partialUpdateEntity
-        Set<RelationalEntityType> relationalEntityTypes = relationalEntityManagerUtil.inferTypes(oldEntity.getClass());
+        Set<RelationalEntityType> relationalEntityTypes = relationalEntityManagerUtil.inferTypes(getTargetClass(oldEntity));
         if (relationalEntityTypes.contains(RelationalEntityType.BiDirParent)) {
             if (log.isDebugEnabled())
                 log.debug("applying pre partial-update BiDirParent logic for: " + oldEntity.getClass());
@@ -86,7 +88,7 @@ public class RapidRelationalEntityManager implements RelationalEntityManager {
 
     @Override
     public <E extends IdentifiableEntity> E update(E oldEntity, E updateEntity, String... membersToCheck) throws EntityNotFoundException, BadEntityException {
-        Set<RelationalEntityType> relationalEntityTypes = relationalEntityManagerUtil.inferTypes(updateEntity.getClass());
+        Set<RelationalEntityType> relationalEntityTypes = relationalEntityManagerUtil.inferTypes(getTargetClass(updateEntity));
 
         if (relationalEntityTypes.contains(RelationalEntityType.BiDirParent)) {
             if (log.isDebugEnabled())

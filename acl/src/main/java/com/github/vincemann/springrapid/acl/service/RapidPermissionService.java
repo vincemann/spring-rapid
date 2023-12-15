@@ -18,9 +18,6 @@ import org.springframework.transaction.annotation.Transactional;
 import java.io.Serializable;
 import java.lang.reflect.InvocationTargetException;
 import java.util.*;
-import java.util.stream.Collectors;
-
-import static com.github.vincemann.springrapid.acl.util.AclUtils.getSidString;
 
 /**
  * API for managing acl data.
@@ -128,7 +125,7 @@ public class RapidPermissionService implements AclPermissionService {
         try {
             return (MutableAcl) aclService.readAclById(oi);
         } catch (final NotFoundException nfe) {
-            throw new AclNotFoundException("Acl not found for oi: " + oi);
+            throw new AclNotFoundException("Acl not found for oi: " + AclUtils.objectIdentityToString(oi));
         }
     }
 
@@ -136,7 +133,7 @@ public class RapidPermissionService implements AclPermissionService {
         try {
             return (MutableAcl) aclService.readAclById(oi);
         } catch (final NotFoundException nfe) {
-            log.debug("Acl not found for oi: " + oi+ ", creating new");
+            log.debug("Acl not found for oi: " + AclUtils.objectIdentityToString(oi)+ ", creating new");
             return aclService.createAcl(oi);
         }
     }
@@ -230,6 +227,12 @@ public class RapidPermissionService implements AclPermissionService {
         MutableAcl childAcl = findOrCreateAcl(childOi);
         MutableAcl parentAcl = findAcl(parentOi);
 
+        if (log.isDebugEnabled()){
+            log.debug("child acl of entity before copying: ");
+            log.debug(AclUtils.aclToString(childAcl));
+        }
+
+
         copyMatchingAces(parentAcl, childAcl, aceFilter);
 
 //        childAcl.setParent(parentAcl);
@@ -252,39 +255,50 @@ public class RapidPermissionService implements AclPermissionService {
 
     protected void logAclInformation(MutableAcl parentAcl, MutableAcl childAcl) {
         if (log.isDebugEnabled()){
-            log.debug("Parent Acl: " + parentAcl);
-            log.debug("Child Acl: " + childAcl);
+
+            log.debug("parent acl: ");
+            log.debug(AclUtils.aclToString(parentAcl));
+            log.debug("Child Acl: ");
+            log.debug(AclUtils.aclToString(childAcl));
         }
     }
 
     protected void addPermissionsForSid(IdentifiableEntity<?> targetObj, Sid sid, Permission... permissions) {
-        if (log.isDebugEnabled())
-            log.debug("sid: "+ sid +" will gain permissions: " + Arrays.stream(permissions).map(p -> permissionStringConverter.convert(p)).collect(Collectors.toSet()) +" over entity: " + targetObj);
         final ObjectIdentity oi = new ObjectIdentityImpl(targetObj.getClass(), targetObj.getId());
+        if (log.isDebugEnabled())
+            log.debug("sid: "+ AclUtils.sidToString(sid) +" will gain permissions: "
+                    + AclUtils.permissionsToString(permissions)
+                    +" over entity: " + AclUtils.objectIdentityToString(oi));
 
         MutableAcl acl = findOrCreateAcl(oi);
-        if (log.isDebugEnabled())
-            log.debug("acl of entity before adding: " + acl);
+        if (log.isDebugEnabled()){
+            log.debug("acl of entity before adding: ");
+            log.debug(AclUtils.aclToString(acl));
+        }
 
         for (Permission permission : permissions) {
             if (AclUtils.isAcePresent(permission,sid,acl))
-                log.warn("ace is already present in acl: " + sid + " - " + permission + ". Skipping");
+                log.warn("ace is already present in acl: " + AclUtils.sidToString(sid) + " - " + AclUtils.permissionToString(permission) + ". Skipping");
             else
                 acl.insertAce(acl.getEntries().size(), permission, sid, true);
         }
         MutableAcl updated = aclService.updateAcl(acl);
 
-        if (log.isDebugEnabled())
-            log.debug("updated acl: " + updated);
+        if (log.isDebugEnabled()){
+            log.debug("updated acl ");
+            log.debug(AclUtils.aclToString(updated));
+        }
     }
 
     protected void deletePermissionForSid(IdentifiableEntity<?> targetObj, Sid sid, boolean ignoreNotFound, Permission... permissions) throws AclNotFoundException, AceNotFoundException {
-        if (log.isDebugEnabled())
-            log.debug("sid: "+ sid +" will loose permission: " + Arrays.stream(permissions).map(p -> permissionStringConverter.convert(p)).collect(Collectors.toSet()) +" over entity: " + targetObj);
         final ObjectIdentity oi = new ObjectIdentityImpl(targetObj.getClass(), targetObj.getId());
-        MutableAcl acl = findAcl(oi);
         if (log.isDebugEnabled())
-            log.debug("acl of entity before removal" + acl);
+            log.debug("sid: "+ AclUtils.sidToString(sid) +" will loose permission: " + AclUtils.permissionsToString(permissions) +" over entity: " + AclUtils.objectIdentityToString(oi));
+        MutableAcl acl = findAcl(oi);
+        if (log.isDebugEnabled()){
+            log.debug("child acl of entity before removal: ");
+            log.debug(AclUtils.aclToString(acl));
+        }
         // create new list here, so I dont create concurrent modification down below - there is no exception, but it does not seem safe
         List<AccessControlEntry> aces = new ArrayList<>(acl.getEntries());
 //        Set<Integer> aceIndicesToRemove = findMatchingAceIndices(aces, sid, permissions);
@@ -311,7 +325,7 @@ public class RapidPermissionService implements AclPermissionService {
             index++;
         }
         if (removed != permissions.length && !ignoreNotFound)
-            throw new AceNotFoundException("Cant remove permissions " + Arrays.toString(permissions) + " for sid: " + sid + " on target: " + oi + ", bc not all matching aces found");
+            throw new AceNotFoundException("Cant remove permissions " + AclUtils.permissionsToString(permissions) + " for sid: " + AclUtils.sidToString(sid) + " on target: " + AclUtils.objectIdentityToString(oi) + ", bc not all matching aces found");
 
 //        Iterator<AccessControlEntry> aceIterator = aces.iterator();
 //        int index = 0;
@@ -334,8 +348,10 @@ public class RapidPermissionService implements AclPermissionService {
 //        }
 
         MutableAcl updated = aclService.updateAcl(acl);
-        if (log.isDebugEnabled())
-            log.debug("updated acl: " + updated);
+        if (log.isDebugEnabled()){
+            log.debug("updated acl ");
+            log.debug(AclUtils.aclToString(updated));
+        }
     }
 
 

@@ -1,10 +1,8 @@
 package com.github.vincemann.springrapid.acl.service;
 
 import com.google.common.collect.Sets;
-import lombok.Builder;
 import lombok.Getter;
 import org.springframework.security.acls.domain.GrantedAuthoritySid;
-import org.springframework.security.acls.domain.PrincipalSid;
 import org.springframework.security.acls.model.AccessControlEntry;
 import org.springframework.security.acls.model.Permission;
 import org.springframework.security.acls.model.Sid;
@@ -12,7 +10,7 @@ import org.springframework.security.acls.model.Sid;
 import java.util.HashSet;
 import java.util.Set;
 
-import static com.github.vincemann.springrapid.acl.util.AclUtils.getSidString;
+import static com.github.vincemann.springrapid.acl.util.AclUtils.sidToString;
 
 @Getter
 public class AceFilter {
@@ -49,10 +47,21 @@ public class AceFilter {
             return this;
         }
 
+        public AceFilterBuilder sids(Set<String> sids) {
+            aceFilter.sids.addAll(sids);
+            return this;
+        }
+
         public AceFilterBuilder ignoredSid(String ignoredSid) {
             aceFilter.ignoredSids.add(ignoredSid);
             return this;
         }
+
+        public AceFilterBuilder ignoredSids(Set<String> ignoredSids) {
+            aceFilter.ignoredSids.addAll(ignoredSids);
+            return this;
+        }
+
 
         public AceFilterBuilder principalsOnly(Boolean principalsOnly) {
             aceFilter.principalsOnly = principalsOnly;
@@ -71,7 +80,7 @@ public class AceFilter {
             if (aceSid instanceof GrantedAuthoritySid)
                 return false;
         }
-        String aceSidString = getSidString(aceSid);
+        String aceSidString = sidToString(aceSid);
         if (!this.ignoredSids.isEmpty()){
             boolean ignored = this.ignoredSids.contains(aceSidString);
             if (ignored)

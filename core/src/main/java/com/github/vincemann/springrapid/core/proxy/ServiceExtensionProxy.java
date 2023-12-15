@@ -28,7 +28,7 @@ public class ServiceExtensionProxy<S extends CrudService<?,?>>
     }
 
     public boolean isIgnored(Class<? extends AbstractServiceExtension> clazz) {
-        return !defaultExtensionsIgnored.contains(clazz);
+        return defaultExtensionsIgnored.contains(clazz);
     }
 
     @Override

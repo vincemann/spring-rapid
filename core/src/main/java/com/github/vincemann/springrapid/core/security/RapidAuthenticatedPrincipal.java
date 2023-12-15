@@ -102,4 +102,8 @@ public class RapidAuthenticatedPrincipal implements AuthenticatedPrincipal, Cred
     public String toString() {
         return new ReflectionToStringBuilder(this, ToStringStyle.SHORT_PREFIX_STYLE).toString();
     }
+
+    public String shortToString(){
+        return "[ AuthenticatedPrincipal: " + getName() + " ]";
+    }
 }

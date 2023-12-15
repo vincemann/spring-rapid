@@ -12,6 +12,7 @@ import com.github.vincemann.springrapid.core.util.ProxyUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
+import org.springframework.test.util.AopTestUtils;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -69,7 +70,7 @@ public class RapidDefaultSecurityExtensionAutoConfiguration {
             List<AbstractServiceExtension> defaultSecurityExtensions = createDefaultSecurityExtensions(defaultSecurityExtensionsOptional);
             log.debug("Adding Default security extensions for proxy: " + proxy);
             for (AbstractServiceExtension extension : defaultSecurityExtensions) {
-                if (proxy.isIgnored(extension.getClass())){
+                if (proxy.isIgnored(AopTestUtils.getUltimateTargetObject(extension).getClass())){
                     log.info("ignoring default extension: " + extension.getClass().getSimpleName());
                     continue;
                 }

@@ -5,6 +5,7 @@ import com.github.vincemann.springrapid.acl.framework.oidresolve.ObjectIdentityR
 import com.github.vincemann.springrapid.acl.framework.oidresolve.RapidObjectIdentityResolver;
 import com.github.vincemann.springrapid.acl.framework.oidresolve.UnresolvableOidException;
 import com.github.vincemann.springrapid.acl.service.PermissionStringConverter;
+import com.github.vincemann.springrapid.acl.util.AclUtils;
 import com.github.vincemann.springrapid.core.IdConverter;
 import com.github.vincemann.springrapid.core.model.IdentifiableEntity;
 import com.github.vincemann.springrapid.core.security.RapidSecurityContext;
@@ -118,6 +119,10 @@ public class VerboseAclPermissionEvaluator extends AclPermissionEvaluator implem
         try {
             // Lookup only ACL for SIDs we're interested in
             Acl acl = aclService.readAclById(oid, sids);
+            if (log.isDebugEnabled()){
+                log.debug("acl in question:");
+                log.debug(AclUtils.aclToString(acl));
+            }
 
             if (acl.isGranted(requiredPermissions, sids, false)) {
                 log.debug("Access granted");

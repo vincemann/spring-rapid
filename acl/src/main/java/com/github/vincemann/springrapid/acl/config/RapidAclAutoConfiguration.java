@@ -7,6 +7,7 @@ import com.github.vincemann.springrapid.acl.service.AclPermissionService;
 import com.github.vincemann.springrapid.acl.service.PermissionStringConverter;
 import com.github.vincemann.springrapid.acl.service.RapidPermissionService;
 import com.github.vincemann.springrapid.acl.service.RapidPermissionStringConverter;
+import com.github.vincemann.springrapid.acl.util.AclUtils;
 import com.github.vincemann.springrapid.core.security.Roles;
 import com.github.vincemann.springrapid.acl.framework.HierarchicPermissionGrantingStrategy;
 import com.github.vincemann.springrapid.acl.framework.NoModSecurityCheckAclAuthorizationStrategy;
@@ -28,6 +29,7 @@ import org.springframework.security.access.expression.method.MethodSecurityExpre
 import org.springframework.security.acls.AclPermissionCacheOptimizer;
 import org.springframework.security.acls.domain.AclAuthorizationStrategy;
 import org.springframework.security.acls.domain.ConsoleAuditLogger;
+import org.springframework.security.acls.domain.DefaultPermissionGrantingStrategy;
 import org.springframework.security.acls.domain.EhCacheBasedAclCache;
 import org.springframework.security.acls.jdbc.BasicLookupStrategy;
 import org.springframework.security.acls.jdbc.JdbcMutableAclService;
@@ -96,7 +98,12 @@ public class RapidAclAutoConfiguration {
     @ConditionalOnMissingBean(PermissionGrantingStrategy.class)
     @Bean
     public PermissionGrantingStrategy permissionGrantingStrategy() {
-        return new HierarchicPermissionGrantingStrategy(new ConsoleAuditLogger());
+        return new DefaultPermissionGrantingStrategy(new ConsoleAuditLogger());
+    }
+
+    @Autowired
+    public void configureAclUtils(PermissionStringConverter permissionStringConverter){
+        AclUtils.setPermissionStringConverter(permissionStringConverter);
     }
 
     @Bean

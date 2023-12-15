@@ -12,12 +12,15 @@ import com.github.vincemann.springrapid.autobidir.dto.parent.annotation.BiDirPar
 import com.github.vincemann.springrapid.autobidir.util.EntityIdAnnotationUtils;
 import com.github.vincemann.springrapid.core.util.EntityReflectionUtils;
 import com.github.vincemann.springrapid.core.util.Lists;
+import com.github.vincemann.springrapid.core.util.ProxyUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.cache.annotation.Cacheable;
 
 import java.io.Serializable;
 import java.lang.annotation.Annotation;
 import java.util.*;
+
+import static com.github.vincemann.springrapid.core.util.ProxyUtils.getTargetClass;
 
 @Slf4j
 public class RapidRelationalDtoManager implements RelationalDtoManager {
@@ -92,7 +95,7 @@ public class RapidRelationalDtoManager implements RelationalDtoManager {
 
 
     public Map<Class<IdentifiableEntity>, Collection<Serializable>> findAllUniDirChildIds(Object parent){
-        return findAllEntityIds(parent, UniDirChildId.class, UniDirChildIdCollection.class);
+        return findAllEntityIds((parent), UniDirChildId.class, UniDirChildIdCollection.class);
     }
 
     /**
@@ -181,7 +184,7 @@ public class RapidRelationalDtoManager implements RelationalDtoManager {
 
     protected <C> Map<Class<C>, Serializable> findEntityIds(Object entity, Class<? extends Annotation> entityIdAnnotationType) {
         final Map<Class<C>, Serializable> result = new HashMap<>();
-        EntityReflectionUtils.doWithAnnotatedFields(entityIdAnnotationType, entity.getClass(), field -> {
+        EntityReflectionUtils.doWithAnnotatedFields(entityIdAnnotationType, getTargetClass(entity), field -> {
             Serializable id = (Serializable) field.get(entity);
             if (id != null) {
                 result.put((Class<C>) EntityIdAnnotationUtils.getEntityType(field.getAnnotation(entityIdAnnotationType)), id);
@@ -194,7 +197,7 @@ public class RapidRelationalDtoManager implements RelationalDtoManager {
 
     protected <C> Map<Class<C>, Collection<Serializable>> findEntityIdCollections(Object entity,Class<? extends Annotation> entityCollectionIdAnnotationType) {
         final Map<Class<C>, Collection<Serializable>> result = new HashMap<>();
-        EntityReflectionUtils.doWithAnnotatedFields(entityCollectionIdAnnotationType,entity.getClass(),field -> {
+        EntityReflectionUtils.doWithAnnotatedFields(entityCollectionIdAnnotationType,getTargetClass(entity),field -> {
             Collection<Serializable> idCollection = (Collection<Serializable>) field.get(entity);
             if (idCollection != null) {
                 result.put((Class<C>) EntityIdAnnotationUtils.getEntityType(field.getAnnotation(entityCollectionIdAnnotationType)), idCollection);
@@ -223,7 +226,7 @@ public class RapidRelationalDtoManager implements RelationalDtoManager {
         Map<Class<IdentifiableEntity>, Collection<Serializable>> entityIdCollections = findEntityIdCollections(target,entityIdCollectionAnnotationClass);
         //child collections
         for (Map.Entry<Class<IdentifiableEntity>, Collection<Serializable>> entityIdCollectionEntry : entityIdCollections.entrySet()) {
-            if (entityIdCollectionEntry.getKey().equals(src.getClass())) {
+            if (entityIdCollectionEntry.getKey().equals(getTargetClass(src))) {
                 //need to add
                 Collection<Serializable> idCollection = entityIdCollectionEntry.getValue();
                 //dirChild is always an Identifiable Child
@@ -231,7 +234,7 @@ public class RapidRelationalDtoManager implements RelationalDtoManager {
             }
         }
 
-        AutoBiDirEntityReflectionUtils.doWithIdFieldsWithEntityType(src.getClass(), entityIdAnnotationClass, target.getClass(), field -> {
+        AutoBiDirEntityReflectionUtils.doWithIdFieldsWithEntityType(getTargetClass(src), entityIdAnnotationClass, getTargetClass(target), field -> {
             Object prevEntityId = field.get(target);
             if (prevEntityId != null) {
                 log.warn("Warning, prev EntityId: " + prevEntityId + " was not null -> overriding with new value: " + entityId);

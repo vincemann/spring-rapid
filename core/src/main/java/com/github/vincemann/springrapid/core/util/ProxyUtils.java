@@ -58,6 +58,10 @@ public class ProxyUtils {
         return AopTestUtils.getUltimateTargetObject(proxy);
     }
 
+    public static <T> Class<T> getTargetClass(Object proxied){
+        return (Class<T>) hibernateUnproxy(proxied).getClass();
+    }
+
     public static <T> T hibernateUnproxy(T proxied)
     {
         T entity = proxied;

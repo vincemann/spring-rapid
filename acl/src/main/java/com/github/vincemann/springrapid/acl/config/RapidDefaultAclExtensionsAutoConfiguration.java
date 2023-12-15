@@ -12,6 +12,7 @@ import com.github.vincemann.springrapid.core.util.ProxyUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
+import org.springframework.test.util.AopTestUtils;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -49,7 +50,7 @@ public class RapidDefaultAclExtensionsAutoConfiguration {
             List<AbstractServiceExtension> defaultAclExtensions = createDefaultAclExtensions(defaultAclExtensionsOptional);
             log.debug("Adding Default acl extensions for proxy: " + proxy);
             for (AbstractServiceExtension defaultAclExtension : defaultAclExtensions) {
-                if (proxy.isIgnored(defaultAclExtension.getClass())){
+                if (proxy.isIgnored(AopTestUtils.getUltimateTargetObject(defaultAclExtension).getClass())){
                     log.info("ignoring default extension: " + defaultAclExtension.getClass().getSimpleName());
                     continue;
                 }
