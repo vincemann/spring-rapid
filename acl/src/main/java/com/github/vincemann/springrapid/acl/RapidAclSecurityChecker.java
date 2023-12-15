@@ -77,12 +77,12 @@ public class RapidAclSecurityChecker
             throw new IllegalArgumentException("Clazz must not be null");
         }
         RapidSecurityContextChecker.checkAuthenticated();
-        RapidAuthenticatedPrincipal p = rapidSecurityContext.currentPrincipal();
+//        RapidAuthenticatedPrincipal p = rapidSecurityContext.currentPrincipal();
         String permissionString = permissionStringConverter.convert(permission);
         boolean permitted = checkExpression("hasPermission(" + id + ",'" + clazz.getName() + "','" + permissionString + "')");
         if(!permitted){
             RapidAuthenticatedPrincipal principal = rapidSecurityContext.currentPrincipal();
-            throw new AccessDeniedException("Permission not Granted! Principal: "+principal+
+            throw new AccessDeniedException("Permission not Granted! Principal: "+principal.shortToString()+
                     " does not have Permission: " + permissionString + " for entity: {"+clazz.getSimpleName() + ", id: " + id+"}");
         }
     }

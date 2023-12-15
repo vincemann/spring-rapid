@@ -7,6 +7,7 @@ import lombok.extern.slf4j.Slf4j;
 
 import java.lang.reflect.Method;
 import java.util.HashSet;
+import java.util.Optional;
 import java.util.Set;
 
 @Getter
@@ -25,6 +26,12 @@ public class ServiceExtensionProxy<S extends CrudService<?,?>>
 
     public void ignoreExtension(Class<? extends AbstractServiceExtension> clazz){
         defaultExtensionsIgnored.add(clazz);
+        Optional<AbstractServiceExtension<?, ? super ProxyController>> added =
+                getExtensions().stream().filter(e -> e.getClass().equals(clazz)).findAny();
+        if (added.isPresent()){
+            log.warn("extension that should get ignored was added to proxy, removing...: " + added.get());
+            removeExtension(added.get());
+        }
     }
 
     public boolean isIgnored(Class<? extends AbstractServiceExtension> clazz) {

@@ -73,6 +73,12 @@ public abstract class AbstractExtensionServiceProxy
         resetLearnedIgnoredMethods();
     }
 
+    public void removeExtension(AbstractServiceExtension<?, ? super P> extension){
+        this.extensions.remove(extension);
+        extension.setChain(null);
+        extension.setProxyController(null);
+    }
+
     public void addExtension(AbstractServiceExtension<?, ? super P> extension, int index) {
         this.extensions.add(index,extension);
         //extension expects chainController<T>, gets ChainController<S>, T is always superclass of S -> so this is safe

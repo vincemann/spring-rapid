@@ -8,6 +8,7 @@ import org.springframework.test.util.AopTestUtils;
 
 import java.io.Serializable;
 import java.lang.reflect.Proxy;
+import java.util.Arrays;
 
 public class ServiceExtensionProxyBuilder<S extends CrudService<E,Id>,E extends IdentifiableEntity<Id>, Id extends Serializable> {
     private final ServiceExtensionProxy<S> proxy;
@@ -65,6 +66,7 @@ public class ServiceExtensionProxyBuilder<S extends CrudService<E,Id>,E extends 
         for (Class<? extends AbstractServiceExtension> extension : extensions) {
             proxy.ignoreExtension(extension);
         }
+
         return this;
     }
 

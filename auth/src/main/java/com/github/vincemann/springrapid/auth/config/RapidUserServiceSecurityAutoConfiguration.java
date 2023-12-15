@@ -62,13 +62,13 @@ public class RapidUserServiceSecurityAutoConfiguration {
                                             // Extensions are added by AutoConfig
 ////                                                                            AdminFullAccessAclExtension adminFullAccess,
 ////                                                                            AuthenticatedFullAccessAclExtension authenticatedFullAccessAclExtension,
-                                            CleanUpAclExtension cleanUpAclExtension,
+//                                            CleanUpAclExtension cleanUpAclExtension,
                                             AclUserExtension aclUserServiceExtension
     ) {
         return new ServiceExtensionProxyBuilder<>(service)
-                .toggleDefaultExtensions(false)
+//                .toggleDefaultExtensions(false)
                 .addExtension(aclUserServiceExtension)
-                .addExtension(cleanUpAclExtension)
+//                .addExtension(cleanUpAclExtension)
                 .build();
     }
 
@@ -77,13 +77,14 @@ public class RapidUserServiceSecurityAutoConfiguration {
     @Bean
     @Secured
     public UserService<?, ?> securedUserService(@Acl UserService<?, ?> service,
-                                                UserServiceSecurityExtension securityRule,
-                                                CrudAclChecksSecurityExtension crudAclChecksSecurityExtension
+                                                UserServiceSecurityExtension securityRule
+                                                // added by AutoConfig
+//                                                CrudAclChecksSecurityExtension crudAclChecksSecurityExtension
     ) {
         return new ServiceExtensionProxyBuilder<>(service)
-                .toggleDefaultExtensions(false)
+//                .toggleDefaultExtensions(false)
                 .addExtension(securityRule)
-                .addExtension(crudAclChecksSecurityExtension)
+//                .addExtension(crudAclChecksSecurityExtension)
                 .build();
     }
 
