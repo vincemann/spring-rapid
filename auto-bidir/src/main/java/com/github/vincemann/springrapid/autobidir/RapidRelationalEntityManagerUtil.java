@@ -366,7 +366,7 @@ public class RapidRelationalEntityManagerUtil implements RelationalEntityManager
         // todo THIS CORRECT
         for (Map.Entry<Class<IdentifiableEntity>,Collection<IdentifiableEntity>> entry : this.<IdentifiableEntity>findEntityCollections(entity,entityCollectionAnnotationClass,membersToCheck).entrySet()) {
             Class<? extends IdentifiableEntity> targetClass = entry.getKey();
-            if (newEntity.equals(targetClass)) {
+            if (newEntity.getClass().equals(targetClass)) {
                 (entry.getValue()).add(newEntity);
                 added.set(true);
             }
