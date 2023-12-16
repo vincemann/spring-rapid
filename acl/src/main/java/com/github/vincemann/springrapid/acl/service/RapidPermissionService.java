@@ -319,7 +319,7 @@ public class RapidPermissionService implements AclPermissionService {
             if(ace.getSid().equals(sid) &&
                     Arrays.stream(permissions).anyMatch(p -> p.equals(ace.getPermission()))){
 //                aceIterator.remove();
-                acl.deleteAce(index);
+                acl.deleteAce(index-removed);
                 removed++;
             }
             index++;
