@@ -29,8 +29,8 @@ public class RapidPermissionService implements AclPermissionService {
 
     private MutableAclService aclService;
     private RapidSecurityContext<RapidAuthenticatedPrincipal> securityContext;
-    private PermissionStringConverter permissionStringConverter;
-
+//    private PermissionStringConverter permissionStringConverter;
+/**/
     @Autowired
     public RapidPermissionService(MutableAclService aclService) {
         this.aclService = aclService;
@@ -155,8 +155,8 @@ public class RapidPermissionService implements AclPermissionService {
 //    }
 
     @Override
-    public void inheritAces(IdentifiableEntity<?> parent, List<AclInheritanceInfo> infos) throws AclNotFoundException {
-        AclInheritanceInfo info = getParentInfo(parent,infos);
+    public void inheritAces(IdentifiableEntity<?> parent, List<AclCascadeInfo> infos) throws AclNotFoundException {
+        AclCascadeInfo info = getParentInfo(parent,infos);
         if (info == null)
             return;
         EntityFilter filter = info.getSourceFilter();
@@ -174,13 +174,33 @@ public class RapidPermissionService implements AclPermissionService {
     }
 
     @Override
-    public void inheritAces(Collection<? extends IdentifiableEntity<?>>parents, List<AclInheritanceInfo> infos) throws AclNotFoundException {
+    public void removeAces(IdentifiableEntity<?> parent, List<AclCascadeInfo> infos) throws AclNotFoundException {
+        AclCascadeInfo info = getParentInfo(parent,infos);
+        if (info == null)
+            return;
+        EntityFilter filter = info.getSourceFilter();
+        if (filter != null){
+            if (!filter.matches(parent)){
+                return;
+            }
+        }
+        Collection<IdentifiableEntity<?>> children = getAclChildren(parent, info);
+        for (IdentifiableEntity<?> child : children) {
+            // cannot work with check if all acl entries deleted, bc I cant know how many should be deleted
+            removeAces(child, info.getAceFilter());
+            // recursion
+            removeAces(child,infos);
+        }
+    }
+
+    @Override
+    public void inheritAces(Collection<? extends IdentifiableEntity<?>>parents, List<AclCascadeInfo> infos) throws AclNotFoundException {
         for (IdentifiableEntity<?> parent : parents) {
             inheritAces(parent,infos);
         }
     }
 
-    protected Collection<IdentifiableEntity<?>> getAclChildren(IdentifiableEntity<?> parent, AclInheritanceInfo info) {
+    protected Collection<IdentifiableEntity<?>> getAclChildren(IdentifiableEntity<?> parent, AclCascadeInfo info) {
         try {
             Collection<IdentifiableEntity<?>> children = (Collection<IdentifiableEntity<?>>) info.getTarget().invoke(parent);
             EntityFilter filter = info.getTargetFilter();
@@ -210,9 +230,9 @@ public class RapidPermissionService implements AclPermissionService {
         aclService.updateAcl(childAcl);
     }
 
-    protected AclInheritanceInfo getParentInfo(IdentifiableEntity<?> parent, List<AclInheritanceInfo> infos){
+    protected AclCascadeInfo getParentInfo(IdentifiableEntity<?> parent, List<AclCascadeInfo> infos){
         // first info is always parent
-        Optional<AclInheritanceInfo> info = infos.stream()
+        Optional<AclCascadeInfo> info = infos.stream()
                 .filter(i -> i.matches(parent.getClass()))
                 .findFirst();
         return info.orElse(null);
@@ -240,6 +260,28 @@ public class RapidPermissionService implements AclPermissionService {
         aclService.updateAcl(childAcl);
     }
 
+    @Override
+    public int removeAces(IdentifiableEntity<?> target, AceFilter aceFilter) throws AclNotFoundException {
+        ObjectIdentity oi = new ObjectIdentityImpl(target.getClass(), target.getId());
+
+        MutableAcl acl = findAcl(oi);
+
+        if (log.isDebugEnabled()){
+            log.debug("acl of entity before removing: ");
+            log.debug(AclUtils.aclToString(acl));
+        }
+
+        int removed = removeAces(acl, aceFilter);
+
+        MutableAcl updated = aclService.updateAcl(acl);
+
+        if (log.isDebugEnabled()){
+            log.debug("acl of entity after removing: ");
+            log.debug(AclUtils.aclToString(updated));
+        }
+        return removed;
+    }
+
     /**
      * Copy all aces from parentAcl to childAcl that match aceFilter: {@link AceFilter#matches(AccessControlEntry)}
      * and are not already present in childAcl.
@@ -252,6 +294,8 @@ public class RapidPermissionService implements AclPermissionService {
            }
         }
     }
+
+
 
     protected void logAclInformation(MutableAcl parentAcl, MutableAcl childAcl) {
         if (log.isDebugEnabled()){
@@ -291,109 +335,34 @@ public class RapidPermissionService implements AclPermissionService {
     }
 
     protected void deletePermissionForSid(IdentifiableEntity<?> targetObj, Sid sid, boolean ignoreNotFound, Permission... permissions) throws AclNotFoundException, AceNotFoundException {
-        final ObjectIdentity oi = new ObjectIdentityImpl(targetObj.getClass(), targetObj.getId());
         if (log.isDebugEnabled())
-            log.debug("sid: "+ AclUtils.sidToString(sid) +" will loose permission: " + AclUtils.permissionsToString(permissions) +" over entity: " + AclUtils.objectIdentityToString(oi));
-        MutableAcl acl = findAcl(oi);
-        if (log.isDebugEnabled()){
-            log.debug("child acl of entity before removal: ");
-            log.debug(AclUtils.aclToString(acl));
-        }
+            log.debug("sid: "+ AclUtils.sidToString(sid) +" will loose permission: " + AclUtils.permissionsToString(permissions) +" over entity: " + targetObj);
+
+        int removed = removeAces(targetObj, AceFilter.builder()
+                .sid(AclUtils.sidToString(sid))
+                .permissions(permissions)
+                .build());
+
+        if (removed != permissions.length && !ignoreNotFound)
+            throw new AceNotFoundException("Cant remove permissions on target:  " + AclUtils.permissionsToString(permissions) + " for sid: " + AclUtils.sidToString(sid) + " on target: " + targetObj + ", bc not all matching aces found");
+    }
+
+    public int removeAces(MutableAcl acl, AceFilter aceFilter){
         // create new list here, so I dont create concurrent modification down below - there is no exception, but it does not seem safe
         List<AccessControlEntry> aces = new ArrayList<>(acl.getEntries());
-//        Set<Integer> aceIndicesToRemove = findMatchingAceIndices(aces, sid, permissions);
-
-//        if (aceIndicesToRemove.isEmpty()){
-//            throw new AceNotFoundException("Cant remove permission for sid: " + sid + " on target: " + oi + ", bc no matching ace found");
-//        }
-                // todo have to do weird remove workaround again bc of hibernate set, see DirEntity
-        // also I cannot use equals method in old release, see: https://github.com/vincemann/spring-rapid/issues/155
-        // AccessControlEntry removed = aces.remove(aceIndexToRemove);
-
-        // todo reduce overhead when updating to newer spring version
         Iterator<AccessControlEntry> aceIterator = aces.iterator();
         int removed = 0;
         int index = 0;
         while (aceIterator.hasNext()){
             AccessControlEntry ace = aceIterator.next();
-            if(ace.getSid().equals(sid) &&
-                    Arrays.stream(permissions).anyMatch(p -> p.equals(ace.getPermission()))){
-//                aceIterator.remove();
+            if (aceFilter.matches(ace)){
                 acl.deleteAce(index-removed);
                 removed++;
             }
             index++;
         }
-        if (removed != permissions.length && !ignoreNotFound)
-            throw new AceNotFoundException("Cant remove permissions " + AclUtils.permissionsToString(permissions) + " for sid: " + AclUtils.sidToString(sid) + " on target: " + AclUtils.objectIdentityToString(oi) + ", bc not all matching aces found");
-
-//        Iterator<AccessControlEntry> aceIterator = aces.iterator();
-//        int index = 0;
-//        while (aceIterator.hasNext()){
-//            AccessControlEntry ace = aceIterator.next();
-//            if (aceIndicesToRemove.contains(index)){
-//                if (log.isDebugEnabled())
-//                    log.debug("removing ace: " + ace);
-//                aceIterator.remove();
-//                break;
-//            }
-//            index++;
-//        }
-
-        // do weird stuff so update wont be ignored ...
-//        deleteAclOfEntity(targetObj,deleteCascade);
-//        MutableAcl updatedAcl = aclService.createAcl(oi);
-//        for (AccessControlEntry ace : aces) {
-//            updatedAcl.getEntries().add(ace);
-//        }
-
-        MutableAcl updated = aclService.updateAcl(acl);
-        if (log.isDebugEnabled()){
-            log.debug("updated acl ");
-            log.debug(AclUtils.aclToString(updated));
-        }
+        return removed;
     }
-
-
-//    protected Set<Integer> findMatchingAceIndices(List<AccessControlEntry> aces,Sid sid, Permission... permissions) throws AceNotFoundException {
-//        Set<Integer> indices = new HashSet<>();
-////        int[] index = {-1};
-//        int index = 0;
-//        // https://github.com/spring-projects/spring-security/issues/5401
-////        Set<AccessControlEntry> result = aces.stream()
-////                .peek(x -> index[0]++)
-////                .filter(accessControlEntry -> {
-////                    return getSidString(accessControlEntry.getSid()).equals(getSidString(sid)) &&
-////                            accessControlEntry.getPermission().equals(permissions[0]);
-////                }).collect(Collectors.toSet());
-//        Iterator<AccessControlEntry> iterator = aces.iterator();
-//        while (iterator.hasNext()){
-//            AccessControlEntry ace = iterator.next();
-//            if(getSidString(ace.getSid()).equals(getSidString(sid)) &&
-//                    Arrays.stream(permissions).anyMatch(p -> p.equals(ace.getPermission()))){
-//                        indices.add(index);
-//            }
-//            index += 1;
-//        }
-////        long matches = aces.stream()
-////                .peek(x -> index[0]++)
-////                .filter(accessControlEntry -> {
-////                    boolean isMatching = getSidString(accessControlEntry.getSid()).equals(getSidString(sid)) &&
-////                            Arrays.stream(permissions).anyMatch(p -> p.equals(accessControlEntry.getPermission()));
-////                    if (isMatching) {
-////                        indices.add(index[0]); // Add the position to the Set
-////                    }
-////                    return isMatching;
-////                }).count();
-////                .collect(Collectors.toSet());
-////        if (result.isEmpty()){
-////            return -1;
-////        }else{
-////            if (log.isDebugEnabled())
-////                log.debug("Aces indices to remove: " + matches);
-////            return position[0];
-//        return indices;
-//    }
 
 
     @Autowired
@@ -406,8 +375,8 @@ public class RapidPermissionService implements AclPermissionService {
         this.securityContext = securityContext;
     }
 
-    @Autowired
-    public void injectPermissionStringConverter(PermissionStringConverter permissionStringConverter) {
-        this.permissionStringConverter = permissionStringConverter;
-    }
+//    @Autowired
+//    public void injectPermissionStringConverter(PermissionStringConverter permissionStringConverter) {
+//        this.permissionStringConverter = permissionStringConverter;
+//    }
 }

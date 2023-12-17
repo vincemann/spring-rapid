@@ -35,11 +35,15 @@ public interface AclPermissionService extends AopLoggable {
 
     public void deleteAclOfEntity(Class<? extends IdentifiableEntity> clazz, Serializable id, boolean deleteCascade);
 
-    void inheritAces(IdentifiableEntity<?> parent, List<AclInheritanceInfo> infos) throws AclNotFoundException;
+    void inheritAces(IdentifiableEntity<?> parent, List<AclCascadeInfo> infos) throws AclNotFoundException;
 
-    void inheritAces(Collection<? extends IdentifiableEntity<?>> parents, List<AclInheritanceInfo> infos) throws AclNotFoundException;
+    void removeAces(IdentifiableEntity<?> parent, List<AclCascadeInfo> infos) throws AclNotFoundException;
+
+    void inheritAces(Collection<? extends IdentifiableEntity<?>> parents, List<AclCascadeInfo> infos) throws AclNotFoundException;
 
     void updateEntriesInheriting(boolean value, IdentifiableEntity<?> child, IdentifiableEntity<?> parent) throws AclNotFoundException;
 
     void copyParentAces(IdentifiableEntity<?> child, IdentifiableEntity<?> parent, AceFilter aceFilter) throws AclNotFoundException;
+
+    int removeAces(IdentifiableEntity<?> target, AceFilter aceFilter) throws AclNotFoundException;
 }
