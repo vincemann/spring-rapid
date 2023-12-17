@@ -1,5 +1,7 @@
 package com.github.vincemann.springrapid.acl.service;
 
+import com.github.hervian.reflection.Types;
+import com.github.vincemann.springrapid.acl.util.MethodNameUtil;
 import lombok.Builder;
 import lombok.Getter;
 
@@ -12,16 +14,16 @@ import java.util.Collection;
 public class AclCascadeInfo {
 
     private Class<?> source;
-    private EntityFilter sourceFilter;
+    private EntityFilter<?> sourceFilter;
     private Method target;
-    private EntityFilter targetFilter;
+    private EntityFilter<?> targetFilter;
     private AceFilter aceFilter;
 
     @Builder
-    public AclCascadeInfo(Class<?> source, EntityFilter sourceFilter, Method target, EntityFilter targetFilter, AceFilter aceFilter) {
+    public AclCascadeInfo(Class<?> source, EntityFilter<?> sourceFilter, Types.Supplier<?> target, EntityFilter<?> targetFilter, AceFilter aceFilter) throws Exception {
         this.source = source;
         this.sourceFilter = sourceFilter;
-        this.target = target;
+        this.target = Types.createMethod(target);
         this.targetFilter = targetFilter;
         this.aceFilter = aceFilter;
     }
