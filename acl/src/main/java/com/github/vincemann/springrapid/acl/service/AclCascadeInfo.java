@@ -20,10 +20,14 @@ public class AclCascadeInfo {
     private AceFilter aceFilter;
 
     @Builder
-    public AclCascadeInfo(Class<?> source, EntityFilter<?> sourceFilter, Types.Supplier<?> target, EntityFilter<?> targetFilter, AceFilter aceFilter) throws Exception {
+    public AclCascadeInfo(Class<?> source, EntityFilter<?> sourceFilter, Types.Supplier<?> target, EntityFilter<?> targetFilter, AceFilter aceFilter) {
         this.source = source;
         this.sourceFilter = sourceFilter;
-        this.target = Types.createMethod(target);
+        try {
+            this.target = Types.createMethod(target);
+        }catch (Exception e){
+            throw new IllegalArgumentException("Could not extract method from method ref");
+        }
         this.targetFilter = targetFilter;
         this.aceFilter = aceFilter;
     }
