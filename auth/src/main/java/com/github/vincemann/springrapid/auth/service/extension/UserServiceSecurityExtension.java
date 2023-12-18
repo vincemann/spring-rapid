@@ -107,6 +107,8 @@ public class UserServiceSecurityExtension
 
     /**
      * Check current Users role and decide what role adjustments he can make.
+     * user cant update roles
+     *
      */
     protected void checkRoleChangingPermissions(AbstractUser<?> old, AbstractUser<?> newUser, RapidAuthAuthenticatedPrincipal currentUser) {
         // admin tries to edit

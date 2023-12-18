@@ -1,10 +1,12 @@
 package com.github.vincemann.springrapid.acl.service;
 
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.security.acls.domain.BasePermission;
 import org.springframework.security.acls.model.Permission;
 
 public class RapidPermissionStringConverter implements PermissionStringConverter {
 
+    @Cacheable(value = "permissionStringMapping")
     @Override
     public String convert(Permission permission) {
         String pattern = permission.getPattern().toLowerCase();
@@ -23,6 +25,7 @@ public class RapidPermissionStringConverter implements PermissionStringConverter
         }
     }
 
+    @Cacheable(value = "permissionStringMapping")
     @Override
     public Permission convert(String permission) {
         if (permission.equals("ADMINISTRATION")){

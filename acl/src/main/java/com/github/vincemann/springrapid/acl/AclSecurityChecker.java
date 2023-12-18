@@ -41,9 +41,7 @@ public interface AclSecurityChecker extends AopLoggable {
      */
     public void checkPermission(Serializable id, Class<?> clazz, Permission permission) throws AccessDeniedException;
 
-    public default void checkPermission(IdentifiableEntity<?> entity, Permission permission) throws AccessDeniedException{
-        checkPermission(entity.getId(),entity.getClass(),permission);
-    }
+    public void checkPermission(IdentifiableEntity<?> entity, Permission permission) throws AccessDeniedException;
 
 
 

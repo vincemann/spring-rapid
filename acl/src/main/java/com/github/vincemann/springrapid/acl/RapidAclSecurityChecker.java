@@ -39,7 +39,7 @@ public class RapidAclSecurityChecker
     private Method triggerCheckMethod;
     private SpelExpressionParser parser;
     private ApplicationContext applicationContext;
-    private RapidSecurityContext<?> rapidSecurityContext;
+    private RapidAclSecurityContext<?> rapidSecurityContext;
     private PermissionStringConverter permissionStringConverter;
 
     public RapidAclSecurityChecker() {
@@ -55,11 +55,22 @@ public class RapidAclSecurityChecker
     public <E extends IdentifiableEntity<? extends Serializable>, C extends Collection<E>> C filter(C toFilter, Permission permission){
         RapidSecurityContextChecker.checkAuthenticated();
         Collection<E> filtered =  new HashSet<>();
-        String permissionString = permissionStringConverter.convert(permission);
+//        String permissionString = permissionStringConverter.convert(permission);
         for (E entity : toFilter) {
-            boolean permitted = checkExpression("hasPermission(" + entity.getId() + ",'" + entity.getClass().getName() + "','" + permissionString + "')");
+
+            AclEvaluationContext aclContext = AclEvaluationContext.builder()
+                    .checkedPermission(permission)
+                    .targetEntity(entity)
+                    .build();
+            rapidSecurityContext.setAclContext(aclContext);
+
+            boolean permitted = _checkPermission(entity.getId(),entity.getClass(),permission);
+//            boolean permitted = checkExpression("hasPermission(" + entity.getId() + ",'" + entity.getClass().getName() + "','" + permissionString + "')");
             if(permitted){
                 filtered.add(entity);
+            }else {
+                if (log.isDebugEnabled())
+                    log.debug("filtered out entity: " +  entity);
             }
         }
         return (C) filtered;
@@ -67,6 +78,26 @@ public class RapidAclSecurityChecker
 
     @Override
     public void checkPermission(Serializable id, Class<?> clazz, Permission permission){
+
+        AclEvaluationContext aclContext = AclEvaluationContext.builder()
+                .checkedPermission(permission)
+                .id(id)
+                .entityClass(clazz)
+                .build();
+        rapidSecurityContext.setAclContext(aclContext);
+
+       boolean permitted = _checkPermission(id,clazz,permission);
+        if(!permitted){
+            RapidAuthenticatedPrincipal principal = rapidSecurityContext.currentPrincipal();
+            String permissionString = permissionStringConverter.convert(permission);
+            throw new AccessDeniedException("Permission not Granted! Principal: "+principal.shortToString()+
+                    " does not have Permission: " + permissionString + " for entity: {"+clazz.getSimpleName() + ", id: " + id+"}");
+        }
+
+
+    }
+
+    private boolean _checkPermission(Serializable id, Class<?> clazz, Permission permission) {
         if(id==null){
             throw new IllegalArgumentException("Id must not be null");
         }
@@ -77,13 +108,26 @@ public class RapidAclSecurityChecker
             throw new IllegalArgumentException("Clazz must not be null");
         }
         RapidSecurityContextChecker.checkAuthenticated();
+
 //        RapidAuthenticatedPrincipal p = rapidSecurityContext.currentPrincipal();
         String permissionString = permissionStringConverter.convert(permission);
-        boolean permitted = checkExpression("hasPermission(" + id + ",'" + clazz.getName() + "','" + permissionString + "')");
+        return checkExpression("hasPermission(" + id + ",'" + clazz.getName() + "','" + permissionString + "')");
+    }
+
+    public void checkPermission(IdentifiableEntity<?> entity, Permission permission) throws AccessDeniedException{
+
+        AclEvaluationContext aclContext = AclEvaluationContext.builder()
+                .checkedPermission(permission)
+                .targetEntity(entity)
+                .build();
+        rapidSecurityContext.setAclContext(aclContext);
+
+        boolean permitted = _checkPermission(entity.getId(),entity.getClass(),permission);
         if(!permitted){
             RapidAuthenticatedPrincipal principal = rapidSecurityContext.currentPrincipal();
+            String permissionString = permissionStringConverter.convert(permission);
             throw new AccessDeniedException("Permission not Granted! Principal: "+principal.shortToString()+
-                    " does not have Permission: " + permissionString + " for entity: {"+clazz.getSimpleName() + ", id: " + id+"}");
+                    " does not have Permission: " + permissionString + " for entity: " + entity);
         }
     }
 
@@ -114,7 +158,7 @@ public class RapidAclSecurityChecker
     }
 
     @Autowired
-    public void injectRapidSecurityContext(RapidSecurityContext<?> rapidSecurityContext) {
+    public void injectRapidSecurityContext(RapidAclSecurityContext<?> rapidSecurityContext) {
         this.rapidSecurityContext = rapidSecurityContext;
     }
 

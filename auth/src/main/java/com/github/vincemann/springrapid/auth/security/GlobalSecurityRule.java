@@ -1,8 +1,6 @@
 package com.github.vincemann.springrapid.auth.security;
 
-import com.github.vincemann.springrapid.core.model.IdentifiableEntity;
-import org.springframework.security.acls.domain.BasePermission;
-import org.springframework.security.acls.model.Permission;
+import com.github.vincemann.springrapid.acl.AclEvaluationContext;
 
 public interface GlobalSecurityRule {
 
@@ -13,6 +11,6 @@ public interface GlobalSecurityRule {
      * Check what you need to check and throw runtime exception like {@link org.springframework.security.access.AccessDeniedException} if needed
      * you can also return true,false meaning access allowed, denied respectively. Otherwise return null
      */
-    Boolean check(IdentifiableEntity<?> targetEntity, Permission checkedPermission);
+    Boolean checkAccess(AclEvaluationContext aclContext);
 
 }

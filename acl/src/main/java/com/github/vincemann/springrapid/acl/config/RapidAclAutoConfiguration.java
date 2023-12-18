@@ -12,6 +12,7 @@ import com.github.vincemann.springrapid.acl.util.AclUtils;
 import com.github.vincemann.springrapid.core.security.Roles;
 import com.github.vincemann.springrapid.acl.framework.NoModSecurityCheckAclAuthorizationStrategy;
 import com.github.vincemann.springrapid.acl.framework.VerboseAclPermissionEvaluator;
+import com.github.vincemann.springrapid.core.service.locator.CrudServiceLocator;
 import com.github.vincemann.springrapid.core.slicing.ServiceConfig;
 import lombok.extern.slf4j.Slf4j;
 import net.sf.ehcache.CacheManager;
@@ -27,7 +28,6 @@ import org.springframework.security.access.expression.method.MethodSecurityExpre
 import org.springframework.security.acls.AclPermissionCacheOptimizer;
 import org.springframework.security.acls.domain.AclAuthorizationStrategy;
 import org.springframework.security.acls.domain.ConsoleAuditLogger;
-import org.springframework.security.acls.domain.DefaultPermissionGrantingStrategy;
 import org.springframework.security.acls.domain.EhCacheBasedAclCache;
 import org.springframework.security.acls.jdbc.BasicLookupStrategy;
 import org.springframework.security.acls.jdbc.JdbcMutableAclService;
@@ -53,6 +53,10 @@ public class RapidAclAutoConfiguration {
 
     @Autowired
     DataSource dataSource;
+
+
+
+
 
 
 //    @Primary
@@ -100,8 +104,8 @@ public class RapidAclAutoConfiguration {
     }
 
     @Autowired
-    public void configureAclUtils(PermissionStringConverter permissionStringConverter){
-        AclUtils.setPermissionStringConverter(permissionStringConverter);
+    public void configureAclUtils(PermissionStringConverter permissionStringConverter, CrudServiceLocator crudServiceLocator){
+        AclUtils.setup(permissionStringConverter,crudServiceLocator);
     }
 
     @Bean

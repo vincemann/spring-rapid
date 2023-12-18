@@ -1,21 +1,42 @@
 package com.github.vincemann.springrapid.acl.util;
 
+import com.github.vincemann.springrapid.acl.AclEvaluationContext;
 import com.github.vincemann.springrapid.acl.service.PermissionStringConverter;
+import com.github.vincemann.springrapid.core.model.IdentifiableEntity;
+import com.github.vincemann.springrapid.core.service.exception.BadEntityException;
+import com.github.vincemann.springrapid.core.service.locator.CrudServiceLocator;
 import org.springframework.security.acls.domain.GrantedAuthoritySid;
 import org.springframework.security.acls.domain.PrincipalSid;
 import org.springframework.security.acls.model.*;
 
 import java.util.Arrays;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 public class AclUtils {
 
     private static PermissionStringConverter permissionStringConverter;
+    private static CrudServiceLocator crudServiceLocator;
 
-    public static void setPermissionStringConverter(PermissionStringConverter permissionStringConverter) {
+    public static void setup(PermissionStringConverter permissionStringConverter, CrudServiceLocator crudServiceLocator) {
         AclUtils.permissionStringConverter = permissionStringConverter;
+        AclUtils.crudServiceLocator = crudServiceLocator;
+    }
+
+    public static IdentifiableEntity<?> resolveEntity(AclEvaluationContext aclContext){
+        if (aclContext.getTargetEntity() != null)
+            return aclContext.getTargetEntity();
+        else {
+            try {
+                Optional<IdentifiableEntity<?>> entity = crudServiceLocator.find(aclContext.getEntityClass()).findById(aclContext.getId());
+                if (!entity.isPresent())
+                    throw new IllegalArgumentException("Cannot find entity from acl context: " + aclContext.getEntityClass() + " " + aclContext.getId());
+                else
+                    return entity.get();
+            } catch (BadEntityException e) {
+                throw new RuntimeException(e);
+            }
+        }
     }
 
     private AclUtils(){}

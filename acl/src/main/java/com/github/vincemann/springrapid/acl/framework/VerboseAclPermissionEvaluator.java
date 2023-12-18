@@ -84,37 +84,46 @@ public class VerboseAclPermissionEvaluator extends AclPermissionEvaluator implem
         // Obtain the SIDs applicable to the principal
         List<Sid> sids = sidRetrievalStrategy.getSids(authentication);
         List<Permission> requiredPermissions = resolvePermission(permission);
-        List<String> stringPermissions = requiredPermissions.parallelStream().map(p -> permissionStringConverter.convert(p)).collect(Collectors.toList());
 
 
-        IdentifiableEntity resolvedOid = null;
+
+
+        //expensive trace logging
         if (log.isTraceEnabled()) {
+            List<String> stringPermissions = requiredPermissions.stream()
+                    .map(p -> permissionStringConverter.convert(p))
+                    .collect(Collectors.toList());
+
+            String name = RapidSecurityContext.getName();
+            IdentifiableEntity resolvedEntity = null;
+
             try {
-                resolvedOid = objectIdentityResolver.resolve(oid);
+                resolvedEntity = objectIdentityResolver.resolve(oid);
             } catch (UnresolvableOidException e) {
                 log.warn("Could not resolve Oid for trace logging: " + e.getMessage());
             }
-        }
-        String name = RapidSecurityContext.getName();
-        //expensive trace logging
 
-        if (log.isTraceEnabled()) {
-            if (resolvedOid!=null) {
+            if (resolvedEntity!=null) {
                 log.trace("Checking if User: " + name + " has permissions: " + stringPermissions + "\n" +
-                        "that are required for an operation over: " +resolvedOid +" ?"
+                        "that are required for an operation over: " +resolvedEntity +" ?"
                 );
             }else {
                 log.trace("Checking if User: " + name + " has permissions: " + stringPermissions + "\n" +
                         "that are required for an operation over: " + oid + " ?"
                 );
             }
-        } else {
+        } else if (log.isDebugEnabled()){
+            String name = RapidSecurityContext.getName();
+            List<String> stringPermissions = requiredPermissions.stream()
+                    .map(p -> permissionStringConverter.convert(p))
+                    .collect(Collectors.toList());
             log.debug("Checking if User: " + name + " has permissions: " + stringPermissions + "\n" +
                     "that are required for an operation over: " + oid + " ?"
             );
         }
 
-        log.debug("User has sid's: " + sids);
+        if (log.isDebugEnabled())
+            log.debug("User has sid's: " + sids);
 
         try {
             // Lookup only ACL for SIDs we're interested in
@@ -125,16 +134,21 @@ public class VerboseAclPermissionEvaluator extends AclPermissionEvaluator implem
             }
 
             if (acl.isGranted(requiredPermissions, sids, false)) {
-                log.debug("Access granted");
+                if (log.isDebugEnabled())
+                    log.debug("Access granted");
                 return true;
             }
 
-            log.debug("No Sid has sufficient permissions for operation");
-            log.debug("Access not granted");
+            if (log.isDebugEnabled()){
+                log.debug("No Sid has sufficient permissions for operation");
+                log.debug("Access not granted");
+            }
 
         } catch (NotFoundException nfe) {
-            log.debug("No ACL found for sids of user.");
-            log.debug("Access not granted");
+            if (log.isDebugEnabled()){
+                log.debug("No ACL found for sids of user.");
+                log.debug("Access not granted");
+            }
         }
 
         return false;

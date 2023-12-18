@@ -1,5 +1,6 @@
 package com.github.vincemann.springrapid.auth.security;
 
+import com.github.vincemann.springrapid.acl.AclEvaluationContext;
 import com.github.vincemann.springrapid.auth.model.AuthRoles;
 import com.github.vincemann.springrapid.core.model.IdentifiableEntity;
 import com.github.vincemann.springrapid.core.security.RapidSecurityContext;
@@ -12,7 +13,7 @@ import org.springframework.security.acls.model.Permission;
 public class DenyBlockedGlobalSecurityRule implements GlobalSecurityRule {
 
     @Override
-    public Boolean check(IdentifiableEntity<?> targetEntity, Permission checkedPermission) {
+    public Boolean checkAccess(AclEvaluationContext aclEvaluationContext) {
         String name = RapidSecurityContext.getName();
         boolean blocked = RapidSecurityContext.hasRole(AuthRoles.BLOCKED);
         log.debug("Checking if current User: " + name + " is blocked.");
