@@ -6,12 +6,13 @@ import com.github.vincemann.springrapid.core.security.RapidSecurityContext;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.acls.domain.BasePermission;
+import org.springframework.security.acls.model.Permission;
 
 @Slf4j
 public class DenyBlockedGlobalSecurityRule implements GlobalSecurityRule {
 
     @Override
-    public Boolean check(IdentifiableEntity<?> targetEntity, BasePermission checkedPermission) {
+    public Boolean check(IdentifiableEntity<?> targetEntity, Permission checkedPermission) {
         String name = RapidSecurityContext.getName();
         boolean blocked = RapidSecurityContext.hasRole(AuthRoles.BLOCKED);
         log.debug("Checking if current User: " + name + " is blocked.");

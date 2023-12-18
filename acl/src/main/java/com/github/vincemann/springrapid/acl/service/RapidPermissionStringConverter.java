@@ -1,5 +1,6 @@
 package com.github.vincemann.springrapid.acl.service;
 
+import org.springframework.security.acls.domain.BasePermission;
 import org.springframework.security.acls.model.Permission;
 
 public class RapidPermissionStringConverter implements PermissionStringConverter {
@@ -19,6 +20,23 @@ public class RapidPermissionStringConverter implements PermissionStringConverter
             return "WRITE";
         }else {
             throw new IllegalArgumentException("Unknown pattern: " + pattern);
+        }
+    }
+
+    @Override
+    public Permission convert(String permission) {
+        if (permission.equals("ADMINISTRATION")){
+            return BasePermission.ADMINISTRATION;
+        }else if(permission.equals("CREATE")){
+            return BasePermission.CREATE;
+        }else if (permission.equals("DELETE")){
+            return BasePermission.DELETE;
+        }else if(permission.equals("READ")){
+            return BasePermission.READ;
+        }else if(permission.equals("WRITE")){
+            return BasePermission.WRITE;
+        }else {
+            throw new IllegalArgumentException("Unknown permission string: " + permission);
         }
     }
 }
