@@ -15,8 +15,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import java.util.Optional;
 import java.util.Set;
 
-import static org.hamcrest.Matchers.containsString;
-import static org.hamcrest.Matchers.hasSize;
+import static org.hamcrest.Matchers.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
@@ -49,8 +48,7 @@ public class SignupTest extends AbstractRapidAuthIntegrationTest {
 				.andExpect(jsonPath("$.password").doesNotExist())
 				.andExpect(jsonPath("$.contactInformation").value(signupDto.getContactInformation()))
 				.andExpect(jsonPath("$.roles").value(hasSize(roles.size()+1)))
-				.andExpect(jsonPath("$.roles").value(Matchers.hasItems(roles)))
-				.andExpect(jsonPath("$.roles").value(Matchers.hasItems(AuthRoles.UNVERIFIED)))
+				.andExpect(jsonPath("$.roles", containsInAnyOrder(roles.toArray(new String[0]), AuthRoles.UNVERIFIED)))				.andExpect(jsonPath("$.roles").value(Matchers.hasItems(AuthRoles.UNVERIFIED)))
 				.andExpect(jsonPath("$.verified").value(false))
 				.andExpect(jsonPath("$.blocked").value(false))
 				.andExpect(jsonPath("$.admin").value(false))
