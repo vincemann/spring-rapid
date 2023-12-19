@@ -26,7 +26,7 @@ import java.io.Serializable;
 //        },
 //        mergeMode = TestExecutionListeners.MergeMode.MERGE_WITH_DEFAULTS
 //)
-@Sql(scripts = "classpath:/remove-acl-data.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
+@Sql(scripts = "classpath:/remove-acl-data.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
 public class AclCrudServiceIntegrationTest<
         S extends CrudService<E, Id>,
         E extends IdentifiableEntity<Id>,
