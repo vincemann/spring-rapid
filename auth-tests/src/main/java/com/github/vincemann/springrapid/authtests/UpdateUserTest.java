@@ -8,6 +8,9 @@ import org.junit.jupiter.api.Assumptions;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpHeaders;
 
+import java.util.HashSet;
+import java.util.Set;
+
 import static com.github.vincemann.springrapid.authtests.adapter.AuthTestAdapter.*;
 import static com.github.vincemann.springrapid.coretest.util.RapidTestUtil.createUpdateJsonLine;
 import static com.github.vincemann.springrapid.coretest.util.RapidTestUtil.createUpdateJsonRequest;
@@ -24,16 +27,16 @@ public abstract class UpdateUserTest extends AbstractRapidAuthIntegrationTest
 		String patchRoleJson = createUpdateJsonRequest(
 				createUpdateJsonLine("replace", "/roles", Roles.ADMIN)
 		);
+		Set<String> oldRoles = new HashSet<>(getUser().getRoles());
 		String token = login2xx(USER_CONTACT_INFORMATION, USER_PASSWORD);
 		mvc.perform(update(patchRoleJson,getUser().getId())
-				.header(HttpHeaders.AUTHORIZATION, token))
+						.header(HttpHeaders.AUTHORIZATION, token))
 				.andExpect(status().isForbidden());
 
 		AbstractUser<Long> updated = getUserService().findById(getUser().getId()).get();
 
 		// Ensure that data has not changed
-		Assertions.assertEquals(1, updated.getRoles().size());
-		Assertions.assertTrue(updated.getRoles().contains(AuthRoles.USER));
+		assertRolesHaveNotChanged(oldRoles,updated.getRoles());
     }
 
 	/**
@@ -48,7 +51,7 @@ public abstract class UpdateUserTest extends AbstractRapidAuthIntegrationTest
 
 		String token = login2xx(ADMIN_CONTACT_INFORMATION, ADMIN_PASSWORD);
 		mvc.perform(update(patchRoleAndContactInformationJson,getUser().getId())
-				.header(HttpHeaders.AUTHORIZATION, token))
+						.header(HttpHeaders.AUTHORIZATION, token))
 				.andExpect(status().is2xxSuccessful())
 				.andExpect(jsonPath("$.roles").value(hasSize(1)))
 				.andExpect(jsonPath("$.roles[0]").value(Roles.ADMIN))
@@ -71,7 +74,7 @@ public abstract class UpdateUserTest extends AbstractRapidAuthIntegrationTest
 		);
 		String token = login2xx(USER_CONTACT_INFORMATION, USER_PASSWORD);
 		mvc.perform(update(patchFieldJson,UNKNOWN_USER_ID)
-				.header(HttpHeaders.AUTHORIZATION, token))
+						.header(HttpHeaders.AUTHORIZATION, token))
 				.andExpect(status().isForbidden());
     }
 
@@ -83,7 +86,7 @@ public abstract class UpdateUserTest extends AbstractRapidAuthIntegrationTest
 		);
 		String token = login2xx(USER_CONTACT_INFORMATION, USER_PASSWORD);
 		mvc.perform(update(patchFieldJson,getUser().getId())
-				.header(HttpHeaders.AUTHORIZATION, token))
+						.header(HttpHeaders.AUTHORIZATION, token))
 				.andExpect(status().is2xxSuccessful());
 	}
 
@@ -99,7 +102,7 @@ public abstract class UpdateUserTest extends AbstractRapidAuthIntegrationTest
 		);
 		String token = login2xx(USER_CONTACT_INFORMATION, USER_PASSWORD);
 		mvc.perform(update(invalidFieldPatchJson,getUser().getId())
-				.header(HttpHeaders.AUTHORIZATION, token))
+						.header(HttpHeaders.AUTHORIZATION, token))
 				.andExpect(status().isBadRequest());
 	}
 
@@ -115,7 +118,7 @@ public abstract class UpdateUserTest extends AbstractRapidAuthIntegrationTest
 		);
 		String token = login2xx(USER_CONTACT_INFORMATION, USER_PASSWORD);
 		mvc.perform(update(invalidFieldPatchJson,getSecondUser().getId())
-				.header(HttpHeaders.AUTHORIZATION, token))
+						.header(HttpHeaders.AUTHORIZATION, token))
 				.andExpect(status().isForbidden());
 	}
 
@@ -127,7 +130,7 @@ public abstract class UpdateUserTest extends AbstractRapidAuthIntegrationTest
 		);
 		String token = login2xx(USER_CONTACT_INFORMATION, USER_PASSWORD);
 		mvc.perform(update(invalidFieldPatchJson,getAdmin().getId())
-				.header(HttpHeaders.AUTHORIZATION, token))
+						.header(HttpHeaders.AUTHORIZATION, token))
 				.andExpect(status().isForbidden());
 	}
 
@@ -138,7 +141,7 @@ public abstract class UpdateUserTest extends AbstractRapidAuthIntegrationTest
 		);
 		String token = login2xx(USER_CONTACT_INFORMATION, USER_PASSWORD);
 		mvc.perform(update(patchContactInformationJson,getUser().getId())
-				.header(HttpHeaders.AUTHORIZATION, token))
+						.header(HttpHeaders.AUTHORIZATION, token))
 				.andExpect(status().isForbidden());
 
 		AbstractUser<Long> updated = getUserService().findById(getUser().getId()).get();
@@ -148,6 +151,12 @@ public abstract class UpdateUserTest extends AbstractRapidAuthIntegrationTest
 	}
 
 
+	private void assertRolesHaveNotChanged(Set<String> old, Set<String> updated){
+		Assertions.assertEquals(old.size(),updated.size());
+		for (String role : old) {
+			Assertions.assertTrue(updated.contains(role));
+		}
+	}
 
 
 //	/**

@@ -7,12 +7,13 @@ import com.github.vincemann.springrapid.auth.mail.MailData;
 import com.github.vincemann.springrapid.core.util.TransactionalTemplate;
 import lombok.SneakyThrows;
 import org.hamcrest.Matchers;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 
-import static org.hamcrest.Matchers.containsString;
-import static org.hamcrest.Matchers.hasSize;
+import static org.hamcrest.Matchers.*;
+
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
@@ -30,10 +31,12 @@ public class VerificationTest extends AbstractRapidAuthIntegrationTest {
 				.andExpect(status().is(200))
 				.andExpect(header().string(HttpHeaders.AUTHORIZATION, containsString(".")))
 				.andExpect(jsonPath("$.id").value(savedUser.getId()))
-				.andExpect(jsonPath("$.roles").value(hasSize(1)))
-				.andExpect(jsonPath("$.roles").value(Matchers.hasItem(AuthRoles.USER)))
+				.andExpect(jsonPath("$.roles").value(hasSize(signupDto.getRoles().size())))
+				.andExpect(jsonPath("$.roles").value(Matchers.hasItems(signupDto.getRoles())))
+				.andExpect(jsonPath("$.roles", not(hasItem(AuthRoles.UNVERIFIED))))
 				.andExpect(jsonPath("$.verified").value(false))
 				.andExpect(jsonPath("$.goodUser").value(true));
+
 	}
 
 

@@ -4,6 +4,7 @@ import com.github.vincemann.springrapid.auth.model.AbstractUser;
 import com.github.vincemann.springrapid.auth.model.AuthRoles;
 import com.github.vincemann.springrapid.auth.dto.SignupDto;
 import com.github.vincemann.springrapid.auth.mail.MailData;
+import com.github.vincemann.springrapid.core.security.Roles;
 import org.hamcrest.Matchers;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -12,6 +13,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.util.Optional;
+import java.util.Set;
 
 import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.hasSize;
@@ -38,6 +40,7 @@ public class SignupTest extends AbstractRapidAuthIntegrationTest {
 	@Test
 	public void canSignup() throws Exception {
 		SignupDto signupDto = createValidSignupDto();
+		Set<String> roles = signupDto.getRoles();
 
 		mvc.perform(testTemplate.signup(signupDto))
 				.andExpect(status().is(200))
@@ -45,8 +48,9 @@ public class SignupTest extends AbstractRapidAuthIntegrationTest {
 				.andExpect(jsonPath("$.id").exists())
 				.andExpect(jsonPath("$.password").doesNotExist())
 				.andExpect(jsonPath("$.contactInformation").value(signupDto.getContactInformation()))
-				.andExpect(jsonPath("$.roles").value(hasSize(2)))
-				.andExpect(jsonPath("$.roles").value(Matchers.hasItems(AuthRoles.UNVERIFIED, AuthRoles.USER)))
+				.andExpect(jsonPath("$.roles").value(hasSize(roles.size()+1)))
+				.andExpect(jsonPath("$.roles").value(Matchers.hasItems(roles)))
+				.andExpect(jsonPath("$.roles").value(Matchers.hasItems(AuthRoles.UNVERIFIED)))
 				.andExpect(jsonPath("$.verified").value(false))
 				.andExpect(jsonPath("$.blocked").value(false))
 				.andExpect(jsonPath("$.admin").value(false))
