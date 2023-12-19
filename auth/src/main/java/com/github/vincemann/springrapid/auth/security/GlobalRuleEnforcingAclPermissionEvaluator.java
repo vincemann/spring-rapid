@@ -21,7 +21,7 @@ import java.util.List;
 import java.util.Optional;
 
 /**
- * call {@link GlobalSecurityRule#check(IdentifiableEntity, BasePermission)} on each permission evaluation.
+ * call {@link GlobalSecurityRule#checkAccess(AclEvaluationContext)} on each permission evaluation.
  */
 @Slf4j
 public class GlobalRuleEnforcingAclPermissionEvaluator extends VerboseAclPermissionEvaluator {
