@@ -1,6 +1,6 @@
 package com.github.vincemann.springrapid.autobidir.controller;
 
-import com.github.vincemann.springrapid.core.controller.mergeUpdate.MergeUpdateStrategyImpl;
+import com.github.vincemann.springrapid.core.controller.MergeUpdateStrategyImpl;
 import com.github.vincemann.springrapid.core.util.IdPropertyNameUtils;
 
 

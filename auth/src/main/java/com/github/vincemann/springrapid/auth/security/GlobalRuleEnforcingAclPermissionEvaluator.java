@@ -3,22 +3,14 @@ package com.github.vincemann.springrapid.auth.security;
 import com.github.vincemann.springrapid.acl.AclEvaluationContext;
 import com.github.vincemann.springrapid.acl.RapidAclSecurityContext;
 import com.github.vincemann.springrapid.acl.framework.VerboseAclPermissionEvaluator;
-import com.github.vincemann.springrapid.core.model.IdentifiableEntity;
-import com.github.vincemann.springrapid.core.security.RapidSecurityContext;
-import com.github.vincemann.springrapid.core.service.exception.BadEntityException;
-import com.github.vincemann.springrapid.core.service.exception.EntityNotFoundException;
-import com.github.vincemann.springrapid.core.util.VerifyEntity;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.security.acls.domain.BasePermission;
 import org.springframework.security.acls.model.AclService;
-import org.springframework.security.acls.model.Permission;
 import org.springframework.security.core.Authentication;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 /**
  * call {@link GlobalSecurityRule#checkAccess(AclEvaluationContext)} on each permission evaluation.

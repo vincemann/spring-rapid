@@ -13,17 +13,20 @@ import java.io.Serializable;
 import java.util.Optional;
 
 @Slf4j
-@Transactional
+//@Transactional
 public class EntityLocator {
 
-    private CrudServiceLocator crudServiceLocator;
+    private static CrudServiceLocator crudServiceLocator;
 
+    public EntityLocator(CrudServiceLocator crudServiceLocator) {
+        EntityLocator.crudServiceLocator = crudServiceLocator;
+    }
 
-    public <E extends IdentifiableEntity> E findEntity(E entity) throws EntityNotFoundException, BadEntityException {
+    public static <E extends IdentifiableEntity> E findEntity(E entity) throws EntityNotFoundException {
         return findEntity(entity.getClass(),entity.getId());
     }
 
-    public <E extends IdentifiableEntity> E findEntity(Class clazz, Serializable id) throws EntityNotFoundException, BadEntityException {
+    public static <E extends IdentifiableEntity> E findEntity(Class clazz, Serializable id) throws EntityNotFoundException {
         CrudService service = crudServiceLocator.find((Class<IdentifiableEntity>) clazz);
 //        System.err.println("known services: " + crudServiceLocator.getEntityClassPrimaryServiceMap());
 //        System.err.println(service);
@@ -41,8 +44,4 @@ public class EntityLocator {
         return (E) byId.get();
     }
 
-    @Autowired
-    public void setCrudServiceLocator(CrudServiceLocator crudServiceLocator) {
-        this.crudServiceLocator = crudServiceLocator;
-    }
 }

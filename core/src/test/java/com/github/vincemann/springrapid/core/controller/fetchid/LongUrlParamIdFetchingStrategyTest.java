@@ -1,4 +1,4 @@
-package com.github.vincemann.springrapid.core.controller.idFetchingStrategy;
+package com.github.vincemann.springrapid.core.controller.fetchid;
 
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;

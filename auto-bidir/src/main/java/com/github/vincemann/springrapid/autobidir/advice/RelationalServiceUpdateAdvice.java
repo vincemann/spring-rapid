@@ -90,10 +90,11 @@ public class RelationalServiceUpdateAdvice {
             // java.lang.ClassCastException: class io.gitlab.vinceconrad.votesnackbackend.model.Exercise$HibernateProxy$ipV9X1Mb cannot be cast to class org.hibernate.proxy.LazyInitializer
 //            IdentifiableEntity detachedOldEntity = BeanUtils.clone(entityLocator.findEntity(entity));
             // todo do i really need to do a bean clone here?
-            IdentifiableEntity detachedOldEntity =
-                    BeanUtils.clone(ProxyUtils.hibernateUnproxyRaw(
-                            entityLocator.findEntity(ProxyUtils.hibernateUnproxyRaw(entity))
-                    ));
+//            IdentifiableEntity detachedOldEntity =
+//                    BeanUtils.clone(ProxyUtils.hibernateUnproxyRaw(
+//                            entityLocator.findEntity(ProxyUtils.hibernateUnproxyRaw(entity))
+//                    ));
+            IdentifiableEntity detachedOldEntity = entityLocator.findEntity(ProxyUtils.hibernateUnproxyRaw(entity));
             entityManager.detach(detachedOldEntity);
 
             IdentifiableEntity detachedUpdateEntity = BeanUtils.clone(ProxyUtils.hibernateUnproxyRaw(entity));

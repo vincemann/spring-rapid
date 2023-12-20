@@ -18,7 +18,7 @@ public interface CrudServiceExtension<S extends CrudService>
 
 
     @Override
-    default Optional findById(Serializable id) throws BadEntityException {
+    default Optional findById(Serializable id) {
         return getNext().findById(id);
     }
 
@@ -50,7 +50,7 @@ public interface CrudServiceExtension<S extends CrudService>
     }
 
     @Override
-    default void deleteById(Serializable id) throws EntityNotFoundException, BadEntityException {
+    default void deleteById(Serializable id) throws EntityNotFoundException {
         getNext().deleteById(id);
     }
 

@@ -14,6 +14,7 @@ import com.github.vincemann.springrapid.core.util.IdPropertyNameUtils;
 import com.github.vincemann.springrapid.core.util.Lists;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.util.ReflectionUtils;
 
 import java.lang.reflect.Field;
@@ -42,6 +43,7 @@ public class ExtendedRemoveJsonPatchStrategy implements JsonPatchStrategy {
     
     private ObjectMapper objectMapper;
 
+    @Cacheable(value = "patchInfo")
     @Override
     public PatchInfo findPatchInfo(String patchString) throws BadEntityException {
         try {
@@ -110,7 +112,9 @@ public class ExtendedRemoveJsonPatchStrategy implements JsonPatchStrategy {
         }
     }
 
-    private JsonPatch createPatch(Object dto, JsonNode patchNode) throws Exception {
+    // todo verify caching is useful
+    @Cacheable(value = "createPatch")
+    public JsonPatch createPatch(Object dto, JsonNode patchNode) throws Exception {
         Map<Collection, List<Integer>> removedIndicesMap = new HashMap<>();
 
         Iterator<JsonNode> iterator = patchNode.elements();

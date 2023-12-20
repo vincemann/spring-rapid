@@ -1,11 +1,11 @@
-package com.github.vincemann.springrapid.core.controller.parentAware;
+package com.github.vincemann.springrapid.core.controller.parentaware;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.github.vincemann.springrapid.core.controller.dto.mapper.context.Direction;
 import com.github.vincemann.springrapid.core.controller.GenericCrudController;
-import com.github.vincemann.springrapid.core.controller.idFetchingStrategy.IdFetchingStrategy;
-import com.github.vincemann.springrapid.core.controller.idFetchingStrategy.IdFetchingException;
-import com.github.vincemann.springrapid.core.controller.validationStrategy.DtoValidationStrategy;
+import com.github.vincemann.springrapid.core.controller.fetchid.IdFetchingStrategy;
+import com.github.vincemann.springrapid.core.controller.fetchid.IdFetchingException;
+import com.github.vincemann.springrapid.core.controller.DtoValidationStrategy;
 import com.github.vincemann.springrapid.core.model.IdentifiableEntity;
 import com.github.vincemann.springrapid.core.service.CrudService;
 import com.github.vincemann.springrapid.core.service.ParentAwareService;

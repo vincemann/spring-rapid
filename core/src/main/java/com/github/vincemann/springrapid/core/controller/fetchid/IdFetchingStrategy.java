@@ -1,4 +1,4 @@
-package com.github.vincemann.springrapid.core.controller.idFetchingStrategy;
+package com.github.vincemann.springrapid.core.controller.fetchid;
 
 import javax.servlet.http.HttpServletRequest;
 import java.io.Serializable;

@@ -1,6 +1,4 @@
-package com.github.vincemann.springrapid.core.controller.idFetchingStrategy;
-
-import com.github.vincemann.springrapid.core.controller.idFetchingStrategy.IdFetchingStrategy;
+package com.github.vincemann.springrapid.core.controller.fetchid;
 
 /**
  * Indicates that the id could not be Fetched from the {@link javax.servlet.http.HttpServletRequest}.

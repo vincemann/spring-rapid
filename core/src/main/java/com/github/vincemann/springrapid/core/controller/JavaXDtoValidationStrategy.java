@@ -1,4 +1,4 @@
-package com.github.vincemann.springrapid.core.controller.validationStrategy;
+package com.github.vincemann.springrapid.core.controller;
 
 import javax.validation.*;
 import java.util.Set;

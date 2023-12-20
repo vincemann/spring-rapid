@@ -1,4 +1,4 @@
-package com.github.vincemann.springrapid.core.controller.mergeUpdate;
+package com.github.vincemann.springrapid.core.controller;
 
 
 import com.github.vincemann.springrapid.core.CoreProperties;
@@ -11,7 +11,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.ReflectionUtils;
 
 import java.lang.reflect.Field;
-import java.lang.reflect.Modifier;
 
 @Slf4j
 @Setter

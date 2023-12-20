@@ -18,34 +18,20 @@ public class AclUtils {
     private static PermissionStringConverter permissionStringConverter;
     private static CrudServiceLocator crudServiceLocator;
 
-    public static void setup(PermissionStringConverter permissionStringConverter, CrudServiceLocator crudServiceLocator) {
+    public static void setup(PermissionStringConverter permissionStringConverter) {
         AclUtils.permissionStringConverter = permissionStringConverter;
-        AclUtils.crudServiceLocator = crudServiceLocator;
     }
 
-    public static IdentifiableEntity<?> resolveEntity(AclEvaluationContext aclContext){
-        if (aclContext.getTargetEntity() != null)
-            return aclContext.getTargetEntity();
-        else {
-            try {
-                Optional<IdentifiableEntity<?>> entity = crudServiceLocator.find(aclContext.getEntityClass()).findById(aclContext.getId());
-                if (!entity.isPresent())
-                    throw new IllegalArgumentException("Cannot find entity from acl context: " + aclContext.getEntityClass() + " " + aclContext.getId());
-                else
-                    return entity.get();
-            } catch (BadEntityException e) {
-                throw new RuntimeException(e);
-            }
-        }
+
+    private AclUtils() {
     }
 
-    private AclUtils(){}
-    public static String sidToString(Sid sid){
+    public static String sidToString(Sid sid) {
         if (sid instanceof PrincipalSid) {
             return ((PrincipalSid) sid).getPrincipal();
-        }else if (sid instanceof GrantedAuthoritySid){
+        } else if (sid instanceof GrantedAuthoritySid) {
             return ((GrantedAuthoritySid) sid).getGrantedAuthority();
-        }else {
+        } else {
             throw new IllegalArgumentException("unknown sid, overwrite this function");
         }
     }
@@ -56,7 +42,7 @@ public class AclUtils {
 
         final int[] count = {0};
         acl.getEntries().stream()
-                .peek(e -> count[0] +=1)
+                .peek(e -> count[0] += 1)
                 .map(AclUtils::aceToString)
                 .forEach(e -> result.append(count[0]).append(" ").append(e).append("\n"));
 
@@ -64,36 +50,36 @@ public class AclUtils {
         return result.toString();
     }
 
-    public static String permissionsToString(Permission... permissions){
+    public static String permissionsToString(Permission... permissions) {
         return Arrays.stream(permissions).map(p -> permissionStringConverter.convert(p)).collect(Collectors.toSet()).toString();
     }
 
-    public static String permissionToString(Permission permission){
+    public static String permissionToString(Permission permission) {
         return permissionStringConverter.convert(permission);
     }
 
-    public static String aceToString(AccessControlEntry ace){
+    public static String aceToString(AccessControlEntry ace) {
         return "[ " + AclUtils.sidToString(ace.getSid()) + " -> " + permissionStringConverter.convert(ace.getPermission()) + " ]";
     }
 
-    public static String objectIdentityToString(ObjectIdentity oid){
+    public static String objectIdentityToString(ObjectIdentity oid) {
         // Split the full class name by the period ('.') character
         String[] parts = oid.getType().split("\\.");
 
         // Get the last part of the split string, which is the simple class name
         String simpleClassName = parts[parts.length - 1];
-       return "[ " + simpleClassName + " : " + oid.getIdentifier() + " ]";
+        return "[ " + simpleClassName + " : " + oid.getIdentifier() + " ]";
     }
 
     /**
      * checks if aces sid and aces permission is equal.
      */
-    public static boolean isAcePresent(AccessControlEntry ace, Acl acl){
+    public static boolean isAcePresent(AccessControlEntry ace, Acl acl) {
         // todo mabye add parallel arg here, and for entities with a ton of aces set flag to true and user parallelstream
-      return isAcePresent(ace.getPermission(),ace.getSid(),acl);
+        return isAcePresent(ace.getPermission(), ace.getSid(), acl);
     }
 
-    public static boolean isAcePresent(Permission permission,Sid sid, Acl acl){
+    public static boolean isAcePresent(Permission permission, Sid sid, Acl acl) {
         // todo mabye add parallel arg here, and for entities with a ton of aces set flag to true and user parallelstream
         return acl.getEntries().stream().filter(entry -> {
             return entry.getPermission().equals(permission) &&

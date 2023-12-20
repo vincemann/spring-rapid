@@ -9,4 +9,9 @@ public class LongIdConverter implements IdConverter<Long> {
     public Long toId(String id) {
         return Long.valueOf(id);
     }
+
+    @Override
+    public Class<? extends Serializable> getIdType() {
+        return Long.class;
+    }
 }

@@ -1,4 +1,4 @@
-package com.github.vincemann.springrapid.core.controller.mergeUpdate;
+package com.github.vincemann.springrapid.core.controller;
 
 import com.github.vincemann.aoplog.api.AopLoggable;
 import com.github.vincemann.aoplog.api.annotation.LogInteraction;

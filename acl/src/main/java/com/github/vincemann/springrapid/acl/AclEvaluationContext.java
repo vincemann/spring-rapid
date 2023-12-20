@@ -2,6 +2,10 @@ package com.github.vincemann.springrapid.acl;
 
 import com.github.vincemann.springrapid.acl.util.AclUtils;
 import com.github.vincemann.springrapid.core.model.IdentifiableEntity;
+import com.github.vincemann.springrapid.core.service.context.ServiceCallContext;
+import com.github.vincemann.springrapid.core.service.context.ServiceCallContextHolder;
+import com.github.vincemann.springrapid.core.service.exception.EntityNotFoundException;
+import com.github.vincemann.springrapid.core.util.EntityLocator;
 import lombok.Builder;
 import lombok.Getter;
 import org.springframework.security.acls.model.Permission;
@@ -26,8 +30,24 @@ public class AclEvaluationContext {
     private Serializable id;
     private Class entityClass;
 
-    public IdentifiableEntity<?> resolveTargetEntity(){
-        return AclUtils.resolveEntity(this);
+    public IdentifiableEntity<?> resolveEntity(){
+        if (targetEntity != null)
+            return targetEntity;
+        ServiceCallContext serviceContext = ServiceCallContextHolder.getContext();
+        if (serviceContext.getEntityClass().equals(entityClass))
+            targetEntity = serviceContext.resolveEntity();
+        else {
+            targetEntity = forceResolveEntity();
+        }
+        return targetEntity;
+    }
+
+    public IdentifiableEntity<?> forceResolveEntity(){
+        try {
+            return EntityLocator.findEntity(entityClass,id);
+        } catch (EntityNotFoundException e) {
+            throw new IllegalArgumentException("Could not find target entity for acl operation");
+        }
     }
 
 

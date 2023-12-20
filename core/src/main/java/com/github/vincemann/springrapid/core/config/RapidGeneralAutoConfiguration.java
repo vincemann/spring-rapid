@@ -4,6 +4,7 @@ import com.github.vincemann.springrapid.core.CoreProperties;
 import com.github.vincemann.springrapid.core.IdConverter;
 import com.github.vincemann.springrapid.core.LongIdConverter;
 import com.github.vincemann.springrapid.core.model.LongIdRapidSecurityAuditorAware;
+import com.github.vincemann.springrapid.core.service.locator.CrudServiceLocator;
 import com.github.vincemann.springrapid.core.util.EntityLocator;
 import com.github.vincemann.springrapid.core.util.JpaUtils;
 import com.github.vincemann.springrapid.core.util.Message;
@@ -85,8 +86,8 @@ public class RapidGeneralAutoConfiguration {
 
     @Bean
     @ConditionalOnMissingBean(EntityLocator.class)
-    public EntityLocator entityLocator(){
-        return new EntityLocator();
+    public EntityLocator entityLocator(CrudServiceLocator crudServiceLocator){
+        return new EntityLocator(crudServiceLocator);
     }
 
 //    @Bean

@@ -12,6 +12,8 @@ import java.util.Collection;
 
 /**
  * API for dynamic acl permission checking.
+ * Always use this API to check acl permissions
+ * All methods, except {@link this#checkExpression(String)} will create {@link AclEvaluationContext} that can be used downstream.
  */
 @ServiceComponent
 @LogInteraction

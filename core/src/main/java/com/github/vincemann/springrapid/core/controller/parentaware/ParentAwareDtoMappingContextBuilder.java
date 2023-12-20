@@ -1,4 +1,4 @@
-package com.github.vincemann.springrapid.core.controller.parentAware;
+package com.github.vincemann.springrapid.core.controller.parentaware;
 
 import com.github.vincemann.springrapid.core.controller.dto.mapper.context.AbstractDtoMappingContextBuilder;
 import lombok.Getter;

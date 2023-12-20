@@ -40,14 +40,10 @@ public abstract class JPACrudService
 
     @Transactional
     @Override
-    public Optional<E> findById(Id id) throws BadEntityException {
-        VerifyEntity.notNull(id, "Id");
-        try {
-            return getRepository().findById(id);
-        } catch (NonTransientDataAccessException e) {
-            // constraints not met, such as foreign key constraints or other db entity constraints
-            throw new BadEntityException(e);
-        }
+    public Optional<E> findById(Id id) {
+        if (id == null)
+            throw new IllegalArgumentException("Id cannot be null");
+        return getRepository().findById(id);
     }
 
     @Override
@@ -142,21 +138,17 @@ public abstract class JPACrudService
 
     @Transactional
     @Override
-    public void deleteById(Id id) throws EntityNotFoundException, BadEntityException {
-        try {
-            VerifyEntity.notNull(id, "Id");
-            Optional<E> entity = findById(id);
-            VerifyEntity.isPresent(entity, id, getEntityClass());
-            getRepository().deleteById(id);
-        } catch (NonTransientDataAccessException e) {
-            // constraints not met, such as foreign key constraints or other db entity constraints
-            throw new BadEntityException(e);
-        }
-
+    public void deleteById(Id id) throws EntityNotFoundException {
+        if (id == null)
+            throw new IllegalArgumentException("Id cannot be null");
+        Optional<E> entity = findById(id);
+        VerifyEntity.isPresent(entity, id, getEntityClass());
+        getRepository().deleteById(id);
     }
 
-    private E findOldEntity(Id id) throws BadEntityException, EntityNotFoundException {
-        VerifyEntity.notNull(id, "id");
+    private E findOldEntity(Id id) throws EntityNotFoundException {
+        if (id == null)
+            throw new IllegalArgumentException("Id cannot be null");
         Optional<E> entityToUpdate = findById(id);
         VerifyEntity.isPresent(entityToUpdate, id, getEntityClass());
         return entityToUpdate.get();

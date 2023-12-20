@@ -29,7 +29,7 @@ public interface CrudService<E extends IdentifiableEntity<Id>,Id extends Seriali
         Class<E> getEntityClass();
 
         @Transactional
-        Optional<E> findById(Id id) throws BadEntityException;
+        Optional<E> findById(Id id);
 
 
         @Transactional
@@ -64,5 +64,5 @@ public interface CrudService<E extends IdentifiableEntity<Id>,Id extends Seriali
         Set<E> findAll();
 
         @Transactional
-        void deleteById(Id id) throws EntityNotFoundException, BadEntityException;
+        void deleteById(Id id) throws EntityNotFoundException;
 }

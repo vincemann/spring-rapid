@@ -1,4 +1,4 @@
-package com.github.vincemann.springrapid.core.controller.idFetchingStrategy;
+package com.github.vincemann.springrapid.core.controller.fetchid;
 
 /**
  * The fetched Id is of Type {@link Long}.

@@ -1,6 +1,4 @@
-package com.github.vincemann.springrapid.core.controller.idFetchingStrategy;
-
-import java.io.Serializable;
+package com.github.vincemann.springrapid.core.controller.fetchid;
 
 /**
  * The fetched Id is of Type {@link Long}.

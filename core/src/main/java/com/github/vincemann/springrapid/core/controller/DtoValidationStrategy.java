@@ -1,4 +1,4 @@
-package com.github.vincemann.springrapid.core.controller.validationStrategy;
+package com.github.vincemann.springrapid.core.controller;
 
 import com.github.vincemann.aoplog.Severity;
 import com.github.vincemann.aoplog.api.AopLoggable;

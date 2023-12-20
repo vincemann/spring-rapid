@@ -3,6 +3,7 @@ package com.github.vincemann.springrapid.core.controller;
 
 import com.github.vincemann.springrapid.core.controller.dto.mapper.context.DtoMappingContext;
 import com.github.vincemann.springrapid.core.controller.dto.mapper.context.DtoRequestInfo;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.util.Assert;
 
 import java.util.ArrayList;
@@ -27,6 +28,7 @@ public class DelegatingDtoClassLocator {
 
 
 //    //@LogInteraction
+    @Cacheable(value = "findDtoClass")
     public Class<?> find(DtoRequestInfo info){
         Assert.notNull(context,"Context must be initialized");
         //local

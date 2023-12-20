@@ -12,4 +12,8 @@ import lombok.Setter;
 @Setter
 public class RapidAclSecurityContext<P extends RapidAuthenticatedPrincipal> extends AbstractRapidSecurityContext<P> {
     private AclEvaluationContext aclContext;
+
+    public void clearAclContext(){
+        this.aclContext = null;
+    }
 }
