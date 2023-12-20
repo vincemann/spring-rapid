@@ -32,10 +32,15 @@ public class ProxyUtils {
     public static boolean isRootService(Object target) {
 //        Class<?> userClass = ProxyUtils.getUserClass(joinPoint.getTarget());
         if (AopUtils.isAopProxy(target) || AopUtils.isCglibProxy(target) || Proxy.isProxyClass(target.getClass()) || target instanceof AbstractServiceExtension) {
+//        if (Proxy.isProxyClass(target.getClass())){
             return false;
         } else {
             return true;
         }
+//        if (Proxy.isProxyClass(target.getClass()) || target instanceof AbstractServiceExtension)
+//            return false;
+//        else
+//            return true;
     }
 
 

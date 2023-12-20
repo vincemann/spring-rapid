@@ -31,7 +31,7 @@ public class ExampleAclExtension
     }
 
     @Override
-    public void deleteById(Serializable id) throws EntityNotFoundException, BadEntityException {
+    public void deleteById(Serializable id) throws EntityNotFoundException {
         log.debug("deleting acl list for Entity with class: " + getEntityClass());
         getNext().deleteById(id);
     }

@@ -33,12 +33,8 @@ public class TransactionalRapidTestUtil {
 
 
     public static <E extends IdentifiableEntity> E mustBePresentIn(CrudService service, Serializable id){
-        Optional byId = null;
-        try {
-            byId = service.findById(id);
-        } catch (BadEntityException e) {
-            throw new RuntimeException(e);
-        }
+        Optional byId;
+        byId = service.findById(id);
         if (byId.isEmpty()){
             throw new IllegalArgumentException("No Entity found with id: " + id);
         }

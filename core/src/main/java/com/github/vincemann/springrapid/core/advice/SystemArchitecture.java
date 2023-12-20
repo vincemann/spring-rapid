@@ -32,8 +32,19 @@ public class SystemArchitecture {
     public void deleteOperation(){}
 
 
+    @Pointcut("!execution(* getEntityClass(..))" +
+            " && !execution(* getTargetClass(..))" +
+            " && !execution(* getBeanName(..))" +
+            " && !execution(* inject*(..))"
+    )
+    public void ignoreHelperServiceMethods(){}
+
+    @Pointcut("execution(!com.github.vincemann.springrapid.core.proxy.AbstractServiceExtension+ *(..)) && !this(com.github.vincemann.springrapid.core.proxy.AbstractServiceExtension+)")
+    public void ignoreExtensions(){}
+
     @Pointcut("execution(public * com.github.vincemann.springrapid.core.service.CrudService+.*(..))")
     public void serviceOperation(){}
+
 
     @Pointcut("execution(public * org.springframework.data.repository.Repository+.*(..))")
     public void repoOperation(){}

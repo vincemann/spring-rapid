@@ -1,5 +1,6 @@
 package com.github.vincemann.springrapid.autobidir;
 
+import com.github.vincemann.springrapid.core.proxy.AbstractServiceExtension;
 import com.github.vincemann.springrapid.core.proxy.CrudServiceExtension;
 import com.github.vincemann.springrapid.core.service.CrudService;
 import com.github.vincemann.springrapid.core.util.RepositoryUtil;
@@ -18,15 +19,16 @@ public class AutoBiDirUtils {
     public static Boolean isDisabled(JoinPoint joinPoint){
         Object proxied = AopTestUtils.getUltimateTargetObject(joinPoint.getTarget());
 
-        if (proxied instanceof CrudServiceExtension){
-            return Boolean.TRUE;
-        }
-        if (proxied instanceof CrudService){
-            Class<?> typeToCheck = ((CrudService<?, ?>) proxied).getEntityClass();
-            if (bannedRepoEntityTypes.contains(typeToCheck)){
-                return Boolean.TRUE;
-            }
-        }
+        // cannot happen bc its only repo operations
+//        if (proxied instanceof AbstractServiceExtension){
+//            return Boolean.TRUE;
+//        }
+//        if (proxied instanceof CrudService){
+//            Class<?> typeToCheck = ((CrudService<?, ?>) proxied).getEntityClass();
+//            if (bannedRepoEntityTypes.contains(typeToCheck)){
+//                return Boolean.TRUE;
+//            }
+//        }
 
         if (proxied instanceof SimpleJpaRepository){
             Class<?> typeToCheck = RepositoryUtil.getRepoType((SimpleJpaRepository<?, ?>) proxied);
