@@ -7,18 +7,24 @@ import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
 
+import java.util.Stack;
+
 /**
  * Sets {@link ServiceCallContext} in {@link ServiceCallContextHolder} for each service call.
  * hooks onto every service call for services implementing {@link CrudService}.
- * Checks first argument of function. If it is of type {@link IdentifiableEntity}, this will be interpreted as {@link ServiceCallContext}s target Entity.
- * If first arg is of Type {@link IdConverter#getIdType()}, then it will be interpreted as id of target entity.
+ * Lifetime of {@link ServiceCallContext} is the same as the most outer service call within the thread.
+ * -> each Thread has own context
  *
- * target entity is the entity targeted bc service call.
+ * context is created to allow thread wide caching especially between extensions within an extension chain.
+ * i.E. extensions hook deleteById and all need to call findById(id) to operate on the entity -> multiple uncached findById calls
+ *
  */
 @Aspect
 public class ServiceCallContextAdvice {
 
     IdConverter<?> idConverter;
+//    ThreadLocal<Stack<ServiceCallContext>> serviceCallStack = ThreadLocal.withInitial(Stack::new);
+    ThreadLocal<Stack<Class<?>>> serviceCallStack = ThreadLocal.withInitial(Stack::new);
 
     public ServiceCallContextAdvice(IdConverter<?> idConverter) {
         this.idConverter = idConverter;
@@ -26,31 +32,41 @@ public class ServiceCallContextAdvice {
 
     @Around(value = "com.github.vincemann.springrapid.core.advice.SystemArchitecture.serviceOperation()")
     public Object aroundServiceOperation(ProceedingJoinPoint joinPoint) throws Throwable {
+
+
         ServiceCallContext context = ServiceCallContextHolder.createEmptyContext();
 
-        Class entityClass = ((CrudService) joinPoint.getTarget()).getEntityClass();
-        context.setEntityClass(entityClass);
+        Class<?> entityClass = ((CrudService) joinPoint.getTarget()).getEntityClass();
+        context.setCurrentEntityClass(entityClass);
 
-        Object[] args = joinPoint.getArgs();
-        if (args.length > 0){
-            Object firstArg = args[0];
-            if (firstArg != null){
+//        Object[] args = joinPoint.getArgs();
+//        if (args.length > 0){
+//            Object firstArg = args[0];
+//            if (firstArg != null){
+//
+//                if (firstArg instanceof IdentifiableEntity){
+//                    context.setId(((IdentifiableEntity<?>) firstArg).getId());
+//                }else if (idConverter.getIdType().equals(firstArg.getClass())){
+//                    context.setId(idConverter.toId(String.valueOf(firstArg)));
+//                }
+//            }
+//        }
 
-                if (firstArg instanceof IdentifiableEntity){
-                    context.setId(((IdentifiableEntity<?>) firstArg).getId());
-                }else if (idConverter.getIdType().equals(firstArg.getClass())){
-                    context.setId(idConverter.toId(String.valueOf(firstArg)));
-                }
-            }
-        }
-
+        serviceCallStack.get().push(entityClass);
         ServiceCallContextHolder.setContext(context);
 
         Object ret;
         try {
            ret = joinPoint.proceed();
         }finally {
-            ServiceCallContextHolder.clearContext();
+            // restore old, or clear if last
+            serviceCallStack.get().pop();
+            if (serviceCallStack.get().size() > 0){
+                Class<?> oldEntityClass = serviceCallStack.get().peek();
+                ServiceCallContextHolder.getContext().setCurrentEntityClass(oldEntityClass);
+            } else{
+                ServiceCallContextHolder.clearContext();
+            }
         }
 
         return ret;

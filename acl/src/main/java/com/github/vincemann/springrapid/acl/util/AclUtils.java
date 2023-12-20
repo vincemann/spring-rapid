@@ -16,7 +16,6 @@ import java.util.stream.Collectors;
 public class AclUtils {
 
     private static PermissionStringConverter permissionStringConverter;
-    private static CrudServiceLocator crudServiceLocator;
 
     public static void setup(PermissionStringConverter permissionStringConverter) {
         AclUtils.permissionStringConverter = permissionStringConverter;

@@ -22,7 +22,7 @@ import java.util.Optional;
 @Order(Ordered.LOWEST_PRECEDENCE)
 public abstract class AbstractEntitysUserOwnerLocator<Id extends Serializable> implements OwnerLocator<AuditingEntity<Id>> {
 
-    private UserService<? extends AbstractUser<Id>,Id> userService;
+    private UserService<? extends AbstractUser<Id>, Id> userService;
 
     @Override
     public boolean supports(Class clazz) {
@@ -32,20 +32,15 @@ public abstract class AbstractEntitysUserOwnerLocator<Id extends Serializable> i
     //@LogInteraction
     @Override
     public Optional<String> find(AuditingEntity<Id> entity) {
-        try {
-            if (entity.getCreatedById()==null){
-                return Optional.empty();
-            }
-            Optional<? extends AbstractUser<Id>> byId = userService.findById(entity.getCreatedById());
-            return byId.map(AbstractUser::getContactInformation);
-        } catch (BadEntityException e) {
-            log.warn("Could not find Owner by createdById",e);
+        if (entity.getCreatedById() == null) {
             return Optional.empty();
         }
+        Optional<? extends AbstractUser<Id>> byId = userService.findById(entity.getCreatedById());
+        return byId.map(AbstractUser::getContactInformation);
     }
 
     @Autowired
-    public void injectUserService(UserService<? extends AbstractUser<Id>,Id> userService) {
+    public void injectUserService(UserService<? extends AbstractUser<Id>, Id> userService) {
         this.userService = userService;
     }
 }

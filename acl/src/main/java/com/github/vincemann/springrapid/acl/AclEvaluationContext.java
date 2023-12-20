@@ -1,6 +1,5 @@
 package com.github.vincemann.springrapid.acl;
 
-import com.github.vincemann.springrapid.acl.util.AclUtils;
 import com.github.vincemann.springrapid.core.model.IdentifiableEntity;
 import com.github.vincemann.springrapid.core.service.context.ServiceCallContext;
 import com.github.vincemann.springrapid.core.service.context.ServiceCallContextHolder;
@@ -11,6 +10,7 @@ import lombok.Getter;
 import org.springframework.security.acls.model.Permission;
 
 import java.io.Serializable;
+import java.util.Optional;
 
 /**
  * Much simpler version of {@link org.springframework.expression.EvaluationContext} only for acl evaluations and adjusted to this library.
@@ -20,7 +20,7 @@ import java.io.Serializable;
  * Combine with {@link com.github.vincemann.springrapid.core.security.RapidSecurityContext} to also gain information about authenticated.
  *
  * Either {@link this#targetEntity} is set or id and entityClass.
- * You can use {@link this#resolveTargetEntity()} as a convenience method to get target entity from acl context.
+ * You can use {@link this#resolveEntity()} as a convenience method to get target entity of the acl operation this context is created for.
  *
  */
 @Getter
@@ -30,24 +30,24 @@ public class AclEvaluationContext {
     private Serializable id;
     private Class entityClass;
 
-    public IdentifiableEntity<?> resolveEntity(){
+    public IdentifiableEntity<?> resolveEntity() {
         if (targetEntity != null)
             return targetEntity;
         ServiceCallContext serviceContext = ServiceCallContextHolder.getContext();
-        if (serviceContext.getEntityClass().equals(entityClass))
-            targetEntity = serviceContext.resolveEntity();
-        else {
-            targetEntity = forceResolveEntity();
+        try {
+            targetEntity = serviceContext.resolveEntity(id,entityClass);
+        } catch (EntityNotFoundException e) {
+            throw new IllegalArgumentException("Could not find target entity for acl operation",e);
         }
         return targetEntity;
     }
 
     public IdentifiableEntity<?> forceResolveEntity(){
-        try {
-            return EntityLocator.findEntity(entityClass,id);
-        } catch (EntityNotFoundException e) {
+        Optional<IdentifiableEntity> entity = EntityLocator.findEntity(entityClass, id);
+        // use runtime exception here bc it is expected by the service code to detect missing entities before issuing the check acl permissions call
+        if (entity.isEmpty())
             throw new IllegalArgumentException("Could not find target entity for acl operation");
-        }
+        return entity.get();
     }
 
 

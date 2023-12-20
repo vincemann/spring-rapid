@@ -21,24 +21,18 @@ public class AbstractUser<ID extends Serializable>
 	extends AuditingEntity<ID>
 		implements AuthenticatingEntity<ID>
 {
+	public static final int CONTACT_INFORMATION_MAX = 250;
 
 	// contactInformation can be email or phone number ... dont hardcode to email!
-	@JsonView(UserVerifyUtils.SignupInput.class)
-//	@UniqueContactInformation(groups = {UserVerifyUtils.SignUpValidation.class})
-//	@ContactInformation
-	@Column(nullable = false, unique = true, length = UserVerifyUtils.CONTACT_INFORMATION_MAX)
+	@Column(nullable = false, unique = true, length = CONTACT_INFORMATION_MAX)
 	protected String contactInformation;
 
 	// in the contactInformation-change process, temporarily stores the new contactInformation
-//	@UniqueContactInformation(groups = {UserVerifyUtils.ChangeContactInformationValidation.class})
-	@Column(length = UserVerifyUtils.CONTACT_INFORMATION_MAX)
+	@Column(length = CONTACT_INFORMATION_MAX)
 	protected String newContactInformation;
 
 	// password
 	// @NotBlank gets checked by PasswordChecker
-	// todo change to use @Password Annotation
-	@JsonView(UserVerifyUtils.SignupInput.class)
-//	@Password(/*groups = {UserVerifyUtils.SignUpValidation.class, UserVerifyUtils.ChangeContactInformationValidation.class}*/)
 	@Column(nullable = false) // no length because it will be encrypted
 	protected String password;
 
@@ -58,8 +52,6 @@ public class AbstractUser<ID extends Serializable>
 	// holds reCAPTCHA response while signing up
 	// todo put captcha response in signupDto and validate there
 	@Transient
-	@JsonView(UserVerifyUtils.SignupInput.class)
-//	@Captcha(groups = {UserVerifyUtils.SignUpValidation.class})
 	private String captchaResponse;
 
 	public final boolean hasRole(String role) {

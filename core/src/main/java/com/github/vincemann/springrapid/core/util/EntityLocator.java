@@ -13,6 +13,7 @@ import java.io.Serializable;
 import java.util.Optional;
 
 @Slf4j
+// dont make transactional - if code needs transaction, it should create it himself, then this call will also be wrapped in its own transaction
 //@Transactional
 public class EntityLocator {
 
@@ -22,11 +23,11 @@ public class EntityLocator {
         EntityLocator.crudServiceLocator = crudServiceLocator;
     }
 
-    public static <E extends IdentifiableEntity> E findEntity(E entity) throws EntityNotFoundException {
+    public static <E extends IdentifiableEntity> Optional<E> findEntity(E entity) {
         return findEntity(entity.getClass(),entity.getId());
     }
 
-    public static <E extends IdentifiableEntity> E findEntity(Class clazz, Serializable id) throws EntityNotFoundException {
+    public static <E extends IdentifiableEntity> Optional<E> findEntity(Class clazz, Serializable id) {
         CrudService service = crudServiceLocator.find((Class<IdentifiableEntity>) clazz);
 //        System.err.println("known services: " + crudServiceLocator.getEntityClassPrimaryServiceMap());
 //        System.err.println(service);
@@ -35,13 +36,9 @@ public class EntityLocator {
         }
 //        System.err.println(service.findAll());
         if (id == null){
-            throw new RuntimeException("id is null ");
+            throw new IllegalArgumentException("id is null ");
         }
-        Optional<IdentifiableEntity> byId = service.findById(id);
-        if (byId.isEmpty()){
-            throw new EntityNotFoundException("no entity found with id " + id + " of type: " + clazz.getSimpleName());
-        }
-        return (E) byId.get();
+        return service.findById(id);
     }
 
 }

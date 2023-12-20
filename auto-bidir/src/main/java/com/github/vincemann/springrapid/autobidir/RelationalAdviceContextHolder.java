@@ -4,17 +4,17 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class RelationalAdviceContextHolder {
-    private static Map<Thread,RelationalAdviceContext> context = new HashMap<>();
+    private static ThreadLocal<RelationalAdviceContext> context = ThreadLocal.withInitial(() -> null);
 
     public static RelationalAdviceContext getContext() {
-        return context.get(Thread.currentThread());
+        return context.get();
     }
 
-    public static void clear(){
-        context.remove(Thread.currentThread());
+    public static void clear() {
+        context.remove();
     }
 
-    public static void setContext(RelationalAdviceContext context){
-        RelationalAdviceContextHolder.context.put(Thread.currentThread(),context);
+    public static void setContext(RelationalAdviceContext newContext) {
+        context.set(newContext);
     }
 }

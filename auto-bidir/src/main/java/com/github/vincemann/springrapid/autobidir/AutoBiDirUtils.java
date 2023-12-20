@@ -17,12 +17,7 @@ public class AutoBiDirUtils {
 
     public static Boolean isDisabled(JoinPoint joinPoint){
         Object proxied = AopTestUtils.getUltimateTargetObject(joinPoint.getTarget());
-        if (proxied instanceof SimpleJpaRepository){
-            Class<?> typeToCheck = RepositoryUtil.getRepoType((SimpleJpaRepository<?, ?>) proxied);
-            if (bannedRepoEntityTypes.contains(typeToCheck)){
-                return Boolean.TRUE;
-            }
-        }
+
         if (proxied instanceof CrudServiceExtension){
             return Boolean.TRUE;
         }
@@ -32,6 +27,14 @@ public class AutoBiDirUtils {
                 return Boolean.TRUE;
             }
         }
+
+        if (proxied instanceof SimpleJpaRepository){
+            Class<?> typeToCheck = RepositoryUtil.getRepoType((SimpleJpaRepository<?, ?>) proxied);
+            if (bannedRepoEntityTypes.contains(typeToCheck)){
+                return Boolean.TRUE;
+            }
+        }
+
         return Boolean.FALSE;
     }
 }

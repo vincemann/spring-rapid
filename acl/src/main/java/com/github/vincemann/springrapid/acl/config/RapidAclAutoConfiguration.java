@@ -104,8 +104,8 @@ public class RapidAclAutoConfiguration {
     }
 
     @Autowired
-    public void configureAclUtils(PermissionStringConverter permissionStringConverter, CrudServiceLocator crudServiceLocator){
-        AclUtils.setup(permissionStringConverter,crudServiceLocator);
+    public void configureAclUtils(PermissionStringConverter permissionStringConverter){
+        AclUtils.setup(permissionStringConverter);
     }
 
     @Bean

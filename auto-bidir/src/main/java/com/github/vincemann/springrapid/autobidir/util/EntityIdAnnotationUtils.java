@@ -8,29 +8,38 @@ import com.github.vincemann.springrapid.autobidir.dto.parent.annotation.BiDirPar
 import com.github.vincemann.springrapid.autobidir.dto.parent.annotation.BiDirParentIdCollection;
 
 import java.lang.annotation.Annotation;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class EntityIdAnnotationUtils {
+    private static final Map<Annotation, Class<?>> annotationTypeCache = new ConcurrentHashMap<>();
 
     public static Class<?> getEntityType(Annotation annotation){
-        if (annotation instanceof BiDirChildId){
-            return ((BiDirChildId) annotation).value();
-        }else if (annotation instanceof BiDirChildIdCollection){
-            return ((BiDirChildIdCollection) annotation).value();
+        Class<?> cachedType = annotationTypeCache.get(annotation);
+        if (cachedType != null) {
+            return cachedType;
         }
 
-        else if (annotation instanceof BiDirParentId){
-            return ((BiDirParentId) annotation).value();
-        }else if (annotation instanceof BiDirParentIdCollection){
-            return ((BiDirParentIdCollection) annotation).value();
+        Class<?> entityType = null;
+        if (annotation instanceof BiDirChildId) {
+            entityType = ((BiDirChildId) annotation).value();
+        } else if (annotation instanceof BiDirChildIdCollection) {
+            entityType = ((BiDirChildIdCollection) annotation).value();
+        } else if (annotation instanceof BiDirParentId) {
+            entityType = ((BiDirParentId) annotation).value();
+        } else if (annotation instanceof BiDirParentIdCollection) {
+            entityType = ((BiDirParentIdCollection) annotation).value();
+        } else if (annotation instanceof UniDirChildId) {
+            entityType = ((UniDirChildId) annotation).value();
+        } else if (annotation instanceof UniDirChildIdCollection) {
+            entityType = ((UniDirChildIdCollection) annotation).value();
         }
 
+        if (entityType != null) {
+            annotationTypeCache.put(annotation, entityType);
+            return entityType;
+        }
 
-        else if (annotation instanceof UniDirChildId){
-            return ((UniDirChildId) annotation).value();
-        }
-        else if (annotation instanceof UniDirChildIdCollection){
-            return ((UniDirChildIdCollection) annotation).value();
-        }
         throw new IllegalArgumentException("Annotation: " + annotation + " is not of EntityId Type");
     }
 }

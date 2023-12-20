@@ -140,7 +140,7 @@ public abstract class AbstractUserService
 
     @Transactional(propagation = Propagation.SUPPORTS, readOnly = false)
     @Override
-    public void deleteById(ID id) throws EntityNotFoundException, BadEntityException {
+    public void deleteById(ID id) throws EntityNotFoundException {
         super.deleteById(id);
     }
 

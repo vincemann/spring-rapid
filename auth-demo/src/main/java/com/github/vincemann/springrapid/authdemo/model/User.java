@@ -1,10 +1,11 @@
 package com.github.vincemann.springrapid.authdemo.model;
 
-import com.fasterxml.jackson.annotation.JsonView;
 import com.github.vincemann.springrapid.auth.model.AbstractUser;
-import com.github.vincemann.springrapid.auth.util.UserVerifyUtils;
 import com.google.common.collect.Sets;
-import lombok.*;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
 
@@ -41,9 +42,8 @@ public class User extends AbstractUser<Long> {
 		this.name = name;
 	}
 
-	@JsonView(UserVerifyUtils.SignupInput.class)
-	@NotBlank(message = "{blank.name}"/*, groups = {UserVerifyUtils.SignUpValidation.class, UserVerifyUtils.UpdateValidation.class}*/)
-    @Size(min=NAME_MIN, max=NAME_MAX/*, groups = {UserVerifyUtils.SignUpValidation.class, UserVerifyUtils.UpdateValidation.class}*/)
+	@NotBlank(message = "{blank.name}")
+    @Size(min=NAME_MIN, max=NAME_MAX)
     @Column(nullable = false, length = NAME_MAX)
     private String name;
 

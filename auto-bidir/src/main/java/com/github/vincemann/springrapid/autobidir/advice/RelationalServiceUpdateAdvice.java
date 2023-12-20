@@ -9,6 +9,7 @@ import com.github.vincemann.springrapid.core.service.exception.EntityNotFoundExc
 import com.github.vincemann.springrapid.core.util.BeanUtils;
 import com.github.vincemann.springrapid.core.util.EntityLocator;
 import com.github.vincemann.springrapid.core.util.ProxyUtils;
+import com.github.vincemann.springrapid.core.util.VerifyEntity;
 import lombok.extern.slf4j.Slf4j;
 import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.annotation.Aspect;
@@ -18,6 +19,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 
+import java.util.Optional;
 import java.util.Set;
 
 import static com.github.vincemann.springrapid.core.util.ProxyUtils.isRootService;
@@ -67,7 +69,7 @@ public class RelationalServiceUpdateAdvice {
 
 
     // fields to remove not needed, already done via jpaCrudService.updates copyProperties call (removes those values)
-    public void preBiDirEntity(JoinPoint joinPoint,  IdentifiableEntity entity, RelationalAdviceContext.UpdateKind updateKind) throws EntityNotFoundException, BadEntityException {
+    public void preBiDirEntity(JoinPoint joinPoint,  IdentifiableEntity entity, RelationalAdviceContext.UpdateKind updateKind) throws EntityNotFoundException {
         if (AutoBiDirUtils.isDisabled(joinPoint)){
             return;
         }
@@ -94,7 +96,9 @@ public class RelationalServiceUpdateAdvice {
 //                    BeanUtils.clone(ProxyUtils.hibernateUnproxyRaw(
 //                            entityLocator.findEntity(ProxyUtils.hibernateUnproxyRaw(entity))
 //                    ));
-            IdentifiableEntity detachedOldEntity = entityLocator.findEntity(ProxyUtils.hibernateUnproxyRaw(entity));
+            Optional<IdentifiableEntity> byId = entityLocator.findEntity(ProxyUtils.hibernateUnproxyRaw(entity));
+            VerifyEntity.isPresent(byId,entity.getId(),entity.getClass());
+            IdentifiableEntity<?> detachedOldEntity = byId.get();
             entityManager.detach(detachedOldEntity);
 
             IdentifiableEntity detachedUpdateEntity = BeanUtils.clone(ProxyUtils.hibernateUnproxyRaw(entity));

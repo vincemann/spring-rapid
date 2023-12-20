@@ -17,7 +17,7 @@ public interface GenericCrudServiceExtension<S extends CrudService<E,Id>,E exten
         extends CrudService<E,Id>, NextLinkAware<S>{
 
     @Override
-    default Optional<E> findById(Id id) throws BadEntityException {
+    default Optional<E> findById(Id id) {
         return getNext().findById(id);
     }
 
@@ -48,7 +48,7 @@ public interface GenericCrudServiceExtension<S extends CrudService<E,Id>,E exten
     }
 
     @Override
-    default void deleteById(Id id) throws EntityNotFoundException, BadEntityException {
+    default void deleteById(Id id) throws EntityNotFoundException {
         getNext().deleteById(id);
     }
 
