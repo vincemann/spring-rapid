@@ -1,6 +1,7 @@
 package com.github.vincemann.springrapid.core.proxy;
 
 import com.github.vincemann.aoplog.MethodUtils;
+import com.github.vincemann.springrapid.core.service.context.ServiceCallContext;
 import com.github.vincemann.springrapid.core.util.Lists;
 import com.github.vincemann.springrapid.core.util.ProxyUtils;
 import com.github.vincemann.springrapid.core.service.CrudService;
@@ -47,6 +48,7 @@ public abstract class AbstractExtensionServiceProxy
     private String beanName;
 
 
+    static ThreadLocal<ServiceCallContext> serviceCallContext = new ThreadLocal<>();
 
 
 
