@@ -11,7 +11,6 @@ public class DatabaseDataInitManager implements CommandLineRunner {
 
     private List<DatabaseInitializer> initializers = new ArrayList<>();
 
-    //todo not required?
     @Autowired(required = false)
     public void injectInitializers(List<DatabaseInitializer> initializers) {
         this.initializers = initializers;

@@ -25,7 +25,7 @@ public class RapidSecurityContextChecker {
         }
     }
 
-    public static void checkHasNotRoles(String... roles) throws AccessDeniedException {
+    public static void checkDoesNotHaveRoles(String... roles) throws AccessDeniedException {
         checkAuthenticated();
         for (String required : roles) {
             if (RapidSecurityContext.hasRole(required)){

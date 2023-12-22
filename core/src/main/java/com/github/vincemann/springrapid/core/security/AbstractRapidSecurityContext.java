@@ -41,7 +41,8 @@ public abstract class AbstractRapidSecurityContext<P extends RapidAuthenticatedP
     public P login(P principal) {
         P old = currentPrincipal();
         if (old != null) {
-            log.warn("Principal: " + old + " was already logged in. This login will override old principals session");
+            if (log.isWarnEnabled())
+                log.warn("Principal: " + old + " was already logged in. This login will override old principals session");
         }
         Authentication auth = createToken(principal);
         SecurityContextHolder.getContext().setAuthentication(auth);
@@ -121,11 +122,11 @@ public abstract class AbstractRapidSecurityContext<P extends RapidAuthenticatedP
 
     protected void runAs(Authentication token, Runnable runnable) {
         Authentication old = SecurityContextHolder.getContext().getAuthentication();
-        log.debug("saving old security context authentication: " + old);
+//        log.debug("saving old security context authentication: " + old);
         SecurityContextHolder.getContext().setAuthentication(token);
         runnable.run();
         //restore
-        log.debug("restoring old security context authentication: " + old);
+//        log.debug("restoring old security context authentication: " + old);
         SecurityContextHolder.getContext().setAuthentication(old);
 
     }

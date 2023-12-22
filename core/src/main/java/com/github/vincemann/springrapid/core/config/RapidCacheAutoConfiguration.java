@@ -12,6 +12,6 @@ public class RapidCacheAutoConfiguration implements CacheManagerCustomizer<Concu
 
     @Override
     public void customize(ConcurrentMapCacheManager cacheManager) {
-        cacheManager.setCacheNames(Lists.newArrayList("patchInfo","patchInfo","findDtoClass"));
+        cacheManager.setCacheNames(Lists.newArrayList("patchInfo","findDtoClass"));
     }
 }

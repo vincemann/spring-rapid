@@ -2,6 +2,7 @@ package com.github.vincemann.springrapid.core.proxy;
 
 import com.github.vincemann.aoplog.MethodUtils;
 import com.github.vincemann.springrapid.core.service.context.ServiceCallContext;
+import com.github.vincemann.springrapid.core.service.context.ServiceCallContextHolder;
 import com.github.vincemann.springrapid.core.util.Lists;
 import com.github.vincemann.springrapid.core.util.ProxyUtils;
 import com.github.vincemann.springrapid.core.service.CrudService;
@@ -41,15 +42,12 @@ public abstract class AbstractExtensionServiceProxy
     private List<MethodIdentifier> learnedIgnoredMethods = new ArrayList<>();
     private S proxied;
     private List<AbstractServiceExtension<?, ? super P>> extensions = new ArrayList<>();
-    private ConcurrentHashMap<Thread, St> thead_state_map = new ConcurrentHashMap<>();
+    // todo this may be static
+    private ThreadLocal<St> threadState = new ThreadLocal<>();
     //caches
     private ConcurrentHashMap<ExtensionState, Object> next_cache = new ConcurrentHashMap<>();
     private ConcurrentHashMap<MethodIdentifier, List<ExtensionHandle>> extensionChainCache = new ConcurrentHashMap<>();
     private String beanName;
-
-
-    static ThreadLocal<ServiceCallContext> serviceCallContext = new ThreadLocal<>();
-
 
 
     public AbstractExtensionServiceProxy(S proxied, AbstractServiceExtension<?, ? super P>... extensions) {
@@ -91,18 +89,12 @@ public abstract class AbstractExtensionServiceProxy
     }
 
 
-    protected St getState() {
-        return getThead_state_map().get(Thread.currentThread());
-    }
 
 //    @Override
 //    public void dontCallTargetMethod() {
 //        getState().setCallTargetMethod(false);
 //    }
 
-    protected void setState(St state) {
-        getThead_state_map().put(Thread.currentThread(), state);
-    }
 
     protected P provideProxyController() {
         return (P) this;
@@ -118,6 +110,7 @@ public abstract class AbstractExtensionServiceProxy
         if (isIgnored(method)) {
             return invokeProxied(method, args);
         } else {
+
             //trying to figure out target class -> dont even ask extensions, go straight to final proxied
 //            if (isGetTargetClassMethod(method)){
 //                return invokeProxied(method, args);
@@ -129,7 +122,9 @@ public abstract class AbstractExtensionServiceProxy
 
                 List<ExtensionHandle> extensionChain = createExtensionChain(method);
                 if (!extensionChain.isEmpty()) {
-                    setState(createState(o, method, args));
+                    // create/reset service call context
+                    ServiceCallContextHolder.setContext(new ServiceCallContext());
+                    threadState.set(createState(o, method, args));
                     ExtensionHandle chainHandle = extensionChain.get(0);
                     return chainHandle.invoke(args);
                 } else {
@@ -142,6 +137,7 @@ public abstract class AbstractExtensionServiceProxy
         }
     }
 
+
 //    protected boolean isGetTargetClassMethod(Method method){
 //        if (method.getName().equals("getTargetClass") && method.getParameterTypes().length==0){
 //            return true;
@@ -151,7 +147,7 @@ public abstract class AbstractExtensionServiceProxy
 //    }
 
     protected void resetState(Object o, Method method, Object[] args) {
-        setState(createState(o, method, args));
+        threadState.set(createState(o, method, args));
     }
 
     protected abstract St createState(Object o, Method method, Object[] args);
@@ -167,7 +163,7 @@ public abstract class AbstractExtensionServiceProxy
 
     @Override
     public Object getNext(AbstractServiceExtension extension) {
-        State state = getState();
+        State state = threadState.get();
         //is next object cached?
         ExtensionState extensionState = new ExtensionState(state, extension);
         Object cached = next_cache.get(extensionState);

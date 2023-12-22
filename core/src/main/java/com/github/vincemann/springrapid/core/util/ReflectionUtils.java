@@ -2,10 +2,15 @@ package com.github.vincemann.springrapid.core.util;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class ReflectionUtils {
+
+    private static final Map<Class<?>, Set<String>> fieldNamesCache = new HashMap<>();
 
     public static void setFinal(Field field, Object target, Object newValue) throws Exception {
         field.setAccessible(true);
@@ -35,6 +40,14 @@ public class ReflectionUtils {
     }
 
     public static Set<String> findAllNonNullFieldNames(Object entity){
+
+        Class<?> entityClass = entity.getClass();
+
+        // Check if the result is already cached
+        if (fieldNamesCache.containsKey(entityClass)) {
+            return fieldNamesCache.get(entityClass);
+        }
+
         Set<String> result = new HashSet<>();
         org.springframework.util.ReflectionUtils.doWithFields(entity.getClass(), f -> {
             result.add(f.getName());
@@ -48,6 +61,11 @@ public class ReflectionUtils {
                 return org.springframework.util.ReflectionUtils.getField(field,entity) != null;
             }
         });
+
+
+        // Cache the result for this class
+        fieldNamesCache.put(entityClass, result);
+
         return result;
     }
 }

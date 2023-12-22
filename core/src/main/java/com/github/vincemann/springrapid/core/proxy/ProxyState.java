@@ -19,14 +19,17 @@ import java.util.Map;
 // todo there has to be a better way to do this or avoid completely
 @Slf4j
 public class ProxyState {
-    private final static Map<Thread,Map<String, Object>> STATE = new HashMap<>();
+    private final static ThreadLocal<Map<String, Object>> state = new ThreadLocal<>();
 
+    static {
+        state.set(new HashMap<>());
+    }
     
 
     public static void clear(){
         if (log.isTraceEnabled())
             log.trace("clearing " + Thread.currentThread());
-        STATE.remove(Thread.currentThread());
+        state.remove();
         // this comment made idea realize that it should not call this method many times randomly...
 //        throw new IllegalArgumentException("clearing");
     }
@@ -34,7 +37,7 @@ public class ProxyState {
     public static void clear(String key){
         if (log.isTraceEnabled())
             log.trace("clearing key: " + key + " " + Thread.currentThread());
-        Map<String, Object> state = STATE.get(Thread.currentThread());
+        Map<String, Object> state = state.get();
         if (state==null){
 //            throw new IllegalArgumentException("nothing to clear");
             log.debug("state is null");
@@ -54,18 +57,18 @@ public class ProxyState {
     }
 
     public static void setValue(String key, Object value){
-        Map<String, Object> state = STATE.get(Thread.currentThread());
+        Map<String, Object> state = state.get();
         if (state==null){
             Map<String, Object> firstState = new HashMap<>();
             firstState.put(key,value);
-            STATE.put(Thread.currentThread(),firstState);
+            state.put(key,firstState);
         }else {
             state.put(key,value);
         }
     }
 
     public static <T> T get(String key){
-        Map<String, Object> threadState = STATE.get(Thread.currentThread());
+        Map<String, Object> threadState = state.get();
         if (threadState==null){
             return null;
         }else {
