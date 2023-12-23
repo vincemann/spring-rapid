@@ -19,4 +19,12 @@ import javax.persistence.Table;
 public class PetType extends MyIdentifiableEntity<Long> {
     @Unique
     private String name;
+
+    @Override
+    public String toString() {
+        return "PetType{" +
+                "name='" + name + '\'' +
+                ", id=" + getId() +
+                '}';
+    }
 }

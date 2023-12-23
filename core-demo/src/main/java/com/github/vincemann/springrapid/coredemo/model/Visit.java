@@ -2,6 +2,7 @@ package com.github.vincemann.springrapid.coredemo.model;
 
 import com.github.vincemann.springrapid.autobidir.model.child.annotation.UniDirChildCollection;
 import com.github.vincemann.springrapid.autobidir.model.child.annotation.UniDirChildEntity;
+import com.github.vincemann.springrapid.core.util.LazyToStringUtil;
 import com.github.vincemann.springrapid.coredemo.model.abs.MyIdentifiableEntity;
 import lombok.*;
 import org.springframework.format.annotation.DateTimeFormat;
@@ -17,6 +18,7 @@ import java.util.Set;
 @Setter
 @NoArgsConstructor
 @Entity
+@Table(name = "visits")
 public class Visit extends MyIdentifiableEntity<Long> {
 
 
@@ -55,9 +57,9 @@ public class Visit extends MyIdentifiableEntity<Long> {
     @Override
     public String toString() {
         return "Visit{" +
-                "pets=" + Arrays.toString(pets.stream().map(Pet::getName).toArray())  +
-                ", owner=" + (owner==null? "null": owner.getLastName()) +
-                ", vet=" + (vet==null? "null": vet.getLastName()) +
+                "pets=" + LazyToStringUtil.toStringIfLoaded(pets,Pet::getName) +
+                ", owner=" + LazyToStringUtil.toStringIfLoaded(owner,Owner::getLastName) +
+                ", vet=" + LazyToStringUtil.toStringIfLoaded(vet,Vet::getLastName) +
                 ", date=" + date +
                 ", reason='" + reason + '\'' +
                 '}';

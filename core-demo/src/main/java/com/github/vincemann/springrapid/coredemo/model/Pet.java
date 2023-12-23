@@ -9,6 +9,7 @@ import com.github.vincemann.springrapid.autobidir.model.child.annotation.BiDirCh
 import com.github.vincemann.springrapid.autobidir.model.parent.annotation.BiDirParentEntity;
 import com.github.vincemann.springrapid.autobidir.model.child.annotation.UniDirChildEntity;
 
+import com.github.vincemann.springrapid.core.util.LazyToStringUtil;
 import com.github.vincemann.springrapid.coredemo.model.abs.MyIdentifiableEntity;
 import lombok.*;
 import org.checkerframework.common.aliasing.qual.Unique;
@@ -71,14 +72,14 @@ public class Pet extends MyIdentifiableEntity<Long> {
     @DateTimeFormat(pattern = "yyyy-MM-dd")
     private LocalDate birthDate;
 
-//    @Override
-//    public String toString() {
-//        return "Pet{" +
-//                "name='" + name + '\'' +
-//                ", petType=" + petType +
-//                ", toys=" +  Arrays.toString(toys.stream().map(Toy::getName).toArray()) +
-//                ", owner=" + (owner==null? "null": owner.getLastName()) +
-//                ", birthDate=" + birthDate +
-//                '}';
-//    }
+    @Override
+    public String toString() {
+        return "Pet{" +
+                "name='" + name + '\'' +
+                ", petType=" + petType +
+                ", toys=" +  LazyToStringUtil.toStringIfLoaded(toys,Toy::getName) +
+                ", owner=" + LazyToStringUtil.toStringIfLoaded(owner,Owner::getLastName) +
+                ", birthDate=" + birthDate +
+                '}';
+    }
 }

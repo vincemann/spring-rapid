@@ -16,7 +16,6 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.MessageSource;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.domain.AuditorAware;
 import org.springframework.validation.Validator;
@@ -35,6 +34,11 @@ public class RapidGeneralAutoConfiguration {
 
     public RapidGeneralAutoConfiguration() {
 
+    }
+
+    @Autowired
+    public void configureLazyToStringUtil(){
+        LazyToStringUtil.init(entityManager);
     }
 
     @Autowired

@@ -1,6 +1,7 @@
 package com.github.vincemann.springrapid.coredemo.model;
 
 import com.fasterxml.jackson.annotation.JsonManagedReference;
+import com.github.vincemann.springrapid.core.util.LazyToStringUtil;
 import com.github.vincemann.springrapid.coredemo.model.abs.Person;
 import com.github.vincemann.springrapid.autobidir.model.child.annotation.BiDirChildCollection;
 import com.github.vincemann.springrapid.autobidir.model.child.annotation.BiDirChildEntity;
@@ -62,17 +63,17 @@ public class Owner extends Person {
     private String telephone;
 
 
-//    @Override
-//    public String toString() {
-//        return "Owner{" +
-//                "pets=" + Arrays.toString(pets.stream().map(Pet::getName).toArray()) +
-//                ", clinicCard=" + clinicCard +
-//                ", hobbies=" + hobbies +
-//                ", lazyExceptionItems=" + lazyExceptionItems +
-//                ", lazyLoadedItems=" + lazyLoadedItems +
-//                ", address='" + address + '\'' +
-//                ", city='" + city + '\'' +
-//                ", telephone='" + telephone + '\'' +
-//                '}';
-//    }
+    @Override
+    public String toString() {
+        return "Owner{" +
+                "firstName='" + getFirstName() + '\'' +
+                ", lastName='" + getLastName() + '\'' +
+                ", pets=" + LazyToStringUtil.toStringIfLoaded(pets,Pet::getName) +
+                ", clinicCard=" + LazyToStringUtil.toStringIfLoaded(clinicCard, c -> c.getRegistrationDate().toString()) +
+                ", hobbies=" + hobbies +
+                ", address='" + address + '\'' +
+                ", city='" + city + '\'' +
+                ", telephone='" + telephone + '\'' +
+                '}';
+    }
 }

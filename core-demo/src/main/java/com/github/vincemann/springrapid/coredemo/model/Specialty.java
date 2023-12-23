@@ -4,6 +4,7 @@ import com.github.vincemann.springrapid.core.model.IdentifiableEntityImpl;
 
 
 import com.github.vincemann.springrapid.autobidir.model.parent.annotation.BiDirParentCollection;
+import com.github.vincemann.springrapid.core.util.LazyToStringUtil;
 import com.github.vincemann.springrapid.coredemo.model.abs.MyIdentifiableEntity;
 import lombok.*;
 import org.checkerframework.common.aliasing.qual.Unique;
@@ -40,7 +41,7 @@ public class Specialty extends MyIdentifiableEntity<Long>
     public String toString() {
         return "Specialty{" +
                 "description='" + description + '\'' +
-                ", vets=" + Arrays.toString(vets.stream().map(Vet::getLastName).toArray())  +
+                ", vets=" + LazyToStringUtil.toStringIfLoaded(vets,Vet::getLastName) +
                 '}';
     }
 }

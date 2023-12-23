@@ -17,11 +17,13 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.mock.mockito.SpyBean;
+import org.springframework.test.context.jdbc.Sql;
 
 import java.io.Serializable;
 import java.time.LocalDate;
 import java.util.HashSet;
 
+@Sql(scripts = "classpath:clear-test-data.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
 public class OneToManyServiceIntegrationTest<
         S extends CrudService<E, Id>,
         E extends IdentifiableEntity<Id>,
@@ -108,13 +110,13 @@ public class OneToManyServiceIntegrationTest<
                 .build();
     }
 
-    @AfterEach
-    void tearDown() {
-        petRepository.deleteAll();
-        ownerRepository.deleteAll();
-        petTypeRepository.deleteAll();
-//        RapidTestUtil.clear(petService);
-//        RapidTestUtil.clear(ownerService);
-//        RapidTestUtil.clear(petTypeService);
-    }
+//    @AfterEach
+//    void tearDown() {
+//        petRepository.deleteAll();
+//        ownerRepository.deleteAll();
+//        petTypeRepository.deleteAll();
+////        RapidTestUtil.clear(petService);
+////        RapidTestUtil.clear(ownerService);
+////        RapidTestUtil.clear(petTypeService);
+//    }
 }

@@ -1,5 +1,6 @@
 package com.github.vincemann.springrapid.coredemo.model;
 
+import com.github.vincemann.springrapid.core.util.LazyToStringUtil;
 import com.github.vincemann.springrapid.coredemo.model.abs.Person;
 import com.github.vincemann.springrapid.autobidir.model.child.annotation.BiDirChildCollection;
 
@@ -36,8 +37,11 @@ public class Vet extends Person
     @Override
     public String toString() {
         return "Vet{" +
-                super.toString() +
-                "specialtys=" + Arrays.toString(specialtys.stream().map(Specialty::getDescription).toArray())  +
+                "firstName='" + getFirstName() + '\'' +
+                ", lastName='" + getLastName() + '\'' +
+                ", specialtys=" + LazyToStringUtil.toStringIfLoaded(specialtys,Specialty::getDescription) +
                 '}';
     }
+
+
 }

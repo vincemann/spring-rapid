@@ -13,12 +13,14 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.test.context.jdbc.Sql;
 
 import java.io.Serializable;
 import java.util.HashSet;
 import java.util.Optional;
 import java.util.Set;
 
+@Sql(scripts = "classpath:clear-test-data.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
 public class ManyToManyServiceIntegrationTest<
         S extends CrudService<E, Id>,
         E extends IdentifiableEntity<Id>,
@@ -120,11 +122,11 @@ public class ManyToManyServiceIntegrationTest<
         Assertions.assertEquals(vets, specialty.getVets());
     }
 
-    @AfterEach
-    void tearDown() {
-        specialtyRepository.deleteAll();
-        vetRepository.deleteAll();
-//        RapidTestUtil.clear(specialtyService);
-//        RapidTestUtil.clear(vetService);
-    }
+//    @AfterEach
+//    void tearDown() {
+//        specialtyRepository.deleteAll();
+//        vetRepository.deleteAll();
+////        RapidTestUtil.clear(specialtyService);
+////        RapidTestUtil.clear(vetService);
+//    }
 }

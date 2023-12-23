@@ -1,4 +1,4 @@
-package com.github.vincemann.springrapid.coredemo.controller.ownerLocator;
+package com.github.vincemann.springrapid.coredemo.controller;
 
 import com.github.vincemann.springrapid.core.controller.owner.OwnerLocator;
 import com.github.vincemann.springrapid.core.slicing.WebComponent;

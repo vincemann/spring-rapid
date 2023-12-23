@@ -7,10 +7,7 @@ import com.github.vincemann.springrapid.core.model.IdentifiableEntity;
 import com.github.vincemann.springrapid.core.proxy.AbstractServiceExtension;
 import com.github.vincemann.springrapid.core.service.exception.BadEntityException;
 import com.github.vincemann.springrapid.core.service.exception.EntityNotFoundException;
-import com.github.vincemann.springrapid.core.util.BeanUtils;
-import com.github.vincemann.springrapid.core.util.EntityLocator;
-import com.github.vincemann.springrapid.core.util.ProxyUtils;
-import com.github.vincemann.springrapid.core.util.VerifyEntity;
+import com.github.vincemann.springrapid.core.util.*;
 import lombok.extern.slf4j.Slf4j;
 import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.annotation.Aspect;
@@ -33,7 +30,7 @@ public class RelationalServiceUpdateAdvice {
 
     @PersistenceContext
     private EntityManager entityManager;
-    private EntityLocator entityLocator;
+//    private EntityLocator entityLocator;
 
     @Before(value = "com.github.vincemann.springrapid.core.advice.SystemArchitecture.fullUpdateOperation() && " +
             "com.github.vincemann.springrapid.core.advice.SystemArchitecture.serviceOperation() && " +
@@ -78,13 +75,14 @@ public class RelationalServiceUpdateAdvice {
 
     // fields to remove not needed, already done via jpaCrudService.updates copyProperties call (removes those values)
     public void preBiDirEntity(JoinPoint joinPoint,  IdentifiableEntity entity, RelationalAdviceContext.UpdateKind updateKind) throws EntityNotFoundException {
-        System.err.println("SERVICE UPDATE ADVICE: " + joinPoint.getTarget().getClass().getSimpleName() + "->" + joinPoint.getSignature().getName());
+//        System.err.println("SERVICE UPDATE ADVICE: " + joinPoint.getTarget().getClass().getSimpleName() + "->" + joinPoint.getSignature().getName());
 //        Assert.isTrue(!(joinPoint.getTarget() instanceof AbstractServiceExtension));
 //        Assert.isTrue(!(AopTestUtils.getUltimateTargetObject(joinPoint.getTarget()) instanceof AbstractServiceExtension));
 
         if (!isRootService(joinPoint.getTarget())) {
             if (log.isDebugEnabled()){
-                System.err.println("not root service");
+//                System.err.println("not root service");
+                log.debug("not root service");
             }
 //                log.debug("ignoring service update advice, bc root service not called yet");
             return;
@@ -92,7 +90,7 @@ public class RelationalServiceUpdateAdvice {
         if (AutoBiDirUtils.isDisabled(joinPoint)){
             return;
         }
-        System.err.println("is root service");
+//        System.err.println("is root service");
 
         RelationalAdviceContext updateContext;
         if (updateKind == null){
@@ -106,19 +104,28 @@ public class RelationalServiceUpdateAdvice {
                     .build();
         }else {
             // java.lang.ClassCastException: class io.gitlab.vinceconrad.votesnackbackend.model.Exercise$HibernateProxy$ipV9X1Mb cannot be cast to class org.hibernate.proxy.LazyInitializer
+            // -> need to unproxy as done further down below
 //            IdentifiableEntity detachedOldEntity = BeanUtils.clone(entityLocator.findEntity(entity));
-            // todo do i really need to do a bean clone here?
 //            IdentifiableEntity detachedOldEntity =
 //                    BeanUtils.clone(ProxyUtils.hibernateUnproxyRaw(
 //                            entityLocator.findEntity(ProxyUtils.hibernateUnproxyRaw(entity))
 //                    ));
-            Optional<IdentifiableEntity> byId = entityLocator.findEntity(ProxyUtils.hibernateUnproxyRaw(entity));
+
+
+            // used cloning here to fully detach entity by also detaching its collections - using util method for that now
+            // can only detach collections by calling set = new HashSet(set);
+            // somehow detaching even with util function is not enough
+            Optional<IdentifiableEntity> byId = EntityLocator.findEntity(ProxyUtils.hibernateUnproxyRaw(entity));
             VerifyEntity.isPresent(byId,entity.getId(),entity.getClass());
-            IdentifiableEntity<?> detachedOldEntity = byId.get();
+            IdentifiableEntity<?> detachedOldEntity = BeanUtils.clone(ProxyUtils.hibernateUnproxyRaw(byId.get()));
+//            IdentifiableEntity<?> detachedOldEntity = ProxyUtils.hibernateUnproxyRaw(byId.get());
             entityManager.detach(detachedOldEntity);
+//            JpaUtils.detachCollections(detachedOldEntity);
 
             IdentifiableEntity detachedUpdateEntity = BeanUtils.clone(ProxyUtils.hibernateUnproxyRaw(entity));
+//            IdentifiableEntity detachedUpdateEntity = ProxyUtils.hibernateUnproxyRaw(entity);
             entityManager.detach(detachedUpdateEntity);
+//            JpaUtils.detachCollections(detachedUpdateEntity);
 
             updateContext = RelationalAdviceContext.builder()
                     .detachedUpdateEntity(detachedUpdateEntity)
@@ -129,8 +136,8 @@ public class RelationalServiceUpdateAdvice {
         RelationalAdviceContextHolder.setContext(updateContext);
     }
 
-    @Autowired
-    public void setEntityLocator(EntityLocator entityLocator) {
-        this.entityLocator = entityLocator;
-    }
+//    @Autowired
+//    public void setEntityLocator(EntityLocator entityLocator) {
+//        this.entityLocator = entityLocator;
+//    }
 }

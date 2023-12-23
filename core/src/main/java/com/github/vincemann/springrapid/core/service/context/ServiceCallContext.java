@@ -91,6 +91,10 @@ public class ServiceCallContext {
         return (T) cache.get(key);
     }
 
+    public <T> T getValueOrDefault(String key, T defaultValue) {
+        return (T) cache.getOrDefault(key,defaultValue);
+    }
+
     public void addCachedEntity(IdentifiableEntity<?> entity) {
         cache.put(computeKey(entity.getClass(),entity.getId()),entity);
     }
