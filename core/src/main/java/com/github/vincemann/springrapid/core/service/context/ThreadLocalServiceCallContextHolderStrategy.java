@@ -1,11 +1,14 @@
 package com.github.vincemann.springrapid.core.service.context;
 
-import org.springframework.security.core.context.SecurityContext;
-import org.springframework.security.core.context.SecurityContextImpl;
 import org.springframework.util.Assert;
 
 public class ThreadLocalServiceCallContextHolderStrategy implements ServiceCallContextHolderStrategy{
-    private static final ThreadLocal<ServiceCallContext> contextHolder = new ThreadLocal<>();
+    private final ThreadLocal<ServiceCallContext> contextHolder = new ThreadLocal<>();
+    private ServiceCallContextFactory serviceCallContextFactory;
+
+    public ThreadLocalServiceCallContextHolderStrategy(ServiceCallContextFactory serviceCallContextFactory) {
+        this.serviceCallContextFactory = serviceCallContextFactory;
+    }
 
     // ~ Methods
     // ========================================================================================================
@@ -30,7 +33,7 @@ public class ThreadLocalServiceCallContextHolderStrategy implements ServiceCallC
         contextHolder.set(context);
     }
 
-    public ServiceCallContext createEmptyContext() {
-        return new ServiceCallContext();
+    public ServiceCallContext createEmptyContext(){
+        return serviceCallContextFactory.create();
     }
 }

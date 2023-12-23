@@ -28,7 +28,7 @@ public class CleanUpAclExtension
 
     @LogInteraction
     @Override
-    public void deleteById(Serializable id) throws EntityNotFoundException, BadEntityException {
+    public void deleteById(Serializable id) throws EntityNotFoundException {
         getNext().deleteById(id);
         aclPermissionService.deleteAclOfEntity(getEntityClass(),id,deleteCascade);
     }

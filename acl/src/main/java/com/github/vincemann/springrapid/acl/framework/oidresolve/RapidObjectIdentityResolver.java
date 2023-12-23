@@ -39,7 +39,7 @@ public class RapidObjectIdentityResolver implements ObjectIdentityResolver {
             VerifyEntity.isPresent(byId, objectIdentity.getIdentifier(), entityClass);
             return (T) byId.get();
 
-        } catch (ClassNotFoundException | BadEntityException | EntityNotFoundException | ClassCastException e) {
+        } catch (ClassNotFoundException | EntityNotFoundException | ClassCastException e) {
             throw new UnresolvableOidException(e);
         }
     }

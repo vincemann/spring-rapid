@@ -24,7 +24,7 @@ public class CrudAclChecksSecurityExtension
 
 
     @Override
-    public Optional findById(Serializable id) throws BadEntityException {
+    public Optional findById(Serializable id) {
         getSecurityChecker().checkPermission(id,getLast().getEntityClass(), BasePermission.READ);
         return getNext().findById(id);
     }
@@ -55,7 +55,7 @@ public class CrudAclChecksSecurityExtension
     }
 
     @Override
-    public void deleteById(Serializable id) throws EntityNotFoundException, BadEntityException {
+    public void deleteById(Serializable id) throws EntityNotFoundException {
         getSecurityChecker().checkPermission(id,getLast().getEntityClass(),BasePermission.DELETE);
         getNext().deleteById(id);
     }

@@ -23,53 +23,108 @@ import java.util.function.Supplier;
 @NoArgsConstructor
 public class ServiceCallContext {
 
-
-    private Map<EntityInformation,Optional<? extends IdentifiableEntity<?>>> entityCache = new HashMap<>();
-    private Map<String,Optional<Object>> cache = new HashMap<>();
+    private Map<String,Object> cache = new HashMap<>();
+    private Map<String,Object> values = new HashMap<>();
 
     @Setter
     private Class<?> currentEntityClass;
 
 
-    @EqualsAndHashCode
-    @Builder
-    private static class EntityInformation{
-        private Serializable id;
-        private Class<?> entityClass;
-    }
-
-
     public <T> T getCached(String key, Supplier<T> supplier){
         Optional<T> cached = (Optional<T>) cache.get(key);
-        if (cached != null)
-            return (T) cached;
+        if (cached != null){
+            if (cached.isPresent())
+                return cached.get();
+            else
+                return null;
+        }
         T value = supplier.get();
         cache.put(key,Optional.ofNullable(value));
         return value;
     }
 
-    public void addCachedEntity(EntityInformation information, IdentifiableEntity<?> entity) {
-        entityCache.put(information,Optional.ofNullable(entity));
+    public <T,E extends Exception> T getThrowingCached(String key, ThrowingSupplier<T,E> supplier) throws E {
+        Optional<T> cached = (Optional<T>) cache.get(key);
+        if (cached != null){
+            if (cached.isPresent())
+                return cached.get();
+            else
+                return null;
+        }
+        T value = supplier.get();
+        cache.put(key,Optional.ofNullable(value));
+        return value;
     }
 
-    public void addCachedEntity(EntityInformation information, Optional<? extends IdentifiableEntity<?>> entity) {
-        entityCache.put(information,entity);
+    public <T> T getCached(Serializable id, Class clazz, Supplier<T> supplier){
+       return getCached(computeKey(clazz,id),supplier);
+    }
+
+    public <T> T getCached(Serializable id, Supplier<T> supplier){
+        return getCached(computeKey(currentEntityClass,id),supplier);
+    }
+
+    public <T,E extends Exception> T getThrowingCached(Serializable id, Class clazz, ThrowingSupplier<T,E> supplier) throws E {
+        return getThrowingCached(computeKey(clazz,id),supplier);
+    }
+
+    public <T,E extends Exception> T getThrowingCached(Serializable id, ThrowingSupplier<T,E> supplier) throws E {
+        return getThrowingCached(computeKey(currentEntityClass,id),supplier);
+    }
+
+
+    public <T> T getRefreshedCached(String key, Supplier<T> supplier){
+        T value = supplier.get();
+        cache.put(key,Optional.ofNullable(value));
+        return value;
+    }
+
+    public void addCached(String key, Object value) {
+        cache.put(key,value);
+    }
+
+    public void addValue(String key, Object value) {
+        cache.put(key,value);
+    }
+
+    public <T> T getValue(String key) {
+        return (T) cache.get(key);
+    }
+
+    public void addCachedEntity(IdentifiableEntity<?> entity) {
+        cache.put(computeKey(entity.getClass(),entity.getId()),entity);
+    }
+
+    public void addCachedEntity(Class clazz, Serializable id, Optional<? extends IdentifiableEntity<?>> entity) {
+        cache.put(computeKey(clazz,id),entity);
+    }
+
+    // entity is expected to be found, otherwise EntityNotFoundException is thrown
+    public <E extends IdentifiableEntity<?>> E resolvePresentEntity(Serializable id, Class<?> clazz) throws EntityNotFoundException {
+        Optional<E> entity = resolveEntity(id, clazz);
+        if (entity.isEmpty())
+            throw new EntityNotFoundException(id,clazz);
+        else
+            return entity.get();
+    }
+
+    public <E extends IdentifiableEntity<?>> E resolvePresentEntity(Serializable id) throws EntityNotFoundException {
+       return resolvePresentEntity(id,currentEntityClass);
     }
 
 
     public <E extends IdentifiableEntity<?>> Optional<E> resolveEntity(Serializable id, Class<?> clazz) {
-        EntityInformation info = new EntityInformation(id,clazz);
-        Optional<E> cached = (Optional<E>) entityCache.get(info);
-        if (cached == null){
-            // not cached yet
-            return forceResolveEntity(id, clazz);
-//            entityCache.put(info,entity);
-//            return entity;
-        }else {
-            // cached
-            return cached;
-        }
+        if (id == null)
+            throw new IllegalArgumentException("id is null, cannot resolve entity");
+        Supplier<Optional<E>> supplier = () -> EntityLocator.findEntity(clazz,id);
+        String key = computeKey(clazz, id);
+        return getCached(key,supplier);
     }
+
+    private static String computeKey(Class clazz, Serializable id){
+        return clazz.toString() + ":" + String.valueOf(id);
+    }
+
 
     public <E extends IdentifiableEntity<?>> Optional<E> resolveEntity(Serializable id) {
         return resolveEntity(id,currentEntityClass);
@@ -77,17 +132,22 @@ public class ServiceCallContext {
 
 
     /**
-     * ignored caching and fetches entity from db.
+     * ignores caching and fetches entity from db.
      */
-    public <E extends IdentifiableEntity<?>> Optional<E> forceResolveEntity(Serializable id, Class<?> entityClass) {
-        if (id == null)
-            throw new IllegalArgumentException("id is null, cannot resolve entity");
-        Optional<E> entity = EntityLocator.findEntity(entityClass, id);
-        entityCache.put(new EntityInformation(id,entityClass),entity);
-        return entity;
-//        return entity;
-//        VerifyEntity.isPresent(entity,id,entityClass);
-//        return (E) entity.get();
+    public <E extends IdentifiableEntity<?>> Optional<E> resolveRefreshedEntity(Serializable id, Class<?> entityClass) {
+        return getRefreshedCached(computeKey(entityClass,id),() -> EntityLocator.findEntity(entityClass,id));
+    }
+
+    public <E extends IdentifiableEntity<?>> E resolvePresentRefreshedEntity(Serializable id, Class<?> entityClass) throws EntityNotFoundException {
+        Optional<E> entity = resolveRefreshedEntity(id, entityClass);
+        if (entity.isEmpty())
+            throw new EntityNotFoundException(id,entityClass);
+        else
+            return entity.get();
+    }
+
+    public <E extends IdentifiableEntity<?>> E resolvePresentRefreshedEntity(Serializable id) throws EntityNotFoundException {
+       return resolvePresentRefreshedEntity(id,currentEntityClass);
     }
 
 }

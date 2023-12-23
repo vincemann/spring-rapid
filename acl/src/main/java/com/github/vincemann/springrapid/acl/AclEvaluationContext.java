@@ -3,8 +3,6 @@ package com.github.vincemann.springrapid.acl;
 import com.github.vincemann.springrapid.core.model.IdentifiableEntity;
 import com.github.vincemann.springrapid.core.service.context.ServiceCallContext;
 import com.github.vincemann.springrapid.core.service.context.ServiceCallContextHolder;
-import com.github.vincemann.springrapid.core.service.exception.EntityNotFoundException;
-import com.github.vincemann.springrapid.core.util.EntityLocator;
 import lombok.Builder;
 import lombok.Getter;
 import org.springframework.security.acls.model.Permission;
@@ -43,7 +41,7 @@ public class AclEvaluationContext {
     }
 
     public IdentifiableEntity<?> forceResolveEntity() {
-        Optional<IdentifiableEntity> entity = ServiceCallContextHolder.getContext().forceResolveEntity(id,entityClass);
+        Optional<IdentifiableEntity> entity = ServiceCallContextHolder.getContext().resolveRefreshedEntity(id,entityClass);
         // use runtime exception here bc it is expected by the service code to detect missing entities before issuing the check acl permissions call
         if (entity.isEmpty())
             throw new IllegalArgumentException("Could not find target entity for acl operation");

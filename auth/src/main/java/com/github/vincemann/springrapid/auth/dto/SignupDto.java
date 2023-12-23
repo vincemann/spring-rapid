@@ -1,16 +1,13 @@
 package com.github.vincemann.springrapid.auth.dto;
 
-import com.fasterxml.jackson.annotation.JsonView;
-import com.github.vincemann.springrapid.auth.util.UserVerifyUtils;
-import lombok.*;
-import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
-import org.apache.commons.lang3.builder.ToStringStyle;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import javax.validation.constraints.NotBlank;
 import java.io.Serializable;
-import java.util.ArrayList;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 
 @NoArgsConstructor
@@ -19,14 +16,9 @@ import java.util.Set;
 @Builder
 public class SignupDto implements Serializable {
 
-    //    @UniqueContactInformation(/*groups = {UserVerifyUtils.SignUpValidation.class}*/)
-//    @JsonView(UserVerifyUtils.SignupInput.class)
     @NotBlank
-//    @ContactInformation
     private String contactInformation;
 
-    //    @Password(/*groups = {UserVerifyUtils.SignUpValidation.class, UserVerifyUtils.ChangeContactInformationValidation.class}*/)
-//    @JsonView(UserVerifyUtils.SignupInput.class)
     @NotBlank
     private String password;
 
