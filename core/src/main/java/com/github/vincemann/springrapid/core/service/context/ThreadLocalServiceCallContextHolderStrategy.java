@@ -4,11 +4,8 @@ import org.springframework.util.Assert;
 
 public class ThreadLocalServiceCallContextHolderStrategy implements ServiceCallContextHolderStrategy{
     private final ThreadLocal<ServiceCallContext> contextHolder = new ThreadLocal<>();
-    private ServiceCallContextFactory serviceCallContextFactory;
 
-    public ThreadLocalServiceCallContextHolderStrategy(ServiceCallContextFactory serviceCallContextFactory) {
-        this.serviceCallContextFactory = serviceCallContextFactory;
-    }
+    public ThreadLocalServiceCallContextHolderStrategy() {}
 
     // ~ Methods
     // ========================================================================================================
@@ -18,14 +15,13 @@ public class ThreadLocalServiceCallContextHolderStrategy implements ServiceCallC
     }
 
     public ServiceCallContext getContext() {
-        ServiceCallContext ctx = contextHolder.get();
+        return contextHolder.get();
 
-        if (ctx == null) {
-            ctx = createEmptyContext();
-            contextHolder.set(ctx);
-        }
-
-        return ctx;
+//        if (ctx == null) {
+//            ctx = createEmptyContext();
+//            contextHolder.set(ctx);
+//        }
+//        return ctx;
     }
 
     public void setContext(ServiceCallContext context) {
@@ -33,7 +29,4 @@ public class ThreadLocalServiceCallContextHolderStrategy implements ServiceCallC
         contextHolder.set(context);
     }
 
-    public ServiceCallContext createEmptyContext(){
-        return serviceCallContextFactory.create();
-    }
 }

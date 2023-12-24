@@ -1,6 +1,7 @@
 package com.github.vincemann.springrapid.core.service;
 
 import com.github.vincemann.springrapid.core.model.IdentifiableEntity;
+import com.github.vincemann.springrapid.core.service.context.ServiceCallContextHolder;
 import com.github.vincemann.springrapid.core.service.exception.BadEntityException;
 import com.github.vincemann.springrapid.core.service.exception.EntityNotFoundException;
 import com.github.vincemann.springrapid.core.slicing.ServiceComponent;
@@ -141,7 +142,8 @@ public abstract class JPACrudService
     public void deleteById(Id id) throws EntityNotFoundException {
         if (id == null)
             throw new IllegalArgumentException("Id cannot be null");
-        Optional<E> entity = findById(id);
+        Optional<IdentifiableEntity<?>> entity
+                = ServiceCallContextHolder.getContext().resolveEntity(id, getEntityClass());
         VerifyEntity.isPresent(entity, id, getEntityClass());
         getRepository().deleteById(id);
     }
@@ -149,8 +151,9 @@ public abstract class JPACrudService
     private E findOldEntity(Id id) throws EntityNotFoundException {
         if (id == null)
             throw new IllegalArgumentException("Id cannot be null");
-        Optional<E> entityToUpdate = findById(id);
-        VerifyEntity.isPresent(entityToUpdate, id, getEntityClass());
-        return entityToUpdate.get();
+        return ServiceCallContextHolder.getContext().resolvePresentEntity(id,getEntityClass());
+//        Optional<E> entityToUpdate = findById(id);
+//        VerifyEntity.isPresent(entityToUpdate, id, getEntityClass());
+//        return entityToUpdate;
     }
 }

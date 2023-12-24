@@ -6,11 +6,13 @@ import com.github.vincemann.springrapid.auth.service.context.AuthServiceCallCont
 import com.github.vincemann.springrapid.auth.util.UserUtils;
 import com.github.vincemann.springrapid.core.CoreProperties;
 import com.github.vincemann.springrapid.core.config.RapidCrudControllerAutoConfiguration;
+import com.github.vincemann.springrapid.core.config.RapidGeneralAutoConfiguration;
 import com.github.vincemann.springrapid.core.service.context.ServiceCallContext;
 import com.github.vincemann.springrapid.core.service.context.ServiceCallContextFactory;
 import com.github.vincemann.springrapid.core.service.context.ServiceCallContextHolder;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.AutoConfigureBefore;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.context.properties.ConfigurationProperties;
@@ -34,16 +36,6 @@ public class RapidAuthGeneralAutoConfiguration {
     }
 
 
-    @Autowired
-    public void configureServiceContextHolder(UserUtils userUtils){
-        AuthServiceCallContext.setUserUtils(userUtils);
-        ServiceCallContextHolder.initialize(new ServiceCallContextFactory() {
-            @Override
-            public ServiceCallContext create() {
-                return new AuthServiceCallContext();
-            }
-        });
-    }
 
     /**
      * Configures CaptchaValidator if missing

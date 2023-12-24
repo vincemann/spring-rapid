@@ -5,18 +5,21 @@ import com.github.vincemann.springrapid.core.IdConverter;
 import com.github.vincemann.springrapid.core.LongIdConverter;
 import com.github.vincemann.springrapid.core.model.LongIdRapidSecurityAuditorAware;
 import com.github.vincemann.springrapid.core.service.context.ServiceCallContext;
+import com.github.vincemann.springrapid.core.service.context.ServiceCallContextAdvice;
 import com.github.vincemann.springrapid.core.service.context.ServiceCallContextFactory;
 import com.github.vincemann.springrapid.core.service.context.ServiceCallContextHolder;
 import com.github.vincemann.springrapid.core.service.locator.CrudServiceLocator;
 import com.github.vincemann.springrapid.core.util.*;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.MessageSource;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Scope;
 import org.springframework.data.domain.AuditorAware;
 import org.springframework.validation.Validator;
 import org.springframework.validation.beanvalidation.LocalValidatorFactoryBean;
@@ -28,28 +31,8 @@ import javax.persistence.EntityManager;
 @Slf4j
 public class RapidGeneralAutoConfiguration {
 
-    @Autowired(required = false)
-    EntityManager entityManager;
-
-
     public RapidGeneralAutoConfiguration() {
 
-    }
-
-    @Autowired
-    public void configureLazyToStringUtil(){
-        LazyToStringUtil.setEntityManager(entityManager);
-    }
-
-    @Autowired
-    @ConditionalOtherConfig("com.github.vincemann.springrapid.auth.config.RapidAuthGeneralAutoConfiguration")
-    public void configureServiceCallContext(){
-        ServiceCallContextHolder.initialize(new ServiceCallContextFactory() {
-            @Override
-            public ServiceCallContext create() {
-                return new ServiceCallContext();
-            }
-        });
     }
 
     @Bean
@@ -94,33 +77,5 @@ public class RapidGeneralAutoConfiguration {
     public CoreProperties coreProperties(){
         return new CoreProperties();
     }
-
-//    @Bean
-//    @ConditionalOnMissingBean(JpaUtils.class)
-    @Autowired
-    public void configureJpaUtils(){
-        JpaUtils.setEntityManager(entityManager);
-    }
-
-    @Autowired
-//    @Bean
-//    @ConditionalOnMissingBean(EntityLocator.class)
-    public void configureEntityLocator(CrudServiceLocator crudServiceLocator){
-        EntityLocator.setCrudServiceLocator(crudServiceLocator);
-    }
-
-//    @Autowired
-//    @Bean
-//    @ConditionalOnMissingBean(EntityLocator.class)
-//    public EntityLocator entityLocator(CrudServiceLocator crudServiceLocator){
-//        EntityLocator.setCrudServiceLocator(crudServiceLocator);
-//        return new EntityLocator();
-//    }
-
-//    @Bean
-//    @ConditionalOnMissingBean(LazyLogUtils.class)
-//    public LazyLogUtils lazyInitLogUtils(){
-//        return LazyLogUtils.create(entityManager);
-//    }
 
 }

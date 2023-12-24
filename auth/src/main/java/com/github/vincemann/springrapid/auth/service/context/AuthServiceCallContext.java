@@ -5,15 +5,17 @@ import com.github.vincemann.springrapid.auth.util.UserUtils;
 import com.github.vincemann.springrapid.core.service.context.ServiceCallContext;
 import com.github.vincemann.springrapid.core.service.context.ThrowingSupplier;
 import com.github.vincemann.springrapid.core.service.exception.EntityNotFoundException;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import java.io.Serializable;
 
 public class AuthServiceCallContext extends ServiceCallContext {
 
-    private static UserUtils userUtils;
+    private UserUtils userUtils;
 
-    public static void setUserUtils(UserUtils userUtils) {
-        AuthServiceCallContext.userUtils = userUtils;
+    @Autowired
+    public void setUserUtils(UserUtils userUtils) {
+        this.userUtils = userUtils;
     }
 
     public <U extends AbstractUser> U resolveAuthenticated(){

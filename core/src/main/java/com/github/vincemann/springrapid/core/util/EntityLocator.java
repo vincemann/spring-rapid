@@ -17,18 +17,18 @@ import java.util.Optional;
 //@Transactional
 public class EntityLocator {
 
-    private static CrudServiceLocator crudServiceLocator;
+    private CrudServiceLocator crudServiceLocator;
 
-    public static void setCrudServiceLocator(CrudServiceLocator crudServiceLocator) {
-        EntityLocator.crudServiceLocator = crudServiceLocator;
+    @Autowired
+    public void setCrudServiceLocator(CrudServiceLocator crudServiceLocator) {
+        this.crudServiceLocator = crudServiceLocator;
     }
 
-
-    public static <E extends IdentifiableEntity> Optional<E> findEntity(E entity) {
+    public <E extends IdentifiableEntity> Optional<E> findEntity(E entity) {
         return findEntity(entity.getClass(),entity.getId());
     }
 
-    public static <E extends IdentifiableEntity> Optional<E> findEntity(Class clazz, Serializable id) {
+    public <E extends IdentifiableEntity> Optional<E> findEntity(Class clazz, Serializable id) {
         CrudService service = crudServiceLocator.find((Class<IdentifiableEntity>) clazz);
 //        System.err.println("known services: " + crudServiceLocator.getEntityClassPrimaryServiceMap());
 //        System.err.println(service);

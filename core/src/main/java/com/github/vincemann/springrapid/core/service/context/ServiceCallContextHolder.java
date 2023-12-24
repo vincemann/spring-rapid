@@ -4,9 +4,16 @@ public class ServiceCallContextHolder {
     private static ServiceCallContextHolderStrategy strategy;
     private static int initializeCount = 0;
 
+    static {
+        initialize();
+    }
 
     public static void clearContext() {
         strategy.clearContext();
+    }
+
+    public static boolean isInitialized(){
+        return strategy.getContext() != null;
     }
 
 
@@ -21,8 +28,8 @@ public class ServiceCallContextHolder {
     /**
      * needs to be called before executing any method of this class.
      */
-    public static void initialize(ServiceCallContextFactory serviceCallContextFactory) {
-       strategy = new ThreadLocalServiceCallContextHolderStrategy(serviceCallContextFactory);
+    public static void initialize() {
+       strategy = new ThreadLocalServiceCallContextHolderStrategy();
        initializeCount++;
     }
 
@@ -30,16 +37,10 @@ public class ServiceCallContextHolder {
         strategy.setContext(context);
     }
 
-    public static void setEmptyContext(){
-        setContext(createEmptyContext());
-    }
 
 
     public static ServiceCallContextHolderStrategy getContextHolderStrategy() {
         return strategy;
-    }
-    public static ServiceCallContext createEmptyContext() {
-        return strategy.createEmptyContext();
     }
 
 }

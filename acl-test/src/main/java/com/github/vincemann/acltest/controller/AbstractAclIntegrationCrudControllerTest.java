@@ -4,7 +4,7 @@ import com.github.vincemann.acltest.ClearAclCacheTestExecutionListener;
 import com.github.vincemann.springrapid.core.controller.GenericCrudController;
 import com.github.vincemann.springrapid.core.service.locator.CrudServiceLocator;
 import com.github.vincemann.springrapid.core.util.EntityLocator;
-import com.github.vincemann.springrapid.core.util.JpaUtils;
+
 import com.github.vincemann.springrapid.core.util.LazyToStringUtil;
 import com.github.vincemann.springrapid.coretest.controller.integration.AbstractIntegrationControllerTest;
 import com.github.vincemann.springrapid.coretest.controller.template.AbstractCrudControllerTestTemplate;

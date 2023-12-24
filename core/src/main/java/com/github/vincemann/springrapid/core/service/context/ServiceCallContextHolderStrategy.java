@@ -8,7 +8,4 @@ public interface ServiceCallContextHolderStrategy {
     ServiceCallContext getContext();
 
     void setContext(ServiceCallContext context);
-
-
-    ServiceCallContext createEmptyContext();
 }

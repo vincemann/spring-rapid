@@ -122,8 +122,6 @@ public abstract class AbstractExtensionServiceProxy
 
                 List<ExtensionHandle> extensionChain = createExtensionChain(method);
                 if (!extensionChain.isEmpty()) {
-                    // create/reset service call context
-                    ServiceCallContextHolder.setEmptyContext();
                     threadState.set(createState(o, method, args));
                     ExtensionHandle chainHandle = extensionChain.get(0);
                     return chainHandle.invoke(args);

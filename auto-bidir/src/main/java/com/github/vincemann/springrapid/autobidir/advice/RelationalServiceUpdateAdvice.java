@@ -14,6 +14,7 @@ import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Before;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.annotation.Order;
 import org.springframework.test.util.AopTestUtils;
 import org.springframework.util.Assert;
 
@@ -27,6 +28,7 @@ import static com.github.vincemann.springrapid.core.util.ProxyUtils.isRootServic
 
 @Slf4j
 @Aspect
+@Order(2)
 public class RelationalServiceUpdateAdvice {
 
     @PersistenceContext
@@ -111,19 +113,20 @@ public class RelationalServiceUpdateAdvice {
 //                            entityLocator.findEntity(ProxyUtils.hibernateUnproxyRaw(entity))
 //                    ));
 
+            IdentifiableEntity unproxiedUpdateEntity = ProxyUtils.hibernateUnproxyRaw(entity);
 
             // used cloning here to fully detach entity by also detaching its collections - using util method for that now
             // can only detach collections by calling set = new HashSet(set);
             // somehow detaching even with util function is not enough
             // using cached resolve entity method here, if entity is modified, then setCacheDirty must be set!
             IdentifiableEntity oldEntity = ServiceCallContextHolder.getContext()
-                    .resolvePresentEntity(entity.getId(), ProxyUtils.hibernateUnproxyRaw(entity).getClass());
+                    .resolvePresentEntity(unproxiedUpdateEntity.getId(), unproxiedUpdateEntity.getClass());
             IdentifiableEntity<?> detachedOldEntity = BeanUtils.clone(ProxyUtils.hibernateUnproxyRaw(oldEntity));
 //            IdentifiableEntity<?> detachedOldEntity = ProxyUtils.hibernateUnproxyRaw(byId.get());
             entityManager.detach(detachedOldEntity);
 //            JpaUtils.detachCollections(detachedOldEntity);
 
-            IdentifiableEntity detachedUpdateEntity = BeanUtils.clone(ProxyUtils.hibernateUnproxyRaw(entity));
+            IdentifiableEntity detachedUpdateEntity = BeanUtils.clone(unproxiedUpdateEntity);
 //            IdentifiableEntity detachedUpdateEntity = ProxyUtils.hibernateUnproxyRaw(entity);
             entityManager.detach(detachedUpdateEntity);
 //            JpaUtils.detachCollections(detachedUpdateEntity);

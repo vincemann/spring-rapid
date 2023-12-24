@@ -5,6 +5,7 @@ import com.github.vincemann.springrapid.core.service.exception.EntityNotFoundExc
 import com.github.vincemann.springrapid.core.util.EntityLocator;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import java.io.Serializable;
 import java.util.HashMap;
@@ -14,7 +15,7 @@ import java.util.function.Supplier;
 
 /**
  * Gives user methods for costly operations whos result will be cached within one service call (across extensions).
- * Also provides convenience method for findById fetching operations: {@link this#resolveEntity(Serializable)}.
+ * Also provides convenience method for findById fetching operations: {@link this#resolveEntity(Serializable, Class)}.
  * -> Provides separate cache for that.
  * Uses {@link com.github.vincemann.springrapid.core.service.locator.CrudServiceLocator} for that under the hood.
  */
@@ -26,8 +27,16 @@ public class ServiceCallContext {
 
     private Map<String,Boolean> cacheDirtyMap = new HashMap<>();
 
-    @Setter
-    private Class<?> currentEntityClass;
+    private EntityLocator entityLocator;
+
+    @Autowired
+    public void setEntityLocator(EntityLocator entityLocator) {
+        this.entityLocator = entityLocator;
+    }
+
+
+    //    @Setter
+//    private Class<?> currentEntityClass;
 
     public void setCacheDirty(String key, Boolean cacheDirty) {
         cacheDirtyMap.put(key,cacheDirty);
@@ -80,17 +89,17 @@ public class ServiceCallContext {
        return getCached(computeKey(clazz,id),supplier);
     }
 
-    public <T> T getCached(Serializable id, Supplier<T> supplier){
-        return getCached(computeKey(currentEntityClass,id),supplier);
-    }
+//    public <T> T getCached(Serializable id, Supplier<T> supplier){
+//        return getCached(computeKey(currentEntityClass,id),supplier);
+//    }
 
     public <T,E extends Exception> T getThrowingCached(Serializable id, Class clazz, ThrowingSupplier<T,E> supplier) throws E {
         return getThrowingCached(computeKey(clazz,id),supplier);
     }
 
-    public <T,E extends Exception> T getThrowingCached(Serializable id, ThrowingSupplier<T,E> supplier) throws E {
-        return getThrowingCached(computeKey(currentEntityClass,id),supplier);
-    }
+//    public <T,E extends Exception> T getThrowingCached(Serializable id, ThrowingSupplier<T,E> supplier) throws E {
+//        return getThrowingCached(computeKey(currentEntityClass,id),supplier);
+//    }
 
 
     public <T> T getRefreshedCached(String key, Supplier<T> supplier){
@@ -132,15 +141,15 @@ public class ServiceCallContext {
             return entity.get();
     }
 
-    public <E extends IdentifiableEntity<?>> E resolvePresentEntity(Serializable id) throws EntityNotFoundException {
-       return resolvePresentEntity(id,currentEntityClass);
-    }
+//    public <E extends IdentifiableEntity<?>> E resolvePresentEntity(Serializable id) throws EntityNotFoundException {
+//       return resolvePresentEntity(id,currentEntityClass);
+//    }
 
 
     public <E extends IdentifiableEntity<?>> Optional<E> resolveEntity(Serializable id, Class<?> clazz) {
         if (id == null)
             throw new IllegalArgumentException("id is null, cannot resolve entity");
-        Supplier<Optional<E>> supplier = () -> EntityLocator.findEntity(clazz,id);
+        Supplier<Optional<E>> supplier = () -> entityLocator.findEntity(clazz,id);
         String key = computeKey(clazz, id);
         return getCached(key,supplier);
     }
@@ -150,16 +159,16 @@ public class ServiceCallContext {
     }
 
 
-    public <E extends IdentifiableEntity<?>> Optional<E> resolveEntity(Serializable id) {
-        return resolveEntity(id,currentEntityClass);
-    }
+//    public <E extends IdentifiableEntity<?>> Optional<E> resolveEntity(Serializable id) {
+//        return resolveEntity(id,currentEntityClass);
+//    }
 
 
     /**
      * ignores caching and fetches entity from db.
      */
     public <E extends IdentifiableEntity<?>> Optional<E> resolveRefreshedEntity(Serializable id, Class<?> entityClass) {
-        return getRefreshedCached(computeKey(entityClass,id),() -> EntityLocator.findEntity(entityClass,id));
+        return getRefreshedCached(computeKey(entityClass,id),() -> entityLocator.findEntity(entityClass,id));
     }
 
     public <E extends IdentifiableEntity<?>> E resolvePresentRefreshedEntity(Serializable id, Class<?> entityClass) throws EntityNotFoundException {
@@ -170,8 +179,8 @@ public class ServiceCallContext {
             return entity.get();
     }
 
-    public <E extends IdentifiableEntity<?>> E resolvePresentRefreshedEntity(Serializable id) throws EntityNotFoundException {
-       return resolvePresentRefreshedEntity(id,currentEntityClass);
-    }
+//    public <E extends IdentifiableEntity<?>> E resolvePresentRefreshedEntity(Serializable id) throws EntityNotFoundException {
+//       return resolvePresentRefreshedEntity(id,currentEntityClass);
+//    }
 
 }
