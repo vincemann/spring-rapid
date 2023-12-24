@@ -27,7 +27,7 @@ public class RapidAuthServiceAutoConfiguration {
     @Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
     @Bean
     @ConditionalOnMissingBean(ServiceCallContext.class)
-    public ServiceCallContext authServiceCallContext(){
+    public AuthServiceCallContext authServiceCallContext(){
         return new AuthServiceCallContext();
     }
 }

@@ -1,6 +1,7 @@
 package com.github.vincemann.springrapid.coretest.config;
 
-import com.github.vincemann.springrapid.core.config.RapidCrudServiceLocatorAutoConfiguration;
+
+import com.github.vincemann.springrapid.core.config.RapidServiceAutoConfiguration;
 import com.github.vincemann.springrapid.core.util.TransactionalTemplate;
 import com.github.vincemann.springrapid.coretest.service.resolve.EntityPlaceholderResolver;
 import com.github.vincemann.springrapid.coretest.service.resolve.RapidEntityPlaceholderResolver;
@@ -12,7 +13,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Import;
 
 @ServiceTestConfig
-@Import(RapidCrudServiceLocatorAutoConfiguration.class)
+@Import(RapidServiceAutoConfiguration.class)
 public class RapidServiceTestAutoConfiguration {
 
     @Bean

@@ -2,8 +2,8 @@ package com.github.vincemann.springrapid.autobidir.config;
 
 import com.github.vincemann.springrapid.autobidir.RapidRelationalDtoManager;
 import com.github.vincemann.springrapid.autobidir.RelationalDtoManager;
-import com.github.vincemann.springrapid.core.config.RapidCrudServiceLocatorAutoConfiguration;
 import com.github.vincemann.springrapid.core.config.RapidDtoMapperAutoConfiguration;
+import com.github.vincemann.springrapid.core.config.RapidServiceAutoConfiguration;
 import com.github.vincemann.springrapid.core.controller.MergeUpdateStrategy;
 import com.github.vincemann.springrapid.core.slicing.WebConfig;
 import com.github.vincemann.springrapid.autobidir.controller.IdAwareMergeUpdateStrategy;
@@ -24,7 +24,7 @@ import java.util.List;
 @Slf4j
 //overrides mergeUpdateStrategy
 @AutoConfigureBefore(RapidDtoMapperAutoConfiguration.class)
-@AutoConfigureAfter(RapidCrudServiceLocatorAutoConfiguration.class)
+@AutoConfigureAfter(RapidServiceAutoConfiguration.class)
 public class RapidIdResolvingDtoMapperAutoConfiguration {
 
     public RapidIdResolvingDtoMapperAutoConfiguration() {

@@ -1,5 +1,4 @@
 org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
-com.github.vincemann.springrapid.core.config.RapidCrudServiceLocatorAutoConfiguration,\
 com.github.vincemann.springrapid.core.config.RapidDtoMapperAutoConfiguration,\
 com.github.vincemann.springrapid.core.config.RapidAopLogAutoConfiguration,\
 com.github.vincemann.springrapid.core.config.RapidCrudControllerAutoConfiguration,\
@@ -10,4 +9,5 @@ com.github.vincemann.springrapid.core.config.RapidSecurityAutoConfiguration,\
 com.github.vincemann.springrapid.core.config.RapidDtoLocatorAutoConfiguration,\
 com.github.vincemann.springrapid.core.config.RapidProxyAutoConfiguration,\
 com.github.vincemann.springrapid.core.config.RapidExceptionHandlerAutoConfiguration, \
-com.github.vincemann.springrapid.core.config.RapidCacheAutoConfiguration
+com.github.vincemann.springrapid.core.config.RapidCacheAutoConfiguration, \
+com.github.vincemann.springrapid.core.config.RapidServiceAutoConfiguration
