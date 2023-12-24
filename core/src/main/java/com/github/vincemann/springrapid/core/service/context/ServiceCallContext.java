@@ -3,8 +3,6 @@ package com.github.vincemann.springrapid.core.service.context;
 import com.github.vincemann.springrapid.core.model.IdentifiableEntity;
 import com.github.vincemann.springrapid.core.service.exception.EntityNotFoundException;
 import com.github.vincemann.springrapid.core.util.EntityLocator;
-import lombok.Builder;
-import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
@@ -26,33 +24,55 @@ public class ServiceCallContext {
     private Map<String,Object> cache = new HashMap<>();
     private Map<String,Object> values = new HashMap<>();
 
+    private Map<String,Boolean> cacheDirtyMap = new HashMap<>();
+
     @Setter
     private Class<?> currentEntityClass;
 
+    public void setCacheDirty(String key, Boolean cacheDirty) {
+        cacheDirtyMap.put(key,cacheDirty);
+    }
+
+
 
     public <T> T getCached(String key, Supplier<T> supplier){
-        Optional<T> cached = (Optional<T>) cache.get(key);
-        if (cached != null){
-            if (cached.isPresent())
-                return cached.get();
-            else
-                return null;
+        if (!isCacheDirty(key)){
+            Optional<T> cached = (Optional<T>) cache.get(key);
+            if (cached != null){
+                if (cached.isPresent())
+                    return cached.get();
+                else
+                    return null;
+            }
         }
+
         T value = supplier.get();
-        cache.put(key,Optional.ofNullable(value));
+        addCachedEntity(key,value);
         return value;
     }
 
+    private void addCachedEntity(String key, Object entity){
+        cache.put(key,Optional.ofNullable(entity));
+        setCacheDirty(key,Boolean.FALSE);
+    }
+
+    private boolean isCacheDirty(String key){
+        return cacheDirtyMap.getOrDefault(key,Boolean.FALSE);
+    }
+
     public <T,E extends Exception> T getThrowingCached(String key, ThrowingSupplier<T,E> supplier) throws E {
-        Optional<T> cached = (Optional<T>) cache.get(key);
-        if (cached != null){
-            if (cached.isPresent())
-                return cached.get();
-            else
-                return null;
+        if (!isCacheDirty(key)){
+            Optional<T> cached = (Optional<T>) cache.get(key);
+            if (cached != null){
+                if (cached.isPresent())
+                    return cached.get();
+                else
+                    return null;
+            }
         }
+
         T value = supplier.get();
-        cache.put(key,Optional.ofNullable(value));
+        addCachedEntity(key,value);
         return value;
     }
 
@@ -75,7 +95,7 @@ public class ServiceCallContext {
 
     public <T> T getRefreshedCached(String key, Supplier<T> supplier){
         T value = supplier.get();
-        cache.put(key,Optional.ofNullable(value));
+        addCachedEntity(key,value);
         return value;
     }
 
@@ -96,11 +116,11 @@ public class ServiceCallContext {
     }
 
     public void addCachedEntity(IdentifiableEntity<?> entity) {
-        cache.put(computeKey(entity.getClass(),entity.getId()),entity);
+        addCachedEntity(computeKey(entity.getClass(),entity.getId()),entity);
     }
 
     public void addCachedEntity(Class clazz, Serializable id, Optional<? extends IdentifiableEntity<?>> entity) {
-        cache.put(computeKey(clazz,id),entity);
+        addCachedEntity(computeKey(clazz,id),entity);
     }
 
     // entity is expected to be found, otherwise EntityNotFoundException is thrown

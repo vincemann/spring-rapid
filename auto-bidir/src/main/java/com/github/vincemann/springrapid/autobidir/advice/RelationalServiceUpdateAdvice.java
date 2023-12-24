@@ -5,6 +5,7 @@ import com.github.vincemann.springrapid.autobidir.RelationalAdviceContext;
 import com.github.vincemann.springrapid.autobidir.RelationalAdviceContextHolder;
 import com.github.vincemann.springrapid.core.model.IdentifiableEntity;
 import com.github.vincemann.springrapid.core.proxy.AbstractServiceExtension;
+import com.github.vincemann.springrapid.core.service.context.ServiceCallContextHolder;
 import com.github.vincemann.springrapid.core.service.exception.BadEntityException;
 import com.github.vincemann.springrapid.core.service.exception.EntityNotFoundException;
 import com.github.vincemann.springrapid.core.util.*;
@@ -30,7 +31,6 @@ public class RelationalServiceUpdateAdvice {
 
     @PersistenceContext
     private EntityManager entityManager;
-//    private EntityLocator entityLocator;
 
     @Before(value = "com.github.vincemann.springrapid.core.advice.SystemArchitecture.fullUpdateOperation() && " +
             "com.github.vincemann.springrapid.core.advice.SystemArchitecture.serviceOperation() && " +
@@ -115,9 +115,10 @@ public class RelationalServiceUpdateAdvice {
             // used cloning here to fully detach entity by also detaching its collections - using util method for that now
             // can only detach collections by calling set = new HashSet(set);
             // somehow detaching even with util function is not enough
-            Optional<IdentifiableEntity> byId = EntityLocator.findEntity(ProxyUtils.hibernateUnproxyRaw(entity));
-            VerifyEntity.isPresent(byId,entity.getId(),entity.getClass());
-            IdentifiableEntity<?> detachedOldEntity = BeanUtils.clone(ProxyUtils.hibernateUnproxyRaw(byId.get()));
+            // using cached resolve entity method here, if entity is modified, then setCacheDirty must be set!
+            IdentifiableEntity oldEntity = ServiceCallContextHolder.getContext()
+                    .resolvePresentEntity(entity.getId(), ProxyUtils.hibernateUnproxyRaw(entity).getClass());
+            IdentifiableEntity<?> detachedOldEntity = BeanUtils.clone(ProxyUtils.hibernateUnproxyRaw(oldEntity));
 //            IdentifiableEntity<?> detachedOldEntity = ProxyUtils.hibernateUnproxyRaw(byId.get());
             entityManager.detach(detachedOldEntity);
 //            JpaUtils.detachCollections(detachedOldEntity);
