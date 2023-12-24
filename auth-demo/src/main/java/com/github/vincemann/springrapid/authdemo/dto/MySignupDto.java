@@ -18,11 +18,10 @@ import java.util.Set;
 @Setter
 public class MySignupDto extends SignupDto {
 
-    @JsonView(UserVerifyUtils.SignupInput.class)
-    @NotBlank(message = "{blank.name}"/*, groups = {UserVerifyUtils.SignUpValidation.class, UserVerifyUtils.UpdateValidation.class}*/)
+    @NotBlank(message = "{blank.name}")
     private String name;
 
-    public MySignupDto(String contactInformation, String password, @NotBlank(message = "{blank.name}", groups = {UserVerifyUtils.SignUpValidation.class, UserVerifyUtils.UpdateValidation.class}) String name, Set<String> roles) {
+    public MySignupDto(String contactInformation, String password, @NotBlank(message = "{blank.name}") String name, Set<String> roles) {
         super(contactInformation, password,roles);
         this.name = name;
     }
