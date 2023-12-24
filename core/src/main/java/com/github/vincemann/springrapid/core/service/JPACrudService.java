@@ -40,7 +40,7 @@ public abstract class JPACrudService
 
     @Transactional
     @Override
-    public Optional<E> findById(Id id) {
+    public Optional<E>findById(Id id) {
         if (id == null)
             throw new IllegalArgumentException("Id cannot be null");
         return getRepository().findById(id);

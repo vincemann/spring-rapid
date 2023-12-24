@@ -18,5 +18,6 @@ public interface CrudServiceLocator {
     public CrudService find(Class<? extends IdentifiableEntity> entityClass, Class<? extends ServiceBeanType> annotation);
     //public CrudService find(String beanName);
     public CrudService find(Class<? extends IdentifiableEntity> entityClass);
+    public void loadPrimaryServices();
     //public Map<ServiceBeanInfo, CrudService> find();
 }

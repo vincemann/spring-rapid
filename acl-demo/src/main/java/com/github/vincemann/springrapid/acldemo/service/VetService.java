@@ -8,7 +8,6 @@ import com.github.vincemann.springrapid.acldemo.model.Vet;
 
 import java.util.Optional;
 
-@ServiceComponent
 public interface VetService extends CrudService<Vet,Long> {
 
     public Optional<Vet> findByLastName(String lastName);

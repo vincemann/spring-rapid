@@ -10,12 +10,16 @@ import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import com.github.vincemann.springrapid.core.util.Lists;
 import org.springframework.beans.BeansException;
+import org.springframework.beans.factory.BeanFactory;
+import org.springframework.beans.factory.SmartInitializingSingleton;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.beans.factory.support.BeanDefinitionRegistry;
 import org.springframework.beans.factory.support.BeanDefinitionRegistryPostProcessor;
+import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
+import org.springframework.context.ApplicationEvent;
 import org.springframework.context.ApplicationListener;
 import org.springframework.context.event.ContextRefreshedEvent;
 import org.springframework.util.Assert;
@@ -28,7 +32,7 @@ import java.util.stream.Collectors;
  * @see ServiceBeanType
  */
 @Slf4j
-public class CrudServiceLocatorImpl implements CrudServiceLocator, ApplicationContextAware, ApplicationListener<ContextRefreshedEvent>, BeanDefinitionRegistryPostProcessor {
+public class CrudServiceLocatorImpl implements CrudServiceLocator, ApplicationContextAware, BeanDefinitionRegistryPostProcessor, SmartInitializingSingleton, ApplicationListener<ApplicationReadyEvent> {
     @Getter
     private Map<Class<? extends IdentifiableEntity>, CrudService> entityClassPrimaryServiceMap = new HashMap<>();
     private ApplicationContext applicationContext;
@@ -41,11 +45,25 @@ public class CrudServiceLocatorImpl implements CrudServiceLocator, ApplicationCo
     }
 
     @Override
+    public void afterSingletonsInstantiated() {
+//        loadPrimaryServices(beanFactory);
+    }
+
+    @Override
+    public void onApplicationEvent(ApplicationReadyEvent event) {
+//        if (event instanceof ApplicationReadyEvent) {
+//            // Application is ready, you can safely call loadPrimaryServices here
+//            ConfigurableListableBeanFactory bf = ((ApplicationReadyEvent) event).getApplicationContext().getBeanFactory();
+            loadPrimaryServices();
+//        }
+    }
+
+    @Override
     public void postProcessBeanFactory(ConfigurableListableBeanFactory beanFactory) throws BeansException {
         this.beanFactory=beanFactory;
     }
 
-    private void loadPrimaryServices(ConfigurableListableBeanFactory beanFactory){
+    public void loadPrimaryServices(){
         List<String> beanNames = Lists.newArrayList(beanFactory.getBeanNamesForType(CrudService.class));
         List<String> extensionNames = Lists.newArrayList(beanFactory.getBeanNamesForType(AbstractServiceExtension.class));
 
@@ -104,13 +122,17 @@ public class CrudServiceLocatorImpl implements CrudServiceLocator, ApplicationCo
 //        return result;
 //    }
 
-    @Override
-    public void onApplicationEvent(ContextRefreshedEvent event) {
-        //all beans are initialized -> now is the right time to scan for beans
-        loadPrimaryServices(beanFactory);
-//         todo change this, maybe make whole crudservice Locator static
-//        EntityLocator.setCrudServiceLocator(this);
-    }
+//    @Override
+//    public void onApplicationEvent(ContextRefreshedEvent event) {
+//        //all beans are initialized -> now is the right time to scan for beans
+//        // Check the event source to ensure it's the main application context
+//        if (event.getApplicationContext().getParent() == null) {
+//            // Only perform this operation when the main context is refreshed
+//            loadPrimaryServices();
+//        }
+////         todo change this, maybe make whole crudservice Locator static
+////        EntityLocator.setCrudServiceLocator(this);
+//    }
 
     @Override
     public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {

@@ -6,7 +6,6 @@ import com.github.vincemann.springrapid.acldemo.model.Specialty;
 
 import java.util.Optional;
 
-@ServiceComponent
 public interface SpecialtyService extends CrudService<Specialty,Long> {
     Optional<Specialty> findByDescription(String description);
 }

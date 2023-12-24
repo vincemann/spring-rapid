@@ -84,15 +84,15 @@ public class ServiceCallContext {
     }
 
     public void addValue(String key, Object value) {
-        cache.put(key,value);
+        values.put(key,value);
     }
 
     public <T> T getValue(String key) {
-        return (T) cache.get(key);
+        return (T) values.get(key);
     }
 
     public <T> T getValueOrDefault(String key, T defaultValue) {
-        return (T) cache.getOrDefault(key,defaultValue);
+        return (T) values.getOrDefault(key,defaultValue);
     }
 
     public void addCachedEntity(IdentifiableEntity<?> entity) {

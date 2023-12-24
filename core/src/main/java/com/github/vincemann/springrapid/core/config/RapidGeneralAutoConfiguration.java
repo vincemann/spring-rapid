@@ -38,7 +38,7 @@ public class RapidGeneralAutoConfiguration {
 
     @Autowired
     public void configureLazyToStringUtil(){
-        LazyToStringUtil.init(entityManager);
+        LazyToStringUtil.setEntityManager(entityManager);
     }
 
     @Autowired
@@ -95,17 +95,27 @@ public class RapidGeneralAutoConfiguration {
         return new CoreProperties();
     }
 
-    @Bean
-    @ConditionalOnMissingBean(JpaUtils.class)
-    public JpaUtils jpaUtils(){
-        return new JpaUtils(entityManager);
+//    @Bean
+//    @ConditionalOnMissingBean(JpaUtils.class)
+    @Autowired
+    public void configureJpaUtils(){
+        JpaUtils.setEntityManager(entityManager);
     }
 
-    @Bean
-    @ConditionalOnMissingBean(EntityLocator.class)
-    public EntityLocator entityLocator(CrudServiceLocator crudServiceLocator){
-        return new EntityLocator(crudServiceLocator);
+    @Autowired
+//    @Bean
+//    @ConditionalOnMissingBean(EntityLocator.class)
+    public void configureEntityLocator(CrudServiceLocator crudServiceLocator){
+        EntityLocator.setCrudServiceLocator(crudServiceLocator);
     }
+
+//    @Autowired
+//    @Bean
+//    @ConditionalOnMissingBean(EntityLocator.class)
+//    public EntityLocator entityLocator(CrudServiceLocator crudServiceLocator){
+//        EntityLocator.setCrudServiceLocator(crudServiceLocator);
+//        return new EntityLocator();
+//    }
 
 //    @Bean
 //    @ConditionalOnMissingBean(LazyLogUtils.class)

@@ -6,7 +6,6 @@ import com.github.vincemann.springrapid.core.service.exception.BadEntityExceptio
 import com.github.vincemann.springrapid.core.slicing.ServiceComponent;
 import com.github.vincemann.springrapid.acldemo.model.Visit;
 
-@ServiceComponent
 public interface VisitService extends CrudService<Visit,Long> {
     public void subscribeOwner(Owner owner, Visit visit);
     public void unsubscribeOwner(Owner owner, Visit visit) throws BadEntityException;

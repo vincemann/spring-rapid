@@ -1,6 +1,10 @@
 package com.github.vincemann.springrapid.coredemo.service.jpa;
 
+import com.github.vincemann.springrapid.core.model.IdentifiableEntity;
+import com.github.vincemann.springrapid.core.service.CrudService;
 import com.github.vincemann.springrapid.core.service.exception.EntityNotFoundException;
+import com.github.vincemann.springrapid.core.service.locator.CrudServiceLocator;
+import com.github.vincemann.springrapid.core.util.EntityLocator;
 import com.github.vincemann.springrapid.coredemo.model.Owner;
 import com.github.vincemann.springrapid.coredemo.model.Pet;
 import com.github.vincemann.springrapid.coredemo.service.OwnerService;
@@ -11,6 +15,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.lang.reflect.InvocationTargetException;
+import java.util.Optional;
 
 import static com.github.vincemann.ezcompare.Comparator.compare;
 
@@ -30,6 +35,7 @@ class PetServiceIntegrationTest
     @Autowired
     OwnerService ownerService;
     Pet PetType = new Pet();
+
 
 
     @Test
@@ -175,9 +181,8 @@ class PetServiceIntegrationTest
 
     }
 
-    // todo have to use partial update mode for this case bc i cant get full update to work with bidir relship mangement yet
     @Test
-    public void canLinkOwnerToPet_viaFullUpdate() throws Exception, InvocationTargetException, NoSuchMethodException, InstantiationException, IllegalAccessException {
+    public void canLinkOwnerToPet_viaFullUpdate() throws Exception {
         Owner savedKahn = ownerService.save(kahn);
         Pet savedBello = getTestedService().save(bello);
 
@@ -189,6 +194,19 @@ class PetServiceIntegrationTest
         updatePetsOwner.setId(savedBello.getId());
 //        Pet updatePetsOwner = BeanUtils.clone(savedBello);
 //        updatePetsOwner.setOwner(savedKahn);
+//
+//        Optional<Pet> byId1 = petService.findById(savedBello.getId());
+//
+//
+//        CrudService crudService = crudServiceLocator.find(savedBello.getClass());
+//        Optional byId2 = crudService.findById(savedBello.getId());
+//
+//        Optional<Pet> staticEntity = EntityLocator.findEntity(savedBello.getClass(),savedBello.getId());
+//
+//
+//        EntityLocator.setCrudServiceLocator(crudServiceLocator);
+//        Optional<Pet> third = EntityLocator.findEntity(savedBello.getClass(),savedBello.getId());
+
 
         test(update(updatePetsOwner));
 
@@ -203,5 +221,9 @@ class PetServiceIntegrationTest
         Assertions.assertEquals(dbKahn,dbBello.getOwner());
 
     }
+
+
+
+
 
 }

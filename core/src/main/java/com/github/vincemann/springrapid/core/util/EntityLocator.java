@@ -19,11 +19,12 @@ public class EntityLocator {
 
     private static CrudServiceLocator crudServiceLocator;
 
-    public EntityLocator(CrudServiceLocator crudServiceLocator) {
+    public static void setCrudServiceLocator(CrudServiceLocator crudServiceLocator) {
         EntityLocator.crudServiceLocator = crudServiceLocator;
     }
 
-    public static  <E extends IdentifiableEntity> Optional<E> findEntity(E entity) {
+
+    public static <E extends IdentifiableEntity> Optional<E> findEntity(E entity) {
         return findEntity(entity.getClass(),entity.getId());
     }
 

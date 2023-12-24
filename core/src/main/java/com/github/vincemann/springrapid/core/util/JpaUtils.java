@@ -18,7 +18,7 @@ public class JpaUtils {
 
     private static EntityManager entityManager;
 
-    public JpaUtils(EntityManager entityManager) {
+    public static void setEntityManager(EntityManager entityManager) {
         JpaUtils.entityManager = entityManager;
     }
 

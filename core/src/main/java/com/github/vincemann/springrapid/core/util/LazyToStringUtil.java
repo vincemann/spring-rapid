@@ -91,7 +91,7 @@ public class LazyToStringUtil {
         }
     }
 
-    public static void init(EntityManager entityManager) {
+    public static void setEntityManager(EntityManager entityManager) {
         LazyToStringUtil.entityManager = entityManager;
     }
 }
