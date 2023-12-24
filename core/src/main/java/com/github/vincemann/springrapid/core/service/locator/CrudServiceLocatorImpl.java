@@ -32,7 +32,7 @@ import java.util.stream.Collectors;
  * @see ServiceBeanType
  */
 @Slf4j
-public class CrudServiceLocatorImpl implements CrudServiceLocator, ApplicationContextAware, BeanDefinitionRegistryPostProcessor, SmartInitializingSingleton, ApplicationListener<ApplicationReadyEvent> {
+public class CrudServiceLocatorImpl implements CrudServiceLocator, ApplicationContextAware, BeanDefinitionRegistryPostProcessor, SmartInitializingSingleton, ApplicationListener<ContextRefreshedEvent> {
     @Getter
     private Map<Class<? extends IdentifiableEntity>, CrudService> entityClassPrimaryServiceMap = new HashMap<>();
     private ApplicationContext applicationContext;
@@ -50,7 +50,7 @@ public class CrudServiceLocatorImpl implements CrudServiceLocator, ApplicationCo
     }
 
     @Override
-    public void onApplicationEvent(ApplicationReadyEvent event) {
+    public void onApplicationEvent(ContextRefreshedEvent event) {
 //        if (event instanceof ApplicationReadyEvent) {
 //            // Application is ready, you can safely call loadPrimaryServices here
 //            ConfigurableListableBeanFactory bf = ((ApplicationReadyEvent) event).getApplicationContext().getBeanFactory();

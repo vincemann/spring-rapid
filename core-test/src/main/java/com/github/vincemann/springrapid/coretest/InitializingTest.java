@@ -31,24 +31,9 @@ public abstract class InitializingTest {
     private boolean init = false;
     private boolean afterInit = false;
 
-    @Autowired(required = false)
-    private EntityManager entityManager;
 
-    @Autowired(required = false)
-    private CrudServiceLocator crudServiceLocator;
-
-    // beans from currently cached context are injected into this class before each test
-    @BeforeEach
-    public void keepStaticDependenciesInSyncWithCachedContext(){
-        // beans might be null when only web layer is tested
-        if (crudServiceLocator != null){
-            EntityLocator.setCrudServiceLocator(crudServiceLocator);
-        }
-        if (entityManager != null){
-            JpaUtils.setEntityManager(entityManager);
-            LazyToStringUtil.setEntityManager(entityManager);
-        }
-    }
+    @Autowired
+    private StaticDependencyInitializer staticDependencyInitializer;
 
     @Transactional
     @BeforeEach

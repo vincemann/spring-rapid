@@ -1,3 +1,4 @@
 org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
 com.github.vincemann.springrapid.coretest.config.RapidServiceTestAutoConfiguration,\
-com.github.vincemann.springrapid.coretest.config.RapidControllerTestTemplateAutoconfiguration
+com.github.vincemann.springrapid.coretest.config.RapidControllerTestTemplateAutoconfiguration, \
+com.github.vincemann.springrapid.coretest.config.RapidTestAutoConfiguration

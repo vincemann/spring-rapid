@@ -2,14 +2,20 @@ package com.github.vincemann.acltest.controller;
 
 import com.github.vincemann.acltest.ClearAclCacheTestExecutionListener;
 import com.github.vincemann.springrapid.core.controller.GenericCrudController;
+import com.github.vincemann.springrapid.core.service.locator.CrudServiceLocator;
+import com.github.vincemann.springrapid.core.util.EntityLocator;
+import com.github.vincemann.springrapid.core.util.JpaUtils;
+import com.github.vincemann.springrapid.core.util.LazyToStringUtil;
 import com.github.vincemann.springrapid.coretest.controller.integration.AbstractIntegrationControllerTest;
 import com.github.vincemann.springrapid.coretest.controller.template.AbstractCrudControllerTestTemplate;
 import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.acls.model.AclCache;
 import org.springframework.test.context.TestExecutionListeners;
 import org.springframework.test.context.jdbc.Sql;
 
+import javax.persistence.EntityManager;
 
 
 // todo this annotation can be removed: test
