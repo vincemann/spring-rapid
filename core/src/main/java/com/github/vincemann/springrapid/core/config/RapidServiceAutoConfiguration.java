@@ -1,9 +1,6 @@
 package com.github.vincemann.springrapid.core.config;
 
-import com.github.vincemann.springrapid.core.service.context.DefaultServiceCallContextFactory;
-import com.github.vincemann.springrapid.core.service.context.ServiceCallContext;
-import com.github.vincemann.springrapid.core.service.context.ServiceCallContextAdvice;
-import com.github.vincemann.springrapid.core.service.context.ServiceCallContextFactory;
+import com.github.vincemann.springrapid.core.service.context.*;
 import com.github.vincemann.springrapid.core.service.locator.CrudServiceLocator;
 import com.github.vincemann.springrapid.core.service.locator.CrudServiceLocatorImpl;
 import com.github.vincemann.springrapid.core.slicing.ServiceConfig;
@@ -29,6 +26,12 @@ public class RapidServiceAutoConfiguration {
     @ConditionalOnMissingBean(ServiceCallContextAdvice.class)
     public ServiceCallContextAdvice serviceCallContextAdvice(){
         return new ServiceCallContextAdvice();
+    }
+
+    @Bean
+    @ConditionalOnMissingBean(name = "serviceCallCacheAdvice")
+    public ServiceCallCacheAdvice serviceCallCacheAdvice(){
+        return new ServiceCallCacheAdvice();
     }
 
     @ConditionalOnMissingBean(CrudServiceLocator.class)

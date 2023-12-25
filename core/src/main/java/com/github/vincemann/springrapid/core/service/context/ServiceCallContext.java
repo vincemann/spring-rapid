@@ -29,6 +29,9 @@ public class ServiceCallContext {
 
     private EntityLocator entityLocator;
 
+//    @Setter
+//    private Class<?> currentEntityClass;
+
     @Autowired
     public void setEntityLocator(EntityLocator entityLocator) {
         this.entityLocator = entityLocator;
@@ -60,8 +63,24 @@ public class ServiceCallContext {
         return value;
     }
 
+    public <T> Optional<T> getCachedEntity(Class entityClass, Serializable id){
+        String key = computeKey(entityClass, id);
+        if (!isCacheDirty(key)){
+            Optional<T> cached = (Optional<T>) cache.get(key);
+            if (cached != null){
+                return cached;
+            }
+        }
+        return null;
+    }
+
     protected void addCachedEntity(String key, Object entity){
         cache.put(key,Optional.ofNullable(entity));
+        setCacheDirty(key,Boolean.FALSE);
+    }
+
+    protected void addCachedEntityOptional(String key, Optional<? extends IdentifiableEntity<?>> entity){
+        cache.put(key,entity);
         setCacheDirty(key,Boolean.FALSE);
     }
 
@@ -124,12 +143,12 @@ public class ServiceCallContext {
         return (T) values.getOrDefault(key,defaultValue);
     }
 
-    public void addCachedEntity(IdentifiableEntity<?> entity) {
-        addCachedEntity(computeKey(entity.getClass(),entity.getId()),entity);
-    }
+//    public void addCachedEntity(IdentifiableEntity<?> entity) {
+//        addCachedEntity(computeKey(entity.getClass(),entity.getId()),entity);
+//    }
 
     public void addCachedEntity(Class clazz, Serializable id, Optional<? extends IdentifiableEntity<?>> entity) {
-        addCachedEntity(computeKey(clazz,id),entity);
+        addCachedEntityOptional(computeKey(clazz,id),entity);
     }
 
     // entity is expected to be found, otherwise EntityNotFoundException is thrown
@@ -154,7 +173,7 @@ public class ServiceCallContext {
         return getCached(key,supplier);
     }
 
-    private static String computeKey(Class clazz, Serializable id){
+    public static String computeKey(Class clazz, Serializable id){
         return clazz.toString() + ":" + String.valueOf(id);
     }
 

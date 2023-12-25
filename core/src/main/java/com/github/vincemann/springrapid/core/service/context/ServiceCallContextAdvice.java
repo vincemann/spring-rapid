@@ -2,6 +2,7 @@ package com.github.vincemann.springrapid.core.service.context;
 
 import com.github.vincemann.springrapid.core.proxy.AbstractServiceExtension;
 import com.github.vincemann.springrapid.core.service.CrudService;
+import com.github.vincemann.springrapid.core.util.ProxyUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
@@ -53,30 +54,42 @@ public class ServiceCallContextAdvice {
 
         Object target = joinPoint.getTarget();
 
-        // either proxy or service itself is first entry point -> extensions can be ignored
-        if (target instanceof AbstractServiceExtension) {
+        if (target instanceof AbstractServiceExtension)
             return joinPoint.proceed();
-        }
-
-//        ServiceCallContext context = ServiceCallContextHolder.createEmptyContext();
-
-
-//        Class<?> entityClass;
-//        if (Proxy.isProxyClass(target.getClass())) {
-//            entityClass = ProxyUtils.getExtensionProxy(((CrudService<?, ?>) target)).getLast().getEntityClass();
-//        } else {
-//            entityClass = ((CrudService) target).getEntityClass();
-//        }
-//        context.setCurrentEntityClass(entityClass);
-//        serviceCallStack.get().push(entityClass);
-//        ServiceCallContextHolder.setContext(context);
 
         if (!ServiceCallContextHolder.isInitialized()){
             log.debug("service call context gets initialized");
             ServiceCallContextHolder.setContext(serviceCallContextFactory.create());
         }
-//        ServiceCallContextHolder.getContext().setCurrentEntityClass(entityClass);
+
         depth.set(depth.get()+1);
+
+//        if (!ProxyUtils.isJDKProxy(target)){
+//            // is root service
+//            Class<?> entityClass = ((CrudService) target).getEntityClass();
+//        }
+
+
+
+
+
+
+
+
+//        ServiceCallContext context = ServiceCallContextHolder.createEmptyContext();
+
+
+
+//        context.setCurrentEntityClass(entityClass);
+//        serviceCallStack.get().push(entityClass);
+//        ServiceCallContextHolder.setContext(context);
+
+//        if (!ServiceCallContextHolder.isInitialized()){
+//            log.debug("service call context gets initialized");
+//            ServiceCallContextHolder.setContext(serviceCallContextFactory.create());
+//        }
+////        ServiceCallContextHolder.getContext().setCurrentEntityClass(entityClass);
+//        depth.set(depth.get()+1);
 
 
 

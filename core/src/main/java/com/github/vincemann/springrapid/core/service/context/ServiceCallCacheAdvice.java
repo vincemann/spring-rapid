@@ -1,0 +1,43 @@
+package com.github.vincemann.springrapid.core.service.context;
+
+import com.github.vincemann.springrapid.core.model.IdentifiableEntity;
+import com.github.vincemann.springrapid.core.proxy.AbstractServiceExtension;
+import com.github.vincemann.springrapid.core.service.CrudService;
+import com.github.vincemann.springrapid.core.util.ProxyUtils;
+import org.aspectj.lang.ProceedingJoinPoint;
+import org.aspectj.lang.annotation.Around;
+import org.aspectj.lang.annotation.Aspect;
+import org.springframework.core.annotation.Order;
+
+import java.io.Serializable;
+import java.util.Optional;
+
+@Aspect
+@Order(2)
+public class ServiceCallCacheAdvice {
+
+
+    @Around(value = "com.github.vincemann.springrapid.core.SystemArchitecture.serviceOperation() " +
+            "&& com.github.vincemann.springrapid.core.SystemArchitecture.ignoreExtensions()" +
+            "&& com.github.vincemann.springrapid.core.SystemArchitecture.findByIdOperation() " +
+            "&& com.github.vincemann.springrapid.core.SystemArchitecture.ignoreProxies() " +
+            "&& args(id)"
+    )
+    public Object cacheFindById(ProceedingJoinPoint joinPoint, Serializable id) throws Throwable {
+        if (ProxyUtils.isJDKProxy(joinPoint.getTarget()) || joinPoint.getTarget() instanceof AbstractServiceExtension)
+            return joinPoint.proceed();
+        // is root service -> do caching
+        Object target = joinPoint.getTarget();
+        Class entityClass = ((CrudService) target).getEntityClass();
+        ServiceCallContext context = ServiceCallContextHolder.getContext();
+        Optional<Object> cached = context.getCachedEntity(entityClass, id);
+        if (cached == null) {
+            Optional<? extends IdentifiableEntity<?>> value = (Optional<IdentifiableEntity<?>>) joinPoint.proceed();
+            context.addCachedEntity(entityClass, id, value);
+            return value;
+        } else {
+            return cached;
+        }
+    }
+}
+

@@ -1,6 +1,7 @@
 package com.github.vincemann.springrapid.auth.config;
 
 
+import com.github.vincemann.springrapid.auth.service.context.AuthServiceCallCacheAdvice;
 import com.github.vincemann.springrapid.auth.service.context.AuthServiceCallContext;
 import com.github.vincemann.springrapid.auth.service.context.AuthServiceCallContextFactory;
 import com.github.vincemann.springrapid.core.config.RapidServiceAutoConfiguration;
@@ -30,4 +31,13 @@ public class RapidAuthServiceAutoConfiguration {
     public AuthServiceCallContext authServiceCallContext(){
         return new AuthServiceCallContext();
     }
+
+
+    @Bean
+    @ConditionalOnMissingBean(name = "serviceCallCacheAdvice")
+    public AuthServiceCallCacheAdvice serviceCallCacheAdvice(){
+        return new AuthServiceCallCacheAdvice();
+    }
+
+
 }

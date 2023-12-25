@@ -31,6 +31,9 @@ public class SystemArchitecture {
     @Pointcut("execution(* deleteById(..))")
     public void deleteOperation(){}
 
+    @Pointcut("execution(* findById(..))")
+    public void findByIdOperation(){}
+
 
     @Pointcut("!execution(* getEntityClass(..))" +
             " && !execution(* getTargetClass(..))" +
@@ -41,6 +44,9 @@ public class SystemArchitecture {
 
     @Pointcut("execution(!com.github.vincemann.springrapid.core.proxy.AbstractServiceExtension+ *(..)) && !this(com.github.vincemann.springrapid.core.proxy.AbstractServiceExtension+)")
     public void ignoreExtensions(){}
+
+    @Pointcut("!target(java.lang.reflect.Proxy)")
+    public void ignoreProxies(){}
 
     @Pointcut("execution(public * com.github.vincemann.springrapid.core.service.CrudService+.*(..))")
     public void serviceOperation(){}

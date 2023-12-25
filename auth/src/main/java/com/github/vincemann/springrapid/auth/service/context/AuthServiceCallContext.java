@@ -27,9 +27,10 @@ public class AuthServiceCallContext extends ServiceCallContext {
         this.userUtils = userUtils;
     }
 
-    public <U extends AbstractUser> U resolveAuthenticated(){
-        return getCached("authenticated",() -> userUtils.findAuthenticatedUser());
-    }
+    // dont use, just use userUtils.findAuthenticated which calls service.findByContactInformation which will be cached via aop
+//    public <U extends AbstractUser> U resolveAuthenticated(){
+//        return getCached("authenticated",() -> userUtils.findAuthenticatedUser());
+//    }
 
     public <U extends AbstractUser> U resolveUser(Serializable id) throws EntityNotFoundException {
         U user = getThrowingCached(computeUserKey(id), new ThrowingSupplier<U, EntityNotFoundException>() {
@@ -68,6 +69,6 @@ public class AuthServiceCallContext extends ServiceCallContext {
     }
 
     private String computeUserKey(Serializable id){
-        return "User:" + String.valueOf(id);
+        return computeKey(userService.getEntityClass(),id);
     }
 }

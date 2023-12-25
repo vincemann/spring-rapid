@@ -29,8 +29,13 @@ public class ProxyUtils {
         return (ServiceExtensionProxy<S>) Proxy.getInvocationHandler(AopTestUtils.getUltimateTargetObject(service));
     }
 
+    public static boolean isJDKProxy(Object obj) {
+        return Proxy.isProxyClass(obj.getClass()) &&
+                Proxy.getInvocationHandler(obj) instanceof java.lang.reflect.InvocationHandler;
+    }
     public static boolean isRootService(Object target) {
 //        Class<?> userClass = ProxyUtils.getUserClass(joinPoint.getTarget());
+        // todo recheck this why not aop proxy or cglib
         if (AopUtils.isAopProxy(target) || AopUtils.isCglibProxy(target) || Proxy.isProxyClass(target.getClass()) || target instanceof AbstractServiceExtension) {
 //        if (Proxy.isProxyClass(target.getClass())){
             return false;

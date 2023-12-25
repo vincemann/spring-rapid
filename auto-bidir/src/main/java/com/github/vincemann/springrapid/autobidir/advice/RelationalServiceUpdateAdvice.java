@@ -28,15 +28,24 @@ import static com.github.vincemann.springrapid.core.util.ProxyUtils.isRootServic
 
 @Slf4j
 @Aspect
-@Order(2)
+@Order(3)
 public class RelationalServiceUpdateAdvice {
 
     @PersistenceContext
     private EntityManager entityManager;
 
+
+    private EntityLocator entityLocator;
+
+    @Autowired
+    public void setEntityLocator(EntityLocator entityLocator) {
+        this.entityLocator = entityLocator;
+    }
+
     @Before(value = "com.github.vincemann.springrapid.core.SystemArchitecture.fullUpdateOperation() && " +
             "com.github.vincemann.springrapid.core.SystemArchitecture.serviceOperation() && " +
             "com.github.vincemann.springrapid.core.SystemArchitecture.ignoreExtensions() && " +
+            "com.github.vincemann.springrapid.core.SystemArchitecture.ignoreProxies() && " +
             "args(updateEntity)")
     public void preFullUpdateRelEntity(JoinPoint joinPoint, IdentifiableEntity updateEntity) throws EntityNotFoundException, BadEntityException {
         preBiDirEntity(joinPoint, updateEntity, RelationalAdviceContext.UpdateKind.FULL);
@@ -45,6 +54,7 @@ public class RelationalServiceUpdateAdvice {
     @Before(value = "com.github.vincemann.springrapid.core.SystemArchitecture.partialUpdateOperation() && " +
             "com.github.vincemann.springrapid.core.SystemArchitecture.serviceOperation() && " +
             "com.github.vincemann.springrapid.core.SystemArchitecture.ignoreExtensions() && " +
+            "com.github.vincemann.springrapid.core.SystemArchitecture.ignoreProxies() && " +
             "args(updateEntity,fieldsToRemove)")
     public void prePartialUpdateRelEntity(JoinPoint joinPoint, IdentifiableEntity updateEntity, String... fieldsToRemove) throws EntityNotFoundException, BadEntityException {
         preBiDirEntity(joinPoint,updateEntity,RelationalAdviceContext.UpdateKind.PARTIAL);
@@ -53,6 +63,7 @@ public class RelationalServiceUpdateAdvice {
     @Before(value = "com.github.vincemann.springrapid.core.SystemArchitecture.partialUpdateOperation() && " +
             "com.github.vincemann.springrapid.core.SystemArchitecture.serviceOperation() && " +
             "com.github.vincemann.springrapid.core.SystemArchitecture.ignoreExtensions() && " +
+            "com.github.vincemann.springrapid.core.SystemArchitecture.ignoreProxies() && " +
             "args(updateEntity,propertiesToUpdate, fieldsToRemove)")
     public void prePartialUpdateRelEntity(JoinPoint joinPoint, IdentifiableEntity updateEntity, Set<String> propertiesToUpdate, String... fieldsToRemove) throws EntityNotFoundException, BadEntityException {
         preBiDirEntity(joinPoint,updateEntity,RelationalAdviceContext.UpdateKind.PARTIAL);
@@ -61,6 +72,7 @@ public class RelationalServiceUpdateAdvice {
     @Before(value = "com.github.vincemann.springrapid.core.SystemArchitecture.softUpdateOperation() && " +
             "com.github.vincemann.springrapid.core.SystemArchitecture.serviceOperation() && " +
             "com.github.vincemann.springrapid.core.SystemArchitecture.ignoreExtensions() && " +
+            "com.github.vincemann.springrapid.core.SystemArchitecture.ignoreProxies() && " +
             "args(updateEntity)")
     public void preSoftUpdateRelEntity(JoinPoint joinPoint, IdentifiableEntity updateEntity) throws EntityNotFoundException {
         preBiDirEntity(joinPoint, updateEntity, RelationalAdviceContext.UpdateKind.SOFT);
@@ -69,6 +81,7 @@ public class RelationalServiceUpdateAdvice {
     @Before(value = "com.github.vincemann.springrapid.core.SystemArchitecture.saveOperation() && " +
             "com.github.vincemann.springrapid.core.SystemArchitecture.serviceOperation() && " +
             "com.github.vincemann.springrapid.core.SystemArchitecture.ignoreExtensions() && " +
+            "com.github.vincemann.springrapid.core.SystemArchitecture.ignoreProxies() && " +
             "args(createdEntity)")
     public void preCreateRelEntity(JoinPoint joinPoint, IdentifiableEntity createdEntity) throws EntityNotFoundException {
         preBiDirEntity(joinPoint, createdEntity, null);
@@ -82,11 +95,6 @@ public class RelationalServiceUpdateAdvice {
 //        Assert.isTrue(!(AopTestUtils.getUltimateTargetObject(joinPoint.getTarget()) instanceof AbstractServiceExtension));
 
         if (!isRootService(joinPoint.getTarget())) {
-            if (log.isDebugEnabled()){
-//                System.err.println("not root service");
-                log.debug("not root service");
-            }
-//                log.debug("ignoring service update advice, bc root service not called yet");
             return;
         }
         if (AutoBiDirUtils.isDisabled(joinPoint)){
@@ -119,8 +127,7 @@ public class RelationalServiceUpdateAdvice {
             // can only detach collections by calling set = new HashSet(set);
             // somehow detaching even with util function is not enough
             // using cached resolve entity method here, if entity is modified, then setCacheDirty must be set!
-            IdentifiableEntity oldEntity = ServiceCallContextHolder.getContext()
-                    .resolvePresentEntity(unproxiedUpdateEntity.getId(), unproxiedUpdateEntity.getClass());
+            IdentifiableEntity oldEntity = VerifyEntity.isPresent(entityLocator.findEntity(unproxiedUpdateEntity),unproxiedUpdateEntity.getId(),unproxiedUpdateEntity.getClass());
             IdentifiableEntity<?> detachedOldEntity = BeanUtils.clone(ProxyUtils.hibernateUnproxyRaw(oldEntity));
 //            IdentifiableEntity<?> detachedOldEntity = ProxyUtils.hibernateUnproxyRaw(byId.get());
             entityManager.detach(detachedOldEntity);

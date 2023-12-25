@@ -9,6 +9,8 @@ import com.github.vincemann.springrapid.core.util.NullAwareBeanUtils;
 import com.github.vincemann.springrapid.core.util.ReflectionUtils;
 import com.github.vincemann.springrapid.core.util.VerifyEntity;
 import com.google.common.collect.Sets;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.dao.NonTransientDataAccessException;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.transaction.annotation.Transactional;
@@ -35,6 +37,13 @@ public abstract class JPACrudService
                 >
         extends AbstractCrudService<E, Id, R> {
 
+    private CrudService<E,Id> service;
+
+    @Lazy
+    @Autowired
+    public void injectService(CrudService<E, Id> service) {
+        this.service = service;
+    }
 
     public JPACrudService() {
     }
@@ -142,8 +151,7 @@ public abstract class JPACrudService
     public void deleteById(Id id) throws EntityNotFoundException {
         if (id == null)
             throw new IllegalArgumentException("Id cannot be null");
-        Optional<IdentifiableEntity<?>> entity
-                = ServiceCallContextHolder.getContext().resolveEntity(id, getEntityClass());
+        Optional<E> entity = service.findById(id);
         VerifyEntity.isPresent(entity, id, getEntityClass());
         getRepository().deleteById(id);
     }
@@ -151,9 +159,9 @@ public abstract class JPACrudService
     private E findOldEntity(Id id) throws EntityNotFoundException {
         if (id == null)
             throw new IllegalArgumentException("Id cannot be null");
-        return ServiceCallContextHolder.getContext().resolvePresentEntity(id,getEntityClass());
-//        Optional<E> entityToUpdate = findById(id);
-//        VerifyEntity.isPresent(entityToUpdate, id, getEntityClass());
-//        return entityToUpdate;
+//        return ServiceCallContextHolder.getContext().resolvePresentEntity(id,getEntityClass());
+        Optional<E> entityToUpdate = service.findById(id);
+        VerifyEntity.isPresent(entityToUpdate, id, getEntityClass());
+        return entityToUpdate.get();
     }
 }
