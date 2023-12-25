@@ -34,11 +34,11 @@ public class RapidAuthServiceAutoConfiguration {
     }
 
 
-    @Bean
-//    @ConditionalOnMissingBean(name = "serviceCallCacheAdvice")
-    public AuthServiceCallCacheAdvice authServiceCallCacheAdvice(){
-        return new AuthServiceCallCacheAdvice();
-    }
+//    @Bean
+////    @ConditionalOnMissingBean(name = "serviceCallCacheAdvice")
+//    public AuthServiceCallCacheAdvice serviceCallCacheAdvice(){
+//        return new AuthServiceCallCacheAdvice();
+//    }
 
 
 }

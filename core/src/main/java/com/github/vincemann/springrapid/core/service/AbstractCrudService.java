@@ -12,6 +12,7 @@ import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -29,17 +30,24 @@ public abstract class AbstractCrudService
                 Id extends Serializable,
                 R extends CrudRepository<E, Id>
                 >
-        implements CrudService<E, Id>, TargetClassAware, ApplicationContextAware {
+        implements CrudService<E, Id>, TargetClassAware/* ,ApplicationContextAware*/ {
     private String beanName;
     private R repository;
     protected CrudService<E,Id> service;
 
-    @Override
-    public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
-//        if(service == null){
-            this.service = applicationContext.getBean(this.getClass());
-            System.err.println("initializing this: " + this + " with instance: " + this.service);
-//        }
+//    @Override
+//    public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
+////        if(service == null){
+//            this.service = applicationContext.getBean(this.getClass());
+//            System.err.println("initializing this: " + this + " with instance: " + this.service);
+////        }
+//    }
+
+    @Autowired
+    @Lazy
+    public void setService(CrudService<E, Id> service) {
+        System.err.println("initializing this user service: " + this + " with instance: " + this.service);
+        this.service = service;
     }
 
     @SuppressWarnings("unchecked")

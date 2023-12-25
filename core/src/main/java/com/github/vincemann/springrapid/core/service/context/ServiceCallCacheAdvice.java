@@ -13,7 +13,7 @@ import java.io.Serializable;
 import java.util.Optional;
 
 @Aspect
-@Order(2)
+@Order(3)
 public class ServiceCallCacheAdvice {
 
 
@@ -24,7 +24,7 @@ public class ServiceCallCacheAdvice {
             "&& args(id)"
     )
     public Object cacheFindById(ProceedingJoinPoint joinPoint, Serializable id) throws Throwable {
-        System.err.println("CACHE FIND BY ID: " + joinPoint.getTarget().getClass().getSimpleName() + "->" + joinPoint.getSignature().getName());
+        System.err.println("CACHE FIND BY ID: " + joinPoint.getTarget() + "->" + joinPoint.getSignature().getName());
 
         if (!ProxyUtils.isRootService(joinPoint.getTarget()))
             return joinPoint.proceed();

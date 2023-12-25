@@ -28,8 +28,10 @@ import static com.github.vincemann.springrapid.core.util.ProxyUtils.isRootServic
 
 @Slf4j
 @Aspect
-@Order(3)
+@Order(2)
 public class RelationalServiceUpdateAdvice {
+
+    public static final String RELATIONAL_UPDATE_CONTEXT_KEY = "relational-update-context";
 
     @PersistenceContext
     private EntityManager entityManager;
@@ -47,8 +49,8 @@ public class RelationalServiceUpdateAdvice {
 //    @Before(value = "execution(* com.github.vincemann.springrapid.core.service.CrudService+.fullUpdate(..)) && target(proxy) && args(updateEntity)")
     @Before(value = "com.github.vincemann.springrapid.core.SystemArchitecture.fullUpdateOperation() && " +
         "com.github.vincemann.springrapid.core.SystemArchitecture.serviceOperation() && " +
-//        "com.github.vincemann.springrapid.core.SystemArchitecture.ignoreExtensions() && " +
-//        "com.github.vincemann.springrapid.core.SystemArchitecture.ignoreProxies() && " +
+        "com.github.vincemann.springrapid.core.SystemArchitecture.ignoreExtensions() && " +
+        "com.github.vincemann.springrapid.core.SystemArchitecture.ignoreProxies() && " +
         "args(updateEntity)")
     public void preFullUpdateRelEntity(JoinPoint joinPoint, IdentifiableEntity updateEntity) throws EntityNotFoundException {
         preBiDirEntity(joinPoint, updateEntity, RelationalAdviceContext.UpdateKind.FULL);
@@ -93,7 +95,7 @@ public class RelationalServiceUpdateAdvice {
 
     // fields to remove not needed, already done via jpaCrudService.updates copyProperties call (removes those values)
     public void preBiDirEntity(JoinPoint joinPoint,  IdentifiableEntity entity, RelationalAdviceContext.UpdateKind updateKind) throws EntityNotFoundException {
-        System.err.println("RELATIONAL UPDATE: " + joinPoint.getTarget().getClass().getSimpleName() + "->" + joinPoint.getSignature().getName());
+        System.err.println("SETTING RELATIONAL CONTEXT: " + joinPoint.getTarget() + "->" + joinPoint.getSignature().getName());
 
         if (!isRootService(joinPoint.getTarget())) {
             return;
@@ -148,6 +150,7 @@ public class RelationalServiceUpdateAdvice {
                     .updateKind(updateKind)
                     .build();
         }
-        RelationalAdviceContextHolder.setContext(updateContext);
+        ServiceCallContextHolder.getContext().addValue(RELATIONAL_UPDATE_CONTEXT_KEY,updateContext);
+//        RelationalAdviceContextHolder.setContext(updateContext);
     }
 }

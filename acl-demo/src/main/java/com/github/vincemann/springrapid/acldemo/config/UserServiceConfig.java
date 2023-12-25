@@ -9,28 +9,28 @@ import com.github.vincemann.springrapid.core.slicing.ServiceConfig;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Primary;
 
-//@ServiceConfig
-//public class UserServiceConfig {
-//
-//    private UserService userService;
-//
-//
-//    @Bean
-//    @Primary
-//    public UserService myUserService() {
-//        return createInstance();
-//    }
-//
-//    @Bean
-//    public CrudService<User,Long> userCrudService(){
-//        return createInstance();
-//    }
-//
-//    protected UserService createInstance(){
-//        if (userService==null){
-//            userService = new MyUserServiceImpl();
-//        }
-//        return userService;
-//    }
-//
-//}
+@ServiceConfig
+public class UserServiceConfig {
+
+    private UserService userService;
+
+
+    @Bean
+    @Primary
+    public UserService myUserService() {
+        return createInstance();
+    }
+
+    @Bean
+    public CrudService<User,Long> userCrudService(){
+        return createInstance();
+    }
+
+    protected UserService createInstance(){
+        if (userService==null){
+            userService = new MyUserServiceImpl();
+        }
+        return userService;
+    }
+
+}

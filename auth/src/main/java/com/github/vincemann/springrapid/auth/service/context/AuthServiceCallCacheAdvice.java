@@ -16,7 +16,7 @@ import java.io.Serializable;
 import java.util.Optional;
 
 @Aspect
-@Order(2)
+@Order(3)
 public class AuthServiceCallCacheAdvice {
 
     @Around(value = "com.github.vincemann.springrapid.core.SystemArchitecture.serviceOperation() " +
@@ -26,7 +26,7 @@ public class AuthServiceCallCacheAdvice {
             "&& args(id)"
     )
     public Object cacheFindById(ProceedingJoinPoint joinPoint, Serializable id) throws Throwable {
-        System.err.println("AUTH SERVICE CALL CACHE" + joinPoint.getTarget().getClass().getSimpleName() + "->" + joinPoint.getSignature().getName());
+        System.err.println("AUTH SERVICE CALL CACHE: " + joinPoint.getTarget() + "->" + joinPoint.getSignature().getName());
 
         if (ProxyUtils.isJDKProxy(joinPoint.getTarget()) || joinPoint.getTarget() instanceof AbstractServiceExtension)
             return joinPoint.proceed();

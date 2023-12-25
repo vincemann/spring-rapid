@@ -28,11 +28,11 @@ public class RapidServiceAutoConfiguration {
         return new ServiceCallContextAdvice();
     }
 
-    @Bean
+//    @Bean
 //    @ConditionalOnMissingBean(name = "serviceCallCacheAdvice")
-    public ServiceCallCacheAdvice serviceCallCacheAdvice(){
-        return new ServiceCallCacheAdvice();
-    }
+//    public ServiceCallCacheAdvice serviceCallCacheAdvice(){
+//        return new ServiceCallCacheAdvice();
+//    }
 
     @ConditionalOnMissingBean(CrudServiceLocator.class)
     @Bean

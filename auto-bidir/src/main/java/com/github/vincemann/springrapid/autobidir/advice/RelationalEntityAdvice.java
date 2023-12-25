@@ -62,7 +62,7 @@ public class RelationalEntityAdvice {
             return entity;
         }
 
-        System.err.println("PRE PERSIST: " + joinPoint.getTarget().getClass() + "->" + joinPoint.getSignature().getName());
+        System.err.println("PRE PERSIST: " + joinPoint.getTarget() + "->" + joinPoint.getSignature().getName());
 
 
         RelationalAdviceContext updateContext = RelationalAdviceContextHolder.getContext();

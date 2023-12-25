@@ -48,7 +48,7 @@ public class ServiceCallContextAdvice {
             "&& com.github.vincemann.springrapid.core.SystemArchitecture.ignoreHelperServiceMethods() "
     )
     public Object aroundServiceOperation(ProceedingJoinPoint joinPoint) throws Throwable {
-        System.err.println("SERVICE CALL CONTEXT: " + joinPoint.getTarget().getClass().getSimpleName() + "->" + joinPoint.getSignature().getName());
+        System.err.println("SERVICE CALL CONTEXT: " + joinPoint.getTarget() + "->" + joinPoint.getSignature().getName());
 //        Assert.isTrue(!(joinPoint.getTarget() instanceof AbstractServiceExtension));
 //        Assert.isTrue(!(AopTestUtils.getUltimateTargetObject(joinPoint.getTarget()) instanceof AbstractServiceExtension));
 
@@ -118,11 +118,16 @@ public class ServiceCallContextAdvice {
 //            } else {
 //                ServiceCallContextHolder.clearContext();
 //            }
-            depth.set(depth.get()-1);
-            if (depth.get() == 0)
-                ServiceCallContextHolder.clearContext();
+            decrementDepth();
         }
+//        decrementDepth();
 
         return ret;
+    }
+
+    private void decrementDepth(){
+        depth.set(depth.get()-1);
+        if (depth.get() == 0)
+            ServiceCallContextHolder.clearContext();
     }
 }

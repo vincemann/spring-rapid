@@ -15,9 +15,9 @@ import java.util.Optional;
 import java.util.UUID;
 
 
-@ServiceComponent
-@Service
-@Primary
+//@ServiceComponent
+//@Service
+//@Primary
 @Transactional
 public class MyUserServiceImpl extends AbstractUserService<User, Long, UserRepository> implements MyUserService {
 
