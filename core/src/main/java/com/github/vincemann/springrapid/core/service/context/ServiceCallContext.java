@@ -60,7 +60,7 @@ public class ServiceCallContext {
         return value;
     }
 
-    private void addCachedEntity(String key, Object entity){
+    protected void addCachedEntity(String key, Object entity){
         cache.put(key,Optional.ofNullable(entity));
         setCacheDirty(key,Boolean.FALSE);
     }

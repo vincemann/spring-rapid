@@ -42,9 +42,9 @@ public class ServiceCallContextAdvice {
         this.serviceCallContextFactory = serviceCallContextFactory;
     }
 
-    @Around(value = "com.github.vincemann.springrapid.core.advice.SystemArchitecture.serviceOperation() " +
-            "&& com.github.vincemann.springrapid.core.advice.SystemArchitecture.ignoreExtensions()" +
-            "&& com.github.vincemann.springrapid.core.advice.SystemArchitecture.ignoreHelperServiceMethods() "
+    @Around(value = "com.github.vincemann.springrapid.core.SystemArchitecture.serviceOperation() " +
+            "&& com.github.vincemann.springrapid.core.SystemArchitecture.ignoreExtensions()" +
+            "&& com.github.vincemann.springrapid.core.SystemArchitecture.ignoreHelperServiceMethods() "
     )
     public Object aroundServiceOperation(ProceedingJoinPoint joinPoint) throws Throwable {
 //        System.err.println("SERVICE CONTEXT: " + joinPoint.getTarget().getClass().getSimpleName() + "->" + joinPoint.getSignature().getName());

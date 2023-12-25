@@ -161,7 +161,6 @@ public abstract class GenericCrudController
         // some dtos might not have id set, so we add it here
         patchEntity.setId(id);
         // set all non updated fields to null, to avoid i.E. roles = new HashSet() in class initializer beeing interpreted as an update to remove all roles!
-        // todo transformIdFieldNamesToSet cacheable?
         Set<String> allUpdatedFields = IdPropertyNameUtils.transformIdFieldNamesToSet(patchInfo.getAllUpdatedFields());
         // id field can be any name!
 //        allUpdatedFields.add("id");

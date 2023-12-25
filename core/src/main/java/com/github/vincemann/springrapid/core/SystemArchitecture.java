@@ -1,4 +1,4 @@
-package com.github.vincemann.springrapid.core.advice;
+package com.github.vincemann.springrapid.core;
 
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Pointcut;

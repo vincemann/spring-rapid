@@ -34,41 +34,41 @@ public class RelationalServiceUpdateAdvice {
     @PersistenceContext
     private EntityManager entityManager;
 
-    @Before(value = "com.github.vincemann.springrapid.core.advice.SystemArchitecture.fullUpdateOperation() && " +
-            "com.github.vincemann.springrapid.core.advice.SystemArchitecture.serviceOperation() && " +
-            "com.github.vincemann.springrapid.core.advice.SystemArchitecture.ignoreExtensions() && " +
+    @Before(value = "com.github.vincemann.springrapid.core.SystemArchitecture.fullUpdateOperation() && " +
+            "com.github.vincemann.springrapid.core.SystemArchitecture.serviceOperation() && " +
+            "com.github.vincemann.springrapid.core.SystemArchitecture.ignoreExtensions() && " +
             "args(updateEntity)")
     public void preFullUpdateRelEntity(JoinPoint joinPoint, IdentifiableEntity updateEntity) throws EntityNotFoundException, BadEntityException {
         preBiDirEntity(joinPoint, updateEntity, RelationalAdviceContext.UpdateKind.FULL);
     }
 
-    @Before(value = "com.github.vincemann.springrapid.core.advice.SystemArchitecture.partialUpdateOperation() && " +
-            "com.github.vincemann.springrapid.core.advice.SystemArchitecture.serviceOperation() && " +
-            "com.github.vincemann.springrapid.core.advice.SystemArchitecture.ignoreExtensions() && " +
+    @Before(value = "com.github.vincemann.springrapid.core.SystemArchitecture.partialUpdateOperation() && " +
+            "com.github.vincemann.springrapid.core.SystemArchitecture.serviceOperation() && " +
+            "com.github.vincemann.springrapid.core.SystemArchitecture.ignoreExtensions() && " +
             "args(updateEntity,fieldsToRemove)")
     public void prePartialUpdateRelEntity(JoinPoint joinPoint, IdentifiableEntity updateEntity, String... fieldsToRemove) throws EntityNotFoundException, BadEntityException {
         preBiDirEntity(joinPoint,updateEntity,RelationalAdviceContext.UpdateKind.PARTIAL);
     }
 
-    @Before(value = "com.github.vincemann.springrapid.core.advice.SystemArchitecture.partialUpdateOperation() && " +
-            "com.github.vincemann.springrapid.core.advice.SystemArchitecture.serviceOperation() && " +
-            "com.github.vincemann.springrapid.core.advice.SystemArchitecture.ignoreExtensions() && " +
+    @Before(value = "com.github.vincemann.springrapid.core.SystemArchitecture.partialUpdateOperation() && " +
+            "com.github.vincemann.springrapid.core.SystemArchitecture.serviceOperation() && " +
+            "com.github.vincemann.springrapid.core.SystemArchitecture.ignoreExtensions() && " +
             "args(updateEntity,propertiesToUpdate, fieldsToRemove)")
     public void prePartialUpdateRelEntity(JoinPoint joinPoint, IdentifiableEntity updateEntity, Set<String> propertiesToUpdate, String... fieldsToRemove) throws EntityNotFoundException, BadEntityException {
         preBiDirEntity(joinPoint,updateEntity,RelationalAdviceContext.UpdateKind.PARTIAL);
     }
 
-    @Before(value = "com.github.vincemann.springrapid.core.advice.SystemArchitecture.softUpdateOperation() && " +
-            "com.github.vincemann.springrapid.core.advice.SystemArchitecture.serviceOperation() && " +
-            "com.github.vincemann.springrapid.core.advice.SystemArchitecture.ignoreExtensions() && " +
+    @Before(value = "com.github.vincemann.springrapid.core.SystemArchitecture.softUpdateOperation() && " +
+            "com.github.vincemann.springrapid.core.SystemArchitecture.serviceOperation() && " +
+            "com.github.vincemann.springrapid.core.SystemArchitecture.ignoreExtensions() && " +
             "args(updateEntity)")
     public void preSoftUpdateRelEntity(JoinPoint joinPoint, IdentifiableEntity updateEntity) throws EntityNotFoundException {
         preBiDirEntity(joinPoint, updateEntity, RelationalAdviceContext.UpdateKind.SOFT);
     }
 
-    @Before(value = "com.github.vincemann.springrapid.core.advice.SystemArchitecture.saveOperation() && " +
-            "com.github.vincemann.springrapid.core.advice.SystemArchitecture.serviceOperation() && " +
-            "com.github.vincemann.springrapid.core.advice.SystemArchitecture.ignoreExtensions() && " +
+    @Before(value = "com.github.vincemann.springrapid.core.SystemArchitecture.saveOperation() && " +
+            "com.github.vincemann.springrapid.core.SystemArchitecture.serviceOperation() && " +
+            "com.github.vincemann.springrapid.core.SystemArchitecture.ignoreExtensions() && " +
             "args(createdEntity)")
     public void preCreateRelEntity(JoinPoint joinPoint, IdentifiableEntity createdEntity) throws EntityNotFoundException {
         preBiDirEntity(joinPoint, createdEntity, null);

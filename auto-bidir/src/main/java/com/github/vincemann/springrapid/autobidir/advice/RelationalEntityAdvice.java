@@ -34,8 +34,8 @@ public class RelationalEntityAdvice {
 //    private EntityManager entityManager;
 
 
-    @Before("com.github.vincemann.springrapid.core.advice.SystemArchitecture.deleteOperation() && " +
-            "com.github.vincemann.springrapid.core.advice.SystemArchitecture.repoOperation() && " +
+    @Before("com.github.vincemann.springrapid.core.SystemArchitecture.deleteOperation() && " +
+            "com.github.vincemann.springrapid.core.SystemArchitecture.repoOperation() && " +
             "args(id)")
     public void preRemoveEntity(JoinPoint joinPoint, Serializable id) throws Throwable {
         if (AutoBiDirUtils.isDisabled(joinPoint)){
@@ -50,8 +50,8 @@ public class RelationalEntityAdvice {
     }
 
 
-    @Before("com.github.vincemann.springrapid.core.advice.SystemArchitecture.saveOperation() && " +
-            "com.github.vincemann.springrapid.core.advice.SystemArchitecture.repoOperation() && " +
+    @Before("com.github.vincemann.springrapid.core.SystemArchitecture.saveOperation() && " +
+            "com.github.vincemann.springrapid.core.SystemArchitecture.repoOperation() && " +
             "args(entity)")
     public IdentifiableEntity prePersistEntity(JoinPoint joinPoint, IdentifiableEntity entity) throws Throwable {
         if (AutoBiDirUtils.isDisabled(joinPoint)){

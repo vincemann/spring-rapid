@@ -5,6 +5,7 @@ import com.github.vincemann.springrapid.auth.AuthProperties;
 import com.github.vincemann.springrapid.auth.MessageSender;
 import com.github.vincemann.springrapid.auth.model.*;
 import com.github.vincemann.springrapid.auth.security.AuthenticatedPrincipalFactory;
+import com.github.vincemann.springrapid.auth.service.context.AuthServiceCallContextHolder;
 import com.github.vincemann.springrapid.auth.service.token.AuthorizationTokenService;
 import com.github.vincemann.springrapid.auth.service.token.BadTokenException;
 import com.github.vincemann.springrapid.auth.service.token.JweTokenService;
@@ -101,7 +102,7 @@ public abstract class AbstractUserService
     }
 
     protected void checkUniqueContactInformation(String contactInformation) throws AlreadyRegisteredException {
-        Optional<U> byContactInformation = getRepository().findByContactInformation(contactInformation);
+        Optional<U> byContactInformation = AuthServiceCallContextHolder.getContext().resolveOptionalUserByContactInformation(contactInformation);
         if (byContactInformation.isPresent()) {
             throw new AlreadyRegisteredException("ContactInformation: " + contactInformation + " is already taken");
         }
@@ -220,8 +221,6 @@ public abstract class AbstractUserService
     protected U verifyUser(U user) throws BadEntityException, EntityNotFoundException {
         user.getRoles().remove(AuthRoles.UNVERIFIED);
         user.setCredentialsUpdatedMillis(System.currentTimeMillis());
-        // todo changed to softupdate
-//        U saved = update(user);
         U saved = service.softUpdate(user);
         log.debug("Verified user: " + user.getContactInformation());
         return saved;
@@ -234,9 +233,7 @@ public abstract class AbstractUserService
     @Transactional(propagation = Propagation.REQUIRED, readOnly = false)
     public void forgotPassword(String contactInformation) throws EntityNotFoundException {
         // fetch the user record from database
-        Optional<U> byContactInformation = findByContactInformation(contactInformation);
-        VerifyEntity.isPresent(byContactInformation, "User with contactInformation: " + contactInformation + " not found");
-        U user = byContactInformation.get();
+        U user =  AuthServiceCallContextHolder.getContext().resolveUserByContactInformation(contactInformation);
         TransactionalUtils.afterCommit(() -> sendForgotPasswordMessage(user));
     }
 
@@ -308,9 +305,7 @@ public abstract class AbstractUserService
             user.setCredentialsUpdatedMillis(System.currentTimeMillis());
             //user.setForgotPasswordCode(null);
             try {
-                // todo changed to softupdate
                 return service.softUpdate(user);
-//                return update(user);
             } catch (NonTransientDataAccessException e) {
                 throw new RuntimeException("Could not reset users password", e);
             }
@@ -347,13 +342,10 @@ public abstract class AbstractUserService
     }
 
     protected void updateSpecialUserFields(U update) throws BadEntityException, EntityNotFoundException {
-        Optional<U> old = findById(update.getId());
-        // todo is that ever needed? this is always run in transactional context ?
-//        entityManager.merge(old.get());
-        VerifyEntity.isPresent(old, "Entity to update with id: " + update.getId() + " not found");
+        U user = AuthServiceCallContextHolder.getContext().resolveUser(update.getId());
         //update roles works in transaction -> changes are applied on the fly
-        updateRoles(old.get(), update);
-        update.setRoles(old.get().getRoles());
+        updateRoles(user, update);
+        update.setRoles(user.getRoles());
         String password = update.getPassword();
         if (password != null) {
             if (!getPasswordEncoder().isEncrypted(password)) {
@@ -383,10 +375,8 @@ public abstract class AbstractUserService
         // sets the password
         user.setPassword(passwordEncoder.encode(newPassword));
         user.setCredentialsUpdatedMillis(System.currentTimeMillis());
-        // todo changed to softupdate
         log.debug("changed pw of user: " + user.getContactInformation());
         try {
-//            update(user);
             service.softUpdate(user);
         } catch (NonTransientDataAccessException e) {
             throw new RuntimeException("Could not change users password", e);
@@ -449,7 +439,6 @@ public abstract class AbstractUserService
 //        //user.setChangeContactInformationCode(LemonValidationUtils.uid());
         U saved;
         try {
-            // todo changed to softupdate
             saved = service.softUpdate(user);
             // after successful commit, mails a link to the user
 //            TransactionalUtils.afterCommit(() -> mailChangeContactInformationLink(saved));
@@ -550,8 +539,6 @@ public abstract class AbstractUserService
             // make the user verified if he is not
             if (user.hasRole(AuthRoles.UNVERIFIED))
                 user.getRoles().remove(AuthRoles.UNVERIFIED);
-            // todo changed to repo
-//          return update(user);
             return service.softUpdate(user);
         } catch (BadTokenException e) {
             throw new BadEntityException(Message.get("com.github.vincemann.wrong.verificationCode"), e);
@@ -560,25 +547,17 @@ public abstract class AbstractUserService
         }
     }
 
-    protected U extractUserFromClaims(JWTClaimsSet claims) throws BadEntityException, EntityNotFoundException {
+    protected U extractUserFromClaims(JWTClaimsSet claims) throws EntityNotFoundException {
         ID id = idConverter.toId(claims.getSubject());
         // fetch the user
-        Optional<U> byId = findById(id);
-        VerifyEntity.isPresent(byId, "User with id: " + id + " not found");
-        return byId.get();
+        return AuthServiceCallContextHolder.getContext().resolveUser(id);
     }
 
 
-    /**
-     * Fetches a new token
-     *
-     * @return
-     */
     @Override
     public String createNewAuthToken(String contactInformation) throws EntityNotFoundException {
-        Optional<U> byContactInformation = findByContactInformation(contactInformation);
-        VerifyEntity.isPresent(byContactInformation, "user with contactInformation: " + contactInformation + " not found");
-        return authorizationTokenService.createToken(authenticatedPrincipalFactory.create(byContactInformation.get()));
+        U user =  AuthServiceCallContextHolder.getContext().resolveUserByContactInformation(contactInformation);
+        return authorizationTokenService.createToken(authenticatedPrincipalFactory.create(user));
     }
 
     @Override
