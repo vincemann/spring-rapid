@@ -90,10 +90,6 @@ public class RelationalServiceUpdateAdvice {
 
     // fields to remove not needed, already done via jpaCrudService.updates copyProperties call (removes those values)
     public void preBiDirEntity(JoinPoint joinPoint,  IdentifiableEntity entity, RelationalAdviceContext.UpdateKind updateKind) throws EntityNotFoundException {
-//        System.err.println("SERVICE UPDATE ADVICE: " + joinPoint.getTarget().getClass().getSimpleName() + "->" + joinPoint.getSignature().getName());
-//        Assert.isTrue(!(joinPoint.getTarget() instanceof AbstractServiceExtension));
-//        Assert.isTrue(!(AopTestUtils.getUltimateTargetObject(joinPoint.getTarget()) instanceof AbstractServiceExtension));
-
         if (!isRootService(joinPoint.getTarget())) {
             return;
         }
@@ -127,7 +123,10 @@ public class RelationalServiceUpdateAdvice {
             // can only detach collections by calling set = new HashSet(set);
             // somehow detaching even with util function is not enough
             // using cached resolve entity method here, if entity is modified, then setCacheDirty must be set!
-            IdentifiableEntity oldEntity = VerifyEntity.isPresent(entityLocator.findEntity(unproxiedUpdateEntity),unproxiedUpdateEntity.getId(),unproxiedUpdateEntity.getClass());
+            Optional<IdentifiableEntity> oldEntityOp = entityLocator.findEntity(unproxiedUpdateEntity);
+            if (oldEntityOp.isEmpty())
+                throw new EntityNotFoundException(unproxiedUpdateEntity.getId(),unproxiedUpdateEntity.getClass());
+            IdentifiableEntity oldEntity = oldEntityOp.get();
             IdentifiableEntity<?> detachedOldEntity = BeanUtils.clone(ProxyUtils.hibernateUnproxyRaw(oldEntity));
 //            IdentifiableEntity<?> detachedOldEntity = ProxyUtils.hibernateUnproxyRaw(byId.get());
             entityManager.detach(detachedOldEntity);
@@ -146,9 +145,4 @@ public class RelationalServiceUpdateAdvice {
         }
         RelationalAdviceContextHolder.setContext(updateContext);
     }
-
-//    @Autowired
-//    public void setEntityLocator(EntityLocator entityLocator) {
-//        this.entityLocator = entityLocator;
-//    }
 }

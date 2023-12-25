@@ -24,7 +24,7 @@ public class ServiceCallCacheAdvice {
             "&& args(id)"
     )
     public Object cacheFindById(ProceedingJoinPoint joinPoint, Serializable id) throws Throwable {
-        if (ProxyUtils.isJDKProxy(joinPoint.getTarget()) || joinPoint.getTarget() instanceof AbstractServiceExtension)
+        if (!ProxyUtils.isRootService(joinPoint.getTarget()))
             return joinPoint.proceed();
         // is root service -> do caching
         Object target = joinPoint.getTarget();

@@ -20,7 +20,7 @@ import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 @MockitoSettings(strictness = Strictness.LENIENT)
-class HierarchicPermissionGrantingStrategyTest {
+class AdminDefaultPermissionGrantingStrategyTest {
 
     @Mock
     AuditLogger auditLogger;
@@ -29,6 +29,7 @@ class HierarchicPermissionGrantingStrategyTest {
     @Mock
     AccessControlEntry entry;
     Permission readPermission;
+    Permission createPermission;
 
     @BeforeEach
     void setUp() {
@@ -36,6 +37,7 @@ class HierarchicPermissionGrantingStrategyTest {
         when(entry.isGranting())
                 .thenReturn(true);
         readPermission = BasePermission.READ;
+        createPermission = BasePermission.CREATE;
     }
 
     @Test
@@ -62,7 +64,7 @@ class HierarchicPermissionGrantingStrategyTest {
     }
 
     @Test
-    public void requestLowerPermission_shouldAllow(){
+    public void requestLowerPermission_hasOnlyAdminPermission_shouldAllow(){
         when(entry.getPermission())
                 .thenReturn(BasePermission.ADMINISTRATION);
 
@@ -73,11 +75,31 @@ class HierarchicPermissionGrantingStrategyTest {
 
 
     @Test
-    public void requestHigherPermission_shouldDeny(){
+    public void requestCreatePermission_hasReadPermission_shouldDeny(){
         when(entry.getPermission())
                 .thenReturn(readPermission);
 
         boolean granted = permissionGrantingStrategy.isGranted(entry, BasePermission.CREATE);
+
+        Assertions.assertFalse(granted);
+    }
+
+    @Test
+    public void requestReadPermission_hasOnlyCreatePermission_shouldDeny(){
+        when(entry.getPermission())
+                .thenReturn(createPermission);
+
+        boolean granted = permissionGrantingStrategy.isGranted(entry, BasePermission.READ);
+
+        Assertions.assertFalse(granted);
+    }
+
+    @Test
+    public void requestWritePermission_hasOnlyCreatePermission_shouldDeny(){
+        when(entry.getPermission())
+                .thenReturn(createPermission);
+
+        boolean granted = permissionGrantingStrategy.isGranted(entry, BasePermission.WRITE);
 
         Assertions.assertFalse(granted);
     }
