@@ -12,7 +12,6 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.security.acls.domain.BasePermission;
 
 @ServiceComponent
-@Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
 public class NeedCreatePermissionForSubscribingSecurityExtension extends AbstractSecurityExtension<VisitService>
         implements GenericCrudServiceExtension<VisitService, Visit,Long>, VisitService
 {

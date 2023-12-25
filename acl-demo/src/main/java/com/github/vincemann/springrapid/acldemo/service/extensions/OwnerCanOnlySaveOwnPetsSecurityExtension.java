@@ -15,7 +15,6 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.security.access.AccessDeniedException;
 
 @ServiceComponent
-@Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
 public class OwnerCanOnlySaveOwnPetsSecurityExtension  extends AbstractSecurityExtension<PetService>
         implements GenericCrudServiceExtension<PetService, Pet,Long>
 {

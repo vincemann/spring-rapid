@@ -48,6 +48,8 @@ public class SystemArchitecture {
     @Pointcut("!target(java.lang.reflect.Proxy)")
     public void ignoreProxies(){}
 
+
+//    @Pointcut("execution(public * com.github.vincemann.springrapid.core.service.CrudService+.*(..)) && target(bean)")
     @Pointcut("execution(public * com.github.vincemann.springrapid.core.service.CrudService+.*(..))")
     public void serviceOperation(){}
 

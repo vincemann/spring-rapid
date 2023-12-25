@@ -15,7 +15,8 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Scope;
 
 @ServiceConfig
-@AutoConfigureAfter(RapidServiceAutoConfiguration.class)
+// overwrites beans of there
+//@AutoConfigureAfter(RapidServiceAutoConfiguration.class)
 public class RapidAuthServiceAutoConfiguration {
 
 
@@ -34,8 +35,8 @@ public class RapidAuthServiceAutoConfiguration {
 
 
     @Bean
-    @ConditionalOnMissingBean(name = "serviceCallCacheAdvice")
-    public AuthServiceCallCacheAdvice serviceCallCacheAdvice(){
+//    @ConditionalOnMissingBean(name = "serviceCallCacheAdvice")
+    public AuthServiceCallCacheAdvice authServiceCallCacheAdvice(){
         return new AuthServiceCallCacheAdvice();
     }
 

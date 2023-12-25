@@ -1,5 +1,7 @@
 package com.github.vincemann.springrapid.auth.config;
 
+import com.github.vincemann.springrapid.auth.model.AbstractUser;
+import com.github.vincemann.springrapid.auth.service.UserService;
 import com.github.vincemann.springrapid.auth.service.validation.PasswordValidator;
 import com.github.vincemann.springrapid.auth.service.validation.RapidPasswordValidator;
 import com.github.vincemann.springrapid.auth.util.UserUtils;
@@ -9,10 +11,13 @@ import com.github.vincemann.springrapid.core.model.LongIdRapidAuthAuditorAware;
 import com.github.vincemann.springrapid.core.model.RapidAuthAuditorAware;
 import com.github.vincemann.springrapid.auth.service.RapidUserDetailsService;
 
+import com.github.vincemann.springrapid.core.service.CrudService;
 import com.github.vincemann.springrapid.core.service.password.BcryptRapidPasswordEncoder;
 import com.github.vincemann.springrapid.core.service.password.RapidPasswordEncoder;
 import com.github.vincemann.springrapid.core.slicing.ServiceConfig;
 import lombok.extern.slf4j.Slf4j;
+import org.checkerframework.checker.units.qual.A;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Primary;
@@ -30,6 +35,11 @@ import java.io.Serializable;
 @EnableTransactionManagement
 //@AutoConfigureBefore({AclAutoConfiguration.class})
 public class RapidUserServiceAutoConfiguration {
+
+
+//    @Autowired
+//    private UserService userService;
+
 
 
     /**
@@ -59,6 +69,16 @@ public class RapidUserServiceAutoConfiguration {
 //        return new LongIdConverter();
 //    }
 
+    // need this when trying to autowire CrudService<User,Long>
+//    @Bean
+//    public CrudService<? extends AbstractUser<Serializable>,Serializable> userCrudService(UserService userService){
+//        return userService;
+//    }
+//
+//    @Bean
+//    public UserService<AbstractUser<Long>,Long> userService(UserService userService){
+//        return userService;
+//    }
 
     /**
      * Configures Password encoder if missing

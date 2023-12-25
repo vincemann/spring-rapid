@@ -8,7 +8,10 @@ import com.github.vincemann.springrapid.core.slicing.ServiceComponent;
 import com.github.vincemann.springrapid.core.util.ProxyUtils;
 import org.springframework.aop.TargetClassAware;
 import org.springframework.aop.support.AopUtils;
+import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.ApplicationContextAware;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -26,10 +29,18 @@ public abstract class AbstractCrudService
                 Id extends Serializable,
                 R extends CrudRepository<E, Id>
                 >
-        implements CrudService<E, Id>, TargetClassAware {
+        implements CrudService<E, Id>, TargetClassAware, ApplicationContextAware {
     private String beanName;
     private R repository;
+    protected CrudService<E,Id> service;
 
+    @Override
+    public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
+//        if(service == null){
+            this.service = applicationContext.getBean(this.getClass());
+            System.err.println("initializing this: " + this + " with instance: " + this.service);
+//        }
+    }
 
     @SuppressWarnings("unchecked")
     private Class<E> entityClass = (Class<E>) ((ParameterizedType) this.getClass().getGenericSuperclass()).getActualTypeArguments()[0];

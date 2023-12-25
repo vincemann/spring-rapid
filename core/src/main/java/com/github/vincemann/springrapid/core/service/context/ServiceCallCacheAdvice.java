@@ -24,6 +24,8 @@ public class ServiceCallCacheAdvice {
             "&& args(id)"
     )
     public Object cacheFindById(ProceedingJoinPoint joinPoint, Serializable id) throws Throwable {
+        System.err.println("CACHE FIND BY ID: " + joinPoint.getTarget().getClass().getSimpleName() + "->" + joinPoint.getSignature().getName());
+
         if (!ProxyUtils.isRootService(joinPoint.getTarget()))
             return joinPoint.proceed();
         // is root service -> do caching

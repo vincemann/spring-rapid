@@ -15,7 +15,6 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.security.access.AccessDeniedException;
 
 @ServiceComponent
-@Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
 public class VetCanOnlySaveOwnVisitsSecurityExtension extends AbstractSecurityExtension<VisitService>
         implements GenericCrudServiceExtension<VisitService, Visit,Long>
 {

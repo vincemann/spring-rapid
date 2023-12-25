@@ -26,6 +26,8 @@ public class AuthServiceCallCacheAdvice {
             "&& args(id)"
     )
     public Object cacheFindById(ProceedingJoinPoint joinPoint, Serializable id) throws Throwable {
+        System.err.println("AUTH SERVICE CALL CACHE" + joinPoint.getTarget().getClass().getSimpleName() + "->" + joinPoint.getSignature().getName());
+
         if (ProxyUtils.isJDKProxy(joinPoint.getTarget()) || joinPoint.getTarget() instanceof AbstractServiceExtension)
             return joinPoint.proceed();
         // is root service -> do caching
@@ -56,6 +58,8 @@ public class AuthServiceCallCacheAdvice {
             "&& args(contactInformation)"
     )
     public Object cacheFindByContactInformation(ProceedingJoinPoint joinPoint, String contactInformation) throws Throwable {
+        System.err.println("AUTH SERVICE CALL CACHE" + joinPoint.getTarget().getClass().getSimpleName() + "->" + joinPoint.getSignature().getName());
+
         if (!ProxyUtils.isRootService(joinPoint.getTarget()))
             return joinPoint.proceed();
         // is root service -> do caching

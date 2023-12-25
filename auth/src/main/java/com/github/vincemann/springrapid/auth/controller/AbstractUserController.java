@@ -123,7 +123,7 @@ public abstract class AbstractUserController<U extends AbstractUser<ID>, ID exte
 //	@PostMapping("${lemon.userController.signupUrl}")
 //	@ResponseStatus(HttpStatus.CREATED)
 //	@ResponseBody
-	public ResponseEntity<String> signup(/*@RequestBody @JsonView(UserUtils.SignupInput.class) S signupForm,*/
+	public ResponseEntity<String> signup(
 			HttpServletRequest request,
 			HttpServletResponse response) throws BadEntityException, IOException, EntityNotFoundException, AlreadyRegisteredException {
 

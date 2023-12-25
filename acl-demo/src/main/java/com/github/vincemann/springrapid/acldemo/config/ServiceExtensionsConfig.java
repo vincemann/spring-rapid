@@ -16,19 +16,16 @@ import org.springframework.security.acls.domain.BasePermission;
 public class ServiceExtensionsConfig {
 
     @Bean
-    @Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
     public RoleGainsPermissionAboutSavedAclExtension vetHasFullPermissionAboutSavedAclExtension(){
         return new RoleGainsPermissionAboutSavedAclExtension(MyRoles.VET, BasePermission.ADMINISTRATION);
     }
 
     @Bean
-    @Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
     public NeedRoleForSaveExtension onlyVetAndAdminCanCreateSecurityExtension(){
         return new NeedRoleForSaveExtension(MyRoles.VET);
     }
 
     @Bean
-    @Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
     public RoleGainsPermissionAboutSavedAclExtension vetsGainReadPermissionAboutSavedAclExtension(){
         return new RoleGainsPermissionAboutSavedAclExtension(MyRoles.VET,BasePermission.READ);
     }

@@ -11,9 +11,11 @@ import com.github.vincemann.springrapid.core.slicing.ServiceConfig;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.EnableAspectJAutoProxy;
 
 @ServiceConfig
+@Configuration
 @EnableAspectJAutoProxy(proxyTargetClass = true)
 @Slf4j
 public class RapidBiDirEntityAdviceAutoConfiguration  {
@@ -35,14 +37,14 @@ public class RapidBiDirEntityAdviceAutoConfiguration  {
 //    }
 //
     @Bean
-    @ConditionalOnMissingBean(RelationalServiceUpdateAdvice.class)
-    public RelationalServiceUpdateAdvice biDirEntityUpdateAdvice(){
+//    @ConditionalOnMissingBean(RelationalServiceUpdateAdvice.class)
+    public RelationalServiceUpdateAdvice relationalServiceUpdateAdvice(){
         return new RelationalServiceUpdateAdvice();
     }
 
     @Bean
-    @ConditionalOnMissingBean(RelationalEntityAdvice.class)
-    public RelationalEntityAdvice biDirEntityPersistAdvice(){
+//    @ConditionalOnMissingBean(RelationalEntityAdvice.class)
+    public RelationalEntityAdvice relationalEntityAdvice(){
         return new RelationalEntityAdvice();
     }
 

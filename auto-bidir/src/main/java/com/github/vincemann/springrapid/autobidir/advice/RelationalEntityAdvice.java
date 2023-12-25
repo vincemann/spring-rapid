@@ -8,6 +8,7 @@ import com.github.vincemann.springrapid.core.model.IdentifiableEntity;
 import com.github.vincemann.springrapid.core.service.CrudService;
 import com.github.vincemann.springrapid.core.service.exception.BadEntityException;
 import com.github.vincemann.springrapid.core.service.locator.CrudServiceLocator;
+import com.github.vincemann.springrapid.core.util.EntityLocator;
 import com.github.vincemann.springrapid.core.util.ProxyUtils;
 import com.github.vincemann.springrapid.core.util.RepositoryUtil;
 import lombok.extern.slf4j.Slf4j;
@@ -15,10 +16,12 @@ import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Before;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.annotation.Order;
 import org.springframework.data.jpa.repository.support.SimpleJpaRepository;
 import org.springframework.test.util.AopTestUtils;
 import org.springframework.util.Assert;
 
+import javax.persistence.EntityListeners;
 import java.io.Serializable;
 import java.util.Optional;
 
@@ -27,7 +30,8 @@ import java.util.Optional;
 public class RelationalEntityAdvice {
 
 
-    private CrudServiceLocator crudServiceLocator;
+//    private CrudServiceLocator crudServiceLocator;
+    private EntityLocator entityLocator;
     private RelationalEntityManager relationalEntityManager;
 
 //    @PersistenceContext
@@ -58,7 +62,12 @@ public class RelationalEntityAdvice {
             return entity;
         }
 
+        System.err.println("PRE PERSIST: " + joinPoint.getTarget().getClass() + "->" + joinPoint.getSignature().getName());
+
+
         RelationalAdviceContext updateContext = RelationalAdviceContextHolder.getContext();
+        if (updateContext == null)
+            throw new IllegalArgumentException("Update Context not initialized, make sure ServiceUpdateAdvice is called before this method.");
         if (entity.getId() == null || updateContext.getUpdateKind()==null) {
             // save
             relationalEntityManager.save(entity);
@@ -112,15 +121,21 @@ public class RelationalEntityAdvice {
     private Optional<IdentifiableEntity> resolveById(JoinPoint joinPoint, Serializable id) throws BadEntityException, IllegalAccessException {
         SimpleJpaRepository repo = AopTestUtils.getUltimateTargetObject(joinPoint.getTarget());
         Class entityClass = RepositoryUtil.getRepoType(repo);
+        return entityLocator.findEntity(entityClass,id);
 //        log.debug("pre remove hook reached for entity " + entityClass + ":" + id);
-        CrudService service = crudServiceLocator.find(entityClass);
-        Assert.notNull(service, "Did not find service for entityClass: " + entityClass);
-        return service.findById((id));
+//        CrudService service = crudServiceLocator.find(entityClass);
+//        Assert.notNull(service, "Did not find service for entityClass: " + entityClass);
+//        return service.findById((id));
     }
 
+//    @Autowired
+//    public void setCrudServiceLocator(CrudServiceLocator crudServiceLocator) {
+//        this.crudServiceLocator = crudServiceLocator;
+//    }
+
     @Autowired
-    public void setCrudServiceLocator(CrudServiceLocator crudServiceLocator) {
-        this.crudServiceLocator = crudServiceLocator;
+    public void setEntityLocator(EntityLocator entityLocator) {
+        this.entityLocator = entityLocator;
     }
 
     @Autowired
