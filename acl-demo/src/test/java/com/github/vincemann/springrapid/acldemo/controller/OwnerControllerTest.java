@@ -14,6 +14,7 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpHeaders;
+import org.springframework.test.context.jdbc.Sql;
 
 import java.util.Optional;
 
@@ -24,7 +25,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 
 @Tag(value = "demo-projects")
-
 public class OwnerControllerTest extends AbstractControllerIntegrationTest<OwnerController, OwnerService> {
 
 

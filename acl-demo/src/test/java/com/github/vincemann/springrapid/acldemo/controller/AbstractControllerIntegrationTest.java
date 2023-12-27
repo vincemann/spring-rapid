@@ -29,6 +29,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers;
+import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.web.servlet.setup.DefaultMockMvcBuilder;
 
 import java.time.LocalDate;
@@ -42,6 +43,7 @@ import static com.github.vincemann.springrapid.coretest.util.RapidTestUtil.creat
 import static com.github.vincemann.springrapid.coretest.util.RapidTestUtil.createUpdateJsonRequest;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 // add admin before each test
+@Sql(scripts = "classpath:clear-test-data.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
 public class AbstractControllerIntegrationTest<C extends GenericCrudController<?,Long,S,?,?>,S extends CrudService<?,Long>>
         extends AclIntegrationCrudControllerTest<C,S>
 {
@@ -440,17 +442,16 @@ public class AbstractControllerIntegrationTest<C extends GenericCrudController<?
 
     @AfterEach
     public void tearDown() {
-        // todo cannot find method symbol in console...
         clearAclCache();
 //        aclCache.clearCache();
 
-        TransactionalRapidTestUtil.clear(visitService);
-        TransactionalRapidTestUtil.clear(petService);
-        TransactionalRapidTestUtil.clear(illnessService);
-        TransactionalRapidTestUtil.clear(ownerService);
-        TransactionalRapidTestUtil.clear(petTypeService);
-        TransactionalRapidTestUtil.clear(specialtyService);
-        TransactionalRapidTestUtil.clear(vetService);
-        TransactionalRapidTestUtil.clear(userService);
+//        TransactionalRapidTestUtil.clear(visitService);
+//        TransactionalRapidTestUtil.clear(petService);
+//        TransactionalRapidTestUtil.clear(illnessService);
+//        TransactionalRapidTestUtil.clear(ownerService);
+//        TransactionalRapidTestUtil.clear(petTypeService);
+//        TransactionalRapidTestUtil.clear(specialtyService);
+//        TransactionalRapidTestUtil.clear(vetService);
+//        TransactionalRapidTestUtil.clear(userService);
     }
 }

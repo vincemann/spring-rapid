@@ -669,6 +669,10 @@ public abstract class AbstractUserController<U extends AbstractUser<ID>, ID exte
 		return (S) this.userService;
 	}
 
+	public UserService<U,ID> getUService(){
+		return this.userService;
+	}
+
 
 	@Autowired
 	public void injectAuthProperties(AuthProperties authProperties) {

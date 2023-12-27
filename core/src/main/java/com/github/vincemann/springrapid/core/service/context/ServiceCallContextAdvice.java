@@ -2,7 +2,6 @@ package com.github.vincemann.springrapid.core.service.context;
 
 import com.github.vincemann.springrapid.core.proxy.AbstractServiceExtension;
 import com.github.vincemann.springrapid.core.service.CrudService;
-import com.github.vincemann.springrapid.core.util.ProxyUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
@@ -28,8 +27,8 @@ public class ServiceCallContextAdvice {
 
 //    IdConverter<?> idConverter;
     //    ThreadLocal<Stack<ServiceCallContext>> serviceCallStack = ThreadLocal.withInitial(Stack::new);
-//    ThreadLocal<Stack<Class<?>>> serviceCallStack = ThreadLocal.withInitial(Stack::new);
-    ThreadLocal<Integer> depth = ThreadLocal.withInitial(() -> 0);
+    ThreadLocal<Stack<SubServiceCallContext>> subServiceCallStack = ThreadLocal.withInitial(Stack::new);
+//    ThreadLocal<Integer> depth = ThreadLocal.withInitial(() -> 0);
 //    ThreadLocal<Integer> depth = ThreadLocal.withInitial(() -> 0);
 
 //    public ServiceCallContextAdvice(IdConverter<?> idConverter) {
@@ -44,27 +43,45 @@ public class ServiceCallContextAdvice {
     }
 
     @Around(value = "com.github.vincemann.springrapid.core.SystemArchitecture.serviceOperation() " +
-            "&& com.github.vincemann.springrapid.core.SystemArchitecture.ignoreExtensions()" +
+//            "&& com.github.vincemann.springrapid.core.SystemArchitecture.ignoreExtensions()" +
             "&& com.github.vincemann.springrapid.core.SystemArchitecture.ignoreHelperServiceMethods() "
     )
     public Object aroundServiceOperation(ProceedingJoinPoint joinPoint) throws Throwable {
         System.err.println("SERVICE CALL CONTEXT: " + joinPoint.getTarget() + "->" + joinPoint.getSignature().getName());
-//        Assert.isTrue(!(joinPoint.getTarget() instanceof AbstractServiceExtension));
-//        Assert.isTrue(!(AopTestUtils.getUltimateTargetObject(joinPoint.getTarget()) instanceof AbstractServiceExtension));
 
-        Object target = joinPoint.getTarget();
-
-        if (target instanceof AbstractServiceExtension)
+        if (joinPoint.getTarget() instanceof AbstractServiceExtension) {
             return joinPoint.proceed();
+        }
 
-        if (!ServiceCallContextHolder.isInitialized()){
+
+        if (!ServiceCallContextHolder.isContextInitialized()){
             log.debug("service call context gets initialized");
             ServiceCallContextHolder.setContext(serviceCallContextFactory.create());
         }
 
-        depth.set(depth.get()+1);
+        SubServiceCallContext subContext = new SubServiceCallContext();
+        subServiceCallStack.get().push(subContext);
+        ServiceCallContextHolder.setSubContext(subContext);
 
-//        if (!ProxyUtils.isJDKProxy(target)){
+        Object ret;
+        try {
+            ret = joinPoint.proceed();
+        } finally {
+            // restore old, or clear if last
+            subServiceCallStack.get().pop();
+            if (subServiceCallStack.get().size() > 0) {
+                SubServiceCallContext oldSubContext = subServiceCallStack.get().peek();
+                ServiceCallContextHolder.setSubContext(oldSubContext);
+            } else {
+                ServiceCallContextHolder.clearSubContext();
+                ServiceCallContextHolder.clearContext();
+            }
+        }
+
+        return ret;
+    }
+
+    //        if (!ProxyUtils.isJDKProxy(target)){
 //            // is root service
 //            Class<?> entityClass = ((CrudService) target).getEntityClass();
 //        }
@@ -105,29 +122,4 @@ public class ServiceCallContextAdvice {
 //                }
 //            }
 //        }
-
-        Object ret;
-        try {
-            ret = joinPoint.proceed();
-        } finally {
-//            // restore old, or clear if last
-//            depth.get().pop();
-//            if (depth.get().size() > 0) {
-//                Class<?> oldEntityClass = depth.get().peek();
-//                ServiceCallContextHolder.getContext().setCurrentEntityClass(oldEntityClass);
-//            } else {
-//                ServiceCallContextHolder.clearContext();
-//            }
-            decrementDepth();
-        }
-//        decrementDepth();
-
-        return ret;
-    }
-
-    private void decrementDepth(){
-        depth.set(depth.get()-1);
-        if (depth.get() == 0)
-            ServiceCallContextHolder.clearContext();
-    }
 }

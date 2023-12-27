@@ -7,14 +7,30 @@ import com.github.vincemann.springrapid.acldemo.service.MyUserService;
 import com.github.vincemann.springrapid.auth.controller.AbstractUserController;
 import com.github.vincemann.springrapid.auth.controller.UserDtoMappingContextBuilder;
 import com.github.vincemann.springrapid.auth.dto.SignupDto;
+import com.github.vincemann.springrapid.auth.service.AlreadyRegisteredException;
+import com.github.vincemann.springrapid.auth.service.UserService;
 import com.github.vincemann.springrapid.core.controller.dto.mapper.context.Direction;
 import com.github.vincemann.springrapid.core.controller.dto.mapper.context.DtoMappingContext;
 import com.github.vincemann.springrapid.core.security.Roles;
+import com.github.vincemann.springrapid.core.service.exception.BadEntityException;
+import com.github.vincemann.springrapid.core.service.exception.EntityNotFoundException;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
 
 @Controller
 public class UserController extends AbstractUserController<User, Long, MyUserService>  {
 
+    private MyUserService injectedImpl;
+
+    @Autowired
+    public void setMyUserService(MyUserService myUserService) {
+        this.injectedImpl = myUserService;
+    }
 
     @Override
     protected DtoMappingContext provideDtoMappingContext(UserDtoMappingContextBuilder builder) {
@@ -27,4 +43,16 @@ public class UserController extends AbstractUserController<User, Long, MyUserSer
                 .build();
     }
 
+
+    @Override
+    public ResponseEntity<String> signup(HttpServletRequest request, HttpServletResponse response) throws BadEntityException, IOException, EntityNotFoundException, AlreadyRegisteredException {
+        injectedImpl.findById(42L);
+        UserService<User, Long> unsecuredService = getUService();
+        unsecuredService.findById(43L);
+        // inject crudService sets this
+//        MyUserService securedUserService = getSecuredUserService();
+        UserService<User, Long> genericService = getService();
+        genericService.findById(44L);
+        return super.signup(request, response);
+    }
 }

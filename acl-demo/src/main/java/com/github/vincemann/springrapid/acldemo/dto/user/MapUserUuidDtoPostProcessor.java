@@ -2,11 +2,16 @@ package com.github.vincemann.springrapid.acldemo.dto.user;
 
 import com.github.vincemann.springrapid.acldemo.model.User;
 import com.github.vincemann.springrapid.acldemo.model.abs.UserAwareEntity;
+import com.github.vincemann.springrapid.acldemo.repository.UserRepository;
 import com.github.vincemann.springrapid.acldemo.service.MyUserService;
+import com.github.vincemann.springrapid.acldemo.service.jpa.MyUserServiceImpl;
+import com.github.vincemann.springrapid.auth.service.AbstractUserService;
+import com.github.vincemann.springrapid.auth.service.UserService;
 import com.github.vincemann.springrapid.core.controller.dto.mapper.EntityPostProcessor;
 import com.github.vincemann.springrapid.core.service.CrudService;
 import com.github.vincemann.springrapid.core.service.exception.BadEntityException;
 import com.github.vincemann.springrapid.core.service.exception.EntityNotFoundException;
+import com.github.vincemann.springrapid.core.slicing.ServiceComponent;
 import com.github.vincemann.springrapid.core.slicing.WebComponent;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,30 +23,16 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Optional;
 
-@WebComponent
-public class MapUserUuidDtoPostProcessor implements EntityPostProcessor<CreateUserDto, UserAwareEntity>, ApplicationContextAware {
+@ServiceComponent
+public class MapUserUuidDtoPostProcessor implements EntityPostProcessor<CreateUserDto, UserAwareEntity> {
 
-    private MyUserService userService;
-
-//    @Autowired
-//    public MapUserUuidDtoPostProcessor(MyUserService userService) {
-//        this.userService = userService;
-//    }
+    private MyUserServiceImpl userService;
 
 
-    @Override
-    public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
-//        if(service == null){
-        this.userService = applicationContext.getBean(MyUserService.class);
-        System.err.println("setting user service instance for post processor to: " + userService);
-//        }
+    @Autowired
+    public void injectUserService(MyUserServiceImpl userService) {
+        this.userService = userService;
     }
-//    @Lazy
-//    @Autowired
-//    public void setUserService(MyUserService userService) {
-//        System.err.println("setting user service instance for post processor to: " + userService.getClass());
-//        this.userService = userService;
-//    }
 
     @Override
     public boolean supports(Class<?> entityClazz, Class<?> dtoClass) {
@@ -52,6 +43,7 @@ public class MapUserUuidDtoPostProcessor implements EntityPostProcessor<CreateUs
     @Override
     public void postProcessEntity(UserAwareEntity entity, CreateUserDto createUserDto) throws BadEntityException, EntityNotFoundException {
         String uuid = createUserDto.getUuid();
+        userService.findById(42L);
         Optional<User> byUuid = userService.findByUuid(uuid);
         if (byUuid.isEmpty()){
             throw new BadEntityException("Wrong uuid");
@@ -59,8 +51,6 @@ public class MapUserUuidDtoPostProcessor implements EntityPostProcessor<CreateUs
         User user = byUuid.get();
         entity.setUser(user);
         user.setUuid(null);
-
-        System.err.println("Calling full update on:" + userService);
 
         userService.fullUpdate(user);
     }

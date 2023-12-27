@@ -20,6 +20,7 @@ import java.util.Set;
 @Getter
 @Setter
 @NoArgsConstructor
+@Table(name = "visits")
 @Entity
 public class Visit extends MyIdentifiableEntity<Long> {
 

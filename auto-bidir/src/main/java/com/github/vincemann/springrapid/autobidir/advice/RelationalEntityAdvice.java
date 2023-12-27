@@ -2,28 +2,25 @@ package com.github.vincemann.springrapid.autobidir.advice;
 
 import com.github.vincemann.springrapid.autobidir.AutoBiDirUtils;
 import com.github.vincemann.springrapid.autobidir.RelationalAdviceContext;
-import com.github.vincemann.springrapid.autobidir.RelationalAdviceContextHolder;
 import com.github.vincemann.springrapid.autobidir.RelationalEntityManager;
 import com.github.vincemann.springrapid.core.model.IdentifiableEntity;
-import com.github.vincemann.springrapid.core.service.CrudService;
-import com.github.vincemann.springrapid.core.service.exception.BadEntityException;
-import com.github.vincemann.springrapid.core.service.locator.CrudServiceLocator;
-import com.github.vincemann.springrapid.core.util.EntityLocator;
-import com.github.vincemann.springrapid.core.util.ProxyUtils;
-import com.github.vincemann.springrapid.core.util.RepositoryUtil;
+import com.github.vincemann.springrapid.core.service.context.ServiceCallContextHolder;
+import com.github.vincemann.springrapid.core.service.context.SubServiceCallContext;
+import com.github.vincemann.springrapid.core.util.*;
 import lombok.extern.slf4j.Slf4j;
 import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Before;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.annotation.Order;
 import org.springframework.data.jpa.repository.support.SimpleJpaRepository;
 import org.springframework.test.util.AopTestUtils;
-import org.springframework.util.Assert;
 
-import javax.persistence.EntityListeners;
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
 import java.io.Serializable;
 import java.util.Optional;
+
+import static com.github.vincemann.springrapid.autobidir.advice.RelationalServiceUpdateAdvice.RELATIONAL_UPDATE_CONTEXT_KEY;
 
 @Aspect
 @Slf4j
@@ -34,14 +31,17 @@ public class RelationalEntityAdvice {
     private EntityLocator entityLocator;
     private RelationalEntityManager relationalEntityManager;
 
-//    @PersistenceContext
-//    private EntityManager entityManager;
+    @PersistenceContext
+    private EntityManager entityManager;
 
 
     @Before("com.github.vincemann.springrapid.core.SystemArchitecture.deleteOperation() && " +
             "com.github.vincemann.springrapid.core.SystemArchitecture.repoOperation() && " +
             "args(id)")
     public void preRemoveEntity(JoinPoint joinPoint, Serializable id) throws Throwable {
+
+        System.err.println("PRE REMOVE: " + joinPoint.getTarget() + "->" + joinPoint.getSignature().getName());
+
         if (AutoBiDirUtils.isDisabled(joinPoint)){
             return;
         }
@@ -58,28 +58,63 @@ public class RelationalEntityAdvice {
             "com.github.vincemann.springrapid.core.SystemArchitecture.repoOperation() && " +
             "args(entity)")
     public IdentifiableEntity prePersistEntity(JoinPoint joinPoint, IdentifiableEntity entity) throws Throwable {
+
+        System.err.println("PRE PERSIST: " + joinPoint.getTarget() + "->" + joinPoint.getSignature().getName());
+
         if (AutoBiDirUtils.isDisabled(joinPoint)){
             return entity;
         }
 
-        System.err.println("PRE PERSIST: " + joinPoint.getTarget() + "->" + joinPoint.getSignature().getName());
 
 
-        RelationalAdviceContext updateContext = RelationalAdviceContextHolder.getContext();
-        if (updateContext == null)
-            throw new IllegalArgumentException("Update Context not initialized, make sure ServiceUpdateAdvice is called before this method.");
+
+
+        RelationalAdviceContext updateContext = null;
+        if (ServiceCallContextHolder.getSubContext() != null)
+            updateContext = ServiceCallContextHolder.getSubContext().getValue(RELATIONAL_UPDATE_CONTEXT_KEY);
+
+        if (updateContext==null){
+            if (log.isWarnEnabled())
+                log.warn("update context is null - only limited auto-rel management possible");
+//            throw new IllegalArgumentException("update context is null");
+        }
+        if (updateContext == null){
+            // repo is called directly, not from service via update- or save-methods
+            if (entity.getId() == null){
+                // save operation and update context null
+                relationalEntityManager.save(entity);
+                clearContext();
+                return entity;
+            }else{
+                // update context null and no safe operation
+                if (log.isWarnEnabled())
+                    log.warn("update context null and update operation - assuming full update");
+                // repo is called directly, so also use repo to find old entity
+                Optional<IdentifiableEntity> old = resolveByIdFromRepo(joinPoint, entity.getId());
+                VerifyEntity.isPresent(old,entity.getId(),entity.getClass());
+                IdentifiableEntity oldEntity = BeanUtils.clone(ProxyUtils.hibernateUnproxyRaw(old.get()));
+                entityManager.detach(oldEntity);
+                relationalEntityManager.update(oldEntity, entity);
+                clearContext();
+                return entity;
+            }
+        }
+
+        // update context is not null
+
         if (entity.getId() == null || updateContext.getUpdateKind()==null) {
             // save
             relationalEntityManager.save(entity);
-            RelationalAdviceContextHolder.clear();
-//            return (IdentifiableEntity) joinPoint.proceed(new IdentifiableEntity[]{entity});
+            clearContext();
             return entity;
         } else {
             // update
+            if (updateContext == null)
+                return entity;
             switch (updateContext.getUpdateKind()){
                 case FULL:
                     relationalEntityManager.update(updateContext.getDetachedOldEntity(), entity);
-                    RelationalAdviceContextHolder.clear();
+                    clearContext();
                     break;
                 case PARTIAL:
 //                    relationalEntityManager.partialUpdate(updateContext.getDetachedOldEntity(), entity, updateContext.getDetachedUpdateEntity());
@@ -87,10 +122,10 @@ public class RelationalEntityAdvice {
                     // todo infer membersToCheck cached again in RelationalServiceUpdateAdvice from single source and pass down this method
                     relationalEntityManager.partialUpdate(updateContext.getDetachedOldEntity(), ProxyUtils.hibernateUnproxyRaw(entity));
 //                    relationalEntityManager.partialUpdate(updateContext.getDetachedOldEntity(), updateContext.getDetachedUpdateEntity());
-                    RelationalAdviceContextHolder.clear();
+                    clearContext();
                     break;
                 case SOFT:
-                    RelationalAdviceContextHolder.clear();
+                    clearContext();
                     break;
             }
             return entity;
@@ -110,6 +145,12 @@ public class RelationalEntityAdvice {
         }
     }
 
+    protected void clearContext(){
+        SubServiceCallContext subContext = ServiceCallContextHolder.getSubContext();
+        if (subContext != null)
+            subContext.clearValue(RELATIONAL_UPDATE_CONTEXT_KEY);
+    }
+
 //    @Before(value = "com.github.vincemann.springrapid.core.advice.SystemArchitecture.updateOperation() && " +
 //            "com.github.vincemann.springrapid.core.advice.SystemArchitecture.repoOperation() && " +
 //            "args(entity)")
@@ -118,10 +159,19 @@ public class RelationalEntityAdvice {
 //        RelationalAdviceContext.clear();
 //    }
 
-    private Optional<IdentifiableEntity> resolveById(JoinPoint joinPoint, Serializable id) throws BadEntityException, IllegalAccessException {
+    protected Optional<IdentifiableEntity> resolveById(JoinPoint joinPoint, Serializable id) {
         SimpleJpaRepository repo = AopTestUtils.getUltimateTargetObject(joinPoint.getTarget());
         Class entityClass = RepositoryUtil.getRepoType(repo);
         return entityLocator.findEntity(entityClass,id);
+//        log.debug("pre remove hook reached for entity " + entityClass + ":" + id);
+//        CrudService service = crudServiceLocator.find(entityClass);
+//        Assert.notNull(service, "Did not find service for entityClass: " + entityClass);
+//        return service.findById((id));
+    }
+
+    protected Optional<IdentifiableEntity> resolveByIdFromRepo(JoinPoint joinPoint, Serializable id) {
+        SimpleJpaRepository repo = AopTestUtils.getUltimateTargetObject(joinPoint.getTarget());
+        return repo.findById(id);
 //        log.debug("pre remove hook reached for entity " + entityClass + ":" + id);
 //        CrudService service = crudServiceLocator.find(entityClass);
 //        Assert.notNull(service, "Did not find service for entityClass: " + entityClass);

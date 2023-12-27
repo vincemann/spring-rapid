@@ -7,6 +7,7 @@ import com.github.vincemann.springrapid.auth.service.UserService;
 import com.github.vincemann.springrapid.authdemo.model.User;
 import com.github.vincemann.springrapid.authdemo.repository.UserRepository;
 import com.github.vincemann.springrapid.auth.service.AbstractUserService;
+import com.github.vincemann.springrapid.core.service.CrudService;
 import com.github.vincemann.springrapid.core.service.exception.EntityNotFoundException;
 import com.github.vincemann.springrapid.core.slicing.ServiceComponent;
 import org.springframework.context.annotation.Primary;
@@ -15,7 +16,7 @@ import org.springframework.transaction.annotation.Transactional;
 @ServiceComponent
 @Primary
 @Transactional
-public class MyUserService extends AbstractUserService<User, Long, UserRepository> implements UserService<User,Long> {
+public class MyUserService extends AbstractUserService<User, Long, UserRepository> implements UserService<User,Long>{
 
 	@Override
     public User newUser() {

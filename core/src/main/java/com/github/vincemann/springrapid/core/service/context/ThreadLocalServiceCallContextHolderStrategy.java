@@ -4,6 +4,7 @@ import org.springframework.util.Assert;
 
 public class ThreadLocalServiceCallContextHolderStrategy implements ServiceCallContextHolderStrategy{
     private final ThreadLocal<ServiceCallContext> contextHolder = new ThreadLocal<>();
+    private final ThreadLocal<SubServiceCallContext> subContextHolder = new ThreadLocal<>();
 
     public ThreadLocalServiceCallContextHolderStrategy() {}
 
@@ -12,6 +13,22 @@ public class ThreadLocalServiceCallContextHolderStrategy implements ServiceCallC
 
     public void clearContext() {
         contextHolder.remove();
+    }
+
+    @Override
+    public void clearSubContext() {
+        subContextHolder.remove();
+    }
+
+    @Override
+    public SubServiceCallContext getSubContext() {
+        return subContextHolder.get();
+    }
+
+    @Override
+    public void setSubContext(SubServiceCallContext context) {
+        Assert.notNull(context, "Only non-null SecurityContext instances are permitted");
+        subContextHolder.set(context);
     }
 
     public ServiceCallContext getContext() {

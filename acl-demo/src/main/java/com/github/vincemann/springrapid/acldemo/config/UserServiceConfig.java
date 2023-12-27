@@ -12,7 +12,7 @@ import org.springframework.context.annotation.Primary;
 @ServiceConfig
 public class UserServiceConfig {
 
-    private UserService userService;
+    private MyUserService userService;
 
 
     @Bean
@@ -21,12 +21,18 @@ public class UserServiceConfig {
         return createInstance();
     }
 
+
     @Bean
-    public CrudService<User,Long> userCrudService(){
+    public MyUserService myUserServiceI(){
         return createInstance();
     }
 
-    protected UserService createInstance(){
+//    @Bean
+//    public CrudService<User,Long> userCrudService(){
+//        return createInstance();
+//    }
+
+    protected MyUserService createInstance(){
         if (userService==null){
             userService = new MyUserServiceImpl();
         }

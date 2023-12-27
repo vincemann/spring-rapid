@@ -20,9 +20,9 @@ import java.util.Optional;
 public class AuthServiceCallCacheAdvice {
 
     @Around(value = "com.github.vincemann.springrapid.core.SystemArchitecture.serviceOperation() " +
-            "&& com.github.vincemann.springrapid.core.SystemArchitecture.ignoreExtensions()" +
+//            "&& com.github.vincemann.springrapid.core.SystemArchitecture.ignoreExtensions()" +
             "&& com.github.vincemann.springrapid.core.SystemArchitecture.findByIdOperation() " +
-            "&& com.github.vincemann.springrapid.core.SystemArchitecture.ignoreProxies() " +
+//            "&& com.github.vincemann.springrapid.core.SystemArchitecture.ignoreProxies() " +
             "&& args(id)"
     )
     public Object cacheFindById(ProceedingJoinPoint joinPoint, Serializable id) throws Throwable {
@@ -34,9 +34,14 @@ public class AuthServiceCallCacheAdvice {
         Object target = joinPoint.getTarget();
         Class entityClass = ((CrudService) target).getEntityClass();
         ServiceCallContext context = ServiceCallContextHolder.getContext();
+        System.err.println("looking for: " + entityClass.getSimpleName() + ":" + id);
         Optional<Object> cached = context.getCachedEntity(entityClass, id);
         if (cached == null) {
+            System.err.println("not cached yet");
             Optional<? extends IdentifiableEntity<?>> value = (Optional<IdentifiableEntity<?>>) joinPoint.proceed();
+            System.err.println("adding value: " + value);
+            if (value.isPresent())
+                System.err.println("value in optional: " + value.get());
             context.addCachedEntity(entityClass, id, value);
 
             // make sure subsequent findByContactInformation calls will also find cached entry
@@ -47,14 +52,15 @@ public class AuthServiceCallCacheAdvice {
 
             return value;
         } else {
+            System.err.println("returning cached value: " + cached);
             return cached;
         }
     }
 
     @Around(value = "com.github.vincemann.springrapid.core.SystemArchitecture.serviceOperation() " +
-            "&& com.github.vincemann.springrapid.core.SystemArchitecture.ignoreExtensions()" +
+//            "&& com.github.vincemann.springrapid.core.SystemArchitecture.ignoreExtensions()" +
             "&& com.github.vincemann.springrapid.core.SystemArchitecture.findByIdOperation() " +
-            "&& com.github.vincemann.springrapid.core.SystemArchitecture.ignoreProxies() " +
+//            "&& com.github.vincemann.springrapid.core.SystemArchitecture.ignoreProxies() " +
             "&& args(contactInformation)"
     )
     public Object cacheFindByContactInformation(ProceedingJoinPoint joinPoint, String contactInformation) throws Throwable {

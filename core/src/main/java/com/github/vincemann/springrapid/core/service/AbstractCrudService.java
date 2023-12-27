@@ -7,6 +7,8 @@ import com.github.vincemann.springrapid.core.service.exception.EntityNotFoundExc
 import com.github.vincemann.springrapid.core.slicing.ServiceComponent;
 import com.github.vincemann.springrapid.core.util.ProxyUtils;
 import org.springframework.aop.TargetClassAware;
+import org.springframework.aop.framework.AopProxyUtils;
+import org.springframework.aop.framework.ProxyFactory;
 import org.springframework.aop.support.AopUtils;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,25 +32,18 @@ public abstract class AbstractCrudService
                 Id extends Serializable,
                 R extends CrudRepository<E, Id>
                 >
-        implements CrudService<E, Id>, TargetClassAware/* ,ApplicationContextAware*/ {
+        implements CrudService<E, Id>, TargetClassAware, ApplicationContextAware {
     private String beanName;
     private R repository;
-    protected CrudService<E,Id> service;
+    protected CrudService<E, Id> service;
 
-//    @Override
-//    public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
-////        if(service == null){
-//            this.service = applicationContext.getBean(this.getClass());
-//            System.err.println("initializing this: " + this + " with instance: " + this.service);
-////        }
-//    }
-
-    @Autowired
-    @Lazy
-    public void setService(CrudService<E, Id> service) {
-        System.err.println("initializing this user service: " + this + " with instance: " + this.service);
-        this.service = service;
+    @Override
+    public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
+        // this works - gives me proxied instance with aop working
+        this.service = applicationContext.getBean(this.getClass());
+//        System.err.println("Initializing this: " + this + " with instance: " + this.service);
     }
+
 
     @SuppressWarnings("unchecked")
     private Class<E> entityClass = (Class<E>) ((ParameterizedType) this.getClass().getGenericSuperclass()).getActualTypeArguments()[0];
@@ -61,6 +56,10 @@ public abstract class AbstractCrudService
     public void injectRepository(R repository) {
         this.repository = repository;
     }
+
+
+    // will not be wrapped with right proxy -> no aop possible
+
 
     @Override
     public Class<E> getEntityClass() {

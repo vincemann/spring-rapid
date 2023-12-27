@@ -5,6 +5,7 @@ import com.github.vincemann.springrapid.auth.service.AbstractUserService;
 import com.github.vincemann.springrapid.acldemo.model.User;
 import com.github.vincemann.springrapid.acldemo.repository.UserRepository;
 import com.github.vincemann.springrapid.auth.service.AlreadyRegisteredException;
+import com.github.vincemann.springrapid.core.service.CrudService;
 import com.github.vincemann.springrapid.core.service.exception.BadEntityException;
 import com.github.vincemann.springrapid.core.slicing.ServiceComponent;
 import org.springframework.context.annotation.Primary;

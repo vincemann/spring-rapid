@@ -2,7 +2,7 @@ package com.github.vincemann.springrapid.autobidir.advice;
 
 import com.github.vincemann.springrapid.autobidir.AutoBiDirUtils;
 import com.github.vincemann.springrapid.autobidir.RelationalAdviceContext;
-import com.github.vincemann.springrapid.autobidir.RelationalAdviceContextHolder;
+
 import com.github.vincemann.springrapid.core.model.IdentifiableEntity;
 import com.github.vincemann.springrapid.core.proxy.AbstractServiceExtension;
 import com.github.vincemann.springrapid.core.service.context.ServiceCallContextHolder;
@@ -44,49 +44,54 @@ public class RelationalServiceUpdateAdvice {
         this.entityLocator = entityLocator;
     }
 
-
-//    @Before(value = "execution(* com.github.vincemann.springrapid.core.service.CrudService+.fullUpdate(..)) && args(updateEntity)")
-//    @Before(value = "execution(* com.github.vincemann.springrapid.core.service.CrudService+.fullUpdate(..)) && target(proxy) && args(updateEntity)")
-    @Before(value = "com.github.vincemann.springrapid.core.SystemArchitecture.fullUpdateOperation() && " +
-        "com.github.vincemann.springrapid.core.SystemArchitecture.serviceOperation() && " +
-        "com.github.vincemann.springrapid.core.SystemArchitecture.ignoreExtensions() && " +
-        "com.github.vincemann.springrapid.core.SystemArchitecture.ignoreProxies() && " +
-        "args(updateEntity)")
+    @Before(
+//           value = "com.github.vincemann.springrapid.core.SystemArchitecture.serviceOperation() " +
+           "com.github.vincemann.springrapid.core.SystemArchitecture.fullUpdateOperation() && " +
+//        "com.github.vincemann.springrapid.core.SystemArchitecture.ignoreExtensions() && " +
+//        "com.github.vincemann.springrapid.core.SystemArchitecture.ignoreProxies() && " +
+                    "args(updateEntity)")
     public void preFullUpdateRelEntity(JoinPoint joinPoint, IdentifiableEntity updateEntity) throws EntityNotFoundException {
         preBiDirEntity(joinPoint, updateEntity, RelationalAdviceContext.UpdateKind.FULL);
     }
 
-    @Before(value = "com.github.vincemann.springrapid.core.SystemArchitecture.partialUpdateOperation() && " +
-            "com.github.vincemann.springrapid.core.SystemArchitecture.serviceOperation() && " +
-            "com.github.vincemann.springrapid.core.SystemArchitecture.ignoreExtensions() && " +
-            "com.github.vincemann.springrapid.core.SystemArchitecture.ignoreProxies() && " +
+    @Before(value =
+//            "com.github.vincemann.springrapid.core.SystemArchitecture.serviceOperation() &&" +
+             "com.github.vincemann.springrapid.core.SystemArchitecture.partialUpdateOperation() && " +
+//
+//            "com.github.vincemann.springrapid.core.SystemArchitecture.ignoreExtensions() && " +
+//            "com.github.vincemann.springrapid.core.SystemArchitecture.ignoreProxies() && " +
             "args(updateEntity,fieldsToRemove)")
     public void prePartialUpdateRelEntity(JoinPoint joinPoint, IdentifiableEntity updateEntity, String... fieldsToRemove) throws EntityNotFoundException {
         preBiDirEntity(joinPoint,updateEntity,RelationalAdviceContext.UpdateKind.PARTIAL);
     }
 
-    @Before(value = "com.github.vincemann.springrapid.core.SystemArchitecture.partialUpdateOperation() && " +
-            "com.github.vincemann.springrapid.core.SystemArchitecture.serviceOperation() && " +
-            "com.github.vincemann.springrapid.core.SystemArchitecture.ignoreExtensions() && " +
-            "com.github.vincemann.springrapid.core.SystemArchitecture.ignoreProxies() && " +
+    @Before(value =
+//            "com.github.vincemann.springrapid.core.SystemArchitecture.serviceOperation() " +
+            "com.github.vincemann.springrapid.core.SystemArchitecture.partialUpdateOperation() &&" +
+//            "com.github.vincemann.springrapid.core.SystemArchitecture.serviceOperation() && " +
+//            "com.github.vincemann.springrapid.core.SystemArchitecture.ignoreExtensions() && " +
+//            "com.github.vincemann.springrapid.core.SystemArchitecture.ignoreProxies() && " +
             "args(updateEntity,propertiesToUpdate, fieldsToRemove)")
     public void prePartialUpdateRelEntity(JoinPoint joinPoint, IdentifiableEntity updateEntity, Set<String> propertiesToUpdate, String... fieldsToRemove) throws EntityNotFoundException {
         preBiDirEntity(joinPoint,updateEntity,RelationalAdviceContext.UpdateKind.PARTIAL);
     }
 
-    @Before(value = "com.github.vincemann.springrapid.core.SystemArchitecture.softUpdateOperation() && " +
-            "com.github.vincemann.springrapid.core.SystemArchitecture.serviceOperation() && " +
-            "com.github.vincemann.springrapid.core.SystemArchitecture.ignoreExtensions() && " +
-            "com.github.vincemann.springrapid.core.SystemArchitecture.ignoreProxies() && " +
+    @Before(value =
+//            "com.github.vincemann.springrapid.core.SystemArchitecture.serviceOperation() &&" +
+            "com.github.vincemann.springrapid.core.SystemArchitecture.softUpdateOperation() && " +
+//            "com.github.vincemann.springrapid.core.SystemArchitecture.ignoreExtensions() && " +
+//            "com.github.vincemann.springrapid.core.SystemArchitecture.ignoreProxies() && " +
             "args(updateEntity)")
     public void preSoftUpdateRelEntity(JoinPoint joinPoint, IdentifiableEntity updateEntity) throws EntityNotFoundException {
         preBiDirEntity(joinPoint, updateEntity, RelationalAdviceContext.UpdateKind.SOFT);
     }
 
-    @Before(value = "com.github.vincemann.springrapid.core.SystemArchitecture.saveOperation() && " +
-            "com.github.vincemann.springrapid.core.SystemArchitecture.serviceOperation() && " +
-            "com.github.vincemann.springrapid.core.SystemArchitecture.ignoreExtensions() && " +
-            "com.github.vincemann.springrapid.core.SystemArchitecture.ignoreProxies() && " +
+    @Before(value =
+//            "com.github.vincemann.springrapid.core.SystemArchitecture.serviceOperation() &&" +
+            "com.github.vincemann.springrapid.core.SystemArchitecture.serviceSaveOperation() && " +
+
+//            "com.github.vincemann.springrapid.core.SystemArchitecture.ignoreExtensions() && " +
+//            "com.github.vincemann.springrapid.core.SystemArchitecture.ignoreProxies() && " +
             "args(createdEntity)")
     public void preCreateRelEntity(JoinPoint joinPoint, IdentifiableEntity createdEntity) throws EntityNotFoundException {
         preBiDirEntity(joinPoint, createdEntity, null);
@@ -95,7 +100,9 @@ public class RelationalServiceUpdateAdvice {
 
     // fields to remove not needed, already done via jpaCrudService.updates copyProperties call (removes those values)
     public void preBiDirEntity(JoinPoint joinPoint,  IdentifiableEntity entity, RelationalAdviceContext.UpdateKind updateKind) throws EntityNotFoundException {
+
         System.err.println("SETTING RELATIONAL CONTEXT: " + joinPoint.getTarget() + "->" + joinPoint.getSignature().getName());
+
 
         if (!isRootService(joinPoint.getTarget())) {
             return;
@@ -103,6 +110,7 @@ public class RelationalServiceUpdateAdvice {
         if (AutoBiDirUtils.isDisabled(joinPoint)){
             return;
         }
+
 //        System.err.println("is root service");
 
         RelationalAdviceContext updateContext;
@@ -150,7 +158,7 @@ public class RelationalServiceUpdateAdvice {
                     .updateKind(updateKind)
                     .build();
         }
-        ServiceCallContextHolder.getContext().addValue(RELATIONAL_UPDATE_CONTEXT_KEY,updateContext);
+        ServiceCallContextHolder.getSubContext().addValue(RELATIONAL_UPDATE_CONTEXT_KEY,updateContext);
 //        RelationalAdviceContextHolder.setContext(updateContext);
     }
 }

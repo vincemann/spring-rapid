@@ -15,17 +15,26 @@ public class SystemArchitecture {
     @Pointcut("execution(* save(..))")
     public void saveOperation(){}
 
+    @Pointcut("execution(* *.save(..)) && this(com.github.vincemann.springrapid.core.service.CrudService+)")
+    public void serviceSaveOperation(){}
+
     /**
      * Also save bc on repo level update = save with set id
      * Impl should check if id is set
      */
-    @Pointcut("execution(* fullUpdate(..))")
+    @Pointcut("execution(* *.fullUpdate(..)) && this(com.github.vincemann.springrapid.core.service.CrudService+)")
     public void fullUpdateOperation(){}
 
-    @Pointcut("execution(* partialUpdate(..))")
+//    @Pointcut("this(com.github.vincemann.springrapid.core.service.CrudService+).fullUpdate(..))")
+//    public void fullUpdateOperation(){}
+
+    @Pointcut("execution(* *.partialUpdate(..)) && this(com.github.vincemann.springrapid.core.service.CrudService+)")
     public void partialUpdateOperation(){}
 
-    @Pointcut("execution(* softUpdate(..))")
+//    @Pointcut("this(com.github.vincemann.springrapid.core.service.CrudService+).partialUpdate(..))")
+//    public void partialUpdateOperation(){}
+
+    @Pointcut("execution(* *.softUpdate(..)) && this(com.github.vincemann.springrapid.core.service.CrudService+)")
     public void softUpdateOperation(){}
 
     @Pointcut("execution(* deleteById(..))")
@@ -37,20 +46,21 @@ public class SystemArchitecture {
 
     @Pointcut("!execution(* getEntityClass(..))" +
             " && !execution(* getTargetClass(..))" +
+            " && !execution(* toString(..))" +
             " && !execution(* getBeanName(..))" +
             " && !execution(* inject*(..))"
     )
     public void ignoreHelperServiceMethods(){}
 
-    @Pointcut("execution(!com.github.vincemann.springrapid.core.proxy.AbstractServiceExtension+ *(..)) && !this(com.github.vincemann.springrapid.core.proxy.AbstractServiceExtension+)")
-    public void ignoreExtensions(){}
+//    @Pointcut("execution(!com.github.vincemann.springrapid.core.proxy.AbstractServiceExtension+ *(..)) && !this(com.github.vincemann.springrapid.core.proxy.AbstractServiceExtension+)")
+//    public void ignoreExtensions(){}
 
     @Pointcut("!target(java.lang.reflect.Proxy)")
     public void ignoreProxies(){}
 
-
-//    @Pointcut("execution(public * com.github.vincemann.springrapid.core.service.CrudService+.*(..)) && target(bean)")
-    @Pointcut("execution(public * com.github.vincemann.springrapid.core.service.CrudService+.*(..))")
+//    @Pointcut("execution(public * com.github.vincemann.springrapid.core.service.CrudService+.*(..)) || target(com.github.vincemann.springrapid.core.service.CrudService+) || this(com.github.vincemann.springrapid.core.service.CrudService+)")
+//    @Pointcut("execution(* *.*(..)) && this(com.github.vincemann.springrapid.core.service.CrudService+)")
+    @Pointcut("this(com.github.vincemann.springrapid.core.service.CrudService+)")
     public void serviceOperation(){}
 
 

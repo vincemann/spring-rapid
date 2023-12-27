@@ -37,13 +37,6 @@ public abstract class JPACrudService
                 >
         extends AbstractCrudService<E, Id, R> {
 
-//    private CrudService<E,Id> service;
-//
-////    @Lazy
-//    @Autowired
-//    public void injectService(CrudService<E,Id> service) {
-//        this.service = service;
-//    }
 
     public JPACrudService() {
     }
@@ -160,6 +153,7 @@ public abstract class JPACrudService
         if (id == null)
             throw new IllegalArgumentException("Id cannot be null");
 //        return ServiceCallContextHolder.getContext().resolvePresentEntity(id,getEntityClass());
+        System.err.println("this:  " + this + " calling own service: " + service);
         Optional<E> entityToUpdate = service.findById(id);
         VerifyEntity.isPresent(entityToUpdate, id, getEntityClass());
         return entityToUpdate.get();

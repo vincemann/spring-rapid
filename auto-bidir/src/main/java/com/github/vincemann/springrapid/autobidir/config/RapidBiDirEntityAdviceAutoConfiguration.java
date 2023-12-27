@@ -39,6 +39,7 @@ public class RapidBiDirEntityAdviceAutoConfiguration  {
     @Bean
 //    @ConditionalOnMissingBean(RelationalServiceUpdateAdvice.class)
     public RelationalServiceUpdateAdvice relationalServiceUpdateAdvice(){
+        System.err.println("relational udpate service advice added to context");
         return new RelationalServiceUpdateAdvice();
     }
 

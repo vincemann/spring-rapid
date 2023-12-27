@@ -1,5 +1,15 @@
 spring:
 
+  aop:
+    proxy-target-class: true
+    debug: true
+  logging:
+    level:
+      org.aspectj.weaver.Weaver: DEBUG
+  aspectj:
+    weaver:
+      dump-events: true
+
   # Active profile
   profiles.active: dev,service,web
 
