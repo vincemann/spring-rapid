@@ -1,5 +1,7 @@
 # Overview  
 Some abstractions I use for spring developement for stuff like crud,auth,acl - structured into maven modules.    
+
+Note:  
 Inspired by [**spring-lemon**](https://github.com/naturalprogrammer/spring-lemon) which offers many good modules as well.  
 Most lemon modules were copied, modified and integrated into this project.  
   
@@ -8,7 +10,7 @@ Most lemon modules were copied, modified and integrated into this project.
 * proxy system for extensions                                                           
 * dto mapping with id resolving            
 * bidirectional relationship management                                                               
-* acl (selective inheritence)            
+* acl             
 * authentication (jwt)
   
 # Requirements  
