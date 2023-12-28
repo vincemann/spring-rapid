@@ -29,7 +29,7 @@ public class RapidAuthenticationSuccessHandler
 	extends SimpleUrlAuthenticationSuccessHandler {
 	
 
-    private UserService<?, ?> userService;
+    private UserService userService;
     private HttpTokenService httpTokenService;
 	private CoreProperties properties;
 	
@@ -65,8 +65,7 @@ public class RapidAuthenticationSuccessHandler
 	}
 
 	@Autowired
-
-	public void injectUserService(UserService<?, ?> userService) {
+	public void injectUserService(UserService userService) {
 		this.userService = userService;
 	}
 	

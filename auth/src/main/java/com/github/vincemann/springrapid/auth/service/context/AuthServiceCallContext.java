@@ -52,7 +52,7 @@ public class AuthServiceCallContext extends ServiceCallContext {
                 return byContactInformation.get();
             }
         });
-        addCachedEntity(computeUserKey(user.getId()),user);
+        setCachedEntity(computeUserKey(user.getId()),user);
         return user;
     }
 
@@ -64,7 +64,7 @@ public class AuthServiceCallContext extends ServiceCallContext {
             }
         });
         if (user.isPresent())
-            addCachedEntity(computeUserKey(user.get().getId()),user);
+            setCachedEntity(computeUserKey(user.get().getId()),user);
         return user;
     }
 

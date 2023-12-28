@@ -8,40 +8,14 @@ import org.springframework.stereotype.Component;
 @Component
 public class SystemArchitecture {
 
-//    @Pointcut("within(*.service.*)")
-//    public void inServiceLayer(){}
-
-
     @Pointcut("execution(* save(..))")
     public void saveOperation(){}
-
-//    @Pointcut("execution(* *.save(..)) && this(com.github.vincemann.springrapid.core.service.CrudService+)")
-//    public void serviceSaveOperation(){}
-
-    /**
-     * Also save bc on repo level update = save with set id
-     * Impl should check if id is set
-     */
-//    @Pointcut("execution(* *.fullUpdate(..)) && this(com.github.vincemann.springrapid.core.service.CrudService+)")
-//    public void fullUpdateOperation(){}
 
     @Pointcut("execution(* fullUpdate(..))")
     public void fullUpdateOperation(){}
 
     @Pointcut("execution(* partialUpdate(..))")
     public void partialUpdateOperation(){}
-
-//    @Pointcut("this(com.github.vincemann.springrapid.core.service.CrudService+).fullUpdate(..))")
-//    public void fullUpdateOperation(){}
-
-//    @Pointcut("execution(* *.partialUpdate(..)) && this(com.github.vincemann.springrapid.core.service.CrudService+)")
-//    public void partialUpdateOperation(){}
-
-//    @Pointcut("this(com.github.vincemann.springrapid.core.service.CrudService+).partialUpdate(..))")
-//    public void partialUpdateOperation(){}
-
-//    @Pointcut("execution(* *.softUpdate(..)) && this(com.github.vincemann.springrapid.core.service.CrudService+)")
-//    public void softUpdateOperation(){}
 
     @Pointcut("execution(* softUpdate(..))")
     public void softUpdateOperation(){}
@@ -51,8 +25,7 @@ public class SystemArchitecture {
 
     @Pointcut("execution(* findById(..))")
     public void findByIdOperation(){}
-
-
+    
     @Pointcut("!execution(* getEntityClass(..))" +
             " && !execution(* getTargetClass(..))" +
             " && !execution(* toString(..))" +
@@ -65,10 +38,8 @@ public class SystemArchitecture {
     public void ignoreExtensions(){}
 
     @Pointcut("!target(java.lang.reflect.Proxy)")
-    public void ignoreProxies(){}
+    public void ignoreJdkProxies(){}
 
-//    @Pointcut("execution(public * com.github.vincemann.springrapid.core.service.CrudService+.*(..)) || target(com.github.vincemann.springrapid.core.service.CrudService+) || this(com.github.vincemann.springrapid.core.service.CrudService+)")
-//    @Pointcut("execution(* *.*(..)) && this(com.github.vincemann.springrapid.core.service.CrudService+)")
     @Pointcut("this(com.github.vincemann.springrapid.core.service.CrudService+)")
     public void serviceOperation(){}
 

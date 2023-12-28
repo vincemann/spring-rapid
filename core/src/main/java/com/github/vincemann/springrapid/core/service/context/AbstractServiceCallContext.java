@@ -38,6 +38,9 @@ public abstract class AbstractServiceCallContext {
         cacheDirtyMap.put(key,cacheDirty);
     }
 
+    public Object removeCachedEntity(Class entityClass, Serializable id){
+        return cache.remove(computeKey(entityClass,id));
+    }
 
 
     public <T> T getCached(String key, Supplier<T> supplier){
@@ -52,7 +55,7 @@ public abstract class AbstractServiceCallContext {
         }
 
         T value = supplier.get();
-        addCachedEntity(key,value);
+        setCachedEntity(key,value);
         return value;
     }
 
@@ -67,12 +70,17 @@ public abstract class AbstractServiceCallContext {
         return null;
     }
 
-    protected void addCachedEntity(String key, Object entity){
+    protected void setCachedEntity(String key, Object entity){
         cache.put(key,Optional.ofNullable(entity));
         setCacheDirty(key,Boolean.FALSE);
     }
 
-    protected void addCachedEntityOptional(String key, Optional<? extends IdentifiableEntity<?>> entity){
+    protected void setCachedEntity(IdentifiableEntity<?> entity){
+        String key = computeKey(entity.getClass(), entity.getId());
+        setCachedEntityOptional(key,Optional.of(entity));
+    }
+
+    protected void setCachedEntityOptional(String key, Optional<? extends IdentifiableEntity<?>> entity){
         cache.put(key,entity);
         setCacheDirty(key,Boolean.FALSE);
     }
@@ -93,7 +101,7 @@ public abstract class AbstractServiceCallContext {
         }
 
         T value = supplier.get();
-        addCachedEntity(key,value);
+        setCachedEntity(key,value);
         return value;
     }
 
@@ -116,7 +124,7 @@ public abstract class AbstractServiceCallContext {
 
     public <T> T getRefreshedCached(String key, Supplier<T> supplier){
         T value = supplier.get();
-        addCachedEntity(key,value);
+        setCachedEntity(key,value);
         return value;
     }
 
@@ -145,8 +153,8 @@ public abstract class AbstractServiceCallContext {
 //        addCachedEntity(computeKey(entity.getClass(),entity.getId()),entity);
 //    }
 
-    public void addCachedEntity(Class clazz, Serializable id, Optional<? extends IdentifiableEntity<?>> entity) {
-        addCachedEntityOptional(computeKey(clazz,id),entity);
+    public void setCachedEntity(Class clazz, Serializable id, Optional<? extends IdentifiableEntity<?>> entity) {
+        setCachedEntityOptional(computeKey(clazz,id),entity);
     }
 
     // entity is expected to be found, otherwise EntityNotFoundException is thrown

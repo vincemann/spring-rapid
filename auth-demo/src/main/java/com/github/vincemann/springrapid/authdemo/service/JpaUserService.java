@@ -1,22 +1,19 @@
 package com.github.vincemann.springrapid.authdemo.service;
 
 import com.github.vincemann.springrapid.auth.AuthProperties;
-import com.github.vincemann.springrapid.auth.dto.RequestContactInformationChangeDto;
-import com.github.vincemann.springrapid.auth.service.AlreadyRegisteredException;
-import com.github.vincemann.springrapid.auth.service.UserService;
 import com.github.vincemann.springrapid.authdemo.model.User;
 import com.github.vincemann.springrapid.authdemo.repository.UserRepository;
 import com.github.vincemann.springrapid.auth.service.AbstractUserService;
-import com.github.vincemann.springrapid.core.service.CrudService;
-import com.github.vincemann.springrapid.core.service.exception.EntityNotFoundException;
 import com.github.vincemann.springrapid.core.slicing.ServiceComponent;
 import org.springframework.context.annotation.Primary;
+import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @ServiceComponent
-@Primary
+@Service
+//@Primary
 @Transactional
-public class MyUserService extends AbstractUserService<User, Long, UserRepository> implements UserService<User,Long>{
+public class JpaUserService extends AbstractUserService<User, Long, UserRepository> {
 
 	@Override
     public User newUser() {
@@ -26,7 +23,7 @@ public class MyUserService extends AbstractUserService<User, Long, UserRepositor
 
 	@Override
 	public Class<?> getTargetClass() {
-		return MyUserService.class;
+		return JpaUserService.class;
 	}
 
 

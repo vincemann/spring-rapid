@@ -16,7 +16,7 @@ import org.springframework.context.annotation.EnableAspectJAutoProxy;
 
 @ServiceConfig
 @Configuration
-@EnableAspectJAutoProxy(proxyTargetClass = true, exposeProxy = true)
+@EnableAspectJAutoProxy(proxyTargetClass = true)
 @Slf4j
 public class RapidBiDirEntityAdviceAutoConfiguration  {
 
@@ -37,14 +37,13 @@ public class RapidBiDirEntityAdviceAutoConfiguration  {
 //    }
 //
     @Bean
-//    @ConditionalOnMissingBean(RelationalServiceUpdateAdvice.class)
+    @ConditionalOnMissingBean(RelationalServiceUpdateAdvice.class)
     public RelationalServiceUpdateAdvice relationalServiceUpdateAdvice(){
-        System.err.println("relational udpate service advice added to context");
         return new RelationalServiceUpdateAdvice();
     }
 
     @Bean
-//    @ConditionalOnMissingBean(RelationalEntityAdvice.class)
+    @ConditionalOnMissingBean(RelationalEntityAdvice.class)
     public RelationalEntityAdvice relationalEntityAdvice(){
         return new RelationalEntityAdvice();
     }

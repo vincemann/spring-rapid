@@ -23,7 +23,7 @@ public class AuthServiceCallCacheAdvice {
     @Around(value = "com.github.vincemann.springrapid.core.SystemArchitecture.serviceOperation() " +
             "&& com.github.vincemann.springrapid.core.SystemArchitecture.ignoreExtensions()" +
             "&& com.github.vincemann.springrapid.core.SystemArchitecture.findByIdOperation() " +
-            "&& com.github.vincemann.springrapid.core.SystemArchitecture.ignoreProxies() " +
+            "&& com.github.vincemann.springrapid.core.SystemArchitecture.ignoreJdkProxies() " +
             "&& args(id)"
     )
     public Object cacheFindById(ProceedingJoinPoint joinPoint, Serializable id) throws Throwable {
@@ -44,12 +44,12 @@ public class AuthServiceCallCacheAdvice {
 //            System.err.println("adding value: " + value);
 //            if (value.isPresent())
 //                System.err.println("value in optional: " + value.get());
-            context.addCachedEntity(entityClass, id, value);
+            context.setCachedEntity(entityClass, id, value);
 
             // make sure subsequent findByContactInformation calls will also find cached entry
             if (AbstractUser.class.isAssignableFrom(entityClass) && value.isPresent()){
                 String contactInformation = ((AbstractUser) value.get()).getContactInformation();
-                context.addCachedEntity(entityClass,contactInformation, value);
+                context.setCachedEntity(entityClass,contactInformation, value);
             }
 
             return value;
@@ -64,7 +64,7 @@ public class AuthServiceCallCacheAdvice {
     @Around(value = "com.github.vincemann.springrapid.core.SystemArchitecture.serviceOperation() " +
             "&& com.github.vincemann.springrapid.core.SystemArchitecture.ignoreExtensions()" +
             "&& com.github.vincemann.springrapid.core.SystemArchitecture.findByIdOperation() " +
-            "&& com.github.vincemann.springrapid.core.SystemArchitecture.ignoreProxies() " +
+            "&& com.github.vincemann.springrapid.core.SystemArchitecture.ignoreJdkProxies() " +
             "&& args(contactInformation)"
     )
     public Object cacheFindByContactInformation(ProceedingJoinPoint joinPoint, String contactInformation) throws Throwable {
@@ -79,12 +79,12 @@ public class AuthServiceCallCacheAdvice {
         Optional<Object> cached = context.getCachedEntity(entityClass, contactInformation);
         if (cached == null) {
             Optional<? extends IdentifiableEntity<?>> value = (Optional<IdentifiableEntity<?>>) joinPoint.proceed();
-            context.addCachedEntity(entityClass, contactInformation, value);
+            context.setCachedEntity(entityClass, contactInformation, value);
 
             // make sure subsequent findById calls will also find cached entry
             if (AbstractUser.class.isAssignableFrom(entityClass) && value.isPresent()){
                 Serializable id = ((AbstractUser) value.get()).getId();
-                context.addCachedEntity(entityClass,id,value);
+                context.setCachedEntity(entityClass,id,value);
             }
 
             return value;

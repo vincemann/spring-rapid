@@ -36,6 +36,12 @@ public class RapidServiceAutoConfiguration {
         return new ServiceCallCacheAdvice();
     }
 
+    @Bean
+    @ConditionalOnMissingBean(InvalidateServiceCallCacheAdvice.class)
+    public InvalidateServiceCallCacheAdvice invalidateServiceCallCacheAdvice(){
+        return new InvalidateServiceCallCacheAdvice();
+    }
+
     @ConditionalOnMissingBean(CrudServiceLocator.class)
     @Bean
     public CrudServiceLocator crudServiceLocator(ConfigurableApplicationContext context, ConfigurableListableBeanFactory beanFactory){

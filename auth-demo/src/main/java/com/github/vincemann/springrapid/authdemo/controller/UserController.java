@@ -4,7 +4,7 @@ import com.github.vincemann.springrapid.auth.controller.AbstractUserController;
 import com.github.vincemann.springrapid.auth.controller.UserDtoMappingContextBuilder;
 import com.github.vincemann.springrapid.authdemo.dto.*;
 import com.github.vincemann.springrapid.authdemo.model.User;
-import com.github.vincemann.springrapid.authdemo.service.MyUserService;
+import com.github.vincemann.springrapid.authdemo.service.JpaUserService;
 import com.github.vincemann.springrapid.core.controller.dto.mapper.context.Direction;
 import com.github.vincemann.springrapid.core.controller.dto.mapper.context.DtoMappingContext;
 import com.github.vincemann.springrapid.core.controller.dto.mapper.context.DtoRequestInfo;
@@ -12,7 +12,7 @@ import com.github.vincemann.springrapid.core.security.Roles;
 import org.springframework.stereotype.Controller;
 
 @Controller
-public class UserController extends AbstractUserController<User, Long, MyUserService>  {
+public class UserController extends AbstractUserController<User, Long, JpaUserService>  {
 
     @Override
     protected DtoMappingContext provideDtoMappingContext(UserDtoMappingContextBuilder builder) {
