@@ -1,13 +1,15 @@
 # Overview  
-Spring-rapid consists of modules encapsulating solutions for **common issues** when developing spring **REST APIs**.  
-One common task that is very repetitive is implementing **crud-operations** for all of your entities.    
-The core module gives you a solution for that requirering only **a few lines of code**.  
-The code needed for a working controller, handling multiple different dto-types, can be seen in the example below.  
-There are many other modules building upon the core module that can be plugged in when needed.  
-See 'Features' below for a full list.  
-  
-This project is inspired by [**spring-lemon**](https://github.com/naturalprogrammer/spring-lemon) which offers many good modules as well.  
+Some abstractions I use for spring developement for stuff like crud,auth,acl - structured into maven modules.    
+Inspired by [**spring-lemon**](https://github.com/naturalprogrammer/spring-lemon) which offers many good modules as well.  
 Most lemon modules were copied, modified and integrated into this project.  
+  
+# Features  
+* crud                                                                    
+* proxy system for extensions                                                           
+* dto mapping with id resolving            
+* bidirectional relationship management                                                               
+* acl (selective inheritence)            
+* authentication (jwt)
   
 # Requirements  
 jdk: version 11.0.18 (default version for java 11)   
@@ -20,18 +22,6 @@ use ``` ./build.sh ``` and ``` test*.sh ``` scripts.
 they use mvnw and make sure auth-demo test's wont fail for no reason      
 you can also run auth-demo's tests seperate via:      
 ``` cd ./auth-demo/; ./test.sh ```   
-# Features  
-* full generic **crud** solution                                                                     (core)   
-* proxy-based **extension system** for services                                                      (core)  
-  -> create different kind of service beans (i.E. @Secured, @Acl) that use reusable extensions  
-* basic exception to api-error translation                                                           (lemon-exceptions)  
-* **dto-mapping** (support for different dto's for each endpoint; see example below)                 (core)  
-* uni- and bidirectional relationship management for all crud operations                             (auto-bidir)  
-* resolving of ids <-> entities, while mapping dto's                                                 (auto-bidir)  
-* test-support for service- and controller-tests                                                     (core-test)  
-* automatic **acl**-scheme setup + simple API for writing acl-based service-extensions               (acl)  
-* full solution for jwt based **user authentication**                                                (auth)  
-  -> signup, login, reset-password, verify-email, ...
     
  # Include   
 * replace MODULE with the module you want to include (module-name = directory-name)  
@@ -52,9 +42,7 @@ you can also run auth-demo's tests seperate via:
 </dependency>  
 ```  
   
-# Example  
-**This is the typical setup required to run a fully functional controller exposing crud enpoints for one entity.**  
-**Check out the demo module for a more complete example + tests.**  
+# crud example  
 ## Controller    
   
 ```java  
@@ -66,22 +54,15 @@ public class OwnerController extends CrudController<Owner, Long, OwnerService> {
     protected DtoMappingContext provideDtoMappingContext(CrudDtoMappingContextBuilder builder) {
         return builder
   
-                .withAllPrincipals()  
                 .forEndpoint(getCreateUrl(), CreateOwnerDto.class)  
-  
-                .withAllPrincipals()  
                 .forUpdate(UpdateOwnerDto.class)
                 
-                
-                //response dto config for retrieving own Owner dto  
                 .withPrincipal(DtoRequestInfo.Principal.OWN)
                 .forResponse(ReadOwnOwnerDto.class)
   
                 .withPrincipal(DtoRequestInfo.Principal.FOREIGN)
                 .forResponse(ReadForeignOwnerDto.class)
   
-                .withAllPrincipals()
-                .forResponse(ReadForeignOwnerDto.class)
                 .build();
     }
 
