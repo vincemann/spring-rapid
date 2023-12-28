@@ -153,7 +153,6 @@ public abstract class JPACrudService
         if (id == null)
             throw new IllegalArgumentException("Id cannot be null");
 //        return ServiceCallContextHolder.getContext().resolvePresentEntity(id,getEntityClass());
-        System.err.println("this:  " + this + " calling own service: " + service);
         Optional<E> entityToUpdate = service.findById(id);
         VerifyEntity.isPresent(entityToUpdate, id, getEntityClass());
         return entityToUpdate.get();

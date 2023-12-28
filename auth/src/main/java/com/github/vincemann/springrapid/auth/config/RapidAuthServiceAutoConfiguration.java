@@ -12,11 +12,13 @@ import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.EnableAspectJAutoProxy;
 import org.springframework.context.annotation.Scope;
 
 @ServiceConfig
 // overwrites beans of there
 //@AutoConfigureAfter(RapidServiceAutoConfiguration.class)
+@EnableAspectJAutoProxy(proxyTargetClass = true)
 public class RapidAuthServiceAutoConfiguration {
 
 
@@ -34,11 +36,11 @@ public class RapidAuthServiceAutoConfiguration {
     }
 
 
-//    @Bean
-////    @ConditionalOnMissingBean(name = "serviceCallCacheAdvice")
-//    public AuthServiceCallCacheAdvice serviceCallCacheAdvice(){
-//        return new AuthServiceCallCacheAdvice();
-//    }
+    @Bean
+//    @ConditionalOnMissingBean(name = "serviceCallCacheAdvice")
+    public AuthServiceCallCacheAdvice serviceCallCacheAdvice(){
+        return new AuthServiceCallCacheAdvice();
+    }
 
 
 }

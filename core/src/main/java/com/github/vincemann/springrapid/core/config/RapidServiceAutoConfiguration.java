@@ -12,10 +12,12 @@ import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.EnableAspectJAutoProxy;
 import org.springframework.context.annotation.Scope;
 
 import javax.persistence.EntityManager;
 
+@EnableAspectJAutoProxy(proxyTargetClass = true)
 @ServiceConfig
 public class RapidServiceAutoConfiguration {
 

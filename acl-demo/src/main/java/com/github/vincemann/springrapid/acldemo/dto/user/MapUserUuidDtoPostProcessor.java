@@ -29,6 +29,7 @@ public class MapUserUuidDtoPostProcessor implements EntityPostProcessor<CreateUs
     private MyUserServiceImpl userService;
 
 
+    @Lazy
     @Autowired
     public void injectUserService(MyUserServiceImpl userService) {
         this.userService = userService;
@@ -52,6 +53,7 @@ public class MapUserUuidDtoPostProcessor implements EntityPostProcessor<CreateUs
         entity.setUser(user);
         user.setUuid(null);
 
+        System.err.println("user Service in post processor: " + userService);
         userService.fullUpdate(user);
     }
 }

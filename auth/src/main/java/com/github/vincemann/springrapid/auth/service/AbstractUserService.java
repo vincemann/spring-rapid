@@ -25,7 +25,9 @@ import com.nimbusds.jwt.JWTClaimsSet;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
+import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.dao.NonTransientDataAccessException;
 import org.springframework.transaction.annotation.Propagation;
@@ -51,6 +53,7 @@ public abstract class AbstractUserService
         extends JPACrudService<U, ID, R>
             implements UserService<U, ID> {
 
+
     public static final String CHANGE_CONTACT_INFORMATION_AUDIENCE = "change-contactInformation";
     public static final String VERIFY_CONTACT_INFORMATION_AUDIENCE = "verify";
     public static final String FORGOT_PASSWORD_AUDIENCE = "forgot-password";
@@ -64,16 +67,15 @@ public abstract class AbstractUserService
     private JweTokenService jweTokenService;
     private IdConverter<ID> idConverter;
     private PasswordValidator passwordValidator;
-    private AbstractUserService<U,ID,R> userService;
     @PersistenceContext
     private EntityManager entityManager;
     private MessageSender messageSender;
 
-    // doesnt work for whatever reason
-//    public AbstractUserService<U,ID,R> getService(){
-//        System.err.println(service);
-//        return (AbstractUserService<U, ID, R>) service;
-//    }
+
+
+    public AbstractUserService<U,ID,R> getService(){
+        return (AbstractUserService<U, ID, R>) service;
+    }
 
     /**
      * Creates a new user object. Must be overridden in the
@@ -106,7 +108,7 @@ public abstract class AbstractUserService
     }
 
     protected void checkUniqueContactInformation(String contactInformation) throws AlreadyRegisteredException {
-        Optional<U> byContactInformation = userService.findByContactInformation(contactInformation);
+        Optional<U> byContactInformation = getService().findByContactInformation(contactInformation);
         if (byContactInformation.isPresent()) {
             throw new AlreadyRegisteredException("ContactInformation: " + contactInformation + " is already taken");
         }
@@ -120,7 +122,8 @@ public abstract class AbstractUserService
         }else user.getRoles().add(AuthRoles.USER);
         passwordValidator.validate(user.getPassword());
         checkUniqueContactInformation(user.getContactInformation());
-        U saved = userService.save(user);
+        U saved = getService().save(user);
+        System.err.println("AbstractUserService::context.getBean(this.getClass()) " + getService());
         // is done in same transaction -> so applied directly, but message sent after transaction to make sure it
         // is not sent when transaction fails
         makeUnverified(saved);
@@ -227,7 +230,7 @@ public abstract class AbstractUserService
         user.setCredentialsUpdatedMillis(System.currentTimeMillis());
         // todo changed to softupdate
 //        U saved = update(user);
-        U saved = userService.softUpdate(user);
+        U saved = getService().softUpdate(user);
         log.debug("Verified user: " + user.getContactInformation());
         return saved;
     }
@@ -239,7 +242,7 @@ public abstract class AbstractUserService
     @Transactional(propagation = Propagation.REQUIRED, readOnly = false)
     public void forgotPassword(String contactInformation) throws EntityNotFoundException {
         // fetch the user record from database
-        Optional<U> byContactInformation = userService.findByContactInformation(contactInformation);
+        Optional<U> byContactInformation = getService().findByContactInformation(contactInformation);
         VerifyEntity.isPresent(byContactInformation, "User with contactInformation: " + contactInformation + " not found");
         U user = byContactInformation.get();
         TransactionalUtils.afterCommit(() -> sendForgotPasswordMessage(user));
@@ -314,7 +317,7 @@ public abstract class AbstractUserService
             //user.setForgotPasswordCode(null);
             try {
                 // todo changed to softupdate
-                return userService.softUpdate(user);
+                return getService().softUpdate(user);
 //                return update(user);
             } catch (NonTransientDataAccessException e) {
                 throw new RuntimeException("Could not reset users password", e);
@@ -352,7 +355,7 @@ public abstract class AbstractUserService
     }
 
     protected void updateSpecialUserFields(U update) throws BadEntityException, EntityNotFoundException {
-        Optional<U> old = userService.findById(update.getId());
+        Optional<U> old = getService().findById(update.getId());
         // todo is that ever needed? this is always run in transactional context ?
 //        entityManager.merge(old.get());
         VerifyEntity.isPresent(old, "Entity to update with id: " + update.getId() + " not found");
@@ -392,7 +395,7 @@ public abstract class AbstractUserService
         log.debug("changed pw of user: " + user.getContactInformation());
         try {
 //            update(user);
-            userService.softUpdate(user);
+            getService().softUpdate(user);
         } catch (NonTransientDataAccessException e) {
             throw new RuntimeException("Could not change users password", e);
         }
@@ -455,7 +458,7 @@ public abstract class AbstractUserService
         U saved;
         try {
             // todo changed to softupdate
-            saved = userService.softUpdate(user);
+            saved = getService().softUpdate(user);
             // after successful commit, mails a link to the user
 //            TransactionalUtils.afterCommit(() -> mailChangeContactInformationLink(saved));
         } catch (NonTransientDataAccessException | BadEntityException e) {
@@ -557,7 +560,7 @@ public abstract class AbstractUserService
                 user.getRoles().remove(AuthRoles.UNVERIFIED);
             // todo changed to repo
 //          return update(user);
-            return userService.softUpdate(user);
+            return getService().softUpdate(user);
         } catch (BadTokenException e) {
             throw new BadEntityException(Message.get("com.github.vincemann.wrong.verificationCode"), e);
         } catch (NonTransientDataAccessException e) {
@@ -568,7 +571,7 @@ public abstract class AbstractUserService
     protected U extractUserFromClaims(JWTClaimsSet claims) throws BadEntityException, EntityNotFoundException {
         ID id = idConverter.toId(claims.getSubject());
         // fetch the user
-        Optional<U> byId = userService.findById(id);
+        Optional<U> byId = getService().findById(id);
         VerifyEntity.isPresent(byId, "User with id: " + id + " not found");
         return byId.get();
     }
@@ -581,7 +584,7 @@ public abstract class AbstractUserService
      */
     @Override
     public String createNewAuthToken(String contactInformation) throws EntityNotFoundException {
-        Optional<U> byContactInformation = userService.findByContactInformation(contactInformation);
+        Optional<U> byContactInformation = getService().findByContactInformation(contactInformation);
         VerifyEntity.isPresent(byContactInformation, "user with contactInformation: " + contactInformation + " not found");
         return authorizationTokenService.createToken(authenticatedPrincipalFactory.create(byContactInformation.get()));
     }
@@ -606,7 +609,7 @@ public abstract class AbstractUserService
     public U signupAdmin(U admin) throws AlreadyRegisteredException, BadEntityException {
         checkUniqueContactInformation(admin.getContactInformation());
         passwordValidator.validate(admin.getPassword());
-        return userService.save(admin);
+        return getService().save(admin);
     }
 
     /**
@@ -731,10 +734,10 @@ public abstract class AbstractUserService
         this.passwordValidator = passwordValidator;
     }
 
-    @Lazy
-    @Autowired
-    public void injectUserService(AbstractUserService<U, ID, R> userService) {
-        this.userService = userService;
-    }
+//    @Lazy
+//    @Autowired
+//    public void injectUserService(AbstractUserService<U, ID, R> userService) {
+//        this.userService = userService;
+//    }
 }
 

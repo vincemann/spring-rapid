@@ -134,6 +134,7 @@ public abstract class AbstractUserController<U extends AbstractUser<ID>, ID exte
 		log.debug("Signing up: " + signupDto);
 		U user = getDtoMapper().mapToEntity(signupDto, getEntityClass());
   		U saved = getSecuredUserService().signup(user);
+		System.err.println("AbstractUserController secured UserService<U,Id>: " + getSecuredUserService());
 		log.debug("Signed up: " + signupDto);
 
 		appendFreshTokenOf(saved,response);

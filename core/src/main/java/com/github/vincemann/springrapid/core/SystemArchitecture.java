@@ -22,19 +22,28 @@ public class SystemArchitecture {
      * Also save bc on repo level update = save with set id
      * Impl should check if id is set
      */
-    @Pointcut("execution(* *.fullUpdate(..)) && this(com.github.vincemann.springrapid.core.service.CrudService+)")
+//    @Pointcut("execution(* *.fullUpdate(..)) && this(com.github.vincemann.springrapid.core.service.CrudService+)")
+//    public void fullUpdateOperation(){}
+
+    @Pointcut("execution(* fullUpdate(..))")
     public void fullUpdateOperation(){}
+
+    @Pointcut("execution(* partialUpdate(..))")
+    public void partialUpdateOperation(){}
 
 //    @Pointcut("this(com.github.vincemann.springrapid.core.service.CrudService+).fullUpdate(..))")
 //    public void fullUpdateOperation(){}
 
-    @Pointcut("execution(* *.partialUpdate(..)) && this(com.github.vincemann.springrapid.core.service.CrudService+)")
-    public void partialUpdateOperation(){}
+//    @Pointcut("execution(* *.partialUpdate(..)) && this(com.github.vincemann.springrapid.core.service.CrudService+)")
+//    public void partialUpdateOperation(){}
 
 //    @Pointcut("this(com.github.vincemann.springrapid.core.service.CrudService+).partialUpdate(..))")
 //    public void partialUpdateOperation(){}
 
-    @Pointcut("execution(* *.softUpdate(..)) && this(com.github.vincemann.springrapid.core.service.CrudService+)")
+//    @Pointcut("execution(* *.softUpdate(..)) && this(com.github.vincemann.springrapid.core.service.CrudService+)")
+//    public void softUpdateOperation(){}
+
+    @Pointcut("execution(* softUpdate(..))")
     public void softUpdateOperation(){}
 
     @Pointcut("execution(* deleteById(..))")

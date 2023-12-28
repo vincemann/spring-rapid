@@ -45,7 +45,7 @@ public class RelationalServiceUpdateAdvice {
     }
 
     @Before(
-//           value = "com.github.vincemann.springrapid.core.SystemArchitecture.serviceOperation() " +
+           value = "com.github.vincemann.springrapid.core.SystemArchitecture.serviceOperation() && " +
            "com.github.vincemann.springrapid.core.SystemArchitecture.fullUpdateOperation() && " +
 //        "com.github.vincemann.springrapid.core.SystemArchitecture.ignoreExtensions() && " +
 //        "com.github.vincemann.springrapid.core.SystemArchitecture.ignoreProxies() && " +
@@ -55,7 +55,7 @@ public class RelationalServiceUpdateAdvice {
     }
 
     @Before(value =
-//            "com.github.vincemann.springrapid.core.SystemArchitecture.serviceOperation() &&" +
+            "com.github.vincemann.springrapid.core.SystemArchitecture.serviceOperation() && " +
              "com.github.vincemann.springrapid.core.SystemArchitecture.partialUpdateOperation() && " +
 //
 //            "com.github.vincemann.springrapid.core.SystemArchitecture.ignoreExtensions() && " +
@@ -66,7 +66,7 @@ public class RelationalServiceUpdateAdvice {
     }
 
     @Before(value =
-//            "com.github.vincemann.springrapid.core.SystemArchitecture.serviceOperation() " +
+            "com.github.vincemann.springrapid.core.SystemArchitecture.serviceOperation() && " +
             "com.github.vincemann.springrapid.core.SystemArchitecture.partialUpdateOperation() &&" +
 //            "com.github.vincemann.springrapid.core.SystemArchitecture.serviceOperation() && " +
 //            "com.github.vincemann.springrapid.core.SystemArchitecture.ignoreExtensions() && " +
@@ -77,7 +77,7 @@ public class RelationalServiceUpdateAdvice {
     }
 
     @Before(value =
-//            "com.github.vincemann.springrapid.core.SystemArchitecture.serviceOperation() &&" +
+            "com.github.vincemann.springrapid.core.SystemArchitecture.serviceOperation() &&" +
             "com.github.vincemann.springrapid.core.SystemArchitecture.softUpdateOperation() && " +
 //            "com.github.vincemann.springrapid.core.SystemArchitecture.ignoreExtensions() && " +
 //            "com.github.vincemann.springrapid.core.SystemArchitecture.ignoreProxies() && " +
@@ -87,8 +87,8 @@ public class RelationalServiceUpdateAdvice {
     }
 
     @Before(value =
-//            "com.github.vincemann.springrapid.core.SystemArchitecture.serviceOperation() &&" +
-            "com.github.vincemann.springrapid.core.SystemArchitecture.serviceSaveOperation() && " +
+            "com.github.vincemann.springrapid.core.SystemArchitecture.serviceOperation() && " +
+            "com.github.vincemann.springrapid.core.SystemArchitecture.saveOperation() && " +
 
 //            "com.github.vincemann.springrapid.core.SystemArchitecture.ignoreExtensions() && " +
 //            "com.github.vincemann.springrapid.core.SystemArchitecture.ignoreProxies() && " +
@@ -111,7 +111,7 @@ public class RelationalServiceUpdateAdvice {
             return;
         }
 
-//        System.err.println("is root service");
+        System.err.println("is root service");
 
         RelationalAdviceContext updateContext;
         if (updateKind == null){

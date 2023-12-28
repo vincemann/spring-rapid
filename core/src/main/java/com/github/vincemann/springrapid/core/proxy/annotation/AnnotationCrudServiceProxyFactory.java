@@ -6,8 +6,10 @@ import com.github.vincemann.springrapid.core.service.CrudService;
 import com.github.vincemann.springrapid.core.util.ContainerAnnotationUtils;
 import com.github.vincemann.springrapid.core.util.Lists;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.aop.framework.AopContext;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.BeanNameAware;
+import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.config.BeanPostProcessor;
 import org.springframework.beans.factory.support.AutowireCandidateQualifier;
@@ -36,8 +38,11 @@ public class AnnotationCrudServiceProxyFactory implements BeanPostProcessor, App
     @Override
     public Object postProcessAfterInitialization(Object bean, String beanName) throws BeansException {
         //log.debug("postProcessing bean : " + beanName);
-        Object unwrappedBean = AopTestUtils.getUltimateTargetObject(bean);
-        if (unwrappedBean instanceof CrudService && !(unwrappedBean instanceof AbstractServiceExtension)) {
+        if (bean instanceof CrudService && !(bean instanceof AbstractServiceExtension)) {
+            Object proxied = beanFactory.getBean(beanName);
+            Object unwrappedBean = AopTestUtils.getUltimateTargetObject(proxied);
+
+
             List<DefineProxy> proxyDefinitions = ContainerAnnotationUtils.findAnnotations(unwrappedBean.getClass(), DefineProxy.class, DefineProxies.class);
             List<CreateProxy> toCreate = ContainerAnnotationUtils.findAnnotations(unwrappedBean.getClass(), CreateProxy.class, CreateProxies.class);
             Map<String, CrudService> createdInternalProxies = new HashMap<>();
@@ -66,7 +71,7 @@ public class AnnotationCrudServiceProxyFactory implements BeanPostProcessor, App
                     log.debug("creating proxyBean with name: " + proxyBeanName);
 
                 // compose proxy instance by creating all internal proxies needed and form a proxy chain
-                CrudService lastProxiedBean = (CrudService) bean;
+                CrudService lastProxiedBean = (CrudService) proxied;
                 for (String proxyName : proxy.proxies()) {
                     // try to find locally
                     CrudService internalProxy;
@@ -110,7 +115,7 @@ public class AnnotationCrudServiceProxyFactory implements BeanPostProcessor, App
                 }
                 beanFactory.registerBeanDefinition(proxyBeanName, proxyBeanDef);
                 beanFactory.registerSingleton(proxyBeanName, proxyBean);
-                proxyBean.setBeanName(beanName);
+                proxyBean.setBeanName(proxyBeanName);
                 if (log.isDebugEnabled())
                     log.debug("registered proxyBean: " + proxyBeanName);
             }
