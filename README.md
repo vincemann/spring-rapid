@@ -4,8 +4,8 @@ Adds a common layer on top of spring that match most simple project requirements
 It's easiest to take a quick look at the demo projects.  
   
 Note:  
-Inspired by [**spring-lemon**](https://github.com/naturalprogrammer/spring-lemon) which offers many good modules as well.  
-Most lemon modules were copied, modified and integrated into this project.  
+Inspired by [**spring-lemon**](https://github.com/naturalprogrammer/spring-lemon) which offer many good modules.  
+Most of them were copied, modified and integrated into this project.  
   
 # Features  
 * crud                                                                    
