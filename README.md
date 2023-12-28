@@ -1,6 +1,7 @@
 # Overview  
 Some abstractions I use for spring developement for stuff like crud,auth,acl - structured into maven modules.    
-
+It's easiest to take a quick look at the demo projects with respective tests.  
+  
 Note:  
 Inspired by [**spring-lemon**](https://github.com/naturalprogrammer/spring-lemon) which offers many good modules as well.  
 Most lemon modules were copied, modified and integrated into this project.  
