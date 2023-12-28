@@ -34,7 +34,9 @@ public class ProxyUtils {
                 Proxy.getInvocationHandler(obj) instanceof java.lang.reflect.InvocationHandler;
     }
     public static boolean isRootService(Object target) {
-        return !(target instanceof AbstractServiceExtension) && !ProxyUtils.isJDKProxy(target);
+        if (target instanceof AbstractServiceExtension)
+            return false;
+        return !Proxy.isProxyClass(target.getClass()) || Proxy.getInvocationHandler(target) == null;
     }
 
 

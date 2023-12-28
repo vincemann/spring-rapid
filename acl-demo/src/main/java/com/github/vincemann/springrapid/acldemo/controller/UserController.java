@@ -33,6 +33,7 @@ public class UserController extends AbstractUserController<User, Long, MyUserSer
 
                 .withRoles(Roles.ADMIN)
                 .forAll(FullUserDto.class)
+                
                 .build();
     }
 }

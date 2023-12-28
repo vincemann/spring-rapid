@@ -40,7 +40,12 @@ import javax.persistence.PersistenceContext;
 import java.io.Serializable;
 import java.util.*;
 
-
+/**
+ * Note:
+ * If you extend from this class and annotate with @{@link org.springframework.stereotype.Service} or @{@link org.springframework.stereotype.Component}
+ * make sure to not also add @{@link org.springframework.context.annotation.Primary}.
+ *
+ */
 @Validated
 @Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
 @Slf4j

@@ -25,7 +25,7 @@ public class SystemArchitecture {
 
     @Pointcut("execution(* findById(..))")
     public void findByIdOperation(){}
-    
+
     @Pointcut("!execution(* getEntityClass(..))" +
             " && !execution(* getTargetClass(..))" +
             " && !execution(* toString(..))" +

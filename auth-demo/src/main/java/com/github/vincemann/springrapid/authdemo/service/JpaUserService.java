@@ -11,6 +11,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 @ServiceComponent
 @Service
+// dont mark with primary, is done internally
 //@Primary
 @Transactional
 public class JpaUserService extends AbstractUserService<User, Long, UserRepository> {
