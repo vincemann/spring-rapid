@@ -4,7 +4,7 @@ import com.github.vincemann.springrapid.acl.DefaultSecurityExtension;
 import com.github.vincemann.springrapid.acl.service.extensions.acl.RoleGainsPermissionAboutSavedAclExtension;
 import com.github.vincemann.springrapid.acl.service.extensions.security.NeedCreatePermissionOnParentForSaveExtension;
 import com.github.vincemann.springrapid.acldemo.service.extensions.NeedRoleForSaveExtension;
-import com.github.vincemann.springrapid.acldemo.auth.MyRoles;
+import com.github.vincemann.springrapid.acldemo.MyRoles;
 import com.github.vincemann.springrapid.core.slicing.ServiceConfig;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;

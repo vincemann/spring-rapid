@@ -124,7 +124,7 @@ public abstract class AbstractServiceCallContext {
         cache.put(key,value);
     }
 
-    public void addValue(String key, Object value) {
+    public void setValue(String key, Object value) {
         values.put(key,value);
     }
 

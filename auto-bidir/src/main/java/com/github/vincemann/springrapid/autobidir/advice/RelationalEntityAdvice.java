@@ -4,8 +4,10 @@ import com.github.vincemann.springrapid.autobidir.AutoBiDirUtils;
 import com.github.vincemann.springrapid.autobidir.RelationalAdviceContext;
 import com.github.vincemann.springrapid.autobidir.RelationalEntityManager;
 import com.github.vincemann.springrapid.core.model.IdentifiableEntity;
+import com.github.vincemann.springrapid.core.service.AbstractCrudService;
 import com.github.vincemann.springrapid.core.service.context.ServiceCallContextHolder;
 import com.github.vincemann.springrapid.core.service.context.SubServiceCallContext;
+import com.github.vincemann.springrapid.core.service.locator.CrudServiceLocator;
 import com.github.vincemann.springrapid.core.util.*;
 import lombok.extern.slf4j.Slf4j;
 import org.aspectj.lang.JoinPoint;
@@ -26,10 +28,10 @@ import static com.github.vincemann.springrapid.autobidir.advice.RelationalServic
 @Slf4j
 public class RelationalEntityAdvice {
 
-
-//    private CrudServiceLocator crudServiceLocator;
     private EntityLocator entityLocator;
     private RelationalEntityManager relationalEntityManager;
+
+    private CrudServiceLocator crudServiceLocator;
 
     @PersistenceContext
     private EntityManager entityManager;
@@ -40,7 +42,7 @@ public class RelationalEntityAdvice {
             "args(id)")
     public void preRemoveEntity(JoinPoint joinPoint, Serializable id) throws Throwable {
 
-        System.err.println("PRE REMOVE: " + joinPoint.getTarget() + "->" + joinPoint.getSignature().getName());
+//        System.err.println("PRE REMOVE: " + joinPoint.getTarget() + "->" + joinPoint.getSignature().getName());
 
         if (AutoBiDirUtils.isDisabled(joinPoint)){
             return;
@@ -59,26 +61,21 @@ public class RelationalEntityAdvice {
             "args(entity)")
     public IdentifiableEntity prePersistEntity(JoinPoint joinPoint, IdentifiableEntity entity) throws Throwable {
 
-        System.err.println("PRE PERSIST: " + joinPoint.getTarget() + "->" + joinPoint.getSignature().getName());
+//        System.err.println("PRE PERSIST: " + joinPoint.getTarget() + "->" + joinPoint.getSignature().getName());
 
         if (AutoBiDirUtils.isDisabled(joinPoint)){
             return entity;
         }
 
 
-
-
-
         RelationalAdviceContext updateContext = null;
         if (ServiceCallContextHolder.getSubContext() != null)
             updateContext = ServiceCallContextHolder.getSubContext().getValue(RELATIONAL_UPDATE_CONTEXT_KEY);
 
-        if (updateContext==null){
+
+        if (updateContext == null){
             if (log.isWarnEnabled())
                 log.warn("update context is null - only limited auto-rel management possible");
-//            throw new IllegalArgumentException("update context is null");
-        }
-        if (updateContext == null){
             // repo is called directly, not from service via update- or save-methods
             if (entity.getId() == null){
                 // save operation and update context null
@@ -89,9 +86,12 @@ public class RelationalEntityAdvice {
                 // update context null and no safe operation
                 if (log.isWarnEnabled())
                     log.warn("update context null and update operation - assuming full update");
-                // repo is called directly, so also use repo to find old entity
-                Optional<IdentifiableEntity> old = resolveByIdFromRepo(joinPoint, entity.getId());
+//                throw new IllegalArgumentException("Cannot use update function yet without calling service upfront");
+
+//                // repo is called directly, so also use repo to find old entity
+                Optional<IdentifiableEntity> old = repoResolveById(joinPoint, entity.getId());
                 VerifyEntity.isPresent(old,entity.getId(),entity.getClass());
+                // full detach only works like that
                 IdentifiableEntity oldEntity = BeanUtils.clone(ProxyUtils.hibernateUnproxyRaw(old.get()));
                 entityManager.detach(oldEntity);
                 relationalEntityManager.update(oldEntity, entity);
@@ -163,25 +163,18 @@ public class RelationalEntityAdvice {
         SimpleJpaRepository repo = AopTestUtils.getUltimateTargetObject(joinPoint.getTarget());
         Class entityClass = RepositoryUtil.getRepoType(repo);
         return entityLocator.findEntity(entityClass,id);
-//        log.debug("pre remove hook reached for entity " + entityClass + ":" + id);
-//        CrudService service = crudServiceLocator.find(entityClass);
-//        Assert.notNull(service, "Did not find service for entityClass: " + entityClass);
-//        return service.findById((id));
     }
 
-    protected Optional<IdentifiableEntity> resolveByIdFromRepo(JoinPoint joinPoint, Serializable id) {
+    protected Optional<IdentifiableEntity> repoResolveById(JoinPoint joinPoint, Serializable id) {
         SimpleJpaRepository repo = AopTestUtils.getUltimateTargetObject(joinPoint.getTarget());
-        return repo.findById(id);
-//        log.debug("pre remove hook reached for entity " + entityClass + ":" + id);
-//        CrudService service = crudServiceLocator.find(entityClass);
-//        Assert.notNull(service, "Did not find service for entityClass: " + entityClass);
-//        return service.findById((id));
+        Class entityClass = RepositoryUtil.getRepoType(repo);
+        return ((AbstractCrudService) crudServiceLocator.find(entityClass)).getRepository().findById(id);
     }
 
-//    @Autowired
-//    public void setCrudServiceLocator(CrudServiceLocator crudServiceLocator) {
-//        this.crudServiceLocator = crudServiceLocator;
-//    }
+    @Autowired
+    public void setCrudServiceLocator(CrudServiceLocator crudServiceLocator) {
+        this.crudServiceLocator = crudServiceLocator;
+    }
 
     @Autowired
     public void setEntityLocator(EntityLocator entityLocator) {

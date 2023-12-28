@@ -2,23 +2,13 @@ package com.github.vincemann.springrapid.acldemo.dto.user;
 
 import com.github.vincemann.springrapid.acldemo.model.User;
 import com.github.vincemann.springrapid.acldemo.model.abs.UserAwareEntity;
-import com.github.vincemann.springrapid.acldemo.repository.UserRepository;
-import com.github.vincemann.springrapid.acldemo.service.MyUserService;
-import com.github.vincemann.springrapid.acldemo.service.jpa.MyUserServiceImpl;
-import com.github.vincemann.springrapid.auth.service.AbstractUserService;
-import com.github.vincemann.springrapid.auth.service.UserService;
+import com.github.vincemann.springrapid.acldemo.service.jpa.JpaUserService;
 import com.github.vincemann.springrapid.core.controller.dto.mapper.EntityPostProcessor;
-import com.github.vincemann.springrapid.core.service.CrudService;
 import com.github.vincemann.springrapid.core.service.exception.BadEntityException;
 import com.github.vincemann.springrapid.core.service.exception.EntityNotFoundException;
 import com.github.vincemann.springrapid.core.slicing.ServiceComponent;
-import com.github.vincemann.springrapid.core.slicing.WebComponent;
-import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.ApplicationContext;
-import org.springframework.context.ApplicationContextAware;
 import org.springframework.context.annotation.Lazy;
-import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Optional;
@@ -26,12 +16,13 @@ import java.util.Optional;
 @ServiceComponent
 public class MapUserUuidDtoPostProcessor implements EntityPostProcessor<CreateUserDto, UserAwareEntity> {
 
-    private MyUserServiceImpl userService;
+    private JpaUserService userService;
 
 
+    // need lazy injection here, otherwise not wrapped with aop proxies somehow
     @Lazy
     @Autowired
-    public void injectUserService(MyUserServiceImpl userService) {
+    public void injectUserService(JpaUserService userService) {
         this.userService = userService;
     }
 
@@ -52,8 +43,7 @@ public class MapUserUuidDtoPostProcessor implements EntityPostProcessor<CreateUs
         User user = byUuid.get();
         entity.setUser(user);
         user.setUuid(null);
-
-        System.err.println("user Service in post processor: " + userService);
+        
         userService.fullUpdate(user);
     }
 }

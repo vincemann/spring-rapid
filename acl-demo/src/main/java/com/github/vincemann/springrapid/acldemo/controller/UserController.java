@@ -25,13 +25,6 @@ import java.io.IOException;
 @Controller
 public class UserController extends AbstractUserController<User, Long, MyUserService>  {
 
-    private MyUserService injectedImpl;
-
-    @Autowired
-    public void setMyUserService(MyUserService myUserService) {
-        this.injectedImpl = myUserService;
-    }
-
     @Override
     protected DtoMappingContext provideDtoMappingContext(UserDtoMappingContextBuilder builder) {
         return builder
@@ -41,22 +34,5 @@ public class UserController extends AbstractUserController<User, Long, MyUserSer
                 .withRoles(Roles.ADMIN)
                 .forAll(FullUserDto.class)
                 .build();
-    }
-
-
-    @Override
-    public ResponseEntity<String> signup(HttpServletRequest request, HttpServletResponse response) throws BadEntityException, IOException, EntityNotFoundException, AlreadyRegisteredException {
-        injectedImpl.findById(42L);
-        System.err.println("UserController::MyUserService " + injectedImpl);
-
-
-        UserService<User, Long> unsecuredService = getUService();
-        unsecuredService.findById(43L);
-        System.err.println("AbstractUserController::UserService<U,Id> " + unsecuredService);
-        // inject crudService sets this
-//        MyUserService securedUserService = getSecuredUserService();
-//        UserService<User, Long> genericService = getService();
-
-        return super.signup(request, response);
     }
 }

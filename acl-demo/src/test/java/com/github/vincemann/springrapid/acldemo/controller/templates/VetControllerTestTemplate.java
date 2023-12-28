@@ -6,6 +6,6 @@ import com.github.vincemann.springrapid.coretest.controller.template.AbstractCru
 import com.github.vincemann.springrapid.coretest.slicing.WebTestComponent;
 
 @WebTestComponent
-public class VetControllerTestTemplate  extends AbstractCrudControllerTestTemplate<VetController> {
+public class VetControllerTestTemplate extends AbstractCrudControllerTestTemplate<VetController> {
 }
 

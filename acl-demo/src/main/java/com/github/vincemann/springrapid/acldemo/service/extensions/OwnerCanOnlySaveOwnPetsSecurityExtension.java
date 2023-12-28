@@ -1,7 +1,7 @@
 package com.github.vincemann.springrapid.acldemo.service.extensions;
 
 import com.github.vincemann.springrapid.acl.service.extensions.security.AbstractSecurityExtension;
-import com.github.vincemann.springrapid.acldemo.auth.MyRoles;
+import com.github.vincemann.springrapid.acldemo.MyRoles;
 import com.github.vincemann.springrapid.acldemo.model.Owner;
 import com.github.vincemann.springrapid.acldemo.model.Pet;
 import com.github.vincemann.springrapid.acldemo.service.PetService;
@@ -10,8 +10,6 @@ import com.github.vincemann.springrapid.core.security.RapidSecurityContext;
 import com.github.vincemann.springrapid.core.service.exception.BadEntityException;
 import com.github.vincemann.springrapid.core.slicing.ServiceComponent;
 import com.github.vincemann.springrapid.core.util.VerifyEntity;
-import org.springframework.beans.factory.config.ConfigurableBeanFactory;
-import org.springframework.context.annotation.Scope;
 import org.springframework.security.access.AccessDeniedException;
 
 @ServiceComponent

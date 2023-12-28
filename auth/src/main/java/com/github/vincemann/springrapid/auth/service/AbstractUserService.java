@@ -123,7 +123,6 @@ public abstract class AbstractUserService
         passwordValidator.validate(user.getPassword());
         checkUniqueContactInformation(user.getContactInformation());
         U saved = getService().save(user);
-        System.err.println("AbstractUserService::context.getBean(this.getClass()) " + getService());
         // is done in same transaction -> so applied directly, but message sent after transaction to make sure it
         // is not sent when transaction fails
         makeUnverified(saved);

@@ -43,11 +43,11 @@ public class ServiceCallContextAdvice {
     }
 
     @Around(value = "com.github.vincemann.springrapid.core.SystemArchitecture.serviceOperation() " +
-//            "&& com.github.vincemann.springrapid.core.SystemArchitecture.ignoreExtensions()" +
+            "&& com.github.vincemann.springrapid.core.SystemArchitecture.ignoreExtensions()" +
             "&& com.github.vincemann.springrapid.core.SystemArchitecture.ignoreHelperServiceMethods() "
     )
     public Object aroundServiceOperation(ProceedingJoinPoint joinPoint) throws Throwable {
-        System.err.println("SERVICE CALL CONTEXT: " + joinPoint.getTarget() + "->" + joinPoint.getSignature().getName());
+//        System.err.println("SERVICE CALL CONTEXT: " + joinPoint.getTarget() + "->" + joinPoint.getSignature().getName());
 
         if (joinPoint.getTarget() instanceof AbstractServiceExtension) {
             return joinPoint.proceed();

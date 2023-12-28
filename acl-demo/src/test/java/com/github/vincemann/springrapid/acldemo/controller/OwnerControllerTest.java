@@ -1,6 +1,6 @@
 package com.github.vincemann.springrapid.acldemo.controller;
 
-import com.github.vincemann.springrapid.acldemo.auth.MyRoles;
+import com.github.vincemann.springrapid.acldemo.MyRoles;
 import com.github.vincemann.springrapid.acldemo.dto.owner.CreateOwnerDto;
 import com.github.vincemann.springrapid.acldemo.dto.owner.FullOwnerDto;
 import com.github.vincemann.springrapid.acldemo.dto.pet.FullPetDto;
@@ -14,7 +14,6 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpHeaders;
-import org.springframework.test.context.jdbc.Sql;
 
 import java.util.Optional;
 

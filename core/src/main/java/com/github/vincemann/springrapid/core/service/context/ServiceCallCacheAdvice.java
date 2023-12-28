@@ -20,9 +20,9 @@ public class ServiceCallCacheAdvice {
 
 
     @Around(value = "com.github.vincemann.springrapid.core.SystemArchitecture.serviceOperation() " +
-//            "&& com.github.vincemann.springrapid.core.SystemArchitecture.ignoreExtensions()" +
+            "&& com.github.vincemann.springrapid.core.SystemArchitecture.ignoreExtensions()" +
             "&& com.github.vincemann.springrapid.core.SystemArchitecture.findByIdOperation() " +
-//            "&& com.github.vincemann.springrapid.core.SystemArchitecture.ignoreProxies() " +
+            "&& com.github.vincemann.springrapid.core.SystemArchitecture.ignoreProxies() " +
             "&& args(id)"
     )
     public Object cacheFindById(ProceedingJoinPoint joinPoint, Serializable id) throws Throwable {

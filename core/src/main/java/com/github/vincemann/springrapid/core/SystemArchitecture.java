@@ -15,8 +15,8 @@ public class SystemArchitecture {
     @Pointcut("execution(* save(..))")
     public void saveOperation(){}
 
-    @Pointcut("execution(* *.save(..)) && this(com.github.vincemann.springrapid.core.service.CrudService+)")
-    public void serviceSaveOperation(){}
+//    @Pointcut("execution(* *.save(..)) && this(com.github.vincemann.springrapid.core.service.CrudService+)")
+//    public void serviceSaveOperation(){}
 
     /**
      * Also save bc on repo level update = save with set id
@@ -61,8 +61,8 @@ public class SystemArchitecture {
     )
     public void ignoreHelperServiceMethods(){}
 
-//    @Pointcut("execution(!com.github.vincemann.springrapid.core.proxy.AbstractServiceExtension+ *(..)) && !this(com.github.vincemann.springrapid.core.proxy.AbstractServiceExtension+)")
-//    public void ignoreExtensions(){}
+    @Pointcut("!this(com.github.vincemann.springrapid.core.proxy.AbstractServiceExtension+)")
+    public void ignoreExtensions(){}
 
     @Pointcut("!target(java.lang.reflect.Proxy)")
     public void ignoreProxies(){}

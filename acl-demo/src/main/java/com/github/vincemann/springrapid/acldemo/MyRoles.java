@@ -1,4 +1,4 @@
-package com.github.vincemann.springrapid.acldemo.auth;
+package com.github.vincemann.springrapid.acldemo;
 
 import com.github.vincemann.springrapid.auth.model.AuthRoles;
 

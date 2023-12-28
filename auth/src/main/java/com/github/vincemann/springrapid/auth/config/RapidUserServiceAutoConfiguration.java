@@ -1,6 +1,7 @@
 package com.github.vincemann.springrapid.auth.config;
 
 import com.github.vincemann.springrapid.auth.model.AbstractUser;
+import com.github.vincemann.springrapid.auth.service.AbstractUserService;
 import com.github.vincemann.springrapid.auth.service.UserService;
 import com.github.vincemann.springrapid.auth.service.validation.PasswordValidator;
 import com.github.vincemann.springrapid.auth.service.validation.RapidPasswordValidator;
@@ -69,16 +70,16 @@ public class RapidUserServiceAutoConfiguration {
 //        return new LongIdConverter();
 //    }
 
-    // need this when trying to autowire CrudService<User,Long>
-//    @Bean
-//    public CrudService<? extends AbstractUser<Serializable>,Serializable> userCrudService(UserService userService){
-//        return userService;
-//    }
-//
-//    @Bean
-//    public UserService<AbstractUser<Long>,Long> userService(UserService userService){
-//        return userService;
-//    }
+
+    // keep it like that - otherwise stuff is not proxied and much other sht happening
+    // this way user can define its UserServiceImpl with @Service or @Component and everything works
+    // user must not set its implementation to Primary tho
+    @Bean
+    @Primary
+    public UserService myUserService(AbstractUserService abstractUserService) {
+//        return createInstance();
+        return abstractUserService;
+    }
 
     /**
      * Configures Password encoder if missing

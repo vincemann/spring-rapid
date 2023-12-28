@@ -1,7 +1,7 @@
 package com.github.vincemann.springrapid.acldemo.controller;
 
 import com.github.vincemann.acltest.controller.AclIntegrationCrudControllerTest;
-import com.github.vincemann.springrapid.acldemo.auth.MyRoles;
+import com.github.vincemann.springrapid.acldemo.MyRoles;
 import com.github.vincemann.springrapid.acldemo.controller.templates.OwnerControllerTestTemplate;
 import com.github.vincemann.springrapid.acldemo.controller.templates.PetControllerTestTemplate;
 import com.github.vincemann.springrapid.acldemo.controller.templates.VetControllerTestTemplate;
@@ -22,7 +22,6 @@ import com.github.vincemann.springrapid.core.controller.GenericCrudController;
 import com.github.vincemann.springrapid.core.security.RapidAuthenticatedPrincipal;
 import com.github.vincemann.springrapid.core.security.RapidSecurityContext;
 import com.github.vincemann.springrapid.core.service.CrudService;
-import com.github.vincemann.springrapid.coretest.util.TransactionalRapidTestUtil;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;

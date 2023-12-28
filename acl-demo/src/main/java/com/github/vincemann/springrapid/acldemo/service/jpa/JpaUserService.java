@@ -5,10 +5,8 @@ import com.github.vincemann.springrapid.auth.service.AbstractUserService;
 import com.github.vincemann.springrapid.acldemo.model.User;
 import com.github.vincemann.springrapid.acldemo.repository.UserRepository;
 import com.github.vincemann.springrapid.auth.service.AlreadyRegisteredException;
-import com.github.vincemann.springrapid.core.service.CrudService;
 import com.github.vincemann.springrapid.core.service.exception.BadEntityException;
 import com.github.vincemann.springrapid.core.slicing.ServiceComponent;
-import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -16,11 +14,11 @@ import java.util.Optional;
 import java.util.UUID;
 
 
-//@ServiceComponent
-//@Service
+@ServiceComponent
+@Service
 //@Primary
 @Transactional
-public class MyUserServiceImpl extends AbstractUserService<User, Long, UserRepository> implements MyUserService {
+public class JpaUserService extends AbstractUserService<User, Long, UserRepository> implements MyUserService {
 
 	@Override
     public User newUser() {
@@ -38,14 +36,10 @@ public class MyUserServiceImpl extends AbstractUserService<User, Long, UserRepos
 		return super.signup(user);
 	}
 
-//	@Override
-//	public Long toId(String id) {
-//		return Long.valueOf(id);
-//	}
 
 	@Override
 	public Class<?> getTargetClass() {
-		return MyUserServiceImpl.class;
+		return JpaUserService.class;
 	}
 
 }
