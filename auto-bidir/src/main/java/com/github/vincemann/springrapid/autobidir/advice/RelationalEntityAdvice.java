@@ -83,20 +83,21 @@ public class RelationalEntityAdvice {
                 clearContext();
                 return entity;
             }else{
-                // update context null and no safe operation
-                if (log.isWarnEnabled())
-                    log.warn("update context null and update operation - assuming full update");
-//                throw new IllegalArgumentException("Cannot use update function yet without calling service upfront");
-
-//                // repo is called directly, so also use repo to find old entity
-                Optional<IdentifiableEntity> old = repoResolveById(joinPoint, entity.getId());
-                VerifyEntity.isPresent(old,entity.getId(),entity.getClass());
-                // full detach only works like that
-                IdentifiableEntity oldEntity = BeanUtils.clone(ProxyUtils.hibernateUnproxyRaw(old.get()));
-                entityManager.detach(oldEntity);
-                relationalEntityManager.update(oldEntity, entity);
-                clearContext();
-                return entity;
+                throw new IllegalArgumentException("Usage of repo directly is not permitted with set id yet");
+//                // update context null and no safe operation
+//                if (log.isWarnEnabled())
+//                    log.warn("update context null and update operation - assuming full update");
+////                throw new IllegalArgumentException("Cannot use update function yet without calling service upfront");
+//
+////                // repo is called directly, so also use repo to find old entity
+//                Optional<IdentifiableEntity> old = repoResolveById(joinPoint, entity.getId());
+//                VerifyEntity.isPresent(old,entity.getId(),entity.getClass());
+//                // full detach only works like that
+//                IdentifiableEntity oldEntity = BeanUtils.clone(ProxyUtils.hibernateUnproxyRaw(old.get()));
+//                entityManager.detach(oldEntity);
+//                relationalEntityManager.update(oldEntity, entity);
+//                clearContext();
+//                return entity;
             }
         }
 
@@ -120,7 +121,8 @@ public class RelationalEntityAdvice {
 //                    relationalEntityManager.partialUpdate(updateContext.getDetachedOldEntity(), entity, updateContext.getDetachedUpdateEntity());
 //                    relationalEntityManager.partialUpdate(updateContext.getDetachedOldEntity(), ProxyUtils.hibernateUnproxyRaw(entity), updateContext.getDetachedUpdateEntity());
                     // todo infer membersToCheck cached again in RelationalServiceUpdateAdvice from single source and pass down this method
-                    relationalEntityManager.partialUpdate(updateContext.getDetachedOldEntity(), ProxyUtils.hibernateUnproxyRaw(entity));
+                    relationalEntityManager.partialUpdate(updateContext.getDetachedOldEntity(),
+                            ProxyUtils.hibernateUnproxyRaw(entity));
 //                    relationalEntityManager.partialUpdate(updateContext.getDetachedOldEntity(), updateContext.getDetachedUpdateEntity());
                     clearContext();
                     break;

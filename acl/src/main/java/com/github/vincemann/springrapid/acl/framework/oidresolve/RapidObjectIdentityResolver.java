@@ -34,10 +34,10 @@ public class RapidObjectIdentityResolver implements ObjectIdentityResolver {
             if (crudService == null) {
                 throw new UnresolvableOidException("Entity class: " + entityClass + " does not map to service.");
             }
-            //todo change this. its hardcoded to long id
-            Optional byId = crudService.findById(idConverter.toId(objectIdentity.getIdentifier().toString()));
-            VerifyEntity.isPresent(byId, objectIdentity.getIdentifier(), entityClass);
-            return (T) byId.get();
+            return (T) VerifyEntity.isPresent(
+                    crudService.findById(idConverter.toId(objectIdentity.getIdentifier().toString())),
+                    objectIdentity.getIdentifier(),
+                    entityClass);
 
         } catch (ClassNotFoundException | EntityNotFoundException | ClassCastException e) {
             throw new UnresolvableOidException(e);

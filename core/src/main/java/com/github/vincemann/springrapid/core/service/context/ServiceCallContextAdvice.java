@@ -42,26 +42,29 @@ public class ServiceCallContextAdvice {
         this.serviceCallContextFactory = serviceCallContextFactory;
     }
 
+    // dont ignore proxies because context should be created when most outer proxy is called
     @Around(value = "com.github.vincemann.springrapid.core.SystemArchitecture.serviceOperation() " +
-            "&& com.github.vincemann.springrapid.core.SystemArchitecture.ignoreExtensions()" +
+            // jdkProxies dont match, because they wont be wrapped with glibc aop proxies - so look out for most outer extension
+//            "&& com.github.vincemann.springrapid.core.SystemArchitecture.ignoreExtensions()" +
             "&& com.github.vincemann.springrapid.core.SystemArchitecture.ignoreHelperServiceMethods() "
     )
     public Object aroundServiceOperation(ProceedingJoinPoint joinPoint) throws Throwable {
-//        System.err.println("SERVICE CALL CONTEXT: " + joinPoint.getTarget() + "->" + joinPoint.getSignature().getName());
+        System.err.println("SERVICE CALL CONTEXT: " + joinPoint.getTarget() + "->" + joinPoint.getSignature().getName());
 
+        // jdkProxies dont match, because they wont be wrapped with glibc aop proxies - so look out for most outer extension
         if (joinPoint.getTarget() instanceof AbstractServiceExtension) {
+            boolean init = initGlobalContext();
+            if (init){
+                initSubContext();
+            }
             return joinPoint.proceed();
         }
 
+        // maybe no extension matched, for example root service direct called -> context would then be initialized here
+        initGlobalContext();
+        initSubContext();
 
-        if (!ServiceCallContextHolder.isContextInitialized()){
-            log.debug("service call context gets initialized");
-            ServiceCallContextHolder.setContext(serviceCallContextFactory.create());
-        }
 
-        SubServiceCallContext subContext = new SubServiceCallContext();
-        subServiceCallStack.get().push(subContext);
-        ServiceCallContextHolder.setSubContext(subContext);
 
         Object ret;
         try {
@@ -80,6 +83,22 @@ public class ServiceCallContextAdvice {
 
         return ret;
     }
+
+    private boolean initGlobalContext(){
+        boolean initialized = ServiceCallContextHolder.isContextInitialized();
+        if (!initialized) {
+            log.debug("service call context gets initialized");
+            ServiceCallContextHolder.setContext(serviceCallContextFactory.create());
+        }
+        return initialized;
+    }
+
+    private void initSubContext(){
+        SubServiceCallContext subContext = new SubServiceCallContext();
+        subServiceCallStack.get().push(subContext);
+        ServiceCallContextHolder.setSubContext(subContext);
+    }
+
 
     //        if (!ProxyUtils.isJDKProxy(target)){
 //            // is root service

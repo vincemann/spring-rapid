@@ -32,34 +32,45 @@ public class VerifyEntity {
         }
     }
 
-    public static <T> T isPresent(Object entity, String msg) throws EntityNotFoundException {
-        Object present = isPresent(entity);
-        if (present==null){
+    public static <T> T isPresent(T entity, String msg) throws EntityNotFoundException {
+        if (entity==null){
             throw new EntityNotFoundException(msg);
         }
-        return (T) entity;
+        return entity;
     }
 
-    static <T> T isPresent(Object entity){
-        if(entity==null){
-            return null;
-        }
-        if (entity instanceof Optional){
-            if (((Optional) entity).isEmpty()){
-                return null;
-            }else {
-                return (T) ((Optional) entity).get();
-            }
-        }
-        return (T) entity;
+    public static <T> T isPresent(Optional<T> entity, String msg) throws EntityNotFoundException {
+        if (entity.isEmpty())
+            throw new EntityNotFoundException(msg);
+        return (T) entity.get();
     }
 
-    public static <T> T isPresent(Object entity, Object id, Class clazz) throws EntityNotFoundException {
-        Object present = isPresent(entity);
-        if (present==null){
+//    static <T> T isPresent(Object entity){
+//        if(entity==null){
+//            return null;
+//        }
+//        if (entity instanceof Optional){
+//            if (((Optional) entity).isEmpty()){
+//                return null;
+//            }else {
+//                return (T) ((Optional) entity).get();
+//            }
+//        }
+//        return (T) entity;
+//    }
+
+    public static <T> T isPresent(T entity, Object id, Class clazz) throws EntityNotFoundException {
+        if (entity==null){
             throw new EntityNotFoundException(id,clazz);
         }
-        return (T) entity;
+        return entity;
+    }
+
+    public static <T> T isPresent(Optional<T> entity, Object id, Class clazz) throws EntityNotFoundException {
+        if (entity.isEmpty()){
+            throw new EntityNotFoundException(id,clazz);
+        }
+        return entity.get();
     }
 
 

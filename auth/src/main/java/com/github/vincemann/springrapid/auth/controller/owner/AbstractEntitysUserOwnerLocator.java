@@ -22,7 +22,7 @@ import java.util.Optional;
 @Order(Ordered.LOWEST_PRECEDENCE)
 public abstract class AbstractEntitysUserOwnerLocator<Id extends Serializable> implements OwnerLocator<AuditingEntity<Id>> {
 
-    private UserService<? extends AbstractUser<Id>, Id> userService;
+    private UserService userService;
 
     @Override
     public boolean supports(Class clazz) {
@@ -40,7 +40,7 @@ public abstract class AbstractEntitysUserOwnerLocator<Id extends Serializable> i
     }
 
     @Autowired
-    public void injectUserService(UserService<? extends AbstractUser<Id>, Id> userService) {
+    public void injectUserService(UserService userService) {
         this.userService = userService;
     }
 }

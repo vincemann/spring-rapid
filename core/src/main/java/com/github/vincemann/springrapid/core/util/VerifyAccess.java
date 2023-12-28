@@ -1,6 +1,9 @@
 package com.github.vincemann.springrapid.core.util;
 
+import com.github.vincemann.springrapid.core.service.exception.EntityNotFoundException;
 import org.springframework.security.access.AccessDeniedException;
+
+import java.util.Optional;
 
 public class VerifyAccess {
 
@@ -23,21 +26,25 @@ public class VerifyAccess {
 //        }
 //    }
 
-    public static <T> T isPresent(Object entity, String msg) throws AccessDeniedException {
-        Object present = VerifyEntity.isPresent(entity);
-        if (present==null){
+    public static <T> T isPresent(Optional<T> entity, String msg) throws AccessDeniedException {
+        if (entity.isEmpty())
             throw new AccessDeniedException(msg);
-        }
-        return (T) entity;
+        return entity.get();
     }
 
-    public static <T> T isUserPresent(Object entity) throws AccessDeniedException {
-        Object present = VerifyEntity.isPresent(entity);
-        if (present==null){
-            throw new AccessDeniedException("");
-        }
-        return (T) entity;
+    public static <T> T isPresent(T entity, String msg) throws AccessDeniedException {
+        if (entity == null)
+            throw new AccessDeniedException(msg);
+        return entity;
     }
+
+//    public static <T> T isUserPresent(T entity) throws AccessDeniedException {
+//        Object present = VerifyEntity.isPresent(entity);
+//        if (present==null){
+//            throw new AccessDeniedException("");
+//        }
+//        return (T) entity;
+//    }
 
 //    public static <T> T isPresent(Object entity, Object id, Class clazz) throws AccessDeniedException {
 //        Object present = VerifyEntity.isPresent(entity);
