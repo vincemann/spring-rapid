@@ -119,14 +119,8 @@ public class RelationalServiceUpdateAdvice {
     // fields to remove not needed, already done via jpaCrudService.updates copyProperties call (removes those values)
     public void preBiDirEntity(JoinPoint joinPoint, IdentifiableEntity entity, RelationalAdviceContext.UpdateKind updateKind) throws EntityNotFoundException {
 
-        System.err.println("SETTING RELATIONAL CONTEXT: " + joinPoint.getTarget() + "->" + joinPoint.getSignature().getName());
-
-
-//        if (!isRootService(joinPoint.getTarget())) {
-//            return;
-//        }
-
-//        System.err.println("is root service");
+        if (log.isDebugEnabled())
+            log.debug("setting relational context: " + joinPoint.getTarget() + "->" + joinPoint.getSignature().getName());
 
         RelationalAdviceContext updateContext;
         if (updateKind == null) {

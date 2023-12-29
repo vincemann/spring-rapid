@@ -16,6 +16,7 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.mock.mockito.SpyBean;
+import org.springframework.test.context.jdbc.Sql;
 
 import java.time.LocalDate;
 import java.util.Date;
@@ -23,6 +24,7 @@ import java.util.HashSet;
 import java.util.Optional;
 import java.util.Set;
 
+@Sql(scripts = "classpath:clear-test-data.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
 public class AbstractControllerIntegrationTest<C extends GenericCrudController<?,Long,S,?,?>,S extends CrudService<?,Long>>
         extends IntegrationCrudControllerTest<C,S>
 {
@@ -386,15 +388,15 @@ public class AbstractControllerIntegrationTest<C extends GenericCrudController<?
     }
 
 
-    @AfterEach
-    void tearDown() {
-        TransactionalRapidTestUtil.clear(visitService);
-        TransactionalRapidTestUtil.clear(petService);
-        TransactionalRapidTestUtil.clear(toyService);
-        TransactionalRapidTestUtil.clear(ownerService);
-        TransactionalRapidTestUtil.clear(petTypeService);
-        TransactionalRapidTestUtil.clear(specialtyService);
-        TransactionalRapidTestUtil.clear(vetService);
-        TransactionalRapidTestUtil.clear(clinicCardService);
-    }
+//    @AfterEach
+//    void tearDown() {
+//        TransactionalRapidTestUtil.clear(visitService);
+//        TransactionalRapidTestUtil.clear(petService);
+//        TransactionalRapidTestUtil.clear(toyService);
+//        TransactionalRapidTestUtil.clear(ownerService);
+//        TransactionalRapidTestUtil.clear(petTypeService);
+//        TransactionalRapidTestUtil.clear(specialtyService);
+//        TransactionalRapidTestUtil.clear(vetService);
+//        TransactionalRapidTestUtil.clear(clinicCardService);
+//    }
 }

@@ -29,6 +29,7 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.boot.test.mock.mockito.SpyBean;
 import org.springframework.http.HttpHeaders;
 import org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers;
+import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.web.servlet.setup.DefaultMockMvcBuilder;
 
 import javax.sql.DataSource;
@@ -61,6 +62,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @ImportAutoConfiguration(exclude = RapidAdminAutoConfiguration.class)
 @Getter
 @Slf4j
+@Sql(scripts = "classpath:/remove-user.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
 public abstract class AbstractRapidAuthIntegrationTest
         extends UserIntegrationControllerTest<AbstractUserController> {
 
@@ -204,11 +206,12 @@ public abstract class AbstractRapidAuthIntegrationTest
         System.err.println("TEST ENDS HERE -----------------------------------------------------------------------------------------------------------------");
         System.err.println("clearing test data");
         tokens.clear();
-        System.err.println("deleting users");
+//        System.err.println("deleting users");
         clearAclCache();
-        TransactionalRapidTestUtil.clear(aclUserService);
-        System.err.println("deleted users");
-        System.err.println("test data cleared");
+        // done via sql script
+//        TransactionalRapidTestUtil.clear(aclUserService);
+//        System.err.println("deleted users");
+//        System.err.println("test data cleared");
 
         Mockito.reset(aopUnproxy(mailSender));
         testAdapter.afterEach();

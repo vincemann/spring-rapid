@@ -17,6 +17,7 @@ import java.util.Set;
 @Getter
 @Setter
 @NoArgsConstructor
+@Table(name = "specialties")
 @Entity
 public class Specialty extends MyIdentifiableEntity<Long>
 {

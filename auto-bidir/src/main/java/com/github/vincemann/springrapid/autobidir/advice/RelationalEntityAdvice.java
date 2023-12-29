@@ -122,7 +122,7 @@ public class RelationalEntityAdvice {
 //                    relationalEntityManager.partialUpdate(updateContext.getDetachedOldEntity(), ProxyUtils.hibernateUnproxyRaw(entity), updateContext.getDetachedUpdateEntity());
                     // todo infer membersToCheck cached again in RelationalServiceUpdateAdvice from single source and pass down this method
                     relationalEntityManager.partialUpdate(updateContext.getDetachedOldEntity(),
-                            ProxyUtils.hibernateUnproxyRaw(entity));
+                            ProxyUtils.hibernateUnproxy(entity));
 //                    relationalEntityManager.partialUpdate(updateContext.getDetachedOldEntity(), updateContext.getDetachedUpdateEntity());
                     clearContext();
                     break;

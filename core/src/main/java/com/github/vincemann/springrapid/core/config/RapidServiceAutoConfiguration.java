@@ -25,22 +25,11 @@ public class RapidServiceAutoConfiguration {
     EntityManager entityManager;
 
     @Bean
-//    @ConditionalOnMissingBean(ServiceCallContextAdvice.class)
+    @ConditionalOnMissingBean(ServiceCallContextAdvice.class)
     public ServiceCallContextAdvice serviceCallContextAdvice(){
         return new ServiceCallContextAdvice();
     }
 
-    @Bean
-    @ConditionalOnMissingBean(name = "serviceCallCacheAdvice")
-    public ServiceCallCacheAdvice serviceCallCacheAdvice(){
-        return new ServiceCallCacheAdvice();
-    }
-
-    @Bean
-    @ConditionalOnMissingBean(InvalidateServiceCallCacheAdvice.class)
-    public InvalidateServiceCallCacheAdvice invalidateServiceCallCacheAdvice(){
-        return new InvalidateServiceCallCacheAdvice();
-    }
 
     @ConditionalOnMissingBean(CrudServiceLocator.class)
     @Bean

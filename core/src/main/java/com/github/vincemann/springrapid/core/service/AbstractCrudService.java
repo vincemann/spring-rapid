@@ -32,17 +32,17 @@ public abstract class AbstractCrudService
                 Id extends Serializable,
                 R extends CrudRepository<E, Id>
                 >
-        implements CrudService<E, Id>, TargetClassAware, ApplicationContextAware {
+        implements CrudService<E, Id>, TargetClassAware {
     private String beanName;
     private R repository;
-    protected CrudService<E, Id> service;
-
-    @Override
-    public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
-        // this works - gives me proxied instance with aop working
-        this.service = applicationContext.getBean(this.getClass());
-//        System.err.println("Initializing this: " + this + " with instance: " + this.service);
-    }
+//    protected CrudService<E, Id> service;
+//
+//    @Override
+//    public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
+//        // this works - gives me proxied instance with aop working
+//        this.service = applicationContext.getBean(this.getClass());
+////        System.err.println("Initializing this: " + this + " with instance: " + this.service);
+//    }
 
 
     @SuppressWarnings("unchecked")

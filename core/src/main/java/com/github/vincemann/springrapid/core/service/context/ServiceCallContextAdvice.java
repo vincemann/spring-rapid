@@ -25,16 +25,7 @@ import java.util.Stack;
 @Order(1)
 public class ServiceCallContextAdvice {
 
-//    IdConverter<?> idConverter;
-    //    ThreadLocal<Stack<ServiceCallContext>> serviceCallStack = ThreadLocal.withInitial(Stack::new);
-    ThreadLocal<Stack<SubServiceCallContext>> subServiceCallStack = ThreadLocal.withInitial(Stack::new);
-//    ThreadLocal<Integer> depth = ThreadLocal.withInitial(() -> 0);
-//    ThreadLocal<Integer> depth = ThreadLocal.withInitial(() -> 0);
-
-//    public ServiceCallContextAdvice(IdConverter<?> idConverter) {
-//        this.idConverter = idConverter;
-//    }
-
+    private ThreadLocal<Stack<SubServiceCallContext>> subServiceCallStack = ThreadLocal.withInitial(Stack::new);
     private ServiceCallContextFactory serviceCallContextFactory;
 
     @Autowired
@@ -49,7 +40,7 @@ public class ServiceCallContextAdvice {
             "&& com.github.vincemann.springrapid.core.SystemArchitecture.ignoreHelperServiceMethods() "
     )
     public Object aroundServiceOperation(ProceedingJoinPoint joinPoint) throws Throwable {
-        System.err.println("SERVICE CALL CONTEXT: " + joinPoint.getTarget() + "->" + joinPoint.getSignature().getName());
+//        System.err.println("SERVICE CALL CONTEXT: " + joinPoint.getTarget() + "->" + joinPoint.getSignature().getName());
 
         // jdkProxies dont match, because they wont be wrapped with glibc aop proxies - so look out for most outer extension
         if (joinPoint.getTarget() instanceof AbstractServiceExtension) {
@@ -98,47 +89,4 @@ public class ServiceCallContextAdvice {
         subServiceCallStack.get().push(subContext);
         ServiceCallContextHolder.setSubContext(subContext);
     }
-
-
-    //        if (!ProxyUtils.isJDKProxy(target)){
-//            // is root service
-//            Class<?> entityClass = ((CrudService) target).getEntityClass();
-//        }
-
-
-
-
-
-
-
-
-//        ServiceCallContext context = ServiceCallContextHolder.createEmptyContext();
-
-
-
-//        context.setCurrentEntityClass(entityClass);
-//        serviceCallStack.get().push(entityClass);
-//        ServiceCallContextHolder.setContext(context);
-
-//        if (!ServiceCallContextHolder.isInitialized()){
-//            log.debug("service call context gets initialized");
-//            ServiceCallContextHolder.setContext(serviceCallContextFactory.create());
-//        }
-////        ServiceCallContextHolder.getContext().setCurrentEntityClass(entityClass);
-//        depth.set(depth.get()+1);
-
-
-
-//        Object[] args = joinPoint.getArgs();
-//        if (args.length > 0){
-//            Object firstArg = args[0];
-//            if (firstArg != null){
-//
-//                if (firstArg instanceof IdentifiableEntity){
-//                    context.setId(((IdentifiableEntity<?>) firstArg).getId());
-//                }else if (idConverter.getIdType().equals(firstArg.getClass())){
-//                    context.setId(idConverter.toId(String.valueOf(firstArg)));
-//                }
-//            }
-//        }
 }

@@ -304,8 +304,8 @@ public class RapidRelationalEntityManagerUtil implements RelationalEntityManager
 
 
 
-    // expects all args to be unproxied
-    // returns set of unproxied
+    // expects all args to be unproxied - wants proxied arg -> lazy loading properties is wanted
+    // returns set of unproxied - returns set of proxies
     protected<C> Set<C> findSingleEntities(IdentifiableEntity<?> entity, Class<? extends Annotation> annotationClass, String... membersToCheck){
         Set<C> entities = new HashSet<>();
         EntityReflectionUtils.doWithAnnotatedNamedFields(annotationClass,entity.getClass(),Sets.newHashSet(membersToCheck), field -> {
@@ -325,13 +325,12 @@ public class RapidRelationalEntityManagerUtil implements RelationalEntityManager
      *
      * @return
      */
-    // expects all args to be unproxied
+    // expects all args to be unproxied - wants proxy arg bc field.get call should be loaded lazily - also setting of emtpy collection should be applied
     // returns collection of potential proxies
     protected<C> Map<Class<C>,Collection<C>>  findEntityCollections(IdentifiableEntity entity, Class<? extends Annotation> entityAnnotationClass, String... membersToCheck) {
         Map<Class<C>,Collection<C>> entityType_collectionMap = new HashMap<>();
         EntityReflectionUtils.doWithAnnotatedNamedFields(entityAnnotationClass, entity.getClass(), Sets.newHashSet(membersToCheck), field -> {
             Collection<C> entityCollection = (Collection<C>) field.get(entity);
-            // todo maybe unproxy collection entities here
             if (entityCollection == null) {
                 //throw new IllegalArgumentException("Null idCollection found in BiDirParent "+ this + " for EntityCollectionField with name: " + field.getName());
                 log.warn("Auto-generating Collection for null valued BiDirEntityCollection Field: " + field);

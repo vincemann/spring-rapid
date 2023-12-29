@@ -144,16 +144,16 @@ public abstract class JPACrudService
     public void deleteById(Id id) throws EntityNotFoundException {
         if (id == null)
             throw new IllegalArgumentException("Id cannot be null");
-        Optional<E> entity = service.findById(id);
+        Optional<E> entity = findById(id);
         VerifyEntity.isPresent(entity, id, getEntityClass());
         getRepository().deleteById(id);
     }
 
-    private E findOldEntity(Id id) throws EntityNotFoundException {
+    protected E findOldEntity(Id id) throws EntityNotFoundException {
         if (id == null)
             throw new IllegalArgumentException("Id cannot be null");
 //        return ServiceCallContextHolder.getContext().resolvePresentEntity(id,getEntityClass());
-        Optional<E> entityToUpdate = service.findById(id);
+        Optional<E> entityToUpdate = findById(id);
         VerifyEntity.isPresent(entityToUpdate, id, getEntityClass());
         return entityToUpdate.get();
     }

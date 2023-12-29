@@ -28,8 +28,9 @@ public class IntegrationCrudControllerTest
         this.service = service;
     }
 
-    @AfterEach
-    void cleanup(){
-        TransactionalRapidTestUtil.clear(service);
-    }
+    // use sql scripts for clean up
+//    @AfterEach
+//    void cleanup(){
+//        TransactionalRapidTestUtil.clear(service);
+//    }
 }

@@ -60,13 +60,14 @@ public class ProxyUtils {
     }
 
     public static <T> Class<T> getTargetClass(Object proxied){
-        return (Class<T>) hibernateUnproxy(proxied).getClass();
+        return (Class<T>) Hibernate.unproxy(proxied).getClass();
     }
 
     public static <T> T hibernateUnproxy(T proxied)
     {
         T entity = proxied;
         if (entity instanceof HibernateProxy) {
+            // why would I want to load all properties?
             Hibernate.initialize(entity);
             entity = (T) ((HibernateProxy) entity)
                     .getHibernateLazyInitializer()
