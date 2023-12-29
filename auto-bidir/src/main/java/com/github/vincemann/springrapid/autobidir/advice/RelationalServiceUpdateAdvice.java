@@ -12,6 +12,7 @@ import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Before;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
 
 import javax.persistence.EntityManager;
@@ -24,7 +25,7 @@ import static com.github.vincemann.springrapid.core.util.ProxyUtils.isRootServic
 
 @Slf4j
 @Aspect
-@Order(2)
+@Order(Ordered.LOWEST_PRECEDENCE)
 public class RelationalServiceUpdateAdvice {
 
     public static final String RELATIONAL_UPDATE_CONTEXT_KEY = "relational-update-context";

@@ -337,6 +337,7 @@ public abstract class AbstractUserService
         return super.partialUpdate(update, fieldsToRemove);
     }
 
+    @Transactional(propagation = Propagation.REQUIRED, readOnly = false)
     @Override
     public U partialUpdate(U entity, Set<String> propertiesToUpdate, String... fieldsToRemove) throws EntityNotFoundException, BadEntityException{
         updateSpecialUserFields(entity);

@@ -3,6 +3,7 @@ package com.github.vincemann.springrapid.coretest.service.request;
 import com.github.vincemann.springrapid.core.util.Lists;
 import com.github.vincemann.springrapid.core.model.IdentifiableEntity;
 import com.github.vincemann.springrapid.core.service.CrudService;
+import com.github.vincemann.springrapid.core.util.ProxyUtils;
 import org.apache.commons.lang3.reflect.MethodUtils;
 
 import java.io.Serializable;

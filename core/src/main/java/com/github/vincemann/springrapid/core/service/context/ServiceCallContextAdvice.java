@@ -7,6 +7,7 @@ import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
 
 import java.util.Stack;
@@ -22,7 +23,7 @@ import java.util.Stack;
  */
 @Aspect
 @Slf4j
-@Order(1)
+@Order(Ordered.LOWEST_PRECEDENCE-1)
 public class ServiceCallContextAdvice {
 
     private ThreadLocal<Stack<SubServiceCallContext>> subServiceCallStack = ThreadLocal.withInitial(Stack::new);
