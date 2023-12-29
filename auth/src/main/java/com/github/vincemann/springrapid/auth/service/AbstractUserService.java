@@ -77,14 +77,9 @@ public abstract class AbstractUserService
     private EntityManager entityManager;
     private MessageSender messageSender;
 
-    protected AbstractUserService<U, ID, R> service;
-
-    @Override
-    public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
-        // this works - returns proxied instance with aop working
-        this.service = applicationContext.getBean(this.getClass());
+    public AbstractUserService<U,ID,R> getService(){
+        return (AbstractUserService<U, ID, R>) service;
     }
-
 
     /**
      * Creates a new user object. Must be overridden in the
