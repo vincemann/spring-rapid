@@ -11,17 +11,36 @@ import java.lang.reflect.Field;
 public class RepositoryUtil {
 
     // todo is impl specific
-    public static Class<?> getRepoType(JpaRepository simpleJpaRepository) {
+//    public static Class<?> getRepoType(JpaRepository simpleJpaRepository) {
+//        try {
+//            SimpleJpaRepository repo = AopTestUtils.getUltimateTargetObject(simpleJpaRepository);
+//            Field entityInformationField = ReflectionUtils.findField(SimpleJpaRepository.class, field -> field.getName().equals("entityInformation"));
+//            entityInformationField.setAccessible(true);
+//            JpaEntityInformation entityInformation = ((JpaEntityInformation) entityInformationField.get(repo));
+//            return entityInformation.getJavaType();
+//        }catch (IllegalAccessException e){
+//            throw new RuntimeException(e);
+//        }catch (ClassCastException e){
+//            throw new IllegalArgumentException("Need SimpleRepository as impl for this util method");
+//        }
+//    }
+
+    public static Class<?> getRepoType(JpaRepository<?, ?> simpleJpaRepository) {
         try {
-            SimpleJpaRepository repo = AopTestUtils.getUltimateTargetObject(simpleJpaRepository);
-            Field entityInformationField = ReflectionUtils.findField(SimpleJpaRepository.class, field -> field.getName().equals("entityInformation"));
-            entityInformationField.setAccessible(true);
-            JpaEntityInformation entityInformation = ((JpaEntityInformation) entityInformationField.get(repo));
-            return entityInformation.getJavaType();
-        }catch (IllegalAccessException e){
+            if (simpleJpaRepository instanceof SimpleJpaRepository) {
+                SimpleJpaRepository<?, ?> repo = (SimpleJpaRepository<?, ?>) simpleJpaRepository;
+                Field entityInformationField = ReflectionUtils.findField(SimpleJpaRepository.class, field -> field.getName().equals("entityInformation"));
+                entityInformationField.setAccessible(true);
+                Object entityInformationObject = AopTestUtils.getUltimateTargetObject(entityInformationField.get(repo));
+
+                if (entityInformationObject instanceof JpaEntityInformation) {
+                    JpaEntityInformation<?, ?> entityInformation = (JpaEntityInformation<?, ?>) entityInformationObject;
+                    return entityInformation.getJavaType();
+                }
+            }
+            throw new IllegalArgumentException("Invalid repository type");
+        } catch (Exception e) {
             throw new RuntimeException(e);
-        }catch (ClassCastException e){
-            throw new IllegalArgumentException("Need SimpleRepository as impl for this util method");
         }
     }
 }

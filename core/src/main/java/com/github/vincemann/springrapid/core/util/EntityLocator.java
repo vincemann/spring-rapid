@@ -28,6 +28,7 @@ public class EntityLocator {
         return findEntity(entity.getClass(),entity.getId());
     }
 
+
     public <E extends IdentifiableEntity> Optional<E> findEntity(Class clazz, Serializable id) {
         CrudService service = crudServiceLocator.find((Class<IdentifiableEntity>) clazz);
 //        System.err.println("known services: " + crudServiceLocator.getEntityClassPrimaryServiceMap());

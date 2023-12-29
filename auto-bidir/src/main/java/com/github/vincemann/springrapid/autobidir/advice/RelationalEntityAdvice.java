@@ -5,6 +5,7 @@ import com.github.vincemann.springrapid.autobidir.RelationalAdviceContext;
 import com.github.vincemann.springrapid.autobidir.RelationalEntityManager;
 import com.github.vincemann.springrapid.core.model.IdentifiableEntity;
 import com.github.vincemann.springrapid.core.service.AbstractCrudService;
+import com.github.vincemann.springrapid.core.service.CrudService;
 import com.github.vincemann.springrapid.core.service.context.ServiceCallContextHolder;
 import com.github.vincemann.springrapid.core.service.context.SubServiceCallContext;
 import com.github.vincemann.springrapid.core.service.locator.CrudServiceLocator;
@@ -47,7 +48,8 @@ public class RelationalEntityAdvice {
         if (AutoBiDirUtils.isDisabled(joinPoint)){
             return;
         }
-        Optional<IdentifiableEntity> entity = resolveById(joinPoint,id);
+
+        Optional<IdentifiableEntity> entity = repoResolveById(joinPoint,id);
         if (entity.isPresent()) {
             relationalEntityManager.remove(entity.get());
         } else {
@@ -59,12 +61,12 @@ public class RelationalEntityAdvice {
     @Before("com.github.vincemann.springrapid.core.SystemArchitecture.saveOperation() && " +
             "com.github.vincemann.springrapid.core.SystemArchitecture.repoOperation() && " +
             "args(entity)")
-    public IdentifiableEntity prePersistEntity(JoinPoint joinPoint, IdentifiableEntity entity) throws Throwable {
+    public void prePersistEntity(JoinPoint joinPoint, IdentifiableEntity entity) throws Throwable {
 
 //        System.err.println("PRE PERSIST: " + joinPoint.getTarget() + "->" + joinPoint.getSignature().getName());
 
         if (AutoBiDirUtils.isDisabled(joinPoint)){
-            return entity;
+            return;
         }
 
 
@@ -81,9 +83,10 @@ public class RelationalEntityAdvice {
                 // save operation and update context null
                 relationalEntityManager.save(entity);
                 clearContext();
-                return entity;
+                return;
             }else{
-                throw new IllegalArgumentException("Usage of repo directly is not permitted with set id yet");
+                // todo just do full update and warning - fetch old entity from repo
+                throw new IllegalArgumentException("Usage of repo directly is not permitted with set id yet, use Service api for updates");
 //                // update context null and no safe operation
 //                if (log.isWarnEnabled())
 //                    log.warn("update context null and update operation - assuming full update");
@@ -107,30 +110,28 @@ public class RelationalEntityAdvice {
             // save
             relationalEntityManager.save(entity);
             clearContext();
-            return entity;
         } else {
             // update
-            if (updateContext == null)
-                return entity;
             switch (updateContext.getUpdateKind()){
                 case FULL:
-                    relationalEntityManager.update(updateContext.getDetachedOldEntity(), entity);
+                    relationalEntityManager.update(updateContext.getOldEntity(),entity);
                     clearContext();
                     break;
                 case PARTIAL:
+
 //                    relationalEntityManager.partialUpdate(updateContext.getDetachedOldEntity(), entity, updateContext.getDetachedUpdateEntity());
 //                    relationalEntityManager.partialUpdate(updateContext.getDetachedOldEntity(), ProxyUtils.hibernateUnproxyRaw(entity), updateContext.getDetachedUpdateEntity());
                     // todo infer membersToCheck cached again in RelationalServiceUpdateAdvice from single source and pass down this method
-                    relationalEntityManager.partialUpdate(updateContext.getDetachedOldEntity(),
-                            ProxyUtils.hibernateUnproxy(entity));
-//                    relationalEntityManager.partialUpdate(updateContext.getDetachedOldEntity(), updateContext.getDetachedUpdateEntity());
+//                    relationalEntityManager.partialUpdate(updateContext.getOldEntity(), entity);
+                    // give detached partial update entity - operate on update entity while in session -> hibernate makes updates
+//                    relationalEntityManager.partialUpdate(entity, updateContext.getUpdateEntity());
+                    relationalEntityManager.partialUpdate(updateContext.getOldEntity(), entity);
                     clearContext();
                     break;
                 case SOFT:
                     clearContext();
                     break;
             }
-            return entity;
 
 //            entityManager.refresh(entity);
 //            entity = entityManager.merge(entity);
@@ -167,10 +168,16 @@ public class RelationalEntityAdvice {
         return entityLocator.findEntity(entityClass,id);
     }
 
+    // todo just create repoLocator...
     protected Optional<IdentifiableEntity> repoResolveById(JoinPoint joinPoint, Serializable id) {
         SimpleJpaRepository repo = AopTestUtils.getUltimateTargetObject(joinPoint.getTarget());
         Class entityClass = RepositoryUtil.getRepoType(repo);
-        return ((AbstractCrudService) crudServiceLocator.find(entityClass)).getRepository().findById(id);
+        CrudService service = crudServiceLocator.find(entityClass);
+        if (ProxyUtils.isJDKProxy(service)){
+            return ((AbstractCrudService) ProxyUtils.getExtensionProxy(service).getLast()).getRepository().findById(id);
+        }else{
+            return (((AbstractCrudService) service).getRepository().findById(id));
+        }
     }
 
     @Autowired

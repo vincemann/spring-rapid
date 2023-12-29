@@ -82,7 +82,6 @@ public class RapidRelationalEntityManagerUtil implements RelationalEntityManager
      * @poram child and links child to parent
      * -> set backreference of child
      */
-    // accepts proxies
     @Override
     public void linkBiDirParentsChild(IdentifiableEntity child, String... membersToCheck) {
         //set backreferences
@@ -98,25 +97,19 @@ public class RapidRelationalEntityManagerUtil implements RelationalEntityManager
      *
      * @return
      */
-    // accepts proxies
-    // returns collection of potential proxies
     public Map<Class<IdentifiableEntity>, Collection<IdentifiableEntity>> findBiDirParentCollections(IdentifiableEntity child, String... membersToCheck) {
         assertEntityRelationType(child, RelationalEntityType.BiDirChild);
         return findEntityCollections(child, BiDirParentCollection.class, membersToCheck);
     }
 
     /**
-     * @return all parent of this, that are not null
+     * @return all parents of this, that are not null
      */
-    // accepts proxies
-    // returns collection of potential proxies
     public Collection<IdentifiableEntity> findSingleBiDirParents(IdentifiableEntity child, String... membersToCheck) {
         assertEntityRelationType(child, RelationalEntityType.BiDirChild);
         return findSingleEntities(child, BiDirParentEntity.class, membersToCheck);
     }
 
-    // accepts proxies
-    // returns collection of potential proxies
     public Collection<IdentifiableEntity> findAllBiDirParents(IdentifiableEntity child, String... membersToCheck) {
         assertEntityRelationType(child, RelationalEntityType.BiDirChild);
         return findAllEntities(child, BiDirParentEntity.class, BiDirParentCollection.class, membersToCheck);
@@ -325,8 +318,6 @@ public class RapidRelationalEntityManagerUtil implements RelationalEntityManager
      *
      * @return
      */
-    // wants proxy arg bc field.get call should be loaded lazily - also setting of emtpy collection should be applied
-    // returns collection of potential proxies
     protected <C> Map<Class<C>, Collection<C>> findEntityCollections(IdentifiableEntity entity, Class<? extends Annotation> entityAnnotationClass, String... membersToCheck) {
         Map<Class<C>, Collection<C>> entityType_collectionMap = new HashMap<>();
 
@@ -359,8 +350,6 @@ public class RapidRelationalEntityManagerUtil implements RelationalEntityManager
     }
 
 
-    // expects all args to be unproxied - wants proxies
-    // returns collection of potential proxies
     public Collection<IdentifiableEntity> findAllEntities(IdentifiableEntity entity, Class<? extends Annotation> singleEntityAnnotation, Class<? extends Annotation> collectionEntityAnnotation, String... membersToCheck) {
         Set<IdentifiableEntity> relatedEntities = new HashSet<>();
         relatedEntities.addAll(findSingleEntities(entity, singleEntityAnnotation, membersToCheck));
@@ -372,7 +361,6 @@ public class RapidRelationalEntityManagerUtil implements RelationalEntityManager
     }
 
 
-    // expects all args to be unproxied - wants proxies
     protected void linkEntity(IdentifiableEntity<?> entity, IdentifiableEntity newEntity, Class<? extends Annotation> entityAnnotationClass, Class<? extends Annotation> entityCollectionAnnotationClass, String... membersToCheck) throws UnknownEntityTypeException {
         AtomicBoolean added = new AtomicBoolean(false);
         //add to matching entity collections
@@ -417,8 +405,6 @@ public class RapidRelationalEntityManagerUtil implements RelationalEntityManager
     // wants proxies
     protected void unlinkEntity(IdentifiableEntity entity, IdentifiableEntity entityToRemove, Class<? extends Annotation> entityEntityAnnotationClass, Class<? extends Annotation> entityEntityCollectionAnnotationClass, String... membersToCheck) throws UnknownEntityTypeException {
         AtomicBoolean deleted = new AtomicBoolean(false);
-//        IdentifiableEntity _entityToRemove = hibernateUnproxy(entityToRemove);
-//        IdentifiableEntity _entity = hibernateUnproxy(entity);
         for (Map.Entry<Class<IdentifiableEntity>, Collection<IdentifiableEntity>> entry : this.<IdentifiableEntity>findEntityCollections(entity, entityEntityCollectionAnnotationClass, membersToCheck).entrySet()) {
             // should be a hibernate managed collection
             Collection<IdentifiableEntity> entityCollection = entry.getValue();

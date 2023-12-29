@@ -72,8 +72,7 @@ public abstract class JPACrudService
             E entityToUpdate = findOldEntity(update.getId());
             // copy non null values from update to entityToUpdate
             // also copy null values from explicitly given fieldsToRemove
-            // values get copied to target already bc this is transactional
-            // -> update on managed entity is already happening here
+            // update is not yet applied, because setters ect are not called, which are hooked by hibernate
             NullAwareBeanUtils.copyProperties(entityToUpdate, update, propertiesToUpdate, Sets.newHashSet(fieldsToRemove));
             return getRepository().save(entityToUpdate);
         } catch (NonTransientDataAccessException e) {
