@@ -17,14 +17,16 @@ import java.util.Set;
 
 public class ReadForeignOwnerDto extends AbstractOwnerDto  {
 
+    @Nullable
+    @BiDirChildIdCollection(Pet.class)
+    private Set<Long> petIds = new HashSet<>();
+
     @Builder
     public ReadForeignOwnerDto(Set<Long> petIds, @Size(min = 10, max = 255) @NotBlank String address, @NotBlank String city, @Size(min = 10, max = 10) String telephone,Set<String> hobbies) {
         super(address, city, telephone,hobbies);
         this.petIds=petIds;
     }
 
-    @Nullable
-    @BiDirChildIdCollection(Pet.class)
-    private Set<Long> petIds = new HashSet<>();
+
 
 }

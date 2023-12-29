@@ -20,11 +20,12 @@ import java.util.Set;
 
 @Setter
 @Getter
-@NoArgsConstructor
 @Entity
 @Table(name = "owners")
-public class Owner extends Person implements  UserAwareEntity {
+public class Owner extends Person implements UserAwareEntity {
 
+    public Owner() {
+    }
 
     @Builder
     public Owner(String firstName, String lastName, Set<Pet> pets, String address, String city, String telephone,Set<String> hobbies) {

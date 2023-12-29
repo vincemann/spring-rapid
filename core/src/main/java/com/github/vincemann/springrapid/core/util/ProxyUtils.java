@@ -1,5 +1,6 @@
 package com.github.vincemann.springrapid.core.util;
 
+import com.github.vincemann.springrapid.core.model.IdentifiableEntity;
 import com.github.vincemann.springrapid.core.proxy.AbstractServiceExtension;
 import com.github.vincemann.springrapid.core.proxy.ServiceExtensionProxy;
 import com.github.vincemann.springrapid.core.service.CrudService;
@@ -59,8 +60,37 @@ public class ProxyUtils {
         return AopTestUtils.getUltimateTargetObject(proxy);
     }
 
-    public static <T> Class<T> getTargetClass(Object proxied){
-        return (Class<T>) Hibernate.unproxy(proxied).getClass();
+    /**
+     * gets Class of hibernate proxy without initializing entity ( = loading all lazy entities )
+     */
+    public static <T> Class<T> getTargetClass(T proxied){
+        T entity = proxied;
+        if (entity instanceof HibernateProxy) {
+            return  ((HibernateProxy) entity)
+                    .getHibernateLazyInitializer()
+                    .getPersistentClass();
+
+        }else {
+            return (Class<T>) proxied.getClass();
+        }
+    }
+
+    public static boolean hibernateEquals(IdentifiableEntity entity, IdentifiableEntity other) {
+        if (entity == other) return true;
+        if (entity == null || other == null ||
+                ProxyUtils.getTargetClass(entity) != ProxyUtils.getTargetClass(other)) {
+            return false;
+        }
+
+        // todo maybe access the id via reflections, so proxy is not initialized -> is against jpa spec tho
+        Object entityId = entity.getId();
+        Object otherId = other.getId();
+
+        if (entityId == null || otherId == null) {
+            return false; // If either ID is null, they are not equal
+        }
+
+        return entityId.equals(otherId);
     }
 
     public static <T> T hibernateUnproxy(T proxied)
@@ -74,6 +104,10 @@ public class ProxyUtils {
                     .getImplementation();
         }
         return entity;
+    }
+
+    public static boolean unproxyEquals(Object o1, Object o2){
+        return Hibernate.unproxy(o1).equals(Hibernate.unproxy(o2));
     }
 
     public static <T> T hibernateUnproxyRaw(T proxied){
