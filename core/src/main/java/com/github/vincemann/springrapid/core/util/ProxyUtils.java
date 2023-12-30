@@ -7,6 +7,7 @@ import com.github.vincemann.springrapid.core.service.CrudService;
 import org.hibernate.Hibernate;
 import org.hibernate.engine.spi.SessionImplementor;
 import org.hibernate.proxy.HibernateProxy;
+import org.hibernate.proxy.LazyInitializer;
 import org.springframework.aop.support.AopUtils;
 import org.springframework.test.util.AopTestUtils;
 
@@ -63,16 +64,21 @@ public class ProxyUtils {
     /**
      * gets Class of hibernate proxy without initializing entity ( = loading all lazy entities )
      */
-    public static <T> Class<T> getTargetClass(T proxied){
+    public static <T> Class<T> getTargetClass(T proxied) {
         T entity = proxied;
         if (entity instanceof HibernateProxy) {
-            return  ((HibernateProxy) entity)
-                    .getHibernateLazyInitializer()
-                    .getPersistentClass();
-
-        }else {
+            HibernateProxy hibernateProxy = (HibernateProxy) entity;
+            return (Class<T>) hibernateProxy.getHibernateLazyInitializer().getPersistentClass();
+        } else {
             return (Class<T>) proxied.getClass();
         }
+    }
+
+    public static <T> T deproxy(Object maybeProxy, Class<T> baseClass) throws ClassCastException {
+        if (maybeProxy instanceof HibernateProxy) {
+            return baseClass.cast(((HibernateProxy) maybeProxy).getHibernateLazyInitializer().getImplementation());
+        }
+        return baseClass.cast(maybeProxy);
     }
 
     public static boolean hibernateEquals(IdentifiableEntity entity, IdentifiableEntity other) {

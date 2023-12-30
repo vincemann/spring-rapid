@@ -124,7 +124,7 @@ public class RapidRelationalEntityManager implements RelationalEntityManager {
                 addedParents.add(newParent);
             }else {
                 // all parents need to be merged, non added children can be merged here already
-//                entityManager.merge(newParent);
+                entityManager.merge(newParent);
             }
         }
 
@@ -144,7 +144,7 @@ public class RapidRelationalEntityManager implements RelationalEntityManager {
                 log.debug("update: linking parent: " + addedParent + " to child: " + child);
             relationalEntityManagerUtil.linkBiDirChild(addedParent, child, membersToCheck);
             // new parents may be detached, so merge them, must happen after linking!
-//            entityManager.merge(addedParent);
+            entityManager.merge(addedParent);
         }
 //        entityManager.merge(child); wont do no harm, maybe needed if child is detached?
         return newParents;
@@ -170,7 +170,7 @@ public class RapidRelationalEntityManager implements RelationalEntityManager {
                 addedChildren.add(newChild);
             }else {
                 // all children need to be merged, non added children can be merged here already
-//                entityManager.merge(newChild);
+                entityManager.merge(newChild);
             }
         }
 

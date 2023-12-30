@@ -35,6 +35,7 @@ public class RapidGeneralAutoConfiguration {
 
     }
 
+
     @Bean
     @ConditionalOnMissingBean(Validator.class)
     public javax.validation.Validator localValidatorFactoryBean() {

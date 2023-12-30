@@ -160,7 +160,8 @@ public class RelationalServiceUpdateAdvice {
             // entity removed: no need for any merges I think
             IdentifiableEntity oldEntity = VerifyEntity.isPresent(
                     entityLocator.findEntity(getTargetClass(entity),entity.getId()),entity.getId(),getTargetClass(entity));
-            oldEntity = BeanUtils.clone(oldEntity);
+            // I am doing a full clone anyways, so its no problem to initialize
+            oldEntity = BeanUtils.clone(ProxyUtils.hibernateUnproxyRaw(oldEntity));
 
             // FULL
             // is like save, but with extensive look what has changed idk
