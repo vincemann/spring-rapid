@@ -2,6 +2,7 @@ package com.github.vincemann.springrapid.core.service.context;
 
 import com.github.vincemann.springrapid.core.proxy.AbstractServiceExtension;
 import com.github.vincemann.springrapid.core.service.CrudService;
+import com.github.vincemann.springrapid.core.util.EntityLocator;
 import lombok.extern.slf4j.Slf4j;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
@@ -10,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
 
+import java.security.acl.Owner;
 import java.util.Stack;
 
 /**
@@ -23,11 +25,14 @@ import java.util.Stack;
  */
 @Aspect
 @Slf4j
-@Order(Ordered.LOWEST_PRECEDENCE-1)
+// order is very important -> it matters if transactional proxy needs to be executed first
+// influences how ofter advice is called for some reason
+@Order(400)
 public class ServiceCallContextAdvice {
 
     private ThreadLocal<Stack<SubServiceCallContext>> subServiceCallStack = ThreadLocal.withInitial(Stack::new);
     private ServiceCallContextFactory serviceCallContextFactory;
+
 
     @Autowired
     public void setServiceCallContextFactory(ServiceCallContextFactory serviceCallContextFactory) {
@@ -60,6 +65,7 @@ public class ServiceCallContextAdvice {
 
         Object ret;
         try {
+            System.err.println("first");
             ret = joinPoint.proceed();
         } finally {
             // restore old, or clear if last

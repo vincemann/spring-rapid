@@ -23,7 +23,7 @@ public class PetOwnerLocator implements OwnerLocator<Pet> {
     @Transactional
     @Override
     public Optional<String> find(Pet pet) {
-        entityManager.merge(pet);
+//        entityManager.merge(pet);
         return Optional.of(pet.getOwner().getUser().getContactInformation());
     }
 }

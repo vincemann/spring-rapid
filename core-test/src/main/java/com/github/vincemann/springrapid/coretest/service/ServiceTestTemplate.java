@@ -57,7 +57,7 @@ public class ServiceTestTemplate {
                 .serviceResult(serviceResult)
                 .build();
         // test if changes made in test actually withstand a commit to database (even if its rolled back after)
-        entityManager.flush();
+//        entityManager.flush();
         if (serviceResult.getRaisedException() != null) {
             log.warn("Service threw exception, this is wanted. Stacktrace: ");
             serviceResult.getRaisedException().printStackTrace();
@@ -100,8 +100,10 @@ public class ServiceTestTemplate {
         this.testContext = null;
     }
 
+    private static volatile int count = 0;
     private ServiceResult execute(ServiceRequest serviceRequest) throws Exception {
         try {
+            System.err.println("invoking service test method: " + count++);
             Object result = serviceRequest.getServiceMethod().invoke(
 //                    AopTestUtils.getUltimateTargetObject(serviceUnderTest),
                     serviceUnderTest,

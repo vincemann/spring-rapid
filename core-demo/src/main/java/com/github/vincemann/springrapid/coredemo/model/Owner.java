@@ -65,6 +65,7 @@ public class Owner extends Person {
 
     @Override
     public String toString() {
+//        return "test";
         return "Owner{" +
                 "firstName='" + getFirstName() + '\'' +
                 ", lastName='" + getLastName() + '\'' +

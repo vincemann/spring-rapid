@@ -22,9 +22,10 @@ public class PetType extends MyIdentifiableEntity<Long> {
 
     @Override
     public String toString() {
-        return "PetType{" +
-                "name='" + name + '\'' +
-                ", id=" + getId() +
-                '}';
+        return "test";
+//        return "PetType{" +
+//                "name='" + name + '\'' +
+//                ", id=" + getId() +
+//                '}';
     }
 }

@@ -23,6 +23,9 @@
         <appender-ref ref="CONSOLE"/>
     </logger>
 
+    <!-- Add logger for SQL statements -->
+<!--    <logger name="org.hibernate.SQL" level="DEBUG" />-->
+
 
     <root level="info">
         <appender-ref ref="CONSOLE"/>

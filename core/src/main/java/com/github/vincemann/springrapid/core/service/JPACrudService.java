@@ -37,8 +37,9 @@ public abstract class JPACrudService
                 >
         extends AbstractCrudService<E, Id, R> {
 
-    @PersistenceContext
-    private EntityManager entityManager;
+    @Autowired
+    private EntityLocator entityLocator;
+
 
     public JPACrudService() {
     }
@@ -71,19 +72,14 @@ public abstract class JPACrudService
     @Override
     public E partialUpdate(E update, Set<String> propertiesToUpdate, String... fieldsToRemove) throws EntityNotFoundException, BadEntityException {
         try {
+            E managedEntity = findOldEntity(update.getId());
+            E detachedUpdateEntity = MyJpaUtils.deepDetachOrGet(update);
 
-//            if (ProxyUtils.isHibernateProxy(update))
-//                throw new IllegalArgumentException("update entity must not be proxied by hibernate");
-//            boolean deepDetached = MyJpaUtils.isEntityDeepDetached(entityManager,update);
-//            if (!deepDetached)
-//                throw new IllegalArgumentException("update entity must be deep detached");
-            E detachedUpdateEntity = MyJpaUtils.deepDetach(entityManager,update);
-            E entityToUpdate = findOldEntity(update.getId());
             // copy non null values from update to entityToUpdate
             // also copy null values from explicitly given fieldsToRemove
             // updates are applied on the go by hibernate bc entityToUpdate is managed in current session
-            NullAwareBeanUtils.copyProperties(entityToUpdate, detachedUpdateEntity, propertiesToUpdate, Sets.newHashSet(fieldsToRemove));
-            return getRepository().save(entityToUpdate);
+            NullAwareBeanUtils.copyProperties(managedEntity, detachedUpdateEntity, propertiesToUpdate, Sets.newHashSet(fieldsToRemove));
+            return getRepository().save(managedEntity);
         } catch (NonTransientDataAccessException e) {
             // constraints not met, such as foreign key constraints or other db entity constraints
             throw new BadEntityException(e);
@@ -93,6 +89,7 @@ public abstract class JPACrudService
     @Transactional
     @Override
     public E partialUpdate(E update, String... fieldsToRemove) throws EntityNotFoundException, BadEntityException {
+        System.err.println("partial update other called " + Thread.currentThread().getId());
         return partialUpdate(update,findNonRemovedUpdatedProperties(update),fieldsToRemove);
 //        try {
 //            E entityToUpdate = findOldEntity(update.getId());
@@ -164,7 +161,7 @@ public abstract class JPACrudService
 //        Optional<E> entityToUpdate = findById(id);
 //        VerifyEntity.isPresent(entityToUpdate, id, getEntityClass());
 //        return entityToUpdate.get();
-        Optional<E> entityToUpdate = getRepository().findById(id);
+        Optional<E> entityToUpdate = entityLocator.findEntity(getEntityClass(),id);
         VerifyEntity.isPresent(entityToUpdate, id, getEntityClass());
         return entityToUpdate.get();
     }

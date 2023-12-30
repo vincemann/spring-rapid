@@ -41,7 +41,6 @@ public class LazyToStringUtil {
     }
 
     public static <T extends IdentifiableEntity> String toIdIfLoaded(Set<T> entities){
-
         try {
             if (entities == null)
                 return "null";
@@ -58,7 +57,6 @@ public class LazyToStringUtil {
     }
 
     public static <T extends IdentifiableEntity> String toIdIfLoaded(T entity){
-
         try {
             if (entity == null)
                 return "null";
@@ -78,7 +76,6 @@ public class LazyToStringUtil {
     }
 
     public static <T extends IdentifiableEntity> String toStringIfLoaded(T entity, Function<? super T, ? extends String> mapper){
-
         try {
             if (entity == null)
                 return "null";

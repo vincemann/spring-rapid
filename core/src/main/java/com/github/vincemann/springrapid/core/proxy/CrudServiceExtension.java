@@ -24,6 +24,7 @@ public interface CrudServiceExtension<S extends CrudService>
 
     @Override
     default IdentifiableEntity partialUpdate(IdentifiableEntity entity, String... fieldsToRemove) throws EntityNotFoundException, BadEntityException {
+        System.err.println("second");
         return getNext().partialUpdate(entity,fieldsToRemove);
     }
 

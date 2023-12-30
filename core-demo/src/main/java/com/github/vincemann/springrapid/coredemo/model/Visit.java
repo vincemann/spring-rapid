@@ -56,12 +56,13 @@ public class Visit extends MyIdentifiableEntity<Long> {
 
     @Override
     public String toString() {
-        return "Visit{" +
-                "pets=" + LazyToStringUtil.toStringIfLoaded(pets,Pet::getName) +
-                ", owner=" + LazyToStringUtil.toStringIfLoaded(owner,Owner::getLastName) +
-                ", vet=" + LazyToStringUtil.toStringIfLoaded(vet,Vet::getLastName) +
-                ", date=" + date +
-                ", reason='" + reason + '\'' +
-                '}';
+        return "test";
+//        return "Visit{" +
+//                "pets=" + LazyToStringUtil.toStringIfLoaded(pets,Pet::getName) +
+//                ", owner=" + LazyToStringUtil.toStringIfLoaded(owner,Owner::getLastName) +
+//                ", vet=" + LazyToStringUtil.toStringIfLoaded(vet,Vet::getLastName) +
+//                ", date=" + date +
+//                ", reason='" + reason + '\'' +
+//                '}';
     }
 }

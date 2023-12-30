@@ -76,10 +76,10 @@ public class Pet extends MyIdentifiableEntity<Long> {
     public String toString() {
         return "Pet{" +
                 "name='" + name + '\'' +
-                ", petType=" + petType +
-                ", toys=" +  LazyToStringUtil.toStringIfLoaded(toys,Toy::getName) +
-                ", owner=" + LazyToStringUtil.toStringIfLoaded(owner,Owner::getLastName) +
-                ", birthDate=" + birthDate +
+//                ", petType=" + petType +
+//                ", toys=" +  LazyToStringUtil.toStringIfLoaded(toys,Toy::getName) +
+//                ", owner=" + LazyToStringUtil.toStringIfLoaded(owner,Owner::getLastName) +
+//                ", birthDate=" + birthDate +
                 '}';
     }
 }

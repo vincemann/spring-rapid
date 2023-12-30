@@ -36,11 +36,12 @@ public class Vet extends Person
 
     @Override
     public String toString() {
-        return "Vet{" +
-                "firstName='" + getFirstName() + '\'' +
-                ", lastName='" + getLastName() + '\'' +
-                ", specialtys=" + LazyToStringUtil.toStringIfLoaded(specialtys,Specialty::getDescription) +
-                '}';
+        return "test";
+//        return "Vet{" +
+//                "firstName='" + getFirstName() + '\'' +
+//                ", lastName='" + getLastName() + '\'' +
+//                ", specialtys=" + LazyToStringUtil.toStringIfLoaded(specialtys,Specialty::getDescription) +
+//                '}';
     }
 
 

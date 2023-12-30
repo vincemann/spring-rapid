@@ -63,7 +63,7 @@ public class RelationalEntityAdvice {
             "args(entity)")
     public void prePersistEntity(JoinPoint joinPoint, IdentifiableEntity entity) throws Throwable {
 
-//        System.err.println("PRE PERSIST: " + joinPoint.getTarget() + "->" + joinPoint.getSignature().getName());
+        System.err.println("PRE PERSIST: " + joinPoint.getTarget() + "->" + joinPoint.getSignature().getName());
 
         if (AutoBiDirUtils.isDisabled(joinPoint)){
             return;
@@ -125,19 +125,6 @@ public class RelationalEntityAdvice {
                     clearContext();
                     break;
             }
-
-//            entityManager.refresh(entity);
-//            entity = entityManager.merge(entity);
-
-//            boolean managed = entityManager.contains(entity);
-//            if (!managed){
-//                IdentifiableEntity merged = entityManager.merge(entity);
-//                boolean managed2 = entityManager.contains(merged);
-////                entityManager.persist(merged);
-////                return merged;
-//                return (IdentifiableEntity) joinPoint.proceed(new IdentifiableEntity[]{merged});
-//            }
-//            return (IdentifiableEntity) joinPoint.proceed(new IdentifiableEntity[]{entity});
         }
     }
 
@@ -146,14 +133,6 @@ public class RelationalEntityAdvice {
         if (subContext != null)
             subContext.clearValue(RELATIONAL_UPDATE_CONTEXT_KEY);
     }
-
-//    @Before(value = "com.github.vincemann.springrapid.core.advice.SystemArchitecture.updateOperation() && " +
-//            "com.github.vincemann.springrapid.core.advice.SystemArchitecture.repoOperation() && " +
-//            "args(entity)")
-//    public void preUpdateEntity(JoinPoint joinPoint, IdentifiableEntity entity) throws EntityNotFoundException, BadEntityException {
-//        relationalEntityManager.update(entity,RelationalAdviceContext.isFullUpdate());
-//        RelationalAdviceContext.clear();
-//    }
 
     protected Optional<IdentifiableEntity> resolveById(JoinPoint joinPoint, Serializable id) {
         SimpleJpaRepository repo = AopTestUtils.getUltimateTargetObject(joinPoint.getTarget());
