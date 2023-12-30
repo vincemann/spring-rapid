@@ -106,7 +106,9 @@ public class RapidRelationalEntityManager implements RelationalEntityManager {
 
     public Collection<IdentifiableEntity> updateBiDirChildRelations(IdentifiableEntity oldChild, IdentifiableEntity child, String... membersToCheck) throws BadEntityException, EntityNotFoundException {
 
+        // old parents are managed
         Collection<IdentifiableEntity> oldParents = relationalEntityManagerUtil.findAllBiDirParents(oldChild,membersToCheck);
+        // new parents are detached
         Collection<IdentifiableEntity> newParents = relationalEntityManagerUtil.findAllBiDirParents(child, membersToCheck);
 
         //find parents to unlink
@@ -152,7 +154,9 @@ public class RapidRelationalEntityManager implements RelationalEntityManager {
 
     public Collection<IdentifiableEntity> updateBiDirParentRelations(IdentifiableEntity oldParent, IdentifiableEntity updateParent, String... membersToCheck) throws BadEntityException, EntityNotFoundException {
 
+        // old children are managed
         Collection<IdentifiableEntity> oldChildren = relationalEntityManagerUtil.findAllBiDirChildren(oldParent,membersToCheck);
+        // newChildren are detached
         Collection<IdentifiableEntity> newChildren = relationalEntityManagerUtil.findAllBiDirChildren(updateParent,membersToCheck);
 
         //find Children to unlink
@@ -169,7 +173,7 @@ public class RapidRelationalEntityManager implements RelationalEntityManager {
             if (!oldChildren.contains(newChild)) {
                 addedChildren.add(newChild);
             }else {
-                // all children need to be merged, non added children can be merged here already
+                // all new children need to be merged
                 entityManager.merge(newChild);
             }
         }

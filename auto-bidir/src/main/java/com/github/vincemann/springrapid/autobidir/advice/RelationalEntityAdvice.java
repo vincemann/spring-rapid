@@ -114,18 +114,11 @@ public class RelationalEntityAdvice {
             // update
             switch (updateContext.getUpdateKind()){
                 case FULL:
-                    relationalEntityManager.update(updateContext.getOldEntity(),entity);
+                    relationalEntityManager.update(entity,updateContext.getDetachedUpdateEntity());
                     clearContext();
                     break;
                 case PARTIAL:
-
-//                    relationalEntityManager.partialUpdate(updateContext.getDetachedOldEntity(), entity, updateContext.getDetachedUpdateEntity());
-//                    relationalEntityManager.partialUpdate(updateContext.getDetachedOldEntity(), ProxyUtils.hibernateUnproxyRaw(entity), updateContext.getDetachedUpdateEntity());
-                    // todo infer membersToCheck cached again in RelationalServiceUpdateAdvice from single source and pass down this method
-//                    relationalEntityManager.partialUpdate(updateContext.getOldEntity(), entity);
-                    // give detached partial update entity - operate on update entity while in session -> hibernate makes updates
-//                    relationalEntityManager.partialUpdate(entity, updateContext.getUpdateEntity());
-                    relationalEntityManager.partialUpdate(updateContext.getOldEntity(), entity);
+                    relationalEntityManager.partialUpdate(entity, updateContext.getDetachedUpdateEntity());
                     clearContext();
                     break;
                 case SOFT:

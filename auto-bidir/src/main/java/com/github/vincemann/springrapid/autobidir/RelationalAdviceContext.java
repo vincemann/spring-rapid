@@ -17,7 +17,7 @@ public class RelationalAdviceContext {
         SOFT
     }
 
-    public IdentifiableEntity oldEntity;
-    private IdentifiableEntity updateEntity;
+//    public IdentifiableEntity oldEntity;
+    private IdentifiableEntity detachedUpdateEntity;
     private UpdateKind updateKind;
 }

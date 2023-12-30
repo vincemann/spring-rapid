@@ -5,9 +5,7 @@ import com.github.vincemann.springrapid.core.proxy.AbstractServiceExtension;
 import com.github.vincemann.springrapid.core.proxy.ServiceExtensionProxy;
 import com.github.vincemann.springrapid.core.service.CrudService;
 import org.hibernate.Hibernate;
-import org.hibernate.engine.spi.SessionImplementor;
 import org.hibernate.proxy.HibernateProxy;
-import org.hibernate.proxy.LazyInitializer;
 import org.springframework.aop.support.AopUtils;
 import org.springframework.test.util.AopTestUtils;
 
@@ -74,14 +72,12 @@ public class ProxyUtils {
         }
     }
 
-    public static <T> T deproxy(Object maybeProxy, Class<T> baseClass) throws ClassCastException {
-        if (maybeProxy instanceof HibernateProxy) {
-            return baseClass.cast(((HibernateProxy) maybeProxy).getHibernateLazyInitializer().getImplementation());
-        }
-        return baseClass.cast(maybeProxy);
+    public static boolean isHibernateProxy(Object maybeProxy) throws ClassCastException {
+        return maybeProxy instanceof HibernateProxy;
+
     }
 
-    public static boolean hibernateEquals(IdentifiableEntity entity, IdentifiableEntity other) {
+    public static boolean jpaEquals(IdentifiableEntity entity, IdentifiableEntity other) {
         if (entity == other) return true;
         if (entity == null || other == null ||
                 ProxyUtils.getTargetClass(entity) != ProxyUtils.getTargetClass(other)) {

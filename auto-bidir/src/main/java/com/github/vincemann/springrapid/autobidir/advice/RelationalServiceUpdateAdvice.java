@@ -11,6 +11,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Before;
+import org.hibernate.Hibernate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
@@ -19,8 +20,6 @@ import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 
 import java.util.Set;
-
-import static com.github.vincemann.springrapid.core.util.ProxyUtils.getTargetClass;
 
 @Slf4j
 @Aspect
@@ -158,10 +157,13 @@ public class RelationalServiceUpdateAdvice {
             // then deal with all subEntities completely in advice downstream
             // entity added: got entity to add from update - merge the entity, will be detached
             // entity removed: no need for any merges I think
-            IdentifiableEntity oldEntity = VerifyEntity.isPresent(
-                    entityLocator.findEntity(getTargetClass(entity),entity.getId()),entity.getId(),getTargetClass(entity));
+
+
+
+//            IdentifiableEntity oldEntity = VerifyEntity.isPresent(
+//                    entityLocator.findEntity(getTargetClass(entity),entity.getId()),entity.getId(),getTargetClass(entity));
             // I am doing a full clone anyways, so its no problem to initialize
-            oldEntity = BeanUtils.clone(ProxyUtils.hibernateUnproxyRaw(oldEntity));
+//            oldEntity = BeanUtils.clone(ProxyUtils.hibernateUnproxyRaw(oldEntity));
 
             // FULL
             // is like save, but with extensive look what has changed idk
@@ -188,11 +190,23 @@ public class RelationalServiceUpdateAdvice {
 //            IdentifiableEntity detachedUpdateEntity = entity;
 //            IdentifiableEntity detachedUpdateEntity = ProxyUtils.hibernateUnproxyRaw(entity);
 //            entityManager.detach(detachedUpdateEntity);
+
+
+
+
+//            if (ProxyUtils.isHibernateProxy(entity))
+//                throw new IllegalArgumentException("update entity must not be proxied by hibernate");
+//            entity = ProxyUtils.hibernateUnproxy(entity);
+//            boolean deepDetached = MyJpaUtils.isEntityDeepDetached(entityManager,entity);
+//            if (!deepDetached)
+//                entity = BeanUtils.clone(entity);
+//            if (!MyJpaUtils.isEntityDeepDetached(entityManager,entity))
+//                throw new IllegalArgumentException("deep detachment did not work");
+
 //            JpaUtils.detachCollections(detachedUpdateEntity);
 
             updateContext = RelationalAdviceContext.builder()
-//                    .updateEntity(update)
-                    .oldEntity(oldEntity)
+                    .detachedUpdateEntity(MyJpaUtils.deepDetach(entityManager,entity))
                     .updateKind(updateKind)
                     .build();
         }

@@ -11,20 +11,16 @@ import com.github.vincemann.springrapid.autobidir.model.child.annotation.UniDirC
 import com.github.vincemann.springrapid.autobidir.model.child.annotation.UniDirChildEntity;
 import com.github.vincemann.springrapid.autobidir.model.parent.annotation.BiDirParentCollection;
 import com.github.vincemann.springrapid.autobidir.model.parent.annotation.BiDirParentEntity;
-import com.github.vincemann.springrapid.autobidir.util.CollectionUtils;
 import com.github.vincemann.springrapid.autobidir.util.EntityAnnotationUtils;
 import com.github.vincemann.springrapid.core.util.EntityReflectionUtils;
 import com.github.vincemann.springrapid.core.util.ProxyUtils;
 import com.google.common.collect.Sets;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.beanutils.BeanUtils;
 import org.springframework.beans.PropertyAccessor;
 import org.springframework.beans.PropertyAccessorFactory;
 import org.springframework.cache.annotation.Cacheable;
-import org.springframework.data.util.ReflectionUtils;
 
 import java.lang.annotation.Annotation;
-import java.lang.reflect.InvocationTargetException;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicBoolean;
 
@@ -419,7 +415,7 @@ public class RapidRelationalEntityManagerUtil implements RelationalEntityManager
                         while (iterator.hasNext()) {
                             IdentifiableEntity e = iterator.next();
                             // hibernate proxy should call my custom equals method, but that also compares class, so unproxy
-                            if (ProxyUtils.hibernateEquals(e,entityToRemove)) {
+                            if (ProxyUtils.jpaEquals(e,entityToRemove)) {
                                 iterator.remove();
                                 deleted.set(true);
                                 break;

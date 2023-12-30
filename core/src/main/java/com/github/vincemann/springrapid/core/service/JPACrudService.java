@@ -5,9 +5,7 @@ import com.github.vincemann.springrapid.core.service.context.ServiceCallContextH
 import com.github.vincemann.springrapid.core.service.exception.BadEntityException;
 import com.github.vincemann.springrapid.core.service.exception.EntityNotFoundException;
 import com.github.vincemann.springrapid.core.slicing.ServiceComponent;
-import com.github.vincemann.springrapid.core.util.NullAwareBeanUtils;
-import com.github.vincemann.springrapid.core.util.ReflectionUtils;
-import com.github.vincemann.springrapid.core.util.VerifyEntity;
+import com.github.vincemann.springrapid.core.util.*;
 import com.google.common.collect.Sets;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
@@ -15,6 +13,8 @@ import org.springframework.dao.NonTransientDataAccessException;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
 import java.io.Serializable;
 import java.util.HashSet;
 import java.util.Optional;
@@ -37,6 +37,8 @@ public abstract class JPACrudService
                 >
         extends AbstractCrudService<E, Id, R> {
 
+    @PersistenceContext
+    private EntityManager entityManager;
 
     public JPACrudService() {
     }
@@ -69,11 +71,18 @@ public abstract class JPACrudService
     @Override
     public E partialUpdate(E update, Set<String> propertiesToUpdate, String... fieldsToRemove) throws EntityNotFoundException, BadEntityException {
         try {
+
+//            if (ProxyUtils.isHibernateProxy(update))
+//                throw new IllegalArgumentException("update entity must not be proxied by hibernate");
+//            boolean deepDetached = MyJpaUtils.isEntityDeepDetached(entityManager,update);
+//            if (!deepDetached)
+//                throw new IllegalArgumentException("update entity must be deep detached");
+            E detachedUpdateEntity = MyJpaUtils.deepDetach(entityManager,update);
             E entityToUpdate = findOldEntity(update.getId());
             // copy non null values from update to entityToUpdate
             // also copy null values from explicitly given fieldsToRemove
-            // update is not yet applied, because setters ect are not called, which are hooked by hibernate
-            NullAwareBeanUtils.copyProperties(entityToUpdate, update, propertiesToUpdate, Sets.newHashSet(fieldsToRemove));
+            // updates are applied on the go by hibernate bc entityToUpdate is managed in current session
+            NullAwareBeanUtils.copyProperties(entityToUpdate, detachedUpdateEntity, propertiesToUpdate, Sets.newHashSet(fieldsToRemove));
             return getRepository().save(entityToUpdate);
         } catch (NonTransientDataAccessException e) {
             // constraints not met, such as foreign key constraints or other db entity constraints
@@ -152,7 +161,10 @@ public abstract class JPACrudService
         if (id == null)
             throw new IllegalArgumentException("Id cannot be null");
 //        return ServiceCallContextHolder.getContext().resolvePresentEntity(id,getEntityClass());
-        Optional<E> entityToUpdate = findById(id);
+//        Optional<E> entityToUpdate = findById(id);
+//        VerifyEntity.isPresent(entityToUpdate, id, getEntityClass());
+//        return entityToUpdate.get();
+        Optional<E> entityToUpdate = getRepository().findById(id);
         VerifyEntity.isPresent(entityToUpdate, id, getEntityClass());
         return entityToUpdate.get();
     }
