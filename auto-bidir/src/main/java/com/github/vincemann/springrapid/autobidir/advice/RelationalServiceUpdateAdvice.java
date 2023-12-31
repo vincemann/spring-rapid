@@ -25,7 +25,7 @@ import java.util.Set;
 @Aspect
 // order is very important -> it matters if transactional proxy needs to be executed first
 // influences how ofter advice is called for some reason
-@Order(500)
+@Order(2)
 public class RelationalServiceUpdateAdvice {
 
     public static final String RELATIONAL_UPDATE_CONTEXT_KEY = "relational-update-context";

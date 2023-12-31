@@ -3,6 +3,7 @@ package com.github.vincemann.springrapid.core.proxy;
 import com.github.vincemann.aoplog.api.annotation.LogInteraction;
 import com.github.vincemann.springrapid.core.model.IdentifiableEntity;
 import com.github.vincemann.springrapid.core.service.CrudService;
+import com.github.vincemann.springrapid.core.service.JPACrudService;
 import com.github.vincemann.springrapid.core.service.exception.BadEntityException;
 import com.github.vincemann.springrapid.core.service.exception.EntityNotFoundException;
 
@@ -24,7 +25,7 @@ public interface CrudServiceExtension<S extends CrudService>
 
     @Override
     default IdentifiableEntity partialUpdate(IdentifiableEntity entity, String... fieldsToRemove) throws EntityNotFoundException, BadEntityException {
-        System.err.println("second");
+//        System.err.println("invokoing this " + this.getClass().getSimpleName() +" partialUpdate " + JPACrudService.count++);
         return getNext().partialUpdate(entity,fieldsToRemove);
     }
 

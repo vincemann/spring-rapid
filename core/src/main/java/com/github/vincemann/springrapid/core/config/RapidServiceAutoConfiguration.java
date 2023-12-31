@@ -24,9 +24,12 @@ public class RapidServiceAutoConfiguration {
     @Autowired(required = false)
     EntityManager entityManager;
 
+
+    static int count = 0;
     @Bean
     @ConditionalOnMissingBean(ServiceCallContextAdvice.class)
     public ServiceCallContextAdvice serviceCallContextAdvice(){
+        System.err.println("creating service call context advice " + count++);
         return new ServiceCallContextAdvice();
     }
 

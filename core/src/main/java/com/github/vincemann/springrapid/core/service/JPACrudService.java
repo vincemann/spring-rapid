@@ -37,6 +37,21 @@ public abstract class JPACrudService
                 >
         extends AbstractCrudService<E, Id, R> {
 
+
+    public static boolean checkCallOrigin(String className) {
+        StackTraceElement[] stackTrace = Thread.currentThread().getStackTrace();
+
+        for (StackTraceElement element : stackTrace) {
+            String declaringClass = element.getClassName();
+
+            if (declaringClass.equals(className)) {
+                return true; // ClassX found in the stack trace
+            }
+        }
+
+        return false; // ClassX not found in the stack trace
+    }
+
     @Autowired
     private EntityLocator entityLocator;
 
@@ -73,6 +88,7 @@ public abstract class JPACrudService
     public E partialUpdate(E update, Set<String> propertiesToUpdate, String... fieldsToRemove) throws EntityNotFoundException, BadEntityException {
         try {
             E managedEntity = findOldEntity(update.getId());
+            System.err.println("managed entity: " + managedEntity);
             E detachedUpdateEntity = MyJpaUtils.deepDetachOrGet(update);
 
             // copy non null values from update to entityToUpdate
@@ -89,7 +105,7 @@ public abstract class JPACrudService
     @Transactional
     @Override
     public E partialUpdate(E update, String... fieldsToRemove) throws EntityNotFoundException, BadEntityException {
-        System.err.println("partial update other called " + Thread.currentThread().getId());
+//        System.err.println("invokoing this " + this.getClass().getSimpleName() +" outer partialUpdate " + JPACrudService.count++);
         return partialUpdate(update,findNonRemovedUpdatedProperties(update),fieldsToRemove);
 //        try {
 //            E entityToUpdate = findOldEntity(update.getId());
@@ -106,9 +122,9 @@ public abstract class JPACrudService
     }
 
     private Set<String> findNonRemovedUpdatedProperties(E partialUpdate){
-        Set<String> nonNull = ReflectionUtils.findAllNonNullFieldNames(partialUpdate);
+        return ReflectionUtils.findAllNonNullFieldNames(partialUpdate);
 //        nonNull.addAll(Lists.newArrayList(fieldsToRemove));
-        return nonNull;
+//        return nonNull;
     }
 
 
@@ -158,11 +174,11 @@ public abstract class JPACrudService
         if (id == null)
             throw new IllegalArgumentException("Id cannot be null");
 //        return ServiceCallContextHolder.getContext().resolvePresentEntity(id,getEntityClass());
-//        Optional<E> entityToUpdate = findById(id);
-//        VerifyEntity.isPresent(entityToUpdate, id, getEntityClass());
-//        return entityToUpdate.get();
-        Optional<E> entityToUpdate = entityLocator.findEntity(getEntityClass(),id);
+        Optional<E> entityToUpdate = findById(id);
         VerifyEntity.isPresent(entityToUpdate, id, getEntityClass());
         return entityToUpdate.get();
+//        Optional<E> entityToUpdate = getRepository().findById(id);
+//        VerifyEntity.isPresent(entityToUpdate, id, getEntityClass());
+//        return entityToUpdate.get();
     }
 }

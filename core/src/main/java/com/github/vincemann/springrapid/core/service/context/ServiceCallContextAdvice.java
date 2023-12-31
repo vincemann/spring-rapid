@@ -2,6 +2,7 @@ package com.github.vincemann.springrapid.core.service.context;
 
 import com.github.vincemann.springrapid.core.proxy.AbstractServiceExtension;
 import com.github.vincemann.springrapid.core.service.CrudService;
+import com.github.vincemann.springrapid.core.service.JPACrudService;
 import com.github.vincemann.springrapid.core.util.EntityLocator;
 import lombok.extern.slf4j.Slf4j;
 import org.aspectj.lang.ProceedingJoinPoint;
@@ -27,7 +28,7 @@ import java.util.Stack;
 @Slf4j
 // order is very important -> it matters if transactional proxy needs to be executed first
 // influences how ofter advice is called for some reason
-@Order(400)
+@Order(1)
 public class ServiceCallContextAdvice {
 
     private ThreadLocal<Stack<SubServiceCallContext>> subServiceCallStack = ThreadLocal.withInitial(Stack::new);
@@ -54,6 +55,7 @@ public class ServiceCallContextAdvice {
             if (init){
                 initSubContext();
             }
+//            System.err.println("invokoing this " + this.getClass().getSimpleName() +" (init context) aroundServiceOperation " + JPACrudService.count++);
             return joinPoint.proceed();
         }
 
@@ -65,7 +67,7 @@ public class ServiceCallContextAdvice {
 
         Object ret;
         try {
-            System.err.println("first");
+//            System.err.println("invokoing this " + this.getClass().getSimpleName() +" (no init) aroundServiceOperation " + JPACrudService.count++);
             ret = joinPoint.proceed();
         } finally {
             // restore old, or clear if last
