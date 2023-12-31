@@ -16,10 +16,11 @@ import static javax.persistence.CascadeType.*;
 
 @Setter
 @Getter
-@NoArgsConstructor
 @Entity
+@NoArgsConstructor
 @Table(name = "owners")
 public class Owner extends Person {
+
 
 
     @Builder
@@ -27,9 +28,13 @@ public class Owner extends Person {
         super(firstName, lastName);
         if(pets!=null) {
             this.pets = pets;
+        }else {
+            this.pets = new HashSet<>();
         }
         if(hobbies!=null) {
             this.hobbies = hobbies;
+        }else{
+            this.hobbies = new HashSet<>();
         }
         this.address = address;
         this.city = city;

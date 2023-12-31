@@ -23,7 +23,7 @@ import java.util.Set;
 
 @Slf4j
 @Aspect
-// order is very important -> it matters if transactional proxy needs to be executed first
+// order is very important
 // influences how ofter advice is called for some reason
 @Order(2)
 public class RelationalServiceUpdateAdvice {
@@ -37,6 +37,8 @@ public class RelationalServiceUpdateAdvice {
                     "com.github.vincemann.springrapid.core.SystemArchitecture.ignoreJdkProxies() && " +
                     "args(updateEntity)")
     public void preFullUpdateRelEntity(JoinPoint joinPoint, IdentifiableEntity updateEntity) throws EntityNotFoundException {
+        System.err.println("full update matches " + joinPoint.getTarget() + "->" + joinPoint.getSignature().getName());
+
         if (!ProxyUtils.isRootService(joinPoint.getTarget()))
             return;
         if (AutoBiDirUtils.isDisabled(joinPoint)) {
@@ -52,6 +54,8 @@ public class RelationalServiceUpdateAdvice {
                     "com.github.vincemann.springrapid.core.SystemArchitecture.ignoreJdkProxies() && " +
                     "args(updateEntity,fieldsToRemove)")
     public void prePartialUpdateRelEntity(JoinPoint joinPoint, IdentifiableEntity updateEntity, String... fieldsToRemove) throws EntityNotFoundException {
+        System.err.println("partial update without propertiesToUpdate matches " + joinPoint.getTarget() + "->" + joinPoint.getSignature().getName());
+
         if (!ProxyUtils.isRootService(joinPoint.getTarget()))
             return;
         if (AutoBiDirUtils.isDisabled(joinPoint)) {
@@ -67,6 +71,7 @@ public class RelationalServiceUpdateAdvice {
                     "com.github.vincemann.springrapid.core.SystemArchitecture.ignoreJdkProxies() && " +
                     "args(updateEntity,propertiesToUpdate, fieldsToRemove)")
     public void prePartialUpdateRelEntity(JoinPoint joinPoint, IdentifiableEntity updateEntity, Set<String> propertiesToUpdate, String... fieldsToRemove) throws EntityNotFoundException {
+        System.err.println("partial update with propertiesToUpdate matches " + joinPoint.getTarget() + "->" + joinPoint.getSignature().getName());
         if (!ProxyUtils.isRootService(joinPoint.getTarget()))
             return;
         if (AutoBiDirUtils.isDisabled(joinPoint)) {
@@ -82,6 +87,7 @@ public class RelationalServiceUpdateAdvice {
                     "com.github.vincemann.springrapid.core.SystemArchitecture.ignoreJdkProxies() && " +
                     "args(updateEntity)")
     public void preSoftUpdateRelEntity(JoinPoint joinPoint, IdentifiableEntity updateEntity) throws EntityNotFoundException {
+        System.err.println("soft update matches " + joinPoint.getTarget() + "->" + joinPoint.getSignature().getName());
         if (!ProxyUtils.isRootService(joinPoint.getTarget()))
             return;
         if (AutoBiDirUtils.isDisabled(joinPoint)) {
@@ -97,6 +103,8 @@ public class RelationalServiceUpdateAdvice {
                     "com.github.vincemann.springrapid.core.SystemArchitecture.ignoreJdkProxies() && " +
                     "args(createdEntity)")
     public void preCreateRelEntity(JoinPoint joinPoint, IdentifiableEntity createdEntity) throws EntityNotFoundException {
+        System.err.println("create matches " + joinPoint.getTarget() + "->" + joinPoint.getSignature().getName());
+
         if (!ProxyUtils.isRootService(joinPoint.getTarget()))
             return;
         if (AutoBiDirUtils.isDisabled(joinPoint)) {
@@ -108,6 +116,8 @@ public class RelationalServiceUpdateAdvice {
 
     // fields to remove not needed, already done via jpaCrudService.updates copyProperties call (removes those values)
     public void preBiDirEntity(JoinPoint joinPoint, IdentifiableEntity entity, RelationalAdviceContext.UpdateKind updateKind) throws EntityNotFoundException {
+        System.err.println("not ignoring: " + joinPoint.getTarget() + "->" + joinPoint.getSignature().getName());
+
 
         if (log.isDebugEnabled())
             log.debug("setting relational context: " + joinPoint.getTarget() + "->" + joinPoint.getSignature().getName());

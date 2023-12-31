@@ -448,7 +448,8 @@ public class RapidRelationalEntityManagerUtil implements RelationalEntityManager
             }
         });
         if (!deleted.get()) {
-            System.err.println("it is also possible, that entity to unlink was not found in collection");
+            if (log.isErrorEnabled())
+                log.error("it is also possible, that entity to unlink was not found in collection");
             throw new UnknownEntityTypeException(entity.getClass(), entityToRemove.getClass());
         }
     }

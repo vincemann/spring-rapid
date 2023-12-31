@@ -1,5 +1,6 @@
 package com.github.vincemann.springrapid.coredemo.service.jpa;
 
+import com.github.vincemann.springrapid.core.model.IdentifiableEntityImpl;
 import com.github.vincemann.springrapid.core.service.exception.BadEntityException;
 import com.github.vincemann.springrapid.core.service.exception.EntityNotFoundException;
 import com.github.vincemann.springrapid.core.util.Lists;
@@ -271,8 +272,7 @@ class OwnerServiceIntegrationTest
         Owner savedKahn = getTestedService().save(kahn);
 
 
-        Owner removePetUpdate = new Owner();
-        // explicitly set empty list instead of null
+        Owner removePetUpdate = IdentifiableEntityImpl.createUpdate(Owner.class);
         removePetUpdate.setPets(new HashSet<>(Lists.newArrayList(savedBello)));
         removePetUpdate.setId(savedKahn.getId());
 

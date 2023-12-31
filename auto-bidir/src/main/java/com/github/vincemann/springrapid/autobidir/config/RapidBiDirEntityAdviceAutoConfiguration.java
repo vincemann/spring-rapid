@@ -37,20 +37,17 @@ public class RapidBiDirEntityAdviceAutoConfiguration  {
 //    }
 //
 
-    int count = 0;
+
     @Bean
     @ConditionalOnMissingBean(RelationalServiceUpdateAdvice.class)
     public RelationalServiceUpdateAdvice relationalServiceUpdateAdvice(){
-        System.err.println("creating relational service update advice " + count++);
         return new RelationalServiceUpdateAdvice();
     }
 
-    int count2 = 0;
+
     @Bean
     @ConditionalOnMissingBean(RelationalEntityAdvice.class)
     public RelationalEntityAdvice relationalEntityAdvice(){
-
-        System.err.println("creating relational entity  advice " + count2++);
         return new RelationalEntityAdvice();
     }
 

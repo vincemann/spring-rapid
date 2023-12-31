@@ -38,24 +38,6 @@ public abstract class JPACrudService
         extends AbstractCrudService<E, Id, R> {
 
 
-    public static boolean checkCallOrigin(String className) {
-        StackTraceElement[] stackTrace = Thread.currentThread().getStackTrace();
-
-        for (StackTraceElement element : stackTrace) {
-            String declaringClass = element.getClassName();
-
-            if (declaringClass.equals(className)) {
-                return true; // ClassX found in the stack trace
-            }
-        }
-
-        return false; // ClassX not found in the stack trace
-    }
-
-    @Autowired
-    private EntityLocator entityLocator;
-
-
     public JPACrudService() {
     }
 
@@ -87,15 +69,28 @@ public abstract class JPACrudService
     @Override
     public E partialUpdate(E update, Set<String> propertiesToUpdate, String... fieldsToRemove) throws EntityNotFoundException, BadEntityException {
         try {
+//            E managedEntity = getRepository().findById(update.getId()).orElseThrow(() -> new EntityNotFoundException(update.getId(),getEntityClass()));
             E managedEntity = findOldEntity(update.getId());
-            System.err.println("managed entity: " + managedEntity);
+//            try {
+//                throw new IllegalArgumentException("test");
+//            }catch (Exception e){
+//                e.printStackTrace();
+//            }
+            // never place breakpoint within this method, this triggers unexpected double execution of advices
+            // always check logs to see if this method was executed twice
+            // intellij idea says first breakpoint skipped because it happened in debugger evaluation, so the first execution never halts
+            // the second invocation (that should never occur in the first place) halts then
+//            System.err.println("managed entity: " + managedEntity);
             E detachedUpdateEntity = MyJpaUtils.deepDetachOrGet(update);
-
             // copy non null values from update to entityToUpdate
             // also copy null values from explicitly given fieldsToRemove
             // updates are applied on the go by hibernate bc entityToUpdate is managed in current session
+//            System.err.println("start with copy properties");
             NullAwareBeanUtils.copyProperties(managedEntity, detachedUpdateEntity, propertiesToUpdate, Sets.newHashSet(fieldsToRemove));
+//            System.err.println("start with repo call");
             return getRepository().save(managedEntity);
+//            System.err.println("done with repo call");
+//            return saved;
         } catch (NonTransientDataAccessException e) {
             // constraints not met, such as foreign key constraints or other db entity constraints
             throw new BadEntityException(e);
@@ -105,26 +100,11 @@ public abstract class JPACrudService
     @Transactional
     @Override
     public E partialUpdate(E update, String... fieldsToRemove) throws EntityNotFoundException, BadEntityException {
-//        System.err.println("invokoing this " + this.getClass().getSimpleName() +" outer partialUpdate " + JPACrudService.count++);
         return partialUpdate(update,findNonRemovedUpdatedProperties(update),fieldsToRemove);
-//        try {
-//            E entityToUpdate = findOldEntity(update.getId());
-//            // copy non null values from update to entityToUpdate
-//            // also copy null values from explicitly given fieldsToRemove
-//            // values get copied to target already bc this is transactional
-//            // -> update on managed entity is already happening here
-//            NullAwareBeanUtils.copyProperties(entityToUpdate, update, findNonRemovedUpdatedProperties(update), Sets.newHashSet(fieldsToRemove));
-//            return getRepository().save(entityToUpdate);
-//        } catch (NonTransientDataAccessException e) {
-//            // constraints not met, such as foreign key constraints or other db entity constraints
-//            throw new BadEntityException(e);
-//        }
     }
 
     private Set<String> findNonRemovedUpdatedProperties(E partialUpdate){
         return ReflectionUtils.findAllNonNullFieldNames(partialUpdate);
-//        nonNull.addAll(Lists.newArrayList(fieldsToRemove));
-//        return nonNull;
     }
 
 
@@ -173,12 +153,8 @@ public abstract class JPACrudService
     protected E findOldEntity(Id id) throws EntityNotFoundException {
         if (id == null)
             throw new IllegalArgumentException("Id cannot be null");
-//        return ServiceCallContextHolder.getContext().resolvePresentEntity(id,getEntityClass());
         Optional<E> entityToUpdate = findById(id);
         VerifyEntity.isPresent(entityToUpdate, id, getEntityClass());
         return entityToUpdate.get();
-//        Optional<E> entityToUpdate = getRepository().findById(id);
-//        VerifyEntity.isPresent(entityToUpdate, id, getEntityClass());
-//        return entityToUpdate.get();
     }
 }

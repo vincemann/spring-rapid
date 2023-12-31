@@ -12,7 +12,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
 
-import java.security.acl.Owner;
 import java.util.Stack;
 
 /**
@@ -26,7 +25,7 @@ import java.util.Stack;
  */
 @Aspect
 @Slf4j
-// order is very important -> it matters if transactional proxy needs to be executed first
+// order is very important
 // influences how ofter advice is called for some reason
 @Order(1)
 public class ServiceCallContextAdvice {
@@ -47,7 +46,7 @@ public class ServiceCallContextAdvice {
             "&& com.github.vincemann.springrapid.core.SystemArchitecture.ignoreHelperServiceMethods() "
     )
     public Object aroundServiceOperation(ProceedingJoinPoint joinPoint) throws Throwable {
-//        System.err.println("SERVICE CALL CONTEXT: " + joinPoint.getTarget() + "->" + joinPoint.getSignature().getName());
+        System.err.println("SERVICE CALL CONTEXT: " + joinPoint.getTarget() + "->" + joinPoint.getSignature().getName());
 
         // jdkProxies dont match, because they wont be wrapped with glibc aop proxies - so look out for most outer extension
         if (joinPoint.getTarget() instanceof AbstractServiceExtension) {
@@ -55,7 +54,6 @@ public class ServiceCallContextAdvice {
             if (init){
                 initSubContext();
             }
-//            System.err.println("invokoing this " + this.getClass().getSimpleName() +" (init context) aroundServiceOperation " + JPACrudService.count++);
             return joinPoint.proceed();
         }
 
@@ -67,7 +65,6 @@ public class ServiceCallContextAdvice {
 
         Object ret;
         try {
-//            System.err.println("invokoing this " + this.getClass().getSimpleName() +" (no init) aroundServiceOperation " + JPACrudService.count++);
             ret = joinPoint.proceed();
         } finally {
             // restore old, or clear if last

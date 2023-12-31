@@ -15,6 +15,7 @@ import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Before;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.annotation.Order;
 import org.springframework.data.jpa.repository.support.SimpleJpaRepository;
 import org.springframework.test.util.AopTestUtils;
 
@@ -27,6 +28,7 @@ import static com.github.vincemann.springrapid.autobidir.advice.RelationalServic
 
 @Aspect
 @Slf4j
+@Order(3)
 public class RelationalEntityAdvice {
 
     private EntityLocator entityLocator;

@@ -23,6 +23,7 @@ public class NullAwareBeanUtils {
         }
     }
 
+    // also ignores id
     public static void copyProperties(Object toUpdate, Object update, Set<String> collectionsWhitelist, Set<String> whiteList) {
         BeanUtilsBean dontCopyNullButWhitelisted = new WhitelistNullAwareBeanUtilsBean(whiteList, collectionsWhitelist);
         try {
@@ -57,11 +58,14 @@ public class NullAwareBeanUtils {
         }
 
         /**
-         * Copy member from @param value to @param dst only when not null
+         * Copy member from value to dst only when not null
+         * has whitelist for properties that, if they are null, are applied to dst
          */
         @Override
         public void copyProperty(Object dest, String name, Object value)
                 throws IllegalAccessException, InvocationTargetException {
+            if (name.equals("id"))
+                return;
             if (!whiteListed.isEmpty()) {
                 if (whiteListed.contains(name)) {
                     // value can be null, that's the purpose of the whitelist
@@ -95,7 +99,7 @@ public class NullAwareBeanUtils {
         public void simpleCopyProperty(final Object bean, String name, Object value)
                 throws IllegalAccessException, InvocationTargetException {
 
-
+            System.err.println("  copyProperty(" + bean + ", " + name + ", " + value + ")");
             // Trace logging (if enabled)
             if (log.isTraceEnabled()) {
                 log.trace("  copyProperty(" + bean + ", " + name + ", " + value + ")");

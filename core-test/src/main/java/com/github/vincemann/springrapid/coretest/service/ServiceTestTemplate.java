@@ -100,12 +100,9 @@ public class ServiceTestTemplate {
         this.testContext = null;
     }
 
-    private static volatile int count = 0;
     private ServiceResult execute(ServiceRequest serviceRequest) throws Exception {
         try {
-            System.err.println("invoking service test method: " + count++);
             Object result = serviceRequest.getServiceMethod().invoke(
-//                    AopTestUtils.getUltimateTargetObject(serviceUnderTest),
                     serviceUnderTest,
                     serviceRequest.getArgs().toArray()
             );
