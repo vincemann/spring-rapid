@@ -8,6 +8,7 @@ import org.junit.jupiter.api.Assumptions;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpHeaders;
 
+import java.io.Serializable;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -33,7 +34,7 @@ public abstract class UpdateUserTest extends AbstractRapidAuthIntegrationTest
 						.header(HttpHeaders.AUTHORIZATION, token))
 				.andExpect(status().isForbidden());
 
-		AbstractUser<Long> updated = getUserService().findById(getUser().getId()).get();
+		AbstractUser<Serializable> updated = getUserService().findById(getUser().getId()).get();
 
 		// Ensure that data has not changed
 		assertRolesHaveNotChanged(oldRoles,updated.getRoles());
@@ -57,7 +58,7 @@ public abstract class UpdateUserTest extends AbstractRapidAuthIntegrationTest
 				.andExpect(jsonPath("$.roles[0]").value(Roles.ADMIN))
 				.andExpect(jsonPath("$.contactInformation").value(NEW_CONTACT_INFORMATION));
 
-		AbstractUser<Long> user = getUserService().findById(getUser().getId()).get();
+		AbstractUser<Serializable> user = getUserService().findById(getUser().getId()).get();
 
 		// Ensure that data changed properly
 		//should get replaced because admin has full power
@@ -144,7 +145,7 @@ public abstract class UpdateUserTest extends AbstractRapidAuthIntegrationTest
 						.header(HttpHeaders.AUTHORIZATION, token))
 				.andExpect(status().isForbidden());
 
-		AbstractUser<Long> updated = getUserService().findById(getUser().getId()).get();
+		AbstractUser<Serializable> updated = getUserService().findById(getUser().getId()).get();
 
 		// Ensure that data has not changed
 		Assertions.assertEquals(USER_CONTACT_INFORMATION, updated.getContactInformation());

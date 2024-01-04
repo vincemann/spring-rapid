@@ -14,6 +14,8 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 
+import java.io.Serializable;
+
 import static com.github.vincemann.springrapid.authtests.adapter.AuthTestAdapter.*;
 import static org.hamcrest.Matchers.containsString;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
@@ -39,7 +41,7 @@ public class ChangeContactInformationTest extends AbstractRapidAuthIntegrationTe
 				.andExpect(jsonPath("$.id").value(getUser().getId()));
 
 		
-		AbstractUser<Long> updatedUser = getUserService().findById(getUser().getId()).get();
+		AbstractUser<Serializable> updatedUser = getUserService().findById(getUser().getId()).get();
 		Assertions.assertNull(updatedUser.getNewContactInformation());
 		Assertions.assertEquals(NEW_CONTACT_INFORMATION, updatedUser.getContactInformation());
 	}
@@ -57,7 +59,7 @@ public class ChangeContactInformationTest extends AbstractRapidAuthIntegrationTe
 				.andExpect(jsonPath("$.id").value(getUnverifiedUser().getId()));
 
 
-		AbstractUser<Long> updatedUser = getUserService().findById(getUnverifiedUser().getId()).get();
+		AbstractUser<Serializable> updatedUser = getUserService().findById(getUnverifiedUser().getId()).get();
 		Assertions.assertNull(updatedUser.getNewContactInformation());
 		Assertions.assertEquals(NEW_CONTACT_INFORMATION, updatedUser.getContactInformation());
 	}
@@ -145,7 +147,7 @@ public class ChangeContactInformationTest extends AbstractRapidAuthIntegrationTe
 			@SneakyThrows
 			@Override
 			public void run() {
-				AbstractUser<Long> user = getUserService().findById(getUser().getId()).get();
+				AbstractUser<Serializable> user = getUserService().findById(getUser().getId()).get();
 				user.setCredentialsUpdatedMillis(System.currentTimeMillis());
 				getUserService().fullUpdate(user);
 			}
@@ -191,7 +193,7 @@ public class ChangeContactInformationTest extends AbstractRapidAuthIntegrationTe
 			@SneakyThrows
 			@Override
 			public void run() {
-				AbstractUser<Long> user = getUserService().findById(getSecondUser().getId()).get();
+				AbstractUser<Serializable> user = getUserService().findById(getSecondUser().getId()).get();
 				user.setContactInformation(NEW_CONTACT_INFORMATION);
 				getUserService().fullUpdate(user);
 			}

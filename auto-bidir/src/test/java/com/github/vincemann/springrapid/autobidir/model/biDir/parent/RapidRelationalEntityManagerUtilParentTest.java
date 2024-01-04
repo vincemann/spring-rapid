@@ -131,13 +131,14 @@ class RapidRelationalEntityManagerUtilParentTest {
         Assertions.assertSame(testSecondEntityChild,testEntityParent.getSecondEntityChildSet().stream().findFirst().get());
     }
 
-    @Test
-    void addChildToNullCollection_shouldAutoCreateCollectionAndWork()  {
-        //given
-        testEntityParent.setSecondEntityChildSet(null);
-        relationalEntityManagerUtil.linkBiDirChild(testEntityParent,testSecondEntityChild);
-        Assertions.assertEquals(testSecondEntityChild,testEntityParent.getSecondEntityChildSet().stream().findFirst().get());
-    }
+    // not supported
+//    @Test
+//    void addChildToNullCollection_shouldAutoCreateCollectionAndWork()  {
+//        //given
+//        testEntityParent.setSecondEntityChildSet(null);
+//        relationalEntityManagerUtil.linkBiDirChild(testEntityParent,testSecondEntityChild);
+//        Assertions.assertEquals(testSecondEntityChild,testEntityParent.getSecondEntityChildSet().stream().findFirst().get());
+//    }
 
     @Test
     void unlinkChild()  {

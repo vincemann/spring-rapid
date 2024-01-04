@@ -105,8 +105,6 @@ public class ReflectionUtils {
 
     public static Set<String> findAllNonNullFieldNames(Object entity){
 
-        Class<?> entityClass = entity.getClass();
-
         Set<String> result = new HashSet<>();
         org.springframework.util.ReflectionUtils.doWithFields(entity.getClass(), f -> {
             result.add(f.getName());

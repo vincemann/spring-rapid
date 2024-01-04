@@ -6,6 +6,8 @@ import com.github.vincemann.springrapid.auth.dto.RequestContactInformationChange
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
+import java.io.Serializable;
+
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
@@ -31,7 +33,7 @@ public class RequestContactInformationChangeTest extends AbstractRapidAuthIntegr
 
 		verify(aopUnproxy(mailSender)).send(any());
 
-		AbstractUser<Long> updatedUser = getUserService().findById(getUnverifiedUser().getId()).get();
+		AbstractUser<Serializable> updatedUser = getUserService().findById(getUnverifiedUser().getId()).get();
 		Assertions.assertEquals(NEW_CONTACT_INFORMATION, updatedUser.getNewContactInformation());
 		Assertions.assertEquals(UNVERIFIED_USER_CONTACT_INFORMATION, updatedUser.getContactInformation());
 	}
@@ -44,7 +46,7 @@ public class RequestContactInformationChangeTest extends AbstractRapidAuthIntegr
 
 		verify(aopUnproxy(mailSender)).send(any());
 
-		AbstractUser<Long> updatedUser = getUserService().findById(getUser().getId()).get();
+		AbstractUser<Serializable> updatedUser = getUserService().findById(getUser().getId()).get();
 		Assertions.assertEquals(NEW_CONTACT_INFORMATION, updatedUser.getNewContactInformation());
 		Assertions.assertEquals(USER_CONTACT_INFORMATION, updatedUser.getContactInformation());
 	}
@@ -58,7 +60,7 @@ public class RequestContactInformationChangeTest extends AbstractRapidAuthIntegr
 		mvc.perform(testTemplate.requestContactInformationChange(getUser().getId(),token,contactInformationChangeDto()))
 				.andExpect(status().is(204));
 
-		AbstractUser<Long> updatedUser = getUserService().findById(getUser().getId()).get();
+		AbstractUser<Serializable> updatedUser = getUserService().findById(getUser().getId()).get();
 		Assertions.assertEquals(NEW_CONTACT_INFORMATION, updatedUser.getNewContactInformation());
 	}	
 	
@@ -82,7 +84,7 @@ public class RequestContactInformationChangeTest extends AbstractRapidAuthIntegr
 		
 		verify(aopUnproxy(mailSender), never()).send(any());
 
-		AbstractUser<Long> updatedUser = getUserService().findById(getSecondUser().getId()).get();
+		AbstractUser<Serializable> updatedUser = getUserService().findById(getSecondUser().getId()).get();
 		Assertions.assertNull(updatedUser.getNewContactInformation());
 	}
 	
@@ -96,7 +98,7 @@ public class RequestContactInformationChangeTest extends AbstractRapidAuthIntegr
 		
 		verify(aopUnproxy(mailSender), never()).send(any());
 
-		AbstractUser<Long> updatedUser = getUserService().findById(getSecondAdmin().getId()).get();
+		AbstractUser<Serializable> updatedUser = getUserService().findById(getSecondAdmin().getId()).get();
 		Assertions.assertNull(updatedUser.getNewContactInformation());
 	}
 

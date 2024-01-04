@@ -12,6 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
+import java.io.Serializable;
 import java.util.Optional;
 import java.util.Set;
 
@@ -60,9 +61,9 @@ public class SignupTest extends AbstractRapidAuthIntegrationTest {
 		Assertions.assertEquals(signupDto.getContactInformation(), mailData.getTo());
 		Assertions.assertNotNull(mailData.getCode());
 
-		Optional<AbstractUser<Long>> byContactInformation = getUserService().findByContactInformation(signupDto.getContactInformation());
+		Optional<AbstractUser<Serializable>> byContactInformation = getUserService().findByContactInformation(signupDto.getContactInformation());
 		Assertions.assertTrue(byContactInformation.isPresent());
-		AbstractUser<Long> dbUser = byContactInformation.get();
+		AbstractUser<Serializable> dbUser = byContactInformation.get();
 
 
 		// Ensure that password got encrypted

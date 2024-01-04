@@ -8,6 +8,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.test.context.jdbc.Sql;
 
+import java.io.Serializable;
+
 import static org.hamcrest.Matchers.containsString;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -65,7 +67,7 @@ public class LoginTest extends AbstractRapidAuthIntegrationTest {
 			@SneakyThrows
 			@Override
 			public void run() {
-				AbstractUser<Long> user = getUserService().findById(getUser().getId()).get();
+				AbstractUser<Serializable> user = getUserService().findById(getUser().getId()).get();
 				user.setCredentialsUpdatedMillis(System.currentTimeMillis());
 				getUserService().softUpdate(user);
 			}

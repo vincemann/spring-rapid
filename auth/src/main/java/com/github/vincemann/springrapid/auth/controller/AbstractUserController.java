@@ -54,7 +54,7 @@ public abstract class AbstractUserController<U extends AbstractUser<ID>, ID exte
 
 
 	// dont change to S, autoconfig needs raw userService version, getUserService methods will cast to S
-	private UserService<U,ID> userService;
+	private S userService;
 	private HttpTokenService httpTokenService;
 	private AuthProperties authProperties;
 
@@ -629,7 +629,7 @@ public abstract class AbstractUserController<U extends AbstractUser<ID>, ID exte
 //		httpTokenService.appendToken(token,response);
 //	}
 
-	protected U fetchUser(ID userId) throws BadEntityException, EntityNotFoundException {
+	protected U fetchUser(ID userId) throws EntityNotFoundException {
 		Optional<U> byId =  getUserService().findById(userId);
 		VerifyEntity.isPresent(byId,"User with id: "+userId+" not found");
 		return byId.get();
@@ -657,7 +657,7 @@ public abstract class AbstractUserController<U extends AbstractUser<ID>, ID exte
 //	@Root
 	@Lazy
 	@Autowired
-	public void injectUserService(UserService<U,ID> Service) {
+	public void injectUserService(S Service) {
 		this.userService = Service;
 	}
 
@@ -666,10 +666,6 @@ public abstract class AbstractUserController<U extends AbstractUser<ID>, ID exte
 	}
 
 	protected S getUserService(){
-		return (S) this.userService;
-	}
-
-	public UserService<U,ID> getUService(){
 		return this.userService;
 	}
 

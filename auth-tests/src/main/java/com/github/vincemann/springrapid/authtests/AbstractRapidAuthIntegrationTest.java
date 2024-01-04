@@ -27,6 +27,7 @@ import org.springframework.boot.autoconfigure.ImportAutoConfiguration;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.boot.test.mock.mockito.SpyBean;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.http.HttpHeaders;
 import org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers;
 import org.springframework.test.context.jdbc.Sql;
@@ -62,7 +63,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @ImportAutoConfiguration(exclude = RapidAdminAutoConfiguration.class)
 @Getter
 @Slf4j
-@Sql(scripts = "classpath:/remove-user.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
+// dont do like that because its db impl specific - use service
+//@Sql(scripts = "classpath:/remove-user.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
 public abstract class AbstractRapidAuthIntegrationTest
         extends UserIntegrationControllerTest<AbstractUserController> {
 
@@ -70,10 +72,12 @@ public abstract class AbstractRapidAuthIntegrationTest
 
     @Autowired
     @Acl
-    private UserService<AbstractUser<Long>, Long> aclUserService;
+    @Lazy
+    private UserService<AbstractUser<Serializable>,Serializable> aclUserService;
 
     @Autowired
-    private UserService<AbstractUser<Long>, Long> userService;
+    @Lazy
+    private UserService<AbstractUser<Serializable>,Serializable> userService;
 
     @MockBean
     protected MailSender<?> mailSender;
@@ -93,15 +97,15 @@ public abstract class AbstractRapidAuthIntegrationTest
     @Autowired
     protected JweTokenService jweTokenService;
 
-    protected Map<Long, String> tokens = new HashMap<>(6);
+    protected Map<Serializable, String> tokens = new HashMap<>(6);
 
-    protected AbstractUser<Long> admin;
-    protected AbstractUser<Long> secondAdmin;
-    protected AbstractUser<Long> blockedAdmin;
-    protected AbstractUser<Long> user;
-    protected AbstractUser<Long> secondUser;
-    protected AbstractUser<Long> unverifiedUser;
-    protected AbstractUser<Long> blockedUser;
+    protected AbstractUser<Serializable> admin;
+    protected AbstractUser<Serializable> secondAdmin;
+    protected AbstractUser<Serializable> blockedAdmin;
+    protected AbstractUser<Serializable> user;
+    protected AbstractUser<Serializable> secondUser;
+    protected AbstractUser<Serializable> unverifiedUser;
+    protected AbstractUser<Serializable> blockedUser;
 
     @Autowired
     protected AuthTestAdapter testAdapter;
@@ -206,12 +210,12 @@ public abstract class AbstractRapidAuthIntegrationTest
         System.err.println("TEST ENDS HERE -----------------------------------------------------------------------------------------------------------------");
         System.err.println("clearing test data");
         tokens.clear();
-//        System.err.println("deleting users");
+        System.err.println("deleting users");
         clearAclCache();
         // done via sql script
-//        TransactionalRapidTestUtil.clear(aclUserService);
-//        System.err.println("deleted users");
-//        System.err.println("test data cleared");
+        TransactionalRapidTestUtil.clear(aclUserService);
+        System.err.println("deleted users");
+        System.err.println("test data cleared");
 
         Mockito.reset(aopUnproxy(mailSender));
         testAdapter.afterEach();

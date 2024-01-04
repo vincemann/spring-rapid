@@ -12,6 +12,8 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 
+import java.io.Serializable;
+
 import static org.hamcrest.Matchers.*;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -26,7 +28,7 @@ public class VerificationTest extends AbstractRapidAuthIntegrationTest {
 	public void canVerifyContactInformation() throws Exception {
 		SignupDto signupDto = createValidSignupDto();
 		MailData mailData = testTemplate.signup2xx(signupDto);
-		AbstractUser<Long> savedUser = getUserService().findByContactInformation(signupDto.getContactInformation()).get();
+		AbstractUser<Serializable> savedUser = getUserService().findByContactInformation(signupDto.getContactInformation()).get();
 		mvc.perform(testTemplate.verifyContactInformationWithLink(mailData.getLink()))
 				.andExpect(status().is(200))
 				.andExpect(header().string(HttpHeaders.AUTHORIZATION, containsString(".")))
@@ -96,7 +98,7 @@ public class VerificationTest extends AbstractRapidAuthIntegrationTest {
 		SignupDto signupDto = createValidSignupDto();
 		mockJwtExpirationTime(50L);
 		MailData mailData = testTemplate.signup2xx(signupDto);
-		AbstractUser<Long> savedUser = getUserService().findByContactInformation(signupDto.getContactInformation()).get();
+		AbstractUser<Serializable> savedUser = getUserService().findByContactInformation(signupDto.getContactInformation()).get();
 		// expired token
 		Thread.sleep(51L);
 		mvc.perform(testTemplate.verifyContactInformationWithLink(mailData.getLink()))
@@ -123,7 +125,7 @@ public class VerificationTest extends AbstractRapidAuthIntegrationTest {
 			@SneakyThrows
 			@Override
 			public void run() {
-				AbstractUser<Long> savedUser = getUserService().findByContactInformation(signupDto.getContactInformation()).get();
+				AbstractUser<Serializable> savedUser = getUserService().findByContactInformation(signupDto.getContactInformation()).get();
 
 				// Credentials updated after the verification token is issued
 				savedUser.setCredentialsUpdatedMillis(System.currentTimeMillis());
