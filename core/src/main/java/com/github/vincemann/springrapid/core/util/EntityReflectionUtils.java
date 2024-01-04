@@ -6,6 +6,7 @@ import org.springframework.data.util.ReflectionUtils;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -25,6 +26,17 @@ public class EntityReflectionUtils {
             return super.matches(field) && field.getType().equals(fieldType);
         }
     }
+
+    public static Set<String> findCollectionFields(Set<String> fields, Class<?> entityClass) {
+        Set<String> collectionFields = new HashSet<>();
+
+        org.springframework.util.ReflectionUtils.doWithFields(entityClass, field -> {
+            collectionFields.add(field.getName());
+        }, field -> fields.contains(field.getName()) && Collection.class.isAssignableFrom(field.getType()));
+
+        return collectionFields;
+    }
+
 
     private static class NameAndAnnotationAndFieldTypeFilter extends AnnotationAndFieldTypeFilter {
         private Set<String> fieldNames = new HashSet<>();

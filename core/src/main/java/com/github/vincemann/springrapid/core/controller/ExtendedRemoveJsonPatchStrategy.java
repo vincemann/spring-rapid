@@ -45,7 +45,7 @@ public class ExtendedRemoveJsonPatchStrategy implements JsonPatchStrategy {
 
     @Cacheable(value = "patchInfo")
     @Override
-    public PatchInfo findPatchInfo(String patchString) throws BadEntityException {
+    public PatchInfo createPatchInfo(String patchString) throws BadEntityException {
         try {
             PatchInfo patchInfo = new PatchInfo();
             JsonNode patchNode = objectMapper.readTree(patchString);

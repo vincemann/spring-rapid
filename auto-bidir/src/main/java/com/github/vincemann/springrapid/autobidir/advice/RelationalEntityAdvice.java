@@ -22,6 +22,7 @@ import org.springframework.data.jpa.repository.support.SimpleJpaRepository;
 import org.springframework.test.util.AopTestUtils;
 
 import java.io.Serializable;
+import java.util.Arrays;
 import java.util.Optional;
 
 import static com.github.vincemann.springrapid.autobidir.advice.RelationalServiceUpdateAdvice.RELATIONAL_UPDATE_CONTEXT_KEY;
@@ -113,11 +114,14 @@ public class RelationalEntityAdvice {
             // update
             switch (updateContext.getOperationType()){
                 case FULL:
-                    relationalEntityManager.update(entity, updateContext.getDetachedSourceEntity(),updateContext.getDetachedUpdateEntity());
+                    relationalEntityManager.update(entity, updateContext.getDetachedOldEntity(),updateContext.getDetachedUpdateEntity());
                     clearContext();
                     break;
                 case PARTIAL:
-                    relationalEntityManager.partialUpdate(entity, updateContext.getDetachedSourceEntity(), updateContext.getDetachedUpdateEntity());
+                    String[] whiteListedFieldsToUpdate = updateContext.getWhiteListedFields().toArray(new String[0]);
+                    System.err.println(Arrays.toString(whiteListedFieldsToUpdate));
+                    relationalEntityManager.partialUpdate(entity, updateContext.getDetachedOldEntity(),
+                            updateContext.getDetachedUpdateEntity(), whiteListedFieldsToUpdate);
                     clearContext();
                     break;
                 case SOFT:

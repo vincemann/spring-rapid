@@ -142,7 +142,7 @@ public abstract class GenericCrudController
         String patchString = readBody(request);
         log.debug("patchString: " + patchString);
         ID id = fetchId(request);
-        //user does also need read permission if he wants to update user, so i can check read permission here instead of using raw service
+        //user does also need read permission if he wants to update user, so I can check read permission here instead of using unsecured service
         // i indirectly check if by using secured service.findById
         Optional<E> savedOptional = getService().findById(id);
         VerifyEntity.isPresent(savedOptional, id, getEntityClass());
@@ -151,9 +151,9 @@ public abstract class GenericCrudController
         beforeUpdate(dtoClass, id, patchString, request, response);
         jsonDtoPropertyValidator.validatePatch(patchString,dtoClass);
 
-        PatchInfo patchInfo = jsonPatchStrategy.findPatchInfo(patchString);
-        Object patchDto = dtoMapper.mapToDto(saved, dtoClass,
-                patchInfo.getUpdatedFields().toArray(new String[patchInfo.getUpdatedFields().size()]));
+
+        PatchInfo patchInfo = jsonPatchStrategy.createPatchInfo(patchString);
+        Object patchDto = dtoMapper.mapToDto(saved, dtoClass, patchInfo.getUpdatedFields().toArray(new String[0]));
         patchDto = jsonPatchStrategy.applyPatch(patchDto, patchString);
         // map to dto mapped schon nur die updated properties, also muss es bei mapToEntity nicht erneut limited werden auf mapped properties
         E patchEntity = dtoMapper.mapToEntity(patchDto, getEntityClass());
@@ -164,11 +164,12 @@ public abstract class GenericCrudController
         // id field can be any name!
 //        allUpdatedFields.add("id");
         allUpdatedFields.add(IdPropertyNameUtils.findIdFieldName(patchEntity.getClass()));
-        EntityReflectionUtils.setNonMatchingFieldsNull(patchEntity,allUpdatedFields);
+        Set<String> updatedCollectionFields = EntityReflectionUtils.findCollectionFields(allUpdatedFields, getEntityClass());
+
 
         logSecurityContext();
         E updated = servicePartialUpdate(patchEntity,
-                allUpdatedFields,
+                updatedCollectionFields,
                 IdPropertyNameUtils.transformIdFieldNames(patchInfo.getRemoveSingleMembersFields())
         );
         Class<?> resultDtoClass = createDtoClass(getUpdateUrl(), Direction.RESPONSE, updated);

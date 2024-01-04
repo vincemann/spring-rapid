@@ -12,11 +12,9 @@ import lombok.extern.slf4j.Slf4j;
 import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Before;
-import org.hibernate.Hibernate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.annotation.Order;
 
-import java.lang.reflect.Proxy;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
@@ -28,8 +26,12 @@ public class RelationalServiceUpdateAdvice {
 
     public static final String RELATIONAL_UPDATE_CONTEXT_KEY = "relational-update-context";
 
-    @Autowired
     private EntityLocator entityLocator;
+
+    @Autowired
+    public void setEntityLocator(EntityLocator entityLocator) {
+        this.entityLocator = entityLocator;
+    }
 
     @Before(
             value = "com.github.vincemann.springrapid.core.SystemArchitecture.serviceOperation() && " +
@@ -123,15 +125,16 @@ public class RelationalServiceUpdateAdvice {
             log.debug("setting relational context: " + joinPoint.getTarget() + "->" + joinPoint.getSignature().getName());
         IdentifiableEntity old = entityLocator.findEntity(updateEntity).get();
 
-        IdentifiableEntity detachedSourceEntity = ReflectionUtils.createInstance(updateEntity.getClass());
+        IdentifiableEntity detachedOldEntity = ReflectionUtils.createInstance(updateEntity.getClass());
         Set<String> whiteList = new HashSet<>(collectionsToUpdate);
         whiteList.addAll(Arrays.asList(fieldsToRemove));
         // expects all collections to be initialized and not of Persistent Type
-        NullAwareBeanUtils.copyProperties(detachedSourceEntity,old,whiteList);
+        NullAwareBeanUtils.copyProperties(detachedOldEntity,old,whiteList);
 
         RelationalAdviceContext updateContext = RelationalAdviceContext.builder()
                 .detachedUpdateEntity(MyJpaUtils.deepDetachOrGet(updateEntity))
-                .detachedSourceEntity(detachedSourceEntity)
+                .detachedOldEntity(detachedOldEntity)
+                .whiteListedFields(whiteList)
                 .operationType(RelationalAdviceContext.OperationType.PARTIAL)
                 .build();
         ServiceCallContextHolder.getSubContext().setValue(RELATIONAL_UPDATE_CONTEXT_KEY, updateContext);
@@ -148,11 +151,11 @@ public class RelationalServiceUpdateAdvice {
         // java.lang.ClassCastException: class io.gitlab.vinceconrad.votesnackbackend.model.Exercise$HibernateProxy$ipV9X1Mb cannot be cast to class org.hibernate.proxy.LazyInitializer
 
         IdentifiableEntity old = entityLocator.findEntity(updateEntity).get();
-        IdentifiableEntity detachedSourceEntity = BeanUtils.clone(ProxyUtils.hibernateUnproxy(old));
+        IdentifiableEntity detachedOldEntity = BeanUtils.clone(ProxyUtils.hibernateUnproxy(old));
 
         RelationalAdviceContext updateContext = RelationalAdviceContext.builder()
                 .detachedUpdateEntity(MyJpaUtils.deepDetachOrGet(updateEntity))
-                .detachedSourceEntity(detachedSourceEntity)
+                .detachedOldEntity(detachedOldEntity)
                 .operationType(RelationalAdviceContext.OperationType.FULL)
                 .build();
         ServiceCallContextHolder.getSubContext().setValue(RELATIONAL_UPDATE_CONTEXT_KEY, updateContext);

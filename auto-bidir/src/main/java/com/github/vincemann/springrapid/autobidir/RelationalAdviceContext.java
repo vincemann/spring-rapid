@@ -5,6 +5,8 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.util.Set;
+
 @Getter
 @Setter
 //@AllArgsConstructor
@@ -20,6 +22,7 @@ public class RelationalAdviceContext {
 
 //    public IdentifiableEntity oldEntity;
     private IdentifiableEntity detachedUpdateEntity;
-    private IdentifiableEntity detachedSourceEntity;
+    private IdentifiableEntity detachedOldEntity;
     private OperationType operationType;
+    private Set<String> whiteListedFields;
 }

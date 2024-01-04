@@ -129,19 +129,18 @@ public class RapidRelationalEntityManager implements RelationalEntityManager {
         // unlink child from removed parent -> parent.child = null;
         for (IdentifiableEntity removedParent : removedParents) {
             if (log.isDebugEnabled())
-                log.debug("update: unlinking parent: " + removedParent + " from child: " + update);
+                log.debug("update: unlinking child: " + update + " from removed parent: " + removedParent);
             // could use managed instead of update here but doesnt matter
-            relationalEntityManagerUtil.unlinkBiDirChild(removedParent, update, membersToCheck);
+            relationalEntityManagerUtil.unlinkBiDirChild(removedParent, update);
             entityManager.merge(removedParent);
         }
 
         // link child to added parent -> parent.child = child;
         for (IdentifiableEntity addedParent : addedParents) {
             if (log.isDebugEnabled())
-                log.debug("update: linking parent: " + addedParent + " to child: " + managed);
+                log.debug("update: linking child: " + managed + " to added parent: " + addedParent);
             // cant use partial update entity here, need full managed updated
-//            relationalEntityManagerUtil.linkBiDirChild(addedParent, update, membersToCheck);
-            relationalEntityManagerUtil.linkBiDirChild(addedParent, managed, membersToCheck);
+            relationalEntityManagerUtil.linkBiDirChild(addedParent, managed);
             entityManager.merge(addedParent);
         }
         return newParents;
@@ -181,7 +180,7 @@ public class RapidRelationalEntityManager implements RelationalEntityManager {
         // unlink parent from removed child -> child.parent = null;
         for (IdentifiableEntity removedChild : removedChildren) {
             if (log.isDebugEnabled())
-                log.debug("unlinking child: " + removedChild + " from parent: " + updateParent);
+                log.debug("unlinking parent: " + updateParent + " from removed child: " + removedChild);
             // could use managed instead of update here but doesnt matter
             relationalEntityManagerUtil.unlinkBiDirParent(removedChild, updateParent);
             entityManager.merge(removedChild);
@@ -190,7 +189,7 @@ public class RapidRelationalEntityManager implements RelationalEntityManager {
         //link parent to added child -> child.parent = parent;
         for (IdentifiableEntity addedChild : addedChildren) {
             if (log.isDebugEnabled())
-                log.debug("linking child: " + addedChild + " to parent: " + managed);
+                log.debug("linking parent: " + managed + " to added child: " + addedChild);
             // need to set managed here not partial update variant with tons of null fields
             relationalEntityManagerUtil.linkBiDirParent(addedChild, managed);
             entityManager.merge(addedChild);
