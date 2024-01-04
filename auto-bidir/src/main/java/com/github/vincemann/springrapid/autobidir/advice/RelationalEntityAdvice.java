@@ -9,7 +9,9 @@ import com.github.vincemann.springrapid.core.service.CrudService;
 import com.github.vincemann.springrapid.core.service.context.ServiceCallContextHolder;
 import com.github.vincemann.springrapid.core.service.context.SubServiceCallContext;
 import com.github.vincemann.springrapid.core.service.locator.CrudServiceLocator;
-import com.github.vincemann.springrapid.core.util.*;
+import com.github.vincemann.springrapid.core.util.EntityLocator;
+import com.github.vincemann.springrapid.core.util.ProxyUtils;
+import com.github.vincemann.springrapid.core.util.RepositoryUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.annotation.Aspect;
@@ -19,8 +21,6 @@ import org.springframework.core.annotation.Order;
 import org.springframework.data.jpa.repository.support.SimpleJpaRepository;
 import org.springframework.test.util.AopTestUtils;
 
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
 import java.io.Serializable;
 import java.util.Optional;
 
@@ -35,9 +35,6 @@ public class RelationalEntityAdvice {
     private RelationalEntityManager relationalEntityManager;
 
     private CrudServiceLocator crudServiceLocator;
-
-    @PersistenceContext
-    private EntityManager entityManager;
 
 
     @Before("com.github.vincemann.springrapid.core.SystemArchitecture.deleteOperation() && " +
@@ -136,11 +133,11 @@ public class RelationalEntityAdvice {
             subContext.clearValue(RELATIONAL_UPDATE_CONTEXT_KEY);
     }
 
-    protected Optional<IdentifiableEntity> resolveById(JoinPoint joinPoint, Serializable id) {
-        SimpleJpaRepository repo = AopTestUtils.getUltimateTargetObject(joinPoint.getTarget());
-        Class entityClass = RepositoryUtil.getRepoType(repo);
-        return entityLocator.findEntity(entityClass,id);
-    }
+//    protected Optional<IdentifiableEntity> resolveById(JoinPoint joinPoint, Serializable id) {
+//        SimpleJpaRepository repo = AopTestUtils.getUltimateTargetObject(joinPoint.getTarget());
+//        Class entityClass = RepositoryUtil.getRepoType(repo);
+//        return entityLocator.findEntity(entityClass,id);
+//    }
 
     // todo just create repoLocator...
     protected Optional<IdentifiableEntity> repoResolveById(JoinPoint joinPoint, Serializable id) {

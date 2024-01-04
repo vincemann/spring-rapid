@@ -25,25 +25,18 @@ public class RapidRelationalEntityManager implements RelationalEntityManager {
 
     @Override
     public <E extends IdentifiableEntity> E save(E entity, String... membersToCheck) {
-//        if (entity.getId() != null) {
-//            throw new IllegalArgumentException("save needs null id");
-//        }
         Set<RelationalEntityType> relationalEntityTypes = relationalEntityManagerUtil.inferTypes(getTargetClass(entity));
         if (relationalEntityTypes.contains(RelationalEntityType.BiDirParent)) {
             if (log.isDebugEnabled())
                 log.debug("applying pre persist BiDirParent logic for: " + entity);
             // also filter for class obj stored in annotation, so if I update only one BiDirChildCollection, only init this one
             // with the right class
-//            entity = BiDirJpaUtils.initializeSubEntities(entity, BiDirChildCollection.class);
-//            entity = BiDirJpaUtils.initializeSubEntities(entity, BiDirChildEntity.class);
             relationalEntityManagerUtil.linkBiDirChildrensParent(entity);
         }
 
         if (relationalEntityTypes.contains(RelationalEntityType.BiDirChild)) {
             if (log.isDebugEnabled())
                 log.debug("applying pre persist BiDirChild logic for: " + entity);
-//            entity = BiDirJpaUtils.initializeSubEntities(entity, BiDirParentEntity.class);
-//            entity = BiDirJpaUtils.initializeSubEntities(entity, BiDirParentCollection.class);
             relationalEntityManagerUtil.linkBiDirParentsChild(entity);
         }
         return entity;
@@ -81,7 +74,6 @@ public class RapidRelationalEntityManager implements RelationalEntityManager {
                 log.debug("applying pre partial-update BiDirChild logic for: " + oldEntity.getClass());
             updateBiDirChildRelations(managed, oldEntity, updateEntity,membersToCheck);
         }
-        // should be updated now, otherwise we need parameter updateEntity instead
         return oldEntity;
     }
 
@@ -111,7 +103,7 @@ public class RapidRelationalEntityManager implements RelationalEntityManager {
         // new parents are detached
         Collection<IdentifiableEntity> newParents = relationalEntityManagerUtil.findAllBiDirParents(update, membersToCheck);
 
-        //find parents to unlink
+        // find parents to unlink -> child of those need to be unlinked
         List<IdentifiableEntity> removedParents = new ArrayList<>();
         for (IdentifiableEntity oldParent : oldParents) {
             if (!newParents.contains(oldParent)) {
@@ -119,7 +111,7 @@ public class RapidRelationalEntityManager implements RelationalEntityManager {
             }
         }
 
-        //find added parents
+        // find added parents -> child of those need to be linked
         List<IdentifiableEntity> addedParents = new ArrayList<>();
         for (IdentifiableEntity newParent : newParents) {
             if (!oldParents.contains(newParent)) {
@@ -134,7 +126,7 @@ public class RapidRelationalEntityManager implements RelationalEntityManager {
         // both collections of children are detached, so relevant entities need to be merged after link/unlink
         adjustUpdatedEntities(addedParents, removedParents);
 
-        // unlink Child from certain Parents
+        // unlink child from removed parent -> parent.child = null;
         for (IdentifiableEntity removedParent : removedParents) {
             if (log.isDebugEnabled())
                 log.debug("update: unlinking parent: " + removedParent + " from child: " + update);
@@ -143,7 +135,7 @@ public class RapidRelationalEntityManager implements RelationalEntityManager {
             entityManager.merge(removedParent);
         }
 
-        // link added Parent to child
+        // link child to added parent -> parent.child = child;
         for (IdentifiableEntity addedParent : addedParents) {
             if (log.isDebugEnabled())
                 log.debug("update: linking parent: " + addedParent + " to child: " + managed);
@@ -162,7 +154,7 @@ public class RapidRelationalEntityManager implements RelationalEntityManager {
         // newChildren are detached
         Collection<IdentifiableEntity> newChildren = relationalEntityManagerUtil.findAllBiDirChildren(updateParent,membersToCheck);
 
-        // find Children to unlink
+        // find removed children -> parent of those need to be unlinked
         List<IdentifiableEntity> removedChildren = new ArrayList<>();
         for (IdentifiableEntity oldChild : oldChildren) {
             if (!newChildren.contains(oldChild)) {
@@ -170,7 +162,7 @@ public class RapidRelationalEntityManager implements RelationalEntityManager {
             }
         }
 
-        // find added Children
+        // find added children -> parent of those need to be linked
         List<IdentifiableEntity> addedChildren = new ArrayList<>();
         for (IdentifiableEntity newChild : newChildren) {
             if (!oldChildren.contains(newChild)) {
@@ -186,7 +178,7 @@ public class RapidRelationalEntityManager implements RelationalEntityManager {
         adjustUpdatedEntities(addedChildren, removedChildren);
 
 
-        // unlink removed Children from parent
+        // unlink parent from removed child -> child.parent = null;
         for (IdentifiableEntity removedChild : removedChildren) {
             if (log.isDebugEnabled())
                 log.debug("unlinking child: " + removedChild + " from parent: " + updateParent);
@@ -195,7 +187,7 @@ public class RapidRelationalEntityManager implements RelationalEntityManager {
             entityManager.merge(removedChild);
         }
 
-        //link added Children to parent
+        //link parent to added child -> child.parent = parent;
         for (IdentifiableEntity addedChild : addedChildren) {
             if (log.isDebugEnabled())
                 log.debug("linking child: " + addedChild + " to parent: " + managed);
