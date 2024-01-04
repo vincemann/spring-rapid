@@ -47,7 +47,18 @@ public class RelationalServiceUpdateAdvice {
         if (AutoBiDirUtils.isDisabled(joinPoint)) {
             return;
         }
-        preFullUpdate(joinPoint,updateEntity);
+        // java.lang.ClassCastException: class io.gitlab.vinceconrad.votesnackbackend.model.Exercise$HibernateProxy$ipV9X1Mb cannot be cast to class org.hibernate.proxy.LazyInitializer
+        // -> use unproxy
+
+        IdentifiableEntity old = entityLocator.findEntity(updateEntity).get();
+        IdentifiableEntity detachedOldEntity = MyJpaUtils.deepDetach(old);
+
+        RelationalAdviceContext updateContext = RelationalAdviceContext.builder()
+                .detachedUpdateEntity(MyJpaUtils.deepDetachOrGet(updateEntity))
+                .detachedOldEntity(detachedOldEntity)
+                .operationType(RelationalAdviceContext.OperationType.FULL)
+                .build();
+        ServiceCallContextHolder.getSubContext().setValue(RELATIONAL_UPDATE_CONTEXT_KEY, updateContext);
     }
 
     @Before(value =
@@ -96,7 +107,10 @@ public class RelationalServiceUpdateAdvice {
         if (AutoBiDirUtils.isDisabled(joinPoint)) {
             return;
         }
-        preSoftUpdate();
+        RelationalAdviceContext updateContext = RelationalAdviceContext.builder()
+                .operationType(RelationalAdviceContext.OperationType.SOFT)
+                .build();
+        ServiceCallContextHolder.getSubContext().setValue(RELATIONAL_UPDATE_CONTEXT_KEY, updateContext);
     }
 
     @Before(value =
@@ -140,25 +154,5 @@ public class RelationalServiceUpdateAdvice {
         ServiceCallContextHolder.getSubContext().setValue(RELATIONAL_UPDATE_CONTEXT_KEY, updateContext);
     }
 
-    public void preSoftUpdate(){
-        RelationalAdviceContext updateContext = RelationalAdviceContext.builder()
-                .operationType(RelationalAdviceContext.OperationType.SOFT)
-                .build();
-        ServiceCallContextHolder.getSubContext().setValue(RELATIONAL_UPDATE_CONTEXT_KEY, updateContext);
-    }
-
-    public void preFullUpdate(JoinPoint joinPoint, IdentifiableEntity updateEntity){
-        // java.lang.ClassCastException: class io.gitlab.vinceconrad.votesnackbackend.model.Exercise$HibernateProxy$ipV9X1Mb cannot be cast to class org.hibernate.proxy.LazyInitializer
-
-        IdentifiableEntity old = entityLocator.findEntity(updateEntity).get();
-        IdentifiableEntity detachedOldEntity = BeanUtils.clone(ProxyUtils.hibernateUnproxy(old));
-
-        RelationalAdviceContext updateContext = RelationalAdviceContext.builder()
-                .detachedUpdateEntity(MyJpaUtils.deepDetachOrGet(updateEntity))
-                .detachedOldEntity(detachedOldEntity)
-                .operationType(RelationalAdviceContext.OperationType.FULL)
-                .build();
-        ServiceCallContextHolder.getSubContext().setValue(RELATIONAL_UPDATE_CONTEXT_KEY, updateContext);
-    }
 
 }

@@ -1,6 +1,5 @@
 package com.github.vincemann.springrapid.autobidir;
 
-import com.github.vincemann.springrapid.core.model.IdentifiableEntity;
 import com.github.vincemann.springrapid.autobidir.exception.UnknownChildTypeException;
 import com.github.vincemann.springrapid.autobidir.exception.UnknownEntityTypeException;
 import com.github.vincemann.springrapid.autobidir.exception.UnknownParentTypeException;
@@ -12,6 +11,7 @@ import com.github.vincemann.springrapid.autobidir.model.child.annotation.UniDirC
 import com.github.vincemann.springrapid.autobidir.model.parent.annotation.BiDirParentCollection;
 import com.github.vincemann.springrapid.autobidir.model.parent.annotation.BiDirParentEntity;
 import com.github.vincemann.springrapid.autobidir.util.EntityAnnotationUtils;
+import com.github.vincemann.springrapid.core.model.IdentifiableEntity;
 import com.github.vincemann.springrapid.core.util.EntityReflectionUtils;
 import com.github.vincemann.springrapid.core.util.ProxyUtils;
 import com.google.common.collect.Sets;
@@ -24,8 +24,7 @@ import java.lang.annotation.Annotation;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-import static com.github.vincemann.springrapid.core.util.ProxyUtils.*;
-import static com.github.vincemann.springrapid.core.util.ProxyUtils.hibernateUnproxy;
+import static com.github.vincemann.springrapid.core.util.ProxyUtils.getTargetClass;
 
 @Slf4j
 public class RapidRelationalEntityManagerUtil implements RelationalEntityManagerUtil {
@@ -131,6 +130,7 @@ public class RapidRelationalEntityManagerUtil implements RelationalEntityManager
     }
 
 
+    // proxies ok
     public void unlinkBiDirParent(IdentifiableEntity child, IdentifiableEntity parent, String... membersToCheck) throws UnknownParentTypeException {
         assertEntityRelationType(child, RelationalEntityType.BiDirChild);
         assertEntityRelationType(parent, RelationalEntityType.BiDirParent);
@@ -201,7 +201,7 @@ public class RapidRelationalEntityManagerUtil implements RelationalEntityManager
      */
     public void unlinkBiDirChildrensParent(IdentifiableEntity parent, String... membersToCheck) throws UnknownParentTypeException {
         for (IdentifiableEntity child : findAllBiDirChildren(parent, membersToCheck)) {
-            unlinkBiDirParent(hibernateUnproxy(child), hibernateUnproxy(parent), membersToCheck);
+            unlinkBiDirParent(child, parent, membersToCheck);
         }
     }
 
@@ -370,6 +370,7 @@ public class RapidRelationalEntityManagerUtil implements RelationalEntityManager
         }
     }
 
+    // proxies ok
     protected void unlinkEntity(IdentifiableEntity entity, IdentifiableEntity entityToRemove, Class<? extends Annotation> entityEntityAnnotationClass, Class<? extends Annotation> entityEntityCollectionAnnotationClass, String... membersToCheck) throws UnknownEntityTypeException {
         AtomicBoolean deleted = new AtomicBoolean(false);
         for (Map.Entry<Class<IdentifiableEntity>, Collection<IdentifiableEntity>> entry : this.<IdentifiableEntity>findEntityCollections(entity, entityEntityCollectionAnnotationClass, membersToCheck).entrySet()) {
