@@ -48,7 +48,7 @@ public class RelationalServiceUpdateAdvice {
             return;
         }
         // java.lang.ClassCastException: class io.gitlab.vinceconrad.votesnackbackend.model.Exercise$HibernateProxy$ipV9X1Mb cannot be cast to class org.hibernate.proxy.LazyInitializer
-        // -> use unproxy
+        // -> use unproxy in jpaUtils
 
         IdentifiableEntity old = entityLocator.findEntity(updateEntity).get();
         IdentifiableEntity detachedOldEntity = MyJpaUtils.deepDetach(old);
@@ -139,7 +139,7 @@ public class RelationalServiceUpdateAdvice {
             log.debug("setting relational context: " + joinPoint.getTarget() + "->" + joinPoint.getSignature().getName());
         IdentifiableEntity old = entityLocator.findEntity(updateEntity).get();
 
-        IdentifiableEntity detachedOldEntity = ReflectionUtils.createInstance(updateEntity.getClass());
+        IdentifiableEntity detachedOldEntity = ReflectionUtils.createInstance(ProxyUtils.getTargetClass(updateEntity));
         Set<String> whiteList = new HashSet<>(collectionsToUpdate);
         whiteList.addAll(Arrays.asList(fieldsToRemove));
         // expects all collections to be initialized and not of Persistent Type

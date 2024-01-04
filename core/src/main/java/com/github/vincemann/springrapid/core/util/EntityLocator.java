@@ -25,7 +25,7 @@ public class EntityLocator {
     }
 
     public <E extends IdentifiableEntity> Optional<E> findEntity(E entity) {
-        return findEntity(entity.getClass(),entity.getId());
+        return findEntity(ProxyUtils.getTargetClass(entity),entity.getId());
     }
 
 
