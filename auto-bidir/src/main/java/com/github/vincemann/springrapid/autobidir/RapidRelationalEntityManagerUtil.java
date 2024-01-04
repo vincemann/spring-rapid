@@ -146,8 +146,6 @@ public class RapidRelationalEntityManagerUtil implements RelationalEntityManager
 
 
     // BiDirParent Methods
-
-
     public void linkBiDirChildrensParent(IdentifiableEntity parent, String... membersToCheck) {
         for (IdentifiableEntity child : findAllBiDirChildren(parent, membersToCheck)) {
             linkBiDirParent(child, parent, membersToCheck);

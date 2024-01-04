@@ -26,13 +26,13 @@ public class RapidAopLogAutoConfiguration {
     private static final Set<String> EXCLUDE_SECURE_FIELD_NAMES = Sets.newHashSet("password");
 
 
-//    @ConditionalOnMissingBean(ProxyAwareAopLogger.class)
-//    @Bean
-//    public ProxyAwareAopLogger aopLogger(CustomLoggerInfoFactory customLoggerInfoFactory) {
-//        GlobalRegExMethodFilter globalRegExMethodFilter = new GlobalRegExMethodFilter(
-//                GETTER_REGEX,SETTER_REGEX,"equals","hashCode","toString","^inject[A-Za-z0-9]*","getEntityClass", "getTargetClass","getBeanName");
-//        ProxyAwareAopLogger aopLogger = new ProxyAwareAopLogger(new TypeHierarchyAnnotationParser(),new InvocationDescriptorFactoryImpl(), customLoggerInfoFactory, globalRegExMethodFilter);
-//        aopLogger.setLogAdapter(new ThreadAwareIndentingLogAdapter(SKIP_NULL_FIELDS, CROP_THRESHOLD, EXCLUDE_SECURE_FIELD_NAMES,FORCE_REFLECTION));
-//        return aopLogger;
-//    }
+    @ConditionalOnMissingBean(ProxyAwareAopLogger.class)
+    @Bean
+    public ProxyAwareAopLogger aopLogger(CustomLoggerInfoFactory customLoggerInfoFactory) {
+        GlobalRegExMethodFilter globalRegExMethodFilter = new GlobalRegExMethodFilter(
+                GETTER_REGEX,SETTER_REGEX,"equals","hashCode","toString","^inject[A-Za-z0-9]*","getEntityClass", "getTargetClass","getBeanName");
+        ProxyAwareAopLogger aopLogger = new ProxyAwareAopLogger(new TypeHierarchyAnnotationParser(),new InvocationDescriptorFactoryImpl(), customLoggerInfoFactory, globalRegExMethodFilter);
+        aopLogger.setLogAdapter(new ThreadAwareIndentingLogAdapter(SKIP_NULL_FIELDS, CROP_THRESHOLD, EXCLUDE_SECURE_FIELD_NAMES,FORCE_REFLECTION));
+        return aopLogger;
+    }
 }

@@ -164,6 +164,8 @@ public abstract class GenericCrudController
         // id field can be any name!
 //        allUpdatedFields.add("id");
         allUpdatedFields.add(IdPropertyNameUtils.findIdFieldName(patchEntity.getClass()));
+        EntityReflectionUtils.setNonMatchingFieldsNull(patchEntity,allUpdatedFields);
+
         Set<String> updatedCollectionFields = EntityReflectionUtils.findCollectionFields(allUpdatedFields, getEntityClass());
 
 
