@@ -11,8 +11,6 @@ import java.util.concurrent.ConcurrentHashMap;
 
 public class ReflectionUtils {
 
-    private static final Map<Class<?>, Set<String>> fieldNamesCache = new HashMap<>();
-
 
     public static <T> T createInstance(Class<T> clazz) {
         try {
@@ -109,11 +107,6 @@ public class ReflectionUtils {
 
         Class<?> entityClass = entity.getClass();
 
-        // Check if the result is already cached
-        if (fieldNamesCache.containsKey(entityClass)) {
-            return fieldNamesCache.get(entityClass);
-        }
-
         Set<String> result = new HashSet<>();
         org.springframework.util.ReflectionUtils.doWithFields(entity.getClass(), f -> {
             result.add(f.getName());
@@ -127,10 +120,6 @@ public class ReflectionUtils {
                 return org.springframework.util.ReflectionUtils.getField(field,entity) != null;
             }
         });
-
-
-        // Cache the result for this class
-        fieldNamesCache.put(entityClass, result);
 
         return result;
     }

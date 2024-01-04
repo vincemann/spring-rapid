@@ -112,8 +112,8 @@ public class ExtendedRemoveJsonPatchStrategy implements JsonPatchStrategy {
         }
     }
 
-    // todo verify caching is useful
-    @Cacheable(value = "createPatch")
+    // dont cache, different dto versions can have same id but have same key
+//    @Cacheable(value = "createPatch")
     public JsonPatch createPatch(Object dto, JsonNode patchNode) throws Exception {
         Map<Collection, List<Integer>> removedIndicesMap = new HashMap<>();
 
