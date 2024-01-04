@@ -65,7 +65,7 @@ public class RelationalEntityAdvice {
             "args(entity)")
     public void prePersistEntity(JoinPoint joinPoint, IdentifiableEntity entity) throws Throwable {
 
-        System.err.println("PRE PERSIST: " + joinPoint.getTarget() + "->" + joinPoint.getSignature().getName());
+//        System.err.println("PRE PERSIST: " + joinPoint.getTarget() + "->" + joinPoint.getSignature().getName());
 
         if (AutoBiDirUtils.isDisabled(joinPoint)){
             return;
@@ -108,19 +108,19 @@ public class RelationalEntityAdvice {
 
         // update context is not null
 
-        if (entity.getId() == null || updateContext.getUpdateKind()==null) {
+        if (entity.getId() == null || updateContext.getOperationType()==null) {
             // save
             relationalEntityManager.save(entity);
             clearContext();
         } else {
             // update
-            switch (updateContext.getUpdateKind()){
+            switch (updateContext.getOperationType()){
                 case FULL:
-                    relationalEntityManager.update(entity,updateContext.getDetachedUpdateEntity());
+                    relationalEntityManager.update(entity, updateContext.getDetachedSourceEntity(),updateContext.getDetachedUpdateEntity());
                     clearContext();
                     break;
                 case PARTIAL:
-                    relationalEntityManager.partialUpdate(entity, updateContext.getDetachedUpdateEntity());
+                    relationalEntityManager.partialUpdate(entity, updateContext.getDetachedSourceEntity(), updateContext.getDetachedUpdateEntity());
                     clearContext();
                     break;
                 case SOFT:

@@ -40,10 +40,9 @@ public class Specialty extends MyIdentifiableEntity<Long>
 
     @Override
     public String toString() {
-        return "test";
-//        return "Specialty{" +
-//                "description='" + description + '\'' +
-//                ", vets=" + LazyToStringUtil.toStringIfLoaded(vets,Vet::getLastName) +
-//                '}';
+        return "Specialty{" +
+                "description='" + description + '\'' +
+                ", vets=" + LazyToStringUtil.toStringIfLoaded(vets,Vet::getLastName) +
+                '}';
     }
 }

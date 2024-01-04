@@ -16,6 +16,7 @@ import org.springframework.transaction.annotation.Transactional;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import java.io.Serializable;
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Optional;
 import java.util.Set;
@@ -67,7 +68,7 @@ public abstract class JPACrudService
 
     @Transactional
     @Override
-    public E partialUpdate(E update, Set<String> propertiesToUpdate, String... fieldsToRemove) throws EntityNotFoundException, BadEntityException {
+    public E partialUpdate(E update, Set<String> collectionsToUpdate, String... fieldsToRemove) throws EntityNotFoundException, BadEntityException {
         try {
 //            E managedEntity = getRepository().findById(update.getId()).orElseThrow(() -> new EntityNotFoundException(update.getId(),getEntityClass()));
             E managedEntity = findOldEntity(update.getId());
@@ -86,7 +87,9 @@ public abstract class JPACrudService
             // also copy null values from explicitly given fieldsToRemove
             // updates are applied on the go by hibernate bc entityToUpdate is managed in current session
 //            System.err.println("start with copy properties");
-            NullAwareBeanUtils.copyProperties(managedEntity, detachedUpdateEntity, propertiesToUpdate, Sets.newHashSet(fieldsToRemove));
+            Set<String> whiteList = new HashSet<>(collectionsToUpdate);
+            whiteList.addAll(Arrays.asList(fieldsToRemove));
+            NullAwareBeanUtils.copyProperties(managedEntity, detachedUpdateEntity,whiteList);
 //            System.err.println("start with repo call");
             return getRepository().save(managedEntity);
 //            System.err.println("done with repo call");
@@ -153,8 +156,6 @@ public abstract class JPACrudService
     protected E findOldEntity(Id id) throws EntityNotFoundException {
         if (id == null)
             throw new IllegalArgumentException("Id cannot be null");
-        Optional<E> entityToUpdate = findById(id);
-        VerifyEntity.isPresent(entityToUpdate, id, getEntityClass());
-        return entityToUpdate.get();
+        return findById(id).orElseThrow(() -> new EntityNotFoundException(id,getEntityClass()));
     }
 }

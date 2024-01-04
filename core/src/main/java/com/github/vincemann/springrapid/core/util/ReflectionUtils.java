@@ -4,6 +4,7 @@ import javax.persistence.ManyToMany;
 import javax.persistence.OneToMany;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Modifier;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
@@ -11,6 +12,47 @@ import java.util.concurrent.ConcurrentHashMap;
 public class ReflectionUtils {
 
     private static final Map<Class<?>, Set<String>> fieldNamesCache = new HashMap<>();
+
+
+    public static <T> T createInstance(Class<T> clazz) {
+        try {
+            return clazz.getDeclaredConstructor().newInstance();
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+    public static void initializeNullCollectionFields(Object object) {
+
+
+
+        Class<?> clazz = object.getClass();
+        Field[] fields = clazz.getDeclaredFields();
+
+        for (Field field : fields) {
+            if (Collection.class.isAssignableFrom(field.getType())) {
+                try {
+                    field.setAccessible(true);
+                    Collection<?> fieldValue = (Collection<?>) field.get(object);
+
+                    if (fieldValue == null) {
+                        // Instantiate a HashSet for Set type, ArrayList for List, and ArrayList for other Collection types
+                        if (Set.class.isAssignableFrom(field.getType())) {
+                            field.set(object, new HashSet<>());
+                        } else if (List.class.isAssignableFrom(field.getType())) {
+                            field.set(object, new ArrayList<>());
+                        } else {
+                            // Default to ArrayList for other Collection types
+                            field.set(object, new ArrayList<>());
+                        }
+                    }
+                } catch (IllegalAccessException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+    }
 
     public static void setFinal(Field field, Object target, Object newValue) throws Exception {
         field.setAccessible(true);

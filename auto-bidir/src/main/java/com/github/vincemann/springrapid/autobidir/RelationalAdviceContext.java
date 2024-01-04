@@ -11,13 +11,15 @@ import lombok.Setter;
 @Builder
 public class RelationalAdviceContext {
 
-    public enum UpdateKind{
+    public enum OperationType {
         FULL,
         PARTIAL,
-        SOFT
+        SOFT,
+        CREATE
     }
 
 //    public IdentifiableEntity oldEntity;
     private IdentifiableEntity detachedUpdateEntity;
-    private UpdateKind updateKind;
+    private IdentifiableEntity detachedSourceEntity;
+    private OperationType operationType;
 }

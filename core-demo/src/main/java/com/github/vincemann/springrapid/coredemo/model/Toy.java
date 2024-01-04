@@ -33,10 +33,9 @@ public class Toy extends MyIdentifiableEntity<Long> {
 
     @Override
     public String toString() {
-        return "test";
-//        return "Toy{" +
-//                "name='" + name + '\'' +
-//                ", pet=" + LazyToStringUtil.toStringIfLoaded(pet,Pet::getName) +
-//                '}';
+        return "Toy{" +
+                "name='" + name + '\'' +
+                ", pet=" + LazyToStringUtil.toStringIfLoaded(pet,Pet::getName) +
+                '}';
     }
 }

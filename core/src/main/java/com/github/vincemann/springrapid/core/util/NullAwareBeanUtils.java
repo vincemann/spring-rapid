@@ -14,47 +14,40 @@ import java.util.Set;
 public class NullAwareBeanUtils {
 
 
-    public static void copyProperties(Object toUpdate, Object update) {
-        BeanUtilsBean dontCopyNull = new NullAwareBeanUtilsBean();
+    /**
+     * copy all properties from update to destination that are not null on update side.
+     * collections need to be explicitly listed in whiteList
+     * properties that are null on update side, but should still be copied are listed in whiteList
+     */
+    public static void copyProperties(Object destination, Object update, Set<String> whiteList) {
+        BeanUtilsBean dontCopyNullButWhitelisted = new WhitelistNullAwareBeanUtilsBean(whiteList);
         try {
-            dontCopyNull.copyProperties(toUpdate, update);
+            dontCopyNullButWhitelisted.copyProperties(destination, update);
         } catch (IllegalAccessException | InvocationTargetException e) {
             throw new RuntimeException(e);
         }
     }
 
-    // also ignores id
-    public static void copyProperties(Object toUpdate, Object update, Set<String> collectionsWhitelist, Set<String> whiteList) {
-        BeanUtilsBean dontCopyNullButWhitelisted = new WhitelistNullAwareBeanUtilsBean(whiteList, collectionsWhitelist);
-        try {
-            dontCopyNullButWhitelisted.copyProperties(toUpdate, update);
-        } catch (IllegalAccessException | InvocationTargetException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-    private static class NullAwareBeanUtilsBean extends BeanUtilsBean {
-
-        /**
-         * Copy member from @param value to @param dst only when not null
-         */
-        @Override
-        public void copyProperty(Object dest, String name, Object value)
-                throws IllegalAccessException, InvocationTargetException {
-            if (value == null) return;
-            super.copyProperty(dest, name, value);
-        }
-    }
+//    private static class NullAwareBeanUtilsBean extends BeanUtilsBean {
+//
+//        /**
+//         * Copy member from @param value to @param dst only when not null
+//         */
+//        @Override
+//        public void copyProperty(Object dest, String name, Object value)
+//                throws IllegalAccessException, InvocationTargetException {
+//            if (value == null) return;
+//            super.copyProperty(dest, name, value);
+//        }
+//    }
 
     @Slf4j
     private static class WhitelistNullAwareBeanUtilsBean extends BeanUtilsBean {
 
-        private Set<String> whiteListed = new HashSet<>();
-        private Set<String> collectionsWhitelist = new HashSet<>();
+        private Set<String> whiteList = new HashSet<>();
 
-        public WhitelistNullAwareBeanUtilsBean(Set<String> whiteListed, Set<String> collectionsWhitelist) {
-            this.whiteListed = whiteListed;
-            this.collectionsWhitelist = collectionsWhitelist;
+        public WhitelistNullAwareBeanUtilsBean(Set<String> whiteList) {
+            this.whiteList = whiteList;
         }
 
         /**
@@ -66,8 +59,8 @@ public class NullAwareBeanUtils {
                 throws IllegalAccessException, InvocationTargetException {
             if (name.equals("id"))
                 return;
-            if (!whiteListed.isEmpty()) {
-                if (whiteListed.contains(name)) {
+            if (!whiteList.isEmpty()) {
+                if (whiteList.contains(name)) {
                     // value can be null, that's the purpose of the whitelist
                     simpleCopyProperty(dest, name, value);
                     return;
@@ -78,15 +71,14 @@ public class NullAwareBeanUtils {
                 // ignore null value
                 return;
             }
+
+            // all collections need to be whitelisted
             if (Collection.class.isAssignableFrom(value.getClass())){
-                if (!collectionsWhitelist.isEmpty()){
-                    if (collectionsWhitelist.contains(name)){
-                        simpleCopyProperty(dest, name, value);
-                        return;
+                if (!whiteList.isEmpty()) {
+                    if (!whiteList.contains(name)) {
+                       return;
                     }
                 }
-                // ignore non whitelisted property
-                return;
             }
 
             simpleCopyProperty(dest, name, value);
@@ -99,7 +91,6 @@ public class NullAwareBeanUtils {
         public void simpleCopyProperty(final Object bean, String name, Object value)
                 throws IllegalAccessException, InvocationTargetException {
 
-            System.err.println("  copyProperty(" + bean + ", " + name + ", " + value + ")");
             // Trace logging (if enabled)
             if (log.isTraceEnabled()) {
                 log.trace("  copyProperty(" + bean + ", " + name + ", " + value + ")");
@@ -159,6 +150,7 @@ public class NullAwareBeanUtils {
                 } catch (NoSuchMethodException e) {
                     throw new RuntimeException(e);
                 }
+
 
                 if (index >= 0) {
                     // Handle indexed collection properties
@@ -232,6 +224,8 @@ public class NullAwareBeanUtils {
                 }
             }
         }
+
+
     }
 
 

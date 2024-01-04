@@ -37,10 +37,9 @@ public class ClinicCard extends MyIdentifiableEntity<Long> {
 
     @Override
     public String toString() {
-        return "test";
-//        return "ClinicCard{" +
-//                "registrationDate=" + registrationDate +
-//                ", registrationReason='" + registrationReason + '\'' +
-//                '}';
+        return "ClinicCard{" +
+                "registrationDate=" + registrationDate +
+                ", registrationReason='" + registrationReason + '\'' +
+                '}';
     }
 }

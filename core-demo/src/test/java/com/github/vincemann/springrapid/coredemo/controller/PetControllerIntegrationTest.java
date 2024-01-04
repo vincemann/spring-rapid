@@ -301,6 +301,8 @@ public class PetControllerIntegrationTest extends AbstractControllerIntegrationT
 
     @Test
     public void canChangePetsOwner_viaUpdateRemoveAdd() throws Exception {
+        // bellas owner was kahn
+        // remove owner kahn from bella and add new owner meier
         Owner savedKahn = ownerRepository.save(kahn);
         Owner savedMeier = ownerRepository.save(meier);
 

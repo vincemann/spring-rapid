@@ -25,8 +25,6 @@ import java.util.Stack;
  */
 @Aspect
 @Slf4j
-// order is very important
-// influences how ofter advice is called for some reason
 @Order(1)
 public class ServiceCallContextAdvice {
 
@@ -46,7 +44,7 @@ public class ServiceCallContextAdvice {
             "&& com.github.vincemann.springrapid.core.SystemArchitecture.ignoreHelperServiceMethods() "
     )
     public Object aroundServiceOperation(ProceedingJoinPoint joinPoint) throws Throwable {
-        System.err.println("SERVICE CALL CONTEXT: " + joinPoint.getTarget() + "->" + joinPoint.getSignature().getName());
+//        System.err.println("SERVICE CALL CONTEXT: " + joinPoint.getTarget() + "->" + joinPoint.getSignature().getName());
 
         // jdkProxies dont match, because they wont be wrapped with glibc aop proxies - so look out for most outer extension
         if (joinPoint.getTarget() instanceof AbstractServiceExtension) {
@@ -84,7 +82,8 @@ public class ServiceCallContextAdvice {
     private boolean initGlobalContext(){
         boolean initialized = ServiceCallContextHolder.isContextInitialized();
         if (!initialized) {
-            log.debug("service call context gets initialized");
+            if (log.isDebugEnabled())
+                log.debug("service call context gets initialized");
             ServiceCallContextHolder.setContext(serviceCallContextFactory.create());
         }
         return initialized;
