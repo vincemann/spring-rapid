@@ -201,8 +201,7 @@ public abstract class AbstractRapidAuthIntegrationTest
     protected String modCode(String code, String aud, String subject, Long expirationMillis,Long issuedAt, Map<String,Object> otherClaims) throws BadTokenException, ParseException {
         JWTClaimsSet claims = jweTokenService.parseToken(code);
         claims = RapidJwt.mod(claims,aud,subject,expirationMillis,issuedAt,otherClaims);
-        String moddedCode = jweTokenService.createToken(claims);
-        return moddedCode;
+        return jweTokenService.createToken(claims);
     }
 
     @AfterEach
