@@ -1,6 +1,7 @@
 package com.github.vincemann.springrapid.coredemo.controller;
 
 
+import com.github.vincemann.springrapid.core.model.IdentifiableEntityImpl;
 import com.github.vincemann.springrapid.core.security.RapidAuthenticatedPrincipal;
 import com.github.vincemann.springrapid.core.security.RapidSecurityContext;
 import com.github.vincemann.springrapid.core.service.locator.CrudServiceLocator;
@@ -184,15 +185,13 @@ public class MockServiceOwnerControllerTest
         String updatedAddress = "other Street 12";
 
         // exclude hobbies bc emtpy collections that should not get updated, will be set to null by EntityReflectionUtils.setNonMatchingFieldsNull(patchEntity,allUpdatedFields);
-        Owner ownerPatch = new Owner();
+        Owner ownerPatch = IdentifiableEntityImpl.createUpdate(Owner.class);
         ownerPatch.setId(owner.getId());
-        ownerPatch.setHobbies(null);
-        ownerPatch.setPets(null);
         ownerPatch.setAddress(updatedAddress);
 
         when(ownerService.findById(owner.getId()))
                 .thenReturn(Optional.of(owner));
-        when(ownerService.partialUpdate(refEq(ownerPatch),any())).thenReturn(ownerPatch);
+        when(ownerService.partialUpdate(refEq(ownerPatch),any(),any())).thenReturn(ownerPatch);
 
         //when
         getMvc().perform(update(addressPatch, owner.getId()))
@@ -201,7 +200,7 @@ public class MockServiceOwnerControllerTest
 
         ownerPatch.setPets(null);
         ownerPatch.setHobbies(null);
-        Mockito.verify(ownerService).partialUpdate(refEq(ownerPatch),any());
+        Mockito.verify(ownerService).partialUpdate(refEq(ownerPatch),any(),any());
 
     }
 
@@ -211,23 +210,21 @@ public class MockServiceOwnerControllerTest
     @Test
     public void cantUpdateWithBlankCity() throws Exception {
         // exclude hobbies bc emtpy collections that should not get updated, will be set to null by EntityReflectionUtils.setNonMatchingFieldsNull(patchEntity,allUpdatedFields);
-        Owner ownerPatch = new Owner();
+        Owner ownerPatch = IdentifiableEntityImpl.createUpdate(Owner.class);
         ownerPatch.setId(owner.getId());
-        ownerPatch.setHobbies(null);
-        ownerPatch.setPets(null);
         ownerPatch.setCity("");
 
         when(ownerService.findById(owner.getId()))
                 .thenReturn(Optional.of(owner));
 
-        when(ownerService.partialUpdate(any(),any()))
+        when(ownerService.partialUpdate(any(),any(),any()))
                 .thenThrow(ConstraintViolationException.class);
 
         getMvc().perform(update(blankCityPatch, owner.getId()))
                 .andExpect(status().isBadRequest());
 
 
-        verify(ownerService, never()).partialUpdate(any(),any());
+        verify(ownerService, never()).partialUpdate(any(),any(),any());
     }
 
     @Test
@@ -237,10 +234,9 @@ public class MockServiceOwnerControllerTest
         pet.setId(petId);
 
         // exclude hobbies bc emtpy collections that should not get updated, will be set to null by EntityReflectionUtils.setNonMatchingFieldsNull(patchEntity,allUpdatedFields);
-        Owner ownerPatch = new Owner();
+        Owner ownerPatch = IdentifiableEntityImpl.createUpdate(Owner.class);
         ownerPatch.setId(owner.getId());
-        ownerPatch.setHobbies(null);
-        ownerPatch.getPets().add(pet);
+        ownerPatch.setPets(Sets.newHashSet(pet));
 
 
         when(ownerService.findById(owner.getId()))
@@ -249,7 +245,7 @@ public class MockServiceOwnerControllerTest
                 .thenReturn(Optional.of(pet));
         when(crudServiceLocator.find(Pet.class))
                 .thenReturn(petService);
-        when(ownerService.partialUpdate(refEq(ownerPatch),any()))
+        when(ownerService.partialUpdate(refEq(ownerPatch),any(),any()))
                 .thenReturn(ownerPatch);
 
         getMvc().perform(update(addPetPatch, owner.getId()))
@@ -257,6 +253,6 @@ public class MockServiceOwnerControllerTest
                 .andExpect(jsonPath("$.petIds[0]").value(petId));
 
         ownerPatch.setHobbies(null);
-        verify(ownerService).partialUpdate(refEq(ownerPatch),any());
+        verify(ownerService).partialUpdate(refEq(ownerPatch),any(),any());
     }
 }

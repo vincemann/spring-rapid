@@ -113,6 +113,14 @@ public class PetControllerIntegrationTest extends AbstractControllerIntegrationT
 
     @Test
     public void canUnlinkPetsOwnerAndSomeToys_viaUpdate() throws Exception {
+        // bella -> owner=kahn
+        //       -> toys=[ball, bone, rubberDuck]
+
+        // unlink owner from bella
+        // unlink bone and rubberDuck from bella
+
+        // result = bella -> owner = null
+        //                -> toys = [ball]
         Owner savedKahn = ownerRepository.save(kahn);
         Toy savedBall = toyRepository.save(ball);
         Toy savedBone = toyRepository.save(bone);

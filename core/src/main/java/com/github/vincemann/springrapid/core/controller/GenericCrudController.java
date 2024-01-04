@@ -168,6 +168,7 @@ public abstract class GenericCrudController
 
         logSecurityContext();
         E updated = servicePartialUpdate(patchEntity,
+                allUpdatedFields,
                 IdPropertyNameUtils.transformIdFieldNames(patchInfo.getRemoveSingleMembersFields())
         );
         Class<?> resultDtoClass = createDtoClass(getUpdateUrl(), Direction.RESPONSE, updated);
@@ -490,8 +491,8 @@ public abstract class GenericCrudController
     //              SERVICE CALLBACKS
 
 
-    protected E servicePartialUpdate(E update, String... propertiesToDelete) throws BadEntityException, EntityNotFoundException {
-        return service.partialUpdate(update,propertiesToDelete);
+    protected E servicePartialUpdate(E update,Set<String> collectionsToUpdate, String... propertiesToDelete) throws BadEntityException, EntityNotFoundException {
+        return service.partialUpdate(update,collectionsToUpdate,propertiesToDelete);
     }
 
     protected E serviceCreate(E entity) throws BadEntityException {
