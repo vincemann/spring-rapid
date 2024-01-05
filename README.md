@@ -8,10 +8,9 @@ Inspired by [**spring-lemon**](https://github.com/naturalprogrammer/spring-lemon
 Most of them were copied, modified and integrated into this project.  
   
 # Features  
-* crud                                                                    
-* proxy system for extensions                                                           
-* dto mapping with id resolving            
-* bidirectional relationship management                                                               
+* crud  
+* bidirectional relationship management                                                                                                                          
+* dto mapping with id resolving                                                                         
 * acl             
 * authentication (jwt)
   
