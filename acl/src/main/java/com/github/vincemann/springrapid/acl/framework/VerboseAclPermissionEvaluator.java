@@ -130,7 +130,8 @@ public class VerboseAclPermissionEvaluator extends AclPermissionEvaluator implem
             Acl acl = aclService.readAclById(oid, sids);
             if (log.isDebugEnabled()){
                 log.debug("acl in question:");
-                log.debug(AclUtils.aclToString(acl));
+//                log.debug(AclUtils.aclToString(acl));
+                AclUtils.logAcl(acl,log);
             }
 
             if (acl.isGranted(requiredPermissions, sids, false)) {

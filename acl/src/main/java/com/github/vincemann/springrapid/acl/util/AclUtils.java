@@ -5,6 +5,7 @@ import com.github.vincemann.springrapid.acl.service.PermissionStringConverter;
 import com.github.vincemann.springrapid.core.model.IdentifiableEntity;
 import com.github.vincemann.springrapid.core.service.exception.BadEntityException;
 import com.github.vincemann.springrapid.core.service.locator.CrudServiceLocator;
+import org.slf4j.Logger;
 import org.springframework.security.acls.domain.GrantedAuthoritySid;
 import org.springframework.security.acls.domain.PrincipalSid;
 import org.springframework.security.acls.model.*;
@@ -35,6 +36,12 @@ public class AclUtils {
         }
     }
 
+    public static void logAcl(Acl acl, Logger logger){
+        for (String line : aclToString(acl).split("\n")) {
+            if (logger.isDebugEnabled())
+                logger.debug(line);
+        }
+    }
     public static String aclToString(Acl acl) {
         StringBuilder result = new StringBuilder("__________________________________________\n");
         result.append("acl of: ").append(AclUtils.objectIdentityToString(acl.getObjectIdentity())).append("\n");

@@ -82,8 +82,8 @@ public class ServiceCallContextAdvice {
     private boolean initGlobalContext(){
         boolean initialized = ServiceCallContextHolder.isContextInitialized();
         if (!initialized) {
-            if (log.isDebugEnabled())
-                log.debug("service call context gets initialized");
+//            if (log.isDebugEnabled())
+//                log.debug("service call context gets initialized");
             ServiceCallContextHolder.setContext(serviceCallContextFactory.create());
         }
         return initialized;
