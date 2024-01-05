@@ -203,9 +203,6 @@ public class RapidPermissionService implements AclPermissionService {
     }
 
     protected Collection<IdentifiableEntity<?>> getAclChildren(IdentifiableEntity<?> parent, AclCascadeInfo info) {
-//            System.err.println("parent: " + parent);
-//            System.err.println("parent type: " + parent.getClass());
-//            System.err.println("target: " + info.getTarget());
         Collection<IdentifiableEntity<?>> children = info.getTargetCollection(parent);
         EntityFilter filter = info.getTargetFilter();
         if (filter != null)
@@ -312,10 +309,6 @@ public class RapidPermissionService implements AclPermissionService {
     }
 
 
-    protected void logAclInformation(MutableAcl parentAcl, MutableAcl childAcl) {
-
-    }
-
     protected void addPermissionsForSid(IdentifiableEntity<?> targetObj, Sid sid, Permission... permissions) {
         final ObjectIdentity oi = new ObjectIdentityImpl(targetObj.getClass(), targetObj.getId());
         if (log.isDebugEnabled())
@@ -349,8 +342,11 @@ public class RapidPermissionService implements AclPermissionService {
         if (log.isDebugEnabled())
             log.debug("sid: " + AclUtils.sidToString(sid) + " will loose permission: " + AclUtils.permissionsToString(permissions) + " over entity: " + targetObj);
 
+        boolean principalsOnly = !(sid instanceof GrantedAuthoritySid);
+
         int removed = removeAces(targetObj, AceFilter.builder()
                 .sid(AclUtils.sidToString(sid))
+                .principalsOnly(principalsOnly)
                 .permissions(permissions)
                 .build());
 
