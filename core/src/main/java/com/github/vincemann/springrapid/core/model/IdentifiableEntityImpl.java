@@ -33,32 +33,6 @@ public class IdentifiableEntityImpl<Id extends Serializable>
         this.id=id;
     }
 
-    /**
-     * uses default constructor to create instance of this and nullifies all collections
-     * -> make sure to always use this method to create instances used for {@link com.github.vincemann.springrapid.core.service.CrudService#partialUpdate(IdentifiableEntity, String...)}
-     */
-    public static <T> T createUpdate(Class<T> clazz) {
-//        Class<?> clazz = this.getClass();
-        // Create an instance of the class using Spring's ReflectionUtils
-
-        try {
-            T instance = clazz.getDeclaredConstructor().newInstance();
-            // Use Spring's ReflectionUtils to iterate through fields
-            ReflectionUtils.doWithFields(clazz, field -> {
-                field.setAccessible(true); // Make the field accessible
-
-                // Check if the field is of type Collection
-                if (Collection.class.isAssignableFrom(field.getType())) {
-                    // Set the field to null
-                    field.set(instance, null);
-                }
-            });
-            return instance;
-        } catch (InstantiationException | IllegalAccessException | InvocationTargetException | NoSuchMethodException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
 
     @Override
     public boolean equals(Object o) {

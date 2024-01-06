@@ -117,10 +117,6 @@ public class RapidRelationalEntityManager implements RelationalEntityManager {
             if (!oldParents.contains(newParent)) {
                 addedParents.add(newParent);
             }
-//            else {
-//                // all parents need to be merged, non added children can be merged here already
-//                entityManager.merge(newParent);
-//            }
         }
 
         // both collections of children are detached, so relevant entities need to be merged after link/unlink
@@ -167,10 +163,6 @@ public class RapidRelationalEntityManager implements RelationalEntityManager {
             if (!oldChildren.contains(newChild)) {
                 addedChildren.add(newChild);
             }
-//            else {
-//                // all new children need to be merged
-//                entityManager.merge(newChild);
-//            }
         }
 
         // both collections of children are detached, so relevant entities need to be merged after link/unlink

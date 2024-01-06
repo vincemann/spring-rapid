@@ -48,7 +48,6 @@ import java.util.*;
  *
  */
 @Validated
-@Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
 @Slf4j
 public abstract class AbstractUserService
         <
@@ -118,7 +117,7 @@ public abstract class AbstractUserService
         }
     }
 
-    @Transactional(propagation = Propagation.REQUIRED, readOnly = false)
+    @Transactional
     public U signup(U user) throws BadEntityException, AlreadyRegisteredException {
         //admins get created with createAdminMethod
         if (user.getRoles() == null){
@@ -141,7 +140,7 @@ public abstract class AbstractUserService
     }
 
 
-    @Transactional(propagation = Propagation.SUPPORTS, readOnly = false)
+    @Transactional
     @Override
     public U save(U user) throws BadEntityException {
         // no restrictions in save method, all restrictions and checks in more abstract methods such as signup and createAdmin
@@ -149,7 +148,7 @@ public abstract class AbstractUserService
         return super.save(user);
     }
 
-    @Transactional(propagation = Propagation.SUPPORTS, readOnly = false)
+    @Transactional
     @Override
     public void deleteById(ID id) throws EntityNotFoundException {
         super.deleteById(id);
@@ -200,7 +199,7 @@ public abstract class AbstractUserService
      *
      * @return
      */
-    @Transactional(propagation = Propagation.REQUIRED, readOnly = false)
+    @Transactional
     public U verifyUser(String verificationCode) throws EntityNotFoundException, BadEntityException {
         try {
             JWTClaimsSet claims = jweTokenService.parseToken(verificationCode);
@@ -231,8 +230,6 @@ public abstract class AbstractUserService
     protected U verifyUser(U user) throws BadEntityException, EntityNotFoundException {
         user.getRoles().remove(AuthRoles.UNVERIFIED);
         user.setCredentialsUpdatedMillis(System.currentTimeMillis());
-        // todo changed to softupdate
-//        U saved = update(user);
         U saved = service.softUpdate(user);
         log.debug("Verified user: " + user.getContactInformation());
         return saved;
@@ -242,7 +239,7 @@ public abstract class AbstractUserService
     /**
      * Forgot password.
      */
-    @Transactional(propagation = Propagation.REQUIRED, readOnly = false)
+    @Transactional
     public void forgotPassword(String contactInformation) throws EntityNotFoundException {
         // fetch the user record from database
         Optional<U> byContactInformation = findByContactInformation(contactInformation);
@@ -297,7 +294,7 @@ public abstract class AbstractUserService
      *
      * @return
      */
-    @Transactional(propagation = Propagation.REQUIRED, readOnly = false)
+    @Transactional
     public U resetPassword(String newPassword, String code) throws EntityNotFoundException, BadEntityException {
 
         try {
@@ -330,28 +327,28 @@ public abstract class AbstractUserService
         }
     }
 
-    @Transactional(propagation = Propagation.REQUIRED, readOnly = false)
+    @Transactional
     @Override
     public U partialUpdate(U update, String... fieldsToRemove) throws EntityNotFoundException, BadEntityException {
         updateSpecialUserFields(update);
         return super.partialUpdate(update, fieldsToRemove);
     }
 
-    @Transactional(propagation = Propagation.REQUIRED, readOnly = false)
+    @Transactional
     @Override
     public U partialUpdate(U entity, Set<String> collectionsToUpdate, String... fieldsToRemove) throws EntityNotFoundException, BadEntityException{
         updateSpecialUserFields(entity);
         return super.partialUpdate(entity, collectionsToUpdate, fieldsToRemove);
     }
 
-    @Transactional(propagation = Propagation.REQUIRED, readOnly = false)
+    @Transactional
     @Override
     public U fullUpdate(U update) throws BadEntityException, EntityNotFoundException {
         updateSpecialUserFields(update);
         return super.fullUpdate(update);
     }
 
-    @Transactional(propagation = Propagation.REQUIRED, readOnly = false)
+    @Transactional
     @Override
     public U softUpdate(U update) throws EntityNotFoundException, BadEntityException {
         updateSpecialUserFields(update);
@@ -360,8 +357,6 @@ public abstract class AbstractUserService
 
     protected void updateSpecialUserFields(U update) throws BadEntityException, EntityNotFoundException {
         Optional<U> old = findById(update.getId());
-        // todo is that ever needed? this is always run in transactional context ?
-//        entityManager.merge(old.get());
         VerifyEntity.isPresent(old, "Entity to update with id: " + update.getId() + " not found");
         //update roles works in transaction -> changes are applied on the fly
         updateRoles(old.get(), update);
@@ -378,7 +373,7 @@ public abstract class AbstractUserService
     /**
      * Changes the password.
      */
-    @Transactional(propagation = Propagation.REQUIRED, readOnly = false)
+    @Transactional
     public void changePassword(U user, String givenOldPassword, String newPassword, String retypeNewPassword) throws EntityNotFoundException, BadEntityException {
         VerifyEntity.isPresent(user, "User not found");
         String oldPassword = user.getPassword();
@@ -395,10 +390,8 @@ public abstract class AbstractUserService
         // sets the password
         user.setPassword(passwordEncoder.encode(newPassword));
         user.setCredentialsUpdatedMillis(System.currentTimeMillis());
-        // todo changed to softupdate
         log.debug("changed pw of user: " + user.getContactInformation());
         try {
-//            update(user);
             service.softUpdate(user);
         } catch (NonTransientDataAccessException e) {
             throw new RuntimeException("Could not change users password", e);
@@ -444,7 +437,7 @@ public abstract class AbstractUserService
      * Requests for contactInformation change.
      *
      */
-    @Transactional(propagation = Propagation.REQUIRED, readOnly = false)
+    @Transactional
     public void requestContactInformationChange(U user, String newContactInformation) throws EntityNotFoundException, AlreadyRegisteredException, BadEntityException {
         VerifyEntity.isPresent(user, "User not found");
         checkUniqueContactInformation(newContactInformation);
@@ -527,7 +520,7 @@ public abstract class AbstractUserService
      *
      * @return
      */
-    @Transactional(propagation = Propagation.REQUIRED, readOnly = false)
+    @Transactional
     public U changeContactInformation(String code) throws EntityNotFoundException, BadEntityException, AlreadyRegisteredException {
         try {
             JWTClaimsSet claims = jweTokenService.parseToken(code);
@@ -598,7 +591,7 @@ public abstract class AbstractUserService
         return createNewAuthToken(securityContext.currentPrincipal().getContactInformation());
     }
 
-    @Transactional(propagation = Propagation.REQUIRED, readOnly = false)
+    @Transactional
     //only called internally
     public U newAdmin(AuthProperties.Admin admin) {
         // create the adminUser
@@ -609,7 +602,7 @@ public abstract class AbstractUserService
         return adminUser;
     }
 
-    @Transactional(propagation = Propagation.REQUIRED, readOnly = false)
+    @Transactional
     public U signupAdmin(U admin) throws AlreadyRegisteredException, BadEntityException {
         checkUniqueContactInformation(admin.getContactInformation());
         passwordValidator.validate(admin.getPassword());

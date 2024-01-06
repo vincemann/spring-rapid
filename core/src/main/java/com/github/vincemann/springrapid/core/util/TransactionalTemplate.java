@@ -7,6 +7,8 @@ import org.springframework.transaction.annotation.Transactional;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 
+import static org.springframework.transaction.annotation.Isolation.READ_COMMITTED;
+
 @Getter
 public class TransactionalTemplate {
 
@@ -14,7 +16,7 @@ public class TransactionalTemplate {
     @PersistenceContext
     private EntityManager entityManager;
 
-    @Transactional
+    @Transactional(/*isolation = READ_COMMITTED*/)
     public void doInTransaction(Runnable runnable) {
         runnable.run();
     }

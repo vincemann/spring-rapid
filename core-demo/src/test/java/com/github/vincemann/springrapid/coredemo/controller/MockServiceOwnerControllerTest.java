@@ -1,6 +1,7 @@
 package com.github.vincemann.springrapid.coredemo.controller;
 
 
+import com.github.vincemann.springrapid.core.Entity;
 import com.github.vincemann.springrapid.core.model.IdentifiableEntityImpl;
 import com.github.vincemann.springrapid.core.security.RapidAuthenticatedPrincipal;
 import com.github.vincemann.springrapid.core.security.RapidSecurityContext;
@@ -187,8 +188,7 @@ public class MockServiceOwnerControllerTest
         String updatedAddress = "other Street 12";
 
         // exclude hobbies bc emtpy collections that should not get updated, will be set to null by EntityReflectionUtils.setNonMatchingFieldsNull(patchEntity,allUpdatedFields);
-        Owner ownerPatch = IdentifiableEntityImpl.createUpdate(Owner.class);
-        ownerPatch.setId(owner.getId());
+        Owner ownerPatch = Entity.createUpdate(owner);
         ownerPatch.setAddress(updatedAddress);
 
         when(ownerService.findById(owner.getId()))
@@ -212,8 +212,7 @@ public class MockServiceOwnerControllerTest
     @Test
     public void cantUpdateWithBlankCity() throws Exception {
         // exclude hobbies bc emtpy collections that should not get updated, will be set to null by EntityReflectionUtils.setNonMatchingFieldsNull(patchEntity,allUpdatedFields);
-        Owner ownerPatch = IdentifiableEntityImpl.createUpdate(Owner.class);
-        ownerPatch.setId(owner.getId());
+        Owner ownerPatch = Entity.createUpdate(owner);
         ownerPatch.setCity("");
 
         when(ownerService.findById(owner.getId()))
@@ -236,8 +235,7 @@ public class MockServiceOwnerControllerTest
         pet.setId(petId);
 
         // exclude hobbies bc emtpy collections that should not get updated, will be set to null by EntityReflectionUtils.setNonMatchingFieldsNull(patchEntity,allUpdatedFields);
-        Owner ownerPatch = IdentifiableEntityImpl.createUpdate(Owner.class);
-        ownerPatch.setId(owner.getId());
+        Owner ownerPatch = Entity.createUpdate(owner);
         ownerPatch.setPets(Sets.newHashSet(pet));
 
 

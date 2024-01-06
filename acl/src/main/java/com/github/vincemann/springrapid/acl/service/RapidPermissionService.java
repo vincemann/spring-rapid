@@ -245,15 +245,15 @@ public class RapidPermissionService implements AclPermissionService {
         MutableAcl childAcl = findOrCreateAcl(childOi);
         MutableAcl parentAcl = findAcl(parentOi);
 
-        if (log.isDebugEnabled()) {
-            log.debug("child acl of entity before copying: ");
+        if (log.isTraceEnabled()) {
+            log.trace("child acl of entity before copying: ");
 //            log.debug(AclUtils.aclToString(childAcl));
             AclUtils.logAcl(childAcl, log);
         }
 
-        if (log.isDebugEnabled()) {
+        if (log.isTraceEnabled()) {
 
-            log.debug("inheriting from parent acl: ");
+            log.trace("inheriting from parent acl: ");
 //            log.debug(AclUtils.aclToString(parentAcl));
             AclUtils.logAcl(parentAcl, log);
 //            log.debug(AclUtils.aclToString(childAcl));
@@ -265,7 +265,7 @@ public class RapidPermissionService implements AclPermissionService {
 //        childAcl.setParent(parentAcl);
 
         if (log.isDebugEnabled()) {
-            log.debug("Child Acl after copying:");
+            log.debug("updated acl:");
             AclUtils.logAcl(childAcl, log);
         }
         aclService.updateAcl(childAcl);
@@ -277,7 +277,7 @@ public class RapidPermissionService implements AclPermissionService {
 
         MutableAcl acl = findAcl(oi);
 
-        if (log.isDebugEnabled()) {
+        if (log.isTraceEnabled()) {
             log.debug("acl of entity before removing: ");
 //            log.debug(AclUtils.aclToString(acl));
             AclUtils.logAcl(acl, log);
@@ -288,9 +288,9 @@ public class RapidPermissionService implements AclPermissionService {
         MutableAcl updated = aclService.updateAcl(acl);
 
         if (log.isDebugEnabled()) {
-            log.debug("acl of entity after removing: ");
+            log.debug("updated acl: ");
 //            log.debug(AclUtils.aclToString(updated));
-            AclUtils.logAcl(acl, log);
+            AclUtils.logAcl(updated, log);
         }
         return removed;
     }
@@ -317,8 +317,8 @@ public class RapidPermissionService implements AclPermissionService {
                     + " over entity: " + AclUtils.objectIdentityToString(oi));
 
         MutableAcl acl = findOrCreateAcl(oi);
-        if (log.isDebugEnabled()) {
-            log.debug("acl of entity before adding:");
+        if (log.isTraceEnabled()) {
+            log.trace("acl of entity before adding:");
 //            log.debug(AclUtils.aclToString(acl));
             AclUtils.logAcl(acl, log);
         }
