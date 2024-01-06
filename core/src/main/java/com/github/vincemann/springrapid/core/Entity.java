@@ -6,6 +6,7 @@ import org.springframework.util.ReflectionUtils;
 
 import java.io.Serializable;
 import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Modifier;
 
 public class Entity {
 
@@ -21,8 +22,10 @@ public class Entity {
             T instance = clazz.getDeclaredConstructor().newInstance();
             // Use Spring's ReflectionUtils to iterate through fields
             ReflectionUtils.doWithFields(clazz, field -> {
-                field.setAccessible(true); // Make the field accessible
-                field.set(instance, null);
+                if (!Modifier.isStatic(field.getModifiers())){
+                    field.setAccessible(true); // Make the field accessible
+                    field.set(instance, null);
+                }
             });
             instance.setId(id);
             return instance;
