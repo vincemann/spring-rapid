@@ -118,7 +118,7 @@ public class VerboseAclPermissionEvaluator extends AclPermissionEvaluator implem
                     .map(p -> permissionStringConverter.convert(p))
                     .collect(Collectors.toList());
             log.debug("Checking if User: " + name + " has permissions: " + stringPermissions + "\n" +
-                    "that are required for an operation over: " + oid + " ?"
+                    "that are required for an operation over: " + AclUtils.objectIdentityToString(oid) + " ?"
             );
         }
 
@@ -129,7 +129,7 @@ public class VerboseAclPermissionEvaluator extends AclPermissionEvaluator implem
             // Lookup only ACL for SIDs we're interested in
             Acl acl = aclService.readAclById(oid, sids);
             if (log.isDebugEnabled()){
-                log.debug("acl in question:");
+                log.debug("acl of oid:");
 //                log.debug(AclUtils.aclToString(acl));
                 AclUtils.logAcl(acl,log);
             }
@@ -147,7 +147,7 @@ public class VerboseAclPermissionEvaluator extends AclPermissionEvaluator implem
 
         } catch (NotFoundException nfe) {
             if (log.isDebugEnabled()){
-                log.debug("No ACL found for sids of user.");
+                log.debug("No ACL found for oid: " + AclUtils.objectIdentityToString(oid));
                 log.debug("Access not granted");
             }
         }
