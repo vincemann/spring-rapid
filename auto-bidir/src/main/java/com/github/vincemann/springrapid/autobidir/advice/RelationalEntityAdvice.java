@@ -119,7 +119,7 @@ public class RelationalEntityAdvice {
                     break;
                 case PARTIAL:
                     String[] whiteListedFieldsToUpdate = updateContext.getWhiteListedFields().toArray(new String[0]);
-                    System.err.println(Arrays.toString(whiteListedFieldsToUpdate));
+//                    System.err.println(Arrays.toString(whiteListedFieldsToUpdate));
                     relationalEntityManager.partialUpdate(entity, updateContext.getDetachedOldEntity(),
                             updateContext.getDetachedUpdateEntity(), whiteListedFieldsToUpdate);
                     clearContext();
