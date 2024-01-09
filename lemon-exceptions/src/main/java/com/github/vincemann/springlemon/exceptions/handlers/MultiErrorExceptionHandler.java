@@ -16,9 +16,7 @@ import org.springframework.http.HttpStatus;
 public class MultiErrorExceptionHandler extends AbstractExceptionHandler<MultiErrorException> {
 
 	public MultiErrorExceptionHandler() {
-		
 		super(MultiErrorException.class);
-
 	}
 	
 	@Override
