@@ -36,7 +36,7 @@ public class ClinicCard extends IdentifiableEntityImpl<Long> {
     @Override
     public String toString() {
         return "ClinicCard{" +
-                "owner=" + owner ==  null ? "null" : owner.getLastName() +
+                "owner=" + ((owner ==  null) ? "null" : owner.getLastName()) +
                 ", registrationDate=" + registrationDate +
                 ", registrationReason='" + registrationReason + '\'' +
                 ", id=" + getId() +

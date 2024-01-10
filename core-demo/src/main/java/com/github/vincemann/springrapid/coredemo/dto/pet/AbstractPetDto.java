@@ -1,19 +1,15 @@
 package com.github.vincemann.springrapid.coredemo.dto.pet;
 
-import com.github.vincemann.springrapid.coredemo.dto.abs.MyIdDto;
-import com.github.vincemann.springrapid.coredemo.model.Owner;
-
-import com.github.vincemann.springrapid.coredemo.model.PetType;
-import com.github.vincemann.springrapid.coredemo.model.Toy;
 import com.github.vincemann.springrapid.autobidir.dto.child.annotation.BiDirChildIdCollection;
 import com.github.vincemann.springrapid.autobidir.dto.child.annotation.UniDirChildId;
-
-
-import com.github.vincemann.springrapid.coredemo.model.abs.MyIdentifiableEntity;
-import lombok.*;
-
-import com.github.vincemann.springrapid.core.model.IdentifiableEntityImpl;
 import com.github.vincemann.springrapid.autobidir.dto.parent.annotation.BiDirParentId;
+import com.github.vincemann.springrapid.coredemo.dto.abs.MyIdDto;
+import com.github.vincemann.springrapid.coredemo.model.Owner;
+import com.github.vincemann.springrapid.coredemo.model.PetType;
+import com.github.vincemann.springrapid.coredemo.model.Toy;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import javax.validation.constraints.Size;
 import java.time.LocalDate;
@@ -23,7 +19,6 @@ import java.util.Set;
 @Getter
 @Setter
 @NoArgsConstructor
-
 public abstract class AbstractPetDto extends MyIdDto<Long>
 {
 
