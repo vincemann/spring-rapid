@@ -1,6 +1,7 @@
 package com.github.vincemann.springrapid.core.service;
 
 import com.github.vincemann.springrapid.core.model.IdentifiableEntity;
+import com.github.vincemann.springrapid.core.repo.FindSomeRepository;
 import com.github.vincemann.springrapid.core.service.exception.BadEntityException;
 import com.github.vincemann.springrapid.core.service.exception.EntityNotFoundException;
 import com.github.vincemann.springrapid.core.slicing.ServiceComponent;
@@ -25,7 +26,8 @@ public abstract class JPACrudService
         <
                 E extends IdentifiableEntity<Id>,
                 Id extends Serializable,
-                R extends JpaRepository<E, Id>
+                // just use RapidJpaRepository
+                R extends JpaRepository<E, Id> & FindSomeRepository<E,Id>
                 >
         extends AbstractCrudService<E, Id, R> {
 
@@ -50,6 +52,12 @@ public abstract class JPACrudService
             // constraints not met, such as foreign key constraints or other db update constraints
             throw new BadEntityException(e);
         }
+    }
+
+    @Transactional
+    @Override
+    public Set<E> findSome(Set<Id> ids) {
+        return getRepository().findAllByIdIn(ids);
     }
 
 

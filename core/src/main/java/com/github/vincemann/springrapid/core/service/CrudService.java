@@ -67,5 +67,14 @@ public interface CrudService<E extends IdentifiableEntity<Id>,Id extends Seriali
         Set<E> findAll();
 
         @Transactional
+        Set<E> findSome(Set<Id> ids);
+
+        // can always add own find methods using jpql or native sql to fetch entities instead of using this
+//        @Transactional
+//        Set<E> findAll(EntityFilter<E> filter);
+
+
+
+        @Transactional
         void deleteById(Id id) throws EntityNotFoundException;
 }

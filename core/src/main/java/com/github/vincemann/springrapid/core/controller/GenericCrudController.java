@@ -1,6 +1,8 @@
 package com.github.vincemann.springrapid.core.controller;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.type.CollectionType;
 import com.github.fge.jsonpatch.JsonPatchException;
 import com.github.vincemann.springrapid.core.CoreProperties;
 import com.github.vincemann.springrapid.core.controller.dto.mapper.DelegatingDtoMapper;
@@ -15,6 +17,7 @@ import com.github.vincemann.springrapid.core.model.IdentifiableEntity;
 import com.github.vincemann.springrapid.core.security.RapidSecurityContext;
 import com.github.vincemann.springrapid.core.service.CrudService;
 import com.github.vincemann.springrapid.core.service.EndpointService;
+import com.github.vincemann.springrapid.core.service.EntityFilter;
 import com.github.vincemann.springrapid.core.service.exception.BadEntityException;
 import com.github.vincemann.springrapid.core.service.exception.EntityNotFoundException;
 import com.github.vincemann.springrapid.core.util.EntityReflectionUtils;
@@ -66,7 +69,7 @@ public abstract class GenericCrudController
 
     //              DEPENDENCIES
 
-    private JsonMapper jsonMapper;
+
     private IdFetchingStrategy<ID> idFetchingStrategy;
     private EndpointInfo endpointInfo;
     private S service;
@@ -99,13 +102,33 @@ public abstract class GenericCrudController
 
     }
 
-    public ResponseEntity<String> find(HttpServletRequest request, HttpServletResponse response) throws IdFetchingException, EntityNotFoundException, BadEntityException, JsonProcessingException {
+    public ResponseEntity<String> findSome(HttpServletRequest request, HttpServletResponse response) throws IOException, BadEntityException {
+        logSecurityContext();
+        String json = readBody(request);
+        CollectionType idSetType = getJsonMapper().getObjectMapper()
+                .getTypeFactory().constructCollectionType(Set.class, getIdClass());
+        Set<ID> ids = getJsonMapper().readDto(json,idSetType);
+
+        beforeFindSome(ids, request, response);
+
+        Set<E> foundEntities = serviceFindSome(ids);
+        Collection<Object> dtos = new HashSet<>();
+        for (E e : foundEntities) {
+            dtos.add(dtoMapper.mapToDto(e,
+                    createDtoClass(getFindSomeUrl(), Direction.RESPONSE, e)));
+        }
+        afterFindSome(dtos, foundEntities, request, response);
+        String responseJson = jsonMapper.writeDto(dtos);
+        return ok(responseJson);
+    }
+
+
+    public ResponseEntity<String> find(HttpServletRequest request, HttpServletResponse response) throws EntityNotFoundException, BadEntityException, JsonProcessingException {
         ID id = fetchId(request);
         beforeFind(id, request, response);
         logSecurityContext();
         Optional<E> optionalEntity = serviceFind(id);
-        VerifyEntity.isPresent(optionalEntity, id, getEntityClass());
-        E found = optionalEntity.get();
+        E found = VerifyEntity.isPresent(optionalEntity, id, getEntityClass());
         Object dto = dtoMapper.mapToDto(
                 found,
                 createDtoClass(getFindUrl(), Direction.RESPONSE, found)
@@ -139,8 +162,7 @@ public abstract class GenericCrudController
         //user does also need read permission if he wants to update user, so I can check read permission here instead of using unsecured service
         // i indirectly check if by using secured service.findById
         Optional<E> savedOptional = getService().findById(id);
-        VerifyEntity.isPresent(savedOptional, id, getEntityClass());
-        E saved = savedOptional.get();
+        E saved = VerifyEntity.isPresent(savedOptional, id, getEntityClass());
         Class<?> dtoClass = createDtoClass(getUpdateUrl(), Direction.REQUEST, saved);
         beforeUpdate(dtoClass, id, patchString, request, response);
         jsonDtoPropertyValidator.validatePatch(patchString, dtoClass);
@@ -240,9 +262,6 @@ public abstract class GenericCrudController
         return dtoMapper.mapToEntity(dto, getEntityClass());
     }
 
-    protected String readBody(HttpServletRequest request) throws IOException {
-        return request.getReader().lines().collect(Collectors.joining(System.lineSeparator()));
-    }
 
     protected String readRequestParam(HttpServletRequest request, String key) throws BadEntityException {
         String param = request.getParameter(key);
@@ -363,6 +382,8 @@ public abstract class GenericCrudController
     @Setter
     private String findAllUrl;
     @Setter
+    private String findSomeUrl;
+    @Setter
     private String deleteUrl;
     @Setter
     private String createUrl;
@@ -371,6 +392,7 @@ public abstract class GenericCrudController
         super.initUrls();
         this.findUrl = entityBaseUrl + coreProperties.controller.endpoints.find;
         this.findAllUrl = entityBaseUrl + coreProperties.controller.endpoints.findAll;
+        this.findSomeUrl = entityBaseUrl + coreProperties.controller.endpoints.findSome;
         this.updateUrl = entityBaseUrl + coreProperties.controller.endpoints.update;
         this.deleteUrl = entityBaseUrl + coreProperties.controller.endpoints.delete;
         this.createUrl = entityBaseUrl + coreProperties.controller.endpoints.create;
@@ -397,11 +419,22 @@ public abstract class GenericCrudController
         if (endpointInfo.isExposeFindAll()) {
             registerEndpoint(createFindAllRequestMappingInfo(), "findAll");
         }
+        if (endpointInfo.isExposeFindSome()) {
+            registerEndpoint(createFindSomeRequestMappingInfo(), "findSome");
+        }
     }
 
     protected RequestMappingInfo createFindRequestMappingInfo() {
         return RequestMappingInfo
                 .paths(findUrl)
+                .methods(RequestMethod.GET)
+                .produces(getMediaType())
+                .build();
+    }
+
+    protected RequestMappingInfo createFindSomeRequestMappingInfo() {
+        return RequestMappingInfo
+                .paths(findSomeUrl)
                 .methods(RequestMethod.GET)
                 .produces(getMediaType())
                 .build();
@@ -462,6 +495,14 @@ public abstract class GenericCrudController
         return service.findAll();
     }
 
+//    protected Set<E> serviceFindAll(EntityFilter<E> filter) {
+//        return service.findAll(filter);
+//    }
+
+    protected Set<E> serviceFindSome(Set<ID> ids) {
+        return service.findSome(ids);
+    }
+
     protected Optional<E> serviceFind(ID id) {
         return service.findById(id);
     }
@@ -485,6 +526,9 @@ public abstract class GenericCrudController
     public void beforeFindAll(HttpServletRequest httpServletRequest, HttpServletResponse response) {
     }
 
+    public void beforeFindSome(Set<ID> ids, HttpServletRequest httpServletRequest, HttpServletResponse response) {
+    }
+
     public void afterCreate(Object dto, E created, HttpServletRequest httpServletRequest, HttpServletResponse response) {
     }
 
@@ -498,6 +542,9 @@ public abstract class GenericCrudController
     }
 
     public void afterFindAll(Collection<Object> dtos, Set<E> found, HttpServletRequest httpServletRequest, HttpServletResponse response) {
+    }
+
+    public void afterFindSome(Collection<Object> dtos, Set<E> found, HttpServletRequest httpServletRequest, HttpServletResponse response) {
     }
 
 
@@ -545,10 +592,6 @@ public abstract class GenericCrudController
         this.endpointInfo = endpointInfo;
     }
 
-    @Autowired
-    public void injectJsonMapper(JsonMapper mapper) {
-        this.jsonMapper = mapper;
-    }
 
     @Autowired
     public void injectIdIdFetchingStrategy(IdFetchingStrategy<ID> idFetchingStrategy) {

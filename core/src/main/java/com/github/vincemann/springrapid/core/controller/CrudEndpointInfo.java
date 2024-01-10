@@ -16,6 +16,7 @@ public class CrudEndpointInfo {
     private boolean exposeUpdate =true;
     private boolean exposeDelete =true;
     private boolean exposeFindAll =true;
+    private boolean exposeFindSome =true;
 
     public static CrudEndpointInfo exposeNone(){
         CrudEndpointInfo info = new CrudEndpointInfo();
@@ -24,6 +25,7 @@ public class CrudEndpointInfo {
         info.setExposeUpdate(false);
         info.setExposeDelete(false);
         info.setExposeFindAll(false);
+        info.setExposeFindSome(false);
         return info;
     }
 
@@ -72,6 +74,7 @@ public class CrudEndpointInfo {
                 ", exposeUpdate=" + exposeUpdate +
                 ", exposeDelete=" + exposeDelete +
                 ", exposeFindAll=" + exposeFindAll +
+                ", exposeFindSome=" + exposeFindSome +
                 '}';
     }
 }

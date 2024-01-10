@@ -13,6 +13,7 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import javax.persistence.*;
 import java.io.Serializable;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 
 /**
@@ -30,6 +31,8 @@ public class AuditingEntity<ID extends Serializable>
 {
 
 	private static final long serialVersionUID = -8151190931948396443L;
+//	public static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
+
 	
 	@CreatedBy
 	private ID createdById;

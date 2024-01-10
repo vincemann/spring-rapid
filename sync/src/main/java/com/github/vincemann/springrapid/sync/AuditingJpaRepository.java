@@ -1,4 +1,4 @@
-package com.github.vincemann.springrapid.audit;
+package com.github.vincemann.springrapid.sync;
 
 import com.github.vincemann.springrapid.core.model.AuditingEntity;
 import org.springframework.data.jpa.repository.JpaRepository;

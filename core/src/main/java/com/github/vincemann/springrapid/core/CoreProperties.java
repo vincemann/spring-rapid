@@ -40,6 +40,7 @@ public class CoreProperties {
             public String create = "create";
             public String find = "find";
             public String findAll = "find-all";
+            public String findSome = "find-some";
             public String delete = "delete";
             public String findAllOfParent = "find-all-of-parent";
         }

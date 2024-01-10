@@ -1,6 +1,7 @@
 package com.github.vincemann.springrapid.core.controller;
 
 import com.github.vincemann.springrapid.core.CoreProperties;
+import com.github.vincemann.springrapid.core.controller.json.JsonMapper;
 import com.github.vincemann.springrapid.core.model.IdentifiableEntity;
 import com.github.vincemann.springrapid.core.service.EndpointService;
 import lombok.Getter;
@@ -15,8 +16,10 @@ import org.springframework.web.servlet.mvc.method.RequestMappingInfo;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
 import java.io.Serializable;
 import java.lang.reflect.ParameterizedType;
+import java.util.stream.Collectors;
 
 @Slf4j
 @Getter
@@ -25,14 +28,17 @@ public abstract class AbstractEntityController<E extends IdentifiableEntity<ID>,
 
 {
     protected Class<E> entityClass;
+    protected Class<ID> idClass;
     protected String baseUrl;
     protected String entityBaseUrl;
     protected String urlEntityName;
     protected CoreProperties coreProperties;
     protected EndpointService endpointService;
+    protected JsonMapper jsonMapper;
 
     public AbstractEntityController() {
         this.entityClass = (Class<E>) ((ParameterizedType) this.getClass().getGenericSuperclass()).getActualTypeArguments()[0];
+        this.idClass = (Class<ID>) ((ParameterizedType) this.getClass().getGenericSuperclass()).getActualTypeArguments()[1];
     }
 
     @Override
@@ -76,6 +82,9 @@ public abstract class AbstractEntityController<E extends IdentifiableEntity<ID>,
     }
 
 
+    protected String readBody(HttpServletRequest request) throws IOException {
+        return request.getReader().lines().collect(Collectors.joining(System.lineSeparator()));
+    }
 
     @Override
     public void onApplicationEvent(ContextRefreshedEvent event) {
@@ -85,6 +94,12 @@ public abstract class AbstractEntityController<E extends IdentifiableEntity<ID>,
             throw new RuntimeException(e);
         }
     }
+
+    @Autowired
+    public void injectJsonMapper(JsonMapper mapper) {
+        this.jsonMapper = mapper;
+    }
+
 
     @Autowired
     public void injectCoreProperties(CoreProperties properties) {

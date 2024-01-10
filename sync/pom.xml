@@ -9,7 +9,7 @@
         <version>1.0.0-SNAPSHOT.17</version>
     </parent>
 
-    <artifactId>audit</artifactId>
+    <artifactId>sync</artifactId>
     <groupId>com.github.vincemann.spring-rapid</groupId>
 
 

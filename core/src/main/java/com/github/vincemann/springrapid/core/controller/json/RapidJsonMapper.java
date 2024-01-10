@@ -20,6 +20,8 @@ public class RapidJsonMapper implements JsonMapper {
         return objectMapper.readValue(json,dtoClass);
     }
 
+
+
     @Override
     public <T> T readDto(String json, JavaType dtoClass) throws JsonProcessingException {
         return objectMapper.readValue(json,dtoClass);
