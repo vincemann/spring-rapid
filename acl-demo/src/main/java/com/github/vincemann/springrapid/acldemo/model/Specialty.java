@@ -1,6 +1,7 @@
 package com.github.vincemann.springrapid.acldemo.model;
 
 import com.github.vincemann.springrapid.acldemo.model.abs.MyIdentifiableEntity;
+import com.github.vincemann.springrapid.core.model.AuditingEntity;
 import com.github.vincemann.springrapid.core.model.IdentifiableEntityImpl;
 
 import com.github.vincemann.springrapid.autobidir.model.parent.annotation.BiDirParentCollection;
@@ -17,7 +18,7 @@ import java.util.Set;
 @NoArgsConstructor
 @Table(name = "specialties")
 @Entity
-public class Specialty extends MyIdentifiableEntity<Long>
+public class Specialty extends IdentifiableEntityImpl<Long>
          {
 
     @Builder

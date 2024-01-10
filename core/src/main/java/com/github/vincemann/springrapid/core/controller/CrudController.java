@@ -2,6 +2,7 @@ package com.github.vincemann.springrapid.core.controller;
 
 import com.github.vincemann.springrapid.core.controller.dto.mapper.context.CrudDtoMappingContextBuilder;
 import com.github.vincemann.springrapid.core.controller.fetchid.UrlParamIdFetchingStrategy;
+import com.github.vincemann.springrapid.core.model.AuditingEntity;
 import com.github.vincemann.springrapid.core.model.IdentifiableEntity;
 import com.github.vincemann.springrapid.core.service.CrudService;
 import org.springframework.beans.factory.annotation.Autowired;

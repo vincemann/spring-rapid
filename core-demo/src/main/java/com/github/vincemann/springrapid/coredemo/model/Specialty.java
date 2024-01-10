@@ -1,16 +1,15 @@
 package com.github.vincemann.springrapid.coredemo.model;
 
-import com.github.vincemann.springrapid.core.model.IdentifiableEntityImpl;
-
-
 import com.github.vincemann.springrapid.autobidir.model.parent.annotation.BiDirParentCollection;
+import com.github.vincemann.springrapid.core.model.IdentifiableEntityImpl;
 import com.github.vincemann.springrapid.core.util.LazyToStringUtil;
-import com.github.vincemann.springrapid.coredemo.model.abs.MyIdentifiableEntity;
-import lombok.*;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 import org.checkerframework.common.aliasing.qual.Unique;
 
 import javax.persistence.*;
-import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -19,7 +18,7 @@ import java.util.Set;
 @NoArgsConstructor
 @Table(name = "specialties")
 @Entity
-public class Specialty extends MyIdentifiableEntity<Long>
+public class Specialty extends IdentifiableEntityImpl<Long>
 {
 
     @Builder

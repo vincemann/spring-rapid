@@ -1,6 +1,5 @@
 package com.github.vincemann.springrapid.coredemo.repo;
 
-import com.github.vincemann.springrapid.coredemo.model.Specialty;
 import com.github.vincemann.springrapid.coredemo.model.Toy;
 import org.springframework.data.jpa.repository.JpaRepository;
 

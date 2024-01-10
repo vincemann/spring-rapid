@@ -1,10 +1,12 @@
 package com.github.vincemann.springrapid.core.controller.fetchid;
 
+import com.github.vincemann.springrapid.core.service.exception.BadEntityException;
+
 /**
  * Indicates that the id could not be Fetched from the {@link javax.servlet.http.HttpServletRequest}.
  * See : {@link IdFetchingStrategy}
  */
-public class IdFetchingException extends Exception {
+public class IdFetchingException extends BadEntityException {
     public IdFetchingException() {
     }
 

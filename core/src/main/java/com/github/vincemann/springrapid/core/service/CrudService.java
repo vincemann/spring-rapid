@@ -4,6 +4,7 @@ import com.github.vincemann.aoplog.api.AopLoggable;
 import com.github.vincemann.aoplog.api.IBeanNameAware;
 import com.github.vincemann.aoplog.api.annotation.LogConfig;
 import com.github.vincemann.aoplog.api.annotation.LogInteraction;
+import com.github.vincemann.springrapid.core.model.AuditingEntity;
 import com.github.vincemann.springrapid.core.model.IdentifiableEntity;
 import com.github.vincemann.springrapid.core.service.exception.BadEntityException;
 import com.github.vincemann.springrapid.core.service.exception.EntityNotFoundException;
@@ -11,6 +12,7 @@ import com.github.vincemann.springrapid.core.slicing.ServiceComponent;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.io.Serializable;
+import java.util.Date;
 import java.util.Optional;
 import java.util.Set;
 
@@ -30,6 +32,7 @@ public interface CrudService<E extends IdentifiableEntity<Id>,Id extends Seriali
 
         @Transactional
         Optional<E> findById(Id id);
+
 
 
         @Transactional

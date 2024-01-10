@@ -1,4 +1,4 @@
-package com.github.vincemann.springrapid.acldemo.repository;
+package com.github.vincemann.springrapid.acldemo.repo;
 
 import com.github.vincemann.springrapid.acldemo.model.Illness;
 import org.springframework.data.jpa.repository.JpaRepository;

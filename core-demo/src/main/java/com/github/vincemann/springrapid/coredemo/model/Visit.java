@@ -2,15 +2,16 @@ package com.github.vincemann.springrapid.coredemo.model;
 
 import com.github.vincemann.springrapid.autobidir.model.child.annotation.UniDirChildCollection;
 import com.github.vincemann.springrapid.autobidir.model.child.annotation.UniDirChildEntity;
-import com.github.vincemann.springrapid.core.util.LazyToStringUtil;
-import com.github.vincemann.springrapid.coredemo.model.abs.MyIdentifiableEntity;
-import lombok.*;
-import org.springframework.format.annotation.DateTimeFormat;
 import com.github.vincemann.springrapid.core.model.IdentifiableEntityImpl;
+import com.github.vincemann.springrapid.core.util.LazyToStringUtil;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+import org.springframework.format.annotation.DateTimeFormat;
 
 import javax.persistence.*;
 import java.time.LocalDate;
-import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -19,7 +20,7 @@ import java.util.Set;
 @NoArgsConstructor
 @Entity
 @Table(name = "visits")
-public class Visit extends MyIdentifiableEntity<Long> {
+public class Visit extends IdentifiableEntityImpl<Long> {
 
 
     @Builder

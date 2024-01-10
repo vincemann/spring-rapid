@@ -96,7 +96,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 
 @Repository
-public interface <insert entity>Repository extends JpaRepository<<insert entity>,<insert id>> {
+public interface <insert entity>Repository extends AuditingJpaRepository<<insert entity>,<insert id>> {
 
 }
 	'''

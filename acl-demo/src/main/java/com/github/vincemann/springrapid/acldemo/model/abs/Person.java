@@ -1,5 +1,6 @@
 package com.github.vincemann.springrapid.acldemo.model.abs;
 
+import com.github.vincemann.springrapid.core.model.AuditingEntity;
 import com.github.vincemann.springrapid.core.model.IdentifiableEntityImpl;
 import lombok.*;
 import org.checkerframework.common.aliasing.qual.Unique;
@@ -13,7 +14,7 @@ import javax.validation.constraints.NotBlank;
 @Setter
 @MappedSuperclass
 @AllArgsConstructor
-public abstract class Person extends MyIdentifiableEntity<Long> {
+public abstract class Person extends IdentifiableEntityImpl<Long> {
     @Column(name = "first_name")
     @NotBlank
     private String firstName;

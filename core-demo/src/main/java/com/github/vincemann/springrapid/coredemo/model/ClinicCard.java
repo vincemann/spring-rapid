@@ -1,9 +1,7 @@
 package com.github.vincemann.springrapid.coredemo.model;
 
-import com.github.vincemann.springrapid.core.model.IdentifiableEntityImpl;
-
 import com.github.vincemann.springrapid.autobidir.model.parent.annotation.BiDirParentEntity;
-import com.github.vincemann.springrapid.coredemo.model.abs.MyIdentifiableEntity;
+import com.github.vincemann.springrapid.core.model.IdentifiableEntityImpl;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -19,7 +17,7 @@ import java.util.Date;
 @NoArgsConstructor
 @Entity
 @Table(name = "clinic_cards")
-public class ClinicCard extends MyIdentifiableEntity<Long> {
+public class ClinicCard extends IdentifiableEntityImpl<Long> {
 
 
     @BiDirParentEntity
@@ -38,8 +36,10 @@ public class ClinicCard extends MyIdentifiableEntity<Long> {
     @Override
     public String toString() {
         return "ClinicCard{" +
-                "registrationDate=" + registrationDate +
+                "owner=" + owner ==  null ? "null" : owner.getLastName() +
+                ", registrationDate=" + registrationDate +
                 ", registrationReason='" + registrationReason + '\'' +
+                ", id=" + getId() +
                 '}';
     }
 }

@@ -1,6 +1,7 @@
 package com.github.vincemann.springrapid.acldemo.model;
 
 import com.github.vincemann.springrapid.acldemo.model.abs.MyIdentifiableEntity;
+import com.github.vincemann.springrapid.core.model.AuditingEntity;
 import com.github.vincemann.springrapid.core.model.IdentifiableEntityImpl;
 
 import com.github.vincemann.springrapid.autobidir.model.parent.annotation.BiDirParentCollection;
@@ -20,7 +21,7 @@ import java.util.Set;
 @Setter
 @Table(name = "illnesss")
 @Entity
-public class Illness extends MyIdentifiableEntity<Long> {
+public class Illness extends IdentifiableEntityImpl<Long> {
     @Unique
     private String name;
 

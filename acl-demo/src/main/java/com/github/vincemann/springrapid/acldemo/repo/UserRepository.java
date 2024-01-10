@@ -1,4 +1,4 @@
-package com.github.vincemann.springrapid.acldemo.repository;
+package com.github.vincemann.springrapid.acldemo.repo;
 
 import com.github.vincemann.springrapid.auth.model.AbstractUserRepository;
 import com.github.vincemann.springrapid.acldemo.model.User;

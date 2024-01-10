@@ -2,7 +2,6 @@ package com.github.vincemann.springrapid.core.controller;
 
 import lombok.Getter;
 import lombok.Setter;
-import lombok.ToString;
 import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
 
@@ -67,6 +66,12 @@ public class CrudEndpointInfo {
 
     @Override
     public String toString() {
-        return new ReflectionToStringBuilder(this, ToStringStyle.SHORT_PREFIX_STYLE).toString();
+        return "CrudEndpointInfo{" +
+                "exposeCreate=" + exposeCreate +
+                ", exposeFind=" + exposeFind +
+                ", exposeUpdate=" + exposeUpdate +
+                ", exposeDelete=" + exposeDelete +
+                ", exposeFindAll=" + exposeFindAll +
+                '}';
     }
 }

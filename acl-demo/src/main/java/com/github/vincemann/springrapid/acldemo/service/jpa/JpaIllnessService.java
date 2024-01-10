@@ -3,7 +3,7 @@ package com.github.vincemann.springrapid.acldemo.service.jpa;
 import com.github.vincemann.springrapid.acldemo.model.Illness;
 import com.github.vincemann.springrapid.core.service.JPACrudService;
 import com.github.vincemann.springrapid.core.slicing.ServiceComponent;
-import com.github.vincemann.springrapid.acldemo.repository.IllnessRepository;
+import com.github.vincemann.springrapid.acldemo.repo.IllnessRepository;
 import com.github.vincemann.springrapid.acldemo.service.IllnessService;
 import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Service;

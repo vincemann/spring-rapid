@@ -3,7 +3,6 @@ package com.github.vincemann.springrapid.coredemo.model;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.github.vincemann.springrapid.autobidir.model.parent.annotation.BiDirParentEntity;
 import com.github.vincemann.springrapid.core.model.IdentifiableEntityImpl;
-import com.github.vincemann.springrapid.coredemo.model.abs.MyIdentifiableEntity;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -11,14 +10,13 @@ import lombok.Setter;
 import org.checkerframework.common.aliasing.qual.Unique;
 
 import javax.persistence.*;
-import java.util.Arrays;
 
 @NoArgsConstructor
 @Getter
 @Setter
 @Table(name = "illnesss")
 @Entity
-public class Illness extends MyIdentifiableEntity<Long> {
+public class Illness extends IdentifiableEntityImpl<Long> {
     @Unique
     private String name;
 

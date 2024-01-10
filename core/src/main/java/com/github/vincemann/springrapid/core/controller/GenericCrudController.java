@@ -10,6 +10,7 @@ import com.github.vincemann.springrapid.core.controller.fetchid.IdFetchingStrate
 import com.github.vincemann.springrapid.core.controller.json.JsonDtoPropertyValidator;
 import com.github.vincemann.springrapid.core.controller.json.JsonMapper;
 import com.github.vincemann.springrapid.core.controller.owner.DelegatingOwnerLocator;
+import com.github.vincemann.springrapid.core.model.AuditingEntity;
 import com.github.vincemann.springrapid.core.model.IdentifiableEntity;
 import com.github.vincemann.springrapid.core.security.RapidSecurityContext;
 import com.github.vincemann.springrapid.core.service.CrudService;
@@ -41,6 +42,8 @@ import javax.validation.ConstraintViolationException;
 import java.io.IOException;
 import java.io.Serializable;
 import java.lang.reflect.ParameterizedType;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -57,16 +60,12 @@ public abstract class GenericCrudController
                 EndpointInfo extends CrudEndpointInfo,
                 DTOMappingContextBuilder extends AbstractDtoMappingContextBuilder
                 >
-        implements
-        ApplicationListener<ContextRefreshedEvent>,
-        InitializingBean {
+        extends AbstractEntityController<E,ID>
+{
 
 
     //              DEPENDENCIES
 
-
-    private CoreProperties coreProperties;
-    private EndpointService endpointService;
     private JsonMapper jsonMapper;
     private IdFetchingStrategy<ID> idFetchingStrategy;
     private EndpointInfo endpointInfo;
@@ -80,28 +79,23 @@ public abstract class GenericCrudController
     private MergeUpdateStrategy mergeUpdateStrategy;
     private JsonPatchStrategy jsonPatchStrategy;
     private JsonDtoPropertyValidator jsonDtoPropertyValidator;
-    private Class<E> entityClass;
 
 
     //              CONTROLLER METHODS
 
+    public ResponseEntity<String> findAll(HttpServletRequest request, HttpServletResponse response) throws JsonProcessingException, BadEntityException {
 
-    public ResponseEntity<String> findAll(HttpServletRequest request, HttpServletResponse response) throws JsonProcessingException {
-        try {
-            beforeFindAll(request, response);
-            logSecurityContext();
-            Set<E> foundEntities = serviceFindAll();
-            Collection<Object> dtos = new HashSet<>();
-            for (E e : foundEntities) {
-                dtos.add(dtoMapper.mapToDto(e,
-                        createDtoClass(getFindAllUrl(), Direction.RESPONSE, e)));
-            }
-            afterFindAll(dtos, foundEntities, request, response);
-            String json = jsonMapper.writeDto(dtos);
-            return ok(json);
-        } catch (BadEntityException e) {
-            throw new RuntimeException(e);
+        beforeFindAll(request, response);
+        logSecurityContext();
+        Set<E> foundEntities = serviceFindAll();
+        Collection<Object> dtos = new HashSet<>();
+        for (E e : foundEntities) {
+            dtos.add(dtoMapper.mapToDto(e,
+                    createDtoClass(getFindAllUrl(), Direction.RESPONSE, e)));
         }
+        afterFindAll(dtos, foundEntities, request, response);
+        String json = jsonMapper.writeDto(dtos);
+        return ok(json);
 
     }
 
@@ -124,7 +118,7 @@ public abstract class GenericCrudController
     public ResponseEntity<String> create(HttpServletRequest request, HttpServletResponse response) throws BadEntityException, EntityNotFoundException, IOException {
         String json = readBody(request);
         Class<?> dtoClass = createDtoClass(getCreateUrl(), Direction.REQUEST, null);
-        jsonDtoPropertyValidator.validateDto(json,dtoClass);
+        jsonDtoPropertyValidator.validateDto(json, dtoClass);
         Object dto = getJsonMapper().readDto(json, dtoClass);
         beforeCreate(dto, request, response);
         dtoValidationStrategy.validate(dto);
@@ -149,7 +143,7 @@ public abstract class GenericCrudController
         E saved = savedOptional.get();
         Class<?> dtoClass = createDtoClass(getUpdateUrl(), Direction.REQUEST, saved);
         beforeUpdate(dtoClass, id, patchString, request, response);
-        jsonDtoPropertyValidator.validatePatch(patchString,dtoClass);
+        jsonDtoPropertyValidator.validatePatch(patchString, dtoClass);
 
 
         PatchInfo patchInfo = jsonPatchStrategy.createPatchInfo(patchString);
@@ -164,7 +158,7 @@ public abstract class GenericCrudController
         // id field can be any name!
 //        allUpdatedFields.add("id");
         allUpdatedFields.add(IdPropertyNameUtils.findIdFieldName(patchEntity.getClass()));
-        EntityReflectionUtils.setNonMatchingFieldsNull(patchEntity,allUpdatedFields);
+        EntityReflectionUtils.setNonMatchingFieldsNull(patchEntity, allUpdatedFields);
 
         Set<String> updatedCollectionFields = EntityReflectionUtils.findCollectionFields(allUpdatedFields, getEntityClass());
 
@@ -207,7 +201,7 @@ public abstract class GenericCrudController
     public Class<?> createDtoClass(String endpoint, Direction direction, E entity) throws BadEntityException {
         DtoRequestInfo dtoRequestInfo = createDtoRequestInfo(endpoint, direction, entity);
         Class<?> dtoClass = dtoClassLocator.find(dtoRequestInfo);
-        if (dtoClass==null){
+        if (dtoClass == null) {
             throw new BadEntityException("No DtoClass mapped for info: " + dtoRequestInfo);
         }
         return dtoClass;
@@ -238,13 +232,12 @@ public abstract class GenericCrudController
     }
 
 
-
     protected ID fetchId(HttpServletRequest request) throws IdFetchingException {
         return this.getIdFetchingStrategy().fetchId(request);
     }
 
     private E mapToEntity(Object dto) throws BadEntityException, EntityNotFoundException {
-        return dtoMapper.mapToEntity(dto, entityClass);
+        return dtoMapper.mapToEntity(dto, getEntityClass());
     }
 
     protected String readBody(HttpServletRequest request) throws IOException {
@@ -253,18 +246,18 @@ public abstract class GenericCrudController
 
     protected String readRequestParam(HttpServletRequest request, String key) throws BadEntityException {
         String param = request.getParameter(key);
-        if (param==null){
+        if (param == null) {
             throw new BadEntityException("RequestParam with key: " + key + " not found");
-        }else {
+        } else {
             return param;
         }
     }
 
     protected Optional<String> readOptionalRequestParam(HttpServletRequest request, String key) {
         String param = request.getParameter(key);
-        if (param!=null){
+        if (param != null) {
             return Optional.of(param);
-        }else {
+        } else {
             return Optional.empty();
         }
     }
@@ -276,7 +269,7 @@ public abstract class GenericCrudController
                 .body(jsonDto);
     }
 
-    protected ResponseEntity<?> okNoContent(){
+    protected ResponseEntity<?> okNoContent() {
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
 
@@ -308,10 +301,9 @@ public abstract class GenericCrudController
     //             INIT
 
 
-    @Autowired
     @SuppressWarnings("unchecked")
     public GenericCrudController() {
-        this.entityClass = (Class<E>) ((ParameterizedType) this.getClass().getGenericSuperclass()).getActualTypeArguments()[0];
+        super();
     }
 
     /**
@@ -325,25 +317,19 @@ public abstract class GenericCrudController
 
     }
 
-    protected String getMediaType(){
+    protected String getMediaType() {
         return coreProperties.getController().getMediaType();
     }
 
     @Override
     public void onApplicationEvent(ContextRefreshedEvent event) {
         configureEndpointInfo(endpointInfo);
-        try {
-            registerEndpoints();
-        } catch (NoSuchMethodException e) {
-            //should never happen
-            throw new RuntimeException(e);
-        }
-
+        super.onApplicationEvent(event);
     }
 
     @Override
-    public void afterPropertiesSet() {
-        initUrls();
+    public void afterPropertiesSet() throws Exception {
+        super.afterPropertiesSet();
         this.dtoMappingContextBuilder = createDtoMappingContextBuilder();
         preconfigureDtoMappingContextBuilder(dtoMappingContextBuilder);
         this.dtoMappingContext = provideDtoMappingContext(dtoMappingContextBuilder);
@@ -368,22 +354,7 @@ public abstract class GenericCrudController
 
     }
 
-    protected String createUrlEntityName(){
-        return getEntityClass().getSimpleName().toLowerCase();
-    }
-
-    /**
-     * Override this if your API for this controller changes.
-     * e.g. from /api/v1 to /api/v2
-     * @return
-     */
-    protected String createBaseUrl(){
-        return coreProperties.baseUrl;
-    }
-
-
     //              URLS
-
 
     @Setter
     private String findUrl;
@@ -395,18 +366,9 @@ public abstract class GenericCrudController
     private String deleteUrl;
     @Setter
     private String createUrl;
-    /**
-     * overwrite {@link this#createBaseUrl()} and {@link this#createUrlEntityName()} instead of setting these values
-     * if you want to change them
-     */
-    private String baseUrl;
-    private String entityBaseUrl;
-    private String urlEntityName;
 
     protected void initUrls() {
-        this.urlEntityName = createUrlEntityName();
-        this.baseUrl = createBaseUrl();
-        this.entityBaseUrl = baseUrl + "/" + urlEntityName + "/";
+        super.initUrls();
         this.findUrl = entityBaseUrl + coreProperties.controller.endpoints.find;
         this.findAllUrl = entityBaseUrl + coreProperties.controller.endpoints.findAll;
         this.updateUrl = entityBaseUrl + coreProperties.controller.endpoints.update;
@@ -418,6 +380,7 @@ public abstract class GenericCrudController
     //              REGISTER ENDPOINTS
 
 
+    @Override
     protected void registerEndpoints() throws NoSuchMethodException {
         if (endpointInfo.isExposeCreate()) {
             registerEndpoint(createCreateRequestMappingInfo(), "create");
@@ -436,18 +399,6 @@ public abstract class GenericCrudController
         }
     }
 
-    protected void registerEndpoint(RequestMappingInfo requestMappingInfo, String methodName) throws NoSuchMethodException {
-        log.debug("Exposing " + methodName + " Endpoint for " + this.getClass().getSimpleName());
-        getEndpointService().addMapping(requestMappingInfo,
-                this.getClass().getMethod(methodName, HttpServletRequest.class, HttpServletResponse.class), this);
-    }
-
-    protected void registerViewEndpoint(RequestMappingInfo requestMappingInfo, String methodName) throws NoSuchMethodException {
-        log.debug("Exposing " + methodName + " Endpoint for " + this.getClass().getSimpleName());
-        getEndpointService().addMapping(requestMappingInfo,
-                this.getClass().getMethod(methodName, HttpServletRequest.class, HttpServletResponse.class, Model.class), this);
-    }
-
     protected RequestMappingInfo createFindRequestMappingInfo() {
         return RequestMappingInfo
                 .paths(findUrl)
@@ -455,6 +406,7 @@ public abstract class GenericCrudController
                 .produces(getMediaType())
                 .build();
     }
+
 
     protected RequestMappingInfo createDeleteRequestMappingInfo() {
         return RequestMappingInfo
@@ -494,8 +446,8 @@ public abstract class GenericCrudController
     //              SERVICE CALLBACKS
 
 
-    protected E servicePartialUpdate(E update,Set<String> collectionsToUpdate, String... propertiesToDelete) throws BadEntityException, EntityNotFoundException {
-        return service.partialUpdate(update,collectionsToUpdate,propertiesToDelete);
+    protected E servicePartialUpdate(E update, Set<String> collectionsToUpdate, String... propertiesToDelete) throws BadEntityException, EntityNotFoundException {
+        return service.partialUpdate(update, collectionsToUpdate, propertiesToDelete);
     }
 
     protected E serviceCreate(E entity) throws BadEntityException {
@@ -510,7 +462,7 @@ public abstract class GenericCrudController
         return service.findAll();
     }
 
-    protected Optional<E> serviceFind(ID id) throws BadEntityException {
+    protected Optional<E> serviceFind(ID id) {
         return service.findById(id);
     }
 
@@ -589,11 +541,6 @@ public abstract class GenericCrudController
     }
 
     @Autowired
-    public void injectEndpointService(EndpointService endpointService) {
-        this.endpointService = endpointService;
-    }
-
-    @Autowired
     public void injectEndpointInfo(EndpointInfo endpointInfo) {
         this.endpointInfo = endpointInfo;
     }
@@ -606,11 +553,6 @@ public abstract class GenericCrudController
     @Autowired
     public void injectIdIdFetchingStrategy(IdFetchingStrategy<ID> idFetchingStrategy) {
         this.idFetchingStrategy = idFetchingStrategy;
-    }
-
-    @Autowired
-    public void injectCoreProperties(CoreProperties properties) {
-        this.coreProperties = properties;
     }
 
     @Autowired

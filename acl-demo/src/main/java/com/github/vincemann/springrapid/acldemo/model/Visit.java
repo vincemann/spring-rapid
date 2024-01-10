@@ -1,10 +1,8 @@
 package com.github.vincemann.springrapid.acldemo.model;
 
-import com.github.vincemann.springrapid.acldemo.model.abs.MyIdentifiableEntity;
-import com.github.vincemann.springrapid.core.model.IdentifiableEntityImpl;
 import com.github.vincemann.springrapid.autobidir.model.child.annotation.UniDirChildCollection;
 import com.github.vincemann.springrapid.autobidir.model.child.annotation.UniDirChildEntity;
-
+import com.github.vincemann.springrapid.core.model.IdentifiableEntityImpl;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -22,7 +20,7 @@ import java.util.Set;
 @NoArgsConstructor
 @Table(name = "visits")
 @Entity
-public class Visit extends MyIdentifiableEntity<Long> {
+public class Visit extends IdentifiableEntityImpl<Long> {
 
 
     @Builder

@@ -1,6 +1,7 @@
 package com.github.vincemann.springrapid.core.proxy;
 
 import com.github.vincemann.aoplog.api.annotation.LogInteraction;
+import com.github.vincemann.springrapid.core.model.AuditingEntity;
 import com.github.vincemann.springrapid.core.model.IdentifiableEntity;
 import com.github.vincemann.springrapid.core.service.CrudService;
 import com.github.vincemann.springrapid.core.service.exception.BadEntityException;
@@ -13,7 +14,8 @@ import java.util.Set;
 //override log config from CrudService -> explicitly enable Logging for methods that actually matter in subclasses
 @LogInteraction(disabled = true)
 //@LogConfig
-public interface GenericCrudServiceExtension<S extends CrudService<E,Id>,E extends IdentifiableEntity<Id>,Id extends Serializable>
+public interface GenericCrudServiceExtension
+        <S extends CrudService<E,Id>,E extends IdentifiableEntity<Id>,Id extends Serializable>
         extends CrudService<E,Id>, NextLinkAware<S>{
 
     @Override

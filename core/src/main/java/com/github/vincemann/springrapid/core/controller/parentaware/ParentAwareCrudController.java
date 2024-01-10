@@ -6,6 +6,7 @@ import com.github.vincemann.springrapid.core.controller.GenericCrudController;
 import com.github.vincemann.springrapid.core.controller.fetchid.IdFetchingStrategy;
 import com.github.vincemann.springrapid.core.controller.fetchid.IdFetchingException;
 import com.github.vincemann.springrapid.core.controller.DtoValidationStrategy;
+import com.github.vincemann.springrapid.core.model.AuditingEntity;
 import com.github.vincemann.springrapid.core.model.IdentifiableEntity;
 import com.github.vincemann.springrapid.core.service.CrudService;
 import com.github.vincemann.springrapid.core.service.ParentAwareService;
@@ -39,7 +40,7 @@ import java.util.Set;
 @Getter
 public abstract class ParentAwareCrudController
         <
-                E extends IdentifiableEntity<Id>,
+                E extends AuditingEntity<Id>,
                 Id extends Serializable,
                 PId extends Serializable,
                 S extends CrudService<E, Id> & ParentAwareService<E, PId>
@@ -62,7 +63,7 @@ public abstract class ParentAwareCrudController
     @Override
     protected void initUrls() {
         super.initUrls();
-        this.findAllOfParentUrl = getEntityBaseUrl() + getCoreProperties().controller.endpoints.findAllOfParent;
+        this.findAllOfParentUrl = entityBaseUrl + coreProperties.controller.endpoints.findAllOfParent;
     }
 
 
@@ -78,7 +79,7 @@ public abstract class ParentAwareCrudController
         return RequestMappingInfo
                 .paths(findAllOfParentUrl)
                 .methods(RequestMethod.GET)
-                .produces(getCoreProperties().getController().getMediaType())
+                .produces(coreProperties.getController().getMediaType())
                 .build();
     }
 

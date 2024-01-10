@@ -33,6 +33,7 @@
 
     <modules>
         <module>auth</module>
+        <module>audit</module>
         <module>lemon-exceptions</module>
         <module>auth-demo</module>
         <module>auth-test</module>
