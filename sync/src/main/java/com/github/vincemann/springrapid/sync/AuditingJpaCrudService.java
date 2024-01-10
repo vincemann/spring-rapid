@@ -3,6 +3,7 @@ package com.github.vincemann.springrapid.sync;
 import com.github.vincemann.springrapid.core.IdConverter;
 import com.github.vincemann.springrapid.core.model.AuditingEntity;
 import com.github.vincemann.springrapid.core.repo.RapidJpaRepository;
+import com.github.vincemann.springrapid.core.service.EntityFilter;
 import com.github.vincemann.springrapid.core.service.JPACrudService;
 import com.github.vincemann.springrapid.core.service.exception.EntityNotFoundException;
 import com.github.vincemann.springrapid.sync.dto.EntityLastUpdateInfo;
@@ -11,8 +12,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.io.Serializable;
+import java.sql.Timestamp;
 import java.util.Date;
-import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -23,7 +24,7 @@ public class AuditingJpaCrudService
                 Id extends Serializable,
                 R extends RapidJpaRepository<E, Id> & AuditingRepository<Id>>
         extends JPACrudService<E, Id, R>
-        implements AuditingService<Id> {
+        implements AuditingService<E, Id> {
 
     private IdConverter<Id> idConverter;
 
@@ -58,13 +59,18 @@ public class AuditingJpaCrudService
         }
     }
 
+    @Override
+    public Set<EntitySyncStatus> findEntitySyncStatusesSinceTimestamp(Timestamp lastUpdate, Set<EntityFilter<E>> filters) throws EntityNotFoundException {
+        return null;
+    }
+
     /**
      * only returns set of {@link EntitySyncStatus} for entities that need update.
      * @param lastUpdateInfos
      * @return
      */
     @Override
-    public Set<EntitySyncStatus> findEntitiesSyncStatus(Set<EntityLastUpdateInfo> lastUpdateInfos) {
+    public Set<EntitySyncStatus> findEntitySyncStatuses(Set<EntityLastUpdateInfo> lastUpdateInfos) {
         // todo speed this up maybe
         // maybe add parallel flag ?
         return lastUpdateInfos.stream()

@@ -2,16 +2,19 @@ package com.github.vincemann.springrapid.core.service;
 
 import com.github.vincemann.springrapid.core.model.IdentifiableEntity;
 import com.github.vincemann.springrapid.core.repo.FindSomeRepository;
+import com.github.vincemann.springrapid.core.repo.RapidJpaRepository;
 import com.github.vincemann.springrapid.core.service.exception.BadEntityException;
 import com.github.vincemann.springrapid.core.service.exception.EntityNotFoundException;
 import com.github.vincemann.springrapid.core.slicing.ServiceComponent;
 import com.github.vincemann.springrapid.core.util.*;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.NonTransientDataAccessException;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.io.Serializable;
 import java.util.*;
+import java.util.stream.Collectors;
 
 
 /**
@@ -22,12 +25,12 @@ import java.util.*;
  * @param <R>  {@link JpaRepository} Type
  */
 @ServiceComponent
+@Slf4j
 public abstract class JPACrudService
         <
                 E extends IdentifiableEntity<Id>,
                 Id extends Serializable,
-                // just use RapidJpaRepository
-                R extends JpaRepository<E, Id> & FindSomeRepository<E,Id>
+                R extends RapidJpaRepository<E,Id>
                 >
         extends AbstractCrudService<E, Id, R> {
 
@@ -140,6 +143,28 @@ public abstract class JPACrudService
     @Override
     public Set<E> findAll() {
         return new HashSet<>(getRepository().findAll());
+    }
+
+    // todo find JPQL way bc constructing sql with multiple where clauses or smth
+    // would be nice when in memory filtering and sql filtering could be combined, all with same interface of entityFilter
+    @Transactional
+    @Override
+    public Set<E> findAll(Set<EntityFilter<E>> filters) {
+        return new HashSet<>(getRepository().findAll())
+                .stream()
+                .filter(entity ->  {
+                    for (EntityFilter<E> filter : filters) {
+                        if (filter.match(entity)){
+                            if (log.isTraceEnabled())
+                                log.trace("entity: " + entity + " matches filter: " + filter);
+                            return true;
+                        }
+                    }
+                    if (log.isTraceEnabled())
+                        log.trace("entity: " + entity + " did not match any filter: ");
+                    return false;
+                })
+                .collect(Collectors.toSet());
     }
 
 

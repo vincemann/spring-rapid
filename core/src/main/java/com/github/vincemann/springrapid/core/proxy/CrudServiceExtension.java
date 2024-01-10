@@ -35,6 +35,16 @@ public interface CrudServiceExtension<S extends CrudService>
 //    }
 
 
+    @Override
+    default Set findAll(Set filters) {
+        return getNext().findAll(filters);
+    }
+
+    @Override
+    default Set<IdentifiableEntity> findSome(Set ids) {
+        return getNext().findSome(ids);
+    }
+
     // i dont know why i have to use raw Set Type
     @Override
     default IdentifiableEntity partialUpdate(IdentifiableEntity update, Set propertiesToUpdate, String... fieldsToRemove) throws EntityNotFoundException, BadEntityException {

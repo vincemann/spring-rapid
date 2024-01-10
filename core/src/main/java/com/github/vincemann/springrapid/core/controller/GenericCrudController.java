@@ -1,41 +1,37 @@
 package com.github.vincemann.springrapid.core.controller;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.type.CollectionType;
 import com.github.fge.jsonpatch.JsonPatchException;
-import com.github.vincemann.springrapid.core.CoreProperties;
 import com.github.vincemann.springrapid.core.controller.dto.mapper.DelegatingDtoMapper;
 import com.github.vincemann.springrapid.core.controller.dto.mapper.context.*;
 import com.github.vincemann.springrapid.core.controller.fetchid.IdFetchingException;
 import com.github.vincemann.springrapid.core.controller.fetchid.IdFetchingStrategy;
 import com.github.vincemann.springrapid.core.controller.json.JsonDtoPropertyValidator;
-import com.github.vincemann.springrapid.core.controller.json.JsonMapper;
 import com.github.vincemann.springrapid.core.controller.owner.DelegatingOwnerLocator;
-import com.github.vincemann.springrapid.core.model.AuditingEntity;
 import com.github.vincemann.springrapid.core.model.IdentifiableEntity;
 import com.github.vincemann.springrapid.core.security.RapidSecurityContext;
 import com.github.vincemann.springrapid.core.service.CrudService;
-import com.github.vincemann.springrapid.core.service.EndpointService;
 import com.github.vincemann.springrapid.core.service.EntityFilter;
 import com.github.vincemann.springrapid.core.service.exception.BadEntityException;
 import com.github.vincemann.springrapid.core.service.exception.EntityNotFoundException;
 import com.github.vincemann.springrapid.core.util.EntityReflectionUtils;
+import com.github.vincemann.springrapid.core.util.HttpServletRequestUtils;
 import com.github.vincemann.springrapid.core.util.IdPropertyNameUtils;
 import com.github.vincemann.springrapid.core.util.VerifyEntity;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.InitializingBean;
+import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.ApplicationListener;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.ApplicationContextAware;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.context.event.ContextRefreshedEvent;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.servlet.mvc.method.RequestMappingInfo;
 
@@ -44,11 +40,7 @@ import javax.servlet.http.HttpServletResponse;
 import javax.validation.ConstraintViolationException;
 import java.io.IOException;
 import java.io.Serializable;
-import java.lang.reflect.ParameterizedType;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.*;
-import java.util.stream.Collectors;
 
 
 @Slf4j
@@ -63,7 +55,7 @@ public abstract class GenericCrudController
                 EndpointInfo extends CrudEndpointInfo,
                 DTOMappingContextBuilder extends AbstractDtoMappingContextBuilder
                 >
-        extends AbstractEntityController<E,ID>
+        extends AbstractEntityController<E,ID> implements ApplicationContextAware
 {
 
 
@@ -82,21 +74,24 @@ public abstract class GenericCrudController
     private MergeUpdateStrategy mergeUpdateStrategy;
     private JsonPatchStrategy jsonPatchStrategy;
     private JsonDtoPropertyValidator jsonDtoPropertyValidator;
+    private ApplicationContext applicationContext;
 
 
     //              CONTROLLER METHODS
 
     public ResponseEntity<String> findAll(HttpServletRequest request, HttpServletResponse response) throws JsonProcessingException, BadEntityException {
 
-        beforeFindAll(request, response);
+        Set<EntityFilter<E>> filters = HttpServletRequestUtils.extractFilters(request,applicationContext);
+
+        beforeFindAll(request, response,filters);
         logSecurityContext();
-        Set<E> foundEntities = serviceFindAll();
+        Set<E> foundEntities = serviceFindAll(filters);
         Collection<Object> dtos = new HashSet<>();
         for (E e : foundEntities) {
             dtos.add(dtoMapper.mapToDto(e,
                     createDtoClass(getFindAllUrl(), Direction.RESPONSE, e)));
         }
-        afterFindAll(dtos, foundEntities, request, response);
+        afterFindAll(dtos, foundEntities, request, response,filters);
         String json = jsonMapper.writeDto(dtos);
         return ok(json);
 
@@ -216,6 +211,10 @@ public abstract class GenericCrudController
         return okNoContent();
     }
 
+    @Override
+    public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
+        this.applicationContext = applicationContext;
+    }
 
     //              HELPERS
 
@@ -495,6 +494,13 @@ public abstract class GenericCrudController
         return service.findAll();
     }
 
+    protected Set<E> serviceFindAll(Set<EntityFilter<E>> filters) {
+        if (filters.isEmpty())
+            return service.findAll();
+        else
+            return service.findAll(filters);
+    }
+
 //    protected Set<E> serviceFindAll(EntityFilter<E> filter) {
 //        return service.findAll(filter);
 //    }
@@ -523,11 +529,12 @@ public abstract class GenericCrudController
     public void beforeFind(ID id, HttpServletRequest httpServletRequest, HttpServletResponse response) {
     }
 
-    public void beforeFindAll(HttpServletRequest httpServletRequest, HttpServletResponse response) {
+    public void beforeFindAll(HttpServletRequest httpServletRequest, HttpServletResponse response, Set<EntityFilter<E>> filters) {
     }
 
     public void beforeFindSome(Set<ID> ids, HttpServletRequest httpServletRequest, HttpServletResponse response) {
     }
+
 
     public void afterCreate(Object dto, E created, HttpServletRequest httpServletRequest, HttpServletResponse response) {
     }
@@ -541,7 +548,7 @@ public abstract class GenericCrudController
     public void afterFind(ID id, Object dto, Optional<E> found, HttpServletRequest httpServletRequest, HttpServletResponse response) {
     }
 
-    public void afterFindAll(Collection<Object> dtos, Set<E> found, HttpServletRequest httpServletRequest, HttpServletResponse response) {
+    public void afterFindAll(Collection<Object> dtos, Set<E> found, HttpServletRequest httpServletRequest, HttpServletResponse response, Set<EntityFilter<E>> filters) {
     }
 
     public void afterFindSome(Collection<Object> dtos, Set<E> found, HttpServletRequest httpServletRequest, HttpServletResponse response) {

@@ -5,8 +5,10 @@ import com.github.vincemann.springrapid.core.controller.AbstractEntityController
 import com.github.vincemann.springrapid.core.controller.fetchid.IdFetchingException;
 import com.github.vincemann.springrapid.core.controller.fetchid.IdFetchingStrategy;
 import com.github.vincemann.springrapid.core.model.AuditingEntity;
+import com.github.vincemann.springrapid.core.service.EntityFilter;
 import com.github.vincemann.springrapid.core.service.exception.BadEntityException;
 import com.github.vincemann.springrapid.core.service.exception.EntityNotFoundException;
+import com.github.vincemann.springrapid.core.util.HttpServletRequestUtils;
 import com.github.vincemann.springrapid.core.util.VerifyEntity;
 import com.github.vincemann.springrapid.sync.dto.EntityLastUpdateInfo;
 import com.github.vincemann.springrapid.sync.dto.EntitySyncStatus;
@@ -14,7 +16,11 @@ import com.github.vincemann.springrapid.sync.serialize.EntitySyncStatusSerialize
 import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.BeansException;
+import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.ApplicationContextAware;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -26,12 +32,14 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.Serializable;
 import java.sql.Timestamp;
+import java.util.HashSet;
 import java.util.Set;
 
 /**
  * Offers methods for evaluating {@link EntitySyncStatus} of an entity or multiple entities.
  * Entities need to record audit information -> {@link AuditingEntity}.
  * Client can check if updates need to be done, and what kind of update is required, before actually fetching.
+ *
  * @see EntitySyncStatus
  */
 @Slf4j
@@ -39,15 +47,18 @@ import java.util.Set;
 public class SyncEntityController<
         E extends AuditingEntity<ID>,
         ID extends Serializable,
-        S extends AuditingService<ID>>
-        extends AbstractEntityController<E, ID> {
+        S extends AuditingService<E, ID>>
+        extends AbstractEntityController<E, ID> implements ApplicationContextAware {
 
+    private ApplicationContext applicationContext;
     private IdFetchingStrategy<ID> idFetchingStrategy;
     private S service;
     @Setter
     private String fetchEntitySyncStatusUrl;
     @Setter
     private String fetchEntitySyncStatusesUrl;
+    @Setter
+    private String fetchEntitySyncStatusesSinceTsUrl;
 
     private EntitySyncStatusSerializer entitySyncStatusSerializer;
 
@@ -56,30 +67,34 @@ public class SyncEntityController<
         super();
     }
 
+    @Override
+    public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
+        this.applicationContext = applicationContext;
+    }
 
     /**
      * used for single entity sync.
-     * GET /api/core/entity/fetch-entity-sync-status?id=42,last-update-ts=...
+     * GET /api/core/entity/fetch-entity-sync-status?id=42,ts=...
      * returns 200 if updated needed with body {@link EntitySyncStatusSerializer#serialize(EntitySyncStatus)}
      * or 204 if no update is needed
      */
     public ResponseEntity<String> fetchEntitySyncStatus(HttpServletRequest request, HttpServletResponse response) throws BadEntityException, EntityNotFoundException {
         try {
             ID id = fetchId(request);
-            long lastUpdateTimestamp = Long.parseLong(request.getParameter("last-update-ts"));
+            long lastUpdateTimestamp = Long.parseLong(request.getParameter("ts"));
             // jpa uses this format
-    //            Date lastUpdateDate = DATE_FORMAT.parse(lastUpdateTimestampString);
+            //            Date lastUpdateDate = DATE_FORMAT.parse(lastUpdateTimestampString);
             Timestamp lastUpdate = new Timestamp(lastUpdateTimestamp);
             VerifyEntity.isPresent(lastUpdateTimestamp, "need 'last-update-ts' parameter");
             EntitySyncStatus syncStatus = serviceFindEntitySyncStatus(new EntityLastUpdateInfo(id.toString(), lastUpdate));
             boolean updated = syncStatus != null;
             if (updated)
                 return ResponseEntity.ok()
-                    .contentType(MediaType.TEXT_PLAIN)
-                    .body(entitySyncStatusSerializer.serialize(syncStatus));
+                        .contentType(MediaType.TEXT_PLAIN)
+                        .body(entitySyncStatusSerializer.serialize(syncStatus));
             else
                 return ResponseEntity.noContent().build();
-        }catch (NumberFormatException e) {
+        } catch (NumberFormatException e) {
             throw new BadEntityException("Invalid timestamp format. Send unix timestamp long value.");
         }
     }
@@ -87,7 +102,7 @@ public class SyncEntityController<
     /**
      * receives Set of {@link com.github.vincemann.springrapid.sync.dto.EntityLastUpdateInfo} of client and looks these through.
      * Returns client Set of {@link EntitySyncStatus} for those that need update with respective {@link EntitySyncStatus#getStatus()}.
-     *
+     * <p>
      * If no updated required at all, returns 204 without body.
      */
     public ResponseEntity<String> fetchEntitySyncStatuses(HttpServletRequest request, HttpServletResponse response) throws BadEntityException, EntityNotFoundException {
@@ -102,17 +117,43 @@ public class SyncEntityController<
                 return ResponseEntity.noContent().build();
             else
                 return ResponseEntity.ok()
-                    .contentType(MediaType.TEXT_PLAIN)
-                    .body(entitySyncStatusSerializer.serialize(syncStatuses));
+                        .contentType(MediaType.TEXT_PLAIN)
+                        .body(entitySyncStatusSerializer.serialize(syncStatuses));
         } catch (IOException e) {
             throw new BadEntityException("invalid format for EntityLastUpdateInfo. Use json list.");
         }
     }
 
+    /**
+     * client passes timestamp, of when last update for find-all (with potential filter) was performed, to server.
+     * searched entity space can be reduced with {@link com.github.vincemann.springrapid.core.service.EntityFilter}s.
+     * Client can pass list of filters bean names, that should be applied in that order.
+     * <p>
+     * Server returns Set of {@link EntitySyncStatus} of all entities, that have been removed, added or updated since then.
+     * <p>
+     * GET /api/core/entity/fetch-entity-sync-statuses-since-ts?ts=...&filter=filter1,filter2
+     */
+    public ResponseEntity<String> fetchEntitySyncStatusesSinceTimestamp(HttpServletRequest request, HttpServletResponse response) throws BadEntityException, EntityNotFoundException {
+        // todo maybe add allowed list of filters hardcoded for more security
+        // what about default filters? rather integrate as ServiceExtensions?
+        // what about JPQL where clause filters for performance or smth like that
+        long lastUpdateTimestamp = Long.parseLong(request.getParameter("ts"));
+        Set<EntityFilter<E>> filters = HttpServletRequestUtils.extractFilters(request,applicationContext);
+        Set<EntitySyncStatus> syncStatuses = serviceFindUpdatesSinceTimestamp(new Timestamp(lastUpdateTimestamp),filters);
+        if (syncStatuses.isEmpty())
+            return ResponseEntity.noContent().build();
+        else
+            return ResponseEntity.ok()
+                    .contentType(MediaType.TEXT_PLAIN)
+                    .body(entitySyncStatusSerializer.serialize(syncStatuses));
+    }
+
+
     @Override
     protected void registerEndpoints() throws NoSuchMethodException {
         registerEndpoint(createFetchEntitySyncStatusRequestMappingInfo(), "fetchEntitySyncStatus");
         registerEndpoint(createFetchEntitySyncStatusesRequestMappingInfo(), "fetchEntitySyncStatuses");
+        registerEndpoint(createFetchEntitySyncStatusesSinceTsRequestMappingInfo(), "fetchEntitySyncStatusesSinceTimestamp");
     }
 
 
@@ -121,10 +162,14 @@ public class SyncEntityController<
     }
 
     protected Set<EntitySyncStatus> serviceFindEntitySyncStatuses(Set<EntityLastUpdateInfo> lastUpdateInfos) throws EntityNotFoundException {
-        return service.findEntitiesSyncStatus(lastUpdateInfos);
+        return service.findEntitySyncStatuses(lastUpdateInfos);
     }
 
-    private RequestMappingInfo createFetchEntitySyncStatusRequestMappingInfo() {
+    protected Set<EntitySyncStatus> serviceFindUpdatesSinceTimestamp(Timestamp lastUpdate, Set<EntityFilter<E>> filters) throws EntityNotFoundException {
+        return service.findEntitySyncStatusesSinceTimestamp(lastUpdate,filters);
+    }
+
+    protected RequestMappingInfo createFetchEntitySyncStatusRequestMappingInfo() {
         return RequestMappingInfo
                 .paths(fetchEntitySyncStatusUrl)
                 .methods(RequestMethod.GET)
@@ -132,7 +177,15 @@ public class SyncEntityController<
                 .build();
     }
 
-    private RequestMappingInfo createFetchEntitySyncStatusesRequestMappingInfo() {
+    protected RequestMappingInfo createFetchEntitySyncStatusesSinceTsRequestMappingInfo() {
+        return RequestMappingInfo
+                .paths(fetchEntitySyncStatusesSinceTsUrl)
+                .methods(RequestMethod.GET)
+                .produces(MediaType.TEXT_PLAIN_VALUE)
+                .build();
+    }
+
+    protected RequestMappingInfo createFetchEntitySyncStatusesRequestMappingInfo() {
         return RequestMappingInfo
                 .paths(fetchEntitySyncStatusesUrl)
                 .methods(RequestMethod.POST)
@@ -145,6 +198,7 @@ public class SyncEntityController<
         super.initUrls();
         this.fetchEntitySyncStatusUrl = entityBaseUrl + "fetch-entity-sync-status";
         this.fetchEntitySyncStatusesUrl = entityBaseUrl + "fetch-entity-sync-statuses";
+        this.fetchEntitySyncStatusesSinceTsUrl = entityBaseUrl + "fetch-entity-sync-statuses-since-ts";
     }
 
 

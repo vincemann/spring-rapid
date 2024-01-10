@@ -10,6 +10,7 @@ import com.github.vincemann.springrapid.core.service.exception.EntityNotFoundExc
 import org.springframework.security.acls.domain.BasePermission;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.persistence.Id;
 import java.io.Serializable;
 import java.util.Optional;
 import java.util.Set;
@@ -57,7 +58,24 @@ public class CrudAclChecksSecurityExtension
     }
 
     @Override
+    public Set<IdentifiableEntity> findSome(Set ids) {
+        Set<IdentifiableEntity> entities = getNext().findSome(ids);
+        entities.stream().forEach(entity -> getSecurityChecker().checkPermission(entity,BasePermission.READ));
+//        return getSecurityChecker().filter(entities,BasePermission.READ);
+        return entities;
+    }
+
+    @Override
+    public Set findAll(Set filters) {
+        Set<IdentifiableEntity> entities = getNext().findAll(filters);
+        entities.stream().forEach(entity -> getSecurityChecker().checkPermission(entity,BasePermission.READ));
+        return entities;
+    }
+
+    @Override
     public Set findAll() {
+        // todo maybe replace with access denied exception if no read permission for at least one
+        // also add filter that filters out the ones I have read permission for?
         Set<IdentifiableEntity> entities = getNext().findAll();
         return getSecurityChecker().filter(entities,BasePermission.READ);
     }

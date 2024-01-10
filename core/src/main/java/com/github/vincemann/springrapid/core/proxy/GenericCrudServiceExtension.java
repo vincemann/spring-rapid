@@ -4,6 +4,7 @@ import com.github.vincemann.aoplog.api.annotation.LogInteraction;
 import com.github.vincemann.springrapid.core.model.AuditingEntity;
 import com.github.vincemann.springrapid.core.model.IdentifiableEntity;
 import com.github.vincemann.springrapid.core.service.CrudService;
+import com.github.vincemann.springrapid.core.service.EntityFilter;
 import com.github.vincemann.springrapid.core.service.exception.BadEntityException;
 import com.github.vincemann.springrapid.core.service.exception.EntityNotFoundException;
 
@@ -33,6 +34,15 @@ public interface GenericCrudServiceExtension
         return getNext().partialUpdate(entity,fieldsToRemove);
     }
 
+    @Override
+    default Set<E> findAll(Set<EntityFilter<E>> filters) {
+        return getNext().findAll(filters);
+    }
+
+    @Override
+    default Set<E> findSome(Set<Id> ids) {
+        return getNext().findSome(ids);
+    }
 
     @Override
     default E partialUpdate(E update, Set<String> propertiesToUpdate, String... fieldsToRemove) throws EntityNotFoundException, BadEntityException {

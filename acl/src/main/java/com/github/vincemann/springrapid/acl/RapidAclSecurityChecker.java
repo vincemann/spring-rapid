@@ -71,8 +71,8 @@ public class RapidAclSecurityChecker
             if (permitted) {
                 filtered.add(entity);
             } else {
-                if (log.isDebugEnabled())
-                    log.debug("filtered out entity: " + entity);
+                if (log.isWarnEnabled())
+                    log.warn("filtered out entity: " + entity);
             }
         }
         return (C) filtered;

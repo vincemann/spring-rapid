@@ -16,7 +16,7 @@ public class EntitySyncStatusSerializerImpl implements EntitySyncStatusSerialize
     public static final String DELIMITER = ":";
     @Override
     public String serialize(EntitySyncStatus syncStatus) {
-        return syncStatus.getId()+syncStatus.getStatus();
+        return syncStatus.getId()+EntitySyncStatus.convert(syncStatus.getStatus());
     }
 
     /**
@@ -45,7 +45,7 @@ public class EntitySyncStatusSerializerImpl implements EntitySyncStatusSerialize
             // Get the rest of the characters
             String id = statusString.substring(0, statusString.length() - 1);
 
-            return new EntitySyncStatus(id,status);
+            return new EntitySyncStatus(id,EntitySyncStatus.convert(status));
         } else {
             // Handle cases where the string is too short to split
             throw new BadEntityException("status string to too short");

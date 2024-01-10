@@ -58,7 +58,7 @@ public abstract class AbstractDtoMappingContextBuilder<C extends GenericCrudCont
     }
 
     protected List<String> getFindEndpoints(){
-        return Lists.newArrayList(controller.getFindUrl(), controller.getFindAllUrl());
+        return Lists.newArrayList(controller.getFindUrl(), controller.getFindAllUrl(), controller.getFindSomeUrl());
     }
 
     protected List<String> getWriteEndpoints(){
