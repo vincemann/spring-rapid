@@ -1,13 +1,16 @@
-package com.github.vincemann.springrapid.sync;
+package com.github.vincemann.springrapid.sync.service;
 
 import com.github.vincemann.springrapid.core.IdConverter;
 import com.github.vincemann.springrapid.core.model.AuditingEntity;
 import com.github.vincemann.springrapid.core.repo.RapidJpaRepository;
 import com.github.vincemann.springrapid.core.service.EntityFilter;
 import com.github.vincemann.springrapid.core.service.JPACrudService;
+import com.github.vincemann.springrapid.core.service.exception.BadEntityException;
 import com.github.vincemann.springrapid.core.service.exception.EntityNotFoundException;
-import com.github.vincemann.springrapid.sync.dto.EntityLastUpdateInfo;
-import com.github.vincemann.springrapid.sync.dto.EntitySyncStatus;
+import com.github.vincemann.springrapid.sync.model.EntityLastUpdateInfo;
+import com.github.vincemann.springrapid.sync.model.EntitySyncStatus;
+import com.github.vincemann.springrapid.sync.model.SyncStatus;
+import com.github.vincemann.springrapid.sync.repo.AuditingRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -18,13 +21,15 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-public class AuditingJpaCrudService
+import static com.github.vincemann.springrapid.sync.model.EntitySyncStatus.convert;
+
+public class SyncJpaCrudService
         <
                 E extends AuditingEntity<Id>,
                 Id extends Serializable,
                 R extends RapidJpaRepository<E, Id> & AuditingRepository<Id>>
         extends JPACrudService<E, Id, R>
-        implements AuditingService<E, Id> {
+        implements SyncService<E, Id> {
 
     private IdConverter<Id> idConverter;
 
@@ -33,21 +38,27 @@ public class AuditingJpaCrudService
         this.idConverter = idConverter;
     }
 
+
+    @Override
+    public E save(E entity) throws BadEntityException {
+
+    }
+
     @Transactional
     @Override
     public EntitySyncStatus findEntitySyncStatus(EntityLastUpdateInfo lastUpdateInfo) {
         String id = lastUpdateInfo.getId();
         Id convertedId = idConverter.toId(id);
         Date lastModified = getRepository().findLastModifiedDateByIdEquals(convertedId);
-        char status;
+        SyncStatus status;
         boolean updated;
         if (lastModified == null){
             assert getRepository().findById(convertedId).isEmpty();
             updated = true;
-            status = 'r';
+            status = SyncStatus.REMOVED;
         }else{
             updated = lastUpdateInfo.getLastUpdate().after(lastModified);
-            status = 'u';
+            status = SyncStatus.UPDATED;
         }
         if (updated) {
             return EntitySyncStatus.builder()
@@ -66,8 +77,6 @@ public class AuditingJpaCrudService
 
     /**
      * only returns set of {@link EntitySyncStatus} for entities that need update.
-     * @param lastUpdateInfos
-     * @return
      */
     @Override
     public Set<EntitySyncStatus> findEntitySyncStatuses(Set<EntityLastUpdateInfo> lastUpdateInfos) {

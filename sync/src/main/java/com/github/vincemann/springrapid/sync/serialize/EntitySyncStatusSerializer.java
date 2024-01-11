@@ -1,7 +1,7 @@
 package com.github.vincemann.springrapid.sync.serialize;
 
 import com.github.vincemann.springrapid.core.service.exception.BadEntityException;
-import com.github.vincemann.springrapid.sync.dto.EntitySyncStatus;
+import com.github.vincemann.springrapid.sync.model.EntitySyncStatus;
 
 import java.util.Set;
 

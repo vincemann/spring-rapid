@@ -1,14 +1,15 @@
 package com.github.vincemann.springrapid.sync.serialize;
 
 import com.github.vincemann.springrapid.core.service.exception.BadEntityException;
-import com.github.vincemann.springrapid.sync.dto.EntitySyncStatus;
+import com.github.vincemann.springrapid.sync.model.SyncStatus;
+import com.github.vincemann.springrapid.sync.model.EntitySyncStatus;
 
 import java.util.HashSet;
 import java.util.Set;
 
 /**
  * convert {@link EntitySyncStatus} to string and vice versa, trying to optimize space, resulting in less network load
- * -> this will be executed all the time
+ * -> request with this entity as payload will be executed all the time
  *
  * This class can also be copied and used by client.
  */
@@ -16,7 +17,7 @@ public class EntitySyncStatusSerializerImpl implements EntitySyncStatusSerialize
     public static final String DELIMITER = ":";
     @Override
     public String serialize(EntitySyncStatus syncStatus) {
-        return syncStatus.getId()+EntitySyncStatus.convert(syncStatus.getStatus());
+        return syncStatus.getId()+ SyncStatus.convert(syncStatus.getStatus());
     }
 
     /**
@@ -45,7 +46,7 @@ public class EntitySyncStatusSerializerImpl implements EntitySyncStatusSerialize
             // Get the rest of the characters
             String id = statusString.substring(0, statusString.length() - 1);
 
-            return new EntitySyncStatus(id,EntitySyncStatus.convert(status));
+            return new EntitySyncStatus(id,status);
         } else {
             // Handle cases where the string is too short to split
             throw new BadEntityException("status string to too short");

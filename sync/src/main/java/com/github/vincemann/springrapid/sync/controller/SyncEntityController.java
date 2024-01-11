@@ -1,4 +1,4 @@
-package com.github.vincemann.springrapid.sync;
+package com.github.vincemann.springrapid.sync.controller;
 
 import com.fasterxml.jackson.databind.type.CollectionType;
 import com.github.vincemann.springrapid.core.controller.AbstractEntityController;
@@ -10,14 +10,14 @@ import com.github.vincemann.springrapid.core.service.exception.BadEntityExceptio
 import com.github.vincemann.springrapid.core.service.exception.EntityNotFoundException;
 import com.github.vincemann.springrapid.core.util.HttpServletRequestUtils;
 import com.github.vincemann.springrapid.core.util.VerifyEntity;
-import com.github.vincemann.springrapid.sync.dto.EntityLastUpdateInfo;
-import com.github.vincemann.springrapid.sync.dto.EntitySyncStatus;
+import com.github.vincemann.springrapid.sync.model.EntityLastUpdateInfo;
+import com.github.vincemann.springrapid.sync.model.EntitySyncStatus;
 import com.github.vincemann.springrapid.sync.serialize.EntitySyncStatusSerializer;
+import com.github.vincemann.springrapid.sync.service.SyncService;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeansException;
-import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
@@ -32,7 +32,6 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.Serializable;
 import java.sql.Timestamp;
-import java.util.HashSet;
 import java.util.Set;
 
 /**
@@ -47,7 +46,7 @@ import java.util.Set;
 public class SyncEntityController<
         E extends AuditingEntity<ID>,
         ID extends Serializable,
-        S extends AuditingService<E, ID>>
+        S extends SyncService<E, ID>>
         extends AbstractEntityController<E, ID> implements ApplicationContextAware {
 
     private ApplicationContext applicationContext;
@@ -100,7 +99,7 @@ public class SyncEntityController<
     }
 
     /**
-     * receives Set of {@link com.github.vincemann.springrapid.sync.dto.EntityLastUpdateInfo} of client and looks these through.
+     * receives Set of {@link EntityLastUpdateInfo} of client and looks these through.
      * Returns client Set of {@link EntitySyncStatus} for those that need update with respective {@link EntitySyncStatus#getStatus()}.
      * <p>
      * If no updated required at all, returns 204 without body.
