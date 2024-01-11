@@ -16,7 +16,7 @@ import java.util.Set;
 
 public interface SyncService<E extends AuditingEntity<Id>,Id extends Serializable> {
 
-    EntitySyncStatus findEntitySyncStatus(EntityLastUpdateInfo lastUpdateInfo) throws EntityNotFoundException;
+    EntitySyncStatus findEntitySyncStatus(EntityLastUpdateInfo lastUpdateInfo);
 
     Set<EntitySyncStatus> findEntitySyncStatusesSinceTimestamp(Timestamp lastUpdate, List<JPQLEntityFilter<E>> jpqlFilters);
 

@@ -8,13 +8,12 @@ import javax.persistence.EntityManager;
 import javax.persistence.TypedQuery;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 import java.lang.reflect.ParameterizedType;
 import java.util.List;
 
 @Repository
-public class CustomFilterRepositoryImpl<E extends IdentifiableEntity<?>>
+public class RapidCustomFilterRepository<E extends IdentifiableEntity<?>>
         extends AbstractRapidCustomRepository<E>
         implements CustomFilterRepository<E> {
 
@@ -22,7 +21,7 @@ public class CustomFilterRepositoryImpl<E extends IdentifiableEntity<?>>
     private final Class<E> entityClass;
     private EntityManager entityManager;
 
-    public CustomFilterRepositoryImpl(EntityManager entityManager) {
+    public RapidCustomFilterRepository(EntityManager entityManager) {
         this.entityManager = entityManager;
         this.entityClass = (Class<E>) ((ParameterizedType) this.getClass().getGenericSuperclass()).getActualTypeArguments()[0];
     }
@@ -34,11 +33,12 @@ public class CustomFilterRepositoryImpl<E extends IdentifiableEntity<?>>
         Root<E> root = cq.from(entityClass);
 
         cq.select(root);
-        Predicate[] predicates = filters.stream().map(JPQLEntityFilter::getPredicates).toArray(Predicate[]::new);
-        cq.where(predicates);
+        applyFilters(cq,root,cb,filters);
         cq.orderBy(cb.desc(root.get("lastModifiedDate")));
 
         TypedQuery<E> query = entityManager.createQuery(cq);
         return query.getResultList();
     }
+
+
 }

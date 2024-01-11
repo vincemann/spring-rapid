@@ -21,12 +21,11 @@ public class RapidCustomAuditingRepository<E extends AuditingEntity<?>>
     extends AbstractRapidCustomRepository<E>
         implements CustomAuditingRepository<E> {
 
-    @PersistenceContext
     private EntityManager entityManager;
-
     private Class<E> entityClass;
 
-    public RapidCustomAuditingRepository() {
+    public RapidCustomAuditingRepository(EntityManager entityManager) {
+        this.entityManager = entityManager;
         this.entityClass = (Class<E>) ((ParameterizedType) this.getClass().getGenericSuperclass()).getActualTypeArguments()[0];
     }
 
@@ -59,8 +58,9 @@ public class RapidCustomAuditingRepository<E extends AuditingEntity<?>>
         // Apply all predicates to the query
         cq.where(cb.and(allPredicates.toArray(new Predicate[0])));
 
-        // Order by lastModifiedDate
-        cq.orderBy(cb.desc(root.get("lastModifiedDate")));
+        // not needed
+//        // Order by lastModifiedDate
+//        cq.orderBy(cb.desc(root.get("lastModifiedDate")));
 
         TypedQuery<EntityLastUpdateInfo> query = entityManager.createQuery(cq);
         return query.getResultList();

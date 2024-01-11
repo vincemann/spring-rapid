@@ -138,7 +138,7 @@ public class SyncEntityController<
         // what about default filters? rather integrate as ServiceExtensions?
         // what about JPQL where clause filters for performance or smth like that
         long lastUpdateTimestamp = Long.parseLong(request.getParameter("ts"));
-        Set<EntityFilter<E>> filters = HttpServletRequestUtils.extractFilters(request,applicationContext);
+        List<JPQLEntityFilter<E>> filters = HttpServletRequestUtils.extractJPQLFilters(request,applicationContext);
         Set<EntitySyncStatus> syncStatuses = serviceFindUpdatesSinceTimestamp(new Timestamp(lastUpdateTimestamp),filters);
         if (syncStatuses.isEmpty())
             return ResponseEntity.noContent().build();
@@ -157,11 +157,11 @@ public class SyncEntityController<
     }
 
 
-    protected EntitySyncStatus serviceFindEntitySyncStatus(EntityLastUpdateInfo lastUpdateInfo) throws EntityNotFoundException {
+    protected EntitySyncStatus serviceFindEntitySyncStatus(EntityLastUpdateInfo lastUpdateInfo) {
         return service.findEntitySyncStatus(lastUpdateInfo);
     }
 
-    protected Set<EntitySyncStatus> serviceFindEntitySyncStatuses(Set<EntityLastUpdateInfo> lastUpdateInfos) throws EntityNotFoundException {
+    protected Set<EntitySyncStatus> serviceFindEntitySyncStatuses(Set<EntityLastUpdateInfo> lastUpdateInfos) {
         return service.findEntitySyncStatuses(lastUpdateInfos);
     }
 

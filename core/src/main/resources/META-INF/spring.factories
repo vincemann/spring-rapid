@@ -10,4 +10,5 @@ com.github.vincemann.springrapid.core.config.RapidDtoLocatorAutoConfiguration,\
 com.github.vincemann.springrapid.core.config.RapidProxyAutoConfiguration,\
 com.github.vincemann.springrapid.core.config.RapidExceptionHandlerAutoConfiguration, \
 com.github.vincemann.springrapid.core.config.RapidCacheAutoConfiguration, \
-com.github.vincemann.springrapid.core.config.RapidServiceAutoConfiguration
+com.github.vincemann.springrapid.core.config.RapidServiceAutoConfiguration, \
+com.github.vincemann.springrapid.core.config.RapidRepoAutoConfiguration

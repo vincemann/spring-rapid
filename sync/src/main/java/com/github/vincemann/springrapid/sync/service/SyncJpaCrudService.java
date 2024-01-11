@@ -3,10 +3,8 @@ package com.github.vincemann.springrapid.sync.service;
 import com.github.vincemann.springrapid.core.IdConverter;
 import com.github.vincemann.springrapid.core.model.AuditingEntity;
 import com.github.vincemann.springrapid.core.repo.RapidJpaRepository;
-import com.github.vincemann.springrapid.core.service.EntityFilter;
 import com.github.vincemann.springrapid.core.service.JPACrudService;
 import com.github.vincemann.springrapid.core.service.JPQLEntityFilter;
-import com.github.vincemann.springrapid.core.service.exception.EntityNotFoundException;
 import com.github.vincemann.springrapid.sync.model.EntityLastUpdateInfo;
 import com.github.vincemann.springrapid.sync.model.EntitySyncStatus;
 import com.github.vincemann.springrapid.sync.model.SyncStatus;
@@ -18,8 +16,6 @@ import java.io.Serializable;
 import java.sql.Timestamp;
 import java.util.*;
 import java.util.stream.Collectors;
-
-import static com.github.vincemann.springrapid.sync.model.EntitySyncStatus.convert;
 
 public class SyncJpaCrudService
         <
