@@ -145,15 +145,19 @@ public abstract class JPACrudService
         return new HashSet<>(getRepository().findAll());
     }
 
-    // todo find JPQL way bc constructing sql with multiple where clauses or smth
-    // would be nice when in memory filtering and sql filtering could be combined, all with same interface of entityFilter
+    /**
+     * first jqpl filters applied (where clauses), then in memory filtering.
+     * Can be combined as needed.
+     */
     @Transactional
     @Override
-    public Set<E> findAll(Set<EntityFilter<E>> filters) {
-        return new HashSet<>(getRepository().findAll())
+    public Set<E> findAll(Set<JPQLEntityFilter<E>> jpqlFilters, Set<EntityFilter<E>> filters) {
+        return new HashSet<>(getRepository().findAll(jpqlFilters))
                 .stream()
                 .filter(entity ->  {
                     for (EntityFilter<E> filter : filters) {
+                        if (log.isDebugEnabled())
+                            log.debug("applying memory filter: " + filter.getClass().getSimpleName());
                         if (filter.match(entity)){
                             if (log.isTraceEnabled())
                                 log.trace("entity: " + entity + " matches filter: " + filter);

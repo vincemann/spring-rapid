@@ -12,7 +12,6 @@ import com.github.vincemann.springrapid.core.util.HttpServletRequestUtils;
 import com.github.vincemann.springrapid.core.util.VerifyEntity;
 import com.github.vincemann.springrapid.sync.model.EntityLastUpdateInfo;
 import com.github.vincemann.springrapid.sync.model.EntitySyncStatus;
-import com.github.vincemann.springrapid.sync.serialize.EntitySyncStatusSerializer;
 import com.github.vincemann.springrapid.sync.service.SyncService;
 import lombok.Getter;
 import lombok.Setter;

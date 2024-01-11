@@ -1,8 +1,12 @@
 package com.github.vincemann.springrapid.sync.repo;
 
-import java.io.Serializable;
-import java.util.Date;
+import com.github.vincemann.springrapid.core.model.AuditingEntity;
 
-public interface CustomAuditingRepository<Id extends Serializable> {
-    Date findLastModifiedDateByIdEquals(Id id);
+import java.io.Serializable;
+import java.util.List;
+
+public interface CustomAuditingRepository<E extends AuditingEntity<?>>
+{
+//    @Query("SELECT e FROM E e ORDER BY e.lastModifiedDate DESC")
+    List<E> findAllSortedByLastModifiedDate();
 }

@@ -11,6 +11,7 @@ import com.github.vincemann.springrapid.sync.model.EntityLastUpdateInfo;
 import com.github.vincemann.springrapid.sync.model.EntitySyncStatus;
 import com.github.vincemann.springrapid.sync.model.SyncStatus;
 import com.github.vincemann.springrapid.sync.repo.AuditingRepository;
+import com.github.vincemann.springrapid.sync.repo.CustomAuditingRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -27,7 +28,7 @@ public class SyncJpaCrudService
         <
                 E extends AuditingEntity<Id>,
                 Id extends Serializable,
-                R extends RapidJpaRepository<E, Id> & AuditingRepository<Id>>
+                R extends RapidJpaRepository<E, Id> & AuditingRepository<E,Id>>
         extends JPACrudService<E, Id, R>
         implements SyncService<E, Id> {
 
@@ -37,12 +38,7 @@ public class SyncJpaCrudService
     public void setIdConverter(IdConverter<Id> idConverter) {
         this.idConverter = idConverter;
     }
-
-
-    @Override
-    public E save(E entity) throws BadEntityException {
-
-    }
+    
 
     @Transactional
     @Override

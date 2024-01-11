@@ -8,12 +8,11 @@ import javax.persistence.TypedQuery;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Root;
-import java.io.Serializable;
 import java.lang.reflect.ParameterizedType;
 import java.util.List;
 
-public class RapidCustomAuditingRepository<E extends AuditingEntity<Id>,Id extends Serializable>
-        implements AuditingRepository<E,Id> {
+public class RapidCustomAuditingRepository<E extends AuditingEntity<?>>
+        implements CustomAuditingRepository<E> {
 
     @PersistenceContext
     private EntityManager entityManager;
@@ -24,6 +23,10 @@ public class RapidCustomAuditingRepository<E extends AuditingEntity<Id>,Id exten
         this.entityClass = (Class<E>) ((ParameterizedType) this.getClass().getGenericSuperclass()).getActualTypeArguments()[0];
     }
 
+    /**
+     * sorted in order to find latest updates
+     * @return
+     */
     @Override
     public List<E> findAllSortedByLastModifiedDate() {
         CriteriaBuilder cb = entityManager.getCriteriaBuilder();

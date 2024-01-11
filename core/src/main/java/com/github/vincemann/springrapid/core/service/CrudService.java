@@ -71,7 +71,7 @@ public interface CrudService<E extends IdentifiableEntity<Id>,Id extends Seriali
 
         // can always add own find methods using jpql or native sql to fetch entities instead of using this
         @Transactional
-        Set<E> findAll(Set<EntityFilter<E>> filters);
+        Set<E> findAll(Set<JPQLEntityFilter<E>> jpqlFilters, Set<EntityFilter<E>> filters);
 
 
 

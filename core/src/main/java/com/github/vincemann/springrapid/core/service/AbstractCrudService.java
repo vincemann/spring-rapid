@@ -2,6 +2,7 @@ package com.github.vincemann.springrapid.core.service;
 
 import com.github.vincemann.springrapid.core.model.IdentifiableEntity;
 import com.github.vincemann.springrapid.core.repo.FindSomeRepository;
+import com.github.vincemann.springrapid.core.repo.RapidJpaRepository;
 import com.github.vincemann.springrapid.core.slicing.ServiceComponent;
 import org.springframework.aop.TargetClassAware;
 import org.springframework.beans.BeansException;
@@ -20,7 +21,7 @@ public abstract class AbstractCrudService
                 E extends IdentifiableEntity<Id>,
                 Id extends Serializable,
                 // just use RapidJpaRepository
-                R extends CrudRepository<E, Id> & FindSomeRepository<E,Id>
+                R extends RapidJpaRepository<E, Id> & FindSomeRepository<E,Id>
                 >
         implements CrudService<E, Id>, TargetClassAware, ApplicationContextAware {
     private String beanName;
