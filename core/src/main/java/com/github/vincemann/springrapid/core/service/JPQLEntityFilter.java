@@ -7,8 +7,7 @@ import javax.persistence.criteria.*;
 /**
  * add custom where clauses to JPQL query.
  */
-@FunctionalInterface
-public interface JPQLEntityFilter<E extends IdentifiableEntity<?>> {
+public interface JPQLEntityFilter<E extends IdentifiableEntity<?>> extends ArgAwareFilter {
 
     public Predicate getPredicates(CriteriaBuilder cb, Root<E> root);
 

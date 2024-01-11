@@ -82,8 +82,8 @@ public abstract class GenericCrudController
 
     public ResponseEntity<String> findAll(HttpServletRequest request, HttpServletResponse response) throws JsonProcessingException, BadEntityException {
 
-        List<JPQLEntityFilter<E>> jpqlFilters = HttpServletRequestUtils.extractJPQLFilters(request,applicationContext);
-        List<EntityFilter<E>> filters = HttpServletRequestUtils.extractFilters(request,applicationContext);
+        List<JPQLEntityFilter<E>> jpqlFilters = HttpServletRequestUtils.extractFilters(request,applicationContext,"jpql-filter");
+        List<EntityFilter<E>> filters = HttpServletRequestUtils.extractFilters(request,applicationContext,"filter");
 
         beforeFindAll(request, response,filters,jpqlFilters);
         logSecurityContext();

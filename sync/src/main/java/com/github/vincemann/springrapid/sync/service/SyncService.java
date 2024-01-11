@@ -1,6 +1,7 @@
 package com.github.vincemann.springrapid.sync.service;
 
 import com.github.vincemann.springrapid.core.model.AuditingEntity;
+import com.github.vincemann.springrapid.core.service.CrudService;
 import com.github.vincemann.springrapid.core.service.EntityFilter;
 import com.github.vincemann.springrapid.core.service.JPQLEntityFilter;
 import com.github.vincemann.springrapid.core.service.exception.EntityNotFoundException;
@@ -15,6 +16,7 @@ import java.util.List;
 import java.util.Set;
 
 public interface SyncService<E extends AuditingEntity<Id>,Id extends Serializable> {
+
 
     EntitySyncStatus findEntitySyncStatus(EntityLastUpdateInfo lastUpdateInfo);
 

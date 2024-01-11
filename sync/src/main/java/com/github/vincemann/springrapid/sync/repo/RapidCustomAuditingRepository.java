@@ -11,14 +11,16 @@ import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
+import java.io.Serializable;
 import java.lang.reflect.ParameterizedType;
 import java.sql.Timestamp;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
-public class RapidCustomAuditingRepository<E extends AuditingEntity<?>>
+public class RapidCustomAuditingRepository<E extends AuditingEntity<Id>,Id extends Serializable>
     extends AbstractRapidCustomRepository<E>
-        implements CustomAuditingRepository<E> {
+        implements CustomAuditingRepository<E,Id> {
 
     private EntityManager entityManager;
     private Class<E> entityClass;
@@ -27,6 +29,18 @@ public class RapidCustomAuditingRepository<E extends AuditingEntity<?>>
         this.entityManager = entityManager;
 //        this.entityClass = (Class<E>) ((ParameterizedType) this.getClass().getGenericSuperclass()).getActualTypeArguments()[0];
         this.entityClass = entityClass;
+    }
+
+    @Override
+    public Date findLastModifiedDateById(Id id) {
+        CriteriaBuilder cb = entityManager.getCriteriaBuilder();
+        CriteriaQuery<Date> query = cb.createQuery(Date.class);
+        Root<E> root = query.from(entityClass);
+
+        query.select(root.get("lastModifiedDate"))
+                .where(cb.equal(root.get("id"), id));
+
+        return entityManager.createQuery(query).getSingleResult();
     }
 
     /**
