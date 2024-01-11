@@ -13,5 +13,6 @@ import java.util.List;
 import java.util.Set;
 
 public interface CustomFilterRepository<E extends IdentifiableEntity<?>> {
-    public List<E> findAll(Set<JPQLEntityFilter<E>> filters);
+
+    List<E> findAll(List<JPQLEntityFilter<E>> filters);
 }

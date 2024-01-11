@@ -1,7 +1,6 @@
 package com.github.vincemann.springrapid.core.service;
 
 import com.github.vincemann.springrapid.core.model.IdentifiableEntity;
-import com.github.vincemann.springrapid.core.repo.FindSomeRepository;
 import com.github.vincemann.springrapid.core.repo.RapidJpaRepository;
 import com.github.vincemann.springrapid.core.service.exception.BadEntityException;
 import com.github.vincemann.springrapid.core.service.exception.EntityNotFoundException;
@@ -14,6 +13,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.io.Serializable;
 import java.util.*;
+import java.util.stream.Collector;
 import java.util.stream.Collectors;
 
 
@@ -30,7 +30,7 @@ public abstract class JPACrudService
         <
                 E extends IdentifiableEntity<Id>,
                 Id extends Serializable,
-                R extends RapidJpaRepository<E,Id>
+                R extends RapidJpaRepository<E, Id>
                 >
         extends AbstractCrudService<E, Id, R> {
 
@@ -40,7 +40,7 @@ public abstract class JPACrudService
 
     @Transactional
     @Override
-    public Optional<E>findById(Id id) {
+    public Optional<E> findById(Id id) {
         if (id == null)
             throw new IllegalArgumentException("Id cannot be null");
         return getRepository().findById(id);
@@ -92,7 +92,7 @@ public abstract class JPACrudService
 //            System.err.println("start with copy properties");
             Set<String> whiteList = new HashSet<>(collectionsToUpdate);
             whiteList.addAll(Arrays.asList(fieldsToRemove));
-            NullAwareBeanUtils.copyProperties(managedEntity, detachedUpdateEntity,whiteList);
+            NullAwareBeanUtils.copyProperties(managedEntity, detachedUpdateEntity, whiteList);
 //            System.err.println("start with repo call");
             return getRepository().save(managedEntity);
 //            System.err.println("done with repo call");
@@ -106,13 +106,12 @@ public abstract class JPACrudService
     @Transactional
     @Override
     public E partialUpdate(E update, String... fieldsToRemove) throws EntityNotFoundException, BadEntityException {
-        return partialUpdate(update,findNonRemovedUpdatedProperties(update),fieldsToRemove);
+        return partialUpdate(update, findNonRemovedUpdatedProperties(update), fieldsToRemove);
     }
 
-    private Set<String> findNonRemovedUpdatedProperties(E partialUpdate){
+    private Set<String> findNonRemovedUpdatedProperties(E partialUpdate) {
         return ReflectionUtils.findAllNonNullFieldNames(partialUpdate);
     }
-
 
 
     @Transactional
@@ -151,14 +150,19 @@ public abstract class JPACrudService
      */
     @Transactional
     @Override
-    public Set<E> findAll(Set<JPQLEntityFilter<E>> jpqlFilters, Set<EntityFilter<E>> filters) {
-        return new HashSet<>(getRepository().findAll(jpqlFilters))
+    public Set<E> findAll(List<JPQLEntityFilter<E>> jpqlFilters, List<EntityFilter<E>> filters) {
+        return applyMemoryFilters(new HashSet<>(getRepository().findAll(jpqlFilters)), filters,Collectors.toSet());
+    }
+
+
+    protected <S extends Collection<E>> S applyMemoryFilters(Collection<E> result, List<EntityFilter<E>> filters, Collector<E,?,S> collector) {
+        return result
                 .stream()
-                .filter(entity ->  {
+                .filter(entity -> {
                     for (EntityFilter<E> filter : filters) {
                         if (log.isDebugEnabled())
                             log.debug("applying memory filter: " + filter.getClass().getSimpleName());
-                        if (filter.match(entity)){
+                        if (filter.match(entity)) {
                             if (log.isTraceEnabled())
                                 log.trace("entity: " + entity + " matches filter: " + filter);
                             return true;
@@ -168,7 +172,7 @@ public abstract class JPACrudService
                         log.trace("entity: " + entity + " did not match any filter: ");
                     return false;
                 })
-                .collect(Collectors.toSet());
+                .collect(collector);
     }
 
 
@@ -185,6 +189,6 @@ public abstract class JPACrudService
     protected E findOldEntity(Id id) throws EntityNotFoundException {
         if (id == null)
             throw new IllegalArgumentException("Id cannot be null");
-        return findById(id).orElseThrow(() -> new EntityNotFoundException(id,getEntityClass()));
+        return findById(id).orElseThrow(() -> new EntityNotFoundException(id, getEntityClass()));
     }
 }

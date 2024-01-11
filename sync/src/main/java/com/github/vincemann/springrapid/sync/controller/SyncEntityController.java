@@ -6,6 +6,7 @@ import com.github.vincemann.springrapid.core.controller.fetchid.IdFetchingExcept
 import com.github.vincemann.springrapid.core.controller.fetchid.IdFetchingStrategy;
 import com.github.vincemann.springrapid.core.model.AuditingEntity;
 import com.github.vincemann.springrapid.core.service.EntityFilter;
+import com.github.vincemann.springrapid.core.service.JPQLEntityFilter;
 import com.github.vincemann.springrapid.core.service.exception.BadEntityException;
 import com.github.vincemann.springrapid.core.service.exception.EntityNotFoundException;
 import com.github.vincemann.springrapid.core.util.HttpServletRequestUtils;
@@ -31,6 +32,7 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.Serializable;
 import java.sql.Timestamp;
+import java.util.List;
 import java.util.Set;
 
 /**
@@ -163,7 +165,7 @@ public class SyncEntityController<
         return service.findEntitySyncStatuses(lastUpdateInfos);
     }
 
-    protected Set<EntitySyncStatus> serviceFindUpdatesSinceTimestamp(Timestamp lastUpdate, Set<EntityFilter<E>> filters) throws EntityNotFoundException {
+    protected Set<EntitySyncStatus> serviceFindUpdatesSinceTimestamp(Timestamp lastUpdate, List<JPQLEntityFilter<E>> filters) {
         return service.findEntitySyncStatusesSinceTimestamp(lastUpdate,filters);
     }
 

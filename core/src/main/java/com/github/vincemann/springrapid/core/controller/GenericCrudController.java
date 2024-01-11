@@ -13,6 +13,7 @@ import com.github.vincemann.springrapid.core.model.IdentifiableEntity;
 import com.github.vincemann.springrapid.core.security.RapidSecurityContext;
 import com.github.vincemann.springrapid.core.service.CrudService;
 import com.github.vincemann.springrapid.core.service.EntityFilter;
+import com.github.vincemann.springrapid.core.service.JPQLEntityFilter;
 import com.github.vincemann.springrapid.core.service.exception.BadEntityException;
 import com.github.vincemann.springrapid.core.service.exception.EntityNotFoundException;
 import com.github.vincemann.springrapid.core.util.EntityReflectionUtils;
@@ -81,17 +82,18 @@ public abstract class GenericCrudController
 
     public ResponseEntity<String> findAll(HttpServletRequest request, HttpServletResponse response) throws JsonProcessingException, BadEntityException {
 
-        Set<EntityFilter<E>> filters = HttpServletRequestUtils.extractFilters(request,applicationContext);
+        List<JPQLEntityFilter<E>> jpqlFilters = HttpServletRequestUtils.extractJPQLFilters(request,applicationContext);
+        List<EntityFilter<E>> filters = HttpServletRequestUtils.extractFilters(request,applicationContext);
 
-        beforeFindAll(request, response,filters);
+        beforeFindAll(request, response,filters,jpqlFilters);
         logSecurityContext();
-        Set<E> foundEntities = serviceFindAll(filters);
+        Set<E> foundEntities = serviceFindAll(jpqlFilters, filters);
         Collection<Object> dtos = new HashSet<>();
         for (E e : foundEntities) {
             dtos.add(dtoMapper.mapToDto(e,
                     createDtoClass(getFindAllUrl(), Direction.RESPONSE, e)));
         }
-        afterFindAll(dtos, foundEntities, request, response,filters);
+        afterFindAll(dtos, foundEntities, request, response,filters, jpqlFilters);
         String json = jsonMapper.writeDto(dtos);
         return ok(json);
 
@@ -494,11 +496,11 @@ public abstract class GenericCrudController
         return service.findAll();
     }
 
-    protected Set<E> serviceFindAll(Set<EntityFilter<E>> filters) {
-        if (filters.isEmpty())
+    protected Set<E> serviceFindAll(List<JPQLEntityFilter<E>> jpqlFilters, List<EntityFilter<E>> filters) {
+        if (filters.isEmpty() && jpqlFilters.isEmpty())
             return service.findAll();
         else
-            return service.findAll(filters);
+            return service.findAll(jpqlFilters,filters);
     }
 
 //    protected Set<E> serviceFindAll(EntityFilter<E> filter) {
@@ -529,7 +531,7 @@ public abstract class GenericCrudController
     public void beforeFind(ID id, HttpServletRequest httpServletRequest, HttpServletResponse response) {
     }
 
-    public void beforeFindAll(HttpServletRequest httpServletRequest, HttpServletResponse response, Set<EntityFilter<E>> filters) {
+    public void beforeFindAll(HttpServletRequest httpServletRequest, HttpServletResponse response, List<EntityFilter<E>> filters, List<JPQLEntityFilter<E>> jpqlFilters) {
     }
 
     public void beforeFindSome(Set<ID> ids, HttpServletRequest httpServletRequest, HttpServletResponse response) {
@@ -548,7 +550,7 @@ public abstract class GenericCrudController
     public void afterFind(ID id, Object dto, Optional<E> found, HttpServletRequest httpServletRequest, HttpServletResponse response) {
     }
 
-    public void afterFindAll(Collection<Object> dtos, Set<E> found, HttpServletRequest httpServletRequest, HttpServletResponse response, Set<EntityFilter<E>> filters) {
+    public void afterFindAll(Collection<Object> dtos, Set<E> found, HttpServletRequest httpServletRequest, HttpServletResponse response, List<EntityFilter<E>> filters, List<JPQLEntityFilter<E>> jpqlFilters) {
     }
 
     public void afterFindSome(Collection<Object> dtos, Set<E> found, HttpServletRequest httpServletRequest, HttpServletResponse response) {

@@ -13,6 +13,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.io.Serializable;
 import java.util.Date;
+import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
@@ -71,7 +72,7 @@ public interface CrudService<E extends IdentifiableEntity<Id>,Id extends Seriali
 
         // can always add own find methods using jpql or native sql to fetch entities instead of using this
         @Transactional
-        Set<E> findAll(Set<JPQLEntityFilter<E>> jpqlFilters, Set<EntityFilter<E>> filters);
+        Set<E> findAll(List<JPQLEntityFilter<E>> jpqlFilters, List<EntityFilter<E>> filters);
 
 
 

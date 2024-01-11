@@ -12,6 +12,8 @@ import java.sql.Timestamp;
  * client side timestamp.
  * Returns set of {@link EntitySyncStatus} for those id's that need syncing.
  * Client can decide what to do with this information.
+ *
+ * Can also be used as server side last update info!
  */
 @NoArgsConstructor
 @Getter
@@ -20,7 +22,6 @@ import java.sql.Timestamp;
 @AllArgsConstructor
 public class EntityLastUpdateInfo {
     private String id;
-    // client side
     @JsonFormat(shape = JsonFormat.Shape.NUMBER)
     private Timestamp lastUpdate;
 }

@@ -10,7 +10,7 @@ import javax.persistence.criteria.*;
 @FunctionalInterface
 public interface JPQLEntityFilter<E extends IdentifiableEntity<?>> {
 
-    public Predicate[] getPredicates();
+    public Predicate getPredicates(CriteriaBuilder cb, Root<E> root);
 
 //    public Order configureOrdering(CriteriaBuilder cb, Root<E> root);
 }

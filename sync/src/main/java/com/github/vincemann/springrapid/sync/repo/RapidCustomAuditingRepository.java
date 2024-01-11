@@ -1,17 +1,24 @@
 package com.github.vincemann.springrapid.sync.repo;
 
 import com.github.vincemann.springrapid.core.model.AuditingEntity;
+import com.github.vincemann.springrapid.core.repo.AbstractRapidCustomRepository;
+import com.github.vincemann.springrapid.core.service.JPQLEntityFilter;
+import com.github.vincemann.springrapid.sync.model.EntityLastUpdateInfo;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.TypedQuery;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 import java.lang.reflect.ParameterizedType;
+import java.sql.Timestamp;
+import java.util.ArrayList;
 import java.util.List;
 
 public class RapidCustomAuditingRepository<E extends AuditingEntity<?>>
+    extends AbstractRapidCustomRepository<E>
         implements CustomAuditingRepository<E> {
 
     @PersistenceContext
@@ -28,15 +35,34 @@ public class RapidCustomAuditingRepository<E extends AuditingEntity<?>>
      * @return
      */
     @Override
-    public List<E> findAllSortedByLastModifiedDate() {
+    public List<EntityLastUpdateInfo> findLastUpdateInfosSince(Timestamp until, List<JPQLEntityFilter<E>> filters) {
         CriteriaBuilder cb = entityManager.getCriteriaBuilder();
-        CriteriaQuery<E> cq = cb.createQuery(entityClass);
+        CriteriaQuery<EntityLastUpdateInfo> cq = cb.createQuery(EntityLastUpdateInfo.class);
         Root<E> root = cq.from(entityClass);
 
-        cq.select(root);
+        // Create the predicate for filtering
+        Predicate datePredicate = cb.greaterThan(root.get("lastModifiedDate"), until);
+
+        // Construct the EntityLastUpdateInfo with the required fields
+        cq.select(cb.construct(EntityLastUpdateInfo.class,
+                root.get("id"),
+                root.get("lastModifiedDate")));
+
+        // Combine the date predicate with custom filters
+        List<Predicate> allPredicates = new ArrayList<>();
+        allPredicates.add(datePredicate);
+        for (JPQLEntityFilter<E> filter : filters) {
+            Predicate filterPredicate = filter.getPredicates(cb,root);
+            allPredicates.add(filterPredicate);
+        }
+
+        // Apply all predicates to the query
+        cq.where(cb.and(allPredicates.toArray(new Predicate[0])));
+
+        // Order by lastModifiedDate
         cq.orderBy(cb.desc(root.get("lastModifiedDate")));
 
-        TypedQuery<E> query = entityManager.createQuery(cq);
+        TypedQuery<EntityLastUpdateInfo> query = entityManager.createQuery(cq);
         return query.getResultList();
     }
 

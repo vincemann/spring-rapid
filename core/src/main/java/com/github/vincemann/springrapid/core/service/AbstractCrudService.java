@@ -10,9 +10,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.data.repository.CrudRepository;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.io.Serializable;
 import java.lang.reflect.ParameterizedType;
+import java.util.List;
+import java.util.Set;
 
 
 @ServiceComponent
@@ -83,5 +86,6 @@ public abstract class AbstractCrudService
 //        }
         this.beanName = name;
     }
+
 
 }

@@ -12,10 +12,11 @@ import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 import java.lang.reflect.ParameterizedType;
 import java.util.List;
-import java.util.Set;
 
 @Repository
-public class CustomFilterRepositoryImpl<E extends IdentifiableEntity<?>> implements CustomFilterRepository<E> {
+public class CustomFilterRepositoryImpl<E extends IdentifiableEntity<?>>
+        extends AbstractRapidCustomRepository<E>
+        implements CustomFilterRepository<E> {
 
 
     private final Class<E> entityClass;
@@ -27,7 +28,7 @@ public class CustomFilterRepositoryImpl<E extends IdentifiableEntity<?>> impleme
     }
 
     @Override
-    public List<E> findAll(Set<JPQLEntityFilter<E>> filters) {
+    public List<E> findAll(List<JPQLEntityFilter<E>> filters) {
         CriteriaBuilder cb = entityManager.getCriteriaBuilder();
         CriteriaQuery<E> cq = cb.createQuery(entityClass);
         Root<E> root = cq.from(entityClass);
