@@ -9,7 +9,6 @@ import javax.persistence.TypedQuery;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Root;
-import java.lang.reflect.ParameterizedType;
 import java.util.List;
 
 @Repository
@@ -18,12 +17,14 @@ public class RapidCustomFilterRepository<E extends IdentifiableEntity<?>>
         implements CustomFilterRepository<E> {
 
 
-    private final Class<E> entityClass;
+
+    private Class<E> entityClass;
     private EntityManager entityManager;
 
-    public RapidCustomFilterRepository(EntityManager entityManager) {
+    public RapidCustomFilterRepository(EntityManager entityManager, Class<E> clazz) {
         this.entityManager = entityManager;
-        this.entityClass = (Class<E>) ((ParameterizedType) this.getClass().getGenericSuperclass()).getActualTypeArguments()[0];
+//        this.entityClass = (Class<E>) ((ParameterizedType) this.getClass().getGenericSuperclass()).getActualTypeArguments()[0];
+        this.entityClass = clazz;
     }
 
     @Override
@@ -34,7 +35,6 @@ public class RapidCustomFilterRepository<E extends IdentifiableEntity<?>>
 
         cq.select(root);
         applyFilters(cq,root,cb,filters);
-        cq.orderBy(cb.desc(root.get("lastModifiedDate")));
 
         TypedQuery<E> query = entityManager.createQuery(cq);
         return query.getResultList();

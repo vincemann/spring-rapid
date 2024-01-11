@@ -8,6 +8,7 @@ import com.github.vincemann.springrapid.core.service.exception.BadEntityExceptio
 import com.github.vincemann.springrapid.core.service.exception.EntityNotFoundException;
 
 import java.io.Serializable;
+import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
@@ -36,8 +37,8 @@ public interface CrudServiceExtension<S extends CrudService>
 
 
     @Override
-    default Set findAll(Set filters) {
-        return getNext().findAll(filters);
+    default Set findAll(List jpqlFilters, List list) {
+        return getNext().findAll(jpqlFilters,list);
     }
 
     @Override

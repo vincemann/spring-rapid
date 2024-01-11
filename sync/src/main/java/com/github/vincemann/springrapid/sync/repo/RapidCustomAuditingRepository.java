@@ -6,7 +6,6 @@ import com.github.vincemann.springrapid.core.service.JPQLEntityFilter;
 import com.github.vincemann.springrapid.sync.model.EntityLastUpdateInfo;
 
 import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
 import javax.persistence.TypedQuery;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
@@ -24,9 +23,10 @@ public class RapidCustomAuditingRepository<E extends AuditingEntity<?>>
     private EntityManager entityManager;
     private Class<E> entityClass;
 
-    public RapidCustomAuditingRepository(EntityManager entityManager) {
+    public RapidCustomAuditingRepository(EntityManager entityManager, Class<E> entityClass) {
         this.entityManager = entityManager;
-        this.entityClass = (Class<E>) ((ParameterizedType) this.getClass().getGenericSuperclass()).getActualTypeArguments()[0];
+//        this.entityClass = (Class<E>) ((ParameterizedType) this.getClass().getGenericSuperclass()).getActualTypeArguments()[0];
+        this.entityClass = entityClass;
     }
 
     /**

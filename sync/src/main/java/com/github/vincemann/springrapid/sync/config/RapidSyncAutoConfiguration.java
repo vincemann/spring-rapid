@@ -12,10 +12,10 @@ import javax.persistence.EntityManager;
 @ServiceConfig
 public class RapidSyncAutoConfiguration {
 
-    @ConditionalOnMissingBean(CustomAuditingRepository.class)
-    @Bean
-    public <E extends AuditingEntity<?>> CustomAuditingRepository<E> customAuditingRepository(EntityManager entityManager) {
-        return new RapidCustomAuditingRepository<>(entityManager);
-    }
+//    @ConditionalOnMissingBean(CustomAuditingRepository.class)
+//    @Bean
+//    public <E extends AuditingEntity<?>> CustomAuditingRepository<E> customAuditingRepository(EntityManager entityManager) {
+//        return new RapidCustomAuditingRepository<>(entityManager);
+//    }
 
 }

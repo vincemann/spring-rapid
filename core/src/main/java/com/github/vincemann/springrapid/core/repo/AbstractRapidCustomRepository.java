@@ -12,7 +12,8 @@ import java.util.List;
 public abstract class AbstractRapidCustomRepository<E extends IdentifiableEntity<?>> {
 
     protected void applyFilters(CriteriaQuery<E> cq, Root<E> root, CriteriaBuilder cb, List<JPQLEntityFilter<E>> filters) {
-        cq.where(filters.stream().map(f -> f.getPredicates(cb,root)).toArray(Predicate[]::new));
+        if (!filters.isEmpty())
+            cq.where(filters.stream().map(f -> f.getPredicates(cb,root)).toArray(Predicate[]::new));
     }
 
 }

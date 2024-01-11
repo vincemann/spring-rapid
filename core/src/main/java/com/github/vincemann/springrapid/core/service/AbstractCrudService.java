@@ -1,21 +1,22 @@
 package com.github.vincemann.springrapid.core.service;
 
 import com.github.vincemann.springrapid.core.model.IdentifiableEntity;
-import com.github.vincemann.springrapid.core.repo.FindSomeRepository;
+import com.github.vincemann.springrapid.core.repo.CustomFilterRepository;
+import com.github.vincemann.springrapid.core.repo.RapidCustomFilterRepository;
 import com.github.vincemann.springrapid.core.repo.RapidJpaRepository;
 import com.github.vincemann.springrapid.core.slicing.ServiceComponent;
+import lombok.Getter;
 import org.springframework.aop.TargetClassAware;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
+import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.repository.CrudRepository;
-import org.springframework.transaction.annotation.Transactional;
 
+import javax.persistence.EntityManager;
 import java.io.Serializable;
 import java.lang.reflect.ParameterizedType;
-import java.util.List;
-import java.util.Set;
 
 
 @ServiceComponent
@@ -23,13 +24,20 @@ public abstract class AbstractCrudService
         <
                 E extends IdentifiableEntity<Id>,
                 Id extends Serializable,
-                // just use RapidJpaRepository
-                R extends RapidJpaRepository<E, Id> & FindSomeRepository<E,Id>
+                R extends CrudRepository<E, Id>
                 >
         implements CrudService<E, Id>, TargetClassAware, ApplicationContextAware {
     private String beanName;
     private R repository;
+    @Getter
+    private CustomFilterRepository<E> filterRepository;
     protected CrudService<E, Id> service;
+
+
+    @Autowired
+    public void initFilterRepository(EntityManager entityManager) {
+        this.filterRepository = new RapidCustomFilterRepository<>(entityManager,getEntityClass());
+    }
 
     @Override
     public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {

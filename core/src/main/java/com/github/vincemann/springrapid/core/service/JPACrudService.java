@@ -30,7 +30,7 @@ public abstract class JPACrudService
         <
                 E extends IdentifiableEntity<Id>,
                 Id extends Serializable,
-                R extends RapidJpaRepository<E, Id>
+                R extends JpaRepository<E, Id>
                 >
         extends AbstractCrudService<E, Id, R> {
 
@@ -60,7 +60,7 @@ public abstract class JPACrudService
     @Transactional
     @Override
     public Set<E> findSome(Set<Id> ids) {
-        return getRepository().findAllByIdIn(ids);
+        return new HashSet<>(getRepository().findAllById(ids));
     }
 
 
@@ -151,7 +151,7 @@ public abstract class JPACrudService
     @Transactional
     @Override
     public Set<E> findAll(List<JPQLEntityFilter<E>> jpqlFilters, List<EntityFilter<E>> filters) {
-        return applyMemoryFilters(new HashSet<>(getRepository().findAll(jpqlFilters)), filters,Collectors.toSet());
+        return applyMemoryFilters(new HashSet<>(getFilterRepository().findAll(jpqlFilters)), filters,Collectors.toSet());
     }
 
 

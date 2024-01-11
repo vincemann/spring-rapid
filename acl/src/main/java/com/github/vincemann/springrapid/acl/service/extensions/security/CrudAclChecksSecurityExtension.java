@@ -12,6 +12,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.Id;
 import java.io.Serializable;
+import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
@@ -66,8 +67,8 @@ public class CrudAclChecksSecurityExtension
     }
 
     @Override
-    public Set findAll(Set filters) {
-        Set<IdentifiableEntity> entities = getNext().findAll(filters);
+    public Set findAll(List jpqlFilters, List list) {
+        Set<IdentifiableEntity> entities = getNext().findAll(jpqlFilters,list);
         entities.stream().forEach(entity -> getSecurityChecker().checkPermission(entity,BasePermission.READ));
         return entities;
     }

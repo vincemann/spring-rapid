@@ -9,9 +9,13 @@ import com.github.vincemann.springrapid.sync.model.EntityLastUpdateInfo;
 import com.github.vincemann.springrapid.sync.model.EntitySyncStatus;
 import com.github.vincemann.springrapid.sync.model.SyncStatus;
 import com.github.vincemann.springrapid.sync.repo.AuditingRepository;
+import com.github.vincemann.springrapid.sync.repo.CustomAuditingRepository;
+import com.github.vincemann.springrapid.sync.repo.RapidCustomAuditingRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.persistence.EntityManager;
 import java.io.Serializable;
 import java.sql.Timestamp;
 import java.util.*;
@@ -21,11 +25,20 @@ public class SyncJpaCrudService
         <
                 E extends AuditingEntity<Id>,
                 Id extends Serializable,
-                R extends RapidJpaRepository<E, Id> & AuditingRepository<E, Id>>
+                R extends JpaRepository<E, Id> & AuditingRepository<E, Id>>
         extends JPACrudService<E, Id, R>
         implements SyncService<E, Id> {
 
     private IdConverter<Id> idConverter;
+    // could not merge my custom repo with jpa repo for some reason, so custom repos are seperated
+    // and everything that can be auto impl via jpaRepoInterface is subTypeRequirement for Repo generic type
+    private CustomAuditingRepository<E> auditingRepository;
+
+
+    @Autowired
+    public void initAuditingRepository(EntityManager entityManager) {
+        this.auditingRepository= new RapidCustomAuditingRepository<>(entityManager,getEntityClass());
+    }
 
     @Autowired
     public void setIdConverter(IdConverter<Id> idConverter) {
@@ -65,7 +78,7 @@ public class SyncJpaCrudService
         // server side update info
         Set<EntitySyncStatus> result = new HashSet<>();
         // todo overwrite and check soft delete timestamp
-        List<EntityLastUpdateInfo> updateInfosSince = getRepository().findLastUpdateInfosSince(lastClientFetch, jpqlFilters);
+        List<EntityLastUpdateInfo> updateInfosSince = auditingRepository.findLastUpdateInfosSince(lastClientFetch, jpqlFilters);
         for (EntityLastUpdateInfo lastUpdateInfo : updateInfosSince) {
             if (lastUpdateInfo.getLastUpdate().after(lastClientFetch)) {
                 result.add(

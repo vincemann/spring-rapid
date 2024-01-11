@@ -43,7 +43,7 @@
         <module>acl</module>
         <module>core-test</module>
         <module>core-demo</module>
-        <module>limit-actions</module>
+        <module>limit</module>
         <module>exceptions-api</module>
         <module>acl-demo</module>
         <module>acl-test</module>

@@ -5,7 +5,7 @@
 
 
     <groupId>com.github.vincemann.spring-rapid</groupId>
-    <artifactId>limit-actions</artifactId>
+    <artifactId>limit</artifactId>
 
     <parent>
         <groupId>com.github.vincemann</groupId>

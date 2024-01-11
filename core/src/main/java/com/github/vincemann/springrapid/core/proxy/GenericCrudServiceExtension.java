@@ -5,10 +5,12 @@ import com.github.vincemann.springrapid.core.model.AuditingEntity;
 import com.github.vincemann.springrapid.core.model.IdentifiableEntity;
 import com.github.vincemann.springrapid.core.service.CrudService;
 import com.github.vincemann.springrapid.core.service.EntityFilter;
+import com.github.vincemann.springrapid.core.service.JPQLEntityFilter;
 import com.github.vincemann.springrapid.core.service.exception.BadEntityException;
 import com.github.vincemann.springrapid.core.service.exception.EntityNotFoundException;
 
 import java.io.Serializable;
+import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
@@ -35,8 +37,8 @@ public interface GenericCrudServiceExtension
     }
 
     @Override
-    default Set<E> findAll(Set<EntityFilter<E>> filters) {
-        return getNext().findAll(filters);
+    default Set<E> findAll(List<JPQLEntityFilter<E>> jpqlFilters, List<EntityFilter<E>> entityFilters) {
+        return getNext().findAll(jpqlFilters,entityFilters);
     }
 
     @Override

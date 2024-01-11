@@ -8,5 +8,6 @@ import java.io.Serializable;
 import java.util.Set;
 
 public interface RapidJpaRepository<E extends IdentifiableEntity<Id>,Id extends Serializable>
-        extends JpaRepository<E,Id>, FindSomeRepository<E,Id>, CustomFilterRepository<E> {
+        extends JpaRepository<E,Id>
+{
 }
