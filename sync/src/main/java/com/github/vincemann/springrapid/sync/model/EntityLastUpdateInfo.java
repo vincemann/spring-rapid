@@ -5,6 +5,7 @@ import com.github.vincemann.springrapid.core.model.AuditingEntity;
 import lombok.*;
 
 import java.sql.Timestamp;
+import java.util.Date;
 
 /**
  * Set of object of this class is sent by client to server.
@@ -23,5 +24,11 @@ import java.sql.Timestamp;
 public class EntityLastUpdateInfo {
     private String id;
     @JsonFormat(shape = JsonFormat.Shape.NUMBER)
-    private Timestamp lastUpdate;
+    private Date lastUpdate;
+
+    // constructor for jpa
+    public EntityLastUpdateInfo(Long id, Date lastUpdate) {
+        this.id = String.valueOf(id);
+        this.lastUpdate = lastUpdate;
+    }
 }

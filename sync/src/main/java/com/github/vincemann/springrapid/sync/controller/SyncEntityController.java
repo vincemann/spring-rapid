@@ -85,7 +85,7 @@ public class SyncEntityController<
             // jpa uses this format
             //            Date lastUpdateDate = DATE_FORMAT.parse(lastUpdateTimestampString);
             Timestamp lastUpdate = new Timestamp(lastUpdateTimestamp);
-            VerifyEntity.isPresent(lastUpdateTimestamp, "need 'ts' parameter");
+            VerifyEntity.isPresent(lastUpdateTimestamp, "need timestamp parameter 'ts'");
             EntitySyncStatus syncStatus = serviceFindEntitySyncStatus(new EntityLastUpdateInfo(id.toString(), lastUpdate));
             boolean updated = syncStatus != null;
             if (updated)

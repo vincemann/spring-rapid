@@ -90,5 +90,9 @@ public abstract class AbstractCrudControllerTestTemplate
         return getController().getFindAllUrl();
     }
 
+    public String getFindSomeUrl(){
+        return getController().getFindSomeUrl();
+    }
+
 }
 

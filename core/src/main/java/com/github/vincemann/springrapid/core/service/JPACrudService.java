@@ -46,6 +46,7 @@ public abstract class JPACrudService
         return getRepository().findById(id);
     }
 
+    @Transactional
     @Override
     public E softUpdate(E update) throws EntityNotFoundException, BadEntityException {
         VerifyEntity.isPresent(update.getId(), "No Id set for update");

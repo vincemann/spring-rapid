@@ -436,7 +436,7 @@ public abstract class GenericCrudController
     protected RequestMappingInfo createFindSomeRequestMappingInfo() {
         return RequestMappingInfo
                 .paths(findSomeUrl)
-                .methods(RequestMethod.GET)
+                .methods(RequestMethod.POST)
                 .produces(getMediaType())
                 .build();
     }

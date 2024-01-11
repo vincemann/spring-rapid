@@ -54,7 +54,7 @@ public class EntitySyncStatusSerializerImpl implements EntitySyncStatusSerialize
     }
 
     @Override
-    public Set<EntitySyncStatus> deserializeSetString(String statusString) throws BadEntityException {
+    public Set<EntitySyncStatus> deserializeToSet(String statusString) throws BadEntityException {
         Set<EntitySyncStatus> result = new HashSet<>();
         for (String element : statusString.split(DELIMITER)) {
             // cant use stream api bc of checked exception

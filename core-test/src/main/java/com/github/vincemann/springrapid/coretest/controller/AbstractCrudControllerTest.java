@@ -186,6 +186,10 @@ public abstract class AbstractCrudControllerTest
         return testTemplate.getFindAllUrl();
     }
 
+    public String getFindSomeUrl(){
+        return testTemplate.getFindSomeUrl();
+    }
+
     public  String serialize(Object o) throws JsonProcessingException {
         return testTemplate.serialize(o);
     }

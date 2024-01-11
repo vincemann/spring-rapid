@@ -12,5 +12,5 @@ public interface EntitySyncStatusSerializer {
     EntitySyncStatus deserialize(String statusString) throws BadEntityException;
     String serialize(Set<EntitySyncStatus> entitySyncStatuses);
 
-    Set<EntitySyncStatus> deserializeSetString(String statusString) throws BadEntityException;
+    Set<EntitySyncStatus> deserializeToSet(String statusString) throws BadEntityException;
 }
