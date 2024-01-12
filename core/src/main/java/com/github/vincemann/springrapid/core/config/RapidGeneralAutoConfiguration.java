@@ -29,7 +29,6 @@ import javax.persistence.EntityManager;
 
 @Configuration
 @EnableConfigurationProperties
-@EnableJpaAuditing
 @Slf4j
 public class RapidGeneralAutoConfiguration {
 
@@ -61,13 +60,6 @@ public class RapidGeneralAutoConfiguration {
         return new LongIdConverter();
     }
 
-    // you can overwrite existing autorAware, is done in auth modules autoconfig
-    // if you need an other type than long, define a bean with name rapidSecurityAuditorAware with other generic parameter
-    @ConditionalOnMissingBean(name = "rapidSecurityAuditorAware")
-    @Bean
-    public AuditorAware<Long> auditorAware(){
-        return new LongIdRapidSecurityAuditorAware();
-    }
 
     @Bean
     public Message messageUtils(MessageSource messageSource){

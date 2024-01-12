@@ -33,7 +33,6 @@ import java.io.Serializable;
 @ServiceConfig
 @Slf4j
 @EnableTransactionManagement
-//@EnableJpaAuditing
 //@AutoConfigureBefore({AclAutoConfiguration.class})
 public class RapidUserServiceAutoConfiguration {
 
@@ -41,16 +40,6 @@ public class RapidUserServiceAutoConfiguration {
 //    @Autowired
 //    private UserService userService;
 
-
-
-    /**
-     * Configures an Auditor Aware if missing
-     */
-    @Bean
-    @ConditionalOnMissingBean(name = "rapidAuthSecurityAuditorAware")
-    public AuditorAware<Long> rapidSecurityAuditorAware() {
-        return new LongIdRapidAuthAuditorAware();
-    }
 
 
     /**
