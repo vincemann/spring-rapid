@@ -76,6 +76,7 @@ public class Owner extends Person {
     @Override
     public String toString() {
         return "Owner{" +
+                "id=" + (getId() == null ? "null" : getId().toString()) +
                 "firstName='" + getFirstName() + '\'' +
                 ", lastName='" + getLastName() + '\'' +
                 ", pets=" + LazyToStringUtil.toStringIfLoaded(pets,Pet::getName) +

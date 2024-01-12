@@ -14,7 +14,7 @@ import java.util.List;
 public class AutoBiDirUtils {
 
 //    public static List<Object> bannedBeans = new ArrayList<>();
-    public static List<Class> bannedRepoEntityTypes = new ArrayList<>();
+    public static List<Class<?>> bannedRepoEntityTypes = new ArrayList<>();
 
     public static Boolean isDisabled(JoinPoint joinPoint){
         Object proxied = AopTestUtils.getUltimateTargetObject(joinPoint.getTarget());

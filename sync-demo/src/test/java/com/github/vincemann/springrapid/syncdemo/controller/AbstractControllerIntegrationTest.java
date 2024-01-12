@@ -421,12 +421,17 @@ public class AbstractControllerIntegrationTest<C extends GenericCrudController<?
     }
 
 
-    protected ReadOwnOwnerDto saveOwnerLinkedToClinicCard(Owner owner, ClinicCard clinicCard) throws Exception {
+    protected Owner saveOwnerLinkedToClinicCard(Owner owner, ClinicCard clinicCard) throws Exception {
         CreateOwnerDto createOwnerDto = new CreateOwnerDto(owner);
         createOwnerDto.setClinicCardId(clinicCard.getId());
-
-
-        return performDs2xx(create(createOwnerDto),ReadOwnOwnerDto.class);
+        ReadOwnOwnerDto readOwnOwnerDto = performDs2xx(create(createOwnerDto), ReadOwnOwnerDto.class);
+        Assertions.assertNotNull(readOwnOwnerDto.getId());
+        Owner saved = fetchOwner(readOwnOwnerDto.getId());
+        Assertions.assertNotNull(saved.getCreatedDate());
+//        Assertions.assertNotNull(saved.getCreatedById());
+        Assertions.assertNotNull(saved.getLastModifiedDate());
+//        Assertions.assertNotNull(saved.getLastModifiedById());
+        return saved;
     }
 
 

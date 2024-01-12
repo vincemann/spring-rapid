@@ -21,7 +21,8 @@ public class PetType extends IdentifiableEntityImpl<Long> {
     @Override
     public String toString() {
         return "PetType{" +
-                "name='" + name + '\'' +
+                "id=" + (getId() == null ? "null" : getId().toString()) +
+                ", name='" + name + '\'' +
                 ", id=" + getId() +
                 '}';
     }

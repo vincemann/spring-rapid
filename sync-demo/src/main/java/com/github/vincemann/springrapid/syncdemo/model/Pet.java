@@ -74,7 +74,8 @@ public class Pet extends AuditingEntity<Long> {
     @Override
     public String toString() {
         return "Pet{" +
-                "name='" + name + '\'' +
+                "id=" + (getId() == null ? "null" : getId().toString()) +
+                ", name='" + name + '\'' +
                 ", petType=" + petType +
                 ", toys=" +  LazyToStringUtil.toStringIfLoaded(toys,Toy::getName) +
                 ", owner=" + LazyToStringUtil.toStringIfLoaded(owner,Owner::getLastName) +

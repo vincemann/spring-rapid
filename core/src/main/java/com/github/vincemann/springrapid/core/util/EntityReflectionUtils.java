@@ -28,6 +28,20 @@ public class EntityReflectionUtils {
         }
     }
 
+    private static class AnnotationAndFieldSubTypeFilter extends org.springframework.data.util.ReflectionUtils.AnnotationFieldFilter {
+        private final Class<?> fieldType;
+
+        public AnnotationAndFieldSubTypeFilter(@NonNull Class<? extends Annotation> annotationType, Class<?> fieldType) {
+            super(annotationType);
+            this.fieldType = fieldType;
+        }
+
+        @Override
+        public boolean matches(Field field) {
+            return super.matches(field) && fieldType.isAssignableFrom(field.getType());
+        }
+    }
+
     public static Set<String> findCollectionFields(Set<String> fields, Class<?> entityClass) {
         Set<String> collectionFields = new HashSet<>();
 
@@ -114,6 +128,13 @@ public class EntityReflectionUtils {
             org.springframework.util.ReflectionUtils.makeAccessible(field);
             fieldCallback.doWith(field);
         },new AnnotationAndFieldTypeFilter(annotationType,fieldType));
+    }
+
+    public static void doWithAnnotatedFieldsOfSubType(Class<?> fieldType, Class<? extends Annotation> annotationType, Class clazz, org.springframework.util.ReflectionUtils.FieldCallback fieldCallback){
+        org.springframework.util.ReflectionUtils.doWithFields(clazz,field -> {
+            org.springframework.util.ReflectionUtils.makeAccessible(field);
+            fieldCallback.doWith(field);
+        },new AnnotationAndFieldSubTypeFilter(annotationType,fieldType));
     }
 
     public static void doWithNamedAnnotatedFieldsOfType(Class<?> fieldType, Class<? extends Annotation> annotationType, Class clazz,Set<String> membersToCheck, org.springframework.util.ReflectionUtils.FieldCallback fieldCallback){

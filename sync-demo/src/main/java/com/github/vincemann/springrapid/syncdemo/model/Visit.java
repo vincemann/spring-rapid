@@ -58,7 +58,8 @@ public class Visit extends IdentifiableEntityImpl<Long> {
     @Override
     public String toString() {
         return "Visit{" +
-                "pets=" + LazyToStringUtil.toStringIfLoaded(pets,Pet::getName) +
+                "id=" + (getId() == null ? "null" : getId().toString()) +
+                ", pets=" + LazyToStringUtil.toStringIfLoaded(pets,Pet::getName) +
                 ", owner=" + LazyToStringUtil.toStringIfLoaded(owner,Owner::getLastName) +
                 ", vet=" + LazyToStringUtil.toStringIfLoaded(vet,Vet::getLastName) +
                 ", date=" + date +

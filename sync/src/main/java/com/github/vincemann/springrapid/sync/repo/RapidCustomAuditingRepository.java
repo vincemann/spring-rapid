@@ -48,13 +48,13 @@ public class RapidCustomAuditingRepository<E extends AuditingEntity<Id>,Id exten
      * @return
      */
     @Override
-    public List<EntityLastUpdateInfo> findLastUpdateInfosSince(Timestamp until, List<JPQLEntityFilter<E>> filters) {
+    public List<EntityLastUpdateInfo> findLastUpdateInfosSince(Timestamp since, List<JPQLEntityFilter<E>> filters) {
         CriteriaBuilder cb = entityManager.getCriteriaBuilder();
         CriteriaQuery<EntityLastUpdateInfo> cq = cb.createQuery(EntityLastUpdateInfo.class);
         Root<E> root = cq.from(entityClass);
 
         // Create the predicate for filtering
-        Predicate datePredicate = cb.greaterThan(root.get("lastModifiedDate"), until);
+        Predicate datePredicate = cb.greaterThan(root.get("lastModifiedDate"), since);
 
         // Construct the EntityLastUpdateInfo with the required fields
         cq.select(cb.construct(EntityLastUpdateInfo.class,

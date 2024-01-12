@@ -36,28 +36,28 @@ public class ServiceExtensionProxyBuilder<S extends CrudService<E,Id>,E extends 
     /**
      * User this method if your {@link AbstractServiceExtension} implements {@link GenericCrudServiceExtension}.
      */
-    public ServiceExtensionProxyBuilder<S,E,Id> addGenericExtensions(AbstractServiceExtension<? extends CrudService<? super E,? super Id>,? super ProxyController>... extensions){
-        for (AbstractServiceExtension<? extends CrudService<? super E, ? super Id>,? super ProxyController> extension : extensions) {
+    public ServiceExtensionProxyBuilder<S,E,Id> addGenericExtensions(AbstractServiceExtension<? extends CrudService<? super E,? super Id>,ProxyController>... extensions){
+        for (AbstractServiceExtension<? extends CrudService<? super E, ? super Id>,ProxyController> extension : extensions) {
             addGenericExtension(extension);
         }
         return this;
     }
 
-    public ServiceExtensionProxyBuilder<S,E,Id> addGenericExtension(AbstractServiceExtension<? extends CrudService<? super E,? super Id>,? super ProxyController> extension){
+    public ServiceExtensionProxyBuilder<S,E,Id> addGenericExtension(AbstractServiceExtension<? extends CrudService<? super E,? super Id>,ProxyController> extension){
         proxy.addExtension(extension);
         return this;
     }
 
     // service extension can be any super class of service
     // also types that are not of type SimpleService
-    public ServiceExtensionProxyBuilder<S,E,Id> addExtensions(AbstractServiceExtension<? super S,? super ProxyController>... extensions){
+    public ServiceExtensionProxyBuilder<S,E,Id> addExtensions(AbstractServiceExtension<? super S,ProxyController>... extensions){
         for (AbstractServiceExtension<? super S,? super ProxyController> extension : extensions) {
             proxy.addExtension(extension);
         }
         return this;
     }
 
-    public ServiceExtensionProxyBuilder<S,E,Id> addExtension(AbstractServiceExtension<? super S,? super ProxyController> extension){
+    public ServiceExtensionProxyBuilder<S,E,Id> addExtension(AbstractServiceExtension<? super S,ProxyController> extension){
         proxy.addExtension(extension);
         return this;
     }

@@ -1,8 +1,12 @@
 package com.github.vincemann.springrapid.syncdemo.config;
 
+import com.github.vincemann.springrapid.core.proxy.AbstractServiceExtension;
+import com.github.vincemann.springrapid.core.proxy.ProxyController;
 import com.github.vincemann.springrapid.core.proxy.ServiceExtensionProxyBuilder;
+import com.github.vincemann.springrapid.core.service.CrudService;
 import com.github.vincemann.springrapid.core.slicing.ServiceConfig;
 import com.github.vincemann.springrapid.sync.service.AuditCollectionsExtension;
+import com.github.vincemann.springrapid.syncdemo.model.Owner;
 import com.github.vincemann.springrapid.syncdemo.service.OwnerService;
 import com.github.vincemann.springrapid.syncdemo.service.PetService;
 import com.github.vincemann.springrapid.syncdemo.service.Root;

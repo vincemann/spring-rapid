@@ -40,7 +40,8 @@ public class Specialty extends IdentifiableEntityImpl<Long>
     @Override
     public String toString() {
         return "Specialty{" +
-                "description='" + description + '\'' +
+                "id=" + (getId() == null ? "null" : getId().toString()) +
+                ", description='" + description + '\'' +
                 ", vets=" + LazyToStringUtil.toStringIfLoaded(vets,Vet::getLastName) +
                 '}';
     }

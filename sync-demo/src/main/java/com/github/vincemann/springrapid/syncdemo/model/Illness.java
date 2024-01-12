@@ -36,7 +36,8 @@ public class Illness extends IdentifiableEntityImpl<Long> {
     @Override
     public String toString() {
         return "Illness{" +
-                "name='" + name + '\'' +
+                "id=" + (getId() == null ? "null" : getId().toString()) +
+                ", name='" + name + '\'' +
                 ", pets=" +  pet == null ? "null" : pet.getName() +
                 '}';
     }

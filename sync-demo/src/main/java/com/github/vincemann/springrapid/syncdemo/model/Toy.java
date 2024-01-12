@@ -32,7 +32,8 @@ public class Toy extends IdentifiableEntityImpl<Long> {
     @Override
     public String toString() {
         return "Toy{" +
-                "name='" + name + '\'' +
+                "id=" + (getId() == null ? "null" : getId().toString()) +
+                ", name='" + name + '\'' +
                 ", pet=" + LazyToStringUtil.toStringIfLoaded(pet,Pet::getName) +
                 '}';
     }

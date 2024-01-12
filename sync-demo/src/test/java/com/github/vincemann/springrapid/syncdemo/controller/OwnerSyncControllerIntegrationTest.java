@@ -10,6 +10,7 @@ import com.github.vincemann.springrapid.sync.model.EntitySyncStatus;
 import com.github.vincemann.springrapid.sync.model.SyncStatus;
 import com.github.vincemann.springrapid.syncdemo.controller.sync.OwnerSyncController;
 import com.github.vincemann.springrapid.syncdemo.dto.owner.ReadOwnOwnerDto;
+import com.github.vincemann.springrapid.syncdemo.model.ClinicCard;
 import com.github.vincemann.springrapid.syncdemo.model.Owner;
 import com.github.vincemann.springrapid.syncdemo.model.Pet;
 import com.github.vincemann.springrapid.syncdemo.service.OwnerService;
@@ -439,7 +440,7 @@ public class OwnerSyncControllerIntegrationTest extends AbstractControllerIntegr
         Assertions.assertEquals(1,updatedPets.size());
         unlinkBello.setPets(updatedPets);
 
-        Owner updatedOwner = ownerService.partialUpdate(unlinkBello,"pets");
+        Owner updatedOwner = ownerService.partialUpdate(unlinkBello,Sets.newHashSet("pets"));
 
         assertOwnerHasPets(KAHN,KITTY);
         assertPetHasOwner(BELLO,null);
@@ -502,7 +503,7 @@ public class OwnerSyncControllerIntegrationTest extends AbstractControllerIntegr
         Owner unlinkPets = Entity.createUpdate(owner);
         unlinkPets.setPets(new HashSet<>());
 
-        Owner updatedOwner = ownerService.partialUpdate(unlinkPets,"pets");
+        Owner updatedOwner = ownerService.partialUpdate(unlinkPets,Sets.newHashSet("pets"));
 
         assertOwnerHasPets(KAHN);
         assertPetHasOwner(BELLO,null);
@@ -516,9 +517,10 @@ public class OwnerSyncControllerIntegrationTest extends AbstractControllerIntegr
     }
 
 
-    // we talk about non foreign key collection here -> should still trigger no update
+    // collection is annotated with AuditCollection so changes will trigger lastModified change
+    // implemented in AuditCollectionsExtension
     @Test
-    public void checkSyncStatusForOwner_afterUnlinkingOneElement_fromElementCollection_shouldFindUpdate() throws Exception {
+    public void checkSyncStatusForOwner_afterUnlinkingOneHobby_fromAnnotatedAuditCollection_shouldFindUpdate() throws Exception {
         // create owner with hobbies
         // record client ts
         // unlink one hobby from owner
@@ -547,87 +549,181 @@ public class OwnerSyncControllerIntegrationTest extends AbstractControllerIntegr
         updatedHobbies.remove(bodybuilding);
         removeHobby.setHobbies(updatedHobbies);
 
-        Owner updatedOwner = ownerService.partialUpdate(removeHobby,"hobbies");
+        Owner updatedOwner = ownerService.partialUpdate(removeHobby,Sets.newHashSet("hobbies"));
 
 
         // has changed
-        Assertions.assertEquals(lastServerUpdate, updatedOwner.getLastModifiedDate());
+        Assertions.assertTrue(lastServerUpdate.before(updatedOwner.getLastModifiedDate()));
 
 //        EntitySyncStatus status = fetchOwnerSyncStatus_assertUpdate(owner.getId(), clientUpdate, SyncStatus.UPDATED);
-        fetchOwnerSyncStatus_assertNoUpdate(owner.getId(),clientUpdate);
+        EntitySyncStatus status = fetchOwnerSyncStatus_assertUpdate(owner.getId(), clientUpdate, SyncStatus.UPDATED);
 
         securityContext.login(TestPrincipal.withName(KAHN));
-        ReadOwnOwnerDto readOwnOwnerDto = performDs2xx(find(owner.getId().toString()), ReadOwnOwnerDto.class);
+        ReadOwnOwnerDto readOwnOwnerDto = performDs2xx(find(status.getId()), ReadOwnOwnerDto.class);
         RapidSecurityContext.logout();
 
         Assertions.assertEquals(updatedHobbies,readOwnOwnerDto.getHobbies());
     }
 
-//    @Test
-//    public void checkSyncStatusForOwner_afterUnlinkingClinicCard_shouldFindUpdate() throws Exception {
-//        // create owner linked to single entity clinic card
-//        // record client ts
-//        // unlink owners pet bello via update
-//        // check owner sync info
-//        // server tells client, owner was updated
-//        // fetch update and validate
-//
-//        Pet savedBello = petRepository.save(bello);
-//        Pet savedKitty = petRepository.save(kitty);
-//        Owner owner = saveOwnerLinkedToPets(kahn,savedBello.getId(),savedKitty.getId());
-//
-//        assertOwnerHasPets(KAHN,BELLO,KITTY);
-//        assertPetHasOwner(BELLO,KAHN);
-//        assertPetHasOwner(KITTY,KAHN);
-//
-//        Timestamp lastServerUpdate = new Timestamp(owner.getLastModifiedDate().getTime());
-//
-//        // now
-//        Timestamp clientUpdate = new Timestamp(new Date().getTime());
-//        Assertions.assertTrue(clientUpdate.after(lastServerUpdate));
-//
-//        fetchOwnerSyncStatus_assertNoUpdate(owner.getId(),clientUpdate);
-//
-//        // update owner by unlinking pet bello
-//        Owner unlinkBello = Entity.createUpdate(owner);
-//        Set<Pet> updatedPets = Sets.newHashSet(owner.getPets());
-//        updatedPets.remove(savedBello);
-//        Assertions.assertEquals(1,updatedPets.size());
-//        unlinkBello.setPets(updatedPets);
-//
-//        Owner updatedOwner = ownerService.partialUpdate(unlinkBello,"pets");
-//
-//        assertOwnerHasPets(KAHN,KITTY);
-//        assertPetHasOwner(BELLO,null);
-//        assertPetHasOwner(KITTY,KAHN);
-//
-//
-//        // has not changed
-//        Assertions.assertEquals(lastServerUpdate, updatedOwner.getLastModifiedDate());
-//
-//
-//        fetchOwnerSyncStatus_assertNoUpdate(owner.getId(), clientUpdate);
-//
-//        Set<String> idsToSync = Sets.newHashSet(owner.getId().toString());
-//
-//        securityContext.login(TestPrincipal.withName(KAHN));
-//        String json = perform(post(getFindSomeUrl())
-//                .content(getController().getJsonMapper().writeDto(idsToSync))
-//                .contentType(MediaType.APPLICATION_JSON_VALUE))
-//                .andExpect(status().is2xxSuccessful())
-//                .andReturn().getResponse().getContentAsString();
-//        RapidSecurityContext.logout();
-//
-//        CollectionType ownerSetType = getController().getJsonMapper().getObjectMapper()
-//                .getTypeFactory().constructCollectionType(Set.class, ReadOwnOwnerDto.class);
-//        Set<ReadOwnOwnerDto> updatedOwners = deserialize(json, ownerSetType);
-//
-//        Assertions.assertEquals(1,updatedOwners.size());
-//
-//        ReadOwnOwnerDto ownerDto = updatedOwners.stream().filter(s -> s.getId().equals(updatedOwner.getId())).findFirst().get();
-//        Assertions.assertEquals(1,ownerDto.getPetIds().size());
-//        Assertions.assertEquals(ownerDto.getPetIds().stream().findFirst().get(),savedKitty.getId());
-//    }
+    // collection is annotated with AuditCollection so changes will trigger lastModified change
+    // implemented in AuditCollectionsExtension
+    @Test
+    public void checkSyncStatusForOwner_after_fromAnnotatedAuditCollection_shouldFindUpdate() throws Exception {
+        // create owner with hobbies
+        // record client ts
+        // unlink one hobby from owner
+        // check owner sync info
+        // server tells client, owner was updated
+        // fetch update and validate
+
+        String bodybuilding = "bodybuilding";
+        Set<String> hobbies = new HashSet<>(Arrays.asList("swimming","biking",bodybuilding,"jogging","eating"));
+        kahn.setHobbies(hobbies);
+        Owner owner = saveOwnerLinkedToPets(kahn);
+
+        Assertions.assertEquals(hobbies,owner.getHobbies());
+
+        Timestamp lastServerUpdate = new Timestamp(owner.getLastModifiedDate().getTime());
+
+        // now
+        Timestamp clientUpdate = new Timestamp(new Date().getTime());
+        Assertions.assertTrue(clientUpdate.after(lastServerUpdate));
+
+        fetchOwnerSyncStatus_assertNoUpdate(owner.getId(),clientUpdate);
+
+        // update owner by unlinking all pets
+        Owner removeHobby = Entity.createUpdate(owner);
+        Set<String> updatedHobbies = new HashSet<>(hobbies);
+        updatedHobbies.remove(bodybuilding);
+        removeHobby.setHobbies(updatedHobbies);
+
+        Owner updatedOwner = ownerService.partialUpdate(removeHobby,Sets.newHashSet("hobbies"));
+
+
+        // has changed
+        Assertions.assertTrue(lastServerUpdate.before(updatedOwner.getLastModifiedDate()));
+
+//        EntitySyncStatus status = fetchOwnerSyncStatus_assertUpdate(owner.getId(), clientUpdate, SyncStatus.UPDATED);
+        EntitySyncStatus status = fetchOwnerSyncStatus_assertUpdate(owner.getId(), clientUpdate, SyncStatus.UPDATED);
+
+        securityContext.login(TestPrincipal.withName(KAHN));
+        ReadOwnOwnerDto readOwnOwnerDto = performDs2xx(find(status.getId()), ReadOwnOwnerDto.class);
+        RapidSecurityContext.logout();
+
+        Assertions.assertEquals(updatedHobbies,readOwnOwnerDto.getHobbies());
+    }
+
+    @Test
+    public void checkSyncStatusForOwner_afterUnlinkingClinicCard_shouldFindUpdate() throws Exception {
+        // create owner linked to single entity clinic card
+        // record client ts
+        // unlink clinic card from owner
+        // check owner sync info
+        // server tells client, owner was updated
+        // fetch update and validate
+
+        ClinicCard card = clinicCardRepository.save(clinicCard);
+        Owner owner = saveOwnerLinkedToClinicCard(kahn,clinicCard);
+
+        assertOwnerHasClinicCard(KAHN,card.getId());
+        assertClinicCardHasOwner(card.getId(),KAHN);
+
+        Timestamp lastServerUpdate = new Timestamp(owner.getLastModifiedDate().getTime());
+
+        // now
+        Timestamp clientUpdate = new Timestamp(new Date().getTime());
+        Assertions.assertTrue(clientUpdate.after(lastServerUpdate));
+
+        // update owner by unlinking pet bello
+        Owner unlinkClinicCard = Entity.createUpdate(owner);
+
+        Owner updatedOwner = ownerService.partialUpdate(unlinkClinicCard,"clinicCard");
+
+        assertOwnerHasClinicCard(KAHN, null);
+        assertClinicCardHasOwner(card.getId(), null);
+
+
+        // has changed
+        Assertions.assertTrue(lastServerUpdate.before(updatedOwner.getLastModifiedDate()));
+
+
+        EntitySyncStatus status = fetchOwnerSyncStatus_assertUpdate(owner.getId(), clientUpdate, SyncStatus.UPDATED);
+
+        Set<String> idsToSync = Sets.newHashSet(status.getId());
+
+        securityContext.login(TestPrincipal.withName(KAHN));
+        String json = perform(post(getFindSomeUrl())
+                .content(getController().getJsonMapper().writeDto(idsToSync))
+                .contentType(MediaType.APPLICATION_JSON_VALUE))
+                .andExpect(status().is2xxSuccessful())
+                .andReturn().getResponse().getContentAsString();
+        RapidSecurityContext.logout();
+
+        CollectionType ownerSetType = getController().getJsonMapper().getObjectMapper()
+                .getTypeFactory().constructCollectionType(Set.class, ReadOwnOwnerDto.class);
+        Set<ReadOwnOwnerDto> updatedOwners = deserialize(json, ownerSetType);
+
+        Assertions.assertEquals(1,updatedOwners.size());
+
+        ReadOwnOwnerDto ownerDto = updatedOwners.stream().filter(s -> s.getId().equals(updatedOwner.getId())).findFirst().get();
+        Assertions.assertNull(ownerDto.getClinicCardId());
+    }
+
+    @Test
+    public void checkSyncStatusForOwner_afterUnlinkingClinicCard_viaRemovingClinicCard_shouldFindUpdate() throws Exception {
+        // create owner linked to single entity clinic card
+        // record client ts
+        // remove clinicCard -> auto bidir removes card from owner as well
+        // check owner sync info
+        // server tells client, owner was updated, bc clinic card field and not collection
+        // so its updated even though it was indirect
+        // fetch update and validate
+
+        ClinicCard card = clinicCardRepository.save(clinicCard);
+        Owner owner = saveOwnerLinkedToClinicCard(kahn,clinicCard);
+
+        assertOwnerHasClinicCard(KAHN,card.getId());
+        assertClinicCardHasOwner(card.getId(),KAHN);
+
+        Timestamp lastServerUpdate = new Timestamp(owner.getLastModifiedDate().getTime());
+
+        // now
+        Timestamp clientUpdate = new Timestamp(new Date().getTime());
+        Assertions.assertTrue(clientUpdate.after(lastServerUpdate));
+
+        // update owner by removing clinic card
+        clinicCardService.deleteById(card.getId());
+        Owner updatedOwner = fetchOwner(owner.getId());
+
+        assertOwnerHasClinicCard(KAHN, null);
+        Assertions.assertTrue(clinicCardRepository.findAll().isEmpty());
+
+
+        // has changed
+        Assertions.assertTrue(lastServerUpdate.before(updatedOwner.getLastModifiedDate()));
+
+
+        EntitySyncStatus status = fetchOwnerSyncStatus_assertUpdate(owner.getId(), clientUpdate, SyncStatus.UPDATED);
+
+        Set<String> idsToSync = Sets.newHashSet(status.getId());
+
+        securityContext.login(TestPrincipal.withName(KAHN));
+        String json = perform(post(getFindSomeUrl())
+                .content(getController().getJsonMapper().writeDto(idsToSync))
+                .contentType(MediaType.APPLICATION_JSON_VALUE))
+                .andExpect(status().is2xxSuccessful())
+                .andReturn().getResponse().getContentAsString();
+        RapidSecurityContext.logout();
+
+        CollectionType ownerSetType = getController().getJsonMapper().getObjectMapper()
+                .getTypeFactory().constructCollectionType(Set.class, ReadOwnOwnerDto.class);
+        Set<ReadOwnOwnerDto> updatedOwners = deserialize(json, ownerSetType);
+
+        Assertions.assertEquals(1,updatedOwners.size());
+
+        ReadOwnOwnerDto ownerDto = updatedOwners.stream().filter(s -> s.getId().equals(updatedOwner.getId())).findFirst().get();
+        Assertions.assertNull(ownerDto.getClinicCardId());
+    }
 
 
     // sync specific helpers
