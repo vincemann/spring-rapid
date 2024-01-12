@@ -6,6 +6,7 @@ import com.fasterxml.jackson.databind.JavaType;
 
 import com.github.vincemann.springrapid.core.controller.GenericCrudController;
 import com.github.vincemann.springrapid.core.model.IdentifiableEntity;
+import com.github.vincemann.springrapid.core.service.ArgAwareFilter;
 import com.github.vincemann.springrapid.core.service.exception.BadEntityException;
 import com.github.vincemann.springrapid.core.service.exception.EntityNotFoundException;
 import com.github.vincemann.springrapid.coretest.InitializingTest;
@@ -14,6 +15,7 @@ import com.github.vincemann.springrapid.coretest.controller.integration.Abstract
 import com.github.vincemann.springrapid.coretest.controller.template.AbstractControllerTestTemplate;
 import com.github.vincemann.springrapid.coretest.controller.template.AbstractCrudControllerTestTemplate;
 import lombok.Getter;
+import org.junit.jupiter.api.Assertions;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -82,6 +84,37 @@ public abstract class AbstractCrudControllerTest
         this.contentType = MediaType.valueOf(controller.getCoreProperties().getController().getMediaType());
         mvc = mvcBuilder.build();
         setTestTemplatesMvc();
+    }
+
+    protected static class Filter{
+        Class<? extends ArgAwareFilter> filterType;
+        String[] args;
+
+        public Filter(Class<? extends ArgAwareFilter> filterType, String... args) {
+            this.filterType = filterType;
+            this.args = args;
+        }
+    }
+
+    public String createFilterString(Filter... filters){
+        StringBuilder sb = new StringBuilder();
+        int filterCount = 0;
+        for (Filter filter : filters) {
+            String[] beanNamesForType = applicationContext.getBeanNamesForType(filter.filterType);
+            Assertions.assertEquals(1,beanNamesForType.length,"no single bean found with type: " + filter.getClass().getSimpleName() + ". Found beanNames: " + beanNamesForType);
+            sb.append(beanNamesForType[0]);
+            int count = 0;
+            String[] args = filter.args;
+            for (String arg : args) {
+                if (count++ != args.length)
+                    sb.append(":");
+                sb.append(arg);
+            }
+            if (++filterCount < filters.length){
+                sb.append(",");
+            }
+        }
+        return sb.toString();
     }
 
 
@@ -164,6 +197,10 @@ public abstract class AbstractCrudControllerTest
 
     public  MockHttpServletRequestBuilder findAll() throws Exception {
         return testTemplate.findAll();
+    }
+
+    public  MockHttpServletRequestBuilder findAll(String filters) throws Exception {
+        return testTemplate.findAll(filters);
     }
 
     public  String getCreateUrl() {

@@ -1,5 +1,8 @@
 package com.github.vincemann.springrapid.coredemo.controller;
 
+import com.fasterxml.jackson.databind.type.CollectionType;
+import com.github.vincemann.springrapid.core.service.ParentFilter;
+import com.github.vincemann.springrapid.coredemo.dto.owner.ReadOwnOwnerDto;
 import com.github.vincemann.springrapid.coredemo.dto.pet.PetDto;
 import com.github.vincemann.springrapid.coredemo.model.Owner;
 import com.github.vincemann.springrapid.coredemo.model.Pet;
@@ -9,11 +12,11 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 import java.util.Arrays;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import static com.github.vincemann.ezcompare.Comparator.compare;
-import static com.github.vincemann.springrapid.coretest.util.RapidTestUtil.createUpdateJsonLine;
-import static com.github.vincemann.springrapid.coretest.util.RapidTestUtil.createUpdateJsonRequest;
+import static com.github.vincemann.springrapid.coretest.util.RapidTestUtil.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 public class PetControllerIntegrationTest extends AbstractControllerIntegrationTest<PetController, PetService>
@@ -45,6 +48,50 @@ public class PetControllerIntegrationTest extends AbstractControllerIntegrationT
 
         Assertions.assertEquals(responseDto.getId(),dbBella.getId());
     }
+
+    @Test
+    public void canFindPetsOfOwner() throws Exception {
+        // save kahn and meier
+        // kahn has bello and bella
+        // meier has kitty
+        // find all pets of kahn -> should return bello and bella
+        Pet savedBello = petRepository.save(bello);
+        Pet savedBella = petRepository.save(bella);
+        Pet savedKitty = petRepository.save(kitty);
+        ReadOwnOwnerDto savedKahn = saveOwnerLinkedToPets(kahn,savedBello.getId(),savedBella.getId());
+        ReadOwnOwnerDto savedMeier = saveOwnerLinkedToPets(meier,savedKitty.getId());
+
+        assertOwnerHasPets(KAHN,BELLO,BELLA);
+        assertOwnerHasPets(MEIER,KITTY);
+        assertPetHasOwner(BELLO,KAHN);
+        assertPetHasOwner(BELLA,KAHN);
+        assertPetHasOwner(KITTY,MEIER);
+
+        String parentFilter = createFilterString(new Filter(ParentFilter.class,"owner",savedKahn.getId().toString()));
+        String json = perform(findAll(parentFilter))
+                .andExpect(status().is2xxSuccessful())
+                .andReturn().getResponse().getContentAsString();
+
+        CollectionType petSetType = getController().getJsonMapper().getObjectMapper()
+                .getTypeFactory().constructCollectionType(Set.class, PetDto.class);
+        Set<PetDto> petsOfKahn = deserialize(json, petSetType);
+
+        Assertions.assertEquals(2,petsOfKahn.size());
+        PetDto belloDto = petsOfKahn.stream().filter(p -> p.getId().equals(savedBello.getId())).findFirst().get();
+        PetDto bellaDto = petsOfKahn.stream().filter(p -> p.getId().equals(savedBella.getId())).findFirst().get();
+
+        compare(belloDto).with(savedBello)
+                .properties().all()
+                .ignore(dtoIdProperties(PetDto.class))
+                .assertEqual();
+
+        compare(bellaDto).with(savedBella)
+                .properties().all()
+                .ignore(dtoIdProperties(PetDto.class))
+                .assertEqual();
+
+    }
+
 
     @Test
     public void canSavePet_thusGetLinkedToOwner() throws Exception {

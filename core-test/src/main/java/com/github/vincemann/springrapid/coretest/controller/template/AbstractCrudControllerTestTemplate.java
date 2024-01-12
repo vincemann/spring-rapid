@@ -1,12 +1,16 @@
 package com.github.vincemann.springrapid.coretest.controller.template;
 
 import com.github.vincemann.springrapid.core.controller.GenericCrudController;
+import com.github.vincemann.springrapid.core.service.JPQLEntityFilter;
 import lombok.Getter;
+import org.junit.jupiter.api.Assertions;
 import org.springframework.test.web.servlet.RequestBuilder;
 import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.ResultMatcher;
 import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
+
+import java.util.Set;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -68,6 +72,15 @@ public abstract class AbstractCrudControllerTestTemplate
 
     public  MockHttpServletRequestBuilder findAll() throws Exception {
         return get(getController().getFindAllUrl())/*.contentType(getContentType())*/;
+    }
+
+    public  MockHttpServletRequestBuilder findAll(String... jpqlFilters) throws Exception {
+        MockHttpServletRequestBuilder requestBuilder = get(getController().getFindAllUrl());
+        if (jpqlFilters.length != 0){
+            Assertions.assertEquals(1,jpqlFilters.length);
+            requestBuilder.param("jpql-filter",jpqlFilters[0]);
+        }
+        return requestBuilder;
     }
 
     public  String getCreateUrl() {

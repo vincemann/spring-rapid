@@ -40,7 +40,7 @@ import java.util.Set;
 @Getter
 public abstract class ParentAwareCrudController
         <
-                E extends AuditingEntity<Id>,
+                E extends IdentifiableEntity<Id>,
                 Id extends Serializable,
                 PId extends Serializable,
                 S extends CrudService<E, Id> & ParentAwareService<E, PId>

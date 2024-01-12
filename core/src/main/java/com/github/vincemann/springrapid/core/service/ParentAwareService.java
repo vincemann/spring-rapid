@@ -15,5 +15,5 @@ public interface ParentAwareService
         >
 {
 
-    public Set<E> findAllOfParent(PId parentId) throws BadEntityException;
+    public Set<E> findAllOfParent(PId parentId);
 }

@@ -48,7 +48,8 @@ public class SyncEntityController<
         E extends AuditingEntity<ID>,
         ID extends Serializable,
         S extends SyncService<E, ID>>
-        extends AbstractEntityController<E, ID> implements ApplicationContextAware {
+        extends AbstractEntityController<E, ID>
+        implements ApplicationContextAware {
 
     private ApplicationContext applicationContext;
     private IdFetchingStrategy<ID> idFetchingStrategy;

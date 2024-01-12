@@ -12,6 +12,7 @@ import com.github.vincemann.springrapid.coredemo.repo.*;
 import com.github.vincemann.springrapid.coredemo.service.*;
 import com.github.vincemann.springrapid.coredemo.service.ext.OwnerOfTheYearExtension;
 import com.github.vincemann.springrapid.core.util.TransactionalTemplate;
+import com.github.vincemann.springrapid.coredemo.suite.OwnerControllerTestTemplate;
 import com.github.vincemann.springrapid.coretest.controller.integration.IntegrationCrudControllerTest;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -141,6 +142,10 @@ public class AbstractControllerIntegrationTest<C extends GenericCrudController<?
 
     @Autowired
     protected TransactionalTemplate transactionalTemplate;
+
+
+    @Autowired
+    protected OwnerControllerTestTemplate ownerController;
 
     @BeforeEach
     public void setupTestData() throws Exception {
@@ -395,7 +400,7 @@ public class AbstractControllerIntegrationTest<C extends GenericCrudController<?
         createOwnerDto.getPetIds().addAll(Lists.newArrayList(petIds));
 
 
-        return performDs2xx(create(createOwnerDto),ReadOwnOwnerDto.class);
+        return performDs2xx(ownerController.create(createOwnerDto),ReadOwnOwnerDto.class);
     }
 
 
@@ -404,13 +409,13 @@ public class AbstractControllerIntegrationTest<C extends GenericCrudController<?
         createOwnerDto.setClinicCardId(clinicCard.getId());
 
 
-        return performDs2xx(create(createOwnerDto),ReadOwnOwnerDto.class);
+        return performDs2xx(ownerController.create(createOwnerDto),ReadOwnOwnerDto.class);
     }
 
 
     protected ReadOwnOwnerDto saveOwner(Owner owner) throws Exception {
         CreateOwnerDto createOwnerDto = new CreateOwnerDto(owner);
-        return performDs2xx(create(createOwnerDto),ReadOwnOwnerDto.class);
+        return performDs2xx(ownerController.create(createOwnerDto),ReadOwnOwnerDto.class);
     }
 
 

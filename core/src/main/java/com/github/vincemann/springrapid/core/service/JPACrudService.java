@@ -152,11 +152,13 @@ public abstract class JPACrudService
     @Transactional
     @Override
     public Set<E> findAll(List<JPQLEntityFilter<E>> jpqlFilters, List<EntityFilter<E>> filters) {
-        return applyMemoryFilters(new HashSet<>(getFilterRepository().findAll(jpqlFilters)), filters,Collectors.toSet());
+        return applyMemoryFilters(new HashSet<>(getFilterRepository().findAll(jpqlFilters)), filters);
     }
 
 
-    protected <S extends Collection<E>> S applyMemoryFilters(Collection<E> result, List<EntityFilter<E>> filters, Collector<E,?,S> collector) {
+    protected Set<E> applyMemoryFilters(Set<E> result, List<EntityFilter<E>> filters) {
+        if (filters.isEmpty())
+            return result;
         return result
                 .stream()
                 .filter(entity -> {
@@ -173,7 +175,7 @@ public abstract class JPACrudService
                         log.trace("entity: " + entity + " did not match any filter: ");
                     return false;
                 })
-                .collect(collector);
+                .collect(Collectors.toSet());
     }
 
 

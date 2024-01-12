@@ -3,17 +3,21 @@ package com.github.vincemann.springrapid.syncdemo.controller;
 import com.fasterxml.jackson.databind.type.CollectionType;
 import com.github.vincemann.springrapid.core.Entity;
 import com.github.vincemann.springrapid.core.security.RapidSecurityContext;
+import com.github.vincemann.springrapid.core.service.ParentFilter;
 import com.github.vincemann.springrapid.coretest.TestPrincipal;
 import com.github.vincemann.springrapid.sync.controller.EntitySyncStatusSerializer;
 import com.github.vincemann.springrapid.sync.model.EntityLastUpdateInfo;
 import com.github.vincemann.springrapid.sync.model.EntitySyncStatus;
 import com.github.vincemann.springrapid.sync.model.SyncStatus;
 import com.github.vincemann.springrapid.syncdemo.controller.sync.OwnerSyncController;
+import com.github.vincemann.springrapid.syncdemo.controller.sync.PetSyncController;
 import com.github.vincemann.springrapid.syncdemo.dto.owner.ReadOwnOwnerDto;
+import com.github.vincemann.springrapid.syncdemo.dto.pet.PetDto;
 import com.github.vincemann.springrapid.syncdemo.model.ClinicCard;
 import com.github.vincemann.springrapid.syncdemo.model.Owner;
 import com.github.vincemann.springrapid.syncdemo.model.Pet;
 import com.github.vincemann.springrapid.syncdemo.service.OwnerService;
+import com.github.vincemann.springrapid.syncdemo.service.filter.OwnerTelNumberFilter;
 import com.google.common.collect.Sets;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -38,7 +42,15 @@ public class OwnerSyncControllerIntegrationTest extends AbstractControllerIntegr
     OwnerSyncController ownerSyncController;
 
     @Autowired
+    PetSyncController petSyncController;
+
+    @Autowired
     EntitySyncStatusSerializer syncStatusSerializer;
+
+    @Autowired
+    PetController petController;
+
+
 
 
     @Test
@@ -379,7 +391,7 @@ public class OwnerSyncControllerIntegrationTest extends AbstractControllerIntegr
         Assertions.assertTrue(updatedOwner3.getLastModifiedDate().after(lastServerUpdate));
 
         // now should ask for update info for owner2 and owner3
-        String telPrefixFilter0176 = "telprefix:0176";
+        String telPrefixFilter0176 = createFilterString(new Filter(OwnerTelNumberFilter.class,"0176"));
         Set<EntitySyncStatus> statuses = fetchOwnerSyncStatusesSinceTs_assertUpdates(clientUpdate,telPrefixFilter0176);
         Assertions.assertEquals(1,statuses.size());
         EntitySyncStatus owner3SyncStatus = statuses.stream().filter(s -> s.getId().equals(updatedOwner3.getId().toString())).findFirst().get();
@@ -404,6 +416,72 @@ public class OwnerSyncControllerIntegrationTest extends AbstractControllerIntegr
 
         ReadOwnOwnerDto owner3Dto = updatedOwners.stream().filter(s -> s.getId().equals(updatedOwner3.getId())).findFirst().get();
         Assertions.assertEquals(owner3Dto.getCity(),updateOwner3.getCity());
+    }
+
+    @Test
+    public void checkSyncStatusForAllPetsOfOwner_sinceTimestamp() throws Exception {
+        // create 2 owners
+        // owner 1 has bello and kitty
+        // owner 2 has bella
+        // record client ts
+        // modify bello and bella
+        // ask server for sync infos of all pets of owner1 ( via filter)
+        // server should tell client about update of bello but not about bella
+        // query server for those updates and validate
+        Pet savedBello = petRepository.save(bello);
+        Pet savedBella = petRepository.save(bella);
+        Pet savedKitty = petRepository.save(kitty);
+        Owner owner = saveOwnerLinkedToPets(kahn,savedBello.getId(),savedKitty.getId());
+        Owner owner2 = saveOwnerLinkedToPets(meier,savedBella.getId());
+
+        Timestamp lastServerUpdate = new Timestamp(owner.getLastModifiedDate().getTime());
+
+        // now
+        Timestamp clientUpdate = new Timestamp(new Date().getTime());
+        Assertions.assertTrue(clientUpdate.after(lastServerUpdate));
+
+        fetchOwnerSyncStatusesSinceTs_assertNoUpdates(clientUpdate);
+
+        // update bello and bella
+        Pet updateBello = Entity.createUpdate(bello);
+        updateBello.setBirthDate(savedBello.getBirthDate().minusDays(3));
+
+
+        Pet updateBella = Entity.createUpdate(bella);
+        updateBella.setBirthDate(savedBella.getBirthDate().minusDays(2));
+
+        Pet updatedBello = petService.partialUpdate(updateBello);
+        Pet updatedBella = petService.partialUpdate(updateBella);
+
+        Assertions.assertTrue(updatedBello.getLastModifiedDate().after(lastServerUpdate));
+        Assertions.assertTrue(updatedBella.getLastModifiedDate().after(lastServerUpdate));
+
+        // now should ask for update infos for all pets with owner=kahn since clientUpdate ts
+        String parentFilter = createFilterString(new Filter(ParentFilter.class,"owner",owner.getId().toString()));
+        Set<EntitySyncStatus> statuses = fetchPetSyncStatusesSinceTs_assertUpdates(clientUpdate,parentFilter);
+
+        Assertions.assertEquals(1,statuses.size());
+        EntitySyncStatus belloSyncStatus = statuses.stream().filter(s -> s.getId().equals(savedBello.getId().toString())).findFirst().get();
+        Assertions.assertEquals(belloSyncStatus.getStatus(), SyncStatus.UPDATED);
+
+        Set<String> idsToSync = Sets.newHashSet(belloSyncStatus.getId());
+
+        securityContext.login(TestPrincipal.withName(KAHN));
+        String json = perform(post(petController.getFindSomeUrl())
+                .content(getController().getJsonMapper().writeDto(idsToSync))
+                .contentType(MediaType.APPLICATION_JSON_VALUE))
+                .andExpect(status().is2xxSuccessful())
+                .andReturn().getResponse().getContentAsString();
+        RapidSecurityContext.logout();
+
+        CollectionType petSetType = getController().getJsonMapper().getObjectMapper()
+                .getTypeFactory().constructCollectionType(Set.class, PetDto.class);
+        Set<PetDto> updatedPets = deserialize(json, petSetType);
+
+        Assertions.assertEquals(1,updatedPets.size());
+
+        PetDto belloDto = updatedPets.stream().filter(s -> s.getId().equals(savedBello.getId())).findFirst().get();
+        Assertions.assertEquals(belloDto.getBirthDate(),updateBello.getBirthDate());
     }
 
     // would be overkill to record change in foreignkey column as recorded update for sync
@@ -765,6 +843,20 @@ public class OwnerSyncControllerIntegrationTest extends AbstractControllerIntegr
 
     public Set<EntitySyncStatus> fetchOwnerSyncStatusesSinceTs_assertUpdates(Timestamp clientUpdate, String... jpqlFilters) throws Exception {
         MockHttpServletRequestBuilder requestBuilder = get(ownerSyncController.getFetchEntitySyncStatusesSinceTsUrl())
+                .param("ts", String.valueOf(clientUpdate.getTime()));
+        if (jpqlFilters.length != 0){
+            Assertions.assertEquals(1,jpqlFilters.length);
+            requestBuilder.param("jpql-filter",jpqlFilters[0]);
+        }
+        String responseString = perform(requestBuilder)
+                .andExpect(status().is(200))
+                .andReturn().getResponse().getContentAsString();
+
+        return syncStatusSerializer.deserializeToSet(responseString);
+    }
+
+    public Set<EntitySyncStatus> fetchPetSyncStatusesSinceTs_assertUpdates(Timestamp clientUpdate, String... jpqlFilters) throws Exception {
+        MockHttpServletRequestBuilder requestBuilder = get(petSyncController.getFetchEntitySyncStatusesSinceTsUrl())
                 .param("ts", String.valueOf(clientUpdate.getTime()));
         if (jpqlFilters.length != 0){
             Assertions.assertEquals(1,jpqlFilters.length);
