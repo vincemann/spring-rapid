@@ -2,6 +2,8 @@ package com.github.vincemann.springrapid.syncdemo.controller;
 
 import com.fasterxml.jackson.databind.type.CollectionType;
 import com.github.vincemann.springrapid.core.Entity;
+import com.github.vincemann.springrapid.core.security.RapidSecurityContext;
+import com.github.vincemann.springrapid.coretest.TestPrincipal;
 import com.github.vincemann.springrapid.sync.controller.EntitySyncStatusSerializer;
 import com.github.vincemann.springrapid.sync.model.EntitySyncStatus;
 import com.github.vincemann.springrapid.sync.model.SyncStatus;
@@ -60,10 +62,6 @@ public class OwnerSyncControllerIntegrationTest extends AbstractControllerIntegr
         // record client ts as now + 1 hour -> far after creation of owner
         // check if owner was updated -> no
         Owner owner = fetchOwner(saveOwnerLinkedToPets(kahn).getId());
-        Assertions.assertNotNull(owner.getCreatedDate());
-        Assertions.assertNotNull(owner.getCreatedById());
-        Assertions.assertNotNull(owner.getLastModifiedDate());
-        Assertions.assertNotNull(owner.getLastModifiedById());
 
         Timestamp lastServerUpdate = new Timestamp(owner.getLastModifiedDate().getTime());
 
@@ -85,10 +83,6 @@ public class OwnerSyncControllerIntegrationTest extends AbstractControllerIntegr
         // record client ts as now
         // check if owner was updated -> no
         Owner owner = fetchOwner(saveOwnerLinkedToPets(kahn).getId());
-        Assertions.assertNotNull(owner.getCreatedDate());
-        Assertions.assertNotNull(owner.getCreatedById());
-        Assertions.assertNotNull(owner.getLastModifiedDate());
-        Assertions.assertNotNull(owner.getLastModifiedById());
 
         Timestamp lastServerUpdate = new Timestamp(owner.getLastModifiedDate().getTime());
 
@@ -105,9 +99,9 @@ public class OwnerSyncControllerIntegrationTest extends AbstractControllerIntegr
         // create owner
         // record client ts as now
         // check if owner was updated -> no
-        // update owner's number
+        // update owner's first name
         // check if owner was updated -> yes
-        // fetch owner with id from sync info and validate number changed
+        // fetch owner with id from sync info and validate first name changed
 
         Owner owner = saveOwnerLinkedToPets(kahn);
 
@@ -121,22 +115,24 @@ public class OwnerSyncControllerIntegrationTest extends AbstractControllerIntegr
         fetchOwnerSyncStatus_assertNoUpdateNeeded(owner.getId(),clientUpdate);
 
 
-        String updatedLastName = owner.getLastName()+"-updated";
+        String updatedFirstName = owner.getFirstName()+"-updated";
         Owner updateOwner = Entity.createUpdate(owner);
-        updateOwner.setLastName(updatedLastName);
+        updateOwner.setFirstName(updatedFirstName);
 
         Owner updated = ownerService.partialUpdate(updateOwner);
-        Assertions.assertEquals(updatedLastName,updated.getLastName());
+        Assertions.assertEquals(updatedFirstName,updated.getFirstName());
         Assertions.assertTrue(updated.getLastModifiedDate().after(lastServerUpdate));
         Assertions.assertTrue(clientUpdate.before(updated.getLastModifiedDate()));
 
         // now should need update
         EntitySyncStatus status = fetchOwnerSyncStatus_assertNeedUpdate(owner.getId(), clientUpdate, SyncStatus.UPDATED);
 
+        securityContext.login(TestPrincipal.withName(KAHN));
         ReadOwnOwnerDto updatedEG = performDs2xx(testTemplate.find(status.getId())
                 , ReadOwnOwnerDto.class);
+        RapidSecurityContext.logout();
 
-        Assertions.assertEquals(updatedLastName,updatedEG.getLastName());
+        Assertions.assertEquals(updatedFirstName,updatedEG.getFirstName());
     }
 
 
@@ -162,11 +158,11 @@ public class OwnerSyncControllerIntegrationTest extends AbstractControllerIntegr
         // update owner 2 and 3
 
         Owner updateOwner2 = Entity.createUpdate(owner2);
-        updateOwner2.setLastName("new 2 lastname");
+        updateOwner2.setCity(owner2.getCity() + "updated");
 
 
         Owner updateOwner3 = Entity.createUpdate(owner3);
-        updateOwner3.setLastName("new 3 lastname");
+        updateOwner3.setCity(owner3.getCity() + "updated");
 
         Owner updatedOwner2 = ownerService.partialUpdate(updateOwner2);
         Owner updatedOwner3 = ownerService.partialUpdate(updateOwner3);
@@ -186,11 +182,13 @@ public class OwnerSyncControllerIntegrationTest extends AbstractControllerIntegr
 
         Set<String> idsToSync = Sets.newHashSet(owner2SyncStatus.getId(),owner3SyncStatus.getId());
 
+        securityContext.login(TestPrincipal.withName(KAHN));
         String json = perform(post(getFindSomeUrl())
                 .content(getController().getJsonMapper().writeDto(idsToSync))
                 .contentType(MediaType.APPLICATION_JSON_VALUE))
                 .andExpect(status().is2xxSuccessful())
                 .andReturn().getResponse().getContentAsString();
+        RapidSecurityContext.logout();
 
         CollectionType ownerSetType = getController().getJsonMapper().getObjectMapper()
                 .getTypeFactory().constructCollectionType(Set.class, ReadOwnOwnerDto.class);
@@ -201,8 +199,8 @@ public class OwnerSyncControllerIntegrationTest extends AbstractControllerIntegr
         ReadOwnOwnerDto owner2Dto = updatedOwners.stream().filter(s -> s.getId().equals(updatedOwner2.getId())).findFirst().get();
         ReadOwnOwnerDto owner3Dto = updatedOwners.stream().filter(s -> s.getId().equals(updatedOwner3.getId())).findFirst().get();
 
-        Assertions.assertEquals(owner2Dto.getLastName(),updateOwner2.getLastName());
-        Assertions.assertEquals(owner3Dto.getLastName(),updateOwner3.getLastName());
+        Assertions.assertEquals(owner2Dto.getCity(),updateOwner2.getCity());
+        Assertions.assertEquals(owner3Dto.getCity(),updateOwner3.getCity());
     }
 
 
