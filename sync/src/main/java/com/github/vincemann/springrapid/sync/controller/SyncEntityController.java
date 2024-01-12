@@ -100,7 +100,7 @@ public class SyncEntityController<
     }
 
     /**
-     * receives Set of {@link EntityLastUpdateInfo} of client and looks these through.
+     * receives Set of {@link EntityLastUpdateInfo} of client in body and looks these through.
      * Returns client Set of {@link EntitySyncStatus} for those that need update with respective {@link EntitySyncStatus#getStatus()}.
      * <p>
      * If no updated required at all, returns 204 without body.
@@ -109,13 +109,13 @@ public class SyncEntityController<
      *
      *
      */
-    public ResponseEntity<String> fetchEntitySyncStatuses(HttpServletRequest request, HttpServletResponse response) throws BadEntityException, EntityNotFoundException {
+    public ResponseEntity<String> fetchEntitySyncStatuses(HttpServletRequest request, HttpServletResponse response) throws BadEntityException {
         try {
             String json = readBody(request);
             CollectionType idSetType = getJsonMapper().getObjectMapper()
                     .getTypeFactory().constructCollectionType(Set.class, EntityLastUpdateInfo.class);
             Set<EntityLastUpdateInfo> lastUpdateInfos = getJsonMapper().readDto(json, idSetType);
-            List<JPQLEntityFilter<E>> filters = HttpServletRequestUtils.extractFilters(request,applicationContext,"jpql-filter");
+//            List<JPQLEntityFilter<E>> filters = HttpServletRequestUtils.extractFilters(request,applicationContext,"jpql-filter");
 
 
             Set<EntitySyncStatus> syncStatuses = serviceFindEntitySyncStatuses(lastUpdateInfos);

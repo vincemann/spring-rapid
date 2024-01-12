@@ -12,9 +12,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 @NoArgsConstructor
-@Getter
-@Setter
-
+@Getter @Setter
 public class ReadForeignOwnerDto extends AbstractOwnerDto  {
 
     @Nullable

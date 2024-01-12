@@ -11,7 +11,7 @@ import java.util.Set;
  * convert {@link EntitySyncStatus} to string and vice versa, trying to optimize space, resulting in less network load
  * -> request with this entity as payload will be executed all the time
  *
- * This class can also be copied and used by client.
+ * This class can also be copied and used by client and in tests.
  */
 public class EntitySyncStatusSerializerImpl implements EntitySyncStatusSerializer {
     public static final String DELIMITER = ":";

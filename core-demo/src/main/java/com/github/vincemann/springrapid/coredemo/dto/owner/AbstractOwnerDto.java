@@ -11,10 +11,8 @@ import javax.validation.constraints.Size;
 import java.util.HashSet;
 import java.util.Set;
 
-@Getter
-@Setter
 @NoArgsConstructor
-
+@Getter @Setter
 public abstract class AbstractOwnerDto extends MyIdDto<Long> {
 
     public AbstractOwnerDto(@Size(min = 10, max = 255) @NotBlank String address, @NotBlank String city, @Nullable @Size(min = 10, max = 10) String telephone,Set<String> hobbies) {

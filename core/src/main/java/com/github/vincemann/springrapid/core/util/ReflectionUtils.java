@@ -1,10 +1,6 @@
 package com.github.vincemann.springrapid.core.util;
 
-import javax.persistence.ManyToMany;
-import javax.persistence.OneToMany;
-import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
-import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Modifier;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
@@ -79,9 +75,9 @@ public class ReflectionUtils {
         return field.getName().indexOf('$') != -1 || Modifier.isStatic(field.getModifiers());
     }
 
-    private static Map<Class<?>, Set<Field>> entityCollectionFieldsCache = new ConcurrentHashMap<>();
-    public static Set<Field> findEntityCollectionFields(Class<?> clazz){
-        Set<Field> cachedResult = entityCollectionFieldsCache.get(clazz);
+    private static Map<Class<?>, Set<Field>> collectionFieldsCache = new ConcurrentHashMap<>();
+    public static Set<Field> findCollectionFields(Class<?> clazz){
+        Set<Field> cachedResult = collectionFieldsCache.get(clazz);
         if (cachedResult != null) {
             return cachedResult;
         }
@@ -98,7 +94,30 @@ public class ReflectionUtils {
                     return Collection.class.isAssignableFrom(field.getType());
                 });
 
-        entityCollectionFieldsCache.put(clazz, fields);
+        collectionFieldsCache.put(clazz, fields);
+
+        return fields;
+    }
+
+    public static Set<Field> findCollectionFieldsAnnotatedWith(Class<?> clazz){
+        Set<Field> cachedResult = collectionFieldsCache.get(clazz);
+        if (cachedResult != null) {
+            return cachedResult;
+        }
+
+        Set<Field> fields = new HashSet<>();
+        org.springframework.util.ReflectionUtils.doWithFields(clazz, fields::add,
+                field -> {
+                    // dont also check for these annotations, it is required to also check for collections that do not represent other entities
+//                    Annotation[] annotations = field.getDeclaredAnnotations();
+//                    boolean annotationMatch = Arrays.stream(annotations).sequential().anyMatch(a -> a.annotationType().equals(OneToMany.class) || a.annotationType().equals(ManyToMany.class));
+//                    if (!annotationMatch)
+//                        return false;
+//                    else
+                    return Collection.class.isAssignableFrom(field.getType());
+                });
+
+        collectionFieldsCache.put(clazz, fields);
 
         return fields;
     }

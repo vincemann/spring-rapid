@@ -16,10 +16,8 @@ import javax.validation.constraints.Size;
 import java.util.HashSet;
 import java.util.Set;
 
-@Getter
-@Setter
 @NoArgsConstructor
-
+@Getter @Setter
 public class CreateOwnerDto extends AbstractOwnerDto  {
 
     @NotBlank
