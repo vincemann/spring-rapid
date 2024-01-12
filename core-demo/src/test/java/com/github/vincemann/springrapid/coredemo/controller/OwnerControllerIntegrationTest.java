@@ -118,33 +118,6 @@ public class OwnerControllerIntegrationTest
         assertPetHasOwner(KITTY,KAHN);
     }
 
-    private ReadOwnOwnerDto saveOwnerLinkedToPets(Owner owner,Long... petIds) throws Exception {
-        CreateOwnerDto createOwnerDto = new CreateOwnerDto(owner);
-        createOwnerDto.getPetIds().addAll(Lists.newArrayList(petIds));
-
-
-       return performDs2xx(create(createOwnerDto),ReadOwnOwnerDto.class);
-    }
-
-
-    private ReadOwnOwnerDto saveOwnerLinkedToClinicCard(Owner owner,ClinicCard clinicCard) throws Exception {
-        CreateOwnerDto createOwnerDto = new CreateOwnerDto(owner);
-        createOwnerDto.setClinicCardId(clinicCard.getId());
-
-
-        return performDs2xx(create(createOwnerDto),ReadOwnOwnerDto.class);
-    }
-
-
-    private ReadOwnOwnerDto saveOwner(Owner owner) throws Exception {
-        CreateOwnerDto createOwnerDto = new CreateOwnerDto(owner);
-        return performDs2xx(create(createOwnerDto),ReadOwnOwnerDto.class);
-    }
-
-
-
-
-
     // UPDATE TESTS
     @Test
     public void canUpdateOwnersCity() throws Exception {

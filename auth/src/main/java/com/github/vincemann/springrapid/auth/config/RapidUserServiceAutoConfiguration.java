@@ -32,8 +32,8 @@ import java.io.Serializable;
 
 @ServiceConfig
 @Slf4j
-@EnableJpaAuditing
 @EnableTransactionManagement
+//@EnableJpaAuditing
 //@AutoConfigureBefore({AclAutoConfiguration.class})
 public class RapidUserServiceAutoConfiguration {
 

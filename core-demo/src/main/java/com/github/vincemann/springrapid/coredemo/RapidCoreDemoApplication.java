@@ -6,11 +6,10 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.ApplicationContext;
 
 @SpringBootApplication
-@Slf4j
 public class RapidCoreDemoApplication {
 
 	public static void main(String[] args){
-		ApplicationContext context = SpringApplication.run(RapidCoreDemoApplication.class, args);
+		SpringApplication.run(RapidCoreDemoApplication.class, args);
 	}
 
 }

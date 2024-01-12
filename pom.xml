@@ -47,6 +47,7 @@
         <module>exceptions-api</module>
         <module>acl-demo</module>
         <module>acl-test</module>
+        <module>sync-demo</module>
     </modules>
 
     <dependencies>

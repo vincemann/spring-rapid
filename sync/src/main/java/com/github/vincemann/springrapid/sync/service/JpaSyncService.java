@@ -21,7 +21,7 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 public class JpaSyncService
-    // todo remove generic params not needed
+    // todo remove generic params that are not needed
         <
                 E extends AuditingEntity<Id>,
                 Id extends Serializable,

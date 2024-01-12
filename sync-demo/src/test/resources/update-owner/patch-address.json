@@ -1,0 +1,3 @@
+[
+  {"op": "replace", "path": "/address", "value": "other Street 12"}
+]

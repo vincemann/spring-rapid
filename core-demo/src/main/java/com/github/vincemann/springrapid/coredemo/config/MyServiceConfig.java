@@ -5,9 +5,9 @@ import com.github.vincemann.springrapid.core.slicing.ServiceConfig;
 import com.github.vincemann.springrapid.coredemo.service.OwnerService;
 import com.github.vincemann.springrapid.coredemo.service.PetService;
 import com.github.vincemann.springrapid.coredemo.service.Root;
-import com.github.vincemann.springrapid.coredemo.service.extensions.ExampleAclExtension;
-import com.github.vincemann.springrapid.coredemo.service.extensions.OwnerOfTheYearExtension;
-import com.github.vincemann.springrapid.coredemo.service.extensions.SaveNameToWordPressDbExtension;
+import com.github.vincemann.springrapid.coredemo.service.ext.ExampleAclExtension;
+import com.github.vincemann.springrapid.coredemo.service.ext.OwnerOfTheYearExtension;
+import com.github.vincemann.springrapid.coredemo.service.ext.SaveNameToWordPressDbExtension;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Primary;
 

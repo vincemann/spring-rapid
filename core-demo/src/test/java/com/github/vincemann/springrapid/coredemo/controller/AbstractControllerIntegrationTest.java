@@ -4,14 +4,15 @@ import com.github.vincemann.springrapid.core.controller.GenericCrudController;
 import com.github.vincemann.springrapid.core.security.RapidAuthenticatedPrincipal;
 import com.github.vincemann.springrapid.core.security.RapidSecurityContext;
 import com.github.vincemann.springrapid.core.service.CrudService;
+import com.github.vincemann.springrapid.core.util.Lists;
+import com.github.vincemann.springrapid.coredemo.dto.owner.CreateOwnerDto;
+import com.github.vincemann.springrapid.coredemo.dto.owner.ReadOwnOwnerDto;
 import com.github.vincemann.springrapid.coredemo.model.*;
 import com.github.vincemann.springrapid.coredemo.repo.*;
 import com.github.vincemann.springrapid.coredemo.service.*;
-import com.github.vincemann.springrapid.coredemo.service.extensions.OwnerOfTheYearExtension;
+import com.github.vincemann.springrapid.coredemo.service.ext.OwnerOfTheYearExtension;
 import com.github.vincemann.springrapid.core.util.TransactionalTemplate;
 import com.github.vincemann.springrapid.coretest.controller.integration.IntegrationCrudControllerTest;
-import com.github.vincemann.springrapid.coretest.util.TransactionalRapidTestUtil;
-import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -139,7 +140,7 @@ public class AbstractControllerIntegrationTest<C extends GenericCrudController<?
     protected RapidSecurityContext<RapidAuthenticatedPrincipal> securityContext;
 
     @Autowired
-    TransactionalTemplate transactionalTemplate;
+    protected TransactionalTemplate transactionalTemplate;
 
     @BeforeEach
     public void setupTestData() throws Exception {
@@ -385,6 +386,31 @@ public class AbstractControllerIntegrationTest<C extends GenericCrudController<?
             System.err.println("Checking pet: " + petName);
             Assertions.assertEquals(owner, pet.getOwner());
         });
+    }
+
+    // HELPERS
+
+    protected ReadOwnOwnerDto saveOwnerLinkedToPets(Owner owner, Long... petIds) throws Exception {
+        CreateOwnerDto createOwnerDto = new CreateOwnerDto(owner);
+        createOwnerDto.getPetIds().addAll(Lists.newArrayList(petIds));
+
+
+        return performDs2xx(create(createOwnerDto),ReadOwnOwnerDto.class);
+    }
+
+
+    protected ReadOwnOwnerDto saveOwnerLinkedToClinicCard(Owner owner,ClinicCard clinicCard) throws Exception {
+        CreateOwnerDto createOwnerDto = new CreateOwnerDto(owner);
+        createOwnerDto.setClinicCardId(clinicCard.getId());
+
+
+        return performDs2xx(create(createOwnerDto),ReadOwnOwnerDto.class);
+    }
+
+
+    protected ReadOwnOwnerDto saveOwner(Owner owner) throws Exception {
+        CreateOwnerDto createOwnerDto = new CreateOwnerDto(owner);
+        return performDs2xx(create(createOwnerDto),ReadOwnOwnerDto.class);
     }
 
 

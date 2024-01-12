@@ -21,6 +21,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Scope;
 import org.springframework.data.domain.AuditorAware;
+import org.springframework.data.jpa.repository.config.EnableJpaAuditing;
 import org.springframework.validation.Validator;
 import org.springframework.validation.beanvalidation.LocalValidatorFactoryBean;
 
@@ -28,6 +29,7 @@ import javax.persistence.EntityManager;
 
 @Configuration
 @EnableConfigurationProperties
+@EnableJpaAuditing
 @Slf4j
 public class RapidGeneralAutoConfiguration {
 

@@ -1,5 +1,6 @@
 package com.github.vincemann.springrapid.coredemo.model.abs;
 
+import com.github.vincemann.springrapid.core.model.AuditingEntity;
 import com.github.vincemann.springrapid.core.model.IdentifiableEntityImpl;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
