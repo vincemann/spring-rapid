@@ -6,6 +6,7 @@ import com.github.vincemann.springrapid.sync.controller.EntitySyncStatusSerializ
 import com.github.vincemann.springrapid.sync.controller.EntitySyncStatusSerializerImpl;
 import com.github.vincemann.springrapid.sync.repo.CustomAuditingRepository;
 import com.github.vincemann.springrapid.sync.repo.RapidCustomAuditingRepository;
+import com.github.vincemann.springrapid.sync.service.AuditCollectionsExtension;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.context.annotation.Bean;
 
@@ -24,6 +25,12 @@ public class RapidSyncAutoConfiguration {
     @ConditionalOnMissingBean(EntitySyncStatusSerializer.class)
     public EntitySyncStatusSerializer entitySyncStatusSerializer(){
         return new EntitySyncStatusSerializerImpl();
+    }
+
+    @Bean
+    @ConditionalOnMissingBean(name = "auditCollectionsExtension")
+    public AuditCollectionsExtension auditCollectionsExtension(){
+        return new AuditCollectionsExtension();
     }
 
 }

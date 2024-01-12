@@ -5,6 +5,7 @@ import com.github.vincemann.springrapid.autobidir.model.child.annotation.BiDirCh
 import com.github.vincemann.springrapid.autobidir.model.child.annotation.BiDirChildEntity;
 import com.github.vincemann.springrapid.core.model.AuditingEntity;
 import com.github.vincemann.springrapid.core.util.LazyToStringUtil;
+import com.github.vincemann.springrapid.sync.AuditCollection;
 import com.github.vincemann.springrapid.syncdemo.model.abs.Person;
 import lombok.Builder;
 import lombok.Getter;
@@ -24,23 +25,11 @@ import static javax.persistence.CascadeType.*;
 @Entity
 @NoArgsConstructor
 @Table(name = "owners")
-public class Owner extends AuditingEntity<Long> {
-
-    @Column(name = "first_name")
-    @NotBlank
-    private String firstName;
-
-    @Unique
-    @NotBlank
-    @Column(name = "last_name")
-    private String lastName;
-
+public class Owner extends Person {
 
     @Builder
     public Owner(String firstName, String lastName, Set<Pet> pets, String address, String city, String telephone, Set<String> hobbies) {
-//        super(firstName, lastName);
-        this.firstName = firstName;
-        this.lastName = lastName;
+        super(firstName, lastName);
         if(pets!=null) {
             this.pets = pets;
         }else {
@@ -70,6 +59,7 @@ public class Owner extends AuditingEntity<Long> {
 
 
     @ElementCollection(targetClass = String.class,fetch = FetchType.EAGER)
+    @AuditCollection
     private Set<String> hobbies = new HashSet<>();
 
 
