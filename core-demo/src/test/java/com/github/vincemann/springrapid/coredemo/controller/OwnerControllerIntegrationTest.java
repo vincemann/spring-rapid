@@ -10,7 +10,10 @@ import com.github.vincemann.springrapid.coredemo.model.ClinicCard;
 import com.github.vincemann.springrapid.coredemo.model.Owner;
 import com.github.vincemann.springrapid.coredemo.model.Pet;
 import com.github.vincemann.springrapid.coredemo.service.OwnerService;
+import com.github.vincemann.springrapid.coredemo.service.filter.CityPrefixFilter;
 import com.github.vincemann.springrapid.coredemo.service.filter.HasPetsFilter;
+import com.github.vincemann.springrapid.coredemo.service.filter.OwnerTelNumberFilter;
+import com.github.vincemann.springrapid.coredemo.service.filter.PetNameEndsWithFilter;
 import com.github.vincemann.springrapid.coretest.TestPrincipal;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Disabled;
@@ -302,7 +305,7 @@ public class OwnerControllerIntegrationTest
         assertPetHasOwner(KITTY,KAHN);
         assertPetHasOwner(BELLA,null);
     }
-    
+
     @Test
     public void canRemoveOneOfManyHobbiesFromOwner_viaUpdate() throws Exception {
         String hobbyToRemove = "bodybuilding";
@@ -356,6 +359,13 @@ public class OwnerControllerIntegrationTest
     @Test
     public void canFindAllOwnersWithPetsFilter() throws Exception {
 
+        // save kahn -> bello
+        // meier -> kitty
+        // gil -> []
+        // find all owners with hasPets filter (in memory filter), authenticated as kahn
+        // should find kahn and meier
+        // kahn should be FindOwnOwnerDto and meier FindForeignOwnerDto
+
         Pet savedBello = petRepository.save(bello);
         Pet savedKitty = petRepository.save(kitty);
 
@@ -379,6 +389,142 @@ public class OwnerControllerIntegrationTest
         Assertions.assertEquals(Owner.DIRTY_SECRET,kahnDto.getDirtySecret());
         ReadOwnOwnerDto meierDto = findInCollection(responseDtos, savedMeier);
         Assertions.assertNull(meierDto.getDirtySecret());
+    }
+
+    // can combine jpql filter with memory filter
+    @Test
+    public void canFindAllOwnersWithPetsFilter_andTelNrPrefix() throws Exception {
+        // save kahn -> bello
+        // meier -> kitty
+        // gil -> []
+        // find all owners with hasPets filter (in memory filter), authenticated as kahn
+        // and combine with jpql filter checking telnr prefix for 0176
+        // should find kahn only
+        // kahn should be FindOwnOwnerDto
+        Pet savedBello = petRepository.save(bello);
+        Pet savedKitty = petRepository.save(kitty);
+
+        ReadOwnOwnerDto savedKahn = saveOwnerLinkedToPets(kahn,savedBello.getId());
+        ReadOwnOwnerDto savedMeier = saveOwnerLinkedToPets(meier, savedKitty.getId());
+        ReadOwnOwnerDto savedGil = saveOwnerLinkedToPets(gil);
+
+        Assertions.assertEquals(3,ownerRepository.findAll().size());
+
+        String telnrPrefix = "0176";
+        Assertions.assertTrue(savedKahn.getTelephone().startsWith(telnrPrefix));
+        Assertions.assertTrue(savedGil.getTelephone().startsWith(telnrPrefix));
+        Assertions.assertFalse(savedMeier.getTelephone().startsWith(telnrPrefix));
+
+
+        securityContext.login(TestPrincipal.withName(KAHN));
+        // memory filter
+        String hasPetsFilter = createFilterString(new Filter(HasPetsFilter.class));
+        String telNrPrefixFilter = createFilterString(new Filter(OwnerTelNumberFilter.class,telnrPrefix));
+        Set<ReadOwnOwnerDto> responseDtos = deserializeToSet(getMvc().perform(findAll(telNrPrefixFilter,hasPetsFilter))
+                .andReturn().getResponse().getContentAsString(), ReadOwnOwnerDto.class);
+        RapidSecurityContext.logout();
+
+        // one dto findOwnDto and one findForeign
+        Assertions.assertEquals(1,responseDtos.size());
+        ReadOwnOwnerDto kahnDto = findInCollection(responseDtos, savedKahn);
+        Assertions.assertEquals(Owner.DIRTY_SECRET,kahnDto.getDirtySecret());
+    }
+
+    // combine jpql filter with two memory filters
+    @Test
+    public void canFindAllOwnersWithPetsFilter_andTelNrPrefix_andPetNameEndsWithA() throws Exception {
+        // save kahn -> bello
+        // meier -> kitty
+        // gil -> bella
+        // find all owners with hasPets filter (in memory filter), authenticated as kahn -> all
+        // and combine with jpql filter checking telnr prefix for 0176 -> kahn, gil
+        // and combine with petNameEnds with a filter -> gil
+        // should find gil only
+        // gil should be FindForeignOwnerDto
+        Pet savedBello = petRepository.save(bello);
+        Pet savedKitty = petRepository.save(kitty);
+        Pet savedBella = petRepository.save(bella);
+
+        ReadOwnOwnerDto savedKahn = saveOwnerLinkedToPets(kahn,savedBello.getId());
+        ReadOwnOwnerDto savedMeier = saveOwnerLinkedToPets(meier, savedKitty.getId());
+        ReadOwnOwnerDto savedGil = saveOwnerLinkedToPets(gil,savedBella.getId());
+
+        Assertions.assertEquals(3,ownerRepository.findAll().size());
+
+        String telnrPrefix = "0176";
+        Assertions.assertTrue(savedKahn.getTelephone().startsWith(telnrPrefix));
+        Assertions.assertTrue(savedGil.getTelephone().startsWith(telnrPrefix));
+        Assertions.assertFalse(savedMeier.getTelephone().startsWith(telnrPrefix));
+
+
+        securityContext.login(TestPrincipal.withName(KAHN));
+        // memory filter
+        String memoryFilters = createFilterString(new Filter(HasPetsFilter.class),new Filter(PetNameEndsWithFilter.class,"a"));
+        // jpql filters (always come first)
+        String telNrPrefixFilter = createFilterString(new Filter(OwnerTelNumberFilter.class,telnrPrefix));
+        Set<ReadForeignOwnerDto> responseDtos = deserializeToSet(getMvc().perform(findAll(telNrPrefixFilter,memoryFilters))
+                .andReturn().getResponse().getContentAsString(), ReadForeignOwnerDto.class);
+        RapidSecurityContext.logout();
+
+        // one dto findOwnDto and one findForeign
+        Assertions.assertEquals(1,responseDtos.size());
+        ReadForeignOwnerDto gilDto = findInCollection(responseDtos, savedGil);
+
+        compare(gilDto).with(savedGil)
+                .properties()
+                .all()
+                .assertEqual();
+    }
+
+    // combine multiple jpql filters with memory filter
+    @Test
+    public void canFindAllOwnersWithPetsFilter_andTelNrPrefix_andCityIsN1() throws Exception {
+        // save kahn -> bello
+        // meier -> kitty
+        // gil -> bella
+        // find all owners with hasPets filter (in memory filter), authenticated as kahn -> all
+        // and combine with jpql filter checking telnr prefix for 0176 -> kahn, gil
+        // and combine with city is n1 -> kahn
+        // should find kahn only
+        // kahn should be FindOwnOwnerDto
+        Pet savedBello = petRepository.save(bello);
+        Pet savedKitty = petRepository.save(kitty);
+        Pet savedBella = petRepository.save(bella);
+
+        ReadOwnOwnerDto savedKahn = saveOwnerLinkedToPets(kahn,savedBello.getId());
+        ReadOwnOwnerDto savedMeier = saveOwnerLinkedToPets(meier, savedKitty.getId());
+        ReadOwnOwnerDto savedGil = saveOwnerLinkedToPets(gil,savedBella.getId());
+
+        Assertions.assertEquals(3,ownerRepository.findAll().size());
+
+        String telnrPrefix = "0176";
+        Assertions.assertTrue(savedKahn.getTelephone().startsWith(telnrPrefix));
+        Assertions.assertTrue(savedGil.getTelephone().startsWith(telnrPrefix));
+        Assertions.assertFalse(savedMeier.getTelephone().startsWith(telnrPrefix));
+
+        String niceCityPrefix = "n1";
+        Assertions.assertTrue(savedKahn.getCity().startsWith(niceCityPrefix));
+        Assertions.assertFalse(savedGil.getCity().startsWith(niceCityPrefix));
+
+        securityContext.login(TestPrincipal.withName(KAHN));
+        // memory filter
+        String memoryFilters = createFilterString(new Filter(HasPetsFilter.class));
+        // jpql filters (always come first)
+        String telNrPrefixFilter = createFilterString(new Filter(OwnerTelNumberFilter.class,telnrPrefix),new Filter(CityPrefixFilter.class,niceCityPrefix));
+        Set<ReadOwnOwnerDto> responseDtos = deserializeToSet(getMvc().perform(findAll(telNrPrefixFilter,memoryFilters))
+                .andReturn().getResponse().getContentAsString(), ReadOwnOwnerDto.class);
+        RapidSecurityContext.logout();
+
+        // one dto findOwnDto and one findForeign
+        Assertions.assertEquals(1,responseDtos.size());
+        ReadOwnOwnerDto kahnDto = findInCollection(responseDtos, savedKahn);
+        Assertions.assertNotNull(kahnDto.getDirtySecret());
+        Assertions.assertEquals(Owner.DIRTY_SECRET,kahnDto.getDirtySecret());
+
+        compare(kahnDto).with(savedKahn)
+                .properties()
+                .all()
+                .assertEqual();
     }
 
 

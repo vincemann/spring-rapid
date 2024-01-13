@@ -1,9 +1,8 @@
-package com.github.vincemann.springrapid.syncdemo.service.filter;
+package com.github.vincemann.springrapid.coredemo.service.filter;
 
 import com.github.vincemann.springrapid.core.service.JPQLEntityFilter;
 import com.github.vincemann.springrapid.core.service.exception.BadEntityException;
-import com.github.vincemann.springrapid.core.slicing.ServiceConfig;
-import com.github.vincemann.springrapid.syncdemo.model.Owner;
+import com.github.vincemann.springrapid.coredemo.model.Owner;
 import org.springframework.stereotype.Component;
 
 import javax.persistence.criteria.CriteriaBuilder;

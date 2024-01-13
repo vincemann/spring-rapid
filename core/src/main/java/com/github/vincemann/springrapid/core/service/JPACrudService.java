@@ -159,23 +159,29 @@ public abstract class JPACrudService
     protected Set<E> applyMemoryFilters(Set<E> result, List<EntityFilter<E>> filters) {
         if (filters.isEmpty())
             return result;
-        return result
-                .stream()
-                .filter(entity -> {
-                    for (EntityFilter<E> filter : filters) {
-                        if (log.isDebugEnabled())
-                            log.debug("applying memory filter: " + filter.getClass().getSimpleName());
-                        if (filter.match(entity)) {
-                            if (log.isTraceEnabled())
-                                log.trace("entity: " + entity + " matches filter: " + filter);
-                            return true;
-                        }
-                    }
-                    if (log.isTraceEnabled())
-                        log.trace("entity: " + entity + " did not match any filter: ");
-                    return false;
-                })
-                .collect(Collectors.toSet());
+        Set<E> filtered = new HashSet<>();
+        for (E entity : result) {
+            if (!isFilteredOut(filters,entity))
+                filtered.add(entity);
+        }
+        return filtered;
+    }
+
+    /**
+     * @return true if entity is filtered out -> not part of result set
+     *         false if entity matches all filters -> is part of result set
+     */
+    protected boolean isFilteredOut(List<EntityFilter<E>> filters, E entity){
+        for (EntityFilter<E> filter : filters) {
+            if (log.isDebugEnabled())
+                log.debug("applying memory filter: " + filter.getClass().getSimpleName());
+            if (!filter.match(entity)) {
+                if (log.isTraceEnabled())
+                    log.trace("entity: " + entity + " did not match filter: " + filter);
+                return true;
+            }
+        }
+        return false;
     }
 
 
