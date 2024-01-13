@@ -114,11 +114,11 @@ public class MockServiceOwnerControllerTest
                 .lastName(lastName)
                 .address(address)
                 .city(city)
+                .dirtySecret(Owner.DIRTY_SECRET)
                 .telephone(telephone)
                 .petIds(new HashSet<>())
                 .build();
         readOwnOwnerDto.setId(id);
-        readOwnOwnerDto.setDirtySecret(ReadOwnOwnerDto.DIRTY_SECRET);
 
 
         owner = Owner.builder()

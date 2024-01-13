@@ -50,6 +50,7 @@ public class AbstractControllerIntegrationTest<C extends GenericCrudController<?
 
     protected static final String MEIER = "Meier";
     protected static final String KAHN = "Kahn";
+    protected static final String GIL = "Gil";
 
     protected static final String BELLO = "Bello";
     protected static final String BELLA = "Bella";
@@ -72,6 +73,7 @@ public class AbstractControllerIntegrationTest<C extends GenericCrudController<?
 
     protected Owner meier;
     protected Owner kahn;
+    protected Owner gil;
 
     protected Pet bello;
     protected Pet kitty;
@@ -198,6 +200,14 @@ public class AbstractControllerIntegrationTest<C extends GenericCrudController<?
                 .address("asljnflksamfslkmf")
                 .city("n1 city")
                 .telephone("1234567890")
+                .build();
+
+        gil = Owner.builder()
+                .firstName("dessen")
+                .lastName(GIL)
+                .address("dessen address")
+                .city("n2 city")
+                .telephone("0176567110")
                 .build();
 
         dentism = Specialty.builder()

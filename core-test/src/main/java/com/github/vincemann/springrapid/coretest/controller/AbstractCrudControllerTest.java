@@ -4,6 +4,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JavaType;
 
+import com.fasterxml.jackson.databind.type.CollectionType;
 import com.github.vincemann.springrapid.core.controller.GenericCrudController;
 import com.github.vincemann.springrapid.core.model.IdentifiableEntity;
 import com.github.vincemann.springrapid.core.service.ArgAwareFilter;
@@ -32,6 +33,10 @@ import org.springframework.web.context.WebApplicationContext;
 
 import java.io.IOException;
 import java.util.Arrays;
+import java.util.Collection;
+import java.util.Optional;
+import java.util.Set;
+import java.util.function.Predicate;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -200,8 +205,12 @@ public abstract class AbstractCrudControllerTest
         return testTemplate.findAll();
     }
 
-    public  MockHttpServletRequestBuilder findAll(String filters) throws Exception {
-        return testTemplate.findAll(filters);
+    public  MockHttpServletRequestBuilder findAll(String jpqlFilters) throws Exception {
+        return testTemplate.findAll(jpqlFilters);
+    }
+
+    public  MockHttpServletRequestBuilder findAll(String jpqlFilters, String memoryFilters) throws Exception {
+        return testTemplate.findAll(jpqlFilters,memoryFilters);
     }
 
     public  String getCreateUrl() {
@@ -234,6 +243,24 @@ public abstract class AbstractCrudControllerTest
 
     public  <Dto> Dto deserialize(String s, Class<Dto> dtoClass) throws IOException {
         return (Dto) testTemplate.deserialize(s,dtoClass);
+    }
+
+    public  <Dto> Set<Dto> deserializeToSet(String s, Class<Dto> dtoClass) throws IOException {
+        CollectionType setType = getController().getJsonMapper().getObjectMapper()
+                .getTypeFactory().constructCollectionType(Set.class, dtoClass);
+        return deserialize(s, setType);
+    }
+
+    public <E> E findInCollection(Collection<E> collection, Predicate<E> predicate){
+        Optional<E> entity = collection.stream().filter(predicate::test).findFirst();
+        Assertions.assertTrue(entity.isPresent(),"could not find entity in collection");
+        return entity.get();
+    }
+
+    public <E extends IdentifiableEntity<?>, E2 extends IdentifiableEntity<?>> E findInCollection(Collection<E> collection, E2 entity){
+        Optional<E> filtered = collection.stream().filter(e -> e.getId().equals(entity.getId())).findFirst();
+        Assertions.assertTrue(filtered.isPresent(),"could not find entity in collection");
+        return filtered.get();
     }
 
     public  <Dto> Dto deserialize(String s, TypeReference<?> dtoClass) throws IOException {

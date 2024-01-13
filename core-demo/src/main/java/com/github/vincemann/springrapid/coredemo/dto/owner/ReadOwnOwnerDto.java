@@ -11,8 +11,9 @@ import java.util.Set;
 @NoArgsConstructor
 @Getter @Setter
 public class ReadOwnOwnerDto extends ReadForeignOwnerDto {
-    public static final String DIRTY_SECRET = "can you see this?";
-    private String dirtySecret = DIRTY_SECRET;
+
+    private String dirtySecret;
+
     @NotBlank
     @Size(min = 2, max = 20)
     private String firstName;

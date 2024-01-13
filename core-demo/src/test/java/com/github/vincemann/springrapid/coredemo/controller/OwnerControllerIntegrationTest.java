@@ -1,13 +1,16 @@
 package com.github.vincemann.springrapid.coredemo.controller;
 
+import com.fasterxml.jackson.databind.type.CollectionType;
 import com.github.vincemann.springrapid.core.security.RapidSecurityContext;
 import com.github.vincemann.springrapid.core.util.Lists;
 import com.github.vincemann.springrapid.coredemo.dto.owner.CreateOwnerDto;
+import com.github.vincemann.springrapid.coredemo.dto.owner.ReadForeignOwnerDto;
 import com.github.vincemann.springrapid.coredemo.dto.owner.ReadOwnOwnerDto;
 import com.github.vincemann.springrapid.coredemo.model.ClinicCard;
 import com.github.vincemann.springrapid.coredemo.model.Owner;
 import com.github.vincemann.springrapid.coredemo.model.Pet;
 import com.github.vincemann.springrapid.coredemo.service.OwnerService;
+import com.github.vincemann.springrapid.coredemo.service.filter.HasPetsFilter;
 import com.github.vincemann.springrapid.coretest.TestPrincipal;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Disabled;
@@ -299,12 +302,8 @@ public class OwnerControllerIntegrationTest
         assertPetHasOwner(KITTY,KAHN);
         assertPetHasOwner(BELLA,null);
     }
-
-
-    // todo fails when run with all other tests bc of some state probably in RelationalAdviceContextHolder
+    
     @Test
-    @DirtiesContext
-    @Disabled
     public void canRemoveOneOfManyHobbiesFromOwner_viaUpdate() throws Exception {
         String hobbyToRemove = "bodybuilding";
         Set<String> hobbies = new HashSet<>(Arrays.asList("swimming","biking",hobbyToRemove,"jogging","eating"));
@@ -349,10 +348,39 @@ public class OwnerControllerIntegrationTest
         compare(savedKahnDto).with(responseDto)
                 .properties().all()
                 .assertEqual();
-        Assertions.assertEquals(ReadOwnOwnerDto.DIRTY_SECRET,responseDto.getDirtySecret());
+        Assertions.assertEquals(Owner.DIRTY_SECRET,responseDto.getDirtySecret());
 
         RapidSecurityContext.logout();
     }
+
+    @Test
+    public void canFindAllOwnersWithPetsFilter() throws Exception {
+
+        Pet savedBello = petRepository.save(bello);
+        Pet savedKitty = petRepository.save(kitty);
+
+        ReadOwnOwnerDto savedKahn = saveOwnerLinkedToPets(kahn,savedBello.getId());
+        ReadOwnOwnerDto savedMeier = saveOwnerLinkedToPets(meier, savedKitty.getId());
+        ReadOwnOwnerDto savedGil = saveOwnerLinkedToPets(gil);
+
+        Assertions.assertEquals(3,ownerRepository.findAll().size());
+
+
+        securityContext.login(TestPrincipal.withName(KAHN));
+        // memory filter
+        String filter = createFilterString(new Filter(HasPetsFilter.class));
+        Set<ReadOwnOwnerDto> responseDtos = deserializeToSet(getMvc().perform(findAll(null,filter))
+                .andReturn().getResponse().getContentAsString(), ReadOwnOwnerDto.class);
+        RapidSecurityContext.logout();
+
+        // one dto findOwnDto and one findForeign
+        Assertions.assertEquals(2,responseDtos.size());
+        ReadOwnOwnerDto kahnDto = findInCollection(responseDtos, savedKahn);
+        Assertions.assertEquals(Owner.DIRTY_SECRET,kahnDto.getDirtySecret());
+        ReadOwnOwnerDto meierDto = findInCollection(responseDtos, savedMeier);
+        Assertions.assertNull(meierDto.getDirtySecret());
+    }
+
 
     @Test
     public void canFindOwnOwnerWithPets() throws Exception {

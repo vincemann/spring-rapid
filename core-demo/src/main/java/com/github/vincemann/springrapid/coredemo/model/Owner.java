@@ -21,6 +21,8 @@ import static javax.persistence.CascadeType.*;
 @Table(name = "owners")
 public class Owner extends Person {
 
+    public static final String DIRTY_SECRET = "can you see this?";
+
 
 
     @Builder
@@ -67,6 +69,8 @@ public class Owner extends Person {
     @Column(name = "telephone")
     private String telephone;
 
+    @Column(name = "dirty_secret")
+    private String dirtySecret = DIRTY_SECRET;
 
     @Override
     public String toString() {

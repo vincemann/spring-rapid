@@ -74,11 +74,19 @@ public abstract class AbstractCrudControllerTestTemplate
         return get(getController().getFindAllUrl())/*.contentType(getContentType())*/;
     }
 
-    public  MockHttpServletRequestBuilder findAll(String... jpqlFilters) throws Exception {
+    public  MockHttpServletRequestBuilder findAll(String jpqlFilters) throws Exception {
         MockHttpServletRequestBuilder requestBuilder = get(getController().getFindAllUrl());
-        if (jpqlFilters.length != 0){
-            Assertions.assertEquals(1,jpqlFilters.length);
-            requestBuilder.param("jpql-filter",jpqlFilters[0]);
+        requestBuilder.param("jpql-filter",jpqlFilters);
+        return requestBuilder;
+    }
+
+    public  MockHttpServletRequestBuilder findAll(String jpqlFilters, String memoryFilters) throws Exception {
+        MockHttpServletRequestBuilder requestBuilder = get(getController().getFindAllUrl());
+        if (jpqlFilters != null){
+            requestBuilder.param("jpql-filter",jpqlFilters);
+        }
+        if (memoryFilters != null){
+            requestBuilder.param("filter",memoryFilters);
         }
         return requestBuilder;
     }
