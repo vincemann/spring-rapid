@@ -31,6 +31,7 @@ import org.springframework.util.ReflectionUtils;
 import org.springframework.web.context.WebApplicationContext;
 
 import java.io.IOException;
+import java.util.Arrays;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -101,7 +102,7 @@ public abstract class AbstractCrudControllerTest
         int filterCount = 0;
         for (Filter filter : filters) {
             String[] beanNamesForType = applicationContext.getBeanNamesForType(filter.filterType);
-            Assertions.assertEquals(1,beanNamesForType.length,"no single bean found with type: " + filter.getClass().getSimpleName() + ". Found beanNames: " + beanNamesForType);
+            Assertions.assertEquals(1,beanNamesForType.length,"no single bean found with type: " + filter.filterType.getSimpleName() + ". Found beanNames: " + Arrays.toString(beanNamesForType));
             sb.append(beanNamesForType[0]);
             int count = 0;
             String[] args = filter.args;
